@@ -10,7 +10,7 @@ import { Button } from './button.js';
  * A filled button component.
  */
 export class FilledButton extends Button {
-    renderElevation() {
+    renderElevationOrOutline() {
         return html `<md-elevation></md-elevation>`;
     }
 }

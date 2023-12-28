@@ -78,9 +78,9 @@ class WaylandPointerConstraintDelegate : public PointerConstraintDelegate {
     zwp_locked_pointer_v1_send_unlocked(constraint_resource_);
   }
 
-  const raw_ptr<wl_resource, ExperimentalAsh> constraint_resource_;
-  raw_ptr<Pointer, ExperimentalAsh> pointer_;
-  const raw_ptr<Surface, ExperimentalAsh> surface_;
+  const raw_ptr<wl_resource> constraint_resource_;
+  raw_ptr<Pointer> pointer_;
+  const raw_ptr<Surface> surface_;
   bool is_persistent_;
 };
 

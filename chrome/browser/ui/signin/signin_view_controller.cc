@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/navigation_entry.h"
@@ -247,7 +248,7 @@ void SigninViewController::ShowModalSyncConfirmationDialog(
       GetOnModalDialogClosedCallback());
 }
 
-void SigninViewController::ShowModalEnterpriseConfirmationDialog(
+void SigninViewController::ShowModalManagedUserNoticeDialog(
     const AccountInfo& account_info,
     bool force_new_profile,
     bool show_link_data_option,
@@ -256,12 +257,12 @@ void SigninViewController::ShowModalEnterpriseConfirmationDialog(
     BUILDFLAG(IS_CHROMEOS_LACROS)
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
-      SigninViewControllerDelegate::CreateEnterpriseConfirmationDelegate(
+      SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
           browser_, account_info, force_new_profile, show_link_data_option,
           std::move(callback)),
       GetOnModalDialogClosedCallback());
 #else
-  NOTREACHED() << "Enterprise confirmation dialog modal not supported";
+  NOTREACHED() << "Managed user notice dialog modal not supported";
 #endif
 }
 
@@ -427,10 +428,16 @@ void SigninViewController::ShowGaiaLogoutTab(
     contents->Focus();
   }
 
+  // Pass a continue URL when the Web Signin Intercept bubble is shown, so that
+  // the bubble and the app picker do not overlap. If the bubble is not shown,
+  // open the app picker in case the user is lost.
+  GURL logout_url =
+      base::FeatureList::IsEnabled(switches::kUnoDesktop)
+          ? GaiaUrls::GetInstance()->LogOutURLWithContinueURL(GURL())
+          : GaiaUrls::GetInstance()->service_logout_url();
   // Do not use a singleton tab. A new tab should be opened even if there is
   // already a logout tab.
-  ShowTabOverwritingNTP(browser_,
-                        GaiaUrls::GetInstance()->service_logout_url());
+  ShowTabOverwritingNTP(browser_, logout_url);
 
   // Monitor the logout and fallback to local signout if it fails. The
   // LogoutTabHelper deletes itself.

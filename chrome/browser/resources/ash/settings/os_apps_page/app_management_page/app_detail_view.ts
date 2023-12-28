@@ -21,6 +21,7 @@ import {updateSelectedAppId} from '../../common/app_management/actions.js';
 import {AppMap} from '../../common/app_management/store.js';
 import {AppManagementStoreMixin} from '../../common/app_management/store_mixin.js';
 import {RouteObserverMixin} from '../../common/route_observer_mixin.js';
+import {PrefsState} from '../../common/types.js';
 import {Route, Router, routes} from '../../router.js';
 
 import {getTemplate} from './app_detail_view.html.js';
@@ -41,6 +42,10 @@ export class AppManagementAppDetailViewElement extends
 
   static get properties() {
     return {
+      prefs: {
+        type: Object,
+        notify: true,
+      },
       app_: {
         type: Object,
       },
@@ -56,6 +61,10 @@ export class AppManagementAppDetailViewElement extends
       },
     };
   }
+
+  // Public API: Bidirectional data flow.
+  /** Passed down to children. Do not access without using PrefsMixin. */
+  prefs: PrefsState;
 
   private app_: App;
   private apps_: AppMap;

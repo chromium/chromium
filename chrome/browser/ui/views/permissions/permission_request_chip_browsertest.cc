@@ -352,7 +352,7 @@ class PermissionRequestChipBrowserUiTest : public UiBrowserTest {
 
     const auto* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
-    return VerifyPixelUi(location_bar, test_info->test_case_name(),
+    return VerifyPixelUi(location_bar, test_info->test_suite_name(),
                          test_info->name()) != ui::test::ActionResult::kFailed;
   }
 

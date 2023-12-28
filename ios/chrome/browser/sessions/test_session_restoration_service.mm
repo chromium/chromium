@@ -49,6 +49,15 @@ void TestSessionRestorationService::SetSessionID(
   // Nothing to do.
 }
 
+void TestSessionRestorationService::LoadWebStateStorage(
+    Browser* browser,
+    web::WebState* web_state,
+    WebStateStorageCallback callback) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), web::proto::WebStateStorage{}));
+}
+
 void TestSessionRestorationService::LoadSession(Browser* browser) {
   // Pretend loading will happen.
   for (SessionRestorationObserver& observer : observers_) {
@@ -96,4 +105,8 @@ void TestSessionRestorationService::PurgeUnassociatedData(
     base::OnceClosure closure) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                            std::move(closure));
+}
+
+bool TestSessionRestorationService::PlaceholderTabsEnabled() const {
+  return false;
 }

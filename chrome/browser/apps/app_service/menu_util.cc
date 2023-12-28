@@ -151,8 +151,9 @@ void PopulateLaunchNewItemFromMenuItem(const MenuItemPtr& menu_item,
                                        int* launch_new_string_id) {
   DCHECK_EQ(menu_item->command_id, ash::LAUNCH_NEW);
 
-  if (launch_new_string_id)
+  if (launch_new_string_id) {
     *launch_new_string_id = menu_item->string_id;
+  }
 
   switch (menu_item->type) {
     case apps::MenuItemType::kCommand: {
@@ -210,10 +211,12 @@ base::StringPiece MenuTypeToString(MenuType menu_type) {
 }
 
 MenuType MenuTypeFromString(base::StringPiece menu_type) {
-  if (base::EqualsCaseInsensitiveASCII(menu_type, "shelf"))
+  if (base::EqualsCaseInsensitiveASCII(menu_type, "shelf")) {
     return MenuType::kShelf;
-  if (base::EqualsCaseInsensitiveASCII(menu_type, "applist"))
+  }
+  if (base::EqualsCaseInsensitiveASCII(menu_type, "applist")) {
     return MenuType::kAppList;
+  }
   return MenuType::kShelf;
 }
 

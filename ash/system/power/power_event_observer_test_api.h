@@ -41,7 +41,7 @@ class PowerEventObserverTestApi {
   bool TrackingLockOnSuspendUsage() const;
 
  private:
-  raw_ptr<PowerEventObserver, ExperimentalAsh> power_event_observer_;
+  raw_ptr<PowerEventObserver> power_event_observer_;
 };
 
 }  // namespace ash

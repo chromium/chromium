@@ -59,6 +59,7 @@ extern NSString* const kMoveFolderSymbol;
 extern NSString* const kTopOmniboxOptionSymbol;
 extern NSString* const kBottomOmniboxOptionSymbol;
 extern NSString* const kDangerousOmniboxSymbol;
+extern NSString* const kArrowDownSymbol;
 
 // Custom symbol names which can be configured with a color palette. iOS 15+
 // only.
@@ -197,6 +198,9 @@ extern NSString* const kCircleCircleFillSymbol;
 extern NSString* const kLockSymbol;
 extern NSString* const kRulerSymbol;
 extern NSString* const kLaptopAndIphoneSymbol;
+extern NSString* const kNewTabGroupActionSymbol;
+extern NSString* const kRemoveTabFromGroupActionSymbol;
+extern NSString* const kMoveTabToGroupActionSymbol;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

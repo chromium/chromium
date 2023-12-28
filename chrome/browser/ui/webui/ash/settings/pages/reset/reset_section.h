@@ -38,7 +38,7 @@ class ResetSection : public OsSettingsSection {
 
  private:
   const bool isRevampWayfindingEnabled_;
-  const std::vector<SearchConcept>& GetSearchConcepts();
+  const std::vector<SearchConcept>& GetPowerwashSearchConcept();
 };
 
 }  // namespace ash::settings

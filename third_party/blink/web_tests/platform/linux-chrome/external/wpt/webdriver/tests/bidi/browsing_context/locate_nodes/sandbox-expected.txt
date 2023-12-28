@@ -1,0 +1,10 @@
+This is a wdspec test.
+[FAIL] test_locate_nodes_in_sandbox
+  AttributeError: 'BrowsingContext' object has no attribute 'locate_nodes'
+[FAIL] test_locate_same_node_in_different_sandboxes_returns_same_id
+  AttributeError: 'BrowsingContext' object has no attribute 'locate_nodes'
+[FAIL] test_locate_same_node_in_default_sandbox_returns_same_id_as_sandbox
+  AttributeError: 'BrowsingContext' object has no attribute 'locate_nodes'
+[FAIL] test_locate_same_node_in_different_sandboxes_with_root_ownership_returns_different_handles
+  AttributeError: 'BrowsingContext' object has no attribute 'locate_nodes'
+Harness: the test ran to completion.

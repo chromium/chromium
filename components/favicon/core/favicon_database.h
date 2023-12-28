@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "components/favicon/core/favicon_types.h"
@@ -31,6 +32,8 @@ namespace favicon {
 // The minimum number of days after which last_requested field gets updated.
 // All earlier updates are ignored.
 static const int kFaviconUpdateLastRequestedAfterDays = 10;
+
+BASE_DECLARE_FEATURE(kFaviconDatabaseUseBuiltInRecoveryIfSupported);
 
 // This database interface is owned by the history backend and runs on the
 // history thread.

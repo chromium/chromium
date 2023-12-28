@@ -9,7 +9,8 @@
         display: none;
       }
     </style>
-    <template is="dom-if" if="[[showBasicPage_(currentRoute_, inSearchMode)]]">
+    <template is="dom-if" if="[[showBasicPage_(currentRoute_, inSearchMode)]]"
+        restamp>
       <div id="basicPage">
         <template is="dom-if" if="[[showResetProfileBanner_]]" restamp>
           <settings-reset-profile-banner on-close="onResetProfileBannerClosed_">
@@ -79,10 +80,10 @@
         <template is="dom-if"
             if="[[showPerformancePage_(pageVisibility.performance)]]"
             restamp>
-          <settings-section page-title="[[getPerformancePageTitle_()]]"
+          <settings-section page-title="$i18n{memoryPageTitle}"
 <if expr="_google_chrome">
               show-send-feedback-button
-              on-send-feedback="onSendHighEfficiencyFeedbackClick_"
+              on-send-feedback="onSendMemorySaverFeedbackClick_"
 </if>
               section="performance" id="performanceSettingsSection">
             <settings-performance-page prefs="{{prefs}}">

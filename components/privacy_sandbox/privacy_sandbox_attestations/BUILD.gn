@@ -71,6 +71,8 @@ if (use_blink) {
       sources = [ "privacy_sandbox_attestations_parser_proto_fuzzer.cc" ]
       deps = [
         ":privacy_sandbox_attestations",
+        "//base",
+        "//base:i18n",
         "//components/privacy_sandbox/privacy_sandbox_attestations/proto:proto",
         "//third_party/libprotobuf-mutator",
       ]

@@ -130,6 +130,9 @@ bool SearchEngineChoiceServiceFactory::
 std::unique_ptr<KeyedService>
 SearchEngineChoiceServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(CHROME_FOR_TESTING)
+  return nullptr;
+#else
   if (!g_is_chrome_build) {
     return nullptr;
   }
@@ -148,4 +151,5 @@ SearchEngineChoiceServiceFactory::BuildServiceInstanceForBrowserContext(
       CHECK_DEREF(TemplateURLServiceFactory::GetForProfile(&profile));
   return std::make_unique<SearchEngineChoiceService>(profile,
                                                      template_url_service);
+#endif
 }

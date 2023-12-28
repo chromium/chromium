@@ -35,10 +35,6 @@
 #include "ui/gl/scoped_make_current.h"
 #include "ui/gl/sync_control_vsync_provider.h"
 
-#if BUILDFLAG(IS_OZONE)
-#include "ui/ozone/buildflags.h"
-#endif  // BUILDFLAG(IS_OZONE)
-
 #if !defined(EGL_FIXED_SIZE_ANGLE)
 #define EGL_FIXED_SIZE_ANGLE 0x3201
 #endif

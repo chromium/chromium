@@ -9,7 +9,6 @@ mojom("mojom") {
   sources = [ "in_session_auth.mojom" ]
   webui_module_path =
       "chrome://resources/mojo/chromeos/components/in_session_auth/mojom"
-  use_typescript_sources = true
 
   public_deps = [ "//mojo/public/mojom/base" ]
 }

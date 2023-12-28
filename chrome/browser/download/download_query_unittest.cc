@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -108,7 +109,7 @@ class DownloadQueryTest : public testing::Test {
   // These two vectors hold the MockDownloadItems. |mocks_| contains just the
   // pointers, but is necessary because DownloadQuery processes vectors of
   // unowned pointers. |owned_mocks_| holds the ownership of the mock objects.
-  std::vector<download::MockDownloadItem*> mocks_;
+  std::vector<raw_ptr<download::MockDownloadItem, VectorExperimental>> mocks_;
   std::vector<std::unique_ptr<download::MockDownloadItem>> owned_mocks_;
   DownloadQuery query_;
   DownloadVector results_;

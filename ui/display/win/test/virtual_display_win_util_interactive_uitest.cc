@@ -51,10 +51,11 @@ TEST_F(VirtualDisplayWinUtilInteractiveUitest, IsAPIAvailable) {
 }
 
 TEST_F(VirtualDisplayWinUtilInteractiveUitest, AddDisplay) {
+  int initial_display_count = screen()->GetNumDisplays();
   int64_t display_id = virtual_display_win_util_.AddDisplay(
       1, display::test::VirtualDisplayWinUtil::k1920x1080);
   EXPECT_NE(display_id, display::kInvalidDisplayId);
-  EXPECT_GT(screen()->GetNumDisplays(), 1);
+  EXPECT_EQ(screen()->GetNumDisplays(), initial_display_count + 1);
   display::Display d;
   EXPECT_TRUE(screen()->GetDisplayWithDisplayId(display_id, &d));
   EXPECT_EQ(d.size(), gfx::Size(1920, 1080));
@@ -64,7 +65,7 @@ TEST_F(VirtualDisplayWinUtilInteractiveUitest, AddDisplay) {
                 1, display::test::VirtualDisplayWinUtil::k1920x1080),
             display::kInvalidDisplayId);
 
-  virtual_display_win_util_.RemoveAllDisplays();
+  virtual_display_win_util_.ResetDisplays();
   EXPECT_FALSE(screen()->GetDisplayWithDisplayId(display_id, &d));
 }
 
@@ -97,7 +98,7 @@ TEST_F(VirtualDisplayWinUtilInteractiveUitest, AddRemove) {
   EXPECT_TRUE(screen()->GetDisplayWithDisplayId(display_id[2], &d));
   EXPECT_EQ(d.size(), gfx::Size(1920, 1080));
 
-  virtual_display_win_util_.RemoveAllDisplays();
+  virtual_display_win_util_.ResetDisplays();
   EXPECT_FALSE(screen()->GetDisplayWithDisplayId(display_id[0], &d));
   EXPECT_FALSE(screen()->GetDisplayWithDisplayId(display_id[1], &d));
   EXPECT_FALSE(screen()->GetDisplayWithDisplayId(display_id[2], &d));

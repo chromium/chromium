@@ -56,6 +56,30 @@ const int kNoBytesToWrite = -1;
 // Default content length when the potential file size is not yet determined.
 const int kUnknownContentLength = -1;
 
+#if BUILDFLAG(IS_MAC)
+void UnHideFile(const base::FilePath& path) {
+  base::stat_wrapper_t stat;
+  if (base::File::Stat(path.value().c_str(), &stat) < 0) {
+    return;
+  }
+
+  if (!S_ISREG(stat.st_mode)) {
+    return;
+  }
+
+  // Skip files starting with ".".
+  if (base::StartsWith(path.BaseName().value(), ".")) {
+    return;
+  }
+
+  // Update the file's hidden flags.
+  if (stat.st_flags & UF_HIDDEN) {
+    stat.st_flags ^= UF_HIDDEN;
+    chflags(path.value().c_str(), stat.st_flags);
+  }
+}
+#endif
+
 }  // namespace
 
 DownloadFileImpl::SourceStream::SourceStream(
@@ -472,6 +496,11 @@ void DownloadFileImpl::OnRenameComplete(const base::FilePath& new_path,
     for (auto& stream : source_streams_)
       stream.second->ClearDataReadyCallback();
   }
+#if BUILDFLAG(IS_MAC)
+  else {
+    UnHideFile(new_path);
+  }
+#endif
 
   main_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), reason,

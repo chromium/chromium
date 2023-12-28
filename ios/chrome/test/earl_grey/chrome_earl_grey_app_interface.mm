@@ -59,7 +59,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
-#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
+#import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/test/app/browsing_data_test_util.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/navigation_test_util.h"
@@ -925,10 +925,6 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
   chrome_test_util::SignInWithoutSync(identity);
 }
 
-+ (void)clearSyncServerData {
-  chrome_test_util::ClearSyncServerData();
-}
-
 + (NSError*)waitForSyncEngineInitialized:(BOOL)isInitialized
                              syncTimeout:(base::TimeDelta)timeout {
   bool success = WaitUntilConditionOrTimeout(timeout, ^{
@@ -1011,6 +1007,14 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
 
 + (void)tearDownFakeSyncServer {
   chrome_test_util::TearDownFakeSyncServer();
+}
+
++ (void)clearFakeSyncServerData {
+  chrome_test_util::ClearFakeSyncServerData();
+}
+
++ (void)flushFakeSyncServerToDisk {
+  chrome_test_util::FlushFakeSyncServerToDisk();
 }
 
 + (NSError*)verifyNumberOfSyncEntitiesWithType:(NSUInteger)type

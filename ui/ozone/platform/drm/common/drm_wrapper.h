@@ -46,7 +46,7 @@ class DrmPropertyBlobMetadata {
   uint32_t id() const { return id_; }
 
  private:
-  raw_ptr<DrmWrapper, ExperimentalAsh> drm_;  // Not owned;
+  raw_ptr<DrmWrapper> drm_;  // Not owned;
   uint32_t id_;
 };
 

@@ -6,7 +6,11 @@ import("//build/config/android/rules.gni")
 import("//chrome/android/features/android_library_factory_tmpl.gni")
 
 android_library("java") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeController.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeController.java",
+    "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgePadAdjuster.java",
+    "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeSupplier.java",
+  ]
   deps = [
     "//base:base_java",
     "//chrome/browser/android/lifecycle:java",

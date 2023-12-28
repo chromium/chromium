@@ -71,8 +71,7 @@ class CrtcCommitRequest {
   const uint32_t connector_id_ = 0;
   const drmModeModeInfo mode_ = {};
   const gfx::Point origin_;
-  raw_ptr<HardwareDisplayPlaneList, DanglingUntriaged | ExperimentalAsh>
-      plane_list_ = nullptr;
+  raw_ptr<HardwareDisplayPlaneList, DanglingUntriaged> plane_list_ = nullptr;
   const DrmOverlayPlaneList overlays_;
   const bool enable_vrr_ = false;
 };

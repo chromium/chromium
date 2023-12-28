@@ -4,6 +4,7 @@
 
 #include "chrome/browser/download/notification/multi_profile_download_notifier.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -51,7 +52,7 @@ void MultiProfileDownloadNotifier::AddProfile(Profile* profile) {
   }
 }
 
-std::vector<download::DownloadItem*>
+std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>
 MultiProfileDownloadNotifier::GetAllDownloads() {
   download::SimpleDownloadManager::DownloadVector downloads;
   for (const auto& download_notifier : download_notifiers_) {

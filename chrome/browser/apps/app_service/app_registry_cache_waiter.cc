@@ -6,11 +6,29 @@
 
 #include <string>
 
+#include "base/functional/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 
 namespace apps {
+
+namespace {
+
+bool ContainsExpectedScopeIntentFilter(GURL scope,
+                                       const apps::AppUpdate& update) {
+  apps::IntentFilterPtr expected =
+      apps_util::MakeIntentFilterForUrlScope(scope);
+  for (auto& intent_filter : update.IntentFilters()) {
+    DCHECK(!intent_filter->IsBrowserFilter());
+    if (*intent_filter == *expected) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
 
 AppTypeInitializationWaiter::AppTypeInitializationWaiter(Profile* profile,
                                                          apps::AppType app_type)
@@ -43,20 +61,51 @@ void AppTypeInitializationWaiter::OnAppRegistryCacheWillBeDestroyed(
   app_registry_cache_observer_.Reset();
 }
 
-AppReadinessWaiter::AppReadinessWaiter(
+AppUpdateWaiter::AppUpdateWaiter(
     Profile* profile,
     const std::string& app_id,
-    base::RepeatingCallback<bool(apps::Readiness)> readiness_predicate)
-    : app_id_(app_id), readiness_predicate_(std::move(readiness_predicate)) {
+    base::RepeatingCallback<bool(const apps::AppUpdate&)> condition)
+    : app_id_(app_id), condition_(std::move(condition)) {
   apps::AppRegistryCache& cache =
       apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
   app_registry_cache_observer_.Observe(&cache);
   cache.ForOneApp(app_id, [this](const apps::AppUpdate& update) {
-    if (readiness_predicate_.Run(update.Readiness())) {
+    if (condition_.Run(update)) {
       run_loop_.Quit();
     }
   });
 }
+
+AppUpdateWaiter::~AppUpdateWaiter() = default;
+
+void AppUpdateWaiter::Await(const base::Location& location) {
+  run_loop_.Run(location);
+}
+
+void AppUpdateWaiter::OnAppUpdate(const apps::AppUpdate& update) {
+  if (update.AppId() == app_id_ && condition_.Run(update)) {
+    run_loop_.Quit();
+  }
+}
+
+void AppUpdateWaiter::OnAppRegistryCacheWillBeDestroyed(
+    apps::AppRegistryCache* cache) {
+  app_registry_cache_observer_.Reset();
+}
+
+AppReadinessWaiter::AppReadinessWaiter(
+    Profile* profile,
+    const std::string& app_id,
+    base::RepeatingCallback<bool(apps::Readiness)> readiness_condition)
+    : AppUpdateWaiter(profile,
+                      app_id,
+                      base::BindRepeating(
+                          [](base::RepeatingCallback<bool(apps::Readiness)>
+                                 readiness_condition,
+                             const AppUpdate& update) {
+                            return readiness_condition.Run(update.Readiness());
+                          },
+                          readiness_condition)) {}
 
 AppReadinessWaiter::AppReadinessWaiter(Profile* profile,
                                        const std::string& app_id,
@@ -70,141 +119,26 @@ AppReadinessWaiter::AppReadinessWaiter(Profile* profile,
                              },
                              readiness)) {}
 
-AppReadinessWaiter::~AppReadinessWaiter() = default;
-
-void AppReadinessWaiter::Await(const base::Location& location) {
-  run_loop_.Run(location);
-}
-
-void AppReadinessWaiter::OnAppUpdate(const apps::AppUpdate& update) {
-  if (update.AppId() == app_id_ &&
-      readiness_predicate_.Run(update.Readiness())) {
-    run_loop_.Quit();
-  }
-}
-void AppReadinessWaiter::OnAppRegistryCacheWillBeDestroyed(
-    apps::AppRegistryCache* cache) {
-  app_registry_cache_observer_.Reset();
-}
-
 WebAppScopeWaiter::WebAppScopeWaiter(Profile* profile,
                                      const std::string& app_id,
                                      GURL scope)
-    : app_id_(app_id), scope_(std::move(scope)) {
-  apps::AppRegistryCache& cache =
-      apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
-  app_registry_cache_observer_.Observe(&cache);
-  cache.ForOneApp(app_id, [this](const apps::AppUpdate& update) {
-    if (ContainsExpectedIntentFilter(update)) {
-      run_loop_.Quit();
-    }
-  });
-}
-
-WebAppScopeWaiter::~WebAppScopeWaiter() = default;
-
-void WebAppScopeWaiter::Await(const base::Location& location) {
-  run_loop_.Run(location);
-}
-
-void WebAppScopeWaiter::OnAppUpdate(const apps::AppUpdate& update) {
-  if (update.AppId() == app_id_ && ContainsExpectedIntentFilter(update)) {
-    run_loop_.Quit();
-  }
-}
-
-void WebAppScopeWaiter::OnAppRegistryCacheWillBeDestroyed(
-    apps::AppRegistryCache* cache) {
-  app_registry_cache_observer_.Reset();
-}
-
-bool WebAppScopeWaiter::ContainsExpectedIntentFilter(
-    const apps::AppUpdate& update) const {
-  apps::IntentFilterPtr expected =
-      apps_util::MakeIntentFilterForUrlScope(scope_);
-  for (auto& intent_filter : update.IntentFilters()) {
-    DCHECK(!intent_filter->IsBrowserFilter());
-    if (*intent_filter == *expected) {
-      return true;
-    }
-  }
-  return false;
-}
-
-AppUpdateWaiter::AppUpdateWaiter(
-    Profile* profile,
-    const std::string& app_id,
-    base::RepeatingCallback<bool(const apps::AppUpdate&)> condition)
-    : app_id_(app_id), condition_(condition) {
-  raw_ptr<apps::AppRegistryCache, ExperimentalAsh> app_registry_cache_ =
-      &apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
-  app_registry_cache_observation_.Observe(app_registry_cache_.get());
-}
-
-AppUpdateWaiter::~AppUpdateWaiter() = default;
-
-void AppUpdateWaiter::Wait() {
-  if (!condition_met_) {
-    base::RunLoop run_loop;
-    callback_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
-  // Allow updates to propagate to other observers.
-  base::RunLoop().RunUntilIdle();
-}
-
-void AppUpdateWaiter::OnAppUpdate(const apps::AppUpdate& update) {
-  if (condition_met_ || update.AppId() != app_id_ || !condition_.Run(update)) {
-    return;
-  }
-
-  app_registry_cache_observation_.Reset();
-  condition_met_ = true;
-  if (callback_) {
-    std::move(callback_).Run();
-  }
-}
-
-void AppUpdateWaiter::OnAppRegistryCacheWillBeDestroyed(
-    apps::AppRegistryCache* cache) {
-  app_registry_cache_observation_.Reset();
-}
+    : AppUpdateWaiter(
+          profile,
+          app_id,
+          base::BindRepeating(&ContainsExpectedScopeIntentFilter, scope)) {}
 
 AppWindowModeWaiter::AppWindowModeWaiter(Profile* profile,
                                          const std::string& app_id,
                                          apps::WindowMode window_mode)
-    : app_id_(app_id), window_mode_(window_mode) {
-  DCHECK_NE(window_mode_, apps::WindowMode::kUnknown);
-  apps::AppRegistryCache& cache =
-      apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
-  app_registry_cache_observer_.Observe(&cache);
-  cache.ForOneApp(app_id, [this](const apps::AppUpdate& update) {
-    if (HasExpectedWindowMode(update)) {
-      run_loop_.Quit();
-    }
-  });
-}
-
-AppWindowModeWaiter::~AppWindowModeWaiter() = default;
-
-void AppWindowModeWaiter::Await(const base::Location& location) {
-  run_loop_.Run(location);
-}
-
-void AppWindowModeWaiter::OnAppUpdate(const apps::AppUpdate& update) {
-  if (update.AppId() == app_id_ && HasExpectedWindowMode(update)) {
-    run_loop_.Quit();
-  }
-}
-
-void AppWindowModeWaiter::OnAppRegistryCacheWillBeDestroyed(
-    apps::AppRegistryCache* cache) {
-  app_registry_cache_observer_.Reset();
-}
-
-bool AppWindowModeWaiter::HasExpectedWindowMode(
-    const apps::AppUpdate& update) const {
-  return update.WindowMode() == window_mode_;
+    : AppUpdateWaiter(
+          profile,
+          app_id,
+          base::BindRepeating(
+              [](apps::WindowMode expected_mode, const AppUpdate& update) {
+                return update.WindowMode() == expected_mode;
+              },
+              window_mode)) {
+  DCHECK_NE(window_mode, apps::WindowMode::kUnknown);
 }
 
 }  // namespace apps

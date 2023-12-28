@@ -10,6 +10,8 @@ assert(is_chromeos_ash)
 mojom("mojom") {
   sources = [ "shimless_rma.mojom" ]
 
+  webui_module_path = "/ash/webui/shimless_rma"
+  generate_webui_js_bindings = true
   public_deps = [ "//mojo/public/mojom/base" ]
 
   cpp_typemaps = [

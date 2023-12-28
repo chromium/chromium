@@ -44,16 +44,18 @@ TEST_F(PolicyProviderTest, DefaultGeolocationContentSetting) {
       profile.GetTestingPrefService();
   PolicyProvider provider(prefs);
 
-  std::unique_ptr<RuleIterator> rule_iterator(
-      provider.GetRuleIterator(ContentSettingsType::GEOLOCATION, false));
+  std::unique_ptr<RuleIterator> rule_iterator(provider.GetRuleIterator(
+      ContentSettingsType::GEOLOCATION, false,
+      content_settings::PartitionKey::GetDefaultForTesting()));
   EXPECT_FALSE(rule_iterator);
 
   // Change the managed value of the default geolocation setting
   prefs->SetManagedPref(prefs::kManagedDefaultGeolocationSetting,
                         std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
 
-  rule_iterator =
-      provider.GetRuleIterator(ContentSettingsType::GEOLOCATION, false);
+  rule_iterator = provider.GetRuleIterator(
+      ContentSettingsType::GEOLOCATION, false,
+      content_settings::PartitionKey::GetDefaultForTesting());
   ASSERT_TRUE(rule_iterator);
   EXPECT_TRUE(rule_iterator->HasNext());
   std::unique_ptr<Rule> rule = rule_iterator->Next();
@@ -75,8 +77,9 @@ TEST_F(PolicyProviderTest, ManagedDefaultContentSettings) {
   prefs->SetManagedPref(prefs::kManagedDefaultCookiesSetting,
                         std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
 
-  std::unique_ptr<RuleIterator> rule_iterator(
-      provider.GetRuleIterator(ContentSettingsType::COOKIES, false));
+  std::unique_ptr<RuleIterator> rule_iterator(provider.GetRuleIterator(
+      ContentSettingsType::COOKIES, false,
+      content_settings::PartitionKey::GetDefaultForTesting()));
   EXPECT_TRUE(rule_iterator->HasNext());
   std::unique_ptr<Rule> rule = rule_iterator->Next();
   EXPECT_FALSE(rule_iterator->HasNext());
@@ -148,9 +151,10 @@ TEST_F(PolicyProviderTest, GettingManagedContentSettings) {
   // The PolicyProvider does not allow setting content settings as they are
   // enforced via policies and not set by the user or extension. So a call to
   // SetWebsiteSetting does nothing.
-  bool owned = provider.SetWebsiteSetting(yt_url_pattern, yt_url_pattern,
-                                          ContentSettingsType::COOKIES,
-                                          base::Value(CONTENT_SETTING_BLOCK));
+  bool owned = provider.SetWebsiteSetting(
+      yt_url_pattern, yt_url_pattern, ContentSettingsType::COOKIES,
+      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
   EXPECT_FALSE(owned);
   EXPECT_EQ(CONTENT_SETTING_DEFAULT,
             TestUtils::GetContentSetting(&provider, youtube_url, youtube_url,
@@ -269,8 +273,9 @@ TEST_F(PolicyProviderTest, InvalidManagedDefaultContentSetting) {
 
   // The setting provided in the cookies pref is not valid for cookies. It
   // should be ignored.
-  std::unique_ptr<RuleIterator> rule_iterator(
-      provider.GetRuleIterator(ContentSettingsType::COOKIES, false));
+  std::unique_ptr<RuleIterator> rule_iterator(provider.GetRuleIterator(
+      ContentSettingsType::COOKIES, false,
+      content_settings::PartitionKey::GetDefaultForTesting()));
   EXPECT_FALSE(rule_iterator);
 
   provider.ShutdownOnUIThread();

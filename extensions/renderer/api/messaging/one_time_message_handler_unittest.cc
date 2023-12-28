@@ -14,6 +14,7 @@
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/api/messaging/messaging_util.h"
@@ -61,8 +62,8 @@ class OneTimeMessageHandlerTest : public NativeExtensionBindingsSystemUnittest {
     v8::HandleScope handle_scope(isolate());
     v8::Local<v8::Context> context = MainContext();
 
-    script_context_ = CreateScriptContext(context, extension_.get(),
-                                          Feature::BLESSED_EXTENSION_CONTEXT);
+    script_context_ = CreateScriptContext(
+        context, extension_.get(), mojom::ContextType::kPrivilegedExtension);
     script_context_->set_url(extension_->url());
     bindings_system()->UpdateBindingsForContext(script_context_);
   }

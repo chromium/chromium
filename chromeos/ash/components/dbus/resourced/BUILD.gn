@@ -14,6 +14,7 @@ component("resourced") {
     ":resourced_proto",
     "//base",
     "//chromeos/dbus/common",
+    "//components/memory_pressure",
     "//dbus",
   ]
 

@@ -53,19 +53,19 @@ export class TabSearchItem extends TabSearchItemBase {
         value: () => loadTimeData.getBoolean('useRipples'),
       },
 
-      hideTimestamp: {
+      index: Number,
+
+      inSuggestedGroup: {
         type: Boolean,
         value: false,
       },
-
-      index: Number,
     };
   }
 
   data: TabData;
   private buttonRipples_: boolean;
-  hideTimestamp: boolean;
   index: number;
+  inSuggestedGroup: boolean;
 
   /**
    * @return Whether a close action can be performed on the item.
@@ -181,7 +181,11 @@ export class TabSearchItem extends TabSearchItemBase {
   }
 
   private ariaLabelForButton_(title: string): string {
-    return `${loadTimeData.getString('closeTab')} ${title}`;
+    if (this.inSuggestedGroup) {
+      return loadTimeData.getStringF('tabOrganizationCloseTab', title);
+    } else {
+      return `${loadTimeData.getString('closeTab')} ${title}`;
+    }
   }
 }
 

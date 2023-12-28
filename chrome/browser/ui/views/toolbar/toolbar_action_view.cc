@@ -293,5 +293,5 @@ void ToolbarActionView::ButtonPressed() {
   }
 }
 
-BEGIN_METADATA(ToolbarActionView, views::MenuButton)
+BEGIN_METADATA(ToolbarActionView)
 END_METADATA

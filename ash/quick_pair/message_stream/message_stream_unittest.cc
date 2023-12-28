@@ -154,8 +154,7 @@ class FakeQuickPairProcessManager
   mojo::PendingRemote<ash::quick_pair::mojom::FastPairDataParser>
       fast_pair_data_parser_;
   std::unique_ptr<ash::quick_pair::FastPairDataParser> data_parser_;
-  raw_ptr<base::test::SingleThreadTaskEnvironment, ExperimentalAsh>
-      task_enviornment_;
+  raw_ptr<base::test::SingleThreadTaskEnvironment> task_enviornment_;
   ProcessStoppedCallback on_process_stopped_callback_;
 };
 
@@ -274,7 +273,7 @@ class MessageStreamTest : public testing::Test, public MessageStream::Observer {
   mojo::SharedRemote<mojom::FastPairDataParser> data_parser_remote_;
   mojo::PendingRemote<mojom::FastPairDataParser> fast_pair_data_parser_;
   std::unique_ptr<FastPairDataParser> data_parser_;
-  raw_ptr<FakeQuickPairProcessManager, ExperimentalAsh> fake_process_manager_;
+  raw_ptr<FakeQuickPairProcessManager> fake_process_manager_;
   bool battery_update_ = false;
   uint16_t remaining_battery_time_ = 0;
   bool enable_silence_mode_ = false;

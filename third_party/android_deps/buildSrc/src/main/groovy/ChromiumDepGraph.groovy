@@ -60,11 +60,16 @@ class ChromiumDepGraph {
         com_google_errorprone_error_prone_annotation: new PropertyOverride(
             url: 'https://github.com/google/error-prone/tree/master/annotation',
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
+            licenseName: 'Apache 2.0',
+            description: 'ErrorProne Annotations.',),
         com_google_errorprone_error_prone_annotations: new PropertyOverride(
-            url: 'https://github.com/google/error-prone/tree/master/type_annotations',
+            url: 'https://github.com/google/error-prone/tree/master/annotations',
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
+            licenseName: 'Apache 2.0',
+            description: 'ErrorProne Annotations.',),
+        com_google_errorprone_error_prone_type_annotations: new PropertyOverride(
+            url: 'https://github.com/google/error-prone/tree/master/type_annotations',
+            description: 'ErrorProne Annotations.',),
         com_google_errorprone_error_prone_check_api: new PropertyOverride(
             url: 'https://github.com/google/error-prone/tree/master/check_api'),
         com_google_errorprone_error_prone_core: new PropertyOverride(

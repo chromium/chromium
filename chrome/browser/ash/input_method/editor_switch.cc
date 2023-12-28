@@ -153,7 +153,8 @@ bool EditorSwitch::IsAllowedForUse() const {
   auto* profile_policy_connector = profile_->GetProfilePolicyConnector();
 
   return (base::FeatureList::IsEnabled(chromeos::features::kOrca) &&
-          base::FeatureList::IsEnabled(features::kFeatureManagementOrca) &&
+          base::FeatureList::IsEnabled(
+              chromeos::features::kFeatureManagementOrca) &&
           IsCountryAllowed(country_code_)) &&
          (profile_policy_connector == nullptr ||
           !profile_policy_connector->IsManaged());

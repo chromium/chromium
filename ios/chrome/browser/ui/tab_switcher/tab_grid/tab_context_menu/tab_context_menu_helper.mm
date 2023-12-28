@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_helper.h"
 
+#import "base/check.h"
 #import "base/metrics/histogram_functions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
@@ -15,6 +16,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
@@ -110,6 +112,13 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
                           pinTabWithIdentifier:cell.itemIdentifier];
                     }]];
     }
+  }
+
+  if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
+    [menuElements addObject:[actionFactory actionToAddTabToNewGroupWithBlock:^{
+                    [self.contextMenuDelegate
+                        createNewTabGroupWithIdentifier:cell.itemIdentifier];
+                  }]];
   }
 
   if (!IsURLNewTabPage(item.URL)) {

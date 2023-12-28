@@ -265,6 +265,10 @@
     "META": {"sizes": {"includes": [15]}},
     "includes": [3120],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/device_log/resources.grd": {
+    "META": {"sizes": {"includes": [5],}},
+    "includes": [3130],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/discards/resources.grd": {
     "META": {"sizes": {"includes": [20],}},
     "includes": [3140],
@@ -317,7 +321,7 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [3380],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/nearby_internals/nearby_internals_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/nearby_internals/resources.grd": {
     "META": {"sizes": {"includes": [40]}},
     "includes": [3400],
   },
@@ -412,6 +416,10 @@
     "META": {"sizes": {"includes": [20],}},
     "includes": [3860],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/ash/inline_login/resources.grd": {
+    "META": {"sizes": {"includes": [20]}},
+    "includes": [3870],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/ash/settings/resources.grd": {
     "META": {"sizes": {"includes": [1000],}},
     "includes": [3880],
@@ -482,7 +490,7 @@
     "META": {"sizes": {"includes": [30]}},
     "includes": [4200],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/bluetooth_pairing_dialog/bluetooth_pairing_dialog_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/bluetooth_pairing_dialog/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [4220],
   },
@@ -498,11 +506,11 @@
     "META": {"sizes": {"includes": [50]}},
     "includes": [4280],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/internet_config_dialog/internet_config_dialog_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/internet_config_dialog/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [4300],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/internet_detail_dialog/internet_detail_dialog_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/internet_detail_dialog/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [4320],
   },
@@ -674,12 +682,20 @@
     "includes": [5120],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/inline_login/resources.grd": {
-    "META": {"sizes": {"includes": [20]}},
+    "META": {"sizes": {"includes": [10]}},
     "includes": [5140],
   },
   "<(SHARED_INTERMEDIATE_DIR)/components/metrics/debug/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [5160],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/lens/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [5180],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/lens/untrusted_resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [5200],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/enterprise_reporting/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
@@ -692,6 +708,10 @@
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/on_device_internals/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [5260],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/privacy_sandbox/internals/resources.grd": {
+   "META": {"sizes": {"includes": [30],}},
+    "includes": [5280],
   },
   # END chrome/ WebUI resources section
 
@@ -729,6 +749,10 @@
     "META": {"sizes": {"includes": [100],}},
     "includes": [5520],
   },
+  "chromeos/ash/components/emoji/emoji.grd" : {
+    "META": {"sizes": {"includes": [15],}},
+    "includes" : [5530],
+  },
   "chromeos/ash/resources/ash_resources.grd": {
     "includes": [5540],
   },
@@ -747,7 +771,7 @@
     "META": {"sizes": {"includes": [5]}},
     "includes": [5620],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/connectivity_diagnostics/resources/connectivity_diagnostics_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/connectivity_diagnostics/resources/resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [5640],
   },
@@ -1109,8 +1133,8 @@
   "ash/shortcut_viewer/shortcut_viewer_strings.grd": {
     "messages": [7500],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/shimless_rma/resources/ash_shimless_rma_resources.grd": {
-    "META": {"sizes": {"includes": [80],}},
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/shimless_rma/resources/resources.grd": {
+    "META": {"sizes": {"includes": [100],}},
     "includes": [7520],
   },
   "ash/keyboard/ui/keyboard_resources.grd": {

@@ -634,6 +634,10 @@ TEST(StrFormat, BehavesAsDocumented) {
   const int& something = *reinterpret_cast<const int*>(ptr_value);
   EXPECT_EQ(StrFormat("%p", &something), StrFormat("0x%x", ptr_value));
 
+  // The output of formatting a null pointer is not documented as being a
+  // specific thing, but the attempt should at least compile.
+  (void)StrFormat("%p", nullptr);
+
   // Output widths are supported, with optional flags.
   EXPECT_EQ(StrFormat("%3d", 1), "  1");
   EXPECT_EQ(StrFormat("%3d", 123456), "123456");

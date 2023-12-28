@@ -15,7 +15,7 @@ namespace extensions {
 
 // An NaCl module included in the extension.
 struct NaClModuleInfo {
-  typedef std::list<NaClModuleInfo> List;
+  using List = std::list<NaClModuleInfo>;
   // Returns the NaCl modules for the extensions, or NULL if none exist.
   static const NaClModuleInfo::List* GetNaClModules(
       const Extension* extension);

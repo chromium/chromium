@@ -236,11 +236,12 @@ StyleEngine::StyleEngine(Document& document)
     force_dark_mode_enabled_ =
         document.GetSettings()->GetForceDarkModeEnabled();
     UpdateColorSchemeMetrics();
+
+    UpdateForcedBackgroundColor();
   }
 
   forced_colors_ =
       WebThemeEngineHelper::GetNativeThemeEngine()->GetForcedColors();
-  UpdateForcedBackgroundColor();
   UpdateColorScheme();
 
   // Mostly for the benefit of unit tests.
@@ -4062,8 +4063,12 @@ mojom::blink::PreferredColorScheme StyleEngine::ResolveColorSchemeForEmbedding(
 }
 
 void StyleEngine::UpdateForcedBackgroundColor() {
+  CHECK(GetDocument().GetPage());
+  mojom::blink::ColorScheme color_scheme = mojom::blink::ColorScheme::kLight;
   forced_background_color_ = LayoutTheme::GetTheme().SystemColor(
-      CSSValueID::kCanvas, mojom::blink::ColorScheme::kLight);
+      CSSValueID::kCanvas, color_scheme,
+      GetDocument().GetPage()->GetColorProviderForPainting(
+          color_scheme, forced_colors_ != ForcedColors::kNone));
 }
 
 Color StyleEngine::ColorAdjustBackgroundColor() const {

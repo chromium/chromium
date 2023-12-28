@@ -111,6 +111,17 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   }
   virtual String PlainText() const;
 
+  // Returns true if text-transform or -webkit-text-security changes the text
+  // length.
+  bool HasVariableLengthTransform() const {
+    NOT_DESTROYED();
+    return has_variable_length_transform_;
+  }
+  void SetHasVariableLengthTransform(bool flag) {
+    NOT_DESTROYED();
+    has_variable_length_transform_ = flag;
+  }
+
   // Returns first letter part of |LayoutTextFragment|.
   virtual LayoutText* GetFirstLetterPart() const {
     NOT_DESTROYED();
@@ -130,29 +141,10 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
-  bool Is8Bit() const {
-    NOT_DESTROYED();
-    return text_.Is8Bit();
-  }
-  const LChar* Characters8() const {
-    NOT_DESTROYED();
-    return text_.Characters8();
-  }
-  const UChar* Characters16() const {
-    NOT_DESTROYED();
-    return text_.Characters16();
-  }
   bool HasEmptyText() const {
     NOT_DESTROYED();
     return text_.empty();
   }
-  UChar CharacterAt(unsigned) const;
-  UChar UncheckedCharacterAt(unsigned) const;
-  UChar operator[](unsigned i) const {
-    NOT_DESTROYED();
-    return UncheckedCharacterAt(i);
-  }
-  UChar32 CodepointAt(unsigned) const;
   unsigned TextLength() const {
     NOT_DESTROYED();
     return text_.length();
@@ -397,8 +389,10 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   void ApplyTextTransform();
   void SecureText(UChar mask);
 
-  // This will catch anyone doing an unnecessary check.
-  bool IsText() const = delete;
+  bool IsText() const final {
+    NOT_DESTROYED();
+    return true;
+  }
 
   PhysicalRect LocalVisualRectIgnoringVisibility() const final;
 
@@ -424,6 +418,8 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   // associated to |AbstractInlineTextBox|.
   unsigned has_abstract_inline_text_box_ : 1;
 
+  unsigned has_variable_length_transform_ : 1;
+
   DOMNodeId node_id_ = kInvalidDOMNodeId;
 
   String text_;
@@ -444,28 +440,6 @@ inline wtf_size_t LayoutText::FirstInlineFragmentItemIndex() const {
   if (!IsInLayoutNGInlineFormattingContext())
     return 0u;
   return first_fragment_item_index_;
-}
-
-inline UChar LayoutText::UncheckedCharacterAt(unsigned i) const {
-  SECURITY_DCHECK(i < TextLength());
-  return Is8Bit() ? Characters8()[i] : Characters16()[i];
-}
-
-inline UChar LayoutText::CharacterAt(unsigned i) const {
-  if (i >= TextLength())
-    return 0;
-
-  return UncheckedCharacterAt(i);
-}
-
-inline UChar32 LayoutText::CodepointAt(unsigned i) const {
-  if (i >= TextLength())
-    return 0;
-  if (Is8Bit())
-    return Characters8()[i];
-  UChar32 c;
-  U16_GET(Characters16(), 0, i, TextLength(), c);
-  return c;
 }
 
 inline void LayoutText::DetachAbstractInlineTextBoxesIfNeeded() {

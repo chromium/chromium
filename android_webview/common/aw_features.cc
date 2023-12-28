@@ -16,11 +16,6 @@ BASE_FEATURE(kWebViewBrotliSupport,
              "WebViewBrotliSupport",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Check layer_tree_frame_sink_id when return resources to compositor.
-BASE_FEATURE(kWebViewCheckReturnResources,
-             "WebViewCheckReturnResources",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Whether to destroy the WebView rendering functor when after a WebView window
 // becomes invisible.
 //
@@ -98,12 +93,6 @@ BASE_FEATURE(kWebViewExtraHeadersSameOriginOnly,
 BASE_FEATURE(kWebViewJavaJsBridgeMojo,
              "WebViewJavaJsBridgeMojo",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enable reporting filtered metrics from webview clients used to be
-// out-sampled.
-BASE_FEATURE(kWebViewMetricsFiltering,
-             "WebViewMetricsFiltering",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Field trial feature for controlling support of Origin Trials on WebView.
 BASE_FEATURE(kWebViewOriginTrials,

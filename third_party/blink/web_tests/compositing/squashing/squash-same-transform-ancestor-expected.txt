@@ -14,7 +14,7 @@
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='squashed'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='squashed'",
       "position": [-100, 0],
       "bounds": [200, 200],
       "transform": 2

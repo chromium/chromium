@@ -98,6 +98,8 @@ class CreditCardAccessManager
  public:
   using OnCreditCardFetchedCallback =
       base::OnceCallback<void(CreditCardFetchResult, const CreditCard*)>;
+  using OtpAuthenticationResponse =
+      CreditCardOtpAuthenticator::OtpAuthenticationResponse;
 
   CreditCardAccessManager(AutofillDriver* driver,
                           AutofillClient* client,
@@ -117,7 +119,7 @@ class CreditCardAccessManager
   bool ShouldClearPreviewedForm();
 
   // Makes a call to Google Payments to retrieve authentication details.
-  void PrepareToFetchCreditCard();
+  virtual void PrepareToFetchCreditCard();
 
   // `on_credit_card_fetched` is run once `card` is fetched.
   virtual void FetchCreditCard(
@@ -263,6 +265,11 @@ class CreditCardAccessManager
   // etc., is available and enabled. If set to true, then an Unmask Details
   // request will be sent to Google Payments.
   void GetUnmaskDetailsIfUserIsVerifiable(bool is_user_verifiable);
+
+  // Log success metrics based on `unmask_auth_flow_type` if user passed
+  // authentication, as well as fill the form.
+  void LogMetricsAndFillFormForServerUnmaskFlows(
+      UnmaskAuthFlowType unmask_auth_flow_type);
 
   // Sets |unmask_details_|. May be ignored if response is too late and user is
   // not opted-in for FIDO auth, or if user does not select a card.
@@ -452,14 +459,14 @@ class CreditCardAccessManager
   const raw_ptr<autofill_metrics::CreditCardFormEventLogger> form_event_logger_;
 
   // Timestamp used for preflight call metrics.
-  absl::optional<base::TimeTicks> preflight_call_timestamp_;
+  std::optional<base::TimeTicks> preflight_call_timestamp_;
 
   // Timestamp used for user-perceived latency metrics.
-  absl::optional<base::TimeTicks>
+  std::optional<base::TimeTicks>
       card_selected_without_unmask_details_timestamp_;
 
   // Timestamp for when fido_authenticator_->IsUserVerifiable() is called.
-  absl::optional<base::TimeTicks> is_user_verifiable_called_timestamp_;
+  std::optional<base::TimeTicks> is_user_verifiable_called_timestamp_;
 
 #if !BUILDFLAG(IS_IOS)
   std::unique_ptr<CreditCardFidoAuthenticator> fido_authenticator_;
@@ -506,7 +513,7 @@ class CreditCardAccessManager
   // Set to true only if user has a verifying platform authenticator.
   // e.g. Touch/Face ID, Windows Hello, Android fingerprint, etc., is available
   // and enabled.
-  absl::optional<bool> is_user_verifiable_;
+  std::optional<bool> is_user_verifiable_;
 
   // True only if currently waiting on unmask details. This avoids making
   // unnecessary calls to payments.

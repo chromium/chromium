@@ -72,8 +72,8 @@ void CanvasRenderingContext::Dispose() {
   // the other in order to break the circular reference.  This is to avoid
   // an error when CanvasRenderingContext::DidProcessTask() is invoked
   // after the HTMLCanvasElement is destroyed.
-  if (Host()) {
-    Host()->DetachContext();
+  if (CanvasRenderingContextHost* host = Host(); LIKELY(host != nullptr)) {
+    host->DetachContext();
     host_ = nullptr;
   }
 }
@@ -85,7 +85,8 @@ NoAllocDirectCallHost* CanvasRenderingContext::AsNoAllocDirectCallHost() {
 void CanvasRenderingContext::DidDraw(
     const SkIRect& dirty_rect,
     CanvasPerformanceMonitor::DrawType draw_type) {
-  Host()->DidDraw(dirty_rect);
+  CanvasRenderingContextHost* const host = Host();
+  host->DidDraw(dirty_rect);
 
   auto& monitor = GetCanvasPerformanceMonitor();
   monitor.DidDraw(draw_type);
@@ -97,7 +98,7 @@ void CanvasRenderingContext::DidDraw(
   // We need to store whether the document is being printed because the
   // document may exit printing state by the time DidProcessTask is called.
   // This is an issue with beforeprint event listeners.
-  did_print_in_current_task_ |= Host()->IsPrinting();
+  did_print_in_current_task_ |= host->IsPrinting();
   Thread::Current()->AddTaskObserver(this);
 }
 
@@ -107,22 +108,25 @@ void CanvasRenderingContext::DidProcessTask(
 
   // The end of a script task that drew content to the canvas is the point
   // at which the current frame may be considered complete.
-  if (Host())
-    Host()->PreFinalizeFrame();
+  if (CanvasRenderingContextHost* host = Host(); LIKELY(host != nullptr)) {
+    host->PreFinalizeFrame();
+  }
   FlushReason reason = did_print_in_current_task_
                            ? FlushReason::kCanvasPushFrameWhilePrinting
                            : FlushReason::kCanvasPushFrame;
   FinalizeFrame(reason);
   did_print_in_current_task_ = false;
-  if (Host())
-    Host()->PostFinalizeFrame(reason);
+  if (CanvasRenderingContextHost* host = Host(); LIKELY(host != nullptr)) {
+    host->PostFinalizeFrame(reason);
+  }
 }
 
 void CanvasRenderingContext::RecordUMACanvasRenderingAPI() {
+  const CanvasRenderingContextHost* const host = Host();
   if (auto* window =
-          DynamicTo<LocalDOMWindow>(Host()->GetTopExecutionContext())) {
+          DynamicTo<LocalDOMWindow>(host->GetTopExecutionContext())) {
     WebFeature feature;
-    if (Host()->IsOffscreenCanvas()) {
+    if (host->IsOffscreenCanvas()) {
       switch (canvas_rendering_type_) {
         default:
           NOTREACHED();
@@ -170,9 +174,10 @@ void CanvasRenderingContext::RecordUMACanvasRenderingAPI() {
 }
 
 void CanvasRenderingContext::RecordUKMCanvasRenderingAPI() {
-  DCHECK(Host());
-  const auto& ukm_params = Host()->GetUkmParameters();
-  if (Host()->IsOffscreenCanvas()) {
+  CanvasRenderingContextHost* const host = Host();
+  DCHECK(host);
+  const auto& ukm_params = host->GetUkmParameters();
+  if (host->IsOffscreenCanvas()) {
     ukm::builders::ClientRenderingAPI(ukm_params.source_id)
         .SetOffscreenCanvas_RenderingContext(
             static_cast<int>(canvas_rendering_type_))
@@ -185,9 +190,10 @@ void CanvasRenderingContext::RecordUKMCanvasRenderingAPI() {
 }
 
 void CanvasRenderingContext::RecordUKMCanvasDrawnToRenderingAPI() {
-  DCHECK(Host());
-  const auto& ukm_params = Host()->GetUkmParameters();
-  if (Host()->IsOffscreenCanvas()) {
+  CanvasRenderingContextHost* const host = Host();
+  DCHECK(host);
+  const auto& ukm_params = host->GetUkmParameters();
+  if (host->IsOffscreenCanvas()) {
     ukm::builders::ClientRenderingAPI(ukm_params.source_id)
         .SetOffscreenCanvas_RenderingContextDrawnTo(
             static_cast<int>(canvas_rendering_type_))

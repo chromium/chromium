@@ -366,14 +366,15 @@ void SMILTimeContainer::SetElapsed(SMILTime elapsed) {
   UpdateAnimationsAndScheduleFrameIfNeeded(update);
 }
 
-void SMILTimeContainer::ScheduleAnimationFrame(base::TimeDelta delay_time) {
+void SMILTimeContainer::ScheduleAnimationFrame(base::TimeDelta delay_time,
+                                               bool disable_throttling) {
   DCHECK(IsTimelineRunning());
   DCHECK(!wakeup_timer_.IsActive());
   DCHECK(GetDocument().IsActive());
 
   // Skip the comparison against kLocalMinimumDelay if an animation is
   // not visible.
-  if (ShouldThrottleSVGAnimation()) {
+  if (!disable_throttling) {
     ScheduleWakeUp(delay_time, kFutureAnimationFrame);
     return;
   }
@@ -515,28 +516,30 @@ bool SMILTimeContainer::UpdateAnimationsAndScheduleFrameIfNeeded(
     return false;
   AnimationTargetsMutationsForbidden scope(this);
   UpdateTimedElements(update);
-  ApplyTimedEffects(update.TargetTime());
+  bool disable_throttling = ApplyTimedEffects(update.TargetTime());
   DCHECK(!wakeup_timer_.IsActive());
   DCHECK(!HasPendingSynchronization());
 
   if (!IsTimelineRunning())
     return false;
-  SMILTime next_progress_time = NextProgressTime(update.TargetTime());
+  SMILTime next_progress_time =
+      NextProgressTime(update.TargetTime(), disable_throttling);
   if (!next_progress_time.IsFinite())
     return false;
   SMILTime delay_time = next_progress_time - update.TargetTime();
   DCHECK(delay_time.IsFinite());
-  ScheduleAnimationFrame(delay_time.ToTimeDelta());
+  ScheduleAnimationFrame(delay_time.ToTimeDelta(), disable_throttling);
   return true;
 }
 
-SMILTime SMILTimeContainer::NextProgressTime(SMILTime presentation_time) const {
+SMILTime SMILTimeContainer::NextProgressTime(SMILTime presentation_time,
+                                             bool disable_throttling) const {
   if (presentation_time == max_presentation_time_)
     return SMILTime::Unresolved();
 
   // If the element is not rendered, skip any updates within the active
   // intervals and step to the next "event" time (begin, repeat or end).
-  if (ShouldThrottleSVGAnimation()) {
+  if (!disable_throttling) {
     return priority_queue_.Min();
   }
 
@@ -632,21 +635,31 @@ void SMILTimeContainer::UpdateTimedElements(TimingUpdate& update) {
   }
 }
 
-void SMILTimeContainer::ApplyTimedEffects(SMILTime elapsed) {
+bool SMILTimeContainer::ApplyTimedEffects(SMILTime elapsed) {
   if (document_order_indexes_dirty_)
     UpdateDocumentOrderIndexes();
 
   bool did_apply_effects = false;
+  bool disable_throttling =
+      !RuntimeEnabledFeatures::InvisibleSVGAnimationThrottlingEnabled();
   for (auto& entry : animated_targets_) {
     ElementSMILAnimations* animations = entry.key->GetSMILAnimations();
-    if (animations && animations->Apply(elapsed))
+    if (animations && animations->Apply(elapsed)) {
       did_apply_effects = true;
+
+      if (!disable_throttling && (entry.key->GetLayoutObject() ||
+                                  !entry.key->InstancesForElement().empty())) {
+        disable_throttling = true;
+      }
+    }
   }
 
   if (did_apply_effects) {
     UseCounter::Count(&GetDocument(),
                       WebFeature::kSVGSMILAnimationAppliedEffect);
   }
+
+  return disable_throttling;
 }
 
 void SMILTimeContainer::AdvanceFrameForTesting() {
@@ -672,13 +685,6 @@ void SMILTimeContainer::DidAttachLayoutObject() {
   }
   CancelAnimationFrame();
   ServiceOnNextFrame();
-}
-
-bool SMILTimeContainer::ShouldThrottleSVGAnimation() const {
-  if (!RuntimeEnabledFeatures::InvisibleSVGAnimationThrottlingEnabled()) {
-    return false;
-  }
-  return !OwnerSVGElement().GetLayoutObject();
 }
 
 }  // namespace blink

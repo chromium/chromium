@@ -65,6 +65,12 @@ VIZ_COMMON_EXPORT gfx::Transform GetViewTransitionTransform(
     gfx::Rect shared_element_quad,
     gfx::Rect view_transition_content_output);
 
+// Returns true if the quad's visible rect bounds overlaps with at least one
+// of the rounded corners bounding rects.
+VIZ_COMMON_EXPORT bool QuadRoundedCornersBoundsIntersects(
+    const DrawQuad* quad,
+    const gfx::RectF& target_quad);
+
 }  // namespace viz
 
 #endif  // COMPONENTS_VIZ_COMMON_VIZ_UTILS_H_

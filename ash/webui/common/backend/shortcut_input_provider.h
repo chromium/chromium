@@ -66,7 +66,7 @@ class ShortcutInputProvider : public common::mojom::ShortcutInputProvider,
   // A clone of the most recent prerewritten key event.
   mojom::KeyEventPtr prerewritten_event_;
 
-  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
 
   mojo::RemoteSet<common::mojom::ShortcutInputObserver>
       shortcut_input_observers_;

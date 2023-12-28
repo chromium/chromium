@@ -213,6 +213,10 @@ interface SellerWorklet {
   //  took to generate the bid. Taken as milliseconds to reduce granularity of
   //  timing information passed to an untrusted process.
   //
+  // `browser_signal_for_debugging_only_in_cooldown_or_lockout` Whether the
+  // browser is under lockout or the seller's origin is under cooldown for
+  // sending forDebuggingOnly reports.
+  //
   // `seller_timeout` Restrict the runtime of the seller's scoring script. Any
   //  timeout higher than 500 ms will be clamped to 500 ms before passing in as
   //  `seller_timeout`. Null if not provided by the publisher page. Null will be
@@ -238,6 +242,7 @@ interface SellerWorklet {
           url.mojom.Url browser_signal_render_url,
           array<url.mojom.Url> browser_signal_ad_component_render_urls,
           uint32 browser_signal_bidding_duration_msecs,
+          bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
           mojo_base.mojom.TimeDelta? seller_timeout,
           uint64 trace_id,
           pending_remote<ScoreAdClient> score_ad_client);

@@ -18,7 +18,6 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
@@ -349,56 +348,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, EmptyDBPath) {
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
-       ClearSiteDataOnChangedSetsForContext_FeatureNotEnabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kFirstPartySets,
-      {{features::kFirstPartySetsClearSiteDataOnChangedSets.name, "false"}});
-  base::HistogramTester histogram;
-  net::SchemefulSite foo(GURL("https://foo.test"));
-  net::SchemefulSite associated(GURL("https://associatedsite.test"));
-
-  const std::string browser_context_id = "profile";
-  const std::string input =
-      R"({"primary": "https://foo.test", )"
-      R"("associatedSites": ["https://associatedsite.test"]})";
-  ASSERT_TRUE(base::JSONReader::Read(input));
-  handler().SetPublicFirstPartySets(base::Version("0.0.1"),
-                                    WritePublicSetsFile(input));
-
-  handler().Init(scoped_dir_.GetPath(), net::LocalSetDeclaration());
-  ASSERT_THAT(GetSetsAndWait().FindEntries({foo, associated},
-                                           net::FirstPartySetsContextConfig()),
-              UnorderedElementsAre(
-                  Pair(foo, net::FirstPartySetEntry(
-                                foo, net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(associated, net::FirstPartySetEntry(
-                                       foo, net::SiteType::kAssociated, 0))));
-
-  histogram.ExpectTotalCount(kDelayedQueriesCountHistogram, 1);
-  histogram.ExpectTotalCount(kMostDelayedQueryDeltaHistogram, 1);
-
-  ClearSiteDataOnChangedSetsForContextAndWait(
-      context(), browser_context_id, net::FirstPartySetsContextConfig());
-
-  absl::optional<
-      std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>>
-      persisted = GetPersistedSetsAndWait(browser_context_id);
-  EXPECT_TRUE(persisted.has_value());
-  EXPECT_THAT(
-      persisted->first.FindEntries({foo, associated}, persisted->second),
-      IsEmpty());
-  // Should not be recorded.
-  histogram.ExpectTotalCount(kFirstPartySetsClearSiteDataOutcomeHistogram, 0);
-}
-
-TEST_F(FirstPartySetsHandlerImplEnabledTest,
        ClearSiteDataOnChangedSetsForContext_ManualSet_Successful) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kFirstPartySets,
-      {{features::kFirstPartySetsClearSiteDataOnChangedSets.name, "true"}});
-
   net::SchemefulSite foo(GURL("https://foo.test"));
   net::SchemefulSite associated(GURL("https://associatedsite.test"));
   net::SchemefulSite associated2(GURL("https://associatedsite2.test"));
@@ -442,11 +392,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
        ClearSiteDataOnChangedSetsForContext_PublicSetsWithDiff_Successful) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kFirstPartySets,
-      {{features::kFirstPartySetsClearSiteDataOnChangedSets.name, "true"}});
-
   net::SchemefulSite foo(GURL("https://foo.test"));
   net::SchemefulSite associated(GURL("https://associatedsite.test"));
   net::SchemefulSite associated2(GURL("https://associatedsite2.test"));
@@ -542,11 +487,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
        ClearSiteDataOnChangedSetsForContext_EmptyDBPath) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kFirstPartySets,
-      {{features::kFirstPartySetsClearSiteDataOnChangedSets.name, "true"}});
-
   base::HistogramTester histogram;
   net::SchemefulSite foo(GURL("https://foo.test"));
   net::SchemefulSite associated(GURL("https://associatedsite.test"));
@@ -581,11 +521,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
        ClearSiteDataOnChangedSetsForContext_BeforeSetsReady) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kFirstPartySets,
-      {{features::kFirstPartySetsClearSiteDataOnChangedSets.name, "true"}});
-
   base::HistogramTester histogram;
 
   handler().Init(scoped_dir_.GetPath(), net::LocalSetDeclaration());

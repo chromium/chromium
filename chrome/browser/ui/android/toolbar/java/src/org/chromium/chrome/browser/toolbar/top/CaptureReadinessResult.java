@@ -41,7 +41,7 @@ public class CaptureReadinessResult {
     /**
      * Reasons to block toolbar captures. Treat this list as append only and keep it in sync with
      * TopToolbarBlockCaptureReason in enums.xml, as well as the proto in chrome_track_event.proto.
-     **/
+     */
     @IntDef({
         TopToolbarBlockCaptureReason.UNKNOWN,
         TopToolbarBlockCaptureReason.TOOLBAR_OR_RESULT_NULL,
@@ -57,6 +57,7 @@ public class CaptureReadinessResult {
         TopToolbarBlockCaptureReason.COMPOSITOR_IN_MOTION,
         TopToolbarBlockCaptureReason.NTP_Y_TRANSLATION,
         TopToolbarBlockCaptureReason.FULLSCREEN,
+        TopToolbarBlockCaptureReason.TABLET_BUTTON_ANIMATION_IN_PROGRESS,
         TopToolbarBlockCaptureReason.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -75,7 +76,8 @@ public class CaptureReadinessResult {
         int COMPOSITOR_IN_MOTION = 11;
         int NTP_Y_TRANSLATION = 12;
         int FULLSCREEN = 13;
-        int NUM_ENTRIES = 14;
+        int TABLET_BUTTON_ANIMATION_IN_PROGRESS = 14;
+        int NUM_ENTRIES = 15;
     }
 
     public static CaptureReadinessResult readyForced() {

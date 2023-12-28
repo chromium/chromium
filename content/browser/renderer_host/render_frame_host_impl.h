@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <cstdint>
+#include <deque>
 #include <list>
 #include <map>
 #include <memory>
@@ -29,6 +30,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/numerics/checked_math.h"
 #include "base/process/kill.h"
 #include "base/strings/string_piece.h"
 #include "base/supports_user_data.h"
@@ -268,7 +270,6 @@ class PrerenderCancellationReason;
 class IdleManagerImpl;
 class NavigationEarlyHintsManager;
 class NavigationRequest;
-class PeakGpuMemoryTracker;
 class PeerConnectionTrackerHost;
 class PrefetchedSignedExchangeCache;
 class PresentationServiceImpl;
@@ -719,19 +720,38 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // and after the embedding token has been set.
   void PropagateEmbeddingTokenToParentFrame();
 
-  // Returns true if the frame recently plays an audio.
-  bool is_audible() const { return is_audible_; }
+  // Adds/removes a media stream to this render frame.
+  enum MediaStreamType {
+    // This stream is capturing an audio or video source. For example, the
+    // stream could be capturing the microphone's audio, or capturing the
+    // content of a tab.
+    kCapturingMediaStream,
+    // This stream is playing audio data. For example, the user is listening to
+    // an audio file. Exists even if the audio data is silent.
+    kPlayingAudioStream,
+    // Same as kPlayingAudioStream, but only if the audio data is actually
+    // audible to the user.
+    kPlayingAudibleAudioStream,
+    kCount,
+  };
+  void OnMediaStreamAdded(MediaStreamType type);
+  void OnMediaStreamRemoved(MediaStreamType type);
 
-  // Toggles the audible state of this render frame. This should only be called
-  // from AudioStreamMonitor, and should not be invoked with the same value
-  // successively.
-  void OnAudibleStateChanged(bool is_audible);
+  // Returns true if this frame has at least one media stream of this `type`.
+  bool HasMediaStreams(MediaStreamType type) const;
 
-  // Called when this render frame starts or stops capturing a media stream
-  // (audio or video). This should only be called from VideoCaptureHost or
-  // AudioStreamBroker (or internally, during clean up).
-  void OnMediaStreamAdded();
-  void OnMediaStreamRemoved();
+  // Returns the MediaStreamType that denotes if the frame should be considered
+  // audible. This returns kPlayingAudibleAudioStream on all platforms except
+  // for MacOS. On MacOS, all active audio stream are considered as audible. Thi
+  // avoid a priority inversion that causes audio glitches when a renderer
+  // playing silent audio is backgrounded. See https://crbug.com/1504625.
+  static constexpr MediaStreamType GetAudibleMediaStreamType() {
+#if BUILDFLAG(IS_MAC)
+    return MediaStreamType::kPlayingAudioStream;
+#else
+    return MediaStreamType::kPlayingAudibleAudioStream;
+#endif
+  }
 
   // Called when this frame has added a child. This is a continuation of an IPC
   // that was partially handled on the IO thread (to allocate |new_routing_id|,
@@ -843,11 +863,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // not.
   bool was_loaded_from_load_data_with_base_url() const {
     return renderer_url_info_.was_loaded_from_load_data_with_base_url;
-  }
-
-  const base::UnguessableToken& credentialless_iframes_nonce() const {
-    DCHECK(is_main_frame() || IsFencedFrameRoot());
-    return credentialless_iframes_nonce_;
   }
 
   // Saves the URLs and other URL-related information used in the renderer.
@@ -1691,8 +1706,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   }
   bool is_mhtml_document() { return is_mhtml_document_; }
 
-  bool is_overriding_user_agent() { return is_overriding_user_agent_; }
-
   ReloadType reload_type() { return reload_type_; }
 
   // Notifies the render frame that |frame_tree_node_| has received user
@@ -2430,19 +2443,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SendFencedFrameReportingBeacon(
       const std::string& event_data,
       const std::string& event_type,
-      const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-      network::AttributionReportingRuntimeFeatures
-          attribution_reporting_runtime_features) override;
+      const std::vector<blink::FencedFrame::ReportingDestination>& destinations)
+      override;
   void SendFencedFrameReportingBeaconToCustomURL(
-      const GURL& destination_url,
-      network::AttributionReportingRuntimeFeatures
-          attribution_reporting_runtime_features) override;
+      const GURL& destination_url) override;
   void SetFencedFrameAutomaticBeaconReportEventData(
       blink::mojom::AutomaticBeaconType event_type,
       const std::string& event_data,
       const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-      network::AttributionReportingRuntimeFeatures
-          attribution_reporting_runtime_features,
       bool once,
       bool cross_origin_exposed) override;
   void SendLegacyTechEvent(
@@ -2450,6 +2458,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       blink::mojom::LegacyTechEventCodeLocationPtr code_location) override;
   void SendPrivateAggregationRequestsForFencedFrameEvent(
       const std::string& event_type) override;
+  void SetAttributionReportingRuntimeFeatures(
+      network::AttributionReportingRuntimeFeatures features) override;
   void CreateFencedFrame(
       mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>
           pending_receiver,
@@ -3011,6 +3021,21 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   void NotifyWillCreateRenderWidgetOnCommit();
 
+  // If this RenderFrameHost is a local root (i.e., either the main frame or a
+  // subframe in a different process than its parent), this returns the
+  // RenderWidgetHost corresponding to this frame. Otherwise this returns null.
+  // See also GetRenderWidgetHost(), which walks up the tree to find the nearest
+  // local root.
+  // Main frame: RenderWidgetHost is owned by the RenderViewHost.
+  // Subframe: RenderWidgetHost is owned by this RenderFrameHost.
+  RenderWidgetHostImpl* GetLocalRenderWidgetHost() const;
+
+  // Called by `SharedStorageHeaderObserver` to add operation deferral callbacks
+  // to `deferred_shared_storage_header_callbacks_` to be run by
+  // `RunDeferredSharedStorageHeaderCallbacks()` after commit.
+  void AddDeferredSharedStorageHeaderCallback(
+      base::OnceCallback<void(NavigationOrDocumentHandle*)> callback);
+
  protected:
   friend class RenderFrameHostFactory;
 
@@ -3239,6 +3264,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest, SetTitleOnPagehide);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
                            DetachedIframePagehideHandlerABCB);
+  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheStillLoadingBrowserTest,
+                           DoesNotCacheIfFrameStillLoading);
 
   class SubresourceLoaderFactoriesConfig;
 
@@ -3826,15 +3853,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojom::DidCommitProvisionalLoadParamsPtr* params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params);
 
-  // If this RenderFrameHost is a local root (i.e., either the main frame or a
-  // subframe in a different process than its parent), this returns the
-  // RenderWidgetHost corresponding to this frame. Otherwise this returns null.
-  // See also GetRenderWidgetHost(), which walks up the tree to find the nearest
-  // local root.
-  // Main frame: RenderWidgetHost is owned by the RenderViewHost.
-  // Subframe: RenderWidgetHost is owned by this RenderFrameHost.
-  RenderWidgetHostImpl* GetLocalRenderWidgetHost() const;
-
   // Called after a new document commit. Every children of the previous document
   // are expected to be deleted or at least to be pending deletion waiting for
   // unload completion. A compromised renderer process or bugs can cause the
@@ -4045,14 +4063,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Helper function that handles creating and sending a fenced frame beacon for
   // a given destination.
-  // `attribution_reporting_runtime_features` indicates whether Attribution
-  // Reporting API related runtime features are enabled and is needed for
-  // integration with Attribution Reporting API.
   void SendFencedFrameReportingBeaconInternal(
       const FencedFrameReporter::DestinationVariant& event_variant,
       blink::FencedFrame::ReportingDestination destination,
-      network::AttributionReportingRuntimeFeatures
-          attribution_reporting_features,
       absl::optional<int64_t> navigation_id = absl::nullopt);
 
   // Indicates whether this frame has third-party storage
@@ -4096,6 +4109,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
       base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback,
       blink::mojom::AuthenticatorStatus status);
 #endif
+
+  // Notifies the RenderProcessHost instance that this frame no longer has any
+  // media stream. Called when this render frame is deleted or when the process
+  // is gone.
+  void CleanUpMediaStreams();
 
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
@@ -4513,14 +4531,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // If true, then the RenderFrame has selected text.
   bool has_selection_ = false;
 
-  // If true, then this RenderFrame has one or more audio streams with audible
-  // signal. If false, all audio streams are currently silent (or there are no
-  // audio streams).
-  bool is_audible_ = false;
-
-  // Indicates the number of media streams (audio or video) this frame is
-  // capturing.
-  int media_stream_count_ = 0;
+  // Indicates the number of media streams (audio or video) that are tracked
+  // via OnMediaStreamAdded/OnMediaStreamRemoved, split by the stream type.
+  int media_stream_counts_[MediaStreamType::kCount] = {};
 
   // If true, then this RenderFrameHost is waiting to update its
   // LifecycleStateImpl. Happens when the old RenderFrameHost is waiting to
@@ -4751,10 +4764,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // browser side state as this value is used in security checks.
   bool is_mhtml_document_ = false;
 
-  // Whether the currently committed document is overriding the user agent or
-  // not.
-  bool is_overriding_user_agent_ = false;
-
   // Whether the currently committed document was reloaded in a particular
   // way.
   ReloadType reload_type_ = ReloadType::NONE;
@@ -4834,11 +4843,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Tracking active features in this frame, for use in figuring out whether
   // or not it can be frozen.
   std::unique_ptr<FeatureObserver> feature_observer_;
-
-  // Optional PeakGpuMemoryTracker, when this frame is the primary main frame.
-  // Created by NavigationRequest, ownership is maintained until the frame has
-  // stopped loading. Or newer navigations occur.
-  std::unique_ptr<PeakGpuMemoryTracker> loading_mem_tracker_;
 
   scoped_refptr<WebAuthRequestSecurityChecker>
       webauth_request_security_checker_;
@@ -5087,14 +5091,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Emit a DumpWithoutCrashing() when |this| is deleted and this flag is reset.
   bool check_deletion_for_bug_1276535_ = false;
 
-  // Nonce to be used for initializing the storage key and the network isolation
-  // key of credentialless iframes which are children of this page's document.
-  // TODO(https://crbug.com/1287458): Once the ShadowDom implementation of
-  // FencedFrame is gone, move this attribute back to PageImpl. See also:
-  // https://crbug.com/1262022
-  base::UnguessableToken credentialless_iframes_nonce_ =
-      base::UnguessableToken::Create();
-
   // Used for devtools instrumentation and trace-ability. Do not use for
   // anything else, especially to look up the RenderFrameHost
   // or FrameTreeNode instance.
@@ -5142,6 +5138,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // If true, the renderer side widget is created after the navigation is
   // committed.
   bool waiting_for_renderer_widget_creation_after_commit_ = false;
+
+  // Deferred shared storage operations to run after navigation commit in the
+  // event of a race between navigation and subresource request(s).
+  std::deque<base::OnceCallback<void(NavigationOrDocumentHandle*)>>
+      deferred_shared_storage_header_callbacks_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Holds a reference to a pending remote WebAuthn RP ID validation while one

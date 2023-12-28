@@ -587,6 +587,10 @@ void AppWindow::UpdateShape(std::unique_ptr<ShapeRects> rects) {
 void AppWindow::UpdateDraggableRegions(
     const std::vector<mojom::DraggableRegionPtr>& regions) {
   native_app_window_->UpdateDraggableRegions(regions);
+
+  if (on_update_draggable_regions_callback_for_testing_) {
+    std::move(on_update_draggable_regions_callback_for_testing_).Run();
+  }
 }
 
 void AppWindow::UpdateAppIcon(const gfx::Image& image) {

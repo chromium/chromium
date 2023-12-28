@@ -40,7 +40,7 @@ static std::unique_ptr<GURL> FromJavaGURL(JNIEnv* env,
                                           bool is_valid,
                                           jlong parsed_ptr) {
   Parsed* parsed = reinterpret_cast<Parsed*>(parsed_ptr);
-  const std::string& spec = ConvertJavaStringToUTF8(env, j_spec);
+  const std::string& spec = base::android::ConvertJavaStringToUTF8(env, j_spec);
   std::unique_ptr<GURL> gurl =
       std::make_unique<GURL>(spec.data(), parsed->Length(), *parsed, is_valid);
   delete parsed;
@@ -143,7 +143,8 @@ static jboolean JNI_GURL_DomainIs(JNIEnv* env,
                                   jlong parsed_ptr,
                                   const JavaParamRef<jstring>& j_domain) {
   std::unique_ptr<GURL> gurl = FromJavaGURL(env, j_spec, is_valid, parsed_ptr);
-  const std::string& domain = ConvertJavaStringToUTF8(env, j_domain);
+  const std::string& domain =
+      base::android::ConvertJavaStringToUTF8(env, j_domain);
   return gurl->DomainIs(domain);
 }
 
@@ -181,14 +182,16 @@ static void JNI_GURL_ReplaceComponents(
   if (clear_username) {
     replacements.ClearUsername();
   } else if (j_username_replacement) {
-    username = ConvertJavaStringToUTF8(env, j_username_replacement);
+    username =
+        base::android::ConvertJavaStringToUTF8(env, j_username_replacement);
     replacements.SetUsernameStr(username);
   }
 
   if (clear_password) {
     replacements.ClearPassword();
   } else if (j_password_replacement) {
-    password = ConvertJavaStringToUTF8(env, j_password_replacement);
+    password =
+        base::android::ConvertJavaStringToUTF8(env, j_password_replacement);
     replacements.SetPasswordStr(password);
   }
 

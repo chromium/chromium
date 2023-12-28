@@ -1,5 +1,19 @@
 include_rules = [
+  "+base/types/fixed_array.h",
   "+components/ml/mojom",
   "+components/ml/webnn",
   "+services/webnn/public/mojom",
 ]
+
+specific_include_rules = {
+  # Additional allowed list of include for ml trace unit test
+  # we need them for parsing the trace.
+  "ml_trace_unittest.cc" : [
+    "+base/json/json_reader.h",
+    "+base/memory/ref_counted_memory.h",
+    "+base/strings/stringprintf.h",
+  ],
+  "ml_graph_builder_test.cc" : [
+    "+base/containers/fixed_flat_set.h",
+  ],
+}

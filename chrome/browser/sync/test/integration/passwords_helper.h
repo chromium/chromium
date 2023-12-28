@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_PASSWORDS_HELPER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,10 +15,12 @@
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 
 namespace syncer {
 class Cryptographer;
 class KeyDerivationParams;
+class SyncServiceImpl;
 }
 
 namespace password_manager {
@@ -27,7 +30,8 @@ class PasswordStoreInterface;
 namespace passwords_helper {
 
 // Returns all logins from |store| matching a fake signon realm (see
-// CreateTestPasswordForm()).
+// CreateTestPasswordForm()). Note that it uses RunLoop to wait for async
+// results and should be avoided from using in StatusChangeChecker.
 // TODO(treib): Rename this to make clear how specific it is.
 std::vector<std::unique_ptr<password_manager::PasswordForm>> GetLogins(
     password_manager::PasswordStoreInterface* store);
@@ -213,6 +217,36 @@ class ServerPasswordsEqualityChecker
   const std::unique_ptr<syncer::Cryptographer> cryptographer_;
 
   std::vector<std::unique_ptr<password_manager::PasswordForm>> expected_forms_;
+};
+
+// Waits for the `expected_new_password_forms` of newly added passwords to the
+// `password_store`. Note that this object should be created before any changes
+// to the store to prevent test flakiness.
+class PasswordFormsAddedChecker
+    : public StatusChangeChecker,
+      public password_manager::PasswordStoreInterface::Observer {
+ public:
+  PasswordFormsAddedChecker(
+      password_manager::PasswordStoreInterface* password_store,
+      size_t expected_new_password_forms);
+  ~PasswordFormsAddedChecker() override;
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+  // PasswordStoreInterface::Observer implementation.
+  void OnLoginsChanged(
+      password_manager::PasswordStoreInterface* store,
+      const password_manager::PasswordStoreChangeList& changes) override;
+  void OnLoginsRetained(password_manager::PasswordStoreInterface* store,
+                        const std::vector<password_manager::PasswordForm>&
+                            retained_passwords) override;
+
+ private:
+  const raw_ptr<password_manager::PasswordStoreInterface> password_store_;
+  const size_t expected_new_password_forms_;
+
+  size_t num_added_passwords_ = 0;
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_PASSWORDS_HELPER_H_

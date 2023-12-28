@@ -1207,20 +1207,33 @@ void PointerEventManager::ProcessPendingPointerCapture(
     if (!pointer_capture_target->isConnected()) {
       target = pointer_capture_target->ownerDocument();
     }
+    pointer_capture_target_.erase(pointer_id);
     DispatchPointerEvent(
         target, pointer_event_factory_.CreatePointerCaptureEvent(
                     pointer_event, event_type_names::kLostpointercapture));
   }
 
-  if (pending_pointer_capture_target) {
+  if (pending_pointer_capture_target &&
+      (!RuntimeEnabledFeatures::
+           PointerCaptureLostOnRemovalDuringCaptureEnabled() ||
+       pending_pointer_capture_target->isConnected())) {
     SetElementUnderPointer(pointer_event, pending_pointer_capture_target);
     DispatchPointerEvent(
         pending_pointer_capture_target,
         pointer_event_factory_.CreatePointerCaptureEvent(
             pointer_event, event_type_names::kGotpointercapture));
-    pointer_capture_target_.Set(pointer_id, pending_pointer_capture_target);
-  } else {
-    pointer_capture_target_.erase(pointer_id);
+    if (!RuntimeEnabledFeatures::
+            PointerCaptureLostOnRemovalDuringCaptureEnabled() ||
+        pending_pointer_capture_target->isConnected()) {
+      pointer_capture_target_.Set(pointer_id, pending_pointer_capture_target);
+    } else {
+      // As a result of dispatching gotpointercapture the capture node was
+      // removed.
+      DispatchPointerEvent(
+          pending_pointer_capture_target->ownerDocument(),
+          pointer_event_factory_.CreatePointerCaptureEvent(
+              pointer_event, event_type_names::kLostpointercapture));
+    }
   }
 }
 

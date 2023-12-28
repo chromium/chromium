@@ -134,10 +134,6 @@ class ASH_EXPORT TabletModeController
   // TabletMode:
   void AddObserver(TabletModeObserver* observer) override;
   void RemoveObserver(TabletModeObserver* observer) override;
-  // We are considered in tablet mode when |tablet_mode_window_manager_| is
-  // about to be initialized. When it is about to be shutdown, we are considered
-  // out of tablet mode.
-  bool InTabletMode() const override;
   bool AreInternalInputDeviceEventsBlocked() const override;
   bool ForceUiTabletModeState(std::optional<bool> enabled) override;
   void SetEnabledForTest(bool enabled) override;
@@ -420,7 +416,7 @@ class ASH_EXPORT TabletModeController
   base::TimeTicks first_unstable_lid_angle_time_;
 
   // Source for the current time in base::TimeTicks.
-  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // The state in which the UI mode is forced in via command-line flags, such as
   // `--force-tablet-mode=touch_view` or `--force-tablet-mode=clamshell`.
@@ -497,7 +493,7 @@ class ASH_EXPORT TabletModeController
 
   // The layer that animates duraing tablet mode <-> clamshell
   // transition. It's observed to take an action after its animation ends.
-  raw_ptr<ui::Layer, ExperimentalAsh> animating_layer_ = nullptr;
+  raw_ptr<ui::Layer> animating_layer_ = nullptr;
 
   // When in scope, hides the shelf and float containers. Used to temporarily
   // hide shelf while taking a screenshot during tablet mode transition (so the

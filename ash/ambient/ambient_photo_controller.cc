@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/ambient/ambient_backup_photo_downloader.h"
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/ambient_photo_cache.h"
@@ -180,21 +181,30 @@ void AmbientPhotoController::ScheduleFetchBackupImages() {
 }
 
 void AmbientPhotoController::FetchBackupImages() {
+  active_backup_image_downloads_.clear();
   const auto& backup_photo_urls = GetBackupPhotoUrls();
   backup_retries_to_read_from_cache_ = backup_photo_urls.size();
-  for (size_t i = 0; i < backup_photo_urls.size(); i++) {
-    ambient_photo_cache::DownloadPhotoToFile(
-        ambient_photo_cache::Store::kBackup, backup_photo_urls.at(i),
-        *access_token_controller_,
-        /*cache_index=*/i,
-        base::BindOnce(&AmbientPhotoController::OnBackupImageFetched,
-                       weak_factory_.GetWeakPtr()));
+  const std::vector<gfx::Size> target_sizes =
+      topic_queue_delegate_->GetTopicSizes();
+  size_t target_size_idx = 0;
+  // Evenly distribute target photo sizes for the current `AmbientTheme` amongst
+  // the backup photos so that the ambient UI has as much variety in photo size
+  // to work with as possible.
+  for (size_t i = 0; i < backup_photo_urls.size(); i++, target_size_idx++) {
+    active_backup_image_downloads_.push_back(
+        std::make_unique<AmbientBackupPhotoDownloader>(
+            *access_token_controller_, i,
+            target_sizes[target_size_idx % target_sizes.size()],
+            backup_photo_urls[i],
+            base::BindOnce(&AmbientPhotoController::OnBackupImageFetched,
+                           weak_factory_.GetWeakPtr())));
   }
 }
 
 void AmbientPhotoController::OnBackupImageFetched(bool success) {
   if (!success) {
     // TODO(b/169807068) Change to retry individual failed images.
+    active_backup_image_downloads_.clear();
     resume_fetch_image_backoff_.InformOfRequest(/*succeeded=*/false);
     LOG(WARNING) << "Downloading backup image failed.";
     ScheduleFetchBackupImages();

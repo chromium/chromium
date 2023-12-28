@@ -8,7 +8,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "ui/aura/env.h"
 #include "ui/base/interaction/polling_state_observer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -16,7 +16,7 @@
 
 namespace {
 
-class TerminalIntegrationTest : public InteractiveAshTest {
+class TerminalIntegrationTest : public AshIntegrationTest {
  public:
   // Sends the given text to the element as individual key press commands.
   //

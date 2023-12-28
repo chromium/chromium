@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/dom/document_part_root.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
-#include "third_party/blink/renderer/core/dom/node_move_scope.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/part.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -26,22 +25,8 @@ void PartRoot::AddPart(Part& new_part) {
   if (cached_parts_list_dirty_) {
     return;
   }
-  bool no_tracking =
-      !RuntimeEnabledFeatures::DOMPartsAPIActivePartTrackingEnabled();
-  if (no_tracking || NodeMoveScope::AllMovedPartsWereClean()) {
-    DCHECK(!base::Contains(cached_ordered_parts_, &new_part));
-    if (no_tracking || !NodeMoveScope::IsPrepend()) {
-      cached_ordered_parts_.push_back(&new_part);
-    } else {
-      // TODO(crbug.com/1453291) If we go back to tracking parts, this case
-      // should do: cached_ordered_parts_.push_front(&new_part).
-      cached_ordered_parts_.clear();
-      cached_parts_list_dirty_ = true;
-    }
-  } else {
-    cached_ordered_parts_.clear();
-    cached_parts_list_dirty_ = true;
-  }
+  DCHECK(!base::Contains(cached_ordered_parts_, &new_part));
+  cached_ordered_parts_.push_back(&new_part);
 }
 
 // If we're removing the first Part in the cached part list, then just remove
@@ -88,10 +73,10 @@ void PartRoot::CloneParts(const Node& source_node,
         continue;
       }
       // This should *only* be the nextSibling of a ChildNodePart.
-      DCHECK(part->GetAsPartRoot()) << "Should be a ChildNodePart";
+      CHECK(part->GetAsPartRoot()) << "Should be a ChildNodePart";
       DCHECK_EQ(static_cast<ChildNodePart*>(part)->nextSibling(), source_node)
           << "This should be the next sibling node";
-      if (data.PartRootStackInvalid()) {
+      if (data.PartRootStackHasOnlyDocumentRoot()) {
         // If there have been mis-nested parts, abort.
         continue;
       }

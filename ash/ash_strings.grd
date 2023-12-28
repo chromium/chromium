@@ -1690,8 +1690,14 @@ Style notes:
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_FULL" meaning="This describes the strength of background blur for a video conferencing background. In this case, `full` refers to the level of intensity, so this is a full-strength, strongly blurred background." desc="Text 'full' is a synonym of the background blur 'maximum' setting, in the VC bubble.">
         Full
       </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_IMAGE" desc="Text for background blur 'Image' setting, in the VC bubble.">
+        Image
+      </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_PORTRAIT_RELIGHT_NAME" desc="Text for name of the portrait relight effect in the VC bubble, which is a toggle and effectively adjusts the users lighting.">
         Improve lighting
+      </message>
+        <message name="IDS_ASH_VIDEO_CONFERENCE_CREAT_WITH_AI_NAME" desc="Text for name of the 'Create With AI' button in the VC bubble, which invokes the webui for the creation.">
+        Create with AI
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_LINUX_APP_WARNING_TEXT" desc="Text for the warning label placed inside the VC bubble when there's any linux app running.">
         Effects are not supported on linux apps
@@ -1789,6 +1795,15 @@ Style notes:
       </message>
       <message name="IDS_ASH_PHONE_HUB_LOCATE_PHONE_TITLE" desc="Title of the locate phone toggle in the phone hub bubble.">
         Locate phone
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_ENABLE_HOTSPOT_SHORTENED_TITLE" desc="Short version of title of the enable hotspot toggle in the phone hub bubble.">
+        Hotspot
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_SILENCE_PHONE_SHORTENED_TITLE" desc="Short version of title of the silence phone toggle in the phone hub bubble.">
+        Silence
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_LOCATE_PHONE_SHORTENED_TITLE" desc="Short version of title of the locate phone toggle in the phone hub bubble.">
+        Locate
       </message>
       <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_TOGGLE_TOOLTIP" desc="The tooltip text used for the button in phone hube bubble to toggle quick actions feature on or off.">
         Toggle <ph name="FEATURE_NAME">$1<ex>Silence</ex></ph>. <ph name="STATE_TEXT">$2<ex>Silence is on.</ex></ph>
@@ -2041,6 +2056,9 @@ Style notes:
       </message>
       <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_ACCESSIBLE_NAME" desc="Accessible name for notification received in Phone Hub from paired phone, containing app_name, notification_title, message, phone_name.">
         <ph name="APP_NAME">$1<ex>Chat</ex></ph>, <ph name="NOTIFICATION_TITLE">$2<ex>+1-111-111-1111</ex></ph>: <ph name="MESSAGE">$3<ex>Hello</ex></ph>, <ph name="PHONE_NAME">$4<ex>Pixel</ex></ph>
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_TRAY_ICON_DISMISS_TEXT" desc="The text that appears in the context menu when right click Phone Hub icon in the tray to dismiss the icon if feature is not set up.">
+        Remove Phone Hub from shelf
       </message>
       <message name="IDS_ASH_STYLUS_BATTERY_LOW_LABEL" desc="The label next to the stylus battery indicator when the battery level is below 24%">
         Low
@@ -5559,6 +5577,33 @@ Some features are limited to increase battery life.
         I'm your Google Assistant, here to help you throughout your day!
 Here are some things you can try to get started.
       </message>
+      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_WEATHER" desc="Message shown on suggestion chip in LauncherSearchIphView to initiate a query." meaning="Query text on the button. [CHAR_LIMIT=14]">
+        Weather
+      </message>
+      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_UNIT_CONVERSION1" desc="Message shown on suggestion chip in LauncherSearchIphView to initiate a query." meaning="Query text on the button. [CHAR_LIMIT=14]">
+        5 ft in m
+      </message>
+      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_UNIT_CONVERSION2" desc="Message shown on suggestion chip in LauncherSearchIphView to initiate a query." meaning="Query text on the button. [CHAR_LIMIT=14]">
+        90°F in C
+      </message>
+      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_TRANSLATION" desc="Message shown on suggestion chip in LauncherSearchIphView to initiate a query." meaning="Query text on the button. [CHAR_LIMIT=14]">
+        Hi in French
+      </message>
+      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_DEFINITION" desc="Message shown on suggestion chip in LauncherSearchIphView to initiate a query." meaning="Query text on the button. [CHAR_LIMIT=14]">
+        Define zenith
+      </message>
+      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_CALCULATION" desc="Message shown on suggestion chip in LauncherSearchIphView to initiate a query." meaning="Query text on the button. [CHAR_LIMIT=14]">
+        50+94/5
+      </message>
+      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_ASSISTANT" desc="Message shown on suggestion chip in LauncherSearchIphView to open the Assistant UI." meaning="Text on the button. [CHAR_LIMIT=14]">
+        Go to Assistant
+      </message>
+      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_TITLE" desc="Text shown in LauncherSearchIphView.">
+        Search for what you need directly in Launcher
+      </message>
+      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_DESCRIPTION" desc="Description shown in LauncherSearchIphView.">
+        Here are a few suggestions to try
+      </message>
 
       <!-- For ScreenCaptureTrayItemView -->
       <message name="IDS_ASH_ADMIN_SCREEN_CAPTURE" desc="Tooltip message shown at the systray screen capture indicator when an administrator is capturing the screens.">
@@ -6162,6 +6207,9 @@ Here are some things you can try to get started.
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_EDUCATION_TUTORIAL_TITLE" desc="The title of the tutorial dialog for Screen Capture Education (Arm 2).">
         Press the screenshot shortcut
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_EDUCATION_TUTORIAL_ACCESSIBLE_TITLE" desc="The accessible title of the tutorial dialog for Screen Capture Education (Arm 2).">
+        Press the screenshot shortcut, Ctrl plus Shift plus Overview mode key
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_EDUCATION_SETTINGS_NUDGE_LABEL" desc="The label of the Screen Capture Education settings nudge (Arm 3) for using the quick settings menu.">
         Use the screen capture tool in quick settings to take screenshots
@@ -7330,12 +7378,12 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_DEVICE_SETTINGS_LEARN_MORE_BUTTON" desc="Button shown for device settings notifications which opens an article with helpful information related to the notification.">
         Learn more
       </message>
-        <message name="IDS_SETTINGS_CUSTOMIZATION_MIDDLE_BUTTON_DEFAULT_NAME" desc="The name of the middle mouse button on a mouse">
-    Middle Button
-  </message>
-  <message name="IDS_SETTINGS_CUSTOMIZATION_OTHER_BUTTON_DEFAULT_NAME" desc="The default name to give additional buttons on a mouse or graphics tablet">
-    Other Button <ph name="BUTTON_NUMBER">$1<ex>1</ex></ph>
-  </message>
+      <message name="IDS_SETTINGS_CUSTOMIZATION_MIDDLE_BUTTON_DEFAULT_NAME" desc="The name of the middle mouse button on a mouse">
+        Middle Button
+      </message>
+      <message name="IDS_SETTINGS_CUSTOMIZATION_OTHER_BUTTON_DEFAULT_NAME" desc="The default name to give additional buttons on a mouse or graphics tablet">
+        Other Button <ph name="BUTTON_NUMBER">$1<ex>1</ex></ph>
+      </message>
 
 
       <!-- Compat Mode Resize States-->
@@ -7347,6 +7395,17 @@ To shut down the device, press and hold the power button on the device again.
       </message>
       <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE" desc="Item in a list of possible sizes for the app. Makes the app resizable.">
         Resizable
+      </message>
+
+      <!-- Ash download command text -->
+      <message name="IDS_ASH_DOWNLOAD_COMMAND_TEXT_CANCEL" desc="Text of the command to cancel a download.">
+        Cancel
+      </message>
+      <message name="IDS_ASH_DOWNLOAD_COMMAND_TEXT_PAUSE" desc="Text of the command to pause a download.">
+        Pause
+      </message>
+      <message name="IDS_ASH_DOWNLOAD_COMMAND_TEXT_RESUME" desc="Text of the command to resume a paused download.">
+        Resume
       </message>
      </messages>
     </release>

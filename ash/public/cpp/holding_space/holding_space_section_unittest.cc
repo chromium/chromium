@@ -51,6 +51,7 @@ void ExpectSection(const HoldingSpaceSection* section,
                       HoldingSpaceItem::Type::kLacrosDownload,
                       HoldingSpaceItem::Type::kNearbyShare,
                       HoldingSpaceItem::Type::kPhoneHubCameraRoll,
+                      HoldingSpaceItem::Type::kPhotoshopWeb,
                       HoldingSpaceItem::Type::kPrintedPdf,
                       HoldingSpaceItem::Type::kScan));
       EXPECT_EQ(section->max_item_count, 50u);
@@ -117,6 +118,7 @@ TEST_F(HoldingSpaceSectionTest, GetHoldingSpaceSectionByType) {
       case HoldingSpaceItem::Type::kLacrosDownload:
       case HoldingSpaceItem::Type::kNearbyShare:
       case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
+      case HoldingSpaceItem::Type::kPhotoshopWeb:
       case HoldingSpaceItem::Type::kPrintedPdf:
       case HoldingSpaceItem::Type::kScan:
         id = HoldingSpaceSectionId::kDownloads;

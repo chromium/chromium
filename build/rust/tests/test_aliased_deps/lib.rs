@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-pub use other_name;
+chromium::import! {
+    pub "//build/rust/tests/test_aliased_deps:other_name";
+}
 
 #[cfg(test)]
 #[test]

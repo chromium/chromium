@@ -18,23 +18,34 @@ class WebContents;
 namespace enterprise_data_protection {
 
 // Represents context for the kind of print workflow that needs to check if
-// scanning should happen. This is used in conjunction with the
-// `kEnableCloudScanAfterPreview` to control the timing at which scanning
+// scanning should happen. This is to control the timing at which scanning
 // occurs.
 //
-//                 +-------------#3-------------+
-//                 |                            V
-//        +---------+        +--------+    +----------+        +-------+
-// --#1-> | Preview | --#2-> | System | -> | Print    | --#4-> | Print |
-//        | dialog  |        | dialog |    | document | --#5-> | job   |
-//        +---------+        +--------+    +----------+        +-------+
-//                               ^
-// --#0--------------------------+
+//           +-------------------#3-----------------+
+//           |                                      V
+//   +---------+         +--------+            +----------+        +-------+
+//   | Preview | --#2--> | System | ---------> | Print    | --#4-> | Print |
+//   | dialog  |         | dialog | --+        | document | --#5-> | job   |
+//   +---------+         +--------+   |        +----------+        +-------+
+//                          ^         |
+// ------#0-----------------+         |        +------------+
+//                                    |        | Open in    |
+//                                    +--#6--> | Preview    |
+//                                             | (Mac only) |
+//                                             +------------+
 enum class PrintScanningContext {
   // Represents the moment the user presses ctrl-p/shift-ctrl-p or an equivalent
-  // action before any preview/system dialog is shown.
+  // action that would lead to a system print dialog showing, before any such
+  // dialog is shown.
   kBeforeSystemDialog = 0,
-  kBeforePreview = 1,
+
+  // DEPRECATED
+  // Represents the moment the user presses ctrl-p or an equivalent action
+  // before any preview dialog is shown. This value is deprecated as policies no
+  // longer apply print checks at the timing it used to represent. Since this
+  // value was used in UMA, new code that hooks in a similar location should use
+  // a different value.
+  // kBeforePreview = 1,
 
   // Represents the moment the user has clicked "Print using system dialog",
   // before said dialog is shown and before the print job starts.
@@ -63,9 +74,9 @@ enum class PrintScanningContext {
 
 };
 
-// These functions take something to print (`data`) and scans it if the policy
-// is enabled on a managed browser. It also passes on print metadata (e.g.
-// `printer_name` or `scanning_data`) to content scans and `hides_preview`
+// These functions take something to print (`print_data`) and scans it if the
+// policy is enabled on a managed browser. It also passes on print metadata
+// (e.g. `printer_name` or `scanning_data`) to content scans and `hides_preview`
 // for the local ones. On receiving the verdict after the scan these functions
 // calls `on_verdict` with true or false. In the non enterprise case where no
 // scan is required, these functions directly calls `on_verdict` with true.

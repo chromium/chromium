@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DialogArgs, DialogPage, DialogTask, OperationType, PageHandlerRemote} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
+import {DialogArgs, DialogSpecificArgs, PageHandlerRemote} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
@@ -11,14 +11,11 @@ export interface ProxyOptions {
   officeWebAppInstalled: boolean;
   installOfficeWebAppResult: boolean;
   odfsMounted: boolean;
-  dialogPage: DialogPage;
-  localTasks?: DialogTask[]|null;
-  setOfficeAsDefaultHandler?: boolean|null;
+  dialogSpecificArgs: DialogSpecificArgs;
   alwaysMoveOfficeFilesToDrive?: boolean|null;
   alwaysMoveOfficeFilesToOneDrive?: boolean|null;
   officeMoveConfirmationShownForDrive?: boolean|null;
   officeMoveConfirmationShownForOneDrive?: boolean|null;
-  operationType: OperationType;
 }
 
 /**
@@ -32,17 +29,8 @@ export class CloudUploadTestBrowserProxy implements CloudUploadBrowserProxy {
     this.handler = TestMock.fromClass(PageHandlerRemote);
     const args: DialogArgs = {
       fileNames: options.fileNames,
-      dialogPage: options.dialogPage,
-      localTasks: [],
-      setOfficeAsDefaultHandler: true,
-      operationType: options.operationType,
+      dialogSpecificArgs: options.dialogSpecificArgs,
     };
-    if (options.localTasks != null) {
-      args.localTasks = options.localTasks;
-    }
-    if (options.setOfficeAsDefaultHandler != null) {
-      args.setOfficeAsDefaultHandler = options.setOfficeAsDefaultHandler;
-    }
     this.handler.setResultFor('getDialogArgs', {args: args});
     this.handler.setResultFor(
         'isOfficeWebAppInstalled', {installed: options.officeWebAppInstalled});

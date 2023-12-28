@@ -11,6 +11,7 @@
 #include "base/containers/enum_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
 #include "components/browsing_data/content/shared_worker_info.h"
 #include "content/public/browser/attribution_data_model.h"
@@ -131,7 +132,7 @@ class BrowsingDataModel {
   };
 
   // A delegate to handle non components/ data type retrieval and deletion.
-  class Delegate {
+  class Delegate : public base::SupportsWeakPtr<Delegate> {
    public:
     struct DelegateEntry {
       DelegateEntry(const DataKey& data_key,

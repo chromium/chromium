@@ -1045,7 +1045,7 @@ TEST_F(ButtonActionViewInterfaceTest, TestActionTriggered) {
   ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                    ui::EventTimeForNow(), 0, 0);
   bool called = false;
-  button()->GetActionViewInterface()->LinkActionTriggerToView(
+  button()->GetActionViewInterface()->LinkActionInvocationToView(
       base::BindRepeating([](bool* called_bool) { *called_bool = true; },
                           &called));
   views::test::ButtonTestApi test_api(button());

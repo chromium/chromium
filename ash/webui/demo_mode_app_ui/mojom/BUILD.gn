@@ -13,5 +13,5 @@ mojom("mojom") {
   webui_module_path = "/ash/webui/demo_mode_app_ui/mojom/"
 
   # This page still uses JS + Closure compiler.
-  use_typescript_sources = false
+  generate_webui_js_bindings = true
 }

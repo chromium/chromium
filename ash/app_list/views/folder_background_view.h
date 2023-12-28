@@ -38,7 +38,7 @@ class FolderBackgroundView : public views::View {
   // Handles mouse click event or gesture tap event.
   void HandleClickOrTap();
 
-  raw_ptr<AppListFolderView, DanglingUntriaged | ExperimentalAsh> folder_view_;
+  raw_ptr<AppListFolderView, DanglingUntriaged> folder_view_;
 };
 
 }  // namespace ash

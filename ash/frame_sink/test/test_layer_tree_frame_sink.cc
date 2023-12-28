@@ -6,6 +6,8 @@
 
 #include <optional>
 
+#include "gpu/ipc/client/client_shared_image_interface.h"
+
 namespace ash {
 
 TestLayerTreeFrameSink::TestLayerTreeFrameSink()

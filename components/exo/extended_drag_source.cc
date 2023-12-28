@@ -138,10 +138,10 @@ class ExtendedDragSource::DraggedWindowHolder : public aura::WindowObserver,
     return true;
   }
 
-  raw_ptr<Surface, ExperimentalAsh> surface_;
+  raw_ptr<Surface> surface_;
   gfx::Vector2d drag_offset_;
-  const raw_ptr<ExtendedDragSource, ExperimentalAsh> source_;
-  raw_ptr<aura::Window, ExperimentalAsh> toplevel_window_ = nullptr;
+  const raw_ptr<ExtendedDragSource> source_;
+  raw_ptr<aura::Window> toplevel_window_ = nullptr;
 };
 
 // static

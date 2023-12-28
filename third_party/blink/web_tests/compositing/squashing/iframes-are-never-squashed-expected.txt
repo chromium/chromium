@@ -14,7 +14,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutIFrame (positioned) IFRAME",
+      "name": "LayoutIFrame (positioned, block) IFRAME",
       "bounds": [104, 104],
       "contentsOpaque": true,
       "backgroundColor": "#ADD8E6"

@@ -57,9 +57,9 @@ class CORE_EXPORT LayoutProgress : public LayoutNGBlockFlow {
 
  protected:
   void WillBeDestroyed() override;
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsProgress() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectProgress || LayoutBlockFlow::IsOfType(type);
+    return true;
   }
 
   bool IsAnimating() const;

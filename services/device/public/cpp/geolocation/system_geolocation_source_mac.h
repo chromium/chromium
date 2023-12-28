@@ -43,6 +43,8 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceMac
   // Calls requestWhenInUseAuthorization from CLLocationManager.
   void TrackGeolocationAttempted() override;
 
+  void OpenSystemPermissionSetting() override;
+
  private:
   LocationSystemPermissionStatus GetSystemPermission() const;
 

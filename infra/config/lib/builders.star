@@ -161,7 +161,10 @@ def xcode_enum(version):
 
 # Keep this in-sync with the versions of bots in //ios/build/bots/.
 xcode = struct(
-    # (current default for other projects) xc12.0 gm seed
+    # Default Xcode Version, stays in sync with x15main
+    xcode_default = xcode_enum("15a507"),
+
+    # xc12.0 gm seed
     x12a7209 = xcode_enum("12a7209"),
     # xc12.4 gm seed
     x12d4e = xcode_enum("12d4e"),
@@ -886,7 +889,8 @@ def builder(
             shadow_properties["$build/reclient"] = shadow_reclient
 
     siso_project = defaults.get_value("siso_project", siso_project)
-    if defaults.get_value("siso_enabled", siso_enabled) and siso_project:
+    use_siso = defaults.get_value("siso_enabled", siso_enabled) and siso_project
+    if use_siso:
         properties["$build/siso"] = {
             "configs": defaults.get_value("siso_configs", siso_configs),
             "enable_cloud_profiler": defaults.get_value("siso_enable_cloud_profiler", siso_enable_cloud_profiler),
@@ -959,7 +963,7 @@ def builder(
 
     register_recipe_experiments_ref(bucket, name, executable)
 
-    additional_exclusions = register_gn_args(builder_group, bucket, name, gn_args)
+    additional_exclusions = register_gn_args(builder_group, bucket, name, gn_args, use_siso)
 
     register_builder_config(
         bucket,

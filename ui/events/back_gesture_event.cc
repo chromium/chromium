@@ -6,9 +6,7 @@
 
 namespace ui {
 
-BackGestureEvent::BackGestureEvent(const gfx::PointF& location,
-                                   float progress,
-                                   BackGestureEventSwipeEdge edge)
-    : location_(location), progress_(progress), edge_(edge) {}
+BackGestureEvent::BackGestureEvent(const gfx::PointF& location, float progress)
+    : location_(location), progress_(progress) {}
 
 }  // namespace ui

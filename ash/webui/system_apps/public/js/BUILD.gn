@@ -6,17 +6,21 @@ import("//ash/webui/web_applications/system_apps.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/test/base/ash/js2gtest.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_definitions.gni")
+import("//tools/typescript/ts_library.gni")
 
 assert(is_chromeos_ash)
+
+ts_library("build_ts") {
+  composite = true
+  in_files = [ "message_pipe.ts" ]
+}
 
 js_library("sandboxed_load_time_data") {
 }
 
 js_library("dom_testing_helpers") {
   testonly = true
-}
-
-js_library("message_pipe") {
 }
 
 js2gtest("browser_tests_js") {
@@ -26,10 +30,13 @@ js2gtest("browser_tests_js") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  deps = [ "//ash/webui/web_applications/test:test_support" ]
+  deps = [
+    ":build_ts",
+    "//ash/webui/web_applications/test:test_support",
+  ]
 
   data = [
-    "message_pipe.js",
+    "$target_gen_dir/message_pipe.js",
     "test_data/message_pipe_browsertest_trusted.html",
     "test_data/message_pipe_browsertest_trusted.js",
     "test_data/message_pipe_browsertest_untrusted.html",
@@ -39,15 +46,7 @@ js2gtest("browser_tests_js") {
 
 group("closure_compile") {
   testonly = true
-  deps = [
-    ":closure_compile_message_pipe",
-    ":closure_compile_message_pipe_browsertest_js",
-  ]
-}
-
-js_type_check("closure_compile_message_pipe") {
-  closure_flags = system_app_closure_flags_strict
-  deps = [ ":message_pipe" ]
+  deps = [ ":closure_compile_message_pipe_browsertest_js" ]
 }
 
 js_type_check("closure_compile_message_pipe_browsertest_js") {
@@ -59,12 +58,12 @@ js_type_check("closure_compile_message_pipe_browsertest_js") {
 js_library("message_pipe_browsertest_js") {
   testonly = true
   sources = [
-    "message_pipe.js",
     "message_pipe_browsertest.js",
     "test_data/message_pipe_browsertest_trusted.js",
     "test_data/message_pipe_browsertest_untrusted.js",
   ]
   externs_list = [
+    "//ash/webui/system_apps/public/js/message_pipe.externs.js",
     "//ash/webui/web_applications/js2gtest_support.externs.js",
     "//third_party/closure_compiler/externs/chai-3.5.js",
   ]

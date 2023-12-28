@@ -219,11 +219,6 @@ public final class HeaderIphScrollListenerTest {
                     }
 
                     @Override
-                    public boolean isShowingBackToTopBubble() {
-                        return false;
-                    }
-
-                    @Override
                     public int getHeaderCount() {
                         return 0;
                     }
@@ -335,11 +330,6 @@ public final class HeaderIphScrollListenerTest {
 
                     @Override
                     public boolean canScrollUp() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean isShowingBackToTopBubble() {
                         return false;
                     }
 

@@ -18,7 +18,7 @@ CASE 1, original layer tree:
       "backgroundColor": "#808080"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='container'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='container'",
       "position": [100, 100],
       "bounds": [100, 4000],
       "contentsOpaque": true,
@@ -75,7 +75,7 @@ CASE 2, scrolling y by 10 pixels, both the "container" and "inner" should scroll
       "backgroundColor": "#808080"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='container'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='container'",
       "position": [100, 100],
       "bounds": [100, 4000],
       "contentsOpaque": true,
@@ -143,7 +143,7 @@ CASE 3, scrolling y further so that "inner" no longer overlaps the fixed-pos lay
       "backgroundColor": "#808080"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='container'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='container'",
       "position": [100, 100],
       "bounds": [100, 4000],
       "contentsOpaque": true,

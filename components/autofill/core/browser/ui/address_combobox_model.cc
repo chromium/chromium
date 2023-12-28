@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -72,7 +73,7 @@ bool AddressComboboxModel::IsItemSeparatorAt(size_t index) const {
   return index == 1;
 }
 
-absl::optional<size_t> AddressComboboxModel::GetDefaultIndex() const {
+std::optional<size_t> AddressComboboxModel::GetDefaultIndex() const {
   if (!default_selected_guid_.empty()) {
     const auto index = GetIndexOfIdentifier(default_selected_guid_);
     if (index.has_value())
@@ -96,13 +97,13 @@ std::string AddressComboboxModel::GetItemIdentifierAt(size_t index) {
   return addresses_[index - kNbHeaderEntries].first;
 }
 
-absl::optional<size_t> AddressComboboxModel::GetIndexOfIdentifier(
+std::optional<size_t> AddressComboboxModel::GetIndexOfIdentifier(
     const std::string& identifier) const {
   for (size_t i = 0; i < addresses_.size(); ++i) {
     if (addresses_[i].first == identifier)
       return i + kNbHeaderEntries;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void AddressComboboxModel::UpdateAddresses() {
@@ -110,7 +111,7 @@ void AddressComboboxModel::UpdateAddresses() {
   std::vector<std::u16string> labels;
   // CreateDifferentiatingLabels is expecting a pointer vector and we keep
   // profiles as unique_ptr.
-  std::vector<const AutofillProfile*> profiles;
+  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>> profiles;
   for (const auto& profile : profiles_cache_) {
     profiles.push_back(profile.get());
   }

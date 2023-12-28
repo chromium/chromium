@@ -72,7 +72,9 @@ extern const char kAllowBackForwardCacheForCacheControlNoStorePageEnabled[];
 extern const char kLocalTestPoliciesForNextStartup[];
 extern const char kForcePermissionPolicyUnloadDefaultEnabled[];
 extern const char kPPAPISharedImagesForVideoDecoderAllowed[];
-
+#if BUILDFLAG(IS_CHROMEOS)
+extern const char kAlwaysOnVpnPreConnectUrlAllowlist[];
+#endif
 }  // namespace policy_prefs
 }  // namespace policy
 

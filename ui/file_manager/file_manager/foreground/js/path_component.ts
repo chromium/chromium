@@ -85,10 +85,15 @@ export class PathComponent {
     }
 
     // Add volume component.
-    let displayRootUrl = locationInfo.volumeInfo!.displayRoot.toURL();
-    let displayRootFullPath = locationInfo.volumeInfo!.displayRoot.fullPath;
+    const volumeInfo = locationInfo.volumeInfo;
+    if (!volumeInfo) {
+      return components;
+    }
 
-    const prefixEntry = locationInfo.volumeInfo?.prefixEntry;
+    let displayRootUrl = volumeInfo.displayRoot.toURL();
+    let displayRootFullPath = volumeInfo.displayRoot.fullPath;
+
+    const prefixEntry = volumeInfo.prefixEntry;
     // Directories under Drive Fake Root can return the fake root entry list as
     // prefix entry, but we will never show "Google Drive" as the prefix in the
     // breadcrumb.
@@ -109,10 +114,12 @@ export class PathComponent {
       }
       displayRootUrl = replaceRootName(displayRootUrl, displayRootFullPath);
       const sharedWithMeFakeEntry =
-          locationInfo.volumeInfo!.fakeEntries[RootType.DRIVE_SHARED_WITH_ME]!;
-      components.push(new PathComponent(
-          str('DRIVE_SHARED_WITH_ME_COLLECTION_LABEL'),
-          sharedWithMeFakeEntry.toURL(), sharedWithMeFakeEntry));
+          volumeInfo.fakeEntries[RootType.DRIVE_SHARED_WITH_ME];
+      if (sharedWithMeFakeEntry) {
+        components.push(new PathComponent(
+            str('DRIVE_SHARED_WITH_ME_COLLECTION_LABEL'),
+            sharedWithMeFakeEntry.toURL(), sharedWithMeFakeEntry));
+      }
     } else if (locationInfo.rootType === RootType.SHARED_DRIVE) {
       displayRootUrl =
           replaceRootName(displayRootUrl, SHARED_DRIVES_DIRECTORY_PATH);

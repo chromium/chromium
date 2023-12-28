@@ -209,7 +209,6 @@ class Location;
 class MediaQueryListListener;
 class MediaQueryMatcher;
 class NodeIterator;
-class NodeMoveScopeItem;
 class NthIndexCache;
 class Page;
 class PendingAnimations;
@@ -722,8 +721,8 @@ class CORE_EXPORT Document : public ContainerNode,
   // does its own ancestor tree walk).
   void UpdateStyleAndLayoutTreeForThisDocument();
 
-  void UpdateStyleAndLayoutTreeForNode(const Node*, DocumentUpdateReason);
-  void UpdateStyleAndLayoutTreeForSubtree(const Node*, DocumentUpdateReason);
+  void UpdateStyleAndLayoutTreeForElement(const Element*, DocumentUpdateReason);
+  void UpdateStyleAndLayoutTreeForSubtree(const Element*, DocumentUpdateReason);
 
   void UpdateStyleAndLayout(DocumentUpdateReason);
   void LayoutUpdated();
@@ -1556,12 +1555,6 @@ class CORE_EXPORT Document : public ContainerNode,
     return *worklet_animation_controller_;
   }
 
-  // This uses an inline capacity of 2: typically there is only one scope active
-  // in a Document, but in some cases there will be a ShadowRoot being
-  // constructed, bringing the total to 2.
-  using NodeMoveScopeItemSet = HeapVector<Member<NodeMoveScopeItem>, 2>;
-  NodeMoveScopeItemSet& NodeMoveScopeItems() { return node_move_scope_items_; }
-
   void AttachCompositorTimeline(cc::AnimationTimeline*) const;
 
   enum class TopLayerReason {
@@ -1916,6 +1909,14 @@ class CORE_EXPORT Document : public ContainerNode,
 
   RenderBlockingResourceManager* GetRenderBlockingResourceManager() {
     return render_blocking_resource_manager_.Get();
+  }
+
+  void SetHasRenderBlockingExpectLinkElements(bool flag) {
+    has_render_blocking_expect_link_elements_ = flag;
+  }
+
+  bool HasRenderBlockingExpectLinkElements() const {
+    return has_render_blocking_expect_link_elements_;
   }
 
   // Called when a previously render-blocking resource is no longer render-
@@ -2427,6 +2428,8 @@ class CORE_EXPORT Document : public ContainerNode,
   bool have_explicitly_disabled_dns_prefetch_;
   bool contains_plugins_;
 
+  bool has_render_blocking_expect_link_elements_ = false;
+
   // Set to true whenever shadow root is attached to document. Does not
   // get reset if all roots are removed.
   bool may_contain_shadow_roots_ = false;
@@ -2595,8 +2598,6 @@ class CORE_EXPORT Document : public ContainerNode,
   Member<PendingAnimations> pending_animations_;
   Member<WorkletAnimationController> worklet_animation_controller_;
   AnimationClock animation_clock_;
-
-  NodeMoveScopeItemSet node_move_scope_items_;
 
   Member<Document> template_document_;
   Member<Document> template_document_host_;

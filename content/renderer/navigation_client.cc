@@ -46,6 +46,8 @@ void NavigationClient::CommitNavigation(
     const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
     blink::mojom::PolicyContainerPtr policy_container,
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
+    mojo::PendingRemote<blink::mojom::CodeCacheHost>
+        code_cache_host_for_background,
     mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache,
     mojom::CookieManagerInfoPtr cookie_manager_info,
     mojom::StorageInfoPtr storage_info,
@@ -69,8 +71,9 @@ void NavigationClient::CommitNavigation(
       std::move(fetch_later_loader_factory), document_token,
       devtools_navigation_token, permissions_policy,
       std::move(policy_container), std::move(code_cache_host),
-      std::move(resource_cache), std::move(cookie_manager_info),
-      std::move(storage_info), std::move(callback));
+      std::move(code_cache_host_for_background), std::move(resource_cache),
+      std::move(cookie_manager_info), std::move(storage_info),
+      std::move(callback));
 }
 
 void NavigationClient::CommitFailedNavigation(

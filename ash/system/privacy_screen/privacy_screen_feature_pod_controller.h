@@ -42,7 +42,7 @@ class ASH_EXPORT PrivacyScreenFeaturePodController
   void OnPrivacyScreenSettingChanged(bool enabled, bool notify_ui) override;
 
   // Owned by the views hierarchy.
-  raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ = nullptr;
+  raw_ptr<FeatureTile, DanglingUntriaged> tile_ = nullptr;
 
   base::WeakPtrFactory<PrivacyScreenFeaturePodController> weak_factory_{this};
 };

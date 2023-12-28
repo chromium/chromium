@@ -39,7 +39,7 @@ source_set("model") {
     "//ios/chrome/browser/geolocation/model",
     "//ios/chrome/browser/history/model:tab_helper",
     "//ios/chrome/browser/itunes_urls/model",
-    "//ios/chrome/browser/net",
+    "//ios/chrome/browser/net/model",
     "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/sessions:session_restoration_service",
     "//ios/chrome/browser/sessions:session_restoration_service_factory",

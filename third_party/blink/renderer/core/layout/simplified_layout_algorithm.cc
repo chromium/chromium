@@ -221,6 +221,10 @@ void SimplifiedLayoutAlgorithm::AppendNewChildFragment(
 
 const LayoutResult*
 SimplifiedLayoutAlgorithm::CreateResultAfterManualChildLayout() {
+  if (container_builder_.HasOutOfFlowFragmentainerDescendants()) {
+    container_builder_.AddMulticolWithPendingOOFs(Node());
+  }
+
   const LayoutResult* result = container_builder_.ToBoxFragment();
   if (result->GetPhysicalFragment().IsOutOfFlowPositioned()) {
     result->CopyMutableOutOfFlowData(previous_result_);

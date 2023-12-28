@@ -176,7 +176,7 @@ void PageSwitcher::OnThemeChanged() {
   views::View::OnThemeChanged();
   if (!buttons_)
     return;
-  for (auto* child : buttons_->children()) {
+  for (views::View* child : buttons_->children()) {
     if (child->GetVisible())
       child->SchedulePaint();
   }

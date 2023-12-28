@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifndef CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_NETWORK_CONTEXT_H_
+#define CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_NETWORK_CONTEXT_H_
+
 #include <optional>
 
 #include "base/memory/scoped_refptr.h"
@@ -23,9 +26,6 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "url/gurl.h"
-
-#ifndef CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_NETWORK_CONTEXT_H_
-#define CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_NETWORK_CONTEXT_H_
 
 namespace bruschetta {
 

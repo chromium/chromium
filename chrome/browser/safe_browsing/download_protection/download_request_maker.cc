@@ -37,8 +37,7 @@ namespace {
 // changing this value.
 // Note: The name of this variable is checked by PRESUBMIT. Please update the
 // PRESUBMIT script before renaming this variable.
-constexpr int kTailoredWarningVersion = 1;
-constexpr int kTailoredWarningVersionWithImprovedDownloadBubbleWarnings = 3;
+constexpr int kTailoredWarningVersion = 3;
 
 DownloadRequestMaker::TabUrls TabUrlsFromWebContents(
     content::WebContents* web_contents) {
@@ -300,11 +299,7 @@ void DownloadRequestMaker::OnGotTabRedirects(
 
 void DownloadRequestMaker::PopulateTailoredInfo() {
   ClientDownloadRequest::TailoredInfo tailored_info;
-  int version = base::FeatureList::IsEnabled(
-                    safe_browsing::kImprovedDownloadBubbleWarnings)
-                    ? kTailoredWarningVersionWithImprovedDownloadBubbleWarnings
-                    : kTailoredWarningVersion;
-  tailored_info.set_version(version);
+  tailored_info.set_version(kTailoredWarningVersion);
   *request_->mutable_tailored_info() = tailored_info;
 }
 

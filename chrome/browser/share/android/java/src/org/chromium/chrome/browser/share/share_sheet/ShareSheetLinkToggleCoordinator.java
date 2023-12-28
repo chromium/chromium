@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.share.share_sheet;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
@@ -54,8 +53,7 @@ public class ShareSheetLinkToggleCoordinator {
         mChromeShareExtras = chromeShareExtras;
         mUrl = chromeShareExtras.getContentUrl();
         mShouldEnableLinkToTextToggle =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
-                        && mLinkToTextCoordinator != null
+                mLinkToTextCoordinator != null
                         && chromeShareExtras.getDetailedContentType()
                                 == DetailedContentType.HIGHLIGHTED_TEXT;
         mShouldEnableGenericToggle =
@@ -90,9 +88,6 @@ public class ShareSheetLinkToggleCoordinator {
     }
 
     boolean shouldEnableToggleByDefault() {
-        int detailedContentType = mChromeShareExtras.getDetailedContentType();
-        return detailedContentType == DetailedContentType.HIGHLIGHTED_TEXT
-                || detailedContentType == DetailedContentType.WEB_NOTES
-                || detailedContentType == DetailedContentType.LIGHTWEIGHT_REACTION;
+        return DetailedContentType.HIGHLIGHTED_TEXT == mChromeShareExtras.getDetailedContentType();
     }
 }

@@ -81,7 +81,7 @@ class WebApiHandshakeChecker::CheckerOnSB
         /*can_check_db=*/true, /*can_check_high_confidence_allowlist=*/true,
         /*url_lookup_service_metric_suffix=*/".None", last_committed_url_,
         content::GetUIThreadTaskRunner({}),
-        /*url_lookup_service=*/nullptr, WebUIInfoSingleton::GetInstance(),
+        /*url_lookup_service=*/nullptr,
         /*hash_realtime_service_on_ui=*/nullptr,
         /*mechanism_experimenter=*/nullptr,
         /*is_mechanism_experiment_allowed=*/false,
@@ -110,11 +110,10 @@ class WebApiHandshakeChecker::CheckerOnSB
 
     *slow_check_notifier =
         base::BindOnce(&WebApiHandshakeChecker::CheckerOnSB::OnCompleteCheck,
-                       base::Unretained(this), /*slow_check=*/true);
+                       base::Unretained(this));
   }
 
   void OnCompleteCheck(
-      bool slow_check,
       bool proceed,
       bool showed_interstitial,
       SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {

@@ -501,6 +501,22 @@ bool TemplateURLService::ShowInDefaultList(const TemplateURL* t_url) const {
          IsPrepopulatedOrDefaultProviderByPolicy(t_url);
 }
 
+bool TemplateURLService::ShowInActivesList(const TemplateURL* t_url) const {
+  return t_url->is_active() == TemplateURLData::ActiveStatus::kTrue ||
+         (t_url->created_by_policy() ==
+              TemplateURLData::CreatedByPolicy::kSiteSearch &&
+          t_url->keyword()[0] != u'@');
+}
+
+bool TemplateURLService::HiddenFromLists(const TemplateURL* t_url) const {
+  // Hide synthetic entries created by SiteSearchSettings policy, since they
+  // are only used for discoverability and the corresponding entry that doesn't
+  // start with "@" is already shown in the actives list.
+  return t_url->created_by_policy() ==
+             TemplateURLData::CreatedByPolicy::kSiteSearch &&
+         t_url->keyword()[0] == u'@';
+}
+
 void TemplateURLService::AddMatchingKeywords(const std::u16string& prefix,
                                              bool supports_replacement_only,
                                              TemplateURLVector* matches) {
@@ -2302,11 +2318,6 @@ void TemplateURLService::ApplyEnterpriseSiteSearchChanges(
   // TODO(b/314162426): Check interaction with DSP not set by policy.
   // TODO(b/309456406): Override existing SE if keywords starts with "@" and
   //                    this is a featured site search entry.
-  // TODO(b/314359989): Only override user-defined search engines with
-  //                    `safe_for_autoreplace` == false.
-  // TODO(b/314368463): Do not delete search engines with
-  //                    `safe_for_autoreplace` == true when overridden by
-  //                    policy (both DSP and site search).
 }
 
 void TemplateURLService::EnterpriseSiteSearchChanged(
@@ -2704,6 +2715,14 @@ TemplateURL* TemplateURLService::FindMatchingDefaultExtensionTemplateURL(
 bool TemplateURLService::RemoveDuplicateReplaceableEnginesOf(
     TemplateURL* candidate) {
   DCHECK(candidate);
+
+  // Do not replace existing search engines if `candidate` was created by the
+  // `SiteSearchSettings` policy.
+  if (candidate->created_by_policy() ==
+      TemplateURLData::CreatedByPolicy::kSiteSearch) {
+    return false;
+  }
+
   const std::u16string& keyword = candidate->keyword();
 
   // If there's not at least one conflicting TemplateURL, there's nothing to do.

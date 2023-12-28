@@ -25,6 +25,7 @@
 #include "url/origin.h"
 
 using blink::mojom::FederatedAuthRequestResult;
+using content::FedCmDisconnectStatus;
 
 namespace content::webid {
 
@@ -303,6 +304,75 @@ std::string GetConsoleErrorMessageFromResult(
   }
 }
 
+std::string GetDisconnectConsoleErrorMessage(
+    FedCmDisconnectStatus disconnect_status_for_metrics) {
+  switch (disconnect_status_for_metrics) {
+    case FedCmDisconnectStatus::kSuccess: {
+      NOTREACHED();
+      return "";
+    }
+    case FedCmDisconnectStatus::kTooManyRequests: {
+      return "There is a pending disconnect() call.";
+    }
+    case FedCmDisconnectStatus::kUnhandledRequest: {
+      return "The disconnect request did not finish by the time the page was "
+             "closed.";
+    }
+    case FedCmDisconnectStatus::kNoAccountToDisconnect: {
+      return "There is no account to disconnect.";
+    }
+    case FedCmDisconnectStatus::kDisconnectUrlIsCrossOrigin: {
+      return "The disconnect URL is cross origin";
+    }
+    case FedCmDisconnectStatus::kDisconnectFailedOnServer: {
+      return "The disconnect request failed on the server";
+    }
+    case FedCmDisconnectStatus::kConfigHttpNotFound: {
+      return "The config file cannot be found.";
+    }
+    case FedCmDisconnectStatus::kConfigNoResponse: {
+      return "The config file returned an error response code.";
+    }
+    case FedCmDisconnectStatus::kConfigInvalidResponse: {
+      return "The config file returned some invalid response.";
+    }
+    case FedCmDisconnectStatus::kDisabledInSettings: {
+      return "FedCM is disabled by user settings.";
+    }
+    case FedCmDisconnectStatus::kDisabledInFlags: {
+      return "The disconnect API is disabled by a flag.";
+    }
+    case FedCmDisconnectStatus::kWellKnownHttpNotFound: {
+      return "The well known file cannot be found.";
+    }
+    case FedCmDisconnectStatus::kWellKnownNoResponse: {
+      return "The well-known file returned an error response code.";
+    }
+    case FedCmDisconnectStatus::kWellKnownInvalidResponse: {
+      return "The well-known filed returned some invalid response.";
+    }
+    case FedCmDisconnectStatus::kWellKnownListEmpty: {
+      return "The well-known file returned an empty list.";
+    }
+    case FedCmDisconnectStatus::kConfigNotInWellKnown: {
+      return "The config file is not in the well-known file.";
+    }
+    case FedCmDisconnectStatus::kWellKnownTooBig: {
+      return "Provider's FedCM well-known file contains too many config URLs.";
+    }
+    case FedCmDisconnectStatus::kWellKnownInvalidContentType: {
+      return "Provider's well-known content type must be a JSON content type.";
+    }
+    case FedCmDisconnectStatus::kConfigInvalidContentType: {
+      return "Provider's FedCM config file content type must be a JSON content "
+             "type.";
+    }
+    case FedCmDisconnectStatus::kIdpNotPotentiallyTrustworthy: {
+      return "The provider's config file URL is not potentially trustworthy.";
+    }
+  }
+}
+
 FedCmIdpSigninStatusMode GetIdpSigninStatusMode(RenderFrameHost& host,
                                                 const url::Origin& idp_origin) {
   // TODO(crbug.com/1487668): Remove this function in favor of
@@ -332,9 +402,10 @@ std::string FormatUrlWithDomain(const GURL& url, bool for_display) {
       url_formatter::kFormatUrlOmitDefaults &
       ~(url_formatter::kFormatUrlOmitHTTP | url_formatter::kFormatUrlOmitHTTPS |
         url_formatter::kFormatUrlOmitFileScheme);
-  return base::UTF16ToUTF8(url_formatter::FormatUrl(
+  std::string out = base::UTF16ToUTF8(url_formatter::FormatUrl(
       GURL(url.scheme() + "://" + formatted_url_str), types,
       base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
+  return out;
 }
 
 bool HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(

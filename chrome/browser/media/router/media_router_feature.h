@@ -57,6 +57,13 @@ BASE_DECLARE_FEATURE(kFallbackToAudioTabMirroring);
 // `kCastMirroringPlayoutDelayMs`.
 BASE_DECLARE_FEATURE(kCastMirroringPlayoutDelay);
 
+// When enabled, Cast virtual connections are removed without explicitly sending
+// a close connection request to the receiver when the sender webpage navigates
+// away.
+// TODO(crbug.com/1508704): Remove the flag when confident that the default-
+// enabled feature is not causing a regression.
+BASE_DECLARE_FEATURE(kCastSilentlyRemoveVcOnNavigation);
+
 extern const base::FeatureParam<int> kCastMirroringPlayoutDelayMs;
 
 // Registers |kMediaRouterCastAllowAllIPs| with local state pref |registry|.

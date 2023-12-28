@@ -4,6 +4,7 @@
 
 #include "chrome/browser/reading_list/android/reading_list_manager_impl.h"
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
@@ -69,8 +70,10 @@ class ReadingListManagerImplTest : public testing::Test {
     reading_list_model_ = std::make_unique<ReadingListModelImpl>(
         std::move(storage), syncer::StorageType::kUnspecified,
         syncer::WipeModelUponSyncDisabledBehavior::kNever, &clock_);
-    manager_ =
-        std::make_unique<ReadingListManagerImpl>(reading_list_model_.get());
+    manager_ = std::make_unique<ReadingListManagerImpl>(
+        reading_list_model_.get(),
+        base::BindRepeating([](int64_t* id) { return (*id)++; },
+                            base::Owned(std::make_unique<int64_t>(0))));
     manager_->AddObserver(observer());
 
     return storage_ptr;

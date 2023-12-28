@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_consumer.h"
+#import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_mutator.h"
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_view_controller_delegate.h"
 
 @protocol NewTabPageDelegate;
@@ -22,6 +23,9 @@
 
 // Delegate to handle interactions of the signin promo.
 @property(nonatomic, weak) id<SigninPromoViewDelegate> signinPromoDelegate;
+
+// Delegate to handle interactions of the notifications promo.
+@property(nonatomic, weak) id<FeedTopSectionMutator> feedTopSectionMutator;
 
 // Delegate for NTP related actions.
 @property(nonatomic, weak) id<NewTabPageDelegate> NTPDelegate;

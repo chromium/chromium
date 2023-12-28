@@ -116,18 +116,18 @@ class Keyboard : public ui::EventHandler,
   std::unique_ptr<KeyboardDelegate> delegate_;
 
   // Seat that the Keyboard recieves focus events from.
-  const raw_ptr<Seat, ExperimentalAsh> seat_;
+  const raw_ptr<Seat> seat_;
 
   // The delegate instance that events about device configuration are dispatched
   // to.
-  raw_ptr<KeyboardDeviceConfigurationDelegate, ExperimentalAsh>
-      device_configuration_delegate_ = nullptr;
+  raw_ptr<KeyboardDeviceConfigurationDelegate> device_configuration_delegate_ =
+      nullptr;
 
   // Indicates that each key event is expected to be acknowledged.
   bool are_keyboard_key_acks_needed_ = false;
 
   // The current focus surface for the keyboard.
-  raw_ptr<Surface, ExperimentalAsh> focus_ = nullptr;
+  raw_ptr<Surface> focus_ = nullptr;
 
   // Set of currently pressed keys. First value is a platform code and second
   // value is the code that was delivered to client. See Seat.h for more

@@ -82,7 +82,8 @@ class VariationsServiceClient {
 
   // Registers the group membership of the limited entropy synthetic trial.
   // TODO(crbug.com/1508150): Remove once the trial has wrapped up.
-  void RegisterLimitedEntropySyntheticTrial(std::string_view group_name);
+  virtual void RegisterLimitedEntropySyntheticTrial(
+      std::string_view group_name);
 
  private:
   // Gets the channel of the embedder. But all variations callers should use

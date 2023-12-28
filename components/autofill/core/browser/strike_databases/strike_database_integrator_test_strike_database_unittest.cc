@@ -39,7 +39,7 @@ class StrikeDatabaseIntegratorTestStrikeDatabaseTest : public ::testing::Test {
             strike_database_service_.get());
     no_expiry_strike_database_ =
         std::make_unique<StrikeDatabaseIntegratorTestStrikeDatabase>(
-            strike_database_service_.get(), absl::nullopt);
+            strike_database_service_.get(), std::nullopt);
   }
 
   void TearDown() override {
@@ -225,7 +225,7 @@ TEST_F(StrikeDatabaseIntegratorTestStrikeDatabaseTest,
       other_strike_database =
           std::make_unique<StrikeDatabaseIntegratorTestStrikeDatabase>(
               strike_database_service_.get(),
-              /*expiry_time_micros=*/absl::nullopt, other_project_prefix);
+              /*expiry_time_micros=*/std::nullopt, other_project_prefix);
 
   // Add a strike to both integrators.
   strike_database_->AddStrike();

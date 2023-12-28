@@ -270,7 +270,7 @@ TEST_F(OverviewWindowDragControllerTest,
   EXPECT_EQ(OverviewWindowDragController::DragBehavior::kNormalDrag,
             drag_controller->current_drag_behavior_for_testing());
   // Now it's possible to drop it on desk_2's mini_view.
-  auto* desk_2_mini_view = desks_bar_view->mini_views()[1];
+  auto* desk_2_mini_view = desks_bar_view->mini_views()[1].get();
   ASSERT_TRUE(desk_2_mini_view);
   event_generator->MoveTouch(
       desk_2_mini_view->GetBoundsInScreen().CenterPoint());
@@ -528,7 +528,7 @@ TEST_F(OverviewWindowDragControllerDesksPortraitTabletTest, DragAndDropInDesk) {
   // progress, the desks bar remains shifted.
   const auto* desks_bar_view = overview_grid()->desks_bar_view();
   ASSERT_TRUE(desks_bar_view);
-  auto* desk_2_mini_view = desks_bar_view->mini_views()[1];
+  auto* desk_2_mini_view = desks_bar_view->mini_views()[1].get();
   ASSERT_TRUE(desk_2_mini_view);
   const auto mini_view_location =
       desk_2_mini_view->GetBoundsInScreen().CenterPoint();

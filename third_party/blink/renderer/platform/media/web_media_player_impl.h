@@ -46,12 +46,12 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/media/video_frame_compositor.h"
 #include "third_party/blink/public/platform/media/web_media_player_builder.h"
-#include "third_party/blink/public/platform/media/webmediaplayer_delegate.h"
+#include "third_party/blink/public/platform/media/web_media_player_delegate.h"
 #include "third_party/blink/public/platform/web_audio_source_provider.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_result.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_surface_layer_bridge.h"
-#include "third_party/blink/public/web/modules/media/webmediaplayer_util.h"
+#include "third_party/blink/public/web/modules/media/web_media_player_util.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/media/learning_experiment_helper.h"
 #include "third_party/blink/renderer/platform/media/multi_buffer_data_source.h"
@@ -892,6 +892,10 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Captured once the cdm is provided to SetCdmInternal(). Used in creation of
   // |video_decode_stats_reporter_|.
   absl::optional<media::CdmConfig> cdm_config_;
+
+  // Whether the EME playback has been blocked waiting for the CDM to be set
+  // or waiting for decryption key.
+  bool has_waiting_for_key_ = false;
 
   // Tracks if we are currently flinging a video (e.g. in a RemotePlayback
   // session). Used to prevent videos from being paused when hidden.

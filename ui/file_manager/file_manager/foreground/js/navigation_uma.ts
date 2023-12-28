@@ -17,7 +17,7 @@ export class NavigationUma {
    *
    * @param entry the new directory
    */
-  onDirectoryChanged(entry: FileEntry) {
+  onDirectoryChanged(entry: Entry) {
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
     if (locationInfo) {
       recordEnum(

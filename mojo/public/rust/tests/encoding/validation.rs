@@ -8,6 +8,11 @@
 //! and the result being caught in the test! macro. If a test function
 //! returns without panicking, it is assumed to pass.
 
+chromium::import! {
+    "//mojo/public/rust:mojo";
+    "//mojo/public/rust/tests:test_util" as util;
+}
+
 use crate::mojom_validation::*;
 
 use mojo::bindings::mojom::MojomMessageOption;

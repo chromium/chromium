@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.webapps;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
@@ -56,7 +54,6 @@ public class WebApkInstallBroadcastReceiverTest {
     private Context mContext;
     private ShadowNotificationManager mShadowNotificationManager;
 
-    @Mock public WebApkInstallCoordinatorBridge mBridge;
     @Mock private Context mContextMock;
 
     private WebApkInstallBroadcastReceiver mReceiver;
@@ -68,7 +65,7 @@ public class WebApkInstallBroadcastReceiverTest {
         mContext = spy(RuntimeEnvironment.application);
         ContextUtils.initApplicationContextForTests(mContext);
 
-        mReceiver = new WebApkInstallBroadcastReceiver(mBridge);
+        mReceiver = new WebApkInstallBroadcastReceiver();
 
         mShadowNotificationManager =
                 shadowOf(
@@ -80,14 +77,13 @@ public class WebApkInstallBroadcastReceiverTest {
                 URL,
                 mIcon,
                 /* isIconMaskable= */ false,
-                WebApkInstallResult.FAILURE,
-                mSerializedProto);
+                WebApkInstallResult.FAILURE);
     }
 
     private Intent createActionIntent(String action) {
         PendingIntentProvider provider =
                 WebApkInstallBroadcastReceiver.createPendingIntent(
-                        mContext, MANIFEST_URL, URL, action, mSerializedProto);
+                        mContext, MANIFEST_URL, URL, action);
         ShadowPendingIntent shadow = shadowOf(provider.getPendingIntent());
         Intent intent = shadow.getSavedIntents()[0];
         Assert.assertNotNull(intent);
@@ -102,28 +98,5 @@ public class WebApkInstallBroadcastReceiverTest {
 
         Assert.assertEquals(0, mShadowNotificationManager.getAllNotifications().size());
         verify(mContext).startActivity(notNull());
-    }
-
-    @Test
-    public void testRetryInstallAction() {
-        Intent intent = createActionIntent(WebApkInstallBroadcastReceiver.ACTION_RETRY_INSTALL);
-
-        mReceiver.onReceive(mContext, intent);
-
-        Assert.assertEquals(0, mShadowNotificationManager.getAllNotifications().size());
-        verify(mBridge).retry(any(), any(), any());
-    }
-
-    @Test(expected = AssertionError.class)
-    public void testRetryInstallActionWithoutProto() {
-        Intent intent = createActionIntent(WebApkInstallBroadcastReceiver.ACTION_RETRY_INSTALL);
-        intent.putExtra(WebApkInstallBroadcastReceiver.RETRY_PROTO, (byte[]) null);
-
-        mReceiver.onReceive(mContext, intent);
-
-        Assert.assertEquals(0, mShadowNotificationManager.getAllNotifications().size());
-        // Verify it opens the startUrl when no valid proto to retry.
-        verify(mContext).startActivity(notNull());
-        verify(mBridge, never()).retry(any(), any(), any());
     }
 }

@@ -6,14 +6,14 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/public/cpp/tablet_mode.h"
-#include "ash/shell.h"
 #include "ash/system/federated/federated_service_controller_impl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -36,6 +36,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "ui/display/screen.h"
 
 namespace app_list {
 namespace {
@@ -48,10 +49,6 @@ void ClearNonZeroStateResults(ResultsMap& results) {
       ++it;
     }
   }
-}
-
-bool IsTabletMode() {
-  return ash::TabletMode::IsInTabletMode();
 }
 
 }  // namespace
@@ -95,15 +92,6 @@ SearchController::GetToggleableCategories() const {
     // Cannot toggle is not an actual search category.
     if (provider->control_category() ==
         ash::AppListSearchControlCategory::kCannotToggle) {
-      continue;
-    }
-
-    // Image search results only become available after the user acknowledges a
-    // privacy notice - the user will be able to toggle the feature only after
-    // image search results become available.
-    if (provider->control_category() ==
-            ash::AppListSearchControlCategory::kImages &&
-        !ash::AppListController::Get()->IsImageSearchToggleable()) {
       continue;
     }
 
@@ -228,7 +216,7 @@ void SearchController::OnZeroStateTimedOut() {
 void SearchController::AppListViewChanging(bool is_visible) {
   // In tablet mode, the launcher is always visible so do not log launcher open
   // if the device is in tablet mode.
-  if (is_visible && !IsTabletMode() &&
+  if (is_visible && !display::Screen::GetScreen()->InTabletMode() &&
       base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
     app_discovery_metrics_manager_->OnLauncherOpen();
   }
@@ -260,8 +248,7 @@ void SearchController::OpenResult(ChromeSearchResult* result, int event_flags) {
 
   // Launching apps can take some time. It looks nicer to eagerly dismiss the
   // app list if |result| permits it. Do not close app list for home launcher.
-  if (dismiss_view_on_open &&
-      (!ash::TabletMode::Get() || !ash::TabletMode::Get()->InTabletMode())) {
+  if (dismiss_view_on_open && !display::Screen::GetScreen()->InTabletMode()) {
     list_controller_->DismissView();
   }
 }
@@ -371,7 +358,7 @@ void SearchController::Publish() {
 
   // Compile a single list of results and sort first by their category with best
   // match first, then by burn-in iteration number, and finally by relevance.
-  std::vector<ChromeSearchResult*> all_results;
+  std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>> all_results;
   for (const auto& type_results : results_) {
     for (const auto& result : type_results.second) {
       double score = result->scoring().FinalScore();
@@ -393,7 +380,7 @@ void SearchController::Publish() {
 
   if (!observer_list_.empty()) {
     std::vector<const ChromeSearchResult*> observer_results;
-    for (auto* result : all_results) {
+    for (ChromeSearchResult* result : all_results) {
       observer_results.push_back(const_cast<const ChromeSearchResult*>(result));
     }
 

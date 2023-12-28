@@ -72,9 +72,9 @@ class LayoutSVGModelObject : public LayoutObject {
     return To<SVGElement>(LayoutObject::GetNode());
   }
 
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsSVG() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectSVG || LayoutObject::IsOfType(type);
+    return true;
   }
 
  protected:

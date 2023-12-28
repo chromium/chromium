@@ -12,11 +12,6 @@ LayoutRubyText::LayoutRubyText(Element* element) : LayoutNGBlockFlow(element) {}
 
 LayoutRubyText::~LayoutRubyText() = default;
 
-bool LayoutRubyText::IsOfType(LayoutObjectType type) const {
-  NOT_DESTROYED();
-  return type == kLayoutObjectRubyText || LayoutNGBlockFlow::IsOfType(type);
-}
-
 bool LayoutRubyText::CreatesNewFormattingContext() const {
   NOT_DESTROYED();
   // Ruby text objects are pushed around after layout, to become flush with

@@ -4,6 +4,8 @@
 
 #include "components/policy/core/common/device_local_account_type.h"
 
+#include <string_view>
+
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -15,7 +17,7 @@ namespace policy {
 namespace {
 
 constexpr auto kDomainPrefixMap =
-    base::MakeFixedFlatMap<DeviceLocalAccountType, base::StringPiece>({
+    base::MakeFixedFlatMap<DeviceLocalAccountType, std::string_view>({
         {DeviceLocalAccountType::kPublicSession, "public-accounts"},
         {DeviceLocalAccountType::kKioskApp, "kiosk-apps"},
         {DeviceLocalAccountType::kArcKioskApp, "arc-kiosk-apps"},
@@ -27,7 +29,7 @@ constexpr char kDeviceLocalAccountDomainSuffix[] = ".device-local.localhost";
 
 }  // namespace
 
-std::string GenerateDeviceLocalAccountUserId(base::StringPiece account_id,
+std::string GenerateDeviceLocalAccountUserId(std::string_view account_id,
                                              DeviceLocalAccountType type) {
   const auto* it = kDomainPrefixMap.find(type);
   CHECK(it != kDomainPrefixMap.end());
@@ -37,10 +39,10 @@ std::string GenerateDeviceLocalAccountUserId(base::StringPiece account_id,
 }
 
 base::expected<DeviceLocalAccountType, GetDeviceLocalAccountTypeError>
-GetDeviceLocalAccountType(base::StringPiece user_id) {
+GetDeviceLocalAccountType(std::string_view user_id) {
   // For historical reasons, the guest user ID does not contain an @ symbol and
   // therefore, cannot be parsed by gaia::ExtractDomainName().
-  if (user_id.find('@') == base::StringPiece::npos) {
+  if (user_id.find('@') == std::string_view::npos) {
     return base::unexpected(
         GetDeviceLocalAccountTypeError::kNoDeviceLocalAccountUser);
   }
@@ -53,7 +55,7 @@ GetDeviceLocalAccountType(base::StringPiece user_id) {
   }
 
   // Strip the domain suffix.
-  base::StringPiece domain_prefix = domain;
+  std::string_view domain_prefix = domain;
   domain_prefix.remove_suffix(sizeof(kDeviceLocalAccountDomainSuffix) - 1);
 
   // Reverse look up from the map.
@@ -68,7 +70,7 @@ GetDeviceLocalAccountType(base::StringPiece user_id) {
   return base::unexpected(GetDeviceLocalAccountTypeError::kUnknownDomain);
 }
 
-bool IsDeviceLocalAccountUser(base::StringPiece user_id) {
+bool IsDeviceLocalAccountUser(std::string_view user_id) {
   return GetDeviceLocalAccountType(user_id) !=
          base::unexpected(
              GetDeviceLocalAccountTypeError::kNoDeviceLocalAccountUser);

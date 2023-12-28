@@ -133,7 +133,7 @@ class ScopedObservation {
  private:
   using Traits = ScopedObservationTraits<Source, Observer>;
 
-  const raw_ptr<Observer, DanglingUntriaged> observer_;
+  const raw_ptr<Observer> observer_;
 
   // The observed source, if any.
   raw_ptr<Source, LeakedDanglingUntriaged> source_ = nullptr;

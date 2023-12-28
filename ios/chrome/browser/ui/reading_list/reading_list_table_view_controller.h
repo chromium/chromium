@@ -47,7 +47,8 @@ class Browser;
 // Controls the visibility state of the sign-in promo.
 - (void)promoStateChanged:(BOOL)promoEnabled
         promoConfigurator:(SigninPromoViewConfigurator*)promoConfigurator
-            promoDelegate:(id<SigninPromoViewDelegate>)promoDelegate;
+            promoDelegate:(id<SigninPromoViewDelegate>)promoDelegate
+                promoText:(NSString*)promoText;
 
 // Updates the sign-in promo view after identity updates.
 - (void)configureSigninPromoWithConfigurator:

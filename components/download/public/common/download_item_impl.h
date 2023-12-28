@@ -298,6 +298,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   bool GetFileExternallyRemoved() const override;
   void DeleteFile(base::OnceCallback<void(bool)> callback) override;
   DownloadFile* GetDownloadFile() override;
+#if BUILDFLAG(IS_ANDROID)
+  bool IsFromExternalApp() override;
+#endif  // BUILDFLAG(IS_ANDROID)
   bool IsDangerous() const override;
   bool IsInsecure() const override;
   DownloadDangerType GetDangerType() const override;
@@ -394,6 +397,12 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   void SetDelegate(DownloadItemImplDelegate* delegate);
 
   void SetDownloadId(uint32_t download_id);
+
+#if BUILDFLAG(IS_ANDROID)
+  void set_is_from_external_app(bool is_from_external_app) {
+    is_from_external_app_ = is_from_external_app;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 
   const DownloadUrlParameters::RequestHeadersType& request_headers() const {
     return request_headers_;
@@ -876,6 +885,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   // The InsecureDownloadStatus if determined.
   InsecureDownloadStatus insecure_download_status_ =
       InsecureDownloadStatus::UNKNOWN;
+
+#if BUILDFLAG(IS_ANDROID)
+  bool is_from_external_app_ = false;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   THREAD_CHECKER(thread_checker_);
 

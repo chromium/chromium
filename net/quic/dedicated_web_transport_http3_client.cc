@@ -96,8 +96,8 @@ std::unique_ptr<quic::ProofVerifier> CreateProofVerifier(
       hostnames_to_allow_unknown_roots.insert("");
     }
     return std::make_unique<ProofVerifierChromium>(
-        context->cert_verifier(), context->ct_policy_enforcer(),
-        context->transport_security_state(), context->sct_auditing_delegate(),
+        context->cert_verifier(), context->transport_security_state(),
+        context->sct_auditing_delegate(),
         std::move(hostnames_to_allow_unknown_roots), anonymization_key);
   }
 

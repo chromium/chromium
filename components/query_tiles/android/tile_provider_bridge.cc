@@ -26,14 +26,14 @@ const char kTileProviderBridgeKey[] = "tile_provider_bridge";
 void RunGetTilesCallback(const JavaRef<jobject>& j_callback,
                          std::vector<Tile> tiles) {
   JNIEnv* env = AttachCurrentThread();
-  RunObjectCallbackAndroid(
+  base::android::RunObjectCallbackAndroid(
       j_callback, TileConversionBridge::CreateJavaTiles(env, std::move(tiles)));
 }
 
 void RunGetTileCallback(const JavaRef<jobject>& j_callback,
                         absl::optional<Tile> tile) {
   JNIEnv* env = AttachCurrentThread();
-  RunObjectCallbackAndroid(
+  base::android::RunObjectCallbackAndroid(
       j_callback,
       TileConversionBridge::CreateJavaTiles(
           env, tile.has_value() ? std::move(tile->sub_tiles)

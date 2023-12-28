@@ -67,7 +67,22 @@ ContentBrowserTest::ContentBrowserTest() {
   file_exe_override_.emplace(base::FILE_EXE, content_shell_path,
                              /*is_absolute=*/false, /*create=*/false);
 #endif
-  CreateTestServer(GetTestDataFilePath());
+
+  // The HTTPS test server must be setup here as different browser test suites
+  // have different bundle behavior on macOS, and the HTTPS test server
+  // constructor reads in the local test root cert. It might be possible
+  // to move this to BrowserTestBase in the future.
+  embedded_https_test_server_ = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  // Default hostnames for the HTTPS test server. Test fixtures can call this
+  // with different hostnames (before starting the server) to override.
+  embedded_https_test_server_->SetCertHostnames(
+      {"example.com", "*.example.com", "foo.com", "*.foo.com", "bar.com",
+       "*.bar.com", "a.com", "*.a.com", "b.com", "*.b.com", "c.com",
+       "*.c.com"});
+
+  embedded_test_server()->AddDefaultHandlers(GetTestDataFilePath());
+  embedded_https_test_server().AddDefaultHandlers(GetTestDataFilePath());
 
   // Fail as quickly as possible during tests, rather than attempting to reset
   // accessibility and continue when unserialization fails.
@@ -121,6 +136,10 @@ void ContentBrowserTest::SetUp() {
 
 void ContentBrowserTest::TearDown() {
   BrowserTestBase::TearDown();
+
+  if (embedded_https_test_server().Started()) {
+    ASSERT_TRUE(embedded_https_test_server().ShutdownAndWaitUntilComplete());
+  }
 
   // LinuxInputMethodContextFactory has to be shutdown.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch

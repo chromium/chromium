@@ -41,6 +41,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/user_education/common/user_education_class_properties.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -610,10 +611,7 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate() {
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
       this, views::BubbleBorder::TOP_RIGHT);
   bubble_delegate->SetTitle(
-      base::FeatureList::IsEnabled(
-          safe_browsing::kImprovedDownloadBubbleWarnings)
-          ? l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_HEADER_LABEL)
-          : l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_HEADER_TEXT));
+      l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_HEADER_LABEL));
   bubble_delegate->SetShowTitle(false);
   bubble_delegate->set_internal_name(kBubbleName);
   bubble_delegate->SetShowCloseButton(false);
@@ -716,6 +714,17 @@ void DownloadToolbarButtonView::BubbleCloser::OnEvent(const ui::Event& event) {
 }
 
 void DownloadToolbarButtonView::OnPartialViewClosed() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  Profile* profile = browser_->profile();
+  if (safe_browsing::GetSafeBrowsingState(*profile->GetPrefs()) ==
+          safe_browsing::SafeBrowsingState::STANDARD_PROTECTION &&
+      !profile->IsOffTheRecord() &&
+      browser_->window()->MaybeShowFeaturePromo(
+          feature_engagement::kIPHDownloadEsbPromoFeature)) {
+    return;
+  }
+#endif
+
   if (download::ShouldSuppressDownloadBubbleIph(
           browser_->profile()->GetOriginalProfile())) {
     return;
@@ -851,5 +860,5 @@ void DownloadToolbarButtonView::SetBubbleControllerForTesting(
   bubble_controller_ = std::move(bubble_controller);
 }
 
-BEGIN_METADATA(DownloadToolbarButtonView, ToolbarButton)
+BEGIN_METADATA(DownloadToolbarButtonView)
 END_METADATA

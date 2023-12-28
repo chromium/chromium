@@ -46,8 +46,6 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
-#include "net/cert/ct_policy_enforcer.h"
-#include "net/cert/ct_policy_status.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/mock_client_cert_verifier.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
@@ -106,18 +104,6 @@ const uint16_t kEcdheCiphers[] = {
     0xc030,  // ECDHE_RSA_WITH_AES_256_GCM_SHA384
     0xcca8,  // ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
     0xcca9,  // ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
-};
-
-class MockCTPolicyEnforcer : public CTPolicyEnforcer {
- public:
-  MockCTPolicyEnforcer() = default;
-  ~MockCTPolicyEnforcer() override = default;
-  ct::CTPolicyCompliance CheckCompliance(
-      X509Certificate* cert,
-      const ct::SCTList& verified_scts,
-      const NetLogWithSource& net_log) override {
-    return ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS;
-  }
 };
 
 class FakeDataChannel {
@@ -366,7 +352,6 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
         cert_verifier_(std::make_unique<MockCertVerifier>()),
         client_cert_verifier_(std::make_unique<MockClientCertVerifier>()),
         transport_security_state_(std::make_unique<TransportSecurityState>()),
-        ct_policy_enforcer_(std::make_unique<MockCTPolicyEnforcer>()),
         ssl_client_session_cache_(std::make_unique<SSLClientSessionCache>(
             SSLClientSessionCache::Config())) {}
 
@@ -393,8 +378,8 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
 
     client_context_ = std::make_unique<SSLClientContext>(
         ssl_config_service_.get(), cert_verifier_.get(),
-        transport_security_state_.get(), ct_policy_enforcer_.get(),
-        ssl_client_session_cache_.get(), nullptr);
+        transport_security_state_.get(), ssl_client_session_cache_.get(),
+        nullptr);
   }
 
  protected:
@@ -522,7 +507,6 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
   std::unique_ptr<MockCertVerifier> cert_verifier_;
   std::unique_ptr<MockClientCertVerifier> client_cert_verifier_;
   std::unique_ptr<TransportSecurityState> transport_security_state_;
-  std::unique_ptr<MockCTPolicyEnforcer> ct_policy_enforcer_;
   std::unique_ptr<SSLClientSessionCache> ssl_client_session_cache_;
   std::unique_ptr<SSLClientContext> client_context_;
   std::unique_ptr<SSLServerContext> server_context_;

@@ -1011,6 +1011,12 @@ DownloadFile* DownloadItemImpl::GetDownloadFile() {
   return download_file_.get();
 }
 
+#if BUILDFLAG(IS_ANDROID)
+bool DownloadItemImpl::IsFromExternalApp() {
+  return is_from_external_app_;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 bool DownloadItemImpl::IsDangerous() const {
   switch (danger_type_) {
     case DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:

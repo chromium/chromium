@@ -132,6 +132,8 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::Test {
             &trusted_url_loader_factory_),
         base::BindOnce(&AuctionUrlLoaderFactoryProxyTest::PreconnectSocket,
                        base::Unretained(this)),
+        base::BindRepeating(
+            []() -> absl::optional<std::string> { return absl::nullopt; }),
         /*force_reload=*/force_reload_, top_frame_origin_, frame_origin_,
         /*renderer_process_id=*/kRenderProcessId, is_for_seller_,
         client_security_state_.Clone(), GURL(kScriptUrl), wasm_url_,

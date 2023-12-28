@@ -19,11 +19,6 @@ bool CreditCardCloudTokenData::operator==(
   return Compare(other_data) == 0;
 }
 
-bool CreditCardCloudTokenData::operator!=(
-    const CreditCardCloudTokenData& other_data) const {
-  return Compare(other_data) != 0;
-}
-
 std::u16string CreditCardCloudTokenData::ExpirationMonthAsString() const {
   return data_util::Expiration2DigitMonthAsString(exp_month);
 }

@@ -28,6 +28,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -199,8 +200,8 @@ class AppListSearchViewTest : public AshTestBase {
   bool IsSearchResultPageVisible() { return GetSearchPage()->GetVisible(); }
 
   std::vector<size_t> GetVisibleResultContainers() {
-    std::vector<SearchResultContainerView*> result_containers =
-        GetSearchView()->result_container_views_for_test();
+    std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+        result_containers = GetSearchView()->result_container_views_for_test();
     std::vector<size_t> visible_result_containers = {};
     for (size_t i = 0; i < result_containers.size(); i++) {
       if (result_containers[i]->GetVisible()) {
@@ -219,8 +220,8 @@ class AppListSearchViewTest : public AshTestBase {
 
   SearchResultView* GetSearchResultView(size_t container_index,
                                         size_t view_index) {
-    std::vector<SearchResultContainerView*> result_containers =
-        GetSearchView()->result_container_views_for_test();
+    std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+        result_containers = GetSearchView()->result_container_views_for_test();
     if (container_index >= result_containers.size()) {
       ADD_FAILURE() << "Container index out of bounds";
       return nullptr;
@@ -316,9 +317,9 @@ TEST_P(SearchResultImageViewTest, ImageListViewVisible) {
   PressAndReleaseKey(ui::VKEY_A);
 
   // Check result container visibility.
-  std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
-  for (auto* container : result_containers) {
+  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+      result_containers = GetSearchView()->result_container_views_for_test();
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
 
@@ -330,9 +331,10 @@ TEST_P(SearchResultImageViewTest, ImageListViewVisible) {
   // SearchResultImageListView container should be visible.
   EXPECT_TRUE(result_containers[2]->GetVisible());
 
-  std::vector<SearchResultImageView*> search_result_image_views =
-      static_cast<SearchResultImageListView*>(result_containers[2])
-          ->GetSearchResultImageViews();
+  std::vector<raw_ptr<SearchResultImageView, VectorExperimental>>
+      search_result_image_views =
+          static_cast<SearchResultImageListView*>(result_containers[2])
+              ->GetSearchResultImageViews();
 
   // The SearchResultImageListView should have 3 result views.
   EXPECT_EQ(image_max_results, search_result_image_views.size());
@@ -380,9 +382,9 @@ TEST_P(SearchResultImageViewTest, OneResultShowsImageInfo) {
   PressAndReleaseKey(ui::VKEY_A);
 
   // Check result container visibility.
-  std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
-  for (auto* container : result_containers) {
+  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+      result_containers = GetSearchView()->result_container_views_for_test();
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
 
@@ -405,7 +407,7 @@ TEST_P(SearchResultImageViewTest, OneResultShowsImageInfo) {
 
   // Verify the actual texts shown in the info container are correct. Note that
   // the narrowed space \x202F is used in formatting the time of the day.
-  const std::vector<views::Label*>& content_labels =
+  const std::vector<raw_ptr<views::Label, VectorExperimental>>& content_labels =
       image_list_view->metadata_content_labels_for_test();
   EXPECT_EQ(content_labels[0]->GetText(), u"file name");
   EXPECT_EQ(content_labels[1]->GetText(), u"displayable folder");
@@ -430,10 +432,10 @@ TEST_P(SearchResultImageViewTest, ActivateImageResult) {
       SharedAppListConfig::instance().image_search_max_results());
 
   // Check result container visibility.
-  std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
+  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+      result_containers = GetSearchView()->result_container_views_for_test();
   ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
-  for (auto* container : result_containers) {
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
 
@@ -489,9 +491,9 @@ TEST_P(SearchResultImageViewTest, PulsingBlocksShowWhenNoResultIcon) {
   PressAndReleaseKey(ui::VKEY_A);
 
   // Check result container visibility.
-  std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
-  for (auto* container : result_containers) {
+  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+      result_containers = GetSearchView()->result_container_views_for_test();
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
 
@@ -499,9 +501,10 @@ TEST_P(SearchResultImageViewTest, PulsingBlocksShowWhenNoResultIcon) {
   // SearchResultImageListView container should be visible.
   EXPECT_TRUE(result_containers[2]->GetVisible());
 
-  std::vector<SearchResultImageView*> search_result_image_views =
-      static_cast<SearchResultImageListView*>(result_containers[2])
-          ->GetSearchResultImageViews();
+  std::vector<raw_ptr<SearchResultImageView, VectorExperimental>>
+      search_result_image_views =
+          static_cast<SearchResultImageListView*>(result_containers[2])
+              ->GetSearchResultImageViews();
 
   // The SearchResultImageListView should have 3 result views.
   EXPECT_EQ(image_max_results, search_result_image_views.size());
@@ -724,9 +727,9 @@ TEST_P(SearchResultImageViewTest, ResultSelectionCycle) {
   SetUpSearchResults(results, 1, kDefaultSearchItems, 100, false,
                      SearchResult::Category::kApps);
 
-  std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
-  for (auto* container : result_containers) {
+  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+      result_containers = GetSearchView()->result_container_views_for_test();
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
 
@@ -811,9 +814,9 @@ TEST_P(SearchViewClamshellAndTabletTest, AnimateSearchResultView) {
 
   // Verify that search containers have a scheduled update, and ensure they get
   // run.
-  std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
-  for (auto* container : result_containers) {
+  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+      result_containers = GetSearchView()->result_container_views_for_test();
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
 
@@ -870,9 +873,9 @@ TEST_P(SearchViewClamshellAndTabletTest, ResultContainerIsVisible) {
   // Press a key to start a search.
   PressAndReleaseKey(ui::VKEY_A);
 
-  std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
-  for (auto* container : result_containers) {
+  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+      result_containers = GetSearchView()->result_container_views_for_test();
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
 
@@ -884,7 +887,7 @@ TEST_P(SearchViewClamshellAndTabletTest, ResultContainerIsVisible) {
   PressAndReleaseKey(ui::VKEY_ESCAPE);
 
   result_containers = GetSearchView()->result_container_views_for_test();
-  for (auto* container : result_containers) {
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_FALSE(container->UpdateScheduled());
   }
 
@@ -925,9 +928,9 @@ TEST_P(SearchViewClamshellAndTabletTest,
   // Press a key to start a search.
   PressAndReleaseKey(ui::VKEY_A);
 
-  std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
-  for (auto* container : result_containers) {
+  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+      result_containers = GetSearchView()->result_container_views_for_test();
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
 
@@ -946,7 +949,7 @@ TEST_P(SearchViewClamshellAndTabletTest,
 
   // Verify that clearing search results did not schedule a container update,
   // and that result view text has not been cleared.
-  for (auto* container : result_containers) {
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_FALSE(container->UpdateScheduled());
   }
 
@@ -1010,9 +1013,9 @@ TEST_F(SearchViewTabletTest, SearchResultPageShownWhileClosing) {
   // Press a key to start a search.
   PressAndReleaseKey(ui::VKEY_A);
 
-  std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
-  for (auto* container : result_containers) {
+  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+      result_containers = GetSearchView()->result_container_views_for_test();
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
 
@@ -1069,9 +1072,9 @@ TEST_P(SearchViewClamshellAndTabletTest, SelectionChangeDuringHide) {
   // Press a key to start a search.
   PressAndReleaseKey(ui::VKEY_A);
 
-  std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
-  for (auto* container : result_containers) {
+  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+      result_containers = GetSearchView()->result_container_views_for_test();
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
 
@@ -1084,7 +1087,7 @@ TEST_P(SearchViewClamshellAndTabletTest, SelectionChangeDuringHide) {
 
   // Verify that clearing search results did not schedule a container update,
   // and that result view text has not been cleared.
-  for (auto* container : result_containers) {
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_FALSE(container->UpdateScheduled());
   }
 
@@ -1126,9 +1129,9 @@ TEST_P(SearchViewClamshellAndTabletTest, ResultSelectionCycle) {
   SetUpSearchResults(results, 1 + kDefaultSearchItems, kDefaultSearchItems, 1,
                      false, SearchResult::Category::kWeb);
 
-  std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
-  for (auto* container : result_containers) {
+  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+      result_containers = GetSearchView()->result_container_views_for_test();
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
 
@@ -1203,14 +1206,14 @@ TEST_P(SearchViewClamshellAndTabletTest, AnswerCardSelection) {
                      SearchResult::Category::kApps);
 
   // Verify result container ordering.
-  std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
-  for (auto* container : result_containers) {
+  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+      result_containers = GetSearchView()->result_container_views_for_test();
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
 
   SetUpAnswerCardResult(results, 1, 1);
-  for (auto* container : result_containers) {
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
 
@@ -1252,9 +1255,9 @@ TEST_P(SearchViewClamshellAndTabletTest, ResultSelection) {
   SetUpSearchResults(results, 2 + kDefaultSearchItems, kDefaultSearchItems, 1,
                      false, SearchResult::Category::kWeb);
 
-  std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
-  for (auto* container : result_containers) {
+  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+      result_containers = GetSearchView()->result_container_views_for_test();
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
 
@@ -1314,9 +1317,9 @@ TEST_P(SearchViewClamshellAndTabletTest, ResultPageHiddenInZeroSearchState) {
                      SearchResult::Category::kApps);
 
   // Verify that containers are not updating if search is not in progress.
-  std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
-  for (auto* container : result_containers) {
+  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+      result_containers = GetSearchView()->result_container_views_for_test();
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_FALSE(container->UpdateScheduled());
   }
 
@@ -1332,7 +1335,7 @@ TEST_P(SearchViewClamshellAndTabletTest, ResultPageHiddenInZeroSearchState) {
   ordered_categories->push_back(AppListSearchResultCategory::kWeb);
   SetUpSearchResults(results, 1, kDefaultSearchItems, 100, false,
                      SearchResult::Category::kWeb);
-  for (auto* container : result_containers) {
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
 
@@ -1346,7 +1349,7 @@ TEST_P(SearchViewClamshellAndTabletTest, ResultPageHiddenInZeroSearchState) {
   // Backspace should clear selection, and search box content.
   PressAndReleaseKey(ui::VKEY_BACK);
 
-  for (auto* container : result_containers) {
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_FALSE(container->UpdateScheduled());
   }
 
@@ -1365,8 +1368,8 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchResultCategoricalSort) {
 
   SearchModel::SearchResults* results = test_helper->GetSearchResults();
 
-  std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
+  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+      result_containers = GetSearchView()->result_container_views_for_test();
   ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
 
   // Create categorized results and order categories as {kApps, kWeb}.
@@ -1379,7 +1382,7 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchResultCategoricalSort) {
                      SearchResult::Category::kApps);
   SetUpSearchResults(results, 1 + kDefaultSearchItems, kDefaultSearchItems, 1,
                      false, SearchResult::Category::kWeb);
-  for (auto* container : result_containers) {
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
 
@@ -1411,7 +1414,7 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchResultCategoricalSort) {
   SetUpSearchResults(results, 1 + kDefaultSearchItems, kDefaultSearchItems, 100,
                      false, SearchResult::Category::kWeb);
   result_containers = GetSearchView()->result_container_views_for_test();
-  for (auto* container : result_containers) {
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
 
@@ -1435,14 +1438,14 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchResultCategoricalSort) {
             SearchResultListView::SearchResultListType::kApps);
 
   SetUpAnswerCardResult(results, 1, 1);
-  for (auto* container : result_containers) {
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
 
   EXPECT_EQ(GetVisibleResultContainers(), (std::vector<size_t>{0, 2, 3}));
 
   AppListModelProvider::Get()->search_model()->DeleteAllResults();
-  for (auto* container : result_containers) {
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
   EXPECT_EQ(GetVisibleResultContainers(), (std::vector<size_t>{}));
@@ -1460,9 +1463,9 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchResultA11y) {
   // Create |kDefaultSearchItems| new search results for us to cycle through.
   SetUpSearchResults(results, 1, kDefaultSearchItems, 100, true,
                      SearchResult::Category::kApps);
-  std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
-  for (auto* container : result_containers) {
+  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+      result_containers = GetSearchView()->result_container_views_for_test();
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
 
@@ -1507,9 +1510,9 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchPageA11y) {
 
   auto* search_view = GetSearchView();
   // Check result container visibility.
-  std::vector<SearchResultContainerView*> result_containers =
-      search_view->result_container_views_for_test();
-  for (auto* container : result_containers) {
+  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+      result_containers = search_view->result_container_views_for_test();
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
 
@@ -1524,7 +1527,7 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchPageA11y) {
             data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
   // Create a single search result and and verify A11yNodeData.
   SetUpSearchResults(results, 1, 1, 100, true, SearchResult::Category::kApps);
-  for (auto* container : result_containers) {
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
   search_view->GetAccessibleNodeData(&data);
@@ -1534,7 +1537,7 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchPageA11y) {
   // Create new search results and and and verify A11yNodeData.
   SetUpSearchResults(results, 2, kDefaultSearchItems - 1, 100, true,
                      SearchResult::Category::kApps);
-  for (auto* container : result_containers) {
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
   ui::AXNodeData data2;
@@ -1555,9 +1558,9 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchClearedOnModelUpdate) {
   SetUpSearchResults(results, 1, kDefaultSearchItems, 100, true,
                      SearchResult::Category::kApps);
 
-  std::vector<SearchResultContainerView*> result_containers =
-      GetSearchView()->result_container_views_for_test();
-  for (auto* container : result_containers) {
+  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+      result_containers = GetSearchView()->result_container_views_for_test();
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
 
@@ -1583,7 +1586,7 @@ TEST_P(SearchViewClamshellAndTabletTest, SearchClearedOnModelUpdate) {
   SetUpSearchResults(search_model_override->results(), 2, 1, 100, true,
                      SearchResult::Category::kApps);
   result_containers = GetSearchView()->result_container_views_for_test();
-  for (auto* container : result_containers) {
+  for (ash::SearchResultContainerView* container : result_containers) {
     EXPECT_TRUE(container->RunScheduledUpdateForTest());
   }
 

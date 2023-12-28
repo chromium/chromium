@@ -80,7 +80,8 @@ class BLINK_EXPORT WebNavigationBodyLoader {
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
       bool is_main_frame,
-      WebNavigationParams* navigation_params);
+      WebNavigationParams* navigation_params,
+      bool is_ad_frame);
 
   // It should be safe to destroy WebNavigationBodyLoader at any moment,
   // including from inside any client notification.

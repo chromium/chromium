@@ -256,6 +256,14 @@ void MediaController::Seek(base::TimeDelta seek_time) {
     session_->ipc()->Seek(seek_time);
 }
 
+void MediaController::SkipAd() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (session_) {
+    session_->ipc()->SkipAd();
+  }
+}
+
 void MediaController::ObserveImages(
     mojom::MediaSessionImageType type,
     int minimum_size_px,

@@ -153,7 +153,7 @@ public class MediaPlayerBridge {
 
     @CalledByNative
     protected boolean setDataSource(
-            String url, String cookies, String userAgent, boolean hideUrlLog) {
+            String url, String cookies, String userAgent, boolean hideUrlLog, HashMap headers) {
         Uri uri = Uri.parse(url);
         HashMap<String, String> headersMap = new HashMap<String, String>();
         if (hideUrlLog) headersMap.put("x-hide-urls-from-log", "true");
@@ -161,6 +161,13 @@ public class MediaPlayerBridge {
         if (!TextUtils.isEmpty(userAgent)) headersMap.put("User-Agent", userAgent);
 
         headersMap.put("android-allow-cross-domain-redirect", "0");
+
+        headers.forEach(
+                (key, value) -> {
+                    if (!TextUtils.isEmpty(value.toString())) {
+                        headersMap.put(key.toString(), value.toString());
+                    }
+                });
 
         try {
             getLocalPlayer().setDataSource(ContextUtils.getApplicationContext(), uri, headersMap);

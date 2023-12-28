@@ -258,7 +258,7 @@ class AutofillDriverRouter {
       mojom::ActionPersistence action_persistence,
       const FormData& data,
       const url::Origin& triggered_origin,
-      const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map,
+      const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
       void (*callback)(AutofillDriver* target,
                        mojom::ActionType action_type,
                        mojom::ActionPersistence action_persistence,
@@ -277,7 +277,7 @@ class AutofillDriverRouter {
                        const std::u16string& value));
   using BrowserFormHandler = AutofillDriver::BrowserFormHandler;
   using RendererFormHandler =
-      base::OnceCallback<void(const absl::optional<::autofill::FormData>&)>;
+      base::OnceCallback<void(const std::optional<::autofill::FormData>&)>;
   // Routes both the request *and* the response: it calls `callback` with
   // - the `target` driver that shall extract the form,
   // - the `form_id` to be extracted, and

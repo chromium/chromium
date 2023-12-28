@@ -106,6 +106,7 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/manifest_url_handlers.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
@@ -1070,8 +1071,9 @@ DeveloperPrivateGetProfileConfigurationFunction::Run() {
   // heuristic that it's a good time to verify installs. We do this on startup,
   // but there's a chance that it failed erroneously, so it's good to double-
   // check.
-  if (source_context_type() == Feature::WEBUI_CONTEXT)
+  if (source_context_type() == mojom::ContextType::kWebUi) {
     PerformVerificationCheck(browser_context());
+  }
 
   return RespondNow(WithArguments(info->ToValue()));
 }
@@ -1123,7 +1125,7 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
   // TODO(dpapad): Remove this exemption when sliding a toggle counts as a
   // gesture.
   bool allowed =
-      source_context_type() == Feature::WEBUI_CONTEXT || user_gesture();
+      source_context_type() == mojom::ContextType::kWebUi || user_gesture();
   if (!allowed)
     return RespondNow(Error(kRequiresUserGestureError));
 

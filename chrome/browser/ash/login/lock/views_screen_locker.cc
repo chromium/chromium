@@ -45,9 +45,8 @@
 
 namespace ash {
 
-ViewsScreenLocker::ViewsScreenLocker(ScreenLocker* screen_locker)
-    : screen_locker_(screen_locker),
-      system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>()) {
+ViewsScreenLocker::ViewsScreenLocker()
+    : system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>()) {
   LoginScreenClientImpl::Get()->SetDelegate(this);
   user_board_view_mojo_ = std::make_unique<UserBoardViewMojo>();
   user_selection_screen_ =
@@ -60,10 +59,10 @@ ViewsScreenLocker::~ViewsScreenLocker() {
   LoginScreenClientImpl::Get()->SetDelegate(nullptr);
 }
 
-void ViewsScreenLocker::Init() {
+void ViewsScreenLocker::Init(const user_manager::UserList& users) {
   VLOG(1) << "b/228873153 : ViewsScreenLocker::Init()";
   lock_time_ = base::TimeTicks::Now();
-  user_selection_screen_->Init(screen_locker_->GetUsersToShow());
+  user_selection_screen_->Init(users);
 
   // Reset Caps Lock state when lock screen is shown.
   input_method::InputMethodManager::Get()->GetImeKeyboard()->SetCapsLockEnabled(
@@ -88,19 +87,7 @@ void ViewsScreenLocker::Init() {
   user_selection_screen_->InitEasyUnlock();
   UMA_HISTOGRAM_TIMES("LockScreen.LockReady",
                       base::TimeTicks::Now() - lock_time_);
-  screen_locker_->ScreenLockReady();
   lock_screen_apps::StateController::Get()->SetFocusCyclerDelegate(this);
-}
-
-void ViewsScreenLocker::ShowErrorMessage(
-    int error_msg_id,
-    HelpAppLauncher::HelpTopic help_topic_id) {
-  // TODO(xiaoyinh): Complete the implementation here.
-  NOTIMPLEMENTED();
-}
-
-void ViewsScreenLocker::ClearErrors() {
-  NOTIMPLEMENTED();
 }
 
 void ViewsScreenLocker::OnAshLockAnimationFinished() {

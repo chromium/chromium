@@ -47,11 +47,6 @@ public interface AccountManagerDelegate {
     void attachAccountsChangeObserver(AccountsChangeObserver observer);
 
     /** Get all the accounts on device synchronously. */
-    @Deprecated
-    @WorkerThread
-    Account[] getAccounts();
-
-    /** Get all the accounts on device synchronously. */
     @WorkerThread
     Account[] getAccountsSynchronous() throws AccountManagerDelegateException;
 

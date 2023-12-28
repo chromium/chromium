@@ -154,7 +154,6 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
 
 // `SearchEngineChoiceService` may need to suppress this dialog to avoid
 // dialog conflicts and too frequent promos.
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
   SearchEngineChoiceService* search_engine_choice_service =
       SearchEngineChoiceServiceFactory::GetForProfile(profile());
   if (search_engine_choice_service &&
@@ -164,7 +163,6 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
                                       kSearchEngineChoiceDialogShown);
     return;
   }
-#endif
 
   auto* browser =
       chrome::FindBrowserWithTab(navigation_handle->GetWebContents());

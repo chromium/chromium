@@ -111,7 +111,6 @@ class LocalFrameMojoHandler
   void AddMessageToConsole(mojom::blink::ConsoleMessageLevel level,
                            const WTF::String& message,
                            bool discard_duplicates) final;
-  void AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr) final;
   void SwapInImmediately() final;
   void CheckCompleted() final;
   void StopLoading() final;

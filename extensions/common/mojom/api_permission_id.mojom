@@ -284,6 +284,7 @@ enum APIPermissionID {
   kChromeOSManagementAudio = 257,
 
   // Add new entries at the end of the enum and be sure to update the
-  // "ExtensionPermission3" enum in tools/metrics/histograms/enums.xml
-  // (by running update_extension_permission.py).
+  // "ExtensionPermission3" enum in
+  // tools/metrics/histograms/metadata/extensions/enums.xml (by running
+  // update_extension_permission.py).
 };

@@ -48,11 +48,10 @@ class ASH_EXPORT SwitchAccessBackButtonBubbleController
   bool for_menu_ = false;
 
   // Owned by views hierarchy.
-  raw_ptr<SwitchAccessBackButtonView, ExperimentalAsh> back_button_view_ =
-      nullptr;
-  raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
+  raw_ptr<SwitchAccessBackButtonView> back_button_view_ = nullptr;
+  raw_ptr<TrayBubbleView> bubble_view_ = nullptr;
 
-  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
 };
 
 }  // namespace ash

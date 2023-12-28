@@ -34,6 +34,7 @@ PowerPreference ConvertBlinkPowerPreferenceToMojo(
 void MLContextMojo::ValidateAndCreateAsync(ScriptPromiseResolver* resolver,
                                            MLContextOptions* options,
                                            ML* ml) {
+  ScopedMLTrace scoped_trace("MLContextMojo::ValidateAndCreateAsync");
   CHECK_EQ(options->deviceType(), V8MLDeviceType::Enum::kGpu);
   // TODO(crbug.com/1273291): Remove unsupported options (ex. model_format)
   // once the context gets implemented for non-mojo too.
@@ -41,7 +42,7 @@ void MLContextMojo::ValidateAndCreateAsync(ScriptPromiseResolver* resolver,
       options->devicePreference(), options->deviceType(),
       options->powerPreference(), options->modelFormat(), options->numThreads(),
       ml);
-  context->CreateAsync(resolver, options);
+  context->CreateAsync(std::move(scoped_trace), resolver, options);
 }
 
 // static
@@ -57,7 +58,8 @@ MLContext* MLContextMojo::ValidateAndCreateSync(ScriptState* script_state,
   return context->CreateSync(script_state, options, exception_state);
 }
 
-void MLContextMojo::CreateAsyncImpl(ScriptPromiseResolver* resolver,
+void MLContextMojo::CreateAsyncImpl(ScopedMLTrace scoped_trace,
+                                    ScriptPromiseResolver* resolver,
                                     MLContextOptions* options) {
   auto options_mojo = webnn::mojom::blink::CreateContextOptions::New();
   options_mojo->power_preference =
@@ -65,7 +67,7 @@ void MLContextMojo::CreateAsyncImpl(ScriptPromiseResolver* resolver,
   GetML()->CreateWebNNContext(
       std::move(options_mojo),
       WTF::BindOnce(&MLContextMojo::OnCreateWebNNContext, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+                    std::move(scoped_trace), WrapPersistent(resolver)));
 }
 
 MLContext* MLContextMojo::CreateSyncImpl(ScriptState* script_state,
@@ -140,6 +142,7 @@ bool MLContextMojo::CreateWebNNGraphSync(
 }
 
 void MLContextMojo::OnCreateWebNNContext(
+    ScopedMLTrace scoped_trace,
     ScriptPromiseResolver* resolver,
     blink_mojom::CreateContextResultPtr result) {
   if (result->is_error()) {

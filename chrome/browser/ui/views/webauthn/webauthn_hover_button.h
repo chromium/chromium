@@ -22,8 +22,9 @@ class View;
 // title and subtitle, and a secondary right-hand icon (usually a submenu
 // arrow). Icons and subtitle are optional.
 class WebAuthnHoverButton : public HoverButton {
+  METADATA_HEADER(WebAuthnHoverButton, HoverButton)
+
  public:
-  METADATA_HEADER(WebAuthnHoverButton);
   // Creates a hoverable button with the given elements, like so:
   //
   // +-------------------------------------------------------------------+

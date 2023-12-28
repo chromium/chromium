@@ -245,9 +245,11 @@ bool ServiceWorkerSubresourceLoader::StartRaceNetworkRequest() {
 
   // If the initial state is not kWaitForBody, that means creating data pipes
   // failed. Do not start RaceNetworkRequest this case.
-  if (race_network_request_loader_client_->state() !=
-      ServiceWorkerRaceNetworkRequestURLLoaderClient::State::kWaitForBody) {
-    return false;
+  switch (race_network_request_loader_client_->state()) {
+    case ServiceWorkerRaceNetworkRequestURLLoaderClient::State::kWaitForBody:
+      break;
+    default:
+      return false;
   }
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> remote_factory;
@@ -628,8 +630,20 @@ void ServiceWorkerSubresourceLoader::OnFallback(
                           TRACE_ID_LOCAL(request_id_)),
       TRACE_EVENT_FLAG_FLOW_IN);
 
+  bool is_race_network_request_aborted = false;
+  if (race_network_request_loader_client_) {
+    switch (race_network_request_loader_client_->state()) {
+      case ServiceWorkerRaceNetworkRequestURLLoaderClient::State::kAborted:
+        is_race_network_request_aborted = true;
+        break;
+      default:
+        break;
+    }
+  }
+
   if (dispatched_preload_type() == DispatchedPreloadType::kAutoPreload &&
-      commit_responsibility() == FetchResponseFrom::kServiceWorker) {
+      commit_responsibility() == FetchResponseFrom::kServiceWorker &&
+      !is_race_network_request_aborted) {
     // When AutoPreload is dispatched, set the fetch handler end time and record
     // loading metrics.
     race_network_request_loader_client_
@@ -644,15 +658,18 @@ void ServiceWorkerSubresourceLoader::OnFallback(
   switch (commit_responsibility()) {
     case FetchResponseFrom::kNoResponseYet:
     case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
-      // If the RaceNetworkRequest or AutoPreload is triggered but the response
-      // is not handled yet, ask its URLLoaderClient to handle the response
-      // regardless of the response status not to dispatch additional network
-      // request for fallback.
+      // If the RaceNetworkRequest or AutoPreload is successfully processed but
+      // the response is not handled yet, ask its URLLoaderClient to handle the
+      // response regardless of the response status not to dispatch additional
+      // network request for fallback.
       switch (dispatched_preload_type()) {
         case DispatchedPreloadType::kRaceNetworkRequest:
         case DispatchedPreloadType::kAutoPreload:
-          SetCommitResponsibility(FetchResponseFrom::kWithoutServiceWorker);
-          return;
+          if (!is_race_network_request_aborted) {
+            SetCommitResponsibility(FetchResponseFrom::kWithoutServiceWorker);
+            return;
+          }
+          break;
         case DispatchedPreloadType::kNone:
           SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
           break;

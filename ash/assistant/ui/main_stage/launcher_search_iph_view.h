@@ -10,15 +10,21 @@
 
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/view.h"
 
+namespace views {
+class BoxLayoutView;
+}  // namespace views
+
 namespace ash {
 
 class ChipView;
+class PillButton;
 
 class LauncherSearchIphView : public views::View {
   METADATA_HEADER(LauncherSearchIphView, views::View)
@@ -49,37 +55,51 @@ class LauncherSearchIphView : public views::View {
     kChipStart
   };
 
-  LauncherSearchIphView(
-      Delegate* delegate,
-      bool is_in_tablet_mode,
-      std::unique_ptr<ScopedIphSession> scoped_iph_session = nullptr,
-      bool show_assistant_chip = true);
+  enum class UiLocation {
+    // In the Launcher search box.
+    kSearchBox = 0,
+    // In the `assistant_page` in the Launcher.
+    kAssistantPage
+  };
+
+  static void SetChipTextForTesting(const std::u16string& text);
+
+  LauncherSearchIphView(Delegate* delegate,
+                        bool is_in_tablet_mode,
+                        std::unique_ptr<ScopedIphSession> scoped_iph_session,
+                        UiLocation location);
   ~LauncherSearchIphView() override;
 
   // views::View:
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   void NotifyAssistantButtonPressedEvent();
 
   std::vector<raw_ptr<ChipView>> GetChipsForTesting();
+  views::View* GetAssistantButtonForTesting();
 
  private:
-  // TODO(b/272370530): Use string id for internationalization.
-  void RunLauncherSearchQuery(const std::u16string& query);
+  void RunLauncherSearchQuery(assistant::LauncherSearchIphQueryType query_type);
 
   void OpenAssistantPage();
 
-  void CreateQueryChips(views::View* actions_container);
+  void CreateChips(views::BoxLayoutView* actions_container);
 
   void ShuffleChipsQuery();
 
+  void SetChipsVisibility();
+
   raw_ptr<Delegate> delegate_ = nullptr;
+
+  bool is_in_tablet_mode_ = false;
 
   std::unique_ptr<ScopedIphSession> scoped_iph_session_;
 
-  bool show_assistant_chip_ = false;
+  UiLocation location_ = UiLocation::kSearchBox;
 
   std::vector<raw_ptr<ChipView>> chips_;
+  raw_ptr<ash::PillButton> assistant_button_ = nullptr;
 
   base::WeakPtrFactory<LauncherSearchIphView> weak_ptr_factory_{this};
 };

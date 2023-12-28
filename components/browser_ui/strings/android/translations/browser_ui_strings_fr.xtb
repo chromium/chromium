@@ -148,6 +148,7 @@
 <translation id="3448554387819310837">Lorsque cette option est activée, les sites peuvent demander à utiliser votre appareil photo. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser votre appareil photo.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome bloquera de nouveau les cookies demain}one{Chrome bloquera de nouveau les cookies dans # jour}other{Chrome bloquera de nouveau les cookies dans # jours}}</translation>
 <translation id="3521663503435878242">Sites de <ph name="DOMAIN" /></translation>
+<translation id="3536227077203206203">Accès autorisé cette fois-ci</translation>
 <translation id="3538390592868664640">Empêcher les sites de créer un plan 3D de votre environnement ou de suivre la position de la caméra</translation>
 <translation id="3544058026430919413">Une entreprise peut définir un groupe de sites autorisés à utiliser des cookies pour partager votre activité dans le groupe. Cette option est désactivée en navigation privée.</translation>
 <translation id="3551268116566418498">Quitter la navigation privée ?</translation>
@@ -266,7 +267,7 @@
 <translation id="5545693483061321551">Les sites ne peuvent pas utiliser vos cookies pour voir votre activité de navigation sur l'ensemble des différents sites (par exemple, pour personnaliser les annonces). Les fonctionnalités de certains sites peuvent ne pas fonctionner.</translation>
 <translation id="5553374991681107062">Les plus récents</translation>
 <translation id="5556459405103347317">Actualiser</translation>
-<translation id="5591840828808741583">Autorisation refusée : <ph name="SITE_NAME" /></translation>
+<translation id="5591840828808741583"><ph name="SITE_NAME" /> bloquée</translation>
 <translation id="5649053991847567735">Téléchargements automatiques</translation>
 <translation id="5668404140385795438">Ignore la demande d'un site d'empêcher les zooms avant</translation>
 <translation id="5677928146339483299">Bloqué</translation>
@@ -325,7 +326,7 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Empêcher les sites d'utiliser vos données et votre appareil de réalité virtuelle</translation>
 <translation id="6447842834002726250">Cookies</translation>
-<translation id="6500423977866688905">Demander l'affichage sur mobile lorsque la fenêtre est étroite</translation>
+<translation id="6500423977866688905">Si la fenêtre est étroite, demander l'affichage sur mobile</translation>
 <translation id="6527303717912515753">Partager</translation>
 <translation id="652937045869844725">Essayez d'autoriser les cookies tiers. Vous bénéficierez d'une protection réduite, mais les fonctionnalités du site seront plus susceptibles de fonctionner.</translation>
 <translation id="6530703012083415527">Lorsque cette option est activée, les sites peuvent utiliser des pop-ups et des redirections. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser de pop-ups ni de redirections.</translation>

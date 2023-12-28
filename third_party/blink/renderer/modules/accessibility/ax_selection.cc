@@ -143,8 +143,7 @@ AXSelection AXSelection::FromCurrentSelection(
     return {};
 
   auto* ax_object_cache_impl = static_cast<AXObjectCacheImpl*>(ax_object_cache);
-  const AXObject* ax_text_control =
-      ax_object_cache_impl->GetOrCreate(&text_control);
+  const AXObject* ax_text_control = ax_object_cache_impl->Get(&text_control);
   DCHECK(ax_text_control);
 
   // We can't directly use "text_control.Selection()" because the selection it

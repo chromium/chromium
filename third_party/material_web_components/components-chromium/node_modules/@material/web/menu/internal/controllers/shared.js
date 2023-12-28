@@ -10,7 +10,7 @@ export function createCloseMenuEvent(initiator, reason) {
     return new CustomEvent('close-menu', {
         bubbles: true,
         composed: true,
-        detail: { initiator, reason, itemPath: [initiator] }
+        detail: { initiator, reason, itemPath: [initiator] },
     });
 }
 /**
@@ -88,7 +88,7 @@ export const KeydownCloseKey = {
  * menu.
  */
 export function isClosableKey(code) {
-    return Object.values(KeydownCloseKey).some(value => (value === code));
+    return Object.values(KeydownCloseKey).some((value) => value === code);
 }
 /**
  * Determines whether the given key code is a key code that should select a menu
@@ -99,7 +99,7 @@ export function isClosableKey(code) {
  * menu item.
  */
 export function isSelectableKey(code) {
-    return Object.values(SelectionKey).some(value => (value === code));
+    return Object.values(SelectionKey).some((value) => value === code);
 }
 /**
  * Determines whether a target element is contained inside another element's
@@ -132,6 +132,6 @@ export const FocusState = {
     NONE: 'none',
     LIST_ROOT: 'list-root',
     FIRST_ITEM: 'first-item',
-    LAST_ITEM: 'last-item'
+    LAST_ITEM: 'last-item',
 };
 //# sourceMappingURL=shared.js.map

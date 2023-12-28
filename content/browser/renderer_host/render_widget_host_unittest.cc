@@ -234,8 +234,7 @@ class TestView : public TestRenderWidgetHostView {
   }
   void GestureEventAck(
       const WebGestureEvent& event,
-      blink::mojom::InputEventResultState ack_result,
-      blink::mojom::ScrollResultDataPtr scroll_result_data) override {
+      blink::mojom::InputEventResultState ack_result) override {
     gesture_event_type_ = event.GetType();
     ack_result_ = ack_result;
   }
@@ -632,6 +631,7 @@ class RenderWidgetHostTest : public testing::Test {
   }
 
   void TearDown() override {
+    sink_ = nullptr;
     view_.reset();
     host_.reset();
     delegate_.reset();
@@ -827,7 +827,7 @@ class RenderWidgetHostTest : public testing::Test {
   bool handle_mouse_event_ = false;
   base::TimeTicks last_simulated_event_time_;
   base::TimeDelta simulated_event_time_delta_;
-  raw_ptr<IPC::TestSink, DanglingUntriaged> sink_;
+  raw_ptr<IPC::TestSink> sink_;
   std::unique_ptr<FakeRenderFrameMetadataObserver>
       renderer_render_frame_metadata_observer_;
   MockWidget widget_;

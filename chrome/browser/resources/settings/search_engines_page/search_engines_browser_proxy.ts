@@ -26,6 +26,7 @@ export interface SearchEngine {
   iconURL?: string;
   iconPath: string;
   id: number;
+  isManaged: boolean;
   isOmniboxExtension: boolean;
   keyword: string;
   modelIndex: number;

@@ -136,8 +136,8 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
   }
 
   if (RuntimeEnabledFeatures::RTCEncodedVideoFrameAdditionalMetadataEnabled()) {
-    if (delegate_->CaptureTimeIdentifier()) {
-      metadata->setCaptureTimestamp(delegate_->CaptureTimeIdentifier()->us());
+    if (delegate_->PresentationTimestamp()) {
+      metadata->setTimestamp(delegate_->PresentationTimestamp()->us());
     }
   }
 

@@ -16,12 +16,12 @@ import '../dialogs/multi_store_delete_password_dialog.js';
 import '../sharing/share_password_flow.js';
 import '../sharing/metrics_utils.js';
 
-import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
+import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -31,8 +31,8 @@ import {PasswordSharingActions, recordPasswordSharingInteraction} from '../shari
 import {ShowPasswordMixin} from '../show_password_mixin.js';
 import {UserUtilMixin} from '../user_utils_mixin.js';
 
-import {CredentialFieldElement} from './credential_field.js';
-import {CredentialNoteElement} from './credential_note.js';
+import type {CredentialFieldElement} from './credential_field.js';
+import type {CredentialNoteElement} from './credential_note.js';
 import {getTemplate} from './password_details_card.html.js';
 
 export const PASSWORD_SHARE_BUTTON_BUTTON_ELEMENT_ID =

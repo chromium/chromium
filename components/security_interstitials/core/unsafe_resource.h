@@ -55,11 +55,12 @@ struct UnsafeResource {
   UnsafeResource(const UnsafeResource& other);
   ~UnsafeResource();
 
-  // Returns true if this UnsafeResource is a main frame load that was blocked
-  // while the navigation is still pending. Note that a main frame hit may not
-  // be blocking, eg. client side detection happens after the load is
-  // committed.
-  bool IsMainPageLoadBlocked() const;
+  // Returns true if this UnsafeResource is a main frame load while the
+  // navigation is still pending. Note that a main frame hit may not be
+  // blocking, eg. client side detection happens after the load is committed.
+  // Note: If kSafeBrowsingAsyncRealTimeCheck is supported, please call
+  // AsyncCheckTracker::IsMainPageLoadPending instead.
+  bool IsMainPageLoadPendingWithSyncCheck() const;
 
   // Checks if |callback| is not null and posts it to |callback_sequence|.
   void DispatchCallback(const base::Location& from_here,

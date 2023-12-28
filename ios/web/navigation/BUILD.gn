@@ -18,7 +18,9 @@ source_set("navigation") {
     ":core",
     ":navigation_manager_util",
     "//base",
+    "//components/security_interstitials/core:insecure_form_util",
     "//components/sessions:session_id",
+    "//ios/components/security_interstitials/https_only_mode:feature",
     "//ios/net",
     "//ios/web:core",
     "//ios/web/common",
@@ -193,10 +195,7 @@ source_set("navigation_manager_util") {
 
 source_set("proto_util") {
   public_deps = [ "//ios/web/public/session/proto" ]
-  deps = [
-    "//base",
-    "//ios/web/public/navigation",
-  ]
+  deps = [ "//base" ]
 
   sources = [
     "proto_util.h",

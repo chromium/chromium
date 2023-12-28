@@ -31,8 +31,9 @@ class Canvas;
 // The visual representation of a SavedTabGroup shown in the bookmarks bar.
 class SavedTabGroupButton : public views::MenuButton,
                             public views::DragController {
+  METADATA_HEADER(SavedTabGroupButton, views::MenuButton)
+
  public:
-  METADATA_HEADER(SavedTabGroupButton);
   SavedTabGroupButton(
       const SavedTabGroup& group,
       base::RepeatingCallback<content::PageNavigator*()> page_navigator,

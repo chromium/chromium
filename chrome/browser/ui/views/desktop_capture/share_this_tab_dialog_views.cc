@@ -347,7 +347,7 @@ bool ShareThisTabDialogView::ShouldAutoReject() const {
   return auto_reject_this_tab_capture_;
 }
 
-BEGIN_METADATA(ShareThisTabDialogView, views::DialogDelegateView)
+BEGIN_METADATA(ShareThisTabDialogView)
 END_METADATA
 
 ShareThisTabDialogViews::ShareThisTabDialogViews() : dialog_(nullptr) {

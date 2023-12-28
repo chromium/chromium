@@ -46,11 +46,11 @@
 #include "extensions/browser/script_injection_tracker.h"
 #include "extensions/browser/service_worker/service_worker_keepalive.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/context_type_adapter.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/trace_util.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
@@ -116,9 +116,9 @@ bool CanRendererActOnBehalfOfExtension(
   // `extension_id`?
   // TODO(https://crbug.com/1186557): Ideally, we'd only check content script/
   // user script status if the renderer claimed to be acting on behalf of the
-  // corresponding type (e.g. Feature::CONTENT_SCRIPT_CONTEXT). We evaluate this
-  // later in ProcessMap::CanProcessHostContextType(), but we could be stricter
-  // by including it here.
+  // corresponding type (e.g. mojom::ContextType::kContentScript). We evaluate
+  // this later in ProcessMap::CanProcessHostContextType(), but we could be
+  // stricter by including it here.
   if (ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
           render_process_host, extension_id) ||
       ScriptInjectionTracker::DidProcessRunUserScriptFromExtension(
@@ -383,10 +383,8 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
         *render_frame_host_url);
   }
 
-  Feature::Context context_type =
-      MojomContextToFeatureContext(params.context_type);
   if (!process_map->CanProcessHostContextType(extension, render_process_host,
-                                              context_type)) {
+                                              params.context_type)) {
     // TODO(https://crbug.com/1186557): Ideally, we'd be able to mark some
     // of these as bad messages. We can't do that in all cases because there
     // are times some of these might legitimately fail (for instance, during
@@ -399,7 +397,7 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
     return;
   }
 
-  if (context_type == Feature::WEBUI_UNTRUSTED_CONTEXT) {
+  if (params.context_type == mojom::ContextType::kUntrustedWebUi) {
     // TODO(https://crbug.com/1435575): We should, at minimum, be using an
     // origin here. It'd be even better if we could have a more robust way of
     // checking that a process can host untrusted webui.
@@ -417,8 +415,9 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
 
   scoped_refptr<ExtensionFunction> function = CreateExtensionFunction(
       params, extension, render_process_id, is_worker_request,
-      render_frame_host_url, context_type, ExtensionAPI::GetSharedInstance(),
-      std::move(callback), render_frame_host);
+      render_frame_host_url, params.context_type,
+      ExtensionAPI::GetSharedInstance(), std::move(callback),
+      render_frame_host);
   if (!function.get())
     return;
 
@@ -429,14 +428,15 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
   }
 
   if (!extension) {
-    if (function->source_context_type() == Feature::WEBUI_CONTEXT) {
+    if (function->source_context_type() == mojom::ContextType::kWebUi) {
       base::UmaHistogramSparse("Extensions.Functions.WebUICalls",
                                function->histogram_value());
     } else if (function->source_context_type() ==
-               Feature::WEBUI_UNTRUSTED_CONTEXT) {
+               mojom::ContextType::kUntrustedWebUi) {
       base::UmaHistogramSparse("Extensions.Functions.WebUIUntrustedCalls",
                                function->histogram_value());
-    } else if (function->source_context_type() == Feature::WEB_PAGE_CONTEXT) {
+    } else if (function->source_context_type() ==
+               mojom::ContextType::kWebPage) {
       base::UmaHistogramSparse("Extensions.Functions.NonExtensionWebPageCalls",
                                function->histogram_value());
     }
@@ -602,7 +602,7 @@ ExtensionFunctionDispatcher::CreateExtensionFunction(
     int requesting_process_id,
     bool is_worker_request,
     const GURL* render_frame_host_url,
-    Feature::Context context_type,
+    mojom::ContextType context_type,
     ExtensionAPI* api,
     ExtensionFunction::ResponseCallback callback,
     content::RenderFrameHost* render_frame_host) {

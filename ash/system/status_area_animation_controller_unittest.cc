@@ -49,7 +49,7 @@ class TrayItemViewAnimationWaiter {
   void OnTrayItemAnimationFinished() { run_loop_.Quit(); }
 
   // The tray item whose animation is being waited for.
-  raw_ptr<TrayItemView, ExperimentalAsh> tray_item_ = nullptr;
+  raw_ptr<TrayItemView> tray_item_ = nullptr;
 
   base::RunLoop run_loop_;
 

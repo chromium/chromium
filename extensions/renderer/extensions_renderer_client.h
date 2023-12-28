@@ -5,6 +5,8 @@
 #ifndef EXTENSIONS_RENDERER_EXTENSIONS_RENDERER_CLIENT_H_
 #define EXTENSIONS_RENDERER_EXTENSIONS_RENDERER_CLIENT_H_
 
+#include <memory>
+
 #include "extensions/common/extension_id.h"
 #include "extensions/renderer/extensions_renderer_api_provider.h"
 

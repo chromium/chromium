@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutHTMLCanvas (positioned) CANVAS id='canvas'",
+      "name": "LayoutHTMLCanvas (positioned, block) CANVAS id='canvas'",
       "position": [50, 50],
       "bounds": [500, 500]
     }

@@ -6,9 +6,10 @@
 
 #include <utility>
 
+#include <string_view>
+
 #include "base/check_op.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "components/webcrypto/algorithms/asymmetric_key_util.h"
 #include "components/webcrypto/algorithms/util.h"
 #include "components/webcrypto/blink_key_handle.h"
@@ -50,7 +51,7 @@ struct JwkRsaInfo {
 //     present.
 //   * expected_usages must be a subset of the JWK's "key_ops" if present.
 Status ReadRsaKeyJwk(base::span<const uint8_t> key_data,
-                     base::StringPiece expected_alg,
+                     std::string_view expected_alg,
                      bool expected_extractable,
                      blink::WebCryptoKeyUsageMask expected_usages,
                      JwkRsaInfo* result) {

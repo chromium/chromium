@@ -11,6 +11,8 @@ source_set("smart_card") {
       "chromeos_smart_card_delegate.h",
       "get_smart_card_context_factory.cc",
       "get_smart_card_context_factory.h",
+      "smart_card_permission_request.cc",
+      "smart_card_permission_request.h",
     ]
 
     if (!is_chromeos_device) {
@@ -27,7 +29,9 @@ source_set("smart_card") {
     deps = [
       "//chrome/browser/chromeos/extensions/smart_card_provider_private",
       "//chrome/browser/profiles:profile",
-      "//content/public/browser:browser",
+      "//components/permissions",
+      "//components/strings:components_strings_grit",
+      "//content/public/browser",
     ]
   }
   # TODO(crbug.com/1386175): Add chrome_smart_card_delegate.* for Win/Mac/Linux

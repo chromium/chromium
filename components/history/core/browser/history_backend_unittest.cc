@@ -217,6 +217,7 @@ class TestHistoryBackend : public HistoryBackend {
   using HistoryBackend::UpdateVisitDuration;
 
   using HistoryBackend::db_;
+  using HistoryBackend::expirer_;
   using HistoryBackend::favicon_backend_;
   using HistoryBackend::recent_redirects_;
 
@@ -2851,6 +2852,7 @@ TEST_F(HistoryBackendTest, CloneFaviconMappingsForPages) {
 // Check that UpdateFaviconMappingsAndFetch() call back to the UI when there is
 // no valid favicon database.
 TEST_F(HistoryBackendTest, UpdateFaviconMappingsAndFetchNoDB) {
+  backend_->expirer_.SetDatabases(/*main_db=*/nullptr, /*favicon_db=*/nullptr);
   // Make the favicon database invalid.
   backend_->favicon_backend_.reset();
 

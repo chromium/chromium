@@ -20,7 +20,6 @@
 #include "net/base/network_delegate.h"
 #include "net/base/proxy_delegate.h"
 #include "net/cert/cert_verifier.h"
-#include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/sct_auditing_delegate.h"
 #include "net/cookies/cookie_store.h"
 #include "net/dns/host_resolver.h"
@@ -77,6 +76,15 @@ URLRequestContext::~URLRequestContext() {
   // subclass this, as some parts of the URLRequestContext may then be torn
   // down before this cancels the ProxyResolutionService's URLRequests.
   proxy_resolution_service()->OnShutdown();
+
+  // If a ProxyDelegate is set then the builder gave it a pointer to the
+  // ProxyResolutionService, so clear that here to avoid having a dangling
+  // pointer. There's no need to clear the ProxyResolutionService's pointer to
+  // ProxyDelegate because the member destruction order ensures that
+  // ProxyResolutionService is destroyed first.
+  if (proxy_delegate()) {
+    proxy_delegate()->SetProxyResolutionService(nullptr);
+  }
 
   DCHECK(host_resolver());
   host_resolver()->OnShutdown();
@@ -197,10 +205,6 @@ void URLRequestContext::set_cookie_store(
 void URLRequestContext::set_transport_security_state(
     std::unique_ptr<TransportSecurityState> state) {
   transport_security_state_ = std::move(state);
-}
-void URLRequestContext::set_ct_policy_enforcer(
-    std::unique_ptr<CTPolicyEnforcer> enforcer) {
-  ct_policy_enforcer_ = std::move(enforcer);
 }
 void URLRequestContext::set_sct_auditing_delegate(
     std::unique_ptr<SCTAuditingDelegate> delegate) {

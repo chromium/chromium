@@ -895,8 +895,6 @@ class HostResolverManager::RequestImpl
   RequestPriority priority() const { return priority_; }
   void set_priority(RequestPriority priority) { priority_ = priority; }
 
-  bool complete() const { return complete_; }
-
  private:
   enum ResolveState {
     STATE_IPV6_REACHABILITY,

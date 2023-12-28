@@ -55,6 +55,7 @@ class ActionEditView : public views::Button {
  private:
   friend class ButtonOptionsMenuTest;
   friend class EditLabelTest;
+  friend class OverlayViewTestBase;
 
   void OnClicked();
 

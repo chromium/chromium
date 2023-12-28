@@ -73,7 +73,7 @@ void InterruptVideoRecording() {
 bool IsAnyChildVisible(aura::Window* window) {
   if (window->GetOcclusionState() == aura::Window::OcclusionState::VISIBLE)
     return true;
-  for (auto* child : window->children()) {
+  for (aura::Window* child : window->children()) {
     if (IsAnyChildVisible(child))
       return true;
   }
@@ -86,7 +86,7 @@ aura::Window* FindSurface(aura::Window* window) {
     return nullptr;
   if (exo::Surface::AsSurface(window))
     return window;
-  for (auto* child : window->children()) {
+  for (aura::Window* child : window->children()) {
     auto* found_window = FindSurface(child);
     if (found_window)
       return found_window;

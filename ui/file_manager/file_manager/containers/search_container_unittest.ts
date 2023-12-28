@@ -9,17 +9,17 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 import {EntryLocation} from '../externs/entry_location.js';
 import {PropStatus, State} from '../externs/ts/state.js';
 import type {VolumeManager} from '../externs/volume_manager.js';
-import {A11yAnnounce} from '../foreground/js/ui/a11y_announce.js';
+import type {A11yAnnounce} from '../foreground/js/ui/a11y_announce.js';
 import {clearSearch, getDefaultSearchOptions, updateSearch} from '../state/ducks/search.js';
 import {waitDeepEquals} from '../state/for_tests.js';
 import {getEmptyState, getStore, type Store} from '../state/store.js';
 
 import {SearchContainer} from './search_container.js';
 
-class TestA11yAnnouncer extends A11yAnnounce {
+class TestA11yAnnouncer implements A11yAnnounce {
   messages: string[] = [];
 
-  override speakA11yMessage(message: string) {
+  speakA11yMessage(message: string) {
     this.messages.push(message);
   }
 }

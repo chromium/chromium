@@ -77,7 +77,7 @@ class ScopedPendingReceiver {
 
  private:
   mojo::PendingReceiver<T> pending_receiver_;
-  const raw_ptr<const ArcBridgeHostImpl, ExperimentalAsh> arc_bridge_host_impl_;
+  const raw_ptr<const ArcBridgeHostImpl> arc_bridge_host_impl_;
 };
 
 // Test that the test fixture class, especially its ArcBridgeHostImpl variable,

@@ -162,10 +162,6 @@
     Hide suggestions
   </message>
 
-  <message name="IDS_AUTOFILL_MANAGE" desc="The text displayed at the bottom of the Autofill popup to allow the user to manage their Autofill preferences for addresses, credit cards, and passwords. Imperative. When the user clicks on it, opens the Autofill settings page." meaning="Manage addresses, credit cards and passwords in the user profile that can be used by Chrome Autofill.">
-    Manage...
-  </message>
-
   <message name="IDS_AUTOFILL_EDIT_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="The text displayed at the bottom of the Autofill sub meny to open the edit address profile dialog." meaning="Entry point to address profile deletion.">
     Edit address
   </message>

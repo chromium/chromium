@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './shimless_rma_shared_css.js';
+import './shimless_rma_shared.css.js';
 import './base_page.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {HardwareWriteProtectionStateObserverInterface, HardwareWriteProtectionStateObserverReceiver, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {getTemplate} from './onboarding_wait_for_manual_wp_disable_page.html.js';
+import {HardwareWriteProtectionStateObserverInterface, HardwareWriteProtectionStateObserverReceiver, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
 import {disableAllButtons, focusPageTitle} from './shimless_rma_util.js';
 
 /**
@@ -34,13 +35,13 @@ export class OnboardingWaitForManualWpDisablePage extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
       /** @protected */
-      hwwpEnabled_: {
+      hwwpEnabled: {
         type: Boolean,
         value: true,
       },
@@ -53,15 +54,15 @@ export class OnboardingWaitForManualWpDisablePage extends
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService = getShimlessRmaService();
     /** @private {?HardwareWriteProtectionStateObserverReceiver} */
-    this.hardwareWriteProtectionStateObserverReceiver_ =
+    this.hardwareWriteProtectionStateObserverReceiver =
         new HardwareWriteProtectionStateObserverReceiver(
             /** @type {!HardwareWriteProtectionStateObserverInterface} */
             (this));
 
-    this.shimlessRmaService_.observeHardwareWriteProtectionState(
-        this.hardwareWriteProtectionStateObserverReceiver_.$
+    this.shimlessRmaService.observeHardwareWriteProtectionState(
+        this.hardwareWriteProtectionStateObserverReceiver.$
             .bindNewPipeAndPassRemote());
   }
 
@@ -77,10 +78,10 @@ export class OnboardingWaitForManualWpDisablePage extends
    * @public
    */
   onHardwareWriteProtectionStateChanged(enabled) {
-    this.hwwpEnabled_ = enabled;
+    this.hwwpEnabled = enabled;
 
     if(!this.hidden) {
-      if (!this.hwwpEnabled_) {
+      if (!this.hwwpEnabled) {
         disableAllButtons(this, /*showBusyStateOverlay=*/ false);
         // TODO(swifton): Hide the cancel button.
       }
@@ -91,17 +92,17 @@ export class OnboardingWaitForManualWpDisablePage extends
    * @return {string}
    * @protected
    */
-  getPageTitle_() {
-    return this.hwwpEnabled_ ? this.i18n('manuallyDisableWpTitleText') :
-                               this.i18n('manuallyDisableWpTitleTextReboot');
+  getPageTitle() {
+    return this.hwwpEnabled ? this.i18n('manuallyDisableWpTitleText') :
+                              this.i18n('manuallyDisableWpTitleTextReboot');
   }
 
   /**
    * @return {string}
    * @protected
    */
-  getInstructions_() {
-    return this.hwwpEnabled_ ?
+  getInstructions() {
+    return this.hwwpEnabled ?
         this.i18n('manuallyDisableWpInstructionsText') :
         this.i18n('manuallyDisableWpInstructionsTextReboot');
   }

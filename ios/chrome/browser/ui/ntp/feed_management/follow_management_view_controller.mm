@@ -6,7 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -227,6 +228,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                                actionProvider:actionProvider];
 }
 
+#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
 #pragma mark - UIResponder
 
 - (BOOL)canBecomeFirstResponder {
@@ -252,6 +254,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.indexPathOfSelectedRow = nil;
   return [super resignFirstResponder];
 }
+#endif
 
 #pragma mark - Edit Menu Actions
 

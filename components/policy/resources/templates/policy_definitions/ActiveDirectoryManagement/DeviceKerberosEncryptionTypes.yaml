@@ -1,4 +1,5 @@
 caption: Allowed Kerberos encryption types
+deprecated: true
 default: 1
 desc: |-
   Setting the policy designates which encryption types are allowed when requesting Kerberos tickets from a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> server.
@@ -35,10 +36,8 @@ schema:
   - 1
   - 2
   type: integer
-supported_chrome_os_management:
-- active_directory
 supported_on:
-- chrome_os:66-
+- chrome_os:66-114
 tags:
 - system-security
 type: int-enum

@@ -190,7 +190,9 @@ TEST(BlinkTransferableMessageStructTraitsTest,
   size_t original_bitmap_width = original_bitmap->width();
   scoped_refptr<SharedBuffer> original_bitmap_data =
       original_bitmap->BitmapImage()->Data();
-  v8::Local<v8::Value> wrapper = ToV8(original_bitmap, scope.GetScriptState());
+  v8::Local<v8::Value> wrapper =
+      ToV8Traits<ImageBitmap>::ToV8(scope.GetScriptState(), original_bitmap)
+          .ToLocalChecked();
   Transferables transferables;
   transferables.image_bitmaps.push_back(std::move(original_bitmap));
   BlinkTransferableMessage msg;

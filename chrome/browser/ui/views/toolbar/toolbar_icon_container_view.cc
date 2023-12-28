@@ -274,6 +274,6 @@ void ToolbarIconContainerView::OnButtonHighlightedChanged(
   UpdateHighlight();
 }
 
-BEGIN_METADATA(ToolbarIconContainerView, views::View)
+BEGIN_METADATA(ToolbarIconContainerView)
 ADD_READONLY_PROPERTY_METADATA(bool, Highlighted)
 END_METADATA

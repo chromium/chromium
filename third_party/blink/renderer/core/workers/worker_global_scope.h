@@ -307,7 +307,6 @@ class CORE_EXPORT WorkerGlobalScope
   // Used for importScripts().
   void ImportScriptsInternal(const Vector<String>& urls);
   // ExecutionContext
-  void AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr) final;
   void AddInspectorIssue(AuditsIssue) final;
   EventTarget* ErrorEventTarget() final { return this; }
 

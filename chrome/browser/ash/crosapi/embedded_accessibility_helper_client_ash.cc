@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "ash/public/cpp/accessibility_controller.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom.h"
 

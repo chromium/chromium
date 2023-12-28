@@ -92,9 +92,6 @@ class MockGpuVideoDecodeAcceleratorFactories
 
 }  // anonymous namespace
 
-typedef webrtc::SdpVideoFormat Sdp;
-typedef webrtc::SdpVideoFormat::Parameters Params;
-
 class RTCVideoDecoderFactoryTest : public ::testing::Test {
  public:
   RTCVideoDecoderFactoryTest()
@@ -111,51 +108,58 @@ TEST_F(RTCVideoDecoderFactoryTest, QueryCodecSupportReturnsExpectedResults) {
       .WillRepeatedly(Return(true));
 
   // VP8 is not supported
-  EXPECT_TRUE(Equals(decoder_factory_.QueryCodecSupport(
-                         Sdp("VP8"), false /*reference_scaling*/),
-                     kUnsupported));
+  EXPECT_TRUE(
+      Equals(decoder_factory_.QueryCodecSupport(webrtc::SdpVideoFormat("VP8"),
+                                                false /*reference_scaling*/),
+             kUnsupported));
 
   // H264 high profile is not supported
-  EXPECT_TRUE(Equals(decoder_factory_.QueryCodecSupport(
-                         Sdp("H264", Params{{"level-asymmetry-allowed", "1"},
-                                            {"packetization-mode", "1"},
-                                            {"profile-level-id", "64001f"}}),
-                         false /*reference_scaling*/),
-                     kUnsupported));
+  EXPECT_TRUE(Equals(
+      decoder_factory_.QueryCodecSupport(
+          webrtc::SdpVideoFormat("H264", {{"level-asymmetry-allowed", "1"},
+                                          {"packetization-mode", "1"},
+                                          {"profile-level-id", "64001f"}}),
+          false /*reference_scaling*/),
+      kUnsupported));
 
   // VP9, H264 & AV1 decode should be supported without reference scaling.
-  EXPECT_TRUE(Equals(decoder_factory_.QueryCodecSupport(
-                         Sdp("VP9"), false /*reference_scaling*/),
-                     kSupportedPowerEfficient));
-  EXPECT_TRUE(Equals(decoder_factory_.QueryCodecSupport(
-                         Sdp("AV1"), false /*reference_scaling*/),
-                     kSupportedPowerEfficient));
-  EXPECT_TRUE(Equals(decoder_factory_.QueryCodecSupport(
-                         Sdp("H264", Params{{"level-asymmetry-allowed", "1"},
-                                            {"packetization-mode", "1"},
-                                            {"profile-level-id", "42001f"}}),
-                         false /*reference_scaling*/),
-                     kSupportedPowerEfficient));
+  EXPECT_TRUE(
+      Equals(decoder_factory_.QueryCodecSupport(webrtc::SdpVideoFormat("VP9"),
+                                                false /*reference_scaling*/),
+             kSupportedPowerEfficient));
+  EXPECT_TRUE(
+      Equals(decoder_factory_.QueryCodecSupport(webrtc::SdpVideoFormat("AV1"),
+                                                false /*reference_scaling*/),
+             kSupportedPowerEfficient));
+  EXPECT_TRUE(Equals(
+      decoder_factory_.QueryCodecSupport(
+          webrtc::SdpVideoFormat("H264", {{"level-asymmetry-allowed", "1"},
+                                          {"packetization-mode", "1"},
+                                          {"profile-level-id", "42001f"}}),
+          false /*reference_scaling*/),
+      kSupportedPowerEfficient));
 
   // AV1 decode should be supported with reference scaling.
-  EXPECT_TRUE(Equals(decoder_factory_.QueryCodecSupport(
-                         Sdp("AV1"), true /*reference_scaling*/),
-                     kSupportedPowerEfficient));
+  EXPECT_TRUE(
+      Equals(decoder_factory_.QueryCodecSupport(webrtc::SdpVideoFormat("AV1"),
+                                                true /*reference_scaling*/),
+             kSupportedPowerEfficient));
 
   // VP9 decode supported depending on platform.
-  EXPECT_TRUE(Equals(decoder_factory_.QueryCodecSupport(
-                         Sdp("VP9"), true /*reference_scaling*/),
-                     media::IsVp9kSVCHWDecodingEnabled()
-                         ? kSupportedPowerEfficient
-                         : kUnsupported));
+  EXPECT_TRUE(
+      Equals(decoder_factory_.QueryCodecSupport(webrtc::SdpVideoFormat("VP9"),
+                                                true /*reference_scaling*/),
+             media::IsVp9kSVCHWDecodingEnabled() ? kSupportedPowerEfficient
+                                                 : kUnsupported));
 
   // H264 decode not supported with reference scaling.
-  EXPECT_TRUE(Equals(decoder_factory_.QueryCodecSupport(
-                         Sdp("H264", Params{{"level-asymmetry-allowed", "1"},
-                                            {"packetization-mode", "1"},
-                                            {"profile-level-id", "42001f"}}),
-                         true /*reference_scaling*/),
-                     kUnsupported));
+  EXPECT_TRUE(Equals(
+      decoder_factory_.QueryCodecSupport(
+          webrtc::SdpVideoFormat("H264", {{"level-asymmetry-allowed", "1"},
+                                          {"packetization-mode", "1"},
+                                          {"profile-level-id", "42001f"}}),
+          true /*reference_scaling*/),
+      kUnsupported));
 }
 
 TEST_F(RTCVideoDecoderFactoryTest, GetSupportedFormatsReturnsAllExpectedModes) {

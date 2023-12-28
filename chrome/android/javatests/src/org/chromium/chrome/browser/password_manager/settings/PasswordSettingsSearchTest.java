@@ -316,7 +316,8 @@ public class PasswordSettingsSearchTest {
                         menuInitiallyVisible.set(
                                 prefs.getToolbarForTesting().isOverflowMenuShowing()));
 
-        onView(withText(R.string.passwords_auto_signin_title)).check(matches(isDisplayed()));
+        onView(withText(R.string.password_settings_save_passwords)).check(matches(isDisplayed()));
+
         if (menuInitiallyVisible.get()) { // Check overflow menu only on large screens that have it.
             onView(withContentDescription(R.string.abc_action_menu_overflow_description))
                     .check(matches(isDisplayed()));
@@ -324,7 +325,7 @@ public class PasswordSettingsSearchTest {
 
         onView(withSearchMenuIdOrText()).perform(click());
 
-        onView(withText(R.string.passwords_auto_signin_title)).check(doesNotExist());
+        onView(withText(R.string.password_settings_save_passwords)).check(doesNotExist());
         ViewUtils.waitForViewCheckingState(
                 withParent(withContentDescription(R.string.abc_action_menu_overflow_description)),
                 VIEW_INVISIBLE | VIEW_GONE | VIEW_NULL);
@@ -348,12 +349,13 @@ public class PasswordSettingsSearchTest {
         onView(withSearchMenuIdOrText()).perform(click());
         onView(withId(R.id.search_src_text)).perform(click(), typeText("Zeu"), closeSoftKeyboard());
 
-        onView(withText(R.string.passwords_auto_signin_title)).check(doesNotExist());
+        onView(withText(R.string.password_settings_save_passwords)).check(doesNotExist());
 
         onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
-        onView(withText(R.string.passwords_auto_signin_title)).check(matches(isDisplayed()));
+        onView(withText(R.string.password_settings_save_passwords)).check(matches(isDisplayed()));
+
         onView(withId(R.id.menu_id_search)).check(matches(isDisplayed()));
     }
 

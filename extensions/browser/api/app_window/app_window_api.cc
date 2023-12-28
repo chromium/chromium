@@ -32,6 +32,7 @@
 #include "extensions/common/features/simple_feature.h"
 #include "extensions/common/image_util.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -374,7 +375,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
       api::app_runtime::ActionType::kNone;
   if (options &&
       options->lock_screen_action != api::app_runtime::ActionType::kNone) {
-    if (source_context_type() != Feature::LOCK_SCREEN_EXTENSION_CONTEXT) {
+    if (source_context_type() != mojom::ContextType::kLockscreenExtension) {
       return RespondNow(Error(
           app_window_constants::kLockScreenActionRequiresLockScreenContext));
     }

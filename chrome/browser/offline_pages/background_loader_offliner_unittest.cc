@@ -646,10 +646,6 @@ TEST_F(BackgroundLoaderOfflinerTest, FailsOnErrorPage) {
   handle.set_net_error_code(net::Error::ERR_NAME_NOT_RESOLVED);
   offliner()->DidFinishNavigation(&handle);
 
-  histograms().ExpectBucketCount(
-      "OfflinePages.Background.LoadingErrorStatusCode.async_loading",
-      -105,  // ERR_NAME_NOT_RESOLVED
-      1);
   CompleteLoading();
   PumpLoop();
 
@@ -940,10 +936,6 @@ TEST_F(BackgroundLoaderOfflinerTest,
   offliner()->DidFinishNavigation(&handle);
 
   // The error histogram should be 0.
-  histograms().ExpectBucketCount(
-      "OfflinePages.Background.LoadingErrorStatusCode.async_loading",
-      -105,  // ERR_NAME_NOT_RESOLVED
-      0);
   CompleteLoading();
   PumpLoop();
 

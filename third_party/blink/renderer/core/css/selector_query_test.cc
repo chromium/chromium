@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 // Uncomment to run the SelectorQueryTests for stats in a release build.
 // #define RELEASE_QUERY_STATS
@@ -66,6 +67,7 @@ void RunTests(ContainerNode& scope, const QueryTest (&test_cases)[length]) {
 }  // namespace
 
 TEST(SelectorQueryTest, NotMatchingPseudoElement) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       Document::CreateForTest(execution_context.GetExecutionContext());
@@ -77,8 +79,7 @@ TEST(SelectorQueryTest, NotMatchingPseudoElement) {
   HeapVector<CSSSelector> arena;
   base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
-          *document, NullURL(), true /* origin_clean */, Referrer(),
-          WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
+          *document, NullURL(), true /* origin_clean */, Referrer()),
       CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr, nullptr,
       "span::before", arena);
   CSSSelectorList* selector_list =
@@ -89,8 +90,7 @@ TEST(SelectorQueryTest, NotMatchingPseudoElement) {
 
   selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
-          *document, NullURL(), true /* origin_clean */, Referrer(),
-          WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
+          *document, NullURL(), true /* origin_clean */, Referrer()),
       CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr, nullptr,
       "span", arena);
   selector_list = CSSSelectorList::AdoptSelectorVector(selector_vector);
@@ -100,6 +100,7 @@ TEST(SelectorQueryTest, NotMatchingPseudoElement) {
 }
 
 TEST(SelectorQueryTest, LastOfTypeNotFinishedParsing) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
@@ -113,8 +114,7 @@ TEST(SelectorQueryTest, LastOfTypeNotFinishedParsing) {
   HeapVector<CSSSelector> arena;
   base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
-          *document, NullURL(), true /* origin_clean */, Referrer(),
-          WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
+          *document, NullURL(), true /* origin_clean */, Referrer()),
       CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr, nullptr,
       "p:last-of-type", arena);
   CSSSelectorList* selector_list =
@@ -126,6 +126,7 @@ TEST(SelectorQueryTest, LastOfTypeNotFinishedParsing) {
 }
 
 TEST(SelectorQueryTest, StandardsModeFastPaths) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
@@ -232,6 +233,7 @@ TEST(SelectorQueryTest, StandardsModeFastPaths) {
 }
 
 TEST(SelectorQueryTest, FastPathScoped) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
@@ -300,6 +302,7 @@ TEST(SelectorQueryTest, FastPathScoped) {
 }
 
 TEST(SelectorQueryTest, QuirksModeSlowPath) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
@@ -338,6 +341,7 @@ TEST(SelectorQueryTest, QuirksModeSlowPath) {
 }
 
 TEST(SelectorQueryTest, DisconnectedSubtree) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
@@ -367,6 +371,7 @@ TEST(SelectorQueryTest, DisconnectedSubtree) {
 }
 
 TEST(SelectorQueryTest, DisconnectedTreeScope) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
@@ -398,6 +403,7 @@ TEST(SelectorQueryTest, DisconnectedTreeScope) {
 }
 
 TEST(SelectorQueryTest, QueryHasPseudoClass) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());

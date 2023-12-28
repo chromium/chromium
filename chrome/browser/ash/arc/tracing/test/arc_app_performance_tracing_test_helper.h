@@ -58,8 +58,9 @@ class ArcAppPerformanceTracingTestHelper {
   void PlaySequence(exo::Surface* surface,
                     const std::vector<base::TimeDelta>& deltas);
 
-  // Plays default sequence that has FPS = 45, CommitDeviation = 216 and
-  // RenderQuality = 48% for target tracing period as 1/3 seconds.
+  // Plays default sequence that has PerceivedFPS = FPS = 48,
+  // CommitDeviation = 216 and RenderQuality = 48% for target tracing period as
+  // 1/3 seconds.
   void PlayDefaultSequence(exo::Surface* surface);
 
   // Causes the surface to be committed and its present callback to be invoked.

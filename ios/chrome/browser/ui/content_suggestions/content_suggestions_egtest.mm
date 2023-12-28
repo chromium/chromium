@@ -11,6 +11,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/segmentation_platform/public/constants.h"
+#import "components/segmentation_platform/public/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -178,28 +180,18 @@ void TapMoreButtonIfVisible() {
       [self isRunningTest:@selector(testMagicStackEditButton)] ||
       [self isRunningTest:@selector
             (testMagicStackCompactedSetUpListCompleteAllItems)]) {
-    if ([self
-            isRunningTest:@selector(testMagicStackSetUpListCompleteAllItems)]) {
-      config.additional_args.push_back(
-          "--enable-features=" + std::string(kMagicStack.name) + "<" +
-          std::string(kMagicStack.name));
-      config.additional_args.push_back(
-          "--force-fieldtrials=" + std::string(kMagicStack.name) + "/Test");
-      config.additional_args.push_back(
-          "--force-fieldtrial-params=" + std::string(kMagicStack.name) +
-          ".Test:" + std::string(kSetUpListCompactedTimeThresholdDays) + "/" +
-          "3");
-    } else {
-      config.additional_args.push_back(
-          "--enable-features=" + std::string(kMagicStack.name) + "<" +
-          std::string(kMagicStack.name));
-      config.additional_args.push_back(
-          "--force-fieldtrials=" + std::string(kMagicStack.name) + "/Test");
-      config.additional_args.push_back(
-          "--force-fieldtrial-params=" + std::string(kMagicStack.name) +
-          ".Test:" + std::string(kSetUpListCompactedTimeThresholdDays) + "/" +
-          "0");
+    std::string enable_magic_stack_segmentation_arg =
+        "--enable-features=" +
+        std::string(segmentation_platform::features::
+                        kSegmentationPlatformIosModuleRanker.name) +
+        ":" + segmentation_platform::kDefaultModelEnabledParam + "/true" + "," +
+        kMagicStack.name;
+    if ([self isRunningTest:@selector
+              (testMagicStackCompactedSetUpListCompleteAllItems)]) {
+      enable_magic_stack_segmentation_arg +=
+          ":" + std::string(kSetUpListCompactedTimeThresholdDays) + "/" + "0";
     }
+    config.additional_args.push_back(enable_magic_stack_segmentation_arg);
   } else {
     config.features_disabled.push_back(kMagicStack);
   }

@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/geometry/length_point.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_component_transfer.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_convolve_matrix.h"
@@ -50,21 +51,6 @@ class ScriptValue;
 
 namespace {
 int num_canvas_filter_errors_to_console_allowed_ = 64;
-
-BlurFilterOperation* ResolveBlur(const Dictionary& blur_dict,
-                                 ExceptionState& exception_state) {
-  absl::optional<double> std_deviation =
-      blur_dict.Get<IDLDouble>("stdDeviation", exception_state);
-  if (!std_deviation.has_value()) {
-    exception_state.ThrowTypeError(
-        "Failed to construct blur filter, 'stdDeviation' required and must be "
-        "a number.");
-    return nullptr;
-  }
-
-  return MakeGarbageCollected<BlurFilterOperation>(
-      Length::Fixed(*std_deviation));
-}
 
 ColorMatrixFilterOperation* ResolveColorMatrix(
     const Dictionary& dict,
@@ -256,11 +242,28 @@ base::expected<gfx::PointF, String> ResolveFloatOrVec2f(
     if (exception_state.HadException() || !two_floats.has_value() ||
         two_floats->size() != 2) {
       return base::unexpected(String::Format(
-          "\"%s\" must either be a number or a array of two numbers",
+          "\"%s\" must either be a number or an array of two numbers",
           property_name.Ascii().c_str()));
     }
     return gfx::PointF(two_floats->at(0), two_floats->at(1));
   }
+}
+
+BlurFilterOperation* ResolveBlur(const Dictionary& blur_dict,
+                                 ExceptionState& exception_state) {
+  base::expected<gfx::PointF, String> blur_xy =
+      ResolveFloatOrVec2f("stdDeviation", blur_dict, exception_state);
+
+  if (exception_state.HadException() || !blur_xy.has_value()) {
+    exception_state.ThrowTypeError(
+        String::Format("Failed to construct blur filter. %s.",
+                       blur_xy.error().Utf8().c_str()));
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<BlurFilterOperation>(
+      Length::Fixed(std::max(0.0f, blur_xy->x())),
+      Length::Fixed(std::max(0.0f, blur_xy->y())));
 }
 
 DropShadowFilterOperation* ResolveDropShadow(

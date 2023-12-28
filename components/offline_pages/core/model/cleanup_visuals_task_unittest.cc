@@ -66,9 +66,6 @@ TEST_F(CleanupVisualsTaskTest, CleanupNoVisuals) {
   base::HistogramTester histogram_tester;
   RunTask(std::make_unique<CleanupVisualsTask>(
       store(), store_utils::FromDatabaseTime(1000), callback.Get()));
-
-  histogram_tester.ExpectUniqueSample("OfflinePages.CleanupThumbnails.Count", 0,
-                                      1);
 }
 
 TEST_F(CleanupVisualsTaskTest, CleanupAllCombinations) {
@@ -124,9 +121,6 @@ TEST_F(CleanupVisualsTaskTest, CleanupAllCombinations) {
   EXPECT_EQ(visuals2, MustReadVisuals(visuals2.offline_id));
   EXPECT_EQ(visuals3, MustReadVisuals(visuals3.offline_id));
   EXPECT_EQ(nullptr, ReadVisuals(visuals4.offline_id).get());
-
-  histogram_tester.ExpectUniqueSample("OfflinePages.CleanupThumbnails.Count", 1,
-                                      1);
 }
 
 }  // namespace

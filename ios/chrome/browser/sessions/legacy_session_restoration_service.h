@@ -49,6 +49,9 @@ class LegacySessionRestorationService final : public SessionRestorationService,
   void ScheduleSaveSessions() final;
   void SetSessionID(Browser* browser, const std::string& identifier) final;
   void LoadSession(Browser* browser) final;
+  void LoadWebStateStorage(Browser* browser,
+                           web::WebState* web_state,
+                           WebStateStorageCallback callback) final;
   void Disconnect(Browser* browser) final;
   std::unique_ptr<web::WebState> CreateUnrealizedWebState(
       Browser* browser,
@@ -58,6 +61,7 @@ class LegacySessionRestorationService final : public SessionRestorationService,
   void InvokeClosureWhenBackgroundProcessingDone(
       base::OnceClosure closure) final;
   void PurgeUnassociatedData(base::OnceClosure closure) final;
+  bool PlaceholderTabsEnabled() const final;
 
   // SessionRestorationObserver implementation.
   void WillStartSessionRestoration(Browser* browser) final;

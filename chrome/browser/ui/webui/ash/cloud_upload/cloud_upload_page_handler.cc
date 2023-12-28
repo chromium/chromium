@@ -51,8 +51,7 @@ void CloudUploadPageHandler::OnMountResponse(
 }
 
 void CloudUploadPageHandler::GetDialogArgs(GetDialogArgsCallback callback) {
-  std::move(callback).Run(dialog_args_ ? dialog_args_.Clone()
-                                       : mojom::DialogArgs::New());
+  std::move(callback).Run(dialog_args_ ? dialog_args_.Clone() : nullptr);
 }
 
 void CloudUploadPageHandler::IsOfficeWebAppInstalled(

@@ -51,7 +51,7 @@ class ASH_EXPORT LoginShelfButton : public PillButton, public ShelfObserver {
 
  private:
   base::ScopedObservation<Shelf, ShelfObserver> shelf_observer_{this};
-  const raw_ref<const gfx::VectorIcon, ExperimentalAsh> icon_;
+  const raw_ref<const gfx::VectorIcon> icon_;
   const int text_resource_id_;
 };
 

@@ -54,10 +54,10 @@ blink_python_runner("runtime_enabled_features") {
 
   build_scripts_output_dir = "$blink_platform_output_dir/../build/scripts"
   outputs = [
+    "$blink_platform_output_dir/exported/web_runtime_features_base.cc",
     "$blink_platform_output_dir/runtime_enabled_features.cc",
     "$blink_platform_output_dir/runtime_enabled_features.h",
     "$blink_platform_output_dir/testing/runtime_enabled_features_test_helpers.h",
-    "$blink_platform_output_dir/exported/web_runtime_features_base.cc",
     "$build_scripts_output_dir/runtime_enabled_features.pickle",
   ]
 
@@ -83,8 +83,8 @@ blink_python_runner("runtime_feature_state_override_context") {
              "../build/scripts/templates/runtime_feature_state_override_context.cc.tmpl",
            ]
   outputs = [
-    "$blink_platform_output_dir/runtime_feature_state/runtime_feature_state_override_context.h",
     "$blink_platform_output_dir/runtime_feature_state/runtime_feature_state_override_context.cc",
+    "$blink_platform_output_dir/runtime_feature_state/runtime_feature_state_override_context.h",
   ]
 
   args = [
@@ -996,8 +996,6 @@ component("platform") {
     "graphics/gpu/xr_frame_transport.h",
     "graphics/gpu/xr_webgl_drawing_buffer.cc",
     "graphics/gpu/xr_webgl_drawing_buffer.h",
-    "graphics/gpu_memory_buffer_image_copy.cc",
-    "graphics/gpu_memory_buffer_image_copy.h",
     "graphics/gradient.cc",
     "graphics/gradient.h",
     "graphics/gradient_generated_image.cc",
@@ -1027,6 +1025,8 @@ component("platform") {
     "graphics/image_orientation_enum.h",
     "graphics/image_pattern.cc",
     "graphics/image_pattern.h",
+    "graphics/image_to_buffer_copier.cc",
+    "graphics/image_to_buffer_copier.h",
     "graphics/intercepting_canvas.cc",
     "graphics/intercepting_canvas.h",
     "graphics/interpolation_space.cc",
@@ -1212,7 +1212,7 @@ component("platform") {
     "link_hash.cc",
     "link_hash.h",
     "media/web_audio_source_provider_client.h",
-    "media/webaudiosourceprovider_impl.cc",
+    "media/web_audio_source_provider_impl.cc",
     "media_capabilities/web_audio_configuration.h",
     "media_capabilities/web_media_capabilities_info.h",
     "media_capabilities/web_media_configuration.h",
@@ -1744,6 +1744,7 @@ component("platform") {
     "//ui/events/ipc",
     "//ui/gfx/geometry",
     "//ui/gfx/mojom",
+    "//ui/gl:buildflags",
     "//ui/native_theme",
   ]
 
@@ -1984,7 +1985,7 @@ static_library("test_support") {
 test("blink_platform_unittests") {
   deps = [ ":blink_platform_unittests_sources" ]
 
-  if (enable_nocompile_tests_new) {
+  if (enable_nocompile_tests) {
     deps += [ ":blink_platform_nocompile_tests" ]
   }
 
@@ -2010,7 +2011,7 @@ test("blink_platform_unittests") {
   }
 }
 
-if (enable_nocompile_tests_new) {
+if (enable_nocompile_tests) {
   nocompile_source_set("blink_platform_nocompile_tests") {
     sources = [ "wtf/functional_nocompile.nc" ]
 
@@ -2146,7 +2147,7 @@ source_set("blink_platform_unittests_sources") {
     "heap_observer_set_test.cc",
     "json/json_parser_test.cc",
     "json/json_values_test.cc",
-    "media/webaudiosourceprovider_impl_test.cc",
+    "media/web_audio_source_provider_impl_test.cc",
     "mediastream/audio_service_audio_processor_proxy_test.cc",
     "mediastream/media_stream_audio_processor_options_test.cc",
     "mediastream/media_stream_audio_test.cc",

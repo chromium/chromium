@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">صفحہ کا سائز</translation>
 <translation id="1082009148392559545">اسکرین سیور ڈاؤن لوڈ ہو رہا ہے</translation>
 <translation id="1094693127011229778">‏IP پتہ دستیاب نہیں ہے</translation>
+<translation id="1116694919640316211">کے بارے میں</translation>
 <translation id="1118572504348554005">ہم اس فارم کے ذریعے جمع کرائے گئے تاثرات کا اپنے پارٹنرز کے ساتھ بگز اور دیگر مسائل جن کی آپ ہمیں رپورٹ کرتے ہیں کو حل کرنے کے لیے اشتراک کر سکتے ہیں۔ پاس ورڈز جیسی حساس معلومات شامل نہ کریں۔</translation>
 <translation id="1119447706177454957">داخلی خرابی</translation>
 <translation id="1124772482545689468">صارف</translation>
@@ -378,6 +379,7 @@
 <translation id="3866249974567520381">تفصیل</translation>
 <translation id="387301095347517405">آپ کی بیٹری کے مکمل طور پر چارج ہونے کی تعداد</translation>
 <translation id="3885327323343477505">اسکرین سیور تبدیل کریں</translation>
+<translation id="3892148308691398805">ٹیکسٹ کاپی کریں</translation>
 <translation id="391412459402535266">آلہ کو ٹیسٹ نہیں کیا جا سکتا۔ ٹیسٹ کرنے کے لیے لیپ ٹیب موڈ پر سوئچ کریں۔</translation>
 <translation id="3916998944874125962">اسکرین شاٹ لیں</translation>
 <translation id="3923184630988645767">ڈیٹا کا استعمال</translation>
@@ -494,7 +496,7 @@
 <translation id="4773299976671772492">روک دیا گیا</translation>
 <translation id="4782311465517282004">جب آپ دائیں طرف کلک کرنے یا ٹیکسٹ کو ٹچ کریں اور دبائے رکھیں تو تعریفیں، ترجمے یونٹ کی تبدیلیاں حاصل کریں</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> تصویر</translation>
-<translation id="4793710386569335688">مزید مدد کے لیے، <ph name="BEGIN_LINK" />مرکز امداد<ph name="END_LINK" /> پر جائیں۔</translation>
+<translation id="4793710386569335688">مزید مدد کے لیے، <ph name="BEGIN_LINK" />ہیلپ سینٹر<ph name="END_LINK" /> پر جائیں۔</translation>
 <translation id="4793756956024303490">کمپریشن الگورتھم</translation>
 <translation id="4794140124556169553">‏CPU ٹیسٹ چلانے سے آپ کے سسٹم کی کارکردگی متاثر ہو سکتی ہے</translation>
 <translation id="4798078634453489142">‏نیا APN شامل کرنے کے لیے ایک APN ہٹائیں</translation>
@@ -693,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">استعمال کے ساتھ بیٹری کی صلاحیت کم ہوتی ہے</translation>
 <translation id="6191293864534840972">نام سرورز غلط ہے</translation>
+<translation id="6196607555925437199">دوبارہ تخلیق کریں</translation>
 <translation id="6205145102504628069">کلاؤڈ فلو</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">کوئی بھی اسکینر دستیاب نہیں ہے</translation>
@@ -869,7 +872,9 @@
 <translation id="7502658306369382406">‏IPv6 پتہ</translation>
 <translation id="7513770521371759388">نیچے</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">بنائیں</translation>
 <translation id="7528507600602050979">مددگار مواد دستیاب نہیں ہے</translation>
+<translation id="753556296624075801">‏Google کے ذریعے تقویت یافتہ</translation>
 <translation id="7535791657097741517">ہلکی تھیم آن کریں</translation>
 <translation id="7550715992156305117">ڈائیگناسٹک روٹینز</translation>
 <translation id="7551123448725492271">آلہ ایک آڈیو آلہ ہے۔</translation>
@@ -880,7 +885,7 @@
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> باقی</translation>
 <translation id="7613724632293948900">ماؤس یا تیر کے نشان والی کلیدوں کے ساتھ پوزیشن تبدیل کریں۔</translation>
 <translation id="7618774594543487847">نیوٹرل</translation>
-<translation id="7620771111601174153">مرکز امداد میں مزید جانیں</translation>
+<translation id="7620771111601174153">ہیلپ سینٹر میں مزید جانیں</translation>
 <translation id="763165478673169849">آخری ری سیٹ کرنے کا وقت</translation>
 <translation id="7633068090678117093">پس منظر کی تصویر</translation>
 <translation id="7648838807254605802">‏زیادہ HTTPS تاخیر</translation>
@@ -960,6 +965,7 @@
 <translation id="8227119283605456246">فائل منسلک کریں</translation>
 <translation id="8230672074305416752">ڈیفالٹ نیٹ ورک گیٹ وے کو پنگ کرنے میں ناکام</translation>
 <translation id="8246209727385807362">نامعلوم کیریئر</translation>
+<translation id="8261506727792406068">حذف کریں</translation>
 <translation id="8262870577632766028">1 گھنٹہ</translation>
 <translation id="827422111966801947">گہرا نیلا</translation>
 <translation id="8286154143153872371">براہ کرم کسی نیٹ ورک سے منسلک ہوں اور وال پیپر دیکھنے کے لیے صفحے کو دوبارہ لوڈ کریں۔</translation>

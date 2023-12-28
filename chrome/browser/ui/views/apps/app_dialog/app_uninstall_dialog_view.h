@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_dialog_view.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 class Profile;
@@ -35,6 +36,8 @@ struct SubApp;
 class AppUninstallDialogView : public ProfileObserver,
                                public apps::UninstallDialog::UiBase,
                                public AppDialogView {
+  METADATA_HEADER(AppUninstallDialogView, AppDialogView)
+
  public:
   AppUninstallDialogView(Profile* profile,
                          apps::AppType app_type,

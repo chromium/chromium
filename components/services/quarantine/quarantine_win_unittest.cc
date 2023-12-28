@@ -5,7 +5,6 @@
 #include "components/services/quarantine/quarantine.h"
 
 #include <windows.h>
-
 #include <wininet.h>
 
 #include <string_view>
@@ -80,7 +79,7 @@ class ScopedZoneForSite {
     kRestrictedSitesZone = 4,
   };
 
-  ScopedZoneForSite(base::StringPiece domain,
+  ScopedZoneForSite(std::string_view domain,
                     std::wstring_view protocol,
                     ZoneIdentifierType zone_identifier_type);
 
@@ -96,7 +95,7 @@ class ScopedZoneForSite {
   std::wstring protocol_;
 };
 
-ScopedZoneForSite::ScopedZoneForSite(base::StringPiece domain,
+ScopedZoneForSite::ScopedZoneForSite(std::string_view domain,
                                      std::wstring_view protocol,
                                      ZoneIdentifierType zone_identifier_type)
     : domain_(base::ASCIIToWide(domain)), protocol_(protocol) {
@@ -160,11 +159,11 @@ class QuarantineWinTest : public ::testing::Test {
 
   base::FilePath GetTempDir() { return scoped_temp_dir_.GetPath(); }
 
-  base::StringPiece GetTrustedSite() { return "thisisatrustedsite.com"; }
+  std::string_view GetTrustedSite() { return "thisisatrustedsite.com"; }
 
-  base::StringPiece GetRestrictedSite() { return "thisisarestrictedsite.com"; }
+  std::string_view GetRestrictedSite() { return "thisisarestrictedsite.com"; }
 
-  base::StringPiece GetInternetSite() { return "example.com"; }
+  std::string_view GetInternetSite() { return "example.com"; }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;

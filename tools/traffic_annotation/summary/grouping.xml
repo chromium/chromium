@@ -208,7 +208,6 @@ after discussions on the right group.
       <annotation id="stream_message_pipe_adapter"/>
       <annotation id="stream_packet_socket"/>
       <annotation id="certificate_verifier_url_loader"/>
-      <annotation id="domain_security_policy"/>
       <annotation id="services_http_server_error_response"/>
       <annotation id="webrtc_peer_connection"/>
       <annotation id="direct_sockets"/>
@@ -225,7 +224,6 @@ after discussions on the right group.
       <annotation id="quick_answers_loader"/>
       <annotation id="chrome_search_suggest_service"/>
       <annotation id="cryptauth_get_my_devices"/>
-      <annotation id="shopping_list_ui_image_fetcher"/>
       <annotation id="chrome_commerce_price_email_pref_fetcher"/>
       <annotation id="chrome_commerce_price_email_pref_sender"/>
       <annotation id="receive_messages_express"/>
@@ -300,6 +298,7 @@ after discussions on the right group.
       <annotation id="remoting_report_provisioning_error"/>
       <annotation id="webauthn_rp_id_check"/>
       <annotation id="tasks_integration"/>
+      <annotation id="search_engine_adapter"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
@@ -342,7 +341,6 @@ after discussions on the right group.
   <group name="Child-protection and Safe Browsing Features" hidden="true">
     <sender name="Safe Browsing">
       <annotation id="client_download_request"/>
-      <annotation id="kids_chrome_management_client_classify_url"/>
       <annotation id="supervised_user_classify_url"/>
       <annotation id="supervised_user_list_family_members"/>
       <annotation id="password_protection_request"/>

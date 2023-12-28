@@ -129,8 +129,8 @@ class HUDHeaderLayout : public views::LayoutManager {
   gfx::Size GetPreferredSize(const views::View* host) const override;
 
  private:
-  raw_ptr<const views::View, ExperimentalAsh> data_view_;
-  raw_ptr<views::View, ExperimentalAsh> padding_;
+  raw_ptr<const views::View> data_view_;
+  raw_ptr<views::View> padding_;
 };
 
 gfx::Size HUDHeaderLayout::GetPreferredSize(const views::View* host) const {
@@ -143,7 +143,7 @@ void HUDHeaderLayout::Layout(views::View* host) {
 
   const gfx::Size preferred_size = data_view_->GetPreferredSize();
 
-  for (auto* child : host->children()) {
+  for (views::View* child : host->children()) {
     if (child != padding_) {
       child->SetPosition({0, 0});
       child->SetSize(preferred_size);

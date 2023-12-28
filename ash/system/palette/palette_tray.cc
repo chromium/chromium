@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/tray_background_view_catalog.h"
@@ -116,14 +116,8 @@ class BatteryView : public views::View {
     label_ = AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_ASH_STYLUS_BATTERY_LOW_LABEL)));
     label_->SetEnabledColor(stylus_battery_delegate_.GetColorForBatteryLevel());
-    if (chromeos::features::IsJellyEnabled()) {
-      label_->SetAutoColorReadabilityEnabled(false);
-      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
-                                            *label_);
-    } else {
-      TrayPopupUtils::SetLabelFontList(label_,
-                                       TrayPopupUtils::FontStyle::kSmallTitle);
-    }
+    label_->SetAutoColorReadabilityEnabled(false);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *label_);
   }
 
   // views::View:
@@ -157,8 +151,8 @@ class BatteryView : public views::View {
 
  private:
   StylusBatteryDelegate stylus_battery_delegate_;
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
 };
 
 BEGIN_METADATA(BatteryView)
@@ -182,14 +176,9 @@ class TitleView : public views::View {
         l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE)));
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     title_label->SetEnabledColorId(kColorAshTextColorPrimary);
-    if (chromeos::features::IsJellyEnabled()) {
-      title_label->SetAutoColorReadabilityEnabled(false);
-      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
-                                            *title_label);
-    } else {
-      TrayPopupUtils::SetLabelFontList(
-          title_label, TrayPopupUtils::FontStyle::kPodMenuHeader);
-    }
+    title_label->SetAutoColorReadabilityEnabled(false);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
+                                          *title_label);
     layout_ptr->SetFlexForView(title_label, 1);
 
     if (ash::features::IsStylusBatteryStatusEnabled()) {
@@ -234,9 +223,9 @@ class TitleView : public views::View {
 
   // Unowned pointers to button views so we can determine which button was
   // clicked.
-  raw_ptr<views::View, ExperimentalAsh> settings_button_;
-  raw_ptr<views::View, ExperimentalAsh> help_button_;
-  raw_ptr<PaletteTray, DanglingUntriaged | ExperimentalAsh> palette_tray_;
+  raw_ptr<views::View> settings_button_;
+  raw_ptr<views::View> help_button_;
+  raw_ptr<PaletteTray, DanglingUntriaged> palette_tray_;
 };
 
 BEGIN_METADATA(TitleView)
@@ -262,7 +251,7 @@ class StylusEventHandler : public ui::EventHandler {
   }
 
  private:
-  raw_ptr<PaletteTray, ExperimentalAsh> palette_tray_;
+  raw_ptr<PaletteTray> palette_tray_;
 };
 
 }  // namespace

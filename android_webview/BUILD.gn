@@ -19,7 +19,6 @@ import("//chrome/android/expectations/expectations.gni")
 import("//chrome/android/trichrome.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//components/services/screen_ai/buildflags/features.gni")
-import("//components/signin/features.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//components/supervised_user/buildflags.gni")
 import("//device/vr/buildflags/buildflags.gni")
@@ -136,8 +135,7 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
     is_base_module = true
 
     if (enable_manifest_verification) {
-      expected_android_manifest =
-          "expectations/system_webview_bundle.AndroidManifest.expected"
+      expected_android_manifest = "expectations/$_main_system_webview_bundle_target.AndroidManifest.expected"
     }
   }
 
@@ -172,6 +170,10 @@ if (android_64bit_target_cpu) {
     target_type = "android_app_bundle_module"
     is_base_module = true
     include_32_bit_webview = false
+    if (enable_manifest_verification) {
+      expected_android_manifest =
+          "expectations/system_webview_64_bundle.AndroidManifest.expected"
+    }
   }
 
   system_webview_bundle("system_webview_64_bundle") {
@@ -192,6 +194,10 @@ if (android_64bit_target_cpu) {
       target_type = "android_app_bundle_module"
       include_64_bit_webview = false
       is_base_module = true
+      if (enable_manifest_verification) {
+        expected_android_manifest =
+            "expectations/system_webview_32_bundle.AndroidManifest.expected"
+      }
     }
 
     system_webview_bundle("system_webview_32_bundle") {
@@ -262,8 +268,7 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
     }
 
     if (enable_manifest_verification) {
-      expected_android_manifest =
-          "expectations/trichrome_webview_bundle.AndroidManifest.expected"
+      expected_android_manifest = "expectations/$_main_trichrome_webview_bundle_target.AndroidManifest.expected"
     }
     static_library_provider = _main_trichrome_library_provider
   }
@@ -274,7 +279,7 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
     bundle_name = "TrichromeWebView"
     static_library_provider = _main_trichrome_library_provider
     if (enable_libs_and_assets_verification) {
-      expected_libs_and_assets = "expectations/trichrome_webview_bundle.$target_cpu.libs_and_assets.expected"
+      expected_libs_and_assets = "expectations/$_main_trichrome_webview_bundle_target.$target_cpu.libs_and_assets.expected"
     }
   }
 }
@@ -297,6 +302,10 @@ if (android_64bit_target_cpu) {
     is_64_bit_browser = true
     include_32_bit_webview = false
     static_library_provider = "//chrome/android:trichrome_library_64_apk"
+    if (enable_manifest_verification) {
+      expected_android_manifest =
+          "expectations/trichrome_webview_64_bundle.AndroidManifest.expected"
+    }
   }
 }
 
@@ -333,6 +342,10 @@ if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
   trichrome_webview_64_32_tmpl("trichrome_webview_64_32_base_bundle_module") {
     target_type = "android_app_bundle_module"
     is_base_module = true
+    if (enable_manifest_verification) {
+      expected_android_manifest =
+          "expectations/trichrome_webview_64_32_bundle.AndroidManifest.expected"
+    }
   }
 
   system_webview_bundle("trichrome_webview_64_32_bundle") {
@@ -365,6 +378,10 @@ if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
   trichrome_webview_32_tmpl("trichrome_webview_32_base_bundle_module") {
     target_type = "android_app_bundle_module"
     is_base_module = true
+    if (enable_manifest_verification) {
+      expected_android_manifest =
+          "expectations/trichrome_webview_32_bundle.AndroidManifest.expected"
+    }
   }
 
   system_webview_bundle("trichrome_webview_32_bundle") {
@@ -504,6 +521,7 @@ generate_jni("browser_jni_headers") {
     "java/src/org/chromium/android_webview/AndroidProtocolHandler.java",
     "java/src/org/chromium/android_webview/AwAutofillClient.java",
     "java/src/org/chromium/android_webview/AwBrowserContext.java",
+    "java/src/org/chromium/android_webview/AwBrowserContextStore.java",
     "java/src/org/chromium/android_webview/AwBrowserProcess.java",
     "java/src/org/chromium/android_webview/AwContents.java",
     "java/src/org/chromium/android_webview/AwContentsBackgroundThreadClient.java",
@@ -553,6 +571,7 @@ android_library("browser_java") {
     "java/src/org/chromium/android_webview/AwActionModeCallback.java",
     "java/src/org/chromium/android_webview/AwAutofillClient.java",
     "java/src/org/chromium/android_webview/AwBrowserContext.java",
+    "java/src/org/chromium/android_webview/AwBrowserContextStore.java",
     "java/src/org/chromium/android_webview/AwBrowserProcess.java",
     "java/src/org/chromium/android_webview/AwComputedFlags.java",
     "java/src/org/chromium/android_webview/AwConsoleMessage.java",
@@ -660,7 +679,8 @@ android_library("browser_java") {
     "java/src/org/chromium/android_webview/safe_browsing/AwSafeBrowsingConversionHelper.java",
     "java/src/org/chromium/android_webview/safe_browsing/AwSafeBrowsingResponse.java",
     "java/src/org/chromium/android_webview/safe_browsing/AwSafeBrowsingSafeModeAction.java",
-    "java/src/org/chromium/android_webview/selection/SamsungSelectionActionMenuDelegate.java",
+    "java/src/org/chromium/android_webview/selection/AwSelectionActionMenuDelegate.java",
+    "java/src/org/chromium/android_webview/selection/SamsungSelectionActionMenuHelper.java",
     "java/src/org/chromium/android_webview/supervised_user/AwSupervisedUserUrlClassifier.java",
     "java/src/org/chromium/android_webview/variations/FastVariationsSeedSafeModeAction.java",
     "java/src/org/chromium/android_webview/variations/VariationsSeedLoader.java",
@@ -1171,7 +1191,6 @@ grit("generate_components_strings") {
     "enable_pdf=$enable_pdf",
     "enable_print_preview=$enable_print_preview",
     "enable_screen_ai_service=$enable_screen_ai_service",
-    "enable_search_engine_choice=$enable_search_engine_choice",
     "enable_vr=$enable_vr",
     "use_blink=$use_blink",
   ]

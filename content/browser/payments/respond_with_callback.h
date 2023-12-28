@@ -55,7 +55,6 @@ class RespondWithCallback
       blink::ServiceWorkerStatusCode service_worker_status) = 0;
 
   void FinishServiceWorkerRequest();
-  void MaybeRecordTimeoutMetric(blink::ServiceWorkerStatusCode status);
   void ClearRespondWithCallbackAndCloseWindow();
 
  private:

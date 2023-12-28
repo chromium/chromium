@@ -402,8 +402,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 #pragma mark - CRWWebStateObserver
 
 - (void)webState:(web::WebState*)webState
-    didChangeStateForPermission:(web::Permission)permission
-    API_AVAILABLE(ios(15.0)) {
+    didChangeStateForPermission:(web::Permission)permission {
   DCHECK_EQ(webState, self.webState);
   [self updateBadgesShownForWebState:webState];
 }
@@ -465,8 +464,8 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 // Returns the infobar in the active WebState's InfoBarManager with `type`.
 - (InfoBarIOS*)infobarWithType:(InfobarType)type {
   InfoBarManagerImpl* manager = InfoBarManagerImpl::FromWebState(self.webState);
-  const auto it =
-      base::ranges::find(manager->infobars(), type, [](const auto* infobar) {
+  const auto it = base::ranges::find(
+      manager->infobars(), type, [](const infobars::InfoBar* infobar) {
         return static_cast<const InfoBarIOS*>(infobar)->infobar_type();
       });
   return it != manager->infobars().cend() ? static_cast<InfoBarIOS*>(*it)

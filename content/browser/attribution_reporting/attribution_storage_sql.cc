@@ -21,6 +21,7 @@
 #include "base/check_op.h"
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
@@ -526,7 +527,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
 
   const std::string serialized_source_origin =
       common_info.source_origin().Serialize();
-  if (!HasCapacityForStoringSource(serialized_source_origin)) {
+  if (!HasCapacityForStoringSource(serialized_source_origin, source_time)) {
     if (int64_t file_size = StorageFileSizeKB(path_to_database_);
         file_size > -1) {
       base::UmaHistogramCounts10M(
@@ -748,6 +749,11 @@ StoreSourceResult AttributionStorageSql::StoreSource(
     return StoreSourceResult::InternalError();
   }
 
+  DCHECK_LT(AttributionStorageSql::kCurrentVersionNumber, 86);
+  base::UmaHistogramCustomCounts("Conversions.DbVersionOnSourceStored",
+                                 kCurrentVersionNumber, /*min=*/56,
+                                 /*exclusive_max=*/86, /*buckets=*/30);
+
   if (attribution_logic == StoredSource::AttributionLogic::kTruthfully) {
     return StoreSourceResult::Success();
   }
@@ -831,14 +837,10 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
   int64_t min_priority;
 
   while (min_priority_statement.Step()) {
-    std::string metadata;
-    if (!min_priority_statement.ColumnBlobAsString(0, &metadata)) {
-      continue;
-    }
-
     uint32_t trigger_data;
     int64_t priority;
-    if (!DeserializeReportMetadata(metadata, trigger_data, priority)) {
+    if (base::span<const uint8_t> blob = min_priority_statement.ColumnBlob(0);
+        !DeserializeReportMetadata(blob, trigger_data, priority)) {
       continue;
     }
 
@@ -1542,13 +1544,9 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
     corruption_causes.Put(ReportCorruptionStatus::kReportingOriginMismatch);
   }
 
-  std::string metadata;
-  if (!statement.ColumnBlobAsString(col++, &metadata)) {
-    corruption_causes.Put(ReportCorruptionStatus::kMetadataAsStringFailed);
-  }
-
   absl::optional<AttributionReport::Data> data;
-  switch (*report_type) {
+  switch (base::span<const uint8_t> metadata = statement.ColumnBlob(col++);
+          *report_type) {
     case AttributionReport::Type::kEventLevel: {
       if (!source_data.has_value()) {
         corruption_causes.Put(
@@ -1984,11 +1982,13 @@ void AttributionStorageSql::ClearAllDataAllTime(bool delete_rate_limit_data) {
 }
 
 bool AttributionStorageSql::HasCapacityForStoringSource(
-    const std::string& serialized_origin) {
+    const std::string& serialized_origin,
+    const base::Time now) {
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE,
       attribution_queries::kCountActiveSourcesFromSourceOriginSql));
   statement.BindString(0, serialized_origin);
+  statement.BindTime(1, now);
   if (!statement.Step()) {
     return false;
   }
@@ -2069,42 +2069,39 @@ std::vector<StoredSource> AttributionStorageSql::GetActiveSources(int limit) {
   }
 
   for (auto& source : sources) {
-    absl::optional<std::vector<uint64_t>> dedup_keys =
-        ReadDedupKeys(source.source_id(), AttributionReport::Type::kEventLevel);
-    if (!dedup_keys.has_value()) {
+    if (!ReadDedupKeys(source)) {
       return {};
     }
-    source.SetDedupKeys(std::move(*dedup_keys));
-
-    absl::optional<std::vector<uint64_t>> aggregatable_dedup_keys =
-        ReadDedupKeys(source.source_id(),
-                      AttributionReport::Type::kAggregatableAttribution);
-    if (!aggregatable_dedup_keys.has_value()) {
-      return {};
-    }
-    source.SetAggregatableDedupKeys(std::move(*aggregatable_dedup_keys));
   }
 
   return sources;
 }
 
-absl::optional<std::vector<uint64_t>> AttributionStorageSql::ReadDedupKeys(
-    StoredSource::Id source_id,
-    AttributionReport::Type report_type) {
+bool AttributionStorageSql::ReadDedupKeys(StoredSource& source) {
   sql::Statement statement(
       db_.GetCachedStatement(SQL_FROM_HERE, attribution_queries::kDedupKeySql));
-  statement.BindInt64(0, *source_id);
-  statement.BindInt(1, SerializeReportType(report_type));
+  statement.BindInt64(0, *source.source_id());
 
-  std::vector<uint64_t> dedup_keys;
   while (statement.Step()) {
-    dedup_keys.push_back(DeserializeUint64(statement.ColumnInt64(0)));
-  }
-  if (!statement.Succeeded()) {
-    return absl ::nullopt;
-  }
+    uint64_t dedup_key = DeserializeUint64(statement.ColumnInt64(0));
 
-  return dedup_keys;
+    absl::optional<AttributionReport::Type> report_type =
+        DeserializeReportType(statement.ColumnInt(1));
+    if (!report_type.has_value()) {
+      continue;
+    }
+    switch (*report_type) {
+      case AttributionReport::Type::kEventLevel:
+        source.dedup_keys().push_back(dedup_key);
+        break;
+      case AttributionReport::Type::kAggregatableAttribution:
+        source.aggregatable_dedup_keys().push_back(dedup_key);
+        break;
+      case AttributionReport::Type::kNullAggregatable:
+        break;
+    }
+  }
+  return statement.Succeeded();
 }
 
 bool AttributionStorageSql::StoreDedupKey(StoredSource::Id source_id,

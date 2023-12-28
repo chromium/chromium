@@ -904,13 +904,12 @@ void BubbleDialogDelegate::BubbleUmaLogger::LogMetric(
     return;
   }
 
-  const auto& allowed_class_names =
-      allowed_class_names_for_testing_.has_value()
-          ? allowed_class_names_for_testing_.value()
-          : base::make_span(views_metrics::kBubbleNameVariantAllowList,
-                            views_metrics::kBubbleNameVariantAllowListSize);
-
-  if (!base::Contains(allowed_class_names, bubble_name.value())) {
+  if (allowed_class_names_for_testing_.has_value()) {
+    if (!base::Contains(allowed_class_names_for_testing_.value(),
+                        bubble_name.value())) {
+      return;
+    }
+  } else if (!views_metrics::IsValidBubbleNameVariant(bubble_name.value())) {
     return;
   }
 

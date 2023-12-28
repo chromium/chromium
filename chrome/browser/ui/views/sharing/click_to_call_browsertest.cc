@@ -6,6 +6,7 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -319,8 +320,8 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, ContextMenu_UKM) {
 
   // Expect UKM metrics to be logged
   run_loop.Run();
-  std::vector<const ukm::mojom::UkmEntry*> ukm_entries =
-      ukm_recorder.GetEntriesByName(
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>
+      ukm_entries = ukm_recorder.GetEntriesByName(
           ukm::builders::Sharing_ClickToCall::kEntryName);
   ASSERT_EQ(1u, ukm_entries.size());
 

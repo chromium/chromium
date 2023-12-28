@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">រំកិល​ទៅស្ដាំ</translation>
 <translation id="3081586908890909590">ប្ដូរទៅ​ថត​វីដេអូ</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">ចូលរួម "<ph name="WIFINAME" />"</translation>
 <translation id="3227137524299004712">ម៉ៃក្រូហ្វូន</translation>
 <translation id="3240426699337459095">បានចម្លងតំណ</translation>
 <translation id="3354465018370944241">ការកំណត់​រូបថត</translation>
@@ -78,12 +79,14 @@
 <translation id="4705093842003735294">កម្រិតគុណភាព​ពេញលេញ</translation>
 <translation id="4864143361253542638">បញ្ជីទំព័រស្កេន</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">ចម្លងអាសយដ្ឋានតំណ <ph name="URL" /></translation>
 <translation id="491895758387112773">ផ្សាយការថត​វីដេអូ​ទៅបណ្ដាញច្រើន</translation>
 <translation id="495170559598752135">សកម្មភាព</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">សមាមាត្រ​រូបថត</translation>
 <translation id="5057360777601936059">កាមេរ៉ារបស់អ្នកមិន​អាច​ប្រើបានទេនៅពេលនេះ។
         សូមពិនិត្យមើល​ថាតើ​កាមេរ៉ា​ត្រូវបាន​ភ្ជាប់​ត្រឹមត្រូវ​ឬអត់។</translation>
+<translation id="5157591164390831335">បាន​រកឃើញ URL។</translation>
 <translation id="5163387177077603948">កំពុងផ្លាស់ទី​ក្នុងទិសដៅ​ខាងស្ដាំ</translation>
 <translation id="5235304959032763950">16:9</translation>
 <translation id="5266635337630551423">ជ្រុងខាងលើផ្នែកខាងឆ្វេងនៃឯកសារ</translation>
@@ -110,6 +113,7 @@
 <translation id="6353688143752491039">សូមអរគុណសម្រាប់ការផ្ដល់មតិកែលម្អចំពោះកម្មវិធីកាមេរ៉ា។
 
 ប្រសិនបើមតិកែលម្អរបស់អ្នកពាក់ព័ន្ធនឹងគុណភាពរូបភាព ឬវីដេអូ សូមភ្ជាប់ជាមួយសំណាករូបថត ឬវីដេអូ និងរៀបរាប់ថាមានបញ្ហាអ្វី។ (ឧទាហរណ៍ រូបថតងងឹតជ្រុល ឬមានលក្ខណៈព្រាល។)</translation>
+<translation id="6519884562954018934">ចូលរួម <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">ចែករំលែក</translation>
 <translation id="6617916774429601017">បង្ហាញកម្រិតគុណភាពទាំងអស់</translation>
 <translation id="6631515515009660915">បិទ​កញ្ចក់</translation>
@@ -129,6 +133,7 @@
 <translation id="7450541714075000668">បាន​ចម្លង​អត្ថបទ</translation>
 <translation id="7488619942230388918">ថតវីដេអូ GIF</translation>
 <translation id="7557677699350329807">ប្ដូរទៅ​កាមេរ៉ាបន្ទាប់</translation>
+<translation id="7562584071994185503">ចម្លង​អក្សរ <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">បានផ្អាក</translation>
 <translation id="7608223098072244877">4 គុណ​នឹង 4</translation>
 <translation id="761421184377987513">កំពុងផ្លាស់ទី​ក្នុងទិសដៅ​ខាងឆ្វេងផ្នែកខាងក្រោម</translation>
@@ -141,6 +146,7 @@
 <translation id="7726641833034062494">ថតវីដេអូ​ធម្មតា</translation>
 <translation id="7748344063862150053">ជ្រុងខាងលើផ្នែកខាងស្ដាំនៃឯកសារ</translation>
 <translation id="7933675232020478311">កំពុងផ្លាស់ទី​ក្នុងទិសដៅ​ខាងស្ដាំ​ផ្នែកខាងក្រោម</translation>
+<translation id="7983668134180549431">បានរកឃើញ​អត្ថបទ។</translation>
 <translation id="8079255378695216066">មិនអាចចាប់ផ្ដើមថតបានទេ</translation>
 <translation id="8120146556401698679">រំកិល ផ្អៀង ពង្រីកបង្រួម</translation>
 <translation id="8131740175452115882">អះអាង</translation>
@@ -150,16 +156,17 @@
 <translation id="8346544573713510785">កំណត់​មាត្រដ្ឋាន​ស៊ុមដោយ Camera HAL</translation>
 <translation id="8425673304802773841">ផ្អៀង​ចុះក្រោម</translation>
 <translation id="8428213095426709021">ការកំណត់</translation>
+<translation id="8609951387004618906">បើក <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">ប៊ូតុងបិទ/បើកសំឡេងមីក្រូហ្វូន។ ការបិទសំឡេង​ត្រូវបានបើក</translation>
 <translation id="8730621377337864115">រួចរាល់</translation>
 <translation id="8732462232047530626">មើលទិន្នន័យ​មេតាសាកល្បង</translation>
+<translation id="874854738381978209">បានរកឃើញ​បណ្ដាញ Wi-Fi។</translation>
 <translation id="8815966864175525708">ប្ដូរទៅ​ថតរូប​បញ្ឈរ</translation>
 <translation id="8828441885228359828">បន្ត​ការថត</translation>
 <translation id="8870695351537079478">មិន​អាច​ចាប់ផ្ដើម​ថត​បាន​ទេ</translation>
 <translation id="8880167521484863515">4:3</translation>
 <translation id="8903921497873541725">ពង្រីក</translation>
-<translation id="8926890870105777777">ចូលរួម​បណ្ដាញ "<ph name="WIFINAME" />"</translation>
 <translation id="9045010116236796332">ដាក់គែមទាំងអស់​របស់ឯកសារ​នៅក្នុងស៊ុម</translation>
 <translation id="9045155556724273246">10 វិនាទី</translation>
 <translation id="906331135292332864">កំពុង​ដំណើរការ​រូបភាព...</translation>

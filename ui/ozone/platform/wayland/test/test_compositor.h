@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 
 namespace wl {
@@ -33,7 +34,7 @@ class TestCompositor : public GlobalObject {
 
  private:
   Version version_;
-  std::vector<MockSurface*> surfaces_;
+  std::vector<raw_ptr<MockSurface, VectorExperimental>> surfaces_;
 };
 
 }  // namespace wl

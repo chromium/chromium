@@ -18,9 +18,10 @@
 
 namespace autofill {
 
-class AutofillTable;
+class AutofillSyncMetadataTable;
 class AutofillWebDataBackend;
 class AutofillWebDataService;
+class PaymentsAutofillTable;
 
 // Sync bridge responsible for applying remote changes of usage data to the
 // local database.
@@ -51,10 +52,10 @@ class AutofillWalletUsageDataSyncBridge : public base::SupportsUserData::Data,
   // ModelTypeSyncBridge
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  absl::optional<syncer::ModelError> MergeFullSyncData(
+  std::optional<syncer::ModelError> MergeFullSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
-  absl::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
+  std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -67,7 +68,9 @@ class AutofillWalletUsageDataSyncBridge : public base::SupportsUserData::Data,
 
  private:
   // Returns the table associated with the |web_data_backend_|.
-  AutofillTable* GetAutofillTable();
+  PaymentsAutofillTable* GetAutofillTable();
+
+  AutofillSyncMetadataTable* GetSyncMetadataStore();
 
   // Synchronously load sync metadata from the autofill table and pass it to the
   // processor so that it can start tracking changes.

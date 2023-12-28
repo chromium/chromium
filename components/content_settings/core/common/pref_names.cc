@@ -206,13 +206,6 @@ const char kInContextCookieControlsOpened[] =
 #if BUILDFLAG(IS_ANDROID)
 // Enable vibration for web notifications.
 const char kNotificationsVibrateEnabled[] = "notifications.vibrate_enabled";
-// Peripheral setting for request desktop site. When enabled, we will always
-// request desktop site if a keyboard, trackpad, or mouse is attached.
-const char kDesktopSitePeripheralSettingEnabled[] =
-    "desktop_site.peripheral_setting";
-// Display setting for request desktop site. When enabled, we will always
-// request desktop site if a monitor is connected.
-const char kDesktopSiteDisplaySettingEnabled[] = "desktop_site.display_setting";
 // Window setting for request desktop site. When enabled, we will request
 // mobile site if the window is narrow.
 const char kDesktopSiteWindowSettingEnabled[] = "desktop_site.window_setting";

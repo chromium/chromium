@@ -3075,8 +3075,9 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
   if (prefs.viewport_enabled &&
       base::FeatureList::IsEnabled(
           blink::features::kDefaultViewportIsDeviceWidth) &&
-      min_width_in_dp >= kAndroidMinimumTabletWidthDp &&
-      ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TV) {
+      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_AUTOMOTIVE ||
+       (min_width_in_dp >= kAndroidMinimumTabletWidthDp &&
+        ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TV))) {
     prefs.viewport_style = blink::mojom::ViewportStyle::kDefault;
   }
 #endif
@@ -3878,7 +3879,12 @@ void WebContentsImpl::ExitFullscreenMode(bool will_cause_resize) {
   }
 
   if (delegate_) {
+    // This may spin the message loop and destroy this object crbug.com/1506535
+    base::WeakPtr<WebContentsImpl> weak_ptr = weak_factory_.GetWeakPtr();
     delegate_->ExitFullscreenModeForTab(this);
+    if (!weak_ptr) {
+      return;
+    }
 
     if (keyboard_lock_widget_) {
       delegate_->CancelKeyboardLockRequest(this);
@@ -4368,8 +4374,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
                "opener", opener, "params", params);
   DCHECK(opener);
 
-  if (base::FeatureList::IsEnabled(features::kWindowOpenFileSelectFix) &&
-      active_file_chooser_) {
+  if (active_file_chooser_) {
     // Do not allow opening a new window or tab while a file select is active
     // file chooser to avoid user confusion over which tab triggered the file
     // chooser.
@@ -6940,15 +6945,13 @@ void WebContentsImpl::EnumerateDirectory(
   base::ScopedClosureRunner cancel_chooser(base::BindOnce(
       &FileChooserImpl::FileSelectListenerImpl::FileSelectionCanceled,
       listener));
-  if (base::FeatureList::IsEnabled(features::kWindowOpenFileSelectFix)) {
-    if (visibility_ == Visibility::HIDDEN) {
-      // Do not allow background tab to open file chooser.
-      return;
-    }
-    if (active_file_chooser_) {
-      // Only allow one active file chooser at one time.
-      return;
-    }
+  if (visibility_ == Visibility::HIDDEN) {
+    // Do not allow background tab to open file chooser.
+    return;
+  }
+  if (active_file_chooser_) {
+    // Only allow one active file chooser at one time.
+    return;
   }
 
   // Any explicit focusing of another window while this WebContents is in
@@ -6957,9 +6960,7 @@ void WebContentsImpl::EnumerateDirectory(
   listener->SetFullscreenBlock(std::move(fullscreen_block));
 
   if (delegate_) {
-    if (base::FeatureList::IsEnabled(features::kWindowOpenFileSelectFix)) {
-      active_file_chooser_ = std::move(file_chooser);
-    }
+    active_file_chooser_ = std::move(file_chooser);
     delegate_->EnumerateDirectory(this, std::move(listener), directory_path);
     std::ignore = cancel_chooser.Release();
   }
@@ -7732,15 +7733,13 @@ void WebContentsImpl::RunFileChooser(
   base::ScopedClosureRunner cancel_chooser(base::BindOnce(
       &FileChooserImpl::FileSelectListenerImpl::FileSelectionCanceled,
       listener));
-  if (base::FeatureList::IsEnabled(features::kWindowOpenFileSelectFix)) {
-    if (visibility_ == Visibility::HIDDEN) {
-      // Do not allow background tab to open file chooser.
-      return;
-    }
-    if (active_file_chooser_) {
-      // Only allow one active file chooser at one time.
-      return;
-    }
+  if (visibility_ == Visibility::HIDDEN) {
+    // Do not allow background tab to open file chooser.
+    return;
+  }
+  if (active_file_chooser_) {
+    // Only allow one active file chooser at one time.
+    return;
   }
 
   // Any explicit focusing of another window while this WebContents is in
@@ -7749,9 +7748,7 @@ void WebContentsImpl::RunFileChooser(
   listener->SetFullscreenBlock(std::move(fullscreen_block));
 
   if (delegate_) {
-    if (base::FeatureList::IsEnabled(features::kWindowOpenFileSelectFix)) {
-      active_file_chooser_ = std::move(file_chooser);
-    }
+    active_file_chooser_ = std::move(file_chooser);
     delegate_->RunFileChooser(render_frame_host, std::move(listener), params);
     std::ignore = cancel_chooser.Release();
   }
@@ -9078,7 +9075,9 @@ void WebContentsImpl::OnDialogClosed(int render_process_id,
                                      const std::u16string& user_input) {
   RenderFrameHostImpl* rfh =
       RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
-  DCHECK(!rfh || rfh->GetPage().IsPrimary());
+  // The user confirms and closes a dialog even after the page has navigated
+  // away and got into BackForwardCache.
+  DCHECK(!rfh || rfh->GetPage().IsPrimary() || rfh->IsInBackForwardCache());
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnDialogClosed",
                         "render_frame_host", rfh);
   last_dialog_suppressed_ = dialog_was_suppressed;

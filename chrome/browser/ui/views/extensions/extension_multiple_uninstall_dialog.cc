@@ -32,7 +32,7 @@ void ShowExtensionMultipleUninstallDialog(
       .OverrideShowCloseButton(false)
       .AddOkButton(
           std::move(accept_callback),
-          ui::DialogModelButton::Params().SetLabel(
+          ui::DialogModel::Button::Params().SetLabel(
               l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_BUTTON)))
       .AddCancelButton(std::move(split_cancel_callback.first))
       .SetCloseActionCallback(std::move(split_cancel_callback.second));

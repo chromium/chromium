@@ -104,7 +104,8 @@ class MODULES_EXPORT PaintRenderingContext2D
  protected:
   PredefinedColorSpace GetDefaultImageDataColorSpace() const final;
   bool IsPaint2D() const override { return true; }
-  void WillOverwriteCanvas() override;
+  void SkipQueuedDrawCommands() override;
+  void RestartRecording() override;
 
   // PaintRenderingContext2D is unable to resolve fonts.
   bool ResolveFont(const String& new_font) final { return false; }

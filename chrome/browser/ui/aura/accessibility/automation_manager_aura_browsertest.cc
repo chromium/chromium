@@ -444,9 +444,10 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, MAYBE_TableView) {
   // WARNING: This holds a raw pointer to `model`. To ensure the table doesn't
   // outlive its model, it must be manually deleted at the bottom of this
   // function.
-  views::TableView* const table = widget->GetRootView()->AddChildView(
-      std::make_unique<views::TableView>(model.get(), columns, views::TEXT_ONLY,
-                                         /* single_selection = */ true));
+  views::TableView* const table =
+      widget->GetRootView()->AddChildView(std::make_unique<views::TableView>(
+          model.get(), columns, views::TableType::kTextOnly,
+          /* single_selection = */ true));
   table->SetBounds(0, 0, 200, 200);
 
   // Show the widget.

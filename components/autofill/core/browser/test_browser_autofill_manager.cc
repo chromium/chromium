@@ -119,8 +119,9 @@ void TestBrowserAutofillManager::UploadVotesAndLogQuality(
     run_loop_->Quit();
   }
 
-  if (expected_observed_submission_ != absl::nullopt)
+  if (expected_observed_submission_ != std::nullopt) {
     EXPECT_EQ(expected_observed_submission_, observed_submission);
+  }
 
   // If we have expected field types set, make sure they match.
   if (!expected_submitted_field_types_.empty()) {
@@ -130,7 +131,7 @@ void TestBrowserAutofillManager::UploadVotesAndLogQuality(
       SCOPED_TRACE(base::StringPrintf(
           "Field %d with value %s", static_cast<int>(i),
           base::UTF16ToUTF8(submitted_form->field(i)->value).c_str()));
-      const ServerFieldTypeSet& possible_types =
+      const FieldTypeSet& possible_types =
           submitted_form->field(i)->possible_types();
       EXPECT_EQ(expected_submitted_field_types_[i].size(),
                 possible_types.size());
@@ -183,22 +184,23 @@ bool TestBrowserAutofillManager::MaybeStartVoteUploadProcess(
 
 void TestBrowserAutofillManager::AddSeenForm(
     const FormData& form,
-    const std::vector<ServerFieldType>& heuristic_types,
-    const std::vector<ServerFieldType>& server_types,
+    const std::vector<FieldType>& heuristic_types,
+    const std::vector<FieldType>& server_types,
     bool preserve_values_in_form_structure) {
-  std::vector<std::vector<std::pair<HeuristicSource, ServerFieldType>>>
+  std::vector<std::vector<std::pair<HeuristicSource, FieldType>>>
       all_heuristic_types;
-  for (ServerFieldType type : heuristic_types)
+  for (FieldType type : heuristic_types) {
     all_heuristic_types.push_back({{GetActiveHeuristicSource(), type}});
+  }
   AddSeenForm(form, all_heuristic_types, server_types,
               preserve_values_in_form_structure);
 }
 
 void TestBrowserAutofillManager::AddSeenForm(
     const FormData& form,
-    const std::vector<std::vector<std::pair<HeuristicSource, ServerFieldType>>>&
+    const std::vector<std::vector<std::pair<HeuristicSource, FieldType>>>&
         heuristic_types,
-    const std::vector<ServerFieldType>& server_types,
+    const std::vector<FieldType>& server_types,
     bool preserve_values_in_form_structure) {
   auto form_structure = std::make_unique<FormStructure>(
       preserve_values_in_form_structure ? form : test::WithoutValues(form));
@@ -255,7 +257,7 @@ void TestBrowserAutofillManager::SetAutofillPaymentMethodsEnabled(
 }
 
 void TestBrowserAutofillManager::SetExpectedSubmittedFieldTypes(
-    const std::vector<ServerFieldTypeSet>& expected_types) {
+    const std::vector<FieldTypeSet>& expected_types) {
   expected_submitted_field_types_ = expected_types;
 }
 

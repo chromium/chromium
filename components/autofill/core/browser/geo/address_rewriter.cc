@@ -5,12 +5,12 @@
 #include "components/autofill/core/browser/geo/address_rewriter.h"
 
 #include <memory>
+#include <string_view>
 #include <unordered_map>
 
 #include "base/i18n/case_conversion.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/grit/autofill_address_rewriter_resources_map.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -47,7 +47,7 @@ static bool ExtractRegionRulesData(const std::string& region,
   }
 
   // Gets and uncompresses resource data.
-  base::StringPiece raw_resource =
+  std::string_view raw_resource =
       ui::ResourceBundle::GetSharedInstance().GetRawDataResource(resource_id);
   compression::GzipUncompress(raw_resource, out_data);
 
@@ -57,7 +57,7 @@ static bool ExtractRegionRulesData(const std::string& region,
 // Helper function to populate |compiled_rules| by parsing |data_string|.
 void CompileRulesFromData(const std::string& data_string,
                           CompiledRuleVector* compiled_rules) {
-  base::StringPiece data = data_string;
+  std::string_view data = data_string;
   re2::RE2::Options options;
   options.set_encoding(RE2::Options::EncodingUTF8);
   options.set_word_boundary(true);

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.edge_to_edge;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,7 +43,13 @@ public class EdgeToEdgeControllerFactory {
         return new EdgeToEdgeControllerImpl(activity, tabObservableSupplier, null);
     }
 
-    /** @Return whether the feature is enabled or not. */
+    public static EdgeToEdgePadAdjuster createForView(View view) {
+        return new SimpleEdgeToEdgePadAdjuster(view);
+    }
+
+    /**
+     * @return whether the feature is enabled or not.
+     */
     public static boolean isEnabled() {
         // Make sure we test SDK version before checking the Feature so Field Trials only collect
         // from qualifying devices.

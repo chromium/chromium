@@ -55,10 +55,10 @@ class RemoveQueryConfirmationDialog : public views::WidgetDelegateView {
   // Whether Jelly style feature is enabled.
   bool is_jellyroll_enabled_ = false;
 
-  raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> body_ = nullptr;
-  raw_ptr<views::Button, ExperimentalAsh> cancel_button_ = nullptr;
-  raw_ptr<views::Button, ExperimentalAsh> accept_button_ = nullptr;
+  raw_ptr<views::Label> title_ = nullptr;
+  raw_ptr<views::Label> body_ = nullptr;
+  raw_ptr<views::Button> cancel_button_ = nullptr;
+  raw_ptr<views::Button> accept_button_ = nullptr;
 };
 
 }  // namespace ash

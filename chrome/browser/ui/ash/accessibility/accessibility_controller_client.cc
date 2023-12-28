@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
 
-#include "ash/public/cpp/accessibility_controller.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"

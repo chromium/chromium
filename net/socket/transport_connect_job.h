@@ -44,10 +44,10 @@ class NET_EXPORT_PRIVATE TransportSocketParams
   // transport parameters.
   using Endpoint = absl::variant<url::SchemeHostPort, HostPortPair>;
 
-  // |host_resolution_callback| will be invoked after the the hostname is
-  // resolved. |network_anonymization_key| is passed to the HostResolver to
-  // prevent cross-NIK leaks. If |host_resolution_callback| does not return OK,
-  // then the connection will be aborted with that value. |supported_alpns|
+  // `host_resolution_callback` will be invoked after the the hostname is
+  // resolved. `network_anonymization_key` is passed to the HostResolver to
+  // prevent cross-NAK leaks. If `host_resolution_callback` does not return OK,
+  // then the connection will be aborted with that value. `supported_alpns`
   // specifies ALPN protocols for selecting HTTPS/SVCB records. If empty,
   // addresses from HTTPS/SVCB records will be ignored and only A/AAAA will be
   // used.

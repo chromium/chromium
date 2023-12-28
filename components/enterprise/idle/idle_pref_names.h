@@ -12,6 +12,7 @@ extern const char kIdleTimeoutShowBubbleOnStartup[];
 
 extern const char kLastActiveTimestamp[];
 extern const char kLastIdleTimestamp[];
+extern const char kIdleTimeoutPolicyAppliesToUserOnly[];
 }  // namespace enterprise_idle::prefs
 
 #endif  // COMPONENTS_ENTERPRISE_IDLE_IDLE_PREF_NAMES_H_

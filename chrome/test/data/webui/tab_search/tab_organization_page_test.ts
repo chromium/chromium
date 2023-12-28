@@ -103,10 +103,6 @@ suite('TabOrganizationPageTest', () => {
     const notStarted = tabOrganizationPage.shadowRoot!.querySelector(
         'tab-organization-not-started');
     assertTrue(!!notStarted);
-    const animations = notStarted.getAnimations();
-    assertEquals(2, animations.length);
-    animations[0]!.finish();
-    animations[1]!.finish();
     assertTrue(isVisible(notStarted));
 
     const organizeTabsButton =
@@ -154,7 +150,7 @@ suite('TabOrganizationPageTest', () => {
     assertEquals(1, testApiProxy.getCallCount('removeTabFromOrganization'));
   });
 
-  test('Arrow keys traverse focus', async () => {
+  test('Arrow keys traverse focus in results list', async () => {
     await tabOrganizationResultsSetup();
 
     const tabRows =
@@ -193,6 +189,36 @@ suite('TabOrganizationPageTest', () => {
     assertFalse(closeButton2.matches(':focus'));
   });
 
+  test('Arrow keys traverse focus in footer', async () => {
+    await tabOrganizationResultsSetup();
+
+    const focusableElement0 = tabOrganizationResults.$.learnMore;
+    const focusableElement1 =
+        tabOrganizationResults.$.feedbackButtons.$.thumbsUp;
+    const focusableElement2 =
+        tabOrganizationResults.$.feedbackButtons.$.thumbsDown;
+    focusableElement0.focus();
+
+    assertTrue(focusableElement0.matches(':focus'));
+    assertFalse(focusableElement1.matches(':focus'));
+    assertFalse(focusableElement2.matches(':focus'));
+
+    const feedback =
+        tabOrganizationResults.shadowRoot!.querySelector('.feedback');
+    assertTrue(!!feedback);
+    feedback.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowLeft'}));
+
+    assertFalse(focusableElement0.matches(':focus'));
+    assertFalse(focusableElement1.matches(':focus'));
+    assertTrue(focusableElement2.matches(':focus'));
+
+    feedback.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
+
+    assertTrue(focusableElement0.matches(':focus'));
+    assertFalse(focusableElement1.matches(':focus'));
+    assertFalse(focusableElement2.matches(':focus'));
+  });
+
   test('Create group accepts organization', async () => {
     await tabOrganizationPageSetup();
 
@@ -212,6 +238,84 @@ suite('TabOrganizationPageTest', () => {
     assertEquals(1, testApiProxy.getCallCount('acceptTabOrganization'));
   });
 
+  test('Refresh rejects organization', async () => {
+    const rejectFinalSuggestion = 'Clear';
+
+    loadTimeData.overrideValues({
+      tabOrganizationRefreshButtonEnabled: true,
+      rejectFinalSuggestion: rejectFinalSuggestion,
+    });
+
+    await tabOrganizationPageSetup();
+
+    testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
+        createSession({state: TabOrganizationState.kSuccess}));
+    await flushTasks();
+
+    assertEquals(0, testApiProxy.getCallCount('rejectTabOrganization'));
+
+    const results = tabOrganizationPage.shadowRoot!.querySelector(
+        'tab-organization-results');
+    assertTrue(!!results);
+    const refreshButton = results.shadowRoot!.querySelector('cr-button');
+    assertTrue(!!refreshButton);
+    assertTrue(refreshButton.innerHTML.includes(rejectFinalSuggestion));
+    refreshButton.click();
+    await flushTasks();
+
+    assertEquals(1, testApiProxy.getCallCount('rejectTabOrganization'));
+  });
+
+  test(
+      'Refresh button has different label for multiple suggestions',
+      async () => {
+        const rejectSuggestion = 'Refresh';
+
+        loadTimeData.overrideValues({
+          tabOrganizationRefreshButtonEnabled: true,
+          rejectSuggestion: rejectSuggestion,
+        });
+
+        await tabOrganizationPageSetup();
+
+        const multiOrganizationSession = {
+          sessionId: 1,
+          state: TabOrganizationState.kSuccess,
+          organizations: [
+            {
+              organizationId: 1,
+              name: stringToMojoString16('foo'),
+              tabs: [
+                createTab({title: 'Tab 1', url: {url: 'https://tab-1.com/'}}),
+                createTab({title: 'Tab 2', url: {url: 'https://tab-2.com/'}}),
+                createTab({title: 'Tab 3', url: {url: 'https://tab-3.com/'}}),
+              ],
+            },
+            {
+              organizationId: 2,
+              name: stringToMojoString16('bar'),
+              tabs: [
+                createTab({title: 'Tab 4', url: {url: 'https://tab-4.com/'}}),
+                createTab({title: 'Tab 5', url: {url: 'https://tab-5.com/'}}),
+                createTab({title: 'Tab 6', url: {url: 'https://tab-6.com/'}}),
+              ],
+            },
+          ],
+          error: TabOrganizationError.kNone,
+        };
+
+        testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
+            multiOrganizationSession);
+        await flushTasks();
+
+        const results = tabOrganizationPage.shadowRoot!.querySelector(
+            'tab-organization-results');
+        assertTrue(!!results);
+        const refreshButton = results.shadowRoot!.querySelector('cr-button');
+        assertTrue(!!refreshButton);
+        assertTrue(refreshButton.innerHTML.includes(rejectSuggestion));
+      });
+
   test('Sync required for organization', async () => {
     const syncInfo: SyncInfo = {
       syncing: false,
@@ -223,10 +327,6 @@ suite('TabOrganizationPageTest', () => {
     const notStarted = tabOrganizationPage.shadowRoot!.querySelector(
         'tab-organization-not-started');
     assertTrue(!!notStarted);
-    const animations = notStarted.getAnimations();
-    assertEquals(2, animations.length);
-    animations[0]!.finish();
-    animations[1]!.finish();
     assertTrue(isVisible(notStarted));
 
     const actionButton = notStarted.shadowRoot!.querySelector('cr-button');
@@ -304,10 +404,6 @@ suite('TabOrganizationPageTest', () => {
     const notStarted = tabOrganizationPage.shadowRoot!.querySelector(
         'tab-organization-not-started');
     assertTrue(!!notStarted);
-    const animations = notStarted.getAnimations();
-    assertEquals(2, animations.length);
-    animations[0]!.finish();
-    animations[1]!.finish();
     assertTrue(isVisible(notStarted));
 
     const accountRowSynced =
@@ -327,7 +423,30 @@ suite('TabOrganizationPageTest', () => {
     assertTrue(!!accountRowUnsynced);
   });
 
-  test('Tip action starts tutorial', async () => {
+  test('Check now action activates on Enter', async () => {
+    await tabOrganizationPageSetup();
+
+    testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
+        createSession({
+          state: TabOrganizationState.kFailure,
+          error: TabOrganizationError.kGeneric,
+        }));
+
+    assertEquals(0, testApiProxy.getCallCount('resetSession'));
+
+    const failure = tabOrganizationPage.shadowRoot!.querySelector(
+        'tab-organization-failure');
+    assertTrue(!!failure);
+    const checkNowAction = failure.shadowRoot!.querySelector<HTMLElement>(
+        '.tab-organization-link');
+    assertTrue(!!checkNowAction);
+    checkNowAction.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    await flushTasks();
+
+    assertEquals(1, testApiProxy.getCallCount('resetSession'));
+  });
+
+  test('Tip action activates on Enter', async () => {
     loadTimeData.overrideValues({
       showTabOrganizationFRE: true,
     });
@@ -349,7 +468,7 @@ suite('TabOrganizationPageTest', () => {
         '.tab-organization-link');
     assertEquals(2, links.length);
     const tipAction = links[1]!;
-    tipAction.click();
+    tipAction.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
     await flushTasks();
 
     assertEquals(1, testApiProxy.getCallCount('startTabGroupTutorial'));

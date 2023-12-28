@@ -9,6 +9,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
@@ -47,7 +48,7 @@ ExtensionsToolbarButton::ExtensionsToolbarButton(
     Browser* browser,
     ExtensionsToolbarContainer* extensions_container,
     ExtensionsMenuCoordinator* extensions_menu_coordinator)
-    : ToolbarButton(PressedCallback()),
+    : ToolbarChipButton(PressedCallback()),
       browser_(browser),
       extensions_container_(extensions_container),
       extensions_menu_coordinator_(extensions_menu_coordinator) {
@@ -67,6 +68,10 @@ ExtensionsToolbarButton::ExtensionsToolbarButton(
   SetVectorIcon(GetIcon(state_));
 
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kMenu);
+
+  // Do not flip the Extensions icon in RTL.
+  SetFlipCanvasOnPaintForRTLUI(false);
+  SetID(VIEW_ID_EXTENSIONS_MENU_BUTTON);
 
   // Set button for IPH.
   SetProperty(views::kElementIdentifierKey, kExtensionsMenuButtonElementId);
@@ -198,7 +203,7 @@ std::u16string ExtensionsToolbarButton::GetTooltipText(
   return l10n_util::GetStringUTF16(message_id);
 }
 
-BEGIN_METADATA(ExtensionsToolbarButton, ToolbarButton)
+BEGIN_METADATA(ExtensionsToolbarButton)
 ADD_READONLY_PROPERTY_METADATA(bool, ExtensionsMenuShowing)
 ADD_READONLY_PROPERTY_METADATA(int, IconSize)
 END_METADATA

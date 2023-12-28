@@ -542,8 +542,12 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
       @"document.cookie ? document.cookie.split(/;\\s*/) : [];";
   base::Value result = [self evaluateJavaScript:kGetCookiesScript];
 
-  EG_TEST_HELPER_ASSERT_TRUE(result.is_list(),
-                             @"The script response is not iterable.");
+  if (!result.is_list()) {
+    EG_TEST_HELPER_ASSERT_TRUE(
+        false,
+        @"The script response is not iterable. Cookies can not be retrieved.");
+    return nil;
+  }
 
   NSMutableDictionary* cookies = [NSMutableDictionary dictionary];
   for (const auto& option : result.GetList()) {
@@ -797,10 +801,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 #pragma mark - Sync Utilities (EG2)
 
-- (void)clearSyncServerData {
-  [ChromeEarlGreyAppInterface clearSyncServerData];
-}
-
 - (void)signInWithoutSyncWithIdentity:(FakeSystemIdentity*)identity {
   [ChromeEarlGreyAppInterface signInWithoutSyncWithIdentity:identity];
 }
@@ -844,6 +844,14 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 - (void)tearDownFakeSyncServer {
   [ChromeEarlGreyAppInterface tearDownFakeSyncServer];
+}
+
+- (void)clearFakeSyncServerData {
+  [ChromeEarlGreyAppInterface clearFakeSyncServerData];
+}
+
+- (void)flushFakeSyncServerToDisk {
+  [ChromeEarlGreyAppInterface flushFakeSyncServerToDisk];
 }
 
 - (int)numberOfSyncEntitiesWithType:(syncer::ModelType)type {

@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='block'",
+      "name": "LayoutNGBlockFlow (relative positioned, children-inline) DIV id='block'",
       "bounds": [402, 62],
       "backfaceVisibility": "hidden",
       "transform": 1

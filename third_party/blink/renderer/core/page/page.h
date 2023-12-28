@@ -164,6 +164,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   void UpdateColorProviders(
       const ColorProviderColorMaps& color_provider_colors);
+  void UpdateColorProvidersForTest();
   const ui::ColorProvider* GetColorProviderForPainting(
       mojom::blink::ColorScheme color_scheme,
       bool in_forced_colors) const;
@@ -219,6 +220,9 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   ChromeClient& GetChromeClient() const {
     DCHECK(chrome_client_) << "No chrome client";
     return *chrome_client_;
+  }
+  void SetChromeClientForTesting(ChromeClient* chrome_client) {
+    chrome_client_ = chrome_client;
   }
   AutoscrollController& GetAutoscrollController() const {
     return *autoscroll_controller_;

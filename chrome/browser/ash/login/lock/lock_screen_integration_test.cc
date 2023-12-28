@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
@@ -16,7 +16,7 @@
 
 namespace {
 
-using LockScreen = InteractiveAshTest;
+using LockScreen = AshIntegrationTest;
 
 }  // namespace
 

@@ -158,6 +158,12 @@ void FakeArcSupport::PostMessageFromNativeHost(
     }
   } else if (*action == "showErrorPage") {
     ui_page_ = ArcSupportHost::UIPage::ERROR;
+    native_message_host_->OnMessage(base::StrCat(
+        {"{\"event\": \"onErrorPageShown\", "
+         "\"networkTestsShown\": ",
+         message.FindBool("shouldShowNetworkTests").value_or(false) ? "true"
+                                                                    : "false",
+         "}"}));
   } else if (*action == "setMetricsMode") {
     std::optional<bool> opt = message.FindBool("enabled");
     if (!opt) {

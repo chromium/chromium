@@ -172,8 +172,8 @@ class RecordedWindowRootObserver : public aura::WindowObserver {
   }
 
  private:
-  const raw_ptr<aura::Window, ExperimentalAsh> root_;
-  const raw_ptr<VideoRecordingWatcher, ExperimentalAsh> owner_;
+  const raw_ptr<aura::Window> root_;
+  const raw_ptr<VideoRecordingWatcher> owner_;
 };
 
 // -----------------------------------------------------------------------------
@@ -764,7 +764,7 @@ void VideoRecordingWatcher::UpdateLayerStackingAndDimmers() {
           DesksMruType::kAllDesks);
   bool did_find_recorded_window = false;
   // Note that the order of |mru_windows| are from top-most first.
-  for (auto* window : mru_windows) {
+  for (aura::Window* window : mru_windows) {
     if (window == window_being_recorded_) {
       did_find_recorded_window = true;
       continue;

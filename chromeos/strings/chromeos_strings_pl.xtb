@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Rozmiar strony</translation>
 <translation id="1082009148392559545">Pobieram wygaszacz ekranu</translation>
 <translation id="1094693127011229778">Adres IP jest niedostępny</translation>
+<translation id="1116694919640316211">Informacje</translation>
 <translation id="1118572504348554005">Opinie, które przesyłasz za pomocą tego formularza, możemy udostępniać naszym partnerom, aby pomagać im w naprawianiu błędów i rozwiązywaniu innych problemów, jakie do nas zgłaszasz. Nie podawaj informacji poufnych, takich jak hasła.</translation>
 <translation id="1119447706177454957">Błąd wewnętrzny</translation>
 <translation id="1124772482545689468">Użytkownik</translation>
@@ -378,6 +379,7 @@
 <translation id="3866249974567520381">Opis</translation>
 <translation id="387301095347517405">Liczba wykonanych pełnych cykli ładowania baterii</translation>
 <translation id="3885327323343477505">Zmień wygaszacz ekranu</translation>
+<translation id="3892148308691398805">Kopiuj tekst</translation>
 <translation id="391412459402535266">Nie udało się przetestować urządzenia. Aby uruchomić test, włącz tryb laptopa.</translation>
 <translation id="3916998944874125962">zapisz zrzut ekranu</translation>
 <translation id="3923184630988645767">Transmisja danych</translation>
@@ -403,6 +405,7 @@
 <translation id="4060260348856573701">Nowy APN</translation>
 <translation id="4093865285251893588">Zdjęcie profilowe</translation>
 <translation id="409427325554347132">Zapisz szczegóły testu</translation>
+<translation id="409469431304488632">Eksperyment</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
 <translation id="4110686435123617899">Wybierz album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Touchpad USB</translation>
@@ -693,6 +696,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Pojemność baterii zmniejsza się w miarę jej zużycia</translation>
 <translation id="6191293864534840972">Nieprawidłowe serwery nazw</translation>
+<translation id="6196607555925437199">Powtórz</translation>
 <translation id="6205145102504628069">Chmury</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Brak dostępnych skanerów</translation>
@@ -869,7 +873,9 @@
 <translation id="7502658306369382406">Adres IPv6</translation>
 <translation id="7513770521371759388">dół</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Utwórz</translation>
 <translation id="7528507600602050979">Treść pomocy jest niedostępna</translation>
+<translation id="753556296624075801">Technologia Google</translation>
 <translation id="7535791657097741517">Włącz jasny motyw</translation>
 <translation id="7550715992156305117">Procedury diagnostyczne</translation>
 <translation id="7551123448725492271">To urządzenie typu audio.</translation>
@@ -960,6 +966,7 @@
 <translation id="8227119283605456246">Załącz plik</translation>
 <translation id="8230672074305416752">Nie udało się sprawdzić pingiem domyślnej bramy sieciowej</translation>
 <translation id="8246209727385807362">Nieznany operator</translation>
+<translation id="8261506727792406068">Usuń</translation>
 <translation id="8262870577632766028">1 godzina</translation>
 <translation id="827422111966801947">Indygo</translation>
 <translation id="8286154143153872371">Aby wyświetlić tapetę, połącz się z siecią i załaduj ponownie stronę.</translation>
@@ -970,6 +977,7 @@
 <translation id="8318753676953949627">Brak obrazów</translation>
 <translation id="8329018942023753850">aplikacja Kalkulator</translation>
 <translation id="8336739000755212683">Zmień obraz konta na urządzeniu</translation>
+<translation id="8339024191194156249">Więcej informacji o automatycznym uruchamianiu</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> lub <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Zadania drukowania</translation>
 <translation id="8349826889576450703">program uruchamiający</translation>

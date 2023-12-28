@@ -141,7 +141,10 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
     return false;
   }
 
-  VLOG(1) << "Starting DND session.";
+  VLOG(1) << "Starting Drag-and-Drop session. tracker_id=" << serial->value
+          << ", data_source="
+          << (source == DragEventSource::kMouse ? "mouse" : "touch")
+          << ", serial tracker=" << connection_->serial_tracker().ToString();
 
   // Create new data source and offers |data|.
   SetOfferedExchangeDataProvider(data);

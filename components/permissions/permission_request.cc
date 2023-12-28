@@ -215,6 +215,9 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
     case RequestType::kCameraStream:
       message_id = IDS_MEDIA_CAPTURE_VIDEO_ONLY_PERMISSION_FRAGMENT;
       break;
+    case RequestType::kCapturedSurfaceControl:
+      message_id = IDS_CAPTURED_SURFACE_CONTROL_PERMISSION_FRAGMENT;
+      break;
     case RequestType::kClipboard:
       message_id = IDS_CLIPBOARD_PERMISSION_FRAGMENT;
       break;
@@ -257,6 +260,12 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
       // Handled by an override in `RegisterProtocolHandlerPermissionRequest`.
       NOTREACHED();
       return std::u16string();
+#if BUILDFLAG(IS_CHROMEOS)
+    case RequestType::kSmartCard:
+      // Handled by an override in `SmartCardPermissionRequest`.
+      NOTREACHED();
+      return std::u16string();
+#endif
     case RequestType::kStorageAccess:
     case RequestType::kTopLevelStorageAccess:
       message_id = IDS_STORAGE_ACCESS_PERMISSION_FRAGMENT;
@@ -272,6 +281,10 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
   return l10n_util::GetStringUTF16(message_id);
 }
 #endif
+
+std::optional<std::u16string> PermissionRequest::GetAllowAlwaysText() const {
+  return std::nullopt;
+}
 
 bool PermissionRequest::ShouldUseTwoOriginPrompt() const {
   return request_type() == RequestType::kStorageAccess &&

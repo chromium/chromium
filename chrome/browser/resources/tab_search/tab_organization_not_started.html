@@ -35,7 +35,7 @@
   <picture>
     <source media="(prefers-color-scheme: dark)"
         srcset="./images/not_started_dark.svg">
-    <!-- TODO(emshack): Add alt text -->
+    <!-- Decorative image, intentionally empty alt text -->
     <img id="product-logo" srcset="./images/not_started.svg" alt="">
   </picture>
   <div class="tab-organization-text-container">
@@ -46,7 +46,7 @@
   </div>
   <template is="dom-if" if="[[shouldShowAccountInfo_(sync_, account_)]]">
     <div class="account-row">
-      <!-- TODO(emshack): Add alt text -->
+      <!-- Decorative image, intentionally empty alt text -->
       <img class="account-image" alt=""
           src="[[getAccountImageSrc_(account_.avatarImage)]]">
       <div class="account-text">

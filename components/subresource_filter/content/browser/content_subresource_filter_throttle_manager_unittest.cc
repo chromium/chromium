@@ -1803,7 +1803,7 @@ class ContentSubresourceFilterThrottleManagerInfoBarUiTest
     // No infobars other than the ads blocked infobar should be displayed in the
     // context of these tests.
     EXPECT_EQ(infobar_manager->infobars().size(), 1u);
-    auto* infobar = infobar_manager->infobars()[0];
+    auto* infobar = infobar_manager->infobars()[0].get();
     EXPECT_EQ(infobar->GetIdentifier(),
               infobars::InfoBarDelegate::ADS_BLOCKED_INFOBAR_DELEGATE_ANDROID);
 

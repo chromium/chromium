@@ -371,6 +371,16 @@ enum class ContentSettingsType : int32_t {
   // shown to the user, for a given origin.
   FILE_SYSTEM_ACCESS_RESTORE_PERMISSION,
 
+  // Whether an application capturing another tab, may scroll and zoom
+  // the captured tab.
+  CAPTURED_SURFACE_CONTROL,
+
+  // Content setting for access to smart card readers.
+  // The "guard" content setting stores whether to allow sites to access the
+  // Smart Card API.
+  SMART_CARD_GUARD,
+  SMART_CARD_DATA,
+
   NUM_TYPES,
 };
 

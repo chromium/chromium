@@ -112,8 +112,8 @@ bool EnsureResolvable(SVGElement* context_element, bool needs_layout) {
     document.UpdateStyleAndLayoutForNode(context_element,
                                          DocumentUpdateReason::kJavaScript);
   } else {
-    document.UpdateStyleAndLayoutTreeForNode(context_element,
-                                             DocumentUpdateReason::kJavaScript);
+    document.UpdateStyleAndLayoutTreeForElement(
+        context_element, DocumentUpdateReason::kJavaScript);
   }
   return true;
 }

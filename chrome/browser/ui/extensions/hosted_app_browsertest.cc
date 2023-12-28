@@ -111,7 +111,7 @@ using web_app::kDisabled;
 using web_app::kEnabled;
 using web_app::kNotPresent;
 using web_app::NavigateAndCheckForToolbar;
-using web_app::NavigateToURLAndWait;
+using web_app::NavigateViaLinkClickToURLAndWait;
 
 namespace {
 
@@ -650,8 +650,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppTest, DISABLED_LoadIcon) {
 
   EXPECT_TRUE(app_service_test().AreIconImageEqual(
       app_service_test().LoadAppIconBlocking(
-          apps::AppType::kChromeApp, app_id_,
-          extension_misc::EXTENSION_ICON_SMALL),
+          app_id_, extension_misc::EXTENSION_ICON_SMALL),
       app_browser_->app_controller()->GetWindowAppIcon().Rasterize(nullptr)));
 }
 #endif
@@ -820,7 +819,7 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, SubframeRedirectsToHostedApp) {
   GURL url = embedded_test_server()->GetURL("foo.com", "/iframe.html");
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
-  NavigateToURLAndWait(browser(), url);
+  NavigateViaLinkClickToURLAndWait(browser(), url);
 
   // Navigate the subframe to a URL that redirects to a URL in the hosted app's
   // web extent.
@@ -1945,8 +1944,8 @@ class HostedAppJitTestBase : public HostedAppProcessModelTest {
   std::unique_ptr<ScopedJitChromeBrowserClientOverride> scoped_client_override_;
 };
 
-typedef HostedAppJitTestBase<false> HostedAppJitTestBaseDefaultEnabled;
-typedef HostedAppJitTestBase<true> HostedAppJitTestBaseDefaultDisabled;
+using HostedAppJitTestBaseDefaultEnabled = HostedAppJitTestBase<false>;
+using HostedAppJitTestBaseDefaultDisabled = HostedAppJitTestBase<true>;
 
 IN_PROC_BROWSER_TEST_P(HostedAppJitTestBaseDefaultEnabled, JITDisabledTest) {
   JitTestInternal();

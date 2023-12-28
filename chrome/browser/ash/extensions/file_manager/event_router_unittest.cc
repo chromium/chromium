@@ -31,6 +31,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "ui/display/test/test_screen.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -162,6 +163,8 @@ class FileManagerEventRouterTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  display::test::TestScreen test_screen_{/*create_dispay=*/true,
+                                         /*register_screen=*/true};
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingProfile> profile_;
   const blink::StorageKey kTestStorageKey =

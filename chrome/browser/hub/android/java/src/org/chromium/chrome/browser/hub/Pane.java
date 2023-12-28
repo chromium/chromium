@@ -21,6 +21,9 @@ public interface Pane extends BackPressHandler {
     @NonNull
     View getRootView();
 
+    /** Destroys the pane. Called when the Hub is destroyed. */
+    void destroy();
+
     /**
      * Notifies of a change to the Hub's or the pane's lifecycle. See {@link LoadHint} for possible
      * values and what the pane could or should do in response to a notification.

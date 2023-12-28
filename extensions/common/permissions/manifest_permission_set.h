@@ -18,8 +18,8 @@ class ManifestPermissionSet;
 
 template<>
 struct BaseSetOperatorsTraits<ManifestPermissionSet> {
-  typedef ManifestPermission ElementType;
-  typedef std::string ElementIDType;
+  using ElementType = ManifestPermission;
+  using ElementIDType = std::string;
 };
 
 class ManifestPermissionSet : public BaseSetOperators<ManifestPermissionSet> {

@@ -42,7 +42,8 @@ class PermissionRequest;
 //   1) The PermissionRequestType enum in tools/metrics/histograms/enums.xml.
 //   2) The PermissionRequestTypes suffix list in
 //      tools/metrics/histograms/metadata/histogram_suffixes_list.xml.
-//   3) GetPermissionRequestString below.
+//   3) GetPermissionRequestString function in
+//      components/permissions/permission_uma_util.cc
 //
 // The usual rules of updating UMA values applies to this enum:
 // - don't remove values
@@ -82,6 +83,8 @@ enum class RequestTypeForUma {
   PERMISSION_TOP_LEVEL_STORAGE_ACCESS = 30,
   PERMISSION_MIDI = 31,
   PERMISSION_FILE_SYSTEM_ACCESS = 32,
+  CAPTURED_SURFACE_CONTROL = 33,
+  PERMISSION_SMART_CARD = 34,
   // NUM must be the last value in the enum.
   NUM
 };
@@ -508,7 +511,8 @@ class PermissionUmaUtil {
 
   // Recorded when a permission prompt creation is in progress.
   static void RecordPermissionPromptAttempt(
-      const std::vector<PermissionRequest*>& requests,
+      const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
+          requests,
       bool IsLocationBarEditingOrEmpty);
 
   // UMA specifically for when permission prompts are shown. This should be
@@ -521,10 +525,12 @@ class PermissionUmaUtil {
   //   granted+denied+dismissed+ignored is not equal to requested), so it is
   //   unclear from those metrics alone how many prompts are seen by users.
   static void PermissionPromptShown(
-      const std::vector<PermissionRequest*>& requests);
+      const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
+          requests);
 
   static void PermissionPromptResolved(
-      const std::vector<PermissionRequest*>& requests,
+      const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
+          requests,
       content::WebContents* web_contents,
       PermissionAction permission_action,
       base::TimeDelta time_to_decision,
@@ -617,7 +623,8 @@ class PermissionUmaUtil {
       PermissionPromptDisposition prompt_disposition);
 
   static void RecordIgnoreReason(
-      const std::vector<PermissionRequest*>& requests,
+      const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
+          requests,
       PermissionPromptDisposition prompt_disposition,
       PermissionIgnoredReason reason);
 
@@ -710,7 +717,8 @@ class PermissionUmaUtil {
                                                int count);
 
   static void RecordPromptDecided(
-      const std::vector<PermissionRequest*>& requests,
+      const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
+          requests,
       bool accepted,
       bool is_one_time);
 };

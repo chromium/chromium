@@ -54,24 +54,21 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
                                        const base::FilePath& install_dir,
                                        base::StringPiece contents);
 
- private:
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
-                           NonexistentFile_OnComponentReady);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
-                           NonexistentFile_OnRegistrationComplete);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
-                           LoadsSets_OnComponentReady);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
-                           IgnoreNewSets_NoInitialComponent);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
-                           IgnoreNewSets_OnComponentReady);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
-                           IgnoreNewSets_OnNetworkRestart);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureDisabledTest,
-                           GetInstallerAttributes);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
-                           GetInstallerAttributes);
+  static base::FilePath GetInstalledPathForTesting(const base::FilePath& base) {
+    return GetInstalledPath(base);
+  }
 
+  void ComponentReadyForTesting(const base::Version& version,
+                                const base::FilePath& install_dir,
+                                base::Value::Dict manifest) {
+    ComponentReady(version, install_dir, std::move(manifest));
+  }
+
+  update_client::InstallerAttributes GetInstallerAttributesForTesting() const {
+    return GetInstallerAttributes();
+  }
+
+ private:
   // The following methods override ComponentInstallerPolicy.
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;

@@ -6,9 +6,8 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/file_system_access/file_system_access_scroll_panel.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_ui_helpers.h"
 #include "chrome/browser/ui/views/title_origin_label.h"
 #include "chrome/grit/generated_resources.h"
@@ -20,7 +19,6 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 
 FileSystemAccessRestorePermissionBubbleView::
@@ -37,7 +35,6 @@ FileSystemAccessRestorePermissionBubbleView::
       callback_(std::move(callback)) {
   // Initial set up.
   views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
-  ChromeLayoutProvider* chrome_layout_provider = ChromeLayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       DISTANCE_BUTTON_VERTICAL));
@@ -58,36 +55,12 @@ FileSystemAccessRestorePermissionBubbleView::
       IDS_FILE_SYSTEM_ACCESS_RESTORE_PERMISSION_DESCRIPTION));
 
   // Add file/directory list.
-  auto file_list_container = std::make_unique<views::View>();
-  file_list_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical,
-      gfx::Insets::VH(FILENAME_AREA_MARGIN, FILENAME_AREA_MARGIN),
-      BETWEEN_FILENAME_SPACING));
+  std::vector<base::FilePath> file_paths;
   for (auto file : file_data) {
-    auto* line_container =
-        file_list_container->AddChildView(std::make_unique<views::View>());
-    line_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-        chrome_layout_provider->GetDistanceMetric(
-            DISTANCE_PERMISSION_PROMPT_HORIZONTAL_ICON_LABEL_PADDING)));
-
-    auto* icon = line_container->AddChildView(
-        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            vector_icons::kFolderOpenIcon, ui::kColorIcon, FOLDER_ICON_SIZE)));
-    icon->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
-
-    auto* label = line_container->AddChildView(std::make_unique<views::Label>(
-        file_system_access_ui_helper::GetPathForDisplayAsParagraph(file.path)));
-    label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    file_paths.push_back(file.path);
   }
-  // TODO(crbug.com/1011533): Add border radius to the scroll view, and
-  // determine if/how file names should be focused for accessibility.
-  auto scroll_view = std::make_unique<views::ScrollView>();
-  scroll_view->SetDrawOverflowIndicator(false);
-  scroll_view->SetBackgroundThemeColorId(ui::kColorSubtleEmphasisBackground);
-  scroll_view->SetContents(std::move(file_list_container));
-  scroll_view->ClipHeightTo(0, MAX_SCROLL_HEIGHT);
-  AddChildView(std::move(scroll_view));
+  auto scroll_panel = FileSystemAccessScrollPanel();
+  AddChildView(scroll_panel.Create(file_paths));
 
   // Add buttons.
   auto allow_once_button = std::make_unique<views::MdTextButton>(

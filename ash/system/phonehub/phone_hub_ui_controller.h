@@ -124,8 +124,7 @@ class ASH_EXPORT PhoneHubUiController
                                   std::optional<base::Time> timestamp);
 
   // The PhoneHubManager that provides data for the UI.
-  raw_ptr<phonehub::PhoneHubManager, ExperimentalAsh> phone_hub_manager_ =
-      nullptr;
+  raw_ptr<phonehub::PhoneHubManager> phone_hub_manager_ = nullptr;
 
   // The current UI state.
   UiState ui_state_ = UiState::kHidden;

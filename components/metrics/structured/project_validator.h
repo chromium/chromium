@@ -6,11 +6,11 @@
 #define COMPONENTS_METRICS_STRUCTURED_PROJECT_VALIDATOR_H_
 
 #include <cstdint>
+#include <optional>
 #include <string>
 
 #include "components/metrics/structured/enums.h"
 #include "components/metrics/structured/event_validator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics::structured {
 
@@ -26,11 +26,10 @@ class ProjectValidator {
 
   // Returns the event validator if |event_name| is a valid event for this
   // project.
-  absl::optional<const EventValidator*> GetEventValidator(
+  std::optional<const EventValidator*> GetEventValidator(
       base::StringPiece event_name) const;
 
-  absl::optional<base::StringPiece> GetEventName(
-      uint64_t event_name_hash) const;
+  std::optional<base::StringPiece> GetEventName(uint64_t event_name_hash) const;
 
   uint64_t project_hash() const { return project_hash_; }
   IdType id_type() const { return id_type_; }

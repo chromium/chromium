@@ -295,7 +295,9 @@ export class CrSliderElement extends CrSliderElementBase {
       return;
     }
 
-    this.getRipple().showAndHoldDown();
+    if (!this.getRipple().holdDown) {
+      this.getRipple().showAndHoldDown();
+    }
     this.showLabel_ = true;
   }
 

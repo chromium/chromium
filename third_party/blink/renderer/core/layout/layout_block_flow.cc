@@ -207,7 +207,8 @@ void LayoutBlockFlow::AddChild(LayoutObject* new_child,
 
 static bool IsMergeableAnonymousBlock(const LayoutBlockFlow* block) {
   return block->IsAnonymousBlock() && !block->BeingDestroyed() &&
-         !block->IsRubyColumn() && !block->IsRubyBase();
+         !block->IsRubyColumn() && !block->IsRubyBase() &&
+         !block->IsViewTransitionRoot();
 }
 
 void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
@@ -262,8 +263,8 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
 
   LayoutObject* child = prev ? prev : next;
   auto* child_block_flow = DynamicTo<LayoutBlockFlow>(child);
-  if (child && child_block_flow && !child->PreviousSibling() &&
-      !child->NextSibling()) {
+  if (child_block_flow && !child_block_flow->PreviousSibling() &&
+      !child_block_flow->NextSibling()) {
     // If the removal has knocked us down to containing only a single anonymous
     // box we can go ahead and pull the content right back up into our
     // box.
@@ -321,6 +322,11 @@ static bool AllowsCollapseAnonymousBlockChild(const LayoutBlockFlow& parent,
   // Ruby elements use anonymous wrappers for ruby columns and ruby bases by
   // design, so we don't remove them.
   if (child.IsRubyColumn() || child.IsRubyBase()) {
+    return false;
+  }
+  // The ViewTransitionRoot is also anonymous by design and shouldn't be
+  // elided.
+  if (child.IsViewTransitionRoot()) {
     return false;
   }
   if (IsA<LayoutMultiColumnFlowThread>(parent) &&

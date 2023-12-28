@@ -32,6 +32,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.jank_tracker.PlaceholderJankTracker;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.feed.ScrollableContainerDelegate;
@@ -48,6 +49,7 @@ import org.chromium.ui.test.util.UiRestriction;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class ExploreSurfaceViewBinderTest {
     private ExploreSurfaceCoordinatorFactory mExploreSurfaceCoordinatorFactory;
     private ExploreSurfaceCoordinator mExploreSurfaceCoordinator;
@@ -73,6 +75,8 @@ public class ExploreSurfaceViewBinderTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPropertyModel = new PropertyModel(StartSurfaceProperties.ALL_KEYS);
+                    var tabStripHeightSupplier = new ObservableSupplierImpl<Integer>();
+                    tabStripHeightSupplier.set(0);
                     mExploreSurfaceCoordinatorFactory =
                             new ExploreSurfaceCoordinatorFactory(
                                     mActivityTestRule.getActivity(),
@@ -92,7 +96,8 @@ public class ExploreSurfaceViewBinderTest {
                                         return null;
                                     },
                                     0L,
-                                    null);
+                                    null,
+                                    tabStripHeightSupplier);
                     mExploreSurfaceCoordinator =
                             mExploreSurfaceCoordinatorFactory.create(
                                     false,

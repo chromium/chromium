@@ -864,15 +864,20 @@ void PersistOriginTrialsFromHeaders(
                                                   tokens, base::Time::Now());
 }
 
+struct TopicsHeaderValueResult {
+  bool topics_eligible = false;
+  std::optional<std::string> header_value;
+};
+
 // Returns the topics header for a navigation request. Returns absl::nullopt if
 // the request isn't eligible for topics. This should align with the handling in
 // `GetTopicsHeaderValueForSubresourceRequest()`.
-absl::optional<std::string> GetTopicsHeaderValueForNavigationRequest(
+TopicsHeaderValueResult GetTopicsHeaderValueForNavigationRequest(
     FrameTreeNode* frame_tree_node,
     const GURL& url) {
   // Skip if the <iframe> does not have the "browsingtopics" opt-in attribute.
   if (!frame_tree_node->browsing_topics()) {
-    return absl::nullopt;
+    return TopicsHeaderValueResult{};
   }
 
   RenderFrameHostImpl* rfh = frame_tree_node->current_frame_host();
@@ -882,33 +887,33 @@ absl::optional<std::string> GetTopicsHeaderValueForNavigationRequest(
   // RenderFrameHostImpl::DidChangeIframeAttributes, and should be a DCHECK
   // here.
   if (rfh->is_main_frame()) {
-    return absl::nullopt;
+    return {};
   }
 
   // Skip fenced frames.
   if (rfh->IsNestedWithinFencedFrame()) {
-    return absl::nullopt;
+    return {};
   }
 
   // Skip inactive pages (e.g. prerendered pages).
   if (!rfh->GetPage().IsPrimary()) {
-    return absl::nullopt;
+    return {};
   }
 
   // TODO(crbug.com/1244137): IsPrimary() doesn't actually detect portals yet.
   // Remove this when it does.
   if (!static_cast<RenderFrameHostImpl*>(rfh->GetMainFrame())
            ->IsOutermostMainFrame()) {
-    return absl::nullopt;
+    return {};
   }
 
   url::Origin origin = url::Origin::Create(url);
   if (origin.opaque()) {
-    return absl::nullopt;
+    return {};
   }
 
   if (!network::IsOriginPotentiallyTrustworthy(origin)) {
-    return absl::nullopt;
+    return {};
   }
 
   const blink::PermissionsPolicy* parent_policy =
@@ -922,7 +927,7 @@ absl::optional<std::string> GetTopicsHeaderValueForNavigationRequest(
           blink::mojom::PermissionsPolicyFeature::
               kBrowsingTopicsBackwardCompatible,
           origin)) {
-    return absl::nullopt;
+    return {};
   }
 
   std::vector<blink::mojom::EpochTopicPtr> topics;
@@ -932,15 +937,15 @@ absl::optional<std::string> GetTopicsHeaderValueForNavigationRequest(
       /*get_topics=*/true,
       /*observe=*/false, topics);
 
-  if (!topics_eligible) {
-    return absl::nullopt;
-  }
-
   int num_versions_in_epochs =
-      GetContentClient()->browser()->NumVersionsInTopicsEpochs(
-          rfh->GetMainFrame());
+      topics_eligible
+          ? GetContentClient()->browser()->NumVersionsInTopicsEpochs(
+                rfh->GetMainFrame())
+          : 0;
 
-  return DeriveTopicsHeaderValue(topics, num_versions_in_epochs);
+  return {
+      .topics_eligible = topics_eligible,
+      .header_value = DeriveTopicsHeaderValue(topics, num_versions_in_epochs)};
 }
 
 ukm::SourceId GetPageUkmSourceId(FrameTreeNode* frame_tree_node) {
@@ -1872,14 +1877,15 @@ NavigationRequest::NavigationRequest(
                         &commit_params_->post_content_type);
     }
 
-    absl::optional<std::string> topics_header_value =
+    TopicsHeaderValueResult topics_header_value_result =
         GetTopicsHeaderValueForNavigationRequest(frame_tree_node,
                                                  common_params_->url);
 
-    topics_eligible_ = topics_header_value.has_value();
+    topics_eligible_ = topics_header_value_result.topics_eligible;
 
-    if (topics_eligible_) {
-      headers.SetHeader(kBrowsingTopicsRequestHeaderKey, *topics_header_value);
+    if (topics_header_value_result.header_value) {
+      headers.SetHeader(kBrowsingTopicsRequestHeaderKey,
+                        *topics_header_value_result.header_value);
     }
 
     if (has_ad_auction_headers_attribute_ &&
@@ -2416,16 +2422,16 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
     return;
   }
 
-  if (properties->on_navigate_callback_) {
-    properties->on_navigate_callback_.Run();
+  if (properties->on_navigate_callback()) {
+    properties->on_navigate_callback().Run();
   }
 
   // Currently, all fenced frame use cases include mapped urls. Patch up
   // url-related fields to use the underlying mapped url, rather than the
   // original urn.
-  CHECK(properties->mapped_url_.has_value());
+  CHECK(properties->mapped_url().has_value());
   const GURL& mapped_url_value =
-      properties->mapped_url_->GetValueIgnoringVisibility();
+      properties->mapped_url()->GetValueIgnoringVisibility();
   common_params_->url = mapped_url_value;
   commit_params_->original_url = mapped_url_value;
 
@@ -2436,19 +2442,19 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
 
   // Set the shared storage context in the fenced frame properties.
   DCHECK(fenced_frame_properties_);
-  fenced_frame_properties_->embedder_shared_storage_context_ =
-      embedder_shared_storage_context_;
+  fenced_frame_properties_->SetEmbedderSharedStorageContext(
+      embedder_shared_storage_context_);
   embedder_shared_storage_context_ = absl::nullopt;
 
   // For urns loaded into iframes for FLEDGE OT, for compatibility we don't
   // want to use a fenced frame nonce.
   if (!frame_tree_node_->IsFencedFrameRoot()) {
     CHECK(blink::features::IsAllowURNsInIframeEnabled());
-    fenced_frame_properties_->partition_nonce_ = absl::nullopt;
+    fenced_frame_properties_->ClearPartitionNonce();
   }
 
   // This implies the URN is created from shared storage.
-  if (fenced_frame_properties_->shared_storage_budget_metadata_) {
+  if (fenced_frame_properties_->shared_storage_budget_metadata()) {
     base::TimeDelta time_spent_in_fenced_frame_url_mapping =
         base::TimeTicks::Now() - fenced_frame_url_mapping_start_time_;
 
@@ -2543,7 +2549,8 @@ void NavigationRequest::BeginNavigationImpl() {
   // the value set in CommitNavigationParams.
   if (IsServedFromBackForwardCache() &&
       GetRenderFrameHostRestoredFromBackForwardCache()
-              ->is_overriding_user_agent() !=
+              ->GetPage()
+              .is_overriding_user_agent() !=
           commit_params_->is_overriding_user_agent) {
     // Trigger an eviction, which will cancel this navigation and trigger a new
     // one to the same entry (but won't try to restore the entry from the
@@ -5202,10 +5209,6 @@ void NavigationRequest::OnRedirectChecksComplete(
   if (topics_eligible_) {
     topics_eligible_ = false;
 
-    // Removes the topics header from the request that was passed on from the
-    // previous one.
-    removed_headers.push_back(kBrowsingTopicsRequestHeaderKey);
-
     // At this point we may not have a valid `GetRenderFrameHost()` if the
     // navigation is during a cross-site redirect. Thus, pass in the current/old
     // RenderFrameHost here. This is fine, because it should still give us the
@@ -5218,15 +5221,19 @@ void NavigationRequest::OnRedirectChecksComplete(
         browsing_topics::ApiCallerSource::kIframeAttribute);
   }
 
-  absl::optional<std::string> topics_header_value =
+  // Removes the topics header. This will effectively be a no-op if the topics
+  // header wasn't sent for the previous request.
+  removed_headers.push_back(kBrowsingTopicsRequestHeaderKey);
+
+  TopicsHeaderValueResult topics_header_value_result =
       GetTopicsHeaderValueForNavigationRequest(frame_tree_node_,
                                                common_params_->url);
 
-  topics_eligible_ = topics_header_value.has_value();
+  topics_eligible_ = topics_header_value_result.topics_eligible;
 
-  if (topics_eligible_) {
+  if (topics_header_value_result.header_value) {
     modified_headers.SetHeader(kBrowsingTopicsRequestHeaderKey,
-                               *topics_header_value);
+                               *topics_header_value_result.header_value);
   }
 
   if (ad_auction_headers_eligible_) {
@@ -5577,7 +5584,7 @@ void NavigationRequest::CommitErrorPage(
 
   DetermineOriginAgentClusterEndResult();
 
-  UpdateCommitNavigationParamsHistory();
+  UpdateHistoryParamsInCommitNavigationParams();
 
   common_params_->should_replace_current_entry =
       ShouldReplaceCurrentEntryForFailedNavigation();
@@ -5674,7 +5681,7 @@ void NavigationRequest::CommitNavigation() {
 
   DetermineOriginAgentClusterEndResult();
 
-  UpdateCommitNavigationParamsHistory();
+  UpdateHistoryParamsInCommitNavigationParams();
   DCHECK(NeedsUrlLoader() == !!response_head_ ||
          (was_redirected_ && common_params_->url.IsAboutBlank()));
   DCHECK(!common_params_->url.SchemeIs(url::kJavaScriptScheme));
@@ -5682,12 +5689,10 @@ void NavigationRequest::CommitNavigation() {
 
   AddOldPageInfoToCommitParamsIfNeeded();
 
-  url::Origin origin = GetOriginToCommit().value();
-  // TODO(crbug.com/979296): Consider changing this code to copy an origin
-  // instead of creating one from a URL which lacks opacity information.
+  url::Origin origin_to_commit = GetOriginToCommit().value();
   isolation_info_for_subresources_ =
       GetRenderFrameHost()->ComputeIsolationInfoForSubresourcesForPendingCommit(
-          origin, is_credentialless(), ComputeFencedFrameNonce());
+          origin_to_commit, is_credentialless(), ComputeFencedFrameNonce());
   DCHECK(!isolation_info_for_subresources_.IsEmpty());
 
   // TODO(https://crbug.com/888079): The storage key's origin is ignored at the
@@ -5698,7 +5703,7 @@ void NavigationRequest::CommitNavigation() {
                                          ComputeFencedFrameNonce());
 
   commit_params_->storage_key = GetRenderFrameHost()->CalculateStorageKey(
-      GetOriginToCommit().value(), base::OptionalToPtr(nonce));
+      origin_to_commit, base::OptionalToPtr(nonce));
   commit_params_->session_storage_key =
       frame_tree_node()->frame_tree().GetSessionStorageKey(
           commit_params_->storage_key);
@@ -5715,7 +5720,8 @@ void NavigationRequest::CommitNavigation() {
   }
 
   if (ad_auction_headers_eligible_ && response_head_->headers) {
-    ProcessAdAuctionResponseHeaders(origin, GetRenderFrameHost()->GetPage(),
+    ProcessAdAuctionResponseHeaders(origin_to_commit,
+                                    GetRenderFrameHost()->GetPage(),
                                     *response_head_->headers);
   } else if (has_ad_auction_headers_attribute_ && response_head_->headers) {
     RemoveAdAuctionResponseHeaders(*response_head_->headers);
@@ -5780,13 +5786,13 @@ void NavigationRequest::CommitNavigation() {
           response()->headers.get(), browser_context, client_hints_delegate,
           frame_tree_node_);
     }
-    commit_params_->enabled_client_hints = LookupAcceptCHForCommit(
-        GetOriginToCommit().value(), client_hints_delegate, frame_tree_node_,
-        common_params_->url);
+    commit_params_->enabled_client_hints =
+        LookupAcceptCHForCommit(origin_to_commit, client_hints_delegate,
+                                frame_tree_node_, common_params_->url);
   }
   // Navigation requests should use the new origin as the partition origin
   // except if embedded in an outer frame.
-  url::Origin partition_origin = origin;
+  url::Origin partition_origin = origin_to_commit;
   bool is_top_level = frame_tree_node()->GetParentOrOuterDocument() == nullptr;
   if (!is_top_level) {
     partition_origin = frame_tree_node()
@@ -5795,7 +5801,7 @@ void NavigationRequest::CommitNavigation() {
                            ->GetLastCommittedOrigin();
   }
 
-  PersistOriginTrialsFromHeaders(origin, partition_origin, response(),
+  PersistOriginTrialsFromHeaders(origin_to_commit, partition_origin, response(),
                                  browser_context);
 
   // Update the reduced accept-language to commit if it's empty, and stop
@@ -5814,13 +5820,12 @@ void NavigationRequest::CommitNavigation() {
     if (commit_params_->reduced_accept_language.empty()) {
       commit_params_->reduced_accept_language =
           reduce_accept_lang_utils.value()
-              .LookupReducedAcceptLanguage(GetOriginToCommit().value(),
-                                           frame_tree_node_)
+              .LookupReducedAcceptLanguage(origin_to_commit, frame_tree_node_)
               .value_or("");
     }
     reduce_accept_lang_utils.value().RemoveOriginTrialReducedAcceptLanguage(
-        commit_params_->reduced_accept_language, GetOriginToCommit().value(),
-        response(), frame_tree_node_);
+        commit_params_->reduced_accept_language, origin_to_commit, response(),
+        frame_tree_node_);
   }
 
   // Generate a UKM source and track it on NavigationRequest. This will be
@@ -5856,7 +5861,7 @@ void NavigationRequest::CommitNavigation() {
        (commit_params_->frame_policy.sandbox_flags &
         WebSandboxFlags::kTopNavigation) == WebSandboxFlags::kNone);
   const bool is_same_origin_to_top =
-      GetOriginToCommit() ==
+      origin_to_commit ==
       GetRenderFrameHost()->GetMainFrame()->GetLastCommittedOrigin();
   if (is_same_origin_to_top) {
     policy_container_builder_->SetAllowTopNavigationWithoutUserGesture(true);
@@ -6567,7 +6572,7 @@ NavigationRequest::CheckCSPEmbeddedEnforcement() {
   return CSPEmbeddedEnforcementResult::BLOCK_RESPONSE;
 }
 
-void NavigationRequest::UpdateCommitNavigationParamsHistory() {
+void NavigationRequest::UpdateHistoryParamsInCommitNavigationParams() {
   NavigationController& navigation_controller =
       frame_tree_node_->navigator().controller();
   commit_params_->current_history_list_offset =
@@ -7509,7 +7514,7 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
     // * Embedder-initiated FF root navigations to transparent (non-urn) urls.
     // In those cases, we skip this step.
     if (fenced_frame_properties_.has_value() &&
-        fenced_frame_properties_->mapped_url_.has_value()) {
+        fenced_frame_properties_->mapped_url().has_value()) {
       fenced_frame_properties_->UpdateMappedURL(GetURL());
     }
   }
@@ -7529,9 +7534,9 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   if (computed_fenced_frame_properties.has_value()) {
     content::FencedFrameEntity entity =
         content::FencedFrameEntity::kSameOriginContent;
-    if (computed_fenced_frame_properties->mapped_url_.has_value() &&
+    if (computed_fenced_frame_properties->mapped_url().has_value() &&
         !url::Origin::Create(common_params_->url)
-             .IsSameOriginWith(computed_fenced_frame_properties->mapped_url_
+             .IsSameOriginWith(computed_fenced_frame_properties->mapped_url()
                                    ->GetValueIgnoringVisibility())) {
       entity = content::FencedFrameEntity::kCrossOriginContent;
     }
@@ -8766,7 +8771,7 @@ bool NavigationRequest::CheckPermissionsPoliciesForFencedFrames(
   // extra policies defined in the outer document/"allow" attribute won't have
   // any effect.
   for (const blink::mojom::PermissionsPolicyFeature feature :
-       computed_fenced_frame_properties->effective_enabled_permissions) {
+       computed_fenced_frame_properties->effective_enabled_permissions()) {
     if (!IsFencedFrameRequiredPolicyFeatureAllowed(origin, feature)) {
       const blink::PermissionsPolicyFeatureToNameMap& feature_to_name_map =
           blink::GetPermissionsPolicyFeatureToNameMap();
@@ -9422,14 +9427,14 @@ NavigationRequest::ComputeFencedFrameNonce() const {
   if (!computed_fenced_frame_properties.has_value()) {
     return absl::nullopt;
   }
-  if (!computed_fenced_frame_properties->partition_nonce_.has_value()) {
+  if (!computed_fenced_frame_properties->partition_nonce().has_value()) {
     // It is only possible for there to be `FencedFrameProperties` but no
     // partition nonce in urn iframes (which could indeed be nested inside a
     // fenced frame).
     CHECK(blink::features::IsAllowURNsInIframeEnabled());
     return absl::nullopt;
   }
-  return computed_fenced_frame_properties->partition_nonce_
+  return computed_fenced_frame_properties->partition_nonce()
       ->GetValueIgnoringVisibility();
 }
 

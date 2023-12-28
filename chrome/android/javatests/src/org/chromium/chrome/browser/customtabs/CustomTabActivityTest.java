@@ -2705,7 +2705,7 @@ public class CustomTabActivityTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.BackPress.Failure",
-                        BackPressManager.getHistogramValueForTesting(
+                        BackPressManager.getHistogramValue(
                                 BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB));
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

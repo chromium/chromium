@@ -70,7 +70,7 @@ bool DownloadStatusUpdater::GetProgress(float* progress,
     if (notifier->GetManager()) {
       content::DownloadManager::DownloadVector items;
       notifier->GetManager()->GetAllDownloads(&items);
-      for (auto* item : items) {
+      for (download::DownloadItem* item : items) {
         if (item->GetState() == download::DownloadItem::IN_PROGRESS) {
           ++*download_count;
           if (item->GetTotalBytes() <= 0) {
@@ -95,8 +95,9 @@ void DownloadStatusUpdater::AddManager(content::DownloadManager* manager) {
       std::make_unique<download::AllDownloadItemNotifier>(manager, this));
   content::DownloadManager::DownloadVector items;
   manager->GetAllDownloads(&items);
-  for (auto* item : items)
+  for (download::DownloadItem* item : items) {
     OnDownloadCreated(manager, item);
+  }
 }
 
 void DownloadStatusUpdater::OnDownloadCreated(content::DownloadManager* manager,

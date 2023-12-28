@@ -7,6 +7,7 @@
 
 #include <dawn/dawn_proc_table.h>
 #include <dawn/webgpu.h>
+#include <vector>
 
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
@@ -75,6 +76,13 @@ class PLATFORM_EXPORT DawnControlClientHolder
 
   base::WeakPtrFactory<DawnControlClientHolder> weak_ptr_factory_{this};
 };
+
+// Slightly hacky way to get the wgslLanguageFeatures without accessing the
+// DawnControlClient because it is initialized asynchronously on workers.
+// TODO(crbug.com/1246805): Remove this hack when the DawnControlClient can be
+// initialized synchronously on workers and query from its WGPUInstance
+// instead.
+PLATFORM_EXPORT std::vector<WGPUWGSLFeatureName> GatherWGSLFeatures();
 
 }  // namespace blink
 

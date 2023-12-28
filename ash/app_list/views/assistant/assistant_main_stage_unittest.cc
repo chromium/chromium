@@ -12,7 +12,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
@@ -72,7 +72,7 @@ TEST_F(AssistantMainStageTest, DarkAndLightTheme) {
 TEST_F(AssistantMainStageTest, FooterIsVisible) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
-      assistant::features::kEnableAssistantLearnMore);
+      feature_engagement::kIPHLauncherSearchHelpUiFeature);
 
   ShowAssistantUi();
 
@@ -82,7 +82,7 @@ TEST_F(AssistantMainStageTest, FooterIsVisible) {
 
 TEST_F(AssistantMainStageTest, FooterIsNotVisible) {
   base::test::ScopedFeatureList scoped_feature_list(
-      assistant::features::kEnableAssistantLearnMore);
+      feature_engagement::kIPHLauncherSearchHelpUiFeature);
 
   ShowAssistantUi();
 
@@ -92,7 +92,7 @@ TEST_F(AssistantMainStageTest, FooterIsNotVisible) {
 
 TEST_F(AssistantMainStageTest, FooterIsVisibleAfterQuery) {
   base::test::ScopedFeatureList scoped_feature_list(
-      assistant::features::kEnableAssistantLearnMore);
+      feature_engagement::kIPHLauncherSearchHelpUiFeature);
 
   ShowAssistantUi();
 
@@ -105,7 +105,7 @@ TEST_F(AssistantMainStageTest, FooterIsVisibleAfterQuery) {
 
 TEST_F(AssistantMainStageTest, FooterIsVisibleAfterResponse) {
   base::test::ScopedFeatureList scoped_feature_list(
-      assistant::features::kEnableAssistantLearnMore);
+      feature_engagement::kIPHLauncherSearchHelpUiFeature);
 
   ShowAssistantUi();
 
@@ -119,7 +119,7 @@ TEST_F(AssistantMainStageTest, FooterIsVisibleAfterResponse) {
 TEST_F(AssistantMainStageTest, FooterIsVisible_Tablet) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
-      assistant::features::kEnableAssistantLearnMore);
+      feature_engagement::kIPHLauncherSearchHelpUiFeature);
 
   SetTabletMode(true);
   ShowAssistantUi();
@@ -130,7 +130,7 @@ TEST_F(AssistantMainStageTest, FooterIsVisible_Tablet) {
 
 TEST_F(AssistantMainStageTest, FooterIsNotVisible_Tablet) {
   base::test::ScopedFeatureList scoped_feature_list(
-      assistant::features::kEnableAssistantLearnMore);
+      feature_engagement::kIPHLauncherSearchHelpUiFeature);
 
   SetTabletMode(true);
   ShowAssistantUi();
@@ -141,7 +141,7 @@ TEST_F(AssistantMainStageTest, FooterIsNotVisible_Tablet) {
 
 TEST_F(AssistantMainStageTest, FooterIsVisibleAfterQuery_Tablet) {
   base::test::ScopedFeatureList scoped_feature_list(
-      assistant::features::kEnableAssistantLearnMore);
+      feature_engagement::kIPHLauncherSearchHelpUiFeature);
 
   SetTabletMode(true);
   ShowAssistantUi();
@@ -157,7 +157,7 @@ TEST_F(AssistantMainStageTest, FooterIsVisibleAfterQuery_Tablet) {
 
 TEST_F(AssistantMainStageTest, FooterIsVisibleAfterResponse_Tablet) {
   base::test::ScopedFeatureList scoped_feature_list(
-      assistant::features::kEnableAssistantLearnMore);
+      feature_engagement::kIPHLauncherSearchHelpUiFeature);
 
   SetTabletMode(true);
   ShowAssistantUi();

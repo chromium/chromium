@@ -54,8 +54,9 @@ struct DesktopMediaSourceViewStyle {
 // View used for each item in DesktopMediaListView. Shows a single desktop media
 // source as a thumbnail with the title under it.
 class DesktopMediaSourceView : public views::View {
+  METADATA_HEADER(DesktopMediaSourceView, views::View)
+
  public:
-  METADATA_HEADER(DesktopMediaSourceView);
   DesktopMediaSourceView(DesktopMediaListView* parent,
                          content::DesktopMediaID source_id,
                          DesktopMediaSourceViewStyle style);

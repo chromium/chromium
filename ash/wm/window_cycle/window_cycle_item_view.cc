@@ -185,7 +185,7 @@ bool GroupContainerCycleView::Contains(aura::Window* window) const {
 
 aura::Window* GroupContainerCycleView::GetWindowAtPoint(
     const gfx::Point& screen_point) const {
-  for (auto* mini_view : mini_views_) {
+  for (ash::WindowCycleItemView* mini_view : mini_views_) {
     if (auto* window = mini_view->GetWindowAtPoint(screen_point)) {
       return window;
     }
@@ -194,7 +194,7 @@ aura::Window* GroupContainerCycleView::GetWindowAtPoint(
 }
 
 void GroupContainerCycleView::SetShowPreview(bool show) {
-  for (auto* mini_view : mini_views_) {
+  for (ash::WindowCycleItemView* mini_view : mini_views_) {
     mini_view->SetShowPreview(show);
   }
 }
@@ -212,7 +212,7 @@ void GroupContainerCycleView::RefreshItemVisuals() {
         /*lower_left=*/0));
   }
 
-  for (auto* mini_view : mini_views_) {
+  for (ash::WindowCycleItemView* mini_view : mini_views_) {
     mini_view->RefreshItemVisuals();
   }
 }
@@ -284,7 +284,7 @@ void GroupContainerCycleView::SetSelectedWindowForFocus(aura::Window* window) {
   } else {
     // For normal use case, follow the window cycle order and `UpdateFocusState`
     // on the cycle item that contains the target window.
-    for (auto* mini_view : mini_views_) {
+    for (ash::WindowCycleItemView* mini_view : mini_views_) {
       if (mini_view->Contains(window)) {
         mini_view->UpdateFocusState(/*focus=*/true);
         break;
@@ -294,7 +294,7 @@ void GroupContainerCycleView::SetSelectedWindowForFocus(aura::Window* window) {
 }
 
 void GroupContainerCycleView::ClearFocusSelection() {
-  for (auto* mini_view : mini_views_) {
+  for (ash::WindowCycleItemView* mini_view : mini_views_) {
     mini_view->UpdateFocusState(/*focus=*/false);
   }
 }

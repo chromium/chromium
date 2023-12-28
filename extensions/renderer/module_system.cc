@@ -12,6 +12,7 @@
 #include "base/trace_event/trace_event.h"
 #include "content/public/renderer/render_frame.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/renderer/console.h"
 #include "extensions/renderer/safe_builtins.h"
 #include "extensions/renderer/script_context.h"
@@ -198,7 +199,7 @@ ModuleSystem::ModuleSystem(ScriptContext* context, const SourceMap* source_map)
   }
 
   if (context_->GetRenderFrame() &&
-      context_->context_type() == Feature::BLESSED_EXTENSION_CONTEXT &&
+      context_->context_type() == mojom::ContextType::kPrivilegedExtension &&
       !context_->IsForServiceWorker() && ContextNeedsMojoBindings(context_)) {
     blink::WebV8Features::EnableMojoJS(context->v8_context(), true);
   }

@@ -85,7 +85,7 @@ class TestNudgeAnimationObserver : public HomeButton::NudgeAnimationObserver {
  private:
   base::RunLoop animation_run_loop_;
   base::RunLoop label_run_loop_;
-  const raw_ptr<HomeButton, ExperimentalAsh> home_button_;
+  const raw_ptr<HomeButton> home_button_;
 
   // Counts the number of started/ended animations.
   int started_animation_count_ = 0;
@@ -142,11 +142,10 @@ class LauncherNudgeControllerTest : public AshTestBase {
     test_api_->RunMessageLoopUntilAnimationsDone();
   }
 
-  raw_ptr<LauncherNudgeController, DanglingUntriaged | ExperimentalAsh>
-      nudge_controller_;
+  raw_ptr<LauncherNudgeController, DanglingUntriaged> nudge_controller_;
   std::unique_ptr<TestNudgeAnimationObserver> observer_;
-  raw_ptr<ScrollableShelfView, DanglingUntriaged | ExperimentalAsh>
-      scrollable_shelf_view_ = nullptr;
+  raw_ptr<ScrollableShelfView, DanglingUntriaged> scrollable_shelf_view_ =
+      nullptr;
   std::unique_ptr<ShelfViewTestAPI> test_api_;
 };
 

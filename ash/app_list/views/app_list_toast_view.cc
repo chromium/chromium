@@ -66,8 +66,8 @@ class IconImageWithBackground : public views::ImageView {
 
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
+    flags.setColor(
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemOnBase));
     canvas->DrawRoundRect(GetContentsBounds(), kIconCornerRadius, flags);
     SkPath mask;
     mask.addRoundRect(gfx::RectToSkRect(GetContentsBounds()), kIconCornerRadius,

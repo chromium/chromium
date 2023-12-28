@@ -299,12 +299,12 @@ void FullscreenController::ExitFullscreenModeForTab(WebContents* web_contents) {
 void FullscreenController::FullscreenTabOpeningPopup(
     content::WebContents* opener,
     content::WebContents* popup) {
-  if (popunder_preventer_) {
-    DCHECK_EQ(exclusive_access_tab(), opener);
-    popunder_preventer_->AddPotentialPopunder(popup);
-  } else {
-    DCHECK(IsFullscreenWithinTab(opener));
+  if (!popunder_preventer_) {
+    return;
   }
+
+  DCHECK_EQ(exclusive_access_tab(), opener);
+  popunder_preventer_->AddPotentialPopunder(popup);
 }
 
 void FullscreenController::OnTabDeactivated(
@@ -365,6 +365,11 @@ void FullscreenController::WindowFullscreenStateChanged() {
       exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
           ExclusiveAccessBubbleHideCallback(),
           /*force_update=*/true);
+    }
+    if (IsFullscreenCausedByTab()) {
+      exclusive_access_manager()->RecordLockStateOnEnteringApiFullscreen();
+    } else {
+      exclusive_access_manager()->RecordLockStateOnEnteringBrowserFullscreen();
     }
   }
 }

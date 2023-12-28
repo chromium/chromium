@@ -47,10 +47,10 @@ class LogoutConfirmationDialog : public views::DialogDelegateView {
   void UpdateLabel();
   void OnDialogAccepted();
 
-  raw_ptr<LogoutConfirmationController, ExperimentalAsh> controller_;
+  raw_ptr<LogoutConfirmationController> controller_;
   base::TimeTicks logout_time_;
 
-  raw_ptr<views::Label, ExperimentalAsh> label_;
+  raw_ptr<views::Label> label_;
 
   base::RepeatingTimer update_timer_;
 };

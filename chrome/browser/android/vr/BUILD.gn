@@ -13,88 +13,14 @@ assert(enable_vr)
 
 static_library("vr_android") {
   defines = []
-  sources = [
-    "vr_module_provider.cc",
-    "vr_module_provider.h",
-  ]
-
-  if (enable_gvr_services) {
-    sources += [
-      "android_vsync_helper.cc",
-      "android_vsync_helper.h",
-      "browser_renderer_factory.cc",
-      "browser_renderer_factory.h",
-      "cardboard_input_delegate.cc",
-      "cardboard_input_delegate.h",
-      "gl_browser_interface.h",
-      "gvr_graphics_delegate.cc",
-      "gvr_graphics_delegate.h",
-      "gvr_input_delegate.cc",
-      "gvr_input_delegate.h",
-      "gvr_install_helper.cc",
-      "gvr_install_helper.h",
-      "gvr_scheduler_delegate.cc",
-      "gvr_scheduler_delegate.h",
-      "gvr_util.cc",
-      "gvr_util.h",
-      "metrics_util_android.cc",
-      "metrics_util_android.h",
-      "register_gvr_jni.cc",
-      "register_gvr_jni.h",
-      "register_jni.h",
-      "scoped_gpu_trace.cc",
-      "scoped_gpu_trace.h",
-      "vr_controller.cc",
-      "vr_controller.h",
-      "vr_gl_thread.cc",
-      "vr_gl_thread.h",
-      "vr_shell.cc",
-      "vr_shell.h",
-      "vr_shell_delegate.cc",
-      "vr_shell_delegate.h",
-      "vrcore_install_helper.cc",
-      "vrcore_install_helper.h",
-    ]
-  }
+  sources = []
 
   deps = [
-    ":ui_factory",
-    "//base",
-    "//cc",
-    "//chrome/android:chrome_jni_headers",
-    "//chrome/android/features/vr:split_jni_headers",
-    "//chrome/browser:browser_process",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
-    "//chrome/browser/vr:vr_common",
-    "//chrome/common",
-    "//chrome/common:constants",
-    "//components/browser_ui/util/android",
-    "//components/content_settings/core/browser",
-    "//components/language/core/browser",
-    "//components/omnibox/browser",
-    "//components/page_info",
-    "//components/permissions",
-    "//components/search_engines:search_engines",
-    "//components/webxr:webxr",
-    "//components/webxr/android",
-    "//components/webxr/android:android_utils",
-    "//content/public/browser",
-    "//content/public/common",
     "//device/vr",
     "//device/vr:vr_base",
     "//device/vr:vr_util",
     "//device/vr/android:vr_android",
     "//device/vr/buildflags:buildflags",
-    "//gpu/command_buffer/service:gles2",
-    "//services/device/public/mojom",
-    "//services/metrics/public/cpp:ukm_builders",
-    "//services/viz/public/cpp/gpu",
-    "//ui/android",
-    "//ui/base",
-    "//ui/display",
-    "//ui/gl",
-    "//ui/gl/init",
   ]
 
   if (enable_arcore) {
@@ -107,60 +33,7 @@ static_library("vr_android") {
   public_deps = [ "//device/vr/public/mojom:isolated_xr_service" ]
 
   libs = [ "android" ]
-
-  if (enable_gvr_services) {
-    deps += [ "//third_party/gvr-android-sdk:gvr_shim" ]
-    configs += [ "//third_party/gvr-android-sdk:libgvr_config" ]
-  }
 }
-
-# The VR UI module factory interface.
-source_set("ui_factory") {
-  sources = [ "ui_factory.h" ]
-  deps = [ "//chrome/browser/vr:vr_base" ]
-}
-
-# The default UI factory implementation, which simply instantiates an object.
-source_set("ui_default_factory") {
-  sources = [
-    "ui_default_factory.cc",
-    "ui_default_factory.h",
-  ]
-  deps = [
-    ":ui_factory",
-    "//chrome/browser/vr:vr_base",
-    "//chrome/browser/vr:vr_ui",
-  ]
-}
-
-# The DFM version of the factory, which opens the DFM shared library and uses
-# it to create a UI.
-source_set("ui_module_factory") {
-  sources = [
-    "ui_module_factory.cc",
-    "ui_module_factory.h",
-  ]
-  deps = [
-    ":ui_factory",
-    "//chrome/browser/vr:vr_base",
-  ]
-}
-
-# A top-level module factory target to be included by Chrome's main library
-# target. Ideally, this would be pulled in by vr_android. However, vr_android
-# is a dep of both Chrome and VR unit tests, and unit tests always require the
-# non-module version of the factory. As such, vr_android doesn't know which
-# factory it needs to use. The fact that vr_android has an implicity circular
-# dependency on chrome/browser precludes the use of an intermediate target (eg.
-# vr_android_with_factory).
-group("module_factory") {
-  if (use_native_partitions) {
-    deps = [ ":ui_module_factory" ]
-  } else {
-    deps = [ ":ui_default_factory" ]
-  }
-}
-
 if (enable_arcore) {
   generate_jni("ar_jni_headers") {
     sources = [ "//chrome/android/java/src/org/chromium/chrome/browser/vr/ArCompositorDelegateProviderImpl.java" ]
@@ -173,16 +46,11 @@ if (enable_cardboard) {
   }
 }
 
-group("test_support") {
-  public_deps = [ ":ui_default_factory" ]
-}
-
 test("vr_android_unittests") {
   sources = [
     "arcore_device/arcore_device_unittest.cc",
     "arcore_device/fake_arcore.cc",
     "arcore_device/fake_arcore.h",
-    "register_jni_monochrome.cc",
     "test/ar_test_suite.cc",
     "test/ar_test_suite.h",
     "test/run_all_unittests.cc",
@@ -191,7 +59,6 @@ test("vr_android_unittests") {
   libs = [ "android" ]
 
   deps = [
-    ":test_support",
     ":vr_android",
     "//base/test:test_support",
     "//chrome/browser",

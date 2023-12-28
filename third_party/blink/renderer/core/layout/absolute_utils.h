@@ -47,11 +47,17 @@ struct CORE_EXPORT LogicalOofInsets {
   absl::optional<LayoutUnit> block_end;
 };
 
+bool IsInsetAutoForAxis(const Length& side1,
+                        const Length& side2,
+                        const ComputedStyle& style,
+                        WritingDirectionMode container_writing_direction,
+                        const AnchorEvaluatorImpl*);
+
 CORE_EXPORT LogicalOofInsets
 ComputeOutOfFlowInsets(const ComputedStyle& style,
                        const LogicalSize& available_size,
-                       const WritingDirectionMode& container_writing_direction,
-                       const WritingDirectionMode& self_writing_direction,
+                       WritingDirectionMode container_writing_direction,
+                       WritingDirectionMode self_writing_direction,
                        AnchorEvaluatorImpl* anchor_evaluator);
 
 struct CORE_EXPORT InsetModifiedContainingBlock {
@@ -71,6 +77,12 @@ struct CORE_EXPORT InsetModifiedContainingBlock {
   enum class InsetBias { kStart, kEnd, kEqual };
   InsetBias inline_inset_bias = InsetBias::kStart;
   InsetBias block_inset_bias = InsetBias::kStart;
+
+  // If safe alignment is specified (e.g. "align-self: safe end") and the
+  // object overflows its containing block it'll become start aligned instead.
+  // This field indicates the "start" edge of the containing block.
+  absl::optional<InsetBias> safe_inline_inset_bias;
+  absl::optional<InsetBias> safe_block_inset_bias;
 
   LayoutUnit InlineEndOffset() const {
     return available_size.inline_size - inline_end;
@@ -95,19 +107,20 @@ CORE_EXPORT InsetModifiedContainingBlock ComputeInsetModifiedContainingBlock(
     const LogicalSize& available_size,
     const LogicalOofInsets&,
     const LogicalStaticPosition&,
-    const WritingDirectionMode& container_writing_direction,
-    const WritingDirectionMode& self_writing_direction);
+    WritingDirectionMode container_writing_direction,
+    WritingDirectionMode self_writing_direction);
 
 // Similar to `ComputeInsetModifiedContainingBlock`, but returns the
 // scroll-adjusted IMCB at the initial scroll position, which is for the
 // position fallback algorithm only.
 // https://www.w3.org/TR/css-anchor-position-1/#fallback-apply
-CORE_EXPORT InsetModifiedContainingBlock ComputeIMCBForPositionFallback(
-    const LogicalSize& available_size,
-    const LogicalOofInsets&,
-    const LogicalStaticPosition&,
-    const WritingDirectionMode& container_writing_direction,
-    const WritingDirectionMode& self_writing_direction);
+CORE_EXPORT InsetModifiedContainingBlock
+ComputeIMCBForPositionFallback(const LogicalSize& available_size,
+                               const LogicalOofInsets&,
+                               const LogicalStaticPosition&,
+                               const ComputedStyle&,
+                               WritingDirectionMode container_writing_direction,
+                               WritingDirectionMode self_writing_direction);
 
 // The following routines implement the absolute size resolution algorithm.
 // https://www.w3.org/TR/css-position-3/#abs-non-replaced-width
@@ -129,7 +142,7 @@ CORE_EXPORT bool ComputeOofInlineDimensions(
     const InsetModifiedContainingBlock&,
     const BoxStrut& border_padding,
     const absl::optional<LogicalSize>& replaced_size,
-    const WritingDirectionMode container_writing_direction,
+    WritingDirectionMode container_writing_direction,
     const AnchorEvaluatorImpl* anchor_evaluator,
     LogicalOofDimensions* dimensions);
 
@@ -142,7 +155,7 @@ CORE_EXPORT const LayoutResult* ComputeOofBlockDimensions(
     const InsetModifiedContainingBlock&,
     const BoxStrut& border_padding,
     const absl::optional<LogicalSize>& replaced_size,
-    const WritingDirectionMode container_writing_direction,
+    WritingDirectionMode container_writing_direction,
     const AnchorEvaluatorImpl* anchor_evaluator,
     LogicalOofDimensions* dimensions);
 

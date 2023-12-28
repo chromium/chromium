@@ -7,14 +7,18 @@
 
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
+#include "content/public/browser/web_contents_observer.h"
+
 namespace autofill::payments {
 
 // Chrome implementation of PaymentsAutofillClient. Used for Chrome Desktop and
 // Clank. Owned by the ChromeAutofillClient. Created lazily in the
-// ChromeAutofillClient when it is needed.
-class ChromePaymentsAutofillClient : public PaymentsAutofillClient {
+// ChromeAutofillClient when it is needed, and it observes the same WebContents
+// as its owning ChromeAutofillClient.
+class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
+                                     public content::WebContentsObserver {
  public:
-  ChromePaymentsAutofillClient();
+  explicit ChromePaymentsAutofillClient(content::WebContents* web_contents);
   ChromePaymentsAutofillClient(const ChromePaymentsAutofillClient&) = delete;
   ChromePaymentsAutofillClient& operator=(const ChromePaymentsAutofillClient&) =
       delete;

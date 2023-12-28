@@ -117,9 +117,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                     UserPrefs.get(getProfile()).setBoolean(Pref.PRIVACY_GUIDE_VIEWED, true);
                     return false;
                 });
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_GUIDE)
-                || getProfile().isChild()
-                || ManagedBrowserUtils.isBrowserManaged(getProfile())) {
+        if (getProfile().isChild() || ManagedBrowserUtils.isBrowserManaged(getProfile())) {
             getPreferenceScreen().removePreference(privacyGuidePreference);
         }
 

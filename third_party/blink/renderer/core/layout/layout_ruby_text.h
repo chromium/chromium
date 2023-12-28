@@ -21,7 +21,10 @@ class CORE_EXPORT LayoutRubyText final : public LayoutNGBlockFlow {
     NOT_DESTROYED();
     return "LayoutRubyText";
   }
-  bool IsOfType(LayoutObjectType type) const override;
+  bool IsRubyText() const final {
+    NOT_DESTROYED();
+    return true;
+  }
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
   void StyleDidChange(StyleDifference diff,
                       const ComputedStyle* old_style) override;

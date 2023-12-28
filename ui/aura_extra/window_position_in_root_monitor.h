@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/aura_extra/aura_extra_export.h"
 
@@ -45,7 +46,7 @@ class AURA_EXTRA_EXPORT WindowPositionInRootMonitor
 
   // The windows being watched. This contains the window supplied to the
   // constructor and all it's ancestors. This is empty if the window is deleted.
-  std::vector<aura::Window*> ancestors_;
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> ancestors_;
 };
 
 }  // namespace aura_extra

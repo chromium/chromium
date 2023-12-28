@@ -183,7 +183,7 @@ class ArcPowerBridge : public KeyedService,
   // Sends a PowerInstance::Resume mojo call to Android.
   void DispatchAndroidResume();
 
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 
   std::string user_id_hash_;

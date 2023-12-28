@@ -10,7 +10,7 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
-import {decorate} from '../../common/js/cr_ui.js';
+import {crInjectTypeAndInit} from '../../common/js/cr_ui.js';
 import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
@@ -25,7 +25,7 @@ import {deduplicatePath, FileTransferController, resolvePath, writeFile} from '.
 import {MetadataModel} from './metadata/metadata_model.js';
 import {MockMetadataModel} from './metadata/mock_metadata.js';
 import {createFakeDirectoryModel} from './mock_directory_model.js';
-import {A11yAnnounce} from './ui/a11y_announce.js';
+import type {A11yAnnounce} from './ui/a11y_announce.js';
 import {Command} from './ui/command.js';
 import {DirectoryTree} from './ui/directory_tree.js';
 import {FileGrid} from './ui/file_grid.js';
@@ -80,7 +80,7 @@ export function setUp() {
 
   // Initialize Command with the <command>s.
   for (const command of document.querySelectorAll<Command>('command')) {
-    decorate(command, Command);
+    crInjectTypeAndInit(command, Command);
   }
   // Fake confirmation callback.
   const confirmationDialog = () => Promise.resolve(true);
@@ -97,8 +97,7 @@ export function setUp() {
   // Create fake VolumeManager and install webkitResolveLocalFileSystemURL.
   volumeManager = new MockVolumeManager();
   window.webkitResolveLocalFileSystemURL =
-      MockVolumeManager.resolveLocalFileSystemUrl.bind(null, volumeManager) as
-      unknown as Window['webkitResolveLocalFileSystemURL'];
+      MockVolumeManager.resolveLocalFileSystemUrl.bind(null, volumeManager);
 
 
   // Fake FileSelectionHandler.
@@ -116,7 +115,7 @@ export function setUp() {
   const table =
       document.querySelector('#detail-table')! as unknown as FileTable;
   FileTable.decorate(
-      table as unknown as Element, metadataModel, volumeManager, a11y,
+      table as unknown as HTMLElement, metadataModel, volumeManager, a11y,
       true /* fullPage */);
   const dataModel = new FileListModel(metadataModel);
   table.list.dataModel = dataModel;

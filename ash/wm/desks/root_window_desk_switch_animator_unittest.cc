@@ -75,6 +75,18 @@ class RootWindowDeskSwitchAnimatorTest
       const RootWindowDeskSwitchAnimatorTest&) = delete;
   ~RootWindowDeskSwitchAnimatorTest() override = default;
 
+  void TearDown() override {
+    // Shell teardown happens in AshTestBase::TearDown. That function is
+    // executed before the destructor of derived tests. The animator is a
+    // ShellObserver, so it wants the Shell to be around when it destroys. In
+    // order for the Shell to be alive for the entire duration of the animator,
+    // we explicitly destroy it here before proceeding with the rest of the
+    // teardown.
+    animator_.reset();
+
+    AshTestBase::TearDown();
+  }
+
   RootWindowDeskSwitchAnimatorTestApi* test_api() { return test_api_.get(); }
   RootWindowDeskSwitchAnimator* animator() { return animator_.get(); }
 

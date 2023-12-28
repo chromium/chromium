@@ -11,7 +11,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
-import org.chromium.components.autofill.ServerFieldType;
+import org.chromium.components.autofill.FieldType;
 
 import java.text.Collator;
 import java.util.ArrayList;
@@ -95,8 +95,8 @@ public final class AutofillProfileBridge {
 
     /** Description of an address editor input field. */
     public static class AutofillAddressUiComponent {
-        /** The type of the field, e.g., ServerFieldType.NAME_FULL. */
-        public final @ServerFieldType int id;
+        /** The type of the field, e.g., FieldType.NAME_FULL. */
+        public final @FieldType int id;
 
         /** The localized display label for the field, e.g., "City." */
         public final String label;
@@ -110,8 +110,8 @@ public final class AutofillProfileBridge {
         /**
          * Builds a description of an address editor input field.
          *
-         * @param id         The type of the field, .e.g., ServerFieldType.ADDRESS_HOME_CITY.
-         * @param label      The localized display label for the field, .e.g., "City."
+         * @param id The type of the field, .e.g., FieldType.ADDRESS_HOME_CITY.
+         * @param label The localized display label for the field, .e.g., "City."
          * @param isRequired Whether the field is required.
          * @param isFullLine Whether the field takes up the full line.
          */

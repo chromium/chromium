@@ -52,7 +52,7 @@ class DISPLAY_MANAGER_EXPORT TouchDeviceManagerTestApi {
 
  private:
   // Not owned
-  raw_ptr<TouchDeviceManager, ExperimentalAsh> touch_device_manager_;
+  raw_ptr<TouchDeviceManager> touch_device_manager_;
 };
 
 }  // namespace test

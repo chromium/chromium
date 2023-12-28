@@ -67,7 +67,7 @@ class SerialTracker {
   std::string ToString() const;
 
  private:
-  raw_ptr<struct wl_display, DanglingUntriaged | ExperimentalAsh> display_;
+  raw_ptr<struct wl_display, DanglingUntriaged> display_;
 
   // EventTypes are stored in a circular buffer, because serial numbers are
   // issued sequentially and we only want to store the most recent events.

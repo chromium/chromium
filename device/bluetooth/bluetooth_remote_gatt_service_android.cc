@@ -112,9 +112,9 @@ std::string BluetoothRemoteGattServiceAndroid::GetIdentifier() const {
 }
 
 device::BluetoothUUID BluetoothRemoteGattServiceAndroid::GetUUID() const {
-  return device::BluetoothUUID(
-      ConvertJavaStringToUTF8(Java_ChromeBluetoothRemoteGattService_getUUID(
-          AttachCurrentThread(), j_service_)));
+  return device::BluetoothUUID(base::android::ConvertJavaStringToUTF8(
+      Java_ChromeBluetoothRemoteGattService_getUUID(AttachCurrentThread(),
+                                                    j_service_)));
 }
 
 bool BluetoothRemoteGattServiceAndroid::IsPrimary() const {

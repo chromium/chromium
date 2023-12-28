@@ -701,6 +701,7 @@ css_properties("make_core_generated_computed_style_base") {
   other_inputs = [
     "../build/scripts/core/style/templates/computed_style_base.cc.tmpl",
     "../build/scripts/core/style/templates/computed_style_base.h.tmpl",
+    "../build/scripts/core/style/templates/computed_style_base_constants.cc.tmpl",
     "../build/scripts/core/style/templates/computed_style_base_constants.h.tmpl",
     "../build/scripts/templates/fields/field.tmpl",
     "../build/scripts/templates/fields/group.tmpl",
@@ -715,6 +716,7 @@ css_properties("make_core_generated_computed_style_base") {
   outputs = [
     "$blink_core_output_dir/style/computed_style_base.cc",
     "$blink_core_output_dir/style/computed_style_base.h",
+    "$blink_core_output_dir/style/computed_style_base_constants.cc",
     "$blink_core_output_dir/style/computed_style_base_constants.h",
   ]
 }
@@ -1440,7 +1442,7 @@ source_set("unit_tests") {
     "//ui/gfx:test_support",
   ]
 
-  if (enable_nocompile_tests_new) {
+  if (enable_nocompile_tests) {
     deps += [ "//third_party/blink/renderer/core/probe:probe_nocompile_tests" ]
   }
 
@@ -1474,6 +1476,9 @@ source_set("unit_tests") {
 source_set("unit_tests_v2") {
   testonly = true
 
+  # TODO(crbug.com/1315595): Remove once all tests under blink_unittests have been migrated to blink_unittests_v2.
+  defines = [ "HAS_BLINK_TASK_ENVIRONMENT" ]
+
   # If you create a new subdirectory 'foo' that contains unit tests, list them in
   # 'foo/build.gni' to define blink_core_tests_foo, and add any dependencies in
   # the deps section below.
@@ -1485,25 +1490,55 @@ source_set("unit_tests_v2") {
   sources += rebase_path(blink_core_tests_clipboard, "", "clipboard")
   sources +=
       rebase_path(blink_core_tests_content_capture, "", "content_capture")
+  sources += rebase_path(blink_core_tests_css, "", "css")
+  sources += rebase_path(blink_core_tests_display_lock, "", "display_lock")
+  sources += rebase_path(blink_core_tests_dom, "", "dom")
   sources += rebase_path(blink_core_tests_events, "", "events")
+  sources +=
+      rebase_path(blink_core_tests_execution_context, "", "execution_context")
+  sources += rebase_path(blink_core_tests_fetch, "", "fetch")
   sources += rebase_path(blink_core_tests_fullscreen, "", "fullscreen")
+  sources += rebase_path(blink_core_tests_geometry, "", "geometry")
+  sources +=
+      rebase_path(blink_core_tests_fragment_directive, "", "fragment_directive")
+  sources += rebase_path(blink_core_tests_html, "", "html")
+  sources += rebase_path(blink_core_tests_highlight, "", "highlight")
   sources += rebase_path(blink_core_tests_imagebitmap, "", "imagebitmap")
+  sources += rebase_path(blink_core_tests_input, "", "input")
+  sources += rebase_path(blink_core_tests_inspector, "", "inspector")
   sources += rebase_path(blink_core_tests_intersection_observer,
                          "",
                          "intersection_observer")
+  sources += rebase_path(blink_core_tests_layout, "", "layout")
+  sources += rebase_path(blink_core_tests_lcp_critical_path_predictor,
+                         "",
+                         "lcp_critical_path_predictor")
   sources += rebase_path(blink_core_tests_mathml, "", "mathml")
   sources += rebase_path(blink_core_tests_messaging, "", "messaging")
   sources += rebase_path(blink_core_tests_mobile_metrics, "", "mobile_metrics")
+  sources += rebase_path(blink_core_tests_navigation_api, "", "navigation_api")
+  sources += rebase_path(blink_core_tests_origin_trials, "", "origin_trials")
+  sources += rebase_path(blink_core_tests_paint, "", "paint")
   sources +=
       rebase_path(blink_core_tests_permissions_policy, "", "permissions_policy")
   sources +=
       rebase_path(blink_core_tests_resize_observer, "", "resize_observer")
+  sources += rebase_path(blink_core_tests_scheduler_integration_tests,
+                         "",
+                         "scheduler_integration_tests")
   sources += rebase_path(blink_core_tests_script, "", "script")
+  sources += rebase_path(blink_core_tests_scroll, "", "scroll")
   sources +=
       rebase_path(blink_core_tests_speculation_rules, "", "speculation_rules")
+  sources += rebase_path(blink_core_tests_streams, "", "streams")
+  sources += rebase_path(blink_core_tests_trustedtypes, "", "trustedtypes")
+  sources += rebase_path(blink_core_tests_style, "", "style")
+  sources += rebase_path(blink_core_tests_svg, "", "svg")
   sources += rebase_path(blink_core_tests_typed_arrays, "", "typed_arrays")
   sources += rebase_path(blink_core_tests_url, "", "url")
   sources += rebase_path(blink_core_tests_url_pattern, "", "url_pattern")
+  sources +=
+      rebase_path(blink_core_tests_view_transition, "", "view_transition")
   sources += rebase_path(blink_core_tests_xml, "", "xml")
   sources += rebase_path(blink_core_tests_xmlhttprequest, "", "xmlhttprequest")
 
@@ -1615,6 +1650,10 @@ source_set("unit_test_support") {
     "css/css_test_helpers.cc",
     "css/css_test_helpers.h",
     "css/mock_css_paint_image_generator.h",
+    "editing/testing/editing_test_base.cc",
+    "editing/testing/editing_test_base.h",
+    "editing/testing/selection_sample.cc",
+    "editing/testing/selection_sample.h",
     "frame/frame_test_helpers.cc",
     "frame/frame_test_helpers.h",
     "html/media/html_media_test_helper.cc",

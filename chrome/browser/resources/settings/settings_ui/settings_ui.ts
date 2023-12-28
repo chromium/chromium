@@ -162,12 +162,6 @@ export class SettingsUiElement extends SettingsUiElementBase {
 
     document.documentElement.classList.remove('loading');
 
-    setTimeout(function() {
-      chrome.send(
-          'metricsHandler:recordTime',
-          ['Settings.TimeUntilInteractive', window.performance.now()]);
-    });
-
     // Preload bold Roboto so it doesn't load and flicker the first time used.
     // https://github.com/microsoft/TypeScript/issues/13569
     (document as any).fonts.load('bold 12px Roboto');

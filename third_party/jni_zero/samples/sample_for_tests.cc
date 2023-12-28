@@ -133,28 +133,29 @@ static base::android::ScopedJavaLocalRef<jobject>
 JNI_SampleForAnnotationProcessor_Bar(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& sample) {
-  return JNI_SampleForTests_GetNonPODDatatype(env, sample);
+  return base::android::JNI_SampleForTests_GetNonPODDatatype(env, sample);
 }
 
 static base::android::ScopedJavaLocalRef<jstring>
 JNI_SampleForAnnotationProcessor_RevString(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& stringToReverse) {
-  return JNI_SampleForTests_GetNonPODDatatype(env, stringToReverse);
+  return base::android::JNI_SampleForTests_GetNonPODDatatype(env,
+                                                             stringToReverse);
 }
 
 static base::android::ScopedJavaLocalRef<jobjectArray>
 JNI_SampleForAnnotationProcessor_SendToNative(
     JNIEnv* env,
     const base::android::JavaParamRef<jobjectArray>& strs) {
-  return JNI_SampleForTests_GetNonPODDatatype(env, strs);
+  return base::android::JNI_SampleForTests_GetNonPODDatatype(env, strs);
 }
 
 static base::android::ScopedJavaLocalRef<jobjectArray>
 JNI_SampleForAnnotationProcessor_SendSamplesToNative(
     JNIEnv* env,
     const base::android::JavaParamRef<jobjectArray>& strs) {
-  return JNI_SampleForTests_GetNonPODDatatype(env, strs);
+  return base::android::JNI_SampleForTests_GetNonPODDatatype(env, strs);
 }
 
 static jboolean JNI_SampleForAnnotationProcessor_HasPhalange(JNIEnv* env) {

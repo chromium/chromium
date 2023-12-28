@@ -121,7 +121,7 @@ class MockLoginScreenClient : public LoginScreenClient {
   bool authenticate_user_callback_result_ = true;
   ParentCodeValidationResult validate_parent_access_code_result_ =
       ParentCodeValidationResult::kValid;
-  raw_ptr<base::OnceCallback<void(bool)>, ExperimentalAsh>
+  raw_ptr<base::OnceCallback<void(bool)>>
       authenticate_user_with_password_or_pin_callback_storage_ = nullptr;
 };
 

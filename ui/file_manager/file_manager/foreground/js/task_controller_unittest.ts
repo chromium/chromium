@@ -7,7 +7,7 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertDeepEquals, assertEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {createCrostiniForTest} from '../../background/js/mock_crostini.js';
-import {decorate} from '../../common/js/cr_ui.js';
+import {crInjectTypeAndInit} from '../../common/js/cr_ui.js';
 import {queryDecoratedElement} from '../../common/js/dom_utils.js';
 import {isSameEntries} from '../../common/js/entry_utils.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
@@ -70,7 +70,7 @@ export function setUp() {
 
   // Initialize Command with the <command>s.
   for (const command of document.querySelectorAll<Command>('command')) {
-    decorate(command, Command);
+    crInjectTypeAndInit(command, Command);
   }
 
   setUpFileManagerOnWindow();

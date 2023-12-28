@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.permissions.ItemChooserDialog;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -130,7 +131,8 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
     }
 
     @CalledByNative
-    private static UsbChooserDialog create(
+    @VisibleForTesting
+    static UsbChooserDialog create(
             WindowAndroid windowAndroid,
             String origin,
             int securityLevel,
@@ -138,6 +140,18 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
             long nativeUsbChooserDialogPtr) {
         Activity activity = windowAndroid.getActivity().get();
         if (activity == null) return null;
+
+        // Avoid showing the chooser when ModalDialogManager indicates that
+        // tab-modal or app-modal dialogs are suspended.
+        // TODO(crbug.com/1511004): Integrate UsbChooserDialog with
+        // ModalDialogManager.
+        ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
+        if (modalDialogManager != null
+                && (modalDialogManager.isSuspended(ModalDialogManager.ModalDialogType.TAB)
+                        || modalDialogManager.isSuspended(
+                                ModalDialogManager.ModalDialogType.APP))) {
+            return null;
+        }
 
         UsbChooserDialog dialog = new UsbChooserDialog(nativeUsbChooserDialogPtr, profile);
         dialog.show(activity, origin, securityLevel);

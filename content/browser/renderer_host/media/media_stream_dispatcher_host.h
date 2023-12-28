@@ -127,7 +127,7 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
       const base::UnguessableToken& session_id,
       const base::UnguessableToken& transfer_id,
       KeepDeviceAliveForTransferCallback callback) override;
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void FocusCapturedSurface(const std::string& label, bool focus) override;
   void ApplySubCaptureTarget(const base::UnguessableToken& device_id,
                              media::mojom::SubCaptureTargetType type,
@@ -139,6 +139,9 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
                  SendWheelCallback callback) override;
   void GetZoomLevel(const base::UnguessableToken& device_id,
                     GetZoomLevelCallback callback) override;
+  void SetZoomLevel(const base::UnguessableToken& device_id,
+                    int32_t zoom_level,
+                    SetZoomLevelCallback callback) override;
   void OnSubCaptureTargetValidationComplete(
       const base::UnguessableToken& device_id,
       media::mojom::SubCaptureTargetType type,

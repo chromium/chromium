@@ -124,7 +124,7 @@ class InstanceUpdateTest : public testing::Test {
     }
   }
 
-  raw_ptr<aura::Window, ExperimentalAsh> expect_window_;
+  raw_ptr<aura::Window> expect_window_;
   bool expect_window_changed_;
   std::string expect_launch_id_;
   bool expect_launch_id_changed_;

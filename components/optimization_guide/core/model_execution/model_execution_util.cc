@@ -27,6 +27,9 @@ void SetExecutionRequest(
       SetExecutionRequestTemplate<ComposeFeatureTypeMap>(log_ai_request,
                                                          request_metadata);
       return;
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST:
+      // Do not log request for test.
+      return;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       // Don't log any request data when the feature is not specified.
       NOTREACHED();
@@ -51,6 +54,9 @@ void SetExecutionResponse(proto::ModelExecutionFeature feature,
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE:
       SetExecutionResponseTemplate<ComposeFeatureTypeMap>(log_ai_request,
                                                           response_metadata);
+      return;
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST:
+      // Do not log response for test.
       return;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       // Don't log any response data when the feature is not specified.

@@ -833,7 +833,10 @@ void ShellContentBrowserClient::SetUpFieldTrials() {
           /*signature_verification_enabled=*/true,
           std::make_unique<variations::VariationsSafeSeedStoreLocalState>(
               GetSharedState().local_state.get())),
-      variations::UIStringOverrider());
+      variations::UIStringOverrider(),
+      // The limited entropy synthetic trial will not be registered for this
+      // purpose.
+      /*limited_entropy_synthetic_trial=*/nullptr);
 
   variations::SafeSeedManager safe_seed_manager(
       GetSharedState().local_state.get());

@@ -47,8 +47,7 @@ class PeImageReaderTest : public testing::TestWithParam<const TestData*> {
 
     ASSERT_TRUE(data_file_.Initialize(data_file_path_));
 
-    ASSERT_TRUE(
-        image_reader_.Initialize(data_file_.data(), data_file_.length()));
+    ASSERT_TRUE(image_reader_.Initialize(data_file_.bytes()));
   }
 
   raw_ptr<const TestData> expected_data_;
@@ -108,11 +107,12 @@ TEST_P(PeImageReaderTest, InitializeFailTruncatedFile) {
   PeImageReader short_reader;
 
   // Initialize should succeed when all headers are present.
-  EXPECT_TRUE(short_reader.Initialize(data_file_.data(), header_size));
+  EXPECT_TRUE(
+      short_reader.Initialize(make_span(data_file_.data(), header_size)));
 
   // But fail if anything is missing.
   for (size_t i = 0; i < header_size; ++i) {
-    EXPECT_FALSE(short_reader.Initialize(data_file_.data(), i));
+    EXPECT_FALSE(short_reader.Initialize(make_span(data_file_.data(), i)));
   }
 }
 
@@ -222,8 +222,7 @@ class PeImageReaderCertificateTest
     data_file_path_ = data_file_path_.AppendASCII("pe_image_reader");
     data_file_path_ = data_file_path_.AppendASCII(expected_data_->filename);
     ASSERT_TRUE(data_file_.Initialize(data_file_path_));
-    ASSERT_TRUE(
-        image_reader_.Initialize(data_file_.data(), data_file_.length()));
+    ASSERT_TRUE(image_reader_.Initialize(data_file_.bytes()));
   }
 
   raw_ptr<const CertificateTestData> expected_data_;

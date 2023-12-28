@@ -114,8 +114,9 @@ pub fn readme_file_from_package<'a>(
     let path_if_exists = |path: &'a Path| -> Result<Option<&'a Path>> {
         if crate_dir.join(path).try_exists()? { Ok(Some(path)) } else { Ok(None) }
     };
-    let to_crate_dir_string =
-        |path: &Path| -> String { format!("//{}", crate_dir.join(path).to_string_lossy()) };
+    let to_crate_dir_string = |path: &Path| -> String {
+        format!("//{}", paths::normalize_unix_path_separator(&crate_dir.join(path)))
+    };
 
     let license_files: Vec<String> = {
         if let Some(config_license_files) = crate_config.and_then(|config| {
@@ -221,15 +222,19 @@ static ALLOWED_LICENSES: [(&str, &str); 20] = [
     ("Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT", "Apache 2.0"),
 ];
 
-static EXPECTED_LICENSE_FILE: [(&str, &str); 11] = [
+static EXPECTED_LICENSE_FILE: [(&str, &str); 15] = [
     ("Apache 2.0", "LICENSE-APACHE"),
     ("Apache 2.0", "LICENSE-APACHE.txt"),
+    ("Apache 2.0", "LICENSE-APACHE.md"),
     ("Apache 2.0", "LICENSE"),
     ("MIT", "LICENSE"),
     ("MIT", "LICENSE-MIT"),
     ("MIT", "LICENSE-MIT.txt"),
+    ("MIT", "LICENSE-MIT.md"),
     ("BSD 3-Clause", "LICENSE"),
     ("BSD 3-Clause", "LICENSE-BSD"),
+    ("BSD 3-Clause", "LICENSE-BSD.txt"),
+    ("BSD 3-Clause", "LICENSE-BSD.md"),
     ("ISC", "LICENSE"),
     ("ISC", "LICENSE-ISC"),
     ("Apache 2.0 | BSD 3-Clause", "LICENSE"),

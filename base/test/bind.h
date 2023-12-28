@@ -34,7 +34,7 @@ struct BindLambdaForTestingHelper<Lambda, R(Args...)> {
   static constexpr bool kHasConstCallOperator<R (F::*)(Args...) const> = true;
 
   // For context on this "templated struct with a lambda that asserts" pattern,
-  // see comments in MakeBindStateTypeImpl.
+  // see comments in `Invoker<>`.
   template <bool v = std::is_rvalue_reference_v<Lambda&&> &&
                      !std::is_const_v<std::remove_reference_t<Lambda>>>
   struct IsNonConstRvalueRef {

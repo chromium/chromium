@@ -199,8 +199,7 @@ class ToastManagerImplTest : public AshTestBase,
   }
 
  private:
-  raw_ptr<ToastManagerImpl, DanglingUntriaged | ExperimentalAsh> manager_ =
-      nullptr;
+  raw_ptr<ToastManagerImpl, DanglingUntriaged> manager_ = nullptr;
   unsigned int serial_ = 0;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -438,7 +437,7 @@ TEST_P(ToastManagerImplTest, ToastsOnMultipleMonitors) {
 
   toast_manager->Show(std::move(toast_data));
   ASSERT_TRUE(toast_manager->IsToastShown(toast_id));
-  for (auto* root_window : Shell::GetAllRootWindows()) {
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
     ASSERT_TRUE(GetCurrentOverlay(root_window));
   }
 
@@ -1107,7 +1106,7 @@ TEST_P(ToastManagerImplTest, ShowAndCloseToastsOnAllRootWindows) {
     toast_data.show_on_all_root_windows = true;
     toast_manager->Show(std::move(toast_data));
 
-    for (auto* root_window : root_windows) {
+    for (aura::Window* root_window : root_windows) {
       EXPECT_TRUE(GetCurrentOverlay(root_window));
     }
 
@@ -1130,7 +1129,7 @@ TEST_P(ToastManagerImplTest, ShowAndCloseToastsOnAllRootWindows) {
       }
     }
 
-    for (auto* root_window : root_windows) {
+    for (aura::Window* root_window : root_windows) {
       EXPECT_FALSE(GetCurrentOverlay(root_window));
     }
   }
@@ -1155,7 +1154,7 @@ TEST_P(ToastManagerImplTest, ToastsThatPersistOnHoverOnAllRootWindows) {
   toast_manager->Show(std::move(toast_data));
   ASSERT_TRUE(toast_manager->IsToastShown(toast_id));
 
-  for (auto* root_window : root_windows) {
+  for (aura::Window* root_window : root_windows) {
     ASSERT_TRUE(GetCurrentOverlay(root_window));
   }
 
@@ -1177,7 +1176,7 @@ TEST_P(ToastManagerImplTest, ToastsThatPersistOnHoverOnAllRootWindows) {
   // remain open after this time.
   WaitForTimeDelta(ToastData::kDefaultToastDuration / 2);
 
-  for (auto* root_window : root_windows) {
+  for (aura::Window* root_window : root_windows) {
     EXPECT_TRUE(GetCurrentOverlay(root_window));
   }
 
@@ -1190,7 +1189,7 @@ TEST_P(ToastManagerImplTest, ToastsThatPersistOnHoverOnAllRootWindows) {
   // gone.
   WaitForTimeDelta(ToastData::kDefaultToastDuration / 2);
 
-  for (auto* root_window : root_windows) {
+  for (aura::Window* root_window : root_windows) {
     EXPECT_FALSE(GetCurrentOverlay(root_window));
   }
 }
@@ -1218,7 +1217,7 @@ TEST_P(ToastManagerImplTest, ExpiredCallbackNotCalledOnRootWindowRemoved) {
   toast_manager->Show(std::move(toast_data));
   ASSERT_TRUE(toast_manager->IsToastShown(toast_id));
 
-  for (auto* root_window : Shell::GetAllRootWindows()) {
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
     ASSERT_TRUE(GetCurrentOverlay(root_window));
   }
 
@@ -1314,7 +1313,7 @@ TEST_P(ToastManagerImplTest,
   // instance should be destroyed.
   WaitForTimeDelta(ToastData::kDefaultToastDuration / 2);
 
-  for (auto* root_window : Shell::GetAllRootWindows()) {
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
     EXPECT_TRUE(GetCurrentOverlay(root_window));
   }
 
@@ -1328,7 +1327,7 @@ TEST_P(ToastManagerImplTest,
   WaitForTimeDelta(ToastData::kDefaultToastDuration / 2);
   base::RunLoop().RunUntilIdle();
 
-  for (auto* root_window : Shell::GetAllRootWindows()) {
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
     EXPECT_FALSE(GetCurrentOverlay(root_window));
   }
 }

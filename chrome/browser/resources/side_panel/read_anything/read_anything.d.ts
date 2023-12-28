@@ -241,15 +241,25 @@ declare namespace chrome {
     // position, but we should be able to remove this in the future.
     function initAXPositionWithNode(startingNodeId: number): void;
 
-    // Gets the next text that should be spoken and highlighted. Returns a list
-    // of triples, represented as a double array, where each triple contains an
-    // AXNodeId, the starting text index, and the ending text index.
-    function getNextText(maxTextLength: number): number[][];
+    // Gets the starting text index for the current Read Aloud text segment
+    // for the given node. nodeId should be a node returned by getNextText or
+    // getPreviousText. Returns -1 if the node is invalid.
+    function getNextTextStartIndex(nodeId: number): number;
 
-    // Gets the previous text that should be spoken and highlighted. Returns a
-    // list of triples, represented as a double array, where each triple
-    // contains an XNodeId, the starting text index, and the ending text index.
-    function getPreviousText(maxTextLength: number): number[][];
+    // Gets the ending text index for the current Read Aloud text segment
+    // for the given node. nodeId should be a node returned by getNextText or
+    // getPreviousText. Returns -1 if the node is invalid.
+    function getNextTextEndIndex(nodeId: number): number;
+
+    // Gets the nodes of the  next text that should be spoken and highlighted.
+    // Use getNextTextStartIndex and getNextTextEndIndex to get the bounds
+    // for text associated with these nodes.
+    function getNextText(maxTextLength: number): number[];
+
+    // Gets the nodes for the previous text that should be spoken and
+    // highlighted. Use getNextTextStartIndex and getNextTextEndIndex to get
+    // the bounds for text associated with these nodes.
+    function getPreviousText(maxTextLength: number): number[];
 
     // Signal that the supported fonts should be updated i.e. that the brower's
     // preferred language has changed.

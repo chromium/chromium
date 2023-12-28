@@ -209,6 +209,10 @@ class MockCastMessageHandler : public CastMessageHandler {
               (int, const std::string&, const std::string&),
               (override));
   MOCK_METHOD(void,
+              RemoveConnection,
+              (int, const std::string&, const std::string&),
+              (override));
+  MOCK_METHOD(void,
               RequestAppAvailability,
               (CastSocket * socket,
                const std::string& app_id,

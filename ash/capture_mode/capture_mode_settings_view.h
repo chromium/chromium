@@ -130,25 +130,24 @@ class ASH_EXPORT CaptureModeSettingsView
 
   // A reference to the session that owns this view indirectly by owning its
   // containing widget.
-  const raw_ptr<CaptureModeSession, DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<CaptureModeSession, DanglingUntriaged>
       capture_mode_session_;  // Not null;
 
-  const raw_ptr<CaptureModeBehavior, ExperimentalAsh> active_behavior_;
+  const raw_ptr<CaptureModeBehavior> active_behavior_;
 
   // "Audio input" menu group that users can select an audio input from for
   // screen capture recording. It has "Off" and "Microphone" options for now.
   // "Off" is the default one which means no audio input selected.
-  raw_ptr<CaptureModeMenuGroup, ExperimentalAsh> audio_input_menu_group_ =
-      nullptr;
+  raw_ptr<CaptureModeMenuGroup> audio_input_menu_group_ = nullptr;
 
   // The separator between audio input and camera menus.
-  raw_ptr<views::Separator, ExperimentalAsh> separator_1_ = nullptr;
+  raw_ptr<views::Separator> separator_1_ = nullptr;
 
   // Camera menu group that users can select a camera device from for selfie
   // cam while video recording. It has an `Off` option and options for all
   // available camera devices. `Off` is the default one which means no camera is
   // selected.
-  raw_ptr<CaptureModeMenuGroup, ExperimentalAsh> camera_menu_group_ = nullptr;
+  raw_ptr<CaptureModeMenuGroup> camera_menu_group_ = nullptr;
 
   // A mapping from option id to camera id for camera devices.
   base::flat_map<int, CameraId> option_camera_id_map_;
@@ -157,21 +156,20 @@ class ASH_EXPORT CaptureModeSettingsView
   // the capture mode demo tools feature. Currently
   // `demo_tools_menu_toggle_button_` and `separator_2_` are guarded by the
   // feature flag and will only be visible when the feature is enabled.
-  raw_ptr<views::Separator, ExperimentalAsh> separator_2_ = nullptr;
-  raw_ptr<CaptureModeMenuToggleButton, ExperimentalAsh>
-      demo_tools_menu_toggle_button_ = nullptr;
+  raw_ptr<views::Separator> separator_2_ = nullptr;
+  raw_ptr<CaptureModeMenuToggleButton> demo_tools_menu_toggle_button_ = nullptr;
 
   // Can be null if `ShouldSaveToSettingsBeIncluded()` is false for the active
   // behavior of current capture mode session, since then it's not needed as the
   // "Save-to" menu group will not be added at all.
-  raw_ptr<views::Separator, ExperimentalAsh> separator_3_ = nullptr;
+  raw_ptr<views::Separator> separator_3_ = nullptr;
 
   // "Save to" menu group that users can select a folder to save the captured
   // files to. It will include the "Downloads" folder as the default one and
   // one more folder selected by users.
   // This menu group is not added when in `ShouldSaveToSettingsBeIncluded()` is
   // false for the active behavior of current capture mode session.
-  raw_ptr<CaptureModeMenuGroup, ExperimentalAsh> save_to_menu_group_ = nullptr;
+  raw_ptr<CaptureModeMenuGroup> save_to_menu_group_ = nullptr;
 
   // If not set, custom folder is not set. If true, customer folder is set and
   // available. If false, customer folder is set but unavailable.

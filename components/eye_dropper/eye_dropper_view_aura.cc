@@ -11,6 +11,7 @@
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/display/screen.h"
 #include "ui/views/native_window_tracker.h"
 
 namespace eye_dropper {
@@ -124,16 +125,34 @@ void EyeDropperView::PreEventDispatchHandler::OnGestureEvent(
   }
 }
 
-void EyeDropperView::MoveViewToFront() {
-  // The view is already topmost when Aura is used.
+void EyeDropperView::PreEventDispatchHandler::OnTouchEvent(
+    ui::TouchEvent* event) {
+  if (event->type() == ui::ET_TOUCH_PRESSED) {
+    // For touch-move, we don't move the center of the EyeDropper to be at the
+    // touch point, but rather maintain the offset from the first press.
+    touch_offset_ = event->root_location() -
+                    view_->GetWidget()->GetWindowBoundsInScreen().CenterPoint();
+  }
+  if (event->type() == ui::ET_TOUCH_MOVED) {
+    // Keep EyeDropper always inside a display, but adjust offset if it is
+    // pushing up against the bounds.
+    gfx::Point position = event->root_location() - touch_offset_;
+    display::Display display =
+        display::Screen::GetScreen()->GetDisplayNearestPoint(position);
+    if (display.bounds().Contains(position)) {
+      view_->UpdatePosition(std::move(position));
+    } else {
+      touch_offset_ =
+          event->root_location() -
+          view_->GetWidget()->GetWindowBoundsInScreen().CenterPoint();
+    }
+  }
 }
 
-void EyeDropperView::CaptureInputIfNeeded() {
-#if BUILDFLAG(IS_LINUX)
+void EyeDropperView::CaptureInput() {
   // The eye dropper needs to capture input since it is not activated
   // in order to avoid dismissing the color picker.
   GetWidget()->GetNativeWindow()->SetCapture();
-#endif
 }
 
 void EyeDropperView::HideCursor() {

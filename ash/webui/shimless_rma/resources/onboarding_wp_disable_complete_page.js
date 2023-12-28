@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './shimless_rma_shared_css.js';
+import './shimless_rma_shared.css.js';
 import './base_page.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {ShimlessRmaServiceInterface, StateResult, WriteProtectDisableCompleteAction} from './shimless_rma_types.js';
+import {getTemplate} from './onboarding_wp_disable_complete_page.html.js';
+import {ShimlessRmaServiceInterface, StateResult, WriteProtectDisableCompleteAction} from './shimless_rma.mojom-webui.js';
 import {enableNextButton, focusPageTitle} from './shimless_rma_util.js';
 
 /** @type {!Object<WriteProtectDisableCompleteAction, string>} */
@@ -44,15 +45,15 @@ export class OnboardingWpDisableCompletePage extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
       /** @protected */
-      actionString_: {
+      actionString: {
         type: String,
-        computed: 'getActionString_(action_)',
+        computed: 'getActionString(action)',
       },
     };
   }
@@ -68,14 +69,14 @@ export class OnboardingWpDisableCompletePage extends
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService = getShimlessRmaService();
     /** @private {WriteProtectDisableCompleteAction} */
-    this.action_ = WriteProtectDisableCompleteAction.kUnknown;
+    this.action = WriteProtectDisableCompleteAction.kUnknown;
 
-    this.shimlessRmaService_.getWriteProtectDisableCompleteAction().then(
+    this.shimlessRmaService.getWriteProtectDisableCompleteAction().then(
         (res) => {
           if (res) {
-            this.action_ = res.action;
+            this.action = res.action;
           }
         });
   }
@@ -84,25 +85,25 @@ export class OnboardingWpDisableCompletePage extends
    * @return {string}
    * @protected
    */
-  getActionString_() {
-    return (this.action_ === WriteProtectDisableCompleteAction.kUnknown ||
-            this.action_ === WriteProtectDisableCompleteAction.kCompleteNoOp) ?
+  getActionString() {
+    return (this.action === WriteProtectDisableCompleteAction.kUnknown ||
+            this.action === WriteProtectDisableCompleteAction.kCompleteNoOp) ?
         '' :
-        this.i18n(disableActionTextKeys[this.action_]);
+        this.i18n(disableActionTextKeys[this.action]);
   }
 
   /** @return {!Promise<!{stateResult: !StateResult}>} */
   onNextButtonClick() {
-    return this.shimlessRmaService_.confirmManualWpDisableComplete();
+    return this.shimlessRmaService.confirmManualWpDisableComplete();
   }
 
   /**
    * @return {string}
    * @protected
    */
-  getVerificationIcon_() {
-    return (this.action_ === WriteProtectDisableCompleteAction.kUnknown ||
-            this.action_ === WriteProtectDisableCompleteAction.kCompleteNoOp) ?
+  getVerificationIcon() {
+    return (this.action === WriteProtectDisableCompleteAction.kUnknown ||
+            this.action === WriteProtectDisableCompleteAction.kCompleteNoOp) ?
         '' :
         'shimless-icon:check';
   }

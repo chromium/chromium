@@ -12,6 +12,7 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
@@ -55,7 +56,7 @@ class TabAndroid : public base::SupportsUserData {
 
   // Returns the a vector of native TabAndroid stored in the Java Tab array
   // represented by |obj_array|.
-  static std::vector<TabAndroid*> GetAllNativeTabs(
+  static std::vector<raw_ptr<TabAndroid, VectorExperimental>> GetAllNativeTabs(
       JNIEnv* env,
       const base::android::ScopedJavaLocalRef<jobjectArray>& obj_array);
 
@@ -129,8 +130,6 @@ class TabAndroid : public base::SupportsUserData {
 
   bool IsCustomTab();
   bool IsHidden();
-
-  static bool isHardwareKeyboardAvailable(TabAndroid* tab_android);
 
   // Observers -----------------------------------------------------------------
 

@@ -41,6 +41,9 @@ UserScriptLoader* UserScriptManager::GetUserScriptLoaderByID(
   switch (host_id.type) {
     case mojom::HostID::HostType::kExtensions:
       return GetUserScriptLoaderForExtension(host_id.id);
+    // TODO(cmp): Investigate improvements to load files for Controlled Frame.
+    //            crbug.com/1511295, b/316171914
+    case mojom::HostID::HostType::kControlledFrameEmbedder:
     case mojom::HostID::HostType::kWebUi:
       return GetUserScriptLoaderForWebUI(GURL(host_id.id));
   }

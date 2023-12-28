@@ -36,13 +36,6 @@ config("find_bad_constructs") {
       "-Xclang",
       "check-raw-ptr-to-stack-allocated",
 
-      # TODO(https://crbug.com/1449812): This option should be removed after
-      #   next clang roll.
-      "-Xclang",
-      "-plugin-arg-find-bad-constructs",
-      "-Xclang",
-      "raw-ptr-fix-crbug-1449812",
-
       # TODO(https://crbug.com/1504043): Remove when raw_ptr check has been enabled for the dawn repo.
       "-Xclang",
       "-plugin-arg-find-bad-constructs",

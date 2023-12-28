@@ -327,4 +327,14 @@ Node& FlatTreeTraversal::LastWithinOrSelf(const Node& node) {
   return result;
 }
 
+const Element* FlatTreeTraversal::InclusiveParentElement(const Node& node) {
+  AssertPrecondition(node);
+  const Element* inclusive_parent = DynamicTo<Element>(node);
+  if (!inclusive_parent) {
+    inclusive_parent = ParentElement(node);
+  }
+  AssertPostcondition(inclusive_parent);
+  return inclusive_parent;
+}
+
 }  // namespace blink

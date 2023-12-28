@@ -5,9 +5,6 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 
 #include <algorithm>
-#include <map>
-#include <string>
-#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -44,23 +41,26 @@ SortedTokenComparisonResult& SortedTokenComparisonResult::operator=(
 SortedTokenComparisonResult::~SortedTokenComparisonResult() = default;
 
 bool SortedTokenComparisonResult::IsSingleTokenSubset() const {
-  return status == SUBSET && additional_tokens.size() == 1;
+  return status == SortedTokenComparisonStatus::kSubset &&
+         additional_tokens.size() == 1;
 }
 
 bool SortedTokenComparisonResult::IsSingleTokenSuperset() const {
-  return status == SUPERSET && additional_tokens.size() == 1;
+  return status == SortedTokenComparisonStatus::kSuperset &&
+         additional_tokens.size() == 1;
 }
 
 bool SortedTokenComparisonResult::OneIsSubset() const {
-  return status == SUBSET || status == SUPERSET;
+  return status == SortedTokenComparisonStatus::kSubset ||
+         status == SortedTokenComparisonStatus::kSuperset;
 }
 
 bool SortedTokenComparisonResult::ContainEachOther() const {
-  return status != DISTINCT;
+  return status != SortedTokenComparisonStatus::kDistinct;
 }
 
 bool SortedTokenComparisonResult::TokensMatch() const {
-  return status == MATCH;
+  return status == SortedTokenComparisonStatus::kMatch;
 }
 
 bool HonorificPrefixEnabled() {
@@ -139,17 +139,17 @@ bool HasHispanicLatinxNameCharacteristics(const std::string& name) {
   return false;
 }
 
-absl::optional<base::flat_map<std::string, std::string>>
+std::optional<base::flat_map<std::string, std::string>>
 ParseValueByRegularExpression(const std::string& value,
                               const std::string& pattern) {
   const RE2* regex = Re2RegExCache::Instance()->GetRegEx(pattern);
   return ParseValueByRegularExpression(value, regex);
 }
 
-absl::optional<base::flat_map<std::string, std::string>>
+std::optional<base::flat_map<std::string, std::string>>
 ParseValueByRegularExpression(const std::string& value, const RE2* regex) {
   if (!regex || !regex->ok())
-    return absl::nullopt;
+    return std::nullopt;
 
   // Get the number of capturing groups in the expression.
   // Note, the capturing group for the full match is not counted.
@@ -170,7 +170,7 @@ ParseValueByRegularExpression(const std::string& value, const RE2* regex) {
   // One capturing group is not counted since it holds the full match.
   if (!RE2::FullMatchN(value, *regex, match_results_ptr.data(),
                        number_of_capturing_groups - 1))
-    return absl::nullopt;
+    return std::nullopt;
 
   // If successful, write the values into the results map.
   // Note, the capturing group for the full match creates an off-by-one scenario
@@ -218,15 +218,15 @@ std::string GetPlaceholderToken(std::string_view value) {
 }
 
 std::string CaptureTypeWithPattern(
-    const ServerFieldType& type,
-    std::initializer_list<base::StringPiece> pattern_span_initializer_list) {
+    const FieldType& type,
+    std::initializer_list<std::string_view> pattern_span_initializer_list) {
   return CaptureTypeWithPattern(type, pattern_span_initializer_list,
                                 CaptureOptions());
 }
 
 std::string CaptureTypeWithPattern(
-    const ServerFieldType& type,
-    std::initializer_list<base::StringPiece> pattern_span_initializer_list,
+    const FieldType& type,
+    std::initializer_list<std::string_view> pattern_span_initializer_list,
     const CaptureOptions& options) {
   return CaptureTypeWithPattern(
       type, base::StrCat(base::make_span(pattern_span_initializer_list)),
@@ -238,15 +238,15 @@ std::string NoCapturePattern(const std::string& pattern,
   std::string quantifier;
   switch (options.quantifier) {
     // Makes the match optional.
-    case MATCH_OPTIONAL:
+    case MatchQuantifier::kOptional:
       quantifier = "?";
       break;
     // Makes the match lazy meaning that it is avoided if possible.
-    case MATCH_LAZY_OPTIONAL:
+    case MatchQuantifier::kLazyOptional:
       quantifier = "??";
       break;
     // Makes the match required.
-    case MATCH_REQUIRED:
+    case MatchQuantifier::kRequired:
       quantifier = "";
   }
 
@@ -256,7 +256,7 @@ std::string NoCapturePattern(const std::string& pattern,
       {"(?i:", pattern, "(?:", options.separator, ")+)", quantifier});
 }
 
-std::string CaptureTypeWithAffixedPattern(const ServerFieldType& type,
+std::string CaptureTypeWithAffixedPattern(const FieldType& type,
                                           const std::string& prefix,
                                           const std::string& pattern,
                                           const std::string& suffix,
@@ -264,15 +264,15 @@ std::string CaptureTypeWithAffixedPattern(const ServerFieldType& type,
   std::string quantifier;
   switch (options.quantifier) {
     // Makes the match optional.
-    case MATCH_OPTIONAL:
+    case MatchQuantifier::kOptional:
       quantifier = "?";
       break;
     // Makes the match lazy meaning that it is avoided if possible.
-    case MATCH_LAZY_OPTIONAL:
+    case MatchQuantifier::kLazyOptional:
       quantifier = "??";
       break;
     // Makes the match required.
-    case MATCH_REQUIRED:
+    case MatchQuantifier::kRequired:
       quantifier = "";
   }
 
@@ -283,7 +283,7 @@ std::string CaptureTypeWithAffixedPattern(const ServerFieldType& type,
                        quantifier});
 }
 
-std::string CaptureTypeWithSuffixedPattern(const ServerFieldType& type,
+std::string CaptureTypeWithSuffixedPattern(const FieldType& type,
                                            const std::string& pattern,
                                            const std::string& suffix_pattern,
                                            const CaptureOptions& options) {
@@ -291,7 +291,7 @@ std::string CaptureTypeWithSuffixedPattern(const ServerFieldType& type,
                                        suffix_pattern, options);
 }
 
-std::string CaptureTypeWithPrefixedPattern(const ServerFieldType& type,
+std::string CaptureTypeWithPrefixedPattern(const FieldType& type,
                                            const std::string& prefix_pattern,
                                            const std::string& pattern,
                                            const CaptureOptions& options) {
@@ -299,7 +299,7 @@ std::string CaptureTypeWithPrefixedPattern(const ServerFieldType& type,
                                        std::string(), options);
 }
 
-std::string CaptureTypeWithPattern(const ServerFieldType& type,
+std::string CaptureTypeWithPattern(const FieldType& type,
                                    const std::string& pattern,
                                    CaptureOptions options) {
   return CaptureTypeWithAffixedPattern(type, std::string(), pattern,
@@ -331,7 +331,8 @@ bool AreStringTokenCompatible(const std::u16string& first,
   SortedTokenComparisonResult result =
       CompareSortedTokens(TokenizeValue(NormalizeValue(first)),
                           TokenizeValue(NormalizeValue(second)));
-  return result.status == MATCH || result.status == SUBSET;
+  return result.status == SortedTokenComparisonStatus::kMatch ||
+         result.status == SortedTokenComparisonStatus::kSubset;
 }
 
 SortedTokenComparisonResult CompareSortedTokens(
@@ -353,11 +354,11 @@ SortedTokenComparisonResult CompareSortedTokens(
 
   // If first is both a superset and a subset it is the same.
   if (is_supserset && is_subset)
-    return SortedTokenComparisonResult(MATCH);
+    return SortedTokenComparisonResult(SortedTokenComparisonStatus::kMatch);
 
   // If it is neither, both are distinct.
   if (!is_supserset && !is_subset)
-    return SortedTokenComparisonResult(DISTINCT);
+    return SortedTokenComparisonResult(SortedTokenComparisonStatus::kDistinct);
 
   std::vector<AddressToken> additional_tokens;
 
@@ -368,10 +369,12 @@ SortedTokenComparisonResult CompareSortedTokens(
       std::back_inserter(additional_tokens), cmp_normalized);
 
   if (is_supserset) {
-    return SortedTokenComparisonResult(SUPERSET, additional_tokens);
+    return SortedTokenComparisonResult(SortedTokenComparisonStatus::kSuperset,
+                                       additional_tokens);
   }
 
-  return SortedTokenComparisonResult(SUBSET, additional_tokens);
+  return SortedTokenComparisonResult(SortedTokenComparisonStatus::kSubset,
+                                     additional_tokens);
 }
 
 SortedTokenComparisonResult CompareSortedTokens(const std::u16string& first,
@@ -381,7 +384,8 @@ SortedTokenComparisonResult CompareSortedTokens(const std::u16string& first,
 
 bool AreSortedTokensEqual(const std::vector<AddressToken>& first,
                           const std::vector<AddressToken>& second) {
-  return CompareSortedTokens(first, second).status == MATCH;
+  return CompareSortedTokens(first, second).status ==
+         SortedTokenComparisonStatus::kMatch;
 }
 
 std::vector<AddressToken> TokenizeValue(const std::u16string value) {

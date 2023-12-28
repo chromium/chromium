@@ -110,7 +110,31 @@ interface PageHandler {
   GetDownloads(array<string> search_terms);
   OpenFileRequiringGesture(string id);
   Drag(string id);
+
+  // This shows the DownloadDangerPrompt (native UI dialog) and is obsoleted by
+  // the following four methods.
+  // TODO(chlily): Remove this when cleaning up ImprovedDownloadPageWarnings.
   SaveDangerousRequiringGesture(string id);
+
+  // Called when "Download suspicious file" is clicked from the
+  // chrome://downloads overflow menu, for suspicious/unverified files. Does not
+  // show a prompt.
+  SaveSuspiciousRequiringGesture(string id);
+
+  // Called when "Download dangerous file" is clicked from the
+  // chrome://downloads overflow menu to open the warning bypass prompt, for
+  // dangerous files. Only records the opening of the warning bypass prompt.
+  RecordOpenBypassWarningPrompt(string id);
+
+  // Called when "Download dangerous file" is clicked from the
+  // chrome://downloads warning bypass prompt, for dangerous files.
+  SaveDangerousFromPromptRequiringGesture(string id);
+
+  // Called when "Cancel" is clicked on the chrome://downloads warning bypass
+  // prompt, or the prompt is closed by dismissing it. Only records the event
+  // and potentially sends a report.
+  RecordCancelBypassWarningPrompt(string id);
+
   DiscardDangerous(string id);
   RetryDownload(string id);
   Show(string id);

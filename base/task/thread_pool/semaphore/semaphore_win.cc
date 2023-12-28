@@ -42,7 +42,7 @@ void Semaphore::Wait() {
 }
 
 bool Semaphore::TimedWait(TimeDelta timeout) {
-  const DWORD wait_ms = checked_cast<DWORD>(timeout.InMilliseconds());
+  const DWORD wait_ms = saturated_cast<DWORD>(timeout.InMilliseconds());
   const TimeTicks start = TimeTicks::Now();
   DWORD result;
   // WaitForSingleObject has been shown to experience spurious wakeups (on the

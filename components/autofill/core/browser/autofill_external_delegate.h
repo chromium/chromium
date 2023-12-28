@@ -31,6 +31,7 @@ namespace autofill {
 class AutofillDriver;
 class BrowserAutofillManager;
 class CreditCard;
+enum class CreditCardFetchResult;
 
 // TODO(csharp): A lot of the logic in this class is copied from AutofillAgent.
 // Once Autofill is moved out of WebKit this class should be the only home for
@@ -66,9 +67,14 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
                         Suggestion::BackendId backend_id) override;
   void ClearPreviewedForm() override;
 
-  // Returns PopupType::kUnspecified for all popups prior to |onQuery|, or the
-  // popup type after call to |onQuery|.
+  // Returns PopupType::kUnspecified for all popups prior to `onQuery`, or the
+  // popup type after call to `onQuery`.
   PopupType GetPopupType() const override;
+
+  // Returns FillingProduct::kNone for all popups prior to
+  // `OnSuggestionsReturned`. Returns the filling product of the first
+  // suggestion that has a filling product that is not none.
+  FillingProduct GetMainFillingProduct() const override;
 
   // Returns the ax node id associated with the current web contents' element
   // who has a controller relation to the current autofill popup.
@@ -105,7 +111,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // will store these fields so that in a next iteration, when the user clicks,
   // say a name field only fields that are of group name are filled, therefore
   // staying at a group filling level.
-  absl::optional<ServerFieldTypeSet> GetLastFieldTypesToFillForSection(
+  std::optional<FieldTypeSet> GetLastFieldTypesToFillForSection(
       const Section& section) const;
 
   // Returns true if there is a screen reader installed on the machine.
@@ -147,11 +153,12 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // to delete is determined by the passed `guid`.
   void ShowDeleteAddressProfileDialog(const std::string& guid);
 
-  // Triggered when user closes the address editor dialog.
+  // Triggered when the user closes the address editor dialog.
   void OnAddressEditorClosed(
       AutofillClient::SaveAddressProfileOfferUserDecision decision,
       base::optional_ref<const AutofillProfile> profile);
 
+  // Triggered when the user closes the delete address profile dialog.
   void OnDeleteDialogClosed(const std::string& guid, bool user_accepted_delete);
 
   // Called when a credit card is scanned using device camera.
@@ -201,9 +208,17 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
       const SuggestionPosition& position,
       AutofillSuggestionTriggerSource trigger_source);
 
-  // Fills the main text from the `suggestion`.
+  // Uses the `credit_card` to optionally fetch the credit card number depending
+  // on the `suggestion.field_by_field_filling_type_used`. Fills the fetched
+  // credit card number or the `suggestion::main_text`.
   void FillCreditCardFieldByFieldFillingSuggestion(
+      const CreditCard& credit_card,
       const Suggestion& suggestion);
+
+  // Triggered when the user closes the authentication flow needed to access
+  // the number and cvc of the `credit_card`.
+  void OnCreditCardFetched(CreditCardFetchResult result,
+                           const CreditCard* credit_card);
 
   // Will remove Autofill warnings from |suggestions| if there are also
   // autocomplete entries in the vector. Note: at this point, it is assumed that
@@ -242,15 +257,16 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // Stores the last `AutofillTriggerDetails::field_types_to_fill`.
   // We key this information by form section to guarantee granular filling
   // side effects are specific are not "leaked" to other forms.
-  base::flat_map<Section, ServerFieldTypeSet>
+  base::flat_map<Section, FieldTypeSet>
       last_field_types_to_fill_for_address_form_section_;
 
   bool should_show_scan_credit_card_ = false;
   PopupType popup_type_ = PopupType::kUnspecified;
 
   bool should_show_cards_from_account_option_ = false;
+  bool show_cards_from_account_suggestion_added_ = false;
 
-  std::vector<PopupItemId> shown_suggestions_types_;
+  std::vector<PopupItemId> shown_suggestion_types_;
 
   // The current data list values.
   std::vector<SelectOption> datalist_;

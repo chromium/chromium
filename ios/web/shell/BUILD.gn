@@ -9,6 +9,7 @@ import("//tools/grit/grit_rule.gni")
 
 ios_app_bundle("ios_web_shell") {
   info_plist = "Info.plist"
+  bundle_identifier = shared_bundle_id_for_test_apps
 
   deps = [ ":shell" ]
 

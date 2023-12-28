@@ -34,7 +34,7 @@ std::vector<std::string> ConvertJavaStringArrayToListValue(
 
   std::vector<std::string> vector_string;
   for (auto j_str : array_reader) {
-    vector_string.push_back(ConvertJavaStringToUTF8(env, j_str));
+    vector_string.push_back(base::android::ConvertJavaStringToUTF8(env, j_str));
   }
 
   return vector_string;

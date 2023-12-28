@@ -14,6 +14,8 @@
 #import "ios/web/public/web_state_user_data.h"
 
 @protocol DownloadManagerTabHelperDelegate;
+@protocol SystemIdentity;
+
 namespace web {
 class DownloadTask;
 class WebState;
@@ -37,8 +39,11 @@ class DownloadManagerTabHelper
   // cancelled.
   bool has_download_task() const { return task_.get(); }
 
-  // Set the delegate. The tab helper will no-op if the delegate is nil.
+  // Sets the delegate. The tab helper will no-op if the delegate is nil.
   void SetDelegate(id<DownloadManagerTabHelperDelegate> delegate);
+
+  // Starts the current download task and remember to save it to Drive.
+  virtual void OnDownloadAddedToSaveToDrive(web::DownloadTask* task);
 
  protected:
   // Allow subclassing from DownloadManagerTabHelper for testing purposes.
@@ -55,12 +60,11 @@ class DownloadManagerTabHelper
   // web::DownloadTaskObserver overrides:
   void OnDownloadUpdated(web::DownloadTask* task) override;
 
-  // Returns key for using with NetworkActivityIndicatorManager.
-  NSString* GetNetworkActivityKey() const;
-
   // Assigns `task` to `task_`; replaces the current download if exists;
   // instructs the delegate that download has started.
   void DidCreateDownload(std::unique_ptr<web::DownloadTask> task);
+  // Returns whether `task_` still needs to be saved to Drive.
+  bool WillDownloadTaskBeSavedToDrive() const;
 
   web::WebState* web_state_ = nullptr;
   __weak id<DownloadManagerTabHelperDelegate> delegate_ = nil;

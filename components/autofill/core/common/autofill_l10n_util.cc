@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/common/autofill_l10n_util.h"
 
-#include <string_view>
 #include <utility>
 
 #include "base/i18n/string_compare.h"

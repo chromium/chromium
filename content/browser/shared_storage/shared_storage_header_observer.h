@@ -13,16 +13,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
+#include "content/browser/navigation_or_document_handle.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "services/network/public/mojom/optional_bool.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace content {
-
-class RenderFrameHost;
 
 // Receives notifications from `StoragePartitionImpl` when a parsed
 // "Shared-Storage-Write" header is received from the network service. The
@@ -35,13 +34,53 @@ class CONTENT_EXPORT SharedStorageHeaderObserver {
   using OperationResult = storage::SharedStorageManager::OperationResult;
   using OperationType = network::mojom::SharedStorageOperationType;
   using OperationPtr = network::mojom::SharedStorageOperationPtr;
+  using ContextType = StoragePartitionImpl::URLLoaderNetworkContext::Type;
+
+  // Enum for tracking how often the `PermissionsPolicy` double check runs along
+  // with its results. Recorded to UMA; always add new values to the end and do
+  // not reorder or delete values from this list. If you add any entries to this
+  // enum, you must also update the corresponding enum
+  // `SharedStorageHeaderObserverPermissionsPolicyDoubleCheckStatus` at
+  // tools/metrics/histograms/metadata/storage/enums.xml.
+  enum class PermissionsPolicyDoubleCheckStatus {
+    // RFH is null, so no double check is run. Any previous permissions
+    // policy checks were only done in the renderer; hence operations
+    // are dropped.
+    kSubresourceSourceNoRFH = 0,
+    // RFH has not yet committed. Defer the operations until a corresponding
+    // commit notification is received. If none is received, they will be
+    // dropped when RFH dies.
+    kSubresourceSourceDefer = 1,
+    // RFH's LifecycleState is neither kPendingCommit nor kActive. We do not
+    // handle these cases as the PermissionsPolicy that we have access to may
+    // not be correct. Any operations are dropped.
+    kSubresourceSourceOtherLifecycleState = 2,
+    // RFH is non-null but has no `PermissionsPolicy`, so no double
+    // check is run. Any previous permissions policy checks were only
+    // done in the renderer; hence operations are dropped.
+    kSubresourceSourceNoPolicy = 3,
+    // RFH is non-null but has no `PermissionsPolicy`, so no double
+    // check is run, but the request source is an iframe navigation, so
+    // a previous browser-side permissions policy check was run in
+    // `NavigationRequest`. Hence it is ok to skip the double-check and
+    // proceed with the operations.
+    kNavigationSourceNoPolicy = 4,
+    // The request source is a navigation request for a main frame,
+    // which is not supported.
+    kDisallowedMainFrameNavigation = 5,
+    // A double check is run and the feature is disabled so
+    // operations are dropped.
+    kDisabled = 6,
+    // A double check is run and the feature is enabled so
+    // operations are processed.
+    kEnabled = 7,
+
+    // Keep this at the end and equal to the last entry.
+    kMaxValue = kEnabled,
+  };
 
   explicit SharedStorageHeaderObserver(StoragePartitionImpl* storage_partition);
   virtual ~SharedStorageHeaderObserver();
-
-  // If true, allows operations to bypass the permission check in
-  // `IsSharedStorageAllowed()` for testing.
-  static bool& GetBypassIsSharedStorageAllowedForTesting();
 
   // Called by `StoragePartitionImpl` to notify that a parsed
   // "Shared-Storage-Write" header `operations` for a request to
@@ -51,9 +90,12 @@ class CONTENT_EXPORT SharedStorageHeaderObserver {
   // any necessary parameters or for which any necessary parameters are
   // invalid..
   void HeaderReceived(const url::Origin& request_origin,
-                      RenderFrameHost* rfh,
+                      ContextType context_type,
+                      NavigationOrDocumentHandle* navigation_or_document_handle,
                       std::vector<OperationPtr> operations,
-                      base::OnceClosure callback);
+                      base::OnceClosure callback,
+                      mojo::ReportBadMessageCallback bad_message_callback,
+                      bool can_defer);
 
  protected:
   // virtual for testing.
@@ -64,8 +106,6 @@ class CONTENT_EXPORT SharedStorageHeaderObserver {
                                    OperationResult result) {}
 
  private:
-  static bool& GetBypassIsSharedStorageAllowed();
-
   bool Invoke(const url::Origin& request_origin, OperationPtr operation);
 
   bool Set(const url::Origin& request_origin,
@@ -80,8 +120,14 @@ class CONTENT_EXPORT SharedStorageHeaderObserver {
 
   storage::SharedStorageManager* GetSharedStorageManager();
 
-  bool IsSharedStorageAllowed(RenderFrameHost* rfh,
-                              const url::Origin& request_origin);
+  PermissionsPolicyDoubleCheckStatus DoPermissionsPolicyDoubleCheck(
+      const url::Origin& request_origin,
+      ContextType context_type,
+      NavigationOrDocumentHandle* navigation_or_document_handle);
+
+  bool IsSharedStorageAllowedBySiteSettings(
+      NavigationOrDocumentHandle* navigation_or_document_handle,
+      const url::Origin& request_origin);
 
   // `storage_partition_` owns `this`, so it will outlive `this`.
   raw_ptr<StoragePartitionImpl> storage_partition_;

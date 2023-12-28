@@ -4,7 +4,7 @@
 
 import {ByteOrder, ByteReader} from './byte_reader.js';
 import {ParserMetadata} from './metadata_item.js';
-import {ImageParser, MetadataParser, MetadataParserLogger} from './metadata_parser.js';
+import {ImageParser, MetadataParser, type MetadataParserLogger} from './metadata_parser.js';
 
 /**
  * Base class for image metadata parsers that only need to look at a short
@@ -33,15 +33,14 @@ export abstract class SimpleImageParser extends ImageParser {
       file: File, metadata: ParserMetadata,
       callback: (metadata: ParserMetadata) => void,
       errorCallback: (error: string) => void) {
-    const self = this;
-    MetadataParser.readFileBytes(file, 0, this.headerSize, (_file, br) => {
-      try {
-        self.parseHeader(metadata, br);
-        callback(metadata);
-      } catch (e) {
-        errorCallback(e!.toString());
-      }
-    }, errorCallback);
+    MetadataParser.readFileBytes(file, 0, this.headerSize)
+        .then(byteReader => {
+          this.parseHeader(metadata, byteReader);
+          callback(metadata);
+        })
+        .catch((e: unknown) => {
+          errorCallback(e!.toString());
+        });
   }
 
   /**

@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
@@ -104,6 +105,13 @@ bool AutomationTestUtils::NodeExistsNoWait(const std::string& name,
   return script_result == "true";
 }
 
+void AutomationTestUtils::DoDefault(const std::string& name,
+                                    const std::string& role) {
+  ExecuteScriptInExtensionPage(base::StringPrintf(
+      R"JS(globalThis.automationTestSupport.doDefault(`%s`, `%s`))JS",
+      name.c_str(), role.c_str()));
+}
+
 void AutomationTestUtils::WaitForTextSelectionChangedEvent() {
   std::string script = R"(
     globalThis.automationTestSupport.waitForTextSelectionChangedEvent();
@@ -125,6 +133,16 @@ void AutomationTestUtils::WaitForChildrenChangedEvent() {
   ExecuteScriptInExtensionPage(script);
 }
 
+void AutomationTestUtils::WaitForNumTabsWithRegexName(int num,
+                                                      const std::string& name) {
+  std::string script =
+      base::StringPrintf(R"(
+    globalThis.automationTestSupport.waitForNumTabsWithName(%s, %s);
+  )",
+                         base::ToString(num).c_str(), name.c_str());
+  ExecuteScriptInExtensionPage(script);
+}
+
 std::string AutomationTestUtils::GetValueForNodeWithClassName(
     const std::string& class_name) {
   std::string script = base::StringPrintf(R"(
@@ -132,6 +150,16 @@ std::string AutomationTestUtils::GetValueForNodeWithClassName(
   )",
                                           class_name.c_str());
   return ExecuteScriptInExtensionPage(script);
+}
+
+void AutomationTestUtils::WaitForNodeWithClassNameAndValue(
+    const std::string& class_name,
+    const std::string& value) {
+  std::string script = base::StringPrintf(R"(
+    globalThis.automationTestSupport.waitForNodeWithClassNameAndValue(
+        `%s`, `%s`);)",
+                                          class_name.c_str(), value.c_str());
+  ExecuteScriptInExtensionPage(script);
 }
 
 std::string AutomationTestUtils::ExecuteScriptInExtensionPage(

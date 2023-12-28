@@ -23,7 +23,6 @@ mojom("cros_camera_common") {
 
   # ChromeOS is still heavily reliant on legacy bindings.
   generate_legacy_js_bindings = true
-  use_typescript_sources = true
 }
 
 mojom("cros_camera") {

@@ -21,6 +21,7 @@ struct MediaUrlParams {
   bool has_storage_access;
   bool allow_credentials;
   bool is_hls;
+  map<string, string> headers;
 };
 
 // A Mojo equivalent of media::Renderer. Used when audio and video decoding

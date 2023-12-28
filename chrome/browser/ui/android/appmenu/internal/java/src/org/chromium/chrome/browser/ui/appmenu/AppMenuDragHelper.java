@@ -19,7 +19,6 @@ import android.widget.ListView;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
 
@@ -171,8 +170,6 @@ class AppMenuDragHelper {
         if (eventActionMasked == MotionEvent.ACTION_CANCEL) {
             mAppMenu.dismiss();
             return true;
-        } else if (eventActionMasked == MotionEvent.ACTION_UP) {
-            RecordHistogram.recordTimesHistogram("WrenchMenu.TouchDuration", timeSinceDown);
         }
 
         mIsSingleTapCanceled |= timeSinceDown > mTapTimeout;

@@ -125,8 +125,6 @@ class MdIPHBubbleButton : public views::MdTextButton {
       : MdTextButton(std::move(callback), text),
         delegate_(delegate),
         is_default_button_(is_default_button) {
-    // Prominent style gives a button hover highlight.
-    SetProminent(true);
     GetViewAccessibility().OverrideIsLeaf(true);
 
     if (features::IsChromeRefresh2023()) {
@@ -143,6 +141,8 @@ class MdIPHBubbleButton : public views::MdTextButton {
               : delegate_->GetHelpBubbleForegroundColorId());
       ink_drop->SetHighlightOpacity(absl::nullopt);
     } else {
+      // Prominent style gives a button hover highlight.
+      SetStyle(ui::ButtonStyle::kProminent);
       // Focus ring rendering varies significantly between pre- and post-refresh
       // Chrome. The pre-refresh tactic of setting the focus color to background
       // is actually a hack; the post-refresh approach is more "correct".
@@ -437,7 +437,8 @@ class MenuEventMonitor {
     if (IsInButton(screen_coords, help_bubble_->default_button_)) {
       return help_bubble_->default_button_;
     }
-    for (auto* const button : help_bubble_->non_default_buttons_) {
+    for (views::MdTextButton* const button :
+         help_bubble_->non_default_buttons_) {
       if (IsInButton(screen_coords, button)) {
         return button;
       }
@@ -758,8 +759,13 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
 
   // Icon view should have padding between it and the title or body label.
   if (icon_view_) {
-    icon_view_->SetProperty(views::kMarginsKey,
-                            gfx::Insets::TLBR(0, 0, 0, default_spacing));
+    // When there is no title, distance from icon and body text to buttons can
+    // appear cramped, so add a small bit of extra margin.
+    const int bottom_margin =
+        !params.buttons.empty() && params.title_text.empty() ? 2 : 0;
+    icon_view_->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(0, 0, bottom_margin, default_spacing));
   }
 
   // Set label flex properties. This ensures that if the width of the bubble
@@ -953,7 +959,7 @@ void HelpBubbleView::OnThemeChanged() {
         foreground_color, icon_view_->GetPreferredSize().height() / 2));
   }
 
-  for (auto* label : labels_) {
+  for (views::Label* label : labels_) {
     label->SetBackgroundColor(background_color);
     label->SetEnabledColor(foreground_color);
   }
@@ -1034,7 +1040,7 @@ bool HelpBubbleView::IsFocusInHelpBubble() const {
     return true;
   if (default_button_ && default_button_->HasFocus())
     return true;
-  for (auto* button : non_default_buttons_) {
+  for (views::MdTextButton* button : non_default_buttons_) {
     if (button->HasFocus())
       return true;
   }

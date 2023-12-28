@@ -209,9 +209,7 @@ public class ReadingListTest {
 
         // We should default to the root bookmark.
         Assert.assertEquals(BookmarkUiMode.FOLDER, delegate.getCurrentUiMode());
-        Assert.assertEquals(
-                "chrome-native://bookmarks/folder/0",
-                BookmarkUtils.getLastUsedUrl(mActivityTestRule.getActivity()));
+        Assert.assertEquals("chrome-native://bookmarks/folder/0", BookmarkUtils.getLastUsedUrl());
         Assert.assertEquals("Bookmarks", toolbar.getTitle());
 
         // When opening "Mobile bookmarks", we should come back to it when within the same session.
@@ -229,9 +227,7 @@ public class ReadingListTest {
 
         // Reopen and make sure we're back in "Mobile bookmarks".
         Assert.assertEquals(BookmarkUiMode.FOLDER, delegate.getCurrentUiMode());
-        Assert.assertEquals(
-                "chrome-native://bookmarks/folder/3",
-                BookmarkUtils.getLastUsedUrl(mActivityTestRule.getActivity()));
+        Assert.assertEquals("chrome-native://bookmarks/folder/3", BookmarkUtils.getLastUsedUrl());
     }
 
     @Test

@@ -58,7 +58,7 @@ class CssToWrapperTest(unittest.TestCase):
   def testCssToWrapperStylePolymer(self):
     self._run_test('css_to_wrapper/foo_style.css',
                    'css_to_wrapper/foo_style.css.ts',
-                   'css_to_wrapper/foo_style_expected.css.ts')
+                   'css_to_wrapper/expected/foo_style.css.ts')
 
   def testCssToWrapperStyleLit(self):
     self._run_test('css_to_wrapper/foo_style_lit.css',
@@ -68,12 +68,12 @@ class CssToWrapperTest(unittest.TestCase):
   def testCssToWrapperStyleNoIncludes(self):
     self._run_test('css_to_wrapper/foo_no_includes_style.css',
                    'css_to_wrapper/foo_no_includes_style.css.ts',
-                   'css_to_wrapper/foo_no_includes_style_expected.css.ts')
+                   'css_to_wrapper/expected/foo_no_includes_style.css.ts')
 
   def testCssToWrapperVarsPolymer(self):
     self._run_test('css_to_wrapper/foo_vars.css',
                    'css_to_wrapper/foo_vars.css.ts',
-                   'css_to_wrapper/foo_vars_expected.css.ts')
+                   'css_to_wrapper/expected/foo_vars.css.ts')
 
   def testCssToWrapperVarsLit(self):
     self._run_test('css_to_wrapper/foo_vars_lit.css',
@@ -83,19 +83,19 @@ class CssToWrapperTest(unittest.TestCase):
   def testCssToWrapperMinify(self):
     self._run_test('css_to_wrapper/foo_style.css',
                    'css_to_wrapper/foo_style.css.ts',
-                   'css_to_wrapper/foo_style_expected.min.css.ts',
+                   'css_to_wrapper/expected/foo_style.min.css.ts',
                    minify=True)
 
   def testCssToWrapperUseJs(self):
     self._run_test('css_to_wrapper/foo_style.css',
                    'css_to_wrapper/foo_style.css.js',
-                   'css_to_wrapper/foo_style_expected.css.ts',
+                   'css_to_wrapper/expected/foo_style.css.ts',
                    use_js=True)
 
   def testCssToWrapperSchemeRelative(self):
     self._run_test('css_to_wrapper/foo_relative_style.css',
                    'css_to_wrapper/foo_relative_style.css.ts',
-                   'css_to_wrapper/foo_relative_style_expected.css.ts')
+                   'css_to_wrapper/expected/foo_relative_style.css.ts')
 
 
 if __name__ == '__main__':

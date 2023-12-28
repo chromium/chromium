@@ -29,6 +29,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/common/api/test.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -274,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUIEmbeddedOptionsTest,
             content::EvalJs(guest_render_frame_host, "onChangedPromise;"));
 
   // Now check access to the tabs API, which is restricted to
-  // Feature::BLESSED_EXTENSION_CONTEXTs (which this should be).
+  // mojom::ContextType::kPrivilegedExtensions (which this should be).
   static constexpr char kTabsExecution[] =
       R"(new Promise(r => {
            chrome.tabs.create({}, (tab) => {

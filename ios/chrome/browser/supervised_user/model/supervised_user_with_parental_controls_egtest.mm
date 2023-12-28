@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/test/ios/wait_util.h"
 #import "components/policy/policy_constants.h"
 #import "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
-#import "ios/chrome/browser/policy/policy_app_interface.h"
-#import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
-#import "ios/chrome/browser/policy/policy_util.h"
+#import "ios/chrome/browser/policy/model/policy_app_interface.h"
+#import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/signin/model/capabilities_types.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -56,8 +57,6 @@ static const char* kInterstitialFirstTimeBanner =
   AppLaunchConfiguration config;
   config.features_enabled.push_back(
       supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
-  config.features_enabled.push_back(
-      supervised_user::kEnableProtoApiForClassifyUrl);
   return config;
 }
 
@@ -210,11 +209,17 @@ static const char* kInterstitialFirstTimeBanner =
       1, [ChromeEarlGrey realizedWebStatesCount],
       @"A single realized web state must exist. The tab reloading filtering"
       @"behaviour should not force web states to become realized.");
-  GREYAssertEqual(1,
-                  [SupervisedUserSettingsAppInterface
-                      countSupervisedUserIntersitialsForExistingWebStates],
-                  @"A single interstitial must exist.");
-  [ChromeEarlGrey waitForMainTabCount:3];
+
+  // Wait for one interstitial to appear (on the realized tab).
+  GREYAssert(
+      base::test::ios::WaitUntilConditionOrTimeout(
+          base::test::ios::kWaitForPageLoadTimeout,
+          ^bool {
+            return
+                [SupervisedUserSettingsAppInterface
+                    countSupervisedUserIntersitialsForExistingWebStates] == 1;
+          }),
+      @"Interstitial did not appear.");
 
   // Out of the 3 tabs, only the active one should have recorded metrics for
   // filtering.

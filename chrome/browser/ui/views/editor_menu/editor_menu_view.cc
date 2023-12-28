@@ -172,8 +172,8 @@ void EditorMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
 void EditorMenuView::DisableMenu() {
   settings_button_->SetEnabled(false);
 
-  for (auto* row : chips_container_->children()) {
-    for (auto* chip : row->children()) {
+  for (views::View* row : chips_container_->children()) {
+    for (views::View* chip : row->children()) {
       chip->SetEnabled(false);
     }
   }
@@ -263,7 +263,7 @@ void EditorMenuView::UpdateChipsContainer(int editor_menu_width) {
   // Remove chips from their current rows and transfer ownership since we want
   // to add the chips to new rows.
   std::vector<std::unique_ptr<EditorMenuChipView>> chips;
-  for (auto* row : chips_container_->children()) {
+  for (views::View* row : chips_container_->children()) {
     while (!row->children().empty()) {
       chips.push_back(row->RemoveChildViewT(
           views::AsViewClass<EditorMenuChipView>(row->children()[0])));

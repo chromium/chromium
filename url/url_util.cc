@@ -273,14 +273,13 @@ bool DoCanonicalize(const CHAR* spec,
   } else if (DoCompareSchemeComponent(spec, scheme, url::kFileSystemScheme)) {
     // Filesystem URLs are special.
     ParseFileSystemURL(spec, spec_len, &parsed_input);
-    success = CanonicalizeFileSystemURL(spec, spec_len, parsed_input,
-                                        charset_converter, output,
-                                        output_parsed);
+    success = CanonicalizeFileSystemURL(spec, parsed_input, charset_converter,
+                                        output, output_parsed);
 
   } else if (DoIsStandard(spec, scheme, &scheme_type)) {
     // All "normal" URLs.
     ParseStandardURL(spec, spec_len, &parsed_input);
-    success = CanonicalizeStandardURL(spec, spec_len, parsed_input, scheme_type,
+    success = CanonicalizeStandardURL(spec, parsed_input, scheme_type,
                                       charset_converter, output, output_parsed);
 
   } else if (DoCompareSchemeComponent(spec, scheme, url::kMailToScheme)) {

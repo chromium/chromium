@@ -164,6 +164,22 @@ TEST_F(RenderFrameHostImplTest, ExpectedMainWorldOrigin) {
   EXPECT_EQ(initial_rfh, main_rfh());
 }
 
+// Test that navigating to an invalid URL (which creates an empty GURL) causes
+// about:blank to commit.
+TEST_F(RenderFrameHostImplTest, InvalidURL) {
+  // Start from a valid commit.
+  NavigateAndCommit(GURL("https://test.example.com"));
+
+  // Attempt to navigate to a non-empty invalid URL, which GURL treats as an
+  // empty invalid URL. Blink treats navigations to an empty URL as navigations
+  // to about:blank.
+  GURL invalid_url("invalidurl");
+  EXPECT_TRUE(invalid_url.is_empty());
+  EXPECT_FALSE(invalid_url.is_valid());
+  NavigateAndCommit(invalid_url);
+  EXPECT_EQ(GURL(url::kAboutBlankURL), main_rfh()->GetLastCommittedURL());
+}
+
 // Ensures that IsolationInfo's SiteForCookies is empty and
 // that it correctly generates a StorageKey with a kCrossSite
 // AncestorChainBit when frames are nested in an A->B->A
@@ -445,7 +461,7 @@ TEST_F(RenderFrameHostImplTest, ChildOfCredentiallessIsCredentialless) {
 
   // A credentialless document sets a nonce on its network isolation key.
   EXPECT_TRUE(child_frame->GetNetworkIsolationKey().GetNonce().has_value());
-  EXPECT_EQ(main_test_rfh()->credentialless_iframes_nonce(),
+  EXPECT_EQ(main_test_rfh()->GetPage().credentialless_iframes_nonce(),
             child_frame->GetNetworkIsolationKey().GetNonce().value());
 
   // A child of a credentialless RFH is credentialless.
@@ -463,7 +479,7 @@ TEST_F(RenderFrameHostImplTest, ChildOfCredentiallessIsCredentialless) {
   // isolation key.
   EXPECT_TRUE(
       grandchild_frame->GetNetworkIsolationKey().GetNonce().has_value());
-  EXPECT_EQ(main_test_rfh()->credentialless_iframes_nonce(),
+  EXPECT_EQ(main_test_rfh()->GetPage().credentialless_iframes_nonce(),
             grandchild_frame->GetNetworkIsolationKey().GetNonce().value());
 }
 
@@ -706,10 +722,19 @@ TEST_F(RenderFrameHostImplTest, CalculateStorageKey) {
                 grandchild_frame->GetLastCommittedOrigin(), nullptr));
 }
 
+// TODO(https://crbug.com/1510555): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_CalculateStorageKeyFirstPartyOverride \
+  DISABLED_CalculateStorageKeyFirstPartyOverride
+#else
+#define MAYBE_CalculateStorageKeyFirstPartyOverride \
+  CalculateStorageKeyFirstPartyOverride
+#endif
+
 // TODO(https://crbug.com/1425337): Eventually, this test will be moved to
 // chrome/browser/ so that we no longer need to override the
 // ContentBrowserClient, and we can test using real extension URLs.
-TEST_F(RenderFrameHostImplTest, CalculateStorageKeyFirstPartyOverride) {
+TEST_F(RenderFrameHostImplTest, MAYBE_CalculateStorageKeyFirstPartyOverride) {
   // Enable third-party storage partitioning.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -1552,21 +1577,25 @@ TEST_F(RenderFrameHostImplTest, CapturedMediaStreamAddedRemoved) {
 
   // Calling OnMediaStreamAdded for the first time will cause a notification.
   EXPECT_CALL(observer, OnFrameIsCapturingMediaStreamChanged(main_rfh, true));
-  main_rfh->OnMediaStreamAdded();
+  main_rfh->OnMediaStreamAdded(
+      RenderFrameHostImpl::MediaStreamType::kCapturingMediaStream);
 
   // Calling it again will not result in a notification (verified by the
   // StrictMock).
-  main_rfh->OnMediaStreamAdded();
+  main_rfh->OnMediaStreamAdded(
+      RenderFrameHostImpl::MediaStreamType::kCapturingMediaStream);
 
   // Calling OnMediaStreamRemoved to cancel out one of the OnMediaStreamAdded
   // calls. Overall, the frame is still capturing at least one media stream so
   // there is no notifications.
-  main_rfh->OnMediaStreamRemoved();
+  main_rfh->OnMediaStreamRemoved(
+      RenderFrameHostImpl::MediaStreamType::kCapturingMediaStream);
 
   // Cancelling the first OnMediaStreamAdded call. This changes the state of the
   // frame and thus cause a notification.
   EXPECT_CALL(observer, OnFrameIsCapturingMediaStreamChanged(main_rfh, false));
-  main_rfh->OnMediaStreamRemoved();
+  main_rfh->OnMediaStreamRemoved(
+      RenderFrameHostImpl::MediaStreamType::kCapturingMediaStream);
 }
 
 }  // namespace content

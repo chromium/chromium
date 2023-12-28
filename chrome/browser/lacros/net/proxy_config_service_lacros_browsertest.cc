@@ -59,6 +59,9 @@ class FakeNetworkSettingsService
     }
   }
 
+  void IsAlwaysOnVpnPreConnectUrlAllowlistEnforced(
+      IsAlwaysOnVpnPreConnectUrlAllowlistEnforcedCallback callback) override {}
+
   // This fake implementation of the crosapi::mojom::NetworkSettingsService is
   // only used to test the behaviour of `ProxyConfigServiceLacros`, which is an
   // observer of the mojo service. Observers only listen for updates, they do

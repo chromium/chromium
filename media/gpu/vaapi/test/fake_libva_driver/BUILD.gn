@@ -11,6 +11,7 @@ shared_library("fake_drv_video") {
   deps = [
     ":fake_libva_driver_internals",
     "//base",
+    "//third_party/libyuv",
   ]
 }
 
@@ -26,6 +27,8 @@ source_set("fake_libva_driver_internals") {
     "fake_context.h",
     "fake_driver.cc",
     "fake_driver.h",
+    "fake_image.cc",
+    "fake_image.h",
     "fake_surface.cc",
     "fake_surface.h",
     "no_op_context_delegate.cc",

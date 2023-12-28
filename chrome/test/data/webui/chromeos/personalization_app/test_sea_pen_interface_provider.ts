@@ -55,6 +55,7 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
       'selectRecentSeaPenImage',
       'getRecentSeaPenImages',
       'getRecentSeaPenImageThumbnail',
+      'deleteRecentSeaPenImage',
     ]);
   }
 
@@ -81,5 +82,11 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
   getRecentSeaPenImageThumbnail(filePath: FilePath) {
     this.methodCalled('getRecentSeaPenImageThumbnail', filePath);
     return Promise.resolve({url: this.recentImageData[filePath.path]!.url});
+  }
+
+  deleteRecentSeaPenImage(filePath: FilePath) {
+    this.methodCalled('deleteRecentSeaPenImage', filePath);
+    this.recentImages.splice(this.recentImages.indexOf(filePath), 1);
+    return Promise.resolve({success: true});
   }
 }

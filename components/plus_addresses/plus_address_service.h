@@ -49,7 +49,7 @@ class PlusAddressService : public KeyedService,
   // Returns `true` when plus addresses are supported. This includes checks that
   // the `kPlusAddressesEnabled` base::Feature is enabled, that there's a
   // signed-in user, the ability to talk to the server, and that off-the-record
-  // sessions will not offer new shielded email creation.
+  // sessions will not offer new plus address creation.
   // Virtual to allow overriding the behavior in tests. This allows external
   // tests (e.g., those in autofill that depend on this class) to substitute
   // their own behavior.

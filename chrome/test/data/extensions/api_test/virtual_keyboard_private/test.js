@@ -53,10 +53,26 @@ function checkEmptyResult(result) {
   chrome.test.assertEq(parsed, []);
 }
 
+function multipaste() {
+  chrome.virtualKeyboardPrivate.getClipboardHistory(
+      {}, callbackPass(checkFullResult));
+}
+
+function multipasteUnderLockScreen() {
+  chrome.virtualKeyboardPrivate.getClipboardHistory(
+      {}, callbackPass(checkEmptyResult));
+}
+
+const tests_funcs_by_names = {
+  'multipaste': multipaste,
+  'multipasteUnderLockScreen': multipasteUnderLockScreen,
+};
+
 chrome.test.getConfig(function(config) {
-  const screenLocked = config.customArg;
-  chrome.test.runTests([function multipasteApi() {
-    chrome.virtualKeyboardPrivate.getClipboardHistory(
-        {}, callbackPass(screenLocked ? checkEmptyResult : checkFullResult));
-  }]);
+  const test_name = config.customArg;
+  if (test_name in tests_funcs_by_names) {
+    chrome.test.runTests([tests_funcs_by_names[test_name]]);
+  } else {
+    chrome.test.fail('Invalid test name');
+  }
 });

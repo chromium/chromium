@@ -26,11 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="BooleanEligible">
-  <int value="0" label="Not elibible"/>
-  <int value="1" label="Eligible"/>
-</enum>
-
 <enum name="CaptivePortalStatus">
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="OFFLINE"/>
@@ -216,6 +211,10 @@ chromium-metrics-reviews@google.com.
   <int value="41" label="OpenURL"/>
   <int value="42" label="AddToReadingList"/>
   <int value="43" label="SearchWith"/>
+  <int value="44" label="Autofill (menu)"/>
+  <int value="45" label="Autofill passwords"/>
+  <int value="46" label="Autofill contacts"/>
+  <int value="47" label="Autofill others"/>
 </enum>
 
 <enum name="IOSEditMenuError">
@@ -289,13 +288,6 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Distant tab resumption tile"/>
 </enum>
 
-<enum name="IOSITunesURLsStoreKitHandlingResult">
-  <int value="0" label="Handling failed"/>
-  <int value="1" label="Single App URL, handled"/>
-  <int value="2" label="App Bundle URL, handled"/>
-  <int value="3" label="App Bundle URL, not handled"/>
-</enum>
-
 <enum name="IOSJavascriptContentBlockType">
   <int value="0" label="Cookie"/>
   <int value="1" label="Local Storage"/>
@@ -331,6 +323,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Tab Resumption"/>
   <int value="11" label="Parcel Tracking"/>
   <int value="12" label="Parcel Tracking See More"/>
+  <int value="13" label="Set Up List Content Notification"/>
 </enum>
 
 <enum name="IOSMainThreadFreezeDetectionNotRunningAfterReportBlock">
@@ -502,6 +495,30 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Camera permission"/>
   <int value="1" label="Microphone permission"/>
   <int value="2" label="Camera and Microphone permissions"/>
+</enum>
+
+<enum name="IOSPhotosServiceUploadFailureType">
+  <int value="0" label="None"/>
+  <int value="1" label="The service is already uploading."/>
+  <int value="10" label="Failure occurred while retrieving an existing album."/>
+  <int value="20" label="Failure occurred while creating a new album."/>
+  <int value="30"
+      label="Failure occurred during the first step of uploading a photo."/>
+  <int value="31"
+      label="Failure occurred during the first step of uploading a photo (no
+             data in response)."/>
+  <int value="32"
+      label="Failure occurred during the first step of uploading a photo
+             (response is not text)."/>
+  <int value="33"
+      label="Failure occurred during the first step of uploading a photo
+             (token could not be decoded)."/>
+  <int value="40"
+      label="Failure occurred during the second step of uploading a photo."/>
+  <int value="41"
+      label="Failure occurred during the second step of uploading a photo
+             because the remaining storage in the user's account is not
+             enough to perform this operation."/>
 </enum>
 
 <enum name="IOSPostRestoreDefaultBrowserActionOnPrompt">
@@ -852,9 +869,27 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Not a new user (user is new for 30 days after FRE)"/>
 </enum>
 
+<enum name="OmniboxPositionChoiceScreenEvents">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Screen Was Displayed"/>
+  <int value="2" label="Top Selected"/>
+  <int value="3" label="Bottom Selected"/>
+  <int value="4" label="Position Validated"/>
+  <int value="5" label="Position Discarded"/>
+  <int value="6" label="Screen Skipped"/>
+  <int value="7" label="Promo Registered"/>
+</enum>
+
 <enum name="OmniboxPositionType">
   <int value="0" label="Top"/>
   <int value="1" label="Bottom"/>
+</enum>
+
+<enum name="OmniboxPromoSelectedPositions">
+  <int value="0" label="Top default"/>
+  <int value="1" label="Bottom default"/>
+  <int value="2" label="Top not default"/>
+  <int value="3" label="Bottom not default"/>
 </enum>
 
 <enum name="PageLoadedSnapshotResult">
@@ -888,6 +923,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Used payment suggestion"/>
   <int value="2" label="Accessed Payment Methods through the long press menu"/>
   <int value="3" label="Accessed Payment Details through the long press menu"/>
+  <int value="4" label="The suggestion provider's type was incorrect"/>
 </enum>
 
 <enum name="PromoWithInstructionsAction">

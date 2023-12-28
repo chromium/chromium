@@ -358,11 +358,17 @@ VideoEncoderClient::CreateBitstreamRef(
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_client_sequence_checker_);
   auto it = bitstream_buffers_.find(bitstream_buffer_id);
   LOG_ASSERT(it != bitstream_buffers_.end());
-  auto decoder_buffer = DecoderBuffer::FromSharedMemoryRegion(
-      it->second.Duplicate(), 0u /* offset */, metadata.payload_size_bytes);
-  if (!decoder_buffer)
-    return nullptr;
-  decoder_buffer->set_timestamp(base::Microseconds(frame_index_));
+
+  scoped_refptr<DecoderBuffer> decoder_buffer;
+  if (metadata.payload_size_bytes != 0) {
+    decoder_buffer = DecoderBuffer::FromSharedMemoryRegion(
+        it->second.Duplicate(), 0u /* offset */, metadata.payload_size_bytes);
+    if (!decoder_buffer) {
+      return nullptr;
+    }
+    decoder_buffer->set_timestamp(base::Microseconds(frame_index_));
+  }
+
   auto source_timestamp_it = source_timestamps_.find(metadata.timestamp);
   LOG_ASSERT(source_timestamp_it != source_timestamps_.end());
 
@@ -379,11 +385,17 @@ void VideoEncoderClient::BitstreamBufferReady(
     const BitstreamBufferMetadata& metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_client_sequence_checker_);
   DVLOGF(4) << "frame_index=" << frame_index_
-            << ", encoded image size=" << metadata.payload_size_bytes;
+            << ", encoded image size=" << metadata.payload_size_bytes
+            << (metadata.payload_size_bytes > 0 ? "" : " (Drop Frame)");
   {
+    // |metadata.payload_size_bytes| can be zero here, but counts the dropped
+    // frame to compute a bitrate from the network point of view.
     base::AutoLock auto_lock(stats_lock_);
     current_stats_.total_num_encoded_frames++;
     current_stats_.total_encoded_frames_size += metadata.payload_size_bytes;
+    if (metadata.payload_size_bytes == 0) {
+      current_stats_.num_dropped_frames++;
+    }
     if (metadata.vp9.has_value()) {
       uint8_t temporal_id = metadata.vp9->temporal_idx;
       uint8_t spatial_id = metadata.vp9->spatial_idx;
@@ -499,6 +511,8 @@ void VideoEncoderClient::CreateEncoderTask(const RawVideo* video,
   config.initial_framerate = encoder_client_config_.framerate;
   config.storage_type = encoder_client_config_.input_storage_type;
   config.content_type = VideoEncodeAccelerator::Config::ContentType::kCamera;
+  config.drop_frame_thresh_percentage =
+      encoder_client_config_.drop_frame_thresh;
   config.spatial_layers = encoder_client_config_.spatial_layers;
   config.inter_layer_pred = encoder_client_config_.inter_layer_pred_mode;
 

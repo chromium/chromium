@@ -129,7 +129,6 @@ constexpr char kWebAppId[] = "webApp";
 constexpr char kSystemWebAppId[] = "systemWebApp";
 constexpr char kUnknownAppId[] = "unknownApp";
 constexpr char kBuiltInAppId[] = "builtInApp";
-constexpr char kMacOsAppId[] = "MacOsApp";
 constexpr char kStandaloneBrowserAppId[] = "standaloneBrowserApp";
 constexpr char kRemoteAppId[] = "remoteApp";
 constexpr char kBorealisAppId[] = "borealisApp";
@@ -1372,6 +1371,42 @@ TEST_F(DlpFilesControllerAshTest, DoNotReportOnSystemApps) {
               base::BucketsAre(base::Bucket(dlp::FileAction::kTransfer, 0)));
 }
 
+// Warnings to Files app and image loader should be converted to blocks to avoid
+// mass warnings when browsing a folder with warned images.
+TEST_F(DlpFilesControllerAshTest, BlockWarningFilesOnSystemApps) {
+  const auto file = DlpFilesControllerAsh::FileDaemonInfo(
+      kInode1, kCrtime1, base::FilePath(kFilePath1), kExampleUrl1,
+      kReferrerUrl1);
+
+  base::MockOnceCallback<void(
+      const std::vector<std::pair<FileDaemonInfo, ::dlp::RestrictionLevel>>&)>
+      result_callback;
+
+  EXPECT_CALL(
+      result_callback,
+      Run(testing::ElementsAre(testing::Pair(
+          testing::FieldsAre(kInode1, kCrtime1, base::FilePath(kFilePath1),
+                             kExampleUrl1, kReferrerUrl1),
+          ::dlp::RestrictionLevel::LEVEL_BLOCK))))
+      .Times(2);
+
+  EXPECT_CALL(*rules_manager_, IsRestrictedDestination)
+      .Times(2)
+      .WillRepeatedly(
+          testing::DoAll(testing::SetArgPointee<3>(kExampleSourcePattern1),
+                         testing::SetArgPointee<4>(kFileManagerUrl),
+                         testing::SetArgPointee<5>(kRuleMetadata1),
+                         testing::Return(DlpRulesManager::Level::kWarn)));
+
+  files_controller_->IsFilesTransferRestricted(
+      /*task_id=*/1234, {file}, DlpFileDestination(GURL(kFileManagerUrl)),
+      dlp::FileAction::kTransfer, result_callback.Get());
+
+  files_controller_->IsFilesTransferRestricted(
+      /*task_id=*/1234, {file}, DlpFileDestination(GURL(kImageLoaderUrl)),
+      dlp::FileAction::kTransfer, result_callback.Get());
+}
+
 TEST_F(DlpFilesControllerAshTest, IsFilesTransferRestricted_MyFiles) {
   const auto histogram_tester = base::HistogramTester();
 
@@ -2407,7 +2442,6 @@ class DlpFilesAppLaunchTest_Unsupported
 
     CreateAndStoreFakeApp(kUnknownAppId, apps::AppType::kUnknown, kExampleUrl1);
     CreateAndStoreFakeApp(kBuiltInAppId, apps::AppType::kBuiltIn, kExampleUrl2);
-    CreateAndStoreFakeApp(kMacOsAppId, apps::AppType::kMacOs, kExampleUrl3);
     CreateAndStoreFakeApp(kStandaloneBrowserAppId,
                           apps::AppType::kStandaloneBrowser, kExampleUrl4);
     CreateAndStoreFakeApp(kRemoteAppId, apps::AppType::kRemote, kExampleUrl5);
@@ -2423,7 +2457,6 @@ INSTANTIATE_TEST_SUITE_P(
     DlpFilesAppLaunchTest_Unsupported,
     ::testing::Values(std::make_tuple(apps::AppType::kUnknown, kUnknownAppId),
                       std::make_tuple(apps::AppType::kBuiltIn, kBuiltInAppId),
-                      std::make_tuple(apps::AppType::kMacOs, kMacOsAppId),
                       std::make_tuple(apps::AppType::kStandaloneBrowser,
                                       kStandaloneBrowserAppId),
                       std::make_tuple(apps::AppType::kRemote, kRemoteAppId),

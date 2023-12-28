@@ -163,7 +163,8 @@ class GFX_EXPORT Image {
   // Set the default representation's color space. This is used for converting
   // to NSImage. This is used to compensate for PNGCodec not writing or reading
   // colorspace ancillary chunks. (sRGB, iCCP).
-  void SetSourceColorSpace(CGColorSpaceRef color_space);
+  // TODO(https://crbug.com/1495334): Remove callers of this function.
+  void SetSourceColorSpace(CGColorSpaceRef color_space) {}
 #endif  // BUILDFLAG(IS_MAC)
 
  private:

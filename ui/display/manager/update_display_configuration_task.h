@@ -28,8 +28,10 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
  public:
   using ResponseCallback = base::OnceCallback<void(
       /*success=*/bool,
-      /*displays=*/const std::vector<DisplaySnapshot*>&,
-      /*unassociated_displays=*/const std::vector<DisplaySnapshot*>&,
+      /*displays=*/
+      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&,
+      /*unassociated_displays=*/
+      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&,
       /*new_display_state=*/MultipleDisplayState,
       /*new_power_state=*/chromeos::DisplayPowerState,
       /*new_vrr_state=*/bool)>;
@@ -61,7 +63,9 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
 
  private:
   // Callback to NativeDisplayDelegate::GetDisplays().
-  void OnDisplaysUpdated(const std::vector<DisplaySnapshot*>& displays);
+  void OnDisplaysUpdated(
+      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&
+          displays);
 
   // Callback to ConfigureDisplaysTask used to process the result of a display
   // configuration run.
@@ -93,8 +97,8 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
   // variable refresh rate setting.
   bool ShouldConfigureVrr() const;
 
-  raw_ptr<NativeDisplayDelegate, ExperimentalAsh> delegate_;       // Not owned.
-  raw_ptr<DisplayLayoutManager, ExperimentalAsh> layout_manager_;  // Not owned.
+  raw_ptr<NativeDisplayDelegate> delegate_;       // Not owned.
+  raw_ptr<DisplayLayoutManager> layout_manager_;  // Not owned.
 
   // Requested display state.
   MultipleDisplayState new_display_state_;
@@ -126,12 +130,13 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
   bool requesting_displays_;
 
   // List of updated displays.
-  std::vector<DisplaySnapshot*> cached_displays_;
+  std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>> cached_displays_;
 
   // List of updated displays which have no associated crtc. It can happen
   // when the device is connected with so many displays that has no available
   // crtc to assign.
-  std::vector<DisplaySnapshot*> cached_unassociated_displays_;
+  std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>
+      cached_unassociated_displays_;
 
   std::unique_ptr<ConfigureDisplaysTask> configure_task_;
 

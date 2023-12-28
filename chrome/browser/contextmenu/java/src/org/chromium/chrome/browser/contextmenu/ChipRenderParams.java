@@ -35,10 +35,9 @@ public class ChipRenderParams {
     public boolean isRemoveIconHidden;
 
     /** Defines the types of chips that can be rendered. */
-    @IntDef({ChipType.LENS_SHOPPING_CHIP, ChipType.LENS_TRANSLATE_CHIP})
+    @IntDef({ChipType.LENS_TRANSLATE_CHIP})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ChipType {
-        int LENS_SHOPPING_CHIP = 0;
         int LENS_TRANSLATE_CHIP = 1;
     }
 }

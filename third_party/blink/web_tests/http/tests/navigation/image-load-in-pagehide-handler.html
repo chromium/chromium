@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Image load in pagehide handler</title>
+  <script>
+    // We need to ensure that other instances of this test running in parallel
+    // (e.g. in a virtual suite) do not interfere.
+    const key = `${Date.now()}-${Math.random()}`;
+
+    if (window.testRunner) {
+      testRunner.dumpAsText();
+      testRunner.waitUntilDone();
+    }
+
+    async function test() {
+
+      const response = await fetch(`resources/delete-ping.php?test=pagehide-image-${key}`);
+      if (response.ok) {
+        // We can't go to check-ping.php directly, since that doesn't start sending
+        // a response until the ping data is detected, but pagehide handlers (where
+        // we send the ping) are only run once we've begun receiving data from the
+        // page being navigated to. Instead, we go through a dummy redirect page,
+        // to make sure that the onpagehide handler has run before we get to
+        // check-ping.php.
+        location.assign(`resources/ping-redirect.html?test=pagehide-image-${key}`);
+      }
+    }
+
+    function ping() {
+      var img = new Image(1, 1);
+      img.src = `resources/save-Ping.php?test=pagehide-image-${key}`
+    }
+
+  </script>
+</head>
+
+<body onload="test();" onpagehide="ping();">
+  Test case for https://bugs.webkit.org/show_bug.cgi?id=30457. Previously, if an image<br>
+  load was trigger from an pagehide handler, we would kill it almost immediately due to the<br>
+  navigation stopping all loaders. These loads now happen entirely in the background and detached<br>
+  from the DOM, so they're invisible to the normal resource load callback infrastructure. We generate a<br>
+  timestamp, then in the pagehide handler, we load an 'image' (actually a php script) that takes the<br>
+  timestamp as a parameter and saves it to a file. The destination page is a php script that checks for<br>
+  the existence of that file and passes the test if the file contains the expected timestamp.<br>
+</body>
+
+</html>

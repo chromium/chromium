@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,40 +6,50 @@ package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
 import static org.chromium.ui.base.LocalizationUtils.isLayoutRtl;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.animation.AccelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.LinearLayout;
 
-import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.tabs.TabLayout;
-
+import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
+import org.chromium.ui.widget.ViewRectProvider;
 
 /**
  * The Accessory sitting above the keyboard and below the content area. It is used for autofill
  * suggestions and manual entry points assisting the user in filling forms.
  */
 class KeyboardAccessoryView extends LinearLayout {
-    protected static final int FADE_ANIMATION_DURATION_MS = 150; // Total duration of show/hide.
-    protected static final int HIDING_ANIMATION_DELAY_MS = 50; // Shortens animation duration.
+    private static final int ARRIVAL_ANIMATION_DURATION_MS = 300;
+    private static final float ARRIVAL_ANIMATION_BOUNCE_LENGTH_DIP = 200f;
+    private static final float ARRIVAL_ANIMATION_TENSION = 1f;
+    private static final int FADE_ANIMATION_DURATION_MS = 150; // Total duration of show/hide.
+    private static final int HIDING_ANIMATION_DELAY_MS = 50; // Shortens animation duration.
 
-    protected RecyclerView mBarItemsView;
-    protected TabLayout mTabLayout;
+    private Callback<Integer> mObfuscatedLastChildAt;
+    private ObjectAnimator mAnimator;
+    private AnimationListener mAnimationListener;
     private ViewPropertyAnimator mRunningAnimation;
+    private float mLastBarItemsViewPosition;
     private boolean mShouldSkipClosingAnimation;
     private boolean mDisableAnimations;
+
+    protected RecyclerView mBarItemsView;
 
     /** Interface that allows to react to animations. */
     interface AnimationListener {
@@ -50,13 +60,29 @@ class KeyboardAccessoryView extends LinearLayout {
         void onFadeInEnd();
     }
 
-    private AnimationListener mAnimationListener;
+    // Records the first time a user scrolled to suppress an IPH explaining how scrolling works.
+    private final RecyclerView.OnScrollListener mScrollingIphCallback =
+            new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                    if (newState != RecyclerView.SCROLL_STATE_IDLE) {
+                        mBarItemsView.removeOnScrollListener(mScrollingIphCallback);
+                        KeyboardAccessoryIPHUtils.emitScrollingEvent();
+                    }
+                }
+            };
 
-    protected static class HorizontalDividerItemDecoration extends RecyclerView.ItemDecoration {
+    /**
+     * This decoration ensures that the last item is right-aligned. To do this, it subtracts the
+     * widths, margins and offsets of all items in the recycler view from the RecyclerView's total
+     * width. If the items fill the whole recycler view, the last item uses the same offset as all
+     * other items.
+     */
+    private class StickyLastItemDecoration extends RecyclerView.ItemDecoration {
         private final int mHorizontalMargin;
 
-        HorizontalDividerItemDecoration(int horizontalMargin) {
-            this.mHorizontalMargin = horizontalMargin;
+        StickyLastItemDecoration(@Px int minimalLeadingHorizontalMargin) {
+            this.mHorizontalMargin = minimalLeadingHorizontalMargin;
         }
 
         @Override
@@ -69,9 +95,60 @@ class KeyboardAccessoryView extends LinearLayout {
             }
         }
 
-        protected int getItemOffsetInternal(
+        private int getItemOffsetInternal(
                 final View view, final RecyclerView parent, RecyclerView.State state) {
-            return mHorizontalMargin;
+            if (!isLastItem(parent, view, parent.getAdapter().getItemCount())) {
+                return mHorizontalMargin;
+            }
+            if (view.getWidth() == 0 && state.didStructureChange()) {
+                // When the RecyclerView is first created, its children aren't measured yet and miss
+                // dimensions. Therefore, estimate the offset and recalculate after UI has loaded.
+                view.post(parent::invalidateItemDecorations);
+                return parent.getWidth() - estimateLastElementWidth(view);
+            }
+            return Math.max(getSpaceLeftInParent(parent), mHorizontalMargin);
+        }
+
+        private int getSpaceLeftInParent(RecyclerView parent) {
+            int spaceLeftInParent = parent.getWidth();
+            spaceLeftInParent -= getOccupiedSpaceByChildren(parent);
+            spaceLeftInParent -= getOccupiedSpaceByChildrenOffsets(parent);
+            spaceLeftInParent -= parent.getPaddingEnd() + parent.getPaddingStart();
+            return spaceLeftInParent;
+        }
+
+        private int estimateLastElementWidth(View view) {
+            assert view instanceof ViewGroup;
+            return ((ViewGroup) view).getChildCount()
+                    * getContext()
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.keyboard_accessory_tab_size);
+        }
+
+        private int getOccupiedSpaceByChildren(RecyclerView parent) {
+            int occupiedSpace = 0;
+            for (int i = 0; i < parent.getChildCount(); i++) {
+                occupiedSpace += getOccupiedSpaceForView(parent.getChildAt(i));
+            }
+            return occupiedSpace;
+        }
+
+        private int getOccupiedSpaceForView(View view) {
+            int occupiedSpace = view.getWidth();
+            ViewGroup.LayoutParams lp = view.getLayoutParams();
+            if (lp instanceof MarginLayoutParams) {
+                occupiedSpace += ((MarginLayoutParams) lp).leftMargin;
+                occupiedSpace += ((MarginLayoutParams) lp).rightMargin;
+            }
+            return occupiedSpace;
+        }
+
+        private int getOccupiedSpaceByChildrenOffsets(RecyclerView parent) {
+            return (parent.getChildCount() - 1) * mHorizontalMargin;
+        }
+
+        private boolean isLastItem(RecyclerView parent, View view, int itemCount) {
+            return parent.getChildAdapterPosition(view) == itemCount - 1;
         }
     }
 
@@ -104,14 +181,22 @@ class KeyboardAccessoryView extends LinearLayout {
         setOnClickListener(view -> {});
         setClickable(false); // Disables the "Double-tap to activate" Talkback reading.
         setSoundEffectsEnabled(false);
+
+        int pad = getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_bar_item_padding);
+        // Ensure the last element (although scrollable) is always end-aligned.
+        mBarItemsView.addItemDecoration(new StickyLastItemDecoration(pad));
+        mBarItemsView.addOnScrollListener(mScrollingIphCallback);
+
+        // Remove any paddings that might be inherited since this messes up the fading edge.
+        ViewCompat.setPaddingRelative(mBarItemsView, 0, 0, 0, 0);
         TraceEvent.end("KeyboardAccessoryView#onFinishInflate");
     }
 
-    TabLayout getTabLayout() {
-        if (mTabLayout == null) {
-            mTabLayout = findViewById(R.id.tabs);
-        }
-        return mTabLayout;
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        // Request update for the offset of the icons at the end of the accessory bar:
+        mBarItemsView.post(mBarItemsView::invalidateItemDecorations);
     }
 
     void setVisible(boolean visible) {
@@ -119,16 +204,57 @@ class KeyboardAccessoryView extends LinearLayout {
         if (!visible || getVisibility() != VISIBLE) mBarItemsView.scrollToPosition(0);
         if (visible) {
             show();
+            mBarItemsView.post(mBarItemsView::invalidateItemDecorations);
+            // Animate the suggestions only if the bar wasn't visible already.
+            if (getVisibility() != View.VISIBLE) animateSuggestionArrival();
         } else {
             hide();
         }
         TraceEvent.end("KeyboardAccessoryView#setVisible");
     }
 
+    void setSkipClosingAnimation(boolean shouldSkipClosingAnimation) {
+        mShouldSkipClosingAnimation = shouldSkipClosingAnimation;
+    }
+
+    void setAnimationListener(AnimationListener animationListener) {
+        mAnimationListener = animationListener;
+    }
+
+    ViewRectProvider getSwipingIphRect() {
+        View lastChild = getLastChild();
+        if (lastChild == null) return null;
+        ViewRectProvider provider = new ViewRectProvider(getLastChild());
+        provider.setIncludePadding(true);
+        return provider;
+    }
+
     void setBottomOffset(int bottomOffset) {
         MarginLayoutParams params = (MarginLayoutParams) getLayoutParams();
         params.setMargins(params.leftMargin, params.topMargin, params.rightMargin, bottomOffset);
         setLayoutParams(params);
+    }
+
+    void setObfuscatedLastChildAt(Callback<Integer> obfuscatedLastChildAt) {
+        mObfuscatedLastChildAt = obfuscatedLastChildAt;
+    }
+
+    void disableAnimationsForTesting() {
+        mDisableAnimations = true;
+    }
+
+    boolean areAnimationsDisabled() {
+        return mDisableAnimations;
+    }
+
+    void setAccessibilityMessage(boolean hasSuggestions) {
+        setContentDescription(
+                getContext()
+                        .getString(
+                                hasSuggestions
+                                        ? R.string.autofill_keyboard_accessory_content_description
+                                        : R.string
+                                                .autofill_keyboard_accessory_content_fallback_description));
     }
 
     void setBarItemsAdapter(RecyclerView.Adapter adapter) {
@@ -145,14 +271,6 @@ class KeyboardAccessoryView extends LinearLayout {
                 });
         mBarItemsView.setAdapter(adapter);
     }
-
-    void setAnimationListener(AnimationListener animationListener) {
-        mAnimationListener = animationListener;
-    }
-
-    /** Template method. Override to be notified if the bar items change. */
-    @CallSuper
-    protected void onItemsChanged() {}
 
     private void show() {
         TraceEvent.begin("KeyboardAccessoryView#show");
@@ -205,16 +323,55 @@ class KeyboardAccessoryView extends LinearLayout {
                                 });
     }
 
-    void setSkipClosingAnimation(boolean shouldSkipClosingAnimation) {
-        mShouldSkipClosingAnimation = shouldSkipClosingAnimation;
+    private boolean isLastChildObfuscated() {
+        View lastChild = getLastChild();
+        RecyclerView.Adapter adapter = mBarItemsView.getAdapter();
+        // The recycler view isn't ready yet, so no children can be considered:
+        if (lastChild == null || adapter == null) return false;
+        // The last child wasn't even rendered, so it's definitely not visible:
+        if (mBarItemsView.indexOfChild(lastChild) < adapter.getItemCount()) return true;
+        // The last child is partly off screen:
+        return getLayoutDirection() == LAYOUT_DIRECTION_RTL
+                ? lastChild.getX() < 0
+                : lastChild.getX() + lastChild.getWidth() > mBarItemsView.getWidth();
     }
 
-    void disableAnimationsForTesting() {
-        mDisableAnimations = true;
+    private void onItemsChanged() {
+        if (isLastChildObfuscated()) {
+            mObfuscatedLastChildAt.onResult(mBarItemsView.indexOfChild(getLastChild()));
+        }
     }
 
-    boolean areAnimationsDisabled() {
-        return mDisableAnimations;
+    private View getLastChild() {
+        for (int i = mBarItemsView.getChildCount() - 1; i >= 0; --i) {
+            View lastChild = mBarItemsView.getChildAt(i);
+            if (lastChild == null) continue;
+            return lastChild;
+        }
+        return null;
+    }
+
+    private void animateSuggestionArrival() {
+        if (areAnimationsDisabled()) return;
+        int bounceDirection = getLayoutDirection() == LAYOUT_DIRECTION_RTL ? 1 : -1;
+        if (mAnimator != null && mAnimator.isRunning()) {
+            mAnimator.cancel();
+        } else {
+            mLastBarItemsViewPosition = mBarItemsView.getX();
+        }
+
+        float start =
+                mLastBarItemsViewPosition
+                        - bounceDirection
+                                * ARRIVAL_ANIMATION_BOUNCE_LENGTH_DIP
+                                * getContext().getResources().getDisplayMetrics().density;
+        mBarItemsView.setTranslationX(start);
+        mAnimator =
+                ObjectAnimator.ofFloat(
+                        mBarItemsView, "translationX", start, mLastBarItemsViewPosition);
+        mAnimator.setDuration(ARRIVAL_ANIMATION_DURATION_MS);
+        mAnimator.setInterpolator(new OvershootInterpolator(ARRIVAL_ANIMATION_TENSION));
+        mAnimator.start();
     }
 
     private void initializeHorizontalRecyclerView(RecyclerView recyclerView) {
@@ -224,10 +381,6 @@ class KeyboardAccessoryView extends LinearLayout {
 
         int pad =
                 getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_horizontal_padding);
-        // Create margins between every element.
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
-            recyclerView.addItemDecoration(new HorizontalDividerItemDecoration(pad));
-        }
 
         // Remove all animations - the accessory shouldn't be visibly built anyway.
         recyclerView.setItemAnimator(null);

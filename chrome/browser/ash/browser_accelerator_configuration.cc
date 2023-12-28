@@ -17,7 +17,7 @@ BrowserAcceleratorConfiguration::BrowserAcceleratorConfiguration()
 
 BrowserAcceleratorConfiguration::~BrowserAcceleratorConfiguration() = default;
 
-const std::vector<ui::Accelerator>&
+base::optional_ref<const std::vector<ui::Accelerator>>
 BrowserAcceleratorConfiguration::GetAcceleratorsForAction(
     AcceleratorActionId action_id) {
   // TODO(jimmyxgong): Implement stub.

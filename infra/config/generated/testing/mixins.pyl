@@ -578,11 +578,6 @@
       'expiration': 21600,
     },
   },
-  'linux-archive-rel-args': {
-    'args': [
-      'linux-release-64/sizes',
-    ],
-  },
   'linux-focal': {
     'swarming': {
       'dimensions': {
@@ -688,11 +683,6 @@
   },
   'long_skylab_timeout': {
     'timeout_sec': 10800,
-  },
-  'mac-archive-rel-args': {
-    'args': [
-      'mac-release/sizes',
-    ],
   },
   'mac_10.15': {
     'swarming': {
@@ -915,14 +905,6 @@
           'revision': 'git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0',
         },
       ],
-    },
-  },
-  'mac_x64': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Mac-12',
-        'cpu': 'x86-64',
-      },
     },
   },
   'marshmallow': {
@@ -1148,12 +1130,6 @@
       },
     },
   },
-  'vr_instrumentation_test': {
-    'args': [
-      '--remove-system-package=com.google.vr.vrcore',
-      '--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk',
-    ],
-  },
   'walleye': {
     'swarming': {
       'dimensions': {
@@ -1199,7 +1175,7 @@
         {
           'cipd_package': 'chromium/android_webview/tools/cts_archive',
           'location': 'android_webview/tools/cts_archive',
-          'revision': 'akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC',
+          'revision': 'dMHDxWyIpkzGNem_Z7ywDRj3Y2lUQKM7h4JT87_ejr8C',
         },
       ],
     },

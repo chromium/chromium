@@ -32,9 +32,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
-namespace ash {
-namespace file_system_provider {
-namespace util {
+namespace ash::file_system_provider::util {
 
 namespace {
 
@@ -311,6 +309,4 @@ TEST_F(FileSystemProviderMountPathUtilTest, LocalPathParser_WrongPath) {
   }
 }
 
-}  // namespace util
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider::util

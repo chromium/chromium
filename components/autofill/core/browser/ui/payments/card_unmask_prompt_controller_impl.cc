@@ -149,7 +149,8 @@ void CardUnmaskPromptControllerImpl::OnUnmaskPromptAccepted(
     const std::u16string& cvc,
     const std::u16string& exp_month,
     const std::u16string& exp_year,
-    bool enable_fido_auth) {
+    bool enable_fido_auth,
+    bool was_checkbox_visible) {
   verify_timestamp_ = AutofillClock::Now();
   unmasking_number_of_attempts_++;
   unmasking_result_ = AutofillClient::PaymentsRpcResult::kNone;
@@ -167,8 +168,10 @@ void CardUnmaskPromptControllerImpl::OnUnmaskPromptAccepted(
   // always be shown. Remember the last choice the user made on this device.
 #if BUILDFLAG(IS_ANDROID)
   pending_details_.enable_fido_auth = enable_fido_auth;
-  pref_service_->SetBoolean(
-      prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, enable_fido_auth);
+  if (was_checkbox_visible) {
+    pref_service_->SetBoolean(
+        prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, enable_fido_auth);
+  }
 #endif
 
   // There is a chance the delegate has disappeared (i.e. tab closed) before the
@@ -200,41 +203,35 @@ std::u16string CardUnmaskPromptControllerImpl::GetWindowTitle() const {
   // For VCN unmask flow, display unique CVC title.
   if (IsChallengeOptionPresent()) {
 #if BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillTouchToFillForCreditCardsAndroid)) {
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_VIRTUAL_CARD);
-    }
-#endif
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_VIRTUAL_CARD);
+#else
     return l10n_util::GetStringFUTF16(
         IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_SECURITY_CODE,
         card_.CardNameAndLastFourDigits());
+#endif
   }
 
   // Title for expired cards.
   if (ShouldRequestExpirationDate()) {
 #if BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillTouchToFillForCreditCardsAndroid)) {
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_EXPIRED_CARD);
-    }
-#endif
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_EXPIRED_CARD);
+#else
     return l10n_util::GetStringFUTF16(
         IDS_AUTOFILL_CARD_UNMASK_PROMPT_EXPIRED_TITLE,
         card_.CardNameAndLastFourDigits());
+#endif
   }
 
   // Default title.
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillTouchToFillForCreditCardsAndroid)) {
-    return l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_DEFAULT);
-  }
-#endif
+  return l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_DEFAULT);
+#else
   return l10n_util::GetStringFUTF16(IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE,
                                     card_.CardNameAndLastFourDigits());
+#endif
 #endif  // BUILDFLAG(IS_IOS)
 }
 

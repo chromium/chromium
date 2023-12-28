@@ -31,6 +31,9 @@ BASE_FEATURE(kIPHCompanionSidePanelFeature,
 BASE_FEATURE(kIPHCompanionSidePanelRegionSearchFeature,
              "IPH_CompanionSidePanelRegionSearch",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHComposeMenuNewBadgeFeature,
+             "IPH_ComposeMenuNewBadgeFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHComposeNewBadgeFeature,
              "IPH_ComposeNewBadgeFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -49,6 +52,9 @@ BASE_FEATURE(kIPHDesktopCustomizeChromeRefreshFeature,
 BASE_FEATURE(kIPHDesktopNewTabPageModulesCustomizeFeature,
              "IPH_DesktopNewTabPageModulesCustomize",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHDownloadEsbPromoFeature,
+             "IPH_DownloadEsbPromo",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDownloadToolbarButtonFeature,
              "IPH_DownloadToolbarButton",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -69,7 +75,7 @@ BASE_FEATURE(kIPHGMCCastStartStopFeature,
 BASE_FEATURE(kIPHGMCLocalMediaCastingFeature,
              "IPH_GMCLocalMediaCasting",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHHighEfficiencyModeFeature,
+BASE_FEATURE(kIPHMemorySaverModeFeature,
              "IPH_HighEfficiencyMode",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHLiveCaptionFeature,
@@ -481,6 +487,9 @@ BASE_FEATURE(kIPHBadgedReadingListFeature,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHWhatsNewFeature,
              "IPH_WhatsNew",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHWhatsNewUpdatedFeature,
+             "IPH_WhatsNewUpdated",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHReadingListMessagesFeature,
              "IPH_ReadingListMessages",

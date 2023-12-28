@@ -1647,13 +1647,14 @@ public class TabGridDialogTest {
                 || isTablet(cta)) {
             return;
         }
-        final @ColorInt int scrimDefaultColor = cta.getColor(R.color.default_scrim_color);
-        final @ColorInt int navigationBarColor = SemanticColorUtils.getBottomSystemNavColor(cta);
+        @ColorInt int scrimDefaultColor = cta.getColor(R.color.default_scrim_color);
+        @ColorInt int navigationBarColor = SemanticColorUtils.getBottomSystemNavColor(cta);
         float scrimColorAlpha = (scrimDefaultColor >>> 24) / 255f;
-        int scrimColorOpaque = scrimDefaultColor & 0xFF000000;
+        @ColorInt int scrimColorOpaque = scrimDefaultColor | 0xFF000000;
+        @ColorInt
         int navigationBarColorWithScrimOverlay =
                 ColorUtils.getColorWithOverlay(
-                        navigationBarColor, scrimColorOpaque, scrimColorAlpha, true);
+                        navigationBarColor, scrimColorOpaque, scrimColorAlpha);
 
         assertEquals(cta.getWindow().getNavigationBarColor(), navigationBarColorWithScrimOverlay);
         assertNotEquals(navigationBarColor, navigationBarColorWithScrimOverlay);

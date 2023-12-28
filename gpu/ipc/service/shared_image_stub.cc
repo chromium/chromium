@@ -228,7 +228,7 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
     return false;
   }
 
-  bool needs_gl = usage & SHARED_IMAGE_USAGE_GLES2;
+  bool needs_gl = HasGLES2ReadOrWriteUsage(usage);
   if (!MakeContextCurrent(needs_gl)) {
     OnError();
     return false;
@@ -279,7 +279,7 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
   }
 #endif
 
-  bool needs_gl = usage & SHARED_IMAGE_USAGE_GLES2;
+  bool needs_gl = HasGLES2ReadOrWriteUsage(usage);
   if (!MakeContextCurrent(needs_gl)) {
     OnError();
     return false;
@@ -334,7 +334,7 @@ void SharedImageStub::OnCreateSharedImage(
     return;
   }
 
-  bool needs_gl = params->usage & SHARED_IMAGE_USAGE_GLES2;
+  bool needs_gl = HasGLES2ReadOrWriteUsage(params->usage);
   if (!MakeContextCurrent(needs_gl)) {
     OnError();
     return;
@@ -362,7 +362,7 @@ void SharedImageStub::OnCreateSharedImageWithData(
     return;
   }
 
-  bool needs_gl = params->usage & SHARED_IMAGE_USAGE_GLES2;
+  bool needs_gl = HasGLES2ReadOrWriteUsage(params->usage);
   if (!MakeContextCurrent(needs_gl)) {
     OnError();
     return;
@@ -477,7 +477,7 @@ void SharedImageStub::OnDestroySharedImage(const Mailbox& mailbox) {
   }
 
   bool needs_gl =
-      factory_->GetUsageForMailbox(mailbox) & SHARED_IMAGE_USAGE_GLES2;
+      HasGLES2ReadOrWriteUsage(factory_->GetUsageForMailbox(mailbox));
   if (!MakeContextCurrent(needs_gl)) {
     OnError();
     return;

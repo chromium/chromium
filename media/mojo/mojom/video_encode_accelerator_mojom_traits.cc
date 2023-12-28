@@ -504,6 +504,10 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
   if (!input.ReadContentType(&content_type))
     return false;
 
+  uint8_t drop_frame_thresh_percentage = input.drop_frame_thresh_percentage();
+  if (drop_frame_thresh_percentage > 100) {
+    return false;
+  }
   std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>
       spatial_layers;
   if (!input.ReadSpatialLayers(&spatial_layers))
@@ -531,6 +535,7 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
     absl::optional<media::VideoEncodeAccelerator::Config::StorageType>
         storage_type;
     media::VideoEncodeAccelerator::Config::ContentType content_type;
+    uint8_t drop_frame_thresh_percentage;
     std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>
         spatial_layers;
     media::SVCInterLayerPredMode inter_layer_pred;
@@ -550,6 +555,7 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
   output->is_constrained_h264 = is_constrained_h264;
   output->storage_type = storage_type;
   output->content_type = content_type;
+  output->drop_frame_thresh_percentage = drop_frame_thresh_percentage;
   output->spatial_layers = spatial_layers;
   output->inter_layer_pred = inter_layer_pred;
   output->require_low_delay = input.require_low_delay();

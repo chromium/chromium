@@ -16,8 +16,7 @@
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 namespace {
 
 // Extension icon size for the notification.
@@ -129,5 +128,4 @@ void NotificationManager::OnNotificationResult(NotificationResult result) {
   }
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

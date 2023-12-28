@@ -77,6 +77,11 @@
 #       Additional dependencies required before running protoc.
 #       e.g. proto file generating action.
 #
+#   proto_data_sources (optional)
+#       Additional proto sources that will only be used for references
+#       and will not be compiled.
+#       This should be used in conjunction with import_dirs.
+#
 #   use_protobuf_full (optional)
 #       If adding protobuf library would be required, adds protobuf_full to deps
 #       instead of protobuf_lite.
@@ -436,6 +441,10 @@ template("proto_library") {
         rel_depfile,
       ]
     }
+    inputs = []
+    if (defined(invoker.proto_data_sources)) {
+      inputs += invoker.proto_data_sources
+    }
 
     if (defined(invoker.import_dirs)) {
       foreach(path, invoker.import_dirs) {
@@ -444,7 +453,7 @@ template("proto_library") {
     }
 
     # System protoc is not used so it's necessary to build a chromium one.
-    inputs = [ _protoc_path ]
+    inputs += [ _protoc_path ]
     deps = [ _protoc_label ]
 
     if (generate_with_plugin) {

@@ -195,8 +195,8 @@ class ExtensionLoadObserver final
     }
 
     // Ensure that the extension's background host is active.
-    const extensions::LazyContextId context_id(browser_context,
-                                               extension->id());
+    const auto context_id =
+        extensions::LazyContextId::ForExtension(browser_context, extension);
     extensions::LazyContextTaskQueue* queue = context_id.GetTaskQueue();
     if (!queue->ShouldEnqueueTask(browser_context, extension)) {
       // The background host already exists.

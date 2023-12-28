@@ -111,11 +111,6 @@ class MockHardwareDisplayPlaneManager : public HardwareDisplayPlaneManager {
   bool DisableOverlayPlanes(HardwareDisplayPlaneList* plane_list) override {
     return false;
   }
-  bool SetColorCorrectionOnAllCrtcPlanes(
-      uint32_t crtc_id,
-      ScopedDrmColorCtmPtr ctm_blob_data) override {
-    return false;
-  }
   bool ValidatePrimarySize(const DrmOverlayPlane& primary,
                            const drmModeModeInfo& mode) override {
     return false;
@@ -142,12 +137,7 @@ class MockHardwareDisplayPlaneManager : public HardwareDisplayPlaneManager {
                     uint32_t crtc_index) const override {
     return false;
   }
-  bool CommitColorMatrix(const CrtcProperties& crtc_props) override {
-    return false;
-  }
-  bool CommitGammaCorrection(const CrtcProperties& crtc_props) override {
-    return false;
-  }
+  bool CommitPendingCrtcState(CrtcState* state) override { return false; }
 };
 
 }  // namespace

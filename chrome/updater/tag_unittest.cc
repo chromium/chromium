@@ -1164,14 +1164,21 @@ TEST(TagExtractorTest, CheckRange) {
   ASSERT_FALSE(tagging::internal::CheckRange(it, 1, binary.end()));
 }
 
+TEST(ExeTagTest, FileNotFound) {
+  ASSERT_TRUE(
+      tagging::BinaryReadTagString(test::GetTestFilePath("FileNotFound.exe"))
+          .empty());
+}
+
 TEST(ExeTagTest, UntaggedExe) {
-  ASSERT_TRUE(tagging::ExeReadTag(test::GetTestFilePath("signed.exe")).empty());
+  ASSERT_TRUE(tagging::BinaryReadTagString(test::GetTestFilePath("signed.exe"))
+                  .empty());
 }
 
 TEST(ExeTagTest, TaggedExeEncodeUtf8) {
-  ASSERT_EQ(
-      tagging::ExeReadTag(test::GetTestFilePath("tagged_encode_utf8.exe")),
-      "TestTag123");
+  ASSERT_EQ(tagging::BinaryReadTagString(
+                test::GetTestFilePath("tagged_encode_utf8.exe")),
+            "TestTag123");
 }
 
 struct ExeTagTestExeWriteTagTestCase {
@@ -1222,13 +1229,13 @@ TEST_P(ExeTagTestExeWriteTagTest, TestCases) {
   base::FilePath out_file;
   ASSERT_TRUE(CreateTemporaryFileInDir(temp_dir.GetPath(), &out_file));
 
-  ASSERT_EQ(tagging::ExeWriteTag(
+  ASSERT_EQ(tagging::BinaryWriteTag(
                 test::GetTestFilePath(GetParam().exe_file_name.c_str()),
                 GetParam().tag_string, 8206, out_file),
             GetParam().expected_success)
       << GetParam().exe_file_name << ": " << GetParam().tag_string;
   if (GetParam().expected_success) {
-    EXPECT_EQ(tagging::ExeReadTag(out_file), GetParam().tag_string);
+    EXPECT_EQ(tagging::BinaryReadTagString(out_file), GetParam().tag_string);
   }
 }
 
@@ -1335,8 +1342,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(MsiTagTestMsiReadTagTest, TestCases) {
   const auto tag_args =
-      tagging::MsiReadTag(test::GetTestFilePath("tagged_msi")
-                              .AppendASCII(GetParam().msi_file_name));
+      tagging::BinaryReadTag(test::GetTestFilePath("tagged_msi")
+                                 .AppendASCII(GetParam().msi_file_name));
   EXPECT_EQ(tag_args.has_value(), GetParam().expected_tag_args.has_value());
   if (GetParam().expected_tag_args) {
     test::ExpectTagArgsEqual(*tag_args, *GetParam().expected_tag_args);
@@ -1371,18 +1378,18 @@ INSTANTIATE_TEST_SUITE_P(
          "defaultbrowser",
          true},
 
+        // empty tag string.
+        {"GUH-untagged.msi", "", true},
+
+        // already tagged.
+        {"GUH-brand-only.msi", "brand=QAQA", true},
+
         // unknown tag argument `unknowntagarg`.
         {"GUH-untagged.msi",
          "appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&iid={2D8C18E9-8D3A-"
          "4EFC-"
          "6D61-AE23E3530EA2}&unknowntagarg=foo",
          false},
-
-        // empty tag string.
-        {"GUH-untagged.msi", "", false},
-
-        // already tagged.
-        {"GUH-brand-only.msi", "brand=QAQA", false},
     }));
 
 TEST_P(MsiTagTestMsiWriteTagTest, TestCases) {
@@ -1398,15 +1405,16 @@ TEST_P(MsiTagTestMsiWriteTagTest, TestCases) {
   for (const auto& [msi_file, out_msi_file] :
        {std::make_pair(msi_file_path, out_file),
         std::make_pair(in_out_file, base::FilePath())}) {
-    ASSERT_EQ(
-        tagging::MsiWriteTag(msi_file, GetParam().tag_string, out_msi_file),
-        GetParam().expected_success);
-    if (GetParam().expected_success) {
+    ASSERT_EQ(tagging::BinaryWriteTag(msi_file, GetParam().tag_string, 8206,
+                                      out_msi_file),
+              GetParam().expected_success);
+    if (GetParam().expected_success && !GetParam().tag_string.empty()) {
       tagging::TagArgs tag_args;
       ASSERT_EQ(tagging::Parse(GetParam().tag_string, {}, &tag_args),
                 tagging::ErrorCode::kSuccess);
       test::ExpectTagArgsEqual(
-          tagging::MsiReadTag(!out_msi_file.empty() ? out_msi_file : msi_file)
+          tagging::BinaryReadTag(!out_msi_file.empty() ? out_msi_file
+                                                       : msi_file)
               .value(),
           tag_args);
     }

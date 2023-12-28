@@ -52,42 +52,6 @@ absl::optional<ServiceWorkerRouterCondition> RouterConditionToBlink(
   return false;
 }
 
-absl::optional<std::vector<liburlpattern::Part>> ToPartList(
-    const String& pattern,
-    const String& field_name,
-    ExceptionState& exception_state) {
-  // This means that the field should not exist.
-  if (pattern.empty()) {
-    return std::vector<liburlpattern::Part>();
-  }
-  // TODO(crbug.com/1371756): unify the code with manifest_parser.cc
-  WTF::StringUTF8Adaptor utf8(pattern);
-  auto parse_result = liburlpattern::Parse(
-      base::StringPiece(utf8.data(), utf8.size()),
-      [](base::StringPiece input) { return std::string(input); });
-  if (!parse_result.ok()) {
-    exception_state.ThrowTypeError("Failed to parse URLPattern '" + pattern +
-                                   "'");
-    return absl::nullopt;
-  }
-  std::vector<liburlpattern::Part> part_list;
-  for (auto& part : parse_result.value().PartList()) {
-    // We don't allow custom regex for security reasons as this will be used
-    // in the browser process.
-    if (part.type == liburlpattern::PartType::kRegex) {
-      DLOG(INFO) << "regex URLPattern is not allowed as Router Condition";
-      exception_state.ThrowTypeError("Used regular expression in '" + pattern +
-                                     "', which is prohibited.");
-      return absl::nullopt;
-    }
-    part_list.push_back(std::move(part));
-  }
-  return part_list;
-}
-
-// TODO(crbug.com/1371756): Make URLPattern has a method to construct the
-// SafeURLPattern and remove the conversion from here.
-// The method should take a exception_state to raise on regex usage.
 absl::optional<SafeUrlPattern> RouterUrlPatternConditionToBlink(
     v8::Isolate* isolate,
     const V8URLPatternCompatible* url_pattern_compatible,
@@ -109,29 +73,12 @@ absl::optional<SafeUrlPattern> RouterUrlPatternConditionToBlink(
     return absl::nullopt;
   }
 
-  SafeUrlPattern safe_url_pattern;
-#define TO_PART(field)                                             \
-  do {                                                             \
-    auto part_list =                                               \
-        ToPartList(url_pattern->field(), #field, exception_state); \
-    if (!part_list.has_value()) {                                  \
-      CHECK(exception_state.HadException());                       \
-      return absl::nullopt;                                        \
-    }                                                              \
-    safe_url_pattern.field = std::move(*part_list);                \
-  } while (0)
-  TO_PART(protocol);
-  TO_PART(username);
-  TO_PART(password);
-  TO_PART(hostname);
-  TO_PART(port);
-  TO_PART(pathname);
-  TO_PART(search);
-  TO_PART(hash);
-#undef TO_PART
-  // TODO(crbug.com/1371756): support URLPatternOptions.
-  // Currently, URLPatternOptions are not included in URLPatternInit,
-  // and we do not pass the option to the browser side.
+  std::optional<SafeUrlPattern> safe_url_pattern =
+      url_pattern->ToSafeUrlPattern(exception_state);
+  if (!safe_url_pattern) {
+    CHECK(exception_state.HadException());
+    return absl::nullopt;
+  }
   return safe_url_pattern;
 }
 

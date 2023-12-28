@@ -687,8 +687,9 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
       recycled_shared_images_.pop_back();
     }
     if (gpu_mailbox.IsZero()) {
-      uint32_t usage =
-          gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+      uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                       gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
+                       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
       if (overlays_supported)
         usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
       auto client_shared_image = sii->CreateSharedImage(

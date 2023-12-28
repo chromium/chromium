@@ -139,7 +139,7 @@ ScriptPromise SubApps::add(
   // [SecureContext] from the IDL ensures this.
   DCHECK(ExecutionContext::From(script_state)->IsSecureContext());
 
-  if (!CheckPreconditionsMaybeThrow(exception_state)) {
+  if (!CheckPreconditionsMaybeThrow(script_state, exception_state)) {
     return ScriptPromise();
   }
 
@@ -198,7 +198,7 @@ ScriptPromise SubApps::add(
 
 ScriptPromise SubApps::list(ScriptState* script_state,
                             ExceptionState& exception_state) {
-  if (!CheckPreconditionsMaybeThrow(exception_state)) {
+  if (!CheckPreconditionsMaybeThrow(script_state, exception_state)) {
     return ScriptPromise();
   }
 
@@ -223,7 +223,7 @@ ScriptPromise SubApps::list(ScriptState* script_state,
 ScriptPromise SubApps::remove(ScriptState* script_state,
                               const Vector<String>& manifest_id_paths,
                               ExceptionState& exception_state) {
-  if (!CheckPreconditionsMaybeThrow(exception_state)) {
+  if (!CheckPreconditionsMaybeThrow(script_state, exception_state)) {
     return ScriptPromise();
   }
 
@@ -255,7 +255,17 @@ ScriptPromise SubApps::remove(ScriptState* script_state,
   return resolver->Promise();
 }
 
-bool SubApps::CheckPreconditionsMaybeThrow(ExceptionState& exception_state) {
+bool SubApps::CheckPreconditionsMaybeThrow(ScriptState* script_state,
+                                           ExceptionState& exception_state) {
+  if (!ExecutionContext::From(script_state)
+           ->IsFeatureEnabled(
+               mojom::blink::PermissionsPolicyFeature::kSubApps)) {
+    exception_state.ThrowSecurityError(
+        "The executing top-level browsing context is not granted the "
+        "\"sub-apps\" permissions policy.");
+    return false;
+  }
+
   Navigator* const navigator = GetSupplementable();
 
   if (!navigator->DomWindow()) {

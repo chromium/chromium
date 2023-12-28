@@ -68,4 +68,8 @@ interface ChromeRenderFrame {
   // Tells the render frame to load any blocked plugins matching the given
   // identifier (empty string matches all).
   LoadBlockedPlugins(string identifier);
+
+  // Indicates that the frame should collect draggable regions set using the
+  // app-region CSS property.
+  SetSupportsAppRegion(bool supports_app_region);
 };

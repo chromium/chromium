@@ -31,6 +31,12 @@ class DeviceNameManager {
         const std::optional<std::string>& nickname) = 0;
   };
 
+  // The pref name used for the map of Bluetooth device IDs to nicknames.
+  static const char kDeviceIdToNicknameMapPrefName[];
+
+  // The pref name used for the legacy map of Bluetooth device IDs to nicknames.
+  static const char kDeviceIdToNicknameMapPrefNameLegacy[];
+
   virtual ~DeviceNameManager();
 
   // Retrieves the nickname of the Bluetooth device with ID |device_id| or

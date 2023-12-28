@@ -12,6 +12,7 @@
 #include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "content/browser/first_party_sets/first_party_sets_overrides_policy.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "net/base/schemeful_site.h"
@@ -25,9 +26,10 @@ namespace content {
 
 class CONTENT_EXPORT FirstPartySetParser {
  public:
-  using PolicyParseResult = std::pair<
-      base::expected<net::SetsMutation, FirstPartySetsHandler::ParseError>,
-      std::vector<FirstPartySetsHandler::ParseWarning>>;
+  using PolicyParseResult =
+      std::pair<base::expected<FirstPartySetsOverridesPolicy,
+                               FirstPartySetsHandler::ParseError>,
+                std::vector<FirstPartySetsHandler::ParseWarning>>;
 
   FirstPartySetParser() = delete;
   ~FirstPartySetParser() = delete;
@@ -42,8 +44,7 @@ class CONTENT_EXPORT FirstPartySetParser {
   // received by Component Updater.
   //
   // Returns an empty GlobalFirstPartySets instance if parsing or validation of
-  // any set failed. Must not be called before field trial state has been
-  // initialized.
+  // any set failed.
   static net::GlobalFirstPartySets ParseSetsFromStream(std::istream& input,
                                                        base::Version version,
                                                        bool emit_errors,

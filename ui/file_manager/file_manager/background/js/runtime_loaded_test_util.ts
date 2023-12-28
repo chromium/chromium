@@ -14,6 +14,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {entriesToURLs} from '../../common/js/entry_utils.js';
 import {recordEnum} from '../../common/js/metrics.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
+import type {MetadataKey} from '../../foreground/js/metadata/metadata_item.js';
 
 import {test} from './test_util_base.js';
 
@@ -435,8 +436,12 @@ test.util.sync.sendEvent =
 test.util.sync.fakeEvent =
     (contentWindow: Window, targetQuery: string, eventType: string,
      additionalProperties?: Record<string, string>): boolean => {
-      const event = new Event(eventType, additionalProperties || {});
-      if (additionalProperties) {
+      const isCustomEvent = 'detail' in (additionalProperties || {});
+
+      const event = isCustomEvent ?
+          new CustomEvent(eventType, additionalProperties || {}) :
+          new Event(eventType, additionalProperties || {});
+      if (!isCustomEvent && additionalProperties) {
         for (const name in additionalProperties) {
           if (name === 'bubbles') {
             // bubbles is a read-only which, causes an error when assigning.
@@ -1129,7 +1134,7 @@ test.util.sync.getMetadataStats = (contentWindow: Window) => {
  * @param callback Callback with metadata results returned.
  */
 test.util.async.getContentMetadata =
-    (contentWindow: Window, properties: string[],
+    (contentWindow: Window, properties: MetadataKey[],
      callback: (a: unknown) => void) => {
       const entries =
           contentWindow.fileManager.directoryModel.getSelectedEntries_();

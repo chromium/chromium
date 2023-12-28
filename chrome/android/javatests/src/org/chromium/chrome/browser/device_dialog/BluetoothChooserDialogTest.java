@@ -4,7 +4,11 @@
 
 package org.chromium.chrome.browser.device_dialog;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -24,6 +28,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -47,10 +52,13 @@ import org.chromium.content_public.browser.bluetooth.BluetoothChooserEvent;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.ui.permissions.PermissionCallback;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
+import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 
@@ -82,6 +90,11 @@ public class BluetoothChooserDialogTest {
     private int mFinishedEventType = -1;
     private String mFinishedDeviceId;
     private int mRestartSearchCount;
+
+    // Unused member variables to avoid Java optimizer issues with Mockito.
+    @Mock ModalDialogManager mMockModalDialogManager;
+    @Mock Activity mMockActivity;
+    @Mock WindowAndroid mMockWindowAndroid;
 
     private class TestBluetoothChooserDialogJni implements BluetoothChooserDialog.Natives {
         private BluetoothChooserDialog mBluetoothChooserDialog;
@@ -588,6 +601,38 @@ public class BluetoothChooserDialogTest {
         Assert.assertEquals(View.VISIBLE, progress.getVisibility());
 
         mChooserDialog.closeDialog();
+    }
+
+    @Test
+    @SmallTest
+    public void testChooserBlockedByModalDialogManager() {
+        ModalDialogManager mockModalDialogManager = mock(ModalDialogManager.class);
+        when(mockModalDialogManager.isSuspended(ModalDialogManager.ModalDialogType.APP))
+                .thenReturn(true);
+        when(mockModalDialogManager.isSuspended(ModalDialogManager.ModalDialogType.TAB))
+                .thenReturn(true);
+        Activity mockActivity = mock(Activity.class);
+        WindowAndroid mockWindowAndroid = mock(WindowAndroid.class);
+        when(mockWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mockActivity));
+        when(mockWindowAndroid.getModalDialogManager()).thenReturn(mockModalDialogManager);
+        when(mockWindowAndroid.hasPermission(Manifest.permission.BLUETOOTH_SCAN)).thenReturn(true);
+        when(mockWindowAndroid.hasPermission(Manifest.permission.BLUETOOTH_CONNECT))
+                .thenReturn(true);
+        when(mockWindowAndroid.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION))
+                .thenReturn(true);
+
+        BluetoothChooserDialog dialog;
+        dialog =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            return BluetoothChooserDialog.create(
+                                    mockWindowAndroid,
+                                    "https://origin.example.com/",
+                                    ConnectionSecurityLevel.SECURE,
+                                    /* delegate= */ null,
+                                    /* nativeUsbChooserDialogPtr= */ 42);
+                        });
+        Assert.assertNull(dialog);
     }
 
     private static class TestAndroidPermissionDelegate implements AndroidPermissionDelegate {

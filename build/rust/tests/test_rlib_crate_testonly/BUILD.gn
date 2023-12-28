@@ -1,0 +1,22 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("testonly_target") {
+  testonly = true
+  crate_root = "crate/src/main.rs"
+  crate_type = "bin"
+  sources = [ "crate/src/main.rs" ]
+  build_sources = [ "crate/build.rs" ]
+  build_root = "crate/build.rs"
+  build_deps = [ ":testonly_build_dep" ]
+}
+
+cargo_crate("testonly_build_dep") {
+  testonly = true
+  crate_name = "test_only_build_dep"
+  crate_root = "crate/src/lib.rs"
+  sources = [ "crate/src/lib.rs" ]
+}

@@ -9,6 +9,7 @@ include_rules = [
   "+chromeos/version",
   "+components/account_id/account_id.h",
   "+components/device_event_log",
+  "+components/memory_pressure",
   "+components/policy/proto",
   "+dbus",
   "+crypto",

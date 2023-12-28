@@ -16,12 +16,12 @@ import {FileListModel} from '../file_list_model.js';
 import {MetadataItem} from '../metadata/metadata_item.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
 
-import {A11yAnnounce} from './a11y_announce.js';
+import type {A11yAnnounce} from './a11y_announce.js';
 import {DragSelector} from './drag_selector.js';
 import {FileGridSelectionController} from './file_grid.js';
 import {FileListSelectionModel} from './file_list_selection_model.js';
 import {FileTable} from './file_table.js';
-import {FileTapHandler} from './file_tap_handler.js';
+import {FileTapHandler, TapEvent} from './file_tap_handler.js';
 import {List} from './list.js';
 import {ListItem} from './list_item.js';
 import {ListSelectionController} from './list_selection_controller.js';
@@ -40,19 +40,10 @@ export class FileTableList extends TableList {
   private onMergeItems_: null|OnMergeItemsCallback = null;
   shouldStartDragSelection: null|((e: MouseEvent) => boolean) = null;
 
-  constructor() {
-    // To silence closure compiler.
-    super();
-
-    throw new Error('Designed to decorate elements');
-  }
-
-  static override decorate(element: HTMLElement) {
-    Object.setPrototypeOf(element, FileTableList.prototype);
-    const self = element as FileTableList;
-    self.setAttribute('aria-multiselectable', 'true');
-    self.setAttribute('aria-describedby', 'more-actions-info');
-    self.onMergeItems_ = null;
+  override initialize() {
+    this.setAttribute('aria-multiselectable', 'true');
+    this.setAttribute('aria-describedby', 'more-actions-info');
+    this.onMergeItems_ = null;
   }
 
   override get table(): FileTable {
@@ -267,11 +258,11 @@ export class FileTableList extends TableList {
    * @param _x X coordinate value.
    * @param y Y coordinate value.
    * @param _width Width of the coordinate.
-   * @param _height Height of the coordinate.
+   * @param height Height of the coordinate.
    * @return Index list of hit elements.
    */
-  getHitElements(_x: number, y: number, _width?: number, _height?: number):
-      number[] {
+  override getHitElements(
+      _x: number, y: number, _width?: number, height?: number): number[] {
     const fileListModel = this.dataModel;
     const groupBySnapshot =
         fileListModel ? fileListModel.getGroupBySnapshot() : [];
@@ -281,7 +272,7 @@ export class FileTableList extends TableList {
 
     const currentSelection = [];
     const startHeight = y;
-    const endHeight = y + (_height || 0);
+    const endHeight = y + (height || 0);
     const length = this.selectionModel?.length ?? 0;
     for (let i = 0; i < length; i++) {
       const itemMetrics = this.getHeightsForIndex(i);
@@ -514,11 +505,11 @@ export function updateListItemExternalProps(
  */
 export function handleTap(
     this: FileListSelectionController|FileGridSelectionController,
-    e: TouchEvent, index: number, eventType: FileTapHandler.TapEvent) {
+    e: TouchEvent, index: number, eventType: TapEvent) {
   const sm = this.selectionModel as FileListSelectionModel;
   const a11y = this.filesView.a11y!;
 
-  if (eventType === FileTapHandler.TapEvent.TWO_FINGER_TAP) {
+  if (eventType === TapEvent.TWO_FINGER_TAP) {
     // Prepare to open the context menu in the same manner as the right
     // click. If the target is any of the selected files, open a one for
     // those files. If the target is a non-selected file, cancel current
@@ -556,15 +547,14 @@ export function handleTap(
 
   const target = e.target as HTMLElement;
   // Single finger tap.
-  const isTap = eventType === FileTapHandler.TapEvent.TAP ||
-      eventType === FileTapHandler.TapEvent.LONG_TAP;
+  const isTap = eventType === TapEvent.TAP || eventType === TapEvent.LONG_TAP;
   // Revert to click handling for single tap on the checkmark or rename
   // input. Single tap on the item checkmark should toggle select the item.
   // Single tap on rename input should focus on input.
   const isCheckmark = target.classList.contains('detail-checkmark') ||
       target.classList.contains('detail-icon');
   const isRename = target.localName === 'input';
-  if (eventType === FileTapHandler.TapEvent.TAP && (isCheckmark || isRename)) {
+  if (eventType === TapEvent.TAP && (isCheckmark || isRename)) {
     return false;
   }
 
@@ -583,8 +573,7 @@ export function handleTap(
     sm.anchorIndex = index;
     sm.endChange();
     return true;
-  } else if (
-      sm.multiple && (eventType === FileTapHandler.TapEvent.LONG_PRESS)) {
+  } else if (sm.multiple && (eventType === TapEvent.LONG_PRESS)) {
     sm.beginChange();
     if (!sm.getCheckSelectMode()) {
       // Make sure to unselect the leading item that was not the touch
@@ -598,8 +587,7 @@ export function handleTap(
     sm.endChange();
     return true;
     // Do not toggle selection yet, so as to avoid unselecting before drag.
-  } else if (
-      eventType === FileTapHandler.TapEvent.TAP && !sm.getCheckSelectMode()) {
+  } else if (eventType === TapEvent.TAP && !sm.getCheckSelectMode()) {
     // Single tap should open the item with default action.
     // Select the item, so that MainWindowComponent will execute action of
     // it.

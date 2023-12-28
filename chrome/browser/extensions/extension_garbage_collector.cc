@@ -49,7 +49,7 @@ constexpr base::TimeDelta kGarbageCollectRetryDelay = base::Seconds(30);
 // garbage collected.
 constexpr base::TimeDelta kGarbageCollectStartupDelay = base::Seconds(30);
 
-typedef std::multimap<std::string, base::FilePath> ExtensionPathsMultimap;
+using ExtensionPathsMultimap = std::multimap<std::string, base::FilePath>;
 
 void CheckExtensionDirectory(const base::FilePath& path,
                              const ExtensionPathsMultimap& extension_paths) {

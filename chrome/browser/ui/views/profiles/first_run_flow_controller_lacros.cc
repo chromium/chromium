@@ -127,7 +127,7 @@ class LacrosFirstRunSignedInFlowController
             base::Unretained(this), std::move(proceed_callback)));
   }
 
-  void SwitchToEnterpriseProfileWelcome(
+  void SwitchToManagedUserProfileNotice(
       ManagedUserProfileNoticeUI::ScreenType type,
       signin::SigninChoiceCallback proceed_callback) override {
     NOTREACHED();

@@ -71,8 +71,6 @@
 #import "ios/chrome/browser/ui/tabs/tab_strip_constants.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
-#import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator.h"
-#import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller.h"
 #import "ios/chrome/browser/ui/toolbar/fullscreen/toolbar_ui.h"
 #import "ios/chrome/browser/ui/toolbar/fullscreen/toolbar_ui_broadcasting_util.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator.h"
@@ -1295,7 +1293,11 @@ enum HeaderBehaviour {
   _fakeStatusBarView = [[UIView alloc] initWithFrame:statusBarFrame];
   [_fakeStatusBarView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    _fakeStatusBarView.backgroundColor = UIColor.blackColor;
+    if (base::FeatureList::IsEnabled(kModernTabStrip)) {
+      _fakeStatusBarView.backgroundColor = [UIColor colorNamed:kGrey200Color];
+    } else {
+      _fakeStatusBarView.backgroundColor = UIColor.blackColor;
+    }
     _fakeStatusBarView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     DCHECK(self.contentArea);
     [self.view insertSubview:_fakeStatusBarView aboveSubview:self.contentArea];
@@ -1386,7 +1388,8 @@ enum HeaderBehaviour {
         constraintEqualToAnchor:self.tabStripView.leadingAnchor],
     [self.view.safeAreaLayoutGuide.trailingAnchor
         constraintEqualToAnchor:self.tabStripView.trailingAnchor],
-    [self.tabStripView.heightAnchor constraintEqualToConstant:kTabStripHeight],
+    [self.tabStripView.heightAnchor
+        constraintEqualToConstant:kModernTabStripHeight],
   ]];
 }
 
@@ -1972,6 +1975,11 @@ enum HeaderBehaviour {
 // progress of 1.0 fully shows the footer and a progress of 0.0 fully hides it.
 - (void)updateFootersForFullscreenProgress:(CGFloat)progress {
   self.footerFullscreenProgress = progress;
+
+  // Don't update the height of the secondary toolbar if it is hidden.
+  if (!IsSplitToolbarMode(self)) {
+    return;
+  }
 
   const CGFloat expandedToolbarHeight =
       self.fullscreenController->GetMaxViewportInsets().bottom;

@@ -48,6 +48,13 @@ MEDIA_EXPORT extern const char kAlsaInputDevice[];
 MEDIA_EXPORT extern const char kAlsaOutputDevice[];
 #endif
 
+#if BUILDFLAG(IS_WIN)
+MEDIA_EXPORT extern const char kEnableExclusiveAudio[];
+MEDIA_EXPORT extern const char kForceWaveAudio[];
+MEDIA_EXPORT extern const char kTrySupportedChannelLayouts[];
+MEDIA_EXPORT extern const char kWaveOutBuffers[];
+#endif
+
 #if BUILDFLAG(IS_FUCHSIA)
 MEDIA_EXPORT extern const char kEnableProtectedVideoBuffers[];
 MEDIA_EXPORT extern const char kForceProtectedVideoOutputBuffers[];
@@ -70,8 +77,6 @@ MEDIA_EXPORT extern const char kUseFakeMjpegDecodeAccelerator[];
 MEDIA_EXPORT extern const char kDisableAcceleratedMjpegDecode[];
 
 MEDIA_EXPORT extern const char kMuteAudio[];
-
-MEDIA_EXPORT extern const char kVideoUnderflowThresholdMs[];
 
 MEDIA_EXPORT extern const char kDisableRTCSmoothnessAlgorithm[];
 
@@ -102,6 +107,10 @@ MEDIA_EXPORT extern const char kUserGestureRequiredPolicy[];
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 MEDIA_EXPORT extern const char kHardwareVideoDecodeFrameRate[];
+#endif
+
+#if BUILDFLAG(USE_V4L2_CODEC)
+MEDIA_EXPORT extern const char kEnablePrimaryNodeAccessForVkmsTesting[];
 #endif
 
 // NOTE: callers should always use the free functions in
@@ -298,6 +307,10 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kPlatformHEVCEncoderSupport);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kPlaybackSpeedButton);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kPreloadMediaEngagementData);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kPreloadMetadataSuspend);
+#if BUILDFLAG(IS_LINUX)
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kPulseaudioLoopbackForCast);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kPulseaudioLoopbackForScreenShare);
+#endif  // BUILDFLAG(IS_LINUX)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kRecordMediaEngagementScores);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kRecordWebAudioEngagement);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kResumeBackgroundVideo);

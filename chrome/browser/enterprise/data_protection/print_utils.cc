@@ -21,70 +21,37 @@ namespace enterprise_data_protection {
 
 namespace {
 
-bool ShouldDoScan(bool post_dialog_feature_enabled,
-                  PrintScanningContext context) {
-  if (post_dialog_feature_enabled) {
-    switch (context) {
-      // For "normal" prints, the scanning can happen immediately after the user
-      // clicks "Print" in the print preview dialog as the preview document is
-      // representative of what they are printing.
-      case PrintScanningContext::kNormalPrintAfterPreview:
-        return true;
-      case PrintScanningContext::kBeforePreview:
-      case PrintScanningContext::kNormalPrintBeforePrintDocument:
-        return false;
-
-      // For "system dialog" prints, the scanning waits until the user picks
-      // settings from the system dialog, but starts applying enterprise-logic
-      // logic at the `kBeforeSystemDialog` context for that to happen.
-      //
-      // Scanning also happens right before the document is printed through an
-      // existing print job when that is triggered after the print preview
-      // dialog.
-      case PrintScanningContext::kBeforeSystemDialog:
-        return true;
-      case PrintScanningContext::kSystemPrintAfterPreview:
-        return false;
-      case PrintScanningContext::kSystemPrintBeforePrintDocument:
-        return true;
-
-#if BUILDFLAG(IS_MAC)
-      // For the "Open PDF in Preview" option on Mac, scan right as it happens
-      // from the print preview dialog.
-      case PrintScanningContext::kOpenPdfInPreview:
-        return true;
-#endif  // BUILDFLAG(IS_MAC)
-    }
-  }
-
-  // `post_dialog_feature_enabled` being false means printing should only happen
-  // before any kind of dialog to get settings is shown.
+bool ShouldScan(PrintScanningContext context) {
   switch (context) {
-    case PrintScanningContext::kBeforePreview:
+    // For "normal" prints, the scanning can happen immediately after the user
+    // clicks "Print" in the print preview dialog as the preview document is
+    // representative of what they are printing.
+    case PrintScanningContext::kNormalPrintAfterPreview:
+      return true;
+    case PrintScanningContext::kNormalPrintBeforePrintDocument:
+      return false;
+
+    // For "system dialog" prints, the scanning waits until the user picks
+    // settings from the system dialog, but starts applying enterprise-logic
+    // logic at the `kBeforeSystemDialog` context for that to happen.
+    //
+    // Scanning also happens right before the document is printed through an
+    // existing print job when that is triggered after the print preview
+    // dialog.
     case PrintScanningContext::kBeforeSystemDialog:
       return true;
-
-    case PrintScanningContext::kNormalPrintAfterPreview:
     case PrintScanningContext::kSystemPrintAfterPreview:
-    case PrintScanningContext::kNormalPrintBeforePrintDocument:
-    case PrintScanningContext::kSystemPrintBeforePrintDocument:
-#if BUILDFLAG(IS_MAC)
-    case PrintScanningContext::kOpenPdfInPreview:
-#endif  // BUILDFLAG(IS_MAC)
       return false;
-  }
-}
+    case PrintScanningContext::kSystemPrintBeforePrintDocument:
+      return true;
 
-bool ShouldScan(
-    PrintScanningContext context,
-    const enterprise_connectors::ContentAnalysisDelegate::Data& scanning_data) {
-  return ShouldDoScan(
-      /*post_dialog_feature_enabled=*/
-      scanning_data.settings.cloud_or_local_settings.is_local_analysis()
-          ? true
-          : base::FeatureList::IsEnabled(
-                printing::features::kEnableCloudScanAfterPreview),
-      context);
+#if BUILDFLAG(IS_MAC)
+    // For the "Open PDF in Preview" option on Mac, scan right as it happens
+    // from the print preview dialog.
+    case PrintScanningContext::kOpenPdfInPreview:
+      return true;
+#endif  // BUILDFLAG(IS_MAC)
+  }
 }
 
 void RecordPrintType(
@@ -197,7 +164,7 @@ GetPrintAnalysisData(content::WebContents* web_contents,
       web_contents->GetOutermostWebContents()->GetLastCommittedURL(),
       &scanning_data, enterprise_connectors::AnalysisConnector::PRINT);
 
-  if (enabled && ShouldScan(context, scanning_data)) {
+  if (enabled && ShouldScan(context)) {
     // Returning a non-null value here means the user triggered an action
     // leading to a scan, so logging the print type metric here will apply it to
     // every print content analysis workflow.
@@ -208,7 +175,6 @@ GetPrintAnalysisData(content::WebContents* web_contents,
       case PrintScanningContext::kOpenPdfInPreview:
 #endif  // BUILDFLAG(IS_MAC)
       case PrintScanningContext::kNormalPrintAfterPreview:
-      case PrintScanningContext::kBeforePreview:
       case PrintScanningContext::kNormalPrintBeforePrintDocument:
         scanning_data.reason =
             enterprise_connectors::ContentAnalysisRequest::PRINT_PREVIEW_PRINT;

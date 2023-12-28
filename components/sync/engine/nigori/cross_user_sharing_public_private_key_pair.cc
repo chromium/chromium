@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 
@@ -126,6 +127,7 @@ CrossUserSharingPublicPrivateKeyPair::HpkeAuthDecrypt(
   bssl::ScopedEVP_HPKE_CTX sender_context;
 
   if (encrypted_data.size() < X25519_PUBLIC_VALUE_LEN) {
+    VLOG(1) << "Invalid size of encrypted data";
     return absl::nullopt;
   }
 
@@ -142,6 +144,7 @@ CrossUserSharingPublicPrivateKeyPair::HpkeAuthDecrypt(
           /*info_len=*/authenticated_info.size(),
           /*peer_public_key=*/sender_public_key.data(),
           /*peer_public_key_len=*/sender_public_key.size())) {
+    VLOG(1) << "Cross-user sharing decryption: setup auth recipient failed";
     return absl::nullopt;
   }
 
@@ -156,6 +159,7 @@ CrossUserSharingPublicPrivateKeyPair::HpkeAuthDecrypt(
           /*in=*/ciphertext.data(), /*in_len=*/ciphertext.size(),
           /*ad=*/nullptr,
           /*ad_len=*/0)) {
+    VLOG(1) << "Cross-user sharing decryption: HPKE decryption failed";
     return absl::nullopt;
   }
 

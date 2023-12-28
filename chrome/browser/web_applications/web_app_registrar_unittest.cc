@@ -752,6 +752,18 @@ TEST_F(WebAppRegistrarTest, CanFindAppWithUrlInScope) {
 }
 
 TEST_F(WebAppRegistrarTest, CanFindShortcutWithUrlInScope) {
+  // Behaviour when Shortstand enabled is covered in
+  // WebAppRegistrarTest_Shortstand.CannotFindShortcutWithUrlInScope.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      chromeos::features::kCrosShortstand);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::BrowserInitParamsPtr init_params =
+      chromeos::BrowserInitParams::GetForTests()->Clone();
+  init_params->is_cros_shortstand_enabled = false;
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   InitSyncBridge();
 
   const GURL app1_page("https://example.com/app/page");
@@ -1852,6 +1864,129 @@ TEST_F(WebAppRegistrarTest_Shortstand, IsShortcut) {
     EXPECT_FALSE(registrar().IsShortcutApp(web_app_id));
     UnregisterApp(web_app_id);
   }
+}
+
+TEST_F(WebAppRegistrarTest_Shortstand, CannotFindShortcutWithUrlInScope) {
+  InitSyncBridge();
+
+  const GURL shortcut1_page("https://example.com/shortcut/page");
+  const GURL shortcut2_page("https://example.com/shortcut-two/page");
+  const GURL shortcut3_page("https://not-example.com/shortcut/page");
+
+  const GURL shortcut1_launch("https://example.com/shortcut/launch");
+  const GURL shortcut2_launch("https://example.com/shortcut-two/launch");
+  const GURL shortcut3_launch("https://not-example.com/shortcut/launch");
+
+  const webapps::AppId shortcut1_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, shortcut1_launch);
+  const webapps::AppId shortcut2_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, shortcut2_launch);
+  const webapps::AppId shortcut3_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, shortcut3_launch);
+
+  // Implicit scope "https://example.com/shortcut/"
+  auto shortcut1 = test::CreateWebApp(shortcut1_launch);
+  shortcut1->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
+  RegisterApp(std::move(shortcut1));
+
+  absl::optional<webapps::AppId> shortcut2_match =
+      registrar().FindAppWithUrlInScope(shortcut2_page);
+  EXPECT_FALSE(shortcut2_match);
+
+  absl::optional<webapps::AppId> shortcut3_match =
+      registrar().FindAppWithUrlInScope(shortcut3_page);
+  EXPECT_FALSE(shortcut3_match);
+
+  auto shortcut2 = test::CreateWebApp(shortcut2_launch);
+  shortcut2->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
+  RegisterApp(std::move(shortcut2));
+
+  auto shortcut3 = test::CreateWebApp(shortcut3_launch);
+  shortcut3->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
+  RegisterApp(std::move(shortcut3));
+
+  absl::optional<webapps::AppId> shortcut1_match =
+      registrar().FindAppWithUrlInScope(shortcut1_page);
+  EXPECT_FALSE(shortcut1_match);
+
+  shortcut2_match = registrar().FindAppWithUrlInScope(shortcut2_page);
+  EXPECT_FALSE(shortcut2_match);
+
+  shortcut3_match = registrar().FindAppWithUrlInScope(shortcut3_page);
+  EXPECT_FALSE(shortcut3_match);
+}
+
+// TODO(b/315263875): Parameterize this test (and other tests) to
+// run in all platforms with shortstand on and off.
+TEST_F(WebAppRegistrarTest_Shortstand, CanFindAppWithUrlInScope) {
+  InitSyncBridge();
+
+  const GURL origin_scope("https://example.com/");
+
+  const GURL app1_scope("https://example.com/app");
+  const GURL app2_scope("https://example.com/app-two");
+  const GURL app3_scope("https://not-example.com/app");
+  const GURL app4_scope("https://app-four.com/");
+
+  const webapps::AppId app1_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, app1_scope);
+  const webapps::AppId app2_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, app2_scope);
+  const webapps::AppId app3_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, app3_scope);
+  const webapps::AppId app4_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, app3_scope);
+
+  auto app1 = test::CreateWebApp(app1_scope);
+  app1->SetScope(app1_scope);
+  RegisterApp(std::move(app1));
+
+  absl::optional<webapps::AppId> app2_match =
+      registrar().FindAppWithUrlInScope(app2_scope);
+  DCHECK(app2_match);
+  EXPECT_EQ(*app2_match, app1_id);
+
+  absl::optional<webapps::AppId> app3_match =
+      registrar().FindAppWithUrlInScope(app3_scope);
+  EXPECT_FALSE(app3_match);
+
+  absl::optional<webapps::AppId> app4_match =
+      registrar().FindAppWithUrlInScope(app4_scope);
+  EXPECT_FALSE(app4_match);
+
+  auto app2 = test::CreateWebApp(app2_scope);
+  app2->SetScope(app2_scope);
+  RegisterApp(std::move(app2));
+
+  auto app3 = test::CreateWebApp(app3_scope);
+  app3->SetScope(app3_scope);
+  RegisterApp(std::move(app3));
+
+  auto app4 = test::CreateWebApp(app4_scope);
+  app4->SetScope(app4_scope);
+  app4->SetIsUninstalling(true);
+  RegisterApp(std::move(app4));
+
+  absl::optional<webapps::AppId> origin_match =
+      registrar().FindAppWithUrlInScope(origin_scope);
+  EXPECT_FALSE(origin_match);
+
+  absl::optional<webapps::AppId> app1_match =
+      registrar().FindAppWithUrlInScope(app1_scope);
+  DCHECK(app1_match);
+  EXPECT_EQ(*app1_match, app1_id);
+
+  app2_match = registrar().FindAppWithUrlInScope(app2_scope);
+  DCHECK(app2_match);
+  EXPECT_EQ(*app2_match, app2_id);
+
+  app3_match = registrar().FindAppWithUrlInScope(app3_scope);
+  DCHECK(app3_match);
+  EXPECT_EQ(*app3_match, app3_id);
+
+  // Apps in the process of uninstalling are ignored.
+  app4_match = registrar().FindAppWithUrlInScope(app4_scope);
+  EXPECT_FALSE(app4_match);
 }
 #endif
 }  // namespace web_app

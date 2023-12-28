@@ -5,10 +5,12 @@
 #include "third_party/blink/renderer/core/html/parser/atomic_html_token.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(AtomicHTMLTokenTest, EmptyAttributeValueFromHTMLToken) {
+  test::TaskEnvironment task_environment;
   HTMLToken token;
   token.BeginStartTag('a');
   token.AddNewAttribute('b');

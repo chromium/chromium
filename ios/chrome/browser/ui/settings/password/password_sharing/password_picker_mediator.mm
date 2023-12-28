@@ -6,7 +6,7 @@
 
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
-#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_picker_consumer.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "url/gurl.h"

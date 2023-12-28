@@ -74,19 +74,6 @@ config("dependants_extra_warnings") {
     } else {
       cflags += [ "-pedantic" ]
     }
-
-    # TODO(https://crbug.com/1464560) Get rid of those warning exceptions.
-    # This is blocking using PartitionAlloc in Dawn. Most fixes have been
-    # prototyped in:
-    # https://chromium-review.googlesource.com/c/chromium/src/+/5057762
-    cflags += [
-      # Those are compiler extension banned by -pedantic.
-      "-Wno-import-preprocessor-directive-pedantic",
-      "-Wno-embedded-directive",
-      "-Wno-gnu-statement-expression-from-macro-expansion",
-      "-Wno-language-extension-token",
-      "-Wno-zero-length-array",
-    ]
   }
 }
 
@@ -189,6 +176,7 @@ buildflag_header("partition_alloc_buildflags") {
   # gen/base/allocator/buildflags.h defines and chrome includes.
   flags = [
     "HAS_64_BIT_POINTERS=$has_64_bit_pointers",
+    "HAS_MEMORY_TAGGING=$has_memory_tagging",
 
     "USE_ALLOCATOR_SHIM=$use_allocator_shim",
     "USE_PARTITION_ALLOC=$use_partition_alloc",
@@ -597,6 +585,7 @@ if (is_clang_or_gcc) {
     sources = [
       "partition_alloc_base/atomic_ref_count.h",
       "partition_alloc_base/augmentations/compiler_specific.h",
+      "partition_alloc_base/bit_cast.h",
       "partition_alloc_base/bits.h",
       "partition_alloc_base/check.cc",
       "partition_alloc_base/check.h",

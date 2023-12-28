@@ -26,13 +26,7 @@
 }
 
 - (void)handleDisplay {
-  // Don't show the promo if What's New has been previously open.
-  if (WasWhatsNewUsed()) {
-    return;
-  }
-
   DCHECK(self.handler);
-  SetWhatsNewUsed(_promosManager);
   base::RecordAction(base::UserMetricsAction("WhatsNew.Promo.Displayed"));
   [self.handler showWhatsNewPromo];
 }

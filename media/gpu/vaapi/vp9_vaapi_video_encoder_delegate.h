@@ -102,7 +102,7 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   bool RecreateSVCLayersIfNeeded(VideoBitrateAllocation& bitrate_allocation);
   bool ApplyPendingUpdateRates();
 
-  bool PrepareEncodeJob(EncodeJob& encode_job) override;
+  PrepareEncodeJobResult PrepareEncodeJob(EncodeJob& encode_job) override;
   BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
                                       size_t payload_size) override;
   void BitrateControlUpdate(const BitstreamBufferMetadata& metadata) override;

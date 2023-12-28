@@ -6,9 +6,9 @@
 #define COMPONENTS_CAST_RECEIVER_RENDERER_PUBLIC_CONTENT_RENDERER_CLIENT_MIXINS_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/callback_forward.h"
-#include "base/strings/string_piece.h"
 
 namespace blink {
 class URLLoaderThrottleProvider;
@@ -30,7 +30,7 @@ namespace cast_receiver {
 class ContentRendererClientMixins {
  public:
   using IsCorsExemptHeadersCallback =
-      base::RepeatingCallback<bool(base::StringPiece)>;
+      base::RepeatingCallback<bool(std::string_view)>;
   static std::unique_ptr<ContentRendererClientMixins> Create(
       IsCorsExemptHeadersCallback is_cors_exempt_header_callback);
 

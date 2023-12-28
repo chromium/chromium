@@ -5,7 +5,6 @@
 
 import collections
 import contextlib
-import copy
 import hashlib
 import json
 import logging
@@ -23,7 +22,6 @@ from devil.android import crash_handler
 from devil.android import device_errors
 from devil.android import device_temp_file
 from devil.android import flag_changer
-from devil.android.sdk import shared_prefs
 from devil.android.sdk import version_codes
 from devil.android import logcat_monitor
 from devil.android.tools import system_app
@@ -44,7 +42,6 @@ from pylib.utils import chrome_proxy_utils
 from pylib.utils import code_coverage_utils
 from pylib.utils import gold_utils
 from pylib.utils import instrumentation_tracing
-from pylib.utils import shared_preference_utils
 from pylib.utils.device_dependencies import DevicePathComponentsFor
 from py_trace_event import trace_event
 from py_trace_event import trace_time
@@ -202,7 +199,6 @@ class LocalDeviceInstrumentationTestRun(
     self._flag_changers = {}
     self._webview_flag_changers = {}
     self._render_tests_device_output_dir = None
-    self._shared_prefs_to_restore = []
     self._skia_gold_session_manager = None
     self._skia_gold_work_dir = None
 
@@ -419,19 +415,6 @@ class LocalDeviceInstrumentationTestRun(
         dev.RunShellCommand(cmd, check_return=True)
 
       @trace_event.traced
-      def edit_shared_prefs(dev):
-        for setting in self._test_instance.edit_shared_prefs:
-          shared_pref = shared_prefs.SharedPrefs(
-              dev, setting['package'], setting['filename'],
-              use_encrypted_path=setting.get('supports_encrypted_path', False))
-          pref_to_restore = copy.copy(shared_pref)
-          pref_to_restore.Load()
-          self._shared_prefs_to_restore.append(pref_to_restore)
-
-          shared_preference_utils.ApplySharedPreferenceSetting(
-              shared_pref, setting)
-
-      @trace_event.traced
       def approve_app_links(dev):
         self._ToggleAppLinks(dev, 'STATE_APPROVED')
 
@@ -514,8 +497,8 @@ class LocalDeviceInstrumentationTestRun(
 
       install_steps += [push_test_data, create_flag_changer]
       post_install_steps += [
-          set_debug_app, edit_shared_prefs, approve_app_links,
-          set_vega_permissions, DismissCrashDialogs
+          set_debug_app, approve_app_links, set_vega_permissions,
+          DismissCrashDialogs
       ]
 
       def bind_crash_handler(step, dev):
@@ -601,13 +584,6 @@ class LocalDeviceInstrumentationTestRun(
         dev.RunShellCommand(cmd, shell=True, check_return=True)
 
       valgrind_tools.SetChromeTimeoutScale(dev, None)
-
-      # Restore any shared preference files that we stored during setup.
-      # This should be run sometime before the replace package contextmanager
-      # gets exited so we don't have to special case restoring files of
-      # replaced system apps.
-      for pref_to_restore in self._shared_prefs_to_restore:
-        pref_to_restore.Commit(force_commit=True)
 
       # If we've force approved app links for a package, undo that now.
       self._ToggleAppLinks(dev, 'STATE_NO_RESPONSE')
@@ -807,7 +783,8 @@ class LocalDeviceInstrumentationTestRun(
 
       if self._env.force_main_user:
         coverage_directory = device.ResolveSpecialPath(coverage_directory)
-      if not device.PathExists(coverage_directory):
+      if not device.PathExists(coverage_directory,
+                               as_root=self._env.force_main_user):
         # Root permission is needed when accessing a secondary user's path.
         device.RunShellCommand(['mkdir', '-p', coverage_directory],
                                check_return=True,
@@ -1370,7 +1347,7 @@ class LocalDeviceInstrumentationTestRun(
     device_file_path = trace_device_file.name
     if self._env.force_main_user:
       device_file_path = device.ResolveSpecialPath(device_file_path)
-    if device.FileExists(device_file_path, as_root=self._env.force_main_user):
+    if device.PathExists(device_file_path, as_root=self._env.force_main_user):
       try:
         java_trace_json = device.ReadFile(device_file_path,
                                           as_root=self._env.force_main_user)
@@ -1434,7 +1411,7 @@ class LocalDeviceInstrumentationTestRun(
     device_file_path = screenshot_device_file.name
     if self._env.force_main_user:
       device_file_path = device.ResolveSpecialPath(device_file_path)
-    if device.FileExists(device_file_path):
+    if device.PathExists(device_file_path, as_root=self._env.force_main_user):
       with self._env.output_manager.ArchivedTempfile(
           screenshot_filename, 'screenshot',
           output_manager.Datatype.PNG) as screenshot_host_file:
@@ -1464,7 +1441,7 @@ class LocalDeviceInstrumentationTestRun(
     logging.info('Starting Gold directory existence check')
     start_time = time.time()
     try:
-      if not device.FileExists(gold_dir):
+      if not device.PathExists(gold_dir):
         return
     finally:
       logging.info('Gold directory existence check took %fs',

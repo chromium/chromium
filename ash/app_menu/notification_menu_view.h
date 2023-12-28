@@ -107,13 +107,11 @@ class APP_MENU_EXPORT NotificationMenuView : public views::View {
   const std::string app_id_;
 
   // Owned by AppMenuModelAdapter.
-  const raw_ptr<NotificationMenuView::Delegate,
-                DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<NotificationMenuView::Delegate, DanglingUntriaged>
       notification_item_view_delegate_;
 
   // Owned by AppMenuModelAdapter.
-  const raw_ptr<views::SlideOutControllerDelegate,
-                DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<views::SlideOutControllerDelegate, DanglingUntriaged>
       slide_out_controller_delegate_;
 
   // The deque of NotificationItemViews. The front item in the deque is the view
@@ -122,15 +120,14 @@ class APP_MENU_EXPORT NotificationMenuView : public views::View {
 
   // A double separator used to distinguish notifications from context menu
   // options. Owned by views hierarchy.
-  raw_ptr<views::MenuSeparator, ExperimentalAsh> double_separator_;
+  raw_ptr<views::MenuSeparator> double_separator_;
 
   // Holds the header and counter texts. Owned by views hierarchy.
-  raw_ptr<NotificationMenuHeaderView, ExperimentalAsh> header_view_;
+  raw_ptr<NotificationMenuHeaderView> header_view_;
 
   // A view that shows icons of notifications for this app that are not being
   // shown.
-  raw_ptr<NotificationOverflowView, DanglingUntriaged | ExperimentalAsh>
-      overflow_view_ = nullptr;
+  raw_ptr<NotificationOverflowView, DanglingUntriaged> overflow_view_ = nullptr;
 };
 
 }  // namespace ash

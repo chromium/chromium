@@ -53,6 +53,7 @@ class ReSignInInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // InfobarDelegate implementation.
   InfoBarIdentifier GetIdentifier() const override;
+  bool ShouldExpire(const NavigationDetails& details) const override;
 
   // ConfirmInfoBarDelegate implementation.
   std::u16string GetTitleText() const override;

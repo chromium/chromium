@@ -58,25 +58,23 @@ class PhoneFieldTest
 
  protected:
   // Downcast for tests.
-  static std::unique_ptr<PhoneField> Parse(AutofillScanner* scanner) {
+  static std::unique_ptr<PhoneField> Parse(ParsingContext& context,
+                                           AutofillScanner* scanner) {
     // An empty page_language means the language is unknown and patterns of all
     // languages are used.
-    std::unique_ptr<FormField> field =
-        PhoneField::Parse(scanner, GeoIpCountryCode(""), LanguageCode(""),
-                          *GetActivePatternSource(),
-                          /*log_manager=*/nullptr);
+    std::unique_ptr<FormField> field = PhoneField::Parse(context, scanner);
     return std::unique_ptr<PhoneField>(
         static_cast<PhoneField*>(field.release()));
   }
 
   // Checks if the field with `id` was classified as `expected_type`.
-  void CheckField(const FieldGlobalId id, ServerFieldType expected_type) const;
+  void CheckField(const FieldGlobalId id, FieldType expected_type) const;
 
   struct TestFieldData {
     FormControlType type;
     std::u16string label;
     std::u16string name;
-    ServerFieldType expected_type;
+    FieldType expected_type;
     // Rarely used fields. Placed at the end to simplify common use cases.
     uint64_t max_length = 0;
     // Options of a FormControlType::kSelectOne `type` element.
@@ -110,7 +108,7 @@ class PhoneFieldTest
 };
 
 void PhoneFieldTest::CheckField(const FieldGlobalId id,
-                                ServerFieldType expected_type) const {
+                                FieldType expected_type) const {
   auto it = field_candidates_map_.find(id);
   ASSERT_TRUE(it != field_candidates_map_.end());
   EXPECT_EQ(expected_type, it->second.BestHeuristicType());
@@ -144,7 +142,9 @@ void PhoneFieldTest::RunParsingTest(const std::vector<TestFieldData>& fields,
 
   // Parse.
   AutofillScanner scanner(list_);
-  field_ = Parse(&scanner);
+  ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
+                         PatternSource::kLegacy);
+  field_ = Parse(context, &scanner);
   ASSERT_EQ(expect_success, field_.get() != nullptr);
 
   // Verify expecations.

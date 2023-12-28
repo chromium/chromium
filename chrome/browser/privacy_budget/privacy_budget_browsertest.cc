@@ -15,6 +15,7 @@
 #include "base/barrier_closure.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -329,12 +330,12 @@ IN_PROC_BROWSER_TEST_P(PrivacyBudgetBrowserTestForWorkersClientAdded,
   // Test succeeds if there is no timeout.
   // Both surfaces should come from the same source but have different client
   // ids.
-  std::vector<const ukm::mojom::UkmEntry*> entries =
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
       recorder().GetEntriesByName(ukm::builders::Identifiability::kEntryName);
 
   base::flat_set<uint64_t> source_ids;
   base::flat_set<uint64_t> client_source_ids;
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     for (const auto& metric : entry->metrics) {
       if (metric.first == expected_key) {
         source_ids.insert(entry->source_id);
@@ -518,14 +519,12 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
   recorder().SetOnAddEntryCallback(
       ukm::builders::Identifiability::kEntryName,
       base::BindLambdaForTesting([this, &run_loop]() {
-        // (kCanvasReadback | input_digest << kTypeBits) = one of the
-        // merged_entries. If the value of the relevant merged entry changes,
-        // input_digest needs to change. The new input_digest can be calculated
-        // by: new_input_digest = new_ukm_entry >> kTypeBits;
-        constexpr uint64_t input_digest = UINT64_C(33457614533296512);
+        // Key of the entry metric to look for.
+        constexpr uint64_t input_digest = UINT64_C(3701609392929341475);
         const uint64_t canvas_key =
             blink::IdentifiableSurface::FromTypeAndToken(
-                blink::IdentifiableSurface::Type::kCanvasReadback, input_digest)
+                blink::IdentifiableSurface::Type::kCanvasReadback,
+                input_digest >> blink::IdentifiableSurface::kTypeBits)
                 .ToUkmMetricHash();
 
         for (const ukm::mojom::UkmEntry* entry : recorder().GetEntriesByName(

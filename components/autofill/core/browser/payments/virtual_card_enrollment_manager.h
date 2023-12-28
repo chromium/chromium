@@ -74,7 +74,7 @@ struct VirtualCardEnrollmentProcessState {
       const VirtualCardEnrollmentProcessState&);
   ~VirtualCardEnrollmentProcessState();
   // Only populated once the risk engine responded.
-  absl::optional<std::string> risk_data;
+  std::optional<std::string> risk_data;
   // |virtual_card_enrollment_fields|'s |credit_card| and
   // |virtual_card_enrollment_source| are populated in the beginning of the
   // virtual card enrollment flow, but the rest of the fields are only populated
@@ -85,7 +85,7 @@ struct VirtualCardEnrollmentProcessState {
   // id, and using |vcn_context_token| for enroll allows the server to link a
   // GetDetailsForEnrollRequest with the corresponding
   // UpdateVirtualCardEnrollmentRequest for the enroll process.
-  absl::optional<std::string> vcn_context_token;
+  std::optional<std::string> vcn_context_token;
 };
 
 // Owned by FormDataImporter. There is one instance of this class per tab. This
@@ -130,9 +130,9 @@ class VirtualCardEnrollmentManager {
       // GetDetailsForEnrollmentResponseDetails from the
       // UploadCardResponseDetails, so we can then skip the
       // GetDetailsForEnroll request in the Virtual Card Enrollment flow.
-      absl::optional<payments::PaymentsNetworkInterface::
-                         GetDetailsForEnrollmentResponseDetails>
-          get_details_for_enrollment_response_details = absl::nullopt,
+      std::optional<payments::PaymentsNetworkInterface::
+                        GetDetailsForEnrollmentResponseDetails>
+          get_details_for_enrollment_response_details = std::nullopt,
       // |user_prefs| will be populated if we are in the Android settings page,
       // to then be used for loading risk data. Otherwise it will always be
       // nullptr, and we should load risk data through |autofill_client_| as we
@@ -160,12 +160,12 @@ class VirtualCardEnrollmentManager {
   void Enroll(
       // The callback lets the Android Settings page know whether
       // (un)enrollment was successful.
-      absl::optional<VirtualCardEnrollmentUpdateResponseCallback>
+      std::optional<VirtualCardEnrollmentUpdateResponseCallback>
           virtual_card_enrollment_update_response_callback);
 
   // Unenrolls the card mapped to the given |instrument_id|.
   void Unenroll(int64_t instrument_id,
-                absl::optional<VirtualCardEnrollmentUpdateResponseCallback>
+                std::optional<VirtualCardEnrollmentUpdateResponseCallback>
                     virtual_card_enrollment_update_response_callback);
 
   // Returns true if a credit card identified by its |instrument_id| should be
@@ -252,7 +252,7 @@ class VirtualCardEnrollmentManager {
 
   // Callback triggered after getting server response about the success of
   // virtual card (un)enrollment.
-  absl::optional<VirtualCardEnrollmentUpdateResponseCallback>
+  std::optional<VirtualCardEnrollmentUpdateResponseCallback>
       virtual_card_enrollment_update_response_callback_;
 
   // Cancels the entire Virtual Card enrollment process.
@@ -372,10 +372,10 @@ class VirtualCardEnrollmentManager {
   // VirtualCardEnrollBubble, we will take the difference between the current
   // timestamp and |save_card_bubble_accepted_timestamp_| to log as the latency
   // metric. |save_card_bubble_accepted_timestamp_| will then be reset.
-  absl::optional<base::Time> save_card_bubble_accepted_timestamp_;
+  std::optional<base::Time> save_card_bubble_accepted_timestamp_;
 
   // The timestamp when a GetDetailsForEnrollment request is sent.
-  absl::optional<base::Time> get_details_for_enrollment_request_sent_timestamp_;
+  std::optional<base::Time> get_details_for_enrollment_request_sent_timestamp_;
 
   base::WeakPtrFactory<VirtualCardEnrollmentManager> weak_ptr_factory_{this};
 };

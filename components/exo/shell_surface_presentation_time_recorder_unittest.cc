@@ -127,8 +127,7 @@ class ShellSurfacePresentationTimeRecorderTest : public test::ExoTestBase {
  protected:
   std::unique_ptr<ShellSurface> shell_surface_;
   std::unique_ptr<TestRecorder> recorder_;
-  raw_ptr<TestReporter, DanglingUntriaged | ExperimentalAsh> reporter_ =
-      nullptr;
+  raw_ptr<TestReporter, DanglingUntriaged> reporter_ = nullptr;
 };
 
 TEST_F(ShellSurfacePresentationTimeRecorderTest, Request) {

@@ -9,6 +9,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
@@ -137,8 +138,8 @@ ContinueBrowsingChip::ContinueBrowsingChip(
 void ContinueBrowsingChip::OnPaintBackground(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
+  flags.setColor(
+      GetColorProvider()->GetColor(kColorAshControlBackgroundColorInactive));
   gfx::Rect bounds = GetContentsBounds();
   canvas->DrawRoundRect(bounds, kTaskContinuationChipRadius, flags);
   views::View::OnPaintBackground(canvas);

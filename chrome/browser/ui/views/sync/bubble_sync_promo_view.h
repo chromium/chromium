@@ -30,17 +30,17 @@ class BubbleSyncPromoView : public views::View {
   // |delegate| is not owned by BubbleSyncPromoView.
   // The promo message is set to |accounts_promo_message_resource_id| when
   // Chrome has at least one account.
-  // If |signin_button_prominent| is false and a non-personalized signin button
-  // is shown, the button is set to non-prominent. Otherwise the button remains
-  // prominent.
+  // |button_style| is used to style non-personalized signin button. Otherwise,
+  // the button remains prominent.
   // The promo message is set in a font given by |text_style|. It is defaulted
   // to a primary style font.
-  BubbleSyncPromoView(Profile* profile,
-                      BubbleSyncPromoDelegate* delegate,
-                      signin_metrics::AccessPoint access_point,
-                      int accounts_promo_message_resource_id = 0,
-                      bool signin_button_prominent = true,
-                      int text_style = views::style::STYLE_PRIMARY);
+  BubbleSyncPromoView(
+      Profile* profile,
+      BubbleSyncPromoDelegate* delegate,
+      signin_metrics::AccessPoint access_point,
+      int accounts_promo_message_resource_id = 0,
+      ui::ButtonStyle button_style = ui::ButtonStyle::kProminent,
+      int text_style = views::style::STYLE_PRIMARY);
   BubbleSyncPromoView(const BubbleSyncPromoView&) = delete;
   BubbleSyncPromoView& operator=(const BubbleSyncPromoView&) = delete;
   ~BubbleSyncPromoView() override;

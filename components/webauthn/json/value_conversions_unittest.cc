@@ -114,6 +114,7 @@ TEST(WebAuthenticationJSONConversionTest,
           device::AuthenticatorAttachment::kPlatform,
           device::ResidentKeyRequirement::kRequired,
           device::UserVerificationRequirement::kRequired),
+      /*hints=*/std::vector<blink::mojom::Hint>(),
       device::AttestationConveyancePreference::kDirect,
       /*hmac_create_secret=*/true,
       /*prf_enable=*/true,
@@ -155,7 +156,9 @@ TEST(WebAuthenticationJSONConversionTest,
   // Exercise all supported fields.
   auto options = PublicKeyCredentialRequestOptions::New(
       /*is_conditional=*/false, kChallenge, kTimeout, kRpId,
-      GetCredentialList(), device::UserVerificationRequirement::kRequired,
+      GetCredentialList(),
+      /*hints=*/std::vector<blink::mojom::Hint>(),
+      device::UserVerificationRequirement::kRequired,
       AuthenticationExtensionsClientInputs::New(
           kAppId,
           std::vector<device::CableDiscoveryData>{

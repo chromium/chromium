@@ -148,6 +148,7 @@
 <translation id="3448554387819310837">เมื่อเปิด เว็บไซต์จะขอใช้กล้องของคุณได้ เมื่อปิด เว็บไซต์จะใช้กล้องของคุณไม่ได้</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome จะบล็อกคุกกี้อีกครั้งในวันพรุ่งนี้}other{อีก # วัน Chrome จะบล็อกคุกกี้อีกครั้ง}}</translation>
 <translation id="3521663503435878242">เว็บไซต์ภายใต้ <ph name="DOMAIN" /></translation>
+<translation id="3536227077203206203">อนุญาตในครั้งนี้</translation>
 <translation id="3538390592868664640">บล็อกไม่ให้เว็บไซต์สร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณหรือติดตามตำแหน่งของกล้อง</translation>
 <translation id="3544058026430919413">บริษัทสามารถกำหนดกลุ่มเว็บไซต์ที่ใช้คุกกี้เพื่อแชร์กิจกรรมของคุณในกลุ่มได้ ตัวเลือกนี้จะปิดไว้ในโหมดไม่ระบุตัวตน</translation>
 <translation id="3551268116566418498">ออกจากโหมดไม่ระบุตัวตนไหม</translation>
@@ -294,7 +295,7 @@
 <translation id="5968921426641056619">ป้อนที่อยู่เว็บ</translation>
 <translation id="5975083100439434680">ย่อ</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015775454662021376">ควบคุมการเข้าถึงอุปกรณ์ของคุณของเว็บไซต์นี้</translation>
+<translation id="6015775454662021376">ควบคุมสิทธิ์ของเว็บไซต์นี้ในการเข้าถึงอุปกรณ์ของคุณ</translation>
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="6042308850641462728">แสดงเพิ่ม</translation>
 <translation id="6064125863973209585">การดาวน์โหลดที่เสร็จสมบูรณ์แล้ว</translation>

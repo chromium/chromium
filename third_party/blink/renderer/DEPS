@@ -5,6 +5,7 @@ include_rules = [
     "+base/bit_cast.h",
     "+base/bits.h",
     "+base/check.h",
+    "+base/check_deref.h",
     "+base/check_op.h",
     "+base/compiler_specific.h",
     "+base/containers/adapters.h",

@@ -36,6 +36,10 @@ bool ConvertToDawn(const GPURenderPassColorAttachment* in,
 
   *out = {};
   out->view = in->view()->GetHandle();
+  out->depthSlice = WGPU_DEPTH_SLICE_UNDEFINED;
+  if (in->hasDepthSlice()) {
+    out->depthSlice = in->depthSlice();
+  }
   if (in->hasResolveTarget()) {
     out->resolveTarget = in->resolveTarget()->GetHandle();
   }
@@ -50,6 +54,30 @@ bool ConvertToDawn(const GPURenderPassColorAttachment* in,
 }
 
 namespace {
+
+// Dawn represents `undefined` as the special uint32_t value
+// WGPU_DEPTH_SLICE_UNDEFINED (0xFFFF'FFFF). Blink must make sure that an
+// actual value of 0xFFFF'FFFF coming in from JS is not treated as
+// WGPU_DEPTH_SLICE_UNDEFINED, so it injects an error in that case.
+std::string ValidateColorAttachmentsDepthSlice(
+    const HeapVector<Member<GPURenderPassColorAttachment>>& in) {
+  for (wtf_size_t i = 0; i < in.size(); ++i) {
+    if (!in[i]) {
+      continue;
+    }
+
+    const GPURenderPassColorAttachment* attachment = in[i].Get();
+    if (attachment->hasDepthSlice() &&
+        attachment->depthSlice() == WGPU_DEPTH_SLICE_UNDEFINED) {
+      std::ostringstream error;
+      error << "depthSlice (" << attachment->depthSlice()
+            << ") in colorAttachments[" << i << "] is too large";
+      return error.str();
+    }
+  }
+
+  return std::string();
+}
 
 // Dawn represents `undefined` as the special uint32_t value
 // WGPU_QUERY_SET_INDEX_UNDEFINED (0xFFFF'FFFF). Blink must make sure that an
@@ -195,6 +223,13 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
   std::unique_ptr<WGPURenderPassColorAttachment[]> color_attachments;
   dawn_desc.colorAttachmentCount = descriptor->colorAttachments().size();
   if (dawn_desc.colorAttachmentCount > 0) {
+    std::string error =
+        ValidateColorAttachmentsDepthSlice(descriptor->colorAttachments());
+    if (!error.empty()) {
+      GetProcs().commandEncoderInjectValidationError(GetHandle(),
+                                                     error.c_str());
+    }
+
     if (!ConvertToDawn(descriptor->colorAttachments(), &color_attachments,
                        exception_state)) {
       return nullptr;

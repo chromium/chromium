@@ -45,7 +45,6 @@ class GURL;
 
 namespace net {
 
-class CTPolicyEnforcer;
 class ClientSocketFactory;
 class HashValue;
 class HostPortPair;
@@ -58,6 +57,7 @@ class SpdyStream;
 class SpdyStreamRequest;
 class TransportSecurityState;
 class URLRequestContextBuilder;
+class ProxyDelegate;
 
 // Default upload data used by both, mock objects and framer when creating
 // data frames.
@@ -182,7 +182,8 @@ struct SpdySessionDependencies {
   std::unique_ptr<HostResolver> alternate_host_resolver;
   std::unique_ptr<MockCertVerifier> cert_verifier;
   std::unique_ptr<TransportSecurityState> transport_security_state;
-  std::unique_ptr<CTPolicyEnforcer> ct_policy_enforcer;
+  // NOTE: `proxy_delegate` must be ordered before `proxy_resolution_service`.
+  std::unique_ptr<ProxyDelegate> proxy_delegate;
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service;
   std::unique_ptr<HttpUserAgentSettings> http_user_agent_settings;
   std::unique_ptr<SSLConfigService> ssl_config_service;

@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_event_exporter.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_event_exporter_factory.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 namespace {

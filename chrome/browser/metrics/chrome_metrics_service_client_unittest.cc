@@ -240,8 +240,8 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   // PersonalizationAppThemeMetricsProvider, PrinterMetricsProvider,
   // FamilyUserMetricsProvider, FamilyLinkUserMetricsProvider,
   // UpdateEngineMetricsProvider, OsSettingsMetricsProvider,
-  // UserTypeByDeviceTypeMetricsProvider, and WallpaperMetricsProvider.
-  expected_providers += 14;
+  // and UserTypeByDeviceTypeMetricsProvider.
+  expected_providers += 13;
 
   // StructuredMetricsProvider.
   if (!base::FeatureList::IsEnabled(

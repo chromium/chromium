@@ -15,6 +15,9 @@ import { requestUpdateOnAriaChange } from '../../../internal/aria/delegate.js';
  * segmented button component. It is intended **only** for use as a child of a
  * `SementedButtonSet` component. It is **not** intended for use in any other
  * context.
+ *
+ * @fires segmented-button-interaction {Event} Dispatched whenever a button is
+ * clicked. --bubbles --composed
  */
 export class SegmentedButton extends LitElement {
     constructor() {
@@ -49,7 +52,10 @@ export class SegmentedButton extends LitElement {
         return '';
     }
     handleClick() {
-        const event = new Event('segmented-button-interaction', { bubbles: true, composed: true });
+        const event = new Event('segmented-button-interaction', {
+            bubbles: true,
+            composed: true,
+        });
         this.dispatchEvent(event);
     }
     render() {
@@ -62,13 +68,14 @@ export class SegmentedButton extends LitElement {
         aria-pressed=${this.selected}
         ?disabled=${this.disabled}
         @click="${this.handleClick}"
-        class="md3-segmented-button ${classMap(this.getRenderClasses())}"
-      >
-        <md-focus-ring class="md3-segmented-button__focus-ring" part="focus-ring"></md-focus-ring>
-        <md-ripple ?disabled="${this.disabled}" class="md3-segmented-button__ripple"></md-ripple>
-        ${this.renderOutline()}
-        ${this.renderLeading()}
-        ${this.renderLabel()}
+        class="md3-segmented-button ${classMap(this.getRenderClasses())}">
+        <md-focus-ring
+          class="md3-segmented-button__focus-ring"
+          part="focus-ring"></md-focus-ring>
+        <md-ripple
+          ?disabled="${this.disabled}"
+          class="md3-segmented-button__ripple"></md-ripple>
+        ${this.renderOutline()} ${this.renderLeading()} ${this.renderLabel()}
         ${this.renderTouchTarget()}
       </button>
     `;
@@ -90,15 +97,19 @@ export class SegmentedButton extends LitElement {
         return nothing;
     }
     renderLeading() {
-        return this.label === '' ? this.renderLeadingWithoutLabel() :
-            this.renderLeadingWithLabel();
+        return this.label === ''
+            ? this.renderLeadingWithoutLabel()
+            : this.renderLeadingWithLabel();
     }
     renderLeadingWithoutLabel() {
         return html `
       <span class="md3-segmented-button__leading" aria-hidden="true">
         <span class="md3-segmented-button__graphic">
           <svg class="md3-segmented-button__checkmark" viewBox="0 0 24 24">
-            <path class="md3-segmented-button__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>
+            <path
+              class="md3-segmented-button__checkmark-path"
+              fill="none"
+              d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>
           </svg>
         </span>
         <span class="md3-segmented-button__icon" aria-hidden="true">
@@ -112,7 +123,10 @@ export class SegmentedButton extends LitElement {
       <span class="md3-segmented-button__leading" aria-hidden="true">
         <span class="md3-segmented-button__graphic">
           <svg class="md3-segmented-button__checkmark" viewBox="0 0 24 24">
-            <path class="md3-segmented-button__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>
+            <path
+              class="md3-segmented-button__checkmark-path"
+              fill="none"
+              d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>
           </svg>
           <span class="md3-segmented-button__icon" aria-hidden="true">
             <slot name="icon"></slot>

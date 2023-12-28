@@ -29,7 +29,7 @@
         </div>
         <label id="logLevelLabel">Min Log Level</label>
         <select aria-labelledby="logLevelLabel" id="logLevelSelector">
-          <template is="dom-repeat" items="[[logLevelList]]">
+          <template is="dom-repeat" items="[[logLevelList_]]">
             <option
                 value="[[item.value]]">
               [[item.name]]
@@ -38,7 +38,7 @@
         </select>
         <div id="filterApplyDiv">
           <cr-button class="internals-button" id="filterApply"
-              on-click="addLogFilter">Apply Filters</cr-button>
+              on-click="addLogFilter_">Apply Filters</cr-button>
         </div>
       </div>
     </div>

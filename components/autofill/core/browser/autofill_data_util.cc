@@ -20,7 +20,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/autofill_table_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -272,8 +272,8 @@ bool SplitCJKName(const std::vector<base::StringPiece16>& name_tokens,
   return false;
 }
 
-void AddGroupToBitmask(uint32_t* group_bitmask, ServerFieldType type) {
-  const FieldTypeGroup group = GroupTypeOfServerFieldType(type);
+void AddGroupToBitmask(uint32_t* group_bitmask, FieldType type) {
+  const FieldTypeGroup group = GroupTypeOfFieldType(type);
   switch (group) {
     case autofill::FieldTypeGroup::kName:
       *group_bitmask |= kName;
@@ -313,15 +313,15 @@ bool ContainsPhone(uint32_t groups) {
 uint32_t DetermineGroups(const FormStructure& form) {
   uint32_t group_bitmask = 0;
   for (const auto& field : form) {
-    ServerFieldType type = field->Type().GetStorableType();
+    FieldType type = field->Type().GetStorableType();
     AddGroupToBitmask(&group_bitmask, type);
   }
   return group_bitmask;
 }
 
-uint32_t DetermineGroups(const ServerFieldTypeSet& types) {
+uint32_t DetermineGroups(const FieldTypeSet& types) {
   uint32_t group_bitmask = 0;
-  for (const ServerFieldType type : types) {
+  for (const FieldType type : types) {
     AddGroupToBitmask(&group_bitmask, type);
   }
   return group_bitmask;
@@ -361,12 +361,11 @@ std::string GetSuffixForProfileFormType(uint32_t bitmask) {
 
 std::string TruncateUTF8(const std::string& data) {
   std::string trimmed_value;
-  base::TruncateUTF8ToByteSize(data, AutofillTable::kMaxDataLength,
-                               &trimmed_value);
+  base::TruncateUTF8ToByteSize(data, kMaxDataLengthForDatabase, &trimmed_value);
   return trimmed_value;
 }
 
-bool IsCreditCardExpirationType(ServerFieldType type) {
+bool IsCreditCardExpirationType(FieldType type) {
   return type == CREDIT_CARD_EXP_MONTH ||
          type == CREDIT_CARD_EXP_2_DIGIT_YEAR ||
          type == CREDIT_CARD_EXP_4_DIGIT_YEAR ||

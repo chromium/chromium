@@ -207,7 +207,7 @@ class AXSelectionDeserializer final {
                                         HTMLElement& element) {
     element.setInnerHTML(String::FromUTF8(html_snippet));
     element.GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-    AXObject* root = ax_object_cache_->GetOrCreate(&element);
+    AXObject* root = ax_object_cache_->Get(&element);
     if (!root || root->IsDetached())
       return {};
 

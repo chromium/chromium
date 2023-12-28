@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "ui/views/widget/widget_observer.h"
 #include "url/gurl.h"
@@ -79,6 +80,7 @@ class NetworkPortalSigninController : public views::WidgetObserver,
   // NetworkStateHandlerObserver:
   void PortalStateChanged(const NetworkState* default_network,
                           NetworkState::PortalState portal_state) override;
+  void OnShuttingDown() override;
 
  protected:
   friend class base::NoDestructor<NetworkPortalSigninController>;
@@ -95,6 +97,8 @@ class NetworkPortalSigninController : public views::WidgetObserver,
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       dialog_widget_observation_{this};
   NetworkStateHandlerScopedObservation network_state_handler_observation_{this};
+  std::string signin_network_guid_;
+  base::TimeTicks signin_start_time_;
 };
 
 }  // namespace ash

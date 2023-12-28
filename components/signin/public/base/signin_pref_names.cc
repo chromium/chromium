@@ -143,4 +143,9 @@ const char kProfileSeparationDomainExceptionList[] =
 const char kUserCloudSigninPolicyResponseFromPolicyTestPage[] =
     "signin.user_cloud_signin_policy_response_from_policy_test_page";
 
+// Registers that the sign in occurred with an explicit user action.
+// Affected by all signin sources except when signing in to Chrome caused by a
+// web sign in or by an unknown source.
+const char kExplicitBrowserSignin[] = "signin.explicit_browser_signin";
+
 }  // namespace prefs

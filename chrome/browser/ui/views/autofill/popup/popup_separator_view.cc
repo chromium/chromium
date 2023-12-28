@@ -38,7 +38,7 @@ void PopupSeparatorView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kSplitter;
 }
 
-BEGIN_METADATA(PopupSeparatorView, views::View)
+BEGIN_METADATA(PopupSeparatorView)
 END_METADATA
 
 }  // namespace autofill

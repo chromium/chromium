@@ -44,8 +44,7 @@ class PeerConnectionDependencyFactoryTest : public ::testing::Test {
   }
 
  protected:
-  test::TaskEnvironment task_environment_{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment_;
   Persistent<PeerConnectionDependencyFactory> dependency_factory_;
   Persistent<MockRTCPeerConnectionHandlerClient> mock_client_;
 };

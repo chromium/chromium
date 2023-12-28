@@ -26,8 +26,8 @@ public class PlatformContentCaptureConsumer implements ContentCaptureConsumer {
     /**
      * This method is used when ViewStructure is available.
      *
-     * @Return ContentCaptureConsumer or null if ContentCapture service isn't
-     *         available, disabled or isn't AiAi service.
+     * @return ContentCaptureConsumer or null if ContentCapture service isn't available, disabled or
+     *     isn't AiAi service.
      */
     public static ContentCaptureConsumer create(
             Context context, View view, ViewStructure structure, WebContents webContents) {

@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -57,6 +58,7 @@ class CustomElementRegistryTest : public ::testing::Test {
                          HeapVector<Member<Element>>* elements) {
     Registry().CollectCandidates(desc, elements);
   }
+  test::TaskEnvironment task_environment_;
 };
 
 TEST_F(CustomElementRegistryTest,

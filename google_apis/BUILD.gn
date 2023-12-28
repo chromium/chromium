@@ -316,6 +316,7 @@ test("google_apis_unittests") {
 bundle_data("google_apis_unittest_bundle_data") {
   testonly = true
   sources = [
+    "test/data/calendar/calendar_list.json",
     "test/data/calendar/event_self_response_statuses.json",
     "test/data/calendar/event_statuses.json",
     "test/data/calendar/event_with_invalid_conference_data_uri.json",

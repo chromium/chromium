@@ -17,7 +17,7 @@
 #include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/splitview/split_view_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_resizer.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
@@ -103,7 +103,11 @@ int GetShadowElevation(aura::Window* window) {
 }
 
 void EnableTabletMode(bool enable) {
-  ash::Shell::Get()->tablet_mode_controller()->SetEnabledForTest(enable);
+  if (enable) {
+    ash::TabletModeControllerTestApi().EnterTabletMode();
+  } else {
+    ash::TabletModeControllerTestApi().LeaveTabletMode();
+  }
 }
 
 // A canvas that just logs when a text blob is drawn.
@@ -739,8 +743,7 @@ TEST_P(ClientControlledShellSurfaceTest,
 TEST_P(ClientControlledShellSurfaceTest, CompositorLockInRotation) {
   UpdateDisplay("800x600");
 
-  ash::Shell* shell = ash::Shell::Get();
-  shell->tablet_mode_controller()->SetEnabledForTest(true);
+  EnableTabletMode(true);
   gfx::Rect maximum_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
 
@@ -1016,7 +1019,7 @@ TEST_P(ClientControlledShellSurfaceTest, ShellSurfaceInSystemModalHitTest) {
 // Test the snap functionalities in splitscreen in tablet mode.
 TEST_P(ClientControlledShellSurfaceTest, SnapWindowInSplitViewModeTest) {
   UpdateDisplay("807x607");
-  ash::Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  EnableTabletMode(true);
 
   auto shell_surface1 =
       exo::test::ShellSurfaceBuilder({800, 600})
@@ -1150,7 +1153,7 @@ class ShellSurfaceWindowObserver : public aura::WindowObserver {
   }
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
   bool has_delegate_;
 };
 

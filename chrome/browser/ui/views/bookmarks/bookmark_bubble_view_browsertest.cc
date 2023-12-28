@@ -90,6 +90,7 @@ class BaseBookmarkBubbleViewBrowserTest : public DialogBrowserTest {
     if (name == "bookmark_details_on_trackable_product") {
       commerce::ProductInfo info;
       info.product_cluster_id.emplace(12345L);
+      mock_shopping_service_->SetIsShoppingListEligible(true);
       mock_shopping_service_->SetResponseForGetProductInfoForUrl(info);
       mock_shopping_service_->SetIsSubscribedCallbackValue(false);
       MockCommerceUiTabHelper::CreateForWebContents(
@@ -133,8 +134,7 @@ class PowerBookmarkBubbleViewBrowserTest
     : public BaseBookmarkBubbleViewBrowserTest {
  public:
   PowerBookmarkBubbleViewBrowserTest() {
-    test_features_.InitWithFeatures({commerce::kShoppingList},
-                                    {commerce::kShoppingListTrackByDefault});
+    test_features_.InitWithFeatures({commerce::kShoppingList}, {});
   }
 
   PowerBookmarkBubbleViewBrowserTest(

@@ -60,11 +60,11 @@ class ASH_EXPORT FloatingAccessibilityDetailedController
                          aura::Window* gained_active,
                          aura::Window* lost_active) override;
 
-  raw_ptr<DetailedBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
-  raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_ = nullptr;
-  raw_ptr<AccessibilityDetailedView, ExperimentalAsh> detailed_view_ = nullptr;
+  raw_ptr<DetailedBubbleView> bubble_view_ = nullptr;
+  raw_ptr<views::Widget> bubble_widget_ = nullptr;
+  raw_ptr<AccessibilityDetailedView> detailed_view_ = nullptr;
 
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;  // Owns us.
+  const raw_ptr<Delegate> delegate_;  // Owns us.
 };
 
 }  // namespace ash

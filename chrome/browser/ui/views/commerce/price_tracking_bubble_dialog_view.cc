@@ -173,7 +173,7 @@ void PriceTrackingBubbleDialogView::OnCanceled(
   std::move(on_track_price_callback).Run(false);
 }
 
-BEGIN_METADATA(PriceTrackingBubbleDialogView, LocationBarBubbleDelegateView)
+BEGIN_METADATA(PriceTrackingBubbleDialogView)
 END_METADATA
 
 // PriceTrackingBubbleCoordinator

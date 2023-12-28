@@ -124,6 +124,32 @@ void ApplyDalvikMemoryProfile(
           << (mem_info.total / 1024) << "Mb device.";
 }
 
+void ApplyHostUreadaheadMode(StartParams* params) {
+  // Check if deprecated flags are in use, override later if necessary
+  const arc::ArcUreadaheadMode mode =
+      arc::GetArcUreadaheadMode(ash::switches::kArcHostUreadaheadMode);
+  switch (mode) {
+    case arc::ArcUreadaheadMode::READAHEAD: {
+      params->host_ureadahead_mode =
+          StartParams::HostUreadaheadMode::MODE_READAHEAD;
+      break;
+    }
+    case arc::ArcUreadaheadMode::GENERATE: {
+      params->host_ureadahead_mode =
+          StartParams::HostUreadaheadMode::MODE_GENERATE;
+      break;
+    }
+    case arc::ArcUreadaheadMode::DISABLED: {
+      params->host_ureadahead_mode =
+          StartParams::HostUreadaheadMode::MODE_DISABLED;
+      break;
+    }
+    default: {
+      NOTREACHED_NORETURN();
+    }
+  }
+}
+
 void ApplyDisableDownloadProvider(StartParams* params) {
   params->disable_download_provider =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -182,7 +208,7 @@ class ArcSessionDelegateImpl : public ArcSessionImpl::Delegate {
                        mojo::ScopedMessagePipeHandle server_pipe);
 
   // Owned by ArcServiceManager.
-  const raw_ptr<ArcBridgeService, ExperimentalAsh> arc_bridge_service_;
+  const raw_ptr<ArcBridgeService> arc_bridge_service_;
 
   const version_info::Channel channel_;
 
@@ -492,6 +518,7 @@ void ArcSessionImpl::DoStartMiniInstance(size_t num_cores_disabled) {
   ApplyDisableUreadahed(&params);
   ApplyHostUreadahedGeneration(&params);
   ApplyUseDevCaches(&params);
+  ApplyHostUreadaheadMode(&params);
 
   client_->StartMiniArc(std::move(params),
                         base::BindOnce(&ArcSessionImpl::OnMiniInstanceStarted,

@@ -16,6 +16,12 @@ BASE_FEATURE(kIgnoreSyncEncryptionKeysLongMissing,
              "IgnoreSyncEncryptionKeysLongMissing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kPassExplicitSyncPassphraseToGmsCore,
+             "PassExplicitSyncPassphraseToGmsCore",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE(kPasswordNotesWithBackup,
              "PasswordNotesWithBackup",
 #if BUILDFLAG(IS_ANDROID)
@@ -27,7 +33,7 @@ BASE_FEATURE(kPasswordNotesWithBackup,
 
 BASE_FEATURE(kSharingOfferKeyPairBootstrap,
              "SharingOfferKeyPairBootstrap",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSharingOfferKeyPairRead,
              "SharingOfferKeyPairRead",
@@ -95,10 +101,6 @@ BASE_FEATURE(kSyncEnableContactInfoDataTypeForDasherUsers,
              "SyncEnableContactInfoDataTypeForDasherUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncEnforceBookmarksCountLimit,
-             "SyncEnforceBookmarksCountLimit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnablePreferencesAccountStorage,
              "EnablePreferencesAccountStorage",
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
@@ -145,14 +147,16 @@ BASE_FEATURE(kEnableBookmarkFoldersForAccountStorage,
              "EnableBookmarkFoldersForAccountStorage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_IOS)
 BASE_FEATURE(kReadingListEnableSyncTransportModeUponSignIn,
              "ReadingListEnableSyncTransportModeUponSignIn",
-#if BUILDFLAG(IS_IOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_IOS)
-);
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsReadingListAccountStorageEnabled() {
+  return base::FeatureList::IsEnabled(
+      syncer::kReadingListEnableSyncTransportModeUponSignIn);
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kSyncEnableWalletMetadataInTransportMode,
              "SyncEnableWalletMetadataInTransportMode",
@@ -207,5 +211,13 @@ BASE_FEATURE(kSyncDecoupleAddressPaymentSettings,
 BASE_FEATURE(kSyncAlwaysForceImmediateStartIfTransportDataMissing,
              "SyncAlwaysForceImmediateStartIfTransportDataMissing",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSyncIncreaseNudgeDelayForSingleClient,
+             "SyncIncreaseNudgeDelayForSingleClient",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSyncSchedulerUseWallClockTimer,
+             "SyncSchedulerUseWallClockTimer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace syncer

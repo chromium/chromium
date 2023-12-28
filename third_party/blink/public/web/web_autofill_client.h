@@ -66,6 +66,9 @@ class WebAutofillClient {
   virtual void TextFieldDidChange(const WebFormControlElement&) {}
   virtual void TextFieldDidReceiveKeyDown(const WebInputElement&,
                                           const WebKeyboardEvent&) {}
+  // This is called once per-character when a user edits a contenteditable
+  // element by typing.
+  virtual void ContentEditableDidChange(const WebElement&) {}
   // This is called when a datalist indicator is clicked.
   virtual void OpenTextDataListChooser(const WebInputElement&) {}
   // This is called when the datalist for an input has changed.

@@ -63,8 +63,7 @@ class OhttpKeyServiceTest : public ::testing::Test {
     test_url_loader_factory_ =
         std::make_unique<network::TestURLLoaderFactory>();
     test_shared_loader_factory_ =
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            test_url_loader_factory_.get());
+        test_url_loader_factory_->GetSafeWeakWrapper();
     ohttp_key_service_ = std::make_unique<OhttpKeyService>(
         test_shared_loader_factory_, &pref_service_);
     std::string key = google_apis::GetAPIKey();

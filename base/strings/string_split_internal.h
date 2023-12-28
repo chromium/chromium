@@ -16,7 +16,7 @@ namespace internal {
 
 // Returns either the ASCII or UTF-16 whitespace.
 template <typename CharT>
-BasicStringPiece<CharT> WhitespaceForType();
+std::basic_string_view<CharT> WhitespaceForType();
 
 template <>
 inline StringPiece16 WhitespaceForType<char16_t>() {
@@ -44,7 +44,7 @@ static std::vector<OutputStringType> SplitStringT(T str,
   while (start != std::basic_string<CharT>::npos) {
     size_t end = str.find_first_of(delimiter, start);
 
-    BasicStringPiece<CharT> piece;
+    std::basic_string_view<CharT> piece;
     if (end == std::basic_string<CharT>::npos) {
       piece = str.substr(start);
       start = std::basic_string<CharT>::npos;
@@ -70,7 +70,7 @@ std::vector<OutputStringType> SplitStringUsingSubstrT(
     T delimiter,
     WhitespaceHandling whitespace,
     SplitResult result_type) {
-  using Piece = BasicStringPiece<CharT>;
+  using Piece = std::basic_string_view<CharT>;
   using size_type = typename Piece::size_type;
 
   std::vector<OutputStringType> result;

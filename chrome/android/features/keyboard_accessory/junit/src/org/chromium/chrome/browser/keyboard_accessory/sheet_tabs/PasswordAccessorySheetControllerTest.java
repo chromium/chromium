@@ -150,7 +150,7 @@ public class PasswordAccessorySheetControllerTest {
     }
 
     @Test
-    public void testUsesTabTitleOnlyForEmptyListsForModernDesign() {
+    public void testUsesTabTitleOnlyForEmptyLists() {
         final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
         final AccessorySheetData testData =
                 new AccessorySheetData(AccessoryTabType.PASSWORDS, "No passwords for this", "");

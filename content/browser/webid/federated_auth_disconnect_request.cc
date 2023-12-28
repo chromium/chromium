@@ -17,7 +17,7 @@ namespace content {
 using FederatedApiPermissionStatus =
     FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
 using LoginState = IdentityRequestAccount::LoginState;
-using DisconnectStatusForMetrics = content::FedCmDisconnectStatus;
+using DisconnectStatusForMetrics = FedCmDisconnectStatus;
 using blink::mojom::DisconnectStatus;
 using blink::mojom::FederatedAuthRequestResult;
 
@@ -52,7 +52,8 @@ FederatedAuthDisconnectRequest::FederatedAuthDisconnectRequest(
       metrics_(metrics),
       render_frame_host_(render_frame_host),
       options_(std::move(options)),
-      origin_(render_frame_host->GetLastCommittedOrigin()) {
+      origin_(render_frame_host->GetLastCommittedOrigin()),
+      start_time_(base::TimeTicks::Now()) {
   RenderFrameHost* main_frame = render_frame_host->GetMainFrame();
   DCHECK(main_frame->IsInPrimaryMainFrame());
   embedding_origin_ = main_frame->GetLastCommittedOrigin();
@@ -109,7 +110,7 @@ void FederatedAuthDisconnectRequest::SetCallbackAndStart(
       *render_frame_host_, network_manager_.get());
   GURL config_url = options_->config->config_url;
   provider_fetcher_->Start(
-      {GURL(config_url)}, /*icon_ideal_size=*/0,
+      {GURL(config_url)}, blink::mojom::RpMode::kWidget, /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindOnce(
           &FederatedAuthDisconnectRequest::OnAllConfigAndWellKnownFetched,
@@ -201,6 +202,7 @@ void FederatedAuthDisconnectRequest::OnAllConfigAndWellKnownFetched(
              DisconnectStatusForMetrics::kDisconnectUrlIsCrossOrigin);
     return;
   }
+  disconnect_request_sent_ = true;
   network_manager_->SendDisconnectRequest(
       fetch_result.endpoints.disconnect, options_->account_hint,
       options_->config->client_id,
@@ -235,17 +237,30 @@ void FederatedAuthDisconnectRequest::OnDisconnectResponse(
 
 void FederatedAuthDisconnectRequest::Complete(
     blink::mojom::DisconnectStatus status,
-    absl::optional<content::FedCmDisconnectStatus>
-        disconnect_status_for_metrics) {
+    FedCmDisconnectStatus disconnect_status_for_metrics) {
   if (!callback_) {
     return;
   }
-
-  if (disconnect_status_for_metrics) {
-    metrics_->RecordDisconnectStatus(*disconnect_status_for_metrics);
+  if (disconnect_status_for_metrics != FedCmDisconnectStatus::kSuccess) {
+    AddConsoleErrorMessage(disconnect_status_for_metrics);
   }
 
+  std::optional<base::TimeDelta> duration =
+      disconnect_request_sent_
+          ? std::optional<base::TimeDelta>{base::TimeTicks::Now() - start_time_}
+          : std::nullopt;
+  metrics_->RecordDisconnectMetrics(disconnect_status_for_metrics, duration,
+                                    *render_frame_host_, origin_,
+                                    embedding_origin_);
+
   std::move(callback_).Run(status);
+}
+
+void FederatedAuthDisconnectRequest::AddConsoleErrorMessage(
+    FedCmDisconnectStatus disconnect_status_for_metrics) {
+  render_frame_host_->AddMessageToConsole(
+      blink::mojom::ConsoleMessageLevel::kError,
+      webid::GetDisconnectConsoleErrorMessage(disconnect_status_for_metrics));
 }
 
 }  // namespace content

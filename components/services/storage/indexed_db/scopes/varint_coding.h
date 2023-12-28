@@ -6,9 +6,9 @@
 #define COMPONENTS_SERVICES_STORAGE_INDEXED_DB_SCOPES_VARINT_CODING_H_
 
 #include <stdint.h>
-#include <string>
 
-#include "base/strings/string_piece.h"
+#include <string>
+#include <string_view>
 
 namespace content {
 
@@ -22,7 +22,7 @@ void EncodeVarInt(int64_t from, std::string* into);
 // Decodes a varint from the given string piece into the given int64_t. Returns
 // if the  string had a valid varint (where a byte was found with it's top bit
 // set). This function does NOT check to see if move than 64 bits were read.
-[[nodiscard]] bool DecodeVarInt(base::StringPiece* from, int64_t* into);
+[[nodiscard]] bool DecodeVarInt(std::string_view* from, int64_t* into);
 
 }  // namespace content
 

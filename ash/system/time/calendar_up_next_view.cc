@@ -18,6 +18,7 @@
 #include "ash/system/time/calendar_up_next_view_background_painter.h"
 #include "ash/system/time/calendar_utils.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -137,10 +138,11 @@ bool IsRightScrollButtonEnabled(views::ScrollView* scroll_view) {
 
 // Returns the index of the first (left-most) visible (partially or wholly)
 // child in the ScrollView.
-int GetFirstVisibleChildIndex(std::vector<views::View*> event_views,
-                              views::View* scroll_view) {
+int GetFirstVisibleChildIndex(
+    std::vector<raw_ptr<views::View, VectorExperimental>> event_views,
+    views::View* scroll_view) {
   for (size_t i = 0; i < event_views.size(); ++i) {
-    auto* child = event_views[i];
+    auto* child = event_views[i].get();
     if (scroll_view->GetBoundsInScreen().Intersects(
             child->GetBoundsInScreen())) {
       return i;

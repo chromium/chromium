@@ -14,11 +14,13 @@
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_suggestions_controller.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -36,6 +38,11 @@ constexpr char kIdPrefix[] = "googleassistant_text://";
 // Returns if the Assistant omnibox search provider is allowed to contribute
 // results.
 bool AreResultsAllowed() {
+  if (base::FeatureList::IsEnabled(
+          feature_engagement::kIPHLauncherSearchHelpUiFeature)) {
+    return false;
+  }
+
   ash::AssistantState* assistant_state = ash::AssistantState::Get();
   return assistant_state->allowed_state() == AssistantAllowedState::ALLOWED &&
          assistant_state->settings_enabled() == true;

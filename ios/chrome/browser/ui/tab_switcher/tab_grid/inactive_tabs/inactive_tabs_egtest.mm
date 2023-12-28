@@ -150,32 +150,6 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 
-// Relaunches the app with Inactive Tabs still enabled, and the
-// Show Inactive Tabs Count feature enabled.
-- (void)relaunchAppWithInactiveTabsAndShowCountEnabled {
-  AppLaunchConfiguration config;
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.additional_args.push_back(
-      "--enable-features=" + std::string(kTabInactivityThreshold.name) + ":" +
-      kTabInactivityThresholdParameterName + "/" +
-      kTabInactivityThresholdImmediateDemoParam + "," +
-      std::string(kShowInactiveTabsCount.name));
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-}
-
-// Relaunches the app with Inactive Tabs still enabled, and the
-// Show Inactive Tabs Count feature explicitly disabled.
-- (void)relaunchAppWithInactiveTabsEnabledAndShowCountDisabled {
-  AppLaunchConfiguration config;
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.additional_args.push_back(
-      "--enable-features=" + std::string(kTabInactivityThreshold.name) + ":" +
-      kTabInactivityThresholdParameterName + "/" +
-      kTabInactivityThresholdImmediateDemoParam);
-  config.features_disabled.push_back(kShowInactiveTabsCount);
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-}
-
 // Relaunches the app with Inactive Tabs disabled.
 - (void)relaunchAppWithInactiveTabsDisabled {
   AppLaunchConfiguration config;
@@ -751,8 +725,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
                  @"Inactive tab count should be 0");
 }
 
-// Checks that the count of inactive tabs only appear when the
-// show-inactive-tabs-count feature is enabled.
+// Checks that the count of inactive tabs appears.
 - (void)testShowCount {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Inactive Tabs feature is "
@@ -760,20 +733,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   }
   CreateRegularTabs(3, self.testServer);
 
-  // Relaunch without the Show Inactive Tabs Count feature enabled.
-  [self relaunchAppWithInactiveTabsEnabledAndShowCountDisabled];
-
-  // Open the Tab Grid.
-  [ChromeEarlGreyUI openTabGrid];
-
-  // The Inactive Tabs count should not be appended at the end of the button's
-  // label.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
-      assertWithMatcher:grey_accessibilityLabel(
-                            @"Inactive Tabs, Tabs not used for 0 days")];
-
-  // Relaunch with the Show Inactive Tabs Count feature enabled.
-  [self relaunchAppWithInactiveTabsAndShowCountEnabled];
+  [self relaunchAppWithInactiveTabsEnabled];
 
   // Open the Tab Grid.
   [ChromeEarlGreyUI openTabGrid];

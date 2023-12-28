@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/bubble/bubble_constants.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"

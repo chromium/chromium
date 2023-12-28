@@ -64,6 +64,7 @@
 
 # crbug.com/1429757
 -org.chromium.chrome.browser.incognito.reauth.TabSwitcherIncognitoReauthViewTest.testIncognitoReauthView_TabSwitcherRenderTest
+-org.chromium.chrome.browser.incognito.reauth.TabSwitcherIncognitoReauthViewTest.testIncognitoReauthViewIsRestored_WhenActivityIsKilled
 
 # crbug.com/1429763
 -org.chromium.chrome.browser.metrics.MainIntentBehaviorMetricsIntegrationTest.testLaunch_From_InAppActivities
@@ -76,6 +77,11 @@
 
 # crbug.com/1416433
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIntentURIWithFileSchemeDoesNothing
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIntentURIWithMixedCaseFileSchemeDoesNothing
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationWithFallbackURL
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testOpenWindowFromUserGesture
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testWindowServerRedirect
+
 
 # crbug.com/1432046
 -org.chromium.chrome.browser.DragAndDropLauncherActivityTest.testDragAndDropLauncherActivity_openInExistingTabbedActivity
@@ -91,3 +97,100 @@
 
 # crbug.com/1432785
 -org.chromium.chrome.browser.ContentViewFocusTest.testHideSelectionOnPhoneTabSwiping
+
+# crbug.com/1511801
+-org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testEmptyBookmarkFolder
+-org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testEmptyReadingListFolder
+-org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testOpenBookmarkManagerFolder
+
+# crbug.com/1511804
+-org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_GroupActionAndUndo
+-org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_ShareActionGroupsOnly
+-org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_ShareActionTabsOnly
+-org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_ShareActionTabsWithGroups
+-org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_ShareActionView
+-org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testUndoToolbarGroup
+
+# crbug.com/1512248
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testDialogSelectionEditor_PostLongPressClickNoSelectionEditor
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testDialogSelectionEditor_ShareActionTabs
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testDialogSelectionEditor_ShareActionView
+
+# crbug.com/1512250
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherTabletTest.testEmptyStateView_ToggleIncognito
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherTabletTest.testGridTabSwitcherOnCloseAllTabs
+
+# crbug.com/1512251
+-org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__INCOGNITO_CCT_INCOGNITO_CCT
+-org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__INCOGNITO_CCT_INCOGNITO_TAB
+-org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__INCOGNITO_CCT_REGULAR_CCT
+-org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__INCOGNITO_CCT_REGULAR_TAB
+-org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__REGULAR_CCT_INCOGNITO_CCT
+-org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__REGULAR_CCT_INCOGNITO_TAB
+-org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__REGULAR_CCT_REGULAR_CCT
+-org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__REGULAR_CCT_REGULAR_TAB
+
+# crbug.com/1512916
+-org.chromium.chrome.browser.gesturenav.NavigationHandlerTest.testCloseChromeAtHistoryStackHead
+-org.chromium.chrome.browser.gesturenav.NavigationHandlerTest.testSwipeNavigateOnNativePage
+
+# crbug.com/1513294
+-org.chromium.chrome.browser.compositor.overlays.strip.TabStripTest.testScrollingStripStackerFadeOpacity
+
+# crbug.com/1513296
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testRedirectedExternalNavigationWithUserGesture
+
+# crbug.com/1513299
+-org.chromium.chrome.browser.omnibox.suggestions.OmniboxActionsTest.testHistoryClustersAction
+
+# crbug.com/1513300
+-org.chromium.chrome.browser.segmentation_platform.ContextualPageActionControllerTest.testContextualPageModelExecution_OnReaderModePage
+
+# crbug.com/1513301
+-org.chromium.chrome.browser.supervised_user.SupervisedUserCriticalJourneysIntegrationTest.incognitoModeIsUnavailableFromTabSwitcherActionMenu
+
+# crbug.com/1513302
+-org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardViewTest.testCardNameTooLong_cardNameTruncated_lastFourDigitsAlwaysShown
+
+# crbug.com/1513303
+-org.chromium.chrome.browser.ui.system.StatusBarColorControllerTest.testStatusBarColorForTabStripRedesignFolioTablet
+
+# crbug.com/1513557
+-org.chromium.chrome.browser.NavigateTest.testTabObserverOnPageLoadStarted
+-org.chromium.chrome.browser.NavigateTest.testOpenLink
+
+# crbug.com/1513561
+-org.chromium.chrome.browser.keyboard_accessory.ManualFillingIntegrationTest.testInfobarStaysHiddenWhileChangingFieldsWithOpenKeyboard
+
+# crbug.com/1513564
+-org.chromium.chrome.browser.page_info.PageInfoViewDarkModeTest.testChromePage
+
+# crbug.com/1513565
+-org.chromium.chrome.browser.permissions.GeolocationTest.testGeolocationWatchDialog
+-org.chromium.chrome.browser.permissions.GeolocationTest.testGeolocationPlumbingAllowedDialog
+-org.chromium.chrome.browser.permissions.MediaTest.testCombinedPermissionsPlumbingDialog
+-org.chromium.chrome.browser.permissions.RuntimePermissionTest.testDenyAndNeverAskCamera
+-org.chromium.chrome.browser.permissions.RuntimePermissionTest.testDenyAndNeverAskMicrophone
+
+# crbug.com/1513566
+-org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionNoticeTest.testNoticeShownOnlyOnSecurePage
+
+# crbug.com/1513568
+-org.chromium.chrome.browser.tab.InterceptNavigationDelegateTest.testExternalAppPrerenderingNavigation
+
+# crbug.com/1513570
+-org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testSuspendNullCurrentTab
+
+# crbug.com/1513571
+-org.chromium.chrome.browser.webshare.WebShareTest.testWebShareMany
+-org.chromium.chrome.browser.webshare.WebShareTest.testWebShareSeparator
+
+# crbug.com/1513573
+-org.chromium.chrome.features.start_surface.ShowNtpAtStartupTest.testThumbnailRecaptureForSingleTabCardAfterMostRecentTabClosed
+
+# crbug.com/1513740
+-org.chromium.chrome.browser.signin.SigninManagerIntegrationTest.testUpdateAccountListTwoAccountsThenRemoveAll
+
+# crbug.com/1513741
+-org.chromium.chrome.browser.tab.TabUmaTest.testNoCreationStateNoTabUma
+

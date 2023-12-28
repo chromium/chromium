@@ -45,12 +45,11 @@ void FakeStartCrdSessionJobDelegate::StartCrdHostAndGetCode(
   received_session_parameters_ = parameters;
   session_finished_callback_ = std::move(session_finished_callback);
 
-  if (access_code_success_) {
-    std::move(success_callback).Run(kTestAccessCode);
+  if (error_) {
+    std::move(error_callback).Run(error_.value(), "");
+    error_.reset();
   } else {
-    std::move(error_callback)
-        .Run(ExtendedStartCrdSessionResultCode::kFailureCrdHostError,
-             std::string());
+    std::move(success_callback).Run(kTestAccessCode);
   }
 }
 

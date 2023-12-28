@@ -459,6 +459,7 @@ void TrustSafetySentimentService::InteractedWithDownloadWarningUI(
   product_specific_data["Is downloads page UI"] = false;
   product_specific_data["Is download prompt UI"] = false;
   product_specific_data["User proceeded past warning"] = false;
+  product_specific_data["Is subpage UI"] = false;
   switch (surface) {
     case DownloadItemWarningData::WarningSurface::BUBBLE_MAINPAGE:
       product_specific_data["Is mainpage UI"] = true;

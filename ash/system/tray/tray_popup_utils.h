@@ -132,8 +132,8 @@ class ASH_EXPORT TrayPopupUtils {
   // Creates a default focus painter used for most things in tray popups.
   static std::unique_ptr<views::Painter> CreateFocusPainter();
 
-  // Sets up `view` to be a sticky header in a tray detail scroll view.
-  static void ConfigureAsStickyHeader(views::View* view);
+  // Sets up `view` with the tray detail scroll view header specs.
+  static void ConfigureHeader(views::View* view);
 
   // Sets up `ink_drop` according to jelly ux requirements for row buttons.
   static void ConfigureRowButtonInkdrop(views::InkDropHost* ink_drop);
@@ -188,11 +188,6 @@ class ASH_EXPORT TrayPopupUtils {
 
   // Creates the check mark.
   static ui::ImageModel CreateCheckMark(ui::ColorId color_id);
-
-  // Sets the font list for |label| based on |style|.
-  // DEPRECATED: Use `TypographyProvider` in new code. If you need legacy fonts,
-  // use TypographyToken::kLegacy*.
-  static void SetLabelFontList(views::Label* label, FontStyle style);
 };
 
 }  // namespace ash

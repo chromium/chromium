@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_computed_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_optional_effect_timing.h"
@@ -447,8 +448,7 @@ protocol::Response InspectorAnimationAgent::resolveAnimation(
       ToV8InspectorStringView(kAnimationObjectGroup));
   *result = v8_session_->wrapObject(
       script_state->GetContext(),
-      ToV8(animation, script_state->GetContext()->Global(),
-           script_state->GetIsolate()),
+      ToV8Traits<Animation>::ToV8(script_state, animation).ToLocalChecked(),
       ToV8InspectorStringView(kAnimationObjectGroup),
       false /* generatePreview */);
   if (!*result) {

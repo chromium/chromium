@@ -182,7 +182,6 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
       /*last_committed_url=*/web_state->GetLastCommittedURL(),
       web::GetUIThreadTaskRunner({}),
       url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr,
-      /*webui_delegate=*/nullptr,
       hash_real_time_service ? hash_real_time_service->GetWeakPtr() : nullptr,
       /*mechanism_experimenter=*/nullptr,
       /*is_mechanism_experiment_allowed=*/false, hash_real_time_selection);
@@ -325,8 +324,7 @@ void SafeBrowsingServiceImpl::IOThreadEnabler::SetUpURLRequestContext(
           cookie_util::CookieStoreConfig(
               cookie_file_path,
               cookie_util::CookieStoreConfig::RESTORED_SESSION_COOKIES,
-              cookie_util::CookieStoreConfig::COOKIE_MONSTER,
-              /*crypto_delegate=*/nullptr),
+              cookie_util::CookieStoreConfig::COOKIE_MONSTER),
           /*system_cookie_store=*/nullptr, net::NetLog::Get());
 
   builder.SetCookieStore(std::move(cookie_store));

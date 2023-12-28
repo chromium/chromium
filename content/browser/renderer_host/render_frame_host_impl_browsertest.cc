@@ -145,39 +145,6 @@
 namespace content {
 namespace {
 
-// Implementation of ContentBrowserClient that overrides
-// OverridePageVisibilityState() and allows consumers to set a value.
-class PrerenderTestContentBrowserClient
-    : public ContentBrowserTestContentBrowserClient {
- public:
-  PrerenderTestContentBrowserClient()
-      : override_enabled_(false),
-        visibility_override_(PageVisibilityState::kVisible) {}
-
-  PrerenderTestContentBrowserClient(const PrerenderTestContentBrowserClient&) =
-      delete;
-  PrerenderTestContentBrowserClient& operator=(
-      const PrerenderTestContentBrowserClient&) = delete;
-
-  ~PrerenderTestContentBrowserClient() override {}
-
-  void EnableVisibilityOverride(PageVisibilityState visibility_override) {
-    override_enabled_ = true;
-    visibility_override_ = visibility_override;
-  }
-
-  void OverridePageVisibilityState(
-      RenderFrameHost* render_frame_host,
-      PageVisibilityState* visibility_state) override {
-    if (override_enabled_)
-      *visibility_state = visibility_override_;
-  }
-
- private:
-  bool override_enabled_;
-  PageVisibilityState visibility_override_;
-};
-
 const char kTrustMeUrl[] = "trustme://host/path/";
 const char kTrustMeIfEmbeddingSecureUrl[] =
     "trustmeifembeddingsecure://host/path/";
@@ -481,22 +448,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   web_contents()->WasHidden();
   EXPECT_EQ(PageVisibilityState::kHidden,
-            web_contents()->GetPrimaryMainFrame()->GetVisibilityState());
-}
-
-// Test that a frame visibility can be overridden by the ContentBrowserClient.
-IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
-                       GetVisibilityState_Override) {
-  EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,foo")));
-
-  PrerenderTestContentBrowserClient new_client;
-
-  web_contents()->WasShown();
-  EXPECT_EQ(PageVisibilityState::kVisible,
-            web_contents()->GetPrimaryMainFrame()->GetVisibilityState());
-
-  new_client.EnableVisibilityOverride(PageVisibilityState::kHiddenButPainting);
-  EXPECT_EQ(PageVisibilityState::kHiddenButPainting,
             web_contents()->GetPrimaryMainFrame()->GetVisibilityState());
 }
 
@@ -3446,18 +3397,18 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   ASSERT_EQ(0, process->get_media_stream_count_for_testing());
 
   // Audible audio output should cause the media stream count to increment.
-  frame->OnAudibleStateChanged(true);
+  frame->OnMediaStreamAdded(RenderFrameHostImpl::GetAudibleMediaStreamType());
   RunPostedTasks();
   EXPECT_EQ(1, process->get_media_stream_count_for_testing());
 
   // Silence should cause the media stream count to decrement.
-  frame->OnAudibleStateChanged(false);
+  frame->OnMediaStreamRemoved(RenderFrameHostImpl::GetAudibleMediaStreamType());
   RunPostedTasks();
   EXPECT_EQ(0, process->get_media_stream_count_for_testing());
 
   // Start audible audio output again, and then crash the renderer. Expect the
   // media stream count to be zero after the crash.
-  frame->OnAudibleStateChanged(true);
+  frame->OnMediaStreamAdded(RenderFrameHostImpl::GetAudibleMediaStreamType());
   RunPostedTasks();
   EXPECT_EQ(1, process->get_media_stream_count_for_testing());
   RenderProcessHostWatcher crash_observer(
@@ -5042,7 +4993,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // Spot-check that an example entry recorded from the renderer uses the
   // correct document source id set by the RFH.
   const auto& blink_entries = recorder.GetEntriesByName("Blink.PageLoad");
-  for (const auto* entry : blink_entries) {
+  for (const ukm::mojom::UkmEntry* entry : blink_entries) {
     EXPECT_EQ(main_frame_doc_ukm_source_id, entry->source_id);
   }
 }
@@ -6592,32 +6543,29 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplCredentiallessIframeBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   base::UnguessableToken first_nonce =
-      web_contents()->GetPrimaryMainFrame()->credentialless_iframes_nonce();
+      web_contents()->GetPrimaryPage().credentialless_iframes_nonce();
   EXPECT_TRUE(first_nonce);
 
   // Same-document navigation does not change the nonce.
   EXPECT_TRUE(NavigateToURL(shell(), main_url.Resolve("#here")));
-  EXPECT_EQ(
-      first_nonce,
-      web_contents()->GetPrimaryMainFrame()->credentialless_iframes_nonce());
+  EXPECT_EQ(first_nonce,
+            web_contents()->GetPrimaryPage().credentialless_iframes_nonce());
 
   // Cross-document same-site navigation creates a new nonce.
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
   base::UnguessableToken second_nonce =
-      web_contents()->GetPrimaryMainFrame()->credentialless_iframes_nonce();
+      web_contents()->GetPrimaryPage().credentialless_iframes_nonce();
   EXPECT_TRUE(second_nonce);
   EXPECT_NE(first_nonce, second_nonce);
 
   // Cross-document cross-site navigation creates a new nonce.
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
-  EXPECT_NE(
-      first_nonce,
-      web_contents()->GetPrimaryMainFrame()->credentialless_iframes_nonce());
-  EXPECT_NE(
-      second_nonce,
-      web_contents()->GetPrimaryMainFrame()->credentialless_iframes_nonce());
+  EXPECT_NE(first_nonce,
+            web_contents()->GetPrimaryPage().credentialless_iframes_nonce());
+  EXPECT_NE(second_nonce,
+            web_contents()->GetPrimaryPage().credentialless_iframes_nonce());
 }
 
 class RenderFrameHostImplCredentiallessIframeNikBrowserTest
@@ -7695,9 +7643,6 @@ class RenderFrameHostImplBrowserTestWithBFCache
     std::vector<base::test::FeatureRefAndParams> enabled_features =
         GetDefaultEnabledBackForwardCacheFeaturesForTesting(
             /*ignore_outstanding_network_request=*/false);
-    enabled_features.push_back(
-        {features::kNavigationUpdatesChildViewsVisibility, {{}}});
-    enabled_features.push_back({features::kEvictSubtree, {{}}});
     scoped_feature_list_.InitWithFeaturesAndParameters(
         enabled_features,
         GetDefaultDisabledBackForwardCacheFeaturesForTesting());

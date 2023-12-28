@@ -7,7 +7,9 @@
 
 #include "base/time/time.h"
 #include "ios/web/common/user_agent.h"
+#include "ios/web/public/navigation/referrer.h"
 #include "ios/web/public/session/proto/common.pb.h"
+#include "ios/web/public/session/proto/navigation.pb.h"
 
 namespace web {
 
@@ -22,6 +24,19 @@ UserAgentType UserAgentTypeFromProto(proto::UserAgentType value);
 
 // Converts a web::UserAgentType and web::proto::UserAgentType.
 proto::UserAgentType UserAgentTypeToProto(UserAgentType value);
+
+// Converts a web::proto::ReferrerPolicy to a web::ReferrerPolicy.
+ReferrerPolicy ReferrerPolicyFromProto(proto::ReferrerPolicy value);
+
+// Converts a web::ReferrerPolicy to a web::proto::ReferrerPolicy.
+proto::ReferrerPolicy ReferrerPolicyToProto(ReferrerPolicy value);
+
+// Creates a Referrer from serialized `storage`.
+Referrer ReferrerFromProto(const proto::ReferrerStorage& storage);
+
+// Serializes `referrer` into `storage`.
+void SerializeReferrerToProto(const Referrer& referrer,
+                              proto::ReferrerStorage& storage);
 
 }  // namespace web
 

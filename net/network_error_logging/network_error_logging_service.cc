@@ -23,6 +23,7 @@
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "net/log/net_log.h"
@@ -286,7 +287,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
   }
 
  private:
-  // Map from (NIK, origin) to owned policy.
+  // Map from (NAK, origin) to owned policy.
   using PolicyMap = std::map<NelPolicyKey, NelPolicy>;
 
   // Wildcard policies are policies for which the include_subdomains flag is
@@ -300,7 +301,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
   // the longest host part (most specific subdomain) that is a substring of the
   // domain.
   //
-  // When multiple policies with the same (NIK, origin.host()) are present, they
+  // When multiple policies with the same (NAK, origin.host()) are present, they
   // are all stored, the policy returned is not well defined.
   //
   // Policies in the map are unowned; they are pointers to the original in

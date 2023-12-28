@@ -47,6 +47,7 @@ class PermissionPromptAndroid : public PermissionPrompt {
 
   void Closing();
   void Accept();
+  void AcceptThisTime();
   void Deny();
   void SetManageClicked();
   void SetLearnMoreClicked();

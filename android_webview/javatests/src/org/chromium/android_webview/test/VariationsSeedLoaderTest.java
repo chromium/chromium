@@ -171,6 +171,31 @@ public class VariationsSeedLoaderTest extends AwParameterizedTest {
         VariationsTestUtils.deleteSeeds();
     }
 
+    // Test that Seed and AppSeed Freshness diff is correct and recorded
+    @Test
+    @MediumTest
+    public void testRecordSeedDiff() throws Exception {
+        // The first line is needed to set the seed freshness to zero
+        // in order to calculate the diff correctly
+        VariationsSeedLoader.cacheSeedFreshness(0);
+        long seedFreshnessInMinutes = 100;
+        long appSeedFreshnessInMinutes = 40;
+        long diff = seedFreshnessInMinutes - appSeedFreshnessInMinutes;
+        var histogramWatcherOne =
+                HistogramWatcher.newSingleRecordWatcher(
+                        VariationsSeedLoader.SEED_FRESHNESS_DIFF_HISTOGRAM_NAME, (int) diff);
+        VariationsSeedLoader.cacheAppSeedFreshness(appSeedFreshnessInMinutes);
+        VariationsSeedLoader.cacheSeedFreshness(seedFreshnessInMinutes);
+        histogramWatcherOne.assertExpected();
+
+        var histogramWatcherTwo =
+                HistogramWatcher.newSingleRecordWatcher(
+                        VariationsSeedLoader.SEED_FRESHNESS_DIFF_HISTOGRAM_NAME, (int) diff);
+        VariationsSeedLoader.cacheSeedFreshness(seedFreshnessInMinutes);
+        VariationsSeedLoader.cacheAppSeedFreshness(appSeedFreshnessInMinutes);
+        histogramWatcherTwo.assertExpected();
+    }
+
     // Test the case that:
     // VariationsUtils.getSeedFile() - doesn't exist
     // VariationsUtils.getNewSeedFile() - doesn't exist

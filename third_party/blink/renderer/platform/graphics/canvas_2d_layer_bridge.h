@@ -60,9 +60,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
   void PageVisibilityChanged();
   bool Restore();
 
-  // virtual for unit testing
-  virtual void WillOverwriteCanvas();
-
   void DrawFullImage(const cc::PaintImage&);
 
   // This may recreate CanvasResourceProvider
@@ -127,8 +124,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
 
   CanvasResourceProvider* ResourceProvider() const;
   void ResetResourceProvider();
-
-  void SkipQueuedDrawCommands();
 
   // Check if the Raster Mode is GPU and if the GPU context is not lost
   bool ShouldAccelerate() const;

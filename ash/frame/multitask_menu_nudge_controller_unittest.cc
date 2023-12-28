@@ -42,7 +42,7 @@ namespace {
 // Returns the nudge controller associated with `window`.
 chromeos::MultitaskMenuNudgeController* GetNudgeControllerForWindow(
     aura::Window* window) {
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     return TabletModeControllerTestApi()
         .tablet_mode_window_manager()
         ->tablet_mode_multitask_menu_controller()

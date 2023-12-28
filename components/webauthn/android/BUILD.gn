@@ -7,11 +7,11 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni_headers") {
   sources = [
-    "java/src/org/chromium/components/webauthn/CredManSupportProvider.java",
     "java/src/org/chromium/components/webauthn/Fido2Api.java",
     "java/src/org/chromium/components/webauthn/Fido2CredentialRequest.java",
     "java/src/org/chromium/components/webauthn/InternalAuthenticator.java",
     "java/src/org/chromium/components/webauthn/WebAuthnBrowserBridge.java",
+    "java/src/org/chromium/components/webauthn/cred_man/CredManSupportProvider.java",
   ]
 }
 
@@ -28,12 +28,8 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/components/webauthn/AuthenticatorFactory.java",
     "java/src/org/chromium/components/webauthn/AuthenticatorImpl.java",
-    "java/src/org/chromium/components/webauthn/AuthenticatorIncognitoConfirmationBottomsheet.java",
     "java/src/org/chromium/components/webauthn/Barrier.java",
-    "java/src/org/chromium/components/webauthn/CredManHelper.java",
-    "java/src/org/chromium/components/webauthn/CredManMetricsHelper.java",
-    "java/src/org/chromium/components/webauthn/CredManSupportProvider.java",
-    "java/src/org/chromium/components/webauthn/CredManUiModeRecommender.java",
+    "java/src/org/chromium/components/webauthn/CreateConfirmationUiDelegate.java",
     "java/src/org/chromium/components/webauthn/Fido2Api.java",
     "java/src/org/chromium/components/webauthn/Fido2ApiCall.java",
     "java/src/org/chromium/components/webauthn/Fido2ApiCallHelper.java",
@@ -47,18 +43,20 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/MakeCredentialResponseCallback.java",
     "java/src/org/chromium/components/webauthn/WebAuthnBrowserBridge.java",
     "java/src/org/chromium/components/webauthn/WebAuthnCredentialDetails.java",
+    "java/src/org/chromium/components/webauthn/cred_man/CredManHelper.java",
+    "java/src/org/chromium/components/webauthn/cred_man/CredManMetricsHelper.java",
+    "java/src/org/chromium/components/webauthn/cred_man/CredManSupportProvider.java",
+    "java/src/org/chromium/components/webauthn/cred_man/CredManUiModeRecommender.java",
   ]
 
-  jar_excluded_patterns = [ "*/CredManUiModeRecommender.class" ]
+  jar_excluded_patterns = [ "*/cred_man/CredManUiModeRecommender.class" ]
 
   deps = [
-    ":java_resources",
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
     "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
     "//build/android:build_java",
-    "//components/browser_ui/bottomsheet/android:java",
     "//components/externalauth/android:java",
     "//components/payments/content/android:feature_list_java",
     "//components/version_info/android:version_constants_java",
@@ -83,9 +81,7 @@ android_library("java") {
   resources_package = "org.chromium.components.webauthn"
 }
 android_library("delegate_public_java") {
-  sources = [
-    "java/src/org/chromium/components/webauthn/CredManUiModeRecommender.java",
-  ]
+  sources = [ "java/src/org/chromium/components/webauthn/cred_man/CredManUiModeRecommender.java" ]
   deps = [ ":java" ]
 }
 
@@ -159,40 +155,41 @@ source_set("unit_tests") {
   ]
 }
 
-android_resources("java_resources") {
-  sources = [
-    "java/res/drawable/webauthn_incognito_confirmation_icon.xml",
-    "java/res/layout/webauthn_incognito_confirmation.xml",
-  ]
-  deps = [
-    "//components/browser_ui/bottomsheet/android:java_resources",
-    "//components/strings:components_strings_grd",
-  ]
-}
-
 robolectric_library("junit") {
-  sources = [ "junit/src/org/chromium/components/webauthn/AuthenticatorIncognitoConfirmationBottomsheetTest.java" ]
+  sources = [
+    "junit/src/org/chromium/components/webauthn/BarrierTest.java",
+    "junit/src/org/chromium/components/webauthn/Fido2CredentialRequestRobolectricTest.java",
+    "junit/src/org/chromium/components/webauthn/ShadowWebContentStatics.java",
+    "junit/src/org/chromium/components/webauthn/cred_man/CredManHelperRobolectricTest.java",
+    "junit/src/org/chromium/components/webauthn/cred_man/ShadowCreateCredentialException.java",
+    "junit/src/org/chromium/components/webauthn/cred_man/ShadowCreateCredentialRequest.java",
+    "junit/src/org/chromium/components/webauthn/cred_man/ShadowCreateCredentialResponse.java",
+    "junit/src/org/chromium/components/webauthn/cred_man/ShadowCredential.java",
+    "junit/src/org/chromium/components/webauthn/cred_man/ShadowCredentialManager.java",
+    "junit/src/org/chromium/components/webauthn/cred_man/ShadowCredentialOption.java",
+    "junit/src/org/chromium/components/webauthn/cred_man/ShadowGetCredentialException.java",
+    "junit/src/org/chromium/components/webauthn/cred_man/ShadowGetCredentialRequest.java",
+    "junit/src/org/chromium/components/webauthn/cred_man/ShadowGetCredentialResponse.java",
+    "junit/src/org/chromium/components/webauthn/cred_man/ShadowPrepareGetCredentialResponse.java",
+  ]
   deps = [
+    ":delegate_public_java",
     ":java",
+    ":test_support_java",
+    "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//components/browser_ui/bottomsheet/android:java",
-    "//components/payments/content/android:service_java",
-    "//components/payments/mojom:mojom_java",
-    "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_java",
-    "//mojo/public/java:system_java",
-    "//third_party/android_deps:material_design_java",
-    "//third_party/androidx:androidx_collection_collection_java",
+    "//net/android:net_java",
+    "//services/device/public/java:device_feature_list_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//third_party/google-truth:google_truth_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
-    "//url:gurl_junit_test_support",
-    "//url/mojom:url_mojom_gurl_java",
-    "//url/mojom:url_mojom_origin_java",
   ]
 }

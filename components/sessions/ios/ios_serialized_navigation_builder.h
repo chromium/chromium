@@ -12,6 +12,10 @@ namespace web {
 class NavigationItem;
 }
 
+namespace web::proto {
+class NavigationItemStorage;
+}
+
 @class CRWNavigationItemStorage;
 
 namespace sessions {
@@ -27,7 +31,15 @@ class IOSSerializedNavigationBuilder {
       int index, const web::NavigationItem& item);
 
   // Construct a SerializedNavigationEntry for a particular index from the given
+  // web::proto::NavigationItemStorage.
+  static SerializedNavigationEntry FromNavigationStorageItem(
+      int index,
+      const web::proto::NavigationItemStorage& item);
+
+  // Construct a SerializedNavigationEntry for a particular index from the given
   // CRWNavigationItemStorage.
+  // TODO(crbug.com/1504753): Remove once support for legacy session storage is
+  // removed.
   static SerializedNavigationEntry FromNavigationStorageItem(
       int index,
       CRWNavigationItemStorage* item);

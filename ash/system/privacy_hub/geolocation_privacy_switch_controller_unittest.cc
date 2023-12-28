@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/geolocation_access_level.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -75,9 +76,7 @@ class PrivacyHubGeolocationControllerTest : public AshTestBase {
             prefs::kUserGeolocationAccessLevel));
   }
 
-  raw_ptr<GeolocationPrivacySwitchController,
-          DanglingUntriaged | ExperimentalAsh>
-      controller_;
+  raw_ptr<GeolocationPrivacySwitchController, DanglingUntriaged> controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
   const base::HistogramTester histogram_tester_;
 };
@@ -139,17 +138,21 @@ TEST_F(PrivacyHubGeolocationControllerTest, ClickOnNotificationTest) {
   EXPECT_TRUE(features::IsCrosPrivacyHubLocationEnabled());
   EXPECT_TRUE(controller_);
   controller_->TrackGeolocationAttempted(app_name);
+
+  const auto kGeolocationAccessLevels = {
+      GeolocationAccessLevel::kDisallowed, GeolocationAccessLevel::kAllowed,
+      GeolocationAccessLevel::kOnlyAllowedForSystem};
+  ASSERT_EQ(static_cast<unsigned long>(GeolocationAccessLevel::kMaxValue) + 1,
+            kGeolocationAccessLevels.size());
+
   // We didn't log any notification clicks so far.
-  EXPECT_EQ(histogram_tester_.GetBucketCount(
-                privacy_hub_metrics::
-                    kPrivacyHubGeolocationEnabledFromNotificationHistogram,
-                true),
-            0);
-  EXPECT_EQ(histogram_tester_.GetBucketCount(
-                privacy_hub_metrics::
-                    kPrivacyHubGeolocationEnabledFromNotificationHistogram,
-                false),
-            0);
+  for (auto access_level : kGeolocationAccessLevels) {
+    EXPECT_EQ(0,
+              histogram_tester_.GetBucketCount(
+                  privacy_hub_metrics::
+                      kPrivacyHubGeolocationAccessLevelChangedFromNotification,
+                  access_level));
+  }
   EXPECT_TRUE(FindNotification());
   EXPECT_NE(GetUserPref(), GeolocationAccessLevel::kAllowed);
 
@@ -162,16 +165,18 @@ TEST_F(PrivacyHubGeolocationControllerTest, ClickOnNotificationTest) {
   EXPECT_FALSE(FindNotification());
 
   // The histograms were updated.
-  EXPECT_EQ(histogram_tester_.GetBucketCount(
-                privacy_hub_metrics::
-                    kPrivacyHubGeolocationEnabledFromNotificationHistogram,
-                true),
-            1);
-  EXPECT_EQ(histogram_tester_.GetBucketCount(
-                privacy_hub_metrics::
-                    kPrivacyHubGeolocationEnabledFromNotificationHistogram,
-                false),
-            0);
+  EXPECT_EQ(1, histogram_tester_.GetBucketCount(
+                   privacy_hub_metrics::
+                       kPrivacyHubGeolocationAccessLevelChangedFromNotification,
+                   GeolocationAccessLevel::kAllowed));
+  EXPECT_EQ(0, histogram_tester_.GetBucketCount(
+                   privacy_hub_metrics::
+                       kPrivacyHubGeolocationAccessLevelChangedFromNotification,
+                   GeolocationAccessLevel::kDisallowed));
+  EXPECT_EQ(0, histogram_tester_.GetBucketCount(
+                   privacy_hub_metrics::
+                       kPrivacyHubGeolocationAccessLevelChangedFromNotification,
+                   GeolocationAccessLevel::kOnlyAllowedForSystem));
 }
 
 }  // namespace ash

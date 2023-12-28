@@ -34,8 +34,9 @@ class TaskManagerView : public TableViewDelegate,
                         public views::TableViewObserver,
                         public views::ContextMenuController,
                         public ui::SimpleMenuModel::Delegate {
+  METADATA_HEADER(TaskManagerView, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(TaskManagerView);
   TaskManagerView(const TaskManagerView&) = delete;
   TaskManagerView& operator=(const TaskManagerView&) = delete;
   ~TaskManagerView() override;

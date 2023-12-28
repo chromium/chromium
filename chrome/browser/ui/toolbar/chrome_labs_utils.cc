@@ -151,6 +151,10 @@ bool IsChromeLabsEnabled() {
           variations::switches::kEnableBenchmarking)) {
     return true;
   }
+  // Could be null in unit tests.
+  if (!g_browser_process->local_state()) {
+    return false;
+  }
   if (g_browser_process->local_state()->GetInteger(
           chrome_labs_prefs::kChromeLabsActivationThreshold) ==
       chrome_labs_prefs::kChromeLabsActivationThresholdDefaultValue) {

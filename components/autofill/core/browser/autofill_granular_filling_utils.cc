@@ -11,17 +11,17 @@ namespace autofill {
 
 namespace {
 
-ServerFieldTypeSet GetServerFieldsForFieldGroup(FieldTypeGroup group) {
+FieldTypeSet GetServerFieldsForFieldGroup(FieldTypeGroup group) {
   switch (group) {
     case FieldTypeGroup::kName:
-      return GetServerFieldTypesOfGroup(FieldTypeGroup::kName);
+      return GetFieldTypesOfGroup(FieldTypeGroup::kName);
     case FieldTypeGroup::kAddress:
     case FieldTypeGroup::kCompany:
       return GetAddressFieldsForGroupFilling();
     case FieldTypeGroup::kPhone:
-      return GetServerFieldTypesOfGroup(FieldTypeGroup::kPhone);
+      return GetFieldTypesOfGroup(FieldTypeGroup::kPhone);
     case FieldTypeGroup::kEmail:
-      return GetServerFieldTypesOfGroup(FieldTypeGroup::kEmail);
+      return GetFieldTypesOfGroup(FieldTypeGroup::kEmail);
     case FieldTypeGroup::kNoGroup:
     case FieldTypeGroup::kCreditCard:
     case FieldTypeGroup::kPasswordField:
@@ -33,15 +33,15 @@ ServerFieldTypeSet GetServerFieldsForFieldGroup(FieldTypeGroup group) {
       // If `group` is not one of the groups we offer group filling for
       // (name, address and phone field), we default back to fill full form
       // behaviour/pre-granular filling.
-      return kAllServerFieldTypes;
+      return kAllFieldTypes;
   }
 }
 
 }  // namespace
 
 AutofillFillingMethod GetFillingMethodFromTargetedFields(
-    const ServerFieldTypeSet& targeted_field_types) {
-  if (targeted_field_types == kAllServerFieldTypes) {
+    const FieldTypeSet& targeted_field_types) {
+  if (targeted_field_types == kAllFieldTypes) {
     return AutofillFillingMethod::kFullForm;
   }
   if (AreFieldsGranularFillingGroup(targeted_field_types)) {
@@ -53,29 +53,28 @@ AutofillFillingMethod GetFillingMethodFromTargetedFields(
   return AutofillFillingMethod::kNone;
 }
 
-ServerFieldTypeSet GetAddressFieldsForGroupFilling() {
-  ServerFieldTypeSet fields =
-      GetServerFieldTypesOfGroup(FieldTypeGroup::kAddress);
-  fields.insert_all(GetServerFieldTypesOfGroup(FieldTypeGroup::kCompany));
+FieldTypeSet GetAddressFieldsForGroupFilling() {
+  FieldTypeSet fields = GetFieldTypesOfGroup(FieldTypeGroup::kAddress);
+  fields.insert_all(GetFieldTypesOfGroup(FieldTypeGroup::kCompany));
   return fields;
 }
 
-bool AreFieldsGranularFillingGroup(const ServerFieldTypeSet& field_types) {
+bool AreFieldsGranularFillingGroup(const FieldTypeSet& field_types) {
   return field_types == GetAddressFieldsForGroupFilling() ||
-         field_types == GetServerFieldTypesOfGroup(FieldTypeGroup::kName) ||
-         field_types == GetServerFieldTypesOfGroup(FieldTypeGroup::kEmail) ||
-         field_types == GetServerFieldTypesOfGroup(FieldTypeGroup::kPhone);
+         field_types == GetFieldTypesOfGroup(FieldTypeGroup::kName) ||
+         field_types == GetFieldTypesOfGroup(FieldTypeGroup::kEmail) ||
+         field_types == GetFieldTypesOfGroup(FieldTypeGroup::kPhone);
 }
 
-ServerFieldTypeSet GetTargetServerFieldsForTypeAndLastTargetedFields(
-    const ServerFieldTypeSet& last_targeted_field_types,
-    ServerFieldType triggering_field_type) {
+FieldTypeSet GetTargetServerFieldsForTypeAndLastTargetedFields(
+    const FieldTypeSet& last_targeted_field_types,
+    FieldType triggering_field_type) {
   switch (GetFillingMethodFromTargetedFields(last_targeted_field_types)) {
     case AutofillFillingMethod::kGroupFilling:
       return GetServerFieldsForFieldGroup(
-          GroupTypeOfServerFieldType(triggering_field_type));
+          GroupTypeOfFieldType(triggering_field_type));
     case AutofillFillingMethod::kFullForm:
-      return kAllServerFieldTypes;
+      return kAllFieldTypes;
     case AutofillFillingMethod::kFieldByFieldFilling:
       return {triggering_field_type};
     case AutofillFillingMethod::kNone:

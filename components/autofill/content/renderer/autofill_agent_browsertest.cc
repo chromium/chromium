@@ -38,6 +38,10 @@
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 
+namespace autofill {
+
+namespace {
+
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
@@ -48,12 +52,18 @@ using ::testing::NiceMock;
 using ::testing::Optional;
 using ::testing::SizeIs;
 
-namespace autofill {
-
-namespace {
-
 // The throttling amount of ProcessForms().
 constexpr base::TimeDelta kFormsSeenThrottle = base::Milliseconds(100);
+
+constexpr int kExpectedCallsToHandleFocusChangeComplete =
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/1490581): Android calls HandleFocusChangeComplete()
+    // twice, once from FocusedElementChanged() and once from
+    // DidReceiveLeftMouseDownOrGestureTapInNode().
+    2;
+#else
+    1;
+#endif
 
 class MockFormTracker : public FormTracker {
  public:
@@ -73,7 +83,7 @@ class MockAutofillDriver : public mojom::AutofillDriver {
 
   MOCK_METHOD(void,
               SetFormToBeProbablySubmitted,
-              (const absl::optional<FormData>& form),
+              (const std::optional<FormData>& form),
               (override));
   MOCK_METHOD(void,
               FormsSeen,
@@ -194,8 +204,9 @@ class AutofillAgentTest : public content::RenderViewTest {
     autofill_agent_ = std::make_unique<AutofillAgent>(
         GetMainRenderFrame(), std::move(password_autofill_agent),
         std::move(password_generation), &associated_interfaces_);
-    autofill_agent_->set_form_tracker_for_testing(
-        std::make_unique<MockFormTracker>(GetMainRenderFrame()));
+    test_api(*autofill_agent_)
+        .set_form_tracker(
+            std::make_unique<MockFormTracker>(GetMainRenderFrame()));
   }
 
   void TearDown() override {
@@ -204,8 +215,8 @@ class AutofillAgentTest : public content::RenderViewTest {
   }
 
   MockFormTracker& form_tracker() {
-    return *static_cast<MockFormTracker*>(
-        autofill_agent_->form_tracker_for_testing());
+    return static_cast<MockFormTracker&>(
+        test_api(*autofill_agent_).form_tracker());
   }
 
   // AutofillDriver::FormsSeen() is throttled indirectly because some callsites
@@ -216,7 +227,7 @@ class AutofillAgentTest : public content::RenderViewTest {
   }
 
  protected:
-  MockAutofillDriver autofill_driver_;
+  NiceMock<MockAutofillDriver> autofill_driver_;
   std::unique_ptr<AutofillAgent> autofill_agent_;
 
  private:
@@ -337,15 +348,31 @@ TEST_F(AutofillAgentTestWithFeatures,
           Field(&FormData::fields, ElementsAre(is_content_editable)),
           is_content_editable, _,
           mojom::AutofillSuggestionTriggerSource::kContentEditableClicked))
-#if BUILDFLAG(IS_ANDROID)
-      // TODO(crbug.com/1490581): Android calls HandleFocusChangeComplete()
-      // twice, once from FocusedElementChanged() and once from
-      // DidReceiveLeftMouseDownOrGestureTapInNode().
-      .Times(2)
-#endif
-      ;
+      .Times(kExpectedCallsToHandleFocusChangeComplete);
   SimulateElementClick("ce");
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// Tests that unfocusing a contenteditable triggers a call to
+// `AutofillDriver::HidePopup()`.
+// The test is not enabled on Android because the keyboard accessory has
+// different hiding logic for which `HidePopup` is not called.
+TEST_F(AutofillAgentTestWithFeatures,
+       LossOfFocusOfContentEditableTriggersHideAutofillPopup) {
+  const auto is_content_editable = HasType(FormControlType::kContentEditable);
+  LoadHTML("<body><div id=ce contenteditable></div>");
+  WaitForFormsSeen();
+  EXPECT_CALL(
+      autofill_driver_,
+      AskForValuesToFill(
+          Field(&FormData::fields, ElementsAre(is_content_editable)),
+          is_content_editable, _,
+          mojom::AutofillSuggestionTriggerSource::kContentEditableClicked));
+  EXPECT_CALL(autofill_driver_, HidePopup);
+  SimulateElementClick("ce");
+  ChangeFocusToNull(GetMainFrame()->GetDocument());
+}
+#endif
 
 TEST_F(AutofillAgentTestWithFeatures, FocusOnContentEditableFormIsIgnored) {
   LoadHTML("<body><form id=ce contenteditable></form>");
@@ -360,13 +387,7 @@ TEST_F(AutofillAgentTestWithFeatures,
   LoadHTML("<body><textarea id=ce contenteditable></textarea>");
   WaitForFormsSeen();
   EXPECT_CALL(autofill_driver_, AskForValuesToFill)
-#if BUILDFLAG(IS_ANDROID)
-      // TODO(crbug.com/1490581): Android calls HandleFocusChangeComplete()
-      // twice, once from FocusedElementChanged() and once from
-      // DidReceiveLeftMouseDownOrGestureTapInNode().
-      .Times(2)
-#endif
-      ;
+      .Times(kExpectedCallsToHandleFocusChangeComplete);
   EXPECT_CALL(
       autofill_driver_,
       AskForValuesToFill(
@@ -483,11 +504,10 @@ TEST_F(AutofillAgentTest, UndoAutofillSetsLastQueriedElement) {
   blink::WebVector<blink::WebFormElement> forms =
       GetMainFrame()->GetDocument().Forms();
   EXPECT_EQ(1U, forms.size());
-  FormData form;
-  EXPECT_TRUE(form_util::WebFormElementToFormData(
+  FormData form = *form_util::WebFormElementToFormData(
       forms[0], blink::WebFormControlElement(),
       *base::MakeRefCounted<FieldDataManager>(),
-      {form_util::ExtractOption::kValue}, &form, nullptr));
+      {form_util::ExtractOption::kValue}, nullptr);
 
   ASSERT_TRUE(autofill_agent_->focused_element().IsNull());
   autofill_agent_->ApplyFormAction(mojom::ActionType::kUndo,

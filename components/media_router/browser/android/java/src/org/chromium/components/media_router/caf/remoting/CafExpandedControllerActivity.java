@@ -17,7 +17,6 @@ import android.widget.TextView;
 import androidx.fragment.app.FragmentActivity;
 import androidx.mediarouter.app.MediaRouteButton;
 
-import org.chromium.components.browser_ui.media.MediaNotificationUma;
 import org.chromium.components.media_router.R;
 import org.chromium.components.media_router.caf.BaseSessionController;
 import org.chromium.third_party.android.media.MediaController;
@@ -99,8 +98,6 @@ public class CafExpandedControllerActivity extends FragmentActivity
         super.onCreate(savedInstanceState);
 
         mSessionController = RemotingSessionController.getInstance();
-
-        MediaNotificationUma.recordClickSource(getIntent());
 
         if (mSessionController == null || !mSessionController.isConnected()) {
             finish();

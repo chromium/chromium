@@ -21,8 +21,9 @@ class Textfield;
 
 class CryptoModulePasswordDialogView : public views::DialogDelegateView,
                                        public views::TextfieldController {
+  METADATA_HEADER(CryptoModulePasswordDialogView, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(CryptoModulePasswordDialogView);
   CryptoModulePasswordDialogView(const std::string& slot_name,
                                  CryptoModulePasswordReason reason,
                                  const std::string& server,

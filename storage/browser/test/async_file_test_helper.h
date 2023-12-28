@@ -8,6 +8,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string_view>
+
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
@@ -88,8 +90,7 @@ class AsyncFileTestHelper {
   // Creates a file at |url| and fills with |buf|.
   static base::File::Error CreateFileWithData(FileSystemContext* context,
                                               const FileSystemURL& url,
-                                              const char* buf,
-                                              int buf_size);
+                                              std::string_view data);
 
   // Truncates the file |url| to |size|.
   static base::File::Error TruncateFile(FileSystemContext* context,

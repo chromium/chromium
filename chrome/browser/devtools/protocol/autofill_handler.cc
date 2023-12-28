@@ -27,6 +27,7 @@
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 
 using autofill::AutofillField;
 using autofill::AutofillTriggerSource;
@@ -34,7 +35,7 @@ using autofill::CreditCard;
 using autofill::FieldGlobalId;
 using autofill::FormData;
 using autofill::FormFieldData;
-using autofill::HtmlFieldTypeToBestCorrespondingServerFieldType;
+using autofill::HtmlFieldTypeToBestCorrespondingFieldType;
 using autofill::mojom::HtmlFieldType;
 using protocol::Maybe;
 using protocol::Response;
@@ -259,14 +260,14 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
     bool autofill_inferred =
         autofill_field->html_type() == HtmlFieldType::kUnspecified ||
         autofill_field->html_type() == HtmlFieldType::kUnrecognized ||
-        HtmlFieldTypeToBestCorrespondingServerFieldType(
+        HtmlFieldTypeToBestCorrespondingFieldType(
             autofill_field->html_type()) !=
             autofill_field->Type().GetStorableType();
     filled_fields_to_be_sent_to_devtools->push_back(
         protocol::Autofill::FilledField::Create()
-            .SetId(base::UTF16ToASCII(autofill_field->id_attribute))
-            .SetName(base::UTF16ToASCII(autofill_field->name_attribute))
-            .SetValue(base::UTF16ToASCII(field->value))
+            .SetId(base::UTF16ToUTF8(autofill_field->id_attribute))
+            .SetName(base::UTF16ToUTF8(autofill_field->name_attribute))
+            .SetValue(base::UTF16ToUTF8(field->value))
             .SetHtmlType(std::string(
                 autofill::FormControlTypeToString(field->form_control_type)))
             .SetAutofillType(
@@ -277,6 +278,10 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
                     ? protocol::Autofill::FillingStrategyEnum::AutofillInferred
                     : protocol::Autofill::FillingStrategyEnum::
                           AutocompleteAttribute)
+            .SetFieldId(base::FeatureList::IsEnabled(
+                            blink::features::kAutofillUseDomNodeIdForRendererId)
+                            ? field->unique_renderer_id.value()
+                            : 0)
             .Build());
   }
 
@@ -286,8 +291,8 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
   // Devtools is already in english, so we can default the local to en-US.
   const std::string locale = "en-US";
   autofill::GetAddressComponents(
-      base::UTF16ToASCII(profile_used_to_fill_form->GetInfo(
-          autofill::ServerFieldType::ADDRESS_HOME_COUNTRY, locale)),
+      base::UTF16ToUTF8(profile_used_to_fill_form->GetInfo(
+          autofill::FieldType::ADDRESS_HOME_COUNTRY, locale)),
       locale,
       /*include_literals=*/false, &components, nullptr);
 
@@ -311,7 +316,7 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
       profile_values->push_back(
           protocol::Autofill::AddressField::Create()
               .SetName(FieldTypeToString(component.field))
-              .SetValue(base::UTF16ToASCII(
+              .SetValue(base::UTF16ToUTF8(
                   profile_used_to_fill_form->GetInfo(component.field, locale)))
               .Build());
     }

@@ -368,11 +368,8 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       // Mimics logic in download_ui_model.cc for downloads with danger_type
       // DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE.
       case DangerType.kDangerousFile:
-        return this.data.safeBrowsingState ===
-                SafeBrowsingState.kNoSafeBrowsing ?
-            DisplayType.UNVERIFIED :
-            (this.data.hasSafeBrowsingVerdict ? DisplayType.SUSPICIOUS :
-                                                DisplayType.UNVERIFIED);
+        return this.data.hasSafeBrowsingVerdict ? DisplayType.SUSPICIOUS :
+                                                  DisplayType.UNVERIFIED;
 
       case DangerType.kDangerousUrl:
       case DangerType.kDangerousContent:
@@ -931,15 +928,29 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   private onSaveDangerousClick_() {
-    if (this.improvedDownloadWarningsUx_) {
-      this.getMoreActionsMenu().close();
-      // TODO(crbug.com/1465966): Suspicious downloads should validate directly.
-      if (this.displayType_ === DisplayType.DANGEROUS) {
-        this.notifySaveDangerousClick_();
-        return;
-      }
+    if (!this.improvedDownloadWarningsUx_) {
+      // TODO(chlily): Clean up old paths that show the DownloadDangerPrompt.
+      assert(!!this.mojoHandler_);
+      this.mojoHandler_.saveDangerousRequiringGesture(this.data.id);
+      return;
     }
-    this.mojoHandler_!.saveDangerousRequiringGesture(this.data.id);
+
+    this.getMoreActionsMenu().close();
+
+    if (this.displayType_ === DisplayType.DANGEROUS) {
+      this.notifySaveDangerousClick_();
+      return;
+    }
+
+    // "Suspicious" types which show up in grey can be validated directly.
+    const SAVED_FROM_PAGE_TYPES = [
+      DisplayType.SUSPICIOUS,
+      DisplayType.UNVERIFIED,
+      DisplayType.INSECURE,
+    ];
+    assert(SAVED_FROM_PAGE_TYPES.includes(this.displayType_));
+    assert(!!this.mojoHandler_);
+    this.mojoHandler_.saveSuspiciousRequiringGesture(this.data.id);
   }
 
   private onShowClick_() {

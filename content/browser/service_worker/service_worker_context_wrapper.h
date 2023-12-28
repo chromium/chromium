@@ -414,6 +414,10 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   static void SetURLLoaderFactoryInterceptorForTesting(
       const URLLoaderFactoryInterceptor& interceptor);
 
+  ServiceWorkerContextCore* GetContextCoreForTest() {
+    return context_core_.get();
+  }
+
  private:
   friend class BackgroundSyncManagerTest;
   friend class base::DeleteHelper<ServiceWorkerContextWrapper>;

@@ -38,6 +38,20 @@ const int kNonExistingBackendNodeId = 1000'000'001;
 using testing::Eq;
 using testing::Pointee;
 
+std::string ElementReference(const char* frame_id,
+                             const char* loader_id,
+                             int backend_node_id) {
+  return base::StringPrintf("f.%s.d.%s.e.%d", frame_id, loader_id,
+                            backend_node_id);
+}
+
+std::string ElementReference(const char* frame_id,
+                             const char* loader_id,
+                             const char* backend_node_id) {
+  return base::StringPrintf("f.%s.d.%s.e.%s", frame_id, loader_id,
+                            backend_node_id);
+}
+
 template <int Code>
 testing::AssertionResult StatusCodeIs(const Status& status) {
   if (status.code() == Code) {
@@ -574,36 +588,110 @@ TEST(ManageCookies, AddCookie_SameSiteTrue) {
   ASSERT_EQ(kOk, status.code());
 }
 
-TEST(GetBackendNodeId, W3C) {
+TEST(GetBackendNodeId, ElementW3C) {
   std::unique_ptr<FakeDevToolsClient> client_uptr =
-      std::make_unique<FakeDevToolsClient>();
+      std::make_unique<FakeDevToolsClient>("root");
   FakeDevToolsClient* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
   WebViewImpl view(client_ptr->GetId(), true, nullptr, &browser_info,
                    std::move(client_uptr), absl::nullopt,
                    PageLoadStrategy::kEager);
   {
+    // Good 1
     base::Value::Dict node_ref;
-    node_ref.Set(kElementKey, "one_element_25");
-    node_ref.Set(kElementKeyW3C, "one_element_13");
+    node_ref.Set(kElementKey, ElementReference("root", "root_loader", 25));
+    node_ref.Set(kElementKeyW3C, ElementReference("root", "root_loader", 13));
     int backend_node_id = -1;
     EXPECT_TRUE(StatusOk(view.GetBackendNodeIdByElement(
         "", base::Value(std::move(node_ref)), &backend_node_id)));
     EXPECT_EQ(13, backend_node_id);
   }
   {
+    // Good 2
     base::Value::Dict node_ref;
-    node_ref.Set(kShadowRootKey, "one_element_11");
+    node_ref.Set(kElementKey, ElementReference("good", "good_loader", 25));
+    node_ref.Set(kElementKeyW3C, ElementReference("good", "good_loader", 13));
+    int backend_node_id = -1;
+    EXPECT_TRUE(StatusOk(view.GetBackendNodeIdByElement(
+        "good", base::Value(std::move(node_ref)), &backend_node_id)));
+    EXPECT_EQ(13, backend_node_id);
+  }
+  {
+    // Stale
+    base::Value::Dict node_ref;
+    node_ref.Set(kElementKey, ElementReference("root", "past_loader", 25));
+    node_ref.Set(kElementKeyW3C, ElementReference("root", "past_loader", 13));
+    int backend_node_id = -1;
+    EXPECT_EQ(kStaleElementReference,
+              view.GetBackendNodeIdByElement(
+                      "", base::Value(std::move(node_ref)), &backend_node_id)
+                  .code());
+  }
+  {
+    // Unknown
+    base::Value::Dict node_ref;
+    node_ref.Set(kElementKey, ElementReference("root", "root_loader", 25));
+    node_ref.Set(kElementKeyW3C, ElementReference("root", "root_loader", 13));
+    int backend_node_id = -1;
+    EXPECT_EQ(kNoSuchElement, view.GetBackendNodeIdByElement(
+                                      "good", base::Value(std::move(node_ref)),
+                                      &backend_node_id)
+                                  .code());
+  }
+}
+
+TEST(GetBackendNodeId, ShadowRootW3C) {
+  std::unique_ptr<FakeDevToolsClient> client_uptr =
+      std::make_unique<FakeDevToolsClient>("root");
+  FakeDevToolsClient* client_ptr = client_uptr.get();
+  BrowserInfo browser_info;
+  WebViewImpl view(client_ptr->GetId(), true, nullptr, &browser_info,
+                   std::move(client_uptr), absl::nullopt,
+                   PageLoadStrategy::kEager);
+  {
+    // Good 1
+    base::Value::Dict node_ref;
+    node_ref.Set(kShadowRootKey, ElementReference("root", "root_loader", 11));
     int backend_node_id = -1;
     EXPECT_TRUE(StatusOk(view.GetBackendNodeIdByElement(
         "", base::Value(std::move(node_ref)), &backend_node_id)));
     EXPECT_EQ(11, backend_node_id);
   }
+  {
+    // Good 2
+    base::Value::Dict node_ref;
+    node_ref.Set(kShadowRootKey, ElementReference("good", "good_loader", 11));
+    int backend_node_id = -1;
+    EXPECT_TRUE(StatusOk(view.GetBackendNodeIdByElement(
+        "good", base::Value(std::move(node_ref)), &backend_node_id)));
+    EXPECT_EQ(11, backend_node_id);
+  }
+  {
+    // Stale
+    base::Value::Dict node_ref;
+    node_ref.Set(kShadowRootKey, ElementReference("root", "past_loader", 11));
+    int backend_node_id = -1;
+    EXPECT_EQ(kDetachedShadowRoot,
+              view.GetBackendNodeIdByElement(
+                      "", base::Value(std::move(node_ref)), &backend_node_id)
+                  .code());
+  }
+  {
+    // Unknown
+    base::Value::Dict node_ref;
+    node_ref.Set(kShadowRootKey, ElementReference("root", "root_loader", 11));
+    int backend_node_id = -1;
+    EXPECT_EQ(
+        kNoSuchShadowRoot,
+        view.GetBackendNodeIdByElement("good", base::Value(std::move(node_ref)),
+                                       &backend_node_id)
+            .code());
+  }
 }
 
 TEST(GetBackendNodeId, NonW3C) {
   std::unique_ptr<FakeDevToolsClient> client_uptr =
-      std::make_unique<FakeDevToolsClient>();
+      std::make_unique<FakeDevToolsClient>("root");
   FakeDevToolsClient* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
   WebViewImpl view(client_ptr->GetId(), false, nullptr, &browser_info,
@@ -611,8 +699,8 @@ TEST(GetBackendNodeId, NonW3C) {
                    PageLoadStrategy::kEager);
   {
     base::Value::Dict node_ref;
-    node_ref.Set(kElementKey, "one_element_25");
-    node_ref.Set(kElementKeyW3C, "one_element_13");
+    node_ref.Set(kElementKey, ElementReference("root", "root_loader", 25));
+    node_ref.Set(kElementKeyW3C, ElementReference("root", "root_loader", 13));
     int backend_node_id = -1;
     EXPECT_TRUE(StatusOk(view.GetBackendNodeIdByElement(
         "", base::Value(std::move(node_ref)), &backend_node_id)));
@@ -620,7 +708,7 @@ TEST(GetBackendNodeId, NonW3C) {
   }
   {
     base::Value::Dict node_ref;
-    node_ref.Set(kShadowRootKey, "one_element_11");
+    node_ref.Set(kShadowRootKey, ElementReference("root", "root_loader", 11));
     int backend_node_id = -1;
     EXPECT_TRUE(StatusOk(view.GetBackendNodeIdByElement(
         "", base::Value(std::move(node_ref)), &backend_node_id)));
@@ -644,7 +732,7 @@ TEST(CallUserSyncScript, ElementIdAsResultRootFrame) {
                                 base::TimeDelta::Max(), &result)));
     ASSERT_TRUE(result->is_dict());
     EXPECT_THAT(result->GetDict().FindString(kElementKeyW3C),
-                Pointee(Eq("root_loader_element_4321")));
+                Pointee(Eq(ElementReference("root", "root_loader", "4321"))));
   }
   result.reset();
   {
@@ -653,7 +741,7 @@ TEST(CallUserSyncScript, ElementIdAsResultRootFrame) {
                                          base::TimeDelta::Max(), &result)));
     ASSERT_TRUE(result->is_dict());
     EXPECT_THAT(result->GetDict().FindString(kElementKeyW3C),
-                Pointee(Eq("root_loader_element_4321")));
+                Pointee(Eq(ElementReference("root", "root_loader", 4321))));
   }
   result.reset();
   {
@@ -662,7 +750,7 @@ TEST(CallUserSyncScript, ElementIdAsResultRootFrame) {
                                 base::TimeDelta::Max(), &result)));
     ASSERT_TRUE(result->is_dict());
     EXPECT_THAT(result->GetDict().FindString(kElementKeyW3C),
-                Pointee(Eq("good_loader_element_4321")));
+                Pointee(Eq(ElementReference("good", "good_loader", 4321))));
   }
 }
 
@@ -682,7 +770,7 @@ TEST(CallUserSyncScript, ElementIdAsResultChildFrame) {
                                 base::TimeDelta::Max(), &result)));
     ASSERT_TRUE(result->is_dict());
     EXPECT_THAT(result->GetDict().FindString(kElementKeyW3C),
-                Pointee(Eq("root_loader_element_4321")));
+                Pointee(Eq(ElementReference("root", "root_loader", 4321))));
   }
   result.reset();
   {
@@ -691,7 +779,7 @@ TEST(CallUserSyncScript, ElementIdAsResultChildFrame) {
                                          base::TimeDelta::Max(), &result)));
     ASSERT_TRUE(result->is_dict());
     EXPECT_THAT(result->GetDict().FindString(kElementKeyW3C),
-                Pointee(Eq("good_loader_element_4321")));
+                Pointee(Eq(ElementReference("good", "good_loader", 4321))));
   }
   result.reset();
   {
@@ -700,7 +788,7 @@ TEST(CallUserSyncScript, ElementIdAsResultChildFrame) {
                                 base::TimeDelta::Max(), &result)));
     ASSERT_TRUE(result->is_dict());
     EXPECT_THAT(result->GetDict().FindString(kElementKeyW3C),
-                Pointee(Eq("good_loader_element_4321")));
+                Pointee(Eq(ElementReference("good", "good_loader", 4321))));
   }
 }
 
@@ -843,7 +931,7 @@ TEST_P(CallUserSyncScriptArgs, Root) {
   // Expecting success as the frame and loader_id match each other.
   base::Value::List args;
   base::Value::Dict ref;
-  ref.Set(ElementKey(), "root_loader_element_99");
+  ref.Set(ElementKey(), ElementReference("root", "root_loader", 99));
   args.Append(std::move(ref));
   std::unique_ptr<base::Value> result;
   EXPECT_TRUE(StatusOk(view->CallUserSyncScript(
@@ -854,7 +942,7 @@ TEST_P(CallUserSyncScriptArgs, GoodChild) {
   // Expecting success as the frame and loader_id match each other.
   base::Value::List args;
   base::Value::Dict ref;
-  ref.Set(ElementKey(), "good_loader_element_99");
+  ref.Set(ElementKey(), ElementReference("good", "good_loader", 99));
   args.Append(std::move(ref));
   std::unique_ptr<base::Value> result;
   EXPECT_TRUE(StatusOk(view->CallUserSyncScript(
@@ -862,7 +950,7 @@ TEST_P(CallUserSyncScriptArgs, GoodChild) {
 }
 
 TEST_P(CallUserSyncScriptArgs, DeepElement) {
-  std::string element_id = "good_loader_element_99";
+  std::string element_id = ElementReference("good", "good_loader", 99);
   base::Value::Dict ref;
   ref.Set(ElementKey(), element_id);
   base::Value::List list;
@@ -893,14 +981,27 @@ TEST_P(CallUserSyncScriptArgs, DeepElement) {
 TEST_P(CallUserSyncScriptArgs, FrameAndLoaderMismatch) {
   base::Value::List args;
   base::Value::Dict ref;
-  ref.Set(ElementKey(), "root_loader_element_99");
+  ref.Set(ElementKey(), ElementReference("root", "root_loader", 99));
   args.Append(std::move(ref));
   std::unique_ptr<base::Value> result;
-  const int expected_error = ElementKey() == kShadowRootKey
-                                 ? kDetachedShadowRoot
-                                 : kStaleElementReference;
+  const int expected_error =
+      ElementKey() == kShadowRootKey ? kNoSuchShadowRoot : kNoSuchElement;
   EXPECT_EQ(expected_error,
             view->CallUserSyncScript("good", "some_code", std::move(args),
+                                     base::TimeDelta::Max(), &result)
+                .code());
+}
+
+TEST_P(CallUserSyncScriptArgs, NoSuchFrame) {
+  base::Value::List args;
+  base::Value::Dict ref;
+  ref.Set(ElementKey(), ElementReference("unknown", "root_loader", 99));
+  args.Append(std::move(ref));
+  std::unique_ptr<base::Value> result;
+  const int expected_error =
+      ElementKey() == kShadowRootKey ? kNoSuchShadowRoot : kNoSuchElement;
+  EXPECT_EQ(expected_error,
+            view->CallUserSyncScript("root", "some_code", std::move(args),
                                      base::TimeDelta::Max(), &result)
                 .code());
 }
@@ -908,7 +1009,7 @@ TEST_P(CallUserSyncScriptArgs, FrameAndLoaderMismatch) {
 TEST_P(CallUserSyncScriptArgs, NoSuchLoader) {
   base::Value::List args;
   base::Value::Dict ref;
-  ref.Set(ElementKey(), "bad_loader_element_99");
+  ref.Set(ElementKey(), ElementReference("root", "bad_loader", 99));
   args.Append(std::move(ref));
   std::unique_ptr<base::Value> result;
   const int expected_error = ElementKey() == kShadowRootKey
@@ -923,59 +1024,54 @@ TEST_P(CallUserSyncScriptArgs, NoSuchLoader) {
 TEST_P(CallUserSyncScriptArgs, NoSuchBackendNodeId) {
   base::Value::List args;
   base::Value::Dict ref;
-  ref.Set(ElementKey(), base::StringPrintf("good_loader_element_%d",
-                                           kNonExistingBackendNodeId));
+  ref.Set(ElementKey(),
+          ElementReference("good", "good_loader", kNonExistingBackendNodeId));
   args.Append(std::move(ref));
   std::unique_ptr<base::Value> result;
-  EXPECT_EQ(kNoSuchElement,
+  const int expected_error = ElementKey() == kShadowRootKey
+                                 ? kDetachedShadowRoot
+                                 : kStaleElementReference;
+  EXPECT_EQ(expected_error,
             view->CallUserSyncScript("good", "some_code", std::move(args),
                                      base::TimeDelta::Max(), &result)
                 .code());
 }
 
-TEST_P(CallUserSyncScriptArgs, IncorrectSeparator) {
-  base::Value::List args;
-  base::Value::Dict ref;
-  ref.Set(ElementKey(), "good_loader_eeeeeee_99");
-  args.Append(std::move(ref));
-  std::unique_ptr<base::Value> result;
-  EXPECT_FALSE(view->CallUserSyncScript("good", "some_code", std::move(args),
-                                        base::TimeDelta::Max(), &result)
-                   .IsOk());
+TEST_P(CallUserSyncScriptArgs, MalformedReference) {
+  std::vector<std::string> components = {"f", "good", "d",      "good_loader",
+                                         "e", "99",   "trailer"};
+  std::string ref_prefix;
+  std::vector<std::string> bad_refs;
+  for (size_t k = 0; k < components.size(); ++k) {
+    ref_prefix += components[k];
+    if (k != 5) {
+      // exclude the only good reference
+      bad_refs.push_back(ref_prefix);
+    }
+    ref_prefix += ".";
+    bad_refs.push_back(ref_prefix);
+  }
+  for (const std::string& ref_str : bad_refs) {
+    base::Value::List args;
+    base::Value::Dict ref;
+    ref.Set(ElementKey(), ref_str);
+    args.Append(std::move(ref));
+    std::unique_ptr<base::Value> result;
+    EXPECT_FALSE(view->CallUserSyncScript("good", "some_code", std::move(args),
+                                          base::TimeDelta::Max(), &result)
+                     .IsOk());
+  }
 }
 
 TEST_P(CallUserSyncScriptArgs, NoBackendNodeId) {
   base::Value::List args;
   base::Value::Dict ref;
-  ref.Set(ElementKey(), "good_loader_element_xx");
+  ref.Set(ElementKey(), ElementReference("good", "good_loader", "xx"));
   args.Append(std::move(ref));
   std::unique_ptr<base::Value> result;
   EXPECT_FALSE(view->CallUserSyncScript("good", "some_code", std::move(args),
                                         base::TimeDelta::Max(), &result)
                    .IsOk());
-}
-
-TEST_P(CallUserSyncScriptArgs, RepeatedSeparator) {
-  // We have a test that checks if the second component (BackendNodeId) is
-  // integer.
-  // Here it is sufficient to check that the call does not fail.
-  // This would mean that only the last _element_ id was used as a separation
-  // point.
-  base::Value::Dict extra_child;
-  extra_child.SetByDottedPath("frame.id", "extra_child_element_some_text");
-  extra_child.SetByDottedPath("frame.loaderId",
-                              "extra_child_element_some_text_loader");
-  client_ptr->AddExtraChildFrame(std::move(extra_child));
-  view->GetFrameTracker()->SetContextIdForFrame("extra_child_element_some_text",
-                                                "irrelevant");
-  base::Value::List args;
-  base::Value::Dict ref;
-  ref.Set(ElementKey(), "extra_child_element_some_text_loader_element_71");
-  args.Append(std::move(ref));
-  std::unique_ptr<base::Value> result;
-  EXPECT_TRUE(StatusOk(view->CallUserSyncScript(
-      "extra_child_element_some_text", "some_code", std::move(args),
-      base::TimeDelta::Max(), &result)));
 }
 
 INSTANTIATE_TEST_SUITE_P(References,
@@ -1021,10 +1117,10 @@ TEST(CallUserSyncScript, WeakReference) {
   ASSERT_EQ(2u, result_list.size());
   ASSERT_TRUE(result_list[0].is_dict());
   EXPECT_THAT(result_list[0].GetDict().FindString(kElementKeyW3C),
-              Pointee(Eq("root_loader_element_557")));
+              Pointee(Eq(ElementReference("root", "root_loader", 557))));
   ASSERT_TRUE(result_list[1].is_dict());
   EXPECT_THAT(result_list[1].GetDict().FindString(kElementKeyW3C),
-              Pointee(Eq("root_loader_element_557")));
+              Pointee(Eq(ElementReference("root", "root_loader", 557))));
 }
 
 TEST(CallUserSyncScript, WeakReferenceOrderInsensitive) {
@@ -1062,10 +1158,10 @@ TEST(CallUserSyncScript, WeakReferenceOrderInsensitive) {
   ASSERT_EQ(2u, result_list.size());
   ASSERT_TRUE(result_list[0].is_dict());
   EXPECT_THAT(result_list[0].GetDict().FindString(kElementKeyW3C),
-              Pointee(Eq("root_loader_element_557")));
+              Pointee(Eq(ElementReference("root", "root_loader", 557))));
   ASSERT_TRUE(result_list[1].is_dict());
   EXPECT_THAT(result_list[1].GetDict().FindString(kElementKeyW3C),
-              Pointee(Eq("root_loader_element_557")));
+              Pointee(Eq(ElementReference("root", "root_loader", 557))));
 }
 
 TEST(CallUserSyncScript, WeakReferenceNotResolved) {

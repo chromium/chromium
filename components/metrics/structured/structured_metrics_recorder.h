@@ -6,6 +6,7 @@
 
 #include <deque>
 #include <memory>
+#include <optional>
 
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
@@ -115,9 +116,6 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   friend class TestStructuredMetricsProvider;
   friend class StructuredMetricsServiceTest;
 
-  // Recorder::RecorderImpl:
-  void OnReportingStateChanged(bool enabled) override;
-
   // Records events before IsInitialized().
   void RecordEventBeforeInitialization(const Event& event);
 
@@ -181,7 +179,7 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   bool IsProfileEvent(const Event& event) const;
 
   // Helper function to get the validators for |event|.
-  absl::optional<std::pair<const ProjectValidator*, const EventValidator*>>
+  std::optional<std::pair<const ProjectValidator*, const EventValidator*>>
   GetEventValidators(const Event& event) const;
 
   void SetOnReadyToRecord(base::OnceClosure callback);
@@ -225,11 +223,6 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   // OnRecordingEnabled is called, which sets it true if structured metrics'
   // feature flag is enabled.
   bool recording_enabled_ = false;
-
-  // Set by OnReportingStateChanged if all keys and events should be deleted,
-  // but the files backing that state haven't been initialized yet. If set,
-  // state will be purged upon initialization.
-  bool purge_state_on_init_ = false;
 
   // Store for events that were recorded before keys are loaded.
   std::deque<Event> unhashed_events_;

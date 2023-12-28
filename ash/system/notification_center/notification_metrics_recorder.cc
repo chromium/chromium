@@ -6,7 +6,7 @@
 
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/system/message_center/metrics_utils.h"
+#include "ash/system/notification_center/metrics_utils.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "base/check.h"
 #include "base/time/time.h"

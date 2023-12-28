@@ -53,7 +53,7 @@ class ScopedFloatContainerStacker : public aura::WindowObserver {
 
   // Not null when a dragged window has been released and is animating to its
   // final position.
-  raw_ptr<aura::Window, ExperimentalAsh> dragged_window_ = nullptr;
+  raw_ptr<aura::Window> dragged_window_ = nullptr;
   std::unique_ptr<ui::CallbackLayerAnimationObserver> animation_observer_;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>

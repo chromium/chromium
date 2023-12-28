@@ -38,18 +38,17 @@ CreateAddressDataFromAutofillProfile(const AutofillProfile& profile,
                                      const std::string& app_locale);
 
 // Returns the corresponding Autofill server type for |field|.
-ServerFieldType TypeForField(::i18n::addressinput::AddressField field);
+FieldType TypeForField(::i18n::addressinput::AddressField field);
 
 // Sets |field| to the corresponding address field for the Autofill
 // |server_type|. Returns |true| if |server_type| can be represented as an
 // address field. The |field| parameter can be NULL.
-bool FieldForType(ServerFieldType server_type,
+bool FieldForType(FieldType server_type,
                   ::i18n::addressinput::AddressField* field);
 
 // Returns whether the field specified by |server_type| is required for this
 // |country_code|, according to the libaddressinput metadata.
-bool IsFieldRequired(ServerFieldType server_type,
-                     const std::string& country_code);
+bool IsFieldRequired(FieldType server_type, const std::string& country_code);
 
 }  // namespace i18n
 }  // namespace autofill

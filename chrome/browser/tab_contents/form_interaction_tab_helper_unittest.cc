@@ -73,7 +73,6 @@ class FormInteractionTabHelperTest : public ChromeRenderViewHostTestHarness {
              GetFrameNodeForRenderFrameHost(rfh)]() {
           auto* frame_node =
               performance_manager::FrameNodeImpl::FromNode(node.get());
-          frame_node->SetIsCurrent(true);
           frame_node->SetHadFormInteraction();
           std::move(quit_loop).Run();
         });

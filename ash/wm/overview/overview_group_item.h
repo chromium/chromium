@@ -40,7 +40,7 @@ class OverviewGroupItem : public OverviewItemBase,
 
   // OverviewItemBase:
   aura::Window* GetWindow() override;
-  std::vector<aura::Window*> GetWindows() override;
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> GetWindows() override;
   bool HasVisibleOnAllDesksWindow() override;
   bool Contains(const aura::Window* target) const override;
   OverviewItem* GetLeafItemForWindow(aura::Window* window) override;

@@ -4,6 +4,8 @@
 
 module crosapi.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
+
 // Memory pressure level corresponding to MemoryPressureLevel in
 // base/memory/memory_pressure_listener.h
 [Stable, Extensible]
@@ -14,12 +16,16 @@ enum MemoryPressureLevel {
 };
 
 // Memory pressure status.
+// Next MinVersion: 2
 [Stable]
 struct MemoryPressure {
   MemoryPressureLevel level@0;
 
   // The amount of memory to reclaim to reduce the memory pressure level.
   uint64 reclaim_target_kb@1;
+
+  // The origin time of the memory pressure signal.
+  [MinVersion=1] mojo_base.mojom.TimeTicks? signal_origin@2;
 };
 
 // A renderer process hosting a frame of a page for browser memory usage

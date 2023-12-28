@@ -41,6 +41,7 @@ namespace {
           .capabilities =
               {// Capabilities used/routed by WebInstanceHost:
                ::component_testing::Directory{"config-data-for-web-instance"},
+               ::component_testing::Directory{"tzdata-icu"},
                // Required capabilities offered to web-instance.cm:
                ::component_testing::Directory{"root-ssl-certificates"},
                ::component_testing::Protocol{"fuchsia.buildinfo.Provider"},

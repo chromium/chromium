@@ -165,7 +165,7 @@ class ReleaseBufferCompletionCallback: public TestCompletionCallback {
  private:
   void SetResult(int result) override;
 
-  raw_ptr<IOBuffer, DanglingUntriaged> buffer_;
+  raw_ptr<IOBuffer> buffer_;
 };
 
 }  // namespace net

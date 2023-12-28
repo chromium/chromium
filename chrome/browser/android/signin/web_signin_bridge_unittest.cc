@@ -115,8 +115,9 @@ TEST_F(
       CreateWebSigninBridge(account, callback.Get());
 
   EXPECT_CALL(callback,
-              Run(GoogleServiceAuthError(
-                  GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS)));
+              Run(GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                  GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                      CREDENTIALS_REJECTED_BY_SERVER)));
   identity_test_env_.SetPrimaryAccount(account.email,
                                        signin::ConsentLevel::kSync);
   identity_test_env_.SetInvalidRefreshTokenForAccount(account.account_id);
@@ -160,8 +161,9 @@ TEST_F(WebSigninBridgeTest, ReconcilorErrorShouldTriggerOnSigninFailed) {
   std::unique_ptr<WebSigninBridge> web_signin_bridge =
       CreateWebSigninBridge(account, callback.Get());
   EXPECT_CALL(callback,
-              Run(GoogleServiceAuthError(
-                  GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS)));
+              Run(GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                  GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                      CREDENTIALS_REJECTED_BY_SERVER)));
 
   identity_test_env_.SetPrimaryAccount(account.email,
                                        signin::ConsentLevel::kSync);

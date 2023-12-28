@@ -47,25 +47,26 @@ class AuraObserver : public aura::WindowEventDispatcherObserver {
   bool mouse_up_seen_ = false;
 };
 
-bool IsTestControllerAvailable(
-    crosapi::mojom::TestController::MethodMinVersions min_version) {
+// Returns true if TestController is available in LacrosService.
+bool IsTestControllerAvailable() {
   auto* lacros_service = chromeos::LacrosService::Get();
-  if (!lacros_service ||
-      !lacros_service->IsAvailable<crosapi::mojom::TestController>()) {
-    return false;
-  }
+  return lacros_service &&
+         lacros_service->IsAvailable<crosapi::mojom::TestController>();
+}
 
+// Returns true if TestController in Ash supports the method requiring at least
+// |min_version|.
+bool DoesTestControllerSupport(
+    crosapi::mojom::TestController::MethodMinVersions min_version) {
+  CHECK(IsTestControllerAvailable());
   int interface_version =
-      lacros_service->GetInterfaceVersion<crosapi::mojom::TestController>();
+      chromeos::LacrosService::Get()
+          ->GetInterfaceVersion<crosapi::mojom::TestController>();
   return (interface_version >= static_cast<int>(min_version));
 }
 
 bool WaitForWindow(const std::string& id, bool exists) {
-  if (!IsTestControllerAvailable(
-          crosapi::mojom::TestController::MethodMinVersions::
-              kDoesWindowExistMinVersion)) {
-    return false;
-  }
+  CHECK(IsTestControllerAvailable());
   base::RunLoop outer_loop;
   bool actual_exists = false;
   auto wait_for_window = base::BindRepeating(
@@ -97,11 +98,7 @@ bool WaitForWindow(const std::string& id, bool exists) {
 }
 
 bool WaitForElement(const std::string& id, bool exists) {
-  if (!IsTestControllerAvailable(
-          crosapi::mojom::TestController::MethodMinVersions::
-              kDoesElementExistMinVersion)) {
-    return false;
-  }
+  CHECK(IsTestControllerAvailable());
   base::RunLoop outer_loop;
   bool actual_exists = false;
   auto wait_for_element = base::BindRepeating(
@@ -147,11 +144,7 @@ bool WaitForWindowDestruction(const std::string& id) {
 }
 
 bool WaitForShelfItem(const std::string& id, bool exists) {
-  if (!IsTestControllerAvailable(
-          crosapi::mojom::TestController::MethodMinVersions::
-              kDoesItemExistInShelfMinVersion)) {
-    return false;
-  }
+  CHECK(IsTestControllerAvailable());
   base::RunLoop outer_loop;
   bool actual_exists = false;
   auto wait_for_shelf_item = base::BindRepeating(
@@ -185,7 +178,7 @@ bool WaitForShelfItem(const std::string& id, bool exists) {
 bool WaitForShelfItemState(const std::string& id,
                            uint32_t state,
                            const base::Location& location) {
-  if (!IsTestControllerAvailable(
+  if (!DoesTestControllerSupport(
           crosapi::mojom::TestController::MethodMinVersions::
               kGetShelfItemStateMinVersion)) {
     return false;
@@ -226,11 +219,7 @@ bool WaitForShelfItemState(const std::string& id,
 // |window|. The AuraObserver only waits for the up-event to start processing
 // before quitting the run loop.
 bool SendAndWaitForMouseClick(aura::Window* window) {
-  if (!IsTestControllerAvailable(
-          crosapi::mojom::TestController::MethodMinVersions::
-              kClickWindowMinVersion)) {
-    return false;
-  }
+  CHECK(IsTestControllerAvailable());
   DCHECK(window->IsRootWindow());
   std::string id = lacros_window_utility::GetRootWindowUniqueId(window);
 

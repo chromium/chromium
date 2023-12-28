@@ -93,8 +93,7 @@ class ASH_EXPORT DarkLightModeControllerImpl
 
   base::ObserverList<ColorModeObserver> observers_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  raw_ptr<PrefService, ExperimentalAsh> active_user_pref_service_ =
-      nullptr;  // Not owned.
+  raw_ptr<PrefService> active_user_pref_service_ = nullptr;  // Not owned.
 };
 
 }  // namespace ash

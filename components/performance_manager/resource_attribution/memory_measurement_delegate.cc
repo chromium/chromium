@@ -116,7 +116,7 @@ class MemoryMeasurementDelegateFactoryImpl final
 // static
 void MemoryMeasurementDelegate::SetDelegateFactoryForTesting(Graph* graph,
                                                              Factory* factory) {
-  auto* scheduler = QueryScheduler::GetFromGraph(graph);
+  auto* scheduler = internal::QueryScheduler::GetFromGraph(graph);
   CHECK(scheduler);
   scheduler
       ->GetMemoryProviderForTesting()                  // IN-TEST

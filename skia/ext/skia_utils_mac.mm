@@ -9,28 +9,64 @@
 
 #include <memory>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check.h"
 #include "base/mac/mac_util.h"
 #include "skia/ext/platform_canvas.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/utils/mac/SkCGUtils.h"
 
 namespace {
 
 // Draws an NSImage or an NSImageRep with a given size into a SkBitmap.
-SkBitmap NSImageOrNSImageRepToSkBitmapWithColorSpace(
-    NSImage* image,
-    NSImageRep* image_rep,
-    NSSize size,
-    bool is_opaque,
-    CGColorSpaceRef color_space) {
+SkBitmap NSImageOrNSImageRepToSkBitmap(NSImage* image,
+                                       NSImageRep* image_rep,
+                                       NSSize size,
+                                       bool is_opaque) {
   // Only image or image_rep should be provided, not both.
   DCHECK((image != nullptr) ^ (image_rep != nullptr));
 
-  SkBitmap bitmap;
-  if (!bitmap.tryAllocN32Pixels(size.width, size.height, is_opaque))
-    return bitmap;  // Return |bitmap| which should respond true to isNull().
+  // Determine the color space for the SkBitmap. Any color space is acceptable,
+  // but if we can match the color space of `image` or `image_rep` then the
+  // result will be higher fidelity.
+  sk_sp<SkColorSpace> sk_color_space;
+  {
+    NSBitmapImageRep* bitmap_image_rep = nil;
+    if (image_rep) {
+      // If `image_rep` is an NSBitmapImageRep, then use its color space.
+      bitmap_image_rep = base::apple::ObjCCast<NSBitmapImageRep>(image_rep);
+    } else {
+      // If `image` has an NSBitmapImageRep, then use the color space of the
+      // first encountered NSBitmapImageRep.
+      for (NSImageRep* rep in [image representations]) {
+        bitmap_image_rep = base::apple::ObjCCast<NSBitmapImageRep>(rep);
+        if (bitmap_image_rep) {
+          break;
+        }
+      }
+    }
+    sk_color_space = SkMakeColorSpaceFromCGColorSpace(
+        [[bitmap_image_rep colorSpace] CGColorSpace]);
 
+    // If we did not extract a color space that matches the input, default to
+    // using sRGB.
+    if (!sk_color_space) {
+      sk_color_space = SkColorSpace::MakeSRGB();
+    }
+  }
+
+  // Set the CGColorSpace of the CGContext to match the SkColorSpace.
+  base::apple::ScopedCFTypeRef<CGColorSpaceRef> cg_color_space(
+      SkCreateCGColorSpace(sk_color_space.get()));
+
+  SkImageInfo info = SkImageInfo::MakeN32(
+      size.width, size.height,
+      is_opaque ? kOpaque_SkAlphaType : kPremul_SkAlphaType, sk_color_space);
+  SkBitmap bitmap;
+  if (!bitmap.tryAllocPixels(info)) {
+    return bitmap;  // Return |bitmap| which should respond true to isNull().
+  }
 
   void* data = bitmap.getPixels();
 
@@ -41,7 +77,7 @@ SkBitmap NSImageOrNSImageRepToSkBitmapWithColorSpace(
              && SK_G32_SHIFT == (g) && SK_B32_SHIFT == (b))
 #if defined(SK_CPU_LENDIAN) && HAS_ARGB_SHIFTS(24, 16, 8, 0)
   base::apple::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
-      data, size.width, size.height, 8, size.width * 4, color_space,
+      data, size.width, size.height, 8, size.width * 4, cg_color_space.get(),
       uint32_t{kCGImageAlphaPremultipliedFirst} | kCGBitmapByteOrder32Host));
 #else
 #error We require that Skia's and CoreGraphics's recommended \
@@ -210,26 +246,22 @@ SkBitmap CGImageToSkBitmap(CGImageRef image) {
   return SkBitmap();
 }
 
-SkBitmap NSImageToSkBitmapWithColorSpace(
-    NSImage* image, bool is_opaque, CGColorSpaceRef color_space) {
-  return NSImageOrNSImageRepToSkBitmapWithColorSpace(
-      image, /*image_rep=*/nil, image.size, is_opaque, color_space);
+SkBitmap NSImageToSkBitmap(NSImage* image, bool is_opaque) {
+  return NSImageOrNSImageRepToSkBitmap(image, /*image_rep=*/nil, image.size,
+                                       is_opaque);
 }
 
-SkBitmap NSImageRepToSkBitmapWithColorSpace(NSImageRep* image_rep,
-                                            NSSize size,
-                                            bool is_opaque,
-                                            CGColorSpaceRef color_space) {
-  return NSImageOrNSImageRepToSkBitmapWithColorSpace(
-      /*image=*/nil, image_rep, size, is_opaque, color_space);
+SkBitmap NSImageRepToSkBitmap(NSImageRep* image_rep,
+                              NSSize size,
+                              bool is_opaque) {
+  return NSImageOrNSImageRepToSkBitmap(
+      /*image=*/nil, image_rep, size, is_opaque);
 }
 
-NSBitmapImageRep* SkBitmapToNSBitmapImageRepWithColorSpace(
-    const SkBitmap& skiaBitmap,
-    CGColorSpaceRef colorSpace) {
+NSBitmapImageRep* SkBitmapToNSBitmapImageRep(const SkBitmap& skiaBitmap) {
   // First convert SkBitmap to CGImageRef.
   base::apple::ScopedCFTypeRef<CGImageRef> cgimage(
-      SkCreateCGImageRefWithColorspace(skiaBitmap, colorSpace));
+      SkCreateCGImageRef(skiaBitmap));
   if (!cgimage)
     return nil;
 
@@ -237,14 +269,12 @@ NSBitmapImageRep* SkBitmapToNSBitmapImageRepWithColorSpace(
   return [[NSBitmapImageRep alloc] initWithCGImage:cgimage.get()];
 }
 
-NSImage* SkBitmapToNSImageWithColorSpace(const SkBitmap& skiaBitmap,
-                                         CGColorSpaceRef colorSpace) {
+NSImage* SkBitmapToNSImage(const SkBitmap& skiaBitmap) {
   if (skiaBitmap.isNull())
     return nil;
 
   NSImage* image = [[NSImage alloc] init];
-  NSBitmapImageRep* imageRep =
-      SkBitmapToNSBitmapImageRepWithColorSpace(skiaBitmap, colorSpace);
+  NSBitmapImageRep* imageRep = SkBitmapToNSBitmapImageRep(skiaBitmap);
   if (!imageRep)
     return nil;
   [image addRepresentation:imageRep];

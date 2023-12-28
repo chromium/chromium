@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
-#include "base/containers/fixed_flat_map.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -19,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chrome/browser/ash/policy/handlers/device_dlc_predownload_list_policy_handler.h"
 #include "chrome/browser/ash/policy/off_hours/off_hours_proto_parser.h"
 #include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -76,30 +76,20 @@ void SetJsonDevicePolicy(
   }
 }
 
-base::Value::List ProtoToList(const RepeatedPtrField<std::string>& strings) {
-  base::Value::List result = base::Value::List::with_capacity(strings.size());
-  for (const auto& value : strings) {
-    result.Append(value);
-  }
-  return result;
-}
-
 void SetDeviceDlcPredownloadListPolicy(
     const RepeatedPtrField<std::string>& raw_policy_value,
     PolicyMap* policies) {
-  std::string error;
-  std::optional<base::Value::List> decoded_dlc_list =
-      DecodeDeviceDlcPredownloadListPolicy(raw_policy_value, &error);
-  base::Value::List value_to_set = decoded_dlc_list.has_value()
-                                       ? std::move(decoded_dlc_list.value())
-                                       : ProtoToList(raw_policy_value);
+  std::string warning;
+  base::Value::List decoded_dlc_list =
+      policy::DeviceDlcPredownloadListPolicyHandler::
+          DecodeDeviceDlcPredownloadListPolicy(raw_policy_value, warning);
   policies->Set(key::kDeviceDlcPredownloadList, POLICY_LEVEL_MANDATORY,
                 POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                base::Value(std::move(value_to_set)), nullptr);
-  if (!error.empty()) {
+                base::Value(std::move(decoded_dlc_list)), nullptr);
+  if (!warning.empty()) {
     policies->AddMessage(
-        key::kDeviceDlcPredownloadList, PolicyMap::MessageType::kError,
-        IDS_POLICY_PROTO_PARSING_ERROR, {base::UTF8ToUTF16(error)});
+        key::kDeviceDlcPredownloadList, PolicyMap::MessageType::kWarning,
+        IDS_POLICY_PROTO_PARSING_ERROR, {base::UTF8ToUTF16(warning)});
   }
 }
 
@@ -818,19 +808,6 @@ void DecodeNetworkPolicies(const em::ChromeDeviceSettingsProto& policy,
     policies->Set(key::kDeviceHostnameTemplate, POLICY_LEVEL_MANDATORY,
                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                   base::Value(hostname), nullptr);
-  }
-
-  if (policy.has_device_kerberos_encryption_types()) {
-    const em::DeviceKerberosEncryptionTypesProto& container(
-        policy.device_kerberos_encryption_types());
-    if (container.has_types()) {
-      std::unique_ptr<base::Value> value(DecodeIntegerValue(container.types()));
-      if (value) {
-        policies->Set(key::kDeviceKerberosEncryptionTypes,
-                      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                      POLICY_SOURCE_CLOUD, std::move(*value), nullptr);
-      }
-    }
   }
 
   if (policy.has_system_proxy_settings()) {
@@ -1890,19 +1867,6 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
   }
 
-  if (policy.has_device_user_policy_loopback_processing_mode()) {
-    const em::DeviceUserPolicyLoopbackProcessingModeProto& container(
-        policy.device_user_policy_loopback_processing_mode());
-    if (container.has_mode()) {
-      std::unique_ptr<base::Value> value(DecodeIntegerValue(container.mode()));
-      if (value) {
-        policies->Set(key::kDeviceUserPolicyLoopbackProcessingMode,
-                      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                      POLICY_SOURCE_CLOUD, std::move(*value), nullptr);
-      }
-    }
-  }
-
   if (policy.has_virtual_machines_allowed()) {
     const em::VirtualMachinesAllowedProto& container(
         policy.virtual_machines_allowed());
@@ -1910,59 +1874,6 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
       policies->Set(key::kVirtualMachinesAllowed, POLICY_LEVEL_MANDATORY,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                     base::Value(container.virtual_machines_allowed()), nullptr);
-    }
-  }
-
-  if (policy.has_device_machine_password_change_rate()) {
-    const em::DeviceMachinePasswordChangeRateProto& container(
-        policy.device_machine_password_change_rate());
-    if (container.has_rate_days()) {
-      std::unique_ptr<base::Value> value(
-          DecodeIntegerValue(container.rate_days()));
-      if (value) {
-        policies->Set(key::kDeviceMachinePasswordChangeRate,
-                      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                      POLICY_SOURCE_CLOUD, std::move(*value), nullptr);
-      }
-    }
-  }
-
-  if (policy.has_device_gpo_cache_lifetime()) {
-    const em::DeviceGpoCacheLifetimeProto& container(
-        policy.device_gpo_cache_lifetime());
-    if (container.has_lifetime_hours()) {
-      std::unique_ptr<base::Value> value(
-          DecodeIntegerValue(container.lifetime_hours()));
-      if (value) {
-        policies->Set(key::kDeviceGpoCacheLifetime, POLICY_LEVEL_MANDATORY,
-                      POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                      std::move(*value), nullptr);
-      }
-    }
-  }
-
-  if (policy.has_device_auth_data_cache_lifetime()) {
-    const em::DeviceAuthDataCacheLifetimeProto& container(
-        policy.device_auth_data_cache_lifetime());
-    if (container.has_lifetime_hours()) {
-      std::unique_ptr<base::Value> value(
-          DecodeIntegerValue(container.lifetime_hours()));
-      if (value) {
-        policies->Set(key::kDeviceAuthDataCacheLifetime, POLICY_LEVEL_MANDATORY,
-                      POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                      std::move(*value), nullptr);
-      }
-    }
-  }
-
-  if (policy.has_chromad_to_cloud_migration_enabled()) {
-    const em::BooleanPolicyProto& container(
-        policy.chromad_to_cloud_migration_enabled());
-    if (container.has_value()) {
-      policies->Set(key::kChromadToCloudMigrationEnabled,
-                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                    POLICY_SOURCE_CLOUD, base::Value(container.value()),
-                    nullptr);
     }
   }
 
@@ -2394,34 +2305,6 @@ std::optional<base::Value> DecodeJsonStringAndNormalize(
   }
 
   return root;
-}
-
-// TODO (b/297008279): move this function to the class that will manage pre
-// downloading DLCs.
-std::optional<base::Value::List> DecodeDeviceDlcPredownloadListPolicy(
-    const RepeatedPtrField<std::string>& raw_policy_value,
-    std::string* error) {
-  constexpr auto policy_value_to_dlc_id =
-      base::MakeFixedFlatMap<absl::string_view, absl::string_view>(
-          {{"scanner_drivers", "sane-backends-extras-dlc"}});
-
-  base::Value::List dlcs_to_predownload =
-      base::Value::List::with_capacity(raw_policy_value.size());
-  for (const auto& dlc_to_predownload : raw_policy_value) {
-    // TODO (b/297008279): handle case when there is an invalid value. In this
-    // case we should return an info message and skip this particular DLC
-    // without failing.
-    if (policy_value_to_dlc_id.contains(dlc_to_predownload)) {
-      const absl::string_view& dlc_id =
-          policy_value_to_dlc_id.at(dlc_to_predownload);
-      if (!base::Contains(dlcs_to_predownload, dlc_id)) {
-        // Silently ignore duplicate values.
-        dlcs_to_predownload.Append(dlc_id);
-      }
-    }
-  }
-
-  return dlcs_to_predownload;
 }
 
 void DecodeDevicePolicy(

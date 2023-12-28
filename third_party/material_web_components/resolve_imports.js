@@ -25,7 +25,13 @@ for (const inputFile of inputFiles) {
   if (inputDir.startsWith("components-chromium/node_modules/@material")) continue;
 
   const data = fs.readFileSync(inputFile, {encoding: 'utf8'})
-  const ast = acorn.parse(data, {sourceType: 'module'});
+  let ast;
+  try { 
+    ast = acorn.parse(data, {sourceType: 'module', ecmaVersion: "latest"});
+  } catch (e) {
+    console.log(">> ACORN FAILED TO PARSE", inputFile);
+    throw e;
+  }
 
   const NODE_TYPES_TO_RESOLVE = [
     'ImportDeclaration',

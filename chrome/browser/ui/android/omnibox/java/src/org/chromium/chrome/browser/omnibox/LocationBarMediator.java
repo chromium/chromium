@@ -13,7 +13,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Rect;
-import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.util.FloatProperty;
 import android.view.KeyEvent;
@@ -39,7 +38,6 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.device.DeviceClassManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
@@ -345,7 +343,7 @@ class LocationBarMediator
         if (mProfileSupplier.hasValue()) setProfile(mProfileSupplier.get());
 
         mLocationBarLayout.setMicButtonDrawable(
-                AppCompatResources.getDrawable(mContext, R.drawable.btn_mic));
+                AppCompatResources.getDrawable(mContext, R.drawable.ic_mic_white_24dp));
         onPrimaryColorChanged();
 
         for (Runnable deferredRunnable : mDeferredNativeRunnables) {
@@ -1495,8 +1493,7 @@ class LocationBarMediator
         // the scrim on the web contents, which is not desirable.
         if (!mUrlFocusedWithoutAnimations
                 || mUrlCoordinator == null
-                || !TextUtils.isEmpty(mUrlCoordinator.getTextWithoutAutocomplete())
-                || !ChromeFeatureList.isEnabled(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT)) {
+                || !TextUtils.isEmpty(mUrlCoordinator.getTextWithoutAutocomplete())) {
             return;
         }
         handleUrlFocusAnimation(true);
@@ -1595,34 +1592,38 @@ class LocationBarMediator
     }
 
     /**
-     * Sets the search box hint text color, depending on whether or not the the current page is
-     * Start Surface or NTP.
+     * Updates the color of the hint text in the search box.
      *
-     * @param isStartOrNtp Whether the current page is Start Surface or NTP. If true, then a
-     *     colorful theme may be applied.
+     * @param useDefaultUrlBarHintTextColor Whether to use the default color for the search text in
+     *     the search box. If not we will use specific color for surface polish.
      */
-    public void setUrlBarHintTextColor(boolean isStartOrNtp) {
-        if (isStartOrNtp) {
+    public void updateUrlBarHintTextColor(boolean useDefaultUrlBarHintTextColor) {
+        if (useDefaultUrlBarHintTextColor) {
+            mUrlCoordinator.setUrlBarHintTextColorForDefault(mBrandedColorScheme);
+        } else {
             mUrlCoordinator.setUrlBarHintTextColorForSurfacePolish(
                     mIsSurfacePolishOmniboxColorEnabled);
-        } else {
-            mUrlCoordinator.setUrlBarHintTextColorForDefault(mBrandedColorScheme);
         }
     }
 
     /**
-     * Sets the typeface and style of the search text in the search box.
+     * Updates the typeface and style of the search text in the search box.
      *
-     * @param typeface The typeface for the search text in the search box.
+     * @param useDefaultUrlBarTypeface Whether to use the default typeface for the search text in
+     *     the search box. If not we will use medium Google sans typeface for surface polish.
      */
-    public void setUrlBarTypeface(Typeface typeface) {
-        mUrlCoordinator.setUrlBarTypeface(typeface);
+    public void updateUrlBarTypeface(boolean useDefaultUrlBarTypeface) {
+        mUrlCoordinator.updateUrlBarTypeface(useDefaultUrlBarTypeface);
     }
 
     /**
-     * @see LocationBarCoordinator#updateUrlActionContainerEndMargin(int)
+     * Updates the value for the end margin of the url action container in the search box.
+     *
+     * @param useDefaultUrlActionContainerEndMargin Whether to use the default end margin for the
+     *     url action container in the search box. If not we will use the specific end margin value
+     *     for surface polish.
      */
-    public void updateUrlActionContainerEndMargin(int endMargin) {
-        mLocationBarLayout.updateUrlActionContainerEndMargin(endMargin);
+    public void updateUrlActionContainerEndMargin(boolean useDefaultUrlActionContainerEndMargin) {
+        mLocationBarLayout.updateUrlActionContainerEndMargin(useDefaultUrlActionContainerEndMargin);
     }
 }

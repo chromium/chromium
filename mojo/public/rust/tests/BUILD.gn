@@ -18,7 +18,7 @@ rust_static_library("mojo_rust_system_tests") {
   deps = [
     ":c_test_support",
     ":test_util",
-    "//mojo/public/rust:mojo_rust",
+    "//mojo/public/rust:mojo",
     "//testing/rust_gtest_interop",
     "//third_party/rust/lazy_static/v1:lib",
   ]
@@ -40,8 +40,8 @@ rust_static_library("mojo_rust_encoding_tests") {
     ":c_test_support",
     ":test_util",
     "//mojo/public/c/system",
-    "//mojo/public/rust:mojo_rust",
-    "//mojo/public/rust:mojo_rust_system_test_support",
+    "//mojo/public/rust:mojo",
+    "//mojo/public/rust:mojo_system_test_support",
     "//testing/rust_gtest_interop",
   ]
 
@@ -72,7 +72,7 @@ rust_static_library("mojo_rust_integration_tests") {
   deps = [
     ":c_test_support",
     ":test_util",
-    "//mojo/public/rust:mojo_rust",
+    "//mojo/public/rust:mojo",
     "//testing/rust_gtest_interop",
   ]
 }

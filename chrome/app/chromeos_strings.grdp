@@ -2496,9 +2496,6 @@
   <message name="IDS_LOGIN_ERROR_GOOGLE_ACCOUNT_NOT_ALLOWED" desc="Couldn't sign into Google account on the Active Directory managed device.">
     Sorry, Google accounts are not allowed on this device.
   </message>
-  <message name="IDS_LOGIN_ERROR_AUTHENTICATING_2ND_TIME" desc="Couldn't sign in because password is invalid for the 2nd time">
-    Sorry, your password still could not be verified. Note: if you changed your password recently, your new password will be applied once you sign out, please use the old password here.
-  </message>
   <message name="IDS_LOGIN_ERROR_AUTHENTICATING_NEW" desc="Couldn't sign in because username or password invalid">
     Sorry, your email or password could not be verified. Please try again.
   </message>

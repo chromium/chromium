@@ -559,4 +559,15 @@ if (fuzztest_supported) {
       "//third_party/fuzztest:fuzztest_gtest_main",
     ]
   }
+
+  test("vp9_encoder_fuzz_test") {
+    sources = [ "tests/fuzzer/vp9_encoder_fuzz_test.cc" ]
+
+    enable_fuzztest = true
+
+    deps = [
+      ":libvpx",
+      "//third_party/fuzztest:fuzztest_gtest_main",
+    ]
+  }
 }

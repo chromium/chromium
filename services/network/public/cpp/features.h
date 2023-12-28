@@ -33,6 +33,8 @@ BASE_DECLARE_FEATURE(kSplitAuthCacheByNetworkIsolationKey);
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kDnsOverHttpsUpgrade);
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kMaskedDomainList);
 COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::FeatureParam<int> kMaskedDomainListExperimentGroup;
+COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::FeatureParam<std::string>
     kMaskedDomainListExperimentalVersion;
 COMPONENT_EXPORT(NETWORK_CPP)
@@ -158,6 +160,7 @@ BASE_DECLARE_FEATURE(kCompressionDictionaryTransportRequireKnownRootCert);
 // Enables visibility aware network service resource scheduler. When enabled,
 // request may be prioritized or de-prioritized based on the visibility of
 // requestors.
+// TODO(https://crbug.com/1457817): Remove this feature.
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kVisibilityAwareResourceScheduler);
 

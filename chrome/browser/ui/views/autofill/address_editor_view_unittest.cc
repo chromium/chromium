@@ -72,7 +72,7 @@ TEST_F(AddressEditorViewTest, FormValidation) {
       << "The form initailized from a full profile should be valid.";
 
   view_->SetTextInputFieldValueForTesting(
-      autofill::ServerFieldType::ADDRESS_HOME_STREET_ADDRESS, u"");
+      autofill::FieldType::ADDRESS_HOME_STREET_ADDRESS, u"");
   EXPECT_FALSE(controller_->is_valid())
       << "Street address is required for US, the form should be invalid.";
   EXPECT_EQ(l10n_util::GetStringUTF16(
@@ -80,16 +80,16 @@ TEST_F(AddressEditorViewTest, FormValidation) {
             view_->GetValidationErrorForTesting());
 
   view_->SetTextInputFieldValueForTesting(
-      autofill::ServerFieldType::ADDRESS_HOME_CITY, u"");
+      autofill::FieldType::ADDRESS_HOME_CITY, u"");
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELDS_FORM_ERROR),
             view_->GetValidationErrorForTesting())
       << "The error message should denote multiple invalid fileds now.";
 
   view_->SetTextInputFieldValueForTesting(
-      autofill::ServerFieldType::ADDRESS_HOME_STREET_ADDRESS, u"Some text");
+      autofill::FieldType::ADDRESS_HOME_STREET_ADDRESS, u"Some text");
   view_->SetTextInputFieldValueForTesting(
-      autofill::ServerFieldType::ADDRESS_HOME_CITY, u"Some text");
+      autofill::FieldType::ADDRESS_HOME_CITY, u"Some text");
   EXPECT_TRUE(controller_->is_valid())
       << "All the required fields are filled in, the form should be valid.";
   EXPECT_EQ(u"", view_->GetValidationErrorForTesting())
@@ -103,7 +103,7 @@ TEST_F(AddressEditorViewTest, NoValidatableFormValidation) {
   view_ = std::make_unique<AddressEditorView>(std::move(controller));
 
   view_->SetTextInputFieldValueForTesting(
-      autofill::ServerFieldType::ADDRESS_HOME_STREET_ADDRESS, u"");
+      autofill::FieldType::ADDRESS_HOME_STREET_ADDRESS, u"");
   EXPECT_TRUE(controller_->is_valid())
       << "Street address is required for US, but the form is not validatable.";
   EXPECT_EQ(u"", view_->GetValidationErrorForTesting());
@@ -111,7 +111,7 @@ TEST_F(AddressEditorViewTest, NoValidatableFormValidation) {
 
 TEST_F(AddressEditorViewTest, CountryChangeValidity) {
   view_->SetTextInputFieldValueForTesting(
-      ServerFieldType::ADDRESS_HOME_STREET_ADDRESS, u"");
+      FieldType::ADDRESS_HOME_STREET_ADDRESS, u"");
   EXPECT_FALSE(controller_->is_valid())
       << "Street address is required for US, the form should be invalid.";
   EXPECT_EQ(l10n_util::GetStringUTF16(
@@ -128,8 +128,7 @@ TEST_F(AddressEditorViewTest, CountryChangeValidity) {
 }
 
 TEST_F(AddressEditorViewTest, CountryChangeValidity2) {
-  view_->SetTextInputFieldValueForTesting(ServerFieldType::ADDRESS_HOME_ZIP,
-                                          u"");
+  view_->SetTextInputFieldValueForTesting(FieldType::ADDRESS_HOME_ZIP, u"");
   EXPECT_FALSE(controller_->is_valid())
       << "ZIP code is required for US, the form should be invalid";
 

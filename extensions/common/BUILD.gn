@@ -262,8 +262,6 @@ static_library("common") {
     "content_script_injection_url_getter.cc",
     "content_script_injection_url_getter.h",
     "context_data.h",
-    "context_type_adapter.cc",
-    "context_type_adapter.h",
     "cors_util.cc",
     "cors_util.h",
     "csp_validator.cc",
@@ -393,6 +391,8 @@ static_library("common") {
     "manifest_handlers/sandboxed_page_info.h",
     "manifest_handlers/shared_module_info.cc",
     "manifest_handlers/shared_module_info.h",
+    "manifest_handlers/trial_tokens_handler.cc",
+    "manifest_handlers/trial_tokens_handler.h",
     "manifest_handlers/web_accessible_resources_info.cc",
     "manifest_handlers/web_accessible_resources_info.h",
     "manifest_handlers/web_file_handlers_info.cc",
@@ -622,6 +622,7 @@ source_set("unit_tests") {
     "manifest_handlers/oauth2_manifest_unittest.cc",
     "manifest_handlers/replacement_apps_unittest.cc",
     "manifest_handlers/shared_module_manifest_unittest.cc",
+    "manifest_handlers/trial_tokens_unittest.cc",
     "manifest_unittest.cc",
     "message_bundle_unittest.cc",
     "mojom/message_port_mojom_traits_unittest.cc",
@@ -679,7 +680,7 @@ source_set("unit_tests") {
 
   data = [
     "//extensions/common/mojom/api_permission_id.mojom",
-    "//tools/metrics/histograms/enums.xml",
+    "//tools/metrics/histograms/metadata/extensions/enums.xml",
   ]
 }
 

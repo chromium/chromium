@@ -12,6 +12,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/libvpx_thread_wrapper.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #include "third_party/libyuv/include/libyuv.h"
@@ -26,6 +27,12 @@ extern "C" {
 #endif
 
 namespace media {
+
+#if BUILDFLAG(ENABLE_LIBVPX)
+BASE_FEATURE(kLibvpxUseChromeThreads,
+             "LibvpxUseChromeThreads",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(ENABLE_LIBVPX)
 
 // Media must only be initialized once; use a thread-safe static to do this.
 class MediaInitializer {
@@ -48,6 +55,12 @@ class MediaInitializer {
 #endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
+
+#if BUILDFLAG(ENABLE_LIBVPX)
+    if (base::FeatureList::IsEnabled(kLibvpxUseChromeThreads)) {
+      InitLibVpxThreadWrapper();
+    }
+#endif  // BUILDFLAG(ENABLE_LIBVPX)
   }
 
   MediaInitializer(const MediaInitializer&) = delete;

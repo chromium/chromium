@@ -61,6 +61,9 @@ class FakeNetworkSettingsService
     clear_extension_metadata_future_.SetValue(true);
   }
 
+  void IsAlwaysOnVpnPreConnectUrlAllowlistEnforced(
+      IsAlwaysOnVpnPreConnectUrlAllowlistEnforcedCallback callback) override {}
+
   crosapi::mojom::ProxyConfigPtr WaitSetExtensionProxy() {
     return set_extension_proxy_future_.Take();
   }

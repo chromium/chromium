@@ -25,7 +25,8 @@ namespace performance_manager {
 
 TestProcessNodeImpl::TestProcessNodeImpl()
     : ProcessNodeImpl(RenderProcessHostProxy::CreateForTesting(
-          NextTestRenderProcessHostId())) {}
+                          NextTestRenderProcessHostId()),
+                      base::TaskPriority::HIGHEST) {}
 
 TestProcessNodeImpl::TestProcessNodeImpl(content::ProcessType process_type)
     : ProcessNodeImpl(process_type,

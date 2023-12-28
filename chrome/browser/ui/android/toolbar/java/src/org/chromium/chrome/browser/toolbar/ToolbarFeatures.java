@@ -18,24 +18,6 @@ public final class ToolbarFeatures {
     /** Private constructor to avoid instantiation. */
     private ToolbarFeatures() {}
 
-    /** Returns whether captures should be blocked as part of the ablation experiment. */
-    public static boolean shouldBlockCapturesForAblation() {
-        // The ablation experiment turns off toolbar scrolling off the screen. Initially this also
-        // turned off captures, which are unnecessary when the toolbar cannot scroll off. But this
-        // param
-        // allows half of this work to still be done, allowing measurement of both halves when
-        // compared
-        // to the original ablation and controls.
-        if (!ChromeFeatureList.sToolbarScrollAblation.isEnabled()) {
-            // Not in ablation or pre-native, allow captures like normal.
-            return false;
-        }
-
-        // Ablation is enabled, follow the param.
-        return !ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.TOOLBAR_SCROLL_ABLATION_ANDROID, ALLOW_CAPTURES, false);
-    }
-
     public static boolean shouldSuppressCaptures() {
         return ChromeFeatureList.sSuppressionToolbarCaptures.isEnabled();
     }

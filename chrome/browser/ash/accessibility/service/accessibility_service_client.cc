@@ -62,9 +62,13 @@ AccessibilityServiceClient::~AccessibilityServiceClient() {
 }
 
 void AccessibilityServiceClient::BindAutomation(
-    mojo::PendingAssociatedRemote<ax::mojom::Automation> automation,
+    mojo::PendingAssociatedRemote<ax::mojom::Automation> automation) {
+  automation_client_->BindAutomation(std::move(automation));
+}
+
+void AccessibilityServiceClient::BindAutomationClient(
     mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client) {
-  automation_client_->Bind(std::move(automation), std::move(automation_client));
+  automation_client_->BindAutomationClient(std::move(automation_client));
 }
 
 void AccessibilityServiceClient::BindAutoclickClient(
@@ -185,6 +189,13 @@ void AccessibilityServiceClient::EnableAssistiveTechnology(
   } else if (!enabled && iter != enabled_features_.end()) {
     enabled_features_.erase(iter);
     AccessibilityManager::Get()->RemoveFocusRings(type);
+  }
+
+  // If nothing at all is enabled, ensure that automation gets disabled,
+  // which will keep the system from collecting and passing a11y trees.
+  // Note it is safe to call Disable multiple times in a row.
+  if (enabled_features_.empty()) {
+    automation_client_->Disable();
   }
 
   if (!enabled && !at_controller_.is_bound()) {

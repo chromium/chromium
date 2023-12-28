@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.toolbar.ButtonDataProvider.ButtonDataObserver
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
@@ -107,7 +106,6 @@ public class AdaptiveToolbarButtonControllerTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
-    @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR)
     public void testCustomization_newTab() {
         AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
         AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
@@ -130,7 +128,6 @@ public class AdaptiveToolbarButtonControllerTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
-    @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR)
     public void testCustomization_share() {
         AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
         AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
@@ -153,7 +150,6 @@ public class AdaptiveToolbarButtonControllerTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
-    @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR)
     public void testCustomization_voice() {
         AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
         AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
@@ -176,7 +172,6 @@ public class AdaptiveToolbarButtonControllerTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
-    @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR)
     public void testCustomization_prefChangeTriggersButtonChange() {
         AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
         AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
@@ -209,7 +204,6 @@ public class AdaptiveToolbarButtonControllerTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
-    @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR)
     public void testLongPress() {
         AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
         AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
@@ -262,7 +256,6 @@ public class AdaptiveToolbarButtonControllerTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
-    @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR)
     public void testShowDynamicAction() {
         Activity activity = Robolectric.setupActivity(Activity.class);
         SettingsLauncher settingsLauncher = mock(SettingsLauncher.class);
@@ -327,7 +320,6 @@ public class AdaptiveToolbarButtonControllerTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
-    @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR)
     public void testButtonOnLargeScreens() {
         // Screen is wide enough to fit the button, it should appear.
         mConfiguration.screenWidthDp = 450;
@@ -356,7 +348,6 @@ public class AdaptiveToolbarButtonControllerTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
-    @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR)
     public void testButtonNotShownOnSmallScreens() {
         // Screen too narrow, button shouldn't appear.
         mConfiguration.screenWidthDp = 320;
@@ -385,7 +376,6 @@ public class AdaptiveToolbarButtonControllerTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
-    @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR)
     public void testButtonVisibilityChangeOnConfigurationChange() {
         // Screen too narrow, button shouldn't appear.
         mConfiguration.screenWidthDp = 320;
@@ -423,7 +413,6 @@ public class AdaptiveToolbarButtonControllerTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
-    @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR)
     public void testConfigurationChangeIgnoredWhenNativeNotReady() {
         AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
         AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(

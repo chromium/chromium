@@ -89,7 +89,7 @@ std::vector<FieldGlobalId> AutofillDriverIOS::ApplyFormAction(
     mojom::ActionPersistence action_persistence,
     const FormData& data,
     const url::Origin& triggered_origin,
-    const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
+    const base::flat_map<FieldGlobalId, FieldType>& field_type_map) {
   switch (action_type) {
     case mojom::ActionType::kUndo:
       // TODO(crbug.com/1441410) Add Undo support on iOS.
@@ -139,7 +139,7 @@ void AutofillDriverIOS::ExtractForm(
 void AutofillDriverIOS::HandleParsedForms(const std::vector<FormData>& forms) {
   const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& map =
       browser_autofill_manager_->form_structures();
-  std::vector<FormStructure*> form_structures;
+  std::vector<raw_ptr<FormStructure, VectorExperimental>> form_structures;
   form_structures.reserve(forms.size());
   for (const FormData& form : forms) {
     auto it = map.find(form.global_id());
@@ -155,7 +155,7 @@ void AutofillDriverIOS::HandleParsedForms(const std::vector<FormData>& forms) {
 }
 
 void AutofillDriverIOS::SendAutofillTypePredictionsToRenderer(
-    const std::vector<FormStructure*>& forms) {
+    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms) {
   web::WebFrame* frame = web_frame();
   if (!frame) {
     return;

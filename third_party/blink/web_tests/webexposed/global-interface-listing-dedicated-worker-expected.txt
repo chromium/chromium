@@ -472,6 +472,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method addEventListener
 [Worker]     method constructor
 [Worker]     method dispatchEvent
+[Worker]     method on
 [Worker]     method removeEventListener
 [Worker] interface FaceDetector
 [Worker]     attribute @@toStringTag
@@ -1177,6 +1178,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     method abs
 [Worker]     method add
+[Worker]     method argMax
+[Worker]     method argMin
 [Worker]     method averagePool2d
 [Worker]     method batchNormalization
 [Worker]     method buildSync
@@ -1199,6 +1202,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method gather
 [Worker]     method gemm
 [Worker]     method greater
+[Worker]     method greaterOrEqual
 [Worker]     method hardSwish
 [Worker]     method identity
 [Worker]     method input
@@ -1206,6 +1210,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method layerNormalization
 [Worker]     method leakyRelu
 [Worker]     method lesser
+[Worker]     method lesserOrEqual
 [Worker]     method linear
 [Worker]     method log
 [Worker]     method logicalNot
@@ -1236,6 +1241,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method sin
 [Worker]     method slice
 [Worker]     method softmax
+[Worker]     method softplus
 [Worker]     method softsign
 [Worker]     method split
 [Worker]     method sqrt

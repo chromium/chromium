@@ -101,7 +101,7 @@
     Manage languages
   </message>
   <message name="IDS_SETTINGS_CAPTIONS_MANAGE_LANGUAGES_SUBTITLE" desc="Subtitle for the caption settings section for managing language packs.">
-    Add and remove languages to caption
+    Language packs are used for Live Caption and are stored on your device
   </message>
   <message name="IDS_SETTINGS_CAPTIONS_LIVE_TRANSLATE_TARGET_LANGUAGE" desc="Description of the target language setting for the Live Translate feature.">
     Translate to

@@ -23,6 +23,7 @@
 #include "base/trace_event/trace_event.h"
 #include "media/base/media_log.h"
 #include "media/gpu/macros.h"
+#include "media/gpu/v4l2/v4l2_framerate_control.h"
 #include "media/gpu/v4l2/v4l2_queue.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
 #include "media/video/h264_parser.h"
@@ -379,6 +380,10 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
     // This will also Deallocate() all buffers and issue a VIDIOC_STREAMOFF.
     OUTPUT_queue_.reset();
     CAPTURE_queue_.reset();
+
+    framerate_control_ = std::make_unique<V4L2FrameRateControl>(
+        base::BindRepeating(&HandledIoctl, device_fd_.get()),
+        base::SequencedTaskRunner::GetCurrentDefault());
   }
 
   // At this point we initialize the |OUTPUT_queue_| only, following
@@ -454,7 +459,7 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                       DecodeCB decode_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsInitialized()) << "V4L2StatefulVideoDecoder must be Initialize()d";
-  DVLOGF(3) << buffer->AsHumanReadableString(/*verbose=*/false);
+  VLOGF(3) << buffer->AsHumanReadableString(/*verbose=*/false);
 
   if (buffer->end_of_stream()) {
     if (!event_task_runner_) {
@@ -975,7 +980,9 @@ void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
         VLOGF(3) << wrapped_frame->AsHumanReadableString();
         output_cb_.Run(std::move(wrapped_frame));
       } else {
+        DCHECK_EQ(queue_type, V4L2_MEMORY_DMABUF);
         VLOGF(3) << video_frame->AsHumanReadableString();
+        framerate_control_->AttachToVideoFrame(video_frame);
         output_cb_.Run(std::move(video_frame));
       }
 
@@ -1166,7 +1173,7 @@ H264FrameReassembler::Process(scoped_refptr<DecoderBuffer> buffer,
         base::checked_cast<size_t>(nalu_info->nalu_size);
 
     if (nalu_info->is_start_of_new_frame && HasFragments()) {
-      VLOGF(3) << frame_fragments_.size()
+      VLOGF(4) << frame_fragments_.size()
                << " currently stored frame fragment(s) can be reassembled.";
       whole_frames.emplace_back(std::make_pair(
           ReassembleFragments(frame_fragments_), base::DoNothing()));
@@ -1177,15 +1184,17 @@ H264FrameReassembler::Process(scoped_refptr<DecoderBuffer> buffer,
       whole_frames.emplace_back(std::make_pair(
           DecoderBuffer::CopyFrom(buffer_pointer, found_nalu_size),
           base::DoNothing()));
+      whole_frames.back().first->set_timestamp(buffer->timestamp());
 
       buffer_pointer += found_nalu_size;
       remaining_buffer_size -= found_nalu_size;
       continue;
     }
 
-    VLOGF(3) << "This was a frame fragment; storing it for later reassembly.";
+    VLOGF(4) << "This was a frame fragment; storing it for later reassembly.";
     frame_fragments_.emplace_back(
         DecoderBuffer::CopyFrom(buffer_pointer, found_nalu_size));
+    frame_fragments_.back()->set_timestamp(buffer->timestamp());
 
     buffer_pointer += found_nalu_size;
     remaining_buffer_size -= found_nalu_size;

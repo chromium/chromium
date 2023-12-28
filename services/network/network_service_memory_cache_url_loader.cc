@@ -4,7 +4,6 @@
 
 #include "services/network/network_service_memory_cache_url_loader.h"
 
-#include "base/bit_cast.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
@@ -194,8 +193,8 @@ void NetworkServiceMemoryCacheURLLoader::WriteMore() {
   if (net_log_.IsCapturing()) {
     net_log_.AddByteTransferEvent(
         net::NetLogEventType::IN_MEMORY_CACHE_BYTES_READ, total_write_size,
-        base::bit_cast<const char*>(content_->data().data() +
-                                    original_write_position));
+        reinterpret_cast<const char*>(content_->data().data() +
+                                      original_write_position));
   }
 
   if (write_completed) {

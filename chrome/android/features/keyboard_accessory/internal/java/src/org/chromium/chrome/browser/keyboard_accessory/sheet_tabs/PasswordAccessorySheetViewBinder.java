@@ -4,206 +4,117 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
-import static org.chromium.ui.base.LocalizationUtils.isLayoutRtl;
+import static org.chromium.components.embedder_support.util.UrlUtilities.stripScheme;
 
 import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.text.method.PasswordTransformationMethod;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
-import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.FooterCommand;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.keyboard_accessory.helper.FaviconHelper;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabViewBinder.ElementViewHolder;
-import org.chromium.ui.HorizontalListDividerDrawable;
+import org.chromium.chrome.browser.keyboard_accessory.utils.InsecureFillingDialogUtils;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.modelutil.ListModel;
 
 /**
- * This stateless class provides methods to bind the items in a {@link ListModel <Item>}
- * to the {@link RecyclerView} used as view of the Password accessory sheet component.
+ * This stateless class provides methods to bind a {@link ListModel<AccessorySheetDataPiece>}
+ * to the {@link RecyclerView} used as view of a tab for the accessory sheet component.
  */
 class PasswordAccessorySheetViewBinder {
     static ElementViewHolder create(ViewGroup parent, @AccessorySheetDataPiece.Type int viewType) {
         switch (viewType) {
-            case AccessorySheetDataPiece.Type.TITLE:
-                return new PasswordsTitleViewHolder(parent);
+            case AccessorySheetDataPiece.Type.PASSKEY_SECTION:
+                return new PasskeyChipViewHolder(parent);
             case AccessorySheetDataPiece.Type.PASSWORD_INFO:
-                return new PasswordsInfoViewHolder(parent);
+                return new PasswordInfoViewHolder(parent);
+            case AccessorySheetDataPiece.Type.TITLE:
+                return new AccessorySheetTabViewBinder.TitleViewHolder(
+                        parent, R.layout.keyboard_accessory_sheet_tab_title);
             case AccessorySheetDataPiece.Type.FOOTER_COMMAND:
-                return new FooterCommandViewHolder(parent);
+            case AccessorySheetDataPiece.Type.OPTION_TOGGLE:
+                return AccessorySheetTabViewBinder.create(parent, viewType);
         }
         assert false : "Unhandled type of data piece: " + viewType;
         return null;
     }
 
-    /** Holds a the TextView with the title of the sheet and a divider for the accessory bar. */
-    static class PasswordsTitleViewHolder extends ElementViewHolder<String, LinearLayout> {
-        PasswordsTitleViewHolder(ViewGroup parent) {
-            super(parent, R.layout.password_accessory_sheet_label);
+    /** Holds a clickable {@link ChipView} that represents a Passkey. */
+    static class PasskeyChipViewHolder
+            extends ElementViewHolder<KeyboardAccessoryData.PasskeySection, ViewGroup> {
+        PasskeyChipViewHolder(ViewGroup parent) {
+            super(parent, R.layout.password_accessory_passkey_chip);
         }
 
         @Override
-        protected void bind(String displayText, LinearLayout view) {
-            TextView titleView = view.findViewById(R.id.tab_title);
-            titleView.setText(displayText);
-            titleView.setContentDescription(displayText);
+        protected void bind(KeyboardAccessoryData.PasskeySection passkeySection, ViewGroup view) {
+            ChipView chip = view.findViewById(R.id.keyboard_accessory_sheet_chip);
+            chip.getPrimaryTextView().setText(passkeySection.getDisplayName());
+            chip.getPrimaryTextView().setContentDescription(passkeySection.getDisplayName());
+            chip.getSecondaryTextView().setText(R.string.password_accessory_passkey_label);
+            chip.setOnClickListener((unused) -> passkeySection.triggerSelection());
         }
     }
 
-    /**
-     * Holds a TextView that represents a bottom command and is separated to the top by a divider.
-     */
-    static class FooterCommandViewHolder extends ElementViewHolder<FooterCommand, LinearLayout> {
-        public static class DynamicTopDivider extends RecyclerView.ItemDecoration {
-            private final int mAccessoryPadding;
-            private final int mDividerHeight;
+    /** Holds a TextView that represents a list entry. */
+    static class PasswordInfoViewHolder
+            extends ElementViewHolder<KeyboardAccessoryData.UserInfo, PasswordAccessoryInfoView> {
+        String mFaviconRequestOrigin;
 
-            DynamicTopDivider(Context context) {
-                var resources = context.getResources();
-                mAccessoryPadding =
-                        resources.getDimensionPixelOffset(
-                                R.dimen.keyboard_accessory_suggestion_padding);
-                mDividerHeight = resources.getDimensionPixelSize(R.dimen.divider_height);
-            }
-
-            @Override
-            public void getItemOffsets(
-                    Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                super.getItemOffsets(outRect, view, parent, state);
-                if (view.getId() != R.id.footer_command) return;
-                int previous = parent.indexOfChild(view) - 1;
-                if (previous < 0) return;
-                if (parent.getChildAt(previous).getId() == R.id.footer_command) return;
-                outRect.top = mAccessoryPadding + mDividerHeight;
-            }
-
-            @Override
-            public void onDraw(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
-                int attatchedChlidCount = parent.getChildCount();
-                int halfHeight = mAccessoryPadding / 2;
-                for (int i = 0; i < attatchedChlidCount - 1; ++i) {
-                    View currentView = parent.getChildAt(i);
-                    if (currentView.getId() == R.id.footer_command) break;
-
-                    View nextView = parent.getChildAt(i + 1);
-                    if (nextView.getId() != R.id.footer_command) continue;
-
-                    Drawable dividerDrawable =
-                            HorizontalListDividerDrawable.create(nextView.getContext());
-                    int top = currentView.getBottom() + halfHeight;
-                    int bottom = top + dividerDrawable.getIntrinsicHeight();
-                    dividerDrawable.setBounds(
-                            parent.getLeft() + parent.getPaddingLeft(),
-                            top,
-                            parent.getRight() - parent.getPaddingRight(),
-                            bottom);
-
-                    dividerDrawable.draw(canvas);
-                }
-            }
-        }
-
-        FooterCommandViewHolder(ViewGroup parent) {
-            super(parent, R.layout.password_accessory_sheet_legacy_option);
+        PasswordInfoViewHolder(ViewGroup parent) {
+            super(parent, R.layout.keyboard_accessory_sheet_tab_password_info);
         }
 
         @Override
-        protected void bind(FooterCommand footerCommand, LinearLayout layout) {
-            TextView view = layout.findViewById(R.id.footer_text);
-            view.setText(footerCommand.getDisplayText());
-            view.setContentDescription(footerCommand.getDisplayText());
-            view.setOnClickListener(v -> footerCommand.execute());
-            view.setClickable(true);
-        }
-    }
+        protected void bind(KeyboardAccessoryData.UserInfo info, PasswordAccessoryInfoView view) {
+            bindChipView(view.getUsername(), info.getFields().get(0), view.getContext());
+            bindChipView(view.getPassword(), info.getFields().get(1), view.getContext());
 
-    /** Holds a layout for a username and a password with a small icon. */
-    static class PasswordsInfoViewHolder
-            extends ElementViewHolder<KeyboardAccessoryData.UserInfo, LinearLayout> {
-        private final int mPadding;
-        private final int mIconSize;
+            view.getTitle().setVisibility(info.isExactMatch() ? View.GONE : View.VISIBLE);
+            // Strip the trailing slash (for aesthetic reasons):
+            view.getTitle().setText(stripScheme(info.getOrigin()).replaceFirst("/$", ""));
 
-        PasswordsInfoViewHolder(ViewGroup parent) {
-            super(parent, R.layout.keyboard_accessory_sheet_tab_legacy_password_info);
-            mPadding =
-                    itemView.getContext()
-                            .getResources()
-                            .getDimensionPixelSize(R.dimen.keyboard_accessory_suggestion_padding);
-            mIconSize =
-                    itemView.getContext()
-                            .getResources()
-                            .getDimensionPixelSize(R.dimen.keyboard_accessory_suggestion_icon_size);
+            // Set the default icon, then try to get a better one.
+            mFaviconRequestOrigin = info.getOrigin(); // Save the origin for returning callback.
+            FaviconHelper faviconHelper = FaviconHelper.create(view.getContext());
+            view.setIconForBitmap(faviconHelper.getDefaultIcon(info.getOrigin()));
+            faviconHelper.fetchFavicon(info.getOrigin(), d -> setIcon(view, info.getOrigin(), d));
         }
 
-        @Override
-        protected void bind(KeyboardAccessoryData.UserInfo info, LinearLayout layout) {
-            TextView username = layout.findViewById(R.id.suggestion_text);
-            TextView password = layout.findViewById(R.id.password_text);
-            bindTextView(username, info.getFields().get(0));
-            bindTextView(password, info.getFields().get(1));
-
-            // Set the default icon for username, then try to get a better one.
-            FaviconHelper faviconHelper = FaviconHelper.create(username.getContext());
-            setIconForBitmap(username, faviconHelper.getDefaultIcon(info.getOrigin()));
-            faviconHelper.fetchFavicon(info.getOrigin(), icon -> setIconForBitmap(username, icon));
-
-            ViewCompat.setPaddingRelative(username, mPadding, 0, mPadding, 0);
-            // Passwords have no icon, so increase the offset.
-            ViewCompat.setPaddingRelative(password, 2 * mPadding + mIconSize, 0, mPadding, 0);
+        private void setIcon(
+                PasswordAccessoryInfoView view, String requestOrigin, Drawable drawable) {
+            // Only set the icon if the origin hasn't changed since this view last requested an
+            // icon. Since the Views are recycled, an old callback can target a new view.
+            if (requestOrigin.equals(mFaviconRequestOrigin)) view.setIconForBitmap(drawable);
         }
 
-        private void bindTextView(TextView text, UserInfoField field) {
-            text.setTransformationMethod(
-                    field.isObfuscated() ? new PasswordTransformationMethod() : null);
-            // With transformation, the character set forces a LTR gravity. Therefore, invert it:
-            text.setGravity(
-                    Gravity.CENTER_VERTICAL
-                            | (isLayoutRtl() && field.isObfuscated()
-                                    ? Gravity.END
-                                    : Gravity.START));
-            text.setText(field.getDisplayText());
-            text.setContentDescription(field.getA11yDescription());
-            text.setOnClickListener(!field.isSelectable() ? null : src -> field.triggerSelection());
-            text.setClickable(true); // Ensures that "disabled" is announced.
-            text.setEnabled(field.isSelectable());
-            text.setBackground(getBackgroundDrawable(field.isSelectable()));
-        }
-
-        private @Nullable Drawable getBackgroundDrawable(boolean selectable) {
-            if (!selectable) return null;
-            TypedArray a =
-                    itemView.getContext()
-                            .obtainStyledAttributes(new int[] {R.attr.selectableItemBackground});
-            Drawable suggestionBackground = a.getDrawable(0);
-            a.recycle();
-            return suggestionBackground;
-        }
-
-        private void setIconForBitmap(TextView text, @Nullable Drawable icon) {
-            if (icon != null) {
-                icon.setBounds(0, 0, mIconSize, mIconSize);
+        void bindChipView(ChipView chip, UserInfoField field, Context context) {
+            chip.getPrimaryTextView()
+                    .setTransformationMethod(
+                            field.isObfuscated() ? new PasswordTransformationMethod() : null);
+            chip.getPrimaryTextView().setText(field.getDisplayText());
+            chip.getPrimaryTextView().setContentDescription(field.getA11yDescription());
+            View.OnClickListener listener = null;
+            if (field.isSelectable()) {
+                listener = src -> field.triggerSelection();
+            } else if (field.isObfuscated()) {
+                listener = src -> InsecureFillingDialogUtils.showWarningDialog(context);
             }
-            text.setCompoundDrawablePadding(mPadding);
-            text.setCompoundDrawablesRelative(icon, null, null, null);
+            chip.setOnClickListener(listener);
+            chip.setClickable(listener != null);
+            chip.setEnabled(listener != null);
         }
     }
 
     static void initializeView(RecyclerView view, AccessorySheetTabItemsModel model) {
         view.setAdapter(PasswordAccessorySheetCoordinator.createAdapter(model));
-        view.addItemDecoration(new FooterCommandViewHolder.DynamicTopDivider(view.getContext()));
+        view.addItemDecoration(new DynamicInfoViewBottomSpacer(PasswordAccessoryInfoView.class));
     }
 }

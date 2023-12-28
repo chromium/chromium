@@ -4,8 +4,7 @@
 
 #include "chrome/browser/ash/file_system_provider/logging_observer.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 LoggingObserver::LoggingObserver() {}
 LoggingObserver::~LoggingObserver() {}
@@ -25,5 +24,4 @@ void LoggingObserver::OnProvidedFileSystemUnmount(
   unmounts.push_back(Event(file_system_info, MOUNT_CONTEXT_USER, error));
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

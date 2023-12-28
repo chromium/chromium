@@ -94,7 +94,8 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   void AddOnlineNetwork();
 
   void EnableTestIphFeatures(
-      const std::vector<const base::Feature*> test_iph_features);
+      const std::vector<raw_ptr<const base::Feature, VectorExperimental>>
+          test_iph_features);
   void EnableTestIphFeature();
   const base::Feature& TestIphFeature() const;
 

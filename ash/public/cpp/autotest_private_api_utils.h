@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 
 namespace aura {
 class Window;
@@ -19,7 +20,8 @@ class Window;
 namespace ash {
 
 // Get application windows, windows that are shown in overview grid.
-ASH_EXPORT std::vector<aura::Window*> GetAppWindowList();
+ASH_EXPORT std::vector<raw_ptr<aura::Window, VectorExperimental>>
+GetAppWindowList();
 
 // Runs the callback when the launcher state becomes |state| after
 // state transition animation. For clamshell launcher, it invokes closure

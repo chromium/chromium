@@ -94,7 +94,7 @@ class MockFeaturePodController : public FeaturePodControllerBase {
   bool WasLabelPressed() { return was_label_pressed_; }
 
  private:
-  raw_ptr<FeatureTile, ExperimentalAsh> tile_ = nullptr;
+  raw_ptr<FeatureTile> tile_ = nullptr;
   bool was_icon_pressed_ = false;
   bool was_label_pressed_ = false;
   bool togglable_ = false;

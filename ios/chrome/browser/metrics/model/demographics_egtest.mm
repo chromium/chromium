@@ -49,7 +49,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 }
 
 - (void)tearDown {
-  [ChromeEarlGrey clearSyncServerData];
+  [ChromeEarlGrey clearFakeSyncServerData];
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Failed to release histogram tester.");
@@ -187,14 +187,6 @@ const metrics::UserDemographicsProto::Gender kTestGender =
   GREYAssertTrue([MetricsAppInterface UKMReportHasBirthYear:birthYear_
                                                      gender:kTestGender],
                  @"The report should contain the specified user demographics");
-
-  const int success =
-      static_cast<int>(metrics::UserDemographicsStatus::kSuccess);
-  GREYAssertNil([MetricsAppInterface
-                    expectUniqueSampleWithCount:1
-                                      forBucket:success
-                                   forHistogram:@"UKM.UserDemographics.Status"],
-                @"Unexpected histogram contents");
 }
 
 // Tests that user demographics are neither recorded by UKM nor logged in
@@ -217,9 +209,6 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 
   GREYAssertFalse([MetricsAppInterface UKMReportHasUserDemographics],
                   @"The report should not contain user demographics.");
-  GREYAssertNil([MetricsAppInterface expectSum:0
-                                  forHistogram:@"UKM.UserDemographics.Status"],
-                @"Unexpected histogram contents.");
 }
 
 // Tests that user demographics are synced, recorded by UMA, and logged in

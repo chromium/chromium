@@ -20,22 +20,21 @@ class NonClientFrameView;
 
 namespace ash {
 
+class PickerContentsView;
 class PickerSearchFieldView;
+class PickerSearchResult;
+class PickerSearchResults;
+class PickerSearchResultsView;
 class PickerUserEducationView;
+class PickerViewDelegate;
+class PickerZeroStateView;
 
 // View for the Picker widget.
 class ASH_EXPORT PickerView : public views::WidgetDelegateView {
  public:
   METADATA_HEADER(PickerView);
 
-  class Delegate {
-   public:
-    virtual ~Delegate() {}
-    virtual std::unique_ptr<AshWebView> CreateWebView(
-        const AshWebView::InitParams& params) = 0;
-  };
-
-  explicit PickerView(std::unique_ptr<Delegate> delegate,
+  explicit PickerView(std::unique_ptr<PickerViewDelegate> delegate,
                       base::TimeTicks trigger_event_timestamp);
   PickerView(const PickerView&) = delete;
   PickerView& operator=(const PickerView&) = delete;
@@ -46,19 +45,41 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   // click, then it should be the timestamp of the click. By default, the
   // timestamp is the time this function is called.
   static views::UniqueWidgetPtr CreateWidget(
-      std::unique_ptr<Delegate> delegate,
+      std::unique_ptr<PickerViewDelegate> delegate,
       base::TimeTicks trigger_event_timestamp = base::TimeTicks::Now());
 
   // views::WidgetDelegateView:
+  void PaintChildren(const views::PaintInfo& paint_info) override;
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
 
-  const AshWebView& web_view_for_testing() const { return *web_view_; }
+  PickerSearchFieldView& search_field_view_for_testing() {
+    return *search_field_view_;
+  }
+  PickerSearchResultsView& search_results_view_for_testing() {
+    return *search_results_view_;
+  }
+  PickerZeroStateView& zero_state_view_for_testing() {
+    return *zero_state_view_;
+  }
 
  private:
+  // Starts a search with `query`, with search results being returned to
+  // `PublishSearchResults`.
+  void StartSearch(const std::u16string& query);
+
+  // Displays `results` in the view.
+  void PublishSearchResults(const PickerSearchResults& results);
+
+  // Selects a search result.
+  void SelectSearchResult(const PickerSearchResult& result);
+
   PickerSessionMetrics session_metrics_;
+  std::unique_ptr<PickerViewDelegate> delegate_;
   raw_ptr<PickerSearchFieldView> search_field_view_ = nullptr;
-  raw_ptr<AshWebView> web_view_ = nullptr;
+  raw_ptr<PickerContentsView> contents_view_ = nullptr;
+  raw_ptr<PickerZeroStateView> zero_state_view_ = nullptr;
+  raw_ptr<PickerSearchResultsView> search_results_view_ = nullptr;
   raw_ptr<PickerUserEducationView> user_education_view_ = nullptr;
 };
 

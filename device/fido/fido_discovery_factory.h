@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -103,6 +104,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
       base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
           callback);
 
+  // Returns a callback that can be called to provide the OAuth token for
+  // connecting to the cloud enclave authenticator.
+  virtual base::RepeatingCallback<void(absl::optional<std::string_view>)>
+  get_enclave_oauth_token_callback();
+
 #if BUILDFLAG(IS_MAC)
   // Configures the Touch ID authenticator. Set to absl::nullopt to disable it.
   void set_mac_touch_id_info(
@@ -191,6 +197,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   std::vector<sync_pb::WebauthnCredentialSpecifics> enclave_passkeys_;
   base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
       enclave_passkey_creation_callback_;
+  std::unique_ptr<
+      FidoDiscoveryBase::EventStream<absl::optional<std::string_view>>>
+      oauth_token_provider_;
 };
 
 }  // namespace device

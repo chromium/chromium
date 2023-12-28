@@ -502,7 +502,8 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintCurrentFrame() {
 
 void SkiaOutputSurfaceImpl::MakePromiseSkImage(
     ImageContext* image_context,
-    const gfx::ColorSpace& color_space) {
+    const gfx::ColorSpace& color_space,
+    bool force_rgbx) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(current_paint_);
   DCHECK(!image_context->mailbox_holder().mailbox.IsZero());
@@ -535,8 +536,9 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(
   auto format = image_context->format();
   if (format.is_single_plane() || format.PrefersExternalSampler()) {
     MakePromiseSkImageSinglePlane(image_context_impl, /*mipmapped=*/false,
-                                  color_space);
+                                  color_space, force_rgbx);
   } else {
+    DCHECK(!force_rgbx);
     MakePromiseSkImageMultiPlane(image_context_impl, color_space);
   }
 
@@ -623,7 +625,8 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
 void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
     ImageContextImpl* image_context,
     bool mipmap,
-    const gfx::ColorSpace& color_space) {
+    const gfx::ColorSpace& color_space,
+    bool force_rgbx) {
   CHECK(!image_context->has_image());
   auto format = image_context->format();
   CHECK(format.is_single_plane() || format.PrefersExternalSampler());
@@ -632,6 +635,16 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
       format.PrefersExternalSampler()
           ? gpu::ToClosestSkColorTypeExternalSampler(format)
           : ToClosestSkColorType(/*gpu_compositing=*/true, format);
+
+  if (force_rgbx) {
+    if (color_type == SkColorType::kBGRA_8888_SkColorType ||
+        color_type == SkColorType::kRGBA_8888_SkColorType) {
+      // We do not have a BGRX type in skia. RGBX will suffice for this case as
+      // BGRA8 on 'kRGB_888x_SkColorType' is designed not to swizzle.
+      color_type = SkColorType::kRGB_888x_SkColorType;
+    }
+  }
+
   if (graphite_recorder_) {
     skgpu::graphite::TextureInfo texture_info = gpu::GraphitePromiseTextureInfo(
         gr_context_type_, format, /*plane_index=*/0, mipmap);
@@ -1014,7 +1027,7 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromRenderPass(
     // NOTE: The ColorSpace parameter is relevant only for external sampling,
     // whereas RenderPasses always work with true single-planar formats.
     MakePromiseSkImageSinglePlane(image_context.get(), mipmap,
-                                  gfx::ColorSpace());
+                                  gfx::ColorSpace(), false);
     if (!image_context->has_image()) {
       return nullptr;
     }
@@ -1218,7 +1231,7 @@ SkiaOutputSurfaceImpl::CreateGrSurfaceCharacterizationRenderPass(
   }
 
   auto cache_max_resource_bytes = impl_on_gpu_->max_resource_cache_bytes();
-  SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
+  SkSurfaceProps surface_props;
   const int sample_count = std::min(
       sample_count_,
       gr_context_thread_safe_->maxSurfaceSampleCountForColorType(color_type));
@@ -1267,7 +1280,7 @@ SkiaOutputSurfaceImpl::CreateGrSurfaceCharacterizationCurrentFrame(
   }
 
   auto cache_max_resource_bytes = impl_on_gpu_->max_resource_cache_bytes();
-  SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
+  SkSurfaceProps surface_props;
   int sample_count = std::min(
       sample_count_,
       gr_context_thread_safe_->maxSurfaceSampleCountForColorType(color_type));
@@ -1715,6 +1728,15 @@ void SkiaOutputSurfaceImpl::DestroySharedImage(const gpu::Mailbox& mailbox) {
   auto task = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::DestroySharedImage,
                              base::Unretained(impl_on_gpu_.get()), mailbox);
   EnqueueGpuTask(std::move(task), {}, /*make_current=*/true,
+                 /*need_framebuffer=*/false);
+}
+
+void SkiaOutputSurfaceImpl::SetSharedImagePurgeable(const gpu::Mailbox& mailbox,
+                                                    bool purgeable) {
+  auto task =
+      base::BindOnce(&SkiaOutputSurfaceImplOnGpu::SetSharedImagePurgeable,
+                     base::Unretained(impl_on_gpu_.get()), mailbox, purgeable);
+  EnqueueGpuTask(std::move(task), {}, /*make_current=*/false,
                  /*need_framebuffer=*/false);
 }
 

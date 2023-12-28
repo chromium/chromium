@@ -66,7 +66,6 @@ class QuicRandom;
 
 namespace net {
 
-class CTPolicyEnforcer;
 class CertVerifier;
 class ClientSocketFactory;
 class HostResolver;
@@ -291,7 +290,6 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
       ClientSocketFactory* client_socket_factory,
       HttpServerProperties* http_server_properties,
       CertVerifier* cert_verifier,
-      CTPolicyEnforcer* ct_policy_enforcer,
       TransportSecurityState* transport_security_state,
       SCTAuditingDelegate* sct_auditing_delegate,
       SocketPerformanceWatcherFactory* socket_performance_watcher_factory,
@@ -631,7 +629,6 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   raw_ptr<ClientSocketFactory> client_socket_factory_;
   raw_ptr<HttpServerProperties> http_server_properties_;
   const raw_ptr<CertVerifier> cert_verifier_;
-  const raw_ptr<CTPolicyEnforcer> ct_policy_enforcer_;
   const raw_ptr<TransportSecurityState> transport_security_state_;
   const raw_ptr<SCTAuditingDelegate> sct_auditing_delegate_;
   raw_ptr<QuicCryptoClientStreamFactory> quic_crypto_client_stream_factory_;
@@ -721,13 +718,13 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   const raw_ptr<SSLConfigService> ssl_config_service_;
 
   // Whether NetworkAnonymizationKeys should be used for
-  // |active_crypto_config_map_|. If false, there will just be one config with
+  // `active_crypto_config_map_`. If false, there will just be one config with
   // an empty NetworkAnonymizationKey. Whether QuicSessionAliasKeys all have an
-  // empty NIK is based on whether socket pools are respecting NIKs, but whether
-  // those NIKs are also used when accessing |active_crypto_config_map_| is also
+  // empty NAK is based on whether socket pools are respecting NAKs, but whether
+  // those NAKs are also used when accessing `active_crypto_config_map_` is also
   // gated this, which is set based on whether HttpServerProperties is
-  // respecting NIKs, as that data is fed into the crypto config map using the
-  // corresponding NIK.
+  // respecting NAKs, as that data is fed into the crypto config map using the
+  // corresponding NAK.
   const bool use_network_anonymization_key_for_crypto_configs_;
 
   quic::DeterministicConnectionIdGenerator connection_id_generator_{

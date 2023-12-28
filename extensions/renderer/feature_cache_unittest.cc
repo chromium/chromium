@@ -10,6 +10,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "extensions/renderer/scoped_web_frame.h"
@@ -27,7 +28,7 @@ namespace extensions {
 namespace {
 
 struct FakeContext {
-  Feature::Context context_type;
+  mojom::ContextType context_type;
   raw_ptr<const Extension, ExperimentalRenderer> extension;
   const GURL url;
 };
@@ -51,9 +52,9 @@ TEST_F(FeatureCacheTest, Basic) {
   scoped_refptr<const Extension> extension_b =
       ExtensionBuilder("b").AddPermission("storage").Build();
 
-  FakeContext context_a = {Feature::BLESSED_EXTENSION_CONTEXT,
+  FakeContext context_a = {mojom::ContextType::kPrivilegedExtension,
                            extension_a.get(), extension_a->url()};
-  FakeContext context_b = {Feature::BLESSED_EXTENSION_CONTEXT,
+  FakeContext context_b = {mojom::ContextType::kPrivilegedExtension,
                            extension_b.get(), extension_b->url()};
   // To start, context a should not have access to storage, but context b
   // should.
@@ -75,11 +76,11 @@ TEST_F(FeatureCacheTest, WebUIContexts) {
   scoped_refptr<const Extension> extension_a = ExtensionBuilder("a").Build();
 
   // The chrome://extensions page is allowlisted for the management API.
-  FakeContext webui_context = {Feature::WEBUI_CONTEXT, nullptr,
+  FakeContext webui_context = {mojom::ContextType::kWebUi, nullptr,
                                content::GetWebUIURL("extensions")};
   // chrome://baz is not allowlisted, and should not have access.
-  FakeContext webui_context_without_access = {Feature::WEBUI_CONTEXT, nullptr,
-                                              content::GetWebUIURL("baz")};
+  FakeContext webui_context_without_access = {
+      mojom::ContextType::kWebUi, nullptr, content::GetWebUIURL("baz")};
 
   EXPECT_TRUE(HasFeature(cache, webui_context, "management"));
   EXPECT_FALSE(HasFeature(cache, webui_context_without_access, "management"));

@@ -157,7 +157,8 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
                    size_t row_bytes,
                    int x,
                    int y) override;
-  void WillOverwriteCanvas() override;
+  void SkipQueuedDrawCommands() override;
+  void RestartRecording() override;
   void DispatchContextLostEvent(TimerBase*) override;
   void TryRestoreContextEvent(TimerBase*) override;
 

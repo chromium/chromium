@@ -7,10 +7,13 @@ source_set("privacy_guide") {
     "privacy_guide_main_coordinator.h",
     "privacy_guide_main_coordinator.mm",
     "privacy_guide_main_coordinator_delegate.h",
+    "privacy_guide_url_usage_coordinator.h",
+    "privacy_guide_url_usage_coordinator.mm",
     "privacy_guide_welcome_coordinator.h",
     "privacy_guide_welcome_coordinator.mm",
   ]
   deps = [
+    ":privacy_guide_constants",
     ":privacy_guide_ui",
     "//base",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",

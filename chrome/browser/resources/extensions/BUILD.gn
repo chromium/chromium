@@ -64,6 +64,7 @@ build_webui("build") {
     "service.ts",
     "shortcut_util.ts",
     "site_settings_mixin.ts",
+    "extension_hats_browser_proxy.ts",
     "url_util.ts",
   ]
 
@@ -89,10 +90,9 @@ build_webui("build") {
     "//tools/typescript/definitions/pending.d.ts",
     "//tools/typescript/definitions/runtime.d.ts",
     "//tools/typescript/definitions/tabs.d.ts",
+    "//tools/typescript/definitions/chrome_send.d.ts",
   ]
-  if (is_chromeos_ash) {
-    ts_definitions += [ "//tools/typescript/definitions/chrome_send.d.ts" ]
-  }
+
   ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/managed_footnote:build_ts",

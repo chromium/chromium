@@ -139,8 +139,8 @@ TEST_F(RegularOwnerKeyLoaderTest, FirstUserGeneratesOwnerKeyInPublicSlot) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{ash::features::kStoreOwnerKeyInPrivateSlot,
-                             ash::features::kMigrateOwnerKeyToPrivateSlot});
+      /*disabled_features=*/{kStoreOwnerKeyInPrivateSlot,
+                             kMigrateOwnerKeyToPrivateSlot});
 
   // In real code DeviceSettingsService must call this for the first user.
   device_settings_service_.MarkWillEstablishConsumerOwnership();
@@ -168,8 +168,8 @@ TEST_F(RegularOwnerKeyLoaderTest, FirstUserGeneratesOwnerKeyInPublicSlot) {
 TEST_F(RegularOwnerKeyLoaderTest, FirstUserGeneratesOwnerKeyInPrivateSlot) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{ash::features::kStoreOwnerKeyInPrivateSlot},
-      /*disabled_features=*/{ash::features::kMigrateOwnerKeyToPrivateSlot});
+      /*enabled_features=*/{kStoreOwnerKeyInPrivateSlot},
+      /*disabled_features=*/{kMigrateOwnerKeyToPrivateSlot});
 
   // In real code DeviceSettingsService must call this for the first user.
   device_settings_service_.MarkWillEstablishConsumerOwnership();
@@ -244,8 +244,8 @@ TEST_F(RegularOwnerKeyLoaderTest, SecondUserDoesNotTakeOwnership) {
 TEST_F(RegularOwnerKeyLoaderTest, OwnerUserLoadsExistingKeyFromPublicSlot) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{ash::features::kStoreOwnerKeyInPrivateSlot},
-      /*disabled_features=*/{ash::features::kMigrateOwnerKeyToPrivateSlot});
+      /*enabled_features=*/{kStoreOwnerKeyInPrivateSlot},
+      /*disabled_features=*/{kMigrateOwnerKeyToPrivateSlot});
 
   // Configure existing device policies and the owner key.
   auto signing_key = ConfigureExistingPolicies(profile_->GetProfileUserName());
@@ -273,8 +273,8 @@ TEST_F(RegularOwnerKeyLoaderTest, OwnerUserLoadsExistingKeyFromPublicSlot) {
 TEST_F(RegularOwnerKeyLoaderTest, OwnerUserLoadsExistingKeyFromPrivateSlot) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{ash::features::kStoreOwnerKeyInPrivateSlot},
-      /*disabled_features=*/{ash::features::kMigrateOwnerKeyToPrivateSlot});
+      /*enabled_features=*/{kStoreOwnerKeyInPrivateSlot},
+      /*disabled_features=*/{kMigrateOwnerKeyToPrivateSlot});
 
   // Configure existing device policies and the owner key.
   auto signing_key = ConfigureExistingPolicies(profile_->GetProfileUserName());
@@ -304,8 +304,8 @@ TEST_F(RegularOwnerKeyLoaderTest,
        OwnerUserLoadsExistingKeyFromPublicSlotWithoutPolicies) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{ash::features::kStoreOwnerKeyInPrivateSlot},
-      /*disabled_features=*/{ash::features::kMigrateOwnerKeyToPrivateSlot});
+      /*enabled_features=*/{kStoreOwnerKeyInPrivateSlot},
+      /*disabled_features=*/{kMigrateOwnerKeyToPrivateSlot});
 
   policy::DevicePolicyBuilder policy_builder;
   auto signing_key = policy_builder.GetSigningKey();
@@ -334,8 +334,8 @@ TEST_F(RegularOwnerKeyLoaderTest,
        OwnerUserLoadsExistingKeyFromPrivateSlotWithoutPolicies) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{ash::features::kStoreOwnerKeyInPrivateSlot},
-      /*disabled_features=*/{ash::features::kMigrateOwnerKeyToPrivateSlot});
+      /*enabled_features=*/{kStoreOwnerKeyInPrivateSlot},
+      /*disabled_features=*/{kMigrateOwnerKeyToPrivateSlot});
 
   policy::DevicePolicyBuilder policy_builder;
   auto signing_key = policy_builder.GetSigningKey();
@@ -511,8 +511,8 @@ TEST_F(RegularOwnerKeyLoaderTest, EnterpriseDevicesDontNeedPrivateKey) {
 TEST_F(RegularOwnerKeyLoaderTest, MigrateFromPublicToPrivateSlot) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{ash::features::kStoreOwnerKeyInPrivateSlot,
-                            ash::features::kMigrateOwnerKeyToPrivateSlot},
+      /*enabled_features=*/{kStoreOwnerKeyInPrivateSlot,
+                            kMigrateOwnerKeyToPrivateSlot},
       /*disabled_features=*/{});
 
   // Configure existing device policies and the owner key.
@@ -550,8 +550,8 @@ TEST_F(RegularOwnerKeyLoaderTest, NotMigratedFromPublicToPrivateSlot) {
   // With this config Chrome should generate new keys in the private slot, but
   // not migrate existing keys from the public slot.
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{ash::features::kStoreOwnerKeyInPrivateSlot},
-      /*disabled_features=*/{ash::features::kMigrateOwnerKeyToPrivateSlot});
+      /*enabled_features=*/{kStoreOwnerKeyInPrivateSlot},
+      /*disabled_features=*/{kMigrateOwnerKeyToPrivateSlot});
 
   // Configure existing device policies and the owner key.
   auto signing_key = ConfigureExistingPolicies(profile_->GetProfileUserName());
@@ -585,8 +585,8 @@ TEST_F(RegularOwnerKeyLoaderTest, NotMigratedFromPrivateToPublicSlot) {
   // With this config Chrome should generate new keys in the private slot, but
   // not migrate existing keys from the public slot.
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{ash::features::kStoreOwnerKeyInPrivateSlot,
-                            ash::features::kMigrateOwnerKeyToPrivateSlot},
+      /*enabled_features=*/{kStoreOwnerKeyInPrivateSlot,
+                            kMigrateOwnerKeyToPrivateSlot},
       /*disabled_features=*/{});
 
   // Configure existing device policies and the owner key.
@@ -622,8 +622,8 @@ TEST_F(RegularOwnerKeyLoaderTest, MigrateFromPrivateToPublicSlot) {
   // not migrate existing keys from the public slot.
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{ash::features::kStoreOwnerKeyInPrivateSlot,
-                             ash::features::kMigrateOwnerKeyToPrivateSlot});
+      /*disabled_features=*/{kStoreOwnerKeyInPrivateSlot,
+                             kMigrateOwnerKeyToPrivateSlot});
 
   // Configure existing device policies and the owner key.
   auto signing_key = ConfigureExistingPolicies(profile_->GetProfileUserName());

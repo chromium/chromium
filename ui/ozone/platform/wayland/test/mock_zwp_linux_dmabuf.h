@@ -7,6 +7,7 @@
 
 #include <linux-dmabuf-unstable-v1-server-protocol.h>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 
@@ -35,7 +36,8 @@ class MockZwpLinuxDmabufV1 : public GlobalObject {
                     wl_resource* resource,
                     uint32_t params_id));
 
-  const std::vector<TestZwpLinuxBufferParamsV1*>& buffer_params() const {
+  const std::vector<raw_ptr<TestZwpLinuxBufferParamsV1, VectorExperimental>>&
+  buffer_params() const {
     return buffer_params_;
   }
 
@@ -44,7 +46,8 @@ class MockZwpLinuxDmabufV1 : public GlobalObject {
   void OnBufferParamsDestroyed(TestZwpLinuxBufferParamsV1* params);
 
  private:
-  std::vector<TestZwpLinuxBufferParamsV1*> buffer_params_;
+  std::vector<raw_ptr<TestZwpLinuxBufferParamsV1, VectorExperimental>>
+      buffer_params_;
 };
 
 }  // namespace wl

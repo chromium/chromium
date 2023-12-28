@@ -113,6 +113,11 @@ ReSignInInfoBarDelegate::GetIdentifier() const {
   return RE_SIGN_IN_INFOBAR_DELEGATE_IOS;
 }
 
+bool ReSignInInfoBarDelegate::ShouldExpire(
+    const NavigationDetails& details) const {
+  return false;
+}
+
 std::u16string ReSignInInfoBarDelegate::GetTitleText() const {
   return base::FeatureList::IsEnabled(
              syncer::kReplaceSyncPromosWithSignInPromos)

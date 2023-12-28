@@ -19,6 +19,7 @@
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -74,9 +75,10 @@ class RichAnswersView : public views::View {
                   base::WeakPtr<QuickAnswersUiController> controller,
                   const ResultType result_type);
 
-  void AddSettingsButtonTo(views::View* container_view);
+  views::View* AddSettingsButtonTo(views::View* container_view);
 
-  void AddHeaderViewsTo(views::View* container_view, std::string header_text);
+  void AddHeaderViewsTo(views::View* container_view,
+                        const std::string& header_text);
 
   // FocusSearch::GetFocusableViewsCallback to poll currently focusable views.
   std::vector<views::View*> GetFocusableViews();
@@ -87,6 +89,9 @@ class RichAnswersView : public views::View {
 
  private:
   void InitLayout();
+  void SetUpBaseView();
+  void SetUpMainView();
+  void SetUpContentView();
   void AddResultTypeIcon();
   void AddGoogleSearchLink();
   void OnGoogleSearchLinkClicked();
@@ -100,7 +105,7 @@ class RichAnswersView : public views::View {
 
   raw_ptr<views::View> base_view_ = nullptr;
   raw_ptr<views::FlexLayoutView> main_view_ = nullptr;
-  raw_ptr<views::FlexLayoutView> content_view_ = nullptr;
+  raw_ptr<views::BoxLayoutView> content_view_ = nullptr;
   raw_ptr<views::ImageButton> settings_button_ = nullptr;
   raw_ptr<views::ImageView> vector_icon_ = nullptr;
   raw_ptr<views::Link> search_link_label_ = nullptr;

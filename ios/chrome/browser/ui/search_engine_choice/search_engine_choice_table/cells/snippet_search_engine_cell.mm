@@ -26,7 +26,10 @@ constexpr CGFloat kVerticalMargin = 17.;
 // Horizontal margin between elements in SnippetSearchEngineCell.
 constexpr CGFloat kInnerHorizontalMargin = 12.;
 // Chevron button size.
-constexpr CGFloat kChevronButtonSize = 24.;
+constexpr CGFloat kChevronButtonSize = 44.;
+// Horizontal chevron margin with the separtor, the name label and the snippet
+// label.
+constexpr CGFloat kChevronButtonHorizontalMargin = 2.;
 // Thickness of the vertical separator.
 constexpr CGFloat kSeparatorThickness = 1.;
 // Duration of the snippet animation when changing state.
@@ -148,13 +151,13 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
                          constant:kVerticalMargin],
       [_nameLabel.trailingAnchor
           constraintLessThanOrEqualToAnchor:_chevronButton.leadingAnchor
-                                   constant:-kInnerHorizontalMargin],
+                                   constant:-kChevronButtonHorizontalMargin],
       [_nameLabel.bottomAnchor constraintEqualToAnchor:_snippetLabel.topAnchor],
       [_snippetLabel.leadingAnchor
           constraintEqualToAnchor:_nameLabel.leadingAnchor],
       [_snippetLabel.trailingAnchor
           constraintLessThanOrEqualToAnchor:_chevronButton.leadingAnchor
-                                   constant:-kInnerHorizontalMargin],
+                                   constant:-kChevronButtonHorizontalMargin],
       [_chevronButton.heightAnchor
           constraintEqualToConstant:kChevronButtonSize],
       [_chevronButton.widthAnchor constraintEqualToConstant:kChevronButtonSize],
@@ -162,7 +165,7 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
           constraintEqualToAnchor:_nameLabel.centerYAnchor],
       [_chevronButton.trailingAnchor
           constraintEqualToAnchor:separatorLine.leadingAnchor
-                         constant:-kInnerHorizontalMargin],
+                         constant:-kChevronButtonHorizontalMargin],
       [separatorLine.heightAnchor
           constraintEqualToAnchor:_nameLabel.heightAnchor],
       [separatorLine.centerYAnchor
@@ -182,6 +185,10 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
     [NSLayoutConstraint activateConstraints:constraints];
     [self updateCellWithSnippetSate:SnippetState::kHidden animate:NO];
     [self updateCircleImageView];
+    // Set the button/accessibility settings.
+    self.accessibilityTraits |= UIAccessibilityTraitButton;
+    self.userInteractionEnabled = YES;
+    self.accessibilityTraits &= ~UIAccessibilityTraitNotEnabled;
   }
   return self;
 }
@@ -193,6 +200,11 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
     return;
   }
   _checked = checked;
+  if (_checked) {
+    self.accessibilityTraits |= UIAccessibilityTraitSelected;
+  } else {
+    self.accessibilityTraits &= ~UIAccessibilityTraitSelected;
+  }
   [self updateCircleImageView];
 }
 
@@ -205,6 +217,12 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
 
 - (UIImage*)faviconImage {
   return _faviconImageView.image;
+}
+
+- (void)setSnippetState:(SnippetState)snippetState {
+  // This method should be called only when being configured, before to be
+  // added to the view. Therefore there should be no animation.
+  [self updateCellWithSnippetSate:snippetState animate:NO];
 }
 
 #pragma mark - Private
@@ -293,6 +311,11 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
 - (void)prepareForReuse {
   [super prepareForReuse];
   _faviconImageView.image = nil;
+  self.nameLabel.text = nil;
+  self.nameLabel.textColor = UIColor.labelColor;
+  self.snippetLabel.text = nil;
+  [self updateCellWithSnippetSate:SnippetState::kHidden animate:NO];
+  self.checked = NO;
   self.chevronToggledBlock = nil;
 }
 

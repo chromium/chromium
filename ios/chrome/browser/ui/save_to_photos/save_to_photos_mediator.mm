@@ -29,6 +29,9 @@ namespace {
 
 // Maximum length of the suggested image name passed to the Photos service.
 constexpr size_t kSuggestedImageNameMaxLength = 100;
+NSString* const kNotEnoughStorageErrorLocalizedDescription =
+    @"The remaining storage in the user's account is not enough to perform "
+    @"this operation.";
 
 NSURL* GetGooglePhotosAppURL() {
   NSURLComponents* photosAppURLComponents = [[NSURLComponents alloc] init];
@@ -308,10 +311,20 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
 
 // Called when the Photos service reports upload completion.
 - (void)photosServiceFinishedUploadWithResult:
-    (const PhotosService::UploadResult&)result {
+    (PhotosService::UploadResult)result {
   if (!result.successful) {
-    base::UmaHistogramTimes("IOS.SaveToPhotos.UploadFailureLatency",
+    base::UmaHistogramTimes(kSaveToPhotosUploadFailureLatencyHistogram,
                             base::TimeTicks::Now() - _uploadStart);
+    // TODO(crbug.com/1513891): Emit the failure type as-is once the service is
+    // able to identify out-of-storage errors by itself.
+    if (result.failure_type == PhotosServiceUploadFailureType::kUploadPhoto2 &&
+        [result.error.localizedDescription
+            isEqualToString:kNotEnoughStorageErrorLocalizedDescription]) {
+      result.failure_type =
+          PhotosServiceUploadFailureType::kUploadPhoto2NotEnoughStorage;
+    }
+    base::UmaHistogramEnumeration(kSaveToPhotosUploadFailureTypeHistogram,
+                                  result.failure_type);
     __weak __typeof(self) weakSelf = self;
     [self.delegate stopValidationSpinnerForAccountPicker];
     [self showTryAgainOrCancelAlertWithTryAgainBlock:^{
@@ -321,7 +334,7 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
     return;
   }
 
-  base::UmaHistogramTimes("IOS.SaveToPhotos.UploadSuccessLatency",
+  base::UmaHistogramTimes(kSaveToPhotosUploadSuccessLatencyHistogram,
                           base::TimeTicks::Now() - _uploadStart);
   _uploadCompletedSuccessfully = YES;
 

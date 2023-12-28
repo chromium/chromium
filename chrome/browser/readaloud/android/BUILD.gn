@@ -14,17 +14,15 @@ android_library("java") {
   ]
   deps = [
     ":hooks_java",
+    ":metrics_java",
     "//base:base_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android/modules/readaloud/public:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/device:java",
-    "//chrome/browser/flags:java",
     "//chrome/browser/language/android:base_module_java",
     "//chrome/browser/language/android:java",
     "//chrome/browser/profiles/android:java",
-    "//chrome/browser/search_engines/android:java",
-    "//chrome/browser/signin/services/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/layouts:java",
@@ -32,14 +30,11 @@ android_library("java") {
     "//chrome/browser/ui/android/toolbar:java",
     "//chrome/browser/user_education:java",
     "//components/browser_ui/bottomsheet/android:java",
-    "//components/browser_ui/bottomsheet/android:java",
     "//components/embedder_support/android:util_java",
     "//components/feature_engagement/public:public_java",
     "//components/prefs/android:java",
-    "//components/search_engines/android:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
@@ -56,11 +51,22 @@ generate_jni("jni_headers") {
   ]
 }
 
+android_library("metrics_java") {
+  sources =
+      [ "java/src/org/chromium/chrome/browser/readaloud/ReadAloudMetrics.java" ]
+
+  deps = [
+    "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
 android_library("features_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudFeatures.java",
   ]
   deps = [
+    ":metrics_java",
     "//base:base_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
@@ -81,8 +87,8 @@ android_resources("java_resources") {
     "java/res/drawable/baseline_more_horiz_24.xml",
     "java/res/drawable/error_24.xml",
     "java/res/drawable/format_ink_highlighter_24.xml",
-    "java/res/drawable/forward_30_24.xml",
-    "java/res/drawable/forward_30_button.xml",
+    "java/res/drawable/forward_10_24.xml",
+    "java/res/drawable/forward_10_button.xml",
     "java/res/drawable/mini_pause_button.xml",
     "java/res/drawable/mini_play_button.xml",
     "java/res/drawable/pause_24.xml",
@@ -192,10 +198,13 @@ robolectric_library("junit") {
     "//components/search_engines/android:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_java",
+    "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
@@ -208,6 +217,7 @@ robolectric_library("junit") {
 
 android_library("player_java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/readaloud/player/Colors.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/InteractionHandler.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/PlayerCoordinator.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/PlayerMediator.java",
@@ -282,6 +292,7 @@ robolectric_library("player_junit_java") {
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/layouts:java",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/styles/android:java",
     "//components/prefs/android:java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_interpolator_interpolator_java",

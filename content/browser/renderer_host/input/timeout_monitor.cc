@@ -12,11 +12,13 @@ using base::TimeTicks;
 
 namespace content {
 
-TimeoutMonitor::TimeoutMonitor(const TimeoutHandler& timeout_handler)
+TimeoutMonitor::TimeoutMonitor(
+    const TimeoutHandler& timeout_handler,
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
     : timeout_handler_(timeout_handler) {
   DCHECK(!timeout_handler_.is_null());
-  timeout_timer_.SetTaskRunner(
-      content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
+  DCHECK(task_runner->RunsTasksInCurrentSequence());
+  timeout_timer_.SetTaskRunner(task_runner);
 }
 
 TimeoutMonitor::~TimeoutMonitor() {

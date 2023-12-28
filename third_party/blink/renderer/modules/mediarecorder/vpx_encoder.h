@@ -29,7 +29,8 @@ class VpxEncoder final : public VideoTrackRecorder::Encoder {
   VpxEncoder(scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
              bool use_vp9,
              const VideoTrackRecorder::OnEncodedVideoCB& on_encoded_video_cb,
-             uint32_t bits_per_second);
+             uint32_t bits_per_second,
+             const VideoTrackRecorder::OnErrorCB on_error_cb);
 
   VpxEncoder(const VpxEncoder&) = delete;
   VpxEncoder& operator=(const VpxEncoder&) = delete;
@@ -72,6 +73,8 @@ class VpxEncoder final : public VideoTrackRecorder::Encoder {
 
   // Force usage of VP9 for encoding, instead of VP8 which is the default.
   const bool use_vp9_;
+
+  const VideoTrackRecorder::OnErrorCB on_error_cb_;
 
   // VPx internal objects: configuration and encoder. |encoder_| is a special
   // scoped pointer to guarantee proper destruction, particularly when

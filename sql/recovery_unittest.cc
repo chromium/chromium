@@ -62,6 +62,8 @@ std::string GetSchema(Database* db) {
 class SqlRecoveryTestBase : public testing::Test {
  public:
   void SetUp() override {
+    db_.set_histogram_tag("MyFeatureDatabase");
+
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_path_ = temp_dir_.GetPath().AppendASCII("recovery_test.sqlite");
     ASSERT_TRUE(db_.Open(db_path_));
@@ -1172,7 +1174,7 @@ TEST_P(SqlRecoveryTest, RecoverIfPossibleWithPerDatabaseUma) {
   auto run_recovery = base::BindLambdaForTesting([&]() {
     EXPECT_TRUE(BuiltInRecovery::RecoverIfPossible(
         &db_, SQLITE_CORRUPT, BuiltInRecovery::Strategy::kRecoverOrRaze,
-        &features::kUseBuiltInRecoveryIfSupported, "MyFeatureDatabase"));
+        &features::kUseBuiltInRecoveryIfSupported));
   });
 
   TestRecoverDatabase(db_, db_path_, /*with_meta=*/false,

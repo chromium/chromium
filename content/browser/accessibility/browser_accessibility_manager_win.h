@@ -12,6 +12,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
@@ -80,8 +81,8 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
 
  private:
   struct SelectionEvents {
-    std::vector<BrowserAccessibility*> added;
-    std::vector<BrowserAccessibility*> removed;
+    std::vector<raw_ptr<BrowserAccessibility, VectorExperimental>> added;
+    std::vector<raw_ptr<BrowserAccessibility, VectorExperimental>> removed;
     SelectionEvents();
     ~SelectionEvents();
   };

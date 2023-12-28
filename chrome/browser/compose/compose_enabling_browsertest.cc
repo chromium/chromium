@@ -65,8 +65,7 @@ IN_PROC_BROWSER_TEST_F(ComposeEnablingBrowserTest,
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
 
   // Checks that Compose is disabled.
-  EXPECT_NE(base::ok(),
-            GetComposeEnabling().IsEnabledForProfile(browser()->profile()));
+  EXPECT_NE(base::ok(), GetComposeEnabling().IsEnabled());
   EXPECT_FALSE(GetOptimizationGuide()->ShouldFeatureBeCurrentlyEnabledForUser(
       optimization_guide::proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_COMPOSE));
@@ -88,8 +87,7 @@ IN_PROC_BROWSER_TEST_F(ComposeEnablingBrowserTest, EnableComposeViaSettings) {
   EXPECT_TRUE(base::FeatureList::IsEnabled(
       autofill::features::kAutofillContentEditables));
 
-  EXPECT_EQ(base::ok(),
-            GetComposeEnabling().IsEnabledForProfile(browser()->profile()));
+  EXPECT_EQ(base::ok(), GetComposeEnabling().IsEnabled());
   EXPECT_TRUE(GetOptimizationGuide()->ShouldFeatureBeCurrentlyEnabledForUser(
       optimization_guide::proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_COMPOSE));

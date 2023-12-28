@@ -1,0 +1,25 @@
+<style include="cr-hidden-style">
+  #content {
+    display: flex;
+    flex: 1;
+  }
+
+  .collapsible {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  span {
+    white-space: pre;
+  }
+
+  .elided-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+</style>
+<cr-toast id="toast" duration="[[duration]]">
+  <div id="content" class="elided-text"></div>
+  <slot id="slotted"></slot>
+</cr-toast>

@@ -4,15 +4,11 @@
 
 import("//build/config/features.gni")
 import("//chrome/installer/installers.gni")
-import("//components/signin/features.gni")
 import("//media/media_options.gni")
 import("//third_party/ffmpeg/ffmpeg_options.gni")
 
 # chrome/installer/installers.gni
 enable_linux_installer = false
-
-# components/signin/features.gni
-enable_search_engine_choice = false
 
 # build/config/features.gni
 proprietary_codecs = true

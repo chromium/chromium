@@ -22,8 +22,8 @@ namespace extensions {
 // Tests that the ExtensionEvents enum in enums.xml exactly matches the
 // C++ enum definition.
 TEST(ExtensionEventHistogramValueTest, CheckEnums) {
-  std::optional<base::HistogramEnumEntryMap> enums =
-      base::ReadEnumFromEnumsXml("ExtensionEvents");
+  std::optional<base::HistogramEnumEntryMap> enums = base::ReadEnumFromEnumsXml(
+      "ExtensionEvents", /*subdirectory=*/"extensions");
   ASSERT_TRUE(enums);
   // The number of enums in the histogram entry should be equal to the number of
   // enums in the C++ file.

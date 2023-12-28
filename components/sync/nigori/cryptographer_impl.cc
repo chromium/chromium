@@ -88,9 +88,8 @@ void CryptographerImpl::EmplaceKeysFrom(const NigoriKeyBag& key_bag) {
   key_bag_.AddAllUnknownKeysFrom(key_bag);
 }
 
-void CryptographerImpl::EmplaceCrossUserSharingKeysFrom(
-    const CrossUserSharingKeys& keys) {
-  cross_user_sharing_keys_.AddAllUnknownKeysFrom(keys);
+void CryptographerImpl::ReplaceCrossUserSharingKeys(CrossUserSharingKeys keys) {
+  cross_user_sharing_keys_ = std::move(keys);
 }
 
 void CryptographerImpl::SelectDefaultEncryptionKey(
@@ -124,6 +123,11 @@ bool CryptographerImpl::HasKeyPair(const uint32_t key_pair_version) const {
   return cross_user_sharing_keys_.HasKeyPair(key_pair_version);
 }
 
+const CrossUserSharingPublicPrivateKeyPair&
+CryptographerImpl::GetCrossUserSharingKeyPair(uint32_t version) const {
+  return cross_user_sharing_keys_.GetKeyPair(version);
+}
+
 sync_pb::NigoriKey CryptographerImpl::ExportDefaultKey() const {
   DCHECK(CanEncrypt());
   return key_bag_.ExportKey(default_encryption_key_name_);
@@ -137,12 +141,6 @@ std::unique_ptr<CryptographerImpl> CryptographerImpl::Clone() const {
 
 size_t CryptographerImpl::KeyBagSizeForTesting() const {
   return key_bag_.size();
-}
-
-const CrossUserSharingPublicPrivateKeyPair&
-CryptographerImpl::GetCrossUserSharingKeyPairForTesting(
-    uint32_t version) const {
-  return cross_user_sharing_keys_.GetKeyPair(version);
 }
 
 bool CryptographerImpl::CanEncrypt() const {
@@ -182,12 +180,12 @@ CryptographerImpl::AuthEncryptForCrossUserSharing(
     base::span<const uint8_t> plaintext,
     base::span<const uint8_t> recipient_public_key) const {
   if (!default_cross_user_sharing_key_version_.has_value()) {
-    DVLOG(1) << "Default encryption key pair version is not set";
+    VLOG(1) << "Default encryption key pair version is not set";
     return absl::nullopt;
   }
   if (!cross_user_sharing_keys_.HasKeyPair(
           default_cross_user_sharing_key_version_.value())) {
-    DVLOG(1) << "Encryption key pair is not available";
+    VLOG(1) << "Encryption key pair is not available";
     return absl::nullopt;
   }
 
@@ -205,6 +203,7 @@ CryptographerImpl::AuthDecryptForCrossUserSharing(
     base::span<const uint8_t> sender_public_key,
     const uint32_t recipient_key_version) const {
   if (!cross_user_sharing_keys_.HasKeyPair(recipient_key_version)) {
+    VLOG(1) << "Decryption key pair does not exist: " << recipient_key_version;
     return absl::nullopt;
   }
 

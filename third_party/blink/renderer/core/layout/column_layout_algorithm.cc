@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "third_party/blink/renderer/core/layout/block_layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/block_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/layout/column_spanner_path.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
@@ -295,6 +296,7 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
     previously_consumed_block_size = token->ConsumedBlockSize();
   }
 
+  const LayoutUnit unconstrained_intrinsic_block_size = intrinsic_block_size_;
   intrinsic_block_size_ =
       ClampIntrinsicBlockSize(GetConstraintSpace(), Node(), GetBreakToken(),
                               BorderScrollbarPadding(), intrinsic_block_size_);
@@ -337,7 +339,11 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
   }
 
   if (GetConstraintSpace().IsTableCell()) {
-    FinalizeTableCellLayout(intrinsic_block_size_, &container_builder_);
+    FinalizeTableCellLayout(unconstrained_intrinsic_block_size,
+                            &container_builder_);
+  } else {
+    AlignBlockContent(Style(), GetBreakToken(),
+                      unconstrained_intrinsic_block_size, container_builder_);
   }
 
   OutOfFlowLayoutPart(Node(), GetConstraintSpace(), &container_builder_).Run();

@@ -76,9 +76,9 @@ class LayoutSVGBlock : public LayoutNGBlockFlow {
   bool needs_transform_update_ : 1;
   bool transform_uses_reference_box_ : 1;
 
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsSVG() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectSVG || LayoutNGBlockFlow::IsOfType(type);
+    return true;
   }
 
   bool CheckForImplicitTransformChange(bool bbox_changed) const;

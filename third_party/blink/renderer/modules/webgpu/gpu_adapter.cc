@@ -94,15 +94,15 @@ GPUAdapter::GPUAdapter(
     GPU* gpu,
     WGPUAdapter handle,
     scoped_refptr<DawnControlClientHolder> dawn_control_client)
-    : DawnObjectBase(dawn_control_client), handle_(handle), gpu_(gpu) {
+    : DawnObject(dawn_control_client, handle), gpu_(gpu) {
   WGPUAdapterProperties properties = {};
   WGPUAdapterPropertiesMemoryHeaps memoryHeapProperties = {};
   memoryHeapProperties.chain.sType = WGPUSType_AdapterPropertiesMemoryHeaps;
   if (GetProcs().adapterHasFeature(
-          handle_, WGPUFeatureName_AdapterPropertiesMemoryHeaps)) {
+          GetHandle(), WGPUFeatureName_AdapterPropertiesMemoryHeaps)) {
     properties.nextInChain = &memoryHeapProperties.chain;
   }
-  GetProcs().adapterGetProperties(handle_, &properties);
+  GetProcs().adapterGetProperties(GetHandle(), &properties);
   is_fallback_adapter_ = properties.adapterType == WGPUAdapterType_CPU;
   adapter_type_ = properties.adapterType;
   backend_type_ = properties.backendType;
@@ -122,7 +122,7 @@ GPUAdapter::GPUAdapter(
         memoryHeapProperties.heapInfo[i]));
   }
 
-  features_ = MakeFeatureNameSet(GetProcs(), handle_);
+  features_ = MakeFeatureNameSet(GetProcs(), GetHandle());
 
   WGPUSupportedLimits limits = {};
   // Chain to get experimental subgroup limits, if support experimental
@@ -133,7 +133,7 @@ GPUAdapter::GPUAdapter(
     limits.nextInChain = &subgroupLimits.chain;
   }
 
-  GetProcs().adapterGetLimits(handle_, &limits);
+  GetProcs().adapterGetLimits(GetHandle(), &limits);
   limits_ = MakeGarbageCollected<GPUSupportedLimits>(limits);
 }
 
@@ -171,7 +171,7 @@ WGPUBackendType GPUAdapter::backendType() const {
 }
 
 bool GPUAdapter::SupportsMultiPlanarFormats() const {
-  return GetProcs().adapterHasFeature(handle_,
+  return GetProcs().adapterHasFeature(GetHandle(),
                                       WGPUFeatureName_DawnMultiPlanarFormats);
 }
 
@@ -294,8 +294,9 @@ ScriptPromise GPUAdapter::requestDevice(ScriptState* script_state,
       WTF::BindOnce(&GPUAdapter::OnRequestDeviceCallback, WrapPersistent(this),
                     WrapPersistent(script_state), WrapPersistent(descriptor))));
 
-  GetProcs().adapterRequestDevice(
-      handle_, &dawn_desc, callback->UnboundCallback(), callback->AsUserdata());
+  GetProcs().adapterRequestDevice(GetHandle(), &dawn_desc,
+                                  callback->UnboundCallback(),
+                                  callback->AsUserdata());
   EnsureFlush(ToEventLoop(script_state));
 
   return promise;

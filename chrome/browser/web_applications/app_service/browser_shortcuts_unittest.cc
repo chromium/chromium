@@ -33,8 +33,10 @@
 #include "ui/display/types/display_constants.h"
 
 namespace {
+
+using webapps::AppId;
+
 const char kUrl[] = "https://example.com/";
-const char kIconUrl[] = "https://example.com/icon";
 }
 
 namespace web_app {
@@ -50,33 +52,13 @@ class BrowserShortcutsTest : public testing::Test,
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
-  std::string CreateShortcut(const std::string& shortcut_name,
-                             bool with_icon = false) {
-    const GURL kAppUrl(kUrl);
-
-    // Create a web app entry without scope, which would be recognised
-    // as ShortcutApp in the web app system.
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->title = base::UTF8ToUTF16(shortcut_name);
-    web_app_info->start_url = kAppUrl;
-
-    if (with_icon) {
-      const GeneratedIconsInfo icon_info(
-          IconPurpose::ANY, {web_app::icon_size::k32}, {SK_ColorBLACK});
-      web_app::AddIconsToWebAppInstallInfo(web_app_info.get(), GURL(kIconUrl),
-                                           {icon_info});
-    }
-
-    std::string app_id =
-        test::InstallWebApp(profile(), std::move(web_app_info),
-                            /*overwrite_existing_manifest_fields=*/true);
-    CHECK(
-        WebAppProvider::GetForTest(profile())->registrar_unsafe().IsShortcutApp(
-            app_id));
-    return app_id;
+  AppId CreateShortcut(const std::string& shortcut_name,
+                       bool with_icon = true) {
+    return test::InstallShortcut(profile(), shortcut_name, GURL(kUrl),
+                                 with_icon);
   }
 
-  std::string CreateWebApp(const std::string& app_name) {
+  AppId CreateWebApp(const std::string& app_name) {
     const GURL kAppUrl(kUrl);
 
     // Create a web app entry with scope, which would be recognised
@@ -143,7 +125,11 @@ class BrowserShortcutsTest : public testing::Test,
 TEST_F(BrowserShortcutsTest, PublishExistingBrowserShortcut) {
   const std::string kShortcutName = "Shortcut";
 
-  auto local_shortcut_id = CreateShortcut(kShortcutName);
+  // Does not create a default icon with this installation so that we can
+  // verify the icon effect is set to be correct.
+  // TODO(b/315263875): Add a specific test to test the different icon
+  // effect to make this clearer.
+  AppId local_shortcut_id = CreateShortcut(kShortcutName, /*with_icon =*/false);
   apps::ShortcutId expected_shortcut_id =
       apps::GenerateShortcutId(app_constants::kChromeAppId, local_shortcut_id);
 
@@ -176,7 +162,7 @@ TEST_F(BrowserShortcutsTest, PublishExistingBrowserShortcut) {
 }
 
 TEST_F(BrowserShortcutsTest, WebAppNotPublishedAsShortcut) {
-  auto app_id = CreateWebApp("App");
+  CreateWebApp("App");
 
   InitializeBrowserShortcutPublisher();
 
@@ -185,7 +171,7 @@ TEST_F(BrowserShortcutsTest, WebAppNotPublishedAsShortcut) {
           ->ShortcutRegistryCache();
   EXPECT_EQ(cache->GetAllShortcuts().size(), 0u);
 
-  auto new_app_id = CreateWebApp("NewApp");
+  CreateWebApp("NewApp");
   EXPECT_EQ(cache->GetAllShortcuts().size(), 0u);
 }
 
@@ -198,7 +184,7 @@ TEST_F(BrowserShortcutsTest, PublishNewBrowserShortcut) {
 
   const std::string kShortcutName = "Shortcut";
 
-  auto local_shortcut_id = CreateShortcut(kShortcutName, /*with_icon = */ true);
+  AppId local_shortcut_id = CreateShortcut(kShortcutName);
   apps::ShortcutId expected_shortcut_id =
       apps::GenerateShortcutId(app_constants::kChromeAppId, local_shortcut_id);
 
@@ -228,7 +214,7 @@ TEST_F(BrowserShortcutsTest, PublishNewBrowserShortcut) {
 TEST_F(BrowserShortcutsTest, LaunchShortcut) {
   const std::string kShortcutName = "Shortcut";
 
-  auto local_shortcut_id = CreateShortcut(kShortcutName);
+  AppId local_shortcut_id = CreateShortcut(kShortcutName);
   apps::ShortcutId expected_shortcut_id =
       apps::GenerateShortcutId(app_constants::kChromeAppId, local_shortcut_id);
   InitializeBrowserShortcutPublisher();
@@ -276,7 +262,7 @@ TEST_F(BrowserShortcutsTest, ShortcutRemoved) {
 
   const std::string kShortcutName = "Shortcut";
 
-  auto local_shortcut_id = CreateShortcut(kShortcutName);
+  AppId local_shortcut_id = CreateShortcut(kShortcutName);
   apps::ShortcutId expected_shortcut_id =
       apps::GenerateShortcutId(app_constants::kChromeAppId, local_shortcut_id);
 
@@ -292,7 +278,7 @@ TEST_F(BrowserShortcutsTest, ShortcutRemoved) {
 TEST_F(BrowserShortcutsTest, RemoveShortcut) {
   const std::string kShortcutName = "Shortcut";
 
-  auto local_shortcut_id = CreateShortcut(kShortcutName);
+  AppId local_shortcut_id = CreateShortcut(kShortcutName);
   apps::ShortcutId shortcut_id =
       apps::GenerateShortcutId(app_constants::kChromeAppId, local_shortcut_id);
   InitializeBrowserShortcutPublisher();
@@ -319,7 +305,7 @@ TEST_F(BrowserShortcutsTest, RemoveShortcut) {
 TEST_F(BrowserShortcutsTest, GetCompressedShortcutIcon) {
   const std::string kShortcutName = "Shortcut";
 
-  auto local_shortcut_id = CreateShortcut(kShortcutName);
+  AppId local_shortcut_id = CreateShortcut(kShortcutName);
   apps::ShortcutId shortcut_id =
       apps::GenerateShortcutId(app_constants::kChromeAppId, local_shortcut_id);
   InitializeBrowserShortcutPublisher();
@@ -372,7 +358,7 @@ TEST_F(BrowserShortcutsTest, ReplaceBetweenShortcutAndWebApp) {
           ->AppRegistryCache();
   ASSERT_EQ(shortcut_cache->GetAllShortcuts().size(), 0u);
 
-  auto web_app_id = CreateShortcut("Shortcut");
+  AppId web_app_id = CreateShortcut("Shortcut");
   EXPECT_TRUE(shortcut_cache->HasShortcut(apps::ShortcutId(web_app_id)));
   EXPECT_FALSE(app_cache.IsAppInstalled(web_app_id));
 

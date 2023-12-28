@@ -79,6 +79,10 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
   // creation (e.g. color space, protection type).
   bool is_stream_video : 1;
 
+  // If true we will treat the alpha in the texture as 1. This works like rgbx
+  // and not like blend mode 'kSrc' which would copy the alpha.
+  bool force_rgbx : 1 = false;
+
   gfx::HDRMetadata hdr_metadata;
 
   // kClear if the contents do not require any special protection. See enum of a
@@ -140,6 +144,10 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
   }
   void set_resource_size_in_pixels(const gfx::Size& size_in_pixels) {
     overlay_resources.size_in_pixels = size_in_pixels;
+  }
+
+  void set_force_rgbx(bool force_rgbx_value = true) {
+    force_rgbx = force_rgbx_value;
   }
 
   static const TextureDrawQuad* MaterialCast(const DrawQuad*);

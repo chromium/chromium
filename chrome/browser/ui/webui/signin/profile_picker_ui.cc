@@ -108,81 +108,78 @@ int GetMainViewTitleId() {
 
 void AddStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-    {"mainViewSubtitle",
+      {"mainViewSubtitle",
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-     IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_LACROS
+       IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_LACROS
 #else
-     IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE
+       IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE
 #endif
-    },
-    {"addSpaceButton", IDS_PROFILE_PICKER_ADD_SPACE_BUTTON},
-    {"askOnStartupCheckboxText", IDS_PROFILE_PICKER_ASK_ON_STARTUP},
-    {"browseAsGuestButton", IDS_PROFILE_PICKER_BROWSE_AS_GUEST_BUTTON},
-    {"needsSigninPrompt", IDS_PROFILE_PICKER_PROFILE_CARD_NEEDS_SIGNIN_PROMPT},
-    {"profileCardButtonLabel", IDS_PROFILE_PICKER_PROFILE_CARD_LABEL},
-    {"profileCardInputLabel", IDS_PROFILE_PICKER_PROFILE_CARD_INPUT_LABEL},
-    {"menu", IDS_MENU},
-    {"cancel", IDS_CANCEL},
-    {"profileMenuName", IDS_SETTINGS_MORE_ACTIONS},
-    {"profileMenuAriaLabel",
-     IDS_PROFILE_PICKER_PROFILE_MORE_ACTIONS_ARIA_LABEL},
-    {"profileMenuRemoveText", IDS_PROFILE_PICKER_PROFILE_MENU_REMOVE_TEXT},
-    {"profileMenuCustomizeText",
-     IDS_PROFILE_PICKER_PROFILE_MENU_CUSTOMIZE_TEXT},
-    {"removeWarningLocalProfileTitle",
-     IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE_TITLE},
-    {"removeWarningSignedInProfileTitle",
+      },
+      {"addSpaceButton", IDS_PROFILE_PICKER_ADD_SPACE_BUTTON},
+      {"askOnStartupCheckboxText", IDS_PROFILE_PICKER_ASK_ON_STARTUP},
+      {"browseAsGuestButton", IDS_PROFILE_PICKER_BROWSE_AS_GUEST_BUTTON},
+      {"needsSigninPrompt",
+       IDS_PROFILE_PICKER_PROFILE_CARD_NEEDS_SIGNIN_PROMPT},
+      {"profileCardButtonLabel", IDS_PROFILE_PICKER_PROFILE_CARD_LABEL},
+      {"profileCardInputLabel", IDS_PROFILE_PICKER_PROFILE_CARD_INPUT_LABEL},
+      {"menu", IDS_MENU},
+      {"cancel", IDS_CANCEL},
+      {"profileMenuName", IDS_SETTINGS_MORE_ACTIONS},
+      {"profileMenuAriaLabel",
+       IDS_PROFILE_PICKER_PROFILE_MORE_ACTIONS_ARIA_LABEL},
+      {"profileMenuRemoveText", IDS_PROFILE_PICKER_PROFILE_MENU_REMOVE_TEXT},
+      {"profileMenuCustomizeText",
+       IDS_PROFILE_PICKER_PROFILE_MENU_CUSTOMIZE_TEXT},
+      {"removeWarningLocalProfileTitle",
+       IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE_TITLE},
+      {"removeWarningSignedInProfileTitle",
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-     IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_TITLE_LACROS
+       IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_TITLE_LACROS
 #else
-     IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_TITLE
+       IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_TITLE
 #endif
-    },
-    {"removeWarningHistory", IDS_PROFILE_PICKER_REMOVE_WARNING_HISTORY},
-    {"removeWarningPasswords", IDS_PROFILE_PICKER_REMOVE_WARNING_PASSWORDS},
-    {"removeWarningBookmarks", IDS_PROFILE_PICKER_REMOVE_WARNING_BOOKMARKS},
-    {"removeWarningAutofill", IDS_PROFILE_PICKER_REMOVE_WARNING_AUTOFILL},
-    {"removeWarningCalculating", IDS_PROFILE_PICKER_REMOVE_WARNING_CALCULATING},
-    {"backButtonAriaLabel", IDS_PROFILE_PICKER_BACK_BUTTON_ARIA_LABEL},
-    {"profileTypeChoiceTitle",
-     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_TITLE},
-    {"profileTypeChoiceSubtitle",
+      },
+      {"removeWarningHistory", IDS_PROFILE_PICKER_REMOVE_WARNING_HISTORY},
+      {"removeWarningPasswords", IDS_PROFILE_PICKER_REMOVE_WARNING_PASSWORDS},
+      {"removeWarningBookmarks", IDS_PROFILE_PICKER_REMOVE_WARNING_BOOKMARKS},
+      {"removeWarningAutofill", IDS_PROFILE_PICKER_REMOVE_WARNING_AUTOFILL},
+      {"removeWarningCalculating",
+       IDS_PROFILE_PICKER_REMOVE_WARNING_CALCULATING},
+      {"backButtonAriaLabel", IDS_PROFILE_PICKER_BACK_BUTTON_ARIA_LABEL},
+      {"profileTypeChoiceTitle",
+       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_TITLE},
+      {"profileTypeChoiceSubtitle",
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_LACROS
+       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_LACROS
 #else
-     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE
+       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE
 #endif
-    },
-    {"notNowButtonLabel",
-     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_NOT_NOW_BUTTON_LABEL},
-    {"profileSwitchTitle", IDS_PROFILE_PICKER_PROFILE_SWITCH_TITLE},
-    {"profileSwitchSubtitle", IDS_PROFILE_PICKER_PROFILE_SWITCH_SUBTITLE},
-    {"switchButtonLabel",
-     IDS_PROFILE_PICKER_PROFILE_SWITCH_SWITCH_BUTTON_LABEL},
+      },
+      {"notNowButtonLabel",
+       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_NOT_NOW_BUTTON_LABEL},
+      {"profileSwitchTitle", IDS_PROFILE_PICKER_PROFILE_SWITCH_TITLE},
+      {"profileSwitchSubtitle", IDS_PROFILE_PICKER_PROFILE_SWITCH_SUBTITLE},
+      {"switchButtonLabel",
+       IDS_PROFILE_PICKER_PROFILE_SWITCH_SWITCH_BUTTON_LABEL},
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    {"accountSelectionLacrosTitle",
-     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_TITLE},
-    {"accountSelectionLacrosOtherAccountButtonLabel",
-     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_OTHER_ACCOUNT_BUTTON_LABEL},
-    {"lacrosPrimaryProfileDeletionWarningTitle",
-     IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING_TITLE},
-    {"lacrosPrimaryProfileDeletionWarning",
-     IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING},
-    {"lacrosPrimaryProfileDeletionWarningConfirmation",
-     IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING_CONFIRMATION},
+      {"accountSelectionLacrosTitle",
+       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_TITLE},
+      {"accountSelectionLacrosOtherAccountButtonLabel",
+       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_OTHER_ACCOUNT_BUTTON_LABEL},
+      {"lacrosPrimaryProfileDeletionWarningTitle",
+       IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING_TITLE},
+      {"lacrosPrimaryProfileDeletionWarning",
+       IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING},
+      {"lacrosPrimaryProfileDeletionWarningConfirmation",
+       IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING_CONFIRMATION},
 #else
-    {"removeWarningLocalProfile",
-     IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE},
-    {"removeWarningSignedInProfile",
-     IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE},
+      {"removeWarningLocalProfile",
+       IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE},
+      {"removeWarningSignedInProfile",
+       IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE},
 #endif
-    {"forceSigninErrorDialogTitle",
-     IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_TITLE},
-    {"forceSigninErrorDialogBody",
-     IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_BODY},
-    {"ok", IDS_OK},
-
+      {"ok", IDS_OK},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

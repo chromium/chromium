@@ -231,49 +231,6 @@ TEST_F(DownloadBubbleRowViewInfoTest, InProgressOrCompletedBubbleUIInfo) {
   EXPECT_FALSE(info().primary_button_command().has_value());
 }
 
-TEST_F(DownloadBubbleRowViewInfoTest, DangerousWarningBubbleUIInfo_Old) {
-  // TODO(crbug.com/1465966): Clean up after the base::Feature is removed.
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(
-      safe_browsing::kImprovedDownloadBubbleWarnings);
-  ON_CALL(item(), GetState())
-      .WillByDefault(Return(download::DownloadItem::COMPLETE));
-  const struct DangerTypeTestCase {
-    download::DownloadDangerType danger_type;
-    std::optional<DownloadCommands::Command> primary_button_command;
-    bool has_subpage;
-  } kDangerTypeTestCases[] = {
-      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
-       DownloadCommands::Command::KEEP, true},
-      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT,
-       DownloadCommands::Command::DISCARD, true},
-      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST,
-       DownloadCommands::Command::DISCARD, true},
-      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
-       DownloadCommands::Command::DISCARD, true},
-      {download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
-       DownloadCommands::Command::DISCARD, true},
-      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL,
-       DownloadCommands::Command::DISCARD, true},
-      {download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING,
-       DownloadCommands::Command::DISCARD, true},
-      {download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING, std::nullopt, true},
-      {download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING, std::nullopt, true},
-  };
-  for (const auto& test_case : kDangerTypeTestCases) {
-    SCOPED_TRACE(testing::Message()
-                 << "Failed for danger type "
-                 << download::GetDownloadDangerTypeString(test_case.danger_type)
-                 << std::endl);
-    ON_CALL(item(), GetDangerType())
-        .WillByDefault(Return(test_case.danger_type));
-    item().NotifyObserversDownloadUpdated();
-    EXPECT_EQ(info().primary_button_command(),
-              test_case.primary_button_command);
-    EXPECT_EQ(info().has_subpage(), test_case.has_subpage);
-  }
-}
-
 TEST_F(DownloadBubbleRowViewInfoTest, DangerousWarningBubbleUIInfo) {
   ON_CALL(item(), GetState())
       .WillByDefault(Return(download::DownloadItem::COMPLETE));

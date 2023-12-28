@@ -25,8 +25,9 @@ class ExtensionViewHost;
 // This handles the display portion of an ExtensionHost.
 class ExtensionViewViews : public views::WebView,
                            public extensions::ExtensionView {
+  METADATA_HEADER(ExtensionViewViews, views::WebView)
+
  public:
-  METADATA_HEADER(ExtensionViewViews);
   // A class that represents the container that this view is in.
   // (bottom shelf, side bar, etc.)
   class Container {

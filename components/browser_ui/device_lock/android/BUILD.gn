@@ -40,3 +40,17 @@ source_set("android") {
 generate_jni("device_lock_bridge_jni_headers") {
   sources = [ "java/src/org/chromium/components/browser_ui/device_lock/DeviceLockBridge.java" ]
 }
+
+source_set("test_support") {
+  sources = [
+    "test_device_lock_bridge.cc",
+    "test_device_lock_bridge.h",
+  ]
+
+  deps = [
+    ":android",
+    ":device_lock_bridge_jni_headers",
+    "//base",
+    "//ui/android:android",
+  ]
+}

@@ -28,10 +28,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 using password_manager::AffiliatedMatchHelper;
 using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
@@ -43,18 +39,6 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
   Profile* profile = Profile::FromBrowserContext(context);
 
   DCHECK(!profile->IsOffTheRecord());
-
-  // Incognito profiles don't have their own password stores. Guest, or system
-  // profiles aren't relevant for Password Manager, and no PasswordStore should
-  // even be created for those types of profiles.
-  if (!profile->IsRegularProfile())
-    return nullptr;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On Ash, there are additional non-interesting profile types (sign-in
-  // profile and lockscreen profile).
-  if (!ash::ProfileHelper::IsUserProfile(profile))
-    return nullptr;
-#endif
 
   scoped_refptr<PasswordStore> ps;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || \
@@ -133,9 +117,7 @@ ProfilePasswordStoreFactory::ProfilePasswordStoreFactory()
           "PasswordStore",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
-              // TODO(crbug.com/1418376): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
   DependsOn(AffiliationServiceFactory::GetInstance());
   DependsOn(AffiliationsPrefetcherFactory::GetInstance());

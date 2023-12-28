@@ -126,8 +126,8 @@ bool V4L2StatefulVideoDecoderBackend::Initialize() {
     return false;
   }
 
-  framerate_control_ =
-      std::make_unique<V4L2FrameRateControl>(device_, task_runner_);
+  framerate_control_ = std::make_unique<V4L2FrameRateControl>(
+      base::BindRepeating(&V4L2Device::Ioctl, device_), task_runner_);
 
   return true;
 }

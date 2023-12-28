@@ -148,6 +148,7 @@
 <translation id="3448554387819310837">開咗之後，網站可以要求使用相機。閂咗之後，網站唔可以使用相機。</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome 將於明天再次封鎖 Cookie}other{Chrome 將於 # 天後再次封鎖 Cookie}}</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> 下的網站</translation>
+<translation id="3536227077203206203">這次允許</translation>
 <translation id="3538390592868664640">禁止網站建立您身處環境的 3D 地圖或追蹤攝錄機位置</translation>
 <translation id="3544058026430919413">公司可定義網站群組，指定哪些網站可使用 Cookie 分享您在群組中的活動。網站群組不會在無痕模式下啟用。</translation>
 <translation id="3551268116566418498">要退出無痕模式嗎？</translation>

@@ -156,7 +156,10 @@ VideoFrameLayout::VideoFrameLayout(VideoPixelFormat format,
       planes_(std::move(planes)),
       is_multi_planar_(is_multi_planar),
       buffer_addr_align_(buffer_addr_align),
-      modifier_(modifier) {}
+      modifier_(modifier) {
+  // Trigger NOTREACHED() if `format` is not valid.
+  NumPlanes(format);
+}
 
 VideoFrameLayout::~VideoFrameLayout() = default;
 VideoFrameLayout::VideoFrameLayout(const VideoFrameLayout&) = default;

@@ -177,8 +177,12 @@ bool CookieJar::IPCNeeded() {
     return true;
   }
 
-  // If there is a cached version, there should also be a cached string.
-  CHECK(!last_cookies_.IsNull());
+  // |last_cookies_| can be null when converting the raw mojo payload failed.
+  // (See ConvertUTF8ToUTF16() for details.) In that case use an IPC to request
+  // another string to be safe.
+  if (last_cookies_.IsNull()) {
+    return true;
+  }
 
   // Cookie string has changed.
   if (last_version_ < GetSharedCookieVersion()) {

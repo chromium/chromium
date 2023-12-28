@@ -31,7 +31,7 @@ PasswordSyncTokenCheckersCollection::~PasswordSyncTokenCheckersCollection() =
 void PasswordSyncTokenCheckersCollection::StartPasswordSyncCheckers(
     const user_manager::UserList& users,
     PasswordSyncTokenLoginChecker::Observer* observer) {
-  for (auto* user : users) {
+  for (user_manager::User* user : users) {
     // Online login already enforced for the user - no further checks are
     // required.
     if (!user->using_saml() || user->force_online_signin())

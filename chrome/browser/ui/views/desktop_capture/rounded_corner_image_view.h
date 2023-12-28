@@ -10,8 +10,9 @@
 
 // TODO(crbug.com/1458354): Add support for rounded image corners to ImageView
 class RoundedCornerImageView : public views::ImageView {
+  METADATA_HEADER(RoundedCornerImageView, views::ImageView)
+
  public:
-  METADATA_HEADER(RoundedCornerImageView);
   RoundedCornerImageView() = default;
   RoundedCornerImageView(const RoundedCornerImageView&) = delete;
   RoundedCornerImageView& operator=(const RoundedCornerImageView&) = delete;

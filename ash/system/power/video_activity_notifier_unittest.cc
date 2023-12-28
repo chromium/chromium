@@ -38,7 +38,7 @@ class VideoActivityNotifierTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<chromeos::FakePowerManagerClient, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<chromeos::FakePowerManagerClient, DanglingUntriaged>
       power_client_;  // Not owned.
 
   std::unique_ptr<VideoDetector> detector_;

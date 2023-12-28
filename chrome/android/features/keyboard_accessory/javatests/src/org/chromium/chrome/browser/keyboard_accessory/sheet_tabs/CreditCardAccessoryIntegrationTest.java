@@ -9,6 +9,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
+import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -17,7 +18,6 @@ import static org.hamcrest.Matchers.containsString;
 
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.selectTabWithDescription;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.whenDisplayed;
-import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabTestHelper.isKeyboardAccessoryTabLayout;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.FakeKeyboard;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper;
 import org.chromium.chrome.browser.keyboard_accessory.R;
+import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupView;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -102,9 +103,9 @@ public class CreditCardAccessoryIntegrationTest {
         // Click the tab to show the sheet and hide the keyboard.
         whenDisplayed(withId(R.id.bar_items_view))
                 .perform(
-                        scrollTo(isKeyboardAccessoryTabLayout()),
+                        scrollTo(isAssignableFrom(KeyboardAccessoryButtonGroupView.class)),
                         actionOnItem(
-                                isKeyboardAccessoryTabLayout(),
+                                isAssignableFrom(KeyboardAccessoryButtonGroupView.class),
                                 selectTabWithDescription(
                                         R.string.credit_card_accessory_sheet_toggle)));
 
@@ -125,9 +126,9 @@ public class CreditCardAccessoryIntegrationTest {
         // Scroll to last element and click the first icon:
         whenDisplayed(withId(R.id.bar_items_view))
                 .perform(
-                        scrollTo(isKeyboardAccessoryTabLayout()),
+                        scrollTo(isAssignableFrom(KeyboardAccessoryButtonGroupView.class)),
                         actionOnItem(
-                                isKeyboardAccessoryTabLayout(),
+                                isAssignableFrom(KeyboardAccessoryButtonGroupView.class),
                                 selectTabWithDescription(
                                         R.string.credit_card_accessory_sheet_toggle)));
 

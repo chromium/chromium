@@ -14,7 +14,6 @@ source_set("model") {
     "//components/sync",
     "//components/sync_preferences",
     "//components/unified_consent",
-    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/signin/model",

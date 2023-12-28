@@ -17,15 +17,22 @@ export enum SeaPenActionName {
   BEGIN_SEARCH_SEA_PEN_THUMBNAILS = 'begin_search_sea_pen_thumbnails',
   BEGIN_LOAD_RECENT_SEA_PEN_IMAGES = 'begin_load_recent_sea_pen_images',
   BEGIN_LOAD_RECENT_SEA_PEN_IMAGE_DATA = 'begin_load_recent_sea_pen_image_data',
+  BEGIN_LOAD_SELECTED_RECENT_SEA_PEN_IMAGE =
+      'begin_load_selected_recent_sea_pen_image',
+  BEGIN_SELECT_RECENT_SEA_PEN_IMAGE = 'begin_select_recent_sea_pen_image',
+  END_SELECT_RECENT_SEA_PEN_IMAGE = 'end_select_recent_sea_pen_image',
   SET_SEA_PEN_THUMBNAILS = 'set_sea_pen_thumbnails',
   SET_RECENT_SEA_PEN_IMAGES = 'set_recent_sea_pen_images',
   SET_RECENT_SEA_PEN_IMAGE_DATA = 'set_recent_sea_pen_image_data',
+  SET_SELECTED_RECENT_SEA_PEN_IMAGE = 'set_selected_recent_sea_pen_image',
 }
 
-export type SeaPenActions =
-    BeginSearchSeaPenThumbnailsAction|BeginLoadRecentSeaPenImagesAction|
-    BeginLoadRecentSeaPenImageDataAction|SetSeaPenThumbnailsAction|
-    SetRecentSeaPenImagesAction|SetRecentSeaPenImageDataAction;
+export type SeaPenActions = BeginSearchSeaPenThumbnailsAction|
+    BeginLoadRecentSeaPenImagesAction|BeginLoadRecentSeaPenImageDataAction|
+    BeginLoadSelectedRecentSeaPenImageAction|BeginSelectRecentSeaPenImageAction|
+    EndSelectRecentSeaPenImageAction|SetSeaPenThumbnailsAction|
+    SetRecentSeaPenImagesAction|SetRecentSeaPenImageDataAction|
+    SetSelectedRecentSeaPenImageAction;
 
 export interface BeginSearchSeaPenThumbnailsAction extends Action {
   name: SeaPenActionName.BEGIN_SEARCH_SEA_PEN_THUMBNAILS;
@@ -117,5 +124,67 @@ export function setRecentSeaPenImageDataAction(
     name: SeaPenActionName.SET_RECENT_SEA_PEN_IMAGE_DATA,
     id: filePath.path,
     data,
+  };
+}
+
+export interface BeginSelectRecentSeaPenImageAction extends Action {
+  name: SeaPenActionName.BEGIN_SELECT_RECENT_SEA_PEN_IMAGE;
+  image: FilePath;
+}
+
+/**
+ * Begins selecting a recent Sea Pen image.
+ */
+export function beginSelectRecentSeaPenImageAction(image: FilePath):
+    BeginSelectRecentSeaPenImageAction {
+  return {
+    name: SeaPenActionName.BEGIN_SELECT_RECENT_SEA_PEN_IMAGE,
+    image: image,
+  };
+}
+
+export interface EndSelectRecentSeaPenImageAction extends Action {
+  name: SeaPenActionName.END_SELECT_RECENT_SEA_PEN_IMAGE;
+  image: FilePath;
+  success: boolean;
+}
+
+/**
+ * Ends selecting a recent Sea Pen image.
+ */
+export function endSelectRecentSeaPenImageAction(
+    image: FilePath, success: boolean): EndSelectRecentSeaPenImageAction {
+  return {
+    name: SeaPenActionName.END_SELECT_RECENT_SEA_PEN_IMAGE,
+    image,
+    success,
+  };
+}
+
+export interface BeginLoadSelectedRecentSeaPenImageAction extends Action {
+  name: SeaPenActionName.BEGIN_LOAD_SELECTED_RECENT_SEA_PEN_IMAGE;
+}
+
+/**
+ * Begins loading the selected recent Sea Pen image.
+ */
+export function beginLoadSelectedRecentSeaPenImageAction():
+    BeginLoadSelectedRecentSeaPenImageAction {
+  return {name: SeaPenActionName.BEGIN_LOAD_SELECTED_RECENT_SEA_PEN_IMAGE};
+}
+
+export interface SetSelectedRecentSeaPenImageAction extends Action {
+  name: SeaPenActionName.SET_SELECTED_RECENT_SEA_PEN_IMAGE;
+  key: string|null;
+}
+
+/**
+ * Sets the selected recent Sea Pen image.
+ */
+export function setSelectedRecentSeaPenImageAction(key: string|null):
+    SetSelectedRecentSeaPenImageAction {
+  return {
+    name: SeaPenActionName.SET_SELECTED_RECENT_SEA_PEN_IMAGE,
+    key: key,
   };
 }

@@ -23,9 +23,9 @@ found in the LICENSE file.
 </style>
 
 <oobe-adaptive-dialog id="gaiaInfoDialog" role="dialog"
-    for-step="overview" aria-live="polite">
+    for-step="overview">
   <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
-  <h1 slot="title" id="gaia-info-title">
+  <h1 slot="title" id="gaia-info-title" aria-live="polite">
     [[i18nDynamic(locale, 'gaiaInfoScreenTitle')]]
   </h1>
   <div slot="subtitle">

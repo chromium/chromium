@@ -158,7 +158,7 @@ fyi_goma_rbe_canary_builder(
     ),
     cores = None,
     os = os.MAC_DEFAULT,
-    xcode = xcode.x15main,
+    xcode = xcode.xcode_default,
 )
 
 fyi_goma_rbe_canary_builder(

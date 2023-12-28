@@ -61,8 +61,8 @@ source_set("eg2_tests") {
   sources = [ "incognito_interstitial_egtest.mm" ]
   deps = [
     "//components/policy:generated",
-    "//ios/chrome/browser/policy:eg_test_support+eg2",
-    "//ios/chrome/browser/policy:policy_util",
+    "//ios/chrome/browser/policy/model:eg_test_support+eg2",
+    "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test:eg_test_support+eg2",

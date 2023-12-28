@@ -218,6 +218,11 @@ class OzonePlatformWayland : public OzonePlatform,
 #endif
   }
 
+  bool IsWindowCompositingSupported() const override {
+    // Wayland always supports compositing.
+    return true;
+  }
+
   bool ShouldUseCustomFrame() override {
     return connection_->xdg_decoration_manager_v1() == nullptr;
   }

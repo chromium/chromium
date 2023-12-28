@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/dcheck_is_on.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "device/vr/openxr/openxr_anchor_manager.h"
@@ -16,6 +17,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "device/vr/openxr/android/openxr_hand_tracker_android.h"
+#include "device/vr/openxr/android/openxr_stage_bounds_provider_android.h"
 #endif
 
 namespace device {
@@ -32,6 +34,15 @@ OpenXrExtensionEnumeration::OpenXrExtensionEnumeration() {
     xrEnumerateInstanceExtensionProperties(nullptr, extension_count,
                                            &extension_count,
                                            extension_properties_.data());
+  }
+
+  if constexpr (DCHECK_IS_ON()) {
+    DVLOG(1) << __func__ << ": Supported Extensions Begin";
+    for (const auto& extension : extension_properties_) {
+      DVLOG(1) << __func__ << ": " << extension.extensionName
+               << " version=" << extension.extensionVersion;
+    }
+    DVLOG(1) << __func__ << ": Supported Extensions End";
   }
 }
 
@@ -144,6 +155,14 @@ OpenXrExtensionHelper::OpenXrExtensionHelper(
           const_cast<PFN_xrConvertWin32PerformanceCounterToTimeKHR*>(
               &extension_methods_.xrConvertWin32PerformanceCounterToTimeKHR)));
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+  std::ignore = xrGetInstanceProcAddr(
+      instance, "xrGetReferenceSpaceBoundsPolygonANDROID",
+      reinterpret_cast<PFN_xrVoidFunction*>(
+          const_cast<PFN_xrGetReferenceSpaceBoundsPolygonANDROID*>(
+              &extension_methods_.xrGetReferenceSpaceBoundsPolygonANDROID)));
+#endif
 }
 
 bool OpenXrExtensionHelper::IsFeatureSupported(
@@ -216,6 +235,12 @@ OpenXrExtensionHelper::CreateSceneUnderstandingManager(
 
 std::unique_ptr<OpenXrStageBoundsProvider>
 OpenXrExtensionHelper::CreateStageBoundsProvider(XrSession session) const {
+#if BUILDFLAG(IS_ANDROID)
+  if (IsExtensionSupported(
+          XR_ANDROID_REFERENCE_SPACE_BOUNDS_POLYGON_EXTENSION_NAME)) {
+    return std::make_unique<OpenXrStageBoundsProviderAndroid>(*this, session);
+  }
+#endif
   return std::make_unique<OpenXrStageBoundsProviderBasic>(session);
 }
 

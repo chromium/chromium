@@ -64,6 +64,10 @@ void SupportHostObserverProxy::OnHostStateReceivedAccessCode(
 
 void SupportHostObserverProxy::OnHostStateConnecting() {
   CRD_VLOG(3) << __func__;
+
+  for (auto& observer : observers_) {
+    observer.OnClientConnecting();
+  }
 }
 
 void SupportHostObserverProxy::OnHostStateConnected(
@@ -130,9 +134,9 @@ void SupportHostObserverProxy::OnMojomConnectionDropped() {
 
 void SupportHostObserverProxy::ReportHostStopped(
     ExtendedStartCrdSessionResultCode result,
-    const std::string& error_message) {
+    std::string_view error_message) {
   for (auto& observer : observers_) {
-    observer.OnHostStopped(result, error_message);
+    observer.OnHostStopped(result, std::string{error_message});
   }
 }
 

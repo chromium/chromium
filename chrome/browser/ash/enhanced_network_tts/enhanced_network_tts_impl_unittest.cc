@@ -32,9 +32,7 @@ namespace {
 class TestServerURLLoaderFactory {
  public:
   TestServerURLLoaderFactory()
-      : shared_loader_factory_(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &loader_factory_)) {}
+      : shared_loader_factory_(loader_factory_.GetSafeWeakWrapper()) {}
   TestServerURLLoaderFactory(const TestServerURLLoaderFactory&) = delete;
   TestServerURLLoaderFactory& operator=(const TestServerURLLoaderFactory&) =
       delete;

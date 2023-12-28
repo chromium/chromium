@@ -33,13 +33,13 @@ void TabSearchSyncHandler::RegisterMessages() {
 
 void TabSearchSyncHandler::OnJavascriptAllowed() {
   syncer::SyncService* sync_service = GetSyncService();
-  if (sync_service) {
+  if (sync_service && !sync_service_observation_.IsObserving()) {
     sync_service_observation_.Observe(sync_service);
   }
 
   signin::IdentityManager* identity_manager(
       IdentityManagerFactory::GetInstance()->GetForProfile(profile_));
-  if (identity_manager) {
+  if (identity_manager && !identity_manager_observation_.IsObserving()) {
     identity_manager_observation_.Observe(identity_manager);
   }
 }

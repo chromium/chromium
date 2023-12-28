@@ -38,7 +38,6 @@ enum class CTPolicyCompliance;
 }
 
 class HostPortPair;
-class NetworkAnonymizationKey;
 class X509Certificate;
 
 // Feature that controls whether Certificate Transparency is enforced. This
@@ -201,10 +200,6 @@ class NET_EXPORT TransportSecurityState {
     // Updated by |GetDynamicPKPState| and |GetStaticDomainState|.
     std::string domain;
 
-    // An optional URI indicating where reports should be sent when this
-    // pin is violated, or empty when omitted.
-    GURL report_uri;
-
     // Takes a set of SubjectPublicKeyInfo |hashes| and returns true if:
     //   1) |bad_static_spki_hashes| does not intersect |hashes|; AND
     //   2) Both |static_spki_hashes| and |dynamic_spki_hashes| are empty
@@ -221,8 +216,7 @@ class NET_EXPORT TransportSecurityState {
     //
     // |bad_static_spki_hashes| contains public keys that we don't want to
     // trust.
-    bool CheckPublicKeyPins(const HashValueVector& hashes,
-                            std::string* failure_log) const;
+    bool CheckPublicKeyPins(const HashValueVector& hashes) const;
 
     // Returns true if any of the HashValueVectors |static_spki_hashes|,
     // |bad_static_spki_hashes|, or |dynamic_spki_hashes| contains any
@@ -230,37 +224,11 @@ class NET_EXPORT TransportSecurityState {
     bool HasPublicKeyPins() const;
   };
 
-  // An interface for asynchronously sending HPKP violation reports.
-  class NET_EXPORT ReportSenderInterface {
-   public:
-    // Sends the given serialized |report| to |report_uri| with
-    // Content-Type header as specified in
-    // |content_type|. |content_type| should be non-empty.
-    // |success_callback| is called iff an HTTP 200 response is received.
-    // |error_callback| is called in all other cases. Error callback's
-    // |net_error| can be net::OK if the upload was successful but the server
-    // returned a non-HTTP 200 |http_response_code|. In all other cases,
-    // error callback's |http_response_code| is -1.
-    virtual void Send(const GURL& report_uri,
-                      base::StringPiece content_type,
-                      base::StringPiece report,
-                      const NetworkAnonymizationKey& network_anonymization_key,
-                      base::OnceCallback<void()> success_callback,
-                      base::OnceCallback<void(const GURL&,
-                                              int /* net_error */,
-                                              int /* http_response_code */)>
-                          error_callback) = 0;
-
-   protected:
-    virtual ~ReportSenderInterface() = default;
-  };
-
   class NET_EXPORT PinSet {
    public:
     PinSet(std::string name,
            std::vector<std::vector<uint8_t>> static_spki_hashes,
-           std::vector<std::vector<uint8_t>> bad_static_spki_hashes,
-           std::string report_uri);
+           std::vector<std::vector<uint8_t>> bad_static_spki_hashes);
     PinSet(const PinSet& other);
     ~PinSet();
 
@@ -271,13 +239,11 @@ class NET_EXPORT TransportSecurityState {
     const std::vector<std::vector<uint8_t>>& bad_static_spki_hashes() const {
       return bad_static_spki_hashes_;
     }
-    const std::string& report_uri() const { return report_uri_; }
 
    private:
     std::string name_;
     std::vector<std::vector<uint8_t>> static_spki_hashes_;
     std::vector<std::vector<uint8_t>> bad_static_spki_hashes_;
-    std::string report_uri_;
   };
 
   struct NET_EXPORT PinSetInfo {
@@ -289,10 +255,6 @@ class NET_EXPORT TransportSecurityState {
                std::string pinset_name,
                bool include_subdomains);
   };
-
-  // Indicates whether or not a public key pin check should send a
-  // report if a violation is detected.
-  enum PublicKeyPinReportStatus { ENABLE_PIN_REPORTS, DISABLE_PIN_REPORTS };
 
   // Indicates whether a connection met CT requirements.
   enum CTRequirementsStatus {
@@ -326,15 +288,9 @@ class NET_EXPORT TransportSecurityState {
   bool ShouldSSLErrorsBeFatal(const std::string& host);
   bool ShouldUpgradeToSSL(const std::string& host,
                           const NetLogWithSource& net_log = NetLogWithSource());
-  PKPStatus CheckPublicKeyPins(
-      const HostPortPair& host_port_pair,
-      bool is_issued_by_known_root,
-      const HashValueVector& hashes,
-      const X509Certificate* served_certificate_chain,
-      const X509Certificate* validated_certificate_chain,
-      const PublicKeyPinReportStatus report_status,
-      const NetworkAnonymizationKey& network_anonymization_key,
-      std::string* failure_log);
+  PKPStatus CheckPublicKeyPins(const HostPortPair& host_port_pair,
+                               bool is_issued_by_known_root,
+                               const HashValueVector& hashes);
   bool HasPublicKeyPins(const std::string& host);
 
   // Returns CT_REQUIREMENTS_NOT_MET if a connection violates CT policy
@@ -351,9 +307,6 @@ class NET_EXPORT TransportSecurityState {
       bool is_issued_by_known_root,
       const HashValueVector& public_key_hashes,
       const X509Certificate* validated_certificate_chain,
-      const X509Certificate* served_certificate_chain,
-      const SignedCertificateTimestampAndStatusList&
-          signed_certificate_timestamps,
       ct::CTPolicyCompliance policy_compliance);
 
   // Assign a |Delegate| for persisting the transport security state. If
@@ -362,8 +315,6 @@ class NET_EXPORT TransportSecurityState {
   // Note: This is only used for serializing/deserializing the
   // TransportSecurityState.
   void SetDelegate(Delegate* delegate);
-
-  void SetReportSender(ReportSenderInterface* report_sender);
 
   // Assigns a delegate responsible for determining whether or not a
   // connection to a given host should require Certificate Transparency
@@ -467,8 +418,7 @@ class NET_EXPORT TransportSecurityState {
   void AddHPKP(const std::string& host,
                const base::Time& expiry,
                bool include_subdomains,
-               const HashValueVector& hashes,
-               const GURL& report_uri);
+               const HashValueVector& hashes);
 
   // Enables or disables public key pinning bypass for local trust anchors.
   // Disabling the bypass for local trust anchors is highly discouraged.
@@ -485,9 +435,6 @@ class NET_EXPORT TransportSecurityState {
   // For unit tests only. Forces CheckCTRequirements() to unconditionally
   // check compliance.
   static void SetRequireCTForTesting(bool required);
-
-  // For unit tests only. Clears the caches that deduplicate sent PKP reports.
-  void ClearReportCachesForTesting();
 
   // For unit tests only.
   void EnableStaticPinsForTesting() { enable_static_pins_ = true; }
@@ -509,8 +456,6 @@ class NET_EXPORT TransportSecurityState {
 
   typedef std::map<HashedHost, STSState> STSStateMap;
   typedef std::map<HashedHost, PKPState> PKPStateMap;
-  typedef ExpiringCache<std::string, bool, base::TimeTicks, std::less<>>
-      ReportCache;
 
   base::Value::Dict NetLogUpgradeToSSLParam(const std::string& host);
 
@@ -520,15 +465,9 @@ class NET_EXPORT TransportSecurityState {
   static bool IsBuildTimely();
 
   // Helper method for actually checking pins.
-  PKPStatus CheckPublicKeyPinsImpl(
-      const HostPortPair& host_port_pair,
-      bool is_issued_by_known_root,
-      const HashValueVector& hashes,
-      const X509Certificate* served_certificate_chain,
-      const X509Certificate* validated_certificate_chain,
-      const PublicKeyPinReportStatus report_status,
-      const NetworkAnonymizationKey& network_anonymization_key,
-      std::string* failure_log);
+  PKPStatus CheckPublicKeyPinsImpl(const HostPortPair& host_port_pair,
+                                   bool is_issued_by_known_root,
+                                   const HashValueVector& hashes);
 
   // If a Delegate is present, notify it that the internal state has
   // changed.
@@ -546,26 +485,15 @@ class NET_EXPORT TransportSecurityState {
                        const base::Time& last_observed,
                        const base::Time& expiry,
                        bool include_subdomains,
-                       const HashValueVector& hashes,
-                       const GURL& report_uri);
+                       const HashValueVector& hashes);
 
   // Returns true if a request to |host_port_pair| with the given
   // SubjectPublicKeyInfo |hashes| satisfies the pins in |pkp_state|,
-  // and false otherwise. If a violation is found and reporting is
-  // configured (i.e. there is a report URI in |pkp_state| and
-  // |report_status| says to), this method sends an HPKP violation
-  // report containing |served_certificate_chain| and
-  // |validated_certificate_chain|.
-  PKPStatus CheckPinsAndMaybeSendReport(
-      const HostPortPair& host_port_pair,
-      bool is_issued_by_known_root,
-      const TransportSecurityState::PKPState& pkp_state,
-      const HashValueVector& hashes,
-      const X509Certificate* served_certificate_chain,
-      const X509Certificate* validated_certificate_chain,
-      const TransportSecurityState::PublicKeyPinReportStatus report_status,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
-      std::string* failure_log);
+  // and false otherwise.
+  PKPStatus CheckPins(const HostPortPair& host_port_pair,
+                      bool is_issued_by_known_root,
+                      const TransportSecurityState::PKPState& pkp_state,
+                      const HashValueVector& hashes);
 
   // Returns true if the static key pinning list has been updated in the last 10
   // weeks.
@@ -580,8 +508,6 @@ class NET_EXPORT TransportSecurityState {
 
   raw_ptr<Delegate> delegate_ = nullptr;
 
-  raw_ptr<ReportSenderInterface> report_sender_ = nullptr;
-
   // True if static pins should be used.
   bool enable_static_pins_ = true;
 
@@ -589,10 +515,6 @@ class NET_EXPORT TransportSecurityState {
   bool enable_pkp_bypass_for_local_trust_anchors_ = true;
 
   raw_ptr<RequireCTDelegate> require_ct_delegate_ = nullptr;
-
-  // Keeps track of reports that have been sent recently for
-  // rate-limiting.
-  ReportCache sent_hpkp_reports_cache_;
 
   std::set<std::string> hsts_host_bypass_list_;
 

@@ -24,7 +24,6 @@ extern const char kChromeInterstitialSafeBrowsingTypeQueryKey[];
 extern const char kChromeInterstitialSafeBrowsingTypeMalwareValue[];
 extern const char kChromeInterstitialSafeBrowsingTypePhishingValue[];
 extern const char kChromeInterstitialSafeBrowsingTypeUnwantedValue[];
-extern const char kChromeInterstitialSafeBrowsingTypeClientsideMalwareValue[];
 extern const char kChromeInterstitialSafeBrowsingTypeClientsidePhishingValue[];
 extern const char kChromeInterstitialSafeBrowsingTypeBillingValue[];
 

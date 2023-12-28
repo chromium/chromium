@@ -103,7 +103,6 @@ void PasswordSelectionScreen::OnUserAction(const base::Value::List& args) {
 }
 
 bool PasswordSelectionScreen::MaybeSkip(WizardContext& wizard_context) {
-  CHECK(features::AreLocalPasswordsEnabledForConsumers());
   return false;
 }
 

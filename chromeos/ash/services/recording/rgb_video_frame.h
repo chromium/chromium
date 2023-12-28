@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <memory>
 
+#include "base/time/time.h"
+#include "media/base/video_frame.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkTypes.h"
@@ -65,13 +67,15 @@ static_assert(sizeof(RgbColor) == sizeof(SkPMColor));
 // platform (see above `RgbColor` members order).
 class RgbVideoFrame {
  public:
-  explicit RgbVideoFrame(const SkBitmap& bitmap);
+  explicit RgbVideoFrame(const media::VideoFrame& video_frame);
+  RgbVideoFrame(const SkBitmap& bitmap, base::TimeTicks frame_time);
   RgbVideoFrame(RgbVideoFrame&&);
   RgbVideoFrame& operator=(const RgbVideoFrame&) = delete;
   ~RgbVideoFrame();
 
   int width() const { return width_; }
   int height() const { return height_; }
+  base::TimeTicks frame_time() const { return frame_time_; }
 
   size_t num_pixels() const { return width_ * height_; }
 
@@ -94,6 +98,8 @@ class RgbVideoFrame {
   // The width and height of the video frame.
   const int width_;
   const int height_;
+
+  const base::TimeTicks frame_time_;
 
   // The pixel color data.
   std::unique_ptr<RgbColor[]> data_;

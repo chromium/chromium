@@ -122,7 +122,7 @@ class SearchResultListViewTest : public views::test::WidgetTest {
 
   std::vector<SearchResultView*> GetAssistantResultViews() const {
     std::vector<SearchResultView*> results;
-    for (auto* view : default_view_->search_result_views_) {
+    for (ash::SearchResultView* view : default_view_->search_result_views_) {
       auto* result = view->result();
       if (result &&
           result->result_type() == AppListSearchResultType::kAssistantText)
@@ -299,7 +299,7 @@ class SearchResultListViewTest : public views::test::WidgetTest {
   AppListTestViewDelegate view_delegate_;
   std::unique_ptr<SearchResultListView> default_view_;
   std::unique_ptr<SearchResultListView> answer_card_view_;
-  raw_ptr<views::Widget, DanglingUntriaged | ExperimentalAsh> widget_;
+  raw_ptr<views::Widget, DanglingUntriaged> widget_;
 };
 
 TEST_F(SearchResultListViewTest, SpokenFeedback) {

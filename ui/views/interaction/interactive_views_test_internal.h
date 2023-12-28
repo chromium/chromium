@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_INTERACTION_INTERACTIVE_VIEWS_TEST_INTERNAL_H_
 #define UI_VIEWS_INTERACTION_INTERACTIVE_VIEWS_TEST_INTERNAL_H_
 
+#include <concepts>
 #include <map>
 #include <memory>
 #include <string>
@@ -21,6 +22,7 @@
 
 namespace views {
 class NativeWindowTracker;
+class View;
 }
 
 namespace views::test {
@@ -83,9 +85,15 @@ class InteractiveViewsTestPrivate
   std::unique_ptr<WidgetFocusSupplierFrame> widget_focus_supplier_frame_;
 };
 
-template <size_t N, typename F>
-using ViewArgType = std::remove_cv_t<
-    std::remove_pointer_t<ui::test::internal::NthArgumentOf<N, F>>>;
+template <typename T>
+concept IsView = std::derived_from<T, View>;
+
+template <size_t N,
+          typename F,
+          typename V = std::remove_cv_t<
+              std::remove_pointer_t<ui::test::internal::NthArgumentOf<N, F>>>>
+  requires IsView<V>
+using ViewArgType = V;
 
 }  // namespace internal
 

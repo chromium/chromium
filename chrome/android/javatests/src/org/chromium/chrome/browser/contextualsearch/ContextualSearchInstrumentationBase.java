@@ -33,6 +33,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
@@ -116,7 +117,8 @@ public class ContextualSearchInstrumentationBase {
                     0,
                     null,
                     0,
-                    null);
+                    null,
+                    sActivityTestRule.getActivity().getEdgeToEdgeControllerSupplierForTesting());
         }
 
         @Override
@@ -143,7 +145,8 @@ public class ContextualSearchInstrumentationBase {
                     activity.getBrowserControlsManager(),
                     activity.getWindowAndroid(),
                     activity.getTabModelSelector(),
-                    () -> activity.getLastUserInteractionTime());
+                    () -> activity.getLastUserInteractionTime(),
+                    activity.getEdgeToEdgeControllerSupplierForTesting());
             setSelectionController(new MockCSSelectionController(activity, this));
             WebContents webContents =
                     WebContentsFactory.createWebContents(
@@ -282,8 +285,8 @@ public class ContextualSearchInstrumentationBase {
     protected void generateTextSurroundingSelectionAvailable() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    // It only makes sense to send dummy data here because we can't easily control
-                    // what's in the native context.
+                    // It only makes sense to send placeholder data here because we can't easily
+                    // control what's in the native context.
                     mContextualSearchManager.onTextSurroundingSelectionAvailable(
                             "UTF-8", "unused", 0, 0);
                 });
@@ -296,8 +299,8 @@ public class ContextualSearchInstrumentationBase {
     protected void generateSelectWordAroundCaretAck() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    // It only makes sense to send dummy data here because we can't easily control
-                    // what's in the native context.
+                    // It only makes sense to send placeholder data here because we can't easily
+                    // control what's in the native context.
                     mContextualSearchClient.selectAroundCaretAck(
                             new SelectAroundCaretResult(0, 0, 0, 0));
                 });
@@ -496,6 +499,8 @@ public class ContextualSearchInstrumentationBase {
         if (mEnabledFeature == EnabledFeature.RELATED_SEARCHES) {
             mPolicy.overrideAllowSendingPageUrlForTesting(true);
         }
+
+        MockitoAnnotations.openMocks(this);
     }
 
     @After

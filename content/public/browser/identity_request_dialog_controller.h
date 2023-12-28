@@ -57,7 +57,8 @@ struct CONTENT_EXPORT IdentityProviderData {
                        const IdentityProviderMetadata& idp_metadata,
                        const ClientMetadata& client_metadata,
                        const blink::mojom::RpContext& rp_context,
-                       const bool request_permission);
+                       bool request_permission,
+                       bool has_login_status_mismatch);
   IdentityProviderData(const IdentityProviderData& other);
   ~IdentityProviderData();
 
@@ -69,6 +70,9 @@ struct CONTENT_EXPORT IdentityProviderData {
   // Whether the dialog should ask for the user's permission to share
   // the id/email/name/picture permission or not.
   bool request_permission;
+  // Whether there was some login status API mismatch when fetching the IDP's
+  // accounts.
+  bool has_login_status_mismatch;
 };
 
 // IdentityRequestDialogController is in interface for control of the UI

@@ -51,7 +51,7 @@ export async function getPreferences() {
 }
 
 export async function validatePathNameLength(
-    parentEntry: DirectoryEntry, name: string) {
+    parentEntry: FilesAppDirEntry|DirectoryEntry, name: string) {
   return promisify<boolean>(
       chrome.fileManagerPrivate.validatePathNameLength,
       unwrapEntry(parentEntry), name);
@@ -119,7 +119,7 @@ export async function getDlpBlockedComponents(sourceUrl: string) {
  * Retrieves Data Leak Prevention (DLP) restriction details.
  */
 export async function getDlpRestrictionDetails(sourceUrl: string) {
-  return promisify<chrome.fileManagerPrivate.DlpRestrictionDetails>(
+  return promisify<chrome.fileManagerPrivate.DlpRestrictionDetails[]>(
       chrome.fileManagerPrivate.getDlpRestrictionDetails, sourceUrl);
 }
 
@@ -150,21 +150,23 @@ export async function mountGuest(id: number) {
  * FileSystemEntry helpers
  */
 
-export async function getParentEntry(entry: Entry): Promise<DirectoryEntry> {
+export async function getParentEntry(entry: Entry|
+                                     FilesAppEntry): Promise<DirectoryEntry> {
   return new Promise((resolve, reject) => {
     entry.getParent(resolve, reject);
   });
 }
 
 export async function moveEntryTo(
-    entry: Entry, parent: DirectoryEntry, newName: string): Promise<Entry> {
+    entry: Entry|FilesAppEntry, parent: DirectoryEntry,
+    newName: string): Promise<Entry|FilesAppEntry> {
   return new Promise((resolve, reject) => {
     entry.moveTo(parent, newName, resolve, reject);
   });
 }
 
 export async function getFile(
-    directory: DirectoryEntry, filename: string,
+    directory: FilesAppDirEntry|DirectoryEntry, filename: string,
     options: Flags|undefined): Promise<FileEntry> {
   return new Promise((resolve, reject) => {
     directory.getFile(filename, options, resolve, reject);
@@ -290,4 +292,16 @@ export async function getDriveConnectionState() {
 
 export async function grantAccess(entries: string[]) {
   return promisify<void>(chrome.fileManagerPrivate.grantAccess, entries);
+}
+
+export async function getContentMimeType(fileEntry: FileEntry) {
+  return promisify<string>(
+      chrome.fileManagerPrivate.getContentMimeType, fileEntry);
+}
+
+export async function getContentMetadata(
+    fileEntry: FileEntry, mimeType: string, includeImages: boolean) {
+  return promisify<chrome.fileManagerPrivate.MediaMetadata>(
+      chrome.fileManagerPrivate.getContentMetadata, fileEntry, mimeType,
+      includeImages);
 }

@@ -7,8 +7,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/clock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -35,16 +33,7 @@ bool ReportCompareFunc(const CertificateReportingService::Report& item1,
   return item1.creation_time > item2.creation_time;
 }
 
-void RecordUMAEvent(CertificateReportingService::ReportOutcome outcome) {
-  UMA_HISTOGRAM_ENUMERATION(
-      CertificateReportingService::kReportEventHistogram, outcome,
-      CertificateReportingService::ReportOutcome::EVENT_COUNT);
-}
-
 }  // namespace
-
-const char CertificateReportingService::kReportEventHistogram[] =
-    "SSL.CertificateErrorReportEvent";
 
 CertificateReportingService::BoundedReportList::BoundedReportList(
     size_t max_size)
@@ -63,12 +52,10 @@ void CertificateReportingService::BoundedReportList::Add(const Report& item) {
     const Report& last = items_.back();
     if (item.creation_time <= last.creation_time) {
       // Report older than the oldest item in the queue, ignore.
-      RecordUMAEvent(ReportOutcome::DROPPED_OR_IGNORED);
       return;
     }
     // Reached the maximum item count, remove the oldest item.
     items_.pop_back();
-    RecordUMAEvent(ReportOutcome::DROPPED_OR_IGNORED);
   }
   items_.push_back(item);
   std::sort(items_.begin(), items_.end(), ReportCompareFunc);
@@ -115,7 +102,6 @@ void CertificateReportingService::Reporter::SendPending() {
   for (Report& report : items) {
     if (report.creation_time < now - report_ttl_) {
       // Report too old, ignore.
-      RecordUMAEvent(ReportOutcome::DROPPED_OR_IGNORED);
       continue;
     }
     if (!report.is_retried) {
@@ -150,7 +136,6 @@ void CertificateReportingService::Reporter::
 void CertificateReportingService::Reporter::SendInternal(
     const CertificateReportingService::Report& report) {
   inflight_reports_.insert(std::make_pair(report.report_id, report));
-  RecordUMAEvent(ReportOutcome::SUBMITTED);
   error_reporter_->SendExtendedReportingReport(
       report.serialized_report,
       base::BindOnce(&CertificateReportingService::Reporter::SuccessCallback,
@@ -163,7 +148,6 @@ void CertificateReportingService::Reporter::ErrorCallback(
     int report_id,
     int net_error,
     int http_response_code) {
-  RecordUMAEvent(ReportOutcome::FAILED);
   if (retries_enabled_) {
     auto it = inflight_reports_.find(report_id);
     DCHECK(it != inflight_reports_.end());
@@ -175,7 +159,6 @@ void CertificateReportingService::Reporter::ErrorCallback(
 }
 
 void CertificateReportingService::Reporter::SuccessCallback(int report_id) {
-  RecordUMAEvent(ReportOutcome::SUCCESSFUL);
   CHECK_GT(inflight_reports_.erase(report_id), 0u);
   if (inflight_reports_.empty() && no_in_flight_reports_)
     std::move(no_in_flight_reports_).Run();

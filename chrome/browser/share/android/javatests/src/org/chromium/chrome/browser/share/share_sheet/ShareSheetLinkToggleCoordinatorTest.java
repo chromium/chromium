@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 
 import android.text.TextUtils;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,10 +19,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
@@ -63,16 +60,6 @@ public class ShareSheetLinkToggleCoordinatorTest {
                         .build();
         when(mLinkToTextCoordinator.getShareParams(LinkToggleState.NO_LINK))
                 .thenReturn(shareParamsWithTextOnly);
-
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(
-                ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION, true);
-        FeatureList.setTestValues(testValues);
-    }
-
-    @After
-    public void tearDown() {
-        FeatureList.setTestValues(null);
     }
 
     @Test
@@ -289,24 +276,6 @@ public class ShareSheetLinkToggleCoordinatorTest {
                 new ShareSheetLinkToggleCoordinator(
                         shareParams, chromeShareExtras, mLinkToTextCoordinator);
 
-        assertTrue(
-                "Should enable toggle by default.",
-                shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());
-
-        shareSheetLinkToggleCoordinator.setShareParamsAndExtras(
-                shareParams,
-                new ChromeShareExtras.Builder()
-                        .setDetailedContentType(DetailedContentType.WEB_NOTES)
-                        .build());
-        assertTrue(
-                "Should enable toggle by default.",
-                shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());
-
-        shareSheetLinkToggleCoordinator.setShareParamsAndExtras(
-                shareParams,
-                new ChromeShareExtras.Builder()
-                        .setDetailedContentType(DetailedContentType.LIGHTWEIGHT_REACTION)
-                        .build());
         assertTrue(
                 "Should enable toggle by default.",
                 shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());

@@ -100,8 +100,8 @@ export function getSharesheetLaunchSource(event: Event) {
  * Extracts entry on which command event was dispatched.
  */
 export function getCommandEntry(
-    fileManager: CommandHandlerDeps, element: EventTarget): Entry|FilesAppEntry|
-    undefined {
+    fileManager: CommandHandlerDeps, element: EventTarget|null): Entry|
+    FilesAppEntry|undefined {
   const entries = getCommandEntries(fileManager, element);
   return entries.length === 0 ? undefined : entries[0]!;
 }
@@ -207,9 +207,9 @@ export function getParentEntry(
  * list selected items; or null if can determine it.
  */
 export function getElementVolumeInfo(
-    element: EventTarget, fileManager: CommandHandlerDeps): VolumeInfo|null|
-    undefined {
-  if ('volumeInfo' in element) {
+    element: EventTarget|null, fileManager: CommandHandlerDeps): VolumeInfo|
+    null|undefined {
+  if (element && 'volumeInfo' in element) {
     return element.volumeInfo as VolumeInfo;
   }
   const entry = getCommandEntry(fileManager, element);

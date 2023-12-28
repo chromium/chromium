@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {boolAttrSetter, decorate, jsSetter} from '../../../common/js/cr_ui.js';
+import {boolAttrSetter, crInjectTypeAndInit, jsSetter} from '../../../common/js/cr_ui.js';
 
 /** The next id suffix to use when giving each item an unique id. */
 let nextUniqueIdSuffix: number = 0;
@@ -10,7 +10,8 @@ let nextUniqueIdSuffix: number = 0;
 /** Creates a new list item element. */
 export function createListItem(): ListItem {
   const el = document.createElement('li');
-  return decorate(el as ListItem, ListItem);
+  crInjectTypeAndInit(el, ListItem);
+  return el as ListItem;
 }
 
 export class ListItem extends HTMLLIElement {
@@ -60,7 +61,7 @@ export class ListItem extends HTMLLIElement {
   }
 
   /** Called when an element is decorated as a list item. */
-  decorate() {
+  initialize() {
     this.listIndex_ = -1;
 
     this.setAttribute('role', 'listitem');

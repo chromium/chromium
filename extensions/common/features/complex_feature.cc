@@ -4,6 +4,7 @@
 
 #include "extensions/common/features/complex_feature.h"
 
+#include "extensions/common/mojom/context_type.mojom.h"
 namespace extensions {
 
 ComplexFeature::ComplexFeature(std::vector<Feature*>* features) {
@@ -60,7 +61,7 @@ Feature::Availability ComplexFeature::IsAvailableToManifest(
 
 Feature::Availability ComplexFeature::IsAvailableToContextImpl(
     const Extension* extension,
-    Context context,
+    mojom::ContextType context,
     const GURL& url,
     Platform platform,
     int context_id,

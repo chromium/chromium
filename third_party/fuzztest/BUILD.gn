@@ -30,10 +30,15 @@ config("fuzztest_internal_config") {
     cflags += [ "-msse4.2" ]
   }
   include_dirs = [ "src" ]
+
+  # Riegeli is a library which centipede can use to store data more
+  # efficiently. It's not yet available in Chromium, so disable
+  # for now.
+  defines = [ "CENTIPEDE_DISABLE_RIEGELI" ]
   if (use_centipede) {
-    defines = [ "FUZZTEST_USE_CENTIPEDE" ]
+    defines += [ "FUZZTEST_USE_CENTIPEDE" ]
   } else if (use_fuzzing_engine && fuzzing_engine_supports_custom_main) {
-    defines = [ "FUZZTEST_COMPATIBILITY_MODE" ]
+    defines += [ "FUZZTEST_COMPATIBILITY_MODE" ]
   }
 }
 
@@ -51,8 +56,11 @@ if (use_centipede) {
       "src/centipede/feature.h",
       "src/centipede/knobs.cc",
       "src/centipede/knobs.h",
+      "src/centipede/logging.h",
       "src/centipede/pc_info.cc",
       "src/centipede/pc_info.h",
+      "src/centipede/remote_file.cc",
+      "src/centipede/remote_file.h",
       "src/centipede/reverse_pc_table.h",
       "src/centipede/runner_cmp_trace.h",
       "src/centipede/runner_request.cc",
@@ -150,6 +158,8 @@ if (use_centipede) {
       "src/centipede/coverage.cc",
       "src/centipede/distill.cc",
       "src/centipede/distill.h",
+      "src/centipede/early_exit.cc",
+      "src/centipede/early_exit.h",
       "src/centipede/environment.cc",
       "src/centipede/environment_flags.cc",
       "src/centipede/environment_flags.h",
@@ -158,10 +168,7 @@ if (use_centipede) {
       "src/centipede/fuzztest_mutator.cc",
       "src/centipede/fuzztest_mutator.h",
       "src/centipede/hash.cc",
-      "src/centipede/logging.cc",
-      "src/centipede/logging.h",
       "src/centipede/minimize_crash.cc",
-      "src/centipede/remote_file.cc",
       "src/centipede/rusage_profiler.cc",
       "src/centipede/rusage_stats.cc",
       "src/centipede/shard_reader.cc",
@@ -199,8 +206,6 @@ source_set("fuzztest_internal") {
     "src/fuzztest/fuzztest.cc",
     "src/fuzztest/fuzztest.h",
     "src/fuzztest/googletest_fixture_adapter.h",
-    "src/fuzztest/init_fuzztest.cc",
-    "src/fuzztest/init_fuzztest.h",
     "src/fuzztest/internal/any.h",
     "src/fuzztest/internal/centipede_adaptor.h",
     "src/fuzztest/internal/compatibility_mode.cc",
@@ -304,14 +309,22 @@ source_set("fuzztest_internal") {
 #                               # out of process execution environment.
 #                               # Requires use_centipede gn argument.
 source_set("fuzztest") {
+  sources = [
+    "src/fuzztest/init_fuzztest.cc",
+    "src/fuzztest/init_fuzztest.h",
+  ]
+  deps = [
+    "//testing/gtest",
+    "//third_party/abseil-cpp/absl/flags:flag",
+  ]
   if (use_centipede) {
     # If we are building for centipede, we want to make fuzztest executables
     # which can be used as centipede fuzzers.
-    sources = [ "src/fuzztest/internal/centipede_adaptor.cc" ]
-    deps = [ ":centipede_runner_no_main" ]
+    sources += [ "src/fuzztest/internal/centipede_adaptor.cc" ]
+    deps += [ ":centipede_runner_no_main" ]
   } else if (use_fuzzing_engine && fuzzing_engine_supports_custom_main) {
     # Typically, libfuzzer.
-    deps = [ "//testing/libfuzzer:fuzzing_engine_no_main" ]
+    deps += [ "//testing/libfuzzer:fuzzing_engine_no_main" ]
   }
   public_deps = [ ":fuzztest_internal" ]
   public_configs = [ ":fuzztest_internal_config" ]

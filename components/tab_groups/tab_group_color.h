@@ -52,6 +52,12 @@ using ColorLabelMap = base::flat_map<TabGroupColorId, std::u16string>;
 COMPONENT_EXPORT(TAB_GROUPS)
 const ColorLabelMap& GetTabGroupColorLabelMap();
 
+// Returns the least-used color in the color set, breaking ties toward the first
+// color in the set. Used to initialize a new group's color, which should be as
+// distinct from the other groups as possible.
+COMPONENT_EXPORT(TAB_GROUPS)
+TabGroupColorId GetNextColor(const std::vector<TabGroupColorId>& used_colors);
+
 }  // namespace tab_groups
 
 #endif  // COMPONENTS_TAB_GROUPS_TAB_GROUP_COLOR_H_

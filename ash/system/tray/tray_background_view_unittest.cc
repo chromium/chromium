@@ -4,7 +4,7 @@
 
 #include "ash/system/tray/tray_background_view.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
@@ -158,7 +158,7 @@ class TrayBackgroundViewTest : public AshTestBase,
                 std::unique_ptr<TrayBackgroundView>(std::move(tmp))));
 
     // Set Dictation button to be visible.
-    AccessibilityControllerImpl* controller =
+    AccessibilityController* controller =
         Shell::Get()->accessibility_controller();
     controller->dictation().SetEnabled(true);
   }
@@ -203,10 +203,9 @@ class TrayBackgroundViewTest : public AshTestBase,
   }
 
  private:
-  raw_ptr<TestTrayBackgroundView, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<TestTrayBackgroundView, DanglingUntriaged>
       test_tray_background_view_ = nullptr;
-  raw_ptr<PersistentBubbleTestTrayBackgroundView,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<PersistentBubbleTestTrayBackgroundView, DanglingUntriaged>
       persistent_bubble_test_tray_background_view_ = nullptr;
   int num_animations_scheduled_ = 0;
 };

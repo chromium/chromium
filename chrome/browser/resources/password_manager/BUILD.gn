@@ -21,8 +21,6 @@ build_webui("build") {
     "images/password_sharing_secure_lock.svg",
     "images/password_sharing_progress_bar.svg",
     "password_manager.html",
-    "images/relaunch_chrome_promo.svg",
-    "images/relaunch_chrome_promo_dark.svg",
   ]
   if (is_chrome_branded) {
     static_files += [
@@ -35,9 +33,15 @@ build_webui("build") {
       "images/password_shortcut_promo_dark.svg",
       "images/passwords_on_web_promo.svg",
       "images/passwords_on_web_promo_dark.svg",
+      "images/relaunch_chrome_promo.svg",
+      "images/relaunch_chrome_promo_dark.svg",
     ]
   } else {
-    static_files += [ "manifest.webmanifest" ]
+    static_files += [
+      "manifest.webmanifest",
+      "images/relaunch_chrome_promo_non_branded.svg",
+      "images/relaunch_chrome_promo_dark_non_branded.svg",
+    ]
   }
 
   web_component_files = [

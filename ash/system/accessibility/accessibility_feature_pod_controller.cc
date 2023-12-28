@@ -6,7 +6,7 @@
 
 #include "ash/system/accessibility/accessibility_feature_pod_controller.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
@@ -31,7 +31,7 @@ namespace ash {
 namespace {
 
 std::u16string GenerateSublabelText(
-    std::vector<AccessibilityControllerImpl::Feature*> enabled_features,
+    std::vector<AccessibilityController::Feature*> enabled_features,
     int max_width,
     gfx::FontList font_list) {
   CHECK(!enabled_features.empty());
@@ -61,7 +61,7 @@ std::u16string GenerateSublabelText(
 }
 
 std::u16string GenerateTooltipText(
-    std::vector<AccessibilityControllerImpl::Feature*> enabled_features) {
+    std::vector<AccessibilityController::Feature*> enabled_features) {
   if (enabled_features.empty()) {
     return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_TOOLTIP);
   }

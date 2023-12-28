@@ -20,10 +20,10 @@
 namespace net {
 
 HttpBasicState::HttpBasicState(std::unique_ptr<ClientSocketHandle> connection,
-                               bool using_proxy)
+                               bool is_for_get_to_http_proxy)
     : read_buf_(base::MakeRefCounted<GrowableIOBuffer>()),
       connection_(std::move(connection)),
-      using_proxy_(using_proxy) {
+      is_for_get_to_http_proxy_(is_for_get_to_http_proxy) {
   CHECK(connection_) << "ClientSocketHandle passed to HttpBasicState must "
                         "not be NULL. See crbug.com/790776";
 }
@@ -55,8 +55,9 @@ void HttpBasicState::DeleteParser() { parser_.reset(); }
 std::string HttpBasicState::GenerateRequestLine() const {
   static const char kSuffix[] = " HTTP/1.1\r\n";
   const size_t kSuffixLen = std::size(kSuffix) - 1;
-  const std::string path =
-      using_proxy_ ? HttpUtil::SpecForRequest(url_) : url_.PathForRequest();
+  const std::string path = is_for_get_to_http_proxy_
+                               ? HttpUtil::SpecForRequest(url_)
+                               : url_.PathForRequest();
   // Don't use StringPrintf for concatenation because it is very inefficient.
   std::string request_line;
   const size_t expected_size =

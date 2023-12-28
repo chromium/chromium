@@ -11,7 +11,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_value_converter.h"
 #include "base/json/json_writer.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -71,14 +70,6 @@ base::Value::List AvailableContentListToValue(
   return value;
 }
 
-void RecordSuggestionPresented(
-    const std::vector<AvailableOfflineContentPtr>& suggestions) {
-  for (const AvailableOfflineContentPtr& item : suggestions) {
-    UMA_HISTOGRAM_ENUMERATION("Net.ErrorPageCounts.SuggestionPresented",
-                              item->content_type);
-  }
-}
-
 AvailableOfflineContentHelper::Binder& GetBinderOverride() {
   static base::NoDestructor<AvailableOfflineContentHelper::Binder> binder;
   return *binder;
@@ -132,8 +123,6 @@ void AvailableOfflineContentHelper::LaunchItem(const std::string& id,
 
   for (const AvailableOfflineContentPtr& item : fetched_content_) {
     if (item->id == id && item->name_space == name_space) {
-      UMA_HISTOGRAM_ENUMERATION("Net.ErrorPageCounts.SuggestionClicked",
-                                item->content_type);
       RecordEvent(error_page::NETWORK_ERROR_PAGE_OFFLINE_SUGGESTION_CLICKED);
       provider_->LaunchItem(id, name_space);
       return;
@@ -169,7 +158,6 @@ void AvailableOfflineContentHelper::AvailableContentReceived(
     has_prefetched_content_ = fetched_content_.front()->content_type ==
                               AvailableContentType::kPrefetchedPage;
 
-    RecordSuggestionPresented(fetched_content_);
     if (list_visible_by_prefs)
       RecordEvent(error_page::NETWORK_ERROR_PAGE_OFFLINE_SUGGESTIONS_SHOWN);
     else

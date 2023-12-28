@@ -300,7 +300,7 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
   // Create a texture to wrap the IOSurface.
   id<MTLTexture> bufferTexture = nil;
   {
-    MTLTextureDescriptor* texDesc = [MTLTextureDescriptor new];
+    MTLTextureDescriptor* texDesc = [[MTLTextureDescriptor alloc] init];
     texDesc.textureType = MTLTextureType2D;
     texDesc.usage = MTLTextureUsageShaderRead;
     texDesc.pixelFormat = mtlFormat;

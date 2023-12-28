@@ -13,6 +13,7 @@
 #include "extensions/common/context_data.h"
 #include "extensions/common/hashed_extension_id.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 
 class GURL;
@@ -33,21 +34,6 @@ class Extension;
 // usage and types.
 class Feature {
  public:
-  // The JavaScript contexts the feature is supported in.
-  enum Context {
-    UNSPECIFIED_CONTEXT,
-    BLESSED_EXTENSION_CONTEXT,
-    UNBLESSED_EXTENSION_CONTEXT,
-    CONTENT_SCRIPT_CONTEXT,
-    WEB_PAGE_CONTEXT,
-    BLESSED_WEB_PAGE_CONTEXT,
-    WEBUI_CONTEXT,
-    WEBUI_UNTRUSTED_CONTEXT,
-    LOCK_SCREEN_EXTENSION_CONTEXT,
-    OFFSCREEN_EXTENSION_CONTEXT,
-    USER_SCRIPT_CONTEXT,
-  };
-
   // The platforms the feature is supported in.
   enum Platform {
     UNSPECIFIED_PLATFORM,
@@ -88,7 +74,7 @@ class Feature {
   using DelegatedAvailabilityCheckHandler =
       base::RepeatingCallback<bool(const std::string& api_full_name,
                                    const Extension* extension,
-                                   Context context,
+                                   mojom::ContextType context,
                                    const GURL& url,
                                    Platform platform,
                                    int context_id,
@@ -168,7 +154,7 @@ class Feature {
   // Returns true if the feature is available to be used in the specified
   // extension and context.
   Availability IsAvailableToContext(const Extension* extension,
-                                    Context context,
+                                    mojom::ContextType context,
                                     const GURL& url,
                                     int context_id,
                                     const ContextData& context_data) const {
@@ -177,7 +163,7 @@ class Feature {
   }
 
   Availability IsAvailableToContext(const Extension* extension,
-                                    Context context,
+                                    mojom::ContextType context,
                                     const GURL& url,
                                     Platform platform,
                                     int context_id,
@@ -188,7 +174,7 @@ class Feature {
 
   Availability IsAvailableToContextIgnoringDevMode(
       const Extension* extension,
-      Context context,
+      mojom::ContextType context,
       const GURL& url,
       Platform platform,
       int context_id,
@@ -221,7 +207,7 @@ class Feature {
   // DelegatedAvailabilityCheckHandler.
   virtual Availability IsAvailableToContextImpl(
       const Extension* extension,
-      Context context,
+      mojom::ContextType context,
       const GURL& url,
       Platform platform,
       int context_id,

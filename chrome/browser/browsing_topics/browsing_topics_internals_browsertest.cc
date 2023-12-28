@@ -353,7 +353,7 @@ PrivacySandboxAdsAPIsOverride: disabled
 OverridePrivacySandboxSettingsLocalTesting: disabled
 BrowsingTopicsBypassIPIsPubliclyRoutableCheck: disabled
 BrowsingTopicsDocumentAPI: enabled
-Configuration version: 1
+Configuration version: 2
 BrowsingTopicsParameters: disabled
 BrowsingTopicsParameters:number_of_epochs_to_expose: 3
 BrowsingTopicsParameters:time_period_per_epoch: 7d-0h-0m-0s
@@ -466,7 +466,7 @@ PrivacySandboxAdsAPIsOverride: enabled
 OverridePrivacySandboxSettingsLocalTesting: disabled
 BrowsingTopicsBypassIPIsPubliclyRoutableCheck: disabled
 BrowsingTopicsDocumentAPI: enabled
-Configuration version: 1
+Configuration version: 2
 BrowsingTopicsParameters: enabled
 BrowsingTopicsParameters:number_of_epochs_to_expose: 3
 BrowsingTopicsParameters:time_period_per_epoch: 0d-0h-0m-15s

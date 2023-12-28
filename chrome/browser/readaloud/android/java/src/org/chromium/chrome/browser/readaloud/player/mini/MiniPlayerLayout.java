@@ -15,7 +15,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.TouchDelegate;
@@ -31,14 +30,12 @@ import androidx.annotation.ColorInt;
 
 import com.google.android.material.animation.ChildrenAlphaProperty;
 
+import org.chromium.chrome.browser.readaloud.player.Colors;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
-import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.interpolators.Interpolators;
-import org.chromium.ui.util.ColorUtils;
 
 /** Convenience class for manipulating mini player UI layout. */
 public class MiniPlayerLayout extends LinearLayout {
@@ -95,20 +92,13 @@ public class MiniPlayerLayout extends LinearLayout {
 
         // Set dynamic colors.
         Context context = getContext();
-        mBackgroundColorArgb = SemanticColorUtils.getDefaultBgColor(context);
-        @ColorInt int progressBarColor = SemanticColorUtils.getDefaultIconColor(context);
-        if (ColorUtils.inNightMode(context)) {
-            // This color should change to "Surface Container High" in the next Material update.
-            mBackgroundColorArgb =
-                    ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_4);
-            progressBarColor = context.getColor(R.color.baseline_primary_80);
-        }
+        mBackgroundColorArgb = Colors.getMiniPlayerBackgroundColor(context);
+        Colors.setProgressBarColor(mProgressBar);
         findViewById(R.id.backdrop).setBackgroundColor(mBackgroundColorArgb);
         if (mMediator != null) {
             mMediator.onBackgroundColorUpdated(mBackgroundColorArgb);
         }
 
-        mProgressBar.setProgressTintList(ColorStateList.valueOf(progressBarColor));
         mLastPlaybackState = PlaybackListener.State.UNKNOWN;
     }
 

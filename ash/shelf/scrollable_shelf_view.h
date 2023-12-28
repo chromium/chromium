@@ -480,15 +480,15 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   LayoutStrategy layout_strategy_ = kNotShowArrowButtons;
 
   // Child views Owned by views hierarchy.
-  raw_ptr<ScrollArrowView, ExperimentalAsh> left_arrow_ = nullptr;
-  raw_ptr<ScrollArrowView, ExperimentalAsh> right_arrow_ = nullptr;
-  raw_ptr<ShelfContainerView, ExperimentalAsh> shelf_container_view_ = nullptr;
+  raw_ptr<ScrollArrowView> left_arrow_ = nullptr;
+  raw_ptr<ScrollArrowView> right_arrow_ = nullptr;
+  raw_ptr<ShelfContainerView> shelf_container_view_ = nullptr;
 
   // Available space to accommodate child views. It is mirrored for the
   // horizontal shelf under RTL.
   gfx::Rect available_space_;
 
-  raw_ptr<ShelfView, ExperimentalAsh> shelf_view_ = nullptr;
+  raw_ptr<ShelfView> shelf_view_ = nullptr;
 
   // Defines the padding space inside the scrollable shelf. It is decided by the
   // current padding strategy. Note that `edge_padding_insets_` is mirrored
@@ -546,7 +546,7 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   // Waiting time before flipping the page.
   base::TimeDelta page_flip_time_threshold_;
 
-  raw_ptr<TestObserver, ExperimentalAsh> test_observer_ = nullptr;
+  raw_ptr<TestObserver> test_observer_ = nullptr;
 
   // If page flip timer is active for shelf item drag, the last known drag item
   // bounds in screen coordinates.

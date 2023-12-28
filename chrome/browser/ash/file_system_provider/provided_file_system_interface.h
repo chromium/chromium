@@ -31,8 +31,7 @@ namespace net {
 class IOBuffer;
 }  // namespace net
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 class ProvidedFileSystemInfo;
 class OperationRequestManager;
@@ -315,7 +314,6 @@ class ProvidedFileSystemInterface {
   virtual std::unique_ptr<ScopedUserInteraction> StartUserInteraction() = 0;
 };
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_PROVIDED_FILE_SYSTEM_INTERFACE_H_

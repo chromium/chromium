@@ -36,7 +36,7 @@ base::Value::Dict SimpleManifest() {
 }  // namespace
 
 struct RecordingCondition {
-  typedef int MatchData;
+  using MatchData = int;
 
   raw_ptr<URLMatcherConditionFactory> factory;
   std::unique_ptr<base::Value> value;
@@ -62,7 +62,7 @@ struct RecordingCondition {
     return result;
   }
 };
-typedef DeclarativeConditionSet<RecordingCondition> RecordingConditionSet;
+using RecordingConditionSet = DeclarativeConditionSet<RecordingCondition>;
 
 TEST(DeclarativeConditionTest, ErrorConditionSet) {
   URLMatcher matcher;
@@ -156,7 +156,7 @@ struct FulfillableCondition {
 };
 
 TEST(DeclarativeConditionTest, FulfillConditionSet) {
-  typedef DeclarativeConditionSet<FulfillableCondition> FulfillableConditionSet;
+  using FulfillableConditionSet = DeclarativeConditionSet<FulfillableCondition>;
   base::Value::List conditions;
   conditions.Append(ParseJson("{\"url_id\": 1, \"max\": 3}"));
   conditions.Append(ParseJson("{\"url_id\": 2, \"max\": 5}"));
@@ -209,7 +209,7 @@ TEST(DeclarativeConditionTest, FulfillConditionSet) {
 
 class SummingAction : public base::RefCounted<SummingAction> {
  public:
-  typedef int ApplyInfo;
+  using ApplyInfo = int;
 
   SummingAction(int increment, int min_priority)
       : increment_(increment), min_priority_(min_priority) {}
@@ -255,7 +255,7 @@ class SummingAction : public base::RefCounted<SummingAction> {
   int increment_;
   int min_priority_;
 };
-typedef DeclarativeActionSet<SummingAction> SummingActionSet;
+using SummingActionSet = DeclarativeActionSet<SummingAction>;
 
 TEST(DeclarativeActionTest, ErrorActionSet) {
   base::Value::List actions;
@@ -301,7 +301,7 @@ TEST(DeclarativeActionTest, ApplyActionSet) {
 }
 
 TEST(DeclarativeRuleTest, Create) {
-  typedef DeclarativeRule<FulfillableCondition, SummingAction> Rule;
+  using Rule = DeclarativeRule<FulfillableCondition, SummingAction>;
   auto json_rule = Rule::JsonRule::FromValue(ParseJsonDict(R"(
       {
         "id": "rule1",
@@ -368,7 +368,7 @@ bool AtLeastOneCondition(
 }
 
 TEST(DeclarativeRuleTest, CheckConsistency) {
-  typedef DeclarativeRule<FulfillableCondition, SummingAction> Rule;
+  using Rule = DeclarativeRule<FulfillableCondition, SummingAction>;
   URLMatcher matcher;
   std::string error;
   const char kExtensionId[] = "ext1";

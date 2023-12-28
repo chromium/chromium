@@ -57,7 +57,7 @@
 // (dangling else, missing switch case) and preserving noreturn semantics (e.g.
 // on `LOG(FATAL)`) without requiring braces.
 //
-// The `switch` ensures that this expansion is the begnning of a statement (as
+// The `switch` ensures that this expansion is the beginning of a statement (as
 // opposed to an expression) and prevents shenanigans like
 // `AFunction(LOG(INFO))` and `decltype(LOG(INFO))`.  The apparently-redundant
 // `default` case makes the condition more amenable to Clang dataflow analysis.
@@ -68,7 +68,7 @@
     !(condition) ? (void)0 : ::absl::log_internal::Voidify()&&
 
 // `ABSL_LOG_INTERNAL_STATEFUL_CONDITION` applies a condition like
-// `ABSL_LOG_INTERNAL_CONDITION` but adds to that a series of variable
+// `ABSL_LOG_INTERNAL_STATELESS_CONDITION` but adds to that a series of variable
 // declarations, including a local static object which stores the state needed
 // to implement the stateful macros like `LOG_EVERY_N`.
 //
@@ -147,20 +147,20 @@
             (::absl::kLogDebugFatal == ::absl::LogSeverity::kFatal &&   \
              (::absl::log_internal::AbortQuietly(), false)))))
 
-#define ABSL_LOG_INTERNAL_CONDITION_LEVEL(severity)                    \
-  for (int log_internal_severity_loop = 1; log_internal_severity_loop; \
-       log_internal_severity_loop = 0)                                 \
-    for (const absl::LogSeverity log_internal_severity =               \
-             ::absl::NormalizeLogSeverity(severity);                   \
-         log_internal_severity_loop; log_internal_severity_loop = 0)   \
+#define ABSL_LOG_INTERNAL_CONDITION_LEVEL(severity)                            \
+  for (int absl_log_internal_severity_loop = 1;                                \
+       absl_log_internal_severity_loop; absl_log_internal_severity_loop = 0)   \
+    for (const absl::LogSeverity absl_log_internal_severity =                  \
+             ::absl::NormalizeLogSeverity(severity);                           \
+         absl_log_internal_severity_loop; absl_log_internal_severity_loop = 0) \
   ABSL_LOG_INTERNAL_CONDITION_LEVEL_IMPL
-#define ABSL_LOG_INTERNAL_CONDITION_LEVEL_IMPL(type, condition)    \
-  ABSL_LOG_INTERNAL_##type##_CONDITION(                            \
-      (condition) &&                                               \
-      (log_internal_severity >=                                    \
-           static_cast<::absl::LogSeverity>(ABSL_MIN_LOG_LEVEL) || \
-       (log_internal_severity == ::absl::LogSeverity::kFatal &&    \
-        (::absl::log_internal::AbortQuietly(), false))))
+#define ABSL_LOG_INTERNAL_CONDITION_LEVEL_IMPL(type, condition)          \
+  ABSL_LOG_INTERNAL_##type##_CONDITION((                                  \
+      (condition) &&                                                     \
+          (absl_log_internal_severity >=                                 \
+               static_cast<::absl::LogSeverity>(ABSL_MIN_LOG_LEVEL) ||   \
+           (absl_log_internal_severity == ::absl::LogSeverity::kFatal && \
+            (::absl::log_internal::AbortQuietly(), false)))))
 #else  // ndef ABSL_MIN_LOG_LEVEL
 #define ABSL_LOG_INTERNAL_CONDITION_INFO(type, condition) \
   ABSL_LOG_INTERNAL_##type##_CONDITION(condition)
@@ -174,12 +174,12 @@
   ABSL_LOG_INTERNAL_##type##_CONDITION(condition)
 #define ABSL_LOG_INTERNAL_CONDITION_DFATAL(type, condition) \
   ABSL_LOG_INTERNAL_##type##_CONDITION(condition)
-#define ABSL_LOG_INTERNAL_CONDITION_LEVEL(severity)                    \
-  for (int log_internal_severity_loop = 1; log_internal_severity_loop; \
-       log_internal_severity_loop = 0)                                 \
-    for (const absl::LogSeverity log_internal_severity =               \
-             ::absl::NormalizeLogSeverity(severity);                   \
-         log_internal_severity_loop; log_internal_severity_loop = 0)   \
+#define ABSL_LOG_INTERNAL_CONDITION_LEVEL(severity)                            \
+  for (int absl_log_internal_severity_loop = 1;                                \
+       absl_log_internal_severity_loop; absl_log_internal_severity_loop = 0)   \
+    for (const absl::LogSeverity absl_log_internal_severity =                  \
+             ::absl::NormalizeLogSeverity(severity);                           \
+         absl_log_internal_severity_loop; absl_log_internal_severity_loop = 0) \
   ABSL_LOG_INTERNAL_CONDITION_LEVEL_IMPL
 #define ABSL_LOG_INTERNAL_CONDITION_LEVEL_IMPL(type, condition) \
   ABSL_LOG_INTERNAL_##type##_CONDITION(condition)

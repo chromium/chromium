@@ -63,6 +63,7 @@ bool DidEndAtFallback(OfficeTaskResult task_result) {
     case OfficeTaskResult::kFallbackQuickOffice:
     case OfficeTaskResult::kFallbackOther:
     case OfficeTaskResult::kCancelledAtFallback:
+    case OfficeTaskResult::kCannotGetFallbackChoice:
       return true;
     case OfficeTaskResult::kOpened:
     case OfficeTaskResult::kMoved:
@@ -565,6 +566,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
           case OfficeTaskResult::kCancelledAtSetup:
           case OfficeTaskResult::kLocalFileTask:
           case OfficeTaskResult::kFileAlreadyBeingUploaded:
+          case OfficeTaskResult::kCannotGetFallbackChoice:
             SetWrongValueLogged(task_result);
             break;
         }

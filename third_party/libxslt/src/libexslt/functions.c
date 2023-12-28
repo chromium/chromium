@@ -385,13 +385,15 @@ exsltFuncFunctionFunction (xmlXPathParserContextPtr ctxt, int nargs) {
     newBase = tctxt->varsNr;
     /* If there are any parameters */
     if (paramNode != NULL) {
-        args = (xmlXPathObjectPtr *) xmlMalloc(sizeof(*args) * nargs);
-        if (args == NULL)
-            goto error;
-        /* Fetch the stored argument values from the caller */
-	for (i = nargs - 1; i >= 0; i--) {
-            args[i] = valuePop(ctxt);
-	}
+        if (nargs > 0) {
+            args = (xmlXPathObjectPtr *) xmlMalloc(sizeof(*args) * nargs);
+            if (args == NULL)
+                goto error;
+            /* Fetch the stored argument values from the caller */
+            for (i = nargs - 1; i >= 0; i--) {
+                args[i] = valuePop(ctxt);
+            }
+        }
 
 	/*
 	 * Prepare to process params in reverse order.  First, go to

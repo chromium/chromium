@@ -167,6 +167,10 @@ class ASH_EXPORT VideoConferenceTray
   // to the state in `VideoConferenceTrayController`.
   void UpdateTrayAndIconsState();
 
+  // Sets the visibility of the view `SetCameraBackgroundView' in the
+  // 'BubbleView`.
+  void SetBackgroundReplaceUiVisible(bool visible);
+
   IconButton* GetToggleBubbleButtonForTest();
 
  private:
@@ -193,11 +197,10 @@ class ASH_EXPORT VideoConferenceTray
   void ConstructBubbleWithMediaApps(MediaApps apps);
 
   // Owned by the views hierarchy.
-  raw_ptr<VideoConferenceTrayButton, ExperimentalAsh> audio_icon_ = nullptr;
-  raw_ptr<VideoConferenceTrayButton, ExperimentalAsh> camera_icon_ = nullptr;
-  raw_ptr<VideoConferenceTrayButton, ExperimentalAsh> screen_share_icon_ =
-      nullptr;
-  raw_ptr<IconButton, ExperimentalAsh> toggle_bubble_button_ = nullptr;
+  raw_ptr<VideoConferenceTrayButton> audio_icon_ = nullptr;
+  raw_ptr<VideoConferenceTrayButton> camera_icon_ = nullptr;
+  raw_ptr<VideoConferenceTrayButton> screen_share_icon_ = nullptr;
+  raw_ptr<IconButton> toggle_bubble_button_ = nullptr;
 
   // The bubble that appears after clicking the tray button.
   std::unique_ptr<TrayBubbleWrapper> bubble_;

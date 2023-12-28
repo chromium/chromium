@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_client.h"
 #include "third_party/nearby/sharing/proto/certificate_rpc.pb.h"
 #include "third_party/nearby/sharing/proto/contact_rpc.pb.h"
@@ -96,13 +97,15 @@ class FakeNearbyShareClientFactory : public NearbyShareClientFactory {
 
  public:
   // Returns all FakeNearbyShareClient instances created by CreateInstance().
-  std::vector<FakeNearbyShareClient*>& instances() { return instances_; }
+  std::vector<raw_ptr<FakeNearbyShareClient, VectorExperimental>>& instances() {
+    return instances_;
+  }
 
  private:
   // NearbyShareClientFactory:
   std::unique_ptr<NearbyShareClient> CreateInstance() override;
 
-  std::vector<FakeNearbyShareClient*> instances_;
+  std::vector<raw_ptr<FakeNearbyShareClient, VectorExperimental>> instances_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_CLIENT_FAKE_NEARBY_SHARE_CLIENT_H_

@@ -249,7 +249,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
   void MaybeStartDrag(TabSlotView* source,
                       const ui::LocatedEvent& event,
                       const ui::ListSelectionModel& original_selection) {
-    std::vector<TabSlotView*> dragging_views;
+    std::vector<raw_ptr<TabSlotView, VectorExperimental>> dragging_views;
     int x = source->GetMirroredXInView(event.x());
     int y = event.y();
 
@@ -475,7 +475,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
 
   int GetInsertionIndexForDraggedBounds(
       const gfx::Rect& dragged_bounds,
-      std::vector<TabSlotView*> dragged_views,
+      std::vector<raw_ptr<TabSlotView, VectorExperimental>> dragged_views,
       int num_dragged_tabs,
       std::optional<tab_groups::TabGroupId> group) const override {
     // If the strip has no tabs, the only position to insert at is 0.
@@ -504,7 +504,8 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
   }
 
   std::vector<gfx::Rect> CalculateBoundsForDraggedViews(
-      const std::vector<TabSlotView*>& views) override {
+      const std::vector<raw_ptr<TabSlotView, VectorExperimental>>& views)
+      override {
     DCHECK(!views.empty());
 
     std::vector<gfx::Rect> bounds;
@@ -519,8 +520,9 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     return bounds;
   }
 
-  void SetBoundsForDrag(const std::vector<TabSlotView*>& views,
-                        const std::vector<gfx::Rect>& bounds) override {
+  void SetBoundsForDrag(
+      const std::vector<raw_ptr<TabSlotView, VectorExperimental>>& views,
+      const std::vector<gfx::Rect>& bounds) override {
     tab_strip_->tab_container_->CancelAnimation();
     DCHECK_EQ(views.size(), bounds.size());
     for (size_t i = 0; i < views.size(); ++i)
@@ -539,7 +541,9 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
           views.at(0)->group().value());
   }
 
-  void StartedDragging(const std::vector<TabSlotView*>& views) override {
+  void StartedDragging(
+      const std::vector<raw_ptr<TabSlotView, VectorExperimental>>& views)
+      override {
     // Let the controller know that the user started dragging tabs.
     tab_strip_->controller_->OnStartedDragging(
         views.size() == static_cast<size_t>(tab_strip_->GetModelCount()));
@@ -579,7 +583,9 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     tab_strip_->controller_->OnStoppedDragging();
   }
 
-  void StoppedDragging(const std::vector<TabSlotView*>& views) override {
+  void StoppedDragging(
+      const std::vector<raw_ptr<TabSlotView, VectorExperimental>>& views)
+      override {
     // Let the controller know that the user stopped dragging tabs.
     tab_strip_->controller_->OnStoppedDragging();
     UpdateDragEventSourceCrashKey({});
@@ -609,10 +615,11 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     }
   }
 
-  void LayoutDraggedViewsAt(const std::vector<TabSlotView*>& views,
-                            TabSlotView* source_view,
-                            const gfx::Point& location,
-                            bool initial_drag) override {
+  void LayoutDraggedViewsAt(
+      const std::vector<raw_ptr<TabSlotView, VectorExperimental>>& views,
+      TabSlotView* source_view,
+      const gfx::Point& location,
+      bool initial_drag) override {
     std::vector<gfx::Rect> bounds = CalculateBoundsForDraggedViews(views);
     DCHECK_EQ(views.size(), bounds.size());
 
@@ -966,7 +973,8 @@ void TabStrip::SetAvailableWidthCallback(
 }
 
 // static
-int TabStrip::GetSizeNeededForViews(const std::vector<TabSlotView*>& views) {
+int TabStrip::GetSizeNeededForViews(
+    const std::vector<raw_ptr<TabSlotView, VectorExperimental>>& views) {
   int width = 0;
   for (const TabSlotView* view : views)
     width += view->width();

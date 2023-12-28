@@ -368,7 +368,7 @@ void WebThemeEngineDefault::EmulateForcedColors(bool is_dark_theme,
                                                 bool is_web_test) {
   SetEmulateForcedColors(true);
   emulated_forced_colors_provider_ =
-      is_web_test ? ui::CreateEmulatedForcedColorsColorProviderForWebTests()
+      is_web_test ? ui::CreateEmulatedForcedColorsColorProviderForTest()
                   : ui::CreateEmulatedForcedColorsColorProvider(is_dark_theme);
 }
 

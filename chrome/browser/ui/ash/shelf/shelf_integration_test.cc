@@ -15,8 +15,8 @@
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
+#include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "chrome/test/base/chromeos/crosier/aura_window_title_observer.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
 #include "components/app_constants/constants.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/env.h"
@@ -34,7 +34,7 @@ const char16_t kBrowserWindowTitle[] = u"Chrome - New Tab";
 const char16_t kBrowserWindowTitle[] = u"Chromium - New Tab";
 #endif
 
-class ShelfIntegrationTest : public InteractiveAshTest {
+class ShelfIntegrationTest : public AshIntegrationTest {
  public:
   ShelfIntegrationTest()
       : zero_duration_scoped_animation_scale_mode_(

@@ -335,7 +335,8 @@ class TabDesktopMediaListTest : public testing::Test,
   // Must be listed before |list_|, so it's destroyed last.
   MockObserver observer_;
   std::unique_ptr<TabDesktopMediaList> list_;
-  std::vector<WebContents*> manually_added_web_contents_;
+  std::vector<raw_ptr<WebContents, VectorExperimental>>
+      manually_added_web_contents_;
   std::vector<std::unique_ptr<TestAppWindow>> manually_added_app_windows_;
 
   content::BrowserTaskEnvironment task_environment_;

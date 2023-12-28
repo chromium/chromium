@@ -70,9 +70,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
     virtual ~MetricsTracker() = default;
   };
 
-  OverviewGrid(aura::Window* root_window,
-               const std::vector<aura::Window*>& window_list,
-               OverviewSession* overview_session);
+  OverviewGrid(
+      aura::Window* root_window,
+      const std::vector<raw_ptr<aura::Window, VectorExperimental>>& window_list,
+      OverviewSession* overview_session);
 
   OverviewGrid(const OverviewGrid&) = delete;
   OverviewGrid& operator=(const OverviewGrid&) = delete;
@@ -566,7 +567,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // the overview item that represents the `windows` is being added to `this`,
   // `increment` is true, and false if being removed.
   void UpdateNumSavedDeskUnsupportedWindows(
-      const std::vector<aura::Window*>& windows,
+      const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows,
       bool increment);
 
   // Returns the height of `desks_bar_view_`.
@@ -590,10 +591,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   raw_ptr<OverviewDropTarget> drop_target_ = nullptr;
 
   // Root window the grid is in.
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> root_window_;
+  raw_ptr<aura::Window, DanglingUntriaged> root_window_;
 
   // Pointer to the OverviewSession that spawned this grid.
-  raw_ptr<OverviewSession, ExperimentalAsh> overview_session_;
+  raw_ptr<OverviewSession> overview_session_;
 
   // Vector containing all the items in this grid.
   std::vector<std::unique_ptr<OverviewItemBase>> item_list_;
@@ -610,8 +611,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   std::unique_ptr<views::Widget> desks_widget_;
 
   // The contents view of the above |desks_widget_| if created.
-  raw_ptr<LegacyDeskBarView, DanglingUntriaged | ExperimentalAsh>
-      desks_bar_view_ = nullptr;
+  raw_ptr<LegacyDeskBarView, DanglingUntriaged> desks_bar_view_ = nullptr;
 
   // True if the overview grid should animate when exiting overview mode. Note
   // even if it's true, it doesn't mean all window items in the grid should
@@ -649,10 +649,13 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
 
   // Window that is being dragged from the shelf or during tab dragging.
-  raw_ptr<aura::Window, ExperimentalAsh> dragged_window_ = nullptr;
+  raw_ptr<aura::Window> dragged_window_ = nullptr;
 
   // The widget that contains the view for all saved desks.
   std::unique_ptr<views::Widget> saved_desk_library_widget_;
+
+  // The widget that contains the `PineContentsView`.
+  std::unique_ptr<views::Widget> pine_widget_;
 
   // A widget that contains save desk buttons which save desk as template or for
   // later when pressed.

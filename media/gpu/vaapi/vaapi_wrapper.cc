@@ -345,11 +345,7 @@ media::VAImplementation VendorStringToImplementationType(
   return media::VAImplementation::kOther;
 }
 
-bool UseGlobalVaapiLock(media::VAImplementation implementation_type) {
-  if (!media::VaapiWrapper::allow_disabling_global_lock_) {
-    return true;
-  }
-
+bool IsThreadSafeDriver(media::VAImplementation implementation_type) {
   // Only iHD and Mesa Gallium are known to be thread safe at the moment.
   // * Mesa Gallium: b/144877595
   // * iHD: crbug.com/1123429.
@@ -357,7 +353,15 @@ bool UseGlobalVaapiLock(media::VAImplementation implementation_type) {
       base::MakeFixedFlatSet<media::VAImplementation>(
           {media::VAImplementation::kMesaGallium,
            media::VAImplementation::kIntelIHD});
-  return !kNoVaapiLockImplementations.contains(implementation_type) ||
+  return kNoVaapiLockImplementations.contains(implementation_type);
+}
+
+bool UseGlobalVaapiLock(media::VAImplementation implementation_type) {
+  if (!media::VaapiWrapper::allow_disabling_global_lock_) {
+    return true;
+  }
+
+  return !IsThreadSafeDriver(implementation_type) ||
          base::FeatureList::IsEnabled(media::kGlobalVaapiLock);
 }
 
@@ -672,6 +676,15 @@ bool ClearNV12Padding(const VAImage& image,
   }
 
   return true;
+}
+
+// Creates an AutoLock iff |va_lock_| is not null and the libva backend is
+// thread-safe.
+std::unique_ptr<base::AutoLock> AutoLockOnlyIfNeeded(base::Lock* lock) {
+  if (lock && !IsThreadSafeDriver(VaapiWrapper::GetImplementationType())) {
+    return std::make_unique<base::AutoLock>(*lock);
+  }
+  return nullptr;
 }
 
 // Can't statically initialize the profile map:
@@ -2725,11 +2738,13 @@ std::unique_ptr<ScopedVAImage> VaapiWrapper::CreateVaImage(
 
 bool VaapiWrapper::UploadVideoFrameToSurface(const VideoFrame& frame,
                                              VASurfaceID va_surface_id,
-                                             const gfx::Size& va_surface_size) {
+                                             const gfx::Size& va_surface_size)
+    NO_THREAD_SAFETY_ANALYSIS {
   CHECK(!enforce_sequence_affinity_ ||
         sequence_checker_.CalledOnValidSequence());
   TRACE_EVENT0("media,gpu", "VaapiWrapper::UploadVideoFrameToSurface");
-  base::AutoLockMaybe auto_lock(va_lock_.get());
+  std::unique_ptr<base::AutoLock> auto_lock =
+      AutoLockOnlyIfNeeded(va_lock_.get());
   TRACE_EVENT0("media,gpu", "VaapiWrapper::UploadVideoFrameToSurfaceLocked");
 
   if (frame.visible_rect().origin() != gfx::Point(0, 0)) {
@@ -2774,9 +2789,11 @@ bool VaapiWrapper::UploadVideoFrameToSurface(const VideoFrame& frame,
     return false;
   }
 
-  ScopedVABufferMapping mapping(va_lock_, va_display_, image.buf);
-  if (!mapping.IsValid())
+  ScopedVABufferMapping mapping(auto_lock ? va_lock_ : nullptr, va_display_,
+                                image.buf);
+  if (!mapping.IsValid()) {
     return false;
+  }
   uint8_t* image_ptr = static_cast<uint8_t*>(mapping.data());
 
   if (!ClearNV12Padding(image, visible_size, image_ptr)) {
@@ -2789,8 +2806,10 @@ bool VaapiWrapper::UploadVideoFrameToSurface(const VideoFrame& frame,
     TRACE_EVENT0("media,gpu", "VaapiWrapper::UploadVideoFrameToSurface_copy");
 
     std::unique_ptr<base::AutoUnlock> auto_unlock;
-    if (va_lock_)
+    if (auto_lock) {
       auto_unlock = std::make_unique<base::AutoUnlock>(*va_lock_);
+    }
+
     if (frame.format() == PIXEL_FORMAT_I420) {
       ret = libyuv::I420ToNV12(
           frame.data(VideoFrame::kYPlane), frame.stride(VideoFrame::kYPlane),
@@ -2836,13 +2855,14 @@ std::unique_ptr<ScopedVABuffer> VaapiWrapper::CreateVABuffer(VABufferType type,
 }
 
 uint64_t VaapiWrapper::GetEncodedChunkSize(VABufferID buffer_id,
-                                           VASurfaceID sync_surface_id) {
+                                           VASurfaceID sync_surface_id)
+    NO_THREAD_SAFETY_ANALYSIS {
   CHECK(!enforce_sequence_affinity_ ||
         sequence_checker_.CalledOnValidSequence());
   TRACE_EVENT0("media,gpu", "VaapiWrapper::GetEncodedChunkSize");
-  base::AutoLockMaybe auto_lock(va_lock_.get());
+  std::unique_ptr<base::AutoLock> auto_lock =
+      AutoLockOnlyIfNeeded(va_lock_.get());
   TRACE_EVENT0("media,gpu", "VaapiWrapper::GetEncodedChunkSizeLocked");
-
   // vaSyncSurface() is not necessary on Intel platforms as long as there is a
   // vaMapBuffer() like in ScopedVABufferMapping below.
   // vaSyncSurface() synchronizes all active workloads (potentially many, e.g.
@@ -2854,7 +2874,8 @@ uint64_t VaapiWrapper::GetEncodedChunkSize(VABufferID buffer_id,
     VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVASyncSurface, 0u);
   }
 
-  ScopedVABufferMapping mapping(va_lock_, va_display_, buffer_id);
+  ScopedVABufferMapping mapping(auto_lock ? va_lock_ : nullptr, va_display_,
+                                buffer_id);
   if (!mapping.IsValid())
     return 0u;
 
@@ -2873,14 +2894,14 @@ bool VaapiWrapper::DownloadFromVABuffer(
     absl::optional<VASurfaceID> sync_surface_id,
     uint8_t* target_ptr,
     size_t target_size,
-    size_t* coded_data_size) {
+    size_t* coded_data_size) NO_THREAD_SAFETY_ANALYSIS {
   CHECK(!enforce_sequence_affinity_ ||
         sequence_checker_.CalledOnValidSequence());
   DCHECK(target_ptr);
   TRACE_EVENT0("media,gpu", "VaapiWrapper::DownloadFromVABuffer");
-  base::AutoLockMaybe auto_lock(va_lock_.get());
+  std::unique_ptr<base::AutoLock> auto_lock =
+      AutoLockOnlyIfNeeded(va_lock_.get());
   TRACE_EVENT0("media,gpu", "VaapiWrapper::DownloadFromVABufferLocked");
-
   // vaSyncSurface() is not necessary on Intel platforms as long as there is a
   // vaMapBuffer() like in ScopedVABufferMapping below, see b/184312032.
   // |sync_surface_id| will be nullopt because it has been synced already.
@@ -2893,7 +2914,8 @@ bool VaapiWrapper::DownloadFromVABuffer(
     VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVASyncSurface, false);
   }
 
-  ScopedVABufferMapping mapping(va_lock_, va_display_, buffer_id);
+  ScopedVABufferMapping mapping(auto_lock ? va_lock_ : nullptr, va_display_,
+                                buffer_id);
   if (!mapping.IsValid())
     return false;
   auto* buffer_segment =

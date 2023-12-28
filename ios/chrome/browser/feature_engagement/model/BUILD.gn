@@ -21,7 +21,6 @@ source_set("model") {
     "//ios/chrome/browser/promos_manager",
     "//ios/chrome/browser/promos_manager:event_exporter_factory",
     "//ios/chrome/browser/promos_manager:features",
-    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/web/public",

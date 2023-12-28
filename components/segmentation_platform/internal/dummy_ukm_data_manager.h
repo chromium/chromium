@@ -20,9 +20,8 @@ class DummyUkmDataManager : public UkmDataManager {
   DummyUkmDataManager& operator=(const DummyUkmDataManager&) = delete;
 
   // UkmDataManager implementation:
-  void Initialize(const base::FilePath& database_path,
-                  bool in_memory,
-                  UkmObserver* ukm_observer) override;
+  void Initialize(const base::FilePath& database_path, bool in_memory) override;
+  void StartObservation(UkmObserver* ukm_observer) override;
   bool IsUkmEngineEnabled() override;
   void StartObservingUkm(const UkmConfig& config) override;
   void PauseOrResumeObservation(bool pause) override;

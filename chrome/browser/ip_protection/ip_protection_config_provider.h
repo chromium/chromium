@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_CONFIG_PROVIDER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -127,20 +128,41 @@ class IpProtectionConfigProvider
   // loops in browser startup.
   void SetUp();
 
+  // Creating a generic callback in order for `RequestOAuthToken()` to work for
+  // `TryGetAuthTokens()` and `GetProxyList()`.
+  using RequestOAuthTokenCallback =
+      base::OnceCallback<void(GoogleServiceAuthError error,
+                              signin::AccessTokenInfo access_token_info)>;
   // Calls the IdentityManager asynchronously to request the OAuth token for the
-  // logged in user.
-  void RequestOAuthToken(uint32_t batch_size,
-                         network::mojom::IpProtectionProxyLayer proxy_layer,
-                         TryGetAuthTokensCallback callback);
+  // logged in user. This method must only be called when
+  // `CanRequestOAuthToken()` returns true.
+  void RequestOAuthToken(RequestOAuthTokenCallback callback);
+  bool CanRequestOAuthToken();
+
   void OnRequestOAuthTokenCompleted(
       std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
           oauth_token_fetcher,
-      base::TimeTicks oauth_token_fetch_start_time,
+      RequestOAuthTokenCallback callback,
+      GoogleServiceAuthError error,
+      signin::AccessTokenInfo access_token_info);
+
+  void OnRequestOAuthTokenCompletedForTryGetAuthTokens(
       uint32_t batch_size,
       network::mojom::IpProtectionProxyLayer proxy_layer,
       TryGetAuthTokensCallback callback,
+      base::TimeTicks oauth_token_fetch_start_time,
       GoogleServiceAuthError error,
       signin::AccessTokenInfo access_token_info);
+
+  void OnRequestOAuthTokenCompletedForGetProxyConfig(
+      GetProxyListCallback callback,
+      GoogleServiceAuthError error,
+      signin::AccessTokenInfo access_token_info);
+
+  // Wrapping `ip_protection_config_http_->GetProxyConfig()` method
+  // to enable OAuth Token inclusion in the GetProxyConfig API call to Phosphor.
+  void CallGetProxyConfig(GetProxyListCallback callback,
+                          std::optional<std::string> oauth_token);
 
   // `FetchBlindSignedToken()` calls into the `quiche::BlindSignAuth` library to
   // request a blind-signed auth token for use at the IP Protection proxies.

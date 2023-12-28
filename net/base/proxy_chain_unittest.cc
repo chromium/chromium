@@ -303,6 +303,23 @@ TEST(ProxyChainTest, ForIpProtection) {
             copied_proxy_chain.proxy_servers());
 }
 
+TEST(ProxyChainTest, IsGetToProxyAllowed) {
+  auto https_server1 =
+      ProxyUriToProxyServer("foo:333", ProxyServer::SCHEME_HTTPS);
+  auto https_server2 =
+      ProxyUriToProxyServer("foo:444", ProxyServer::SCHEME_HTTPS);
+  auto http_server = ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTP);
+  auto socks_server =
+      ProxyUriToProxyServer("foo:666", ProxyServer::SCHEME_SOCKS4);
+
+  EXPECT_FALSE(ProxyChain::Direct().is_get_to_proxy_allowed());
+  EXPECT_TRUE(ProxyChain({https_server1}).is_get_to_proxy_allowed());
+  EXPECT_TRUE(ProxyChain({http_server}).is_get_to_proxy_allowed());
+  EXPECT_FALSE(ProxyChain({socks_server}).is_get_to_proxy_allowed());
+  EXPECT_FALSE(
+      ProxyChain({https_server1, https_server2}).is_get_to_proxy_allowed());
+}
+
 TEST(ProxyChainTest, IsValid) {
   ProxyServer direct_proxy =
       ProxyUriToProxyServer("", ProxyServer::SCHEME_DIRECT);

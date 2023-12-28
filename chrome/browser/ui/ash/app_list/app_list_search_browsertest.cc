@@ -11,6 +11,7 @@
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/search/test/app_list_search_test_helper.h"
@@ -110,8 +111,8 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, SearchBuiltInApps) {
   // The search result should exist in the view hierarchy.
   AppListTestHelper helper;
   AppListSearchView* search_view = helper.GetBubbleAppListSearchView();
-  std::vector<SearchResultContainerView*> result_containers =
-      search_view->result_container_views_for_test();
+  std::vector<raw_ptr<SearchResultContainerView, VectorExperimental>>
+      result_containers = search_view->result_container_views_for_test();
   // The result is of type "App", in container index 2.
   ASSERT_GE(result_containers.size(), 2u);
   SearchResultContainerView* container = result_containers[2];

@@ -8,6 +8,8 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
+#include "base/functional/overloaded.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/browser_process.h"
@@ -33,6 +35,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_reauth_provider.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -277,6 +280,7 @@ class ProfileCreationSignedInFlowController
       step_completed_callback_;
 };
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class ReauthFlowStepController : public ProfileManagementStepController {
  public:
   explicit ReauthFlowStepController(
@@ -293,6 +297,8 @@ class ReauthFlowStepController : public ProfileManagementStepController {
     reauth_provider_->SwitchToReauth();
   }
 
+  void OnHidden() override { host()->SetNativeToolbarVisible(false); }
+
   void OnNavigateBackRequested() override {
     NavigateBackInternal(reauth_provider_->contents());
   }
@@ -301,11 +307,10 @@ class ReauthFlowStepController : public ProfileManagementStepController {
   std::unique_ptr<ProfilePickerDiceReauthProvider> reauth_provider_;
 };
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 std::unique_ptr<ProfileManagementStepController> CreateReauthtep(
     ProfilePickerWebContentsHost* host,
     Profile* profile,
-    base::OnceCallback<void(bool)> on_reauth_completed) {
+    base::OnceCallback<void(bool, ReauthUIError)> on_reauth_completed) {
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
@@ -343,23 +348,41 @@ void ProfilePickerFlowController::Init(
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ProfilePickerFlowController::SwitchToDiceSignIn(
-    std::optional<SkColor> profile_color,
+    ProfilePicker::ProfileInfo profile_info,
     StepSwitchFinishedCallback switch_finished_callback) {
   DCHECK_EQ(Step::kProfilePicker, current_step());
 
-  suggested_profile_color_ = profile_color;
-  SwitchToIdentityStepsFromAccountSelection(
-      std::move(switch_finished_callback));
+  base::FilePath profile_path;
+  // Split the variant information from `profile_info`.
+  absl::visit(base::Overloaded{
+                  [&suggested_profile_color = suggested_profile_color_](
+                      absl::optional<SkColor> color) {
+                    suggested_profile_color = color;
+                  },
+                  [&profile_path](base::FilePath profile_path_info) {
+                    profile_path = profile_path_info;
+                  },
+              },
+              profile_info);
+
+  SwitchToIdentityStepsFromAccountSelection(std::move(switch_finished_callback),
+                                            kAccessPoint,
+                                            std::move(profile_path));
 }
 
 void ProfilePickerFlowController::SwitchToReauth(
     Profile* profile,
-    base::OnceCallback<void()> on_error_callback) {
+    base::OnceCallback<void(ReauthUIError)> on_error_callback) {
   DCHECK_EQ(Step::kProfilePicker, current_step());
 
   // if the step was already initialized, unregister to make sure the new
   // reauth is properly initialised and the current reauth step is cleaned.
-  if (!IsStepInitialized(Step::kReauth)) {
+  //
+  // TODO(crbug.com/1478217): Cleanup the unregistration of the step with a
+  // proper resetable state within the `ProfilePickerDiceReauthProvider`, and
+  // using the `ProfileManagementFlowController::SwitchToStep()` `reset_state`
+  // value to trigger the reset.
+  if (IsStepInitialized(Step::kReauth)) {
     UnregisterStep(Step::kReauth);
   }
 
@@ -370,26 +393,25 @@ void ProfilePickerFlowController::SwitchToReauth(
           base::BindOnce(&ProfilePickerFlowController::OnReauthCompleted,
                          base::Unretained(this), profile,
                          std::move(on_error_callback))));
-  // Popping this step should first unregister it (specific to the reauth step),
-  // then switch back to the current step.
-  auto pop_closure =
-      base::BindOnce(&ProfilePickerFlowController::UnregisterStep,
-                     base::Unretained(this), Step::kReauth)
-          .Then(CreateSwitchToCurrentStepPopCallback());
-  SwitchToStep(Step::kReauth, true, StepSwitchFinishedCallback(),
-               std::move(pop_closure));
+
+  SwitchToStep(
+      Step::kReauth, true, StepSwitchFinishedCallback(),
+      /*pop_step_callback=*/CreateSwitchToStepPopCallback(current_step()));
 }
 
 void ProfilePickerFlowController::OnReauthCompleted(
     Profile* profile,
-    base::OnceCallback<void()> on_error_callback,
-    bool success) {
+    base::OnceCallback<void(ReauthUIError)> on_error_callback,
+    bool success,
+    ReauthUIError error) {
   if (!success) {
+    CHECK_NE(error, ReauthUIError::kNone);
+
     SwitchToStep(
         Step::kProfilePicker, /*reset_state=*/true,
         base::BindOnce(
             &ProfilePickerFlowController::OnProfilePickerStepShownReauthError,
-            base::Unretained(this), std::move(on_error_callback)));
+            base::Unretained(this), std::move(on_error_callback), error));
     return;
   }
 
@@ -402,7 +424,8 @@ void ProfilePickerFlowController::OnReauthCompleted(
 }
 
 void ProfilePickerFlowController::OnProfilePickerStepShownReauthError(
-    base::OnceCallback<void()> on_error_callback,
+    base::OnceCallback<void(ReauthUIError)> on_error_callback,
+    ReauthUIError error,
     bool switch_step_success) {
   // If the step switch to the profile picker was not successful, do not proceed
   // with displaying the error dialog.
@@ -410,7 +433,7 @@ void ProfilePickerFlowController::OnProfilePickerStepShownReauthError(
     return;
   }
 
-  std::move(on_error_callback).Run();
+  std::move(on_error_callback).Run(error);
 }
 
 #endif
@@ -485,14 +508,6 @@ std::u16string ProfilePickerFlowController::GetFallbackAccessibleWindowTitle()
 #endif
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-std::unique_ptr<ProfilePickerDiceSignInProvider>
-ProfilePickerFlowController::CreateDiceSignInProvider() {
-  return std::make_unique<ProfilePickerDiceSignInProvider>(host(),
-                                                           kAccessPoint);
-}
-#endif
-
 std::unique_ptr<ProfilePickerSignedInFlowController>
 ProfilePickerFlowController::CreateSignedInFlowController(
     Profile* signed_in_profile,
@@ -536,7 +551,6 @@ ProfilePickerFlowController::RegisterPostIdentitySteps() {
   CHECK(created_profile_);
   base::queue<ProfileManagementFlowController::Step> post_identity_steps;
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
   if (weak_signed_in_flow_controller_) {
     auto search_engine_choice_step_completed = base::BindOnce(
         &ProfilePickerFlowController::AdvanceToNextPostIdentityStep,
@@ -554,7 +568,6 @@ ProfilePickerFlowController::RegisterPostIdentitySteps() {
     post_identity_steps.emplace(
         ProfileManagementFlowController::Step::kSearchEngineChoice);
   }
-#endif
 
   RegisterStep(
       Step::kFinishFlow,

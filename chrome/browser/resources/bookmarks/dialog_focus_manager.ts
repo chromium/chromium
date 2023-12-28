@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 /**

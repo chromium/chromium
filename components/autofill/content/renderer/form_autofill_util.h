@@ -261,19 +261,18 @@ void WebFormControlElementToFormField(
     FormFieldData* field,
     ShadowFieldData* shadow_data = nullptr);
 
-// Fills |form| with the FormData object corresponding to the |form_element|.
-// If |field| is non-NULL, also fills |field| with the FormField object
-// corresponding to the |form_control_element|. |extract_options| controls what
-// data is extracted. Returns true if |form| is filled out.  Also returns false
-// if there are no fields or too many fields in the |form|. Field properties
-// will be copied from |field_data_manager|, if the argument is not null and
-// has entry for |element| (see properties in FieldPropertiesFlags).
-bool WebFormElementToFormData(
+// Returns a FormData object corresponding to `form_element`.
+// If `field` is non-NULL, also fills `field` with the FormFieldData object.
+// corresponding to `form_control_element`. `extract_options` controls what
+// data is extracted. Returns std::nullopt if there are no fields or too many
+// fields in the form. Field properties will be copied from
+// `field_data_manager`, if the argument is not null and has entry for the
+// corresponding element (see properties in FieldPropertiesFlags).
+std::optional<FormData> WebFormElementToFormData(
     const blink::WebFormElement& form_element,
     const blink::WebFormControlElement& form_control_element,
     const FieldDataManager& field_data_manager,
     DenseSet<ExtractOption> extract_options,
-    FormData* form,
     FormFieldData* field);
 
 // Returns the form that owns the `form_control`, or a null pointer if no form
@@ -304,30 +303,28 @@ std::vector<blink::WebElement> GetWebElementsFromIdList(
     const blink::WebDocument& document,
     const blink::WebString& id_list);
 
-// Returns false iff the extraction fails because the number of fields exceeds
-// |kMaxExtractableFields|, or |field| and |element| are not nullptr but
-// |element| is not among |control_elements|.
-bool UnownedFormElementsToFormData(
+// Returns std::nullopt iff the extraction fails because the number of fields
+// exceeds `kMaxExtractableFields`, or `field` and `element` are not nullptr but
+// `element` is not among `control_elements`.
+std::optional<FormData> UnownedFormElementsToFormData(
     const std::vector<blink::WebFormControlElement>& control_elements,
     const std::vector<blink::WebElement>& iframe_elements,
     const blink::WebFormControlElement* element,
     const blink::WebDocument& document,
     const FieldDataManager& field_data_manager,
     DenseSet<ExtractOption> extract_options,
-    FormData* form,
     FormFieldData* field);
 
-// Finds the form that contains |element| and returns it in |form|.  If |field|
-// is non-nullptr, fill it with the FormField representation for |element|.
-// |extract_options| control what to extract beside the default options which is
-// {ExtractOption::kValue, ExtractOption::kOptions}. Returns false if the form
-// is not found or cannot be serialized.
-bool FindFormAndFieldForFormControlElement(
+// Finds the field that represents `element`, and the form that contains
+// `element` and returns them. |extract_options| control what to extract beside
+// the default options which is {ExtractOption::kValue,
+// ExtractOption::kOptions}. Returns nullopt if the form is not found or cannot
+// be serialized.
+std::optional<std::pair<FormData, FormFieldData>>
+FindFormAndFieldForFormControlElement(
     const blink::WebFormControlElement& element,
     const FieldDataManager& field_data_manager,
-    DenseSet<ExtractOption> extract_options,
-    FormData* form,
-    FormFieldData* field);
+    DenseSet<ExtractOption> extract_options);
 
 // Creates a FormData containing a single field out of a contenteditable
 // non-form element. The FormData is synthetic in the sense that it does not
@@ -421,12 +418,15 @@ std::u16string FindChildText(const blink::WebNode& node);
 ButtonTitleList GetButtonTitles(const blink::WebFormElement& web_form,
                                 ButtonTitlesCache* button_titles_cache);
 
-// Exposed for testing purposes.
-std::u16string FindChildTextWithIgnoreListForTesting(
+// Same as FindChildText() below, but with a list of div nodes to skip.
+std::u16string FindChildTextWithIgnoreList(
     const blink::WebNode& node,
     const std::set<blink::WebNode>& divs_to_skip);
-bool InferLabelForElementForTesting(const blink::WebFormControlElement& element,
-                                    std::u16string& label,
+
+// Infers corresponding label for `element` from surrounding context in the DOM,
+// e.g. the contents of the preceding <p> tag or text element. Returns an empty
+// string if it could not find a label for `element`.
+std::u16string InferLabelForElement(const blink::WebFormControlElement& element,
                                     FormFieldData::LabelSource& label_source);
 
 // Returns the form element by unique renderer id. Returns the null element if
@@ -442,7 +442,7 @@ blink::WebFormElement FindFormByRendererId(const blink::WebDocument& doc,
 blink::WebFormControlElement FindFormControlByRendererId(
     const blink::WebDocument& doc,
     FieldRendererId queried_form_control,
-    absl::optional<FormRendererId> form_to_be_searched = absl::nullopt);
+    std::optional<FormRendererId> form_to_be_searched = std::nullopt);
 
 // Note: The vector-based API of the following two functions is a tax for
 // limiting the frequency and duration of retrieving a lot of DOM elements.

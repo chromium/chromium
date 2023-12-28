@@ -46,10 +46,14 @@ class AccessibilityMainHandler
   void StateChanged(screen_ai::ScreenAIInstallState::State state) override;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
-  void HandleA11yPageReady(const base::Value::List& args);
+ private:
+  void HandleGetScreenReaderState(const base::Value::List& args);
   void HandleCheckAccessibilityImageLabels(const base::Value::List& args);
 
- private:
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+  void HandleGetScreenAIInstallState(const base::Value::List& args);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+
   void SendScreenReaderStateChanged();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -783,9 +783,9 @@ int BrowserMainLoop::PreCreateThreads() {
   // This must occur before metrics recording initialization in
   // ChromeBrowserMainParts::PreCreateThreads() because it's used in
   // BackgroundTracingMetricsProvider.
-  tracing_controller_ = std::make_unique<content::TracingControllerImpl>();
+  tracing_controller_ = std::make_unique<TracingControllerImpl>();
   background_tracing_manager_ =
-      content::BackgroundTracingManagerImpl::CreateInstance();
+      BackgroundTracingManagerImpl::CreateInstance();
 
   // Make sure no accidental call to initialize GpuDataManager earlier.
   DCHECK(!GpuDataManagerImpl::Initialized());
@@ -962,7 +962,7 @@ int BrowserMainLoop::CreateThreads() {
       base::BindOnce(
           [](BrowserMainLoop* browser_main_loop) {
             // Informs BrowserTaskExecutor that startup is complete.
-            content::BrowserTaskExecutor::OnStartupComplete();
+            BrowserTaskExecutor::OnStartupComplete();
             browser_main_loop->scoped_best_effort_execution_fence_.reset();
           },
           // Main thread tasks can't run after BrowserMainLoop destruction.
@@ -977,7 +977,7 @@ int BrowserMainLoop::CreateThreads() {
 int BrowserMainLoop::PostCreateThreads() {
   TRACE_EVENT0("startup", "BrowserMainLoop::PostCreateThreads");
 
-  content::BackgroundTracingManagerImpl::GetInstance()
+  BackgroundTracingManagerImpl::GetInstance()
       .AddMetadataGeneratorFunction();
 
   if (parts_)
@@ -1574,7 +1574,7 @@ void BrowserMainLoop::InitializeAudio() {
 
   if (base::FeatureList::IsEnabled(features::kAudioServiceLaunchOnStartup)) {
     // Schedule the audio service startup on the main thread.
-    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+    GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
         ->PostTask(FROM_HERE, base::BindOnce([]() {
                      TRACE_EVENT0("audio", "Starting audio service");
                      GetAudioService();

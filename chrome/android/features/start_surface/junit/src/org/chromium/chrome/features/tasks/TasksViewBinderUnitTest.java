@@ -22,10 +22,8 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_LENS_
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_CARD_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.LENS_BUTTON_CLICK_LISTENER;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_LEFT_RIGHT_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.SINGLE_TAB_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TASKS_SURFACE_BODY_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TOP_TOOLBAR_PLACEHOLDER_HEIGHT;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.VOICE_SEARCH_BUTTON_CLICK_LISTENER;
@@ -321,45 +319,6 @@ public class TasksViewBinderUnitTest {
         assertEquals(0, params.topMargin);
 
         mTasksViewPropertyModel.set(MV_TILES_CONTAINER_TOP_MARGIN, 16);
-
-        assertEquals(16, params.topMargin);
-    }
-
-    @Test
-    @SmallTest
-    public void testSetMVTilesContainerLeftAndRightMargin() {
-        ViewGroup.MarginLayoutParams params =
-                (ViewGroup.MarginLayoutParams)
-                        mTasksView.findViewById(R.id.mv_tiles_container).getLayoutParams();
-        assertEquals(0, params.leftMargin);
-        assertEquals(0, params.rightMargin);
-
-        mTasksViewPropertyModel.set(MV_TILES_CONTAINER_LEFT_RIGHT_MARGIN, 16);
-
-        assertEquals(16, params.leftMargin);
-        assertEquals(16, params.rightMargin);
-    }
-
-    @Test
-    @SmallTest
-    public void testSetSingleTabTopMargin() {
-        SingleTabView singleTabView =
-                (SingleTabView)
-                        mActivity
-                                .getLayoutInflater()
-                                .inflate(
-                                        R.layout.single_tab_view_layout,
-                                        mTasksView.getCardTabSwitcherContainer(),
-                                        false);
-        mTasksView.getCardTabSwitcherContainer().addView(singleTabView);
-
-        ViewGroup.MarginLayoutParams params =
-                (ViewGroup.MarginLayoutParams)
-                        mTasksView.findViewById(R.id.single_tab_view).getLayoutParams();
-        // The initial top margin of single_tab_view_layout is 24.
-        assertEquals(24, params.topMargin);
-
-        mTasksViewPropertyModel.set(SINGLE_TAB_TOP_MARGIN, 16);
 
         assertEquals(16, params.topMargin);
     }

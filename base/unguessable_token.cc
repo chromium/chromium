@@ -45,6 +45,17 @@ absl::optional<UnguessableToken> UnguessableToken::Deserialize(uint64_t high,
   return UnguessableToken(Token{high, low});
 }
 
+// static
+absl::optional<UnguessableToken> UnguessableToken::DeserializeFromString(
+    StringPiece string_representation) {
+  auto token = Token::FromString(string_representation);
+  // A zeroed out token means that it's not initialized via Create().
+  if (!token.has_value() || token.value().is_zero()) {
+    return absl::nullopt;
+  }
+  return UnguessableToken(token.value());
+}
+
 bool operator==(const UnguessableToken& lhs, const UnguessableToken& rhs) {
 #if BUILDFLAG(IS_NACL)
   // BoringSSL is unavailable for NaCl builds so it remains timing dependent.

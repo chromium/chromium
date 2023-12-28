@@ -4,6 +4,20 @@
 
 // https://gpuweb.github.io/gpuweb/
 
+enum WGSLFeatureName {
+    "readonly_and_readwrite_storage_textures",
+    "packed_4x8_integer_dot_product",
+    "unrestricted_pointer_parameters",
+    "pointer_composite_access",
+
+    // Non-standard.
+    "chromium_testing_unimplemented",
+    "chromium_testing_unsafe_experimental",
+    "chromium_testing_experimental",
+    "chromium_testing_shipped_with_killswitch",
+    "chromium_testing_shipped",
+};
+
 [
     Exposed=(Window, DedicatedWorker),
     SecureContext

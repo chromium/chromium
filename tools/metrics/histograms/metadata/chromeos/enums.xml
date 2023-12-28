@@ -846,6 +846,33 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Feature is accessible to user. Recorded periodically."/>
 </enum>
 
+<enum name="FirmwareUpdateDeviceRequestID">
+  <int value="0" label="DoNotPowerOff"/>
+  <int value="1" label="ReplugInstall"/>
+  <int value="2" label="InsertUSBCable"/>
+  <int value="3" label="RemoveUSBCable"/>
+  <int value="4" label="PressUnlock"/>
+  <int value="5" label="RemoveReplug"/>
+</enum>
+
+<enum name="FirmwareUpdateFwupdStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Idle"/>
+  <int value="2" label="Loading"/>
+  <int value="3" label="Decompressing"/>
+  <int value="4" label="DeviceRestart"/>
+  <int value="5" label="DeviceWrite"/>
+  <int value="6" label="DeviceVerify"/>
+  <int value="7" label="Scheduling"/>
+  <int value="8" label="Downloading"/>
+  <int value="9" label="DeviceRead"/>
+  <int value="10" label="DeviceErase"/>
+  <int value="11" label="WaitingForAuth"/>
+  <int value="12" label="DeviceBusy"/>
+  <int value="13" label="Shutdown"/>
+  <int value="14" label="WaitingForUser"/>
+</enum>
+
 <enum name="FirmwareUpdateInstallResult">
   <int value="0" label="Success"/>
   <int value="1" label="InstallFailed"/>
@@ -853,6 +880,12 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="InvalidDestinationFile"/>
   <int value="4" label="InvalidFileDescriptor"/>
   <int value="5" label="FailedToDownloadToFile"/>
+</enum>
+
+<enum name="GeolocationAccessLevel">
+  <int value="0" label="Blocked for all"/>
+  <int value="1" label="Allowed"/>
+  <int value="2" label="Only allowed for system services"/>
 </enum>
 
 <enum name="HardwareVerifierQualificationStatus">

@@ -16,30 +16,6 @@ namespace supervised_user::testing {
 
 // Defines possible space of valid states of this test use case, and for each
 // state configures the features.
-class EnableProtoApiForClassifyUrlTestCase {
- public:
-  // Enumerates possible values of the test case.
-  static ::testing::internal::ParamGenerator<
-      EnableProtoApiForClassifyUrlTestCase>
-  Values();
-
-  explicit EnableProtoApiForClassifyUrlTestCase(bool is_proto_api_enabled);
-
-  // Constructs the FeatureList to be held by test fixture. ScopedFeatureList is
-  // not copyable nor assignable.
-  std::unique_ptr<base::test::ScopedFeatureList> MakeFeatureList();
-
-  // Stringifies the test name as requested (but doesn't indicate effective
-  // value).
-  std::string ToString() const;
-  explicit operator std::string() const { return ToString(); }
-
- private:
-  bool is_proto_api_enabled_;
-};
-
-// Defines possible space of valid states of this test use case, and for each
-// state configures the features.
 class LocalWebApprovalsTestCase {
  public:
   // Enumerates possible values of the test case.

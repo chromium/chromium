@@ -290,21 +290,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.Browser.MemoryFootprint.NumLiveOverscroll" units="tabs"
-    expires_after="2021-09-12">
-  <owner>ajuma@chromium.org</owner>
-  <owner>rkgibson@google.com</owner>
-  <summary>
-    Investigation into crbug.com/1102494 shows that OverscrollActionsController
-    is allocating thousands of objects in it's -initWithScrollView:. This is
-    likely because thousands of OverscrollActionsControllers are being
-    initialized. The theory is that there are users that have many many tabs,
-    causing many OverscrollActionsControllers to be allocated. This histogram
-    tests that theory by logging how many live OverscrollActionsControllers
-    there are. This is recorded every time histograms are uploaded.
-  </summary>
-</histogram>
-
 <histogram name="Memory.Browser.MemoryFootprint.NumOpenTabs" units="tabs"
     expires_after="2024-04-28">
   <owner>ajuma@chromium.org</owner>
@@ -1947,7 +1932,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.RenderProcessHost.Count.OriginAgentClusterOverhead"
-    units="processes" expires_after="2024-04-13">
+    units="processes" expires_after="2024-06-16">
   <owner>wjmaclean@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
@@ -1991,15 +1976,6 @@ chromium-metrics-reviews@google.com.
     percentage of total SiteInstances due to the OAC header corresponds exactly
     to the percentage of RenderProcesses that OAC gives rise to. Recorded once
     per UMA ping.
-  </summary>
-</histogram>
-
-<histogram name="Memory.ShmemDir.AmountOfFreeSpace" units="MB"
-    expires_after="M77">
-  <owner>reveman@chromium.org</owner>
-  <summary>
-    The amount of free space in temporary directory for shared memory files.
-    Recorded each time a new discardable memory manager instance is created.
   </summary>
 </histogram>
 
@@ -2286,7 +2262,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.VMMMS.{ClientName}.DecisionLatency" units="ms"
-    expires_after="2024-04-23">
+    expires_after="2024-06-23">
   <owner>kalutes@google.com</owner>
   <owner>cwd@google.com</owner>
   <owner>cros-vm-technology@google.com</owner>
@@ -2299,7 +2275,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.VMMMS.{ClientName}.DecisionTimeout"
-    enum="VmmmsRequestPriority" expires_after="2024-04-23">
+    enum="VmmmsRequestPriority" expires_after="2024-06-23">
   <owner>kalutes@google.com</owner>
   <owner>cwd@google.com</owner>
   <owner>cros-vm-technology@google.com</owner>
@@ -2312,7 +2288,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.VMMMS.{ClientName}.UnnecessaryKill"
-    enum="VmmmsRequestPriority" expires_after="2024-04-23">
+    enum="VmmmsRequestPriority" expires_after="2024-06-23">
   <owner>kalutes@google.com</owner>
   <owner>cwd@google.com</owner>
   <owner>cros-vm-technology@google.com</owner>
@@ -2325,7 +2301,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.VMMMS.{VmName}.Deflate" units="MiB"
-    expires_after="2024-04-23">
+    expires_after="2024-06-23">
   <owner>kalutes@google.com</owner>
   <owner>cwd@google.com</owner>
   <owner>cros-vm-technology@google.com</owner>
@@ -2336,7 +2312,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.VMMMS.{VmName}.Inflate" units="MiB"
-    expires_after="2024-04-23">
+    expires_after="2024-06-23">
   <owner>kalutes@google.com</owner>
   <owner>cwd@google.com</owner>
   <owner>cros-vm-technology@google.com</owner>
@@ -2347,7 +2323,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.VMMMS.{VmName}.ResizeInterval" units="ms"
-    expires_after="2024-04-23">
+    expires_after="2024-06-23">
   <owner>kalutes@google.com</owner>
   <owner>cwd@google.com</owner>
   <owner>cros-vm-technology@google.com</owner>
@@ -2358,7 +2334,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.VMMMS.{VmName}.Size10Minutes" units="MiB"
-    expires_after="2024-04-23">
+    expires_after="2024-06-23">
   <owner>kalutes@google.com</owner>
   <owner>cwd@google.com</owner>
   <owner>cros-vm-technology@google.com</owner>
@@ -2369,7 +2345,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.VMMMS.{VmName}.StallThroughput" units="MiB/s"
-    expires_after="2024-04-23">
+    expires_after="2024-06-23">
   <owner>kalutes@google.com</owner>
   <owner>cwd@google.com</owner>
   <owner>cros-vm-technology@google.com</owner>
@@ -2416,7 +2392,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.VmmSwap.{VmName}.DisableReason"
-    enum="VmmSwapDisableReason" expires_after="2024-04-28">
+    enum="VmmSwapDisableReason" expires_after="2024-06-02">
   <owner>kawasin@google.com</owner>
   <owner>sstan@google.com</owner>
   <summary>
@@ -2430,7 +2406,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.VmmSwap.{VmName}.InactiveBeforeEnableDuration"
-    units="Hours" expires_after="2024-01-31">
+    units="Hours" expires_after="2024-06-02">
   <owner>kawasin@google.com</owner>
   <owner>sstan@google.com</owner>
   <summary>
@@ -2482,7 +2458,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.VmmSwap.{VmName}.PolicyResult"
-    enum="VmmSwapPolicyResult" expires_after="2024-04-28">
+    enum="VmmSwapPolicyResult" expires_after="2024-06-02">
   <owner>kawasin@google.com</owner>
   <owner>sstan@google.com</owner>
   <summary>
@@ -2514,67 +2490,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The private working set used by each worker process. Each worker process
     provides one sample. Recorded once per process per UMA ping.
-  </summary>
-</histogram>
-
-<histogram name="Memory.WorkingSetTrim.ArcProcessTrimCount"
-    units="ProcessesTrimmed" expires_after="M95">
-  <owner>bgeffon@chromium.org</owner>
-  <owner>fdoray@chromium.org</owner>
-  <summary>
-    Cumulative number of ARC processes trimmed during a user's session, recorded
-    each time an ARC process is trimmed. Available on ChromeOS.
-  </summary>
-</histogram>
-
-<histogram name="Memory.WorkingSetTrim.ArcVmTrimCountPer30Mins"
-    units="VMsTrimmed" expires_after="2022-04-03">
-  <owner>khmel@chromium.org</owner>
-  <owner>bgeffon@chromium.org</owner>
-  <summary>
-    Number of ARCVM's crosvm trimmed in the last 30 minutes. Recorded every 30
-    minutes as long as ARCVM trimming is enabled. Available on ChromeOS. Also,
-    one last report is emitted for the &lt;= 30 minute period since the last
-    report, at browser exit, and that the sample is scaled. For example, when 1
-    trim was done since the last report and the browser exits 15 minutes after
-    the last report, 2 is recorded on the browser exit.
-  </summary>
-</histogram>
-
-<histogram name="Memory.WorkingSetTrim.ArcVmTrimFailCountPer30Mins"
-    units="failures" expires_after="2022-10-15">
-  <owner>raging@google.com</owner>
-  <owner>khmel@chromium.org</owner>
-  <owner>bgeffon@chromium.org</owner>
-  <summary>
-    Tracks the number of failures that resulted from ArcVM trim operations.
-    Recorded every 30 minutes as long as ARCVM trimming is enabled. Available on
-    ChromeOS. Also, one last report is emitted for the &lt;= 30 minute period
-    since the last report, at browser exit.
-  </summary>
-</histogram>
-
-<histogram name="Memory.WorkingSetTrim.ArcVmTrimPageLimit" units="pages"
-    expires_after="2022-10-15">
-  <owner>raging@google.com</owner>
-  <owner>khmel@chromium.org</owner>
-  <owner>bgeffon@chromium.org</owner>
-  <summary>
-    Tracks the ongoing computed value used to limit the number of pages to trim
-    each time the ArcVM operation runs. Available on ChromeOS. If VM trimming is
-    enabled, this is recorded at the start of every trim operation, with the
-    page limit computed for each operation. Values tracked as zero mean
-    unlimited trimming.
-  </summary>
-</histogram>
-
-<histogram name="Memory.WorkingSetTrim.RendererTrimCount"
-    units="RenderersTrimmed" expires_after="M95">
-  <owner>bgeffon@chromium.org</owner>
-  <owner>fdoray@chromium.org</owner>
-  <summary>
-    Cumulative number of renderers trimmed during a user's session, recorded
-    each time a renderer is trimmed. Available on Windows and ChromeOS.
   </summary>
 </histogram>
 

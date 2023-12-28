@@ -192,7 +192,7 @@ void PriceTrackingEmailDialogView::OnClosed() {
   }
 }
 
-BEGIN_METADATA(PriceTrackingEmailDialogView, LocationBarBubbleDelegateView)
+BEGIN_METADATA(PriceTrackingEmailDialogView)
 END_METADATA
 
 // PriceTrackingEmailDialogCoordinator

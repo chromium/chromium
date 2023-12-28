@@ -96,15 +96,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OfflinePages.Background.LoadingErrorStatusCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-06-25">
-  <owner>chili@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    The combined http and net error codes that caused a page load failure.
-  </summary>
-</histogram>
-
 <histogram name="OfflinePages.CachedOfflineStatusValid" enum="BooleanMatched"
     expires_after="2024-05-26">
   <owner>pnoland@chromium.org</owner>
@@ -114,27 +105,6 @@ chromium-metrics-reviews@google.com.
     value. Recorded with 1/100 probability each time the offline status for a
     tab is checked.
   </summary>
-</histogram>
-
-<histogram name="OfflinePages.CleanupThumbnails.Count" units="thumbnails"
-    expires_after="2021-06-25">
-  <owner>harringtond@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>Number of thumbnails removed by the thumbnail cleanup task.</summary>
-</histogram>
-
-<histogram name="OfflinePages.ConsistencyCheck.Persistent.Result"
-    enum="OfflinePagesSyncOperationResult" expires_after="2021-06-25">
-  <owner>dimich@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>Result of persistent page consistency check.</summary>
-</histogram>
-
-<histogram name="OfflinePages.ConsistencyCheck.Temporary.Result"
-    enum="OfflinePagesSyncOperationResult" expires_after="2021-06-25">
-  <owner>dimich@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>Result of temporary page consistency check.</summary>
 </histogram>
 
 <histogram name="OfflinePages.DidNavigationThrottleCancelNavigation"
@@ -150,19 +120,6 @@ chromium-metrics-reviews@google.com.
     This histogram is recorded each time Chrome tries to create an
     OfflinePageNavigationThrottle, which only happens on Android (since Offline
     Pages is only enabled there).
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.LastN.IsSavingSamePage"
-    enum="OfflinePagesLastNIsSavingSamePageEnum" expires_after="2021-05-31">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Upon starting saving a new last_n offline page snapshot, report if that is
-    being done for a page that is new (a navigation happened) or for one that
-    has been previously saved in the same session (no navigation happened). This
-    metric will assist in determining if there is the need to better track
-    actual content changes in pages saved more than once by last_n.
   </summary>
 </histogram>
 
@@ -204,33 +161,6 @@ chromium-metrics-reviews@google.com.
     Length of time between accesses to an offline page. This is the same time
     period used for expiring temporary pages. This metric is recorded when an
     offline page is accessed.
-  </summary>
-</histogram>
-
-<histogram base="true" name="OfflinePages.PageSize" units="KB"
-    expires_after="2021-06-25">
-  <owner>jianli@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>Size of the saved copy of an offline page.</summary>
-</histogram>
-
-<histogram name="OfflinePages.SQLStorage.StoreEvent"
-    enum="OfflinePagesStoreEvent" expires_after="2021-06-25">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Used as a counter to track different events related to offline page store
-    inner working.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.TrustStateOnOpen" enum="OfflinePageTrustedState"
-    expires_after="2021-06-25">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    The trust state of the offline page. This is recorded when an offline page
-    is being opened.
   </summary>
 </histogram>
 

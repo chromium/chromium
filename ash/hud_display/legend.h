@@ -32,7 +32,7 @@ class Legend : public views::View {
     Entry(const Entry&);
     ~Entry();
 
-    const raw_ref<const Graph, ExperimentalAsh> graph;
+    const raw_ref<const Graph> graph;
     std::u16string label;
     std::u16string tooltip;
     Formatter formatter;  // formatting function

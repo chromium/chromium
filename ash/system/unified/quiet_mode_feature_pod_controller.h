@@ -59,10 +59,10 @@ class ASH_EXPORT QuietModeFeaturePodController
 
   void RecordDisabledNotifierCount(int disabled_count);
 
-  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
+  const raw_ptr<UnifiedSystemTrayController> tray_controller_;
 
   // Owned by the views hierarchy.
-  raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ = nullptr;
+  raw_ptr<FeatureTile, DanglingUntriaged> tile_ = nullptr;
 
   std::optional<int> last_disabled_count_;
 

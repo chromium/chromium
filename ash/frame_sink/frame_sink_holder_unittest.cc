@@ -129,7 +129,7 @@ class FrameSinkHolderTest : public AshTestBase {
   // holder did not schedule a delete task, it will get destroyed once we
   // delete the root_window of `host_window_`.
   std::unique_ptr<FrameSinkHolder> frame_sink_holder_;
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> host_window_;
+  raw_ptr<aura::Window, DanglingUntriaged> host_window_;
 
   // Will be used to access the frame_sink_holder once we pass the
   // ownership of `frame_sink_holder_` to
@@ -140,7 +140,7 @@ class FrameSinkHolderTest : public AshTestBase {
   std::unique_ptr<TestFrameFactory> frame_factory_;
 
   // Keeping a reference to be used in tests.
-  raw_ptr<TestLayerTreeFrameSink, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<TestLayerTreeFrameSink, DanglingUntriaged>
       layer_tree_frame_sink_;  // no owned
 };
 

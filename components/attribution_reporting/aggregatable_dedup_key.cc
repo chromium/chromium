@@ -15,6 +15,7 @@
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace attribution_reporting {
 
@@ -33,13 +34,16 @@ AggregatableDedupKey::FromJSON(base::Value& value) {
         TriggerRegistrationError::kAggregatableDedupKeyWrongType);
   }
 
-  ASSIGN_OR_RETURN(auto filters, FilterPair::FromJSON(*dict));
-  absl::optional<uint64_t> dedup_key;
-  if (!ParseDeduplicationKey(*dict, dedup_key)) {
-    return base::unexpected(
-        TriggerRegistrationError::kAggregatableDedupKeyValueInvalid);
-  }
-  return AggregatableDedupKey(dedup_key, std::move(filters));
+  AggregatableDedupKey out;
+
+  ASSIGN_OR_RETURN(out.filters, FilterPair::FromJSON(*dict));
+
+  ASSIGN_OR_RETURN(
+      out.dedup_key, ParseDeduplicationKey(*dict), [](absl::monostate) {
+        return TriggerRegistrationError::kAggregatableDedupKeyValueInvalid;
+      });
+
+  return out;
 }
 
 AggregatableDedupKey::AggregatableDedupKey() = default;

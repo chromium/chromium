@@ -8,9 +8,10 @@
 #include <cstdint>
 #include <string>
 
-namespace ash {
-namespace firmware_update {
-namespace metrics {
+#include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
+#include "chromeos/ash/components/fwupd/firmware_update_manager.h"
+
+namespace ash::firmware_update::metrics {
 
 // The enums below are used in histograms, do not remove/renumber entries. If
 // you're adding to any of these enums, update the corresponding enum listing in
@@ -31,12 +32,12 @@ void EmitUpdateCount(int num_updates,
                      int num_critical_updates,
                      bool is_startup);
 
+void EmitInstallFailedWithStatus(FwupdStatus last_fwupd_status);
 void EmitInstallResult(FirmwareUpdateInstallResult result);
+void EmitDeviceRequest(firmware_update::mojom::DeviceRequestPtr request);
 
 std::string GetSourceStr(bool is_startup);
 
-}  // namespace metrics
-}  // namespace firmware_update
-}  // namespace ash
+}  // namespace ash::firmware_update::metrics
 
 #endif  // CHROMEOS_ASH_COMPONENTS_FWUPD_HISTOGRAM_UTIL_H_

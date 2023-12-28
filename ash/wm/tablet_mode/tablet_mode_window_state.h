@@ -125,10 +125,10 @@ class TabletModeWindowState : public WindowState::State {
   std::unique_ptr<WindowState::State> old_state_;
 
   // The window whose WindowState owns this instance.
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 
   // The creator which needs to be informed when this state goes away.
-  raw_ptr<TabletModeWindowManager, ExperimentalAsh> creator_;
+  raw_ptr<TabletModeWindowManager> creator_;
 
   // The state type to be established in AttachState(), unless
   // previous_state->GetType() is MAXIMIZED, MINIMIZED, FULLSCREEN, PINNED, or

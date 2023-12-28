@@ -725,6 +725,35 @@ TEST_F(DownloadFileTest, RenameRecognizesSelfConflict) {
   EXPECT_EQ(initial_path.value(), new_path.value());
 }
 
+#if BUILDFLAG(IS_MAC)
+// Test that RenameAndUniquify will remove file hidden flag.
+TEST_F(DownloadFileTest, RenameRemovesHiddenFlag) {
+  ASSERT_TRUE(CreateDownloadFile(true));
+  base::FilePath initial_path(download_file_->FullPath());
+  EXPECT_TRUE(base::PathExists(initial_path));
+  // Set the file hidden.
+  base::stat_wrapper_t stat;
+  base::File::Stat(initial_path.value().c_str(), &stat);
+  // Update the file's hidden flags.
+  chflags(initial_path.value().c_str(), stat.st_flags | UF_HIDDEN);
+
+  base::FilePath target_path =
+      initial_path.DirName().Append(FILE_PATH_LITERAL("foo"));
+  base::FilePath new_path;
+  EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_NONE,
+            RenameAndUniquify(target_path, &new_path));
+  EXPECT_TRUE(base::PathExists(target_path));
+  base::File::Stat(initial_path.value().c_str(), &stat);
+  EXPECT_FALSE(stat.st_flags & UF_HIDDEN);
+
+  FinishStream(DOWNLOAD_INTERRUPT_REASON_NONE, true, kEmptyHash);
+  base::RunLoop().RunUntilIdle();
+
+  DestroyDownloadFile(0);
+  EXPECT_EQ(target_path.value(), new_path.value());
+}
+#endif
+
 #if BUILDFLAG(IS_FUCHSIA)
 // TODO(crbug.com/1314071): Re-enable when RenameError works on Fuchsia.
 #define MAYBE_RenameError DISABLED_RenameError

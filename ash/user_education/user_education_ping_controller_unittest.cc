@@ -109,6 +109,7 @@ class UserEducationPingControllerTest : public UserEducationAshTestBase {
   void AssertPingProperties(
       const std::optional<views::View*>& v = std::nullopt) {
     views::View* const view = v.value_or(this->view());
+    using testing::Pointee;
     ASSERT_THAT(
         view->GetLayersInOrder(),
         ElementsAre(
@@ -120,27 +121,27 @@ class UserEducationPingControllerTest : public UserEducationAshTestBase {
                 Property(
                     &ui::Layer::children,
                     ElementsAre(AllOf(
-                        Property(&ui::Layer::name,
-                                 Eq(UserEducationPingController::
-                                        kPingChildLayerName)),
-                        Property(&ui::Layer::background_color,
-                                 Eq(DarkLightModeController::Get()
-                                            ->IsDarkModeEnabled()
-                                        ? SK_ColorWHITE
-                                        : SK_ColorBLACK)),
-                        Property(
+                        Pointee(Property(&ui::Layer::name,
+                                         Eq(UserEducationPingController::
+                                                kPingChildLayerName))),
+                        Pointee(Property(&ui::Layer::background_color,
+                                         Eq(DarkLightModeController::Get()
+                                                    ->IsDarkModeEnabled()
+                                                ? SK_ColorWHITE
+                                                : SK_ColorBLACK))),
+                        Pointee(Property(
                             &ui::Layer::bounds,
                             Eq(Inset(gfx::Rect(view->layer()->bounds().size()),
-                                     view->GetProperty(kPingInsetsKey)))),
-                        Property(
+                                     view->GetProperty(kPingInsetsKey))))),
+                        Pointee(Property(
                             &ui::Layer::rounded_corner_radii,
                             Eq(gfx::RoundedCornersF(
                                 Inset(gfx::Rect(view->layer()->bounds().size()),
                                       view->GetProperty(kPingInsetsKey))
                                     .width() /
-                                2.f))),
-                        Property(&ui::Layer::type,
-                                 Eq(ui::LAYER_SOLID_COLOR)))))),
+                                2.f)))),
+                        Pointee(Property(&ui::Layer::type,
+                                         Eq(ui::LAYER_SOLID_COLOR))))))),
             Eq(view->layer())));
   }
 

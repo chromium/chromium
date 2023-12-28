@@ -66,7 +66,7 @@ std::u16string ProtocolHandlerLaunchDialogView::GetRememberChoiceString() {
       IDS_INTENT_PICKER_BUBBLE_VIEW_REMEMBER_SELECTION);
 }
 
-BEGIN_METADATA(ProtocolHandlerLaunchDialogView, views::DialogDelegateView)
+BEGIN_METADATA(ProtocolHandlerLaunchDialogView)
 END_METADATA
 
 void ShowWebAppProtocolLaunchDialog(

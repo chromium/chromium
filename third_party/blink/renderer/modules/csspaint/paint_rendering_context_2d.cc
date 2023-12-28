@@ -102,12 +102,18 @@ PredefinedColorSpace PaintRenderingContext2D::GetDefaultImageDataColorSpace()
   return PredefinedColorSpace::kSRGB;
 }
 
-void PaintRenderingContext2D::WillOverwriteCanvas() {
+void PaintRenderingContext2D::SkipQueuedDrawCommands() {
   previous_frame_ = absl::nullopt;
   if (paint_recorder_.HasRecordedDrawOps()) {
     // Discard previous draw commands
     paint_recorder_.finishRecordingAsPicture();
   }
+}
+
+void PaintRenderingContext2D::RestartRecording() {
+  previous_frame_ = absl::nullopt;
+  // Discard previous draw commands
+  paint_recorder_.finishRecordingAsPicture();
 }
 
 DOMMatrix* PaintRenderingContext2D::getTransform() {

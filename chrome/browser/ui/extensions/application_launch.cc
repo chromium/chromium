@@ -224,7 +224,6 @@ WebContents* OpenApplicationTab(Profile* profile,
 
   extensions::LaunchType launch_type =
       extensions::GetLaunchType(ExtensionPrefs::Get(profile), extension);
-  UMA_HISTOGRAM_ENUMERATION("Extensions.AppTabLaunchType", launch_type, 100);
 
   int add_type = AddTabTypes::ADD_ACTIVE;
   if (launch_type == extensions::LAUNCH_TYPE_PINNED)
@@ -513,8 +512,7 @@ void OpenApplicationWithReenablePrompt(Profile* profile,
       extensions::ExtensionSystem::Get(profile)->extension_service();
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
   if (!service->IsExtensionEnabled(extension->id()) ||
-      registry->GetExtensionById(extension->id(),
-                                 ExtensionRegistry::TERMINATED)) {
+      registry->terminated_extensions().GetByID(extension->id())) {
     // Self deleting.
     auto* flow = new EnableViaDialogFlow(
         service, registry, profile, extension->id(),

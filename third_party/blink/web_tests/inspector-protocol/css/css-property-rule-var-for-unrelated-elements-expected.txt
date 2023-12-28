@@ -1,0 +1,96 @@
+Test that values of registered properties are not validated against unrelated elements
+Computed value:
+{
+    name : --len
+    value : 4px
+}
+undefined
+Editing a rule:
+[
+    [0] : {
+        disabled : false
+        implicit : false
+        name : --v
+        range : {
+            endColumn : 16
+            endLine : 1
+            startColumn : 7
+            startLine : 1
+        }
+        text : --v: 5px;
+        value : 5px
+    }
+    [1] : {
+        disabled : false
+        implicit : false
+        name : --len
+        parsedOk : false
+        range : {
+            endColumn : 33
+            endLine : 1
+            startColumn : 17
+            startLine : 1
+        }
+        text : --len: var(--v);
+        value : var(--v)
+    }
+    [2] : {
+        name : --v
+        value : 5px
+    }
+    [3] : {
+        name : --len
+        value : var(--v)
+    }
+]
+Adding a rule:
+{
+    cssProperties : [
+        [0] : {
+            disabled : false
+            implicit : false
+            name : --v
+            range : {
+                endColumn : 17
+                endLine : 1
+                startColumn : 8
+                startLine : 1
+            }
+            text : --v: 5px;
+            value : 5px
+        }
+        [1] : {
+            disabled : false
+            implicit : false
+            name : --len
+            parsedOk : false
+            range : {
+                endColumn : 34
+                endLine : 1
+                startColumn : 18
+                startLine : 1
+            }
+            text : --len: var(--v);
+            value : var(--v)
+        }
+        [2] : {
+            name : --v
+            value : 5px
+        }
+        [3] : {
+            name : --len
+            value : var(--v)
+        }
+    ]
+    cssText :  --v: 5px; --len: var(--v); 
+    range : {
+        endColumn : 35
+        endLine : 1
+        startColumn : 7
+        startLine : 1
+    }
+    shorthandEntries : [
+    ]
+    styleSheetId : <string>
+}
+

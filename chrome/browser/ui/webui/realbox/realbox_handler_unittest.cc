@@ -91,32 +91,6 @@ class RealboxHandlerTest : public ::testing::Test {
   void TearDown() override { handler_.reset(); }
 };
 
-TEST_F(RealboxHandlerTest, RealboxLensSearchIsFalseWhenDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{ntp_features::kNtpRealboxLensSearch});
-
-  RealboxHandler::SetupWebUIDataSource(source()->GetWebUIDataSource(),
-                                       profile());
-
-  EXPECT_FALSE(
-      source()->GetLocalizedStrings()->FindBool("realboxLensSearch").value());
-}
-
-TEST_F(RealboxHandlerTest, RealboxLensSearchIsTrueWhenEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{ntp_features::kNtpRealboxLensSearch, {{}}}},
-      /*disabled_features=*/{});
-
-  RealboxHandler::SetupWebUIDataSource(source()->GetWebUIDataSource(),
-                                       profile());
-
-  EXPECT_TRUE(
-      source()->GetLocalizedStrings()->FindBool("realboxLensSearch").value());
-}
-
 TEST_F(RealboxHandlerTest, RealboxLensVariationsContainsVariations) {
   RealboxHandler::SetupWebUIDataSource(source()->GetWebUIDataSource(),
                                        profile());

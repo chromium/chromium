@@ -38,7 +38,6 @@ class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient();
   ~MockAutofillClient() override;
-  MOCK_METHOD(bool, IsTouchToFillCreditCardSupported, (), (override));
   MOCK_METHOD(bool,
               ShowTouchToFillCreditCard,
               (base::WeakPtr<TouchToFillDelegate>,
@@ -237,7 +236,6 @@ class AutofillMetricsBaseTest {
  private:
   void CreateTestAutofillProfiles();
 
-  base::test::ScopedFeatureList scoped_feature_list_async_parse_form_;
   CreditCard credit_card_ = test::WithCvc(test::GetMaskedServerCard());
 };
 

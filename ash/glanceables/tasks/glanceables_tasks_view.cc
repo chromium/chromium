@@ -15,7 +15,7 @@
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/glanceables_metrics.h"
-#include "ash/glanceables/tasks/glanceables_task_view.h"
+#include "ash/glanceables/tasks/glanceables_task_view_v2.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -57,7 +57,6 @@ constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 4);
 constexpr int kInteriorGlanceableBubbleMargin = 16;
 constexpr int kListViewBetweenChildSpacing = 2;
 constexpr int kMaximumTasks = 100;
-constexpr int kScrollViewMaxHeight = 300;
 
 constexpr char kTasksManagementPage[] =
     "https://calendar.google.com/calendar/u/0/r/week?opentasks=1";
@@ -75,8 +74,6 @@ std::unique_ptr<views::LabelButton> CreateAddNewTaskButton(
       ui::ImageModel::FromVectorIcon(kGlanceablesTasksAddNewTaskIcon,
                                      cros_tokens::kFocusRingColor));
   add_new_task_button->SetImageLabelSpacing(18);
-  add_new_task_button->SetBackground(
-      views::CreateThemedSolidBackground(cros_tokens::kCrosSysSystemOnBase));
   add_new_task_button->SetBorder(
       views::CreateEmptyBorder(gfx::Insets::VH(13, 18)));
   add_new_task_button->SetEnabledTextColorIds(cros_tokens::kFocusRingColor);
@@ -101,14 +98,19 @@ GlanceablesTasksView::GlanceablesTasksView(
                                             kInteriorGlanceableBubbleMargin))
       .SetOrientation(views::LayoutOrientation::kVertical);
 
+  // It is the parent container of GlanceablesTasksView that matches the style
+  // of GlanceableTrayChildBubble. Manually update this bubble to match the
+  // spec.
+  CHECK(layer());
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{16.f});
+  SetBackground(
+      views::CreateThemedSolidBackground(cros_tokens::kCrosSysSystemOnBase));
+  SetBorder(nullptr);
+
   tasks_header_view_ = AddChildView(std::make_unique<views::FlexLayoutView>());
   tasks_header_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
   tasks_header_view_->SetMainAxisAlignment(views::LayoutAlignment::kStart);
   tasks_header_view_->SetOrientation(views::LayoutOrientation::kHorizontal);
-  tasks_header_view_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kPreferred));
   tasks_header_view_->SetID(
       base::to_underlying(GlanceablesViewId::kTasksBubbleHeaderView));
 
@@ -116,15 +118,17 @@ GlanceablesTasksView::GlanceablesTasksView(
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
   auto* const scroll_view = AddChildView(std::make_unique<views::ScrollView>());
-  scroll_view->ClipHeightTo(0, kScrollViewMaxHeight);
+  scroll_view->ClipHeightTo(0, std::numeric_limits<int>::max());
   scroll_view->SetBackgroundColor(std::nullopt);
   scroll_view->SetDrawOverflowIndicator(false);
 
   auto* const list_view =
       scroll_view->SetContents(std::make_unique<views::View>());
-  list_view->SetPaintToLayer();
-  list_view->layer()->SetFillsBoundsOpaquely(false);
-  list_view->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(16));
+  scroll_view->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded)
+          .WithWeight(1));
   list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       /*inside_border_insets=*/gfx::Insets(), kListViewBetweenChildSpacing));
@@ -151,7 +155,7 @@ GlanceablesTasksView::GlanceablesTasksView(
                               TasksLaunchSource::kHeaderButton),
           IconButton::Type::kMedium, &kGlanceablesTasksIcon,
           IDS_GLANCEABLES_TASKS_HEADER_ICON_ACCESSIBLE_NAME));
-  header_icon->SetBackgroundColor(cros_tokens::kCrosSysBaseElevated);
+  header_icon->SetBackgroundColor(SK_ColorTRANSPARENT);
   header_icon->SetProperty(views::kMarginsKey, kHeaderIconButtonMargins);
   header_icon->SetID(
       base::to_underlying(GlanceablesViewId::kTasksBubbleHeaderIcon));
@@ -214,18 +218,18 @@ void GlanceablesTasksView::AddNewTaskButtonPressed() {
   const auto* const active_task_list = tasks_combobox_model_->GetTaskListAt(
       task_list_combo_box_view_->GetSelectedIndex().value());
   // TODO(b/301253574): make sure there is only one view is in `kEdit` state.
-  pending_new_task_ = task_items_container_view_->AddChildViewAt(
+  auto* const pending_new_task = task_items_container_view_->AddChildViewAt(
       CreateTaskView(active_task_list->id, /*task=*/nullptr),
       /*index=*/0);
-  pending_new_task_->UpdateTaskTitleViewForState(
-      GlanceablesTaskView::TaskTitleViewState::kEdit);
+  pending_new_task->UpdateTaskTitleViewForState(
+      GlanceablesTaskViewV2::TaskTitleViewState::kEdit);
   PreferredSizeChanged();
 }
 
-std::unique_ptr<GlanceablesTaskView> GlanceablesTasksView::CreateTaskView(
+std::unique_ptr<GlanceablesTaskViewV2> GlanceablesTasksView::CreateTaskView(
     const std::string& task_list_id,
     const api::Task* task) {
-  return std::make_unique<GlanceablesTaskView>(
+  return std::make_unique<GlanceablesTaskViewV2>(
       task,
       base::BindRepeating(&GlanceablesTasksView::MarkTaskAsCompleted,
                           base::Unretained(this), task_list_id),
@@ -343,19 +347,17 @@ void GlanceablesTasksView::MarkTaskAsCompleted(const std::string& task_list_id,
 
 void GlanceablesTasksView::SaveTask(
     const std::string& task_list_id,
+    base::WeakPtr<GlanceablesTaskViewV2> view,
     const std::string& task_id,
     const std::string& title,
     api::TasksClient::OnTaskSavedCallback callback) {
   if (task_id.empty()) {
-    // Empty `task_id` applies only for `pending_new_task_`, meaning that the
-    // task has not yet been created. Verify that this task has a non-empty
-    // title, otherwise just delete the view from the scrollable container.
-    CHECK(pending_new_task_);
-    views::View* view_to_delete = pending_new_task_;
-    pending_new_task_ = nullptr;
+    // Empty `task_id` means that the task has not yet been created. Verify that
+    // this task has a non-empty title, otherwise just delete the `view` from
+    // the scrollable container.
     add_new_task_button_->SetState(views::Button::ButtonState::STATE_NORMAL);
-    if (title.empty() && view_to_delete) {
-      task_items_container_view_->RemoveChildViewT(view_to_delete);
+    if (title.empty() && view) {
+      task_items_container_view_->RemoveChildViewT(view.get());
       return;
     }
   }
@@ -363,9 +365,9 @@ void GlanceablesTasksView::SaveTask(
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/true);
 
   auto* const client = Shell::Get()->glanceables_controller()->GetTasksClient();
-  auto on_task_saved =
-      base::BindOnce(&GlanceablesTasksView::OnTaskSaved,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  auto on_task_saved = base::BindOnce(
+      &GlanceablesTasksView::OnTaskSaved, weak_ptr_factory_.GetWeakPtr(),
+      std::move(view), task_id, std::move(callback));
   if (task_id.empty()) {
     client->AddTask(task_list_id, title, std::move(on_task_saved));
   } else {
@@ -374,10 +376,18 @@ void GlanceablesTasksView::SaveTask(
 }
 
 void GlanceablesTasksView::OnTaskSaved(
+    base::WeakPtr<GlanceablesTaskViewV2> view,
+    const std::string& task_id,
     api::TasksClient::OnTaskSavedCallback callback,
     const api::Task* task) {
   if (!task) {
-    // TODO(b/301253574): show error message.
+    ShowErrorMessage(u"[l10n] Error");
+    if (task_id.empty() && view) {
+      // Empty `task_id` means that the task has not yet been created. Delete
+      // the corresponding `view` from the scrollable container in case of
+      // error.
+      task_items_container_view_->RemoveChildViewT(view.get());
+    }
   }
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
   std::move(callback).Run(task);

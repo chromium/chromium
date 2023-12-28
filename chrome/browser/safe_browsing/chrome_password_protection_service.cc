@@ -60,6 +60,7 @@
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_throttler.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/web_contents_key.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
@@ -72,7 +73,6 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/utils.h"
-#include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -1461,7 +1461,7 @@ bool ChromePasswordProtectionService::IsPingingEnabled(
 #if BUILDFLAG(IS_ANDROID)
     if (password_type.account_type() ==
             ReusedPasswordAccountType::SAVED_PASSWORD ||
-        IsSyncingGMAILPasswordWithSignedInProtectionEnabled(password_type)) {
+        password_type.account_type() == ReusedPasswordAccountType::GMAIL) {
       return true;
     }
 
@@ -1637,8 +1637,7 @@ bool ChromePasswordProtectionService::UserClickedThroughSBInterstitial(
   return current_threat_type == SB_THREAT_TYPE_URL_PHISHING ||
          current_threat_type == SB_THREAT_TYPE_URL_MALWARE ||
          current_threat_type == SB_THREAT_TYPE_URL_UNWANTED ||
-         current_threat_type == SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING ||
-         current_threat_type == SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE;
+         current_threat_type == SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
 }
 
 AccountInfo ChromePasswordProtectionService::GetAccountInfo() const {

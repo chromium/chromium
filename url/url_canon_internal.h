@@ -290,6 +290,12 @@ inline bool AppendUTF8EscapedChar(const char* str,
   return success;
 }
 
+// URL Standard: https://url.spec.whatwg.org/#c0-control-percent-encode-set
+template <typename CHAR>
+bool IsInC0ControlPercentEncodeSet(CHAR ch) {
+  return ch < 0x20 || ch > 0x7E;
+}
+
 // Given a '%' character at |*begin| in the string |spec|, this will decode
 // the escaped value and put it into |*unescaped_value| on success (returns
 // true). On failure, this will return false, and will not write into
@@ -415,10 +421,12 @@ bool SetupUTF16OverrideComponents(const char* base,
 bool CanonicalizePartialPathInternal(const char* spec,
                                      const Component& path,
                                      size_t path_begin_in_output,
+                                     CanonMode canon_mode,
                                      CanonOutput* output);
 bool CanonicalizePartialPathInternal(const char16_t* spec,
                                      const Component& path,
                                      size_t path_begin_in_output,
+                                     CanonMode canon_mode,
                                      CanonOutput* output);
 
 // Find the position of a bona fide Windows drive letter in the given path. If

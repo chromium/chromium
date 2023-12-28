@@ -45,8 +45,9 @@ const views::BubbleBorder::Shadow kShadowType =
 // TODO(estade): the functionality here should probably be folded into
 // BubbleFrameView.
 class FullSizeBubbleFrameView : public views::BubbleFrameView {
+  METADATA_HEADER(FullSizeBubbleFrameView, views::BubbleFrameView)
+
  public:
-  METADATA_HEADER(FullSizeBubbleFrameView);
   FullSizeBubbleFrameView()
       : views::BubbleFrameView(gfx::Insets(), gfx::Insets()) {}
   FullSizeBubbleFrameView(const FullSizeBubbleFrameView&) = delete;
@@ -58,13 +59,14 @@ class FullSizeBubbleFrameView : public views::BubbleFrameView {
   bool ExtendClientIntoTitle() const override { return true; }
 };
 
-BEGIN_METADATA(FullSizeBubbleFrameView, views::BubbleFrameView)
+BEGIN_METADATA(FullSizeBubbleFrameView)
 END_METADATA
 
 // A container view for a native dialog, which sizes to the given fixed |size|.
 class NativeDialogContainer : public views::DialogDelegateView {
+  METADATA_HEADER(NativeDialogContainer, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(NativeDialogContainer);
   NativeDialogContainer(std::unique_ptr<views::View> dialog_body,
                         const gfx::Size& size,
                         base::OnceClosure close_callback) {
@@ -93,7 +95,7 @@ class NativeDialogContainer : public views::DialogDelegateView {
   }
 };
 
-BEGIN_METADATA(NativeDialogContainer, views::DialogDelegateView)
+BEGIN_METADATA(NativeDialogContainer)
 END_METADATA
 
 }  // namespace

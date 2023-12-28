@@ -127,12 +127,15 @@ class GLES2ExternalFrameBufferTest
       return shared_image_representation_factory_->ProduceGLTexture(mailbox);
   }
 
+  // Creates a SharedImage that can be used for reading and writing via the
+  // GLES2 interface (these tests do both).
   Mailbox CreateSharedImage(const viz::SharedImageFormat& format) {
     auto mailbox = Mailbox::GenerateForSharedImage();
     backing_factory_->CreateSharedImage(
         mailbox, format, gfx::Size(64, 64), gfx::ColorSpace::CreateSRGB(),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SurfaceHandle(),
-        SHARED_IMAGE_USAGE_GLES2, "TestLabel");
+        SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE,
+        "TestLabel");
     return mailbox;
   }
 

@@ -33,7 +33,6 @@
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/common/input/web_pointer_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
-#include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/renderer/platform/widget/input/compositor_thread_event_queue.h"
 #include "third_party/blink/renderer/platform/widget/input/cursor_control_handler.h"
 #include "third_party/blink/renderer/platform/widget/input/elastic_overscroll_controller.h"
@@ -214,7 +213,6 @@ InputHandlerProxy::InputHandlerProxy(cc::InputHandler& input_handler,
       handling_gesture_on_impl_thread_(false),
       scroll_sequence_ignored_(false),
       current_overscroll_params_(nullptr),
-      current_scroll_result_data_(nullptr),
       has_seen_first_gesture_scroll_update_after_begin_(false),
       last_injected_gesture_was_begin_(false),
       tick_clock_(base::DefaultTickClock::GetInstance()),
@@ -426,7 +424,7 @@ void InputHandlerProxy::ContinueScrollBeginAfterMainThreadHitTest(
         PerformEventAttribution(event->Event());
     std::move(callback).Run(DROP_EVENT, std::move(event),
                             /*overscroll_params=*/nullptr, attribution,
-                            std::move(metrics), /*scroll_result_data=*/nullptr);
+                            std::move(metrics));
   }
 
   // We blocked the compositor gesture event queue while the hit test was
@@ -498,8 +496,7 @@ void InputHandlerProxy::DispatchSingleInputEvent(
   // Will run callback for every original events.
   event_with_callback->RunCallbacks(disposition, monitored_latency_info,
                                     std::move(current_overscroll_params_),
-                                    attribution,
-                                    std::move(current_scroll_result_data_));
+                                    attribution);
 }
 
 bool InputHandlerProxy::HasQueuedEventsReadyForDispatch(bool frame_aligned) {
@@ -1101,14 +1098,6 @@ InputHandlerProxy::HandleGestureScrollUpdate(
 
   if (metrics && scroll_result.needs_main_thread_repaint)
     metrics->set_requires_main_thread_update();
-
-  if (scroll_result.did_scroll) {
-    current_scroll_result_data_ = mojom::blink::ScrollResultData::New();
-    if (input_handler_->IsCurrentlyScrollingViewport()) {
-      current_scroll_result_data_->root_scroll_offset =
-          scroll_result.current_visual_offset;
-    }
-  }
 
   return scroll_result.did_scroll ? DID_HANDLE : DROP_EVENT;
 }

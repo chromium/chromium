@@ -169,7 +169,7 @@ class WebOTPServiceTest : public RenderViewHostTestHarness {
 
     // There are non-outcome metrics under the same entry of SMSReceiver UKM. We
     // need to make sure that the outcome metric only includes the expected one.
-    for (const auto* const entry : entries) {
+    for (const ukm::mojom::UkmEntry* const entry : entries) {
       const int64_t* metric = ukm_recorder()->GetEntryMetric(entry, "Outcome");
       if (metric && *metric != static_cast<int>(outcome))
         FAIL() << "Unexpected outcome was recorded";
@@ -183,7 +183,7 @@ class WebOTPServiceTest : public RenderViewHostTestHarness {
 
     ASSERT_FALSE(entries.empty());
 
-    for (const auto* const entry : entries) {
+    for (const ukm::mojom::UkmEntry* const entry : entries) {
       if (ukm_recorder()->GetEntryMetric(entry, metric_name)) {
         SUCCEED();
         return;

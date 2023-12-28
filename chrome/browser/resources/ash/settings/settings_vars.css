@@ -27,6 +27,10 @@ html {
   --settings-menu-width: 250px;
   --settings-menu-item-border-width: 2px;
 
+  --settings-row-min-height: var(--cr-section-min-height);
+
+  --settings-subpage-min-height: calc(100vh - var(--settings-toolbar-height));
+
   --settings-toolbar-height: var(--cr-toolbar-height);
   --settings-toolbar-padding-inline-end: 10px;
   --settings-toolbar-padding-inline-start: 14px;
@@ -42,7 +46,22 @@ html {
  * is fully launched and can be cleaned up.
  */
 body.revamp-wayfinding-enabled {
-  --settings-menu-width: 280px;
+  --settings-container-padding-top: 8px;
+
+  --settings-menu-item-width: 256px;
+
+  --settings-menu-padding-inline-end: 16px;
+  --settings-menu-padding-inline-start: 16px;
+  --settings-menu-padding-top: 16px;
+  --settings-menu-width: calc(var(--settings-menu-item-width) +
+      var(--settings-menu-padding-inline-end) +
+      var(--settings-menu-padding-inline-start));
+
+  --settings-row-min-height: 64px;
+
+  --settings-subpage-min-height: calc(100vh - var(--settings-toolbar-height) -
+      var(--settings-container-padding-top));
+
   --settings-toolbar-height: 72px;
   --settings-toolbar-padding-inline-end: 16px;
   --settings-toolbar-padding-inline-start: 32px;

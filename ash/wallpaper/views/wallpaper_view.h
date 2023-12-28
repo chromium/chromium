@@ -74,8 +74,7 @@ class WallpaperView : public WallpaperBaseView,
 
   // A view to hold solid color layer to hide desktop, in case compositor
   // failed to draw its content due to memory shortage.
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> shield_view_ =
-      nullptr;
+  raw_ptr<views::View, DanglingUntriaged> shield_view_ = nullptr;
 
   // A cached downsampled image of the wallpaper image. It will help wallpaper
   // blur/brightness animations be more performant.

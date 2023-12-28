@@ -4,6 +4,7 @@
 
 module mojom;
 
+import "mojo/public/mojom/base/file_path.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -12,10 +13,17 @@ struct InstallIsolatedWebAppResult {
   string error;  // should only be set if the app failed to install.
 };
 
-struct IwaDevProxyAppInfo {
+// Dev mode IWAs are either installed from a proxy origin, or from a Web Bundle
+// file.
+union IwaDevModeLocation {
+  url.mojom.Origin proxy_origin;
+  mojo_base.mojom.FilePath bundle_path;
+};
+
+struct IwaDevModeAppInfo {
   string app_id;
   string name;
-  url.mojom.Origin proxy_origin;
+  IwaDevModeLocation location;
   string installed_version;
 };
 
@@ -27,18 +35,26 @@ interface WebAppInternalsHandler {
   // Returns whether the clearing is successful.
   [EnableIf=is_chromeos_lacros]
   ClearExperimentalWebAppIsolationData() => (bool success);
+
   // Returns whether the installation succeeded.
   InstallIsolatedWebAppFromDevProxy(url.mojom.Url url) =>
       (InstallIsolatedWebAppResult result);
   // Returns whether the installation succeeded.
   SelectFileAndInstallIsolatedWebAppFromDevBundle() =>
       (InstallIsolatedWebAppResult result);
-  // Triggers update discovery for installed non-dev-mode Isolated Web Apps.
-  // Returns a string containing a success or error message.
-  SearchForIsolatedWebAppUpdates() => (string result);
-  // Returns information about installed dev mode proxy apps.
-  GetIsolatedWebAppDevModeProxyAppInfo() => (array<IwaDevProxyAppInfo> apps);
+
   // Triggers an update for a dev mode proxy app. Returns a string containing a
   // success or error message.
   UpdateDevProxyIsolatedWebApp(string app_id) => (string result);
+  // Triggers an update for a dev mode bundle app by opening a file picker to
+  // let the user choose a Signed Web Bundle. Returns a string containing a
+  // success or error message.
+  SelectFileAndUpdateIsolatedWebAppFromDevBundle(string app_id) =>
+      (string result);
+
+  // Triggers update discovery for installed non-dev-mode Isolated Web Apps.
+  // Returns a string containing a success or error message.
+  SearchForIsolatedWebAppUpdates() => (string result);
+  // Returns information about installed dev mode IWAs.
+  GetIsolatedWebAppDevModeAppInfo() => (array<IwaDevModeAppInfo> apps);
 };

@@ -10,11 +10,13 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
@@ -41,6 +43,12 @@
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_pref_names.h"
+#include "base/values.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -49,6 +57,8 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/web_applications/app_service/test/loopback_crosapi_app_service_proxy.h"
+#include "chromeos/crosapi/mojom/prefs.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace web_app {
@@ -175,6 +185,7 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
     profile_builder.SetIsMainProfile(true);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     profile_ = profile_builder.Build();
+    SetIsolatedWebAppsEnabledPref(true);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::full_restore::FullRestoreServiceFactory::GetInstance()
@@ -201,6 +212,14 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
   base::FilePath CreateBundlePath(const std::string& bundle_filename) {
     return scoped_temp_dir_.GetPath().Append(
         base::FilePath::FromASCII(bundle_filename));
+  }
+
+  void SetIsolatedWebAppsEnabledPref(bool value) {
+#if BUILDFLAG(IS_CHROMEOS)
+    sync_preferences::TestingPrefServiceSyncable* pref =
+        profile()->GetTestingPrefService();
+    pref->SetUserPref(ash::prefs::kIsolatedWebAppsEnabled, base::Value(value));
+#endif  //  BUILDFLAG(IS_CHROMEOS)
   }
 
   void MockIconAndPageState(const IsolatedWebAppUrlInfo& url_info,
@@ -259,7 +278,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
                                             u"test app name", "7.7.7")))
       .WillOnce(Invoke(&callback, &base::test::TestFuture<void>::SetValue));
 
-  controller.Start();
+  controller.Start(base::DoNothing(), base::DoNothing());
 
   EXPECT_TRUE(callback.Wait());
   EXPECT_EQ(model.step(), IsolatedWebAppInstallerModel::Step::kShowMetadata);
@@ -291,7 +310,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
                   IDS_IWA_INSTALLER_VERIFICATION_ERROR_SUBTITLE)))
       .WillOnce(Invoke(&callback, &base::test::TestFuture<void>::SetValue));
 
-  controller.Start();
+  controller.Start(base::DoNothing(), base::DoNothing());
 
   EXPECT_TRUE(callback.Wait());
   EXPECT_EQ(model.step(), IsolatedWebAppInstallerModel::Step::kGetMetadata);
@@ -449,8 +468,11 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   IsolatedWebAppInstallerModel model(CreateBundlePath("test_bundle.swbn"));
   IsolatedWebAppInstallerViewController controller(profile(), fake_provider(),
                                                    &model);
+
   testing::StrictMock<MockView> view;
   controller.SetViewForTesting(&view);
+
+  controller.completion_callback_ = base::DoNothing();
 
   SignedWebBundleMetadata metadata = CreateMetadata(u"Test App", "0.0.1");
   model.SetSignedWebBundleMetadata(metadata);
@@ -465,5 +487,97 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 
   EXPECT_TRUE(callback.Wait());
 }
+
+// TODO(crbug/1508716): Enable the test for Lacros.
+#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ChangingPrefToFalseDisablesInstaller \
+  DISABLED_ChangingPrefToFalseDisablesInstaller
+#else
+#define MAYBE_ChangingPrefToFalseDisablesInstaller \
+  ChangingPrefToFalseDisablesInstaller
+#endif
+TEST_F(IsolatedWebAppInstallerViewControllerTest,
+       MAYBE_ChangingPrefToFalseDisablesInstaller) {
+  base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
+  IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
+  MockIconAndPageState(url_info);
+
+  IsolatedWebAppInstallerModel model(bundle_path);
+  IsolatedWebAppInstallerViewController controller(profile(), fake_provider(),
+                                                   &model);
+  testing::StrictMock<MockView> view;
+  controller.SetViewForTesting(&view);
+
+  base::test::TestFuture<void> callback;
+  EXPECT_CALL(view, UpdateGetMetadataProgress(_)).Times(AnyNumber());
+  EXPECT_CALL(view, ShowGetMetadataScreen());
+  EXPECT_CALL(
+      view, ShowMetadataScreen(WithMetadata("hoealecpbefphiclhampllbdbdpfmfpi",
+                                            u"test app name", "7.7.7")))
+      .WillOnce(Invoke(&callback, &base::test::TestFuture<void>::SetValue));
+
+  controller.Start(base::DoNothing(), base::DoNothing());
+  ASSERT_TRUE(callback.Wait());
+
+  ASSERT_EQ(model.step(), IsolatedWebAppInstallerModel::Step::kShowMetadata);
+
+  callback.Clear();
+
+  EXPECT_CALL(view, ShowDisabledScreen())
+      .WillOnce(Invoke(&callback, &base::test::TestFuture<void>::SetValue));
+
+  SetIsolatedWebAppsEnabledPref(false);
+  EXPECT_TRUE(callback.Wait());
+
+  EXPECT_EQ(model.step(), IsolatedWebAppInstallerModel::Step::kDisabled);
+}
+
+// TODO(crbug/1508716): Enable the test for Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ChangingPrefToTrueRestartsInstaller \
+  DISABLED_ChangingPrefToTrueRestartsInstaller
+#else
+#define MAYBE_ChangingPrefToTrueRestartsInstaller \
+  ChangingPrefToTrueRestartsInstaller
+#endif
+TEST_F(IsolatedWebAppInstallerViewControllerTest,
+       MAYBE_ChangingPrefToTrueRestartsInstaller) {
+  base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
+  IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
+  MockIconAndPageState(url_info);
+
+  IsolatedWebAppInstallerModel model(bundle_path);
+  IsolatedWebAppInstallerViewController controller(profile(), fake_provider(),
+                                                   &model);
+  testing::StrictMock<MockView> view;
+  controller.SetViewForTesting(&view);
+
+  SetIsolatedWebAppsEnabledPref(false);
+
+  base::test::TestFuture<void> callback;
+  EXPECT_CALL(view, ShowDisabledScreen())
+      .WillOnce(Invoke(&callback, &base::test::TestFuture<void>::SetValue));
+
+  controller.Start(base::DoNothing(), base::DoNothing());
+  ASSERT_TRUE(callback.Wait());
+
+  ASSERT_EQ(model.step(), IsolatedWebAppInstallerModel::Step::kDisabled);
+
+  callback.Clear();
+
+  EXPECT_CALL(view, UpdateGetMetadataProgress(_)).Times(AnyNumber());
+  EXPECT_CALL(view, ShowGetMetadataScreen());
+  EXPECT_CALL(
+      view, ShowMetadataScreen(WithMetadata("hoealecpbefphiclhampllbdbdpfmfpi",
+                                            u"test app name", "7.7.7")))
+      .WillOnce(Invoke(&callback, &base::test::TestFuture<void>::SetValue));
+
+  SetIsolatedWebAppsEnabledPref(true);
+  EXPECT_TRUE(callback.Wait());
+
+  EXPECT_EQ(model.step(), IsolatedWebAppInstallerModel::Step::kShowMetadata);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app

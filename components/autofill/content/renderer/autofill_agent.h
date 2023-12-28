@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_AUTOFILL_AGENT_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -26,7 +27,6 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -177,12 +177,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   void UpdateStateForTextChange(const blink::WebFormControlElement& element,
                                 FieldPropertiesFlags flag);
 
-  FormTracker* form_tracker_for_testing() { return form_tracker_.get(); }
-  void set_form_tracker_for_testing(
-      std::unique_ptr<FormTracker>&& form_tracker) {
-    form_tracker_ = std::move(form_tracker);
-  }
-
   bool is_heavy_form_data_scraping_enabled() {
     return is_heavy_form_data_scraping_enabled_;
   }
@@ -278,6 +272,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   // blink::WebAutofillClient:
   void TextFieldDidEndEditing(const blink::WebInputElement& element) override;
   void TextFieldDidChange(const blink::WebFormControlElement& element) override;
+  void ContentEditableDidChange(const blink::WebElement& element) override;
   void TextFieldDidReceiveKeyDown(
       const blink::WebInputElement& element,
       const blink::WebKeyboardEvent& event) override;
@@ -313,7 +308,6 @@ class AutofillAgent : public content::RenderFrameObserver,
       DenseSet<form_util::ExtractOption> extract_options = {
           form_util::ExtractOption::kValue,
           form_util::ExtractOption::kOptions}) const;
-  FRIEND_TEST_ALL_PREFIXES(FormAutocompleteTest, CollectFormlessElements);
 
   void OnTextFieldDidChange(const blink::WebFormControlElement& element);
   void DidChangeScrollOffsetImpl(const blink::WebFormControlElement& element);

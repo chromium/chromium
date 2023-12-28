@@ -108,7 +108,7 @@ void DeskSwitchButton::OnViewBlurred(views::View* observed_view) {
       ->MaybeContract();
 }
 
-BEGIN_METADATA(DeskSwitchButton, views::ImageButton)
+BEGIN_METADATA(DeskSwitchButton)
 END_METADATA
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -562,7 +562,7 @@ void DeskButton::SetupFocus(views::Button* view) {
   view->SetFlipCanvasOnPaintForRTLUI(false);
 }
 
-BEGIN_METADATA(DeskButton, Button)
+BEGIN_METADATA(DeskButton)
 END_METADATA
 
 }  // namespace ash

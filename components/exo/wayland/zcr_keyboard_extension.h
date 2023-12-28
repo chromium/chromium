@@ -22,7 +22,7 @@ struct WaylandKeyboardExtension {
   WaylandKeyboardExtension& operator=(const WaylandKeyboardExtension&) = delete;
 
   // Owned by Server, which always outlives zcr_keyboard_extension.
-  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker;
+  const raw_ptr<SerialTracker> serial_tracker;
 };
 
 void bind_keyboard_extension(wl_client* client,

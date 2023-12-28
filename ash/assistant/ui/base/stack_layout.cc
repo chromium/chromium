@@ -27,7 +27,7 @@ void StackLayout::ViewRemoved(views::View* host, views::View* view) {
 
 gfx::Size StackLayout::GetPreferredSize(const views::View* host) const {
   return std::accumulate(host->children().cbegin(), host->children().cend(),
-                         gfx::Size(), [](gfx::Size size, const auto* v) {
+                         gfx::Size(), [](gfx::Size size, const views::View* v) {
                            size.SetToMax(v->GetPreferredSize());
                            return size;
                          });
@@ -49,7 +49,7 @@ void StackLayout::Layout(views::View* host) {
   const int host_width = host->GetContentsBounds().width();
   const int host_height = host->GetContentsBounds().height();
 
-  for (auto* child : host->children()) {
+  for (views::View* child : host->children()) {
     int child_width = host_width;
     int child_height = host_height;
 

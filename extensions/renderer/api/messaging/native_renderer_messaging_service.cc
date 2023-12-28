@@ -22,6 +22,7 @@
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/api/messaging/messaging_util.h"
@@ -613,7 +614,7 @@ void NativeRendererMessagingService::DeliverMessageToBackgroundPage(
     bool sender_is_privileged = message.from_privileged_context;
     bool receiver_is_privileged =
         script_context->context_type() ==
-        extensions::Feature::BLESSED_EXTENSION_CONTEXT;
+        extensions::mojom::ContextType::kPrivilegedExtension;
     UserActivationNotificationType notification_type;
     if (sender_is_privileged && receiver_is_privileged) {
       notification_type =

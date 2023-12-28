@@ -53,6 +53,7 @@
 #include "base/vlog.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 #if !BUILDFLAG(IS_NACL)
 #include "base/auto_reset.h"
@@ -723,6 +724,14 @@ LogMessage::~LogMessage() {
   std::string str_newline(stream_.str());
   TraceLogMessage(file_, line_, str_newline.substr(message_start_));
 
+  // FATAL messages should always run the assert handler and crash, even if a
+  // message handler marks them as otherwise handled.
+  absl::Cleanup handle_fatal_message = [&] {
+    if (severity_ == LOGGING_FATAL) {
+      HandleFatal(stack_start, str_newline);
+    }
+  };
+
   if (severity_ == LOGGING_FATAL)
     SetLogFatalCrashKey(this);
 
@@ -902,41 +911,6 @@ LogMessage::~LogMessage() {
 #endif
     }
   }
-
-  if (severity_ == LOGGING_FATAL) {
-    char str_stack[1024];
-    base::strlcpy(str_stack, str_newline.data(), std::size(str_stack));
-    base::debug::Alias(&str_stack);
-
-    if (!GetLogAssertHandlerStack().empty()) {
-      LogAssertHandlerFunction log_assert_handler =
-          GetLogAssertHandlerStack().top();
-
-      if (log_assert_handler) {
-        log_assert_handler.Run(
-            file_, line_,
-            base::StringPiece(str_newline.c_str() + message_start_,
-                              stack_start - message_start_),
-            base::StringPiece(str_newline.c_str() + stack_start));
-      }
-    } else {
-      // Don't use the string with the newline, get a fresh version to send to
-      // the debug message process. We also don't display assertions to the
-      // user in release mode. The enduser can't do anything with this
-      // information, and displaying message boxes when the application is
-      // hosed can cause additional problems.
-#ifndef NDEBUG
-      if (!base::debug::BeingDebugged()) {
-        // Displaying a dialog is unnecessary when debugging and can complicate
-        // debugging.
-        DisplayDebugMessageInDialog(stream_.str());
-      }
-#endif
-
-      // Crash the process to generate a dump.
-      base::ImmediateCrash();
-    }
-  }
 }
 
 std::string LogMessage::BuildCrashString() const {
@@ -1012,6 +986,46 @@ void LogMessage::Init(const char* file, int line) {
     stream_ << ":" << filename << "(" << line << ")] ";
   }
   message_start_ = stream_.str().length();
+}
+
+void LogMessage::HandleFatal(size_t stack_start,
+                             const std::string& str_newline) const {
+  char str_stack[1024];
+  base::strlcpy(str_stack, str_newline.data(), std::size(str_stack));
+  base::debug::Alias(&str_stack);
+
+  if (!GetLogAssertHandlerStack().empty()) {
+    LogAssertHandlerFunction log_assert_handler =
+        GetLogAssertHandlerStack().top();
+
+    if (log_assert_handler) {
+      log_assert_handler.Run(
+          file_, line_,
+          base::StringPiece(str_newline.c_str() + message_start_,
+                            stack_start - message_start_),
+          base::StringPiece(str_newline.c_str() + stack_start));
+    }
+  } else {
+    // Don't use the string with the newline, get a fresh version to send to
+    // the debug message process. We also don't display assertions to the
+    // user in release mode. The enduser can't do anything with this
+    // information, and displaying message boxes when the application is
+    // hosed can cause additional problems.
+#ifndef NDEBUG
+    if (!base::debug::BeingDebugged()) {
+      // Displaying a dialog is unnecessary when debugging and can complicate
+      // debugging.
+      DisplayDebugMessageInDialog(stream_.str());
+    }
+#endif
+
+    // Crash the process to generate a dump.
+    // TODO(crbug.com/1409729): Move ImmediateCrash() to an absl::Cleanup to
+    // make sure it runs unconditionally. Currently LogAssertHandlers can abort
+    // a FATAL message and tests rely on this. HandleFatal() should be
+    // [[noreturn]].
+    base::ImmediateCrash();
+  }
 }
 
 #if BUILDFLAG(IS_WIN)

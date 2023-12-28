@@ -14,12 +14,15 @@
 #include <sys/ioctl.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
+#include <sys/syscall.h>
 #include <sys/types.h>
 
 #include "base/files/scoped_file.h"
 #include "base/posix/eintr_wrapper.h"
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 #include "sandbox/linux/seccomp-bpf/bpf_tests.h"
+#include "sandbox/linux/services/syscall_wrappers.h"
+#include "sandbox/linux/tests/test_utils.h"
 
 namespace sandbox {
 namespace {
@@ -149,6 +152,51 @@ BPF_DEATH_TEST_C(BaselinePolicyAndroid,
   base::ScopedFD fd(HANDLE_EINTR(open("/dev/null", O_RDWR)));
   BPF_ASSERT(fd.is_valid());
   ioctl(fd.get(), UFFDIO_API);
+}
+
+class RestrictingCloneParamsBaselinePolicy : public BaselinePolicyAndroid {
+ public:
+  RestrictingCloneParamsBaselinePolicy()
+      : BaselinePolicyAndroid(
+            RuntimeOptions{.should_restrict_clone_params = true}) {}
+};
+
+BPF_TEST_C(BaselinePolicyAndroid,
+           ForkandPthreadCreateAllowed,
+           RestrictingCloneParamsBaselinePolicy) {
+  errno = 0;
+  pid_t pid = fork();
+  const int fork_errno = errno;
+  TestUtils::HandlePostForkReturn(pid);
+  BPF_ASSERT_EQ(0, fork_errno);
+  BPF_ASSERT_NE(-1, pid);
+
+  pthread_t thread;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnonnull"
+  int ret = pthread_create(&thread, nullptr, nullptr, nullptr);
+#pragma clang diagnostic pop
+  BPF_ASSERT_EQ(0, ret);
+}
+
+BPF_DEATH_TEST_C(BaselinePolicyAndroid,
+                 DisallowedCloneParamsCrashes,
+                 DEATH_SEGV_MESSAGE(GetCloneErrorMessageContentForTests()),
+                 RestrictingCloneParamsBaselinePolicy) {
+  pid_t pid =
+      clone(nullptr, nullptr, static_cast<int>(CLONE_IO | CLONE_INTO_CGROUP),
+            nullptr, nullptr);
+  TestUtils::HandlePostForkReturn(pid);
+}
+
+BPF_DEATH_TEST_C(BaselinePolicyAndroid,
+                 CloneParamOneDisallowedOneAllowedShouldCrash,
+                 DEATH_SEGV_MESSAGE(GetCloneErrorMessageContentForTests()),
+                 RestrictingCloneParamsBaselinePolicy) {
+  pid_t pid =
+      clone(nullptr, nullptr, static_cast<int>(CLONE_IO | CLONE_CHILD_SETTID),
+            nullptr, nullptr);
+  TestUtils::HandlePostForkReturn(pid);
 }
 
 }  // namespace

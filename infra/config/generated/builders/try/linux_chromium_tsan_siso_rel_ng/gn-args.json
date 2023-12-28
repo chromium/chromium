@@ -6,6 +6,7 @@
     "is_debug": false,
     "is_tsan": true,
     "symbol_level": 1,
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }

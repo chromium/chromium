@@ -52,8 +52,7 @@ class PrefsMigrator {
       absl::optional<SelectedSegment> old_result);
 
   // Configs for all registered clients.
-  const raw_ref<const std::vector<std::unique_ptr<Config>>, ExperimentalAsh>
-      configs_;
+  const raw_ref<const std::vector<std::unique_ptr<Config>>> configs_;
 
   // The underlying pref backed store to read the pref values from before multi
   // output.

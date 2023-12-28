@@ -88,7 +88,7 @@ TEST(OverlayProcessorSurfaceControlTest, DisplayTransformOverlay) {
 
   OverlayProcessorSurfaceControl processor;
   processor.SetViewportSize(gfx::Size(100, 200));
-  processor.SetDisplayTransformHint(gfx::OVERLAY_TRANSFORM_ROTATE_90);
+  processor.SetDisplayTransformHint(gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90);
 
   // First use a different transform than the display transform, the overlay is
   // rejected.
@@ -96,7 +96,7 @@ TEST(OverlayProcessorSurfaceControlTest, DisplayTransformOverlay) {
   processor.CheckOverlaySupport(nullptr, &candidates);
   EXPECT_FALSE(candidates.back().overlay_handled);
 
-  candidates.back().transform = gfx::OVERLAY_TRANSFORM_ROTATE_90;
+  candidates.back().transform = gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90;
   processor.CheckOverlaySupport(nullptr, &candidates);
   EXPECT_TRUE(candidates.back().overlay_handled);
   EXPECT_EQ(absl::get<gfx::OverlayTransform>(candidates.back().transform),
@@ -113,21 +113,22 @@ TEST(OverlayProcessorSurfaceControlTest, DisplayTransformOutputSurfaceOverlay) {
 
   OverlayProcessorSurfaceControl processor;
   processor.SetViewportSize(gfx::Size(100, 200));
-  processor.SetDisplayTransformHint(gfx::OVERLAY_TRANSFORM_ROTATE_90);
+  processor.SetDisplayTransformHint(gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90);
   processor.AdjustOutputSurfaceOverlay(&overlay_plane);
   EXPECT_RECTF_EQ(overlay_plane.value().display_rect, gfx::RectF(200, 100));
-  EXPECT_EQ(overlay_plane.value().transform, gfx::OVERLAY_TRANSFORM_ROTATE_90);
+  EXPECT_EQ(overlay_plane.value().transform,
+            gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90);
 }
 
 TEST(OverlayCandidateValidatorTest, OverlayDamageRectForOutputSurface) {
   OverlayCandidate candidate;
   candidate.display_rect = gfx::RectF(10, 10, 50, 100);
-  candidate.transform = gfx::OVERLAY_TRANSFORM_ROTATE_90;
+  candidate.transform = gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90;
   candidate.overlay_handled = false;
 
   OverlayProcessorSurfaceControl processor;
   processor.SetViewportSize(gfx::Size(100, 200));
-  processor.SetDisplayTransformHint(gfx::OVERLAY_TRANSFORM_ROTATE_90);
+  processor.SetDisplayTransformHint(gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90);
 
   OverlayCandidateList candidates;
   candidates.push_back(candidate);

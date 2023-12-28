@@ -8,6 +8,7 @@
 
 #include "base/at_exit.h"
 #include "base/debug/alias.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
@@ -137,6 +138,14 @@ ATOM ClassRegistrar::RetrieveClassAtom(const ClassInfo& class_info) {
                           ? class_info.class_name
                           : std::wstring(WindowImpl::kBaseClassName) +
                                 base::NumberToWString(registered_count_++);
+  // We're not supposed to have many window classes, so if registered_count_
+  // gets above a certain small threshold, we may as well have a resource leak
+  // caused by repeatedly registering a class with auto-generated name, which
+  // would eventually lead to user atom table exhaustion.
+  // TODO(crbug.com/1470483): remove when source of ATOM leak is found.
+  if (registered_count_ == 128) {
+    base::debug::DumpWithoutCrashing();
+  }
 
   WNDCLASSEX window_class;
   base::win::InitializeWindowClass(

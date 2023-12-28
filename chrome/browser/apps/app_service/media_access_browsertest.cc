@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(MediaAccessWebAppsTest, RequestAccessingCamera) {
 
   // Launch |app_id| in a new tab.
   web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
-  web_app::NavigateToURLAndWait(browser(), GetUrl1());
+  web_app::NavigateViaLinkClickToURLAndWait(browser(), GetUrl1());
 
   // Request accessing the camera for |app_id| in the new tab.
   content::WebContents* web_content1 = GetWebContents();
@@ -420,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(MediaAccessWebAppsTest, RequestAccessingMicrophone) {
 
   // Launch |app_id| in a new tab.
   web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
-  web_app::NavigateToURLAndWait(browser(), GetUrl1());
+  web_app::NavigateViaLinkClickToURLAndWait(browser(), GetUrl1());
 
   // Request accessing the microphone for |app_id| in the new tab.
   content::WebContents* web_content1 = GetWebContents();
@@ -457,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(MediaAccessWebAppsTest, RemoveApp) {
 
   // Launch |app_id| in a new tab.
   web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
-  web_app::NavigateToURLAndWait(browser(), GetUrl1());
+  web_app::NavigateViaLinkClickToURLAndWait(browser(), GetUrl1());
 
   // Request accessing the camera and the microphone for |app_id| in the new
   // tab.
@@ -499,7 +499,7 @@ IN_PROC_BROWSER_TEST_F(MediaAccessWebAppsTest, TwoApps) {
 
   // Launch |app_id1| in a new tab.
   web_app::LaunchWebAppBrowser(browser()->profile(), app_id1);
-  web_app::NavigateToURLAndWait(browser(), GetUrl1());
+  web_app::NavigateViaLinkClickToURLAndWait(browser(), GetUrl1());
 
   // Request accessing the camera and the microphone for |app_id1| in the new
   // tab.
@@ -575,7 +575,7 @@ IN_PROC_BROWSER_TEST_F(MediaAccessWebAppsTest,
 
   // Launch |app_id| in a new tab.
   web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
-  web_app::NavigateToURLAndWait(browser(), GetUrl1());
+  web_app::NavigateViaLinkClickToURLAndWait(browser(), GetUrl1());
 
   // Request DEVICE_VIDEO_CAPTURE accessing the camera for |app_id| in the new
   // tab.
@@ -608,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(MediaAccessWebAppsTest,
 
   // Launch |app_id| in a new tab.
   web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
-  web_app::NavigateToURLAndWait(browser(), GetUrl1());
+  web_app::NavigateViaLinkClickToURLAndWait(browser(), GetUrl1());
 
   // Request GUM_DESKTOP_VIDEO_CAPTURE accessing the camera for |app_id| in the
   // new tab.
@@ -638,10 +638,8 @@ IN_PROC_BROWSER_TEST_F(MediaAccessWebAppsTest,
 class MediaAccessBrowserShortcutsTest : public MediaAccessWebAppsTest {
  public:
   std::string CreateShortcut(const GURL& url) const {
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_info->start_url = url;
-    return web_app::test::InstallWebApp(browser()->profile(),
-                                        std::move(web_app_info));
+    return web_app::test::InstallShortcut(browser()->profile(), "Shortcut Name",
+                                          url);
   }
 
  private:
@@ -653,7 +651,7 @@ IN_PROC_BROWSER_TEST_F(MediaAccessBrowserShortcutsTest,
                        RequestAccessingCamera) {
   std::string shortcut_id = CreateShortcut(GetUrl1());
 
-  web_app::NavigateToURLAndWait(browser(), GetUrl1());
+  web_app::NavigateViaLinkClickToURLAndWait(browser(), GetUrl1());
 
   // Request accessing the camera for |shortcut_id| in the new tab.
   content::WebContents* web_content = GetWebContents();
@@ -679,7 +677,7 @@ IN_PROC_BROWSER_TEST_F(MediaAccessBrowserShortcutsTest,
                        RequestAccessingMicrophone) {
   std::string shortcut_id = CreateShortcut(GetUrl1());
 
-  web_app::NavigateToURLAndWait(browser(), GetUrl1());
+  web_app::NavigateViaLinkClickToURLAndWait(browser(), GetUrl1());
 
   // Request accessing the microphone for |shortcut_id| in the new tab.
   content::WebContents* web_content = GetWebContents();

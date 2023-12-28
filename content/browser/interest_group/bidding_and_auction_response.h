@@ -65,6 +65,7 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
   std::vector<blink::InterestGroupKey> bidding_groups;
   absl::optional<double> score, bid;
   absl::optional<url::Origin> top_level_seller;
+  absl::optional<std::string> ad_metadata;
 
   absl::optional<std::string> error;
   absl::optional<ReportingURLs> buyer_reporting, seller_reporting;

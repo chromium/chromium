@@ -199,7 +199,7 @@ TEST_F(CreditCardCvcAuthenticatorTest, AuthenticateVirtualCardSuccess) {
 
   payments::FullCardRequest* full_card_request = GetFullCardRequest();
   ASSERT_TRUE(full_card_request->GetShouldUnmaskCardForTesting());
-  absl::optional<CardUnmaskChallengeOption> challenge_option =
+  std::optional<CardUnmaskChallengeOption> challenge_option =
       full_card_request->GetUnmaskRequestDetailsForTesting()
           ->selected_challenge_option;
   ASSERT_TRUE(challenge_option);

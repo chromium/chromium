@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
@@ -503,6 +504,7 @@ void AuctionRunner::StartAuction() {
     // Entire auction is running server-side, so skip interest group loading.
     state_ = State::kBiddingAndScoringPhase;
     auction_.StartBiddingAndScoringPhase(
+        /*debug_report_lockout_and_cooldowns=*/absl::nullopt,
         /*on_seller_receiver_callback=*/base::OnceClosure(),
         base::BindOnce(&AuctionRunner::OnBidsGeneratedAndScored,
                        base::Unretained(this), base::TimeTicks::Now()));
@@ -518,8 +520,32 @@ void AuctionRunner::OnLoadInterestGroupsComplete(bool success) {
     return;
   }
 
+  if (base::FeatureList::IsEnabled(
+          blink::features::kBiddingAndScoringDebugReportingAPI) &&
+      base::FeatureList::IsEnabled(
+          blink::features::kFledgeSampleDebugReports)) {
+    // All sellers and buyers in the auction.
+    base::flat_set<url::Origin> origins = auction_.GetSellersAndBuyers();
+    // Use a weak pointer here so that
+    // &AuctionRunner::OnLoadDebugReportLockoutAndCooldownsComplete is cancelled
+    // when |weak_ptr_factory_| is destroyed.
+    interest_group_manager_->GetDebugReportLockoutAndCooldowns(
+        std::move(origins),
+        base::BindOnce(
+            &AuctionRunner::OnLoadDebugReportLockoutAndCooldownsComplete,
+            weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    OnLoadDebugReportLockoutAndCooldownsComplete(
+        /*debug_report_lockout_and_cooldowns=*/absl::nullopt);
+  }
+}
+
+void AuctionRunner::OnLoadDebugReportLockoutAndCooldownsComplete(
+    absl::optional<DebugReportLockoutAndCooldowns>
+        debug_report_lockout_and_cooldowns) {
   state_ = State::kBiddingAndScoringPhase;
   auction_.StartBiddingAndScoringPhase(
+      std::move(debug_report_lockout_and_cooldowns),
       /*on_seller_receiver_callback=*/base::OnceClosure(),
       base::BindOnce(&AuctionRunner::OnBidsGeneratedAndScored,
                      base::Unretained(this), base::TimeTicks::Now()));
@@ -587,8 +613,16 @@ void AuctionRunner::UpdateInterestGroupsPostAuction() {
         ContentBrowserClient::InterestGroupApiOperation::kUpdate, owner);
   });
 
-  interest_group_manager_->UpdateInterestGroupsOfOwners(
-      update_owners, client_security_state_.Clone(), attestation_callback_);
+  if (base::FeatureList::IsEnabled(
+          features::kFledgeDelayPostAuctionInterestGroupUpdate)) {
+    interest_group_manager_->UpdateInterestGroupsOfOwnersWithDelay(
+        std::move(update_owners), client_security_state_.Clone(),
+        std::move(attestation_callback_), kPostAuctionInterestGroupUpdateDelay);
+  } else {
+    interest_group_manager_->UpdateInterestGroupsOfOwners(
+        std::move(update_owners), client_security_state_.Clone(),
+        attestation_callback_);
+  }
 }
 
 void AuctionRunner::NotifyPromiseResolved(

@@ -125,7 +125,7 @@ class EnterpriseBadgeLayout : public views::LayoutManager {
     DCHECK_EQ(host->children().size(), 1U);
     const gfx::Rect content_bounds(host->GetContentsBounds());
     const int offset = content_bounds.width() - size_;
-    auto* child = host->children()[0];
+    auto* child = host->children()[0].get();
     child->SetPosition({offset, offset});
     child->SetSize({size_, size_});
   }
@@ -155,7 +155,7 @@ class LoginUserView::UserImage : public NonAccessibleView {
     }
 
    private:
-    const raw_ptr<LoginUserView::UserImage, ExperimentalAsh> view_;
+    const raw_ptr<LoginUserView::UserImage> view_;
   };
 
   explicit UserImage(LoginDisplayStyle style)
@@ -259,8 +259,8 @@ class LoginUserView::UserImage : public NonAccessibleView {
     }
   }
 
-  raw_ptr<AnimatedRoundedImageView, ExperimentalAsh> image_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> enterprise_icon_container_ = nullptr;
+  raw_ptr<AnimatedRoundedImageView> image_ = nullptr;
+  raw_ptr<views::View> enterprise_icon_container_ = nullptr;
   bool animation_enabled_ = false;
 
   base::WeakPtrFactory<UserImage> weak_factory_{this};
@@ -331,7 +331,7 @@ class LoginUserView::UserLabel : public NonAccessibleView {
   const std::u16string& displayed_name() const { return user_name_->GetText(); }
 
  private:
-  raw_ptr<views::Label, ExperimentalAsh> user_name_ = nullptr;
+  raw_ptr<views::Label> user_name_ = nullptr;
   const int label_width_;
 };
 
@@ -370,7 +370,7 @@ class LoginUserView::TapButton : public views::Button {
   }
 
  private:
-  const raw_ptr<LoginUserView, ExperimentalAsh> parent_;
+  const raw_ptr<LoginUserView> parent_;
 };
 
 BEGIN_METADATA(LoginUserView, TapButton, views::Button)

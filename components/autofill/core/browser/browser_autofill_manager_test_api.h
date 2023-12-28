@@ -73,8 +73,12 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
         ->form_interactions_flow_id_for_test();
   }
 
-  SingleFieldFormFillRouter* single_field_form_fill_router() {
-    return manager_->single_field_form_fill_router_.get();
+  SingleFieldFormFillRouter& single_field_form_fill_router() {
+    return *manager_->single_field_form_fill_router_;
+  }
+
+  autofill_metrics::CreditCardFormEventLogger* credit_card_form_event_logger() {
+    return manager_->credit_card_form_event_logger_.get();
   }
 
   void set_single_field_form_fill_router(
@@ -125,7 +129,7 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
   }
 
   void SetConsiderFormAsSecureForTesting(
-      absl::optional<bool> consider_form_as_secure_for_testing) {
+      std::optional<bool> consider_form_as_secure_for_testing) {
     manager_->consider_form_as_secure_for_testing_ =
         consider_form_as_secure_for_testing;
   }

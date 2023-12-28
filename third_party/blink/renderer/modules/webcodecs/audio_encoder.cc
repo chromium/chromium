@@ -408,11 +408,12 @@ std::unique_ptr<media::AudioEncoder> AudioEncoder::CreateMediaAudioEncoder(
 void AudioEncoder::ProcessConfigure(Request* request) {
   DCHECK_NE(state_.AsEnum(), V8CodecState::Enum::kClosed);
   DCHECK_EQ(request->type, Request::Type::kConfigure);
-  DCHECK(active_config_);
+  DCHECK(request->config);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   request->StartTracing();
 
+  active_config_ = request->config;
   String js_error_message;
   if (!VerifyCodecSupport(active_config_, &js_error_message)) {
     blocking_request_in_progress_ = request;

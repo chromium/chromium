@@ -5,9 +5,12 @@
 #include "components/omnibox/browser/suggestion_group_util.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/groups.pb.h"
+#include "ui/base/l10n/l10n_util.h"
 
 // Ensures that accessing unset fields is safe and verifies the default values.
 // https://developers.google.com/protocol-buffers/docs/reference/cpp-generated
@@ -77,4 +80,44 @@ TEST(SuggestionGroupTest, SectionMobileMostVisited_VerticalRenderType) {
   ASSERT_NE(most_visited_group_config, default_groups.end());
   ASSERT_EQ(omnibox::GroupConfig_RenderType_DEFAULT_VERTICAL,
             most_visited_group_config->second.render_type());
+}
+
+TEST(SuggestionGroupTest, SectionPopularSearches_VerticalRenderType) {
+  omnibox::ResetDefaultGroupsForTest();
+
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters({{omnibox::kQueryTilesInZPSOnNTP, {}}},
+                                         {});
+
+  auto default_groups = omnibox::BuildDefaultGroups();
+  auto group_config = default_groups.find(omnibox::GROUP_MOBILE_QUERY_TILES);
+
+  ASSERT_NE(group_config, default_groups.end());
+  ASSERT_EQ(omnibox::GroupConfig_RenderType_DEFAULT_VERTICAL,
+            group_config->second.render_type());
+
+  ASSERT_FALSE(group_config->second.header_text().empty());
+  ASSERT_EQ(l10n_util::GetStringUTF8(IDS_OMNIBOX_HEADER_POPULAR_TOPICS),
+            group_config->second.header_text());
+}
+
+TEST(SuggestionGroupTest, SectionPopularSearches_HorizontalRenderType) {
+  omnibox::ResetDefaultGroupsForTest();
+
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {{omnibox::kQueryTilesInZPSOnNTP,
+        {{OmniboxFieldTrial::kQueryTilesShowAsCarousel.name, "true"}}}},
+      {});
+
+  auto default_groups = omnibox::BuildDefaultGroups();
+  auto group_config = default_groups.find(omnibox::GROUP_MOBILE_QUERY_TILES);
+
+  ASSERT_NE(group_config, default_groups.end());
+  ASSERT_EQ(omnibox::GroupConfig_RenderType_HORIZONTAL,
+            group_config->second.render_type());
+
+  ASSERT_FALSE(group_config->second.header_text().empty());
+  ASSERT_EQ(l10n_util::GetStringUTF8(IDS_OMNIBOX_HEADER_POPULAR_TOPICS),
+            group_config->second.header_text());
 }

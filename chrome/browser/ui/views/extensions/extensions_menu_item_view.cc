@@ -153,9 +153,6 @@ ExtensionMenuItemView::ExtensionMenuItemView(
   CHECK(!base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
 
-  views::FlexSpecification stretch_specification =
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded);
   auto builder =
       views::Builder<ExtensionMenuItemView>(this)
           // Set so the extension button receives enter/exit on children to
@@ -168,7 +165,10 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                   std::make_unique<ExtensionsMenuButton>(browser_,
                                                          controller_.get()))
                   .CopyAddressTo(&primary_action_button_)
-                  .SetProperty(views::kFlexBehaviorKey, stretch_specification),
+                  .SetProperty(views::kFlexBehaviorKey,
+                               views::FlexSpecification(
+                                   views::MinimumFlexSizeRule::kScaleToZero,
+                                   views::MaximumFlexSizeRule::kUnbounded)),
               views::Builder<HoverButton>(
                   std::make_unique<HoverButton>(
                       views::Button::PressedCallback(), std::u16string()))
@@ -225,9 +225,6 @@ ExtensionMenuItemView::ExtensionMenuItemView(
   CHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
 
-  views::FlexSpecification stretch_specification =
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded);
   ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
   const int icon_size =
       provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
@@ -258,7 +255,8 @@ ExtensionMenuItemView::ExtensionMenuItemView(
       .SetNotifyEnterExitOnChild(true)
       .SetOrientation(views::LayoutOrientation::kVertical)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
-      .SetProperty(views::kFlexBehaviorKey, stretch_specification)
+      .SetProperty(views::kBoxLayoutFlexKey,
+                   views::BoxLayoutFlexSpecification())
       .AddChildren(
           // Main row.
           views::Builder<views::FlexLayoutView>()
@@ -275,7 +273,9 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                                                              controller_.get()))
                       .CopyAddressTo(&primary_action_button_)
                       .SetProperty(views::kFlexBehaviorKey,
-                                   stretch_specification),
+                                   views::FlexSpecification(
+                                       views::MinimumFlexSizeRule::kScaleToZero,
+                                       views::MaximumFlexSizeRule::kUnbounded)),
                   // Site access toggle.
                   views::Builder<views::ToggleButton>()
                       .CopyAddressTo(&site_access_toggle_)
@@ -396,6 +396,10 @@ void ExtensionMenuItemView::Update(
         site_permissions_text));
     site_permissions_button_icon_->SetVisible(
         site_permissions_button_state == SitePermissionsButtonState::kEnabled);
+
+    // Update button size after changing its contents so it fits in the menu
+    // item row.
+    site_permissions_button_->PreferredSizeChanged();
   }
 
   view_controller()->UpdateState();
@@ -502,5 +506,5 @@ bool ExtensionMenuItemView::IsContextMenuRunningForTesting() const {
   return context_menu_controller_->IsMenuRunning();
 }
 
-BEGIN_METADATA(ExtensionMenuItemView, views::View)
+BEGIN_METADATA(ExtensionMenuItemView)
 END_METADATA

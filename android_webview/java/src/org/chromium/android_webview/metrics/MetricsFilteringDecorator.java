@@ -6,8 +6,6 @@ package org.chromium.android_webview.metrics;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
-import org.chromium.android_webview.AwFeatureMap;
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.base.Log;
 import org.chromium.components.metrics.AndroidMetricsLogConsumer;
 import org.chromium.components.metrics.ChromeUserMetricsExtensionProtos.ChromeUserMetricsExtension;
@@ -24,14 +22,8 @@ public class MetricsFilteringDecorator implements AndroidMetricsLogConsumer {
     private final HistogramsAllowlist mHistogramsAllowlist;
 
     public MetricsFilteringDecorator(AndroidMetricsLogConsumer uploader) {
-        // Class initialization requires native to be loaded to query WEBVIEW_METRICS_FILTERING
-        // feature state.
         mLogUploader = uploader;
-        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_METRICS_FILTERING)) {
-            mHistogramsAllowlist = new HistogramsAllowlist();
-        } else {
-            mHistogramsAllowlist = null;
-        }
+        mHistogramsAllowlist = new HistogramsAllowlist();
     }
 
     @Override
@@ -47,16 +39,6 @@ public class MetricsFilteringDecorator implements AndroidMetricsLogConsumer {
     }
 
     private byte[] applyMetricsFilteringIfNeeded(byte[] data) {
-        // Avoid parsing the proto if the feature is disabled to compare the performance of the
-        // control and experiment groups.
-        // Note: This has the edge case that a log uploaded from a previous session could have
-        // METRICS_ONLY_CRITICAL set, but could get uploaded with full metrics if the feature is
-        // disabled (mHistogramsAllowlist == null) during this session. This is a known issue and is
-        // an acceptable trade off in order to be able to accurately measure the impact of proto
-        // deserialization.
-        if (mHistogramsAllowlist == null) {
-            return data;
-        }
         try {
             ChromeUserMetricsExtension proto = ChromeUserMetricsExtension.parseFrom(data);
             if (shouldApplyMetricsFiltering(proto)) {

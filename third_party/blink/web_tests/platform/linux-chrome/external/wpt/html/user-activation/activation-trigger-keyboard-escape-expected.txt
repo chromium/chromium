@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Activation through ESCAPE keyboard event
+  promise_test: Unhandled rejection with value: object "Error: User activation is not active so can't be consumed. Something is probably wrong with the test."
+Harness: the test ran to completion.
+

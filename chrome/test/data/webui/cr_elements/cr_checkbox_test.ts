@@ -27,8 +27,10 @@ suite('cr-checkbox', function() {
     `;
 
     checkbox = document.querySelector('cr-checkbox')!;
-    innerCheckbox =
-        checkbox.shadowRoot!.querySelector('#checkbox')! as HTMLElement;
+    const innerBox =
+        checkbox.shadowRoot!.querySelector<HTMLElement>('#checkbox');
+    assertTrue(!!innerBox);
+    innerCheckbox = innerBox;
     assertNotChecked();
   });
 

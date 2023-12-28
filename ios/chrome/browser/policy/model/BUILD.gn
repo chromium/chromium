@@ -1,19 +1,357 @@
-# Copyright 2023 The Chromium Authors
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ios/bundle_data_from_filelist.gni")
+
 source_set("model") {
-  sources = [ "browser_state_policy_connector.h" ]
-  public_deps = [ "//ios/chrome/browser/policy:policy" ]
+  sources = [
+    "browser_dm_token_storage_ios.h",
+    "browser_dm_token_storage_ios.mm",
+    "browser_policy_connector_ios.h",
+    "browser_policy_connector_ios.mm",
+    "browser_signin_policy_handler.cc",
+    "browser_signin_policy_handler.h",
+    "browser_state_policy_connector.h",
+    "browser_state_policy_connector.mm",
+    "browser_state_policy_connector_factory.h",
+    "browser_state_policy_connector_factory.mm",
+    "chrome_browser_cloud_management_controller_ios.h",
+    "chrome_browser_cloud_management_controller_ios.mm",
+    "chrome_browser_cloud_management_controller_observer_bridge.h",
+    "chrome_browser_cloud_management_controller_observer_bridge.mm",
+    "client_data_delegate_ios.cc",
+    "client_data_delegate_ios.h",
+    "cloud/user_policy_signin_service.h",
+    "cloud/user_policy_signin_service.mm",
+    "cloud/user_policy_signin_service_factory.h",
+    "cloud/user_policy_signin_service_factory.mm",
+    "cloud/user_policy_switch.h",
+    "cloud/user_policy_switch.mm",
+    "cloud_policy_client_observer_bridge.h",
+    "cloud_policy_client_observer_bridge.mm",
+    "configuration_policy_handler_list_factory.h",
+    "configuration_policy_handler_list_factory.mm",
+    "device_management_service_configuration_ios.h",
+    "device_management_service_configuration_ios.mm",
+    "new_tab_page_location_policy_handler.cc",
+    "new_tab_page_location_policy_handler.h",
+    "policy_conversions_client_ios.h",
+    "policy_conversions_client_ios.mm",
+    "policy_watcher_browser_agent.h",
+    "policy_watcher_browser_agent.mm",
+    "policy_watcher_browser_agent_observer.h",
+    "policy_watcher_browser_agent_observer_bridge.h",
+    "policy_watcher_browser_agent_observer_bridge.mm",
+    "reporting/browser_report_generator_ios.h",
+    "reporting/browser_report_generator_ios.mm",
+    "reporting/profile_report_generator_ios.h",
+    "reporting/profile_report_generator_ios.mm",
+    "reporting/report_scheduler_ios.h",
+    "reporting/report_scheduler_ios.mm",
+    "reporting/reporting_delegate_factory_ios.h",
+    "reporting/reporting_delegate_factory_ios.mm",
+    "restrict_accounts_policy_handler.cc",
+    "restrict_accounts_policy_handler.h",
+    "schema_registry_factory.h",
+    "schema_registry_factory.mm",
+    "status_provider/user_cloud_policy_status_provider.h",
+    "status_provider/user_cloud_policy_status_provider.mm",
+  ]
+
+  deps = [
+    ":constants",
+    ":policy_util",
+    "//base",
+    "//components/account_id",
+    "//components/autofill/core/browser",
+    "//components/bookmarks/common",
+    "//components/bookmarks/managed",
+    "//components/commerce/core:pref_names",
+    "//components/component_updater",
+    "//components/enterprise",
+    "//components/enterprise/idle",
+    "//components/history/core/common",
+    "//components/keyed_service/ios",
+    "//components/metrics",
+    "//components/password_manager/core/common",
+    "//components/policy:generated",
+    "//components/policy/core/common",
+    "//components/policy/proto",
+    "//components/pref_registry",
+    "//components/safe_browsing/core/common:safe_browsing_policy_handler",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/search_engines",
+    "//components/security_interstitials/core",
+    "//components/strings",
+    "//components/translate/core/browser:translate_pref_names",
+    "//components/unified_consent:unified_consent",
+    "//components/variations",
+    "//components/variations/service",
+    "//components/version_info:version_info",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/paths",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
+    "//ios/chrome/common",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+
+  public_deps = [ "//components/policy/core/browser" ]
 }
 
 source_set("policy_util") {
-  sources = [ "policy_util.h" ]
-  public_deps = [ "//ios/chrome/browser/policy:policy_util" ]
+  sources = [
+    "policy_util.h",
+    "policy_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+  ]
 }
 
 source_set("policy_earl_grey_matchers") {
   testonly = true
-  sources = [ "policy_earl_grey_matchers.h" ]
-  public_deps = [ "//ios/chrome/browser/policy:policy_earl_grey_matchers" ]
+  sources = [
+    "policy_earl_grey_matchers.h",
+    "policy_earl_grey_matchers.mm",
+  ]
+  deps = [
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "cloud/user_policy_constants.h",
+    "cloud/user_policy_constants.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "browser_state_policy_connector_mock.h",
+    "browser_state_policy_connector_mock.mm",
+    "enterprise_policy_test_helper.cc",
+    "enterprise_policy_test_helper.h",
+    "test_platform_policy_provider.cc",
+    "test_platform_policy_provider.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/sync_preferences",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/policy_url_blocking/model",
+    "//ios/chrome/browser/prefs/model",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+  ]
+
+  public_deps = [
+    "//components/policy/core/common:test_support",
+    "//testing/gmock",
+  ]
+}
+
+bundle_data_from_filelist("test_resources") {
+  visibility = [
+    ":eg2_tests",
+    ":unit_tests",
+  ]
+  testonly = true
+  filelist_name =
+      "//ios/chrome/test/data/policy/policy_test_bundle_data.filelist"
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "browser_dm_token_storage_ios_unittest.mm",
+    "browser_signin_policy_handler_unittest.mm",
+    "client_data_delegate_ios_unittest.cc",
+    "cloud/user_policy_signin_service_unittest.mm",
+    "new_tab_page_location_policy_handler_unittest.cc",
+    "policy_unittest.mm",
+    "policy_util_unittest.mm",
+    "policy_watcher_browser_agent_unittest.mm",
+    "reporting/browser_report_generator_ios_unittest.mm",
+    "reporting/profile_report_generator_ios_unittest.mm",
+    "reporting/report_generator_ios_unittest.mm",
+    "reporting/report_scheduler_ios_unittest.mm",
+    "restrict_accounts_policy_handler_unittest.cc",
+    "status_provider/user_cloud_policy_status_provider_unittest.mm",
+  ]
+  deps = [
+    ":constants",
+    ":model",
+    ":policy_util",
+    ":test_resources",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/account_id",
+    "//components/enterprise",
+    "//components/enterprise:test_support",
+    "//components/policy/core/browser:test_support",
+    "//components/policy/core/common",
+    "//components/policy/proto",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/strings",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//google_apis",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/flags:system_flags",
+    "//ios/chrome/browser/prefs/model",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene/test",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/paths",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test:test",
+    "//net",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+
+  sources = [
+    "policy_egtest.mm",
+    "policy_incognito_mode_availability_egtest.mm",
+    "policy_platform_provider_egtest.mm",
+    "user_policy_egtest.mm",
+  ]
+
+  deps = [
+    ":constants",
+    ":eg_test_support+eg2",
+    ":policy_earl_grey_matchers",
+    ":test_resources",
+    "//base",
+    "//components/autofill/core/common",
+    "//components/enterprise",
+    "//components/history/core/common",
+    "//components/password_manager/core/common",
+    "//components/policy:generated",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//components/policy/test_support",
+    "//components/safe_browsing/core/common",
+    "//components/strings",
+    "//components/sync/base:features",
+    "//google_apis",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/policy/model:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/translate/model:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
+    "//ios/chrome/browser/ui/authentication/views:views_constants",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/ntp:constants",
+    "//ios/chrome/browser/ui/ntp:feature_flags",
+    "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/browser/ui/settings:constants",
+    "//ios/chrome/browser/ui/settings:settings_root_constants",
+    "//ios/chrome/browser/ui/settings/autofill:constants",
+    "//ios/chrome/browser/ui/settings/elements:constants",
+    "//ios/chrome/browser/ui/settings/language:language_ui_constants",
+    "//ios/chrome/browser/ui/settings/password:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/password:password_constants",
+    "//ios/chrome/browser/ui/settings/password/password_settings:password_settings_constants",
+    "//ios/chrome/browser/ui/settings/privacy:privacy_constants",
+    "//ios/chrome/browser/ui/toolbar/public:constants",
+    "//ios/chrome/common/ui/confirmation_alert:constants",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:switches",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+    "//url",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg_app_support+eg2") {
+  testonly = true
+  sources = [
+    "policy_app_interface.h",
+    "policy_app_interface.mm",
+  ]
+  deps = [
+    ":model",
+    ":test_support",
+    "//base",
+    "//components/policy:generated",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//google_apis",
+    "//ios/chrome/browser/policy_url_blocking/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/paths",
+    "//ios/chrome/test/app:test_support",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "policy_app_interface.h",
+    "policy_app_interface_stub.mm",
+    "policy_earl_grey_utils.h",
+    "policy_earl_grey_utils.mm",
+    "scoped_policy_list.cc",
+    "scoped_policy_list.h",
+  ]
+  deps = [
+    "//base",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
 }

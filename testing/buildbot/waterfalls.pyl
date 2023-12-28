@@ -395,11 +395,6 @@
           'all',
         ],
       },
-      'fuchsia-official': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
       'lacros-arm-archive-rel': {
         'additional_compile_targets': [
           'chrome',
@@ -419,9 +414,6 @@
         'os_type': 'chromeos',
       },
       'linux-archive-rel': {
-        'mixins': [
-          'linux-archive-rel-args',
-        ],
         'additional_compile_targets': [
           'all',
         ],
@@ -469,13 +461,11 @@
         ],
       },
       'mac-archive-rel': {
-        'mixins': ['mac-archive-rel-args'],
         'additional_compile_targets': [
           'all',
         ],
       },
       'mac-arm64-archive-rel': {
-        'mixins': ['mac-archive-rel-args'],
         'additional_compile_targets': [
           'all',
         ],
@@ -1645,6 +1635,9 @@
         'additional_compile_targets': [
           'chrome',
         ],
+        'mixins': [
+            'ci_only',
+        ],
         'test_suites': {
           'skylab_tests': 'lacros_skylab_tests_amd64_generic_rel',
         },
@@ -2017,7 +2010,7 @@
       },
       'ToTMac': {
         'mixins': [
-          'mac_x64',
+          'mac_default_x64',
         ],
         'test_suites': {
           'gtest_tests': 'clang_tot_gtests',
@@ -2029,7 +2022,7 @@
       },
       'ToTMac (dbg)': {
         'mixins': [
-          'mac_x64',
+          'mac_default_x64',
         ],
         'additional_compile_targets': [
           'all',
@@ -2037,7 +2030,7 @@
       },
       'ToTMacASan': {
         'mixins': [
-          'mac_x64',
+          'mac_default_x64',
         ],
         'test_suites': {
           'gtest_tests': 'clang_tot_gtests',
@@ -2054,7 +2047,7 @@
           'all',
         ],
         'mixins': [
-          'mac_x64',
+          'mac_default_x64',
         ],
       },
       'ToTMacArm64PGO': {
@@ -2062,14 +2055,14 @@
           'all',
         ],
         'mixins': [
-          'mac_x64',
+          'mac_default_x64',
         ],
       },
       # Used on an internal builder.
       'ToTMacOfficial': {
         'mixins': [
           'chrome-tester-service-account',
-          'mac_x64',
+          'mac_default_x64',
           'chrome-swarming-pool',
         ],
         'test_suites': {
@@ -2085,7 +2078,7 @@
           'all',
         ],
         'mixins': [
-          'mac_x64',
+          'mac_default_x64',
         ],
         'test_suites': {
           'gtest_tests': 'clang_tot_gtests',
@@ -2357,9 +2350,6 @@
         },
       },
       'fuchsia-code-coverage': {
-        'additional_compile_targets': [
-          'chrome_pkg',
-        ],
         'test_suites': {
           'gtest_tests': 'fuchsia_gtests',
           'isolated_scripts': 'gpu_angle_fuchsia_unittests_isolated_scripts',
@@ -2934,7 +2924,7 @@
       },
       'mac-rel-dev': {
         'mixins': [
-          'mac_x64',
+          'mac_default_x64',
         ],
         'test_suites': {
            'gtest_tests': 'chromium_dev_desktop_gtests',
@@ -2979,13 +2969,14 @@
     'mixins': ['chromium-tester-service-account'],
     'machines': {
       'fuchsia-arm64-cast-receiver-rel': {
+        'additional_compile_targets': [
+          'all',
+          'cast_test_lists',
+        ],
         'test_suites': {
           'gtest_tests': 'fuchsia_web_engine_non_graphical_gtests',
           'isolated_scripts': 'fuchsia_arm64_isolated_scripts',
         },
-        'additional_compile_targets': [
-          'cast_test_lists',
-        ],
         'mixins': [
           'arm64',
           'docker',
@@ -3007,6 +2998,10 @@
         ],
       },
       'fuchsia-x64-cast-receiver-rel': {
+        'additional_compile_targets': [
+          'all',
+          'cast_test_lists',
+        ],
         'browser_config': 'web-engine-shell',
         'os_type': 'fuchsia',
         'mixins': [
@@ -3023,9 +3018,6 @@
           'gtest_tests': 'fuchsia_gtests',
           'isolated_scripts': 'fuchsia_isolated_scripts',
         },
-        'additional_compile_targets': [
-          'cast_test_lists',
-        ],
       },
       'fuchsia-x64-dbg': {
         'additional_compile_targets': [
@@ -4047,7 +4039,7 @@
       # See crbug.com/899425
       'Chromium Mac Goma RBE Staging': {
         'mixins': [
-          'mac_x64',
+          'mac_default_x64',
         ],
         'additional_compile_targets': [
           'chrome',
@@ -4058,7 +4050,7 @@
       },
       'Chromium Mac Goma RBE Staging (dbg)': {
         'mixins': [
-          'mac_x64',
+          'mac_default_x64',
         ],
         'additional_compile_targets': [
           'chrome',
@@ -5241,7 +5233,7 @@
       },
       'Mac ASan 64 Tests (1)': {
         'mixins': [
-          'mac_x64',
+          'mac_default_x64',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests',
@@ -5380,7 +5372,7 @@
       },
       'mac-lsan-fyi-rel': {
         'mixins': [
-          'mac_x64',
+          'mac_default_x64',
         ],
         'test_suites': {
           'gtest_tests': 'mac_lsan_fyi_gtests',

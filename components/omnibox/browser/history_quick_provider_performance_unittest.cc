@@ -170,7 +170,7 @@ void HQPPerfTestOnePopularURL::PrintMeasurements(
   // Strip off trailing comma.
   durations.pop_back();
 
-  auto metric_prefix = std::string(test_info->test_case_name()) + "_" +
+  auto metric_prefix = std::string(test_info->test_suite_name()) + "_" +
                        std::string(test_info->name());
   perf_test::PerfResultReporter reporter(metric_prefix, story_name);
   reporter.RegisterImportantMetric(".duration", "ms");

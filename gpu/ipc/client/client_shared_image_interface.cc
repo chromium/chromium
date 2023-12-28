@@ -10,6 +10,7 @@
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/client/shared_image_interface_proxy.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -21,8 +22,9 @@
 namespace gpu {
 
 ClientSharedImageInterface::ClientSharedImageInterface(
-    SharedImageInterfaceProxy* proxy)
-    : proxy_(proxy) {}
+    SharedImageInterfaceProxy* proxy,
+    scoped_refptr<gpu::GpuChannelHost> channel)
+    : gpu_channel_(std::move(channel)), proxy_(proxy) {}
 
 ClientSharedImageInterface::~ClientSharedImageInterface() {
   gpu::SyncToken sync_token;
@@ -260,13 +262,15 @@ void ClientSharedImageInterface::DestroySharedImage(
   DestroySharedImage(sync_token, client_shared_image->mailbox());
 }
 
-void ClientSharedImageInterface::AddReferenceToSharedImage(
+scoped_refptr<ClientSharedImage>
+ClientSharedImageInterface::AddReferenceToSharedImage(
     const SyncToken& sync_token,
     const Mailbox& mailbox,
     uint32_t usage) {
   DCHECK(!mailbox.IsZero());
   AddMailbox(mailbox);
   proxy_->AddReferenceToSharedImage(sync_token, mailbox, usage);
+  return base::MakeRefCounted<ClientSharedImage>(mailbox);
 }
 
 uint32_t ClientSharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {

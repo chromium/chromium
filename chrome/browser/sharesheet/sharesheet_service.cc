@@ -296,8 +296,7 @@ void SharesheetService::LoadAppIcons(
     icon_effects |= apps::IconEffects::kBlocked;
   }
   app_service_proxy_->LoadIconWithIconEffects(
-      app_service_proxy_->AppRegistryCache().GetAppType(app_id), app_id,
-      icon_effects, apps::IconType::kStandard, kIconSize,
+      app_id, icon_effects, apps::IconType::kStandard, kIconSize,
       /*allow_placeholder_icon=*/false,
       base::BindOnce(&SharesheetService::OnIconLoaded,
                      weak_factory_.GetWeakPtr(), std::move(intent_launch_info),
@@ -467,7 +466,6 @@ void SharesheetService::RecordUserActionMetrics(
       case apps::AppType::kBuiltIn:
       case apps::AppType::kCrostini:
       case apps::AppType::kChromeApp:
-      case apps::AppType::kMacOs:
       case apps::AppType::kPluginVm:
       case apps::AppType::kStandaloneBrowser:
       case apps::AppType::kRemote:

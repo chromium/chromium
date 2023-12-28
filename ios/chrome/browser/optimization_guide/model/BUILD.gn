@@ -6,8 +6,6 @@ source_set("model") {
   sources = [
     "ios_chrome_hints_manager.h",
     "ios_chrome_hints_manager.mm",
-    "optimization_guide_push_notification_client.h",
-    "optimization_guide_push_notification_client.mm",
     "optimization_guide_service.h",
     "optimization_guide_service.mm",
     "optimization_guide_service_factory.h",
@@ -35,7 +33,6 @@ source_set("model") {
     "//components/variations",
     "//ios/chrome/browser/download/model/background_service",
     "//ios/chrome/browser/metrics/model:accessor",
-    "//ios/chrome/browser/push_notification/model:push_notification_client",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
@@ -62,7 +59,6 @@ source_set("download_client_header") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "optimization_guide_push_notification_client_unittest.mm",
     "optimization_guide_service_factory_unittest.mm",
     "optimization_guide_service_unittest.mm",
     "optimization_guide_tab_helper_unittest.mm",

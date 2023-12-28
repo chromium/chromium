@@ -9,9 +9,11 @@ implemented_in="chrome/browser/extensions/api/printing/printing_api.h"]
 namespace printing {
   dictionary SubmitJobRequest {
     // The print job to be submitted.
-    // The only supported content type is "application/pdf", and the CJT ticket
-    // shouldn't include FitToPageTicketItem, PageRangeTicketItem,
-    // ReverseOrderTicketItem and VendorTicketItem fields since they are
+    // The only supported content type is "application/pdf", and the
+    // <a href="https://developers.google.com/cloud-print/docs/cdd#cjt">Cloud Job Ticket</a>
+    // shouldn't include <code>FitToPageTicketItem</code>,
+    // <code>PageRangeTicketItem</code>, <code>ReverseOrderTicketItem</code>
+    // and <code>VendorTicketItem</code> fields since they are
     // irrelevant for native printing. All other fields must be present.
     printerProvider.PrintJob job;
 
@@ -153,11 +155,10 @@ namespace printing {
   callback GetPrinterInfoCallback = void(GetPrinterInfoResponse response);
 
   interface Functions {
-    // Submits the job for printing.
-    // Use the
-    // <a href="https://chromeenterprise.google/policies/#PrintingAPIExtensionsAllowlist">
-    // <code>PrintingAPIExtensionsAllowlist</code></a> to bypass promting
-    // the user to confirm printing.<br/>
+    // Submits the job for printing. If the extension is not listed in
+    // the <a href="https://chromeenterprise.google/policies/#PrintingAPIExtensionsAllowlist">
+    // <code>PrintingAPIExtensionsAllowlist</code></a> policy,
+    // the user is prompted to accept the print job.<br/>
     // Before Chrome 120, this function did not return a promise.
     [supportsPromises] static void submitJob(SubmitJobRequest request,
                                              SubmitJobCallback callback);

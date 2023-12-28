@@ -35,6 +35,7 @@
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/trace_constants.h"
 #include "net/base/tracing.h"
 #include "net/cert/cert_verifier.h"
@@ -427,9 +428,7 @@ class QuicStreamFactory::Job {
     // If SVCB/HTTPS resolution succeeded, the client supports ECH, and all
     // routes support ECH, disable the A/AAAA fallback. See Section 10.1 of
     // draft-ietf-dnsop-svcb-https-11.
-    if (!factory_->ssl_config_service_->GetSSLContextConfig()
-             .EncryptedClientHelloEnabled() ||
-        !base::FeatureList::IsEnabled(features::kEncryptedClientHelloQuic)) {
+    if (!factory_->ssl_config_service_->GetSSLContextConfig().ech_enabled) {
       return true;  // ECH is not supported for this request.
     }
 
@@ -1097,7 +1096,6 @@ QuicStreamFactory::QuicStreamFactory(
     ClientSocketFactory* client_socket_factory,
     HttpServerProperties* http_server_properties,
     CertVerifier* cert_verifier,
-    CTPolicyEnforcer* ct_policy_enforcer,
     TransportSecurityState* transport_security_state,
     SCTAuditingDelegate* sct_auditing_delegate,
     SocketPerformanceWatcherFactory* socket_performance_watcher_factory,
@@ -1109,7 +1107,6 @@ QuicStreamFactory::QuicStreamFactory(
       client_socket_factory_(client_socket_factory),
       http_server_properties_(http_server_properties),
       cert_verifier_(cert_verifier),
-      ct_policy_enforcer_(ct_policy_enforcer),
       transport_security_state_(transport_security_state),
       sct_auditing_delegate_(sct_auditing_delegate),
       quic_crypto_client_stream_factory_(quic_crypto_client_stream_factory),
@@ -1619,9 +1616,13 @@ void QuicStreamFactory::OnIPAddressChanged() {
 void QuicStreamFactory::OnNetworkConnected(handles::NetworkHandle network) {
   CollectDataOnPlatformNotification(NETWORK_CONNECTED, network);
   if (params_.migrate_sessions_on_network_change_v2) {
-    net_log_.AddEventWithStringParams(
-        NetLogEventType::QUIC_STREAM_FACTORY_PLATFORM_NOTIFICATION, "signal",
-        "OnNetworkConnected");
+    net_log_.AddEvent(
+        NetLogEventType::QUIC_STREAM_FACTORY_PLATFORM_NOTIFICATION, [&] {
+          base::Value::Dict dict;
+          dict.Set("signal", "OnNetworkConnected");
+          dict.Set("network", base::NumberToString(network));
+          return dict;
+        });
   }
   // Broadcast network connected to all sessions.
   // If migration is not turned on, session will not migrate but collect data.
@@ -1637,9 +1638,13 @@ void QuicStreamFactory::OnNetworkConnected(handles::NetworkHandle network) {
 void QuicStreamFactory::OnNetworkDisconnected(handles::NetworkHandle network) {
   CollectDataOnPlatformNotification(NETWORK_DISCONNECTED, network);
   if (params_.migrate_sessions_on_network_change_v2) {
-    net_log_.AddEventWithStringParams(
-        NetLogEventType::QUIC_STREAM_FACTORY_PLATFORM_NOTIFICATION, "signal",
-        "OnNetworkDisconnected");
+    net_log_.AddEvent(
+        NetLogEventType::QUIC_STREAM_FACTORY_PLATFORM_NOTIFICATION, [&] {
+          base::Value::Dict dict;
+          dict.Set("signal", "OnNetworkDisconnected");
+          dict.Set("network", base::NumberToString(network));
+          return dict;
+        });
   }
   // Broadcast network disconnected to all sessions.
   // If migration is not turned on, session will not migrate but collect data.
@@ -1675,9 +1680,13 @@ void QuicStreamFactory::OnNetworkMadeDefault(handles::NetworkHandle network) {
   default_network_ = network;
 
   if (params_.migrate_sessions_on_network_change_v2) {
-    net_log_.AddEventWithStringParams(
-        NetLogEventType::QUIC_STREAM_FACTORY_PLATFORM_NOTIFICATION, "signal",
-        "OnNetworkMadeDefault");
+    net_log_.AddEvent(
+        NetLogEventType::QUIC_STREAM_FACTORY_PLATFORM_NOTIFICATION, [&] {
+          base::Value::Dict dict;
+          dict.Set("signal", "OnNetworkMadeDefault");
+          dict.Set("network", base::NumberToString(network));
+          return dict;
+        });
   }
 
   auto it = all_sessions_.begin();
@@ -2364,8 +2373,7 @@ QuicStreamFactory::CreateCryptoConfigHandle(
   std::unique_ptr<QuicCryptoClientConfigOwner> crypto_config_owner =
       std::make_unique<QuicCryptoClientConfigOwner>(
           std::make_unique<ProofVerifierChromium>(
-              cert_verifier_, ct_policy_enforcer_, transport_security_state_,
-              sct_auditing_delegate_,
+              cert_verifier_, transport_security_state_, sct_auditing_delegate_,
               HostsFromOrigins(params_.origins_to_force_quic_on),
               actual_network_anonymization_key),
           std::make_unique<quic::QuicClientSessionCache>(), this);

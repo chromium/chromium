@@ -170,7 +170,7 @@ TEST(GIFImageDecoderTest, allDataReceivedTruncation) {
   decoder->DecodeFrameBufferAtIndex(0);
   EXPECT_FALSE(decoder->Failed());
   decoder->DecodeFrameBufferAtIndex(1);
-  EXPECT_TRUE(decoder->Failed());
+  EXPECT_FALSE(decoder->Failed());
 }
 
 TEST(GIFImageDecoderTest, frameIsComplete) {
@@ -464,7 +464,7 @@ TEST(GIFImageDecoderTest, recursiveDecodeFailure) {
     for (size_t i = 0; i <= 3; ++i) {
       ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(i);
       ASSERT_NE(frame, nullptr);
-      ASSERT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
+      EXPECT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
     }
   }
 
@@ -479,7 +479,7 @@ TEST(GIFImageDecoderTest, recursiveDecodeFailure) {
     auto decoder = CreateDecoder();
     decoder->SetData(modified_data.get(), true);
     decoder->DecodeFrameBufferAtIndex(2);
-    ASSERT_TRUE(decoder->Failed());
+    EXPECT_FALSE(decoder->Failed());
   }
 
   {
@@ -487,10 +487,25 @@ TEST(GIFImageDecoderTest, recursiveDecodeFailure) {
     auto decoder = CreateDecoder();
     decoder->SetData(modified_data.get(), true);
     ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(3);
-    EXPECT_TRUE(decoder->Failed());
+    EXPECT_FALSE(decoder->Failed());
     ASSERT_NE(frame, nullptr);
-    ASSERT_EQ(frame->RequiredPreviousFrameIndex(), 2u);
+    EXPECT_EQ(frame->RequiredPreviousFrameIndex(), 2u);
   }
+}
+
+TEST(GIFImageDecoderTest, errorFrame) {
+  scoped_refptr<SharedBuffer> test_data =
+      ReadFile(kDecodersTestingDir, "error_frame.gif");
+  ASSERT_TRUE(test_data.get());
+
+  std::unique_ptr<ImageDecoder> decoder = CreateDecoder();
+  decoder->SetData(test_data.get(), true);
+  wtf_size_t frame_count = decoder->FrameCount();
+  EXPECT_EQ(65u, frame_count);
+  for (wtf_size_t i = 0; i < frame_count; ++i) {
+    decoder->DecodeFrameBufferAtIndex(i);
+  }
+  EXPECT_FALSE(decoder->Failed());
 }
 
 }  // namespace blink

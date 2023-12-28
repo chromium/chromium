@@ -13,6 +13,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/extend.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -261,7 +262,7 @@ std::pair<int, int> BookmarkProvider::CalculateBookmarkMatchRelevance(
   size_t url_node_count = 0;
 
   {
-    std::vector<const BookmarkNode*> nodes =
+    std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes =
         local_or_syncable_bookmark_model_->GetNodesByURL(url);
     url_node_count += nodes.size();
   }
@@ -270,7 +271,7 @@ std::pair<int, int> BookmarkProvider::CalculateBookmarkMatchRelevance(
   // take the maximum. This appears more robust against edge cases where a user
   // may have many or all bookmarks duplicated between the two models.
   if (account_bookmark_model_) {
-    std::vector<const BookmarkNode*> nodes =
+    std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes =
         account_bookmark_model_->GetNodesByURL(url);
     url_node_count = std::max(url_node_count, nodes.size());
   }

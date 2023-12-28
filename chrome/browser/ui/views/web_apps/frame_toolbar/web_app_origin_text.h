@@ -28,8 +28,9 @@ class WebAppOriginText : public views::View,
                          public ui::LayerAnimationObserver,
                          public TabStripModelObserver,
                          public content::WebContentsObserver {
+  METADATA_HEADER(WebAppOriginText, views::View)
+
  public:
-  METADATA_HEADER(WebAppOriginText);
   explicit WebAppOriginText(Browser* browser);
   WebAppOriginText(const WebAppOriginText&) = delete;
   WebAppOriginText& operator=(const WebAppOriginText&) = delete;

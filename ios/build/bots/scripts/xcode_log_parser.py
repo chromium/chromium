@@ -121,6 +121,26 @@ def copy_screenshots_for_failed_test(failure_message, test_case_folder):
       shutil.copyfile(f, screenshot)
 
 
+def test_crashed(root):
+  actionResultMetrics = root.get('actions',
+                                 {}).get('_values',
+                                         [{}])[0].get('actionResult',
+                                                      {}).get('metrics', {})
+
+  # In case of test crash both numbers of run and failed tests are equal to 0.
+  actionResultMetricsMissing = (
+      actionResultMetrics.get('testsCount', {}).get('_value', 0) == 0 and
+      actionResultMetrics.get('testsFailedCount', {}).get('_value', 0) == 0)
+  # After certain types of test failures action results metrics might be missing
+  # but root metrics may still be present, indicating that some tests still
+  # ran successfully and the entire test suite should not be considered crashed
+  rootMetricsMissing = (
+      root.get('metrics', {}).get('testsCount', {}).get('_value', 0) == 0 and
+      root.get('metrics', {}).get('testsFailedCount', {}).get('_value', 0) == 0)
+  # if both metrics are missing then consider the test app to have crashed
+  return actionResultMetricsMissing and rootMetricsMissing
+
+
 class XcodeLogParser(object):
   """Xcode log parser. Parse Xcode result types v3."""
 
@@ -419,13 +439,10 @@ class XcodeLogParser(object):
 
     # See XCRESULT_ROOT in xcode_log_parser_test.py for an example of |root|.
     root = json.loads(XcodeLogParser._xcresulttool_get(xcresult))
-    metrics = root.get('actions', {}).get('_values',
-                                          [{}])[0].get('actionResult',
-                                                       {}).get('metrics', {})
+
     XcodeLogParser.export_diagnostic_data(output_path)
-    # In case of test crash both numbers of run and failed tests are equal to 0.
-    if (metrics.get('testsCount', {}).get('_value', 0) == 0 and
-        metrics.get('testsFailedCount', {}).get('_value', 0) == 0):
+
+    if (test_crashed(root)):
       overall_collected_result.crashed = True
       overall_collected_result.crash_message = '0 tests executed!'
     else:

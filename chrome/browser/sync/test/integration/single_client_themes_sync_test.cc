@@ -81,8 +81,7 @@ class ServerThemeMatchChecker
   ServerThemeMatchChecker& operator=(const ServerThemeMatchChecker&) = delete;
 
   // FakeServer::Observer overrides.
-  void OnCommit(const std::string& committer_invalidator_client_id,
-                syncer::ModelTypeSet committed_model_types) override;
+  void OnCommit(syncer::ModelTypeSet committed_model_types) override;
 
   // StatusChangeChecker overrides.
   bool IsExitConditionSatisfied(std::ostream* os) override;
@@ -97,7 +96,6 @@ ServerThemeMatchChecker::ServerThemeMatchChecker(const Matcher& matcher)
 ServerThemeMatchChecker::~ServerThemeMatchChecker() = default;
 
 void ServerThemeMatchChecker::OnCommit(
-    const std::string& committer_invalidator_client_id,
     syncer::ModelTypeSet committed_model_types) {
   if (committed_model_types.Has(syncer::THEMES)) {
     CheckExitCondition();

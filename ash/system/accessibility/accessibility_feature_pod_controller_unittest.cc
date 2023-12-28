@@ -5,7 +5,7 @@
 #include "ash/system/accessibility/accessibility_feature_pod_controller.h"
 
 #include "ash/accessibility/a11y_feature_type.h"
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/shell.h"
 #include "ash/system/unified/feature_tile.h"
@@ -50,7 +50,7 @@ class AccessibilityFeaturePodControllerTest
     tile_ = controller_->CreateTile();
   }
 
-  AccessibilityControllerImpl* GetAccessibilityController() {
+  AccessibilityController* GetAccessibilityController() {
     return Shell::Get()->accessibility_controller();
   }
 

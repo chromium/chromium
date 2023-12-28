@@ -117,15 +117,15 @@ TEST_F(ProcessPriorityPolicyTest, GraphReflectedToRenderProcessHost) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://www.foo.com/"));
 
-  // Expect a background priority override to be set for process creation.
+  // Expect a foreground priority override to be set for process creation.
   // NOTE: This is going to change once we have provisional frames and the like,
   // and can calculate meaningful process startup priorities.
-  EXPECT_CALL(*this, OnSetPriority(rph, false));
+  EXPECT_CALL(*this, OnSetPriority(rph, true));
   RunUntilOnSetPriority();
 
   // Toggle the priority and expect it to change.
   PostToggleProcessNodePriority(rph);
-  EXPECT_CALL(*this, OnSetPriority(rph, true));
+  EXPECT_CALL(*this, OnSetPriority(rph, false));
   RunUntilOnSetPriority();
 
   testing::Mock::VerifyAndClearExpectations(this);

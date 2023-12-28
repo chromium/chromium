@@ -105,39 +105,39 @@ const char* GetProfileCategorySuffix(AutofillProfileSourceCategory category) {
 }
 
 SettingsVisibleFieldTypeForMetrics ConvertSettingsVisibleFieldTypeForMetrics(
-    ServerFieldType field_type) {
+    FieldType field_type) {
   switch (field_type) {
-    case ServerFieldType::NAME_FULL:
+    case FieldType::NAME_FULL:
       return SettingsVisibleFieldTypeForMetrics::kName;
 
-    case ServerFieldType::EMAIL_ADDRESS:
+    case FieldType::EMAIL_ADDRESS:
       return SettingsVisibleFieldTypeForMetrics::kEmailAddress;
 
-    case ServerFieldType::PHONE_HOME_WHOLE_NUMBER:
+    case FieldType::PHONE_HOME_WHOLE_NUMBER:
       return SettingsVisibleFieldTypeForMetrics::kPhoneNumber;
 
-    case ServerFieldType::ADDRESS_HOME_CITY:
+    case FieldType::ADDRESS_HOME_CITY:
       return SettingsVisibleFieldTypeForMetrics::kCity;
 
-    case ServerFieldType::ADDRESS_HOME_COUNTRY:
+    case FieldType::ADDRESS_HOME_COUNTRY:
       return SettingsVisibleFieldTypeForMetrics::kCountry;
 
-    case ServerFieldType::ADDRESS_HOME_ZIP:
+    case FieldType::ADDRESS_HOME_ZIP:
       return SettingsVisibleFieldTypeForMetrics::kZip;
 
-    case ServerFieldType::ADDRESS_HOME_STATE:
+    case FieldType::ADDRESS_HOME_STATE:
       return SettingsVisibleFieldTypeForMetrics::kState;
 
-    case ServerFieldType::ADDRESS_HOME_STREET_ADDRESS:
+    case FieldType::ADDRESS_HOME_STREET_ADDRESS:
       return SettingsVisibleFieldTypeForMetrics::kStreetAddress;
 
-    case ServerFieldType::ADDRESS_HOME_DEPENDENT_LOCALITY:
+    case FieldType::ADDRESS_HOME_DEPENDENT_LOCALITY:
       return SettingsVisibleFieldTypeForMetrics::kDependentLocality;
 
-    case ServerFieldType::NAME_HONORIFIC_PREFIX:
+    case FieldType::NAME_HONORIFIC_PREFIX:
       return SettingsVisibleFieldTypeForMetrics::kHonorificPrefix;
 
-    case ServerFieldType::COMPANY_NAME:
+    case FieldType::COMPANY_NAME:
       return SettingsVisibleFieldTypeForMetrics::kCompany;
 
     default:

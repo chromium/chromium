@@ -50,6 +50,10 @@ function nonDraggableRegions() {
 }
 
 function startTest() {
+    // Verify that app regions are correctly collected when the frame supports
+    // app regions.
+    internals.SetSupportsAppRegion(true);
+
     shouldBe("draggableRegions()", "''");
     shouldBe("nonDraggableRegions()", "''");
 
@@ -68,6 +72,26 @@ function startTest() {
     draggable.classList.remove('transform');
     shouldBe("draggableRegions()", "'20,10+100x60'");
     shouldBe("nonDraggableRegions()", "'20,10+60x20'");
+
+    // Verify that app regions are reset when the frame does not support
+    // app regions.
+    internals.SetSupportsAppRegion(false);
+    shouldBe("draggableRegions()", "''");
+    shouldBe("nonDraggableRegions()", "''");
+
+    draggable.classList.remove('drag');
+    draggable.classList.remove('nodrag');
+
+    // App regions should continue to be empty when new app regions are added
+    // or resized.
+    draggable.classList.add("drag");
+    nondraggable.classList.add('nodrag');
+    shouldBe("draggableRegions()", "''");
+    shouldBe("nonDraggableRegions()", "''");
+
+    draggable.classList.add('transform');
+    shouldBe("draggableRegions()", "''");
+    shouldBe("nonDraggableRegions()", "''");
 
     finishJSTest();
 }

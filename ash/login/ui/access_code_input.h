@@ -112,7 +112,7 @@ class FlexCodeInput : public AccessCodeInput {
  private:
   void OnAccessibleNameChanged(const std::u16string& new_name) override;
 
-  raw_ptr<SystemTextfield, ExperimentalAsh> code_field_;
+  raw_ptr<SystemTextfield> code_field_;
 
   // To be called when access input code changes (character is inserted, deleted
   // or updated). Passes true when code non-empty.
@@ -177,7 +177,7 @@ class FixedLengthCodeInput : public AccessCodeInput {
     }
 
    private:
-    raw_ptr<FixedLengthCodeInput, ExperimentalAsh> fixed_length_code_input_;
+    raw_ptr<FixedLengthCodeInput> fixed_length_code_input_;
   };
 
   // Builds the view for an access code that consists out of |length| digits.
@@ -295,7 +295,7 @@ class FixedLengthCodeInput : public AccessCodeInput {
   int active_input_index_ = 0;
 
   // Unowned input textfields ordered from the first to the last digit.
-  std::vector<AccessibleInputField*> input_fields_;
+  std::vector<raw_ptr<AccessibleInputField, VectorExperimental>> input_fields_;
 
   // Value of current input, associate with AX event. The value will be the
   // concat string of input fields. i.e. [1][2][3][|][][], text_value_for_a11y_

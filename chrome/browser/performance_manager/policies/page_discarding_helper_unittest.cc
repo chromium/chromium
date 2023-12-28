@@ -101,7 +101,6 @@ TEST_F(PageDiscardingHelperTest, TestCanDiscardMultipleCurrentMainFrames) {
   // https://source.chromium.org/chromium/chromium/src/+/main:components/performance_manager/graph/frame_node_impl.cc;l=272;drc=6d331b84c048659c6a9a89bd81e92dfdddd6bae7.)
   TestNodeWrapper<FrameNodeImpl> other_frame_node =
       CreateFrameNodeAutoId(process_node(), page_node());
-  other_frame_node->SetIsCurrent(true);
 
   // frame_node() is created with a URL. `other_frame_node` starts without.
   ASSERT_FALSE(frame_node()->GetURL().is_empty());
@@ -182,7 +181,6 @@ TEST_F(PageDiscardingHelperTest, TestCanDiscardNeverAudiblePage) {
   TestNodeWrapper<PageNodeImpl> new_page_node = CreateNode<PageNodeImpl>();
   TestNodeWrapper<FrameNodeImpl> new_frame_node =
       CreateFrameNodeAutoId(process_node(), new_page_node.get());
-  new_frame_node->SetIsCurrent(true);
   new_page_node->SetIsVisible(false);
   const GURL kUrl("https://example.com");
   new_page_node->OnMainFrameNavigationCommitted(false, base::TimeTicks::Now(),
@@ -456,7 +454,7 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesNoCandidate) {
 
   // When discard_protected_tabs is false, protected page can not be discarded.
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-      /*reclaim_target_kb*/ 1024,
+      memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 1024),
       /*discard_protected_tabs*/ false,
       base::BindOnce([](bool success) { EXPECT_FALSE(success); }),
       DiscardReason::URGENT);
@@ -471,7 +469,7 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesDiscardProtected) {
       .WillOnce(Return(true));
 
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-      /*reclaim_target_kb*/ 1024,
+      memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 1024),
       /*discard_protected_tabs*/ true,
       base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
       DiscardReason::URGENT);
@@ -483,7 +481,6 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidates) {
   auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
   auto main_frame_node2 =
       CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
-  main_frame_node2->SetIsCurrent(true);
   testing::MakePageNodeDiscardable(page_node2.get(), task_env());
 
   EXPECT_TRUE(CanDiscard(page_node2.get(), DiscardReason::URGENT));
@@ -498,7 +495,7 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidates) {
       .WillOnce(Return(true));
 
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-      /*reclaim_target_kb*/ 2048,
+      memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 2048),
       /*discard_protected_tabs*/ true,
       base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
       DiscardReason::URGENT);
@@ -513,7 +510,6 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidatesProtected) {
   auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
   auto main_frame_node2 =
       CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
-  main_frame_node2->SetIsCurrent(true);
   testing::MakePageNodeDiscardable(page_node2.get(), task_env());
 
   EXPECT_TRUE(CanDiscard(page_node2.get(), DiscardReason::URGENT));
@@ -527,7 +523,7 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidatesProtected) {
       .WillOnce(Return(true));
 
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-      /*reclaim_target_kb*/ 1000000,
+      memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 1000000),
       /*discard_protected_tabs*/ false,
       base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
       DiscardReason::URGENT);
@@ -539,14 +535,12 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesThreeCandidates) {
   auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
   auto main_frame_node2 =
       CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
-  main_frame_node2->SetIsCurrent(true);
   testing::MakePageNodeDiscardable(page_node2.get(), task_env());
 
   auto process_node3 = CreateNode<performance_manager::ProcessNodeImpl>();
   auto page_node3 = CreateNode<performance_manager::PageNodeImpl>();
   auto main_frame_node3 =
       CreateFrameNodeAutoId(process_node3.get(), page_node3.get());
-  main_frame_node3->SetIsCurrent(true);
   testing::MakePageNodeDiscardable(page_node3.get(), task_env());
 
   page_node2->SetIsVisible(true);
@@ -571,7 +565,7 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesThreeCandidates) {
       .WillOnce(Return(true));
 
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-      /*reclaim_target_kb*/ 1500,
+      memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 1500),
       /*discard_protected_tabs*/ true,
       base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
       DiscardReason::URGENT);
@@ -589,14 +583,12 @@ TEST_F(PageDiscardingHelperTest,
   auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
   auto main_frame_node2 =
       CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
-  main_frame_node2->SetIsCurrent(true);
   testing::MakePageNodeDiscardable(page_node2.get(), task_env());
 
   auto process_node3 = CreateNode<performance_manager::ProcessNodeImpl>();
   auto page_node3 = CreateNode<performance_manager::PageNodeImpl>();
   auto main_frame_node3 =
       CreateFrameNodeAutoId(process_node3.get(), page_node3.get());
-  main_frame_node3->SetIsCurrent(true);
   testing::MakePageNodeDiscardable(page_node3.get(), task_env());
 
   page_node2->SetIsVisible(true);
@@ -621,7 +613,7 @@ TEST_F(PageDiscardingHelperTest,
       .WillOnce(Return(true));
 
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-      /*reclaim_target_kb*/ 1500,
+      memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 1500),
       /*discard_protected_tabs*/ true,
       base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
       DiscardReason::URGENT);
@@ -647,7 +639,7 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesNoDiscardable) {
       .WillOnce(Return(false));
 
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-      /*reclaim_target_kb*/ 10240,
+      memory_pressure::ReclaimTarget(/*reclaim_target_kb*/ 10240),
       /*discard_protected_tabs*/ true,
       base::BindOnce([](bool success) { EXPECT_FALSE(success); }),
       DiscardReason::URGENT);
@@ -697,7 +689,6 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidates) {
   auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
   auto main_frame_node2 =
       CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
-  main_frame_node2->SetIsCurrent(true);
   testing::MakePageNodeDiscardable(page_node2.get(), task_env());
 
   // Pretend that |page_node2| is the most recently visible page.
@@ -729,7 +720,6 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidatesFirstFails) {
   auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
   auto main_frame_node2 =
       CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
-  main_frame_node2->SetIsCurrent(true);
   testing::MakePageNodeDiscardable(page_node2.get(), task_env());
 
   process_node()->set_resident_set_kb(1024);
@@ -755,7 +745,6 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidatesMultipleFrames) {
   auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
   auto main_frame_node2 =
       CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
-  main_frame_node2->SetIsCurrent(true);
   testing::MakePageNodeDiscardable(page_node2.get(), task_env());
   // Adds a second frame to |page_node()| and host it in |process_node2|.
   auto page_node1_extra_frame =
@@ -781,7 +770,6 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidatesNoRSSData) {
   auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
   auto main_frame_node2 =
       CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
-  main_frame_node2->SetIsCurrent(true);
   testing::MakePageNodeDiscardable(page_node2.get(), task_env());
 
   // Pretend that |page_node()| is the most recently visible page.
@@ -811,7 +799,6 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidatesNoRSSData) {
   auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
   auto main_frame_node2 =
       CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
-  main_frame_node2->SetIsCurrent(true);
   testing::MakePageNodeDiscardable(page_node2.get(), task_env());
 
   // Pretend that |page_node()| is the most recently visible page.
@@ -829,7 +816,7 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidatesNoRSSData) {
       .WillOnce(Return(true));
 
   PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-      /*reclaim_target_kb*/ absl::nullopt,
+      /*reclaim_target*/ absl::nullopt,
       /*discard_protected_tabs*/ true,
       base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
       DiscardReason::URGENT);

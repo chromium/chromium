@@ -357,7 +357,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Chrome app opened in a tab"/>
   <int value="6" label="Web app in a window"/>
   <int value="7" label="Web app in a tab"/>
-  <int value="8" label="Mac OS app"/>
+  <int value="8" label="(Obsolete) Mac OS app"/>
   <int value="9" label="Plugin VM"/>
   <int value="10" label="Standalone browser"/>
   <int value="11" label="Remote app"/>

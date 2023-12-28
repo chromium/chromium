@@ -51,8 +51,9 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
   STATIC_ASSERT_OR_PA_CHECK(
       (internal::PartitionPageSize() & internal::SystemPageOffsetMask()) == 0,
       "ok partition page multiple");
-  static_assert(sizeof(internal::PartitionPage) <= internal::kPageMetadataSize,
-                "PartitionPage should not be too big");
+  static_assert(
+      sizeof(internal::PartitionPageMetadata) <= internal::kPageMetadataSize,
+      "PartitionPage should not be too big");
   STATIC_ASSERT_OR_PA_CHECK(
       internal::kPageMetadataSize * internal::NumPartitionPagesPerSuperPage() <=
           internal::SystemPageSize(),
@@ -91,7 +92,7 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
         (internal::kSuperPageSize / internal::SystemPageSize()))
        << internal::GetPartitionRefCountIndexMultiplierShift()) <=
           internal::SystemPageSize(),
-      "PartitionRefCount Bitmap size must be smaller than or equal to "
+      "PartitionRefCount table size must be smaller than or equal to "
       "<= SystemPageSize().");
 #endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 

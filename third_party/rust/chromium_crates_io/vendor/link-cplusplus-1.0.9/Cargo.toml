@@ -12,6 +12,14 @@
 name = "link-cplusplus"
 version = "1.0.9"
 
+[features]
+"default" = []
+"libc++" = []
+"libcxx" = []
+"libstdc++" = []
+"libstdcxx" = []
+"nothing" = []
+
 [dependencies.cc]
 version = "*"
 default_features = true

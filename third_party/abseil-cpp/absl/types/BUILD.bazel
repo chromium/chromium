@@ -118,6 +118,7 @@ cc_library(
     deps = [
         "//absl/algorithm",
         "//absl/base:core_headers",
+        "//absl/base:nullability",
         "//absl/base:throw_delegate",
         "//absl/meta:type_traits",
     ],
@@ -154,6 +155,7 @@ cc_library(
         "//absl/base:base_internal",
         "//absl/base:config",
         "//absl/base:core_headers",
+        "//absl/base:nullability",
         "//absl/memory",
         "//absl/meta:type_traits",
         "//absl/utility",
@@ -293,6 +295,7 @@ cc_library(
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
+        "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/meta:type_traits",
     ],

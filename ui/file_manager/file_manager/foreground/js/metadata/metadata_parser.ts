@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {ByteReader} from './byte_reader.js';
+import {ParserMetadata} from './metadata_item.js';
 
 export interface MetadataParserLogger {
   /**
@@ -31,7 +32,7 @@ export interface MetadataParserLogger {
   vlog(...args: Array<Object|string>): void;
 }
 
-export class MetadataParser implements MetadataParserLogger {
+export abstract class MetadataParser implements MetadataParserLogger {
   readonly verbose: boolean;
   mimeType = 'unknown';
 
@@ -77,34 +78,34 @@ export class MetadataParser implements MetadataParserLogger {
   }
 
   /**
-   * Utility function to read specified range of bytes from file
+   * Get a ByteReader for a range of bytes from file. Rejects on error.
    * @param file The file to read.
-   * @param begin Starting byte(included).
-   * @param end Last byte(excluded).
-   * @param callback Callback to invoke.
-   * @param onError Error handler.
+   * @param begin Starting byte (included).
+   * @param end Last byte (excluded).
    */
-  static readFileBytes(
-      file: File, begin: number, end: number,
-      callback: (file: File, byteReader: ByteReader) => void,
-      onError: (s: string) => void) {
-    const fileReader = new FileReader();
-    fileReader.onerror = event => {
-      onError(event.type);
-    };
-    fileReader.onloadend = () => {
-      callback(file, new ByteReader(fileReader.result as ArrayBuffer));
-    };
-    fileReader.readAsArrayBuffer(file.slice(begin, end));
+  static async readFileBytes(file: File, begin: number, end: number):
+      Promise<ByteReader> {
+    return new ByteReader(await file.slice(begin, end).arrayBuffer());
   }
 
-  // TODO(cleanup): Add parse() abstract method which fills in a ParserMetadata.
+  /**
+   * Parses the file and fills out the given metadata object, returning the
+   * result via the passed in callback.
+   * @param file File object to parse.
+   * @param metadata Metadata object of the file.
+   * @param callback Success callback.
+   * @param onError Error callback.
+   */
+  abstract parse(
+      file: File, metadata: ParserMetadata,
+      callback: (metadata: ParserMetadata) => void,
+      onError: (error: Event|string) => void): void;
 }
 
 /**
  * Base class for image metadata parsers.
  */
-export class ImageParser extends MetadataParser {
+export abstract class ImageParser extends MetadataParser {
   /**
    * @param parent Parent object.
    * @param type Image type.

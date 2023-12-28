@@ -68,7 +68,7 @@ class AssistantNotificationExpiryMonitor::Observer
   }
 
  private:
-  const raw_ptr<AssistantNotificationExpiryMonitor, ExperimentalAsh> monitor_;
+  const raw_ptr<AssistantNotificationExpiryMonitor> monitor_;
 };
 
 AssistantNotificationExpiryMonitor::AssistantNotificationExpiryMonitor(

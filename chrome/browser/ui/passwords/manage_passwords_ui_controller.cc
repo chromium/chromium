@@ -9,6 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -298,10 +299,11 @@ void ManagePasswordsUIController::OnAutomaticPasswordSave(
 }
 
 void ManagePasswordsUIController::OnPasswordAutofilled(
-    const std::vector<const password_manager::PasswordForm*>& password_forms,
+    const std::vector<raw_ptr<const password_manager::PasswordForm,
+                              VectorExperimental>>& password_forms,
     const url::Origin& origin,
-    const std::vector<const password_manager::PasswordForm*>*
-        federated_matches) {
+    const std::vector<raw_ptr<const password_manager::PasswordForm,
+                              VectorExperimental>>* federated_matches) {
   // To change to managed state only when the managed state is more important
   // for the user that the current state.
   if (passwords_data_.state() != password_manager::ui::INACTIVE_STATE &&
@@ -1060,8 +1062,9 @@ void ManagePasswordsUIController::
     }
     return;
   }
-  // If reauth wasn't successful, change to local store and reopen the bubble is
-  // the state didn't change.
+  // If reauth wasn't successful, explicitly opt out, change to local store and
+  // reopen the bubble if the state didn't change.
+  GetPasswordFeatureManager()->OptOutOfAccountStorageAndClearSettings();
   GetPasswordFeatureManager()->SetDefaultPasswordStore(
       password_manager::PasswordForm::Store::kProfileStore);
   if (passwords_data_.state() != password_manager::ui::PENDING_PASSWORD_STATE)
@@ -1119,6 +1122,10 @@ void ManagePasswordsUIController::MoveJustSavedPasswordAfterAccountStoreOptIn(
     // locally. This is already the default value, but setting it explicitly
     // makes sure the user won't be asked to opt in again (since "store not set"
     // gets interpreted as "first-time save").
+    // Similarly, opting out explicitly has special handling in
+    // SyncUserSettings::GetSelectedTypes(), and thus in
+    // IsOptedInForAccountStorage().
+    GetPasswordFeatureManager()->OptOutOfAccountStorageAndClearSettings();
     GetPasswordFeatureManager()->SetDefaultPasswordStore(
         password_manager::PasswordForm::Store::kProfileStore);
   }

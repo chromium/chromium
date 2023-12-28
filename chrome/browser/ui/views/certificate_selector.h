@@ -37,9 +37,9 @@ namespace chrome {
 // The explanatory text shown to the user must be provided to |InitWithText()|.
 class CertificateSelector : public views::DialogDelegateView,
                             public views::TableViewObserver {
- public:
-  METADATA_HEADER(CertificateSelector);
+  METADATA_HEADER(CertificateSelector, views::DialogDelegateView)
 
+ public:
   // Indicates if the dialog can be successfully shown.
   // TODO(davidben): Remove this when the certificate selector prompt is moved
   // to the WebContentsDelegate. https://crbug.com/456255.

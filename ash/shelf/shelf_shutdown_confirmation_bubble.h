@@ -74,10 +74,10 @@ class ASH_EXPORT ShelfShutdownConfirmationBubble : public ShelfBubble {
   // Report bubble action metrics
   void ReportBubbleAction(BubbleAction action);
 
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;
-  raw_ptr<views::LabelButton, ExperimentalAsh> cancel_ = nullptr;
-  raw_ptr<views::LabelButton, ExperimentalAsh> confirm_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
+  raw_ptr<views::Label> title_ = nullptr;
+  raw_ptr<views::LabelButton> cancel_ = nullptr;
+  raw_ptr<views::LabelButton> confirm_ = nullptr;
 
   enum class DialogResult { kNone, kCancelled, kConfirmed };
 

@@ -170,7 +170,7 @@ class ProcessDiceHeaderDelegateImplTest
       return std::make_unique<ProcessDiceHeaderDelegateImpl>(
           web_contents(), /*is_sync_signin_tab=*/false,
           signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
-          kTestPromoAction, signin_metrics::Reason::kUnknownReason, GURL(),
+          kTestPromoAction, GURL(),
           ProcessDiceHeaderDelegateImpl::EnableSyncCallback(),
           base::BindRepeating(
               &ProcessDiceHeaderDelegateImplTest::OnSigninHeaderReceived,
@@ -200,13 +200,11 @@ class ProcessDiceHeaderDelegateImplTest
   void StartSyncCallback(Profile* profile,
                          signin_metrics::AccessPoint access_point,
                          signin_metrics::PromoAction promo_action,
-                         signin_metrics::Reason reason,
                          content::WebContents* contents,
                          const CoreAccountInfo& account_info) {
     EXPECT_EQ(profile, this->profile());
     EXPECT_EQ(access_point, kTestAccessPoint);
     EXPECT_EQ(promo_action, kTestPromoAction);
-    EXPECT_EQ(reason, signin_reason_);
     EXPECT_EQ(web_contents(), contents);
     EXPECT_EQ(account_info_, account_info);
     enable_sync_called_ = true;

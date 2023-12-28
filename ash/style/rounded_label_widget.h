@@ -34,7 +34,7 @@ class RoundedLabelWidget : public views::Widget {
     // TODO(zxdan): change back to message ID if test string is no longer
     // needed.
     absl::variant<std::u16string, int> message;
-    raw_ptr<aura::Window, ExperimentalAsh> parent;
+    raw_ptr<aura::Window> parent;
     bool disable_default_visibility_animation = false;
   };
 

@@ -72,11 +72,13 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kForceStartupSigninPromo);
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kTangibleSync);
+BASE_DECLARE_FEATURE(kRestoreSignedInAccountAndSettingsFromBackup);
+#endif
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const base::FeatureParam<bool> kWithSearchEngineMarketingSnippets;
+BASE_DECLARE_FEATURE(kTangibleSync);
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const base::FeatureParam<bool> kWithForcedScrollEnabled;

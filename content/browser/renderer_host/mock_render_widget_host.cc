@@ -24,8 +24,11 @@ void MockRenderWidgetHost::OnTouchEventAck(
 }
 
 void MockRenderWidgetHost::DisableGestureDebounce() {
+  InputRouter::Config config;
+  config.touch_config.task_runner =
+      content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput});
   input_router_ = std::make_unique<InputRouterImpl>(
-      this, this, fling_scheduler_.get(), InputRouter::Config());
+      this, this, fling_scheduler_.get(), config);
 }
 
 void MockRenderWidgetHost::ExpectForceEnableZoom(bool enable) {

@@ -66,7 +66,7 @@ void GraphFeatures::ConfigureGraph(Graph* graph) const {
     Install<ProcessHostedContentTypesAggregator>(graph);
   }
   if (flags_.resource_attribution_scheduler) {
-    Install<resource_attribution::QueryScheduler>(graph);
+    Install<resource_attribution::internal::QueryScheduler>(graph);
   }
   if (flags_.tab_page_decorator) {
     Install<TabPageDecorator>(graph);

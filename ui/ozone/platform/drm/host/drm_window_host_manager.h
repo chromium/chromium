@@ -68,7 +68,7 @@ class DrmWindowHostManager {
 
   gfx::AcceleratedWidget last_allocated_widget_ = 0;
   WidgetToWindowMap window_map_;
-  raw_ptr<DrmWindowHost, ExperimentalAsh> window_mouse_currently_on_ = nullptr;
+  raw_ptr<DrmWindowHost> window_mouse_currently_on_ = nullptr;
 
   gfx::AcceleratedWidget event_grabber_ = gfx::kNullAcceleratedWidget;
 };

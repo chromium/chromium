@@ -8,12 +8,14 @@
 #include "cc/layers/layer.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 // Integration tests of video painting code (in CAP mode).
@@ -170,6 +172,10 @@ class TestWebFrameClientImpl : public frame_test_helpers::TestWebFrameClient {
 class VideoPaintPreviewTest : public testing::Test,
                               public PaintTestConfigurations {
  public:
+  ~VideoPaintPreviewTest() {
+    CSSDefaultStyleSheets::Instance().PrepareForLeakDetection();
+  }
+
   void SetUp() override {
     web_view_helper_.Initialize(&web_frame_client_);
 
@@ -230,6 +236,8 @@ class VideoPaintPreviewTest : public testing::Test,
   }
 
  private:
+  test::TaskEnvironment task_environment_;
+
   LocalFrame* GetFrame() { return GetLocalMainFrame().GetFrame(); }
 
   frame_test_helpers::WebViewHelper web_view_helper_;

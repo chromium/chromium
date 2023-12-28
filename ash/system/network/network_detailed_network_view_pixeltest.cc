@@ -53,7 +53,7 @@ class ChildAddedWaiter : public views::ViewObserver {
   }
 
  private:
-  const raw_ptr<views::View, ExperimentalAsh> parent_;
+  const raw_ptr<views::View> parent_;
   base::RunLoop run_loop_;
 };
 

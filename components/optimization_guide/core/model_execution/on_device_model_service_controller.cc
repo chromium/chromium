@@ -8,9 +8,11 @@
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
 #include "components/optimization_guide/core/model_execution/session_impl.h"
 #include "components/optimization_guide/core/model_util.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -58,33 +60,68 @@ OnDeviceModelLoadResult ConvertToOnDeviceModelLoadResult(
   }
 }
 
+bool HasRequiredSafetyFiles(const ModelInfo& model_info) {
+  return model_info.GetAdditionalFileWithBaseName(kTsDataFile) &&
+         model_info.GetAdditionalFileWithBaseName(kTsSpModelFile);
+}
+
 }  // namespace
 
 OnDeviceModelServiceController::OnDeviceModelServiceController(
-    std::unique_ptr<OnDeviceModelAccessController> access_controller)
-    : access_controller_(std::move(access_controller)) {}
+    std::unique_ptr<OnDeviceModelAccessController> access_controller,
+    base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
+        on_device_component_state_manager)
+    : access_controller_(std::move(access_controller)),
+      on_device_component_state_manager_(
+          std::move(on_device_component_state_manager)) {
+  if (on_device_component_state_manager_) {
+    on_device_component_state_manager_->AddObserver(this);
+  }
+}
 
-OnDeviceModelServiceController::~OnDeviceModelServiceController() = default;
+OnDeviceModelServiceController::~OnDeviceModelServiceController() {
+  if (on_device_component_state_manager_) {
+    on_device_component_state_manager_->RemoveObserver(this);
+  }
+}
 
 void OnDeviceModelServiceController::Init(
     const base::FilePath& model_path,
     std::unique_ptr<OnDeviceModelExecutionConfigInterpreter>
         config_interpreter) {
-  CHECK(model_path_.empty());
-  model_path_ = model_path;
+  CHECK(!model_paths_.has_value());
+  on_device_model::ModelAssetPaths model_paths;
+  model_paths.sp_model = model_path.Append(kSpModelFile);
+  model_paths.model = model_path.Append(kModelFile);
+  model_paths.weights = model_path.Append(kWeightsFile);
+  if (safety_model_info_) {
+    model_paths.ts_data =
+        *(safety_model_info_->GetAdditionalFileWithBaseName(kTsDataFile));
+    model_paths.ts_sp_model =
+        *(safety_model_info_->GetAdditionalFileWithBaseName(kTsSpModelFile));
+  }
+  model_paths_ = std::move(model_paths);
   config_interpreter_ = std::move(config_interpreter);
-  config_interpreter_->UpdateConfigWithFileDir(model_path_);
+  config_interpreter_->UpdateConfigWithFileDir(model_path);
 }
 
 void OnDeviceModelServiceController::Init() {
   auto model_path_override_switch =
       switches::GetOnDeviceModelExecutionOverride();
+  std::optional<base::FilePath> model_path;
   if (model_path_override_switch) {
-    auto file_path = StringToFilePath(*model_path_override_switch);
-    if (file_path) {
-      Init(*file_path,
-           std::make_unique<OnDeviceModelExecutionConfigInterpreter>());
+    model_path = StringToFilePath(*model_path_override_switch);
+  } else if (on_device_component_state_manager_) {
+    const OnDeviceModelComponentState* state =
+        on_device_component_state_manager_->GetState();
+    if (state) {
+      model_path = state->GetInstallDirectory();
     }
+  }
+
+  if (model_path) {
+    Init(*model_path,
+         std::make_unique<OnDeviceModelExecutionConfigInterpreter>());
   }
 }
 
@@ -93,14 +130,22 @@ OnDeviceModelServiceController::CreateSession(
     proto::ModelExecutionFeature feature,
     ExecuteRemoteFn execute_remote_fn,
     OptimizationGuideLogger* optimization_guide_logger) {
+  if (on_device_component_state_manager_) {
+    on_device_component_state_manager_->OnDeviceEligibleFeatureUsed();
+  }
   ScopedEligibilityReasonLogger logger(feature);
   if (!base::FeatureList::IsEnabled(
           features::kOptimizationGuideOnDeviceModel)) {
     logger.set_reason(OnDeviceModelEligibilityReason::kFeatureNotEnabled);
     return nullptr;
   }
-  if (model_path_.empty()) {
+  if (!model_paths_) {
     logger.set_reason(OnDeviceModelEligibilityReason::kModelNotAvailable);
+    return nullptr;
+  }
+  if (features::GetOnDeviceModelMustUseSafetyModel() &&
+      !model_paths_->HasSafetyFiles()) {
+    logger.set_reason(OnDeviceModelEligibilityReason::kSafetyModelNotAvailable);
     return nullptr;
   }
   if (!config_interpreter_->HasConfigForFeature(feature)) {
@@ -141,8 +186,7 @@ void OnDeviceModelServiceController::StartMojoSession(
     LaunchService();
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&on_device_model::LoadModelAssets, model_path_,
-                       model_path_),
+        base::BindOnce(&on_device_model::LoadModelAssets, *model_paths_),
         base::BindOnce(&OnDeviceModelServiceController::OnModelAssetsLoaded,
                        weak_ptr_factory_.GetWeakPtr(),
                        model_remote_.BindNewPipeAndPassReceiver()));
@@ -177,6 +221,41 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
       std::move(model),
       base::BindOnce(&OnDeviceModelServiceController::OnLoadModelResult,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void OnDeviceModelServiceController::MaybeUpdateSafetyModel(
+    base::optional_ref<const ModelInfo> model_info) {
+  if (model_info.has_value() && HasRequiredSafetyFiles(*model_info)) {
+    safety_model_info_ = *model_info;
+
+    // Update the paths if this exists to be used in subsequent sessions.
+    if (model_paths_) {
+      model_paths_->ts_data =
+          *(safety_model_info_->GetAdditionalFileWithBaseName(kTsDataFile));
+      model_paths_->ts_sp_model =
+          *(safety_model_info_->GetAdditionalFileWithBaseName(kTsSpModelFile));
+    }
+  } else if (model_paths_) {
+    safety_model_info_ = std::nullopt;
+    // Clear out T&S model paths if we shouldn't use the current safety model
+    // anymore. The current active session will still use the safety model
+    // though, if already using it.
+    model_paths_->ts_data = base::FilePath();
+    model_paths_->ts_sp_model = base::FilePath();
+  }
+}
+
+void OnDeviceModelServiceController::StateChanged(
+    const OnDeviceModelComponentState* state) {
+  if (state && !model_paths_) {
+    Init();
+  } else {
+    // TODO(b/302327114): Support other cases. Decide how to handle:
+    // * If state is null and Init() has already been called. We should prevent
+    // future requests from being handled, and maybe kill in-flight tasks.
+    // * If state is non-null and Init() has already been called. We should
+    // probably re-load any files as they may have changed.
+  }
 }
 
 void OnDeviceModelServiceController::OnLoadModelResult(

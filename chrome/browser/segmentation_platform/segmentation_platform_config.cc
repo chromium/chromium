@@ -45,7 +45,6 @@
 #include "components/segmentation_platform/embedder/default_model/intentional_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/most_visited_tiles_user.h"
 #include "components/segmentation_platform/embedder/default_model/power_user_segment.h"
-#include "components/segmentation_platform/embedder/default_model/query_tiles_model.h"
 #include "components/segmentation_platform/embedder/default_model/tablet_productivity_user_model.h"
 #endif
 
@@ -157,7 +156,6 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
     configs.emplace_back(GetConfigForContextualPageActions(context));
   }
 
-  configs.emplace_back(QueryTilesModel::GetConfig());
   configs.emplace_back(ChromeStartModelV2::GetConfig());
   configs.emplace_back(IntentionalUserModel::GetConfig());
   configs.emplace_back(PowerUserSegment::GetConfig());

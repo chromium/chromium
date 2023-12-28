@@ -61,10 +61,8 @@ void RenderAccessibilityManager::SetMode(const ui::AXMode& new_mode,
 
   if (new_mode.has_mode(ui::AXMode::kWebContents) &&
       !old_mode.has_mode(ui::AXMode::kWebContents)) {
-    render_accessibility_ = std::make_unique<RenderAccessibilityImpl>(
-        this, render_frame_,
-        base::FeatureList::IsEnabled(
-            blink::features::kSerializeAccessibilityPostLifecycle));
+    render_accessibility_ =
+        std::make_unique<RenderAccessibilityImpl>(this, render_frame_);
   } else if (!new_mode.has_mode(ui::AXMode::kWebContents) &&
              old_mode.has_mode(ui::AXMode::kWebContents)) {
     render_accessibility_.reset();

@@ -38,7 +38,6 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
-#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/data_pipe_bytes_consumer.h"
@@ -97,10 +96,7 @@ class PLATFORM_EXPORT ResourceLoader final
                  Resource*,
                  ContextLifecycleNotifier*,
                  ResourceRequestBody request_body = ResourceRequestBody(),
-                 uint32_t inflight_keepalive_bytes = 0,
-                 absl::optional<mojom::blink::WebFeature> count_orb_block_as =
-                     absl::nullopt);
-
+                 uint32_t inflight_keepalive_bytes = 0);
   ~ResourceLoader() override;
   void Trace(Visitor*) const override;
 
@@ -112,10 +108,6 @@ class PLATFORM_EXPORT ResourceLoader final
   void SetDefersLoading(LoaderFreezeMode);
 
   void DidChangePriority(ResourceLoadPriority, int intra_priority_value);
-
-  // Called before start() to activate cache-aware loading if enabled in
-  // |m_resource->options()| and applicable.
-  void ActivateCacheAwareLoadingIfNeeded(const ResourceRequestHead&);
 
   bool IsCacheAwareLoadingActivated() const {
     return is_cache_aware_loading_activated_;
@@ -158,8 +150,7 @@ class PLATFORM_EXPORT ResourceLoader final
   void DidFinishLoading(base::TimeTicks response_end_time,
                         int64_t encoded_data_length,
                         uint64_t encoded_body_length,
-                        int64_t decoded_body_length,
-                        bool should_report_corb_blocking) override;
+                        int64_t decoded_body_length) override;
   void DidFail(const WebURLError&,
                base::TimeTicks response_end_time,
                int64_t encoded_data_length,
@@ -194,15 +185,14 @@ class PLATFORM_EXPORT ResourceLoader final
   void DidCancelLoadingBody() override;
 
   bool ShouldFetchCodeCache();
-  void StartWith(const ResourceRequestHead&);
+  void StartFetch();
 
   void Release(ResourceLoadScheduler::ReleaseOption,
                const ResourceLoadScheduler::TrafficReportHints&);
 
-  // This method is currently only used for service worker fallback request and
-  // cache-aware loading, other users should be careful not to break
-  // ResourceLoader state.
-  void Restart(const ResourceRequestHead&);
+  // This method is currently only used for cache-aware loading, other users
+  // should be careful not to break ResourceLoader state.
+  void Restart();
 
   FetchContext& Context() const;
 
@@ -212,8 +202,8 @@ class PLATFORM_EXPORT ResourceLoader final
 
   void CancelForRedirectAccessCheckError(const KURL&,
                                          ResourceRequestBlockedReason);
-  void RequestSynchronously(const ResourceRequestHead&);
-  void RequestAsynchronously(const ResourceRequestHead&);
+  void RequestSynchronously();
+  void RequestAsynchronously();
   void Dispose();
 
   void DidReceiveResponseInternal(
@@ -250,9 +240,13 @@ class PLATFORM_EXPORT ResourceLoader final
   void CountPrivateNetworkAccessPreflightResult(
       network::mojom::PrivateNetworkAccessPreflightResult result);
 
-  void CountOrbBlock() const;
+  // The request object which will be passed to URLLoader. This is not used when
+  // the request URL is a data URL.
+  std::unique_ptr<network::ResourceRequest> network_resource_request_;
 
+  // Used only for non-data URL request.
   std::unique_ptr<URLLoader> loader_;
+
   ResourceLoadScheduler::ClientId scheduler_client_id_;
   Member<ResourceFetcher> fetcher_;
   Member<ResourceLoadScheduler> scheduler_;
@@ -268,7 +262,6 @@ class PLATFORM_EXPORT ResourceLoader final
   uint32_t inflight_keepalive_bytes_;
   bool is_cache_aware_loading_activated_;
 
-  bool is_downloading_to_blob_ = false;
   blink::HeapMojoAssociatedReceiver<mojom::blink::ProgressClient,
                                     blink::ResourceLoader>
       progress_receiver_;
@@ -281,7 +274,6 @@ class PLATFORM_EXPORT ResourceLoader final
   // when the blob is finished too.
   struct DeferredFinishLoadingInfo {
     base::TimeTicks response_end_time;
-    bool should_report_corb_blocking;
   };
   absl::optional<DeferredFinishLoadingInfo> deferred_finish_loading_info_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_body_loader_;
@@ -300,11 +292,7 @@ class PLATFORM_EXPORT ResourceLoader final
 
   int64_t received_body_length_from_service_worker_ = 0;
   CnameAliasInfoForTesting cname_alias_info_for_testing_;
-
-  // Count ORB-blocked responses (optionally), so that we can measure
-  // compatibility impact.
-  // TODO(vogelheim, 1463725): Remove this once the ORB feature launches.
-  const absl::optional<mojom::blink::WebFeature> count_orb_block_as_;
+  bool finished_ = false;
 };
 
 }  // namespace blink

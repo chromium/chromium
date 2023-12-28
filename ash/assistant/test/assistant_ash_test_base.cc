@@ -90,7 +90,7 @@ class ChildViewCollector {
       Get(child, result);
   }
 
-  raw_ptr<const views::View, ExperimentalAsh> parent_;
+  raw_ptr<const views::View> parent_;
 };
 
 }  // namespace

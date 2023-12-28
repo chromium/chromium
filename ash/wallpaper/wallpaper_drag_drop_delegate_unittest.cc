@@ -185,8 +185,7 @@ class WallpaperDragDropDelegateTest
   // The delegate, owned by the `WallpaperControllerImpl`, for drag-and-drop
   // events over the wallpaper. May be `nullptr` depending on test
   // parameterization.
-  raw_ptr<StrictMock<MockWallpaperDragDropDelegate>,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<StrictMock<MockWallpaperDragDropDelegate>, DanglingUntriaged>
       delegate_ = nullptr;
 
   // The widget from which data can be drag-and-dropped.

@@ -12,6 +12,7 @@
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/tasks/glanceables_task_view.h"
+#include "ash/glanceables/tasks/glanceables_task_view_v2.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/style/combobox.h"
@@ -170,11 +171,6 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
     return current_items;
   }
 
-  GlanceablesTaskView* GetTaskItemView(int item_index) {
-    return views::AsViewClass<GlanceablesTaskView>(
-        GetTasksItemContainerView()->children()[item_index]);
-  }
-
   ClassroomBubbleStudentView* GetStudentView() const {
     return GetGlanceableTrayBubble()->GetClassroomStudentView();
   }
@@ -226,10 +222,17 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
 };
 
 class GlanceablesMvpBrowserTest : public GlanceablesBrowserTest {
+ public:
   void SetUpOnMainThread() override {
     GlanceablesBrowserTest::SetUpOnMainThread();
     base::AddFeatureIdTagToTestResult(
         "screenplay-ace3b729-5402-40cd-b2bf-d488bc95b7e2");
+  }
+
+  // Returns the task view at `item_index`.
+  GlanceablesTaskView* GetTaskItemView(int item_index) {
+    return views::AsViewClass<GlanceablesTaskView>(
+        GetTasksItemContainerView()->children()[item_index]);
   }
 };
 
@@ -474,6 +477,13 @@ IN_PROC_BROWSER_TEST_F(GlanceablesMvpBrowserTest, CheckOffTaskItems) {
 }
 
 class GlanceablesWithAddEditBrowserTest : public GlanceablesBrowserTest {
+ public:
+  // Returns the task view at `item_index`.
+  GlanceablesTaskViewV2* GetTaskItemView(int item_index) {
+    return views::AsViewClass<GlanceablesTaskViewV2>(
+        GetTasksItemContainerView()->children()[item_index]);
+  }
+
  private:
   base::test::ScopedFeatureList features_{
       features::kGlanceablesTimeManagementStableLaunch};

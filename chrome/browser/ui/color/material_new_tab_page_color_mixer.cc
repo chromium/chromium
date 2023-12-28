@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/color/material_new_tab_page_color_mixer.h"
 
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "components/search/ntp_features.h"
@@ -70,4 +71,52 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPagePromoBackground] = {ui::kColorSysBase};
   mixer[kColorNewTabPagePrimaryForeground] = {ui::kColorSysOnSurface};
   mixer[kColorNewTabPageSecondaryForeground] = {ui::kColorSysOnSurfaceSubtle};
+
+  if (base::FeatureList::IsEnabled(ntp_features::kRealboxCr23Theming) ||
+      base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All)) {
+    // TODO(https://crbug.com/1509456): Clean up kNtpComprehensiveThemeRealbox flag.
+
+    // Steady state theme colors.
+    mixer[kColorRealboxBackground] = {kColorToolbarBackgroundSubtleEmphasis};
+    mixer[kColorRealboxBackgroundHovered] = {
+        kColorToolbarBackgroundSubtleEmphasisHovered};
+    mixer[kColorRealboxPlaceholder] = {kColorOmniboxTextDimmed};
+    mixer[kColorRealboxSearchIconBackground] = {kColorOmniboxResultsIcon};
+    mixer[kColorRealboxLensVoiceIconBackground] = {ui::kColorSysPrimary};
+
+    // Expanded state theme colors.
+    mixer[kColorRealboxAnswerIconBackground] = {
+        kColorOmniboxAnswerIconGM3Background};
+    mixer[kColorRealboxAnswerIconForeground] = {
+        kColorOmniboxAnswerIconGM3Foreground};
+    mixer[kColorRealboxForeground] = {kColorOmniboxText};
+    mixer[kColorRealboxResultsActionChip] = {ui::kColorSysTonalOutline};
+    mixer[kColorRealboxResultsActionChipIcon] = {ui::kColorSysPrimary};
+    mixer[kColorRealboxResultsActionChipFocusOutline] = {
+        ui::kColorSysStateFocusRing};
+    mixer[kColorRealboxResultsBackgroundHovered] = {
+        kColorOmniboxResultsBackgroundHovered};
+    mixer[kColorRealboxResultsDimSelected] = {
+        kColorOmniboxResultsTextDimmedSelected};
+    mixer[kColorRealboxResultsFocusIndicator] = {
+        kColorOmniboxResultsFocusIndicator};
+    mixer[kColorRealboxResultsForeground] = {kColorOmniboxText};
+    mixer[kColorRealboxResultsForegroundDimmed] = {kColorOmniboxTextDimmed};
+    mixer[kColorRealboxResultsIcon] = {kColorOmniboxResultsIcon};
+    mixer[kColorRealboxResultsIconSelected] = {kColorOmniboxResultsIcon};
+    mixer[kColorRealboxResultsIconFocusedOutline] = {
+        kColorOmniboxResultsButtonIconSelected};
+    mixer[kColorRealboxResultsUrl] = {kColorOmniboxResultsUrl};
+    mixer[kColorRealboxResultsUrlSelected] = {kColorOmniboxResultsUrlSelected};
+
+    // This determines weather the realbox expanded state background in dark
+    // mode will match the omnibox or not.
+    if (key.color_mode == ui::ColorProviderKey::ColorMode::kDark &&
+        !ntp_features::kNtpRealboxCr23ExpandedStateBgMatchesOmnibox.Get()) {
+      mixer[kColorRealboxResultsBackground] = {
+          kColorToolbarBackgroundSubtleEmphasis};
+    } else {
+      mixer[kColorRealboxResultsBackground] = {kColorOmniboxResultsBackground};
+    }
+  }
 }

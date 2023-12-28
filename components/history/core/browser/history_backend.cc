@@ -363,9 +363,9 @@ HistoryBackend::HistoryBackend(
     std::unique_ptr<HistoryBackendClient> backend_client,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : delegate_(std::move(delegate)),
-      expirer_(this, backend_client.get(), task_runner),
       recent_redirects_(kMaxRedirectCount),
       backend_client_(std::move(backend_client)),
+      expirer_(this, backend_client_.get(), task_runner),
       task_runner_(task_runner) {
   DCHECK(delegate_);
 }
@@ -1334,6 +1334,9 @@ void HistoryBackend::OnMemoryPressure(
 }
 
 void HistoryBackend::CloseAllDatabases() {
+  // Reset to avoid dangling pointers to the database.
+  history_sync_bridge_.reset();
+  expirer_.SetDatabases(/*main_db=*/nullptr, /*favicon_db=*/nullptr);
   if (db_) {
     CommitSingletonTransactionIfItExists();
     db_.reset();
@@ -3246,7 +3249,6 @@ void HistoryBackend::BeginSingletonTransaction() {
   singleton_transaction_ = db_->CreateTransaction();
 
   bool success = singleton_transaction_->Begin();
-  UMA_HISTOGRAM_BOOLEAN("History.Backend.TransactionBeginSuccess", success);
   if (success) {
     DCHECK_EQ(db_->transaction_nesting(), 1);
   } else {

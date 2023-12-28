@@ -35,7 +35,7 @@ namespace {
 // Some of the types that the model was trained on are not supported by the
 // client. Index 0 is UNKNOWN_TYPE, while the others are non-supported types.
 // The handler receives this information as part of its metadata.
-constexpr std::array<ServerFieldType, 57> kSupportedFieldTypes = {
+constexpr std::array<FieldType, 57> kSupportedFieldTypes = {
     UNKNOWN_TYPE,
     EMAIL_ADDRESS,
     UNKNOWN_TYPE,
@@ -95,7 +95,7 @@ constexpr std::array<ServerFieldType, 57> kSupportedFieldTypes = {
     ADDRESS_HOME_LINE1};
 
 // The matcher expects two arguments of types std::unique_ptr<AutofillField>
-// and ServerFieldType respectively.
+// and FieldType respectively.
 MATCHER(MlTypeEq, "") {
   return std::get<0>(arg)->heuristic_type(HeuristicSource::kMachineLearning) ==
          std::get<1>(arg);
@@ -141,7 +141,7 @@ class AutofillMlPredictionModelHandlerTest : public testing::Test {
 
   // The expected types for the form in `CreateOverfittedForm()` using the
   // overfitted model.
-  std::vector<ServerFieldType> ExpectedTypesForOverfittedForm() const {
+  std::vector<FieldType> ExpectedTypesForOverfittedForm() const {
     return {NAME_FULL,       UNKNOWN_TYPE,
             UNKNOWN_TYPE,    PHONE_HOME_CITY_AND_NUMBER,
             EMAIL_ADDRESS,   UNKNOWN_TYPE,
@@ -180,7 +180,7 @@ class AutofillMlPredictionModelHandlerTest : public testing::Test {
         test_data_dir_.AppendASCII("br_overfitted_dictionary_test.txt"),
         metadata);
     // Construct `output_type()`.
-    for (ServerFieldType type : kSupportedFieldTypes) {
+    for (FieldType type : kSupportedFieldTypes) {
       metadata.add_output_type(static_cast<int>(type));
     }
     if (confidence_threshold) {
@@ -254,7 +254,7 @@ TEST_F(AutofillMlPredictionModelHandlerTest,
                                              future.GetCallback());
   EXPECT_THAT(future.Get()->fields(),
               testing::Pointwise(
-                  MlTypeEq(), std::vector<ServerFieldType>(
+                  MlTypeEq(), std::vector<FieldType>(
                                   future.Get()->field_count(), UNKNOWN_TYPE)));
 }
 

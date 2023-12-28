@@ -107,6 +107,16 @@ class ShortcutCustomizationInteractiveUiTestBase
         ExecuteJsAt(webcontents_id_, kDoneButtonQuery, kClickFn));
   }
 
+ auto ClickAddShortcutButton() {
+    CHECK(webcontents_id_);
+    return Steps(ExecuteJsAt(webcontents_id_, kAddShortcutButtonQuery, kClickFn));
+  }
+
+ auto ClickDoneButton() {
+    CHECK(webcontents_id_);
+    return Steps(ExecuteJsAt(webcontents_id_, kDoneButtonQuery, kClickFn));
+  }
+
   ui::InteractionSequence::StepBuilder LaunchShortcutCustomizationApp();
 
   // Ensure focusing web contents doesn't accidentally block accelerator

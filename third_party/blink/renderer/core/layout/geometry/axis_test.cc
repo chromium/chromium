@@ -5,10 +5,12 @@
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(AxisTest, LogicalAxesOperators) {
+  test::TaskEnvironment task_environment;
   // operator |
   EXPECT_EQ(kLogicalAxisNone, (kLogicalAxisNone | kLogicalAxisNone));
   EXPECT_EQ(kLogicalAxisInline, (kLogicalAxisNone | kLogicalAxisInline));
@@ -42,6 +44,7 @@ TEST(AxisTest, LogicalAxesOperators) {
 }
 
 TEST(AxisTest, PhysicalAxesOperators) {
+  test::TaskEnvironment task_environment;
   // operator |
   EXPECT_EQ(kPhysicalAxisNone, (kPhysicalAxisNone | kPhysicalAxisNone));
   EXPECT_EQ(kPhysicalAxisHorizontal,
@@ -80,6 +83,7 @@ TEST(AxisTest, PhysicalAxesOperators) {
 }
 
 TEST(AxisTest, ToPhysicalAxes) {
+  test::TaskEnvironment task_environment;
   ASSERT_TRUE(IsHorizontalWritingMode(WritingMode::kHorizontalTb));
   ASSERT_FALSE(IsHorizontalWritingMode(WritingMode::kVerticalRl));
 
@@ -105,6 +109,7 @@ TEST(AxisTest, ToPhysicalAxes) {
 }
 
 TEST(AxisTest, ToLogicalAxes) {
+  test::TaskEnvironment task_environment;
   ASSERT_TRUE(IsHorizontalWritingMode(WritingMode::kHorizontalTb));
   ASSERT_FALSE(IsHorizontalWritingMode(WritingMode::kVerticalRl));
 

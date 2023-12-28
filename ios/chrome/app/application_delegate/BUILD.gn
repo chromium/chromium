@@ -52,7 +52,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/shared/coordinator/scene",
     "//ios/chrome/browser/shared/coordinator/scene/test",
-    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
@@ -129,7 +128,7 @@ source_set("metric_kit_subscriber") {
 
 source_set("app_state_header") {
   sources = [
-    "app_state+private.h",
+    "app_state+Testing.h",
     "app_state.h",
     "app_state_agent.h",
     "app_state_observer.h",
@@ -192,7 +191,7 @@ source_set("application_delegate_internal") {
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/ntp/model:util",
-    "//ios/chrome/browser/policy:policy_util",
+    "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/shared/coordinator/scene",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",

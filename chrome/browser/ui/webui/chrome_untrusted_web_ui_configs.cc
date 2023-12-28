@@ -15,6 +15,10 @@
 #include "chrome/browser/ui/webui/hats/hats_ui.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
+#include "components/lens/buildflags.h"
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+#include "chrome/browser/ui/webui/lens/lens_untrusted_ui_config.h"
+#endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 #endif  // defined(TOOLKIT_VIEWS)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -43,6 +47,10 @@ void RegisterChromeUntrustedWebUIConfigs() {
   map.AddUntrustedWebUIConfig(
       std::make_unique<ReadAnythingUIUntrustedConfig>());
   map.AddUntrustedWebUIConfig(std::make_unique<HatsUIConfig>());
+
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+  map.AddUntrustedWebUIConfig(std::make_unique<lens::LensUntrustedUIConfig>());
+#endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 #endif  // defined(TOOLKIT_VIEWS)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)

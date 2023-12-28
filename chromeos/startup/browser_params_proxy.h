@@ -22,6 +22,9 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
   // before any threads are created in the browser process.
   static void WaitForLogin();
 
+  // Returns true if the user has logged in, false if not.
+  static bool IsLoggedIn();
+
   // Init and post-login parameters' accessors are listed starting from here.
   bool IsCrosapiDisabledForTesting() const;
 
@@ -151,6 +154,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
   bool IsCrosWebAppShortcutUiUpdateEnabled() const;
 
   bool IsCrosShortstandEnabled() const;
+
+  bool ShouldDisableChromeComposeOnChromeOS() const;
 
  private:
   friend base::NoDestructor<BrowserParamsProxy>;

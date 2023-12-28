@@ -56,22 +56,6 @@ export interface InlineLoginBrowserProxy {
 
   /** Send 'dialogClose' message to close the login dialog. */
   dialogClose(): void;
-
-  // <if expr="chromeos_ash">
-  /**
-   * Send 'skipWelcomePage' message to the handler.
-   * @param skip Whether the welcome page should be skipped.
-   */
-  skipWelcomePage(skip: boolean): void;
-
-  /** Send 'openGuestWindow' message to the handler */
-  openGuestWindow(): void;
-
-  /**
-   * @return JSON-encoded dialog arguments.
-   */
-  getDialogArguments(): string|null;
-  // </if>
 }
 
 export class InlineLoginBrowserProxyImpl implements InlineLoginBrowserProxy {
@@ -114,20 +98,6 @@ export class InlineLoginBrowserProxyImpl implements InlineLoginBrowserProxy {
   dialogClose() {
     chrome.send('dialogClose');
   }
-
-  // <if expr="chromeos_ash">
-  skipWelcomePage(skip: boolean) {
-    chrome.send('skipWelcomePage', [skip]);
-  }
-
-  openGuestWindow() {
-    chrome.send('openGuestWindow');
-  }
-
-  getDialogArguments() {
-    return chrome.getVariableValue('dialogArguments');
-  }
-  // </if>
 
   static getInstance(): InlineLoginBrowserProxy {
     return instance || (instance = new InlineLoginBrowserProxyImpl());

@@ -10,8 +10,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/accessibility/assistive_technology_controller_impl.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
 #include "ui/accessibility/ax_event.h"
@@ -28,10 +26,6 @@ template <typename T>
 class Local;
 class ObjectTemplate;
 }  // namespace v8
-
-namespace gin {
-class Arguments;
-}  // namespace gin
 
 namespace ax {
 class BindingsIsolateHolder;
@@ -50,8 +44,7 @@ class AutomationInternalBindings : public ui::AutomationTreeManagerOwner,
   // V8Manager which implements BindingsIsolateHolder.
   explicit AutomationInternalBindings(
       BindingsIsolateHolder* isolate_holder,
-      mojo::PendingAssociatedReceiver<mojom::Automation> automation,
-      mojo::PendingRemote<mojom::AutomationClient> automation_client);
+      mojo::PendingAssociatedReceiver<mojom::Automation> automation);
   ~AutomationInternalBindings() override;
   AutomationInternalBindings(const AutomationInternalBindings&) = delete;
   AutomationInternalBindings& operator=(const AutomationInternalBindings&) =
@@ -61,9 +54,6 @@ class AutomationInternalBindings : public ui::AutomationTreeManagerOwner,
   // V8 bindings to the given |object_template|.
   // Adds V8 bindings for the chrome.automation API.
   void AddAutomationRoutesToTemplate(
-      v8::Local<v8::ObjectTemplate>* object_template);
-  // Adds V8 bindings for the chrome.automationInternal API.
-  void AddAutomationInternalRoutesToTemplate(
       v8::Local<v8::ObjectTemplate>* object_template);
 
   // ui::AutomationTreeManagerOwner:
@@ -94,27 +84,16 @@ class AutomationInternalBindings : public ui::AutomationTreeManagerOwner,
   void DispatchEvent(const std::string& event_name,
                      const base::Value::List& event_args) const override;
 
-  // Methods to communicate back to the OS main process. These should get bound
-  // to V8 JS methods and called from there.
-  void Enable(gin::Arguments* args);
-  void Disable(gin::Arguments* args);
-  void EnableTree(const ui::AXTreeID& tree_id);
-  void PerformAction(const ui::AXActionData& action_data);
-
  private:
   friend class AutomationInternalBindingsTest;
 
   // Used during object template creation.
-  raw_ptr<v8::Local<v8::ObjectTemplate>, ExperimentalAsh> template_;
+  raw_ptr<v8::Local<v8::ObjectTemplate>> template_;
 
   // Owns `this`.
   raw_ptr<BindingsIsolateHolder> isolate_holder_;
 
   std::unique_ptr<ui::AutomationV8Bindings> automation_v8_bindings_;
-
-  // We can send automation info back to the main Service thread with the
-  // automation client interface.
-  mojo::Remote<mojom::AutomationClient> automation_client_remote_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -57,6 +57,7 @@ SYSTEM_LOG_LOCATIONS = [
     '/var/log/chrome/',
     '/var/log/messages',
     '/var/log/ui/',
+    '/var/log/lacros/',
 ]
 
 TAST_DEBUG_DOC = 'https://bit.ly/2LgvIXz'

@@ -925,8 +925,7 @@ std::vector<viz::SurfaceId> RenderViewHostImpl::CollectSurfaceIdsForEviction() {
             ? tree.NodesIncludingInnerTreeNodes()
             : tree.SubtreeNodes(root);
     CollectSurfaceIdsForEvictionForFrameTreeNodeRange(node_range, ids);
-  } else if (is_in_back_forward_cache_ &&
-             base::FeatureList::IsEnabled(features::kEvictSubtree)) {
+  } else if (is_in_back_forward_cache_) {
     // `FrameTree::SubtreeAndInnerTreeNodes` starts with the children of `rfh`
     // so we need to add our current viz::SurfaceId to ensure it is evicted.
     if (render_widget_host_) {

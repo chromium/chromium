@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/cpu.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -13,10 +14,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/smart_dim_component_installer.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/component_updater/component_updater_service.h"
 #include "net/dns/mock_host_resolver.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window_observer.h"
@@ -68,7 +70,7 @@ class LacrosWindowWaiter : public aura::EnvObserver,
 
 }  // namespace
 
-class SmartDimIntegrationTest : public InteractiveAshTest {
+class SmartDimIntegrationTest : public AshIntegrationTest {
  public:
   SmartDimIntegrationTest() {
     feature_list_.InitAndEnableFeature(features::kSmartDim);
@@ -180,7 +182,7 @@ class SmartDimLacrosIntegrationTest : public SmartDimIntegrationTest {
         ash::standalone_browser::features::kLacrosOnly);
   }
 
-  // InteractiveAshTest:
+  // AshIntegrationTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SmartDimIntegrationTest::SetUpCommandLine(command_line);
     SetUpCommandLineForLacros(command_line);
@@ -189,9 +191,13 @@ class SmartDimLacrosIntegrationTest : public SmartDimIntegrationTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Disabled due to failure on chromeos-betty-pi-arc-chrome.
-// TODO(http://b/308674133): Enable after fix.
-IN_PROC_BROWSER_TEST_F(SmartDimLacrosIntegrationTest, DISABLED_SmartDim) {
+IN_PROC_BROWSER_TEST_F(SmartDimLacrosIntegrationTest, SmartDim) {
+  // Lacros fails to start up correctly on VM tryservers like
+  // chromeos-amd64-generic (Lacros restarts in a loop). b/303359438
+  if (base::CPU().is_running_in_vm()) {
+    GTEST_SKIP();
+  }
+
   ASSERT_TRUE(crosapi::browser_util::IsLacrosEnabled());
 
   // The test opens a Lacros window, so ensure the Wayland server is running and

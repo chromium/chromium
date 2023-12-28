@@ -8,7 +8,9 @@
  * Autofill keyboard accessory.
  */
 
-// Requires functions from fill.js and form.js.
+// Requires functions from fill.js, form.js, and autofill_form_features.js.
+
+import {processChildFrameMessage} from '//components/autofill/ios/form_util/resources/child_frame_registration_lib.js';
 
 /**
  * Namespace for this file. It depends on |__gCrWeb| having already been
@@ -198,6 +200,16 @@ function sendFormMutationMessageAfterDelay_(msg, delay) {
   }, delay);
 }
 
+/**
+ * Checks if cross-frame filling is enabled and, if so, forwards messages to
+ * the Child Frame Registration lib.
+ */
+function maybeProcessChildFrame_(event) {
+  if (__gCrWeb.autofill_form_features.isAutofillAcrossIframesEnabled()) {
+    processChildFrameMessage(event);
+  }
+}
+
 function attachListeners_() {
   /**
    * Focus events performed on the 'capture' phase otherwise they are often
@@ -217,6 +229,12 @@ function attachListeners_() {
    */
   document.addEventListener('keyup', formActivity_, false);
   document.addEventListener('submit', submitHandler_, false);
+
+  /**
+   * Receipt of cross-frame messages for Child Frame Registration don't use the
+   * `formActivity_` handler, but need to be attached under the same conditions.
+   */
+  window.addEventListener('message', maybeProcessChildFrame_);
 
   // Per specification, SubmitEvent is not triggered when calling form.submit().
   // Hook the method to call the handler in that case.

@@ -406,8 +406,16 @@ bool IsABookmarkNodeSectionForIdentifier(
         [[TableViewSigninPromoItem alloc]
             initWithType:BookmarksHomeItemTypePromo];
     signinPromoItem.configurator = [signinPromoViewMediator createConfigurator];
-    signinPromoItem.text =
-        l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_BOOKMARKS);
+
+    if (signinPromoViewMediator.signinPromoAction ==
+        SigninPromoAction::kReviewAccountSettings) {
+      signinPromoItem.text = l10n_util::GetNSString(
+          IDS_IOS_SIGNIN_PROMO_REVIEW_BOOKMARKS_SETTINGS);
+    } else {
+      signinPromoItem.text =
+          l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_BOOKMARKS);
+    }
+
     signinPromoItem.delegate = signinPromoViewMediator;
     [signinPromoViewMediator signinPromoViewIsVisible];
 
@@ -482,6 +490,19 @@ bool IsABookmarkNodeSectionForIdentifier(
       << _localOrSyncableBookmarkModel.get()
       << ", accountBookmarkModel: " << _accountBookmarkModel.get();
   return NO;
+}
+
+- (void)updateReviewSettingsPromo {
+  self.promoVisible = NO;
+  if ([self.consumer.tableViewModel
+          hasSectionForSectionIdentifier:BookmarksHomeSectionIdentifierPromo]) {
+    [self.consumer.tableViewModel
+        removeSectionWithIdentifier:BookmarksHomeSectionIdentifierPromo];
+  }
+  // Decide if a sign in promo should be visible.
+  [self computePromoTableViewData];
+  // Decide if the promo should be removed.
+  [self.bookmarkPromoController updateShouldShowSigninPromo];
 }
 
 #pragma mark - Properties

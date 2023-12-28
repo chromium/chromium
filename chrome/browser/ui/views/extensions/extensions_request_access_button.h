@@ -8,7 +8,7 @@
 #include <optional>
 
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_chip_button.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "url/origin.h"
@@ -23,9 +23,10 @@ class ExtensionsRequestAccessHoverCardCoordinator;
 
 // Button in the toolbar bar that displays the extensions that requests
 // access, and are allowed to do so, and grants them access.
-class ExtensionsRequestAccessButton : public ToolbarButton {
+class ExtensionsRequestAccessButton : public ToolbarChipButton {
+  METADATA_HEADER(ExtensionsRequestAccessButton, ToolbarChipButton)
+
  public:
-  METADATA_HEADER(ExtensionsRequestAccessButton);
   explicit ExtensionsRequestAccessButton(
       Browser* browser,
       ExtensionsContainer* extensions_container);

@@ -8,6 +8,10 @@
 #![allow(unused_variables)]
 #![allow(dead_code)]
 
+chromium::import! {
+    "//mojo/public/rust:mojo";
+}
+
 use mojo::bindings::decoding::{self, Decoder, ValidationError};
 use mojo::bindings::encoding::{
     self, Context, DataHeaderValue, Encoder, EncodingState, DATA_HEADER_SIZE,

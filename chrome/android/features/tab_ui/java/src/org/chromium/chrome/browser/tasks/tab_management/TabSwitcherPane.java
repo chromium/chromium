@@ -45,6 +45,9 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
     }
 
     @Override
+    public void destroy() {}
+
+    @Override
     public @PaneId int getPaneId() {
         return PaneId.TAB_SWITCHER;
     }

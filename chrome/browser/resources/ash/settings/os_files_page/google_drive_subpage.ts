@@ -375,6 +375,12 @@ export class SettingsGoogleDriveSubpageElement extends
         setInterval(this.updateContentCacheSize_.bind(this), 5000);
   }
 
+  private getDriveAccountStatusLabel_(): TrustedHTML {
+    return this.driveDisabled_ ?
+        this.i18nAdvanced('googleDriveReconnectAs', {attrs: ['id']}) :
+        this.i18nAdvanced('googleDriveSignedInAs', {attrs: ['id']});
+  }
+
   /**
    * Returns the value for the button to Connect/Disconnect Google drive
    * depending on the current state.

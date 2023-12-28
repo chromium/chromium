@@ -1313,6 +1313,66 @@ TEST_P(IntersectionObserverTest, CachedRectsDisplayNone) {
   EXPECT_FALSE(observation->CanUseCachedRectsForTesting());
 }
 
+TEST_P(IntersectionObserverTest, CachedRectsWithFixedPosition) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <div id="fixed" style="position: fixed">
+      <div id="child">Child</div>
+    </div>
+  )HTML");
+
+  Element* fixed = GetDocument().getElementById(AtomicString("fixed"));
+  Element* child = GetDocument().getElementById(AtomicString("child"));
+
+  IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
+  DummyExceptionStateForTesting exception_state;
+  TestIntersectionObserverDelegate* observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+  IntersectionObserver* observer = IntersectionObserver::Create(
+      observer_init, *observer_delegate, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  observer->observe(fixed, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  observer->observe(child, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  // CanUseCachedRectsForTesting requires clean layout.
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+
+  IntersectionObservation* observation1 =
+      fixed->IntersectionObserverData()->GetObservationFor(*observer);
+  EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
+  IntersectionObservation* observation2 =
+      child->IntersectionObserverData()->GetObservationFor(*observer);
+  EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
+
+  // Generate initial notifications and populate cache
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    EXPECT_TRUE(observation1->CanUseCachedRectsForTesting());
+    EXPECT_TRUE(observation2->CanUseCachedRectsForTesting());
+  } else {
+    EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
+    EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
+  }
+
+  GetDocument().domWindow()->scrollTo(0, 100);
+  GetDocument().View()->UpdateLifecycleToPrePaintClean(
+      DocumentUpdateReason::kTest);
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    EXPECT_TRUE(observation1->CanUseCachedRectsForTesting());
+    EXPECT_TRUE(observation2->CanUseCachedRectsForTesting());
+  } else {
+    EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
+    EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
+  }
+}
+
 TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateNotScrollable) {
   if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
     return;

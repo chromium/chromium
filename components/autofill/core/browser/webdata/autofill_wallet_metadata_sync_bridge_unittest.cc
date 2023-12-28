@@ -25,8 +25,9 @@
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_test_util.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -48,6 +49,7 @@ namespace autofill {
 namespace {
 
 using base::ScopedTempDir;
+using IbanChangeKey = absl::variant<std::string, int64_t>;
 using sync_pb::WalletMetadataSpecifics;
 using syncer::DataBatch;
 using syncer::EntityData;
@@ -62,24 +64,37 @@ using testing::Return;
 using testing::UnorderedElementsAre;
 
 // Non-UTF8 server IDs.
-const char kAddr1ServerId[] = "addr1\xEF\xBF\xBE";
-const char kAddr2ServerId[] = "addr2\xEF\xBF\xBE";
-const char kCard1ServerId[] = "card1\xEF\xBF\xBE";
-const char kCard2ServerId[] = "card2\xEF\xBF\xBE";
+constexpr char kAddr1ServerId[] = "addr1\xEF\xBF\xBE";
+constexpr char kAddr2ServerId[] = "addr2\xEF\xBF\xBE";
+constexpr char kCard1ServerId[] = "card1\xEF\xBF\xBE";
+constexpr char kCard2ServerId[] = "card2\xEF\xBF\xBE";
+
+// Server IBAN instrument IDs.
+constexpr Iban::InstrumentId kIban1InstrumentId =
+    Iban::InstrumentId(111222333444);
+constexpr Iban::InstrumentId kIban2InstrumentId =
+    Iban::InstrumentId(555666777888);
 
 // Base64 encodings of the server IDs, used as ids in WalletMetadataSpecifics
 // (these are suitable for syncing, because they are valid UTF-8).
-const char kAddr1SpecificsId[] = "YWRkcjHvv74=";
-const char kCard1SpecificsId[] = "Y2FyZDHvv74=";
-const char kCard2SpecificsId[] = "Y2FyZDLvv74=";
+constexpr char kAddr1SpecificsId[] = "YWRkcjHvv74=";
+constexpr char kCard1SpecificsId[] = "Y2FyZDHvv74=";
+constexpr char kCard2SpecificsId[] = "Y2FyZDLvv74=";
+constexpr char kIban1SpecificsId[] = "MTExMjIyMzMzNDQ0";
+constexpr char kIban2SpecificsId[] = "NTU1NjY2Nzc3ODg4";
 
 const std::string kCard1StorageKey =
     GetStorageKeyForWalletMetadataTypeAndSpecificsId(
         WalletMetadataSpecifics::CARD,
         kCard1SpecificsId);
+const std::string kIban1StorageKey =
+    GetStorageKeyForWalletMetadataTypeAndSpecificsId(
+        WalletMetadataSpecifics::IBAN,
+        kIban1SpecificsId);
 
 // Unique sync tag for the server ID.
 const char kCard1SyncTag[] = "card-Y2FyZDHvv74=";
+const char kIban1SyncTag[] = "iban-MTExMjIyMzMzNDQ0";
 
 const char kLocalAddr1ServerId[] = "e171e3ed-858a-4dd5-9bf3-8517f14ba5fc";
 const char kLocalAddr2ServerId[] = "fa232b9a-f248-4e5a-8d76-d46f821c0c5f";
@@ -102,6 +117,11 @@ std::string GetCardStorageKey(const std::string& specifics_id) {
       WalletMetadataSpecifics::CARD, specifics_id);
 }
 
+std::string GetIbanStorageKey(const std::string& specifics_id) {
+  return GetStorageKeyForWalletMetadataTypeAndSpecificsId(
+      WalletMetadataSpecifics::IBAN, specifics_id);
+}
+
 WalletMetadataSpecifics CreateWalletMetadataSpecificsForCardWithDetails(
     const std::string& specifics_id,
     size_t use_count,
@@ -114,7 +134,7 @@ WalletMetadataSpecifics CreateWalletMetadataSpecificsForCardWithDetails(
   specifics.set_use_date(use_date);
   // "" is the default value according to the constructor of AutofillProfile;
   // this field is Base64 encoded in the protobuf.
-  specifics.set_card_billing_address_id(GetBase64EncodedId(billing_address_id));
+  specifics.set_card_billing_address_id(base::Base64Encode(billing_address_id));
   return specifics;
 }
 
@@ -125,6 +145,18 @@ WalletMetadataSpecifics CreateWalletMetadataSpecificsForCard(
   return CreateWalletMetadataSpecificsForCardWithDetails(
       specifics_id, /*use_count=*/1,
       /*use_date=*/UseDateToProtoValue(kDefaultTime));
+}
+
+WalletMetadataSpecifics CreateWalletMetadataSpecificsForIbanWithDetails(
+    const std::string& specifics_id,
+    size_t use_count = 1,
+    int64_t use_date = UseDateToProtoValue(kDefaultTime)) {
+  WalletMetadataSpecifics specifics;
+  specifics.set_id(specifics_id);
+  specifics.set_type(WalletMetadataSpecifics::IBAN);
+  specifics.set_use_count(use_count);
+  specifics.set_use_date(use_date);
+  return specifics;
 }
 
 CreditCard CreateServerCreditCardWithDetails(
@@ -139,6 +171,16 @@ CreditCard CreateServerCreditCardWithDetails(
   return card;
 }
 
+Iban CreateServerIbanWithDetails(
+    Iban::InstrumentId instrument_id,
+    size_t use_count = 1,
+    int64_t use_date = UseDateToProtoValue(kDefaultTime)) {
+  Iban iban = CreateServerIban(instrument_id);
+  iban.set_use_count(use_count);
+  iban.set_use_date(UseDateFromProtoValue(use_date));
+  return iban;
+}
+
 CreditCard CreateLocalCreditCardWithDetails(size_t use_count,
                                             int64_t use_date) {
   CreditCard card;
@@ -150,10 +192,24 @@ CreditCard CreateLocalCreditCardWithDetails(size_t use_count,
 
 CreditCard CreateServerCreditCardFromSpecifics(
     const WalletMetadataSpecifics& specifics) {
-  return CreateServerCreditCardWithDetails(
-      GetBase64DecodedId(specifics.id()), specifics.use_count(),
-      specifics.use_date(),
-      GetBase64DecodedId(specifics.card_billing_address_id()));
+  std::string specifics_id;
+  std::string specifics_card_billing_address_id;
+  base::Base64Decode(specifics.id(), &specifics_id);
+  base::Base64Decode(specifics.card_billing_address_id(),
+                     &specifics_card_billing_address_id);
+  return CreateServerCreditCardWithDetails(specifics_id, specifics.use_count(),
+                                           specifics.use_date(),
+                                           specifics_card_billing_address_id);
+}
+
+Iban CreateServerIbanFromSpecifics(const WalletMetadataSpecifics& specifics) {
+  std::string instrument_id_str;
+  int64_t instrument_id = 0;
+  base::Base64Decode(specifics.id(), &instrument_id_str);
+  CHECK(base::StringToInt64(instrument_id_str, &instrument_id));
+  return CreateServerIbanWithDetails(Iban::InstrumentId(instrument_id),
+                                     specifics.use_count(),
+                                     specifics.use_date());
 }
 
 void ExtractWalletMetadataSpecificsFromDataBatch(
@@ -232,6 +288,7 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
     test_clock_.SetNow(kDefaultTime);
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    db_.AddTable(&sync_metadata_table_);
     db_.AddTable(&table_);
     db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"));
     ON_CALL(*backend(), GetDatabase()).WillByDefault(Return(&db_));
@@ -255,8 +312,8 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
     model_type_state.mutable_progress_marker()->set_data_type_id(
         GetSpecificsFieldNumberFromModelType(syncer::AUTOFILL_WALLET_METADATA));
     model_type_state.set_cache_guid(kDefaultCacheGuid);
-    EXPECT_TRUE(table()->UpdateModelTypeState(syncer::AUTOFILL_WALLET_METADATA,
-                                              model_type_state));
+    EXPECT_TRUE(sync_metadata_table_.UpdateModelTypeState(
+        syncer::AUTOFILL_WALLET_METADATA, model_type_state));
     bridge_ = std::make_unique<AutofillWalletMetadataSyncBridge>(
         mock_processor_.CreateForwardingProcessor(), &backend_);
   }
@@ -301,7 +358,7 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
       updates.push_back(SpecificsToUpdateResponse(specifics));
     }
     real_processor_->OnUpdateReceived(state, std::move(updates),
-                                      /*gc_directive=*/absl::nullopt);
+                                      /*gc_directive=*/std::nullopt);
   }
 
   void ReceiveTombstones(
@@ -320,7 +377,7 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
           SpecificsToUpdateResponse(specifics, /*is_deleted=*/true));
     }
     real_processor_->OnUpdateReceived(state, std::move(updates),
-                                      /*gc_directive=*/absl::nullopt);
+                                      /*gc_directive=*/std::nullopt);
   }
 
   EntityData SpecificsToEntity(const WalletMetadataSpecifics& specifics,
@@ -390,10 +447,9 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
 
   std::vector<std::string> GetLocalSyncMetadataStorageKeys() {
     std::vector<std::string> storage_keys;
-
-    AutofillTable* table = AutofillTable::FromWebDatabase(&db_);
     syncer::MetadataBatch batch;
-    if (table->GetAllSyncMetadata(syncer::AUTOFILL_WALLET_METADATA, &batch)) {
+    if (sync_metadata_table_.GetAllSyncMetadata(
+            syncer::AUTOFILL_WALLET_METADATA, &batch)) {
       for (const auto& [storage_key, metadata] : batch.GetAllMetadata()) {
         storage_keys.push_back(storage_key);
       }
@@ -415,7 +471,7 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
     return real_processor_.get();
   }
 
-  AutofillTable* table() { return &table_; }
+  PaymentsAutofillTable* table() { return &table_; }
 
   MockAutofillWebDataBackend* backend() { return &backend_; }
 
@@ -425,14 +481,15 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
   ScopedTempDir temp_dir_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   testing::NiceMock<MockAutofillWebDataBackend> backend_;
-  AutofillTable table_;
+  AutofillSyncMetadataTable sync_metadata_table_;
+  PaymentsAutofillTable table_;
   WebDatabase db_;
   testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
   std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor> real_processor_;
   std::unique_ptr<AutofillWalletMetadataSyncBridge> bridge_;
 };
 
-// The following test makes sure client tags stay stable.
+// The following two tests make sure client tags stay stable.
 TEST_F(AutofillWalletMetadataSyncBridgeTest, GetClientTagForCard) {
   ResetBridge();
   WalletMetadataSpecifics specifics =
@@ -441,7 +498,15 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest, GetClientTagForCard) {
             kCard1SyncTag);
 }
 
-// The following test makes sure storage keys stay stable.
+TEST_F(AutofillWalletMetadataSyncBridgeTest, GetClientTagForIban) {
+  ResetBridge();
+  WalletMetadataSpecifics specifics =
+      CreateWalletMetadataSpecificsForIbanWithDetails(kIban1SpecificsId);
+  EXPECT_EQ(bridge()->GetClientTag(SpecificsToEntity(specifics)),
+            kIban1SyncTag);
+}
+
+// The following two tests make sure storage keys stay stable.
 TEST_F(AutofillWalletMetadataSyncBridgeTest, GetStorageKeyForCard) {
   ResetBridge();
   WalletMetadataSpecifics specifics =
@@ -450,8 +515,16 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest, GetStorageKeyForCard) {
             GetCardStorageKey(kCard1SpecificsId));
 }
 
+TEST_F(AutofillWalletMetadataSyncBridgeTest, GetStorageKeyForIban) {
+  ResetBridge();
+  WalletMetadataSpecifics specifics =
+      CreateWalletMetadataSpecificsForIbanWithDetails(kIban1SpecificsId);
+  EXPECT_EQ(bridge()->GetStorageKey(SpecificsToEntity(specifics)),
+            GetIbanStorageKey(kIban1SpecificsId));
+}
+
 TEST_F(AutofillWalletMetadataSyncBridgeTest,
-       GetAllDataForDebugging_ShouldReturnAllData) {
+       GetAllDataForDebugging_ShouldReturnAllData_Cards) {
   table()->SetServerCreditCards({CreateServerCreditCard(kCard1ServerId),
                                  CreateServerCreditCard(kCard2ServerId)});
   ResetBridge();
@@ -466,12 +539,28 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
 }
 
 TEST_F(AutofillWalletMetadataSyncBridgeTest,
+       GetAllDataForDebugging_ShouldReturnAllData_Ibans) {
+  table()->SetServerIbansForTesting({CreateServerIban(kIban1InstrumentId),
+                                     CreateServerIban(kIban2InstrumentId)});
+  ResetBridge();
+
+  EXPECT_THAT(
+      GetAllLocalData(),
+      UnorderedElementsAre(
+          EqualsSpecifics(CreateWalletMetadataSpecificsForIbanWithDetails(
+              kIban1SpecificsId)),
+          EqualsSpecifics(CreateWalletMetadataSpecificsForIbanWithDetails(
+              kIban2SpecificsId))));
+}
+
+TEST_F(AutofillWalletMetadataSyncBridgeTest,
        GetData_ShouldNotReturnNonexistentData) {
   ResetBridge();
   EXPECT_THAT(GetLocalData({GetCardStorageKey(kCard1SpecificsId)}), IsEmpty());
 }
 
-TEST_F(AutofillWalletMetadataSyncBridgeTest, GetData_ShouldReturnSelectedData) {
+TEST_F(AutofillWalletMetadataSyncBridgeTest,
+       GetData_ShouldReturnSelectedData_Cards) {
   table()->SetServerCreditCards({CreateServerCreditCard(kCard1ServerId),
                                  CreateServerCreditCard(kCard2ServerId)});
   ResetBridge();
@@ -481,7 +570,20 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest, GetData_ShouldReturnSelectedData) {
                   CreateWalletMetadataSpecificsForCard(kCard1SpecificsId))));
 }
 
-TEST_F(AutofillWalletMetadataSyncBridgeTest, GetData_ShouldReturnCompleteData) {
+TEST_F(AutofillWalletMetadataSyncBridgeTest,
+       GetData_ShouldReturnSelectedData_Ibans) {
+  table()->SetServerIbansForTesting({CreateServerIban(kIban1InstrumentId),
+                                     CreateServerIban(kIban2InstrumentId)});
+  ResetBridge();
+
+  EXPECT_THAT(
+      GetLocalData({GetIbanStorageKey(kIban1SpecificsId)}),
+      UnorderedElementsAre(EqualsSpecifics(
+          CreateWalletMetadataSpecificsForIbanWithDetails(kIban1SpecificsId))));
+}
+
+TEST_F(AutofillWalletMetadataSyncBridgeTest,
+       GetData_ShouldReturnCompleteData_Cards) {
   CreditCard card = CreateServerCreditCard(kCard1ServerId);
   card.set_use_count(6);
   card.set_use_date(UseDateFromProtoValue(3));
@@ -501,7 +603,21 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest, GetData_ShouldReturnCompleteData) {
 }
 
 TEST_F(AutofillWalletMetadataSyncBridgeTest,
-       ApplyDisableSyncChanges_ShouldWipeLocalDataWhenSyncStopped) {
+       GetData_ShouldReturnCompleteData_Ibans) {
+  table()->SetServerIbansForTesting(
+      {CreateServerIbanWithDetails(kIban1InstrumentId)});
+  ResetBridge();
+
+  // Expect to retrieve following specifics:
+  WalletMetadataSpecifics iban_specifics =
+      CreateWalletMetadataSpecificsForIbanWithDetails(kIban1SpecificsId);
+
+  EXPECT_THAT(GetLocalData({GetIbanStorageKey(kIban1SpecificsId)}),
+              UnorderedElementsAre(EqualsSpecifics(iban_specifics)));
+}
+
+TEST_F(AutofillWalletMetadataSyncBridgeTest,
+       ApplyDisableSyncChanges_ShouldWipeLocalDataWhenSyncStopped_Cards) {
   // Perform initial sync to create sync data & metadata.
   ResetBridge(/*initial_sync_done=*/false);
   WalletMetadataSpecifics card =
@@ -520,10 +636,29 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
   EXPECT_THAT(GetAllLocalDataInclRestart(), IsEmpty());
 }
 
+TEST_F(AutofillWalletMetadataSyncBridgeTest,
+       ApplyDisableSyncChanges_ShouldWipeLocalDataWhenSyncStopped_Ibans) {
+  // Perform initial sync to create sync data & metadata.
+  ResetBridge(/*initial_sync_done=*/false);
+  WalletMetadataSpecifics iban =
+      CreateWalletMetadataSpecificsForIbanWithDetails(kIban1SpecificsId);
+  StartSyncing({iban});
+
+  // Now stop sync. This should wipe the data but not notify the backend (as the
+  // data bridge will do that).
+  EXPECT_CALL(*backend(), CommitChanges);
+  EXPECT_CALL(*backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_METADATA))
+      .Times(0);
+  StopSyncingAndClearMetadata();
+
+  EXPECT_THAT(GetAllLocalDataInclRestart(), IsEmpty());
+}
+
 // Verify that lower values of metadata are not sent to the sync server when
 // local metadata is updated.
 TEST_F(AutofillWalletMetadataSyncBridgeTest,
-       DontSendLowerValueToServerOnUpdate) {
+       DontSendLowerValueToServerOnUpdate_Cards) {
   table()->SetServerCreditCards({CreateServerCreditCardWithDetails(
       kCard1ServerId, /*use_count=*/3, /*use_date=*/6)});
   ResetBridge();
@@ -554,7 +689,7 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
 // counts arrive before the data, the data bridge later notifies about creation
 // for data that is already there).
 TEST_F(AutofillWalletMetadataSyncBridgeTest,
-       DontSendLowerValueToServerOnCreation) {
+       DontSendLowerValueToServerOnCreation_Cards) {
   table()->SetServerCreditCards({CreateServerCreditCardWithDetails(
       kCard1ServerId, /*use_count=*/3, /*use_date=*/6)});
   ResetBridge();
@@ -583,7 +718,7 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
 // Verify that higher values of metadata are sent to the sync server when local
 // metadata is updated.
 TEST_F(AutofillWalletMetadataSyncBridgeTest,
-       SendHigherValuesToServerOnLocalUpdate) {
+       SendHigherValuesToServerOnLocalUpdate_Cards) {
   table()->SetServerCreditCards({CreateServerCreditCardWithDetails(
       kCard1ServerId, /*use_count=*/3, /*use_date=*/4)});
   ResetBridge();
@@ -611,9 +746,42 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
               UnorderedElementsAre(EqualsSpecifics(expected_card_specifics)));
 }
 
+// Test that increase the value of `use_count` and `use_date` result in an
+// update to the database.
+TEST_F(AutofillWalletMetadataSyncBridgeTest,
+       SendHigherValuesToServerOnLocalUpdate_Ibans) {
+  table()->SetServerIbansForTesting(
+      {CreateServerIbanWithDetails(kIban1InstrumentId, /*use_count=*/5,
+                                   /*use_date=*/6)});
+  ResetBridge();
+
+  Iban updated_iban = CreateServerIbanWithDetails(
+      kIban1InstrumentId, /*use_count=*/50, /*use_date=*/60);
+
+  WalletMetadataSpecifics expected_iban_specifics =
+      CreateWalletMetadataSpecificsForIbanWithDetails(
+          kIban1SpecificsId, /*use_count=*/50, /*use_date=*/60);
+
+  EXPECT_CALL(mock_processor(),
+              Put(kIban1StorageKey, HasSpecifics(expected_iban_specifics), _));
+  // Local changes should not cause local DB writes.
+  EXPECT_CALL(*backend(), CommitChanges).Times(0);
+  EXPECT_CALL(*backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_METADATA))
+      .Times(0);
+
+  bridge()->IbanChanged(IbanChange(IbanChange::UPDATE,
+                                   IbanChangeKey(updated_iban.instrument_id()),
+                                   updated_iban));
+
+  // Check that the local metadata got updated as well.
+  EXPECT_THAT(GetAllLocalDataInclRestart(),
+              UnorderedElementsAre(EqualsSpecifics(expected_iban_specifics)));
+}
+
 // Verify that one-off addition of metadata is sent to the sync server.
 TEST_F(AutofillWalletMetadataSyncBridgeTest,
-       SendNewDataToServerOnLocalAddition) {
+       SendNewDataToServerOnLocalAddition_Cards) {
   ResetBridge();
   CreditCard new_card = CreateServerCreditCardWithDetails(
       kCard1ServerId, /*use_count=*/30, /*use_date=*/40);
@@ -638,10 +806,34 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
               UnorderedElementsAre(EqualsSpecifics(expected_card_specifics)));
 }
 
+TEST_F(AutofillWalletMetadataSyncBridgeTest,
+       SendNewDataToServerOnLocalAddition_Ibans) {
+  ResetBridge();
+  Iban new_iban = CreateServerIbanWithDetails(kIban1InstrumentId);
+  WalletMetadataSpecifics expected_iban_specifics =
+      CreateWalletMetadataSpecificsForIbanWithDetails(kIban1SpecificsId);
+
+  EXPECT_CALL(mock_processor(),
+              Put(kIban1StorageKey, HasSpecifics(expected_iban_specifics), _));
+  // Local changes should not cause local DB writes.
+  EXPECT_CALL(*backend(), CommitChanges).Times(0);
+  EXPECT_CALL(*backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_METADATA))
+      .Times(0);
+
+  bridge()->IbanChanged(IbanChange(
+      IbanChange::ADD, IbanChangeKey(new_iban.instrument_id()), new_iban));
+
+  // Check that the new metadata got created as well.
+  EXPECT_THAT(GetAllLocalDataInclRestart(),
+              UnorderedElementsAre(EqualsSpecifics(expected_iban_specifics)));
+}
+
 // Verify that one-off addition of metadata is sent to the sync server (even
 // though it is notified as an update). This tests that the bridge is robust and
 // recreates metadata that may get deleted in the mean-time).
-TEST_F(AutofillWalletMetadataSyncBridgeTest, SendNewDataToServerOnLocalUpdate) {
+TEST_F(AutofillWalletMetadataSyncBridgeTest,
+       SendNewDataToServerOnLocalUpdate_Cards) {
   ResetBridge();
   CreditCard new_card = CreateServerCreditCardWithDetails(
       kCard1ServerId, /*use_count=*/30, /*use_date=*/40);
@@ -666,9 +858,32 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest, SendNewDataToServerOnLocalUpdate) {
               UnorderedElementsAre(EqualsSpecifics(expected_card_specifics)));
 }
 
+TEST_F(AutofillWalletMetadataSyncBridgeTest,
+       SendNewDataToServerOnLocalUpdate_Ibans) {
+  ResetBridge();
+  Iban new_iban = CreateServerIbanWithDetails(kIban1InstrumentId);
+  WalletMetadataSpecifics expected_iban_specifics =
+      CreateWalletMetadataSpecificsForIbanWithDetails(kIban1SpecificsId);
+
+  EXPECT_CALL(mock_processor(),
+              Put(kIban1StorageKey, HasSpecifics(expected_iban_specifics), _));
+  // Local changes should not cause local DB writes.
+  EXPECT_CALL(*backend(), CommitChanges).Times(0);
+  EXPECT_CALL(*backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_METADATA))
+      .Times(0);
+
+  bridge()->IbanChanged(IbanChange(
+      IbanChange::UPDATE, IbanChangeKey(new_iban.instrument_id()), new_iban));
+
+  // Check that the new metadata got created as well.
+  EXPECT_THAT(GetAllLocalDataInclRestart(),
+              UnorderedElementsAre(EqualsSpecifics(expected_iban_specifics)));
+}
+
 // Verify that one-off deletion of existing metadata is sent to the sync server.
 TEST_F(AutofillWalletMetadataSyncBridgeTest,
-       DeleteExistingDataFromServerOnLocalDeletion) {
+       DeleteExistingDataFromServerOnLocalDeletion_Cards) {
   CreditCard existing_card = CreateServerCreditCardWithDetails(
       kCard1ServerId, /*use_count=*/30, /*use_date=*/40);
   table()->SetServerCreditCards({existing_card});
@@ -688,9 +903,36 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
   EXPECT_THAT(GetAllLocalDataInclRestart(), IsEmpty());
 }
 
+// Test that deleting the local IBAN will result in the deletion of existing
+// IBAN data as well as IBAN metadata.
+TEST_F(AutofillWalletMetadataSyncBridgeTest,
+       DeleteExistingAllDataFromServerOnLocalDeletion_Ibans) {
+  Iban existing_iban = CreateServerIbanWithDetails(
+      kIban1InstrumentId, /*use_count=*/50, /*use_date=*/60);
+  table()->SetServerIbansForTesting({existing_iban});
+  ResetBridge();
+
+  // Check that there is some metadata, from start on.
+  ASSERT_FALSE(GetAllLocalDataInclRestart().empty());
+
+  EXPECT_CALL(mock_processor(), Delete(kIban1StorageKey, _));
+  // Local changes should not cause local DB writes.
+  EXPECT_CALL(*backend(), CommitChanges).Times(0);
+  EXPECT_CALL(*backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_METADATA))
+      .Times(0);
+
+  bridge()->IbanChanged(IbanChange(IbanChange::REMOVE,
+                                   IbanChangeKey(existing_iban.instrument_id()),
+                                   existing_iban));
+
+  // Check that there is no metadata anymore.
+  EXPECT_THAT(GetAllLocalDataInclRestart(), IsEmpty());
+}
+
 // Verify that deletion of non-existing metadata is not sent to the sync server.
 TEST_F(AutofillWalletMetadataSyncBridgeTest,
-       DoNotDeleteNonExistingDataFromServerOnLocalDeletion) {
+       DoNotDeleteNonExistingDataFromServerOnLocalDeletion_Cards) {
   CreditCard existing_card = CreateServerCreditCardWithDetails(
       kCard1ServerId, /*use_count=*/30, /*use_date=*/40);
   // Save only data and not metadata.
@@ -709,6 +951,34 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
 
   bridge()->CreditCardChanged(CreditCardChange(
       CreditCardChange::REMOVE, existing_card.server_id(), existing_card));
+
+  // Check that there is also no metadata at the end.
+  EXPECT_THAT(GetAllLocalDataInclRestart(), IsEmpty());
+}
+
+// Test that deleting the local IBAN will result in the deletion of existing
+// IBAN data. It should be a no-op if there is no existing metadata.
+TEST_F(AutofillWalletMetadataSyncBridgeTest,
+       DeleteExistingDataOnlyFromServerOnLocalDeletion_Ibans) {
+  Iban existing_iban = CreateServerIbanWithDetails(
+      kIban1InstrumentId, /*use_count=*/50, /*use_date=*/60);
+  // Save only data and not metadata.
+  table()->SetServerIbansData({existing_iban});
+  ResetBridge();
+
+  // Check that there is no metadata, from start on.
+  ASSERT_THAT(GetAllLocalDataInclRestart(), IsEmpty());
+
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+  // Local changes should not cause local DB writes.
+  EXPECT_CALL(*backend(), CommitChanges).Times(0);
+  EXPECT_CALL(*backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_METADATA))
+      .Times(0);
+
+  bridge()->IbanChanged(IbanChange(IbanChange::REMOVE,
+                                   IbanChangeKey(existing_iban.instrument_id()),
+                                   existing_iban));
 
   // Check that there is also no metadata at the end.
   EXPECT_THAT(GetAllLocalDataInclRestart(), IsEmpty());
@@ -748,7 +1018,8 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest, DoNotPropagateNonSyncCards) {
 }
 
 // Verify that old orphan metadata gets deleted on startup.
-TEST_F(AutofillWalletMetadataSyncBridgeTest, DeleteOldOrphanMetadataOnStartup) {
+TEST_F(AutofillWalletMetadataSyncBridgeTest,
+       DeleteOldOrphanMetadataOnStartup_Cards) {
   WalletMetadataSpecifics card =
       CreateWalletMetadataSpecificsForCardWithDetails(
           kCard1SpecificsId, /*use_count=*/30, /*use_date=*/40);
@@ -768,9 +1039,29 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest, DeleteOldOrphanMetadataOnStartup) {
   ASSERT_THAT(GetAllLocalDataInclRestart(), IsEmpty());
 }
 
+TEST_F(AutofillWalletMetadataSyncBridgeTest,
+       DeleteOldOrphanMetadataOnStartup_Ibans) {
+  WalletMetadataSpecifics iban =
+      CreateWalletMetadataSpecificsForIbanWithDetails(kIban1SpecificsId);
+
+  // Save only metadata and not data - simulate an orphan.
+  table()->AddOrUpdateServerIbanMetadata(
+      CreateServerIbanFromSpecifics(iban).GetMetadata());
+
+  // Make the orphans old by advancing time.
+  AdvanceTestClockByTwoYears();
+
+  EXPECT_CALL(mock_processor(), Delete(kIban1StorageKey, _));
+  EXPECT_CALL(*backend(), CommitChanges);
+
+  ResetBridge();
+
+  ASSERT_THAT(GetAllLocalDataInclRestart(), IsEmpty());
+}
+
 // Verify that recent orphan metadata does not get deleted on startup.
 TEST_F(AutofillWalletMetadataSyncBridgeTest,
-       DoNotDeleteOldNonOrphanMetadataOnStartup) {
+       DoNotDeleteOldNonOrphanMetadataOnStartup_Cards) {
   WalletMetadataSpecifics card =
       CreateWalletMetadataSpecificsForCardWithDetails(
           kCard1SpecificsId, /*use_count=*/30, /*use_date=*/40);
@@ -791,9 +1082,30 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
               UnorderedElementsAre(EqualsSpecifics(card)));
 }
 
+TEST_F(AutofillWalletMetadataSyncBridgeTest,
+       DoNotDeleteOldNonOrphanMetadataOnStartup_Ibans) {
+  WalletMetadataSpecifics iban =
+      CreateWalletMetadataSpecificsForIbanWithDetails(kIban1SpecificsId);
+
+  // Save both data and metadata - these are not orphans.
+  table()->SetServerIbansForTesting({CreateServerIbanFromSpecifics(iban)});
+
+  // Make the entities old by advancing time.
+  AdvanceTestClockByTwoYears();
+
+  // Since the entities are non-oprhans, they should not get deleted.
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+  EXPECT_CALL(*backend(), CommitChanges).Times(0);
+
+  ResetBridge();
+
+  EXPECT_THAT(GetAllLocalDataInclRestart(),
+              UnorderedElementsAre(EqualsSpecifics(iban)));
+}
+
 // Verify that recent orphan metadata does not get deleted on startup.
 TEST_F(AutofillWalletMetadataSyncBridgeTest,
-       DoNotDeleteRecentOrphanMetadataOnStartup) {
+       DoNotDeleteRecentOrphanMetadataOnStartup_Cards) {
   WalletMetadataSpecifics card =
       CreateWalletMetadataSpecificsForCardWithDetails(
           kCard1SpecificsId, /*use_count=*/30, /*use_date=*/40);
@@ -812,12 +1124,31 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
               UnorderedElementsAre(EqualsSpecifics(card)));
 }
 
+TEST_F(AutofillWalletMetadataSyncBridgeTest,
+       DoNotDeleteRecentOrphanMetadataOnStartup_Ibans) {
+  WalletMetadataSpecifics iban =
+      CreateWalletMetadataSpecificsForIbanWithDetails(kIban1SpecificsId);
+
+  // Save only metadata and not data - simulate an orphan.
+  table()->AddOrUpdateServerIbanMetadata(
+      CreateServerIbanFromSpecifics(iban).GetMetadata());
+
+  // We do not advance time so the orphans are recent, should not get deleted.
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+  EXPECT_CALL(*backend(), CommitChanges).Times(0);
+
+  ResetBridge();
+
+  EXPECT_THAT(GetAllLocalDataInclRestart(),
+              UnorderedElementsAre(EqualsSpecifics(iban)));
+}
+
 // Test that local cards that are not in the remote data set are uploaded during
 // initial sync. This should rarely happen in practice because we wipe local
 // data when disabling sync. Still there are corner cases such as when PDM
 // manages to change metadata before the metadata bridge performs initial sync.
 TEST_F(AutofillWalletMetadataSyncBridgeTest,
-       InitialSync_UploadUniqueLocalData) {
+       InitialSync_UploadUniqueLocalData_Cards) {
   WalletMetadataSpecifics preexisting_card =
       CreateWalletMetadataSpecificsForCardWithDetails(
           kCard1SpecificsId, /*use_count=*/30, /*use_date=*/40);
@@ -845,6 +1176,33 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
   EXPECT_THAT(GetAllLocalDataInclRestart(),
               UnorderedElementsAre(EqualsSpecifics(preexisting_card),
                                    EqualsSpecifics(remote_card)));
+}
+
+TEST_F(AutofillWalletMetadataSyncBridgeTest,
+       InitialSync_UploadUniqueLocalData_Ibans) {
+  WalletMetadataSpecifics preexisting_iban =
+      CreateWalletMetadataSpecificsForIbanWithDetails(kIban1SpecificsId);
+  table()->SetServerIbansForTesting(
+      {CreateServerIbanFromSpecifics(preexisting_iban)});
+  // Have a different entity on the server.
+  WalletMetadataSpecifics remote_iban =
+      CreateWalletMetadataSpecificsForIbanWithDetails(kIban2SpecificsId);
+
+  // The bridge should upload the unique local entities and store the remote
+  // ones locally.
+  EXPECT_CALL(mock_processor(),
+              Put(kIban1StorageKey, HasSpecifics(preexisting_iban), _));
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+  EXPECT_CALL(*backend(), CommitChanges);
+  EXPECT_CALL(*backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_METADATA));
+
+  ResetBridge(/*initial_sync_done=*/false);
+  StartSyncing({remote_iban});
+
+  EXPECT_THAT(GetAllLocalDataInclRestart(),
+              UnorderedElementsAre(EqualsSpecifics(preexisting_iban),
+                                   EqualsSpecifics(remote_iban)));
 }
 
 // Test that the initial sync correctly distinguishes data that is unique in the
@@ -884,7 +1242,7 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
 
 // Test that remote deletions are ignored.
 TEST_F(AutofillWalletMetadataSyncBridgeTest,
-       RemoteDeletion_ShouldNotDeleteExistingLocalData) {
+       RemoteDeletion_ShouldNotDeleteExistingLocalData_Cards) {
   // Perform initial sync to create sync data & metadata.
   ResetBridge(/*initial_sync_done=*/false);
   WalletMetadataSpecifics card =
@@ -913,6 +1271,38 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
   EXPECT_THAT(GetLocalSyncMetadataStorageKeys(), IsEmpty());
   EXPECT_THAT(GetAllLocalDataInclRestart(),
               UnorderedElementsAre(EqualsSpecifics(card)));
+}
+
+TEST_F(AutofillWalletMetadataSyncBridgeTest,
+       RemoteDeletion_ShouldNotDeleteExistingLocalData_Ibans) {
+  // Perform initial sync to create sync data & metadata.
+  ResetBridge(/*initial_sync_done=*/false);
+  WalletMetadataSpecifics iban =
+      CreateWalletMetadataSpecificsForIbanWithDetails(kIban1SpecificsId);
+  StartSyncing({iban});
+
+  // Verify that both the processor and the local DB contain sync metadata.
+  ASSERT_TRUE(real_processor()->IsTrackingEntityForTest(kIban1StorageKey));
+  ASSERT_THAT(GetLocalSyncMetadataStorageKeys(),
+              UnorderedElementsAre(kIban1StorageKey));
+
+  // Now delete the IBAN.
+  // We still need to commit the updated progress marker and sync metadata.
+  EXPECT_CALL(*backend(), CommitChanges);
+  // Changes should _not_ happen in the local autofill database.
+  EXPECT_CALL(*backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_METADATA))
+      .Times(0);
+
+  ReceiveTombstones({iban});
+
+  // Verify that even though the processor does not track these entities any
+  // more and the sync metadata is gone, the actual data entities still exist in
+  // the local DB.
+  EXPECT_FALSE(real_processor()->IsTrackingEntityForTest(kIban1StorageKey));
+  EXPECT_THAT(GetLocalSyncMetadataStorageKeys(), IsEmpty());
+  EXPECT_THAT(GetAllLocalDataInclRestart(),
+              UnorderedElementsAre(EqualsSpecifics(iban)));
 }
 
 enum RemoteChangesMode {
@@ -977,7 +1367,8 @@ TEST_P(AutofillWalletMetadataSyncBridgeRemoteChangesTest, EmptyUpdateIgnored) {
 
 // No upstream communication or local DB change happens if the server sends the
 // same data as we have locally.
-TEST_P(AutofillWalletMetadataSyncBridgeRemoteChangesTest, SameDataIgnored) {
+TEST_P(AutofillWalletMetadataSyncBridgeRemoteChangesTest,
+       SameDataIgnored_Cards) {
   WalletMetadataSpecifics card =
       CreateWalletMetadataSpecificsForCardWithDetails(
           kCard1SpecificsId, /*use_count=*/3, /*use_date=*/6);
@@ -999,10 +1390,31 @@ TEST_P(AutofillWalletMetadataSyncBridgeRemoteChangesTest, SameDataIgnored) {
               UnorderedElementsAre(EqualsSpecifics(card)));
 }
 
+TEST_P(AutofillWalletMetadataSyncBridgeRemoteChangesTest,
+       SameDataIgnored_Ibans) {
+  WalletMetadataSpecifics iban =
+      CreateWalletMetadataSpecificsForIbanWithDetails(kIban1SpecificsId);
+  table()->SetServerIbansForTesting({CreateServerIbanFromSpecifics(iban)});
+  ResetBridgeWithPotentialInitialSync({iban});
+
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(*backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_METADATA))
+      .Times(0);
+  // We still need to commit the updated progress marker.
+  EXPECT_CALL(*backend(), CommitChanges);
+
+  ReceivePotentiallyInitialUpdates({iban});
+
+  EXPECT_THAT(GetAllLocalDataInclRestart(),
+              UnorderedElementsAre(EqualsSpecifics(iban)));
+}
+
 // Tests that if the remote use stats are higher / newer, they should win over
 // local stats.
 TEST_P(AutofillWalletMetadataSyncBridgeRemoteChangesTest,
-       Conflict_PreferHigherValues_RemoteWins) {
+       Conflict_PreferHigherValues_RemoteWins_Cards) {
   WalletMetadataSpecifics card =
       CreateWalletMetadataSpecificsForCardWithDetails(
           kCard1SpecificsId, /*use_count=*/3, /*use_date=*/6);
@@ -1026,10 +1438,33 @@ TEST_P(AutofillWalletMetadataSyncBridgeRemoteChangesTest,
               UnorderedElementsAre(EqualsSpecifics(updated_remote_card)));
 }
 
+TEST_P(AutofillWalletMetadataSyncBridgeRemoteChangesTest,
+       Conflict_PreferHigherValues_RemoteWins_Ibans) {
+  WalletMetadataSpecifics iban =
+      CreateWalletMetadataSpecificsForIbanWithDetails(
+          kIban1SpecificsId, /*use_count=*/4, /*use_date=*/7);
+  table()->SetServerIbansForTesting({CreateServerIbanFromSpecifics(iban)});
+  ResetBridgeWithPotentialInitialSync({iban});
+  WalletMetadataSpecifics updated_remote_iban =
+      CreateWalletMetadataSpecificsForIbanWithDetails(
+          kIban1SpecificsId, /*use_count=*/40, /*use_date=*/70);
+
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(*backend(), CommitChanges);
+  EXPECT_CALL(*backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_METADATA));
+
+  ReceivePotentiallyInitialUpdates({updated_remote_iban});
+
+  EXPECT_THAT(GetAllLocalDataInclRestart(),
+              UnorderedElementsAre(EqualsSpecifics(updated_remote_iban)));
+}
+
 // Tests that if the local use stats are higher / newer, they should win over
 // remote stats.
 TEST_P(AutofillWalletMetadataSyncBridgeRemoteChangesTest,
-       Conflict_PreferHigherValues_LocalWins) {
+       Conflict_PreferHigherValues_LocalWins_Cards) {
   WalletMetadataSpecifics card =
       CreateWalletMetadataSpecificsForCardWithDetails(
           kCard1SpecificsId, /*use_count=*/30, /*use_date=*/60);
@@ -1055,10 +1490,35 @@ TEST_P(AutofillWalletMetadataSyncBridgeRemoteChangesTest,
               UnorderedElementsAre(EqualsSpecifics(card)));
 }
 
+TEST_P(AutofillWalletMetadataSyncBridgeRemoteChangesTest,
+       Conflict_PreferHigherValues_LocalWins_Ibans) {
+  WalletMetadataSpecifics iban =
+      CreateWalletMetadataSpecificsForIbanWithDetails(
+          kIban1SpecificsId, /*use_count=*/40, /*use_date=*/70);
+  table()->SetServerIbansForTesting({CreateServerIbanFromSpecifics(iban)});
+  ResetBridgeWithPotentialInitialSync({iban});
+  WalletMetadataSpecifics updated_remote_iban =
+      CreateWalletMetadataSpecificsForIbanWithDetails(
+          kIban1SpecificsId, /*use_count=*/4, /*use_date=*/7);
+
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+  EXPECT_CALL(mock_processor(), Put(kIban1StorageKey, HasSpecifics(iban), _));
+  EXPECT_CALL(*backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_METADATA))
+      .Times(0);
+  // We still need to commit the updated progress marker.
+  EXPECT_CALL(*backend(), CommitChanges);
+
+  ReceivePotentiallyInitialUpdates({updated_remote_iban});
+
+  EXPECT_THAT(GetAllLocalDataInclRestart(),
+              UnorderedElementsAre(EqualsSpecifics(iban)));
+}
+
 // Tests that the conflicts are resolved component-wise (a higher use_count is
 // taken from local data, a newer use_data is taken from remote data).
 TEST_P(AutofillWalletMetadataSyncBridgeRemoteChangesTest,
-       Conflict_PreferHigherValues_BothWin1) {
+       Conflict_PreferHigherValues_BothWin1_Cards) {
   WalletMetadataSpecifics card =
       CreateWalletMetadataSpecificsForCardWithDetails(
           kCard1SpecificsId, /*use_count=*/30, /*use_date=*/6);
@@ -1085,13 +1545,40 @@ TEST_P(AutofillWalletMetadataSyncBridgeRemoteChangesTest,
 
   EXPECT_THAT(GetAllLocalDataInclRestart(),
               UnorderedElementsAre(EqualsSpecifics(merged_card)));
+}
+
+TEST_P(AutofillWalletMetadataSyncBridgeRemoteChangesTest,
+       Conflict_PreferHigherValues_BothWin1_Ibans) {
+  WalletMetadataSpecifics iban =
+      CreateWalletMetadataSpecificsForIbanWithDetails(
+          kIban1SpecificsId, /*use_count=*/40, /*use_date=*/7);
+  table()->SetServerIbansForTesting({CreateServerIbanFromSpecifics(iban)});
+  ResetBridgeWithPotentialInitialSync({iban});
+  WalletMetadataSpecifics updated_remote_iban =
+      CreateWalletMetadataSpecificsForIbanWithDetails(
+          kIban1SpecificsId, /*use_count=*/4, /*use_date=*/70);
+  WalletMetadataSpecifics merged_iban =
+      CreateWalletMetadataSpecificsForIbanWithDetails(
+          kIban1SpecificsId, /*use_count=*/40, /*use_date=*/70);
+
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+  EXPECT_CALL(mock_processor(),
+              Put(kIban1StorageKey, HasSpecifics(merged_iban), _));
+  EXPECT_CALL(*backend(), CommitChanges);
+  EXPECT_CALL(*backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_METADATA));
+
+  ReceivePotentiallyInitialUpdates({updated_remote_iban});
+
+  EXPECT_THAT(GetAllLocalDataInclRestart(),
+              UnorderedElementsAre(EqualsSpecifics(merged_iban)));
 }
 
 // Tests that the conflicts are resolved component-wise, like the previous test,
 // only the other way around (a higher use_count is taken from remote data, a
 // newer use_data is taken from local data).
 TEST_P(AutofillWalletMetadataSyncBridgeRemoteChangesTest,
-       Conflict_PreferHigherValues_BothWin2) {
+       Conflict_PreferHigherValues_BothWin2_Cards) {
   WalletMetadataSpecifics card =
       CreateWalletMetadataSpecificsForCardWithDetails(
           kCard1SpecificsId, /*use_count=*/3, /*use_date=*/60);
@@ -1120,10 +1607,37 @@ TEST_P(AutofillWalletMetadataSyncBridgeRemoteChangesTest,
               UnorderedElementsAre(EqualsSpecifics(merged_card)));
 }
 
+TEST_P(AutofillWalletMetadataSyncBridgeRemoteChangesTest,
+       Conflict_PreferHigherValues_BothWin2_Ibans) {
+  WalletMetadataSpecifics iban =
+      CreateWalletMetadataSpecificsForIbanWithDetails(
+          kIban1SpecificsId, /*use_count=*/4, /*use_date=*/70);
+  table()->SetServerIbansForTesting({CreateServerIbanFromSpecifics(iban)});
+  ResetBridgeWithPotentialInitialSync({iban});
+  WalletMetadataSpecifics updated_remote_iban =
+      CreateWalletMetadataSpecificsForIbanWithDetails(
+          kIban1SpecificsId, /*use_count=*/40, /*use_date=*/7);
+  WalletMetadataSpecifics merged_iban =
+      CreateWalletMetadataSpecificsForIbanWithDetails(
+          kIban1SpecificsId, /*use_count=*/40, /*use_date=*/70);
+
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+  EXPECT_CALL(mock_processor(),
+              Put(kIban1StorageKey, HasSpecifics(merged_iban), _));
+  EXPECT_CALL(*backend(), CommitChanges);
+  EXPECT_CALL(*backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_METADATA));
+
+  ReceivePotentiallyInitialUpdates({updated_remote_iban});
+
+  EXPECT_THAT(GetAllLocalDataInclRestart(),
+              UnorderedElementsAre(EqualsSpecifics(merged_iban)));
+}
+
 // No merge logic is applied if local data has initial use_count (=1). In this
 // situation, we just take over the remote entity completely.
 TEST_P(AutofillWalletMetadataSyncBridgeRemoteChangesTest,
-       Conflict_PreferRemoteIfLocalHasInitialUseCount) {
+       Conflict_PreferRemoteIfLocalHasInitialUseCount_Cards) {
   WalletMetadataSpecifics card =
       CreateWalletMetadataSpecificsForCardWithDetails(
           kCard1SpecificsId, /*use_count=*/1, /*use_date=*/60);
@@ -1145,6 +1659,29 @@ TEST_P(AutofillWalletMetadataSyncBridgeRemoteChangesTest,
 
   EXPECT_THAT(GetAllLocalDataInclRestart(),
               UnorderedElementsAre(EqualsSpecifics(updated_remote_card)));
+}
+
+TEST_P(AutofillWalletMetadataSyncBridgeRemoteChangesTest,
+       Conflict_PreferRemoteIfLocalHasInitialUseCount_Ibans) {
+  WalletMetadataSpecifics iban =
+      CreateWalletMetadataSpecificsForIbanWithDetails(
+          kIban1SpecificsId, /*use_count=*/1, /*use_date=*/70);
+  table()->SetServerIbansForTesting({CreateServerIbanFromSpecifics(iban)});
+  ResetBridgeWithPotentialInitialSync({iban});
+  WalletMetadataSpecifics updated_remote_iban =
+      CreateWalletMetadataSpecificsForIbanWithDetails(
+          kIban1SpecificsId, /*use_count=*/40, /*use_date=*/7);
+
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(*backend(), CommitChanges());
+  EXPECT_CALL(*backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_METADATA));
+
+  ReceivePotentiallyInitialUpdates({updated_remote_iban});
+
+  EXPECT_THAT(GetAllLocalDataInclRestart(),
+              UnorderedElementsAre(EqualsSpecifics(updated_remote_iban)));
 }
 
 // Tests that with a conflict in billing_address_id, we prefer an ID of a local

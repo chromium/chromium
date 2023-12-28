@@ -98,7 +98,7 @@ class ArcUsbHostBridge : public KeyedService,
 
   SEQUENCE_CHECKER(sequence_);
 
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 
   // Connection to the DeviceService for usb manager.
@@ -109,7 +109,7 @@ class ArcUsbHostBridge : public KeyedService,
   // A mapping from GUID -> UsbDeviceInfoPtr for each attached USB device.
   std::map<std::string, device::mojom::UsbDeviceInfoPtr> devices_;
 
-  raw_ptr<ArcUsbHostUiDelegate, ExperimentalAsh> ui_delegate_ = nullptr;
+  raw_ptr<ArcUsbHostUiDelegate> ui_delegate_ = nullptr;
 
   // WeakPtrFactory to use for callbacks.
   base::WeakPtrFactory<ArcUsbHostBridge> weak_factory_{this};

@@ -339,15 +339,60 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, KeyTypesTest) {
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, ObjectStoreTest) {
   base::HistogramTester tester;
 
-  SimpleTest(GetTestUrl("indexeddb", "object_store_test.html"));
+  tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration.Open", 0);
 
+  // This test opens a database and does 3 adds and 3 gets in the versionchange
+  // transaction (no readonly or readwrite transactions).
+  SimpleTest(GetTestUrl("indexeddb", "object_store_test.html"));
   content::FetchHistogramsFromChildProcesses();
+
+  tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration.Open", 1);
   tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration.ObjectStorePut",
                           0);
   tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration.ObjectStoreAdd",
                           3);
   tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration.ObjectStoreGet",
                           3);
+
+  tester.ExpectTotalCount("WebCore.IndexedDB.Transaction.ReadWrite.TimeQueued",
+                          0);
+  tester.ExpectTotalCount("WebCore.IndexedDB.Transaction.ReadOnly.TimeQueued",
+                          0);
+  tester.ExpectTotalCount(
+      "WebCore.IndexedDB.Transaction.VersionChange.TimeQueued", 1);
+
+  tester.ExpectTotalCount("WebCore.IndexedDB.Transaction.ReadWrite.TimeActive2",
+                          0);
+  tester.ExpectTotalCount("WebCore.IndexedDB.Transaction.ReadOnly.TimeActive2",
+                          0);
+  tester.ExpectTotalCount(
+      "WebCore.IndexedDB.Transaction.VersionChange.TimeActive2", 1);
+
+  // This test opens a database and does 2 gets in one readonly transaction.
+  SimpleTest(GetTestUrl("indexeddb", "transaction_get_test.html"));
+  content::FetchHistogramsFromChildProcesses();
+
+  tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration.Open", 2);
+  tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration.ObjectStorePut",
+                          0);
+  tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration.ObjectStoreAdd",
+                          4);
+  tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration.ObjectStoreGet",
+                          5);
+
+  tester.ExpectTotalCount("WebCore.IndexedDB.Transaction.ReadWrite.TimeQueued",
+                          0);
+  tester.ExpectTotalCount("WebCore.IndexedDB.Transaction.ReadOnly.TimeQueued",
+                          1);
+  tester.ExpectTotalCount(
+      "WebCore.IndexedDB.Transaction.VersionChange.TimeQueued", 2);
+
+  tester.ExpectTotalCount("WebCore.IndexedDB.Transaction.ReadWrite.TimeActive2",
+                          0);
+  tester.ExpectTotalCount("WebCore.IndexedDB.Transaction.ReadOnly.TimeActive2",
+                          1);
+  tester.ExpectTotalCount(
+      "WebCore.IndexedDB.Transaction.VersionChange.TimeActive2", 2);
 }
 
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DatabaseTest) {

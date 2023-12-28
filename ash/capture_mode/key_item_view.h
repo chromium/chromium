@@ -43,8 +43,8 @@ class KeyItemView : public views::View {
 
  private:
   const ui::KeyboardCode key_code_;
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
 
   // The shadow around each key item UI component in the combo. The shadow
   // should be `SystemShadowOnTextureLayer` as the corners are perfectly

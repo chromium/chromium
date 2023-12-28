@@ -582,18 +582,8 @@ bool ClipboardHostImpl::IsRendererPasteAllowed(
       &render_frame_host);
 }
 
-bool ClipboardHostImpl::IsUnsanitizedCustomFormatContentAllowed() {
-  if (!base::FeatureList::IsEnabled(blink::features::kClipboardCustomFormats)) {
-    mojo::ReportBadMessage("Custom format read/write is not enabled.");
-    return false;
-  }
-  return true;
-}
-
 void ClipboardHostImpl::ReadAvailableCustomAndStandardFormats(
     ReadAvailableCustomAndStandardFormatsCallback callback) {
-  if (!IsUnsanitizedCustomFormatContentAllowed())
-    return;
   std::vector<std::u16string> format_types =
       ui::Clipboard::GetForCurrentThread()
           ->ReadAvailableStandardAndCustomFormatNames(
@@ -604,8 +594,6 @@ void ClipboardHostImpl::ReadAvailableCustomAndStandardFormats(
 void ClipboardHostImpl::ReadUnsanitizedCustomFormat(
     const std::u16string& format,
     ReadUnsanitizedCustomFormatCallback callback) {
-  if (!IsUnsanitizedCustomFormatContentAllowed())
-    return;
   // `kMaxFormatSize` includes the null terminator as well so we check if
   // the `format` size is strictly less than `kMaxFormatSize` or not.
   if (format.length() >= blink::mojom::ClipboardHost::kMaxFormatSize)
@@ -638,8 +626,6 @@ void ClipboardHostImpl::ReadUnsanitizedCustomFormat(
 void ClipboardHostImpl::WriteUnsanitizedCustomFormat(
     const std::u16string& format,
     mojo_base::BigBuffer data) {
-  if (!IsUnsanitizedCustomFormatContentAllowed())
-    return;
   // `kMaxFormatSize` & `kMaxDataSize` includes the null terminator.
   if (format.length() >= blink::mojom::ClipboardHost::kMaxFormatSize)
     return;

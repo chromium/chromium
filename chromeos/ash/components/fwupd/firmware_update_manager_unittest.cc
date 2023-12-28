@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/fwupd/firmware_update_manager.h"
 
+#include <cstdint>
 #include <deque>
 #include <map>
 #include <memory>
@@ -21,6 +22,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_request.h"
 #include "chromeos/ash/components/fwupd/fake_fwupd_download_client.h"
 #include "chromeos/ash/components/fwupd/histogram_util.h"
 #include "dbus/message.h"
@@ -131,6 +133,30 @@ class FakeUpdateProgressObserver
       this};
 };
 
+class FakeDeviceRequestObserver
+    : public ash::firmware_update::mojom::DeviceRequestObserver {
+ public:
+  void OnDeviceRequest(
+      ash::firmware_update::mojom::DeviceRequestPtr request) override {
+    request_ = std::move(request);
+  }
+
+  mojo::PendingRemote<ash::firmware_update::mojom::DeviceRequestObserver>
+  pending_remote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  const ash::firmware_update::mojom::DeviceRequestPtr& GetLatestRequest()
+      const {
+    return request_;
+  }
+
+ private:
+  ash::firmware_update::mojom::DeviceRequestPtr request_;
+  mojo::Receiver<ash::firmware_update::mojom::DeviceRequestObserver> receiver_{
+      this};
+};
+
 }  // namespace
 
 namespace ash {
@@ -210,6 +236,39 @@ class FirmwareUpdateManagerTest : public testing::Test {
   void RequestDevices() {
     firmware_update_manager_->RequestDevices();
     base::RunLoop().RunUntilIdle();
+  }
+
+  void TriggerOnDeviceRequestResponse(
+      firmware_update::mojom::DeviceRequestId id,
+      firmware_update::mojom::DeviceRequestKind kind) {
+    FwupdRequest request(static_cast<uint32_t>(id),
+                         static_cast<uint32_t>(kind));
+    firmware_update_manager_->OnDeviceRequestResponse(request);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  firmware_update::mojom::FirmwareUpdatePtr CreateFakeUpdate() {
+    auto update = firmware_update::mojom::FirmwareUpdate::New();
+    update->device_id = "id";
+    update->device_name = base::UTF8ToUTF16(std::string("name"));
+    update->device_version = "version";
+    update->device_description = base::UTF8ToUTF16(std::string("description"));
+    update->priority = firmware_update::mojom::UpdatePriority::kMedium;
+    update->filepath = base::FilePath("filepath");
+    update->checksum = "checksum";
+    return update;
+  }
+
+  void TriggerInstallFailed() {
+    // Create a fake update so that the following method call works correctly.
+    firmware_update_manager_->inflight_update_ = CreateFakeUpdate();
+    // Trigger an unsuccessful update.
+    firmware_update_manager_->OnInstallResponse(/*success=*/false);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetStatus(FwupdStatus fwupd_status) {
+    SetProperties(/*percentage=*/0, static_cast<uint32_t>(fwupd_status));
   }
 
   void SetFakeUrlForTesting(const std::string& fake_url) {
@@ -527,6 +586,12 @@ class FirmwareUpdateManagerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void SetupDeviceRequestObserver(FakeDeviceRequestObserver* observer) {
+    install_controller_remote_->AddDeviceRequestObserver(
+        observer->pending_remote());
+    base::RunLoop().RunUntilIdle();
+  }
+
   bool PrepareForUpdate(const std::string& device_id) {
     base::test::TestFuture<
         mojo::PendingRemote<ash::firmware_update::mojom::InstallController>>
@@ -534,8 +599,9 @@ class FirmwareUpdateManagerTest : public testing::Test {
     update_provider_remote_->PrepareForUpdate(
         device_id, pending_remote_future.GetCallback());
     auto pending_remote = pending_remote_future.Take();
-    if (!pending_remote.is_valid())
+    if (!pending_remote.is_valid()) {
       return false;
+    }
 
     install_controller_remote_.Bind(std::move(pending_remote));
     base::RunLoop().RunUntilIdle();
@@ -1041,6 +1107,128 @@ TEST_F(FirmwareUpdateManagerTest, InternalDeviceFiltered) {
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1U, updates.size());
   EXPECT_EQ(kFakeDeviceIdForTesting, updates[0]->device_id);
+}
+
+TEST_F(FirmwareUpdateManagerTest, SetupDeviceRequestObserver) {
+  // Simple test to ensure that binding the observer works.
+  EXPECT_TRUE(PrepareForUpdate(std::string(kFakeDeviceIdForTesting)));
+  FakeDeviceRequestObserver device_request_observer;
+  SetupDeviceRequestObserver(&device_request_observer);
+}
+
+TEST_F(FirmwareUpdateManagerTest, DeviceRequestObserver) {
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(PrepareForUpdate(std::string(kFakeDeviceIdForTesting)));
+  FakeDeviceRequestObserver device_request_observer;
+  SetupDeviceRequestObserver(&device_request_observer);
+
+  // For each combination of DeviceRequestId and DeviceRequestKind, call
+  // OnDeviceRequestResponse on firmware_update_manager and then verify that the
+  // observer received the correct DeviceRequest.
+  int device_request_id_size =
+      static_cast<int>(firmware_update::mojom::DeviceRequestId::kMaxValue) + 1;
+  int device_request_kind_size =
+      static_cast<int>(firmware_update::mojom::DeviceRequestKind::kMaxValue) +
+      1;
+
+  for (int id_index = 0; id_index < device_request_id_size; id_index++) {
+    firmware_update::mojom::DeviceRequestId id =
+        static_cast<firmware_update::mojom::DeviceRequestId>(id_index);
+    for (int kind_index = 0; kind_index < device_request_kind_size;
+         kind_index++) {
+      firmware_update::mojom::DeviceRequestKind kind =
+          static_cast<firmware_update::mojom::DeviceRequestKind>(kind_index);
+
+      TriggerOnDeviceRequestResponse(id, kind);
+
+      EXPECT_EQ(id, device_request_observer.GetLatestRequest()->id);
+      EXPECT_EQ(kind, device_request_observer.GetLatestRequest()->kind);
+    }
+    histogram_tester.ExpectBucketCount(
+        "ChromeOS.FirmwareUpdateUi.RequestReceived.KindImmediate", id, 1);
+    histogram_tester.ExpectBucketCount(
+        "ChromeOS.FirmwareUpdateUi.RequestReceived.KindPost", id, 1);
+    histogram_tester.ExpectBucketCount(
+        "ChromeOS.FirmwareUpdateUi.RequestReceived.KindUnknown", id, 1);
+  }
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.FirmwareUpdateUi.RequestReceived.KindImmediate",
+      device_request_id_size);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.FirmwareUpdateUi.RequestReceived.KindPost",
+      device_request_id_size);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.FirmwareUpdateUi.RequestReceived.KindUnknown",
+      device_request_id_size);
+}
+
+TEST_F(FirmwareUpdateManagerTest, DeviceRequestObserverMetrics) {
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(PrepareForUpdate(std::string(kFakeDeviceIdForTesting)));
+  FakeDeviceRequestObserver device_request_observer;
+  SetupDeviceRequestObserver(&device_request_observer);
+
+  TriggerOnDeviceRequestResponse(
+      firmware_update::mojom::DeviceRequestId::kPressUnlock,
+      firmware_update::mojom::DeviceRequestKind::kImmediate);
+
+  EXPECT_EQ(firmware_update::mojom::DeviceRequestId::kPressUnlock,
+            device_request_observer.GetLatestRequest()->id);
+  EXPECT_EQ(firmware_update::mojom::DeviceRequestKind::kImmediate,
+            device_request_observer.GetLatestRequest()->kind);
+
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.FirmwareUpdateUi.RequestReceived.KindImmediate",
+      firmware_update::mojom::DeviceRequestId::kPressUnlock, 1);
+}
+
+struct FailedInstallParam {
+  explicit FailedInstallParam(FwupdStatus fwupd_status)
+      : fwupd_status(fwupd_status) {}
+
+  FwupdStatus fwupd_status;
+};
+
+class FirmwareUpdateManagerTest_FailedInstall
+    : public FirmwareUpdateManagerTest,
+      public testing::WithParamInterface<FailedInstallParam> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    FirmwareUpdateManagerTest_FailedInstall,
+    FirmwareUpdateManagerTest_FailedInstall,
+    ::testing::Values(FailedInstallParam(FwupdStatus::kUnknown),
+                      FailedInstallParam(FwupdStatus::kIdle),
+                      FailedInstallParam(FwupdStatus::kLoading),
+                      FailedInstallParam(FwupdStatus::kDecompressing),
+                      FailedInstallParam(FwupdStatus::kDeviceRestart),
+                      FailedInstallParam(FwupdStatus::kDeviceWrite),
+                      FailedInstallParam(FwupdStatus::kDeviceVerify),
+                      FailedInstallParam(FwupdStatus::kScheduling),
+                      FailedInstallParam(FwupdStatus::kDownloading),
+                      FailedInstallParam(FwupdStatus::kDeviceRead),
+                      FailedInstallParam(FwupdStatus::kDeviceErase),
+                      FailedInstallParam(FwupdStatus::kWaitingForAuth),
+                      FailedInstallParam(FwupdStatus::kDeviceBusy),
+                      FailedInstallParam(FwupdStatus::kShutdown),
+                      FailedInstallParam(FwupdStatus::kWaitingForUser)));
+
+TEST_P(FirmwareUpdateManagerTest_FailedInstall, FailedInstall_WaitingForUser) {
+  base::HistogramTester histogram_tester;
+
+  // These three steps are necessary for SetStatus and TriggerInstallFailed to
+  // work correctly.
+  EXPECT_TRUE(PrepareForUpdate(std::string(kFakeDeviceIdForTesting)));
+  FakeUpdateProgressObserver update_progress_observer;
+  SetupProgressObserver(&update_progress_observer);
+
+  SetStatus(GetParam().fwupd_status);
+  TriggerInstallFailed();
+
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.FirmwareUpdateUi.InstallFailedWithStatus", 1);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.FirmwareUpdateUi.InstallFailedWithStatus",
+      GetParam().fwupd_status, 1);
 }
 
 }  // namespace ash

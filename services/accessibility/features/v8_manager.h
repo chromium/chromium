@@ -83,8 +83,7 @@ class V8Environment : public BindingsIsolateHolder {
   // All of the APIs needed for this V8Manager (based on the AT type) should be
   // installed before adding V8 bindings.
   void InstallAutomation(
-      mojo::PendingAssociatedReceiver<mojom::Automation> automation,
-      mojo::PendingRemote<mojom::AutomationClient> automation_client);
+      mojo::PendingAssociatedReceiver<mojom::Automation> automation);
   void InstallOSState();
   void AddV8Bindings();
 
@@ -191,8 +190,8 @@ class V8Manager {
   // done before calling `FinishContextSetUp()`.
   void ConfigureAutoclick(mojom::AccessibilityServiceClient* ax_service_client);
   void ConfigureAutomation(
-      mojo::PendingAssociatedReceiver<mojom::Automation> automation,
-      mojo::PendingRemote<mojom::AutomationClient> automation_client);
+      mojom::AccessibilityServiceClient* ax_service_client,
+      mojo::PendingAssociatedReceiver<mojom::Automation> automation);
   void ConfigureOSState();
   void ConfigureSpeechRecognition(
       mojom::AccessibilityServiceClient* ax_service_client);

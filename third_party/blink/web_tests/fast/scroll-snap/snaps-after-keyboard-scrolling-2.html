@@ -17,23 +17,6 @@ var scroller = document.getElementById("scroller");
 var topLeft = document.getElementById("top-left");
 var topRight = document.getElementById("top-right");
 
-function keyPress(key) {
-  return new Promise((resolve, reject) => {
-    if (window.eventSender) {
-      eventSender.keyDown(key);
-      resolve();
-    }
-    else {
-      reject('This test requires window.eventSender');
-    }
-  })
-}
-
-function keyboardScroll(key, scroller) {
-  const scrollPromise = waitForScrollendEvent(scroller);
-  return Promise.all([ keyPress(key), scrollPromise ]);
-}
-
 promise_test (async t => {
   // Make the snap area covers the snapport.
   topLeft.style.width = "800px";

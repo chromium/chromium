@@ -53,8 +53,6 @@ class TestAutofillProvider : public AutofillProvider {
   void OnHidePopup(AndroidAutofillManager* manager) override {}
   void OnServerPredictionsAvailable(AndroidAutofillManager&,
                                     FormGlobalId form) override {}
-  void OnServerQueryRequestError(AndroidAutofillManager* manager,
-                                 FormSignature form_signature) override {}
   void OnManagerResetOrDestroyed(AndroidAutofillManager* manager) override {}
   bool GetCachedIsAutofilled(const FormFieldData& field) const override;
 };

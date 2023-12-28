@@ -26,6 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NODE_H_
 
+#include <climits>
+
 #include "base/dcheck_is_on.h"
 #include "base/notreached.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
@@ -305,7 +307,8 @@ class CORE_EXPORT Node : public EventTarget {
   const AtomicString& lookupNamespaceURI(const String& prefix) const;
 
   String textContent(bool convert_brs_to_newlines = false,
-                     TextVisitor* visitor = nullptr) const;
+                     TextVisitor* visitor = nullptr,
+                     unsigned int max_length = UINT_MAX) const;
   virtual void setTextContent(const String&);
   V8UnionStringOrTrustedScript* textContentForBinding() const;
   virtual void setTextContentForBinding(
@@ -953,8 +956,6 @@ class CORE_EXPORT Node : public EventTarget {
   PartsList* GetDOMParts() const {
     return HasRareData() ? RareData()->GetDOMParts() : nullptr;
   }
-  void UpdateForRemovedDOMParts(ContainerNode& insertion_point);
-  void UpdateForInsertedDOMParts(ContainerNode& insertion_point);
 
   // For the imperative slot distribution API.
   void SetManuallyAssignedSlot(HTMLSlotElement* slot);
@@ -1006,7 +1007,7 @@ class CORE_EXPORT Node : public EventTarget {
 
   void Trace(Visitor*) const override;
 
-  bool IsModifiedBySoftNavigation() const {
+  bool IsModifiedBySoftNavigation() {
     return GetFlag(kModifiedBySoftNavigation);
   }
   void SetIsModifiedBySoftNavigation() { SetFlag(kModifiedBySoftNavigation); }
@@ -1134,7 +1135,7 @@ class CORE_EXPORT Node : public EventTarget {
 
   Node(TreeScope*, ConstructionType);
 
-  void WillMoveToNewDocument(Document& old_document, Document& new_document);
+  void WillMoveToNewDocument(Document& new_document);
   virtual void DidMoveToNewDocument(Document& old_document);
 
   void AddedEventListener(const AtomicString& event_type,

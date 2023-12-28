@@ -20,7 +20,6 @@
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #include "components/supervised_user/core/browser/list_family_members_service.h"
 #include "components/supervised_user/core/browser/permission_request_creator.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
@@ -44,6 +43,12 @@ class MockPermissionRequestCreator : public PermissionRequestCreator {
                               SuccessCallback callback) override {}
 };
 
+class MockSupervisedUserservicePlatformDelegate
+    : public SupervisedUserService::PlatformDelegate {
+ public:
+  MOCK_METHOD(void, CloseIncognitoTabs, (), (override));
+};
+
 class ChildAccountServiceTest : public ::testing::Test {
  public:
   void SetUp() override {
@@ -61,11 +66,6 @@ class ChildAccountServiceTest : public ::testing::Test {
             /*test_url_loader_factory=*/nullptr, &syncable_pref_service_,
             test_signin_client_.get());
 
-    kids_chrome_management_client_ =
-        std::make_unique<KidsChromeManagementClient>(
-            weak_wrapped_subresource_loader_factory,
-            identity_test_environment_->identity_manager());
-
     settings_service_.Init(syncable_pref_service_.user_prefs_store());
     supervised_user::RegisterProfilePrefs(syncable_pref_service_.registry());
 
@@ -74,11 +74,12 @@ class ChildAccountServiceTest : public ::testing::Test {
 
     supervised_user_service_ = std::make_unique<SupervisedUserService>(
         identity_test_environment_->identity_manager(),
-        kids_chrome_management_client_.get(), syncable_pref_service_,
+        test_url_loader_factory_.GetSafeWeakWrapper(), syncable_pref_service_,
         settings_service_, &sync_service_,
         /*check_webstore_url_callback=*/
         base::BindRepeating([](const GURL& url) { return false; }),
         std::make_unique<FakeURLFilterDelegate>(),
+        std::make_unique<MockSupervisedUserservicePlatformDelegate>(),
         /*can_show_first_time_interstitial_banner=*/false);
 
     list_family_members_service_ = std::make_unique<ListFamilyMembersService>(
@@ -128,7 +129,6 @@ class ChildAccountServiceTest : public ::testing::Test {
 
   std::unique_ptr<TestSigninClient> test_signin_client_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
-  std::unique_ptr<KidsChromeManagementClient> kids_chrome_management_client_;
   std::unique_ptr<SupervisedUserService> supervised_user_service_;
   std::unique_ptr<ListFamilyMembersService> list_family_members_service_;
   std::unique_ptr<ChildAccountService> child_account_service_;

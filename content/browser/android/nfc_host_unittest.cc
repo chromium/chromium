@@ -60,9 +60,9 @@ TEST_F(NFCHostTest, GetNFCTwice) {
       .WillOnce(Return(blink::mojom::PermissionStatus::GRANTED))
       .WillOnce(Return(blink::mojom::PermissionStatus::GRANTED));
   EXPECT_CALL(mock_permission_manager(),
-              SubscribePermissionStatusChange(blink::PermissionType::NFC,
-                                              /*render_process_host=*/nullptr,
-                                              main_rfh(), GURL(kTestUrl), _))
+              SubscribeToPermissionStatusChange(blink::PermissionType::NFC,
+                                                /*render_process_host=*/nullptr,
+                                                main_rfh(), GURL(kTestUrl), _))
       .WillOnce(Return(kSubscriptionId));
 
   mojo::Remote<device::mojom::NFC> nfc1, nfc2;
@@ -75,7 +75,7 @@ TEST_F(NFCHostTest, GetNFCTwice) {
   EXPECT_TRUE(nfc2.is_bound());
 
   EXPECT_CALL(mock_permission_manager(),
-              UnsubscribePermissionStatusChange(kSubscriptionId));
+              UnsubscribeFromPermissionStatusChange(kSubscriptionId));
 
   DeleteContents();
 }

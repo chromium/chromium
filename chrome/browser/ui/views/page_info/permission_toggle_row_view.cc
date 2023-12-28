@@ -253,5 +253,9 @@ void PermissionToggleRowView::ResetPermission() {
   PermissionChanged();
 }
 
+bool PermissionToggleRowView::GetToggleButtonStateForTesting() const {
+  return toggle_button_->GetIsOn();
+}
+
 BEGIN_METADATA(PermissionToggleRowView, views::View)
 END_METADATA

@@ -123,7 +123,7 @@ class ChromeAppSorting : public AppSorting,
     syncer::StringOrdinal page_ordinal;
     syncer::StringOrdinal app_launch_ordinal;
   };
-  typedef std::map<std::string, AppOrdinals> AppOrdinalsMap;
+  using AppOrdinalsMap = std::map<std::string, AppOrdinals>;
 
   // This function returns the lowest ordinal on |page_ordinal| if
   // |return_value| == AppLaunchOrdinalReturn::MIN_ORDINAL, otherwise it returns

@@ -117,6 +117,9 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
     // Called when network tests link on error page is clicked.
     virtual void OnRunNetworkTestsClicked() = 0;
 
+    // Called when error page is shown.
+    virtual void OnErrorPageShown(bool network_tests_shown) = 0;
+
    protected:
     virtual ~ErrorDelegate() = default;
   };

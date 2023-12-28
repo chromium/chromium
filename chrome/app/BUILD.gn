@@ -247,31 +247,3 @@ static_library("test_support") {
     ]
   }
 }
-
-if (is_fuchsia) {
-  # Generate a packaged component, and an installer script to aid development.
-
-  fuchsia_component("chrome_component") {
-    visibility = [ ":*" ]
-    manifest = "chrome.cml"
-    data_deps = [ "//chrome:chrome_initial" ]
-  }
-
-  fuchsia_package("chrome_pkg") {
-    package_name = "chrome"
-    deps = [ ":chrome_component" ]
-
-    excluded_dirs = FUCHSIA_PACKAGED_CONTENT_EMBEDDER_EXCLUDED_DIRS
-  }
-
-  fuchsia_package_installer("chrome_fuchsia") {
-    visibility = [
-      ":*",  # See https://crbug.com/1328459#c4.
-      "//:gn_all",
-      "//chrome/test/*",
-      "//content/test/*",
-    ]
-    package = ":chrome_pkg"
-    package_name = "chrome"
-  }
-}

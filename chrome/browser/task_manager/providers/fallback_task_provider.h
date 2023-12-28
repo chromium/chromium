@@ -65,7 +65,7 @@ class FallbackTaskProvider : public TaskProvider {
 
   // This is the set of tasks that this provider is currently passing up to
   // whatever is observing it.
-  std::vector<Task*> shown_tasks_;
+  std::vector<raw_ptr<Task, VectorExperimental>> shown_tasks_;
 
   // This maps a Task to a WeakPtrFactory so when a task is removed we can
   // cancel showing a task that has been removed before it has been shown.
@@ -85,7 +85,7 @@ class FallbackTaskProvider::SubproviderSource : public TaskProviderObserver {
   ~SubproviderSource() override;
 
   TaskProvider* subprovider() { return subprovider_.get(); }
-  std::vector<Task*>* tasks() { return &tasks_; }
+  std::vector<raw_ptr<Task, VectorExperimental>>* tasks() { return &tasks_; }
 
  private:
   friend class FallbackTaskProviderTest;
@@ -101,7 +101,7 @@ class FallbackTaskProvider::SubproviderSource : public TaskProviderObserver {
   std::unique_ptr<TaskProvider> subprovider_;
 
   // The vector of tasks that have been created by |subprovider_|.
-  std::vector<Task*> tasks_;
+  std::vector<raw_ptr<Task, VectorExperimental>> tasks_;
 };
 
 }  // namespace task_manager

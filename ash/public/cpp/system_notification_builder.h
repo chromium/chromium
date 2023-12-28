@@ -279,8 +279,7 @@ class ASH_PUBLIC_EXPORT SystemNotificationBuilder {
   std::optional<message_center::NotifierId> notifier_id_;
   NotificationCatalogName catalog_name_ = NotificationCatalogName::kNone;
   scoped_refptr<message_center::NotificationDelegate> delegate_ = nullptr;
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> small_image_ =
-      &gfx::kNoneIcon;
+  raw_ptr<const gfx::VectorIcon> small_image_ = &gfx::kNoneIcon;
   message_center::RichNotificationData optional_fields_;
   message_center::SystemNotificationWarningLevel warning_level_ =
       message_center::SystemNotificationWarningLevel::NORMAL;

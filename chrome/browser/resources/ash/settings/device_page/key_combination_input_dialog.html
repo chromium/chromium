@@ -20,6 +20,11 @@
     text-align: center;
     padding-bottom: 24px;
   }
+
+  .right-button-group {
+    display: flex;
+    gap: 8px;
+  }
 </style>
 <cr-dialog id="keyCombinationInputDialog">
   <div slot="title">$i18n{keyCombinationDialogTitle}</div>
@@ -30,26 +35,27 @@
     <div id="shortcut-input-container" class="flex-row" tabindex="-1">
       <shortcut-input id="shortcutInput"
           shortcut-input-provider="[[getShortcutProvider()]]"
-          show-separator="true">
+          show-separator="true"
+          has-launcher-button="[[hasLauncherButton]]"
+          ignore-blur>
       </shortcut-input>
-      <template is="dom-if" if="[[shouldShowEditButton_(isCapturing)]]">
-        <div class="edit-icon-container">
-          <cr-icon-button class="edit-button"
-              iron-icon="os-settings:edit"
-              on-click="onEditButtonClicked_">
-          </cr-icon-button>
-        </div>
-      </template>
     </div>
   </div>
   <div slot="button-container">
-    <div>
+    <div class="left-button-group">
+      <template is="dom-if" if="[[shouldShowEditButton_(isCapturing)]]">
+        <cr-button class="edit-button"
+            id="editButton"
+            on-click="onEditButtonClicked_">
+          $i18n{buttonRemappingDialogChangeLabel}
+        </cr-button>
+      </template>
+    </div>
+    <div class="right-button-group">
       <cr-button id="cancelButton"
           on-click="cancelDialogClicked_">
         $i18n{buttonRemappingDialogCancelLabel}
       </cr-button>
-    </div>
-    <div>
       <cr-button id="saveButton" class="action-button"
           on-click="saveDialogClicked_"
           disabled$="[[shouldDisableSaveButton_(inputKeyEvent)]]">

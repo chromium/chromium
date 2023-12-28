@@ -6,13 +6,13 @@
 
 #include <stdint.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -338,8 +338,8 @@ void BluetoothPrivateSetAdapterStateFunction::SendError() {
   DCHECK(pending_properties_.empty());
   DCHECK(!failed_properties_.empty());
 
-  std::vector<base::StringPiece> failed_vector(failed_properties_.begin(),
-                                               failed_properties_.end());
+  std::vector<std::string_view> failed_vector(failed_properties_.begin(),
+                                              failed_properties_.end());
 
   std::vector<std::string> replacements(1);
   replacements[0] = base::JoinString(failed_vector, ", ");

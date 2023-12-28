@@ -116,6 +116,9 @@ void StructuredMetricsRecorder::Purge() {
   CHECK(event_storage_);
   event_storage_->Purge();
   key_data_provider_->Purge();
+
+  unhashed_events_.clear();
+  unhashed_profile_events_.clear();
 }
 
 void StructuredMetricsRecorder::OnProfileAdded(
@@ -132,12 +135,6 @@ void StructuredMetricsRecorder::OnProfileAdded(
   init_state_.Put(State::kProfileAdded);
 
   event_storage_->OnProfileAdded(profile_path);
-
-  // See DisableRecording for more information.
-  if (purge_state_on_init_) {
-    Purge();
-    purge_state_on_init_ = false;
-  }
 }
 
 void StructuredMetricsRecorder::OnEventRecord(const Event& event) {
@@ -168,42 +165,6 @@ void StructuredMetricsRecorder::OnEventRecord(const Event& event) {
 
 bool StructuredMetricsRecorder::HasState(State state) const {
   return init_state_.Has(state);
-}
-
-void StructuredMetricsRecorder::OnReportingStateChanged(bool enabled) {
-  DCHECK(base::CurrentUIThread::IsSet());
-
-  // When reporting is enabled, OnRecordingEnabled is also called. Let that
-  // handle enabling.
-  if (enabled) {
-    return;
-  }
-
-  // Clean up any events that were recording during the pre-user.
-  if (!recording_enabled_ && !enabled) {
-    Purge();
-  }
-
-  // When reporting is disabled, OnRecordingDisabled is also called. Disabling
-  // here is redundant but done for clarity.
-  recording_enabled_ = false;
-
-  // Delete keys and unsent logs. We need to handle two cases:
-  //
-  // 1. A profile hasn't been added yet and we can't delete the files
-  //    immediately. In this case set |purge_state_on_init_| and let
-  //    OnProfileAdded call Purge after initialization.
-  //
-  // 2. A profile has been added and so the backing PersistentProtos have been
-  //    constructed. In this case just call Purge directly.
-  //
-  // Note that Purge will ensure the events are deleted from disk even if the
-  // PersistentProto hasn't itself finished being read.
-  if (!IsInitialized()) {
-    purge_state_on_init_ = true;
-  } else {
-    Purge();
-  }
 }
 
 void StructuredMetricsRecorder::SetOnReadyToRecord(base::OnceClosure callback) {
@@ -299,7 +260,7 @@ void StructuredMetricsRecorder::InitializeEventProto(
   // Set the ID for this event, if any.
   switch (project_validator.id_type()) {
     case IdType::kProjectId: {
-      absl::optional<uint64_t> primary_id =
+      std::optional<uint64_t> primary_id =
           key_data_provider_->GetId(event.project_name());
       if (primary_id.has_value()) {
         proto->set_profile_event_id(primary_id.value());
@@ -332,7 +293,7 @@ void StructuredMetricsRecorder::AddMetricsToProto(
     // Validate that both name and metric type are valid structured metrics.
     // If a metric is invalid, then ignore the metric so that other valid
     // metrics are added to the proto.
-    absl::optional<EventValidator::MetricMetadata> metadata =
+    std::optional<EventValidator::MetricMetadata> metadata =
         event_validator.GetMetricMetadata(metric_name);
 
     // Checks that the metrics defined are valid. If not valid, then the
@@ -435,7 +396,7 @@ bool StructuredMetricsRecorder::CanForceRecord(const Event& event) const {
   return validators->second->can_force_record();
 }
 
-absl::optional<std::pair<const ProjectValidator*, const EventValidator*>>
+std::optional<std::pair<const ProjectValidator*, const EventValidator*>>
 StructuredMetricsRecorder::GetEventValidators(const Event& event) const {
   auto maybe_project_validator =
       validator::Validators::Get()->GetProjectValidator(event.project_name());

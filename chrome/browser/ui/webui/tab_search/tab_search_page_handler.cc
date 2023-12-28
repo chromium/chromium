@@ -23,6 +23,8 @@
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_util.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -360,7 +362,7 @@ void TabSearchPageHandler::GetTabOrganizationSession(
 
 std::optional<TabSearchPageHandler::TabDetails>
 TabSearchPageHandler::GetTabDetails(int32_t tab_id) {
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (!ShouldTrackBrowser(browser)) {
       continue;
     }
@@ -524,6 +526,17 @@ void TabSearchPageHandler::TriggerFeedback(int32_t session_id) {
     return;
   }
   Browser* browser = chrome::FindLastActive();
+  if (!browser) {
+    return;
+  }
+  OptimizationGuideKeyedService* opt_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(browser->profile());
+  if (!opt_guide_keyed_service ||
+      !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForLogging(
+          optimization_guide::proto::
+              MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION)) {
+    return;
+  }
   base::Value::Dict feedback_metadata;
   feedback_metadata.Set("log_id", feedback_id);
   chrome::ShowFeedbackPage(
@@ -553,7 +566,7 @@ void TabSearchPageHandler::TriggerSignIn() {
 
 void TabSearchPageHandler::OpenHelpPage() {
   Browser* browser = chrome::FindLastActive();
-  GURL help_url("https://support.google.com/chrome?p=tab_organization");
+  GURL help_url("https://support.google.com/chrome?p=auto_tab_group");
   NavigateParams params(browser, help_url,
                         ui::PageTransition::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
@@ -612,7 +625,7 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
 
   std::set<DedupKey> tab_dedup_keys;
   std::set<tab_groups::TabGroupId> tab_group_ids;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (!ShouldTrackBrowser(browser))
       continue;
     TabStripModel* tab_strip_model = browser->tab_strip_model();
@@ -1040,7 +1053,8 @@ TabSearchPageHandler::GetMojoForTabOrganizationSession(
       if (session->tab_organizations().size() > 0) {
         for (const std::unique_ptr<TabOrganization>& organization :
              session->tab_organizations()) {
-          if (!organization->IsValidForOrganizing()) {
+          if (!organization->IsValidForOrganizing() ||
+              organization->choice().has_value()) {
             continue;
           }
           organizations.emplace_back(

@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixedpos'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='fixedpos'",
       "bounds": [800, 550],
       "contentsOpaque": true,
       "backgroundColor": "#ADD8E6",

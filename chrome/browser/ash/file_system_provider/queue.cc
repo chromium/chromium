@@ -10,8 +10,7 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 Queue::Task::Task() : token(0) {
 }
@@ -104,5 +103,4 @@ void Queue::Abort(size_t token) {
   NOTREACHED();
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

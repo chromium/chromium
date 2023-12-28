@@ -6,6 +6,7 @@
 #define BASE_STRINGS_STRING_UTIL_IMPL_HELPERS_H_
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -220,7 +221,7 @@ bool StartsWithT(T str, T search_for, CompareCase case_sensitivity) {
   if (search_for.size() > str.size())
     return false;
 
-  BasicStringPiece<CharT> source = str.substr(0, search_for.size());
+  std::basic_string_view<CharT> source = str.substr(0, search_for.size());
 
   switch (case_sensitivity) {
     case CompareCase::SENSITIVE:
@@ -237,7 +238,7 @@ bool EndsWithT(T str, T search_for, CompareCase case_sensitivity) {
   if (search_for.size() > str.size())
     return false;
 
-  BasicStringPiece<CharT> source =
+  std::basic_string_view<CharT> source =
       str.substr(str.size() - search_for.size(), search_for.size());
 
   switch (case_sensitivity) {
@@ -253,7 +254,7 @@ bool EndsWithT(T str, T search_for, CompareCase case_sensitivity) {
 // A Matcher for DoReplaceMatchesAfterOffset() that matches substrings.
 template <class CharT>
 struct SubstringMatcher {
-  BasicStringPiece<CharT> find_this;
+  std::basic_string_view<CharT> find_this;
 
   size_t Find(const std::basic_string<CharT>& input, size_t pos) {
     return input.find(find_this.data(), pos, find_this.length());
@@ -270,7 +271,7 @@ auto MakeSubstringMatcher(T find_this) {
 // A Matcher for DoReplaceMatchesAfterOffset() that matches single characters.
 template <class CharT>
 struct CharacterMatcher {
-  BasicStringPiece<CharT> find_any_of_these;
+  std::basic_string_view<CharT> find_any_of_these;
 
   size_t Find(const std::basic_string<CharT>& input, size_t pos) {
     return input.find_first_of(find_any_of_these.data(), pos,

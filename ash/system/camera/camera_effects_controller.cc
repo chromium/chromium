@@ -7,12 +7,15 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/camera/autozoom_controller_impl.h"
+#include "ash/system/status_area_widget.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
+#include "ash/system/video_conference/video_conference_tray.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_utils.h"
 #include "base/check_is_test.h"
@@ -67,6 +70,7 @@ bool IsValidBackgroundBlurPrefValue(int pref_value) {
     case CameraEffectsController::BackgroundBlurPrefValue::kMedium:
     case CameraEffectsController::BackgroundBlurPrefValue::kHeavy:
     case CameraEffectsController::BackgroundBlurPrefValue::kMaximum:
+    case CameraEffectsController::BackgroundBlurPrefValue::kImage:
       return true;
   }
 
@@ -84,6 +88,7 @@ CameraHalBackgroundBlurState MapBackgroundBlurPrefValueToCameraHalState(
     // For state `kOff`, the `bool` is 'false' because background blur is
     // disabled, `BlurLevel` is set to `kLowest` but its value doesn't matter.
     case CameraEffectsController::BackgroundBlurPrefValue::kOff:
+    case CameraEffectsController::BackgroundBlurPrefValue::kImage:
       return std::make_pair(cros::mojom::BlurLevel::kLowest, false);
 
     // For states other than `kOff`, background blur is enabled so the `bool`
@@ -148,6 +153,8 @@ CameraEffectsController::BackgroundBlurState MapBackgroundBlurPrefValueToState(
       return CameraEffectsController::BackgroundBlurState::kHeavy;
     case CameraEffectsController::BackgroundBlurPrefValue::kMaximum:
       return CameraEffectsController::BackgroundBlurState::kMaximum;
+    case CameraEffectsController::BackgroundBlurPrefValue::kImage:
+      return CameraEffectsController::BackgroundBlurState::kImage;
   }
 
   NOTREACHED();
@@ -256,6 +263,18 @@ std::vector<BackgroundImageInfo> GetRecentlyUsedBackgroundImagesOnWorker(
   }
 
   return background_images_info;
+}
+
+void SetBackgroundReplaceUiVisible(bool visible) {
+  for (auto* root_window_controller :
+       Shell::Get()->GetAllRootWindowControllers()) {
+    DCHECK(root_window_controller);
+    DCHECK(root_window_controller->GetStatusAreaWidget());
+
+    root_window_controller->GetStatusAreaWidget()
+        ->video_conference_tray()
+        ->SetBackgroundReplaceUiVisible(visible);
+  }
 }
 
 }  // namespace
@@ -447,8 +466,11 @@ std::optional<int> CameraEffectsController::GetEffectState(
     VcEffectId effect_id) {
   switch (effect_id) {
     case VcEffectId::kBackgroundBlur:
-      return MapBackgroundBlurCameraHalStateToPrefValue(
-          current_effects_->blur_level, current_effects_->blur_enabled);
+      return current_effects_->replace_enabled
+                 ? CameraEffectsController::BackgroundBlurPrefValue::kImage
+                 : MapBackgroundBlurCameraHalStateToPrefValue(
+                       current_effects_->blur_level,
+                       current_effects_->blur_enabled);
     case VcEffectId::kPortraitRelighting:
       return current_effects_->relight_enabled;
     case VcEffectId::kCameraFraming:
@@ -474,6 +496,20 @@ void CameraEffectsController::OnEffectControlActivated(
           !IsValidBackgroundBlurPrefValue(state.value())) {
         state = static_cast<int>(
             CameraEffectsController::BackgroundBlurPrefValue::kOff);
+      }
+      if (state.value() ==
+          CameraEffectsController::BackgroundBlurPrefValue::kImage) {
+        SetBackgroundReplaceUiVisible(true);
+
+        // Clicking on the Image button should just show the
+        // BackgroundReplaceUi, no effects change is required.
+        return;
+      }
+
+      // Only change the SetCameraBackgroundView visibility if background
+      // replace is enabled; otherwise the view is null.
+      if (features::IsVcBackgroundReplaceEnabled()) {
+        SetBackgroundReplaceUiVisible(false);
       }
 
       auto [blur_level, blur_enabled] =
@@ -684,12 +720,16 @@ CameraEffectsController::GetEffectsConfigFromPref() {
   effects->blur_enabled = blur_state.second;
   effects->blur_level = blur_state.first;
 
-  effects->replace_enabled =
-      pref_change_registrar_->prefs()->GetBoolean(prefs::kBackgroundReplace);
-  if (effects->replace_enabled) {
-    effects->background_filepath = pref_change_registrar_->prefs()->GetFilePath(
-        prefs::kBackgroundImagePath);
+  if (features::IsVcBackgroundReplaceEnabled()) {
+    effects->replace_enabled =
+        pref_change_registrar_->prefs()->GetBoolean(prefs::kBackgroundReplace);
+    if (effects->replace_enabled) {
+      effects->background_filepath =
+          pref_change_registrar_->prefs()->GetFilePath(
+              prefs::kBackgroundImagePath);
+    }
   }
+
   effects->relight_enabled =
       pref_change_registrar_->prefs()->GetBoolean(prefs::kPortraitRelighting);
   return effects;
@@ -709,16 +749,18 @@ void CameraEffectsController::SetEffectsConfigToPref(
                                                    new_config->blur_enabled));
   }
 
-  if (new_config->replace_enabled != current_effects_->replace_enabled) {
-    pref_change_registrar_->prefs()->SetBoolean(prefs::kBackgroundReplace,
-                                                new_config->replace_enabled);
-  }
+  if (features::IsVcBackgroundReplaceEnabled()) {
+    if (new_config->replace_enabled != current_effects_->replace_enabled) {
+      pref_change_registrar_->prefs()->SetBoolean(prefs::kBackgroundReplace,
+                                                  new_config->replace_enabled);
+    }
 
-  if (new_config->background_filepath !=
-      current_effects_->background_filepath) {
-    pref_change_registrar_->prefs()->SetFilePath(
-        prefs::kBackgroundImagePath,
-        new_config->background_filepath.value_or(base::FilePath()));
+    if (new_config->background_filepath !=
+        current_effects_->background_filepath) {
+      pref_change_registrar_->prefs()->SetFilePath(
+          prefs::kBackgroundImagePath,
+          new_config->background_filepath.value_or(base::FilePath()));
+    }
   }
 
   if (new_config->relight_enabled != current_effects_->relight_enabled) {
@@ -773,6 +815,14 @@ void CameraEffectsController::InitializeEffectControls() {
         /*state_value=*/BackgroundBlurPrefValue::kMaximum,
         /*string_id=*/
         IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_FULL);
+
+    if (features::IsVcBackgroundReplaceEnabled()) {
+      AddBackgroundBlurStateToEffect(
+          effect.get(), kAiImageIcon,
+          /*state_value=*/BackgroundBlurPrefValue::kImage,
+          /*string_id=*/
+          IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_IMAGE);
+    }
     effect->set_dependency_flags(VcHostedEffect::ResourceDependency::kCamera);
     AddEffect(std::move(effect));
   }

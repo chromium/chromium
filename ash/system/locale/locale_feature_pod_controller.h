@@ -37,7 +37,7 @@ class ASH_EXPORT LocaleFeaturePodController : public FeaturePodControllerBase {
 
  private:
   // Unowned.
-  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
+  const raw_ptr<UnifiedSystemTrayController> tray_controller_;
 
   base::WeakPtrFactory<LocaleFeaturePodController> weak_factory_{this};
 };

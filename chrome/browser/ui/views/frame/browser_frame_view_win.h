@@ -81,6 +81,8 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
     return caption_button_container_;
   }
 
+  const TabIconView* window_icon_for_testing() const { return window_icon_; }
+
  protected:
   // BrowserNonClientFrameView:
   void PaintAsActiveChanged() override;

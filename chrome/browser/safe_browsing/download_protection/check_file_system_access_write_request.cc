@@ -148,7 +148,8 @@ bool CheckFileSystemAccessWriteRequest::IsAllowlistedByPolicy() const {
   return IsURLAllowlistedByPolicy(item_->frame_url, *profile->GetPrefs());
 }
 
-void CheckFileSystemAccessWriteRequest::LogDeepScanningPrompt() const {
+void CheckFileSystemAccessWriteRequest::LogDeepScanningPrompt(
+    bool did_prompt) const {
   NOTREACHED();
 }
 

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
@@ -30,6 +31,7 @@ class NavigationApiTest : public testing::Test {
   void TearDown() override {
     url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
   }
+  test::TaskEnvironment task_environment_;
 };
 
 class BeginNavigationClient : public frame_test_helpers::TestWebFrameClient {

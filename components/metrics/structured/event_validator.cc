@@ -20,20 +20,20 @@ bool EventValidator::can_force_record() const {
   return force_record_;
 }
 
-absl::optional<EventValidator::MetricMetadata>
-EventValidator::GetMetricMetadata(const std::string& metric_name) const {
+std::optional<EventValidator::MetricMetadata> EventValidator::GetMetricMetadata(
+    const std::string& metric_name) const {
   const auto it = metric_metadata_.find(metric_name);
   if (it == metric_metadata_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return it->second;
 }
 
-absl::optional<base::StringPiece> EventValidator::GetMetricName(
+std::optional<base::StringPiece> EventValidator::GetMetricName(
     uint64_t metric_name_hash) const {
   const auto it = metrics_name_map_.find(metric_name_hash);
   if (it == metrics_name_map_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return it->second;
 }

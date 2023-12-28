@@ -109,8 +109,10 @@ export enum SafetyCheckNotificationsModuleInteractions {
   UNDO_IGNORE = 6,
   UNDO_RESET = 7,
   OPEN_REVIEW_UI = 8,
+  UNDO_BLOCK_ALL = 9,
+  GO_TO_SETTINGS = 10,
   // Max value should be updated whenever new entries are added.
-  MAX_VALUE = 9,
+  MAX_VALUE = 11,
 }
 
 /**
@@ -120,7 +122,7 @@ export enum SafetyCheckNotificationsModuleInteractions {
  * numeric values should never be reused.
  *
  * Must be kept in sync with the
- * SafetyChecUnusedSitePermissionsModuleInteractions enum in
+ * SafetyCheckUnusedSitePermissionsModuleInteractions enum in
  * histograms/enums.xml
  */
 export enum SafetyCheckUnusedSitePermissionsModuleInteractions {
@@ -130,6 +132,46 @@ export enum SafetyCheckUnusedSitePermissionsModuleInteractions {
   UNDO_ALLOW_AGAIN = 3,
   UNDO_ACKNOWLEDGE_ALL = 4,
   MINIMIZE = 5,
+  GO_TO_SETTINGS = 6,
+  // Max value should be updated whenever new entries are added.
+  MAX_VALUE = 7,
+}
+
+/**
+ * Contains all entry points for Safety Hub page.
+ *
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Must be kept in sync with the SafetyHubEntryPoint enum in
+ * histograms/enums.xml and safety_hub/safety_hub_constants.h.
+ */
+export enum SafetyHubEntryPoint {
+  PRIVACY_SAFE = 0,
+  PRIVACY_WARNING = 1,
+  SITE_SETTINGS = 2,
+  THREE_DOT_MENU = 3,
+  NOTIFICATIONS = 4,
+  // Max value should be updated whenever new entries are added.
+  MAX_VALUE = 5,
+}
+
+/**
+ * Contains all Safety Hub modules.
+ *
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Must be kept in sync with the SafetyHubModuleType enum in
+ * histograms/enums.xml and safety_hub/safety_hub_constants.h.
+ */
+export enum SafetyHubModuleType {
+  PERMISSIONS = 0,
+  NOTIFICATIONS = 1,
+  SAFE_BROWSING = 2,
+  EXTENSIONS = 3,
+  PASSWORDS = 4,
+  VERSION = 5,
   // Max value should be updated whenever new entries are added.
   MAX_VALUE = 6,
 }
@@ -342,11 +384,62 @@ export interface MetricsBrowserProxy {
 
   /**
    * Helper function that calls recordHistogram for the
+   * Settings.SafetyHub.EntryPointShown histogram
+   */
+  recordSafetyHubEntryPointShown(page: SafetyHubEntryPoint): void;
+
+  /**
+   * Helper function that calls recordHistogram for the
+   *Settings.SafetyHub.EntryPointClicked histogram
+   */
+  recordSafetyHubEntryPointClicked(page: SafetyHubEntryPoint): void;
+
+  /**
+   * Helper function that calls recordHistogram for the
+   * Settings.SafetyHub.DashboardWarning histogram
+   */
+  recordSafetyHubModuleWarningImpression(module: SafetyHubModuleType): void;
+
+  /**
+   * Helper function that calls recordHistogram for the
+   * Settings.SafetyHub.HasDashboardShowAnyWarning histogram
+   */
+  recordSafetyHubDashboardAnyWarning(visible: boolean): void;
+
+  /**
+   * Helper function that calls recordHistogram for the
    * Settings.SafetyHub.[card_name].StatusOnClick histogram
    */
   recordSafetyHubCardStateClicked(
       histogramName: string, state: SafetyHubCardState): void;
 
+  /**
+   * Helper function that calls recordHistogram for the
+   * Settings.SafetyHub.NotificationPermissionsModule.Interactions histogram
+   */
+  recordSafetyHubNotificationPermissionsModuleInteractionsHistogram(
+      interaction: SafetyCheckNotificationsModuleInteractions): void;
+
+  /**
+   * Helper function that calls recordHistogram for
+   * Settings.SafetyHub.NotificationPermissionsModule.ListCount histogram
+   */
+  recordSafetyHubNotificationPermissionsModuleListCountHistogram(
+      suggestions: number): void;
+
+  /**
+   * Helper function that calls recordHistogram for the
+   * Settings.SafetyHub.UnusedSitePermissionsModule.Interactions histogram
+   */
+  recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram(
+      interaction: SafetyCheckUnusedSitePermissionsModuleInteractions): void;
+
+  /**
+   * Helper function that calls recordHistogram for
+   * Settings.SafetyHub.UnusedSitePermissionsModule.ListCount histogram
+   */
+  recordSafetyHubUnusedSitePermissionsModuleListCountHistogram(
+      suggestions: number): void;
 
   /**
    * Helper function that calls recordHistogram for the
@@ -482,6 +575,73 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
     chrome.send(
         'metricsHandler:recordInHistogram',
         [histogramName, state, SafetyHubCardState.MAX_VALUE]);
+  }
+
+  recordSafetyHubEntryPointShown(page: SafetyHubEntryPoint) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.SafetyHub.EntryPointImpression',
+      page,
+      SafetyHubEntryPoint.MAX_VALUE,
+    ]);
+  }
+
+  recordSafetyHubEntryPointClicked(page: SafetyHubEntryPoint) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.SafetyHub.EntryPointInteraction',
+      page,
+      SafetyHubEntryPoint.MAX_VALUE,
+    ]);
+  }
+
+  recordSafetyHubModuleWarningImpression(module: SafetyHubModuleType) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.SafetyHub.DashboardWarning',
+      module,
+      SafetyHubModuleType.MAX_VALUE,
+    ]);
+  }
+
+  recordSafetyHubDashboardAnyWarning(visible: boolean) {
+    chrome.send('metricsHandler:recordBooleanHistogram', [
+      'Settings.SafetyHub.HasDashboardShowAnyWarning',
+      visible,
+    ]);
+  }
+
+  recordSafetyHubNotificationPermissionsModuleInteractionsHistogram(
+      interaction: SafetyCheckNotificationsModuleInteractions) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.SafetyHub.NotificationPermissionsModule.Interactions',
+      interaction,
+      SafetyCheckNotificationsModuleInteractions.MAX_VALUE,
+    ]);
+  }
+
+  recordSafetyHubNotificationPermissionsModuleListCountHistogram(suggestions:
+                                                                     number) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.SafetyHub.NotificationPermissionsModuleListCount',
+      suggestions,
+      99 /*max value for Notification Permissions suggestions*/,
+    ]);
+  }
+
+  recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram(
+      interaction: SafetyCheckUnusedSitePermissionsModuleInteractions) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.SafetyHub.UnusedSitePermissionsModule.Interactions',
+      interaction,
+      SafetyCheckUnusedSitePermissionsModuleInteractions.MAX_VALUE,
+    ]);
+  }
+
+  recordSafetyHubUnusedSitePermissionsModuleListCountHistogram(suggestions:
+                                                                   number) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.SafetyHub.UnusedSitePermissionsModuleListCount',
+      suggestions,
+      99 /*max value for Unused Site Permissions suggestions*/,
+    ]);
   }
 
   recordSettingsPageHistogram(interaction: PrivacyElementInteractions) {

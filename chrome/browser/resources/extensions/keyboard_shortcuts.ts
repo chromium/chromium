@@ -11,7 +11,7 @@ import './shortcut_input.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {KeyboardShortcutDelegate} from './keyboard_shortcut_delegate.js';
+import type {KeyboardShortcutDelegate} from './keyboard_shortcut_delegate.js';
 import {getTemplate} from './keyboard_shortcuts.html.js';
 
 /** Event interface for dom-repeat. */

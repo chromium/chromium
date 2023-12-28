@@ -38,6 +38,10 @@ class MockFeaturePromoController : public FeaturePromoController {
               GetPromoStatus,
               (const base::Feature&),
               (const, override));
+  MOCK_METHOD(void,
+              RecordPromoNotShown,
+              (const char*, FeaturePromoResult::Failure),
+              (const, override));
   MOCK_METHOD(const base::Feature*,
               GetCurrentPromoFeature,
               (),

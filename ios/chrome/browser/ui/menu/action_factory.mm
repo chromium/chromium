@@ -4,9 +4,10 @@
 
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 
+#import "base/check.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
-#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -336,6 +337,21 @@
       block();
     }
   };
+}
+
+- (UIAction*)actionToAddTabToNewGroupWithBlock:(ProceduralBlock)block {
+  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+      << "You should not be able to create a tab group context menu action "
+         "outside the Tab Groups experiment.";
+  UIImage* image = DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
+                                              kSymbolActionPointSize);
+  UIAction* action =
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP)
+                      image:image
+                       type:MenuActionType::AddTabToNewGroup
+                      block:block];
+  return action;
 }
 
 #pragma mark - Private

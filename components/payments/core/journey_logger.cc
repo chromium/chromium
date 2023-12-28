@@ -290,7 +290,7 @@ void JourneyLogger::SetAborted(AbortReason reason) {
     RecordJourneyStatsHistograms(COMPLETION_STATUS_OTHER_ABORTED);
 }
 
-void JourneyLogger::SetNotShown(NotShownReason reason) {
+void JourneyLogger::SetNotShown() {
   DCHECK(!WasPaymentRequestTriggered());
   RecordJourneyStatsHistograms(COMPLETION_STATUS_COULD_NOT_SHOW);
 }

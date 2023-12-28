@@ -56,147 +56,10 @@ const TransportSecurityStateSource* const kDefaultHSTSSource = nullptr;
 
 const TransportSecurityStateSource* g_hsts_source = kDefaultHSTSSource;
 
-// Parameters for remembering sent HPKP reports.
-const size_t kMaxReportCacheEntries = 50;
-const int kTimeToRememberReportsMins = 60;
-const size_t kReportCacheKeyLength = 16;
-
 // Override for CheckCTRequirements() for unit tests. Possible values:
 //   false: Use the default implementation (e.g. production)
 //   true: Unless a delegate says otherwise, require CT.
 bool g_ct_required_for_testing = false;
-
-base::Value GetPEMEncodedChainAsList(const net::X509Certificate* cert_chain) {
-  if (!cert_chain)
-    return base::Value(base::Value::Type::LIST);
-
-  base::Value::List result;
-  std::vector<std::string> pem_encoded_chain;
-  cert_chain->GetPEMEncodedChain(&pem_encoded_chain);
-  for (const std::string& cert : pem_encoded_chain)
-    result.Append(cert);
-
-  return base::Value(std::move(result));
-}
-
-bool HashReportForCache(const base::Value::Dict& report,
-                        const GURL& report_uri,
-                        std::string* cache_key) {
-  char hashed[crypto::kSHA256Length];
-  std::string to_hash;
-  if (!base::JSONWriter::Write(report, &to_hash))
-    return false;
-  to_hash += "," + report_uri.spec();
-  crypto::SHA256HashString(to_hash, hashed, sizeof(hashed));
-  static_assert(kReportCacheKeyLength <= sizeof(hashed),
-                "HPKP report cache key size is larger than hash size.");
-  *cache_key = std::string(hashed, kReportCacheKeyLength);
-  return true;
-}
-
-// Formats a time compliant to ISO 8601 in UTC, e.g. "2020-12-31T23:59:59.999Z".
-//
-// This behaves identically to the function in base/i18n/time_formatting.h. It
-// is reimplemented here since net/ cannot depend on base/i18n/.
-std::string TimeFormatAsIso8601(const base::Time& time) {
-  base::Time::Exploded exploded;
-  time.UTCExplode(&exploded);
-  return base::StringPrintf(
-      "%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", exploded.year, exploded.month,
-      exploded.day_of_month, exploded.hour, exploded.minute, exploded.second,
-      exploded.millisecond);
-}
-
-bool GetHPKPReport(const HostPortPair& host_port_pair,
-                   const TransportSecurityState::PKPState& pkp_state,
-                   const X509Certificate* served_certificate_chain,
-                   const X509Certificate* validated_certificate_chain,
-                   std::string* serialized_report,
-                   std::string* cache_key) {
-  if (pkp_state.report_uri.is_empty())
-    return false;
-
-  base::Value::Dict report;
-  base::Time now = base::Time::Now();
-  report.Set("hostname", host_port_pair.host());
-  report.Set("port", host_port_pair.port());
-  report.Set("include-subdomains", pkp_state.include_subdomains);
-  report.Set("noted-hostname", pkp_state.domain);
-
-  auto served_certificate_chain_list =
-      GetPEMEncodedChainAsList(served_certificate_chain);
-  auto validated_certificate_chain_list =
-      GetPEMEncodedChainAsList(validated_certificate_chain);
-  report.Set("served-certificate-chain",
-             std::move(served_certificate_chain_list));
-  report.Set("validated-certificate-chain",
-             std::move(validated_certificate_chain_list));
-
-  base::Value::List known_pin_list;
-  for (const auto& hash_value : pkp_state.spki_hashes) {
-    std::string known_pin;
-
-    switch (hash_value.tag()) {
-      case HASH_VALUE_SHA256:
-        known_pin += "pin-sha256=";
-        break;
-      default:
-        // Don't bother reporting about hash types we don't support. SHA-256 is
-        // the only standardized hash function for HPKP anyway.
-        continue;
-    }
-
-    std::string base64_value;
-    base::Base64Encode(
-        base::StringPiece(reinterpret_cast<const char*>(hash_value.data()),
-                          hash_value.size()),
-        &base64_value);
-    known_pin += "\"" + base64_value + "\"";
-
-    known_pin_list.Append(known_pin);
-  }
-
-  report.Set("known-pins", std::move(known_pin_list));
-
-  // For the sent reports cache, do not include the effective expiration
-  // date. The expiration date will likely change every time the user
-  // visits the site, so it would prevent reports from being effectively
-  // deduplicated.
-  if (!HashReportForCache(report, pkp_state.report_uri, cache_key)) {
-    LOG(ERROR) << "Failed to compute cache key for HPKP violation report.";
-    return false;
-  }
-
-  report.Set("date-time", TimeFormatAsIso8601(now));
-  report.Set("effective-expiration-date",
-             TimeFormatAsIso8601(pkp_state.expiry));
-  if (!base::JSONWriter::Write(report, serialized_report)) {
-    LOG(ERROR) << "Failed to serialize HPKP violation report.";
-    return false;
-  }
-
-  return true;
-}
-
-// Do not send a report over HTTPS to the same host that set the
-// pin. Such report URIs will result in loops. (A.com has a pinning
-// violation which results in a report being sent to A.com, which
-// results in a pinning violation which results in a report being sent
-// to A.com, etc.)
-bool IsReportUriValidForHost(const GURL& report_uri, const std::string& host) {
-  return (report_uri.host_piece() != host ||
-          !report_uri.SchemeIsCryptographic());
-}
-
-std::string HashesToBase64String(const HashValueVector& hashes) {
-  std::string str;
-  for (size_t i = 0; i != hashes.size(); ++i) {
-    if (i != 0)
-      str += ",";
-    str += hashes[i].ToString();
-  }
-  return str;
-}
 
 TransportSecurityState::HashedHost HashHost(
     base::span<const uint8_t> canonicalized_host) {
@@ -384,8 +247,7 @@ TransportSecurityState::TransportSecurityState()
     : TransportSecurityState(std::vector<std::string>()) {}
 
 TransportSecurityState::TransportSecurityState(
-    std::vector<std::string> hsts_host_bypass_list)
-    : sent_hpkp_reports_cache_(kMaxReportCacheEntries) {
+    std::vector<std::string> hsts_host_bypass_list) {
 // Static pinning is only enabled for official builds to make sure that
 // others don't end up with pins that cannot be easily updated.
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING) || BUILDFLAG(IS_IOS)
@@ -432,21 +294,14 @@ bool TransportSecurityState::ShouldUpgradeToSSL(
 TransportSecurityState::PKPStatus TransportSecurityState::CheckPublicKeyPins(
     const HostPortPair& host_port_pair,
     bool is_issued_by_known_root,
-    const HashValueVector& public_key_hashes,
-    const X509Certificate* served_certificate_chain,
-    const X509Certificate* validated_certificate_chain,
-    const PublicKeyPinReportStatus report_status,
-    const NetworkAnonymizationKey& network_anonymization_key,
-    std::string* pinning_failure_log) {
+    const HashValueVector& public_key_hashes) {
   // Perform pin validation only if the server actually has public key pins.
   if (!HasPublicKeyPins(host_port_pair.host())) {
     return PKPStatus::OK;
   }
 
   return CheckPublicKeyPinsImpl(host_port_pair, is_issued_by_known_root,
-                                public_key_hashes, served_certificate_chain,
-                                validated_certificate_chain, report_status,
-                                network_anonymization_key, pinning_failure_log);
+                                public_key_hashes);
 }
 
 bool TransportSecurityState::HasPublicKeyPins(const std::string& host) {
@@ -460,9 +315,6 @@ TransportSecurityState::CheckCTRequirements(
     bool is_issued_by_known_root,
     const HashValueVector& public_key_hashes,
     const X509Certificate* validated_certificate_chain,
-    const X509Certificate* served_certificate_chain,
-    const SignedCertificateTimestampAndStatusList&
-        signed_certificate_timestamps,
     ct::CTPolicyCompliance policy_compliance) {
   using CTRequirementLevel = RequireCTDelegate::CTRequirementLevel;
   std::string hostname = host_port_pair.host();
@@ -509,12 +361,6 @@ void TransportSecurityState::SetDelegate(
     TransportSecurityState::Delegate* delegate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   delegate_ = delegate;
-}
-
-void TransportSecurityState::SetReportSender(
-    TransportSecurityState::ReportSenderInterface* report_sender) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  report_sender_ = report_sender;
 }
 
 void TransportSecurityState::SetRequireCTDelegate(RequireCTDelegate* delegate) {
@@ -578,8 +424,7 @@ void TransportSecurityState::AddHPKPInternal(const std::string& host,
                                              const base::Time& last_observed,
                                              const base::Time& expiry,
                                              bool include_subdomains,
-                                             const HashValueVector& hashes,
-                                             const GURL& report_uri) {
+                                             const HashValueVector& hashes) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   const std::vector<uint8_t> canonicalized_host = CanonicalizeHost(host);
   if (canonicalized_host.empty())
@@ -592,7 +437,6 @@ void TransportSecurityState::AddHPKPInternal(const std::string& host,
   pkp_state.expiry = expiry;
   pkp_state.include_subdomains = include_subdomains;
   pkp_state.spki_hashes = hashes;
-  pkp_state.report_uri = report_uri;
 
   // Only store new state when HPKP is explicitly enabled. If it is
   // disabled, remove the state from the enabled hosts.
@@ -611,59 +455,19 @@ void TransportSecurityState::
   enable_pkp_bypass_for_local_trust_anchors_ = value;
 }
 
-TransportSecurityState::PKPStatus
-TransportSecurityState::CheckPinsAndMaybeSendReport(
+TransportSecurityState::PKPStatus TransportSecurityState::CheckPins(
     const HostPortPair& host_port_pair,
     bool is_issued_by_known_root,
     const TransportSecurityState::PKPState& pkp_state,
-    const HashValueVector& hashes,
-    const X509Certificate* served_certificate_chain,
-    const X509Certificate* validated_certificate_chain,
-    const TransportSecurityState::PublicKeyPinReportStatus report_status,
-    const net::NetworkAnonymizationKey& network_anonymization_key,
-    std::string* failure_log) {
-  if (pkp_state.CheckPublicKeyPins(hashes, failure_log))
+    const HashValueVector& hashes) {
+  if (pkp_state.CheckPublicKeyPins(hashes)) {
     return PKPStatus::OK;
+  }
 
   // Don't report violations for certificates that chain to local roots.
   if (!is_issued_by_known_root && enable_pkp_bypass_for_local_trust_anchors_)
     return PKPStatus::BYPASSED;
 
-  if (!report_sender_ ||
-      report_status != TransportSecurityState::ENABLE_PIN_REPORTS ||
-      pkp_state.report_uri.is_empty()) {
-    return PKPStatus::VIOLATED;
-  }
-
-  DCHECK(pkp_state.report_uri.is_valid());
-  // Report URIs should not be used if they are the same host as the pin
-  // and are HTTPS, to avoid going into a report-sending loop.
-  if (!IsReportUriValidForHost(pkp_state.report_uri, host_port_pair.host()))
-    return PKPStatus::VIOLATED;
-
-  std::string serialized_report;
-  std::string report_cache_key;
-  if (!GetHPKPReport(host_port_pair, pkp_state, served_certificate_chain,
-                     validated_certificate_chain, &serialized_report,
-                     &report_cache_key)) {
-    return PKPStatus::VIOLATED;
-  }
-
-  // Limit the rate at which duplicate reports are sent to the same
-  // report URI. The same report will not be sent within
-  // |kTimeToRememberReportsMins|, which reduces load on servers and
-  // also prevents accidental loops (a.com triggers a report to b.com
-  // which triggers a report to a.com). See section 2.1.4 of RFC 7469.
-  if (sent_hpkp_reports_cache_.Get(report_cache_key, base::TimeTicks::Now()))
-    return PKPStatus::VIOLATED;
-  sent_hpkp_reports_cache_.Put(
-      report_cache_key, true, base::TimeTicks::Now(),
-      base::TimeTicks::Now() + base::Minutes(kTimeToRememberReportsMins));
-
-  report_sender_->Send(pkp_state.report_uri, "application/json; charset=utf-8",
-                       serialized_report, network_anonymization_key,
-                       base::OnceCallback<void()>(),
-                       base::OnceCallback<void(const GURL&, int, int)>());
   return PKPStatus::VIOLATED;
 }
 
@@ -780,20 +584,14 @@ void TransportSecurityState::AddHSTS(const std::string& host,
 void TransportSecurityState::AddHPKP(const std::string& host,
                                      const base::Time& expiry,
                                      bool include_subdomains,
-                                     const HashValueVector& hashes,
-                                     const GURL& report_uri) {
+                                     const HashValueVector& hashes) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  AddHPKPInternal(host, base::Time::Now(), expiry, include_subdomains, hashes,
-                  report_uri);
+  AddHPKPInternal(host, base::Time::Now(), expiry, include_subdomains, hashes);
 }
 
 // static
 void TransportSecurityState::SetRequireCTForTesting(bool required) {
   g_ct_required_for_testing = required;
-}
-
-void TransportSecurityState::ClearReportCachesForTesting() {
-  sent_hpkp_reports_cache_.Clear();
 }
 
 size_t TransportSecurityState::num_sts_entries() const {
@@ -811,22 +609,14 @@ TransportSecurityState::PKPStatus
 TransportSecurityState::CheckPublicKeyPinsImpl(
     const HostPortPair& host_port_pair,
     bool is_issued_by_known_root,
-    const HashValueVector& hashes,
-    const X509Certificate* served_certificate_chain,
-    const X509Certificate* validated_certificate_chain,
-    const PublicKeyPinReportStatus report_status,
-    const NetworkAnonymizationKey& network_anonymization_key,
-    std::string* failure_log) {
+    const HashValueVector& hashes) {
   PKPState pkp_state;
   bool found_state = GetPKPState(host_port_pair.host(), &pkp_state);
 
   // HasPublicKeyPins should have returned true in order for this method to have
   // been called.
   DCHECK(found_state);
-  return CheckPinsAndMaybeSendReport(
-      host_port_pair, is_issued_by_known_root, pkp_state, hashes,
-      served_certificate_chain, validated_certificate_chain, report_status,
-      network_anonymization_key, failure_log);
+  return CheckPins(host_port_pair, is_issued_by_known_root, pkp_state, hashes);
 }
 
 bool TransportSecurityState::GetStaticSTSState(const std::string& host,
@@ -886,9 +676,6 @@ bool TransportSecurityState::GetStaticPKPState(const std::string& host,
         pkp_result->last_observed = key_pins_list_last_update_time_;
         pkp_result->include_subdomains = iter->second.second;
         const PinSet* pinset = iter->second.first;
-        if (!pinset->report_uri().empty()) {
-          pkp_result->report_uri = GURL(pinset->report_uri());
-        }
         for (auto hash : pinset->static_spki_hashes()) {
           // If the update is malformed, it's preferable to skip the hash than
           // crash.
@@ -927,8 +714,6 @@ bool TransportSecurityState::GetStaticPKPState(const std::string& host,
 
     const TransportSecurityStateSource::Pinset* pinset =
         &g_hsts_source->pinsets[result.pinset_id];
-    if (pinset->report_uri != kNoReportURI)
-      pkp_result->report_uri = GURL(pinset->report_uri);
 
     if (pinset->accepted_pins) {
       const char* const* sha256_hash = pinset->accepted_pins;
@@ -1081,12 +866,10 @@ TransportSecurityState::PKPState::~PKPState() = default;
 TransportSecurityState::PinSet::PinSet(
     std::string name,
     std::vector<std::vector<uint8_t>> static_spki_hashes,
-    std::vector<std::vector<uint8_t>> bad_static_spki_hashes,
-    std::string report_uri)
+    std::vector<std::vector<uint8_t>> bad_static_spki_hashes)
     : name_(std::move(name)),
       static_spki_hashes_(std::move(static_spki_hashes)),
-      bad_static_spki_hashes_(std::move(bad_static_spki_hashes)),
-      report_uri_(std::move(report_uri)) {}
+      bad_static_spki_hashes_(std::move(bad_static_spki_hashes)) {}
 
 TransportSecurityState::PinSet::PinSet(const PinSet& other) = default;
 TransportSecurityState::PinSet::~PinSet() = default;
@@ -1099,23 +882,15 @@ TransportSecurityState::PinSetInfo::PinSetInfo(std::string hostname,
       include_subdomains_(std::move(include_subdomains)) {}
 
 bool TransportSecurityState::PKPState::CheckPublicKeyPins(
-    const HashValueVector& hashes,
-    std::string* failure_log) const {
+    const HashValueVector& hashes) const {
   // Validate that hashes is not empty. By the time this code is called (in
   // production), that should never happen, but it's good to be defensive.
   // And, hashes *can* be empty in some test scenarios.
   if (hashes.empty()) {
-    failure_log->append(
-        "Rejecting empty public key chain for public-key-pinned domains: " +
-        domain);
     return false;
   }
 
   if (HashesIntersect(bad_spki_hashes, hashes)) {
-    failure_log->append("Rejecting public key chain for domain " + domain +
-                        ". Validated chain: " + HashesToBase64String(hashes) +
-                        ", matches one or more bad hashes: " +
-                        HashesToBase64String(bad_spki_hashes));
     return false;
   }
 
@@ -1127,9 +902,6 @@ bool TransportSecurityState::PKPState::CheckPublicKeyPins(
     return true;
   }
 
-  failure_log->append("Rejecting public key chain for domain " + domain +
-                      ". Validated chain: " + HashesToBase64String(hashes) +
-                      ", expected: " + HashesToBase64String(spki_hashes));
   return false;
 }
 

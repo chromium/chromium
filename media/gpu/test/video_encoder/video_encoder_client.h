@@ -59,6 +59,8 @@ struct VideoEncoderClientConfig {
   // The maximum number of bitstream buffer encodes that can be requested
   // without waiting for the result of the previous encodes requests.
   size_t max_outstanding_encode_requests = 1;
+  // The drop frame threshold. See VideoEncodeAccelerator::Config for detail.
+  uint8_t drop_frame_thresh = 0;
   // The desired bitrate in bits/second.
   media::VideoBitrateAllocation bitrate_allocation;
   // The desired framerate in frames/second.
@@ -94,6 +96,7 @@ class VideoEncoderStats {
   uint32_t framerate = 0;
   size_t total_num_encoded_frames = 0;
   size_t total_encoded_frames_size = 0;
+  size_t num_dropped_frames = 0;
   // Filled in spatial/temporal layer encoding and codec is vp9.
   std::vector<std::vector<size_t>> num_encoded_frames_per_layer;
   std::vector<std::vector<size_t>> encoded_frames_size_per_layer;

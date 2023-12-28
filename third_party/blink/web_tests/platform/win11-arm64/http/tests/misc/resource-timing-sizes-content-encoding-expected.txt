@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] PerformanceResourceTiming sizes compressed content test
+  assert_between_exclusive: encodedBodySize expected a number greater than 0 and less than 1250 but got 1986
+Harness: the test ran to completion.
+

@@ -22,8 +22,16 @@ constexpr int kOrcaFeedbackProductId = 5314436;
 
 base::WeakPtr<feedback::FeedbackUploader> GetFeedbackUploaderFromContext(
     content::BrowserContext* context) {
-  return base::AsWeakPtr(static_cast<feedback::FeedbackUploader*>(
-      feedback::FeedbackUploaderFactoryChrome::GetForBrowserContext(context)));
+  feedback::FeedbackUploader* uploader =
+      static_cast<feedback::FeedbackUploader*>(
+          feedback::FeedbackUploaderFactoryChrome::GetForBrowserContext(
+              context));
+  // Can be a nullptr value in unit tests.
+  if (!uploader) {
+    return nullptr;
+  }
+
+  return uploader->AsWeakPtr();
 }
 
 std::string GetChromeVersion() {

@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="BrowserDialogs.ExternalProtocol.BlockState"
-    enum="BlockStateMetric" expires_after="2024-04-12">
+    enum="BlockStateMetric" expires_after="2024-06-16">
   <owner>rsesek@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -352,18 +352,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Permissions.CrowdDeny.PreloadData.WarningOnly" enum="Boolean"
-    expires_after="2021-10-25">
-  <owner>andypaicu@chromium.org</owner>
-  <owner>engedy@chromium.org</owner>
-  <owner>hkamila@chromium.org</owner>
-  <summary>
-    Records, each time a notification permission prompt is about to be shown,
-    the whether there is preload data that indicates the origin being on a
-    warning list.
-  </summary>
-</histogram>
-
 <histogram name="Permissions.CrowdDeny.SafeBrowsing.RequestDuration" units="ms"
     expires_after="2024-11-30">
   <owner>andypaicu@chromium.org</owner>
@@ -561,7 +549,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.OneTimePermission.{PermissionType}.Event"
-    enum="OneTimePermissionEvent" expires_after="2024-04-20">
+    enum="OneTimePermissionEvent" expires_after="2024-06-23">
   <owner>fjacky@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -1216,7 +1204,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Usage.Notifications.DidRecordUkm" enum="Boolean"
-    expires_after="2024-01-01">
+    expires_after="2024-05-05">
   <owner>engedy@chromium.org</owner>
   <owner>willxu@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
@@ -1247,7 +1235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteEngagementService.EngagementType"
-    enum="SiteEngagementServiceEngagementType" expires_after="2024-02-11">
+    enum="SiteEngagementServiceEngagementType" expires_after="2024-06-09">
   <owner>calamity@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <summary>

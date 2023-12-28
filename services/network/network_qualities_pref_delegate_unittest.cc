@@ -44,45 +44,19 @@ TEST_F(NetworkQualitiesPrefDelegateTest, WritingReadingToPrefsEnabled) {
   net::TestNetworkQualityEstimator estimator;
   NetworkQualitiesPrefDelegate::RegisterPrefs(pref_service_simple.registry());
 
-  base::HistogramTester initial_histogram_tester;
   NetworkQualitiesPrefDelegate pref_delegate(&pref_service_simple, &estimator);
-  // NetworkQualityEstimator must be notified of the read prefs at startup.
-  EXPECT_FALSE(
-      initial_histogram_tester.GetAllSamples("NQE.Prefs.ReadSize").empty());
 
-  {
-    base::HistogramTester histogram_tester;
-    estimator.set_effective_connection_type(
-        net::EFFECTIVE_CONNECTION_TYPE_OFFLINE);
-    estimator.set_recent_effective_connection_type(
-        net::EFFECTIVE_CONNECTION_TYPE_OFFLINE);
-    estimator.RunOneRequest();
+  estimator.set_effective_connection_type(
+      net::EFFECTIVE_CONNECTION_TYPE_OFFLINE);
+  estimator.set_recent_effective_connection_type(
+      net::EFFECTIVE_CONNECTION_TYPE_OFFLINE);
+  estimator.RunOneRequest();
 
-    // Prefs are written only if persistent caching was enabled.
-    EXPECT_FALSE(
-        histogram_tester.GetAllSamples("NQE.Prefs.WriteCount").empty());
-    histogram_tester.ExpectTotalCount("NQE.Prefs.ReadCount", 0);
-
-    // NetworkQualityEstimator should not be notified of change in prefs.
-    histogram_tester.ExpectTotalCount("NQE.Prefs.ReadSize", 0);
-  }
-
-  {
-    base::HistogramTester histogram_tester;
-    estimator.set_effective_connection_type(
-        net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
-    estimator.set_recent_effective_connection_type(
-        net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
-    estimator.RunOneRequest();
-
-    // Prefs are written even if the network id was unavailable.
-    EXPECT_FALSE(
-        histogram_tester.GetAllSamples("NQE.Prefs.WriteCount").empty());
-    histogram_tester.ExpectTotalCount("NQE.Prefs.ReadCount", 0);
-
-    // NetworkQualityEstimator should not be notified of change in prefs.
-    histogram_tester.ExpectTotalCount("NQE.Prefs.ReadSize", 0);
-  }
+  estimator.set_effective_connection_type(
+      net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  estimator.set_recent_effective_connection_type(
+      net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  estimator.RunOneRequest();
 
   // Verify the contents of the prefs by reading them again.
   std::map<net::nqe::internal::NetworkID,

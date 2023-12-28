@@ -77,107 +77,6 @@ public class PaymentRequestJourneyLoggerTest {
         autofillTestHelper.clearAllDataForTesting();
     }
 
-    /** Expect that the number of shipping address suggestions was logged properly. */
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    public void testNumberOfSuggestionsShown_ShippingAddress_Completed() throws Exception {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "PaymentRequest.NumberOfSuggestionsShown.ShippingAddress.Completed",
-                                2)
-                        .build();
-
-        // Complete a Payment Request with the fake url payment method.
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
-                "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
-                mPaymentRequestTestRule.getReadyToPay());
-        mPaymentRequestTestRule.clickAndWait(
-                R.id.button_primary, mPaymentRequestTestRule.getDismissed());
-
-        // Make sure the right number of suggestions were logged.
-        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
-    }
-
-    /** Expect that the number of shipping address suggestions was logged properly. */
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    public void testNumberOfSuggestionsShown_ShippingAddress_AbortedByUser() throws Exception {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "PaymentRequest.NumberOfSuggestionsShown.ShippingAddress.UserAborted",
-                                2)
-                        .build();
-
-        // Cancel the payment request.
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
-                "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
-                mPaymentRequestTestRule.getReadyToPay());
-        mPaymentRequestTestRule.clickAndWait(
-                R.id.close_button, mPaymentRequestTestRule.getDismissed());
-
-        // Make sure the right number of suggestions were logged.
-        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
-    }
-
-    /** Expect that the number of payment method suggestions was logged properly. */
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    public void testNumberOfSuggestionsShown_PaymentMethod_Completed() throws Exception {
-        // Add a second payment app.
-        mPaymentRequestTestRule.addPaymentAppFactory(
-                "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "PaymentRequest.NumberOfSuggestionsShown.PaymentMethod.Completed",
-                                2)
-                        .build();
-
-        // Complete a Payment Request with the payment app.
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
-                "buyWithMethods([{supportedMethods: 'https://bobpay.test'},"
-                        + " {supportedMethods: 'https://kylepay.test/webpay'}]);",
-                mPaymentRequestTestRule.getReadyToPay());
-        mPaymentRequestTestRule.clickAndWait(
-                R.id.button_primary, mPaymentRequestTestRule.getDismissed());
-        // Matches either "https://bobpay.test" or "https://kylepay.test/webpay"
-        mPaymentRequestTestRule.expectResultContains(
-                new String[] {"https://", "\"transaction\"", "1337"});
-
-        // Make sure the right number of suggestions were logged.
-        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
-    }
-
-    /** Expect that the number of payment method suggestions was logged properly. */
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    public void testNumberOfSuggestionsShown_PaymentMethod_AbortedByUser() throws Exception {
-        // Add a second payment app.
-        mPaymentRequestTestRule.addPaymentAppFactory(
-                "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "PaymentRequest.NumberOfSuggestionsShown.PaymentMethod.UserAborted",
-                                2)
-                        .build();
-
-        // Cancel the payment request.
-        mPaymentRequestTestRule.triggerUIAndWait(
-                "buyWithUrlMethods", mPaymentRequestTestRule.getReadyForInput());
-        mPaymentRequestTestRule.clickAndWait(
-                R.id.close_button, mPaymentRequestTestRule.getDismissed());
-
-        // Make sure the right number of suggestions were logged.
-        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
-    }
-
     /** Expect that an incomplete payment app is not suggested to the user. */
     @Test
     @MediumTest
@@ -200,49 +99,6 @@ public class PaymentRequestJourneyLoggerTest {
                 R.id.close_button, mPaymentRequestTestRule.getDismissed());
 
         // Make sure only the one payment app suggestions was logged.
-        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
-    }
-
-    /** Expect that the number of contact info suggestions was logged properly. */
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    public void testNumberOfSuggestionsShown_ContactInfo_Completed() throws Exception {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "PaymentRequest.NumberOfSuggestionsShown.ContactInfo.Completed", 2)
-                        .build();
-
-        // Complete a Payment Request with the fake url payment method.
-        mPaymentRequestTestRule.triggerUIAndWait(
-                "contactInfoBuy", mPaymentRequestTestRule.getReadyToPay());
-        mPaymentRequestTestRule.clickAndWait(
-                R.id.button_primary, mPaymentRequestTestRule.getDismissed());
-
-        // Make sure the right number of suggestions were logged.
-        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
-    }
-
-    /** Expect that the number of contact info suggestions was logged properly. */
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    public void testNumberOfSuggestionsShown_ContactInfo_AbortedByUser() throws Exception {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "PaymentRequest.NumberOfSuggestionsShown.ContactInfo.UserAborted",
-                                2)
-                        .build();
-
-        // Cancel the payment request.
-        mPaymentRequestTestRule.triggerUIAndWait(
-                "contactInfoBuy", mPaymentRequestTestRule.getReadyToPay());
-        mPaymentRequestTestRule.clickAndWait(
-                R.id.close_button, mPaymentRequestTestRule.getDismissed());
-
-        // Make sure the right number of suggestions were logged.
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 
@@ -415,28 +271,6 @@ public class PaymentRequestJourneyLoggerTest {
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 
-    /** Expect that no metric for contact info has been logged. */
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    public void testNoContactInfoHistogram() throws TimeoutException {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords(
-                                "PaymentRequest.NumberOfSuggestionsShown.ContactInfo.Completed")
-                        .build();
-
-        // Complete a Payment Request with a credit card.
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
-                "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
-                mPaymentRequestTestRule.getReadyToPay());
-        mPaymentRequestTestRule.clickAndWait(
-                R.id.button_primary, mPaymentRequestTestRule.getDismissed());
-
-        // Make sure nothing was logged for contact info.
-        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
-    }
-
     /**
      * Expect that that the journey metrics are logged correctly on a second consecutive payment
      * request.
@@ -455,23 +289,11 @@ public class PaymentRequestJourneyLoggerTest {
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
 
-        // Make sure the right number of suggestions were logged.
-        Assert.assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSuggestionsShown.PaymentMethod.Completed", 2));
-
         // Complete a second Payment Request with payment apps.
         mPaymentRequestTestRule.triggerUIAndWait(
                 "buyWithUrlMethods", mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
-
-        // Make sure the right number of suggestions were logged.
-        Assert.assertEquals(
-                2,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSuggestionsShown.PaymentMethod.Completed", 2));
 
         // Make sure the events were logged correctly.
         int expectedSample =
@@ -489,36 +311,5 @@ public class PaymentRequestJourneyLoggerTest {
                 2,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));
-    }
-
-    /**
-     * Expect that only some journey metrics are logged if the payment request was not shown to the
-     * user.
-     */
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    public void testNoShow() throws TimeoutException {
-        // Android Pay has a factory but it does not return an app.
-        mPaymentRequestTestRule.addPaymentAppFactory(
-                "https://android.com/pay", AppPresence.NO_APPS, FactorySpeed.SLOW_FACTORY);
-        mPaymentRequestTestRule.clickNodeAndWait(
-                "androidPayBuy", mPaymentRequestTestRule.getShowFailed());
-        mPaymentRequestTestRule.expectResultContains(
-                new String[] {"The payment method", "not supported"});
-
-        // Make sure that no journey metrics were logged.
-        Assert.assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSuggestionsShown.ShippingAddress.UserAborted", 2));
-        Assert.assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSuggestionsShown.ShippingAddress.OtherAborted", 2));
-        Assert.assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.NumberOfSuggestionsShown.ShippingAddress.Completed", 2));
     }
 }

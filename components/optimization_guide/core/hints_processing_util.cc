@@ -108,6 +108,11 @@ std::string GetStringNameForOptimizationType(
       return "CapitalOneCreditCardEntertainmentBenefits";
     case proto::OptimizationType::CAPITAL_ONE_CREDIT_CARD_STREAMING_BENEFITS:
       return "CapitalOneCreditCardStreamingBenefits";
+    case proto::OptimizationType::AMERICAN_EXPRESS_CREDIT_CARD_FLIGHT_BENEFITS:
+      return "AmericanExpressCreditCardFlightBenefits";
+    case proto::OptimizationType::
+        AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS:
+      return "AmericanExpressCreditCardSubscriptionBenefits";
   }
 
   // The returned string is used to record histograms for the optimization type.

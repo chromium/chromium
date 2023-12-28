@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PERMISSIONS_EMBEDDED_PERMISSION_PROMPT_H_
 #define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_EMBEDDED_PERMISSION_PROMPT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_base_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_view_delegate.h"
@@ -77,7 +78,9 @@ class EmbeddedPermissionPrompt : public PermissionPromptDesktop,
   void DismissScrim() override;
   base::WeakPtr<permissions::PermissionPrompt::Delegate>
   GetPermissionPromptDelegate() const override;
-  const std::vector<permissions::PermissionRequest*>& Requests() const override;
+  const std::vector<
+      raw_ptr<permissions::PermissionRequest, VectorExperimental>>&
+  Requests() const override;
 
  private:
   static Variant DeterminePromptVariant(
@@ -109,7 +112,8 @@ class EmbeddedPermissionPrompt : public PermissionPromptDesktop,
   raw_ptr<permissions::PermissionPrompt::Delegate> delegate_;
 
   std::set<ContentSettingsType> prompt_types_;
-  std::vector<permissions::PermissionRequest*> requests_;
+  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+      requests_;
 
   base::WeakPtrFactory<EmbeddedPermissionPrompt> weak_factory_{this};
 };

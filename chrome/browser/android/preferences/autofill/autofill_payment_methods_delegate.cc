@@ -34,7 +34,7 @@ namespace autofill {
 void RunVirtualCardEnrollmentFieldsLoadedCallback(
     const JavaRef<jobject>& j_callback,
     VirtualCardEnrollmentFields* virtual_card_enrollment_fields) {
-  RunObjectCallbackAndroid(
+  base::android::RunObjectCallbackAndroid(
       j_callback, autofill::CreateVirtualCardEnrollmentFieldsJavaObject(
                       virtual_card_enrollment_fields));
 }

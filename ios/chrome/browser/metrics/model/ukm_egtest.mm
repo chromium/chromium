@@ -93,7 +93,7 @@ using chrome_test_util::SettingsDoneButton;
   [ChromeEarlGrey
       waitForSyncEngineInitialized:NO
                        syncTimeout:syncher::kSyncUKMOperationsTimeout];
-  [ChromeEarlGrey clearSyncServerData];
+  [ChromeEarlGrey clearFakeSyncServerData];
 
   [super tearDown];
 }

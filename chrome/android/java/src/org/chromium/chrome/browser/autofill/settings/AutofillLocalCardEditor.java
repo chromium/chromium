@@ -296,6 +296,38 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
             card.setMonth(AutofillLocalCardEditor.getExpirationMonth(expirationDate));
             card.setYear(AutofillLocalCardEditor.getExpirationYear(expirationDate));
             card.setCvc(mCvc.getText().toString().trim());
+            // TODO(crbug.com/1511305): Move metric logging to a separate class.
+            if (mIsNewEntry) {
+                if (!card.getCvc().isEmpty()) {
+                    RecordUserAction.record("AutofillCreditCardsAddedWithCvc");
+                }
+            } else {
+                // Verify if the CVC value for the existing card is absent.
+                if (mCard.getCvc().isEmpty()) {
+                    // Verify if the CVC value is absent for the new card that is replacing the
+                    // existing card.
+                    if (card.getCvc().isEmpty()) {
+                        // Record when an existing card without CVC is edited and no CVC was
+                        // added.
+                        RecordUserAction.record("AutofillCreditCardsEditedAndCvcWasLeftBlank");
+                    } else {
+                        // Record when an existing card without CVC is edited and CVC was added.
+                        RecordUserAction.record("AutofillCreditCardsEditedAndCvcWasAdded");
+                    }
+                } else {
+                    if (card.getCvc().isEmpty()) {
+                        // Record when an existing card with CVC is edited and CVC was removed.
+                        RecordUserAction.record("AutofillCreditCardsEditedAndCvcWasRemoved");
+                    } else if (!card.getCvc().equals(mCard.getCvc())) {
+                        // Record when an existing card with CVC is edited and CVC was updated.
+                        RecordUserAction.record("AutofillCreditCardsEditedAndCvcWasUpdated");
+                    } else {
+                        // Record when an existing card with CVC is edited and CVC was
+                        // unchanged.
+                        RecordUserAction.record("AutofillCreditCardsEditedAndCvcWasUnchanged");
+                    }
+                }
+            }
         } else {
             card.setMonth(String.valueOf(mExpirationMonth.getSelectedItemPosition() + 1));
             card.setYear((String) mExpirationYear.getSelectedItem());

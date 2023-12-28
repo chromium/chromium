@@ -46,9 +46,8 @@ constexpr char kLoginThroughputUnordered[] = "LoginThroughput-unordered";
 // A class used to wait for animations.
 class AnimationObserver : public views::BoundsAnimatorObserver {
  public:
-  AnimationObserver(ShelfView* shelf_view, base::OnceClosure& on_animation_end)
-      : shelf_view_(shelf_view),
-        on_animation_end_(std::move(on_animation_end)) {}
+  AnimationObserver(base::OnceClosure& on_animation_end)
+      : on_animation_end_(std::move(on_animation_end)) {}
 
   AnimationObserver(const AnimationObserver&) = delete;
   AnimationObserver& operator=(const AnimationObserver&) = delete;
@@ -58,13 +57,14 @@ class AnimationObserver : public views::BoundsAnimatorObserver {
   // ShelfViewObserver overrides:
   void OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) override {}
   void OnBoundsAnimatorDone(views::BoundsAnimator* animator) override {
-    shelf_view_->RemoveAnimationObserver(this);
+    GetShelfView()->RemoveAnimationObserver(this);
     RunCallbackAndDestroy();
   }
 
   void StartObserving() {
-    if (shelf_view_->IsAnimating()) {
-      shelf_view_->AddAnimationObserver(this);
+    ShelfView* shelf_view = GetShelfView();
+    if (shelf_view->IsAnimating()) {
+      shelf_view->AddAnimationObserver(this);
       return;
     }
     RunCallbackAndDestroy();
@@ -76,7 +76,15 @@ class AnimationObserver : public views::BoundsAnimatorObserver {
     delete this;
   }
 
-  raw_ptr<ShelfView, LeakedDanglingUntriaged> shelf_view_;
+  ShelfView* GetShelfView() {
+    return RootWindowController::ForWindow(
+               Shell::Get()->window_tree_host_manager()->GetPrimaryRootWindow())
+        ->shelf()
+        ->hotseat_widget()
+        ->scrollable_shelf_view()
+        ->shelf_view();
+  }
+
   base::OnceClosure on_animation_end_;
 };
 
@@ -483,13 +491,6 @@ void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEndIfNeeded() {
     shelf_container->SchedulePaintInRect(bounds);
   }
 
-  ShelfView* shelf_view =
-      RootWindowController::ForWindow(
-          Shell::Get()->window_tree_host_manager()->GetPrimaryRootWindow())
-          ->shelf()
-          ->hotseat_widget()
-          ->scrollable_shelf_view()
-          ->shelf_view();
   base::OnceCallback on_animation_end = base::BindOnce(
       [](base::WeakPtr<LoginUnlockThroughputRecorder> self) {
         self->shelf_animation_finished_ = true;
@@ -507,7 +508,7 @@ void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEndIfNeeded() {
       },
       weak_ptr_factory_.GetWeakPtr());
 
-  (new AnimationObserver(shelf_view, on_animation_end))->StartObserving();
+  (new AnimationObserver(on_animation_end))->StartObserving();
 }
 
 void LoginUnlockThroughputRecorder::OnAllExpectedShelfIconsLoaded() {

@@ -120,8 +120,7 @@ class RTCPeerConnectionTest : public testing::Test {
   }
 
  protected:
-  test::TaskEnvironment task_environment_{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
 };
 

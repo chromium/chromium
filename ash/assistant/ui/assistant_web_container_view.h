@@ -57,12 +57,10 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantWebContainerView
   void InitLayout();
   void RemoveContents();
 
-  const raw_ptr<AssistantWebViewDelegate, ExperimentalAsh>
-      web_container_view_delegate_;
+  const raw_ptr<AssistantWebViewDelegate> web_container_view_delegate_;
 
   std::unique_ptr<AshWebView> contents_view_;
-  raw_ptr<AshWebView, DanglingUntriaged | ExperimentalAsh> contents_view_ptr_ =
-      nullptr;
+  raw_ptr<AshWebView, DanglingUntriaged> contents_view_ptr_ = nullptr;
 };
 
 }  // namespace ash

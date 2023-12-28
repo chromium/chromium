@@ -71,14 +71,6 @@ ClassicPendingScript* ClassicPendingScript::Fetch(
       url, context->GetSecurityOrigin(), context->GetCurrentWorld(),
       cross_origin, encoding, defer));
 
-  constexpr WebFeature kCountOrbBlockAs[2][2] = {
-      {WebFeature::kORBBlockWithoutAnyEventHandler,
-       WebFeature::kORBBlockWithOnErrorButWithoutOnLoadEventHandler},
-      {WebFeature::kORBBlockWithOnLoadButWithoutOnErrorEventHandler,
-       WebFeature::kORBBlockWithOnLoadAndOnErrorEventHandler}};
-  params.SetCountORBBlockAs(kCountOrbBlockAs[element->HasLoadEventHandler()]
-                                            [element->HasErrorEventHandler()]);
-
   ClassicPendingScript* pending_script =
       MakeGarbageCollected<ClassicPendingScript>(
           element, TextPosition::MinimumPosition(), KURL(), KURL(), String(),

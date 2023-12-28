@@ -178,19 +178,14 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
   void SendFencedFrameReportingBeacon(
       const WTF::String& event_data,
       const WTF::String& event_type,
-      const WTF::Vector<blink::FencedFrame::ReportingDestination>& destinations,
-      network::AttributionReportingRuntimeFeatures
-          attribution_reporting_runtime_features) override;
+      const WTF::Vector<blink::FencedFrame::ReportingDestination>& destinations)
+      override;
   void SendFencedFrameReportingBeaconToCustomURL(
-      const blink::KURL& destination_url,
-      network::AttributionReportingRuntimeFeatures
-          attribution_reporting_runtime_features) override;
+      const blink::KURL& destination_url) override;
   void SetFencedFrameAutomaticBeaconReportEventData(
       blink::mojom::AutomaticBeaconType event_type,
       const WTF::String& event_data,
       const WTF::Vector<blink::FencedFrame::ReportingDestination>& destinations,
-      network::AttributionReportingRuntimeFeatures
-          attribution_reporting_runtime_features,
       bool once,
       bool cross_origin_exposed) override;
   void SendLegacyTechEvent(
@@ -198,6 +193,8 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
       mojom::blink::LegacyTechEventCodeLocationPtr code_location) override;
   void SendPrivateAggregationRequestsForFencedFrameEvent(
       const WTF::String& event_type) override;
+  void SetAttributionReportingRuntimeFeatures(
+      network::AttributionReportingRuntimeFeatures features) override;
   void CreateFencedFrame(
       mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>,
       mojom::blink::RemoteFrameInterfacesFromRendererPtr

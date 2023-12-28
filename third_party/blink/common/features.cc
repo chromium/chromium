@@ -54,6 +54,12 @@ BASE_FEATURE(kAdInterestGroupAPIRestrictedPolicyByDefault,
              "AdInterestGroupAPIRestrictedPolicyByDefault",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Make MediaDevicesDispatcherHost and ended MediaStreamTrack not block BFCache.
+// See https://chrbug.com/1502395 for more details.
+BASE_FEATURE(kAllowBFCacheWhenClosedMediaStreamTrack,
+             "AllowBFCacheWhenClosedMediaStreamTrack",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kComputePressureRateObfuscationMitigation,
              "ComputePressureRateObfuscationMitigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -401,7 +407,8 @@ const base::FeatureParam<std::string> kBrowsingTopicsDisabledTopicsList{
 // Comma separated list of Topic IDs. Prioritize these topics and their
 // descendants during top topic selection.
 const base::FeatureParam<std::string> kBrowsingTopicsPrioritizedTopicsList{
-    &kBrowsingTopicsParameters, "prioritized_topics_list", ""};
+    &kBrowsingTopicsParameters, "prioritized_topics_list",
+    "57,86,126,149,172,180,196,207,239,254,263,272,289,299,332"};
 
 // Suppresses console errors for CORS problems which report an associated
 // inspector issue anyway.
@@ -786,7 +793,7 @@ BASE_FEATURE(kFencedFramesM120FeaturesPart1,
 //   `reserved.top_navigation_start` and `reserved.top_navigation_commit.
 BASE_FEATURE(kFencedFramesM120FeaturesPart2,
              "FencedFramesM120FeaturesPart2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Relax the attestation requirement of post-impression beacons from Protected
 // Audience only to either Protected Audience or Attribution Reporting.
@@ -807,6 +814,12 @@ BASE_FEATURE(kFencedFramesCrossOriginAutomaticBeacons,
 BASE_FEATURE(kFencedFramesAutomaticBeaconCredentials,
              "FencedFramesAutomaticBeaconCredentials",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Controls functionality related to network revocation/local unpartitioned data
+// access in fenced frames.
+BASE_FEATURE(kFencedFramesLocalUnpartitionedDataAccess,
+             "FencedFramesLocalUnpartitionedDataAccess",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // File handling icons. https://crbug.com/1218213
 BASE_FEATURE(kFileHandlingIcons,
@@ -865,6 +878,19 @@ BASE_FEATURE(kFledgePassKAnonStatusToReportWin,
 BASE_FEATURE(kFledgePassRecencyToGenerateBid,
              "FledgePassRecencyToGenerateBid",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kFledgeSampleDebugReports,
+             "FledgeSampleDebugReports",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<base::TimeDelta> kFledgeDebugReportLockout{
+    &kFledgeSampleDebugReports, "fledge_debug_report_lockout",
+    base::Days(365 * 3)};
+const base::FeatureParam<base::TimeDelta> kFledgeDebugReportRestrictedCooldown{
+    &kFledgeSampleDebugReports, "fledge_debug_report_restricted_cooldown",
+    base::Days(365)};
+const base::FeatureParam<base::TimeDelta> kFledgeDebugReportShortCooldown{
+    &kFledgeSampleDebugReports, "fledge_debug_report_short_cooldown",
+    base::Days(14)};
 
 BASE_FEATURE(kForceDeferScriptIntervention,
              "ForceDeferScriptIntervention",
@@ -1155,6 +1181,14 @@ const base::FeatureParam<LcppPreloadLazyLoadImageType>
 const base::FeatureParam<bool> kLCPPFontURLPredictorEnablePrefetch{
     &kLCPPFontURLPredictor, "lcpp_enable_font_prefetch", false};
 
+BASE_FEATURE(kHttpDiskCachePrewarming,
+             "HttpDiskCachePrewarming",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kHttpDiskCachePrewarmingMaxUrlLength{
+    &kHttpDiskCachePrewarming, "http_disk_cache_prewarming_max_url_length",
+    1024};
+
 // Enables reporting as LCP of the time the first frame of a video was painted.
 BASE_FEATURE(kLCPVideoFirstFrame,
              "LCPVideoFirstFrame",
@@ -1258,10 +1292,6 @@ const base::FeatureParam<std::string> kLowPriorityScriptLoadingDenyListParam{
     &kLowPriorityScriptLoading, "low_pri_async_loading_deny_list", ""};
 const base::FeatureParam<bool> kLowPriorityScriptLoadingMainFrameOnlyParam{
     &kLowPriorityScriptLoading, "low_pri_async_loading_main_frame_only", false};
-
-BASE_FEATURE(kMainThreadHighPriorityImageLoading,
-             "MainThreadHighPriorityImageLoading",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the setTimeout(..., 0) will clamp to 4ms after a custom `nesting`
 // level.
@@ -1626,6 +1656,10 @@ BASE_FEATURE(kRemoveAuthroizationOnCrossOriginRedirect,
              "RemoveAutorizationOnCrossOriginRedirect",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kInteractiveDetectorIgnoreFcp,
+             "InteractiveDetectorIgnoreFcp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kRenderBlockingFonts,
              "RenderBlockingFonts",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1921,32 +1955,6 @@ BASE_FEATURE(kStopInBackground,
 #endif
 );
 
-const base::FeatureParam<int> kStorageAccessAPIImplicitGrantLimit{
-    &kStorageAccessAPI, "storage-access-api-implicit-grant-limit", 0};
-const base::FeatureParam<bool> kStorageAccessAPIAutoGrantInFPS{
-    &kStorageAccessAPI, "storage_access_api_auto_grant_in_fps", true};
-const base::FeatureParam<bool> kStorageAccessAPIAutoDenyOutsideFPS{
-    &kStorageAccessAPI, "storage_access_api_auto_deny_outside_fps", true};
-const base::FeatureParam<bool> kStorageAccessAPIRefreshGrantsOnUserInteraction{
-    &kStorageAccessAPI, "storage_access_api_refresh_grants_on_user_interaction",
-    true};
-const base::FeatureParam<base::TimeDelta>
-    kStorageAccessAPITopLevelUserInteractionBound{
-        &kStorageAccessAPI,
-        "storage_access_api_top_level_user_interaction_bound", base::Days(30)};
-const base::FeatureParam<base::TimeDelta>
-    kStorageAccessAPIRelatedWebsiteSetsLifetime{
-        &kStorageAccessAPI, "related_website_sets_permission_lifetime",
-        base::Days(30)};
-const base::FeatureParam<base::TimeDelta>
-    kStorageAccessAPIImplicitPermissionLifetime{
-        &kStorageAccessAPI, "storage_access_api_implicit_permission_lifetime",
-        base::Hours(24)};
-const base::FeatureParam<base::TimeDelta>
-    kStorageAccessAPIExplicitPermissionLifetime{
-        &kStorageAccessAPI, "storage_access_api_explicit_permission_lifetime",
-        base::Days(30)};
-
 BASE_FEATURE(kStylusPointerAdjustment,
              "StylusPointerAdjustment",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2036,10 +2044,6 @@ BASE_FEATURE(kUACHOverrideBlank,
 // https://crbug.com/1502591
 BASE_FEATURE(kEmulateLoadStartedForInspectorOncePerResource,
              "kEmulateLoadStartedForInspectorOncePerResource",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kUseBlinkSchedulerTaskRunnerWithCustomDeleter,
-             "UseBlinkSchedulerTaskRunnerWithCustomDeleter",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBlinkSchedulerPrioritizeNavigationIPCs,
@@ -2245,6 +2249,11 @@ bool IsAllowPageWithIDBConnectionAndTransactionInBFCacheEnabled() {
 
 bool IsAllowURNsInIframeEnabled() {
   return base::FeatureList::IsEnabled(blink::features::kAllowURNsInIframes);
+}
+
+bool IsAllowBFCacheWhenClosedMediaStreamTrackEnabled() {
+  return base::FeatureList::IsEnabled(
+      blink::features::kAllowBFCacheWhenClosedMediaStreamTrack);
 }
 
 bool IsFencedFramesEnabled() {

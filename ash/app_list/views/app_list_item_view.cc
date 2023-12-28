@@ -485,12 +485,12 @@ class AppListItemView::FolderIconView : public views::View,
   }
 
   // The folder item this icon view paints.
-  raw_ptr<AppListFolderItem, ExperimentalAsh> folder_item_;
+  raw_ptr<AppListFolderItem> folder_item_;
 
   // Whether Jelly style feature is enabled.
   const bool jelly_style_;
 
-  raw_ptr<const AppListConfig, DanglingUntriaged | ExperimentalAsh> config_;
+  raw_ptr<const AppListConfig, DanglingUntriaged> config_;
 
   // The scaling factor used for cardified states in tablet mode.
   float icon_scale_;
@@ -1845,6 +1845,12 @@ void AppListItemView::SetMostRecentGridIndex(GridIndex new_grid_index,
   most_recent_grid_index_ = new_grid_index;
 }
 
+void AppListItemView::ClearItemDraggingState() {
+  SetState(STATE_NORMAL);
+  SetMouseDragging(false);
+  SetTouchDragging(false);
+}
+
 void AppListItemView::AnimateInFromPromiseApp(
     const ui::ImageModel& fallback_image,
     base::RepeatingClosure callback) {
@@ -2183,8 +2189,7 @@ void AppListItemView::UpdateProgressIndicatorState() {
     progress_indicator_->SetColorId(cros_tokens::kCrosSysHighlightShape);
     progress_indicator_->SetOuterRingTrackVisible(true);
   } else {
-    progress_indicator_->SetColorId(
-        cros_tokens::kCrosSysSystemPrimaryContainer);
+    progress_indicator_->SetColorId(cros_tokens::kCrosSysPrimary);
     progress_indicator_->SetOuterRingTrackVisible(false);
   }
 

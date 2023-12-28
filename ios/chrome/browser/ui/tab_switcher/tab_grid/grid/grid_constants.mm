@@ -7,6 +7,10 @@
 // Accessibility identifier prefix of a grid cell.
 NSString* const kGridCellIdentifierPrefix = @"GridCellIdentifierPrefix";
 
+// Accessibility identifier prefix of a grid cell.
+NSString* const kGroupGridCellIdentifierPrefix =
+    @"GroupGridCellIdentifierPrefix";
+
 // Accessibility identifier for the close button in a grid cell.
 NSString* const kGridCellCloseButtonIdentifier =
     @"GridCellCloseButtonIdentifier";
@@ -68,6 +72,9 @@ const CGSize kGridCellSizeLarge = CGSize{228.0f, 256.0f};
 const CGSize kGridCellSizeAccessibility = CGSize{288.0f, 336.0f};
 const CGFloat kGridCellCornerRadius = 16.0f;
 const CGFloat kGridCellIconCornerRadius = 3.0f;
+const CGFloat kGroupGridCellCornerRadius = 12.0f;
+const CGFloat kGroupGridBottomTrailingCellCornerRadius = 7.0f;
+
 // The cell header contains the icon, title, and close button.
 const CGFloat kGridCellHeaderHeight = 32.0f;
 const CGFloat kGridCellHeaderAccessibilityHeight = 108.0f;

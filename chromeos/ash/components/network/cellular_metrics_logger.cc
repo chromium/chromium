@@ -189,6 +189,9 @@ void CellularMetricsLogger::RecordSimLockNotificationLockType(
   } else if (sim_lock_type == shill::kSIMLockPuk) {
     base::UmaHistogramEnumeration(kSimLockNotificationLockType,
                                   SimPinLockType::kPukLocked);
+  } else if (sim_lock_type == shill::kSIMLockNetworkPin) {
+    base::UmaHistogramEnumeration(kSimLockNotificationLockType,
+                                  SimPinLockType::kCarrierLocked);
   } else {
     NOTREACHED();
   }
@@ -302,8 +305,13 @@ CellularMetricsLogger::NetworkConnectionErrorToConnectResult(
   if (error_name == NetworkConnectionHandler::kErrorCellularOutOfCredits)
     return CellularMetricsLogger::ConnectResult::kCellularOutOfCredits;
 
-  if (error_name == NetworkConnectionHandler::kErrorSimLocked)
-    return CellularMetricsLogger::ConnectResult::kSimLocked;
+  if (error_name == NetworkConnectionHandler::kErrorSimPinPukLocked) {
+    return CellularMetricsLogger::ConnectResult::kSimPinPukLocked;
+  }
+
+  if (error_name == NetworkConnectionHandler::kErrorSimCarrierLocked) {
+    return CellularMetricsLogger::ConnectResult::kSimCarrierLocked;
+  }
 
   if (error_name == NetworkConnectionHandler::kErrorConnectFailed)
     return CellularMetricsLogger::ConnectResult::kConnectFailed;
@@ -360,9 +368,12 @@ CellularMetricsLogger::ShillErrorToConnectResult(
   else if (error_name == shill::kErrorNotAuthenticated)
     return CellularMetricsLogger::ShillConnectResult::kNotAuthenticated;
   else if (error_name == shill::kErrorSimLocked)
-    return CellularMetricsLogger::ShillConnectResult::kErrorSimLocked;
-  else if (error_name == shill::kErrorNotRegistered)
+    return CellularMetricsLogger::ShillConnectResult::kErrorSimPinPukLocked;
+  else if (error_name == shill::kErrorSimCarrierLocked) {
+    return CellularMetricsLogger::ShillConnectResult::kErrorSimCarrierLocked;
+  } else if (error_name == shill::kErrorNotRegistered) {
     return CellularMetricsLogger::ShillConnectResult::kErrorNotRegistered;
+  }
   return CellularMetricsLogger::ShillConnectResult::kUnknown;
 }
 
@@ -727,6 +738,8 @@ void CellularMetricsLogger::CheckForSIMStatusMetric(
     lock_type = SimPinLockType::kPinLocked;
   } else if (sim_lock_type == shill::kSIMLockPuk) {
     lock_type = SimPinLockType::kPukLocked;
+  } else if (sim_lock_type == shill::kSIMLockNetworkPin) {
+    lock_type = SimPinLockType::kCarrierLocked;
   } else if (sim_lock_type.empty()) {
     lock_type = SimPinLockType::kUnlocked;
   } else {

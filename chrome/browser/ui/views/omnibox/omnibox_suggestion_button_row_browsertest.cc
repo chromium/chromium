@@ -51,6 +51,7 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
     // Populate suggestions for the omnibox popup.
     AutocompleteController* autocomplete_controller =
         omnibox_view->controller()->autocomplete_controller();
+    autocomplete_controller->Start({});
     AutocompleteResult& results = autocomplete_controller->internal_result_;
     ACMatches matches;
     TermMatches termMatches = {{0, 0, 0}};

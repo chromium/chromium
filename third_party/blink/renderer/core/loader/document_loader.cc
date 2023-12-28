@@ -43,6 +43,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/types/optional_util.h"
 #include "build/chromeos_buildflags.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
@@ -138,6 +139,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_performance.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
+#include "third_party/blink/renderer/platform/loader/fetch/background_code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
@@ -319,6 +321,8 @@ struct SameSizeAsDocumentLoader
   WebVector<WebHistoryItem> navigation_api_forward_entries;
   Member<HistoryItem> navigation_api_previous_entry;
   std::unique_ptr<CodeCacheHost> code_cache_host;
+  mojo::PendingRemote<mojom::blink::CodeCacheHost>
+      pending_code_cache_host_for_background;
   HashMap<KURL, EarlyHintsPreloadEntry> early_hints_preloaded_resources;
   absl::optional<Vector<KURL>> ad_auction_components;
   std::unique_ptr<ExtraData> extra_data;
@@ -343,9 +347,6 @@ struct SameSizeAsDocumentLoader
 ASSERT_SIZE(DocumentLoader, SameSizeAsDocumentLoader);
 
 void WarnIfSandboxIneffective(LocalDOMWindow* window) {
-  if (!RuntimeEnabledFeatures::WarnSandboxIneffectiveEnabled())
-    return;
-
   if (window->document()->IsInitialEmptyDocument())
     return;
 
@@ -1009,8 +1010,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
         // need to do that now.
         soft_navigation_event_scope =
             std::make_unique<SoftNavigationEventScope>(
-                heuristics, script_state,
-                SoftNavigationHeuristics::EventScopeType::Navigate,
+                heuristics, SoftNavigationHeuristics::EventScopeType::Navigate,
                 /*is_new_interaction=*/true);
         heuristics->SameDocumentNavigationStarted(script_state);
       }
@@ -3127,6 +3127,12 @@ void DocumentLoader::RecordUseCountersForCommit() {
       response_.HttpHeaderField(http_names::kContentEncoding);
   if (content_encoding.LowerASCII() == "zstd") {
     CountUse(WebFeature::kZstdContentEncoding);
+    if (frame_->IsOutermostMainFrame()) {
+      ukm::builders::MainFrameNavigation_ZstdContentEncoding builder(
+          ukm_source_id_);
+      builder.SetUsedZstd(true);
+      builder.Record(frame_->GetDocument()->UkmRecorder());
+    }
   }
   if (response_.DidUseSharedDictionary()) {
     CountUse(WebFeature::kSharedDictionaryUsed);
@@ -3429,6 +3435,15 @@ CodeCacheHost* DocumentLoader::GetCodeCacheHost() {
   return code_cache_host_.get();
 }
 
+scoped_refptr<BackgroundCodeCacheHost>
+DocumentLoader::CreateBackgroundCodeCacheHost() {
+  if (!pending_code_cache_host_for_background_) {
+    return nullptr;
+  }
+  return base::MakeRefCounted<BackgroundCodeCacheHost>(
+      std::move(pending_code_cache_host_for_background_));
+}
+
 mojo::PendingRemote<mojom::blink::CodeCacheHost>
 DocumentLoader::CreateWorkerCodeCacheHost() {
   if (GetDisableCodeCacheForTesting())
@@ -3441,7 +3456,9 @@ DocumentLoader::CreateWorkerCodeCacheHost() {
 
 void DocumentLoader::SetCodeCacheHost(
     CrossVariantMojoRemote<mojom::blink::CodeCacheHostInterfaceBase>
-        code_cache_host) {
+        code_cache_host,
+    CrossVariantMojoRemote<mojom::blink::CodeCacheHostInterfaceBase>
+        code_cache_host_for_background) {
   code_cache_host_.reset();
   // When NavigationThreadingOptimizations feature is disabled, code_cache_host
   // can be a nullptr. When this feature is turned off the CodeCacheHost
@@ -3450,6 +3467,10 @@ void DocumentLoader::SetCodeCacheHost(
     code_cache_host_ = std::make_unique<CodeCacheHost>(
         mojo::Remote<mojom::blink::CodeCacheHost>(std::move(code_cache_host)));
   }
+
+  pending_code_cache_host_for_background_ =
+      mojo::PendingRemote<mojom::blink::CodeCacheHost>(
+          std::move(code_cache_host_for_background));
 }
 
 void DocumentLoader::SetSubresourceFilter(

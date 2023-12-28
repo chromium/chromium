@@ -73,6 +73,7 @@ void BrowserPolicyConnector::InitInternal(
 void BrowserPolicyConnector::Shutdown() {
   BrowserPolicyConnectorBase::Shutdown();
   device_management_service_.reset();
+  policy_statistics_collector_.reset();
 }
 
 void BrowserPolicyConnector::ScheduleServiceInitialization(

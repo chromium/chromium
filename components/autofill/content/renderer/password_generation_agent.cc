@@ -459,7 +459,7 @@ void PasswordGenerationAgent::TriggeredGeneratePassword(
     std::move(callback).Run(std::move(password_generation_ui_data));
     current_generation_item_->generation_popup_shown_ = true;
   } else {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
   }
 }
 

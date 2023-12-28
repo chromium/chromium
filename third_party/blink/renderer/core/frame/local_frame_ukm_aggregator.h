@@ -150,8 +150,9 @@ class CORE_EXPORT LocalFrameUkmAggregator
     kUserDrivenDocumentUpdate,
     kParseStyleSheet,
     kAccessibility,
+    kPossibleSynchronizedScrollCount,
     kCount,
-    kMainFrame
+    kMainFrame,
   };
 
   // For metrics that require it, this converts the input value to use
@@ -201,7 +202,8 @@ class CORE_EXPORT LocalFrameUkmAggregator
         {"Blink.ServiceDocumentUpdate.UpdateTime", true},
         {"Blink.UserDrivenDocumentUpdate.UpdateTime", true},
         {"Blink.ParseStyleSheet.UpdateTime", true},
-        {"Blink.Accessibility.UpdateTime", true}};
+        {"Blink.Accessibility.UpdateTime", true},
+        {"Blink.PossibleSynchronizedScrollCount.UpdateTime", true}};
     static_assert(std::size(data) == kCount, "Metrics data mismatch");
     return data;
   }

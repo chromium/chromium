@@ -1330,7 +1330,7 @@ ci.builder(
         short_name = "sim",
     ),
     contact_team_email = "lexan@google.com",
-    xcode = xcode.x14main,
+    xcode = xcode.xcode_default,
 )
 
 ci.builder(
@@ -1371,7 +1371,7 @@ ci.builder(
         short_name = "dev",
     ),
     contact_team_email = "lexan@google.com",
-    xcode = xcode.x14main,
+    xcode = xcode.xcode_default,
 )
 
 clang_mac_builder(

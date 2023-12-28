@@ -27,10 +27,10 @@ const char kFormHTMLFile[] = "/username_password_field_form.html";
 // The "username" field in the test page.
 const char kFormElementUsername[] = "username";
 
-// Save a set of credentials so that the manual fill password button is visible
-// in keyboard accessories.
-void EnableManualFillButtonForPassword() {
-  [AutofillAppInterface saveExamplePasswordForm];
+// Save a set of credentials to the profile store so that the manual fill
+// password button is visible in keyboard accessories.
+void EnableManualFillButtonForPasswordInProfileStore() {
+  [AutofillAppInterface saveExamplePasswordFormToProfileStore];
 }
 
 // Save an address so that the manual fill address button is visible in keyboard
@@ -45,10 +45,10 @@ void EnableManualFillButtonForCreditCard() {
   [AutofillAppInterface saveLocalCreditCard];
 }
 
-// Remove all saved passwords, credit cards and addresses so that no manual fill
-// buttons will show in keyboard accessories.
-void DisableManualFillButtons() {
-  [AutofillAppInterface clearPasswordStore];
+// Remove all passwords in profile store, all credit cards and all addresses so
+// that no manual fill buttons will show in keyboard accessories.
+void DisableManualFillButtonsInProfileStore() {
+  [AutofillAppInterface clearProfilePasswordStore];
   [AutofillAppInterface clearProfilesStore];
   [AutofillAppInterface clearCreditCardStore];
 }
@@ -114,7 +114,7 @@ void CheckBrandingHasVisiblity(BOOL visibility) {
     [[AppLaunchManager sharedManager]
         ensureAppLaunchedWithConfiguration:[self appConfigurationForTestCase]];
   }
-  DisableManualFillButtons();
+  DisableManualFillButtonsInProfileStore();
   // Turn on test server and load test page.
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   GURL url = self.testServer->GetURL(kFormHTMLFile);
@@ -123,7 +123,7 @@ void CheckBrandingHasVisiblity(BOOL visibility) {
 }
 
 - (void)tearDown {
-  DisableManualFillButtons();
+  DisableManualFillButtonsInProfileStore();
   // Clear feature related local state prefs.
   [ChromeEarlGrey
       resetDataForLocalStatePref:prefs::kAutofillBrandingIconDisplayCount];
@@ -134,7 +134,7 @@ void CheckBrandingHasVisiblity(BOOL visibility) {
 
 // Tests that the autofill branding icon only shows twice.
 - (void)testBrandingTwoImpressions {
-  EnableManualFillButtonForPassword();
+  EnableManualFillButtonForPasswordInProfileStore();
   // First time.
   BringUpKeyboard();
   CheckBrandingHasVisiblity(YES);
@@ -153,7 +153,7 @@ void CheckBrandingHasVisiblity(BOOL visibility) {
 
 // Tests that the branding is visible when some manual fill button is visible.
 - (void)testSomeManualFillButtonsVisible {
-  EnableManualFillButtonForPassword();
+  EnableManualFillButtonForPasswordInProfileStore();
   BringUpKeyboard();
   CheckBrandingHasVisiblity(YES);
 }
@@ -167,8 +167,8 @@ void CheckBrandingHasVisiblity(BOOL visibility) {
 // Tests that the branding is not visible when some manual fill button is
 // enabled then disabled before the keyboard is presented.
 - (void)testEnableAndDisableManualFillButtonsBeforeKeyboardPresented {
-  EnableManualFillButtonForPassword();
-  DisableManualFillButtons();
+  EnableManualFillButtonForPasswordInProfileStore();
+  DisableManualFillButtonsInProfileStore();
   BringUpKeyboard();
   CheckBrandingHasVisiblity(NO);
 }
@@ -176,8 +176,8 @@ void CheckBrandingHasVisiblity(BOOL visibility) {
 // Tests that the branding is visible when some manual fill button is enabled,
 // disabled and re-enabled before the keyboard is presented.
 - (void)testEnableDisableAndReenableManualFillButtonsBeforeKeyboardPresented {
-  EnableManualFillButtonForPassword();
-  DisableManualFillButtons();
+  EnableManualFillButtonForPasswordInProfileStore();
+  DisableManualFillButtonsInProfileStore();
   EnableManualFillButtonForProfile();
   BringUpKeyboard();
   CheckBrandingHasVisiblity(YES);
@@ -186,10 +186,10 @@ void CheckBrandingHasVisiblity(BOOL visibility) {
 // Tests that the branding is visible when some manual fill button is enabled,
 // then disappears when the manual fill button is disabled.
 - (void)testDisableManualFillButtonsDuringKeyboardPresenting {
-  EnableManualFillButtonForPassword();
+  EnableManualFillButtonForPasswordInProfileStore();
   BringUpKeyboard();
   CheckBrandingHasVisiblity(YES);
-  DisableManualFillButtons();
+  DisableManualFillButtonsInProfileStore();
   DismissKeyboard();
   BringUpKeyboard();
   CheckBrandingHasVisiblity(NO);
@@ -200,11 +200,11 @@ void CheckBrandingHasVisiblity(BOOL visibility) {
 - (void)testEnableAndDisableManualFillButtonsDuringKeyboardPresenting {
   BringUpKeyboard();
   CheckBrandingHasVisiblity(NO);
-  EnableManualFillButtonForPassword();
+  EnableManualFillButtonForPasswordInProfileStore();
   DismissKeyboard();
   BringUpKeyboard();
   CheckBrandingHasVisiblity(YES);
-  DisableManualFillButtons();
+  DisableManualFillButtonsInProfileStore();
   DismissKeyboard();
   BringUpKeyboard();
   CheckBrandingHasVisiblity(NO);
@@ -213,12 +213,12 @@ void CheckBrandingHasVisiblity(BOOL visibility) {
 // Tests that the branding is visible even after one of the multiple manual fill
 // buttons is disabled.
 - (void)testEnableTwoManualFillButtonsAndDisableOneDuringKeyboardPresenting {
-  EnableManualFillButtonForPassword();
+  EnableManualFillButtonForPasswordInProfileStore();
   EnableManualFillButtonForCreditCard();
   BringUpKeyboard();
   CheckBrandingHasVisiblity(YES);
   // Hide manual fill button for password.
-  [AutofillAppInterface clearPasswordStore];
+  [AutofillAppInterface clearProfilePasswordStore];
   DismissKeyboard();
   BringUpKeyboard();
   CheckBrandingHasVisiblity(YES);

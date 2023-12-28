@@ -73,6 +73,30 @@ public class EarlyTraceEvent {
         }
     }
 
+    @VisibleForTesting
+    static final class ActivityStartupEvent {
+        final long mId;
+        final long mTimeMs;
+
+        ActivityStartupEvent(long id, long timeMs) {
+            mId = id;
+            mTimeMs = timeMs;
+        }
+    }
+
+    @VisibleForTesting
+    static final class ActivityLaunchCauseEvent {
+        final long mId;
+        final long mTimeMs;
+        final int mLaunchCause;
+
+        ActivityLaunchCauseEvent(long id, int launchCause) {
+            mId = id;
+            mTimeMs = SystemClock.uptimeMillis();
+            mLaunchCause = launchCause;
+        }
+    }
+
     // State transitions are:
     // - enable(): DISABLED -> ENABLED
     // - disable(): ENABLED -> FINISHED
@@ -116,6 +140,16 @@ public class EarlyTraceEvent {
     @GuardedBy("sLock")
     @VisibleForTesting
     static List<AsyncEvent> sAsyncEvents;
+
+    @GuardedBy("sLock")
+    @VisibleForTesting
+    static final List<ActivityStartupEvent> sActivityStartupEvents =
+            new ArrayList<ActivityStartupEvent>();
+
+    @GuardedBy("sLock")
+    @VisibleForTesting
+    static final List<ActivityLaunchCauseEvent> sActivityLaunchCauseEvents =
+            new ArrayList<ActivityLaunchCauseEvent>();
 
     /** @see TraceEvent#maybeEnableEarlyTracing(boolean) */
     static void maybeEnableInBrowserProcess() {
@@ -294,6 +328,26 @@ public class EarlyTraceEvent {
         }
     }
 
+    /**
+     * @see TraceEvent#startupActivityStart
+     */
+    public static void startupActivityStart(long activityId, long startTimeMs) {
+        ActivityStartupEvent event = new ActivityStartupEvent(activityId, startTimeMs);
+        synchronized (sLock) {
+            sActivityStartupEvents.add(event);
+        }
+    }
+
+    /**
+     * @see TraceEvent#startupLaunchCause
+     */
+    public static void startupLaunchCause(long activityId, int launchCause) {
+        ActivityLaunchCauseEvent event = new ActivityLaunchCauseEvent(activityId, launchCause);
+        synchronized (sLock) {
+            sActivityLaunchCauseEvents.add(event);
+        }
+    }
+
     static List<Event> getMatchingCompletedEventsForTesting(String eventName) {
         synchronized (sLock) {
             List<Event> matchingEvents = new ArrayList<Event>();
@@ -338,6 +392,24 @@ public class EarlyTraceEvent {
                 EarlyTraceEventJni.get().recordEarlyAsyncBeginEvent(e.mName, e.mId, e.mTimeNanos);
             } else {
                 EarlyTraceEventJni.get().recordEarlyAsyncEndEvent(e.mId, e.mTimeNanos);
+            }
+        }
+    }
+
+    /** Can only be called if the TraceEventJni has been enabled. */
+    public static void dumpActivityStartupEvents() {
+        synchronized (sLock) {
+            if (!sActivityStartupEvents.isEmpty()) {
+                for (ActivityStartupEvent e : sActivityStartupEvents) {
+                    TraceEventJni.get().startupActivityStart(e.mId, e.mTimeMs);
+                }
+                sActivityStartupEvents.clear();
+            }
+            if (!sActivityLaunchCauseEvents.isEmpty()) {
+                for (ActivityLaunchCauseEvent e : sActivityLaunchCauseEvents) {
+                    TraceEventJni.get().startupLaunchCause(e.mId, e.mTimeMs, e.mLaunchCause);
+                }
+                sActivityLaunchCauseEvents.clear();
             }
         }
     }

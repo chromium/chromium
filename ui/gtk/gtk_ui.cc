@@ -34,6 +34,7 @@
 #include "ui/base/ime/linux/fake_input_method_context.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/base/ime/text_input_flags.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
@@ -71,26 +72,18 @@
 #include "ui/linux/nav_button_provider.h"
 #include "ui/linux/window_button_order_observer.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/ozone/buildflags.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/views/window/window_button_order_provider.h"
 
-#if BUILDFLAG(OZONE_PLATFORM_WAYLAND)
-#define USE_WAYLAND
-#endif
-#if BUILDFLAG(OZONE_PLATFORM_X11)
-#define USE_X11
-#endif
-
-#if defined(USE_WAYLAND)
+#if BUILDFLAG(IS_OZONE_WAYLAND)
 #include "ui/gtk/wayland/gtk_ui_platform_wayland.h"
-#endif
+#endif  // BUILDFLAG(IS_OZONE_WAYLAND)
 
-#if defined(USE_X11)
+#if BUILDFLAG(IS_OZONE_X11)
 #include "ui/gtk/x/gtk_ui_platform_x11.h"
-#endif
+#endif  // BUILDFLAG(IS_OZONE_X11)
 
 namespace gtk {
 
@@ -160,14 +153,14 @@ std::unique_ptr<GtkUiPlatform> CreateGtkUiPlatform(ui::LinuxUiBackend backend) {
   switch (backend) {
     case ui::LinuxUiBackend::kStub:
       return std::make_unique<GtkUiPlatformStub>();
-#if defined(USE_X11)
+#if BUILDFLAG(IS_OZONE_X11)
     case ui::LinuxUiBackend::kX11:
       return std::make_unique<GtkUiPlatformX11>();
-#endif
-#if defined(USE_WAYLAND)
+#endif  // BUILDFLAG(IS_OZONE_X11)
+#if BUILDFLAG(IS_OZONE_WAYLAND)
     case ui::LinuxUiBackend::kWayland:
       return std::make_unique<GtkUiPlatformWayland>();
-#endif
+#endif  // BUILDFLAG(IS_OZONE_WAYLAND)
     default:
       NOTREACHED();
       return nullptr;

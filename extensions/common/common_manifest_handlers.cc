@@ -37,6 +37,7 @@
 #include "extensions/common/manifest_handlers/requirements_info.h"
 #include "extensions/common/manifest_handlers/sandboxed_page_info.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
+#include "extensions/common/manifest_handlers/trial_tokens_handler.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/manifest_handlers/webview_info.h"
 #include "extensions/common/manifest_url_handlers.h"
@@ -85,6 +86,7 @@ void RegisterCommonManifestHandlers() {
   registry->RegisterHandler(std::make_unique<SandboxedPageHandler>());
   registry->RegisterHandler(std::make_unique<SharedModuleHandler>());
   registry->RegisterHandler(std::make_unique<SocketsManifestHandler>());
+  registry->RegisterHandler(std::make_unique<TrialTokensHandler>());
   registry->RegisterHandler(std::make_unique<UpdateURLHandler>());
   registry->RegisterHandler(std::make_unique<UsbPrinterManifestHandler>());
   registry->RegisterHandler(std::make_unique<WebAccessibleResourcesHandler>());

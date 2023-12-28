@@ -51,7 +51,7 @@ class ASH_EXPORT NotificationMetricsRecorder
   // Returns whether the notification center bubble is visible.
   bool IsNotificationCenterVisible() const;
 
-  const raw_ptr<NotificationCenterTray, ExperimentalAsh> tray_;
+  const raw_ptr<NotificationCenterTray> tray_;
   int notifications_displayed_in_first_minute_count_ = 0;
   base::OneShotTimer login_notification_logging_timer_;
 };

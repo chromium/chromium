@@ -31,6 +31,7 @@
 #include "chrome/browser/ash/crosapi/browser_version_service_ash.h"
 #include "chrome/browser/ash/crosapi/cert_database_ash.h"
 #include "chrome/browser/ash/crosapi/cert_provisioning_ash.h"
+#include "chrome/browser/ash/crosapi/chaps_service_ash.h"
 #include "chrome/browser/ash/crosapi/chrome_app_kiosk_service_ash.h"
 #include "chrome/browser/ash/crosapi/chrome_app_window_tracker_ash.h"
 #include "chrome/browser/ash/crosapi/clipboard_ash.h"
@@ -69,6 +70,7 @@
 #include "chrome/browser/ash/crosapi/kerberos_in_browser_ash.h"
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 #include "chrome/browser/ash/crosapi/kiosk_session_service_ash.h"
+#include "chrome/browser/ash/crosapi/lacros_shelf_item_tracker.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chrome/browser/ash/crosapi/login_ash.h"
 #include "chrome/browser/ash/crosapi/login_screen_storage_ash.h"
@@ -118,6 +120,7 @@
 #include "chrome/browser/ash/sync/sync_mojo_service_factory_ash.h"
 #include "chrome/browser/ash/telemetry_extension/diagnostics/diagnostics_service_ash.h"
 #include "chrome/browser/ash/telemetry_extension/events/telemetry_event_service_ash.h"
+#include "chrome/browser/ash/telemetry_extension/management/telemetry_management_service_ash.h"
 #include "chrome/browser/ash/telemetry_extension/routines/telemetry_diagnostic_routine_service_ash.h"
 #include "chrome/browser/ash/telemetry_extension/telemetry/probe_service_ash.h"
 #include "chrome/browser/ash/trusted_vault/trusted_vault_backend_service_ash.h"
@@ -147,6 +150,7 @@
 #include "chromeos/crosapi/mojom/image_writer.mojom.h"
 #include "chromeos/crosapi/mojom/kerberos_in_browser.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
+#include "chromeos/crosapi/mojom/lacros_shelf_item_tracker.mojom.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/multi_capture_service.mojom.h"
@@ -211,6 +215,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
           std::make_unique<GuestOsSkForwarderFactoryAsh>()),
       cert_database_ash_(std::make_unique<CertDatabaseAsh>()),
       cert_provisioning_ash_(std::make_unique<CertProvisioningAsh>()),
+      chaps_service_ash_(std::make_unique<ChapsServiceAsh>()),
       chrome_app_kiosk_service_ash_(
           std::make_unique<ChromeAppKioskServiceAsh>()),
       chrome_app_window_tracker_ash_(
@@ -258,6 +263,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       kerberos_in_browser_ash_(std::make_unique<KerberosInBrowserAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
       kiosk_session_service_ash_(std::make_unique<KioskSessionServiceAsh>()),
+      lacros_shelf_item_tracker_(std::make_unique<LacrosShelfItemTracker>()),
       local_printer_ash_(std::make_unique<LocalPrinterAsh>()),
       login_ash_(std::make_unique<LoginAsh>()),
       login_screen_storage_ash_(std::make_unique<LoginScreenStorageAsh>()),
@@ -288,6 +294,8 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
           std::make_unique<ash::TelemetryDiagnosticsRoutineServiceAsh>()),
       telemetry_event_service_ash_(
           std::make_unique<ash::TelemetryEventServiceAsh>()),
+      telemetry_management_service_ash_(
+          std::make_unique<ash::TelemetryManagementServiceAsh>()),
       probe_service_ash_(std::make_unique<ash::ProbeServiceAsh>()),
       remoting_ash_(std::make_unique<RemotingAsh>()),
       resource_manager_ash_(std::make_unique<ResourceManagerAsh>()),
@@ -417,6 +425,11 @@ void CrosapiAsh::BindCertDatabase(
 void CrosapiAsh::BindCertProvisioning(
     mojo::PendingReceiver<mojom::CertProvisioning> receiver) {
   cert_provisioning_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindChapsService(
+    mojo::PendingReceiver<mojom::ChapsService> receiver) {
+  chaps_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindChromeAppKioskService(
@@ -674,6 +687,11 @@ void CrosapiAsh::BindKeystoreService(
 void CrosapiAsh::BindKioskSessionService(
     mojo::PendingReceiver<mojom::KioskSessionService> receiver) {
   kiosk_session_service_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindLacrosShelfItemTracker(
+    mojo::PendingReceiver<mojom::LacrosShelfItemTracker> receiver) {
+  lacros_shelf_item_tracker_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindLacrosAppPublisher(
@@ -944,6 +962,11 @@ void CrosapiAsh::BindTelemetryDiagnosticRoutinesService(
 void CrosapiAsh::BindTelemetryEventService(
     mojo::PendingReceiver<mojom::TelemetryEventService> receiver) {
   telemetry_event_service_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindTelemetryManagementService(
+    mojo::PendingReceiver<mojom::TelemetryManagementService> receiver) {
+  telemetry_management_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindTelemetryProbeService(

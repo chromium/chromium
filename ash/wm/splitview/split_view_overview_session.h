@@ -75,7 +75,7 @@ class ASH_EXPORT SplitViewOverviewSession : public aura::WindowObserver,
   void RecordSplitViewOverviewSessionExitPointMetrics(
       SplitViewOverviewSessionExitPoint user_action);
 
-  const aura::Window* window() const { return window_; }
+  aura::Window* window() { return window_; }
   SplitViewOverviewSetupType setup_type() const { return setup_type_; }
   chromeos::WindowStateType GetWindowStateType() const;
   AutoSnapController* auto_snap_controller() {

@@ -48,9 +48,9 @@ class ShelfTestBase : public AshTestBase {
   // Adds a shelf item of the specified type and color.
   ShelfID AddAppShortcutWithIconColor(ShelfItemType item_type, SkColor color);
 
-  raw_ptr<ScrollableShelfView, DanglingUntriaged | ExperimentalAsh>
-      scrollable_shelf_view_ = nullptr;
-  raw_ptr<ShelfView, DanglingUntriaged | ExperimentalAsh> shelf_view_ = nullptr;
+  raw_ptr<ScrollableShelfView, DanglingUntriaged> scrollable_shelf_view_ =
+      nullptr;
+  raw_ptr<ShelfView, DanglingUntriaged> shelf_view_ = nullptr;
   std::unique_ptr<ShelfViewTestAPI> test_api_;
 
   // Used as the id of the next pinned app. Updates when an app is pinned.

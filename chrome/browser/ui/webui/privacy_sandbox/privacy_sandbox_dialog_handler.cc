@@ -11,8 +11,7 @@
 namespace {
 
 bool IsConsent(PrivacySandboxService::PromptType prompt_type) {
-  return prompt_type == PrivacySandboxService::PromptType::kConsent ||
-         prompt_type == PrivacySandboxService::PromptType::kM1Consent;
+  return prompt_type == PrivacySandboxService::PromptType::kM1Consent;
 }
 
 bool IsRestrictedNotice(PrivacySandboxService::PromptType prompt_type) {
@@ -114,11 +113,7 @@ void PrivacySandboxDialogHandler::HandlePromptActionOccurred(
     }
     case PrivacySandboxService::PromptAction::kConsentAccepted:
     case PrivacySandboxService::PromptAction::kConsentDeclined: {
-      // Close the dialog after consent was resolved only for trials consent
-      // (kConsent). In case of kM1Consent, a notice step will be shown after
-      // the consent decision.
-      if (prompt_type_ == PrivacySandboxService::PromptType::kConsent)
-        CloseDialog();
+      did_user_make_decision_ = true;
       break;
     }
     default:
@@ -143,18 +138,6 @@ void PrivacySandboxDialogHandler::HandleResizeDialog(
 void PrivacySandboxDialogHandler::HandleShowDialog(
     const base::Value::List& args) {
   AllowJavascript();
-
-  // Notify the service that the DOM was loaded and the dialog was shown to
-  // user. Only for trials prompt types, other prompt types are handled in web
-  // UI.
-  if (prompt_type_ == PrivacySandboxService::PromptType::kConsent) {
-    NotifyServiceAboutPromptAction(
-        PrivacySandboxService::PromptAction::kConsentShown);
-  }
-  if (prompt_type_ == PrivacySandboxService::PromptType::kNotice) {
-    NotifyServiceAboutPromptAction(
-        PrivacySandboxService::PromptAction::kNoticeShown);
-  }
 
   DCHECK(show_dialog_callback_);
   std::move(show_dialog_callback_).Run();

@@ -34,6 +34,8 @@
 #include "net/cert/cert_verify_proc_builtin.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/crl_set.h"
+#include "net/cert/ct_policy_enforcer.h"
+#include "net/cert/do_nothing_ct_verifier.h"
 #include "net/cert/ev_root_ca_metadata.h"
 #include "net/cert/internal/system_trust_store.h"
 #include "net/cert/test_root_certs.h"
@@ -201,9 +203,10 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc(
     CertificateList additional_trust_anchors,
     CertificateList additional_untrusted_authorities) {
   CertVerifyProc::InstanceParams instance_params;
-  instance_params.additional_trust_anchors = additional_trust_anchors;
+  instance_params.additional_trust_anchors =
+      net::x509_util::ParseAllCerts(additional_trust_anchors);
   instance_params.additional_untrusted_authorities =
-      additional_untrusted_authorities;
+      net::x509_util::ParseAllCerts(additional_untrusted_authorities);
   switch (type) {
 #if BUILDFLAG(IS_ANDROID)
     case CERT_VERIFY_PROC_ANDROID:
@@ -217,12 +220,16 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc(
     case CERT_VERIFY_PROC_BUILTIN:
       return CreateCertVerifyProcBuiltin(
           std::move(cert_net_fetcher), std::move(crl_set),
+          std::make_unique<DoNothingCTVerifier>(),
+          base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
           CreateSslSystemTrustStore(), instance_params);
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
     case CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS:
       return CreateCertVerifyProcBuiltin(
           std::move(cert_net_fetcher), std::move(crl_set),
+          std::make_unique<DoNothingCTVerifier>(),
+          base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
           CreateSslSystemTrustStoreChromeRoot(
               std::make_unique<net::TrustStoreChrome>()),
           instance_params);
@@ -1248,8 +1255,7 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
 
     // NOTE: The signature is NOT recomputed over TBSCertificate -- for these
     // tests it isn't needed.
-    return X509Certificate::CreateFromBytes(
-        base::as_bytes(base::make_span(cert_der)));
+    return X509Certificate::CreateFromBytes(base::as_byte_span(cert_der));
   }
 
   static scoped_refptr<X509Certificate> CreateChain(

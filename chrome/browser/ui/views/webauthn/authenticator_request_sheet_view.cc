@@ -257,5 +257,5 @@ void AuthenticatorRequestSheetView::UpdateIconImageFromModel() {
   }
 }
 
-BEGIN_METADATA(AuthenticatorRequestSheetView, views::View)
+BEGIN_METADATA(AuthenticatorRequestSheetView)
 END_METADATA

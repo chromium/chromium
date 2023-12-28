@@ -40,31 +40,15 @@ public class OmniboxFeatures {
                             "modernize_visual_update_active_color_on_omnibox",
                             true);
 
-    public static final BooleanCachedFieldTrialParameter
-            MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN =
-                    new BooleanCachedFieldTrialParameter(
-                            ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
-                            "modernize_visual_update_small_bottom_margin",
-                            false);
-
-    public static final BooleanCachedFieldTrialParameter MODERNIZE_VISUAL_UPDATE_SMALLER_MARGINS =
-            new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
-                    "modernize_visual_update_smaller_margins",
-                    false);
-
     public static final BooleanCachedFieldTrialParameter MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS =
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
                     "modernize_visual_update_smallest_margins",
                     true);
 
-    public static final BooleanCachedFieldTrialParameter
-            MODERNIZE_VISUAL_UPDATE_MERGE_CLIPBOARD_ON_NTP =
-                    new BooleanCachedFieldTrialParameter(
-                            ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
-                            "modernize_visual_update_merge_clipboard_on_ntp",
-                            true);
+    public static final BooleanCachedFieldTrialParameter QUERY_TILES_SHOW_AS_CAROUSEL =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.QUERY_TILES_IN_ZPS_ON_NTP, "QueryTilesShowAsCarousel", false);
 
     public static final int DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION = 5;
 
@@ -83,19 +67,6 @@ public class OmniboxFeatures {
      */
     public static boolean shouldShowActiveColorOnOmnibox() {
         return MODERNIZE_VISUAL_UPDATE_ACTIVE_COLOR_ON_OMNIBOX.getValue();
-    }
-
-    /** Returns whether the margin between groups should be "small" in the visual update. */
-    public static boolean shouldShowSmallBottomMargin() {
-        return MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN.getValue();
-    }
-
-    /**
-     * Returns whether smaller vertical and horizontal margins should be used in the visual update.
-     */
-    public static boolean shouldShowSmallerMargins(Context context) {
-        return shouldShowModernizeVisualUpdate(context)
-                && MODERNIZE_VISUAL_UPDATE_SMALLER_MARGINS.getValue();
     }
 
     /**
@@ -127,29 +98,16 @@ public class OmniboxFeatures {
         return ChromeFeatureList.sOmniboxMatchToolbarAndStatusBarColor.isEnabled();
     }
 
-    /** Whether Journeys suggestions should be shown as an action chip. */
-    public static boolean isJourneysActionChipEnabled() {
-        return ChromeFeatureList.sOmniboxJourneysActionChipFlag.isEnabled();
-    }
-
     /** Whether Journeys suggestions should be shown in a dedicated row. */
     public static boolean isJourneysRowUiEnabled() {
         return ChromeFeatureList.sOmniboxHistoryClusterProvider.isEnabled();
     }
 
     /**
-     * Returns whether suggestion resources should be cached directly instead of relying on Android
-     * system caching.
-     */
-    public static boolean shouldCacheSuggestionResources() {
-        return ChromeFeatureList.sOmniboxCacheSuggestionResources.isEnabled();
-    }
-
-    /**
      * Returns whether the omnibox's recycler view pool should be pre-warmed prior to initial use.
      */
     public static boolean shouldPreWarmRecyclerViewPool() {
-        return !isLowMemoryDevice() && ChromeFeatureList.sOmniboxWarmRecycledViewPool.isEnabled();
+        return !isLowMemoryDevice();
     }
 
     /**
@@ -171,14 +129,6 @@ public class OmniboxFeatures {
      */
     public static boolean noopEditUrlSuggestionClicks() {
         return ChromeFeatureList.sOmniboxNoopEditUrlSuggestionClicks.isEnabled();
-    }
-
-    /**
-     * Whether the omnibox unfocus animation should be short-circuited when navigating to a
-     * suggestion in order to speed up navigation.
-     */
-    public static boolean shouldShortCircuitUnfocusAnimation() {
-        return ChromeFeatureList.sShortCircuitUnfocusAnimation.isEnabled();
     }
 
     /**

@@ -111,8 +111,7 @@ class MediaPerceptionAPIManager::MediaPerceptionControllerClient
 
  private:
   // Provides access to methods for talking to core Chrome code.
-  raw_ptr<MediaPerceptionAPIDelegate, DanglingUntriaged | ExperimentalAsh>
-      delegate_;
+  raw_ptr<MediaPerceptionAPIDelegate, DanglingUntriaged> delegate_;
 
   // Receiver of the MediaPerceptionControllerClient to the message pipe.
   mojo::Receiver<

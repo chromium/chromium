@@ -27,14 +27,21 @@ source_set("jni_export") {
 # longer depends on //base.
 component("jni_zero_utils") {
   sources = [
+    "core.cc",
+    "core.h",
     "logging.cc",
     "logging.h",
+    "scoped_java_ref.cc",
+    "scoped_java_ref.h",
   ]
   public_deps = [ ":jni_export" ]
+  configs += [ ":toolchain_define" ]
   if (is_android) {
     libs = [ "log" ]
   }
-  configs += [ ":toolchain_define" ]
+  if (is_robolectric) {
+    public_configs = [ "//third_party/jdk:jdk" ]
+  }
 }
 
 source_set("jni_zero") {

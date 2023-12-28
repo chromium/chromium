@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -34,6 +35,7 @@ void ExpectToFail(const String& source) {
 }  // namespace
 
 TEST(EmailInputTypeTest, ConvertEmailAddressToASCII) {
+  test::TaskEnvironment task_environment;
   // U+043C U+043E U+0439 . U+0434 U+043E U+043C U+0435 U+043D
   ExpectToFail(
       String::FromUTF8("user@\xD0\xBC\xD0\xBE\xD0\xB9."
@@ -47,6 +49,7 @@ TEST(EmailInputTypeTest, ConvertEmailAddressToASCII) {
 }
 
 TEST(EmailInputTypeTest, ConvertEmailAddressToASCIIUTS46) {
+  test::TaskEnvironment task_environment;
   // http://unicode.org/reports/tr46/#Table_IDNA_Comparisons
 
   // U+00E0

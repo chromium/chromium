@@ -56,8 +56,7 @@ public class PasswordAccessorySheetCoordinator extends AccessorySheetTabCoordina
     @Override
     public void onTabCreated(ViewGroup view) {
         super.onTabCreated(view);
-        PasswordAccessorySheetModernViewBinder.initializeView(
-                (RecyclerView) view, mModel.get(ITEMS));
+        PasswordAccessorySheetViewBinder.initializeView((RecyclerView) view, mModel.get(ITEMS));
     }
 
     @Override
@@ -73,34 +72,19 @@ public class PasswordAccessorySheetCoordinator extends AccessorySheetTabCoordina
     }
 
     /**
-     * Creates an adapter to an {@link PasswordAccessorySheetViewBinder} that is wired
-     * up to a model change processor listening to the {@link AccessorySheetTabItemsModel}.
+     * Creates an adapter to an {@link PasswordAccessorySheetViewBinder} that is wired up to the
+     * model change processor which listens to the {@link AccessorySheetTabItemsModel}.
+     *
      * @param model the {@link AccessorySheetTabItemsModel} the adapter gets its data from.
-     * @return Returns a fully initialized and wired adapter to a PasswordAccessorySheetViewBinder.
+     * @return Returns an {@link PasswordAccessorySheetViewBinder} wired to a MCP.
      */
     static RecyclerViewAdapter<AccessorySheetTabViewBinder.ElementViewHolder, Void> createAdapter(
-            AccessorySheetTabItemsModel model) {
+            ListModel<AccessorySheetDataPiece> model) {
         return new RecyclerViewAdapter<>(
                 new SimpleRecyclerViewMcp<>(
                         model,
                         AccessorySheetDataPiece::getType,
                         AccessorySheetTabViewBinder.ElementViewHolder::bind),
                 PasswordAccessorySheetViewBinder::create);
-    }
-
-    /**
-     * Creates an adapter to an {@link PasswordAccessorySheetModernViewBinder} that is wired up to
-     * the model change processor which listens to the {@link AccessorySheetTabItemsModel}.
-     * @param model the {@link AccessorySheetTabItemsModel} the adapter gets its data from.
-     * @return Returns an {@link PasswordAccessorySheetModernViewBinder} wired to a MCP.
-     */
-    static RecyclerViewAdapter<AccessorySheetTabViewBinder.ElementViewHolder, Void>
-            createModernAdapter(ListModel<AccessorySheetDataPiece> model) {
-        return new RecyclerViewAdapter<>(
-                new SimpleRecyclerViewMcp<>(
-                        model,
-                        AccessorySheetDataPiece::getType,
-                        AccessorySheetTabViewBinder.ElementViewHolder::bind),
-                PasswordAccessorySheetModernViewBinder::create);
     }
 }

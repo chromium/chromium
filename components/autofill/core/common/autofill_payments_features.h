@@ -22,6 +22,11 @@ BASE_DECLARE_FEATURE(kAutofillEnableCvcStorageAndFilling);
 BASE_DECLARE_FEATURE(kAutofillEnableEmailOtpForVcnYellowPath);
 BASE_DECLARE_FEATURE(kAutofillEnableFIDOProgressDialog);
 BASE_DECLARE_FEATURE(kAutofillEnableFpanRiskBasedAuthentication);
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kAutofillEnableIbanAndroidBottomSheet);
+#endif
+
 BASE_DECLARE_FEATURE(kAutofillEnableManualFallbackForVirtualCards);
 BASE_DECLARE_FEATURE(kAutofillEnableMerchantDomainInUnmaskCardRequest);
 BASE_DECLARE_FEATURE(kAutofillEnableMerchantOptOutClientSideUrlFiltering);
@@ -55,11 +60,6 @@ BASE_DECLARE_FEATURE(kAutofillUpstream);
 #if BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kAutofillUseTwoDotsForLastFourDigits);
 BASE_DECLARE_FEATURE(kAutofillEnableVirtualCards);
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kEnablePixDetection);
-BASE_DECLARE_FEATURE(kEnablePixPayments);
 #endif
 
 // Return whether a [No thanks] button and new messaging is shown in the save

@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/types/expected.h"
@@ -348,6 +349,10 @@ class InputMethodEngine : virtual public TextInputMethod,
                           ui::ime::InputMethodMenuItem* property);
 
   void OnScreenProjectionChanged(bool is_projected);
+
+  // Infers if the user is choosing from a candidate from the window.
+  // TODO(b/300576550): get this information from IME.
+  bool InferIsUserSelecting(base::span<const Candidate> candidates);
 
   // The current candidate window.
   ui::CandidateWindow candidate_window_;

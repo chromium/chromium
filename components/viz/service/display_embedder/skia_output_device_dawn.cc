@@ -17,8 +17,11 @@
 #include "ui/gfx/vsync_provider.h"
 #include "ui/gl/vsync_provider_win.h"
 
-namespace viz {
+#if BUILDFLAG(IS_ANDROID)
+#include "gpu/ipc/common/gpu_surface_lookup.h"
+#endif
 
+namespace viz {
 namespace {
 
 // TODO(crbug.com/dawn/286): Dawn requires that surface format is BGRA8Unorm for
@@ -65,16 +68,21 @@ SkiaOutputDeviceDawn::SkiaOutputDeviceDawn(
   capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::BGRX_8888)] =
       kSurfaceColorType;
 
+  wgpu::SurfaceDescriptor surface_desc;
+
+#if BUILDFLAG(IS_WIN)
   gpu::SurfaceHandle window_handle_to_draw_to;
 
-  // TODO(crbug.com/swiftshader/186): If we are using SwiftShader, don't create
-  // child window. Child window is created with WS_EX_LAYERED |
-  // WS_EX_NOREDIRECTIONBITMAP flag which doesn't work with SwiftShader.
-  if (!context_state_->IsGraphiteDawnVulkanSwiftShader()) {
-    child_window_.Initialize();
-    window_handle_to_draw_to = child_window_.window();
-  } else {
-    window_handle_to_draw_to = surface_handle;
+  // Only D3D swapchain requires that the rendering windows are owned by the
+  // process that's currently doing the rendering.
+  switch (context_state_->dawn_context_provider()->backend_type()) {
+    case wgpu::BackendType::D3D11:
+    case wgpu::BackendType::D3D12:
+      child_window_.Initialize();
+      window_handle_to_draw_to = child_window_.window();
+      break;
+    default:
+      window_handle_to_draw_to = surface_handle;
   }
 
   vsync_provider_ =
@@ -85,10 +93,28 @@ SkiaOutputDeviceDawn::SkiaOutputDeviceDawn(
   hwnd_desc.hwnd = window_handle_to_draw_to;
   hwnd_desc.hinstance = GetModuleHandle(nullptr);
 
+  surface_desc.nextInChain = &hwnd_desc;
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  bool can_be_used_with_surface_control = false;
+  auto surface_variant =
+      gpu::GpuSurfaceLookup::GetInstance()->AcquireJavaSurface(
+          surface_handle, &can_be_used_with_surface_control);
+  // Should only reach here if surface control is disabled. In which case
+  // browser should not be sending ScopedJavaSurfaceControl variant.
+  CHECK(absl::holds_alternative<gl::ScopedJavaSurface>(surface_variant));
+  auto& scoped_java_surface = absl::get<gl::ScopedJavaSurface>(surface_variant);
+  android_native_window_ = gl::ScopedANativeWindow(scoped_java_surface);
+
+  wgpu::SurfaceDescriptorFromAndroidNativeWindow android_native_window_desc;
+  android_native_window_desc.window = android_native_window_.a_native_window();
+  surface_desc.nextInChain = &android_native_window_desc;
+#endif
+
   CHECK(context_state_->dawn_context_provider() &&
         context_state_->dawn_context_provider()->GetDevice());
-  wgpu::SurfaceDescriptor surface_desc;
-  surface_desc.nextInChain = &hwnd_desc;
+
   surface_ =
       context_state_->dawn_context_provider()->GetInstance().CreateSurface(
           &surface_desc);
@@ -101,10 +127,6 @@ SkiaOutputDeviceDawn::SkiaOutputDeviceDawn(
 
 SkiaOutputDeviceDawn::~SkiaOutputDeviceDawn() = default;
 
-gpu::SurfaceHandle SkiaOutputDeviceDawn::GetChildSurfaceHandle() const {
-  return child_window_.window();
-}
-
 bool SkiaOutputDeviceDawn::Reshape(const SkImageInfo& image_info,
                                    const gfx::ColorSpace& color_space,
                                    int sample_count,
@@ -116,9 +138,11 @@ bool SkiaOutputDeviceDawn::Reshape(const SkImageInfo& image_info,
   sk_color_space_ = image_info.refColorSpace();
   sample_count_ = sample_count;
 
+#if BUILDFLAG(IS_WIN)
   if (child_window_.window() && !child_window_.Resize(size_)) {
     return false;
   }
+#endif
 
   wgpu::SwapChainDescriptor swap_chain_desc;
   swap_chain_desc.format = kSwapChainFormat;
@@ -165,7 +189,7 @@ SkSurface* SkiaOutputDeviceDawn::BeginPaint(
   wgpu::Texture texture = swap_chain_.GetCurrentTexture();
   skgpu::graphite::BackendTexture backend_texture(texture.Get());
 
-  SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
+  SkSurfaceProps surface_props;
   sk_surface_ = SkSurfaces::WrapBackendTexture(
       context_state_->gpu_main_graphite_recorder(), backend_texture,
       kSurfaceColorType, sk_color_space_, &surface_props);

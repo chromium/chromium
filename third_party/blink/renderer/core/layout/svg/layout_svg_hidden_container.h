@@ -42,10 +42,9 @@ class LayoutSVGHiddenContainer : public LayoutSVGContainer {
  protected:
   void UpdateLayout() override;
 
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsSVGHiddenContainer() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectSVGHiddenContainer ||
-           LayoutSVGContainer::IsOfType(type);
+    return true;
   }
 
  private:

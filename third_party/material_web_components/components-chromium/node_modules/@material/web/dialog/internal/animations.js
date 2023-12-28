@@ -12,20 +12,21 @@ export const DIALOG_DEFAULT_OPEN_ANIMATION = {
         [
             // Dialog slide down
             [{ 'transform': 'translateY(-50px)' }, { 'transform': 'translateY(0)' }],
-            { duration: 500, easing: EASING.EMPHASIZED }
+            { duration: 500, easing: EASING.EMPHASIZED },
         ],
     ],
     scrim: [
         [
             // Scrim fade in
-            [{ 'opacity': 0 }, { 'opacity': 0.32 }], { duration: 500, easing: 'linear' }
+            [{ 'opacity': 0 }, { 'opacity': 0.32 }],
+            { duration: 500, easing: 'linear' },
         ],
     ],
     container: [
         [
             // Container fade in
             [{ 'opacity': 0 }, { 'opacity': 1 }],
-            { duration: 50, easing: 'linear', pseudoElement: '::before' }
+            { duration: 50, easing: 'linear', pseudoElement: '::before' },
         ],
         [
             // Container grow
@@ -41,21 +42,21 @@ export const DIALOG_DEFAULT_OPEN_ANIMATION = {
         [
             // Headline fade in
             [{ 'opacity': 0 }, { 'opacity': 0, offset: 0.2 }, { 'opacity': 1 }],
-            { duration: 250, easing: 'linear', fill: 'forwards' }
+            { duration: 250, easing: 'linear', fill: 'forwards' },
         ],
     ],
     content: [
         [
             // Content fade in
             [{ 'opacity': 0 }, { 'opacity': 0, offset: 0.2 }, { 'opacity': 1 }],
-            { duration: 250, easing: 'linear', fill: 'forwards' }
+            { duration: 250, easing: 'linear', fill: 'forwards' },
         ],
     ],
     actions: [
         [
             // Actions fade in
             [{ 'opacity': 0 }, { 'opacity': 0, offset: 0.5 }, { 'opacity': 1 }],
-            { duration: 300, easing: 'linear', fill: 'forwards' }
+            { duration: 300, easing: 'linear', fill: 'forwards' },
         ],
     ],
 };
@@ -67,13 +68,14 @@ export const DIALOG_DEFAULT_CLOSE_ANIMATION = {
         [
             // Dialog slide up
             [{ 'transform': 'translateY(0)' }, { 'transform': 'translateY(-50px)' }],
-            { duration: 150, easing: EASING.EMPHASIZED_ACCELERATE }
+            { duration: 150, easing: EASING.EMPHASIZED_ACCELERATE },
         ],
     ],
     scrim: [
         [
             // Scrim fade out
-            [{ 'opacity': 0.32 }, { 'opacity': 0 }], { duration: 150, easing: 'linear' }
+            [{ 'opacity': 0.32 }, { 'opacity': 0 }],
+            { duration: 150, easing: 'linear' },
         ],
     ],
     container: [
@@ -90,27 +92,27 @@ export const DIALOG_DEFAULT_CLOSE_ANIMATION = {
             // Container fade out
             [{ 'opacity': '1' }, { 'opacity': '0' }],
             { delay: 100, duration: 50, easing: 'linear', pseudoElement: '::before' },
-        ]
+        ],
     ],
     headline: [
         [
             // Headline fade out
             [{ 'opacity': 1 }, { 'opacity': 0 }],
-            { duration: 100, easing: 'linear', fill: 'forwards' }
+            { duration: 100, easing: 'linear', fill: 'forwards' },
         ],
     ],
     content: [
         [
             // Content fade out
             [{ 'opacity': 1 }, { 'opacity': 0 }],
-            { duration: 100, easing: 'linear', fill: 'forwards' }
+            { duration: 100, easing: 'linear', fill: 'forwards' },
         ],
     ],
     actions: [
         [
             // Actions fade out
             [{ 'opacity': 1 }, { 'opacity': 0 }],
-            { duration: 100, easing: 'linear', fill: 'forwards' }
+            { duration: 100, easing: 'linear', fill: 'forwards' },
         ],
     ],
 };

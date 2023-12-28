@@ -6,7 +6,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../strings.m.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
-import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
+import {ShoppingServiceApiProxy, ShoppingServiceApiProxyImpl} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
 import {BookmarkProductInfo, PriceInsightsInfo, PriceInsightsInfo_PriceBucket, ProductInfo} from '//shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
@@ -56,8 +56,8 @@ export class PriceTrackingSection extends PolymerElement {
   private showSaveLocationText_: boolean;
   private folderName_: string;
 
-  private shoppingApi_: ShoppingListApiProxy =
-      ShoppingListApiProxyImpl.getInstance();
+  private shoppingApi_: ShoppingServiceApiProxy =
+      ShoppingServiceApiProxyImpl.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();

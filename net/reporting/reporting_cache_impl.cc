@@ -10,10 +10,12 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/url_util.h"
 #include "net/log/net_log.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -76,7 +78,8 @@ void ReportingCacheImpl::AddReport(
 }
 
 void ReportingCacheImpl::GetReports(
-    std::vector<const ReportingReport*>* reports_out) const {
+    std::vector<raw_ptr<const ReportingReport, VectorExperimental>>*
+        reports_out) const {
   reports_out->clear();
   for (const auto& report : reports_) {
     if (report->status != ReportingReport::Status::DOOMED &&
@@ -130,8 +133,9 @@ base::Value ReportingCacheImpl::GetReportsAsValue() const {
   return base::Value(std::move(report_list));
 }
 
-std::vector<const ReportingReport*> ReportingCacheImpl::GetReportsToDeliver() {
-  std::vector<const ReportingReport*> reports_out;
+std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+ReportingCacheImpl::GetReportsToDeliver() {
+  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports_out;
   for (const auto& report : reports_) {
     if (report->IsUploadPending())
       continue;
@@ -142,11 +146,11 @@ std::vector<const ReportingReport*> ReportingCacheImpl::GetReportsToDeliver() {
   return reports_out;
 }
 
-std::vector<const ReportingReport*>
+std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
 ReportingCacheImpl::GetReportsToDeliverForSource(
     const base::UnguessableToken& reporting_source) {
   DCHECK(!reporting_source.is_empty());
-  std::vector<const ReportingReport*> reports_out;
+  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports_out;
   for (const auto& report : reports_) {
     if (report->reporting_source == reporting_source) {
       if (report->IsUploadPending())
@@ -160,7 +164,8 @@ ReportingCacheImpl::GetReportsToDeliverForSource(
 }
 
 void ReportingCacheImpl::ClearReportsPending(
-    const std::vector<const ReportingReport*>& reports) {
+    const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+        reports) {
   for (const ReportingReport* report : reports) {
     auto it = reports_.find(report);
     DCHECK(it != reports_.end());
@@ -176,7 +181,8 @@ void ReportingCacheImpl::ClearReportsPending(
 }
 
 void ReportingCacheImpl::IncrementReportsAttempts(
-    const std::vector<const ReportingReport*>& reports) {
+    const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+        reports) {
   for (const ReportingReport* report : reports) {
     auto it = reports_.find(report);
     DCHECK(it != reports_.end());
@@ -292,12 +298,14 @@ ReportingCacheImpl::GetExpiredSources() const {
 }
 
 void ReportingCacheImpl::RemoveReports(
-    const std::vector<const ReportingReport*>& reports) {
+    const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+        reports) {
   RemoveReports(reports, false);
 }
 
 void ReportingCacheImpl::RemoveReports(
-    const std::vector<const ReportingReport*>& reports,
+    const std::vector<raw_ptr<const ReportingReport, VectorExperimental>>&
+        reports,
     bool delivery_success) {
   for (const ReportingReport* report : reports) {
     auto it = reports_.find(report);
@@ -329,7 +337,8 @@ void ReportingCacheImpl::RemoveReports(
 }
 
 void ReportingCacheImpl::RemoveAllReports() {
-  std::vector<const ReportingReport*> reports_to_remove;
+  std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
+      reports_to_remove;
   GetReports(&reports_to_remove);
   RemoveReports(reports_to_remove);
 }
@@ -382,7 +391,7 @@ void ReportingCacheImpl::OnParsedHeader(
     // Creates an endpoint group and sets its |last_used| to |now|.
     CachedReportingEndpointGroup new_group(parsed_endpoint_group, now);
 
-    // Consistency check: the new client should have the same NIK and origin as
+    // Consistency check: the new client should have the same NAK and origin as
     // all groups parsed from this header.
     DCHECK(new_group.group_key.network_anonymization_key ==
            new_client.network_anonymization_key);
@@ -1020,7 +1029,7 @@ void ReportingCacheImpl::ConsistencyCheckClients() const {
 
     auto inserted = nik_origin_pairs_in_cache.insert(
         std::make_pair(client.network_anonymization_key, client.origin));
-    // We have not seen a duplicate client with the same NIK and origin.
+    // We have not seen a duplicate client with the same NAK and origin.
     DCHECK(inserted.second);
   }
 
@@ -1179,7 +1188,7 @@ ReportingCacheImpl::ClientMap::iterator ReportingCacheImpl::AddOrUpdateClient(
   ClientMap::iterator client_it =
       FindClientIt(new_client.network_anonymization_key, new_client.origin);
 
-  // Add a new client for this NIK and origin.
+  // Add a new client for this NAK and origin.
   if (client_it == clients_.end()) {
     std::string domain = new_client.origin.host();
     client_it = clients_.insert(
@@ -1445,7 +1454,7 @@ void ReportingCacheImpl::EnforcePerClientAndGlobalEndpointLimits(
   DCHECK(client_it != clients_.end());
   size_t client_endpoint_count = client_it->second.endpoint_count;
   // TODO(chlily): This is actually a limit on the endpoints for a given client
-  // (for a NIK, origin pair). Rename this.
+  // (for a NAK, origin pair). Rename this.
   size_t max_endpoints_per_origin = context_->policy().max_endpoints_per_origin;
   if (client_endpoint_count > max_endpoints_per_origin) {
     EvictEndpointsFromClient(client_it,

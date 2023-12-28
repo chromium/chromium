@@ -41,6 +41,9 @@ class ASH_EXPORT SearchResultInlineIconView : public views::View {
   void SetIcon(const gfx::VectorIcon& icon);
   void SetText(const std::u16string& text);
 
+  // Sets the tooltip text on `icon_image_`.
+  void SetTooltipTextForImageView(const std::u16string& text);
+
  private:
   class SizedLabel;
 
@@ -51,13 +54,11 @@ class ASH_EXPORT SearchResultInlineIconView : public views::View {
   const bool use_modified_styling_;
 
   // Cached icon used to recolor icon_image_ when OnThemeChanged() is called.
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<const gfx::VectorIcon> icon_ = nullptr;
 
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_image_ =
-      nullptr;  // Owned by views hierarchy.
+  raw_ptr<views::ImageView> icon_image_ = nullptr;  // Owned by views hierarchy.
 
-  raw_ptr<views::Label, ExperimentalAsh> label_ =
-      nullptr;  // Owned by views hierarchy.
+  raw_ptr<views::Label> label_ = nullptr;  // Owned by views hierarchy.
 };
 
 }  // namespace ash

@@ -69,7 +69,7 @@ class DrmDisplayHost : public GpuThreadObserver {
   // Calls all the callbacks with failure.
   void ClearCallbacks();
 
-  const raw_ptr<GpuThreadAdapter, ExperimentalAsh> sender_;  // Not owned.
+  const raw_ptr<GpuThreadAdapter> sender_;  // Not owned.
 
   std::unique_ptr<display::DisplaySnapshot> snapshot_;
 

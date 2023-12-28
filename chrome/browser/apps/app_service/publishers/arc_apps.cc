@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/components/arc/metrics/arc_metrics_service.h"
@@ -899,6 +900,7 @@ void ArcApps::SetAppLocale(const std::string& app_id,
                << app_id;
     return;
   }
+  // Set app locale and update last-set app locale.
   arc::mojom::AppInstance* app_instance =
       (arc::ArcServiceManager::Get()
            ? ARC_GET_INSTANCE_FOR_METHOD(
@@ -914,6 +916,11 @@ void ArcApps::SetAppLocale(const std::string& app_id,
     // Chrome. If there's a mismatch, Chrome will then send back its latest-set
     // locale to ARC, both settings are still synchronized.
     prefs->SetAppLocale(app_info->package_name, locale_tag);
+  }
+  // Update the last-set locale, unless the locale tag is the system language.
+  if (!locale_tag.empty()) {
+    profile_->GetPrefs()->SetString(arc::prefs::kArcLastSetAppLocale,
+                                    locale_tag);
   }
 }
 

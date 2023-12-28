@@ -7,6 +7,7 @@
  * pure function that returns a new state object if anything has changed.
  * @see [redux tutorial]{@link https://redux.js.org/tutorials/fundamentals/part-3-state-actions-reducers}
  */
+import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {ambientReducers} from './ambient/ambient_reducers.js';
@@ -19,7 +20,6 @@ import {themeReducers} from './theme/theme_reducers.js';
 import {ThemeState} from './theme/theme_state.js';
 import {userReducers} from './user/user_reducers.js';
 import {UserState} from './user/user_state.js';
-import {isNonEmptyArray} from './utils.js';
 import {WallpaperActionName} from './wallpaper/wallpaper_actions.js';
 import {wallpaperReducers} from './wallpaper/wallpaper_reducers.js';
 import {WallpaperState} from './wallpaper/wallpaper_state.js';

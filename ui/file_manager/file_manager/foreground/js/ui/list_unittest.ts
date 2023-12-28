@@ -5,7 +5,7 @@
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {ArrayDataModel} from '../../../common/js/array_data_model.js';
-import {decorate} from '../../../common/js/cr_ui.js';
+import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 
 import {List} from './list.js';
 
@@ -14,7 +14,7 @@ export function testClearPinnedItem() {
   list.style.position = 'absolute';
   list.style.width = '800px';
   list.style.height = '800px';
-  decorate(list, List);
+  crInjectTypeAndInit(list, List);
   document.body.appendChild(list);
 
   const model = new ArrayDataModel(['Item A', 'Item B']);
@@ -36,7 +36,7 @@ export function testClickOutsideListItem() {
   list.style.position = 'absolute';
   list.style.width = '800px';
   list.style.height = '800px';
-  decorate(list, List);
+  crInjectTypeAndInit(list, List);
   document.body.appendChild(list);
 
   // Add a header inside the list.

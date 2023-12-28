@@ -39,15 +39,21 @@ bool IsSystemAppTestURL(const GURL& url) {
 
 void HandleRequest(const std::string& url_path,
                    content::WebUIDataSource::GotDataCallback callback) {
-  base::FilePath path;
-  CHECK(
-      base::PathService::Get(base::BasePathKey::DIR_SRC_TEST_DATA_ROOT, &path));
-  path = path.Append(kRootDir);
-  path = path.AppendASCII(url_path.substr(0, url_path.find('?')));
-
+  const auto& path_for_key = [url_path](base::BasePathKey key) {
+    base::FilePath path;
+    CHECK(base::PathService::Get(key, &path));
+    path = path.Append(kRootDir);
+    path = path.AppendASCII(url_path.substr(0, url_path.find('?')));
+    return path;
+  };
+  // First try the source dir, then try generated files.
+  base::FilePath path = path_for_key(base::BasePathKey::DIR_SRC_TEST_DATA_ROOT);
   std::string contents;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
+    if (!base::PathExists(path)) {
+      path = path_for_key(base::BasePathKey::DIR_GEN_TEST_DATA_ROOT);
+    }
     CHECK(base::ReadFileToString(path, &contents)) << path.value();
   }
 

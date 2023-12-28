@@ -5,6 +5,7 @@
 #include "components/policy/core/common/policy_logger.h"
 
 #include <deque>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -113,7 +114,7 @@ PolicyLogger::LogHelper::~LogHelper() {
 }
 
 void PolicyLogger::LogHelper::StreamLog() const {
-  base::StringPiece filename(location_.file_name());
+  std::string_view filename(location_.file_name());
   std::ostringstream message;
 
   // Create the message to be logged to the terminal.
@@ -124,7 +125,7 @@ void PolicyLogger::LogHelper::StreamLog() const {
           << message_buffer_.str();
 
   size_t last_slash_pos = filename.find_last_of("\\/");
-  if (last_slash_pos != base::StringPiece::npos) {
+  if (last_slash_pos != std::string_view::npos) {
     filename.remove_prefix(last_slash_pos + 1);
   }
 

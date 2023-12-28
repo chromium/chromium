@@ -622,6 +622,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void RebuildLayoutTree(Element* size_container = nullptr);
   bool InRebuildLayoutTree() const { return in_layout_tree_rebuild_; }
   bool InDOMRemoval() const { return in_dom_removal_; }
+  bool InDetachLayoutTree() const { return in_detach_scope_; }
   bool InContainerQueryStyleRecalc() const {
     return in_container_query_style_recalc_;
   }

@@ -5,6 +5,7 @@
 #ifndef UI_BASE_INTERACTION_INTERACTIVE_TEST_INTERNAL_H_
 #define UI_BASE_INTERACTION_INTERACTIVE_TEST_INTERNAL_H_
 
+#include <concepts>
 #include <functional>
 #include <memory>
 #include <string>
@@ -22,6 +23,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/rectify_callback.h"
+#include "base/types/is_instantiation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -295,7 +297,7 @@ class StateObserverElementT : public StateObserverElement {
 //
 // Steps which use this method will fail if it returns false, printing out the
 // details of the step in the usual way.
-template <typename T, typename V = std::remove_cvref_t<T>>
+template <typename T, typename V = std::decay_t<T>>
 bool MatchAndExplain(const base::StringPiece& test_name,
                      const testing::Matcher<V>& matcher,
                      const T& value) {
@@ -370,84 +372,49 @@ InteractiveTestPrivate::MultiStep InteractiveTestPrivate::PostTask(
   return result;
 }
 
-template <typename T, typename SFINAE = void>
-struct IsCallable {
-  static constexpr bool value = false;
-};
-
+// Similar to `std::invocable<T, Args...>`, but does not put constraints on the
+// parameters passed to the invocation method.
 template <typename T>
-struct IsCallable<T, std::void_t<decltype(&T::operator())>> {
-  static constexpr bool value = true;
-};
+concept IsCallable = requires { &std::decay_t<T>::operator(); };
 
+// Applies if `T` has bound state (such as a lambda expression with captures).
 template <typename T>
-constexpr bool IsCallableValue = IsCallable<std::remove_reference_t<T>>::value;
+concept HasState = !std::is_empty_v<std::remove_reference_t<T>>;
 
-template <typename T, typename SFINAE = void>
-struct IsFunctionPointer {
-  static constexpr bool value = false;
-};
+// Helper for matching a function pointer.
+template <typename T>
+inline constexpr bool IsFunctionPointerValue = false;
 
 template <typename R, typename... Args>
-struct IsFunctionPointer<R (*)(Args...), void> {
-  static constexpr bool value = true;
-};
+inline constexpr bool IsFunctionPointerValue<R (*)(Args...)> = true;
 
+// Applies if `T` is a function pointer (but not a pointer to an instance
+// member function).
 template <typename T>
-constexpr bool IsFunctionPointerValue = IsFunctionPointer<T>::value;
-
-// Uses SFINAE to choose the correct implementation for `MaybeBind`.
-template <typename F, typename SFINAE = void>
-struct MaybeBindHelper;
-
-// Callbacks are already callbacks, so can be returned as-is.
-template <typename F>
-  requires(base::IsBaseCallback<F>)
-struct MaybeBindHelper<F> {
-  template <class G>
-  static auto MaybeBind(G&& function) {
-    return std::forward<G>(function);
-  }
-};
-
-// Callable objects with state can only be bound with
-// base::BindLambdaForTesting.
-template <typename F>
-struct MaybeBindHelper<
-    F,
-    std::enable_if_t<IsCallableValue<F> && !std::is_empty_v<F>>> {
-  template <class G>
-  static auto MaybeBind(G&& function) {
-    return base::BindLambdaForTesting(std::forward<G>(function));
-  }
-};
-
-// Function pointers and empty callable objects can be bound using
-// base::BindOnce.
-template <typename F>
-struct MaybeBindHelper<
-    F,
-    std::enable_if_t<(IsCallableValue<F> && std::is_empty_v<F>) ||
-                     IsFunctionPointerValue<F>>> {
-  template <class G>
-  static auto MaybeBind(G&& function) {
-    return base::BindOnce(std::forward<G>(function));
-  }
-};
-
-// base::DoNothing() is compatible with callbacks, so return it as-is.
-template <>
-struct MaybeBindHelper<decltype(base::DoNothing()), void> {
-  static auto MaybeBind(decltype(base::DoNothing()) function) {
-    return function;
-  }
-};
+concept IsFunctionPointer = IsFunctionPointerValue<T>;
 
 // Optionally converts `function` to something that is compatible with a
 // base::OnceCallback.
 template <typename F>
 auto MaybeBind(F&& function) {
-  return MaybeBindHelper<F>::MaybeBind(std::forward<F>(function));
+  if constexpr (base::IsBaseCallback<F>) {
+    // Callbacks are already callbacks, so can be returned as-is.
+    return std::forward<F>(function);
+  } else if constexpr (IsCallable<F> && HasState<F>) {
+    // Callable objects with state can only be bound with
+    // `base::BindLambdaForTesting`.
+    return base::BindLambdaForTesting(std::forward<F>(function));
+  } else if constexpr ((IsCallable<F> && !HasState<F>) ||
+                       IsFunctionPointer<F>) {
+    // Function pointers and empty callable objects can be bound using
+    // `base::BindOnce`.
+    return base::BindOnce(std::forward<F>(function));
+  } else if constexpr (std::same_as<F, decltype(base::DoNothing())>) {
+    // base::DoNothing() is compatible with callbacks, so return it as-is.
+    return function;
+  } else {
+    static_assert(base::AlwaysFalse<F>, "Can only bind callable objects.");
+  }
 }
 
 // Helper struct that captures information about what signature a function-like
@@ -470,11 +437,11 @@ struct MaybeBindTypeHelper<decltype(base::DoNothing())> {
 template <typename F>
 base::RepeatingCallback<typename MaybeBindTypeHelper<F>::Signature>
 MaybeBindRepeating(F&& function) {
-  if constexpr (IsCallableValue<F> && std::is_empty_v<F> &&
-                std::is_copy_constructible_v<std::remove_cvref_t<F>>) {
+  if constexpr (IsCallable<F> && !HasState<F> &&
+                std::copy_constructible<std::decay_t<F>>) {
     return base::BindRepeating(std::forward<F>(function));
   } else {
-    return MaybeBindHelper<F>::MaybeBind(std::forward<F>(function));
+    return MaybeBind(std::forward<F>(function));
   }
 }
 
@@ -483,7 +450,7 @@ struct ArgsExtractor;
 
 template <typename R, typename... Args>
 struct ArgsExtractor<R(Args...)> {
-  using holder = std::tuple<Args...>;
+  using Holder = std::tuple<Args...>;
 };
 
 template <typename F>
@@ -492,150 +459,101 @@ using ReturnTypeOf = MaybeBindTypeHelper<F>::ReturnType;
 template <size_t N, typename F>
 using NthArgumentOf = std::tuple_element_t<
     N,
-    typename ArgsExtractor<typename MaybeBindTypeHelper<F>::Signature>::holder>;
-
-// Implementation for HasSignature that uses SFINAE to check whether the
-// signature of a callable object `F` matches signature `S`.
-template <typename F, typename S>
-struct HasSignatureHelper {
-  static constexpr bool value =
-      std::is_same_v<typename MaybeBindTypeHelper<F>::Signature, S>;
-};
-
-// DoNothing() can match any signature that returns void.
-template <typename... Args>
-struct HasSignatureHelper<decltype(base::DoNothing()), void(Args...)> {
-  static constexpr bool value = true;
-};
-
-template <typename F, typename S>
-constexpr bool HasSignature = HasSignatureHelper<F, S>::value;
+    typename ArgsExtractor<typename MaybeBindTypeHelper<F>::Signature>::Holder>;
 
 // Requires that `F` resolves to some kind of callable object with call
-// signature `S`; causes a compile failure on mismatch.
+// signature `S`.
 template <typename F, typename S>
-using RequireSignature = std::enable_if_t<HasSignature<F, S>>;
+concept HasSignature =
+    std::same_as<typename MaybeBindTypeHelper<F>::Signature, S> ||
+    std::same_as<F, decltype(base::DoNothing())>;
 
+// Helper for `HasCompatibleSignature`; see recursive implementation below.
 template <typename F, typename S>
-struct HasCompatibleSignatureHelper;
-
-// This is the leaf state for the recursive compatibility computation; see
-// below.
-template <typename F, typename R>
-struct HasCompatibleSignatureHelper<F, R()> {
-  static constexpr bool value = HasSignature<F, R()>;
-};
-
-// Implementation for `HasCompatibleSignature` and `RequireCompatibleSignature`.
-//
-// This removes arguments one by one from the left of the target signature `S`
-// to see if `F` has that signature. The recursion stops when one matches, or
-// when the arg list is empty (in which case the leaf state is hit, above).
-template <typename F, typename R, typename A, typename... Args>
-struct HasCompatibleSignatureHelper<F, R(A, Args...)> {
-  static constexpr bool value =
-      HasSignature<F, R(A, Args...)> ||
-      HasCompatibleSignatureHelper<F, R(Args...)>::value;
-};
-
-template <typename F, typename S>
-constexpr bool HasCompatibleSignature =
-    HasCompatibleSignatureHelper<F, S>::value;
+inline constexpr bool HasCompatibleSignatureValue = false;
 
 // Requires that `F` resolves to some kind of callable object whose signature
 // can be rectified to `S`; see `base::RectifyCallback` for more information.
 // (Basically, `F` can omit arguments from the left of `S`; these arguments
 // will be ignored.)
 template <typename F, typename S>
-using RequireCompatibleSignature =
-    std::enable_if_t<HasCompatibleSignature<F, S>>;
+concept HasCompatibleSignature = HasCompatibleSignatureValue<F, S>;
 
-// Utility struct to detect specializations of std::reference_wrapper.
+// This is the leaf state for the recursive compatibility computation; see
+// below.
+template <typename F, typename R>
+  requires HasSignature<F, R()>
+inline constexpr bool HasCompatibleSignatureValue<F, R()> = true;
+
+// Implementation for `HasCompatibleSignature`.
+//
+// This removes arguments one by one from the left of the target signature `S`
+// to see if `F` has that signature. The recursion stops when one matches, or
+// when the arg list is empty (in which case the leaf state is hit, above).
+template <typename F, typename R, typename A, typename... Args>
+  requires HasSignature<F, R(A, Args...)> ||
+               HasCompatibleSignature<F, R(Args...)>
+inline constexpr bool HasCompatibleSignatureValue<F, R(A, Args...)> = true;
+
+// Checks that `T` is a reference wrapper around any type.
 template <typename T>
-struct IsReferenceWrapperHelper : std::false_type {};
+concept IsReferenceWrapper = base::is_instantiation<std::reference_wrapper, T>;
 
-template <typename T>
-struct IsReferenceWrapperHelper<std::reference_wrapper<T>> : std::true_type {};
-
-template <typename T>
-constexpr bool IsReferenceWrapper = IsReferenceWrapperHelper<T>::value;
-
+// Helper to determine the type used to match a value. The default is to just
+// use the decayed value type.
 template <typename T>
 struct MatcherTypeHelper {
   using ActualType = T;
 };
 
-template <>
-struct MatcherTypeHelper<const char*> {
-  using ActualType = std::string;
-};
-
-template <>
-struct MatcherTypeHelper<char[]> {
-  using ActualType = std::string;
-};
-
-template <size_t N>
-struct MatcherTypeHelper<char[N]> {
-  using ActualType = std::string;
-};
-
-template <>
-struct MatcherTypeHelper<const char16_t*> {
-  using ActualType = std::u16string;
-};
-
-template <>
-struct MatcherTypeHelper<char16_t[]> {
-  using ActualType = std::u16string;
-};
-
-template <size_t N>
-struct MatcherTypeHelper<char16_t[N]> {
-  using ActualType = std::u16string;
+// Specialization for string types used in Chrome. For any representation of a
+// string using character type, the type used for matching is the corresponding
+// `std::basic_string`.
+//
+// Add to this template if different character formats become supported (e.g.
+// char8_t, char32_t, wchar_t, etc.)
+template <typename C>
+  requires(std::same_as<std::remove_const_t<C>, char> ||
+           std::same_as<std::remove_const_t<C>, char16_t>)
+struct MatcherTypeHelper<C*> {
+  using ActualType = std::basic_string<std::remove_const_t<C>>;
 };
 
 // Gets the appropriate matchable type for `T`. This affects string-like types
 // (e.g. `const char*`) as the corresponding `Matcher` should match a
 // `std::string` or `std::u16string`.
 template <typename T>
-using MatcherTypeFor = MatcherTypeHelper<std::remove_cvref_t<T>>::ActualType;
+using MatcherTypeFor = MatcherTypeHelper<std::decay_t<T>>::ActualType;
 
 // Determines if `T` is a valid type to be used in a matcher. This precludes
 // string-like types (const char*, constexpr char16_t[], etc.) in favor of
 // `std::string` and `std::u16string`.
 template <typename T>
-constexpr bool IsValidMatcherType = std::is_same_v<T, MatcherTypeFor<T>>;
-template <typename T>
-using RequireValidMatcherType = std::enable_if_t<IsValidMatcherType<T>>;
+concept IsValidMatcherType = std::same_as<T, MatcherTypeFor<T>>;
 
 template <typename T>
-class IsMatcherHelper {
- private:
-  template <bool b>
-  struct Result {
-    static constexpr bool value = b;
-  };
-
-  template <typename U>
-  static Result<true> Test(typename U::is_gtest_matcher*);
-  template <typename U>
-  static Result<true> Test(decltype(&U::MatchAndExplain));
-  template <typename U>
-  static Result<false> Test(...);
-
- public:
-  static const bool value = decltype(Test<T>(nullptr))::value;
-};
-
-template <class T>
-class IsMatcherHelper<testing::PolymorphicMatcher<T>> {
- public:
-  static const bool value = true;
-};
+concept IsGtestMatcher = requires { typename T::is_gtest_matcher; };
 
 template <typename T>
-constexpr bool IsMatcher = IsMatcherHelper<T>::value;
+concept HasMatchAndExplain = requires { &T::MatchAndExplain; };
+
+template <typename T>
+concept IsMatcher = IsGtestMatcher<T> || HasMatchAndExplain<T> ||
+                    base::is_instantiation<testing::PolymorphicMatcher, T>;
+
+// Accepts any function-like object that is compatible with
+// `InteractionSequence::StepCallback`.
+template <typename F>
+concept IsStepCallback = internal::
+    HasCompatibleSignature<F, void(InteractionSequence*, TrackedElement*)>;
+
+// Accepts any function-like object that can be used with `Check()` and
+// `CheckResult()`.
+template <typename F, typename R>
+concept IsCheckCallback =
+    internal::HasCompatibleSignature<F,
+                                     R(const InteractionSequence*,
+                                       const TrackedElement*)>;
 
 // Converts an ElementSpecifier to an element ID or name and sets it onto
 // `builder`.
@@ -647,21 +565,26 @@ std::string DescribeElement(ElementSpecifier spec);
 InteractionSequence::Builder BuildSubsequence(
     InteractiveTestPrivate::MultiStep steps);
 
+// Takes an argument expected to be a literal value and retrieves the literal
+// value by either calling the object (if it's callable), unwrapping it (if it's
+// a `std::reference_wrapper`) or just returning it otherwise.
+//
+// This allows e.g. passing deferred or computed values to the `Log()` verb.
+template <typename Arg>
+auto UnwrapArgument(Arg arg) {
+  if constexpr (base::IsBaseCallback<Arg>) {
+    return std::move(arg).Run();
+  } else if constexpr (internal::IsFunctionPointer<Arg>) {
+    return (*arg)();
+  } else if constexpr (internal::IsCallable<Arg>) {
+    return arg();
+  } else {
+    return arg;
+  }
+}
+
 }  // namespace internal
 
 }  // namespace ui::test
-
-#define INTERACTIVE_TEST_UNWRAP_IMPL(arg, Arg)                    \
-  [&]() {                                                         \
-    if constexpr (base::IsBaseCallback<Arg>) {                    \
-      return std::move(arg).Run();                                \
-    } else if constexpr (internal::IsFunctionPointerValue<Arg>) { \
-      return (*arg)();                                            \
-    } else if constexpr (internal::IsCallableValue<Arg>) {        \
-      return arg();                                               \
-    } else {                                                      \
-      return arg;                                                 \
-    }                                                             \
-  }()
 
 #endif  // UI_BASE_INTERACTION_INTERACTIVE_TEST_INTERNAL_H_

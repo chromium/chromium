@@ -96,7 +96,7 @@ std::vector<content::WebContents*> TabMatcherDesktop::GetOpenTabs() const {
     active_tab = active_browser->tab_strip_model()->GetActiveWebContents();
 
   std::vector<content::WebContents*> all_tabs;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (profile_ != browser->profile()) {
       // Only look at the same profile (and anonymity level).
       continue;

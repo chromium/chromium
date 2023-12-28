@@ -175,8 +175,10 @@ class AccessCodeCastIntegrationBrowserTest
  protected:
   raw_ptr<media_router::MockMediaRouter, DanglingUntriaged> media_router_ =
       nullptr;
-  std::vector<MediaSinksObserver*> media_sinks_observers_;
-  std::vector<media_router::MediaRoutesObserver*> media_routes_observers_;
+  std::vector<raw_ptr<MediaSinksObserver, VectorExperimental>>
+      media_sinks_observers_;
+  std::vector<raw_ptr<media_router::MediaRoutesObserver, VectorExperimental>>
+      media_routes_observers_;
 
   content::WebContents* web_contents() {
     return chrome_test_utils::GetActiveWebContents(this);

@@ -72,7 +72,7 @@ void FencedFrameURLMappingTestPeer::GetSharedStorageReportingMap(
   DCHECK(urn_it != fenced_frame_url_mapping_->urn_uuid_to_url_map_.end());
 
   scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
-      urn_it->second.fenced_frame_reporter_;
+      urn_it->second.fenced_frame_reporter();
   if (!fenced_frame_reporter) {
     return;
   }

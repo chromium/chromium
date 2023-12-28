@@ -140,7 +140,6 @@ public class CookiesFetcher {
                                     cookie.isHttpOnly(),
                                     cookie.getSameSite(),
                                     cookie.getPriority(),
-                                    cookie.isSameParty(),
                                     cookie.getPartitionKey(),
                                     cookie.sourceScheme(),
                                     cookie.sourcePort());
@@ -195,7 +194,6 @@ public class CookiesFetcher {
             boolean httpOnly,
             int sameSite,
             int priority,
-            boolean sameParty,
             String partitionKey,
             int sourceScheme,
             int sourcePort) {
@@ -212,7 +210,6 @@ public class CookiesFetcher {
                 httpOnly,
                 sameSite,
                 priority,
-                sameParty,
                 partitionKey,
                 sourceScheme,
                 sourcePort);
@@ -283,7 +280,6 @@ public class CookiesFetcher {
                 boolean httpOnly,
                 int sameSite,
                 int priority,
-                boolean sameParty,
                 String partitionKey,
                 int sourceScheme,
                 int sourcePort);

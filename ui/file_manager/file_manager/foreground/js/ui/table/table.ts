@@ -10,7 +10,7 @@ import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.j
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {type ArrayDataModel} from '../../../../common/js/array_data_model.js';
-import {boolAttrSetter, convertToKebabCase} from '../../../../common/js/cr_ui.js';
+import {boolAttrSetter, convertToKebabCase, crInjectTypeAndInit} from '../../../../common/js/cr_ui.js';
 import {List} from '../list.js';
 import {type ListItem} from '../list_item.js';
 import {ListSelectionModel} from '../list_selection_model.js';
@@ -193,39 +193,36 @@ export class Table extends HTMLDivElement {
   /**
    * Initializes the element.
    */
-  static decorate(element: Element, ..._: any[]) {
-    Object.setPrototypeOf(element, Table.prototype);
-    const table = element as Table;
+  initialize() {
+    this.columnModel_ = new TableColumnModel([]);
+    this.header_ = this.ownerDocument.createElement('div') as TableHeader;
+    this.list_ = this.ownerDocument.createElement('list') as TableList;
 
-    table.columnModel_ = new TableColumnModel([]);
-    table.header_ = table.ownerDocument.createElement('div') as TableHeader;
-    table.list_ = table.ownerDocument.createElement('list') as TableList;
+    this.appendChild(this.header_);
+    this.appendChild(this.list_);
 
-    table.appendChild(table.header_);
-    table.appendChild(table.list_);
+    crInjectTypeAndInit(this.list_, TableList);
+    this.list_.selectionModel = new ListSelectionModel();
+    this.list_.table = this;
+    this.list_.addEventListener('scroll', this.handleScroll_.bind(this));
 
-    TableList.decorate(table.list_);
-    table.list_.selectionModel = new ListSelectionModel();
-    table.list_.table = table;
-    table.list_.addEventListener('scroll', table.handleScroll_.bind(table));
+    crInjectTypeAndInit(this.header_, TableHeader);
+    this.header_.table = this;
 
-    TableHeader.decorate(table.header_);
-    table.header_.table = table;
+    this.classList.add('table');
 
-    table.classList.add('table');
-
-    table.boundResize_ = table.resize.bind(table);
-    table.boundHandleSorted_ = table.handleSorted_.bind(table);
-    table.boundHandleChangeList_ = table.handleChangeList_.bind(table);
+    this.boundResize_ = this.resize.bind(this);
+    this.boundHandleSorted_ = this.handleSorted_.bind(this);
+    this.boundHandleChangeList_ = this.handleChangeList_.bind(this);
 
     // The contained list should be focusable, not the table itself.
-    if (table.hasAttribute('tabindex')) {
-      table.list_.setAttribute('tabindex', table.getAttribute('tabindex')!);
-      table.removeAttribute('tabindex');
+    if (this.hasAttribute('tabindex')) {
+      this.list_.setAttribute('tabindex', this.getAttribute('tabindex')!);
+      this.removeAttribute('tabindex');
     }
 
-    table.addEventListener('focus', table.handleElementFocus_, true);
-    table.addEventListener('blur', table.handleElementBlur_, true);
+    this.addEventListener('focus', this.handleElementFocus_, true);
+    this.addEventListener('blur', this.handleElementBlur_, true);
   }
 
   /**

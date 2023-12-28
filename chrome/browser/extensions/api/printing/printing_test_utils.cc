@@ -218,11 +218,13 @@ std::unique_ptr<printing::PrinterSemanticCapsAndDefaults>
 ConstructPrinterCapabilities() {
   auto capabilities =
       std::make_unique<printing::PrinterSemanticCapsAndDefaults>();
+  capabilities->bw_model = printing::mojom::ColorModel::kGray;
   capabilities->color_model = printing::mojom::ColorModel::kColor;
   capabilities->duplex_default = printing::mojom::DuplexMode::kSimplex;
   capabilities->duplex_modes.push_back(printing::mojom::DuplexMode::kSimplex);
   capabilities->copies_max = 2;
-  capabilities->dpis.emplace_back(kHorizontalDpi, kVerticalDpi);
+  capabilities->default_dpi = {kHorizontalDpi, kVerticalDpi};
+  capabilities->dpis.emplace_back(capabilities->default_dpi);
   printing::PrinterSemanticCapsAndDefaults::Paper paper(
       /*display_name=*/"", kMediaSizeVendorId,
       {kMediaSizeWidth, kMediaSizeHeight});

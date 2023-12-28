@@ -32,7 +32,7 @@ TEST(UserTest, DeviceLocalAccountAffiliation) {
     bool IsAffiliated() const { return user_ && user_->IsAffiliated(); }
 
    private:
-    const raw_ptr<const User, DanglingUntriaged | ExperimentalAsh> user_;
+    const raw_ptr<const User, DanglingUntriaged> user_;
   };
 
   const AccountId account_id = AccountId::FromUserEmailGaiaId(kEmail, kGaiaId);

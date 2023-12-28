@@ -205,7 +205,8 @@ void AppViewGuest::CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
     return;
   }
 
-  const LazyContextId context_id(browser_context(), guest_extension->id());
+  const auto context_id =
+      LazyContextId::ForExtension(browser_context(), guest_extension);
   LazyContextTaskQueue* queue = context_id.GetTaskQueue();
   if (queue->ShouldEnqueueTask(browser_context(), guest_extension)) {
     queue->AddPendingTask(

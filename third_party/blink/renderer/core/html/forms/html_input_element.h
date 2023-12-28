@@ -471,7 +471,7 @@ class CORE_EXPORT HTMLInputElement
   void DisabledAttributeChanged() final;
 
   void InitializeTypeInParsing();
-  void UpdateType();
+  void UpdateType(const AtomicString&);
 
   void SubtreeHasChanged() final;
 

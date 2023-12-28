@@ -49,7 +49,7 @@ public class TabListEditorBookmarkAction extends TabListEditorAction {
             @ShowMode int showMode,
             @ButtonType int buttonType,
             @IconPosition int iconPosition) {
-        Drawable drawable = AppCompatResources.getDrawable(activity, R.drawable.btn_star);
+        Drawable drawable = AppCompatResources.getDrawable(activity, R.drawable.star_outline_24dp);
         TabListEditorBookmarkActionDelegate delegate =
                 new TabListEditorBookmarkActionDelegateImpl();
         return new TabListEditorBookmarkAction(

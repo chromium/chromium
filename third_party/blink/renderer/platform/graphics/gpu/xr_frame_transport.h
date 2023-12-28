@@ -29,7 +29,7 @@ class GLES2Interface;
 
 namespace blink {
 
-class GpuMemoryBufferImageCopy;
+class ImageToBufferCopier;
 class Image;
 
 class PLATFORM_EXPORT XRFrameTransport final
@@ -97,7 +97,7 @@ class PLATFORM_EXPORT XRFrameTransport final
 
   device::mojom::blink::XRPresentationTransportOptionsPtr transport_options_;
 
-  std::unique_ptr<GpuMemoryBufferImageCopy> frame_copier_;
+  std::unique_ptr<ImageToBufferCopier> frame_copier_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 

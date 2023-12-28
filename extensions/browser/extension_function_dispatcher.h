@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/service_worker_host.mojom.h"
 #include "ipc/ipc_sender.h"
@@ -125,7 +126,7 @@ class ExtensionFunctionDispatcher {
       int requesting_process_id,
       bool is_worker_request,
       const GURL* render_frame_host_url,
-      Feature::Context context_type,
+      mojom::ContextType context_type,
       ExtensionAPI* api,
       ExtensionFunction::ResponseCallback callback,
       content::RenderFrameHost* render_frame_host);

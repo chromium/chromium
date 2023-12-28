@@ -340,8 +340,7 @@ class ClipboardHistoryMenuModelAdapter::ScopedA11yIgnore {
     }
   }
 
-  const raw_ptr<ClipboardHistoryMenuModelAdapter, ExperimentalAsh>
-      menu_model_adapter_;
+  const raw_ptr<ClipboardHistoryMenuModelAdapter> menu_model_adapter_;
 };
 
 // ClipboardHistoryMenuModelAdapter --------------------------------------------

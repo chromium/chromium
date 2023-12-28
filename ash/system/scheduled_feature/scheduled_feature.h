@@ -248,7 +248,7 @@ class ASH_EXPORT ScheduledFeature
 
   // The pref service of the currently active user. Can be null in
   // ash_unittests.
-  raw_ptr<PrefService, ExperimentalAsh> active_user_pref_service_ = nullptr;
+  raw_ptr<PrefService> active_user_pref_service_ = nullptr;
 
   base::flat_map<PrefService*, ScheduleSnapshot> per_user_schedule_snapshot_;
 
@@ -268,15 +268,15 @@ class ASH_EXPORT ScheduledFeature
   const std::string prefs_path_custom_start_time_;
   const std::string prefs_path_custom_end_time_;
 
-  raw_ptr<GeolocationController, ExperimentalAsh> geolocation_controller_;
+  raw_ptr<GeolocationController> geolocation_controller_;
 
   const Clock default_clock_;
   // May be reset in tests to override the time of "Now"; otherwise, points to
   // `default_clock_`. Should never be null.
-  raw_ptr<const Clock, ExperimentalAsh> clock_ = nullptr;  // Not owned.
+  raw_ptr<const Clock> clock_ = nullptr;  // Not owned.
 
   // Optional Used in tests to override all local time operations.
-  raw_ptr<const LocalTimeConverter, ExperimentalAsh> local_time_converter_ =
+  raw_ptr<const LocalTimeConverter> local_time_converter_ =
       nullptr;  // Not owned.
 
   // Never persisted anywhere. Must stay in sync with the feature's current

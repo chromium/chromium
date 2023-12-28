@@ -1408,8 +1408,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return *rare_data_.Get();
   }
 
-  bool IsBox() const =
-      delete;  // This will catch anyone doing an unnecessary check.
+  bool IsBox() const final {
+    NOT_DESTROYED();
+    return true;
+  }
 
   void LocationChanged();
 

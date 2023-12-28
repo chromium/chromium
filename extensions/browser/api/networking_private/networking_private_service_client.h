@@ -117,7 +117,7 @@ class NetworkingPrivateServiceClient
   // Callbacks to extension api function objects. Keep reference to API object
   // and are released in ShutdownOnUIThread. Run when WiFiService calls back
   // into NetworkingPrivateServiceClient's callback wrappers.
-  typedef int32_t ServiceCallbacksID;
+  using ServiceCallbacksID = int32_t;
   struct ServiceCallbacks {
     ServiceCallbacks();
     ~ServiceCallbacks();

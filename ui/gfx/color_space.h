@@ -293,6 +293,11 @@ class COLOR_SPACE_EXPORT ColorSpace {
   // SCRGB_LINEAR_80_NITS transfer functions.
   bool IsAffectedBySDRWhiteLevel() const;
 
+  // If this color space is affected by the SDR white level, return |this| with
+  // its SDR white level set to |sdr_white_level|. Otherwise return |this|
+  // unmodified.
+  ColorSpace GetWithSdrWhiteLevel(float sdr_white_level) const;
+
   // Returns true if the encoded values can be outside of the 0.0-1.0 range.
   bool FullRangeEncodedValues() const;
 

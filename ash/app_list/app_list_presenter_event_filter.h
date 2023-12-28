@@ -39,9 +39,9 @@ class ASH_EXPORT AppListPresenterEventFilter : public ui::EventHandler {
  private:
   void ProcessLocatedEvent(ui::LocatedEvent* event);
 
-  const raw_ptr<AppListControllerImpl, ExperimentalAsh> controller_;
-  const raw_ptr<AppListPresenterImpl, ExperimentalAsh> presenter_;
-  const raw_ptr<AppListView, ExperimentalAsh> view_;
+  const raw_ptr<AppListControllerImpl> controller_;
+  const raw_ptr<AppListPresenterImpl> presenter_;
+  const raw_ptr<AppListView> view_;
 };
 
 }  // namespace ash

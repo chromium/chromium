@@ -69,7 +69,7 @@ class COMPOSITOR_EXPORT CompositorLockManager {
   // If true, the |scheduled_timeout_| might be recalculated and extended.
   bool allow_locks_to_extend_timeout_ = false;
   // The set of locks that are held externally.
-  std::vector<CompositorLock*> active_locks_;
+  std::vector<raw_ptr<CompositorLock, VectorExperimental>> active_locks_;
 
   base::WeakPtrFactory<CompositorLockManager> weak_ptr_factory_{this};
   base::WeakPtrFactory<CompositorLockManager> lock_timeout_weak_ptr_factory_{

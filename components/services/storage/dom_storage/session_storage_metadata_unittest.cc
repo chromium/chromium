@@ -533,14 +533,28 @@ TEST_F(SessionStorageMetadataMigrationTest, MigrateV0ToV1) {
   EXPECT_TRUE(metadata.ParseNamespaces(std::move(values), &migration_tasks));
   EXPECT_EQ(2ul, migration_tasks.size());
 
-  leveldb::WriteBatch batch;
-  DomStorageDatabase* null_db = nullptr;
+  // Make a database for testing.
+  base::RunLoop loop;
+  std::unique_ptr<AsyncDomStorageDatabase> database =
+      AsyncDomStorageDatabase::OpenInMemory(
+          std::nullopt, "SessionStorageMetadataMigrationTest",
+          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
+          base::BindLambdaForTesting([&](leveldb::Status) { loop.Quit(); }));
+  loop.Run();
 
-  // Run the tasks on our local batch object. Note that these migration tasks
-  // only manipulate |batch|, so it's safe enough to pass them a reference to a
-  // null database.
-  for (auto& task : migration_tasks)
-    std::move(task).Run(&batch, *null_db);
+  // Run the tasks on our local batch object.
+  leveldb::WriteBatch batch;
+  base::RunLoop loop2;
+  database->RunDatabaseTask(
+      base::OnceCallback<bool(const DomStorageDatabase&)>(
+          base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
+            for (auto& task : migration_tasks) {
+              std::move(task).Run(&batch, db);
+            }
+            return true;
+          })),
+      base::BindLambdaForTesting([&](bool) { loop2.Quit(); }));
+  loop2.Run();
 
   BatchCollector collector;
   batch.Iterate(&collector);

@@ -150,6 +150,13 @@ BASE_FEATURE(kV8SingleThreadedGCInBackground,
              "V8SingleThreadedGCInBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Use V8 efficiency mode for tiering decisions.
+BASE_FEATURE(kV8EfficiencyModeTiering,
+             "V8EfficiencyModeTiering",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kV8EfficiencyModeTieringDelayTurbofan{
+    &kV8EfficiencyModeTiering, "V8EfficiencyModeTieringDelayTurbofan", 0};
+
 // Enables slow histograms that provide detailed information at increased
 // runtime overheads.
 BASE_FEATURE(kV8SlowHistograms,
@@ -235,6 +242,11 @@ BASE_FEATURE(kJavaScriptPromiseWithResolvers,
 // Enables the Array.fromAsync proposal.
 BASE_FEATURE(kJavaScriptArrayFromAsync,
              "JavaScriptArrayFromAsync",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the RegExp modifiers proposal.
+BASE_FEATURE(kJavaScriptRegExpModifiers,
+             "JavaScriptRegExpModifiers",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // WebAssembly features.

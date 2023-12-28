@@ -104,8 +104,6 @@ REMAP_ALLOC_ATTRIBUTES void* __rust_alloc(size_t size, size_t align) {
     // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.cc;l=219-226;drc=31d99ff4aa0cc0b75063325ff243e911516a5a6a
 
 #if defined(COMPILER_MSVC)
-    // Because we use PartitionAlloc() as the allocator, free() is able to find
-    // this allocation, instead of the usual requirement to use _aligned_free().
     return _aligned_malloc(size, align);
 #elif BUILDFLAG(IS_ANDROID)
     // Android has no posix_memalign() exposed:
@@ -130,7 +128,15 @@ REMAP_ALLOC_ATTRIBUTES void* __rust_alloc(size_t size, size_t align) {
 }
 
 REMAP_ALLOC_ATTRIBUTES void __rust_dealloc(void* p, size_t size, size_t align) {
+#if defined(COMPILER_MSVC)
+  if (align <= alignof(std::max_align_t)) {
+    free(p);
+  } else {
+    _aligned_free(p);
+  }
+#else
   free(p);
+#endif
 }
 
 REMAP_ALLOC_ATTRIBUTES void* __rust_realloc(void* p,

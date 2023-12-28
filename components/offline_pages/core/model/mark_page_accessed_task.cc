@@ -24,11 +24,6 @@ namespace {
 void ReportAccessHistogram(int64_t offline_id,
                            base::Time access_time,
                            sql::Database* db) {
-  // Used as upper bound of PageAccessInterval histogram which is used for
-  // evaluating how good the expiration period is. The expiration period of a
-  // page will be longer than one year in extreme cases so it's good enough.
-  const int kMinutesPerYear = base::Days(365).InMinutes();
-
   static const char kSql[] =
       "SELECT client_namespace, last_access_time FROM " OFFLINE_PAGES_TABLE_NAME
       " WHERE offline_id = ?";
@@ -38,12 +33,6 @@ void ReportAccessHistogram(int64_t offline_id,
     std::string name_space = statement.ColumnString(0);
     UMA_HISTOGRAM_ENUMERATION("OfflinePages.AccessPageCount",
                               model_utils::ToNamespaceEnum(name_space));
-
-    base::Time last_access_time = statement.ColumnTime(1);
-    base::UmaHistogramCustomCounts(
-        model_utils::AddHistogramSuffix(name_space,
-                                        "OfflinePages.PageAccessInterval"),
-        (access_time - last_access_time).InMinutes(), 1, kMinutesPerYear, 100);
   }
 }
 

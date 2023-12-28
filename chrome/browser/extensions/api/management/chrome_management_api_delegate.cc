@@ -62,6 +62,7 @@
 #include "extensions/common/api/management.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 
@@ -149,7 +150,7 @@ class ManagementUninstallFunctionUninstallDialogDelegate
       source = extensions::UNINSTALL_SOURCE_CHROME_WEBSTORE;
       reason = extensions::UNINSTALL_REASON_CHROME_WEBSTORE;
     } else if (function->source_context_type() ==
-               extensions::Feature::WEBUI_CONTEXT) {
+               extensions::mojom::ContextType::kWebUi) {
       source = extensions::UNINSTALL_SOURCE_CHROME_EXTENSIONS_PAGE;
       // TODO: Update this to a new reason; it shouldn't be lumped in with
       // other uninstalls if it's from the chrome://extensions page.

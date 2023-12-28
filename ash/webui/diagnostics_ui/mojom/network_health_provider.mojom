@@ -48,6 +48,7 @@ enum LockType {
   kNone,
   kSimPin,
   kSimPuk,
+  kNetworkPin,
 };
 
 struct CellularStateProperties {

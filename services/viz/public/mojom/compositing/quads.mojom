@@ -96,6 +96,7 @@ struct TextureQuadState {
   bool secure_output_only;
   bool is_stream_video;
   bool is_video_frame;
+  bool force_rgbx;
   ProtectedVideoState protected_video_type;
   gfx.mojom.HDRMetadata hdr_metadata;
   gfx.mojom.Rect? damage_rect;

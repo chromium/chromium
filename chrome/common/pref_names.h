@@ -74,11 +74,6 @@ inline constexpr char kDownloadBubblePartialViewImpressions[] =
 inline constexpr char kDownloadBubbleIphSuppression[] =
     "suppress_download_bubble_iph";
 
-// Whether the user wants to be prompted upon downloading a duplicate file. Only
-// used when the new download bubble UI is enabled.
-inline constexpr char kDownloadDuplicateFilePromptEnabled[] =
-    "download_duplicate_file_prompt_enabled";
-
 // If set to true profiles are created in ephemeral mode and do not store their
 // data in the profile folder on disk but only in memory.
 inline constexpr char kForceEphemeralProfiles[] = "profile.ephemeral_mode";
@@ -1532,7 +1527,7 @@ inline constexpr char kImportDialogSearchEngine[] =
 // Boolean controlling whether native client is force allowed by policy.
 inline constexpr char kNativeClientForceAllowed[] =
     "native_client_force_allowed";
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif
 
 // Profile avatar and name
 inline constexpr char kProfileAvatarIndex[] = "profile.avatar_index";
@@ -2239,6 +2234,12 @@ inline constexpr char kNtpModulesOrder[] = "NewTabPage.ModulesOrder";
 inline constexpr char kNtpModulesVisible[] = "NewTabPage.ModulesVisible";
 // Number of times user has seen an NTP module.
 inline constexpr char kNtpModulesShownCount[] = "NewTabPage.ModulesShownCount";
+// Dictionary of number of times a module has loaded.
+inline constexpr char kNtpModulesLoadedCountDict[] =
+    "NewTabPage.ModulesLoadedCountDict";
+// Dictionary of number of times the user has interacted with a module.
+inline constexpr char kNtpModulesInteractedCountDict[] =
+    "NewTabPage.ModulesInteractedCountDict";
 // Time modules were first shown to user.
 inline constexpr char kNtpModulesFirstShownTime[] =
     "NewTabPage.ModulesFirstShownTime";
@@ -3865,14 +3866,16 @@ inline constexpr char kConsumerAutoUpdateToggle[] =
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-// An integer count of how many times the user has seen the high efficiency mode
-// page action chip in the expanded size.
-inline constexpr char kHighEfficiencyChipExpandedCount[] =
+// An integer count of how many times the user has seen the memory saver mode
+// page action chip in the expanded size. While the feature was renamed to
+// "Memory Saver" the pref cannot be changed without migration.
+inline constexpr char kMemorySaverChipExpandedCount[] =
     "high_efficiency.chip_expanded_count";
 
-// Stores the timestamp of the last time the high efficiency chip was shown
-// expanded to highlight memory savings.
-inline constexpr char kLastHighEfficiencyChipExpandedTimestamp[] =
+// Stores the timestamp of the last time the memory saver chip was shown
+// expanded to highlight memory savings. While the feature was renamed to
+// "Memory Saver" the pref cannot be changed without migration.
+inline constexpr char kLastMemorySaverChipExpandedTimestamp[] =
     "high_efficiency.last_chip_expanded_timestamp";
 
 // A boolean indicating whether the price track first user experience bubble
@@ -3984,6 +3987,24 @@ inline constexpr char kReadAloudHighlightingEnabled[] =
 inline constexpr char kListenToThisPageEnabled[] =
     "readaloud.listen_to_this_page_enabled";
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
+// A list of base64 encoded certificates that are to be trusted as root certs.
+// Only specifiable as an enterprise policy.
+inline constexpr char kCACertificates[] = "certificates.ca_certificates";
+
+// A list of base64 encoded certificates containing SPKIs that are not to be
+// trusted.
+// Only specifiable as an enterprise policy.
+inline constexpr char kCADistrustedCertificates[] =
+    "certificates.ca_distrusted_certificates";
+
+// A list of base64 certificates that are to be used as hints for path
+// building. Only specifiable as an enterprise policy.
+inline constexpr char kCAHintCertificates[] =
+    "certificates.ca_hint_certificates";
+#endif  // BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

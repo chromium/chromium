@@ -18,6 +18,7 @@ import '../../settings_shared.css.js';
 
 import {App, Locale} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {getAppIcon} from 'chrome://resources/cr_components/app_management/util.js';
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -34,7 +35,8 @@ export interface AppLanguageSelectionDialogElement {
   };
 }
 
-const AppLanguageSelectionDialogElementBase = I18nMixin(PolymerElement);
+const AppLanguageSelectionDialogElementBase =
+    PrefsMixin(I18nMixin(PolymerElement));
 
 export class AppLanguageSelectionDialogElement extends
     AppLanguageSelectionDialogElementBase {
@@ -56,6 +58,9 @@ export class AppLanguageSelectionDialogElement extends
       },
     };
   }
+
+  // Public API: Bidirectional data flow.
+  // prefs is provided by PrefsMixin.
 
   // App must be present when this dialog is shown.
   app: App;
@@ -154,7 +159,16 @@ export class AppLanguageSelectionDialogElement extends
       // Set device language as selected if no other locale selected.
       this.selectedLanguage_ = defaultDeviceLanguage;
     }
-    // TODO(b/261200827): Add last-selected-language from other apps.
+    const lastSetAppLocaleTag = this.getPref('arc.last_set_app_locale').value;
+    // Add last-set-app-locale into suggestions if it's supported by app and
+    // hasn't been included yet.
+    const lastSetAppLocale = this.app.supportedLocales.find(
+        locale => locale.localeTag === lastSetAppLocaleTag);
+    if (lastSetAppLocale &&
+        !suggestedLanguages.find(
+            locale => locale.localeTag === lastSetAppLocale.localeTag)) {
+      suggestedLanguages.push(lastSetAppLocale);
+    }
 
     this.suggestedLanguages_ = suggestedLanguages;
   }

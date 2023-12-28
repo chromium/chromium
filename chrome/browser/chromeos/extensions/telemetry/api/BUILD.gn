@@ -20,6 +20,7 @@ function_registration("api_registration") {
   deps = [
     "diagnostics",
     "events",
+    "management",
     "telemetry",
     "//base",
     "//extensions/common",
@@ -45,6 +46,7 @@ source_set("browser_tests") {
     "common:browser_tests",
     "diagnostics:browser_tests",
     "events:browser_tests",
+    "management:browser_tests",
     "routines:browser_tests",
     "telemetry:browser_tests",
   ]

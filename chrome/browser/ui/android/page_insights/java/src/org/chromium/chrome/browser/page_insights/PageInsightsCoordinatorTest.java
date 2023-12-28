@@ -83,6 +83,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -132,6 +133,7 @@ public class PageInsightsCoordinatorTest {
     @Mock private BackPressManager mBackPressManager;
     @Mock private ObservableSupplierImpl<Boolean> mInMotionSupplier;
     @Mock private NavigationHandle mNavigationHandle;
+    @Mock private ApplicationViewportInsetSupplier mAppInsetSupplier;
 
     private PageInsightsCoordinator mPageInsightsCoordinator;
     private ManagedBottomSheetController mPageInsightsController;
@@ -240,6 +242,7 @@ public class PageInsightsCoordinatorTest {
                                         mBrowserControlsSizer,
                                         mBackPressManager,
                                         mInMotionSupplier,
+                                        mAppInsetSupplier,
                                         mIsPageInsightsHubEnabled,
                                         (navigationHandle) ->
                                                 PageInsightsConfig.newBuilder()

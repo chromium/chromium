@@ -106,19 +106,12 @@ void RecordNewTabLoadTime(content::WebContents* contents) {
   if (core_tab_helper->new_tab_start_time().is_null())
     return;
 
-  base::TimeDelta duration =
-      base::TimeTicks::Now() - core_tab_helper->new_tab_start_time();
   if (IsCacheableNTP(contents)) {
     if (google_util::IsGoogleDomainUrl(
             contents->GetController().GetLastCommittedEntry()->GetURL(),
             google_util::ALLOW_SUBDOMAIN,
             google_util::DISALLOW_NON_STANDARD_PORTS)) {
-      UMA_HISTOGRAM_TIMES("Tab.NewTabOnload.Google", duration);
-    } else {
-      UMA_HISTOGRAM_TIMES("Tab.NewTabOnload.Other", duration);
     }
-  } else {
-    UMA_HISTOGRAM_TIMES("Tab.NewTabOnload.Local", duration);
   }
   core_tab_helper->set_new_tab_start_time(base::TimeTicks());
 }

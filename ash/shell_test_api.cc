@@ -16,7 +16,7 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
-#include "ash/system/message_center/session_state_notification_blocker.h"
+#include "ash/system/notification_center/session_state_notification_blocker.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/system/power/power_button_controller.h"
 #include "ash/wm/overview/overview_animation_state_waiter.h"
@@ -63,7 +63,7 @@ class WindowAnimationWaiter : public ui::LayerAnimationObserver {
   void Wait() { run_loop_.Run(); }
 
  private:
-  raw_ptr<ui::LayerAnimator, DanglingUntriaged | ExperimentalAsh> animator_;
+  raw_ptr<ui::LayerAnimator, DanglingUntriaged> animator_;
   base::RunLoop run_loop_;
 };
 

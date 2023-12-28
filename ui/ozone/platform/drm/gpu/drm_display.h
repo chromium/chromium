@@ -23,6 +23,9 @@ typedef struct _drmModeModeInfo drmModeModeInfo;
 namespace display {
 class DisplaySnapshot;
 class GammaCurve;
+struct ColorTemperatureAdjustment;
+struct ColorCalibration;
+struct GammaAdjustment;
 }  // namespace display
 
 namespace ui {
@@ -50,8 +53,7 @@ class DrmDisplay {
     drmModePropertyRes* GetWritePrivacyScreenProperty() const;
 
     const scoped_refptr<DrmDevice> drm_;
-    raw_ptr<drmModeConnector, ExperimentalAsh> connector_ =
-        nullptr;  // not owned.
+    raw_ptr<drmModeConnector> connector_ = nullptr;  // not owned.
 
     display::PrivacyScreenState property_last_ =
         display::kPrivacyScreenStateLast;
@@ -85,6 +87,10 @@ class DrmDisplay {
                     display::ContentProtectionMethod* protection_method);
   bool SetHDCPState(display::HDCPState state,
                     display::ContentProtectionMethod protection_method);
+  void SetColorTemperatureAdjustment(
+      const display::ColorTemperatureAdjustment& cta);
+  void SetColorCalibration(const display::ColorCalibration& calibration);
+  void SetGammaAdjustment(const display::GammaAdjustment& adjustment);
   void SetColorMatrix(const std::vector<float>& color_matrix);
   void SetBackgroundColor(const uint64_t background_color);
   void SetGammaCorrection(const display::GammaCurve& degamma,

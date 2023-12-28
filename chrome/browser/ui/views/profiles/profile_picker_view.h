@@ -75,6 +75,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void SetNativeToolbarVisible(bool visible) override;
+  bool IsNativeToolbarVisibleForTesting() const;
   SkColor GetPreferredBackgroundColor() const override;
 #endif
 
@@ -178,10 +179,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
   void FinishInit();
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Switches the layout to the sign-in screen (and creates a new profile).
-  // std::nullopt `profile_color` corresponds to the default theme.
+  // Switches the layout to the sign-in screen (and creates a new profile or
+  // load an existing one based on the `profile_info` content).
   void SwitchToDiceSignIn(
-      std::optional<SkColor> profile_color,
+      ProfilePicker::ProfileInfo profile_info,
       base::OnceCallback<void(bool)> switch_finished_callback);
 
   // Starts the forced sign-in flow (and creates a new profile).
@@ -199,8 +200,9 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // unlocked and a browser is opend. On failure the user is redirected to the
   // profile picker main page with an popup error dialog displayed through
   // `on_error_callback`.
-  void SwitchToReauth(Profile* profile,
-                      base::OnceCallback<void()> on_error_callback);
+  void SwitchToReauth(
+      Profile* profile,
+      base::OnceCallback<void(ReauthUIError)> on_error_callback);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

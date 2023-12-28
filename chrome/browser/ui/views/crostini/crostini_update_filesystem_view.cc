@@ -122,5 +122,5 @@ CrostiniUpdateFilesystemView::~CrostiniUpdateFilesystemView() {
   g_crostini_update_filesystem_view_dialog = nullptr;
 }
 
-BEGIN_METADATA(CrostiniUpdateFilesystemView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(CrostiniUpdateFilesystemView)
 END_METADATA

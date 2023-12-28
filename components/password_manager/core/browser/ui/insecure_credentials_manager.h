@@ -88,6 +88,7 @@ class InsecureCredentialsManager : public SavedPasswordsPresenter::Observer {
   // were changed.
   void OnWeakCheckDone(base::ElapsedTimer timer_since_weak_check_start,
                        base::flat_set<std::u16string> weak_passwords);
+  void OnPartialWeakCheckDone(base::flat_set<std::u16string> weak_passwords);
 
   // Updates |reused_passwords| set and notifies observers that insecure
   // credentials were changed.

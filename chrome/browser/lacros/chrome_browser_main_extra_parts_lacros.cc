@@ -43,6 +43,7 @@
 #include "chrome/browser/lacros/launcher_search/search_controller_lacros.h"
 #include "chrome/browser/lacros/multitask_menu_nudge_delegate_lacros.h"
 #include "chrome/browser/lacros/net/network_change_manager_bridge.h"
+#include "chrome/browser/lacros/net/network_settings_observer.h"
 #include "chrome/browser/lacros/screen_orientation_delegate_lacros.h"
 #include "chrome/browser/lacros/sync/sync_crosapi_manager_lacros.h"
 #include "chrome/browser/lacros/task_manager_lacros.h"
@@ -353,6 +354,9 @@ void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
               }
             }));
   }
+  network_settings_observer_ =
+      std::make_unique<NetworkSettingsObserver>(profile);
+  network_settings_observer_->Start();
 }
 
 void ChromeBrowserMainExtraPartsLacros::PostMainMessageLoopRun() {

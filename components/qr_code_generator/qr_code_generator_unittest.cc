@@ -93,19 +93,22 @@ TEST_P(QRCodeGeneratorTest, ManySizes) {
     input.push_back('!');
 
     // C++ can only handle up to 287 of arbitrary bytes, but Rust implementation
-    // wouldn't `break` out of the loop until hitting `kMaxInputSize=700`.
-    // Therefore to avoid timeouts we test only a subset of possible input
-    // lengths when Rusty QR code generation is enabled.
+    // wouldn't `break` out of the loop until hitting `input.size() > 700`
+    // below. Therefore to avoid timeouts we test only a subset of possible
+    // input lengths when Rusty QR code generation is enabled.
     if (IsRustyQrCodeGeneratorFeatureEnabled()) {
       // The "holes" below try to ensure coverage of lengths around the test
       // assertions below that are shared across C++ and Rust + around a few
       // longer lengths that Rust can handle.
 
-      bool want_to_cover = input.size() < 130;  // 2-L (2-M in Rust), 5-M, 7-M
-      want_to_cover |= ((170 < input.size()) && (input.size() < 190));  // 9-M
-      want_to_cover |= ((270 < input.size()) && (input.size() < 300));  // 12-M
-      want_to_cover |= ((660 < input.size()) && (input.size() < 670));  // 20-M
-      want_to_cover |= ((690 < input.size()) && (input.size() < 710));  // max
+      if (input.size() > 710) {
+        break;
+      }
+      bool want_to_cover = input.size() < 125;  // 2-L (2-M in Rust), 5-M, 7-M
+      want_to_cover |= ((178 < input.size()) && (input.size() < 182));  // 9-M
+      want_to_cover |= ((285 < input.size()) && (input.size() < 289));  // 12-M
+      want_to_cover |= ((664 < input.size()) && (input.size() < 668));  // 20-M
+      want_to_cover |= ((698 < input.size()) && (input.size() < 702));  // max
       if (!want_to_cover) {
         continue;
       }

@@ -8,7 +8,6 @@
 #import "base/memory/singleton.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #import "components/supervised_user/core/browser/permission_request_creator.h"
 #import "components/supervised_user/core/browser/permission_request_creator_mock.h"
 #import "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
@@ -220,17 +219,14 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
   // responses.
   ChromeBrowserState* browser_state = ChromeBrowserState::FromBrowserState(
       chrome_test_util::GetOriginalBrowserState());
-  auto* identity_manager =
+  signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state);
   CHECK(identity_manager);
-  auto kids_chrome_management_client =
-      std::make_unique<KidsChromeManagementClient>(shared_url_loader_factory,
-                                                   identity_manager);
 
   supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForBrowserState(browser_state);
   supervised_user_service->GetURLFilter()->InitAsyncURLChecker(
-      kids_chrome_management_client.get());
+      identity_manager, shared_url_loader_factory);
 }
 
 + (void)setUpTestUrlLoaderFactoryHelper {

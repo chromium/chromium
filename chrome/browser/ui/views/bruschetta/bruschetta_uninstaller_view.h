@@ -24,9 +24,9 @@ class Profile;
 // The Bruschetta uninstaller. Provides a warning to the user and
 // uninstalls Bruschetta if the user chooses to do so.
 class BruschettaUninstallerView : public views::BubbleDialogDelegateView {
- public:
-  METADATA_HEADER(BruschettaUninstallerView);
+  METADATA_HEADER(BruschettaUninstallerView, views::BubbleDialogDelegateView)
 
+ public:
   BruschettaUninstallerView(const BruschettaUninstallerView&) = delete;
   BruschettaUninstallerView& operator=(const BruschettaUninstallerView&) =
       delete;

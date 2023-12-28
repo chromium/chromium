@@ -13,10 +13,8 @@
 
 namespace autofill {
 
-class AutofillTable;
+class PaymentsAutofillTable;
 class PaymentInstrument;
-
-bool operator==(const PaymentInstrument& a, const PaymentInstrument& b);
 
 // Base class for all payment instruments. A payment instrument is considered to
 // be any form of payment stored in the GPay backend that can be used to
@@ -40,16 +38,19 @@ class PaymentInstrument {
   PaymentInstrument(const PaymentInstrument& other);
   PaymentInstrument& operator=(const PaymentInstrument& other);
   virtual ~PaymentInstrument();
+
+  friend bool operator==(const PaymentInstrument&, const PaymentInstrument&);
+
   // Return the type of PaymentInstrument.
   virtual InstrumentType GetInstrumentType() const = 0;
 
   // Database operations to be implemented by derived class. The derived class
-  // is expected to call the corresponding database method on the AutofillTable
-  // object. This is required for callers to call these methods on the base
-  // class without knowing the type of the derived class.
-  virtual bool AddToDatabase(AutofillTable* database) const = 0;
-  virtual bool UpdateInDatabase(AutofillTable* database) const = 0;
-  virtual bool DeleteFromDatabase(AutofillTable* database) const = 0;
+  // is expected to call the corresponding database method on the
+  // PaymentsAutofillTable object. This is required for callers to call these
+  // methods on the base class without knowing the type of the derived class.
+  virtual bool AddToDatabase(PaymentsAutofillTable* database) const = 0;
+  virtual bool UpdateInDatabase(PaymentsAutofillTable* database) const = 0;
+  virtual bool DeleteFromDatabase(PaymentsAutofillTable* database) const = 0;
 
   int64_t instrument_id() const { return instrument_id_; }
 

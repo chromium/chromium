@@ -15,7 +15,6 @@
 #include "ash/system/phonehub/ui_constants.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "skia/ext/image_operations.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -89,14 +88,8 @@ PhoneHubInterstitialView::PhoneHubInterstitialView(bool show_progress,
   auto label_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);
   title_->SetEnabledColor(label_color);
-
-  if (chromeos::features::IsJellyrollEnabled()) {
-    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton1,
-                                          *title_);
-  } else {
-    TrayPopupUtils::SetLabelFontList(title_,
-                                     TrayPopupUtils::FontStyle::kSubHeader);
-  }
+  TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton1,
+                                        *title_);
 
   // Overriding because the typography line height set does not match Phone
   // Hub specs.
@@ -114,16 +107,10 @@ PhoneHubInterstitialView::PhoneHubInterstitialView(bool show_progress,
   description_->SetEnabledColor(label_color);
   description_->SetMultiLine(true);
   description_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-
-  if (chromeos::features::IsJellyrollEnabled()) {
-    // TODO(b/281844561): Migrate the |description_| to usea slightly lighter
-    // text color when tokens have been finalized.
-    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
-                                          *description_);
-  } else {
-    TrayPopupUtils::SetLabelFontList(
-        description_, TrayPopupUtils::FontStyle::kDetailedViewLabel);
-  }
+  // TODO(b/281844561): Migrate the `description_` to use a slightly lighter
+  // text color when tokens have been finalized.
+  TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
+                                        *description_);
   description_->SetLineHeight(20);
 
   // Set up button container view, which should be right-aligned.

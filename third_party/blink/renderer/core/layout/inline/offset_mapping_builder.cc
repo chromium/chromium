@@ -111,6 +111,30 @@ void OffsetMappingBuilder::AppendCollapsedMapping(unsigned length) {
   has_open_unit_ = true;
 }
 
+void OffsetMappingBuilder::AppendVariableMapping(unsigned dom_length,
+                                                 unsigned text_content_length) {
+  DCHECK(RuntimeEnabledFeatures::OffsetMappingUnitVariableEnabled());
+  DCHECK_GT(dom_length, 0u);
+  DCHECK_GT(text_content_length, 0u);
+  const unsigned dom_start = current_offset_;
+  const unsigned dom_end = dom_start + dom_length;
+  const unsigned text_content_start = destination_length_;
+  const unsigned text_content_end = text_content_start + text_content_length;
+  current_offset_ += dom_length;
+  destination_length_ += text_content_length;
+
+  if (!current_layout_object_) {
+    return;
+  }
+
+  // Don't handle has_open_unit_ here. We can't merge kVariable units.
+
+  mapping_units_.emplace_back(OffsetMappingUnitType::kVariable,
+                              *current_layout_object_, dom_start, dom_end,
+                              text_content_start, text_content_end);
+  has_open_unit_ = false;
+}
+
 void OffsetMappingBuilder::CollapseTrailingSpace(unsigned space_offset) {
   DCHECK_LT(space_offset, destination_length_);
   --destination_length_;
@@ -213,9 +237,17 @@ void OffsetMappingBuilder::RestoreTrailingCollapsibleSpace(
   return;
 }
 
-void OffsetMappingBuilder::SetDestinationString(String string) {
+bool OffsetMappingBuilder::SetDestinationString(const String& string) {
   DCHECK_EQ(destination_length_, string.length());
+  if (RuntimeEnabledFeatures::NoOffsetMappingForInconsistentTextEnabled() &&
+      destination_length_ != string.length()) {
+    // If we continue building an OffsetMapping with the inconsistent IFC text
+    // content, it might cause out-of-bounds accesses. It happens only if we
+    // have a bug, and we should fail safely.
+    return false;
+  }
   destination_string_ = string;
+  return true;
 }
 
 OffsetMapping* OffsetMappingBuilder::Build() {

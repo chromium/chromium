@@ -12,6 +12,11 @@
       path: "/config/data",
     },
     {
+      directory: "tzdata-icu",
+      rights: [ "r*" ],
+      path: "/config/tzdata/icu",
+    },
+    {
       storage: "cache",
       path: "/cache",
     },

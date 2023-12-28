@@ -27,7 +27,8 @@ class SharedImageRepresentationTest : public ::testing::Test {
     auto color_space = gfx::ColorSpace::CreateSRGB();
     auto surface_origin = kTopLeft_GrSurfaceOrigin;
     auto alpha_type = kPremul_SkAlphaType;
-    uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
+    uint32_t usage =
+        SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE;
 
     auto backing = std::make_unique<TestImageBacking>(
         mailbox_, format, size, color_space, surface_origin, alpha_type, usage,

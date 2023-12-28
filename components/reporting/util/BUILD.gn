@@ -144,7 +144,7 @@ source_set("rate_limiter_slide_window") {
   ]
 }
 
-if (enable_nocompile_tests_new) {
+if (enable_nocompile_tests) {
   nocompile_source_set("reporting_nocompile_tests") {
     sources = [
       "status_macros_assert_ok_nocompile.nc",
@@ -197,7 +197,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-  if (enable_nocompile_tests_new) {
+  if (enable_nocompile_tests) {
     deps += [ ":reporting_nocompile_tests" ]
   }
 }

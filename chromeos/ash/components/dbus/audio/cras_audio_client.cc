@@ -523,7 +523,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
                                  cras::kSetGlobalOutputChannelRemix);
     dbus::MessageWriter writer(&method_call);
     writer.AppendInt32(channels);
-    writer.AppendArrayOfDoubles(mixer.data(), mixer.size());
+    writer.AppendArrayOfDoubles(mixer);
     cras_proxy_->CallMethod(&method_call,
                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
                             base::DoNothing());

@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
@@ -76,7 +77,8 @@ bool ShouldUseChip(permissions::PermissionPrompt::Delegate* delegate) {
   if (!permissions::PermissionUtil::HasUserGesture(delegate))
     return false;
 
-  std::vector<permissions::PermissionRequest*> requests = delegate->Requests();
+  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+      requests = delegate->Requests();
   return base::ranges::all_of(
       requests, [](permissions::PermissionRequest* request) {
         return request
@@ -94,7 +96,8 @@ bool IsLocationBarDisplayed(Browser* browser) {
 
 bool ShouldCurrentRequestUseQuietChip(
     permissions::PermissionPrompt::Delegate* delegate) {
-  std::vector<permissions::PermissionRequest*> requests = delegate->Requests();
+  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+      requests = delegate->Requests();
   return base::ranges::all_of(
       requests, [](permissions::PermissionRequest* request) {
         return request->request_type() ==
@@ -110,7 +113,8 @@ bool ShouldCurrentRequestUsePermissionElementSecondaryUI(
     return false;
   }
 
-  std::vector<permissions::PermissionRequest*> requests = delegate->Requests();
+  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+      requests = delegate->Requests();
   return base::ranges::all_of(
       requests, [](permissions::PermissionRequest* request) {
         return (request->request_type() ==

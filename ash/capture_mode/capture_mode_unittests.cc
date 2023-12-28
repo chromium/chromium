@@ -3764,7 +3764,8 @@ TEST_F(CaptureModeTest, KeyboardNavigationBasic) {
 // mode.
 TEST_F(CaptureModeTest, KeyboardNavigationTabThroughWindowsOnMultipleDisplays) {
   UpdateDisplay("800x700,801+0-800x700");
-  std::vector<aura::Window*> root_windows = Shell::GetAllRootWindows();
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> root_windows =
+      Shell::GetAllRootWindows();
   ASSERT_EQ(2u, root_windows.size());
 
   // Create three windows, one of them is a modal transient child.
@@ -6014,7 +6015,7 @@ class EventTargetCatcher : public ui::EventHandler {
   }
 
  private:
-  raw_ptr<ui::EventTarget, ExperimentalAsh> last_event_target_ = nullptr;
+  raw_ptr<ui::EventTarget> last_event_target_ = nullptr;
 };
 
 }  // namespace

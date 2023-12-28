@@ -36,12 +36,12 @@ TEST_F(DependencyGraphTest, SingleCase) {
   DependencyGraph graph;
   DummyNode node(&graph);
 
-  std::vector<DependencyNode*> construction_order;
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> construction_order;
   EXPECT_TRUE(graph.GetConstructionOrder(&construction_order));
   ASSERT_EQ(1U, construction_order.size());
   EXPECT_EQ(&node, construction_order[0]);
 
-  std::vector<DependencyNode*> destruction_order;
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> destruction_order;
   EXPECT_TRUE(graph.GetDestructionOrder(&destruction_order));
   ASSERT_EQ(1U, destruction_order.size());
   EXPECT_EQ(&node, destruction_order[0]);
@@ -55,13 +55,13 @@ TEST_F(DependencyGraphTest, SimpleDependency) {
 
   graph.AddEdge(&parent, &child);
 
-  std::vector<DependencyNode*> construction_order;
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> construction_order;
   EXPECT_TRUE(graph.GetConstructionOrder(&construction_order));
   ASSERT_EQ(2U, construction_order.size());
   EXPECT_EQ(&parent, construction_order[0]);
   EXPECT_EQ(&child, construction_order[1]);
 
-  std::vector<DependencyNode*> destruction_order;
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> destruction_order;
   EXPECT_TRUE(graph.GetDestructionOrder(&destruction_order));
   ASSERT_EQ(2U, destruction_order.size());
   EXPECT_EQ(&child, destruction_order[0]);
@@ -78,14 +78,14 @@ TEST_F(DependencyGraphTest, TwoChildrenOneParent) {
   graph.AddEdge(&parent, &child1);
   graph.AddEdge(&parent, &child2);
 
-  std::vector<DependencyNode*> construction_order;
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> construction_order;
   EXPECT_TRUE(graph.GetConstructionOrder(&construction_order));
   ASSERT_EQ(3U, construction_order.size());
   EXPECT_EQ(&parent, construction_order[0]);
   EXPECT_EQ(&child1, construction_order[1]);
   EXPECT_EQ(&child2, construction_order[2]);
 
-  std::vector<DependencyNode*> destruction_order;
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> destruction_order;
   EXPECT_TRUE(graph.GetDestructionOrder(&destruction_order));
   ASSERT_EQ(3U, destruction_order.size());
   EXPECT_EQ(&child2, destruction_order[0]);
@@ -110,7 +110,7 @@ TEST_F(DependencyGraphTest, MConfiguration) {
   DummyNode child_of_2(&graph);
   graph.AddEdge(&parent2, &child_of_2);
 
-  std::vector<DependencyNode*> construction_order;
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> construction_order;
   EXPECT_TRUE(graph.GetConstructionOrder(&construction_order));
   ASSERT_EQ(5U, construction_order.size());
   EXPECT_EQ(&parent1, construction_order[0]);
@@ -119,7 +119,7 @@ TEST_F(DependencyGraphTest, MConfiguration) {
   EXPECT_EQ(&child_of_12, construction_order[3]);
   EXPECT_EQ(&child_of_2, construction_order[4]);
 
-  std::vector<DependencyNode*> destruction_order;
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> destruction_order;
   EXPECT_TRUE(graph.GetDestructionOrder(&destruction_order));
   ASSERT_EQ(5U, destruction_order.size());
   EXPECT_EQ(&child_of_2, destruction_order[0]);
@@ -145,7 +145,7 @@ TEST_F(DependencyGraphTest, DiamondConfiguration) {
   graph.AddEdge(&middle1, &bottom);
   graph.AddEdge(&middle2, &bottom);
 
-  std::vector<DependencyNode*> construction_order;
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> construction_order;
   EXPECT_TRUE(graph.GetConstructionOrder(&construction_order));
   ASSERT_EQ(4U, construction_order.size());
   EXPECT_EQ(&parent, construction_order[0]);
@@ -153,7 +153,7 @@ TEST_F(DependencyGraphTest, DiamondConfiguration) {
   EXPECT_EQ(&middle2, construction_order[2]);
   EXPECT_EQ(&bottom, construction_order[3]);
 
-  std::vector<DependencyNode*> destruction_order;
+  std::vector<raw_ptr<DependencyNode, VectorExperimental>> destruction_order;
   EXPECT_TRUE(graph.GetDestructionOrder(&destruction_order));
   ASSERT_EQ(4U, destruction_order.size());
   EXPECT_EQ(&bottom, destruction_order[0]);

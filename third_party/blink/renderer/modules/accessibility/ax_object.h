@@ -1486,6 +1486,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
  private:
   bool ComputeCanSetFocusAttribute() const;
   String KeyboardShortcut() const;
+  void UpdateStyleAndLayoutTreeForNode(Node& node);
 
   // Do the rest of the cached_* member variables need to be recomputed?
   mutable bool cached_values_need_update_ : 1;

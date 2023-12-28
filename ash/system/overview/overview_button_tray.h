@@ -97,7 +97,7 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
   gfx::ImageSkia GetIconImage();
 
   // Weak pointer, will be parented by TrayContainer for its lifetime.
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_;
+  raw_ptr<views::ImageView> icon_;
 
   ScopedSessionObserver scoped_session_observer_;
 

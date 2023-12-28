@@ -174,6 +174,11 @@ CustomPatternWithAlias kCustomPatternsWithContext[] = {
     // log entries from ChromeOS's crash_sender program.
     {"Crash ID", R"xxx((Crash report receipt ID )([0-9a-fA-F]+)(.+?))xxx",
      PIIType::kCrashId},
+
+    // Names of ChromeOS cryptohome logical volumes and device mapper devices,
+    // which include a partial hash of the user id.
+    {"UID", R"xxx(((?:cryptohome|dmcrypt)-+)([0-9a-fA-F]+)(-+))xxx",
+     PIIType::kStableIdentifier},
 };
 
 bool MaybeUnmapAddress(IPAddress* addr) {

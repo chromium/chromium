@@ -865,8 +865,8 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.CWP.CollectProcessTypes"
-    enum="ChromeOSProcessTypeCollectionStatus" expires_after="2024-01-19">
-  <owner>aalexand@google.com</owner>
+    enum="ChromeOSProcessTypeCollectionStatus" expires_after="2025-01-19">
+  <owner>gmx@google.com</owner>
   <owner>cwp-team@google.com</owner>
   <summary>
     Record the collection status (success or failure) when the Chrome process
@@ -954,7 +954,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.CWP.RecordPerf" enum="ChromeOSProfileRecordStatus"
-    expires_after="2024-01-14">
+    expires_after="2025-01-14">
   <owner>shantuo@google.com</owner>
   <owner>cwp-team@google.com</owner>
   <summary>
@@ -966,7 +966,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.CWP.UploadPerf" units="reports"
-    expires_after="2024-02-11">
+    expires_after="2024-06-16">
   <owner>aalexand@google.com</owner>
   <owner>gmx@chromium.org</owner>
   <owner>cwp-team@google.com</owner>
@@ -1194,6 +1194,18 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   <token key="FeatureName" variants="FeaturesLoggingUsageEvents"/>
 </histogram>
 
+<histogram name="ChromeOS.FirmwareUpdateUi.InstallFailedWithStatus"
+    enum="FirmwareUpdateFwupdStatus" expires_after="2024-06-28">
+  <owner>cambickel@google.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the most recent FwupdStatus when a firmware install fails for any
+    reason.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.FirmwareUpdateUi.InstallResult"
     enum="FirmwareUpdateInstallResult" expires_after="2024-04-28">
   <owner>jimmyxgong@chromium.org</owner>
@@ -1205,6 +1217,25 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
     when a failure state is reached. An example failure state is if we're unable
     to create a firmware update directory.
   </summary>
+</histogram>
+
+<histogram name="ChromeOS.FirmwareUpdateUi.RequestReceived.Kind{Kind}"
+    enum="FirmwareUpdateDeviceRequestID" expires_after="2024-06-28">
+  <owner>cambickel@google.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the ID and {Kind} of request received from fwupd. A request is an
+    instruction for the user to perform some action necessary to continue the
+    update. For example, a user may be asked to unplug and then replug their
+    device. For each firmware update, there may be 0 or more requests received.
+  </summary>
+  <token key="Kind">
+    <variant name="Immediate"/>
+    <variant name="Post"/>
+    <variant name="Unknown"/>
+  </token>
 </histogram>
 
 <histogram name="ChromeOS.FirmwareUpdateUi.{Source}.DeviceCount"
@@ -2029,6 +2060,24 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
     active or historical print jobs and with at least one active or historical
     print job.
   </summary>
+</histogram>
+
+<histogram name="ChromeOS.PrivacyHub.Geolocation.AccessLevelChanged.{Source}"
+    enum="GeolocationAccessLevel" expires_after="2024-06-01">
+  <owner>zauri@google.com</owner>
+  <owner>chromeos-privacyhub@google.com</owner>
+  <summary>
+    Records system geolocation permission change originated from the {Source}.
+  </summary>
+  <token key="Source">
+    <variant name="GeolocationDialog"
+        summary="geolocation dialogs. These dialogs are surfaced in the
+                 affected system services, like Automatic Time Zone"/>
+    <variant name="LocationPermissionNotification"
+        summary="ChromeOS system notification"/>
+    <variant name="SystemSettings"
+        summary="ChromeOS system settings &gt; Location access subpage"/>
+  </token>
 </histogram>
 
 <histogram name="ChromeOS.PrivacyHub.LearnMorePage.Opened"
@@ -2869,7 +2918,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.AcceleratorAction.Initial"
-    enum="AcceleratorAction" expires_after="2024-03-22">
+    enum="AcceleratorAction" expires_after="2024-06-09">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3029,7 +3078,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.Registered.CustomizableButton"
-    enum="CustomizableButton" expires_after="2024-03-22">
+    enum="CustomizableButton" expires_after="2024-06-09">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3078,7 +3127,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.StaticShortcutAction.Initial"
-    enum="DeviceSettingsStaticShortcutAction" expires_after="2024-03-22">
+    enum="DeviceSettingsStaticShortcutAction" expires_after="2024-06-09">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3685,7 +3734,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.Zram.PSISomeOrigDataSizeMB" units="MB"
-    expires_after="2024-02-25">
+    expires_after="2024-06-23">
   <owner>erikchen@chromium.org</owner>
   <owner>bgeffon@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>

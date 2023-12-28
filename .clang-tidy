@@ -13,6 +13,7 @@
                     bugprone-use-after-move,
                     google-build-explicit-make-pair,
                     google-explicit-constructor,
+                    google-objc-avoid-nsobject-new,
                     misc-misleading-identifier,
                     misc-homoglyph,
                     modernize-avoid-bind,

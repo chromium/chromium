@@ -163,4 +163,14 @@ suite('FakeInputDeviceSettings', () => {
     assertDeepEquals(
         graphicsTabletActions.options, fakeGraphicsTabletButtonActions);
   });
+
+  test('hasLauncherButton', async () => {
+    provider.setFakeHasLauncherButton(true);
+    let hasLauncherButton = await provider.hasLauncherButton();
+    assertDeepEquals(hasLauncherButton, {hasLauncherButton: true});
+
+    provider.setFakeHasLauncherButton(false);
+    hasLauncherButton = await provider.hasLauncherButton();
+    assertDeepEquals(hasLauncherButton, {hasLauncherButton: false});
+  });
 });

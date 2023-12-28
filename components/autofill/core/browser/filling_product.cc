@@ -21,20 +21,17 @@ FillingProduct GetFillingProductFromPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kDeleteAddressProfile:
     case PopupItemId::kDevtoolsTestAddresses:
     case PopupItemId::kDevtoolsTestAddressEntry:
-    case PopupItemId::kAddressEntryNotSelectable:
-      return FillingProduct::kAddressAutofill;
+      return FillingProduct::kAddress;
     case PopupItemId::kCreditCardEntry:
-    case PopupItemId::kInsecureContextPaymentDisabledMessage:
     case PopupItemId::kScanCreditCard:
     case PopupItemId::kVirtualCreditCardEntry:
     case PopupItemId::kCreditCardFieldByFieldFilling:
-    case PopupItemId::kIbanEntry:
+      return FillingProduct::kCreditCard;
     case PopupItemId::kMerchantPromoCodeEntry:
-    case PopupItemId::kSeePromoCodeDetails:
-    case PopupItemId::kPaymentsEntryNotSelectable:
-      return FillingProduct::kPaymentsAutofill;
+      return FillingProduct::kMerchantPromoCode;
+    case PopupItemId::kIbanEntry:
+      return FillingProduct::kIban;
     case PopupItemId::kAutocompleteEntry:
-    case PopupItemId::kDatalistEntry:
       return FillingProduct::kAutocomplete;
     case PopupItemId::kPasswordEntry:
     case PopupItemId::kUsernameEntry:
@@ -49,18 +46,20 @@ FillingProduct GetFillingProductFromPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kPasswordAccountStorageEmpty:
     case PopupItemId::kWebauthnCredential:
     case PopupItemId::kWebauthnSignInWithAnotherDevice:
-      return FillingProduct::kPasswordManager;
+      return FillingProduct::kPassword;
     case PopupItemId::kCompose:
       return FillingProduct::kCompose;
     case PopupItemId::kCreateNewPlusAddress:
     case PopupItemId::kFillExistingPlusAddress:
       return FillingProduct::kPlusAddresses;
-    case PopupItemId::kTitle:
     case PopupItemId::kAutofillOptions:
+    case PopupItemId::kSeePromoCodeDetails:
     case PopupItemId::kSeparator:
     case PopupItemId::kClearForm:
+    case PopupItemId::kDatalistEntry:
     case PopupItemId::kMixedFormMessage:
-      NOTREACHED_NORETURN();
+    case PopupItemId::kInsecureContextPaymentDisabledMessage:
+      return FillingProduct::kNone;
   }
 }
 

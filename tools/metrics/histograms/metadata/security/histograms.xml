@@ -22,22 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Security.ClientAuth.CertificateSelectionSource"
-    enum="ClientCertSelectionResult" expires_after="2020-08-16">
-  <owner>jdeblasio@chromium.org</owner>
-  <summary>
-    When TLS client authentication is requested by the server, Chrome must
-    choose whether to return a certificate or to abort the handshake. This
-    histogram records how this determination was made, either as a result of
-    user action, or as chosen automatically due to content settings. It only
-    records when a fresh certificate selection would be attempted (and thus
-    ignores cache hits). This histogram is recorded in SSLClientAuthObserver for
-    user-selected outcomes and in ChromeContentBrowserClient for policy
-    outcomes. This histogram does not cover mobile, as certificate handling is
-    not handled by Chrome on Android nor iOS.
-  </summary>
-</histogram>
-
 <histogram name="Security.DataDecoder.Image.DecodingTime" units="ms"
     expires_after="2024-04-28">
   <owner>lukasza@chromium.org</owner>
@@ -156,7 +140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.GwpAsan.CrashAnalysisResult.{Allocator}"
-    enum="GwpAsanCrashAnalysisResult" expires_after="2024-03-24">
+    enum="GwpAsanCrashAnalysisResult" expires_after="2024-06-23">
   <owner>glazunov@google.com</owner>
   <owner>mpdenton@chromium.org</owner>
   <owner>chrome-memory-tok@google.com</owner>
@@ -308,7 +292,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.JSONParser.ParsingTime" units="microseconds"
-    expires_after="M120">
+    expires_after="M124">
   <owner>djmitche@chromium.org</owner>
   <owner>chrome-platform-security@google.com</owner>
   <summary>
@@ -322,6 +306,8 @@ chromium-metrics-reviews@google.com.
     mostly interested in comparing C++ vs Rust and it seems okay to assume that
     such comparison would give similar results for the filtered and non-filtered
     population.
+
+    Data for this metric is missing before M122.
   </summary>
 </histogram>
 
@@ -417,7 +403,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.TimeOpen.NoAction" units="ms"
-    expires_after="2024-03-17">
+    expires_after="2024-06-16">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -427,10 +413,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PrivateNetworkAccess.CheckResult"
-    enum="PrivateNetworkAccessCheckResult" expires_after="2023-12-24">
+    enum="PrivateNetworkAccessCheckResult" expires_after="2024-06-24">
   <owner>titouan@chromium.org</owner>
   <owner>clamy@chromium.org</owner>
   <owner>mkwst@chromium.org</owner>
+  <owner>lyf@chromium.org</owner>
+  <owner>src/chrome/browser/private_network_access/OWNERS</owner>
   <summary>
     Result of the Private Network Access Check on a new connection. Recorded
     once per call to network::URLLoader::OnConnected(), which may be more than
@@ -756,7 +744,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.BrowsingInstance.MaxCountPerProcess"
-    units="units" expires_after="2023-12-18">
+    units="units" expires_after="2024-05-19">
   <owner>wjmaclean@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <summary>

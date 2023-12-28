@@ -56,6 +56,7 @@ std::unique_ptr<InvalidationService> CreateInvalidationServiceForSenderId(
           gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver(),
           instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
               ->driver()),
+      base::BindRepeating(&invalidation::FCMInvalidationListener::Create),
       base::BindRepeating(
           &PerUserTopicSubscriptionManager::Create, identity_provider,
           profile->GetPrefs(),

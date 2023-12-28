@@ -21,10 +21,16 @@ extern const char kComposeSessionComposeCount[];
 extern const char kComposeSessionCloseReason[];
 extern const char kComposeSessionDialogShownCount[];
 extern const char kComposeSessionUndoCount[];
+extern const char kComposeSessionUpdateInputCount[];
 extern const char kComposeShowStatus[];
 extern const char kComposeConsentSessionCloseReason[];
+extern const char kComposeMSBBSessionCloseReason[];
 extern const char kComposeConsentSessionDialogShownCount[];
+extern const char kComposeMSBBSessionDialogShownCount[];
 extern const char kComposeSessionConsentGivenInSession[];
+extern const char kComposeSessionMSBBEnabledInSession[];
+extern const char kComposeFirstRunSessionCloseReason[];
+extern const char kComposeFirstRunSessionDialogShownCount[];
 
 // Enum for calculating the CTR of the Compose context menu item.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -47,6 +53,27 @@ enum class ComposeConsentSessionCloseReason {
   kPageContentConsentDeclined = 4,
   kPageContentConsentGivenWithInsert = 5,
   kNewSessionWithSelectedText = 6,
+  kMaxValue = kNewSessionWithSelectedText,
+};
+
+// Keep in sync with ComposeMSBBSessionCloseReasonType in
+// src/tools/metrics/histograms/metadata/compose/enums.xml.
+enum class ComposeMSBBSessionCloseReason {
+  kMSBBEndedImplicitly = 0,
+  kMSBBCloseButtonPressed = 1,
+  kMSBBAcceptedWithoutInsert = 2,
+  kMSBBAcceptedWithInsert = 3,
+  kMaxValue = kMSBBAcceptedWithInsert,
+};
+
+// Keep in sync with ComposeFirstRunSessionCloseReasonType in
+// src/tools/metrics/histograms/metadata/compose/enums.xml.
+enum class ComposeFirstRunSessionCloseReason {
+  kEndedImplicitly = 0,
+  kCloseButtonPressed = 1,
+  kFirstRunDisclaimerAcknowledgedWithoutInsert = 2,
+  kFirstRunDisclaimerAcknowledgedWithInsert = 3,
+  kNewSessionWithSelectedText = 4,
   kMaxValue = kNewSessionWithSelectedText,
 };
 
@@ -75,7 +102,8 @@ enum class ComposeShowStatus {
   kFormFieldInCrossOriginFrame = 6,
   kPerUrlChecksFailed = 7,
   kUserNotAllowedByOptimizationGuide = 8,
-  kMaxValue = kUserNotAllowedByOptimizationGuide,
+  kNotComposeEligible = 9,
+  kMaxValue = kNotComposeEligible,
 };
 
 void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event);
@@ -86,19 +114,34 @@ void LogComposeContextMenuShowStatus(ComposeShowStatus status);
 // the request.
 void LogComposeRequestDuration(base::TimeDelta duration, bool is_ok);
 
+void LogComposeFirstRunSessionCloseReason(
+    ComposeFirstRunSessionCloseReason reason);
+
+// Log session based metrics when a FRE session ends.
+void LogComposeFirstRunSessionDialogShownCount(
+    ComposeFirstRunSessionCloseReason reason,
+    int dialog_shown_count);
+
 void LogComposeConsentSessionCloseReason(
     ComposeConsentSessionCloseReason reason);
+
+void LogComposeMSBBSessionCloseReason(ComposeMSBBSessionCloseReason reason);
 
 // Log session based metrics when a consent session ends.
 void LogComposeConsentSessionDialogShownCount(
     ComposeConsentSessionCloseReason reason,
     int dialog_shown_count);
 
+// Log session based metrics when a consent session ends.
+void LogComposeMSBBSessionDialogShownCount(ComposeMSBBSessionCloseReason reason,
+                                           int dialog_shown_count);
+
 // Log session based metrics when a session ends.
 void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
                                    int compose_count,
                                    int dialog_shown_count,
                                    int undo_count,
+                                   int update_input_count,
                                    bool consent_given_in_session);
 
 // Log the amount trimmed from the inner text from the page (in bytes) when the

@@ -8,10 +8,7 @@
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/StringRef.h"
 
-CheckForbiddenFieldsVisitor::CheckForbiddenFieldsVisitor(
-    const BlinkGCPluginOptions& options)
-    : forbid_associated_remote_receiver_(
-          options.forbid_associated_remote_receiver) {}
+CheckForbiddenFieldsVisitor::CheckForbiddenFieldsVisitor() {}
 
 CheckForbiddenFieldsVisitor::Errors&
 CheckForbiddenFieldsVisitor::forbidden_fields() {
@@ -109,15 +106,13 @@ bool CheckForbiddenFieldsVisitor::ContainsInvalidFieldTypes(Value* edge) {
     return true;
   }
 
-  if (forbid_associated_remote_receiver_) {
-    it = std::find_if(
-        std::begin(kOptionalAssociatedErrors),
-        std::end(kOptionalAssociatedErrors),
-        [&type_name](const auto& val) { return val.first == type_name; });
-    if (it != std::end(kOptionalAssociatedErrors)) {
-      forbidden_fields_.push_back({current_, it->second});
-      return true;
-    }
+  it = std::find_if(
+      std::begin(kOptionalAssociatedErrors),
+      std::end(kOptionalAssociatedErrors),
+      [&type_name](const auto& val) { return val.first == type_name; });
+  if (it != std::end(kOptionalAssociatedErrors)) {
+    forbidden_fields_.push_back({current_, it->second});
+    return true;
   }
 
   return false;

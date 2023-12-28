@@ -9,7 +9,7 @@ import {descriptorEqual} from '../../common/js/util.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {CurrentDirectory, DialogType, DirectoryContent, FileData, FileKey, FileTask, FileTasks, PropStatus, Selection, State} from '../../externs/ts/state.js';
-import {constants} from '../../foreground/js/constants.js';
+import {DEFAULT_CROSTINI_VM} from '../../foreground/js/constants.js';
 import {PathComponent} from '../../foreground/js/path_component.js';
 import type {ActionsProducerGen} from '../../lib/actions_producer.js';
 import {Slice} from '../../lib/base_store.js';
@@ -334,7 +334,7 @@ function allowCrostiniTask(filesData: FileData[]) {
   }
   const crostini = window.fileManager.crostini;
   return crostini.canSharePath(
-      constants.DEFAULT_CROSTINI_VM, (fileData.entry as Entry),
+      DEFAULT_CROSTINI_VM, (fileData.entry as Entry),
       /*persiste=*/ false);
 }
 

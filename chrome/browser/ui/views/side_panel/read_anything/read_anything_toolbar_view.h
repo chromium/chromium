@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_font_combobox.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_menu_button.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
@@ -27,12 +28,16 @@
 // ReadAnythingToolbarView
 //
 //  The toolbar for Read Anything.
-//  This class is created by the ReadAnythingCoordinator and owned by the
-//  ReadAnythingContainerView. It has the same lifetime as the Side Panel view.
+//  This class is either created by the ReadAnythingCoordinator (when the side
+//  panel entry is global) or the ReadAnythingSidePanelController (when the side
+//  panel entry is local) and owned by the ReadAnythingContainerView. It has the
+//  same lifetime as the Side Panel view.
 //
-class ReadAnythingToolbarView : public views::View,
-                                public ReadAnythingModel::Observer,
-                                public ReadAnythingCoordinator::Observer {
+class ReadAnythingToolbarView
+    : public views::View,
+      public ReadAnythingModel::Observer,
+      public ReadAnythingCoordinator::Observer,
+      public ReadAnythingSidePanelController::Observer {
  public:
   METADATA_HEADER(ReadAnythingToolbarView);
   class Delegate {
@@ -49,6 +54,10 @@ class ReadAnythingToolbarView : public views::View,
 
   ReadAnythingToolbarView(
       ReadAnythingCoordinator* coordinator,
+      ReadAnythingToolbarView::Delegate* toolbar_delegate,
+      ReadAnythingFontCombobox::Delegate* font_combobox_delegate);
+  ReadAnythingToolbarView(
+      ReadAnythingSidePanelController* controller,
       ReadAnythingToolbarView::Delegate* toolbar_delegate,
       ReadAnythingFontCombobox::Delegate* font_combobox_delegate);
   ReadAnythingToolbarView(const ReadAnythingToolbarView&) = delete;
@@ -70,15 +79,20 @@ class ReadAnythingToolbarView : public views::View,
 
   // ReadAnythingCoordinator::Observer:
   void OnCoordinatorDestroyed() override;
+  // ReadAnythingSidePanelController::Observer:
+  void OnSidePanelControllerDestroyed() override;
 
  private:
   friend class ReadAnythingToolbarViewTest;
 
+  void Init(ReadAnythingToolbarView::Delegate* toolbar_delegate,
+            ReadAnythingFontCombobox::Delegate* font_combobox_delegate);
   void DecreaseFontSizeCallback();
   void IncreaseFontSizeCallback();
   void ChangeColorsCallback();
   void ChangeLineSpacingCallback();
   void ChangeLetterSpacingCallback();
+  void CleanUp();
 
   // views::View:
   void AddedToWidget() override;
@@ -98,6 +112,7 @@ class ReadAnythingToolbarView : public views::View,
 
   raw_ptr<ReadAnythingToolbarView::Delegate> delegate_;
   raw_ptr<ReadAnythingCoordinator> coordinator_;
+  raw_ptr<ReadAnythingSidePanelController> controller_;
 
   base::WeakPtrFactory<ReadAnythingToolbarView> weak_pointer_factory_{this};
 };

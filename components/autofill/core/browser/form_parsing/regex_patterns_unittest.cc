@@ -14,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/ranges/ranges.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns_inl.h"
@@ -38,9 +39,9 @@ class MatchPatternRefTestApi {
 
   explicit MatchPatternRefTestApi(MatchPatternRef p) : p_(p) {}
 
-  absl::optional<MatchPatternRef> MakeSupplementary() const {
+  std::optional<MatchPatternRef> MakeSupplementary() const {
     if (!(*p_).match_field_attributes.contains(MatchAttribute::kName))
-      return absl::nullopt;
+      return std::nullopt;
     return MatchPatternRef(true, index());
   }
 
@@ -61,7 +62,7 @@ MatchPatternRefTestApi test_api(MatchPatternRef p) {
 auto Matches(base::StringPiece16 regex) {
   icu::RegexPattern regex_pattern = *CompileRegex(regex);
   return ::testing::Truly(
-      [regex_pattern = std::move(regex_pattern)](base::StringPiece actual) {
+      [regex_pattern = std::move(regex_pattern)](std::string_view actual) {
         return MatchesRegex(base::UTF8ToUTF16(actual), regex_pattern);
       });
 }
@@ -205,9 +206,9 @@ TEST_P(RegexPatternsTest, PseudoLanguageIsUnionOfLanguages) {
   std::erase_if(expected,
                 [](auto p) { return test_api(p).is_supplementary(); });
 
-  EXPECT_THAT(GetMatchPatterns(kSomeName, absl::nullopt, pattern_source()),
+  EXPECT_THAT(GetMatchPatterns(kSomeName, std::nullopt, pattern_source()),
               UnorderedElementsAreArray(expected));
-  EXPECT_THAT(GetMatchPatterns(kSomeName, absl::nullopt, pattern_source()),
+  EXPECT_THAT(GetMatchPatterns(kSomeName, std::nullopt, pattern_source()),
               Each(Not(IsSupplementary)));
 }
 
@@ -219,7 +220,7 @@ TEST_P(RegexPatternsTest, FallbackToPseudoLanguageIfLanguageDoesNotExist) {
   EXPECT_THAT(
       GetMatchPatterns(kSomeName, kNonexistingLanguage, pattern_source()),
       ElementsAreArray(
-          GetMatchPatterns(kSomeName, absl::nullopt, pattern_source())));
+          GetMatchPatterns(kSomeName, std::nullopt, pattern_source())));
 }
 
 // Tests that for a given pattern name, the non-English languages are

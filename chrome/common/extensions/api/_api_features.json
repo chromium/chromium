@@ -365,7 +365,22 @@
   "documentScan.openScanner": {
     "channel": "dev"
   },
+  "documentScan.getOptionGroups": {
+    "channel": "dev"
+  },
   "documentScan.closeScanner": {
+    "channel": "dev"
+  },
+  "documentScan.setOptions": {
+    "channel": "dev"
+  },
+  "documentScan.startScan": {
+    "channel": "dev"
+  },
+  "documentScan.cancelScan": {
+    "channel": "dev"
+  },
+  "documentScan.readScanData": {
     "channel": "dev"
   },
   "dom": {

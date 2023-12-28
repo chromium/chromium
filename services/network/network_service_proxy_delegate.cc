@@ -195,6 +195,15 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
       const std::vector<net::ProxyChain>& proxy_chain_list =
           ipp_config_cache_->GetProxyChainList();
       for (const auto& proxy_chain : proxy_chain_list) {
+        if (proxy_chain.is_single_proxy() && url.SchemeIs(url::kHttpScheme)) {
+          // Proxying HTTP traffic correctly for IP Protection requires
+          // multi-proxy chains to be used, so if a single-proxy chain is
+          // encountered here then just fail.
+          // TODO(https://crbug.com/1474932): Once chains are guaranteed to be
+          // multi-proxy here, turn this into a CHECK.
+          dvlog("can't proxy HTTP URL through a single-proxy chain");
+          return;
+        }
         proxy_list.AddProxyChain(std::move(proxy_chain));
       }
     }
@@ -304,6 +313,11 @@ net::Error NetworkServiceProxyDelegate::OnTunnelHeadersReceived(
             response_headers.raw_headers()));
   }
   return net::OK;
+}
+
+void NetworkServiceProxyDelegate::SetProxyResolutionService(
+    net::ProxyResolutionService* proxy_resolution_service) {
+  proxy_resolution_service_ = proxy_resolution_service;
 }
 
 void NetworkServiceProxyDelegate::OnCustomProxyConfigUpdated(

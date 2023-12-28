@@ -15,6 +15,7 @@
 #include "extensions/browser/script_injection_tracker.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 
 namespace extensions {
 
@@ -139,62 +140,62 @@ bool ProcessMap::IsPrivilegedExtensionProcess(const Extension& extension,
 bool ProcessMap::CanProcessHostContextType(
     const Extension* extension,
     const content::RenderProcessHost& process,
-    Feature::Context context_type) {
+    mojom::ContextType context_type) {
   const int process_id = process.GetID();
   switch (context_type) {
-    case Feature::UNSPECIFIED_CONTEXT:
+    case mojom::ContextType::kUnspecified:
       // We never consider unspecified contexts valid. Even though they would be
       // permissionless, they should never be able to make a request to the
       // browser.
       return false;
-    case Feature::OFFSCREEN_EXTENSION_CONTEXT:
-    case Feature::BLESSED_EXTENSION_CONTEXT:
+    case mojom::ContextType::kOffscreenExtension:
+    case mojom::ContextType::kPrivilegedExtension:
       // Offscreen documents run in the main extension process, so both of these
       // require a privileged extension process.
       return extension && IsPrivilegedExtensionProcess(*extension, process_id);
-    case Feature::UNBLESSED_EXTENSION_CONTEXT:
+    case mojom::ContextType::kUnprivilegedExtension:
       return extension &&
              IsWebViewProcessForExtension(process_id, extension->id());
-    case Feature::CONTENT_SCRIPT_CONTEXT:
+    case mojom::ContextType::kContentScript:
       // Currently, we assume any process can host a content script.
       // TODO(crbug.com/1186557): This could be better by looking at
       // ScriptInjectionTracker, as we do for user scripts below.
       return !!extension;
-    case Feature::USER_SCRIPT_CONTEXT:
+    case mojom::ContextType::kUserScript:
       return extension &&
              ScriptInjectionTracker::DidProcessRunUserScriptFromExtension(
                  process, extension->id());
-    case Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
+    case mojom::ContextType::kLockscreenExtension:
       // Lock screen contexts are essentially blessed contexts that run on the
       // lock screen profile. We don't run component hosted apps there, so no
       // need to allow those.
       return is_lock_screen_context_ && extension &&
              !extension->is_hosted_app() &&
              Contains(extension->id(), process_id);
-    case Feature::BLESSED_WEB_PAGE_CONTEXT:
+    case mojom::ContextType::kPrivilegedWebPage:
       // A blessed web page is a (non-component) hosted app process.
       return extension && extension->is_hosted_app() &&
              extension->location() != mojom::ManifestLocation::kComponent &&
              Contains(extension->id(), process_id);
-    case Feature::WEBUI_UNTRUSTED_CONTEXT:
+    case mojom::ContextType::kUntrustedWebUi:
       // Unfortunately, we have no way of checking if a *process* can host
       // untrusted webui contexts. Callers should look at (ideally, the
       // browser-verified) origin.
       [[fallthrough]];
-    case Feature::WEB_PAGE_CONTEXT:
+    case mojom::ContextType::kWebPage:
       // Any context not associated with an extension, not running in an
       // extension process, and without webui bindings can be considered a
       // web page process.
       return !extension && !Contains(process_id) &&
              !ProcessHasWebUIBindings(process_id);
-    case Feature::WEBUI_CONTEXT:
+    case mojom::ContextType::kWebUi:
       // Don't consider extensions in webui (like content scripts) to be
       // webui.
       return !extension && ProcessHasWebUIBindings(process_id);
   }
 }
 
-Feature::Context ProcessMap::GetMostLikelyContextType(
+mojom::ContextType ProcessMap::GetMostLikelyContextType(
     const Extension* extension,
     int process_id,
     const GURL* url) const {
@@ -205,16 +206,16 @@ Feature::Context ProcessMap::GetMostLikelyContextType(
   // or document why we want to return WEBUI_CONTEXT for content scripts in
   // WebUIs.
   if (ProcessHasWebUIBindings(process_id)) {
-    return Feature::WEBUI_CONTEXT;
+    return mojom::ContextType::kWebUi;
   }
 
   if (!extension) {
     // Note that blob/filesystem schemes associated with an inner URL of
     // chrome-untrusted will be considered regular pages.
     if (url && url->SchemeIs(content::kChromeUIUntrustedScheme))
-      return Feature::WEBUI_UNTRUSTED_CONTEXT;
+      return mojom::ContextType::kUntrustedWebUi;
 
-    return Feature::WEB_PAGE_CONTEXT;
+    return mojom::ContextType::kWebPage;
   }
 
   if (!Contains(extension->id(), process_id)) {
@@ -225,17 +226,17 @@ Feature::Context ProcessMap::GetMostLikelyContextType(
     if (url && extension->origin().IsSameOriginWith(*url) &&
         IsWebViewProcessForExtension(process_id, extension->id())) {
       // Yep, it's an extension frame in a webview.
-      return Feature::UNBLESSED_EXTENSION_CONTEXT;
+      return mojom::ContextType::kUnprivilegedExtension;
     }
 
     // Otherwise, it's a content script (the context in which an extension can
     // run in an unassociated, non-webview process).
-    return Feature::CONTENT_SCRIPT_CONTEXT;
+    return mojom::ContextType::kContentScript;
   }
 
   if (extension->is_hosted_app() &&
       extension->location() != mojom::ManifestLocation::kComponent) {
-    return Feature::BLESSED_WEB_PAGE_CONTEXT;
+    return mojom::ContextType::kPrivilegedWebPage;
   }
 
   // TODO(https://crbug.com/1339382): Currently, offscreen document contexts
@@ -250,8 +251,8 @@ Feature::Context ProcessMap::GetMostLikelyContextType(
   // this would be a problem if offscreen documents ever have access to APIs
   // that BLESSED_EXTENSION_CONTEXTs don't).
 
-  return is_lock_screen_context_ ? Feature::LOCK_SCREEN_EXTENSION_CONTEXT
-                                 : Feature::BLESSED_EXTENSION_CONTEXT;
+  return is_lock_screen_context_ ? mojom::ContextType::kLockscreenExtension
+                                 : mojom::ContextType::kPrivilegedExtension;
 }
 
 }  // namespace extensions

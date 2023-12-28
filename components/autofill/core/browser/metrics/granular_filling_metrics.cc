@@ -12,7 +12,7 @@ namespace autofill::autofill_metrics {
 namespace {
 
 AutofillFieldByFieldFillingTypes GetFieldByFieldFillingType(
-    ServerFieldType field_type) {
+    FieldType field_type) {
   switch (field_type) {
     case NAME_FIRST:
       return AutofillFieldByFieldFillingTypes::kNameFirst;
@@ -56,8 +56,10 @@ void LogEditAddressProfileDialogClosed(bool user_saved_changes) {
                             user_saved_changes);
 }
 
-void LogDeleteAddressProfileDialogClosed(bool user_accepted_delete) {
-  base::UmaHistogramBoolean("Autofill.ExtendedMenu.DeleteAddress",
+void LogDeleteAddressProfileFromExtendedMenu(bool user_accepted_delete) {
+  base::UmaHistogramBoolean("Autofill.ProfileDeleted.ExtendedMenu",
+                            user_accepted_delete);
+  base::UmaHistogramBoolean("Autofill.ProfileDeleted.Any",
                             user_accepted_delete);
 }
 
@@ -66,7 +68,7 @@ void LogFillingMethodUsed(AutofillFillingMethodMetric filling_method) {
   base::UmaHistogramEnumeration("Autofill.FillingMethodUsed", filling_method);
 }
 
-void LogFieldByFieldFillingFieldUsed(ServerFieldType field_type) {
+void LogFieldByFieldFillingFieldUsed(FieldType field_type) {
   base::UmaHistogramEnumeration("Autofill.FieldByFieldFilling.FieldTypeUsed",
                                 GetFieldByFieldFillingType(field_type),
                                 AutofillFieldByFieldFillingTypes::kMaxValue);

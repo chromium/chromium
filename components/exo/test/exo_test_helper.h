@@ -57,7 +57,7 @@ class ClientControlledShellSurfaceDelegate
   void OnZoomLevelChanged(ZoomChange zoom_change) override;
   void Commit();
 
-  raw_ptr<ClientControlledShellSurface, ExperimentalAsh> shell_surface_;
+  raw_ptr<ClientControlledShellSurface> shell_surface_;
   bool delay_commit_;
 };
 

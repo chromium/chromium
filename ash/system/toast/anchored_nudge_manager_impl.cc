@@ -81,7 +81,7 @@ class HideAnimationObserver : public ui::ImplicitAnimationObserver {
 
  private:
   // Owned by the views hierarchy.
-  raw_ptr<AnchoredNudge, ExperimentalAsh> anchored_nudge_;
+  raw_ptr<AnchoredNudge> anchored_nudge_;
 };
 
 }  // namespace
@@ -185,8 +185,7 @@ class AnchoredNudgeManagerImpl::NudgeHoverObserver : public ui::EventObserver {
 
   // `NudgeHoverObserver` is guaranteed to not outlive
   // `anchored_nudge_manager_`, which is owned by `Shell`.
-  const raw_ptr<AnchoredNudgeManagerImpl, ExperimentalAsh>
-      anchored_nudge_manager_;
+  const raw_ptr<AnchoredNudgeManagerImpl> anchored_nudge_manager_;
 };
 
 // A view observer that is used to close the nudge's widget whenever its

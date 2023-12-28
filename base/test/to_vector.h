@@ -28,7 +28,7 @@ template <typename Range, typename Proj = std::identity>
 auto ToVector(Range&& range, Proj proj = {}) {
   using ProjectedType =
       std::invoke_result_t<Proj, decltype(*std::begin(range))>;
-  std::vector<base::remove_cvref_t<ProjectedType>> container;
+  std::vector<std::remove_cvref_t<ProjectedType>> container;
   container.reserve(std::size(range));
   base::ranges::transform(std::forward<Range>(range),
                           std::back_inserter(container), std::move(proj));

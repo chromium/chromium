@@ -14,6 +14,7 @@
 
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_page.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_ref_count.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/thread_cache.h"
@@ -36,7 +37,7 @@ namespace partition_alloc::tools {
 
 using partition_alloc::internal::kInvalidBucketSize;
 using partition_alloc::internal::kSuperPageSize;
-using partition_alloc::internal::PartitionPage;
+using partition_alloc::internal::PartitionPageMetadata;
 using partition_alloc::internal::PartitionPageSize;
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 using partition_alloc::internal::PartitionRefCountPointer;
@@ -175,13 +176,12 @@ class HeapDumper {
       ret.Set("type", value);
 
       if (value != "metadata" && value != "guard") {
-        const auto* partition_page =
-            PartitionPage::FromAddr(reinterpret_cast<uintptr_t>(data + offset));
-        ret.Set("page_index_in_span",
-                partition_page->slot_span_metadata_offset);
-        if (partition_page->slot_span_metadata_offset == 0 &&
-            partition_page->slot_span_metadata.bucket) {
-          const auto& slot_span_metadata = partition_page->slot_span_metadata;
+        const auto* page_metadata = PartitionPageMetadata::FromAddr(
+            reinterpret_cast<uintptr_t>(data + offset));
+        ret.Set("page_index_in_span", page_metadata->slot_span_metadata_offset);
+        if (page_metadata->slot_span_metadata_offset == 0 &&
+            page_metadata->slot_span_metadata.bucket) {
+          const auto& slot_span_metadata = page_metadata->slot_span_metadata;
           ret.Set("slot_size",
                   static_cast<int>(slot_span_metadata.bucket->slot_size));
           ret.Set("is_active", slot_span_metadata.is_active());

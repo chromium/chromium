@@ -43,7 +43,7 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
     private final @NonNull FaviconHelper mFaviconHelper;
     private final int mSearchEngineLogoTargetSizePixels;
     private Boolean mNeedToCheckForSearchEnginePromo;
-    private boolean mDefaultSearchEngineIsGoogle;
+    private boolean mDoesDefaultSearchEngineHaveLogo;
     private @Nullable StatusIconResource mSearchEngineLogo;
 
     /**
@@ -105,9 +105,9 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
 
     @Override
     public void onTemplateURLServiceChanged() {
-        mDefaultSearchEngineIsGoogle = mTemplateUrlService.isDefaultSearchEngineGoogle();
+        mDoesDefaultSearchEngineHaveLogo = mTemplateUrlService.doesDefaultSearchEngineHaveLogo();
 
-        if (mDefaultSearchEngineIsGoogle) {
+        if (mTemplateUrlService.isDefaultSearchEngineGoogle()) {
             mSearchEngineLogo = new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0);
         } else {
             mSearchEngineLogo = null;
@@ -227,9 +227,9 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
     }
 
     /*
-     * Returns whether the current search provider is Google.
+     * Returns whether the current search provider has Logo.
      */
-    boolean isDefaultSearchEngineGoogle() {
-        return mDefaultSearchEngineIsGoogle;
+    boolean doesDefaultSearchEngineHaveLogo() {
+        return mDoesDefaultSearchEngineHaveLogo;
     }
 }

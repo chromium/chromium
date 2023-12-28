@@ -1062,6 +1062,8 @@ TEST(StaticAVIFTests, GetAdobeGainmapInfoAndData) {
   EXPECT_NEAR(gainmap_info.fDisplayRatioSdr, 1.0, kEpsilon);
   EXPECT_NEAR(gainmap_info.fDisplayRatioHdr, std::exp2(2.8), kEpsilon);
 
+  EXPECT_EQ(gainmap_info.fGainmapMathColorSpace, nullptr);
+
   // Check that the gainmap can be decoded.
   std::unique_ptr<ImageDecoder> gainmap_decoder = CreateAVIFDecoder();
   gainmap_decoder->SetData(gainmap_data, true);
@@ -1115,6 +1117,8 @@ TEST(StaticAVIFTests, GetIsoGainmapInfoAndData) {
 
   EXPECT_NEAR(gainmap_info.fDisplayRatioSdr, 1.0, kEpsilon);
   EXPECT_NEAR(gainmap_info.fDisplayRatioHdr, std::exp2(1.4427), kEpsilon);
+
+  EXPECT_EQ(gainmap_info.fGainmapMathColorSpace, nullptr);
 
   // Check that the gainmap can be decoded.
   std::unique_ptr<ImageDecoder> gainmap_decoder = CreateAVIFDecoder();
@@ -1175,6 +1179,99 @@ TEST(StaticAVIFTests, GetIsoGainmapInfoAndDataHdrToSdr) {
   gainmap_decoder->SetData(gainmap_data, true);
   ImageFrame* gainmap_frame = decoder->DecodeFrameBufferAtIndex(0);
   EXPECT_TRUE(gainmap_frame);
+}
+
+TEST(StaticAVIFTests, GetIsoGainmapColorSpaceSameICC) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kGainmapHdrImages,
+                            features::kAvifGainmapHdrImages},
+      /*disabled_features=*/{});
+
+  // The image has use_base_color_space set to false (i.e. use the alternate
+  // image's color space), and the base and alternate image ICC profiles are the
+  // same, so the alternate image color space should be ignored.
+  scoped_refptr<SharedBuffer> data = ReadFile(
+      "/images/resources/avif/small-with-gainmap-iso-usealtcolorspace.avif");
+  std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
+  decoder->SetData(data, true);
+  SkGainmapInfo gainmap_info;
+  scoped_refptr<SegmentReader> gainmap_data;
+  const bool has_gainmap =
+      decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data);
+  ASSERT_TRUE(has_gainmap);
+
+  EXPECT_EQ(gainmap_info.fGainmapMathColorSpace, nullptr);
+}
+
+void ExpectMatrixNear(const skcms_Matrix3x3& lhs,
+                      const skcms_Matrix3x3& rhs,
+                      float epsilon) {
+  for (int r = 0; r < 3; r++) {
+    for (int c = 0; c < 3; c++) {
+      EXPECT_NEAR(lhs.vals[r][c], rhs.vals[r][c], epsilon);
+    }
+  }
+}
+
+TEST(StaticAVIFTests, GetIsoGainmapColorSpaceDifferentICC) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kGainmapHdrImages,
+                            features::kAvifGainmapHdrImages},
+      /*disabled_features=*/{});
+
+  // The image has use_base_color_space set to false (i.e. use the alternate
+  // image's color space), and the base and alternate image ICC profiles are
+  // different, so the alternate ICC profile should be set as
+  // fGainmapMathColorSpace.
+  // Base is sRGB, alternate is P3.
+  scoped_refptr<SharedBuffer> data = ReadFile(
+      "/images/resources/avif/"
+      "small-with-gainmap-iso-usealtcolorspace-differenticc.avif");
+  std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
+  decoder->SetData(data, true);
+  SkGainmapInfo gainmap_info;
+  scoped_refptr<SegmentReader> gainmap_data;
+  const bool has_gainmap =
+      decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data);
+  ASSERT_TRUE(has_gainmap);
+
+  // Check that the gain map color space is specified.
+  EXPECT_NE(gainmap_info.fGainmapMathColorSpace, nullptr);
+  // Only compare the color primaries, the transfer function is irrelevant.
+  skcms_Matrix3x3 matrix;
+  ASSERT_TRUE(gainmap_info.fGainmapMathColorSpace->toXYZD50(&matrix));
+  ExpectMatrixNear(matrix, SkNamedGamut::kDisplayP3, 0.001);
+}
+
+TEST(StaticAVIFTests, GetIsoGainmapColorSpaceDifferentCICP) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kGainmapHdrImages,
+                            features::kAvifGainmapHdrImages},
+      /*disabled_features=*/{});
+
+  // The image has use_base_color_space set to false (i.e. use the alternate
+  // image's color space), and the base and alternate images don't have ICC
+  // but CICP values instead. The alternate image's CICP values should be used.
+  // Base is sRGB, alternate is Rec 2020.
+  scoped_refptr<SharedBuffer> data = ReadFile(
+      "/images/resources/avif/gainmap-sdr-srgb-to-hdr-wcg-rec2020.avif");
+  std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
+  decoder->SetData(data, true);
+  SkGainmapInfo gainmap_info;
+  scoped_refptr<SegmentReader> gainmap_data;
+  const bool has_gainmap =
+      decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data);
+  ASSERT_TRUE(has_gainmap);
+
+  // Check that the gain map color space is specified.
+  EXPECT_NE(gainmap_info.fGainmapMathColorSpace, nullptr);
+  // Only compare the color primaries, the transfer function is irrelevant.
+  skcms_Matrix3x3 matrix;
+  ASSERT_TRUE(gainmap_info.fGainmapMathColorSpace->toXYZD50(&matrix));
+  ExpectMatrixNear(matrix, SkNamedGamut::kRec2020, 0.0001);
 }
 
 TEST(StaticAVIFTests, GetGainmapInfoAndDataWithFeatureDisabled) {

@@ -17,7 +17,7 @@
 //   headers and bodies.
 //
 // If you want to change this protocol definition or you have questions
-// regarding its format please contact chrome-anti-phishing@googlegroups.com.
+// regarding its format please contact safebrowsing@chromium.org.
 
 syntax = "proto2";
 
@@ -1515,7 +1515,7 @@ message ClientSafeBrowsingReportRequest {
     URL_MALWARE = 2;
     URL_UNWANTED = 3;
     URL_CLIENT_SIDE_PHISHING = 4;
-    URL_CLIENT_SIDE_MALWARE = 5;
+    URL_CLIENT_SIDE_MALWARE = 5 [deprecated = true];
     DANGEROUS_DOWNLOAD_RECOVERY = 6;
     DANGEROUS_DOWNLOAD_WARNING = 7;
     DANGEROUS_DOWNLOAD_BY_API = 10;
@@ -1706,9 +1706,11 @@ message ClientSafeBrowsingReportRequest {
       // Applicable actions: PROCEED, DISCARD, DISMISS, CLOSE, BACK,
       // PROCEED_DEEP_SCAN, OPEN_LEARN_MORE_LINK
       BUBBLE_SUBPAGE = 2;
-      // Applicable actions: DISCARD, KEEP
+      // Applicable actions: DISCARD, KEEP, PROCEED
       DOWNLOADS_PAGE = 3;
       // Applicable actions: PROCEED, CANCEL, CLOSE
+      // TODO(chlily): Remove CLOSE option once ImprovedDownloadPageWarnings
+      // launches.
       DOWNLOAD_PROMPT = 4;
     }
     optional Surface surface = 1;

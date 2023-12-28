@@ -21,7 +21,10 @@ class LayoutMathMLBlockFlow final : public LayoutNGBlockFlow {
   }
 
  private:
-  bool IsOfType(LayoutObjectType) const final;
+  bool IsMathML() const final {
+    NOT_DESTROYED();
+    return true;
+  }
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const final {
     NOT_DESTROYED();
     return true;

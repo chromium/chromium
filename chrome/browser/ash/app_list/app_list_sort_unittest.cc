@@ -14,6 +14,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "components/sync/test/fake_sync_change_processor.h"
+#include "ui/display/test/test_screen.h"
 
 namespace app_list {
 
@@ -61,6 +62,8 @@ class TemporaryAppListSortTest : public test::AppListSyncableServiceTestBase {
   }
 
  private:
+  display::test::TestScreen test_screen_{/*create_dispay=*/true,
+                                         /*register_screen=*/true};
   std::unique_ptr<test::TestAppListController> app_list_controller_;
 };
 

@@ -29,7 +29,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -67,6 +66,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
@@ -119,6 +119,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.mojom.WindowOpenDisposition;
+import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -1236,6 +1237,7 @@ public class NewTabPageTest {
     @Feature({"NewTabPage"})
     @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
     @DisableFeatures({ChromeFeatureList.FEED_POSITION_ANDROID})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     public void test2RowMvtOnNtpAfterPolish() {
         verifyMostVisitedTileMarginPolish();
 
@@ -1245,7 +1247,7 @@ public class NewTabPageTest {
 
         int expectedTitleTopMargin =
                 res.getDimensionPixelSize(R.dimen.tile_view_title_margin_top_modern_polish);
-        TileView suggestionsTileElement = (TileView) ((FrameLayout) mvTilesLayout).getChildAt(0);
+        TileView suggestionsTileElement = (TileView) ((ViewGroup) mvTilesLayout).getChildAt(0);
         Assert.assertEquals(
                 "The top margin of the tile element's title is wrong.",
                 expectedTitleTopMargin,

@@ -19,13 +19,13 @@ class PerformanceManagerMetricsProviderDesktopTest : public testing::Test {
  protected:
   PrefService* local_state() { return &local_state_; }
 
-  void SetHighEfficiencyEnabled(bool enabled) {
+  void SetMemorySaverEnabled(bool enabled) {
     local_state()->SetInteger(
-        performance_manager::user_tuning::prefs::kHighEfficiencyModeState,
+        performance_manager::user_tuning::prefs::kMemorySaverModeState,
         static_cast<int>(enabled ? performance_manager::user_tuning::prefs::
-                                       HighEfficiencyModeState::kEnabledOnTimer
+                                       MemorySaverModeState::kEnabledOnTimer
                                  : performance_manager::user_tuning::prefs::
-                                       HighEfficiencyModeState::kDisabled));
+                                       MemorySaverModeState::kDisabled));
   }
 
   void SetBatterySaverEnabled(bool enabled) {
@@ -101,7 +101,7 @@ class PerformanceManagerMetricsProviderDesktopTest : public testing::Test {
 };
 
 TEST_F(PerformanceManagerMetricsProviderDesktopTest, TestNormalMode) {
-  SetHighEfficiencyEnabled(false);
+  SetMemorySaverEnabled(false);
 
   InitProvider();
   base::HistogramTester tester;
@@ -116,7 +116,7 @@ TEST_F(PerformanceManagerMetricsProviderDesktopTest, TestNormalMode) {
 
 TEST_F(PerformanceManagerMetricsProviderDesktopTest, TestMixedMode) {
   // Start in normal mode
-  SetHighEfficiencyEnabled(false);
+  SetMemorySaverEnabled(false);
 
   InitProvider();
   {
@@ -136,7 +136,7 @@ TEST_F(PerformanceManagerMetricsProviderDesktopTest, TestMixedMode) {
     // should result in memory saver being reported as enabled for 50% of the
     // interval
     FastForwardBy(base::Minutes(10));
-    SetHighEfficiencyEnabled(true);
+    SetMemorySaverEnabled(true);
     FastForwardBy(base::Minutes(10));
     provider()->ProvideCurrentSessionData(nullptr);
     ExpectSingleUniqueSample(
@@ -153,7 +153,7 @@ TEST_F(PerformanceManagerMetricsProviderDesktopTest, TestMixedMode) {
     provider()->ProvideCurrentSessionData(nullptr);
     ExpectSingleUniqueSample(tester,
                              performance_manager::MetricsProviderDesktop::
-                                 EfficiencyMode::kHighEfficiency,
+                                 EfficiencyMode::kMemorySaver,
                              /*battery_saver_percent=*/0,
                              /*memory_saver_percent=*/100);
   }
@@ -174,7 +174,7 @@ TEST_F(PerformanceManagerMetricsProviderDesktopTest, TestMixedMode) {
 }
 
 TEST_F(PerformanceManagerMetricsProviderDesktopTest, TestBothModes) {
-  SetHighEfficiencyEnabled(true);
+  SetMemorySaverEnabled(true);
   SetBatterySaverEnabled(true);
 
   InitProvider();
@@ -195,7 +195,7 @@ TEST_F(PerformanceManagerMetricsProviderDesktopTest, TestBothModes) {
     // Disabling High-Efficiency Mode will cause the next report to be "mixed".
     // Since the time didn't advance, memory saver was off for the entire
     // interval and battery saver was on for it.
-    SetHighEfficiencyEnabled(false);
+    SetMemorySaverEnabled(false);
     provider()->ProvideCurrentSessionData(nullptr);
     ExpectSingleUniqueSample(
         tester,
@@ -219,7 +219,7 @@ TEST_F(PerformanceManagerMetricsProviderDesktopTest, TestBothModes) {
     // Re-enabling High-Efficiency Mode will cause the next report to indicate
     // "mixed".
     FastForwardBy(base::Minutes(10));
-    SetHighEfficiencyEnabled(true);
+    SetMemorySaverEnabled(true);
     FastForwardBy(base::Minutes(30));
     provider()->ProvideCurrentSessionData(nullptr);
     ExpectSingleUniqueSample(
@@ -241,7 +241,7 @@ TEST_F(PerformanceManagerMetricsProviderDesktopTest, TestBothModes) {
 
 TEST_F(PerformanceManagerMetricsProviderDesktopTest,
        TestCorrectlyLoggedDuringShutdown) {
-  SetHighEfficiencyEnabled(false);
+  SetMemorySaverEnabled(false);
   SetBatterySaverEnabled(true);
 
   InitProvider();

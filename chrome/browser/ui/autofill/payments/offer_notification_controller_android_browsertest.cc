@@ -143,8 +143,7 @@ class OfferNotificationControllerAndroidBrowserTestForInfobar
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        /*disabled_features=*/{messages::kMessagesForAndroidInfrastructure,
-                               messages::kMessagesForAndroidOfferNotification});
+        /*disabled_features=*/{messages::kMessagesForAndroidOfferNotification});
     OfferNotificationControllerAndroidBrowserTest::SetUp();
   }
 
@@ -251,8 +250,7 @@ class OfferNotificationControllerAndroidBrowserTestForMessagesUi
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{messages::kMessagesForAndroidInfrastructure,
-                              messages::kMessagesForAndroidOfferNotification},
+        /*enabled_features=*/{messages::kMessagesForAndroidOfferNotification},
         /*disabled_features=*/{});
     OfferNotificationControllerAndroidBrowserTest::SetUp();
   }

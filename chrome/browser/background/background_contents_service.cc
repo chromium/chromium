@@ -162,8 +162,7 @@ void ReloadExtension(const std::string& extension_id, Profile* profile) {
     return;
   }
 
-  if (!extension_registry->GetExtensionById(
-          extension_id, extensions::ExtensionRegistry::TERMINATED)) {
+  if (!extension_registry->terminated_extensions().GetByID(extension_id)) {
     // Either the app/extension was uninstalled by policy or it has since
     // been restarted successfully by someone else (the user).
     return;

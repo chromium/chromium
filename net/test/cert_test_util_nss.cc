@@ -114,9 +114,9 @@ bool ImportSensitiveKeyFromFile(const base::FilePath& dir,
   }
 
   crypto::ScopedSECKEYPrivateKey private_key(
-      crypto::ImportNSSKeyFromPrivateKeyInfo(
-          slot, base::as_bytes(base::make_span(key_pkcs8)),
-          /*permanent=*/true));
+      crypto::ImportNSSKeyFromPrivateKeyInfo(slot,
+                                             base::as_byte_span(key_pkcs8),
+                                             /*permanent=*/true));
   LOG_IF(ERROR, !private_key)
       << "Could not create key from file " << key_path.value();
   return !!private_key;

@@ -50,6 +50,7 @@
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-shared.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config_mojom_traits.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
 #include "components/device_event_log/device_event_log.h"
@@ -2822,6 +2823,12 @@ void CrosNetworkConfig::SetCellularSimState(
 
   const std::string& lock_type = device_state->sim_lock_type();
 
+  if (lock_type == shill::kSIMLockNetworkPin) {
+    NET_LOG(ERROR) << "SetCellularSimState: carrier locked sim.";
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
   // When unblocking a PUK locked SIM, a new PIN must be provided.
   if (lock_type == shill::kSIMLockPuk && !sim_state->new_pin) {
     NET_LOG(ERROR) << "SetCellularSimState: PUK locked and no pin provided.";
@@ -3069,6 +3076,21 @@ void CrosNetworkConfig::GetGlobalPolicy(GetGlobalPolicyCallback callback) {
                        kUserCreatedNetworkConfigurationsAreEphemeral,
                    /*value_if_key_missing_from_dict=*/
                    result->user_created_network_configurations_are_ephemeral);
+  }
+
+  if (features::IsSuppressTextMessagesEnabled()) {
+    std::string allow_text_messages_onc =
+        GetString(global_policy_dict,
+                  ::onc::global_network_config::kAllowTextMessages)
+            .value_or(::onc::cellular::kTextMessagesUnset);
+    if (allow_text_messages_onc == ::onc::cellular::kTextMessagesAllow) {
+      result->allow_text_messages = mojom::SuppressionType::kAllow;
+    } else if (allow_text_messages_onc ==
+               ::onc::cellular::kTextMessagesSuppress) {
+      result->allow_text_messages = mojom::SuppressionType::kSuppress;
+    } else {
+      result->allow_text_messages = mojom::SuppressionType::kUnset;
+    }
   }
 
   std::move(callback).Run(std::move(result));

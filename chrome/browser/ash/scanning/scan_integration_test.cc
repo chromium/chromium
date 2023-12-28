@@ -15,8 +15,8 @@
 #include "chrome/browser/ash/scanning/scan_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_login_mixin.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
@@ -66,7 +66,7 @@ std::unique_ptr<KeyedService> BuildLorgnetteScannerManager(
   return manager;
 }
 
-class ScanIntegrationTest : public InteractiveAshTest {
+class ScanIntegrationTest : public AshIntegrationTest {
  public:
   ScanIntegrationTest() {
     set_exit_when_last_browser_closes(false);

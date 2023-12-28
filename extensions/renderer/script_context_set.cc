@@ -13,6 +13,7 @@
 #include "content/public/renderer/worker_thread.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extensions_renderer_client.h"
 #include "extensions/renderer/isolated_world_manager.h"
@@ -62,10 +63,10 @@ ScriptContext* ScriptContextSet::Register(
     view_type = frame_helper->view_type();
   }
   GURL frame_url = ScriptContext::GetDocumentLoaderURLForFrame(frame);
-  Feature::Context context_type = ClassifyJavaScriptContext(
+  mojom::ContextType context_type = ClassifyJavaScriptContext(
       extension, world_id, frame_url, frame->GetDocument().GetSecurityOrigin(),
       view_type, is_webview);
-  Feature::Context effective_context_type = ClassifyJavaScriptContext(
+  mojom::ContextType effective_context_type = ClassifyJavaScriptContext(
       effective_extension, world_id,
       ScriptContext::GetEffectiveDocumentURLForContext(frame, frame_url, true),
       frame->GetDocument().GetSecurityOrigin(), view_type, is_webview);
@@ -196,7 +197,7 @@ const Extension* ScriptContextSet::GetExtensionFromFrameAndWorld(
   return extension;
 }
 
-Feature::Context ScriptContextSet::ClassifyJavaScriptContext(
+mojom::ContextType ScriptContextSet::ClassifyJavaScriptContext(
     const Extension* extension,
     int32_t world_id,
     const GURL& url,
@@ -220,12 +221,12 @@ Feature::Context ScriptContextSet::ClassifyJavaScriptContext(
             world_id);
     if (execution_world == mojom::ExecutionWorld::kUserScript) {
       CHECK(extension);
-      return Feature::USER_SCRIPT_CONTEXT;
+      return mojom::ContextType::kUserScript;
     }
 
     return extension ?  // TODO(kalman): when does this happen?
-               Feature::CONTENT_SCRIPT_CONTEXT
-                     : Feature::UNSPECIFIED_CONTEXT;
+               mojom::ContextType::kContentScript
+                     : mojom::ContextType::kUnspecified;
   }
 
   // We have an explicit check for sandboxed pages before checking whether the
@@ -237,7 +238,7 @@ Feature::Context ScriptContextSet::ClassifyJavaScriptContext(
   //    reading the CSP header), so the caller can't check if the context's
   //    security origin is unique yet.
   if (ScriptContext::IsSandboxedPage(url))
-    return Feature::WEB_PAGE_CONTEXT;
+    return mojom::ContextType::kWebPage;
 
   if (extension && active_extension_ids_->count(extension->id()) > 0) {
     // |extension| is active in this process, but it could be either a true
@@ -247,20 +248,20 @@ Feature::Context ScriptContextSet::ClassifyJavaScriptContext(
     // we cheat and call it blessed.
     if (extension->is_hosted_app() &&
         extension->location() != mojom::ManifestLocation::kComponent) {
-      return Feature::BLESSED_WEB_PAGE_CONTEXT;
+      return mojom::ContextType::kPrivilegedWebPage;
     }
 
     if (is_lock_screen_context_)
-      return Feature::LOCK_SCREEN_EXTENSION_CONTEXT;
+      return mojom::ContextType::kLockscreenExtension;
 
     if (is_webview) {
-      return Feature::UNBLESSED_EXTENSION_CONTEXT;
+      return mojom::ContextType::kUnprivilegedExtension;
     }
 
     if (view_type == mojom::ViewType::kOffscreenDocument)
-      return Feature::OFFSCREEN_EXTENSION_CONTEXT;
+      return mojom::ContextType::kOffscreenExtension;
 
-    return Feature::BLESSED_EXTENSION_CONTEXT;
+    return mojom::ContextType::kPrivilegedExtension;
   }
 
   // None of the following feature types should ever be present in an
@@ -272,21 +273,22 @@ Feature::Context ScriptContextSet::ClassifyJavaScriptContext(
   if (!origin.IsOpaque() &&
       RendererExtensionRegistry::Get()->ExtensionBindingsAllowed(url)) {
     if (!extension)  // TODO(kalman): when does this happen?
-      return Feature::UNSPECIFIED_CONTEXT;
-    return extension->is_hosted_app() ? Feature::BLESSED_WEB_PAGE_CONTEXT
-                                      : Feature::UNBLESSED_EXTENSION_CONTEXT;
+      return mojom::ContextType::kUnspecified;
+    return extension->is_hosted_app()
+               ? mojom::ContextType::kPrivilegedWebPage
+               : mojom::ContextType::kUnprivilegedExtension;
   }
 
   if (!url.is_valid())
-    return Feature::UNSPECIFIED_CONTEXT;
+    return mojom::ContextType::kUnspecified;
 
   if (url.SchemeIs(content::kChromeUIScheme))
-    return Feature::WEBUI_CONTEXT;
+    return mojom::ContextType::kWebUi;
 
   if (url.SchemeIs(content::kChromeUIUntrustedScheme))
-    return Feature::WEBUI_UNTRUSTED_CONTEXT;
+    return mojom::ContextType::kUntrustedWebUi;
 
-  return Feature::WEB_PAGE_CONTEXT;
+  return mojom::ContextType::kWebPage;
 }
 
 }  // namespace extensions

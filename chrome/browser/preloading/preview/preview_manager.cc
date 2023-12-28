@@ -58,4 +58,8 @@ void PreviewManager::CloseForTesting() {
   tab_.reset();
 }
 
+PreviewZoomController* PreviewManager::PreviewZoomControllerForTesting() const {
+  return tab_->preview_zoom_controller();
+}
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PreviewManager);

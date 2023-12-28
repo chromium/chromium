@@ -62,7 +62,8 @@ int64_t GenerateAndStoreClientId(PrefService* pref_service) {
   }
 
   pref_service->SetInt64(
-      optimization_guide::prefs::kModelQualityLogggingClientId, client_id);
+      optimization_guide::prefs::localstate::kModelQualityLogggingClientId,
+      client_id);
   return client_id;
 }
 
@@ -85,6 +86,8 @@ std::string_view GetStringNameForModelExecutionFeature(
       return "TabOrganization";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE:
       return "Compose";
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST:
+      return "Test";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       return "Unknown";
       // Must be in sync with the ModelExecutionFeature variant in
@@ -191,11 +194,12 @@ int64_t GetOrCreateModelQualityClientId(proto::ModelExecutionFeature feature,
     return 0;
   }
   int64_t client_id = pref_service->GetInt64(
-      optimization_guide::prefs::kModelQualityLogggingClientId);
+      optimization_guide::prefs::localstate::kModelQualityLogggingClientId);
   if (!client_id) {
     client_id = GenerateAndStoreClientId(pref_service);
     pref_service->SetInt64(
-        optimization_guide::prefs::kModelQualityLogggingClientId, client_id);
+        optimization_guide::prefs::localstate::kModelQualityLogggingClientId,
+        client_id);
   }
 
   // Hash the client id with the date so that it changes everyday for every

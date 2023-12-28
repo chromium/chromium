@@ -21,7 +21,7 @@ PerformanceControlsHatsService::PerformanceControlsHatsService(Profile* profile)
     : profile_(profile) {
   if (base::FeatureList::IsEnabled(
           performance_manager::features::
-              kPerformanceControlsHighEfficiencyOptOutSurvey)) {
+              kPerformanceControlsMemorySaverOptOutSurvey)) {
     performance_manager::user_tuning::UserPerformanceTuningManager::
         GetInstance()
             ->AddObserver(this);
@@ -58,17 +58,16 @@ void PerformanceControlsHatsService::OpenedNewTabPage() {
   const bool battery_saver_mode =
       performance_manager::user_tuning::BatterySaverModeManager::GetInstance()
           ->IsBatterySaverModeEnabled();
-  const bool high_efficiency_mode =
-      performance_manager::user_tuning::UserPerformanceTuningManager::
-          GetInstance()
-              ->IsHighEfficiencyModeActive();
+  const bool memory_saver_mode = performance_manager::user_tuning::
+                                     UserPerformanceTuningManager::GetInstance()
+                                         ->IsMemorySaverModeActive();
 
   // A general performance survey for all users.
   if (base::FeatureList::IsEnabled(performance_manager::features::
                                        kPerformanceControlsPerformanceSurvey)) {
     hats_service->LaunchSurvey(kHatsSurveyTriggerPerformanceControlsPerformance,
                                base::DoNothing(), base::DoNothing(),
-                               {{"high_efficiency_mode", high_efficiency_mode},
+                               {{"high_efficiency_mode", memory_saver_mode},
                                 {"battery_saver_mode", battery_saver_mode}},
                                {});
   }
@@ -87,7 +86,7 @@ void PerformanceControlsHatsService::OpenedNewTabPage() {
     hats_service->LaunchSurvey(
         kHatsSurveyTriggerPerformanceControlsBatteryPerformance,
         base::DoNothing(), base::DoNothing(),
-        {{"high_efficiency_mode", high_efficiency_mode},
+        {{"high_efficiency_mode", memory_saver_mode},
          {"battery_saver_mode", battery_saver_mode}},
         {});
   }
@@ -109,7 +108,7 @@ void PerformanceControlsHatsService::OnBatterySaverModeChanged(
   }
 }
 
-void PerformanceControlsHatsService::OnHighEfficiencyModeChanged() {
+void PerformanceControlsHatsService::OnMemorySaverModeChanged() {
   HatsService* hats_service = HatsServiceFactory::GetForProfile(profile_, true);
   if (!hats_service) {
     return;
@@ -117,11 +116,11 @@ void PerformanceControlsHatsService::OnHighEfficiencyModeChanged() {
 
   auto* manager = performance_manager::user_tuning::
       UserPerformanceTuningManager::GetInstance();
-  // A survey for users who have turned off high efficiency mode.
-  if (!manager->IsHighEfficiencyModeActive() &&
-      !manager->IsHighEfficiencyModeManaged() &&
-      !manager->IsHighEfficiencyModeDefault()) {
+  // A survey for users who have turned off memory saver mode.
+  if (!manager->IsMemorySaverModeActive() &&
+      !manager->IsMemorySaverModeManaged() &&
+      !manager->IsMemorySaverModeDefault()) {
     hats_service->LaunchDelayedSurvey(
-        kHatsSurveyTriggerPerformanceControlsHighEfficiencyOptOut, 10000);
+        kHatsSurveyTriggerPerformanceControlsMemorySaverOptOut, 10000);
   }
 }

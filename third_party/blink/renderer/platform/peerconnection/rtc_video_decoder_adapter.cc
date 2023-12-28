@@ -198,9 +198,6 @@ class RTCVideoDecoderAdapter::Impl {
     DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
     // |weak_decoder_this| must be invalidated on the media sequence.
     weak_decoder_this_factory_.InvalidateWeakPtrs();
-
-    if (have_started_decoding_)
-      g_num_decoders_--;
   }
 
   void Initialize(const media::VideoDecoderConfig& config,
@@ -215,13 +212,8 @@ class RTCVideoDecoderAdapter::Impl {
   void Flush(WTF::CrossThreadOnceClosure flush_success_cb,
              WTF::CrossThreadOnceClosure flush_fail_cb);
   void RegisterDecodeCompleteCallback(webrtc::DecodedImageCallback* callback);
-  void SetResolution(int width, int height);
-
-  static int g_num_decoders_;
 
  private:
-  absl::optional<RTCVideoDecoderFallbackReason>
-  FallbackOrRegisterConcurrentInstanceOnce(media::VideoCodec codec);
   absl::optional<RTCVideoDecoderFallbackReason> NeedSoftwareFallback(
       media::VideoCodec codec,
       const media::DecoderBuffer& buffer) const;
@@ -248,12 +240,7 @@ class RTCVideoDecoderAdapter::Impl {
   // timestamp will cause the frame to be dropped when it is output.
   WTF::Deque<base::TimeDelta> decode_timestamps_;
   bool require_key_frame_ = true;
-  bool have_started_decoding_ = false;
   WTF::CrossThreadRepeatingFunction<void(Status)> change_status_callback_;
-  // Resolution of most recently decoded frame, or the initial resolution if we
-  // haven't decoded anything yet.  Since this is updated asynchronously, it's
-  // only an approximation of "most recently".
-  int32_t current_resolution_ = 0;
 
   SEQUENCE_CHECKER(media_sequence_checker_);
 
@@ -261,9 +248,6 @@ class RTCVideoDecoderAdapter::Impl {
   base::WeakPtr<Impl> weak_decoder_this_;
   base::WeakPtrFactory<Impl> weak_decoder_this_factory_{this};
 };
-
-// static
-int RTCVideoDecoderAdapter::Impl::g_num_decoders_ = 0;
 
 void RTCVideoDecoderAdapter::Impl::Initialize(
     const media::VideoDecoderConfig& config,
@@ -307,34 +291,6 @@ void RTCVideoDecoderAdapter::Impl::Initialize(
           CrossThreadUnretained(decoder_type),
           CrossThreadUnretained(video_decoder_.get())),
       output_cb, base::DoNothing());
-}
-
-absl::optional<RTCVideoDecoderFallbackReason>
-RTCVideoDecoderAdapter::Impl::FallbackOrRegisterConcurrentInstanceOnce(
-    media::VideoCodec codec) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-
-  // If this is the first decode, then increment the count of working decoders.
-  if (!have_started_decoding_) {
-    have_started_decoding_ = true;
-    g_num_decoders_++;
-  }
-
-  // Don't allow hardware decode for small videos if there are too many
-  // decoder instances.  This includes the case where our resolution drops while
-  // too many decoders exist.
-  if (HasSoftwareFallback(codec) && current_resolution_ < kMinResolution &&
-      g_num_decoders_ > kMaxDecoderInstances) {
-    // Decrement the count and clear the flag, so that other decoders don't
-    // fall back also.
-    have_started_decoding_ = false;
-    g_num_decoders_--;
-    // TODO(b/246460597): Add the fallback reason about too many concurrent
-    // instances.
-    return RTCVideoDecoderFallbackReason::kPreviousErrorOnDecode;
-  }
-
-  return absl::nullopt;
 }
 
 void RTCVideoDecoderAdapter::Impl::Decode(
@@ -383,11 +339,6 @@ absl::variant<RTCVideoDecoderAdapter::DecodeResult,
 RTCVideoDecoderAdapter::Impl::EnqueueBuffer(
     scoped_refptr<media::DecoderBuffer> buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  if (auto fallback_reason =
-          FallbackOrRegisterConcurrentInstanceOnce(video_codec_)) {
-    return *fallback_reason;
-  }
-
   if (require_key_frame_) {
     // We discarded previous frame because we have too many pending buffers (see
     // logic) below. Now we need to wait for the key frame and discard
@@ -478,12 +429,6 @@ void RTCVideoDecoderAdapter::Impl::RegisterDecodeCompleteCallback(
   decode_complete_callback_ = callback;
 }
 
-void RTCVideoDecoderAdapter::Impl::SetResolution(int32_t width,
-                                                 int32_t height) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  current_resolution_ = base::saturated_cast<int32_t>(width * height);
-}
-
 void RTCVideoDecoderAdapter::Impl::OnDecodeDone(media::DecoderStatus status) {
   DVLOG(3) << __func__ << "(" << status.group() << ":"
            << static_cast<int>(status.code()) << ")";
@@ -530,10 +475,6 @@ void RTCVideoDecoderAdapter::Impl::OnOutput(
     start_time_.reset();
   }
 
-  // Update `current_resolution_`, in case it's changed.  This lets us fall
-  // back to software, or avoid doing so, if we're over the decoder limit.
-  SetResolution(rtc_frame.width(), rtc_frame.height());
-
   if (!base::Contains(decode_timestamps_, timestamp)) {
     DVLOG(2) << "Discarding frame with timestamp " << timestamp;
     return;
@@ -547,9 +488,13 @@ void RTCVideoDecoderAdapter::Impl::OnOutput(
 }
 
 // static
+std::atomic_int RTCVideoDecoderAdapter::g_num_decoders_{0};
+
+// static
 std::unique_ptr<RTCVideoDecoderAdapter> RTCVideoDecoderAdapter::Create(
     media::GpuVideoAcceleratorFactories* gpu_factories,
-    const webrtc::SdpVideoFormat& format) {
+    const webrtc::SdpVideoFormat& format,
+    std::unique_ptr<media::ResolutionMonitor> resolution_monitor) {
   DVLOG(1) << __func__ << "(" << format.name << ")";
 
   const webrtc::VideoCodecType video_codec_type =
@@ -559,8 +504,6 @@ std::unique_ptr<RTCVideoDecoderAdapter> RTCVideoDecoderAdapter::Create(
   if (WebRtcToMediaVideoCodec(video_codec_type) == media::VideoCodec::kUnknown)
     return nullptr;
 
-  // Avoid the thread hop if the decoder is known not to support the config.
-  // TODO(sandersd): Predict size from level.
   media::VideoDecoderConfig config(
       WebRtcToMediaVideoCodec(webrtc::PayloadStringToCodecType(format.name)),
       WebRtcVideoFormatToMediaVideoCodecProfile(format),
@@ -570,12 +513,21 @@ std::unique_ptr<RTCVideoDecoderAdapter> RTCVideoDecoderAdapter::Create(
       media::EncryptionScheme::kUnencrypted);
   config.set_is_rtc(true);
 
+  if (!resolution_monitor) {
+    resolution_monitor = media::ResolutionMonitor::Create(config.codec());
+    if (!resolution_monitor) {
+      DLOG(ERROR) << "Failed to create ResolutionMonitor for codec: "
+                  << media::GetCodecName(config.codec());
+      return nullptr;
+    }
+  }
+
   std::unique_ptr<RTCVideoDecoderAdapter> rtc_video_decoder_adapter;
   if (gpu_factories->IsDecoderConfigSupported(config) !=
       media::GpuVideoAcceleratorFactories::Supported::kFalse) {
     // Synchronously verify that the decoder can be initialized.
-    rtc_video_decoder_adapter =
-        base::WrapUnique(new RTCVideoDecoderAdapter(gpu_factories, config));
+    rtc_video_decoder_adapter = base::WrapUnique(new RTCVideoDecoderAdapter(
+        gpu_factories, config, std::move(resolution_monitor)));
     if (rtc_video_decoder_adapter->InitializeSync(config)) {
       return rtc_video_decoder_adapter;
     }
@@ -591,10 +543,16 @@ std::unique_ptr<RTCVideoDecoderAdapter> RTCVideoDecoderAdapter::Create(
 
 RTCVideoDecoderAdapter::RTCVideoDecoderAdapter(
     media::GpuVideoAcceleratorFactories* gpu_factories,
-    const media::VideoDecoderConfig& config)
-    : media_task_runner_(gpu_factories->GetTaskRunner()), config_(config) {
+    const media::VideoDecoderConfig& config,
+    std::unique_ptr<media::ResolutionMonitor> resolution_monitor)
+    : media_task_runner_(gpu_factories->GetTaskRunner()),
+      config_(config),
+      resolution_monitor_(std::move(resolution_monitor)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
   DVLOG(1) << __func__;
+  CHECK(resolution_monitor_);
+  CHECK_EQ(resolution_monitor_->codec(), config_.codec());
+
   decoder_info_.implementation_name = "ExternalDecoder (Unknown)";
   decoder_info_.is_hardware_accelerated = true;
 
@@ -610,6 +568,11 @@ RTCVideoDecoderAdapter::RTCVideoDecoderAdapter(
 RTCVideoDecoderAdapter::~RTCVideoDecoderAdapter() {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
+
+  if (have_started_decoding_) {
+    g_num_decoders_ -= 1;
+    CHECK_GE(g_num_decoders_, 0);
+  }
 
   // |weak_this_factory_| must be invalidated on |decoding_sequence_checker_|.
   weak_this_factory_.InvalidateWeakPtrs();
@@ -662,13 +625,8 @@ bool RTCVideoDecoderAdapter::Configure(const Settings& settings) {
 
   if (WebRtcToMediaVideoCodec(settings.codec_type()) != config_.codec())
     return false;
-
-  // Save the initial resolution so that we can fall back later, if needed.
-  PostCrossThreadTask(
-      *media_task_runner_.get(), FROM_HERE,
-      CrossThreadBindOnce(&RTCVideoDecoderAdapter::Impl::SetResolution,
-                          weak_impl_, settings.max_render_resolution().Width(),
-                          settings.max_render_resolution().Height()));
+  CHECK_EQ(resolution_monitor_->codec(),
+           WebRtcToMediaVideoCodec(settings.codec_type()));
 
   const bool init_success = status_ != Status::kError;
   base::UmaHistogramBoolean("Media.RTCVideoDecoderInitDecodeSuccess",
@@ -691,8 +649,10 @@ int32_t RTCVideoDecoderAdapter::Decode(const webrtc::EncodedImage& input_image,
     return WEBRTC_VIDEO_CODEC_UNINITIALIZED;
 
   auto result = DecodeInternal(input_image, missing_frames, render_time_ms);
-  if (!result)
+  if (!result) {
+    ChangeStatus(Status::kError);
     return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+  }
 
   return *result == DecodeResult::kOk ? WEBRTC_VIDEO_CODEC_OK
                                       : WEBRTC_VIDEO_CODEC_ERROR;
@@ -741,6 +701,11 @@ RTCVideoDecoderAdapter::DecodeInternal(const webrtc::EncodedImage& input_image,
   }
 
   auto buffer = ConvertToDecoderBuffer(input_image);
+  CHECK(buffer);
+  if (HasSoftwareFallback(config_.codec()) &&
+      !CheckResolutionAndNumInstances(*buffer)) {
+    return absl::nullopt;
+  }
   if (auto fallback_reason =
           NeedSoftwareFallback(config_.codec(), *buffer, decoder_type_)) {
     RecordRTCVideoDecoderFallbackReason(config_.codec(), *fallback_reason);
@@ -760,6 +725,53 @@ RTCVideoDecoderAdapter::DecodeInternal(const webrtc::EncodedImage& input_image,
     return absl::nullopt;
   }
   return DecodeResult::kOk;
+}
+
+bool RTCVideoDecoderAdapter::CheckResolutionAndNumInstances(
+    const media::DecoderBuffer& buffer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
+  DCHECK(HasSoftwareFallback(config_.codec()));
+
+  if (!have_started_decoding_) {
+    have_started_decoding_ = true;
+    g_num_decoders_ += 1;
+  }
+
+  absl::optional<gfx::Size> resolution =
+      resolution_monitor_->GetResolution(buffer);
+  if (!resolution) {
+    DVLOG(1) << "Stream parse error";
+    RecordRTCVideoDecoderFallbackReason(
+        config_.codec(),
+        RTCVideoDecoderFallbackReason::kParseErrorOnResolutionCheck);
+    return false;
+  }
+
+  if (resolution->GetArea() >= kMinResolution.GetArea()) {
+    return true;
+  }
+
+  // The stream resolution is smaller than |kMinResolution|. We fall back to a
+  // software decoder if there are many instances.
+
+  // This code reduces instances too much when two RTCVDAdapters reach
+  // here and executes the if-condition when
+  // g_num_decoders_ == kMaxDecoderInstances + 1 and then both of them
+  // enters the if-statement. But this case must be rare and reducing the
+  // decoder instances too much is a minor problem. So I keep this code.
+  // To avoid the problem, we need a global lock.
+  if (g_num_decoders_ > kMaxDecoderInstances) {
+    g_num_decoders_ -= 1;
+    CHECK_GE(g_num_decoders_, 0);
+    have_started_decoding_ = false;
+    DVLOG(1) << "Too many decoder instances";
+    RecordRTCVideoDecoderFallbackReason(
+        config_.codec(),
+        RTCVideoDecoderFallbackReason::kTooManyInstancesAndSmallResolution);
+    return false;
+  }
+
+  return true;
 }
 
 int32_t RTCVideoDecoderAdapter::RegisterDecodeCompleteCallback(
@@ -881,15 +893,15 @@ void RTCVideoDecoderAdapter::ChangeStatus(Status new_status) {
 }
 
 int RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting() {
-  return Impl::g_num_decoders_;
+  return g_num_decoders_;
 }
 
 void RTCVideoDecoderAdapter::IncrementCurrentDecoderCountForTesting() {
-  Impl::g_num_decoders_++;
+  g_num_decoders_++;
 }
 
 void RTCVideoDecoderAdapter::DecrementCurrentDecoderCountForTesting() {
-  Impl::g_num_decoders_--;
+  g_num_decoders_--;
 }
 
 }  // namespace blink

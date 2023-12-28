@@ -24,10 +24,12 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {DisplaySettingsProviderInterface, DisplaySettingsType} from '../mojom-webui/display_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {GeolocationAccessLevel} from '../os_privacy_page/privacy_hub_geolocation_subpage.js';
 
 import {getTemplate} from './display_night_light.html.js';
+import {getDisplaySettingsProvider} from './display_settings_mojo_interface_provider.js';
 
 /**
  * The types of Night Light automatic schedule. The values of the enum values
@@ -112,6 +114,18 @@ export class SettingsDisplayNightLightElement extends
         type: Boolean,
         value: false,
       },
+
+      isInternalDisplay: Boolean,
+
+      /**
+       * Current status of night light setting.
+       */
+      currentNightLightStatus: Boolean,
+
+      /**
+       * Current selected night light schedule type.
+       */
+      currentScheduleType: NightLightScheduleType,
     };
   }
 
@@ -122,11 +136,17 @@ export class SettingsDisplayNightLightElement extends
     ];
   }
 
+  isInternalDisplay: boolean;
+  private displaySettingsProvider: DisplaySettingsProviderInterface =
+      getDisplaySettingsProvider();
   private nightLightScheduleSubLabel_: string;
   private scheduleTypesList_: ScheduleType[];
   private shouldOpenCustomScheduleCollapse_: boolean;
   private shouldShowGeolocationDialog_: boolean;
   private shouldShowGeolocationWarningText_: boolean;
+  private currentNightLightStatus: boolean;
+  private currentScheduleType: NightLightScheduleType;
+
   /**
    * Invoked when the status of Night Light or its schedule type are changed,
    * in order to update the schedule settings, such as whether to show the
@@ -137,14 +157,41 @@ export class SettingsDisplayNightLightElement extends
     this.shouldOpenCustomScheduleCollapse_ =
         scheduleType === NightLightScheduleType.CUSTOM;
 
+    const nightLightStatus: boolean =
+        this.getPref('ash.night_light.enabled').value;
     if (scheduleType === NightLightScheduleType.SUNSET_TO_SUNRISE) {
-      const nightLightStatus = this.getPref('ash.night_light.enabled').value;
       this.nightLightScheduleSubLabel_ = nightLightStatus ?
           this.i18n('displayNightLightOffAtSunrise') :
           this.i18n('displayNightLightOnAtSunset');
     } else {
       this.nightLightScheduleSubLabel_ = '';
     }
+
+    // Records metrics when schedule type or night light status have changed. Do
+    // not record when the page just loads and the current value is still
+    // undefined.
+    if (this.currentScheduleType !== scheduleType &&
+        this.currentScheduleType !== undefined) {
+      this.recordNightLightSettingsMetrics(
+          DisplaySettingsType.kNightLightSchedule, this.isInternalDisplay);
+    }
+    if (this.currentNightLightStatus !== nightLightStatus &&
+        this.currentNightLightStatus !== undefined) {
+      this.recordNightLightSettingsMetrics(
+          DisplaySettingsType.kNightLight, this.isInternalDisplay);
+    }
+
+    // Updates current schedule type and night light status.
+    this.currentScheduleType = scheduleType;
+    this.currentNightLightStatus = nightLightStatus;
+  }
+
+  // Records metrics when users change the night light settings.
+  private recordNightLightSettingsMetrics(
+      displaySettingsType: DisplaySettingsType,
+      isInternalDisplay: boolean): void {
+    this.displaySettingsProvider.recordChangingDisplaySettings(
+        displaySettingsType, {isInternalDisplay});
   }
 
   private computeShouldShowGeolocationWarningText_(): boolean {

@@ -128,7 +128,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.Agc2.EstimatedNoiseLevel" units="dBFS (negated)"
-    expires_after="2023-12-31">
+    expires_after="2024-05-05">
   <owner>alessiob@chromium.org</owner>
   <owner>silen@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1296,14 +1296,6 @@ chromium-metrics-reviews@google.com.
   <summary>Records the reasons for ICE re-gathering.</summary>
 </histogram>
 
-<histogram name="WebRTC.PeerConnection.IceRestartState" enum="IceRestartState"
-    expires_after="M77">
-  <owner>honghaiz@chromium.org</owner>
-  <summary>
-    Records the transport channel states when ICE restart happens.
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.PeerConnection.IPMetrics" enum="PeerConnectionCounters"
     expires_after="2024-06-15">
   <owner>hta@chromium.org</owner>
@@ -1413,22 +1405,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.RtcpMuxPolicy"
-    enum="PeerConnectionRtcpMux" expires_after="2023-12-11">
+    enum="PeerConnectionRtcpMux" expires_after="2024-12-01">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <owner>phancke@microsoft.com</owner>
   <summary>
     Which RTCPMuxPolicy was requested for the PeerConnection. Recorded during
     the first DTLS connection establishment.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.PeerConnection.Simulcast.NumberOfSendEncodings"
-    units="units" expires_after="2020-08-30">
-  <owner>amithi@chromium.org</owner>
-  <summary>
-    Counts the number of send encodings given to PeerConnection::AddTransceiver.
-    This histogram will be used to understand if and how the API is used.
   </summary>
 </histogram>
 
@@ -1497,7 +1480,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.ThermalState" enum="ThermalState"
-    expires_after="2024-03-17">
+    expires_after="2024-06-09">
   <owner>eshr@google.com</owner>
   <owner>hbos@chromium.org</owner>
   <summary>
@@ -1693,7 +1676,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Stun.Integrity.{StunPacketType}"
-    enum="WebRtcStunIntegrityOutcome" expires_after="2024-04-07">
+    enum="WebRtcStunIntegrityOutcome" expires_after="2024-06-09">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>

@@ -592,7 +592,7 @@ void MessageCenterImpl::ClickOnSettingsButton(const std::string& id) {
   Notification* notification = notification_list_->GetNotificationById(id);
 
   bool handled_by_delegate =
-      notification &&
+      notification && notification->delegate() &&
       (notification->rich_notification_data().settings_button_handler ==
        SettingsButtonHandler::DELEGATE);
   if (handled_by_delegate) {

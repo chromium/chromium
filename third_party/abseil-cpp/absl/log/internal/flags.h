@@ -50,4 +50,10 @@ ABSL_DECLARE_FLAG(std::string, log_backtrace_at);
 // each message logged. Defaults to true.
 ABSL_DECLARE_FLAG(bool, log_prefix);
 
+// Global log verbosity level. Default is 0.
+ABSL_DECLARE_FLAG(int, v);
+
+// Per-module log verbosity level. By default is empty and is unused.
+ABSL_DECLARE_FLAG(std::string, vmodule);
+
 #endif  // ABSL_LOG_INTERNAL_FLAGS_H_

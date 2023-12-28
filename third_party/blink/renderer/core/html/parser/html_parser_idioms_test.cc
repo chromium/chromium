@@ -5,12 +5,14 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 namespace {
 
 TEST(HTMLParserIdiomsTest, ParseHTMLInteger) {
+  test::TaskEnvironment task_environment;
   int value = 0;
 
   EXPECT_TRUE(ParseHTMLInteger("2147483646", value));
@@ -33,6 +35,7 @@ TEST(HTMLParserIdiomsTest, ParseHTMLInteger) {
 }
 
 TEST(HTMLParserIdiomsTest, ParseHTMLNonNegativeInteger) {
+  test::TaskEnvironment task_environment;
   unsigned value = 0;
 
   EXPECT_TRUE(ParseHTMLNonNegativeInteger("0", value));
@@ -66,6 +69,7 @@ TEST(HTMLParserIdiomsTest, ParseHTMLNonNegativeInteger) {
 }
 
 TEST(HTMLParserIdiomsTest, ParseHTMLListOfFloatingPointNumbers_null) {
+  test::TaskEnvironment task_environment;
   Vector<double> numbers = ParseHTMLListOfFloatingPointNumbers(g_null_atom);
   EXPECT_EQ(0u, numbers.size());
 }

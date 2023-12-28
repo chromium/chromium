@@ -28,6 +28,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
@@ -44,7 +45,7 @@ bool WillDispatchTabUpdatedEvent(
     WebContents* contents,
     const std::set<std::string> changed_property_names,
     content::BrowserContext* browser_context,
-    Feature::Context target_context,
+    mojom::ContextType target_context,
     const Extension* extension,
     const base::Value::Dict* listener_filter,
     absl::optional<base::Value::List>& event_args_out,
@@ -74,7 +75,7 @@ bool WillDispatchTabCreatedEvent(
     WebContents* contents,
     bool active,
     content::BrowserContext* browser_context,
-    Feature::Context target_context,
+    mojom::ContextType target_context,
     const Extension* extension,
     const base::Value::Dict* listener_filter,
     absl::optional<base::Value::List>& event_args_out,

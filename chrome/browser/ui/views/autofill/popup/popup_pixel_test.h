@@ -90,7 +90,7 @@ class PopupPixelTest : public UiBrowserTest,
     }
 
     auto* test_info = testing::UnitTest::GetInstance()->current_test_info();
-    return VerifyPixelUi(widget, test_info->test_case_name(),
+    return VerifyPixelUi(widget, test_info->test_suite_name(),
                          test_info->name()) != ui::test::ActionResult::kFailed;
   }
 

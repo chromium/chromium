@@ -35,6 +35,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
 
 using web_app::test::CrosapiParam;
@@ -212,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppItemBrowserTest,
                        ActivateAppRecordsNewInstallHistogram) {
   base::HistogramTester histograms;
   {
-    ASSERT_FALSE(ash::TabletMode::Get()->InTabletMode());
+    ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
 
     // Simulate a user-installed chrome app item.
     std::unique_ptr<AppServiceAppItem> app_item =

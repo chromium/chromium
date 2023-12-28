@@ -117,12 +117,11 @@ class TabDragDropDelegateTest : public AshTestBase {
   }
 
  private:
-  raw_ptr<NiceMock<MockShellDelegate>, ExperimentalAsh> mock_shell_delegate_ =
-      nullptr;
+  raw_ptr<NiceMock<MockShellDelegate>> mock_shell_delegate_ = nullptr;
 
   std::unique_ptr<TestNewWindowDelegateProvider>
       test_new_window_delegate_provider_;
-  raw_ptr<NiceMock<MockNewWindowDelegate>, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<NiceMock<MockNewWindowDelegate>, DanglingUntriaged>
       mock_new_window_delegate_ptr_ = nullptr;
 
   std::unique_ptr<aura::Window> dummy_window_;

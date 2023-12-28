@@ -452,13 +452,14 @@ message AutofillUploadContents {
     XHR_SUCCEEDED = 3;
     FRAME_DETACHED = 4;
     DEPRECATED_MANUAL_SAVE = 5;  // obsolete
-    DOM_MUTATION_AFTER_XHR = 6;
+    DEPRECATED_DOM_MUTATION_AFTER_XHR = 6;  // obsolete
     DEPRECATED_PROVISIONALLY_SAVED_FORM_ON_START_PROVISIONAL_LOAD =
         7;                                                           // unused
     DEPRECATED_FILLED_FORM_ON_START_PROVISIONAL_LOAD = 8;            // unused
     DEPRECATED_FILLED_INPUT_ELEMENTS_ON_START_PROVISIONAL_LOAD = 9;  // unused
     PROBABLE_FORM_SUBMISSION = 10;
     CHANGE_PASSWORD_FORM_CLEARED = 11;
+    DOM_MUTATION_AFTER_AUTOFILL = 12;
   }
 
   // The type of the event that was taken as an indication that the form has
@@ -539,7 +540,7 @@ message AutofillUploadContents {
 message ProfileValidityMap {
   // Map from autofill type to the validity of its value in the profile.
   //
-  // Key should be one of the enum values from ServerFieldType. Values should be
+  // Key should be one of the enum values from FieldType. Values should be
   // from the AutofillProfile::ValidityState. Plain integers are used
   // instead of enums because proto2 treats unknown enum values as unknown
   // fields, which is confusing when the enums are in maps.

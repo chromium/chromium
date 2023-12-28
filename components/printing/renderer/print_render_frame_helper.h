@@ -94,16 +94,13 @@ class ClosuresForMojoResponse
   void SetScriptedPrintPreviewQuitClosure(base::OnceClosure quit_print_preview);
   bool HasScriptedPrintPreviewQuitClosure() const;
   void RunScriptedPrintPreviewQuitClosure();
-  void SetPrintSettingFromUserQuitClosure(base::OnceClosure quit_print_setting);
-  void RunPrintSettingFromUserQuitClosure();
 
  private:
   friend class base::RefCounted<ClosuresForMojoResponse>;
   ~ClosuresForMojoResponse();
 
-  // Stores quit closures for the runloops that are waiting for Mojo replies.
+  // Stores quit closure for the runloop that is waiting for a Mojo reply.
   base::OnceClosure scripted_print_preview_quit_closure_;
-  base::OnceClosure get_print_settings_from_user_quit_closure_;
 };
 
 // PrintRenderFrameHelper handles most of the printing grunt work for
@@ -268,10 +265,6 @@ class PrintRenderFrameHelper
   void PrintingDone(bool success) override;
   void ConnectToPdfRenderer() override;
   void PrintNodeUnderContextMenu() override;
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-  void SnapshotForContentAnalysis(
-      SnapshotForContentAnalysisCallback callback) override;
-#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
   // Update |ignore_css_margins_| based on settings.
   void UpdateFrameMarginsCssInfo(const base::Value::Dict& settings);
@@ -419,14 +412,13 @@ class PrintRenderFrameHelper
   // `settings` must be valid.
   void SetPrintPagesParams(const mojom::PrintPagesParams& settings);
 
-  // Quits all runloops waiting for Mojo replies. It's called when
+  // Quits active runloop waiting for Mojo reply. It's called when
   // |print_manager_host_| is disconnected before the replies.
-  void QuitActiveRunLoops();
+  void QuitActiveRunLoop();
 
   // Quits a runloop waiting for a Mojo reply. These are called when a Mojo
   // message gets a reply.
   void QuitScriptedPrintPreviewRunLoop();
-  void QuitGetPrintSettingsFromUserRunLoop();
 
   // Resets internal state
   void Reset();

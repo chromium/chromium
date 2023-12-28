@@ -412,7 +412,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   DOMRectList* getClientRects();
   // Returns a rectangle in zoomed pixel units.
   gfx::RectF GetBoundingClientRectNoLifecycleUpdateNoAdjustment() const;
-  // Returns a rectangle in CSS pixel units.  i.e. ignorign zoom.
+  // Returns a rectangle in CSS pixel units.  i.e. ignoring zoom.
   gfx::RectF GetBoundingClientRectNoLifecycleUpdate() const;
   DOMRect* GetBoundingClientRect();
   DOMRect* GetBoundingClientRectForBinding();
@@ -1294,6 +1294,17 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void AdjustDirectionalityIfNeededAfterChildrenChanged(
       const ChildrenChange& change);
 
+  // The "nonce" attribute is hidden when:
+  // 1) The Content-Security-Policy is delivered from the HTTP headers.
+  // 2) The Element is part of the active document.
+  // See https://github.com/whatwg/html/pull/2373
+  //
+  // This applies to the element of the HTML and SVG namespaces.
+  //
+  // This function clears the "nonce" attribute whenever conditions (1) and (2)
+  // are met.
+  void HideNonce();
+
  protected:
   bool HasElementData() const { return static_cast<bool>(element_data_); }
   const ElementData* GetElementData() const { return element_data_.Get(); }
@@ -1385,17 +1396,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   Node* InsertAdjacent(const String& where, Node* new_child, ExceptionState&);
 
   virtual void ParserDidSetAttributes() {}
-
-  // The "nonce" attribute is hidden when:
-  // 1) The Content-Security-Policy is delivered from the HTTP headers.
-  // 2) The Element is part of the active document.
-  // See https://github.com/whatwg/html/pull/2373
-  //
-  // This applies to the element of the HTML and SVG namespaces.
-  //
-  // This function clears the "nonce" attribute whenever conditions (1) and (2)
-  // are met.
-  void HideNonce();
 
   // Mark for style invalidation/recalc for :lang() selectors to pick up the
   // changes.

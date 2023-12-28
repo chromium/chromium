@@ -36,7 +36,7 @@ class AnimatedContainerView::ScopedDisablePreferredSizeChanged {
   }
 
  private:
-  const raw_ptr<AnimatedContainerView, ExperimentalAsh> view_;
+  const raw_ptr<AnimatedContainerView> view_;
   const bool original_value_;
 };
 

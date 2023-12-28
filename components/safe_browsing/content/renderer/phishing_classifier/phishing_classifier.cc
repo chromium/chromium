@@ -27,6 +27,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/common/visual_utils.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier_delegate.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_dom_feature_extractor.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_term_feature_extractor.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_url_feature_extractor.h"
@@ -49,7 +50,7 @@
 
 namespace safe_browsing {
 
-const float PhishingClassifier::kInvalidScore = -1.0;
+const int PhishingClassifier::kClassifierFailed = -1;
 const float PhishingClassifier::kPhishyThreshold = 0.5;
 
 PhishingClassifier::PhishingClassifier(content::RenderFrame* render_frame)
@@ -109,19 +110,19 @@ void PhishingClassifier::BeginFeatureExtraction() {
   // Currently, we only classify http/https URLs that are GET requests.
   GURL url(frame->GetDocument().Url());
   if (!url.SchemeIsHTTPOrHTTPS()) {
-    RunFailureCallback();
+    RunFailureCallback(Result::kInvalidURLFormatRequest);
     return;
   }
 
   blink::WebDocumentLoader* document_loader = frame->GetDocumentLoader();
   if (!document_loader || document_loader->HttpMethod().Ascii() != "GET") {
-    RunFailureCallback();
+    RunFailureCallback(Result::kInvalidDocumentLoader);
     return;
   }
 
   features_ = std::make_unique<FeatureMap>();
   if (!url_extractor_->ExtractFeatures(url, features_.get())) {
-    RunFailureCallback();
+    RunFailureCallback(Result::kURLFeatureExtractionFailed);
     return;
   }
 
@@ -154,7 +155,7 @@ void PhishingClassifier::DOMExtractionFinished(bool success) {
         base::BindOnce(&PhishingClassifier::TermExtractionFinished,
                        base::Unretained(this)));
   } else {
-    RunFailureCallback();
+    RunFailureCallback(Result::kDOMExtractionFailed);
   }
 }
 
@@ -165,7 +166,7 @@ void PhishingClassifier::TermExtractionFinished(bool success) {
         base::BindOnce(&PhishingClassifier::OnPlaybackDone,
                        base::Unretained(this)));
   } else {
-    RunFailureCallback();
+    RunFailureCallback(Result::kTermExtractionFailed);
   }
 }
 
@@ -193,7 +194,7 @@ void PhishingClassifier::OnVisualFeaturesExtracted(
 void PhishingClassifier::VisualExtractionFinished(bool success) {
   DCHECK(content::RenderThread::IsMainThread());
   if (!success) {
-    RunFailureCallback();
+    RunFailureCallback(Result::kVisualExtractionFailed);
     return;
   }
 
@@ -243,7 +244,7 @@ void PhishingClassifier::OnVisualTfLiteModelDone(
   Scorer* scorer = ScorerStorage::GetInstance()->GetScorer();
   if (static_cast<int>(result.size()) > scorer->tflite_thresholds().size()) {
     // Model is misconfigured, so bail out.
-    RunFailureCallback();
+    RunFailureCallback(Result::kInvalidScore);
     return;
   }
 
@@ -256,24 +257,25 @@ void PhishingClassifier::OnVisualTfLiteModelDone(
     category->set_value(result[i]);
   }
 
-  RunCallback(*verdict);
+  RunCallback(*verdict, Result::kSuccess);
 }
 
-void PhishingClassifier::RunCallback(const ClientPhishingRequest& verdict) {
+void PhishingClassifier::RunCallback(const ClientPhishingRequest& verdict,
+                                     Result phishing_classifier_result) {
   TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "PhishingClassification",
                                   this);
-  std::move(done_callback_).Run(verdict);
+  std::move(done_callback_).Run(verdict, phishing_classifier_result);
   Clear();
 }
 
-void PhishingClassifier::RunFailureCallback() {
+void PhishingClassifier::RunFailureCallback(Result failure_event) {
   ClientPhishingRequest verdict;
   // In this case we're not guaranteed to have a valid URL.  Just set it
   // to the empty string to make sure we have a valid protocol buffer.
   verdict.set_url("");
-  verdict.set_client_score(kInvalidScore);
+  verdict.set_client_score(kClassifierFailed);
   verdict.set_is_phishing(false);
-  RunCallback(verdict);
+  RunCallback(verdict, failure_event);
 }
 
 void PhishingClassifier::Clear() {

@@ -391,6 +391,50 @@ TEST_F(ZAuraSurfaceTest, OcclusionIncludesOffScreenArea) {
             aura_surface().last_sent_occlusion_state());
 }
 
+TEST_F(ZAuraSurfaceTest, OcclusionFractionDoesNotDoubleCountOutsideOfScreen) {
+  UpdateDisplay("600x800");
+
+  // Create a surface which is halfway offscreen.
+  gfx::Size buffer1_size(80, 100);
+  std::unique_ptr<Buffer> buffer1(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer1_size)));
+  surface().window()->SetBounds(gfx::Rect(-40, 50, 80, 100));
+  surface().Attach(buffer1.get());
+  surface().Commit();
+
+  EXPECT_EQ(0.5f, aura_surface().last_sent_occlusion_fraction());
+  EXPECT_EQ(aura::Window::OcclusionState::VISIBLE,
+            aura_surface().last_sent_occlusion_state());
+
+  // Occlude the previous surface but only offscreen. The occlusion fraction
+  // should still be 0.5.
+  auto window =
+      std::make_unique<aura::Window>(nullptr, aura::client::WINDOW_TYPE_POPUP);
+  window->Init(ui::LAYER_SOLID_COLOR);
+  window->layer()->SetColor(SK_ColorBLACK);
+  window->SetTransparent(false);
+  window->SetBounds(gfx::Rect(-60, 75, 60, 150));
+  window->Show();
+  parent_widget().GetNativeWindow()->parent()->AddChild(window.get());
+
+  surface().OnWindowOcclusionChanged(aura::Window::OcclusionState::UNKNOWN,
+                                     aura::Window::OcclusionState::VISIBLE);
+
+  EXPECT_EQ(0.5f, aura_surface().last_sent_occlusion_fraction());
+  EXPECT_EQ(aura::Window::OcclusionState::VISIBLE,
+            aura_surface().last_sent_occlusion_state());
+
+  // Occlude the previous surface by 25% more additionally inside the screen.
+  window->SetBounds(gfx::Rect(-60, 75, 90, 150));
+
+  surface().OnWindowOcclusionChanged(aura::Window::OcclusionState::VISIBLE,
+                                     aura::Window::OcclusionState::VISIBLE);
+
+  EXPECT_EQ(0.75f, aura_surface().last_sent_occlusion_fraction());
+  EXPECT_EQ(aura::Window::OcclusionState::VISIBLE,
+            aura_surface().last_sent_occlusion_state());
+}
+
 TEST_F(ZAuraSurfaceTest, ZeroSizeWindowSendsZeroOcclusionFraction) {
   // Zero sized window should not be occluded.
   surface().window()->SetBounds(gfx::Rect(0, 0, 0, 0));
@@ -753,7 +797,7 @@ class ZAuraOutputTest : public test::ExoTestBase {
     std::unique_ptr<WaylandDisplayOutput> output;
     std::unique_ptr<WaylandDisplayHandler> handler;
 
-    raw_ptr<wl_client, ExperimentalAsh> client;
+    raw_ptr<wl_client> client;
 
     void CreateAuraOutput() {
       DCHECK(!aura_output);
@@ -776,7 +820,7 @@ class ZAuraOutputTest : public test::ExoTestBase {
  private:
   std::vector<std::unique_ptr<OutputHolder>> output_holder_list_;
   std::unique_ptr<wl_display, WlDisplayDeleter> wayland_display_;
-  raw_ptr<wl_client, ExperimentalAsh> client_ = nullptr;
+  raw_ptr<wl_client> client_ = nullptr;
 };
 
 TEST_F(ZAuraOutputTest, SendInsets) {

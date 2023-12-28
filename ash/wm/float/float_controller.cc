@@ -451,7 +451,7 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
 
  private:
   // The `floated_window` this object is hosting information for.
-  raw_ptr<aura::Window, ExperimentalAsh> floated_window_;
+  raw_ptr<aura::Window> floated_window_;
 
   // When a window is floated, the window position should not be auto-managed.
   // Use this value to reset the auto-managed state when unfloating a window.
@@ -473,7 +473,7 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
   // container, this Desk pointer is used to determine floating window's desk
   // ownership, since floated window should only be shown on the desk it belongs
   // to.
-  raw_ptr<const Desk, DanglingUntriaged | ExperimentalAsh> desk_;
+  raw_ptr<const Desk, DanglingUntriaged> desk_;
 
   // The start time when the floated window is on the active desk. Used for
   // logging the amount of time a window is floated. Logged when the desk

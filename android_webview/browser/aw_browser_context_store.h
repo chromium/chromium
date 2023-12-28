@@ -32,6 +32,18 @@ constexpr char kProfileCounterPref[] = "profile.counter";
 
 class AwBrowserContext;
 
+// AwBrowserContextStore is the container for AwBrowserContexts.
+//
+// - Owns and manages the lifetimes of instantiated AwBrowserContexts
+//   ("Profiles").
+//
+// - Keeps track of the profiles instantiated into memory and the profiles saved
+//   to disk (via the local_state pref_service), including mappings between
+//   profile names and directory names.
+//
+// Most profiles are created and instantiated lazily (via the Get method).
+// However, there is a special "Default" profile which is always created and
+// instantiated on startup.
 // Lifetime: Singleton
 class AwBrowserContextStore final {
  public:

@@ -42,7 +42,9 @@ void PlatformWindowDelegate::OnWindowTiledStateChanged(
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-void PlatformWindowDelegate::OnFullscreenModeChanged() {}
+void PlatformWindowDelegate::OnFullscreenTypeChanged(
+    PlatformFullscreenType old_type,
+    PlatformFullscreenType new_type) {}
 #endif
 
 absl::optional<gfx::Size> PlatformWindowDelegate::GetMinimumSizeForWindow() {

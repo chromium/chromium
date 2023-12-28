@@ -125,6 +125,9 @@ void PredictorJankTracker::ReportJankyFrame(
     bool slow_scroll,
     std::optional<EventMetrics::TraceId> trace_id) {
   janky_frames_++;
+  if (scroll_jank_ukm_reporter_) {
+    scroll_jank_ukm_reporter_->IncrementPredictorJankyFrames();
+  }
   TRACE_EVENT_INSTANT(
       "input.scrolling", "PredictorJankTracker::ReportJankyFrame",
       [&](perfetto::EventContext ctx) {

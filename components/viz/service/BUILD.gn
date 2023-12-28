@@ -465,7 +465,7 @@ viz_component("service") {
   }
 
   if (skia_use_dawn) {
-    if (is_win) {
+    if (is_win || is_android) {
       sources += [
         "display_embedder/skia_output_device_dawn.cc",
         "display_embedder/skia_output_device_dawn.h",

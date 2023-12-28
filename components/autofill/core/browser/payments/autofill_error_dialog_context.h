@@ -5,9 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_AUTOFILL_ERROR_DIALOG_CONTEXT_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_AUTOFILL_ERROR_DIALOG_CONTEXT_H_
 
+#include <optional>
 #include <string>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -32,8 +31,11 @@ enum class AutofillErrorDialogType {
   // Error shown when the card cannot be verified because Google Payments
   // servers can't be reached.
   kMaskedServerCardRiskBasedUnmaskingNetworkError = 5,
+  // Error shown when the server returns a temporary error for unmasking a
+  // server IBAN.
+  kMaskedServerIbanUnmaskingTemporaryError = 6,
   // kMaxValue is required for logging histograms.
-  kMaxValue = kMaskedServerCardRiskBasedUnmaskingNetworkError,
+  kMaxValue = kMaskedServerIbanUnmaskingTemporaryError,
 };
 
 // The context for the autofill error dialog.
@@ -57,14 +59,14 @@ struct AutofillErrorDialogContext {
   // related to the error to the user. This should be preferred for the title of
   // the autofill error dialog if a value is present. The language is based on
   // the client's locale.
-  absl::optional<std::string> server_returned_title;
+  std::optional<std::string> server_returned_title;
 
   // Autofill error dialog description returned from the server. Present in
   // situations where the server returns an error, and wants to display a
   // detailed description related to the error to the user. This should be
   // preferred for the description of the autofill error dialog if a value is
   // present. The language is based on the client's locale.
-  absl::optional<std::string> server_returned_description;
+  std::optional<std::string> server_returned_description;
 };
 
 }  // namespace autofill

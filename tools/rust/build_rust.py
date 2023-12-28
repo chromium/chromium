@@ -13,7 +13,7 @@ Rust has an official boostrapping build. At a high level:
    the latest beta is downloaded. If building stable 1.57.0, stage0 is stable
    1.56.1.
 2. Stage 0 libstd is built. This is different than the libstd downloaded above.
-3. Stage 1 rustc is built with rustc from (1)c and libstd from (2)
+3. Stage 1 rustc is built with rustc from (1) and libstd from (2)
 2. Stage 1 libstd is built with stage 1 rustc. Later artifacts built with
    stage 1 rustc are built with stage 1 libstd.
 
@@ -71,18 +71,6 @@ EXCLUDED_TESTS = [
     os.path.join('tests', 'codegen', 'issue-45222.rs'),
     # https://github.com/rust-lang/rust/issues/96497
     os.path.join('tests', 'codegen', 'issue-96497-slice-size-nowrap.rs'),
-    # https://github.com/rust-lang/rust/issues/109671 the test is being
-    # optimized in newer LLVM which breaks its expectations.
-    os.path.join('tests', 'ui', 'abi', 'stack-protector.rs'),
-    # https://github.com/rust-lang/rust/issues/109672 the second panic in a
-    # double-panic is being optimized out (reasonably correctly) by newer LLVM.
-    os.path.join('tests', 'ui', 'backtrace.rs'),
-    # https://github.com/rust-lang/rust/issues/94322 large output from
-    # compiletests is breaking json parsing of the results.
-    os.path.join('tests', 'ui', 'numeric', 'numeric-cast.rs'),
-    # https://github.com/rust-lang/rust/pull/116018
-    # disable temporarily for the clang roll
-    os.path.join('tests', 'codegen', 'simd', 'simd-wide-sum.rs'),
 ]
 EXCLUDED_TESTS_WINDOWS = [
     # https://github.com/rust-lang/rust/issues/96464
@@ -753,7 +741,7 @@ def main():
         # TODO(crbug.com/1493085): remove once
         # https://github.com/rust-lang/rust/pull/116672 has been merged.
         GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
-                      '751f7b9431b41418e2035c2c155a39fefd5d318f')
+                      '4f1e147849d89f4c2324fd569a48e6be66fae5d8')
 
         # TODO: Remove once
         # https://github.com/rust-lang/rust/pull/118410 has been merged.
@@ -763,13 +751,27 @@ def main():
         # TODO: Remove once
         # https://github.com/rust-lang/rust/pull/118610 has been merged.
         GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
-                      '0899efe363292f786e67c978ec77439c437d0e74')
+                      'b378059e6b2573c5356423fa31d184a89a3b6029')
+
+        # TODO: Remove once
+        # https://github.com/rust-lang/rust/pull/118818 has been merged.
         GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
-                      '43baf5dc1fa6758c0268e30530d821d8b36fee07')
+                      'a0c5079889b1f86dd9e246d8863a5c8b44fbdb78')
+
+        # TODO: Remove once
+        # https://github.com/rust-lang/rust/pull/118866 has been merged.
         GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
-                      '4ac32747ba280faa5cea05ad3f54a31c03257171')
+                      '46a801559127441675f2341bd1d684809a47def1')
+
+        # TODO: Remove once
+        # https://github.com/rust-lang/rust/pull/118941 has been merged.
         GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
-                      '01046205f3970e7ce111c9a0d63ed512c5a354d5')
+                      '0a285e8de7eec36e1de68c83764d23f2522a4274')
+
+        # TODO: Remove once
+        # https://github.com/rust-lang/rust/pull/119185 has been merged.
+        GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                      '14947b410ad23a09251180af50486e247f70b465')
 
         path = FetchBetaPackage('cargo', checkout_revision)
         if sys.platform == 'win32':

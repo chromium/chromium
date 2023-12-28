@@ -59,7 +59,7 @@ class HistogramReporter
   }
 
  private:
-  const raw_ptr<base::HistogramBase, ExperimentalAsh> latency_histogram_;
+  const raw_ptr<base::HistogramBase> latency_histogram_;
   const absl::optional<const char*> max_latency_histogram_name_;
   base::TimeDelta max_latency_;
 };

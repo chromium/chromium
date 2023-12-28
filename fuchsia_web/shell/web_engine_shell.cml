@@ -191,6 +191,14 @@
       availability: "optional",
     },
     {
+      // Holds ICU time zone data files.
+      // See:
+      // https://fuchsia.dev/fuchsia-src/concepts/process/namespaces?typical_directory_structure
+      directory: "tzdata-icu",
+      from: "parent",
+      to: "#realm_builder",
+    },
+    {
       // Required by `fuchsia.web/ContextFeatureFlags.NETWORK`.
       directory: "root-ssl-certificates",
       from: "parent",

@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_page_control.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_action_wrangler.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_main_tab_grid_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_top_toolbar.h"
 
@@ -69,15 +69,15 @@
 #pragma mark - Control actions
 
 - (void)pageControlChangedValue:(id)sender {
-  [self.actionWrangler pageControlChangedValue:sender];
+  [self.toolbarTabGridDelegate pageControlChangedValue:sender];
 }
 
 - (void)pageControlChangedPageByDrag:(id)sender {
-  [self.actionWrangler pageControlChangedPageByDrag:sender];
+  [self.toolbarTabGridDelegate pageControlChangedPageByDrag:sender];
 }
 
 - (void)pageControlChangedPageByTap:(id)sender {
-  [self.actionWrangler pageControlChangedPageByTap:sender];
+  [self.toolbarTabGridDelegate pageControlChangedPageByTap:sender];
 }
 
 @end

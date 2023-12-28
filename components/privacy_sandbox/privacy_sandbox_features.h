@@ -24,6 +24,12 @@ BASE_DECLARE_FEATURE(kPrivacySandboxSettings4);
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxAdsNoticeCCT);
+
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const char kPrivacySandboxAdsNoticeCCTAppIdName[];
+
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const base::FeatureParam<std::string> kPrivacySandboxAdsNoticeCCTAppId;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Split out name definitions since about_flags otherwise complains about the
@@ -125,6 +131,10 @@ BASE_DECLARE_FEATURE(kEnforcePrivacySandboxAttestations);
 // attestations map is absent.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kDefaultAllowPrivacySandboxAttestations);
+
+// Enables the sentinel file guard for Privacy Sandbox Attestations.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPrivacySandboxAttestationSentinel);
 
 // Gives a list of sites permission to use Privacy Sandbox features without
 // being officially enrolled.

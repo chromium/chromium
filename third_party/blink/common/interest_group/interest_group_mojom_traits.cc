@@ -13,7 +13,7 @@ bool StructTraits<
     blink::mojom::InterestGroupAdDataView,
     blink::InterestGroup::Ad>::Read(blink::mojom::InterestGroupAdDataView data,
                                     blink::InterestGroup::Ad* out) {
-  if (!data.ReadRenderUrl(&out->render_url) ||
+  if (!data.ReadRenderUrl(&out->render_url_) ||
       !data.ReadSizeGroup(&out->size_group) ||
       !data.ReadBuyerReportingId(&out->buyer_reporting_id) ||
       !data.ReadBuyerAndSellerReportingId(

@@ -18,12 +18,12 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/constants.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/content_features.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
@@ -65,8 +65,6 @@ void TopLevelStorageAccessPermissionContext::DecidePermission(
       request_data.id.global_render_frame_host_id());
   CHECK(rfh);
   if (!request_data.user_gesture ||
-      !base::FeatureList::IsEnabled(
-          blink::features::kStorageAccessAPIForOriginExtension) ||
       !request_data.requesting_origin.is_valid() ||
       !request_data.embedding_origin.is_valid()) {
     if (!request_data.user_gesture) {
@@ -74,14 +72,6 @@ void TopLevelStorageAccessPermissionContext::DecidePermission(
           blink::mojom::ConsoleMessageLevel::kError,
           "requestStorageAccessFor: Must be handling a user gesture to use.");
     }
-    RecordOutcomeSample(
-        TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites);
-    std::move(callback).Run(CONTENT_SETTING_BLOCK);
-    return;
-  }
-
-  if (!base::FeatureList::IsEnabled(features::kFirstPartySets)) {
-    // First-Party Sets is disabled, so reject the request.
     RecordOutcomeSample(
         TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites);
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
@@ -137,11 +127,6 @@ TopLevelStorageAccessPermissionContext::GetPermissionStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kStorageAccessAPIForOriginExtension)) {
-    return CONTENT_SETTING_BLOCK;
-  }
-
   if (render_frame_host && !render_frame_host->IsInPrimaryMainFrame()) {
     // Note that portal and other main but non-outermost frames are
     // currently disallowed from queries by the PermissionService. This check
@@ -197,11 +182,6 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
     TopLevelStorageAccessRequestOutcome outcome) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kStorageAccessAPIForOriginExtension)) {
-    return;
-  }
-
   RecordOutcomeSample(outcome);
 
   const bool permission_allowed = (content_setting == CONTENT_SETTING_ALLOW);
@@ -236,7 +216,7 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
 
   content_settings::ContentSettingConstraints constraints;
   constraints.set_lifetime(
-      blink::features::kStorageAccessAPIRelatedWebsiteSetsLifetime.Get());
+      permissions::kStorageAccessAPIRelatedWebsiteSetsLifetime);
   constraints.set_session_model(
       content_settings::SessionModel::NonRestorableUserSession);
 

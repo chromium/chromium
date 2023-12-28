@@ -19,8 +19,9 @@ class ImageModel;
 // The app dialog that may display the app's name, icon. This is the base class
 // for app related dialog classes, e.g AppBlockDialogView, AppPauseDialogView.
 class AppDialogView : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(AppDialogView, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(AppDialogView);
   explicit AppDialogView(const ui::ImageModel& image);
   ~AppDialogView() override;
 

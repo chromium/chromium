@@ -621,7 +621,7 @@ void PaymentRequestSheetController::AddPrimaryButton(views::View* container) {
                       .SetID(GetPrimaryButtonId())
                       .SetEnabled(GetPrimaryButtonEnabled())
                       .SetFocusBehavior(views::View::FocusBehavior::ALWAYS)
-                      .SetProminent(true))
+                      .SetStyle(ui::ButtonStyle::kProminent))
         .BuildChildren();
   }
 }

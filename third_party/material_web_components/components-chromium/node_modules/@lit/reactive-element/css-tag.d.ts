@@ -14,12 +14,12 @@ export declare const supportsAdoptingStyleSheets: boolean;
  * object can be used for styling along side CSSResult from the `css`
  * template tag.
  */
-export declare type CSSResultOrNative = CSSResult | CSSStyleSheet;
-export declare type CSSResultArray = Array<CSSResultOrNative | CSSResultArray>;
+export type CSSResultOrNative = CSSResult | CSSStyleSheet;
+export type CSSResultArray = Array<CSSResultOrNative | CSSResultArray>;
 /**
  * A single CSSResult, CSSStyleSheet, or an array or nested arrays of those.
  */
-export declare type CSSResultGroup = CSSResultOrNative | CSSResultArray;
+export type CSSResultGroup = CSSResultOrNative | CSSResultArray;
 /**
  * A container for a string of CSS text, that may be used to create a CSSStyleSheet.
  *

@@ -19,14 +19,13 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/variant_util.h"
+#include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
 #include "components/performance_manager/resource_attribution/query_params.h"
 
-namespace performance_manager::resource_attribution {
+namespace performance_manager::resource_attribution::internal {
 
 namespace {
-
-using QueryParams = internal::QueryParams;
 
 // A global singleton that holds the TaskRunner the QueryScheduler runs on. In
 // production this is the PM graph sequence, but in unit tests it can be the
@@ -204,8 +203,10 @@ void QueryScheduler::OnPassedToGraph(Graph* graph) {
   CHECK_EQ(graph_, nullptr);
   graph_ = graph;
   graph_->RegisterObject(this);
-  SchedulerTaskRunner::GetInstance()->OnSchedulerPassedToGraph(graph);
   memory_provider_.emplace(graph);
+  graph->GetNodeDataDescriberRegistry()->RegisterDescriber(&cpu_monitor_,
+                                                           "CpuAttribution");
+  SchedulerTaskRunner::GetInstance()->OnSchedulerPassedToGraph(graph);
 }
 
 void QueryScheduler::OnTakenFromGraph(Graph* graph) {
@@ -214,6 +215,7 @@ void QueryScheduler::OnTakenFromGraph(Graph* graph) {
   graph_->UnregisterObject(this);
   graph_ = nullptr;
   SchedulerTaskRunner::GetInstance()->OnSchedulerTakenFromGraph(graph);
+  graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(&cpu_monitor_);
   if (cpu_query_count_ > 0) {
     cpu_monitor_.StopMonitoring();
   }
@@ -281,7 +283,7 @@ void QueryScheduler::RemoveMemoryQuery() {
 }
 
 void QueryScheduler::OnResultsReceived(
-    const internal::ContextCollection& contexts,
+    const ContextCollection& contexts,
     base::OnceCallback<void(const QueryResultMap&)> callback,
     const std::vector<SingleQueryResultMap>& results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -296,4 +298,4 @@ void QueryScheduler::OnResultsReceived(
   std::move(callback).Run(merged_results);
 }
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace performance_manager::resource_attribution::internal

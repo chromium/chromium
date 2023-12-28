@@ -682,8 +682,7 @@ static AXObject* GetDeepestAXChildInLayoutTree(AXObject* start_object,
     if (!current_node)
       break;
 
-    AXObject* tentative_child =
-        start_object->AXObjectCache().GetOrCreate(current_node);
+    AXObject* tentative_child = start_object->AXObjectCache().Get(current_node);
 
     if (tentative_child && tentative_child->AccessibilityIsIncludedInTree())
       result = tentative_child;
@@ -757,13 +756,24 @@ AXObject* AXLayoutObject::NextOnLine() const {
   // Found cursor: use it to find next inline leaf.
   if (cursor) {
     cursor.MoveToNextInlineLeafOnLine();
-    if (cursor) {
+    while (cursor) {
       LayoutObject* runner_layout_object = cursor.CurrentMutableLayoutObject();
       DCHECK(runner_layout_object);
-      AXObject* result = AXObjectCache().GetOrCreate(runner_layout_object);
+      AXObject* result = AXObjectCache().Get(runner_layout_object);
+
+      bool is_inert = result ? result->IsInert() : false;
+
       result = GetDeepestAXChildInLayoutTree(result, true);
-      if (result)
+      if (result) {
         return result;
+      }
+
+      // We want to continue searching for the next inline leaf if the
+      // current one is inert.
+      if (!is_inert) {
+        break;
+      }
+      cursor.MoveToNextInlineLeafOnLine();
     }
   }
 
@@ -841,13 +851,24 @@ AXObject* AXLayoutObject::PreviousOnLine() const {
   // Found cursor: use it to find previous inline leaf.
   if (cursor) {
     cursor.MoveToPreviousInlineLeafOnLine();
-    if (cursor) {
+    while (cursor) {
       LayoutObject* runner_layout_object = cursor.CurrentMutableLayoutObject();
       DCHECK(runner_layout_object);
-      AXObject* result = AXObjectCache().GetOrCreate(runner_layout_object);
+      AXObject* result = AXObjectCache().Get(runner_layout_object);
+
+      bool is_inert = result ? result->IsInert() : false;
+
       result = GetDeepestAXChildInLayoutTree(result, false);
-      if (result)
+      if (result) {
         return result;
+      }
+
+      // We want to continue searching for the previous inline leaf if the
+      // current one is inert.
+      if (!is_inert) {
+        break;
+      }
+      cursor.MoveToPreviousInlineLeafOnLine();
     }
   }
 
@@ -997,7 +1018,7 @@ AXObject* AXLayoutObject::AccessibilityHitTest(const gfx::Point& point) const {
   }
 
   LayoutObject* obj = node->GetLayoutObject();
-  AXObject* result = AXObjectCache().GetOrCreate(obj);
+  AXObject* result = AXObjectCache().Get(obj);
   if (!result)
     return nullptr;
   result->UpdateChildrenIfNecessary();
@@ -1011,8 +1032,9 @@ AXObject* AXLayoutObject::AccessibilityHitTest(const gfx::Point& point) const {
     // control. The label is ignored because it's already reflected in the name.
     if (auto* label = DynamicTo<HTMLLabelElement>(result->GetNode())) {
       if (HTMLElement* control = label->control()) {
-        if (AXObject* ax_control = AXObjectCache().GetOrCreate(control))
+        if (AXObject* ax_control = AXObjectCache().Get(control)) {
           return ax_control;
+        }
       }
     }
 
@@ -1183,7 +1205,7 @@ AXObject* AXLayoutObject::CellForColumnAndRow(unsigned target_column_index,
             target_column_index <= effective_last_col &&
             target_row_index >= row_index &&
             target_row_index < row_index + row_span) {
-          return AXObjectCache().GetOrCreate(cell);
+          return AXObjectCache().Get(cell);
         }
       }
     }
@@ -1208,7 +1230,7 @@ bool AXLayoutObject::FindAllTableCellsWithRole(ax::mojom::blink::Role role,
          row = row->NextRow()) {
       for (LayoutTableCell* cell = row->FirstCell(); cell;
            cell = cell->NextCell()) {
-        AXObject* ax_cell = AXObjectCache().GetOrCreate(cell);
+        AXObject* ax_cell = AXObjectCache().Get(cell);
         if (ax_cell && ax_cell->RoleValue() == role)
           cells.push_back(ax_cell);
       }
@@ -1240,7 +1262,7 @@ AXObject* AXLayoutObject::HeaderObject() const {
 
   for (LayoutTableCell* cell = row->FirstCell(); cell;
        cell = cell->NextCell()) {
-    AXObject* ax_cell = cell ? AXObjectCache().GetOrCreate(cell) : nullptr;
+    AXObject* ax_cell = cell ? AXObjectCache().Get(cell) : nullptr;
     if (ax_cell && ax_cell->RoleValue() == ax::mojom::blink::Role::kRowHeader)
       return ax_cell;
   }
@@ -1281,7 +1303,7 @@ AXObject* AXLayoutObject::AccessibilityImageMapHitTest(
   if (!area)
     return nullptr;
 
-  AXObject* parent = AXObjectCache().GetOrCreate(area->ImageElement());
+  AXObject* parent = AXObjectCache().Get(area->ImageElement());
   if (!parent)
     return nullptr;
 

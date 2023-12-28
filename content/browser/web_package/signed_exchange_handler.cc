@@ -83,19 +83,17 @@ bool IsSupportedSignedExchangeVersion(
   return version == SignedExchangeVersion::kB3;
 }
 
-using VerifyCallback = base::OnceCallback<
-    void(int32_t, const net::CertVerifyResult&, bool, const std::string&)>;
+using VerifyCallback =
+    base::OnceCallback<void(int32_t, const net::CertVerifyResult&, bool)>;
 
 void VerifyCert(const scoped_refptr<net::X509Certificate>& certificate,
                 const GURL& url,
-                const net::NetworkAnonymizationKey& network_anonymization_key,
                 const std::string& ocsp_result,
                 const std::string& sct_list,
                 int frame_tree_node_id,
                 VerifyCallback callback) {
   VerifyCallback wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      std::move(callback), net::ERR_FAILED, net::CertVerifyResult(), false,
-      std::string());
+      std::move(callback), net::ERR_FAILED, net::CertVerifyResult(), false);
 
   network::mojom::NetworkContext* network_context =
       g_network_context_for_testing;
@@ -111,8 +109,7 @@ void VerifyCert(const scoped_refptr<net::X509Certificate>& certificate,
   }
 
   network_context->VerifyCertForSignedExchange(
-      certificate, url, network_anonymization_key, ocsp_result, sct_list,
-      std::move(wrapped_callback));
+      certificate, url, ocsp_result, sct_list, std::move(wrapped_callback));
 }
 
 std::string OCSPErrorToString(const bssl::OCSPVerifyResult& ocsp_result) {
@@ -175,7 +172,6 @@ SignedExchangeHandler::SignedExchangeHandler(
     std::unique_ptr<net::SourceStream> body,
     ExchangeHeadersCallback headers_callback,
     std::unique_ptr<SignedExchangeCertFetcherFactory> cert_fetcher_factory,
-    const net::NetworkAnonymizationKey& network_anonymization_key,
     const absl::optional<net::IsolationInfo> outer_request_isolation_info,
     int load_flags,
     const net::IPEndPoint& remote_endpoint,
@@ -189,7 +185,6 @@ SignedExchangeHandler::SignedExchangeHandler(
       source_(std::move(body)),
       cert_fetcher_factory_(std::move(cert_fetcher_factory)),
       devtools_proxy_(std::move(devtools_proxy)),
-      network_anonymization_key_(network_anonymization_key),
       outer_request_isolation_info_(std::move(outer_request_isolation_info)),
       load_flags_(load_flags),
       remote_endpoint_(remote_endpoint),
@@ -533,8 +528,7 @@ void SignedExchangeHandler::OnCertReceived(
   //   property, or
   const std::string& stapled_ocsp_response = unverified_cert_chain_->ocsp();
 
-  VerifyCert(certificate, url, network_anonymization_key_,
-             stapled_ocsp_response, sct_list_from_cert_cbor,
+  VerifyCert(certificate, url, stapled_ocsp_response, sct_list_from_cert_cbor,
              frame_tree_node_id_,
              base::BindOnce(&SignedExchangeHandler::OnVerifyCert,
                             weak_factory_.GetWeakPtr()));
@@ -603,11 +597,9 @@ bool SignedExchangeHandler::CheckOCSPStatus(
   return false;
 }
 
-void SignedExchangeHandler::OnVerifyCert(
-    int32_t error_code,
-    const net::CertVerifyResult& cv_result,
-    bool pkp_bypassed,
-    const std::string& pinning_failure_log) {
+void SignedExchangeHandler::OnVerifyCert(int32_t error_code,
+                                         const net::CertVerifyResult& cv_result,
+                                         bool pkp_bypassed) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
                "SignedExchangeHandler::OnCertVerifyComplete");
   // net::Error codes are negative, so we put - in front of it.
@@ -675,7 +667,6 @@ void SignedExchangeHandler::OnVerifyCert(
   ssl_info.is_issued_by_known_root = cv_result.is_issued_by_known_root;
   ssl_info.pkp_bypassed = pkp_bypassed;
   ssl_info.public_key_hashes = cv_result.public_key_hashes;
-  ssl_info.pinning_failure_log = pinning_failure_log;
   ssl_info.ocsp_result = cv_result.ocsp_result;
   ssl_info.is_fatal_cert_error = net::IsCertStatusError(ssl_info.cert_status);
   ssl_info.signed_certificate_timestamps = cv_result.scts;

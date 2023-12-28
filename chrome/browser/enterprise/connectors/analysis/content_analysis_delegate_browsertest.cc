@@ -1539,29 +1539,26 @@ class ContentAnalysisDelegateUnauthorizedBrowserTest
     file_scan_ = file_scan;
   }
 
-  // The dialog should only appear on file scans since they need to be opened
-  // asynchronously. This means that the dialog appears when scanning files and
-  // that all the following overrides should be called. Text scans don't have an
-  // asynchronous operation needed before being sent for scanning, so in the
-  // unauthorized case the dialog doesn't need to appear and the assertions will
-  // fail the test if they are reached.
+  // The dialog should appear on blocking scans for both paste and files upload,
+  // because CBUS retries authorizarion check first and then update the scan
+  // result.
   void ConstructorCalled(ContentAnalysisDialog* dialog,
                          base::TimeTicks timestamp) override {
-    ASSERT_TRUE(file_scan_ && blocking_scan());
+    ASSERT_TRUE(blocking_scan());
   }
 
   void ViewsFirstShown(ContentAnalysisDialog* dialog,
                        base::TimeTicks timestamp) override {
-    ASSERT_TRUE(file_scan_ && blocking_scan());
+    ASSERT_TRUE(blocking_scan());
   }
 
   void DialogUpdated(ContentAnalysisDialog* dialog,
                      FinalContentAnalysisResult result) override {
-    ASSERT_TRUE(file_scan_ && blocking_scan());
+    ASSERT_TRUE(blocking_scan());
   }
 
   void DestructorCalled(ContentAnalysisDialog* dialog) override {
-    ASSERT_TRUE(file_scan_ && blocking_scan());
+    ASSERT_TRUE(blocking_scan());
     CallQuitClosure();
   }
 
@@ -1586,6 +1583,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Paste) {
                           content_analysis_run_loop.QuitClosure()));
 
   FakeBinaryUploadServiceStorage()->SetAuthForTesting(dm_token(), false);
+  FakeBinaryUploadServiceStorage()->SetAuthorized(false);
 
   bool called = false;
   base::RunLoop run_loop;
@@ -1609,11 +1607,14 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Paste) {
           }),
       safe_browsing::DeepScanAccessPoint::PASTE);
 
+  // Make sure auth retry fails.
+  FakeBinaryUploadServiceStorage()->ReturnAuthorizedResponse();
+
   run_loop.Run();
   EXPECT_TRUE(called);
 
-  // No requests should be made since the DM token is unauthorized.
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 0);
+  // 1 request to retry authentication.
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 1);
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 0);
 
   // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
@@ -1631,6 +1632,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Files) {
                           content_analysis_run_loop.QuitClosure()));
 
   FakeBinaryUploadServiceStorage()->SetAuthForTesting(dm_token(), false);
+  // Make sure all auth retries fail.
+  FakeBinaryUploadServiceStorage()->SetAuthorized(false);
+  FakeBinaryUploadServiceStorage()->SetShouldAutomaticallyAuthorize(true);
 
   bool called = false;
   base::RunLoop run_loop;
@@ -1669,12 +1673,13 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Files) {
   run_loop.Run();
   EXPECT_TRUE(called);
 
-  // No requests should be made since the DM token is unauthorized.
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 0);
-  ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 0);
-
   // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
   content_analysis_run_loop.Run();
+
+  // Check result after both blocking and non-blocking scan finishes.
+  // 2 request to retry authentication for each file.
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 2);
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 0);
 }
 
 }  // namespace enterprise_connectors

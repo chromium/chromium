@@ -19,7 +19,7 @@ class Profile;
 namespace extensions {
 class Extension;
 class ExtensionRegistry;
-}
+}  // namespace extensions
 
 namespace views {
 class ScrollView;
@@ -32,9 +32,9 @@ class ScrollView;
 class AppInfoDialog : public views::View,
                       public extensions::ExtensionRegistryObserver,
                       public base::SupportsWeakPtr<AppInfoDialog> {
- public:
-  METADATA_HEADER(AppInfoDialog);
+  METADATA_HEADER(AppInfoDialog, views::View)
 
+ public:
   static base::WeakPtr<AppInfoDialog>& GetLastDialogForTesting();
 
   AppInfoDialog(Profile* profile, const extensions::Extension* app);

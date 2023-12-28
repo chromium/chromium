@@ -5,9 +5,9 @@
 #import "components/policy/policy_constants.h"
 #import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
-#import "ios/chrome/browser/policy/policy_app_interface.h"
-#import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
-#import "ios/chrome/browser/policy/policy_util.h"
+#import "ios/chrome/browser/policy/model/policy_app_interface.h"
+#import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
@@ -157,8 +157,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
   // Close settings.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
       performAction:grey_tap()];
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceNotSyncing];
+  [SigninEarlGreyUI signOut];
   [ChromeEarlGreyUI openSettingsMenu];
   // Tap on sign-in cell.
   [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
@@ -218,8 +217,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
   // Close settings.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
       performAction:grey_tap()];
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceNotSyncing];
+  [SigninEarlGreyUI signOut];
   [ChromeEarlGreyUI openSettingsMenu];
   // Tap on sign-in cell.
   [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
@@ -583,8 +581,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
   // Sign-out then forget fakeIdentity1.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
       performAction:grey_tap()];
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceKeepData];
+  [SigninEarlGreyUI signOut];
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity1];
 
   // Tap on sign-in cell in settings for fakeIdentity2.

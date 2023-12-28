@@ -91,7 +91,8 @@ IN_PROC_BROWSER_TEST_F(VirtualKeyboardPrivateApiTest, MAYBE_Multipaste) {
   CopyBitmapItem();
   CopyFileItem();
 
-  ASSERT_TRUE(RunExtensionTest("virtual_keyboard_private", {},
+  ASSERT_TRUE(RunExtensionTest("virtual_keyboard_private",
+                               {.custom_arg = "multipaste"},
                                {.load_as_component = true}))
       << message_;
 }
@@ -108,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(VirtualKeyboardPrivateApiTest, MultipasteLockedScreen) {
   tester.Lock();
 
   ASSERT_TRUE(RunExtensionTest("virtual_keyboard_private",
-                               {.custom_arg = "locked"},
+                               {.custom_arg = "multipasteUnderLockScreen"},
                                {.load_as_component = true}))
       << message_;
 }

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 
 #include "ash/components/arc/arc_util.h"
+#include "ash/constants/ash_features.h"
 #include "base/auto_reset.h"
 #include "base/base64url.h"
 #include "base/files/file_util.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/snapshot_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
@@ -133,6 +135,13 @@ std::string FuseBoxSubdirFSP(
   return base::StrCat({util::kFuseBoxSubdirPrefixFSP, b64});
 }
 
+std::string FuseBoxSubdirLOC(const base::FilePath& path) {
+  std::string hash = crypto::SHA256HashString(path.value());
+  std::string b64;
+  base::Base64UrlEncode(hash, base::Base64UrlEncodePolicy::OMIT_PADDING, &b64);
+  return base::StrCat({util::kFuseBoxSubdirPrefixLOC, b64});
+}
+
 std::string FuseBoxSubdirMTP(const std::string& device_id) {
   // Derive the subdir name from the MTP device ID (which is stable even after
   // unplugging and replugging a phone). It's a hash of the ID, not the ID
@@ -182,6 +191,48 @@ void RecordDownloadsDiskUsageStats(base::FilePath downloads_path) {
         "FileBrowser.Downloads.DirectoryPercentageOfDiskUsage",
         percentage_space_used);
   }
+}
+
+std::unique_ptr<Volume> CreateForFuseBoxDownloads(
+    Profile* profile,
+    file_manager::FuseBoxDaemon* fusebox_daemon,
+    const char* fusebox_volume_label) {
+  if (!profile || !fusebox_daemon) {
+    return nullptr;
+  }
+
+  // Get the FileSystemURL for the underlying Downloads folder.
+  GURL gurl;
+  base::FilePath downloads_path = util::GetDownloadsFolderForProfile(profile);
+  if (!util::ConvertAbsoluteFilePathToFileSystemUrl(
+          profile, downloads_path, util::GetFileManagerURL(), &gurl)) {
+    LOG(ERROR) << "could not convert Downloads to FileSystemURL";
+    return nullptr;
+  }
+
+  // Attach the Downloads directory to the fusebox daemon.
+  std::string subdir = FuseBoxSubdirLOC(downloads_path);
+  static constexpr bool read_only = false;
+  fusebox_daemon->AttachStorage(subdir, gurl.spec(), read_only);
+
+  // Create a Volume for the fusebox edition of Downloads.
+  std::unique_ptr<Volume> fusebox_volume = Volume::CreateForDownloads(
+      {}, base::FilePath(util::kFuseBoxMediaPath).Append(subdir),
+      fusebox_volume_label);
+
+  // Register the fusebox file system with chrome::storage.
+  const std::string fusebox_fsid =
+      base::StrCat({util::kFuseBoxMountNamePrefix, subdir});
+  if (!FindExternalMountPoint(fusebox_fsid)) {
+    auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
+    bool result = mount_points->RegisterFileSystem(
+        fusebox_fsid, storage::kFileSystemTypeFuseBox,
+        storage::FileSystemMountOption(), fusebox_volume->mount_path());
+    LOG_IF(ERROR, !result) << "invalid FuseBox Downloads mount path";
+    DCHECK(result);
+  }
+
+  return fusebox_volume;
 }
 
 }  // namespace
@@ -239,6 +290,12 @@ void VolumeManager::Initialize() {
   DCHECK(success);
 
   DoMountEvent(Volume::CreateForDownloads(localVolume));
+  if (ash::features::IsFileManagerFuseBoxDebugEnabled()) {
+    if (auto volume = CreateForFuseBoxDownloads(profile_, fusebox_daemon_.get(),
+                                                "fusebox Downloads")) {
+      DoMountEvent(std::move(volume));
+    }
+  }
 
   // Asynchronously record the disk usage for the downloads path.
   base::ThreadPool::PostTask(
@@ -865,11 +922,9 @@ void VolumeManager::OnProvidedFileSystemMount(
   fusebox_daemon_->AttachStorage(subdir, url, !file_system_info.writable());
 
   // Create a Volume for the fusebox FSP storage device.
-  const base::FilePath mount_path =
-      base::FilePath(util::kFuseBoxMediaPath).Append(subdir);
-  std::unique_ptr<Volume> fusebox_volume =
-      Volume::CreateForFuseBoxProvidedFileSystem(mount_path, file_system_info,
-                                                 volume_context);
+  std::unique_ptr<Volume> fusebox_volume = Volume::CreateForProvidedFileSystem(
+      file_system_info, volume_context,
+      base::FilePath(util::kFuseBoxMediaPath).Append(subdir));
 
   // Register the fusebox FSP storage device with chrome::storage.
   const std::string fusebox_fsid = base::StrCat(
@@ -918,11 +973,9 @@ void VolumeManager::OnProvidedFileSystemUnmount(
   const std::string subdir = FuseBoxSubdirFSP(file_system_info);
 
   // Unmount the fusebox FSP storage device in files app.
-  const base::FilePath mount_path =
-      base::FilePath(util::kFuseBoxMediaPath).Append(subdir);
-  std::unique_ptr<Volume> fusebox_volume =
-      Volume::CreateForFuseBoxProvidedFileSystem(mount_path, file_system_info,
-                                                 MOUNT_CONTEXT_UNKNOWN);
+  std::unique_ptr<Volume> fusebox_volume = Volume::CreateForProvidedFileSystem(
+      file_system_info, MOUNT_CONTEXT_UNKNOWN,
+      base::FilePath(util::kFuseBoxMediaPath).Append(subdir));
   DoUnmountEvent(*fusebox_volume, mount_error);
 
   // Remove the fusebox FSP storage device from chrome::storage.
@@ -1124,10 +1177,9 @@ void VolumeManager::DoAttachMtpStorage(
   fusebox_daemon_->AttachStorage(subdir, url, read_only);
 
   // Create a Volume for the fusebox MTP storage device.
-  const base::FilePath mount_path =
-      base::FilePath(util::kFuseBoxMediaPath).Append(subdir);
-  std::unique_ptr<Volume> fusebox_volume =
-      Volume::CreateForFuseBoxMTP(mount_path, label, read_only);
+  std::unique_ptr<Volume> fusebox_volume = Volume::CreateForMTP(
+      base::FilePath(util::kFuseBoxMediaPath).Append(subdir), label, read_only,
+      /*use_fusebox=*/true);
 
   // Register the fusebox MTP storage device with chrome::storage.
   const std::string fusebox_fsid =

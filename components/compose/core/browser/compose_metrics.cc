@@ -23,13 +23,23 @@ const char kComposeSessionCloseReason[] = "Compose.Session.CloseReason";
 const char kComposeSessionDialogShownCount[] =
     "Compose.Session.DialogShownCount";
 const char kComposeSessionUndoCount[] = "Compose.Session.UndoCount";
+const char kComposeSessionUpdateInputCount[] =
+    "Compose.Session.SubmitEditCount";
 const char kComposeShowStatus[] = "Compose.ContextMenu.ShowStatus";
 const char kComposeConsentSessionCloseReason[] =
     "Compose.Session.Consent.CloseReason";
 const char kComposeConsentSessionDialogShownCount[] =
     "Compose.Session.Consent.DialogShownCount";
+const char kComposeMSBBSessionCloseReason[] =
+    "Compose.Session.FRE.MSBB.CloseReason";
+const char kComposeMSBBSessionDialogShownCount[] =
+    "Compose.Session.FRE.MSBB.DialogShownCount";
 const char kComposeSessionConsentGivenInSession[] =
     "Compose.Session.Consent.GivenInSession";
+const char kComposeFirstRunSessionCloseReason[] =
+    "Compose.Session.FRE.Disclaimer.CloseReason";
+const char kComposeFirstRunSessionDialogShownCount[] =
+    "Compose.Session.FRE.Disclaimer.DialogShownCount";
 
 void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event) {
   UMA_HISTOGRAM_ENUMERATION("Compose.ContextMenu.CTR", event);
@@ -45,9 +55,38 @@ void LogComposeRequestDuration(base::TimeDelta duration, bool is_valid) {
       duration);
 }
 
+void LogComposeFirstRunSessionCloseReason(
+    ComposeFirstRunSessionCloseReason reason) {
+  base::UmaHistogramEnumeration(kComposeFirstRunSessionCloseReason, reason);
+}
+
+void LogComposeFirstRunSessionDialogShownCount(
+    ComposeFirstRunSessionCloseReason reason,
+    int dialog_shown_count) {
+  std::string status;
+  switch (reason) {
+    case ComposeFirstRunSessionCloseReason::
+        kFirstRunDisclaimerAcknowledgedWithoutInsert:
+    case ComposeFirstRunSessionCloseReason::
+        kFirstRunDisclaimerAcknowledgedWithInsert:
+      status = ".Acknowledged";
+      break;
+    case ComposeFirstRunSessionCloseReason::kCloseButtonPressed:
+    case ComposeFirstRunSessionCloseReason::kEndedImplicitly:
+    case ComposeFirstRunSessionCloseReason::kNewSessionWithSelectedText:
+      status = ".Ignored";
+  }
+  base::UmaHistogramCounts1000(kComposeFirstRunSessionDialogShownCount + status,
+                               dialog_shown_count);
+}
+
 void LogComposeConsentSessionCloseReason(
     ComposeConsentSessionCloseReason reason) {
   base::UmaHistogramEnumeration(kComposeConsentSessionCloseReason, reason);
+}
+
+void LogComposeMSBBSessionCloseReason(ComposeMSBBSessionCloseReason reason) {
+  base::UmaHistogramEnumeration(kComposeMSBBSessionCloseReason, reason);
 }
 
 void LogComposeConsentSessionDialogShownCount(
@@ -72,10 +111,27 @@ void LogComposeConsentSessionDialogShownCount(
                                dialog_shown_count);
 }
 
+void LogComposeMSBBSessionDialogShownCount(ComposeMSBBSessionCloseReason reason,
+                                           int dialog_shown_count) {
+  std::string status;
+  switch (reason) {
+    case ComposeMSBBSessionCloseReason::kMSBBAcceptedWithoutInsert:
+    case ComposeMSBBSessionCloseReason::kMSBBAcceptedWithInsert:
+      status = ".Accepted";
+      break;
+    case ComposeMSBBSessionCloseReason::kMSBBEndedImplicitly:
+    case ComposeMSBBSessionCloseReason::kMSBBCloseButtonPressed:
+      status = ".Ignored";
+  }
+  base::UmaHistogramCounts1000(kComposeMSBBSessionDialogShownCount + status,
+                               dialog_shown_count);
+}
+
 void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
                                    int compose_count,
                                    int dialog_shown_count,
                                    int undo_count,
+                                   int update_input_count_,
                                    bool consent_given_in_session) {
   base::UmaHistogramEnumeration(kComposeSessionCloseReason, reason);
   base::UmaHistogramBoolean(kComposeSessionConsentGivenInSession,
@@ -96,6 +152,8 @@ void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
   base::UmaHistogramCounts1000(kComposeSessionDialogShownCount + status,
                                dialog_shown_count);
   base::UmaHistogramCounts1000(kComposeSessionUndoCount + status, undo_count);
+  base::UmaHistogramCounts1000(kComposeSessionUpdateInputCount + status,
+                               update_input_count_);
 }
 
 void LogComposeDialogInnerTextShortenedBy(int shortened_by) {
@@ -117,4 +175,5 @@ void LogComposeDialogSelectionLength(int length) {
   base::UmaHistogramCustomCounts(kComposeDialogSelectionLength, length, 1,
                                  max_selection_size + 1, 100);
 }
+
 }  // namespace compose

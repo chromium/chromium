@@ -110,7 +110,7 @@ class HoldingSpaceControllerProgressIndicator
 
   // The associated holding space `controller_` for which to indicate progress
   // of all holding space items in its attached model.
-  const raw_ptr<HoldingSpaceController, ExperimentalAsh> controller_;
+  const raw_ptr<HoldingSpaceController> controller_;
 
   base::ScopedObservation<HoldingSpaceController,
                           HoldingSpaceControllerObserver>
@@ -165,7 +165,7 @@ class HoldingSpaceItemProgressIndicator : public ProgressIndicator,
 
   // The associated holding space `item` for which to indicate progress.
   // NOTE: May temporarily be `nullptr` during the `item`s destruction sequence.
-  raw_ptr<const HoldingSpaceItem, ExperimentalAsh> item_ = nullptr;
+  raw_ptr<const HoldingSpaceItem> item_ = nullptr;
 
   base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
       model_observation_{this};

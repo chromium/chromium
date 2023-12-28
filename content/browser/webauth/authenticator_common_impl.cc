@@ -478,6 +478,33 @@ blink::mojom::PRFValuesPtr PRFResultsToValues(
   return prf_values;
 }
 
+void SetHints(AuthenticatorRequestClientDelegate* request_delegate,
+              const base::flat_set<blink::mojom::Hint> hints) {
+  // The first recognised transport takes priority.
+  absl::optional<device::FidoTransportProtocol> transport;
+  for (const auto hint : hints) {
+    switch (hint) {
+      case blink::mojom::Hint::SECURITY_KEY:
+        transport = transport.value_or(
+            device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
+        break;
+      case blink::mojom::Hint::CLIENT_DEVICE:
+        transport =
+            transport.value_or(device::FidoTransportProtocol::kInternal);
+        break;
+      case blink::mojom::Hint::HYBRID:
+        transport = transport.value_or(device::FidoTransportProtocol::kHybrid);
+        break;
+    }
+  }
+
+  if (transport) {
+    AuthenticatorRequestClientDelegate::Hints delegate_hints;
+    delegate_hints.transport = transport;
+    request_delegate->SetHints(delegate_hints);
+  }
+}
+
 }  // namespace
 
 // RequestState contains all state that is specific to a single WebAuthn call.
@@ -529,6 +556,8 @@ struct AuthenticatorCommonImpl::RequestState {
   // is_payment_request indicates that the current request is Secure Payment
   // Confirmation-related.
   bool is_payment_request = false;
+  // The hints set by the request, if any.
+  base::flat_set<blink::mojom::Hint> hints;
 
   base::flat_set<RequestExtension> requested_extensions;
 
@@ -603,6 +632,7 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
       GetWebAuthenticationDelegate()->IsEnclaveAuthenticatorAvailable(
           GetBrowserContext()),
       discovery_factory());
+  SetHints(req_state_->request_delegate.get(), req_state_->hints);
 
   req_state_->make_credential_options->allow_skipping_pin_touch =
       allow_skipping_pin_touch;
@@ -659,6 +689,7 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
   discovery_factory()->set_get_assertion_request_for_legacy_credential_check(
       *req_state_->ctap_get_assertion_request);
 #endif
+  SetHints(req_state_->request_delegate.get(), req_state_->hints);
 
   base::flat_set<device::FidoTransportProtocol> transports =
       GetWebAuthnTransports(
@@ -715,6 +746,7 @@ void AuthenticatorCommonImpl::MakeCredential(
 
   req_state_->make_credential_response_callback = std::move(callback);
   req_state_->is_payment_request = options->is_payment_credential_creation;
+  req_state_->hints.insert(options->hints.begin(), options->hints.end());
 
   // TODO(crbug.com/1459443): remove this and everything else from
   // the CL that added it if this is unused by June 2024.
@@ -1028,6 +1060,7 @@ void AuthenticatorCommonImpl::GetAssertion(
 
   req_state_->get_assertion_response_callback = std::move(callback);
   req_state_->is_payment_request = !payment_options.is_null();
+  req_state_->hints.insert(options->hints.begin(), options->hints.end());
 
   // TODO(crbug.com/1459443): remove this and everything else from
   // the CL that added it if this is unused by June 2024.

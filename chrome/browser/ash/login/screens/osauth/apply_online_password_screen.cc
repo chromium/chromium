@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/osauth/apply_online_password_screen.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
@@ -64,14 +65,14 @@ void ApplyOnlinePasswordScreen::HideImpl() {
 }
 
 bool ApplyOnlinePasswordScreen::MaybeSkip(WizardContext& wizard_context) {
-  CHECK(features::AreLocalPasswordsEnabledForConsumers());
   return false;
 }
 
 void ApplyOnlinePasswordScreen::InspectContext(UserContext* user_context) {
   if (!user_context) {
     LOG(ERROR) << "Session expired while waiting for user's decision";
-    exit_callback_.Run(Result::kSuccess);
+    context()->osauth_error = WizardContext::OSAuthErrorKind::kFatal;
+    exit_callback_.Run(Result::kError);
     return;
   }
   CHECK(user_context->HasAuthFactorsConfiguration());
@@ -90,10 +91,22 @@ void ApplyOnlinePasswordScreen::SetOnlinePassword() {
           quick_unlock::QuickUnlockFactory::GetDelegate(),
           g_browser_process->local_state());
 
-  password_factor_editor.SetOnlinePassword(
-      GetToken(), online_password_.value().value(),
-      base::BindOnce(&ApplyOnlinePasswordScreen::OnOnlinePasswordSet,
-                     weak_ptr_factory_.GetWeakPtr()));
+  if (context()->knowledge_factor_setup.auth_setup_flow ==
+      WizardContext::AuthChangeFlow::kInitialSetup) {
+    CHECK(!auth_factors_config_.HasConfiguredFactor(
+        cryptohome::AuthFactorType::kPassword));
+    password_factor_editor.SetOnlinePassword(
+        GetToken(), online_password_.value().value(),
+        base::BindOnce(&ApplyOnlinePasswordScreen::OnOnlinePasswordSet,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    CHECK(auth_factors_config_.HasConfiguredFactor(
+        cryptohome::AuthFactorType::kPassword));
+    password_factor_editor.UpdateOnlinePassword(
+        GetToken(), online_password_.value().value(),
+        base::BindOnce(&ApplyOnlinePasswordScreen::OnOnlinePasswordSet,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void ApplyOnlinePasswordScreen::OnOnlinePasswordSet(
@@ -103,6 +116,8 @@ void ApplyOnlinePasswordScreen::OnOnlinePasswordSet(
     exit_callback_.Run(Result::kError);
     LOG(ERROR) << "Could not set online password";
   } else {
+    context()->knowledge_factor_setup.modified_factors.Put(
+        AshAuthFactor::kGaiaPassword);
     exit_callback_.Run(Result::kSuccess);
   }
 }

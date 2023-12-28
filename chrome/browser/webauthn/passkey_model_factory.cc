@@ -32,9 +32,10 @@ PasskeyModelFactory::PasskeyModelFactory()
           "PasskeyModel",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
-              // TODO(crbug.com/1418376): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              // Enable PasskeyModel for guest profiles. Guest profiles are
+              // never signed in so they don't have have access to GPM passkeys,
+              // but this simplifies handling by clients.
+              .WithGuest(ProfileSelection::kOffTheRecordOnly)
               .Build()) {
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
   if (base::FeatureList::IsEnabled(
@@ -52,8 +53,11 @@ PasskeyModelFactory::BuildServiceInstanceForBrowserContext(
   DCHECK(base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials));
   auto sync_bridge = std::make_unique<webauthn::PasskeySyncBridge>(
       ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
+  // Do not instantiate the affiliation service for guest profiles, since the
+  // password manager does not run for them.
   if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasskeysPrefetchAffiliations)) {
+          password_manager::features::kPasskeysPrefetchAffiliations) &&
+      !profile->IsGuestSession()) {
     AffiliationsPrefetcherFactory::GetForProfile(profile)->RegisterPasskeyModel(
         sync_bridge.get());
   }

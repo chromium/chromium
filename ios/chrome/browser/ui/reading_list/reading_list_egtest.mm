@@ -17,14 +17,23 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/sync/base/features.h"
+#import "components/sync/base/user_selectable_type.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_constants.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_egtest_utils.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
@@ -48,6 +57,7 @@
 
 using base::test::ios::kWaitForUIElementTimeout;
 using chrome_test_util::DeleteButton;
+using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::ReadingListMarkAsReadButton;
 using chrome_test_util::ReadingListMarkAsUnreadButton;
 using reading_list_test_utils::AddedToLocalReadingListSnackbar;
@@ -453,6 +463,26 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 @implementation ReadingListTestCase
 @synthesize serverRespondsWithContent = _serverRespondsWithContent;
 @synthesize serverResponseDelay = _serverResponseDelay;
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+
+  if ([self isRunningTest:@selector
+            (testReviewAccountSettingsPromoWithReadingListToggleDisabled)] ||
+      [self isRunningTest:@selector
+            (testAccountSettingsPromoIfSyncToSigninEnabledWithReadingListOn)] ||
+      [self isRunningTest:@selector
+            (testAccountSettingsViewedFroReadingListManager)] ||
+      [self isRunningTest:@selector
+            (testSignOutFromAccountSettingsFromReadingListManager)] ||
+      [self isRunningTest:@selector(testSigninToReviewAccountSettingsPromo)]) {
+    config.features_enabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+    config.features_enabled.push_back(kEnableReviewAccountSettingsPromo);
+  }
+
+  return config;
+}
 
 - (void)setUp {
   [super setUp];
@@ -1246,11 +1276,216 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   [self verifyReadingListIsEmpty];
 }
 
+// Tests that review account settings promo is shown if the user is signed in
+// only but reading list account storage is off and gets removed after enabling
+// the toggle.
+- (void)testReviewAccountSettingsPromoWithReadingListToggleDisabled {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  // By default, `signinWithFakeIdentity` above enables reading list data type,
+  // so turn it off.
+  [SigninEarlGreyAppInterface
+      setSelectedType:(syncer::UserSelectableType::kReadingList)
+              enabled:NO];
+
+  OpenReadingList();
+  [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
+                        SigninPromoViewModeSignedInWithPrimaryAccount];
+
+  // Open the settings using the sign-in promo.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kManageSyncTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Turn Reading List On.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSyncReadingListIdentifier)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(/*on=*/YES)];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify that the promo disappears.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   chrome_test_util::SettingsDoneButton(),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+}
+
+// Tests that review account settings promo is not shown if the user is signed
+// in only and reading list account storage is already enabled.
+- (void)testAccountSettingsPromoIfSyncToSigninEnabledWithReadingListOn {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  OpenReadingList();
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+}
+
+// Tests that account settings are viewed from the reading list manager and
+// account gets removed.
+- (void)testAccountSettingsViewedFroReadingListManager {
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+
+  // By default, `signinWithFakeIdentity` above enables reading list data type,
+  // so turn it off.
+  [SigninEarlGreyAppInterface
+      setSelectedType:(syncer::UserSelectableType::kReadingList)
+              enabled:NO];
+  OpenReadingList();
+  [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
+                        SigninPromoViewModeSignedInWithPrimaryAccount];
+
+  // Open the settings using the sign-in promo.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kManageSyncTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Remove identity from device.
+  [SigninEarlGrey forgetFakeIdentity:fakeIdentity1];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [SigninEarlGrey verifySignedOut];
+
+  // Verify that Account Settings is closed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kManageSyncTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+  // Sign in promo shows.
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
+}
+
+// Tests review account settings promo changes to a sign-in promo after signing
+// out from account settings.
+- (void)testSignOutFromAccountSettingsFromReadingListManager {
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+
+  // By default, `signinWithFakeIdentity` above enables reading list data type,
+  // so turn it off.
+  [SigninEarlGreyAppInterface
+      setSelectedType:(syncer::UserSelectableType::kReadingList)
+              enabled:NO];
+  OpenReadingList();
+  [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
+                        SigninPromoViewModeSignedInWithPrimaryAccount];
+
+  // Open the settings using the sign-in promo.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kManageSyncTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Scroll to the bottom to view the signout button.
+  id<GREYMatcher> scroll_view_matcher =
+      grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
+  [[EarlGrey selectElementWithMatcher:scroll_view_matcher]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  // Tap the "Sign out" button.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM))]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [SigninEarlGrey verifySignedOut];
+
+  // Verify that Account Settings is closed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kManageSyncTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+
+  // Dismiss sign out snackbar.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityLabel(l10n_util::GetNSString(
+              IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE))]
+      performAction:grey_tap()];
+
+  // Sign in promo shows and try to sign in succeeds.
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     (IDS_IOS_SIGNIN_PROMO_REVIEW_READING_LIST_SETTINGS)))]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity1];
+}
+
+// Tests sign-in promo changes to review account settings promo after signing
+// in.
+- (void)testSigninToReviewAccountSettingsPromo {
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+
+  // By default, `signinWithFakeIdentity` above enables reading list data type,
+  // so turn it off.
+  [SigninEarlGreyAppInterface
+      setSelectedType:(syncer::UserSelectableType::kReadingList)
+              enabled:NO];
+
+  // Sign out.
+  [SigninEarlGreyUI signOut];
+
+  // Sign in from Reading List promo.
+  OpenReadingList();
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSStringF(
+                                   IDS_IOS_SIGNIN_SNACKBAR_SIGNED_IN_AS,
+                                   base::SysNSStringToUTF16(
+                                       fakeIdentity1.userEmail)))]
+      performAction:grey_tap()];
+
+  // Verify Account Settings promo shows.
+  [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
+                        SigninPromoViewModeSignedInWithPrimaryAccount];
+
+  // Open the settings using the sign-in promo.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  // Verify Account Settings are viewed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kManageSyncTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 #pragma mark - Multiwindow
 
 // Tests the Open in New Window context menu action for a reading list entry.
 // TODO(crbug.com/1274099): Test is flaky
-- (void)DISABLED_testContextMenuOpenInNewWindow {
+- (void)testContextMenuOpenInNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 

@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
@@ -97,6 +98,7 @@ class CreditCardOtpAuthenticator;
 class CreditCardRiskBasedAuthenticator;
 class FormDataImporter;
 class Iban;
+class IbanAccessManager;
 class IbanManager;
 class LogManager;
 class MerchantPromoCodeManager;
@@ -105,7 +107,6 @@ struct OfferNotificationOptions;
 class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
 class PersonalDataManager;
-class SingleFieldFormFillRouter;
 class StrikeDatabase;
 struct Suggestion;
 class TouchToFillDelegate;
@@ -312,9 +313,9 @@ class AutofillClient : public RiskDataLoader {
                   AutofillSuggestionTriggerSource trigger_source);
     PopupOpenArgs(const PopupOpenArgs&);
     PopupOpenArgs(PopupOpenArgs&&);
-    ~PopupOpenArgs();
     PopupOpenArgs& operator=(const PopupOpenArgs&);
     PopupOpenArgs& operator=(PopupOpenArgs&&);
+    ~PopupOpenArgs();
 
     gfx::RectF element_bounds;
     base::i18n::TextDirection text_direction =
@@ -439,6 +440,9 @@ class AutofillClient : public RiskDataLoader {
   // Gets the IbanManager instance associated with the client.
   virtual IbanManager* GetIbanManager();
 
+  // Gets the IbanAccessManager instance associated with the client.
+  virtual IbanAccessManager* GetIbanAccessManager();
+
   // When the enterprise plus address feature is supported, gets the
   // KeyedService that manages that data.
   virtual plus_addresses::PlusAddressService* GetPlusAddressService();
@@ -460,11 +464,6 @@ class AutofillClient : public RiskDataLoader {
   virtual CreditCardCvcAuthenticator* GetCvcAuthenticator();
   virtual CreditCardOtpAuthenticator* GetOtpAuthenticator();
   virtual CreditCardRiskBasedAuthenticator* GetRiskBasedAuthenticator();
-
-  // Creates and returns a SingleFieldFormFillRouter using the
-  // AutocompleteHistoryManager, IbanManager and MerchantPromoCodeManager
-  // instances associated with the client.
-  std::unique_ptr<SingleFieldFormFillRouter> CreateSingleFieldFormFillRouter();
 
   // Gets the preferences associated with the client.
   virtual PrefService* GetPrefs() = 0;
@@ -663,7 +662,7 @@ class AutofillClient : public RiskDataLoader {
   // as a virtual card. |candidates| must not be empty and has at least one
   // card. Runs |callback| when a card is selected.
   virtual void OfferVirtualCardOptions(
-      const std::vector<CreditCard*>& candidates,
+      const std::vector<raw_ptr<CreditCard, VectorExperimental>>& candidates,
       base::OnceCallback<void(const std::string&)> callback);
 
 #else  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -771,22 +770,16 @@ class AutofillClient : public RiskDataLoader {
   // HasCreditCardScanFeature() returns true.
   virtual void ScanCreditCard(CreditCardScanCallback callback) = 0;
 
-  // Returns true if the Touch To Fill feature is both supported by platform and
-  // enabled. Should be called before |ShowTouchToFillCreditCard| or
-  // |HideTouchToFillCreditCard|.
-  virtual bool IsTouchToFillCreditCardSupported() = 0;
-
   // Shows the Touch To Fill surface for filling credit card information, if
   // possible, and returns |true| on success. |delegate| will be notified of
-  // events. Should be called only if |IsTouchToFillCreditCardSupported|
-  // returns true.
+  // events. Should be called only if the feature is supported by the platform.
   virtual bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const autofill::CreditCard> cards_to_suggest) = 0;
 
   // Hides the Touch To Fill surface for filling credit card information
-  // if one is currently shown. Should be called only if
-  // |IsTouchToFillCreditCardSupported| returns true.
+  // if one is currently shown. Should be called only if the feature is
+  // supported by the platform.
   virtual void HideTouchToFillCreditCard() = 0;
 
   // Shows an Autofill popup with the given |values|, |labels|, |icons|, and

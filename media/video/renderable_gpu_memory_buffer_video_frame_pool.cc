@@ -190,13 +190,15 @@ bool FrameResources::Initialize() {
     return false;
   }
 
+#if BUILDFLAG(IS_MAC)
   gpu_memory_buffer_->SetColorSpace(color_space_);
+#endif
 
   constexpr uint32_t kSharedImageUsage =
 #if BUILDFLAG(IS_MAC)
       gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
 #endif
-      gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_RASTER |
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER |
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   uint32_t texture_target = GL_TEXTURE_2D;

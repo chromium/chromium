@@ -230,7 +230,7 @@ TEST_F(ShoppingListHandlerTest, TestTrackProductSuccess) {
   handler_->TrackPriceForBookmark(product->id());
 
   // Assume the subscription callback fires with a success.
-  handler_->OnSubscribe(CreateUserTrackedSubscription(cluster_id), true);
+  handler_->OnSubscribe(BuildUserSubscriptionForClusterId(cluster_id), true);
 
   task_environment_.RunUntilIdle();
 }
@@ -253,7 +253,7 @@ TEST_F(ShoppingListHandlerTest, TestUntrackProductSuccess) {
   handler_->UntrackPriceForBookmark(product->id());
 
   // Assume the subscription callback fires with a success.
-  handler_->OnUnsubscribe(CreateUserTrackedSubscription(cluster_id), true);
+  handler_->OnUnsubscribe(BuildUserSubscriptionForClusterId(cluster_id), true);
 
   task_environment_.RunUntilIdle();
 }
@@ -280,7 +280,7 @@ TEST_F(ShoppingListHandlerTest, TestTrackProductFailure) {
   handler_->TrackPriceForBookmark(product->id());
 
   // Assume the subscription callback fires with a failure.
-  handler_->OnUnsubscribe(CreateUserTrackedSubscription(cluster_id), false);
+  handler_->OnUnsubscribe(BuildUserSubscriptionForClusterId(cluster_id), false);
 
   task_environment_.RunUntilIdle();
 }
@@ -307,7 +307,7 @@ TEST_F(ShoppingListHandlerTest, TestUntrackProductFailure) {
   handler_->UntrackPriceForBookmark(product->id());
 
   // Assume the subscription callback fires with a failure.
-  handler_->OnUnsubscribe(CreateUserTrackedSubscription(cluster_id), false);
+  handler_->OnUnsubscribe(BuildUserSubscriptionForClusterId(cluster_id), false);
 
   task_environment_.RunUntilIdle();
 }
@@ -321,7 +321,7 @@ TEST_F(ShoppingListHandlerTest, PageUpdateForPriceTrackChange) {
               PriceUntrackedForBookmark(MojoBookmarkInfoWithId(product->id())));
 
   // Assume the plumbing for subscriptions works and fake an unsubscribe event.
-  handler_->OnUnsubscribe(CreateUserTrackedSubscription(123L), true);
+  handler_->OnUnsubscribe(BuildUserSubscriptionForClusterId(123L), true);
 
   task_environment_.RunUntilIdle();
 }
@@ -332,7 +332,7 @@ TEST_F(ShoppingListHandlerTest, TestUnsubscribeCausedByBookmarkDeletion) {
                          MojoBookmarkInfoWithClusterId(cluster_id)))
       .Times(1);
 
-  handler_->OnUnsubscribe(CreateUserTrackedSubscription(cluster_id), true);
+  handler_->OnUnsubscribe(BuildUserSubscriptionForClusterId(cluster_id), true);
 
   task_environment_.RunUntilIdle();
 }
@@ -340,13 +340,16 @@ TEST_F(ShoppingListHandlerTest, TestUnsubscribeCausedByBookmarkDeletion) {
 TEST_F(ShoppingListHandlerTest, TestGetProductInfo_FeatureEnabled) {
   EXPECT_CALL(tracker_, NotifyEvent("price_tracking_side_panel_shown"));
 
+  shopping_service_->SetIsReady(true);
+  shopping_service_->SetIsShoppingListEligible(true);
+
   const bookmarks::BookmarkNode* product = AddProductBookmark(
       bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
       true, 1230000, "usd");
   AddProductBookmark(bookmark_model_.get(), u"product 2",
                      GURL("http://example.com/2"), 456L, false, 4560000, "usd");
   shopping_service_->SetGetAllSubscriptionsCallbackValue(
-      {CreateUserTrackedSubscription(123L)});
+      {BuildUserSubscriptionForClusterId(123L)});
 
   std::vector<const bookmarks::BookmarkNode*> bookmark_list;
   bookmark_list.push_back(product);
@@ -391,6 +394,8 @@ TEST_F(ShoppingListHandlerTest, TestGetAllShoppingInfo_FeatureEnabled) {
 TEST_F(ShoppingListHandlerTest,
        TestGetProductInfoForCurrentUrl_FeatureEligible) {
   base::RunLoop run_loop;
+
+  shopping_service_->SetIsPriceInsightsEligible(true);
 
   absl::optional<commerce::ProductInfo> info;
   info.emplace();
@@ -450,6 +455,7 @@ TEST_F(ShoppingListHandlerTest, TestGetPriceInsightsInfoForCurrentUrl) {
   info->catalog_history_prices.emplace_back("2021-01-01", 3330000);
   info->catalog_history_prices.emplace_back("2021-01-02", 4440000);
 
+  shopping_service_->SetIsPriceInsightsEligible(true);
   shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(info);
 
   handler_->GetPriceInsightsInfoForCurrentUrl(base::BindOnce(
@@ -541,6 +547,10 @@ TEST_F(ShoppingListHandlerTest,
 TEST_F(ShoppingListHandlerTest,
        TestGetPriceTrackingStatusForCurrentUrl_WithoutBookmark) {
   base::RunLoop run_loop;
+
+  shopping_service_->SetSubscribeCallbackValue(false);
+  shopping_service_->SetResponseForGetProductInfoForUrl(absl::nullopt);
+  ;
 
   EXPECT_CALL(*shopping_service_, IsSubscribed(testing::_, testing::_))
       .Times(0);

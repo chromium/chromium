@@ -17,7 +17,6 @@
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/clock.h"
@@ -576,7 +575,7 @@ void ExtensionPrefs::UpdateExtensionPrefInternal(
 
 void ExtensionPrefs::UpdateExtensionPref(
     const std::string& extension_id,
-    base::StringPiece key,
+    std::string_view key,
     std::optional<base::Value> data_value) {
   if (!crx_file::id_util::IdIsValid(extension_id)) {
     NOTREACHED() << "Invalid extension_id " << extension_id;
@@ -691,7 +690,7 @@ base::Time ExtensionPrefs::ReadPrefAsTime(const std::string& extension_id,
 }
 
 bool ExtensionPrefs::ReadPrefAsBoolean(const std::string& extension_id,
-                                       base::StringPiece pref_key,
+                                       std::string_view pref_key,
                                        bool* out_value) const {
   const base::Value::Dict* ext = GetExtensionPref(extension_id);
   if (!ext)
@@ -706,7 +705,7 @@ bool ExtensionPrefs::ReadPrefAsBoolean(const std::string& extension_id,
 }
 
 bool ExtensionPrefs::ReadPrefAsInteger(const std::string& extension_id,
-                                       base::StringPiece pref_key,
+                                       std::string_view pref_key,
                                        int* out_value) const {
   const base::Value::Dict* ext = GetExtensionPref(extension_id);
   if (!ext)
@@ -721,7 +720,7 @@ bool ExtensionPrefs::ReadPrefAsInteger(const std::string& extension_id,
 }
 
 bool ExtensionPrefs::ReadPrefAsString(const std::string& extension_id,
-                                      base::StringPiece pref_key,
+                                      std::string_view pref_key,
                                       std::string* out_value) const {
   DCHECK(out_value);
   const base::Value::Dict* ext = GetExtensionPref(extension_id);
@@ -738,7 +737,7 @@ bool ExtensionPrefs::ReadPrefAsString(const std::string& extension_id,
 
 const base::Value::List* ExtensionPrefs::ReadPrefAsList(
     const std::string& extension_id,
-    base::StringPiece pref_key) const {
+    std::string_view pref_key) const {
   const base::Value::Dict* ext = GetExtensionPref(extension_id);
   if (!ext)
     return nullptr;
@@ -747,7 +746,7 @@ const base::Value::List* ExtensionPrefs::ReadPrefAsList(
 
 const base::Value* ExtensionPrefs::GetPrefAsValue(
     const std::string& extension_id,
-    base::StringPiece pref_key) const {
+    std::string_view pref_key) const {
   const base::Value::Dict* ext = GetExtensionPref(extension_id);
   if (!ext)
     return nullptr;
@@ -757,7 +756,7 @@ const base::Value* ExtensionPrefs::GetPrefAsValue(
 
 const base::Value::Dict* ExtensionPrefs::ReadPrefAsDict(
     const std::string& extension_id,
-    base::StringPiece pref_key) const {
+    std::string_view pref_key) const {
   const base::Value* out = GetPrefAsValue(extension_id, pref_key);
   return out ? &out->GetDict() : nullptr;
 }
@@ -768,7 +767,7 @@ bool ExtensionPrefs::HasPrefForExtension(
 }
 
 bool ExtensionPrefs::ReadPrefAsURLPatternSet(const std::string& extension_id,
-                                             base::StringPiece pref_key,
+                                             std::string_view pref_key,
                                              URLPatternSet* result,
                                              int valid_schemes) const {
   const base::Value::List* value = ReadPrefAsList(extension_id, pref_key);
@@ -789,21 +788,21 @@ bool ExtensionPrefs::ReadPrefAsURLPatternSet(const std::string& extension_id,
 
 void ExtensionPrefs::SetExtensionPrefURLPatternSet(
     const std::string& extension_id,
-    base::StringPiece pref_key,
+    std::string_view pref_key,
     const URLPatternSet& set) {
   UpdateExtensionPref(extension_id, pref_key, base::Value(set.ToValue()));
 }
 
 bool ExtensionPrefs::ReadPrefAsBooleanAndReturn(
     const std::string& extension_id,
-    base::StringPiece pref_key) const {
+    std::string_view pref_key) const {
   bool out_value = false;
   return ReadPrefAsBoolean(extension_id, pref_key, &out_value) && out_value;
 }
 
 std::unique_ptr<PermissionSet> ExtensionPrefs::ReadPrefAsPermissionSet(
     const std::string& extension_id,
-    base::StringPiece pref_key) const {
+    std::string_view pref_key) const {
   if (!GetExtensionPref(extension_id))
     return nullptr;
 
@@ -878,7 +877,7 @@ base::Value CreatePermissionList(const T& permissions) {
 
 void ExtensionPrefs::SetExtensionPrefPermissionSet(
     const std::string& extension_id,
-    base::StringPiece pref_key,
+    std::string_view pref_key,
     const PermissionSet& new_value) {
   std::string api_pref = JoinPrefs({pref_key, kPrefAPIs});
   UpdateExtensionPref(extension_id, api_pref,
@@ -1004,7 +1003,7 @@ int ExtensionPrefs::GetDisableReasons(const std::string& extension_id) const {
 }
 
 int ExtensionPrefs::GetBitMapPrefBits(const std::string& extension_id,
-                                      base::StringPiece pref_key,
+                                      std::string_view pref_key,
                                       int default_bit) const {
   int value = -1;
   if (ReadPrefAsInteger(extension_id, pref_key, &value) && value >= 0) {
@@ -1085,7 +1084,7 @@ void ExtensionPrefs::ModifyDisableReasons(const std::string& extension_id,
 void ExtensionPrefs::ModifyBitMapPrefBits(const std::string& extension_id,
                                           int pending_bits,
                                           BitMapPrefOperation operation,
-                                          base::StringPiece pref_key,
+                                          std::string_view pref_key,
                                           int default_bit) {
   int old_value = GetBitMapPrefBits(extension_id, pref_key, default_bit);
   int new_value = old_value;
@@ -2182,7 +2181,7 @@ const char ExtensionPrefs::kDNRStaticRulesetPref[] = "dnr_static_ruleset";
 
 // static
 std::string ExtensionPrefs::JoinPrefs(
-    const std::vector<base::StringPiece>& parts) {
+    const std::vector<std::string_view>& parts) {
   return base::JoinString(parts, ".");
 }
 

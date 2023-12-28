@@ -56,9 +56,8 @@ class ASH_EXPORT SilencePhoneQuickActionController
   // phone. Make changes to item's state if necessary.
   void CheckRequestedState();
 
-  raw_ptr<phonehub::DoNotDisturbController, ExperimentalAsh> dnd_controller_ =
-      nullptr;
-  raw_ptr<QuickActionItem, DanglingUntriaged | ExperimentalAsh> item_ = nullptr;
+  raw_ptr<phonehub::DoNotDisturbController> dnd_controller_ = nullptr;
+  raw_ptr<QuickActionItem, DanglingUntriaged> item_ = nullptr;
 
   // Keep track the current state of the item.
   ActionState state_;

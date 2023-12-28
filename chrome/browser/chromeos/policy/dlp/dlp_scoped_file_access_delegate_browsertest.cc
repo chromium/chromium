@@ -471,6 +471,11 @@ class MockDlpFilesController : public DlpFilesController {
               (Profile * profile, const base::FilePath& file_path),
               (override));
 
+  MOCK_METHOD(bool,
+              IsInLocalFileSystem,
+              (const base::FilePath& file_path),
+              (override));
+
   MOCK_METHOD(void,
               ShowDlpBlockedFiles,
               (absl::optional<uint64_t> task_id,

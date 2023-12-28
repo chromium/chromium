@@ -6,7 +6,7 @@
 
 #include <optional>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
@@ -73,7 +73,7 @@ class ShelfConfig::ShelfAccessibilityObserver : public AccessibilityObserver {
  private:
   base::RepeatingClosure accessibility_state_changed_callback_;
 
-  base::ScopedObservation<AccessibilityControllerImpl, AccessibilityObserver>
+  base::ScopedObservation<AccessibilityController, AccessibilityObserver>
       observation_{this};
 };
 

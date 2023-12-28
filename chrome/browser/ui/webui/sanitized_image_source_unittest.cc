@@ -150,9 +150,27 @@ TEST_F(SanitizedImageSourceTest, FailedLoad) {
               DecodeAnimation(testing::_, testing::_))
       .Times(0);
   base::MockCallback<content::URLDataSource::GotDataCallback> callback;
-  EXPECT_CALL(callback,
-              Run(MemoryEq(base::MakeRefCounted<base::RefCountedString>())))
-      .Times(1);
+  EXPECT_CALL(callback, Run(testing::IsNull())).Times(1);
+
+  // Issue request.
+  sanitized_image_source_->StartDataRequest(
+      GURL(base::StrCat({chrome::kChromeUIImageURL, "?", kImageUrl})),
+      content::WebContents::Getter(), callback.Get());
+  task_environment_.RunUntilIdle();
+}
+
+// Verifies that the image source sends back an error in case the external
+// image is served via an HTTP scheme.
+TEST_F(SanitizedImageSourceTest, HttpScheme) {
+  constexpr char kImageUrl[] = "http://foo.com/img.png";
+
+  // Set up expectations and mock data.
+  test_url_loader_factory_.AddResponse(kImageUrl, "abcd");
+  EXPECT_CALL(*mock_data_decoder_delegate_,
+              DecodeAnimation(testing::_, testing::_))
+      .Times(0);
+  base::MockCallback<content::URLDataSource::GotDataCallback> callback;
+  EXPECT_CALL(callback, Run(testing::IsNull())).Times(1);
 
   // Issue request.
   sanitized_image_source_->StartDataRequest(
@@ -168,9 +186,7 @@ TEST_F(SanitizedImageSourceTest, WrongUrl) {
               DecodeAnimation(testing::_, testing::_))
       .Times(0);
   base::MockCallback<content::URLDataSource::GotDataCallback> callback;
-  EXPECT_CALL(callback,
-              Run(MemoryEq(base::MakeRefCounted<base::RefCountedString>())))
-      .Times(2);
+  EXPECT_CALL(callback, Run(testing::IsNull())).Times(2);
 
   // Issue request.
   sanitized_image_source_->StartDataRequest(

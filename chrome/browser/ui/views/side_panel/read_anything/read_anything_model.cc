@@ -148,26 +148,30 @@ void ReadAnythingModel::SetSelectedLetterSpacingByIndex(size_t new_index) {
 }
 
 double ReadAnythingModel::GetValidFontScale(double font_scale) {
-  if (font_scale < kReadAnythingMinimumFontScale)
+  if (font_scale < kReadAnythingMinimumFontScale) {
     return kReadAnythingMinimumFontScale;
-  if (font_scale > kReadAnythingMaximumFontScale)
+  }
+  if (font_scale > kReadAnythingMaximumFontScale) {
     return kReadAnythingMaximumFontScale;
+  }
   return font_scale;
 }
 
 // TODO(1266555): Update with text scaling approach based on UI/UX feedback.
 void ReadAnythingModel::DecreaseTextSize() {
   font_scale_ -= kReadAnythingFontScaleIncrement;
-  if (font_scale_ < kReadAnythingMinimumFontScale)
+  if (font_scale_ < kReadAnythingMinimumFontScale) {
     font_scale_ = kReadAnythingMinimumFontScale;
+  }
 
   NotifyThemeChanged();
 }
 
 void ReadAnythingModel::IncreaseTextSize() {
   font_scale_ += kReadAnythingFontScaleIncrement;
-  if (font_scale_ > kReadAnythingMaximumFontScale)
+  if (font_scale_ > kReadAnythingMaximumFontScale) {
     font_scale_ = kReadAnythingMaximumFontScale;
+  }
 
   NotifyThemeChanged();
 }

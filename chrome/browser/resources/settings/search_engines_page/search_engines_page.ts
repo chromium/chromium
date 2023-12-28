@@ -236,15 +236,8 @@ export class SettingsSearchEnginesPageElement extends
 
   private enginesChanged_(searchEnginesInfo: SearchEnginesInfo) {
     this.defaultEngines = searchEnginesInfo.defaults;
-
-    // Sort |activeEngines| and |otherEngines| in alphabetical order.
-    this.activeEngines = searchEnginesInfo.actives.sort(
-        (a, b) => a.name.toLocaleLowerCase().localeCompare(
-            b.name.toLocaleLowerCase()));
-    this.otherEngines = searchEnginesInfo.others.sort(
-        (a, b) => a.name.toLocaleLowerCase().localeCompare(
-            b.name.toLocaleLowerCase()));
-
+    this.activeEngines = searchEnginesInfo.actives;
+    this.otherEngines = searchEnginesInfo.others;
     this.extensions = searchEnginesInfo.extensions;
   }
 

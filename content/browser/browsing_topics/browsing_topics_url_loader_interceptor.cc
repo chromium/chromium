@@ -185,12 +185,15 @@ void BrowsingTopicsURLLoaderInterceptor::PopulateRequestOrRedirectHeaders(
       /*get_topics=*/true,
       /*observe=*/false, topics);
 
+  const int num_versions_in_epochs =
+      topics_eligible_
+          ? GetContentClient()->browser()->NumVersionsInTopicsEpochs(
+                request_initiator_frame->GetMainFrame())
+          : 0;
+  headers.SetHeader(kBrowsingTopicsRequestHeaderKey,
+                    DeriveTopicsHeaderValue(topics, num_versions_in_epochs));
+
   if (topics_eligible_) {
-    int num_versions_in_epochs =
-        GetContentClient()->browser()->NumVersionsInTopicsEpochs(
-            request_initiator_frame->GetMainFrame());
-    headers.SetHeader(kBrowsingTopicsRequestHeaderKey,
-                      DeriveTopicsHeaderValue(topics, num_versions_in_epochs));
     RecordFetchRequestResultUma(
         BrowsingTopicsFetchRequestOrRedirectResult::kSuccess, is_redirect);
   } else {

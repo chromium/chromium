@@ -35,7 +35,7 @@ class MockArcNotificationSurface : public ArcNotificationSurface {
  private:
   const std::string notification_key_;
   ui::AXTreeID ax_tree_id_;
-  raw_ptr<views::NativeViewHost, ExperimentalAsh> native_view_host_;
+  raw_ptr<views::NativeViewHost> native_view_host_;
   const std::unique_ptr<aura::Window> window_;
   const std::unique_ptr<aura::Window> content_window_;
 };

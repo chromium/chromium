@@ -145,8 +145,7 @@ class MockPublicKeyCredential : public Credential {
 // a persistent handle to a ScriptPromiseResolver instance. Ensure that if the
 // document is destroyed while a call is pending, it can still be freed up.
 TEST(CredentialsContainerTest, PendingGetRequest_NoGCCycles) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   MockCredentialManager mock_credential_manager;
   GCObjectLivenessObserver<Document> document_observer;
 
@@ -172,8 +171,7 @@ TEST(CredentialsContainerTest, PendingGetRequest_NoGCCycles) {
 // should be left unresolved, and there should be no crashes.
 TEST(CredentialsContainerTest,
      PendingGetRequest_NoCrashOnResponseAfterDocumentShutdown) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   MockCredentialManager mock_credential_manager;
   CredentialManagerTestingContext context(&mock_credential_manager);
 
@@ -191,8 +189,7 @@ TEST(CredentialsContainerTest,
 }
 
 TEST(CredentialsContainerTest, RejectPublicKeyCredentialStoreOperation) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   MockCredentialManager mock_credential_manager;
   CredentialManagerTestingContext context(&mock_credential_manager);
 

@@ -12,11 +12,6 @@ namespace blink {
 LayoutInsideListMarker::LayoutInsideListMarker(Element* element)
     : LayoutInline(element) {}
 
-bool LayoutInsideListMarker::IsOfType(LayoutObjectType type) const {
-  NOT_DESTROYED();
-  return type == kLayoutObjectInsideListMarker || LayoutInline::IsOfType(type);
-}
-
 PositionWithAffinity LayoutInsideListMarker::PositionForPoint(
     const PhysicalOffset&) const {
   NOT_DESTROYED();

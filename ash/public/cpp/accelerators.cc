@@ -129,6 +129,7 @@ const AcceleratorData kAcceleratorData[] = {
     // The following is triggered when Search is released while Alt is still
     // down. The key_code here is LWIN (for search) and Alt is a modifier.
     {false, ui::VKEY_LWIN, ui::EF_ALT_DOWN, AcceleratorAction::kToggleCapsLock},
+    {false, ui::VKEY_RWIN, ui::EF_ALT_DOWN, AcceleratorAction::kToggleCapsLock},
     // The following is triggered when Alt is released while search is still
     // down. The key_code here is MENU (for Alt) and Search is a modifier
     // (EF_COMMAND_DOWN is used for Search as a modifier).
@@ -146,6 +147,8 @@ const AcceleratorData kAcceleratorData[] = {
     {true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
      AcceleratorAction::kSwitchToNextIme},
     {true, ui::VKEY_I, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
+     AcceleratorAction::kOpenFeedbackPage},
+    {true, ui::VKEY_I, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN,
      AcceleratorAction::kOpenFeedbackPage},
     {true, ui::VKEY_Q, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
      AcceleratorAction::kExit},
@@ -176,6 +179,9 @@ const AcceleratorData kAcceleratorData[] = {
     // extended keyboard shortcuts.
     {false, ui::VKEY_LWIN, ui::EF_NONE, AcceleratorAction::kToggleAppList},
     {false, ui::VKEY_LWIN, ui::EF_SHIFT_DOWN,
+     AcceleratorAction::kToggleAppList},
+    {false, ui::VKEY_RWIN, ui::EF_NONE, AcceleratorAction::kToggleAppList},
+    {false, ui::VKEY_RWIN, ui::EF_SHIFT_DOWN,
      AcceleratorAction::kToggleAppList},
     {true, ui::VKEY_ZOOM, ui::EF_NONE, AcceleratorAction::kToggleFullscreen},
     {true, ui::VKEY_ZOOM, ui::EF_SHIFT_DOWN,

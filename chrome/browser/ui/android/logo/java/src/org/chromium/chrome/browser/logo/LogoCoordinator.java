@@ -36,7 +36,6 @@ public class LogoCoordinator {
      * @param logoView The view that shows the search provider logo.
      * @param shouldFetchDoodle Whether to fetch doodle if there is.
      * @param onLogoAvailableCallback The callback for when logo is available.
-     * @param onCachedLogoRevalidatedRunnable The runnable for when cached logo is revalidated.
      * @param isParentSurfaceShown Whether Start surface homepage or NTP is shown. This value
      *                             is true when this class is used by NTP; while used by Start,
      *                             it's only true on Start homepage.
@@ -48,7 +47,6 @@ public class LogoCoordinator {
             LogoView logoView,
             boolean shouldFetchDoodle,
             Callback<Logo> onLogoAvailableCallback,
-            Runnable onCachedLogoRevalidatedRunnable,
             boolean isParentSurfaceShown,
             VisibilityObserver visibilityObserver) {
         // TODO(crbug.com/1394983): This is weird that we're passing in our view,
@@ -63,7 +61,6 @@ public class LogoCoordinator {
                         mLogoModel,
                         shouldFetchDoodle,
                         onLogoAvailableCallback,
-                        onCachedLogoRevalidatedRunnable,
                         isParentSurfaceShown,
                         visibilityObserver,
                         sDefaultGoogleLogo);

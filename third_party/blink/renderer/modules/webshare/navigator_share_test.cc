@@ -134,8 +134,7 @@ class NavigatorShareTest : public testing::Test {
   }
 
  public:
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   MockShareService mock_share_service_;
 
   std::unique_ptr<DummyPageHolder> holder_;

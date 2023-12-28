@@ -409,7 +409,7 @@ TEST_P(NavigationThrottleRunnerTestWithEventAndAction, DeferRecordsUKM) {
   const auto& entries = test_ukm_recorder().GetEntriesByName(
       ukm::builders::NavigationThrottleDeferredTime::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     EXPECT_EQ(*ukm::TestUkmRecorder::GetEntryMetric(
                   entry, ukm::builders::NavigationThrottleDeferredTime::
                              kNavigationThrottleEventTypeName),

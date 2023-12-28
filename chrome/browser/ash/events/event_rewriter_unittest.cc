@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
@@ -22,6 +23,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -676,92 +678,9 @@ constexpr TestKeyEvent HangulModePressed(ui::EventFlags flags = ui::EF_NONE) {
 }
 #endif
 
-std::string EventTypeToString(ui::EventType type) {
-  switch (type) {
-#define CASE(name) \
-  case ui::name:   \
-    return #name
-    CASE(ET_UNKNOWN);
-    CASE(ET_MOUSE_PRESSED);
-    CASE(ET_MOUSE_DRAGGED);
-    CASE(ET_MOUSE_RELEASED);
-    CASE(ET_MOUSE_MOVED);
-    CASE(ET_MOUSE_ENTERED);
-    CASE(ET_MOUSE_EXITED);
-    CASE(ET_KEY_PRESSED);
-    CASE(ET_KEY_RELEASED);
-    CASE(ET_MOUSEWHEEL);
-    CASE(ET_MOUSE_CAPTURE_CHANGED);
-    CASE(ET_TOUCH_RELEASED);
-    CASE(ET_TOUCH_PRESSED);
-    CASE(ET_TOUCH_MOVED);
-    CASE(ET_TOUCH_CANCELLED);
-    CASE(ET_DROP_TARGET_EVENT);
-    CASE(ET_GESTURE_SCROLL_BEGIN);
-    CASE(ET_GESTURE_SCROLL_END);
-    CASE(ET_GESTURE_SCROLL_UPDATE);
-    CASE(ET_GESTURE_TAP);
-    CASE(ET_GESTURE_TAP_DOWN);
-    CASE(ET_GESTURE_TAP_CANCEL);
-    CASE(ET_GESTURE_TAP_UNCONFIRMED);
-    CASE(ET_GESTURE_DOUBLE_TAP);
-    CASE(ET_GESTURE_BEGIN);
-    CASE(ET_GESTURE_END);
-    CASE(ET_GESTURE_TWO_FINGER_TAP);
-    CASE(ET_GESTURE_PINCH_BEGIN);
-    CASE(ET_GESTURE_PINCH_END);
-    CASE(ET_GESTURE_PINCH_UPDATE);
-    CASE(ET_GESTURE_SHORT_PRESS);
-    CASE(ET_GESTURE_LONG_PRESS);
-    CASE(ET_GESTURE_LONG_TAP);
-    CASE(ET_GESTURE_SWIPE);
-    CASE(ET_GESTURE_SHOW_PRESS);
-    CASE(ET_SCROLL);
-    CASE(ET_SCROLL_FLING_START);
-    CASE(ET_SCROLL_FLING_CANCEL);
-    CASE(ET_CANCEL_MODE);
-    CASE(ET_UMA_DATA);
-    CASE(ET_LAST);
-#undef CASE
-  }
-}
-
-std::string KeyEventFlagsToString(ui::EventFlags flags) {
-  if (flags == ui::EF_NONE) {
-    return "EF_NONE";
-  }
-
-  static constexpr struct {
-    ui::EventFlags flag;
-    const char* name;
-  } kFlags[] = {
-#define FLAG(flag) {ui::flag, #flag}
-      FLAG(EF_IS_SYNTHESIZED), FLAG(EF_SHIFT_DOWN),     FLAG(EF_CONTROL_DOWN),
-      FLAG(EF_ALT_DOWN),       FLAG(EF_COMMAND_DOWN),   FLAG(EF_FUNCTION_DOWN),
-      FLAG(EF_ALTGR_DOWN),     FLAG(EF_MOD3_DOWN),      FLAG(EF_NUM_LOCK_ON),
-      FLAG(EF_CAPS_LOCK_ON),   FLAG(EF_SCROLL_LOCK_ON),
-#undef FLAG
-  };
-  std::string result;
-  for (auto [flag, name] : kFlags) {
-    if (flags & flag) {
-      if (!result.empty()) {
-        result.push_back('|');
-      }
-      result += name;
-    }
-    flags &= ~flag;
-  }
-  if (flags) {
-    if (!result.empty()) {
-      result.push_back('|');
-    }
-    result += base::StringPrintf("unknown[0x%X]", flags);
-  }
-  return result;
-}
-
 std::string TestKeyEvent::ToString() const {
+  std::string type_name(ui::EventTypeName(type));
+  std::string flags_name = base::JoinString(ui::EventFlagsNames(flags), "|");
   return base::StringPrintf(
       "type=%s(%d) "
       "code=%s(0x%06X) "
@@ -769,12 +688,12 @@ std::string TestKeyEvent::ToString() const {
       "keycode=0x%02X "
       "flags=%s(0x%X) "
       "scan_code=0x%08X",
-      EventTypeToString(type).c_str(), type,
+      type_name.c_str(), type,
       ui::KeycodeConverter::DomCodeToCodeString(code).c_str(),
       static_cast<uint32_t>(code),
       ui::KeycodeConverter::DomKeyToKeyString(key).c_str(),
-      static_cast<uint32_t>(key), keycode, KeyEventFlagsToString(flags).c_str(),
-      flags, scan_code);
+      static_cast<uint32_t>(key), keycode, flags_name.c_str(), flags,
+      scan_code);
 }
 
 inline std::ostream& operator<<(std::ostream& os, const TestKeyEvent& event) {
@@ -949,8 +868,8 @@ class EventRewriterTest : public ChromeAshTestBase {
   ui::test::TestEventSource& source() { return source_; }
 
  protected:
-  absl::optional<TestKeyEvent> RunRewriter(const TestKeyEvent& test_key_event,
-                                           int device_id = kKeyboardDeviceId) {
+  std::optional<TestKeyEvent> RunRewriter(const TestKeyEvent& test_key_event,
+                                          int device_id = kKeyboardDeviceId) {
     ui::KeyEvent event(test_key_event.type, test_key_event.keycode,
                        test_key_event.code, test_key_event.flags,
                        test_key_event.key, ui::EventTimeForNow());
@@ -961,7 +880,7 @@ class EventRewriterTest : public ChromeAshTestBase {
     auto events =
         static_cast<TestEventSink*>(source().GetEventSink())->TakeEvents();
     if (events.empty()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     auto* key_event = events[0]->AsKeyEvent();
     return {{key_event->type(), key_event->code(), key_event->GetDomKey(),
@@ -1026,8 +945,8 @@ class EventRewriterTest : public ChromeAshTestBase {
 
     fake_udev_.Reset();
     fake_udev_.AddFakeDevice(keyboard.name, keyboard.sys_path.value(),
-                             /*subsystem=*/"input", /*devnode=*/absl::nullopt,
-                             /*devtype=*/absl::nullopt,
+                             /*subsystem=*/"input", /*devnode=*/std::nullopt,
+                             /*devtype=*/std::nullopt,
                              std::move(sysfs_attributes),
                              std::move(sysfs_properties));
 
@@ -1204,12 +1123,8 @@ TEST_F(EventRewriterTest, TestRewriteCommandToControl) {
     EXPECT_EQ(LWinPressed(ui::EF_ALT_DOWN),
               RunRewriter(LWinPressed(ui::EF_ALT_DOWN)));
 
-    // TODO(b/312578988): This should be an identity transformation with
-    // RWinPressed as both the before and after event.
     // VKEY_RWIN (right Windows key), Alt modifier.
-    EXPECT_EQ(TestKeyEvent(ui::ET_KEY_PRESSED, ui::DomCode::META_RIGHT,
-                           ui::DomKey::META, ui::VKEY_LWIN,
-                           ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN),
+    EXPECT_EQ(RWinPressed(ui::EF_ALT_DOWN),
               RunRewriter(RWinPressed(ui::EF_ALT_DOWN)));
   }
 }
@@ -1261,12 +1176,8 @@ TEST_F(EventRewriterTest, TestRewriteExternalMetaKey) {
     EXPECT_EQ(LWinPressed(ui::EF_ALT_DOWN),
               RunRewriter(LWinPressed(ui::EF_ALT_DOWN)));
 
-    // TODO(b/312578988): This should be an identity transformation with
-    // RWinPressed as both the before and after event.
     // VKEY_RWIN (right Windows key), Alt modifier.
-    EXPECT_EQ(TestKeyEvent(ui::ET_KEY_PRESSED, ui::DomCode::META_RIGHT,
-                           ui::DomKey::META, ui::VKEY_LWIN,
-                           ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN),
+    EXPECT_EQ(RWinPressed(ui::EF_ALT_DOWN),
               RunRewriter(RWinPressed(ui::EF_ALT_DOWN)));
   }
 
@@ -1495,13 +1406,22 @@ TEST_F(EventRewriterTest, TestRewriteModifiersNoRemapMultipleKeys) {
     EXPECT_EQ(EscapePressed(ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN),
               RunRewriter(EscapePressed(ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN)));
 
+    // Toggling on CapsLock.
+    EXPECT_EQ(CapsLockPressed(ui::EF_CAPS_LOCK_ON),
+              RunRewriter(CapsLockPressed(ui::EF_CAPS_LOCK_ON)));
+    EXPECT_EQ(CapsLockReleased(ui::EF_CAPS_LOCK_ON),
+              RunRewriter(CapsLockReleased(ui::EF_CAPS_LOCK_ON)));
+
     // Press Search with Caps Lock mask. Confirm the event is not rewritten.
     EXPECT_EQ(LWinPressed(ui::EF_CAPS_LOCK_ON),
               RunRewriter(LWinPressed(ui::EF_CAPS_LOCK_ON)));
-
     // Release Search with Caps Lock mask. Confirm the event is not rewritten.
     EXPECT_EQ(LWinReleased(ui::EF_CAPS_LOCK_ON),
               RunRewriter(LWinReleased(ui::EF_CAPS_LOCK_ON)));
+
+    // Toggling off CapsLock.
+    EXPECT_EQ(CapsLockPressed(), RunRewriter(CapsLockPressed()));
+    EXPECT_EQ(CapsLockReleased(), RunRewriter(CapsLockReleased()));
 
     // Press Shift+Ctrl+Alt+Search+Escape. Confirm the event is not rewritten.
     EXPECT_EQ(
@@ -1851,12 +1771,11 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Release Search.
-  EXPECT_EQ(CapsLockReleased(), RunRewriter(LWinReleased()));
+  EXPECT_EQ(CapsLockReleased(ui::EF_CAPS_LOCK_ON), RunRewriter(LWinReleased()));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Press Search.
-  EXPECT_EQ(CapsLockPressed(ui::EF_CAPS_LOCK_ON),
-            RunRewriter(LWinPressed(ui::EF_CAPS_LOCK_ON)));
+  EXPECT_EQ(CapsLockPressed(), RunRewriter(LWinPressed()));
   EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Release Search.
@@ -1871,12 +1790,11 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Release Search.
-  EXPECT_EQ(CapsLockReleased(), RunRewriter(LWinReleased()));
+  EXPECT_EQ(CapsLockReleased(ui::EF_CAPS_LOCK_ON), RunRewriter(LWinReleased()));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Press Search.
-  EXPECT_EQ(CapsLockPressed(ui::EF_CAPS_LOCK_ON),
-            RunRewriter(LWinPressed(ui::EF_CAPS_LOCK_ON)));
+  EXPECT_EQ(CapsLockPressed(), RunRewriter(LWinPressed()));
   EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Release Search.
@@ -1892,7 +1810,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Release Caps Lock.
-  EXPECT_EQ(CapsLockReleased(),
+  EXPECT_EQ(CapsLockReleased(ui::EF_CAPS_LOCK_ON),
             RunRewriter(CapsLockReleased(ui::EF_CAPS_LOCK_ON)));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 }
@@ -1908,7 +1826,12 @@ TEST_F(EventRewriterTest, TestRewriteCapsLock) {
             RunRewriter(CapsLockPressed()));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
-  EXPECT_EQ(CapsLockReleased(),
+  // Key repeating should not toggle CapsLock state.
+  EXPECT_EQ(CapsLockPressed(ui::EF_CAPS_LOCK_ON),
+            RunRewriter(CapsLockPressed()));
+  EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
+
+  EXPECT_EQ(CapsLockReleased(ui::EF_CAPS_LOCK_ON),
             RunRewriter(CapsLockReleased(ui::EF_CAPS_LOCK_ON)));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
@@ -1942,7 +1865,7 @@ TEST_F(EventRewriterTest, TestRewriteExternalCapsLockWithDifferentScenarios) {
             RunRewriter(CapsLockPressed()));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
-  EXPECT_EQ(CapsLockReleased(),
+  EXPECT_EQ(CapsLockReleased(ui::EF_CAPS_LOCK_ON),
             RunRewriter(CapsLockReleased(ui::EF_CAPS_LOCK_ON)));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
@@ -1970,7 +1893,7 @@ TEST_F(EventRewriterTest, TestRewriteExternalCapsLockWithDifferentScenarios) {
 
   // Now press CapsLock again and now expect that the CapsLock modifier is
   // removed and the key is disabled.
-  EXPECT_EQ(CapsLockPressed(ui::EF_CAPS_LOCK_ON),
+  EXPECT_EQ(CapsLockPressed(),
             RunRewriter(CapsLockPressed(ui::EF_CAPS_LOCK_ON)));
   EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
 }
@@ -4393,6 +4316,8 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedTest) {
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.Internal",
       modifier_key_usage_mapping_, 1);
+  // Unset CapsLock for each press.
+  fake_ime_keyboard_.SetCapsLockEnabled(false);
 
   SetUpKeyboard(kExternalChromeKeyboard);
   EXPECT_EQ(expected, RunRewriter(event_));
@@ -4402,6 +4327,7 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedTest) {
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.CrOSExternal",
       modifier_key_usage_mapping_, 1);
+  fake_ime_keyboard_.SetCapsLockEnabled(false);
 
   SetUpKeyboard(kExternalAppleKeyboard);
   EXPECT_EQ(expected, RunRewriter(event_));
@@ -4411,6 +4337,7 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedTest) {
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.AppleExternal",
       modifier_key_usage_mapping_, 1);
+  fake_ime_keyboard_.SetCapsLockEnabled(false);
 
   SetUpKeyboard(kExternalGenericKeyboard);
   EXPECT_EQ(expected, RunRewriter(event_));
@@ -4420,6 +4347,7 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedTest) {
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.External",
       modifier_key_usage_mapping_, 1);
+  fake_ime_keyboard_.SetCapsLockEnabled(false);
 }
 
 TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToBackspaceTest) {
@@ -4533,17 +4461,16 @@ TEST_P(ModifierPressedMetricsTest, KeyPressedWithRemappingToControlTest) {
 }
 
 TEST_P(ModifierPressedMetricsTest, KeyRepeatTest) {
+  if (event_.code == ui::DomCode::CAPS_LOCK) {
+    GTEST_SKIP() << "CapsLock Key will not be marked as EF_IS_REPEAT";
+  }
+
   base::HistogramTester histogram_tester;
   // No metrics should be published if it is a repeated key.
   event_.flags |= ui::EF_IS_REPEAT;
 
-  auto expected = event_;
-  if (expected.code == ui::DomCode::CAPS_LOCK) {
-    expected.flags |= ui::EF_CAPS_LOCK_ON;
-  }
-
   SetUpKeyboard(kInternalChromeKeyboard);
-  EXPECT_EQ(expected, RunRewriter(event_));
+  EXPECT_EQ(event_, RunRewriter(event_));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.Internal",
       modifier_key_usage_mapping_, 0);
@@ -4552,7 +4479,7 @@ TEST_P(ModifierPressedMetricsTest, KeyRepeatTest) {
       modifier_key_usage_mapping_, 0);
 
   SetUpKeyboard(kExternalChromeKeyboard);
-  EXPECT_EQ(expected, RunRewriter(event_));
+  EXPECT_EQ(event_, RunRewriter(event_));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.CrOSExternal",
       modifier_key_usage_mapping_, 0);
@@ -4561,7 +4488,7 @@ TEST_P(ModifierPressedMetricsTest, KeyRepeatTest) {
       modifier_key_usage_mapping_, 0);
 
   SetUpKeyboard(kExternalAppleKeyboard);
-  EXPECT_EQ(expected, RunRewriter(event_));
+  EXPECT_EQ(event_, RunRewriter(event_));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.AppleExternal",
       modifier_key_usage_mapping_, 0);
@@ -4570,7 +4497,7 @@ TEST_P(ModifierPressedMetricsTest, KeyRepeatTest) {
       modifier_key_usage_mapping_, 0);
 
   SetUpKeyboard(kExternalGenericKeyboard);
-  EXPECT_EQ(expected, RunRewriter(event_));
+  EXPECT_EQ(event_, RunRewriter(event_));
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Inputs.Keyboard.ModifierPressed.External",
       modifier_key_usage_mapping_, 0);
@@ -4580,6 +4507,10 @@ TEST_P(ModifierPressedMetricsTest, KeyRepeatTest) {
 }
 
 TEST_P(ModifierPressedMetricsTest, KeyReleasedTest) {
+  if (event_.code == ui::DomCode::CAPS_LOCK) {
+    GTEST_SKIP() << "CapsLock Key will not be marked as EF_IS_REPEAT";
+  }
+
   base::HistogramTester histogram_tester;
   // No metrics should be published if it is a repeated key.
   event_.flags |= ui::EF_IS_REPEAT;

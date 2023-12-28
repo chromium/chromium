@@ -4,7 +4,7 @@
 
 #include "ash/system/accessibility/switch_access/switch_access_menu_view.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/bubble/bubble_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -27,7 +27,7 @@ namespace {
 constexpr int kMaxColumns = 3;
 
 struct ButtonInfo {
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon;
+  raw_ptr<const gfx::VectorIcon> icon;
   int label_id;
 };
 

@@ -52,7 +52,7 @@ class LoginShelfViewPixelTestBase : public LoginTestBase {
     LoginTestBase::TearDown();
   }
 
-  raw_ptr<views::View, ExperimentalAsh> primary_big_user_view_ = nullptr;
+  raw_ptr<views::View> primary_big_user_view_ = nullptr;
 
  private:
   // TODO(b/291622042): Remove this when the Jelly feature can no longer be

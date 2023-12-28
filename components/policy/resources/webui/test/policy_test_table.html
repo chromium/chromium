@@ -2,14 +2,16 @@
   /* Shared styles for both table and card views */
   .table {
     width: 100%;
+    box-sizing: border-box;
   }
 
   button {
     font-size: 125%;
     font-weight: bold;
     padding: 5px;
-    margin-top: 5px;
     border: 1px solid rgba(0, 0, 0, .06);
+    border-radius: 0 0 15px 15px;
+    box-sizing: border-box;
     width: 100%;
   }
 
@@ -26,22 +28,29 @@
     .table {
       display: table;
       border: 1px solid rgba(0, 0, 0, .06);
+      border-radius: 15px 15px 0 0;
+      border-bottom: none;
     }
 
     header {
       display: table-row;
       background-color: rgb(240, 240, 240);
       font-size: 100%;
-      font-weight: bold;
     }
 
     .cell {
+      border-right: 1px solid rgba(0, 0, 0, .06);
       display: table-cell;
-      padding: 7px;
+      padding: 12px 7px;
     }
 
     #name-header {
-      border-right: 1px solid rgba(0, 0, 0, .06);
+      border-radius: 15px 0 0 0;
+    }
+
+    #header-remove-btn-cell {
+      border-radius: 0 15px 0 0;
+      border-right: none;
     }
   }
 
@@ -67,7 +76,7 @@
     <div class="cell">$i18n{testTableSource}</div>
     <div class="cell">$i18n{testTableScope}</div>
     <div class="cell">$i18n{testTableLevel}</div>
-    <div class="cell"></div>
+    <div class="cell" id="header-remove-btn-cell"></div>
   </header>
   <policy-test-row></policy-test-row>
 </div>

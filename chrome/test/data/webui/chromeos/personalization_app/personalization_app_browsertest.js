@@ -396,10 +396,8 @@ TEST_F(PersonalizationAppWallpaperSubpageBrowserTest.name, 'All', async () => {
 
   function getWallpaperSelected() {
     const subpage = getWallpaperSubpage();
-    const wallpaperTop =
-        subpage.shadowRoot.querySelector('wallpaper-subpage-top');
     const wallpaperSelected =
-        wallpaperTop.shadowRoot.querySelector('wallpaper-selected');
+        subpage.shadowRoot.querySelector('wallpaper-selected');
     assertTrue(!!wallpaperSelected, 'wallpaper-selected should exist');
     return wallpaperSelected;
   }

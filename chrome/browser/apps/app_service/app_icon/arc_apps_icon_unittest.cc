@@ -156,7 +156,7 @@ class AppServiceArcAppIconTest : public ArcAppsIconFactoryTest,
 
   apps::IconValuePtr LoadIcon(const std::string& app_id, IconType icon_type) {
     base::test::TestFuture<apps::IconValuePtr> result;
-    app_service_proxy().LoadIcon(AppType::kArc, app_id, icon_type, kSizeInDip,
+    app_service_proxy().LoadIcon(app_id, icon_type, kSizeInDip,
                                  /*allow_placeholder_icon=*/false,
                                  result.GetCallback());
     return result.Take();
@@ -167,7 +167,7 @@ class AppServiceArcAppIconTest : public ArcAppsIconFactoryTest,
                                              IconType icon_type) {
     base::test::TestFuture<apps::IconValuePtr> result;
     app_service_proxy().LoadIconWithIconEffects(
-        AppType::kArc, app_id, icon_effects, icon_type, kSizeInDip,
+        app_id, icon_effects, icon_type, kSizeInDip,
         /*allow_placeholder_icon=*/false, result.GetCallback());
     return result.Take();
   }

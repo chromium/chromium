@@ -324,6 +324,28 @@ enum class TestType {
   [self assertSuccessfulUpgrade];
 }
 
+// Navigate to an HTTP URL by posting a form. This should not be upgraded to
+// HTTPS.
+- (void)test_HTTPWithGoodHTTPS_Post_ShouldNotUpgrade {
+  [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
+                                      useFakeHTTPS:true];
+  int HTTPPort = self.testServer->port();
+
+  GURL testURL(base::StringPrintf(
+      "data:text/html,"
+      "<form method='POST' action='http://127.0.0.1:%d/good-https' id='myform'>"
+      "<input name='test' value='test'><br>"
+      "<input type='submit' id='submit-btn' value='Submit'></form><br>READY",
+      HTTPPort));
+  [ChromeEarlGrey loadURL:testURL];
+  [ChromeEarlGrey waitForWebStateContainingText:"READY"];
+
+  // Post the form. Should load the http URL.
+  [ChromeEarlGrey tapWebStateElementWithID:@"submit-btn"];
+  [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+  [self assertNoUpgrade];
+}
+
 // Navigate to an HTTP URL directly. The upgraded HTTPS version serves good SSL
 // which redirects to the original HTTP URL. This should show the interstitial.
 - (void)test_HTTPSRedirectsToHTTP_ShouldFallback {

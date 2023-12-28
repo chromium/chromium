@@ -91,7 +91,7 @@ class AppsAccessSetupOperation {
 
   std::optional<Status> current_status_;
   const base::TimeTicks start_timestamp_ = base::TimeTicks::Now();
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate> delegate_;
   base::OnceClosure destructor_callback_;
 };
 

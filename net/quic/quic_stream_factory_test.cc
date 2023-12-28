@@ -33,7 +33,6 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
-#include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/dns_query_type.h"
@@ -215,7 +214,6 @@ class MockQuicStreamFactory : public QuicStreamFactory {
       ClientSocketFactory* client_socket_factory,
       HttpServerProperties* http_server_properties,
       CertVerifier* cert_verifier,
-      CTPolicyEnforcer* ct_policy_enforcer,
       TransportSecurityState* transport_security_state,
       SCTAuditingDelegate* sct_auditing_delegate,
       SocketPerformanceWatcherFactory* socket_performance_watcher_factory,
@@ -227,7 +225,6 @@ class MockQuicStreamFactory : public QuicStreamFactory {
                           client_socket_factory,
                           http_server_properties,
                           cert_verifier,
-                          ct_policy_enforcer,
                           transport_security_state,
                           sct_auditing_delegate,
                           socket_performance_watcher_factory,
@@ -296,7 +293,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
     factory_ = std::make_unique<QuicStreamFactory>(
         net_log_.net_log(), host_resolver_.get(), &ssl_config_service_,
         socket_factory_.get(), http_server_properties_.get(),
-        cert_verifier_.get(), &ct_policy_enforcer_, &transport_security_state_,
+        cert_verifier_.get(), &transport_security_state_,
         /*sct_auditing_delegate=*/nullptr,
         /*SocketPerformanceWatcherFactory*/ nullptr,
         &crypto_client_stream_factory_, &context_);
@@ -955,7 +952,6 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
   std::unique_ptr<HttpServerProperties> http_server_properties_;
   std::unique_ptr<MockCertVerifier> cert_verifier_;
   TransportSecurityState transport_security_state_;
-  DefaultCTPolicyEnforcer ct_policy_enforcer_;
   std::unique_ptr<ScopedMockNetworkChangeNotifier>
       scoped_mock_network_change_notifier_;
   std::unique_ptr<QuicStreamFactory> factory_;
@@ -2863,7 +2859,7 @@ TEST_P(QuicStreamFactoryTest, CloseSessionDuringCreation) {
   auto factory = MockQuicStreamFactory(
       net_log_.net_log(), host_resolver_.get(), &ssl_config_service_,
       socket_factory_.get(), http_server_properties_.get(),
-      cert_verifier_.get(), &ct_policy_enforcer_, &transport_security_state_,
+      cert_verifier_.get(), &transport_security_state_,
       /*sct_auditing_delegate=*/nullptr,
       /*SocketPerformanceWatcherFactory*/ nullptr,
       &crypto_client_stream_factory_, &context_);
@@ -12957,7 +12953,7 @@ TEST_P(QuicStreamFactoryTest, CryptoConfigCacheWithNetworkAnonymizationKey) {
   EXPECT_EQ(kUserAgentId1, crypto_config_handle1->GetConfig()->user_agent_id());
   EXPECT_EQ(kUserAgentId2, crypto_config_handle2->GetConfig()->user_agent_id());
 
-  // Creating handles with the same NIKs while the old handles are still alive
+  // Creating handles with the same NAKs while the old handles are still alive
   // should result in getting the same CryptoConfigs.
   std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config_handle1_2 =
       QuicStreamFactoryPeer::GetCryptoConfig(factory_.get(),
@@ -12986,7 +12982,7 @@ TEST_P(QuicStreamFactoryTest, CryptoConfigCacheWithNetworkAnonymizationKey) {
   crypto_config_handle3.reset();
 
   // The old CryptoConfigs should be recovered when creating handles with the
-  // same NIKs as before.
+  // same NAKs as before.
   crypto_config_handle2 = QuicStreamFactoryPeer::GetCryptoConfig(
       factory_.get(), kNetworkAnonymizationKey2);
   crypto_config_handle1 = QuicStreamFactoryPeer::GetCryptoConfig(
@@ -13040,7 +13036,7 @@ TEST_P(QuicStreamFactoryTest, CryptoConfigCacheMRUWithNetworkAnonymizationKey) {
     EXPECT_EQ(base::NumberToString(i),
               crypto_config_handles[i]->GetConfig()->user_agent_id());
 
-    // A new handle for the same NIK returns the same crypto config.
+    // A new handle for the same NAK returns the same crypto config.
     std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config_handle =
         QuicStreamFactoryPeer::GetCryptoConfig(factory_.get(),
                                                network_anonymization_keys[i]);
@@ -13048,7 +13044,7 @@ TEST_P(QuicStreamFactoryTest, CryptoConfigCacheMRUWithNetworkAnonymizationKey) {
               crypto_config_handle->GetConfig()->user_agent_id());
   }
 
-  // Destroying the only remaining handle for a NIK results in evicting entries,
+  // Destroying the only remaining handle for a NAK results in evicting entries,
   // until there are exactly |kMaxRecentCryptoConfigs| handles.
   for (int i = 0; i < kNumSessionsToMake; ++i) {
     SCOPED_TRACE(i);
@@ -13057,7 +13053,7 @@ TEST_P(QuicStreamFactoryTest, CryptoConfigCacheMRUWithNetworkAnonymizationKey) {
 
     crypto_config_handles[i].reset();
 
-    // A new handle for the same NIK will return a new config, if the config was
+    // A new handle for the same NAK will return a new config, if the config was
     // evicted. Otherwise, it will return the same one.
     std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config_handle =
         QuicStreamFactoryPeer::GetCryptoConfig(factory_.get(),
@@ -15040,32 +15036,8 @@ TEST_P(QuicStreamFactoryDnsAliasPoolingTest, IPPooling) {
   EXPECT_EQ(expected_dns_aliases2_, stream2->GetDnsAliases());
 }
 
-class QuicStreamFactoryEchTest : public QuicStreamFactoryTestBase,
-                                 public ::testing::TestWithParam<TestParams> {
- protected:
-  QuicStreamFactoryEchTest()
-      : QuicStreamFactoryTestBase(GetParam().version,
-                                  /*enabled_features=*/
-                                  {features::kEncryptedClientHello,
-                                   features::kEncryptedClientHelloQuic}) {
-    if (GetParam().priority_header_enabled) {
-      feature_list_.InitAndEnableFeature(net::features::kPriorityHeader);
-    } else {
-      feature_list_.InitAndDisableFeature(net::features::kPriorityHeader);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
-                         QuicStreamFactoryEchTest,
-                         ::testing::ValuesIn(GetTestParams()),
-                         ::testing::PrintToStringParamName());
-
 // Test that, even if DNS does not provide ECH keys, ECH GREASE is enabled.
-TEST_P(QuicStreamFactoryEchTest, EchGrease) {
+TEST_P(QuicStreamFactoryTest, EchGrease) {
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
@@ -15095,7 +15067,7 @@ TEST_P(QuicStreamFactoryEchTest, EchGrease) {
 
 // Test that, connections where we discover QUIC from Alt-Svc (as opposed to
 // HTTPS-RR), ECH is picked up from DNS.
-TEST_P(QuicStreamFactoryEchTest, EchWithQuicFromAltSvc) {
+TEST_P(QuicStreamFactoryTest, EchWithQuicFromAltSvc) {
   HostResolverEndpointResult endpoint;
   endpoint.ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
   endpoint.metadata.supported_protocol_alpns = {quic::AlpnForVersion(version_)};
@@ -15135,7 +15107,7 @@ TEST_P(QuicStreamFactoryEchTest, EchWithQuicFromAltSvc) {
 
 // Test that, connections where we discover QUIC from HTTPS-RR (as opposed to
 // Alt-Svc), ECH is picked up from DNS.
-TEST_P(QuicStreamFactoryEchTest, EchWithQuicFromHttpsRecord) {
+TEST_P(QuicStreamFactoryTest, EchWithQuicFromHttpsRecord) {
   quic_params_->supported_versions = {version_};
   HostResolverEndpointResult endpoint;
   endpoint.ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
@@ -15178,7 +15150,7 @@ TEST_P(QuicStreamFactoryEchTest, EchWithQuicFromHttpsRecord) {
 }
 
 // Test that, when ECH is disabled, neither ECH nor ECH GREASE are configured.
-TEST_P(QuicStreamFactoryEchTest, EchDisabled) {
+TEST_P(QuicStreamFactoryTest, EchDisabled) {
   quic_params_->supported_versions = {version_};
   HostResolverEndpointResult endpoint;
   endpoint.ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
@@ -15225,7 +15197,7 @@ TEST_P(QuicStreamFactoryEchTest, EchDisabled) {
 
 // Test that, when the server supports ECH, the connection should use
 // SVCB-reliant behavior.
-TEST_P(QuicStreamFactoryEchTest, EchSvcbReliant) {
+TEST_P(QuicStreamFactoryTest, EchSvcbReliant) {
   // The HTTPS-RR route only advertises HTTP/2 and is therefore incompatible
   // with QUIC. The fallback A/AAAA is compatible, but is ineligible in
   // ECH-capable clients.
@@ -15262,7 +15234,7 @@ TEST_P(QuicStreamFactoryEchTest, EchSvcbReliant) {
 }
 
 // Test that, when ECH is disabled, SVCB-reliant behavior doesn't trigger.
-TEST_P(QuicStreamFactoryEchTest, EchDisabledSvcbOptional) {
+TEST_P(QuicStreamFactoryTest, EchDisabledSvcbOptional) {
   // The HTTPS-RR route only advertises HTTP/2 and is therefore incompatible
   // with QUIC. The fallback A/AAAA is compatible, but is ineligible in
   // ECH-capable clients.

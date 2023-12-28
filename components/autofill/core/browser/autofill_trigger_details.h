@@ -56,7 +56,7 @@ enum class AutofillTriggerSource {
 struct AutofillTriggerDetails {
   AutofillTriggerSource trigger_source = AutofillTriggerSource::kNone;
   // Default to considering every field type when filling the form.
-  ServerFieldTypeSet field_types_to_fill = kAllServerFieldTypes;
+  FieldTypeSet field_types_to_fill = kAllFieldTypes;
 };
 
 }  // namespace autofill

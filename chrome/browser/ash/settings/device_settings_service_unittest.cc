@@ -6,13 +6,13 @@
 
 #include <stdint.h>
 
-#include "ash/constants/ash_features.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/ownership/owner_key_loader.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
@@ -75,8 +75,8 @@ class DeviceSettingsServiceTest : public DeviceSettingsTestBase {
 
     // Disable owner key migration.
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kStoreOwnerKeyInPrivateSlot},
-        /*disabled_features=*/{features::kMigrateOwnerKeyToPrivateSlot});
+        /*enabled_features=*/{kStoreOwnerKeyInPrivateSlot},
+        /*disabled_features=*/{kMigrateOwnerKeyToPrivateSlot});
 
     device_policy_->payload()
         .mutable_device_policy_refresh_rate()

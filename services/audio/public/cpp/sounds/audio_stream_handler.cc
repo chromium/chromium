@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/cancelable_callback.h"
@@ -170,7 +171,7 @@ class AudioStreamHandler::AudioStreamContainer
 
 AudioStreamHandler::AudioStreamHandler(
     SoundsManager::StreamFactoryBinder stream_factory_binder,
-    const std::string_view& audio_data,
+    std::string_view audio_data,
     media::AudioCodec codec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

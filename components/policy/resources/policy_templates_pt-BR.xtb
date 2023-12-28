@@ -385,8 +385,6 @@ Isso substitui a política <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAM
 <translation id="1305400589435476516">Se a política for definida como "Ativada", o roaming de dados será permitido no dispositivo.
 
       Se ela for definida como "Desativada" ou não for definida, o roaming de dados ficará indisponível.</translation>
-<translation id="1307454923744766368">Origens ou padrões de nome de host aos quais as restrições sobre
-      origens não seguras não se aplicam</translation>
 <translation id="1308526987406924874">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites não podem pedir que o usuário conceda permissão de acesso a uma porta serial.
 
       Se a política não tiver definição, <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
@@ -1137,7 +1135,6 @@ Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> fechar
 
       A API Managed Configuration é uma configuração de chave-valor que pode ser acessada pela chamada de navigator.managed.getManagedConfiguration() no JavaScript. Ela só está disponível em origens correspondentes a aplicativos da Web de instalação forçada via <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
      </translation>
-<translation id="1918690415433353669">Permitir organização de guias, sem registrar os detalhes delas</translation>
 <translation id="1919802376548418720">Usar a política KDC para delegar credenciais.</translation>
 <translation id="1920046221095339924">Permite sessão gerenciada no dispositivo</translation>
 <translation id="1920772397574801429">Definir a política especifica o tipo de conta fornecido pelo app de autenticação do Android compatível com a autenticação <ph name="HTTP_NEGOTIATE" /> (como Kerberos). Essas informações devem estar disponíveis junto ao fornecedor do app de autenticação. Para saber detalhes, consulte a página The Chromium Projects (https://goo.gl/hajyfN)
@@ -1539,6 +1536,7 @@ A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENAB
       Se for definida como verdadeira ou deixada sem definição, o status de rede do dispositivo será enviado.</translation>
 <translation id="2223393221350938149">Não permitir que sites executem o JIT do JavaScript</translation>
 <translation id="2223598546285729819">Configuração padrão de notificações</translation>
+<translation id="2224706708550115831">Permitir que o navegador do usuário acesse uma lista de URLs enquanto a VPN sempre ativada estiver no modo restrito com o bloqueio total ativado e não estiver conectada</translation>
 <translation id="222673035924187991">Ativar Encrypted ClientHello do TLS</translation>
 <translation id="2231817271680715693">Importar histórico de navegação do navegador padrão na primeira execução</translation>
 <translation id="2231962946025538735">O uso desta política foi suspenso. Use <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> para controlar a disponibilidade do plug-in Flash e <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> para controlar se o visualizador de PDF integrado será usado para abrir arquivos PDF.
@@ -1724,7 +1722,6 @@ política enquanto o navegador estiver em execução.</translation>
 Quando a política é desativada, ela impede que usuários ou variações do <ph name="PRODUCT_NAME" /> ativem o recurso NewBaseUrlInheritanceBehavior caso problemas de compatibilidade sejam descobertos. Quando ativada ou deixada sem definição, ela permite a ativação do recurso NewBaseUrlInheritanceBehavior.</translation>
 <translation id="2362469626417133796">Janela de tempo de reinicialização</translation>
 <translation id="2362539163677485510">Token de registro da política de nuvem</translation>
-<translation id="2362947328909044249">Permitir a organização de guias</translation>
 <translation id="2363928351203698966">Se a política for definida com um valor válido, o <ph name="PRODUCT_NAME" /> não usará versões SSL/TLS anteriores à versão especificada. Valores não reconhecidos serão ignorados.
 
       Se esta política não for definida, o <ph name="PRODUCT_NAME" /> mostrará uma mensagem de erro para TLS 1.0 e TLS 1.1, mas o usuário poderá ignorá-la.
@@ -2084,7 +2081,6 @@ O sistema só consulta registros AAAA quando está acessível a um host IPv6 glo
 <translation id="2650049181907741121">Ação a ser realizada quando o usuário fecha a tampa</translation>
 <translation id="2656559539624760733">Não usar a Chrome Root Store.</translation>
 <translation id="2658653824183107970">Usar a implementação legada de <ph name="CORS" /> em vez do novo <ph name="CORS" /></translation>
-<translation id="2659064869547694451">Permitir o Compose</translation>
 <translation id="2660846099862559570">Nunca usar um proxy</translation>
 <translation id="2661628029848851543">Todos os usos de contas gerenciadas são permitidos</translation>
 <translation id="2664391398878045611">A página "Nova guia" não vai mostrar o aviso abaixo da caixa de pesquisa, mesmo se ele estiver disponível</translation>
@@ -2330,6 +2326,7 @@ Esta política só pode ser definida como uma política do usuário em nuvem.</t
 <translation id="2896434627453256512">Definir a política para ativar o recurso de janela fantasma.
       Se a política for definida como "true" (verdadeira), janelas fantasma do ARC serão criadas antes da inicialização do ARC após uma falha ou reinicialização com base na configuração de restauração do app.
       Se a política for definida como "false" (falsa), nenhuma janela fantasma será criada antes da inicialização do ARC. Apps do ARC serão restaurados após a inicialização dele</translation>
+<translation id="2897716186959852329">Nunca permitir a leitura em voz alta</translation>
 <translation id="2899002520262095963">Os apps Android podem usar as configurações de rede e os certificados de CA definidos por esta política, mas não têm acesso a algumas opções de configuração.</translation>
 <translation id="2899213072616346687">Restringe modo de impressão de gráficos em segundo plano. Se esta política não for definida, não haverá restrição.</translation>
 <translation id="2899640611559504158">Desativar acesso à linha de comando de máquinas virtuais</translation>
@@ -2863,7 +2860,6 @@ Se a política for definida como "Desativada", os arquivos transferidos por down
 Essas restrições são aplicadas a downloads acionados em conteúdos de páginas da Web e na opção do menu "Fazer download do link". Essas restrições não se aplicam às opções de salvar ou fazer o download da página atualmente em exibição nem de salvar como PDF nas opções de impressão.
 
 No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
-<translation id="3300322252167923819">Permitir a organização de guias</translation>
 <translation id="3300784749135986828">Ativar ou desativar a <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Ativar extensão de insights</translation>
 <translation id="3302829897293005699">Se a política for definida como "Ativada" ou não for definida, as informações da sessão de quiosque ativa, como versão e ID do aplicativo, serão comunicadas pelos dispositivos registrados.
@@ -2945,6 +2941,15 @@ Se esta política for definida como desativada, o recurso de escrita preditiva n
 <translation id="3398051852031115795">Comportamento padrão do sistema (depende do tamanho da tela)</translation>
 <translation id="3399859571630358395">Forçar a desativação do Pareamento rápido (pareamento rápido por Bluetooth).</translation>
 <translation id="3404681701763345449">Ativar a integração com o <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
+<translation id="3405361833556012520">Esta política se aplica apenas ao tráfego do navegador. A Play Store, a navegação na Web em apps Android e outros tipos de tráfego de usuários, como o de VMs do Linux ou o de trabalhos de impressão, ainda respeitam as restrições impostas pela VPN sempre ativa. Esta política só é aplicada quando a VPN não está conectada e somente para o tráfego do navegador do usuário. Enquanto estiver aplicada, o tráfego do sistema também poderá ignorar a VPN sempre ativada para realizar tarefas como buscas de políticas e sincronização do relógio do sistema.
+
+Use a política para abrir exceções para alguns esquemas, subdomínios de outros domínios, portas ou caminhos específicos usando o formato especificado em https://support.google.com/chrome/a?p=url_blocklist_filter_format. O filtro mais específico vai determinar se um URL será bloqueado ou permitido.
+
+Se a política <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> for definida e uma VPN sempre ativada estiver configurada e não conectada, a navegação para todos os hosts será bloqueada, exceto os permitidos pela <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />. Nesse estado do dispositivo, <ph name="URL_BLOCKLIST_POLICY_NAME" /> e <ph name="URL_ALLOWLIST_POLICY_NAME" /> são ignorados. Quando a VPN sempre ativada se conectar, as políticas <ph name="URL_BLOCKLIST_POLICY_NAME" /> e <ph name="URL_ALLOWLIST_POLICY_NAME" /> serão aplicadas e a <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> será ignorada.
+
+Esta política tem um limite de 1.000 entradas.
+
+Se a política for deixada sem definição, a navegação no navegador será bloqueada enquanto a VPN sempre ativada com modo restrito estiver ativada e não conectada.</translation>
 <translation id="3405997282295704902">Não permitir o uso do <ph name="PRODUCT_NAME" /></translation>
 <translation id="3406122462682235653">Não perguntar ao usuário (o download começa imediatamente)</translation>
 <translation id="3408078762098350617">Controla a experiência do usuário com recursos desativados na <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.
@@ -3272,7 +3277,6 @@ Quando ela for definida como falsa, as informações da versão não serão cole
 
 Esta política só é eficaz quando a máquina está registrada na <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> do <ph name="PRODUCT_NAME" />.
 Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
-<translation id="3642557248926713561">Desativar a proteção de extensões pelo recurso Navegação segura</translation>
 <translation id="3644735978203799620">Permite a seleção automática de várias capturas de tela</translation>
 <translation id="3646859102161347133">Definir tipo de lupa</translation>
 <translation id="3647212518036289905">Definir a política especifica qual biblioteca GSSAPI será usada para a autenticação HTTP. Defina a política como um nome de biblioteca ou um caminho completo.
@@ -3492,7 +3496,6 @@ Esta política é uma solução temporária e vai ser removida em marcos futuros
 
           Se esta política não for definida, o ditado ficará inicialmente desativado na tela de login, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="3811562426301733860">Permitir anúncios em todos os sites</translation>
-<translation id="3816281648615435872">Desativar a organização de guias</translation>
 <translation id="3816312845600780067">Ativar atalho do teclado dp plano de salvação para login automático</translation>
 <translation id="3817323252437541502">Ativar mais proteções para usuários inscritos no Programa Proteção Avançada</translation>
 <translation id="3821861026311587684">Força a saída do usuário quando a conta perde a autenticação</translation>
@@ -4064,7 +4067,6 @@ A desativação da política faz com que uma mensagem de erro apareça.</transla
 <translation id="428948795004445932">Frequência de amostragem e coleta de dados de rede. O mínimo permitido é de um minuto.
 
       Se deixada sem definição, a frequência padrão de 10 minutos será aplicada.</translation>
-<translation id="4289628882370719584">Esse recurso permite que os usuários organizem as guias.</translation>
 <translation id="4290231183305601970">Texto que será exibido ao usuário na Chrome Web Store se a instalação for bloqueada.</translation>
 <translation id="4293187705196369087">Permite ativar ou desativar uma notificação quando há pouco espaço em disco. Isso é válido para todos os usuários no dispositivo.
 
@@ -4373,7 +4375,6 @@ Esta política não vai ter efeito se for ativada, deixada vazia ou não for def
 <translation id="453031441196755904">Essa política está obsoleta.</translation>
 <translation id="4531706050939927436">Os apps Android podem ser instalados forçadamente a partir do Google Admin Console usando o Google Play. Eles não usam esta política.</translation>
 <translation id="4534500438517478692">Nome de restrição Android:</translation>
-<translation id="4537645230504195464">Permitir o Compose sem gerar registros</translation>
 <translation id="4541530620466526913">Contas locais de dispositivo</translation>
 <translation id="4542255783284620926">Bloqueia a adição de uma conta gerenciada como secundária no ChromeOS (na sessão)</translation>
 <translation id="4543502256674577024">Configurações de atualização do dispositivo</translation>
@@ -4583,7 +4584,6 @@ Após a configuração inicial, os usuários poderão ativar ou desativar os Ser
 <translation id="4674871290487541952">Permite algoritmos inseguros em verificações de integridade nas atualizações e instalações de extensão</translation>
 <translation id="4680961954980851756">Ativar Preenchimento automático</translation>
 <translation id="4685721728282448265">CECPQ2 de acordo de chave pós-quântico ativado para TLS</translation>
-<translation id="4688118315245991650">Desativar o Compose</translation>
 <translation id="468822697351680932">Usar a política de lista de sites do Internet Explorer como fonte de regras</translation>
 <translation id="4693190628432874457">Ativar relatórios de localização do dispositivo</translation>
 <translation id="4693779768620889402">Destinos baseados em extensões</translation>
@@ -5244,6 +5244,11 @@ políticas específicas correspondentes.
 Observação: esta política não se aplica a HSTS Upgrades.</translation>
 <translation id="5297948043665200363">Permitir que o usuário permaneça conectado depois que a conta perder a autenticação</translation>
 <translation id="5298949392804966105">Nenhuma restrição em contas gerenciadas</translation>
+<translation id="5300770793658186741">Se a política for definida, será possível especificar uma lista de origens (URLs) ou padrões de nome do host (como *.example.com) aos quais as restrições de segurança de origens inseguras não serão aplicadas. As organizações podem especificar origens para aplicativos legados que não possam implantar TLS ou configurar um servidor de preparo para desenvolvimento da Web interno. Dessa forma, os desenvolvedores podem testar recursos que necessitam de contextos seguros sem precisar implantar o TLS no servidor de preparo. Essa política também impede que origens sejam marcadas como "Não seguras" na barra de endereço.
+
+A definição de uma lista de URLs nesta política tem o mesmo efeito que configurar a flag de linha de comando --unsafely-treat-insecure-origin-as-secure para uma lista dos mesmos URLs separados por vírgulas. A política modificará a flag de linha de comando e UnsafelyTreatInsecureOriginAsSecure, se estiver presente.
+
+Para mais informações sobre contextos seguros, consulte "Secure Contexts" (https://www.w3.org/TR/secure-contexts) (em inglês).</translation>
 <translation id="530134925949808452">A hora do dia, no horário local, em que a cota de uso é renovada.</translation>
 <translation id="5303080953475303561">Se a política for definida, ela controlará a frequência com que a tela de bloqueio solicita a senha para o desbloqueio rápido. Quando a tela de bloqueio aparece, se a última senha digitada tiver sido inserida antes da janela de tempo especificada pelo valor escolhido, o desbloqueio rápido não ficará disponível. Se os usuários continuarem na tela de bloqueio após esse período, uma senha será solicitada na próxima vez que o código errado for digitado ou que eles acessarem a tela de bloqueio, o que ocorrer primeiro.
 
@@ -5283,7 +5288,6 @@ Se a política for desativada, o histórico de navegação e o de downloads não
 <translation id="5340008866815063393">Ativar relatórios sobre dados de política</translation>
 <translation id="5345910753471481870">Não mostrar o botão do Google Lens na caixa de pesquisa da página "Nova guia".</translation>
 <translation id="5346587320074666194">Bloquear acesso a sensores nesses sites</translation>
-<translation id="5347809796754019202">Permitir o Compose</translation>
 <translation id="534836255587440809">Desativar o clique automático na tela de login</translation>
 <translation id="5348658899015174540">A API <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> permite que aplicativos da Web capturem várias superfícies ao mesmo tempo.
       Esta política desbloqueia a propriedade <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> para aplicativos da Web em origens definidas.
@@ -5454,6 +5458,7 @@ Se a política for desativada ou deixada sem definição, as configurações de 
 <translation id="547601067149622666">Não permitir anúncios em sites com anúncios invasivos</translation>
 <translation id="5476152378885134514">Bloquear a área de transferência nesses sites</translation>
 <translation id="5480380613778757009">Se a política for desativada ou deixada sem definição, todas as configurações de tela que foram definidas em Sessões de visitante gerenciadas serão redefinidas assim que a sessão for encerrada. Se a política for definida como "Verdadeira", as propriedades de tela permanecerão após a Sessão de visitante gerenciada ser encerrada.</translation>
+<translation id="5483012943408894695">Origens ou padrões de nome do host aos quais as restrições sobre origens não seguras não se aplicam</translation>
 <translation id="5483065054530244863">Permitir certificados SHA-1 assinados emitidos pelas âncoras de confiança locais</translation>
 <translation id="5487758664517243511">Se esta configuração estiver ativada, os usuários que já ativaram o recurso "Seu smartphone" poderão continuar tarefas no ChromeOS, como visualizar as páginas da Web do smartphone.
 
@@ -5803,8 +5808,6 @@ Quando ela está desativada ou é deixada sem definição, os Glanceables não s
       Se esta política for definida como falsa ou não for definida, os recursos da Web Components v0 ficarão desativados por padrão, a partir do M80.
 
       Esta política será removida após o Chrome 84.</translation>
-<translation id="5755149423476170868">Quando esta política for ativada ou deixada sem definição, a proteção de extensões pelo recurso <ph name="SAFE_BROWSING_NAME" /> será controlada pela <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> para o <ph name="PRODUCT_NAME" />. Se a <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> for definida como <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_STANDARD" /> ou <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_ENHANCED" />, as extensões maliciosas serão desativadas mais rapidamente no <ph name="PRODUCT_NAME" />. O <ph name="PRODUCT_NAME" /> envia uma solicitação ao servidor da Navegação segura do Google para verificar se uma extensão foi removida da Chrome Web Store (CWS) por ser considerada problemática, ou seja, um software malicioso, vulnerável, indesejado ou que viola as políticas da CWS. Se uma extensão for removida, o <ph name="PRODUCT_NAME" /> vai impedir que os usuários a instalem. Caso já tenha sido instalada, ela será desativada.
-Se a política for desativada, a proteção de extensões pelo recurso <ph name="SAFE_BROWSING_NAME" /> será desativada e as extensões maliciosas serão verificadas e removidas com menos frequência pelo <ph name="GOOGLE_UPDATE_NAME" />. Nenhum dado é enviado ao recurso <ph name="SAFE_BROWSING_NAME" /> do Google para vereditos.</translation>
 <translation id="575647238840663288">Por padrão, os documentos podem ser colocados em clusters de agente com origin-key. Nesses casos, o document.domain não é definível.</translation>
 <translation id="5756680608782814094">Envia informações sobre os dados vitais do produto (VPD, na sigla em inglês) de um dispositivo.
 
@@ -5921,7 +5924,6 @@ Se a política for desativada, a proteção de extensões pelo recurso <ph name=
 <translation id="5883754873839596178">Se a política for definida, o número máximo de conexões simultâneas ao servidor proxy será especificado. Alguns servidores proxy não podem administrar um grande número de conexões simultâneas por cliente, o que pode ser resolvido com a definição de um número menor para esta política. Defina um valor inferior a 100 e superior a 6. Alguns apps da Web são conhecidos por consumir muitas conexões com GETs irresponsivos, então definir um valor inferior a 32 pode gerar deslocamentos na rede do navegador caso haja muitos apps da Web com conexões deslocadas abertas. A definição de valores inferiores ao padrão fica por sua conta e risco.
 
       Se a política não for definida, o valor padrão de 32 será usado.</translation>
-<translation id="5885770645815872943">Permitir a proteção de extensões pelo recurso Navegação segura</translation>
 <translation id="5887414688706570295">Configura o prefixo TalkGadget que será usado pelos hosts de acesso remoto e impede os usuários de alterá-lo.
 
           Se for especificado, esse prefixo é anexado ao nome básico do TalkGadget para criar um nome de domínio completo para o TalkGadget. O nome de domínio básico do TalkGadget é ".talkgadget.google.com".
@@ -6612,7 +6614,6 @@ Consulte também a política <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</transla
           Se a política for desativada, o dispositivo <ph name="PRODUCT_OS_NAME" /> não vai poder buscar eventos do <ph name="GOOGLE_CALENDAR_NAME" /> para preencher o widget da agenda do <ph name="PRODUCT_OS_NAME" /> na barra de status do sistema para o usuário conectado.
 
           Se a política não for definida, o <ph name="GOOGLE_CALENDAR_NAME" /> vai ser ativado por padrão para os usuários corporativos.</translation>
-<translation id="6450607392928079050">A proteção de extensões pelo recurso Navegação segura é controlada pela política <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /></translation>
 <translation id="6452882999388592166">Quando a política está ativada, a extensão do componente do CryptoToken integrada é carregada na inicialização. Se ela for desativada ou deixada sem definição, o CryptoToken não vai ser carregado na inicialização do navegador. Esta política é apenas uma solução temporária para sites corrompidos por chrome.runtime indefinido como um efeito colateral da remoção de CryptoToken no M106. Os sites não podem depender da definição incondicional de chrome.runtime.</translation>
 <translation id="6453641799812499182">Ativar as mitigações de verificação de <ph name="CORS" /> na nova implementação de <ph name="CORS" /></translation>
 <translation id="645425387487868471">Ativar login forçado no <ph name="PRODUCT_NAME" /></translation>
@@ -7063,6 +7064,7 @@ Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
       Se a política for ativada, os sites poderão usar os SharedArrayBuffers sem restrições.
 
       Se ela for desativada ou deixada sem definição, os sites só poderão usar os SharedArrayBuffers em isolamento de origem cruzada.</translation>
+<translation id="6734397897213913438">Sempre permitir a leitura em voz alta</translation>
 <translation id="6735701345096330595">Forçar a ativação da correção ortográfica de idiomas</translation>
 <translation id="6736283207617136584">Ativar relatórios sobre o status de atualização do SO do dispositivo</translation>
 <translation id="6739541168983991680">Automatizar o fluxo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /></translation>
@@ -7437,11 +7439,6 @@ Se não for definida, as imagens serão permitidas, mas os usuários poderão mu
 
       Configurações extras são necessárias para que essa política seja aplicada. Acesse https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para mais informações.</translation>
 <translation id="7032813174556919004">Desativar DNS sobre HTTPS</translation>
-<translation id="7033778618670823541">Se a política for definida, será possível especificar uma lista de origens (URLs) ou padrões de nome de host (como *.example.com) aos quais as restrições de segurança de origens inseguras não serão aplicadas. As organizações podem especificar origens para aplicativos legados que não possam implantar TLS ou configurar um servidor de preparo para desenvolvimento da Web interno. Dessa forma, os desenvolvedores podem testar recursos que necessitam de contextos seguros sem precisar implantar o TLS no servidor de preparo. Essa política também impede que origens sejam marcadas como "Não seguras" na barra de endereço.
-
-      A definição de uma lista de URLs nesta política tem o mesmo efeito que configurar a flag de linha de comando --unsafely-treat-insecure-origin-as-secure para uma lista dos mesmos URLs separados por vírgulas. A política modificará a flag de linha de comando e UnsafelyTreatInsecureOriginAsSecure, se estiver presente.
-
-      Para acessar mais informações sobre contextos seguros, consulte "Secure Contexts" (https://www.w3.org/TR/secure-contexts) (em inglês).</translation>
 <translation id="703672323011778742">Esta política foi suspensa na versão M88. O Flash não é mais compatível com o Chrome. Se a política for definida como 1, você poderá definir se todos os sites poderão executar automaticamente o plug-in <ph name="FLASH_PLUGIN_NAME" />. Se ela for definida como 2, esse plug-in será negado em todos os sites. O "Clique para ver" permite que o plug-in <ph name="FLASH_PLUGIN_NAME" /> seja executado, mas os usuários precisam clicar no marcador para iniciar a execução.
 
       Se a política não for definida, a <ph name="BLOCK_PLUGINS_POLICY_NAME" /> será usada e os usuários poderão mudar essa configuração.
@@ -7926,6 +7923,11 @@ Se a política não for definida, ela será funcionalmente equivalente a ser def
 <translation id="7443356543619955157">Se a política for definida, será possível aplicar a configuração de rede para todos os usuários de um dispositivo <ph name="PRODUCT_OS_NAME" />. A configuração de rede é uma string formatada em JSON, conforme definido pelo formato Open Network Configuration.</translation>
 <translation id="7446978687387327623">Permitir verificações em tempo real com o proxy da Navegação segura</translation>
 <translation id="7448430478749155471">Ativa o recurso "Selecionar para ouvir" na tela de login</translation>
+<translation id="7455912144588577399">Se a política for definida como verdadeira, os usuários poderão ler páginas da
+Web qualificadas em voz alta usando a conversão de texto em voz. Isso é possível graças à síntese de áudio e
+à destilação de conteúdo do lado do servidor. Se for definida como falsa,
+esse recurso será desativado. Se definida como padrão ou deixada sem definição,
+a leitura em voz alta será ativada.</translation>
 <translation id="7456922722153109956">Esta política controla a visibilidade do aviso abaixo da caixa de pesquisa na página "Nova guia".
 
       Se a política estiver definida como Ativada, a página "Nova guia" vai mostrar o aviso abaixo da caixa de pesquisa, caso esteja disponível.
@@ -8890,19 +8892,6 @@ Se a política for desativada, a página será bloqueada.</translation>
 
       Se não for definida, os sites terão permissão para solicitar acesso, mas os usuários poderão mudar essa configuração.</translation>
 <translation id="8267520984570984190">O comportamento padrão de redimensionamento do teclado virtual não é modificado</translation>
-<translation id="8267887696930711948">Descontinuada na versão M69. Use a
-      OverrideSecurityRestrictionsOnInsecureOrigin.
-
-      A política especifica uma lista de origens (URLs) ou padrões de nome do host (como "*.example.com") aos quais as restrições de segurança sobre origens não seguras não se aplicam.
-
-      O objetivo é permitir que as organizações autorizem origens para aplicativos legados que não implantam TLS ou que elas configurem um servidor de preparo para o desenvolvimento da Web interno, de modo que os desenvolvedores possam testar recursos que exigem contextos seguros sem precisar implantar TLS no servidor de preparo. Esta política também vai impedir que a origem seja rotulada como "Não segura" na omnibox.
-
-      Definir uma lista de URLs nesta política tem o mesmo efeito que definir a flag de linha de comando "--unsafely-treat-insecure-origin-as-secure" para uma lista com os mesmos URLs separados por vírgula. Se a política for definida, ela vai substituir a flag de linha de comando.
-
-      Esta política foi descontinuada na versão M69 para implementar a OverrideSecurityRestrictionsOnInsecureOrigin. Se as duas políticas estiverem presentes, a OverrideSecurityRestrictionsOnInsecureOrigin substituirá esta.
-
-      Para acessar mais informações sobre contextos seguros, acesse https://www.w3.org/TR/secure-contexts/ (link em inglês).
-      </translation>
 <translation id="8269238942896230153">Uma conta gerenciada precisa ser a principal. A importação de dados de navegação existentes é permitida no momento da criação do perfil</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="827054846390793641">Ativar IUs relacionadas à conexão no computador host quando uma conexão estiver ativa</translation>
@@ -9457,6 +9446,7 @@ haverá um URL do tipo "saiba mais" no instalador. Se estiver presente, ela prec
 o esquema https.</translation>
 <translation id="8715885991031124968">Permitir caixas de diálogo de JavaScript acionadas por um subframe de origem diferente.</translation>
 <translation id="8720547069538712402">Permitir que o usuário ative ou desative a verificação ortográfica</translation>
+<translation id="8721685661759544418">Ativar a leitura em voz alta (destilação de texto e síntese de conversão de texto em voz) para páginas da Web</translation>
 <translation id="8726080977639508431">Esta política controla como o <ph name="PRODUCT_NAME" /> interpreta políticas de lista de sites/lista cinza no recurso Suporte a navegadores legados. Ela afeta as políticas <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> e <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
 
       Se ela for definida como "Default" (0) ou for deixada sem definição, a correspondência de URL será menos rigorosa. Regras que não tiverem "/" procurarão uma substring em qualquer lugar no nome do host do URL. A correspondência do componente de caminho de um URL diferencia maiúsculas de minúsculas.
@@ -9982,6 +9972,17 @@ Esta política só tem efeito quando a <ph name="FULL_RESTORE_ENABLED_NAME" /> e
 <translation id="9135095804754272364">Mostrar uma notificação quando um dispositivo USB for detectado</translation>
 <translation id="9136212796239682721">Desativar a interface de download em balão</translation>
 <translation id="9136399279941091445">Intervalos de horas de inatividade quando as políticas do dispositivo específicas são lançadas</translation>
+<translation id="9140064482233876338">Descontinuada no M69. Use a OverrideSecurityRestrictionsOnInsecureOrigin.
+
+A política especifica uma lista de origens (URLs) ou padrões de nome do host (como "*.example.com") a que as restrições de segurança sobre origens não seguras não se aplicam.
+
+O objetivo é permitir que organizações autorizem origens para aplicativos legados que não implantam TLS, ou que elas configurem um servidor de preparo para o desenvolvimento interno da Web, de modo que os desenvolvedores possam testar recursos que exigem contextos seguros sem precisar implantar TLS no servidor de preparo. Esta política também impedirá que a origem seja rotulada como "Não segura" na omnibox.
+
+Definir uma lista de URLs nesta política tem o mesmo efeito que definir a flag de linha de comando "--unsafely-treat-insecure-origin-as-secure" para uma lista com os mesmos URLs separados por vírgula. Se a política for definida, ela substituirá a flag de linha de comando.
+
+Esta política foi descontinuada no M69 para implementar a OverrideSecurityRestrictionsOnInsecureOrigin. Se as duas políticas estiverem presentes, OverrideSecurityRestrictionsOnInsecureOrigin substituirá esta.
+
+Para mais informações sobre contextos seguros, acesse https://www.w3.org/TR/secure-contexts/ (link em inglês).</translation>
 <translation id="9142561920976791097">O novo comportamento para envio de eventos em controles de formulário desativados vai ser usado.</translation>
 <translation id="91459503271584213">Iniciar hosts executáveis de mensagens nativas diretamente no Windows</translation>
 <translation id="9148720248753722892">Não permitir certificados assinados SHA-1</translation>

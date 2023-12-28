@@ -992,8 +992,7 @@ ui::Compositor* RenderWidgetHostViewIOS::GetCompositor() {
 
 void RenderWidgetHostViewIOS::GestureEventAck(
     const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result,
-    blink::mojom::ScrollResultDataPtr scroll_result_data) {
+    blink::mojom::InputEventResultState ack_result) {
   // Stop flinging if a GSU event with momentum phase is sent to the renderer
   // but not consumed.
   StopFlingingIfNecessary(event, ack_result);
@@ -1008,10 +1007,11 @@ void RenderWidgetHostViewIOS::GestureEventAck(
       [[scrollView delegate] scrollViewWillBeginDragging:scrollView];
       break;
     case blink::WebInputEvent::Type::kGestureScrollUpdate:
-      if (scroll_result_data && scroll_result_data->root_scroll_offset) {
-        ApplyRootScrollOffsetChanged(*scroll_result_data->root_scroll_offset,
-                                     /*force=*/false);
-      }
+      // TODO(crbug.com/1458640): Since ScrollResultData has been removed from
+      // GestureEventAck, the invocation of ApplyRootScrollOffsetChanged here
+      // has also been eliminated for now. We should address the
+      // GestureScrollUpdate event after examining how the bug implements
+      // GestureEventAck.
       break;
     case blink::WebInputEvent::Type::kGestureScrollEnd: {
       // Make sure our cached view bounds gets updated.
@@ -1038,12 +1038,11 @@ void RenderWidgetHostViewIOS::GestureEventAck(
 
 void RenderWidgetHostViewIOS::ChildDidAckGestureEvent(
     const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result,
-    blink::mojom::ScrollResultDataPtr scroll_result_data) {
-  if (scroll_result_data && scroll_result_data->root_scroll_offset) {
-    ApplyRootScrollOffsetChanged(*scroll_result_data->root_scroll_offset,
-                                 /*force=*/false);
-  }
+    blink::mojom::InputEventResultState ack_result) {
+  // TODO(crbug.com/1458640): Since ScrollResultData has been removed from
+  // GestureEventAck, the invocation of ApplyRootScrollOffsetChanged here has
+  // also been eliminated for now. We should address the GestureScrollUpdate
+  // event after examining how the bug implements GestureEventAck.
 }
 
 void RenderWidgetHostViewIOS::UpdateFrameBounds() {

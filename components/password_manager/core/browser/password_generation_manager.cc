@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/form_saver.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
@@ -21,7 +22,7 @@ namespace password_manager {
 namespace {
 
 std::vector<PasswordForm> DeepCopyVector(
-    const std::vector<const PasswordForm*>& forms) {
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& forms) {
   std::vector<PasswordForm> result;
   result.reserve(forms.size());
   for (const PasswordForm* form : forms)
@@ -33,24 +34,30 @@ std::vector<PasswordForm> DeepCopyVector(
 // a conflict in generation.
 class PasswordDataForUI : public PasswordFormManagerForUI {
  public:
-  PasswordDataForUI(PasswordForm pending_form,
-                    const std::vector<const PasswordForm*>& matches,
-                    const std::vector<const PasswordForm*>& federated,
-                    base::RepeatingCallback<void(bool, const PasswordForm&)>
-                        bubble_interaction);
+  PasswordDataForUI(
+      PasswordForm pending_form,
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+          matches,
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+          federated,
+      base::RepeatingCallback<void(bool, const PasswordForm&)>
+          bubble_interaction);
   ~PasswordDataForUI() override = default;
   PasswordDataForUI(const PasswordDataForUI&) = delete;
   PasswordDataForUI& operator=(const PasswordDataForUI&) = delete;
 
   // PasswordFormManagerForUI:
   const GURL& GetURL() const override;
-  const std::vector<const PasswordForm*>& GetBestMatches() const override;
-  std::vector<const PasswordForm*> GetFederatedMatches() const override;
+  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+  GetBestMatches() const override;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+  GetFederatedMatches() const override;
   const PasswordForm& GetPendingCredentials() const override;
   metrics_util::CredentialSourceType GetCredentialSource() const override;
   PasswordFormMetricsRecorder* GetMetricsRecorder() override;
   base::span<const InteractionsStats> GetInteractionsStats() const override;
-  std::vector<const PasswordForm*> GetInsecureCredentials() const override;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+  GetInsecureCredentials() const override;
   bool IsBlocklisted() const override;
   bool IsMovableToAccountStore() const override;
   void Save() override;
@@ -67,7 +74,7 @@ class PasswordDataForUI : public PasswordFormManagerForUI {
 
  private:
   PasswordForm pending_form_;
-  std::vector<const PasswordForm*> matches_;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches_;
   const std::vector<PasswordForm> federated_matches_;
   const std::vector<PasswordForm> non_federated_matches_;
 
@@ -80,8 +87,9 @@ class PasswordDataForUI : public PasswordFormManagerForUI {
 
 PasswordDataForUI::PasswordDataForUI(
     PasswordForm pending_form,
-    const std::vector<const PasswordForm*>& matches,
-    const std::vector<const PasswordForm*>& federated,
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+        federated,
     base::RepeatingCallback<void(bool, const PasswordForm&)> bubble_interaction)
     : pending_form_(std::move(pending_form)),
       federated_matches_(DeepCopyVector(federated)),
@@ -95,14 +103,15 @@ const GURL& PasswordDataForUI::GetURL() const {
   return pending_form_.url;
 }
 
-const std::vector<const PasswordForm*>& PasswordDataForUI::GetBestMatches()
-    const {
+const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+PasswordDataForUI::GetBestMatches() const {
   return matches_;
 }
 
-std::vector<const PasswordForm*> PasswordDataForUI::GetFederatedMatches()
-    const {
-  std::vector<const PasswordForm*> result(federated_matches_.size());
+std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+PasswordDataForUI::GetFederatedMatches() const {
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> result(
+      federated_matches_.size());
   base::ranges::transform(federated_matches_, result.begin(),
                           [](const PasswordForm& form) { return &form; });
   return result;
@@ -126,8 +135,8 @@ base::span<const InteractionsStats> PasswordDataForUI::GetInteractionsStats()
   return {};
 }
 
-std::vector<const PasswordForm*> PasswordDataForUI::GetInsecureCredentials()
-    const {
+std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+PasswordDataForUI::GetInsecureCredentials() const {
   return {};
 }
 
@@ -183,8 +192,9 @@ void PasswordDataForUI::BlockMovingCredentialsToAccountStore() {}
 // Returns a form from |matches| that causes a name conflict with |generated|.
 const PasswordForm* FindUsernameConflict(
     const PasswordForm& generated,
-    const std::vector<const PasswordForm*>& matches) {
-  for (const auto* form : matches) {
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+        matches) {
+  for (const password_manager::PasswordForm* form : matches) {
     if (form->username_value == generated.username_value)
       return form;
   }
@@ -316,8 +326,10 @@ std::unique_ptr<PasswordGenerationManager> PasswordGenerationManager::Clone()
 
 void PasswordGenerationManager::GeneratedPasswordAccepted(
     PasswordForm generated,
-    const std::vector<const PasswordForm*>& non_federated_matches,
-    const std::vector<const PasswordForm*>& federated_matches,
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+        non_federated_matches,
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+        federated_matches,
     base::WeakPtr<PasswordManagerDriver> driver) {
   // Clear the username value if there are already saved credentials with
   // the same username in order to prevent overwriting.
@@ -340,7 +352,7 @@ void PasswordGenerationManager::GeneratedPasswordAccepted(
 
 void PasswordGenerationManager::PresaveGeneratedPassword(
     PasswordForm generated,
-    const std::vector<const PasswordForm*>& matches,
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
     FormSaver* form_saver) {
   CHECK(!generated.password_value.empty());
   // Clear the username value if there are already saved credentials with
@@ -370,7 +382,7 @@ void PasswordGenerationManager::PasswordNoLongerGenerated(
 
 void PasswordGenerationManager::CommitGeneratedPassword(
     PasswordForm generated,
-    const std::vector<const PasswordForm*>& matches,
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
     const std::u16string& old_password,
     FormSaver* form_saver) {
   DCHECK(presaved_);

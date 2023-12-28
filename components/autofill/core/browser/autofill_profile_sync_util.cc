@@ -13,7 +13,6 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/proto/autofill_sync.pb.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/sync/protocol/entity_data.h"
@@ -636,7 +635,7 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
 
   // When adding field types, ensure that they don't need to be added here and
   // update the last checked value.
-  static_assert(ServerFieldType::MAX_VALID_FIELD_TYPE == 161,
+  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 161,
                 "New field type needs to be reviewed for inclusion in sync");
 
   // The profile may be in a legacy state. By calling |FinalizeAfterImport()|

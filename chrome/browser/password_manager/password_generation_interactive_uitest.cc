@@ -80,6 +80,10 @@ class PasswordGenerationInteractiveTest
   }
 
   void TearDownOnMainThread() override {
+    // RunUntilIdle() is necessary because otherwise, under the hood
+    // PasswordFormManager::OnFetchComplete() callback is run after this test is
+    // destroyed meaning that OsCryptImpl will be used instead of OsCryptMocker,
+    // causing this test to fail.
     base::RunLoop().RunUntilIdle();
     PasswordManagerBrowserTestBase::TearDownOnMainThread();
 
@@ -439,9 +443,8 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kShown);
 }
 
-// https://crbug.com/791389
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
-                       DISABLED_AutoSavingGeneratedPassword) {
+                       AutoSavingGeneratedPassword) {
   scoped_refptr<password_manager::TestPasswordStore> password_store =
       static_cast<password_manager::TestPasswordStore*>(
           ProfilePasswordStoreFactory::GetForProfile(

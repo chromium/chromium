@@ -153,6 +153,7 @@ cc_library(
         ":conditions",
         ":log_message",
         ":strip",
+        "//absl/log:absl_vlog_is_on",
     ],
 )
 
@@ -374,6 +375,48 @@ cc_library(
     deps = [
         "//absl/base:config",
         "//absl/strings",
+    ],
+)
+
+cc_library(
+    name = "vlog_config",
+    srcs = ["vlog_config.cc"],
+    hdrs = ["vlog_config.h"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//absl/log:__subpackages__"],
+    deps = [
+        "//absl/base",
+        "//absl/base:config",
+        "//absl/base:core_headers",
+        "//absl/base:no_destructor",
+        "//absl/log/internal:fnmatch",
+        "//absl/memory",
+        "//absl/strings",
+        "//absl/synchronization",
+        "//absl/types:optional",
+    ],
+)
+
+cc_binary(
+    name = "vlog_config_benchmark",
+    testonly = 1,
+    srcs = ["vlog_config_benchmark.cc"],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    tags = [
+        "benchmark",
+    ],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":vlog_config",
+        "//absl/base:config",
+        "//absl/base:core_headers",
+        "//absl/container:layout",
+        "//absl/memory",
+        "//absl/random:distributions",
+        "//absl/strings",
+        "@com_github_google_benchmark//:benchmark_main",
     ],
 )
 

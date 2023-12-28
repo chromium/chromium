@@ -73,7 +73,7 @@ void CreditCardFidoAuthenticator::Authenticate(
     CreditCard card,
     base::WeakPtr<Requester> requester,
     base::Value::Dict request_options,
-    absl::optional<std::string> context_token) {
+    std::optional<std::string> context_token) {
   card_ = std::move(card);
   requester_ = requester;
   context_token_ = context_token;
@@ -524,7 +524,7 @@ CreditCardFidoAuthenticator::ParseRequestOptions(
   DCHECK(challenge);
   options->challenge = Base64ToBytes(*challenge);
 
-  const absl::optional<int> timeout = request_options.FindInt("timeout_millis");
+  const std::optional<int> timeout = request_options.FindInt("timeout_millis");
   options->timeout = base::Milliseconds(timeout.value_or(kWebAuthnTimeoutMs));
 
   options->user_verification = device::UserVerificationRequirement::kRequired;
@@ -576,8 +576,7 @@ CreditCardFidoAuthenticator::ParseCreationOptions(
     }
   }
 
-  const absl::optional<int> timeout =
-      creation_options.FindInt("timeout_millis");
+  const std::optional<int> timeout = creation_options.FindInt("timeout_millis");
   options->timeout = base::Milliseconds(timeout.value_or(kWebAuthnTimeoutMs));
 
   const auto* attestation =
@@ -624,7 +623,7 @@ CreditCardFidoAuthenticator::ParseCredentialDescriptor(
       key_info.GetDict().FindList("authenticator_transport_support");
   if (transports && !transports->empty()) {
     for (const base::Value& transport_type : *transports) {
-      absl::optional<device::FidoTransportProtocol> protocol =
+      std::optional<device::FidoTransportProtocol> protocol =
           device::ConvertToFidoTransportProtocol(
               base::ToLowerASCII(transport_type.GetString()));
       if (protocol.has_value())
@@ -755,7 +754,7 @@ void CreditCardFidoAuthenticator::HandleGetAssertionSuccess(
           autofill_client_, autofill_client_->GetPaymentsNetworkInterface(),
           autofill_client_->GetPersonalDataManager());
 
-      absl::optional<GURL> last_committed_primary_main_frame_origin;
+      std::optional<GURL> last_committed_primary_main_frame_origin;
       if (card_->record_type() == CreditCard::RecordType::kVirtualCard &&
           autofill_client_->GetLastCommittedPrimaryMainFrameURL().is_valid()) {
         last_committed_primary_main_frame_origin =

@@ -526,6 +526,8 @@ if (is_android) {
     sources = [ "android/javatests/src/org/chromium/ui/accessibility/AccessibilityStateTest.java" ]
     deps = [
       ":ax_base_java",
+      ":ui_accessibility_features_java",
+      "//base:base_java_test_support",
       "//base:base_junit_test_support",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/junit:junit",

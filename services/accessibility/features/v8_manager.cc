@@ -27,6 +27,7 @@
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "services/accessibility/assistive_technology_controller_impl.h"
 #include "services/accessibility/features/autoclick_client_interface_binder.h"
+#include "services/accessibility/features/automation_client_interface_binder.h"
 #include "services/accessibility/features/automation_internal_bindings.h"
 #include "services/accessibility/features/devtools/os_devtools_agent.h"
 #include "services/accessibility/features/interface_binder.h"
@@ -152,10 +153,9 @@ V8Environment::~V8Environment() {
 }
 
 void V8Environment::InstallAutomation(
-    mojo::PendingAssociatedReceiver<mojom::Automation> automation,
-    mojo::PendingRemote<mojom::AutomationClient> automation_client) {
-  automation_bindings_ = std::make_unique<AutomationInternalBindings>(
-      this, std::move(automation), std::move(automation_client));
+    mojo::PendingAssociatedReceiver<mojom::Automation> automation) {
+  automation_bindings_ =
+      std::make_unique<AutomationInternalBindings>(this, std::move(automation));
 }
 
 void V8Environment::InstallOSState() {
@@ -400,13 +400,8 @@ void V8Environment::AddV8Bindings() {
     Local<v8::ObjectTemplate> automation_template =
         v8::ObjectTemplate::New(isolate);
     automation_bindings_->AddAutomationRoutesToTemplate(&automation_template);
-    chrome_template->Set(isolate, "automation", automation_template);
-    Local<v8::ObjectTemplate> automation_internal_template =
-        v8::ObjectTemplate::New(isolate);
-    automation_bindings_->AddAutomationInternalRoutesToTemplate(
-        &automation_internal_template);
-    chrome_template->Set(isolate, "automationInternal",
-                         automation_internal_template);
+    global_template->Set(isolate, "nativeAutomationInternal",
+                         automation_template);
   }
 
   // Add chrome.runtime.
@@ -478,11 +473,13 @@ V8Manager::~V8Manager() {
 }
 
 void V8Manager::ConfigureAutomation(
-    mojo::PendingAssociatedReceiver<mojom::Automation> automation,
-    mojo::PendingRemote<mojom::AutomationClient> automation_client) {
+    mojom::AccessibilityServiceClient* ax_service_client,
+    mojo::PendingAssociatedReceiver<mojom::Automation> automation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   v8_env_.AsyncCall(&V8Environment::InstallAutomation)
-      .WithArgs(std::move(automation), std::move(automation_client));
+      .WithArgs(std::move(automation));
+  interface_binders_.push_back(
+      std::make_unique<AutomationClientInterfaceBinder>(ax_service_client));
 }
 
 void V8Manager::ConfigureAutoclick(

@@ -167,7 +167,7 @@ class CalendarUpNextViewTest : public AshTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<CalendarUpNextView, ExperimentalAsh> up_next_view_;
+  raw_ptr<CalendarUpNextView> up_next_view_;
   std::unique_ptr<CalendarViewController> controller_;
 };
 
@@ -554,7 +554,7 @@ TEST_F(CalendarUpNextViewTest, ShouldFocusViewsInCorrectOrder_WhenPressingTab) {
 
   // First the event list item view should be focused.
   PressTab();
-  auto* first_item = GetContentsView()->children()[0];
+  auto* first_item = GetContentsView()->children()[0].get();
   ASSERT_TRUE(first_item);
   EXPECT_EQ(first_item, focus_manager->GetFocusedView());
   EXPECT_STREQ("CalendarEventListItemView",
@@ -567,7 +567,7 @@ TEST_F(CalendarUpNextViewTest, ShouldFocusViewsInCorrectOrder_WhenPressingTab) {
 
   // Next, the second event list item view should be focused.
   PressTab();
-  auto* second_item = GetContentsView()->children()[1];
+  auto* second_item = GetContentsView()->children()[1].get();
   ASSERT_TRUE(second_item);
   EXPECT_EQ(second_item, focus_manager->GetFocusedView());
   EXPECT_STREQ("CalendarEventListItemView",
@@ -610,7 +610,7 @@ TEST_F(CalendarUpNextViewTest, ShouldPreserveFocusAfterRefreshEvent) {
 
   // First the event list item view should be focused.
   PressTab();
-  auto* first_item = GetContentsView()->children()[0];
+  auto* first_item = GetContentsView()->children()[0].get();
   ASSERT_TRUE(first_item);
   EXPECT_EQ(first_item, focus_manager->GetFocusedView());
   EXPECT_STREQ("CalendarEventListItemView",

@@ -42,13 +42,6 @@ class CORE_EXPORT HTMLParserOptions {
   // https://html.spec.whatwg.org/C/#scripting-flag
   bool scripting_flag = false;
 
-  // TODO(domfarolino): Remove this when Priority Hints is no longer in an
-  // Origin Trial. See https://crbug.com/821464.
-  // This flag is here because HTMLPreloadScanner needs to know whether or not
-  // the Priority Hints origin trial is enabled or not, and it does not have
-  // access to an ExecutionContext*, but HTMLParserOptions does.
-  bool priority_hints_origin_trial_enabled = false;
-
   // If set, the ranges (offsets) of the attribute name and value are tracked.
   bool track_attributes_ranges = false;
 };

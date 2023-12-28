@@ -5,6 +5,7 @@
 import("//crypto/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
+import("//services/network/public/cpp/features.gni")
 
 mojom("mojom") {
   sources = [ "cert_verifier_service_factory.mojom" ]
@@ -24,5 +25,9 @@ mojom("mojom") {
 
   if (use_nss_certs) {
     enabled_features += [ "use_nss_certs" ]
+  }
+
+  if (is_ct_supported) {
+    enabled_features += [ "is_ct_supported" ]
   }
 }

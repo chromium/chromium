@@ -131,7 +131,7 @@ interface MediaDevicesDispatcherHost {
   // of opportunity from the render side.
   // (Note that a timer exists on the browser-side, too. This message serves
   // to close the window early.)
-  [EnableIfNot=is_android]
+  [EnableIfNot=is_android_or_ios]
   CloseFocusWindowOfOpportunity(string label);
 
   // Mints a new ID backing a SubCaptureTarget.
@@ -139,7 +139,7 @@ interface MediaDevicesDispatcherHost {
   //   for BrowserCaptureMediaStreamTrack.cropTo().
   // * RestrictionTargetIds back a RestrictionTarget, which is the input type
   //   for BrowserCaptureMediaStreamTrack.restrictTo().
-  [EnableIfNot=is_android]
+  [EnableIfNot=is_android_or_ios]
   ProduceSubCaptureTargetId(media.mojom.SubCaptureTargetType type)
       => (string id);
 };

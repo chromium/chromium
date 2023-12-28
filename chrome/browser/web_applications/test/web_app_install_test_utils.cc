@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -27,6 +28,10 @@
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
 
 namespace web_app {
 namespace test {
@@ -85,12 +90,65 @@ webapps::AppId InstallWebApp(Profile* profile,
                              std::unique_ptr<WebAppInstallInfo> web_app_info,
                              bool overwrite_existing_manifest_fields,
                              webapps::WebappInstallSource install_source) {
+  // Use InstallShortcut for Create Shortcut install source.
+  CHECK_NE(install_source, webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
+
   // The sync system requires that sync entity name is never empty.
   if (web_app_info->title.empty())
     web_app_info->title = u"WebAppInstallInfo App Name";
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // In Shortstand, user-installed web app should always have a scope.
+  if (chromeos::features::IsCrosShortstandEnabled() &&
+      web_app_info->scope.is_empty()) {
+    web_app_info->scope = web_app_info->start_url;
+  }
+#endif
+
   webapps::AppId app_id;
-  base::RunLoop run_loop;
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      future;
+  auto* provider = WebAppProvider::GetForTest(profile);
+  DCHECK(provider);
+  WaitUntilReady(provider);
+  // In unit tests, we do not have Browser or WebContents instances. Hence we
+  // use `InstallFromInfoCommand` instead of `FetchManifestAndInstallCommand` or
+  // `WebAppInstallCommand` to install the web app.
+  provider->scheduler().InstallFromInfo(std::move(web_app_info),
+                                        overwrite_existing_manifest_fields,
+                                        install_source, future.GetCallback());
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+            future.Get<webapps::InstallResultCode>());
+  // Allow updates to be published to App Service listeners.
+  base::RunLoop().RunUntilIdle();
+
+  return future.Get<webapps::AppId>();
+}
+
+webapps::AppId InstallShortcut(Profile* profile,
+                               const std::string& shortcut_name,
+                               const GURL& start_url,
+                               bool create_default_icon,
+                               bool is_policy_install) {
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
+
+  web_app_info->start_url = start_url;
+  web_app_info->title = base::UTF8ToUTF16(shortcut_name);
+  web_app_info->user_display_mode = mojom::UserDisplayMode::kBrowser;
+  if (create_default_icon) {
+    const GeneratedIconsInfo icon_info(
+        IconPurpose::ANY, {web_app::icon_size::k32}, {SK_ColorBLACK});
+    web_app::AddIconsToWebAppInstallInfo(web_app_info.get(), start_url,
+                                         {icon_info});
+  }
+  // The sync system requires that sync entity name is never empty.
+  if (web_app_info->title.empty()) {
+    web_app_info->title = u"WebAppInstallInfo Shortcut Name";
+  }
+
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      future;
   auto* provider = WebAppProvider::GetForTest(profile);
   DCHECK(provider);
   WaitUntilReady(provider);
@@ -98,19 +156,20 @@ webapps::AppId InstallWebApp(Profile* profile,
   // use `InstallFromInfoCommand` instead of `FetchManifestAndInstallCommand` or
   // `WebAppInstallCommand` to install the web app.
   provider->scheduler().InstallFromInfo(
-      std::move(web_app_info), overwrite_existing_manifest_fields,
-      install_source,
-      base::BindLambdaForTesting([&](const webapps::AppId& installed_app_id,
-                                     webapps::InstallResultCode code) {
-        EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
-        app_id = installed_app_id;
-        run_loop.Quit();
-      }));
+      std::move(web_app_info), /*overwrite_existing_manifest_fields =*/true,
+      is_policy_install ? webapps::WebappInstallSource::EXTERNAL_POLICY
+                        : webapps::WebappInstallSource::MENU_CREATE_SHORTCUT,
+      future.GetCallback());
 
-  run_loop.Run();
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+            future.Get<webapps::InstallResultCode>());
+
   // Allow updates to be published to App Service listeners.
   base::RunLoop().RunUntilIdle();
-  return app_id;
+
+  CHECK(
+      provider->registrar_unsafe().IsShortcutApp(future.Get<webapps::AppId>()));
+  return future.Get<webapps::AppId>();
 }
 
 void UninstallWebApp(Profile* profile, const webapps::AppId& app_id) {

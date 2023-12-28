@@ -50,6 +50,8 @@ class ProxyConfigServiceLacros
  private:
   // crosapi::mojom::NetworkSettingsObserver impl
   void OnProxyChanged(crosapi::mojom::ProxyConfigPtr proxy_config) override;
+  void OnAlwaysOnVpnPreConnectUrlAllowlistEnforcedChanged(
+      bool enforced) override;
 
   void OnUseAshProxyPrefChanged();
 

@@ -92,8 +92,15 @@ void HeadlessWindow::SetFullscreen(bool fullscreen, int64_t target_display_id) {
     UpdateWindowState(PlatformWindowState::kNormal);
   }
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  delegate_->OnFullscreenModeChanged();
-#endif
+  // Setting kImmersive when it's fullscreen on headless window since the
+  // immersive fullscreen is default for fullscreen on Lacros.
+  delegate_->OnFullscreenTypeChanged(
+      window_state_ == PlatformWindowState::kFullScreen
+          ? PlatformFullscreenType::kImmersive
+          : PlatformFullscreenType::kNone,
+      fullscreen ? PlatformFullscreenType::kImmersive
+                 : PlatformFullscreenType::kNone);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void HeadlessWindow::Maximize() {

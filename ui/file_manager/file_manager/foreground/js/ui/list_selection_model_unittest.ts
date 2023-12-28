@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {ListSelectionModel, SelectionChangeEvent} from './list_selection_model.js';
+import {ListSelectionModel, type SelectionChangeEvent} from './list_selection_model.js';
 
 import {assertArrayEquals, assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {assert} from 'chrome://resources/js/assert.js';

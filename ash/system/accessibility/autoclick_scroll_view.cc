@@ -315,7 +315,7 @@ class AutoclickScrollButton : public CustomShapeButton,
   gfx::Size size_;
   std::unique_ptr<base::RetainingOneShotTimer> scroll_hover_timer_;
   bool active_ = false;
-  const raw_ref<const gfx::VectorIcon, ExperimentalAsh> icon_;
+  const raw_ref<const gfx::VectorIcon> icon_;
 };
 
 BEGIN_METADATA(AutoclickScrollButton, CustomShapeButton)

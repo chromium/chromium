@@ -135,8 +135,7 @@ class ASH_EXPORT HoldingSpaceTestApi {
   bool RecentFilesPlaceholderShown() const;
 
  private:
-  raw_ptr<HoldingSpaceTray, DanglingUntriaged | ExperimentalAsh>
-      holding_space_tray_ = nullptr;
+  raw_ptr<HoldingSpaceTray, DanglingUntriaged> holding_space_tray_ = nullptr;
 };
 
 }  // namespace ash

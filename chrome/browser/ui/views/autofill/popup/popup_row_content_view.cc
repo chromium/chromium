@@ -60,7 +60,7 @@ void PopupRowContentView::UpdateStyle(bool selected) {
   SchedulePaint();
 }
 
-BEGIN_METADATA(PopupRowContentView, views::View)
+BEGIN_METADATA(PopupRowContentView)
 END_METADATA
 
 }  // namespace autofill

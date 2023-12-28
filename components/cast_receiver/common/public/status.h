@@ -7,8 +7,7 @@
 
 #include <ostream>
 #include <string>
-
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace cast_receiver {
 
@@ -65,7 +64,7 @@ class Status final {
   StatusCode code() const;
 
   // Returns the error message of this status.
-  base::StringPiece message() const;
+  std::string_view message() const;
 
   // Returns `true` if `this->code() == cast_receiver::StatusCode::kOk`.
   [[nodiscard]] bool ok() const;
@@ -86,7 +85,7 @@ inline StatusCode Status::code() const {
   return code_;
 }
 
-inline base::StringPiece Status::message() const {
+inline std::string_view Status::message() const {
   return message_;
 }
 

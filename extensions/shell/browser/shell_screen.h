@@ -47,8 +47,7 @@ class ShellScreen : public display::ScreenBase,
       gfx::NativeWindow window) const override;
 
  private:
-  const raw_ptr<ShellDesktopControllerAura, ExperimentalAsh>
-      desktop_controller_;
+  const raw_ptr<ShellDesktopControllerAura> desktop_controller_;
 };
 
 }  // namespace extensions

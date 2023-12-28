@@ -119,11 +119,18 @@ SkCanvas* FakeSkiaOutputSurface::BeginPaintCurrentFrame() {
 
 void FakeSkiaOutputSurface::MakePromiseSkImage(
     ImageContext* image_context,
-    const gfx::ColorSpace& yuv_color_space) {
+    const gfx::ColorSpace& yuv_color_space,
+    bool force_rgbx) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (image_context->has_image())
+  if (image_context->has_image()) {
     return;
+  }
+
+  if (image_context->format().is_multi_plane()) {
+    NOTIMPLEMENTED();
+    return;
+  }
 
   GrBackendTexture backend_texture;
   if (!GetGrBackendTexture(*image_context, &backend_texture)) {
@@ -286,7 +293,9 @@ void FakeSkiaOutputSurface::CopyOutput(
     auto client_shared_image = sii->CreateSharedImage(
         SinglePlaneFormat::kRGBA_8888, geometry.result_selection.size(),
         color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-        gpu::SHARED_IMAGE_USAGE_GLES2, "CopyOutput", gpu::kNullSurfaceHandle);
+        gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+            gpu::SHARED_IMAGE_USAGE_GLES2_WRITE,
+        "CopyOutput", gpu::kNullSurfaceHandle);
     CHECK(client_shared_image);
     gpu::Mailbox local_mailbox = client_shared_image->mailbox();
 
@@ -425,6 +434,13 @@ gpu::Mailbox FakeSkiaOutputSurface::CreateSolidColorSharedImage(
     const SkColor4f& color,
     const gfx::ColorSpace& color_space) {
   return gpu::Mailbox::GenerateForSharedImage();
+}
+
+void FakeSkiaOutputSurface::SetSharedImagePurgeable(const gpu::Mailbox& mailbox,
+                                                    bool purgeable) {
+  if (set_purgeable_callback_) {
+    set_purgeable_callback_.Run(mailbox, purgeable);
+  }
 }
 
 bool FakeSkiaOutputSurface::SupportsBGRA() const {

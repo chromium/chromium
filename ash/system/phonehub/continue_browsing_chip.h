@@ -47,8 +47,7 @@ class ASH_EXPORT ContinueBrowsingChip : public views::Button {
   // The total number of chips in the parent view.
   size_t total_count_;
 
-  raw_ptr<phonehub::UserActionRecorder, ExperimentalAsh> user_action_recorder_ =
-      nullptr;
+  raw_ptr<phonehub::UserActionRecorder> user_action_recorder_ = nullptr;
 };
 
 }  // namespace ash

@@ -120,8 +120,8 @@
 // Helper that creates and dispatches initial permissions information to the
 // InfobarModal.
 - (void)dispatchInitialPermissionsInfo {
-  NSMutableArray<PermissionInfo*>* permissionsinfo =
-      [[NSMutableArray alloc] init];
+  NSMutableDictionary<NSNumber*, NSNumber*>* permissionsInfo =
+      [[NSMutableDictionary alloc] init];
 
   NSDictionary<NSNumber*, NSNumber*>* statesForAllPermissions =
       self.webState->GetStatesForAllPermissions();
@@ -129,13 +129,10 @@
     web::PermissionState state =
         (web::PermissionState)statesForAllPermissions[key].unsignedIntValue;
     if (state != web::PermissionStateNotAccessible) {
-      PermissionInfo* permissionInfo = [[PermissionInfo alloc] init];
-      permissionInfo.permission = (web::Permission)key.unsignedIntValue;
-      permissionInfo.state = state;
-      [permissionsinfo addObject:permissionInfo];
+      [permissionsInfo setObject:statesForAllPermissions[key] forKey:key];
     }
   }
-  [self.consumer setPermissionsInfo:permissionsinfo];
+  [self.consumer setPermissionsInfo:permissionsInfo];
 }
 
 - (void)detachFromWebState {

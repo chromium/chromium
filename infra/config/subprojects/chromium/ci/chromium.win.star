@@ -315,6 +315,7 @@ ci.builder(
         ],
     ),
     builderless = False,
+    cores = 32,
     console_view_entry = consoles.console_view_entry(
         category = "misc",
         short_name = "det",

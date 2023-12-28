@@ -110,6 +110,9 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
   bool NotifyKeyEventObserving(const ui::KeyEvent& key_event,
                                DeviceType device_type);
 
+  // Returns if the button is customizable.
+  bool IsButtonCustomizable(const ui::KeyEvent& key_event);
+
   // Rewrites the given event that came from `button` within the
   // `rewritten_event` param. Returns true if the original event should be
   // discarded.

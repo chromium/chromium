@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest, DISABLED_HostedApp) {
 
   // Find the new browser.
   Browser* app_browser = nullptr;
-  for (auto* b : *BrowserList::GetInstance()) {
+  for (Browser* b : *BrowserList::GetInstance()) {
     if (b != browser())
       app_browser = b;
   }

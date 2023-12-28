@@ -129,8 +129,7 @@ class WebStateObserver : public base::CheckedObserver {
 
   // Invoked when the state of a certain permission has changed.
   virtual void PermissionStateChanged(WebState* web_state,
-                                      Permission permission)
-      API_AVAILABLE(ios(15.0)) {}
+                                      Permission permission) {}
 
   // Called when the web process is terminated (usually by crashing, though
   // possibly by other means).

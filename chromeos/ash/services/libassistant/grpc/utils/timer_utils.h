@@ -12,7 +12,6 @@ namespace assistant {
 namespace api {
 
 namespace params {
-enum class TimerStatus;
 class Timer;
 class TimerParams;
 }  // namespace params
@@ -25,9 +24,6 @@ namespace ash::libassistant {
 // `timer_params` contains the information of all the current timers.
 std::vector<assistant::AssistantTimer> ConstructAssistantTimersFromProto(
     const ::assistant::api::params::TimerParams& timer_params);
-
-void ConvertAssistantTimerToProtoTimer(const assistant::AssistantTimer& input,
-                                       ::assistant::api::params::Timer* output);
 
 void ConvertProtoTimerToAssistantTimer(
     const ::assistant::api::params::Timer& input,

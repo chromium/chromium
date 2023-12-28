@@ -85,6 +85,9 @@ BASE_DECLARE_FEATURE(kEnableSessionSerializationOptimizations);
 // purpose of this flag it to allow to testing this code path.
 BASE_DECLARE_FEATURE(kForceSynthesizedRestoreSession);
 
+// Feature flag to remove the UnsafeRestore code path.
+BASE_DECLARE_FEATURE(kRemoveOldWebStateRestoration);
+
 // When true, the new loadSimulatedRequest API should be used when displaying
 // error pages.
 bool IsLoadSimulatedRequestAPIEnabled();

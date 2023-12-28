@@ -3,17 +3,12 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/data_model/bank_account.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 
 namespace autofill {
 
-bool operator==(const BankAccount& a, const BankAccount& b) {
-  return (static_cast<const PaymentInstrument&>(a) ==
-          static_cast<const PaymentInstrument&>(b)) &&
-         a.bank_name() == b.bank_name() &&
-         a.account_number_suffix() == b.account_number_suffix() &&
-         a.account_type() == b.account_type();
-}
+bool operator==(const BankAccount&, const BankAccount&) = default;
 
 BankAccount::BankAccount(const BankAccount& other) = default;
 BankAccount& BankAccount::operator=(const BankAccount& other) = default;
@@ -35,15 +30,15 @@ PaymentInstrument::InstrumentType BankAccount::GetInstrumentType() const {
   return PaymentInstrument::InstrumentType::kBankAccount;
 }
 
-bool BankAccount::AddToDatabase(AutofillTable* database) const {
+bool BankAccount::AddToDatabase(PaymentsAutofillTable* database) const {
   return database->AddBankAccount(*this);
 }
 
-bool BankAccount::UpdateInDatabase(AutofillTable* database) const {
+bool BankAccount::UpdateInDatabase(PaymentsAutofillTable* database) const {
   return database->UpdateBankAccount(*this);
 }
 
-bool BankAccount::DeleteFromDatabase(AutofillTable* database) const {
+bool BankAccount::DeleteFromDatabase(PaymentsAutofillTable* database) const {
   return database->RemoveBankAccount(*this);
 }
 

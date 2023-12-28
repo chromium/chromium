@@ -35,14 +35,14 @@ class BubbleDialogDelegate;
 // before possibly being switched to the security view.
 class DownloadBubbleContentsView : public views::View,
                                    public DownloadBubbleSecurityView::Delegate {
+  METADATA_HEADER(DownloadBubbleContentsView, views::View)
+
  public:
   // Types of pages that this view can show.
   enum class Page {
     kPrimary,
     kSecurity,
   };
-
-  METADATA_HEADER(DownloadBubbleContentsView);
 
   DownloadBubbleContentsView(
       base::WeakPtr<Browser> browser,

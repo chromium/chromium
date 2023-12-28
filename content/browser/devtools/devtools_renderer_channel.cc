@@ -206,17 +206,19 @@ void DevToolsRendererChannel::ChildTargetCreated(
     return;
   }
 
-  DCHECK(context_type == blink::mojom::DevToolsExecutionContextType::kWorklet ||
-         !base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
+  CHECK(context_type == blink::mojom::DevToolsExecutionContextType::kWorklet ||
+        !base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
   if (content::DevToolsAgentHost::GetForId(devtools_worker_token.ToString())) {
     mojo::ReportBadMessage("Workers should have unique tokens.");
     return;
   }
   auto agent_host = base::MakeRefCounted<WorkerDevToolsAgentHost>(
-      process_id_, std::move(worker_devtools_agent), std::move(host_receiver),
-      filtered_url, std::move(name), devtools_worker_token, owner_->GetId(),
+      process_id_, filtered_url, std::move(name), devtools_worker_token,
+      owner_->GetId(),
       base::BindOnce(&DevToolsRendererChannel::ChildTargetDestroyed,
                      weak_factory_.GetWeakPtr()));
+  agent_host->SetRenderer(process_id_, std::move(worker_devtools_agent),
+                          std::move(host_receiver));
   child_targets_.insert(agent_host.get());
   if (child_target_created_callback_)
     child_target_created_callback_.Run(agent_host.get(), waiting_for_debugger);

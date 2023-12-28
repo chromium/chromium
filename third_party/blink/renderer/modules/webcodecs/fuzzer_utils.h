@@ -78,6 +78,9 @@ PlaneLayout* MakePlaneLayout(const wc_fuzzer::PlaneLayout& proto);
 
 DOMRectInit* MakeDOMRectInit(const wc_fuzzer::DOMRectInit& proto);
 
+VideoColorSpaceInit* MakeVideoColorSpaceInit(
+    const wc_fuzzer::VideoColorSpaceInit& proto);
+
 VideoFrame* MakeVideoFrame(
     ScriptState* script_state,
     const wc_fuzzer::VideoFrameBufferInitInvocation& proto);

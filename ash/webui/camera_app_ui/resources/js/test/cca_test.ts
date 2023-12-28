@@ -10,6 +10,7 @@ import {
 } from '../assert.js';
 import {TIME_LAPSE_INITIAL_SPEED} from '../device/mode/video.js';
 import * as dom from '../dom.js';
+import {GalleryButton} from '../lit/components/gallery-button.js';
 import {ModeSelector} from '../lit/components/mode-selector.js';
 import * as localStorage from '../models/local_storage.js';
 import {
@@ -401,6 +402,15 @@ export class CCATest {
       duration = recordDuration / speed;
     }
     return duration;
+  }
+
+  /**
+   * Gets the cover image URL of the gallery button.
+   */
+  static getGalleryButtonCoverURL(): string {
+    const galleryButton =
+        assertInstanceof(resolveElement('galleryButton'), GalleryButton);
+    return galleryButton.getCoverURLForTesting();
   }
 
   /**

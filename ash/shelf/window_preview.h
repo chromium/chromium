@@ -66,13 +66,13 @@ class WindowPreview : public views::View {
   void CloseButtonPressed();
 
   // Child views.
-  raw_ptr<views::ImageButton, ExperimentalAsh> close_button_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> preview_container_view_ = nullptr;
-  raw_ptr<WindowPreviewView, ExperimentalAsh> preview_view_ = nullptr;
+  raw_ptr<views::ImageButton> close_button_ = nullptr;
+  raw_ptr<views::Label> title_ = nullptr;
+  raw_ptr<views::View> preview_container_view_ = nullptr;
+  raw_ptr<WindowPreviewView> preview_view_ = nullptr;
 
   // Unowned pointer to the delegate. The delegate should outlive this instance.
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
 };
 
 }  // namespace ash

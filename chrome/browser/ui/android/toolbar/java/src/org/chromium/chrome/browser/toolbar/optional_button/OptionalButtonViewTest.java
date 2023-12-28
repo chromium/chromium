@@ -160,7 +160,8 @@ public class OptionalButtonViewTest {
     }
 
     private ButtonDataImpl getDataForReaderModeIconButton() {
-        Drawable iconDrawable = AppCompatResources.getDrawable(mActivity, R.drawable.btn_mic);
+        Drawable iconDrawable =
+                AppCompatResources.getDrawable(mActivity, R.drawable.ic_mic_white_24dp);
         OnClickListener clickListener = mock(OnClickListener.class);
         OnLongClickListener longClickListener = mock(OnLongClickListener.class);
         String contentDescription = mActivity.getString(R.string.reader_view_text_alt);
@@ -869,7 +870,7 @@ public class OptionalButtonViewTest {
         // Create two ButtonData objects for the same variant (NEW_TAB) with different icons.
         ButtonDataImpl newTabButtonData =
                 getDataForStaticNewTabIconButton(
-                        AppCompatResources.getDrawable(mActivity, R.drawable.btn_star));
+                        AppCompatResources.getDrawable(mActivity, R.drawable.star_outline_24dp));
         ButtonDataImpl updatedNewTabButtonData =
                 getDataForStaticNewTabIconButton(
                         AppCompatResources.getDrawable(mActivity, R.drawable.btn_star_filled));

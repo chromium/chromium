@@ -10,7 +10,7 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accelerators/accelerator_table.h"
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
@@ -468,9 +468,9 @@ TEST_F(ShelfLayoutManagerTest, AutoHide) {
 
   // Switch to tablet mode should hide the AUTO_HIDE_SHOWN shelf even the mouse
   // cursor is inside the shelf area.
-  EXPECT_FALSE(TabletModeControllerTestApi().IsTabletModeStarted());
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
   TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_TRUE(TabletModeControllerTestApi().IsTabletModeStarted());
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
 }
 
@@ -2959,8 +2959,7 @@ class ShelfLayoutManagerDragDropTest
   }
 
  private:
-  raw_ptr<ui::test::EventGenerator, DanglingUntriaged | ExperimentalAsh>
-      generator_;
+  raw_ptr<ui::test::EventGenerator, DanglingUntriaged> generator_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -3140,7 +3139,7 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, DraggedMRUWindow) {
   const struct TestCase {
     // The shelf widget whose bounds are used as the base for gesture start and
     // end locations.
-    raw_ptr<const views::Widget, ExperimentalAsh> widget;
+    raw_ptr<const views::Widget> widget;
     // Whether the widget bounds are completely in the left part of the split
     // view.
     const bool left_in_split_view;
@@ -4106,11 +4105,11 @@ TEST_F(ShelfLayoutManagerTest, NoShelfUpdateDuringOverviewAnimation) {
   TestDisplayObserver observer;
   EnterOverview();
   WaitForOverviewAnimation(/*enter=*/true);
-  ASSERT_TRUE(TabletModeControllerTestApi().IsTabletModeStarted());
+  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_EQ(0, observer.metrics_change_count());
   ExitOverview();
   WaitForOverviewAnimation(/*enter=*/false);
-  ASSERT_TRUE(TabletModeControllerTestApi().IsTabletModeStarted());
+  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_EQ(0, observer.metrics_change_count());
 }
 

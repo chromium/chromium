@@ -348,14 +348,13 @@ void NativeTheme::ColorSchemeNativeThemeObserver::OnNativeThemeUpdated(
     if (page_colors == PageColors::kOff) {
       forced_colors = false;
       preferred_contrast = PreferredContrast::kNoPreference;
-    } else {
+    } else if (page_colors != PageColors::kHighContrast) {
       // Set other states based on the selected theme (i.e. `kDusk`, `kDesert`,
       // `kBlack`, or `kWhite`). This block is only executed when one of these
       // themes is chosen. `kHighContrast` is not a valid theme here, as it is
       // only available in forced colors mode.
       CHECK_GE(page_colors, ui::NativeTheme::PageColors::kDusk);
       CHECK_LE(page_colors, ui::NativeTheme::PageColors::kWhite);
-      CHECK_NE(page_colors, ui::NativeTheme::PageColors::kHighContrast);
       bool is_dark_color =
           page_colors == PageColors::kBlack || page_colors == PageColors::kDusk;
       PreferredColorScheme page_colors_theme_scheme =

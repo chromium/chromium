@@ -13,14 +13,14 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='mv-tile'",
+      "name": "LayoutNGBlockFlow (relative positioned, inline) DIV class='mv-tile'",
       "position": [8, 8],
       "bounds": [100, 50],
       "contentsOpaque": true,
       "backgroundColor": "#ADD8E6"
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='mv-tile'",
+      "name": "LayoutNGBlockFlow (relative positioned, inline) DIV class='mv-tile'",
       "position": [8, 62],
       "bounds": [1000, 50],
       "drawsContent": false

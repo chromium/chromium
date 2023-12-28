@@ -42,7 +42,7 @@ class SwitchAccessBackButtonView : public views::BoxLayoutView {
   bool show_focus_ring_ = false;
 
   // Owned by views hierarchy.
-  raw_ptr<FloatingMenuButton, ExperimentalAsh> back_button_;
+  raw_ptr<FloatingMenuButton> back_button_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

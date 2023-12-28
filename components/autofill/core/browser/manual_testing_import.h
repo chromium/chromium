@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_MANUAL_TESTING_IMPORT_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_MANUAL_TESTING_IMPORT_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -47,7 +47,7 @@ namespace autofill {
 // The "initial_creator_id" is an optional int value which sets the profile's
 // property of the same name.
 // The "nickname" in credit cards optional as well.
-// "field-type" corresponds to ServerFieldTypes like "NAME_FULL". For profiles
+// "field-type" corresponds to FieldTypes like "NAME_FULL". For profiles
 // and credit cards, only field types valid for AutofillProfile or CreditCard
 // are accepted.
 // All profiles and credit cards specified in the file are imported. They
@@ -61,34 +61,34 @@ constexpr char kManualContentImportForTestingFlag[] =
 
 // Reads the contents of `file`, parses it as a JSON file and converts its
 // content into a list of AutofillProfiles.
-// If any step fails, an error message is logged and absl::nullopt is returned.
-absl::optional<std::vector<AutofillProfile>> LoadProfilesFromFile(
+// If any step fails, an error message is logged and std::nullopt is returned.
+std::optional<std::vector<AutofillProfile>> LoadProfilesFromFile(
     base::FilePath file);
 
 // Reads the contents of `file`, parses it as a JSON file and converts its
 // content into a list of CreditCards.
-// If any step fails, an error message is logged and absl::nullopt is returned.
-absl::optional<std::vector<CreditCard>> LoadCreditCardsFromFile(
+// If any step fails, an error message is logged and std::nullopt is returned.
+std::optional<std::vector<CreditCard>> LoadCreditCardsFromFile(
     base::FilePath file);
 
 // Given the array of descriptions of fully structured profiles in the
 // aforementioned JSON format, converts it to a vector of AutofillProfiles.
 // If the JSON list doesn't adhere to the above format, or if any of the
-// profiles is not fully structured, an error is logged and absl::nullopt is
+// profiles is not fully structured, an error is logged and std::nullopt is
 // returned. A profile is considered "fully structured" if
 // `FinalizeAfterImport()` doesn't change it. This condition exists to prevent
 // profiles from silently changing, since `FinalizeAfterImport()` is called when
 // retrieving a profile from the database. For example, if the structure is
 // invalid because the last name is not part of the full name, the routine will
 // clear this information.
-absl::optional<std::vector<AutofillProfile>> AutofillProfilesFromJSON(
+std::optional<std::vector<AutofillProfile>> AutofillProfilesFromJSON(
     const base::Value::List* const profiles_json);
 
 // Given the array of valid credit cards in the aforementioned JSON format,
 // converts it to a vector of CreditCards.
 // If the JSON list doesn't adhere to the above format, an error message is
-// logged and absl::nullopt is returned.
-absl::optional<std::vector<CreditCard>> CreditCardsFromJSON(
+// logged and std::nullopt is returned.
+std::optional<std::vector<CreditCard>> CreditCardsFromJSON(
     const base::Value::List* const cards_json);
 
 // Checks if the `kManualImportForTestingFlag` flag is present. If so,

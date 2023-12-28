@@ -70,8 +70,7 @@ class PaymentRequestOptionalTotalTest : public testing::Test {
     payment_provider_ = std::make_unique<MockPaymentProvider>();
   }
 
-  test::TaskEnvironment task_environment_{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<MockPaymentProvider> payment_provider_;
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
 };

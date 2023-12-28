@@ -76,6 +76,10 @@ class ASH_EXPORT DisplayPrefs : public SessionObserver {
   void StoreDisplayMixedMirrorModeParamsForTest(
       const std::optional<display::MixedMirrorModeParams>& mixed_params);
 
+  // Checks if given `display_id` was saved to pref service before. Used to tell
+  // if a display is connected for the first time or not.
+  bool IsDisplayAvailableInPref(int64_t display_id) const;
+
  protected:
   friend class DisplayPrefsTest;
 
@@ -83,8 +87,7 @@ class ASH_EXPORT DisplayPrefs : public SessionObserver {
   void LoadDisplayPreferences();
 
  private:
-  raw_ptr<PrefService, ExperimentalAsh>
-      local_state_;  // Non-owned and must out-live this.
+  raw_ptr<PrefService> local_state_;  // Non-owned and must out-live this.
   bool store_requested_ = false;
 };
 

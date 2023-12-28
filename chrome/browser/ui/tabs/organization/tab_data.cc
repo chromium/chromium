@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
 
+#include "chrome/browser/ui/tabs/organization/tab_sensitivity_cache.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"

@@ -690,7 +690,7 @@ TEST_F(FileSystemAccessManagerImplTest, FileWriterCloseDoesNotAbortOnDestruct) {
 
   ASSERT_EQ(base::File::FILE_OK,
             storage::AsyncFileTestHelper::CreateFileWithData(
-                file_system_context_.get(), test_swap_url, "foo", 3));
+                file_system_context_.get(), test_swap_url, "foo"));
 
   auto lock = TakeLockSync(kBindingContext, test_file_url,
                            manager_->GetWFSSiloedLockType());
@@ -742,7 +742,7 @@ TEST_F(FileSystemAccessManagerImplTest,
 
   ASSERT_EQ(base::File::FILE_OK,
             storage::AsyncFileTestHelper::CreateFileWithData(
-                file_system_context_.get(), test_swap_url, "foo", 3));
+                file_system_context_.get(), test_swap_url, "foo"));
 
   auto lock = TakeLockSync(kBindingContext, test_file_url,
                            manager_->GetWFSSiloedLockType());
@@ -783,7 +783,7 @@ TEST_F(FileSystemAccessManagerImplTest,
 
   ASSERT_EQ(base::File::FILE_OK,
             storage::AsyncFileTestHelper::CreateFileWithData(
-                file_system_context_.get(), test_swap_url, "foo", 3));
+                file_system_context_.get(), test_swap_url, "foo"));
 
   auto lock = TakeLockSync(kBindingContext, test_file_url,
                            manager_->GetWFSSiloedLockType());
@@ -1587,6 +1587,14 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_SaveFile) {
                   FileSystemAccessPermissionContext::HandleType::kFile,
                   FileSystemAccessPermissionContext::UserAction::kSave))
       .WillOnce(testing::Return(allow_grant_));
+
+  EXPECT_CALL(
+      permission_context_,
+      OnFileCreatedFromShowSaveFilePicker(
+          /*file_picker_binding_context=*/binding_context.url,
+          file_system_context_->CreateCrackedFileSystemURL(
+              blink::StorageKey(),
+              storage::FileSystemType::kFileSystemTypeLocal, test_file)));
 
   auto save_file_picker_options = blink::mojom::SaveFilePickerOptions::New(
       blink::mojom::AcceptsTypesInfo::New(

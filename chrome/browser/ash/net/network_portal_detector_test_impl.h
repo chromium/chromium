@@ -39,6 +39,7 @@ class NetworkPortalDetectorTestImpl : public NetworkPortalDetector {
   CaptivePortalStatus GetCaptivePortalStatus() override;
   bool IsEnabled() override;
   void Enable() override;
+  void RequestCaptivePortalDetection() override;
 
  private:
   bool enabled_ = false;

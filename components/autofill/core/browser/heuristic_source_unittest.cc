@@ -24,8 +24,8 @@ namespace autofill {
 // as the active heuristic source.
 
 struct HeuristicSourceParams {
-  absl::optional<bool> model_predictions_feature;
-  absl::optional<std::string> pattern_provider_feature;
+  std::optional<bool> model_predictions_feature;
+  std::optional<std::string> pattern_provider_feature;
   const HeuristicSource expected_active_source;
   const DenseSet<HeuristicSource> expected_nonactive_sources;
 };

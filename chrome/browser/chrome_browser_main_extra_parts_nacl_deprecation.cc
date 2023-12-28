@@ -19,10 +19,12 @@ namespace {
 #if BUILDFLAG(ENABLE_NACL)
 bool ShouldNaClBeAllowed() {
   // Enabled by policy.
+#if BUILDFLAG(IS_CHROMEOS)
   if (g_browser_process->local_state()->GetBoolean(
           prefs::kNativeClientForceAllowed)) {
     return true;
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return base::FeatureList::IsEnabled(kNaclAllow);
 }
 #endif

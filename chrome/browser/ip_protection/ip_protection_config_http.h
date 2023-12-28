@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_CONFIG_HTTP_H_
 #define CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_CONFIG_HTTP_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
@@ -38,7 +39,8 @@ class IpProtectionConfigHttp : public quiche::BlindSignHttpInterface {
 
   using GetProxyConfigCallback = base::OnceCallback<void(
       absl::StatusOr<ip_protection::GetProxyConfigResponse>)>;
-  virtual void GetProxyConfig(GetProxyConfigCallback callback,
+  virtual void GetProxyConfig(std::optional<std::string> oauth_token,
+                              GetProxyConfigCallback callback,
                               bool for_testing = false);
 
  private:

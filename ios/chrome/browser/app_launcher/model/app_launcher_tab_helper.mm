@@ -285,8 +285,7 @@ AppLauncherTabHelper::GetPolicyDecisionAndOptionalAppLaunchRequest(
       request_status = ExternalURLRequestStatus::kSubFrameRequestBlocked;
     }
   }
-  UMA_HISTOGRAM_ENUMERATION("WebController.ExternalURLRequestBlocking",
-                            request_status, ExternalURLRequestStatus::kCount);
+
   // Request is blocked.
   if (request_status == ExternalURLRequestStatus::kSubFrameRequestBlocked) {
     return {PolicyDecision::Cancel(), kNoAppLaunchRequest};

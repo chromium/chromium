@@ -20,7 +20,6 @@
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_attach_helper.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -140,8 +139,6 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
     // AncestorThrottle.
     ClearAllButFrameAncestors(response_head);
   }
-
-  MimeTypesHandler::ReportUsedHandler(extension_id);
 
   // TODO(mcnee): Could this id just be an int instead? This is only used
   // internally.

@@ -83,9 +83,10 @@ void AuthFactorConfig::NotifyFactorObserversAfterFailure(
 void AuthFactorConfig::OnUserHasKnowledgeFactor(const UserContext& context) {
   if (add_knowledge_factor_callback_) {
     std::move(add_knowledge_factor_callback_).Run();
+  }
+  if (skip_user_integrity_notification_.value_or(false)) {
     return;
   }
-
   user_manager::UserDirectoryIntegrityManager(local_state_).ClearPrefs();
 }
 
@@ -400,6 +401,11 @@ void AuthFactorConfig::OnGetAuthFactorsConfiguration(
 void AuthFactorConfig::SetAddKnowledgeFactorCallbackForTesting(
     base::OnceClosure callback) {
   add_knowledge_factor_callback_ = std::move(callback);
+}
+
+void AuthFactorConfig::SetSkipUserIntegrityNotificationForTesting(
+    bool skip_notification) {
+  skip_user_integrity_notification_ = skip_notification;
 }
 
 }  // namespace ash::auth

@@ -144,9 +144,13 @@ void TaskQueueSelector::WorkQueueSetBecameNonEmpty(size_t set_index) {
   // There is now a delayed or an immediate task for |set_index|, so add to
   // |active_priority_tracker_|.
   if (non_empty_set_counts_[set_index] == 1) {
+    bool had_active_priority = active_priority_tracker_.HasActivePriority();
     TaskQueue::QueuePriority priority =
         static_cast<TaskQueue::QueuePriority>(set_index);
     active_priority_tracker_.SetActive(priority, true);
+    if (!had_active_priority && task_queue_selector_observer_) {
+      task_queue_selector_observer_->OnWorkAvailable();
+    }
   }
 }
 

@@ -29,7 +29,7 @@ void JNI_CaptivePortalHelper_SetCaptivePortalCertificateForTesting(
       FROM_HERE, base::BindOnce(SSLErrorHandler::SetErrorAssistantProto,
                                 std::move(default_proto)));
 
-  const std::string hash = ConvertJavaStringToUTF8(env, jhash);
+  const std::string hash = base::android::ConvertJavaStringToUTF8(env, jhash);
   auto config_proto =
       std::make_unique<chrome_browser_ssl::SSLErrorAssistantConfig>();
   config_proto->set_version_id(INT_MAX);

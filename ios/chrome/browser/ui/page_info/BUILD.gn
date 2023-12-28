@@ -10,6 +10,7 @@ source_set("page_info") {
     "page_info_view_controller.mm",
   ]
   deps = [
+    ":features",
     "//base",
     "//base:i18n",
     "//components/keyed_service/core",
@@ -18,7 +19,7 @@ source_set("page_info") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
-    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/commands",
@@ -135,4 +136,12 @@ source_set("eg2_tests") {
     "//net:test_support",
     "//ui/base",
   ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  public_deps = [ "//base" ]
 }

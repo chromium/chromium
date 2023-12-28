@@ -285,7 +285,7 @@ InteractiveViewsTestApi::GetFindViewCallback(ChildViewSpecifier spec) {
 View* InteractiveViewsTestApi::FindMatchingView(const View* from,
                                                 ViewMatcher& matcher,
                                                 bool recursive) {
-  for (auto* const child : from->children()) {
+  for (views::View* const child : from->children()) {
     if (matcher.Run(child))
       return child;
     if (recursive) {

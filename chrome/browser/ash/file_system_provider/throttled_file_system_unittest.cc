@@ -20,8 +20,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 namespace {
 
 const char kExtensionId[] = "mbflcebpggnecokmikipoihdbecnjfoj";
@@ -159,5 +158,4 @@ TEST_F(FileSystemProviderThrottledFileSystemTest, AbortAfterRun) {
   EXPECT_EQ(0u, second_open_log.size());
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

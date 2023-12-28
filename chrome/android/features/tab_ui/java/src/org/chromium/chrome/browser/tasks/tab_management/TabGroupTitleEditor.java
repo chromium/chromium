@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
 
-import org.chromium.base.Callback;
+import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -23,19 +23,16 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 public abstract class TabGroupTitleEditor {
     private final Context mContext;
-    private final ObservableSupplier<TabModelFilter> mTabModelFilterSupplier;
+    private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     private final TabModelObserver mTabModelObserver;
     private final TabGroupModelFilter.Observer mFilterObserver;
-    private final Callback<TabModelFilter> mOnTabModelFilterChanged = this::onTabModelFilterChanged;
-
-    // Holds the currently observed TabGroupModelFilter so that observers can be removed when the
-    // value changes.
-    private TabGroupModelFilter mCurrentTabModelFilter;
+    private final ValueChangedCallback<TabModelFilter> mCurrentTabModelFilterObserver =
+            new ValueChangedCallback<>(this::onTabModelFilterChanged);
 
     public TabGroupTitleEditor(
             Context context, ObservableSupplier<TabModelFilter> tabModelFilterSupplier) {
         mContext = context;
-        mTabModelFilterSupplier = tabModelFilterSupplier;
+        mCurrentTabModelFilterSupplier = tabModelFilterSupplier;
 
         mTabModelObserver =
                 new TabModelObserver() {
@@ -44,7 +41,9 @@ public abstract class TabGroupTitleEditor {
                         int tabRootId = tab.getRootId();
                         // If the group becomes a single tab after closing or we are closing a
                         // group, delete the stored title.
-                        if (mCurrentTabModelFilter.getRelatedTabListForRootId(tabRootId).size()
+                        if (((TabGroupModelFilter) mCurrentTabModelFilterSupplier.get())
+                                        .getRelatedTabListForRootId(tabRootId)
+                                        .size()
                                 == 1) {
                             deleteTabGroupTitle(tabRootId);
                         }
@@ -71,7 +70,10 @@ public abstract class TabGroupTitleEditor {
                         if (title == null) return;
                         // If the group size is 2, i.e. the group becomes a single tab after
                         // ungroup, delete the stored title.
-                        if (mCurrentTabModelFilter.getRelatedTabList(movedTab.getId()).size()
+                        if (mCurrentTabModelFilterSupplier
+                                        .get()
+                                        .getRelatedTabList(movedTab.getId())
+                                        .size()
                                 == 2) {
                             deleteTabGroupTitle(getRootId(movedTab));
                             return;
@@ -89,7 +91,8 @@ public abstract class TabGroupTitleEditor {
                     }
                 };
 
-        onTabModelFilterChanged(mTabModelFilterSupplier.addObserver(mOnTabModelFilterChanged));
+        mCurrentTabModelFilterObserver.onResult(
+                mCurrentTabModelFilterSupplier.addObserver(mCurrentTabModelFilterObserver));
     }
 
     /**
@@ -149,27 +152,25 @@ public abstract class TabGroupTitleEditor {
 
     /** Destroy any members that needs clean up. */
     public void destroy() {
-        removeCurrentTabModelFilterObservers();
-        mTabModelFilterSupplier.removeObserver(mOnTabModelFilterChanged);
+        removeTabModelFilterObservers(mCurrentTabModelFilterSupplier.get());
+        mCurrentTabModelFilterSupplier.removeObserver(mCurrentTabModelFilterObserver);
     }
 
-    private void onTabModelFilterChanged(TabModelFilter filter) {
-        if (mCurrentTabModelFilter == filter) return;
+    private void onTabModelFilterChanged(TabModelFilter newFilter, TabModelFilter oldFilter) {
+        removeTabModelFilterObservers(oldFilter);
 
-        assert filter instanceof TabGroupModelFilter;
-        TabGroupModelFilter groupFilter = (TabGroupModelFilter) filter;
-
-        removeCurrentTabModelFilterObservers();
-
-        groupFilter.addObserver(mTabModelObserver);
-        groupFilter.addTabGroupObserver(mFilterObserver);
-        mCurrentTabModelFilter = groupFilter;
+        if (newFilter != null) {
+            TabGroupModelFilter newGroupFilter = (TabGroupModelFilter) newFilter;
+            newGroupFilter.addObserver(mTabModelObserver);
+            newGroupFilter.addTabGroupObserver(mFilterObserver);
+        }
     }
 
-    private void removeCurrentTabModelFilterObservers() {
-        if (mCurrentTabModelFilter != null) {
-            mCurrentTabModelFilter.removeObserver(mTabModelObserver);
-            mCurrentTabModelFilter.removeTabGroupObserver(mFilterObserver);
+    private void removeTabModelFilterObservers(TabModelFilter filter) {
+        if (filter != null) {
+            TabGroupModelFilter groupFilter = (TabGroupModelFilter) filter;
+            groupFilter.removeObserver(mTabModelObserver);
+            groupFilter.removeTabGroupObserver(mFilterObserver);
         }
     }
 }

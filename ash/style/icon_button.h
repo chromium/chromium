@@ -163,8 +163,8 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   bool IsToggledOn() const;
 
   const Type type_;
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon_ = nullptr;
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> toggled_icon_ = nullptr;
+  raw_ptr<const gfx::VectorIcon> icon_ = nullptr;
+  raw_ptr<const gfx::VectorIcon> toggled_icon_ = nullptr;
 
   // True if this button is togglable.
   bool is_togglable_ = false;

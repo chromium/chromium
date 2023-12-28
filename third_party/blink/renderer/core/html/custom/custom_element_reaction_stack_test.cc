@@ -11,11 +11,13 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_test_helpers.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_test_helpers.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
 TEST(CustomElementReactionStackTest, one) {
+  test::TaskEnvironment task_environment;
   Vector<char> log;
   CustomElementTestingScope testing_scope;
   ScopedNullExecutionContext execution_context;
@@ -36,6 +38,7 @@ TEST(CustomElementReactionStackTest, one) {
 }
 
 TEST(CustomElementReactionStackTest, multipleElements) {
+  test::TaskEnvironment task_environment;
   Vector<char> log;
   CustomElementTestingScope testing_scope;
   ScopedNullExecutionContext execution_context;
@@ -65,6 +68,7 @@ TEST(CustomElementReactionStackTest, multipleElements) {
 }
 
 TEST(CustomElementReactionStackTest, popTopEmpty) {
+  test::TaskEnvironment task_environment;
   Vector<char> log;
   CustomElementTestingScope testing_scope;
   ScopedNullExecutionContext execution_context;
@@ -86,6 +90,7 @@ TEST(CustomElementReactionStackTest, popTopEmpty) {
 }
 
 TEST(CustomElementReactionStackTest, popTop) {
+  test::TaskEnvironment task_environment;
   Vector<char> log;
   CustomElementTestingScope testing_scope;
   ScopedNullExecutionContext execution_context;
@@ -116,6 +121,7 @@ TEST(CustomElementReactionStackTest, popTop) {
 }
 
 TEST(CustomElementReactionStackTest, requeueingDoesNotReorderElements) {
+  test::TaskEnvironment task_environment;
   Vector<char> log;
   CustomElementTestingScope testing_scope;
 
@@ -152,6 +158,7 @@ TEST(CustomElementReactionStackTest, requeueingDoesNotReorderElements) {
 }
 
 TEST(CustomElementReactionStackTest, oneReactionQueuePerElement) {
+  test::TaskEnvironment task_environment;
   Vector<char> log;
   CustomElementTestingScope testing_scope;
 
@@ -226,6 +233,7 @@ class EnqueueToStack : public Command {
 };
 
 TEST(CustomElementReactionStackTest, enqueueFromReaction) {
+  test::TaskEnvironment task_environment;
   Vector<char> log;
   CustomElementTestingScope testing_scope;
 

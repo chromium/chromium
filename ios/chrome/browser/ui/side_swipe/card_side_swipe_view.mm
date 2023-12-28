@@ -30,7 +30,10 @@ using base::UserMetricsAction;
 
 namespace {
 // Spacing between cards.
-const CGFloat kCardHorizontalSpacing = 30;
+const CGFloat kCardHorizontalSpacing = 16;
+
+// Corner radius of cards.
+const CGFloat kCardCornerRadius = 32;
 
 // Portion of the screen an edge card can be dragged.
 const CGFloat kEdgeCardDragPercentage = 0.35;
@@ -103,8 +106,12 @@ const CGFloat kResizeFactor = 4;
 
     _rightCard =
         [[SwipeView alloc] initWithFrame:CGRectZero topMargin:topMargin];
+    _rightCard.layer.cornerRadius = kCardCornerRadius;
+    _rightCard.layer.masksToBounds = YES;
     _leftCard =
         [[SwipeView alloc] initWithFrame:CGRectZero topMargin:topMargin];
+    _leftCard.layer.cornerRadius = kCardCornerRadius;
+    _leftCard.layer.masksToBounds = YES;
     [_rightCard setTranslatesAutoresizingMaskIntoConstraints:NO];
     [_leftCard setTranslatesAutoresizingMaskIntoConstraints:NO];
     [self addSubview:_rightCard];

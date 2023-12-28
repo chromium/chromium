@@ -38,21 +38,25 @@ export class AssistChip extends Chip {
         const { ariaLabel } = this;
         if (this.href) {
             return html `
-        <a class="primary action"
+        <a
+          class="primary action"
           id="link"
           aria-label=${ariaLabel || nothing}
           href=${this.href}
           target=${this.target || nothing}
-        >${content}</a>
+          >${content}</a
+        >
       `;
         }
         return html `
-      <button class="primary action"
+      <button
+        class="primary action"
         id="button"
         aria-label=${ariaLabel || nothing}
         ?disabled=${this.disabled && !this.alwaysFocusable}
         type="button"
-      >${content}</button>
+        >${content}</button
+      >
     `;
     }
     renderOutline() {

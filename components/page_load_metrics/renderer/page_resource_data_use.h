@@ -38,7 +38,8 @@ class PageResourceDataUse {
   void DidStartResponse(const url::SchemeHostPort& final_response_url,
                         int resource_id,
                         const network::mojom::URLResponseHead& response_head,
-                        network::mojom::RequestDestination request_destination);
+                        network::mojom::RequestDestination request_destination,
+                        bool is_ad_resource);
 
   // Updates received bytes.
   void DidReceiveTransferSizeUpdate(int received_data_length);
@@ -62,7 +63,6 @@ class PageResourceDataUse {
 
   int resource_id() const { return resource_id_; }
 
-  void SetReportedAsAdResource(bool reported_as_ad_resource);
   void SetIsMainFrameResource(bool is_main_frame_resource);
 
   // Creates a ResourceDataUpdate mojo for this resource. This page resource

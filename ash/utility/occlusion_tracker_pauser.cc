@@ -18,7 +18,7 @@ OcclusionTrackerPauser::~OcclusionTrackerPauser() {
 }
 
 void OcclusionTrackerPauser::PauseUntilAnimationsEnd(base::TimeDelta timeout) {
-  for (auto* root : Shell::GetAllRootWindows()) {
+  for (aura::Window* root : Shell::GetAllRootWindows()) {
     // Compositors may not be animating yet - start observing all of them. In
     // fact, it is the common case that none will be animating at this point. We
     // assume at least one compositor will start animating very soon, and

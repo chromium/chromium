@@ -6,6 +6,7 @@
 #define DEVICE_FIDO_ENCLAVE_ENCLAVE_DISCOVERY_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
@@ -13,6 +14,7 @@
 #include "crypto/ec_private_key.h"
 #include "device/fido/fido_discovery_base.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
 class WebauthnCredentialSpecifics;
@@ -31,7 +33,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticatorDiscovery
       std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys,
       base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
           save_passkey_callback,
-      raw_ptr<network::mojom::NetworkContext> network_context);
+      raw_ptr<network::mojom::NetworkContext> network_context,
+      std::unique_ptr<EventStream<absl::optional<std::string_view>>>
+          oauth_token_provider);
   ~EnclaveAuthenticatorDiscovery() override;
 
   // FidoDiscoveryBase:
@@ -39,12 +43,15 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticatorDiscovery
 
  private:
   void AddAuthenticator();
+  void OnOauthTokenAvailable(absl::optional<std::string_view> token);
 
   std::unique_ptr<EnclaveAuthenticator> authenticator_;
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys_;
   base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
       save_passkey_callback_;
   raw_ptr<network::mojom::NetworkContext> network_context_;
+  std::unique_ptr<EventStream<absl::optional<std::string_view>>>
+      oauth_token_provider_;
 
   // TODO(https://crbug.com/1459620): Temporary for the stand-in signing
   // function.

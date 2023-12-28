@@ -56,6 +56,19 @@ bool ImposterCheckerEvdev::IsSuspectedKeyboardImposter(
   return true;
 }
 
+bool ImposterCheckerEvdev::IsSuspectedMouseImposter(
+    EventConverterEvdev* converter,
+    bool shared_phys) {
+  if (!base::FeatureList::IsEnabled(kEnableFakeMouseHeuristic)) {
+    return false;
+  }
+
+  if (!converter->HasMouse() || (!converter->HasKeyboard() && !shared_phys)) {
+    return false;
+  }
+  return true;
+}
+
 std::vector<int> ImposterCheckerEvdev::OnDeviceAdded(
     EventConverterEvdev* converter) {
   std::string standard_phys = StandardizedPhys(converter->input_device().phys);
@@ -71,6 +84,8 @@ bool ImposterCheckerEvdev::FlagSuspectedImposter(
   bool is_keyboard_imposter =
       IsSuspectedKeyboardImposter(converter, shared_phys);
   converter->SetSuspectedKeyboardImposter(is_keyboard_imposter);
+  bool is_mouse_imposter = IsSuspectedMouseImposter(converter, shared_phys);
+  converter->SetSuspectedMouseImposter(is_mouse_imposter);
 
   if (is_keyboard_imposter) {
     LOG(WARNING) << "Device Name: " << converter->input_device().name
@@ -83,7 +98,18 @@ bool ImposterCheckerEvdev::FlagSuspectedImposter(
                  << " has been flagged as a suspected imposter keyboard";
   }
 
-  return is_keyboard_imposter;
+  if (is_mouse_imposter) {
+    LOG(WARNING) << "Device Name: " << converter->input_device().name
+                 << " Vendor ID: "
+                 << base::StringPrintf("0x%04x",
+                                       converter->input_device().vendor_id)
+                 << " Product ID: "
+                 << base::StringPrintf("0x%04x",
+                                       converter->input_device().product_id)
+                 << " has been flagged as a suspected imposter mouse";
+  }
+
+  return is_keyboard_imposter || is_mouse_imposter;
 }
 
 std::vector<int> ImposterCheckerEvdev::OnDeviceRemoved(

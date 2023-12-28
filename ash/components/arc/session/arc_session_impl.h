@@ -286,11 +286,11 @@ class ArcSessionImpl : public ArcSession,
   std::unique_ptr<mojom::ArcBridgeHost> arc_bridge_host_;
 
   int lcd_density_ = 0;
-  const raw_ptr<ash::SchedulerConfigurationManagerBase, ExperimentalAsh>
+  const raw_ptr<ash::SchedulerConfigurationManagerBase>
       scheduler_configuration_manager_;
 
   // Owned by ArcSessionManager.
-  const raw_ptr<AdbSideloadingAvailabilityDelegate, ExperimentalAsh>
+  const raw_ptr<AdbSideloadingAvailabilityDelegate>
       adb_sideloading_availability_delegate_;
 
   // Callback to read system memory info.

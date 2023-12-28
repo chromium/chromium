@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/memory/raw_ptr.h"
 
 class ChromeAppListItem;
 
@@ -63,7 +64,8 @@ class ChromeAppListItemManager {
   // is cleaned, only this method should be kept.
   void EnsureChildItemValidPosition(
       ChromeAppListItem* child_item,
-      const std::vector<ChromeAppListItem*>& sorted_children);
+      const std::vector<raw_ptr<ChromeAppListItem, VectorExperimental>>&
+          sorted_children);
 
   // Returns the index at which to insert an item in `sorted_children` based on
   // `position` (which must be valid) and `id` (if the positions are equal).
@@ -72,7 +74,8 @@ class ChromeAppListItemManager {
   // cleaned, only this method should be kept.
   size_t GetItemSortOrderIndex(
       ChromeAppListItem* child_item,
-      const std::vector<ChromeAppListItem*>& sorted_children);
+      const std::vector<raw_ptr<ChromeAppListItem, VectorExperimental>>&
+          sorted_children);
 
   // A map from a `ChromeAppListItem`'s id to its unique pointer. This item set
   // matches the one in `AppListModel`.
@@ -81,7 +84,9 @@ class ChromeAppListItemManager {
   // For a key-value pair, the key is a folder id while the value is a list of
   // app list items under the folder indexed by the key. Note that the list
   // maintains the item position increasing order.
-  std::map<std::string, std::vector<ChromeAppListItem*>> folder_item_mappings_;
+  std::map<std::string,
+           std::vector<raw_ptr<ChromeAppListItem, VectorExperimental>>>
+      folder_item_mappings_;
 };
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_CHROME_APP_LIST_ITEM_MANAGER_H_

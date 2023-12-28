@@ -7,14 +7,19 @@
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "components/bookmarks/common/storage_type.h"
+#import "components/browser_sync/browser_sync_switches.h"
 #import "components/sync/base/command_line_switches.h"
 #import "components/sync/base/features.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_egtest_utils.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -54,6 +59,18 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
                  @"Expected Autofill profile to be present");
 }
 
+void ClearRelevantData() {
+  [BookmarkEarlGrey clearBookmarks];
+  GREYAssertNil([ReadingListAppInterface clearEntries],
+                @"Unable to clear Reading List entries");
+
+  [ChromeEarlGrey clearFakeSyncServerData];
+  WaitForEntitiesOnFakeServer(0, syncer::AUTOFILL_PROFILE);
+  WaitForEntitiesOnFakeServer(0, syncer::BOOKMARKS);
+  WaitForEntitiesOnFakeServer(0, syncer::HISTORY);
+  WaitForEntitiesOnFakeServer(0, syncer::READING_LIST);
+}
+
 }  // namespace
 
 // Hermetic sync tests, which use the fake sync server.
@@ -62,29 +79,27 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
 
 @implementation SyncFakeServerTestCase
 
-- (void)tearDown {
++ (void)setUpForTestCase {
+  [super setUpForTestCase];
+
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
-  [BookmarkEarlGrey clearBookmarks];
 
-  [ChromeEarlGrey clearSyncServerData];
-
-  WaitForEntitiesOnFakeServer(0, syncer::AUTOFILL_PROFILE);
-  WaitForEntitiesOnFakeServer(0, syncer::BOOKMARKS);
-  WaitForEntitiesOnFakeServer(0, syncer::HISTORY);
-
-  [super tearDown];
+  // Normally there shouldn't be any data (locally or on the fake server) at
+  // this point, but just in case some other test case didn't clean up after
+  // itself, clear everything here.
+  ClearRelevantData();
 }
 
 - (void)setUp {
   [super setUp];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+}
 
-  [ChromeEarlGrey clearSyncServerData];
+- (void)tearDown {
+  ClearRelevantData();
 
-  WaitForEntitiesOnFakeServer(0, syncer::AUTOFILL_PROFILE);
-  WaitForEntitiesOnFakeServer(0, syncer::BOOKMARKS);
-  WaitForEntitiesOnFakeServer(0, syncer::HISTORY);
+  [super tearDown];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -101,9 +116,36 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
       [self isRunningTest:@selector(testSyncUpdateAutofillProfile)]) {
     config.features_disabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
+  } else if ([self isRunningTest:@selector(testMigrateSyncToSignin)]) {
+    // testMigrateSyncToSignin starts out with SyncToSignin disabled; it'll turn
+    // on flags and restart Chrome.
+    config.features_disabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+    config.features_disabled.push_back(switches::kMigrateSyncingUserToSignedIn);
   }
 
   return config;
+}
+
+- (void)relaunchWithIdentity:(FakeSystemIdentity*)identity
+             enabledFeatures:(const std::vector<base::test::FeatureRef>&)enabled
+            disabledFeatures:
+                (const std::vector<base::test::FeatureRef>&)disabled {
+  // Before restarting, ensure that the FakeServer has written all its pending
+  // state to disk.
+  [ChromeEarlGrey flushFakeSyncServerToDisk];
+
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_enabled = enabled;
+  config.features_disabled = disabled;
+  config.additional_args.push_back(
+      base::StrCat({"--", test_switches::kSignInAtStartup}));
+  config.additional_args.push_back(base::StrCat({
+    "-", test_switches::kAddFakeIdentitiesAtStartup, "=",
+        [FakeSystemIdentity encodeIdentitiesToBase64:@[ identity ]]
+  }));
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 
 // Tests that a bookmark added on the client (before Sync is enabled) is
@@ -444,6 +486,100 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
                                    syncTimeout:kSyncOperationTimeout];
   WaitForEntitiesOnFakeServer(1, syncer::DEVICE_INFO);
   [ChromeEarlGrey waitForSyncInvalidationFields];
+}
+
+- (void)testMigrateSyncToSignin {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Sign in and turn on Sync-the-feature.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
+                                syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+
+  NSString* const kBookmarkUrl = @"https://www.goo.com/";
+  NSString* const kBookmarkTitle = @"Goo";
+
+  NSString* const kReadingListUrl = @"https://www.rl.com/";
+  NSString* const kReadingListTitle = @"RL";
+
+  // Create some data and wait for it to arrive on the server.
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:kBookmarkTitle
+                       URL:kBookmarkUrl
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  GREYAssertNil([ReadingListAppInterface
+                    addEntryWithURL:[NSURL URLWithString:kReadingListUrl]
+                              title:kReadingListTitle
+                               read:YES],
+                @"Unable to add Reading List item");
+
+  WaitForEntitiesOnFakeServer(1, syncer::BOOKMARKS);
+  WaitForEntitiesOnFakeServer(1, syncer::READING_LIST);
+  // TODO(crbug.com/1486420): Also add a password.
+
+  // Restart Chrome with UNO phase 2 enabled.
+  [self relaunchWithIdentity:fakeIdentity
+             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos}
+            disabledFeatures:{switches::kMigrateSyncingUserToSignedIn}];
+  // Sync-the-feature should still be enabled.
+  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
+                                syncTimeout:kSyncOperationTimeout];
+  // Wait for the sync machinery to become active, which is required for the
+  // migration.
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+
+  // Verify that the bookmark still exists in the local-or-syncable storage.
+  [BookmarkEarlGrey verifyExistenceOfBookmarkWithURL:kBookmarkUrl
+                                                name:kBookmarkTitle
+                                           inStorage:bookmarks::StorageType::
+                                                         kLocalOrSyncable];
+
+  // Restart Chrome with UNO phase 3 (i.e. the migration) enabled.
+  [self relaunchWithIdentity:fakeIdentity
+             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos,
+                              switches::kMigrateSyncingUserToSignedIn}
+            disabledFeatures:{}];
+  // Sync-the-feature should *not* be enabled anymore.
+  [ChromeEarlGrey waitForSyncFeatureEnabled:NO
+                                syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+
+  // The bookmark should still exist, but now be in the account store.
+  [BookmarkEarlGrey
+      verifyAbsenceOfBookmarkWithURL:kBookmarkUrl
+                           inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [BookmarkEarlGrey
+      verifyExistenceOfBookmarkWithURL:kBookmarkUrl
+                                  name:kBookmarkTitle
+                             inStorage:bookmarks::StorageType::kAccount];
+
+  // The reading list item should still exist, and *not* have a crossed-cloud
+  // icon (no crossed-cloud icon means that it's in the account store).
+  reading_list_test_utils::OpenReadingList();
+  [[EarlGrey
+      selectElementWithMatcher:reading_list_test_utils::VisibleReadingListItem(
+                                   kReadingListTitle)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey
+      selectElementWithMatcher:reading_list_test_utils::VisibleLocalItemIcon(
+                                   kReadingListTitle)]
+      assertWithMatcher:grey_nil()];
+  // Close the Reading List.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kTableViewNavigationDismissButtonId)]
+      performAction:grey_tap()];
+
+  // The sync machinery should still be functional: Add an account bookmarks
+  // and ensure it arrives on the server.
+  [BookmarkEarlGrey addBookmarkWithTitle:@"Second bookmark"
+                                     URL:@"https://second.com/"
+                               inStorage:bookmarks::StorageType::kAccount];
+  WaitForEntitiesOnFakeServer(2, syncer::BOOKMARKS);
 }
 
 @end

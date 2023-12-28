@@ -377,8 +377,6 @@ Dies ersetzt die eingestellte Richtlinie <ph name="DEFAULT_WINDOW_PLACEMENT_SETT
 <translation id="1305400589435476516">Wenn die Richtlinie aktiviert ist, wird Daten-Roaming für das Gerät zugelassen.
 
       Ist sie deaktiviert oder nicht konfiguriert, ist Daten-Roaming nicht verfügbar.</translation>
-<translation id="1307454923744766368">Quellen oder Hostnamenmuster, für die Einschränkungen für
-      unsichere Quellen nicht gelten sollen</translation>
 <translation id="1308526987406924874">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer nicht um Zugriff auf einen seriellen Port bitten dürfen.
 
       Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
@@ -1511,6 +1509,7 @@ Wenn du diese Richtlinie konfigurieren möchtest, muss die Richtlinie <ph name="
       Ist sie auf „true“ festgelegt oder nicht konfiguriert, wird der Netzwerkstatus des Geräts ausgegeben.</translation>
 <translation id="2223393221350938149">Ausführung von JavaScript JIT für keine Website zulassen</translation>
 <translation id="2223598546285729819">Standardeinstellung für Benachrichtigungen</translation>
+<translation id="2224706708550115831">Nutzer-Browserzugriff auf eine Liste von URLs zulassen, während sich das durchgehend aktive VPN im strikten Modus mit aktivierter Sperrfunktion befindet und nicht verbunden ist</translation>
 <translation id="222673035924187991">TLS Encrypted ClientHello aktivieren</translation>
 <translation id="2231817271680715693">Browserverlauf bei erster Ausführung aus Standardbrowser importieren</translation>
 <translation id="2231962946025538735">Diese Richtlinie ist veraltet. Du kannst mit <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> die Verfügbarkeit des Flash-Plug-ins definieren und über <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> festlegen, ob der integrierte PDF-Viewer zum Öffnen von PDF-Dateien verwendet werden soll.
@@ -2263,6 +2262,7 @@ Diese Richtlinie kann nur als Cloud-Nutzerrichtlinie konfiguriert werden.</trans
 <translation id="2896434627453256512">Wenn die Richtlinie konfiguriert ist, wird die Funktion für das ghost-Dialogfeld aktiviert.
       Ist sie auf „True“ gesetzt, werden nach einem Absturz oder Neustart je nach der Einstellung zur App-Wiederherstellung ARC-ghost-Dialogfelder vor ARC-Starts erstellt.
       Wenn diese Richtlinie auf „False“ gesetzt ist, wird kein ghost-Dialogfeld vor ARC-Starts erstellt. ARC-Apps werden nach ARC-Starts wiederhergestellt.</translation>
+<translation id="2897716186959852329">Funktion „Laut vorlesen“ nie zulassen</translation>
 <translation id="2899002520262095963">Android-Apps können die über diese Richtlinie festgelegten Netzwerkkonfigurationen und CA-Zertifikate verwenden, haben jedoch keinen Zugriff auf bestimmte Konfigurationsoptionen.</translation>
 <translation id="2899213072616346687">Schränkt den Druckmodus mit Hintergrundgrafiken ein. Wenn die Richtlinie nicht konfiguriert ist, gelten keine Einschränkungen.</translation>
 <translation id="2899640611559504158">Befehlszeilenzugriff auf virtuellen Maschinen deaktivieren</translation>
@@ -2874,6 +2874,15 @@ Ist die Richtlinie deaktiviert, sind keine Wortvorschläge bei Nutzung der physi
 <translation id="3398051852031115795">Standardmäßiges Systemverhalten (abhängig von der Bildschirmgröße)</translation>
 <translation id="3399859571630358395">Deaktivierung von schnellem Pairing (schnellem Bluetooth-Koppeln) erzwingen.</translation>
 <translation id="3404681701763345449">Dadurch wird die <ph name="GOOGLE_CALENDAR_NAME" />-Integration aktiviert.</translation>
+<translation id="3405361833556012520">Diese Richtlinie gilt nur für Webtraffic. Für den Play Store, die Webnavigation von Android-Apps und anderen Nutzertraffic wie Linux-VM-Traffic oder Druckaufträge gelten weiterhin die Einschränkungen, die vom durchgehend aktiven VPN auferlegt werden. Die Richtlinie wird nur erzwungen, solange das VPN nicht verbunden ist, und gilt nur für den Webtraffic von Nutzern. Während die Richtlinie erzwungen wird, kann der Systemtraffic das durchgehend aktive VPN umgehen, um bestimmte Aufgaben wie das Abrufen von Richtlinien oder das Synchronisieren der Systemzeit auszuführen.
+
+Mit dieser Richtlinie lassen sich bei Verwendung des unter https://support.google.com/chrome/a?p=url_blocklist_filter_format angegebenen Formats Ausnahmen für bestimmte Schemas, Subdomains anderer Domains, Ports oder bestimmte Pfade festlegen. Mit dem spezifischsten Filter wird festgelegt, ob eine URL blockiert oder zulässig ist.
+
+Wenn „<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />“ festgelegt, ein durchgehend aktives VPN konfiguriert und dieses VPN nicht verbunden ist, wird die Navigation zu allen Hosts blockiert. Eine Ausnahme bilden solche Hosts, die gemäß der Richtlinie „<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />“ zulässig sind. Bei diesem Gerätestatus werden „<ph name="URL_BLOCKLIST_POLICY_NAME" />“ und „<ph name="URL_ALLOWLIST_POLICY_NAME" />“ ignoriert. Wenn eine Verbindung zum durchgehend aktiven VPN hergestellt wird, werden die Richtlinien „<ph name="URL_BLOCKLIST_POLICY_NAME" />“ und „<ph name="URL_ALLOWLIST_POLICY_NAME" />“ angewendet und die Richtlinie „<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />“ wird ignoriert.
+
+Diese Richtlinie ist auf 1.000 Einträge beschränkt.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird die Browsernavigation verhindert, wenn für das durchgehend aktive VPN der strikte Modus aktiviert und das VPN nicht verbunden ist.</translation>
 <translation id="3405997282295704902">Nutzern nicht erlauben, <ph name="PRODUCT_NAME" /> zu verwenden</translation>
 <translation id="3406122462682235653">Nutzer nicht fragen (Downloads werden sofort gestartet)</translation>
 <translation id="3408078762098350617">Diese Richtlinie steuert die Nutzereinstellungen für die in <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> aufgelisteten deaktivierten Funktionen.
@@ -3182,7 +3191,6 @@ Wenn diese Richtlinie auf „False“ gesetzt ist, werden keine Versionsinformat
 
 Diese Richtlinie wird nur angewendet, wenn das Gerät für <ph name="PRODUCT_NAME" /> mit <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> registriert ist.
 Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</translation>
-<translation id="3642557248926713561">Safe Browsing-Erweiterungsschutz deaktivieren</translation>
 <translation id="3644735978203799620">Aktiviert die automatische Auswahl für Aufnahmen auf mehreren Bildschirmen</translation>
 <translation id="3646859102161347133">Lupentyp festlegen</translation>
 <translation id="3647212518036289905">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, welche GSSAPI-Bibliothek für die HTTP-Authentifizierung verwendet werden soll. Gib entweder nur den Namen einer Bibliothek oder einen vollständigen Pfad an.
@@ -5060,6 +5068,11 @@ Alles einschließende Platzhalter für den Host (z. B. „*“ oder „[*]“) 
 Hinweis: Diese Richtlinie gilt nicht für HSTS-Umstellungen.</translation>
 <translation id="5297948043665200363">Nutzer kann angemeldet bleiben, wenn sein Konto nicht mehr authentifiziert ist</translation>
 <translation id="5298949392804966105">Keine Einschränkungen für verwaltete Konten</translation>
+<translation id="5300770793658186741">Mit dieser Richtlinie wird eine Liste von Ursprüngen (URLs) oder Hostnamenmustern wie „*.beispiel.de“ festgelegt, für die keine Sicherheitsbeschränkungen für unsichere Ursprünge gelten. Organisationen können Ursprünge für alte Anwendungen, die kein TLS bereitstellen können, angeben oder einen Testserver für die interne Webentwicklung einrichten, damit die Entwickler Funktionen testen können, die einen sicheren Kontext erfordern, ohne TLS auf dem Testserver bereitstellen zu müssen. Außerdem wird mit dieser Richtlinie verhindert, dass der Ursprung in der Adressleiste als „Nicht sicher“ gekennzeichnet wird.
+
+Das Festlegen einer Liste von URLs in dieser Richtlinie hat den gleichen Effekt wie das Festlegen des Befehlszeilen-Flags „--unsafely-treat-insecure-origin-as-secure“ für eine durch Kommas getrennte Liste mit denselben URLs. Die Richtlinie überschreibt das Befehlszeilen-Flag und „UnsafelyTreatInsecureOriginAsSecure“, sofern vorhanden.
+
+Weitere Informationen zu sicheren Kontexten findest du unter https://www.w3.org/TR/secure-contexts.</translation>
 <translation id="530134925949808452">Zeitpunkt (in Ortszeit), an dem das Nutzungskontingent erneuert wird.</translation>
 <translation id="5303080953475303561">Mit dieser Richtlinie kannst du festlegen, wie oft auf dem Sperrbildschirm das Passwort zum schnellen Entsperren angefordert wird. Immer dann, wenn der Sperrbildschirm angezeigt wird und die letzte Passworteingabe vor dem über den ausgewählten Wert festgelegten Zeitfenster liegt, steht schnelles Entsperren nicht zur Verfügung. Wenn Nutzer auf dem Sperrbildschirm bleiben, bis diese Zeit abgelaufen ist, wird das nächste Mal, wenn sie einen falschen Code eingeben oder wieder auf den Sperrbildschirm gelangen, ein Passwort angefordert, je nachdem, welche Situation zuerst eintritt.
 
@@ -5269,6 +5282,7 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird anhand der Einstell
 <translation id="547601067149622666">Werbung auf Websites mit aufdringlichen Werbeanzeigen nicht zulassen</translation>
 <translation id="5476152378885134514">Zwischenablage für diese Websites blockieren</translation>
 <translation id="5480380613778757009">Wenn diese Richtlinie deaktiviert oder nicht eingerichtet ist, werden alle in der verwalteten Gastsitzung festgelegten Anzeigeeinstellungen zurückgesetzt, sobald die Sitzung beendet ist. Ist diese Richtlinie auf „True“ gesetzt, bleiben Anzeigeeigenschaften nach dem Beenden der verwalteten Gastsitzung bestehen.</translation>
+<translation id="5483012943408894695">Ursprünge oder Hostnamenmuster, für die Einschränkungen für unsichere Ursprünge nicht gelten sollen</translation>
 <translation id="5483065054530244863">SHA-1-signierte Zertifikate zulassen, die von lokalen Vertrauensankern ausgestellt werden</translation>
 <translation id="5487758664517243511">Durch Aktivieren dieser Einstellung können Nutzer, die der Verwendung von Phone Hub zugestimmt haben, Aufgaben unter Chrome OS fortsetzen, wie etwa das Ansehen von Webseiten von ihrem Smartphone.
 
@@ -5609,8 +5623,6 @@ Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, sind Glanceables 
       Ist sie auf "False" gesetzt oder nicht konfiguriert, sind die Funktionen von Web Components v0 ab M80 standardmäßig deaktiviert.
 
       Diese Richtlinie wird nach Chrome 84 entfernt.</translation>
-<translation id="5755149423476170868">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, wird der <ph name="SAFE_BROWSING_NAME" />-Erweiterungsschutz für <ph name="PRODUCT_NAME" /> durch <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> gesteuert. Wenn <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> auf <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_STANDARD" /> oder <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_ENHANCED" /> gesetzt ist, werden schädliche Erweiterungen in <ph name="PRODUCT_NAME" /> schneller deaktiviert. <ph name="PRODUCT_NAME" /> sendet eine Anfrage an den Google Safe Browsing-Server, um zu prüfen, ob eine Erweiterung aus dem Chrome Web Store entfernt wurde, weil sie als problematisch, d. h. schädlich, angreifbar, unerwünscht oder gegen die Chrome Web Store-Richtlinien (CWS) verstoßend eingestuft wird. Wenn eine Erweiterung aus dem Store entfernt wurde, hindert <ph name="PRODUCT_NAME" /> die Nutzer daran, sie zu installieren. Wurde sie bereits installiert, wird sie deaktiviert.
-Wenn die Richtlinie deaktiviert ist, ist auch der <ph name="SAFE_BROWSING_NAME" />-Erweiterungsschutz deaktiviert und schädliche Erweiterungen werden über das <ph name="GOOGLE_UPDATE_NAME" /> unregelmäßiger überprüft und entfernt. Es werden keine Daten zur Überprüfung an Google <ph name="SAFE_BROWSING_NAME" /> gesendet.</translation>
 <translation id="575647238840663288">Standardmäßig werden Dokumente zu an Ursprüngen gebundene Agent-Cluster hinzugefügt – die Funktion „document.domain“ kann für solche Dokumente nicht konfiguriert werden.</translation>
 <translation id="5756680608782814094">VPD-Informationen zu einem Gerät melden.
 
@@ -5726,7 +5738,6 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="5883754873839596178">Wenn diese Richtlinie konfiguriert ist, legt sie die maximale Anzahl gleichzeitiger Verbindungen zum Proxyserver fest. Einige Proxyserver können eine hohe Anzahl gleichzeitiger Verbindungen pro Client nicht verarbeiten. Dieses Problem kann umgangen werden, indem für diese Richtlinie ein niedrigerer Wert festgelegt wird. Der Wert sollte kleiner als 100 und größer als 6 sein. Einige Web-Apps nutzen viele Verbindungen mit hängenden GETs. Daher kann ein Wert unter 32 dazu führen, dass der Browser hängt, wenn zu viele solcher Web-Apps geöffnet sind. Wenn du einen Wert unter dem Standardwert festlegst, geschieht dies auf eigenes Risiko.
 
       Ist diese Richtlinie nicht konfiguriert, so kommt der Standardwert von 32 zum Einsatz.</translation>
-<translation id="5885770645815872943">Safe Browsing-Erweiterungsschutz zulassen</translation>
 <translation id="5887414688706570295">Konfiguriert das TalkGadget-Präfix, das von Remotezugriff-Hosts verwendet wird, und verhindert, dass dieses von Nutzern geändert werden kann.
 
           Wenn dieses Präfix angegeben wird, wird es dem TalkGadget-Basisnamen vorangestellt, um einen vollständigen Domainnamen für das TalkGadget zu erstellen. Der Basisname der TalkGadget-Domain lautet ".talkgadget.google.com".
@@ -6364,7 +6375,6 @@ Weitere Informationen findest du in der Richtlinie <ph name="HTTPS_ONLY_MODE_POL
           Wenn diese Richtlinie deaktiviert ist, kann das <ph name="PRODUCT_OS_NAME" />-Gerät keine <ph name="GOOGLE_CALENDAR_NAME" />-Termine abrufen und im <ph name="PRODUCT_OS_NAME" />-Kalenderwidget in der Systemstatusleiste des angemeldeten Nutzers anzeigen.
 
           Ist die Richtlinie nicht konfiguriert, ist die <ph name="GOOGLE_CALENDAR_NAME" />-Funktion für Unternehmensnutzer standardmäßig aktiviert.</translation>
-<translation id="6450607392928079050">Der Safe Browsing-Erweiterungsschutz wird durch die <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />-Richtlinie gesteuert</translation>
 <translation id="6452882999388592166">Wenn diese Richtlinie aktiviert ist, wird die integrierte Komponentenerweiterung „CryptoToken“ beim Start geladen. Ist sie deaktiviert oder nicht konfiguriert, wird „CryptoToken“ beim Browserstart nicht geladen. Diese Richtlinie ist als vorübergehende Behelfslösung für Websites gedacht, die nicht funktionieren, weil „chrome.runtime“ als Nebeneffekt der Entfernung von „CryptoToken“ in Version M106 nicht definiert wird. Websites dürfen nicht davon abhängen, ob „chrome.runtime“ uneingeschränkt definiert ist.</translation>
 <translation id="6453641799812499182">Einschränkungen bei <ph name="CORS" />-Prüfungen in der neuen <ph name="CORS" />-Implementierung aktivieren</translation>
 <translation id="645425387487868471">Erzwungene Anmeldung für <ph name="PRODUCT_NAME" /> aktivieren</translation>
@@ -6811,6 +6821,7 @@ Ist diese Richtlinie auf „true“ gesetzt, wird WebSQL im Zusammenhang mit Dri
       Bei Auswahl von „Enabled“ können Websites „SharedArrayBuffers“ ohne Einschränkungen verwenden.
 
       Wenn du die Richtlinie auf „Disabled“ setzt oder nicht konfigurierst, können Websites „SharedArrayBuffers“ nur in einem ursprungsübergreifend isolierten Kontext verwenden.</translation>
+<translation id="6734397897213913438">Funktion „Laut vorlesen“ immer zulassen</translation>
 <translation id="6735701345096330595">Aktivierung von Sprachen für die Rechtschreibprüfung erzwingen</translation>
 <translation id="6736283207617136584">Melden des Updatestatus für das Betriebssystem auf Geräten aktivieren</translation>
 <translation id="6739541168983991680"><ph name="CLOUD_UPLOAD_NAME" />-Ablauf für <ph name="MICROSOFT_ONE_DRIVE_NAME" /> und <ph name="MICROSOFT_365_NAME" /> automatisieren</translation>
@@ -7160,11 +7171,6 @@ Wird die Richtlinie nicht konfiguriert, werden Bilder zugelassen, aber Nutzer k�
 
       Für diese Richtlinie sind zusätzliche Einrichtungen nötig. Weitere Informationen dazu findest du unter https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="7032813174556919004">DoH deaktivieren</translation>
-<translation id="7033778618670823541">Mit dieser Richtlinie wird eine Liste von Ursprüngen (URLs) oder Hostnamenmustern wie "*.example.com" festgelegt, für die keine Sicherheitsbeschränkungen für unsichere Ursprünge gelten. Organisationen können Ursprünge für ältere Anwendungen, die kein TLS bereitstellen können, angeben oder einen Testserver für die interne Webentwicklung einrichten, damit die Entwickler Funktionen testen können, die einen sicheren Kontext erfordern, ohne TLS auf dem Testserver bereitstellen zu müssen. Außerdem wird mit dieser Richtlinie verhindert, dass der Ursprung in der Adressleiste als "Nicht sicher" gekennzeichnet wird.
-
-      Das Festlegen einer Liste von URLs in dieser Richtlinie hat den gleichen Effekt wie das Festlegen des Befehlszeilen-Flags "--unsafely-treat-insecure-origin-as-secure" für eine durch Kommas getrennte Liste mit denselben URLs. Die Richtlinie überschreibt das Befehlszeilen-Flag und "UnsafelyTreatInsecureOriginAsSecure", sofern vorhanden.
-
-      Weitere Informationen zu sicheren Kontexten findest du unter https://www.w3.org/TR/secure-contexts.</translation>
 <translation id="703672323011778742">Diese Richtlinie wurde in M88 eingestellt. Flash wird von Chrome nicht mehr unterstützt. Wenn die Richtlinie auf „1“ gesetzt ist, kannst du festlegen, ob das Plug-in <ph name="FLASH_PLUGIN_NAME" /> auf allen Websites automatisch ausgeführt werden soll. Wenn die Richtlinie auf „2“ gesetzt ist, wird dieses Plug-in auf allen Websites blockiert. Mit „Click-to-Play“ wird erlaubt, dass das Plug-in <ph name="FLASH_PLUGIN_NAME" /> ausgeführt wird, der Nutzer muss jedoch den Platzhalter anklicken, um die Ausführung zu starten.
 
       Ist diese Richtlinie nicht konfiguriert, wird <ph name="BLOCK_PLUGINS_POLICY_NAME" /> verwendet und Nutzer können diese Einstellung ändern.
@@ -7648,6 +7654,7 @@ Ist die Richtlinie nicht konfiguriert, entspricht dies der Einstellung „<ph na
 <translation id="7443356543619955157">Wenn die Richtlinie konfiguriert ist, ermöglicht sie, Netzwerkkonfigurationen für alle Nutzer eines <ph name="PRODUCT_OS_NAME" />-Geräts zu übernehmen. Die Netzwerkkonfiguration ist ein String im JSON-Format, der der Definition des ONC-Formats (Open Network Configuration) entspricht.</translation>
 <translation id="7446978687387327623">Weitergeleitete Safe Browsing-Echtzeitprüfungen zulassen</translation>
 <translation id="7448430478749155471">Hiermit wird die Funktion "Vorlesen" auf dem Anmeldebildschirm aktiviert</translation>
+<translation id="7455912144588577399">Wenn die Richtlinie auf „true“ gesetzt ist, können Nutzer sich kompatible Webseiten per Sprachausgabe laut vorlesen lassen. Dies ist durch serverseitige Inhaltsanalyse und Audiosynthese möglich. Ist sie auf „false“ gesetzt, so ist diese Funktion deaktiviert. Wenn die Richtlinie auf die Standardeinstellung gesetzt oder nicht konfiguriert ist, ist die Funktion „Laut vorlesen“ aktiviert.</translation>
 <translation id="7456922722153109956">Diese Richtlinie legt die Sichtbarkeit der Information im mittleren Slot auf der Seite „Neuer Tab“ fest.
 
       Ist die Richtlinie aktiviert, zeigt die Seite „Neuer Tab“ die Information im mittleren Slot an, sofern verfügbar.
@@ -8583,33 +8590,6 @@ Ist die Richtlinie deaktiviert, wird die Seite blockiert.</translation>
 
       Wenn sie nicht konfiguriert ist, können Websites den Zugriff erfragen, aber Nutzer können diese Einstellung ändern.</translation>
 <translation id="8267520984570984190">Das Standardverhalten der Bildschirmtastatur wird nicht geändert</translation>
-<translation id="8267887696930711948">Eingestellt in M69. Verwende stattdessen
-      OverrideSecurityRestrictionsOnInsecureOrigin.
-
-      Mit dieser Richtlinie wird eine Liste von Quellen (URLs) oder Hostnamenmustern
-      wie „*.beispiel.de“ festgelegt, für die keine Sicherheitsbeschränkungen
-      für unsichere Quellen gelten.
-
-      Auf diese Weise können Organisationen Quellen für ältere Anwendungen,
-      die kein TLS bereitstellen können, zulassen oder einen
-      Testserver für die interne Webentwicklung einrichten, damit die Entwickler
-      Funktionen testen können, die einen sicheren Kontext erfordern, ohne TLS
-      auf dem Testserver bereitstellen zu müssen. Außerdem wird mit dieser Richtlinie
-      verhindert, dass die Quelle in der Omnibox als „Nicht sicher“ gekennzeichnet wird.
-
-      Das Festlegen einer Liste von URLs in dieser Richtlinie hat den gleichen Effekt
-      wie das Festlegen des Befehlszeilen-Flags --unsafely-treat-insecure-origin-as-secure
-      für eine durch Kommas getrennte Liste mit denselben URLs. Wenn die Richtlinie konfiguriert
-      ist, wird das Befehlszeilen-Flag überschrieben.
-
-      Diese Richtlinie wurde in M69 zugunsten von
-      OverrideSecurityRestrictionsOnInsecureOrigin eingestellt. Wenn beide Richtlinien
-      vorhanden sind, wird diese Richtlinie durch OverrideSecurityRestrictionsOnInsecureOrigin
-      überschrieben.
-
-      Weitere Informationen zu sicheren Kontexten findest du unter
-      https://www.w3.org/TR/secure-contexts/.
-      </translation>
 <translation id="8269238942896230153">Ein verwaltetes Konto muss ein primäres Konto sein; das Importieren bestehender Browserdaten ist bei der Profilerstellung möglich</translation>
 <translation id="8270320981823560179">Google Drive</translation>
 <translation id="827054846390793641">Benutzeroberflächen im Zusammenhang mit der Verbindung auf dem Host-Computer während einer aktiven Verbindung aktivieren</translation>
@@ -9153,6 +9133,7 @@ Wenn die Richtlinie nicht konfiguriert ist, werden bei der ersten Ausführung ke
 <translation id="8714556680280715750">Eine URL, über die Nutzer mehr erfahren können. Sofern nicht konfiguriert, gibt es im Installationsprogramm keine URL „Weitere Informationen“. Falls vorhanden, muss das HTTPS-Schema verwendet werden.</translation>
 <translation id="8715885991031124968">JavaScript-Dialogfelder zulassen, die von einem anderen Quell-Subframe ausgelöst wurden</translation>
 <translation id="8720547069538712402">Zulassen, dass Nutzer die Rechtschreibprüfung aktivieren oder deaktivieren</translation>
+<translation id="8721685661759544418">Funktion „Laut vorlesen“ (Textanalyse und Sprachsynthese) für Webseiten aktivieren</translation>
 <translation id="8726080977639508431">Diese Richtlinie legt fest, wie <ph name="PRODUCT_NAME" /> Richtlinien zu Websitelisten/Greylists für die Funktion zur Unterstützung älterer Browser interpretiert. Die folgenden Richtlinien sind betroffen: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> und <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
 
       Wenn die Richtlinie auf „Default“ (0) gesetzt oder nicht konfiguriert ist, ist der URL-Abgleich weniger streng. Bei Regeln, die „/“ nicht enthalten, wird nach einem Teilstring im Hostnamen der URL gesucht. Bei der Zuordnung der Pfadkomponente einer URL wird die Groß- und Kleinschreibung beachtet.
@@ -9671,6 +9652,17 @@ Diese Richtlinie wird nur angewendet, wenn die Richtlinie „<ph name="FULL_REST
 <translation id="9135095804754272364">Benachrichtigen, wenn ein USB-Gerät erkannt wird</translation>
 <translation id="9136212796239682721">Benutzeroberfläche für Download-Infofeld deaktivieren</translation>
 <translation id="9136399279941091445">Intervalle für Abwesenheitszeiten, wenn die angegebenen Geräterichtlinien veröffentlicht werden</translation>
+<translation id="9140064482233876338">Eingestellt in M69. Verwende stattdessen „OverrideSecurityRestrictionsOnInsecureOrigin“.
+
+Mit dieser Richtlinie wird eine Liste von Ursprüngen (URLs) oder Hostnamenmustern wie „*.beispiel.de“ festgelegt, für die keine Sicherheitsbeschränkungen für unsichere Ursprünge gelten.
+
+Auf diese Weise können Organisationen Ursprünge für alte Anwendungen, die kein TLS bereitstellen können, auf die Zulassungsliste setzen oder einen Testserver für die interne Webentwicklung einrichten, damit die Entwickler Funktionen testen können, die einen sicheren Kontext erfordern, ohne TLS auf dem Testserver bereitstellen zu müssen. Außerdem wird mit dieser Richtlinie verhindert, dass der Ursprung in der Omnibox als „Nicht sicher“ gekennzeichnet wird.
+
+Das Festlegen einer Liste von URLs in dieser Richtlinie hat den gleichen Effekt wie das Festlegen des Befehlszeilen-Flags „--unsafely-treat-insecure-origin-as-secure“ für eine durch Kommas getrennte Liste mit denselben URLs. Wenn die Richtlinie konfiguriert ist, wird das Befehlszeilen-Flag überschrieben.
+
+Diese Richtlinie wurde in M69 zugunsten von „OverrideSecurityRestrictionsOnInsecureOrigin“ eingestellt. Wenn beide Richtlinien vorhanden sind, wird diese Richtlinie durch „OverrideSecurityRestrictionsOnInsecureOrigin“ überschrieben.
+
+Weitere Informationen zu sicheren Kontexten findest du unter https://www.w3.org/TR/secure-contexts/.</translation>
 <translation id="9142561920976791097">Bei deaktivierten Formularsteuerelementen wird die neue Ereignisweiterleitung verwendet.</translation>
 <translation id="91459503271584213">Ausführbare Windows-Hosts für natives Messaging direkt starten</translation>
 <translation id="9148720248753722892">SHA-1-signierte Zertifikate nicht zulassen</translation>

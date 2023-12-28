@@ -49,10 +49,10 @@ class VIEWS_EXPORT PhoneHubMoreAppsButton
   void LoadAppList();
 
   base::TimeTicks load_app_list_latency_ = base::TimeTicks();
-  raw_ptr<views::TableLayout, ExperimentalAsh> table_layout_ = nullptr;
-  raw_ptr<phonehub::AppStreamLauncherDataModel, ExperimentalAsh>
+  raw_ptr<views::TableLayout> table_layout_ = nullptr;
+  raw_ptr<phonehub::AppStreamLauncherDataModel>
       app_stream_launcher_data_model_ = nullptr;
-  std::vector<AppLoadingIcon*> app_loading_icons_;
+  std::vector<raw_ptr<AppLoadingIcon, VectorExperimental>> app_loading_icons_;
 };
 
 }  // namespace ash

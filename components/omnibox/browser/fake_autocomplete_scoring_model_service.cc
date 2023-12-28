@@ -4,7 +4,6 @@
 
 #include "components/omnibox/browser/fake_autocomplete_scoring_model_service.h"
 
-#include <string>
 #include <vector>
 
 #include "components/omnibox/browser/autocomplete_scoring_model_service.h"
@@ -19,7 +18,9 @@ std::vector<FakeAutocompleteScoringModelService::Result>
 FakeAutocompleteScoringModelService::BatchScoreAutocompleteUrlMatchesSync(
     const std::vector<
         const FakeAutocompleteScoringModelService::ScoringSignals*>&
-        batch_scoring_signals,
-    const std::vector<std::string>& stripped_destination_urls) {
-  return fake_response_;
+        batch_scoring_signals) {
+  std::vector<Result> results;
+  for (size_t i = 0; i < batch_scoring_signals.size(); ++i)
+    results.push_back(batch_scoring_signals[i]->site_engagement());
+  return results;
 }

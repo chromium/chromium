@@ -48,14 +48,6 @@ public class LogoBridge {
          */
         @CalledByNative("LogoObserver")
         void onLogoAvailable(Logo logo, boolean fromCache);
-
-        /**
-         * Called when it has been determined from server that the cached logo (or null) is still
-         * valid. This is independent from OnLogoAvailable and is intended for users who need to
-         * take some action that can only happen when a logo won't later change.
-         */
-        @CalledByNative("LogoObserver")
-        void onCachedLogoRevalidated();
     }
 
     private long mNativeLogoBridge;

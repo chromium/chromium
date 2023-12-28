@@ -348,7 +348,7 @@ class OperationQueue {
 
  private:
   std::string id_;
-  raw_ptr<ItemRegistry, ExperimentalAsh> item_registry_;
+  raw_ptr<ItemRegistry> item_registry_;
   base::queue<PendingOperation> pending_operations_;
   std::vector<char> content_;
   bool deleted_ = false;
@@ -390,7 +390,7 @@ class TestDataItem : public DataItem {
   }
 
  private:
-  raw_ptr<OperationQueue, ExperimentalAsh> operations_;
+  raw_ptr<OperationQueue> operations_;
 };
 
 class TestLockScreenValueStoreMigrator : public LockScreenValueStoreMigrator {
@@ -802,7 +802,7 @@ class LockScreenItemStorageTest : public ExtensionsTest {
   // Whether the test is expected to create deprecated value store version.
   bool can_create_deprecated_value_store_ = false;
 
-  raw_ptr<TestLockScreenValueStoreMigrator, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<TestLockScreenValueStoreMigrator, DanglingUntriaged>
       value_store_migrator_ = nullptr;
 };
 

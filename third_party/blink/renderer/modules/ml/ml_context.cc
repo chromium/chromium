@@ -91,6 +91,7 @@ ScriptPromise MLContext::compute(ScriptState* script_state,
                                  const MLNamedArrayBufferViews& inputs,
                                  const MLNamedArrayBufferViews& outputs,
                                  ExceptionState& exception_state) {
+  ScopedMLTrace scoped_trace("MLContext::compute");
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
@@ -106,7 +107,8 @@ ScriptPromise MLContext::compute(ScriptState* script_state,
         DOMExceptionCode::kDataError,
         "The graph isn't built within this context."));
   } else {
-    graph->ComputeAsync(inputs, outputs, resolver, exception_state);
+    graph->ComputeAsync(std::move(scoped_trace), inputs, outputs, resolver,
+                        exception_state);
   }
 
   return promise;
@@ -116,6 +118,7 @@ void MLContext::computeSync(MLGraph* graph,
                             const MLNamedArrayBufferViews& inputs,
                             const MLNamedArrayBufferViews& outputs,
                             ExceptionState& exception_state) {
+  ScopedMLTrace scoped_trace("MLContext::computeSync");
   if (graph->Context() != this) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
@@ -125,9 +128,10 @@ void MLContext::computeSync(MLGraph* graph,
   graph->ComputeSync(inputs, outputs, exception_state);
 }
 
-void MLContext::CreateAsync(ScriptPromiseResolver* resolver,
+void MLContext::CreateAsync(ScopedMLTrace scoped_trace,
+                            ScriptPromiseResolver* resolver,
                             MLContextOptions* options) {
-  CreateAsyncImpl(resolver, options);
+  CreateAsyncImpl(std::move(scoped_trace), resolver, options);
 }
 
 MLContext* MLContext::CreateSync(ScriptState* script_state,
@@ -136,7 +140,8 @@ MLContext* MLContext::CreateSync(ScriptState* script_state,
   return CreateSyncImpl(script_state, options, exception_state);
 }
 
-void MLContext::CreateAsyncImpl(ScriptPromiseResolver* resolver,
+void MLContext::CreateAsyncImpl(ScopedMLTrace scoped_trace,
+                                ScriptPromiseResolver* resolver,
                                 MLContextOptions* options) {
   // TODO(crbug.com/1273291): Remove when async creation gets implemented for
   // all context types.

@@ -20,7 +20,7 @@ void JNI_PwaRestoreBottomSheetTestUtils_SetAppListForRestoring(
     JNIEnv* env,
     const JavaParamRef<jobjectArray>& apps) {
   std::vector<std::vector<std::u16string>> app_vector;
-  Java2dStringArrayTo2dStringVector(env, apps, &app_vector);
+  base::android::Java2dStringArrayTo2dStringVector(env, apps, &app_vector);
 
   // TODO(finnur): Manipulate the WebApkDatabase with these values, once it has
   // been added as a KeyedService.

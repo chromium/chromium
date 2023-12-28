@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -61,6 +62,7 @@
 #include "components/autofill/content/browser/autofill_log_router_factory.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
@@ -70,6 +72,7 @@
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
+#include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
@@ -265,6 +268,13 @@ IbanManager* ChromeAutofillClient::GetIbanManager() {
   return IbanManagerFactory::GetForProfile(profile);
 }
 
+IbanAccessManager* ChromeAutofillClient::GetIbanAccessManager() {
+  if (!iban_access_manager_) {
+    iban_access_manager_ = std::make_unique<IbanAccessManager>(this);
+  }
+  return iban_access_manager_.get();
+}
+
 AutofillComposeDelegate* ChromeAutofillClient::GetComposeDelegate() {
 #if BUILDFLAG(ENABLE_COMPOSE)
   auto* client = ChromeComposeClient::FromWebContents(web_contents());
@@ -357,7 +367,8 @@ payments::PaymentsAutofillClient*
 ChromeAutofillClient::GetPaymentsAutofillClient() {
   if (!payments_autofill_client_) {
     payments_autofill_client_ =
-        std::make_unique<payments::ChromePaymentsAutofillClient>();
+        std::make_unique<payments::ChromePaymentsAutofillClient>(
+            web_contents());
   }
   return payments_autofill_client_.get();
 }
@@ -491,7 +502,6 @@ void ChromeAutofillClient::ShowAutofillSettings(PopupType popup_type) {
 #if BUILDFLAG(IS_ANDROID)
   switch (popup_type) {
     case PopupType::kAddresses:
-    case PopupType::kPersonalInformation:
       ShowAutofillProfileSettings(web_contents());
       return;
     case PopupType::kCreditCards:
@@ -508,7 +518,6 @@ void ChromeAutofillClient::ShowAutofillSettings(PopupType popup_type) {
   if (browser) {
     switch (popup_type) {
       case PopupType::kAddresses:
-      case PopupType::kPersonalInformation:
         chrome::ShowSettingsSubPage(browser, chrome::kAddressesSubPage);
         return;
       case PopupType::kCreditCards:
@@ -740,7 +749,7 @@ bool ChromeAutofillClient::CloseWebauthnDialog() {
 }
 
 void ChromeAutofillClient::OfferVirtualCardOptions(
-    const std::vector<CreditCard*>& candidates,
+    const std::vector<raw_ptr<CreditCard, VectorExperimental>>& candidates,
     base::OnceCallback<void(const std::string&)> callback) {
   VirtualCardSelectionDialogControllerImpl::CreateForWebContents(
       web_contents());
@@ -813,9 +822,8 @@ void ChromeAutofillClient::ConfirmSaveCreditCardLocally(
 #else
   // Do lazy initialization of SaveCardBubbleControllerImpl.
   SaveCardBubbleControllerImpl::CreateForWebContents(web_contents());
-  SaveCardBubbleControllerImpl* controller =
-      SaveCardBubbleControllerImpl::FromWebContents(web_contents());
-  controller->OfferLocalSave(card, options, std::move(callback));
+  SaveCardBubbleControllerImpl::FromWebContents(web_contents())
+      ->OfferLocalSave(card, options, std::move(callback));
 #endif
 }
 
@@ -861,10 +869,9 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
 #else
   // Do lazy initialization of SaveCardBubbleControllerImpl.
   SaveCardBubbleControllerImpl::CreateForWebContents(web_contents());
-  SaveCardBubbleControllerImpl* controller =
-      SaveCardBubbleControllerImpl::FromWebContents(web_contents());
-  controller->OfferUploadSave(card, legal_message_lines, options,
-                              std::move(callback));
+  SaveCardBubbleControllerImpl::FromWebContents(web_contents())
+      ->OfferUploadSave(card, legal_message_lines, options,
+                        std::move(callback));
 #endif
 }
 
@@ -985,16 +992,6 @@ bool ChromeAutofillClient::HasCreditCardScanFeature() {
 void ChromeAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {
   CreditCardScannerController::ScanCreditCard(web_contents(),
                                               std::move(callback));
-}
-
-bool ChromeAutofillClient::IsTouchToFillCreditCardSupported() {
-#if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(
-      features::kAutofillTouchToFillForCreditCardsAndroid);
-#else
-  // Touch To Fill is not supported on Desktop.
-  return false;
-#endif
 }
 
 bool ChromeAutofillClient::ShowTouchToFillCreditCard(

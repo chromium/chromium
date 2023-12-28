@@ -68,13 +68,12 @@ class IconLoader {
       bool allow_placeholder_icon,
       apps::LoadIconCallback callback) = 0;
 
-  // Convenience method that calls "LoadIconFromIconKey(app_type, app_id,
-  // GetIconKey(app_id), etc)". `callback` may be dispatched synchronously if
-  // it's possible to quickly return a result.
-  // TODO(crbug.com/1412708): Update this interface to not include app specific
-  // params.
-  std::unique_ptr<Releaser> LoadIcon(AppType app_type,
-                                     const std::string& app_id,
+  // Convenience method that calls "LoadIconFromIconKey(id, GetIconKey(app_id),
+  // etc)". `callback` may be dispatched synchronously if it's possible to
+  // quickly return a result.
+  // This interface can be used to load icon for apps or shortcuts. For apps,
+  // `id` is the app id. For shortcuts, `id` is the shortcut id.
+  std::unique_ptr<Releaser> LoadIcon(const std::string& id,
                                      const IconType& icon_type,
                                      int32_t size_hint_in_dip,
                                      bool allow_placeholder_icon,

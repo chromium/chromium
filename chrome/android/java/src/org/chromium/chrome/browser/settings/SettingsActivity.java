@@ -43,12 +43,10 @@ import org.chromium.chrome.browser.autofill.options.AutofillOptionsCoordinator;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillCreditCardEditor;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
-import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentBasic;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsSettings;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -464,26 +462,16 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     private void initBackPressHandler() {
         // Handlers registered last will be called first.
         registerMainFragmentBackPressHandler();
-        if (ChromeFeatureList.sPrivacyGuidePostMVP.isEnabled()) {
-            registerBottomSheetBackPressHandler();
-        }
+        registerBottomSheetBackPressHandler();
     }
 
     private void registerMainFragmentBackPressHandler() {
         Fragment activeFragment = getMainFragment();
-        if (BackPressManager.isSecondaryActivityEnabled()) {
-            if (activeFragment instanceof BackPressHandler) {
-                BackPressHelper.create(
-                        activeFragment.getViewLifecycleOwner(),
-                        getOnBackPressedDispatcher(),
-                        (BackPressHandler) activeFragment,
-                        SecondaryActivity.SETTINGS);
-            }
-        } else if (activeFragment instanceof BackPressHelper.ObsoleteBackPressedHandler) {
+        if (activeFragment instanceof BackPressHandler) {
             BackPressHelper.create(
                     activeFragment.getViewLifecycleOwner(),
                     getOnBackPressedDispatcher(),
-                    (BackPressHelper.ObsoleteBackPressedHandler) activeFragment,
+                    (BackPressHandler) activeFragment,
                     SecondaryActivity.SETTINGS);
         }
     }
@@ -494,19 +482,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         BackPressHandler bottomSheetBackPressHandler =
                 mBottomSheetController.getBottomSheetBackPressHandler();
         if (bottomSheetBackPressHandler != null) {
-            if (BackPressManager.isSecondaryActivityEnabled()) {
-                BackPressHelper.create(
-                        this,
-                        getOnBackPressedDispatcher(),
-                        bottomSheetBackPressHandler,
-                        SecondaryActivity.SETTINGS);
-            } else {
-                BackPressHelper.create(
-                        this,
-                        getOnBackPressedDispatcher(),
-                        mBottomSheetController::handleBackPress,
-                        SecondaryActivity.SETTINGS);
-            }
+            BackPressHelper.create(
+                    this,
+                    getOnBackPressedDispatcher(),
+                    bottomSheetBackPressHandler,
+                    SecondaryActivity.SETTINGS);
         }
     }
 

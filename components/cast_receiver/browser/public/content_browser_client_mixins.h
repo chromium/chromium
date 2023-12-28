@@ -6,10 +6,10 @@
 #define COMPONENTS_CAST_RECEIVER_BROWSER_PUBLIC_CONTENT_BROWSER_CLIENT_MIXINS_H_
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "components/cast_receiver/browser/runtime_application_dispatcher_impl.h"
 
 namespace blink {
@@ -73,7 +73,7 @@ class ContentBrowserClientMixins {
 
   // To be called by the ContentBrowserClient function of the same name.
   using CorsExemptHeaderCallback =
-      base::RepeatingCallback<bool(base::StringPiece)>;
+      base::RepeatingCallback<bool(std::string_view)>;
   virtual std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
   CreateURLLoaderThrottles(
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,

@@ -9,7 +9,7 @@
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
 import {getCurrentLocaleOrDefault, secondsToRemainingTimeString, str, strf} from '../common/js/translations.js';
-import {constants} from '../foreground/js/constants.js';
+import {ICON_TYPES} from '../foreground/js/constants.js';
 
 import {css, customElement, html, property, query, XfBase} from './xf_base.js';
 
@@ -200,35 +200,33 @@ export class XfCloudPanel extends XfBase {
           </div>
         </div>
         <div class="static" id="progress-finished">
-          <xf-icon type="${constants.ICON_TYPES.CLOUD}" size="large"></xf-icon>
+          <xf-icon type="${ICON_TYPES.CLOUD}" size="large"></xf-icon>
           <div class="status-description">
             ${str('BULK_PINNING_FILE_SYNC_ON')}
           </div>
         </div>
         <div class="static" id="progress-offline">
         <xf-icon type="${
-        constants.ICON_TYPES.BULK_PINNING_OFFLINE}" size="large"></xf-icon>
+        ICON_TYPES.BULK_PINNING_OFFLINE}" size="large"></xf-icon>
           <div class="status-description">
             ${str('DRIVE_BULK_PINNING_OFFLINE')}
           </div>
         </div>
         <div class="static" id="progress-battery-saver">
         <xf-icon type="${
-        constants.ICON_TYPES
-            .BULK_PINNING_BATTERY_SAVER}" size="large"></xf-icon>
+        ICON_TYPES.BULK_PINNING_BATTERY_SAVER}" size="large"></xf-icon>
           <div class="status-description">
             ${str('DRIVE_BULK_PINNING_BATTERY_SAVER')}
           </div>
         </div>
         <div class="static" id="progress-not-enough-space">
-        <xf-icon type="${
-        constants.ICON_TYPES.ERROR_BANNER}" size="large"></xf-icon>
+        <xf-icon type="${ICON_TYPES.ERROR_BANNER}" size="large"></xf-icon>
           <div class="status-description">
             ${str('DRIVE_BULK_PINNING_NOT_ENOUGH_SPACE')}
           </div>
         </div>
         <div class="static" id="progress-metered-network">
-          <xf-icon type="${constants.ICON_TYPES.CLOUD}" size="large"></xf-icon>
+          <xf-icon type="${ICON_TYPES.CLOUD}" size="large"></xf-icon>
           <div class="status-description">
             ${str('DRIVE_BULK_PINNING_METERED_NETWORK')}
           </div>

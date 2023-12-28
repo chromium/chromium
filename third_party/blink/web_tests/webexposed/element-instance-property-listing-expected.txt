@@ -176,6 +176,7 @@ namespace http://www.w3.org/1999/xhtml
     property offsetParent
     property offsetTop
     property offsetWidth
+    property on
     property onabort
     property onanimationend
     property onanimationiteration
@@ -676,7 +677,6 @@ html element hr
     property size
     property width
 html element html
-    property blocking
     property version
 html element i
 html element iframe
@@ -1431,6 +1431,7 @@ namespace http://www.w3.org/2000/svg
     property nodeValue
     property nonce
     property normalize
+    property on
     property onabort
     property onanimationend
     property onanimationiteration

@@ -16,8 +16,8 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/browser_state/model/constants.h"
 #import "ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h"
-#import "ios/chrome/browser/net/ios_chrome_network_delegate.h"
-#import "ios/chrome/browser/net/ios_chrome_url_request_context_getter.h"
+#import "ios/chrome/browser/net/model/ios_chrome_network_delegate.h"
+#import "ios/chrome/browser/net/model/ios_chrome_url_request_context_getter.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/components/cookie_util/cookie_util.h"
@@ -147,7 +147,7 @@ void OffTheRecordChromeBrowserStateIOData::InitializeInternal(
       cookie_util::CookieStoreConfig(
           cookie_path_,
           cookie_util::CookieStoreConfig::RESTORED_SESSION_COOKIES,
-          cookie_util::CookieStoreConfig::COOKIE_STORE_IOS, nullptr),
+          cookie_util::CookieStoreConfig::COOKIE_STORE_IOS),
       std::move(profile_params->system_cookie_store), io_thread->net_log()));
 
   net::URLRequestContextBuilder::HttpCacheParams cache_params;

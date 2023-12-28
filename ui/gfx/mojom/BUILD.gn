@@ -486,10 +486,10 @@ component("shared_mojom_traits") {
     ":native_handle_types",
     "//ui/gfx",
   ]
-  deps = [ "//skia/public/mojom" ]
-  if (use_ozone) {
-    public_deps += [ "//ui/ozone:buildflags" ]
-  }
+  deps = [
+    "//skia/public/mojom",
+    "//ui/base:ozone_buildflags",
+  ]
   frameworks = [
     "CoreFoundation.framework",
     "IOSurface.framework",

@@ -46,7 +46,7 @@ class ShelfApplicationMenuModelTestAPI {
 
  private:
   // The ShelfApplicationMenuModel to provide internal access to. Not owned.
-  raw_ptr<ShelfApplicationMenuModel, ExperimentalAsh> menu_;
+  raw_ptr<ShelfApplicationMenuModel> menu_;
 };
 
 // Verifies the menu contents given an empty item list.

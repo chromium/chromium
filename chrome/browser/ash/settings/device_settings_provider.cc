@@ -24,6 +24,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_decoder.h"
+#include "chrome/browser/ash/policy/handlers/device_dlc_predownload_list_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/system_proxy_handler.h"
 #include "chrome/browser/ash/policy/off_hours/off_hours_proto_parser.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -206,18 +207,18 @@ void SetJsonDeviceSetting(const std::string& setting_name,
 
 // Re-use the DecodeDeviceDlcPredownloadListPolicy() from
 // device_policy_decoder.h here to decode the list of DLCs that should be pre
-// downloaded to the device. The error can be ignored here since it is already
-// reported during decoding in device_policy_decoder.cc.
+// downloaded to the device.
 void SetDeviceDlcPredownloadListSetting(
     const RepeatedPtrField<std::string>& raw_policy_value,
     PrefValueMap* pref_value_map) {
-  std::string error;
-  absl::optional<base::Value::List> decoded_dlc_list =
-      policy::DecodeDeviceDlcPredownloadListPolicy(raw_policy_value, &error);
-  if (decoded_dlc_list.has_value()) {
-    pref_value_map->SetValue(kDeviceDlcPredownloadList,
-                             base::Value(std::move(decoded_dlc_list.value())));
-  }
+  std::string warning;
+  base::Value::List decoded_dlc_list =
+      policy::DeviceDlcPredownloadListPolicyHandler::
+          DecodeDeviceDlcPredownloadListPolicy(raw_policy_value, warning);
+  // The warning can be ignored here since it is already reported during
+  // decoding in device_policy_decoder.cc.
+  pref_value_map->SetValue(kDeviceDlcPredownloadList,
+                           base::Value(std::move(decoded_dlc_list)));
 }
 
 // Puts the policy value into the settings store if only it matches the regex

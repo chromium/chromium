@@ -474,6 +474,12 @@ If you find a vulnerability in a Permission API and need to use the Global
 Permissions Kill Switch, then follow [the
 instructions](https://docs.google.com/document/d/17JeYt3c1GgghYoxy4NKJnlxrteAX8F4x-MAzTeXqP4U)
 
+### Vulnerabilities in Chromium's dependencies
+
+If you are handling a bug in one of Chromium's dependencies, see
+[go/howto-investigate-autovm-chromium-bugs](https://goto.google.com/howto-investigate-autovm-chromium-bugs)
+(Google-only, sorry) for some hints.
+
 ### Wrapping Up The Fixed Issue
 
 1. Check with the developer that the issue can be closed as Fixed to allow

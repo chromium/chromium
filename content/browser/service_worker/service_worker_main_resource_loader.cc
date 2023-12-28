@@ -276,9 +276,11 @@ void ServiceWorkerMainResourceLoader::StartRequest(
     CHECK(active_worker->router_evaluator()->IsValid());
     auto eval_result = active_worker->router_evaluator()->Evaluate(
         resource_request_, active_worker->running_status());
-    // TODO(crbug.com/1371756) In some cases the router is evaluated only in the
-    // renderer side. The same mechanism is needed in the subresource loader
-    // as well.
+    // ServiceWorkerStaticRouter_Evaluate is counted only here.
+    // That is because when the static routing API is used, this code will
+    // always be executed even for no fetch handler case and an empty fetch
+    // handler case.  Otherwise, the static routing API won't be applied for
+    // them not only here but also in the subresource load.
     active_worker->CountFeature(
         blink::mojom::WebFeature::kServiceWorkerStaticRouter_Evaluate);
     if (eval_result) {  // matched the rule.
@@ -573,9 +575,11 @@ bool ServiceWorkerMainResourceLoader::StartRaceNetworkRequest(
 
   // If the initial state is not kWaitForBody, that means creating data pipes
   // failed. Do not start RaceNetworkRequest this case.
-  if (race_network_request_url_loader_client_->state() !=
-      ServiceWorkerRaceNetworkRequestURLLoaderClient::State::kWaitForBody) {
-    return false;
+  switch (race_network_request_url_loader_client_->state()) {
+    case ServiceWorkerRaceNetworkRequestURLLoaderClient::State::kWaitForBody:
+      break;
+    default:
+      return false;
   }
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> remote_factory;
@@ -730,9 +734,21 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
             base::TimeTicks::Now(), /*is_fallback=*/is_fallback);
   }
 
+  bool is_race_network_request_aborted = false;
+  if (race_network_request_url_loader_client_) {
+    switch (race_network_request_url_loader_client_->state()) {
+      case ServiceWorkerRaceNetworkRequestURLLoaderClient::State::kAborted:
+        is_race_network_request_aborted = true;
+        break;
+      default:
+        break;
+    }
+  }
+
   // Transition the state if the fetch result is fallback. This is a special
-  // treatment for RaceNetworkRequest and AutoPreload.
-  if (is_fallback) {
+  // treatment for the case when RaceNetworkRequest and AutoPreload successfully
+  // dispatced the network request.
+  if (is_fallback && !is_race_network_request_aborted) {
     switch (commit_responsibility()) {
       case FetchResponseFrom::kNoResponseYet:
         // If the RaceNetworkRequest or AutoPreload is triggered but the

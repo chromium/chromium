@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
@@ -40,7 +41,7 @@ namespace payments {
 
 namespace {
 
-class PaymentMethodListItem : public PaymentRequestItemList::Item {
+class PaymentMethodListItem final : public PaymentRequestItemList::Item {
  public:
   // Does not take ownership of |app|, which should not be null and should
   // outlive this object. |list| is the PaymentRequestItemList object that will
@@ -66,6 +67,10 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
   PaymentMethodListItem& operator=(const PaymentMethodListItem&) = delete;
 
   ~PaymentMethodListItem() override {}
+
+  base::WeakPtr<PaymentRequestRowView> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   // PaymentRequestItemList::Item:
@@ -139,6 +144,7 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
 
   base::WeakPtr<PaymentApp> app_;
   base::WeakPtr<PaymentRequestDialogView> dialog_;
+  base::WeakPtrFactory<PaymentMethodListItem> weak_ptr_factory_{this};
 };
 
 }  // namespace

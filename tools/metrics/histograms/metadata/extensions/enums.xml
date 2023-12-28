@@ -1,0 +1,3451 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BackgroundHostCreatedForExtensionValues">
+  <int value="0" label="Other extension"/>
+  <int value="1"
+      label="Google Docs Offline (ghbmnnjooekpmoecnnnilnnbdlolhkhi)"/>
+  <int value="2"
+      label="In-App Payment Support (nmmhkkegccagdldgiimedpiccmgmieda)"/>
+  <int value="3"
+      label="Assessment Assistant (gndmhdcefbhlchkhipcnnbkcmicncehk)"/>
+</enum>
+
+<enum name="BadSyncDataReason">
+  <int value="0" label="Bad extension ID"/>
+  <int value="1" label="Bad version"/>
+  <int value="2" label="Bad update URL"/>
+  <int value="3" label="No ExtensionSpecifics"/>
+  <int value="4" label="Bad disable reasons"/>
+</enum>
+
+<enum name="BooleanHasWithheldHosts">
+  <int value="0" label="Does not have withheld hosts"/>
+  <int value="1" label="Has withheld hosts"/>
+</enum>
+
+<enum name="CorruptExtensionDisabledReason">
+  <summary>
+    The reason why content verification flagged an extension as corrupted. See
+    ContentVerifyJob::FailureReason in
+    src/extensions/browser/content_verify_job.h.
+  </summary>
+  <int value="0" label="Unknown Reason"/>
+  <int value="1" label="Missing All Hashes"/>
+  <int value="2" label="Missing File Hash"/>
+  <int value="3" label="Hash Mismatch"/>
+</enum>
+
+<enum name="DeclarativeAPIFunctionType">
+  <int value="0" label="kDeclarativeContentAddRules"/>
+  <int value="1" label="kDeclarativeContentRemoveRules"/>
+  <int value="2" label="kDeclarativeContentGetRules"/>
+  <int value="3" label="kDeclarativeWebRequestAddRules"/>
+  <int value="4" label="kDeclarativeWebRequestRemoveRules"/>
+  <int value="5" label="kDeclarativeWebRequestGetRules"/>
+  <int value="6" label="kDeclarativeWebRequestWebviewAddRules"/>
+  <int value="7" label="kDeclarativeWebRequestWebviewRemoveRules"/>
+  <int value="8" label="kDeclarativeWebRequestWebviewGetRules"/>
+</enum>
+
+<enum name="DeclarativeContentActionType">
+  <int value="0" label="kShowAction"/>
+  <int value="1" label="kSetIcon"/>
+  <int value="2" label="kRequestContentScript"/>
+</enum>
+
+<enum name="ExtensionActionInvocationSource">
+  <int value="0" label="Keyboard Shortcut"/>
+  <int value="1" label="Toolbar Button"/>
+  <int value="2" label="Extensions Menu Entry"/>
+  <int value="3" label="Legacy Overflow Menu Entry"/>
+  <int value="4" label="Programmatic API Call"/>
+</enum>
+
+<enum name="ExtensionAllowlistOmahaAttributeValue">
+  <int value="0" label="Undefined"/>
+  <int value="1" label="Allowlisted"/>
+  <int value="2" label="Not allowlisted"/>
+</enum>
+
+<enum name="ExtensionBackgroundPageType">
+  <int value="0" label="None"/>
+  <int value="1" label="Persistent"/>
+  <int value="2" label="Event Page"/>
+  <int value="3" label="Service worker"/>
+</enum>
+
+<enum name="ExtensionContextMenuAction">
+  <int value="0" label="kNoAction"/>
+  <int value="1" label="kCustomCommand"/>
+  <int value="2" label="kHomePage"/>
+  <int value="3" label="kOptions"/>
+  <int value="4" label="kToggleVisibility"/>
+  <int value="5" label="kUninstall"/>
+  <int value="6" label="kManageExtensions"/>
+  <int value="7" label="kInspectPopup"/>
+  <int value="8" label="kPageAccessRunOnClick"/>
+  <int value="9" label="kPageAccessRunOnSite"/>
+  <int value="10" label="kPageAccessRunOnAllSites"/>
+  <int value="11" label="kPageAccessLearnMore"/>
+  <int value="12" label="kPageAccessPermissionsPage"/>
+  <int value="13" label="kViewWebPermissions"/>
+  <int value="14" label="kPolicyInstalled"/>
+  <int value="15" label="kToggleSidePanelVisibility"/>
+</enum>
+
+<enum name="ExtensionDisableReason">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="USER_ACTION"/>
+  <int value="2" label="PERMISSIONS_INCREASE"/>
+  <int value="4" label="RELOAD"/>
+  <int value="8" label="UNSUPPORTED_REQUIREMENT"/>
+  <int value="16" label="SIDELOAD_WIPEOUT"/>
+  <int value="32" label="UNKNOWN_FROM_SYNC"/>
+  <int value="64" label="DEPRECATED_PERMISSIONS_CONSENT"/>
+  <int value="128" label="DEPRECATED_KNOWN_DISABLED"/>
+  <int value="256" label="NOT_VERIFIED"/>
+  <int value="512" label="GREYLIST"/>
+  <int value="1024" label="CORRUPTED"/>
+  <int value="2048" label="REMOTE_INSTALL"/>
+  <int value="4096" label="INACTIVE_EPHEMERAL_APP_DEPRECATED"/>
+  <int value="8192" label="EXTERNAL_EXTENSION"/>
+  <int value="16384" label="UPDATE_REQUIRED_BY_POLICY"/>
+  <int value="32768" label="CUSTODIAN_APPROVAL_REQUIRED"/>
+  <int value="65536" label="BLOCKED_BY_POLICY"/>
+  <int value="131072" label="DEPRECATED_BLOCKED_MATURE"/>
+  <int value="262144" label="DEPRECATED_DISABLE_REMOTELY_FOR_MALWARE"/>
+  <int value="524288" label="DISABLE_REINSTALL"/>
+  <int value="1048576" label="DISABLE_NOT_ALLOWLISTED"/>
+  <int value="2097152" label="DISABLE_NOT_ASH_KEEPLISTED"/>
+  <int value="4194304" label="DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY"/>
+</enum>
+
+<enum name="ExtensionEvents">
+<!-- Generated from extensions/browser/extension_event_histogram_value.h.
+Called by update_extension_histograms.py.-->
+
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="FOR_TEST"/>
+  <int value="2" label="ACCESSIBILITY_PRIVATE_ON_INTRODUCE_CHROME_VOX"/>
+  <int value="3" label="ACTIVITY_LOG_PRIVATE_ON_EXTENSION_ACTIVITY"/>
+  <int value="4" label="ALARMS_ON_ALARM"/>
+  <int value="5" label="APP_CURRENT_WINDOW_INTERNAL_ON_ALPHA_ENABLED_CHANGED"/>
+  <int value="6" label="APP_CURRENT_WINDOW_INTERNAL_ON_BOUNDS_CHANGED"/>
+  <int value="7" label="APP_CURRENT_WINDOW_INTERNAL_ON_CLOSED"/>
+  <int value="8" label="APP_CURRENT_WINDOW_INTERNAL_ON_FULLSCREENED"/>
+  <int value="9" label="APP_CURRENT_WINDOW_INTERNAL_ON_MAXIMIZED"/>
+  <int value="10" label="APP_CURRENT_WINDOW_INTERNAL_ON_MINIMIZED"/>
+  <int value="11" label="APP_CURRENT_WINDOW_INTERNAL_ON_RESTORED"/>
+  <int value="12"
+      label="APP_CURRENT_WINDOW_INTERNAL_ON_WINDOW_SHOWN_FOR_TESTS"/>
+  <int value="13" label="APP_RUNTIME_ON_EMBED_REQUESTED"/>
+  <int value="14" label="APP_RUNTIME_ON_LAUNCHED"/>
+  <int value="15" label="APP_RUNTIME_ON_RESTARTED"/>
+  <int value="16" label="APP_WINDOW_ON_BOUNDS_CHANGED"/>
+  <int value="17" label="APP_WINDOW_ON_CLOSED"/>
+  <int value="18" label="APP_WINDOW_ON_FULLSCREENED"/>
+  <int value="19" label="APP_WINDOW_ON_MAXIMIZED"/>
+  <int value="20" label="APP_WINDOW_ON_MINIMIZED"/>
+  <int value="21" label="APP_WINDOW_ON_RESTORED"/>
+  <int value="22" label="DELETED_AUDIO_MODEM_ON_RECEIVED"/>
+  <int value="23" label="DELETED_AUDIO_MODEM_ON_TRANSMIT_FAIL"/>
+  <int value="24" label="DELETED_AUDIO_ON_DEVICE_CHANGED"/>
+  <int value="25" label="AUDIO_ON_DEVICES_CHANGED"/>
+  <int value="26" label="AUDIO_ON_LEVEL_CHANGED"/>
+  <int value="27" label="AUDIO_ON_MUTE_CHANGED"/>
+  <int value="28" label="AUTOFILL_PRIVATE_ON_ADDRESS_LIST_CHANGED_DEPRECATED"/>
+  <int value="29"
+      label="AUTOFILL_PRIVATE_ON_CREDIT_CARD_LIST_CHANGED_DEPRECATED"/>
+  <int value="30" label="AUTOMATION_INTERNAL_ON_ACCESSIBILITY_EVENT"/>
+  <int value="31" label="AUTOMATION_INTERNAL_ON_ACCESSIBILITY_TREE_DESTROYED"/>
+  <int value="32" label="BLUETOOTH_LOW_ENERGY_ON_CHARACTERISTIC_VALUE_CHANGED"/>
+  <int value="33" label="BLUETOOTH_LOW_ENERGY_ON_DESCRIPTOR_VALUE_CHANGED"/>
+  <int value="34" label="BLUETOOTH_LOW_ENERGY_ON_SERVICE_ADDED"/>
+  <int value="35" label="BLUETOOTH_LOW_ENERGY_ON_SERVICE_CHANGED"/>
+  <int value="36" label="BLUETOOTH_LOW_ENERGY_ON_SERVICE_REMOVED"/>
+  <int value="37" label="BLUETOOTH_ON_ADAPTER_STATE_CHANGED"/>
+  <int value="38" label="BLUETOOTH_ON_DEVICE_ADDED"/>
+  <int value="39" label="BLUETOOTH_ON_DEVICE_CHANGED"/>
+  <int value="40" label="BLUETOOTH_ON_DEVICE_REMOVED"/>
+  <int value="41" label="BLUETOOTH_PRIVATE_ON_PAIRING"/>
+  <int value="42" label="BLUETOOTH_SOCKET_ON_ACCEPT"/>
+  <int value="43" label="BLUETOOTH_SOCKET_ON_ACCEPT_ERROR"/>
+  <int value="44" label="BLUETOOTH_SOCKET_ON_RECEIVE"/>
+  <int value="45" label="BLUETOOTH_SOCKET_ON_RECEIVE_ERROR"/>
+  <int value="46" label="BOOKMARK_MANAGER_PRIVATE_ON_DRAG_ENTER"/>
+  <int value="47" label="BOOKMARK_MANAGER_PRIVATE_ON_DRAG_LEAVE"/>
+  <int value="48" label="BOOKMARK_MANAGER_PRIVATE_ON_DROP"/>
+  <int value="49" label="BOOKMARK_MANAGER_PRIVATE_ON_META_INFO_CHANGED"/>
+  <int value="50" label="BOOKMARKS_ON_CHANGED"/>
+  <int value="51" label="BOOKMARKS_ON_CHILDREN_REORDERED"/>
+  <int value="52" label="BOOKMARKS_ON_CREATED"/>
+  <int value="53" label="BOOKMARKS_ON_IMPORT_BEGAN"/>
+  <int value="54" label="BOOKMARKS_ON_IMPORT_ENDED"/>
+  <int value="55" label="BOOKMARKS_ON_MOVED"/>
+  <int value="56" label="BOOKMARKS_ON_REMOVED"/>
+  <int value="57" label="BRAILLE_DISPLAY_PRIVATE_ON_DISPLAY_STATE_CHANGED"/>
+  <int value="58" label="BRAILLE_DISPLAY_PRIVATE_ON_KEY_EVENT"/>
+  <int value="59" label="BROWSER_ACTION_ON_CLICKED"/>
+  <int value="60" label="DELETED_CAST_STREAMING_RTP_STREAM_ON_ERROR"/>
+  <int value="61" label="DELETED_CAST_STREAMING_RTP_STREAM_ON_STARTED"/>
+  <int value="62" label="DELETED_CAST_STREAMING_RTP_STREAM_ON_STOPPED"/>
+  <int value="63" label="COMMANDS_ON_COMMAND"/>
+  <int value="64" label="CONTEXT_MENUS_INTERNAL_ON_CLICKED"/>
+  <int value="65" label="CONTEXT_MENUS_ON_CLICKED"/>
+  <int value="66" label="COOKIES_ON_CHANGED"/>
+  <int value="67" label="DELETED_COPRESENCE_ON_MESSAGES_RECEIVED"/>
+  <int value="68" label="DELETED_COPRESENCE_ON_STATUS_UPDATED"/>
+  <int value="69" label="DELETED_COPRESENCE_PRIVATE_ON_CONFIG_AUDIO"/>
+  <int value="70" label="DELETED_COPRESENCE_PRIVATE_ON_DECODE_SAMPLES_REQUEST"/>
+  <int value="71" label="DELETED_COPRESENCE_PRIVATE_ON_ENCODE_TOKEN_REQUEST"/>
+  <int value="72" label="DEBUGGER_ON_DETACH"/>
+  <int value="73" label="DEBUGGER_ON_EVENT"/>
+  <int value="74" label="DECLARATIVE_CONTENT_ON_PAGE_CHANGED"/>
+  <int value="75" label="DECLARATIVE_WEB_REQUEST_ON_MESSAGE"/>
+  <int value="76" label="DECLARATIVE_WEB_REQUEST_ON_REQUEST"/>
+  <int value="77" label="DEVELOPER_PRIVATE_ON_ITEM_STATE_CHANGED"/>
+  <int value="78" label="DEVELOPER_PRIVATE_ON_PROFILE_STATE_CHANGED"/>
+  <int value="79" label="DEVTOOLS_INSPECTED_WINDOW_ON_RESOURCE_ADDED"/>
+  <int value="80"
+      label="DEVTOOLS_INSPECTED_WINDOW_ON_RESOURCE_CONTENT_COMMITTED"/>
+  <int value="81" label="DEVTOOLS_NETWORK_ON_NAVIGATED"/>
+  <int value="82" label="DEVTOOLS_NETWORK_ON_REQUEST_FINISHED"/>
+  <int value="83" label="DOWNLOADS_ON_CHANGED"/>
+  <int value="84" label="DOWNLOADS_ON_CREATED"/>
+  <int value="85" label="DOWNLOADS_ON_DETERMINING_FILENAME"/>
+  <int value="86" label="DOWNLOADS_ON_ERASED"/>
+  <int value="87" label="DELETED_EASY_UNLOCK_PRIVATE_ON_START_AUTO_PAIRING"/>
+  <int value="88" label="DELETED_EASY_UNLOCK_PRIVATE_ON_USER_INFO_UPDATED"/>
+  <int value="89" label="DELETED_EXPERIENCE_SAMPLING_PRIVATE_ON_DECISION"/>
+  <int value="90" label="DELETED_EXPERIENCE_SAMPLING_PRIVATE_ON_DISPLAYED"/>
+  <int value="91" label="EXPERIMENTAL_DEVTOOLS_CONSOLE_ON_MESSAGE_ADDED"/>
+  <int value="92" label="EXTENSION_ON_REQUEST"/>
+  <int value="93" label="EXTENSION_ON_REQUEST_EXTERNAL"/>
+  <int value="94" label="EXTENSION_OPTIONS_INTERNAL_ON_CLOSE"/>
+  <int value="95" label="EXTENSION_OPTIONS_INTERNAL_ON_LOAD"/>
+  <int value="96" label="EXTENSION_OPTIONS_INTERNAL_ON_PREFERRED_SIZE_CHANGED"/>
+  <int value="97" label="FEEDBACK_PRIVATE_ON_FEEDBACK_REQUESTED"/>
+  <int value="98" label="FILE_BROWSER_HANDLER_ON_EXECUTE"/>
+  <int value="99" label="FILE_MANAGER_PRIVATE_ON_COPY_PROGRESS"/>
+  <int value="100" label="FILE_MANAGER_PRIVATE_ON_DEVICE_CHANGED"/>
+  <int value="101" label="FILE_MANAGER_PRIVATE_ON_DIRECTORY_CHANGED"/>
+  <int value="102"
+      label="FILE_MANAGER_PRIVATE_ON_DRIVE_CONNECTION_STATUS_CHANGED"/>
+  <int value="103" label="FILE_MANAGER_PRIVATE_ON_DRIVE_SYNC_ERROR"/>
+  <int value="104" label="FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED"/>
+  <int value="105" label="FILE_MANAGER_PRIVATE_ON_MOUNT_COMPLETED"/>
+  <int value="106" label="FILE_MANAGER_PRIVATE_ON_PREFERENCES_CHANGED"/>
+  <int value="107" label="FILE_SYSTEM_ON_VOLUME_LIST_CHANGED"/>
+  <int value="108" label="FILE_SYSTEM_PROVIDER_ON_ABORT_REQUESTED"/>
+  <int value="109" label="FILE_SYSTEM_PROVIDER_ON_ADD_WATCHER_REQUESTED"/>
+  <int value="110" label="FILE_SYSTEM_PROVIDER_ON_CLOSE_FILE_REQUESTED"/>
+  <int value="111" label="FILE_SYSTEM_PROVIDER_ON_CONFIGURE_REQUESTED"/>
+  <int value="112" label="FILE_SYSTEM_PROVIDER_ON_COPY_ENTRY_REQUESTED"/>
+  <int value="113" label="FILE_SYSTEM_PROVIDER_ON_CREATE_DIRECTORY_REQUESTED"/>
+  <int value="114" label="FILE_SYSTEM_PROVIDER_ON_CREATE_FILE_REQUESTED"/>
+  <int value="115" label="FILE_SYSTEM_PROVIDER_ON_DELETE_ENTRY_REQUESTED"/>
+  <int value="116" label="FILE_SYSTEM_PROVIDER_ON_GET_METADATA_REQUESTED"/>
+  <int value="117" label="FILE_SYSTEM_PROVIDER_ON_MOUNT_REQUESTED"/>
+  <int value="118" label="FILE_SYSTEM_PROVIDER_ON_MOVE_ENTRY_REQUESTED"/>
+  <int value="119" label="FILE_SYSTEM_PROVIDER_ON_OPEN_FILE_REQUESTED"/>
+  <int value="120" label="FILE_SYSTEM_PROVIDER_ON_READ_DIRECTORY_REQUESTED"/>
+  <int value="121" label="FILE_SYSTEM_PROVIDER_ON_READ_FILE_REQUESTED"/>
+  <int value="122" label="FILE_SYSTEM_PROVIDER_ON_REMOVE_WATCHER_REQUESTED"/>
+  <int value="123" label="FILE_SYSTEM_PROVIDER_ON_TRUNCATE_REQUESTED"/>
+  <int value="124" label="FILE_SYSTEM_PROVIDER_ON_UNMOUNT_REQUESTED"/>
+  <int value="125" label="FILE_SYSTEM_PROVIDER_ON_WRITE_FILE_REQUESTED"/>
+  <int value="126" label="FONT_SETTINGS_ON_DEFAULT_FIXED_FONT_SIZE_CHANGED"/>
+  <int value="127" label="FONT_SETTINGS_ON_DEFAULT_FONT_SIZE_CHANGED"/>
+  <int value="128" label="FONT_SETTINGS_ON_FONT_CHANGED"/>
+  <int value="129" label="FONT_SETTINGS_ON_MINIMUM_FONT_SIZE_CHANGED"/>
+  <int value="130" label="DELETED_GCD_PRIVATE_ON_DEVICE_REMOVED"/>
+  <int value="131" label="DELETED_GCD_PRIVATE_ON_DEVICE_STATE_CHANGED"/>
+  <int value="132" label="GCM_ON_MESSAGE"/>
+  <int value="133" label="GCM_ON_MESSAGES_DELETED"/>
+  <int value="134" label="GCM_ON_SEND_ERROR"/>
+  <int value="135" label="HANGOUTS_PRIVATE_ON_HANGOUT_REQUESTED_DEPRECATED"/>
+  <int value="136" label="HID_ON_DEVICE_ADDED"/>
+  <int value="137" label="HID_ON_DEVICE_REMOVED"/>
+  <int value="138" label="HISTORY_ON_VISITED"/>
+  <int value="139" label="HISTORY_ON_VISIT_REMOVED"/>
+  <int value="140" label="HOTWORD_PRIVATE_ON_DELETE_SPEAKER_MODEL"/>
+  <int value="141" label="HOTWORD_PRIVATE_ON_ENABLED_CHANGED"/>
+  <int value="142" label="HOTWORD_PRIVATE_ON_FINALIZE_SPEAKER_MODEL"/>
+  <int value="143" label="HOTWORD_PRIVATE_ON_HOTWORD_SESSION_REQUESTED"/>
+  <int value="144" label="HOTWORD_PRIVATE_ON_HOTWORD_SESSION_STOPPED"/>
+  <int value="145" label="HOTWORD_PRIVATE_ON_HOTWORD_TRIGGERED"/>
+  <int value="146" label="HOTWORD_PRIVATE_ON_MICROPHONE_STATE_CHANGED"/>
+  <int value="147" label="HOTWORD_PRIVATE_ON_SPEAKER_MODEL_EXISTS"/>
+  <int value="148" label="HOTWORD_PRIVATE_ON_SPEAKER_MODEL_SAVED"/>
+  <int value="149" label="IDENTITY_ON_SIGN_IN_CHANGED"/>
+  <int value="150" label="DELETED_IDENTITY_PRIVATE_ON_WEB_FLOW_REQUEST"/>
+  <int value="151" label="IDLE_ON_STATE_CHANGED"/>
+  <int value="152" label="IMAGE_WRITER_PRIVATE_ON_DEVICE_INSERTED"/>
+  <int value="153" label="IMAGE_WRITER_PRIVATE_ON_DEVICE_REMOVED"/>
+  <int value="154" label="IMAGE_WRITER_PRIVATE_ON_WRITE_COMPLETE"/>
+  <int value="155" label="IMAGE_WRITER_PRIVATE_ON_WRITE_ERROR"/>
+  <int value="156" label="IMAGE_WRITER_PRIVATE_ON_WRITE_PROGRESS"/>
+  <int value="157" label="INPUT_IME_ON_ACTIVATE"/>
+  <int value="158" label="INPUT_IME_ON_BLUR"/>
+  <int value="159" label="INPUT_IME_ON_CANDIDATE_CLICKED"/>
+  <int value="160" label="INPUT_IME_ON_DEACTIVATED"/>
+  <int value="161" label="INPUT_IME_ON_FOCUS"/>
+  <int value="162" label="INPUT_IME_ON_INPUT_CONTEXT_UPDATE"/>
+  <int value="163" label="INPUT_IME_ON_KEY_EVENT"/>
+  <int value="164" label="INPUT_IME_ON_MENU_ITEM_ACTIVATED"/>
+  <int value="165" label="INPUT_IME_ON_RESET"/>
+  <int value="166" label="INPUT_IME_ON_SURROUNDING_TEXT_CHANGED"/>
+  <int value="167" label="INPUT_METHOD_PRIVATE_ON_CHANGED"/>
+  <int value="168" label="INPUT_METHOD_PRIVATE_ON_COMPOSITION_BOUNDS_CHANGED"/>
+  <int value="169" label="INPUT_METHOD_PRIVATE_ON_DICTIONARY_CHANGED"/>
+  <int value="170" label="INPUT_METHOD_PRIVATE_ON_DICTIONARY_LOADED"/>
+  <int value="171" label="INSTANCE_ID_ON_TOKEN_REFRESH"/>
+  <int value="172" label="DELETED_LOCATION_ON_LOCATION_ERROR"/>
+  <int value="173" label="DELETED_LOCATION_ON_LOCATION_UPDATE"/>
+  <int value="174" label="DELETED_LOG_PRIVATE_ON_CAPTURED_EVENTS"/>
+  <int value="175" label="MANAGEMENT_ON_DISABLED"/>
+  <int value="176" label="MANAGEMENT_ON_ENABLED"/>
+  <int value="177" label="MANAGEMENT_ON_INSTALLED"/>
+  <int value="178" label="MANAGEMENT_ON_UNINSTALLED"/>
+  <int value="179" label="MDNS_ON_SERVICE_LIST"/>
+  <int value="180" label="MEDIA_GALLERIES_ON_GALLERY_CHANGED"/>
+  <int value="181" label="MEDIA_GALLERIES_ON_SCAN_PROGRESS"/>
+  <int value="182" label="MEDIA_PLAYER_PRIVATE_ON_NEXT_TRACK"/>
+  <int value="183" label="MEDIA_PLAYER_PRIVATE_ON_PREV_TRACK"/>
+  <int value="184" label="MEDIA_PLAYER_PRIVATE_ON_TOGGLE_PLAY_STATE"/>
+  <int value="185"
+      label="DELETED_NETWORKING_CONFIG_ON_CAPTIVE_PORTAL_DETECTED"/>
+  <int value="186" label="NETWORKING_PRIVATE_ON_DEVICE_STATE_LIST_CHANGED"/>
+  <int value="187" label="NETWORKING_PRIVATE_ON_NETWORK_LIST_CHANGED"/>
+  <int value="188" label="NETWORKING_PRIVATE_ON_NETWORKS_CHANGED"/>
+  <int value="189" label="NETWORKING_PRIVATE_ON_PORTAL_DETECTION_COMPLETED"/>
+  <int value="190" label="DELETED_NOTIFICATION_PROVIDER_ON_CLEARED"/>
+  <int value="191" label="DELETED_NOTIFICATION_PROVIDER_ON_CREATED"/>
+  <int value="192" label="DELETED_NOTIFICATION_PROVIDER_ON_UPDATED"/>
+  <int value="193" label="NOTIFICATIONS_ON_BUTTON_CLICKED"/>
+  <int value="194" label="NOTIFICATIONS_ON_CLICKED"/>
+  <int value="195" label="NOTIFICATIONS_ON_CLOSED"/>
+  <int value="196" label="NOTIFICATIONS_ON_PERMISSION_LEVEL_CHANGED"/>
+  <int value="197" label="NOTIFICATIONS_ON_SHOW_SETTINGS"/>
+  <int value="198" label="OMNIBOX_ON_INPUT_CANCELLED"/>
+  <int value="199" label="OMNIBOX_ON_INPUT_CHANGED"/>
+  <int value="200" label="OMNIBOX_ON_INPUT_ENTERED"/>
+  <int value="201" label="OMNIBOX_ON_INPUT_STARTED"/>
+  <int value="202" label="PAGE_ACTION_ON_CLICKED"/>
+  <int value="203"
+      label="PASSWORDS_PRIVATE_ON_PASSWORD_EXCEPTIONS_LIST_CHANGED"/>
+  <int value="204" label="PASSWORDS_PRIVATE_ON_PLAINTEXT_PASSWORD_RETRIEVED"/>
+  <int value="205" label="PASSWORDS_PRIVATE_ON_SAVED_PASSWORDS_LIST_CHANGED"/>
+  <int value="206" label="PERMISSIONS_ON_ADDED"/>
+  <int value="207" label="PERMISSIONS_ON_REMOVED"/>
+  <int value="208" label="PRINTER_PROVIDER_ON_GET_CAPABILITY_REQUESTED"/>
+  <int value="209" label="PRINTER_PROVIDER_ON_GET_PRINTERS_REQUESTED"/>
+  <int value="210" label="PRINTER_PROVIDER_ON_GET_USB_PRINTER_INFO_REQUESTED"/>
+  <int value="211" label="PRINTER_PROVIDER_ON_PRINT_REQUESTED"/>
+  <int value="212" label="PROCESSES_ON_CREATED"/>
+  <int value="213" label="PROCESSES_ON_EXITED"/>
+  <int value="214" label="PROCESSES_ON_UNRESPONSIVE"/>
+  <int value="215" label="PROCESSES_ON_UPDATED"/>
+  <int value="216" label="PROCESSES_ON_UPDATED_WITH_MEMORY"/>
+  <int value="217" label="PROXY_ON_PROXY_ERROR"/>
+  <int value="218" label="RUNTIME_ON_BROWSER_UPDATE_AVAILABLE"/>
+  <int value="219" label="RUNTIME_ON_CONNECT"/>
+  <int value="220" label="RUNTIME_ON_CONNECT_EXTERNAL"/>
+  <int value="221" label="RUNTIME_ON_INSTALLED"/>
+  <int value="222" label="RUNTIME_ON_MESSAGE"/>
+  <int value="223" label="RUNTIME_ON_MESSAGE_EXTERNAL"/>
+  <int value="224" label="RUNTIME_ON_RESTART_REQUIRED"/>
+  <int value="225" label="RUNTIME_ON_STARTUP"/>
+  <int value="226" label="RUNTIME_ON_SUSPEND"/>
+  <int value="227" label="RUNTIME_ON_SUSPEND_CANCELED"/>
+  <int value="228" label="RUNTIME_ON_UPDATE_AVAILABLE"/>
+  <int value="229" label="SEARCH_ENGINES_PRIVATE_ON_SEARCH_ENGINES_CHANGED"/>
+  <int value="230" label="SERIAL_ON_RECEIVE"/>
+  <int value="231" label="SERIAL_ON_RECEIVE_ERROR"/>
+  <int value="232" label="SESSIONS_ON_CHANGED"/>
+  <int value="233" label="SETTINGS_PRIVATE_ON_PREFS_CHANGED"/>
+  <int value="234" label="DELETED_SIGNED_IN_DEVICES_ON_DEVICE_INFO_CHANGE"/>
+  <int value="235" label="SOCKETS_TCP_ON_RECEIVE"/>
+  <int value="236" label="SOCKETS_TCP_ON_RECEIVE_ERROR"/>
+  <int value="237" label="SOCKETS_TCP_SERVER_ON_ACCEPT"/>
+  <int value="238" label="SOCKETS_TCP_SERVER_ON_ACCEPT_ERROR"/>
+  <int value="239" label="SOCKETS_UDP_ON_RECEIVE"/>
+  <int value="240" label="SOCKETS_UDP_ON_RECEIVE_ERROR"/>
+  <int value="241" label="STORAGE_ON_CHANGED"/>
+  <int value="242"
+      label="DELETED_STREAMS_PRIVATE_ON_EXECUTE_MIME_TYPE_HANDLER"/>
+  <int value="243" label="SYNC_FILE_SYSTEM_ON_FILE_STATUS_CHANGED"/>
+  <int value="244" label="SYNC_FILE_SYSTEM_ON_SERVICE_STATUS_CHANGED"/>
+  <int value="245" label="SYSTEM_DISPLAY_ON_DISPLAY_CHANGED"/>
+  <int value="246" label="SYSTEM_INDICATOR_ON_CLICKED"/>
+  <int value="247" label="SYSTEM_PRIVATE_ON_BRIGHTNESS_CHANGED"/>
+  <int value="248" label="SYSTEM_PRIVATE_ON_SCREEN_UNLOCKED"/>
+  <int value="249" label="SYSTEM_PRIVATE_ON_VOLUME_CHANGED"/>
+  <int value="250" label="SYSTEM_PRIVATE_ON_WOKE_UP"/>
+  <int value="251" label="SYSTEM_STORAGE_ON_ATTACHED"/>
+  <int value="252" label="SYSTEM_STORAGE_ON_DETACHED"/>
+  <int value="253" label="TAB_CAPTURE_ON_STATUS_CHANGED"/>
+  <int value="254" label="TABS_ON_ACTIVATED"/>
+  <int value="255" label="TABS_ON_ACTIVE_CHANGED"/>
+  <int value="256" label="TABS_ON_ATTACHED"/>
+  <int value="257" label="TABS_ON_CREATED"/>
+  <int value="258" label="TABS_ON_DETACHED"/>
+  <int value="259" label="TABS_ON_HIGHLIGHT_CHANGED"/>
+  <int value="260" label="TABS_ON_HIGHLIGHTED"/>
+  <int value="261" label="TABS_ON_MOVED"/>
+  <int value="262" label="TABS_ON_REMOVED"/>
+  <int value="263" label="TABS_ON_REPLACED"/>
+  <int value="264" label="TABS_ON_SELECTION_CHANGED"/>
+  <int value="265" label="TABS_ON_UPDATED"/>
+  <int value="266" label="TABS_ON_ZOOM_CHANGE"/>
+  <int value="267" label="TERMINAL_PRIVATE_ON_PROCESS_OUTPUT"/>
+  <int value="268" label="TEST_ON_MESSAGE"/>
+  <int value="269" label="TTS_ENGINE_ON_PAUSE"/>
+  <int value="270" label="TTS_ENGINE_ON_RESUME"/>
+  <int value="271" label="TTS_ENGINE_ON_SPEAK"/>
+  <int value="272" label="TTS_ENGINE_ON_STOP"/>
+  <int value="273" label="USB_ON_DEVICE_ADDED"/>
+  <int value="274" label="USB_ON_DEVICE_REMOVED"/>
+  <int value="275" label="VIRTUAL_KEYBOARD_PRIVATE_ON_BOUNDS_CHANGED"/>
+  <int value="276" label="VIRTUAL_KEYBOARD_PRIVATE_ON_TEXT_INPUT_BOX_FOCUSED"/>
+  <int value="277" label="VPN_PROVIDER_ON_CONFIG_CREATED"/>
+  <int value="278" label="VPN_PROVIDER_ON_CONFIG_REMOVED"/>
+  <int value="279" label="VPN_PROVIDER_ON_PACKET_RECEIVED"/>
+  <int value="280" label="VPN_PROVIDER_ON_PLATFORM_MESSAGE"/>
+  <int value="281" label="VPN_PROVIDER_ON_UI_EVENT"/>
+  <int value="282"
+      label="DELETED_WALLPAPER_PRIVATE_ON_WALLPAPER_CHANGED_BY_3RD_PARTY"/>
+  <int value="283" label="WEB_NAVIGATION_ON_BEFORE_NAVIGATE"/>
+  <int value="284" label="WEB_NAVIGATION_ON_COMMITTED"/>
+  <int value="285" label="WEB_NAVIGATION_ON_COMPLETED"/>
+  <int value="286" label="WEB_NAVIGATION_ON_CREATED_NAVIGATION_TARGET"/>
+  <int value="287" label="WEB_NAVIGATION_ON_DOM_CONTENT_LOADED"/>
+  <int value="288" label="WEB_NAVIGATION_ON_ERROR_OCCURRED"/>
+  <int value="289" label="WEB_NAVIGATION_ON_HISTORY_STATE_UPDATED"/>
+  <int value="290" label="WEB_NAVIGATION_ON_REFERENCE_FRAGMENT_UPDATED"/>
+  <int value="291" label="WEB_NAVIGATION_ON_TAB_REPLACED"/>
+  <int value="292" label="WEB_REQUEST_ON_AUTH_REQUIRED"/>
+  <int value="293" label="WEB_REQUEST_ON_BEFORE_REDIRECT"/>
+  <int value="294" label="WEB_REQUEST_ON_BEFORE_REQUEST"/>
+  <int value="295" label="WEB_REQUEST_ON_BEFORE_SEND_HEADERS"/>
+  <int value="296" label="WEB_REQUEST_ON_COMPLETED"/>
+  <int value="297" label="WEB_REQUEST_ON_ERROR_OCCURRED"/>
+  <int value="298" label="WEB_REQUEST_ON_HEADERS_RECEIVED"/>
+  <int value="299" label="WEB_REQUEST_ON_RESPONSE_STARTED"/>
+  <int value="300" label="WEB_REQUEST_ON_SEND_HEADERS"/>
+  <int value="301" label="WEBRTC_AUDIO_PRIVATE_ON_SINKS_CHANGED"/>
+  <int value="302" label="WEBSTORE_ON_DOWNLOAD_PROGRESS"/>
+  <int value="303" label="WEBSTORE_ON_INSTALL_STAGE_CHANGED"/>
+  <int value="304" label="DELETED_WEBSTORE_WIDGET_PRIVATE_ON_SHOW_WIDGET"/>
+  <int value="305" label="WEBVIEW_TAG_CLOSE"/>
+  <int value="306" label="WEBVIEW_TAG_CONSOLEMESSAGE"/>
+  <int value="307" label="WEBVIEW_TAG_CONTENTLOAD"/>
+  <int value="308" label="WEBVIEW_TAG_DIALOG"/>
+  <int value="309" label="WEBVIEW_TAG_EXIT"/>
+  <int value="310" label="WEBVIEW_TAG_FINDUPDATE"/>
+  <int value="311" label="WEBVIEW_TAG_LOADABORT"/>
+  <int value="312" label="WEBVIEW_TAG_LOADCOMMIT"/>
+  <int value="313" label="WEBVIEW_TAG_LOADREDIRECT"/>
+  <int value="314" label="WEBVIEW_TAG_LOADSTART"/>
+  <int value="315" label="WEBVIEW_TAG_LOADSTOP"/>
+  <int value="316" label="WEBVIEW_TAG_NEWWINDOW"/>
+  <int value="317" label="WEBVIEW_TAG_PERMISSIONREQUEST"/>
+  <int value="318" label="WEBVIEW_TAG_RESPONSIVE"/>
+  <int value="319" label="WEBVIEW_TAG_SIZECHANGED"/>
+  <int value="320" label="WEBVIEW_TAG_UNRESPONSIVE"/>
+  <int value="321" label="WEBVIEW_TAG_ZOOMCHANGE"/>
+  <int value="322" label="WINDOWS_ON_CREATED"/>
+  <int value="323" label="WINDOWS_ON_FOCUS_CHANGED"/>
+  <int value="324" label="WINDOWS_ON_REMOVED"/>
+  <int value="325" label="FILE_SYSTEM_PROVIDER_ON_EXECUTE_ACTION_REQUESTED"/>
+  <int value="326" label="FILE_SYSTEM_PROVIDER_ON_GET_ACTIONS_REQUESTED"/>
+  <int value="327" label="DELETED_LAUNCHER_SEARCH_PROVIDER_ON_QUERY_STARTED"/>
+  <int value="328" label="DELETED_LAUNCHER_SEARCH_PROVIDER_ON_QUERY_ENDED"/>
+  <int value="329" label="DELETED_LAUNCHER_SEARCH_PROVIDER_ON_OPEN_RESULT"/>
+  <int value="330" label="CHROME_WEB_VIEW_INTERNAL_ON_CLICKED"/>
+  <int value="331" label="WEB_VIEW_INTERNAL_CONTEXT_MENUS"/>
+  <int value="332" label="CONTEXT_MENUS"/>
+  <int value="333" label="TTS_ON_EVENT"/>
+  <int value="334" label="LAUNCHER_PAGE_ON_TRANSITION_CHANGED_DEPRECATED"/>
+  <int value="335" label="LAUNCHER_PAGE_ON_POP_SUBPAGE_DEPRECATED"/>
+  <int value="336" label="DIAL_ON_DEVICE_LIST"/>
+  <int value="337" label="DIAL_ON_ERROR"/>
+  <int value="338" label="CAST_CHANNEL_ON_MESSAGE"/>
+  <int value="339" label="CAST_CHANNEL_ON_ERROR"/>
+  <int value="340" label="DELETED_SCREENLOCK_PRIVATE_ON_CHANGED"/>
+  <int value="341" label="DELETED_SCREENLOCK_PRIVATE_ON_AUTH_ATTEMPTED"/>
+  <int value="342" label="TYPES_CHROME_SETTING_ON_CHANGE"/>
+  <int value="343"
+      label="DELETED_TYPES_PRIVATE_CHROME_DIRECT_SETTING_ON_CHANGE"/>
+  <int value="344" label="WEB_VIEW_INTERNAL_ON_MESSAGE"/>
+  <int value="345" label="DELETED_EXTENSION_VIEW_INTERNAL_ON_LOAD_COMMIT"/>
+  <int value="346" label="RUNTIME_ON_REQUEST"/>
+  <int value="347" label="RUNTIME_ON_REQUEST_EXTERNAL"/>
+  <int value="348" label="CHROME_WEB_VIEW_INTERNAL_ON_CONTEXT_MENU_SHOW"/>
+  <int value="349" label="WEB_VIEW_INTERNAL_ON_BEFORE_REQUEST"/>
+  <int value="350" label="WEB_VIEW_INTERNAL_ON_BEFORE_SEND_HEADERS"/>
+  <int value="351" label="WEB_VIEW_INTERNAL_ON_CLOSE"/>
+  <int value="352" label="WEB_VIEW_INTERNAL_ON_COMPLETED"/>
+  <int value="353" label="WEB_VIEW_INTERNAL_ON_CONSOLE_MESSAGE"/>
+  <int value="354" label="WEB_VIEW_INTERNAL_ON_CONTENT_LOAD"/>
+  <int value="355" label="WEB_VIEW_INTERNAL_ON_DIALOG"/>
+  <int value="356" label="DELETED_WEB_VIEW_INTERNAL_ON_DROP_LINK"/>
+  <int value="357" label="WEB_VIEW_INTERNAL_ON_EXIT"/>
+  <int value="358" label="WEB_VIEW_INTERNAL_ON_EXIT_FULLSCREEN"/>
+  <int value="359" label="WEB_VIEW_INTERNAL_ON_FIND_REPLY"/>
+  <int value="360" label="WEB_VIEW_INTERNAL_ON_FRAME_NAME_CHANGED"/>
+  <int value="361" label="WEB_VIEW_INTERNAL_ON_HEADERS_RECEIVED"/>
+  <int value="362" label="WEB_VIEW_INTERNAL_ON_LOAD_ABORT"/>
+  <int value="363" label="WEB_VIEW_INTERNAL_ON_LOAD_COMMIT"/>
+  <int value="364" label="WEB_VIEW_INTERNAL_ON_LOAD_PROGRESS"/>
+  <int value="365" label="WEB_VIEW_INTERNAL_ON_LOAD_REDIRECT"/>
+  <int value="366" label="WEB_VIEW_INTERNAL_ON_LOAD_START"/>
+  <int value="367" label="WEB_VIEW_INTERNAL_ON_LOAD_STOP"/>
+  <int value="368" label="WEB_VIEW_INTERNAL_ON_NEW_WINDOW"/>
+  <int value="369" label="WEB_VIEW_INTERNAL_ON_PERMISSION_REQUEST"/>
+  <int value="370" label="WEB_VIEW_INTERNAL_ON_RESPONSE_STARTED"/>
+  <int value="371" label="WEB_VIEW_INTERNAL_ON_RESPONSIVE"/>
+  <int value="372" label="WEB_VIEW_INTERNAL_ON_SIZE_CHANGED"/>
+  <int value="373" label="WEB_VIEW_INTERNAL_ON_UNRESPONSIVE"/>
+  <int value="374" label="WEB_VIEW_INTERNAL_ON_ZOOM_CHANGE"/>
+  <int value="375" label="GUEST_VIEW_INTERNAL_ON_RESIZE"/>
+  <int value="376" label="LANGUAGE_SETTINGS_PRIVATE_ON_INPUT_METHOD_ADDED"/>
+  <int value="377" label="LANGUAGE_SETTINGS_PRIVATE_ON_INPUT_METHOD_REMOVED"/>
+  <int value="378"
+      label="LANGUAGE_SETTINGS_PRIVATE_ON_SPELLCHECK_DICTIONARIES_CHANGED"/>
+  <int value="379"
+      label="LANGUAGE_SETTINGS_PRIVATE_ON_CUSTOM_DICTIONARY_CHANGED"/>
+  <int value="380" label="CAST_DEVICES_PRIVATE_ON_UPDATE_DEVICES_REQUESTED"/>
+  <int value="381" label="CAST_DEVICES_PRIVATE_ON_START_CAST"/>
+  <int value="382" label="CAST_DEVICES_PRIVATE_ON_STOP_CAST"/>
+  <int value="383" label="CERTIFICATEPROVIDER_ON_CERTIFICATES_REQUESTED"/>
+  <int value="384" label="CERTIFICATEPROVIDER_ON_SIGN_DIGEST_REQUESTED"/>
+  <int value="385" label="WEB_VIEW_INTERNAL_ON_AUTH_REQUIRED"/>
+  <int value="386" label="WEB_VIEW_INTERNAL_ON_BEFORE_REDIRECT"/>
+  <int value="387" label="WEB_VIEW_INTERNAL_ON_ERROR_OCCURRED"/>
+  <int value="388" label="WEB_VIEW_INTERNAL_ON_SEND_HEADERS"/>
+  <int value="389"
+      label="DELETED_EASY_UNLOCK_PRIVATE_ON_CONNECTION_STATUS_CHANGED"/>
+  <int value="390" label="DELETED_EASY_UNLOCK_PRIVATE_ON_DATA_RECEIVED"/>
+  <int value="391" label="DELETED_EASY_UNLOCK_PRIVATE_ON_SEND_COMPLETED"/>
+  <int value="392" label="DELETED_DISPLAY_SOURCE_ON_SINKS_UPDATED"/>
+  <int value="393" label="INPUT_IME_ON_COMPOSITION_BOUNDS_CHANGED"/>
+  <int value="394" label="INPUT_METHOD_PRIVATE_ON_IME_MENU_ACTIVATION_CHANGED"/>
+  <int value="395" label="INPUT_METHOD_PRIVATE_ON_IME_MENU_LIST_CHANGED"/>
+  <int value="396" label="INPUT_METHOD_PRIVATE_ON_IME_MENU_ITEMS_CHANGED"/>
+  <int value="397" label="BLUETOOTH_LOW_ENERGY_ON_CHARACTERISTIC_READ_REQUEST"/>
+  <int value="398"
+      label="BLUETOOTH_LOW_ENERGY_ON_CHARACTERISTIC_WRITE_REQUEST"/>
+  <int value="399" label="BLUETOOTH_LOW_ENERGY_ON_DESCRIPTOR_READ_REQUEST"/>
+  <int value="400" label="BLUETOOTH_LOW_ENERGY_ON_DESCRIPTOR_WRITE_REQUEST"/>
+  <int value="401" label="ACCESSIBILITY_PRIVATE_ON_ACCESSIBILITY_GESTURE"/>
+  <int value="402" label="QUICK_UNLOCK_PRIVATE_ON_ACTIVE_MODES_CHANGED"/>
+  <int value="403" label="CLIPBOARD_ON_CLIPBOARD_DATA_CHANGED"/>
+  <int value="404" label="VIRTUAL_KEYBOARD_PRIVATE_ON_KEYBOARD_CLOSED"/>
+  <int value="405" label="FILE_MANAGER_PRIVATE_ON_APPS_UPDATED"/>
+  <int value="406" label="ACCESSIBILITY_PRIVATE_ON_TWO_FINGER_TOUCH_START"/>
+  <int value="407" label="ACCESSIBILITY_PRIVATE_ON_TWO_FINGER_TOUCH_STOP"/>
+  <int value="408" label="MEDIA_PERCEPTION_PRIVATE_ON_MEDIA_PERCEPTION"/>
+  <int value="409" label="NETWORKING_PRIVATE_ON_CERTIFICATE_LISTS_CHANGED"/>
+  <int value="410" label="LOCK_SCREEN_DATA_ON_DATA_ITEMS_AVAILABLE"/>
+  <int value="411" label="WEB_VIEW_INTERNAL_ON_AUDIO_STATE_CHANGED"/>
+  <int value="412" label="AUTOMATION_INTERNAL_ON_ACTION_RESULT"/>
+  <int value="413" label="OMNIBOX_ON_DELETE_SUGGESTION"/>
+  <int value="414" label="VIRTUAL_KEYBOARD_PRIVATE_ON_KEYBOARD_CONFIG_CHANGED"/>
+  <int value="415" label="PASSWORDS_PRIVATE_ON_PASSWORDS_FILE_EXPORT_PROGRESS"/>
+  <int value="416"
+      label="SAFE_BROWSING_PRIVATE_ON_POLICY_SPECIFIED_PASSWORD_REUSE_DETECTED"/>
+  <int value="417"
+      label="SAFE_BROWSING_PRIVATE_ON_POLICY_SPECIFIED_PASSWORD_CHANGED"/>
+  <int value="418" label="SAFE_BROWSING_PRIVATE_ON_DANGEROUS_DOWNLOAD_OPENED"/>
+  <int value="419"
+      label="SAFE_BROWSING_PRIVATE_ON_SECURITY_INTERSTITIAL_SHOWN"/>
+  <int value="420"
+      label="SAFE_BROWSING_PRIVATE_ON_SECURITY_INTERSTITIAL_PROCEEDED"/>
+  <int value="421"
+      label="ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_STATE_CHANGE_REQUESTED"/>
+  <int value="422" label="INPUT_METHOD_PRIVATE_ON_FOCUS"/>
+  <int value="423" label="DELETED_SYSTEM_POWER_SOURCE_ONPOWERCHANGED"/>
+  <int value="424" label="WEB_REQUEST_ON_ACTION_IGNORED"/>
+  <int value="425" label="ARC_APPS_PRIVATE_ON_INSTALLED"/>
+  <int value="426" label="FILE_MANAGER_PRIVATE_ON_CROSTINI_CHANGED"/>
+  <int value="427" label="AUTOMATION_INTERNAL_ON_GET_TEXT_LOCATION_RESULT"/>
+  <int value="428" label="INPUT_METHOD_PRIVATE_ON_SETTINGS_CHANGED"/>
+  <int value="429" label="INPUT_METHOD_PRIVATE_ON_SCREEN_PROJECTION_CHANGED"/>
+  <int value="430" label="STORAGE_LOCAL_ON_CHANGE"/>
+  <int value="431" label="STORAGE_SYNC_ON_CHANGE"/>
+  <int value="432" label="STORAGE_MANAGED_ON_CHANGE"/>
+  <int value="433"
+      label="AUTOFILL_PRIVATE_ON_LOCAL_CREDIT_CARD_LIST_CHANGED_DEPRECATED"/>
+  <int value="434"
+      label="AUTOFILL_PRIVATE_ON_SERVER_CREDIT_CARD_LIST_CHANGED_DEPRECATED"/>
+  <int value="435" label="ACCESSIBILITY_PRIVATE_ON_ANNOUNCE_FOR_ACCESSIBILITY"/>
+  <int value="436" label="MIME_HANDLER_PRIVATE_SAVE"/>
+  <int value="437" label="RUNTIME_ON_CONNECT_NATIVE"/>
+  <int value="438" label="ACTION_ON_CLICKED"/>
+  <int value="439" label="ACCESSIBILITY_PRIVATE_ON_SWITCH_ACCESS_COMMAND"/>
+  <int value="440"
+      label="ACCESSIBILITY_PRIVATE_FIND_SCROLLABLE_BOUNDS_FOR_POINT"/>
+  <int value="441" label="LOGIN_STATE_ON_SESSION_STATE_CHANGED"/>
+  <int value="442" label="PRINTING_METRICS_ON_PRINT_JOB_FINISHED"/>
+  <int value="443" label="AUTOTESTPRIVATE_ON_CLIPBOARD_DATA_CHANGED"/>
+  <int value="444" label="AUTOFILL_PRIVATE_ON_PERSONAL_DATA_CHANGED"/>
+  <int value="445" label="PRINTING_ON_JOB_STATUS_CHANGED"/>
+  <int value="446" label="DECLARATIVE_NET_REQUEST_ON_RULE_MATCHED_DEBUG"/>
+  <int value="447" label="TERMINAL_PRIVATE_ON_SETTINGS_CHANGED"/>
+  <int value="448"
+      label="DELETED_AUTOFILL_ASSISTANT_PRIVATE_ON_ACTIONS_CHANGED"/>
+  <int value="449"
+      label="DELETED_AUTOFILL_ASSISTANT_PRIVATE_ON_STATUS_MESSAGE_CHANGED"/>
+  <int value="450" label="BLUETOOTH_PRIVATE_ON_DEVICE_ADDRESS_CHANGED"/>
+  <int value="451"
+      label="PASSWORDS_PRIVATE_ON_ACCOUNT_STORAGE_OPT_IN_STATE_CHANGED"/>
+  <int value="452"
+      label="ACCESSIBILITY_PRIVATE_ON_CUSTOM_SPOKEN_FEEDBACK_TOGGLED"/>
+  <int value="453"
+      label="DELETED_PASSWORDS_PRIVATE_ON_COMPROMISED_CREDENTIALS_INFO_CHANGED"/>
+  <int value="454" label="TERMINAL_PRIVATE_ON_A11Y_STATUS_CHANGED"/>
+  <int value="455" label="PASSWORDS_PRIVATE_ON_PASSWORD_CHECK_STATUS_CHANGED"/>
+  <int value="456" label="INPUT_IME_ON_ASSISTIVE_WINDOW_BUTTON_CLICKED"/>
+  <int value="457" label="INPUT_IME_ON_SUGGESTIONS_CHANGED"/>
+  <int value="458" label="INPUT_IME_ON_INPUT_METHOD_OPTIONS_CHANGED"/>
+  <int value="459"
+      label="CERTIFICATEPROVIDER_ON_CERTIFICATES_UPDATE_REQUESTED"/>
+  <int value="460" label="CERTIFICATEPROVIDER_ON_SIGNATURE_REQUESTED"/>
+  <int value="461" label="WINDOWS_ON_BOUNDS_CHANGED"/>
+  <int value="462"
+      label="DELETED_WALLPAPER_PRIVATE_ON_CLOSE_PREVIEW_WALLPAPER"/>
+  <int value="463"
+      label="DELETED_PASSWORDS_PRIVATE_ON_WEAK_CREDENTIALS_CHANGED"/>
+  <int value="464" label="ACCESSIBILITY_PRIVATE_ON_MAGNIFIER_BOUNDS_CHANGED"/>
+  <int value="465" label="FILE_MANAGER_PRIVATE_ON_PIN_TRANSFERS_UPDATED"/>
+  <int value="466" label="ACCESSIBILITY_PRIVATE_ON_POINT_SCAN_SET"/>
+  <int value="467"
+      label="ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_PANEL_ACTION"/>
+  <int value="468" label="FILE_MANAGER_PRIVATE_ON_TABLET_MODE_CHANGED"/>
+  <int value="469"
+      label="VIRTUAL_KEYBOARD_PRIVATE_ON_CLIPBOARD_HISTORY_CHANGED"/>
+  <int value="470" label="VIRTUAL_KEYBOARD_PRIVATE_ON_CLIPBOARD_ITEM_UPDATED"/>
+  <int value="471" label="TAB_GROUPS_ON_CREATED"/>
+  <int value="472" label="TAB_GROUPS_ON_MOVED"/>
+  <int value="473" label="TAB_GROUPS_ON_REMOVED"/>
+  <int value="474" label="TAB_GROUPS_ON_UPDATED"/>
+  <int value="475" label="FILE_MANAGER_PRIVATE_ON_DRIVE_CONFIRM_DIALOG"/>
+  <int value="476" label="TTS_ENGINE_ON_SPEAK_WITH_AUDIO_STREAM"/>
+  <int value="477" label="ACCESSIBILITY_PRIVATE_ON_SHOW_CHROMEVOX_TUTORIAL"/>
+  <int value="478" label="STORAGE_SESSION_ON_CHANGE"/>
+  <int value="479" label="ACCESSIBILITY_PRIVATE_ON_TOGGLE_DICTATION"/>
+  <int value="480" label="WEB_AUTHENTICATION_PROXY_ON_ISUVPAA_REQUEST"/>
+  <int value="481" label="SPEECH_RECOGNITION_PRIVATE_ON_STOP"/>
+  <int value="482" label="SPEECH_RECOGNITION_PRIVATE_ON_RESULT"/>
+  <int value="483" label="SPEECH_RECOGNITION_PRIVATE_ON_ERROR"/>
+  <int value="484" label="FILE_MANAGER_PRIVATE_ON_IO_TASK_PROGRESS_STATUS"/>
+  <int value="485" label="INPUT_METHOD_PRIVATE_ON_TOUCH"/>
+  <int value="486" label="WEB_AUTHENTICATION_PROXY_ON_CREATE_REQUEST"/>
+  <int value="487" label="WEB_AUTHENTICATION_PROXY_REQUEST_CANCELLED"/>
+  <int value="488" label="WEB_AUTHENTICATION_PROXY_ON_GET_REQUEST"/>
+  <int value="489" label="DEVELOPER_PRIVATE_ON_USER_SITE_SETTINGS_CHANGED"/>
+  <int value="490" label="TERMINAL_PRIVATE_ON_PREF_CHANGED"/>
+  <int value="491"
+      label="WEB_AUTHENTICATION_PROXY_ON_REMOTE_SESSION_STATE_CHANGE"/>
+  <int value="492" label="LOGIN_ON_REQUEST_EXTERNAL_LOGOUT"/>
+  <int value="493" label="LOGIN_ON_EXTERNAL_LOGOUT_DONE"/>
+  <int value="494" label="ACCESSIBILITY_PRIVATE_ON_PUMPKIN_INSTALLED"/>
+  <int value="495" label="ENTERPRISE_REMOTE_APPS_ON_REMOTE_APP_LAUNCHED"/>
+  <int value="496" label="INPUT_METHOD_PRIVATE_ON_CARET_BOUNDS_CHANGED"/>
+  <int value="497" label="PASSWORDS_PRIVATE_ON_PASSWORD_MANAGER_AUTH_TIMEOUT"/>
+  <int value="498" label="PASSWORDS_PRIVATE_ON_INSECURE_CREDENTIALS_CHANGED"/>
+  <int value="499" label="VIRTUAL_KEYBOARD_PRIVATE_ON_COLOR_PROVIDER_CHANGED"/>
+  <int value="500"
+      label="SMART_CARD_PROVIDER_PRIVATE_ON_ESTABLISH_CONTEXT_REQUESTED"/>
+  <int value="501"
+      label="SMART_CARD_PROVIDER_PRIVATE_ON_RELEASE_CONTEXT_REQUESTED"/>
+  <int value="502"
+      label="SMART_CARD_PROVIDER_PRIVATE_ON_LIST_READERS_REQUESTED"/>
+  <int value="503"
+      label="SMART_CARD_PROVIDER_PRIVATE_ON_GET_STATUS_CHANGE_REQUESTED"/>
+  <int value="504" label="PDF_VIEWER_PRIVATE_ON_PDF_OCR_PREF_CHANGED"/>
+  <int value="505" label="SMART_CARD_PROVIDER_PRIVATE_ON_CONNECT_REQUESTED"/>
+  <int value="506" label="SMART_CARD_PROVIDER_PRIVATE_ON_DISCONNECT_REQUESTED"/>
+  <int value="507" label="SMART_CARD_PROVIDER_PRIVATE_ON_CANCEL_REQUESTED"/>
+  <int value="508" label="OS_EVENTS_ON_AUDIO_JACK_EVENT"/>
+  <int value="509"
+      label="ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_KEYS_PRESSED_CHANGED"/>
+  <int value="510"
+      label="ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_MOUSE_CHANGED"/>
+  <int value="511" label="FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS"/>
+  <int value="512" label="OS_EVENTS_ON_LID_EVENT"/>
+  <int value="513" label="OS_EVENTS_ON_USB_EVENT"/>
+  <int value="514" label="OS_EVENTS_ON_SD_CARD_EVENT"/>
+  <int value="515" label="SMART_CARD_PROVIDER_PRIVATE_ON_TRANSMIT_REQUESTED"/>
+  <int value="516" label="SMART_CARD_PROVIDER_PRIVATE_ON_CONTROL_REQUESTED"/>
+  <int value="517" label="OS_EVENTS_ON_POWER_EVENT"/>
+  <int value="518" label="SMART_CARD_PROVIDER_PRIVATE_ON_GET_ATTRIB_REQUESTED"/>
+  <int value="519" label="OS_EVENTS_ON_KEYBOARD_DIAGNOSTIC_EVENT"/>
+  <int value="520" label="DESK_EVENTS_ON_DESK_ADDED"/>
+  <int value="521" label="DESK_EVENTS_ON_DESK_REMOVED"/>
+  <int value="522" label="DESK_EVENTS_ON_DESK_SWITCHED"/>
+  <int value="523" label="SMART_CARD_PROVIDER_PRIVATE_ON_SET_ATTRIB_REQUESTED"/>
+  <int value="524" label="OS_EVENTS_ON_STYLUS_GARAGE_EVENT"/>
+  <int value="525" label="SMART_CARD_PROVIDER_PRIVATE_ON_STATUS_REQUESTED"/>
+  <int value="526" label="OS_EVENTS_ON_TOUCHPAD_BUTTON_EVENT"/>
+  <int value="527" label="OS_EVENTS_ON_TOUCHPAD_TOUCH_EVENT"/>
+  <int value="528" label="OS_EVENTS_ON_TOUCHPAD_CONNECTED_EVENT"/>
+  <int value="529"
+      label="SMART_CARD_PROVIDER_PRIVATE_ON_BEGIN_TRANSACTION_REQUESTED"/>
+  <int value="530"
+      label="SMART_CARD_PROVIDER_PRIVATE_ON_END_TRANSACTION_REQUESTED"/>
+  <int value="531" label="OS_EVENTS_ON_EXTERNAL_DISPLAY_EVENT"/>
+  <int value="532" label="OS_EVENTS_ON_STYLUS_TOUCH_EVENT"/>
+  <int value="533" label="OS_EVENTS_ON_STYLUS_CONNECTED_EVENT"/>
+  <int value="534"
+      label="ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_CONTEXT_MENU_CLICKED"/>
+  <int value="535" label="DESK_EVENTS_ON_DESK_REMOVAL_UNDONE"/>
+  <int value="536" label="READING_LIST_ON_ENTRY_ADDED"/>
+  <int value="537" label="READING_LIST_ON_ENTRY_REMOVED"/>
+  <int value="538" label="READING_LIST_ON_ENTRY_UPDATED"/>
+  <int value="539" label="OS_DIAGNOSTICS_ON_ROUTINE_INITIALIZED"/>
+  <int value="540" label="OS_DIAGNOSTICS_ON_ROUTINE_RUNNING"/>
+  <int value="541" label="OS_DIAGNOSTICS_ON_ROUTINE_WAITING"/>
+  <int value="542" label="OS_DIAGNOSTICS_ON_MEMORY_ROUTINE_FINISHED"/>
+  <int value="543" label="OS_EVENTS_ON_TOUCHSCREEN_TOUCH_EVENT"/>
+  <int value="544" label="OS_EVENTS_ON_TOUCHSCREEN_CONNECTED_EVENT"/>
+  <int value="545"
+      label="FILE_MANAGER_PRIVATE_ON_DEVICE_CONNECTION_STATUS_CHANGED"/>
+  <int value="546" label="OS_DIAGNOSTICS_ON_ROUTINE_EXCEPTION"/>
+  <int value="547"
+      label="ACCESSIBILITY_SERVICE_PRIVATE_CLIPBOARD_COPY_IN_ACTIVE_GOOGLE_DOC"/>
+  <int value="548"
+      label="INPUT_METHOD_PRIVATE_ON_LANGUAGE_PACK_STATUS_CHANGED"/>
+  <int value="549" label="OS_DIAGNOSTICS_ON_VOLUME_BUTTON_ROUTINE_FINISHED"/>
+  <int value="550" label="OS_DIAGNOSTICS_ON_FAN_ROUTINE_FINISHED"/>
+  <int value="551" label="ODFS_CONFIG_PRIVATE_MOUNT_CHANGED"/>
+  <int value="552" label="ODFS_CONFIG_PRIVATE_ACCOUNT_RESTRICTIONS_CHANGED"/>
+  <int value="553" label="PDF_VIEWER_PRIVATE_ON_SAVE"/>
+</enum>
+
+<enum name="ExtensionFromWebstoreInconcistencyEnum">
+  <int value="0" label="Non-webstore update URL"/>
+  <int value="1" label="External install location"/>
+</enum>
+
+<enum name="ExtensionFunctions">
+<!-- Generated from extensions/browser/extension_function_histogram_value.h.
+Called by update_extension_histograms.py.-->
+
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="WEBNAVIGATION_GETALLFRAMES"/>
+  <int value="2" label="BROWSINGDATA_REMOVEWEBSQL"/>
+  <int value="3" label="ALARMS_CREATE"/>
+  <int value="4" label="FILEMANAGERPRIVATEINTERNAL_REMOVEFILEWATCH"/>
+  <int value="5" label="COOKIES_GET"/>
+  <int value="6" label="FONTSETTINGS_GETMINIMUMFONTSIZE"/>
+  <int value="7" label="CHROMEOSINFOPRIVATE_GET"/>
+  <int value="8" label="BOOKMARKMANAGERPRIVATE_CUT"/>
+  <int value="9" label="TABS_CAPTUREVISIBLETAB"/>
+  <int value="10" label="MANAGEMENT_SETENABLED"/>
+  <int value="11" label="HISTORY_DELETEALL"/>
+  <int value="12" label="STORAGE_GET"/>
+  <int value="13" label="SOCKET_SETKEEPALIVE"/>
+  <int value="14" label="DOWNLOADS_CANCEL"/>
+  <int value="15" label="BOOKMARKS_CREATE"/>
+  <int value="16" label="BOOKMARKS_UPDATE"/>
+  <int value="17" label="FILEMANAGERPRIVATE_GETDRIVEFILES"/>
+  <int value="18" label="TERMINALPRIVATE_ONTERMINALRESIZE"/>
+  <int value="19" label="DELETED_FILEMANAGERPRIVATE_REQUESTDIRECTORYREFRESH"/>
+  <int value="20" label="BLUETOOTH_GETADAPTERSTATE"/>
+  <int value="21"
+      label="DELETED_FILEMANAGERPRIVATEINTERNAL_CANCELFILETRANSFERS"/>
+  <int value="22" label="FILEMANAGERPRIVATEINTERNAL_PINDRIVEFILE"/>
+  <int value="23" label="SOCKET_WRITE"/>
+  <int value="24" label="OMNIBOX_SETDEFAULTSUGGESTION"/>
+  <int value="25" label="TTS_SPEAK"/>
+  <int value="26" label="DELETED_WALLPAPERPRIVATE_RESTOREMINIMIZEDWINDOWS"/>
+  <int value="27" label="BROWSINGDATA_REMOVEHISTORY"/>
+  <int value="28" label="DELETED_FILEMANAGERPRIVATE_ISFULLSCREEN"/>
+  <int value="29" label="AUTOTESTPRIVATE_LOGOUT"/>
+  <int value="30" label="EXPERIMENTAL_HISTORY_GETMOSTVISITED"/>
+  <int value="31" label="DELETED_BLUETOOTH_DISCONNECT"/>
+  <int value="32" label="DELETED_BLUETOOTH_SETOUTOFBANDPAIRINGDATA"/>
+  <int value="33" label="BOOKMARKMANAGERPRIVATE_CANPASTE"/>
+  <int value="34" label="AUTOTESTPRIVATE_RESTART"/>
+  <int value="35" label="USB_CLAIMINTERFACE"/>
+  <int value="36" label="MEDIAPLAYERPRIVATE_SETWINDOWHEIGHT"/>
+  <int value="37" label="DELETED_EXPERIMENTAL_PROCESSES_GETPROCESSINFO"/>
+  <int value="38" label="HISTORY_GETVISITS"/>
+  <int value="39" label="SOCKET_BIND"/>
+  <int value="40" label="TABS_MOVE"/>
+  <int value="41" label="SOCKET_DISCONNECT"/>
+  <int value="42" label="FILESYSTEM_GETWRITABLEENTRY"/>
+  <int value="43" label="SYNCFILESYSTEM_REQUESTFILESYSTEM"/>
+  <int value="44" label="COMMANDS_GETALL"/>
+  <int value="45" label="EXPERIMENTAL_DISCOVERY_REMOVESUGGESTION"/>
+  <int value="46" label="VIRTUALKEYBOARDPRIVATE_SENDKEYEVENT"/>
+  <int value="47" label="BOOKMARKMANAGERPRIVATE_GETSUBTREE"/>
+  <int value="48" label="DELETED_EXPERIMENTAL_RLZ_RECORDPRODUCTEVENT"/>
+  <int value="49" label="BOOKMARKS_GETRECENT"/>
+  <int value="50" label="APP_CURRENTWINDOWINTERNAL_SETBOUNDS"/>
+  <int value="51" label="DELETED_CLOUDPRINTPRIVATE_SETUPCONNECTOR"/>
+  <int value="52" label="SERIAL_SETCONTROLSIGNALS"/>
+  <int value="53" label="DELETED_FILEMANAGERPRIVATE_SETLASTMODIFIED"/>
+  <int value="54" label="IDLE_SETDETECTIONINTERVAL"/>
+  <int value="55" label="FILEMANAGERPRIVATEINTERNAL_GETFILETASKS"/>
+  <int value="56" label="WEBSTOREPRIVATE_GETSTORELOGIN"/>
+  <int value="57" label="SYSTEMPRIVATE_GETINCOGNITOMODEAVAILABILITY"/>
+  <int value="58" label="IDLTEST_SENDARRAYBUFFERVIEW"/>
+  <int value="59" label="SOCKET_SETNODELAY"/>
+  <int value="60" label="APP_CURRENTWINDOWINTERNAL_SHOW"/>
+  <int value="61" label="WEBSTOREPRIVATE_GETBROWSERLOGIN"/>
+  <int value="62" label="EXPERIMENTAL_IDENTITY_GETAUTHTOKEN"/>
+  <int value="63" label="DELETED_SYSTEMINFO_DISPLAY_GETDISPLAYINFO"/>
+  <int value="64" label="BROWSINGDATA_REMOVEPLUGINDATA"/>
+  <int value="65" label="SOCKET_LISTEN"/>
+  <int value="66" label="MEDIAGALLERIES_GETMEDIAFILESYSTEMS"/>
+  <int value="67" label="DOWNLOADS_OPEN"/>
+  <int value="68" label="TABS_EXECUTESCRIPT"/>
+  <int value="69" label="SYNCFILESYSTEM_GETUSAGEANDQUOTA"/>
+  <int value="70" label="INPUTMETHODPRIVATE_GET"/>
+  <int value="71" label="USB_CLOSEDEVICE"/>
+  <int value="72" label="TTS_STOP"/>
+  <int value="73" label="DELETED_SERIAL_GETPORTS"/>
+  <int value="74" label="DELETED_FILEMANAGERPRIVATE_CLEARDRIVECACHE"/>
+  <int value="75" label="SERIAL_GETCONTROLSIGNALS"/>
+  <int value="76" label="DELETED_DEVELOPERPRIVATE_ENABLE"/>
+  <int value="77" label="FILEMANAGERPRIVATEINTERNAL_GETENTRYPROPERTIES"/>
+  <int value="78" label="USB_FINDDEVICES"/>
+  <int value="79" label="BOOKMARKMANAGERPRIVATE_DROP"/>
+  <int value="80" label="DELETED_FILEMANAGERPRIVATE_GETFILETRANSFERS"/>
+  <int value="81" label="INPUT_IME_SETMENUITEMS"/>
+  <int value="82" label="DELETED_BOOKMARKS_EXPORT"/>
+  <int value="83" label="HISTORY_SEARCH"/>
+  <int value="84" label="TTSENGINE_SENDTTSEVENT"/>
+  <int value="85" label="ACCESSIBILITY_PRIVATE_GETALERTSFORTAB"/>
+  <int value="86" label="DELETED_BOOKMARKS_IMPORT"/>
+  <int value="87" label="SYNCFILESYSTEM_DELETEFILESYSTEM"/>
+  <int value="88" label="DEBUGGER_SENDCOMMAND"/>
+  <int value="89" label="DEBUGGER_DETACH"/>
+  <int value="90" label="METRICSPRIVATE_RECORDSMALLCOUNT"/>
+  <int value="91" label="APP_CURRENTWINDOWINTERNAL_MINIMIZE"/>
+  <int value="92" label="DEVELOPERPRIVATE_AUTOUPDATE"/>
+  <int value="93" label="DNS_RESOLVE"/>
+  <int value="94" label="DELETED_EXPERIMENTAL_SYSTEMINFO_MEMORY_GET"/>
+  <int value="95" label="HISTORY_ADDURL"/>
+  <int value="96" label="TABS_GET"/>
+  <int value="97" label="BROWSERACTION_SETBADGETEXT"/>
+  <int value="98" label="TABS_RELOAD"/>
+  <int value="99" label="WINDOWS_CREATE"/>
+  <int value="100" label="DEVELOPERPRIVATE_LOADUNPACKED"/>
+  <int value="101" label="DELETED_DOWNLOADS_SETDESTINATION"/>
+  <int value="102" label="DELETED_EXPERIMENTAL_PROCESSES_GETPROCESSIDFORTAB"/>
+  <int value="103" label="BOOKMARKS_GETCHILDREN"/>
+  <int value="104" label="BROWSERACTION_GETTITLE"/>
+  <int value="105" label="TERMINALPRIVATE_OPENTERMINALPROCESS"/>
+  <int value="106" label="DELETED_SERIAL_CLOSE"/>
+  <int value="107" label="CONTEXTMENUS_REMOVE"/>
+  <int value="108" label="FILESYSTEM_REQUESTFILESYSTEM"/>
+  <int value="109" label="ECHOPRIVATE_GETREGISTRATIONCODE"/>
+  <int value="110" label="TABS_GETCURRENT"/>
+  <int value="111" label="FONTSETTINGS_CLEARDEFAULTFIXEDFONTSIZE"/>
+  <int value="112" label="MEDIAPLAYERPRIVATE_CLOSEWINDOW"/>
+  <int value="113" label="WEBREQUESTINTERNAL_ADDEVENTLISTENER"/>
+  <int value="114" label="DELETED_CLOUDPRINTPRIVATE_GETPRINTERS"/>
+  <int value="115" label="STORAGE_SET"/>
+  <int value="116" label="FONTSETTINGS_GETDEFAULTFONTSIZE"/>
+  <int value="117" label="EXTENSION_SETUPDATEURLDATA"/>
+  <int value="118" label="DELETED_SERIAL_WRITE"/>
+  <int value="119" label="IDLE_QUERYSTATE"/>
+  <int value="120" label="DELETED_EXPERIMENTAL_RLZ_GETACCESSPOINTRLZ"/>
+  <int value="121" label="WEBSTOREPRIVATE_SETSTORELOGIN"/>
+  <int value="122" label="DELETED_PAGEACTIONS_ENABLEFORTAB"/>
+  <int value="123" label="COOKIES_SET"/>
+  <int value="124" label="CONTENTSETTINGS_SET"/>
+  <int value="125" label="CONTEXTMENUS_REMOVEALL"/>
+  <int value="126" label="TABS_INSERTCSS"/>
+  <int value="127" label="WEBREQUEST_HANDLERBEHAVIORCHANGED"/>
+  <int value="128" label="INPUT_IME_SETCURSORPOSITION"/>
+  <int value="129" label="OMNIBOX_SENDSUGGESTIONS"/>
+  <int value="130" label="SYSTEMINDICATOR_ENABLE"/>
+  <int value="131" label="EVENTS_GETRULES"/>
+  <int value="132" label="BOOKMARKMANAGERPRIVATE_COPY"/>
+  <int value="133" label="SOCKET_RECVFROM"/>
+  <int value="134" label="TABS_GETALLINWINDOW"/>
+  <int value="135" label="CONTEXTMENUS_UPDATE"/>
+  <int value="136" label="BOOKMARKS_SEARCH"/>
+  <int value="137" label="EXPERIMENTAL_APP_CLEARALLNOTIFICATIONS"/>
+  <int value="138" label="DELETED_BLUETOOTH_GETLOCALOUTOFBANDPAIRINGDATA"/>
+  <int value="139" label="SYSTEMPRIVATE_GETUPDATESTATUS"/>
+  <int value="140" label="FONTSETTINGS_CLEARMINIMUMFONTSIZE"/>
+  <int value="141" label="DELETED_FILEMANAGERPRIVATE_GETFILELOCATIONS"/>
+  <int value="142" label="EXPERIMENTAL_DISCOVERY_SUGGEST"/>
+  <int value="143" label="FILEMANAGERPRIVATEINTERNAL_SETDEFAULTTASK"/>
+  <int value="144" label="BROWSERACTION_GETBADGETEXT"/>
+  <int value="145" label="APP_CURRENTWINDOWINTERNAL_HIDE"/>
+  <int value="146" label="SOCKET_CONNECT"/>
+  <int value="147" label="BOOKMARKS_GETSUBTREE"/>
+  <int value="148" label="HISTORY_DELETEURL"/>
+  <int value="149"
+      label="DELETED_EXPERIMENTAL_MEDIAGALLERIES_ASSEMBLEMEDIAFILE"/>
+  <int value="150" label="BOOKMARKMANAGERPRIVATE_STARTDRAG"/>
+  <int value="151" label="BROWSINGDATA_REMOVEPASSWORDS"/>
+  <int value="152" label="DELETED_DOWNLOADS_DRAG"/>
+  <int value="153" label="INPUT_IME_SETCOMPOSITION"/>
+  <int value="154" label="METRICSPRIVATE_RECORDUSERACTION"/>
+  <int value="155" label="USB_RELEASEINTERFACE"/>
+  <int value="156" label="PAGEACTION_GETPOPUP"/>
+  <int value="157" label="DELETED_SCRIPTBADGE_GETATTENTION"/>
+  <int value="158" label="FONTSETTINGS_GETFONTLIST"/>
+  <int value="159" label="PERMISSIONS_CONTAINS"/>
+  <int value="160" label="DELETED_SCRIPTBADGE_GETPOPUP"/>
+  <int value="161" label="ACCESSIBILITY_PRIVATE_GETFOCUSEDCONTROL"/>
+  <int value="162" label="DEVELOPERPRIVATE_GETSTRINGS"/>
+  <int value="163" label="METRICSPRIVATE_RECORDMEDIUMCOUNT"/>
+  <int value="164" label="MANAGEMENT_GET"/>
+  <int value="165" label="PERMISSIONS_GETALL"/>
+  <int value="166" label="DOWNLOADS_SHOW"/>
+  <int value="167" label="DELETED_EXPERIMENTAL_RLZ_CLEARPRODUCTSTATE"/>
+  <int value="168" label="TABS_REMOVE"/>
+  <int value="169" label="MANAGEMENT_GETPERMISSIONWARNINGSBYID"/>
+  <int value="170" label="WINDOWS_GET"/>
+  <int value="171" label="FILEMANAGERPRIVATEINTERNAL_EXECUTETASK"/>
+  <int value="172" label="TTS_GETVOICES"/>
+  <int value="173" label="MANAGEMENT_GETALL"/>
+  <int value="174" label="MANAGEMENT_GETPERMISSIONWARNINGSBYMANIFEST"/>
+  <int value="175" label="APP_CURRENTWINDOWINTERNAL_CLEARATTENTION"/>
+  <int value="176" label="AUTOTESTPRIVATE_SHUTDOWN"/>
+  <int value="177" label="FONTSETTINGS_CLEARDEFAULTFONTSIZE"/>
+  <int value="178" label="BOOKMARKS_GETTREE"/>
+  <int value="179" label="FILEMANAGERPRIVATE_SELECTFILES"/>
+  <int value="180" label="RUNTIME_GETBACKGROUNDPAGE"/>
+  <int value="181" label="DELETED_EXPERIMENTAL_RECORD_REPLAYURLS"/>
+  <int value="182" label="WEBSTOREPRIVATE_COMPLETEINSTALL"/>
+  <int value="183" label="DELETED_EXPERIMENTAL_SPEECHINPUT_START"/>
+  <int value="184" label="COOKIES_GETALL"/>
+  <int value="185" label="DOWNLOADS_GETFILEICON"/>
+  <int value="186" label="PAGEACTION_GETTITLE"/>
+  <int value="187" label="BROWSINGDATA_REMOVE"/>
+  <int value="188" label="DELETED_SERIAL_OPEN"/>
+  <int value="189" label="FILESYSTEM_GETDISPLAYPATH"/>
+  <int value="190" label="FILEMANAGERPRIVATE_FORMATVOLUME"/>
+  <int value="191" label="BOOKMARKS_GET"/>
+  <int value="192" label="DELETED_MANAGEDMODEPRIVATE_GET"/>
+  <int value="193" label="ALARMS_CLEAR"/>
+  <int value="194" label="SYNCFILESYSTEM_GETFILESYNCSTATUS"/>
+  <int value="195" label="SOCKET_GETINFO"/>
+  <int value="196" label="DELETED_WEBSTOREPRIVATE_INSTALLBUNDLE"/>
+  <int value="197" label="BROWSERACTION_ENABLE"/>
+  <int value="198" label="METRICSPRIVATE_RECORDMEDIUMTIME"/>
+  <int value="199" label="PAGEACTION_SETTITLE"/>
+  <int value="200" label="DELETED_CLOUDPRINTPRIVATE_GETHOSTNAME"/>
+  <int value="201" label="CONTENTSETTINGS_GETRESOURCEIDENTIFIERS"/>
+  <int value="202" label="SOCKET_CREATE"/>
+  <int value="203" label="DEVELOPERPRIVATE_RELOAD"/>
+  <int value="204" label="FILEMANAGERPRIVATE_GETVOLUMEMETADATALIST"/>
+  <int value="205" label="APP_RUNTIME_POSTINTENTRESPONSE"/>
+  <int value="206" label="DELETED_MANAGEDMODEPRIVATE_SETPOLICY"/>
+  <int value="207" label="WEBSTOREPRIVATE_BEGININSTALLWITHMANIFEST3"/>
+  <int value="208" label="DELETED_WALLPAPERPRIVATE_SETWALLPAPER"/>
+  <int value="209" label="USB_CONTROLTRANSFER"/>
+  <int value="210" label="DELETED_EXPERIMENTAL_SPEECHINPUT_STOP"/>
+  <int value="211" label="USB_BULKTRANSFER"/>
+  <int value="212" label="DELETED_FILEMANAGERPRIVATE_GETVOLUMEMETADATA"/>
+  <int value="213" label="PAGECAPTURE_SAVEASMHTML"/>
+  <int value="214" label="EXTENSION_ISALLOWEDINCOGNITOACCESS"/>
+  <int value="215" label="BROWSINGDATA_REMOVEAPPCACHE"/>
+  <int value="216" label="APP_CURRENTWINDOWINTERNAL_DRAWATTENTION"/>
+  <int value="217" label="METRICSPRIVATE_RECORDCOUNT"/>
+  <int value="218" label="USB_INTERRUPTTRANSFER"/>
+  <int value="219" label="TYPES_CHROMESETTING_CLEAR"/>
+  <int value="220" label="INPUT_IME_COMMITTEXT"/>
+  <int value="221" label="IDLTEST_SENDARRAYBUFFER"/>
+  <int value="222" label="DELETED_WALLPAPERPRIVATE_SETWALLPAPERIFEXISTS"/>
+  <int value="223" label="SOCKET_ACCEPT"/>
+  <int value="224" label="WEBNAVIGATION_GETFRAME"/>
+  <int value="225" label="EXPERIMENTAL_POWER_RELEASEKEEPAWAKE"/>
+  <int value="226" label="APP_CURRENTWINDOWINTERNAL_SETICON"/>
+  <int value="227" label="DELETED_PUSHMESSAGING_GETCHANNELID"/>
+  <int value="228" label="DELETED_EXPERIMENTAL_INFOBARS_SHOW"/>
+  <int value="229" label="INPUT_IME_SETCANDIDATEWINDOWPROPERTIES"/>
+  <int value="230" label="METRICSPRIVATE_RECORDPERCENTAGE"/>
+  <int value="231" label="TYPES_CHROMESETTING_GET"/>
+  <int value="232" label="WINDOWS_GETLASTFOCUSED"/>
+  <int value="233" label="DELETED_MANAGEDMODEPRIVATE_GETPOLICY"/>
+  <int value="234" label="STORAGE_CLEAR"/>
+  <int value="235" label="STORAGE_GETBYTESINUSE"/>
+  <int value="236" label="TABS_QUERY"/>
+  <int value="237" label="PAGEACTION_SETPOPUP"/>
+  <int value="238" label="DEVELOPERPRIVATE_INSPECT"/>
+  <int value="239" label="DOWNLOADS_SEARCH"/>
+  <int value="240" label="FONTSETTINGS_CLEARFONT"/>
+  <int value="241" label="WINDOWS_UPDATE"/>
+  <int value="242" label="DELETED_BOOKMARKMANAGERPRIVATE_CANOPENNEWWINDOWS"/>
+  <int value="243" label="SERIAL_FLUSH"/>
+  <int value="244" label="BROWSERACTION_SETTITLE"/>
+  <int value="245" label="BOOKMARKMANAGERPRIVATE_CANEDIT"/>
+  <int value="246" label="DELETED_WALLPAPERPRIVATE_SETCUSTOMWALLPAPER"/>
+  <int value="247" label="BOOKMARKS_REMOVE"/>
+  <int value="248" label="INPUT_IME_SETCANDIDATES"/>
+  <int value="249" label="TERMINALPRIVATE_CLOSETERMINALPROCESS"/>
+  <int value="250" label="HISTORY_DELETERANGE"/>
+  <int value="251" label="IDLTEST_GETARRAYBUFFER"/>
+  <int value="252" label="TERMINALPRIVATE_SENDINPUT"/>
+  <int value="253" label="TABS_HIGHLIGHT"/>
+  <int value="254" label="BLUETOOTH_STARTDISCOVERY"/>
+  <int value="255" label="FILEMANAGERPRIVATE_SELECTFILE"/>
+  <int value="256" label="WINDOWS_GETCURRENT"/>
+  <int value="257" label="DEBUGGER_ATTACH"/>
+  <int value="258" label="DELETED_WALLPAPERPRIVATE_SAVETHUMBNAIL"/>
+  <int value="259" label="INPUT_IME_KEYEVENTHANDLED"/>
+  <int value="260" label="FONTSETTINGS_SETDEFAULTFONTSIZE"/>
+  <int value="261" label="RUNTIME_REQUESTUPDATECHECK"/>
+  <int value="262" label="PAGEACTION_SETICON"/>
+  <int value="263" label="BROWSERACTION_SETBADGEBACKGROUNDCOLOR"/>
+  <int value="264" label="DELETED_DEVELOPERPRIVATE_GETITEMSINFO"/>
+  <int value="265" label="BLUETOOTH_STOPDISCOVERY"/>
+  <int value="266" label="COOKIES_REMOVE"/>
+  <int value="267" label="DELETED_EXPERIMENTAL_RLZ_SENDFINANCIALPING"/>
+  <int value="268" label="TABCAPTURE_GETCAPTUREDTABS"/>
+  <int value="269" label="WINDOWS_REMOVE"/>
+  <int value="270" label="DELETED_WALLPAPERPRIVATE_GETOFFLINEWALLPAPERLIST"/>
+  <int value="271" label="BROWSERACTION_GETBADGEBACKGROUNDCOLOR"/>
+  <int value="272" label="DELETED_PAGEACTIONS_DISABLEFORTAB"/>
+  <int value="273" label="DELETED_DEVELOPERPRIVATE_ALLOWFILEACCESS"/>
+  <int value="274" label="FILEMANAGERPRIVATE_REMOVEMOUNT"/>
+  <int value="275" label="DELETED_BLUETOOTH_CONNECT"/>
+  <int value="276" label="TABCAPTURE_CAPTURE"/>
+  <int value="277" label="NOTIFICATIONS_CREATE"/>
+  <int value="278" label="TABS_DUPLICATE"/>
+  <int value="279" label="DELETED_BLUETOOTH_WRITE"/>
+  <int value="280" label="PAGEACTION_SHOW"/>
+  <int value="281" label="DELETED_WALLPAPERPRIVATE_GETTHUMBNAIL"/>
+  <int value="282" label="DOWNLOADS_PAUSE"/>
+  <int value="283" label="PERMISSIONS_REQUEST"/>
+  <int value="284" label="TOPSITES_GET"/>
+  <int value="285" label="BROWSINGDATA_REMOVEDOWNLOADS"/>
+  <int value="286" label="BROWSINGDATA_REMOVELOCALSTORAGE"/>
+  <int value="287" label="DELETED_FILEBROWSERHANDLERINTERNAL_SELECTFILE"/>
+  <int value="288" label="INPUT_IME_UPDATEMENUITEMS"/>
+  <int value="289" label="FILEMANAGERPRIVATE_GETSTRINGS"/>
+  <int value="290" label="CONTENTSETTINGS_GET"/>
+  <int value="291" label="FONTSETTINGS_SETDEFAULTFIXEDFONTSIZE"/>
+  <int value="292" label="EXPERIMENTAL_APP_NOTIFY"/>
+  <int value="293" label="METRICSPRIVATE_RECORDLONGTIME"/>
+  <int value="294" label="SOCKET_READ"/>
+  <int value="295" label="DELETED_EXPERIMENTAL_PROCESSES_TERMINATE"/>
+  <int value="296" label="METRICSPRIVATE_RECORDTIME"/>
+  <int value="297" label="DELETED_BOOKMARKMANAGERPRIVATE_GETSTRINGS"/>
+  <int value="298" label="USB_ISOCHRONOUSTRANSFER"/>
+  <int value="299" label="PERMISSIONS_REMOVE"/>
+  <int value="300" label="MANAGEMENT_UNINSTALL"/>
+  <int value="301" label="I18N_GETACCEPTLANGUAGES"/>
+  <int value="302" label="MANAGEMENT_LAUNCHAPP"/>
+  <int value="303" label="INPUT_IME_CLEARCOMPOSITION"/>
+  <int value="304" label="ALARMS_GETALL"/>
+  <int value="305" label="DELETED_DIAL_DISCOVERNOW"/>
+  <int value="306" label="TYPES_CHROMESETTING_SET"/>
+  <int value="307" label="BROWSERACTION_SETICON"/>
+  <int value="308" label="ACCESSIBILITY_PRIVATE_SETACCESSIBILITYENABLED"/>
+  <int value="309" label="DELETED_FILEMANAGERPRIVATE_VIEWFILES"/>
+  <int value="310" label="DELETED_BLUETOOTH_GETSERVICES"/>
+  <int value="311" label="TABS_UPDATE"/>
+  <int value="312" label="BROWSINGDATA_REMOVEFORMDATA"/>
+  <int value="313" label="DELETED_FILEMANAGERPRIVATE_RELOADDRIVE"/>
+  <int value="314" label="ALARMS_GET"/>
+  <int value="315" label="BROWSINGDATA_REMOVEINDEXEDDB"/>
+  <int value="316" label="FILEMANAGERPRIVATEINTERNAL_ADDFILEWATCH"/>
+  <int value="317" label="CONTENTSETTINGS_CLEAR"/>
+  <int value="318" label="FILEMANAGERPRIVATE_GETPREFERENCES"/>
+  <int value="319" label="BOOKMARKMANAGERPRIVATE_PASTE"/>
+  <int value="320" label="FILESYSTEM_ISWRITABLEENTRY"/>
+  <int value="321" label="USB_SETINTERFACEALTERNATESETTING"/>
+  <int value="322" label="FONTSETTINGS_SETMINIMUMFONTSIZE"/>
+  <int value="323" label="BROWSERACTION_GETPOPUP"/>
+  <int value="324" label="SOCKET_DESTROY"/>
+  <int value="325" label="BLUETOOTH_GETDEVICES"/>
+  <int value="326" label="ALARMS_CLEARALL"/>
+  <int value="327" label="FONTSETTINGS_GETDEFAULTFIXEDFONTSIZE"/>
+  <int value="328" label="FILEMANAGERPRIVATEINTERNAL_ZIPSELECTION"/>
+  <int value="329" label="SYSTEMINDICATOR_DISABLE"/>
+  <int value="330" label="DELETED_SCRIPTBADGE_SETPOPUP"/>
+  <int value="331" label="EXTENSION_ISALLOWEDFILESCHEMEACCESS"/>
+  <int value="332" label="EXPERIMENTAL_IDENTITY_LAUNCHWEBAUTHFLOW"/>
+  <int value="333" label="FILEMANAGERPRIVATE_GETDRIVECONNECTIONSTATE"/>
+  <int value="334" label="TABS_DETECTLANGUAGE"/>
+  <int value="335" label="METRICSPRIVATE_RECORDVALUE"/>
+  <int value="336" label="BOOKMARKMANAGERPRIVATE_SORTCHILDREN"/>
+  <int value="337" label="DELETED_SERIAL_READ"/>
+  <int value="338" label="APP_CURRENTWINDOWINTERNAL_MAXIMIZE"/>
+  <int value="339" label="EXPERIMENTAL_DISCOVERY_CLEARALLSUGGESTIONS"/>
+  <int value="340" label="DELETED_MANAGEDMODEPRIVATE_ENTER"/>
+  <int value="341" label="DELETED_FILEMANAGERPRIVATE_TRANSFERFILE"/>
+  <int value="342" label="BROWSERACTION_SETPOPUP"/>
+  <int value="343" label="TABS_GETSELECTED"/>
+  <int value="344" label="FONTSETTINGS_GETFONT"/>
+  <int value="345" label="DELETED_BLUETOOTH_READ"/>
+  <int value="346" label="WEBREQUESTINTERNAL_EVENTHANDLED"/>
+  <int value="347" label="EVENTS_ADDRULES"/>
+  <int value="348" label="CONTEXTMENUS_CREATE"/>
+  <int value="349" label="MEDIAPLAYERPRIVATE_GETPLAYLIST"/>
+  <int value="350" label="DOWNLOADS_ERASE"/>
+  <int value="351" label="DELETED_EXPERIMENTAL_RECORD_CAPTUREURLS"/>
+  <int value="352" label="TTS_ISSPEAKING"/>
+  <int value="353" label="BOOKMARKS_REMOVETREE"/>
+  <int value="354" label="FILEMANAGERPRIVATE_SEARCHDRIVE"/>
+  <int value="355" label="DELETED_EXPERIMENTAL_SYSTEMINFO_CPU_GET"/>
+  <int value="356" label="FILEMANAGERPRIVATE_SETPREFERENCES"/>
+  <int value="357" label="FONTSETTINGS_SETFONT"/>
+  <int value="358" label="SOCKET_GETNETWORKLIST"/>
+  <int value="359" label="BOOKMARKS_MOVE"/>
+  <int value="360" label="DELETED_WALLPAPERPRIVATE_MINIMIZEINACTIVEWINDOWS"/>
+  <int value="361" label="STORAGE_REMOVE"/>
+  <int value="362" label="AUTOTESTPRIVATE_LOGINSTATUS"/>
+  <int value="363" label="TABS_CREATE"/>
+  <int value="364" label="FILEMANAGERPRIVATE_CANCELDIALOG"/>
+  <int value="365" label="BROWSINGDATA_REMOVECOOKIES"/>
+  <int value="366" label="FILESYSTEM_CHOOSEENTRY"/>
+  <int value="367" label="MEDIAPLAYERPRIVATE_PLAY"/>
+  <int value="368" label="WEBSTOREPRIVATE_GETWEBGLSTATUS"/>
+  <int value="369" label="SOCKET_SENDTO"/>
+  <int value="370" label="BROWSINGDATA_REMOVEFILESYSTEMS"/>
+  <int value="371" label="DELETED_WALLPAPERPRIVATE_GETSTRINGS"/>
+  <int value="372" label="BROWSINGDATA_REMOVECACHE"/>
+  <int value="373" label="BOOKMARKMANAGERPRIVATE_RECORDLAUNCH"/>
+  <int value="374" label="BROWSERACTION_DISABLE"/>
+  <int value="375" label="DELETED_EXPERIMENTAL_SPEECHINPUT_ISRECORDING"/>
+  <int value="376" label="APP_WINDOW_CREATE"/>
+  <int value="377" label="RUNTIME_RELOAD"/>
+  <int value="378" label="EXPERIMENTAL_POWER_REQUESTKEEPAWAKE"/>
+  <int value="379" label="SYSTEMINDICATOR_SETICON"/>
+  <int value="380" label="FILEMANAGERPRIVATE_ADDMOUNT"/>
+  <int value="381" label="APP_CURRENTWINDOWINTERNAL_FOCUS"/>
+  <int value="382" label="EVENTS_REMOVERULES"/>
+  <int value="383" label="DOWNLOADS_DOWNLOAD"/>
+  <int value="384" label="WINDOWS_GETALL"/>
+  <int value="385" label="DELETED_FILEMANAGERPRIVATE_TOGGLEFULLSCREEN"/>
+  <int value="386" label="APP_CURRENTWINDOWINTERNAL_RESTORE"/>
+  <int value="387" label="DELETED_WEBSOCKETPROXYPRIVATE_GETPASSPORTFORTCP"/>
+  <int value="388" label="PAGEACTION_HIDE"/>
+  <int value="389" label="DELETED_EXPERIMENTAL_SYSTEMINFO_STORAGE_GET"/>
+  <int value="390" label="DOWNLOADS_ACCEPTDANGER"/>
+  <int value="391" label="DELETED_WEBSOCKETPROXYPRIVATE_GETURLFORTCP"/>
+  <int value="392" label="FILEMANAGERPRIVATE_GETSIZESTATS"/>
+  <int value="393" label="DOWNLOADS_RESUME"/>
+  <int value="394" label="COOKIES_GETALLCOOKIESTORES"/>
+  <int value="395" label="DELETED_MEDIAGALLERIESPRIVATE_ADDGALLERYWATCH"/>
+  <int value="396" label="DELETED_MEDIAGALLERIESPRIVATE_REMOVEGALLERYWATCH"/>
+  <int value="397" label="DELETED_WEBVIEW_EXECUTESCRIPT"/>
+  <int value="398" label="NOTIFICATIONS_UPDATE"/>
+  <int value="399" label="NOTIFICATIONS_CLEAR"/>
+  <int value="400" label="DELETED_SESSIONRESTORE_GETRECENTLYCLOSED"/>
+  <int value="401" label="DELETED_SESSIONRESTORE_RESTORE"/>
+  <int value="402" label="MANAGEMENT_UNINSTALLSELF"/>
+  <int value="403" label="ECHOPRIVATE_GETOOBETIMESTAMP"/>
+  <int value="404" label="FILEMANAGERPRIVATEINTERNAL_VALIDATEPATHNAMELENGTH"/>
+  <int value="405" label="BROWSINGDATA_SETTINGS"/>
+  <int value="406" label="WEBSTOREPRIVATE_GETISLAUNCHERENABLED"/>
+  <int value="407" label="NETWORKINGPRIVATE_GETPROPERTIES"/>
+  <int value="408" label="NETWORKINGPRIVATE_GETVISIBLENETWORKS"/>
+  <int value="409" label="NETWORKINGPRIVATE_STARTCONNECT"/>
+  <int value="410" label="NETWORKINGPRIVATE_STARTDISCONNECT"/>
+  <int value="411" label="DELETED_MEDIAGALLERIESPRIVATE_GETALLGALLERYWATCH"/>
+  <int value="412" label="DELETED_MEDIAGALLERIESPRIVATE_REMOVEALLGALLERYWATCH"/>
+  <int value="413" label="FILEMANAGERPRIVATE_SEARCHDRIVEMETADATA"/>
+  <int value="414" label="DELETED_ECHOPRIVATE_CHECKALLOWREDEEMOFFERS"/>
+  <int value="415" label="DELETED_MEDIAGALLERIESPRIVATE_EJECTDEVICE"/>
+  <int value="416" label="FILEMANAGERPRIVATE_LOGOUTUSERFORREAUTHENTICATION"/>
+  <int value="417" label="DEVELOPERPRIVATE_CHOOSEPATH"/>
+  <int value="418" label="DEVELOPERPRIVATE_PACKDIRECTORY"/>
+  <int value="419" label="NETWORKINGPRIVATE_VERIFYDESTINATION"/>
+  <int value="420" label="NETWORKINGPRIVATE_VERIFYANDENCRYPTCREDENTIALS"/>
+  <int value="421" label="NETWORKINGPRIVATE_VERIFYANDENCRYPTDATA"/>
+  <int value="422" label="DEVELOPERPRIVATE_RESTART"/>
+  <int value="423" label="DELETED_DEVELOPERPRIVATE_ALLOWINCOGNITO"/>
+  <int value="424" label="INPUT_IME_DELETESURROUNDINGTEXT"/>
+  <int value="425" label="DELETED_FILEMANAGERPRIVATE_OPENNEWWINDOW"/>
+  <int value="426" label="DELETED_CLOUDPRINTPRIVATE_GETCLIENTID"/>
+  <int value="427" label="ECHOPRIVATE_GETUSERCONSENT"/>
+  <int value="428" label="SYNCFILESYSTEM_SETCONFLICTRESOLUTIONPOLICY"/>
+  <int value="429" label="SYNCFILESYSTEM_GETCONFLICTRESOLUTIONPOLICY"/>
+  <int value="430" label="NETWORKINGPRIVATE_SETPROPERTIES"/>
+  <int value="431" label="NETWORKINGPRIVATE_GETSTATE"/>
+  <int value="432" label="POWER_REQUESTKEEPAWAKE"/>
+  <int value="433" label="POWER_RELEASEKEEPAWAKE"/>
+  <int value="434" label="DELETED_WALLPAPERPRIVATE_SETCUSTOMWALLPAPERLAYOUT"/>
+  <int value="435" label="DOWNLOADSINTERNAL_DETERMINEFILENAME"/>
+  <int value="436" label="SYNCFILESYSTEM_GETFILESYNCSTATUSES"/>
+  <int value="437" label="DELETED_MEDIAGALLERIESPRIVATE_GETHANDLERS"/>
+  <int value="438" label="DELETED_WALLPAPERPRIVATE_RESETWALLPAPER"/>
+  <int value="439" label="DEVELOPERPRIVATE_PERMISSIONS"/>
+  <int value="440" label="WEBSTOREPRIVATE_ENABLEAPPLAUNCHER"/>
+  <int value="441" label="APP_CURRENTWINDOWINTERNAL_FULLSCREEN"/>
+  <int value="442" label="DEVELOPERPRIVATE_LOADUNPACKEDCROS"/>
+  <int value="443" label="NETWORKINGPRIVATE_REQUESTNETWORKSCAN"/>
+  <int value="444" label="ENTERPRISE_PLATFORMKEYSPRIVATE_CHALLENGEMACHINEKEY"/>
+  <int value="445" label="ENTERPRISE_PLATFORMKEYSPRIVATE_CHALLENGEUSERKEY"/>
+  <int value="446" label="DEVELOPERPRIVATE_LOADPROJECTTOSYNCFS"/>
+  <int value="447" label="DEVELOPERPRIVATE_GETPROJECTSINFO"/>
+  <int value="448" label="DEVELOPERPRIVATE_LOADPROJECT"/>
+  <int value="449" label="COMMANDLINEPRIVATE_HASSWITCH"/>
+  <int value="450" label="NETWORKINGPRIVATE_GETMANAGEDPROPERTIES"/>
+  <int value="451" label="DELETED_LOCATION_WATCHLOCATION"/>
+  <int value="452" label="DELETED_LOCATION_CLEARWATCH"/>
+  <int value="453" label="DELETED_BLUETOOTH_ADDPROFILE"/>
+  <int value="454" label="DELETED_BLUETOOTH_REMOVEPROFILE"/>
+  <int value="455" label="DELETED_BLUETOOTH_GETPROFILES"/>
+  <int value="456" label="EXPERIMENTAL_IDENTITY_REMOVECACHEDAUTHTOKEN"/>
+  <int value="457" label="DELETED_AUDIO_GETINFO"/>
+  <int value="458" label="AUDIO_SETACTIVEDEVICES"/>
+  <int value="459" label="AUDIO_SETPROPERTIES"/>
+  <int value="460" label="USB_RESETDEVICE"/>
+  <int value="461" label="SOCKET_MULTICAST_JOIN_GROUP"/>
+  <int value="462" label="SOCKET_MULTICAST_LEAVE_GROUP"/>
+  <int value="463" label="SOCKET_MULTICAST_SET_TIME_TO_LIVE"/>
+  <int value="464" label="SOCKET_MULTICAST_SET_LOOPBACK_MODE"/>
+  <int value="465" label="SOCKET_MULTICAST_GET_JOINED_GROUPS"/>
+  <int value="466" label="ACCESSIBILITY_PRIVATE_SETNATIVEACCESSIBILITYENABLED"/>
+  <int value="467" label="RUNTIME_GETPLATFORMINFO"/>
+  <int value="468" label="DELETED_WEBVIEW_INSERTCSS"/>
+  <int value="469" label="METRICSPRIVATE_GETISCRASHRECORDINGENABLED"/>
+  <int value="470" label="DELETED_IDENTITYPRIVATE_GETSTRINGS"/>
+  <int value="471" label="NOTIFICATIONS_GET_ALL"/>
+  <int value="472" label="USB_LISTINTERFACES"/>
+  <int value="473" label="FILESYSTEM_RETAINENTRY"/>
+  <int value="474" label="FILESYSTEM_ISRESTORABLE"/>
+  <int value="475" label="FILESYSTEM_RESTOREENTRY"/>
+  <int value="476" label="RUNTIME_SETUNINSTALLURL"/>
+  <int value="477" label="INPUTMETHODPRIVATE_STARTIME"/>
+  <int value="478" label="DELETED_MUSICMANAGERPRIVATE_GETDEVICEID"/>
+  <int value="479" label="TTS_PAUSE"/>
+  <int value="480" label="TTS_RESUME"/>
+  <int value="481" label="DELETED_SYSTEMINFO_CPU_GET"/>
+  <int value="482" label="DELETED_EXPERIMENTAL_SYSTEMINFO_STORAGE_ADDWATCH"/>
+  <int value="483" label="DELETED_EXPERIMENTAL_SYSTEMINFO_STORAGE_REMOVEWATCH"/>
+  <int value="484" label="DELETED_EXPERIMENTAL_SYSTEMINFO_STORAGE_GETALLWATCH"/>
+  <int value="485"
+      label="DELETED_EXPERIMENTAL_SYSTEMINFO_STORAGE_REMOVEALLWATCH"/>
+  <int value="486" label="DELETED_SYSTEMINFO_MEMORY_GET"/>
+  <int value="487" label="ACTIVITYLOGPRIVATE_GETEXTENSIONACTIVITIES"/>
+  <int value="488" label="RUNTIME_GETPACKAGEDIRECTORYENTRY"/>
+  <int value="489" label="DELETED_SYSTEMINFO_DISPLAY_SETDISPLAYPROPERTIES"/>
+  <int value="490" label="FEEDBACKPRIVATE_GETUSEREMAIL"/>
+  <int value="491" label="FEEDBACKPRIVATE_GETSYSTEMINFORMATION"/>
+  <int value="492" label="FEEDBACKPRIVATE_SENDFEEDBACK"/>
+  <int value="493" label="VIRTUALKEYBOARDPRIVATE_INSERTTEXT"/>
+  <int value="494" label="DIAGNOSTICS_SENDPACKET"/>
+  <int value="495" label="METRICSPRIVATE_GETFIELDTRIAL"/>
+  <int value="496" label="FILEMANAGERPRIVATE_ZOOM"/>
+  <int value="497" label="DELETED_WEBVIEW_GO"/>
+  <int value="498" label="WEBSTOREPRIVATE_ISININCOGNITOMODEFUNCTION"/>
+  <int value="499" label="DELETED_FILEMANAGERPRIVATE_REQUESTACCESSTOKEN"/>
+  <int value="500" label="DELETED_WEBVIEW_STOP"/>
+  <int value="501" label="DELETED_WEBVIEW_RELOAD"/>
+  <int value="502" label="DELETED_WEBVIEW_TERMINATE"/>
+  <int value="503" label="DELETED_TYPES_PRIVATE_CHROMEDIRECTSETTING_GET"/>
+  <int value="504" label="DELETED_TYPES_PRIVATE_CHROMEDIRECTSETTING_SET"/>
+  <int value="505" label="DELETED_TYPES_PRIVATE_CHROMEDIRECTSETTING_CLEAR"/>
+  <int value="506" label="DELETED_EXPERIMENTAL_SYSTEMINFO_STORAGE_EJECTDEVICE"/>
+  <int value="507" label="SYSTEM_CPU_GETINFO"/>
+  <int value="508" label="BOOKMARKMANAGERPRIVATE_REMOVETREES"/>
+  <int value="509" label="SYSTEM_DISPLAY_GETINFO"/>
+  <int value="510" label="SYSTEM_DISPLAY_SETDISPLAYPROPERTIES"/>
+  <int value="511" label="SYSTEM_MEMORY_GETINFO"/>
+  <int value="512" label="FILEMANAGERPRIVATEINTERNAL_GETSHAREURL"/>
+  <int value="513" label="SYSTEM_STORAGE_GETINFO"/>
+  <int value="514" label="SYSTEM_STORAGE_EJECTDEVICE"/>
+  <int value="515" label="DELETED_SYSTEM_STORAGE_ADDAVAILABLECAPACITYWATCH"/>
+  <int value="516" label="DELETED_SYSTEM_STORAGE_REMOVEAVAILABLECAPACITYWATCH"/>
+  <int value="517"
+      label="DELETED_SYSTEM_STORAGE_GETALLAVAILABLECAPACITYWATCHES"/>
+  <int value="518"
+      label="DELETED_SYSTEM_STORAGE_REMOVEALLAVAILABLECAPACITYWATCHES"/>
+  <int value="519" label="DOWNLOADS_REMOVEFILE"/>
+  <int value="520" label="DOWNLOADS_SHOWDEFAULTFOLDER"/>
+  <int value="521" label="DELETED_INFOBARS_SHOW"/>
+  <int value="522" label="DOWNLOADS_SETSHELFENABLED"/>
+  <int value="523" label="IMAGEWRITER_WRITEFROMURL"/>
+  <int value="524" label="IMAGEWRITER_WRITEFROMFILE"/>
+  <int value="525" label="IMAGEWRITER_CANCELWRITE"/>
+  <int value="526" label="IMAGEWRITER_DESTROYPARTITIONS"/>
+  <int value="527" label="DELETED_FEEDBACKPRIVATE_GETSTRINGS"/>
+  <int value="528" label="DELETED_LOGPRIVATE_GETHISTORICAL"/>
+  <int value="529" label="VIRTUALKEYBOARDPRIVATE_MOVECURSOR"/>
+  <int value="530" label="METRICSPRIVATE_GETVARIATIONPARAMS"/>
+  <int value="531" label="DELETED_WEBVIEW_SETPERMISSION"/>
+  <int value="532" label="DESKTOPCAPTURE_CHOOSEDESKTOPMEDIA"/>
+  <int value="533" label="APP_CURRENTWINDOWINTERNAL_SETSHAPE"/>
+  <int value="534" label="PROCESSES_GETPROCESSINFO"/>
+  <int value="535" label="PROCESSES_GETPROCESSIDFORTAB"/>
+  <int value="536" label="PROCESSES_TERMINATE"/>
+  <int value="537" label="SOCKETS_UDP_CREATE"/>
+  <int value="538" label="SOCKETS_UDP_UPDATE"/>
+  <int value="539" label="SOCKETS_UDP_BIND"/>
+  <int value="540" label="SOCKETS_UDP_SEND"/>
+  <int value="541" label="SOCKETS_UDP_CLOSE"/>
+  <int value="542" label="SOCKETS_UDP_GETINFO"/>
+  <int value="543" label="SOCKETS_UDP_GETSOCKETS"/>
+  <int value="544" label="SOCKETS_UDP_JOINGROUP"/>
+  <int value="545" label="SOCKETS_UDP_LEAVEGROUP"/>
+  <int value="546" label="SOCKETS_UDP_SETMULTICASTTIMETOLIVE"/>
+  <int value="547" label="SOCKETS_UDP_SETMULTICASTLOOPBACKMODE"/>
+  <int value="548" label="SOCKETS_UDP_GETJOINEDGROUPS"/>
+  <int value="549" label="DELETED_SIGNED_IN_DEVICES_GET"/>
+  <int value="550" label="AUTOTESTPRIVATE_SIMULATEASANMEMORYBUG"/>
+  <int value="551" label="DELETED_WEBVIEW_CLEARDATA"/>
+  <int value="552" label="SESSIONS_GETRECENTLYCLOSED"/>
+  <int value="553" label="SESSIONS_GETDEVICES"/>
+  <int value="554" label="SESSIONS_RESTORE"/>
+  <int value="555" label="SYNCFILESYSTEM_GETSERVICESTATUS"/>
+  <int value="556" label="ECHOPRIVATE_SETOFFERINFO"/>
+  <int value="557" label="ECHOPRIVATE_GETOFFERINFO"/>
+  <int value="558" label="DEVELOPERPRIVATE_ISPROFILEMANAGED"/>
+  <int value="559" label="DELETED_FILEMANAGERPRIVATE_INSTALLWEBSTOREITEM"/>
+  <int value="560" label="FILEMANAGERPRIVATEINTERNAL_STARTCOPY"/>
+  <int value="561" label="FILEMANAGERPRIVATE_CANCELCOPY"/>
+  <int value="562" label="NETWORKINGPRIVATE_CREATENETWORK"/>
+  <int value="563" label="BRAILLEDISPLAYPRIVATE_GETDISPLAYSTATE"/>
+  <int value="564" label="BRAILLEDISPLAYPRIVATE_WRITEDOTS"/>
+  <int value="565" label="USB_GETDEVICES"/>
+  <int value="566" label="USB_REQUESTACCESS"/>
+  <int value="567" label="USB_OPENDEVICE"/>
+  <int value="568" label="ACTIVITYLOGPRIVATE_DELETEDATABASE"/>
+  <int value="569" label="ACTIVITYLOGPRIVATE_DELETEURLS"/>
+  <int value="570" label="FILEMANAGERPRIVATE_REQUESTWEBSTOREACCESSTOKEN"/>
+  <int value="571" label="IMAGEWRITER_LISTREMOVABLESTORAGEDEVICES"/>
+  <int value="572" label="WALLPAPER_SETWALLPAPER"/>
+  <int value="573" label="VIRTUALKEYBOARDPRIVATE_HIDEKEYBOARD"/>
+  <int value="574" label="AUTOTESTPRIVATE_LOCKSCREEN"/>
+  <int value="575" label="WEBRTCLOGGINGPRIVATE_SETMETADATA"/>
+  <int value="576" label="WEBRTCLOGGINGPRIVATE_START"/>
+  <int value="577" label="WEBRTCLOGGINGPRIVATE_SETUPLOADONRENDERCLOSE"/>
+  <int value="578" label="WEBRTCLOGGINGPRIVATE_STOP"/>
+  <int value="579" label="WEBRTCLOGGINGPRIVATE_UPLOAD"/>
+  <int value="580" label="WEBRTCLOGGINGPRIVATE_DISCARD"/>
+  <int value="581" label="DELETED_WEBVIEW_OVERRIDEUSERAGENT"/>
+  <int value="582" label="DELETED_PRINCIPALSPRIVATE_SHOWAVATARBUBBLE"/>
+  <int value="583" label="DELETED_PRINCIPALSPRIVATE_SIGNOUT"/>
+  <int value="584" label="CAST_CHANNEL_OPEN"/>
+  <int value="585" label="CAST_CHANNEL_SEND"/>
+  <int value="586" label="CAST_CHANNEL_CLOSE"/>
+  <int value="587" label="RUNTIME_RESTART"/>
+  <int value="588" label="DESKTOPCAPTURE_CANCELCHOOSEDESKTOPMEDIA"/>
+  <int value="589" label="APP_CURRENTWINDOWINTERNAL_SETALWAYSONTOP"/>
+  <int value="590" label="SOCKETS_TCP_CREATE"/>
+  <int value="591" label="SOCKETS_TCP_UPDATE"/>
+  <int value="592" label="SOCKETS_TCP_SETPAUSED"/>
+  <int value="593" label="SOCKETS_TCP_SETKEEPALIVE"/>
+  <int value="594" label="SOCKETS_TCP_SETNODELAY"/>
+  <int value="595" label="SOCKETS_TCP_CONNECT"/>
+  <int value="596" label="SOCKETS_TCP_DISCONNECT"/>
+  <int value="597" label="SOCKETS_TCP_SEND"/>
+  <int value="598" label="SOCKETS_TCP_CLOSE"/>
+  <int value="599" label="SOCKETS_TCP_GETINFO"/>
+  <int value="600" label="SOCKETS_TCP_GETSOCKETS"/>
+  <int value="601" label="NETWORKINGPRIVATE_GETENABLEDNETWORKTYPES"/>
+  <int value="602" label="NETWORKINGPRIVATE_ENABLENETWORKTYPE"/>
+  <int value="603" label="NETWORKINGPRIVATE_DISABLENETWORKTYPE"/>
+  <int value="604" label="SOCKETS_TCP_SERVER_CREATE"/>
+  <int value="605" label="SOCKETS_TCP_SERVER_UPDATE"/>
+  <int value="606" label="SOCKETS_TCP_SERVER_SETPAUSED"/>
+  <int value="607" label="SOCKETS_TCP_SERVER_LISTEN"/>
+  <int value="608" label="SOCKETS_TCP_SERVER_DISCONNECT"/>
+  <int value="609" label="SOCKETS_TCP_SERVER_CLOSE"/>
+  <int value="610" label="SOCKETS_TCP_SERVER_GETINFO"/>
+  <int value="611" label="SOCKETS_TCP_SERVER_GETSOCKETS"/>
+  <int value="612" label="SYSTEM_STORAGE_GETAVAILABLECAPACITY"/>
+  <int value="613" label="BROWSERACTION_OPEN_POPUP"/>
+  <int value="614" label="WEBRTC_AUDIO_PRIVATE_GET_SINKS"/>
+  <int value="615" label="DELETED_WEBRTC_AUDIO_PRIVATE_GET_ACTIVE_SINK"/>
+  <int value="616" label="DELETED_WEBRTC_AUDIO_PRIVATE_SET_ACTIVE_SINK"/>
+  <int value="617" label="WEBRTC_AUDIO_PRIVATE_GET_ASSOCIATED_SINK"/>
+  <int value="618" label="VIRTUALKEYBOARDPRIVATE_KEYBOARDLOADED"/>
+  <int value="619" label="DELETED_APP_CURRENTWINDOWINTERNAL_SETMINWIDTH"/>
+  <int value="620" label="DELETED_APP_CURRENTWINDOWINTERNAL_SETMINHEIGHT"/>
+  <int value="621" label="DELETED_APP_CURRENTWINDOWINTERNAL_SETMAXWIDTH"/>
+  <int value="622" label="DELETED_APP_CURRENTWINDOWINTERNAL_SETMAXHEIGHT"/>
+  <int value="623" label="SYSTEMPRIVATE_GETAPIKEY"/>
+  <int value="624" label="CHROMEOSINFOPRIVATE_SET"/>
+  <int value="625" label="BOOKMARKMANAGERPRIVATE_GETMETAINFO"/>
+  <int value="626" label="BOOKMARKMANAGERPRIVATE_SETMETAINFO"/>
+  <int value="627" label="FILESYSTEMPROVIDER_MOUNT"/>
+  <int value="628" label="AUTOTESTPRIVATE_GETEXTENSIONSINFO"/>
+  <int value="629" label="DELETED_SCREENLOCKPRIVATE_GETLOCKED"/>
+  <int value="630" label="DELETED_SCREENLOCKPRIVATE_SETLOCKED"/>
+  <int value="631" label="DELETED_SCREENLOCKPRIVATE_SHOWMESSAGE"/>
+  <int value="632" label="FEEDBACKPRIVATE_GETHISTOGRAMS"/>
+  <int value="633" label="SYSTEM_NETWORK_GETNETWORKINTERFACES"/>
+  <int value="634" label="SERIAL_GETDEVICES"/>
+  <int value="635" label="SERIAL_UPDATE"/>
+  <int value="636" label="SERIAL_SETPAUSED"/>
+  <int value="637" label="SERIAL_GETINFO"/>
+  <int value="638" label="SERIAL_GETCONNECTIONS"/>
+  <int value="639" label="SERIAL_SEND"/>
+  <int value="640" label="GCM_REGISTER"/>
+  <int value="641" label="GCM_SEND"/>
+  <int value="642" label="SERIAL_CONNECT"/>
+  <int value="643" label="SERIAL_DISCONNECT"/>
+  <int value="644"
+      label="DELETED_MEDIAGALLERIES_GETALLMEDIAFILESYSTEMMETADATA"/>
+  <int value="645" label="FIRSTRUNPRIVATE_GETLOCALIZEDSTRINGS"/>
+  <int value="646" label="FIRSTRUNPRIVATE_LAUNCHTUTORIAL"/>
+  <int value="647" label="SOCKETS_UDP_SETPAUSED"/>
+  <int value="648" label="DELETED_WEBVIEW_CAPTUREVISIBLEREGION"/>
+  <int value="649" label="MEDIAGALLERIES_GETMETADATA"/>
+  <int value="650" label="INPUT_IME_SENDKEYEVENTS"/>
+  <int value="651" label="VIRTUALKEYBOARDPRIVATE_LOCKKEYBOARD"/>
+  <int value="652" label="DELETED_SCREENLOCKPRIVATE_SHOWCUSTOMICON"/>
+  <int value="653" label="INPUT_IME_HIDEINPUTVIEW"/>
+  <int value="654" label="BOOKMARKMANAGERPRIVATE_UNDO"/>
+  <int value="655" label="BOOKMARKMANAGERPRIVATE_REDO"/>
+  <int value="656" label="BOOKMARKMANAGERPRIVATE_UNDOINFO"/>
+  <int value="657" label="BOOKMARKMANAGERPRIVATE_REDOINFO"/>
+  <int value="658" label="MEDIAGALLERIES_ADDUSERSELECTEDFOLDER"/>
+  <int value="659"
+      label="DELETED_PREFERENCESPRIVATE_GETSYNCCATEGORIESWITHOUTPASSPHRASE"/>
+  <int value="660" label="DELETED_READINGLISTPRIVATE_ADDENTRY"/>
+  <int value="661" label="DELETED_READINGLISTPRIVATE_REMOVEENTRY"/>
+  <int value="662" label="DELETED_READINGLISTPRIVATE_GETENTRIES"/>
+  <int value="663" label="DELETED_MEDIAGALLERIES_STARTMEDIASCAN"/>
+  <int value="664" label="DELETED_MEDIAGALLERIES_CANCELMEDIASCAN"/>
+  <int value="665" label="DELETED_MEDIAGALLERIES_ADDSCANRESULTS"/>
+  <int value="666" label="DELETED_LOGPRIVATE_STARTNETINTERNALSWATCH"/>
+  <int value="667" label="DELETED_LOGPRIVATE_STOPNETINTERNALSWATCH"/>
+  <int value="668" label="FILEMANAGERPRIVATE_GETPROFILES"/>
+  <int value="669" label="DELETED_FILEMANAGERPRIVATE_VISITDESKTOP"/>
+  <int value="670" label="VIRTUALKEYBOARDPRIVATE_GETKEYBOARDCONFIG"/>
+  <int value="671" label="HID_GETDEVICES"/>
+  <int value="672" label="HID_CONNECT"/>
+  <int value="673" label="HID_DISCONNECT"/>
+  <int value="674" label="HID_RECEIVE"/>
+  <int value="675" label="HID_SEND"/>
+  <int value="676" label="HID_RECEIVEFEATUREREPORT"/>
+  <int value="677" label="HID_SENDFEATUREREPORT"/>
+  <int value="678" label="HOTWORDPRIVATE_SETENABLED"/>
+  <int value="679" label="HOTWORDPRIVATE_GETSTATUS"/>
+  <int value="680" label="DELETED_APP_CURRENTWINDOWINTERNAL_SETBADGEICON"/>
+  <int value="681" label="DELETED_APP_CURRENTWINDOWINTERNAL_CLEARBADGE"/>
+  <int value="682" label="DELETED_WEBVIEW_SETZOOM"/>
+  <int value="683" label="DELETED_WEBVIEW_GETZOOM"/>
+  <int value="684" label="DEVELOPERPRIVATE_REQUESTFILESOURCE"/>
+  <int value="685" label="DEVELOPERPRIVATE_OPENDEVTOOLS"/>
+  <int value="686" label="ACTIVITYLOGPRIVATE_DELETEACTIVITIES"/>
+  <int value="687" label="NETWORKINGPRIVATE_SETWIFITDLSENABLEDSTATE"/>
+  <int value="688" label="NETWORKINGPRIVATE_GETWIFITDLSSTATUS"/>
+  <int value="689" label="DELETED_SCREENLOCKPRIVATE_HIDECUSTOMICON"/>
+  <int value="690" label="DELETED_SCREENLOCKPRIVATE_SETAUTHTYPE"/>
+  <int value="691" label="DELETED_SCREENLOCKPRIVATE_GETAUTHTYPE"/>
+  <int value="692" label="DELETED_SCREENLOCKPRIVATE_ACCEPTAUTHATTEMPT"/>
+  <int value="693" label="DELETED_WEBVIEW_FIND"/>
+  <int value="694" label="DELETED_WEBVIEW_STOPFINDING"/>
+  <int value="695" label="DELETED_WEBVIEW_CONTEXTMENUSCREATE"/>
+  <int value="696" label="DELETED_WEBVIEW_CONTEXTMENUSUPDATE"/>
+  <int value="697" label="DELETED_WEBVIEW_CONTEXTMENUSREMOVE"/>
+  <int value="698" label="DELETED_WEBVIEW_CONTEXTMENUSREMOVEALL"/>
+  <int value="699" label="DELETED_AUTOMATIONINTERNAL_ENABLETAB"/>
+  <int value="700" label="APP_CURRENTWINDOWINTERNAL_SETSIZECONSTRAINTS"/>
+  <int value="701" label="BLUETOOTH_GETDEVICE"/>
+  <int value="702" label="GCM_UNREGISTER"/>
+  <int value="703"
+      label="DELETED_FILEMANAGERPRIVATEINTERNAL_REQUESTDRIVESHARE"/>
+  <int value="704" label="METRICSPRIVATE_RECORDSPARSEVALUE"/>
+  <int value="705" label="HOTWORDPRIVATE_SETAUDIOLOGGINGENABLED"/>
+  <int value="706" label="BLUETOOTHPRIVATE_SETADAPTERSTATE"/>
+  <int value="707" label="DELETED_BLUETOOTHPRIVATE_ENABLEPAIRING"/>
+  <int value="708" label="DELETED_BLUETOOTHPRIVATE_DISABLEPAIRING"/>
+  <int value="709" label="BLUETOOTHPRIVATE_SETPAIRINGRESPONSE"/>
+  <int value="710" label="NETWORKINGPRIVATE_GETCAPTIVEPORTALSTATUS"/>
+  <int value="711" label="AUTOMATIONINTERNAL_PERFORMACTION"/>
+  <int value="712" label="DELETED_BLUETOOTH_UPDATE_SOCKET"/>
+  <int value="713" label="DELETED_BLUETOOTH_SET_SOCKET_PAUSED"/>
+  <int value="714" label="DELETED_BLUETOOTH_GET_SOCKET"/>
+  <int value="715" label="DELETED_BLUETOOTH_GET_SOCKETS"/>
+  <int value="716" label="FILESYSTEMPROVIDER_UNMOUNT"/>
+  <int value="717" label="FILESYSTEMPROVIDERINTERNAL_UNMOUNTREQUESTEDSUCCESS"/>
+  <int value="718"
+      label="DELETED_FILESYSTEMPROVIDERINTERNAL_UNMOUNTREQUESTEDERROR"/>
+  <int value="719"
+      label="DELETED_MEDIAGALLERIES_DROPPERMISSIONFORMEDIAFILESYSTEM"/>
+  <int value="720" label="WEBCAMPRIVATE_SET"/>
+  <int value="721" label="WEBCAMPRIVATE_RESET"/>
+  <int value="722" label="WEBCAMPRIVATE_GET"/>
+  <int value="723" label="BLUETOOTHLOWENERGY_GETSERVICE"/>
+  <int value="724" label="BLUETOOTHLOWENERGY_GETSERVICES"/>
+  <int value="725" label="BLUETOOTHLOWENERGY_GETCHARACTERISTIC"/>
+  <int value="726" label="BLUETOOTHLOWENERGY_GETCHARACTERISTICS"/>
+  <int value="727" label="BLUETOOTHLOWENERGY_GETINCLUDEDSERVICES"/>
+  <int value="728" label="BLUETOOTHLOWENERGY_GETDESCRIPTOR"/>
+  <int value="729" label="BLUETOOTHLOWENERGY_GETDESCRIPTORS"/>
+  <int value="730" label="BLUETOOTHLOWENERGY_READCHARACTERISTICVALUE"/>
+  <int value="731" label="BLUETOOTHLOWENERGY_WRITECHARACTERISTICVALUE"/>
+  <int value="732" label="BLUETOOTHLOWENERGY_READDESCRIPTORVALUE"/>
+  <int value="733" label="BLUETOOTHLOWENERGY_WRITEDESCRIPTORVALUE"/>
+  <int value="734" label="BOOKMARKMANAGERPRIVATE_CREATEWITHMETAINFO"/>
+  <int value="735" label="BOOKMARKMANAGERPRIVATE_UPDATEMETAINFO"/>
+  <int value="736" label="BLUETOOTHSOCKET_CREATE"/>
+  <int value="737" label="BLUETOOTHSOCKET_UPDATE"/>
+  <int value="738" label="BLUETOOTHSOCKET_SETPAUSED"/>
+  <int value="739" label="BLUETOOTHSOCKET_LISTENUSINGRFCOMM"/>
+  <int value="740" label="BLUETOOTHSOCKET_LISTENUSINGINSECURERFCOMM"/>
+  <int value="741" label="BLUETOOTHSOCKET_LISTENUSINGL2CAP"/>
+  <int value="742" label="BLUETOOTHSOCKET_CONNECT"/>
+  <int value="743" label="BLUETOOTHSOCKET_DISCONNECT"/>
+  <int value="744" label="BLUETOOTHSOCKET_CLOSE"/>
+  <int value="745" label="BLUETOOTHSOCKET_SEND"/>
+  <int value="746" label="BLUETOOTHSOCKET_GETINFO"/>
+  <int value="747" label="BLUETOOTHSOCKET_GETSOCKETS"/>
+  <int value="748" label="DELETED_WEBSTOREPRIVATE_SIGNINFUNCTION"/>
+  <int value="749" label="DELETED_SHELL_CREATEWINDOW"/>
+  <int value="750"
+      label="FILESYSTEMPROVIDERINTERNAL_GETMETADATAREQUESTEDSUCCESS"/>
+  <int value="751"
+      label="DELETED_FILESYSTEMPROVIDERINTERNAL_GETMETADATAREQUESTEDERROR"/>
+  <int value="752" label="BROWSER_OPENTAB"/>
+  <int value="753" label="MANAGEMENT_CREATEAPPSHORTCUT"/>
+  <int value="754" label="DELETED_WEBVIEW_SHOWCONTEXTMENU"/>
+  <int value="755" label="WEBRTCLOGGINGPRIVATE_STARTRTPDUMP"/>
+  <int value="756" label="WEBRTCLOGGINGPRIVATE_STOPRTPDUMP"/>
+  <int value="757" label="AUTOMATIONINTERNAL_ENABLEDESKTOP"/>
+  <int value="758" label="HOTWORDPRIVATE_SETHOTWORDSESSIONSTATE"/>
+  <int value="759" label="HOTWORDPRIVATE_NOTIFYHOTWORDRECOGNITION"/>
+  <int value="760"
+      label="FILESYSTEMPROVIDERINTERNAL_READDIRECTORYREQUESTEDSUCCESS"/>
+  <int value="761"
+      label="DELETED_FILESYSTEMPROVIDERINTERNAL_READDIRECTORYREQUESTEDERROR"/>
+  <int value="762" label="DELETED_LEDGER_BATCHEXECUTE"/>
+  <int value="763"
+      label="DELETED_FILESYSTEMPROVIDERINTERNAL_OPENFILEREQUESTEDSUCCESS"/>
+  <int value="764"
+      label="DELETED_FILESYSTEMPROVIDERINTERNAL_OPENFILEREQUESTEDERROR"/>
+  <int value="765"
+      label="DELETED_FILESYSTEMPROVIDERINTERNAL_CLOSEFILEREQUESTEDSUCCESS"/>
+  <int value="766"
+      label="DELETED_FILESYSTEMPROVIDERINTERNAL_CLOSEFILEREQUESTEDERROR"/>
+  <int value="767" label="DELETED_SYNCEDNOTIFICATIONSPRIVATE_GETINITIALDATA"/>
+  <int value="768"
+      label="DELETED_SYNCEDNOTIFICATIONSPRIVATE_UPDATENOTIFICATION"/>
+  <int value="769" label="DELETED_SYNCEDNOTIFICATIONSPRIVATE_SETRENDERCONTEXT"/>
+  <int value="770" label="IDENTITY_GETACCOUNTS"/>
+  <int value="771" label="FILEMANAGERPRIVATE_RESOLVEISOLATEDENTRIES"/>
+  <int value="772" label="FILESYSTEMPROVIDERINTERNAL_READFILEREQUESTEDSUCCESS"/>
+  <int value="773"
+      label="DELETED_FILESYSTEMPROVIDERINTERNAL_READFILEREQUESTEDERROR"/>
+  <int value="774" label="NETWORKINGPRIVATE_GETNETWORKS"/>
+  <int value="775" label="DELETED_WEBVIEW_SETNAME"/>
+  <int value="776" label="ENTERPRISE_PLATFORMKEYSINTERNAL_GENERATEKEY"/>
+  <int value="777" label="PLATFORMKEYSINTERNAL_SIGN"/>
+  <int value="778" label="ENTERPRISE_PLATFORMKEYSINTERNAL_GETTOKENS"/>
+  <int value="779" label="ENTERPRISE_PLATFORMKEYS_GETCERTIFICATES"/>
+  <int value="780" label="ENTERPRISE_PLATFORMKEYS_IMPORTCERTIFICATE"/>
+  <int value="781" label="ENTERPRISE_PLATFORMKEYS_REMOVECERTIFICATE"/>
+  <int value="782" label="FILEMANAGERPRIVATE_OPENINSPECTOR"/>
+  <int value="783" label="DELETED_STREAMSPRIVATE_ABORT"/>
+  <int value="784" label="MANAGEMENT_SETLAUNCHTYPE"/>
+  <int value="785" label="MANAGEMENT_GENERATEAPPFORLINK"/>
+  <int value="786" label="DELETED_GUESTVIEWINTERNAL_ALLOCATEINSTANCEID"/>
+  <int value="787" label="DELETED_WEBVIEW_NAVIGATE"/>
+  <int value="788" label="INPUTMETHODPRIVATE_GETCURRENTINPUTMETHOD"/>
+  <int value="789" label="INPUTMETHODPRIVATE_SETCURRENTINPUTMETHOD"/>
+  <int value="790" label="INPUTMETHODPRIVATE_GETINPUTMETHODS"/>
+  <int value="791" label="IDENTITY_GETPROFILEUSERINFO"/>
+  <int value="792" label="VIRTUALKEYBOARDPRIVATE_OPENSETTINGS"/>
+  <int value="793" label="BLUETOOTHLOWENERGY_CONNECT"/>
+  <int value="794" label="BLUETOOTHLOWENERGY_DISCONNECT"/>
+  <int value="795" label="DELETED_WEBSTOREPRIVATE_GETEPHEMERALAPPSENABLED"/>
+  <int value="796" label="DELETED_WEBSTOREPRIVATE_LAUNCHEPHEMERALAPP"/>
+  <int value="797" label="FILESYSTEMPROVIDERINTERNAL_OPERATIONREQUESTEDERROR"/>
+  <int value="798"
+      label="FILESYSTEMPROVIDERINTERNAL_OPERATIONREQUESTEDSUCCESS"/>
+  <int value="799" label="GUESTVIEWINTERNAL_CREATEGUEST"/>
+  <int value="800" label="WEBVIEWINTERNAL_CAPTUREVISIBLEREGION"/>
+  <int value="801" label="WEBVIEWINTERNAL_CONTEXTMENUSCREATE"/>
+  <int value="802" label="WEBVIEWINTERNAL_CONTEXTMENUSREMOVE"/>
+  <int value="803" label="WEBVIEWINTERNAL_CONTEXTMENUSREMOVEALL"/>
+  <int value="804" label="WEBVIEWINTERNAL_CONTEXTMENUSUPDATE"/>
+  <int value="805" label="WEBVIEWINTERNAL_CLEARDATA"/>
+  <int value="806" label="WEBVIEWINTERNAL_EXECUTESCRIPT"/>
+  <int value="807" label="WEBVIEWINTERNAL_FIND"/>
+  <int value="808" label="WEBVIEWINTERNAL_GETZOOM"/>
+  <int value="809" label="WEBVIEWINTERNAL_GO"/>
+  <int value="810" label="WEBVIEWINTERNAL_INSERTCSS"/>
+  <int value="811" label="WEBVIEWINTERNAL_NAVIGATE"/>
+  <int value="812" label="WEBVIEWINTERNAL_OVERRIDEUSERAGENT"/>
+  <int value="813" label="WEBVIEWINTERNAL_RELOAD"/>
+  <int value="814" label="WEBVIEWINTERNAL_SETNAME"/>
+  <int value="815" label="WEBVIEWINTERNAL_SETPERMISSION"/>
+  <int value="816" label="WEBVIEWINTERNAL_SETZOOM"/>
+  <int value="817" label="WEBVIEWINTERNAL_SHOWCONTEXTMENU"/>
+  <int value="818" label="WEBVIEWINTERNAL_STOP"/>
+  <int value="819" label="WEBVIEWINTERNAL_STOPFINDING"/>
+  <int value="820" label="WEBVIEWINTERNAL_TERMINATE"/>
+  <int value="821" label="BLUETOOTHLOWENERGY_STARTCHARACTERISTICNOTIFICATIONS"/>
+  <int value="822" label="BLUETOOTHLOWENERGY_STOPCHARACTERISTICNOTIFICATIONS"/>
+  <int value="823" label="DELETED_GCDPRIVATE_GETCLOUDDEVICELIST"/>
+  <int value="824" label="DELETED_GCDPRIVATE_QUERYFORNEWLOCALDEVICES"/>
+  <int value="825" label="DELETED_GCDPRIVATE_PREFETCHWIFIPASSWORD"/>
+  <int value="826" label="DELETED_GCDPRIVATE_ESTABLISHSESSION"/>
+  <int value="827" label="DELETED_GCDPRIVATE_SENDMESSAGE"/>
+  <int value="828" label="DELETED_GCDPRIVATE_CONFIRMCODE"/>
+  <int value="829" label="DELETED_GCDPRIVATE_TERMINATESESSION"/>
+  <int value="830" label="TABS_SETZOOM"/>
+  <int value="831" label="TABS_GETZOOM"/>
+  <int value="832" label="TABS_SETZOOMSETTINGS"/>
+  <int value="833" label="TABS_GETZOOMSETTINGS"/>
+  <int value="834" label="DELETED_GCDPRIVATE_GETCOMMANDDEFINITIONS"/>
+  <int value="835" label="DELETED_GCDPRIVATE_INSERTCOMMAND"/>
+  <int value="836" label="DELETED_GCDPRIVATE_GETCOMMAND"/>
+  <int value="837" label="DELETED_GCDPRIVATE_CANCELCOMMAND"/>
+  <int value="838" label="DELETED_GCDPRIVATE_GETCOMMANDSLIST"/>
+  <int value="839" label="APPVIEWINTERNAL_ATTACHFRAME"/>
+  <int value="840" label="APPVIEWINTERNAL_DENYREQUEST"/>
+  <int value="841" label="FILEMANAGERPRIVATEINTERNAL_GETDOWNLOADURL"/>
+  <int value="842" label="DELETED_EASYUNLOCKPRIVATE_PERFORMECDHKEYAGREEMENT"/>
+  <int value="843" label="DELETED_EASYUNLOCKPRIVATE_GENERATEECP256KEYPAIR"/>
+  <int value="844" label="DELETED_EASYUNLOCKPRIVATE_CREATESECUREMESSAGE"/>
+  <int value="845" label="DELETED_EASYUNLOCKPRIVATE_UNWRAPSECUREMESSAGE"/>
+  <int value="846" label="DELETED_LOGPRIVATE_STARTEVENTRECODER"/>
+  <int value="847" label="DELETED_LOGPRIVATE_STOPEVENTRECODER"/>
+  <int value="848" label="DELETED_LOGPRIVATE_DUMPLOGS"/>
+  <int value="849" label="SOCKET_SECURE"/>
+  <int value="850" label="SOCKETS_TCP_SECURE"/>
+  <int value="851" label="DELETED_EXPERIENCESAMPLINGPRIVATE_GETBROWSERINFO"/>
+  <int value="852"
+      label="DELETED_EASYUNLOCKPRIVATE_SEEKBLUETOOTHDEVICEBYADDRESS"/>
+  <int value="853" label="DELETED_EASYUNLOCKPRIVATE_GETSTRINGS"/>
+  <int value="854" label="DELETED_NOTIFICATIONPROVIDER_SENDONCLEAR"/>
+  <int value="855" label="DELETED_NOTIFICATIONPROVIDER_NOTIFYONCLEARED"/>
+  <int value="856" label="DELETED_NOTIFICATIONPROVIDER_NOTIFYONCLICKED"/>
+  <int value="857" label="DELETED_NOTIFICATIONPROVIDER_NOTIFYONBUTTONCLICKED"/>
+  <int value="858"
+      label="DELETED_NOTIFICATIONPROVIDER_NOTIFYONPERMISSIONLEVELCHANGED"/>
+  <int value="859" label="DELETED_NOTIFICATIONPROVIDER_NOTIFYONSHOWSETTINGS"/>
+  <int value="860" label="DELETED_NOTIFICATIONPROVIDER_GETNOTIFIER"/>
+  <int value="861" label="DELETED_NOTIFICATIONPROVIDER_GETALLNOTIFIERS"/>
+  <int value="862" label="DELETED_GCDPRIVATE_GETPREFETCHEDWIFINAMELIST"/>
+  <int value="863" label="GUESTVIEWINTERNAL_SETAUTOSIZE"/>
+  <int value="864" label="DELETED_COPRESENCEPRIVATE_SENDFOUND"/>
+  <int value="865" label="DELETED_COPRESENCEPRIVATE_SENDSAMPLES"/>
+  <int value="866" label="DELETED_COPRESENCEPRIVATE_SENDDETECT"/>
+  <int value="867" label="DELETED_COPRESENCEPRIVATE_SENDINITIALIZED"/>
+  <int value="868" label="DELETED_COPRESENCE_EXECUTE"/>
+  <int value="869" label="DELETED_COPRESENCE_SETAPIKEY"/>
+  <int value="870" label="DELETED_FILESYSTEM_OBSERVEDIRECTORY"/>
+  <int value="871" label="DELETED_FILESYSTEM_UNOBSERVEENTRY"/>
+  <int value="872" label="DELETED_FILESYSTEM_GETOBSERVEDENTRIES"/>
+  <int value="873" label="BROWSINGDATA_REMOVESERVICEWORKERS"/>
+  <int value="874" label="DELETED_USBPRIVATE_GETDEVICES"/>
+  <int value="875" label="DELETED_USBPRIVATE_GETDEVICEINFO"/>
+  <int value="876" label="DELETED_EASYUNLOCKPRIVATE_UPDATESCREENLOCKSTATE"/>
+  <int value="877" label="CAST_CHANNEL_GETLOGS"/>
+  <int value="878" label="DELETED_EASYUNLOCKPRIVATE_SETPERMITACCESS"/>
+  <int value="879" label="DELETED_EASYUNLOCKPRIVATE_GETPERMITACCESS"/>
+  <int value="880" label="DELETED_EASYUNLOCKPRIVATE_CLEARPERMITACCESS"/>
+  <int value="881" label="DELETED_EASYUNLOCKPRIVATE_SETREMOTEDEVICES"/>
+  <int value="882" label="DELETED_EASYUNLOCKPRIVATE_GETREMOTEDEVICES"/>
+  <int value="883" label="FILESYSTEMPROVIDER_GETALL"/>
+  <int value="884"
+      label="DELETED_EASYUNLOCKPRIVATE_CONNECTTOBLUETOOTHSERVICEINSECURELY"/>
+  <int value="885" label="MEDIAGALLERIES_ADDGALLERYWATCH"/>
+  <int value="886" label="MEDIAGALLERIES_REMOVEGALLERYWATCH"/>
+  <int value="887" label="DELETED_MEDIAGALLERIES_GETALLGALLERYWATCH"/>
+  <int value="888" label="DELETED_MEDIAGALLERIES_REMOVEALLGALLERYWATCH"/>
+  <int value="889" label="MANAGEMENT_GETSELF"/>
+  <int value="890" label="APP_CURRENTWINDOWINTERNAL_SETVISIBLEONALLWORKSPACES"/>
+  <int value="891" label="DELETED_EASYUNLOCKPRIVATE_GETSIGNINCHALLENGE"/>
+  <int value="892" label="DELETED_EASYUNLOCKPRIVATE_TRYSIGNINSECRET"/>
+  <int value="893" label="ACCESSIBILITY_PRIVATE_SETFOCUSRING"/>
+  <int value="894" label="USB_GETCONFIGURATION"/>
+  <int value="895" label="WEBVIEWINTERNAL_SETALLOWTRANSPARENCY"/>
+  <int value="896" label="DELETED_EASYUNLOCKPRIVATE_GETUSERINFO"/>
+  <int value="897" label="HOTWORDPRIVATE_GETLAUNCHSTATE"/>
+  <int value="898" label="HOTWORDPRIVATE_SETHOTWORDALWAYSONSEARCHENABLED"/>
+  <int value="899" label="WEBVIEWINTERNAL_LOADDATAWITHBASEURL"/>
+  <int value="900" label="DELETED_GUESTVIEWINTERNAL_DESTROYGUEST"/>
+  <int value="901" label="DELETED_COPRESENCESOCKET_CREATEPEER"/>
+  <int value="902" label="DELETED_COPRESENCESOCKET_DESTROYPEER"/>
+  <int value="903" label="DELETED_COPRESENCESOCKET_SEND"/>
+  <int value="904" label="DELETED_COPRESENCESOCKET_DISCONNECT"/>
+  <int value="905" label="DELETED_BOOKMARKMANAGERPRIVATE_SETVERSION"/>
+  <int value="906" label="FILESYSTEMPROVIDER_NOTIFY"/>
+  <int value="907" label="USB_GETUSERSELECTEDDEVICES"/>
+  <int value="908" label="INPUTMETHODPRIVATE_GETINPUTMETHODCONFIG"/>
+  <int value="909" label="DELETED_WALLPAPERPRIVATE_GETSYNCSETTING"/>
+  <int value="910" label="DELETED_COPRESENCE_SETAUTHTOKEN"/>
+  <int value="911" label="CAST_CHANNEL_SETAUTHORITYKEYS"/>
+  <int value="912" label="HOTWORDPRIVATE_STARTTRAINING"/>
+  <int value="913" label="HOTWORDPRIVATE_FINALIZESPEAKERMODEL"/>
+  <int value="914" label="HOTWORDPRIVATE_STOPTRAINING"/>
+  <int value="915" label="DELETED_GCDPRIVATE_STARTPAIRING"/>
+  <int value="916" label="VPNPROVIDER_CREATECONFIG"/>
+  <int value="917" label="VPNPROVIDER_DESTROYCONFIG"/>
+  <int value="918" label="VPNPROVIDER_SETPARAMETERS"/>
+  <int value="919" label="VPNPROVIDER_SENDPACKET"/>
+  <int value="920" label="VPNPROVIDER_NOTIFYCONNECTIONSTATECHANGED"/>
+  <int value="921" label="DOCUMENTSCAN_SCAN"/>
+  <int value="922" label="DELETED_EASYUNLOCKPRIVATE_GETUSERIMAGE"/>
+  <int value="923" label="HOTWORDPRIVATE_NOTIFYSPEAKERMODELSAVED"/>
+  <int value="924" label="HOTWORDPRIVATE_GETLOCALIZEDSTRINGS"/>
+  <int value="925" label="HOTWORDPRIVATE_SETAUDIOHISTORYENABLED"/>
+  <int value="926" label="HOTWORDPRIVATE_GETAUDIOHISTORYENABLED"/>
+  <int value="927"
+      label="DELETED_APP_CURRENTWINDOWINTERNAL_SETINTERCEPTALLKEYS"/>
+  <int value="928" label="DELETED_LAUNCHERPAGE_PUSHSUBPAGE"/>
+  <int value="929" label="DELETED_LAUNCHERPAGE_SHOW"/>
+  <int value="930" label="AUTOTESTPRIVATE_SETTOUCHPADSENSITIVITY"/>
+  <int value="931" label="AUTOTESTPRIVATE_SETTAPTOCLICK"/>
+  <int value="932" label="AUTOTESTPRIVATE_SETTHREEFINGERCLICK"/>
+  <int value="933" label="AUTOTESTPRIVATE_SETTAPDRAGGING"/>
+  <int value="934" label="AUTOTESTPRIVATE_SETNATURALSCROLL"/>
+  <int value="935" label="AUTOTESTPRIVATE_SETMOUSESENSITIVITY"/>
+  <int value="936" label="AUTOTESTPRIVATE_SETPRIMARYBUTTONRIGHT"/>
+  <int value="937" label="DELETED_COPRESENCEENDPOINTS_CREATELOCALENDPOINT"/>
+  <int value="938" label="DELETED_COPRESENCEENDPOINTS_DESTROYLOCALENDPOINT"/>
+  <int value="939" label="DELETED_COPRESENCEENDPOINTS_SEND"/>
+  <int value="940" label="DELETED_INLINE_INSTALL_PRIVATE_INSTALL"/>
+  <int value="941" label="DELETED_LAUNCHERPAGE_SETENABLED"/>
+  <int value="942" label="DELETED_CRYPTOTOKENPRIVATE_REQUESTPERMISSION"/>
+  <int value="943" label="BLUETOOTHPRIVATE_DISCONNECTALL"/>
+  <int value="944" label="FILEMANAGERPRIVATEINTERNAL_GETMIMETYPE"/>
+  <int value="945" label="USB_SETCONFIGURATION"/>
+  <int value="946" label="DELETED_EASYUNLOCKPRIVATE_GETCONNECTIONINFO"/>
+  <int value="947" label="FILEMANAGERPRIVATEINTERNAL_COMPUTECHECKSUM"/>
+  <int value="948" label="PRINTERPROVIDERINTERNAL_REPORTPRINTRESULT"/>
+  <int value="949" label="PRINTERPROVIDERINTERNAL_REPORTPRINTERCAPABILITY"/>
+  <int value="950" label="PRINTERPROVIDERINTERNAL_REPORTPRINTERS"/>
+  <int value="951" label="FILESYSTEMPROVIDER_GET"/>
+  <int value="952" label="FILEMANAGERPRIVATE_SEARCHFILESBYHASHES"/>
+  <int value="953" label="DELETED_EASYUNLOCKPRIVATE_SHOWERRORBUBBLE"/>
+  <int value="954" label="DELETED_EXTENSIONVIEWINTERNAL_NAVIGATE"/>
+  <int value="955" label="DELETED_NETWORKING_CONFIG_SETNETWORKFILTER"/>
+  <int value="956" label="DELETED_NETWORKING_CONFIG_FINISHAUTHENTICATION"/>
+  <int value="957" label="PLATFORMKEYSINTERNAL_SELECTCLIENTCERTIFICATES"/>
+  <int value="958" label="DELETED_CRYPTOTOKENPRIVATE_CANORIGINASSERTAPPID"/>
+  <int value="959" label="DELETED_EASYUNLOCKPRIVATE_SETAUTOPAIRINGRESULT"/>
+  <int value="960" label="DELETED_FILEMANAGERPRIVATE_ISUMAENABLED"/>
+  <int value="961" label="WEBVIEWINTERNAL_SETALLOWSCALING"/>
+  <int value="962" label="PLATFORMKEYSINTERNAL_GETPUBLICKEY"/>
+  <int value="963" label="RUNTIME_OPENOPTIONSPAGE"/>
+  <int value="964" label="DELETED_AUDIOMODEM_TRANSMIT"/>
+  <int value="965" label="DELETED_AUDIOMODEM_STOPTRANSMIT"/>
+  <int value="966" label="DELETED_AUDIOMODEM_RECEIVE"/>
+  <int value="967" label="DELETED_AUDIOMODEM_STOPRECEIVE"/>
+  <int value="968" label="WEBRTCLOGGINGPRIVATE_STORE"/>
+  <int value="969" label="WEBRTCLOGGINGPRIVATE_UPLOADSTORED"/>
+  <int value="970" label="FILEMANAGERPRIVATEINTERNAL_SETENTRYTAG"/>
+  <int value="971" label="INPUTMETHODPRIVATE_FETCHALLDICTIONARYWORDS"/>
+  <int value="972" label="INPUTMETHODPRIVATE_ADDWORDTODICTIONARY"/>
+  <int value="973"
+      label="DASHBOARDPRIVATE_SHOWPERMISSIONPROMPTFORDELEGATEDINSTALL"/>
+  <int value="974" label="PRINTERPROVIDERINTERNAL_GETPRINTDATA"/>
+  <int value="975" label="VIRTUALKEYBOARDPRIVATE_SETMODE"/>
+  <int value="976" label="NETWORKINGPRIVATE_STARTACTIVATE"/>
+  <int value="977" label="FILEMANAGERPRIVATE_GRANTACCESS"/>
+  <int value="978" label="DEVELOPERPRIVATE_GETEXTENSIONSINFO"/>
+  <int value="979" label="DEVELOPERPRIVATE_GETEXTENSIONINFO"/>
+  <int value="980" label="FILEMANAGERPRIVATE_ENABLEEXTERNALFILESCHEME"/>
+  <int value="981" label="DEVELOPERPRIVATE_UPDATEEXTENSIONCONFIGURATION"/>
+  <int value="982" label="DEVELOPERPRIVATE_DELETEEXTENSIONERRORS"/>
+  <int value="983" label="FILEMANAGERPRIVATE_ISPIEXLOADERENABLED"/>
+  <int value="984" label="HOTWORDPRIVATE_SPEAKERMODELEXISTSRESULT"/>
+  <int value="985" label="SETTINGSPRIVATE_SETPREF"/>
+  <int value="986" label="DELETED_SETTINGSPRIVATE_SETDOUBLEPREF"/>
+  <int value="987" label="DELETED_SETTINGSPRIVATE_SETSTRINGPREF"/>
+  <int value="988" label="DELETED_SETTINGSPRIVATE_SETURLPREF"/>
+  <int value="989" label="SETTINGSPRIVATE_GETALLPREFS"/>
+  <int value="990" label="SETTINGSPRIVATE_GETPREF"/>
+  <int value="991" label="NETWORKINGPRIVATE_FORGETNETWORK"/>
+  <int value="992" label="DELETED_EASYUNLOCKPRIVATE_HIDEERRORBUBBLE"/>
+  <int value="993" label="WEBVIEWINTERNAL_SETZOOMMODE"/>
+  <int value="994" label="WEBVIEWINTERNAL_GETZOOMMODE"/>
+  <int value="995" label="DELETED_LAUNCHERSEARCHPROVIDER_SETSEARCHRESULTS"/>
+  <int value="996" label="DELETED_DATAREDUCTIONPROXY_CLEARDATASAVINGS"/>
+  <int value="997" label="BLUETOOTHPRIVATE_SETDISCOVERYFILTER"/>
+  <int value="998" label="FILESYSTEM_GETVOLUMELIST"/>
+  <int value="999" label="NETWORKINGPRIVATE_GETDEVICESTATES"/>
+  <int value="1000" label="DEVELOPERPRIVATE_GETPROFILECONFIGURATION"/>
+  <int value="1001" label="DEVELOPERPRIVATE_UPDATEPROFILECONFIGURATION"/>
+  <int value="1002" label="SOCKETS_UDP_SETBROADCAST"/>
+  <int value="1003" label="FILEMANAGERPRIVATE_GETPROVIDERS"/>
+  <int value="1004" label="WEBVIEWINTERNAL_ADDCONTENTSCRIPTS"/>
+  <int value="1005" label="WEBVIEWINTERNAL_REMOVECONTENTSCRIPTS"/>
+  <int value="1006" label="DEVELOPERPRIVATE_REPAIREXTENSION"/>
+  <int value="1007" label="DEVELOPERPRIVATE_SHOWOPTIONS"/>
+  <int value="1008" label="DEVELOPERPRIVATE_SHOWPATH"/>
+  <int value="1009" label="FILEMANAGERPRIVATE_ADDPROVIDEDFILESYSTEM"/>
+  <int value="1010" label="FILEMANAGERPRIVATE_CONFIGUREVOLUME"/>
+  <int value="1011" label="DELETED_SEARCHENGINESPRIVATE_GETSEARCHENGINES"/>
+  <int value="1012"
+      label="DELETED_SEARCHENGINESPRIVATE_SETSELECTEDSEARCHENGINE"/>
+  <int value="1013" label="AUTOFILLPRIVATE_SAVEADDRESS"/>
+  <int value="1014" label="AUTOFILLPRIVATE_GETADDRESSCOMPONENTS"/>
+  <int value="1015" label="AUTOFILLPRIVATE_SAVECREDITCARD"/>
+  <int value="1016" label="AUTOFILLPRIVATE_REMOVEENTRY"/>
+  <int value="1017" label="DELETED_AUTOFILLPRIVATE_VALIDATEPHONENUMBERS"/>
+  <int value="1018" label="AUTOFILLPRIVATE_MASKCREDITCARD"/>
+  <int value="1019" label="INSTANCEID_GETID"/>
+  <int value="1020" label="INSTANCEID_GETCREATIONTIME"/>
+  <int value="1021" label="INSTANCEID_GETTOKEN"/>
+  <int value="1022" label="INSTANCEID_DELETETOKEN"/>
+  <int value="1023" label="INSTANCEID_DELETEID"/>
+  <int value="1024" label="DELETED_GCDPRIVATE_GETDEVICEINFO"/>
+  <int value="1025" label="DELETED_SEARCHENGINESPRIVATE_GETHOTWORDSTATE"/>
+  <int value="1026" label="DELETED_SEARCHENGINESPRIVATE_ADDOTHERSEARCHENGINE"/>
+  <int value="1027" label="DELETED_SEARCHENGINESPRIVATE_REMOVESEARCHENGINE"/>
+  <int value="1028" label="DELETED_SEARCHENGINESPRIVATE_UPDATESEARCHENGINE"/>
+  <int value="1029" label="DELETED_SEARCHENGINESPRIVATE_OPTINTOHOTWORDING"/>
+  <int value="1030" label="DELETED_WEBSTOREWIDGETPRIVATE_INSTALLWEBSTOREITEM"/>
+  <int value="1031" label="DELETED_WEBSTOREWIDGETPRIVATE_GETSTRINGS"/>
+  <int value="1032" label="WEBRTCDESKTOPCAPTUREPRIVATE_CHOOSEDESKTOPMEDIA"/>
+  <int value="1033"
+      label="WEBRTCDESKTOPCAPTUREPRIVATE_CANCELCHOOSEDESKTOPMEDIA"/>
+  <int value="1034" label="BLUETOOTHLOWENERGY_REGISTERADVERTISEMENT"/>
+  <int value="1035" label="BLUETOOTHLOWENERGY_UNREGISTERADVERTISEMENT"/>
+  <int value="1036"
+      label="DELETED_PASSWORDSPRIVATE_CANPASSWORDACCOUNTBEMANAGED"/>
+  <int value="1037" label="PASSWORDSPRIVATE_REMOVECREDENTIAL"/>
+  <int value="1038" label="PASSWORDSPRIVATE_REMOVEPASSWORDEXCEPTION"/>
+  <int value="1039" label="PASSWORDSPRIVATE_REQUESTPLAINTEXTPASSWORD"/>
+  <int value="1040" label="DELETED_LAUNCHERPAGE_HIDE"/>
+  <int value="1041" label="PLATFORMKEYS_VERIFYTLSSERVERCERTIFICATE"/>
+  <int value="1042" label="DEVELOPERPRIVATE_SETSHORTCUTHANDLINGSUSPENDED"/>
+  <int value="1043" label="DEVELOPERPRIVATE_UPDATEEXTENSIONCOMMAND"/>
+  <int value="1044" label="DELETED_INPUTMETHODPRIVATE_GETENCRYPTSYNCENABLED"/>
+  <int value="1045" label="USERSPRIVATE_GETUSERS"/>
+  <int value="1046" label="USERSPRIVATE_ADDUSER"/>
+  <int value="1047" label="USERSPRIVATE_REMOVEUSER"/>
+  <int value="1048" label="USERSPRIVATE_ISCURRENTUSEROWNER"/>
+  <int value="1049" label="USERSPRIVATE_ISUSERLISTMANAGED"/>
+  <int value="1050" label="PRINTERPROVIDERINTERNAL_REPORTUSBPRINTERINFO"/>
+  <int value="1051" label="WEBCAMPRIVATE_OPENSERIALWEBCAM"/>
+  <int value="1052" label="WEBCAMPRIVATE_CLOSEWEBCAM"/>
+  <int value="1053" label="SERIAL_SETBREAK"/>
+  <int value="1054" label="SERIAL_CLEARBREAK"/>
+  <int value="1055" label="DELETED_EXTENSIONVIEWINTERNAL_LOADSRC"/>
+  <int value="1056" label="DELETED_EXTENSIONVIEWINTERNAL_PARSESRC"/>
+  <int value="1057" label="DELETED_HID_GETUSERSELECTEDDEVICES"/>
+  <int value="1058"
+      label="FILESYSTEMPROVIDERINTERNAL_GETACTIONSREQUESTEDSUCCESS"/>
+  <int value="1059"
+      label="DASHBOARDPRIVATE_SHOWPERMISSIONPROMPTFORDELEGATEDBUNDLEINSTALL"/>
+  <int value="1060" label="FILEMANAGERPRIVATEINTERNAL_GETCUSTOMACTIONS"/>
+  <int value="1061" label="FILEMANAGERPRIVATEINTERNAL_EXECUTECUSTOMACTION"/>
+  <int value="1062" label="MDNS_FORCEDISCOVERY"/>
+  <int value="1063" label="LANGUAGESETTINGSPRIVATE_GETLANGUAGELIST"/>
+  <int value="1064" label="DELETED_LANGUAGESETTINGSPRIVATE_SETLANGUAGELIST"/>
+  <int value="1065"
+      label="LANGUAGESETTINGSPRIVATE_GETSPELLCHECKDICTIONARYSTATUS"/>
+  <int value="1066" label="LANGUAGESETTINGSPRIVATE_GETSPELLCHECKWORDS"/>
+  <int value="1067" label="LANGUAGESETTINGSPRIVATE_GETTRANSLATETARGETLANGUAGE"/>
+  <int value="1068" label="LANGUAGESETTINGSPRIVATE_GETINPUTMETHODLISTS"/>
+  <int value="1069" label="LANGUAGESETTINGSPRIVATE_ADDINPUTMETHOD"/>
+  <int value="1070" label="LANGUAGESETTINGSPRIVATE_REMOVEINPUTMETHOD"/>
+  <int value="1071" label="FILEMANAGERPRIVATE_CANCELALLFILETRANSFERS"/>
+  <int value="1072" label="NETWORKINGPRIVATE_UNLOCKCELLULARSIM"/>
+  <int value="1073" label="NETWORKINGPRIVATE_SETCELLULARSIMSTATE"/>
+  <int value="1074" label="ENTERPRISE_DEVICEATTRIBUTES_GETDIRECTORYDEVICEID"/>
+  <int value="1075" label="CASTDEVICESPRIVATE_UPDATEDEVICES"/>
+  <int value="1076" label="SYSTEM_DISPLAY_ENABLEUNIFIEDDESKTOP"/>
+  <int value="1077" label="BROWSINGDATA_REMOVECACHESTORAGE"/>
+  <int value="1078" label="VIRTUALKEYBOARDPRIVATE_SETKEYBOARDSTATE"/>
+  <int value="1079" label="VIRTUALKEYBOARDPRIVATE_SETHOTRODKEYBOARD"/>
+  <int value="1080" label="CERTIFICATEPROVIDERINTERNAL_REPORTSIGNATURE"/>
+  <int value="1081" label="CERTIFICATEPROVIDERINTERNAL_REPORTCERTIFICATES"/>
+  <int value="1082" label="BLUETOOTHPRIVATE_PAIR"/>
+  <int value="1083" label="DELETED_EASYUNLOCKPRIVATE_FINDSETUPCONNECTION"/>
+  <int value="1084" label="RESOURCESPRIVATE_GETSTRINGS"/>
+  <int value="1085" label="USB_GETCONFIGURATIONS"/>
+  <int value="1086" label="DELETED_EASYUNLOCKPRIVATE_SETUPCONNECTIONSTATUS"/>
+  <int value="1087"
+      label="DELETED_EASYUNLOCKPRIVATE_SETUPCONNECTIONDISCONNECT"/>
+  <int value="1088" label="DELETED_EASYUNLOCKPRIVATE_SETUPCONNECTIONSEND"/>
+  <int value="1089" label="DELETED_DATAREDUCTIONPROXY_GETDATAUSAGE"/>
+  <int value="1090"
+      label="DELETED_EASYUNLOCKPRIVATE_SETUPCONNECTIONGETDEVICEADDRESS"/>
+  <int value="1091" label="DELETED_TABCAPTURE_CAPTUREOFFSCREENTAB"/>
+  <int value="1092" label="LANGUAGESETTINGSPRIVATE_ADDSPELLCHECKWORD"/>
+  <int value="1093" label="LANGUAGESETTINGSPRIVATE_REMOVESPELLCHECKWORD"/>
+  <int value="1094" label="SETTINGSPRIVATE_GETDEFAULTZOOMFUNCTION"/>
+  <int value="1095" label="SETTINGSPRIVATE_SETDEFAULTZOOMFUNCTION"/>
+  <int value="1096" label="BLUETOOTHPRIVATE_CONNECT"/>
+  <int value="1097" label="BLUETOOTHPRIVATE_FORGETDEVICE"/>
+  <int value="1098" label="DELETED_DISPLAYSOURCE_GETAVAILABLESINKS"/>
+  <int value="1099" label="DELETED_DISPLAYSOURCE_REQUESTAUTHENTICATION"/>
+  <int value="1100" label="WEBRTCLOGGINGPRIVATE_STARTAUDIODEBUGRECORDINGS"/>
+  <int value="1101" label="WEBRTCLOGGINGPRIVATE_STOPAUDIODEBUGRECORDINGS"/>
+  <int value="1102" label="TERMINALPRIVATE_ACKOUTPUT"/>
+  <int value="1103" label="INPUT_IME_CREATEWINDOW"/>
+  <int value="1104" label="INPUTMETHODPRIVATE_SETXKBLAYOUT"/>
+  <int value="1105" label="ACCESSIBILITY_PRIVATE_SETKEYBOARDLISTENER"/>
+  <int value="1106" label="INPUT_IME_ACTIVATE"/>
+  <int value="1107" label="INPUT_IME_DEACTIVATE"/>
+  <int value="1108" label="ENTERPRISE_PLATFORMKEYS_CHALLENGEMACHINEKEY"/>
+  <int value="1109" label="ENTERPRISE_PLATFORMKEYS_CHALLENGEUSERKEY"/>
+  <int value="1110"
+      label="DELETED_INPUTMETHODPRIVATE_NOTIFYIMEMENUITEMACTIVATED"/>
+  <int value="1111" label="INPUT_IME_SHOWWINDOW"/>
+  <int value="1112" label="INPUT_IME_HIDEWINDOW"/>
+  <int value="1113" label="INPUTMETHODPRIVATE_SHOWINPUTVIEW"/>
+  <int value="1114" label="DELETED_WALLPAPERPRIVATE_RECORDWALLPAPERUMA"/>
+  <int value="1115" label="AUTOTESTPRIVATE_GETVISIBLENOTIFICATIONS"/>
+  <int value="1116" label="DELETED_WEBRTCLOGGINGPRIVATE_STARTRTCEVENTLOGGING"/>
+  <int value="1117" label="DELETED_WEBRTCLOGGINGPRIVATE_STOPRTCEVENTLOGGING"/>
+  <int value="1118" label="PASSWORDSPRIVATE_GETSAVEDPASSWORDLIST"/>
+  <int value="1119" label="PASSWORDSPRIVATE_GETPASSWORDEXCEPTIONLIST"/>
+  <int value="1120" label="INPUTMETHODPRIVATE_OPENOPTIONSPAGE"/>
+  <int value="1121" label="DELETED_FEEDBACKPRIVATE_LOGSRTPROMPTRESULT"/>
+  <int value="1122" label="BLUETOOTHLOWENERGY_CREATESERVICE"/>
+  <int value="1123" label="BLUETOOTHLOWENERGY_CREATECHARACTERISTIC"/>
+  <int value="1124" label="BLUETOOTHLOWENERGY_CREATEDESCRIPTOR"/>
+  <int value="1125" label="BLUETOOTHLOWENERGY_REGISTERSERVICE"/>
+  <int value="1126" label="BLUETOOTHLOWENERGY_UNREGISTERSERVICE"/>
+  <int value="1127" label="BLUETOOTHLOWENERGY_SENDREQUESTRESPONSE"/>
+  <int value="1128"
+      label="BLUETOOTHLOWENERGY_NOTIFYCHARACTERISTICVALUECHANGED"/>
+  <int value="1129" label="BLUETOOTHLOWENERGY_REMOVESERVICE"/>
+  <int value="1130" label="AUTOFILLPRIVATE_GETADDRESSLIST"/>
+  <int value="1131" label="AUTOFILLPRIVATE_GETCREDITCARDLIST"/>
+  <int value="1132" label="SYSTEM_DISPLAY_OVERSCANCALIBRATIONSTART"/>
+  <int value="1133" label="SYSTEM_DISPLAY_OVERSCANCALIBRATIONADJUST"/>
+  <int value="1134" label="SYSTEM_DISPLAY_OVERSCANCALIBRATIONRESET"/>
+  <int value="1135" label="SYSTEM_DISPLAY_OVERSCANCALIBRATIONCOMPLETE"/>
+  <int value="1136" label="AUTOFILLPRIVATE_GETCOUNTRYLIST"/>
+  <int value="1137" label="RUNTIME_RESTARTAFTERDELAY"/>
+  <int value="1138" label="SYSTEM_DISPLAY_SETDISPLAYLAYOUT"/>
+  <int value="1139" label="SYSTEM_DISPLAY_GETDISPLAYLAYOUT"/>
+  <int value="1140" label="QUICKUNLOCKPRIVATE_SETMODES"/>
+  <int value="1141" label="QUICKUNLOCKPRIVATE_GETACTIVEMODES"/>
+  <int value="1142" label="QUICKUNLOCKPRIVATE_GETAVAILABLEMODES"/>
+  <int value="1143" label="WEBSTOREPRIVATE_ISPENDINGCUSTODIANAPPROVAL"/>
+  <int value="1144" label="TABS_DISCARD"/>
+  <int value="1145" label="LANGUAGESETTINGSPRIVATE_ENABLELANGUAGE"/>
+  <int value="1146" label="LANGUAGESETTINGSPRIVATE_DISABLELANGUAGE"/>
+  <int value="1147" label="FILEMANAGERPRIVATEINTERNAL_GETDIRECTORYSIZE"/>
+  <int value="1148" label="BLUETOOTHLOWENERGY_SETADVERTISINGINTERVAL"/>
+  <int value="1149" label="SYSTEM_DISPLAY_SHOWNATIVETOUCHCALIBRATION"/>
+  <int value="1150" label="SYSTEM_DISPLAY_COMPLETECUSTOMTOUCHCALIBRATION"/>
+  <int value="1151" label="SYSTEM_DISPLAY_CLEARTOUCHCALIBRATION"/>
+  <int value="1152" label="CERTIFICATEPROVIDER_REQUESTPIN"/>
+  <int value="1153" label="CERTIFICATEPROVIDER_STOPPINREQUEST"/>
+  <int value="1154" label="QUICKUNLOCKPRIVATE_CHECKCREDENTIAL"/>
+  <int value="1155" label="QUICKUNLOCKPRIVATE_GETCREDENTIALREQUIREMENTS"/>
+  <int value="1156" label="CLIPBOARD_SETIMAGEDATA"/>
+  <int value="1157" label="NETWORKINGPRIVATE_GETGLOBALPOLICY"/>
+  <int value="1158" label="DELETED_DIAL_FETCHDEVICEDESCRIPTION"/>
+  <int value="1159" label="SYSTEM_DISPLAY_STARTCUSTOMTOUCHCALIBRATION"/>
+  <int value="1160" label="AUDIO_GETMUTE"/>
+  <int value="1161" label="AUDIO_SETMUTE"/>
+  <int value="1162" label="AUDIO_GETDEVICES"/>
+  <int value="1163" label="VIRTUALKEYBOARD_RESTRICTFEATURES"/>
+  <int value="1164" label="DELETED_NETWORKINGCASTPRIVATE_VERIFYDESTINATION"/>
+  <int value="1165"
+      label="DELETED_NETWORKINGCASTPRIVATE_VERIFYANDENCRYPTCREDENTIALS"/>
+  <int value="1166" label="DELETED_NETWORKINGCASTPRIVATE_VERIFYANDENCRYPTDATA"/>
+  <int value="1167"
+      label="DELETED_NETWORKINGCASTPRIVATE_SETWIFITDLSENABLEDSTATE"/>
+  <int value="1168" label="DELETED_NETWORKINGCASTPRIVATE_GETWIFITDLSSTATUS"/>
+  <int value="1169" label="ACCESSIBILITY_PRIVATE_DARKENSCREEN"/>
+  <int value="1170" label="WEBRTC_AUDIO_PRIVATE_SET_AUDIO_EXPERIMENTS"/>
+  <int value="1171" label="AUTOTESTPRIVATE_GETPLAYSTORESTATE"/>
+  <int value="1172" label="AUTOTESTPRIVATE_SETPLAYSTOREENABLED"/>
+  <int value="1173" label="APP_CURRENTWINDOWINTERNAL_SETACTIVATEONPOINTER"/>
+  <int value="1174" label="MEDIAPERCEPTIONPRIVATE_GETSTATE"/>
+  <int value="1175" label="MEDIAPERCEPTIONPRIVATE_SETSTATE"/>
+  <int value="1176" label="MEDIAPERCEPTIONPRIVATE_GETDIAGNOSTICS"/>
+  <int value="1177" label="NETWORKINGPRIVATE_GETCERTIFICATELISTS"/>
+  <int value="1178" label="DELETED_ACCESSIBILITY_PRIVATE_SETSWITCHACCESSKEYS"/>
+  <int value="1179" label="FEEDBACKPRIVATE_READLOGSOURCE"/>
+  <int value="1180" label="LOCKSCREENDATA_CREATE"/>
+  <int value="1181" label="LOCKSCREENDATA_GETALL"/>
+  <int value="1182" label="LOCKSCREENDATA_GETCONTENT"/>
+  <int value="1183" label="LOCKSCREENDATA_SETCONTENT"/>
+  <int value="1184" label="LOCKSCREENDATA_DELETE"/>
+  <int value="1185" label="BLUETOOTHLOWENERGY_RESETADVERTISING"/>
+  <int value="1186" label="WEBVIEWINTERNAL_SETAUDIOMUTED"/>
+  <int value="1187" label="WEBVIEWINTERNAL_ISAUDIOMUTED"/>
+  <int value="1188" label="WEBVIEWINTERNAL_GETAUDIOSTATE"/>
+  <int value="1189" label="FILEMANAGERPRIVATE_GETRECENTFILES"/>
+  <int value="1190" label="FILEMANAGERPRIVATE_RENAMEVOLUME"/>
+  <int value="1191" label="AUTOTESTPRIVATE_SETMOUSEREVERSESCROLL"/>
+  <int value="1192" label="DELETED_METRICSPRIVATE_RECORDSPARSEHASHABLE"/>
+  <int value="1193" label="NETWORKINGPRIVATE_SELECTCELLULARMOBILENETWORK"/>
+  <int value="1194" label="PASSWORDSPRIVATE_IMPORTPASSWORDS"/>
+  <int value="1195" label="PASSWORDSPRIVATE_EXPORTPASSWORDS"/>
+  <int value="1196"
+      label="PASSWORDSPRIVATE_UNDOREMOVESAVEDPASSWORDOREXCEPTION"/>
+  <int value="1197"
+      label="ACCESSIBILITY_PRIVATE_SETNATIVECHROMEVOXARCSUPPORTFORCURRENTAPP"/>
+  <int value="1198"
+      label="LANGUAGESETTINGSPRIVATE_SETENABLETRANSLATIONFORLANGUAGE"/>
+  <int value="1199" label="LANGUAGESETTINGSPRIVATE_MOVELANGUAGE"/>
+  <int value="1200" label="MEDIAPERCEPTIONPRIVATE_SETANALYTICSCOMPONENT"/>
+  <int value="1201" label="ACCESSIBILITY_PRIVATE_SETHIGHLIGHTS"/>
+  <int value="1202" label="WEBRTCLOGGINGPRIVATE_GETLOGSDIRECTORY"/>
+  <int value="1203" label="VIRTUALKEYBOARDPRIVATE_SETDRAGGABLEAREA"/>
+  <int value="1204" label="METRICSPRIVATE_RECORDBOOLEAN"/>
+  <int value="1205" label="METRICSPRIVATE_RECORDENUMERATIONVALUE"/>
+  <int value="1206" label="DEVELOPERPRIVATE_NOTIFYDRAGINSTALLINPROGRESS"/>
+  <int value="1207" label="AUTOTESTPRIVATE_GETPRINTERLIST"/>
+  <int value="1208" label="DEVELOPERPRIVATE_GETEXTENSIONSIZE"/>
+  <int value="1209"
+      label="DELETED_CRYPTOTOKENPRIVATE_ISAPPIDHASHINENTERPRISECONTEXT"/>
+  <int value="1210" label="DELETED_CRYPTOTOKENPRIVATE_CANAPPIDGETATTESTATION"/>
+  <int value="1211" label="SYSTEM_DISPLAY_SETMIRRORMODE"/>
+  <int value="1212" label="TTSENGINE_UPDATEVOICES"/>
+  <int value="1213" label="PASSWORDSPRIVATE_REQUESTEXPORTPROGRESSSTATUS"/>
+  <int value="1214" label="DELETED_WALLPAPERPRIVATE_GETCOLLECTIONSINFO"/>
+  <int value="1215" label="DELETED_WALLPAPERPRIVATE_GETIMAGESINFO"/>
+  <int value="1216" label="ACCESSIBILITY_PRIVATE_SENDSYNTHETICKEYEVENT"/>
+  <int value="1217" label="DELETED_WALLPAPERPRIVATE_GETLOCALIMAGEPATHS"/>
+  <int value="1218" label="DELETED_WALLPAPERPRIVATE_GETLOCALIMAGEDATA"/>
+  <int value="1219" label="ENTERPRISE_DEVICEATTRIBUTES_GETDEVICESERIALNUMBER"/>
+  <int value="1220" label="ENTERPRISE_DEVICEATTRIBUTES_GETDEVICEASSETID"/>
+  <int value="1221"
+      label="ENTERPRISE_DEVICEATTRIBUTES_GETDEVICEANNOTATEDLOCATION"/>
+  <int value="1222" label="DELETED_PASSWORDSPRIVATE_CANCELEXPORTPASSWORDS"/>
+  <int value="1223" label="FILEMANAGERPRIVATE_MARKCACHEASMOUNTED"/>
+  <int value="1224" label="DELETED_WALLPAPERPRIVATE_CONFIRMPREVIEWWALLPAPER"/>
+  <int value="1225" label="DELETED_WALLPAPERPRIVATE_CANCELPREVIEWWALLPAPER"/>
+  <int value="1226" label="WEBRTCLOGGINGPRIVATE_STARTEVENTLOGGING"/>
+  <int value="1227" label="VIRTUALKEYBOARDPRIVATE_SETCONTAINERBEHAVIOR"/>
+  <int value="1228" label="QUICKUNLOCKPRIVATE_GETAUTHTOKEN"/>
+  <int value="1229" label="QUICKUNLOCKPRIVATE_SETLOCKSCREENENABLED"/>
+  <int value="1230" label="LANGUAGESETTINGSPRIVATE_RETRYDOWNLOADDICTIONARY"/>
+  <int value="1231" label="DELETED_DECLARATIVENETREQUEST_ADDALLOWEDPAGES"/>
+  <int value="1232" label="DELETED_DECLARATIVENETREQUEST_REMOVEALLOWEDPAGES"/>
+  <int value="1233" label="DELETED_DECLARATIVENETREQUEST_GETALLOWEDPAGES"/>
+  <int value="1234" label="DEVELOPERPRIVATE_INSTALLDROPPEDFILE"/>
+  <int value="1235" label="AUTOMATIONINTERNAL_ENABLETREE"/>
+  <int value="1236" label="AUTOMATIONINTERNAL_QUERYSELECTOR"/>
+  <int value="1237" label="DEBUGGER_GETTARGETS"/>
+  <int value="1238" label="NOTIFICATIONS_GETPERMISSIONLEVEL"/>
+  <int value="1239" label="DELETED_FILEMANAGERPRIVATE_ENSUREFILEDOWNLOADED"/>
+  <int value="1240" label="FILEMANAGERPRIVATE_OPENSETTINGSSUBPAGE"/>
+  <int value="1241"
+      label="ENTERPRISEREPORTINGPRIVATE_UPLOADCHROMEDESKTOPREPORT"/>
+  <int value="1242" label="CECPRIVATE_SENDSTANDBY"/>
+  <int value="1243" label="CECPRIVATE_SENDWAKEUP"/>
+  <int value="1244" label="WEBSTOREPRIVATE_GETREFERRERCHAIN"/>
+  <int value="1245" label="AUTOTESTPRIVATE_UPDATEPRINTER"/>
+  <int value="1246" label="AUTOTESTPRIVATE_REMOVEPRINTER"/>
+  <int value="1247"
+      label="DELETED_WALLPAPERPRIVATE_GETCURRENTWALLPAPERTHUMBNAIL"/>
+  <int value="1248" label="ACCESSIBILITY_PRIVATE_SETSELECTTOSPEAKSTATE"/>
+  <int value="1249" label="DELETED_INPUTMETHODPRIVATE_GETCOMPOSITIONBOUNDS"/>
+  <int value="1250" label="DELETED_FILEMANAGERPRIVATE_ISCROSTINIENABLED"/>
+  <int value="1251" label="FILEMANAGERPRIVATE_MOUNTCROSTINI"/>
+  <int value="1252" label="CECPRIVATE_QUERYDISPLAYCECPOWERSTATE"/>
+  <int value="1253" label="DEVELOPERPRIVATE_ADDHOSTPERMISSION"/>
+  <int value="1254" label="DEVELOPERPRIVATE_REMOVEHOSTPERMISSION"/>
+  <int value="1255" label="MEDIAPERCEPTIONPRIVATE_SETCOMPONENTPROCESSSTATE"/>
+  <int value="1256" label="USERSPRIVATE_GETCURRENTUSER"/>
+  <int value="1257" label="DELETED_WALLPAPERPRIVATE_GETSURPRISEMEIMAGE"/>
+  <int value="1258" label="VIRTUALKEYBOARDPRIVATE_SETOCCLUDEDBOUNDS"/>
+  <int value="1259" label="DELETED_SYSTEM_POWER_SOURCE_GETPOWERSOURCEINFO"/>
+  <int value="1260" label="DELETED_SYSTEM_POWER_SOURCE_REQUESTSTATUSUPDATE"/>
+  <int value="1261" label="INPUTMETHODPRIVATE_GETSURROUNDINGTEXT"/>
+  <int value="1262" label="USERSPRIVATE_GETLOGINSTATUS"/>
+  <int value="1263" label="FILEMANAGERPRIVATEINTERNAL_INSTALLLINUXPACKAGE"/>
+  <int value="1264" label="VIRTUALKEYBOARDPRIVATE_SETHITTESTBOUNDS"/>
+  <int value="1265" label="ARCAPPSPRIVATE_GETLAUNCHABLEAPPS"/>
+  <int value="1266" label="ARCAPPSPRIVATE_LAUNCHAPP"/>
+  <int value="1267" label="AUTOTESTPRIVATE_RUNCROSTINIINSTALLER"/>
+  <int value="1268" label="AUTOFILLPRIVATE_MIGRATECREDITCARDS"/>
+  <int value="1269" label="AUTOTESTPRIVATE_ISAPPSHOWN"/>
+  <int value="1270" label="ENTERPRISEREPORTINGPRIVATE_GETDEVICEID"/>
+  <int value="1271"
+      label="ENTERPRISE_HARDWAREPLATFORM_GETHARDWAREPLATFORMINFO"/>
+  <int value="1272" label="FILEMANAGERPRIVATEINTERNAL_SHAREPATHSWITHCROSTINI"/>
+  <int value="1273" label="AUTOTESTPRIVATE_SETCROSTINIENABLED"/>
+  <int value="1274" label="METRICSPRIVATE_GETHISTOGRAM"/>
+  <int value="1275" label="TABCAPTURE_GETMEDIASTREAMID"/>
+  <int value="1276" label="WEBVIEWINTERNAL_SETSPATIALNAVIGATIONENABLED"/>
+  <int value="1277" label="WEBVIEWINTERNAL_ISSPATIALNAVIGATIONENABLED"/>
+  <int value="1278" label="DELETED_FILEMANAGERPRIVATEINTERNAL_GETTHUMBNAIL"/>
+  <int value="1279" label="FILEMANAGERPRIVATEINTERNAL_GETCROSTINISHAREDPATHS"/>
+  <int value="1280" label="AUTOTESTPRIVATE_LAUNCHAPP"/>
+  <int value="1281" label="AUTOTESTPRIVATE_BOOTSTRAPMACHINELEARNINGSERVICE"/>
+  <int value="1282" label="AUTOTESTPRIVATE_RUNCROSTINIUNINSTALLER"/>
+  <int value="1283" label="AUTOTESTPRIVATE_TAKESCREENSHOT"/>
+  <int value="1284" label="ACCESSIBILITY_PRIVATE_TOGGLEDICTATION"/>
+  <int value="1285" label="ACCESSIBILITY_PRIVATE_ENABLEMOUSEEVENTS"/>
+  <int value="1286" label="ACCESSIBILITY_PRIVATE_SENDSYNTHETICMOUSEEVENT"/>
+  <int value="1287" label="DELETED_FILEMANAGERPRIVATE_DETECTCHARACTERENCODING"/>
+  <int value="1288" label="FILEMANAGERPRIVATEINTERNAL_GETLINUXPACKAGEINFO"/>
+  <int value="1289" label="TABS_GOFORWARD"/>
+  <int value="1290" label="TABS_GOBACK"/>
+  <int value="1291"
+      label="BRAILLEDISPLAYPRIVATE_UPDATEBLUETOOTHBRAILLEDISPLAYADDRESS"/>
+  <int value="1292" label="AUTOTESTPRIVATE_SETASSISTANTENABLED"/>
+  <int value="1293" label="AUTOTESTPRIVATE_ISARCPROVISIONED"/>
+  <int value="1294" label="DELETED_CRYPTOTOKENPRIVATE_CANPROXYTOWEBAUTHN"/>
+  <int value="1295" label="INPUTMETHODPRIVATE_GETSETTINGS"/>
+  <int value="1296" label="INPUTMETHODPRIVATE_SETSETTINGS"/>
+  <int value="1297" label="FILEMANAGERPRIVATEINTERNAL_UNSHAREPATHWITHCROSTINI"/>
+  <int value="1298"
+      label="PASSWORDSPRIVATE_RECORDPASSWORDSPAGEACCESSINSETTINGS"/>
+  <int value="1299" label="AUTOFILLPRIVATE_SERVERCARDLINKCLICKED"/>
+  <int value="1300" label="AUTOTESTPRIVATE_GETARCAPP"/>
+  <int value="1301" label="AUTOTESTPRIVATE_GETARCPACKAGE"/>
+  <int value="1302" label="DELETED_AUTOTESTPRIVATE_LAUNCHARCAPP"/>
+  <int value="1303" label="AUTOTESTPRIVATE_CLOSEAPP"/>
+  <int value="1304"
+      label="DELETED_ACCESSIBILITY_PRIVATE_SETSWITCHACCESSMENUSTATE"/>
+  <int value="1305" label="AUTOTESTPRIVATE_SENDASSISTANTTEXTQUERY"/>
+  <int value="1306" label="AUTOTESTPRIVATE_SETCROSTINIAPPSCALED"/>
+  <int value="1307" label="ACTIVITYLOGPRIVATE_DELETEACTIVITIESBYEXTENSION"/>
+  <int value="1308"
+      label="ACCESSIBILITY_PRIVATE_FORWARDKEYEVENTSTOSWITCHACCESS"/>
+  <int value="1309"
+      label="AUTOTESTPRIVATE_ENSUREWINDOWSERVICECLIENTHASDRAWNWINDOW"/>
+  <int value="1310" label="ACCESSIBILITY_PRIVATE_GETBATTERYDESCRIPTION"/>
+  <int value="1311" label="IDLE_GETAUTOLOCKDELAY"/>
+  <int value="1312" label="AUTOTESTPRIVATE_GETPRIMARYDISPLAYSCALEFACTOR"/>
+  <int value="1313" label="AUTOFILLPRIVATE_GETLOCALCREDITCARDLIST_DEPRECATED"/>
+  <int value="1314" label="AUTOFILLPRIVATE_GETSERVERCREDITCARDLIST_DEPRECATED"/>
+  <int value="1315" label="DELETED_PASSWORDSPRIVATE_CHANGESAVEDPASSWORD"/>
+  <int value="1316" label="AUTOTESTPRIVATE_SETWHITELISTEDPREF"/>
+  <int value="1317" label="SAFEBROWSINGPRIVATE_GETREFERRERCHAIN"/>
+  <int value="1318" label="DELETED_DECLARATIVENETREQUEST_ADDDYNAMICRULES"/>
+  <int value="1319" label="DELETED_DECLARATIVENETREQUEST_REMOVEDYNAMICRULES"/>
+  <int value="1320" label="DECLARATIVENETREQUEST_GETDYNAMICRULES"/>
+  <int value="1321" label="AUTOTESTPRIVATE_GETARCSTATE"/>
+  <int value="1322" label="AUTOTESTPRIVATE_ISTABLETMODEENABLED"/>
+  <int value="1323" label="AUTOTESTPRIVATE_SETTABLETMODEENABLED"/>
+  <int value="1324" label="AUTOTESTPRIVATE_GETSHELFAUTOHIDEBEHAVIOR"/>
+  <int value="1325" label="AUTOTESTPRIVATE_SETSHELFAUTOHIDEBEHAVIOR"/>
+  <int value="1326" label="AUTOTESTPRIVATE_EXPORTCROSTINI"/>
+  <int value="1327" label="AUTOTESTPRIVATE_IMPORTCROSTINI"/>
+  <int value="1328" label="ACCESSIBILITY_PRIVATE_SETVIRTUALKEYBOARDVISIBLE"/>
+  <int value="1329" label="AUTOTESTPRIVATE_SHOWVIRTUALKEYBOARDIFENABLED"/>
+  <int value="1330" label="DELETED_FEEDBACKPRIVATE_LOGINFEEDBACKCOMPLETE"/>
+  <int value="1331" label="FILEMANAGERPRIVATE_SEARCHFILES"/>
+  <int value="1332" label="MANAGEMENT_INSTALLREPLACEMENTWEBAPP"/>
+  <int value="1333" label="FILEMANAGERPRIVATE_GETANDROIDPICKERAPPS"/>
+  <int value="1334" label="FILEMANAGERPRIVATE_SELECTANDROIDPICKERAPP"/>
+  <int value="1335" label="AUTOTESTPRIVATE_GETSHELFALIGNMENT"/>
+  <int value="1336" label="AUTOTESTPRIVATE_SETSHELFALIGNMENT"/>
+  <int value="1337" label="BLUETOOTHPRIVATE_RECORDPAIRING"/>
+  <int value="1338" label="FILEMANAGERPRIVATE_SETARCSTORAGETOASTSHOWNFLAG"/>
+  <int value="1339" label="INPUTMETHODPRIVATE_SETCOMPOSITIONRANGE"/>
+  <int value="1340" label="BLUETOOTHPRIVATE_RECORDRECONNECTION"/>
+  <int value="1341" label="LOGINSCREENUI_SHOW"/>
+  <int value="1342" label="LOGINSCREENUI_CLOSE"/>
+  <int value="1343" label="DECLARATIVENETREQUEST_GETMATCHEDRULES"/>
+  <int value="1344" label="DECLARATIVENETREQUEST_SETACTIONCOUNTASBADGETEXT"/>
+  <int value="1345" label="BLUETOOTHPRIVATE_RECORDDEVICESELECTION"/>
+  <int value="1346" label="LOGIN_LAUNCHMANAGEDGUESTSESSION"/>
+  <int value="1347" label="LOGIN_EXITCURRENTSESSION"/>
+  <int value="1348" label="DELETED_LOGIN_ISRUNNINGINLOGINPROFILE"/>
+  <int value="1349" label="LOGIN_FETCHDATAFORNEXTLOGINATTEMPT"/>
+  <int value="1350" label="ACTION_SETICON"/>
+  <int value="1351" label="AUTOTESTPRIVATE_GETALLENTERPRISEPOLICIES"/>
+  <int value="1352"
+      label="ACCESSIBILITY_PRIVATE_HANDLESCROLLABLEBOUNDSFORPOINTFOUND"/>
+  <int value="1353" label="ACTION_GETPOPUP"/>
+  <int value="1354" label="ACTION_SETPOPUP"/>
+  <int value="1355" label="ACTION_GETTITLE"/>
+  <int value="1356" label="ACTION_SETTITLE"/>
+  <int value="1357" label="ACTION_GETBADGETEXT"/>
+  <int value="1358" label="ACTION_SETBADGETEXT"/>
+  <int value="1359" label="ACTION_GETBADGEBACKGROUNDCOLOR"/>
+  <int value="1360" label="ACTION_SETBADGEBACKGROUNDCOLOR"/>
+  <int value="1361" label="DELETED_AUTOTESTPRIVATE_SETARCAPPWINDOWSTATE"/>
+  <int value="1362" label="ACCESSIBILITY_PRIVATE_OPENSETTINGSSUBPAGE"/>
+  <int value="1363" label="ACTION_ENABLE"/>
+  <int value="1364" label="ACTION_DISABLE"/>
+  <int value="1365" label="FILEMANAGERPRIVATEINTERNAL_IMPORTCROSTINIIMAGE"/>
+  <int value="1366" label="AUTOTESTPRIVATE_GETSHELFITEMS"/>
+  <int value="1367" label="DELETED_MANAGEMENT_INSTALLREPLACEMENTANDROIDAPP"/>
+  <int value="1368" label="DELETED_MANAGEMENT_CANINSTALLREPLACEMENTANDROIDAPP"/>
+  <int value="1369" label="AUTOTESTPRIVATE_REGISTERCOMPONENT"/>
+  <int value="1370" label="LOGINSCREENSTORAGE_STOREPERSISTENTDATA"/>
+  <int value="1371" label="LOGINSCREENSTORAGE_RETRIEVEPERSISTENTDATA"/>
+  <int value="1372" label="LOGINSCREENSTORAGE_STORECREDENTIALS"/>
+  <int value="1373" label="LOGINSCREENSTORAGE_RETRIEVECREDENTIALS"/>
+  <int value="1374" label="DELETED_AUTOTESTPRIVATE_GETARCAPPWINDOWSTATE"/>
+  <int value="1375" label="DELETED_AUTOTESTPRIVATE_GETARCAPPWINDOWINFO"/>
+  <int value="1376" label="AUTOTESTPRIVATE_GETALLINSTALLEDAPPS"/>
+  <int value="1377" label="AUTOTESTPRIVATE_SWAPWINDOWSINSPLITVIEW"/>
+  <int value="1378" label="AUTOTESTPRIVATE_SETARCAPPWINDOWFOCUS"/>
+  <int value="1379" label="LOGINSTATE_GETPROFILETYPE"/>
+  <int value="1380" label="LOGINSTATE_GETSESSIONSTATE"/>
+  <int value="1381" label="AUTOTESTPRIVATE_GETARCSTARTTIME"/>
+  <int value="1382" label="AUTOTESTPRIVATE_SETOVERVIEWMODESTATE"/>
+  <int value="1383" label="AUTOTESTPRIVATE_TAKESCREENSHOTFORDISPLAY"/>
+  <int value="1384" label="AUTOFILLPRIVATE_SETCREDITCARDFIDOAUTHENABLEDSTATE"/>
+  <int value="1385" label="USERSPRIVATE_ISUSERINLIST"/>
+  <int value="1386" label="PRINTINGMETRICS_GETPRINTJOBS"/>
+  <int value="1387" label="AUTOTESTPRIVATE_WAITFORASSISTANTQUERYSTATUS"/>
+  <int value="1388" label="AUTOTESTPRIVATE_GETCLIPBOARDTEXTDATA"/>
+  <int value="1389" label="AUTOTESTPRIVATE_SETCLIPBOARDTEXTDATA"/>
+  <int value="1390" label="AUTOTESTPRIVATE_INITIALIZEEVENTS"/>
+  <int value="1391" label="AUTOTESTPRIVATE_WAITFORDISPLAYROTATION"/>
+  <int value="1392" label="AUTOTESTPRIVATE_ARCAPPTRACINGSTART"/>
+  <int value="1393" label="AUTOTESTPRIVATE_ARCAPPTRACINGSTOPANDANALYZE"/>
+  <int value="1394" label="AUTOTESTPRIVATE_GETAPPWINDOWLIST"/>
+  <int value="1395" label="AUTOTESTPRIVATE_SETAPPWINDOWSTATE"/>
+  <int value="1396" label="AUTOTESTPRIVATE_CLOSEAPPWINDOW"/>
+  <int value="1397" label="AUTOTESTPRIVATE_REFRESHENTERPRISEPOLICIES"/>
+  <int value="1398" label="AUTOTESTPRIVATE_INSTALLPWAFORCURRENTURL"/>
+  <int value="1399" label="AUTOTESTPRIVATE_ACTIVATEACCELERATOR"/>
+  <int value="1400" label="AUTOTESTPRIVATE_WAITFORLAUNCHERSTATE"/>
+  <int value="1401" label="AUTOTESTPRIVATE_CREATENEWDESK"/>
+  <int value="1402" label="AUTOTESTPRIVATE_ACTIVATEDESKATINDEX"/>
+  <int value="1403" label="AUTOTESTPRIVATE_REMOVEACTIVEDESK"/>
+  <int value="1404" label="TERMINALPRIVATE_GETCROSHSETTINGS"/>
+  <int value="1405" label="AUTOTESTPRIVATE_ENABLEASSISTANTANDWAITFORREADY"/>
+  <int value="1406" label="INPUTMETHODPRIVATE_FINISHCOMPOSINGTEXT"/>
+  <int value="1407" label="DECLARATIVENETREQUEST_UPDATEDYNAMICRULES"/>
+  <int value="1408" label="AUTOTESTPRIVATE_MOUSECLICK"/>
+  <int value="1409" label="AUTOTESTPRIVATE_MOUSEPRESS"/>
+  <int value="1410" label="AUTOTESTPRIVATE_MOUSERELEASE"/>
+  <int value="1411" label="AUTOTESTPRIVATE_MOUSEMOVE"/>
+  <int value="1412" label="WEBSTOREPRIVATE_GETEXTENSIONSTATUS"/>
+  <int value="1413" label="DELETED_INPUTMETHODPRIVATE_SETSELECTIONRANGE"/>
+  <int value="1414" label="VIRTUALKEYBOARDPRIVATE_SETAREATOREMAINONSCREEN"/>
+  <int value="1415" label="TERMINALPRIVATE_GETSETTINGS"/>
+  <int value="1416" label="TERMINALPRIVATE_SETSETTINGS"/>
+  <int value="1417" label="DELETED_WEBSTOREPRIVATE_REQUESTEXTENSION"/>
+  <int value="1418" label="AUTOTESTPRIVATE_INSTALLPLUGINVM"/>
+  <int value="1419" label="CRASHREPORTPRIVATE_REPORTERROR"/>
+  <int value="1420" label="AUTOTESTPRIVATE_SETMETRICSENABLED"/>
+  <int value="1421" label="ENTERPRISEREPORTINGPRIVATE_GETPERSISTENTSECRET"/>
+  <int value="1422" label="ENTERPRISEREPORTINGPRIVATE_GETDEVICEDATA"/>
+  <int value="1423" label="ENTERPRISEREPORTINGPRIVATE_SETDEVICEDATA"/>
+  <int value="1424" label="ENTERPRISEREPORTINGPRIVATE_GETDEVICEINFO"/>
+  <int value="1425" label="PRINTING_GETPRINTERS"/>
+  <int value="1426" label="WEBCAMPRIVATE_SET_HOME"/>
+  <int value="1427" label="INPUTMETHODPRIVATE_RESET"/>
+  <int value="1428" label="PRINTING_GETPRINTERINFO"/>
+  <int value="1429" label="AUTOTESTPRIVATE_ISARCPACKAGELISTINITIALREFRESHED"/>
+  <int value="1430" label="DELETED_AUTOTESTPRIVATE_STARTTRACING"/>
+  <int value="1431" label="DELETED_AUTOTESTPRIVATE_STOPTRACING"/>
+  <int value="1432" label="LOGIN_LOCKMANAGEDGUESTSESSION"/>
+  <int value="1433" label="LOGIN_UNLOCKMANAGEDGUESTSESSION"/>
+  <int value="1434" label="AUTOTESTPRIVATE_SETARCTOUCHMODE"/>
+  <int value="1435" label="PRINTING_SUBMITJOB"/>
+  <int value="1436" label="DELETED_IDENTITYPRIVATE_SETCONSENTRESULT"/>
+  <int value="1437" label="PRINTING_CANCELJOB"/>
+  <int value="1438" label="DELETED_AUTOFILLASSISTANTPRIVATE_CREATE"/>
+  <int value="1439" label="DELETED_AUTOFILLASSISTANTPRIVATE_START"/>
+  <int value="1440" label="DELETED_AUTOFILLASSISTANTPRIVATE_GETSTATE"/>
+  <int value="1441" label="DELETED_AUTOFILLASSISTANTPRIVATE_PERFORMACTION"/>
+  <int value="1442" label="DELETED_AUTOFILLASSISTANTPRIVATE_PROVIDEUSERDATA"/>
+  <int value="1443" label="PASSWORDSPRIVATE_ISOPTEDINFORACCOUNTSTORAGE"/>
+  <int value="1444" label="AUTOTESTPRIVATE_PINSHELFICON"/>
+  <int value="1445" label="AUTOTESTPRIVATE_WAITFOROVERVIEWSTATE"/>
+  <int value="1446" label="AUTOTESTPRIVATE_GETSCROLLABLESHELFINFOFORSTATE"/>
+  <int value="1447" label="ENTERPRISE_DEVICEATTRIBUTES_GETDEVICEHOSTNAME"/>
+  <int value="1448" label="DELETED_AUTOFILLPRIVATE_GETUPIIDLIST"/>
+  <int value="1449" label="WEBCAMPRIVATE_RESTORE_CAMERA_PRESET"/>
+  <int value="1450" label="WEBCAMPRIVATE_SET_CAMERA_PRESET"/>
+  <int value="1451" label="DELETED_PASSWORDSPRIVATE_GETCOMPROMISEDCREDENTIALS"/>
+  <int value="1452" label="INPUTMETHODPRIVATE_HIDEINPUTVIEW"/>
+  <int value="1453" label="PASSWORDSPRIVATE_GETPLAINTEXTINSECUREPASSWORD"/>
+  <int value="1454" label="PASSWORDSPRIVATE_CHANGEINSECURECREDENTIAL"/>
+  <int value="1455" label="PASSWORDSPRIVATE_REMOVEINSECURECREDENTIAL"/>
+  <int value="1456" label="TERMINALPRIVATE_GETA11YSTATUS"/>
+  <int value="1457" label="AUTOTESTPRIVATE_GETSHELFUIINFOFORSTATE"/>
+  <int value="1458" label="PASSWORDSPRIVATE_STARTPASSWORDCHECK"/>
+  <int value="1459" label="DELETED_PASSWORDSPRIVATE_STOPPASSWORDCHECK"/>
+  <int value="1460" label="PASSWORDSPRIVATE_GETPASSWORDCHECKSTATUS"/>
+  <int value="1461" label="TERMINALPRIVATE_OPENVMSHELLPROCESS"/>
+  <int value="1462" label="PASSWORDSPRIVATE_OPTINFORACCOUNTSTORAGE"/>
+  <int value="1463" label="DELETED_CRYPTOTOKENPRIVATE_RECORDREGISTERREQUEST"/>
+  <int value="1464" label="DELETED_CRYPTOTOKENPRIVATE_RECORDSIGNREQUEST"/>
+  <int value="1465" label="VIRTUALKEYBOARDPRIVATE_SETWINDOWBOUNDSINSCREEN"/>
+  <int value="1466" label="AUTOTESTPRIVATE_SETWINDOWBOUNDS"/>
+  <int value="1467" label="AUTOTESTPRIVATE_STARTSMOOTHNESSTRACKING"/>
+  <int value="1468" label="AUTOTESTPRIVATE_STOPSMOOTHNESSTRACKING"/>
+  <int value="1469" label="ACCESSIBILITY_PRIVATE_UPDATESWITCHACCESSBUBBLE"/>
+  <int value="1470" label="TERMINALPRIVATE_OPENOPTIONSPAGE"/>
+  <int value="1471" label="DECLARATIVENETREQUEST_UPDATEENABLEDRULESETS"/>
+  <int value="1472" label="DECLARATIVENETREQUEST_GETENABLEDRULESETS"/>
+  <int value="1473" label="TERMINALPRIVATE_OPENWINDOW"/>
+  <int value="1474" label="AUTOTESTPRIVATE_SETPLUGINVMPOLICY"/>
+  <int value="1475" label="AUTOTESTPRIVATE_SHOWPLUGINVMINSTALLER"/>
+  <int value="1476" label="DELETED_PASSWORDSPRIVATE_REMOVESAVEDPASSWORDS"/>
+  <int value="1477" label="DELETED_PASSWORDSPRIVATE_REMOVEPASSWORDEXCEPTIONS"/>
+  <int value="1478" label="AUTOTESTPRIVATE_WAITFORAMBIENTPHOTOANIMATION"/>
+  <int value="1479" label="INPUT_IME_SETASSISTIVEWINDOWPROPERTIES"/>
+  <int value="1480" label="PASSWORDSPRIVATE_MOVEPASSWORDSTOACCOUNT"/>
+  <int value="1481" label="AUTOTESTPRIVATE_DISABLESWITCHACCESSDIALOG"/>
+  <int value="1482" label="ENTERPRISE_NETWORKINGATTRIBUTES_GETNETWORKDETAILS"/>
+  <int value="1483" label="DELETED_INPUTMETHODPRIVATE_SETAUTOCORRECTRANGE"/>
+  <int value="1484" label="PLATFORMKEYSINTERNAL_GETPUBLICKEYBYSPKI"/>
+  <int value="1485" label="CERTIFICATEPROVIDER_SETCERTIFICATES"/>
+  <int value="1486" label="AUTOTESTPRIVATE_DISABLEAUTOMATION"/>
+  <int value="1487" label="INPUT_IME_SETASSISTIVEWINDOWBUTTONHIGHLIGHTED"/>
+  <int value="1488" label="CERTIFICATEPROVIDER_REPORTSIGNATURE"/>
+  <int value="1489" label="QUICKUNLOCKPRIVATE_SETPINAUTOSUBMITENABLED"/>
+  <int value="1490" label="QUICKUNLOCKPRIVATE_CANAUTHENTICATEPIN"/>
+  <int value="1491"
+      label="DELETED_INPUTMETHODPRIVATE_GETAUTOCORRECTCHARACTERBOUNDS"/>
+  <int value="1492"
+      label="AUTOTESTPRIVATE_STARTTHROUGHPUTTRACKERDATACOLLECTION"/>
+  <int value="1493"
+      label="AUTOTESTPRIVATE_STOPTHROUGHPUTTRACKERDATACOLLECTION"/>
+  <int value="1494" label="DELETED_INPUTMETHODPRIVATE_GETAUTOCORRECTRANGE"/>
+  <int value="1495" label="FILEMANAGERPRIVATEINTERNAL_SHARESHEETHASTARGETS"/>
+  <int value="1496" label="FILEMANAGERPRIVATEINTERNAL_INVOKESHARESHEET"/>
+  <int value="1497" label="FILEMANAGERPRIVATEINTERNAL_GETCONTENTMIMETYPE"/>
+  <int value="1498" label="FILEMANAGERPRIVATEINTERNAL_GETCONTENTMETADATA"/>
+  <int value="1499" label="SEARCH_QUERY"/>
+  <int value="1500" label="FILEMANAGERPRIVATEINTERNAL_COPYIMAGETOCLIPBOARD"/>
+  <int value="1501"
+      label="AUTOTESTPRIVATE_WAITFORSYSTEMWEBAPPSINSTALLFUNCTION"/>
+  <int value="1502" label="AUTOTESTPRIVATE_GETREGISTEREDSYSTEMWEBAPPSFUNCTION"/>
+  <int value="1503"
+      label="FILEMANAGERPRIVATEINTERNAL_TOGGLEADDEDTOHOLDINGSPACE"/>
+  <int value="1504" label="FILEMANAGERPRIVATEINTERNAL_GETHOLDINGSPACESTATE"/>
+  <int value="1505" label="DELETED_INPUTMETHODPRIVATE_SETCOMPOSINGRANGE"/>
+  <int value="1506" label="AUTOTESTPRIVATE_LAUNCHSYSTEMWEBAPP"/>
+  <int value="1507" label="ACCESSIBILITY_PRIVATE_PERFORMACCELERATORACTION"/>
+  <int value="1508" label="DECLARATIVENETREQUEST_ISREGEXSUPPORTED"/>
+  <int value="1509" label="DELETED_PASSWORDSPRIVATE_GETWEAKCREDENTIALS"/>
+  <int value="1510" label="ACCESSIBILITY_PRIVATE_MOVEMAGNIFIERTORECT"/>
+  <int value="1511" label="FILEMANAGERPRIVATE_SINGLEPARTITIONFORMAT"/>
+  <int value="1512" label="TABS_REMOVECSS"/>
+  <int value="1513" label="IDENTITY_CLEARALLCACHEDAUTHTOKENS"/>
+  <int value="1514" label="TABS_GROUP"/>
+  <int value="1515" label="TABS_UNGROUP"/>
+  <int value="1516"
+      label="DELETED_FILEMANAGERPRIVATEINTERNAL_GETDRIVETHUMBNAIL"/>
+  <int value="1517" label="DELETED_FILEMANAGERPRIVATEINTERNAL_GETPDFTHUMBNAIL"/>
+  <int value="1518" label="AUTOTESTPRIVATE_REMOVEALLNOTIFICATIONS"/>
+  <int value="1519" label="VIRTUALKEYBOARDPRIVATE_OPENSUGGESTIONSETTINGS"/>
+  <int value="1520" label="ACCESSIBILITY_PRIVATE_SETPOINTSCANSTATE"/>
+  <int value="1521" label="AUTOTESTPRIVATE_ACTIVATEADJACENTDESKSTOTARGETINDEX"/>
+  <int value="1522" label="DECLARATIVENETREQUEST_GETAVAILABLESTATICRULECOUNT"/>
+  <int value="1523" label="CHROMEOSINFOPRIVATE_ISTABLETMODEENABLED"/>
+  <int value="1524"
+      label="DELETED_FILEMANAGERPRIVATEINTERNAL_GETARCDOCUMENTSPROVIDERTHUMBNAIL"/>
+  <int value="1525" label="ACCESSIBILITY_PRIVATE_ISFEATUREENABLED"/>
+  <int value="1526" label="INPUTMETHODPRIVATE_ONAUTOCORRECT"/>
+  <int value="1527" label="TAB_GROUPS_GET"/>
+  <int value="1528" label="TAB_GROUPS_QUERY"/>
+  <int value="1529" label="TAB_GROUPS_UPDATE"/>
+  <int value="1530" label="ACCESSIBILITY_PRIVATE_UPDATESELECTTOSPEAKPANEL"/>
+  <int value="1531" label="TAB_GROUPS_MOVE"/>
+  <int value="1532" label="SCRIPTING_EXECUTESCRIPT"/>
+  <int value="1533" label="DECLARATIVENETREQUEST_UPDATESESSIONRULES"/>
+  <int value="1534" label="DECLARATIVENETREQUEST_GETSESSIONRULES"/>
+  <int value="1535" label="SCRIPTING_INSERTCSS"/>
+  <int value="1536" label="VIRTUALKEYBOARDPRIVATE_PASTECLIPBOARDITEM"/>
+  <int value="1537" label="VIRTUALKEYBOARDPRIVATE_GETCLIPBOARDHISTORY"/>
+  <int value="1538" label="VIRTUALKEYBOARDPRIVATE_DELETECLIPBOARDITEM"/>
+  <int value="1539" label="FILEMANAGERPRIVATE_ISTABLETMODEENABLED"/>
+  <int value="1540" label="FILEMANAGERPRIVATE_NOTIFYDRIVEDIALOGRESULT"/>
+  <int value="1541" label="ENTERPRISEREPORTINGPRIVATE_GETCONTEXTINFO"/>
+  <int value="1542" label="SCRIPTING_REMOVECSS"/>
+  <int value="1543" label="FILEMANAGERPRIVATEINTERNAL_GETVOLUMEROOT"/>
+  <int value="1544"
+      label="LANGUAGESETTINGSPRIVATE_GETALWAYSTRANSLATELANGUAGES"/>
+  <int value="1545"
+      label="LANGUAGESETTINGSPRIVATE_SETLANGUAGEALWAYSTRANSLATESTATE"/>
+  <int value="1546" label="ACCESSIBILITY_PRIVATE_SHOWCONFIRMATIONDIALOG"/>
+  <int value="1547" label="AUTOTESTPRIVATE_INSTALLBOREALIS"/>
+  <int value="1548" label="LANGUAGESETTINGSPRIVATE_SETTRANSLATETARGETLANGUAGE"/>
+  <int value="1549" label="LANGUAGESETTINGSPRIVATE_GETNEVERTRANSLATELANGUAGES"/>
+  <int value="1550" label="ACTION_GETUSERSETTINGS"/>
+  <int value="1551" label="ENTERPRISEREPORTINGPRIVATE_GETCERTIFICATE"/>
+  <int value="1552" label="AUTOTESTPRIVATE_ISSYSTEMWEBAPPOPENFUNCTION"/>
+  <int value="1553" label="TTSENGINE_SENDTTSAUDIO"/>
+  <int value="1554" label="AUTOTESTPRIVATE_ACTIVATEAPPWINDOW"/>
+  <int value="1555" label="FILEMANAGERPRIVATE_CANCELZIP"/>
+  <int value="1556"
+      label="ACCESSIBILITY_PRIVATE_GETLOCALIZEDDOMKEYSTRINGFORKEYCODE"/>
+  <int value="1557" label="SCRIPTING_REGISTERCONTENTSCRIPTS"/>
+  <int value="1558"
+      label="DELETED_WMDESKSPRIVATE_CAPTUREACTIVEDESKANDSAVETEMPLATE"/>
+  <int value="1559" label="DELETED_WMDESKSPRIVATE_UPDATEDESKTEMPLATE"/>
+  <int value="1560" label="WMDESKSPRIVATE_GETSAVEDDESKS"/>
+  <int value="1561" label="DELETED_WMDESKSPRIVATE_DELETEDESKTEMPLATE"/>
+  <int value="1562" label="WMDESKSPRIVATE_LAUNCHDESK"/>
+  <int value="1563" label="AUTOTESTPRIVATE_SETSHELFICONPIN"/>
+  <int value="1564" label="SCRIPTING_GETREGISTEREDCONTENTSCRIPTS"/>
+  <int value="1565" label="OS_TELEMETRY_GETVPDINFO"/>
+  <int value="1566" label="ACCESSIBILITY_PRIVATE_MAGNIFIERCENTERONPOINT"/>
+  <int value="1567" label="STORAGE_SETACCESSLEVEL"/>
+  <int value="1568" label="OS_TELEMETRY_GETOEMDATA"/>
+  <int value="1569" label="SCRIPTING_UNREGISTERCONTENTSCRIPTS"/>
+  <int value="1570" label="FILEMANAGERPRIVATE_GETZIPPROGRESS"/>
+  <int value="1571" label="DELETED_CRYPTOTOKENPRIVATE_CANMAKEU2FAPIREQUEST"/>
+  <int value="1572" label="OS_DIAGNOSTICS_RUNBATTERYCAPACITYROUTINE"/>
+  <int value="1573" label="WEB_AUTHENTICATION_PROXY_COMPLETE_ISUVPAA_REQUEST"/>
+  <int value="1574" label="LOGIN_LAUNCHSHAREDMANAGEDGUESTSESSION"/>
+  <int value="1575" label="LOGIN_ENTERSHAREDSESSION"/>
+  <int value="1576" label="LOGIN_UNLOCKSHAREDSESSION"/>
+  <int value="1577" label="LOGIN_ENDSHAREDSESSION"/>
+  <int value="1578" label="AUTOTESTPRIVATE_GETDEFAULTPINNEDAPPIDS"/>
+  <int value="1579" label="LOGIN_SETDATAFORNEXTLOGINATTEMPT"/>
+  <int value="1580" label="OS_DIAGNOSTICS_GETAVAILABLEROUTINES"/>
+  <int value="1581" label="OS_DIAGNOSTICS_RUNBATTERYHEALTHROUTINE"/>
+  <int value="1582" label="OS_DIAGNOSTICS_RUNBATTERYDISCHARGEROUTINE"/>
+  <int value="1583" label="OS_DIAGNOSTICS_RUNBATTERYCHARGEROUTINE"/>
+  <int value="1584" label="OS_DIAGNOSTICS_RUNCPUSTRESSROUTINE"/>
+  <int value="1585" label="OS_DIAGNOSTICS_RUNCPUCACHEROUTINE"/>
+  <int value="1586" label="SCRIPTING_UPDATECONTENTSCRIPTS"/>
+  <int value="1587" label="FILEMANAGERPRIVATE_OPENWINDOW"/>
+  <int value="1588" label="OS_DIAGNOSTICS_RUNMEMORYROUTINE"/>
+  <int value="1589" label="OS_DIAGNOSTICS_GETROUTINEUPDATE"/>
+  <int value="1590" label="SPEECHRECOGNITIONPRIVATE_START"/>
+  <int value="1591" label="SPEECHRECOGNITIONPRIVATE_STOP"/>
+  <int value="1592" label="FILEMANAGERPRIVATEINTERNAL_STARTIOTASK"/>
+  <int value="1593" label="DELETED_WALLPAPERPRIVATE_ISSWAENABLED"/>
+  <int value="1594" label="INPUTMETHODPRIVATE_GETTEXTFIELDBOUNDS"/>
+  <int value="1595" label="PASSWORDSPRIVATE_GETURLCOLLECTION"/>
+  <int value="1596" label="PASSWORDSPRIVATE_ADDPASSWORD"/>
+  <int value="1597" label="PASSWORDSPRIVATE_ISACCOUNTSTOREDEFAULT"/>
+  <int value="1598" label="WEB_AUTHENTICATION_PROXY_ATTACH"/>
+  <int value="1599" label="WEB_AUTHENTICATION_PROXY_DETACH"/>
+  <int value="1600" label="FILEMANAGERPRIVATE_CANCELIOTASK"/>
+  <int value="1601" label="AUTOTESTPRIVATE_GETDISPLAYSMOOTHNESS"/>
+  <int value="1602" label="AUTOTESTPRIVATE_RESETHOLDINGSPACE"/>
+  <int value="1603" label="FILEMANAGERPRIVATEINTERNAL_GETDISALLOWEDTRANSFERS"/>
+  <int value="1604" label="WMDESKSPRIVATE_GETDESKTEMPLATEJSON"/>
+  <int value="1605" label="OS_DIAGNOSTICS_RUNCPUFLOATINGPOINTACCURACYROUTINE"/>
+  <int value="1606" label="OS_DIAGNOSTICS_RUNCPUPRIMESEARCHROUTINE"/>
+  <int value="1607" label="ACCESSIBILITY_PRIVATE_UPDATEDICTATIONBUBBLE"/>
+  <int value="1608" label="TERMINALPRIVATE_GETOSINFO"/>
+  <int value="1609" label="OS_TELEMETRY_GETMEMORYINFO"/>
+  <int value="1610" label="AUTOTESTPRIVATE_COULDALLOWCROSTINI"/>
+  <int value="1611" label="WEB_AUTHENTICATION_PROXY_COMPLETE_CREATE_REQUEST"/>
+  <int value="1612" label="DEVELOPERPRIVATE_GETUSERSITESETTINGS"/>
+  <int value="1613" label="ACTION_OPENPOPUP"/>
+  <int value="1614" label="OS_TELEMETRY_GETCPUINFO"/>
+  <int value="1615" label="FILEMANAGERPRIVATE_OPENURL"/>
+  <int value="1616" label="FILEMANAGERPRIVATE_GETFRAMECOLOR"/>
+  <int value="1617" label="DEVELOPERPRIVATE_ADDUSERSPECIFIEDSITES"/>
+  <int value="1618" label="DEVELOPERPRIVATE_REMOVEUSERSPECIFIEDSITES"/>
+  <int value="1619" label="AUTOTESTPRIVATE_STARTARC"/>
+  <int value="1620" label="AUTOTESTPRIVATE_STOPARC"/>
+  <int value="1621" label="PASSWORDSPRIVATE_MUTEINSECURECREDENTIAL"/>
+  <int value="1622" label="WEB_AUTHENTICATION_PROXY_COMPLETE_GET_REQUEST"/>
+  <int value="1623" label="PASSWORDSPRIVATE_UNMUTEINSECURECREDENTIAL"/>
+  <int value="1624" label="OS_DIAGNOSTICS_RUNSMARTCTLCHECKROUTINE"/>
+  <int value="1625" label="OS_DIAGNOSTICS_RUNNVMEWEARLEVELROUTINE"/>
+  <int value="1626" label="AUTOFILLPRIVATE_ADDVIRTUALCARD"/>
+  <int value="1627" label="AUTOFILLPRIVATE_REMOVEVIRTUALCARD"/>
+  <int value="1628" label="FILEMANAGERPRIVATE_LISTMOUNTABLEGUESTS"/>
+  <int value="1629"
+      label="AUTOTESTPRIVATE_STARTLOGINEVENTRECORDERDATACOLLECTION"/>
+  <int value="1630" label="AUTOTESTPRIVATE_GETLOGINEVENTRECORDERLOGINEVENTS"/>
+  <int value="1631" label="AUTOTESTPRIVATE_ADDLOGINEVENTFORTESTING"/>
+  <int value="1632" label="OS_DIAGNOSTICS_RUNDISKREADROUTINE"/>
+  <int value="1633" label="FILEMANAGERPRIVATE_MOUNTGUEST"/>
+  <int value="1634" label="DELETED_AUTOTESTPRIVATE_ISLACROSPRIMARYBROWSER"/>
+  <int value="1635" label="INPUTMETHODPRIVATE_SWITCHTOLASTUSEDINPUTMETHOD"/>
+  <int value="1636" label="AUTOTESTPRIVATE_LOADSMARTDIMCOMPONENT"/>
+  <int value="1637" label="TERMINALPRIVATE_GETPREFS"/>
+  <int value="1638" label="TERMINALPRIVATE_SETPREFS"/>
+  <int value="1639" label="DELETED_AUTOTESTPRIVATE_GETCRYPTOHOMERECOVERYDATA"/>
+  <int value="1640" label="TERMINALPRIVATE_OPENSETTINGSSUBPAGE"/>
+  <int value="1641" label="AUTOTESTPRIVATE_GETLACROSINFO"/>
+  <int value="1642" label="LOGIN_LAUNCHSAMLUSERSESSION"/>
+  <int value="1643" label="LOGIN_LOCKCURRENTSESSION"/>
+  <int value="1644" label="LOGIN_UNLOCKCURRENTSESSION"/>
+  <int value="1645" label="OS_TELEMETRY_GETBATTERYINFO"/>
+  <int value="1646" label="FILEMANAGERPRIVATE_POLLDRIVEHOSTEDFILEPINSTATES"/>
+  <int value="1647" label="OS_DIAGNOSTICS_RUNLANCONNECTIVITYROUTINE"/>
+  <int value="1648" label="LOGIN_REQUESTEXTERNALLOGOUT"/>
+  <int value="1649" label="LOGIN_NOTIFYEXTERNALLOGOUTDONE"/>
+  <int value="1650"
+      label="DELETED_PASSWORDSPRIVATE_RECORDCHANGEPASSWORDFLOWSTARTED"/>
+  <int value="1651" label="ENTERPRISEREPORTINGPRIVATE_ENQUEUERECORD"/>
+  <int value="1652" label="FILEMANAGERPRIVATE_SENDFEEDBACK"/>
+  <int value="1653" label="DECLARATIVENETREQUEST_TESTMATCHOUTCOME"/>
+  <int value="1654" label="FILEMANAGERPRIVATE_CANCELMOUNTING"/>
+  <int value="1655" label="AUTOMATIONINTERNAL_DISABLEDESKTOP"/>
+  <int value="1656" label="ACCESSIBILITY_PRIVATE_INSTALLPUMPKINFORDICTATION"/>
+  <int value="1657" label="BOOKMARKMANAGERPRIVATE_OPENINNEWTAB"/>
+  <int value="1658" label="BOOKMARKMANAGERPRIVATE_OPENINNEWWINDOW"/>
+  <int value="1659" label="WMDESKSPRIVATE_REMOVEDESK"/>
+  <int value="1660" label="SHAREDSTORAGEPRIVATE_GET"/>
+  <int value="1661" label="SHAREDSTORAGEPRIVATE_SET"/>
+  <int value="1662" label="SHAREDSTORAGEPRIVATE_REMOVE"/>
+  <int value="1663" label="FILEMANAGERPRIVATEINTERNAL_GETDLPMETADATA"/>
+  <int value="1664" label="WMDESKSPRIVATE_GETALLDESKS"/>
+  <int value="1665" label="AUTOTESTPRIVATE_FORCEAUTOTHEMEMODE"/>
+  <int value="1666" label="OS_TELEMETRY_GETSTATEFULPARTITIONINFO"/>
+  <int value="1667" label="OS_DIAGNOSTICS_RUNACPOWERROUTINE"/>
+  <int value="1668" label="OS_TELEMETRY_GETOSVERSIONINFO"/>
+  <int value="1669" label="ENTERPRISE_REMOTEAPPS_ADDFOLDER"/>
+  <int value="1670" label="ENTERPRISE_REMOTEAPPS_ADDAPP"/>
+  <int value="1671" label="ENTERPRISE_REMOTEAPPS_DELETEAPP"/>
+  <int value="1672" label="ENTERPRISEREPORTINGPRIVATE_GETAVINFO"/>
+  <int value="1673" label="ENTERPRISEREPORTINGPRIVATE_GETHOTFIXES"/>
+  <int value="1674" label="AUTOTESTPRIVATE_GETACCESSTOKEN"/>
+  <int value="1675" label="DEVELOPERPRIVATE_GETUSERANDEXTENSIONSITESBYETLD"/>
+  <int value="1676" label="AUTOTESTPRIVATE_SENDARCOVERLAYCOLOR"/>
+  <int value="1677" label="AUTOTESTPRIVATE_ISINPUTMETHODREADYFORTESTING"/>
+  <int value="1678" label="AUTOTESTPRIVATE_GETARCAPPKILLS"/>
+  <int value="1679" label="FILEMANAGERPRIVATE_OPENMANAGESYNCSETTINGS"/>
+  <int value="1680"
+      label="DELETED_PASSWORDSPRIVATE_STARTAUTOMATEDPASSWORDCHANGE"/>
+  <int value="1681" label="OFFSCREEN_CREATEDOCUMENT"/>
+  <int value="1682" label="DELETED_PASSWORDSPRIVATE_REFRESHSCRIPTSIFNECESSARY"/>
+  <int value="1683" label="OFFSCREEN_CLOSEDOCUMENT"/>
+  <int value="1684" label="WMDESKSPRIVATE_SETWINDOWPROPERTIES"/>
+  <int value="1685" label="AUTOTESTPRIVATE_LAUNCHFILESAPPTOPATH"/>
+  <int value="1686" label="SIDEPANEL_GETOPTIONS"/>
+  <int value="1687" label="SIDEPANEL_SETOPTIONS"/>
+  <int value="1688" label="ENTERPRISEREPORTINGPRIVATE_GETFILESYSTEMINFO"/>
+  <int value="1689" label="FILEMANAGERPRIVATE_GETDRIVEQUOTAMETADATA"/>
+  <int value="1690" label="DOWNLOADS_SETUIOPTIONS"/>
+  <int value="1691" label="AUTOTESTPRIVATE_GETDESKCOUNT"/>
+  <int value="1692" label="METRICSPRIVATE_RECORDSPARSEVALUEWITHPERSISTENTHASH"/>
+  <int value="1693" label="METRICSPRIVATE_RECORDSPARSEVALUEWITHHASHMETRICNAME"/>
+  <int value="1694" label="FILEMANAGERPRIVATE_GETDLPRESTRICTIONDETAILS"/>
+  <int value="1695" label="ACCESSIBILITY_PRIVATE_SILENCESPOKENFEEDBACK"/>
+  <int value="1696" label="AUTOTESTPRIVATE_SETALLOWEDPREF"/>
+  <int value="1697" label="DELETED_PASSWORDSPRIVATE_REQUESTCREDENTIALDETAILS"/>
+  <int value="1698" label="DEVELOPERPRIVATE_GETMATCHINGEXTENSIONSFORSITE"/>
+  <int value="1699" label="ACCESSIBILITY_PRIVATE_GETDLCCONTENTS"/>
+  <int value="1700" label="FILEMANAGERPRIVATEINTERNAL_PARSETRASHINFOFILES"/>
+  <int value="1701" label="PASSWORDSPRIVATE_EXTENDAUTHVALIDITY"/>
+  <int value="1702" label="AUTOTESTPRIVATE_GETDESKSINFO"/>
+  <int value="1703" label="ENTERPRISEREPORTINGPRIVATE_GETSETTINGS"/>
+  <int value="1704" label="WMDESKSPRIVATE_SAVEACTIVEDESK"/>
+  <int value="1705" label="WMDESKSPRIVATE_DELETESAVEDDESK"/>
+  <int value="1706" label="WMDESKSPRIVATE_RECALLSAVEDDESK"/>
+  <int value="1707" label="FILEMANAGERPRIVATE_GETDLPBLOCKEDCOMPONENTS"/>
+  <int value="1708" label="FILEMANAGERPRIVATE_GETDIALOGCALLER"/>
+  <int value="1709" label="OS_TELEMETRY_GETNONREMOVABLEBLOCKDEVICESINFO"/>
+  <int value="1710" label="OS_DIAGNOSTICS_RUNDNSRESOLUTIONROUTINE"/>
+  <int value="1711" label="OS_DIAGNOSTICS_RUNSIGNALSTRENGTHROUTINE"/>
+  <int value="1712" label="OS_DIAGNOSTICS_RUNGATEWAYCANBEPINGEDROUTINE"/>
+  <int value="1713" label="OS_DIAGNOSTICS_RUNDNSRESOLVERPRESENTROUTINE"/>
+  <int value="1714" label="OS_TELEMETRY_GETINTERNETCONNECTIVITYINFO"/>
+  <int value="1715" label="PASSWORDSPRIVATE_GETINSECURECREDENTIALS"/>
+  <int value="1716" label="ACTION_ISENABLED"/>
+  <int value="1717"
+      label="PASSWORDSPRIVATE_SWITCHBIOMETRICAUTHBEFOREFILLINGSTATE"/>
+  <int value="1718" label="WMDESKSPRIVATE_GETACTIVEDESK"/>
+  <int value="1719" label="WMDESKSPRIVATE_SWITCHDESK"/>
+  <int value="1720" label="OS_TELEMETRY_GETTPMINFO"/>
+  <int value="1721"
+      label="INPUTMETHODPRIVATE_NOTIFYINPUTMETHODREADYFORTESTING"/>
+  <int value="1722" label="AUTOTESTPRIVATE_MAKEFUSEBOXTEMPDIR"/>
+  <int value="1723" label="AUTOTESTPRIVATE_REMOVEFUSEBOXTEMPDIR"/>
+  <int value="1724" label="AUTOTESTPRIVATE_GETTHROUGHPUTTRACKERDATA"/>
+  <int value="1725" label="ENTERPRISE_REMOTEAPPS_SORTLAUNCHER"/>
+  <int value="1726" label="PASSWORDSPRIVATE_SHOWADDSHORTCUTDIALOG"/>
+  <int value="1727" label="ACTION_GETBADGETEXTCOLOR"/>
+  <int value="1728" label="ACTION_SETBADGETEXTCOLOR"/>
+  <int value="1729" label="AUTOTESTPRIVATE_REMOVECOMPONENTEXTENSION"/>
+  <int value="1730" label="PASSWORDSPRIVATE_REQUESTCREDENTIALSDETAILS"/>
+  <int value="1731" label="PASSWORDSPRIVATE_GETCREDENTIALGROUPS"/>
+  <int value="1732" label="AUTOTESTPRIVATE_GETLAUNCHERSSEARCHBOXSTATE"/>
+  <int value="1733" label="OS_DIAGNOSTICS_RUNSENSITIVESENSORROUTINE"/>
+  <int value="1734" label="OS_DIAGNOSTICS_RUNNVMESELFTESTROUTINE"/>
+  <int value="1735" label="AUTOTESTPRIVATE_STARTFRAMECOUNTING"/>
+  <int value="1736" label="AUTOTESTPRIVATE_STOPFRAMECOUNTING"/>
+  <int value="1737" label="FEEDBACKPRIVATE_OPENFEEDBACK"/>
+  <int value="1738" label="OS_DIAGNOSTICS_RUNFINGERPRINTALIVEROUTINE"/>
+  <int value="1739" label="DEVELOPERPRIVATE_UPDATESITEACCESS"/>
+  <int value="1740" label="AUTOTESTPRIVATE_REFRESHREMOTECOMMANDS"/>
+  <int value="1741" label="FILESYSTEMPROVIDERINTERNAL_RESPONDTOMOUNTREQUEST"/>
+  <int value="1742" label="OS_DIAGNOSTICS_RUNEMMCLIFETIMEROUTINE"/>
+  <int value="1743" label="AUTOFILLPRIVATE_SAVEIBAN"/>
+  <int value="1744" label="AUTOFILLPRIVATE_GETIBANLIST"/>
+  <int value="1745" label="ENTERPRISE_PLATFORMKEYS_CHALLENGEKEY"/>
+  <int value="1746" label="PDFVIEWERPRIVATE_ISALLOWEDLOCALFILEACCESS"/>
+  <int value="1747" label="DECLARATIVENETREQUEST_UPDATESTATICRULES"/>
+  <int value="1748" label="FILEMANAGERPRIVATEINTERNAL_SEARCHFILES"/>
+  <int value="1749" label="SYSTEMLOG_ADD"/>
+  <int value="1750" label="DECLARATIVENETREQUEST_GETDISABLEDRULEIDS"/>
+  <int value="1751"
+      label="SMARTCARDPROVIDERPRIVATE_REPORTESTABLISHCONTEXTRESULT"/>
+  <int value="1752"
+      label="SMARTCARDPROVIDERPRIVATE_REPORTRELEASECONTEXTRESULT"/>
+  <int value="1753" label="SMARTCARDPROVIDERPRIVATE_REPORTLISTREADERSRESULT"/>
+  <int value="1754"
+      label="SMARTCARDPROVIDERPRIVATE_REPORTGETSTATUSCHANGERESULT"/>
+  <int value="1755" label="FILEMANAGERPRIVATE_RESUMEIOTASK"/>
+  <int value="1756" label="PASSWORDSPRIVATE_GETCREDENTIALSWITHREUSEDPASSWORD"/>
+  <int value="1757" label="OS_TELEMETRY_GETAUDIOINFO"/>
+  <int value="1758" label="OS_TELEMETRY_GETMARKETINGINFO"/>
+  <int value="1759" label="OS_TELEMETRY_GETUSBBUSINFO"/>
+  <int value="1760" label="PDFVIEWERPRIVATE_ISPDFOCRALWAYSACTIVE"/>
+  <int value="1761" label="PDFVIEWERPRIVATE_SETPDFOCRPREF"/>
+  <int value="1762" label="AUTOFILLPRIVATE_GETACCOUNTINFO"/>
+  <int value="1763" label="FILEMANAGERPRIVATE_PROGRESSPAUSEDTASKS"/>
+  <int value="1764" label="BOOKMARKMANAGERPRIVATE_IMPORT"/>
+  <int value="1765" label="BOOKMARKMANAGERPRIVATE_EXPORT"/>
+  <int value="1766" label="PASSWORDSPRIVATE_SHOWEXPORTEDFILEINSHELL"/>
+  <int value="1767" label="FILEMANAGERPRIVATE_TOGGLEBULKPINNING"/>
+  <int value="1768" label="SMARTCARDPROVIDERPRIVATE_REPORTCONNECTRESULT"/>
+  <int value="1769"
+      label="DELETED_SMARTCARDPROVIDERPRIVATE_REPORTDISCONNECTRESULT"/>
+  <int value="1770" label="WMDESKSPRIVATE_GETDESKBYID"/>
+  <int value="1771" label="AUTOFILLPRIVATE_ISVALIDIBAN"/>
+  <int value="1772" label="ACCESSIBILITY_PRIVATE_ISLACROSPRIMARY"/>
+  <int value="1773" label="POWER_REPORTACTIVITY"/>
+  <int value="1774" label="PASSWORDSPRIVATE_CONTINUEIMPORT"/>
+  <int value="1775" label="PASSWORDSPRIVATE_RESETIMPORTER"/>
+  <int value="1776" label="SMARTCARDPROVIDERPRIVATE_REPORTPLAINRESULT"/>
+  <int value="1777" label="RUNTIME_GETCONTEXTS"/>
+  <int value="1778" label="OS_EVENTS_ISEVENTSUPPORTED"/>
+  <int value="1779" label="OS_EVENTS_STARTCAPTURINGEVENTS"/>
+  <int value="1780" label="OS_EVENTS_STOPCAPTURINGEVENTS"/>
+  <int value="1781" label="SIDEPANEL_SETPANELBEHAVIOR"/>
+  <int value="1782" label="SIDEPANEL_GETPANELBEHAVIOR"/>
+  <int value="1783" label="FILEMANAGERPRIVATE_GETBULKPINPROGRESS"/>
+  <int value="1784" label="ENTERPRISE_REMOTEAPPS_SETPINNEDAPPS"/>
+  <int value="1785" label="SMARTCARDPROVIDERPRIVATE_REPORTDATARESULT"/>
+  <int value="1786" label="FILEMANAGERPRIVATE_CALCULATEBULKPINREQUIREDSPACE"/>
+  <int value="1787"
+      label="AUTOFILLPRIVATE_AUTHENTICATEUSERANDFLIPMANDATORYAUTHTOGGLE"/>
+  <int value="1788" label="FILEMANAGERPRIVATE_SHOWPOLICYDIALOG"/>
+  <int value="1789" label="SIDEPANEL_OPEN"/>
+  <int value="1790" label="AUTOTESTPRIVATE_INSTALLBRUSCHETTA"/>
+  <int value="1791" label="AUTOTESTPRIVATE_REMOVEBRUSCHETTA"/>
+  <int value="1792" label="AUTOFILLPRIVATE_GETLOCALCARD"/>
+  <int value="1793" label="AUTOTESTPRIVATE_ISFEATUREENABLED"/>
+  <int value="1794" label="PASSWORDSPRIVATE_CHANGECREDENTIAL"/>
+  <int value="1795" label="SMARTCARDPROVIDERPRIVATE_REPORTSTATUSRESULT"/>
+  <int value="1796" label="AUTOTESTPRIVATE_WAITFORAMBIENTVIDEO"/>
+  <int value="1797" label="GUESTVIEWINTERNAL_DESTROYUNATTACHEDGUEST"/>
+  <int value="1798" label="AUTOTESTPRIVATE_GETCURRENTINPUTMETHODDESCRIPTOR"/>
+  <int value="1799" label="OS_DIAGNOSTICS_RUNBLUETOOTHPOWERROUTINE"/>
+  <int value="1800" label="OS_DIAGNOSTICS_RUNUFSLIFETIMEROUTINE"/>
+  <int value="1801" label="OS_TELEMETRY_GETDISPLAYINFO"/>
+  <int value="1802" label="OS_DIAGNOSTICS_RUNPOWERBUTTONROUTINE"/>
+  <int value="1803" label="OS_DIAGNOSTICS_RUNAUDIODRIVERROUTINE"/>
+  <int value="1804" label="READINGLIST_ADDENTRY"/>
+  <int value="1805" label="READINGLIST_REMOVEENTRY"/>
+  <int value="1806" label="PASSWORDSPRIVATE_FETCHFAMILYMEMBERS"/>
+  <int value="1807" label="READINGLIST_UPDATEENTRY"/>
+  <int value="1808" label="READINGLIST_QUERY"/>
+  <int value="1809" label="DEVELOPERPRIVATE_REMOVEMULTIPLEEXTENSIONS"/>
+  <int value="1810" label="PASSWORDSPRIVATE_SHAREPASSWORD"/>
+  <int value="1811" label="AUTOFILLPRIVATE_CHECKIFDEVICEAUTHAVAILABLE"/>
+  <int value="1812" label="OS_DIAGNOSTICS_RUNBLUETOOTHDISCOVERYROUTINE"/>
+  <int value="1813"
+      label="IMAGELOADERPRIVATE_GETARCDOCUMENTSPROVIDERTHUMBNAIL"/>
+  <int value="1814" label="IMAGELOADERPRIVATE_GETDRIVETHUMBNAIL"/>
+  <int value="1815" label="IMAGELOADERPRIVATE_GETPDFTHUMBNAIL"/>
+  <int value="1816" label="ACCESSIBILITYSERVICEPRIVATE_SPEAKSELECTEDTEXT"/>
+  <int value="1817" label="USERSCRIPTS_REGISTER"/>
+  <int value="1818" label="OS_DIAGNOSTICS_RUNBLUETOOTHSCANNINGROUTINE"/>
+  <int value="1819" label="OS_DIAGNOSTICS_RUNBLUETOOTHPAIRINGROUTINE"/>
+  <int value="1820" label="FILEMANAGERPRIVATE_DISMISSIOTASK"/>
+  <int value="1821" label="ACCESSIBILITY_PRIVATE_SHOWTOAST"/>
+  <int value="1822" label="USERSCRIPTS_GETSCRIPTS"/>
+  <int value="1823" label="FILEMANAGERPRIVATE_GETDEVICECONNECTIONSTATE"/>
+  <int value="1824" label="USERSCRIPTS_UNREGISTER"/>
+  <int value="1825" label="AUTOTESTPRIVATE_SETARCINTERACTIVESTATE"/>
+  <int value="1826" label="OS_DIAGNOSTICS_CREATEMEMORYROUTINE"/>
+  <int value="1827" label="OS_DIAGNOSTICS_STARTROUTINE"/>
+  <int value="1828" label="OS_DIAGNOSTICS_CANCELROUTINE"/>
+  <int value="1829" label="OS_DIAGNOSTICS_ISMEMORYROUTINEARGUMENTSUPPORTED"/>
+  <int value="1830"
+      label="ACCESSIBILITY_PRIVATE_CLIPBOARDCOPYINACTIVELACROSGOOGLEDOC"/>
+  <int value="1831" label="USERSCRIPTS_UPDATE"/>
+  <int value="1832" label="INPUTMETHODPRIVATE_GETLANGUAGEPACKSTATUS"/>
+  <int value="1833" label="OS_DIAGNOSTICS_RUNFANROUTINE"/>
+  <int value="1834" label="AUTOTESTPRIVATE_ISFIELDTRIALACTIVE"/>
+  <int value="1835" label="AUTOTESTPRIVATE_GETARCWAKEFULNESSMODE"/>
+  <int value="1836" label="OS_DIAGNOSTICS_CREATEVOLUMEBUTTONROUTINE"/>
+  <int value="1837"
+      label="OS_DIAGNOSTICS_ISVOLUMEBUTTONROUTINEARGUMENTSUPPORTED"/>
+  <int value="1838" label="USERSCRIPTS_CONFIGUREWORLD"/>
+  <int value="1839" label="ENTERPRISE_KIOSKINPUT_SETCURRENTINPUTMETHOD"/>
+  <int value="1840" label="AUTOFILLPRIVATE_BULKDELETEALLCVCS"/>
+  <int value="1841" label="PDFVIEWERPRIVATE_GETSTREAMINFO"/>
+  <int value="1842" label="PDFVIEWERPRIVATE_SETPDFPLUGINATTRIBUTES"/>
+  <int value="1843" label="ACCESSIBILITY_PRIVATE_SETCURSORPOSITION"/>
+  <int value="1844" label="ACCESSIBILITY_PRIVATE_GETTTSDLCCONTENTS"/>
+  <int value="1845" label="OS_DIAGNOSTICS_CREATEFANROUTINE"/>
+  <int value="1846" label="OS_DIAGNOSTICS_ISFANROUTINEARGUMENTSUPPORTED"/>
+  <int value="1847" label="AUTOTESTPRIVATE_OVERRIDEORCARESPONSE"/>
+  <int value="1848" label="ODFSCONFIGPRIVATE_GETMOUNT"/>
+  <int value="1849" label="ODFSCONFIGPRIVATE_GETACCOUNTRESTRICTIONS"/>
+  <int value="1850" label="DOCUMENTSCAN_GETSCANNERLIST"/>
+  <int value="1851" label="OS_MANAGEMENT_SETAUDIOGAIN"/>
+  <int value="1852" label="DOCUMENTSCAN_OPENSCANNER"/>
+  <int value="1853" label="DOCUMENTSCAN_CLOSESCANNER"/>
+  <int value="1854" label="ACCESSIBILITY_PRIVATE_GETDISPLAYBOUNDS"/>
+  <int value="1855" label="AUTOFILLPRIVATE_SERVERIBANLINKCLICKED"/>
+  <int value="1856" label="AUTOTESTPRIVATE_CLEARALLOWEDPREF"/>
+  <int value="1857" label="DOCUMENTSCAN_STARTSCAN"/>
+  <int value="1858" label="DOCUMENTSCAN_CANCELSCAN"/>
+  <int value="1859" label="DOCUMENTSCAN_READSCANDATA"/>
+  <int value="1860" label="DOCUMENTSCAN_SETOPTIONS"/>
+  <int value="1861" label="DOCUMENTSCAN_GETOPTIONGROUPS"/>
+</enum>
+
+<enum name="ExtensionInstallationCrxInstallError">
+  <int value="0" label="NONE"/>
+  <int value="1" label="CONVERT_USER_SCRIPT_TO_EXTENSION_FAILED"/>
+  <int value="2" label="UNEXPECTED_ID"/>
+  <int value="3" label="UNEXPECTED_VERSION"/>
+  <int value="4" label="MISMATCHED_VERSION"/>
+  <int value="5" label="MANIFEST_INVALID"/>
+  <int value="6" label="INSTALL_NOT_ENABLED"/>
+  <int value="7" label="OFFSTORE_INSTALL_DISALLOWED"/>
+  <int value="8" label="INCORRECT_APP_CONTENT_TYPE"/>
+  <int value="9" label="NOT_INSTALLED_FROM_GALLERY"/>
+  <int value="10" label="INCORRECT_INSTALL_HOST"/>
+  <int value="11" label="DEPENDENCY_NOT_SHARED_MODULE"/>
+  <int value="12" label="DEPENDENCY_OLD_VERSION"/>
+  <int value="13" label="DEPENDENCY_NOT_ALLOWLISTED"/>
+  <int value="14" label="UNSUPPORTED_REQUIREMENTS"/>
+  <int value="15" label="EXTENSION_IS_BLOCKLISTED"/>
+  <int value="16" label="DISALLOWED_BY_POLICY"/>
+  <int value="17" label="KIOSK_MODE_ONLY"/>
+  <int value="18" label="OVERLAPPING_WEB_EXTENT"/>
+  <int value="19" label="CANT_DOWNGRADE_VERSION"/>
+  <int value="20" label="MOVE_DIRECTORY_TO_PROFILE_FAILED"/>
+  <int value="21" label="CANT_LOAD_EXTENSION"/>
+  <int value="22" label="USER_CANCELED"/>
+  <int value="23" label="USER_ABORTED"/>
+  <int value="24" label="UPDATE_NON_EXISTING_EXTENSION"/>
+</enum>
+
+<enum name="ExtensionInstallationDownloadingCacheStatus">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="DISABLED"/>
+  <int value="2" label="MISS"/>
+  <int value="3" label="OUTDATED"/>
+  <int value="4" label="HIT"/>
+  <int value="5" label="HIT_ON_MANIFEST_FETCH_FAILURE"/>
+</enum>
+
+<enum name="ExtensionInstallationDownloadingStage">
+  <int value="0" label="PENDING"/>
+  <int value="1" label="QUEUED_FOR_MANIFEST"/>
+  <int value="2" label="DOWNLOADING_MANIFEST"/>
+  <int value="3" label="DOWNLOADING_MANIFEST_RETRY"/>
+  <int value="4" label="PARSING_MANIFEST"/>
+  <int value="5" label="MANIFEST_LOADED"/>
+  <int value="6" label="QUEUED_FOR_CRX"/>
+  <int value="7" label="DOWNLOADING_CRX"/>
+  <int value="8" label="DOWNLOADING_CRX_RETRY"/>
+  <int value="9" label="FINISHED"/>
+</enum>
+
+<enum name="ExtensionInstallationStage">
+  <int value="0" label="CREATED"/>
+  <int value="1" label="PENDING"/>
+  <int value="2" label="DOWNLOADING"/>
+  <int value="3" label="INSTALLING"/>
+  <int value="4" label="COMPLETE"/>
+</enum>
+
+<enum name="ExtensionInstallCreationStage">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="CREATION_INITIATED"/>
+  <int value="2" label="NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED"/>
+  <int value="3" label="NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_NOT_FORCED"/>
+  <int value="4" label="NOTIFIED_FROM_MANAGEMENT"/>
+  <int value="5" label="NOTIFIED_FROM_MANAGEMENT_NOT_FORCED"/>
+  <int value="6" label="SEEN_BY_POLICY_LOADER"/>
+  <int value="7" label="SEEN_BY_EXTERNAL_PROVIDER"/>
+</enum>
+
+<enum name="ExtensionInstallFrictionDialogAction">
+  <int value="0" label="Close"/>
+  <int value="1" label="Learn more"/>
+  <int value="2" label="Continue to install"/>
+</enum>
+
+<enum name="ExtensionLaunchType">
+  <int value="0" label="PINNED"/>
+  <int value="1" label="REGULAR"/>
+  <int value="2" label="FULLSCREEN"/>
+  <int value="3" label="WINDOW"/>
+</enum>
+
+<enum name="ExtensionLocation">
+  <int value="0" label="INVALID"/>
+  <int value="1" label="INTERNAL"/>
+  <int value="2" label="EXTERNAL_PREF"/>
+  <int value="3" label="EXTERNAL_REGISTRY"/>
+  <int value="4" label="LOAD"/>
+  <int value="5" label="COMPONENT"/>
+  <int value="6" label="EXTERNAL_PREF_DOWNLOAD"/>
+  <int value="7" label="EXTERNAL_POLICY_DOWNLOAD"/>
+  <int value="8" label="COMMAND_LINE"/>
+  <int value="9" label="EXTERNAL_POLICY"/>
+  <int value="10" label="EXTERNAL_COMPONENT"/>
+</enum>
+
+<enum name="ExtensionNavigationScheme">
+  <int value="0" label="HttpOrHttps"/>
+  <int value="1" label="Chrome"/>
+  <int value="2" label="FileWithPermission"/>
+  <int value="3" label="FileWithoutPermission"/>
+  <int value="4" label="Other"/>
+</enum>
+
+<enum name="ExtensionNoUpdatesInfo">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Empty"/>
+  <int value="2" label="Rate limit"/>
+  <int value="3" label="Disabled by client"/>
+  <int value="4" label="Bandwidth limit"/>
+</enum>
+
+<enum name="ExtensionPermission3">
+<!-- Generated from extensions/common/mojom/api_permission_id.mojom.
+Called by update_extension_permission.py.-->
+
+  <int value="0" label="kInvalid"/>
+  <int value="1" label="kUnknown"/>
+  <int value="2" label="kAccessibilityFeaturesModify"/>
+  <int value="3" label="kAccessibilityFeaturesRead"/>
+  <int value="4" label="kAccessibilityPrivate"/>
+  <int value="5" label="kActiveTab"/>
+  <int value="6" label="kActivityLogPrivate"/>
+  <int value="7" label="kAlarms"/>
+  <int value="8" label="kAlphaEnabled"/>
+  <int value="9" label="kAlwaysOnTopWindows"/>
+  <int value="10" label="kAppView"/>
+  <int value="11" label="kAudio"/>
+  <int value="12" label="kAudioCapture"/>
+  <int value="13" label="kDeleted_AudioModem"/>
+  <int value="14" label="kAutofillPrivate"/>
+  <int value="15" label="kAutomation"/>
+  <int value="16" label="kAutoTestPrivate"/>
+  <int value="17" label="kBackground"/>
+  <int value="18" label="kBluetoothPrivate"/>
+  <int value="19" label="kBookmark"/>
+  <int value="20" label="kDeleted_BookmarkManagerPrivate"/>
+  <int value="21" label="kBrailleDisplayPrivate"/>
+  <int value="22" label="kBrowser"/>
+  <int value="23" label="kBrowsingData"/>
+  <int value="24" label="kDeleted_Cast"/>
+  <int value="25" label="kDeleted_CastStreaming"/>
+  <int value="26" label="kChromeosInfoPrivate"/>
+  <int value="27" label="kClipboardRead"/>
+  <int value="28" label="kClipboardWrite"/>
+  <int value="29" label="kDeleted_CloudPrintPrivate"/>
+  <int value="30" label="kCommandLinePrivate"/>
+  <int value="31" label="kCommandsAccessibility"/>
+  <int value="32" label="kContentSettings"/>
+  <int value="33" label="kContextMenus"/>
+  <int value="34" label="kCookie"/>
+  <int value="35" label="kDeleted_Copresence"/>
+  <int value="36" label="kDeleted_CopresencePrivate"/>
+  <int value="37" label="kDeleted_CryptotokenPrivate"/>
+  <int value="38" label="kDeleted_DataReductionProxy"/>
+  <int value="39" label="kDiagnostics"/>
+  <int value="40" label="kDeleted_Dial"/>
+  <int value="41" label="kDebugger"/>
+  <int value="42" label="kDeclarative"/>
+  <int value="43" label="kDeclarativeContent"/>
+  <int value="44" label="kDeclarativeWebRequest"/>
+  <int value="45" label="kDesktopCapture"/>
+  <int value="46" label="kDeleted_DesktopCapturePrivate"/>
+  <int value="47" label="kDeveloperPrivate"/>
+  <int value="48" label="kDevtools"/>
+  <int value="49" label="kDns"/>
+  <int value="50" label="kDocumentScan"/>
+  <int value="51" label="kDownloads"/>
+  <int value="52" label="kDeleted_DownloadsInternal"/>
+  <int value="53" label="kDownloadsOpen"/>
+  <int value="54" label="kDownloadsShelf"/>
+  <int value="55" label="kDeleted_EasyUnlockPrivate"/>
+  <int value="56" label="kEchoPrivate"/>
+  <int value="57" label="kDeleted_EmbeddedExtensionOptions"/>
+  <int value="58" label="kEnterprisePlatformKeys"/>
+  <int value="59" label="kEnterprisePlatformKeysPrivate"/>
+  <int value="60" label="kDeleted_ExperienceSamplingPrivate"/>
+  <int value="61" label="kExperimental"/>
+  <int value="62" label="kDeleted_ExtensionView"/>
+  <int value="63" label="kDeprecated_ExternallyConnectableAllUrls"/>
+  <int value="64" label="kFeedbackPrivate"/>
+  <int value="65" label="kFileBrowserHandler"/>
+  <int value="66" label="kDeleted_FileBrowserHandlerInternal"/>
+  <int value="67" label="kFileManagerPrivate"/>
+  <int value="68" label="kFileSystem"/>
+  <int value="69" label="kFileSystemDirectory"/>
+  <int value="70" label="kFileSystemProvider"/>
+  <int value="71" label="kFileSystemRequestFileSystem"/>
+  <int value="72" label="kFileSystemRetainEntries"/>
+  <int value="73" label="kFileSystemWrite"/>
+  <int value="74" label="kDeleted_FileSystemWriteDirectory"/>
+  <int value="75" label="kFirstRunPrivate"/>
+  <int value="76" label="kFontSettings"/>
+  <int value="77" label="kFullscreen"/>
+  <int value="78" label="kDeleted_GcdPrivate"/>
+  <int value="79" label="kGcm"/>
+  <int value="80" label="kGeolocation"/>
+  <int value="81" label="kHid"/>
+  <int value="82" label="kHistory"/>
+  <int value="83" label="kHomepage"/>
+  <int value="84" label="kHotwordPrivate"/>
+  <int value="85" label="kIdentity"/>
+  <int value="86" label="kIdentityEmail"/>
+  <int value="87" label="kDeleted_IdentityPrivate"/>
+  <int value="88" label="kIdltest"/>
+  <int value="89" label="kIdle"/>
+  <int value="90" label="kImeWindowEnabled"/>
+  <int value="91" label="kDeleted_InlineInstallPrivate"/>
+  <int value="92" label="kInput"/>
+  <int value="93" label="kInputMethodPrivate"/>
+  <int value="94" label="kDeleted_InterceptAllKeys"/>
+  <int value="95" label="kDeleted_LauncherSearchProvider"/>
+  <int value="96" label="kLocation"/>
+  <int value="97" label="kDeleted_LogPrivate"/>
+  <int value="98" label="kManagement"/>
+  <int value="99" label="kMediaGalleries"/>
+  <int value="100" label="kMediaPlayerPrivate"/>
+  <int value="101" label="kDeleted_MediaRouterPrivate"/>
+  <int value="102" label="kMetricsPrivate"/>
+  <int value="103" label="kMDns"/>
+  <int value="104" label="kDeleted_MusicManagerPrivate"/>
+  <int value="105" label="kNativeMessaging"/>
+  <int value="106" label="kDeleted_NetworkingConfig"/>
+  <int value="107" label="kNetworkingPrivate"/>
+  <int value="108" label="kDeleted_NotificationProvider"/>
+  <int value="109" label="kNotifications"/>
+  <int value="110" label="kOverrideEscFullscreen"/>
+  <int value="111" label="kPageCapture"/>
+  <int value="112" label="kPointerLock"/>
+  <int value="113" label="kPlatformKeys"/>
+  <int value="114" label="kDeleted_Plugin"/>
+  <int value="115" label="kPower"/>
+  <int value="116" label="kDeleted_PreferencesPrivate"/>
+  <int value="117" label="kDeleted_PrincipalsPrivate"/>
+  <int value="118" label="kPrinterProvider"/>
+  <int value="119" label="kPrivacy"/>
+  <int value="120" label="kProcesses"/>
+  <int value="121" label="kProxy"/>
+  <int value="122" label="kImageWriterPrivate"/>
+  <int value="123" label="kDeleted_ReadingListPrivate"/>
+  <int value="124" label="kRtcPrivate"/>
+  <int value="125" label="kSearchProvider"/>
+  <int value="126" label="kSearchEnginesPrivate"/>
+  <int value="127" label="kSerial"/>
+  <int value="128" label="kSessions"/>
+  <int value="129" label="kSettingsPrivate"/>
+  <int value="130" label="kDeleted_SignedInDevices"/>
+  <int value="131" label="kSocket"/>
+  <int value="132" label="kStartupPages"/>
+  <int value="133" label="kStorage"/>
+  <int value="134" label="kDeleted_StreamsPrivate"/>
+  <int value="135" label="kSyncFileSystem"/>
+  <int value="136" label="kSystemPrivate"/>
+  <int value="137" label="kSystemDisplay"/>
+  <int value="138" label="kSystemStorage"/>
+  <int value="139" label="kTab"/>
+  <int value="140" label="kTabCapture"/>
+  <int value="141" label="kTabCaptureForTab"/>
+  <int value="142" label="kTerminalPrivate"/>
+  <int value="143" label="kTopSites"/>
+  <int value="144" label="kTts"/>
+  <int value="145" label="kTtsEngine"/>
+  <int value="146" label="kUnlimitedStorage"/>
+  <int value="147" label="kU2fDevices"/>
+  <int value="148" label="kUsb"/>
+  <int value="149" label="kUsbDevice"/>
+  <int value="150" label="kVideoCapture"/>
+  <int value="151" label="kVirtualKeyboardPrivate"/>
+  <int value="152" label="kVpnProvider"/>
+  <int value="153" label="kWallpaper"/>
+  <int value="154" label="kDeleted_WallpaperPrivate"/>
+  <int value="155" label="kWebcamPrivate"/>
+  <int value="156" label="kDeleted_kWebConnectable"/>
+  <int value="157" label="kWebNavigation"/>
+  <int value="158" label="kWebRequest"/>
+  <int value="159" label="kWebRequestBlocking"/>
+  <int value="160" label="kWebrtcAudioPrivate"/>
+  <int value="161" label="kWebrtcDesktopCapturePrivate"/>
+  <int value="162" label="kWebrtcLoggingPrivate"/>
+  <int value="163" label="kWebstorePrivate"/>
+  <int value="164" label="kDeleted_WebstoreWidgetPrivate"/>
+  <int value="165" label="kWebView"/>
+  <int value="166" label="kWindowShape"/>
+  <int value="167" label="kDeleted_ScreenlockPrivate"/>
+  <int value="168" label="kSystemCpu"/>
+  <int value="169" label="kSystemMemory"/>
+  <int value="170" label="kSystemNetwork"/>
+  <int value="171" label="kSystemInfoCpu"/>
+  <int value="172" label="kSystemInfoMemory"/>
+  <int value="173" label="kBluetooth"/>
+  <int value="174" label="kBluetoothDevices"/>
+  <int value="175" label="kFavicon"/>
+  <int value="176" label="kFullAccess"/>
+  <int value="177" label="kHostReadOnly"/>
+  <int value="178" label="kHostReadWrite"/>
+  <int value="179" label="kHostsAll"/>
+  <int value="180" label="kHostsAllReadOnly"/>
+  <int value="181" label="kMediaGalleriesAllGalleriesCopyTo"/>
+  <int value="182" label="kMediaGalleriesAllGalleriesDelete"/>
+  <int value="183" label="kMediaGalleriesAllGalleriesRead"/>
+  <int value="184" label="kNetworkState"/>
+  <int value="185" label="kDeleted_OverrideBookmarksUI"/>
+  <int value="186" label="kShouldWarnAllHosts"/>
+  <int value="187" label="kSocketAnyHost"/>
+  <int value="188" label="kSocketDomainHosts"/>
+  <int value="189" label="kSocketSpecificHosts"/>
+  <int value="190" label="kDeleted_UsbDeviceList"/>
+  <int value="191" label="kUsbDeviceUnknownProduct"/>
+  <int value="192" label="kUsbDeviceUnknownVendor"/>
+  <int value="193" label="kUsersPrivate"/>
+  <int value="194" label="kPasswordsPrivate"/>
+  <int value="195" label="kLanguageSettingsPrivate"/>
+  <int value="196" label="kEnterpriseDeviceAttributes"/>
+  <int value="197" label="kCertificateProvider"/>
+  <int value="198" label="kResourcesPrivate"/>
+  <int value="199" label="kDeleted_DisplaySource"/>
+  <int value="200" label="kClipboard"/>
+  <int value="201" label="kNetworkingOnc"/>
+  <int value="202" label="kVirtualKeyboard"/>
+  <int value="203" label="kDeleted_NetworkingCastPrivate"/>
+  <int value="204" label="kMediaPerceptionPrivate"/>
+  <int value="205" label="kLockScreen"/>
+  <int value="206" label="kNewTabPageOverride"/>
+  <int value="207" label="kDeclarativeNetRequest"/>
+  <int value="208" label="kLockWindowFullscreenPrivate"/>
+  <int value="209" label="kWebrtcLoggingPrivateAudioDebug"/>
+  <int value="210" label="kEnterpriseReportingPrivate"/>
+  <int value="211" label="kCecPrivate"/>
+  <int value="212" label="kSafeBrowsingPrivate"/>
+  <int value="213" label="kDeleted_FileSystemRequestDownloads"/>
+  <int value="214" label="kDeleted_SystemPowerSource"/>
+  <int value="215" label="kArcAppsPrivate"/>
+  <int value="216" label="kEnterpriseHardwarePlatform"/>
+  <int value="217" label="kLoginScreenUi"/>
+  <int value="218" label="kDeclarativeNetRequestFeedback"/>
+  <int value="219" label="kTransientBackground"/>
+  <int value="220" label="kLogin"/>
+  <int value="221" label="kLoginScreenStorage"/>
+  <int value="222" label="kLoginState"/>
+  <int value="223" label="kPrintingMetrics"/>
+  <int value="224" label="kPrinting"/>
+  <int value="225" label="kCrashReportPrivate"/>
+  <int value="226" label="kDeleted_AutofillAssistantPrivate"/>
+  <int value="227" label="kEnterpriseNetworkingAttributes"/>
+  <int value="228" label="kSearch"/>
+  <int value="229" label="kTabGroups"/>
+  <int value="230" label="kScripting"/>
+  <int value="231" label="kWmDesksPrivate"/>
+  <int value="232" label="kWebAuthenticationProxy"/>
+  <int value="233" label="kDeclarativeNetRequestWithHostAccess"/>
+  <int value="234" label="kChromeOSTelemetry"/>
+  <int value="235" label="kSpeechRecognitionPrivate"/>
+  <int value="236" label="kChromeOSDiagnostics"/>
+  <int value="237" label="kChromeOSTelemetrySerialNumber"/>
+  <int value="238" label="kSharedStoragePrivate"/>
+  <int value="239" label="kEnterpriseRemoteApps"/>
+  <int value="240" label="kOffscreen"/>
+  <int value="241" label="kSidePanel"/>
+  <int value="242" label="kDownloadsUi"/>
+  <int value="243" label="kWebRequestAuthProvider"/>
+  <int value="244" label="kChromeOSTelemetryNetworkInformation"/>
+  <int value="245" label="kPdfViewerPrivate"/>
+  <int value="246" label="kSystemLog"/>
+  <int value="247" label="kSmartCardProviderPrivate"/>
+  <int value="248" label="kChromeOSEvents"/>
+  <int value="249" label="kChromeOSAttachedDeviceInfo"/>
+  <int value="250" label="kReadingList"/>
+  <int value="251" label="kImageLoaderPrivate"/>
+  <int value="252" label="kAccessibilityServicePrivate"/>
+  <int value="253" label="kUserScripts"/>
+  <int value="254" label="kChromeOSBluetoothPeripheralsInfo"/>
+  <int value="255" label="kEnterpriseKioskInput"/>
+  <int value="256" label="kOdfsConfigPrivate"/>
+  <int value="257" label="kChromeOSManagementAudio"/>
+</enum>
+
+<enum name="ExtensionPolicyReinstallReason">
+  <int value="0" label="Tried to load a corrupted extension"/>
+  <int value="1" label="Corrupted Chrome Web Store extension"/>
+  <int value="2" label="Corrupted non-webstore extension"/>
+  <int value="4" label="Non-webstore extension without hashes skipped"/>
+</enum>
+
+<enum name="ExtensionType">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="EXTENSION"/>
+  <int value="2" label="THEME"/>
+  <int value="3" label="USER_SCRIPT"/>
+  <int value="4" label="HOSTED_APP"/>
+  <int value="5" label="LEGACY_PACKAGED_APP"/>
+  <int value="6" label="PLATFORM_APP"/>
+  <int value="7" label="SHARED_MODULE"/>
+  <int value="8" label="LOGIN_SCREEN_EXTENSION"/>
+  <int value="9" label="CHROMEOS_SYSTEM_EXTENSION"/>
+</enum>
+
+<enum name="ExtensionUninstallSource">
+  <int value="0" label="Testing"/>
+  <int value="1" label="Context menu"/>
+  <int value="2" label="Permissions increase"/>
+  <int value="3" label="Storage threshold exceeded"/>
+  <int value="4" label="App list"/>
+  <int value="5" label="App info dialog"/>
+  <int value="6" label="Chrome apps page"/>
+  <int value="7" label="Chrome extensions page"/>
+  <int value="8" label="Extension"/>
+  <int value="9" label="Chrome Webstore"/>
+  <int value="10" label="Hosted app menu"/>
+</enum>
+
+<enum name="ExtensionUnpackFailureReason">
+  <summary>
+    Reasons the sandboxed extension unpacker can fail. See enum FailureReason in
+    src/chrome/browser/extensions/sandboxed_extension_unpacker.h .
+  </summary>
+  <int value="0" label="COULD_NOT_GET_TEMP_DIRECTORY"/>
+  <int value="1" label="COULD_NOT_CREATE_TEMP_DIRECTORY"/>
+  <int value="2" label="FAILED_TO_COPY_EXTENSION_FILE_TO_TEMP_DIRECTORY"/>
+  <int value="3" label="COULD_NOT_GET_SANDBOX_FRIENDLY_PATH"/>
+  <int value="4" label="COULD_NOT_LOCALIZE_EXTENSION"/>
+  <int value="5" label="INVALID_MANIFEST"/>
+  <int value="6" label="UNPACKER_CLIENT_FAILED"/>
+  <int value="7" label="UTILITY_PROCESS_CRASHED_WHILE_TRYING_TO_INSTALL"/>
+  <int value="8" label="CRX_FILE_NOT_READABLE"/>
+  <int value="9" label="CRX_HEADER_INVALID"/>
+  <int value="10" label="CRX_MAGIC_NUMBER_INVALID"/>
+  <int value="11" label="CRX_VERSION_NUMBER_INVALID"/>
+  <int value="12" label="CRX_EXCESSIVELY_LARGE_KEY_OR_SIGNATURE"/>
+  <int value="13" label="CRX_ZERO_KEY_LENGTH"/>
+  <int value="14" label="CRX_ZERO_SIGNATURE_LENGTH"/>
+  <int value="15" label="CRX_PUBLIC_KEY_INVALID"/>
+  <int value="16" label="CRX_SIGNATURE_INVALID"/>
+  <int value="17" label="CRX_SIGNATURE_VERIFICATION_INITIALIZATION_FAILED"/>
+  <int value="18" label="CRX_SIGNATURE_VERIFICATION_FAILED"/>
+  <int value="19" label="ERROR_SERIALIZING_MANIFEST_JSON"/>
+  <int value="20" label="ERROR_SAVING_MANIFEST_JSON"/>
+  <int value="21" label="COULD_NOT_READ_IMAGE_DATA_FROM_DISK"/>
+  <int value="22" label="DECODED_IMAGES_DO_NOT_MATCH_THE_MANIFEST"/>
+  <int value="23" label="INVALID_PATH_FOR_BROWSER_IMAGE"/>
+  <int value="24" label="ERROR_REMOVING_OLD_IMAGE_FILE"/>
+  <int value="25" label="INVALID_PATH_FOR_BITMAP_IMAGE"/>
+  <int value="26" label="ERROR_RE_ENCODING_THEME_IMAGE"/>
+  <int value="27" label="ERROR_SAVING_THEME_IMAGE"/>
+  <int value="28" label="DEPRECATED_ABORTED_DUE_TO_SHUTDOWN"/>
+  <int value="29" label="COULD_NOT_READ_CATALOG_DATA_FROM_DISK"/>
+  <int value="30" label="INVALID_CATALOG_DATA"/>
+  <int value="31" label="INVALID_PATH_FOR_CATALOG"/>
+  <int value="32" label="ERROR_SERIALIZING_CATALOG"/>
+  <int value="33" label="ERROR_SAVING_CATALOG"/>
+  <int value="34" label="CRX_HASH_VERIFICATION_FAILED"/>
+  <int value="35" label="UNZIP_FAILED"/>
+  <int value="36" label="DIRECTORY_MOVE_FAILED"/>
+  <int value="37" label="CRX_FILE_IS_DELTA_UPDATE"/>
+  <int value="38" label="CRX_EXPECTED_HASH_INVALID"/>
+  <int value="39" label="DEPRECATED_ERROR_PARSING_DNR_RULESET"/>
+  <int value="40" label="ERROR_INDEXING_DNR_RULESET"/>
+  <int value="41" label="CRX_REQUIRED_PROOF_MISSING"/>
+  <int value="42" label="CRX_HEADER_VERIFIED_CONTENTS_UNCOMPRESSING_FAILURE"/>
+  <int value="43" label="MALFORMED_VERIFIED_CONTENTS"/>
+  <int value="44" label="COULD_NOT_CREATE_METADATA_DIRECTORY"/>
+  <int value="45" label="COULD_NOT_WRITE_VERIFIED_CONTENTS_INTO_FILE"/>
+</enum>
+
+<enum name="ExtensionUpdateCheckDataKey">
+  <int value="0" label="No update check keys (no action taken)"/>
+  <int value="1" label="Malware"/>
+  <int value="2" label="Potentially UWS"/>
+  <int value="3" label="Policy Violation"/>
+</enum>
+
+<enum name="ExternalItemState">
+  <int value="0" label="DEPRECATED_DISABLED"/>
+  <int value="1" label="DEPRECATED_ENABLED"/>
+  <int value="2" label="DISABLED (in webstore)"/>
+  <int value="3" label="ENABLED (in webstore)"/>
+  <int value="4" label="DISABLED (not in webstore)"/>
+  <int value="5" label="ENABLED (not in webstore)"/>
+  <int value="6" label="UNINSTALLED (in webstore)"/>
+  <int value="7" label="UNINSTALLED (not in webstore)"/>
+</enum>
+
+<enum name="GoogleDocsExtensionAvailablity">
+  <int value="0" label="Available, Regular mode"/>
+  <int value="1" label="Not Available, Regular mode"/>
+  <int value="2" label="Available, Incognito mode"/>
+  <int value="3" label="Not Available, Incognito mode"/>
+</enum>
+
+<enum name="HostPermissionsAccess">
+  <int value="0" label="CANNOT_AFFECT"/>
+  <int value="1" label="NOT_REQUESTED"/>
+  <int value="2" label="ON_CLICK"/>
+  <int value="3" label="ON_SPECIFIC_SITES"/>
+  <int value="4" label="ON_ALL_REQUESTED_SITES"/>
+  <int value="5" label="ON_ACTIVE_TAB_ONLY"/>
+</enum>
+
+<enum name="InDeveloperMode">
+  <summary>A boolean for whether the user is in the developer mode.</summary>
+  <int value="0" label="User is not in the developer mode"/>
+  <int value="1" label="User is in the developer mode"/>
+</enum>
+
+<enum name="IsForceInstalledExtensionFailedWithCrxHeaderInvalidFromCWSBoolean">
+  <summary>
+    A boolean for whether a force installed extension which failed with error
+    CRX_HEADER_INVALID is from Chrome Web Store or not.
+  </summary>
+  <int value="0" label="Offstore"/>
+  <int value="1" label="Chrome Web Store"/>
+</enum>
+
+<enum name="LoadRulesetResult">
+  <int value="0" label="Load succeeded"/>
+  <int value="1" label="Load failed - Invalid path"/>
+  <int value="2" label="Load failed - File read error"/>
+  <int value="3" label="Load failed - Checksum mismatch"/>
+  <int value="4" label="Load failed - Version mismatch"/>
+  <int value="5" label="Load failed - Checksum not found in prefs"/>
+</enum>
+
+<enum name="ManifestInvalidAppStatusError">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Error unknown application"/>
+  <int value="2" label="Error invalid app id"/>
+  <int value="3" label="Error restricted"/>
+</enum>
+
+<enum name="ManifestInvalidError">
+  <int value="0" label="XML Parsing failed"/>
+  <int value="1" label="Invalid xlmns on gupdate tag"/>
+  <int value="2" label="Missing gupdate tag"/>
+  <int value="3" label="Invalid protocol on gupdate tag"/>
+  <int value="4" label="Missing app id"/>
+  <int value="5" label="Missing update check tags"/>
+  <int value="6" label="Multiple update check tags"/>
+  <int value="7" label="Invalid Prodversion min"/>
+  <int value="8" label="Empty codebase url"/>
+  <int value="9" label="Invalid codebase url"/>
+  <int value="10" label="Missing version for update check"/>
+  <int value="11" label="Invalid version"/>
+  <int value="12" label="Bad Update specification"/>
+  <int value="13" label="Bad App Status"/>
+</enum>
+
+<enum name="ReadDynamicRulesJSONStatus">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kFileDoesNotExist"/>
+  <int value="2" label="kFileReadError"/>
+  <int value="3" label="kJSONParseError"/>
+  <int value="4" label="kJSONIsNotList"/>
+  <int value="5" label="kRuleCountLimitExceeded"/>
+</enum>
+
+<enum name="RegexRuleStatus">
+  <int value="0" label="Normal regex (indexed)"/>
+  <int value="1" label="Large Regex (ignored)"/>
+</enum>
+
+<enum name="RequestAction">
+  <int value="0" label="CANCEL"/>
+  <int value="1" label="REDIRECT"/>
+  <int value="2" label="MODIFY_REQUEST_HEADERS"/>
+  <int value="3" label="MODIFY_RESPONSE_HEADERS"/>
+  <int value="4" label="SET_AUTH_CREDENTIALS"/>
+</enum>
+
+<enum name="ServiceWorkerExternalRequestResult">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Bad request ID"/>
+  <int value="2" label="Worker not running"/>
+  <int value="3" label="Worker not found"/>
+  <int value="4" label="Null context"/>
+</enum>
+
+<enum name="SessionType">
+  <int value="0" label="Existing Regular"/>
+  <int value="1" label="Guest"/>
+  <int value="2" label="New Regular"/>
+  <int value="3" label="Public Account"/>
+  <int value="4" label="(Obsolete) Locally Managed"/>
+  <int value="5" label="Kiosk App"/>
+  <int value="6" label="Regular Supervised"/>
+  <int value="7" label="ARC Kiosk"/>
+  <int value="8" label="Active Directory"/>
+  <int value="9" label="Web App Kiosk"/>
+</enum>
+
+<enum name="SettingsOverriddenDialogResult">
+  <int value="0" label="Change settings back"/>
+  <int value="1" label="Keep new settings"/>
+  <int value="2" label="Dialog dismissed"/>
+  <int value="3" label="Dialog closed without user action"/>
+</enum>
+
+<enum name="UpdateDynamicRulesStatus">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kErrorReadJSONRules"/>
+  <int value="2" label="kErrorRuleCountExceeded"/>
+  <int value="3" label="kErrorCreateTemporarySource_Deprecated"/>
+  <int value="4" label="kErrorWriteTemporaryJSONRuleset_Deprecated"/>
+  <int value="5" label="kErrorWriteTemporaryIndexedRuleset_Deprecated"/>
+  <int value="6" label="kErrorInvalidRules"/>
+  <int value="7" label="kErrorCreateDynamicRulesDirectory"/>
+  <int value="8" label="kErrorReplaceIndexedFile_Deprecated"/>
+  <int value="9" label="kErrorReplaceJSONFile_Deprecated"/>
+  <int value="10" label="kErrorCreateMatcher_InvalidPath"/>
+  <int value="11" label="kErrorCreateMatcher_FileReadError"/>
+  <int value="12" label="kErrorCreateMatcher_ChecksumMismatch"/>
+  <int value="13" label="kErrorCreateMatcher_VersionMismatch"/>
+  <int value="14" label="kErrorRegexTooLarge"/>
+  <int value="15" label="kErrorRegexRuleCountExceeded"/>
+  <int value="16" label="kErrorSerializeToJson"/>
+  <int value="17" label="kErrorWriteJson"/>
+  <int value="18" label="kErrorWriteFlatbuffer"/>
+</enum>
+
+<enum name="WebRequest.RequestHeader">
+  <int value="0" label="kNone"/>
+  <int value="1" label="kOther"/>
+  <int value="2" label="kAccept"/>
+  <int value="3" label="kAcceptCharset"/>
+  <int value="4" label="kAcceptEncoding"/>
+  <int value="5" label="kAcceptLanguage"/>
+  <int value="6" label="kAccessControlRequestHeaders"/>
+  <int value="7" label="kAccessControlRequestMethod"/>
+  <int value="8" label="kAuthorization"/>
+  <int value="9" label="kCacheControl"/>
+  <int value="10" label="kConnection"/>
+  <int value="11" label="kContentEncoding"/>
+  <int value="12" label="kContentLanguage"/>
+  <int value="13" label="kContentLength"/>
+  <int value="14" label="kContentLocation"/>
+  <int value="15" label="kContentType"/>
+  <int value="16" label="kCookie"/>
+  <int value="17" label="kDate"/>
+  <int value="18" label="kDnt"/>
+  <int value="19" label="kEarlyData"/>
+  <int value="20" label="kExpect"/>
+  <int value="21" label="kForwarded"/>
+  <int value="22" label="kFrom"/>
+  <int value="23" label="kHost"/>
+  <int value="24" label="kIfMatch"/>
+  <int value="25" label="kIfModifiedSince"/>
+  <int value="26" label="kIfNoneMatch"/>
+  <int value="27" label="kIfRange"/>
+  <int value="28" label="kIfUnmodifiedSince"/>
+  <int value="29" label="kKeepAlive"/>
+  <int value="30" label="kOrigin"/>
+  <int value="31" label="kPragma"/>
+  <int value="32" label="kProxyAuthorization"/>
+  <int value="33" label="kProxyConnection"/>
+  <int value="34" label="kRange"/>
+  <int value="35" label="kReferer"/>
+  <int value="37" label="kTe"/>
+  <int value="38" label="kTransferEncoding"/>
+  <int value="39" label="kUpgrade"/>
+  <int value="40" label="kUpgradeInsecureRequests"/>
+  <int value="41" label="kUserAgent"/>
+  <int value="42" label="kVia"/>
+  <int value="43" label="kWarning"/>
+  <int value="44" label="kXForwardedFor"/>
+  <int value="45" label="kXForwardedHost"/>
+  <int value="46" label="kXForwardedProto"/>
+</enum>
+
+<enum name="WebRequest.ResponseHeader">
+  <int value="0" label="kNone"/>
+  <int value="1" label="kOther"/>
+  <int value="2" label="kAcceptPatch"/>
+  <int value="3" label="kAcceptRanges"/>
+  <int value="4" label="kAccessControlAllowCredentials"/>
+  <int value="5" label="kAccessControlAllowHeaders"/>
+  <int value="6" label="kAccessControlAllowMethods"/>
+  <int value="7" label="kAccessControlAllowOrigin"/>
+  <int value="8" label="kAccessControlExposeHeaders"/>
+  <int value="9" label="kAccessControlMaxAge"/>
+  <int value="10" label="kAge"/>
+  <int value="11" label="kAllow"/>
+  <int value="12" label="kAltSvc"/>
+  <int value="13" label="kCacheControl"/>
+  <int value="14" label="kClearSiteData"/>
+  <int value="15" label="kConnection"/>
+  <int value="16" label="kContentDisposition"/>
+  <int value="17" label="kContentEncoding"/>
+  <int value="18" label="kContentLanguage"/>
+  <int value="19" label="kContentLength"/>
+  <int value="20" label="kContentLocation"/>
+  <int value="21" label="kContentRange"/>
+  <int value="22" label="kContentSecurityPolicy"/>
+  <int value="23" label="kContentSecurityPolicyReportOnly"/>
+  <int value="24" label="kContentType"/>
+  <int value="25" label="kDate"/>
+  <int value="26" label="kETag"/>
+  <int value="27" label="kExpectCT"/>
+  <int value="28" label="kExpires"/>
+  <int value="29" label="kFeaturePolicy"/>
+  <int value="30" label="kKeepAlive"/>
+  <int value="31" label="kLargeAllocation"/>
+  <int value="32" label="kLastModified"/>
+  <int value="33" label="kLocation"/>
+  <int value="34" label="kPragma"/>
+  <int value="35" label="kProxyAuthenticate"/>
+  <int value="36" label="kProxyConnection"/>
+  <int value="37" label="kPublicKeyPins"/>
+  <int value="38" label="kPublicKeyPinsReportOnly"/>
+  <int value="39" label="kReferrerPolicy"/>
+  <int value="40" label="kRefresh"/>
+  <int value="41" label="kRetryAfter"/>
+  <int value="42" label="kSecWebSocketAccept"/>
+  <int value="43" label="kServer"/>
+  <int value="44" label="kServerTiming"/>
+  <int value="45" label="kSetCookie"/>
+  <int value="46" label="kSourceMap"/>
+  <int value="47" label="kStrictTransportSecurity"/>
+  <int value="48" label="kTimingAllowOrigin"/>
+  <int value="49" label="kTk"/>
+  <int value="50" label="kTrailer"/>
+  <int value="51" label="kTransferEncoding"/>
+  <int value="52" label="kUpgrade"/>
+  <int value="53" label="kVary"/>
+  <int value="54" label="kVia"/>
+  <int value="55" label="kWarning"/>
+  <int value="56" label="kWWWAuthenticate"/>
+  <int value="57" label="kXContentTypeOptions"/>
+  <int value="58" label="kXDNSPrefetchControl"/>
+  <int value="59" label="kXFrameOptions"/>
+  <int value="60" label="kXXSSProtection"/>
+</enum>
+
+<enum name="WebRequestEventListenerFlag">
+  <int value="0" label="Total"/>
+  <int value="1" label="None"/>
+  <int value="2" label="requestHeaders"/>
+  <int value="3" label="responseHeaders"/>
+  <int value="4" label="blocking"/>
+  <int value="5" label="asyncBlocking"/>
+  <int value="6" label="requestBody"/>
+  <int value="7" label="extraHeaders"/>
+</enum>
+
+<enum name="WebStoreInstallAllowlistParameter">
+  <int value="0" label="Undefined"/>
+  <int value="1" label="Allowlisted"/>
+  <int value="2" label="Not allowlisted"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

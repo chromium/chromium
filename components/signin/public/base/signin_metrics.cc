@@ -124,10 +124,6 @@ void LogSigninAccessPointCompleted(AccessPoint access_point,
   }
 }
 
-void LogSigninReason(Reason reason) {
-  base::UmaHistogramEnumeration("Signin.SigninReason", reason);
-}
-
 void LogSignInOffered(AccessPoint access_point) {
   base::UmaHistogramEnumeration("Signin.SignIn.Offered", access_point,
                                 AccessPoint::ACCESS_POINT_MAX);
@@ -419,6 +415,7 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_FORCED_SIGNIN:
     case AccessPoint::ACCESS_POINT_ACCOUNT_RENAMED:
     case AccessPoint::ACCESS_POINT_WEB_SIGNIN:
+    case AccessPoint::ACCESS_POINT_SAVE_TO_DRIVE_IOS:
     case AccessPoint::ACCESS_POINT_SAVE_TO_PHOTOS_IOS:
     case AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
     case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
@@ -641,6 +638,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
     case AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
     case AccessPoint::ACCESS_POINT_FOR_YOU_FRE:
+    case AccessPoint::ACCESS_POINT_SAVE_TO_DRIVE_IOS:
     case AccessPoint::ACCESS_POINT_SAVE_TO_PHOTOS_IOS:
     case signin_metrics::AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:

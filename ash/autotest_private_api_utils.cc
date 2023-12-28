@@ -14,10 +14,12 @@
 #include "ash/wm/tablet_mode/scoped_skip_user_session_blocked_check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/display/screen.h"
 
 namespace ash {
 namespace {
@@ -146,15 +148,14 @@ bool WaitForLauncherAnimation(base::OnceClosure closure) {
 
 }  // namespace
 
-std::vector<aura::Window*> GetAppWindowList() {
+std::vector<raw_ptr<aura::Window, VectorExperimental>> GetAppWindowList() {
   ScopedSkipUserSessionBlockedCheck skip_session_blocked;
   return Shell::Get()->mru_window_tracker()->BuildAppWindowList(kAllDesks);
 }
 
 bool WaitForLauncherState(AppListViewState target_state,
                           base::OnceClosure closure) {
-  const bool in_tablet_mode =
-      Shell::Get()->tablet_mode_controller()->InTabletMode();
+  const bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
   if (in_tablet_mode) {
     // App-list can't enter kPeeking or kHalf state in tablet mode. Thus
     // |target_state| should be either kClosed, kFullscreenAllApps or

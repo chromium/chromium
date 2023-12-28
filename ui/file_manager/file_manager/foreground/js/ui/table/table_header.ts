@@ -31,18 +31,15 @@ export class TableHeader extends HTMLDivElement {
   /**
    * Initializes the element.
    */
-  static decorate(el: Element) {
-    Object.setPrototypeOf(el, TableHeader.prototype);
-    const header = el as TableHeader;
+  initialize() {
+    this.className = 'table-header';
+    this.batchCount_ = 0;
 
-    header.className = 'table-header';
-    header.batchCount_ = 0;
-
-    header.headerInner_ = el.ownerDocument.createElement('div');
-    header.headerInner_.className = 'table-header-inner';
-    header.appendChild(header.headerInner_);
-    header.addEventListener(
-        'touchstart', header.handleTouchStart_.bind(el), false);
+    this.headerInner_ = this.ownerDocument.createElement('div');
+    this.headerInner_.className = 'table-header-inner';
+    this.appendChild(this.headerInner_);
+    this.addEventListener(
+        'touchstart', this.handleTouchStart_.bind(this), false);
   }
 
   /**

@@ -55,7 +55,7 @@ constexpr char kManualStart[] = "manual";
 
 constexpr const char kCrosSystemPath[] = "/usr/bin/crossystem";
 
-// ArcVmUreadaheadMode param value strings.
+// ArcUreadaheadMode param value strings.
 constexpr char kReadahead[] = "readahead";
 constexpr char kGenerate[] = "generate";
 constexpr char kDisabled[] = "disabled";
@@ -218,11 +218,13 @@ bool IsArcVmDevConfIgnored() {
       ash::switches::kIgnoreArcVmDevConf);
 }
 
+// TODO(b/315507371): Remove after deprecated switches are not in use
 bool IsUreadaheadDisabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ash::switches::kArcDisableUreadahead);
 }
 
+// TODO(b/315507371): Remove after deprecated switches are not in use
 bool IsHostUreadaheadGeneration() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ash::switches::kArcHostUreadaheadGeneration);
@@ -233,25 +235,25 @@ bool IsArcUseDevCaches() {
       ash::switches::kArcUseDevCaches);
 }
 
-ArcVmUreadaheadMode GetArcVmUreadaheadMode() {
-  ArcVmUreadaheadMode mode = IsUreadaheadDisabled()
-                                 ? ArcVmUreadaheadMode::DISABLED
-                                 : ArcVmUreadaheadMode::READAHEAD;
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ash::switches::kArcVmUreadaheadMode)) {
-    const std::string value =
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            ash::switches::kArcVmUreadaheadMode);
-    if (value == kReadahead) {
-      mode = ArcVmUreadaheadMode::READAHEAD;
-    } else if (value == kGenerate) {
-      mode = ArcVmUreadaheadMode::GENERATE;
-    } else if (value == kDisabled) {
-      mode = ArcVmUreadaheadMode::DISABLED;
-    } else {
-      LOG(ERROR) << "Invalid parameter " << value << " for "
-                 << ash::switches::kArcVmUreadaheadMode;
-    }
+ArcUreadaheadMode GetArcUreadaheadMode(
+    std::string_view ureadahead_mode_switch) {
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ureadahead_mode_switch)) {
+    return ArcUreadaheadMode::READAHEAD;
+  }
+  ArcUreadaheadMode mode = ArcUreadaheadMode::READAHEAD;
+  const std::string value =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          ureadahead_mode_switch);
+  if (value == kReadahead) {
+    mode = ArcUreadaheadMode::READAHEAD;
+  } else if (value == kGenerate) {
+    mode = ArcUreadaheadMode::GENERATE;
+  } else if (value == kDisabled) {
+    mode = ArcUreadaheadMode::DISABLED;
+  } else {
+    LOG(FATAL) << "Invalid parameter " << value << " for "
+               << ureadahead_mode_switch;
   }
   return mode;
 }

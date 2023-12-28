@@ -1240,7 +1240,7 @@ public class ImeAdapterImpl
         if (!ViewUtils.hasFocus(containerView)) ViewUtils.requestFocus(containerView);
 
         updateInputStateForStylusWriting();
-        return mWebContents.getStylusWritingHandler().requestStartStylusWriting();
+        return mWebContents.getStylusWritingHandler().requestStartStylusWriting(containerView);
     }
 
     @CalledByNative

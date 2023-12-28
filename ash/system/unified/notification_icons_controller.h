@@ -82,9 +82,7 @@ class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
   // of this tray.
   std::unique_ptr<message_center::Notification> notification_;
 
-  const raw_ptr<NotificationIconsController,
-                DanglingUntriaged | ExperimentalAsh>
-      controller_;
+  const raw_ptr<NotificationIconsController, DanglingUntriaged> controller_;
 };
 
 // Controller for notification icons in `UnifiedSystemTray` button. This is used
@@ -140,7 +138,8 @@ class ASH_EXPORT NotificationIconsController
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
-  std::vector<NotificationIconTrayItemView*> tray_items() {
+  std::vector<raw_ptr<NotificationIconTrayItemView, VectorExperimental>>
+  tray_items() {
     return tray_items_;
   }
 
@@ -166,7 +165,8 @@ class ASH_EXPORT NotificationIconsController
 
   // Contains notification icon tray items that are added to tray container. All
   // items are owned by views hierarchy.
-  std::vector<NotificationIconTrayItemView*> tray_items_;
+  std::vector<raw_ptr<NotificationIconTrayItemView, VectorExperimental>>
+      tray_items_;
 
   // Points to the first item that is available to use among the notification
   // icons tray item. All the items in previous index are used and visible.
@@ -177,16 +177,14 @@ class ASH_EXPORT NotificationIconsController
   bool icons_view_visible_ = false;
 
   // Owned by `RootWindowController`
-  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  const raw_ptr<Shelf> shelf_;
 
   // `NotificationCenterTray` owns this `NotificationIconsController`.
   // `NotificationCenterTray` itself is owned by the views hierarchy.
-  raw_ptr<NotificationCenterTray, ExperimentalAsh> notification_center_tray_ =
-      nullptr;
+  raw_ptr<NotificationCenterTray> notification_center_tray_ = nullptr;
 
-  raw_ptr<NotificationCounterView, ExperimentalAsh> notification_counter_view_ =
-      nullptr;
-  raw_ptr<QuietModeView, ExperimentalAsh> quiet_mode_view_ = nullptr;
+  raw_ptr<NotificationCounterView> notification_counter_view_ = nullptr;
+  raw_ptr<QuietModeView> quiet_mode_view_ = nullptr;
 
   display::ScopedDisplayObserver display_observer_{this};
 };

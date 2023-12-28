@@ -112,6 +112,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
       container_names::MediaContainerName container_name) override;
   void SetRendererType(RendererType renderer_type) override;
   void SetKeySystem(const std::string& key_system) override;
+  void SetHasWaitingForKey() override;
   void SetIsHardwareSecure() override;
   void SetHasAudio(AudioCodec audio_codec) override;
   void SetHasPlayed() override;
@@ -162,6 +163,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
 
   RendererType renderer_type_ = RendererType::kRendererImpl;
   std::string key_system_;
+  bool has_waiting_for_key_ = false;
   bool is_hardware_secure_ = false;
 
   base::TimeDelta time_to_metadata_ = kNoTimestamp;

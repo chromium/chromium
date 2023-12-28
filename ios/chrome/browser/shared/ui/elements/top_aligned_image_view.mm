@@ -30,10 +30,37 @@
   if (imageSize.width == 0 || imageSize.height == 0) {
     return;
   }
-  CGFloat widthScaleFactor = CGRectGetWidth(self.bounds) / imageSize.width;
-  CGFloat imageViewWidth = CGRectGetWidth(self.bounds);
-  CGFloat imageViewHeight = imageSize.height * widthScaleFactor;
-  self.innerImageView.frame = CGRectMake(0, 0, imageViewWidth, imageViewHeight);
+  const CGFloat imageAspectRatio = imageSize.width / imageSize.height;
+  CGFloat imageViewWidth;
+  CGFloat imageViewHeight;
+  if (imageSize.width > imageSize.height) {
+    // The image is landscape. Adapt the image view size based on the difference
+    // of aspect ratios.
+    const CGFloat viewAspectRatio =
+        CGRectGetWidth(self.bounds) / CGRectGetHeight(self.bounds);
+    if (imageAspectRatio > viewAspectRatio) {
+      // The image is wider than the view. Fit the height.
+      imageViewHeight = CGRectGetHeight(self.bounds);
+      imageViewWidth = CGRectGetHeight(self.bounds) * imageAspectRatio;
+    } else {
+      // The image is narrower than the view. Fit the width.
+      imageViewWidth = CGRectGetWidth(self.bounds);
+      imageViewHeight = CGRectGetWidth(self.bounds) / imageAspectRatio;
+    }
+  } else {
+    // The image is portrait. Always match the width, even if it leads to a
+    // white bar at the bottom if the view is narrower than the image.
+    // See header for the explanation.
+    imageViewWidth = CGRectGetWidth(self.bounds);
+    imageViewHeight = CGRectGetWidth(self.bounds) / imageAspectRatio;
+  }
+  self.innerImageView.frame = CGRectMake(
+      // Always center horizontally.
+      (CGRectGetWidth(self.bounds) - imageViewWidth) / 2.,
+      // Always align to the top.
+      0,
+      // Set the computed image view size.
+      imageViewWidth, imageViewHeight);
 }
 
 #pragma mark - Public properties

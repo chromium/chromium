@@ -90,7 +90,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantButton
  private:
   void OnButtonPressed();
 
-  raw_ptr<AssistantButtonListener, ExperimentalAsh> listener_;
+  raw_ptr<AssistantButtonListener> listener_;
   const AssistantButtonId id_;
 
   // |icon_color_type_| and |icon_description_| are stored only when

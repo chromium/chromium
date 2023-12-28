@@ -8,6 +8,7 @@
 #include <memory>
 #include <queue>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file.h"
@@ -47,13 +48,13 @@ class SpellcheckLanguage {
   void Init(base::File file, const std::string& language);
 
   // Spellcheck a sequence of text.
-  // |text_length| is the length of the text being spellchecked. The |tag|
+  // |text| is the segment of the text being spellchecked. The |tag|
   // parameter should either be a unique identifier for the document that the
   // word came from (if the current platform requires it), or 0.
   //
-  // - Returns IS_CORRECT if every word from |position_in_text| to the end of
-  //   the text is recognized and spelled correctly. Also, returns IS_CORRECT if
-  //   the spellchecker failed to initialize.
+  // - Returns IS_CORRECT if every word in |text| is recognized and spelled
+  //   correctly. Also, returns IS_CORRECT if the spellchecker failed to
+  //   initialize.
   //
   // - Returns IS_SKIPPABLE if a sequence of skippable characters, such as
   //   punctuation, spaces, or unrecognized characters, is found.
@@ -67,9 +68,7 @@ class SpellcheckLanguage {
   //   |*optional_suggestions|. If optional_suggestions is nullptr, suggested
   //   words will not be looked up. Note that doing suggest lookups can be slow.
   SpellcheckWordResult SpellCheckWord(
-      const char16_t* text_begin,
-      size_t position_in_text,
-      size_t text_length,
+      std::u16string_view text,
       spellcheck::mojom::SpellCheckHost& host,
       size_t* skip_or_misspelling_start,
       size_t* skip_or_misspelling_len,

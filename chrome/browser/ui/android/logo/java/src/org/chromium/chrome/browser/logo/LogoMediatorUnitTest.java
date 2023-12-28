@@ -61,8 +61,6 @@ public class LogoMediatorUnitTest {
 
     @Mock Callback<Logo> mOnLogoAvailableCallback;
 
-    @Mock Runnable mOnCachedLogoRevalidatedRunnable;
-
     @Captor
     private ArgumentCaptor<TemplateUrlService.TemplateUrlServiceObserver>
             mTemplateUrlServiceObserverArgumentCaptor;
@@ -322,7 +320,6 @@ public class LogoMediatorUnitTest {
                         mLogoModel,
                         shouldFetchDoodle,
                         mOnLogoAvailableCallback,
-                        mOnCachedLogoRevalidatedRunnable,
                         isParentSurfaceShown,
                         null,
                         new CachedTintedBitmap(

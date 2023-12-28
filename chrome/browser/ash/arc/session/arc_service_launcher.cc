@@ -160,6 +160,8 @@ ArcServiceLauncher::ArcServiceLauncher(
       base::FeatureList::IsEnabled(kEnableArcVmDataMigration)) {
     arc_disk_space_monitor_ = std::make_unique<ArcDiskSpaceMonitor>();
   }
+
+  session_manager_obs_.Observe(arc_session_manager_.get());
 }
 
 ArcServiceLauncher::~ArcServiceLauncher() {
@@ -215,13 +217,14 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   DCHECK(arc_service_manager_);
   DCHECK(arc_session_manager_);
 
-  // We want to configure swap exactly once for the session. We wait for after
-  // the user profile is prepared to make sure policy has been loaded. The
+  // We usually want to configure swap exactly once for the session. We wait for
+  // after the user profile is prepared to make sure policy has been loaded. The
   // function IsArcPlayStoreEnabledForProfile has many conditionals, but the
   // main one we're checking for is if ARC is disabled by policy (which is the
   // default). Note that there's a known edge case where during a session policy
   // changes from disabled to enabled. This is expected to be rare, and logging
-  // out will update the swap configuration.
+  // out will update the swap configuration. Likewise, if a user enables or
+  // disables ARC during a session, the swap configuration will also be updated.
   ash::ConfigureSwap(IsArcPlayStoreEnabledForProfile(profile));
 
   if (arc_session_manager_->profile() != profile) {
@@ -373,6 +376,7 @@ void ArcServiceLauncher::ResetForTesting() {
   // First destroy the internal states, then re-initialize them.
   // These are for workaround of singletonness DCHECK in their ctors/dtors.
   Shutdown();
+  session_manager_obs_.Reset();
   arc_session_manager_.reset();
 
   // No recreation of arc_service_manager. Pointers to its ArcBridgeService
@@ -381,6 +385,11 @@ void ArcServiceLauncher::ResetForTesting() {
   arc_session_manager_ = CreateArcSessionManager(
       arc_service_manager_->arc_bridge_service(), chrome::GetChannel(),
       scheduler_configuration_manager_);
+  session_manager_obs_.Observe(arc_session_manager_.get());
+}
+
+void ArcServiceLauncher::OnArcPlayStoreEnabledChanged(bool enabled) {
+  ash::ConfigureSwap(/*arc_enabled=*/enabled);
 }
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)

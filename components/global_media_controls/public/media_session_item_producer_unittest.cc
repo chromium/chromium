@@ -21,6 +21,7 @@
 #include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/test/mock_audio_focus_manager.h"
 #include "services/media_session/public/cpp/test/mock_media_controller_manager.h"
+#include "services/media_session/public/cpp/test/test_media_controller.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -204,8 +205,9 @@ class MediaSessionItemProducerTest : public testing::Test {
     item_itr->second.MediaSessionPositionChanged(absl::nullopt);
   }
 
-  void SimulateNotificationClicked(const base::UnguessableToken& id) {
-    producer_->OnMediaItemUIClicked(id.ToString());
+  void SimulateNotificationClicked(const base::UnguessableToken& id,
+                                   bool activate_original_media) {
+    producer_->OnMediaItemUIClicked(id.ToString(), activate_original_media);
   }
 
   void SimulateDismissButtonClicked(const base::UnguessableToken& id) {
@@ -606,7 +608,7 @@ TEST_F(MediaSessionItemProducerTest, DelaysHidingNotifications_Interactions) {
 
   // If the user clicks to go back to the tab, it should reset the hide timer.
   ExpectHistogramInteractionDelayAfterPause(base::Minutes(59), 0);
-  SimulateNotificationClicked(id);
+  SimulateNotificationClicked(id, /*activate_original_media=*/true);
   ExpectHistogramInteractionDelayAfterPause(base::Minutes(59), 1);
   AdvanceClockMinutes(50);
   EXPECT_TRUE(HasActiveItems());
@@ -696,6 +698,36 @@ TEST_F(MediaSessionItemProducerTest, RefreshSessionWhenRemotePlaybackChanges) {
   const base::UnguessableToken id = SimulatePlayingControllableMedia();
   EXPECT_CALL(item_manager(), RefreshItem(id.ToString()));
   SimulateItemRefresh(id);
+}
+
+TEST_F(MediaSessionItemProducerTest, ClicksNotificationItem) {
+  // Start playing active media.
+  base::UnguessableToken id = SimulatePlayingControllableMedia();
+  auto item_itr = sessions().find(id.ToString());
+  ASSERT_NE(sessions().end(), item_itr);
+  auto* item = item_itr->second.item();
+
+  // Add a mock media controller for the notification item.
+  auto test_media_controller =
+      std::make_unique<media_session::test::TestMediaController>();
+  MediaSessionInfoPtr session_info(MediaSessionInfo::New());
+  session_info->playback_state =
+      media_session::mojom::MediaPlaybackState::kPlaying;
+  session_info->is_controllable = true;
+  item->SetController(test_media_controller->CreateMediaControllerRemote(),
+                      session_info.Clone());
+  SimulateNecessaryMetadata(id);
+
+  // Click the notification item without raising it.
+  EXPECT_EQ(0, test_media_controller->raise_count());
+  SimulateNotificationClicked(id, /*activate_original_media=*/false);
+  item->FlushForTesting();
+  EXPECT_EQ(0, test_media_controller->raise_count());
+
+  // Click the notification item and raise it.
+  SimulateNotificationClicked(id, /*activate_original_media=*/true);
+  item->FlushForTesting();
+  EXPECT_EQ(1, test_media_controller->raise_count());
 }
 
 }  // namespace global_media_controls

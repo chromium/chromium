@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
@@ -58,7 +59,6 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
           std::make_unique<FieldTrialRecorder>(field_trial_register_.get())),
       profile_prefs_(init_params->profile_prefs.get()),
       creation_time_(clock_->Now()) {
-  stats::BackgroundUmaRecorder::GetInstance().Initialize();
   base::UmaHistogramMediumTimes(
       "SegmentationPlatform.Init.ProcessCreationToServiceCreationLatency",
       base::SysInfo::Uptime());
@@ -149,6 +149,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
 
 SegmentationPlatformServiceImpl::~SegmentationPlatformServiceImpl() {
   signal_handler_.TearDown();
+  ClearAllUserData();
 }
 
 void SegmentationPlatformServiceImpl::GetSelectedSegment(
@@ -228,7 +229,9 @@ void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
 
   signal_handler_.OnSignalListUpdated();
 
-  std::vector<ModelExecutionSchedulerImpl::Observer*> observers;
+  std::vector<
+      raw_ptr<ModelExecutionSchedulerImpl::Observer, VectorExperimental>>
+      observers;
   for (auto& key_and_selector : segment_selectors_)
     observers.push_back(key_and_selector.second.get());
   observers.push_back(proxy_.get());

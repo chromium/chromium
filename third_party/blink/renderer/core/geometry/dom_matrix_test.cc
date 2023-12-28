@@ -8,10 +8,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_matrix_init.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(DOMMatrixTest, Fixup) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMMatrixInit* init = DOMMatrixInit::Create();
 
@@ -71,6 +73,7 @@ TEST(DOMMatrixTest, Fixup) {
 }
 
 TEST(DOMMatrixTest, FixupWithFallback) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMMatrixInit* init = DOMMatrixInit::Create();
 
@@ -104,6 +107,7 @@ TEST(DOMMatrixTest, FixupWithFallback) {
 }
 
 TEST(DOMMatrixTest, ThrowExceptionIfTwoValuesAreDifferent) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   {
     DOMMatrixInit* init = DOMMatrixInit::Create();

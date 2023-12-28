@@ -101,6 +101,19 @@ void GraphInfoBuilder::BuildLeakyRelu(uint64_t input_operand_id,
       mojom::Operation::NewLeakyRelu(std::move(leaky_relu)));
 }
 
+void GraphInfoBuilder::BuildLinear(uint64_t input_operand_id,
+                                   uint64_t output_operand_id,
+                                   float alpha,
+                                   float beta) {
+  mojom::LinearPtr linear = mojom::Linear::New();
+  linear->input_operand_id = input_operand_id;
+  linear->output_operand_id = output_operand_id;
+  linear->alpha = alpha;
+  linear->beta = beta;
+  graph_info_->operations.push_back(
+      mojom::Operation::NewLinear(std::move(linear)));
+}
+
 void GraphInfoBuilder::BuildPad(uint64_t input_operand_id,
                                 uint64_t output_operand_id,
                                 const std::vector<uint32_t>& beginning_padding,
@@ -286,6 +299,17 @@ void GraphInfoBuilder::BuildSoftmax(uint64_t input_operand_id,
   softmax->output_operand_id = output_operand_id;
   graph_info_->operations.push_back(
       mojom::Operation::NewSoftmax(std::move(softmax)));
+}
+
+void GraphInfoBuilder::BuildSoftplus(uint64_t input_operand_id,
+                                     uint64_t output_operand_id,
+                                     float steepness) {
+  mojom::SoftplusPtr softplus = mojom::Softplus::New();
+  softplus->input_operand_id = input_operand_id;
+  softplus->output_operand_id = output_operand_id;
+  softplus->steepness = steepness;
+  graph_info_->operations.push_back(
+      mojom::Operation::NewSoftplus(std::move(softplus)));
 }
 
 void GraphInfoBuilder::BuildTanh(uint64_t input_operand_id,

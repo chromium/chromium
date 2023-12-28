@@ -56,13 +56,17 @@ class MockMojoMediaStreamDispatcherHost
                void(const base::UnguessableToken&,
                     const base::UnguessableToken&,
                     KeepDeviceAliveForTransferCallback));
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   MOCK_METHOD3(SendWheel,
                void(const base::UnguessableToken&,
                     mojom::blink::CapturedWheelActionPtr,
                     SendWheelCallback));
   MOCK_METHOD2(GetZoomLevel,
                void(const base::UnguessableToken&, GetZoomLevelCallback));
+  MOCK_METHOD3(SetZoomLevel,
+               void(const base::UnguessableToken&,
+                    int32_t,
+                    SetZoomLevelCallback));
   MOCK_METHOD2(FocusCapturedSurface, void(const WTF::String&, bool));
   MOCK_METHOD5(ApplySubCaptureTarget,
                void(const base::UnguessableToken&,

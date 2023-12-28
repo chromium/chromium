@@ -11,6 +11,7 @@
 #include "ash/webui/web_applications/test/sandboxed_web_ui_test_base.h"
 #include "base/files/file_path.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 
 namespace {
 
@@ -26,7 +27,7 @@ constexpr char kTestHarness[] = "media_app_ui_browsertest.js";
 
 // Path to test files loaded via the TestFileRequestFilter.
 constexpr base::FilePath::CharType kTestFileLocation[] =
-    FILE_PATH_LITERAL("ash/webui/media_app_ui/test");
+    FILE_PATH_LITERAL("ash/webui/media_app_ui");
 
 // Paths requested on the media-app origin that should be delivered by the test
 // handler.
@@ -54,6 +55,13 @@ MediaAppUiBrowserTest::~MediaAppUiBrowserTest() = default;
 std::string MediaAppUiBrowserTest::AppJsTestLibrary() {
   return SandboxedWebUiAppTestBase::LoadJsTestLibrary(
       base::FilePath(kTestLibraryPath));
+}
+
+// static
+void MediaAppUiBrowserTest::PrepareAppForTest(content::WebContents* web_ui) {
+  EXPECT_TRUE(WaitForLoadStop(web_ui));
+  EXPECT_EQ(nullptr, MediaAppUiBrowserTest::EvalJsInAppFrame(
+                         web_ui, MediaAppUiBrowserTest::AppJsTestLibrary()));
 }
 
 IN_PROC_BROWSER_TEST_F(MediaAppUiBrowserTest, GuestCanLoad) {

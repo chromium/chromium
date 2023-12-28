@@ -521,7 +521,10 @@ class PdfPluginContextMenuBrowserTest : public PDFExtensionTestBase {
     // The context menu will be created inside the extension frame.
     extension_frame_ =
         pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents);
-    EXPECT_TRUE(extension_frame_);
+    if (!extension_frame_) {
+      ADD_FAILURE() << "Failed to get PDF extension frame.";
+      return nullptr;
+    }
     EXPECT_NE(extension_frame_, web_contents->GetPrimaryMainFrame());
 
     if (!UseOopif()) {
@@ -529,7 +532,10 @@ class PdfPluginContextMenuBrowserTest : public PDFExtensionTestBase {
           web_contents->GetBrowserContext()->GetGuestManager();
       WebContents* guest_contents =
           guest_manager->GetFullPageGuest(web_contents);
-      EXPECT_TRUE(guest_contents);
+      if (!guest_contents) {
+        ADD_FAILURE() << "Failed to get guest WebContents.";
+        return nullptr;
+      }
       EXPECT_EQ(extension_frame_, guest_contents->GetPrimaryMainFrame());
     }
 
@@ -705,10 +711,8 @@ class ContextMenuWithoutFilteringForSupervisedUsersBrowserTest
     : public ContextMenuForSupervisedUsersBrowserTest {
  public:
   ContextMenuWithoutFilteringForSupervisedUsersBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{supervised_user::kEnableProtoApiForClassifyUrl},
-        /*disabled_features=*/{
-            supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS});
+    scoped_feature_list_.InitAndDisableFeature(
+        supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
   }
 
  private:
@@ -841,17 +845,9 @@ IN_PROC_BROWSER_TEST_F(
 
 class ContextMenuWithFilteringForSupervisedUsersBrowserTest
     : public ContextMenuForSupervisedUsersBrowserTest {
- public:
-  ContextMenuWithFilteringForSupervisedUsersBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {supervised_user::kEnableProtoApiForClassifyUrl,
-         supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS},
-        /*disabled_features=*/{});
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS};
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -2802,6 +2798,7 @@ IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
   }
 
   std::unique_ptr<TestRenderViewContextMenu> menu = SetupAndCreateMenu();
+  ASSERT_TRUE(menu);
 
   // The full page related items such as 'reload' should be there.
   ASSERT_TRUE(menu->IsItemPresent(IDC_RELOAD));
@@ -2810,6 +2807,7 @@ IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
 IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
                        FullPagePdfFullscreenItems) {
   std::unique_ptr<TestRenderViewContextMenu> menu = SetupAndCreateMenu();
+  ASSERT_TRUE(menu);
 
   // Test that the 'Rotate' items exist and are enabled.
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_ROTATECW));
@@ -2829,6 +2827,7 @@ IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
 IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
                        CopyWithoutText) {
   std::unique_ptr<TestRenderViewContextMenu> menu = SetupAndCreateMenu();
+  ASSERT_TRUE(menu);
 
   // Test that 'Copy' doesn't exist.
   ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPY));
@@ -2839,6 +2838,7 @@ IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
   std::unique_ptr<TestRenderViewContextMenu> menu =
       SetupAndCreateMenuWithPdfInfo(
           {/*selection_text=*/u"text", /*can_copy=*/true});
+  ASSERT_TRUE(menu);
 
   // Test that 'Copy' exists and it is enabled.
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPY));
@@ -2850,6 +2850,7 @@ IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
   std::unique_ptr<TestRenderViewContextMenu> menu =
       SetupAndCreateMenuWithPdfInfo(
           {/*selection_text=*/u"text", /*can_copy=*/false});
+  ASSERT_TRUE(menu);
 
   // Test that 'Copy' exists and it is disabled.
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPY));
@@ -2869,6 +2870,7 @@ IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
   }
 
   std::unique_ptr<TestRenderViewContextMenu> menu = SetupAndCreateMenu();
+  ASSERT_TRUE(menu);
   content::RenderFrameHost* target_rfh =
       pdf_frame_util::FindPdfChildFrame(extension_frame());
   auto cb = [](base::OnceClosure quit_loop,
@@ -2953,6 +2955,7 @@ class PdfOcrContextMenuBrowserTest
 // TODO(crbug.com/1443346): Re-enable this test.
 IN_PROC_BROWSER_TEST_P(PdfOcrContextMenuBrowserTest, DISABLED_PdfOcr) {
   std::unique_ptr<TestRenderViewContextMenu> menu = SetupAndCreateMenu();
+  ASSERT_TRUE(menu);
   ASSERT_EQ(menu->IsItemPresent(IDC_CONTENT_CONTEXT_PDF_OCR),
             IsPdfOcrEnabled() && IsScreenReaderEnabled() && IsComponentReady());
 }
@@ -3330,29 +3333,45 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
   EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT));
 }
 
-IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, OpenReadingMode) {
-  // Open in reading mode is an option when text is unselected.
-  std::unique_ptr<TestRenderViewContextMenu> menu1 =
-      CreateContextMenuMediaTypeNone(GURL("http://www.google.com/"),
-                                     GURL("http://www.google.com/"));
-  ASSERT_TRUE(menu1->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
-
+IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, OpenInReadingMode) {
   // Open in reading mode is an option when non-editable text is selected.
-  std::unique_ptr<TestRenderViewContextMenu> menu2 =
+  std::unique_ptr<TestRenderViewContextMenu> menu =
       CreateContextMenuForTextInWebContents(u"selection text");
-  ASSERT_TRUE(menu2->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
+  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
 
-  // Open in reading mode is an option when editable text is selected.
+  // Open in reading mode is an option for editables.
   content::ContextMenuParams params;
   params.is_editable = true;
-  std::unique_ptr<TestRenderViewContextMenu> menu3 =
+  menu =
       std::make_unique<TestRenderViewContextMenu>(*browser()
                                                        ->tab_strip_model()
                                                        ->GetActiveWebContents()
                                                        ->GetPrimaryMainFrame(),
                                                   params);
-  menu3->Init();
-  ASSERT_TRUE(menu3->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
+  menu->Init();
+  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
+
+  // Open in reading mode is NOT an option for links.
+  menu = CreateContextMenuMediaTypeNone(GURL("http://www.google.com/"),
+                                        GURL("http://www.google.com/"));
+  ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
+
+  // Open in reading mode is NOT an option for <image>.
+  menu = CreateContextMenuMediaTypeImage(GURL("http://url.com/image.png"));
+  ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
+
+  // Open in reading mode is NOT an option for <video>.
+  menu = CreateContextMenu(GURL("http://www.example.com/"),
+                           GURL("http://www.example.com/foo.mp4"), u"",
+                           blink::mojom::ContextMenuDataMediaType::kVideo,
+                           ui::MENU_SOURCE_MOUSE);
+  ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
+
+  // Open in reading mode is NOT an option for <canvas>.
+  params = content::ContextMenuParams();
+  params.media_type = blink::mojom::ContextMenuDataMediaType::kCanvas;
+  menu = CreateContextMenuFromParams(params);
+  ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
 }
 
 // Ensure that the context menu can tolerate changes to session history that

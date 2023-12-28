@@ -197,8 +197,9 @@ bool PageActionIconView::ShouldUpdateInkDropOnClickCanceled() const {
 
 void PageActionIconView::ExecuteCommand(ExecuteSource source) {
   OnExecuting(source);
-  if (command_updater_)
+  if (command_updater_) {
     command_updater_->ExecuteCommand(command_id_);
+  }
   DidExecute(source);
 }
 
@@ -216,8 +217,9 @@ void PageActionIconView::OnTouchUiChanged() {
 }
 
 void PageActionIconView::SetIconColor(SkColor icon_color) {
-  if (icon_color_ == icon_color)
+  if (icon_color_ == icon_color) {
     return;
+  }
   icon_color_ = icon_color;
   UpdateIconImage();
   OnPropertyChanged(&icon_color_, views::kPropertyEffectsNone);
@@ -228,8 +230,9 @@ SkColor PageActionIconView::GetIconColor() const {
 }
 
 void PageActionIconView::SetActive(bool active) {
-  if (active_ == active)
+  if (active_ == active) {
     return;
+  }
   active_ = active;
   UpdateIconImage();
   OnPropertyChanged(&active_, views::kPropertyEffectsNone);
@@ -257,8 +260,9 @@ void PageActionIconView::UpdateIconImage() {
   // needed when added to a Widget and on theme changes. Returning early avoids
   // a call to GetNativeTheme() when no hosting Widget is present which falls
   // through to the deprecated global NativeTheme accessor.
-  if (!GetWidget())
+  if (!GetWidget()) {
     return;
+  }
 
   // Use the provided icon image if available.
   const int icon_size = delegate_->GetPageActionIconSize();
@@ -270,17 +274,23 @@ void PageActionIconView::UpdateIconImage() {
   }
 
   // Fall back to the vector icon if no icon image was provided.
-  const SkColor icon_color =
+  SkColor icon_color =
       active_ ? views::GetCascadingAccentColor(this) : icon_color_;
+  if (GetCustomForegroundColorId().has_value()) {
+    icon_color =
+        GetColorProvider()->GetColor(GetCustomForegroundColorId().value());
+  }
   const gfx::ImageSkia image = gfx::CreateVectorIconWithBadge(
       GetVectorIcon(), icon_size, icon_color, GetVectorIconBadge());
-  if (!image.isNull())
+  if (!image.isNull()) {
     SetImageModel(ui::ImageModel::FromImageSkia(image));
+  }
 }
 
 void PageActionIconView::SetIsLoading(bool is_loading) {
-  if (loading_indicator_)
+  if (loading_indicator_) {
     loading_indicator_->SetAnimating(is_loading);
+  }
 }
 
 content::WebContents* PageActionIconView::GetWebContents() const {
@@ -295,13 +305,15 @@ void PageActionIconView::UpdateBorder() {
     // too bespoke.
     new_insets += gfx::Insets::TLBR(0, 4, 0, 8);
   }
-  if (new_insets != GetInsets())
+  if (new_insets != GetInsets()) {
     SetBorder(views::CreateEmptyBorder(new_insets));
+  }
 }
 
 void PageActionIconView::InstallLoadingIndicator() {
-  if (loading_indicator_)
+  if (loading_indicator_) {
     return;
+  }
 
   loading_indicator_ =
       AddChildView(std::make_unique<PageActionIconLoadingIndicatorView>(this));
@@ -318,7 +330,7 @@ void PageActionIconView::SetVisible(bool visible) {
   }
 }
 
-BEGIN_METADATA(PageActionIconView, IconLabelBubbleView)
+BEGIN_METADATA(PageActionIconView)
 ADD_PROPERTY_METADATA(SkColor, IconColor, ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(bool, Active)
 END_METADATA

@@ -8,6 +8,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -16,12 +17,15 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_test_base.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -32,6 +36,7 @@ class MLGraphBuilderTest : public testing::Test {
  public:
   MLGraphBuilderTest() = default;
   ~MLGraphBuilderTest() override = default;
+  test::TaskEnvironment task_environment_;
 };
 
 TEST_F(MLGraphBuilderTest, InputTest) {
@@ -266,6 +271,144 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
               "Invalid operand descriptor: The byte length is too large.");
+  }
+}
+
+MLOperand* BuildArgMinMax(V8TestingScope& scope,
+                          MLGraphBuilder* builder,
+                          ArgMinMaxKind kind,
+                          const MLOperand* input,
+                          const MLArgMinMaxOptions* options) {
+  MLOperand* output = nullptr;
+  switch (kind) {
+    case ArgMinMaxKind::kArgMin:
+      output = builder->argMin(input, options, scope.GetExceptionState());
+      break;
+    case ArgMinMaxKind::kArgMax:
+      output = builder->argMax(input, options, scope.GetExceptionState());
+      break;
+  }
+  return output;
+}
+
+void CheckArgMinMaxOutput(const MLOperand* input,
+                          const MLOperand* output,
+                          ArgMinMaxKind kind) {
+  EXPECT_NE(output, nullptr);
+  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kInt64);
+  auto* arg_max_min = output->Operator();
+  EXPECT_NE(arg_max_min, nullptr);
+  switch (kind) {
+    case ArgMinMaxKind::kArgMin:
+      EXPECT_EQ(arg_max_min->Kind(), MLOperator::OperatorKind::kArgMin);
+      break;
+    case ArgMinMaxKind::kArgMax:
+      EXPECT_EQ(arg_max_min->Kind(), MLOperator::OperatorKind::kArgMax);
+      break;
+  }
+  EXPECT_EQ(arg_max_min->IsConnected(), true);
+  EXPECT_NE(arg_max_min->Options(), nullptr);
+}
+
+String ArgMinMaxKindToString(ArgMinMaxKind kind) {
+  switch (kind) {
+    case ArgMinMaxKind::kArgMin:
+      return "argMin";
+    case ArgMinMaxKind::kArgMax:
+      return "argMax";
+  }
+}
+
+TEST_F(MLGraphBuilderTest, ArgMinMaxTest) {
+  V8TestingScope scope;
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
+  const auto ArgMinMaxKinds = {ArgMinMaxKind::kArgMin, ArgMinMaxKind::kArgMax};
+  for (const auto kind : ArgMinMaxKinds) {
+    SCOPED_TRACE(testing::Message()
+                 << "Testing for: " << ArgMinMaxKindToString(kind));
+    {
+      // Test argMinMax with default options.
+      auto* input = BuildInput(builder, "input", {1, 2, 3, 4},
+                               V8MLOperandDataType::Enum::kFloat32,
+                               scope.GetExceptionState());
+      auto* options = MLArgMinMaxOptions::Create();
+      EXPECT_FALSE(options->hasAxes());
+      EXPECT_TRUE(options->hasKeepDimensions());
+      EXPECT_EQ(options->keepDimensions(), false);
+      EXPECT_TRUE(options->hasSelectLastIndex());
+      EXPECT_EQ(options->selectLastIndex(), false);
+      auto* output = BuildArgMinMax(scope, builder, kind, input, options);
+      CheckArgMinMaxOutput(input, output, kind);
+      EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({}));
+    }
+    {
+      // Test argMinMax with axes = {1}.
+      auto* input = BuildInput(builder, "input", {1, 2, 3, 4},
+                               V8MLOperandDataType::Enum::kFloat32,
+                               scope.GetExceptionState());
+      auto* options = MLArgMinMaxOptions::Create();
+      options->setAxes({1});
+      auto* output = BuildArgMinMax(scope, builder, kind, input, options);
+      CheckArgMinMaxOutput(input, output, kind);
+      EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 3, 4}));
+    }
+    {
+      // Test argMinMax with axes = {1, 3} and keepDimensions = true.
+      auto* input = BuildInput(builder, "input", {1, 2, 3, 4},
+                               V8MLOperandDataType::Enum::kFloat32,
+                               scope.GetExceptionState());
+      auto* options = MLArgMinMaxOptions::Create();
+      options->setAxes({1, 3});
+      options->setKeepDimensions(true);
+      auto* output = BuildArgMinMax(scope, builder, kind, input, options);
+      CheckArgMinMaxOutput(input, output, kind);
+      EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 1, 3, 1}));
+    }
+    {
+      // Test argMinMax with axes = {1} and selectLastIndex = true.
+      auto* input = BuildInput(builder, "input", {1, 2, 3, 4},
+                               V8MLOperandDataType::Enum::kFloat32,
+                               scope.GetExceptionState());
+      auto* options = MLArgMinMaxOptions::Create();
+      options->setAxes({1});
+      options->setSelectLastIndex(true);
+      auto* output = BuildArgMinMax(scope, builder, kind, input, options);
+      CheckArgMinMaxOutput(input, output, kind);
+      EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 3, 4}));
+    }
+    {
+      // Test throwing exception if the value in axes is greater than or equal
+      // to input rank.
+      auto* input = BuildInput(builder, "input", {1, 2, 3, 4},
+                               V8MLOperandDataType::Enum::kFloat32,
+                               scope.GetExceptionState());
+      auto* options = MLArgMinMaxOptions::Create();
+      options->setAxes({4});
+      auto* output = BuildArgMinMax(scope, builder, kind, input, options);
+      EXPECT_EQ(output, nullptr);
+      EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+                DOMExceptionCode::kDataError);
+      EXPECT_EQ(scope.GetExceptionState().Message(),
+                "The values in axes must be in the range [0, 4).");
+    }
+    {
+      // Test throwing exception if two or more values are same in the axes
+      // sequence.
+      auto* input = BuildInput(builder, "input", {1, 2, 3, 4},
+                               V8MLOperandDataType::Enum::kFloat32,
+                               scope.GetExceptionState());
+      auto* options = MLArgMinMaxOptions::Create();
+      options->setAxes({1, 1});
+      auto* output = BuildArgMinMax(scope, builder, kind, input, options);
+      EXPECT_EQ(output, nullptr);
+      EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+                DOMExceptionCode::kDataError);
+      EXPECT_EQ(scope.GetExceptionState().Message(),
+                "Two or more values are same in the axes sequence.");
+    }
   }
 }
 
@@ -3389,10 +3532,81 @@ TEST_F(MLGraphBuilderTest, GemmTest) {
   }
 }
 
+std::string ElementWiseBinaryKindToString(ElementWiseBinaryKind kind) {
+  switch (kind) {
+    case ElementWiseBinaryKind::kAdd:
+      return "add";
+    case ElementWiseBinaryKind::kSub:
+      return "sub";
+    case ElementWiseBinaryKind::kMul:
+      return "mul";
+    case ElementWiseBinaryKind::kDiv:
+      return "div";
+    case ElementWiseBinaryKind::kMin:
+      return "min";
+    case ElementWiseBinaryKind::kMax:
+      return "max";
+    case ElementWiseBinaryKind::kPow:
+      return "pow";
+    case ElementWiseBinaryKind::kEqual:
+      return "equal";
+    case ElementWiseBinaryKind::kGreater:
+      return "greater";
+    case ElementWiseBinaryKind::kGreaterOrEqual:
+      return "greaterOrEqual";
+    case ElementWiseBinaryKind::kLesser:
+      return "lesser";
+    case ElementWiseBinaryKind::kLesserOrEqual:
+      return "lesserOrEqual";
+  }
+  NOTREACHED_NORETURN();
+}
+
+std::string TestParamElementWiseBinaryKindToString(
+    const ::testing::TestParamInfo<ElementWiseBinaryKind>& info) {
+  return ElementWiseBinaryKindToString(info.param);
+}
+
+MLOperand* BuildElementWiseBinaryOperator(MLGraphBuilder* builder,
+                                          V8TestingScope& scope,
+                                          const MLOperand* a,
+                                          const MLOperand* b,
+                                          ElementWiseBinaryKind kind) {
+  switch (kind) {
+    case ElementWiseBinaryKind::kAdd:
+      return builder->add(a, b, scope.GetExceptionState());
+    case ElementWiseBinaryKind::kSub:
+      return builder->sub(a, b, scope.GetExceptionState());
+    case ElementWiseBinaryKind::kMul:
+      return builder->mul(a, b, scope.GetExceptionState());
+    case ElementWiseBinaryKind::kDiv:
+      return builder->div(a, b, scope.GetExceptionState());
+    case ElementWiseBinaryKind::kMin:
+      return builder->min(a, b, scope.GetExceptionState());
+    case ElementWiseBinaryKind::kMax:
+      return builder->max(a, b, scope.GetExceptionState());
+    case ElementWiseBinaryKind::kPow:
+      return builder->pow(a, b, scope.GetExceptionState());
+    case ElementWiseBinaryKind::kEqual:
+      return builder->equal(a, b, scope.GetExceptionState());
+    case ElementWiseBinaryKind::kGreater:
+      return builder->greater(a, b, scope.GetExceptionState());
+    case ElementWiseBinaryKind::kGreaterOrEqual:
+      return builder->greaterOrEqual(a, b, scope.GetExceptionState());
+    case ElementWiseBinaryKind::kLesser:
+      return builder->lesser(a, b, scope.GetExceptionState());
+    case ElementWiseBinaryKind::kLesserOrEqual:
+      return builder->lesserOrEqual(a, b, scope.GetExceptionState());
+  }
+  NOTREACHED_NORETURN();
+}
+
 constexpr bool IsLogicalBinaryOperator(ElementWiseBinaryKind kind) {
   return kind == ElementWiseBinaryKind::kEqual ||
          kind == ElementWiseBinaryKind::kGreater ||
-         kind == ElementWiseBinaryKind::kLesser;
+         kind == ElementWiseBinaryKind::kGreaterOrEqual ||
+         kind == ElementWiseBinaryKind::kLesser ||
+         kind == ElementWiseBinaryKind::kLesserOrEqual;
 }
 
 MLOperand* BuildElementWiseBinary(V8TestingScope& scope,
@@ -3400,39 +3614,8 @@ MLOperand* BuildElementWiseBinary(V8TestingScope& scope,
                                   ElementWiseBinaryKind kind,
                                   const MLOperand* a,
                                   const MLOperand* b) {
-  MLOperand* output = nullptr;
-  switch (kind) {
-    case ElementWiseBinaryKind::kAdd:
-      output = builder->add(a, b, scope.GetExceptionState());
-      break;
-    case ElementWiseBinaryKind::kSub:
-      output = builder->sub(a, b, scope.GetExceptionState());
-      break;
-    case ElementWiseBinaryKind::kMul:
-      output = builder->mul(a, b, scope.GetExceptionState());
-      break;
-    case ElementWiseBinaryKind::kDiv:
-      output = builder->div(a, b, scope.GetExceptionState());
-      break;
-    case ElementWiseBinaryKind::kMin:
-      output = builder->min(a, b, scope.GetExceptionState());
-      break;
-    case ElementWiseBinaryKind::kMax:
-      output = builder->max(a, b, scope.GetExceptionState());
-      break;
-    case ElementWiseBinaryKind::kPow:
-      output = builder->pow(a, b, scope.GetExceptionState());
-      break;
-    case ElementWiseBinaryKind::kEqual:
-      output = builder->equal(a, b, scope.GetExceptionState());
-      break;
-    case ElementWiseBinaryKind::kGreater:
-      output = builder->greater(a, b, scope.GetExceptionState());
-      break;
-    case ElementWiseBinaryKind::kLesser:
-      output = builder->lesser(a, b, scope.GetExceptionState());
-      break;
-  }
+  MLOperand* output =
+      BuildElementWiseBinaryOperator(builder, scope, a, b, kind);
   EXPECT_NE(output, nullptr);
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
 
@@ -3472,152 +3655,125 @@ MLOperand* BuildElementWiseBinary(V8TestingScope& scope,
     case ElementWiseBinaryKind::kGreater:
       EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kGreater);
       break;
+    case ElementWiseBinaryKind::kGreaterOrEqual:
+      EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kGreaterOrEqual);
+      break;
     case ElementWiseBinaryKind::kLesser:
       EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kLesser);
+      break;
+    case ElementWiseBinaryKind::kLesserOrEqual:
+      EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kLesserOrEqual);
       break;
   }
   EXPECT_EQ(op->IsConnected(), true);
   return output;
 }
 
-TEST_F(MLGraphBuilderTest, ElementWiseBinaryTest) {
-  V8TestingScope scope;
-  MLGraphBuilder* builder =
-      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+class MLGraphBuilderElementWiseBinaryTest
+    : public testing::TestWithParam<ElementWiseBinaryKind> {
+ public:
+  void TestElementWiseBinary() {
+    V8TestingScope scope;
+    MLGraphBuilder* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(),
+                             scope.GetScriptState(), scope.GetExceptionState());
+    const auto& kind = GetParam();
+    SCOPED_TRACE(testing::Message() << "Testing operator: "
+                                    << ElementWiseBinaryKindToString(kind));
+    {
+      // Testing building with two input dimensions - {8, 1, 6, 1} and {7, 1,
+      // 5}. Both the a and b dimensions have axes with length one that are
+      // expanded to a larger size during the broadcast operation.
+      // a_dimensions     (4d) 8 * 1 * 6 * 1
+      // b_dimensions     (3d)     7 * 1 * 5
+      // output_dimenions (4d) 8 * 7 * 6 * 5
+      auto* a = BuildInput(builder, "a", {8, 1, 6, 1},
+                           V8MLOperandDataType::Enum::kFloat32,
                            scope.GetExceptionState());
-  // Testing building with two input dimensions - {8, 1, 6, 1} and {7, 1,
-  // 5}. Both the a and b dimensions have axes with length one that are
-  // expanded to a larger size during the broadcast operation.
-  // a_dimensions     (4d) 8 * 1 * 6 * 1
-  // b_dimensions     (3d)     7 * 1 * 5
-  // output_dimenions (4d) 8 * 7 * 6 * 5
-  {
-    auto* a = BuildInput(builder, "a", {8, 1, 6, 1},
-                         V8MLOperandDataType::Enum::kFloat32,
-                         scope.GetExceptionState());
-    auto* b =
-        BuildInput(builder, "b", {7, 1, 5}, V8MLOperandDataType::Enum::kFloat32,
-                   scope.GetExceptionState());
-    auto* output = BuildElementWiseBinary(scope, builder,
-                                          ElementWiseBinaryKind::kAdd, a, b);
-    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({8, 7, 6, 5}));
-  }
-  {
-    auto* a = BuildInput(builder, "a", {8, 1, 6, 1},
-                         V8MLOperandDataType::Enum::kFloat32,
-                         scope.GetExceptionState());
-    auto* b =
-        BuildInput(builder, "b", {7, 1, 5}, V8MLOperandDataType::Enum::kFloat32,
-                   scope.GetExceptionState());
-    auto* output = BuildElementWiseBinary(scope, builder,
-                                          ElementWiseBinaryKind::kEqual, a, b);
-    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({8, 7, 6, 5}));
-  }
-
-  // Testing building with two input dimensions - {4, 2, 1} and {4}.
-  // a_dimensions     (3d) 4 * 2 * 1
-  // b_dimensions     (1d)         4
-  // output_dimenions (3d) 4 * 2 * 4
-  {
-    auto* a =
-        BuildInput(builder, "a", {4, 2, 1}, V8MLOperandDataType::Enum::kFloat32,
-                   scope.GetExceptionState());
-    auto* b = BuildInput(builder, "b", {4}, V8MLOperandDataType::Enum::kFloat32,
-                         scope.GetExceptionState());
-    auto* output = BuildElementWiseBinary(scope, builder,
-                                          ElementWiseBinaryKind::kAdd, a, b);
-    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({4, 2, 4}));
-  }
-  {
-    auto* a =
-        BuildInput(builder, "a", {4, 2, 1}, V8MLOperandDataType::Enum::kFloat32,
-                   scope.GetExceptionState());
-    auto* b = BuildInput(builder, "b", {4}, V8MLOperandDataType::Enum::kFloat32,
-                         scope.GetExceptionState());
-    auto* output = BuildElementWiseBinary(scope, builder,
-                                          ElementWiseBinaryKind::kEqual, a, b);
-    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({4, 2, 4}));
-  }
-
-  // Testing scalar broadcasting by building with two input dimensions -
-  // {4, 2, 4} and {}.
-  {
-    auto* a =
-        BuildInput(builder, "a", {4, 2, 4}, V8MLOperandDataType::Enum::kFloat32,
-                   scope.GetExceptionState());
-    auto* b = BuildInput(builder, "b", {}, V8MLOperandDataType::Enum::kFloat32,
-                         scope.GetExceptionState());
-    auto* output = BuildElementWiseBinary(scope, builder,
-                                          ElementWiseBinaryKind::kAdd, a, b);
-    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({4, 2, 4}));
-  }
-  {
-    auto* a =
-        BuildInput(builder, "a", {4, 2, 4}, V8MLOperandDataType::Enum::kFloat32,
-                   scope.GetExceptionState());
-    auto* b = BuildInput(builder, "b", {}, V8MLOperandDataType::Enum::kFloat32,
-                         scope.GetExceptionState());
-    auto* output = BuildElementWiseBinary(scope, builder,
-                                          ElementWiseBinaryKind::kEqual, a, b);
-    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({4, 2, 4}));
+      auto* b = BuildInput(builder, "b", {7, 1, 5},
+                           V8MLOperandDataType::Enum::kFloat32,
+                           scope.GetExceptionState());
+      auto* output = BuildElementWiseBinary(scope, builder, kind, a, b);
+      EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({8, 7, 6, 5}));
+    }
+    {
+      // Testing building with two input dimensions - {4, 2, 1} and {4}.
+      // a_dimensions     (3d) 4 * 2 * 1
+      // b_dimensions     (1d)         4
+      // output_dimenions (3d) 4 * 2 * 4
+      auto* a = BuildInput(builder, "a", {4, 2, 1},
+                           V8MLOperandDataType::Enum::kFloat32,
+                           scope.GetExceptionState());
+      auto* b =
+          BuildInput(builder, "b", {4}, V8MLOperandDataType::Enum::kFloat32,
+                     scope.GetExceptionState());
+      auto* output = BuildElementWiseBinary(scope, builder, kind, a, b);
+      EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({4, 2, 4}));
+    }
+    {
+      // Testing scalar broadcasting by building with two input dimensions -
+      // {4, 2, 4} and {}.
+      auto* a = BuildInput(builder, "a", {4, 2, 4},
+                           V8MLOperandDataType::Enum::kFloat32,
+                           scope.GetExceptionState());
+      auto* b =
+          BuildInput(builder, "b", {}, V8MLOperandDataType::Enum::kFloat32,
+                     scope.GetExceptionState());
+      auto* output = BuildElementWiseBinary(scope, builder, kind, a, b);
+      EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({4, 2, 4}));
+    }
+    {
+      // Test throwing exception when the input shapes are not broadcastable.
+      auto* a =
+          BuildInput(builder, "a", {4, 2}, V8MLOperandDataType::Enum::kFloat32,
+                     scope.GetExceptionState());
+      auto* b =
+          BuildInput(builder, "b", {4}, V8MLOperandDataType::Enum::kFloat32,
+                     scope.GetExceptionState());
+      auto* output = BuildElementWiseBinaryOperator(builder, scope, a, b, kind);
+      EXPECT_EQ(output, nullptr);
+      EXPECT_EQ(ToExceptionCode(DOMExceptionCode::kDataError),
+                scope.GetExceptionState().Code());
+      EXPECT_EQ(scope.GetExceptionState().Message(),
+                "The input shapes are not broadcastable.");
+    }
+    {
+      // Test throwing exception when the input types don't match.
+      auto* a =
+          BuildInput(builder, "a", {4, 2}, V8MLOperandDataType::Enum::kFloat32,
+                     scope.GetExceptionState());
+      auto* b = BuildInput(builder, "b", {1}, V8MLOperandDataType::Enum::kInt32,
+                           scope.GetExceptionState());
+      auto* output = BuildElementWiseBinaryOperator(builder, scope, a, b, kind);
+      EXPECT_EQ(output, nullptr);
+      EXPECT_EQ(ToExceptionCode(DOMExceptionCode::kDataError),
+                scope.GetExceptionState().Code());
+      EXPECT_EQ(scope.GetExceptionState().Message(),
+                "The input operand data types don't match.");
+    }
   }
 
-  // Test throwing exception when the input shapes are not broadcastable.
-  {
-    auto* a =
-        BuildInput(builder, "a", {4, 2}, V8MLOperandDataType::Enum::kFloat32,
-                   scope.GetExceptionState());
-    auto* b = BuildInput(builder, "b", {4}, V8MLOperandDataType::Enum::kFloat32,
-                         scope.GetExceptionState());
-    auto* output = builder->sub(a, b, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
-    EXPECT_EQ(ToExceptionCode(DOMExceptionCode::kDataError),
-              scope.GetExceptionState().Code());
-    EXPECT_EQ(scope.GetExceptionState().Message(),
-              "The input shapes are not broadcastable.");
-  }
-  {
-    auto* a =
-        BuildInput(builder, "a", {4, 2}, V8MLOperandDataType::Enum::kFloat32,
-                   scope.GetExceptionState());
-    auto* b = BuildInput(builder, "b", {4}, V8MLOperandDataType::Enum::kFloat32,
-                         scope.GetExceptionState());
-    auto* output = builder->equal(a, b, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
-    EXPECT_EQ(ToExceptionCode(DOMExceptionCode::kDataError),
-              scope.GetExceptionState().Code());
-    EXPECT_EQ(scope.GetExceptionState().Message(),
-              "The input shapes are not broadcastable.");
-  }
+ private:
+  test::TaskEnvironment task_environment_;
+};
 
-  // Test throwing exception when the input types don't match.
-  {
-    auto* a =
-        BuildInput(builder, "a", {4, 2}, V8MLOperandDataType::Enum::kFloat32,
-                   scope.GetExceptionState());
-    auto* b = BuildInput(builder, "b", {1}, V8MLOperandDataType::Enum::kInt32,
-                         scope.GetExceptionState());
-    auto* output = builder->max(a, b, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
-    EXPECT_EQ(ToExceptionCode(DOMExceptionCode::kDataError),
-              scope.GetExceptionState().Code());
-    EXPECT_EQ(scope.GetExceptionState().Message(),
-              "The input operand data types don't match.");
-  }
-  {
-    auto* a =
-        BuildInput(builder, "a", {4, 2}, V8MLOperandDataType::Enum::kFloat32,
-                   scope.GetExceptionState());
-    auto* b = BuildInput(builder, "b", {1}, V8MLOperandDataType::Enum::kInt32,
-                         scope.GetExceptionState());
-    auto* output = builder->equal(a, b, scope.GetExceptionState());
-    EXPECT_EQ(output, nullptr);
-    EXPECT_EQ(ToExceptionCode(DOMExceptionCode::kDataError),
-              scope.GetExceptionState().Code());
-    EXPECT_EQ(scope.GetExceptionState().Message(),
-              "The input operand data types don't match.");
-  }
+TEST_P(MLGraphBuilderElementWiseBinaryTest, TestElementWiseBinary) {
+  TestElementWiseBinary();
 }
+
+const ElementWiseBinaryKind kAllElementWiseBinaryOperators[] = {
+    ElementWiseBinaryKind::kAdd,     ElementWiseBinaryKind::kSub,
+    ElementWiseBinaryKind::kMul,     ElementWiseBinaryKind::kDiv,
+    ElementWiseBinaryKind::kMin,     ElementWiseBinaryKind::kMax,
+    ElementWiseBinaryKind::kPow,     ElementWiseBinaryKind::kEqual,
+    ElementWiseBinaryKind::kGreater, ElementWiseBinaryKind::kGreaterOrEqual,
+    ElementWiseBinaryKind::kLesser,  ElementWiseBinaryKind::kLesserOrEqual,
+};
+
+INSTANTIATE_TEST_SUITE_P(ElementWiseBinaryTest,
+                         MLGraphBuilderElementWiseBinaryTest,
+                         ::testing::ValuesIn(kAllElementWiseBinaryOperators),
+                         TestParamElementWiseBinaryKindToString);
 
 template <typename T>
 struct ElementWiseUnaryTester {
@@ -5663,6 +5819,71 @@ TEST_F(MLGraphBuilderTest, Softmax) {
   }
 }
 
+MLOperand* BuildSoftplus(V8TestingScope& scope,
+                         MLGraphBuilder* builder,
+                         const MLOperand* input,
+                         const MLSoftplusOptions* options) {
+  auto* output = builder->softplus(input, options, scope.GetExceptionState());
+  EXPECT_NE(output, nullptr);
+  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->DataType(), input->DataType());
+  EXPECT_EQ(output->Dimensions(), input->Dimensions());
+  auto* softplus = output->Operator();
+  EXPECT_NE(softplus, nullptr);
+  EXPECT_EQ(softplus->Kind(), MLOperator::OperatorKind::kSoftplus);
+  EXPECT_TRUE(softplus->IsConnected());
+  EXPECT_NE(softplus->Options(), nullptr);
+  return output;
+}
+
+TEST_F(MLGraphBuilderTest, SoftPlusTest) {
+  V8TestingScope scope;
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
+  {
+    // Test building softplus with a scalar input and default options.
+    auto* input =
+        BuildInput(builder, "input", {}, V8MLOperandDataType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    BuildSoftplus(scope, builder, input);
+  }
+  {
+    // Test building softplus with a 2-D input and steepness = 2.0.
+    auto* input = BuildInput(builder, "input", {3, 4},
+                             V8MLOperandDataType::Enum::kFloat16,
+                             scope.GetExceptionState());
+    auto* options = MLSoftplusOptions::Create();
+    options->setSteepness(2.0);
+    BuildSoftplus(scope, builder, input, options);
+  }
+  {
+    // Test building softplus activation.
+    auto* output = builder->softplus(MLSoftplusOptions::Create(),
+                                     scope.GetExceptionState());
+    ASSERT_NE(output, nullptr);
+    const MLOperator* softplus = output->Operator();
+    ASSERT_NE(softplus, nullptr);
+    EXPECT_EQ(softplus->Kind(), MLOperator::OperatorKind::kSoftplus);
+    EXPECT_FALSE(softplus->IsConnected());
+    EXPECT_NE(softplus->Options(), nullptr);
+  }
+  {
+    // Test throwing exception when building softplus with int32 input.
+    Vector<uint32_t> input_shape({3, 4});
+    auto* input = BuildInput(builder, "input", input_shape,
+                             V8MLOperandDataType::Enum::kInt32,
+                             scope.GetExceptionState());
+    auto* output = builder->softplus(input, MLSoftplusOptions::Create(),
+                                     scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The input data type must be one of the float32,float16 types.");
+  }
+}
+
 TEST_F(MLGraphBuilderTest, SoftSignTest) {
   V8TestingScope scope;
   auto* builder =
@@ -6408,7 +6629,7 @@ class FakeMLGraphBackend final : public MLGraph {
                                     const MLNamedOperands& named_outputs,
                                     ScriptPromiseResolver* resolver) {
     auto* graph = MakeGarbageCollected<FakeMLGraphBackend>(context);
-    graph->BuildAsync(named_outputs, resolver);
+    graph->BuildAsync(ScopedMLTrace("BuildAsync"), named_outputs, resolver);
   }
 
   // Create and build a FakeMLGraphBackend object synchronously.
@@ -6429,7 +6650,8 @@ class FakeMLGraphBackend final : public MLGraph {
  private:
   // Resolve the promise with this FakeMLGraphBackend object for testing the
   // input and output resources info.
-  void BuildAsyncImpl(const MLNamedOperands& named_outputs,
+  void BuildAsyncImpl(ScopedMLTrace scoped_trace,
+                      const MLNamedOperands& named_outputs,
                       ScriptPromiseResolver* resolver) override {
     resolver->Resolve(this);
   }
@@ -6444,7 +6666,8 @@ class FakeMLGraphBackend final : public MLGraph {
 
   // Resolve the promise for testing the validation of inputs and outputs in
   // MLGraph::ComputeAsync().
-  void ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,
+  void ComputeAsyncImpl(ScopedMLTrace scoped_trace,
+                        const MLNamedArrayBufferViews& inputs,
                         const MLNamedArrayBufferViews& outputs,
                         ScriptPromiseResolver* resolver,
                         ExceptionState& exception_state) override {
@@ -6708,7 +6931,7 @@ TEST_P(FakeMLGraphTest, BuildTest) {
 }
 
 // Helper struct to create an ArrayBufferView for MLNamedArrayBufferViews test.
-struct ArrayBufferViewInfo {
+struct ArrayBufferViewHelper {
   size_t number_of_elements;
   V8MLOperandDataType::Enum data_type;
 
@@ -6722,6 +6945,70 @@ NotShared<DOMArrayBufferView> CreateArrayBufferViewForOperand(
     const MLOperand* operand) {
   return CreateDOMArrayBufferView(operand->NumberOfElements(),
                                   operand->DataType());
+}
+
+TEST_P(FakeMLGraphTest, CreateNamedArrayBufferViewsTest) {
+  constexpr auto kOperandDataTypes =
+      base::MakeFixedFlatSet<V8MLOperandDataType::Enum>(
+          {V8MLOperandDataType::Enum::kFloat32,
+           V8MLOperandDataType::Enum::kFloat16,
+           V8MLOperandDataType::Enum::kInt32,
+           V8MLOperandDataType::Enum::kUint32,
+           V8MLOperandDataType::Enum::kInt64,
+           V8MLOperandDataType::Enum::kUint64, V8MLOperandDataType::Enum::kInt8,
+           V8MLOperandDataType::Enum::kUint8});
+  static_assert(kOperandDataTypes.size() == V8MLOperandDataType::kEnumSize,
+                "The number of operand data types declared here needs to match "
+                "all possible enumeration values defined in the IDL.");
+
+  V8TestingScope scope;
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
+  {
+    for (auto operand_data_type : kOperandDataTypes) {
+      SCOPED_TRACE(testing::Message()
+                   << "Testing for MLOperandDataType: "
+                   << V8MLOperandDataType(operand_data_type).AsString());
+      auto* input = BuildInput(builder, "input", {3, 4}, operand_data_type,
+                               scope.GetExceptionState());
+      MLNamedArrayBufferViews inputs;
+      inputs.emplace_back("input", CreateArrayBufferViewForOperand(input));
+      auto inputs_info = TransferNamedArrayBufferViews(
+          scope.GetIsolate(), inputs, scope.GetExceptionState());
+      ASSERT_NE(inputs_info, nullptr);
+      auto* input_views = CreateNamedArrayBufferViews(std::move(inputs_info));
+      ASSERT_NE(input_views, nullptr);
+      EXPECT_EQ((*input_views)[0].first, "input");
+      auto input_data_type = (*input_views)[0].second->GetType();
+      switch (operand_data_type) {
+        case V8MLOperandDataType::Enum::kFloat32:
+          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeFloat32);
+          break;
+        case V8MLOperandDataType::Enum::kFloat16:
+          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeUint16);
+          break;
+        case V8MLOperandDataType::Enum::kInt32:
+          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeInt32);
+          break;
+        case V8MLOperandDataType::Enum::kUint32:
+          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeUint32);
+          break;
+        case V8MLOperandDataType::Enum::kInt64:
+          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeBigInt64);
+          break;
+        case V8MLOperandDataType::Enum::kUint64:
+          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeBigUint64);
+          break;
+        case V8MLOperandDataType::Enum::kInt8:
+          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeInt8);
+          break;
+        case V8MLOperandDataType::Enum::kUint8:
+          EXPECT_EQ(input_data_type, DOMArrayBufferView::kTypeUint8);
+          break;
+      }
+    }
+  }
 }
 
 TEST_P(FakeMLGraphTest, ComputeTest) {
@@ -6833,9 +7120,10 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
     // Test throwing exception if the input array buffer view type is wrong.
     MLNamedArrayBufferViews inputs;
     inputs.emplace_back(
-        "a", ArrayBufferViewInfo{.number_of_elements = 12,
-                                 .data_type = V8MLOperandDataType::Enum::kInt32}
-                 .ToArrayBufferView());
+        "a",
+        ArrayBufferViewHelper{.number_of_elements = 12,
+                              .data_type = V8MLOperandDataType::Enum::kInt32}
+            .ToArrayBufferView());
     inputs.emplace_back("b", CreateArrayBufferViewForOperand(b));
     MLNamedArrayBufferViews outputs;
     outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
@@ -6853,8 +7141,8 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
     MLNamedArrayBufferViews inputs;
     inputs.emplace_back(
         "a",
-        ArrayBufferViewInfo{.number_of_elements = 10,
-                            .data_type = V8MLOperandDataType::Enum::kFloat32}
+        ArrayBufferViewHelper{.number_of_elements = 10,
+                              .data_type = V8MLOperandDataType::Enum::kFloat32}
             .ToArrayBufferView());
     inputs.emplace_back("b", CreateArrayBufferViewForOperand(b));
     MLNamedArrayBufferViews outputs;
@@ -6874,9 +7162,10 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
     inputs.emplace_back("b", CreateArrayBufferViewForOperand(b));
     MLNamedArrayBufferViews outputs;
     outputs.emplace_back(
-        "c", ArrayBufferViewInfo{.number_of_elements = 9,
-                                 .data_type = V8MLOperandDataType::Enum::kInt32}
-                 .ToArrayBufferView());
+        "c",
+        ArrayBufferViewHelper{.number_of_elements = 9,
+                              .data_type = V8MLOperandDataType::Enum::kInt32}
+            .ToArrayBufferView());
     auto* exception = ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_NE(exception, nullptr);
     EXPECT_EQ(exception->name(),
@@ -6894,8 +7183,8 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
     MLNamedArrayBufferViews outputs;
     outputs.emplace_back(
         "c",
-        ArrayBufferViewInfo{.number_of_elements = 8,
-                            .data_type = V8MLOperandDataType::Enum::kFloat32}
+        ArrayBufferViewHelper{.number_of_elements = 8,
+                              .data_type = V8MLOperandDataType::Enum::kFloat32}
             .ToArrayBufferView());
     auto* exception = ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_NE(exception, nullptr);

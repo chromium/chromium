@@ -267,8 +267,7 @@ const GetUnclippedLocation = natives.GetUnclippedLocation;
  *     array if this node has no text content, or undefined if the tree or node
  *     was not found.
  */
-const GetLineStartOffsets =
-    requireNative('automationInternal').GetLineStartOffsets;
+const GetLineStartOffsets = natives.GetLineStartOffsets;
 
 /**
  * @param {string} axTreeID The id of the accessibility tree.

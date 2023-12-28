@@ -177,7 +177,6 @@ class AssistantClient {
       base::OnceCallback<void(
           const ::assistant::api::GetAssistantSettingsResponse&)> on_done) = 0;
   virtual void SetLocaleOverride(const std::string& locale) = 0;
-  virtual void SetDeviceAttributes(bool enable_dark_mode) = 0;
   virtual std::string GetDeviceId() = 0;
 
   // Audio-related functionality:

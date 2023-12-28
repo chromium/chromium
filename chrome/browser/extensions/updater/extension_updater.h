@@ -58,7 +58,7 @@ class ExtensionUpdaterTest;
 // updater->Stop();
 class ExtensionUpdater : public ExtensionDownloaderDelegate {
  public:
-  typedef base::OnceClosure FinishedCallback;
+  using FinishedCallback = base::OnceClosure;
 
   struct CheckParams {
     // Creates a default CheckParams instance that checks for all extensions.

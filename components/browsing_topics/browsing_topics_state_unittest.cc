@@ -581,6 +581,10 @@ TEST_F(BrowsingTopicsStateTest,
 
   std::vector<EpochTopics> epochs;
   // Current version is 1 but it's forward compatible with 2.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kBrowsingTopicsParameters,
+      {{"prioritized_topics_list", ""}});
   EXPECT_EQ(CurrentConfigVersion(), 1);
   epochs.emplace_back(CreateTestEpochTopics(
       kTime1, /*from_manually_triggered_calculation=*/false,

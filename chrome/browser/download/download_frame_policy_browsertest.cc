@@ -256,7 +256,8 @@ class DownloadFramePolicyBrowserTest
   void CheckNumDownloadsExpectation() {
     if (download_observer_)
       download_observer_->WaitForFinished();
-    std::vector<download::DownloadItem*> download_items;
+    std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>
+        download_items;
     content::DownloadManager* manager =
         browser()->profile()->GetDownloadManager();
     manager->GetAllDownloads(&download_items);

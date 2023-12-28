@@ -439,11 +439,16 @@ void ChromeDevToolsManagerDelegate::ResetAndroidDeviceManagerForTesting() {
 void ChromeDevToolsManagerDelegate::CloseBrowserSoon() {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce([]() {
-        if (GetInstance()) {
-          // Do not keep the application running anymore, we got an explicit
-          // request to close.
-          GetInstance()->keep_alive_.reset();
-        }
+        // Do not keep the application running anymore, we got an explicit
+        // request to close.
+        AllowBrowserToClose();
         chrome::ExitIgnoreUnloadHandlers();
       }));
+}
+
+// static
+void ChromeDevToolsManagerDelegate::AllowBrowserToClose() {
+  if (auto* instance = GetInstance()) {
+    instance->keep_alive_.reset();
+  }
 }

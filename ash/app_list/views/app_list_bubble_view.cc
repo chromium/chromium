@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/model/app_list_folder_item.h"
@@ -42,6 +42,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
@@ -199,7 +200,7 @@ class ButtonFocusSkipper : public ui::EventHandler {
   }
 
  private:
-  std::vector<views::View*> buttons_;
+  std::vector<raw_ptr<views::View, VectorExperimental>> buttons_;
 };
 
 AppListBubbleView::AppListBubbleView(
@@ -574,9 +575,6 @@ void AppListBubbleView::ShowPage(AppListBubblePage page) {
       }
       a11y_announcer_->AnnounceAppListShown();
       MaybeFocusAndActivateSearchBox();
-      // As `current_page_` is reset to `kNone` in `OnHideAnimationEnded`, we
-      // can expect that this gets called every time a launcher gets shown.
-      search_box_view_->SetIsIphAllowed(true);
       break;
     case AppListBubblePage::kSearch:
       if (previous_page == AppListBubblePage::kApps) {
@@ -587,7 +585,6 @@ void AppListBubbleView::ShowPage(AppListBubblePage page) {
         search_page_->SetVisible(true);
       }
       MaybeFocusAndActivateSearchBox();
-      search_box_view_->SetIsIphAllowed(false);
       break;
     case AppListBubblePage::kAssistant:
       if (showing_folder_)
@@ -602,7 +599,6 @@ void AppListBubbleView::ShowPage(AppListBubblePage page) {
       search_box_view_->SetSearchBoxActive(false,
                                            /*event_type=*/ui::ET_UNKNOWN);
       assistant_page_->RequestFocus();
-      search_box_view_->SetIsIphAllowed(false);
       break;
   }
 }
@@ -854,7 +850,6 @@ void AppListBubbleView::OnHideAnimationEnded(const gfx::Rect& layer_bounds) {
   apps_page_->SetVisible(true);
   search_page_->SetVisible(false);
   assistant_page_->SetVisible(false);
-  search_box_view_->SetIsIphAllowed(false);
 
   is_hiding_ = false;
   if (on_hide_animation_ended_) {

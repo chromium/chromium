@@ -323,7 +323,7 @@ void TestHistograms(const base::HistogramTester& histograms,
     size_t cached_bytes = byte_count.first.cached_kb * 1024;
     size_t network_bytes = byte_count.first.uncached_kb * 1024;
     int matching_entries = 0;
-    for (auto const* entry : entries) {
+    for (const ukm::mojom::UkmEntry* entry : entries) {
       int64_t entry_cache_bytes = *ukm_recorder.GetEntryMetric(
           entry, ukm::builders::AdFrameLoad::kLoading_CacheBytes2Name);
       int64_t entry_network_bytes = *ukm_recorder.GetEntryMetric(

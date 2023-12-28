@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -18,12 +19,14 @@ namespace {
 using ::testing::Values;
 
 TEST(QueueWithSizesTest, TotalSizeStartsAtZero) {
+  test::TaskEnvironment task_environment;
   auto* queue = MakeGarbageCollected<QueueWithSizes>();
   EXPECT_EQ(queue->TotalSize(), 0.0);
   EXPECT_TRUE(queue->IsEmpty());
 }
 
 TEST(QueueWithSizesTest, EnqueueIncreasesTotalSize) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* queue = MakeGarbageCollected<QueueWithSizes>();
   auto* isolate = scope.GetIsolate();
@@ -34,6 +37,7 @@ TEST(QueueWithSizesTest, EnqueueIncreasesTotalSize) {
 }
 
 TEST(QueueWithSizesTest, EnqueueAddsSize) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* queue = MakeGarbageCollected<QueueWithSizes>();
   auto* isolate = scope.GetIsolate();
@@ -49,6 +53,7 @@ TEST(QueueWithSizesTest, EnqueueAddsSize) {
 class QueueWithSizesBadSizeTest : public ::testing::TestWithParam<double> {};
 
 TEST_P(QueueWithSizesBadSizeTest, BadSizeThrowsException) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* queue = MakeGarbageCollected<QueueWithSizes>();
   auto* isolate = scope.GetIsolate();
@@ -67,6 +72,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                                 std::numeric_limits<double>::infinity()));
 
 TEST(QueueWithSizesTest, DequeueReturnsSameObject) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* queue = MakeGarbageCollected<QueueWithSizes>();
   auto* isolate = scope.GetIsolate();
@@ -77,6 +83,7 @@ TEST(QueueWithSizesTest, DequeueReturnsSameObject) {
 }
 
 TEST(QueueWithSizesTest, DequeueSubtractsSize) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* queue = MakeGarbageCollected<QueueWithSizes>();
   auto* isolate = scope.GetIsolate();
@@ -88,6 +95,7 @@ TEST(QueueWithSizesTest, DequeueSubtractsSize) {
 }
 
 TEST(QueueWithSizesTest, PeekReturnsSameObject) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* queue = MakeGarbageCollected<QueueWithSizes>();
   auto* isolate = scope.GetIsolate();
@@ -100,6 +108,7 @@ TEST(QueueWithSizesTest, PeekReturnsSameObject) {
 }
 
 TEST(QueueWithSizesTest, ResetQueueClearsSize) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* queue = MakeGarbageCollected<QueueWithSizes>();
   auto* isolate = scope.GetIsolate();
@@ -111,6 +120,7 @@ TEST(QueueWithSizesTest, ResetQueueClearsSize) {
 }
 
 TEST(QueueWithSizesTest, UsesDoubleArithmetic) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* queue = MakeGarbageCollected<QueueWithSizes>();
   auto* isolate = scope.GetIsolate();
@@ -129,6 +139,7 @@ TEST(QueueWithSizesTest, UsesDoubleArithmetic) {
 }
 
 TEST(QueueWithSizesTest, TotalSizeIsNonNegative) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* queue = MakeGarbageCollected<QueueWithSizes>();
   auto* isolate = scope.GetIsolate();

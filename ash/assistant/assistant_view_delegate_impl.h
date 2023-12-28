@@ -48,7 +48,7 @@ class AssistantViewDelegateImpl : public AssistantViewDelegate {
   void OnLauncherSearchChipPressed(const std::u16string& query) override;
 
  private:
-  const raw_ptr<AssistantControllerImpl, ExperimentalAsh> assistant_controller_;
+  const raw_ptr<AssistantControllerImpl> assistant_controller_;
   base::ObserverList<AssistantViewDelegateObserver> view_delegate_observers_;
 };
 

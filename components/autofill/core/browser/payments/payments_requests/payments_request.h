@@ -80,11 +80,11 @@ class PaymentsRequest {
 
   // Shared helper functions for string operations.
   static void AppendStringIfNotEmpty(const AutofillProfile& profile,
-                                     const ServerFieldType& type,
+                                     const FieldType& type,
                                      const std::string& app_locale,
                                      base::Value::List& list);
   static void SetStringIfNotEmpty(const AutofillDataModel& profile,
-                                  const ServerFieldType& type,
+                                  const FieldType& type,
                                   const std::string& app_locale,
                                   const std::string& path,
                                   base::Value::Dict& dictionary);

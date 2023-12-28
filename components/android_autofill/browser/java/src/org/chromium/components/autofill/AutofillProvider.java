@@ -683,12 +683,11 @@ public class AutofillProvider {
     }
 
     @CalledByNative
-    private void onServerPredictionQueryDone(boolean success) {
+    private void onServerPredictionsAvailable() {
         if (mRequest == null) return;
-        mRequest.onQueryDone(success);
-        mAutofillUMA.onServerTypeAvailable(
-                success ? mRequest.getForm() : null, /* afterSessionStarted= */ true);
-        mAutofillManager.onQueryDone(success);
+        mRequest.onServerPredictionsAvailable();
+        mAutofillManager.onServerPredictionsAvailable();
+        mAutofillUMA.onServerTypeAvailable(mRequest.getForm(), /* afterSessionStarted= */ true);
     }
 
     private void forceNotifyFormValues() {

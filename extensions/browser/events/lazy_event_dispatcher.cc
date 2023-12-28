@@ -12,6 +12,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 
 using content::BrowserContext;
@@ -25,7 +26,7 @@ LazyEventDispatcher::LazyEventDispatcher(BrowserContext* browser_context,
 
 LazyEventDispatcher::~LazyEventDispatcher() = default;
 
-void LazyEventDispatcher::Dispatch(const Event& event,
+void LazyEventDispatcher::Dispatch(Event& event,
                                    const LazyContextId& dispatch_context,
                                    const base::Value::Dict* listener_filter) {
   const Extension* extension = ExtensionRegistry::Get(browser_context_)
@@ -47,7 +48,7 @@ bool LazyEventDispatcher::HasAlreadyDispatched(
 }
 
 bool LazyEventDispatcher::QueueEventDispatch(
-    const Event& event,
+    Event& event,
     const LazyContextId& dispatch_context,
     const Extension* extension,
     const base::Value::Dict* listener_filter) {
@@ -60,6 +61,8 @@ bool LazyEventDispatcher::QueueEventDispatch(
     return false;
 
   LazyContextTaskQueue* queue = dispatch_context.GetTaskQueue();
+  event.lazy_background_active_on_dispatch =
+      queue->IsReadyToRunTasks(dispatch_context.browser_context(), extension);
   if (!queue->ShouldEnqueueTask(dispatch_context.browser_context(),
                                 extension)) {
     return false;
@@ -80,7 +83,7 @@ bool LazyEventDispatcher::QueueEventDispatch(
             // The only lazy listeners belong to an extension's background
             // context (either an event page or a service worker), which are
             // always BLESSED_EXTENSION_CONTEXTs
-            extensions::Feature::BLESSED_EXTENSION_CONTEXT, extension,
+            extensions::mojom::ContextType::kPrivilegedExtension, extension,
             listener_filter, modified_event_args, modified_event_filter_info)) {
       // The event has been canceled.
       return true;

@@ -62,7 +62,6 @@ CSSSelector::RelationType GetImplicitShadowCombinatorForMatching(
     case CSSSelector::PseudoType::kPseudoBlinkInternalElement:
     case CSSSelector::PseudoType::kPseudoCue:
     case CSSSelector::PseudoType::kPseudoDetailsContent:
-    case CSSSelector::PseudoType::kPseudoDetailsSummary:
     case CSSSelector::PseudoType::kPseudoPlaceholder:
     case CSSSelector::PseudoType::kPseudoFileSelectorButton:
       return CSSSelector::RelationType::kUAShadow;
@@ -2224,13 +2223,6 @@ static void RecordUsageAndDeprecationsOneSelector(
       break;
     case CSSSelector::kPseudoHas:
       feature = WebFeature::kCSSSelectorPseudoHas;
-      // TODO(foolip): Remove these counters when the above unified counter is
-      // on its way to stable. (Overlap collection for at least one release.)
-      if (context->IsLiveProfile()) {
-        context->Count(WebFeature::kCSSSelectorPseudoHasInLiveProfile);
-      } else {
-        context->Count(WebFeature::kCSSSelectorPseudoHasInSnapshotProfile);
-      }
       break;
     default:
       break;

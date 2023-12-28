@@ -911,6 +911,7 @@ Testing `document.body` with {"serialization":"deep"}
         }
         backendNodeId : <number>
         childNodeCount : 1
+        loaderId : <string>
         localName : body
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -925,6 +926,7 @@ Testing `document.body` with {"serialization":"deep","maxDepth":0}
         }
         backendNodeId : <number>
         childNodeCount : 1
+        loaderId : <string>
         localName : body
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -939,6 +941,7 @@ Testing `document.body` with {"serialization":"deep","maxDepth":1}
         }
         backendNodeId : <number>
         childNodeCount : 1
+        loaderId : <string>
         localName : body
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -953,6 +956,7 @@ Testing `document.body` with {"serialization":"deep","maxDepth":99}
         }
         backendNodeId : <number>
         childNodeCount : 1
+        loaderId : <string>
         localName : body
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -996,6 +1000,7 @@ Testing `document.querySelector("body > div")` with {"serialization":"deep"}
         }
         backendNodeId : <number>
         childNodeCount : 2
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -1011,6 +1016,7 @@ Testing `document.querySelector("body > div")` with {"serialization":"deep","max
         }
         backendNodeId : <number>
         childNodeCount : 2
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -1026,6 +1032,7 @@ Testing `document.querySelector("body > div")` with {"serialization":"deep","max
         }
         backendNodeId : <number>
         childNodeCount : 2
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -1041,6 +1048,7 @@ Testing `document.querySelector("body > div")` with {"serialization":"deep","max
         }
         backendNodeId : <number>
         childNodeCount : 2
+        loaderId : <string>
         localName : div
         namespaceURI : http://www.w3.org/1999/xhtml
         nodeType : 1
@@ -1053,6 +1061,7 @@ Testing `document.querySelector("body > div").attributes[0]` with {"serializatio
     value : {
         backendNodeId : <number>
         childNodeCount : 0
+        loaderId : <string>
         localName : some_attr_name
         namespaceURI : null
         nodeType : 2
@@ -1065,6 +1074,7 @@ Testing `document.querySelector("body > div").attributes[0]` with {"serializatio
     value : {
         backendNodeId : <number>
         childNodeCount : 0
+        loaderId : <string>
         localName : some_attr_name
         namespaceURI : null
         nodeType : 2
@@ -1077,6 +1087,7 @@ Testing `document.querySelector("body > div").attributes[0]` with {"serializatio
     value : {
         backendNodeId : <number>
         childNodeCount : 0
+        loaderId : <string>
         localName : some_attr_name
         namespaceURI : null
         nodeType : 2
@@ -1089,6 +1100,7 @@ Testing `document.querySelector("body > div").attributes[0]` with {"serializatio
     value : {
         backendNodeId : <number>
         childNodeCount : 0
+        loaderId : <string>
         localName : some_attr_name
         namespaceURI : null
         nodeType : 2

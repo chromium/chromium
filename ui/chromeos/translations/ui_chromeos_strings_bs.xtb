@@ -250,7 +250,7 @@
 <translation id="3003189754374775221">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, poveži</translation>
 <translation id="3003633581067744647">Prebaci na prikaz sličice</translation>
 <translation id="3016566519832145558">Oprez: ovi fajlovi su privremeni i moguće je da će se automatski izbrisati radi oslobađanja prostora na disku.</translation>
-<translation id="3029114385395636667">Omogućite Google Dokumente van mreže da vam Dokumenti, Tabele i Slajdovi budu dostupni offline.</translation>
+<translation id="3029114385395636667">Omogućite Google Dokumente offline da vam Dokumenti, Tabele i Slajdovi budu dostupni offline.</translation>
 <translation id="303198083543495566">Geografija</translation>
 <translation id="3044404008258011032">Da vratite ove stavke, prevucite ih u novi folder izvan otpada. Izvorni folder "<ph name="PARENT_FOLDER_NAME" />" ovih stavki je izbrisan.</translation>
 <translation id="3047197340186497470">kineski dayi</translation>
@@ -505,6 +505,7 @@
 <translation id="4935975195727477204">Cvijet gazanije</translation>
 <translation id="4943368462779413526">Nogomet</translation>
 <translation id="4961158930123534723">1 folder je podijeljen pomoću aplikacije Parallels Desktop</translation>
+<translation id="4965874878399872778">Provjeravamo jesu li fajlovi u skladu sa sigurnosnim pravilima vaše organizacije…</translation>
 <translation id="496656650103537022">Fajl <ph name="FILE_NAME" /> je vraćen</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Završavanje postavljanja sinhronizacije fajlova nije uspjelo</translation>
@@ -560,7 +561,6 @@
 <translation id="5275973617553375938">Oporavljeni fajlovi iz Google Diska</translation>
 <translation id="5278111733643988471">Da vratite ovu stavku, prevucite je u novi folder izvan otpada. Izvorni folder "<ph name="PARENT_FOLDER_NAME" />" ove stavke je izbrisan.</translation>
 <translation id="5283101102242354279">Uključite ekstenziju u anonimnom načinu rada:</translation>
-<translation id="5286194356314741248">Skeniranje</translation>
 <translation id="5288441970121584418">Pljeskavica</translation>
 <translation id="5293615890992542006">Administratorska pravila blokiraju premještanje fajla</translation>
 <translation id="5305688511332277257">Nema instaliranih</translation>
@@ -711,6 +711,7 @@
 <translation id="6430271654280079150">Imate još 1 pokušaj.</translation>
 <translation id="643243556292470964">Izbrisani fajlovi su sada premješteni u otpad</translation>
 <translation id="6438480100790416671">Provjera prostora za pohranu…</translation>
+<translation id="6451527188465304418">Provjeravamo je li fajl u skladu sa sigurnosnim pravilima vaše organizacije…</translation>
 <translation id="6485131920355264772">Preuzimanje informacije o prostoru nije uspjelo</translation>
 <translation id="6495925982925244349">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, upravlja vaš administrator, detalji</translation>
 <translation id="649877868557234318">Izdvajanje fajla <ph name="FILE_NAME" /> u folder <ph name="FOLDER_NAME" /></translation>

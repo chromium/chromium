@@ -67,7 +67,10 @@
                 for (var i = 0; i < mainTable.tBodies[0].rows.length; i++) {
                     // Set the size to a subpixel value, the exact value isn't
                     // important but each row should have a different height.
-                    var height = r((20 + i) * 0.93 + i);
+                    // However, smallest size (after zoom adjustment) has to
+                    // be larger than 22, as this is the minimal size set by
+                    // the font.
+                    var height = r(26 + (20 + i) * 0.93 + i);
                     rowElement.style.height = height + 'px';
                     rect = rowElement.getBoundingClientRect();
                     rowHeights.push(rect.bottom - rect.top);
@@ -95,12 +98,13 @@
                 var failures = 0;
                 for (var i = 0; i < rows.length; i++) {
                     var rect = rows[i].getBoundingClientRect();
-                    if (r(rowHeights[i]) != r(rect.height)) {
-                        testFailed('At ' + r(zoom * 100) + '% zoom getBoundingClientRect returned a height of ' + r(rect.height) + ', expected ' + r(rowHeights[i]) + '.');
+                    // Rounding errors cause inaccurate results, so need to equal sizes with an epsilon
+                    if (Math.abs(r(rowHeights[i]) - r(rect.height / zoom)) > 0.11 ) {
+                        testFailed('At ' + r(zoom * 100) + '% zoom getBoundingClientRect returned a height of ' + r(rect.height / zoom) + ', expected ' + r(rowHeights[i]) + '.');
                         failures++;
                     }
-                    if (r(rowHeights[i]) != r(rect.bottom - rect.top)) {
-                        testFailed('At ' + r(zoom * 100) + '% zoom getBoundingClientRect returned a rect with bottom - top of ' + (rect.bottom - rect.top) + ', expected ' + rowHeights[i] + '.');
+                    if (Math.abs((rowHeights[i]) - r((rect.bottom - rect.top) / zoom)) > 0.11) {
+                        testFailed('At ' + r(zoom * 100) + '% zoom getBoundingClientRect returned a rect with bottom - top of ' + r((rect.bottom - rect.top) / zoom) + ', expected ' + rowHeights[i] + '.');
                         failures++;
                     }
                 }

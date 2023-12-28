@@ -133,7 +133,7 @@ TEST_F(UnmaskCardRequestTest, DoesNotIncludeMerchantDomainWhenMissingField) {
       features::kAutofillEnableMerchantDomainInUnmaskCardRequest);
   PaymentsNetworkInterface::UnmaskRequestDetails request_details =
       GetDefaultUnmaskRequestDetails();
-  request_details.merchant_domain_for_footprints = absl::nullopt;
+  request_details.merchant_domain_for_footprints = std::nullopt;
   request_ = std::make_unique<UnmaskCardRequest>(
       request_details, /*full_sync_enabled=*/true,
       /*callback=*/base::DoNothing());
@@ -143,7 +143,7 @@ TEST_F(UnmaskCardRequestTest, DoesNotIncludeMerchantDomainWhenMissingField) {
 // Test to ensure response is correctly parsed when the FIDO challenge is
 // returned with context token.
 TEST_F(UnmaskCardRequestTest, FidoChallengeReturned_ParseResponse) {
-  absl::optional<base::Value> response = base::JSONReader::Read(
+  std::optional<base::Value> response = base::JSONReader::Read(
       "{\"fido_request_options\":{\"challenge\":\"fake_fido_challenge\"},"
       "\"context_token\":\"fake_context_token\"}");
   ASSERT_TRUE(response.has_value());
@@ -163,7 +163,7 @@ TEST_F(UnmaskCardRequestTest, FidoChallengeReturned_ParseResponse) {
 // Test to ensure the response is complete when context token is returned but
 // PAN is not.
 TEST_F(UnmaskCardRequestTest, ContextTokenReturned) {
-  absl::optional<base::Value> response =
+  std::optional<base::Value> response =
       base::JSONReader::Read("{\"context_token\":\"fake_context_token\"}");
   ASSERT_TRUE(response.has_value());
   GetRequest()->ParseResponse(response->GetDict());
@@ -175,7 +175,7 @@ TEST_F(UnmaskCardRequestTest, ContextTokenReturned) {
 // Test that the response is not complete when both context token and real PAN
 // are not returned.
 TEST_F(UnmaskCardRequestTest, ContextTokenAndPanNotReturned) {
-  absl::optional<base::Value> response = base::JSONReader::Read("{}");
+  std::optional<base::Value> response = base::JSONReader::Read("{}");
   ASSERT_TRUE(response.has_value());
   GetRequest()->ParseResponse(response->GetDict());
 
@@ -283,7 +283,7 @@ TEST_P(VirtualCardUnmaskCardRequestTest,
   feature_list_email_otp.InitWithFeatureState(
       features::kAutofillEnableEmailOtpForVcnYellowPath,
       /*enabled=*/IsAutofillEnableEmailOtpForVcnYellowPathTurnedOn());
-  absl::optional<base::Value> response = base::JSONReader::Read(
+  std::optional<base::Value> response = base::JSONReader::Read(
       "{\"fido_request_options\": {\"challenge\": \"fake_fido_challenge\"}, "
       "\"context_token\": \"fake_context_token\", \"idv_challenge_options\": "
       "[{\"sms_otp_challenge_option\": {\"challenge_id\": "
@@ -376,7 +376,7 @@ TEST_P(VirtualCardUnmaskCardRequestTest, IsRetryableFailure) {
 
     // Test that `IsRetryableFailure()` returns true if a flow status is
     // present.
-    absl::optional<base::Value> response = base::JSONReader::Read(
+    std::optional<base::Value> response = base::JSONReader::Read(
         "{\"flow_status\": \"FLOW_STATUS_INCORRECT_ACCOUNT_SECURITY_CODE\"}");
     ASSERT_TRUE(response);
     GetRequest()->ParseResponse(response->GetDict());

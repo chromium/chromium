@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/ml/ml.h"
 
 #include "components/ml/mojom/web_platform_model.mojom-blink.h"
-#include "components/ml/webnn/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -72,6 +71,7 @@ void ML::Trace(Visitor* visitor) const {
 ScriptPromise ML::createContext(ScriptState* script_state,
                                 MLContextOptions* options,
                                 ExceptionState& exception_state) {
+  ScopedMLTrace scoped_trace("ML::createContext");
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
@@ -85,13 +85,7 @@ ScriptPromise ML::createContext(ScriptState* script_state,
 
 #if !BUILDFLAG(IS_CHROMEOS)
   if (options->deviceType() == V8MLDeviceType::Enum::kGpu) {
-    if (base::FeatureList::IsEnabled(
-            webnn::features::kEnableMachineLearningNeuralNetworkService)) {
-      MLContextMojo::ValidateAndCreateAsync(resolver, options, this);
-    } else {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError, "Not implemented"));
-    }
+    MLContextMojo::ValidateAndCreateAsync(resolver, options, this);
     return promise;
   }
 #endif
@@ -108,6 +102,7 @@ ScriptPromise ML::createContext(ScriptState* script_state,
 MLContext* ML::createContextSync(ScriptState* script_state,
                                  MLContextOptions* options,
                                  ExceptionState& exception_state) {
+  ScopedMLTrace scoped_trace("ML::createContextSync");
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
@@ -118,15 +113,8 @@ MLContext* ML::createContextSync(ScriptState* script_state,
   // The runtime enable feature is used to disable the cross process hardware
   // acceleration by default.
   if (options->deviceType() == V8MLDeviceType::Enum::kGpu) {
-    if (base::FeatureList::IsEnabled(
-            webnn::features::kEnableMachineLearningNeuralNetworkService)) {
       return MLContextMojo::ValidateAndCreateSync(script_state, exception_state,
                                                   options, this);
-    } else {
-      exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                        "Not implemented");
-      return nullptr;
-    }
   }
 #endif
 

@@ -37,7 +37,10 @@ class CORE_EXPORT LayoutOutsideListMarker final : public LayoutNGBlockFlow {
   bool IsMonolithic() const final;
 
  private:
-  bool IsOfType(LayoutObjectType) const override;
+  bool IsLayoutOutsideListMarker() const final {
+    NOT_DESTROYED();
+    return true;
+  }
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
   ListMarker list_marker_;

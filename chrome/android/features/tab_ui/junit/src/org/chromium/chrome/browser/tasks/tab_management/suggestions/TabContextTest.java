@@ -24,8 +24,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -50,10 +48,6 @@ public class TabContextTest {
     @Rule public JniMocker mocker = new JniMocker();
 
     @Mock public Profile.Natives mMockProfileNatives;
-
-    @Mock private TabModelSelector mTabModelSelector;
-
-    @Mock private TabModelFilterProvider mTabModelFilterProvider;
 
     @Mock private TabModelFilter mTabModelFilter;
 
@@ -86,8 +80,6 @@ public class TabContextTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mocker.mock(ProfileJni.TEST_HOOKS, mMockProfileNatives);
-        doReturn(mTabModelFilterProvider).when(mTabModelSelector).getTabModelFilterProvider();
-        doReturn(mTabModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
     }
 
     private static Tab mockTab(
@@ -113,7 +105,7 @@ public class TabContextTest {
         doReturn(Arrays.asList(mTab0, mRelatedTab0, mRelatedTab1))
                 .when(mTabModelFilter)
                 .getRelatedTabList(eq(TAB_0_ID));
-        TabContext tabContext = TabContext.createCurrentContext(mTabModelSelector);
+        TabContext tabContext = TabContext.createCurrentContext(mTabModelFilter);
         Assert.assertEquals(tabContext.getUngroupedTabs().size(), 0);
         List<TabContext.TabGroupInfo> tabGroupInfo = tabContext.getTabGroups();
         Assert.assertEquals(1, tabGroupInfo.size());
@@ -130,7 +122,7 @@ public class TabContextTest {
         doReturn(mTab0).when(mTabModelFilter).getTabAt(eq(TAB_0_ID));
         doReturn(1).when(mTabModelFilter).getCount();
         doReturn(Arrays.asList(mTab0)).when(mTabModelFilter).getRelatedTabList(eq(TAB_0_ID));
-        TabContext tabContext = TabContext.createCurrentContext(mTabModelSelector);
+        TabContext tabContext = TabContext.createCurrentContext(mTabModelFilter);
         Assert.assertEquals(tabContext.getUngroupedTabs().size(), 1);
         List<TabContext.TabGroupInfo> tabGroups = tabContext.getTabGroups();
         Assert.assertEquals(0, tabGroups.size());
@@ -155,20 +147,27 @@ public class TabContextTest {
         doReturn(Arrays.asList(newTab1)).when(mTabModelFilter).getRelatedTabList(eq(NEW_TAB_1_ID));
         doReturn(Arrays.asList(newTab2)).when(mTabModelFilter).getRelatedTabList(eq(NEW_TAB_2_ID));
 
-        TabContext tabContext = TabContext.createCurrentContext(mTabModelSelector);
+        TabContext tabContext = TabContext.createCurrentContext(mTabModelFilter);
         Assert.assertEquals(2, tabContext.getUngroupedTabs().size());
         Assert.assertEquals(1, tabContext.getTabGroups().size());
         Assert.assertEquals(3, tabContext.getTabGroups().get(0).tabs.size());
 
         // close newTab1
         doReturn(true).when(newTab1).isClosing();
-        tabContext = TabContext.createCurrentContext(mTabModelSelector);
+        tabContext = TabContext.createCurrentContext(mTabModelFilter);
         Assert.assertEquals(1, tabContext.getUngroupedTabs().size());
 
         // close mTab0
         doReturn(true).when(mTab0).isClosing();
-        tabContext = TabContext.createCurrentContext(mTabModelSelector);
+        tabContext = TabContext.createCurrentContext(mTabModelFilter);
         Assert.assertEquals(1, tabContext.getTabGroups().size());
         Assert.assertEquals(2, tabContext.getTabGroups().get(0).tabs.size());
+    }
+
+    @Test
+    public void testNoCrashOnNullFilter() {
+        TabContext tabContext = TabContext.createCurrentContext(null);
+        Assert.assertEquals(0, tabContext.getUngroupedTabs().size());
+        Assert.assertEquals(0, tabContext.getTabGroups().size());
     }
 }

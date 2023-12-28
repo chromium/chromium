@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 
-import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import type {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {LottieRenderer} from 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+
 import {MetricsRecordedSetupPage, OperationType, UserAction} from './cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
 import {getTemplate} from './move_confirmation_page.html.js';
@@ -30,6 +31,10 @@ export class MoveConfirmationPageElement extends HTMLElement {
   private animationPlayer: LottieRenderer|undefined;
   private playPauseButton: HTMLElement|undefined;
 
+  // Save reference to listener so it can be removed from the document in
+  // disconnectedCallback().
+  private boundKeyDownListener_: (e: KeyboardEvent) => void;
+
   constructor() {
     super();
 
@@ -44,6 +49,15 @@ export class MoveConfirmationPageElement extends HTMLElement {
     cancelButton.addEventListener('click', () => this.onCancelButtonClick());
     this.playPauseButton.addEventListener(
         'click', () => this.onPlayPauseButtonClick());
+    this.boundKeyDownListener_ = this.onKeyDown.bind(this);
+  }
+
+  connectedCallback(): void {
+    document.addEventListener('keydown', this.boundKeyDownListener_);
+  }
+
+  disconnectedCallback(): void {
+    document.removeEventListener('keydown', this.boundKeyDownListener_);
   }
 
   $<T extends HTMLElement>(query: string): T {
@@ -197,6 +211,16 @@ export class MoveConfirmationPageElement extends HTMLElement {
       this.playPauseButton!.className = 'play';
       this.playPauseButton!.ariaLabel =
           loadTimeData.getString('animationPlayText');
+    }
+  }
+
+  private onKeyDown(e: KeyboardEvent) {
+    if (e.key === 'Escape') {
+      // Handle Escape as a "cancel".
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      this.onCancelButtonClick();
+      return;
     }
   }
 }

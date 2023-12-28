@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -1761,11 +1762,11 @@ TEST_P(AttributionStorageSqlTest,
     while (get_statement.Step()) {
       int64_t id = get_statement.ColumnInt64(0);
 
-      std::string blob;
-      ASSERT_TRUE(get_statement.ColumnBlobAsString(1, &blob));
-
       proto::AttributionReadOnlySourceData msg;
-      ASSERT_TRUE(msg.ParseFromString(blob));
+      {
+        base::span<const uint8_t> blob = get_statement.ColumnBlob(1);
+        ASSERT_TRUE(msg.ParseFromArray(blob.data(), blob.size()));
+      }
 
       msg.clear_randomized_response_rate();
 
@@ -1805,11 +1806,11 @@ TEST_P(AttributionStorageSqlTest, EpsilonNotStored_RecalculatedWhenHandled) {
     while (get_statement.Step()) {
       int64_t id = get_statement.ColumnInt64(0);
 
-      std::string blob;
-      ASSERT_TRUE(get_statement.ColumnBlobAsString(1, &blob));
-
       proto::AttributionReadOnlySourceData msg;
-      ASSERT_TRUE(msg.ParseFromString(blob));
+      {
+        base::span<const uint8_t> blob = get_statement.ColumnBlob(1);
+        ASSERT_TRUE(msg.ParseFromArray(blob.data(), blob.size()));
+      }
 
       msg.clear_event_level_epsilon();
 

@@ -33,7 +33,7 @@ class ASH_EXPORT PhoneConnectingView : public PhoneHubContentView {
  private:
   // Responsible for displaying the connecting UI contents.
   // Owned by view hierarchy.
-  raw_ptr<PhoneHubInterstitialView, ExperimentalAsh> content_view_ = nullptr;
+  raw_ptr<PhoneHubInterstitialView> content_view_ = nullptr;
 };
 
 }  // namespace ash

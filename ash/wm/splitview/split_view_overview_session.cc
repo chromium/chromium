@@ -152,11 +152,10 @@ void SplitViewOverviewSession::OnResizeLoopStarted(aura::Window* window) {
   }
 
   // In clamshell mode, if splitview is active (which means overview is active
-  // at the same time or the feature flag `kSnapGroup` is enabled and
-  // `kAutomaticallyLockGroup` is true, only the resize that happens on the
-  // window edge that's next to the overview grid will resize the window and
-  // overview grid at the same time. For the resize that happens on the other
-  // part of the window, we'll just end splitview and overview mode.
+  // at the same time), only the resize that happens on the window edge that's
+  // next to the overview grid will resize the window and overview grid at the
+  // same time. For the resize that happens on the other part of the window,
+  // we'll just end splitview and overview mode.
   if (WindowState::Get(window)->drag_details()->window_component !=
       GetWindowComponentForResize(window)) {
     Shell::Get()->overview_controller()->EndOverview(

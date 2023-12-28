@@ -12,3 +12,11 @@
 name = "wasi"
 version = "0.11.0+wasi-snapshot-preview1"
 
+[features]
+"compiler_builtins" = []
+"core" = []
+"default" = []
+"rustc-dep-of-std" = []
+"rustc-std-workspace-alloc" = []
+"std" = []
+

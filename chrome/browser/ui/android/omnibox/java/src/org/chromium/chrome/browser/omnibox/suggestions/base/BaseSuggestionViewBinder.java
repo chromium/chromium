@@ -31,7 +31,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -251,14 +250,9 @@ public final class BaseSuggestionViewBinder<T extends View>
 
     /**
      * Access the BaseSuggestionViewMetadata for the given view, creating and attaching a new one if
-     * none is currently associated. Returns an unattached metadata if {@link
-     * OmniboxFeatures#shouldCacheSuggestionResources} returns false.
+     * none is currently associated.
      */
     private static @NonNull BaseSuggestionViewMetadata ensureViewMetadata(View view) {
-        if (!OmniboxFeatures.shouldCacheSuggestionResources()) {
-            return new BaseSuggestionViewMetadata();
-        }
-
         BaseSuggestionViewMetadata metadata =
                 (BaseSuggestionViewMetadata) view.getTag(R.id.base_suggestion_view_metadata_key);
         if (metadata == null) {

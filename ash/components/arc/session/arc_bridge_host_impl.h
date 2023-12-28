@@ -203,7 +203,7 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
   THREAD_CHECKER(thread_checker_);
 
   // Owned by ArcServiceManager.
-  const raw_ptr<ArcBridgeService, ExperimentalAsh> arc_bridge_service_;
+  const raw_ptr<ArcBridgeService> arc_bridge_service_;
 
   mojo::Receiver<mojom::ArcBridgeHost> receiver_;
 

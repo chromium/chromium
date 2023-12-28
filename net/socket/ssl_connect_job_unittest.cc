@@ -24,7 +24,6 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
-#include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -49,6 +48,7 @@
 #include "net/ssl/ssl_config_service_defaults.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_legacy_crypto_fallback.h"
+#include "net/ssl/test_ssl_config_service.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
 #include "net/test/ssl_test_util.h"
@@ -110,7 +110,8 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
       : WithTaskEnvironment(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         proxy_resolution_service_(
             ConfiguredProxyResolutionService::CreateDirect()),
-        ssl_config_service_(std::make_unique<SSLConfigServiceDefaults>()),
+        ssl_config_service_(
+            std::make_unique<TestSSLConfigService>(SSLContextConfig())),
         http_auth_handler_factory_(HttpAuthHandlerFactory::CreateDefault()),
         session_(CreateNetworkSession()),
         common_connect_job_params_(session_->CreateCommonConnectJobParams()) {}
@@ -194,7 +195,6 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
     session_context.host_resolver = &host_resolver_;
     session_context.cert_verifier = &cert_verifier_;
     session_context.transport_security_state = &transport_security_state_;
-    session_context.ct_policy_enforcer = &ct_policy_enforcer_;
     session_context.proxy_resolution_service = proxy_resolution_service_.get();
     session_context.client_socket_factory = &socket_factory_;
     session_context.ssl_config_service = ssl_config_service_.get();
@@ -212,9 +212,8 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
                                       RuleResolver::GetLocalhostResult()};
   MockCertVerifier cert_verifier_;
   TransportSecurityState transport_security_state_;
-  DefaultCTPolicyEnforcer ct_policy_enforcer_;
   const std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
-  const std::unique_ptr<SSLConfigService> ssl_config_service_;
+  const std::unique_ptr<TestSSLConfigService> ssl_config_service_;
   const std::unique_ptr<HttpAuthHandlerFactory> http_auth_handler_factory_;
   HttpServerProperties http_server_properties_;
   QuicContext quic_context_;
@@ -547,63 +546,6 @@ TEST_F(SSLConnectJobTest, DirectSSLError) {
   ASSERT_EQ(1u, connection_attempts.size());
   EXPECT_THAT(connection_attempts[0].result,
               test::IsError(ERR_BAD_SSL_CLIENT_AUTH_CERT));
-}
-
-// Test that the sha1 server handshakes fallback is triggered on applicable
-// error codes.
-TEST_F(SSLConnectJobTest, SHA1ServerHandshakeFallback) {
-  for (bool feature_enabled : {true, false}) {
-    SCOPED_TRACE(feature_enabled);
-    base::test::ScopedFeatureList feature_list;
-    if (feature_enabled) {
-      feature_list.InitAndEnableFeature(features::kSHA1ServerSignature);
-    } else {
-      feature_list.InitAndDisableFeature(features::kSHA1ServerSignature);
-    }
-    for (Error error :
-         {ERR_CONNECTION_CLOSED, ERR_CONNECTION_RESET, ERR_SSL_PROTOCOL_ERROR,
-          ERR_SSL_VERSION_OR_CIPHER_MISMATCH}) {
-      SCOPED_TRACE(error);
-
-      for (bool second_attempt_ok : {true, false}) {
-        SCOPED_TRACE(second_attempt_ok);
-
-        StaticSocketDataProvider data;
-        socket_factory_.AddSocketDataProvider(&data);
-        SSLSocketDataProvider ssl(ASYNC, error);
-        socket_factory_.AddSSLSocketDataProvider(&ssl);
-        ssl.expected_disable_sha1_server_signatures = true;
-
-        Error error2 = second_attempt_ok ? OK : error;
-        StaticSocketDataProvider data2;
-        socket_factory_.AddSocketDataProvider(&data2);
-        SSLSocketDataProvider ssl2(ASYNC, error2);
-        socket_factory_.AddSSLSocketDataProvider(&ssl2);
-        if (feature_enabled) {
-          ssl2.expected_disable_sha1_server_signatures = false;
-        } else {
-          ssl2.expected_disable_sha1_server_signatures = true;
-        }
-
-        TestConnectJobDelegate test_delegate;
-        std::unique_ptr<ConnectJob> ssl_connect_job =
-            CreateConnectJob(&test_delegate);
-
-        test_delegate.StartJobExpectingResult(ssl_connect_job.get(), error2,
-                                              /*expect_sync_result=*/false);
-        ConnectionAttempts connection_attempts =
-            ssl_connect_job->GetConnectionAttempts();
-        if (second_attempt_ok) {
-          ASSERT_EQ(1u, connection_attempts.size());
-          EXPECT_THAT(connection_attempts[0].result, test::IsError(error));
-        } else {
-          ASSERT_EQ(2u, connection_attempts.size());
-          EXPECT_THAT(connection_attempts[0].result, test::IsError(error));
-          EXPECT_THAT(connection_attempts[1].result, test::IsError(error));
-        }
-      }
-    }
-  }
 }
 
 TEST_F(SSLConnectJobTest, LegacyCryptoFallbackHistograms) {
@@ -1315,14 +1257,11 @@ TEST_F(SSLConnectJobTest, EncryptedClientHello) {
       "host", MockHostResolverBase::RuleResolver::RuleResult(
                   std::vector{endpoint1, endpoint2}));
 
-  for (bool feature_enabled : {true, false}) {
-    SCOPED_TRACE(feature_enabled);
-    base::test::ScopedFeatureList feature_list;
-    if (feature_enabled) {
-      feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
-    } else {
-      feature_list.InitAndDisableFeature(features::kEncryptedClientHello);
-    }
+  for (bool ech_enabled : {true, false}) {
+    SCOPED_TRACE(ech_enabled);
+    SSLContextConfig config;
+    config.ech_enabled = ech_enabled;
+    ssl_config_service_->UpdateSSLConfigAndNotify(config);
 
     // The first connection attempt will be to `endpoint1`, which will fail.
     StaticSocketDataProvider data1;
@@ -1339,7 +1278,7 @@ TEST_F(SSLConnectJobTest, EncryptedClientHello) {
     // The ECH configuration should be passed if and only if the feature is
     // enabled.
     ssl2.expected_ech_config_list =
-        feature_enabled ? ech_config_list2 : std::vector<uint8_t>{};
+        ech_enabled ? ech_config_list2 : std::vector<uint8_t>{};
     socket_factory_.AddSSLSocketDataProvider(&ssl2);
 
     // The connection should ultimately succeed.
@@ -1355,7 +1294,7 @@ TEST_F(SSLConnectJobTest, EncryptedClientHello) {
     histogram_tester.ExpectUniqueSample("Net.SSL_Connection_Error_ECH", OK, 1);
     histogram_tester.ExpectTotalCount("Net.SSL_Connection_Latency_ECH", 1);
     // The ECH result should only be recorded if ECH was actually enabled.
-    if (feature_enabled) {
+    if (ech_enabled) {
       histogram_tester.ExpectUniqueSample("Net.SSL.ECHResult",
                                           0 /* kSuccessInitial */, 1);
     } else {
@@ -1367,9 +1306,6 @@ TEST_F(SSLConnectJobTest, EncryptedClientHello) {
 // Test that `SSLConnectJob` retries the connection if there was a stale ECH
 // configuration.
 TEST_F(SSLConnectJobTest, ECHStaleConfig) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
-
   std::vector<uint8_t> ech_config_list1, ech_config_list2, ech_config_list3;
   ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
                               &ech_config_list1));
@@ -1431,9 +1367,6 @@ TEST_F(SSLConnectJobTest, ECHStaleConfig) {
 // Test that `SSLConnectJob` retries the connection given a secure rollback
 // signal.
 TEST_F(SSLConnectJobTest, ECHRollback) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
-
   std::vector<uint8_t> ech_config_list1, ech_config_list2;
   ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
                               &ech_config_list1));
@@ -1492,9 +1425,6 @@ TEST_F(SSLConnectJobTest, ECHRollback) {
 
 // Test that `SSLConnectJob` will not retry more than once.
 TEST_F(SSLConnectJobTest, ECHTooManyRetries) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
-
   std::vector<uint8_t> ech_config_list1, ech_config_list2, ech_config_list3;
   ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
                               &ech_config_list1));
@@ -1545,9 +1475,6 @@ TEST_F(SSLConnectJobTest, ECHTooManyRetries) {
 
 // Test that `SSLConnectJob` will not retry for ECH given the wrong error.
 TEST_F(SSLConnectJobTest, ECHWrongRetryError) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
-
   std::vector<uint8_t> ech_config_list1, ech_config_list2;
   ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
                               &ech_config_list1));
@@ -1586,9 +1513,6 @@ TEST_F(SSLConnectJobTest, ECHWrongRetryError) {
 
 // Test the legacy crypto callback can trigger after the ECH recovery flow.
 TEST_F(SSLConnectJobTest, ECHRecoveryThenLegacyCrypto) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
-
   std::vector<uint8_t> ech_config_list1, ech_config_list2, ech_config_list3;
   ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
                               &ech_config_list1));
@@ -1664,9 +1588,6 @@ TEST_F(SSLConnectJobTest, ECHRecoveryThenLegacyCrypto) {
 
 // Test the ECH recovery flow can trigger after the legacy crypto fallback.
 TEST_F(SSLConnectJobTest, LegacyCryptoThenECHRecovery) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
-
   std::vector<uint8_t> ech_config_list1, ech_config_list2, ech_config_list3;
   ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
                               &ech_config_list1));

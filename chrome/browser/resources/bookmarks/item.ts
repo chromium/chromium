@@ -8,12 +8,12 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './shared_style.css.js';
 import './strings.m.js';
 
-import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {isMac} from 'chrome://resources/js/platform.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {isMac} from 'chrome://resources/js/platform.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {selectItem} from './actions.js';
@@ -21,7 +21,7 @@ import {BookmarksCommandManagerElement} from './command_manager.js';
 import {Command, MenuSource} from './constants.js';
 import {getTemplate} from './item.html.js';
 import {StoreClientMixin} from './store_client_mixin.js';
-import {BookmarkNode} from './types.js';
+import type {BookmarkNode} from './types.js';
 
 const BookmarksItemElementBase = StoreClientMixin(PolymerElement);
 

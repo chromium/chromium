@@ -323,7 +323,7 @@ class ASH_EXPORT AppsContainerView
   // cardified state ends.
   bool keep_gradient_mask_for_cardified_state_ = false;
 
-  const raw_ptr<ContentsView, ExperimentalAsh> contents_view_;
+  const raw_ptr<ContentsView> contents_view_;
 
   // The app list config used to configure sizing and layout of apps grid items
   // within the apps container.
@@ -337,20 +337,16 @@ class ASH_EXPORT AppsContainerView
 
   // Contains the |continue_section_| and the |apps_grid_view_|, which are views
   // that are affected by paging. Owned by views hierarchy.
-  raw_ptr<views::View, ExperimentalAsh> scrollable_container_ = nullptr;
+  raw_ptr<views::View> scrollable_container_ = nullptr;
 
   // The views below are owned by views hierarchy.
-  raw_ptr<ContinueContainer, ExperimentalAsh> continue_container_ = nullptr;
-  raw_ptr<views::Separator, ExperimentalAsh> separator_ = nullptr;
-  raw_ptr<AppListToastContainerView, ExperimentalAsh> toast_container_ =
-      nullptr;
-  raw_ptr<PagedAppsGridView, ExperimentalAsh> apps_grid_view_ = nullptr;
-  raw_ptr<AppListFolderView, DanglingUntriaged | ExperimentalAsh>
-      app_list_folder_view_ = nullptr;
-  raw_ptr<PageSwitcher, DanglingUntriaged | ExperimentalAsh> page_switcher_ =
-      nullptr;
-  raw_ptr<FolderBackgroundView, ExperimentalAsh> folder_background_view_ =
-      nullptr;
+  raw_ptr<ContinueContainer> continue_container_ = nullptr;
+  raw_ptr<views::Separator> separator_ = nullptr;
+  raw_ptr<AppListToastContainerView> toast_container_ = nullptr;
+  raw_ptr<PagedAppsGridView> apps_grid_view_ = nullptr;
+  raw_ptr<AppListFolderView, DanglingUntriaged> app_list_folder_view_ = nullptr;
+  raw_ptr<PageSwitcher, DanglingUntriaged> page_switcher_ = nullptr;
+  raw_ptr<FolderBackgroundView> folder_background_view_ = nullptr;
 
   ShowState show_state_ = SHOW_NONE;
 

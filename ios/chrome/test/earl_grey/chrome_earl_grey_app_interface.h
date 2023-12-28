@@ -342,9 +342,6 @@
 
 #pragma mark - Sync Utilities (EG2)
 
-// Clears fake sync server data if the server is running.
-+ (void)clearSyncServerData;
-
 // Signs in with `identity` without sync consent.
 + (void)signInWithoutSyncWithIdentity:(FakeSystemIdentity*)identity;
 
@@ -382,6 +379,14 @@
 // Tears down the fake sync server used by the SyncServiceImpl and restores the
 // real one.
 + (void)tearDownFakeSyncServer;
+
+// Clears fake sync server data if the server is running.
++ (void)clearFakeSyncServerData;
+
+// Ensures that all of the FakeServer's data is persisted to disk. This is
+// useful before app restarts, where otherwise the FakeServer may not get to do
+// its usual on-destruction flush.
++ (void)flushFakeSyncServerToDisk;
 
 // Gets the number of entities of the given `type`.
 + (int)numberOfSyncEntitiesWithType:(syncer::ModelType)type;

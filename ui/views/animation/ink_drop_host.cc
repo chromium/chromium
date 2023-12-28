@@ -185,8 +185,14 @@ SkColor InkDropHost::GetBaseColor() const {
     return absl::get<SkColor>(ink_drop_base_color_);
   }
 
-  return absl::get<base::RepeatingCallback<SkColor()>>(ink_drop_base_color_)
-      .Run();
+  // The callback may need access to the color provider, which is only available
+  // after the view is added to a widget.
+  if (host_view_->GetWidget()) {
+    return absl::get<base::RepeatingCallback<SkColor()>>(ink_drop_base_color_)
+        .Run();
+  }
+
+  return gfx::kPlaceholderColor;
 }
 
 void InkDropHost::SetBaseColor(SkColor color) {

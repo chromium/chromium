@@ -56,7 +56,7 @@ class WmModeButtonTray : public TrayBackgroundView, public SessionObserver {
   void UpdateButtonVisibility();
 
   // The view that hosts the button icon.
-  const raw_ptr<views::ImageView, ExperimentalAsh> image_view_;
+  const raw_ptr<views::ImageView> image_view_;
 };
 
 }  // namespace ash

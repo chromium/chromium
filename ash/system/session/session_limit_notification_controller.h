@@ -36,7 +36,7 @@ class ASH_EXPORT SessionLimitNotificationController
   static const char kNotificationId[];
 
   // Unowned.
-  const raw_ptr<SessionLengthLimitModel, ExperimentalAsh> model_;
+  const raw_ptr<SessionLengthLimitModel> model_;
 
   // LimitState of the last time OnSessionLengthLimitUpdate() is called.
   SessionLengthLimitModel::LimitState last_limit_state_ =

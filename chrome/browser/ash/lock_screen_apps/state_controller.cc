@@ -202,10 +202,7 @@ bool StateController::GetUserCryptoKey(Profile* profile, std::string* key) {
   if (key->empty())
     return false;
 
-  std::string base64_encoded_key;
-  base::Base64Encode(*key, &base64_encoded_key);
-
-  profile->GetPrefs()->SetString(kDataCryptoKeyPref, base64_encoded_key);
+  profile->GetPrefs()->SetString(kDataCryptoKeyPref, base::Base64Encode(*key));
   return true;
 }
 

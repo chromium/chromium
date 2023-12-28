@@ -177,7 +177,8 @@ void ExtensionHost::OnBackgroundEventDispatched(
     const std::string& event_name,
     base::TimeTicks dispatch_start_time,
     int event_id,
-    EventDispatchSource dispatch_source) {
+    EventDispatchSource dispatch_source,
+    bool lazy_background_active_on_dispatch) {
   CHECK(IsBackgroundPage());
   // See ExtensionHost::OnEventAck() for an explanation on the restriction to
   // this event flow.
@@ -190,7 +191,8 @@ void ExtensionHost::OnBackgroundEventDispatched(
   }
 
   unacked_messages_[event_id] =
-      UnackedEventData{event_name, dispatch_start_time, dispatch_source};
+      UnackedEventData{event_name, dispatch_start_time, dispatch_source,
+                       lazy_background_active_on_dispatch};
   for (auto& observer : observer_list_)
     observer.OnBackgroundEventDispatched(this, event_name, event_id);
 }
@@ -389,10 +391,23 @@ void ExtensionHost::OnEventAck(
     // Only emit events that use the EventRouter::DispatchEventToProcess() event
     // routing flow since EventRouter::DispatchEventToSender() uses a different
     // flow that doesn't include dispatch start and service worker start time.
-    if (unacked_messages_[event_id].dispatch_source ==
+    const UnackedEventData& unacked_event_data = unacked_messages_[event_id];
+    if (unacked_event_data.dispatch_source ==
         EventDispatchSource::kDispatchEventToProcess) {
       base::UmaHistogramCustomMicrosecondsTimes(
           "Extensions.Events.DispatchToAckTime.ExtensionEventPage3",
+          /*sample=*/base::TimeTicks::Now() -
+              unacked_message_data.dispatch_start_time,
+          /*min=*/base::Microseconds(1), /*max=*/base::Minutes(5),
+          /*buckets=*/100);
+      const char* active_metric_name =
+          unacked_event_data.lazy_background_active_on_dispatch
+              ? "Extensions.Events.DispatchToAckTime.ExtensionEventPage3."
+                "Active"
+              : "Extensions.Events.DispatchToAckTime.ExtensionEventPage3."
+                "Inactive";
+      base::UmaHistogramCustomMicrosecondsTimes(
+          active_metric_name,
           /*sample=*/base::TimeTicks::Now() -
               unacked_message_data.dispatch_start_time,
           /*min=*/base::Microseconds(1), /*max=*/base::Minutes(5),

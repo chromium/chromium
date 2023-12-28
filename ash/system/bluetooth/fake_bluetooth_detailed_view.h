@@ -64,7 +64,7 @@ class ASH_EXPORT FakeBluetoothDetailedView : public BluetoothDetailedView,
   size_t notify_device_list_changed_call_count_ = 0;
   std::optional<bool> last_bluetooth_enabled_state_;
   std::unique_ptr<views::View> device_list_;
-  raw_ptr<BluetoothDeviceListItemView, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<BluetoothDeviceListItemView, DanglingUntriaged>
       last_clicked_device_list_item_ = nullptr;
 };
 

@@ -18,6 +18,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.mojom.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -101,12 +102,16 @@ const ::ash::mojom::GraphicsTablet kGraphicsTablet1 =
         /*name=*/"Wacom Intuos S",
         /*id=*/9,
         /*device_key=*/"fake-device-key9",
+        /*customization_restriction=*/
+        ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
         ::ash::mojom::GraphicsTabletSettings::New());
 const ::ash::mojom::GraphicsTablet kGraphicsTablet2 =
     ::ash::mojom::GraphicsTablet(
         /*name=*/"Huion H1060P",
         /*id=*/10,
         /*device_key=*/"fake-device-key10",
+        /*customization_restriction=*/
+        ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
         ::ash::mojom::GraphicsTabletSettings::New());
 
 template <bool sorted = false, typename T>
@@ -1027,6 +1032,24 @@ TEST_F(InputDeviceSettingsProviderTest, ButtonPressObserverFollowsWindowFocus) {
   provider_->OnCustomizableMouseButtonPressed(kMouse1, *expected_button);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(*expected_button, fake_observer.last_pressed_button());
+}
+
+TEST_F(InputDeviceSettingsProviderTest, HasLauncherButton) {
+  base::test::TestFuture<bool> future;
+
+  controller_->AddKeyboard(kKeyboard2.Clone());
+  controller_->AddKeyboard(kKeyboard3.Clone());
+
+  provider_->HasLauncherButton(future.GetCallback());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(future.Get<0>());
+  future.Clear();
+  controller_->AddKeyboard(kKeyboard1.Clone());
+  provider_->HasLauncherButton(future.GetCallback());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(future.Get<0>());
 }
 
 }  // namespace ash::settings

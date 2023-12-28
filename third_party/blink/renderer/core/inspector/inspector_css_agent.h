@@ -209,6 +209,7 @@ class CORE_EXPORT InspectorCSSAgent final
   protocol::Response setStyleTexts(
       std::unique_ptr<protocol::Array<protocol::CSS::StyleDeclarationEdit>>
           edits,
+      protocol::Maybe<int> node_for_property_syntax_validation,
       std::unique_ptr<protocol::Array<protocol::CSS::CSSStyle>>* styles)
       override;
   protocol::Response setMediaText(
@@ -233,10 +234,12 @@ class CORE_EXPORT InspectorCSSAgent final
       std::unique_ptr<protocol::CSS::CSSSupports>*) override;
   protocol::Response createStyleSheet(const String& frame_id,
                                       String* style_sheet_id) override;
-  protocol::Response addRule(const String& style_sheet_id,
-                             const String& rule_text,
-                             std::unique_ptr<protocol::CSS::SourceRange>,
-                             std::unique_ptr<protocol::CSS::CSSRule>*) override;
+  protocol::Response addRule(
+      const String& style_sheet_id,
+      const String& rule_text,
+      std::unique_ptr<protocol::CSS::SourceRange>,
+      protocol::Maybe<int> node_for_property_syntax_validation,
+      std::unique_ptr<protocol::CSS::CSSRule>*) override;
   protocol::Response forcePseudoState(
       int node_id,
       std::unique_ptr<protocol::Array<String>> forced_pseudo_classes) override;

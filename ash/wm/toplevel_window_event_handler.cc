@@ -150,7 +150,7 @@ class ToplevelWindowEventHandler::ScopedWindowResizer
                                   chromeos::WindowStateType type) override;
 
  private:
-  raw_ptr<ToplevelWindowEventHandler, ExperimentalAsh> handler_;
+  raw_ptr<ToplevelWindowEventHandler> handler_;
   std::unique_ptr<WindowResizer> resizer_;
 
   // Whether ScopedWindowResizer grabbed capture.

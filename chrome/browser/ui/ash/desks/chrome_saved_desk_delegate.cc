@@ -431,11 +431,10 @@ void ChromeSavedDeskDelegate::GetIconForAppId(
     return;
   }
 
-  app_service_proxy->LoadIcon(
-      app_service_proxy->AppRegistryCache().GetAppType(app_id), app_id,
-      apps::IconType::kStandard, desired_icon_size,
-      /*allow_placeholder_icon=*/false,
-      AppIconResultToImageSkia(std::move(callback)));
+  app_service_proxy->LoadIcon(app_id, apps::IconType::kStandard,
+                              desired_icon_size,
+                              /*allow_placeholder_icon=*/false,
+                              AppIconResultToImageSkia(std::move(callback)));
 }
 
 bool ChromeSavedDeskDelegate::IsAppAvailable(const std::string& app_id) const {
@@ -507,6 +506,9 @@ void ChromeSavedDeskDelegate::OnLacrosChromeInfoReturned(
   if (state->browser_app_name.has_value()) {
     app_launch_info->app_name = state->browser_app_name.value();
     app_launch_info->app_type_browser = true;
+  }
+  if (state->lacros_profile_id != 0) {
+    app_launch_info->lacros_profile_id = state->lacros_profile_id;
   }
 
   std::move(callback).Run(std::move(app_launch_info));

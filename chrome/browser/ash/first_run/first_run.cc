@@ -7,7 +7,6 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -38,6 +37,7 @@
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
+#include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -130,7 +130,7 @@ bool ShouldLaunchHelpApp(Profile* profile) {
   profile->GetPrefs()->SetBoolean(prefs::kHelpAppShouldShowGetStarted,
                                   ShouldShowGetStarted(profile, user_manager));
   profile->GetPrefs()->SetBoolean(prefs::kHelpAppTabletModeDuringOobe,
-                                  TabletMode::IsInTabletMode());
+                                  display::Screen::GetScreen()->InTabletMode());
 
   if (WizardController::default_controller())
     WizardController::default_controller()->PrepareFirstRunPrefs();
@@ -148,9 +148,9 @@ bool ShouldLaunchHelpApp(Profile* profile) {
     return true;
   }
 
-  // TabletMode does not exist in some tests.
-  if (TabletMode::Get() && TabletMode::Get()->InTabletMode())
+  if (display::Screen::GetScreen()->InTabletMode()) {
     return false;
+  }
 
   if (command_line->HasSwitch(::switches::kTestType))
     return false;

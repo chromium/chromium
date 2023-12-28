@@ -205,7 +205,7 @@
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 #include "third_party/blink/public/web/modules/media/audio/audio_output_ipc_factory.h"
-#include "third_party/blink/public/web/modules/media/webmediaplayer_util.h"
+#include "third_party/blink/public/web/modules/media/web_media_player_util.h"
 #include "third_party/blink/public/web/modules/mediastream/web_media_stream_device_observer.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_console_message.h"
@@ -1216,30 +1216,6 @@ bool ShouldNotifySubresourceResponseStarted(blink::RendererPreferences pref) {
   }
   return pref.send_subresource_notification;
 }
-
-class WebURLLoaderThrottleProviderForFrameImpl
-    : public blink::WebURLLoaderThrottleProviderForFrame {
- public:
-  explicit WebURLLoaderThrottleProviderForFrameImpl(
-      const blink::LocalFrameToken& frame_token)
-      : frame_token_(frame_token) {}
-  ~WebURLLoaderThrottleProviderForFrameImpl() override = default;
-
-  WebVector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles(
-      const WebURLRequest& request) override {
-    RenderThreadImpl* render_thread = RenderThreadImpl::current();
-    // The RenderThreadImpl or its URLLoaderThrottleProvider member may not be
-    // valid in some tests.
-    if (!render_thread || !render_thread->url_loader_throttle_provider()) {
-      return {};
-    }
-    return render_thread->url_loader_throttle_provider()->CreateThrottles(
-        frame_token_, request);
-  }
-
- private:
-  const blink::LocalFrameToken frame_token_;
-};
 
 // Initialize the WebFrameWidget with compositing. Only local root frames
 // create a widget.
@@ -2472,7 +2448,8 @@ void RenderFrameImpl::NotifyResourceResponseReceived(
     int64_t request_id,
     const url::SchemeHostPort& final_response_url,
     network::mojom::URLResponseHeadPtr response_head,
-    network::mojom::RequestDestination request_destination) {
+    network::mojom::RequestDestination request_destination,
+    bool is_ad_resource) {
   if (!blink::IsRequestDestinationFrame(request_destination)) {
     bool notify = ShouldNotifySubresourceResponseStarted(
         GetWebView()->GetRendererPreferences());
@@ -2484,7 +2461,7 @@ void RenderFrameImpl::NotifyResourceResponseReceived(
     }
   }
   DidStartResponse(final_response_url, request_id, std::move(response_head),
-                   request_destination);
+                   request_destination, is_ad_resource);
 }
 
 void RenderFrameImpl::NotifyResourceTransferSizeUpdated(
@@ -2618,6 +2595,8 @@ void RenderFrameImpl::CommitNavigation(
     const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
     blink::mojom::PolicyContainerPtr policy_container,
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
+    mojo::PendingRemote<blink::mojom::CodeCacheHost>
+        code_cache_host_for_background,
     mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache,
     mojom::CookieManagerInfoPtr cookie_manager_info,
     mojom::StorageInfoPtr storage_info,
@@ -2679,8 +2658,9 @@ void RenderFrameImpl::CommitNavigation(
       std::move(subresource_proxying_loader_factory),
       std::move(keep_alive_loader_factory),
       std::move(fetch_later_loader_factory), std::move(code_cache_host),
-      std::move(resource_cache), std::move(cookie_manager_info),
-      std::move(storage_info), std::move(document_state));
+      std::move(code_cache_host_for_background), std::move(resource_cache),
+      std::move(cookie_manager_info), std::move(storage_info),
+      std::move(document_state));
 
   // Handle a navigation that has a non-empty `data_url_as_string`, or perform
   // a "loadDataWithBaseURL" navigation, which is different from a normal data:
@@ -2739,7 +2719,7 @@ void RenderFrameImpl::CommitNavigation(
         std::move(url_loader_client_endpoints),
         GetTaskRunner(blink::TaskType::kInternalLoading),
         CreateResourceLoadInfoNotifierWrapper(), !frame_->Parent(),
-        navigation_params.get());
+        navigation_params.get(), frame_->IsAdFrame());
   }
 
   // The MHTML mime type should be same as the one we check in the browser
@@ -2802,6 +2782,8 @@ void RenderFrameImpl::CommitNavigationWithParams(
     mojo::PendingAssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
         fetch_later_loader_factory,
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
+    mojo::PendingRemote<blink::mojom::CodeCacheHost>
+        code_cache_host_for_background,
     mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache,
     mojom::CookieManagerInfoPtr cookie_manager_info,
     mojom::StorageInfoPtr storage_info,
@@ -2910,6 +2892,8 @@ void RenderFrameImpl::CommitNavigationWithParams(
   DCHECK(!pending_loader_factories_);
   pending_loader_factories_ = std::move(new_loader_factories);
   pending_code_cache_host_ = std::move(code_cache_host);
+  pending_code_cache_host_for_background_ =
+      std::move(code_cache_host_for_background);
   pending_resource_cache_ = std::move(resource_cache);
   pending_cookie_manager_info_ = std::move(cookie_manager_info);
   pending_storage_info_ = std::move(storage_info);
@@ -3819,7 +3803,9 @@ void RenderFrameImpl::DidCreateDocumentLoader(
 
   // Set the code cache host earlier to allow fetching the code cache as soon as
   // possible.
-  document_loader->SetCodeCacheHost(std::move(pending_code_cache_host_));
+  document_loader->SetCodeCacheHost(
+      std::move(pending_code_cache_host_),
+      std::move(pending_code_cache_host_for_background_));
 }
 
 void RenderFrameImpl::DidCommitNavigation(
@@ -4463,10 +4449,11 @@ void RenderFrameImpl::DidStartResponse(
     const url::SchemeHostPort& final_response_url,
     int request_id,
     network::mojom::URLResponseHeadPtr response_head,
-    network::mojom::RequestDestination request_destination) {
+    network::mojom::RequestDestination request_destination,
+    bool is_ad_resource) {
   for (auto& observer : observers_) {
     observer.DidStartResponse(final_response_url, request_id, *response_head,
-                              request_destination);
+                              request_destination, is_ad_resource);
   }
 }
 
@@ -4666,15 +4653,6 @@ void RenderFrameImpl::PostAccessibilityEvent(const ui::AXEvent& event) {
 
   render_accessibility_manager_->GetRenderAccessibilityImpl()->HandleAXEvent(
       event);
-}
-
-void RenderFrameImpl::NotifyWebAXObjectMarkedDirty(
-    const blink::WebAXObject& obj) {
-  if (!IsAccessibilityEnabled())
-    return;
-
-  render_accessibility_manager_->GetRenderAccessibilityImpl()
-      ->NotifyWebAXObjectMarkedDirty(obj);
 }
 
 void RenderFrameImpl::AXReadyCallback() {
@@ -6236,10 +6214,12 @@ RenderFrameImpl::GetURLLoaderFactory() {
   return GetLoaderFactoryBundle();
 }
 
-std::unique_ptr<blink::WebURLLoaderThrottleProviderForFrame>
-RenderFrameImpl::CreateWebURLLoaderThrottleProviderForFrame() {
-  return std::make_unique<WebURLLoaderThrottleProviderForFrameImpl>(
-      frame_->GetLocalFrameToken());
+blink::URLLoaderThrottleProvider*
+RenderFrameImpl::GetURLLoaderThrottleProvider() {
+  RenderThreadImpl* render_thread = RenderThreadImpl::current();
+  // The RenderThreadImpl may not be valid in some tests.
+  return render_thread ? render_thread->url_loader_throttle_provider()
+                       : nullptr;
 }
 
 scoped_refptr<blink::WebBackgroundResourceFetchAssets>

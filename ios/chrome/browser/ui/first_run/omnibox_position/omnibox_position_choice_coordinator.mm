@@ -4,6 +4,11 @@
 
 #import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_coordinator.h"
 
+#import "base/time/time.h"
+#import "base/timer/elapsed_timer.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -11,6 +16,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
+#import "ios/chrome/browser/ui/first_run/omnibox_position/metrics.h"
 #import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_mediator.h"
 #import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_view_controller.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_ui_handler.h"
@@ -27,7 +33,9 @@
   /// Whether the screen is being shown in the FRE.
   BOOL _firstRun;
   /// First run screen delegate.
-  __weak id<FirstRunScreenDelegate> _first_run_delegate;
+  __weak id<FirstRunScreenDelegate> _firstRunDelegate;
+  /// Time when the choice screen was shown.
+  base::ElapsedTimer _startTime;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -50,7 +58,7 @@
   if (self) {
     _baseNavigationController = navigationController;
     _firstRun = YES;
-    _first_run_delegate = delegate;
+    _firstRunDelegate = delegate;
   }
   return self;
 }
@@ -59,7 +67,8 @@
   CHECK(IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAny));
   [super start];
 
-  _mediator = [[OmniboxPositionChoiceMediator alloc] init];
+  _mediator =
+      [[OmniboxPositionChoiceMediator alloc] initWithFirstRun:_firstRun];
   _mediator.originalPrefService = self.browser->GetBrowserState()
                                       ->GetOriginalChromeBrowserState()
                                       ->GetPrefs();
@@ -76,13 +85,20 @@
     BOOL animated = self.baseNavigationController.topViewController != nil;
     [self.baseNavigationController setViewControllers:@[ _viewController ]
                                              animated:animated];
-    // TODO(crbug.com/1503638): Record metric here.
   } else {
     [self.baseViewController presentViewController:_viewController
                                           animated:YES
                                         completion:nil];
-    // TODO(crbug.com/1503638): Record metric here.
   }
+
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  tracker->NotifyEvent(feature_engagement::events::kOmniboxPositionPromoShown);
+
+  RecordScreenEvent(OmniboxPositionChoiceScreenEvent::kScreenDisplayed,
+                    _firstRun);
+  _startTime = base::ElapsedTimer();
 }
 
 - (void)stop {
@@ -95,7 +111,7 @@
   _viewController = nil;
   _mediator = nil;
   _baseNavigationController = nil;
-  _first_run_delegate = nil;
+  _firstRunDelegate = nil;
   [super stop];
 }
 
@@ -107,7 +123,11 @@
 }
 
 - (void)didTapSecondaryActionButton {
-  [_mediator discardSelectedPosition];
+  if (_firstRun) {
+    [_mediator skipSelection];
+  } else {
+    [_mediator discardSelectedPosition];
+  }
   [self dismissScreen];
 }
 
@@ -116,12 +136,13 @@
 /// Dismisses the omnibox position choice view controller.
 - (void)dismissScreen {
   if (_firstRun) {
-    [_first_run_delegate screenWillFinishPresenting];
+    [_firstRunDelegate screenWillFinishPresenting];
   } else {
     id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
     [handler dismissOmniboxPositionChoice];
   }
+  RecordTimeOpen(_startTime.Elapsed(), _firstRun);
 }
 
 @end

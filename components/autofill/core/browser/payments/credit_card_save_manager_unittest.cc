@@ -176,8 +176,8 @@ class MockVirtualCardEnrollmentManager
       InitVirtualCardEnroll,
       (const CreditCard& credit_card,
        VirtualCardEnrollmentSource virtual_card_enrollment_source,
-       absl::optional<payments::PaymentsNetworkInterface::
-                          GetDetailsForEnrollmentResponseDetails>
+       std::optional<payments::PaymentsNetworkInterface::
+                         GetDetailsForEnrollmentResponseDetails>
            get_details_for_enrollment_response_details,
        PrefService* user_prefs,
        VirtualCardEnrollmentManager::RiskAssessmentFunction
@@ -189,11 +189,6 @@ class MockVirtualCardEnrollmentManager
 
 class CreditCardSaveManagerTest : public testing::Test {
  public:
-  CreditCardSaveManagerTest() {
-    scoped_feature_list_async_parse_form_.InitWithFeatureState(
-        features::kAutofillParseAsync, true);
-  }
-
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     autofill_client_.set_test_strike_database(
@@ -358,7 +353,7 @@ class CreditCardSaveManagerTest : public testing::Test {
     auto entries = test_ukm_recorder->GetEntriesByName(
         UkmDeveloperEngagementType::kEntryName);
     EXPECT_EQ(1u, entries.size());
-    for (const auto* const entry : entries) {
+    for (const ukm::mojom::UkmEntry* const entry : entries) {
       test_ukm_recorder->ExpectEntryMetric(
           entry, UkmDeveloperEngagementType::kDeveloperEngagementName,
           1 << AutofillMetrics::FILLABLE_FORM_PARSED_WITHOUT_TYPE_HINTS);
@@ -405,7 +400,7 @@ class CreditCardSaveManagerTest : public testing::Test {
         autofill_client_.GetTestUkmRecorder();
     auto entries = test_ukm_recorder->GetEntriesByName(entry_name);
     EXPECT_EQ(expected_num_matching_entries, entries.size());
-    for (const auto* const entry : entries) {
+    for (const ukm::mojom::UkmEntry* const entry : entries) {
       test_ukm_recorder->ExpectEntryMetric(entry, metric_name,
                                            expected_metric_value);
     }
@@ -448,8 +443,6 @@ class CreditCardSaveManagerTest : public testing::Test {
     NOTREACHED();
     return 0;
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_async_parse_form_;
 };
 
 // Tests that credit card data are saved for forms on https
@@ -5213,8 +5206,8 @@ class SaveCvcTest
   base::test::ScopedFeatureList feature_list;
 };
 
-// Tests that server CVC is added to AutofillTable during credit card upload
-// save.
+// Tests that server CVC is added to PaymentsAutofillTable during credit card
+// upload save.
 TEST_P(SaveCvcTest, OnDidUploadCard_SaveServerCvc) {
   prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(),
                               IsSaveCvcPrefEnabled());
@@ -5230,8 +5223,8 @@ TEST_P(SaveCvcTest, OnDidUploadCard_SaveServerCvc) {
       upload_card_response_details;
   upload_card_response_details.instrument_id = kInstrumentId;
 
-  // Confirm CVC is added to AutofillTable only if CVC storage feature and
-  // pref were enabled.
+  // Confirm CVC is added to PaymentsAutofillTable only if CVC storage feature
+  // and pref were enabled.
   if (IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled()) {
     EXPECT_CALL(personal_data(), AddServerCvc(kInstrumentId, kCvc));
   } else {
@@ -5505,8 +5498,8 @@ INSTANTIATE_TEST_SUITE_P(
             FormDataImporter::CreditCardImportType::kDuplicateLocalServerCard),
         testing::Bool()));
 
-// Tests that server CVC is not added to AutofillTable during credit card
-// upload save if CVC was empty.
+// Tests that server CVC is not added to PaymentsAutofillTable during credit
+// card upload save if CVC was empty.
 TEST_F(CreditCardSaveManagerTest,
        OnDidUploadCard_DoNotAddServerCvcIfCvcIsEmpty) {
   // Set up the flags and prefs.
@@ -5525,7 +5518,7 @@ TEST_F(CreditCardSaveManagerTest,
       upload_card_response_details;
   upload_card_response_details.instrument_id = 12345L;
 
-  // Confirm CVC is not added to AutofillTable if CVC was empty.
+  // Confirm CVC is not added to PaymentsAutofillTable if CVC was empty.
   EXPECT_CALL(personal_data(), AddServerCvc).Times(0);
 
   credit_card_save_manager_->OnDidUploadCard(
@@ -5533,8 +5526,8 @@ TEST_F(CreditCardSaveManagerTest,
       upload_card_response_details);
 }
 
-// Tests that server CVC is not added to AutofillTable during credit card
-// upload save if instrument_id was empty.
+// Tests that server CVC is not added to PaymentsAutofillTable during credit
+// card upload save if instrument_id was empty.
 TEST_F(CreditCardSaveManagerTest,
        OnDidUploadCard_DoNotAddServerCvcIfInstrumentIdIsEmpty) {
   // Set up the flags and prefs.
@@ -5551,7 +5544,8 @@ TEST_F(CreditCardSaveManagerTest,
   payments::PaymentsNetworkInterface::UploadCardResponseDetails
       upload_card_response_details_without_instrument_id;
 
-  // Confirm CVC is not added to AutofillTable if instrument_id was empty.
+  // Confirm CVC is not added to PaymentsAutofillTable if instrument_id was
+  // empty.
   EXPECT_CALL(personal_data(), AddServerCvc).Times(0);
 
   credit_card_save_manager_->OnDidUploadCard(
@@ -5650,8 +5644,8 @@ TEST_F(
 
   CreditCard arg_credit_card;
   VirtualCardEnrollmentSource arg_virtual_card_enrollment_source;
-  absl::optional<payments::PaymentsNetworkInterface::
-                     GetDetailsForEnrollmentResponseDetails>
+  std::optional<payments::PaymentsNetworkInterface::
+                    GetDetailsForEnrollmentResponseDetails>
       arg_get_details_for_enrollment_response_details;
   EXPECT_CALL(autofill_client_, GetVirtualCardEnrollmentManager).Times(1);
   EXPECT_CALL(*virtual_card_enrollment_manager_,

@@ -102,7 +102,7 @@ TEST_F(ArcContainerClientAdapterTest,
     }
 
    private:
-    const raw_ptr<Observer, ExperimentalAsh> child_observer_;
+    const raw_ptr<Observer> child_observer_;
     std::unique_ptr<ArcClientAdapter> nested_client_adapter_;
     bool stopped_called_ = false;
   };
@@ -319,6 +319,40 @@ TEST_P(ArcContainerClientAdapterDalvikMemoryProfileTest, Profile) {
   EXPECT_EQ(test_param.expectation, request.dalvik_memory_profile());
 }
 
+struct HostUreadaheadModeTestParam {
+  // Requested profile.
+  StartParams::HostUreadaheadMode mode;
+  // Expected value passed to DBus.
+  StartArcMiniInstanceRequest_HostUreadaheadMode expectation;
+};
+
+constexpr HostUreadaheadModeTestParam kHostUreadaheadModeTestCases[] = {
+    {StartParams::HostUreadaheadMode::MODE_READAHEAD,
+     StartArcMiniInstanceRequest_HostUreadaheadMode_MODE_DEFAULT},
+    {StartParams::HostUreadaheadMode::MODE_GENERATE,
+     StartArcMiniInstanceRequest_HostUreadaheadMode_MODE_GENERATE},
+    {StartParams::HostUreadaheadMode::MODE_DISABLED,
+     StartArcMiniInstanceRequest_HostUreadaheadMode_MODE_DISABLED}};
+
+class ArcContainerClientAdapterHostUreadaheadModeTest
+    : public ArcContainerClientAdapterTest,
+      public testing::WithParamInterface<HostUreadaheadModeTestParam> {};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ArcContainerClientAdapterHostUreadaheadModeTest,
+                         ::testing::ValuesIn(kHostUreadaheadModeTestCases));
+
+TEST_P(ArcContainerClientAdapterHostUreadaheadModeTest, Mode) {
+  const auto& test_param = GetParam();
+  StartParams start_params;
+  start_params.host_ureadahead_mode = test_param.mode;
+  client_adapter()->StartMiniArc(std::move(start_params),
+                                 base::BindOnce(&OnMiniInstanceStarted));
+  const auto& request = ash::FakeSessionManagerClient::Get()
+                            ->last_start_arc_mini_container_request();
+  EXPECT_TRUE(request.has_host_ureadahead_mode());
+  EXPECT_EQ(test_param.expectation, request.host_ureadahead_mode());
+}
 }  // namespace
 
 }  // namespace arc

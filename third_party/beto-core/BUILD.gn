@@ -2,13 +2,251 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos, "beto-core is used by Nearby Share which is CrOS only")
+assert(is_chromeos, "beto-core is used by Nearby Presence which is CrOS only")
 
-import("//build/rust/cargo_crate.gni")
 import("//build/rust/rust_static_library.gni")
 import("//build/rust/rust_unit_test.gni")
 import("//build/rust/rust_unit_tests_group.gni")
 import("//testing/test.gni")
+
+test("np_cpp_tests") {
+  sources = [
+    "src/nearby/presence/np_cpp_ffi/shared/shared_test_util.cc",
+    "src/nearby/presence/np_cpp_ffi/tests/byte_buffer_tests.cc",
+    "src/nearby/presence/np_cpp_ffi/tests/credential_book_tests.cc",
+    "src/nearby/presence/np_cpp_ffi/tests/credential_slab_tests.cc",
+    "src/nearby/presence/np_cpp_ffi/tests/deserialize_result_tests.cc",
+    "src/nearby/presence/np_cpp_ffi/tests/deserialize_v0_tests.cc",
+    "src/nearby/presence/np_cpp_ffi/tests/deserialize_v1_tests.cc",
+    "src/nearby/presence/np_cpp_ffi/tests/np_cpp_test.cc",
+    "src/nearby/presence/np_cpp_ffi/tests/np_cpp_test.h",
+  ]
+  include_dirs = [
+    "src/nearby/presence/np_cpp_ffi/include",
+    "src/nearby/presence/np_c_ffi/include/cpp",
+    "src/nearby/presence/np_cpp_ffi/shared",
+  ]
+  deps = [
+    ":nearby_protocol",
+    "//base/test:run_all_unittests",
+    "//testing/gtest",
+  ]
+}
+
+executable("np_rust_sample") {
+  sources = [ "src/nearby/presence/np_cpp_ffi/sample/main.cc" ]
+  include_dirs = [
+    "src/nearby/presence/np_cpp_ffi/include",
+    "src/nearby/presence/np_c_ffi/include/cpp",
+  ]
+  deps = [ ":nearby_protocol" ]
+}
+
+source_set("nearby_protocol") {
+  sources = [ "src/nearby/presence/np_cpp_ffi/nearby_protocol.cc" ]
+  public = [
+    "src/nearby/presence/np_c_ffi/include/cpp/np_cpp_ffi_types.h",
+    "src/nearby/presence/np_cpp_ffi/include/nearby_protocol.h",
+  ]
+  include_dirs = [ "src/nearby/presence/np_c_ffi/include/cpp" ]
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
+  deps = [ ":np_c_ffi" ]
+}
+
+rust_static_library("np_c_ffi") {
+  crate_root = "src/nearby/presence/np_c_ffi/src/lib.rs"
+  sources = [
+    "src/nearby/presence/np_c_ffi/src/credentials.rs",
+    "src/nearby/presence/np_c_ffi/src/deserialize/mod.rs",
+    "src/nearby/presence/np_c_ffi/src/deserialize/v0.rs",
+    "src/nearby/presence/np_c_ffi/src/deserialize/v1.rs",
+    "src/nearby/presence/np_c_ffi/src/lib.rs",
+  ]
+  deps = [
+    ":lock_adapter",
+    ":np_ffi_core",
+  ]
+  features = [ "boringssl" ]
+  allow_unsafe = true
+}
+
+rust_static_library("np_ffi_core") {
+  crate_root = "src/nearby/presence/np_ffi_core/src/lib.rs"
+  sources = [
+    "src/nearby/presence/np_ffi_core/src/common.rs",
+    "src/nearby/presence/np_ffi_core/src/credentials.rs",
+    "src/nearby/presence/np_ffi_core/src/deserialize/mod.rs",
+    "src/nearby/presence/np_ffi_core/src/deserialize/v0.rs",
+    "src/nearby/presence/np_ffi_core/src/deserialize/v1.rs",
+    "src/nearby/presence/np_ffi_core/src/lib.rs",
+    "src/nearby/presence/np_ffi_core/src/utils.rs",
+  ]
+  deps = [
+    ":array_view",
+    ":crypto_provider",
+    ":crypto_provider_default",
+    ":handle_map",
+    ":ldt_np_adv",
+    ":lock_adapter",
+    ":np_adv",
+    ":np_hkdf",
+    "//third_party/rust/lazy_static/v1:lib",
+  ]
+  features = [ "boringssl" ]
+}
+
+rust_static_library("handle_map") {
+  build_native_rust_unit_tests = true
+  crate_root = "src/nearby/util/handle_map/src/lib.rs"
+  sources = [
+    "src/nearby/util/handle_map/src/declare_handle_map.rs",
+    "src/nearby/util/handle_map/src/guard.rs",
+    "src/nearby/util/handle_map/src/lib.rs",
+    "src/nearby/util/handle_map/src/shard.rs",
+    "src/nearby/util/handle_map/src/tests.rs",
+  ]
+  deps = [ ":lock_adapter" ]
+}
+
+rust_static_library("lock_adapter") {
+  build_native_rust_unit_tests = true
+  crate_root = "src/nearby/util/lock_adapter/src/lib.rs"
+  sources = [
+    "src/nearby/util/lock_adapter/src/lib.rs",
+    "src/nearby/util/lock_adapter/src/spin.rs",
+    "src/nearby/util/lock_adapter/src/std.rs",
+  ]
+  features = [ "std" ]
+}
+
+rust_static_library("np_adv") {
+  build_native_rust_unit_tests = true
+
+  crate_root = "src/nearby/presence/np_adv/src/lib.rs"
+  sources = [
+    "src/nearby/presence/np_adv/src/array_vec.rs",
+    "src/nearby/presence/np_adv/src/credential/book.rs",
+    "src/nearby/presence/np_adv/src/credential/mod.rs",
+    "src/nearby/presence/np_adv/src/credential/source.rs",
+    "src/nearby/presence/np_adv/src/credential/tests.rs",
+    "src/nearby/presence/np_adv/src/credential/v0.rs",
+    "src/nearby/presence/np_adv/src/credential/v1.rs",
+    "src/nearby/presence/np_adv/src/de_type.rs",
+    "src/nearby/presence/np_adv/src/deser_v0_tests.rs",
+    "src/nearby/presence/np_adv/src/deser_v1_tests.rs",
+    "src/nearby/presence/np_adv/src/deserialization_arena.rs",
+    "src/nearby/presence/np_adv/src/extended/data_elements/mod.rs",
+    "src/nearby/presence/np_adv/src/extended/data_elements/tests.rs",
+    "src/nearby/presence/np_adv/src/extended/de_type.rs",
+    "src/nearby/presence/np_adv/src/extended/deserialize/encrypted_section/mic_decrypt_tests.rs",
+    "src/nearby/presence/np_adv/src/extended/deserialize/encrypted_section/mod.rs",
+    "src/nearby/presence/np_adv/src/extended/deserialize/encrypted_section/signature_decrypt_tests.rs",
+    "src/nearby/presence/np_adv/src/extended/deserialize/mod.rs",
+    "src/nearby/presence/np_adv/src/extended/deserialize/parse_tests.rs",
+    "src/nearby/presence/np_adv/src/extended/deserialize/section_tests.rs",
+    "src/nearby/presence/np_adv/src/extended/deserialize/test_stubs.rs",
+    "src/nearby/presence/np_adv/src/extended/mod.rs",
+    "src/nearby/presence/np_adv/src/extended/section_signature_payload.rs",
+    "src/nearby/presence/np_adv/src/extended/serialize/adv_tests.rs",
+    "src/nearby/presence/np_adv/src/extended/serialize/de_header_tests.rs",
+    "src/nearby/presence/np_adv/src/extended/serialize/mod.rs",
+    "src/nearby/presence/np_adv/src/extended/serialize/section_tests.rs",
+    "src/nearby/presence/np_adv/src/extended/serialize/test_vectors.rs",
+    "src/nearby/presence/np_adv/src/filter/mod.rs",
+    "src/nearby/presence/np_adv/src/filter/tests/actions_filter_tests.rs",
+    "src/nearby/presence/np_adv/src/filter/tests/data_elements_filter_tests.rs",
+    "src/nearby/presence/np_adv/src/filter/tests/mod.rs",
+    "src/nearby/presence/np_adv/src/filter/tests/v0_filter_tests.rs",
+    "src/nearby/presence/np_adv/src/header_parse_tests.rs",
+    "src/nearby/presence/np_adv/src/legacy/actions/macros.rs",
+    "src/nearby/presence/np_adv/src/legacy/actions/mod.rs",
+    "src/nearby/presence/np_adv/src/legacy/actions/tests.rs",
+    "src/nearby/presence/np_adv/src/legacy/data_elements.rs",
+    "src/nearby/presence/np_adv/src/legacy/de_type/mod.rs",
+    "src/nearby/presence/np_adv/src/legacy/de_type/tests.rs",
+    "src/nearby/presence/np_adv/src/legacy/deserialize/mod.rs",
+    "src/nearby/presence/np_adv/src/legacy/deserialize/tests.rs",
+    "src/nearby/presence/np_adv/src/legacy/mod.rs",
+    "src/nearby/presence/np_adv/src/legacy/random_data_elements.rs",
+    "src/nearby/presence/np_adv/src/legacy/serialize/mod.rs",
+    "src/nearby/presence/np_adv/src/legacy/serialize/tests.rs",
+    "src/nearby/presence/np_adv/src/lib.rs",
+    "src/nearby/presence/np_adv/src/shared_data.rs",
+  ]
+  deps = [
+    ":array_view",
+    ":crypto_provider",
+    ":ldt",
+    ":ldt_np_adv",
+    ":np_ed25519",
+    ":np_hkdf",
+    ":sink",
+    ":xts_aes",
+    "//third_party/rust/lazy_static/v1:lib",
+    "//third_party/rust/nom/v7:lib",
+    "//third_party/rust/strum/v0_25:lib",
+    "//third_party/rust/strum_macros/v0_25:lib",
+    "//third_party/rust/tinyvec/v1:lib",
+  ]
+  test_deps = [
+    ":crypto_provider_default",
+    ":rand_ext",
+    ":test_helper",
+    "//third_party/rust/anyhow/v1:lib",
+    "//third_party/rust/hex/v0_4:lib",
+    "//third_party/rust/rand/v0_8:lib",
+    "//third_party/rust/serde_json/v1:lib",
+  ]
+  features = [ "alloc" ]
+}
+
+rust_unit_test("np_adv_examples_v0") {
+  crate_root = "src/nearby/presence/np_adv/tests/examples_v0.rs"
+  sources = [ "src/nearby/presence/np_adv/tests/examples_v0.rs" ]
+  deps = [
+    ":crypto_provider",
+    ":crypto_provider_default",
+    ":ldt_np_adv",
+    ":np_adv",
+    ":np_hkdf",
+    "//third_party/rust/serde/v1:lib",
+    "//third_party/rust/serde_json/v1:lib",
+  ]
+}
+
+rust_unit_test("np_adv_examples_v1") {
+  crate_root = "src/nearby/presence/np_adv/tests/examples_v1.rs"
+  sources = [ "src/nearby/presence/np_adv/tests/examples_v1.rs" ]
+  deps = [
+    ":crypto_provider",
+    ":crypto_provider_default",
+    ":ldt_np_adv",
+    ":np_adv",
+    ":np_ed25519",
+    ":np_hkdf",
+    "//third_party/rust/serde/v1:lib",
+    "//third_party/rust/serde_json/v1:lib",
+  ]
+}
+
+rust_static_library("np_ed25519") {
+  crate_root = "src/nearby/presence/np_ed25519/src/lib.rs"
+  sources = [ "src/nearby/presence/np_ed25519/src/lib.rs" ]
+  deps = [
+    ":array_view",
+    ":crypto_provider",
+    ":sink",
+    "//third_party/rust/tinyvec/v1:lib",
+  ]
+  features = [ "std" ]
+}
+
+rust_static_library("sink") {
+  crate_root = "src/nearby/presence/sink/src/lib.rs"
+  sources = [ "src/nearby/presence/sink/src/lib.rs" ]
+  deps = [ "//third_party/rust/tinyvec/v1:lib" ]
+  features = [ "std" ]
+}
 
 executable("ldt_c_sample") {
   sources = [ "src/nearby/presence/ldt_np_c_sample/main.c" ]
@@ -48,32 +286,37 @@ rust_static_library("ldt_np_adv_ffi") {
   ]
 }
 
-cargo_crate("crypto_provider_boringssl") {
+rust_static_library("crypto_provider_boringssl") {
   build_native_rust_unit_tests = true
-  crate_type = "rlib"
+
   crate_root = "src/nearby/crypto/crypto_provider_boringssl/src/lib.rs"
   sources = [
-    "src/nearby/crypto/crypto_provider_boringssl/src/aes.rs",
+    "src/nearby/crypto/crypto_provider_boringssl/src/aead/aes_gcm.rs",
+    "src/nearby/crypto/crypto_provider_boringssl/src/aead/aes_gcm_siv.rs",
+    "src/nearby/crypto/crypto_provider_boringssl/src/aead/mod.rs",
+    "src/nearby/crypto/crypto_provider_boringssl/src/aes/cbc.rs",
+    "src/nearby/crypto/crypto_provider_boringssl/src/aes/ctr.rs",
+    "src/nearby/crypto/crypto_provider_boringssl/src/aes/mod.rs",
     "src/nearby/crypto/crypto_provider_boringssl/src/ed25519.rs",
     "src/nearby/crypto/crypto_provider_boringssl/src/hkdf.rs",
     "src/nearby/crypto/crypto_provider_boringssl/src/hmac.rs",
     "src/nearby/crypto/crypto_provider_boringssl/src/lib.rs",
+    "src/nearby/crypto/crypto_provider_boringssl/src/p256.rs",
+    "src/nearby/crypto/crypto_provider_boringssl/src/sha2.rs",
+    "src/nearby/crypto/crypto_provider_boringssl/src/x25519.rs",
   ]
   deps = [
     ":crypto_provider",
     ":crypto_provider_stubs",
     "//third_party/boringssl:bssl_crypto",
   ]
-  dev_deps = [ ":crypto_provider_test" ]
+  test_deps = [ ":crypto_provider_test" ]
 }
 
-cargo_crate("crypto_provider") {
-  build_native_rust_unit_tests = false
-  crate_type = "rlib"
+rust_static_library("crypto_provider") {
   crate_root = "src/nearby/crypto/crypto_provider/src/lib.rs"
   sources = [
-    "src/nearby/crypto/crypto_provider/src/aead/aes_gcm_siv.rs",
-    "src/nearby/crypto/crypto_provider/src/aead/mod.rs",
+    "src/nearby/crypto/crypto_provider/src/aead.rs",
     "src/nearby/crypto/crypto_provider/src/aes/cbc.rs",
     "src/nearby/crypto/crypto_provider/src/aes/ctr.rs",
     "src/nearby/crypto/crypto_provider/src/aes/mod.rs",
@@ -91,39 +334,33 @@ cargo_crate("crypto_provider") {
     "std",
     "gcm_siv",
   ]
+  deps = [ "//third_party/rust/tinyvec/v1:lib" ]
 }
 
-cargo_crate("crypto_provider_test") {
-  build_native_rust_unit_tests = false
+rust_static_library("crypto_provider_test") {
   testonly = true
-  crate_type = "rlib"
   crate_root = "src/nearby/crypto/crypto_provider_test/src/lib.rs"
   sources = [ "src/nearby/crypto/crypto_provider_test/src/lib.rs" ]
   deps = [
     ":crypto_provider",
     ":rand_ext",
     ":test_helper",
-    "//third_party/rust/hex/v0_4:test_support",
-    "//third_party/rust/hex_literal/v0_4:test_support",
-    "//third_party/rust/rand/v0_8:test_support",
-    "//third_party/rust/rstest/v0_17:test_support",
-    "//third_party/rust/rstest_reuse/v0_5:test_support",
-    "//third_party/rust/wycheproof/v0_4:test_support",
+    "//third_party/rust/hex/v0_4:lib",
+    "//third_party/rust/hex_literal/v0_4:lib",
+    "//third_party/rust/rand/v0_8:lib",
+    "//third_party/rust/rstest/v0_17:lib",
+    "//third_party/rust/rstest_reuse/v0_5:lib",
+    "//third_party/rust/wycheproof/v0_4:lib",
   ]
 }
 
-cargo_crate("crypto_provider_stubs") {
-  build_native_rust_unit_tests = false
-  crate_type = "rlib"
+rust_static_library("crypto_provider_stubs") {
   crate_root = "src/nearby/crypto/crypto_provider_stubs/src/lib.rs"
   sources = [ "src/nearby/crypto/crypto_provider_stubs/src/lib.rs" ]
   deps = [ ":crypto_provider" ]
 }
 
-cargo_crate("crypto_provider_default") {
-  testonly = true
-  build_native_rust_unit_tests = false
-  crate_type = "rlib"
+rust_static_library("crypto_provider_default") {
   crate_root = "src/nearby/crypto/crypto_provider_default/src/lib.rs"
   sources = [ "src/nearby/crypto/crypto_provider_default/src/lib.rs" ]
   edition = "2021"
@@ -135,8 +372,7 @@ cargo_crate("crypto_provider_default") {
   features = [ "boringssl" ]
 }
 
-cargo_crate("ldt_np_adv") {
-  crate_type = "rlib"
+rust_static_library("ldt_np_adv") {
   build_native_rust_unit_tests = true
   crate_root = "src/nearby/presence/ldt_np_adv/src/lib.rs"
   sources = [ "src/nearby/presence/ldt_np_adv/src/lib.rs" ]
@@ -148,20 +384,18 @@ cargo_crate("ldt_np_adv") {
     ":np_hkdf",
     ":xts_aes",
   ]
-  dev_deps = [
+  test_deps = [
     ":crypto_provider_default",
     ":rand_ext",
     ":test_helper",
-    "//third_party/rust/anyhow/v1:test_support",
-    "//third_party/rust/hex/v0_4:test_support",
-    "//third_party/rust/rand/v0_8:test_support",
-    "//third_party/rust/serde_json/v1:test_support",
+    "//third_party/rust/anyhow/v1:lib",
+    "//third_party/rust/hex/v0_4:lib",
+    "//third_party/rust/rand/v0_8:lib",
+    "//third_party/rust/serde_json/v1:lib",
   ]
 }
 
-cargo_crate("ldt") {
-  crate_type = "rlib"
-  build_native_rust_unit_tests = false
+rust_static_library("ldt") {
   crate_root = "src/nearby/presence/ldt/src/lib.rs"
   sources = [ "src/nearby/presence/ldt/src/lib.rs" ]
   deps = [
@@ -202,7 +436,7 @@ rust_unit_test("ldt_roundtrip_tests") {
     ":ldt_tbc",
     ":rand_ext",
     ":xts_aes",
-    "//third_party/rust/rand/v0_8:test_support",
+    "//third_party/rust/rand/v0_8:lib",
   ]
 }
 
@@ -216,37 +450,30 @@ rust_unit_test("ldt_test_vectors") {
     ":ldt_tbc",
     ":test_helper",
     ":xts_aes",
-    "//third_party/rust/anyhow/v1:test_support",
-    "//third_party/rust/rand/v0_8:test_support",
-    "//third_party/rust/serde_json/v1:test_support",
+    "//third_party/rust/anyhow/v1:lib",
+    "//third_party/rust/rand/v0_8:lib",
+    "//third_party/rust/serde_json/v1:lib",
   ]
 }
 
-cargo_crate("ldt_tbc") {
-  crate_type = "rlib"
-  build_native_rust_unit_tests = false
+rust_static_library("ldt_tbc") {
   crate_root = "src/nearby/presence/ldt_tbc/src/lib.rs"
   sources = [ "src/nearby/presence/ldt_tbc/src/lib.rs" ]
   deps = [ ":crypto_provider" ]
 }
 
-cargo_crate("array_view") {
-  crate_type = "rlib"
+rust_static_library("array_view") {
   build_native_rust_unit_tests = true
   crate_root = "src/nearby/presence/array_view/src/lib.rs"
   sources = [ "src/nearby/presence/array_view/src/lib.rs" ]
 }
 
-cargo_crate("array_ref") {
-  crate_type = "rlib"
-  build_native_rust_unit_tests = false
+rust_static_library("array_ref") {
   crate_root = "src/nearby/presence/array_ref/src/lib.rs"
   sources = [ "src/nearby/presence/array_ref/src/lib.rs" ]
 }
 
-cargo_crate("np_hkdf") {
-  crate_type = "rlib"
-  build_native_rust_unit_tests = false
+rust_static_library("np_hkdf") {
   crate_root = "src/nearby/presence/np_hkdf/src/lib.rs"
   sources = [
     "src/nearby/presence/np_hkdf/src/lib.rs",
@@ -268,15 +495,14 @@ rust_unit_test("np_hkdf_tests") {
     ":np_hkdf",
     ":rand_ext",
     ":test_helper",
-    "//third_party/rust/anyhow/v1:test_support",
-    "//third_party/rust/hex/v0_4:test_support",
-    "//third_party/rust/rand/v0_8:test_support",
-    "//third_party/rust/serde_json/v1:test_support",
+    "//third_party/rust/anyhow/v1:lib",
+    "//third_party/rust/hex/v0_4:lib",
+    "//third_party/rust/rand/v0_8:lib",
+    "//third_party/rust/serde_json/v1:lib",
   ]
 }
 
-cargo_crate("xts_aes") {
-  crate_type = "rlib"
+rust_static_library("xts_aes") {
   build_native_rust_unit_tests = true
   crate_root = "src/nearby/presence/xts_aes/src/lib.rs"
   sources = [ "src/nearby/presence/xts_aes/src/lib.rs" ]
@@ -285,9 +511,9 @@ cargo_crate("xts_aes") {
     ":crypto_provider",
     ":ldt_tbc",
   ]
-  dev_deps = [
+  test_deps = [
     ":test_helper",
-    "//third_party/rust/hex/v0_4:test_support",
+    "//third_party/rust/hex/v0_4:lib",
   ]
 }
 
@@ -300,7 +526,7 @@ rust_unit_test("xts_roundtrip_tests") {
     ":ldt_tbc",
     ":rand_ext",
     ":xts_aes",
-    "//third_party/rust/rand/v0_8:test_support",
+    "//third_party/rust/rand/v0_8:lib",
   ]
 }
 
@@ -313,39 +539,33 @@ rust_unit_test("xts_nist_test_vectors") {
     ":ldt_tbc",
     ":test_helper",
     ":xts_aes",
-    "//third_party/rust/anyhow/v1:test_support",
-    "//third_party/rust/hex/v0_4:test_support",
-    "//third_party/rust/regex/v1:test_support",
+    "//third_party/rust/anyhow/v1:lib",
+    "//third_party/rust/hex/v0_4:lib",
+    "//third_party/rust/regex/v1:lib",
   ]
 }
 
-# rust test targets
-cargo_crate("test_helper") {
+rust_static_library("test_helper") {
   testonly = true
-  build_native_rust_unit_tests = false
-  crate_type = "rlib"
   crate_root = "src/nearby/presence/test_helper/src/lib.rs"
   sources = [ "src/nearby/presence/test_helper/src/lib.rs" ]
   edition = "2021"
   rustenv = [ "WORKSPACE_DIR=" + rebase_path("src/nearby/") ]
   deps = [
-    "//third_party/rust/hex/v0_4:test_support",
-    "//third_party/rust/serde_json/v1:test_support",
+    "//third_party/rust/hex/v0_4:lib",
+    "//third_party/rust/serde_json/v1:lib",
   ]
 }
 
-# rust test targets
-cargo_crate("rand_ext") {
+rust_static_library("rand_ext") {
   testonly = true
-  build_native_rust_unit_tests = false
-  crate_type = "rlib"
   crate_root = "src/nearby/presence/rand_ext/src/lib.rs"
   sources = [ "src/nearby/presence/rand_ext/src/lib.rs" ]
   edition = "2021"
   deps = [
     ":crypto_provider",
-    "//third_party/rust/log/v0_4:test_support",
-    "//third_party/rust/rand/v0_8:test_support",
-    "//third_party/rust/rand_pcg/v0_3:test_support",
+    "//third_party/rust/log/v0_4:lib",
+    "//third_party/rust/rand/v0_8:lib",
+    "//third_party/rust/rand_pcg/v0_3:lib",
   ]
 }

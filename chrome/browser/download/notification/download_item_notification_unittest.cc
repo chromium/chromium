@@ -47,6 +47,7 @@
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/common/pref_names.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -176,6 +177,10 @@ class DownloadItemNotificationTest : public testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void InstallChromeApp(const std::string& app_id) {
+    apps::AppServiceProxy* proxy =
+        apps::AppServiceProxyFactory::GetForProfile(profile_);
+    WaitForAppServiceProxyReady(proxy);
+
     std::vector<apps::AppPtr> apps;
     apps::AppPtr app =
         std::make_unique<apps::App>(apps::AppType::kChromeApp, app_id);
@@ -183,9 +188,8 @@ class DownloadItemNotificationTest : public testing::Test {
     app->policy_ids = {app_id};
     apps.push_back(std::move(app));
 
-    apps::AppServiceProxyFactory::GetForProfile(profile_)->OnApps(
-        std::move(apps), apps::AppType::kChromeApp,
-        /*should_notify_initialized=*/false);
+    proxy->OnApps(std::move(apps), apps::AppType::kChromeApp,
+                  /*should_notify_initialized=*/false);
   }
 #endif
 

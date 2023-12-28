@@ -119,6 +119,19 @@ TEST_F(ImageServiceConsentHelperTest, ExpireOldRequests) {
   FastForwardBy(base::Seconds(10));
   ASSERT_EQ(results.size(), 3U);
   EXPECT_EQ(results[2], PageImageServiceConsentStatus::kTimedOut);
+
+  // Enqueuing another one should restart the timer and shut down sync.
+  consent_helper()->EnqueueRequest(
+      base::BindLambdaForTesting([&](PageImageServiceConsentStatus result) {
+        results.push_back(result);
+      }),
+      mojom::ClientId::Bookmarks);
+  EXPECT_EQ(results.size(), 3U) << "Callback should not be run immediately.";
+  consent_helper()->OnSyncShutdown(sync_service());
+  FastForwardBy(base::Seconds(11));
+  ASSERT_EQ(results.size(), 4U);
+  // Sync service shutdown. We do not know consent status.
+  EXPECT_EQ(results[3], PageImageServiceConsentStatus::kFailure);
 }
 
 TEST_F(ImageServiceConsentHelperTest, InitializationFulfillsAllQueuedRequests) {
@@ -164,6 +177,47 @@ TEST_F(ImageServiceConsentHelperTest, InitializationDisabledCase) {
   SetDownloadStatusAndFireNotification(
       syncer::SyncService::ModelTypeDownloadStatus::kError);
   EXPECT_THAT(results, ElementsAre(PageImageServiceConsentStatus::kFailure));
+}
+
+// In production, sometimes the callback to a request enqueues a new request.
+// This tests this case and fixes the crash in https://crbug.com/1472360.
+TEST_F(ImageServiceConsentHelperTest, CallbacksMakingNewRequests) {
+  SetDownloadStatusAndFireNotification(
+      syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);
+
+  std::vector<PageImageServiceConsentStatus> results;
+
+  // These two blocks are identical. The crash is reliably triggered when
+  // adding two of these. Probably having two pushes the vector to reallocate
+  // while iterating.
+  consent_helper()->EnqueueRequest(
+      base::BindLambdaForTesting([&](PageImageServiceConsentStatus result) {
+        results.push_back(result);
+        consent_helper()->EnqueueRequest(
+            base::BindLambdaForTesting(
+                [&](PageImageServiceConsentStatus result2) {
+                  results.push_back(result2);
+                }),
+            mojom::ClientId::Bookmarks);
+      }),
+      mojom::ClientId::Bookmarks);
+  consent_helper()->EnqueueRequest(
+      base::BindLambdaForTesting([&](PageImageServiceConsentStatus result) {
+        results.push_back(result);
+        consent_helper()->EnqueueRequest(
+            base::BindLambdaForTesting(
+                [&](PageImageServiceConsentStatus result2) {
+                  results.push_back(result2);
+                }),
+            mojom::ClientId::Bookmarks);
+      }),
+      mojom::ClientId::Bookmarks);
+
+  // New requests added during iteration live as long as the NEXT timeout.
+  FastForwardBy(base::Seconds(12));
+  EXPECT_EQ(results.size(), 2U);
+  FastForwardBy(base::Seconds(12));
+  EXPECT_EQ(results.size(), 4U);
 }
 
 class ImageServiceConsentHelperDownloadStatusKillSwitchTest

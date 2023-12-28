@@ -21,6 +21,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/geolocation/position_cache.h"
 #include "services/device/public/cpp/device_features.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -70,7 +71,7 @@ NetworkLocationProvider::NetworkLocationProvider(
   CHECK(internals_updated_closure_);
   CHECK(network_request_callback_);
   CHECK(network_response_callback_);
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
   DCHECK(geolocation_manager);
   geolocation_manager_ = geolocation_manager;
   permission_observers_ = geolocation_manager->GetObserverList();
@@ -86,7 +87,7 @@ NetworkLocationProvider::NetworkLocationProvider(
 
 NetworkLocationProvider::~NetworkLocationProvider() {
   DCHECK(thread_checker_.CalledOnValidThread());
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
   permission_observers_->RemoveObserver(this);
 #endif
   if (IsStarted())
@@ -103,12 +104,12 @@ void NetworkLocationProvider::FillDiagnostics(
       diagnostics.provider_state =
           mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy;
     }
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
     if (!is_system_permission_granted_) {
       diagnostics.provider_state = mojom::GeolocationDiagnostics::
           ProviderState::kBlockedBySystemPermission;
     }
-#endif  // BUILDFLAG(IS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
   } else {
     diagnostics.provider_state =
         mojom::GeolocationDiagnostics::ProviderState::kStopped;
@@ -140,7 +141,7 @@ void NetworkLocationProvider::OnPermissionGranted() {
   }
 }
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
 void NetworkLocationProvider::OnSystemPermissionUpdated(
     LocationSystemPermissionStatus new_status) {
   is_awaiting_initial_permission_status_ = false;
@@ -165,7 +166,7 @@ void NetworkLocationProvider::OnSystemPermissionUpdated(
 void NetworkLocationProvider::OnWifiDataUpdate() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(IsStarted());
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
   if (!is_system_permission_granted_) {
     if (!is_awaiting_initial_permission_status_) {
       location_provider_update_callback_.Run(
@@ -270,7 +271,7 @@ void NetworkLocationProvider::RequestPosition() {
                          << is_new_data_available_ << " is_wifi_data_complete_="
                          << is_wifi_data_complete_;
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
   if (!is_system_permission_granted_) {
     return;
   }

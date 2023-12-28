@@ -931,8 +931,10 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::OnCopiesDone(
     for (const auto& plane_resource : frame_resources->plane_resources) {
       if (plane_resource.gpu_memory_buffer) {
         plane_resource.gpu_memory_buffer->Unmap();
+#if BUILDFLAG(IS_MAC)
         plane_resource.gpu_memory_buffer->SetColorSpace(
             video_frame->ColorSpace());
+#endif
       }
     }
   }
@@ -1254,7 +1256,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
     unsigned texture_target = gpu_factories_->ImageTextureTarget(buffer_format);
     // Bind the texture and create or rebind the image.
     if (gpu_memory_buffer && !plane_resource.shared_image) {
-      uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2 |
+      uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
                        gpu::SHARED_IMAGE_USAGE_RASTER |
                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                        gpu::SHARED_IMAGE_USAGE_SCANOUT;

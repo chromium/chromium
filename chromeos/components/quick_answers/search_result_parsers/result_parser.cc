@@ -5,6 +5,7 @@
 #include "chromeos/components/quick_answers/search_result_parsers/result_parser.h"
 
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/search_result_parsers/definition_result_parser.h"
@@ -14,7 +15,36 @@
 namespace quick_answers {
 namespace {
 using base::Value;
+
+constexpr char kBTagBegin[] = "<b>";
+constexpr char kBTagEnd[] = "</b>";
+
 }  // namespace
+
+const Value::Dict* ResultParser::GetFirstDictElementFromList(
+    const Value::Dict& dict,
+    const std::string& path) {
+  const Value::List* entries = dict.FindListByDottedPath(path);
+
+  if (!entries) {
+    // No list found.
+    return nullptr;
+  }
+
+  if (entries->empty()) {
+    // No valid dictionary entries found.
+    return nullptr;
+  }
+  return &(entries->front().GetDict());
+}
+
+std::string ResultParser::RemoveKnownHtmlTags(const std::string& input) {
+  // Copy input string to another string so we don't modify the passed value.
+  std::string out = input;
+  base::ReplaceSubstringsAfterOffset(&out, /*start_offset=*/0, kBTagBegin, "");
+  base::ReplaceSubstringsAfterOffset(&out, /*start_offset=*/0, kBTagEnd, "");
+  return out;
+}
 
 std::unique_ptr<StructuredResult> ResultParser::ParseInStructuredResult(
     const base::Value::Dict& result) {
@@ -29,22 +59,6 @@ bool ResultParser::PopulateQuickAnswer(
 
 bool ResultParser::SupportsNewInterface() const {
   return false;
-}
-
-const Value::Dict* ResultParser::GetFirstListElement(const Value::Dict& dict,
-                                                     const std::string& path) {
-  const Value::List* entries = dict.FindListByDottedPath(path);
-
-  if (!entries) {
-    // No list found.
-    return nullptr;
-  }
-
-  if (entries->empty()) {
-    // No valid dictionary entries found.
-    return nullptr;
-  }
-  return &(*entries)[0].GetDict();
 }
 
 // static

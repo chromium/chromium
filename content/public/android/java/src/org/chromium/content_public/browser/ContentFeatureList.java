@@ -24,17 +24,14 @@ public class ContentFeatureList {
 
     public static final String AUTO_DISABLE_ACCESSIBILITY_V2 = "AutoDisableAccessibilityV2";
 
-    public static final String BACKGROUND_MEDIA_RENDERER_HAS_MODERATE_BINDING =
-            "BackgroundMediaRendererHasModerateBinding";
-
     public static final String MOUSE_AND_TRACKPAD_DROPDOWN_MENU = "MouseAndTrackpadDropdownMenu";
 
     public static final String OPTIMIZE_IMM_HIDE_CALLS = "OptimizeImmHideCalls";
 
+    public static final String ONE_TIME_PERMISSION = "OneTimePermission";
+
     public static final String PROCESS_SHARING_WITH_STRICT_SITE_INSTANCES =
             "ProcessSharingWithStrictSiteInstances";
-
-    public static final String REQUEST_DESKTOP_SITE_ADDITIONS = "RequestDesktopSiteAdditions";
 
     public static final String REQUEST_DESKTOP_SITE_WINDOW_SETTING =
             "RequestDesktopSiteWindowSetting";

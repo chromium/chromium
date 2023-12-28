@@ -78,12 +78,15 @@ void ImmersiveModeControllerChromeos::Init(BrowserView* browser_view) {
 }
 
 void ImmersiveModeControllerChromeos::SetEnabled(bool enabled) {
-  if (controller_.IsEnabled() == enabled) {
-    // TODO(crbug.com/1505996): Remove this comments when the performance check
-    // has completed.
-    LOG(WARNING) << "Sending immersive again while the state is the same: "
-                 << (enabled ? "enabled." : "disabled.");
+  // If `enabled` is same as the state that has requested previously, do not
+  // request the state change again. Note that we should compare this against
+  // the previously requested state instead of the current state since the state
+  // change happesn asynchronously on Lacros so that the current state might not
+  // yet synchronized to the latest request.
+  if (previous_request_enabled_ == enabled) {
+    return;
   }
+  previous_request_enabled_ = enabled;
 
   if (!fullscreen_observer_.IsObserving()) {
     fullscreen_observer_.Observe(browser_view_->browser()

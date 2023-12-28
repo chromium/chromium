@@ -130,7 +130,7 @@ class AutoclickRingHandler::AutoclickRingView : public views::View {
     canvas->Restore();
   }
 
-  raw_ptr<views::Widget, ExperimentalAsh> widget_;
+  raw_ptr<views::Widget> widget_;
   int radius_;
   int current_angle_ = kAutoclickRingAngleStartValue;
 };

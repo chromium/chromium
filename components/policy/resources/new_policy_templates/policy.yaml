@@ -116,10 +116,6 @@ deprecated: false
 # policy only exists on ChromeOS.
 device_only: false
 
-# Deprecated field, which should only be used for legacy policies that were
-# supported by ChromeAD. No new policy should use this.
-supported_chrome_os_management: ['google_cloud', 'active_directory']
-
 features:
   # Optional field that is `true` by default.
   # Set to False to suppress the policy in the generated

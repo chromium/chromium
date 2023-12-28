@@ -14,7 +14,7 @@ struct wl_resource;
 
 namespace wl {
 
-extern const struct wl_pointer_interface kTestTouchImpl;
+extern const struct wl_touch_interface kTestTouchImpl;
 
 class TestZcrTouchStylus;
 

@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityMan
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.util.TokenHolder;
 
 /** Subclass used to manage tab strip visibility and height presents. */
 public class TabStripTransitionCoordinator implements ComponentCallbacks {
@@ -60,13 +61,35 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
     private final View mControlContainer;
     private final View mToolbarLayout;
     private final int mTabStripHeightFromResource;
+    private final TokenHolder mDeferTransitionTokenHolder;
 
+    /**
+     * Current height of the tab strip represented by the space reserved on top of the toolbar
+     * layout. Could be inconsistent with {@link #mTabStripVisible} during the transition.
+     */
     private int mTabStripHeight;
+
     private int mTabStripTransitionThreshold;
+
+    /**
+     * The stable state whether the tab strip will be visible or not. This value will be changed at
+     * the beginning of the transition.
+     */
     private boolean mTabStripVisible;
+
+    /**
+     * Internal state used to block the transition until the TRANSITION_DELAY_MS after the last
+     * #onLayout pass.
+     */
+    private int mOnLayoutToken = TokenHolder.INVALID_TOKEN;
+
+    /** Tracks the last width seen for the mControlContainer. */
+    private int mControlContainerLayoutWidth;
+
+    private OnLayoutChangeListener mOnLayoutChangedListener;
+    private @Nullable Runnable mLayoutTransitionTask;
+
     private @Nullable BrowserControlsStateProvider.Observer mBrowserControlsObserver;
-    private @Nullable OnLayoutChangeListener mOnLayoutChangedListener;
-    private @Nullable Runnable mLastTransitionTask;
 
     /**
      * Create the coordinator managing transitions for when showing / hiding the tab strip.
@@ -92,12 +115,13 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
         mOnLayoutChangedListener =
                 (view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
                     int windowWidth = Math.abs(right - left);
-                    maybeUpdateTabStripVisibility(windowWidth);
+                    onLayoutWidthChanged(windowWidth);
                 };
         mControlContainer.addOnLayoutChangeListener(mOnLayoutChangedListener);
+        mDeferTransitionTokenHolder = new TokenHolder(this::onTokenUpdate);
 
         updateTabStripTransitionThreshold();
-        maybeUpdateTabStripVisibility(mControlContainer.getWidth());
+        onLayoutWidthChanged(mControlContainer.getWidth());
     }
 
     /** Return the current tab strip height. */
@@ -113,6 +137,19 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
     /** Remove observer for tab strip height change. */
     public void removeObserver(TabStripHeightObserver observer) {
         mTabStripHeightObservers.removeObserver(observer);
+    }
+
+    /** Request the token to defer the tab strip transition to a later time. */
+    public int requestDeferTabStripTransitionToken() {
+        return mDeferTransitionTokenHolder.acquireToken();
+    }
+
+    /**
+     * Release the token acquired from {@link #requestDeferTabStripTransitionToken()} so tab strip
+     * can transition based on its current sizes.
+     */
+    public void releaseTabStripToken(int token) {
+        mDeferTransitionTokenHolder.releaseToken(token);
     }
 
     /** Remove observers and release reference to dependencies. */
@@ -137,29 +174,58 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
     @Override
     public void onLowMemory() {}
 
+    private void onTokenUpdate() {
+        maybeUpdateTabStripVisibility(mControlContainer.getWidth());
+    }
+
     private void updateTabStripTransitionThreshold() {
         DisplayMetrics displayMetrics = mControlContainer.getResources().getDisplayMetrics();
         mTabStripTransitionThreshold =
                 ViewUtils.dpToPx(displayMetrics, getScreenWidthThresholdDp());
 
         if (sMinScreenWidthForTesting != null) {
-            maybeUpdateTabStripVisibility(displayMetrics.widthPixels);
+            onTokenUpdate();
         }
     }
 
-    private void maybeUpdateTabStripVisibility(int windowWidth) {
-        boolean showTabStrip = windowWidth >= mTabStripTransitionThreshold;
-        if (showTabStrip == mTabStripVisible) return;
+    /**
+     * Always wait for a short delay after the last #onLayout pass for the control container to make
+     * sure the UI is in a stable state.
+     *
+     * @param newWidth The current width of control container.
+     */
+    private void onLayoutWidthChanged(int newWidth) {
+        if (newWidth == mControlContainerLayoutWidth) return;
+        mControlContainerLayoutWidth = newWidth;
 
         // Kick off tab strip transition once tab strip visibility is confirmed to be
         // changed. Do not change the mTabStripVisible until the transition actually
         // started.
-        if (mLastTransitionTask != null) {
-            mHandler.removeCallbacks(mLastTransitionTask);
+        if (mLayoutTransitionTask != null) {
+            mHandler.removeCallbacks(mLayoutTransitionTask);
         }
-        mLastTransitionTask =
-                mCallbackController.makeCancelable(() -> setTabStripVisibility(showTabStrip));
-        mHandler.postDelayed(mLastTransitionTask, TRANSITION_DELAY_MS);
+        int oldToken = mOnLayoutToken;
+        mOnLayoutToken = mDeferTransitionTokenHolder.acquireToken();
+        mDeferTransitionTokenHolder.releaseToken(oldToken);
+        mLayoutTransitionTask =
+                mCallbackController.makeCancelable(
+                        () -> mDeferTransitionTokenHolder.releaseToken(mOnLayoutToken));
+        mHandler.postDelayed(mLayoutTransitionTask, TRANSITION_DELAY_MS);
+    }
+
+    private void maybeUpdateTabStripVisibility(int tabStripWidth) {
+        // Block new request for transitions as long as there's any token left. Once the token
+        // clears out, #onTokenUpdated will route into this method again.
+        if (mDeferTransitionTokenHolder.hasTokens()) return;
+
+        // Invalid width will be ignored. This can happen when the mControlContainer is created
+        // hidden after theme changes. See crbug.com/1511599.
+        if (tabStripWidth <= 0) return;
+
+        boolean showTabStrip = tabStripWidth >= mTabStripTransitionThreshold;
+        if (showTabStrip == mTabStripVisible) return;
+
+        setTabStripVisibility(showTabStrip);
     }
 
     /**
@@ -187,6 +253,19 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
             observer.onHeightTransitionRequested(newHeight);
         }
 
+        // If the browser control is performing an browser initiated animation,
+        // we should update the view margins right away. This will make sure the
+        // toolbar stays in the same place with changes in control container's Y
+        // translation.
+        //
+        // For cc initiated transition, we'll defer the view updates until the first
+        // #onControlsOffsetChanged is called. This avoid the toolbar margins gets
+        // updated too fast before the cc layer respond, in which the Android views
+        // in the browser control are still visible.
+        if (mBrowserControlsVisibilityManager.offsetOverridden()) {
+            updateTabStripHeightImpl();
+        }
+
         if (mBrowserControlsObserver != null) return;
         mBrowserControlsObserver =
                 new BrowserControlsStateProvider.Observer() {
@@ -205,23 +284,6 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
                         // Update the margin when browser control turns into invisible. This can
                         // happen before onControlsOffsetChanged.
                         updateTabStripHeightImpl();
-                    }
-
-                    @Override
-                    public void onTopControlsHeightChanged(
-                            int topControlsHeight, int topControlsMinHeight) {
-                        // If the browser control is performing an browser initiated animation,
-                        // we should update the view margins right away. This will make sure the
-                        // toolbar stays in the same place with changes in control container's Y
-                        // translation.
-                        //
-                        // For cc initiated transition, we'll defer the view updates until the first
-                        // #onControlsOffsetChanged is called. This avoid the toolbar margins gets
-                        // updated too fast before the cc layer respond, in which the Android views
-                        // in the browser control are still visible.
-                        if (mBrowserControlsVisibilityManager.offsetOverridden()) {
-                            updateTabStripHeightImpl();
-                        }
                     }
                 };
         mBrowserControlsVisibilityManager.addObserver(mBrowserControlsObserver);
@@ -247,17 +309,24 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
         View toolbarHairline = mControlContainer.findViewById(R.id.toolbar_hairline);
         updateTopMargin(toolbarHairline, topControlHeight);
 
-        // optionally, update the find toolbar.
-        View findToolbar = mControlContainer.findViewById(R.id.find_toolbar);
-        if (findToolbar != null) {
-            updateTopMargin(findToolbar, mTabStripHeight);
-        } else {
-            View findToolbarStub = mControlContainer.findViewById(R.id.find_toolbar_stub);
-            updateTopMargin(findToolbarStub, mTabStripHeight);
-        }
+        // Optionally, update the find toolbar and toolbar drop target views.
+        updateViewStubTopMargin(R.id.find_toolbar_stub, R.id.find_toolbar, mTabStripHeight);
+        updateViewStubTopMargin(
+                R.id.target_view_stub, R.id.toolbar_drag_drop_target_view, mTabStripHeight);
 
         for (var observer : mTabStripHeightObservers) {
             observer.onHeightChanged(mTabStripHeight);
+        }
+    }
+
+    private void updateViewStubTopMargin(int viewStubId, int inflatedViewId, int topMargin) {
+        View view = mControlContainer.findViewById(inflatedViewId);
+        if (view != null) {
+            // View is not yet inflated.
+            updateTopMargin(view, topMargin);
+        } else {
+            View viewStub = mControlContainer.findViewById(viewStubId);
+            updateTopMargin(viewStub, topMargin);
         }
     }
 

@@ -40,7 +40,6 @@ source_set("unified_consent_ui") {
     "//components/google/core/common",
     "//components/password_manager/core/common:features",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",

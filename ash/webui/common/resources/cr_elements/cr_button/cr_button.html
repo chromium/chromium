@@ -1,0 +1,367 @@
+<style include="cr-hidden-style">
+  :host {
+    --active-shadow-rgb: var(--google-grey-800-rgb);
+    --active-shadow-action-rgb: var(--google-blue-500-rgb);
+    --bg-action: var(--google-blue-600);
+    --border-color: var(--google-grey-300);
+    --disabled-bg-action: var(--google-grey-100);
+    --disabled-bg: white;
+    --disabled-border-color: var(--google-grey-100);
+    --disabled-text-color: var(--google-grey-600);
+    --focus-shadow-color: rgba(var(--google-blue-600-rgb), .4);
+    --hover-bg-action: rgba(var(--google-blue-600-rgb), .9);
+    --hover-bg-color: rgba(var(--google-blue-500-rgb), .04);
+    --hover-border-color: var(--google-blue-100);
+    --hover-shadow-action-rgb: var(--google-blue-500-rgb);
+    --ink-color-action: white;
+    /* Blue-ish color used either as a background or as a text color,
+     * depending on the type of button. */
+    --ink-color: var(--google-blue-600);
+    --ripple-opacity-action: .32;
+    --ripple-opacity: .1;
+    --text-color-action: white;
+    --text-color: var(--google-blue-600);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      /* Only in dark. */
+      --active-bg: black linear-gradient(rgba(255, 255, 255, .06),
+                                         rgba(255, 255, 255, .06));
+      --active-shadow-rgb: 0, 0, 0;
+      --active-shadow-action-rgb: var(--google-blue-500-rgb);
+      --bg-action: var(--google-blue-300);
+      --border-color: var(--google-grey-700);
+      --disabled-bg-action: var(--google-grey-800);
+      /* TODO(dbeam): get --disabled-bg from Namrata. */
+      --disabled-bg: transparent;
+      --disabled-border-color: var(--google-grey-800);
+      --disabled-text-color: var(--google-grey-500);
+      --focus-shadow-color: rgba(var(--google-blue-300-rgb), .5);
+      --hover-bg-action: var(--bg-action)
+          linear-gradient(rgba(0, 0, 0, .08), rgba(0, 0, 0, .08));
+      --hover-bg-color: rgba(var(--google-blue-300-rgb), .08);
+      --ink-color-action: black;
+      --ink-color: var(--google-blue-300);
+      --ripple-opacity-action: .16;
+      --ripple-opacity: .16;
+      --text-color-action: var(--google-grey-900);
+      --text-color: var(--google-blue-300);
+    }
+  }
+
+  :host {
+    --paper-ripple-opacity: var(--ripple-opacity);
+    -webkit-tap-highlight-color: transparent;
+    align-items: center;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: var(--text-color);
+    cursor: pointer;
+    display: inline-flex;
+    flex-shrink: 0;
+    font-weight: 500;
+    height: var(--cr-button-height);
+    justify-content: center;
+    min-width: 5.14em;
+    outline-width: 0;
+    overflow: hidden;
+    padding: 8px 16px;
+    position: relative;
+    user-select: none;
+  }
+
+  :host-context([chrome-refresh-2023]):host {
+    /* Default button colors. */
+    --border-color: var(--color-button-border,
+        var(--cr-fallback-color-tonal-outline));
+    --text-color: var(--color-button-foreground,
+        var(--cr-fallback-color-primary));
+    --hover-bg-color: transparent;
+    --hover-border-color: var(--border-color);
+    --active-bg: transparent;
+    --active-shadow: none;
+    --ink-color: var(--cr-active-background-color);
+    --ripple-opacity: 1;
+
+    /* Disabled default button colors. */
+    --disabled-bg: transparent;
+    --disabled-border-color: var(--color-button-border-disabled,
+        var(--cr-fallback-color-disabled-background));
+    --disabled-text-color: var(--color-button-foreground-disabled,
+        var(--cr-fallback-color-disabled-foreground));
+
+    /* Action button colors. */
+    --bg-action: var(--color-button-background-prominent,
+        var(--cr-fallback-color-primary));
+    --text-color-action: var(--color-button-foreground-prominent,
+        var(--cr-fallback-color-on-primary));
+    --hover-bg-action: var(--bg-action);
+    --active-shadow-action: none;
+    --ink-color-action: var(--cr-active-background-color);
+    --ripple-opacity-action: 1;
+
+    /* Disabled action button colors. */
+    --disabled-bg-action: var(--color-button-background-prominent-disabled,
+        var(--cr-fallback-color-disabled-background));
+
+    background: transparent;
+    border-radius: 100px;
+    isolation: isolate;
+    line-height: 20px;
+  }
+
+  :host([has-prefix-icon_]),
+  :host([has-suffix-icon_]) {
+    --iron-icon-height: 16px;
+    --iron-icon-width: 16px;
+    gap: 8px;
+    padding: 8px;
+  }
+
+  :host-context([chrome-refresh-2023]):host([has-prefix-icon_]),
+  :host-context([chrome-refresh-2023]):host([has-suffix-icon_]) {
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    --icon-block-padding-large: 16px;
+    --icon-block-padding-small: 12px;
+    padding-block-end: 8px;
+    padding-block-start: 8px;
+  }
+
+  :host-context([chrome-refresh-2023]):host([has-prefix-icon_]) {
+    padding-inline-end: var(--icon-block-padding-large);
+    padding-inline-start: var(--icon-block-padding-small);
+  }
+
+  :host-context([chrome-refresh-2023]):host([has-suffix-icon_]) {
+    padding-inline-end: var(--icon-block-padding-small);
+    padding-inline-start: var(--icon-block-padding-large);
+  }
+
+  :host-context(.focus-outline-visible):host(:focus) {
+    box-shadow: 0 0 0 2px var(--focus-shadow-color);
+  }
+
+  @media (forced-colors: active) {
+    :host-context(.focus-outline-visible):host(:focus) {
+      /* Use outline instead of box-shadow (which does not work) in Windows
+         HCM. */
+      outline: var(--cr-focus-outline-hcm);
+    }
+
+    :host-context([chrome-refresh-2023]):host {
+      /* Refresh styles either use color pipeline colors which automatically
+       * provide high-contrast colors in high-contrast mode, or use fallback
+       * vars that have high-contrast fallbacks for critically important
+       * states such as disabled state. */
+      forced-color-adjust: none;
+    }
+  }
+
+  :host-context([chrome-refresh-2023].focus-outline-visible):host(:focus) {
+    box-shadow: none;
+    outline: 2px solid var(--cr-focus-outline-color);
+    outline-offset: 2px;
+  }
+
+  :host(:active) {
+    background: var(--active-bg);
+    box-shadow: var(--active-shadow,
+        0 1px 2px 0 rgba(var(--active-shadow-rgb), .3),
+        0 3px 6px 2px rgba(var(--active-shadow-rgb), .15));
+  }
+
+  :host(:hover) {
+    background-color: var(--hover-bg-color);
+  }
+
+  @media (prefers-color-scheme: light) {
+    :host(:hover) {
+      border-color: var(--hover-border-color);
+    }
+  }
+
+  #background {
+    border-radius: inherit;
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+    z-index: 0;
+  }
+
+  :host-context([chrome-refresh-2023]):host(:hover) #background {
+    background-color: var(--hover-bg-color);
+  }
+
+  :host-context([chrome-refresh-2023].focus-outline-visible):host(:focus)
+      #background {
+    background-clip: padding-box;
+  }
+
+  :host-context([chrome-refresh-2023]):host(.action-button) #background {
+    background-color: var(--bg-action);
+  }
+
+  :host-context([chrome-refresh-2023]):host([disabled]) #background {
+    background-color: var(--disabled-bg);
+  }
+
+  :host-context([chrome-refresh-2023]):host(.action-button[disabled])
+      #background {
+    background-color: var(--disabled-bg-action);
+  }
+
+  :host-context([chrome-refresh-2023]):host(.tonal-button) #background,
+  :host-context([chrome-refresh-2023]):host(.floating-button) #background {
+    background-color: var(--color-button-background-tonal,
+        var(--cr-fallback-color-secondary-container));
+  }
+
+  :host-context([chrome-refresh-2023]):host([disabled].tonal-button)
+      #background,
+  :host-context([chrome-refresh-2023]):host([disabled].floating-button)
+      #background {
+    background-color: var(--color-button-background-tonal-disabled,
+        var(--cr-fallback-color-disabled-background));
+  }
+
+  #content {
+    display: contents;
+  }
+
+  :host-context([chrome-refresh-2023]) #content {
+    display: inline;
+    z-index: 2;
+  }
+
+  :host-context([chrome-refresh-2023]) ::slotted(*) {
+    z-index: 2;
+  }
+
+  #hoverBackground {
+    content: '';
+    display: none;
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+    z-index: 1;
+  }
+
+  :host-context([chrome-refresh-2023]):host(:hover) #hoverBackground {
+    background: var(--cr-hover-background-color);
+    display: block;
+  }
+
+  :host-context([chrome-refresh-2023]):host(.action-button:hover)
+      #hoverBackground {
+    background: var(--cr-hover-on-prominent-background-color);
+  }
+
+  :host(.action-button) {
+    --ink-color: var(--ink-color-action);
+    --paper-ripple-opacity: var(--ripple-opacity-action);
+    background-color: var(--bg-action);
+    border: none;
+    color: var(--text-color-action);
+  }
+
+  :host-context([chrome-refresh-2023]):host(.action-button) {
+    --ink-color: var(--cr-active-on-primary-background-color);
+    background-color: transparent;
+  }
+
+  :host(.action-button:active) {
+    box-shadow: var(--active-shadow-action,
+        0 1px 2px 0 rgba(var(--active-shadow-action-rgb), .3),
+        0 3px 6px 2px rgba(var(--active-shadow-action-rgb), .15));
+  }
+
+  :host(.action-button:hover) {
+    background: var(--hover-bg-action);
+  }
+
+  @media (prefers-color-scheme: light) {
+    :host(.action-button:not(:active):hover) {
+      box-shadow:
+          0 1px 2px 0 rgba(var(--hover-shadow-action-rgb), .3),
+          0 1px 3px 1px rgba(var(--hover-shadow-action-rgb), .15);
+    }
+
+    :host-context([chrome-refresh-2023]):host(
+        .action-button:not(:active):hover) {
+      box-shadow: none;
+    }
+  }
+
+  :host([disabled]) {
+    background-color: var(--disabled-bg);
+    border-color: var(--disabled-border-color);
+    color: var(--disabled-text-color);
+    cursor: auto;
+    pointer-events: none;
+  }
+
+  :host(.action-button[disabled]) {
+    background-color: var(--disabled-bg-action);
+    border-color: transparent;
+  }
+
+  /* cancel-button is meant to be used within a cr-dialog */
+  :host(.cancel-button) {
+    margin-inline-end: 8px;
+  }
+
+  :host(.action-button),
+  :host(.cancel-button) {
+    line-height: 154%;
+  }
+
+  :host-context([chrome-refresh-2023]):host(.tonal-button),
+  :host-context([chrome-refresh-2023]):host(.floating-button) {
+    border: none;
+    color: var(--color-button-foreground-tonal,
+        var(--cr-fallback-color-on-tonal-container));
+  }
+
+  :host-context([chrome-refresh-2023]):host(.tonal-button[disabled]),
+  :host-context([chrome-refresh-2023]):host(.floating-button[disabled]) {
+    border: none;
+    color: var(--disabled-text-color);
+  }
+
+  :host-context([chrome-refresh-2023]):host(.floating-button) {
+    border-radius: 8px;
+    height: 40px;
+    transition: box-shadow 80ms linear;
+  }
+
+  :host-context([chrome-refresh-2023]):host(.floating-button:hover) {
+    box-shadow: var(--cr-elevation-3);
+  }
+
+  paper-ripple {
+    color: var(--ink-color);
+    height: var(--paper-ripple-height);
+    /* Fallback to 0 to match the values in paper-ripple.html. Falls back
+     * to null without this. */
+    left: var(--paper-ripple-left, 0);
+    top: var(--paper-ripple-top, 0);
+    width: var(--paper-ripple-width);
+  }
+
+  :host-context([chrome-refresh-2023]) paper-ripple {
+    z-index: 1;
+  }
+</style>
+
+<div id="background"></div>
+<slot id="prefixIcon" name="prefix-icon"
+    on-slotchange="onPrefixIconSlotChanged_">
+</slot>
+<span id="content"><slot></slot></span>
+<slot id="suffixIcon" name="suffix-icon"
+    on-slotchange="onSuffixIconSlotChanged_">
+</slot>
+<div id="hoverBackground" part="hoverBackground"></div>

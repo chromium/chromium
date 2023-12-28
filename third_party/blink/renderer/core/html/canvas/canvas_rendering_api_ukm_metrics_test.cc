@@ -39,7 +39,7 @@ class CanvasRenderingAPIUkmMetricsTest : public PageTestBase {
     auto entries = recorder_.GetEntriesByName(
         ukm::builders::ClientRenderingAPI::kEntryName);
     EXPECT_EQ(1ul, entries.size());
-    auto* entry = entries[0];
+    auto* entry = entries[0].get();
     ukm::TestUkmRecorder::ExpectEntryMetric(
         entry, ukm::builders::ClientRenderingAPI::kCanvas_RenderingContextName,
         static_cast<int>(expected_value));

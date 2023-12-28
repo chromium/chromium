@@ -7,8 +7,7 @@
 
 #include "base/functional/callback.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 // Handles notifications related to provided the file system.
 class NotificationManagerInterface {
@@ -36,7 +35,6 @@ class NotificationManagerInterface {
   virtual void HideUnresponsiveNotification(int id) = 0;
 };
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_NOTIFICATION_MANAGER_INTERFACE_H_

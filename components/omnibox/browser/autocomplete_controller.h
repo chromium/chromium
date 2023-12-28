@@ -33,6 +33,7 @@
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/open_tab_provider.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/omnibox_proto/types.pb.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -75,6 +76,36 @@ class ZeroSuggestProvider;
 class AutocompleteController : public AutocompleteProviderListener,
                                public base::trace_event::MemoryDumpProvider {
  public:
+  // Describes an autocomplete pass.
+  enum class UpdateType {
+    // The 'null' update; used by `last_update_type_` to indicate no update has
+    // occurred for the current input.
+    kNone,
+    // An update triggered by the initial sync pass completing with all
+    // providers being done. I.e. no async pass will follow; e.g. because the
+    // user deleted text.
+    kSyncPassOnly,
+    // An update triggered by the initial sync pass completing without all
+    // providers being done. I.e., async passes will follow if not interrupted.
+    kSyncPass,
+    // An update triggered by an async pass completing without all providers
+    // being done.
+    kAsyncPass,
+    // An update triggered by an async pass completing with all providers except
+    // the doc provider being done.
+    kLastAsyncPassExceptDoc,
+    // An update triggered by the expire timer to clear transferred matches.
+    kExpirePass,
+    // An update triggered by an async pass completing with all providers being
+    // done.
+    kLastAsyncPass,
+    // An update caused by stopping autocompletion either due to user
+    // interaction or user inactivity.
+    kStop,
+    // An update triggered by the user deleting a match.
+    kMatchDeletion,
+  };
+
   typedef std::vector<scoped_refptr<AutocompleteProvider>> Providers;
 
   class Observer : public base::CheckedObserver {
@@ -98,6 +129,9 @@ class AutocompleteController : public AutocompleteProviderListener,
     virtual void OnMlScored(AutocompleteController* controller,
                             const AutocompleteResult& result) {}
   };
+
+  // Converts `UpdateType` to string.
+  static std::string UpdateTypeToDebugString(UpdateType update_type);
 
   // Given a match, returns zero or more subtypes corresponding to SuggestType
   // and SuggestSubtype enums in //third_party/omnibox_proto/types.proto.
@@ -170,10 +204,6 @@ class AutocompleteController : public AutocompleteProviderListener,
   // please see |DeleteMatch| method.
   void DeleteMatchElement(const AutocompleteMatch& match, size_t element_index);
 
-  // Removes any entries that were copied from the last result. This is used by
-  // the popup to ensure it's not showing an out-of-date query.
-  void ExpireCopiedEntries();
-
   // AutocompleteProviderListener:
   void OnProviderUpdate(bool updated_matches,
                         const AutocompleteProvider* provider) override;
@@ -217,13 +247,14 @@ class AutocompleteController : public AutocompleteProviderListener,
   // Groups `published_result_` by search vs URL.
   // See also `AutocompleteResult::GroupSuggestionsBySearchVsURL()`.
   void GroupSuggestionsBySearchVsURL(size_t begin, size_t end);
-  bool done() const { return done_; }
-  bool sync_pass_done() const { return sync_pass_done_; }
-  // TODO(manukh): Once we have a smarter `expire_timer_` that early runs when
-  //  the controller is done, `expire_timer_done()` will be unnecessary. Until
-  //  then, neither, either, or both `done()` and `expire_timer_done()` can be
-  //  true.
-  bool expire_timer_done() const { return !expire_timer_.IsRunning(); }
+  bool done() const {
+    return last_update_type_ == UpdateType::kNone ||
+           last_update_type_ == UpdateType::kSyncPassOnly ||
+           last_update_type_ == UpdateType::kLastAsyncPass ||
+           last_update_type_ == UpdateType::kStop ||
+           last_update_type_ == UpdateType::kMatchDeletion;
+  }
+  UpdateType last_update_type() const { return last_update_type_; }
   const Providers& providers() const { return providers_; }
 
   const base::TimeTicks& last_time_default_match_changed() const {
@@ -248,7 +279,6 @@ class AutocompleteController : public AutocompleteProviderListener,
       metrics::OmniboxEventProto::OmniboxPosition position);
 
  private:
-  friend class AutocompleteControllerTest;
   friend class FakeAutocompleteController;
   friend class AutocompleteProviderTest;
   friend class OmniboxSuggestionButtonRowBrowserTest;
@@ -295,6 +325,20 @@ class AutocompleteController : public AutocompleteProviderListener,
   FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
                            OpenActionSelectionLogsOmniboxEvent);
 
+  // A minimal representation of the previous `AutocompleteResult`. Used by
+  // `UpdateResult()`'s helper methods.
+  struct OldResult {
+    OldResult(UpdateType update_type,
+              AutocompleteInput input,
+              AutocompleteResult* result);
+    ~OldResult();
+
+    absl::optional<AutocompleteMatch> last_default_match;
+    std::u16string last_default_associated_keyword;
+    AutocompleteResult matches_to_transfer;
+    absl::optional<AutocompleteMatch> default_match_to_preserve;
+  };
+
   // Helpers called by the constructor. These initialize the specified providers
   // and add them `providers_`. Split into 2 methods to avoid accidentally
   // adding providers in the wrong order (async providers should be added first
@@ -302,40 +346,25 @@ class AutocompleteController : public AutocompleteProviderListener,
   void InitializeAsyncProviders(int provider_types);
   void InitializeSyncProviders(int provider_types);
 
-  // Updates |internal_result_| to reflect the current provider state and fires
-  // notifications.  If |regenerate_result| then we clear the result
-  // so when we incorporate the current provider state we end up
-  // implicitly removing all expired matches.  (Normally we allow
-  // matches from the previous result set carry over.  These stale
-  // results may outrank legitimate matches from the current result
-  // set.  Sometimes we just want the current matches; the easier way
-  // to do this is to throw everything out and reconstruct the result
-  // set from the providers' current data.)
-  // If |force_notify_default_match_changed|, we tell NotifyChanged
-  // the default match has changed even if it hasn't.  This is
-  // necessary in some cases; for instance, if the user typed a new
-  // character, the edit model needs to repaint (highlighting changed)
-  // even if the default match didn't change.
-  void UpdateResult(bool regenerate_result,
-                    bool force_notify_default_match_changed,
-                    bool score_urls);
+  // Updates `internal_result_` to reflect the current provider state and fires
+  // notifications.
+  void UpdateResult(UpdateType update_type);
 
-  // When the preserve default feature param is enabled, the default match
-  // that would have been shown before ML scoring is preserved. In this case,
-  // call `SortAndCull()` before the ML model is invoked to determine what
-  // this default match would've been. This also limits the potential
-  // suggestions to only what would've been shown in the legacy system.
-  absl::optional<AutocompleteMatch> PreprocessResultForMlScoring(
-      absl::optional<AutocompleteMatch> default_match_to_preserve);
+  // `UpdateResult()` helper. Aggregates matches from `providers_` into
+  // `internal_result_`.
+  void AggregateNewMatches();
 
-  // Calls `SortAndCull()`, then annotates the final set of suggestions (with
-  // open tab match, pedals, keyword info, etc.). Upon completion, notifies the
-  // listeners that the result and potentially the default match has changed.
-  void SortCullAndAnnotateResult(
-      const absl::optional<AutocompleteMatch>& last_default_match,
-      const std::u16string& last_default_associated_keyword,
-      bool force_notify_default_match_changed,
-      absl::optional<AutocompleteMatch> default_match_to_preserve);
+  // `UpdateResult()` helper. Gets ML scores for eligible matches in
+  // `internal_result_` and then sorts `internal_result_` accordingly.
+  void MlRerank(OldResult& old_result);
+
+  // `UpdateResult()` helper. Calls multiple other helpers (see implementation).
+  void PostProcessMatches();
+
+  // `UpdateResult()` helper. Returns whether the default match changed.
+  bool CheckWhetherDefaultMatchChanged(
+      absl::optional<AutocompleteMatch> last_default_match,
+      std::u16string last_default_associated_keyword);
 
   // Attaches actions to matches: pedals, history clusters, tab switch, etc.
   void AttachActions();
@@ -362,16 +391,19 @@ class AutocompleteController : public AutocompleteProviderListener,
   void NotifyChanged();
 
   // Invokes `NotifyChanged()` through `notify_changed_debouncer_`.
-  void DelayedNotifyChanged(bool notify_default_match);
+  void RequestNotifyChanged(bool notify_default_match, bool delayed);
 
   // Cancels any pending `NotifyChanged()` invocation through
   // `notify_changed_debouncer_`.
-  void CancelDelayedNotifyChanged();
+  void CancelNotifyChangedRequest();
 
-  // Returns true if all of the providers which should be run are done. If
-  // `ignore_document_provider` is true, ignores the state of the
-  // `TYPE_DOCUMENT` provider.
-  bool CheckIfDone(bool ignore_document_provider = false);
+  // Returns which of the providers that should run are done.
+  enum class ProviderDoneState {
+    kNotDone,
+    kAllExceptDocDone,
+    kAllDone,
+  };
+  ProviderDoneState GetProviderDoneState();
 
   // Starts |expire_timer_|.
   void StartExpireTimer();
@@ -505,20 +537,14 @@ class AutocompleteController : public AutocompleteProviderListener,
   // closing the popup) bypass the delay as well.
   AutocompleteProviderDebouncer notify_changed_debouncer_;
 
-  // Tracks if any delayed `DelayedNotifyChanged()` call since the last
+  // Tracks if any delayed `RequestNotifyChanged()` call since the last
   // `NotifyChanged()` call changed the default match. Otherwise, if there have
   // been 2 delayed calls, the 1st having changed the default, the latter not,
   // `NotifyChanged()` couldn't know of the former.
   bool notify_changed_default_match_ = false;
 
-  // True if a query is not currently running - i.e., the synchronous pass is
-  // done and all providers have provided their async updates.
-  bool done_ = true;
-
-  // True, if the synchronous pass is done. Used to avoid updating
-  // `internal_result_` and sending notifications until the the synchronous pass
-  // is done on all providers.
-  bool sync_pass_done_ = true;
+  // Represents the reason of the last `UpdateResult()` call.
+  UpdateType last_update_type_ = UpdateType::kNone;
 
   // True if this instance of AutocompleteController is owned by the CrOS
   // launcher. This is currently used to determine whether to enable the Open

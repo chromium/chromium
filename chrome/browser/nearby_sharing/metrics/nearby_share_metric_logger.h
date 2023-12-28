@@ -52,7 +52,7 @@ class NearbyShareMetricLogger : public NearbySharingService::Observer {
       share_target_upgrade_time_;
   base::flat_map<base::UnguessableToken, nearby::connections::mojom::Medium>
       share_target_medium_;
-  base::flat_map<base::UnguessableToken, uint> transfer_size_;
+  base::flat_map<base::UnguessableToken, int64_t> transfer_size_;
   base::flat_map<base::UnguessableToken, float> transfer_progress_;
 };
 

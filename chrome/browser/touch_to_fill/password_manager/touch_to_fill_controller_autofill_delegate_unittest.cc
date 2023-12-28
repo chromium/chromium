@@ -78,6 +78,7 @@ class MockPasswordManagerClient
               GetWebAuthnCredentialsDelegateForDriver,
               (password_manager::PasswordManagerDriver*),
               (override));
+  MOCK_METHOD(void, MarkSharedCredentialsAsNotified, (const GURL&), (override));
 };
 
 struct MockTouchToFillView : TouchToFillView {
@@ -703,6 +704,7 @@ TEST_F(TouchToFillControllerAutofillTest, Dismiss) {
           TouchToFillControllerAutofillDelegate::ShowHybridOption(false)),
       /*cred_man_delegate=*/nullptr, /*frame_driver=*/nullptr);
 
+  EXPECT_CALL(client(), MarkSharedCredentialsAsNotified(GURL(kExampleCom)));
   EXPECT_CALL(*last_mock_filler(), Dismiss(ToShowVirtualKeyboard(true)));
   touch_to_fill_controller().OnDismiss();
 
@@ -734,6 +736,7 @@ TEST_F(TouchToFillControllerAutofillTest, ManagePasswordsSelected) {
           TouchToFillControllerAutofillDelegate::ShowHybridOption(false)),
       /*cred_man_delegate=*/nullptr, /*frame_driver=*/nullptr);
 
+  EXPECT_CALL(client(), MarkSharedCredentialsAsNotified(GURL(kExampleCom)));
   EXPECT_CALL(*last_mock_filler(), Dismiss(ToShowVirtualKeyboard(false)));
   EXPECT_CALL(client(),
               NavigateToManagePasswordsPage(

@@ -17,9 +17,7 @@
 
 FakeProfileOAuth2TokenServiceDelegate::FakeProfileOAuth2TokenServiceDelegate()
     : ProfileOAuth2TokenServiceDelegate(/*use_backoff=*/true),
-      shared_factory_(
-          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-              &test_url_loader_factory_)) {}
+      shared_factory_(test_url_loader_factory_.GetSafeWeakWrapper()) {}
 
 FakeProfileOAuth2TokenServiceDelegate::
     ~FakeProfileOAuth2TokenServiceDelegate() = default;

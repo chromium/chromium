@@ -315,7 +315,7 @@ _BANNED_JAVASCRIPT_FUNCTIONS : Sequence [BanRule] = (
           'ash/webui/common/resources/multidevice_setup/multidevice_setup_browser_proxy.js',
           'ash/webui/common/resources/quick_unlock/lock_screen_constants.ts',
           'ash/webui/common/resources/smb_shares/smb_browser_proxy.js',
-          'ash/webui/connectivity_diagnostics/resources/connectivity_diagnostics.js',
+          'ash/webui/connectivity_diagnostics/resources/connectivity_diagnostics.ts',
           'ash/webui/diagnostics_ui/resources/diagnostics_browser_proxy.ts',
           'ash/webui/multidevice_debug/resources/logs.js',
           'ash/webui/multidevice_debug/resources/webui.js',
@@ -891,7 +891,6 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         r'chrome/browser/web_applications/test/web_app_test_utils\.cc',
         r'chrome/browser/web_applications/test/web_app_test_utils\.cc',
         r'chrome/browser/win/conflicts/module_blocklist_cache_util_unittest\.cc',
-        r'chrome/chrome_cleaner/logging/detailed_info_sampler\.cc',
         r'chromeos/ash/components/memory/userspace_swap/swap_storage_unittest\.cc',
         r'chromeos/ash/components/memory/userspace_swap/userspace_swap\.cc',
         r'components/metrics/metrics_state_manager\.cc',
@@ -1185,6 +1184,15 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       (
         'The thread support library is banned. Use base/synchronization '
         'instead.',
+      ),
+      True,
+      [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
+    ),
+    BanRule(
+      r'/\bstd::bit_cast\b',
+      (
+        'std::bit_cast is banned; use base::bit_cast instead for values and '
+        'standard C++ casting when pointers are involved.',
       ),
       True,
       [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
@@ -3226,7 +3234,6 @@ def CheckSpamLogging(input_api, output_api):
             r"^chrome/browser/ui/startup/startup_browser_creator\.cc$",
             r"^chrome/browser/browser_switcher/bho/.*",
             r"^chrome/browser/diagnostics/diagnostics_writer\.cc$",
-            r"^chrome/chrome_cleaner/.*",
             r"^chrome/chrome_elf/dll_hash/dll_hash_main\.cc$",
             r"^chrome/installer/setup/.*",
             r"^chromecast/",
@@ -4280,7 +4287,6 @@ def _CheckAndroidCrLogUsage(input_api, output_api):
         files_to_skip=cr_log_check_excluded_paths)
 
     tag_decl_errors = []
-    tag_length_errors = []
     tag_errors = []
     tag_with_dot_errors = []
     util_log_errors = []
@@ -4318,8 +4324,6 @@ def _CheckAndroidCrLogUsage(input_api, output_api):
             tag_name = match.group('name') if match else None
             if not tag_name:
                 tag_decl_errors.append(f.LocalPath())
-            elif len(tag_name) > 20:
-                tag_length_errors.append(f.LocalPath())
             elif '.' in tag_name:
                 tag_with_dot_errors.append(f.LocalPath())
 
@@ -4331,12 +4335,6 @@ def _CheckAndroidCrLogUsage(input_api, output_api):
                 '"private static final String TAG = "<package tag>".\n'
                 'They will be prepended with "cr_" automatically.\n' + REF_MSG,
                 tag_decl_errors))
-
-    if tag_length_errors:
-        results.append(
-            output_api.PresubmitError(
-                'The tag length is restricted by the system to be at most '
-                '20 characters.\n' + REF_MSG, tag_length_errors))
 
     if tag_errors:
         results.append(
@@ -5539,7 +5537,7 @@ _NON_INCLUSIVE_TERMS = (
         # ...' will not. This may require some tweaking to catch these cases
         # without triggering a lot of false positives. Leaving it naive and
         # less matchy for now.
-        r'/\b(?i)((black|white)list|master|slave)\b',  # nocheck
+        r'/(?i)\b((black|white)list|master|slave)\b',  # nocheck
         (
             'Please don\'t use blacklist, whitelist, '  # nocheck
             'or slave in your',  # nocheck
@@ -7228,7 +7226,7 @@ def CheckDanglingUntriaged(input_api, output_api):
         "https://chromium.googlesource.com/chromium/src/+/main/docs/dangling_ptr_guide.md\n" +
         "\n" +
         "To disable this warning, please add in the commit description:\n" +
-        "DanglingUntriaged-notes: <rational for new untriaged dangling " +
+        "DanglingUntriaged-notes: <rationale for new untriaged dangling " +
         "pointers>"
     )
     return [output_api.PresubmitPromptWarning(message)]

@@ -40,7 +40,7 @@ struct WaylandRemoteShellData {
   ~WaylandRemoteShellData();
 
   // Owned by WaylandServerController, which always outlives this.
-  const raw_ptr<Display, ExperimentalAsh> display;
+  const raw_ptr<Display> display;
 
   OutputResourceProvider const output_provider;
 

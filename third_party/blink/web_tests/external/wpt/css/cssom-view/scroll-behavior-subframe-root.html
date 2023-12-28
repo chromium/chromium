@@ -31,15 +31,15 @@
 </html>">
 </iframe>
 <script>
-  promise_test(async () => {
-    await waitForCompositorReady();
-  }, "Make sure the page is ready for animation.");
-
   var iframeLoadTest = async_test("iframe loaded");
   var scrollingElement, styledElement, elementToReveal;
   var elementToRevealLeft = 500;
   var elementToRevealTop = 250;
   iframeNode.addEventListener("load", iframeLoadTest.step_func_done(() => {
+    promise_test(async () => {
+      await waitForCompositorReady();
+    }, "Make sure the page is ready for animation.");
+
     scrollingElement = iframeNode.contentDocument.scrollingElement;
     styledElement = iframeNode.contentDocument.documentElement;
     elementToReveal = iframeNode.contentDocument.getElementById("elementToReveal");

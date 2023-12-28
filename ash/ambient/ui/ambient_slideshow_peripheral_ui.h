@@ -49,9 +49,9 @@ class AmbientSlideshowPeripheralUi : public views::View,
 
   std::unique_ptr<JitterCalculator> jitter_calculator_;
 
-  raw_ptr<AmbientInfoView, ExperimentalAsh> ambient_info_view_ = nullptr;
+  raw_ptr<AmbientInfoView> ambient_info_view_ = nullptr;
 
-  raw_ptr<MediaStringView, ExperimentalAsh> media_string_view_ = nullptr;
+  raw_ptr<MediaStringView> media_string_view_ = nullptr;
 };
 
 }  // namespace ash

@@ -43,8 +43,7 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 class ProvidedFileSystemInfo;
 class ProvidedFileSystemInterface;
@@ -217,7 +216,6 @@ class Service : public KeyedService,
   base::WeakPtrFactory<Service> weak_ptr_factory_{this};
 };
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_SERVICE_H_

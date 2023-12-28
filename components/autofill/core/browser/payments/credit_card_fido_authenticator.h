@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_CREDIT_CARD_FIDO_AUTHENTICATOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/gtest_prod_util.h"
@@ -20,7 +21,6 @@
 #include "components/autofill/core/browser/strike_databases/payments/fido_authentication_strike_database.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #include "device/fido/fido_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 
 namespace autofill {
@@ -98,7 +98,7 @@ class CreditCardFidoAuthenticator
       CreditCard card,
       base::WeakPtr<Requester> requester,
       base::Value::Dict request_options,
-      absl::optional<std::string> context_token = absl::nullopt);
+      std::optional<std::string> context_token = std::nullopt);
 
   // Invokes Registration flow. Sends credentials created from
   // |creation_options| along with the |card_authorization_token| to Payments in
@@ -252,7 +252,7 @@ class CreditCardFidoAuthenticator
   webauthn::InternalAuthenticator* authenticator();
 
   // Card being unmasked.
-  absl::optional<CreditCard> card_;
+  std::optional<CreditCard> card_;
 
   // The current flow in progress.
   Flow current_flow_ = NONE_FLOW;
@@ -294,7 +294,7 @@ class CreditCardFidoAuthenticator
 
   // The context token used for sharing context between different server
   // requests. Will be populated only for virtual card unmasking.
-  absl::optional<std::string> context_token_;
+  std::optional<std::string> context_token_;
 
   base::WeakPtrFactory<CreditCardFidoAuthenticator> weak_ptr_factory_{this};
 };

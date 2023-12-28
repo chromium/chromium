@@ -62,6 +62,7 @@ StyleRule* CreateDummyStyleRule() {
 }  // namespace
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_CustomPseudoElements) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules("summary::-webkit-details-marker { }");
@@ -73,6 +74,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_CustomPseudoElements) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_Id) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules("#id { }");
@@ -84,6 +86,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_Id) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_NthChild) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules("div:nth-child(2) { }");
@@ -95,6 +98,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_NthChild) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_ClassThenId) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules(".class#id { }");
@@ -108,6 +112,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_ClassThenId) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_IdThenClass) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules("#id.class { }");
@@ -119,6 +124,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_IdThenClass) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_AttrThenId) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules("[attr]#id { }");
@@ -131,6 +137,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_AttrThenId) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_TagThenAttrThenId) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules("div[attr]#id { }");
@@ -143,6 +150,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_TagThenAttrThenId) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_TagThenAttr) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules("div[attr] { }");
@@ -154,6 +162,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_TagThenAttr) {
 // It's arbitrary which of these we choose, but it needs to match
 // the behavior in IsCoveredByBucketing().
 TEST(RuleSetTest, findBestRuleSetAndAdd_ThreeClasses) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules(".a.b.c { }");
@@ -164,6 +173,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_ThreeClasses) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_AttrThenClass) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules("[attr].class { }");
@@ -173,6 +183,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_AttrThenClass) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_Host) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules(":host { }");
@@ -182,6 +193,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_Host) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_HostWithId) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules(":host(#x) { }");
@@ -191,6 +203,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_HostWithId) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_HostContext) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules(":host-context(*) { }");
@@ -200,6 +213,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_HostContext) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_HostContextWithId) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules(":host-context(#x) { }");
@@ -209,6 +223,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_HostContextWithId) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_HostAndHostContextNotInRightmost) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules(":host-context(#x) .y, :host(.a) > #b  { }");
@@ -223,6 +238,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_HostAndHostContextNotInRightmost) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_HostAndClass) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules(".foo:host { }");
@@ -232,6 +248,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_HostAndClass) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_HostContextAndClass) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules(".foo:host-context(*) { }");
@@ -241,6 +258,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_HostContextAndClass) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_Focus) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules(":focus { }");
@@ -251,6 +269,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_Focus) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_LinkVisited) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules(":link { }");
@@ -267,6 +286,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_LinkVisited) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_Cue) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules("::cue(b) { }");
@@ -277,6 +297,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_Cue) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_PlaceholderPseudo) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules("::placeholder { }");
@@ -288,6 +309,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_PlaceholderPseudo) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_PartPseudoElements) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules("::part(dummy):focus, #id::part(dummy) { }");
@@ -297,6 +319,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_PartPseudoElements) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_IsSingleArg) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules(":is(.a) { }");
@@ -307,6 +330,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_IsSingleArg) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_WhereSingleArg) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules(":where(.a) { }");
@@ -317,6 +341,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_WhereSingleArg) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_WhereSingleArgNested) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules(":where(:is(.a)) { }");
@@ -327,6 +352,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_WhereSingleArgNested) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_IsMultiArg) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules(":is(.a, .b) { }");
@@ -336,6 +362,7 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_IsMultiArg) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_WhereMultiArg) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules(":where(.a, .b) { }");
@@ -356,6 +383,7 @@ static void AddManyAttributeRules(base::test::ScopedFeatureList& feature_list,
 }
 
 TEST(RuleSetTest, LargeNumberOfAttributeRules) {
+  test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList feature_list;
   css_test_helpers::TestStyleSheet sheet;
   AddManyAttributeRules(feature_list, sheet);
@@ -387,6 +415,7 @@ TEST(RuleSetTest, LargeNumberOfAttributeRules) {
 }
 
 TEST(RuleSetTest, LargeNumberOfAttributeRulesWithEmpty) {
+  test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList feature_list;
   css_test_helpers::TestStyleSheet sheet;
   AddManyAttributeRules(feature_list, sheet);
@@ -403,6 +432,7 @@ TEST(RuleSetTest, LargeNumberOfAttributeRulesWithEmpty) {
 }
 
 TEST(RuleSetTest, LargeNumberOfAttributeRulesWithCatchAll) {
+  test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList feature_list;
   css_test_helpers::TestStyleSheet sheet;
   AddManyAttributeRules(feature_list, sheet);
@@ -421,6 +451,7 @@ TEST(RuleSetTest, LargeNumberOfAttributeRulesWithCatchAll) {
 }
 
 TEST(RuleSetTest, LargeNumberOfAttributeRulesWithCatchAll2) {
+  test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList feature_list;
   css_test_helpers::TestStyleSheet sheet;
   AddManyAttributeRules(feature_list, sheet);
@@ -479,6 +510,7 @@ wtf_size_t RuleCount(const String& selector_text) {
 }
 
 TEST(RuleSetTest, IsCoveredByBucketing) {
+  test::TaskEnvironment task_environment;
   // Base cases.
   EXPECT_THAT(CoveredByBucketing(".c"), ElementsAreArray({true}));
   EXPECT_THAT(CoveredByBucketing("#id.c"), ElementsAreArray({true, false}));
@@ -529,6 +561,7 @@ TEST(RuleSetTest, IsCoveredByBucketing) {
 }
 
 TEST(RuleSetTest, VisitedDependentRuleCount) {
+  test::TaskEnvironment task_environment;
   EXPECT_EQ(2u, RuleCount(":link"));
   EXPECT_EQ(2u, RuleCount(":visited"));
   // Not visited-dependent:
@@ -539,6 +572,7 @@ TEST(RuleSetTest, VisitedDependentRuleCount) {
 #endif  // DCHECK_IS_ON()
 
 TEST(RuleSetTest, SelectorIndexLimit) {
+  test::TaskEnvironment task_environment;
   // It's not feasible to run this test for a large number of bits. If the
   // number of bits have increased to a large number, consider removing this
   // test and making do with RuleSetTest.RuleDataSelectorIndexLimit.
@@ -567,6 +601,7 @@ TEST(RuleSetTest, SelectorIndexLimit) {
 }
 
 TEST(RuleSetTest, RuleDataPositionLimit) {
+  test::TaskEnvironment task_environment;
   StyleRule* rule = CreateDummyStyleRule();
   AddRuleFlags flags = kRuleHasNoSpecialState;
   const unsigned selector_index = 0;
@@ -583,6 +618,7 @@ TEST(RuleSetTest, RuleDataPositionLimit) {
 }
 
 TEST(RuleSetTest, RuleCountNotIncreasedByInvalidRuleData) {
+  test::TaskEnvironment task_environment;
   auto* rule_set = MakeGarbageCollected<RuleSet>();
   EXPECT_EQ(0u, rule_set->RuleCount());
 
@@ -602,6 +638,7 @@ TEST(RuleSetTest, RuleCountNotIncreasedByInvalidRuleData) {
 }
 
 TEST(RuleSetTest, NoStyleScope) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules("#b {}");
@@ -612,6 +649,7 @@ TEST(RuleSetTest, NoStyleScope) {
 }
 
 TEST(RuleSetTest, StyleScope) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules("@scope (.a) { #b {} }");
@@ -622,6 +660,7 @@ TEST(RuleSetTest, StyleScope) {
 }
 
 TEST(RuleSetTest, NestedStyleScope) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules(R"CSS(
@@ -660,6 +699,7 @@ TEST(RuleSetTest, NestedStyleScope) {
 }
 
 TEST(RuleSetTest, SingleScope) {
+  test::TaskEnvironment task_environment;
   {
     css_test_helpers::TestStyleSheet sheet;
     sheet.AddCSSRules(R"CSS(

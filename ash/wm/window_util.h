@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
 #include "ash/wm/wm_metrics.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/wm/core/window_util.h"
 
@@ -106,11 +107,11 @@ ASH_EXPORT bool ShouldExcludeForOverview(const aura::Window* window);
 // by overview and window cycler to avoid showing multiple previews for windows
 // linked by transient and creating items using transient descendants.
 ASH_EXPORT void EnsureTransientRoots(
-    std::vector<aura::Window*>* out_window_list);
+    std::vector<raw_ptr<aura::Window, VectorExperimental>>* out_window_list);
 
 // Minimizes a hides list of |windows| without any animations.
 ASH_EXPORT void MinimizeAndHideWithoutAnimation(
-    const std::vector<aura::Window*>& windows);
+    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows);
 
 // Returns the RootWindow at |point_in_screen| in virtual screen coordinates.
 // Returns nullptr if the root window does not exist at the given point.
@@ -152,6 +153,13 @@ void SendBackKeyEvent(aura::Window* root_window);
 // |window| that are visible.
 WindowTransientDescendantIteratorRange GetVisibleTransientTreeIterator(
     aura::Window* window);
+
+// Applies the `transform` to `window` and all of its transient children,
+// except those with `kExcludeFromTransientTreeTransformKey` set to true.
+// Note `transform` is the transform that is applied to `window` and needs to be
+// adjusted for the transient child windows.
+ASH_EXPORT void SetTransform(aura::Window* window,
+                             const gfx::Transform& transform);
 
 // Calculates the bounds of the |transformed_window|. Those bounds are a union
 // of all regular (normal and panel) windows in the |transformed_window|'s

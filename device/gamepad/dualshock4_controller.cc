@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <array>
 
+#include "base/containers/span.h"
 #include "base/metrics/crc32.h"
 #include "base/numerics/safe_conversions.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
@@ -121,9 +122,9 @@ uint32_t ComputeDualshock4Checksum(base::span<const uint8_t> report_data) {
   // The Bluetooth report checksum includes a constant header byte not contained
   // in the report data.
   constexpr uint8_t bt_header = 0xa2;
-  uint32_t crc = base::Crc32(0xffffffff, &bt_header, 1);
+  uint32_t crc = base::Crc32(0xffffffff, base::make_span(&bt_header, 1u));
   // Extend the checksum with the contents of the report.
-  return ~base::Crc32(crc, report_data.data(), report_data.size_bytes());
+  return ~base::Crc32(crc, report_data);
 }
 
 // Scales |value| with range [0,255] to a float within [-1.0,+1.0].

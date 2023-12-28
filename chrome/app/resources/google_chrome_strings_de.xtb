@@ -78,6 +78,7 @@
 <translation id="2258103955319320201">Wenn du auf allen deinen Geräten auf deine Chrome-Browserinhalte zugreifen möchtest, melde dich an und aktiviere die Synchronisierung</translation>
 <translation id="2290014774651636340">Google API-Schlüssel fehlen. Einige Funktionen von Google Chrome sind deaktiviert.</translation>
 <translation id="2290095356545025170">Möchtest du Google Chrome wirklich deinstallieren?</translation>
+<translation id="2298849085402457754">Wenn du Browserdaten nur von diesem Gerät, aber nicht aus deinem Google-Konto löschen möchtest, <ph name="BEGIN_LINK" />melde dich in Chrome ab<ph name="END_LINK" />.</translation>
 <translation id="2309047409763057870">Dies ist eine Zweitinstallation, daher kann Google Chrome nicht als Standardbrowser festgelegt werden.</translation>
 <translation id="2345992953227471816">Chrome hat festgestellt, dass diese Erweiterungen Malware enthalten:</translation>
 <translation id="2348335408836342058">Chrome benötigt für diese Website die Berechtigung, auf deine Kamera und dein Mikrofon zuzugreifen</translation>
@@ -198,7 +199,7 @@
 <translation id="4148957013307229264">Installation wird ausgeführt...</translation>
 <translation id="4149882025268051530">Das Installationsprogramm konnte das Archiv nicht dekomprimieren. Lade Google Chrome erneut herunter.</translation>
 <translation id="4153934450158521343">Browserdaten in Chrome werden bald gelöscht und der Browser geschlossen</translation>
-<translation id="4175922240926474352">Chrome hat diesen Download blockiert, weil die Website keine sichere Verbindung verwendet und die Datei möglicherweise manipuliert wurde</translation>
+<translation id="4175922240926474352">Chrome hat diesen Download blockiert, weil die Website keine verschlüsselte Verbindung verwendet und die Datei möglicherweise manipuliert wurde</translation>
 <translation id="4191857738314598978">{0,plural, =1{Chrome innerhalb eines Tages neu starten}other{Chrome innerhalb von # Tagen neu starten}}</translation>
 <translation id="4205939740494406371">Chrome kann deine Passwörter nicht prüfen. Versuche es in 24 Stunden noch einmal oder <ph name="BEGIN_LINK" />prüfe die Passwörter in deinem Google-Konto<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Wird abgebrochen…</translation>

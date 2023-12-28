@@ -43,11 +43,15 @@ enum class SwipeType { NONE, CHANGE_TAB, CHANGE_PAGE };
 // Swipe starting distance from edge.
 const CGFloat kSwipeEdge = 20;
 
+// The distance between touches for a swipe between tabs to begin.
+const CGFloat kPanGestureRecognizerThreshold = 25;
+
 // Distance between sections of iPad side swipe.
 const CGFloat kIpadTabSwipeDistance = 100;
 
 // Number of tabs to keep in the grey image cache.
 const NSUInteger kIpadGreySwipeTabCount = 8;
+
 }  // namespace
 
 @interface SideSwipeMediator () <CRWWebStateObserver,
@@ -194,7 +198,7 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
       [[SideSwipeGestureRecognizer alloc] initWithTarget:self
                                                   action:@selector(handlePan:)];
   [_panGestureRecognizer setMaximumNumberOfTouches:1];
-  [_panGestureRecognizer setSwipeThreshold:48];
+  [_panGestureRecognizer setSwipeThreshold:kPanGestureRecognizerThreshold];
   [_panGestureRecognizer setDelegate:self];
   [view addGestureRecognizer:_panGestureRecognizer];
 }

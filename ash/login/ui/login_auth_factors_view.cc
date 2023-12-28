@@ -11,7 +11,7 @@
 #include "ash/login/ui/lock_screen.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -248,11 +248,6 @@ LoginAuthFactorsView::LoginAuthFactorsView(
 
   arrow_nudge_animation_ =
       arrow_icon_container_->AddChildView(std::make_unique<AuthIconView>());
-  arrow_nudge_animation_->SetCircleImage(
-      kArrowButtonSizeDp / 2,
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kHairlineBorderColor));
-
   arrow_nudge_animation_->set_on_tap_or_click_callback(base::BindRepeating(
       &LoginAuthFactorsView::RelayArrowButtonPressed, base::Unretained(this)));
 
@@ -517,6 +512,10 @@ void LoginAuthFactorsView::OnThemeChanged() {
   for (const auto& factor : auth_factors_) {
     factor->OnThemeChanged();
   }
+
+  arrow_nudge_animation_->SetCircleImage(
+      kArrowButtonSizeDp / 2,
+      GetColorProvider()->GetColor(kColorAshHairlineBorderColor));
 }
 
 void LoginAuthFactorsView::FireAlert() {

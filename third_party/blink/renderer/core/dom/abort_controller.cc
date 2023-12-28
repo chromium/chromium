@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -24,9 +23,7 @@ AbortController::AbortController(AbortSignal* signal) : signal_(signal) {}
 AbortController::~AbortController() = default;
 
 void AbortController::Dispose() {
-  if (RuntimeEnabledFeatures::AbortSignalCompositionEnabled()) {
-    signal_->DetachFromController();
-  }
+  signal_->DetachFromController();
 }
 
 void AbortController::abort(ScriptState* script_state) {

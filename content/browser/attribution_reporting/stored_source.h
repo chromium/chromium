@@ -125,7 +125,13 @@ class CONTENT_EXPORT StoredSource {
 
   const std::vector<uint64_t>& dedup_keys() const { return dedup_keys_; }
 
+  std::vector<uint64_t>& dedup_keys() { return dedup_keys_; }
+
   const std::vector<uint64_t>& aggregatable_dedup_keys() const {
+    return aggregatable_dedup_keys_;
+  }
+
+  std::vector<uint64_t>& aggregatable_dedup_keys() {
     return aggregatable_dedup_keys_;
   }
 
@@ -140,14 +146,6 @@ class CONTENT_EXPORT StoredSource {
 
   attribution_reporting::EventLevelEpsilon event_level_epsilon() const {
     return event_level_epsilon_;
-  }
-
-  void SetDedupKeys(std::vector<uint64_t> dedup_keys) {
-    dedup_keys_ = std::move(dedup_keys);
-  }
-
-  void SetAggregatableDedupKeys(std::vector<uint64_t> aggregatable_dedup_keys) {
-    aggregatable_dedup_keys_ = std::move(aggregatable_dedup_keys);
   }
 
  private:

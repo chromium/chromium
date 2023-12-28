@@ -19,7 +19,7 @@ import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import {getStore} from '../../state/store.js';
 
-import {constants} from './constants.js';
+import {DEFAULT_CROSTINI_VM, PLUGIN_VM} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
 import {TAG_NAME as DlpRestrictedBannerName} from './ui/banners/dlp_restricted_banner.js';
 import {TAG_NAME as DriveBulkPinningBannerTagName} from './ui/banners/drive_bulk_pinning_banner.js';
@@ -341,22 +341,19 @@ export class BannerController extends EventTarget {
       this.registerCustomBannerFilter(SharedWithCrostiniPluginVmBanner, {
         shouldShow: () =>
             isPathSharedWithVm(
-                this.crostini_, this.currentEntry_,
-                constants.DEFAULT_CROSTINI_VM) &&
-            isPathSharedWithVm(
-                this.crostini_, this.currentEntry_, constants.PLUGIN_VM),
-        context: () =>
-            ({type: constants.DEFAULT_CROSTINI_VM + constants.PLUGIN_VM}),
+                this.crostini_, this.currentEntry_, DEFAULT_CROSTINI_VM) &&
+            isPathSharedWithVm(this.crostini_, this.currentEntry_, PLUGIN_VM),
+        context: () => ({type: DEFAULT_CROSTINI_VM + PLUGIN_VM}),
       });
       this.registerCustomBannerFilter(SharedWithCrostiniPluginVmBanner, {
         shouldShow: () => isPathSharedWithVm(
-            this.crostini_, this.currentEntry_, constants.DEFAULT_CROSTINI_VM),
-        context: () => ({type: constants.DEFAULT_CROSTINI_VM}),
+            this.crostini_, this.currentEntry_, DEFAULT_CROSTINI_VM),
+        context: () => ({type: DEFAULT_CROSTINI_VM}),
       });
       this.registerCustomBannerFilter(SharedWithCrostiniPluginVmBanner, {
-        shouldShow: () => isPathSharedWithVm(
-            this.crostini_, this.currentEntry_, constants.PLUGIN_VM),
-        context: () => ({type: constants.PLUGIN_VM}),
+        shouldShow: () =>
+            isPathSharedWithVm(this.crostini_, this.currentEntry_, PLUGIN_VM),
+        context: () => ({type: PLUGIN_VM}),
       });
 
       this.registerCustomBannerFilter(DriveBulkPinningBannerTagName, {

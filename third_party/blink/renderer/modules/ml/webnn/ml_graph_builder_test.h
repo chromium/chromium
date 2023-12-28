@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_BUILDER_TEST_H_
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
@@ -22,6 +23,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_softplus_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -38,6 +40,15 @@ class V8TestingScope;
 // The utility methods for graph builder test.
 NotShared<DOMArrayBufferView> CreateArrayBufferViewForOperand(
     const MLOperand* operand);
+
+enum class ArgMinMaxKind { kArgMin, kArgMax };
+
+MLOperand* BuildArgMinMax(
+    V8TestingScope& scope,
+    MLGraphBuilder* builder,
+    ArgMinMaxKind kind,
+    const MLOperand* input,
+    const MLArgMinMaxOptions* options = MLArgMinMaxOptions::Create());
 
 MLOperand* BuildBatchNormalization(V8TestingScope& scope,
                                    MLGraphBuilder* builder,
@@ -89,7 +100,9 @@ enum class ElementWiseBinaryKind {
   kPow,
   kEqual,
   kGreater,
-  kLesser
+  kGreaterOrEqual,
+  kLesser,
+  kLesserOrEqual,
 };
 
 MLOperand* BuildElementWiseBinary(V8TestingScope& scope,
@@ -175,6 +188,12 @@ MLOperand* BuildResample2d(
     MLGraphBuilder* builder,
     const MLOperand* input,
     const MLResample2dOptions* options = MLResample2dOptions::Create());
+
+MLOperand* BuildSoftplus(
+    V8TestingScope& scope,
+    MLGraphBuilder* builder,
+    const MLOperand* input,
+    const MLSoftplusOptions* options = MLSoftplusOptions::Create());
 
 MLOperand* BuildTranspose(
     V8TestingScope& scope,

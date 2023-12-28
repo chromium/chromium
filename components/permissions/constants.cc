@@ -61,4 +61,14 @@ const char kPermissionsPromptSurveyReleaseChannelKey[] = "ReleaseChannel";
 // from Android builds.
 
 const char kRevokedKey[] = "revoked";
+
+const base::TimeDelta kStorageAccessAPIExplicitPermissionLifetime =
+    base::Days(30);
+
+const base::TimeDelta kStorageAccessAPIImplicitPermissionLifetime =
+    base::Hours(24);
+
+const base::TimeDelta kStorageAccessAPIRelatedWebsiteSetsLifetime =
+    base::Days(30);
+
 }  // namespace permissions

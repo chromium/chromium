@@ -209,6 +209,8 @@ message ContentAnalysisResponse {
     optional Status status = 2;
 
     message CustomMessage {
+      option deprecated = true;
+
       // An admin-provided url that should lead to a page where the user can
       // learn more about the restrictions in place in their organization.
       optional string learn_more_url = 1;
@@ -230,13 +232,40 @@ message ContentAnalysisResponse {
       optional Action action = 1;
       optional string rule_name = 2;
       optional string rule_id = 3;
+
+      // This represents text segment in a custom message defined for DLP
+      // rule. For ex: “Please learn more (here)[link] and (here)[link]"
+      // is broken into 4 segments.
+      message CustomRuleMessageSegment {
+        // Required. Text to be displayed in this segment.
+        optional string text = 1;
+
+        // Optional. Link to external resource, such as a company's
+        // communication policy. This is supposed to be hyperlink on text
+        // field above.
+        optional string link = 2;
+      }
+
+      // This represents the custom rule message defined by admins to be shown
+      // to users if the rule is triggered.
+      message CustomRuleMessage {
+        // Ordered list of text segments comprised of plain text and URLs. These
+        // combined represent the custom rule message.
+        repeated CustomRuleMessageSegment message_segments = 1;
+      }
+
       // This field contains a custom message that is specific to the rules
       // triggered by this scan, if any. This messages can be shown in addition
       // to the OU-based message found in the client-side policy or at the
       // top-level of the Result message.
-      optional CustomMessage custom_message = 4;
+      optional CustomMessage custom_message = 4 [deprecated = true];
       // Matched URL Category of the URL.
       optional string url_category = 5;
+
+      // If provided, this field contains a custom message that should be
+      // displayed instead of the default one. This is set by admins in Rule
+      // definition UI. This is set by admins in Rule definition UI.
+      optional CustomRuleMessage custom_rule_message = 6;
     }
     repeated TriggeredRule triggered_rules = 3;
 
@@ -250,7 +279,8 @@ message ContentAnalysisResponse {
     // client-side policies. When the result requires a
     // warning, if this field has a value it's the one that will be displayed to
     // the user, otherwise the client-side policy's custom message will be used.
-    optional CustomMessage custom_message = 7;
+    // TODO(b/316008309): Cleanup code once new custom message rolled out.
+    optional CustomMessage custom_message = 7 [deprecated = true];
 
     enum StatusErrorMessage {
       STATUS_ERROR_MESSAGE_UNSPECIFIED = 0;

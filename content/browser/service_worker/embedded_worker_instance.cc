@@ -659,6 +659,9 @@ void EmbeddedWorkerInstance::OnWorkerVersionInstalled() {
 }
 
 void EmbeddedWorkerInstance::OnWorkerVersionDoomed() {
+  if (!context_) {
+    return;
+  }
   ServiceWorkerDevToolsManager::GetInstance()->WorkerVersionDoomed(
       process_id(), worker_devtools_agent_route_id(),
       base::WrapRefCounted(context_->wrapper()), owner_version_->version_id());
@@ -1115,6 +1118,7 @@ void EmbeddedWorkerInstance::NotifyForegroundServiceWorkerRemoved() {
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 EmbeddedWorkerInstance::MakeScriptLoaderFactoryRemote(
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle> script_bundle) {
+  CHECK(context_);
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
       script_loader_factory_remote;
 

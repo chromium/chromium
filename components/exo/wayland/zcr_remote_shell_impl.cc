@@ -8,6 +8,7 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/wm/window_resizer.h"
+#include "base/bit_cast.h"
 #include "base/command_line.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ui/base/window_pin_type.h"
@@ -1475,7 +1476,7 @@ void remote_surface_set_scale_factor(wl_client* client,
                                      uint scale_factor_as_uint) {
   static_assert(sizeof(uint32_t) == sizeof(float),
                 "Sizes much match for reinterpret cast to be meaningful");
-  float scale_factor = *reinterpret_cast<float*>(&scale_factor_as_uint);
+  float scale_factor = base::bit_cast<float>(scale_factor_as_uint);
   GetUserDataAs<ClientControlledShellSurface>(resource)->SetScaleFactor(
       scale_factor);
 }
@@ -1582,7 +1583,7 @@ void toast_surface_set_scale_factor(wl_client* client,
                                     uint scale_factor_as_uint) {
   static_assert(sizeof(uint32_t) == sizeof(float),
                 "Sizes must match for reinterpret cast to be meaningful");
-  float scale_factor = *reinterpret_cast<float*>(&scale_factor_as_uint);
+  float scale_factor = base::bit_cast<float>(scale_factor_as_uint);
   GetUserDataAs<ToastSurface>(resource)->SetScaleFactor(scale_factor);
 }
 

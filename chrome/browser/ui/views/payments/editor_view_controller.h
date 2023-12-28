@@ -49,7 +49,7 @@ struct EditorField {
     READONLY_LABEL
   };
 
-  EditorField(autofill::ServerFieldType type,
+  EditorField(autofill::FieldType type,
               std::u16string label,
               LengthHint length_hint,
               bool required,
@@ -61,7 +61,7 @@ struct EditorField {
         control_type(control_type) {}
 
   // Data type in the field.
-  autofill::ServerFieldType type;
+  autofill::FieldType type;
   // Label to be shown alongside the field.
   std::u16string label;
   // Hint about the length of this field's contents.
@@ -81,7 +81,7 @@ class EditorViewController : public PaymentRequestSheetController,
       std::unordered_map<ValidatingTextfield*, const EditorField>;
   using ComboboxMap =
       std::unordered_map<ValidatingCombobox*, const EditorField>;
-  using ErrorLabelMap = std::map<autofill::ServerFieldType, views::View*>;
+  using ErrorLabelMap = std::map<autofill::FieldType, views::View*>;
 
   // Does not take ownership of the arguments, which should outlive this object.
   // |back_navigation_type| identifies what sort of back navigation should be
@@ -100,14 +100,14 @@ class EditorViewController : public PaymentRequestSheetController,
 
   // Will display |error_message| alongside the input field represented by
   // field |type|.
-  void DisplayErrorMessageForField(autofill::ServerFieldType type,
+  void DisplayErrorMessageForField(autofill::FieldType type,
                                    const std::u16string& error_message);
 
   const ComboboxMap& comboboxes() const { return comboboxes_; }
   const TextFieldsMap& text_fields() const { return text_fields_; }
 
   // Returns the View ID that can be used to lookup the input field for |type|.
-  static int GetInputFieldViewId(autofill::ServerFieldType type);
+  static int GetInputFieldViewId(autofill::FieldType type);
 
  protected:
   // Create a header view to be inserted before all fields.
@@ -121,20 +121,19 @@ class EditorViewController : public PaymentRequestSheetController,
   // message will only be shown in certain circumstances by the
   // EditorViewController.
   virtual std::unique_ptr<views::View> CreateCustomFieldView(
-      autofill::ServerFieldType type,
+      autofill::FieldType type,
       views::View** focusable_field,
       bool* valid,
       std::u16string* error_message);
   // Create an extra view to go to the right of the field with |type|, which
   // can either be a textfield, combobox, or custom view.
   virtual std::unique_ptr<views::View> CreateExtraViewForField(
-      autofill::ServerFieldType type);
+      autofill::FieldType type);
   // Returns whether the editor is editing an existing item.
   virtual bool IsEditingExistingItem() = 0;
   // Returns the field definitions used to build the UI.
   virtual std::vector<EditorField> GetFieldDefinitions() = 0;
-  virtual std::u16string GetInitialValueForType(
-      autofill::ServerFieldType type) = 0;
+  virtual std::u16string GetInitialValueForType(autofill::FieldType type) = 0;
   // Validates the data entered and attempts to save; returns true on success.
   virtual bool ValidateModelAndSave() = 0;
 
@@ -143,7 +142,7 @@ class EditorViewController : public PaymentRequestSheetController,
   virtual std::unique_ptr<ValidationDelegate> CreateValidationDelegate(
       const EditorField& field) = 0;
   virtual std::unique_ptr<ui::ComboboxModel> GetComboboxModelForType(
-      const autofill::ServerFieldType& type) = 0;
+      const autofill::FieldType& type) = 0;
 
   // Returns true if all fields are valid.
   bool ValidateInputFields();
@@ -202,7 +201,7 @@ class EditorViewController : public PaymentRequestSheetController,
   // |size| type.
   int ComputeWidestExtraViewWidth(EditorField::LengthHint size);
 
-  void AddOrUpdateErrorMessageForField(autofill::ServerFieldType type,
+  void AddOrUpdateErrorMessageForField(autofill::FieldType type,
                                        const std::u16string& error_message);
 
   void SaveButtonPressed(const ui::Event& event);

@@ -80,14 +80,10 @@ class ReferenceLines : public views::View {
   float vertical_ticks_interval_ = 0;
 
   // Graph labels
-  raw_ptr<views::Label, ExperimentalAsh> right_top_label_ =
-      nullptr;  // not owned
-  raw_ptr<views::Label, ExperimentalAsh> right_middle_label_ =
-      nullptr;  // not owned
-  raw_ptr<views::Label, ExperimentalAsh> right_bottom_label_ =
-      nullptr;  // not owned
-  raw_ptr<views::Label, ExperimentalAsh> left_bottom_label_ =
-      nullptr;  // not owned
+  raw_ptr<views::Label> right_top_label_ = nullptr;     // not owned
+  raw_ptr<views::Label> right_middle_label_ = nullptr;  // not owned
+  raw_ptr<views::Label> right_bottom_label_ = nullptr;  // not owned
+  raw_ptr<views::Label> left_bottom_label_ = nullptr;   // not owned
 };
 
 }  // namespace hud_display

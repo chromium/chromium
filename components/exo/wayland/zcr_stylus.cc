@@ -57,8 +57,8 @@ class WaylandTouchStylusDelegate : public TouchStylusDelegate {
   }
 
  private:
-  raw_ptr<wl_resource, ExperimentalAsh> resource_;
-  raw_ptr<Touch, ExperimentalAsh> touch_;
+  raw_ptr<wl_resource> resource_;
+  raw_ptr<Touch> touch_;
 };
 
 void touch_stylus_destroy(wl_client* client, wl_resource* resource) {
@@ -123,8 +123,8 @@ class WaylandPointerStylusDelegate : public PointerStylusDelegate {
   }
 
  private:
-  raw_ptr<wl_resource, ExperimentalAsh> resource_;
-  raw_ptr<Pointer, ExperimentalAsh> pointer_;
+  raw_ptr<wl_resource> resource_;
+  raw_ptr<Pointer> pointer_;
   bool supports_force_ = false;
   bool supports_tilt_ = false;
 };

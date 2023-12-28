@@ -23,7 +23,7 @@ using FieldPrediction =
 
 // TODO(crbug.com/1466435): Consolidate the prediction matchers used in
 // different files and move them to a central location.
-Matcher<FieldPrediction> EqualsPrediction(ServerFieldType prediction) {
+Matcher<FieldPrediction> EqualsPrediction(FieldType prediction) {
   return AllOf(Property("type", &FieldPrediction::type, prediction),
                Property("source", &FieldPrediction::source,
                         FieldPrediction::SOURCE_AUTOFILL_DEFAULT));
@@ -38,18 +38,18 @@ TEST_F(AutofillTypeServerPredictionTest, PredictionFromAutofillField) {
   AutofillField field = AutofillField(test::CreateTestFormField(
       "label", "name", "value", /*type=*/FormControlType::kInputText));
   field.set_server_predictions(
-      {test::CreateFieldPrediction(ServerFieldType::EMAIL_ADDRESS),
-       test::CreateFieldPrediction(ServerFieldType::USERNAME)});
+      {test::CreateFieldPrediction(FieldType::EMAIL_ADDRESS),
+       test::CreateFieldPrediction(FieldType::USERNAME)});
   field.set_may_use_prefilled_placeholder(true);
 
   AutofillType::ServerPrediction prediction(field);
   EXPECT_THAT(prediction.server_predictions,
-              ElementsAre(EqualsPrediction(ServerFieldType::EMAIL_ADDRESS),
-                          EqualsPrediction(ServerFieldType::USERNAME)));
+              ElementsAre(EqualsPrediction(FieldType::EMAIL_ADDRESS),
+                          EqualsPrediction(FieldType::USERNAME)));
   EXPECT_TRUE(prediction.may_use_prefilled_placeholder);
 }
 
-TEST(AutofillTypeTest, ServerFieldTypes) {
+TEST(AutofillTypeTest, FieldTypes) {
   // No server data.
   AutofillType none(NO_SERVER_DATA);
   EXPECT_EQ(NO_SERVER_DATA, none.GetStorableType());
@@ -76,12 +76,12 @@ TEST(AutofillTypeTest, ServerFieldTypes) {
   EXPECT_EQ(FieldTypeGroup::kNoGroup, boundary.group());
 
   // Beyond the boundary (error) condition.
-  AutofillType beyond(static_cast<ServerFieldType>(MAX_VALID_FIELD_TYPE + 10));
+  AutofillType beyond(static_cast<FieldType>(MAX_VALID_FIELD_TYPE + 10));
   EXPECT_EQ(UNKNOWN_TYPE, beyond.GetStorableType());
   EXPECT_EQ(FieldTypeGroup::kNoGroup, beyond.group());
 
   // In-between value.  Missing from enum but within range.  Error condition.
-  AutofillType between(static_cast<ServerFieldType>(16));
+  AutofillType between(static_cast<FieldType>(16));
   EXPECT_EQ(UNKNOWN_TYPE, between.GetStorableType());
   EXPECT_EQ(FieldTypeGroup::kNoGroup, between.group());
 }
@@ -123,7 +123,7 @@ INSTANTIATE_TEST_SUITE_P(
                    base::to_underlying(HtmlFieldType::kMaxValue)));
 
 TEST_P(AutofillTypeTestForHtmlFieldTypes, GroupsOfHtmlFieldTypes) {
-  if (HtmlFieldTypeToBestCorrespondingServerFieldType(html_field_type()) ==
+  if (HtmlFieldTypeToBestCorrespondingFieldType(html_field_type()) ==
       UNKNOWN_TYPE) {
     return;
   }
@@ -132,7 +132,7 @@ TEST_P(AutofillTypeTestForHtmlFieldTypes, GroupsOfHtmlFieldTypes) {
                << "html_field_type=" << FieldTypeToStringView(html_field_type())
                << " "
                << "field_type=" << FieldTypeToStringView(t.GetStorableType()));
-  EXPECT_EQ(t.group(), GroupTypeOfServerFieldType(t.GetStorableType()));
+  EXPECT_EQ(t.group(), GroupTypeOfFieldType(t.GetStorableType()));
 }
 
 }  // namespace

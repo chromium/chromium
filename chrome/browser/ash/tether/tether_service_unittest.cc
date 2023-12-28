@@ -52,7 +52,6 @@
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
@@ -299,9 +298,10 @@ class TetherServiceTest : public testing::Test {
     TestingProfile::Builder builder;
     profile_ = builder.Build();
 
-    fake_chrome_user_manager_ = new FakeChromeUserManager();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(fake_chrome_user_manager_.get()));
+    // TestingProfile creates FakeChromeUserManager, so it could be obtained
+    // from UserManager::Get().
+    fake_chrome_user_manager_ = static_cast<ash::FakeChromeUserManager*>(
+        user_manager::UserManager::Get());
 
     chromeos::PowerManagerClient::InitializeFake();
 
@@ -530,10 +530,8 @@ class TetherServiceTest : public testing::Test {
   const content::BrowserTaskEnvironment task_environment_;
 
   NetworkHandlerTestHelper network_handler_test_helper_;
-  std::unique_ptr<TestingProfile> profile_;
   raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
       fake_chrome_user_manager_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable>
       test_pref_service_;
   std::unique_ptr<TestTetherComponentFactory> test_tether_component_factory_;
@@ -570,6 +568,7 @@ class TetherServiceTest : public testing::Test {
   TestingPrefServiceSimple local_pref_service_;
 
   std::unique_ptr<TestTetherService> tether_service_;
+  std::unique_ptr<TestingProfile> profile_;
 
   base::HistogramTester histogram_tester_;
 };

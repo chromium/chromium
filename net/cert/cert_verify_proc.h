@@ -15,7 +15,11 @@
 #include "crypto/crypto_buildflags.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
+#include "net/cert/ct_log_verifier.h"
+#include "net/cert/ct_policy_enforcer.h"
+#include "net/cert/ct_verifier.h"
 #include "net/net_buildflags.h"
+#include "third_party/boringssl/src/pki/parsed_certificate.h"
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "net/cert/internal/trust_store_chrome.h"
@@ -85,6 +89,8 @@ class NET_EXPORT CertVerifyProc
     ImplParams& operator=(ImplParams&& other);
 
     scoped_refptr<CRLSet> crl_set;
+    std::vector<scoped_refptr<const net::CTLogVerifier>> ct_logs;
+    scoped_refptr<net::CTPolicyEnforcer> ct_policy_enforcer;
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
     absl::optional<net::ChromeRootStoreData> root_store_data;
 #endif
@@ -103,21 +109,20 @@ class NET_EXPORT CertVerifyProc
     InstanceParams(InstanceParams&&);
     InstanceParams& operator=(InstanceParams&& other);
 
-    // TODO(crbug.com/1477317): store these as ParsedCertificateList here so
-    // that it only needs to be done once since the same InstanceParams can be
-    // used to create a CertVerifyProc multiple times.
-
     // Additional trust anchors to consider during path validation. Ordinarily,
     // implementations of CertVerifier use trust anchors from the configured
     // system store. This is implementation-specific plumbing for passing
     // additional anchors through.
-    CertificateList additional_trust_anchors;
+    bssl::ParsedCertificateList additional_trust_anchors;
 
     // Additional temporary certs to consider as intermediates during path
     // validation. Ordinarily, implementations of CertVerifier use intermediate
     // certs from the configured system store. This is implementation-specific
     // plumbing for passing additional intermediates through.
-    CertificateList additional_untrusted_authorities;
+    bssl::ParsedCertificateList additional_untrusted_authorities;
+
+    //  Additional SPKIs to consider as distrusted during path validation.
+    std::vector<std::vector<uint8_t>> additional_distrusted_spkis;
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -144,6 +149,8 @@ class NET_EXPORT CertVerifyProc
   static scoped_refptr<CertVerifyProc> CreateBuiltinVerifyProc(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
       scoped_refptr<CRLSet> crl_set,
+      std::unique_ptr<CTVerifier> ct_verifier,
+      scoped_refptr<CTPolicyEnforcer> ct_policy_enforcer,
       const InstanceParams instance_params);
 #endif
 
@@ -154,6 +161,8 @@ class NET_EXPORT CertVerifyProc
   static scoped_refptr<CertVerifyProc> CreateBuiltinWithChromeRootStore(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
       scoped_refptr<CRLSet> crl_set,
+      std::unique_ptr<CTVerifier> ct_verifier,
+      scoped_refptr<CTPolicyEnforcer> ct_policy_enforcer,
       const ChromeRootStoreData* root_store_data,
       const InstanceParams instance_params);
 #endif

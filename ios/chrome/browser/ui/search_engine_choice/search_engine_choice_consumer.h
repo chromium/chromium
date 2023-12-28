@@ -12,8 +12,8 @@
 
 // Switches the fake omnibox at the top of the screen to one with the correct
 // favicon and search engine name
-- (void)updateFakeOmniboxWithFavicon:(UIImageView*)icon
-                    SearchEngineName:(NSString*)name;
+- (void)updateFakeOmniboxWithFaviconImage:(UIImage*)icon
+                         searchEngineName:(NSString*)name;
 
 @end
 

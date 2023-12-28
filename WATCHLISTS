@@ -1276,10 +1276,6 @@
       'filepath': 'base/i18n/|base/string|l10n|icu|'\
                   'locale_settings|encoding',
     },
-    'image_editor': {
-      'filepath': 'chrome/browser/image_editor'\
-                  '|chrome/android/modules/image_editor',
-    },
     'incident_reporting': {
       'filepath': 'chrome/browser/safe_browsing/incident_reporting',
     },
@@ -1357,8 +1353,15 @@
     'ios_ntp': {
       'filepath': 'ios/chrome/browser/ui/ntp/',
     },
-    'ios_showcase': {
-      'filepath': 'ios/showcase/',
+    'ios_transactions': {
+      'filepath': 'components/autofill/ios|'\
+                  'components/password_manager/ios|'\
+                  'ios/chrome/browser/autofill|'\
+                  'ios/chrome/browser/passwords|'\
+                  'ios/chrome/browser/ui/autofill|'\
+                  'ios/chrome/browser/ui/passwords|'\
+                  'ios/chrome/browser/ui/settings/autofill|'\
+                  'ios/chrome/browser/ui/settings/password',
     },
     'ios_web': {
       'filepath': 'ios/web(_view)?/',
@@ -2460,6 +2463,7 @@
     'apps_intent_helper': ['dominickn+watch-intent_helper@chromium.org',
                            'mxcai+watch-intent-helper@chromium.org'],
     'arc': ['hidehiko+watch@chromium.org',
+            'yhanada+watcharc@chromium.org',
             'arc-reviews+chromium@google.com'],
     'arc_auth': ['khmel+watch@chromium.org'],
     'arc_compat_mode': ['toshikikikuchi+watch-compat@chromium.org'],
@@ -2911,10 +2915,6 @@
     'heap_mojo': ['chikamune+watch@chromium.org'],
     'holding_space': ['tote-eng+reviews@google.com'],
     'i18n': ['jshin+watch@chromium.org'],
-    'image_editor': ['chrome-sharing-eng+watch@google.com',
-                     'jeffreycohen+watch@chromium.org',
-                     'kristipark+watch@chromium.org',
-                     'tgupta+watch@chromium.org'],
     'incident_reporting': ['grt+watch@chromium.org'],
     'incognito': ['roagarwal+watch@chromium.org'],
     'indexed_db': ['jsbell+idb@chromium.org',
@@ -2942,8 +2942,8 @@
     'ios_credential_provider': ['rkgibson+watch@chromium.org'],
     'ios_flags': ['noyau+watch@chromium.org'],
     'ios_ntp': ['thegreenfrog+watch@chromium.org'],
-    'ios_showcase': ['ios-reviews+showcase@chromium.org',
-                     'marq+watch@chromium.org'],
+    'ios_transactions': ['sebsg+transactions-watch@chromium.org',
+                         'tmartino+transactions-watch@chromium.org'],
     'ios_web': ['ios-reviews+web@chromium.org'],
     'ios_widget_kit': ['rkgibson+watch@chromium.org'],
     'ip_protection': ['djmitche@chromium.org',

@@ -22,7 +22,7 @@ mojom("trusted") {
   webui_module_path = "/$cur_dir"
 
   # Generate WebUI bindings in JavaScript instead of TypeScript.
-  use_typescript_sources = false
+  generate_webui_js_bindings = true
 }
 
 mojom("shared") {
@@ -32,7 +32,7 @@ mojom("shared") {
   webui_module_path = "/$cur_dir"
 
   # Generate WebUI bindings in JavaScript instead of TypeScript.
-  use_typescript_sources = false
+  generate_webui_js_bindings = true
 }
 
 mojom("untrusted") {
@@ -45,7 +45,7 @@ mojom("untrusted") {
   webui_module_path = "/" + rebase_path(".", "//")
 
   # Generate WebUI bindings in JavaScript instead of TypeScript.
-  use_typescript_sources = false
+  generate_webui_js_bindings = true
 }
 
 # Builds a TS library for generated Mojo files that can be depended on by

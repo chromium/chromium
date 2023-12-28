@@ -18,9 +18,8 @@ using ::testing::Pair;
 using FieldPrediction =
     AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction;
 
-// static
 void FormStructureTestApi::SetFieldTypes(
-    const std::vector<std::vector<std::pair<HeuristicSource, ServerFieldType>>>&
+    const std::vector<std::vector<std::pair<HeuristicSource, FieldType>>>&
         heuristic_types,
     const std::vector<FieldPrediction>& server_types) {
   ASSERT_EQ(form_structure_->field_count(), heuristic_types.size());
@@ -42,22 +41,24 @@ void FormStructureTestApi::SetFieldTypes(
 }
 
 void FormStructureTestApi::SetFieldTypes(
-    const std::vector<std::vector<std::pair<HeuristicSource, ServerFieldType>>>&
+    const std::vector<std::vector<std::pair<HeuristicSource, FieldType>>>&
         heuristic_types,
-    const std::vector<ServerFieldType>& server_types) {
+    const std::vector<FieldType>& server_types) {
   std::vector<FieldPrediction> server_predictions;
-  for (ServerFieldType type : server_types)
-    server_predictions.push_back(::autofill::test::CreateFieldPrediction(type));
+  for (FieldType type : server_types) {
+    server_predictions.push_back(test::CreateFieldPrediction(type));
+  }
   SetFieldTypes(heuristic_types, server_predictions);
 }
 
 void FormStructureTestApi::SetFieldTypes(
-    const std::vector<ServerFieldType>& heuristic_types,
-    const std::vector<ServerFieldType>& server_types) {
-  std::vector<std::vector<std::pair<HeuristicSource, ServerFieldType>>>
+    const std::vector<FieldType>& heuristic_types,
+    const std::vector<FieldType>& server_types) {
+  std::vector<std::vector<std::pair<HeuristicSource, FieldType>>>
       all_heuristic_types;
-  for (ServerFieldType type : heuristic_types)
+  for (FieldType type : heuristic_types) {
     all_heuristic_types.push_back({{GetActiveHeuristicSource(), type}});
+  }
   SetFieldTypes(all_heuristic_types, server_types);
 }
 

@@ -12,27 +12,24 @@ import '../../../css/common.css.js';
 import '../../../css/wallpaper.css.js';
 import '../../../css/sea_pen.css.js';
 
+import {isImageDataUrl, isNonEmptyArray, isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
+import {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/wallpaper_grid_item_element.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {CurrentWallpaper} from '../../../personalization_app.mojom-webui.js';
-import {WithPersonalizationStore} from '../../personalization_store.js';
-import {isImageDataUrl, isNonEmptyArray} from '../../utils.js';
-import {DisplayableImage} from '../constants.js';
-import {isFilePath, isImageAMatchForKey, isImageEqualToSelected} from '../utils.js';
-import {WallpaperGridItemSelectedEvent} from '../wallpaper_grid_item_element.js';
-
 import {RecentSeaPenData} from './constants.js';
-import {fetchRecentSeaPenData, selectRecentSeaPenImage} from './sea_pen_controller.js';
+import {deleteRecentSeaPenImage, fetchRecentSeaPenData, selectRecentSeaPenImage} from './sea_pen_controller.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {getTemplate} from './sea_pen_recent_wallpapers_element.html.js';
+import {WithSeaPenStore} from './sea_pen_store.js';
 
-export class SeaPenRecentWallpapersElement extends WithPersonalizationStore {
+export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
   static get is() {
     return 'sea-pen-recent-wallpapers';
   }
+
   static get template() {
     return getTemplate();
   }
@@ -73,8 +70,8 @@ export class SeaPenRecentWallpapersElement extends WithPersonalizationStore {
   private recentImageDataLoading_: Record<FilePath['path'], boolean>;
   private recentImagesToDisplay_: FilePath[];
   private currentShowWallpaperInfoDialog_: number|null;
-  private currentSelected_: CurrentWallpaper|null;
-  private pendingSelected_: DisplayableImage|null;
+  private currentSelected_: string|null;
+  private pendingSelected_: FilePath|null;
 
   static get observers() {
     return ['onRecentImageLoaded_(recentImageData_, recentImageDataLoading_)'];
@@ -83,16 +80,15 @@ export class SeaPenRecentWallpapersElement extends WithPersonalizationStore {
   override connectedCallback() {
     super.connectedCallback();
     this.watch<SeaPenRecentWallpapersElement['recentImages_']>(
-        'recentImages_', state => state.wallpaper.seaPen.recentImages);
+        'recentImages_', state => state.recentImages);
     this.watch<SeaPenRecentWallpapersElement['recentImageData_']>(
-        'recentImageData_', state => state.wallpaper.seaPen.recentImageData);
+        'recentImageData_', state => state.recentImageData);
     this.watch<SeaPenRecentWallpapersElement['recentImageDataLoading_']>(
-        'recentImageDataLoading_',
-        state => state.wallpaper.seaPen.loading.recentImageData);
+        'recentImageDataLoading_', state => state.loading.recentImageData);
     this.watch<SeaPenRecentWallpapersElement['currentSelected_']>(
-        'currentSelected_', state => state.wallpaper.currentSelected);
+        'currentSelected_', state => state.currentSelected);
     this.watch<SeaPenRecentWallpapersElement['pendingSelected_']>(
-        'pendingSelected_', state => state.wallpaper.pendingSelected);
+        'pendingSelected_', state => state.pendingSelected);
     this.updateFromStore();
     // TODO(b/304576846): also refetch sea pen data when adding and deleting
     // image.
@@ -105,8 +101,7 @@ export class SeaPenRecentWallpapersElement extends WithPersonalizationStore {
    */
   private onRecentImagesChanged_(recentImages: FilePath[]|null) {
     this.recentImagesToDisplay_ = (recentImages || []).filter(image => {
-      if (isFilePath(image) &&
-          this.recentImageDataLoading_[image.path] === false) {
+      if (this.recentImageDataLoading_[image.path] === false) {
         const data = this.recentImageData_[image.path];
         return data && data.queryInfo && data.url;
       }
@@ -184,21 +179,22 @@ export class SeaPenRecentWallpapersElement extends WithPersonalizationStore {
   }
 
   private isRecentImageSelected_(
-      image: FilePath, currentSelected: CurrentWallpaper|null,
-      pendingSelected: DisplayableImage|null) {
-    if (!isFilePath(image)) {
+      image: FilePath|null, currentSelected: string|null,
+      pendingSelected: FilePath|null) {
+    if (!isNonEmptyFilePath(image)) {
       return false;
     }
-    return (isFilePath(pendingSelected) &&
-            isImageAMatchForKey(image, pendingSelected.path)) ||
-        (!pendingSelected && !!currentSelected &&
-         isImageEqualToSelected(image, currentSelected));
+
+    return (isNonEmptyFilePath(pendingSelected) &&
+            image.path === pendingSelected.path) ||
+        (!pendingSelected && image.path === currentSelected);
   }
 
   private onRecentImageSelected_(event: WallpaperGridItemSelectedEvent&
                                  {model: {image: FilePath}}) {
     assert(
-        isFilePath(event.model.image), 'recent Sea Pen image is a file path');
+        isNonEmptyFilePath(event.model.image),
+        'recent Sea Pen image is a file path');
     selectRecentSeaPenImage(
         event.model.image, getSeaPenProvider(), this.getStore());
   }
@@ -228,8 +224,15 @@ export class SeaPenRecentWallpapersElement extends WithPersonalizationStore {
     // TODO(b/304581483): make "More like this" button functional.
   }
 
-  private onClickDeleteWallpaper_() {
-    // TODO(b/304592162): delete the selected wallpaper.
+  private onClickDeleteWallpaper_(event: Event&{model: {image: FilePath}}) {
+    // TODO (b/315069374): confirm if currently set Sea Pen wallpaper can be
+    // removed.
+    assert(
+        isNonEmptyFilePath(event.model.image),
+        'selected Sea Pen image is a file path');
+    deleteRecentSeaPenImage(
+        event.model.image, getSeaPenProvider(), this.getStore());
+    this.closeAllActionMenus_();
   }
 
   private onClickWallpaperInfo_(e: Event) {
@@ -237,8 +240,8 @@ export class SeaPenRecentWallpapersElement extends WithPersonalizationStore {
     const id = eventTarget.dataset['id'];
     if (id !== undefined) {
       this.currentShowWallpaperInfoDialog_ = parseInt(id, 10);
-      this.closeAllActionMenus_();
     }
+    this.closeAllActionMenus_();
   }
 
   private closeAllActionMenus_() {

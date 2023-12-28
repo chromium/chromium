@@ -172,6 +172,10 @@ class NET_EXPORT GlobalFirstPartySets {
   void ForEachAlias(base::FunctionRef<void(const SchemefulSite&,
                                            const SchemefulSite&)> f) const;
 
+  // Returns true iff this instance contains a singleton set (a set with only
+  // one site).
+  bool ContainsSingleton() const;
+
   // The version associated with the component_updater-provided public sets.
   // This may be invalid if the "First-Party Sets" component has not been
   // installed yet, or has been corrupted. Entries and aliases from invalid

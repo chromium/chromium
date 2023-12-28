@@ -17,7 +17,7 @@
 #include "base/test/test_switches.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/dbus/bluetooth_adapter_client.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
@@ -71,16 +71,16 @@ constexpr char kCheckJsElementIsChecked[] = "(el) => { return el.checked; }";
 constexpr char kCheckJsElementIsNotChecked[] =
     "(el) => { return !el.checked; }";
 
-class BluetoothIntegrationTest : public InteractiveAshTest {
+class BluetoothIntegrationTest : public AshIntegrationTest {
  public:
   BluetoothIntegrationTest() {
     // Use the legacy bluez bluetooth stack.
     feature_list_.InitAndDisableFeature(floss::features::kFlossEnabled);
   }
 
-  // InteractiveAshTest:
+  // AshIntegrationTest:
   void SetUpOnMainThread() override {
-    InteractiveAshTest::SetUpOnMainThread();
+    AshIntegrationTest::SetUpOnMainThread();
 
     bluez_dbus_manager_ = BluezDBusManager::Get();
     if (!bluez_dbus_manager_) {
@@ -109,7 +109,7 @@ class BluetoothIntegrationTest : public InteractiveAshTest {
     adapter_client_ = nullptr;
     bluez_dbus_manager_ = nullptr;
 
-    InteractiveAshTest::TearDownOnMainThread();
+    AshIntegrationTest::TearDownOnMainThread();
   }
 
   // Waits for a toggle element to be toggled (which is represented as "checked"

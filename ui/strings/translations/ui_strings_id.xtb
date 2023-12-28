@@ -75,7 +75,7 @@
 <translation id="3087734570205094154">Bawah</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3157931365184549694">Pulihkan</translation>
-<translation id="3183922693828471536">Gulir ke Sini</translation>
+<translation id="3183922693828471536">Scroll ke Sini</translation>
 <translation id="3234408098842461169">Panah Bawah</translation>
 <translation id="3240426699337459095">Tautan disalin</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{1 hari}other{# hari}}</translation>
@@ -107,7 +107,7 @@
 <translation id="4289540628985791613">Ringkasan</translation>
 <translation id="4491109536499578614">Gambar</translation>
 <translation id="4565377596337484307">Sembunyikan sandi</translation>
-<translation id="4588090240171750605">Gulir ke Kanan</translation>
+<translation id="4588090240171750605">Scroll ke Kanan</translation>
 <translation id="4689010477870442157">{YEARS,plural, =1{1 Tahun Lalu}other{# Tahun Lalu}}</translation>
 <translation id="4724120544754982507">Pusat Notifikasi, <ph name="UNREAD_NOTIFICATION_COUNT" /> notifikasi belum dibaca</translation>
 <translation id="4729257764711776855">nomor</translation>
@@ -149,7 +149,7 @@
 <translation id="6237461503717005873"><ph name="ROW_NAME" /> dipilih.</translation>
 <translation id="6264365405983206840">Pilih Semu&amp;a</translation>
 <translation id="6346952829206698721">Tempel dari papan klip</translation>
-<translation id="6364916375976753737">Gulir ke Kiri</translation>
+<translation id="6364916375976753737">Scroll ke Kiri</translation>
 <translation id="6394627529324717982">Koma</translation>
 <translation id="6397363302884558537">Berhenti Berbicara</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{1 dtk yang lalu}other{# dtk yang lalu}}</translation>
@@ -196,14 +196,14 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{1 jam yang lalu}other{# jam yang lalu}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 dtk lagi}other{# dtk lagi}}</translation>
 <translation id="8134065097954893699">Memuat ulang halaman ini</translation>
-<translation id="815598010540052116">Gulir ke Bawah</translation>
+<translation id="815598010540052116">Scroll ke Bawah</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Page Down</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8245914219290430011">Tab</translation>
 <translation id="8259556432390118667">Nilai warna hex</translation>
 <translation id="8328145009876646418">Tepi Kiri</translation>
-<translation id="8331626408530291785">Gulir ke Atas</translation>
+<translation id="8331626408530291785">Scroll ke Atas</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{1 tahun}other{# tahun}}</translation>
 <translation id="8393700583063109961">Kirim pesan</translation>
 <translation id="8394908167088220973">Putar/Jeda Media</translation>

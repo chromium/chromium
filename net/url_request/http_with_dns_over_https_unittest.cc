@@ -449,6 +449,15 @@ TEST_F(HttpsWithDnsOverHttpsTest, HttpsMetadata) {
 }
 
 TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHello) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUseDnsHttpsSvcb,
+                             {// Disable timeouts.
+                              {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+                              {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+                              {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}}}},
+      /*disabled_features=*/{});
+
   // Configure a test server that speaks ECH.
   static constexpr char kRealName[] = "secret.example";
   static constexpr char kPublicName[] = "public.example";
@@ -472,56 +481,30 @@ TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHello) {
   AddHostWithEch(url::SchemeHostPort(url), addr.front().address(),
                  ech_config_list);
 
-  for (bool feature_enabled : {true, false}) {
-    SCOPED_TRACE(feature_enabled);
-    base::test::ScopedFeatureList features;
-    if (feature_enabled) {
-      features.InitWithFeaturesAndParameters(
-          /*enabled_features=*/{{features::kUseDnsHttpsSvcb,
-                                 {// Disable timeouts.
-                                  {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
-                                  {"UseDnsHttpsSvcbSecureExtraTimePercent",
-                                   "0"},
-                                  {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}}},
-                                {features::kEncryptedClientHello, {}}},
-          /*disabled_features=*/{});
-    } else {
-      features.InitWithFeaturesAndParameters(
-          /*enabled_features=*/{{features::kUseDnsHttpsSvcb,
-                                 {// Disable timeouts.
-                                  {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
-                                  {"UseDnsHttpsSvcbSecureExtraTimePercent",
-                                   "0"},
-                                  {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}}}},
-          /*disabled_features=*/{features::kEncryptedClientHello});
-    }
+  for (bool ech_enabled : {true, false}) {
+    SCOPED_TRACE(ech_enabled);
 
-    for (bool config_enabled : {true, false}) {
-      SCOPED_TRACE(config_enabled);
-      bool ech_enabled = feature_enabled && config_enabled;
+    // Create a new `URLRequestContext`, to ensure there are no cached
+    // sockets, etc., from the previous loop iteration.
+    ResetContext();
 
-      // Create a new `URLRequestContext`, to ensure there are no cached
-      // sockets, etc., from the previous loop iteration.
-      ResetContext();
+    SSLContextConfig config;
+    config.ech_enabled = ech_enabled;
+    ssl_config_service_->UpdateSSLConfigAndNotify(config);
 
-      SSLContextConfig config;
-      config.ech_enabled = config_enabled;
-      ssl_config_service_->UpdateSSLConfigAndNotify(config);
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r = context()->CreateRequest(
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS);
+    r->Start();
+    EXPECT_TRUE(r->is_pending());
 
-      TestDelegate d;
-      std::unique_ptr<URLRequest> r = context()->CreateRequest(
-          url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS);
-      r->Start();
-      EXPECT_TRUE(r->is_pending());
+    d.RunUntilComplete();
 
-      d.RunUntilComplete();
-
-      EXPECT_THAT(d.request_status(), IsOk());
-      EXPECT_EQ(1, d.response_started_count());
-      EXPECT_FALSE(d.received_data_before_response());
-      EXPECT_NE(0, d.bytes_received());
-      EXPECT_EQ(ech_enabled, r->ssl_info().encrypted_client_hello);
-    }
+    EXPECT_THAT(d.request_status(), IsOk());
+    EXPECT_EQ(1, d.response_started_count());
+    EXPECT_FALSE(d.received_data_before_response());
+    EXPECT_NE(0, d.bytes_received());
+    EXPECT_EQ(ech_enabled, r->ssl_info().encrypted_client_hello);
   }
 }
 
@@ -531,8 +514,7 @@ TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHello) {
 TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHelloStaleKey) {
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kEncryptedClientHello, {}},
-                            {features::kUseDnsHttpsSvcb,
+      /*enabled_features=*/{{features::kUseDnsHttpsSvcb,
                              {// Disable timeouts.
                               {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
                               {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
@@ -616,8 +598,7 @@ TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHelloStaleKey) {
 TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHelloFallback) {
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kEncryptedClientHello, {}},
-                            {features::kUseDnsHttpsSvcb,
+      /*enabled_features=*/{{features::kUseDnsHttpsSvcb,
                              {// Disable timeouts.
                               {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
                               {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
@@ -691,8 +672,7 @@ TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHelloFallback) {
 TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHelloFallbackTLS12) {
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kEncryptedClientHello, {}},
-                            {features::kUseDnsHttpsSvcb,
+      /*enabled_features=*/{{features::kUseDnsHttpsSvcb,
                              {// Disable timeouts.
                               {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
                               {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},

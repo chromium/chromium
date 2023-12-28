@@ -10,11 +10,24 @@ import("//third_party/blink/public/public_features.gni")
 import("//third_party/blink/renderer/platform/platform.gni")
 import("//v8/gni/v8.gni")
 
+declare_args() {
+  # Whether the blink heap code is compiled into a shared library.
+  # Embedders like CEF use this flag to include blink in a shared library under
+  # non-component build.
+  blink_heap_inside_shared_library = is_component_build
+}
+
+assert(blink_heap_inside_shared_library || !is_component_build,
+       "blink_heap_inside_shared_library can not be false in component build.")
+
 buildflag_header("blink_heap_buildflags") {
   header = "heap_buildflags.h"
   header_dir = "third_party/blink/renderer/platform/heap"
 
-  flags = [ "VERBOSE_PERSISTENT=$cppgc_enable_object_names" ]
+  flags = [
+    "VERBOSE_PERSISTENT=$cppgc_enable_object_names",
+    "BLINK_HEAP_INSIDE_SHARED_LIBRARY=$blink_heap_inside_shared_library",
+  ]
 }
 
 blink_platform_sources("heap") {

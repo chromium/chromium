@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -26,6 +27,7 @@ FormData* Deserialize(ExecutionContext& context,
 }  // namespace
 
 TEST(FormDataTest, append) {
+  test::TaskEnvironment task_environment;
   auto* fd = MakeGarbageCollected<FormData>(UTF8Encoding());
   fd->append("test\n1", "value\n1");
   fd->append("test\r2", nullptr, "filename");
@@ -39,6 +41,7 @@ TEST(FormDataTest, append) {
 }
 
 TEST(FormDataTest, AppendFromElement) {
+  test::TaskEnvironment task_environment;
   UChar lone_surrogate_chars[] = {u'a', 0xD800, u'b', 0};
   String lone_surrogate_string(lone_surrogate_chars);
 
@@ -67,6 +70,7 @@ TEST(FormDataTest, AppendFromElement) {
 }
 
 TEST(FormDataTest, get) {
+  test::TaskEnvironment task_environment;
   auto* fd = MakeGarbageCollected<FormData>(UTF8Encoding());
   fd->append("name1", "value1");
 
@@ -80,6 +84,7 @@ TEST(FormDataTest, get) {
 }
 
 TEST(FormDataTest, getAll) {
+  test::TaskEnvironment task_environment;
   auto* fd = MakeGarbageCollected<FormData>(UTF8Encoding());
   fd->append("name1", "value1");
 
@@ -92,6 +97,7 @@ TEST(FormDataTest, getAll) {
 }
 
 TEST(FormDataTest, has) {
+  test::TaskEnvironment task_environment;
   auto* fd = MakeGarbageCollected<FormData>(UTF8Encoding());
   fd->append("name1", "value1");
 
@@ -100,6 +106,7 @@ TEST(FormDataTest, has) {
 }
 
 TEST(FormDataTest, AppendToControlState) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext context;
   {
     auto* fd = MakeGarbageCollected<FormData>();
@@ -135,6 +142,7 @@ TEST(FormDataTest, AppendToControlState) {
 }
 
 TEST(FormDataTest, CreateFromControlState) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext context;
   EXPECT_EQ(nullptr,
             Deserialize(context.GetExecutionContext(), {"1", "not-a-number"}))
@@ -186,6 +194,7 @@ TEST(FormDataTest, CreateFromControlState) {
 }
 
 TEST(FormDataTest, FilenameWithLoneSurrogates) {
+  test::TaskEnvironment task_environment;
   UChar filename[] = {'a', 0xD800, 'b', 0};
   auto* file = MakeGarbageCollected<File>(filename, absl::nullopt,
                                           BlobDataHandle::Create());

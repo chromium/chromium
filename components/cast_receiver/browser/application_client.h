@@ -6,12 +6,12 @@
 #define COMPONENTS_CAST_RECEIVER_BROWSER_APPLICATION_CLIENT_H_
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/strings/string_piece.h"
 #include "components/cast_receiver/browser/public/application_state_observer.h"
 #include "components/cast_receiver/browser/public/streaming_resolution_observer.h"
 
@@ -96,7 +96,7 @@ class ApplicationClient : public StreamingResolutionObserver,
   void RemoveStreamingResolutionObserver(StreamingResolutionObserver* observer);
   void OnWebContentsCreated(content::WebContents* web_contents);
   using CorsExemptHeaderCallback =
-      base::RepeatingCallback<bool(base::StringPiece)>;
+      base::RepeatingCallback<bool(std::string_view)>;
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
   CreateURLLoaderThrottles(
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,

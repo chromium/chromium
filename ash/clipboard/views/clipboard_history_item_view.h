@@ -161,12 +161,12 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
   // Owned by `ClipboardHistoryControllerImpl`.
   const raw_ptr<const ClipboardHistory> clipboard_history_;
 
-  const raw_ptr<views::MenuItemView, ExperimentalAsh> container_;
+  const raw_ptr<views::MenuItemView> container_;
 
   // Owned by the view hierarchy.
-  raw_ptr<views::View, ExperimentalAsh> main_button_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> ctrl_v_label_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> delete_button_ = nullptr;
+  raw_ptr<views::View> main_button_ = nullptr;
+  raw_ptr<views::View> ctrl_v_label_ = nullptr;
+  raw_ptr<views::View> delete_button_ = nullptr;
 
   PseudoFocus pseudo_focus_ = PseudoFocus::kEmpty;
 

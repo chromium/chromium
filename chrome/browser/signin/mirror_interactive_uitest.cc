@@ -195,6 +195,25 @@ IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest,
       "Signin.ProcessMirrorHeaders.AllowedFromInitiator.GoIncognito", false, 1);
 }
 
+// When receiving "INCOGNITO" from Gaia and the request initiator is
+// a Google-associated domain (but not Google or Youtube) - an incognito tab
+// should not be opened.
+IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest,
+                       IncognitoFromGoogleapisInitiatorIgnored) {
+  base::HistogramTester histogram_tester;
+  size_t browser_count = chrome::GetTotalBrowserCount();
+
+  NavigateToURL(GetUrlWithManageAccountsHeader({{"action", "INCOGNITO"}}),
+                url::Origin::Create(GURL("https://storage.googleapis.com")));
+
+  // Incognito window should not have been displayed, the browser count
+  // stays the same.
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), browser_count);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ProcessMirrorHeaders.AllowedFromInitiator.GoIncognito", false, 1);
+}
+
 // When receiving "INCOGNITO" from Gaia and the request initiator is not a
 // Google domain - an incognito tab should not be opened.
 IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest,

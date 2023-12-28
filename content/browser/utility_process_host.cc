@@ -70,12 +70,12 @@
 #include "media/capture/capture_switches.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/task/sequenced_task_runner.h"
 #include "components/viz/host/gpu_client.h"
 #include "media/capture/capture_switches.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#endif
 
 namespace content {
 
@@ -130,7 +130,7 @@ UtilityProcessHost::UtilityProcessHost(std::unique_ptr<Client> client)
       started_(false),
       name_(u"utility process"),
       file_data_(std::make_unique<ChildProcessLauncherFileData>()),
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
       gpu_client_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
 #endif
       client_(std::move(client)) {
@@ -366,7 +366,11 @@ bool UtilityProcessHost::StartProcess() {
 #endif
 #if BUILDFLAG(IS_WIN)
       switches::kDisableHighResTimer,
+      switches::kEnableExclusiveAudio,
+      switches::kForceWaveAudio,
       switches::kRaiseTimerFrequency,
+      switches::kTrySupportedChannelLayouts,
+      switches::kWaveOutBuffers,
       switches::kWebXrForceRuntime,
       sandbox::policy::switches::kAddXrAppContainerCaps,
 #endif
@@ -423,17 +427,23 @@ bool UtilityProcessHost::StartProcess() {
     }
 #endif  // BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
     // Pass `kVideoCaptureUseGpuMemoryBuffer` flag to video capture service only
-    // when the video capture use GPU memory buffer enabled and NV12 GPU memory
-    // buffer supported.
+    // when the video capture use GPU memory buffer enabled.
     if (metrics_name_ == video_capture::mojom::VideoCaptureService::Name_) {
-      if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled() &&
-          GpuDataManagerImpl::GetInstance()->IsGpuMemoryBufferNV12Supported()) {
+      bool pass_gpu_buffer_flag =
+          switches::IsVideoCaptureUseGpuMemoryBufferEnabled();
+#if BUILDFLAG(IS_LINUX)
+      // Check if NV12 GPU memory buffer supported at the same time.
+      pass_gpu_buffer_flag =
+          pass_gpu_buffer_flag &&
+          GpuDataManagerImpl::GetInstance()->IsGpuMemoryBufferNV12Supported();
+#endif  // BUILDFLAG(IS_LINUX)
+      if (pass_gpu_buffer_flag) {
         cmd_line->AppendSwitch(switches::kVideoCaptureUseGpuMemoryBuffer);
       }
     }
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 
     std::unique_ptr<UtilitySandboxedProcessLauncherDelegate> delegate =
         std::make_unique<UtilitySandboxedProcessLauncherDelegate>(

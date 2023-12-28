@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/dom_distiller/model/dom_distiller_service_factory.h"
 #import "ios/chrome/browser/download/model/background_service/background_download_service_factory.h"
 #import "ios/chrome/browser/download/model/browser_download_service_factory.h"
+#import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
@@ -53,7 +54,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
 #import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
-#import "ios/chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
+#import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service_factory.h"
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_event_exporter_factory.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
@@ -70,6 +71,7 @@
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/about_signin_internals_factory.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
 #import "ios/chrome/browser/signin/model/account_reconcilor_factory.h"
@@ -81,7 +83,6 @@
 #import "ios/chrome/browser/signin/model/signin_error_controller_factory.h"
 #import "ios/chrome/browser/signin/model/trusted_vault_client_backend_factory.h"
 #import "ios/chrome/browser/supervised_user/model/child_account_service_factory.h"
-#import "ios/chrome/browser/supervised_user/model/kids_chrome_management_client_factory.h"
 #import "ios/chrome/browser/supervised_user/model/list_family_members_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_metrics_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
@@ -171,7 +172,6 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   IOSProfileSessionDurationsServiceFactory::GetInstance();
   IOSTrustedVaultServiceFactory::GetInstance();
   IOSUserEventServiceFactory::GetInstance();
-  KidsChromeManagementClientFactory::GetInstance();
   LanguageModelManagerFactory::GetInstance();
   MailtoHandlerServiceFactory::GetInstance();
   ManagedBookmarkServiceFactory::GetInstance();
@@ -179,6 +179,9 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   OptimizationGuideServiceFactory::GetInstance();
   policy::UserPolicySigninServiceFactory::GetInstance();
   PhotosServiceFactory::GetInstance();
+  if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
+    drive::DriveServiceFactory::GetInstance();
+  }
   TabsSearchServiceFactory::GetInstance();
   PushNotificationBrowserStateServiceFactory::GetInstance();
   SyncServiceFactory::GetInstance();

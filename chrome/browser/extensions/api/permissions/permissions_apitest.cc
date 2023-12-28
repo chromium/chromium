@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/files/file_util.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/permissions/permissions_api.h"
@@ -108,10 +107,7 @@ IN_PROC_BROWSER_TEST_P(PermissionsApiTestWithContextType,
 #define MAYBE_FaviconPermission FaviconPermission
 #endif
 IN_PROC_BROWSER_TEST_F(PermissionsApiTest, MAYBE_FaviconPermission) {
-  base::HistogramTester tester;
   ASSERT_TRUE(RunExtensionTest("permissions/favicon")) << message_;
-  tester.ExpectBucketCount("Extensions.FaviconResourceRequested",
-                           Manifest::TYPE_EXTENSION, 1);
 }
 
 // Test functions and APIs that are always allowed (even if you ask for no

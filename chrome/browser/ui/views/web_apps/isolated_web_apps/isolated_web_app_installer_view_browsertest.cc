@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/version.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -79,13 +80,18 @@ class IsolatedWebAppInstallerViewUiPixelTest
   // `TestBrowserDialog`:
   void ShowUi(const std::string& name) override {
     IsolatedWebAppInstallerModel model{base::FilePath()};
-    model.SetStep(GetParam().step);
-    model.SetSignedWebBundleMetadata(CreateTestMetadata());
 
     Profile* profile = browser()->profile();
     IsolatedWebAppInstallerViewController controller{
         profile, WebAppProvider::GetForWebApps(profile), &model};
-    controller.Show(base::DoNothing());
+
+    base::test::TestFuture<void> future;
+    controller.Start(future.GetCallback(), base::DoNothing());
+    ASSERT_TRUE(future.Wait());
+
+    model.SetStep(GetParam().step);
+    model.SetSignedWebBundleMetadata(CreateTestMetadata());
+    controller.Show();
   }
 
  private:

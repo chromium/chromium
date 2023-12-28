@@ -456,7 +456,13 @@ ProfileImpl::ProfileImpl(
         this, profile_metrics::BrowserProfileType::kRegular);
   }
 
+  if (delegate_) {
+    delegate_->OnProfileCreationStarted(this, create_mode);
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/1325210): Move this into
+  // ChromeUserManager::OnProfileCreationStarted().
   const bool is_user_profile = ash::ProfileHelper::IsUserProfile(this);
 
   if (is_user_profile) {
@@ -498,6 +504,8 @@ ProfileImpl::ProfileImpl(
   SimpleKeyMap::GetInstance()->Associate(this, key_.get());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/1325210): Move this into
+  // ChromeUserManager::OnProfileCreationStarted().
   if (is_user_profile) {
     // |ash::InitializeAccountManager| is called during a User's session
     // initialization but some tests do not properly login to a User Session.
@@ -515,9 +523,6 @@ ProfileImpl::ProfileImpl(
     account_manager->SetPrefService(GetPrefs());
   }
 #endif
-
-  if (delegate_)
-    delegate_->OnProfileCreationStarted(this, create_mode);
 
   if (async_prefs) {
     // Wait for the notification that prefs has been loaded

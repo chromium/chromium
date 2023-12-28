@@ -46,6 +46,15 @@ std::pair<uint64_t, uint64_t> TestValue() {
   return {100, 200};
 }
 
+template <>
+std::pair<base::Value::Dict, base::Value::Dict> TestValue() {
+  base::Value::Dict dict1;
+  dict1.Set("vm_name", "vm_name_value");
+  base::Value::Dict dict2;
+  dict2.Set("container_name", "container_name_value");
+  return {std::move(dict1), std::move(dict2)};
+}
+
 bool IsEqual(AppPtr app1, AppPtr app2) {
   std::vector<AppPtr> apps1;
   apps1.push_back(std::move(app1));
@@ -398,6 +407,33 @@ TEST_F(AppTypesTest, VerifyAppsIsEqualForAppSizeInBytes) {
 
 TEST_F(AppTypesTest, VerifyAppsIsEqualForDataSizeInBytes) {
   VerifyOptionalValue(&App::data_size_in_bytes);
+}
+
+TEST_F(AppTypesTest, VerifyAppsIsEqualForSupportedLocales) {
+  // Verify the app is equal with the same `supported_locales`.
+  {
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
+    app1->supported_locales = {"C"};
+    AppPtr app2 = app1->Clone();
+    EXPECT_TRUE(IsEqual(std::move(app1), std::move(app2)));
+  }
+
+  // Verify the app is not equal with different `supported_locales`.
+  {
+    AppPtr app1 = std::make_unique<App>(kAppType, kAppId);
+    AppPtr app2 = app1->Clone();
+    app1->supported_locales = {"C"};
+    app2->supported_locales = {"B"};
+    EXPECT_FALSE(IsEqual(std::move(app1), std::move(app2)));
+  }
+}
+
+TEST_F(AppTypesTest, VerifyAppsIsEqualForSelectedLocale) {
+  VerifyOptionalValue(&App::selected_locale);
+}
+
+TEST_F(AppTypesTest, VerifyAppsIsEqualForExtra) {
+  VerifyOptionalValue(&App::extra);
 }
 
 }  // namespace apps

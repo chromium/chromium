@@ -14,6 +14,16 @@ java_library("custom_d8_java") {
   input_jars_paths = [ "d8/lib/r8.jar" ]
 }
 
+# The output jar for this target is copied and checked-in to minimize the number
+# of edges in the build graph. This is a class that rarely changes.
+java_library("custom_r8_java") {
+  sources = [ "java/src/org/chromium/build/CustomR8.java" ]
+
+  # Avoid using java_prebuilt() to ensure all uses go through the checked-in
+  # version.
+  input_jars_paths = [ "lib/r8.jar" ]
+}
+
 # Use the non-d8 one since this is currently used only by unused_resources.
 java_prebuilt("r8_java") {
   jar_path = "lib/r8.jar"

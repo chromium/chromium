@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -75,13 +76,13 @@ TEST_F(SubAppsInstallDialogControllerTest, DialogViewSetUpCorrectly) {
   EXPECT_TRUE(dialog->owned_by_widget());
 
   // Confirm that all sub app names and icons were added to the view.
-  std::vector<views::View*> sub_app_labels;
+  std::vector<raw_ptr<views::View, VectorExperimental>> sub_app_labels;
   widget->GetContentsView()->GetViewsInGroup(
       base::to_underlying(DialogViewIDForTesting::SUB_APP_LABEL),
       &sub_app_labels);
   EXPECT_EQ(sub_app_labels.size(), 3u);
 
-  std::vector<views::View*> sub_app_icons;
+  std::vector<raw_ptr<views::View, VectorExperimental>> sub_app_icons;
   widget->GetContentsView()->GetViewsInGroup(
       base::to_underlying(DialogViewIDForTesting::SUB_APP_ICON),
       &sub_app_icons);
@@ -109,7 +110,7 @@ TEST_F(SubAppsInstallDialogControllerTest, SubAppConvertedCorrectly) {
                    GetProfile(), GetContext());
   views::Widget* widget = controller->GetWidgetForTesting();
 
-  std::vector<views::View*> sub_app_labels;
+  std::vector<raw_ptr<views::View, VectorExperimental>> sub_app_labels;
   widget->GetContentsView()->GetViewsInGroup(
       base::to_underlying(DialogViewIDForTesting::SUB_APP_LABEL),
       &sub_app_labels);
@@ -117,7 +118,7 @@ TEST_F(SubAppsInstallDialogControllerTest, SubAppConvertedCorrectly) {
   EXPECT_EQ(static_cast<views::Label*>(sub_app_labels[0])->GetText(),
             kSubAppName1);
 
-  std::vector<views::View*> sub_app_icons;
+  std::vector<raw_ptr<views::View, VectorExperimental>> sub_app_icons;
   widget->GetContentsView()->GetViewsInGroup(
       base::to_underlying(DialogViewIDForTesting::SUB_APP_ICON),
       &sub_app_icons);

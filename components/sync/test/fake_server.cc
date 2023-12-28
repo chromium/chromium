@@ -345,6 +345,10 @@ void FakeServer::OverrideResponseType(
   loopback_server_->OverrideResponseType(std::move(response_type_override));
 }
 
+void FakeServer::FlushToDisk() {
+  loopback_server_->FlushToDisk();
+}
+
 base::Value::Dict FakeServer::GetEntitiesAsDictForTesting() {
   DCHECK(thread_checker_.CalledOnValidThread());
   return loopback_server_->GetEntitiesAsDictForTesting();
@@ -394,8 +398,7 @@ void FakeServer::InjectEntity(std::unique_ptr<LoopbackServerEntity> entity) {
   loopback_server_->SaveEntity(std::move(entity));
 
   // Notify observers so invalidations are mimic-ed.
-  OnCommit(/*committer_invalidator_client_id=*/std::string(),
-           /*committed_model_types=*/{model_type});
+  OnCommit(/*committed_model_types=*/{model_type});
 }
 
 base::Time FakeServer::SetWalletData(
@@ -421,8 +424,7 @@ base::Time FakeServer::SetWalletData(
     entity.set_version(version);
   }
 
-  OnCommit(/*committer_invalidator_client_id=*/std::string(),
-           /*committed_model_types=*/{syncer::AUTOFILL_WALLET_DATA});
+  OnCommit(/*committed_model_types=*/{syncer::AUTOFILL_WALLET_DATA});
 
   return now;
 }
@@ -450,8 +452,7 @@ base::Time FakeServer::SetOfferData(
     entity.set_version(version);
   }
 
-  OnCommit(/*committer_id=*/std::string(),
-           /*committed_model_types=*/{syncer::AUTOFILL_WALLET_OFFER});
+  OnCommit(/*committed_model_types=*/{syncer::AUTOFILL_WALLET_OFFER});
 
   return now;
 }
@@ -476,7 +477,6 @@ bool FakeServer::ModifyEntitySpecifics(
 
   // Notify observers so invalidations are mimic-ed.
   OnCommit(
-      /*committer_invalidator_client_id=*/std::string(),
       /*committed_model_types=*/{GetModelTypeFromSpecifics(updated_specifics)});
 
   return true;
@@ -496,8 +496,7 @@ bool FakeServer::ModifyBookmarkEntity(
   }
 
   // Notify observers so invalidations are mimic-ed.
-  OnCommit(/*committer_invalidator_client_id=*/std::string(),
-           /*committed_model_types=*/{syncer::BOOKMARKS});
+  OnCommit(/*committed_model_types=*/{syncer::BOOKMARKS});
 
   return true;
 }
@@ -512,8 +511,7 @@ void FakeServer::ClearServerData() {
   }
 
   // Notify observers so invalidations are mimic-ed.
-  OnCommit(/*committer_invalidator_client_id=*/std::string(),
-           /*committed_model_types=*/{syncer::NIGORI});
+  OnCommit(/*committed_model_types=*/{syncer::NIGORI});
 }
 
 void FakeServer::DeleteAllEntitiesForModelType(ModelType model_type) {
@@ -621,10 +619,9 @@ void FakeServer::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void FakeServer::OnCommit(const std::string& committer_invalidator_client_id,
-                          syncer::ModelTypeSet committed_model_types) {
+void FakeServer::OnCommit(syncer::ModelTypeSet committed_model_types) {
   for (Observer& observer : observers_)
-    observer.OnCommit(committer_invalidator_client_id, committed_model_types);
+    observer.OnCommit(committed_model_types);
 }
 
 void FakeServer::OnHistoryCommit(const std::string& url) {

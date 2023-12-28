@@ -126,7 +126,7 @@ void GeolocationServiceImpl::CreateGeolocationWithPermissionStatus(
   subscription_id_ =
       PermissionControllerImpl::FromBrowserContext(
           render_frame_host_->GetBrowserContext())
-          ->SubscribePermissionStatusChange(
+          ->SubscribeToPermissionStatusChange(
               blink::PermissionType::GEOLOCATION,
               /*render_process_host=*/nullptr, render_frame_host_,
               requesting_url,
@@ -141,7 +141,7 @@ void GeolocationServiceImpl::HandlePermissionStatusChange(
       subscription_id_.value()) {
     PermissionControllerImpl::FromBrowserContext(
         render_frame_host_->GetBrowserContext())
-        ->UnsubscribePermissionStatusChange(subscription_id_);
+        ->UnsubscribeFromPermissionStatusChange(subscription_id_);
     geolocation_context_->OnPermissionRevoked(requesting_origin_);
   }
 }

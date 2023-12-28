@@ -86,7 +86,7 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
 
   // OverviewItemBase:
   aura::Window* GetWindow() override;
-  std::vector<aura::Window*> GetWindows() override;
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> GetWindows() override;
   bool HasVisibleOnAllDesksWindow() override;
   bool Contains(const aura::Window* target) const override;
   OverviewItem* GetLeafItemForWindow(aura::Window* window) override;
@@ -204,7 +204,7 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   aura::Window::Windows GetWindowsForHomeGesture();
 
   // The root window this item is being displayed on.
-  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
+  raw_ptr<aura::Window> root_window_;
 
   // The contained Window's wrapper.
   ScopedOverviewTransformWindow transform_window_;
@@ -231,8 +231,7 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
 
   // The view associated with |item_widget_|. Contains a title, close button and
   // maybe a backdrop. Forwards certain events to |this|.
-  raw_ptr<OverviewItemView, DanglingUntriaged | ExperimentalAsh>
-      overview_item_view_ = nullptr;
+  raw_ptr<OverviewItemView, DanglingUntriaged> overview_item_view_ = nullptr;
 
   // Responsible for mirrors that look like the window on all displays during
   // dragging.

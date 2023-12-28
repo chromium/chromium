@@ -436,9 +436,9 @@ class WebUITabCounterButton : public views::Button,
                               public TabStripModelObserver,
                               public views::ContextMenuController,
                               public ui::SimpleMenuModel::Delegate {
- public:
-  METADATA_HEADER(WebUITabCounterButton);
+  METADATA_HEADER(WebUITabCounterButton, views::Button)
 
+ public:
   static constexpr int WEBUI_TAB_COUNTER_CXMENU_CLOSE_TAB = 13;
   static constexpr int WEBUI_TAB_COUNTER_CXMENU_NEW_TAB = 14;
 
@@ -693,7 +693,7 @@ void WebUITabCounterButton::ExecuteCommand(int command_id, int event_flags) {
   }
 }
 
-BEGIN_METADATA(WebUITabCounterButton, views::Button)
+BEGIN_METADATA(WebUITabCounterButton)
 END_METADATA
 
 }  // namespace

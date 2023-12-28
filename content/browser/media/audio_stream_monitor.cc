@@ -17,38 +17,37 @@ namespace content {
 
 namespace {
 
-AudioStreamMonitor* GetMonitorForRenderFrame(int render_process_id,
-                                             int render_frame_id) {
+AudioStreamMonitor* GetMonitorForRenderFrame(
+    GlobalRenderFrameHostId render_frame_host_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   WebContentsImpl* const web_contents =
       static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(
-          RenderFrameHost::FromID(render_process_id, render_frame_id)));
+          RenderFrameHost::FromID(render_frame_host_id)));
   return web_contents ? web_contents->audio_stream_monitor() : nullptr;
 }
 
 }  // namespace
 
 AudioStreamMonitor::AudibleClientRegistration::AudibleClientRegistration(
-    GlobalRenderFrameHostId host_id,
+    GlobalRenderFrameHostId render_frame_host_id,
     AudioStreamMonitor* audio_stream_monitor)
-    : host_id_(host_id), audio_stream_monitor_(audio_stream_monitor) {
-  audio_stream_monitor_->AddAudibleClient(host_id_);
+    : render_frame_host_id_(render_frame_host_id),
+      audio_stream_monitor_(audio_stream_monitor) {
+  audio_stream_monitor_->AddAudibleClient(render_frame_host_id_);
 }
 
 AudioStreamMonitor::AudibleClientRegistration::~AudibleClientRegistration() {
-  audio_stream_monitor_->RemoveAudibleClient(host_id_);
+  audio_stream_monitor_->RemoveAudibleClient(render_frame_host_id_);
 }
 
 bool AudioStreamMonitor::StreamID::operator<(const StreamID& other) const {
-  return std::tie(render_process_id, render_frame_id, stream_id) <
-         std::tie(other.render_process_id, other.render_frame_id,
-                  other.stream_id);
+  return std::tie(render_frame_host_id, stream_id) <
+         std::tie(other.render_frame_host_id, other.stream_id);
 }
 
 bool AudioStreamMonitor::StreamID::operator==(const StreamID& other) const {
-  return std::tie(render_process_id, render_frame_id, stream_id) ==
-         std::tie(other.render_process_id, other.render_frame_id,
-                  other.stream_id);
+  return std::tie(render_frame_host_id, stream_id) ==
+         std::tie(other.render_frame_host_id, other.stream_id);
 }
 
 AudioStreamMonitor::AudioStreamMonitor(WebContents* contents)
@@ -81,31 +80,35 @@ void AudioStreamMonitor::RenderProcessGone(int render_process_id) {
   // Streams must be removed locally before calling UpdateStreams() in order to
   // avoid removing streams from the process twice, since RenderProcessHost
   // removes the streams on its own when the renderer process is gone.
-  base::EraseIf(streams_,
-                [render_process_id](const std::pair<StreamID, bool>& entry) {
-                  return entry.first.render_process_id == render_process_id;
-                });
+  base::EraseIf(
+      streams_, [render_process_id](const std::pair<StreamID, bool>& entry) {
+        return entry.first.render_frame_host_id.child_id == render_process_id;
+      });
   UpdateStreams();
 }
 
 std::unique_ptr<AudioStreamMonitor::AudibleClientRegistration>
-AudioStreamMonitor::RegisterAudibleClient(GlobalRenderFrameHostId host_id) {
+AudioStreamMonitor::RegisterAudibleClient(
+    GlobalRenderFrameHostId render_frame_host_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  return std::make_unique<AudibleClientRegistration>(host_id, this);
+  return std::make_unique<AudibleClientRegistration>(render_frame_host_id,
+                                                     this);
 }
 
-void AudioStreamMonitor::AddAudibleClient(GlobalRenderFrameHostId host_id) {
+void AudioStreamMonitor::AddAudibleClient(
+    GlobalRenderFrameHostId render_frame_host_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  audible_clients_[host_id]++;
+  audible_clients_[render_frame_host_id]++;
   UpdateStreams();
 }
 
-void AudioStreamMonitor::RemoveAudibleClient(GlobalRenderFrameHostId host_id) {
+void AudioStreamMonitor::RemoveAudibleClient(
+    GlobalRenderFrameHostId render_frame_host_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!audible_clients_.empty());
 
-  auto it = audible_clients_.find(host_id);
+  auto it = audible_clients_.find(render_frame_host_id);
   CHECK(it != audible_clients_.end());
   CHECK_GT(it->second, 0u);
   it->second--;
@@ -118,52 +121,52 @@ void AudioStreamMonitor::RemoveAudibleClient(GlobalRenderFrameHostId host_id) {
 }
 
 // static
-void AudioStreamMonitor::StartMonitoringStream(int render_process_id,
-                                               int render_frame_id,
-                                               int stream_id) {
+void AudioStreamMonitor::StartMonitoringStream(
+    GlobalRenderFrameHostId render_frame_host_id,
+    int stream_id) {
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](const StreamID& sid) {
-            if (AudioStreamMonitor* monitor = GetMonitorForRenderFrame(
-                    sid.render_process_id, sid.render_frame_id)) {
+            if (AudioStreamMonitor* monitor =
+                    GetMonitorForRenderFrame(sid.render_frame_host_id)) {
               monitor->StartMonitoringStreamOnUIThread(sid);
             }
           },
-          StreamID{render_process_id, render_frame_id, stream_id}));
+          StreamID{render_frame_host_id, stream_id}));
 }
 
 // static
-void AudioStreamMonitor::StopMonitoringStream(int render_process_id,
-                                              int render_frame_id,
-                                              int stream_id) {
+void AudioStreamMonitor::StopMonitoringStream(
+    GlobalRenderFrameHostId render_frame_host_id,
+    int stream_id) {
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](const StreamID& sid) {
-            if (AudioStreamMonitor* monitor = GetMonitorForRenderFrame(
-                    sid.render_process_id, sid.render_frame_id)) {
+            if (AudioStreamMonitor* monitor =
+                    GetMonitorForRenderFrame(sid.render_frame_host_id)) {
               monitor->StopMonitoringStreamOnUIThread(sid);
             }
           },
-          StreamID{render_process_id, render_frame_id, stream_id}));
+          StreamID{render_frame_host_id, stream_id}));
 }
 
 // static
-void AudioStreamMonitor::UpdateStreamAudibleState(int render_process_id,
-                                                  int render_frame_id,
-                                                  int stream_id,
-                                                  bool is_audible) {
+void AudioStreamMonitor::UpdateStreamAudibleState(
+    GlobalRenderFrameHostId render_frame_host_id,
+    int stream_id,
+    bool is_audible) {
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](const StreamID& sid, bool is_audible) {
-            if (AudioStreamMonitor* monitor = GetMonitorForRenderFrame(
-                    sid.render_process_id, sid.render_frame_id)) {
+            if (AudioStreamMonitor* monitor =
+                    GetMonitorForRenderFrame(sid.render_frame_host_id)) {
               monitor->UpdateStreamAudibleStateOnUIThread(sid, is_audible);
             }
           },
-          StreamID{render_process_id, render_frame_id, stream_id}, is_audible));
+          StreamID{render_frame_host_id, stream_id}, is_audible));
 }
 
 void AudioStreamMonitor::StartMonitoringStreamOnUIThread(const StreamID& sid) {
@@ -208,9 +211,7 @@ void AudioStreamMonitor::UpdateStreams() {
   for (auto& kv : streams_) {
     const bool is_stream_audible = kv.second;
     is_audible_ |= is_stream_audible;
-    GlobalRenderFrameHostId host_id(kv.first.render_process_id,
-                                    kv.first.render_frame_id);
-    audible_frames[host_id] |= is_stream_audible;
+    audible_frames[kv.first.render_frame_host_id] |= is_stream_audible;
   }
 
   for (auto& kv : audible_clients_) {
@@ -234,8 +235,18 @@ void AudioStreamMonitor::UpdateStreams() {
     }
 
     bool is_frame_audible = kv.second;
-    if (is_frame_audible != render_frame_host_impl->is_audible()) {
-      render_frame_host_impl->OnAudibleStateChanged(is_frame_audible);
+    if (is_frame_audible ==
+        render_frame_host_impl->HasMediaStreams(
+            RenderFrameHostImpl::MediaStreamType::kPlayingAudibleAudioStream)) {
+      continue;
+    }
+
+    if (is_frame_audible) {
+      render_frame_host_impl->OnMediaStreamAdded(
+          RenderFrameHostImpl::MediaStreamType::kPlayingAudibleAudioStream);
+    } else {
+      render_frame_host_impl->OnMediaStreamRemoved(
+          RenderFrameHostImpl::MediaStreamType::kPlayingAudibleAudioStream);
     }
   }
 
@@ -268,15 +279,11 @@ void AudioStreamMonitor::MaybeToggle() {
 
 void AudioStreamMonitor::RenderFrameDeleted(
     RenderFrameHost* render_frame_host) {
-  int render_process_id = render_frame_host->GetProcess()->GetID();
-  int render_frame_id = render_frame_host->GetRoutingID();
-
   // It is possible for a frame to be deleted before notifications about its
   // streams are received. Explicitly clear these streams.
-  base::EraseIf(streams_, [render_process_id, render_frame_id](
+  base::EraseIf(streams_, [render_frame_host](
                               const std::pair<StreamID, bool>& entry) {
-    return entry.first.render_process_id == render_process_id &&
-           entry.first.render_frame_id == render_frame_id;
+    return entry.first.render_frame_host_id == render_frame_host->GetGlobalId();
   });
   UpdateStreams();
 }

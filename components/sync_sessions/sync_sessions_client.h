@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "components/sync/model/model_type_store.h"
 
 class GURL;
@@ -20,7 +21,7 @@ class SyncedWindowDelegatesGetter;
 
 // Interface for clients of a sync sessions datatype. Should be used as a getter
 // for services and data the Sync Sessions datatype depends on.
-class SyncSessionsClient {
+class SyncSessionsClient : public base::SupportsWeakPtr<SyncSessionsClient> {
  public:
   SyncSessionsClient();
 

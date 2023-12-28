@@ -14,7 +14,7 @@
       readAnythingApp.shadowRoot.querySelector('read-anything-toolbar')
           .shadowRoot;
   const highlightButton = toolbar.getElementById('highlight');
-  const sentence1 = 'Big wheel keep on turning.';
+  const sentence1 = 'Big wheel keep on turning. ';
   const sentence2 = 'Proud Mary keep on burning.';
   const axTree = {
     rootId: 1,

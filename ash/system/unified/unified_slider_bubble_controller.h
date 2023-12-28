@@ -100,14 +100,13 @@ class ASH_EXPORT UnifiedSliderBubbleController
   void StartAutoCloseTimer();
 
   // Unowned.
-  const raw_ptr<UnifiedSystemTray, ExperimentalAsh> tray_;
+  const raw_ptr<UnifiedSystemTray> tray_;
 
   base::OneShotTimer autoclose_;
 
-  raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
-  raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_ = nullptr;
-  raw_ptr<UnifiedSliderView, DanglingUntriaged | ExperimentalAsh> slider_view_ =
-      nullptr;
+  raw_ptr<TrayBubbleView> bubble_view_ = nullptr;
+  raw_ptr<views::Widget> bubble_widget_ = nullptr;
+  raw_ptr<UnifiedSliderView, DanglingUntriaged> slider_view_ = nullptr;
 
   // Type of the currently shown slider.
   SliderType slider_type_ = SLIDER_TYPE_VOLUME;

@@ -100,9 +100,9 @@ constexpr int kNumColumns = 5;
 
 // A stub subclass of Button that has no visuals.
 class DownloadBubbleTransparentButton : public views::Button {
- public:
-  METADATA_HEADER(DownloadBubbleTransparentButton);
+  METADATA_HEADER(DownloadBubbleTransparentButton, views::Button)
 
+ public:
   explicit DownloadBubbleTransparentButton(PressedCallback callback,
                                            DownloadBubbleRowView* row_view)
       : Button(std::move(callback)), row_view_(row_view) {
@@ -138,7 +138,7 @@ class DownloadBubbleTransparentButton : public views::Button {
   raw_ptr<DownloadBubbleRowView> row_view_;
 };
 
-BEGIN_METADATA(DownloadBubbleTransparentButton, Button)
+BEGIN_METADATA(DownloadBubbleTransparentButton)
 END_METADATA
 }  // namespace
 
@@ -1099,5 +1099,5 @@ void DownloadBubbleRowView::SetInputProtectorForTesting(
   input_protector_ = std::move(input_protector);
 }
 
-BEGIN_METADATA(DownloadBubbleRowView, views::View)
+BEGIN_METADATA(DownloadBubbleRowView)
 END_METADATA

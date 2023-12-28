@@ -145,16 +145,15 @@ class BatteryUpdateMessageHandlerTest : public testing::Test {
       base::MakeRefCounted<FakeBluetoothSocket>();
   std::unique_ptr<MessageStream> message_stream_;
   std::unique_ptr<MessageStreamLookup> message_stream_lookup_;
-  raw_ptr<FakeMessageStreamLookup, ExperimentalAsh>
-      fake_message_stream_lookup_ = nullptr;
+  raw_ptr<FakeMessageStreamLookup> fake_message_stream_lookup_ = nullptr;
 
   mojo::SharedRemote<mojom::FastPairDataParser> data_parser_remote_;
   mojo::PendingRemote<mojom::FastPairDataParser> fast_pair_data_parser_;
   std::unique_ptr<FastPairDataParser> data_parser_;
   std::unique_ptr<QuickPairProcessManager> process_manager_;
 
-  raw_ptr<device::BluetoothDevice, DanglingUntriaged | ExperimentalAsh>
-      bluetooth_device_ = nullptr;
+  raw_ptr<device::BluetoothDevice, DanglingUntriaged> bluetooth_device_ =
+      nullptr;
   std::unique_ptr<BatteryUpdateMessageHandler> battery_update_message_handler_;
 };
 

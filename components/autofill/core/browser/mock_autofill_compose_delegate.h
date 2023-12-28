@@ -19,13 +19,11 @@ class MockAutofillComposeDelegate : public AutofillComposeDelegate {
               ShouldOfferComposePopup,
               (const FormFieldData&),
               (override));
-  MOCK_METHOD(void,
-              OpenCompose,
-              (UiEntryPoint,
-               const FormFieldData&,
-               std::optional<AutofillClient::PopupScreenLocation>,
-               ComposeCallback),
-              (override));
+  MOCK_METHOD(
+      void,
+      OpenCompose,
+      (autofill::AutofillDriver&, FormGlobalId, FieldGlobalId, UiEntryPoint),
+      (override));
   MOCK_METHOD(bool, HasSavedState, (const FieldGlobalId&), (override));
 };
 

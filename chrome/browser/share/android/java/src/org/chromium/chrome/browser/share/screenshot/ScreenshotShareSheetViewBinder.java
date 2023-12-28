@@ -17,9 +17,6 @@ class ScreenshotShareSheetViewBinder {
         } else if (ScreenshotShareSheetViewProperties.SCREENSHOT_BITMAP == propertyKey) {
             view.updateScreenshotBitmap(
                     model.get(ScreenshotShareSheetViewProperties.SCREENSHOT_BITMAP));
-        } else if (ScreenshotShareSheetViewProperties.SCREENSHOT_EDIT_DISABLED == propertyKey) {
-            view.setEditButtonDisabled(
-                    model.get(ScreenshotShareSheetViewProperties.SCREENSHOT_EDIT_DISABLED));
         }
     }
 }

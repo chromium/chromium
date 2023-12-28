@@ -14,7 +14,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -64,8 +63,7 @@ public class ScreenshotShareSheetMediatorUnitTest {
                 Runnable deleteRunnable,
                 Runnable saveRunnable,
                 WindowAndroid windowAndroid,
-                ChromeOptionShareCallback chromeOptionShareCallback,
-                Callback<Runnable> installCallback) {
+                ChromeOptionShareCallback chromeOptionShareCallback) {
             super(
                     context,
                     propertyModel,
@@ -73,8 +71,7 @@ public class ScreenshotShareSheetMediatorUnitTest {
                     saveRunnable,
                     windowAndroid,
                     JUnitTestGURLs.EXAMPLE_URL.getSpec(),
-                    chromeOptionShareCallback,
-                    installCallback);
+                    chromeOptionShareCallback);
         }
 
         @Override
@@ -111,8 +108,7 @@ public class ScreenshotShareSheetMediatorUnitTest {
                         mDeleteRunnable,
                         mSaveRunnable,
                         mWindowAndroid,
-                        mShareCallback,
-                        mInstallRunnable);
+                        mShareCallback);
     }
 
     @Test
@@ -157,21 +153,4 @@ public class ScreenshotShareSheetMediatorUnitTest {
                         "Sharing.ScreenshotFallback.Action",
                         ScreenshotShareSheetMetrics.ScreenshotShareSheetAction.SHARE));
     }
-
-    @Test
-    public void onClickInstall() {
-        Callback<Integer> callback =
-                mModel.get(ScreenshotShareSheetViewProperties.NO_ARG_OPERATION_LISTENER);
-        callback.onResult(ScreenshotShareSheetViewProperties.NoArgOperation.INSTALL);
-
-        verify(mInstallRunnable).onResult(any());
-        Assert.assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Sharing.ScreenshotFallback.Action",
-                        ScreenshotShareSheetMetrics.ScreenshotShareSheetAction.EDIT));
-    }
-
-    @After
-    public void tearDown() {}
 }

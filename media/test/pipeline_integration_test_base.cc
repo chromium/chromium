@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/media_log.h"
@@ -44,6 +45,12 @@
 #include "media/filters/vpx_video_decoder.h"
 #endif
 
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+#include "media/filters/hls_data_source_provider_impl.h"
+#include "media/filters/hls_manifest_demuxer_engine.h"
+#include "media/filters/manifest_demuxer.h"
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
+
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::AtLeast;
@@ -55,6 +62,25 @@ using ::testing::Return;
 using ::testing::SaveArg;
 
 namespace media {
+
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+namespace {
+
+class TestDataSourceFactory
+    : public HlsDataSourceProviderImpl::DataSourceFactory {
+ public:
+  ~TestDataSourceFactory() override = default;
+  void CreateDataSource(GURL uri, DataSourceCb callback) override {
+    auto file_data_source = std::make_unique<FileDataSource>();
+    base::FilePath file_path(uri.GetContent());
+    CHECK(file_data_source->Initialize(file_path))
+        << "Is " << file_path.value() << " missing?";
+    std::move(callback).Run(std::move(file_data_source));
+  }
+};
+
+}  // namespace
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 static std::vector<std::unique_ptr<VideoDecoder>> CreateVideoDecodersForTest(
     MediaLog* media_log,
@@ -239,6 +265,42 @@ void PipelineIntegrationTestBase::SetCreateRendererCB(
     CreateRendererCB create_renderer_cb) {
   create_renderer_cb_ = std::move(create_renderer_cb);
 }
+
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+PipelineStatus PipelineIntegrationTestBase::StartPipelineWithHlsManifest(
+    const std::string& filename) {
+  hashing_enabled_ = true;
+
+  auto full_path = GetTestDataFilePath(filename);
+  std::string file_url = "file://" + full_path.MaybeAsASCII();
+  GURL manifest_root{file_url};
+
+  auto multibuffer_factory = std::make_unique<TestDataSourceFactory>();
+  // HlsManifestDemuxerEngine requires a SequenceBound data source provider,
+  // regardless of which sequence it's actually bound to.
+  auto hls_dsp = base::SequenceBound<HlsDataSourceProviderImpl>(
+      task_environment_.GetMainThreadTaskRunner(),
+      std::move(multibuffer_factory));
+
+  auto engine = std::make_unique<HlsManifestDemuxerEngine>(
+      std::move(hls_dsp), task_environment_.GetMainThreadTaskRunner(),
+      manifest_root, &media_log_);
+  demuxer_ = std::make_unique<ManifestDemuxer>(
+      task_environment_.GetMainThreadTaskRunner(), base::DoNothing(),
+      std::move(engine), &media_log_);
+  EXPECT_CALL(*this, OnMetadata(_))
+      .Times(AtMost(1))
+      .WillRepeatedly(SaveArg<0>(&metadata_));
+
+  base::RunLoop run_loop;
+  pipeline_->Start(
+      Pipeline::StartType::kNormal, demuxer_.get(), this,
+      base::BindOnce(&PipelineIntegrationTestBase::OnStatusCallback,
+                     base::Unretained(this), run_loop.QuitClosure()));
+  RunUntilQuitOrEndedOrError(&run_loop);
+  return pipeline_status_;
+}
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 PipelineStatus PipelineIntegrationTestBase::StartInternal(
     std::unique_ptr<DataSource> data_source,
@@ -731,7 +793,7 @@ PipelineStatus PipelineIntegrationTestBase::StartPipelineWithMediaSource(
 
   RunUntilQuitOrEndedOrError(&run_loop);
 
-  for (auto* stream : demuxer_->GetAllStreams()) {
+  for (media::DemuxerStream* stream : demuxer_->GetAllStreams()) {
     EXPECT_TRUE(stream->SupportsConfigChanges());
   }
 

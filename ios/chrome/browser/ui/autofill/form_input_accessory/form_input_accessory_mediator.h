@@ -89,6 +89,9 @@ class WebStateList;
 // Returns YES if the last focused field is of type 'password'.
 - (BOOL)lastFocusedFieldWasPassword;
 
+// Returns the last seen valid params of a form before retrieving suggestions.
+- (const autofill::FormActivityParams&)lastSeenParams;
+
 @end
 
 // Methods to allow injection in tests.

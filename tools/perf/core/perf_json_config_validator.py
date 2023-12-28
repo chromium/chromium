@@ -137,6 +137,7 @@ def _ValidateBrowserType(builder_name, test_config):
       raise ValueError("%s must use 'lacros-chrome' browser type" %
                        builder_name)
   elif builder_name in ('win-10-perf', 'win-10-perf-pgo',
+                        'win-11-perf', 'win-11-perf-pgo',
                         'Win 7 Nvidia GPU Perf',
                         'win-10_laptop_low_end-perf_HP-Candidate',
                         'win-10_laptop_low_end-perf',

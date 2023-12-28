@@ -31,11 +31,6 @@ LayoutRubyColumn::LayoutRubyColumn() : LayoutNGBlockFlow(nullptr) {
 
 LayoutRubyColumn::~LayoutRubyColumn() = default;
 
-bool LayoutRubyColumn::IsOfType(LayoutObjectType type) const {
-  NOT_DESTROYED();
-  return type == kLayoutObjectRubyColumn || LayoutBlockFlow::IsOfType(type);
-}
-
 void LayoutRubyColumn::RemoveLeftoverAnonymousBlock(LayoutBlock*) {
   NOT_DESTROYED();
 }

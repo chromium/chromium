@@ -10,7 +10,7 @@ import {RootType, Source, VolumeType} from '../../common/js/volume_manager_types
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {FileKey, PropStatus, State, Volume, VolumeId} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
-import {constants} from '../../foreground/js/constants.js';
+import {ICON_TYPES} from '../../foreground/js/constants.js';
 import {Slice} from '../../lib/base_store.js';
 import {getEntry, getFileData} from '../store.js';
 
@@ -129,15 +129,12 @@ function addVolumeReducer(currentState: State, payload: {
   cacheEntries(currentState, [newVolumeEntry]);
   const volumeRootKey = newVolumeEntry.toURL();
 
-  // Update isEjectable/shouldDelayLoadingChildren fields in the FileData.
+  // Update isEjectable fields in the FileData.
   currentState.allEntries[volumeRootKey] = {
     ...currentState.allEntries[volumeRootKey]!,
     isEjectable: (volumeInfo.source === Source.DEVICE &&
                   volumeInfo.volumeType !== VolumeType.MTP) ||
         volumeInfo.source === Source.FILE,
-    shouldDelayLoadingChildren: volumeInfo.source === Source.NETWORK &&
-        (volumeInfo.volumeType === VolumeType.PROVIDED ||
-         volumeInfo.volumeType === VolumeType.SMB),
   };
 
   const volume =
@@ -359,7 +356,7 @@ function addVolumeReducer(currentState: State, payload: {
               // should be UNKNOWN_REMOVABLE, and it shouldn't be ejectable.
               currentState.allEntries[v.rootKey!] = {
                 ...fileData,
-                icon: constants.ICON_TYPES.UNKNOWN_REMOVABLE,
+                icon: ICON_TYPES.UNKNOWN_REMOVABLE,
                 isEjectable: false,
               };
             }
@@ -374,7 +371,7 @@ function addVolumeReducer(currentState: State, payload: {
       const fileData = getFileData(currentState, volumeRootKey)!;
       currentState.allEntries[volumeRootKey] = {
         ...fileData,
-        icon: constants.ICON_TYPES.UNKNOWN_REMOVABLE,
+        icon: ICON_TYPES.UNKNOWN_REMOVABLE,
         isEjectable: false,
       };
       currentState.allEntries[parentKey] = {

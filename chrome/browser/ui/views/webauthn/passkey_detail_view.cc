@@ -64,5 +64,5 @@ void PasskeyDetailView::OnThemeChanged() {
       GetColorProvider()->GetColor(ui::kColorSeparator)));
 }
 
-BEGIN_METADATA(PasskeyDetailView, views::View)
+BEGIN_METADATA(PasskeyDetailView)
 END_METADATA

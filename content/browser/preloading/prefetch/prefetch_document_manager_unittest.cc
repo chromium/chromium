@@ -450,13 +450,13 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
   prefetch_urls[0]->SetPrefetchStatus(PrefetchStatus::kPrefetchSuccessful);
   EXPECT_FALSE(prefetch_document_manager->IsPrefetchAttemptFailedOrDiscarded(
       GetCrossOriginUrl("/candidate1.html")));
-  prefetch_urls[0]->SetPrefetchStatus(
+  prefetch_urls[1]->SetPrefetchStatus(
       PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps);
   EXPECT_TRUE(prefetch_document_manager->IsPrefetchAttemptFailedOrDiscarded(
-      GetCrossOriginUrl("/candidate1.html")));
-  prefetch_urls[0]->SetPrefetchStatus(PrefetchStatus::kPrefetchFailedNetError);
+      GetCrossOriginUrl("/candidate2.html")));
+  prefetch_urls[2]->SetPrefetchStatus(PrefetchStatus::kPrefetchFailedNetError);
   EXPECT_TRUE(prefetch_document_manager->IsPrefetchAttemptFailedOrDiscarded(
-      GetCrossOriginUrl("/candidate1.html")));
+      GetCrossOriginUrl("/candidate3.html")));
 }
 
 // Struct describing the settings for No-Vary-Search experiment's flags used to

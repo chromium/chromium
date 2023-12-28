@@ -14,6 +14,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -54,11 +55,11 @@ class AutofillProfile : public AutofillDataModel {
   // The values used to represent Autofill in the `initial_creator_id()` and
   // `last_modifier_id()`.
   static constexpr int kInitialCreatorOrModifierChrome = 70073;
-  explicit AutofillProfile(AddressCountryCode country_code);
   AutofillProfile(const std::string& guid,
                   Source source,
                   AddressCountryCode country_code);
   AutofillProfile(Source source, AddressCountryCode country_code);
+  explicit AutofillProfile(AddressCountryCode country_code);
 
   AutofillProfile(const AutofillProfile& profile);
   ~AutofillProfile() override;
@@ -94,35 +95,35 @@ class AutofillProfile : public AutofillDataModel {
   // FormGroup:
   void GetMatchingTypes(const std::u16string& text,
                         const std::string& app_locale,
-                        ServerFieldTypeSet* matching_types) const override;
+                        FieldTypeSet* matching_types) const override;
 
-  std::u16string GetRawInfo(ServerFieldType type) const override;
+  std::u16string GetRawInfo(FieldType type) const override;
 
-  int GetRawInfoAsInt(ServerFieldType type) const override;
+  int GetRawInfoAsInt(FieldType type) const override;
 
-  void SetRawInfoWithVerificationStatus(ServerFieldType type,
+  void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
                                         VerificationStatus status) override;
 
   void SetRawInfoAsIntWithVerificationStatus(
-      ServerFieldType type,
+      FieldType type,
       int value,
       VerificationStatus status) override;
 
-  void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
+  void GetSupportedTypes(FieldTypeSet* supported_types) const override;
 
   // Every `GetSupportedType()` is either a storable type or has a corresponding
   // storable type. For example, ADDRESS_HOME_LINE1 corresponds to the storable
   // type ADDRESS_HOME_STREET_ADDRESS.
   // This function returns the storable type of the given `type`.
-  ServerFieldType GetStorableTypeOf(ServerFieldType type) const;
+  FieldType GetStorableTypeOf(FieldType type) const;
 
   // Returns true if there are no values (field types) set.
   bool IsEmpty(const std::string& app_locale) const;
 
   // Returns true if the |type| of data in this profile is present, but invalid.
   // Otherwise returns false.
-  bool IsPresentButInvalid(ServerFieldType type) const;
+  bool IsPresentButInvalid(FieldType type) const;
 
   // Comparison for Sync.  Returns 0 if the profile is the same as |this|,
   // or < 0, or > 0 if it is different.  The implied ordering can be used for
@@ -164,7 +165,7 @@ class AutofillProfile : public AutofillDataModel {
   // Like `IsSubsetOf()`, but considers only the given `types`.
   bool IsSubsetOfForFieldSet(const AutofillProfileComparator& comparator,
                              const AutofillProfile& profile,
-                             const ServerFieldTypeSet& types) const;
+                             const FieldTypeSet& types) const;
 
   // Like `IsSubsetOf()`, but for strict superset instead of subset.
   bool IsStrictSupersetOf(const AutofillProfileComparator& comparator,
@@ -194,21 +195,32 @@ class AutofillProfile : public AutofillDataModel {
   // 4. Phone.
   // 5. Company name.
   static void CreateDifferentiatingLabels(
-      const std::vector<const AutofillProfile*>& profiles,
+      const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+          profiles,
       const std::string& app_locale,
       std::vector<std::u16string>* labels);
 
-  // Creates inferred labels for |profiles|, according to the rules above and
-  // stores them in |created_labels|. If |suggested_fields| is not NULL, the
-  // resulting label fields are drawn from |suggested_fields|, except excluding
-  // |excluded_field|. Otherwise, the label fields are drawn from a default set,
-  // and |excluded_field| is ignored; by convention, it should be of
-  // |UNKNOWN_TYPE| when |suggested_fields| is NULL. Each label includes at
-  // least |minimal_fields_shown| fields, if possible.
+  // Creates inferred labels for `profiles`, according to the rules above and
+  // stores them in `labels`. The inferred labels both provide a way to
+  // identify a profile and also make sure to differentiate them if
+  // necessary. Therefore this method first adds label information to allow
+  // users to recognize a profile (like their full name) and a possible second
+  // label if this leads to two profiles having the same label, for example if
+  // there are two profiles with the same full name, it might add their email
+  // data to differentiate them. In this context the `triggering_field_type` is
+  // used to help deciding whether the differentiate label is needed. If the
+  // profile value for `triggering_field_type` is unique (and therefore the
+  // `Suggestion::main_text`), no differentiating label will be added. If
+  // `suggested_fields` is not nullopt, the resulting label fields are drawn
+  // from it minus those in `excluded_fields`. Otherwise, the label fields are
+  // drawn from a default set. Each label includes at least
+  // `minimal_fields_shown` fields, if possible.
   static void CreateInferredLabels(
-      const std::vector<const AutofillProfile*>& profiles,
-      const absl::optional<ServerFieldTypeSet>& suggested_fields,
-      ServerFieldType excluded_field,
+      const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+          profiles,
+      const std::optional<FieldTypeSet> suggested_fields,
+      std::optional<FieldType> triggering_field_type,
+      FieldTypeSet excluded_fields,
       size_t minimal_fields_shown,
       const std::string& app_locale,
       std::vector<std::u16string>* labels);
@@ -216,7 +228,7 @@ class AutofillProfile : public AutofillDataModel {
   // Builds inferred label from the first |num_fields_to_include| non-empty
   // fields in |label_fields|. Uses as many fields as possible if there are not
   // enough non-empty fields.
-  std::u16string ConstructInferredLabel(const ServerFieldType* label_fields,
+  std::u16string ConstructInferredLabel(const FieldType* label_fields,
                                         const size_t label_fields_size,
                                         size_t num_fields_to_include,
                                         const std::string& app_locale) const;
@@ -285,13 +297,18 @@ class AutofillProfile : public AutofillDataModel {
 
   // Checks for non-empty setting-inaccessible fields and returns all that were
   // found.
-  ServerFieldTypeSet FindInaccessibleProfileValues() const;
+  FieldTypeSet FindInaccessibleProfileValues() const;
 
   // Clears all specified |fields| from the profile.
-  void ClearFields(const ServerFieldTypeSet& fields);
+  void ClearFields(const FieldTypeSet& fields);
 
   const ProfileTokenQuality& token_quality() const { return token_quality_; }
   ProfileTokenQuality& token_quality() { return token_quality_; }
+
+  // Returns the type that should be used to fill a field given `field_type`.
+  // It is possible that this type is not necessarily `field_type`, if it does
+  // not yield a value for filling.
+  AutofillType GetFillingType(AutofillType field_type) const;
 
  private:
   // FormGroup:
@@ -299,7 +316,7 @@ class AutofillProfile : public AutofillDataModel {
                              const std::string& app_locale) const override;
 
   VerificationStatus GetVerificationStatusImpl(
-      const ServerFieldType type) const override;
+      const FieldType type) const override;
 
   bool SetInfoWithVerificationStatusImpl(const AutofillType& type,
                                          const std::u16string& value,
@@ -312,9 +329,10 @@ class AutofillProfile : public AutofillDataModel {
   // profiles, if possible; and also at least |num_fields_to_include| fields, if
   // possible. The label fields are drawn from |fields|.
   static void CreateInferredLabelsHelper(
-      const std::vector<const AutofillProfile*>& profiles,
+      const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+          profiles,
       const std::list<size_t>& indices,
-      const std::vector<ServerFieldType>& fields,
+      const std::vector<FieldType>& fields,
       size_t num_fields_to_include,
       const std::string& app_locale,
       std::vector<std::u16string>* labels);

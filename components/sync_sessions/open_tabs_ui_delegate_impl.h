@@ -37,7 +37,8 @@ class OpenTabsUIDelegateImpl : public OpenTabsUIDelegate {
 
   // OpenTabsUIDelegate implementation.
   bool GetAllForeignSessions(
-      std::vector<const SyncedSession*>* sessions) override;
+      std::vector<raw_ptr<const SyncedSession, VectorExperimental>>* sessions)
+      override;
   std::vector<const sessions::SessionWindow*> GetForeignSession(
       const std::string& tag) override;
   bool GetForeignTab(const std::string& tag,

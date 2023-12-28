@@ -174,9 +174,8 @@ class DumpAccessibilityEventsTestExceptUIA
 // Parameterize the tests so that each test-pass is run independently.
 struct DumpAccessibilityEventsTestPassToString {
   std::string operator()(
-      const ::testing::TestParamInfo<std::pair<ui::AXApiType::Type, bool>>& i)
-      const {
-    return std::string(i.param.first) + (i.param.second ? "1" : "0");
+      const ::testing::TestParamInfo<ui::AXApiType::Type>& i) const {
+    return std::string(i.param);
   }
 };
 
@@ -184,7 +183,7 @@ struct DumpAccessibilityEventsTestPassToString {
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityEventsTest,
-    ::testing::ValuesIn(DumpAccessibilityTestBase::EventTestPassesExceptUIA()),
+    ::testing::ValuesIn(DumpAccessibilityTestBase::EventTestPasses()),
     DumpAccessibilityEventsTestPassToString());
 
 INSTANTIATE_TEST_SUITE_P(
@@ -271,7 +270,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-haspopup-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+// crbug.com/1511111 leaving disabled after re-enabling test suite.
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsAriaHiddenChanged) {
   RunEventTest(FILE_PATH_LITERAL("aria-hidden-changed.html"));
 }
@@ -515,7 +515,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("anonymous-block-children-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+// crbug.com/1511111 leaving disabled after re-enabling test suite.
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsChildrenChangedOnlyOnAncestor) {
   RunEventTest(FILE_PATH_LITERAL("children-changed-only-on-ancestor.html"));
 }
@@ -604,12 +605,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
       FILE_PATH_LITERAL("aria-expanded-and-collapsed-reparenting.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+// crbug.com/1511111 leaving disabled after re-enabling test suite.
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsAriaHiddenDescendants) {
   RunEventTest(FILE_PATH_LITERAL("aria-hidden-descendants.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+// crbug.com/1511111 leaving disabled after re-enabling test suite.
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsAriaHiddenSingleDescendant) {
   RunEventTest(FILE_PATH_LITERAL("aria-hidden-single-descendant.html"));
 }
@@ -622,8 +625,9 @@ IN_PROC_BROWSER_TEST_P(
       FILE_PATH_LITERAL("aria-hidden-single-descendant-display-none.html"));
 }
 
+// crbug.com/1511111 leaving disabled after re-enabling test suite.
 IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityEventsTest,
+    DumpAccessibilityEventsTestExceptUIA,
     AccessibilityEventsAriaHiddenSingleDescendantVisibilityHidden) {
   RunEventTest(FILE_PATH_LITERAL(
       "aria-hidden-single-descendant-visibility-hidden.html"));
@@ -1017,7 +1021,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("style-changed.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+// crbug.com/1511111 leaving disabled after re-enabling test suite.
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
                        AccessibilityEventsSelectList) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kEnableBlinkFeatures, "HTMLSelectListElement");

@@ -20,8 +20,8 @@ NET_EXPORT_PRIVATE bool ExtractSubjectFromDERCert(
 // ExtractSPKIFromDERCert parses the DER encoded certificate in |cert| and
 // extracts the bytes of the SubjectPublicKeyInfo. On successful return,
 // |spki_out| is set to contain the SPKI, pointing into |cert|.
-NET_EXPORT_PRIVATE bool ExtractSPKIFromDERCert(base::StringPiece cert,
-                                               base::StringPiece* spki_out);
+NET_EXPORT bool ExtractSPKIFromDERCert(base::StringPiece cert,
+                                       base::StringPiece* spki_out);
 
 // ExtractSubjectPublicKeyFromSPKI parses the DER encoded SubjectPublicKeyInfo
 // in |spki| and extracts the bytes of the SubjectPublicKey. On successful

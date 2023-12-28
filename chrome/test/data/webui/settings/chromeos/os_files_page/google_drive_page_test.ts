@@ -127,7 +127,6 @@ suite('<settings-google-drive-subpage>', function() {
     suiteSetup(async () => {
       loadTimeData.overrideValues({
         enableDriveFsBulkPinning: false,
-        showGoogleDriveSettingsPage: true,
       });
     });
 
@@ -265,7 +264,6 @@ suite('<settings-google-drive-subpage>', function() {
     suiteSetup(async () => {
       loadTimeData.overrideValues({
         enableDriveFsBulkPinning: true,
-        showGoogleDriveSettingsPage: true,
       });
     });
 

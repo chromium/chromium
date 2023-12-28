@@ -208,7 +208,8 @@ void CastDisplayConfigurator::ForceInitialConfigure() {
 
 void CastDisplayConfigurator::OnDisplaysAcquired(
     bool force_initial_configure,
-    const std::vector<display::DisplaySnapshot*>& displays) {
+    const std::vector<raw_ptr<display::DisplaySnapshot, VectorExperimental>>&
+        displays) {
   DCHECK(delegate_);
   if (displays.empty()) {
     LOG(WARNING) << "No displays detected, skipping display init.";

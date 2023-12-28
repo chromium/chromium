@@ -52,11 +52,11 @@ class ASH_EXPORT FrameContextMenuController
 
  private:
   // The widget that `this` controls the context menu for.
-  raw_ptr<views::Widget, ExperimentalAsh> frame_;
+  raw_ptr<views::Widget> frame_;
 
   // A delegate who is responsible for determining whether the context menu
   // should be shown at a point.
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
 
   std::unique_ptr<chromeos::MoveToDesksMenuModel> move_to_desks_menu_model_;
   std::unique_ptr<views::MenuRunner> menu_runner_;

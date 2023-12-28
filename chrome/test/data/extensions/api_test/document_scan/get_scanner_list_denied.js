@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// These tests should be run with the get scanner list permission denied (and
+// the extension should not be trusted).
 chrome.test.runTests([() => {
   const filter = {
     local: true,

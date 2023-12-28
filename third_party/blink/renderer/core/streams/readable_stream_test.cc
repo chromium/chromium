@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/string_resource.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "v8/include/v8.h"
 
@@ -107,6 +108,7 @@ readAll(stream);
     NOTREACHED();
     return absl::nullopt;
   }
+  test::TaskEnvironment task_environment_;
 };
 
 // This breaks expectations for general ReadableStreamTransferringOptimizer
@@ -605,6 +607,7 @@ class ReadableByteStreamTest : public testing::Test {
   }
 
  private:
+  test::TaskEnvironment task_environment_;
   Persistent<ReadableStream> stream_;
 };
 

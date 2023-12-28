@@ -40,10 +40,7 @@
 #include "components/translate/core/common/translate_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -85,6 +82,8 @@ constexpr int kImageSearchThumbnailMinSize = 300 * 300;
 constexpr int kImageSearchThumbnailMaxWidth = 600;
 constexpr int kImageSearchThumbnailMaxHeight = 600;
 constexpr char kUnifiedSidePanelVersion[] = "1";
+constexpr int kEncodingQualityJpeg = 40;
+constexpr int kEncodingQualityWebp = 45;
 
 bool NeedsDownscale(gfx::Image image) {
   return (image.Height() * image.Width() >
@@ -135,24 +134,15 @@ std::vector<unsigned char> CoreTabHelper::EncodeImage(
     std::string& content_type,
     lens::mojom::ImageFormat& image_format) {
   std::vector<unsigned char> data;
-  // TODO(crbug/1486044): Encode off the main thread.
-  if (lens::features::IsWebpForImageSearchEnabled() &&
-      gfx::WebpCodec::Encode(image.AsBitmap(),
-                             lens::features::GetEncodingQualityWebp(), &data)) {
-    content_type = "image/webp";
-    image_format = lens::mojom::ImageFormat::WEBP;
-    return data;
-  } else if (lens::features::IsJpegForImageSearchEnabled() &&
-             gfx::JPEGCodec::Encode(image.AsBitmap(),
-                                    lens::features::GetEncodingQualityJpeg(),
-                                    &data)) {
+
+  if (gfx::JPEGCodec::Encode(image.AsBitmap(), kEncodingQualityJpeg, &data)) {
     content_type = "image/jpeg";
     image_format = lens::mojom::ImageFormat::JPEG;
     return data;
   }
-  // If the WebP/JPEG encoding fails, fall back to PNG.
+
   // Get the front and end of the image bytes in order to store them in the
-  // search_args to be sent as part of the PostContent in the request.
+  // search_args to be sent as part of the PostContent in the request
   size_t image_bytes_size = image.As1xPNGBytes()->size();
   const unsigned char* image_bytes_begin = image.As1xPNGBytes()->front();
   const unsigned char* image_bytes_end = image_bytes_begin + image_bytes_size;
@@ -174,6 +164,7 @@ void CoreTabHelper::DownscaleAndEncodeBitmap(
   gfx::Size downscaled_size;
   std::vector<lens::mojom::LatencyLogPtr> log_data;
   std::vector<unsigned char> thumbnail_data;
+
   if (bitmap.isNull()) {
     return std::move(callback).Run(thumbnail_data, content_type, original_size,
                                    downscaled_size, std::move(log_data));
@@ -222,13 +213,11 @@ void CoreTabHelper::DownscaleAndEncodeBitmap(
       lens::mojom::ImageFormat::ORIGINAL, base::Time::Now(),
       /*encoded_size_bytes=*/0));
   if (thumbnail.isOpaque() &&
-      gfx::JPEGCodec::Encode(
-          thumbnail, lens::features::GetEncodingQualityJpeg(), &encoded_data)) {
+      gfx::JPEGCodec::Encode(thumbnail, kEncodingQualityJpeg, &encoded_data)) {
     thumbnail_data.swap(encoded_data);
     content_type = "image/jpeg";
     encode_target_format = lens::mojom::ImageFormat::JPEG;
-  } else if (gfx::WebpCodec::Encode(thumbnail,
-                                    lens::features::GetEncodingQualityWebp(),
+  } else if (gfx::WebpCodec::Encode(thumbnail, kEncodingQualityWebp,
                                     &encoded_data)) {
     thumbnail_data.swap(encoded_data);
     content_type = "image/webp";
@@ -257,26 +246,10 @@ lens::mojom::ImageFormat CoreTabHelper::EncodeImageIntoSearchArgs(
   return image_format;
 }
 
-void CoreTabHelper::TriggerLensPingIfEnabled() {
-  if (lens::features::GetEnableLensPing()) {
-    lens_ping_start_time_ = base::TimeTicks::Now();
-    awaiting_lens_ping_response_ = lens::features::GetLensPingIsSequential();
-
-    // The Lens ping should return response code 204, so opening it in the
-    // current tab will be invisible to the user.
-    GURL lens_ping_url = GURL(lens::features::GetLensPingURL());
-    content::OpenURLParams lens_ping_url_params(
-        lens_ping_url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-        ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
-    web_contents()->OpenURL(lens_ping_url_params);
-  }
-}
-
 void CoreTabHelper::SearchWithLens(content::RenderFrameHost* render_frame_host,
                                    const GURL& src_url,
                                    lens::EntryPoint entry_point,
                                    bool is_image_translate) {
-  TriggerLensPingIfEnabled();
   bool use_side_panel = lens::IsSidePanelEnabledForLens(web_contents());
 
   SearchByImageImpl(render_frame_host, src_url, kImageSearchThumbnailMinSize,
@@ -291,9 +264,6 @@ void CoreTabHelper::SearchWithLens(content::RenderFrameHost* render_frame_host,
 
 void CoreTabHelper::SearchWithLens(const gfx::Image& image,
                                    lens::EntryPoint entry_point) {
-  // TODO(crbug/1431377): After validating the efficacy of the Lens Ping, move
-  // the search Ping to an earlier point in lens_region_search_controller.
-  TriggerLensPingIfEnabled();
   // Do not show the side panel on searches and modify the entry point if Lens
   // fullscreen search features are enabled.
   bool is_full_screen_request = lens::features::IsLensFullscreenSearchEnabled();
@@ -611,27 +581,6 @@ void CoreTabHelper::OnWebContentsLostFocus(
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-void CoreTabHelper::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // A Lens ping should return code 204, so the navigation handle will not be
-  // committed and the URL will start with the Lens ping URL.
-  if (awaiting_lens_ping_response_ && !navigation_handle->HasCommitted() &&
-      navigation_handle->GetURL().spec().find(
-          lens::features::GetLensPingURL()) != std::string::npos) {
-    awaiting_lens_ping_response_ = false;
-
-    base::TimeDelta ping_elapsed_time =
-        base::TimeTicks::Now() - lens_ping_start_time_;
-    UMA_HISTOGRAM_TIMES("Search.Lens.PingDuration", ping_elapsed_time);
-
-    if (stored_lens_search_settings_) {
-      OpenOpenURLParams(stored_lens_search_settings_->url_params,
-                        stored_lens_search_settings_->use_side_panel);
-      stored_lens_search_settings_.reset();
-    }
-  }
-}
-
 void CoreTabHelper::DoSearchByImageWithBitmap(
     mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
         chrome_render_frame,
@@ -781,15 +730,7 @@ void CoreTabHelper::PostContentToURL(TemplateURLRef::PostContent post_content,
         "%s: %s\r\n", net::HttpRequestHeaders::kContentType,
         content_type.c_str());
   }
-  if (awaiting_lens_ping_response_) {
-    stored_lens_search_settings_ = {use_side_panel, open_url_params};
-  } else {
-    OpenOpenURLParams(open_url_params, use_side_panel);
-  }
-}
 
-void CoreTabHelper::OpenOpenURLParams(content::OpenURLParams open_url_params,
-                                      bool use_side_panel) {
   if (use_side_panel) {
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
     lens::OpenLensSidePanel(chrome::FindBrowserWithTab(web_contents()),

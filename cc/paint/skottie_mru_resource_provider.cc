@@ -4,14 +4,12 @@
 
 #include "cc/paint/skottie_mru_resource_provider.h"
 
-#include <string>
+#include <optional>
 #include <utility>
 
-#include <optional>
 #include "base/check.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -19,15 +17,15 @@
 namespace cc {
 namespace {
 
-constexpr base::StringPiece kAssetsKey = "assets";
-constexpr base::StringPiece kIdKey = "id";
-constexpr base::StringPiece kWidthKey = "w";
-constexpr base::StringPiece kHeightKey = "h";
+constexpr std::string_view kAssetsKey = "assets";
+constexpr std::string_view kIdKey = "id";
+constexpr std::string_view kWidthKey = "w";
+constexpr std::string_view kHeightKey = "h";
 
 // TODO(fmalita): Remove explicit parsing and pass size param directly from
 // Skottie.
 base::flat_map</*asset_id*/ std::string, gfx::Size> ParseImageAssetDimensions(
-    base::StringPiece animation_json) {
+    std::string_view animation_json) {
   base::flat_map<std::string, gfx::Size> image_asset_sizes;
 
   std::optional<base::Value> animation_dict =
@@ -99,7 +97,7 @@ class ImageAssetImpl : public skresources::ImageAsset {
 
 SkottieMRUResourceProvider::SkottieMRUResourceProvider(
     FrameDataCallback frame_data_cb,
-    base::StringPiece animation_json)
+    std::string_view animation_json)
     : frame_data_cb_(std::move(frame_data_cb)),
       image_asset_sizes_(ParseImageAssetDimensions(animation_json)) {}
 

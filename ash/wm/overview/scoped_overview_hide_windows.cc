@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/wm/overview/scoped_overview_hide_windows.h"
+#include "base/memory/raw_ptr.h"
 
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
@@ -12,11 +13,12 @@
 namespace ash {
 
 ScopedOverviewHideWindows::ScopedOverviewHideWindows(
-    const std::vector<aura::Window*>& windows,
+    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows,
     bool force_hidden)
     : force_hidden_(force_hidden) {
-  for (auto* window : windows)
+  for (aura::Window* window : windows) {
     AddWindow(window);
+  }
 }
 
 ScopedOverviewHideWindows::~ScopedOverviewHideWindows() {

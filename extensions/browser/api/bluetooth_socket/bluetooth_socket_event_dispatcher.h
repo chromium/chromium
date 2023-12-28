@@ -52,7 +52,7 @@ class BluetoothSocketEventDispatcher : public BrowserContextKeyedAPI {
   static BluetoothSocketEventDispatcher* Get(content::BrowserContext* context);
 
  private:
-  typedef ApiResourceManager<BluetoothApiSocket>::ApiResourceData SocketData;
+  using SocketData = ApiResourceManager<BluetoothApiSocket>::ApiResourceData;
   friend class BrowserContextKeyedAPIFactory<BluetoothSocketEventDispatcher>;
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() { return "BluetoothSocketEventDispatcher"; }

@@ -31,17 +31,27 @@ ComposeDialogView::ComposeDialogView(
                             anchor_bounds,
                             anchor_position),
       anchor_bounds_(anchor_bounds),
-      bubble_wrapper_(std::move(bubble_wrapper)) {
-  set_has_parent(false);
+      bubble_wrapper_(std::move(bubble_wrapper)) {}
+
+void ComposeDialogView::OnBeforeBubbleWidgetInit(
+    views::Widget::InitParams* params,
+    views::Widget* widget) const {
+  WebUIBubbleDialogView::OnBeforeBubbleWidgetInit(params, widget);
+#if BUILDFLAG(IS_LINUX)
+  // In linux, windows may be clipped to their anchors' bounds,
+  // resulting in visual errors, unless they use accelerated rendering. See
+  // crbug.com/1445770 for details.
+  params->requires_accelerated_widget = true;
+#endif
 }
 
-void ComposeDialogView::ResizeDueToAutoResize(content::WebContents* source,
-                                              const gfx::Size& new_size) {
-  WebUIBubbleDialogView::ResizeDueToAutoResize(source, new_size);
-  gfx::Rect screen_work_area =
-      display::Screen::GetScreen()
-          ->GetDisplayNearestWindow(GetWidget()->GetNativeWindow())
-          .work_area();
+gfx::Rect ComposeDialogView::GetBubbleBounds() {
+  const gfx::Size widget_size =
+      BubbleDialogDelegateView::GetBubbleBounds().size();
+  display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestView(
+          GetAnchorView()->GetWidget()->GetNativeView());
+  gfx::Rect screen_work_area = display.work_area();
 
   // We don't want to render anything within `padding` pixels of the edge of the
   // screen work area.
@@ -58,7 +68,6 @@ void ComposeDialogView::ResizeDueToAutoResize(content::WebContents* source,
 
   // Ideally we render at the bottom left of the anchor.  If the dialog would be
   // offscreen, we reposition it.
-  const gfx::Size widget_size = GetWidget()->GetWindowBoundsInScreen().size();
   gfx::Rect best_location(anchor.bottom_left(), widget_size);
   if (available_space.bottom() < kComposeMaxDialogHeightPx) {
     // Not enough space in preferred location. Try other locations
@@ -76,12 +85,18 @@ void ComposeDialogView::ResizeDueToAutoResize(content::WebContents* source,
   }
 
   best_location.AdjustToFit(screen_work_area);
-  GetWidget()->SetBounds(best_location);
+  return best_location;
+}
+
+bool ComposeDialogView::HandleContextMenu(
+    content::RenderFrameHost& render_frame_host,
+    const content::ContextMenuParams& params) {
+  return false;
 }
 
 base::WeakPtr<ComposeDialogView> ComposeDialogView::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-BEGIN_METADATA(ComposeDialogView, views::View)
+BEGIN_METADATA(ComposeDialogView)
 END_METADATA

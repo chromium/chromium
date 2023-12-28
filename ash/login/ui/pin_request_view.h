@@ -118,7 +118,7 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
     PinRequestViewState state() const;
 
    private:
-    const raw_ptr<PinRequestView, DanglingUntriaged | ExperimentalAsh> view_;
+    const raw_ptr<PinRequestView, DanglingUntriaged> view_;
   };
 
   // Creates pin request view that will enable the user to enter a pin.
@@ -183,7 +183,7 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
   PinRequestViewState state_ = PinRequestViewState::kNormal;
 
   // Unowned pointer to the delegate. The delegate should outlive this instance.
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // Callback to close the UI.
   PinRequest::OnPinRequestDone on_pin_request_done_;
@@ -199,13 +199,13 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
   std::u16string default_description_;
   std::u16string default_accessible_title_;
 
-  raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> description_label_ = nullptr;
-  raw_ptr<AccessCodeInput, ExperimentalAsh> access_code_view_ = nullptr;
-  raw_ptr<LoginPinView, ExperimentalAsh> pin_keyboard_view_ = nullptr;
-  raw_ptr<LoginButton, ExperimentalAsh> back_button_ = nullptr;
-  raw_ptr<FocusableLabelButton, ExperimentalAsh> help_button_ = nullptr;
-  raw_ptr<views::Button, ExperimentalAsh> submit_button_ = nullptr;
+  raw_ptr<views::Label> title_label_ = nullptr;
+  raw_ptr<views::Label> description_label_ = nullptr;
+  raw_ptr<AccessCodeInput> access_code_view_ = nullptr;
+  raw_ptr<LoginPinView> pin_keyboard_view_ = nullptr;
+  raw_ptr<LoginButton> back_button_ = nullptr;
+  raw_ptr<FocusableLabelButton> help_button_ = nullptr;
+  raw_ptr<views::Button> submit_button_ = nullptr;
 
   std::unique_ptr<SystemShadow> shadow_;
 

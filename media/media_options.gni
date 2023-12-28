@@ -11,7 +11,6 @@ import("//build/config/ui.gni")
 import("//media/gpu/args.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libaom/options.gni")
-import("//third_party/libgav1/options.gni")
 
 # This flag sets defaults for the current generation of cast devices.
 is_cast_media_device = is_castos || is_cast_android

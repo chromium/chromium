@@ -63,12 +63,6 @@ template("_androidx_prebuilt") {
       # Replace broad library -keep rules with a more limited set in
       # chrome/android/java/proguard.flags instead.
       ignore_proguard_configs = true
-    } else if (target_name ==
-               "androidx_privacysandbox_ads_ads_adservices_java") {
-      if (!is_high_end_android) {
-        # https://crbug.com/1448095
-        mergeable_android_manifests = [ "0_privacysandbox_AndroidManifest.xml" ]
-      }
     } else if (target_name == "androidx_startup_startup_runtime_java") {
       # Keeps emoji2 code. See http://crbug.com/1205141
       ignore_proguard_configs = true

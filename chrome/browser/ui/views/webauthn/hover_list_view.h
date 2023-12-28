@@ -38,8 +38,9 @@ class WebAuthnHoverButton;
 //  +----------------------------------+
 //
 class HoverListView : public views::View {
+  METADATA_HEADER(HoverListView, views::View)
+
  public:
-  METADATA_HEADER(HoverListView);
   explicit HoverListView(std::unique_ptr<HoverListModel> model);
   HoverListView(const HoverListView&) = delete;
   HoverListView& operator=(const HoverListView&) = delete;

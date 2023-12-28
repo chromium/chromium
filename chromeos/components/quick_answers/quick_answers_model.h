@@ -231,9 +231,14 @@ struct QuickAnswersRequest {
 struct Sense {
  public:
   Sense();
+  Sense(const Sense& other);
+  Sense& operator=(const Sense& other);
   ~Sense();
 
   std::string definition;
+  // Not every word will have a sample sentence or synonyms.
+  std::optional<std::string> sample_sentence;
+  std::optional<std::vector<std::string>> synonyms_list;
 };
 
 // `DefinitionResult` holds result for definition intent.
@@ -246,6 +251,7 @@ struct DefinitionResult {
   ~DefinitionResult();
 
   std::string word;
+  std::string word_class;
   PhoneticsInfo phonetics_info;
   Sense sense;
 };
@@ -259,9 +265,8 @@ struct TranslationResult {
   TranslationResult& operator=(const TranslationResult& other);
   ~TranslationResult();
 
-  // TODO(b/278929409): Migrate to `std::string` for strings in structs.
-  std::u16string text_to_translate;
-  std::u16string translated_text;
+  std::string text_to_translate;
+  std::string translated_text;
   std::string source_locale;
   std::string target_locale;
 };

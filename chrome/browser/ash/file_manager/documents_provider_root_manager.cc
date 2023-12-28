@@ -55,11 +55,8 @@ GURL EncodeIconAsUrl(const SkBitmap& bitmap) {
   // bitmaps without resizing in Chrome side.
   std::vector<unsigned char> output;
   gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &output);
-  std::string encoded;
-  base::Base64Encode(
-      base::StringPiece(reinterpret_cast<const char*>(output.data()),
-                        output.size()),
-      &encoded);
+  std::string encoded = base::Base64Encode(base::StringPiece(
+      reinterpret_cast<const char*>(output.data()), output.size()));
   return GURL("data:image/png;base64," + encoded);
 }
 

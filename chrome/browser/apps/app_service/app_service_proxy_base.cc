@@ -224,15 +224,25 @@ void AppServiceProxyBase::OnSupportedLinksPreferenceChanged(
 }
 
 std::unique_ptr<IconLoader::Releaser> AppServiceProxyBase::LoadIcon(
+    const std::string& app_id,
+    const IconType& icon_type,
+    int32_t size_hint_in_dip,
+    bool allow_placeholder_icon,
+    apps::LoadIconCallback callback) {
+  return app_icon_loader()->LoadIcon(app_id, icon_type, size_hint_in_dip,
+                                     allow_placeholder_icon,
+                                     std::move(callback));
+}
+
+std::unique_ptr<IconLoader::Releaser> AppServiceProxyBase::LoadIcon(
     AppType app_type,
     const std::string& app_id,
     const IconType& icon_type,
     int32_t size_hint_in_dip,
     bool allow_placeholder_icon,
     apps::LoadIconCallback callback) {
-  return app_icon_loader()->LoadIcon(app_type, app_id, icon_type,
-                                     size_hint_in_dip, allow_placeholder_icon,
-                                     std::move(callback));
+  return LoadIcon(app_id, icon_type, size_hint_in_dip, allow_placeholder_icon,
+                  std::move(callback));
 }
 
 uint32_t AppServiceProxyBase::GetIconEffects(const std::string& app_id) {
@@ -244,8 +254,7 @@ uint32_t AppServiceProxyBase::GetIconEffects(const std::string& app_id) {
 }
 
 std::unique_ptr<apps::IconLoader::Releaser>
-AppServiceProxyBase::LoadIconWithIconEffects(AppType app_type,
-                                             const std::string& app_id,
+AppServiceProxyBase::LoadIconWithIconEffects(const std::string& app_id,
                                              uint32_t icon_effects,
                                              IconType icon_type,
                                              int32_t size_hint_in_dip,
@@ -262,6 +271,19 @@ AppServiceProxyBase::LoadIconWithIconEffects(AppType app_type,
   return app_icon_loader()->LoadIconFromIconKey(
       app_id, icon_key.value(), icon_type, size_hint_in_dip,
       allow_placeholder_icon, std::move(callback));
+}
+
+std::unique_ptr<apps::IconLoader::Releaser>
+AppServiceProxyBase::LoadIconWithIconEffects(AppType app_type,
+                                             const std::string& app_id,
+                                             uint32_t icon_effects,
+                                             IconType icon_type,
+                                             int32_t size_hint_in_dip,
+                                             bool allow_placeholder_icon,
+                                             LoadIconCallback callback) {
+  return LoadIconWithIconEffects(app_id, icon_effects, icon_type,
+                                 size_hint_in_dip, allow_placeholder_icon,
+                                 std::move(callback));
 }
 
 void AppServiceProxyBase::Launch(const std::string& app_id,
@@ -345,44 +367,43 @@ void AppServiceProxyBase::LaunchAppWithIntent(const std::string& app_id,
                                               WindowInfoPtr window_info,
                                               LaunchCallback callback) {
   CHECK(intent);
-  app_registry_cache_.ForOneApp(
-      app_id,
-      [this, event_flags, &intent, launch_source, &window_info,
-       callback = std::move(callback)](const AppUpdate& update) mutable {
-        auto* publisher = GetPublisher(update.AppType());
-        if (!publisher) {
-          std::unique_ptr<LaunchParams> params =
-              std::make_unique<LaunchParams>();
-          params->event_flags_ = event_flags;
-          params->intent_ = std::move(intent);
-          params->launch_source_ = launch_source;
-          params->window_info_ = std::move(window_info);
-          params->call_back_ = std::move(callback);
-          OnPublisherNotReadyForLaunch(update.AppId(), std::move(params));
-          return;
-        }
+  app_registry_cache_.ForOneApp(app_id, [this, event_flags, &intent,
+                                         launch_source, &window_info,
+                                         callback = std::move(callback)](
+                                            const AppUpdate& update) mutable {
+    auto* publisher = GetPublisher(update.AppType());
+    if (!publisher) {
+      std::unique_ptr<LaunchParams> params = std::make_unique<LaunchParams>();
+      params->event_flags_ = event_flags;
+      params->intent_ = std::move(intent);
+      params->launch_source_ = launch_source;
+      params->window_info_ = std::move(window_info);
+      params->call_back_ = std::move(callback);
+      OnPublisherNotReadyForLaunch(update.AppId(), std::move(params));
+      return;
+    }
 
-        if (MaybeShowLaunchPreventionDialog(update)) {
-          std::move(callback).Run(LaunchResult(State::FAILED));
-          return;
-        }
+    if (MaybeShowLaunchPreventionDialog(update)) {
+      std::move(callback).Run(LaunchResult(State::FAILED));
+      return;
+    }
 
-        // TODO(crbug/1117655): File manager records metrics for apps it
-        // launched. So we only record launches from other places. We should
-        // eventually move those metrics here, after AppService supports all
-        // app types launched by file manager.
-        if (launch_source != LaunchSource::kFromFileManager) {
-          RecordAppLaunch(update.AppId(), launch_source);
-        }
-        RecordAppPlatformMetrics(profile_, update, launch_source,
-                                 LaunchContainer::kLaunchContainerNone);
+    // TODO(crbug/1117655): File manager records metrics for apps it
+    // launched. So we only record launches from other places. We should
+    // eventually move those metrics here, after AppService supports all
+    // app types launched by file manager.
+    if (launch_source != LaunchSource::kFromFileManager) {
+      RecordAppLaunch(update.AppId(), launch_source);
+    }
+    RecordAppPlatformMetrics(profile_, update, launch_source,
+                             LaunchContainer::kLaunchContainerNone);
 
-        publisher->LaunchAppWithIntent(
-            update.AppId(), event_flags, std::move(intent), launch_source,
-            std::move(window_info), std::move(callback));
+    publisher->LaunchAppWithIntent(update.AppId(), event_flags,
+                                   std::move(intent), launch_source,
+                                   std::move(window_info), std::move(callback));
 
-        PerformPostLaunchTasks(launch_source);
-      });
+    PerformPostLaunchTasks(launch_source);
+  });
 }
 
 void AppServiceProxyBase::LaunchAppWithUrl(const std::string& app_id,

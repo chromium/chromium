@@ -81,6 +81,11 @@ class ImmersiveModeControllerChromeos
   // an empty rect if the find bar is not visible.
   gfx::Rect find_bar_visible_bounds_in_screen_;
 
+  // Records the previous immersive state requested from SetEnabled. This state
+  // is not always the same as `controller_.IsEnabled()` since the state
+  // transition happesn asynchronously on Lacros.
+  bool previous_request_enabled_ = false;
+
   // The fraction of the TopContainerView's height which is visible. Zero when
   // the top-of-window views are not revealed.
   double visible_fraction_ = 1.0;

@@ -65,7 +65,7 @@ class MockPermissionManager : public PermissionControllerDelegate {
       base::OnceCallback<
           void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
       override;
-  MOCK_METHOD5(SubscribePermissionStatusChange,
+  MOCK_METHOD5(SubscribeToPermissionStatusChange,
                SubscriptionId(
                    blink::PermissionType permission,
                    RenderProcessHost* render_process_host,
@@ -73,7 +73,7 @@ class MockPermissionManager : public PermissionControllerDelegate {
                    const GURL& requesting_origin,
                    base::RepeatingCallback<void(blink::mojom::PermissionStatus)>
                        callback));
-  MOCK_METHOD1(UnsubscribePermissionStatusChange,
+  MOCK_METHOD1(UnsubscribeFromPermissionStatusChange,
                void(SubscriptionId subscription_id));
 };
 

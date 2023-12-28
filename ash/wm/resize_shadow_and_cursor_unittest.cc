@@ -129,7 +129,7 @@ class ResizeShadowAndCursorTest : public AshTestBase {
   aura::Window* window() { return window_; }
 
  private:
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> window_;
+  raw_ptr<aura::Window, DanglingUntriaged> window_;
 };
 
 // Test whether the resize shadows are visible and the cursor type based on the
@@ -597,7 +597,7 @@ TEST_F(ResizeShadowAndCursorTest, NoCrashOnRootWindowChange) {
   // Add an secondary display.
   display_manager()->AddRemoveDisplay();
   aura::Window* secondary_root = nullptr;
-  for (auto* root : Shell::GetAllRootWindows()) {
+  for (aura::Window* root : Shell::GetAllRootWindows()) {
     if (root != Shell::GetPrimaryRootWindow()) {
       secondary_root = root;
       break;
@@ -659,10 +659,8 @@ TEST_F(ResizeShadowAndCursorTest, KeepShadowBeneathFloatWindow) {
   auto parent_children = shadow_layer->parent()->children();
   auto* window_layer = test_window->layer();
 
-  auto shadow_iter =
-      std::find(parent_children.begin(), parent_children.end(), shadow_layer);
-  auto window_iter =
-      std::find(parent_children.begin(), parent_children.end(), window_layer);
+  auto shadow_iter = base::ranges::find(parent_children, shadow_layer);
+  auto window_iter = base::ranges::find(parent_children, window_layer);
   EXPECT_LT(std::distance(parent_children.begin(), shadow_iter),
             std::distance(parent_children.begin(), window_iter));
 }

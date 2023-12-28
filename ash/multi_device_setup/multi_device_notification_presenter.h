@@ -144,7 +144,7 @@ class ASH_EXPORT MultiDeviceNotificationPresenter
   // MultiDevice.Setup.NotificationInteracted histogram.
   bool is_setup_notification_interacted_ = false;
 
-  raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
+  raw_ptr<message_center::MessageCenter> message_center_;
 
   // Notification currently showing or
   // Status::kNoNotificationVisible if there isn't one.

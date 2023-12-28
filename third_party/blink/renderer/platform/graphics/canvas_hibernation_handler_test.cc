@@ -64,8 +64,7 @@ class CanvasHibernationHandlerTest : public Test {
   }
 
  protected:
-  test::TaskEnvironment task_environment_{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
+  test::TaskEnvironment task_environment_;
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
   std::unique_ptr<FakeCanvasResourceHost> host_;
 };

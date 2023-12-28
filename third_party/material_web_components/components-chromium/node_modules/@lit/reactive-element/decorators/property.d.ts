@@ -3,11 +3,24 @@
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-import { PropertyDeclaration } from '../reactive-element.js';
-import { ClassElement } from './base.js';
+import { type PropertyDeclaration, type ReactiveElement } from '../reactive-element.js';
+import type { Interface } from './base.js';
+export type PropertyDecorator = {
+    <C extends Interface<ReactiveElement>, V>(target: ClassAccessorDecoratorTarget<C, V>, context: ClassAccessorDecoratorContext<C, V>): ClassAccessorDecoratorResult<C, V>;
+    <C extends Interface<ReactiveElement>, V>(target: (value: V) => void, context: ClassSetterDecoratorContext<C, V>): (this: C, value: V) => void;
+    (protoOrDescriptor: Object, name: PropertyKey, descriptor?: PropertyDescriptor): any;
+};
+type StandardPropertyContext<C, V> = (ClassAccessorDecoratorContext<C, V> | ClassSetterDecoratorContext<C, V>) & {
+    metadata: object;
+};
 /**
- * A property decorator which creates a reactive property that reflects a
- * corresponding attribute value. When a decorated property is set
+ * Wraps a class accessor or setter so that `requestUpdate()` is called with the
+ * property name and old value when the accessor is set.
+ */
+export declare const standardProperty: <C extends Interface<ReactiveElement>, V>(options: PropertyDeclaration<unknown, unknown> | undefined, target: ClassAccessorDecoratorTarget<C, V> | ((value: V) => void), context: StandardPropertyContext<C, V>) => ClassAccessorDecoratorResult<C, V> | ((this: C, value: V) => void);
+/**
+ * A class field or accessor decorator which creates a reactive property that
+ * reflects a corresponding attribute value. When a decorated property is set
  * the element will update and render. A {@linkcode PropertyDeclaration} may
  * optionally be supplied to configure property features.
  *
@@ -37,5 +50,6 @@ import { ClassElement } from './base.js';
  * @category Decorator
  * @ExportDecoratedItems
  */
-export declare function property(options?: PropertyDeclaration): (protoOrDescriptor: Object | ClassElement, name?: PropertyKey) => any;
+export declare function property(options?: PropertyDeclaration): PropertyDecorator;
+export {};
 //# sourceMappingURL=property.d.ts.map

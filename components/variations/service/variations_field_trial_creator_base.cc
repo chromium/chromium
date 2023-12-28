@@ -35,6 +35,7 @@
 #include "components/metrics/metrics_state_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
+#include "components/variations/limited_entropy_mode_gate.h"
 #include "components/variations/platform_field_trials.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/variations_seed.pb.h"
@@ -161,6 +162,16 @@ void MaybeExtendVariationsSafeMode(
       /*is_extended_safe_mode=*/true);
 }
 
+// Returns true iff the given seed contains a layer with LIMITED entropy mode.
+bool ContainsLimitedEntropyLayer(const VariationsSeed& seed) {
+  for (const Layer& layer_proto : seed.layers()) {
+    if (layer_proto.entropy_mode() == Layer::LIMITED) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 BASE_FEATURE(kForceFieldTrialSetupCrashForTesting,
@@ -188,13 +199,15 @@ Study::Channel ConvertProductChannelToStudyChannel(
 VariationsFieldTrialCreatorBase::VariationsFieldTrialCreatorBase(
     VariationsServiceClient* client,
     std::unique_ptr<VariationsSeedStore> seed_store,
-    base::OnceCallback<std::string(PrefService*)> locale_cb)
+    base::OnceCallback<std::string(PrefService*)> locale_cb,
+    LimitedEntropySyntheticTrial* limited_entropy_synthetic_trial)
     : client_(client),
       seed_store_(std::move(seed_store)),
       create_trials_from_seed_called_(false),
       application_locale_(std::move(locale_cb).Run(seed_store_->local_state())),
       has_platform_override_(false),
-      platform_override_(Study::PLATFORM_WINDOWS) {}
+      platform_override_(Study::PLATFORM_WINDOWS),
+      limited_entropy_synthetic_trial_(limited_entropy_synthetic_trial) {}
 
 VariationsFieldTrialCreatorBase::~VariationsFieldTrialCreatorBase() = default;
 
@@ -498,21 +511,25 @@ void VariationsFieldTrialCreatorBase::ApplyFieldTrialTestingConfig(
 }
 #endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
 
-bool VariationsFieldTrialCreatorBase::HasSeedExpired(bool is_safe_seed) {
+base::Time VariationsFieldTrialCreatorBase::CalculateSeedFreshness() {
   // TODO(crbug/1462588): Consider comparing the server-provided fetch time with
   // the network time.
-  const base::Time fetch_time = is_safe_seed
-                                    ? GetSeedStore()->GetSafeSeedFetchTime()
-                                    : GetSeedStore()->GetLastFetchTime();
+  return seed_type_ == SeedType::kSafeSeed
+             ? GetSeedStore()->GetSafeSeedFetchTime()
+             : GetSeedStore()->GetLastFetchTime();
+}
 
+bool VariationsFieldTrialCreatorBase::HasSeedExpired() {
+  const base::Time fetch_time = CalculateSeedFreshness();
   // If the fetch time is null, skip the expiry check. If the seed is a regular
   // seed (i.e. not a safe seed) and the fetch time is missing, then this must
   // be the first run of Chrome. If the seed is a safe seed, the fetch time may
   // be missing because the pref was added about a milestone later than most of
   // the other safe seed prefs.
   if (fetch_time.is_null()) {
-    RecordSeedExpiry(is_safe_seed, VariationsSeedExpiry::kFetchTimeMissing);
-    if (!is_safe_seed) {
+    RecordSeedExpiry(seed_type_ == SeedType::kSafeSeed,
+                     VariationsSeedExpiry::kFetchTimeMissing);
+    if (seed_type_ != SeedType::kSafeSeed) {
       // Store the current time as the last fetch time for Chrome's first run.
       GetSeedStore()->RecordLastFetchTime(base::Time::Now());
       // Record freshness of "0", since we expect a first run seed to be fresh.
@@ -524,9 +541,9 @@ bool VariationsFieldTrialCreatorBase::HasSeedExpired(bool is_safe_seed) {
   if (!has_seed_expired) {
     RecordSeedFreshness(base::Time::Now() - fetch_time);
   }
-  RecordSeedExpiry(is_safe_seed, has_seed_expired
-                                     ? VariationsSeedExpiry::kExpired
-                                     : VariationsSeedExpiry::kNotExpired);
+  RecordSeedExpiry(seed_type_ == SeedType::kSafeSeed,
+                   has_seed_expired ? VariationsSeedExpiry::kExpired
+                                    : VariationsSeedExpiry::kNotExpired);
   return has_seed_expired;
 }
 
@@ -626,7 +643,7 @@ bool VariationsFieldTrialCreatorBase::CreateTrialsFromSeed(
                                   : SeedUsage::kUnloadableRegularSeedNotUsed);
     return false;
   }
-  if (HasSeedExpired(/*is_safe_seed=*/run_in_safe_mode)) {
+  if (HasSeedExpired()) {
     RecordVariationsSeedUsage(run_in_safe_mode
                                   ? SeedUsage::kExpiredSafeSeedNotUsed
                                   : SeedUsage::kExpiredRegularSeedNotUsed);
@@ -641,6 +658,14 @@ bool VariationsFieldTrialCreatorBase::CreateTrialsFromSeed(
   RecordVariationsSeedUsage(run_in_safe_mode ? SeedUsage::kSafeSeedUsed
                                              : SeedUsage::kRegularSeedUsed);
 
+  // Register group membership for the limited entropy synthetic trial if the
+  // required parameters are non null, and a LIMITED entropy layer is in the
+  // seed.
+  if (IsLimitedEntropyModeEnabled() && limited_entropy_synthetic_trial_ &&
+      ContainsLimitedEntropyLayer(seed)) {
+    client_->RegisterLimitedEntropySyntheticTrial(
+        limited_entropy_synthetic_trial_->GetGroupName());
+  }
   // Note that passing base::Unretained(this) below is safe because the callback
   // is executed synchronously. It is not possible to pass UIStringOverrider
   // directly to VariationsSeedProcessor (which is in components/variations and

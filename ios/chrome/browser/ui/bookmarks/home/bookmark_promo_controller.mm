@@ -148,6 +148,24 @@
     return;
   }
 
+  // At this point, the user is signed-in not syncing.
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos) &&
+      base::FeatureList::IsEnabled(kEnableReviewAccountSettingsPromo) &&
+      !bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(syncService)) {
+    if (self.shouldShowSigninPromo &&
+        _signinPromoViewMediator.signinPromoAction !=
+            SigninPromoAction::kReviewAccountSettings) {
+      // The promo was visible with another action. `shouldShowSigninPromo`
+      // needs to be toggled first to reflect this change.
+      self.shouldShowSigninPromo = NO;
+    }
+    _signinPromoViewMediator.signinPromoAction =
+        SigninPromoAction::kReviewAccountSettings;
+    self.shouldShowSigninPromo = YES;
+    return;
+  }
+
   if (self.signinPromoViewMediator.showSpinner) {
     // The user is opted into syncing bookmarks, but the first sync is not
     // finished yet - keep the promo visible to show the spinner.

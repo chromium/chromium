@@ -40,8 +40,7 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantQueryHistory {
     void ResetToLast();
 
    private:
-    const raw_ref<const base::circular_deque<std::string>, ExperimentalAsh>
-        queries_;
+    const raw_ref<const base::circular_deque<std::string>> queries_;
     size_t cur_pos_;
   };
 

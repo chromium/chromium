@@ -26,7 +26,7 @@ namespace autofill::i18n_model_definition {
 namespace {
 
 // Checks that the AddressComponent graph has no cycles.
-bool IsTree(AddressComponent* node, ServerFieldTypeSet* visited_types) {
+bool IsTree(AddressComponent* node, FieldTypeSet* visited_types) {
   if (visited_types->contains(node->GetStorageType()) ||
       visited_types->contains_any(node->GetAdditionalSupportedFieldTypes())) {
     // Repeated types exist in the tree.
@@ -62,7 +62,7 @@ TEST_F(AutofillI18nApiTest, GetAddressComponentModel_ReturnsNonEmptyModel) {
           AddressCountryCode(std::string(country_code)));
 
       ASSERT_TRUE(model);
-      ServerFieldTypeSet field_type_set;
+      FieldTypeSet field_type_set;
       model->GetSupportedTypes(&field_type_set);
       EXPECT_FALSE(field_type_set.empty());
       EXPECT_FALSE(field_type_set.contains_any(
@@ -80,7 +80,7 @@ TEST_F(AutofillI18nApiTest, GetAddressComponentModel_ReturnedModelIsTree) {
     std::unique_ptr<AddressComponent> root = CreateAddressComponentModel(
         AddressCountryCode(std::string(country_code)));
 
-    ServerFieldTypeSet supported_types;
+    FieldTypeSet supported_types;
     EXPECT_TRUE(IsTree(root.get(), &supported_types));
 
     // Test that all field types in the country rules are accessible through the
@@ -88,7 +88,7 @@ TEST_F(AutofillI18nApiTest, GetAddressComponentModel_ReturnedModelIsTree) {
     for (const auto& [node_type, children_types] : tree_def) {
       EXPECT_TRUE(root->GetNodeForTypeForTesting(node_type));
 
-      for (ServerFieldType child_type : children_types) {
+      for (FieldType child_type : children_types) {
         EXPECT_TRUE(root->GetNodeForTypeForTesting(child_type));
       }
     }
@@ -173,6 +173,25 @@ TEST_F(AutofillI18nApiTest, ParseValueByI18nRegularExpression) {
                                               kLegacyHierarchyCountryCode));
 }
 
+TEST_F(AutofillI18nApiTest, GetStopwordsExpression) {
+  // The expected values are contained in `kAutofillModelStopwords`.
+  EXPECT_EQ(u"Ponto de referência:",
+            GetStopwordsExpression(ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
+                                   AddressCountryCode("BR")));
+  EXPECT_EQ(u"Andar", GetStopwordsExpression(ADDRESS_HOME_SUBPREMISE,
+                                             AddressCountryCode("BR")));
+  EXPECT_EQ(u"Entre Calles",
+            GetStopwordsExpression(ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
+                                   AddressCountryCode("MX")));
+  EXPECT_EQ(u"Apt\\.|Floor", GetStopwordsExpression(ADDRESS_HOME_SUBPREMISE,
+                                                    AddressCountryCode("XX")));
+  EXPECT_EQ(std::nullopt, GetStopwordsExpression(ADDRESS_HOME_OVERFLOW,
+                                                 AddressCountryCode("MX")));
+  EXPECT_EQ(std::nullopt,
+            GetStopwordsExpression(ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
+                                   AddressCountryCode("")));
+}
+
 TEST_F(AutofillI18nApiTest, IsTypeEnabledForCountry) {
   CountryDataMap* country_data_map = CountryDataMap::GetInstance();
   for (const std::string& country_code : country_data_map->country_codes()) {
@@ -180,9 +199,9 @@ TEST_F(AutofillI18nApiTest, IsTypeEnabledForCountry) {
     std::unique_ptr<AddressComponent> address =
         CreateAddressComponentModel(address_country_code);
 
-    for (std::underlying_type_t<ServerFieldType> i = 0;
-         i < MAX_VALID_FIELD_TYPE; ++i) {
-      ServerFieldType field_type = ToSafeServerFieldType(i, NO_SERVER_DATA);
+    for (std::underlying_type_t<FieldType> i = 0; i < MAX_VALID_FIELD_TYPE;
+         ++i) {
+      FieldType field_type = ToSafeFieldType(i, NO_SERVER_DATA);
       if (field_type == NO_SERVER_DATA) {
         continue;
       }

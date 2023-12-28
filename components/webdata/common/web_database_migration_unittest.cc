@@ -17,20 +17,17 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
+#include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
+#include "components/autofill/core/browser/webdata/autocomplete_table.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/signin/public/webdata/token_service_table.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using autofill::AutofillProfile;
-using autofill::AutofillTable;
-using autofill::CreditCard;
-using base::ASCIIToUTF16;
-using base::Time;
 
 namespace {
 
@@ -76,12 +73,18 @@ class WebDatabaseMigrationTest : public testing::Test {
   // Load the database via the WebDatabase class and migrate the database to
   // the current version.
   void DoMigration() {
-    AutofillTable autofill_table;
+    autofill::AddressAutofillTable address_autofill_table;
+    autofill::AutocompleteTable autocomplete_table;
+    autofill::AutofillSyncMetadataTable autofill_sync_metadata_table;
+    autofill::PaymentsAutofillTable payments_autofill_table;
     KeywordTable keyword_table;
     TokenServiceTable token_service_table;
 
     WebDatabase db;
-    db.AddTable(&autofill_table);
+    db.AddTable(&address_autofill_table);
+    db.AddTable(&autocomplete_table);
+    db.AddTable(&autofill_sync_metadata_table);
+    db.AddTable(&payments_autofill_table);
     db.AddTable(&keyword_table);
     db.AddTable(&token_service_table);
 
@@ -139,7 +142,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 122;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 123;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -1055,21 +1058,22 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion112ToCurrent) {
     EXPECT_TRUE(connection.DoesTableExist("local_addresses"));
     EXPECT_TRUE(connection.DoesTableExist("local_addresses_type_tokens"));
 
-    // Expect to find the profiles in the local_addresses tables. AutofillTable
-    // will read from them.
-    AutofillTable table;
+    // Expect to find the profiles in the local_addresses tables.
+    // AddressAutofillTable will read from them.
+    autofill::AddressAutofillTable table;
     table.Init(&connection, /*meta_table=*/nullptr);
-    std::unique_ptr<AutofillProfile> profile =
-        table.GetAutofillProfile("00000000-0000-0000-0000-000000000000",
-                                 AutofillProfile::Source::kLocalOrSyncable);
+    std::unique_ptr<autofill::AutofillProfile> profile =
+        table.GetAutofillProfile(
+            "00000000-0000-0000-0000-000000000000",
+            autofill::AutofillProfile::Source::kLocalOrSyncable);
     ASSERT_TRUE(profile);
-    EXPECT_EQ(profile->modification_date(), Time::FromTimeT(123));
+    EXPECT_EQ(profile->modification_date(), base::Time::FromTimeT(123));
     EXPECT_EQ(profile->GetRawInfo(autofill::NAME_FULL), u"full name");
     EXPECT_EQ(profile->GetRawInfo(autofill::ADDRESS_HOME_ZIP), u"4567");
 
-    EXPECT_TRUE(
-        table.GetAutofillProfile("00000000-0000-0000-0000-000000000001",
-                                 AutofillProfile::Source::kLocalOrSyncable));
+    EXPECT_TRUE(table.GetAutofillProfile(
+        "00000000-0000-0000-0000-000000000001",
+        autofill::AutofillProfile::Source::kLocalOrSyncable));
   }
 }
 
@@ -1320,5 +1324,58 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion121ToCurrent) {
 
     EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
     EXPECT_TRUE(connection.DoesColumnExist("keywords", "featured_by_policy"));
+  }
+}
+
+// Tests that the `product_terms_url` column is added to the
+// `masked_credit_card` table, and the `masked_credit_card_benefits` and the
+// `benefit_merchant_domains` tables are added.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion122ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_122.sql")));
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    EXPECT_EQ(122, VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesTableExist("masked_credit_cards"));
+    EXPECT_FALSE(
+        connection.DoesColumnExist("masked_credit_cards", "product_terms_url"));
+    EXPECT_FALSE(connection.DoesTableExist("masked_credit_card_benefits"));
+    EXPECT_FALSE(connection.DoesTableExist("benefit_merchant_domains"));
+  }
+  DoMigration();
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+
+    EXPECT_TRUE(connection.DoesTableExist("masked_credit_cards"));
+    EXPECT_TRUE(
+        connection.DoesColumnExist("masked_credit_cards", "product_terms_url"));
+
+    EXPECT_TRUE(connection.DoesTableExist("masked_credit_card_benefits"));
+    EXPECT_TRUE(connection.DoesColumnExist("masked_credit_card_benefits",
+                                           "benefit_id"));
+    EXPECT_TRUE(connection.DoesColumnExist("masked_credit_card_benefits",
+                                           "instrument_id"));
+    EXPECT_TRUE(connection.DoesColumnExist("masked_credit_card_benefits",
+                                           "benefit_type"));
+    EXPECT_TRUE(connection.DoesColumnExist("masked_credit_card_benefits",
+                                           "benefit_category"));
+    EXPECT_TRUE(connection.DoesColumnExist("masked_credit_card_benefits",
+                                           "benefit_description"));
+    EXPECT_TRUE(connection.DoesColumnExist("masked_credit_card_benefits",
+                                           "start_time"));
+    EXPECT_TRUE(
+        connection.DoesColumnExist("masked_credit_card_benefits", "end_time"));
+
+    EXPECT_TRUE(connection.DoesTableExist("benefit_merchant_domains"));
+    EXPECT_TRUE(
+        connection.DoesColumnExist("benefit_merchant_domains", "benefit_id"));
+    EXPECT_TRUE(connection.DoesColumnExist("benefit_merchant_domains",
+                                           "merchant_domain"));
   }
 }

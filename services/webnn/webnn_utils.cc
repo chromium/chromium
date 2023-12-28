@@ -30,10 +30,14 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return "gather";
     case mojom::Operation::Tag::kGemm:
       return "gemm";
+    case mojom::Operation::Tag::kInstanceNormalization:
+      return "instanceNormalization";
     case mojom::Operation::Tag::kLayerNormalization:
       return "layerNormalization";
     case mojom::Operation::Tag::kLeakyRelu:
       return "leakyRelu";
+    case mojom::Operation::Tag::kLinear:
+      return "linear";
     case mojom::Operation::Tag::kMatmul:
       return "matmul";
     case mojom::Operation::Tag::kPad:
@@ -56,6 +60,8 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return "slice";
     case mojom::Operation::Tag::kSoftmax:
       return "softmax";
+    case mojom::Operation::Tag::kSoftplus:
+      return "softplus";
     case mojom::Operation::Tag::kSplit:
       return "split";
     case mojom::Operation::Tag::kTanh:

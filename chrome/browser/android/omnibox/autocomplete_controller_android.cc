@@ -128,10 +128,6 @@ AutocompleteControllerAndroid::AutocompleteControllerAndroid(
       AutocompleteControllerEmitter::GetForBrowserContext(profile_);
   if (emitter)
     autocomplete_controller_->AddObserver(emitter);
-
-  if (profile) {
-    profile_observation_.Observe(profile);
-  }
 }
 
 void AutocompleteControllerAndroid::Start(JNIEnv* env,
@@ -465,21 +461,6 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::GetJavaObject()
 
 void AutocompleteControllerAndroid::Destroy(JNIEnv*) {
   delete this;
-}
-
-void AutocompleteControllerAndroid::OnProfileWillBeDestroyed(Profile* profile) {
-  // In the UrlKeyedDataCollectionConsentHelper there is an assumption
-  // that the PrefChangeRegistrar outlives the PrefService. However, in
-  // the case where AutocompleteControllerAndroid owns the above consent
-  // helper through the AutocompleteProviderClient from the
-  // AutocompleteController, the Profile and ProfileKeyedService (PrefService)
-  // is destroyed before the Java profile notifies the
-  // AutocompleteControllerAndroid to destroy itself via
-  // AutocompleteControllerAndroid::Destroy.
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_AutocompleteController_notifyNativeDestroyed(env, java_controller_);
-  java_controller_.Reset();
-  Destroy(env);
 }
 
 AutocompleteControllerAndroid::~AutocompleteControllerAndroid() = default;

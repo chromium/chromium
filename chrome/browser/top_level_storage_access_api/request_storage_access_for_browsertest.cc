@@ -98,16 +98,11 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   void SetUp() override {
-    features_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
-                                            GetDisabledFeatures());
+    features_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
     InProcessBrowserTest::SetUp();
   }
 
   virtual std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() {
-    return {{blink::features::kStorageAccessAPI, {}}};
-  }
-
-  virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() {
     return {};
   }
 
@@ -339,14 +334,6 @@ class RequestStorageAccessForEnabledBrowserTest
     : public RequestStorageAccessForBaseBrowserTest,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
- protected:
-  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
-    std::vector<base::test::FeatureRefAndParams> enabled =
-        RequestStorageAccessForBaseBrowserTest::GetEnabledFeatures();
-    enabled.push_back(
-        {blink::features::kStorageAccessAPIForOriginExtension, {}});
-    return enabled;
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
@@ -410,12 +397,6 @@ class RequestStorageAccessForWithFirstPartySetsBrowserTest
         base::StrCat({R"({"primary": "https://)", kHostA,
                       R"(", "associatedSites": ["https://)", kHostC, R"("])",
                       R"(, "serviceSites": ["https://)", kHostB, R"("]})"}));
-  }
-
- protected:
-  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
-    return {{blink::features::kStorageAccessAPIForOriginExtension, {}},
-            {blink::features::kStorageAccessAPI, {}}};
   }
 };
 
@@ -780,100 +761,6 @@ IN_PROC_BROWSER_TEST_F(
             "");
 }
 
-// Tests to validate `requestStorageAccessFor` behavior with FPS disabled.
-// For now, that entails auto-denial of requests.
-class RequestStorageAccessForWithFirstPartySetsDisabledBrowserTest
-    : public RequestStorageAccessForBaseBrowserTest {
- public:
- protected:
-  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
-    return {{blink::features::kStorageAccessAPIForOriginExtension, {}},
-            {blink::features::kStorageAccessAPI, {}}};
-  }
-  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
-    return {features::kFirstPartySets};
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(
-    RequestStorageAccessForWithFirstPartySetsDisabledBrowserTest,
-    PermissionAutodenied) {
-  SetBlockThirdPartyCookies(true);
-  base::HistogramTester histogram_tester;
-
-  // Set cross-site cookies on all hosts.
-  SetCrossSiteCookieOnHost(kHostA);
-  SetCrossSiteCookieOnHost(kHostD);
-
-  NavigateToPageWithFrame(kHostA);
-
-  NavigateFrameTo(kHostD, "/echoheader?cookie");
-  EXPECT_EQ(GetFrameContent(), "None");
-  EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "");
-  // `kHostD` cannot be granted access via `RequestStorageAccessFor` in
-  // this configuration, because the requesting site (`kHostA`) is not in the
-  // same First-Party Set as the requested site (`kHostD`).
-  EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
-      GetPrimaryMainFrame(), GetURL(kHostD).spec()));
-
-  // Navigate iframe to a cross-site, cookie-reading endpoint, and verify that
-  // the cookie is not sent.
-  NavigateFrameTo(kHostD, "/echoheader?cookie");
-  EXPECT_EQ(GetFrameContent(), "None");
-  EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "");
-
-  EXPECT_THAT(histogram_tester.GetBucketCount(
-                  kRequestOutcomeHistogram,
-                  TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites),
-              Gt(0));
-}
-
-// Tests to validate that, when the `requestStorageAccessFor` extension is
-// explicitly disabled, or if the larger Storage Access API is disabled, it does
-// not leak onto the document object.
-class RequestStorageAccessForExplicitlyDisabledBrowserTest
-    : public RequestStorageAccessForBaseBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  RequestStorageAccessForExplicitlyDisabledBrowserTest()
-      : enable_standard_storage_access_api_(GetParam()) {}
-
- protected:
-  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
-    if (enable_standard_storage_access_api_) {
-      return {blink::features::kStorageAccessAPIForOriginExtension};
-    }
-    return {blink::features::kStorageAccessAPI,
-            blink::features::kStorageAccessAPIForOriginExtension};
-  }
-  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
-    // When the standard API is enabled, return the parent class's enabled
-    // feature list.
-    if (enable_standard_storage_access_api_) {
-      return RequestStorageAccessForBaseBrowserTest::GetEnabledFeatures();
-    }
-    return {};
-  }
-
- private:
-  bool enable_standard_storage_access_api_;
-};
-
-IN_PROC_BROWSER_TEST_P(RequestStorageAccessForExplicitlyDisabledBrowserTest,
-                       RsaForOriginNotPresentOnDocumentWhenExplicitlyDisabled) {
-  NavigateToPageWithFrame(kHostA);
-  // Ensure that the proposed extension is not available unless explicitly
-  // enabled.
-  EXPECT_FALSE(
-      EvalJs(GetPrimaryMainFrame(), "\"requestStorageAccessFor\" in document")
-          .ExtractBool());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    RequestStorageAccessForExplicitlyDisabledBrowserTest,
-    testing::Bool());
-
 class RequestStorageAccessForWithCHIPSBrowserTest
     : public RequestStorageAccessForBaseBrowserTest {
  public:
@@ -889,8 +776,6 @@ class RequestStorageAccessForWithCHIPSBrowserTest
     std::vector<base::test::FeatureRefAndParams> enabled =
         RequestStorageAccessForBaseBrowserTest::GetEnabledFeatures();
     enabled.push_back({net::features::kPartitionedCookies, {}});
-    enabled.push_back(
-        {blink::features::kStorageAccessAPIForOriginExtension, {}});
     return enabled;
   }
 };

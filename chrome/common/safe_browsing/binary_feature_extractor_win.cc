@@ -125,8 +125,9 @@ bool BinaryFeatureExtractor::ExtractImageFeaturesFromData(
     ClientDownloadRequest_ImageHeaders* image_headers,
     google::protobuf::RepeatedPtrField<std::string>* signed_data) {
   base::win::PeImageReader pe_image;
-  if (!pe_image.Initialize(data, data_size))
+  if (!pe_image.Initialize(base::make_span(data, data_size))) {
     return false;
+  }
 
   // Copy the headers.
   ClientDownloadRequest_PEImageHeaders* pe_headers =

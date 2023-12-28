@@ -22,9 +22,9 @@ class ShowMetadataView;
 class SignedWebBundleMetadata;
 
 class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
- public:
-  METADATA_HEADER(IsolatedWebAppInstallerViewImpl);
+  METADATA_HEADER(IsolatedWebAppInstallerViewImpl, IsolatedWebAppInstallerView)
 
+ public:
   explicit IsolatedWebAppInstallerViewImpl(Delegate* delegate);
   ~IsolatedWebAppInstallerViewImpl() override;
 

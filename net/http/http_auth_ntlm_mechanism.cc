@@ -155,7 +155,7 @@ int HttpAuthNtlmMechanism::GenerateAuthToken(
   auto next_token = ntlm_client_.GenerateAuthenticateMessage(
       domain, user, credentials->password(), hostname, channel_bindings, spn,
       g_get_ms_time_proc(), client_challenge,
-      base::as_bytes(base::make_span(challenge_token_)));
+      base::as_byte_span(challenge_token_));
 
   return SetAuthTokenFromBinaryToken(auth_token, next_token);
 }

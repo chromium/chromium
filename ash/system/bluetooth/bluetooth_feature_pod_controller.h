@@ -85,9 +85,9 @@ class ASH_EXPORT BluetoothFeaturePodController
       bluetooth_config::mojom::BluetoothModificationState::
           kCannotModifyBluetooth;
   bluetooth_config::mojom::BluetoothSystemState system_state_;
-  raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ =
+  raw_ptr<FeatureTile, DanglingUntriaged> tile_ =
       nullptr;  // Owned by views hierarchy.
-  raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
+  raw_ptr<UnifiedSystemTrayController> tray_controller_;
 
   base::WeakPtrFactory<BluetoothFeaturePodController> weak_factory_{this};
 };

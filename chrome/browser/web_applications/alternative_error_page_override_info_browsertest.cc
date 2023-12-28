@@ -41,7 +41,7 @@ class AlternativeErrorPageOverrideInfoBrowserTest
     content::ScopedContentBrowserClientSetting setting(&browser_client);
 
     const GURL app_url = embedded_test_server()->GetURL(html);
-    web_app::NavigateToURLAndWait(browser(), app_url);
+    web_app::NavigateViaLinkClickToURLAndWait(browser(), app_url);
     web_app::test::InstallPwaForCurrentUrl(browser());
     content::BrowserContext* context = browser()->profile();
 
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
 
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url = embedded_test_server()->GetURL("/title1.html");
-  web_app::NavigateToURLAndWait(browser(), app_url);
+  web_app::NavigateViaLinkClickToURLAndWait(browser(), app_url);
   web_app::test::InstallPwaForCurrentUrl(browser());
   content::BrowserContext* context = browser()->profile();
 
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   const GURL app_url = embedded_test_server()->GetURL(
       "/banners/"
       "manifest_test_page.html?manifest=manifest_one_icon.json");
-  web_app::NavigateToURLAndWait(browser(), app_url);
+  web_app::NavigateViaLinkClickToURLAndWait(browser(), app_url);
   web_app::test::InstallPwaForCurrentUrl(browser());
   Profile* profile = browser()->profile();
   web_app::WebAppProvider* web_app_provider =

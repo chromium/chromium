@@ -270,6 +270,11 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment,
       data_vector_.push_back(data);
       if (ssl_provider->next_proto == kProtoUnknown)
         ssl_provider->next_proto = kProtoHTTP2;
+      // Even when next_protos only includes HTTP1, `application_settions`
+      // always includes the full list from the HttpNetworkSession. The
+      // SSLClientSocket layer, which is mocked out in these tests, is the layer
+      // responsible for only sending the relevant settings.
+      ssl_provider->expected_application_settings = {{{kProtoHTTP2, {}}}};
 
       session_deps_->socket_factory->AddSSLSocketDataProvider(
           ssl_provider.get());
@@ -292,7 +297,8 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment,
     SpdySessionDependencies* session_deps() { return session_deps_.get(); }
 
    private:
-    typedef std::vector<SocketDataProvider*> DataVector;
+    typedef std::vector<raw_ptr<SocketDataProvider, VectorExperimental>>
+        DataVector;
     typedef std::vector<std::unique_ptr<SSLSocketDataProvider>> SSLVector;
     typedef std::vector<std::unique_ptr<SocketDataProvider>> AlternateVector;
     const HttpRequestInfo request_;
@@ -4032,9 +4038,9 @@ TEST_P(SpdyNetworkTransactionTest, GracefulGoaway) {
   spdy::SpdySerializedFrame resp2(
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 3));
   spdy::SpdySerializedFrame body2(spdy_util_.ConstructSpdyDataFrame(3, true));
-  MockRead reads[] = {CreateMockRead(resp1, 1),  CreateMockRead(body1, 2),
+  MockRead reads[] = {CreateMockRead(resp1, 1), CreateMockRead(body1, 2),
                       CreateMockRead(goaway, 4), CreateMockRead(resp2, 5),
-                      CreateMockRead(body2, 6),  MockRead(ASYNC, 0, 7)};
+                      CreateMockRead(body2, 6)};
 
   // Run first transaction.
   SequencedSocketData data(reads, writes);
@@ -4120,8 +4126,7 @@ TEST_P(SpdyNetworkTransactionTest, ActiveStreamWhileGoingAway) {
   spdy::SpdySerializedFrame body2(
       spdy_util_.ConstructSpdyDataFrame(1, "bar", true));
   MockRead reads[] = {CreateMockRead(resp, 1), CreateMockRead(body1, 2),
-                      CreateMockRead(goaway, 3), CreateMockRead(body2, 4),
-                      MockRead(ASYNC, 0, 5)};
+                      CreateMockRead(goaway, 3), CreateMockRead(body2, 4)};
 
   SequencedSocketData data(reads, writes);
   NormalSpdyTransactionHelper helper(request_, DEFAULT_PRIORITY, log_, nullptr);

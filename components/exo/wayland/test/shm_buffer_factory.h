@@ -39,7 +39,7 @@ class ShmBufferFactory {
 
  private:
   std::unique_ptr<wl_shm_pool> shm_pool_;
-  raw_ptr<BufferListener, ExperimentalAsh> buffer_listener_ = nullptr;
+  raw_ptr<BufferListener> buffer_listener_ = nullptr;
 };
 
 }  // namespace exo::wayland::test

@@ -69,6 +69,7 @@ class NearbyPresenceCredentialStorage
                              UpdateLocalCredentialCallback callback) override;
 
  protected:
+  // Test only constructor used to inject databases without using a profile.
   NearbyPresenceCredentialStorage(
       mojo::PendingReceiver<mojom::NearbyPresenceCredentialStorage>
           pending_receiver,

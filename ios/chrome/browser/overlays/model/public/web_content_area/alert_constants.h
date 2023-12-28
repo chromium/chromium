@@ -13,5 +13,7 @@ extern NSString* const kJavaScriptDialogAccessibilityIdentifier;
 extern NSString* const kJavaScriptDialogTextFieldAccessibilityIdentifier;
 // Accessibility identifier for a media permissions dialog.
 extern NSString* const kPermissionsDialogAccessibilityIdentifier;
+// Accessibility identifier for an insecure form warning.
+extern NSString* const kInsecureFormWarningAccessibilityIdentifier;
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_WEB_CONTENT_AREA_ALERT_CONSTANTS_H_

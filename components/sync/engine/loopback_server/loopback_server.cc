@@ -244,8 +244,7 @@ LoopbackServer::LoopbackServer(const base::FilePath& persistent_file)
 }
 
 LoopbackServer::~LoopbackServer() {
-  if (writer_.HasPendingWrite())
-    writer_.DoScheduledWrite();
+  FlushToDisk();
 }
 
 void LoopbackServer::Init() {
@@ -394,6 +393,12 @@ void LoopbackServer::AddNewKeystoreKeyForTesting() {
   keystore_keys_.push_back(GenerateNewKeystoreKey());
 }
 
+void LoopbackServer::FlushToDisk() {
+  if (writer_.HasPendingWrite()) {
+    writer_.DoScheduledWrite();
+  }
+}
+
 bool LoopbackServer::HandleGetUpdatesRequest(
     const sync_pb::GetUpdatesMessage& get_updates,
     const std::string& store_birthday,
@@ -495,7 +500,7 @@ bool LoopbackServer::HandleGetUpdatesRequest(
   // During initial bookmark sync, we create new entities for bookmark permanent
   // folders, and hence we should inform the observers.
   if (is_initial_bookmark_sync && observer_for_tests_) {
-    observer_for_tests_->OnCommit(invalidator_client_id, {syncer::BOOKMARKS});
+    observer_for_tests_->OnCommit({syncer::BOOKMARKS});
   }
 
   return true;
@@ -689,7 +694,7 @@ bool LoopbackServer::HandleCommitRequest(
   }
 
   if (observer_for_tests_)
-    observer_for_tests_->OnCommit(invalidator_client_id, committed_model_types);
+    observer_for_tests_->OnCommit(committed_model_types);
 
   return throttled_datatypes_in_request->Empty();
 }

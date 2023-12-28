@@ -74,12 +74,11 @@ class ASH_EXPORT PaletteWelcomeBubble : public SessionObserver,
 
   // The PaletteTray this bubble is associated with. Serves as the anchor for
   // the bubble. Not owned.
-  raw_ptr<PaletteTray, ExperimentalAsh> tray_ = nullptr;
+  raw_ptr<PaletteTray> tray_ = nullptr;
 
-  raw_ptr<PrefService, ExperimentalAsh> active_user_pref_service_ =
-      nullptr;  // Not owned.
+  raw_ptr<PrefService> active_user_pref_service_ = nullptr;  // Not owned.
 
-  raw_ptr<WelcomeBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
+  raw_ptr<WelcomeBubbleView> bubble_view_ = nullptr;
 };
 
 }  // namespace ash

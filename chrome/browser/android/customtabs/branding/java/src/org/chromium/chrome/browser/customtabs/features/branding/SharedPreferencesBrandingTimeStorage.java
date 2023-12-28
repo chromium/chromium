@@ -35,11 +35,7 @@ class SharedPreferencesBrandingTimeStorage implements BrandingChecker.BrandingLa
     /** Shared pref that must be read / write on background thread. */
     private SharedPreferences mSharedPref;
 
-    private SharedPreferencesBrandingTimeStorage() {
-        if (BrandingController.USE_TEMPORARY_STORAGE.getValue()) {
-            resetSharedPref();
-        }
-    }
+    private SharedPreferencesBrandingTimeStorage() {}
 
     static SharedPreferencesBrandingTimeStorage getInstance() {
         if (sInstance == null) {

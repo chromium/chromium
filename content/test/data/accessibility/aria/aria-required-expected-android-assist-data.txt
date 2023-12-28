@@ -1,4 +1,4 @@
-WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
-++RadioGroup textSize:16.00 style:0 bundle:[aria-required="true", display="block", htmlTag="div", role="radiogroup"]
-++++RadioButton textSize:16.00 style:0 bundle:[display="block", htmlTag="div", role="radio"]
-++++RadioButton textSize:16.00 style:0 bundle:[display="block", htmlTag="div", role="radio"]
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++RadioGroup textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-required="true"}, {role="radiogroup"}]
+++++RadioButton textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {role="radio"}]
+++++RadioButton textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {role="radio"}]

@@ -321,9 +321,9 @@ class IndicatorPillView : public views::View {
 
  private:
   // Possibly rotated image of an arrow based on |vector_icon_|.
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;  // NOT OWNED
+  raw_ptr<views::ImageView> icon_ = nullptr;  // NOT OWNED
   // Label containing name of target display in the pill.
-  raw_ptr<views::Label, ExperimentalAsh> text_label_ = nullptr;  // NOT OWNED
+  raw_ptr<views::Label> text_label_ = nullptr;  // NOT OWNED
   gfx::ImageSkia arrow_image_;
   // The side of the display indicator is postioned on. Used to determine arrow
   // direction and placement.

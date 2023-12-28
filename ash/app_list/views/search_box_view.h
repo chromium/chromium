@@ -198,9 +198,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   int GetSearchBoxIconSize();
   int GetSearchBoxButtonSize();
 
-  // Sets whether an IPH can be shown now or not.
-  void SetIsIphAllowed(bool iph_allowed);
-
  private:
   class FocusRingLayer;
 
@@ -222,9 +219,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
 
   // Updates the search box placeholder text and accessible name.
   void UpdatePlaceholderTextAndAccessibleName();
-
-  // Updates the visibility of an IPH view.
-  void UpdateIphViewVisibility();
 
   // Notifies SearchBoxViewDelegate that the autocomplete text is valid.
   void AcceptAutocompleteText();
@@ -249,14 +243,18 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   bool HandleGestureEvent(views::Textfield* sender,
                           const ui::GestureEvent& gesture_event) override;
 
-  // Overridden from SearchBoxModelObserver:
-  void SearchEngineChanged() override;
-  void ShowAssistantChanged() override;
-  void OnWouldTriggerIphChanged() override;
-
   // Updates search_box() for the |selected_result|. Should be called when the
   // selected search result changes.
   void UpdateSearchBoxForSelectedResult(SearchResult* selected_result);
+
+  // Overridden from SearchBoxModelObserver:
+  void SearchEngineChanged() override;
+  void ShowAssistantChanged() override;
+
+  // Updates the visibility of an IPH view.
+  // If `can_show_iph` is false, delete the IPH view if it is visible.
+  // If `can_show_iph` is true, show the IPH view when other conditions are met.
+  void UpdateIphViewVisibility(bool can_show_iph);
 
   // Returns true if the event to trigger autocomplete should be handled.
   bool ShouldProcessAutocomplete();
@@ -292,9 +290,8 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // The key most recently pressed.
   ui::KeyboardCode last_key_pressed_ = ui::VKEY_UNKNOWN;
 
-  const raw_ptr<SearchBoxViewDelegate, DanglingUntriaged | ExperimentalAsh>
-      delegate_;
-  const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
+  const raw_ptr<SearchBoxViewDelegate, DanglingUntriaged> delegate_;
+  const raw_ptr<AppListViewDelegate> view_delegate_;
 
   // The layer that will draw the focus ring if needed. Could be a nullptr if
   // the search box is in the bubble launcher.
@@ -324,7 +321,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
 
   // Owned by SearchResultPageView (for fullscreen launcher) or
   // ProductivityLauncherSearchPage (for bubble launcher).
-  raw_ptr<ResultSelectionController, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ResultSelectionController, DanglingUntriaged>
       result_selection_controller_ = nullptr;
 
   // The timestamp taken when the search box model's query is updated by the

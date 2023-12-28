@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
@@ -1309,8 +1310,9 @@ String HTMLSelectElement::ItemText(const Element& element) const {
   else if (auto* option = DynamicTo<HTMLOptionElement>(element))
     item_string = option->TextIndentedToRespectGroupLabel();
 
-  if (GetLayoutObject() && GetLayoutObject()->Style())
-    GetLayoutObject()->Style()->ApplyTextTransform(&item_string);
+  if (GetLayoutObject() && GetLayoutObject()->Style()) {
+    return GetLayoutObject()->Style()->ApplyTextTransform(item_string);
+  }
   return item_string;
 }
 
@@ -1495,6 +1497,15 @@ void HTMLSelectElement::showPicker(ExceptionState& exception_state) {
     return;
   }
 
+  document.UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
+  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*this) ||
+      !GetLayoutBox()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "showPicker() requires the select is rendered.");
+    return;
+  }
+
   select_type_->ShowPicker();
 }
 
@@ -1535,6 +1546,16 @@ bool HTMLSelectElement::HandleInvokeInternal(HTMLElement& invoker,
   // activation, then return.
   if (!LocalFrame::HasTransientUserActivation(frame)) {
     String message = "Select cannot be invoked without a user gesture.";
+    document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::ConsoleMessageSource::kJavaScript,
+        mojom::ConsoleMessageLevel::kWarning, message));
+    return false;
+  }
+
+  document.UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
+  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*this) ||
+      !GetLayoutBox()) {
+    String message = "Select cannot be invoked when not being rendered.";
     document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kWarning, message));

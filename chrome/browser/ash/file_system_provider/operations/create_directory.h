@@ -15,9 +15,7 @@ namespace base {
 class FilePath;
 }  // namespace base
 
-namespace ash {
-namespace file_system_provider {
-namespace operations {
+namespace ash::file_system_provider::operations {
 
 // Creates a directory. If |recursive| is set to true, then creates also all
 // non-existing directories on the path. The operation will fail if the
@@ -50,8 +48,6 @@ class CreateDirectory : public Operation {
   storage::AsyncFileUtil::StatusCallback callback_;
 };
 
-}  // namespace operations
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider::operations
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_OPERATIONS_CREATE_DIRECTORY_H_

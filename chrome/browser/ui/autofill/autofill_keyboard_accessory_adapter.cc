@@ -177,6 +177,11 @@ PopupType AutofillKeyboardAccessoryAdapter::GetPopupType() const {
   return controller_->GetPopupType();
 }
 
+FillingProduct AutofillKeyboardAccessoryAdapter::GetMainFillingProduct() const {
+  CHECK(controller_) << "Call GetPopupType only from its owner!";
+  return controller_->GetMainFillingProduct();
+}
+
 bool AutofillKeyboardAccessoryAdapter::
     ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const {
   CHECK(controller_) << "Call ShouldIgnoreMouseObservedOutsideItemBoundsCheck "
@@ -222,12 +227,17 @@ bool AutofillKeyboardAccessoryAdapter::RemoveSuggestion(
   return true;
 }
 
-void AutofillKeyboardAccessoryAdapter::SelectSuggestion(
-    std::optional<size_t> index) {
+void AutofillKeyboardAccessoryAdapter::SelectSuggestion(int index) {
   if (!controller_)
     return;
-  controller_->SelectSuggestion(
-      index ? std::optional<size_t>(OffsetIndexFor(*index)) : std::nullopt);
+  controller_->SelectSuggestion(OffsetIndexFor(index));
+}
+
+void AutofillKeyboardAccessoryAdapter::UnselectSuggestion() {
+  if (!controller_) {
+    return;
+  }
+  controller_->UnselectSuggestion();
 }
 
 // AutofillPopupViewDelegate implementation

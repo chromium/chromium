@@ -480,11 +480,6 @@ void HandlePersistentPrefStoreReadError(
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
          !BrowserThread::IsThreadInitialized(BrowserThread::UI));
 
-  // Sample the histogram also for the successful case in order to get a
-  // baseline on the success rate in addition to the error distribution.
-  UMA_HISTOGRAM_ENUMERATION("PrefService.ReadError", error,
-                            PersistentPrefStore::PREF_READ_ERROR_MAX_ENUM);
-
   if (error != PersistentPrefStore::PREF_READ_ERROR_NONE) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     // Failing to load prefs on startup is a bad thing(TM). See bug 38352 for

@@ -5,7 +5,6 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_POINTERS_RAW_PTR_CAST_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_POINTERS_RAW_PTR_CAST_H_
 
-#include <bit>
 #include <memory>
 #include <type_traits>
 
@@ -28,9 +27,29 @@ inline constexpr Dest unsafe_raw_ptr_reinterpret_cast(
 }
 
 // Wrapper for |std::bit_cast<T>(src)|.
+// Though we have similar implementations at |absl::bit_cast| and
+// |base::bit_cast|, it is important to perform casting in this file to
+// correctly exclude from the check.
 template <typename Dest, typename Source>
 inline constexpr Dest unsafe_raw_ptr_bit_cast(const Source& source) noexcept {
-  return std::bit_cast<Dest>(source);
+  static_assert(!std::is_pointer_v<Source>,
+                "bit_cast must not be used on pointer types");
+  static_assert(!std::is_pointer_v<Dest>,
+                "bit_cast must not be used on pointer types");
+  static_assert(!std::is_reference_v<Source>,
+                "bit_cast must not be used on reference types");
+  static_assert(!std::is_reference_v<Dest>,
+                "bit_cast must not be used on reference types");
+  static_assert(
+      sizeof(Dest) == sizeof(Source),
+      "bit_cast requires source and destination types to be the same size");
+  static_assert(std::is_trivially_copyable_v<Source>,
+                "bit_cast requires the source type to be trivially copyable");
+  static_assert(
+      std::is_trivially_copyable_v<Dest>,
+      "bit_cast requires the destination type to be trivially copyable");
+
+  return __builtin_bit_cast(Dest, source);
 }
 
 }  // namespace base

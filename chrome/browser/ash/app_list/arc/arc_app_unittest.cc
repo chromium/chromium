@@ -107,6 +107,7 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/test/test_screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -904,6 +905,8 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
 
  private:
   ArcAppTest arc_test_;
+  display::test::TestScreen test_screen_{/*create_dispay=*/true,
+                                         /*register_screen=*/true};
   std::unique_ptr<FakeAppListModelUpdater> model_updater_;
   std::unique_ptr<test::TestAppListControllerDelegate> controller_;
   std::unique_ptr<AppServiceAppModelBuilder> builder_;
@@ -3039,7 +3042,7 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderCompressed) {
   ASSERT_NE(nullptr, proxy);
 
   proxy->LoadIcon(
-      apps::AppType::kArc, app_id, apps::IconType::kCompressed, icon_size,
+      app_id, apps::IconType::kCompressed, icon_size,
       false /*allow_placeholder_icon*/,
       base::BindLambdaForTesting([&](apps::IconValuePtr icon_value) {
         EXPECT_EQ(apps::IconType::kCompressed, icon_value->icon_type);

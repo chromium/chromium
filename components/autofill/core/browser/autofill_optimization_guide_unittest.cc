@@ -284,7 +284,7 @@ TEST_F(AutofillOptimizationGuideTest,
   base::ranges::move(CreateTestIbanFormData().fields,
                      std::back_inserter(form_data.fields));
   FormStructure form_structure{form_data};
-  const std::vector<ServerFieldType> field_types = {
+  const std::vector<FieldType> field_types = {
       CREDIT_CARD_NAME_FIRST, CREDIT_CARD_NAME_LAST,        CREDIT_CARD_NUMBER,
       CREDIT_CARD_EXP_MONTH,  CREDIT_CARD_EXP_4_DIGIT_YEAR, IBAN_VALUE};
   test_api(form_structure).SetFieldTypes(field_types, field_types);

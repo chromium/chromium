@@ -77,6 +77,25 @@ class RequestDispatcher {
                       scoped_refptr<InputContext> input_context,
                       WrappedCallback callback);
 
+  void ExecuteOnDemand(const std::string& segmentation_key,
+                       const Config* config,
+                       const PredictionOptions& options,
+                       scoped_refptr<InputContext> input_context,
+                       WrappedCallback callback);
+
+  void OnFinishedOnDemandExecution(const std::string& segmentation_key,
+                                   const Config* config,
+                                   const PredictionOptions& options,
+                                   scoped_refptr<InputContext> input_context,
+                                   WrappedCallback callback,
+                                   const RawResult& raw_result);
+
+  void HandleCachedExecution(const std::string& segmentation_key,
+                             const Config* config,
+                             const PredictionOptions& options,
+                             scoped_refptr<InputContext> input_context,
+                             WrappedCallback callback);
+
   // Wrap the result callback for recording metrics and converting raw result to
   // necessary result type.
   template <typename ResultType>

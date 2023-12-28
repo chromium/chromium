@@ -8,19 +8,22 @@
  */
 
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import '../../../css/common.css.js';
 import './sparkle_placeholder_element.js';
 import '../../../css/sea_pen.css.js';
 
+import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
+
 import {SeaPenThumbnail} from '../../../sea_pen.mojom-webui.js';
-import {WithPersonalizationStore} from '../../personalization_store.js';
-import {getZerosArray, isNonEmptyArray} from '../../utils.js';
 
 import {selectSeaPenWallpaper} from './sea_pen_controller.js';
 import {getTemplate} from './sea_pen_images_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
+import {WithSeaPenStore} from './sea_pen_store.js';
 
-export class SeaPenImagesElement extends WithPersonalizationStore {
+export class SeaPenImagesElement extends WithSeaPenStore {
   static get is() {
     return 'sea-pen-images';
   }
@@ -51,10 +54,9 @@ export class SeaPenImagesElement extends WithPersonalizationStore {
   override connectedCallback() {
     super.connectedCallback();
     this.watch<SeaPenImagesElement['thumbnails_']>(
-        'thumbnails_', state => state.wallpaper.seaPen.thumbnails);
+        'thumbnails_', state => state.thumbnails);
     this.watch<SeaPenImagesElement['thumbnailsLoading_']>(
-        'thumbnailsLoading_',
-        state => state.wallpaper.seaPen.loading.thumbnails);
+        'thumbnailsLoading_', state => state.loading.thumbnails);
     this.updateFromStore();
   }
 
@@ -77,12 +79,13 @@ export class SeaPenImagesElement extends WithPersonalizationStore {
   }
 
   private getPlaceholders_(x: number) {
-    return getZerosArray(x);
+    return new Array(x).fill(0);
   }
 
   private onThumbnailSelected_(event: Event&{model: {item: SeaPenThumbnail}}) {
     this.pendingSelected_ = event.model.item;
-    selectSeaPenWallpaper(event.model.item, getSeaPenProvider());
+    selectSeaPenWallpaper(
+        event.model.item, getSeaPenProvider(), this.getStore());
   }
 
   private getAriaIndex_(i: number): number {
@@ -92,6 +95,14 @@ export class SeaPenImagesElement extends WithPersonalizationStore {
   private isThumbnailSelected_(
       thumbnail: SeaPenThumbnail, pendingSelected: SeaPenThumbnail|null) {
     return thumbnail === pendingSelected;
+  }
+
+  private onClickThumbsUp_() {
+    // TODO(b/313667113): Implement thumbs up.
+  }
+
+  private onClickThumbsDown_() {
+    // TODO(b/313667113): Implement thumbs down.
   }
 }
 

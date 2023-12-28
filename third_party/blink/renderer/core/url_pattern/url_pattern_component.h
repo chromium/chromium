@@ -88,7 +88,9 @@ class Component final : public GarbageCollected<Component> {
 
   // Returns if this component has at least one part that uses an ECMAScript
   // regular expression.
-  bool HasRegexpGroups() const { return pattern_.HasRegexGroups(); }
+  bool HasRegExpGroups() const { return pattern_.HasRegexGroups(); }
+
+  const std::vector<liburlpattern::Part>& PartList() const;
 
   void Trace(Visitor* visitor) const;
 

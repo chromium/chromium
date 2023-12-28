@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {RootType, VolumeType} from '../../../../common/js/volume_manager_types.js';
-import {HoldingSpaceUtil} from '../../holding_space_util.js';
+import {getAllowedVolumeTypes, maybeStoreTimeOfFirstWelcomeBannerShow} from '../../holding_space_util.js';
 
 import {EducationalBanner} from './educational_banner.js';
 import {getTemplate} from './holding_space_welcome_banner.html.js';
@@ -34,23 +34,22 @@ export class HoldingSpaceWelcomeBanner extends EducationalBanner {
    * at HoldingSpaceUtil.
    */
   override allowedVolumes() {
-    return HoldingSpaceUtil.getAllowedVolumeTypes().map(
-        (type: VolumeType|null) => {
-          if (type === VolumeType.DRIVE) {
-            return {
-              type: VolumeType.DRIVE,
-              root: RootType.DRIVE,
-            };
-          }
-          return {type: type!};
-        });
+    return getAllowedVolumeTypes().map((type: VolumeType|null) => {
+      if (type === VolumeType.DRIVE) {
+        return {
+          type: VolumeType.DRIVE,
+          root: RootType.DRIVE,
+        };
+      }
+      return {type: type!};
+    });
   }
 
   /**
    * Store the time the banner was first shown.
    */
   override onShow() {
-    HoldingSpaceUtil.maybeStoreTimeOfFirstWelcomeBannerShow();
+    maybeStoreTimeOfFirstWelcomeBannerShow();
   }
 }
 

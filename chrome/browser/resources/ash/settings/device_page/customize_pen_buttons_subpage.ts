@@ -46,6 +46,13 @@ export class SettingsCustomizePenButtonsSubpageElement extends
       graphicsTablets: {
         type: Array,
       },
+
+      /**
+       * Use hasLauncherButton to decide which meta key icon to display.
+       */
+      hasLauncherButton_: {
+        type: Boolean,
+      },
     };
   }
 
@@ -62,11 +69,15 @@ export class SettingsCustomizePenButtonsSubpageElement extends
       getInputDeviceSettingsProvider();
   private previousRoute_: Route|null = null;
   private isInitialized_: boolean = false;
+  private hasLauncherButton_: boolean;
 
-  override connectedCallback(): void {
+  override async connectedCallback(): Promise<void> {
     super.connectedCallback();
 
     this.addEventListener('button-remapping-changed', this.onSettingsChanged);
+    this.hasLauncherButton_ =
+        (await this.inputDeviceSettingsProvider_.hasLauncherButton())
+            ?.hasLauncherButton;
   }
 
   override disconnectedCallback(): void {

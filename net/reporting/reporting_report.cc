@@ -10,6 +10,7 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
+#include "net/base/network_isolation_key.h"
 #include "url/gurl.h"
 
 namespace net {

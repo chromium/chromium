@@ -27,13 +27,14 @@ namespace views {
 class Combobox;
 class Label;
 class View;
-}
+}  // namespace views
 
 // The summary panel of the app info dialog, which provides basic information
 // and controls related to the app.
 class AppInfoSummaryPanel : public AppInfoPanel {
+  METADATA_HEADER(AppInfoSummaryPanel, AppInfoPanel)
+
  public:
-  METADATA_HEADER(AppInfoSummaryPanel);
   AppInfoSummaryPanel(Profile* profile, const extensions::Extension* app);
   AppInfoSummaryPanel(const AppInfoSummaryPanel&) = delete;
   AppInfoSummaryPanel& operator=(const AppInfoSummaryPanel&) = delete;

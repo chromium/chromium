@@ -7,6 +7,8 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
@@ -44,7 +46,7 @@ class UploadDataSource {
 
 class BytesUploadDataSource : public UploadDataSource {
  public:
-  BytesUploadDataSource(const base::StringPiece& bytes) : bytes_(bytes) {}
+  BytesUploadDataSource(const std::string_view& bytes) : bytes_(bytes) {}
 
   BytesUploadDataSource(const BytesUploadDataSource&) = delete;
   BytesUploadDataSource& operator=(const BytesUploadDataSource&) = delete;
@@ -57,7 +59,7 @@ class BytesUploadDataSource : public UploadDataSource {
   }
 
  private:
-  base::StringPiece bytes_;
+  std::string_view bytes_;
 };
 
 class FileUploadDataSource : public UploadDataSource {

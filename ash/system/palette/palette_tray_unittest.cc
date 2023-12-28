@@ -98,8 +98,7 @@ class PaletteTrayTest : public AshTestBase {
     return Shell::Get()->session_controller()->GetActivePrefService();
   }
 
-  raw_ptr<PaletteTray, DanglingUntriaged | ExperimentalAsh> palette_tray_ =
-      nullptr;  // not owned
+  raw_ptr<PaletteTray, DanglingUntriaged> palette_tray_ = nullptr;  // not owned
 
   std::unique_ptr<PaletteTrayTestApi> test_api_;
 };
@@ -626,8 +625,7 @@ class PaletteTrayTestMultiDisplay : public PaletteTrayTest {
   }
 
  protected:
-  raw_ptr<PaletteTray, DanglingUntriaged | ExperimentalAsh>
-      palette_tray_external_ = nullptr;
+  raw_ptr<PaletteTray, DanglingUntriaged> palette_tray_external_ = nullptr;
 
   std::unique_ptr<PaletteTrayTestApi> test_api_external_;
 };
@@ -769,8 +767,7 @@ class PaletteTrayTestWithProjector : public PaletteTrayTest {
   }
 
  protected:
-  raw_ptr<ProjectorSessionImpl, DanglingUntriaged | ExperimentalAsh>
-      projector_session_;
+  raw_ptr<ProjectorSessionImpl, DanglingUntriaged> projector_session_;
 };
 
 // Verify that the palette tray is hidden during a Projector session.

@@ -107,7 +107,6 @@ CertificateErrorReport::CertificateErrorReport(const std::string& hostname,
                              ssl_info.unverified_cert.get(),
                              ssl_info.is_issued_by_known_root,
                              ssl_info.cert_status) {
-  cert_report_->add_pin(ssl_info.pinning_failure_log);
 }
 
 CertificateErrorReport::~CertificateErrorReport() {}

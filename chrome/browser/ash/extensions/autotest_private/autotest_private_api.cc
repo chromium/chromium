@@ -12,6 +12,7 @@
 #include <sstream>
 #include <utility>
 
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/app_list_public_test_util.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
@@ -25,7 +26,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/accelerators.h"
-#include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -406,8 +406,6 @@ api::autotest_private::AppType GetAppType(apps::AppType type) {
       return api::autotest_private::AppType::kWeb;
     case apps::AppType::kUnknown:
       return api::autotest_private::AppType::kNone;
-    case apps::AppType::kMacOs:
-      return api::autotest_private::AppType::kMacOs;
     case apps::AppType::kStandaloneBrowser:
       return api::autotest_private::AppType::kStandaloneBrowser;
     case apps::AppType::kRemote:
@@ -729,10 +727,9 @@ api::autotest_private::WindowStateType ToWindowStateType(
 
 std::string GetPngDataAsString(scoped_refptr<base::RefCountedMemory> png_data) {
   // Base64 encode the result so we can return it as a string.
-  std::string base64Png(png_data->front(),
+  std::string base64_png(png_data->front(),
                         png_data->front() + png_data->size());
-  base::Base64Encode(base64Png, &base64Png);
-  return base64Png;
+  return base::Base64Encode(base64_png);
 }
 
 display::Display::Rotation ToRotation(
@@ -884,7 +881,8 @@ ui::KeyboardCode StringToKeyCode(const std::string& str) {
 }
 
 aura::Window* GetActiveWindow() {
-  std::vector<aura::Window*> list = ash::GetAppWindowList();
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> list =
+      ash::GetAppWindowList();
   if (!list.size()) {
     return nullptr;
   }
@@ -995,7 +993,7 @@ class DisplaySmoothnessTracker {
     }
 
     DCHECK_EQ(windows.size(), 1u);
-    auto* root_window = windows[0];
+    auto* root_window = windows[0].get();
     throughput_.push_back(
         100 - root_window->GetHost()->compositor()->GetPercentDroppedFrames());
   }
@@ -2976,7 +2974,7 @@ AutotestPrivateTakeScreenshotForDisplayFunction::Run() {
   base::StringToInt64(params->display_id, &target_display_id);
   auto grabber = std::make_unique<ui::ScreenshotGrabber>();
 
-  for (auto* const window : ash::Shell::GetAllRootWindows()) {
+  for (aura::Window* const window : ash::Shell::GetAllRootWindows()) {
     const int64_t display_id =
         display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
     if (display_id == target_display_id) {
@@ -3828,7 +3826,8 @@ ExtensionFunction::ResponseAction
 AutotestPrivateIsTabletModeEnabledFunction::Run() {
   DVLOG(1) << "AutotestPrivateIsTabletModeEnabledFunction";
 
-  return RespondNow(WithArguments(ash::TabletMode::Get()->InTabletMode()));
+  return RespondNow(
+      WithArguments(display::Screen::GetScreen()->InTabletMode()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3845,17 +3844,18 @@ AutotestPrivateSetTabletModeEnabledFunction::Run() {
   std::optional<api::autotest_private::SetTabletModeEnabled::Params> params =
       api::autotest_private::SetTabletModeEnabled::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  auto* tablet_mode = ash::TabletMode::Get();
-  if (tablet_mode->InTabletMode() == params->enabled) {
-    return RespondNow(WithArguments(ash::TabletMode::Get()->InTabletMode()));
+  if (display::Screen::GetScreen()->InTabletMode() == params->enabled) {
+    return RespondNow(
+        WithArguments(display::Screen::GetScreen()->InTabletMode()));
   }
 
   ash::TabletMode::Waiter waiter(params->enabled);
-  if (!tablet_mode->ForceUiTabletModeState(params->enabled)) {
+  if (!ash::TabletMode::Get()->ForceUiTabletModeState(params->enabled)) {
     return RespondNow(Error("failed to switch the tablet mode state"));
   }
   waiter.Wait();
-  return RespondNow(WithArguments(ash::TabletMode::Get()->InTabletMode()));
+  return RespondNow(
+      WithArguments(display::Screen::GetScreen()->InTabletMode()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -4519,7 +4519,7 @@ AutotestPrivateGetAppWindowListFunction::Run() {
   auto window_list = ash::GetAppWindowList();
   std::vector<api::autotest_private::AppWindowInfo> result_list;
 
-  for (auto* window : window_list) {
+  for (aura::Window* window : window_list) {
     if (window->GetId() == aura::Window::kInitialId) {
       window->SetId(id_count--);
     }
@@ -5030,7 +5030,7 @@ AutotestPrivateWaitForLauncherStateFunction::Run() {
   // Exceptionally, allow waiting for kClosed state in clamshell mode, so tests
   // can wait for fullscreen launcher state change to finish when exiting tablet
   // mode.
-  if (!ash::TabletMode::Get()->InTabletMode() &&
+  if (!display::Screen::GetScreen()->InTabletMode() &&
       target_state != ash::AppListViewState::kClosed) {
     return RespondNow(Error("Not supported for bubble launcher"));
   }

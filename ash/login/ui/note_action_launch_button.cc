@@ -341,8 +341,7 @@ class NoteActionLaunchButton::ActionButton : public views::ImageButton {
   }
 
   // The background view, which paints the note action bubble.
-  raw_ptr<NoteActionLaunchButton::BackgroundView,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<NoteActionLaunchButton::BackgroundView, DanglingUntriaged>
       background_;
 
   BubbleTargeterDelegate event_targeter_delegate_;

@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager_provider.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 // For FakeVideoDecoder.
@@ -119,6 +120,7 @@ class VideoDecoderTest : public testing::Test {
     return NativeValueTraits<VideoDecoderSupport>::NativeValue(
         v8_scope->GetIsolate(), value.V8Value(), v8_scope->GetExceptionState());
   }
+  test::TaskEnvironment task_environment_;
 };
 
 TEST_F(VideoDecoderTest, HardwareDecodersApplyPressure) {

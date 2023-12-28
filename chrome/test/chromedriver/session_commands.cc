@@ -381,7 +381,11 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
       }
     }
 
-    status = web_view->StartBidiServer(mapper_script);
+    base::Value::Dict mapper_options;
+    mapper_options.Set("acceptInsecureCerts",
+                       capabilities.accept_insecure_certs);
+    mapper_options.Set("sharedIdWithFrame", true);
+    status = web_view->StartBidiServer(mapper_script, mapper_options);
     if (status.IsError()) {
       return status;
     }

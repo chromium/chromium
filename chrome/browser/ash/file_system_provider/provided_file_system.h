@@ -39,8 +39,7 @@ namespace extensions {
 class EventRouter;
 }  // namespace extensions
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 class NotificationManagerInterface;
 class RequestDispatcher;
@@ -272,7 +271,6 @@ class ProvidedFileSystem : public ProvidedFileSystemInterface {
   base::WeakPtrFactory<ProvidedFileSystem> weak_ptr_factory_{this};
 };
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_PROVIDED_FILE_SYSTEM_H_

@@ -192,7 +192,7 @@ source_set("eg2_tests") {
     "//components/sync/base:features",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/policy:eg_test_support+eg2",
+    "//ios/chrome/browser/policy/model:eg_test_support+eg2",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",

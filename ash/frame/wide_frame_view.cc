@@ -60,7 +60,7 @@ class WideFrameTargeter : public aura::WindowTargeter {
   }
 
  private:
-  raw_ptr<chromeos::HeaderView, ExperimentalAsh> header_view_;
+  raw_ptr<chromeos::HeaderView> header_view_;
 };
 
 }  // namespace

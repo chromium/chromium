@@ -155,6 +155,12 @@ void LogCardUnmaskPreflightDuration(const base::TimeDelta& duration);
 // enabled.
 void LogCardUnmaskTypeDecision(CardUnmaskTypeDecisionMetric metric);
 
+// Tracks whether the response is received before a card is chosen by the user.
+void LogPreflightCallResponseReceivedOnCardSelection(
+    PreflightCallEvent event,
+    bool fido_opted_in,
+    CreditCard::RecordType record_type);
+
 // Logs the existence of any user-perceived latency between selecting a Google
 // Payments server card and seeing a card unmask prompt.
 void LogUserPerceivedLatencyOnCardSelection(PreflightCallEvent event,

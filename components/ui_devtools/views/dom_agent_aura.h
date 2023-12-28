@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_UI_DEVTOOLS_VIEWS_DOM_AGENT_AURA_H_
 #define COMPONENTS_UI_DEVTOOLS_VIEWS_DOM_AGENT_AURA_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/ui_devtools/views/dom_agent_views.h"
 
 #include "ui/aura/env_observer.h"
@@ -44,7 +45,7 @@ class DOMAgentAura : public DOMAgentViews,
  private:
   static DOMAgentAura* dom_agent_aura_;
 
-  std::vector<aura::Window*> roots_;
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> roots_;
 };
 }  // namespace ui_devtools
 

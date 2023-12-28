@@ -243,25 +243,6 @@ chromium-metrics-reviews@google.com.
              is system apps and dialogs"/>
 </enum>
 
-<enum name="EventPageShowPersisted">
-  <int value="0" label="No in renderer"/>
-  <int value="1" label="Yes in renderer"/>
-  <int value="2" label="Yes in browser"/>
-  <int value="3"
-      label="Yes in browser
-             BackForwardCacheImpl::WillCommitNavigationToCachedEntry"/>
-  <int value="4"
-      label="Yes in browser BackForwardCacheImpl::RestoreEntry attempt"/>
-  <int value="5"
-      label="Yes in browser BackForwardCacheImpl::RestoreEntry succeed"/>
-  <int value="6" label="Yes in browser RenderFrameHostManager::CommitPending"/>
-  <int value="7" label="Yes in browser seen in renderer"/>
-  <int value="8" label="Yes in browser seen in renderer with Page"/>
-  <int value="9" label="Yes in browser seen in ACK to browser"/>
-  <int value="10" label="Yes in browser while disconnected"/>
-  <int value="11" label="Yes in browser while RenderView was not live"/>
-</enum>
-
 <enum name="EventResultType">
   <int value="0" label="Passive"/>
   <int value="1" label="Uncancelable"/>
@@ -287,11 +268,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Eraser">
     The tool is an eraser or a stylus being used in an inverted posture.
   </int>
-</enum>
-
-<enum name="TapDelayType">
-  <int value="0" label="Delayed Tap"/>
-  <int value="1" label="Undelayed Tap"/>
 </enum>
 
 <enum name="UIEventType">

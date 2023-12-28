@@ -39,6 +39,7 @@ enum PermissionName {
     "window-placement",
     "local-fonts",
     "top-level-storage-access",
+    "captured-surface-control",
 };
 
 // The PermissionDescriptor dictionary is a base to describe permissions. Some

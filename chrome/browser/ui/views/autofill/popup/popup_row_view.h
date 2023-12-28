@@ -158,8 +158,9 @@ class PopupRowView : public views::View, public views::ViewObserver {
   // provide a control for the sub-popup. It implements visualization and event
   // handling only, `PopupViewViews` controls the logic of opening/closing.
   class ExpandChildSuggestionsView : public views::View {
+    METADATA_HEADER(ExpandChildSuggestionsView, views::View)
+
    public:
-    METADATA_HEADER(ExpandChildSuggestionsView);
     ExpandChildSuggestionsView();
     ExpandChildSuggestionsView(const ExpandChildSuggestionsView&) = delete;
     ExpandChildSuggestionsView& operator=(const ExpandChildSuggestionsView&) =
@@ -204,10 +205,9 @@ class PopupRowView : public views::View, public views::ViewObserver {
   // Which (if any) cell of this row is currently selected.
   std::optional<CellType> selected_cell_;
 
-  // The cell wrapping the content area of the row.
+  // The view wrapping the content area of the row.
   raw_ptr<PopupRowContentView> content_view_ = nullptr;
-  // The cell wrapping the control area of the row.
-  // TODO(crbug.com/1411172): Add keyboard event handling.
+  // The view wrapping the control area of the row.
   raw_ptr<ExpandChildSuggestionsView> expand_child_suggestions_view_ = nullptr;
 
   // Overriding event handles for the content and control views.

@@ -4,11 +4,19 @@
 
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 
+#include <dawn/wire/WireClient.h>
+
 #include "base/check.h"
+#include "base/command_line.h"
+#include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"
+#include "gpu/config/gpu_finch_features.h"
+#include "gpu/config/gpu_switches.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "ui/gl/buildflags.h"
 
 namespace blink {
 
@@ -127,6 +135,76 @@ void DawnControlClientHolder::EnsureFlush(scheduler::EventLoop& event_loop) {
         }
       },
       scoped_refptr<DawnControlClientHolder>(this)));
+}
+
+std::vector<WGPUWGSLFeatureName> GatherWGSLFeatures() {
+#if BUILDFLAG(USE_DAWN)
+  // Create a dawn::wire::WireClient on a noop serializer, to get an instance
+  // from it.
+  class NoopSerializer : public dawn::wire::CommandSerializer {
+   public:
+    size_t GetMaximumAllocationSize() const override { return sizeof(buf); }
+    void* GetCmdSpace(size_t size) override { return buf; }
+    bool Flush() override { return true; }
+
+   private:
+    char buf[1024];
+  };
+
+  NoopSerializer noop_serializer;
+  dawn::wire::WireClient client{{.serializer = &noop_serializer}};
+
+  // Control which WGSL features are exposed based on flags.
+  WGPUDawnWireWGSLControl wgsl_control = {};
+  wgsl_control.chain.sType = WGPUSType_DawnWireWGSLControl;
+  wgsl_control.enableUnsafe = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kEnableUnsafeWebGPU);
+  wgsl_control.enableExperimental =
+      wgsl_control.enableUnsafe ||
+      RuntimeEnabledFeatures::WebGPUDeveloperFeaturesEnabled();
+  // This can be changed to true for manual testing with the chromium_testing_*
+  // WGSL features.
+  wgsl_control.enableTesting = false;
+
+  // Additionally populate the WGSL blocklist based on the Finch feature.
+  std::vector<std::string> wgsl_unsafe_features_owned;
+  std::vector<const char*> wgsl_unsafe_features;
+
+  if (!wgsl_control.enableUnsafe) {
+    wgsl_unsafe_features_owned =
+        base::SplitString(features::kWGSLUnsafeFeatures.Get(), ",",
+                          base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    wgsl_unsafe_features.reserve(wgsl_unsafe_features_owned.size());
+    for (const auto& f : wgsl_unsafe_features_owned) {
+      wgsl_unsafe_features.push_back(f.c_str());
+    }
+  }
+  WGPUDawnWGSLBlocklist wgsl_blocklist = {};
+  wgsl_blocklist.chain.sType = WGPUSType_DawnWGSLBlocklist;
+  wgsl_blocklist.chain.next = &wgsl_control.chain;
+  wgsl_blocklist.blocklistedFeatureCount = wgsl_unsafe_features.size();
+  wgsl_blocklist.blocklistedFeatures = wgsl_unsafe_features.data();
+
+  // Create the instance from all the chained structures and gather features
+  // from it.
+  WGPUInstanceDescriptor instance_desc = {};
+  instance_desc.nextInChain = &wgsl_blocklist.chain;
+  WGPUInstance instance = client.ReserveInstance(&instance_desc).instance;
+
+  const DawnProcTable& procs = dawn::wire::client::GetProcs();
+
+  size_t feature_count =
+      procs.instanceEnumerateWGSLLanguageFeatures(instance, nullptr);
+  std::vector<WGPUWGSLFeatureName> features(feature_count,
+                                            WGPUWGSLFeatureName_Undefined);
+  procs.instanceEnumerateWGSLLanguageFeatures(instance, features.data());
+
+  procs.instanceRelease(instance);
+
+  return features;
+#else
+  return {};
+#endif
 }
 
 }  // namespace blink

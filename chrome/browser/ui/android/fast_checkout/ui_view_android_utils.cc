@@ -23,7 +23,7 @@ using ::base::android::ConvertUTF8ToJavaString;
 using ::base::android::JavaRef;
 
 void MaybeSetInfo(autofill::AutofillProfile* profile,
-                  autofill::ServerFieldType type,
+                  autofill::FieldType type,
                   const JavaRef<jstring>& value,
                   const std::string& locale) {
   if (value) {
@@ -32,7 +32,7 @@ void MaybeSetInfo(autofill::AutofillProfile* profile,
 }
 
 void MaybeSetRawInfo(autofill::AutofillProfile* profile,
-                     autofill::ServerFieldType type,
+                     autofill::FieldType type,
                      const JavaRef<jstring>& value) {
   if (value) {
     profile->SetRawInfo(type, ConvertJavaStringToUTF16(value));

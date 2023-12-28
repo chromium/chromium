@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">ወደ ቀኝ ያንፏቅቁ</translation>
 <translation id="3081586908890909590">ቪዲዮ ለመቅረጽ ቀይር</translation>
 <translation id="313467653172006084">60 ክ/ሴ</translation>
+<translation id="3158534262962737808">«<ph name="WIFINAME" />» ይቀላቀላሉ</translation>
 <translation id="3227137524299004712">ማይክሮፎን</translation>
 <translation id="3240426699337459095">አገናኝ ተቀድቷል</translation>
 <translation id="3354465018370944241">የፎቶ ቅንብሮች</translation>
@@ -78,12 +79,14 @@
 <translation id="4705093842003735294">ሙሉ ጥራት</translation>
 <translation id="4864143361253542638">የተቃኘ የገፅ ዝርዝር</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">የአገናኝ አድራሻን ቅዳ <ph name="URL" /></translation>
 <translation id="491895758387112773">ባለ-ብዙ ዥረት ቪዲዮ ቀረፃ</translation>
 <translation id="495170559598752135">እርምጃዎች</translation>
 <translation id="4984613436295737187">ኳድ ኤችዲ (1440p)</translation>
 <translation id="5034763830503483128">የፎቶ ምጥጥነ ገፅታ</translation>
 <translation id="5057360777601936059">የእርስዎ ካሜራ በአሁኑ ጊዜ አይገኝም።
         ካሜራው በትክክል ተገናኝቶ ከሆነ እባክዎ ይፈትሹ።</translation>
+<translation id="5157591164390831335">URL ተገኝቷል።</translation>
 <translation id="5163387177077603948">ወደ ቀኝ አቅጣጫ በመንቀሳቀስ ላይ</translation>
 <translation id="5235304959032763950">16 ለ9</translation>
 <translation id="5266635337630551423">የሰነድ ከላይ-ግራ ጥግ</translation>
@@ -110,6 +113,7 @@
 <translation id="6353688143752491039">በካሜራ መተግበሪያ ላይ ግብረመልስ ስለሰጡ እናመሰግናለን።
 
 የእርስዎ ግብረመልስ ስለምስል ወይም ቪዲዮ ጥራት ከሆነ እባክዎ ናሙና ፎቶ ወይም ቪዲዮ ያያይዙ እና ምን ችግር እንዳለበት ያብራሩ። (ለምሳሌ፣ ፎቶ በጣም ጨለማ ነው ወይም የፎቶው ዋና አካል በትኩረት ላይ አይደለም።)</translation>
+<translation id="6519884562954018934"><ph name="WIFINAME" />ን ይቀላቀሉ</translation>
 <translation id="6527303717912515753">አጋራ</translation>
 <translation id="6617916774429601017">ሁሉንም ጥራቶች አሳይ</translation>
 <translation id="6631515515009660915">መስታወት ጠፍቷል</translation>
@@ -129,6 +133,7 @@
 <translation id="7450541714075000668">ጽሁፍ ገልብጧል</translation>
 <translation id="7488619942230388918">የጂአይኤፍ ቪዲዮን ይቅረጹ</translation>
 <translation id="7557677699350329807">ወደ ቀጣዩ ካሜራ ቀይር</translation>
+<translation id="7562584071994185503"><ph name="TEXT" /> ጽሑፍን ቅዳ</translation>
 <translation id="7607002721634913082">ለአፍታ ቆሟል</translation>
 <translation id="7608223098072244877">4 በ 4</translation>
 <translation id="761421184377987513">ወደ ታች-ግራ አቅጣጫ በመንቀሳቀስ ላይ</translation>
@@ -141,6 +146,7 @@
 <translation id="7726641833034062494">መደበኛ ቪዲዮን ይቅረጹ</translation>
 <translation id="7748344063862150053">የሰነድ ከላይ-ቀኝ ጥግ</translation>
 <translation id="7933675232020478311">ወደ ታች-ቀኝ አቅጣጫ በመንቀሳቀስ ላይ</translation>
+<translation id="7983668134180549431">ጽሁፍ ተገኝቷል።</translation>
 <translation id="8079255378695216066">ቀረጻን መጀመር አልተቻለም</translation>
 <translation id="8120146556401698679">ማንፏቀቅ- ማጋደል-አጉላ/አሳንስ</translation>
 <translation id="8131740175452115882">አረጋግጥ</translation>
@@ -150,16 +156,17 @@
 <translation id="8346544573713510785">በካሜራ ኤችኤኤል የተመጣጠኑ ክፈፎች</translation>
 <translation id="8425673304802773841">ወደ ታች አጋድል</translation>
 <translation id="8428213095426709021">ቅንብሮች</translation>
+<translation id="8609951387004618906"><ph name="URL" /> ይክፈቱ</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">የማይክሮፎን ድምጸ-ከል መቀያየሪያ ድምጸ-ከል በርቷል</translation>
 <translation id="8730621377337864115">ተከናውኗል</translation>
 <translation id="8732462232047530626">የቅድመ ዕይታ ዲበ ውሂብ</translation>
+<translation id="874854738381978209">የWi-Fi አውታረ መረብ ተገኝቷል።</translation>
 <translation id="8815966864175525708">የቁም ፎቶ ለማንሳት ይቀይሩ</translation>
 <translation id="8828441885228359828">ቀረጻን ከቆመበት ቀጥል</translation>
 <translation id="8870695351537079478">መቅረጽ መጀመር አልተቻለም</translation>
 <translation id="8880167521484863515">4 ለ3</translation>
 <translation id="8903921497873541725">አጉላ</translation>
-<translation id="8926890870105777777">«<ph name="WIFINAME" />» አውታረ መረብን ይቀላቀሉ</translation>
 <translation id="9045010116236796332">የሰነዱን ሁሉንም ጠርዞች በክፈፉ ውስጥ ያስቀምጡ</translation>
 <translation id="9045155556724273246">10 ሰከንዶች</translation>
 <translation id="906331135292332864">ምስልን በማሰናዳት ላይ...</translation>

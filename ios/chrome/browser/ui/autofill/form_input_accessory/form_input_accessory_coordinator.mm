@@ -12,11 +12,13 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/not_fatal_until.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
@@ -212,7 +214,7 @@ const CGFloat kIPHVerticalOffset = -5;
 }
 
 - (void)stop {
-  [self stopChildren];
+  [self clearPresentedState];
   [self.formInputAccessoryTapRecognizer.view
       removeGestureRecognizer:self.formInputAccessoryTapRecognizer];
   self.formInputAccessoryViewController = nil;
@@ -222,7 +224,6 @@ const CGFloat kIPHVerticalOffset = -5;
   [self.formInputAccessoryMediator disconnect];
   self.formInputAccessoryMediator = nil;
 
-  [self stopManualFillAllPasswordCoordinator];
   [self.brandingCoordinator stop];
   self.brandingCoordinator = nil;
   [self.layoutGuide.owningView removeLayoutGuide:self.layoutGuide];
@@ -241,6 +242,14 @@ const CGFloat kIPHVerticalOffset = -5;
 
 #pragma mark - Presenting Children
 
+- (void)clearPresentedState {
+  [self stopChildren];
+
+  [self stopManualFillAllPasswordCoordinator];
+
+  [self dismissAlertCoordinator];
+}
+
 - (void)stopChildren {
   for (ChromeCoordinator* coordinator in self.childCoordinators) {
     [coordinator stop];
@@ -253,13 +262,19 @@ const CGFloat kIPHVerticalOffset = -5;
   WebStateList* webStateList = self.browser->GetWebStateList();
   DCHECK(webStateList->GetActiveWebState());
   const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
+  autofill::FormActivityParams lastSeenParams =
+      self.formInputAccessoryMediator.lastSeenParams;
+
   ManualFillPasswordCoordinator* passwordCoordinator =
       [[ManualFillPasswordCoordinator alloc]
           initWithBaseViewController:self.baseViewController
                              browser:self.browser
                                  URL:URL
                     injectionHandler:self.injectionHandler
-              invokedOnPasswordField:invokedOnPasswordField];
+              invokedOnPasswordField:invokedOnPasswordField
+                              formID:lastSeenParams.unique_form_id
+                             frameID:lastSeenParams.frame_id];
+
   passwordCoordinator.delegate = self;
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     [passwordCoordinator presentFromButton:button];
@@ -554,6 +569,7 @@ const CGFloat kIPHVerticalOffset = -5;
 
 // Opens other passwords.
 - (void)showAllPasswords {
+  CHECK(!self.allPasswordCoordinator, base::NotFatalUntil::M124);
   [self reset];
   self.allPasswordCoordinator = [[ManualFillAllPasswordCoordinator alloc]
       initWithBaseViewController:self.baseViewController

@@ -72,7 +72,7 @@ source_set("unit_tests") {
     "//components/sync_preferences",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/web_content_area",
-    "//ios/chrome/browser/policy:test_support",
+    "//ios/chrome/browser/policy/model:test_support",
     "//ios/chrome/browser/policy_url_blocking/model",
     "//ios/chrome/browser/prefs/model",
     "//ios/chrome/browser/reading_list/model",

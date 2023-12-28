@@ -348,11 +348,13 @@ void BubbleFrameView::InsertClientView(ClientView* client_view) {
 
 void BubbleFrameView::SetTitleView(std::unique_ptr<View> title_view) {
   DCHECK(title_view);
-  delete default_title_;
-  default_title_ = nullptr;
-  delete custom_title_;
-  custom_title_ = title_view.get();
-  title_container_->AddChildViewAt(title_view.release(), 0);
+  if (default_title_) {
+    title_container_->RemoveChildViewT(default_title_.ExtractAsDangling());
+  }
+  if (custom_title_) {
+    title_container_->RemoveChildViewT(custom_title_.ExtractAsDangling());
+  }
+  custom_title_ = title_container_->AddChildViewAt(std::move(title_view), 0);
 }
 
 void BubbleFrameView::UpdateSubtitle() {
@@ -662,9 +664,10 @@ void BubbleFrameView::SetBubbleBorder(std::unique_ptr<BubbleBorder> border) {
   if (footnote_container_)
     footnote_container_->SetCornerRadius(border->corner_radius());
 
+  // Update the background, which relies on the border. First set it to null to
+  // avoid dangling pointers, and then update it.
+  SetBackground(nullptr);
   SetBorder(std::move(border));
-
-  // Update the background, which relies on the border.
   SetBackground(std::make_unique<views::BubbleBackground>(bubble_border_));
 }
 
@@ -679,8 +682,7 @@ gfx::Insets BubbleFrameView::GetContentMargins() const {
 
 void BubbleFrameView::SetHeaderView(std::unique_ptr<View> view) {
   if (header_view_) {
-    delete header_view_;
-    header_view_ = nullptr;
+    RemoveChildViewT(header_view_.ExtractAsDangling());
   }
 
   if (view) {
@@ -692,8 +694,9 @@ void BubbleFrameView::SetHeaderView(std::unique_ptr<View> view) {
 
 void BubbleFrameView::SetFootnoteView(std::unique_ptr<View> view) {
   // Remove the old footnote container.
-  delete footnote_container_;
-  footnote_container_ = nullptr;
+  if (footnote_container_) {
+    RemoveChildViewT(footnote_container_.ExtractAsDangling());
+  }
   if (view) {
     int radius = bubble_border_ ? bubble_border_->corner_radius() : 0;
     footnote_container_ = AddChildView(std::make_unique<FootnoteContainerView>(

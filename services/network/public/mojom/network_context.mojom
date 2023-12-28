@@ -1495,18 +1495,12 @@ interface NetworkContext {
 
   // Checks the given certificate against the CertVerifier and CTVerifier. This
   // implementation is currently specific for use by Signed Exchange.
-  //
-  // |network_anonymization_key| must be the NetworkAnonymizationKey associated
-  // with the underlying resource load, and is used foy any reports generated as
-  // a result of verifying the cert.
   VerifyCertForSignedExchange(X509Certificate certificate,
                               url.mojom.Url url,
-                              NetworkAnonymizationKey network_anonymization_key,
                               string ocsp_response,
                               string sct_list) => (int32 error_code,
                                                    CertVerifyResult cv_result,
-                                                   bool pkp_bypassed,
-                                                   string pinning_failure_log);
+                                                   bool pkp_bypassed);
 
   // Used to facilitate cross-process testing of the IP Protection feature. This
   // method will:
@@ -1581,12 +1575,12 @@ interface NetworkContext {
   LoadHttpAuthCacheProxyEntries(mojo_base.mojom.UnguessableToken cache_key)
       => ();
 
-// Adds an entry to the HttpAuthCache. |network_anonymization_key| is the
-// NetworkAnonymizationKney to restrict the credentials to, and is only
-// respected for server (not proxy) HTTP auth and only when the NetworkService
-// was configured to split the auth cache by NetworkAnonymizationKey.
-// |challenge| may not necessarily contain a stateful challenge that requires a
-// persistent connection, allowing the cache to be pre-populated.
+  // Adds an entry to the HttpAuthCache. `network_anonymization_key` is the
+  // NetworkAnonymizationKey to restrict the credentials to, and is only
+  // respected for server (not proxy) HTTP auth and only when the NetworkService
+  // was configured to split the auth cache by NetworkAnonymizationKey.
+  // `challenge` may not necessarily contain a stateful challenge that requires
+  // a persistent connection, allowing the cache to be pre-populated.
   AddAuthCacheEntry(AuthChallengeInfo challenge,
                     NetworkAnonymizationKey network_anonymization_key,
                     AuthCredentials credentials) => ();
@@ -1633,10 +1627,6 @@ interface NetworkContext {
   // Forces all pending Domain Reliability uploads to run now, even if their
   // minimum delay has not yet passed.
   ForceDomainReliabilityUploadsForTesting() => ();
-
-  // If called, the CT log list will be considered always timely.
-  [EnableIf=is_ct_supported]
-  SetCTLogListAlwaysTimelyForTesting();
 
   // Set the SCT auditing mode for this NetworkContext.
   [EnableIf=is_ct_supported]

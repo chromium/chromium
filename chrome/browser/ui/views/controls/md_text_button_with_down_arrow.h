@@ -15,9 +15,9 @@ namespace views {
 // The material design themed text button with a drop arrow displayed on the
 // right side.
 class MdTextButtonWithDownArrow : public MdTextButton {
- public:
-  METADATA_HEADER(MdTextButtonWithDownArrow);
+  METADATA_HEADER(MdTextButtonWithDownArrow, MdTextButton)
 
+ public:
   MdTextButtonWithDownArrow(PressedCallback callback,
                             const std::u16string& text);
   MdTextButtonWithDownArrow(const MdTextButtonWithDownArrow&) = delete;

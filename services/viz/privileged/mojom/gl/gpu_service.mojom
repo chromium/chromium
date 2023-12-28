@@ -42,6 +42,8 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 [EnableIf=is_win]
 import "ui/gfx/mojom/dxgi_info.mojom";
 [EnableIfNot=is_chromeos]
+import "components/ml/webnn/features.mojom";
+[EnableIfNot=is_chromeos]
 import "services/webnn/public/mojom/webnn_context_provider.mojom";
 
 interface GpuService {
@@ -139,9 +141,10 @@ interface GpuService {
 
   // Binds the pending receiver used to access the hardware accelerated OS
   // machine learning APIs.
-  [EnableIfNot=is_chromeos]
+  [EnableIfNot=is_chromeos,
+   RuntimeFeature=webnn.mojom.features.kWebMachineLearningNeuralNetwork]
   BindWebNNContextProvider(
-      pending_receiver<webnn.mojom.WebNNContextProvider> receiver, int32
+      pending_receiver<webnn.mojom.WebNNContextProvider>? receiver, int32
           client_id);
 
   [Sync, NoInterrupt]

@@ -24,12 +24,12 @@ import type {VolumeManager} from '../../externs/volume_manager.js';
 import {getStore} from '../../state/store.js';
 import {USER_CANCELLED, XfPasswordDialog} from '../../widgets/xf_password_dialog.js';
 
-import {constants} from './constants.js';
+import {DEFAULT_CROSTINI_VM} from './constants.js';
 import {type DirectoryChangeTracker, DirectoryModel} from './directory_model.js';
 import {FileTransferController, PastePlan} from './file_transfer_controller.js';
 import {MetadataItem} from './metadata/metadata_item.js';
 import {MetadataModel} from './metadata/metadata_model.js';
-import {TaskController} from './task_controller.js';
+import {type DropdownItem, TaskController} from './task_controller.js';
 import {TaskHistory} from './task_history.js';
 import {DefaultTaskDialog} from './ui/default_task_dialog.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
@@ -104,8 +104,7 @@ export class FileTasks {
     if (entries.length !== 1 ||
         !(isCrostiniEntry(entries[0]!, volumeManager) ||
           crostini.canSharePath(
-              constants.DEFAULT_CROSTINI_VM, entries[0]!,
-              false /* persist */))) {
+              DEFAULT_CROSTINI_VM, entries[0]!, false /* persist */))) {
       resultingTasks.tasks = resultingTasks.tasks.filter(
           (task: chrome.fileManagerPrivate.FileTask) => !descriptorEqual(
               task.descriptor, INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR));
@@ -821,15 +820,15 @@ export class FileTasks {
     if (this.defaultTask_) {
       for (let j = 0; j < items.length; j++) {
         if (descriptorEqual(
-                items[j]!.task.descriptor, this.defaultTask_.descriptor)) {
+                items[j]!.task!.descriptor, this.defaultTask_.descriptor)) {
           defaultIdx = j;
         }
       }
     }
 
     taskDialog.showDefaultTaskDialog(
-        title, message, items, defaultIdx, item => {
-          onSuccess(item.task);
+        title, message, items, defaultIdx, (item: DropdownItem) => {
+          onSuccess(item.task!);
         });
   }
 

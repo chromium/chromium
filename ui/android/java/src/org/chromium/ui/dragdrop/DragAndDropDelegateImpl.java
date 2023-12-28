@@ -293,18 +293,20 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
     protected int buildFlags(DropDataAndroid dropData) {
         if (dropData.hasBrowserContent()) {
             return View.DRAG_FLAG_GLOBAL | View.DRAG_FLAG_OPAQUE;
-        } else if (dropData.isPlainText() || dropData.hasLink()) {
-            return View.DRAG_FLAG_GLOBAL;
-        } else if (dropData.hasImage()) {
-            int flag = View.DRAG_FLAG_GLOBAL | View.DRAG_FLAG_GLOBAL_URI_READ;
+        }
+        int flag = 0;
+        if (dropData.isPlainText() || dropData.hasLink()) {
+            flag |= View.DRAG_FLAG_GLOBAL;
+        }
+        if (dropData.hasImage()) {
+            flag |= View.DRAG_FLAG_GLOBAL | View.DRAG_FLAG_GLOBAL_URI_READ;
             if (mDragAndDropBrowserDelegate != null
                     && mDragAndDropBrowserDelegate.getSupportAnimatedImageDragShadow()) {
                 flag |= View.DRAG_FLAG_OPAQUE;
             }
-            return flag;
-        } else {
-            return 0;
+
         }
+        return flag;
     }
 
     protected View.DragShadowBuilder createDragShadowBuilder(

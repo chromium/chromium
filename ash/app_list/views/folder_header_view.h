@@ -97,14 +97,14 @@ class ASH_EXPORT FolderHeaderView : public views::View,
   // AppListItemObserver overrides:
   void ItemNameChanged() override;
 
-  raw_ptr<AppListFolderItem, ExperimentalAsh> folder_item_;  // Not owned.
+  raw_ptr<AppListFolderItem> folder_item_;  // Not owned.
 
-  raw_ptr<views::Textfield, ExperimentalAsh> folder_name_view_;
+  raw_ptr<views::Textfield> folder_name_view_;
   std::unique_ptr<FolderNameViewController> folder_name_controller_;
 
   const std::u16string folder_name_placeholder_text_;
 
-  raw_ptr<FolderHeaderViewDelegate, ExperimentalAsh> delegate_;
+  raw_ptr<FolderHeaderViewDelegate> delegate_;
 
   bool folder_name_visible_;
 

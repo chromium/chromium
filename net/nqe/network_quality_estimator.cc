@@ -1285,7 +1285,6 @@ void NetworkQualityEstimator::OnPrefsRead(
                    nqe::internal::CachedNetworkQuality> read_prefs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  UMA_HISTOGRAM_COUNTS_1M("NQE.Prefs.ReadSize", read_prefs.size());
   for (auto& it : read_prefs) {
     EffectiveConnectionType effective_connection_type =
         it.second.effective_connection_type();

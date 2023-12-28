@@ -34,8 +34,6 @@ std::string EnterOldPasswordScreen::GetResultString(Result result) {
       return "CryptohomeError";
     case Result::kAuthenticated:
       return "Authenticated";
-    case Result::kNotApplicable:
-      return BaseScreen::kNotApplicable;
   }
 }
 
@@ -89,13 +87,14 @@ void EnterOldPasswordScreen::OnPasswordAuthentication(
     std::unique_ptr<UserContext> user_context,
     std::optional<AuthenticationError> error) {
   if (error.has_value()) {
+    context()->user_context = std::move(user_context);
     if (cryptohome::ErrorMatches(
             error->get_cryptohome_code(),
             user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED)) {
-      context()->user_context = std::move(user_context);
       view_->ShowWrongPasswordError();
       return;
     }
+    context()->osauth_error = WizardContext::OSAuthErrorKind::kFatal;
     exit_callback_.Run(Result::kCryptohomeError);
     return;
   }

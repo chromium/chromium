@@ -24,8 +24,9 @@ DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kLabelExpansionFinished);
 // related offers that are eligible on the current page domain.
 class OfferNotificationIconView : public PageActionIconView,
                                   public views::WidgetObserver {
+  METADATA_HEADER(OfferNotificationIconView, PageActionIconView)
+
  public:
-  METADATA_HEADER(OfferNotificationIconView);
   OfferNotificationIconView(
       CommandUpdater* command_updater,
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,

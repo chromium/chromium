@@ -223,9 +223,7 @@ std::unique_ptr<BehaviourProvider> StatusBehaviour(AllowStatus status) {
       // Unreachable in practice. Show "failed" message just in case.
       return std::make_unique<DisallowedFailure>();
     case AllowStatus::kFeatureDisabled:
-    case AllowStatus::kUnsupportedModel:
-    case AllowStatus::kHardwareChecksFailed:
-    case AllowStatus::kIncorrectToken:
+    case AllowStatus::kInsufficientHardware:
       return std::make_unique<DisallowedHardware>();
     case AllowStatus::kFailedToDetermine:
       return std::make_unique<DisallowedFailure>();

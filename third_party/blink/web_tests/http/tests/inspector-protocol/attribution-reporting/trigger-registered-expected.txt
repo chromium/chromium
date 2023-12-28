@@ -1,0 +1,78 @@
+Test that the Storage.attributionReportingTriggerRegistered event is fired.
+{
+    aggregatable : noMatchingSources
+    eventLevel : noMatchingSources
+    registration : {
+        aggregatableDedupKeys : [
+            [0] : {
+                dedupKey : 1
+                filters : {
+                    filters : [
+                    ]
+                    notFilters : [
+                    ]
+                }
+            }
+        ]
+        aggregatableTriggerData : [
+            [0] : {
+                filters : {
+                    filters : [
+                    ]
+                    notFilters : [
+                    ]
+                }
+                keyPiece : 0x0
+                sourceKeys : [
+                ]
+            }
+        ]
+        aggregatableValues : [
+            [0] : {
+                key : a
+                value : 2
+            }
+        ]
+        debugReporting : true
+        eventTriggerData : [
+            [0] : {
+                data : 0
+                filters : {
+                    filters : [
+                    ]
+                    notFilters : [
+                    ]
+                }
+                priority : 0
+            }
+        ]
+        filters : {
+            filters : [
+                [0] : {
+                    filterValues : [
+                        [0] : {
+                            key : b
+                            values : [
+                            ]
+                        }
+                    ]
+                }
+            ]
+            notFilters : [
+                [0] : {
+                    filterValues : [
+                        [0] : {
+                            key : c
+                            values : [
+                            ]
+                        }
+                    ]
+                    lookbackWindow : 2
+                }
+            ]
+        }
+        sourceRegistrationTimeConfig : exclude
+        triggerContextId : 123
+    }
+}
+

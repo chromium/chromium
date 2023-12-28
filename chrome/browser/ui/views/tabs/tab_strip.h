@@ -87,7 +87,8 @@ class TabStrip : public views::View,
 
   // Returns the size needed for the specified views. This is invoked during
   // drag and drop to calculate offsets and positioning.
-  static int GetSizeNeededForViews(const std::vector<TabSlotView*>& views);
+  static int GetSizeNeededForViews(
+      const std::vector<raw_ptr<TabSlotView, VectorExperimental>>& views);
 
   // Add and remove observers to changes within this TabStrip.
   void AddObserver(TabStripObserver* observer);

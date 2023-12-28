@@ -11,6 +11,8 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.url.GURL;
 
+import java.util.List;
+
 /** Controls the whole flow of boarding pass detection. */
 public class BoardingPassController {
     private static final String TAG = "BoardingPassCtrl";
@@ -28,7 +30,10 @@ public class BoardingPassController {
             @Override
             public void onPageLoadFinished(Tab tab, GURL url) {
                 if (BoardingPassBridge.shouldDetect(url.getSpec())) {
-                    Log.d(TAG, "Detect boarding pass on url: %s", url.getSpec());
+                    BoardingPassBridge.detectBoardingPass(tab.getWebContents())
+                            .then(
+                                    (List<String> passes) ->
+                                            Log.d(TAG, "Detected boarding passes: %s", passes));
                 }
             }
         };

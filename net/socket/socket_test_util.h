@@ -501,6 +501,7 @@ struct SSLSocketDataProvider {
   std::vector<uint8_t> ech_retry_configs;
 
   absl::optional<NextProtoVector> next_protos_expected_in_ssl_config;
+  absl::optional<SSLConfig::ApplicationSettings> expected_application_settings;
 
   uint16_t expected_ssl_version_min;
   uint16_t expected_ssl_version_max;
@@ -1060,7 +1061,8 @@ class MockUDPClientSocket : public DatagramClientSocket, public AsyncSocket {
 
 class TestSocketRequest : public TestCompletionCallbackBase {
  public:
-  TestSocketRequest(std::vector<TestSocketRequest*>* request_order,
+  TestSocketRequest(std::vector<raw_ptr<TestSocketRequest, VectorExperimental>>*
+                        request_order,
                     size_t* completion_count);
 
   TestSocketRequest(const TestSocketRequest&) = delete;
@@ -1079,7 +1081,8 @@ class TestSocketRequest : public TestCompletionCallbackBase {
   void OnComplete(int result);
 
   ClientSocketHandle handle_;
-  raw_ptr<std::vector<TestSocketRequest*>> request_order_;
+  raw_ptr<std::vector<raw_ptr<TestSocketRequest, VectorExperimental>>>
+      request_order_;
   raw_ptr<size_t> completion_count_;
 };
 
@@ -1147,7 +1150,7 @@ class ClientSocketPoolTest {
 
  private:
   std::vector<std::unique_ptr<TestSocketRequest>> requests_;
-  std::vector<TestSocketRequest*> request_order_;
+  std::vector<raw_ptr<TestSocketRequest, VectorExperimental>> request_order_;
   size_t completion_count_ = 0;
 };
 

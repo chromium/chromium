@@ -9,6 +9,7 @@
 #import "components/commerce/core/pref_names.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
@@ -18,6 +19,15 @@
 
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
+
+  // Pref Service.
+  raw_ptr<PrefService> _prefService;
+
+  // YES if price tracing notification is enabled.
+  BOOL _priceTrackingNotificationEnabled;
+
+  // YES if content notification is enabled.
+  BOOL _contentNotificationEnabled;
 }
 
 - (instancetype)initWithPrefService:(PrefService*)prefService {
@@ -31,6 +41,16 @@
         commerce::kPriceEmailNotificationsEnabled, &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(
         prefs::kFeaturePushNotificationPermissions, &_prefChangeRegistrar);
+
+    _prefService = prefService;
+    _priceTrackingNotificationEnabled =
+        _prefService->GetDict(prefs::kFeaturePushNotificationPermissions)
+            .FindBool(kCommerceNotificationKey)
+            .value_or(false);
+    _contentNotificationEnabled =
+        _prefService->GetDict(prefs::kFeaturePushNotificationPermissions)
+            .FindBool(kContentNotificationKey)
+            .value_or(false);
   }
 
   return self;
@@ -38,16 +58,38 @@
 
 #pragma mark - PrefObserverDelegate
 
-// TODO(b/304830588) Decouple kFeaturePushNotificationPermissions from Price
-// Tracking to make it universally usable. Add two separate prefs for Content
-// and Price Tracking, and keep the original one which is updated if at least
-// one of the other prefs is True, and becomes false when both are False.
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (preferenceName == commerce::kPriceEmailNotificationsEnabled ||
-      preferenceName == prefs::kFeaturePushNotificationPermissions) {
+  if (preferenceName == commerce::kPriceEmailNotificationsEnabled) {
     [self.delegate notificationsSettingsDidChangeForClient:
                        PushNotificationClientId::kCommerce];
+  } else if (preferenceName == prefs::kFeaturePushNotificationPermissions) {
+    if (_priceTrackingNotificationEnabled !=
+        [self isPriceTrackingNotificationEnabled]) {
+      _priceTrackingNotificationEnabled =
+          [self isPriceTrackingNotificationEnabled];
+      [self.delegate notificationsSettingsDidChangeForClient:
+                         PushNotificationClientId::kCommerce];
+    } else if (_contentNotificationEnabled !=
+               [self isContentNotificationEnabled]) {
+      _contentNotificationEnabled = [self isContentNotificationEnabled];
+      [self.delegate notificationsSettingsDidChangeForClient:
+                         PushNotificationClientId::kContent];
+    }
   }
+}
+
+#pragma mark - private
+
+- (BOOL)isPriceTrackingNotificationEnabled {
+  return _prefService->GetDict(prefs::kFeaturePushNotificationPermissions)
+      .FindBool(kCommerceNotificationKey)
+      .value_or(false);
+}
+
+- (BOOL)isContentNotificationEnabled {
+  return _prefService->GetDict(prefs::kFeaturePushNotificationPermissions)
+      .FindBool(kContentNotificationKey)
+      .value_or(false);
 }
 
 @end

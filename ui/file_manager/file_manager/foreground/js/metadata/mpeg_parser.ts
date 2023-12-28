@@ -4,7 +4,7 @@
 
 import {ByteReader, SeekOrigin} from './byte_reader.js';
 import {ParserMetadata} from './metadata_item.js';
-import {MetadataParser, MetadataParserLogger} from './metadata_parser.js';
+import {MetadataParser, type MetadataParserLogger} from './metadata_parser.js';
 
 interface Atom {
   name: string;

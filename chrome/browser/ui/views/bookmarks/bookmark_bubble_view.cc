@@ -43,7 +43,6 @@
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/page_image_service/image_service.h"
-#include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
@@ -126,8 +125,7 @@ base::OnceCallback<void()> CreatePriceTrackingEmailCallback(
     views::View* anchor_view,
     content::WebContents* web_contents,
     const bookmarks::BookmarkNode* bookmark) {
-  if (!base::FeatureList::IsEnabled(commerce::kShoppingListTrackByDefault) ||
-      !profile ||
+  if (!profile ||
       commerce::IsEmailNotificationPrefSetByUser(profile->GetPrefs())) {
     return base::DoNothing();
   }
@@ -380,9 +378,7 @@ void BookmarkBubbleView::ShowBubble(
       CreatePriceTrackingEmailCallback(profile, anchor_view, web_contents,
                                        bookmark_node);
 
-  bool show_simplified_flow =
-      !already_bookmarked && base::FeatureList::IsEnabled(
-                                 power_bookmarks::kSimplifiedBookmarkSaveFlow);
+  bool show_simplified_flow = !already_bookmarked;
 
   auto bubble_delegate_unique = std::make_unique<BookmarkBubbleDelegate>(
       std::move(delegate), browser, url, show_simplified_flow);
@@ -433,13 +429,13 @@ void BookmarkBubbleView::ShowBubble(
                          base::Unretained(bubble_delegate)))
       .AddOkButton(base::BindOnce(&BookmarkBubbleDelegate::ApplyEdits,
                                   base::Unretained(bubble_delegate)),
-                   ui::DialogModelButton::Params()
+                   ui::DialogModel::Button::Params()
                        .SetLabel(l10n_util::GetStringUTF16(IDS_DONE))
                        .SetId(kBookmarkBubbleOkButtonId))
       .AddCancelButton(
           base::BindRepeating(&BookmarkBubbleDelegate::HandleSecondaryButton,
                               base::Unretained(bubble_delegate)),
-          ui::DialogModelButton::Params()
+          ui::DialogModel::Button::Params()
               .SetLabel(secondary_button_label)
               .SetStyle(features::IsChromeRefresh2023()
                             ? ui::ButtonStyle::kTonal
@@ -535,8 +531,7 @@ void BookmarkBubbleView::ShowBubble(
     bubble->SetFootnoteView(std::make_unique<BubbleSyncPromoView>(
         profile, delegate_ptr,
         signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE,
-        IDS_BOOKMARK_DICE_PROMO_SYNC_MESSAGE,
-        /*dice_signin_button_prominent=*/false));
+        IDS_BOOKMARK_DICE_PROMO_SYNC_MESSAGE, ui::ButtonStyle::kDefault));
 #endif
   }
 

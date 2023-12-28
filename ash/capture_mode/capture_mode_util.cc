@@ -4,7 +4,7 @@
 
 #include "ash/capture_mode/capture_mode_util.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
@@ -238,7 +238,7 @@ void TriggerAccessibilityAlertSoon(const std::string& message) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &AccessibilityControllerImpl::TriggerAccessibilityAlertWithMessage,
+          &AccessibilityController::TriggerAccessibilityAlertWithMessage,
           Shell::Get()->accessibility_controller()->GetWeakPtr(), message));
 }
 

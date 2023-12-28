@@ -70,7 +70,7 @@ class LockScreenActionBackgroundView::NoteBackground : public views::View {
   ~NoteBackground() override = default;
 
  private:
-  raw_ptr<views::InkDropObserver, ExperimentalAsh> observer_;
+  raw_ptr<views::InkDropObserver> observer_;
 };
 
 BEGIN_METADATA(LockScreenActionBackgroundView, NoteBackground, views::View)

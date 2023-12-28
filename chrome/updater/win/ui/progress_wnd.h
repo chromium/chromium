@@ -124,6 +124,7 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, OnWaitingRetryDownload);
   FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, OnPause);
   FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, OnComplete);
+  FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, LaunchCmdLine);
 
   enum class States {
     STATE_INIT = 0,

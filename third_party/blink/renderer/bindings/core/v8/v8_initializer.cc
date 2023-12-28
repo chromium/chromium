@@ -469,23 +469,34 @@ V8Initializer::CodeGenerationCheckCallbackInMainThread(
   return {true, std::move(stringified_source)};
 }
 
-bool V8Initializer::WasmCodeGenerationCheckCallbackInMainThread(v8::Local<v8::Context> context,
-                                                 v8::Local<v8::String> source) {
-  if (ExecutionContext* execution_context = ToExecutionContext(context)) {
-    if (ContentSecurityPolicy* policy =
-            execution_context->GetContentSecurityPolicy()) {
-      v8::String::Value source_str(context->GetIsolate(), source);
-      UChar snippet[ContentSecurityPolicy::kMaxSampleLength + 1];
-      size_t len = std::min((sizeof(snippet) / sizeof(UChar)) - 1,
-                            static_cast<size_t>(source_str.length()));
-      memcpy(snippet, *source_str, len * sizeof(UChar));
-      snippet[len] = 0;
-      return policy->AllowWasmCodeGeneration(
-          ReportingDisposition::kReport,
-          ContentSecurityPolicy::kWillThrowException, snippet);
-    }
+bool V8Initializer::WasmCodeGenerationCheckCallbackInMainThread(
+    v8::Local<v8::Context> context,
+    v8::Local<v8::String> source) {
+  ExecutionContext* execution_context = ToExecutionContext(context);
+  if (!execution_context) {
+    return false;
   }
-  return false;
+  ContentSecurityPolicy* policy = execution_context->GetContentSecurityPolicy();
+  if (!policy) {
+    return false;
+  }
+  v8::String::Value source_str(context->GetIsolate(), source);
+  UChar snippet[ContentSecurityPolicy::kMaxSampleLength + 1];
+  size_t len = std::min((sizeof(snippet) / sizeof(UChar)) - 1,
+                        static_cast<size_t>(source_str.length()));
+  memcpy(snippet, *source_str, len * sizeof(UChar));
+  snippet[len] = 0;
+  if (!policy->AllowWasmCodeGeneration(
+          ReportingDisposition::kReport,
+          ContentSecurityPolicy::kWillThrowException, snippet)) {
+    return false;
+  }
+
+  // Set a crash key so we know if a crash report could have been caused by
+  // Wasm.
+  static crash_reporter::CrashKeyString<1> has_wasm_key("has-wasm");
+  has_wasm_key.Set("1");
+  return true;
 }
 
 void V8Initializer::WasmAsyncResolvePromiseCallback(

@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idle_options.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/modules/idle/idle_manager.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -65,6 +66,7 @@ class FakeIdleService final : public mojom::blink::IdleManager {
 }  // namespace
 
 TEST(IdleDetectorTest, Start) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   FakeIdleService idle_service;
 
@@ -90,6 +92,7 @@ TEST(IdleDetectorTest, Start) {
 }
 
 TEST(IdleDetectorTest, StartIdleWithLongThreshold) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   FakeIdleService idle_service;
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
@@ -133,6 +136,7 @@ TEST(IdleDetectorTest, StartIdleWithLongThreshold) {
 }
 
 TEST(IdleDetectorTest, LockScreen) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   FakeIdleService idle_service;
 
@@ -162,6 +166,7 @@ TEST(IdleDetectorTest, LockScreen) {
 }
 
 TEST(IdleDetectorTest, BecomeIdle) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   FakeIdleService idle_service;
 
@@ -192,6 +197,7 @@ TEST(IdleDetectorTest, BecomeIdle) {
 }
 
 TEST(IdleDetectorTest, BecomeIdleAndLockScreen) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   FakeIdleService idle_service;
 
@@ -221,6 +227,7 @@ TEST(IdleDetectorTest, BecomeIdleAndLockScreen) {
 }
 
 TEST(IdleDetectorTest, BecomeIdleAndLockScreenWithLongThreshold) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   FakeIdleService idle_service;
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
@@ -263,6 +270,7 @@ TEST(IdleDetectorTest, BecomeIdleAndLockScreenWithLongThreshold) {
 }
 
 TEST(IdleDetectorTest, BecomeIdleAndLockAfterWithLongThreshold) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   FakeIdleService idle_service;
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
@@ -318,6 +326,7 @@ TEST(IdleDetectorTest, BecomeIdleAndLockAfterWithLongThreshold) {
 }
 
 TEST(IdleDetectorTest, BecomeIdleThenActiveBeforeThreshold) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   FakeIdleService idle_service;
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
@@ -359,6 +368,7 @@ TEST(IdleDetectorTest, BecomeIdleThenActiveBeforeThreshold) {
 }
 
 TEST(IdleDetectorTest, SetAndClearOverrides) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   FakeIdleService idle_service;
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();

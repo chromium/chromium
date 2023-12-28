@@ -61,10 +61,9 @@ std::string ExtractTag() {
   PathString path;
   return (::GetModuleFileName(nullptr, path.get(), path.capacity()) > 0 &&
           ::GetLastError() == ERROR_SUCCESS)
-             ? tagging::ExeReadTag(base::FilePath(path.get()))
+             ? tagging::BinaryReadTagString(base::FilePath(path.get()))
              : std::string();
 }
-
 }  // namespace
 
 // This structure passes data back and forth for the processing
@@ -205,67 +204,50 @@ ProcessExitResult UnpackBinaryResources(const Configuration& configuration,
   return exit_code;
 }
 
-ProcessExitResult BuildCommandLineArguments(const wchar_t* cmd_line,
-                                            wchar_t* cmd_line_args,
-                                            size_t cmd_line_args_capacity) {
+ProcessExitResult BuildInstallerCommandLineArguments(
+    const wchar_t* cmd_line,
+    wchar_t* cmd_line_args,
+    size_t cmd_line_args_capacity) {
   CHECK(cmd_line);
   CHECK(cmd_line_args);
   CHECK(cmd_line_args_capacity);
 
   *cmd_line_args = '\0';
-  CommandString args;
 
   // Append the command line arguments in `cmd_line` first.
-  int num_args = 0;
-  base::win::ScopedLocalAllocTyped<wchar_t*> argv(
-      ::CommandLineToArgvW(cmd_line, &num_args));
-  for (int i = 1; i != num_args; ++i) {
-    if (!args.append(L" ") ||
-        !args.append(
-            base::CommandLine::QuoteForCommandLineToArgvW(argv.get()[i])
-                .c_str())) {
-      return ProcessExitResult(COMMAND_STRING_OVERFLOW);
-    }
-  }
+  base::CommandLine args = base::CommandLine::FromString(cmd_line);
 
   // Handle the tag. Use the tag from the --tag command line argument if such
   // argument exists. If --tag is present in `argv`, then it is going to be
   // handed over to the updater, along with the other arguments. Otherwise, try
   // extracting a tag embedded in the program image of the meta installer.
-  if (![&argv, num_args] {
-        // Returns true if the --tag argument is present on the command line.
-        constexpr wchar_t kTagSwitch[] = L"--tag=";
-        for (int i = 1; i != num_args; ++i) {
-          if (memcmp(argv.get()[i], kTagSwitch, sizeof(kTagSwitch)) == 0) {
-            return true;
-          }
-        }
-        return false;
-      }()) {
+  if (!args.HasSwitch(kTagSwitch)) {
     const std::string tag = ExtractTag();
     if (!tag.empty()) {
-      if (!args.append(L" --tag=") ||
-          !args.append(base::SysUTF8ToWide(tag).c_str())) {
-        return ProcessExitResult(COMMAND_STRING_OVERFLOW);
-      }
+      args.AppendSwitchASCII(kTagSwitch, tag.c_str());
     }
   }
 
   // If there is nothing, return an error.
-  if (!args.length()) {
+  if (args.GetSwitches().size() == 0 && args.GetArgs().size() == 0) {
     return ProcessExitResult(INVALID_OPTION);
   }
 
   // Append logging-related arguments for debugging purposes.
-  if (!args.append(
-          base::SysUTF8ToWide(base::StrCat({" --", kEnableLoggingSwitch, " --",
-                                            kLoggingModuleSwitch, "=",
-                                            kLoggingModuleSwitchValue}))
-              .c_str())) {
+  if (!args.HasSwitch(kEnableLoggingSwitch)) {
+    args.AppendSwitch(kEnableLoggingSwitch);
+  }
+
+  if (!args.HasSwitch(kLoggingModuleSwitch)) {
+    args.AppendSwitchASCII(kLoggingModuleSwitch, kLoggingModuleSwitchValue);
+  }
+
+  std::wstring args_str = args.GetArgumentsString();
+  if (args_str.size() >= cmd_line_args_capacity) {
     return ProcessExitResult(COMMAND_STRING_OVERFLOW);
   }
 
-  SafeStrCopy(cmd_line_args, cmd_line_args_capacity, args.get());
+  SafeStrCopy(cmd_line_args, cmd_line_args_capacity, args_str.c_str());
   return ProcessExitResult(SUCCESS_EXIT_CODE);
 }
 
@@ -347,7 +329,7 @@ ProcessExitResult InstallerMain(HMODULE module) {
   }
 
   CommandString cmd_line_args;
-  ProcessExitResult args_result = BuildCommandLineArguments(
+  ProcessExitResult args_result = BuildInstallerCommandLineArguments(
       ::GetCommandLineW(), cmd_line_args.get(), cmd_line_args.capacity());
   if (args_result.exit_code != SUCCESS_EXIT_CODE) {
     return args_result;

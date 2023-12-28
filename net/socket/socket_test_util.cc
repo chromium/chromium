@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "net/socket/socket_test_util.h"
+#include "base/memory/raw_ptr.h"
 
 #include <inttypes.h>  // For SCNx64
 #include <stdint.h>
@@ -797,6 +798,10 @@ std::unique_ptr<SSLClientSocket> MockClientSocketFactory::CreateSSLClientSocket(
     EXPECT_TRUE(base::ranges::equal(
         next_ssl_data->next_protos_expected_in_ssl_config.value(),
         ssl_config.alpn_protos));
+  }
+  if (next_ssl_data->expected_application_settings) {
+    EXPECT_EQ(*next_ssl_data->expected_application_settings,
+              ssl_config.application_settings);
   }
 
   // The protocol version used is a combination of the per-socket SSLConfig and
@@ -1791,7 +1796,7 @@ void MockUDPClientSocket::RunCallback(CompletionOnceCallback callback,
 }
 
 TestSocketRequest::TestSocketRequest(
-    std::vector<TestSocketRequest*>* request_order,
+    std::vector<raw_ptr<TestSocketRequest, VectorExperimental>>* request_order,
     size_t* completion_count)
     : request_order_(request_order), completion_count_(completion_count) {
   DCHECK(request_order);

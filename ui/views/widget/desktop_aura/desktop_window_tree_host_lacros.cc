@@ -74,6 +74,10 @@ class ScopedTouchEventDisabler : public ui::EventHandler {
   void OnTouchEvent(ui::TouchEvent* event) override { event->SetHandled(); }
 };
 
+bool IsImmersive(ui::PlatformFullscreenType type) {
+  return type == ui::PlatformFullscreenType::kImmersive;
+}
+
 }  // namespace
 namespace views {
 
@@ -128,6 +132,7 @@ void DesktopWindowTreeHostLacros::OnClosed() {
   DestroyNonClientEventFilter();
   DesktopWindowTreeHostPlatform::OnClosed();
 }
+
 void DesktopWindowTreeHostLacros::OnWindowStateChanged(
     ui::PlatformWindowState old_window_show_state,
     ui::PlatformWindowState new_window_show_state) {
@@ -138,10 +143,15 @@ void DesktopWindowTreeHostLacros::OnWindowStateChanged(
       ToChromeosWindowStateType(new_window_show_state));
 }
 
-void DesktopWindowTreeHostLacros::OnImmersiveModeChanged(bool enabled) {
+void DesktopWindowTreeHostLacros::OnFullscreenTypeChanged(
+    ui::PlatformFullscreenType old_type,
+    ui::PlatformFullscreenType new_type) {
   // Keep in sync with ImmersiveFullscreenController::Enable for widget. See
   // comment there for details.
-  GetContentWindow()->SetProperty(chromeos::kImmersiveIsActive, enabled);
+  if (IsImmersive(old_type) != IsImmersive(new_type)) {
+    GetContentWindow()->SetProperty(chromeos::kImmersiveIsActive,
+                                    IsImmersive(new_type));
+  }
 }
 
 void DesktopWindowTreeHostLacros::OnOverviewModeChanged(bool in_overview) {

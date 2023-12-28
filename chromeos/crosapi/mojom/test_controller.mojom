@@ -78,8 +78,8 @@ interface DomMessageObserver {
 // Implemented in lacros-chrome.
 // Lets the Ash browser tests that require Lacros to send commands to this
 // lacros-chrome instance.
-// Next version: 9
-// Next method id: 11
+// Next version: 10
+// Next method id: 12
 [Stable, Uuid="20e7f031-f4e1-4ad9-bd91-ad59eb8b1504"]
 interface StandaloneBrowserTestController {
   // Installs a test web app in lacros-chrome given a start URL and mode (open
@@ -137,6 +137,10 @@ interface StandaloneBrowserTestController {
   // DOMAutomationController.
   [MinVersion=8]
   ObserveDomMessages@10(pending_remote<DomMessageObserver> observer) => ();
+
+  // Sets WebAppInstallForceList pref for a primary user profile.
+  [MinVersion=9]
+  SetWebAppInstallForceListPref@11(string policy) => (bool success);
 };
 
 // Allows callers running in lacros to trigger test events that are passed to

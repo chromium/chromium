@@ -47,7 +47,7 @@ class Modem3gppProxy {
                                  modemmanager::kModem3gppSetCarrierLock);
 
     dbus::MessageWriter writer(&method_call);
-    writer.AppendArrayOfBytes((const uint8_t*)config.data(), config.size());
+    writer.AppendArrayOfBytes(base::as_byte_span(config));
 
     proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,

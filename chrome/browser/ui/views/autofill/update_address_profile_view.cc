@@ -36,7 +36,7 @@ namespace {
 constexpr int kIconSize = 16;
 constexpr int kValuesLabelWidth = 190;
 
-const gfx::VectorIcon& GetVectorIconForType(ServerFieldType type) {
+const gfx::VectorIcon& GetVectorIconForType(FieldType type) {
   switch (type) {
     case NAME_FULL_WITH_HONORIFIC_PREFIX:
       return kAccountCircleIcon;

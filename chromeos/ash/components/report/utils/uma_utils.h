@@ -33,6 +33,9 @@ enum class CheckMembershipResponseCases {
   kMaxValue = kSuccessfullySetLocalState,
 };
 
+// Record UMA boolean for whether a ping is required for a given use case.
+void RecordIsDevicePingRequired(PsmUseCase use_case, bool is_ping_required);
+
 // Record UMA net error code histogram for a given use case and request.
 void RecordNetErrorCode(PsmUseCase use_case, PsmRequest request, int net_code);
 

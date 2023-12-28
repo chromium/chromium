@@ -7,11 +7,14 @@
 #include <functional>
 #include <string>
 
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
@@ -27,6 +30,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_filling_address_util.h"
+#include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/address_field.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -38,7 +42,6 @@
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/ui/label_formatter.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -77,12 +80,11 @@ std::u16string SanitizeCreditCardFieldValue(const std::u16string& value) {
 // Returns the card-linked offers map with credit card guid as the key and the
 // pointer to the linked AutofillOfferData as the value.
 std::map<std::string, AutofillOfferData*> GetCardLinkedOffers(
-    AutofillClient* autofill_client) {
-  AutofillOfferManager* offer_manager =
-      autofill_client->GetAutofillOfferManager();
-  if (offer_manager) {
+    AutofillClient& autofill_client) {
+  if (AutofillOfferManager* offer_manager =
+          autofill_client.GetAutofillOfferManager()) {
     return offer_manager->GetCardLinkedOffersMap(
-        autofill_client->GetLastCommittedPrimaryMainFrameURL());
+        autofill_client.GetLastCommittedPrimaryMainFrameURL());
   }
   return {};
 }
@@ -132,12 +134,69 @@ bool ShouldSplitCardNameAndLastFourDigits() {
 #endif
 }
 
+// For a profile containing a full address, the main text is the name, and
+// the label is the address. The problem arises when a profile isn't complete
+// (aka it doesn't have a name or an address etc.).
+//
+// `AutofillProfile::CreateDifferentiatingLabels` generates the a text which
+// contains 2 address fields.
+//
+// Example for a full autofill profile:
+// "Full Name, Address"
+//
+// Examples where autofill profiles are incomplete:
+// "City, Country"
+// "Country, Email"
+//
+// Note: the separator isn't actually ", ", it is
+// IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR
+std::u16string GetProfileSuggestionMainTextForNonAddressField(
+    const AutofillProfile& profile,
+    const std::string& app_locale) {
+  std::vector<std::u16string> suggestion_text_array;
+  AutofillProfile::CreateDifferentiatingLabels({&profile}, app_locale,
+                                               &suggestion_text_array);
+  CHECK_EQ(suggestion_text_array.size(), 1u);
+
+  const std::u16string separator =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
+  // The first part contains the main text.
+  return suggestion_text_array[0].substr(
+      0, suggestion_text_array[0].find_first_of(separator));
+}
+
+// Check comment of method above:
+// `GetProfileSuggestionMainTextForNonAddressField`.
+std::vector<std::u16string> GetProfileSuggestionLabelForNonAddressField(
+    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+        profiles,
+    const std::string& app_locale) {
+  std::vector<std::u16string> labels;
+  AutofillProfile::CreateDifferentiatingLabels(profiles, app_locale, &labels);
+  CHECK_EQ(labels.size(), profiles.size());
+
+  for (std::u16string& label : labels) {
+    const std::u16string separator =
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
+    std::vector<std::u16string> text_pieces = base::SplitStringUsingSubstr(
+        label, separator, base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+
+    // `text_pieces[1]` contains the label.
+    label = text_pieces.size() > 1 ? text_pieces[1] : u"";
+  }
+  return labels;
+}
+
 // In addition to just getting the values out of the profile, this function
 // handles type-specific formatting.
-std::u16string GetProfileSuggestionMainText(
-    const AutofillProfile& profile,
-    const std::string& app_locale,
-    ServerFieldType trigger_field_type) {
+std::u16string GetProfileSuggestionMainText(const AutofillProfile& profile,
+                                            const std::string& app_locale,
+                                            FieldType trigger_field_type) {
+  if (!IsAddressType(trigger_field_type) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillForUnclassifiedFieldsAvailable)) {
+    return GetProfileSuggestionMainTextForNonAddressField(profile, app_locale);
+  }
   if (trigger_field_type == ADDRESS_HOME_STREET_ADDRESS) {
     std::string street_address_line;
     ::i18n::addressinput::GetStreetAddressLinesAsSingleLine(
@@ -211,13 +270,13 @@ Suggestion GetFillEverythingFromAddressProfileSuggestion(
   return suggestion;
 }
 
-// Append new suggestions to `suggestions` based on the `ServerFieldType` list
+// Append new suggestions to `suggestions` based on the `FieldType` list
 // provided. Suggestions are not added if their info is not found in the
 // provided `profile`. Returns true if any suggestion was added.
-// Note that adding a new field-by-field filling `ServerFieldType` should be
+// Note that adding a new field-by-field filling `FieldType` should be
 // reflected in `AutofillFieldByFieldFillingTypes`.
 bool AddAddressFieldByFieldSuggestions(
-    const std::vector<ServerFieldType>& field_types,
+    const std::vector<FieldType>& field_types,
     const AutofillProfile& profile,
     const std::string& app_locale,
     std::vector<Suggestion>& suggestions) {
@@ -249,8 +308,8 @@ bool AddAddressFieldByFieldSuggestions(
 // Given an address `type` and `sub_type`, returns whether the `sub_type` info
 // stored in `profile` is a substring of the info stored in `profile` for
 // `type`.
-bool CheckIfTypeContainsSubtype(ServerFieldType type,
-                                ServerFieldType sub_type,
+bool CheckIfTypeContainsSubtype(FieldType type,
+                                FieldType sub_type,
                                 const AutofillProfile& profile,
                                 const std::string& app_locale) {
   if (!profile.HasInfo(type) || !profile.HasInfo(sub_type)) {
@@ -292,7 +351,7 @@ void AddNameChildSuggestions(FieldTypeGroup trigger_field_type_group,
 bool AddAddressLineChildSuggestions(const AutofillProfile& profile,
                                     const std::string& app_locale,
                                     std::vector<Suggestion>& suggestions) {
-  auto add_address_line = [&](ServerFieldType type) -> bool {
+  auto add_address_line = [&](FieldType type) -> bool {
     CHECK(type == ADDRESS_HOME_LINE1 || type == ADDRESS_HOME_LINE2);
 
     if (!AddAddressFieldByFieldSuggestions({type}, profile, app_locale,
@@ -369,12 +428,12 @@ void AddAddressChildSuggestions(FieldTypeGroup trigger_field_type_group,
 // respectively. When the triggering field group matches the type of the field
 // we are adding, the suggestion will be of group filling type, other than field
 // by field.
-void AddContactChildSuggestions(ServerFieldType trigger_field_type,
+void AddContactChildSuggestions(FieldType trigger_field_type,
                                 const AutofillProfile& profile,
                                 const std::string& app_locale,
                                 Suggestion& suggestion) {
   const FieldTypeGroup trigger_field_type_group =
-      GroupTypeOfServerFieldType(trigger_field_type);
+      GroupTypeOfFieldType(trigger_field_type);
 
   bool phone_number_suggestion_added = false;
   if (profile.HasInfo(PHONE_HOME_WHOLE_NUMBER)) {
@@ -426,15 +485,19 @@ void AddContactChildSuggestions(ServerFieldType trigger_field_type,
 }
 
 // Adds footer child suggestions to build autofill popup submenu.
-void AddFooterChildSuggestions(
-    const AutofillProfile& profile,
-    absl::optional<ServerFieldTypeSet> last_targeted_fields,
-    Suggestion& suggestion) {
+void AddFooterChildSuggestions(const AutofillProfile& profile,
+                               FieldType trigger_field_type,
+                               std::optional<FieldTypeSet> last_targeted_fields,
+                               Suggestion& suggestion) {
+  // If the trigger field is not classified as an address field, then the
+  // filling was triggered from the context menu. In this scenario, the user
+  // should not be able to fill everything.
   // If the last filling granularity was not full form, add the
   // `PopupItemId::kFillEverythingFromAddressProfile` suggestion. This allows
   // the user to go back to filling the whole form once in a more fine grained
   // filling experience.
-  if (!last_targeted_fields || *last_targeted_fields != kAllServerFieldTypes) {
+  if (IsAddressType(trigger_field_type) &&
+      (!last_targeted_fields || *last_targeted_fields != kAllFieldTypes)) {
     suggestion.children.push_back(GetFillEverythingFromAddressProfileSuggestion(
         Suggestion::Guid(profile.guid())));
   }
@@ -526,18 +589,28 @@ void AddCreditCardExpiryDateChildSuggestion(const CreditCard& credit_card,
 // `last_filling_granularity`.
 // `last_targeted_fields` specified the last set of fields target by the user.
 // When not present, we default to full form.
+// This function is called only for first-level popup.
 PopupItemId GetProfileSuggestionPopupItemId(
-    absl::optional<ServerFieldTypeSet> optional_last_targeted_fields,
-    FieldTypeGroup triggering_field_type_group) {
+    std::optional<FieldTypeSet> last_targeted_fields,
+    FieldType trigger_field_type) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillGranularFillingAvailable)) {
     return PopupItemId::kAddressEntry;
   }
 
+  // If a field is not classified as an address, then autofill was triggered
+  // from the context menu.
+  if (!IsAddressType(trigger_field_type)) {
+    return PopupItemId::kAddressEntry;
+  }
+
+  const FieldTypeGroup trigger_field_type_group =
+      GroupTypeOfFieldType(trigger_field_type);
+
   // Lambda to return the expected `PopupItemId` when
-  // `optional_last_targeted_fields` matches one of the granular filling groups.
+  // `last_targeted_fields` matches one of the granular filling groups.
   auto get_popup_item_id_for_group_filling = [&] {
-    switch (triggering_field_type_group) {
+    switch (trigger_field_type_group) {
       case FieldTypeGroup::kName:
         return PopupItemId::kFillFullName;
       case FieldTypeGroup::kAddress:
@@ -547,17 +620,21 @@ PopupItemId GetProfileSuggestionPopupItemId(
         return PopupItemId::kFillFullPhoneNumber;
       case FieldTypeGroup::kEmail:
         return PopupItemId::kFillFullEmail;
-      default:
-        // If the 'current_granularity' is group filling, BUT the current
-        // focused field is not one for which group we offer group filling,
-        // we default back to fill full form behaviour/pre-granular filling
-        // popup id.
+      case FieldTypeGroup::kBirthdateField:
         return PopupItemId::kAddressEntry;
+      case FieldTypeGroup::kNoGroup:
+      case FieldTypeGroup::kCreditCard:
+      case FieldTypeGroup::kPasswordField:
+      case FieldTypeGroup::kTransaction:
+      case FieldTypeGroup::kUsernameField:
+      case FieldTypeGroup::kUnfillable:
+      case FieldTypeGroup::kIban:
+        NOTREACHED_NORETURN();
     }
   };
 
   switch (GetFillingMethodFromTargetedFields(
-      optional_last_targeted_fields.value_or(kAllServerFieldTypes))) {
+      last_targeted_fields.value_or(kAllFieldTypes))) {
     case AutofillFillingMethod::kGroupFilling:
       return get_popup_item_id_for_group_filling();
     case AutofillFillingMethod::kFullForm:
@@ -599,48 +676,53 @@ GetNumberOfSuggestionMainTextAndGranularFillingLabelOcurrences(
   return main_text_and_granular_filling_label_count;
 }
 
+// Returns whether the `ADDRESS_HOME_LINE1` should be included in the granular
+// filling labels vector. This depends on whether `triggering_field_type` is a
+// field that will usually allow users to easily identify their address.
+bool ShouldAddAddressLine1ToGranularFillingLabels(
+    FieldType triggering_field_type) {
+  static constexpr std::array kAddressRecognizingFields = {
+      ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_STREET_ADDRESS};
+  return !base::Contains(kAddressRecognizingFields, triggering_field_type);
+}
 // Creates a specific granular filling labels vector for each `AutofillProfile`
 // in `profiles` when the `last_filling_granularity` for a certain form was
 // group filling. This is done to give users feedback about the filling
 // behaviour. Returns an empty vector when no granular filling label needs to be
 // applied for a profile.
 std::vector<std::vector<std::u16string>> GetGranularFillingLabels(
-    const std::vector<const AutofillProfile*>& profiles,
-    absl::optional<ServerFieldTypeSet> optional_last_targeted_fields,
-    ServerFieldType triggering_field_type,
+    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+        profiles,
+    std::optional<FieldTypeSet> last_targeted_fields,
+    FieldType triggering_field_type,
     const std::string& app_locale) {
-  if (!optional_last_targeted_fields ||
-      !AreFieldsGranularFillingGroup(*optional_last_targeted_fields)) {
+  if (!last_targeted_fields ||
+      !AreFieldsGranularFillingGroup(*last_targeted_fields)) {
     return std::vector<std::vector<std::u16string>>(profiles.size());
   }
   std::vector<std::vector<std::u16string>> labels;
   labels.reserve(profiles.size());
   for (const AutofillProfile* profile : profiles) {
-    switch (GroupTypeOfServerFieldType(triggering_field_type)) {
+    switch (GroupTypeOfFieldType(triggering_field_type)) {
       case FieldTypeGroup::kName:
         labels.push_back({l10n_util::GetStringUTF16(
             IDS_AUTOFILL_FILL_NAME_GROUP_POPUP_OPTION_SELECTED)});
         break;
       case FieldTypeGroup::kCompany:
-      case FieldTypeGroup::kAddress:
-        // Specifies fields that will usually allow users to easily identify a
-        // profile.
-        static constexpr std::array kAddressRecognizingFields = {
-            ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_ADDRESS,
-            ADDRESS_HOME_STREET_ADDRESS};
-        if (base::Contains(kAddressRecognizingFields, triggering_field_type)) {
-          labels.push_back({l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED)});
-        } else {
+      case FieldTypeGroup::kAddress: {
+        std::vector<std::u16string>& profile_labels = labels.emplace_back();
+        profile_labels.push_back(l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED));
+        if (ShouldAddAddressLine1ToGranularFillingLabels(
+                triggering_field_type)) {
           // If the triggering type does not contain information that is
           // useful to identify addresses, add `ADDRESS_HOME_LINE1` to
           // the differentiating labels list.
-          labels.push_back(
-              {l10n_util::GetStringUTF16(
-                   IDS_AUTOFILL_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED),
-               profile->GetInfo(ADDRESS_HOME_LINE1, app_locale)});
+          profile_labels.push_back(
+              profile->GetInfo(ADDRESS_HOME_LINE1, app_locale));
         }
         break;
+      }
       case FieldTypeGroup::kNoGroup:
       case FieldTypeGroup::kPhone:
       case FieldTypeGroup::kEmail:
@@ -657,48 +739,87 @@ std::vector<std::vector<std::u16string>> GetGranularFillingLabels(
   return labels;
 }
 
+// Returns a `FieldTypeSet` to be excluded from the differentiating labels
+// generation. The granular filling labels can contain information such
+// `ADDRESS_HOME_LINE1` depending on `triggering_field_type` and
+// `last_targeted_fields`, see `GetGranularFillingLabels()` for
+// details.
+FieldTypeSet GetFieldTypesToExcludeFromDifferentiatingLabelsGeneration(
+    FieldType triggering_field_type,
+    std::optional<FieldTypeSet> last_targeted_fields) {
+  if (!last_targeted_fields ||
+      !AreFieldsGranularFillingGroup(*last_targeted_fields)) {
+    return {triggering_field_type};
+  }
+  switch (GroupTypeOfFieldType(triggering_field_type)) {
+    case FieldTypeGroup::kAddress:
+      if (ShouldAddAddressLine1ToGranularFillingLabels(triggering_field_type)) {
+        // In the case where the `ADDRESS_HOME_LINE1` was added to the granular
+        // filling labels, make sure to exclude fields that contain
+        // `ADDRESS_HOME_LINE1` from the field types to use when creating the
+        // differentiating label.
+        // For details on how `ADDRESS_HOME_LINE1` is added, see
+        // `GetGranularFillingLabels()`.
+        return {triggering_field_type, ADDRESS_HOME_LINE1,
+                ADDRESS_HOME_STREET_ADDRESS};
+      } else {
+        return {triggering_field_type};
+      }
+    case FieldTypeGroup::kName:
+    case FieldTypeGroup::kCompany:
+    case FieldTypeGroup::kNoGroup:
+    case FieldTypeGroup::kPhone:
+    case FieldTypeGroup::kEmail:
+    case FieldTypeGroup::kCreditCard:
+    case FieldTypeGroup::kPasswordField:
+    case FieldTypeGroup::kTransaction:
+    case FieldTypeGroup::kUsernameField:
+    case FieldTypeGroup::kUnfillable:
+    case FieldTypeGroup::kBirthdateField:
+    case FieldTypeGroup::kIban:
+      return {triggering_field_type};
+  }
+}
+
 // Returns for each profile in `profiles` a differentiating label string to be
 // used as a secondary text in the corresponding suggestion bubble.
 // `field_types` the types of the fields that will be filled by the suggestion.
 std::vector<std::u16string> GetProfileSuggestionLabels(
-    const std::vector<const AutofillProfile*>& profiles,
-    const ServerFieldTypeSet& field_types,
-    ServerFieldType trigger_field_type,
-    absl::optional<ServerFieldTypeSet> optional_last_targeted_fields,
+    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+        profiles,
+    const FieldTypeSet& field_types,
+    FieldType trigger_field_type,
+    std::optional<FieldTypeSet> last_targeted_fields,
     const std::string& app_locale) {
-  std::unique_ptr<LabelFormatter> formatter;
-  bool use_formatter;
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  use_formatter = base::FeatureList::IsEnabled(
-      features::kAutofillUseImprovedLabelDisambiguation);
-#else
-  use_formatter = base::FeatureList::IsEnabled(
-      features::kAutofillUseMobileLabelDisambiguation);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-  // The formatter stores a constant reference to |profiles|.
-  // This is safe since the formatter is destroyed when this function returns.
-  formatter = use_formatter
-                  ? LabelFormatter::Create(profiles, app_locale,
-                                           trigger_field_type, field_types)
-                  : nullptr;
-
   // Generate disambiguating labels based on the list of matches.
   std::vector<std::u16string> differentiating_labels;
-  if (formatter) {
-    differentiating_labels = formatter->GetLabels();
+  if (!IsAddressType(trigger_field_type) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillForUnclassifiedFieldsAvailable)) {
+    differentiating_labels =
+        GetProfileSuggestionLabelForNonAddressField(profiles, app_locale);
   } else {
-    AutofillProfile::CreateInferredLabels(profiles, field_types,
-                                          trigger_field_type, 1, app_locale,
-                                          &differentiating_labels);
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillGranularFillingAvailable)) {
+      AutofillProfile::CreateInferredLabels(
+          profiles, /*suggested_fields=*/std::nullopt, trigger_field_type,
+          GetFieldTypesToExcludeFromDifferentiatingLabelsGeneration(
+              trigger_field_type, last_targeted_fields),
+          // Phone fields are a special case. For them we want both the
+          // `FULL_NAME` and `ADDRESS_HOME_LINE1` to be present.
+          /*minimal_fields_shown=*/GroupTypeOfFieldType(trigger_field_type) ==
+                  FieldTypeGroup::kPhone
+              ? 2
+              : 1,
+          app_locale, &differentiating_labels);
+    } else {
+      AutofillProfile::CreateInferredLabels(
+          profiles, field_types, /*triggering_field_type=*/std::nullopt,
+          GetFieldTypesToExcludeFromDifferentiatingLabelsGeneration(
+              trigger_field_type, last_targeted_fields),
+          /*minimal_fields_shown=*/1, app_locale, &differentiating_labels);
+    }
   }
-
-  if (use_formatter && !profiles.empty()) {
-    AutofillMetrics::LogProfileSuggestionsMadeWithFormatter(formatter !=
-                                                            nullptr);
-  }
-
   return differentiating_labels;
 }
 
@@ -710,18 +831,25 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
 std::vector<std::vector<Suggestion::Text>>
 CreateSuggestionLabelsWithGranularFillingDetails(
     base::span<const Suggestion> suggestions,
-    const std::vector<const AutofillProfile*>& profiles,
-    const ServerFieldTypeSet& field_types,
-    absl::optional<ServerFieldTypeSet> last_targeted_fields,
-    ServerFieldType trigger_field_type,
+    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+        profiles,
+    const FieldTypeSet& field_types,
+    std::optional<FieldTypeSet> last_targeted_fields,
+    FieldType trigger_field_type,
     const std::string& app_locale) {
+  AutofillFillingMethod filling_method = GetFillingMethodFromTargetedFields(
+      last_targeted_fields.value_or(kAllFieldTypes));
+  // Field-by-field filling suggestions should not have labels because they are
+  // guaranteed to be unique, see `DeduplicatedProfilesForSuggestions()`.
+  if (filling_method == AutofillFillingMethod::kFieldByFieldFilling) {
+    return std::vector<std::vector<Suggestion::Text>>(profiles.size());
+  }
+
   const std::vector<std::vector<std::u16string>>
       suggestions_granular_filling_labels = GetGranularFillingLabels(
           profiles, last_targeted_fields, trigger_field_type, app_locale);
   CHECK_EQ(suggestions_granular_filling_labels.size(), suggestions.size());
 
-  // TODO(crbug.com/1459990): Remove `ADDRESS_HOME_LINE1` when
-  // `granular_filling_labels` already contains it.
   const std::vector<std::u16string> suggestions_differentiating_labels =
       GetProfileSuggestionLabels(profiles, field_types, trigger_field_type,
                                  last_targeted_fields, app_locale);
@@ -894,56 +1022,54 @@ void AssignLabelsAndDeduplicate(
 }
 
 // Returns whether the `suggestion_canon` is a valid match given
-// `field_contents_canon`.
-bool IsValidSuggestionForFieldContents(std::u16string suggestion_canon,
-                                       std::u16string field_contents_canon,
-                                       ServerFieldType trigger_field_type,
-                                       bool is_masked_server_card,
-                                       bool field_is_autofilled) {
+// `field_contents_canon`. To be used for address suggestions
+bool IsValidAddressSuggestionForFieldContents(
+    std::u16string suggestion_canon,
+    std::u16string field_contents_canon,
+    FieldType trigger_field_type) {
   // Phones should do a substring match because they can be trimmed to remove
   // the first parts (e.g. country code or prefix).
-  if (GroupTypeOfServerFieldType(trigger_field_type) ==
-          FieldTypeGroup::kPhone &&
+  if (GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kPhone &&
       suggestion_canon.find(field_contents_canon) != std::u16string::npos) {
     return true;
   }
+  return suggestion_canon.starts_with(field_contents_canon);
+}
 
+// Returns whether the `suggestion_canon` is a valid match given
+// `field_contents_canon`. To be used for payments suggestions.
+bool IsValidPaymentsSuggestionForFieldContents(
+    std::u16string suggestion_canon,
+    std::u16string field_contents_canon,
+    FieldType trigger_field_type,
+    bool is_masked_server_card,
+    bool field_is_autofilled) {
+  if (trigger_field_type != CREDIT_CARD_NUMBER) {
+    return suggestion_canon.starts_with(field_contents_canon);
+  }
   // For card number fields, suggest the card if:
   // - the number matches any part of the card, or
   // - it's a masked card and there are 6 or fewer typed so far.
   // - it's a masked card, field is autofilled, and the last 4 digits in the
   // field match the last 4 digits of the card.
-  if (trigger_field_type == CREDIT_CARD_NUMBER) {
-    if (suggestion_canon.find(field_contents_canon) != std::u16string::npos) {
-      return true;
-    }
-
-    if (is_masked_server_card) {
-      if (field_contents_canon.length() < 6) {
-        return true;
-      }
-      if (field_is_autofilled) {
-        int field_contents_length = field_contents_canon.length();
-        DCHECK(field_contents_length >= 4);
-        if (suggestion_canon.find(field_contents_canon.substr(
-                field_contents_length - 4, field_contents_length)) !=
-            std::u16string::npos) {
-          return true;
-        }
-      }
-    }
-
+  if (suggestion_canon.find(field_contents_canon) != std::u16string::npos) {
+    return true;
+  }
+  if (!is_masked_server_card) {
     return false;
   }
-
-  return suggestion_canon.starts_with(field_contents_canon);
+  return field_contents_canon.size() < 6 ||
+         (field_is_autofilled &&
+          suggestion_canon.find(field_contents_canon.substr(
+              field_contents_canon.size() - 4, field_contents_canon.size())) !=
+              std::u16string::npos);
 }
 
 // Normalizes text for comparison based on the type of the field `text` was
 // entered into.
 std::u16string NormalizeForComparisonForType(const std::u16string& text,
-                                             ServerFieldType type) {
-  if (GroupTypeOfServerFieldType(type) == FieldTypeGroup::kEmail) {
+                                             FieldType type) {
+  if (GroupTypeOfFieldType(type) == FieldTypeGroup::kEmail) {
     // For emails, keep special characters so that if the user has two emails
     // `test@foo.xyz` and `test1@foo.xyz` saved, only the first one is suggested
     // upon entering `test@` into the email field.
@@ -952,11 +1078,11 @@ std::u16string NormalizeForComparisonForType(const std::u16string& text,
   return AutofillProfileComparator::NormalizeForComparison(text);
 }
 
-absl::optional<Suggestion> GetSuggestionForTestAddresses(
+std::optional<Suggestion> GetSuggestionForTestAddresses(
     base::span<const AutofillProfile> test_addresses,
     const std::string& locale) {
   if (test_addresses.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   Suggestion suggestion(u"Devtools", PopupItemId::kDevtoolsTestAddresses);
@@ -979,17 +1105,17 @@ absl::optional<Suggestion> GetSuggestionForTestAddresses(
 }  // namespace
 
 AutofillSuggestionGenerator::AutofillSuggestionGenerator(
-    AutofillClient* autofill_client,
-    PersonalDataManager* personal_data)
+    AutofillClient& autofill_client,
+    PersonalDataManager& personal_data)
     : autofill_client_(autofill_client), personal_data_(personal_data) {}
 
 AutofillSuggestionGenerator::~AutofillSuggestionGenerator() = default;
 
 std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
-    const ServerFieldTypeSet& field_types,
+    const FieldTypeSet& field_types,
     const FormFieldData& trigger_field,
-    ServerFieldType trigger_field_type,
-    absl::optional<ServerFieldTypeSet> last_targeted_fields,
+    FieldType trigger_field_type,
+    std::optional<FieldTypeSet> last_targeted_fields,
     AutofillSuggestionTriggerSource trigger_source) {
   // If the user manually triggered suggestions from the context menu, all
   // available profiles should be shown. Selecting a suggestion overwrites the
@@ -999,9 +1125,10 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
           ? trigger_field.value
           : u"";
 
-  std::vector<const AutofillProfile*> profiles_to_suggest =
-      GetProfilesToSuggest(trigger_field_type, field_value_for_filtering,
-                           trigger_field.is_autofilled, field_types);
+  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
+      profiles_to_suggest =
+          GetProfilesToSuggest(trigger_field_type, field_value_for_filtering,
+                               trigger_field.is_autofilled, field_types);
 
   // Find the profiles that were hidden prior to the effects of the feature
   // kAutofillUseAddressRewriterInProfileSubsetComparison.
@@ -1009,21 +1136,23 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
   for (const AutofillProfile* profile : profiles_to_suggest) {
     previously_hidden_profiles_guid.insert(profile->guid());
   }
-  constexpr ServerFieldTypeSet street_address_field_types = {
+  constexpr FieldTypeSet street_address_field_types = {
       ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2,
       ADDRESS_HOME_LINE3};
-  ServerFieldTypeSet field_types_without_address_types = field_types;
+  FieldTypeSet field_types_without_address_types = field_types;
   field_types_without_address_types.erase_all(street_address_field_types);
 
   // Autofill already considers suggestions as different if the suggestion's
   // main text, to be filled in the triggering field, differs regardless of
   // the other fields.
-  std::vector<const AutofillProfile*> previously_suggested_profiles =
-      street_address_field_types.contains(trigger_field_type)
-          ? profiles_to_suggest
-          : GetProfilesToSuggest(trigger_field_type, field_value_for_filtering,
-                                 trigger_field.is_autofilled,
-                                 field_types_without_address_types);
+  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
+      previously_suggested_profiles =
+          street_address_field_types.contains(trigger_field_type)
+              ? profiles_to_suggest
+              : GetProfilesToSuggest(trigger_field_type,
+                                     field_value_for_filtering,
+                                     trigger_field.is_autofilled,
+                                     field_types_without_address_types);
   for (const AutofillProfile* profile : previously_suggested_profiles) {
     previously_hidden_profiles_guid.erase(profile->guid());
   }
@@ -1035,12 +1164,12 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
                                        previously_hidden_profiles_guid);
 }
 
-std::vector<const AutofillProfile*>
+std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
 AutofillSuggestionGenerator::GetProfilesToSuggest(
-    ServerFieldType trigger_field_type,
+    FieldType trigger_field_type,
     const std::u16string& field_contents,
     bool field_is_autofilled,
-    const ServerFieldTypeSet& field_types) {
+    const FieldTypeSet& field_types) {
   std::u16string field_contents_canon =
       NormalizeForComparisonForType(field_contents, trigger_field_type);
 
@@ -1064,19 +1193,20 @@ AutofillSuggestionGenerator::GetProfilesToSuggest(
   const AutofillProfileComparator comparator(personal_data_->app_locale());
   // Don't show two suggestions if one is a subset of the other.
   // Duplicates across sources are resolved in favour of `kAccount` profiles.
-  std::vector<const AutofillProfile*> unique_matched_profiles =
-      DeduplicatedProfilesForSuggestions(matched_profiles, trigger_field_type,
-                                         field_types, comparator);
+  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
+      unique_matched_profiles = DeduplicatedProfilesForSuggestions(
+          matched_profiles, trigger_field_type, field_types, comparator);
 
   return unique_matched_profiles;
 }
 
 std::vector<Suggestion>
 AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
-    const std::vector<const AutofillProfile*>& profiles,
-    const ServerFieldTypeSet& field_types,
-    absl::optional<ServerFieldTypeSet> last_targeted_fields,
-    ServerFieldType trigger_field_type,
+    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+        profiles,
+    const FieldTypeSet& field_types,
+    std::optional<FieldTypeSet> last_targeted_fields,
+    FieldType trigger_field_type,
     uint64_t trigger_field_max_length,
     const std::set<std::string>& previously_hidden_profiles_guid) {
   std::vector<Suggestion> suggestions;
@@ -1084,9 +1214,8 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
 
   // This will be used to check if suggestions should be supported with icons.
   const bool contains_profile_related_fields =
-      base::ranges::count_if(field_types, [](ServerFieldType field_type) {
-        FieldTypeGroup field_type_group =
-            GroupTypeOfServerFieldType(field_type);
+      base::ranges::count_if(field_types, [](FieldType field_type) {
+        FieldTypeGroup field_type_group = GroupTypeOfFieldType(field_type);
         return field_type_group == FieldTypeGroup::kName ||
                field_type_group == FieldTypeGroup::kAddress ||
                field_type_group == FieldTypeGroup::kPhone ||
@@ -1094,7 +1223,7 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
       }) > 1;
 
   FieldTypeGroup trigger_field_type_group =
-      GroupTypeOfServerFieldType(trigger_field_type);
+      GroupTypeOfFieldType(trigger_field_type);
   for (const AutofillProfile* profile : profiles) {
     // Compute the main text to be displayed in the suggestion bubble.
     std::u16string main_text =
@@ -1110,7 +1239,8 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
     suggestions.back().acceptance_a11y_announcement =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
     suggestions.back().popup_item_id = GetProfileSuggestionPopupItemId(
-        last_targeted_fields, trigger_field_type_group);
+        last_targeted_fields, trigger_field_type);
+    suggestions.back().is_acceptable = IsAddressType(trigger_field_type);
     suggestions.back().hidden_prior_to_address_rewriter_usage =
         previously_hidden_profiles_guid.contains(profile->guid());
     if (suggestions.back().popup_item_id ==
@@ -1159,7 +1289,7 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
 
   // Add devtools test addresses suggestion if it exists. A suggestion will
   // exist if devtools is open and therefore test addresses were set.
-  if (absl::optional<Suggestion> test_addresses_suggestion =
+  if (std::optional<Suggestion> test_addresses_suggestion =
           GetSuggestionForTestAddresses(personal_data_->test_addresses(),
                                         app_locale)) {
     std::vector<Suggestion> suggestions_with_test_address;
@@ -1176,11 +1306,11 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
 
 // TODO(crbug.com/1417975): Remove `trigger_field_type` when
 // `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.
-std::vector<const AutofillProfile*>
+std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
 AutofillSuggestionGenerator::DeduplicatedProfilesForSuggestions(
     const std::vector<const AutofillProfile*>& matched_profiles,
-    ServerFieldType trigger_field_type,
-    const ServerFieldTypeSet& field_types,
+    FieldType trigger_field_type,
+    const FieldTypeSet& field_types,
     const AutofillProfileComparator& comparator) {
   // TODO(crbug.com/1417975): Remove when
   // `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.
@@ -1190,7 +1320,8 @@ AutofillSuggestionGenerator::DeduplicatedProfilesForSuggestions(
         *profile, personal_data_->app_locale(), trigger_field_type));
   }
 
-  std::vector<const AutofillProfile*> unique_matched_profiles;
+  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
+      unique_matched_profiles;
   // Limit number of unique profiles as having too many makes the
   // browser hang due to drawing calculations (and is also not
   // very useful for the user).
@@ -1246,7 +1377,7 @@ AutofillSuggestionGenerator::DeduplicatedProfilesForSuggestions(
 std::vector<const AutofillProfile*>
 AutofillSuggestionGenerator::GetPrefixMatchedProfiles(
     const std::vector<AutofillProfile*>& profiles,
-    ServerFieldType trigger_field_type,
+    FieldType trigger_field_type,
     const std::u16string& raw_field_contents,
     const std::u16string& field_contents_canon,
     bool field_is_autofilled) {
@@ -1266,20 +1397,16 @@ AutofillSuggestionGenerator::GetPrefixMatchedProfiles(
       continue;
     }
 #endif  // BUILDFLAG(IS_ANDROID)
-
     std::u16string main_text = GetProfileSuggestionMainText(
         *profile, personal_data_->app_locale(), trigger_field_type);
-
     // Discard profiles that do not have a value for the trigger field.
     if (main_text.empty()) {
       continue;
     }
-
     std::u16string suggestion_canon =
         NormalizeForComparisonForType(main_text, trigger_field_type);
-    if (IsValidSuggestionForFieldContents(
-            suggestion_canon, field_contents_canon, trigger_field_type,
-            /*is_masked_server_card=*/false, field_is_autofilled)) {
+    if (IsValidAddressSuggestionForFieldContents(
+            suggestion_canon, field_contents_canon, trigger_field_type)) {
       matched_profiles.push_back(profile);
     }
   }
@@ -1299,12 +1426,12 @@ void AutofillSuggestionGenerator::RemoveProfilesNotUsedSinceTimestamp(
 }
 
 void AutofillSuggestionGenerator::AddAddressGranularFillingChildSuggestions(
-    absl::optional<ServerFieldTypeSet> last_targeted_fields,
-    ServerFieldType trigger_field_type,
+    std::optional<FieldTypeSet> last_targeted_fields,
+    FieldType trigger_field_type,
     const AutofillProfile& profile,
     Suggestion& suggestion) const {
   const FieldTypeGroup trigger_field_type_group =
-      GroupTypeOfServerFieldType(trigger_field_type);
+      GroupTypeOfFieldType(trigger_field_type);
   const std::string app_locale = personal_data_->app_locale();
   AddNameChildSuggestions(trigger_field_type_group, profile, app_locale,
                           suggestion);
@@ -1312,25 +1439,25 @@ void AutofillSuggestionGenerator::AddAddressGranularFillingChildSuggestions(
                              suggestion);
   AddContactChildSuggestions(trigger_field_type, profile, app_locale,
                              suggestion);
-  AddFooterChildSuggestions(profile, last_targeted_fields, suggestion);
+  AddFooterChildSuggestions(profile, trigger_field_type, last_targeted_fields,
+                            suggestion);
 }
 
 std::vector<Suggestion>
 AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
     const FormFieldData& field,
-    ServerFieldType trigger_field_type,
+    FieldType trigger_field_type,
     bool& should_display_gpay_logo,
     bool& with_offer,
     autofill_metrics::CardMetadataLoggingContext& metadata_logging_context) {
   std::vector<Suggestion> suggestions;
   // Manual fallback entries are shown for all non credit card fields.
   const bool is_manual_fallback =
-      GroupTypeOfServerFieldType(trigger_field_type) !=
-      FieldTypeGroup::kCreditCard;
+      GroupTypeOfFieldType(trigger_field_type) != FieldTypeGroup::kCreditCard;
   const std::string& app_locale = personal_data_->app_locale();
 
   std::map<std::string, AutofillOfferData*> card_linked_offers_map =
-      GetCardLinkedOffers(autofill_client_);
+      GetCardLinkedOffers(*autofill_client_);
   with_offer = !card_linked_offers_map.empty();
 
   // The field value is sanitized before attempting to match it to the user's
@@ -1338,7 +1465,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
   auto field_contents = SanitizeCreditCardFieldValue(field.value);
 
   std::vector<CreditCard> cards_to_suggest =
-      GetOrderedCardsToSuggest(autofill_client_, field_contents.empty());
+      GetOrderedCardsToSuggest(*autofill_client_, field_contents.empty());
 
   std::u16string field_contents_lower = base::i18n::ToLower(field_contents);
 
@@ -1359,9 +1486,8 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
     if (!is_manual_fallback && creditcard_field_value.empty()) {
       continue;
     }
-
     // Manual fallback suggestions aren't filtered based on the field's content.
-    if (is_manual_fallback || IsValidSuggestionForFieldContents(
+    if (is_manual_fallback || IsValidPaymentsSuggestionForFieldContents(
                                   base::i18n::ToLower(creditcard_field_value),
                                   field_contents_lower, trigger_field_type,
                                   credit_card.record_type() ==
@@ -1394,7 +1520,7 @@ AutofillSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
   // duplicate logic to helper functions.
   std::vector<Suggestion> suggestions;
   std::vector<CreditCard> cards_to_suggest = GetOrderedCardsToSuggest(
-      autofill_client_, /*suppress_disused_cards=*/true);
+      *autofill_client_, /*suppress_disused_cards=*/true);
   metadata_logging_context =
       autofill_metrics::GetMetadataLoggingContext(cards_to_suggest);
 
@@ -1412,14 +1538,24 @@ AutofillSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
     suggestion.feature_for_iph =
         feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature.name;
     SetCardArtURL(suggestion, credit_card, /*virtual_card_option=*/true);
-    suggestion.main_text.value =
+    // TODO(crbug.com/1511277): Create translation string for standalone CVC
+    // suggestion which includes spacing.
+    const std::u16string main_text =
         l10n_util::GetStringUTF16(
             IDS_AUTOFILL_VIRTUAL_CARD_STANDALONE_CVC_SUGGESTION_TITLE) +
         u" " +
-        CreditCard::GetObfuscatedStringForCardDigits(/*obfuscation_length=*/4,
+        CreditCard::GetObfuscatedStringForCardDigits(GetObfuscationLength(),
                                                      virtual_card_last_four);
-    suggestion.labels = {
-        {Suggestion::Text(credit_card.CardNameForAutofillDisplay())}};
+    if (IsKeyboardAccessoryEnabled()) {
+      // For keyboard accessory, we concatenate all the content to the
+      // `main_text` to prevent the suggestion descriptor from being cut off.
+      suggestion.main_text.value = base::StrCat(
+          {main_text, u"  ", credit_card.CardNameForAutofillDisplay()});
+    } else {
+      suggestion.main_text.value = main_text;
+      suggestion.labels = {
+          {Suggestion::Text(credit_card.CardNameForAutofillDisplay())}};
+    }
     suggestions.push_back(suggestion);
   }
   return suggestions;
@@ -1443,17 +1579,15 @@ Suggestion AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry() {
 
 // static
 std::vector<CreditCard> AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
-    AutofillClient* autofill_client,
+    AutofillClient& autofill_client,
     bool suppress_disused_cards) {
-  DCHECK(autofill_client);
   std::map<std::string, AutofillOfferData*> card_linked_offers_map =
       GetCardLinkedOffers(autofill_client);
 
-  PersonalDataManager* personal_data =
-      autofill_client->GetPersonalDataManager();
-  DCHECK(personal_data);
+  const PersonalDataManager& personal_data =
+      CHECK_DEREF(autofill_client.GetPersonalDataManager());
   std::vector<CreditCard*> available_cards =
-      personal_data->GetCreditCardsToSuggest();
+      personal_data.GetCreditCardsToSuggest();
 
   // If a card has available card linked offers on the last committed url, rank
   // it to the top.
@@ -1634,21 +1768,19 @@ bool AutofillSuggestionGenerator::ShouldShowVirtualCardOption(
 // Keyboard Accessory.
 Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     const CreditCard& credit_card,
-    ServerFieldType trigger_field_type,
+    FieldType trigger_field_type,
     bool virtual_card_option,
     bool card_linked_offer_available) const {
   // Manual fallback entries are shown for all non credit card fields.
   const bool is_manual_fallback =
-      GroupTypeOfServerFieldType(trigger_field_type) !=
-      FieldTypeGroup::kCreditCard;
+      GroupTypeOfFieldType(trigger_field_type) != FieldTypeGroup::kCreditCard;
 
   Suggestion suggestion;
   suggestion.icon = credit_card.CardIconForAutofillSuggestion();
   // First layer manual fallback entries can't fill forms and thus can't be
   // selected by the user.
-  suggestion.popup_item_id = is_manual_fallback
-                                 ? PopupItemId::kPaymentsEntryNotSelectable
-                                 : PopupItemId::kCreditCardEntry;
+  suggestion.popup_item_id = PopupItemId::kCreditCardEntry;
+  suggestion.is_acceptable = !is_manual_fallback;
   suggestion.payload = Suggestion::Guid(credit_card.guid());
 #if BUILDFLAG(IS_ANDROID)
   // The card art icon should always be shown at the start of the suggestion.
@@ -1700,10 +1832,10 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
   }
 
   suggestion.acceptance_a11y_announcement =
-      suggestion.popup_item_id == PopupItemId::kPaymentsEntryNotSelectable
-          ? l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_A11Y_ANNOUNCE_EXPANDABLE_ONLY_ENTRY)
-          : l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
+      suggestion.is_acceptable
+          ? l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM)
+          : l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_A11Y_ANNOUNCE_EXPANDABLE_ONLY_ENTRY);
 
   return suggestion;
 }
@@ -1730,7 +1862,7 @@ void AutofillSuggestionGenerator::AddPaymentsGranularFillingChildSuggestions(
 std::pair<Suggestion::Text, Suggestion::Text>
 AutofillSuggestionGenerator::GetSuggestionMainTextAndMinorTextForCard(
     const CreditCard& credit_card,
-    ServerFieldType trigger_field_type) const {
+    FieldType trigger_field_type) const {
   std::u16string main_text;
   std::u16string minor_text;
   if (trigger_field_type == CREDIT_CARD_NUMBER) {
@@ -1763,7 +1895,7 @@ AutofillSuggestionGenerator::GetSuggestionMainTextAndMinorTextForCard(
 std::vector<Suggestion::Text>
 AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
     const CreditCard& credit_card,
-    ServerFieldType trigger_field_type) const {
+    FieldType trigger_field_type) const {
   const std::string& app_locale = personal_data_->app_locale();
 
   // If the focused field is a card number field.
@@ -1837,7 +1969,7 @@ AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
 void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
     Suggestion& suggestion,
     const CreditCard& credit_card,
-    ServerFieldType trigger_field_type) const {
+    FieldType trigger_field_type) const {
   if (credit_card.record_type() == CreditCard::RecordType::kLocalCard) {
     const CreditCard* server_duplicate_card =
         personal_data_->GetServerCardForLocalCard(&credit_card);

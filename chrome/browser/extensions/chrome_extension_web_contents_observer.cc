@@ -120,7 +120,7 @@ void ChromeExtensionWebContentsObserver::ReloadIfTerminated(
   // TODO(yoz): This reload doesn't happen synchronously for unpacked
   //            extensions. It seems to be fast enough, but there is a race.
   //            We should delay loading until the extension has reloaded.
-  if (registry->GetExtensionById(extension_id, ExtensionRegistry::TERMINATED)) {
+  if (registry->terminated_extensions().GetByID(extension_id)) {
     ExtensionSystem::Get(browser_context())->
         extension_service()->ReloadExtension(extension_id);
   }

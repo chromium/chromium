@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_DOM_WINDOW_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_DOM_WINDOW_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "services/network/public/mojom/cross_origin_opener_policy.mojom-blink.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -22,6 +23,7 @@
 namespace blink {
 
 class ContextLifecycleNotifier;
+class DOMWrapperWorld;
 class InputDeviceCapabilitiesConstants;
 class LocalDOMWindow;
 class Location;
@@ -31,6 +33,7 @@ class SerializedScriptValue;
 class UserActivation;
 class WindowPostMessageOptions;
 class WindowProxyManager;
+struct WrapperTypeInfo;
 
 struct BlinkTransferableMessage;
 
@@ -76,6 +79,11 @@ class CORE_EXPORT DOMWindow : public WindowProperties {
       v8::Isolate*,
       const WrapperTypeInfo*,
       v8::Local<v8::Object> wrapper) final;
+  v8::Local<v8::Object> AssociateWithWrapper(
+      v8::Isolate* isolate,
+      scoped_refptr<DOMWrapperWorld> world,
+      const WrapperTypeInfo* wrapper_type_info,
+      v8::Local<v8::Object> wrapper);
 
   // EventTarget overrides:
   const AtomicString& InterfaceName() const override;

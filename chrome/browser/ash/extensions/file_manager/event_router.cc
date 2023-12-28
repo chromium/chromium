@@ -15,7 +15,6 @@
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
@@ -85,12 +84,12 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "ui/display/tablet_state.h"
 
 using apps::AppServiceProxy;
 using apps::AppServiceProxyFactory;
 using arc::ArcIntentHelperBridge;
 using ash::LoginState;
-using ash::TabletMode;
 using ash::disks::Disk;
 using ash::disks::DiskMountManager;
 using chromeos::DlpClient;
@@ -632,10 +631,6 @@ void EventRouter::OnIntentFiltersUpdated(
 void EventRouter::Shutdown() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (TabletMode* const mode = TabletMode::Get()) {
-    mode->RemoveObserver(this);
-  }
-
   if (ArcIntentHelperBridge* const bridge =
           arc::ArcIntentHelperBridge::GetForBrowserContext(profile_)) {
     bridge->RemoveObserver(this);
@@ -760,10 +755,6 @@ void EventRouter::ObserveEvents() {
   if (GuestOsSharePath* const path =
           GuestOsSharePath::GetForProfile(profile_)) {
     path->AddObserver(this);
-  }
-
-  if (TabletMode* const mode = TabletMode::Get()) {
-    mode->AddObserver(this);
   }
 
   // GuestOsService doesn't exist for all profiles.
@@ -1167,18 +1158,16 @@ void EventRouter::OnGuestUnregistered(const guest_os::GuestId& guest) {
                  fmp::OnCrostiniChanged::Create(event));
 }
 
-void EventRouter::OnTabletModeStarted() {
-  BroadcastEvent(
-      profile_, extensions::events::FILE_MANAGER_PRIVATE_ON_TABLET_MODE_CHANGED,
-      fmp::OnTabletModeChanged::kEventName,
-      fmp::OnTabletModeChanged::Create(/*enabled=*/true));
-}
+void EventRouter::OnDisplayTabletStateChanged(display::TabletState state) {
+  if (display::IsTabletStateChanging(state)) {
+    return;
+  }
 
-void EventRouter::OnTabletModeEnded() {
   BroadcastEvent(
       profile_, extensions::events::FILE_MANAGER_PRIVATE_ON_TABLET_MODE_CHANGED,
       fmp::OnTabletModeChanged::kEventName,
-      fmp::OnTabletModeChanged::Create(/*enabled=*/false));
+      fmp::OnTabletModeChanged::Create(state ==
+                                       display::TabletState::kInTabletMode));
 }
 
 void EventRouter::NotifyDriveConnectionStatusChanged() {

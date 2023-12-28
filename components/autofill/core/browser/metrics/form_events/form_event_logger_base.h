@@ -92,7 +92,7 @@ class FormEventLoggerBase {
     return flow_id_;
   }
 
-  const absl::optional<int64_t> fast_checkout_run_id_for_test() const {
+  const std::optional<int64_t> fast_checkout_run_id_for_test() const {
     return fast_checkout_run_id_;
   }
 
@@ -194,7 +194,7 @@ class FormEventLoggerBase {
   bool is_heuristic_only_email_form_ = false;
   AblationGroup ablation_group_ = AblationGroup::kDefault;
   AblationGroup conditional_ablation_group_ = AblationGroup::kDefault;
-  absl::optional<base::TimeDelta> time_from_interaction_to_submission_;
+  std::optional<base::TimeDelta> time_from_interaction_to_submission_;
 
   // The last field that was polled for suggestions.
   FormFieldData last_polled_field_;
@@ -208,7 +208,7 @@ class FormEventLoggerBase {
   // during the flow.
   FormInteractionsFlowId flow_id_;
   // Unique ID of a Fast Checkout run. Used for metrics.
-  absl::optional<int64_t> fast_checkout_run_id_;
+  std::optional<int64_t> fast_checkout_run_id_;
 
   // Form types of the submitted form.
   DenseSet<FormType> submitted_form_types_;

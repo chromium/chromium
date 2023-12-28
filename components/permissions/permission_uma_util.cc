@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -116,6 +117,10 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
     case RequestType::kRegisterProtocolHandler:
       return RequestTypeForUma::REGISTER_PROTOCOL_HANDLER;
 #endif
+#if BUILDFLAG(IS_CHROMEOS)
+    case RequestType::kSmartCard:
+      return RequestTypeForUma::PERMISSION_SMART_CARD;
+#endif
     case RequestType::kStorageAccess:
       return RequestTypeForUma::PERMISSION_STORAGE_ACCESS;
     case RequestType::kVrSession:
@@ -129,6 +134,8 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
 #if !BUILDFLAG(IS_ANDROID)
     case RequestType::kFileSystemAccess:
       return RequestTypeForUma::PERMISSION_FILE_SYSTEM_ACCESS;
+    case RequestType::kCapturedSurfaceControl:
+      return RequestTypeForUma::CAPTURED_SURFACE_CONTROL;
 #endif
   }
 }
@@ -185,6 +192,10 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "AccessibilityEvents";
     case RequestTypeForUma::PERMISSION_FILE_SYSTEM_ACCESS:
       return "FileSystemAccess";
+    case RequestTypeForUma::CAPTURED_SURFACE_CONTROL:
+      return "CapturedSurfaceControl";
+    case RequestTypeForUma::PERMISSION_SMART_CARD:
+      return "SmartCard";
 
     case RequestTypeForUma::UNKNOWN:
     case RequestTypeForUma::PERMISSION_FLASH:
@@ -257,9 +268,10 @@ PermissionHeaderPolicyForUMA GetTopLevelPermissionHeaderPolicyForUMA(
                    FEATURE_ALLOWLIST_DOES_NOT_MATCH_ORIGIN;
 }
 
-void RecordEngagementMetric(const std::vector<PermissionRequest*>& requests,
-                            content::WebContents* web_contents,
-                            const std::string& action) {
+void RecordEngagementMetric(
+    const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>& requests,
+    content::WebContents* web_contents,
+    const std::string& action) {
   CHECK(!requests.empty());
 
   RequestTypeForUma type =
@@ -735,7 +747,7 @@ void PermissionUmaUtil::RecordPermissionRecoverySuccessRate(
 }
 
 void PermissionUmaUtil::RecordPermissionPromptAttempt(
-    const std::vector<PermissionRequest*>& requests,
+    const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>& requests,
     bool IsLocationBarEditingOrEmpty) {
   DCHECK(!requests.empty());
 
@@ -775,7 +787,8 @@ void PermissionUmaUtil::RecordPermissionPromptAttempt(
 }
 
 void PermissionUmaUtil::PermissionPromptShown(
-    const std::vector<PermissionRequest*>& requests) {
+    const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
+        requests) {
   DCHECK(!requests.empty());
 
   RequestTypeForUma request_type = RequestTypeForUma::MULTIPLE;
@@ -793,7 +806,7 @@ void PermissionUmaUtil::PermissionPromptShown(
 }
 
 void PermissionUmaUtil::PermissionPromptResolved(
-    const std::vector<PermissionRequest*>& requests,
+    const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>& requests,
     content::WebContents* web_contents,
     PermissionAction permission_action,
     base::TimeDelta time_to_decision,
@@ -1220,6 +1233,14 @@ void PermissionUmaUtil::RecordPermissionAction(
       base::UmaHistogramEnumeration("Permissions.Action.AccessibilityEvents",
                                     action, PermissionAction::NUM);
       break;
+    case ContentSettingsType::CAPTURED_SURFACE_CONTROL:
+      base::UmaHistogramEnumeration("Permissions.Action.CapturedSurfaceControl",
+                                    action, PermissionAction::NUM);
+      break;
+    case ContentSettingsType::SMART_CARD_DATA:
+      base::UmaHistogramEnumeration("Permissions.Action.SmartCard", action,
+                                    PermissionAction::NUM);
+      break;
     // The user is not prompted for these permissions, thus there is no
     // permission action recorded for them.
     default:
@@ -1231,7 +1252,7 @@ void PermissionUmaUtil::RecordPermissionAction(
 
 // static
 void PermissionUmaUtil::RecordPromptDecided(
-    const std::vector<PermissionRequest*>& requests,
+    const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>& requests,
     bool accepted,
     bool is_one_time) {
   DCHECK(!requests.empty());
@@ -1585,7 +1606,7 @@ bool PermissionUmaUtil::IsPromptDispositionLoud(
 
 // static
 void PermissionUmaUtil::RecordIgnoreReason(
-    const std::vector<PermissionRequest*>& requests,
+    const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>& requests,
     PermissionPromptDisposition prompt_disposition,
     PermissionIgnoredReason reason) {
   RequestTypeForUma request_type = RequestTypeForUma::MULTIPLE;

@@ -35,7 +35,6 @@
 #include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/base/test_proxy_delegate.h"
-#include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/multi_log_ct_verifier.h"
 #include "net/dns/mock_host_resolver.h"
@@ -876,9 +875,7 @@ TEST_F(HttpStreamFactoryTest, QuicProxyMarkedAsBad) {
     session_context.cert_verifier = &cert_verifier;
     TransportSecurityState transport_security_state;
     session_context.transport_security_state = &transport_security_state;
-    DefaultCTPolicyEnforcer ct_policy_enforcer;
     QuicContext quic_context;
-    session_context.ct_policy_enforcer = &ct_policy_enforcer;
     session_context.proxy_resolution_service = proxy_resolution_service.get();
     session_context.ssl_config_service = &ssl_config_service;
     session_context.http_server_properties = &http_server_properties;
@@ -2022,7 +2019,6 @@ class HttpStreamFactoryBidirectionalQuicTest
     session_context.quic_crypto_client_stream_factory =
         &crypto_client_stream_factory_;
     session_context.transport_security_state = &transport_security_state_;
-    session_context.ct_policy_enforcer = &ct_policy_enforcer_;
     session_context.host_resolver = &host_resolver_;
     session_context.proxy_resolution_service = proxy_resolution_service_.get();
     session_context.ssl_config_service = ssl_config_service_.get();
@@ -2082,7 +2078,6 @@ class HttpStreamFactoryBidirectionalQuicTest
   MockCryptoClientStreamFactory crypto_client_stream_factory_;
   HttpServerProperties http_server_properties_;
   TransportSecurityState transport_security_state_;
-  DefaultCTPolicyEnforcer ct_policy_enforcer_;
   MockHostResolver host_resolver_{
       /*default_result=*/
       MockHostResolverBase::RuleResolver::GetLocalhostResult()};
@@ -3444,7 +3439,6 @@ class ProcessAlternativeServicesTest : public TestWithTaskEnvironment {
     session_context_.cert_verifier = &cert_verifier_;
     session_context_.transport_security_state = &transport_security_state_;
     session_context_.client_socket_factory = &socket_factory_;
-    session_context_.ct_policy_enforcer = &ct_policy_enforcer_;
     session_context_.ssl_config_service = &ssl_config_service_;
     session_context_.http_server_properties = &http_server_properties_;
     session_context_.quic_context = &quic_context_;
@@ -3460,7 +3454,6 @@ class ProcessAlternativeServicesTest : public TestWithTaskEnvironment {
   MockHostResolver host_resolver_;
   MockCertVerifier cert_verifier_;
   TransportSecurityState transport_security_state_;
-  DefaultCTPolicyEnforcer ct_policy_enforcer_;
 
  protected:
   HttpServerProperties http_server_properties_;

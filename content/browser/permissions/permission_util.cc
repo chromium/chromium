@@ -69,10 +69,6 @@ bool PermissionUtil::ValidateDomainOverride(
     const std::vector<blink::PermissionType>& types,
     RenderFrameHost* rfh,
     const blink::mojom::PermissionDescriptorPtr& descriptor) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kStorageAccessAPIForOriginExtension)) {
-    return false;
-  }
   if (types.size() > 1) {
     // Requests with domain overrides must be requested individually.
     return false;

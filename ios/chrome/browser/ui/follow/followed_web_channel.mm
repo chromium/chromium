@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 
 @implementation FollowedWebChannel
 

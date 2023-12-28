@@ -72,4 +72,5 @@ blink_core_tests_fetch = [
   "readable_stream_bytes_consumer_test.cc",
   "request_test.cc",
   "response_test.cc",
+  "trust_token_to_mojom_test.cc",
 ]

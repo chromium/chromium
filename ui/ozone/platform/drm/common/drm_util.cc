@@ -273,24 +273,6 @@ display::PanelOrientation GetPanelOrientation(const DrmWrapper& drm,
   return static_cast<display::PanelOrientation>(connector->prop_values[index]);
 }
 
-bool HasPerPlaneColorCorrectionMatrix(const DrmWrapper& drm,
-                                      drmModeCrtc* crtc) {
-  ScopedDrmPlaneResPtr plane_resources = drm.GetPlaneResources();
-  DCHECK(plane_resources);
-  for (uint32_t i = 0; i < plane_resources->count_planes; ++i) {
-    ScopedDrmObjectPropertyPtr plane_props = drm.GetObjectProperties(
-        plane_resources->planes[i], DRM_MODE_OBJECT_PLANE);
-    DCHECK(plane_props);
-
-    if (!FindDrmProperty(drm, plane_props.get(), "PLANE_CTM")) {
-      return false;
-    }
-  }
-
-  // On legacy, if no planes are exposed then the property isn't available.
-  return plane_resources->count_planes > 0;
-}
-
 // Read a file and trim whitespace. If the file can't be read, returns
 // nullopt.
 absl::optional<std::string> ReadFileAndTrim(const base::FilePath& path) {
@@ -574,8 +556,7 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
   const bool has_content_protection_key =
       HasContentProtectionKey(drm, info->connector());
   const bool has_color_correction_matrix =
-      HasColorCorrectionMatrix(drm, info->crtc()) ||
-      HasPerPlaneColorCorrectionMatrix(drm, info->crtc());
+      HasColorCorrectionMatrix(drm, info->crtc());
   const gfx::Size maximum_cursor_size = GetMaximumCursorSize(drm);
   const display::VariableRefreshRateState variable_refresh_rate_state =
       GetVariableRefreshRateState(drm, info);

@@ -5,9 +5,9 @@
 import {dispatchPropertyChange} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
 
-import {convertToKebabCase, decorate, domAttrSetter} from '../../../common/js/cr_ui.js';
+import {convertToKebabCase, crInjectTypeAndInit, domAttrSetter} from '../../../common/js/cr_ui.js';
 
-import {MenuItem, MenuItemActivationEvent} from './menu_item.js';
+import {MenuItem, type MenuItemActivationEvent} from './menu_item.js';
 
 export interface ShownPosition {
   mouseDownPos?: {
@@ -29,14 +29,10 @@ export class Menu extends HTMLElement {
 
   private shown_: ShownPosition|null = null;
 
-  static decorate(el: HTMLElement) {
-    decorate(el, Menu);
-  }
-
   /**
    * Initializes the menu element.
    */
-  decorate() {
+  initialize() {
     this.selectedIndex_ = -1;
     this.contextElement = null;
     this.shown_ = null;
@@ -51,7 +47,7 @@ export class Menu extends HTMLElement {
 
     // Decorate the children as menu items.
     for (const item of this.menuItems) {
-      decorate(item, MenuItem);
+      crInjectTypeAndInit(item, MenuItem);
     }
   }
 
@@ -64,7 +60,7 @@ export class Menu extends HTMLElement {
     const menuItem =
         this.ownerDocument.createElement('cr-menu-item') as MenuItem;
     this.appendChild(menuItem);
-    decorate(menuItem, MenuItem);
+    crInjectTypeAndInit(menuItem, MenuItem);
 
     if (item.label) {
       menuItem.label = item.label;
@@ -82,7 +78,7 @@ export class Menu extends HTMLElement {
    */
   addSeparator() {
     const separator = this.ownerDocument.createElement('hr');
-    decorate(separator, MenuItem);
+    crInjectTypeAndInit(separator, MenuItem);
     this.appendChild(separator);
   }
 

@@ -63,7 +63,7 @@ TEST_F(AccessibilityObjectModelTest, SetAccessibleNodeRole) {
   auto* button = GetDocument().getElementById(AtomicString("button"));
   ASSERT_NE(nullptr, button);
 
-  auto* axButton = cache->GetOrCreate(button);
+  auto* axButton = cache->Get(button);
   EXPECT_EQ(ax::mojom::Role::kButton, axButton->RoleValue());
 
   button->accessibleNode()->setRole(AtomicString("slider"));
@@ -71,7 +71,7 @@ TEST_F(AccessibilityObjectModelTest, SetAccessibleNodeRole) {
 
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
-  axButton = cache->GetOrCreate(button);
+  axButton = cache->Get(button);
 
   // No change in the AXObject role should be observed.
   EXPECT_EQ(ax::mojom::Role::kButton, axButton->RoleValue());
@@ -94,7 +94,7 @@ TEST_F(AccessibilityObjectModelTest, AOMDoesNotReflectARIA) {
   auto* cache = AXObjectCache();
   ASSERT_NE(nullptr, cache);
   cache->UpdateAXForAllDocuments();
-  auto* axTextBox = cache->GetOrCreate(textbox);
+  auto* axTextBox = cache->Get(textbox);
   EXPECT_EQ(ax::mojom::Role::kTextFieldWithComboBox, axTextBox->RoleValue());
   ax::mojom::NameFrom name_from;
   AXObject::AXObjectVector name_objects;
@@ -124,7 +124,7 @@ TEST_F(AccessibilityObjectModelTest, AOMPropertiesCanBeCleared) {
   auto* cache = AXObjectCache();
   ASSERT_NE(nullptr, cache);
   cache->UpdateAXForAllDocuments();
-  auto* axButton = cache->GetOrCreate(button);
+  auto* axButton = cache->Get(button);
   EXPECT_EQ(ax::mojom::Role::kCheckBox, axButton->RoleValue());
   ax::mojom::NameFrom name_from;
   AXObject::AXObjectVector name_objects;
@@ -171,7 +171,7 @@ TEST_F(AccessibilityObjectModelTest, RangeProperties) {
   auto* cache = AXObjectCache();
   ASSERT_NE(nullptr, cache);
   cache->UpdateAXForAllDocuments();
-  auto* ax_slider = cache->GetOrCreate(slider);
+  auto* ax_slider = cache->Get(slider);
   float value = 0.0f;
   EXPECT_TRUE(ax_slider->MinValueForRange(&value));
   EXPECT_EQ(0.0f, value);
@@ -194,7 +194,7 @@ TEST_F(AccessibilityObjectModelTest, Level) {
   auto* cache = AXObjectCache();
   ASSERT_NE(nullptr, cache);
   cache->UpdateAXForAllDocuments();
-  auto* ax_heading = cache->GetOrCreate(heading);
+  auto* ax_heading = cache->Get(heading);
   EXPECT_EQ(2, ax_heading->HeadingLevel());
 }
 
@@ -213,7 +213,7 @@ TEST_F(AccessibilityObjectModelTest, ListItem) {
   auto* cache = AXObjectCache();
   ASSERT_NE(nullptr, cache);
   cache->UpdateAXForAllDocuments();
-  auto* ax_listitem = cache->GetOrCreate(listitem);
+  auto* ax_listitem = cache->Get(listitem);
   EXPECT_EQ(0, ax_listitem->PosInSet());
   EXPECT_EQ(0, ax_listitem->SetSize());
 }
@@ -252,16 +252,16 @@ TEST_F(AccessibilityObjectModelTest, Grid) {
   ASSERT_NE(nullptr, cache);
   cache->UpdateAXForAllDocuments();
 
-  auto* ax_grid = cache->GetOrCreate(grid);
+  auto* ax_grid = cache->Get(grid);
   EXPECT_EQ(0, ax_grid->AriaColumnCount());
   EXPECT_EQ(0, ax_grid->AriaRowCount());
 
-  auto* ax_cell = cache->GetOrCreate(cell);
+  auto* ax_cell = cache->Get(cell);
   EXPECT_TRUE(ax_cell->IsTableCellLikeRole());
   EXPECT_EQ(0U, ax_cell->AriaColumnIndex());
   EXPECT_EQ(0U, ax_cell->AriaRowIndex());
 
-  auto* ax_cell2 = cache->GetOrCreate(cell2);
+  auto* ax_cell2 = cache->Get(cell2);
   EXPECT_TRUE(ax_cell2->IsTableCellLikeRole());
   EXPECT_EQ(0U, ax_cell2->AriaColumnIndex());
   EXPECT_EQ(0U, ax_cell2->AriaRowIndex());

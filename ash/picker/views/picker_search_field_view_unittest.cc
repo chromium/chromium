@@ -19,12 +19,12 @@ namespace {
 
 using PickerSearchFieldViewTest = AshTestBase;
 
-TEST_F(PickerSearchFieldViewTest, TriggersSearchOnConstruction) {
+TEST_F(PickerSearchFieldViewTest, DoesNotTriggerSearchOnConstruction) {
   base::test::TestFuture<const std::u16string&> future;
   PickerSessionMetrics metrics;
   PickerSearchFieldView view(future.GetRepeatingCallback(), &metrics);
 
-  EXPECT_EQ(future.Get(), u"");
+  EXPECT_FALSE(future.IsReady());
 }
 
 TEST_F(PickerSearchFieldViewTest, TriggersSearchOnContentsChange) {
@@ -33,7 +33,6 @@ TEST_F(PickerSearchFieldViewTest, TriggersSearchOnContentsChange) {
   PickerSessionMetrics metrics;
   auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
       future.GetRepeatingCallback(), &metrics));
-  future.Clear();
 
   view->RequestFocus();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);

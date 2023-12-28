@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/accessibility/service/autoclick_client_impl.h"
 
-#include "ash/public/cpp/accessibility_controller.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "base/debug/stack_trace.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

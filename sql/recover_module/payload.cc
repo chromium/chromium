@@ -11,6 +11,7 @@
 #include <type_traits>
 
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "sql/recover_module/btree.h"
 #include "sql/recover_module/integers.h"
 #include "sql/recover_module/pager.h"
@@ -148,7 +149,7 @@ bool LeafPayloadReader::Initialize(int64_t payload_size, int payload_offset) {
     // The payload size is bigger than the maximum inline payload size, so it
     // must be bigger than the minimum payload size. This check verifies that
     // the subtractions below have non-negative results.
-    DCHECK_GT(payload_size, min_inline_payload_size);
+    CHECK_GT(payload_size, min_inline_payload_size);
 
     // Payload sizes are upper-bounded by the page size.
     static_assert(
@@ -176,15 +177,18 @@ bool LeafPayloadReader::Initialize(int64_t payload_size, int payload_offset) {
       overflow_page_count_ = efficient_overflow_page_count + 1;
     }
 
-    DCHECK_LE(inline_payload_size_, max_inline_payload_size);
-    DCHECK_EQ(overflow_page_count_, (payload_size - inline_payload_size_ +
-                                     (max_overflow_payload_size_ - 1)) /
-                                        max_overflow_payload_size_)
-        << "Incorect overflow page count calculation";
+    CHECK_LE(inline_payload_size_, max_inline_payload_size);
+    if (overflow_page_count_ != (payload_size - inline_payload_size_ +
+                                 (max_overflow_payload_size_ - 1)) /
+                                    max_overflow_payload_size_) {
+      LOG(ERROR) << "Incorrect overflow page count calculation";
+      page_id_ = DatabasePageReader::kHighestInvalidPageId;
+      return false;
+    }
   }
 
-  DCHECK_LE(inline_payload_size_, payload_size);
-  DCHECK_LE(inline_payload_size_, page_size);
+  CHECK_LE(inline_payload_size_, payload_size);
+  CHECK_LE(inline_payload_size_, page_size);
 
   const int first_overflow_page_id_size =
       (overflow_page_count_ == 0) ? 0 : kPageIdSize;

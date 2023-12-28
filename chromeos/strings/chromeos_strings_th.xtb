@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">ขนาดหน้า</translation>
 <translation id="1082009148392559545">กำลังดาวน์โหลดโปรแกรมรักษาหน้าจอ</translation>
 <translation id="1094693127011229778">ที่อยู่ IP ไม่พร้อมใช้งาน</translation>
+<translation id="1116694919640316211">เกี่ยวกับ</translation>
 <translation id="1118572504348554005">เราอาจแชร์ความคิดเห็นที่ส่งมาทางแบบฟอร์มนี้กับพาร์ทเนอร์เพื่อแก้ไขข้อบกพร่องและปัญหาอื่นๆ ที่คุณรายงานให้ทราบ อย่าใส่ข้อมูลที่ละเอียดอ่อน เช่น รหัสผ่าน</translation>
 <translation id="1119447706177454957">ข้อผิดพลาดภายใน</translation>
 <translation id="1124772482545689468">ผู้ใช้</translation>
@@ -378,6 +379,7 @@
 <translation id="3866249974567520381">คำอธิบาย</translation>
 <translation id="387301095347517405">จำนวนครั้งที่ชาร์จแบตเตอรี่จนเต็ม</translation>
 <translation id="3885327323343477505">เปลี่ยนโปรแกรมรักษาหน้าจอ</translation>
+<translation id="3892148308691398805">คัดลอกข้อความ</translation>
 <translation id="391412459402535266">ทดสอบอุปกรณ์ไม่ได้ เปลี่ยนเป็นโหมดแล็ปท็อปเพื่อทดสอบ</translation>
 <translation id="3916998944874125962">จับภาพหน้าจอ</translation>
 <translation id="3923184630988645767">การใช้อินเทอร์เน็ต</translation>
@@ -403,6 +405,7 @@
 <translation id="4060260348856573701">APN ใหม่</translation>
 <translation id="4093865285251893588">รูปโปรไฟล์</translation>
 <translation id="409427325554347132">บันทึกรายละเอียดการทดสอบ</translation>
+<translation id="409469431304488632">เวอร์ชันทดลอง</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">เลือกอัลบั้ม <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">ทัชแพด USB</translation>
@@ -693,6 +696,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">ความจุแบตเตอรี่จะลดลงเมื่อใช้ไปเรื่อยๆ</translation>
 <translation id="6191293864534840972">เนมเซิร์ฟเวอร์มีรูปแบบไม่ถูกต้อง</translation>
+<translation id="6196607555925437199">สร้างใหม่</translation>
 <translation id="6205145102504628069">การเคลื่อนตัวของเมฆ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">ไม่มีเครื่องสแกนที่ใช้ได้</translation>
@@ -834,7 +838,7 @@
 <translation id="7216409898977639127">ผู้ให้บริการเครือข่ายมือถือ</translation>
 <translation id="725133483556299729">เลือกอีเมล</translation>
 <translation id="7271040990581020067">เครื่องสแกนกำลังทำงานอยู่ ลองอีกครั้งในภายหลัง</translation>
-<translation id="7273347807225967898">แป้นพิมพ์ลัดไม่พร้อมใช้งาน โปรดกดแป้นพิมพ์ลัดใหม่โดยใช้คีย์ตัวปรับแต่ง (Ctrl, Alt, Shift, ค้นหา หรือ Launcher)</translation>
+<translation id="7273347807225967898">แป้นพิมพ์ลัดไม่พร้อมใช้งาน โปรดกดแป้นพิมพ์ลัดใหม่โดยใช้แป้นกดร่วม (Ctrl, Alt, Shift, ค้นหา หรือ Launcher)</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">สัมผัสสายลมเย็น</translation>
 <translation id="7287310195820267359">คอลเล็กชันภาพวอลเปเปอร์</translation>
@@ -869,7 +873,9 @@
 <translation id="7502658306369382406">ที่อยู่ IPv6</translation>
 <translation id="7513770521371759388">ด้านล่าง</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">สร้าง</translation>
 <translation id="7528507600602050979">เนื้อหาช่วยเหลือไม่พร้อมใช้งาน</translation>
+<translation id="753556296624075801">ขับเคลื่อนโดย Google</translation>
 <translation id="7535791657097741517">เปิดธีมสว่าง</translation>
 <translation id="7550715992156305117">กิจวัตรในการวินิจฉัย</translation>
 <translation id="7551123448725492271">อุปกรณ์เป็นอุปกรณ์เสียง</translation>
@@ -944,7 +950,7 @@
 <translation id="808894953321890993">เปลี่ยนรหัสผ่าน</translation>
 <translation id="8094062939584182041">อนุญาตให้ Google ส่งอีเมลถึงคุณเกี่ยวกับปัญหานี้</translation>
 <translation id="8104083085214006426">คุณกำลังใช้เครือข่ายแบบเปิดที่ไม่ปลอดภัย</translation>
-<translation id="8111706652656628199">แป้นพิมพ์ลัดไม่พร้อมใช้งาน กดแป้นพิมพ์ลัดใหม่โดยใช้ Shift และคีย์ตัวปรับแต่งอีก 1 รายการ (Ctrl, Alt, ค้นหา หรือ launcher)</translation>
+<translation id="8111706652656628199">แป้นพิมพ์ลัดไม่พร้อมใช้งาน กดแป้นพิมพ์ลัดใหม่โดยใช้ Shift และแป้นกดร่วมอีก 1 รายการ (Ctrl, Alt, ค้นหา หรือ launcher)</translation>
 <translation id="811820734797650957">(Android) ปิงเกตเวย์ได้</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">ขอตัวนับการรับส่งข้อมูล</translation>
@@ -960,6 +966,7 @@
 <translation id="8227119283605456246">แนบไฟล์</translation>
 <translation id="8230672074305416752">ใช้คำสั่ง ping กับเกตเวย์เครือข่ายเริ่มต้นไม่สำเร็จ</translation>
 <translation id="8246209727385807362">ผู้ให้บริการที่ไม่รู้จัก</translation>
+<translation id="8261506727792406068">ลบ</translation>
 <translation id="8262870577632766028">1 ชั่วโมง</translation>
 <translation id="827422111966801947">สีคราม</translation>
 <translation id="8286154143153872371">โปรดเชื่อมต่อเครือข่ายและโหลดหน้าซ้ำเพื่อดูวอลเปเปอร์</translation>
@@ -970,6 +977,7 @@
 <translation id="8318753676953949627">ไม่มีภาพ</translation>
 <translation id="8329018942023753850">แอปเครื่องคิดเลข</translation>
 <translation id="8336739000755212683">เปลี่ยนรูปภาพของบัญชีอุปกรณ์</translation>
+<translation id="8339024191194156249">ดูข้อมูลเพิ่มเติมเกี่ยวกับการเปิดใช้งานอัตโนมัติ</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> หรือ <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">งานพิมพ์</translation>
 <translation id="8349826889576450703">Launcher</translation>
@@ -1091,7 +1099,7 @@
 <translation id="9111102763498581341">ปลดล็อก</translation>
 <translation id="9122602430962285795">ไปที่การตั้งค่าเพื่อเชื่อมต่ออีกครั้ง</translation>
 <translation id="9126720536733509015">บันทึกหลายหน้าเป็น PDF ไฟล์เดียว</translation>
-<translation id="9133772297793293778">กดคีย์ตัวปรับแต่ง 1-4 รายการและคีย์อื่นๆ อีก 1 รายการบนแป้นพิมพ์ หากต้องการออกจากโหมแก้ไข ให้กด alt + esc</translation>
+<translation id="9133772297793293778">กดแป้นกดร่วม 1-4 รายการและคีย์อื่นๆ อีก 1 รายการบนแป้นพิมพ์ หากต้องการออกจากโหมดแก้ไข ให้กด alt + esc</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Shift ซ้าย</translation>
 <translation id="9149391708638971077">ทดสอบหน่วยความจำ</translation>

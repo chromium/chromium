@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CHROME_EMPTY_TABLE_VIEW_BACKGROUND_H_
 #define IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CHROME_EMPTY_TABLE_VIEW_BACKGROUND_H_
 
-// Protocol to which all LegacyChromeTableViewController EmptyViews need to
+// Protocol to which all ChromeTableViewController EmptyViews need to
 // conform to
 @protocol ChromeEmptyTableViewBackground
 

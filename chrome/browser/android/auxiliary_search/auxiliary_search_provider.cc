@@ -8,6 +8,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/AuxiliarySearchBridge_jni.h"
@@ -143,29 +144,13 @@ AuxiliarySearchProvider::GetBookmarksSearchableData(JNIEnv* env) const {
   return ToJavaByteArray(env, serialized_group);
 }
 
-base::android::ScopedJavaLocalRef<jobjectArray>
-AuxiliarySearchProvider::GetSearchableTabs(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobjectArray>& j_tabs_android) const {
-  std::vector<TabAndroid*> all_tabs = TabAndroid::GetAllNativeTabs(
-      env, base::android::ScopedJavaLocalRef(j_tabs_android));
-  std::vector<base::WeakPtr<TabAndroid>> filtered_tabs =
-      FilterTabsByScheme(all_tabs);
-
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> j_filtered_tabs;
-  j_filtered_tabs.reserve(filtered_tabs.size());
-  for (base::WeakPtr<TabAndroid> tab : filtered_tabs) {
-    j_filtered_tabs.push_back(tab->GetJavaObject());
-  }
-  return base::android::ToJavaArrayOfObjects(env, j_filtered_tabs);
-}
-
 void AuxiliarySearchProvider::GetNonSensitiveTabs(
     JNIEnv* env,
     const base::android::JavaParamRef<jobjectArray>& j_tabs_android,
     const base::android::JavaParamRef<jobject>& j_callback_obj) const {
-  std::vector<TabAndroid*> all_tabs = TabAndroid::GetAllNativeTabs(
-      env, base::android::ScopedJavaLocalRef(j_tabs_android));
+  std::vector<raw_ptr<TabAndroid, VectorExperimental>> all_tabs =
+      TabAndroid::GetAllNativeTabs(
+          env, base::android::ScopedJavaLocalRef<jobjectArray>(j_tabs_android));
 
   GetNonSensitiveTabsInternal(
       all_tabs, base::BindOnce(&callJavaCallbackWithTabList, env,
@@ -204,7 +189,7 @@ AuxiliarySearchProvider::GetBookmarks(bookmarks::BookmarkModel* model) const {
 // static
 std::vector<base::WeakPtr<TabAndroid>>
 AuxiliarySearchProvider::FilterTabsByScheme(
-    const std::vector<TabAndroid*>& tabs) {
+    const std::vector<raw_ptr<TabAndroid, VectorExperimental>>& tabs) {
   std::vector<base::WeakPtr<TabAndroid>> filtered_tabs;
   for (TabAndroid* tab : tabs) {
     if (IsSchemeAllowed(tab->GetURL())) {
@@ -215,7 +200,7 @@ AuxiliarySearchProvider::FilterTabsByScheme(
 }
 
 void AuxiliarySearchProvider::GetNonSensitiveTabsInternal(
-    const std::vector<TabAndroid*>& all_tabs,
+    const std::vector<raw_ptr<TabAndroid, VectorExperimental>>& all_tabs,
     NonSensitiveTabsCallback callback) const {
   std::unique_ptr<std::vector<base::WeakPtr<TabAndroid>>> non_sensitive_tabs =
       std::make_unique<std::vector<base::WeakPtr<TabAndroid>>>();

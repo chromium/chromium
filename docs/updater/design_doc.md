@@ -1109,3 +1109,66 @@ tasks and a duration of inactivity is experienced.
 
 The `UpdateServiceInternal` process can be started by clients by running the
 launcher executable directly. It is not managed or activated by `systemd`.
+
+### Certificate Tagging Mechanism
+
+Tagging is a mechanism for adding arbitrary data to a Windows executable file at
+build time or at download time that does not disturb any digital Authenticode
+signature that has been attached, and allows for making the data tag readable by
+the executable itself.
+
+The updater uses certificate tagging to add extra data, known as a tag, to the
+EXE and MSI installers when they are downloaded or run with no explicit
+parameters on the command line. This is useful for passing user-selected options
+on the web page through to the EXE or MSI, such as the app id to install,
+opting-in to usagestats, or to specify a brand code.
+
+The certificate writer writes the SignedData at the end of the MSI file in
+contiguous bytes. Tag writers and readers can use this stipulation to simplify
+processing of the files, since they will not need to decode the PE structure or
+the MSI FAT or handle tag bytes that are not contiguous.
+
+The data tag marker is embedded with the mock certificate, and consists of the
+string `Gact2.0Omaha` along with the null terminator, followed by the length of
+the tag in bytes, followed by the tag string.
+
+For example, a tag string of `brand=QAQA` would be represented with the
+following bytes:
+
+```
+`'G', 'a', 'c', 't',  '2',  '.', '0', 'O', 'm', 'a', 'h', 'a', '\0', '\x0a', 'b', 'r', 'a', 'n', 'd', '=', 'Q', 'A',  'Q',  'A', '\0'`.
+```
+
+`'\x0a' `is the length in bytes of `brand=QAQA`.
+
+#### Design
+
+
+##### MSI File Format
+
+MSI binaries are in
+[Compound File Binary Format](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-cfb/50708a61-81d9-49c8-ab9c-43c98a795242).
+
+![SignedData in a MSI compound file](https://lh3.googleusercontent.com/drive-viewer/AEYmBYQqxEYaCIuaOhdBog7DcQEm-Wi9FYeAPhr3t3MC-Jeq1hjttgnKo3OV1szCVmxffKx1KDT-0dxZ0nAhI4CHBGAG5paOeA=s2560)
+
+The format is like a filesystem within a file. There is a directory structure as
+well as "data streams" analogous to files. The data streams/files are allocated
+in fixed-size sectors and managed via a File Allocation Table (FAT). Files may
+span non-contiguous sectors.
+
+The Authenticode signature is in a file called `"\x05DigitalSignature"` and is
+formatted as a PKCS#7 container, as it is in PE32. The contents of
+`"\x05MsiDigitalSignature"` are excluded from the signed hash.
+
+##### Adding the mock certificate
+
+The mock certificate is added by
+[MSIBinary::SetTag](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/certificate_tag.cc;l=933?q=MSIBinary::SetTag&sq=&ss=chromium%2Fchromium%2Fsrc).
+It extends the SignedData container by the size of the tag.
+
+* If the digital signature is at the end of the file, the existing data is
+overwritten and extended, with an appropriate update to the FAT.
+* If the digital signature is somewhere within the MSI file, the content there
+is erased by marking the sectors as free, and the SignedData data stream is
+moved to the end of the file, while also updating the FAT and updating the
+directory entry for the signature to point to the new location.

@@ -13,6 +13,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
@@ -108,7 +109,7 @@ class SpellcheckCharAttribute {
 //   SpellcheckWordIterator iterator;
 //   std::u16string text(u"this is a test.");
 //   iterator.Initialize(&attribute, true);
-//   iterator.SetText(text.c_str(), text_.length());
+//   iterator.SetText(text);
 //
 //   std::u16string word;
 //   int offset;
@@ -150,7 +151,7 @@ class SpellcheckWordIterator {
   // Set text to be iterated. (This text does not have to be NULL-terminated.)
   // This function also resets internal state so we can reuse this iterator
   // without calling Initialize().
-  bool SetText(const char16_t* text, size_t length);
+  bool SetText(std::u16string_view text);
 
   // Advances |iterator_| through |text_| and gets the current status of the
   // word iterator within |text|:

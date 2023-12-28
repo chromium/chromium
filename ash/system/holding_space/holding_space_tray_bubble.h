@@ -71,18 +71,17 @@ class ASH_EXPORT HoldingSpaceTrayBubble : public ScreenLayoutObserver,
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // The owner of this class.
-  const raw_ptr<HoldingSpaceTray, DanglingUntriaged | ExperimentalAsh>
-      holding_space_tray_;
+  const raw_ptr<HoldingSpaceTray, DanglingUntriaged> holding_space_tray_;
 
   // The singleton delegate for holding space views that implements support
   // for context menu, drag-and-drop, and multiple selection.
   HoldingSpaceViewDelegate delegate_{this};
 
   // Views owned by view hierarchy.
-  raw_ptr<views::View, ExperimentalAsh> header_ = nullptr;
-  raw_ptr<ChildBubbleContainer, ExperimentalAsh> child_bubble_container_ =
-      nullptr;
-  std::vector<HoldingSpaceTrayChildBubble*> child_bubbles_;
+  raw_ptr<views::View> header_ = nullptr;
+  raw_ptr<ChildBubbleContainer> child_bubble_container_ = nullptr;
+  std::vector<raw_ptr<HoldingSpaceTrayChildBubble, VectorExperimental>>
+      child_bubbles_;
 
   std::unique_ptr<TrayBubbleWrapper> bubble_wrapper_;
   std::unique_ptr<ui::EventHandler> event_handler_;

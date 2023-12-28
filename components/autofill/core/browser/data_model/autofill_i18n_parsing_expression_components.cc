@@ -14,12 +14,12 @@ inline std::string RemoveVersionSuffix(const std::string& token) {
   return token.substr(0, token.find("__"));
 }
 
-absl::optional<base::flat_map<std::string, std::string>> ParseUsingRegex(
+std::optional<base::flat_map<std::string, std::string>> ParseUsingRegex(
     std::string_view value,
     std::string_view pattern) {
   const RE2* regex = Re2RegExCache::Instance()->GetRegEx(pattern);
   if (!regex || !regex->ok()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Get the number of capturing groups in the expression.
@@ -41,7 +41,7 @@ absl::optional<base::flat_map<std::string, std::string>> ParseUsingRegex(
   // One capturing group is not counted since it holds the full match.
   if (!RE2::PartialMatchN(value, *regex, match_results_ptr.data(),
                           number_of_capturing_groups - 1)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // If successful, write the values into the results map.
@@ -85,7 +85,7 @@ ValueParsingResults Decomposition::Parse(std::string_view value) const {
 
 ValueParsingResults DecompositionCascade::Parse(std::string_view value) const {
   if (!ConditionIsMatched(condition_regex_, value)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   for (const auto* alternative : alternatives_) {
@@ -94,12 +94,12 @@ ValueParsingResults DecompositionCascade::Parse(std::string_view value) const {
       return result;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 ValueParsingResults ExtractPart::Parse(std::string_view value) const {
   if (!ConditionIsMatched(condition_regex_, value)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return ParseUsingRegex(value, parsing_regex_);
@@ -107,7 +107,7 @@ ValueParsingResults ExtractPart::Parse(std::string_view value) const {
 
 ValueParsingResults ExtractParts::Parse(std::string_view value) const {
   if (!ConditionIsMatched(condition_regex_, value)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   base::flat_map<std::string, std::string> result;
   for (const auto* piece : pieces_) {
@@ -121,7 +121,7 @@ ValueParsingResults ExtractParts::Parse(std::string_view value) const {
   if (!result.empty()) {
     return result;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace autofill::i18n_model_definition

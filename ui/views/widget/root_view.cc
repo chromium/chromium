@@ -598,9 +598,8 @@ void RootView::OnMouseExited(const ui::MouseEvent& event) {
     if (dispatch_details.dispatcher_destroyed)
       return;
     // The mouse_move_handler_ could have been destroyed in the context of the
-    // mouse exit event.
-    if (!dispatch_details.target_destroyed) {
-      CHECK(mouse_move_handler_);
+    // mouse exit event. b/312400341
+    if (!dispatch_details.target_destroyed && mouse_move_handler_) {
       dispatch_details = NotifyEnterExitOfDescendant(
           event, ui::ET_MOUSE_EXITED, mouse_move_handler_, nullptr);
       if (dispatch_details.dispatcher_destroyed)

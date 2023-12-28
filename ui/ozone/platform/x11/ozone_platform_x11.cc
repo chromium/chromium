@@ -31,6 +31,7 @@
 #include "ui/gfx/linux/gpu_memory_buffer_support_x11.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/switches.h"
+#include "ui/gfx/x/visual_manager.h"
 #include "ui/linux/linux_ui_delegate.h"
 #include "ui/ozone/common/stub_overlay_manager.h"
 #include "ui/ozone/platform/x11/gl_egl_utility_x11.h"
@@ -224,6 +225,12 @@ class OzonePlatformX11 : public OzonePlatform,
     // Native pixmap support is determined on gpu process via gpu extra info
     // that gets this information from GpuMemoryBufferSupportX11.
     return false;
+  }
+
+  bool IsWindowCompositingSupported() const override {
+    return x11::Connection::Get()
+        ->GetOrCreateVisualManager()
+        .ArgbVisualAvailable();
   }
 
   bool InitializeUI(const InitParams& params) override {

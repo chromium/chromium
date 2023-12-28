@@ -18,7 +18,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CARRIER_LOCK)
   // ProvisioningConfigFetcher
   void RequestConfig(const std::string& serial,
                      const std::string& imei,
-                     const std::string& android_id,
                      const std::string& manufacturer,
                      const std::string& model,
                      const std::string& fcm_token,

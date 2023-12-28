@@ -207,6 +207,16 @@ views::Widget* ShowWebModalDialogViews(
   return widget;
 }
 
+std::unique_ptr<views::Widget> ShowWebModalDialogViewsOwned(
+    views::WidgetDelegate* dialog,
+    content::WebContents* initiator_web_contents) {
+  views::Widget* widget =
+      ShowWebModalDialogViews(dialog, initiator_web_contents);
+  CHECK_EQ(widget->ownership(),
+           views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  return base::WrapUnique<views::Widget>(widget);
+}
+
 views::Widget* CreateWebModalDialogViews(views::WidgetDelegate* dialog,
                                          content::WebContents* web_contents) {
   DCHECK_EQ(ui::MODAL_TYPE_CHILD, dialog->GetModalType());

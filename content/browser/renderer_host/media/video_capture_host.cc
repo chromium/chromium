@@ -73,7 +73,9 @@ class VideoCaptureHost::RenderFrameHostDelegateImpl
                          RenderFrameHostImpl* host =
                              RenderFrameHostImpl::FromID(render_frame_host_id);
                          if (host) {
-                           host->OnMediaStreamAdded();
+                           host->OnMediaStreamAdded(
+                               RenderFrameHostImpl::MediaStreamType::
+                                   kCapturingMediaStream);
                          }
                        },
                        render_frame_host_id_));
@@ -87,7 +89,9 @@ class VideoCaptureHost::RenderFrameHostDelegateImpl
                          RenderFrameHostImpl* host =
                              RenderFrameHostImpl::FromID(render_frame_host_id);
                          if (host) {
-                           host->OnMediaStreamRemoved();
+                           host->OnMediaStreamRemoved(
+                               RenderFrameHostImpl::MediaStreamType::
+                                   kCapturingMediaStream);
                          }
                        },
                        render_frame_host_id_));
@@ -338,8 +342,8 @@ void VideoCaptureHost::Stop(const base::UnguessableToken& device_id) {
   if (it != device_id_to_observer_map_.end()) {
     it->second->OnStateChanged(media::mojom::VideoCaptureResult::NewState(
         media::mojom::VideoCaptureState::STOPPED));
+    device_id_to_observer_map_.erase(it);
   }
-  device_id_to_observer_map_.erase(it);
 
   DeleteVideoCaptureController(controller_id, media::VideoCaptureError::kNone);
   NotifyStreamRemoved();

@@ -24,16 +24,15 @@ class NameInfo : public FormGroup {
 
   NameInfo& operator=(const NameInfo& info);
   bool operator==(const NameInfo& other) const;
-  bool operator!=(const NameInfo& other) const { return !operator==(other); }
 
   // FormGroup:
-  std::u16string GetRawInfo(ServerFieldType type) const override;
+  std::u16string GetRawInfo(FieldType type) const override;
 
   void GetMatchingTypes(const std::u16string& text,
                         const std::string& app_locale,
-                        ServerFieldTypeSet* matching_types) const override;
+                        FieldTypeSet* matching_types) const override;
 
-  void SetRawInfoWithVerificationStatus(ServerFieldType type,
+  void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
                                         VerificationStatus status) override;
 
@@ -66,7 +65,7 @@ class NameInfo : public FormGroup {
 
  private:
   // FormGroup:
-  void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
+  void GetSupportedTypes(FieldTypeSet* supported_types) const override;
   std::u16string GetInfoImpl(const AutofillType& type,
                              const std::string& app_locale) const override;
 
@@ -76,8 +75,7 @@ class NameInfo : public FormGroup {
                                          VerificationStatus status) override;
 
   // Return the verification status of a structured name value.
-  VerificationStatus GetVerificationStatusImpl(
-      ServerFieldType type) const override;
+  VerificationStatus GetVerificationStatusImpl(FieldType type) const override;
 
   // This data structure stores the more-structured representation of the name
   // when |features::kAutofillEnableSupportForMoreStructureInNames| is enabled.
@@ -95,14 +93,14 @@ class EmailInfo : public FormGroup {
   bool operator!=(const EmailInfo& other) const { return !operator==(other); }
 
   // FormGroup:
-  std::u16string GetRawInfo(ServerFieldType type) const override;
-  void SetRawInfoWithVerificationStatus(ServerFieldType type,
+  std::u16string GetRawInfo(FieldType type) const override;
+  void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
                                         VerificationStatus status) override;
 
  private:
   // FormGroup:
-  void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
+  void GetSupportedTypes(FieldTypeSet* supported_types) const override;
 
   std::u16string email_;
 };
@@ -117,8 +115,8 @@ class CompanyInfo : public FormGroup {
   bool operator!=(const CompanyInfo& other) const { return !operator==(other); }
 
   // FormGroup:
-  std::u16string GetRawInfo(ServerFieldType type) const override;
-  void SetRawInfoWithVerificationStatus(ServerFieldType type,
+  std::u16string GetRawInfo(FieldType type) const override;
+  void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
                                         VerificationStatus status) override;
 
@@ -128,10 +126,10 @@ class CompanyInfo : public FormGroup {
 
  private:
   // FormGroup:
-  void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
+  void GetSupportedTypes(FieldTypeSet* supported_types) const override;
   void GetMatchingTypes(const std::u16string& text,
                         const std::string& app_locale,
-                        ServerFieldTypeSet* matching_types) const override;
+                        FieldTypeSet* matching_types) const override;
 
   std::u16string company_name_;
 };

@@ -69,7 +69,7 @@ class ASH_EXPORT LogoutButtonTray : public TrayBackgroundView,
 
   void ButtonPressed();
 
-  raw_ptr<views::MdTextButton, ExperimentalAsh> button_;
+  raw_ptr<views::MdTextButton> button_;
   bool show_logout_button_in_tray_ = false;
   base::TimeDelta dialog_duration_;
 

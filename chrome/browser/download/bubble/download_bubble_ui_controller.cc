@@ -83,7 +83,7 @@ bool IsForDownload(Browser* browser, download::DownloadItem* item) {
 // static
 DownloadBubbleUIController* DownloadBubbleUIController::GetForDownload(
     download::DownloadItem* item) {
-  for (auto* browser : BrowserList::GetInstance()->OrderedByActivation()) {
+  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
     if (IsForDownload(browser, item) && browser->window() &&
         browser->window()->GetDownloadBubbleUIController()) {
       return browser->window()->GetDownloadBubbleUIController();
@@ -177,6 +177,9 @@ void DownloadBubbleUIController::OnDownloadItemUpdated(
   bool is_done = item->IsDone() ||
                  (item->GetState() == download::DownloadItem::IN_PROGRESS &&
                   !IsItemInProgress(item));
+  if (model.IsDangerous()) {
+    RecordDangerousDownloadShownToUser();
+  }
   display_controller_->OnUpdatedItem(is_done, may_show_details);
 }
 
@@ -276,7 +279,8 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
       break;
     case DownloadCommands::CANCEL:
       model->SetActionedOn(true);
-      [[fallthrough]];
+      commands.ExecuteCommand(command);
+      break;
     case DownloadCommands::BYPASS_DEEP_SCANNING:
       DownloadItemWarningData::AddWarningActionEvent(
           model->GetDownloadItem(), warning_surface,
@@ -377,6 +381,13 @@ void DownloadBubbleUIController::RecordDownloadBubbleInteraction() {
       feature_engagement::TrackerFactory::GetForBrowserContext(
           browser_->profile());
   tracker->NotifyEvent("download_bubble_interaction");
+}
+
+void DownloadBubbleUIController::RecordDangerousDownloadShownToUser() {
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(
+          browser_->profile());
+  tracker->NotifyEvent("download_bubble_dangerous_download_detected");
 }
 
 base::WeakPtr<DownloadBubbleUIController>

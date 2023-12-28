@@ -6,6 +6,7 @@
 
 #import <MaterialComponents/MaterialActivityIndicator.h>
 
+#import "base/notreached.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -13,16 +14,31 @@
 
 namespace {
 
-// The size of the xmark symbol image.
-NSInteger kXmarkSymbolPointSize = 13;
+// The size of the close button.
+const CGFloat kCloseButtonSize = 16;
+// The alpha of the close button background color.
+const CGFloat kCloseButtonBackgroundAlpha = 0.2;
 
-const CGFloat kFaviconLeadingMargin = 16;
-const CGFloat kCloseButtonMargin = 16;
+// Size of the decoration corner when the cell is selected.
+const CGFloat kCornerSize = 16;
+
+// Threshold width for collapsing the cell and hiding the close button.
+const CGFloat kCollapsedWidthThreshold = 150;
+
+// Separator constraints.
+const CGFloat kSeparatorWidth = 2;
+const CGFloat kSeparatorCornerRadius = 1;
+const CGFloat kSeparatorMaxHeight = 18;
+const CGFloat kSeparatorHorizontalInset = 2;
+
+// Content view constants.
+const CGFloat kFaviconLeadingMargin = 10;
+const CGFloat kCloseButtonMargin = 10;
 const CGFloat kTitleInset = 10.0;
 const CGFloat kFontSize = 14.0;
-
 const CGFloat kFaviconSize = 16.0;
 
+// Returns the default favicon image.
 UIImage* DefaultFavicon() {
   return DefaultSymbolWithPointSize(kGlobeAmericasSymbol, 14);
 }
@@ -30,23 +46,43 @@ UIImage* DefaultFavicon() {
 }  // namespace
 
 @implementation TabStripCell {
+  // Content view subviews.
   UIButton* _closeButton;
   UILabel* _titleLabel;
   UIImageView* _faviconView;
+
+  // Rounded decoration views, visible when the cell is selected.
+  UIView* _leftTailView;
+  UIView* _rightTailView;
+  UIView* _topLeftCornerView;
+  UIView* _topRightCornerView;
+
+  // Cell separator.
+  UIView* _trailingSeparatorView;
+
+  // Wether the decoration layers have been updated.
+  BOOL _decorationLayersUpdated;
+
+  // Circular spinner that shows the loading state of the tab.
   MDCActivityIndicator* _activityIndicator;
+
+  // Title label's trailing constraints.
+  NSLayoutConstraint* _titleLabelCollapsedTrailingConstraint;
+  NSLayoutConstraint* _titleLabelTrailingConstraint;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
   if ((self = [super initWithFrame:frame])) {
-    // TODO(crbug.com/1490555): Remove the border once we get closer to the
-    // design.
-    self.layer.borderColor = UIColor.blackColor.CGColor;
-    self.layer.borderWidth = 1;
+    self.layer.masksToBounds = NO;
+    _decorationLayersUpdated = NO;
 
     UIView* contentView = self.contentView;
 
-    UILayoutGuide* leadingImageGuide = [[UILayoutGuide alloc] init];
-    [self addLayoutGuide:leadingImageGuide];
+    _topLeftCornerView = [self createTopCornerView];
+    [contentView addSubview:_topLeftCornerView];
+
+    _topRightCornerView = [self createTopCornerView];
+    [contentView addSubview:_topRightCornerView];
 
     _faviconView = [self createFaviconView];
     [contentView addSubview:_faviconView];
@@ -60,38 +96,19 @@ UIImage* DefaultFavicon() {
     _titleLabel = [self createTitleLabel];
     [contentView addSubview:_titleLabel];
 
-    [NSLayoutConstraint activateConstraints:@[
-      [leadingImageGuide.leadingAnchor
-          constraintEqualToAnchor:contentView.leadingAnchor
-                         constant:kFaviconLeadingMargin],
-      [leadingImageGuide.centerYAnchor
-          constraintEqualToAnchor:contentView.centerYAnchor],
-      [leadingImageGuide.widthAnchor constraintEqualToConstant:kFaviconSize],
-      [leadingImageGuide.heightAnchor
-          constraintEqualToAnchor:leadingImageGuide.widthAnchor],
-    ]];
+    _leftTailView = [self createTailView];
+    [self addSubview:_leftTailView];
 
-    AddSameConstraints(leadingImageGuide, _faviconView);
-    AddSameConstraints(leadingImageGuide, _activityIndicator);
+    _rightTailView = [self createTailView];
+    [self addSubview:_rightTailView];
 
-    [NSLayoutConstraint activateConstraints:@[
-      [_closeButton.trailingAnchor
-          constraintEqualToAnchor:contentView.trailingAnchor
-                         constant:-kCloseButtonMargin],
-      [_closeButton.centerYAnchor
-          constraintEqualToAnchor:contentView.centerYAnchor],
-    ]];
+    _trailingSeparatorView = [self createSepartorView];
+    [self addSubview:_trailingSeparatorView];
 
-    [NSLayoutConstraint activateConstraints:@[
-      [_titleLabel.leadingAnchor
-          constraintEqualToAnchor:leadingImageGuide.trailingAnchor
-                         constant:kTitleInset],
-      [_titleLabel.trailingAnchor
-          constraintLessThanOrEqualToAnchor:_closeButton.leadingAnchor
-                                   constant:-kTitleInset],
-      [_titleLabel.centerYAnchor
-          constraintEqualToAnchor:contentView.centerYAnchor],
-    ]];
+    [self setupConstraints];
+    [self setupDecorationLayers];
+
+    self.selected = NO;
   }
   return self;
 }
@@ -129,16 +146,34 @@ UIImage* DefaultFavicon() {
 
 - (void)setSelected:(BOOL)selected {
   [super setSelected:selected];
-  self.backgroundColor = selected ? UIColor.blueColor : UIColor.whiteColor;
+
+  // Style the contentView background color.
+  self.contentView.backgroundColor =
+      selected ? [UIColor colorNamed:kPrimaryBackgroundColor]
+               : UIColor.clearColor;
+
   // Style the favicon tint color.
   _faviconView.tintColor = selected ? [UIColor colorNamed:kCloseButtonColor]
                                     : [UIColor colorNamed:kGrey500Color];
-  // Style the close button tint color.
-  _closeButton.tintColor = selected ? [UIColor colorNamed:kCloseButtonColor]
-                                    : [UIColor colorNamed:kGrey500Color];
-  // Style the title tint color.
-  _titleLabel.textColor = selected ? [UIColor colorNamed:kTextPrimaryColor]
-                                   : [UIColor colorNamed:kGrey600Color];
+
+  // Style the separator color.
+  _trailingSeparatorView.backgroundColor =
+      selected ? UIColor.clearColor : [UIColor colorNamed:kGrey400Color];
+
+  // Update decoration views visibility.
+  _leftTailView.hidden = !selected;
+  _rightTailView.hidden = !selected;
+  _topLeftCornerView.hidden = !selected;
+  _topRightCornerView.hidden = !selected;
+
+  [self updateCollapsedState];
+}
+
+- (void)applyLayoutAttributes:
+    (UICollectionViewLayoutAttributes*)layoutAttributes {
+  [super applyLayoutAttributes:layoutAttributes];
+
+  [self updateCollapsedState];
 }
 
 #pragma mark - UICollectionViewCell
@@ -150,7 +185,173 @@ UIImage* DefaultFavicon() {
   [self setFaviconImage:nil];
 }
 
+#pragma mark - Setters
+
+- (void)setSeparatorHidden:(BOOL)separatorHidden {
+  if (separatorHidden == _separatorHidden) {
+    return;
+  }
+  _separatorHidden = separatorHidden;
+  _trailingSeparatorView.hidden = _separatorHidden;
+}
+
 #pragma mark - Private
+
+/// Sets the decoration layers for the `selected` state of the cell.
+- (void)setupDecorationLayers {
+  // Bottom left corner path.
+  UIBezierPath* cornerPath = [UIBezierPath bezierPath];
+  [cornerPath moveToPoint:CGPointMake(kCornerSize, kCornerSize)];
+  [cornerPath addLineToPoint:CGPointMake(kCornerSize, 0)];
+  [cornerPath addArcWithCenter:CGPointMake(0, 0)
+                        radius:kCornerSize
+                    startAngle:0
+                      endAngle:M_PI_2
+                     clockwise:YES];
+  [cornerPath closePath];
+
+  // Round the left tail.
+  CAShapeLayer* leftTailMaskLayer = [CAShapeLayer layer];
+  leftTailMaskLayer.path = cornerPath.CGPath;
+  _leftTailView.layer.mask = leftTailMaskLayer;
+
+  // Round the right tail.
+  CAShapeLayer* rightTailMaskLayer = [CAShapeLayer layer];
+  rightTailMaskLayer.path = cornerPath.CGPath;
+  _rightTailView.layer.mask = rightTailMaskLayer;
+  _rightTailView.layer.transform = CATransform3DMakeScale(-1, 1, 1);
+
+  // Round the top left corner.
+  CAShapeLayer* topLeftCornerLayer = [CAShapeLayer layer];
+  topLeftCornerLayer.path = cornerPath.CGPath;
+  _topLeftCornerView.layer.mask = topLeftCornerLayer;
+  _topLeftCornerView.layer.transform = CATransform3DMakeScale(-1, -1, 1);
+
+  // Round the top right corner.
+  CAShapeLayer* topRightCornerLayer = [CAShapeLayer layer];
+  topRightCornerLayer.path = cornerPath.CGPath;
+  _topRightCornerView.layer.mask = topRightCornerLayer;
+  _topRightCornerView.layer.transform = CATransform3DMakeScale(1, -1, 1);
+
+  _decorationLayersUpdated = YES;
+}
+
+/// Hides the close button view if the cell is collapsed.
+- (void)updateCollapsedState {
+  BOOL collapsed = NO;
+  if (self.frame.size.width < kCollapsedWidthThreshold) {
+    // Don't hide the close button if the cell is selected.
+    collapsed = !self.selected;
+  }
+
+  if (collapsed == _closeButton.hidden) {
+    return;
+  }
+
+  _closeButton.hidden = collapsed;
+
+  // To avoid breaking the layout, always disable the active constraint first.
+  if (collapsed) {
+    _titleLabelTrailingConstraint.active = NO;
+    _titleLabelCollapsedTrailingConstraint.active = YES;
+  } else {
+    _titleLabelCollapsedTrailingConstraint.active = NO;
+    _titleLabelTrailingConstraint.active = YES;
+  }
+}
+
+// Sets the cell constraints.
+- (void)setupConstraints {
+  UILayoutGuide* leadingImageGuide = [[UILayoutGuide alloc] init];
+  [self addLayoutGuide:leadingImageGuide];
+
+  UIView* contentView = self.contentView;
+
+  /// `leadingImageGuide` constraints.
+  [NSLayoutConstraint activateConstraints:@[
+    [leadingImageGuide.leadingAnchor
+        constraintEqualToAnchor:contentView.leadingAnchor
+                       constant:kFaviconLeadingMargin],
+    [leadingImageGuide.centerYAnchor
+        constraintEqualToAnchor:contentView.centerYAnchor],
+    [leadingImageGuide.widthAnchor constraintEqualToConstant:kFaviconSize],
+    [leadingImageGuide.heightAnchor
+        constraintEqualToAnchor:leadingImageGuide.widthAnchor],
+  ]];
+  AddSameConstraints(leadingImageGuide, _faviconView);
+  AddSameConstraints(leadingImageGuide, _activityIndicator);
+
+  /// `_closeButton` constraints.
+  [NSLayoutConstraint activateConstraints:@[
+    [_closeButton.trailingAnchor
+        constraintEqualToAnchor:contentView.trailingAnchor
+                       constant:-kCloseButtonMargin],
+    [_closeButton.widthAnchor constraintEqualToConstant:kCloseButtonSize],
+    [_closeButton.heightAnchor constraintEqualToConstant:kCloseButtonSize],
+    [_closeButton.centerYAnchor
+        constraintEqualToAnchor:contentView.centerYAnchor],
+  ]];
+
+  /// `_titleLabel` constraints.
+  _titleLabelTrailingConstraint = [_titleLabel.trailingAnchor
+      constraintEqualToAnchor:_closeButton.leadingAnchor
+                     constant:-kTitleInset];
+  _titleLabelCollapsedTrailingConstraint = [_titleLabel.trailingAnchor
+      constraintEqualToAnchor:contentView.trailingAnchor
+                     constant:-kTitleInset];
+  [NSLayoutConstraint activateConstraints:@[
+    [_titleLabel.leadingAnchor
+        constraintEqualToAnchor:leadingImageGuide.trailingAnchor
+                       constant:kTitleInset],
+    [_titleLabel.centerYAnchor
+        constraintEqualToAnchor:contentView.centerYAnchor],
+  ]];
+
+  /// `_topLeftCornerView` and `_topRightCornerView` constraints.
+  [NSLayoutConstraint activateConstraints:@[
+    [_topLeftCornerView.leftAnchor
+        constraintEqualToAnchor:contentView.leftAnchor],
+    [_topLeftCornerView.topAnchor
+        constraintEqualToAnchor:contentView.topAnchor],
+    [_topLeftCornerView.widthAnchor constraintEqualToConstant:kCornerSize],
+    [_topLeftCornerView.heightAnchor constraintEqualToConstant:kCornerSize],
+
+    [_topRightCornerView.rightAnchor
+        constraintEqualToAnchor:contentView.rightAnchor],
+    [_topRightCornerView.topAnchor
+        constraintEqualToAnchor:contentView.topAnchor],
+    [_topRightCornerView.widthAnchor constraintEqualToConstant:kCornerSize],
+    [_topRightCornerView.heightAnchor constraintEqualToConstant:kCornerSize],
+  ]];
+
+  /// `_leftTailView` and `_rightTailView` constraints.
+  [NSLayoutConstraint activateConstraints:@[
+    [_leftTailView.rightAnchor constraintEqualToAnchor:contentView.leftAnchor],
+    [_leftTailView.bottomAnchor
+        constraintEqualToAnchor:contentView.bottomAnchor],
+    [_leftTailView.widthAnchor constraintEqualToConstant:kCornerSize],
+    [_leftTailView.heightAnchor constraintEqualToConstant:kCornerSize],
+
+    [_rightTailView.leftAnchor constraintEqualToAnchor:contentView.rightAnchor],
+    [_rightTailView.bottomAnchor
+        constraintEqualToAnchor:contentView.bottomAnchor],
+    [_rightTailView.widthAnchor constraintEqualToConstant:kCornerSize],
+    [_rightTailView.heightAnchor constraintEqualToConstant:kCornerSize],
+  ]];
+
+  /// `_trailingSeparatorView` constraints.
+  [NSLayoutConstraint activateConstraints:@[
+    [_trailingSeparatorView.leadingAnchor
+        constraintEqualToAnchor:contentView.trailingAnchor
+                       constant:kSeparatorHorizontalInset],
+    [_trailingSeparatorView.widthAnchor
+        constraintEqualToConstant:kSeparatorWidth],
+    [_trailingSeparatorView.heightAnchor
+        constraintLessThanOrEqualToConstant:kSeparatorMaxHeight],
+    [_trailingSeparatorView.centerYAnchor
+        constraintEqualToAnchor:contentView.centerYAnchor],
+  ]];
+}
 
 // Selector registered to the close button.
 - (void)closeButtonTapped:(id)sender {
@@ -168,11 +369,19 @@ UIImage* DefaultFavicon() {
 
 // Returns a new close button.
 - (UIButton*)createCloseButton {
-  UIImage* close =
-      DefaultSymbolTemplateWithPointSize(kXMarkSymbol, kXmarkSymbolPointSize);
+  UIImage* closeSymbol =
+      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kCloseButtonSize);
   UIButton* closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
   closeButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [closeButton setImage:close forState:UIControlStateNormal];
+  [closeButton
+      setImage:SymbolWithPalette(
+                   closeSymbol,
+                   @[
+                     [UIColor colorNamed:kTextSecondaryColor],
+                     [[UIColor colorNamed:kTextQuaternaryColor]
+                         colorWithAlphaComponent:kCloseButtonBackgroundAlpha]
+                   ])
+      forState:UIControlStateNormal];
   [closeButton addTarget:self
                   action:@selector(closeButtonTapped:)
         forControlEvents:UIControlEventTouchUpInside];
@@ -185,6 +394,7 @@ UIImage* DefaultFavicon() {
   titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
   titleLabel.font = [UIFont systemFontOfSize:kFontSize
                                       weight:UIFontWeightMedium];
+  titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   return titleLabel;
 }
 
@@ -194,6 +404,33 @@ UIImage* DefaultFavicon() {
   activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
   activityIndicator.hidden = YES;
   return activityIndicator;
+}
+
+// Returns a new tail view.
+- (UIView*)createTailView {
+  UIView* tailView = [[UIView alloc] init];
+  tailView.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  tailView.translatesAutoresizingMaskIntoConstraints = NO;
+  tailView.hidden = YES;
+  return tailView;
+}
+
+// Returns a new top corner view.
+- (UIView*)createTopCornerView {
+  UIView* topCornerView = [[UIView alloc] init];
+  topCornerView.backgroundColor = [UIColor colorNamed:kGrey200Color];
+  topCornerView.translatesAutoresizingMaskIntoConstraints = NO;
+  topCornerView.hidden = YES;
+  return topCornerView;
+}
+
+// Returns a new separator view.
+- (UIView*)createSepartorView {
+  UIView* separatorView = [[UIView alloc] init];
+  separatorView.backgroundColor = [UIColor colorNamed:kGrey400Color];
+  separatorView.translatesAutoresizingMaskIntoConstraints = NO;
+  separatorView.layer.cornerRadius = kSeparatorCornerRadius;
+  return separatorView;
 }
 
 @end

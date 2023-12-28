@@ -21,7 +21,8 @@ struct Feature;
 
 namespace autofill {
 class LogManager;
-}
+struct ParsingContext;
+}  // namespace autofill
 
 namespace autofill::rationalization {
 
@@ -92,7 +93,7 @@ struct FieldCondition {
 
   // If specified, the condition is only true if the overall type of the field
   // before the rule evaluation is in `possible_overall_types`.
-  std::optional<ServerFieldTypeSet> possible_overall_types;
+  std::optional<FieldTypeSet> possible_overall_types;
 
   // If specified, the condition is only true if the field meets the criteria
   // of the references regular expression. See
@@ -108,7 +109,7 @@ struct SetTypeAction {
   FieldLocation target;
 
   // The new field type to assign to the target.
-  ServerFieldType set_overall_type;
+  FieldType set_overall_type;
 };
 
 // A declarative rule with conditions and actions. The actions are executed by
@@ -175,35 +176,29 @@ class RationalizationRuleBuilder {
 
 // This is only exposed for testing purposes.
 namespace internal {
-bool IsEnvironmentConditionFulfilled(const EnvironmentCondition& env,
-                                     const GeoIpCountryCode& client_country);
+bool IsEnvironmentConditionFulfilled(ParsingContext& context,
+                                     const EnvironmentCondition& env);
 
-bool IsFieldConditionFulfilledIgnoringLocation(
-    const FieldCondition& condition,
-    const LanguageCode& page_language,
-    PatternSource pattern_source,
-    const AutofillField& field);
+bool IsFieldConditionFulfilledIgnoringLocation(ParsingContext& context,
+                                               const FieldCondition& condition,
+                                               const AutofillField& field);
 
 // Returns the first index of a field in `fields` that meets the `condition`
 // when starting at `start_index` and walking in the direction of
 // `condition.location`. Returns std::nullopt if no such field exists.
 std::optional<size_t> FindFieldMeetingCondition(
+    ParsingContext& context,
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     size_t start_index,
-    const FieldCondition& condition,
-    const GeoIpCountryCode& client_country,
-    const LanguageCode& page_language,
-    PatternSource pattern_source);
+    const FieldCondition& condition);
 
 // Performs rationalization according `rule` if the the conditions of the
 // rule are met. The `rule` can be executed multiple times on the `fields`.
 // Note that the `fields` vector is const but the fields are mutable. This
 // constness is inherited from the calling sites.
 void ApplyRuleIfApplicable(
+    ParsingContext& context,
     const RationalizationRule& rule,
-    const GeoIpCountryCode& client_country,
-    const LanguageCode& page_language,
-    PatternSource pattern_source,
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     LogManager* log_manager = nullptr);
 
@@ -214,9 +209,7 @@ void ApplyRuleIfApplicable(
 // Note that the `fields` vector is const but the fields are mutable. This
 // constness is inherited from the calling sites.
 void ApplyRationalizationEngineRules(
-    const GeoIpCountryCode& client_country,
-    const LanguageCode& page_language,
-    PatternSource pattern_source,
+    ParsingContext& context,
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     LogManager* log_manager = nullptr);
 

@@ -65,6 +65,11 @@ void Semaphore::Wait() {
 }
 
 bool Semaphore::TimedWait(TimeDelta timeout) {
+  if (timeout.is_max()) {
+    Wait();
+    return true;
+  }
+
   // Compute the time for end of timeout.
   const struct timespec ts = TimeDeltaToAbsTimeSpec(timeout);
 

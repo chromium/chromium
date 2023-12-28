@@ -245,9 +245,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_DONT_PRESERVE_AUTOFILL_STATE,
                 "Retrieves is_autofilled state from blink instead of the cache"),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_PARSE_ASYNC,
-                "Parse forms asynchronously outside of the UI thread."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_PARSING_PATTERN_PROVIDER,
                 "Enables Autofill to use its new method to retrieve parsing patterns."),
         Flag.baseFeature(
@@ -318,6 +315,10 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_TEXT_AREA_CHANGE_EVENTS,
                 "When enabled, autofill responds to textarea change events."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_ENABLE_CACHE_FOR_REGEX_MATCHING,
+                "When enabled, autofill uses an extra cache for matching regular expressions "
+                        + "while executing local heuristics."),
+        Flag.baseFeature(
                 FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE,
                 "When enabled, merchant bound virtual cards will be offered in the keyboard "
                         + "accessory."),
@@ -362,6 +363,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AndroidMetricsFeatures.ANDROID_METRICS_ASYNC_METRIC_LOGGING,
                 "Initiate metric uploading on a background thread."),
+        Flag.baseFeature(
+                BlinkFeatures.CSSMPC_IMPROVEMENTS,
+                "Enables CSS matched property cache improvement."),
         Flag.baseFeature(
                 BlinkFeatures.SET_TIMEOUT_WITHOUT_CLAMP,
                 "Enables faster setTimeout(,0) by removing the 1 ms clamping."),
@@ -437,9 +441,6 @@ public final class ProductionSupportedFlagList {
                 "Early exit when the style or class attribute of a DOM element is set to the"
                         + " same value as before."),
         Flag.baseFeature(
-                BlinkFeatures.MAIN_THREAD_HIGH_PRIORITY_IMAGE_LOADING,
-                "If enabled, image load tasks on visible pages have high priority."),
-        Flag.baseFeature(
                 BlinkFeatures.THREADED_PRELOAD_SCANNER,
                 "If enabled, the HTMLPreloadScanner will run on a worker thread."),
         Flag.baseFeature(
@@ -494,7 +495,6 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.THREADED_BODY_LOADER,
                 "If enabled, reads and decodes navigation body data off the main thread."),
         Flag.baseFeature(BlinkFeatures.SPARSE_OBJECT_PAINT_PROPERTIES),
-        Flag.baseFeature(BlinkFeatures.SVG_RASTER_OPTIMIZATIONS),
         Flag.baseFeature(BlinkFeatures.HIT_TEST_OPAQUENESS),
         Flag.baseFeature(BlinkFeatures.DYNAMIC_SCROLL_CULL_RECT_EXPANSION),
         Flag.baseFeature(BlinkFeatures.INTERSECTION_OPTIMIZATION),
@@ -531,6 +531,10 @@ public final class ProductionSupportedFlagList {
                 ContentSwitches.DISABLE_DOMAIN_BLOCKING_FOR3DAP_IS,
                 "Disable the per-domain blocking for 3D APIs after GPU reset. "
                         + "This switch is intended only for tests."),
+        Flag.baseFeature(
+                BlinkFeatures.MEDIA_RECORDER_USE_MEDIA_VIDEO_ENCODER,
+                "When enabled, media::VideoEncoder implementation is used in MediaRecorder API"
+                        + " instead of using MediaRecorder own video encoder implementation."),
         Flag.baseFeature(
                 MetricsFeatures.METRICS_SERVICE_ALLOW_EARLY_LOG_CLOSE,
                 "Controls whether a log is allowed to be closed when Chrome"
@@ -593,10 +597,6 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.RENDER_BLOCKING_FONTS,
                 "When enabled, blocks rendering on font preloads to reduce CLS. "
                         + "See go/critical-font-analysis"),
-        Flag.baseFeature(
-                AwFeatures.WEBVIEW_METRICS_FILTERING,
-                "If enabled, clients used to be out-sampled will report filtered metrics."
-                        + " This has no effect if metrics reporting is disabled"),
         Flag.baseFeature(
                 SafeBrowsingFeatures.SAFE_BROWSING_SKIP_SUBRESOURCES,
                 "When enabled, Safe Browsing will skip subresources"),
@@ -719,11 +719,6 @@ public final class ProductionSupportedFlagList {
                 "Enables PartitionAlloc's MemoryReclaimer, which tries decommitting unused "
                         + "system pages as much as possible so that other applications can "
                         + "reuse the memory pages."),
-        Flag.baseFeature(VizFeatures.EVICT_SUBTREE, "Enables evicting entire tree of surfaces."),
-        Flag.baseFeature(
-                ContentFeatures.NAVIGATION_UPDATES_CHILD_VIEWS_VISIBILITY,
-                "Enables notifying children of the top-most RenderWidgetHostView that they "
-                        + "were hidden during a navigation."),
         Flag.baseFeature(
                 BlinkFeatures.FORM_CONTROLS_VERTICAL_WRITING_MODE_TEXT_SUPPORT,
                 "Enables support for CSS vertical writing mode on text-based form controls."),
@@ -780,6 +775,8 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("V8MemoryReducer"),
         Flag.baseFeature("V8MinorMS"),
         Flag.baseFeature("WebAssemblyMoreAggressiveCodeCaching"),
+        Flag.baseFeature("WebAssemblyTurboshaft"),
+        Flag.baseFeature("WebAssemblyTurboshaftInstructionSelection"),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_INJECT_PLATFORM_JS_APIS,
                 "Inject platform-specific JavaScript APIs."),
@@ -817,6 +814,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BaseFeatures.PARTITION_ALLOC_ZAPPING_BY_FREE_FLAGS,
                 "Enables Partition Allocator's FreeFlags::kZap"),
+        Flag.baseFeature(
+                BlinkFeatures.REGISTER_JS_SOURCE_LOCATION_BLOCKING_BF_CACHE,
+                "Starts capturing bfcache blocking details"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

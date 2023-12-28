@@ -117,11 +117,6 @@ extern const char kAutofillUpdateChromeSettingsLinkToGPayWebName[];
 extern const char kAutofillUpdateChromeSettingsLinkToGPayWebDescription[];
 
 // Title and description for the flag that controls whether Autofill's
-// suggestions' labels are formatting with a mobile-friendly approach.
-extern const char kAutofillUseMobileLabelDisambiguationName[];
-extern const char kAutofillUseMobileLabelDisambiguationDescription[];
-
-// Title and description for the flag that controls whether Autofill's
 // logic is using numeric unique renderer IDs instead of string IDs for
 // form and field elements.
 extern const char kAutofillUseRendererIDsName[];
@@ -446,6 +441,10 @@ extern const char kIOSEditMenuSearchWithDescription[];
 extern const char kIOSEditMenuHideSearchWebName[];
 extern const char kIOSEditMenuHideSearchWebDescription[];
 
+// Title and description for the flag to enable handling external action URLs.
+extern const char kIOSExternalActionURLsName[];
+extern const char kIOSExternalActionURLsDescription[];
+
 // Title and description for the flag to enable Incognito downloads education.
 extern const char kIOSIncognitoDownloadsWarningName[];
 extern const char kIOSIncognitoDownloadsWarningDescription[];
@@ -471,6 +470,11 @@ extern const char kIOSPasswordAuthOnEntryV2Description[];
 // Title and description for the flag to enable password bottom sheet on IOS.
 extern const char kIOSPasswordBottomSheetName[];
 extern const char kIOSPasswordBottomSheetDescription[];
+
+// Title and description for the flag to enable password bottom sheet triggering
+// on autofocus on IOS.
+extern const char kIOSPasswordBottomSheetAutofocusName[];
+extern const char kIOSPasswordBottomSheetAutofocusDescription[];
 
 // Title and description for the flag to enable bulk uploading local passwords
 // for eligible users on the iOS password settings.
@@ -642,10 +646,6 @@ extern const char kOmniboxPopulateShortcutsDatabaseDescription[];
 extern const char kOmniboxSuggestionsRTLImprovementsName[];
 extern const char kOmniboxSuggestionsRTLImprovementsDescription[];
 
-// Title and description for tail suggestions in the omnibox.
-extern const char kOmniboxTailSuggestName[];
-extern const char kOmniboxTailSuggestDescription[];
-
 // Title and description for the flag to change the max number of autocomplete
 // matches in the omnibox popup.
 extern const char kOmniboxUIMaxAutocompleteMatchesName[];
@@ -740,10 +740,18 @@ extern const char kNotificationSettingsMenuItemDescription[];
 extern const char kRemoveExcessNTPsExperimentName[];
 extern const char kRemoveExcessNTPsExperimentDescription[];
 
+// Title and description for the flag to remove unsafe restore.
+extern const char kRemoveOldWebStateRestoreName[];
+extern const char kRemoveOldWebStateRestoreDescription[];
+
 // Title and description for the flag to replace all sync-related UI with
 // sign-in ones.
 extern const char kReplaceSyncPromosWithSignInPromosName[];
 extern const char kReplaceSyncPromosWithSignInPromosDescription[];
+
+// Title and description for the flag to revamp Page Info in iOS.
+extern const char kRevampPageInfoIosName[];
+extern const char kRevampPageInfoIosDescription[];
 
 // Title and description for the flag that makes Safe Browsing available.
 extern const char kSafeBrowsingAvailableName[];
@@ -777,15 +785,15 @@ extern const char kSendUmaOverAnyNetworkDescription[];
 extern const char kSharedHighlightingIOSName[];
 extern const char kSharedHighlightingIOSDescription[];
 
+// Title and description for the flag to enable the Share button
+// in the web context menu in iOS.
+extern const char kShareInWebContextMenuIOSName[];
+extern const char kShareInWebContextMenuIOSDescription[];
+
 // Title and description for the flag to enable annotating web forms with
 // Autofill field type predictions as placeholder.
 extern const char kShowAutofillTypePredictionsName[];
 extern const char kShowAutofillTypePredictionsDescription[];
-
-// Title and description for the flag to show the count of Inactive Tabs in the
-// Tab Grid button.
-extern const char kShowInactiveTabsCountName[];
-extern const char kShowInactiveTabsCountDescription[];
 
 // Title and description for the flag to enable ignoring undecryptable passwords
 // in the password storage.

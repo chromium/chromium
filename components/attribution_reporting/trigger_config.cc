@@ -65,26 +65,29 @@ constexpr uint32_t DefaultTriggerDataCardinality(SourceType source_type) {
 // If `dict` contains a valid "trigger_data" field, writes the resulting keys
 // into `trigger_data_indices` using `spec_index` as the value.
 // `trigger_data_indices` is also used to perform deduplication checks.
-[[nodiscard]] absl::optional<SourceRegistrationError> ParseTriggerData(
+base::expected<void, SourceRegistrationError> ParseTriggerData(
     const base::Value::Dict& dict,
     TriggerSpecs::TriggerDataIndices& trigger_data_indices,
     const uint8_t spec_index) {
   const base::Value* value = dict.Find(kTriggerData);
   if (!value) {
-    return SourceRegistrationError::kTriggerSpecTriggerDataMissing;
+    return base::unexpected(
+        SourceRegistrationError::kTriggerSpecTriggerDataMissing);
   }
 
   const base::Value::List* list = value->GetIfList();
   if (!list) {
-    return SourceRegistrationError::kTriggerSpecTriggerDataWrongType;
+    return base::unexpected(
+        SourceRegistrationError::kTriggerSpecTriggerDataWrongType);
   }
 
   if (list->empty()) {
-    return SourceRegistrationError::kTriggerSpecTriggerDataEmpty;
+    return base::unexpected(
+        SourceRegistrationError::kTriggerSpecTriggerDataEmpty);
   }
 
   if (list->size() + trigger_data_indices.size() > kMaxTriggerDataPerSource) {
-    return SourceRegistrationError::kExcessiveTriggerData;
+    return base::unexpected(SourceRegistrationError::kExcessiveTriggerData);
   }
 
   for (const base::Value& item : *list) {
@@ -98,11 +101,11 @@ constexpr uint32_t DefaultTriggerDataCardinality(SourceType source_type) {
     auto [_, inserted] =
         trigger_data_indices.try_emplace(trigger_data, spec_index);
     if (!inserted) {
-      return SourceRegistrationError::kDuplicateTriggerData;
+      return base::unexpected(SourceRegistrationError::kDuplicateTriggerData);
     }
   }
 
-  return absl::nullopt;
+  return base::ok();
 }
 
 bool AreSpecsValid(const TriggerSpecs::TriggerDataIndices& trigger_data_indices,
@@ -254,11 +257,9 @@ base::expected<TriggerSpecs, SourceRegistrationError> TriggerSpecs::Parse(
       return base::unexpected(SourceRegistrationError::kTriggerSpecWrongType);
     }
 
-    if (absl::optional<SourceRegistrationError> error = ParseTriggerData(
-            *dict, trigger_data_indices,
-            /*spec_index=*/base::checked_cast<uint8_t>(specs.size()))) {
-      return base::unexpected(*error);
-    }
+    RETURN_IF_ERROR(ParseTriggerData(
+        *dict, trigger_data_indices,
+        /*spec_index=*/base::checked_cast<uint8_t>(specs.size())));
 
     ASSIGN_OR_RETURN(auto event_report_windows,
                      EventReportWindows::ParseWindows(*dict, expiry,

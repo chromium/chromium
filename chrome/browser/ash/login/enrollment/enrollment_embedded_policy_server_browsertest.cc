@@ -63,6 +63,15 @@
 #include "content/public/test/test_utils.h"
 #include "net/http/http_status_code.h"
 
+// TODO(https://crbug.com/1512521): Failing on ASan/Lsan builder on Linux and
+// ChromeOS.
+#if defined(ADDRESS_SANITIZER) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
+#define MAYBE_ASAN(x) DISABLED_##x
+#else
+#define MAYBE_ASAN(x) x
+#endif
+
 namespace ash {
 namespace {
 
@@ -416,6 +425,18 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase, ManualEnrollment) {
   test::OobeJS().ExpectTrue("Oobe.isEnrollmentSuccessfulForTest()");
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
   EXPECT_TRUE(InstallAttributes::Get()->IsCloudManaged());
+}
+
+IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase, GetDeviceId) {
+  host()->HandleAccelerator(LoginAcceleratorAction::kStartEnrollment);
+  OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
+  WaitForGaiaPageBackButtonUpdate();
+
+  SigninFrameJS().ExecuteAsync("gaia.chromeOSLogin.sendGetDeviceId()");
+  SigninFrameJS().CreateWaiter("gaia.chromeOSLogin.receivedDeviceId")->Wait();
+  std::string received_device_id =
+      SigninFrameJS().GetString("gaia.chromeOSLogin.receivedDeviceId");
+  EXPECT_TRUE(!received_device_id.empty());
 }
 
 // The test case is the same as
@@ -913,7 +934,8 @@ IN_PROC_BROWSER_TEST_F(AutoEnrollmentEmbeddedPolicyServer, TestCaptivePortal) {
 }
 
 // FRE explicitly required in VPD, but the state keys are missing.
-IN_PROC_BROWSER_TEST_F(AutoEnrollmentNoStateKeys, FREExplicitlyRequired) {
+IN_PROC_BROWSER_TEST_F(AutoEnrollmentNoStateKeys,
+                       MAYBE_ASAN(FREExplicitlyRequired)) {
   SetFRERequiredKey("1");
   host()->StartWizard(AutoEnrollmentCheckScreenView::kScreenId);
   WaitForOobeUI();
@@ -926,7 +948,7 @@ IN_PROC_BROWSER_TEST_F(AutoEnrollmentNoStateKeys, FREExplicitlyRequired) {
 
 // FRE explicitly required when kCheckEnrollmentKey is set to an invalid value.
 IN_PROC_BROWSER_TEST_F(AutoEnrollmentNoStateKeys,
-                       FREExplicitlyRequiredInvalid) {
+                       MAYBE_ASAN(FREExplicitlyRequiredInvalid)) {
   SetFRERequiredKey("anything");
   host()->StartWizard(AutoEnrollmentCheckScreenView::kScreenId);
   WaitForOobeUI();
@@ -946,7 +968,8 @@ IN_PROC_BROWSER_TEST_F(AutoEnrollmentNoStateKeys, NotRequired) {
 
 // FRE explicitly not required in VPD, so it should not even contact the policy
 // server.
-IN_PROC_BROWSER_TEST_F(AutoEnrollmentWithStatistics, ExplicitlyNotRequired) {
+IN_PROC_BROWSER_TEST_F(AutoEnrollmentWithStatistics,
+                       MAYBE_ASAN(ExplicitlyNotRequired)) {
   SetFRERequiredKey("0");
 
   // Should be ignored.
@@ -974,7 +997,8 @@ IN_PROC_BROWSER_TEST_F(AutoEnrollmentWithStatistics, MachineNotActivated) {
 }
 
 // FRE is required when VPD is valid and activate date is there.
-IN_PROC_BROWSER_TEST_F(AutoEnrollmentWithStatistics, MachineActivated) {
+IN_PROC_BROWSER_TEST_F(AutoEnrollmentWithStatistics,
+                       MAYBE_ASAN(MachineActivated)) {
   SetActivateDate("1970-01");
 
   EXPECT_TRUE(policy_server_.SetDeviceStateRetrievalResponse(
@@ -988,7 +1012,7 @@ IN_PROC_BROWSER_TEST_F(AutoEnrollmentWithStatistics, MachineActivated) {
 }
 
 // FRE is required when VPD in invalid state.
-IN_PROC_BROWSER_TEST_F(AutoEnrollmentWithStatistics, CorruptedVPD) {
+IN_PROC_BROWSER_TEST_F(AutoEnrollmentWithStatistics, MAYBE_ASAN(CorruptedVPD)) {
   SetVPDCorrupted();
 
   EXPECT_TRUE(policy_server_.SetDeviceStateRetrievalResponse(

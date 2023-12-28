@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
 #include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
@@ -52,7 +53,7 @@ TEST_F(OffersMetricsTest, LogStoredOfferMetrics) {
 
   autofill_metrics::LogStoredOfferMetrics(offers);
 
-  auto SamplesOf = [&histogram_tester](base::StringPiece metric) {
+  auto SamplesOf = [&histogram_tester](std::string_view metric) {
     return histogram_tester.GetAllSamples(metric);
   };
 
@@ -79,7 +80,7 @@ TEST_F(OffersMetricsTest, LogStoredOfferMetrics_NoOffers) {
   autofill_metrics::LogStoredOfferMetrics(
       std::vector<std::unique_ptr<AutofillOfferData>>());
 
-  auto SamplesOf = [&histogram_tester](base::StringPiece metric) {
+  auto SamplesOf = [&histogram_tester](std::string_view metric) {
     return histogram_tester.GetAllSamples(metric);
   };
 

@@ -183,7 +183,6 @@ std::optional<ProvidedFileSystemInfo> GetODFSInfo(Profile* profile) {
   auto odfs_infos = service->GetProvidedFileSystemInfoList(provider_id);
 
   if (odfs_infos.size() == 0) {
-    LOG(ERROR) << "ODFS is not mounted";
     return std::nullopt;
   }
   if (odfs_infos.size() > 1u) {

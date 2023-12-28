@@ -227,6 +227,9 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
     return will_establish_consumer_ownership_;
   }
 
+  // Returns if the device is managed according to the device settings.
+  bool IsDeviceManaged() const;
+
   // Adds an observer.
   void AddObserver(Observer* observer);
   // Removes an observer.

@@ -79,7 +79,7 @@ class DeleteOnBlurDelegate : public aura::test::TestWindowDelegate,
     }
   }
 
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> window_{nullptr};
+  raw_ptr<aura::Window, DanglingUntriaged> window_{nullptr};
 };
 
 aura::LayoutManager* GetLayoutManager(RootWindowController* controller,
@@ -376,9 +376,9 @@ TEST_F(RootWindowControllerTest, MoveWindows_MaintainMRUordering) {
   // ordering.
   aura::Window* parent = moved->GetNativeWindow()->parent();
   ASSERT_EQ(parent, existing1->GetNativeWindow()->parent());
-  const std::vector<aura::Window*> expected_order = {
-      existing1->GetNativeWindow(), moved->GetNativeWindow(),
-      existing2->GetNativeWindow(), active->GetNativeWindow()};
+  const std::vector<raw_ptr<aura::Window, VectorExperimental>> expected_order =
+      {existing1->GetNativeWindow(), moved->GetNativeWindow(),
+       existing2->GetNativeWindow(), active->GetNativeWindow()};
   EXPECT_EQ(expected_order, parent->children());
 }
 
@@ -649,7 +649,7 @@ class DestroyedWindowObserver : public aura::WindowObserver {
   }
 
   bool destroyed_ = false;
-  raw_ptr<Window, ExperimentalAsh> window_{nullptr};
+  raw_ptr<Window> window_{nullptr};
 };
 
 // Verifies shutdown doesn't delete windows that are not owned by the parent.

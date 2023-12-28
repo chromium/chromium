@@ -53,10 +53,10 @@ class ASH_EXPORT FocusCycler {
       base::RepeatingCallback<bool(views::Widget*)> callback);
 
  private:
-  std::vector<views::Widget*> widgets_;
+  std::vector<raw_ptr<views::Widget, VectorExperimental>> widgets_;
 
   // See description above getter.
-  raw_ptr<views::Widget, ExperimentalAsh> widget_activating_;
+  raw_ptr<views::Widget> widget_activating_;
 };
 
 }  // namespace ash

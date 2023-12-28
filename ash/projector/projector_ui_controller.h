@@ -74,8 +74,7 @@ class ASH_EXPORT ProjectorUiController : public ProjectorSessionObserver {
   bool annotator_enabled_ = false;
 
   // The current root window in which the video recording is happening.
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> current_root_ =
-      nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged> current_root_ = nullptr;
 
   // True if the canvas is initialized successfully, false if it failed to
   // initialize. An absent value indicates that the initialization has not

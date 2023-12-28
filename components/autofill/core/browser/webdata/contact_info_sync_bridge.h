@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_CONTACT_INFO_SYNC_BRIDGE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -14,7 +15,8 @@
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "components/autofill/core/browser/contact_info_sync_util.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
+#include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/sync/model/entity_change.h"
@@ -25,7 +27,6 @@
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/entity_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -53,10 +54,10 @@ class ContactInfoSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
   // syncer::ModelTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  absl::optional<syncer::ModelError> MergeFullSyncData(
+  std::optional<syncer::ModelError> MergeFullSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
-  absl::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
+  std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -81,7 +82,9 @@ class ContactInfoSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
       const syncer::EntityMetadataMap& metadata_map) const;
 
   // Returns the `AutofillTable` associated with the `web_data_backend_`.
-  AutofillTable* GetAutofillTable();
+  AddressAutofillTable* GetAutofillTable();
+
+  AutofillSyncMetadataTable* GetSyncMetadataStore();
 
   // Queries all `Source::kAccount` profiles from `GetAutofillTable()` and
   // restricts the result to profiles where `filter(guid)` is true.

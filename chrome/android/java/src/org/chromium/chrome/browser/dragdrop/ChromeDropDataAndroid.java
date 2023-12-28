@@ -9,16 +9,18 @@ import org.chromium.ui.dragdrop.DropDataAndroid;
 
 /** */
 public class ChromeDropDataAndroid extends DropDataAndroid {
-    public final int mTabId;
+    private static final String TAB_DATA_PREFIX = "TabId=";
+    private static final String TAB_DATA_DELIMITER = "\n";
+    public final Tab mTab;
 
     /** Not generated from java */
     ChromeDropDataAndroid(Builder builder) {
         super(null, null, null, null, null);
-        this.mTabId = builder.mTabId;
+        this.mTab = builder.mTab;
     }
 
     public boolean hasTab() {
-        return mTabId != Tab.INVALID_TAB_ID;
+        return mTab != null;
     }
 
     @Override
@@ -26,16 +28,37 @@ public class ChromeDropDataAndroid extends DropDataAndroid {
         return hasTab();
     }
 
+    /** Build clip data text with tab info. */
+    public String buildTabClipDataText() {
+        if (hasTab()) {
+            return TAB_DATA_PREFIX + mTab.getId() + TAB_DATA_DELIMITER + mTab.getUrl().getSpec();
+        }
+        return null;
+    }
+
+    /** Extract tabId from clip data item text. */
+    public static int extractTabId(String clipDataText) {
+        if (clipDataText == null) return Tab.INVALID_TAB_ID;
+        String[] parts = clipDataText.split(TAB_DATA_DELIMITER);
+        // Check if first part exists with atleast prefix length.
+        if (parts.length == 0 || parts[0].length() <= TAB_DATA_PREFIX.length())
+            return Tab.INVALID_TAB_ID;
+        String tabIdStr = parts[0].substring(TAB_DATA_PREFIX.length());
+        // Check string contains all digits since this is tabId.
+        if (!tabIdStr.matches("\\d+")) return Tab.INVALID_TAB_ID;
+        return Integer.parseInt(tabIdStr);
+    }
+
     /** Builder for @{@link ChromeDropDataAndroid} instance. */
     public static class Builder {
-        private int mTabId = Tab.INVALID_TAB_ID;
+        private Tab mTab;
 
         /**
-         * @param tabId to be set in clip data.
+         * @param tab to be set in clip data.
          * @return @{@link ChromeDropDataAndroid.Builder} instance.
          */
-        public Builder withTabId(int tabId) {
-            this.mTabId = tabId;
+        public Builder withTab(Tab tab) {
+            this.mTab = tab;
             return this;
         }
 

@@ -18,6 +18,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {isCrostiniSupported, isExternalStorageEnabled} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
+import {PrefsState} from '../common/types.js';
 import {Route, Router, routes} from '../router.js';
 
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, StorageSpaceState} from './device_page_browser_proxy.js';
@@ -30,7 +31,7 @@ interface StorageSizeStat {
   spaceState: StorageSpaceState;
 }
 
-interface SettingsStorageElement {
+export interface SettingsStorageElement {
   $: {
     availableLabelArea: HTMLElement,
     browsingDataSize: CrLinkRowElement,
@@ -42,7 +43,7 @@ interface SettingsStorageElement {
 const SettingsStorageElementBase =
     RouteOriginMixin(WebUiListenerMixin(PolymerElement));
 
-class SettingsStorageElement extends SettingsStorageElementBase {
+export class SettingsStorageElement extends SettingsStorageElementBase {
   static get is() {
     return 'settings-storage';
   }
@@ -53,6 +54,11 @@ class SettingsStorageElement extends SettingsStorageElementBase {
 
   static get properties() {
     return {
+      prefs: {
+        type: Object,
+        notify: true,
+      },
+
       showCrostiniStorage_: {
         type: Boolean,
         value: false,
@@ -61,16 +67,6 @@ class SettingsStorageElement extends SettingsStorageElementBase {
       isDriveEnabled_: {
         type: Boolean,
         value: true,
-      },
-
-      showGoogleDriveSettingsPage_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showGoogleDriveSettingsPage'),
-      },
-
-      isDriveFsBulkPinningEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enableDriveFsBulkPinning'),
       },
 
       isEphemeralUser_: {
@@ -106,12 +102,11 @@ class SettingsStorageElement extends SettingsStorageElementBase {
     ];
   }
 
+  prefs: PrefsState;
   private browserProxy_: DevicePageBrowserProxy;
   private isEphemeralUser_: boolean;
   private showCrostiniStorage_: boolean;
   private isDriveEnabled_: boolean;
-  private showGoogleDriveSettingsPage_: boolean;
-  private isDriveFsBulkPinningEnabled_: boolean;
   private isExternalStorageEnabled_: boolean;
   private showOtherUsers_: boolean;
   private sizeStat_: StorageSizeStat;
@@ -341,9 +336,7 @@ class SettingsStorageElement extends SettingsStorageElementBase {
    * Whether to show the Offline files row or not.
    */
   private shouldShowOfflineFilesRow_(): boolean {
-    return this.isDriveEnabled_ &&
-        (this.isDriveFsBulkPinningEnabled_ ||
-         this.showGoogleDriveSettingsPage_);
+    return this.isDriveEnabled_;
   }
 
   /**

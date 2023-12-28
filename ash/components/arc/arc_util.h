@@ -50,8 +50,8 @@ enum class UpstartOperation {
   JOB_STOP_AND_START,
 };
 
-// Enum for configuring ureadahead mode of operation during ARCVM boot process.
-enum class ArcVmUreadaheadMode {
+// Enum for configuring ureadahead mode of operation during ARC boot process.
+enum class ArcUreadaheadMode {
   // ARCVM ureadahead is in readahead mode for normal user boot flow.
   READAHEAD = 0,
   // ARCVM ureadahead is turned on for generate mode in data collector flow.
@@ -161,9 +161,9 @@ bool IsHostUreadaheadGeneration();
 // Returns true if ARC is using dev caches for arccachesetup service.
 bool IsArcUseDevCaches();
 
-// Returns mode of operation for ureadahead during the ARCVM boot flow.
+// Returns mode of operation for ureadahead during the ARC boot flow.
 // Valid modes are readahead, generate, or disabled.
-ArcVmUreadaheadMode GetArcVmUreadaheadMode();
+ArcUreadaheadMode GetArcUreadaheadMode(std::string_view ureadahead_mode_switch);
 
 // Returns true if ARC should always start within the primary user session
 // (opted in user or not), and other supported mode such as guest and Kiosk

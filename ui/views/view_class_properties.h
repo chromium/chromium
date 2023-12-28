@@ -21,6 +21,7 @@ namespace views {
 class DialogDelegate;
 class FlexSpecification;
 class HighlightPathGenerator;
+class BoxLayoutFlexSpecification;
 
 // The hit test component (e.g. HTCLIENT) for a View in a window frame. Defaults
 // to HTNOWHERE.
@@ -48,13 +49,18 @@ VIEWS_EXPORT extern const ui::ClassProperty<gfx::Insets*>* const
 VIEWS_EXPORT extern const ui::ClassProperty<DialogDelegate*>* const
     kAnchoredDialogKey;
 
+// A property to store how a view should flex when placed in a layout.
+// Only supported by BoxLayout.
+VIEWS_EXPORT extern const ui::ClassProperty<BoxLayoutFlexSpecification*>* const
+    kBoxLayoutFlexKey;
+
 // A property to store a highlight-path generator. This generator is used to
 // generate a highlight path for focus rings or ink-drop effects.
 VIEWS_EXPORT extern const ui::ClassProperty<HighlightPathGenerator*>* const
     kHighlightPathGeneratorKey;
 
 // A property to store how a view should flex when placed in a layout.
-// Currently only fully supported by FlexLayout. BoxLayout supports weight.
+// Currently only supported by FlexLayout.
 VIEWS_EXPORT extern const ui::ClassProperty<FlexSpecification*>* const
     kFlexBehaviorKey;
 

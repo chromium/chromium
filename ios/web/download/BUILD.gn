@@ -34,6 +34,8 @@ source_set("download") {
     "download_session_task_impl.mm",
     "download_task_impl.h",
     "download_task_impl.mm",
+    "download_task_observer.mm",
+    "download_task_observer_bridge.mm",
   ]
 
   frameworks = [ "UIKit.framework" ]

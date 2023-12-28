@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/preloading/preview/preview_manager.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -22,8 +23,11 @@ namespace views {
 class WebView;
 }  // namespace views
 
+class PreviewZoomController;
+
 // Hosts a WebContents for preview until a user decides to navigate to it.
-class PreviewTab final : public content::WebContentsDelegate {
+class PreviewTab final : public content::WebContentsDelegate,
+                         public ui::AcceleratorTarget {
  public:
   PreviewTab(PreviewManager* preview_manager,
              content::WebContents& parent,
@@ -32,6 +36,10 @@ class PreviewTab final : public content::WebContentsDelegate {
 
   PreviewTab(const PreviewTab&) = delete;
   PreviewTab& operator=(const PreviewTab&) = delete;
+
+  PreviewZoomController* preview_zoom_controller() const {
+    return preview_zoom_controller_.get();
+  }
 
   // Opens the previewed WebContents as a new tab.
   //
@@ -50,7 +58,6 @@ class PreviewTab final : public content::WebContentsDelegate {
 
  private:
   class PreviewWidget;
-  class WebContentsObserver;
 
   void AttachTabHelpersForInit();
 
@@ -63,14 +70,22 @@ class PreviewTab final : public content::WebContentsDelegate {
   void CancelPreviewByMojoBinderPolicy(
       const std::string& interface_name) override;
 
+  void RegisterKeyboardAccelerators();
+
+  // ui::AcceleratorTarget implementation:
+  bool CanHandleAccelerators() const override;
+  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+
   std::unique_ptr<content::WebContents> web_contents_;
-  std::unique_ptr<WebContentsObserver> observer_;
   std::unique_ptr<PreviewWidget> widget_;
   std::unique_ptr<views::WebView> view_;
+  std::unique_ptr<PreviewZoomController> preview_zoom_controller_;
   // TODO(b:298347467): Design the actual promotion sequence and move this to
   // PrerenderManager.
   std::unique_ptr<content::PrerenderHandle> prerender_handle_;
   GURL url_;
+  // A mapping between accelerators and command IDs.
+  base::flat_map<ui::Accelerator, int> accelerator_table_;
 };
 
 #endif  // CHROME_BROWSER_PRELOADING_PREVIEW_PREVIEW_TAB_H_

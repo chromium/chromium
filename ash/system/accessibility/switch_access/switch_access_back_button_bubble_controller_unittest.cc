@@ -4,7 +4,7 @@
 
 #include "ash/system/accessibility/switch_access/switch_access_back_button_bubble_controller.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/shell.h"
 #include "ash/system/accessibility/switch_access/switch_access_back_button_view.h"
 #include "ash/system/accessibility/switch_access/switch_access_menu_bubble_controller.h"

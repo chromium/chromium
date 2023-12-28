@@ -4,6 +4,7 @@
 
 #include "ash/system/phonehub/enable_hotspot_quick_action_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -32,8 +33,12 @@ EnableHotspotQuickActionController::~EnableHotspotQuickActionController() {
 
 QuickActionItem* EnableHotspotQuickActionController::CreateItem() {
   DCHECK(!item_);
-  item_ = new QuickActionItem(this, IDS_ASH_PHONE_HUB_ENABLE_HOTSPOT_TITLE,
-                              kPhoneHubEnableHotspotIcon);
+  item_ = new QuickActionItem(
+      this,
+      features::IsPhoneHubShortQuickActionPodsTitlesEnabled()
+          ? IDS_ASH_PHONE_HUB_ENABLE_HOTSPOT_SHORTENED_TITLE
+          : IDS_ASH_PHONE_HUB_ENABLE_HOTSPOT_TITLE,
+      kPhoneHubEnableHotspotIcon);
   OnTetherStatusChanged();
   return item_;
 }

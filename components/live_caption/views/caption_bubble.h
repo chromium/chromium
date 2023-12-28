@@ -105,6 +105,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   bool HasActivity();
 
   views::Label* GetLabelForTesting();
+  views::Label* GetDownloadProgressLabelForTesting();
   views::StyledLabel* GetLanguageLabelForTesting();
   bool IsGenericErrorMessageVisibleForTesting() const;
   base::RetainingOneShotTimer* GetInactivityTimerForTesting();
@@ -159,6 +160,13 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   // Called by CaptionBubbleModel to notify this object that the model's text
   // has changed. Sets the text of the caption bubble to the model's text.
   void OnTextChanged();
+
+  // Called by CaptionBubbleModel to notify this object that the model's
+  // download progress text has changed. Sets the text of the caption bubble to
+  // the model's download progress text.
+  void OnDownloadProgressTextChanged();
+
+  void OnLanguagePackInstalled();
 
   // Called by CaptionBubbleModel to notify this object that the model's
   // auto-detected language has changed.
@@ -233,7 +241,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
 
   void LogSessionEvent(SessionEvent event);
 
-  std::vector<views::View*> GetButtons();
+  std::vector<raw_ptr<views::View, VectorExperimental>> GetButtons();
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
@@ -241,6 +249,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   raw_ptr<CaptionBubbleLabel> label_;
   raw_ptr<views::Label> title_;
   raw_ptr<views::Label> generic_error_text_;
+  raw_ptr<views::Label> download_progress_label_;
   raw_ptr<views::StyledLabel> language_label_;
   raw_ptr<views::View> header_container_;
   raw_ptr<views::View> left_header_container_;
@@ -303,7 +312,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   // A timer which causes the bubble to hide if there is no activity after a
   // specified interval.
   std::unique_ptr<base::RetainingOneShotTimer> inactivity_timer_;
-  raw_ptr<const base::TickClock, AcrossTasksDanglingUntriaged> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   gfx::SlideAnimation controls_animation_;
 

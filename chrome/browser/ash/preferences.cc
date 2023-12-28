@@ -165,14 +165,12 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kLocalStateDevicePeripheralDataAccessEnabled, false);
   registry->RegisterBooleanPref(prefs::kDeviceI18nShortcutsEnabled, true);
-  registry->RegisterBooleanPref(prefs::kChromadToCloudMigrationEnabled, false);
   registry->RegisterBooleanPref(prefs::kLoginScreenWebUILazyLoading, false);
   registry->RegisterBooleanPref(::prefs::kConsumerAutoUpdateToggle, true);
   registry->RegisterBooleanPref(prefs::kDeviceEphemeralNetworkPoliciesEnabled,
                                 false);
   registry->RegisterBooleanPref(prefs::kDeviceSwitchFunctionKeysBehaviorEnabled,
                                 false);
-  registry->RegisterBooleanPref(prefs::kIsolatedWebAppsEnabled, false);
 
   RegisterLocalStatePrefs(registry);
   ash::hid_detection_revamp_field_trial::RegisterLocalStatePrefs(registry);
@@ -614,6 +612,11 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kShowHumanPresenceSensorScreenEnabled,
                                 true);
   registry->RegisterListPref(prefs::kUserFeedbackWithLowLevelDebugDataAllowed);
+  registry->RegisterBooleanPref(prefs::kIsolatedWebAppsEnabled, false);
+
+  registry->RegisterDictionaryPref(prefs::kAshAppIconLightVibrantColorCache);
+  registry->RegisterDictionaryPref(prefs::kAshAppIconSortableColorGroupCache);
+  registry->RegisterDictionaryPref(prefs::kAshAppIconSortableColorHueCache);
 }
 
 void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {

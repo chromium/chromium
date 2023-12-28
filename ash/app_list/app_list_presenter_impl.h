@@ -191,7 +191,7 @@ class ASH_EXPORT AppListPresenterImpl
                                                   bool aborted);
 
   // Owns |this|.
-  const raw_ptr<AppListControllerImpl, ExperimentalAsh> controller_;
+  const raw_ptr<AppListControllerImpl> controller_;
 
   // Closes the app list when the user clicks outside its bounds.
   std::unique_ptr<AppListPresenterEventFilter> event_filter_;
@@ -207,7 +207,7 @@ class ASH_EXPORT AppListPresenterImpl
   bool is_target_visibility_show_ = false;
 
   // The AppListView this class manages, owned by its widget.
-  raw_ptr<AppListView, ExperimentalAsh> view_ = nullptr;
+  raw_ptr<AppListView> view_ = nullptr;
 
   // Whether the presenter is currently changing app list view state to shown.
   // TODO(https://crbug.com/1307871): Remove this when the linked crash gets

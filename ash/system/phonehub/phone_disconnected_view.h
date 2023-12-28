@@ -40,10 +40,9 @@ class ASH_EXPORT PhoneDisconnectedView : public PhoneHubContentView {
   void ButtonPressed(phone_hub_metrics::InterstitialScreenEvent event,
                      base::RepeatingClosure callback);
 
-  raw_ptr<phonehub::ConnectionScheduler, ExperimentalAsh>
-      connection_scheduler_ = nullptr;
+  raw_ptr<phonehub::ConnectionScheduler> connection_scheduler_ = nullptr;
 
-  raw_ptr<PhoneHubInterstitialView, ExperimentalAsh> content_view_ = nullptr;
+  raw_ptr<PhoneHubInterstitialView> content_view_ = nullptr;
 };
 
 }  // namespace ash

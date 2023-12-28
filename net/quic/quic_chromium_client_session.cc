@@ -1299,7 +1299,6 @@ bool QuicChromiumClientSession::GetSSLInfo(SSLInfo* ssl_info) const {
 
   ssl_info->client_cert_sent = false;
   ssl_info->handshake_type = SSLInfo::HANDSHAKE_FULL;
-  ssl_info->pinning_failure_log = pinning_failure_log_;
   ssl_info->is_fatal_cert_error = is_fatal_cert_error_;
 
   ssl_info->signed_certificate_timestamps = cert_verify_result_->scts;
@@ -1370,9 +1369,9 @@ bool QuicChromiumClientSession::CanPool(
     return false;
   }
 
-  return SpdySession::CanPool(
-      transport_security_state_, ssl_info, *ssl_config_service_,
-      session_key_.host(), hostname, session_key_.network_anonymization_key());
+  return SpdySession::CanPool(transport_security_state_, ssl_info,
+                              *ssl_config_service_, session_key_.host(),
+                              hostname);
 }
 
 bool QuicChromiumClientSession::ShouldCreateIncomingStream(
@@ -1528,9 +1527,7 @@ void QuicChromiumClientSession::OnCanCreateNewOutgoingStream(
 
 quic::QuicSSLConfig QuicChromiumClientSession::GetSSLConfig() const {
   quic::QuicSSLConfig config = quic::QuicSpdyClientSessionBase::GetSSLConfig();
-  if (ssl_config_service_->GetSSLContextConfig()
-          .EncryptedClientHelloEnabled() &&
-      base::FeatureList::IsEnabled(features::kEncryptedClientHelloQuic)) {
+  if (ssl_config_service_->GetSSLContextConfig().ech_enabled) {
     config.ech_grease_enabled = true;
     config.ech_config_list.assign(ech_config_list_.begin(),
                                   ech_config_list_.end());
@@ -2723,7 +2720,6 @@ void QuicChromiumClientSession::OnProofVerifyDetailsAvailable(
       reinterpret_cast<const ProofVerifyDetailsChromium*>(&verify_details);
   cert_verify_result_ = std::make_unique<CertVerifyResult>(
       verify_details_chromium->cert_verify_result);
-  pinning_failure_log_ = verify_details_chromium->pinning_failure_log;
   logger_->OnCertificateVerified(*cert_verify_result_);
   pkp_bypassed_ = verify_details_chromium->pkp_bypassed;
   is_fatal_cert_error_ = verify_details_chromium->is_fatal_cert_error;

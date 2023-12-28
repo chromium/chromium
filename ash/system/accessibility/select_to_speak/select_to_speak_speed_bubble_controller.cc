@@ -4,7 +4,7 @@
 
 #include "ash/system/accessibility/select_to_speak/select_to_speak_speed_bubble_controller.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/bubble/bubble_constants.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/shell_window_ids.h"

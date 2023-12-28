@@ -14,7 +14,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
       @media /* color: red */ not /* color: red */print /* color: red */ {
           /* color: red */
-          /* color: red */#main/* color: red */{/* color: red */ background /* color: red */ :/* color: red */blue/* color: red */;/* color: red */ }
+          /* color: red */#main/* color: red */{/* color: red */ background /* color: red */ :/* color: red */ blue /* color: red */;/* color: red */ }
           /* color: red */
       }
 
@@ -31,7 +31,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
       /* color: red */
 
       #main /* color: red */{
-        /* color: red */color/* color: red */:/* color: red */ green/* color: red */;/* color: red */
+        /* color: red */color/* color: red */:/* color: red */ green /* color: red */;/* color: red */
       }
       /* color: red */
       @page /* color: red */:right /* color: red */{/* color: red */

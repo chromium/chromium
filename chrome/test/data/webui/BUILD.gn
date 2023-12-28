@@ -7,7 +7,6 @@ import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
 import("//chrome/test/include_js_tests.gni")
 import("//components/compose/features.gni")
-import("//components/signin/features.gni")
 import("//crypto/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
@@ -54,6 +53,7 @@ source_set("browser_tests") {
     "password_manager_internals/password_manager_internals_browsertest.cc",
     "privacy_sandbox/privacy_sandbox_dialog_browsertest.cc",
     "sandbox/sandbox_browsertest.cc",
+    "search_engine_choice/search_engine_choice_js_browsertest.cc",
     "settings/settings_browsertest.cc",
     "side_panel/bookmarks/sp_bookmarks_browsertest.cc",
     "side_panel/commerce/commerce_browsertest.cc",
@@ -83,10 +83,6 @@ source_set("browser_tests") {
     sources += [ "tab_strip/tab_strip_browsertest.cc" ]
   }
 
-  if (enable_search_engine_choice) {
-    sources += [ "search_engine_choice/search_engine_choice_js_browsertest.cc" ]
-  }
-
   if (enable_print_preview) {
     sources += [ "print_preview/print_preview_browsertest.cc" ]
   }
@@ -98,11 +94,14 @@ source_set("browser_tests") {
 
   if (is_chromeos_ash) {
     sources += [
+      "chromeos/ash_common/cr_elements/ash_common_cr_elements_browsertest.cc",
+      "chromeos/ash_common/sea_pen/sea_pen_browsertest.cc",
       "chromeos/ash_common/webui_resource_browsertest.cc",
       "chromeos/enterprise_reporting/enterprise_reporting_browsertest.cc",
       "chromeos/firmware_update/firmware_update_browsertest.cc",
+      "chromeos/inline_login/inline_login_browsertest.cc",
       "chromeos/personalization_app/personalization_app_browsertest.cc",
-      "chromeos/personalization_app/sea_pen_browsertest.cc",
+      "chromeos/personalization_app/personalization_app_sea_pen_browsertest.cc",
       "chromeos/scanning/scanning_app_browsertest.cc",
       "chromeos/vc_background_ui/vc_background_ui_browsertest.cc",
     ]
@@ -114,7 +113,7 @@ source_set("browser_tests") {
     ]
   }
 
-  if (is_chromeos_ash || is_win || is_mac) {
+  if (is_win || is_mac) {
     sources += [ "inline_login/inline_login_browsertest.cc" ]
   }
 
@@ -216,6 +215,12 @@ source_set("interactive_ui_tests") {
     sources += [ "print_preview/print_preview_focus_test.cc" ]
   }
 
+  if (is_chromeos_ash) {
+    sources += [
+      "chromeos/ash_common/cr_elements/ash_common_cr_elements_focus_test.cc",
+    ]
+  }
+
   data = [ "//chrome/test/data/" ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -225,6 +230,11 @@ source_set("interactive_ui_tests") {
     "//components/password_manager/content/common:common",
     "//components/search:search",
   ]
+
+  if (enable_compose) {
+    sources += [ "compose/compose_focus_test.cc" ]
+    deps += [ "//components/compose/core/browser:features" ]
+  }
 }
 
 if (is_chromeos_ash) {
@@ -365,6 +375,7 @@ generate_grd("build_grd") {
     "password_manager_internals:build_grdp",
     "privacy_sandbox:build_grdp",
     "sandbox:build_grdp",
+    "search_engine_choice:build_grdp",
     "settings:build_grdp",
     "side_panel:build_grdp",
     "side_panel/customize_chrome:build_grdp",
@@ -393,6 +404,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/histograms/resources.grdp",
     "$target_gen_dir/history/resources.grdp",
     "$target_gen_dir/history_clusters_internals/resources.grdp",
+    "$target_gen_dir/search_engine_choice/resources.grdp",
     "$target_gen_dir/identity_internals/resources.grdp",
     "$target_gen_dir/inspect/resources.grdp",
     "$target_gen_dir/js/resources.grdp",
@@ -447,11 +459,6 @@ generate_grd("build_grd") {
     grdp_files += [ "$target_gen_dir/../pdf/resources.grdp" ]
   }
 
-  if (enable_search_engine_choice) {
-    deps += [ "search_engine_choice:build_grdp" ]
-    grdp_files += [ "$target_gen_dir/search_engine_choice/resources.grdp" ]
-  }
-
   if (is_chrome_branded) {
     deps += [ "media_router:build_grdp" ]
     grdp_files += [ "$target_gen_dir/media_router/resources.grdp" ]
@@ -479,6 +486,7 @@ generate_grd("build_grd") {
       "chromeos:build_web_ui_test_mojo_grdp",
       "chromeos:build_web_ui_test_mojo_lite_grdp",
       "chromeos/ash_common:build_grdp",
+      "chromeos/ash_common/cr_elements:build_grdp",
       "chromeos/borealis_installer:build_grdp",
       "chromeos/cloud_upload:build_grdp",
       "chromeos/diagnostics:build_grdp",
@@ -486,8 +494,10 @@ generate_grd("build_grd") {
       "chromeos/emoji_picker:build_grdp",
       "chromeos/enterprise_reporting:build_grdp",
       "chromeos/firmware_update:build_grdp",
+      "chromeos/inline_login:build_grdp",
       "chromeos/manage_mirrorsync:build_grdp",
       "chromeos/office_fallback:build_grdp",
+      "chromeos/os_feedback_ui:build_grdp",
       "chromeos/parent_access:build_grdp",
       "chromeos/personalization_app:build_grdp",
       "chromeos/print_management:build_grdp",
@@ -502,6 +512,7 @@ generate_grd("build_grd") {
     ]
     grdp_files += [
       "$target_gen_dir/chromeos/ash_common/resources.grdp",
+      "$target_gen_dir/chromeos/ash_common/cr_elements/resources.grdp",
       "$target_gen_dir/chromeos/borealis_installer/resources.grdp",
       "$target_gen_dir/chromeos/cloud_upload/resources.grdp",
       "$target_gen_dir/chromeos/diagnostics/resources.grdp",
@@ -509,6 +520,7 @@ generate_grd("build_grd") {
       "$target_gen_dir/chromeos/emoji_picker/resources.grdp",
       "$target_gen_dir/chromeos/enterprise_reporting/resources.grdp",
       "$target_gen_dir/chromeos/firmware_update/resources.grdp",
+      "$target_gen_dir/chromeos/inline_login/resources.grdp",
       "$target_gen_dir/chromeos/manage_mirrorsync/resources.grdp",
       "$target_gen_dir/chromeos/office_fallback/resources.grdp",
       "$target_gen_dir/chromeos/parent_access/resources.grdp",
@@ -517,6 +529,7 @@ generate_grd("build_grd") {
       "$target_gen_dir/chromeos/resources.grdp",
       "$target_gen_dir/chromeos/vc_background_ui/resources.grdp",
       "$target_gen_dir/chromeos/scanning/resources.grdp",
+      "$target_gen_dir/chromeos/os_feedback_ui/resources.grdp",
       "$target_gen_dir/chromeos/shortcut_customization/resources.grdp",
       "$target_gen_dir/chromeos/web_ui_test_mojo_lite_resources.grdp",
       "$target_gen_dir/chromeos/web_ui_test_mojo_resources.grdp",
@@ -539,7 +552,7 @@ generate_grd("build_grd") {
     ]
   }
 
-  if (is_chromeos_ash || is_win || is_mac) {
+  if (is_win || is_mac) {
     deps += [ "inline_login:build_grdp" ]
     grdp_files += [ "$target_gen_dir/inline_login/resources.grdp" ]
   }

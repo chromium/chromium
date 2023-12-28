@@ -25,7 +25,7 @@ const uint64_t k5MbInBytes = 5242880;
 // numeric values should never be reused. The numbers here correspond to the
 // ordering of the flow. This enum should be kept in sync with the
 // NearbyShareBackgroundScanningSetupNotificationFlowEvent enum in
-// src/tools/metrics/histograms/enums.xml.
+// //tools/metrics/histograms/metadata/nearby/enums.xml.
 enum class BackgroundScanningDevicesDetectedEvent {
   kNearbyDevicesDetected = 1,
   kMaxValue = kNearbyDevicesDetected
@@ -33,7 +33,9 @@ enum class BackgroundScanningDevicesDetectedEvent {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. If entries are added, kMaxValue should
-// be updated.
+// be updated. This enum should be kept in sync with the
+// NearbyShareTransferFinalStatus enum in
+// //tools/metrics/histograms/metadata/nearby/enums.xml.
 enum class TransferFinalStatus {
   kComplete = 0,
   kUnknown = 1,
@@ -62,7 +64,9 @@ enum class TransferFinalStatus {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. If entries are added, kMaxValue should
-// be updated.
+// be updated. This enum should be kept in sync with the
+// NearbyShareStartAdvertisingFailureReason enum in
+// //tools/metrics/histograms/metadata/nearby/enums.xml.
 enum class StartAdvertisingFailureReason {
   kUnknown = 0,
   kError = 1,
@@ -77,7 +81,8 @@ enum class StartAdvertisingFailureReason {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. If entries are added, kMaxValue should
-// be updated.
+// be updated. This enum should be kept in sync with the NearbyShareFinalStatus
+// enum in //tools/metrics/histograms/metadata/nearby/enums.xml.
 enum class FinalStatus {
   kSuccess = 0,
   kFailure = 1,
@@ -87,7 +92,9 @@ enum class FinalStatus {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. If entries are added, kMaxValue should
-// be updated.
+// be updated. This enum should be kept in sync with the
+// NearbyShareAttachmentType enum in
+// //tools/metrics/histograms/metadata/nearby/enums.xml.
 enum class AttachmentType {
   kUnknownFileType = 0,
   kUnknownTextType = 1,
@@ -105,7 +112,9 @@ enum class AttachmentType {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. If entries are added, kMaxValue should
-// be updated.
+// be updated. This enum should be kept in sync with the
+// NearbyShareUpgradedMedium enum in
+// //tools/metrics/histograms/metadata/nearby/enums.xml.
 enum class UpgradedMedium {
   kUnknown = 0,
   kMdns = 1,

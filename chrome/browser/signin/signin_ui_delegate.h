@@ -49,7 +49,6 @@ class SigninUiDelegate {
       Profile* profile,
       signin_metrics::AccessPoint access_point,
       signin_metrics::PromoAction promo_action,
-      signin_metrics::Reason signin_reason,
       const CoreAccountId& account_id,
       TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode);
 

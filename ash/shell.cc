@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/accelerators/accelerator_lookup.h"
 #include "ash/accelerators/accelerator_prefs.h"
 #include "ash/accelerators/accelerator_tracker.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
@@ -20,7 +21,7 @@
 #include "ash/accelerators/shortcut_input_handler.h"
 #include "ash/accelerators/spoken_feedback_toggler.h"
 #include "ash/accelerometer/accelerometer_reader.h"
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/accessibility/chromevox/key_accessibility_enabler.h"
@@ -35,6 +36,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_feature_usage_metrics.h"
 #include "ash/assistant/assistant_controller_impl.h"
+#include "ash/birch/birch_model.h"
 #include "ash/booting/booting_animation_controller.h"
 #include "ash/calendar/calendar_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
@@ -74,6 +76,7 @@
 #include "ash/events/event_rewriter_controller_impl.h"
 #include "ash/fast_ink/laser/laser_pointer_controller.h"
 #include "ash/focus_cycler.h"
+#include "ash/frame/multitask_menu_nudge_delegate_ash.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/frame/snap_controller_impl.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
@@ -156,8 +159,8 @@
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "ash/system/locale/locale_update_controller_impl.h"
 #include "ash/system/media/media_notification_provider.h"
-#include "ash/system/message_center/message_center_ash_impl.h"
-#include "ash/system/message_center/message_center_controller.h"
+#include "ash/system/notification_center/message_center_ash_impl.h"
+#include "ash/system/notification_center/message_center_controller.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/model/virtual_keyboard_model.h"
 #include "ash/system/nearby_share/nearby_share_controller_impl.h"
@@ -207,7 +210,6 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/multi_display/multi_display_metrics_controller.h"
 #include "ash/wm/multi_display/persistent_window_controller.h"
-#include "ash/frame/multitask_menu_nudge_delegate_ash.h"
 #include "ash/wm/native_cursor_manager_ash.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/pip/pip_controller.h"
@@ -245,6 +247,7 @@
 #include "chromeos/ash/components/fwupd/firmware_update_manager.h"
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
@@ -802,6 +805,8 @@ Shell::~Shell() {
   shelf_controller_->Shutdown();
   shelf_config_->Shutdown();
 
+  birch_model_.reset();
+
   // Depends on `app_list_controller_` and `tablet_mode_controller_`.
   app_list_feature_usage_metrics_.reset();
 
@@ -1249,7 +1254,7 @@ void Shell::Init(
   accessibility_focus_ring_controller_ =
       std::make_unique<AccessibilityFocusRingControllerImpl>();
   accessibility_delegate_.reset(shell_delegate_->CreateAccessibilityDelegate());
-  accessibility_controller_ = std::make_unique<AccessibilityControllerImpl>();
+  accessibility_controller_ = std::make_unique<AccessibilityController>();
   toast_manager_ = std::make_unique<ToastManagerImpl>();
   anchored_nudge_manager_ = std::make_unique<AnchoredNudgeManagerImpl>();
   system_nudge_pause_manager_ = std::make_unique<SystemNudgePauseManagerImpl>();
@@ -1410,7 +1415,8 @@ void Shell::Init(
   desks_controller_ = std::make_unique<DesksController>();
   saved_desk_delegate_ = shell_delegate_->CreateSavedDeskDelegate();
   // Initialized here since it depends on desks.
-  if (base::FeatureList::IsEnabled(features::kAppLaunchAutomation)) {
+  if (base::FeatureList::IsEnabled(features::kAppLaunchAutomation) ||
+      chromeos::features::IsDeskProfilesEnabled()) {
     saved_desk_controller_ = std::make_unique<SavedDeskController>();
   }
 
@@ -1432,6 +1438,8 @@ void Shell::Init(
   ash_accelerator_configuration_ =
       std::make_unique<AshAcceleratorConfiguration>();
   ash_accelerator_configuration_->Initialize();
+  accelerator_lookup_ =
+      std::make_unique<AcceleratorLookup>(ash_accelerator_configuration_.get());
   accelerator_controller_ = std::make_unique<AcceleratorControllerImpl>(
       ash_accelerator_configuration_.get());
 
@@ -1559,6 +1567,11 @@ void Shell::Init(
   // |assistant_controller_| are put before |app_list_controller_| as they are
   // used in its constructor.
   app_list_controller_ = std::make_unique<AppListControllerImpl>();
+
+  if (features::IsBirchFeatureEnabled() &&
+      switches::IsBirchSecretKeyMatched()) {
+    birch_model_ = std::make_unique<BirchModel>();
+  }
 
   autoclick_controller_ = std::make_unique<AutoclickController>();
 

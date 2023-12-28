@@ -6,8 +6,13 @@
 #define CONTENT_BROWSER_MEDIA_CAPTURE_DESKTOP_CAPTURER_ASH_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
+
+namespace gfx {
+class Image;
+}
 
 namespace content {
 
@@ -38,17 +43,12 @@ class DesktopCapturerAsh : public webrtc::DesktopCapturer {
   void SetExcludedWindow(webrtc::WindowId window) override;
 
  private:
+  void OnGrabWindowSnapsot(gfx::Image snapshot);
+
   // Display to capture.
   absl::optional<SourceId> display_id_;
-
-  // The webrtc::DesktopCapturer interface expects the implementation to hold
-  // onto and call a Callback* object. This instance relies on the assumption
-  // that Callback* will outlive this instance.
-  //
-  // The current media capture implementation expects that the implementation of
-  // CaptureFrame() synchronously invokes |callback_| in a re-entrant fashion.
-  // Thus, we do not worry about thread safety when invoking callback_.
   raw_ptr<Callback> callback_ = nullptr;
+  base::WeakPtrFactory<DesktopCapturerAsh> weak_ptr_factory_{this};
 };
 
 }  // namespace content

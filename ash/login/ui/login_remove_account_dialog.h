@@ -41,7 +41,7 @@ class ASH_EXPORT LoginRemoveAccountDialog : public LoginBaseBubbleView,
     views::Label* management_disclosure_label();
 
    private:
-    raw_ptr<LoginRemoveAccountDialog, ExperimentalAsh> bubble_;
+    raw_ptr<LoginRemoveAccountDialog> bubble_;
   };
 
   LoginRemoveAccountDialog(const LoginUserInfo& user,
@@ -71,16 +71,15 @@ class ASH_EXPORT LoginRemoveAccountDialog : public LoginBaseBubbleView,
  private:
   void RemoveUserButtonPressed();
 
-  raw_ptr<LoginButton, DanglingUntriaged | ExperimentalAsh> bubble_opener_ =
-      nullptr;
+  raw_ptr<LoginButton, DanglingUntriaged> bubble_opener_ = nullptr;
   base::RepeatingClosure on_remove_user_warning_shown_;
   base::RepeatingClosure on_remove_user_requested_;
-  raw_ptr<views::View, ExperimentalAsh> managed_user_data_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> remove_user_confirm_data_ = nullptr;
-  raw_ptr<RemoveUserButton, ExperimentalAsh> remove_user_button_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> username_label_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> email_label_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> management_disclosure_label_ = nullptr;
+  raw_ptr<views::View> managed_user_data_ = nullptr;
+  raw_ptr<views::View> remove_user_confirm_data_ = nullptr;
+  raw_ptr<RemoveUserButton> remove_user_button_ = nullptr;
+  raw_ptr<views::Label> username_label_ = nullptr;
+  raw_ptr<views::Label> email_label_ = nullptr;
+  raw_ptr<views::Label> management_disclosure_label_ = nullptr;
 
   std::u16string warning_message_;
 

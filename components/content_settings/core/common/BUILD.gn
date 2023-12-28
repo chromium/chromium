@@ -31,6 +31,8 @@ static_library("common") {
     "cookie_controls_status.h",
     "cookie_settings_base.cc",
     "cookie_settings_base.h",
+    "host_indexed_content_settings.cc",
+    "host_indexed_content_settings.h",
     "pref_names.cc",
     "pref_names.h",
     "third_party_site_data_access_type.h",
@@ -64,6 +66,7 @@ source_set("unit_tests") {
     "content_settings_pattern_unittest.cc",
     "content_settings_utils_unittest.cc",
     "cookie_settings_base_unittest.cc",
+    "host_indexed_content_settings_unittest.cc",
   ]
 
   deps = [

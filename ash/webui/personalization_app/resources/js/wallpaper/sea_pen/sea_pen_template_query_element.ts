@@ -9,16 +9,16 @@
 
 import '../../../common/icons.html.js';
 
+import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {SeaPenQuery, SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from '../../../sea_pen.mojom-webui.js';
-import {Paths, PersonalizationRouterElement} from '../../personalization_router_element.js';
-import {WithPersonalizationStore} from '../../personalization_store.js';
-import {isNonEmptyArray} from '../../utils.js';
-import {getSampleSeaPenTemplates, parseTemplateText, SeaPenOption, SeaPenTemplate} from '../utils.js';
 
+import {getSeaPenTemplates, parseTemplateText, SeaPenOption, SeaPenTemplate} from './constants.js';
 import {searchSeaPenThumbnails} from './sea_pen_controller.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
+import {SeaPenPaths, SeaPenRouterElement} from './sea_pen_router_element.js';
+import {WithSeaPenStore} from './sea_pen_store.js';
 import {getTemplate} from './sea_pen_template_query_element.html.js';
 
 /**
@@ -51,7 +51,7 @@ export interface ChipToken {
  */
 type TemplateToken = string|ChipToken;
 
-export class SeaPenTemplateQueryElement extends WithPersonalizationStore {
+export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   static get is() {
     return 'sea-pen-template-query';
   }
@@ -110,7 +110,7 @@ export class SeaPenTemplateQueryElement extends WithPersonalizationStore {
   templateId: string|null;
 
   private computeSeaPenTemplate_(templateId: string|null) {
-    const seaPenTemplates = getSampleSeaPenTemplates();
+    const seaPenTemplates = getSeaPenTemplates();
     const correctTemplate = seaPenTemplates.find(
         (seaPenTemplate) => seaPenTemplate.id === templateId);
     return correctTemplate as SeaPenTemplate;
@@ -188,21 +188,20 @@ export class SeaPenTemplateQueryElement extends WithPersonalizationStore {
           translation: selectedOptions.get(templateChip)?.translation || '',
           id: templateChip,
         });
-      } else {
+      } else if (str.trim().length > 0) {
         tokens.push(str);
       }
     });
     return tokens;
   }
 
-  private getChipClassName_(chip: ChipToken, selectedChip: ChipToken|null) {
+  private getChipClassName_(chip: ChipToken, selectedChip: ChipToken|null):
+      'selected'|'unselected' {
     assert(this.isChip_(chip), 'Token must be a chip');
     // If there are no selected chips, then use the 'selected' styling on all
     // chips.
-    const selected = !selectedChip || chip.id === selectedChip.id ?
-        'selected' :
-        'unselected';
-    return `clickable ${selected}`;
+    return !selectedChip || chip.id === selectedChip.id ? 'selected' :
+                                                          'unselected';
   }
 
   private isOptionSelected_(
@@ -240,18 +239,28 @@ export class SeaPenTemplateQueryElement extends WithPersonalizationStore {
   private onClickSearchButton_() {
     searchSeaPenThumbnails(
         this.getTemplateRequest_(), getSeaPenProvider(), this.getStore());
-    PersonalizationRouterElement.instance().goToRoute(
-        Paths.SEA_PEN_RESULTS, {seaPenTemplateId: this.templateId!.toString()});
+    SeaPenRouterElement.instance().goToRoute(
+        SeaPenPaths.RESULTS, {seaPenTemplateId: this.templateId!.toString()});
   }
 
-  private getSearchButtonText_(path: string): string {
-    // TODO(b/308200616) Add finalized text.
-    return path === Paths.SEA_PEN_COLLECTION ? 'Search' : 'Search again';
+  private getSearchButtonText_(path: string|null): string {
+    switch (path) {
+      case SeaPenPaths.RESULTS:
+        return this.i18n('seaPenRecreateButton');
+      case SeaPenPaths.ROOT:
+      default:
+        return this.i18n('seaPenCreateButton');
+    }
   }
 
-  private getSearchButtonIcon_(path: string): string {
-    return path === Paths.SEA_PEN_COLLECTION ? 'sea-pen:photo-spark' :
-                                               'personalization:refresh';
+  private getSearchButtonIcon_(path: string|null): string {
+    switch (path) {
+      case SeaPenPaths.RESULTS:
+        return 'personalization:refresh';
+      case SeaPenPaths.ROOT:
+      default:
+        return 'sea-pen:photo-spark';
+    }
   }
 }
 

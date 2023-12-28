@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
@@ -622,7 +622,8 @@ class AutofillMetrics {
     kValid = 1,
     kGarbage = 2,
     kOff = 3,
-    kMaxValue = kOff
+    kPassword = 4,
+    kMaxValue = kPassword
   };
 
   // The autofill statuses of a field that are recorded into UKM to help us
@@ -675,7 +676,7 @@ class AutofillMetrics {
       kMaxValue = kPartialFill,
     };
 
-    explicit CreditCardSeamlessness(const ServerFieldTypeSet& filled_types);
+    explicit CreditCardSeamlessness(const FieldTypeSet& filled_types);
 
     explicit operator bool() const { return is_valid(); }
     bool is_valid() const { return name_ || number_ || exp_ || cvc_; }
@@ -750,8 +751,8 @@ class AutofillMetrics {
                       FieldSignature field_signature,
                       QualityMetricPredictionSource prediction_source,
                       QualityMetricType metric_type,
-                      ServerFieldType predicted_type,
-                      ServerFieldType actual_type);
+                      FieldType predicted_type,
+                      FieldType actual_type);
     void LogAutofillFieldInfoAtFormRemove(
         const FormStructure& form,
         const AutofillField& field,
@@ -775,7 +776,7 @@ class AutofillMetrics {
                        bool suggestion_filled,
                        const FormInteractionCounts& form_interaction_counts,
                        const FormInteractionsFlowId& flow_id,
-                       absl::optional<int64_t> fast_checkout_run_id);
+                       std::optional<int64_t> fast_checkout_run_id);
     void LogFormEvent(autofill_metrics::FormEvent form_event,
                       const DenseSet<FormType>& form_types,
                       const base::TimeTicks& form_parsed_timestamp);
@@ -791,7 +792,7 @@ class AutofillMetrics {
     void LogRepeatedServerTypePredictionRationalized(
         const FormSignature form_signature,
         const AutofillField& field,
-        ServerFieldType old_type);
+        FieldType old_type);
 
     // Logs a hash of the `sectioning_signature` for a specific
     // `form_signature`. This is useful for detecting sites where different
@@ -812,7 +813,7 @@ class AutofillMetrics {
     raw_ptr<AutofillClient> autofill_client_;
     raw_ptr<ukm::UkmRecorder> ukm_recorder_;
 
-    absl::optional<ukm::SourceId> source_id_;
+    std::optional<ukm::SourceId> source_id_;
     base::TimeTicks pinned_timestamp_;
   };
 
@@ -865,11 +866,6 @@ class AutofillMetrics {
   AutofillMetrics() = delete;
   AutofillMetrics(const AutofillMetrics&) = delete;
   AutofillMetrics& operator=(const AutofillMetrics&) = delete;
-
-  // When the autofill-use-improved-label-disambiguation experiment is enabled
-  // and suggestions are available, records if a LabelFormatter successfully
-  // created the suggestions.
-  static void LogProfileSuggestionsMadeWithFormatter(bool made_with_formatter);
 
   static void LogSubmittedCardStateMetric(SubmittedCardStateMetric metric);
 
@@ -1185,7 +1181,7 @@ class AutofillMetrics {
 
   // Logs Autofill.CreditCard.SeamlessFills.AtSubmissionTime.
   static void LogCreditCardSeamlessnessAtSubmissionTime(
-      const ServerFieldTypeSet& autofilled_types);
+      const FieldTypeSet& autofilled_types);
 
   // This should be called when parsing each form.
   static void LogParseFormTiming(const base::TimeDelta& duration);
@@ -1263,7 +1259,7 @@ class AutofillMetrics {
   static void LogFieldParsingPageTranslationStatusMetric(bool metric);
 
   // Records the visible page language upon form submission.
-  static void LogFieldParsingTranslatedFormLanguageMetric(base::StringPiece);
+  static void LogFieldParsingTranslatedFormLanguageMetric(std::string_view);
 
   static const char* GetMetricsSyncStateSuffix(PaymentsSigninState sync_state);
 
@@ -1328,8 +1324,8 @@ class AutofillMetrics {
   // corresponding to the field's `autocomplete_state`.
   static void LogAutocompletePredictionCollisionTypes(
       AutocompleteState autocomplete_state,
-      ServerFieldType server_type,
-      ServerFieldType heuristic_types);
+      FieldType server_type,
+      FieldType heuristic_types);
 
   // Logs whether a heuristic detection for an NUMERIC_QUANTITY collides with a
   // server prediction.
@@ -1351,7 +1347,7 @@ class AutofillMetrics {
   // Logs the context menu impressions based on the autofill type as well as
   // based on the autocomplete type.
   static void LogContextMenuImpressionsForField(
-      ServerFieldType field_type,
+      FieldType field_type,
       AutocompleteState autocomplete_state);
 
   // Logs the context menu impressions for a submitted form. Mainly logs the
@@ -1375,13 +1371,17 @@ class AutofillMetrics {
       const FormStructure& form,
       const base::TimeTicks& form_submitted_timestamp);
 
+  // This metric is recorded when an address is deleted from a first-level popup
+  // using shift+delete.
+  static void LogDeleteAddressProfileFromPopup();
+
  private:
   static void Log(AutocompleteEvent event);
 };
 
 #if defined(UNIT_TEST)
 int GetFieldTypeUserEditStatusMetric(
-    ServerFieldType server_type,
+    FieldType server_type,
     AutofillMetrics::AutofilledFieldUserEditingStatusMetric metric);
 #endif
 

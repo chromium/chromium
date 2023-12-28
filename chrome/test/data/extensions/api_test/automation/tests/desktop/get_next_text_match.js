@@ -12,4 +12,4 @@ var allTests = [
   },
 ];
 
-setUpAndRunTestsInPage(allTests, 'iframe_inner.html');
+setUpAndRunTabsTests(allTests, 'iframe_inner.html');

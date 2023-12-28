@@ -269,7 +269,7 @@ class DownloadsOpenFunction : public ExtensionFunction {
 
   ResponseAction Run() override;
 
-  typedef base::OnceCallback<void(DownloadOpenPrompt*)> OnPromptCreatedCallback;
+  using OnPromptCreatedCallback = base::OnceCallback<void(DownloadOpenPrompt*)>;
   static void set_on_prompt_created_cb_for_testing(
       OnPromptCreatedCallback* on_prompt_created_cb) {
     on_prompt_created_cb_ = on_prompt_created_cb;

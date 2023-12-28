@@ -77,7 +77,6 @@ void GraphTestHarnessWithMockDiscarder::SetUp() {
   page_node_ = CreateNode<performance_manager::PageNodeImpl>();
   main_frame_node_ =
       CreateFrameNodeAutoId(process_node_.get(), page_node_.get());
-  main_frame_node_->SetIsCurrent(true);
   MakePageNodeDiscardable(page_node(), task_env());
 }
 

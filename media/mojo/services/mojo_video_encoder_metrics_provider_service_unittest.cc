@@ -82,7 +82,7 @@ TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
 
   const auto entries = test_recorder->GetEntriesByName(UkmEntry::kEntryName);
   ASSERT_EQ(1u, entries.size());
-  const auto* entry = entries[0];
+  const auto* entry = entries[0].get();
   EXPECT_UKM(UkmEntry::kHeightName, kEncodeSize.height());
   EXPECT_UKM(UkmEntry::kIsHardwareName, kIsHardwareEncoder);
   EXPECT_UKM(UkmEntry::kNumEncodedFramesName, 0);
@@ -110,7 +110,7 @@ TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
 
   const auto entries = test_recorder->GetEntriesByName(UkmEntry::kEntryName);
   ASSERT_EQ(1u, entries.size());
-  const auto* entry = entries[0];
+  const auto* entry = entries[0].get();
   EXPECT_UKM(UkmEntry::kHeightName, kEncodeSize.height());
   EXPECT_UKM(UkmEntry::kIsHardwareName, kIsHardwareEncoder);
   EXPECT_UKM(UkmEntry::kNumEncodedFramesName, 0);
@@ -141,7 +141,7 @@ TEST_F(
 
   const auto entries = test_recorder->GetEntriesByName(UkmEntry::kEntryName);
   ASSERT_EQ(1u, entries.size());
-  const auto* entry = entries[0];
+  const auto* entry = entries[0].get();
   EXPECT_UKM(UkmEntry::kHeightName, kEncodeSize.height());
   EXPECT_UKM(UkmEntry::kIsHardwareName, kIsHardwareEncoder);
   EXPECT_UKM(UkmEntry::kNumEncodedFramesName, 1u);
@@ -175,7 +175,7 @@ TEST_P(MojoVideoEncoderMetricsProviderServiceTest,
 
   const auto entries = test_recorder->GetEntriesByName(UkmEntry::kEntryName);
   ASSERT_EQ(1u, entries.size());
-  const auto* entry = entries[0];
+  const auto* entry = entries[0].get();
   const uint64_t expected_height = encode_size.height() / 100 * 100;
   const uint64_t expected_width = encode_size.width() / 100 * 100;
   EXPECT_UKM(UkmEntry::kHeightName, expected_height);
@@ -291,7 +291,7 @@ TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
 
   const auto entries = test_recorder->GetEntriesByName(UkmEntry::kEntryName);
   ASSERT_EQ(1u, entries.size());
-  const auto* entry = entries[0];
+  const auto* entry = entries[0].get();
   constexpr uint64_t kHeight = 8200;
   constexpr uint64_t kWidth = 8200;
   EXPECT_UKM(UkmEntry::kHeightName, kHeight);
@@ -324,7 +324,7 @@ TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
 
   const auto entries = test_recorder->GetEntriesByName(UkmEntry::kEntryName);
   ASSERT_EQ(1u, entries.size());
-  const auto* entry = entries[0];
+  const auto* entry = entries[0].get();
   constexpr uint64_t kHeight = kEncodeSize.height() / 100 * 100;
   constexpr uint64_t kWidth = kEncodeSize.width() / 100 * 100;
   EXPECT_UKM(UkmEntry::kHeightName, kHeight);
@@ -359,7 +359,7 @@ TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
 
   const auto entries = test_recorder->GetEntriesByName(UkmEntry::kEntryName);
   ASSERT_EQ(1u, entries.size());
-  const auto* entry = entries[0];
+  const auto* entry = entries[0].get();
   constexpr uint64_t kHeight = kEncodeSize.height() / 100 * 100;
   constexpr uint64_t kWidth = kEncodeSize.width() / 100 * 100;
   EXPECT_UKM(UkmEntry::kHeightName, kHeight);
@@ -395,7 +395,7 @@ TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
 
   const auto entries = test_recorder->GetEntriesByName(UkmEntry::kEntryName);
   ASSERT_EQ(1u, entries.size());
-  const auto* entry = entries[0];
+  const auto* entry = entries[0].get();
   constexpr uint64_t kHeight = kEncodeSize.height() / 100 * 100;
   constexpr uint64_t kWidth = kEncodeSize.width() / 100 * 100;
   EXPECT_UKM(UkmEntry::kHeightName, kHeight);
@@ -435,7 +435,7 @@ TEST_F(
 
   const auto entries = test_recorder->GetEntriesByName(UkmEntry::kEntryName);
   ASSERT_EQ(1u, entries.size());
-  const auto* entry = entries[0];
+  const auto* entry = entries[0].get();
   constexpr uint64_t kHeight = kEncodeSize.height() / 100 * 100;
   constexpr uint64_t kWidth = kEncodeSize.width() / 100 * 100;
   EXPECT_UKM(UkmEntry::kHeightName, kHeight);
@@ -495,7 +495,7 @@ TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
   const auto entries = test_recorder->GetEntriesByName(UkmEntry::kEntryName);
   ASSERT_EQ(std::size(kMetricsCases), entries.size());
   for (size_t i = 0; i < entries.size(); ++i) {
-    const auto* entry = entries[i];
+    const auto* entry = entries[i].get();
     const auto& metrics = kMetricsCases[i];
     EXPECT_UKM(UkmEntry::kHeightName, metrics.size.height());
     EXPECT_UKM(UkmEntry::kIsHardwareName, metrics.is_hardware);
@@ -563,7 +563,7 @@ TEST_F(MojoVideoEncoderMetricsProviderServiceTest, HandleTwoEncoders) {
   const auto entries = test_recorder->GetEntriesByName(UkmEntry::kEntryName);
   ASSERT_EQ(std::size(kMetricsCases), entries.size());
   for (size_t i = 0; i < entries.size(); ++i) {
-    const auto* entry = entries[i];
+    const auto* entry = entries[i].get();
     const auto& metrics = kMetricsCases[i];
     EXPECT_UKM(UkmEntry::kHeightName, metrics.size.height());
     EXPECT_UKM(UkmEntry::kIsHardwareName, metrics.is_hardware);
@@ -602,7 +602,7 @@ TEST_F(MojoVideoEncoderMetricsProviderServiceTest, IgnoreUnknownEncoderIds) {
 
   const auto entries = test_recorder->GetEntriesByName(UkmEntry::kEntryName);
   ASSERT_EQ(1u, entries.size());
-  const auto* entry = entries[0];
+  const auto* entry = entries[0].get();
   EXPECT_UKM(UkmEntry::kHeightName, kEncodeSize.height());
   EXPECT_UKM(UkmEntry::kIsHardwareName, kIsHardwareEncoder);
   EXPECT_UKM(UkmEntry::kNumEncodedFramesName, 0);

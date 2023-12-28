@@ -88,9 +88,7 @@ ProfileAttributesEntry* GetProfileAttributesFromProfile(
 
 std::u16string GetProfileMenuDisplayName(
     ProfileAttributesEntry* profile_attributes) {
-  // Don't use ProfileAttributesEntry::GetName() to prevent both the GAIA
-  // name and local name from being displayed
-  std::u16string profile_name = profile_attributes->GetGAIANameToDisplay();
+  std::u16string profile_name = profile_attributes->GetName();
   if (profile_name.empty()) {
     profile_name = profile_attributes->GetLocalProfileName();
   }

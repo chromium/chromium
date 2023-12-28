@@ -43,10 +43,7 @@ const char kTestDownloadUrl[] = "https://example.com";
 
 class SafeBrowsingServiceTest : public testing::Test {
  public:
-  SafeBrowsingServiceTest() {
-    feature_list_.InitAndEnableFeature(
-        safe_browsing::kSafeBrowsingCsbrrNewDownloadTrigger);
-  }
+  SafeBrowsingServiceTest() = default;
 
   void SetUp() override {
     browser_process_ = TestingBrowserProcess::GetGlobal();
@@ -188,9 +185,6 @@ class SafeBrowsingServiceTest : public testing::Test {
 
   ::testing::NiceMock<download::MockDownloadItem> download_item_;
   GURL download_url_ = GURL(kTestDownloadUrl);
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(SafeBrowsingServiceTest, SendDownloadReport_Success) {
@@ -232,43 +226,6 @@ TEST_F(
     SendDownloadReport_NoDownloadWarningActionWhenExtendedReportingDisabled) {
   SetUpDownload();
   SetExtendedReportingPrefForTests(profile_->GetPrefs(), false);
-
-  auto* ping_manager =
-      ChromePingManagerFactory::GetForBrowserContext(profile());
-  network::TestURLLoaderFactory test_url_loader_factory;
-  test_url_loader_factory.SetInterceptor(
-      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        std::unique_ptr<ClientSafeBrowsingReportRequest> actual_request =
-            GetActualRequest(request);
-        EXPECT_TRUE(actual_request->download_warning_actions().empty());
-      }));
-  ping_manager->SetURLLoaderFactoryForTesting(
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory));
-
-  EXPECT_TRUE(sb_service_->SendDownloadReport(
-      &download_item_,
-      ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_OPENED,
-      /*did_proceed=*/true,
-      /*show_download_in_folder=*/true));
-}
-
-class SafeBrowsingServiceTestWithCsbrrNewTriggerDisabled
-    : public SafeBrowsingServiceTest {
- public:
-  SafeBrowsingServiceTestWithCsbrrNewTriggerDisabled() {
-    feature_list_.InitAndDisableFeature(
-        safe_browsing::kSafeBrowsingCsbrrNewDownloadTrigger);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(SafeBrowsingServiceTestWithCsbrrNewTriggerDisabled,
-       SendDownloadReport_NoDownloadWarningActionWhenFeatureFlagDisabled) {
-  SetUpDownload();
-  SetExtendedReportingPrefForTests(profile_->GetPrefs(), true);
 
   auto* ping_manager =
       ChromePingManagerFactory::GetForBrowserContext(profile());

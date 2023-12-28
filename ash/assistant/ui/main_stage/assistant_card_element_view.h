@@ -56,10 +56,10 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantCardElementView
  private:
   void InitLayout();
 
-  raw_ptr<AshWebView, ExperimentalAsh> contents_view_ = nullptr;
+  raw_ptr<AshWebView> contents_view_ = nullptr;
 
-  const raw_ptr<AssistantViewDelegate, ExperimentalAsh> delegate_;
-  const raw_ptr<const AssistantCardElement, ExperimentalAsh> card_element_;
+  const raw_ptr<AssistantViewDelegate> delegate_;
+  const raw_ptr<const AssistantCardElement> card_element_;
 
   // Rect of the focused node in the |contents_view_|.
   gfx::Rect focused_node_rect_;

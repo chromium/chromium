@@ -18,7 +18,7 @@
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_test_util.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
@@ -34,15 +34,16 @@ namespace {
 using syncer::EntityChange;
 using syncer::EntityData;
 
-class TestAutofillTable : public AutofillTable {
+class TestPaymentsAutofillTable : public PaymentsAutofillTable {
  public:
-  explicit TestAutofillTable(std::vector<CreditCard> cards_on_disk)
+  explicit TestPaymentsAutofillTable(std::vector<CreditCard> cards_on_disk)
       : cards_on_disk_(cards_on_disk) {}
 
-  TestAutofillTable(const TestAutofillTable&) = delete;
-  TestAutofillTable& operator=(const TestAutofillTable&) = delete;
+  TestPaymentsAutofillTable(const TestPaymentsAutofillTable&) = delete;
+  TestPaymentsAutofillTable& operator=(const TestPaymentsAutofillTable&) =
+      delete;
 
-  ~TestAutofillTable() override {}
+  ~TestPaymentsAutofillTable() override {}
 
   bool GetServerCreditCards(
       std::vector<std::unique_ptr<CreditCard>>& cards) const override {
@@ -211,8 +212,8 @@ TEST_F(AutofillSyncBridgeUtilTest,
   wallet_cards.emplace_back(cards_from_local_storage.back());
   wallet_cards.back().set_billing_address_id("1234");
 
-  // Setup the TestAutofillTable with the `cards_from_local_storage`.
-  TestAutofillTable table(cards_from_local_storage);
+  // Setup the TestPaymentsAutofillTable with the `cards_from_local_storage`.
+  TestPaymentsAutofillTable table(cards_from_local_storage);
 
   CopyRelevantWalletMetadataAndCvc(table, &wallet_cards);
 
@@ -243,8 +244,8 @@ TEST_F(AutofillSyncBridgeUtilTest,
   wallet_cards.emplace_back(cards_from_local_storage.back());
   wallet_cards.back().set_billing_address_id(new_billing_id);
 
-  // Setup the TestAutofillTable with the `cards_from_local_storage`.
-  TestAutofillTable table(cards_from_local_storage);
+  // Setup the TestPaymentsAutofillTable with the `cards_from_local_storage`.
+  TestPaymentsAutofillTable table(cards_from_local_storage);
 
   CopyRelevantWalletMetadataAndCvc(table, &wallet_cards);
 
@@ -276,8 +277,8 @@ TEST_F(AutofillSyncBridgeUtilTest,
   wallet_cards.emplace_back();
   wallet_cards.back().set_use_count(10U);
 
-  // Setup the TestAutofillTable with the `cards_from_local_storage`.
-  TestAutofillTable table(cards_from_local_storage);
+  // Setup the TestPaymentsAutofillTable with the `cards_from_local_storage`.
+  TestPaymentsAutofillTable table(cards_from_local_storage);
 
   CopyRelevantWalletMetadataAndCvc(table, &wallet_cards);
 
@@ -302,8 +303,8 @@ TEST_F(AutofillSyncBridgeUtilTest,
   // Create a card pulled from wallet with the same id, but with an empty CVC.
   wallet_cards.emplace_back();
 
-  // Setup the TestAutofillTable with the `cards_from_local_storage`.
-  TestAutofillTable table(cards_from_local_storage);
+  // Setup the TestPaymentsAutofillTable with the `cards_from_local_storage`.
+  TestPaymentsAutofillTable table(cards_from_local_storage);
 
   CopyRelevantWalletMetadataAndCvc(table, &wallet_cards);
 

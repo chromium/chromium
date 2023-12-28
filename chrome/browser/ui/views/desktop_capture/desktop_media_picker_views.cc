@@ -1189,7 +1189,7 @@ void DesktopMediaPickerDialogView::OnCanReselectChanged(
   reselect_button_->SetEnabled(controller->can_reselect());
 }
 
-BEGIN_METADATA(DesktopMediaPickerDialogView, views::DialogDelegateView)
+BEGIN_METADATA(DesktopMediaPickerDialogView)
 END_METADATA
 
 DesktopMediaPickerViews::DesktopMediaPickerViews() : dialog_(nullptr) {}

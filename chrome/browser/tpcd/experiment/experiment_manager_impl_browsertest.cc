@@ -57,24 +57,13 @@ constexpr char kOverrideGroupName[] = "override";
 
 class ExperimentManagerImplBrowserTest : public InProcessBrowserTest {
  public:
-  ExperimentManagerImplBrowserTest(bool force_profiles_eligible_chromeos,
-                                   std::string group_name_override,
+  ExperimentManagerImplBrowserTest(std::string group_name_override,
                                    bool disable_3pcs,
                                    bool need_onboarding,
                                    bool enable_silent_onboarding = false) {
-    // Force profile eligibility on ChromeOS. There is a flaky issue where
-    // `SetClientEligibility` is sometimes called twice, the second time with an
-    // ineligible profile even if the first was eligible.
-#if !BUILDFLAG(IS_CHROMEOS)
-    force_profiles_eligible_chromeos = false;
-#endif  // !BUILDFLAG(IS_ANDROID)
-    std::string force_profiles_eligible_str =
-        force_profiles_eligible_chromeos ? "true" : "false";
-
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kCookieDeprecationFacilitatedTesting,
         {{"label", kEligibleGroupName},
-         {"force_profiles_eligible", force_profiles_eligible_str},
          {"synthetic_trial_group_override", group_name_override},
          {kDisable3PCookiesName, disable_3pcs ? "true" : "false"},
          {kNeedOnboardingForSyntheticTrialName,
@@ -117,12 +106,10 @@ class ExperimentManagerImplSyntheticTrialTest
       public testing::WithParamInterface<SyntheticTrialTestCase> {
  public:
   ExperimentManagerImplSyntheticTrialTest()
-      : ExperimentManagerImplBrowserTest(
-            /*force_profiles_eligible_chromeos=*/GetParam().new_state_eligible,
-            GetParam().group_name_override,
-            GetParam().disable_3pcs,
-            GetParam().need_onboarding,
-            GetParam().enable_silent_onboarding) {}
+      : ExperimentManagerImplBrowserTest(GetParam().group_name_override,
+                                         GetParam().disable_3pcs,
+                                         GetParam().need_onboarding,
+                                         GetParam().enable_silent_onboarding) {}
 };
 
 IN_PROC_BROWSER_TEST_P(ExperimentManagerImplSyntheticTrialTest,
@@ -283,7 +270,6 @@ class ExperimentManagerImplDisable3PCsSyntheticTrialTest
  public:
   ExperimentManagerImplDisable3PCsSyntheticTrialTest()
       : ExperimentManagerImplBrowserTest(
-            /*force_profiles_eligible_chromeos=*/false,
             /*group_name_override=*/"",
             /*disable_3pcs=*/true,
             /*need_onboarding=*/true) {}
@@ -322,7 +308,6 @@ class ExperimentManagerImplSilentOnboardingSyntheticTrialTest
  public:
   ExperimentManagerImplSilentOnboardingSyntheticTrialTest()
       : ExperimentManagerImplBrowserTest(
-            /*force_profiles_eligible_chromeos=*/false,
             /*group_name_override=*/"",
             /*disable_3pcs=*/false,
             /*need_onboarding=*/true,

@@ -13,7 +13,7 @@
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/platform/graphics/gpu_memory_buffer_image_copy.h"
+#include "third_party/blink/renderer/platform/graphics/image_to_buffer_copier.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "ui/gfx/gpu_fence.h"
@@ -118,7 +118,7 @@ void XRFrameTransport::FrameSubmit(
     if (transport_options_->wait_for_transfer_notification)
       WaitForPreviousTransfer();
     if (!frame_copier_ || !last_transfer_succeeded_) {
-      frame_copier_ = std::make_unique<GpuMemoryBufferImageCopy>(gl, sii);
+      frame_copier_ = std::make_unique<ImageToBufferCopier>(gl, sii);
     }
     auto [gpu_memory_buffer_handle, sync_token] =
         frame_copier_->CopyImage(image_ref.get());

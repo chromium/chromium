@@ -55,7 +55,7 @@ class ASH_EXPORT AppListBubbleSearchPage : public views::View {
 
  private:
   // Owned by view hierarchy.
-  raw_ptr<AppListSearchView, ExperimentalAsh> search_view_ = nullptr;
+  raw_ptr<AppListSearchView> search_view_ = nullptr;
 
   base::WeakPtrFactory<AppListBubbleSearchPage> weak_factory_{this};
 };

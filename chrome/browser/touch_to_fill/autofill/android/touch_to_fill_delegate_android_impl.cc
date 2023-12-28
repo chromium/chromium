@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
+#include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
@@ -70,7 +71,7 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
                                        FieldGlobalId field_id,
                                        const FormData& received_form) {
   // Trigger only on supported platforms.
-  if (!manager_->client().IsTouchToFillCreditCardSupported()) {
+  if (!IsTouchToFillCreditCardSupported()) {
     return {TriggerOutcome::kUnsupportedFieldType, {}};
   }
   const FormStructure* form = manager_->FindCachedFormById(form_id);
@@ -115,7 +116,7 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
   // Valid = unexpired with valid number format.
   std::vector<CreditCard> cards_to_suggest =
       AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
-          &manager_->client(), /*suppress_disused_cards=*/true);
+          manager_->client(), /*suppress_disused_cards=*/true);
   if (base::ranges::none_of(cards_to_suggest,
                             &CreditCard::IsCompleteValidCard)) {
     return {TriggerOutcome::kNoValidCards, {}};
@@ -321,7 +322,7 @@ bool TouchToFillDelegateAndroidImpl::IsFormPrefilled(const FormData& form) {
   return base::ranges::any_of(form.fields, [&](const FormFieldData& field) {
     AutofillField* autofill_field = manager_->GetAutofillField(form, field);
     if (autofill_field && autofill_field->Type().GetStorableType() !=
-                              ServerFieldType::CREDIT_CARD_NUMBER) {
+                              FieldType::CREDIT_CARD_NUMBER) {
       return false;
     }
     return !SanitizedFieldIsEmpty(field.value);

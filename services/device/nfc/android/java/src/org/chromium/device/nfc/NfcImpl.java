@@ -29,7 +29,6 @@ import org.chromium.device.mojom.NdefRecord;
 import org.chromium.device.mojom.NdefWriteOptions;
 import org.chromium.device.mojom.Nfc;
 import org.chromium.device.mojom.NfcClient;
-import org.chromium.mojo.bindings.Callbacks;
 import org.chromium.mojo.bindings.InterfaceRequest;
 import org.chromium.mojo.bindings.Router;
 import org.chromium.mojo.system.MojoException;
@@ -202,7 +201,11 @@ public class NfcImpl implements Nfc {
      */
     @Override
     public void push(NdefMessage message, NdefWriteOptions options, Push_Response callback) {
-        if (!checkIfReady(callback)) return;
+        NdefError error = checkIfReady();
+        if (error != null) {
+            callback.call(error);
+            return;
+        }
 
         if (mOperationsSuspended) {
             callback.call(
@@ -247,7 +250,11 @@ public class NfcImpl implements Nfc {
      */
     @Override
     public void makeReadOnly(MakeReadOnly_Response callback) {
-        if (!checkIfReady(callback)) return;
+        NdefError error = checkIfReady();
+        if (error != null) {
+            callback.call(error);
+            return;
+        }
 
         if (mOperationsSuspended) {
             callback.call(
@@ -289,7 +296,12 @@ public class NfcImpl implements Nfc {
      */
     @Override
     public void watch(int id, Watch_Response callback) {
-        if (!checkIfReady(callback)) return;
+        NdefError error = checkIfReady();
+        if (error != null) {
+            callback.call(error);
+            return;
+        }
+
         // We received a duplicate |id| here that should never happen, in such a case we should
         // report a bad message to Mojo but unfortunately Mojo bindings for Java does not support
         // this feature yet. So, we just passes back a generic error instead.
@@ -412,20 +424,6 @@ public class NfcImpl implements Nfc {
             return createError(NdefErrorType.NOT_READABLE, "NFC setting is disabled.");
         }
         return null;
-    }
-
-    /**
-     * Uses checkIfReady() method and if NFC cannot be used, calls mojo callback with NdefError.
-     *
-     * @param callback Generic callback that is provided to watch() and push() methods.
-     * @return boolean true if NFC functionality can be used, false otherwise.
-     */
-    private boolean checkIfReady(Callbacks.Callback1<NdefError> callback) {
-        NdefError error = checkIfReady();
-        if (error == null) return true;
-
-        callback.call(error);
-        return false;
     }
 
     /**
@@ -611,7 +609,8 @@ public class NfcImpl implements Nfc {
                 pendingMakeReadOnlyOperationCompleted(
                         createError(
                                 NdefErrorType.NOT_SUPPORTED,
-                                "Failed to make read-only because the tag cannot be made read-only"));
+                                "Failed to make read-only because the tag cannot be made"
+                                        + " read-only"));
             }
         } catch (TagLostException e) {
             Log.w(TAG, "Cannot make NFC tag read-only. Tag is lost: " + e.getMessage());

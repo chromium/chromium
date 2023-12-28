@@ -117,24 +117,6 @@ void ScopedPrivacyBudgetConfig::Apply(const Parameters& parameters) {
         {features::kIdentifiabilityStudyBlockWeights.name,
          EncodeIdentifiabilityFieldTrialParam(parameters.block_weights)});
   }
-  if (!parameters.reid_blocks.empty()) {
-    ftp.insert({features::kIdentifiabilityStudyReidSurfaceBlocks.name,
-                EncodeIdentifiabilityFieldTrialParam(parameters.reid_blocks)});
-  }
-  if (!parameters.reid_salts_ranges.empty()) {
-    ftp.insert(
-        {features::kIdentifiabilityStudyReidSurfaceBlocksSaltsRanges.name,
-         EncodeIdentifiabilityFieldTrialParam(parameters.reid_salts_ranges)});
-  }
-  if (!parameters.reid_bits.empty()) {
-    ftp.insert({features::kIdentifiabilityStudyReidSurfaceBlocksBits.name,
-                EncodeIdentifiabilityFieldTrialParam(parameters.reid_bits)});
-  }
-  if (!parameters.reid_noise.empty()) {
-    ftp.insert(
-        {features::kIdentifiabilityStudyReidBlocksNoiseProbabilities.name,
-         EncodeIdentifiabilityFieldTrialParam(parameters.reid_noise)});
-  }
   if (!parameters.per_surface_cost.empty()) {
     ftp.insert(
         {features::kIdentifiabilityStudyPerHashCost.name,
@@ -149,14 +131,6 @@ void ScopedPrivacyBudgetConfig::Apply(const Parameters& parameters) {
     ftp.insert(
         {features::kIdentifiabilityStudySurfaceEquivalenceClasses.name,
          EncodeIdentifiabilityFieldTrialParam(parameters.equivalence_classes)});
-  }
-  ftp.insert({features::kIdentifiabilityStudyEnableActiveSampling.name,
-              EncodeIdentifiabilityFieldTrialParam(
-                  parameters.enable_active_sampling)});
-  if (!parameters.actively_sampled_fonts.empty()) {
-    ftp.insert({features::kIdentifiabilityStudyActivelySampledFonts.name,
-                EncodeIdentifiabilityFieldTrialParam(
-                    parameters.actively_sampled_fonts)});
   }
 
   scoped_feature_list_.InitAndEnableFeatureWithParameters(

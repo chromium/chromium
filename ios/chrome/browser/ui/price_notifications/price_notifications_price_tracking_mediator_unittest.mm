@@ -77,6 +77,7 @@ const bookmarks::BookmarkNode* PrepareSubscription(
   bookmark_model->AddURL(default_folder, default_folder->children().size(),
                          base::UTF8ToUTF16(title), GURL(kTestUrl));
   shopping_service->SetSubscribeCallbackValue(true);
+  shopping_service->SetIsSubscribedCallbackValue(true);
   shopping_service->SetUnsubscribeCallbackValue(unsubscribe_callback);
   TrackBookmark(shopping_service, bookmark_model, product);
 
@@ -121,7 +122,7 @@ class PriceNotificationsPriceTrackingMediatorTest
         commerce::ShoppingServiceFactory::GetInstance(),
         base::BindRepeating(
             [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<commerce::MockShoppingService>();
+              return commerce::MockShoppingService::Build();
             }));
     std::unique_ptr<TestChromeBrowserState> test_chrome_browser_state =
         builder.Build();
@@ -155,6 +156,7 @@ class PriceNotificationsPriceTrackingMediatorTest
     shopping_service_ = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetForBrowserState(
             test_chrome_browser_state.get()));
+    shopping_service_->SetupPermissiveMock();
     shopping_service_->SetBookmarkModelUsedForSync(
         GetBookmarkModelUsedForSync());
     test_manager_ = std::make_unique<TestChromeBrowserStateManager>(

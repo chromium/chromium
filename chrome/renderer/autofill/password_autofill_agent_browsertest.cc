@@ -22,6 +22,7 @@
 #include "chrome/renderer/autofill/password_generation_test_utils.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
+#include "components/autofill/content/renderer/autofill_agent_test_api.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_tracker.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
@@ -59,6 +60,10 @@
 #include "third_party/blink/public/web/win/web_font_rendering.h"
 #endif
 
+namespace autofill {
+
+namespace {
+
 using autofill::FormRendererId;
 using autofill::FormTracker;
 using autofill::mojom::FocusedFieldType;
@@ -77,8 +82,6 @@ using testing::_;
 using testing::AtMost;
 using testing::Eq;
 using testing::Truly;
-
-namespace {
 
 // The name of the username/password element in the form.
 const char kUsernameName[] = "username";
@@ -340,10 +343,6 @@ enum PasswordFormSourceType {
 };
 
 enum class FieldChangeSource { USER, AUTOFILL, USER_AUTOFILL };
-
-}  // namespace
-
-namespace autofill {
 
 class PasswordAutofillAgentTest : public ChromeRenderViewTest {
  public:
@@ -828,10 +827,10 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
   void SaveAndSubmitForm() { SaveAndSubmitForm(username_element_.Form()); }
 
   void SaveAndSubmitForm(const WebFormElement& form_element) {
-    FormTracker* tracker = autofill_agent_->form_tracker_for_testing();
-    static_cast<blink::WebLocalFrameObserver*>(tracker)->WillSendSubmitEvent(
+    FormTracker& tracker = test_api(*autofill_agent_).form_tracker();
+    static_cast<blink::WebLocalFrameObserver&>(tracker).WillSendSubmitEvent(
         form_element);
-    static_cast<content::RenderFrameObserver*>(tracker)->WillSubmitForm(
+    static_cast<content::RenderFrameObserver&>(tracker).WillSubmitForm(
         form_element);
   }
 
@@ -841,20 +840,20 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
   }
 
   void SubmitForm() {
-    FormTracker* tracker = autofill_agent_->form_tracker_for_testing();
-    static_cast<content::RenderFrameObserver*>(tracker)->WillSubmitForm(
+    FormTracker& tracker = test_api(*autofill_agent_).form_tracker();
+    static_cast<content::RenderFrameObserver&>(tracker).WillSubmitForm(
         username_element_.Form());
   }
 
   void FireAjaxSucceeded() {
-    FormTracker* tracker = autofill_agent_->form_tracker_for_testing();
-    tracker->AjaxSucceeded();
+    FormTracker& tracker = test_api(*autofill_agent_).form_tracker();
+    tracker.AjaxSucceeded();
   }
 
   void FireDidFinishSameDocumentNavigation() {
-    FormTracker* tracker = autofill_agent_->form_tracker_for_testing();
-    static_cast<content::RenderFrameObserver*>(tracker)
-        ->DidFinishSameDocumentNavigation();
+    FormTracker& tracker = test_api(*autofill_agent_).form_tracker();
+    static_cast<content::RenderFrameObserver&>(tracker)
+        .DidFinishSameDocumentNavigation();
   }
 
   FakeMojoPasswordManagerDriver fake_driver_;
@@ -2403,8 +2402,8 @@ TEST_F(PasswordAutofillAgentTest,
   confirmation_password_element.SetValue(WebString());
 
   // Submit form.
-  FormTracker* tracker = autofill_agent_->form_tracker_for_testing();
-  static_cast<content::RenderFrameObserver*>(tracker)->WillSubmitForm(
+  FormTracker& tracker = test_api(*autofill_agent_).form_tracker();
+  static_cast<content::RenderFrameObserver&>(tracker).WillSubmitForm(
       username_element.Form());
 
   // Observe that the PasswordAutofillAgent still remembered the last non-empty
@@ -2672,7 +2671,7 @@ TEST_F(PasswordAutofillAgentTest,
 
   ExpectFieldPropertiesMasks(PasswordFormSameDocumentNavigation,
                              expected_properties_masks,
-                             SubmissionIndicatorEvent::DOM_MUTATION_AFTER_XHR);
+                             SubmissionIndicatorEvent::XHR_SUCCEEDED);
 }
 
 // The username/password is autofilled by password manager then just before
@@ -3149,7 +3148,7 @@ TEST_F(PasswordAutofillAgentTest,
 
   ExpectSameDocumentNavigationWithUsernameAndPasswords(
       FormRendererId(), u"Bob", u"mypassword", u"",
-      SubmissionIndicatorEvent::DOM_MUTATION_AFTER_XHR);
+      SubmissionIndicatorEvent::XHR_SUCCEEDED);
 }
 
 // In this test, a <div> wrapping a form is hidden via display:none after an
@@ -3173,7 +3172,7 @@ TEST_F(PasswordAutofillAgentTest, PromptForAJAXSubmitAfterHidingParentElement) {
 
   ExpectSameDocumentNavigationWithUsernameAndPasswords(
       GetFormUniqueRendererId("form"), u"Bob", u"mypassword", u"",
-      SubmissionIndicatorEvent::DOM_MUTATION_AFTER_XHR);
+      SubmissionIndicatorEvent::XHR_SUCCEEDED);
 }
 
 // In this test, a <div> wrapping a form is removed from the DOM after an Ajax
@@ -3200,7 +3199,7 @@ TEST_F(PasswordAutofillAgentTest,
 
   ExpectSameDocumentNavigationWithUsernameAndPasswords(
       renderer_id, u"Bob", u"mypassword", u"",
-      SubmissionIndicatorEvent::DOM_MUTATION_AFTER_XHR);
+      SubmissionIndicatorEvent::XHR_SUCCEEDED);
 }
 
 TEST_F(PasswordAutofillAgentTest,
@@ -3659,7 +3658,7 @@ TEST_F(PasswordAutofillAgentTest,
 
   ExpectSameDocumentNavigationWithUsernameAndPasswords(
       FormRendererId(), u"Alice", u"mypassword", u"",
-      SubmissionIndicatorEvent::DOM_MUTATION_AFTER_XHR);
+      SubmissionIndicatorEvent::XHR_SUCCEEDED);
 }
 
 // Tests that password manager sees both autofill assisted and user entered
@@ -4315,7 +4314,7 @@ TEST_F(PasswordAutofillAgentTest, XhrSubmissionAfterFillingSuggestion) {
   ExecuteJavaScriptForTests(kJavaScriptRemoveForm);
   ExpectSameDocumentNavigationWithUsernameAndPasswords(
       fill_data_.form_renderer_id, kBobUsername16, kBobPassword16,
-      std::u16string(), SubmissionIndicatorEvent::DOM_MUTATION_AFTER_XHR);
+      std::u16string(), SubmissionIndicatorEvent::DOM_MUTATION_AFTER_AUTOFILL);
 }
 
 // Tests that a JavaScript submission (e.g. via removing the form from a DOM)
@@ -4501,5 +4500,7 @@ INSTANTIATE_TEST_SUITE_P(FormPresenceVariation,
                          testing::Bool());
 
 #endif  // BUILDFLAG(IS_ANDROID)
+
+}  // namespace
 
 }  // namespace autofill

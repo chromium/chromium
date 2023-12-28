@@ -106,8 +106,7 @@ class ProjectorXhrSender {
   bool IsValidEmail(const std::optional<std::string>& email_check);
 
   ProjectorOAuthTokenFetcher oauth_token_fetcher_;
-  raw_ptr<network::mojom::URLLoaderFactory, ExperimentalAsh>
-      url_loader_factory_ = nullptr;
+  raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_ = nullptr;
 
   // Next request ID.
   int next_request_id_ = 0;

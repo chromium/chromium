@@ -12,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/json/json_reader.h"
-#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "extensions/browser/api/declarative_net_request/indexed_rule.h"

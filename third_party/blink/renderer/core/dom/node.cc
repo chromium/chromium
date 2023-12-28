@@ -1613,11 +1613,15 @@ bool Node::NeedsLayoutSubtreeUpdate() const {
 // questions about HTML in the core DOM class is obviously misplaced.
 bool Node::CanStartSelection() const {
   if (DisplayLockUtilities::LockedAncestorPreventingPaint(*this)) {
-    GetDocument().UpdateStyleAndLayoutTreeForNode(
-        this, DocumentUpdateReason::kSelection);
+    if (const Element* element =
+            FlatTreeTraversal::InclusiveParentElement(*this)) {
+      GetDocument().UpdateStyleAndLayoutTreeForElement(
+          element, DocumentUpdateReason::kSelection);
+    }
   }
-  if (IsEditable(*this))
+  if (IsEditable(*this)) {
     return true;
+  }
 
   if (GetLayoutObject()) {
     const ComputedStyle& style = GetLayoutObject()->StyleRef();
@@ -1940,7 +1944,8 @@ const AtomicString& Node::lookupNamespaceURI(
 }
 
 String Node::textContent(bool convert_brs_to_newlines,
-                         TextVisitor* visitor) const {
+                         TextVisitor* visitor,
+                         unsigned int max_length) const {
   // This covers ProcessingInstruction and Comment that should return their
   // value when .textContent is accessed on them, but should be ignored when
   // iterated over as a descendant of a ContainerNode.
@@ -1965,8 +1970,14 @@ String Node::textContent(bool convert_brs_to_newlines,
       content.Append('\n');
     } else if (auto* text_node = DynamicTo<Text>(node)) {
       content.Append(text_node->data());
+      // Only abridge text content when max_length is explicitly set.
+      if (max_length < UINT_MAX && content.length() > max_length) {
+        content.Resize(max_length);
+        break;
+      }
     }
   }
+
   return content.ReleaseString();
 }
 
@@ -2188,28 +2199,6 @@ void Node::InvalidateIfHasEffectiveAppearance() const {
   layout_object->SetSubtreeShouldDoFullPaintInvalidation();
 }
 
-void Node::UpdateForRemovedDOMParts(ContainerNode& insertion_point) {
-  if (LIKELY(!RuntimeEnabledFeatures::DOMPartsAPIEnabled())) {
-    return;
-  }
-  if (auto* parts = GetDOMParts()) {
-    for (Part* part : *parts) {
-      part->PartDisconnected(*this);
-    }
-  }
-}
-
-void Node::UpdateForInsertedDOMParts(ContainerNode& insertion_point) {
-  if (LIKELY(!RuntimeEnabledFeatures::DOMPartsAPIEnabled())) {
-    return;
-  }
-  if (auto* parts = GetDOMParts()) {
-    for (Part* part : *parts) {
-      part->PartConnected(*this, insertion_point);
-    }
-  }
-}
-
 Node::InsertionNotificationRequest Node::InsertedInto(
     ContainerNode& insertion_point) {
   DCHECK(!ChildNeedsStyleInvalidation());
@@ -2222,7 +2211,6 @@ Node::InsertionNotificationRequest Node::InsertedInto(
     insertion_point.GetDocument().IncrementNodeCount();
 #endif
   }
-  UpdateForInsertedDOMParts(insertion_point);
   if (ParentOrShadowHostNode()->IsInShadowTree())
     SetFlag(kIsInShadowTreeFlag);
   if (auto* cache = GetDocument().ExistingAXObjectCache()) {
@@ -2243,7 +2231,6 @@ void Node::RemovedFrom(ContainerNode& insertion_point) {
     insertion_point.GetDocument().DecrementNodeCount();
 #endif
   }
-  UpdateForRemovedDOMParts(insertion_point);
   if (IsInShadowTree() && !ContainingTreeScope().RootNode().IsShadowRoot())
     ClearFlag(kIsInShadowTreeFlag);
   if (auto* cache = GetDocument().ExistingAXObjectCache()) {
@@ -2581,9 +2568,9 @@ ExecutionContext* Node::GetExecutionContext() const {
   return GetDocument().GetExecutionContext();
 }
 
-void Node::WillMoveToNewDocument(Document& old_document,
-                                 Document& new_document) {
-  DCHECK_NE(&GetDocument(), &new_document);
+void Node::WillMoveToNewDocument(Document& new_document) {
+  Document& old_document = GetDocument();
+  DCHECK_NE(&old_document, &new_document);
 
   // In rare situations, this node may be the focused element of the old
   // document. In this case, we need to clear the focused element of the old

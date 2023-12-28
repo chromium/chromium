@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, StartsOrganizationRequest) {
   const TabOrganizationSession* session =
       service->GetSessionForBrowser(browser());
 
-  EXPECT_NE(TabOrganizationRequest::State::NOT_STARTED,
+  EXPECT_EQ(TabOrganizationRequest::State::NOT_STARTED,
             session->request()->state());
 }
 

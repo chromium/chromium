@@ -140,15 +140,12 @@ specific_include_rules = {
     "+services/network/test",
   ],
   "browser_interface_binders\.cc": [
-    "+components/ml/webnn/features.h",
+    "+components/ml/webnn/features.mojom-features.h",
   ],
   "browser_main_loop\.cc": [
     # TODO(crbug.com/1049894): Remove.
     "+services/network/transitional_url_loader_factory_owner.h",
     "+device/fido/hid/fido_hid_discovery.h",
-  ],
-  "browser_main_loop\.h": [
-    "+ui/ozone/buildflags.h",
   ],
   "browsing_data_(filter_builder|remover)_impl_unittest\.cc": [
     "+services/network/cookie_manager.h",

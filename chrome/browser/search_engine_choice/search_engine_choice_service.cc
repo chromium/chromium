@@ -8,6 +8,7 @@
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -92,6 +93,25 @@ void SearchEngineChoiceService::NotifyChoiceMade(int prepopulate_id,
     std::unique_ptr<TemplateURLData> search_engine =
         TemplateURLPrepopulateData::GetPrepopulatedEngine(pref_service,
                                                           prepopulate_id);
+
+    int country_id =
+        search_engines::GetSearchEngineChoiceCountryId(pref_service);
+    SCOPED_CRASH_KEY_STRING32(
+        "ChoiceService", "choice_country",
+        country_codes::CountryIDToCountryString(country_id));
+    SCOPED_CRASH_KEY_NUMBER("ChoiceService", "prepopulate_id", prepopulate_id);
+    SCOPED_CRASH_KEY_NUMBER("ChoiceService", "entry_point",
+                            static_cast<int>(entry_point));
+    if (!search_engine) {
+      search_engine =
+          TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
+              pref_service, prepopulate_id);
+
+      SCOPED_CRASH_KEY_BOOL("ChoiceService", "engine_found",
+                            search_engine != nullptr);
+      base::debug::DumpWithoutCrashing();
+    }
+
     CHECK(search_engine);
     TemplateURL search_engine_template_url = TemplateURL(*search_engine);
     template_url_service_->SetUserSelectedDefaultSearchProvider(

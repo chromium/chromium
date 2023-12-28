@@ -16,6 +16,7 @@ export {ActivityLogStreamItemElement, ARG_URL_PLACEHOLDER, StreamItem} from './a
 export {ExtensionsCodeSectionElement} from './code_section.js';
 export {ExtensionsDetailViewElement} from './detail_view.js';
 export {ErrorPageDelegate, ExtensionsErrorPageElement} from './error_page.js';
+export {ExtensionsHatsBrowserProxy, ExtensionsHatsBrowserProxyImpl} from './extension_hats_browser_proxy.js';
 export {ExtensionsHostPermissionsToggleListElement} from './host_permissions_toggle_list.js';
 export {ExtensionsItemElement, ItemDelegate} from './item.js';
 export {ExtensionsItemListElement} from './item_list.js';

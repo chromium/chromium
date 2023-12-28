@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] horizontal-input block size should match height and inline size should match width
+  assert_greater_than: expected a number greater than 13 but got 13
+[FAIL] vertical-lr-input block size should match width and inline size should match height
+  assert_greater_than: expected a number greater than 13 but got 13
+[FAIL] vertical-rl-input block size should match width and inline size should match height
+  assert_greater_than: expected a number greater than 13 but got 13
+Harness: the test ran to completion.
+

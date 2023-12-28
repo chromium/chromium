@@ -55,8 +55,8 @@ class WaylandInputTimestamps : public WaylandInputDelegate::Observer {
   }
 
  private:
-  const raw_ptr<wl_resource, ExperimentalAsh> resource_;
-  raw_ptr<WaylandInputDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<wl_resource> resource_;
+  raw_ptr<WaylandInputDelegate> delegate_;
 };
 
 void input_timestamps_destroy(struct wl_client* client,

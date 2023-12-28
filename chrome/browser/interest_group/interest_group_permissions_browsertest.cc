@@ -206,10 +206,10 @@ class InterestGroupPermissionsBrowserTest
   GURL render_url() { return GURL("https://example.com/render"); }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   privacy_sandbox::PrivacySandboxAttestationsMixin
       privacy_sandbox_attestations_mixin_{&mixin_host_};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class InterestGroupOffBrowserTest : public InterestGroupPermissionsBrowserTest {

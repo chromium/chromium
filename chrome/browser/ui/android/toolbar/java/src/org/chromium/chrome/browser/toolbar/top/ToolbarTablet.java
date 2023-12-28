@@ -387,6 +387,7 @@ public class ToolbarTablet extends ToolbarLayout
     @Override
     public void onClick(View v) {
         if (mHomeButton == v) {
+            recordHomeModuleClickedIfNTPVisible();
             openHomepage();
         } else if (mBackButton == v) {
             boolean isEnabled = mBackButton.isEnabled();
@@ -439,15 +440,16 @@ public class ToolbarTablet extends ToolbarLayout
 
     @Override
     public CaptureReadinessResult isReadyForTextureCapture() {
-        if (ToolbarFeatures.shouldBlockCapturesForAblation()) {
-            return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.SCROLL_ABLATION);
-        } else if (ToolbarFeatures.shouldSuppressCaptures()) {
+        if (ToolbarFeatures.shouldSuppressCaptures()) {
             if (urlHasFocus()) {
                 return CaptureReadinessResult.notReady(
                         TopToolbarBlockCaptureReason.URL_BAR_HAS_FOCUS);
             } else if (mIsInTabSwitcherMode) {
                 return CaptureReadinessResult.notReady(
                         TopToolbarBlockCaptureReason.TAB_SWITCHER_MODE);
+            } else if (mButtonVisibilityAnimators != null) {
+                return CaptureReadinessResult.notReady(
+                        TopToolbarBlockCaptureReason.TABLET_BUTTON_ANIMATION_IN_PROGRESS);
             } else {
                 return getReadinessStateWithSuppression();
             }
@@ -601,8 +603,8 @@ public class ToolbarTablet extends ToolbarLayout
                     mBookmarkButton, AppCompatResources.getColorStateList(getContext(), tint));
             mBookmarkButton.setContentDescription(getContext().getString(R.string.edit_bookmark));
         } else {
-            mBookmarkButtonImageRes = R.drawable.btn_star;
-            mBookmarkButton.setImageResource(R.drawable.btn_star);
+            mBookmarkButtonImageRes = R.drawable.star_outline_24dp;
+            mBookmarkButton.setImageResource(R.drawable.star_outline_24dp);
             ImageViewCompat.setImageTintList(mBookmarkButton, getTint());
             mBookmarkButton.setContentDescription(
                     getContext().getString(R.string.accessibility_menu_bookmark));
@@ -852,6 +854,7 @@ public class ToolbarTablet extends ToolbarLayout
                 new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationStart(Animator animation) {
+                        keepControlsShownForAnimation();
                         for (ImageButton button : mToolbarButtons) {
                             button.setVisibility(View.VISIBLE);
                         }
@@ -862,10 +865,8 @@ public class ToolbarTablet extends ToolbarLayout
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        // Reset the capture state token to force a recapture. This is required
-                        // as the capture state token only checks the button's visibility.
-                        mLastCaptureStateToken = null;
                         mButtonVisibilityAnimators = null;
+                        allowBrowserControlsHide();
                     }
                 });
 
@@ -895,6 +896,11 @@ public class ToolbarTablet extends ToolbarLayout
         set.addListener(
                 new AnimatorListenerAdapter() {
                     @Override
+                    public void onAnimationStart(Animator animation) {
+                        keepControlsShownForAnimation();
+                    }
+
+                    @Override
                     public void onAnimationEnd(Animator animation) {
                         // Only set end visibility and alpha if the animation is ending because it's
                         // completely finished and not because it was canceled.
@@ -907,8 +913,8 @@ public class ToolbarTablet extends ToolbarLayout
                             // don't jump when the animation starts.
                             setStartPaddingBasedOnButtonVisibility(false);
                         }
-
                         mButtonVisibilityAnimators = null;
+                        allowBrowserControlsHide();
                     }
                 });
 

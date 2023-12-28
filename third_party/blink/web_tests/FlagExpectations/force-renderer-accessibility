@@ -54,7 +54,7 @@ external/wpt/webcodecs/videoDecoder-codec-specific.https.any.html?h264_avc [ Ski
 external/wpt/webrtc/RTCRtpTransceiver-setCodecPreferences.html [ Skip ]
 external/wpt/webrtc/protocol/rtp-demuxing.html [ Skip ]
 external/wpt/webrtc/protocol/video-codecs.https.html [ Skip ]
-fast/mediarecorder/MediaRecorder-ignores-oversize-frames-h264.html [ Skip ]
+fast/mediarecorder/MediaRecorder-error-on-oversize-frame-h264.html [ Skip ]
 crbug.com/1126305 external/wpt/speculation-rules/prerender/restriction-encrypted-media.https.html [ Skip ]
 crbug.com/1126305 external/wpt/speculation-rules/prerender/restriction-media-auto-play-attribute.html?target_hint=_self [ Skip ]
 crbug.com/1126305 external/wpt/speculation-rules/prerender/restriction-media-auto-play-attribute.html?target_hint=_blank [ Skip ]

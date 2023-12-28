@@ -143,7 +143,7 @@ class ChromeUpdaterMacSetupTest : public testing::Test {
         FILE_PATH_LITERAL(base::StrCat({kTestDirName, "-",
                                         ::testing::UnitTest::GetInstance()
                                             ->current_test_info()
-                                            ->test_case_name()})));
+                                            ->test_suite_name()})));
     ASSERT_TRUE(base::CopyDirectory(GetTestSuiteDirPath(), test_dir_, true));
   }
 

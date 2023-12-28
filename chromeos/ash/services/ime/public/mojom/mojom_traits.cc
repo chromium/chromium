@@ -249,6 +249,8 @@ EnumTraits<AutocorrectSuggestionProviderMojo, AutocorrectSuggestionProvider>::
       return AutocorrectSuggestionProviderMojo::kUsEnglishDownloaded;
     case AutocorrectSuggestionProvider::kUsEnglish840:
       return AutocorrectSuggestionProviderMojo::kUsEnglish840;
+    case AutocorrectSuggestionProvider::kUsEnglish840V2:
+      return AutocorrectSuggestionProviderMojo::kUsEnglish840V2;
     default:
       return AutocorrectSuggestionProviderMojo::kUnknown;
   }
@@ -267,6 +269,9 @@ bool EnumTraits<AutocorrectSuggestionProviderMojo,
       return true;
     case AutocorrectSuggestionProviderMojo::kUsEnglish840:
       *output = AutocorrectSuggestionProvider::kUsEnglish840;
+      return true;
+    case AutocorrectSuggestionProviderMojo::kUsEnglish840V2:
+      *output = AutocorrectSuggestionProvider::kUsEnglish840V2;
       return true;
     default:
       *output = AutocorrectSuggestionProvider::kUnknown;

@@ -36,7 +36,7 @@ class DailyObserver : public metrics::DailyEvent::Observer {
   }
 
  private:
-  const raw_ref<ArcDailyMetrics, ExperimentalAsh> arc_daily_metrics_;
+  const raw_ref<ArcDailyMetrics> arc_daily_metrics_;
 };
 
 class KillCounts {

@@ -5,10 +5,11 @@
 #ifndef COMPONENTS_POLICY_CONTENT_SAFE_SITES_NAVIGATION_THROTTLE_H_
 #define COMPONENTS_POLICY_CONTENT_SAFE_SITES_NAVIGATION_THROTTLE_H_
 
+#include <string_view>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -41,7 +42,7 @@ class SafeSitesNavigationThrottle : public content::NavigationThrottle {
                               DeferredResultCallback deferred_result_callback);
   SafeSitesNavigationThrottle(content::NavigationHandle* navigation_handle,
                               content::BrowserContext* context,
-                              base::StringPiece safe_sites_error_page_content);
+                              std::string_view safe_sites_error_page_content);
   SafeSitesNavigationThrottle(const SafeSitesNavigationThrottle&) = delete;
   SafeSitesNavigationThrottle& operator=(const SafeSitesNavigationThrottle&) =
       delete;

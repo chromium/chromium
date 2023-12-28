@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 
 #include "base/files/file.h"
 #include "base/logging.h"
@@ -186,7 +187,7 @@ void FileSource::LoadWavFile(const base::FilePath& path_to_wav_file) {
 
   // Attempt to create a handler with this data. If the data is invalid, return.
   wav_audio_handler_ =
-      WavAudioHandler::Create(base::StringPiece(raw_wav_data_.get(), length));
+      WavAudioHandler::Create(std::string_view(raw_wav_data_.get(), length));
   if (!wav_audio_handler_) {
     LOG(ERROR) << "WAV data could be read but is not valid";
     load_failed_ = true;

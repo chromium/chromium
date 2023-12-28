@@ -46,6 +46,12 @@ FCMInvalidationListener::~FCMInvalidationListener() {
   DCHECK(!delegate_);
 }
 
+// static
+std::unique_ptr<FCMInvalidationListener> FCMInvalidationListener::Create(
+    std::unique_ptr<FCMSyncNetworkChannel> network_channel) {
+  return std::make_unique<FCMInvalidationListener>(std::move(network_channel));
+}
+
 void FCMInvalidationListener::Start(
     Delegate* delegate,
     std::unique_ptr<PerUserTopicSubscriptionManager>
@@ -170,10 +176,6 @@ void FCMInvalidationListener::DoSubscriptionUpdate() {
     // to do now is emit them.
     EmitSavedInvalidation(invalidation);
   }
-}
-
-void FCMInvalidationListener::StartForTest(Delegate* delegate) {
-  delegate_ = delegate;
 }
 
 void FCMInvalidationListener::EmitStateChangeForTest(InvalidatorState state) {

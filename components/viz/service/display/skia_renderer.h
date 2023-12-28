@@ -271,6 +271,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
       absl::optional<uint32_t> src_bit_depth,
       absl::optional<gfx::HDRMetadata> src_hdr_metadata,
       const gfx::ColorSpace& dst,
+      bool is_video_frame,
       float resource_offset = 0.0f,
       float resource_multiplier = 1.0f);
   // Returns the color filter that should be applied to the current canvas.
@@ -344,7 +345,8 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
       render_pass_backings_;
   sk_sp<SkColorSpace> RenderPassBackingSkColorSpace(
       const RenderPassBacking& backing) {
-    return backing.color_space.ToSkColorSpace(CurrentFrameSDRWhiteLevel());
+    return backing.color_space.GetWithSdrWhiteLevel(CurrentFrameSDRWhiteLevel())
+        .ToSkColorSpace();
   }
 
   // Interface used for drawing. Common among different draw modes.

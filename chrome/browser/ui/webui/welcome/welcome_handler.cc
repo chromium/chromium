@@ -40,8 +40,6 @@ WelcomeHandler::~WelcomeHandler() {
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
       signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
 
-  UMA_HISTOGRAM_ENUMERATION("Welcome.SignInPromptResult", result_,
-                            WelcomeResult::WELCOME_RESULT_MAX);
 }
 
 bool WelcomeHandler::isValidRedirectUrl() {

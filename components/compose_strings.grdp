@@ -15,6 +15,24 @@
     Re-open to continue
   </message>
 
+  <!-- FRE dialog -->
+  <message name="IDS_COMPOSE_FRE_TITLE" desc="The title of the Help me write disclaimer dialog." translateable="false">
+    Write better and with more confidence anywhere on the web
+  </message>
+  <message name="IDS_COMPOSE_FRE_MAIN_TOP" desc="The top main text of the Help me write disclaimer dialog." translateable="false">
+    Just start with a few words or enter a first draft to get writing and editing suggestions.
+  </message>
+  <message name="IDS_COMPOSE_FRE_MAIN_MID" desc="The middle main text of the Help me write disclaimer dialog." translateable="false">
+    Your text and the content and url of the page you're writing on will be sent to Google, reviewed by humans, and used to improve this feature. Avoid entering personal information (like medical or financial details) or using this tool on sites that contain private or sensitive information.
+  </message>
+  <message name="IDS_COMPOSE_FRE_MAIN_BOTTOM" desc="The bottom main text of the Help me write disclaimer dialog." translateable="false">
+    This is an experimental AI writing aid and won't always get it right.
+    <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_COMPOSE_FRE_LETS_GO_BUTTON" desc="The button to acknowledge the Help me write disclaimer message.">
+    Let's go
+  </message>
+
   <!-- Consent dialog -->
   <message name="IDS_COMPOSE_CONSENT_TITLE" desc="The title of the consent dialog." translateable="false">
     Get contextual writing suggestions for reviews, posts and more
@@ -31,6 +49,24 @@
   </message>
   <message name="IDS_COMPOSE_CONSENT_YES_BUTTON" desc="The first option for the consent dialog." translateable="false">
     Yes I'm in
+  </message>
+
+  <!-- MSBB consent dialog -->
+  <message name="IDS_COMPOSE_FRE_MSBB_TITLE" desc="The title of the MSBB consent dialog." translateable="false">
+   Turn on the make searches and browsing better setting to use this feature
+  </message>
+  <if expr="is_macosx">
+    <message name="IDS_COMPOSE_FRE_MSBB_MAIN" desc="The main text of the MSBB consent dialog." translateable="false">
+        After you turn on the setting, come back to this tab to continue where you left off.
+    </message>
+  </if> <!-- is_macosx -->
+  <if expr="not is_macosx">
+    <message name="IDS_COMPOSE_FRE_MSBB_MAIN" desc="The main text of the MSBB consent dialog." translateable="false">
+        After you turn on the setting, come back to this tab to continue where you left off
+    </message>
+  </if> <!-- not is_macosx -->
+  <message name="IDS_COMPOSE_FRE_MSBB_SETTINGS_BUTTON" desc="Open the settings page from the MSBB consent dialog." translateable="false">
+    Go to Settings
   </message>
 
   <!-- Disclaimer dialog -->
@@ -50,7 +86,7 @@
   <ph name="BEGIN_LINK">&lt;a href=""&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_COMPOSE_SUBMIT_BUTTON" desc="The button to request Compose to generate text.">
-    Generate
+    Create
   </message>
   <message name="IDS_COMPOSE_EDIT_UPDATE_BUTTON" desc="The button that confirms the input should be updated.">
     Update
@@ -58,7 +94,7 @@
 
   <!-- Result dialog -->
   <message name="IDS_COMPOSE_EDIT" desc="Label shown on hover and read by screen-readers for button that allows user to edit their input.">
-  Edit
+  Edit input
   </message>
   <message name="IDS_COMPOSE_MENU_LENGTH_TITLE" desc="Title for options to select the length of returned text.">
     Length
@@ -82,10 +118,19 @@
     Undo
   </message>
   <message name="IDS_COMPOSE_RESUBMIT" desc="Label shown on hover and read by screen-readers for button that user clicks to regenerate input.">
-    Regenerate
+    Retry
   </message>
   <message name="IDS_COMPOSE_INSERT_BUTTON" desc="The button that inserts the result into the selected textfield.">
     Insert
+  </message>
+  <message name="IDS_COMPOSE_REPLACE_BUTTON" desc="The button that replaces the highlighted text with the result in the input textfield.">
+  Replace
+  </message>
+  <message name="IDS_COMPOSE_THUMBS_DOWN" desc="Accessibility label for thumbs down button that opens a feedback form when pressed.">
+    Thumbs down opens a form for submitting detailed feedback on why you dislike the generated text.
+  </message>
+  <message name="IDS_COMPOSE_THUMBS_UP" desc="Accessibility label for thumbs up button that submits positive feedback for the generated text.">
+    Thumbs up submits feedback that you like the generated text.
   </message>
 
   <!-- Errors -->

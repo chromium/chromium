@@ -16,8 +16,8 @@
 
 namespace base::internal {
 
-template <bool AllowDangling, bool ExperimentalAsh>
-void RawPtrBackupRefImpl<AllowDangling, ExperimentalAsh>::AcquireInternal(
+template <bool AllowDangling, bool VectorExperimental>
+void RawPtrBackupRefImpl<AllowDangling, VectorExperimental>::AcquireInternal(
     uintptr_t address) {
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   PA_BASE_CHECK(UseBrp(address));
@@ -32,8 +32,8 @@ void RawPtrBackupRefImpl<AllowDangling, ExperimentalAsh>::AcquireInternal(
   }
 }
 
-template <bool AllowDangling, bool ExperimentalAsh>
-void RawPtrBackupRefImpl<AllowDangling, ExperimentalAsh>::ReleaseInternal(
+template <bool AllowDangling, bool VectorExperimental>
+void RawPtrBackupRefImpl<AllowDangling, VectorExperimental>::ReleaseInternal(
     uintptr_t address) {
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   PA_BASE_CHECK(UseBrp(address));
@@ -53,8 +53,8 @@ void RawPtrBackupRefImpl<AllowDangling, ExperimentalAsh>::ReleaseInternal(
   }
 }
 
-template <bool AllowDangling, bool ExperimentalAsh>
-void RawPtrBackupRefImpl<AllowDangling, ExperimentalAsh>::
+template <bool AllowDangling, bool VectorExperimental>
+void RawPtrBackupRefImpl<AllowDangling, VectorExperimental>::
     ReportIfDanglingInternal(uintptr_t address) {
   if (partition_alloc::internal::IsUnretainedDanglingRawPtrCheckEnabled()) {
     if (IsSupportedAndNotNull(address)) {
@@ -67,8 +67,8 @@ void RawPtrBackupRefImpl<AllowDangling, ExperimentalAsh>::
 }
 
 // static
-template <bool AllowDangling, bool ExperimentalAsh>
-bool RawPtrBackupRefImpl<AllowDangling, ExperimentalAsh>::
+template <bool AllowDangling, bool VectorExperimental>
+bool RawPtrBackupRefImpl<AllowDangling, VectorExperimental>::
     CheckPointerWithinSameAlloc(uintptr_t before_addr,
                                 uintptr_t after_addr,
                                 size_t type_size) {
@@ -89,8 +89,8 @@ bool RawPtrBackupRefImpl<AllowDangling, ExperimentalAsh>::
 #endif
 }
 
-template <bool AllowDangling, bool ExperimentalAsh>
-bool RawPtrBackupRefImpl<AllowDangling, ExperimentalAsh>::IsPointeeAlive(
+template <bool AllowDangling, bool VectorExperimental>
+bool RawPtrBackupRefImpl<AllowDangling, VectorExperimental>::IsPointeeAlive(
     uintptr_t address) {
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   PA_BASE_CHECK(UseBrp(address));
@@ -104,13 +104,13 @@ bool RawPtrBackupRefImpl<AllowDangling, ExperimentalAsh>::IsPointeeAlive(
 // Explicitly instantiates the two BackupRefPtr variants in the .cc. This
 // ensures the definitions not visible from the .h are available in the binary.
 template struct RawPtrBackupRefImpl</*AllowDangling=*/false,
-                                    /*ExperimentalAsh=*/false>;
+                                    /*VectorExperimental=*/false>;
 template struct RawPtrBackupRefImpl</*AllowDangling=*/false,
-                                    /*ExperimentalAsh=*/true>;
+                                    /*VectorExperimental=*/true>;
 template struct RawPtrBackupRefImpl</*AllowDangling=*/true,
-                                    /*ExperimentalAsh=*/false>;
+                                    /*VectorExperimental=*/false>;
 template struct RawPtrBackupRefImpl</*AllowDangling=*/true,
-                                    /*ExperimentalAsh=*/true>;
+                                    /*VectorExperimental=*/true>;
 
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address) {

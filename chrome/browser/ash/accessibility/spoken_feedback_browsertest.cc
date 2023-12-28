@@ -6,13 +6,12 @@
 
 #include <queue>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/display_configuration_controller.h"
 #include "ash/public/cpp/accelerators.h"
-#include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "ash/public/cpp/screen_backlight.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -35,6 +34,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
@@ -941,6 +941,38 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OpenStatusTray) {
   sm_.ExpectSpeech("Quick Settings");
 
   sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OpenSettingsFromPanel) {
+  EnableChromeVox();
+
+  AutomationTestUtils test_utils(extension_misc::kChromeVoxExtensionId);
+  sm_.Call([&test_utils]() { test_utils.SetUpTestSupport(); });
+
+  base::RunLoop waiter;
+  AccessibilityManager::Get()->SetOpenSettingsSubpageObserverForTest(
+      base::BindLambdaForTesting([&waiter]() { waiter.Quit(); }));
+
+  // Find the settings button in the panel.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_OEM_PERIOD); });
+  sm_.ExpectSpeech("Search the menus");
+  sm_.Call([this]() {
+    SendKeyPress(ui::VKEY_TAB);
+    SendKeyPress(ui::VKEY_TAB);
+  });
+  sm_.ExpectSpeech("ChromeVox Menus collapse");
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_TAB); });
+  sm_.ExpectSpeech("ChromeVox Options");
+
+  // TODO(b/316916793): We cannot click this button with ChromeVox directly, so
+  // using test utils for now.
+  sm_.Call(
+      [&test_utils]() { test_utils.DoDefault("ChromeVox Options", "button"); });
+
+  sm_.Replay();
+
+  // We should have tried to open the settings subpage.
+  waiter.Run();
 }
 
 // Fails on ASAN. See http://crbug.com/776308 . (Note MAYBE_ doesn't work well
@@ -2298,9 +2330,7 @@ class ShortcutsAppSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
  public:
   ShortcutsAppSpokenFeedbackTest() {
     scoped_feature_list_.InitWithFeatures(
-        {::features::kShortcutCustomizationApp,
-         features::kOnlyShowNewShortcutsApp},
-        {});
+        {::features::kShortcutCustomizationApp}, {});
   }
   ShortcutsAppSpokenFeedbackTest(const ShortcutsAppSpokenFeedbackTest&) =
       delete;
@@ -2379,6 +2409,7 @@ IN_PROC_BROWSER_TEST_F(SpokenFeedbackWithCandidateWindowTest,
   candidate_window.set_page_size(2);
   candidate_window.mutable_candidates()->clear();
   candidate_window.set_orientation(ui::CandidateWindow::VERTICAL);
+  candidate_window.set_is_user_selecting(true);
   for (size_t i = 0; i < 2; ++i) {
     ui::CandidateWindow::Entry entry;
     entry.value = u"value " + base::NumberToString16(i);

@@ -22,12 +22,12 @@ class View;
 class Label;
 }  // namespace views
 
-
 namespace autofill {
 
 class AddressEditorView : public views::View {
+  METADATA_HEADER(AddressEditorView, views::View)
+
  public:
-  METADATA_HEADER(AddressEditorView);
   explicit AddressEditorView(
       std::unique_ptr<AddressEditorController> controller);
   AddressEditorView(const AddressEditorView&) = delete;
@@ -42,7 +42,7 @@ class AddressEditorView : public views::View {
   const autofill::AutofillProfile& GetAddressProfile();
 
   void SelectCountryForTesting(const std::u16string& code);
-  void SetTextInputFieldValueForTesting(autofill::ServerFieldType type,
+  void SetTextInputFieldValueForTesting(autofill::FieldType type,
                                         const std::u16string& value);
   std::u16string GetValidationErrorForTesting() const;
 

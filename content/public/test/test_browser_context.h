@@ -17,7 +17,6 @@ namespace content {
 class MockBackgroundSyncController;
 class MockReduceAcceptLanguageControllerDelegate;
 class MockSSLHostStateDelegate;
-class ResourceContext;
 class ZoomLevelDelegate;
 
 class TestBrowserContext : public BrowserContext {
@@ -59,7 +58,6 @@ class TestBrowserContext : public BrowserContext {
       const base::FilePath& partition_path) override;
   bool IsOffTheRecord() override;
   DownloadManagerDelegate* GetDownloadManagerDelegate() override;
-  ResourceContext* GetResourceContext() override;
   BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
   PlatformNotificationService* GetPlatformNotificationService() override;
@@ -79,7 +77,6 @@ class TestBrowserContext : public BrowserContext {
  private:
   // Hold a reference here because BrowserContext owns lifetime.
   base::ScopedTempDir browser_context_dir_;
-  std::unique_ptr<content::ResourceContext> resource_context_;
   scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
   std::unique_ptr<MockSSLHostStateDelegate> ssl_host_state_delegate_;
   std::unique_ptr<PermissionControllerDelegate> permission_controller_delegate_;

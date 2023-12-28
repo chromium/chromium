@@ -8,7 +8,6 @@
 
 #include <algorithm>
 #include <numeric>
-#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -116,7 +115,7 @@ void SetCheckStatus(FormFieldData* form_field_data,
 }
 
 std::vector<std::string> LowercaseAndTokenizeAttributeString(
-    base::StringPiece attribute) {
+    std::string_view attribute) {
   return base::SplitString(base::ToLowerASCII(attribute),
                            base::kWhitespaceASCII, base::TRIM_WHITESPACE,
                            base::SPLIT_WANT_NONEMPTY);
@@ -176,12 +175,12 @@ SubmissionIndicatorEvent ToSubmissionIndicatorEvent(SubmissionSource source) {
       return SubmissionIndicatorEvent::XHR_SUCCEEDED;
     case SubmissionSource::FRAME_DETACHED:
       return SubmissionIndicatorEvent::FRAME_DETACHED;
-    case SubmissionSource::DOM_MUTATION_AFTER_XHR:
-      return SubmissionIndicatorEvent::DOM_MUTATION_AFTER_XHR;
     case SubmissionSource::PROBABLY_FORM_SUBMITTED:
       return SubmissionIndicatorEvent::PROBABLE_FORM_SUBMISSION;
     case SubmissionSource::FORM_SUBMISSION:
       return SubmissionIndicatorEvent::HTML_FORM_SUBMISSION;
+    case SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL:
+      return SubmissionIndicatorEvent::DOM_MUTATION_AFTER_AUTOFILL;
   }
 
   NOTREACHED();

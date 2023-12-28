@@ -46,11 +46,11 @@
 using autofill::AutofillField;
 using autofill::AutofillType;
 using autofill::FieldGlobalId;
+using autofill::FieldType;
 using autofill::FormData;
 using autofill::FormSignature;
 using autofill::FormStructure;
 using autofill::PasswordRequirementsSpec;
-using autofill::ServerFieldType;
 using autofill::test::CreateFieldPrediction;
 using autofill::test::CreateTestFormField;
 using base::ASCIIToUTF16;
@@ -312,12 +312,12 @@ TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
 
     AutofillType::ServerPrediction username_prediction;
     username_prediction.server_predictions = {
-        autofill::test::CreateFieldPrediction(ServerFieldType::EMAIL_ADDRESS,
+        autofill::test::CreateFieldPrediction(FieldType::EMAIL_ADDRESS,
                                               /*is_override=*/false)};
     AutofillType::ServerPrediction password_prediction;
     password_prediction.server_predictions = {
         autofill::test::CreateFieldPrediction(
-            ServerFieldType::ACCOUNT_CREATION_PASSWORD,
+            FieldType::ACCOUNT_CREATION_PASSWORD,
             /*is_override=*/false)};
     if (test.has_field_requirements) {
       password_prediction.password_requirements = GetFieldRequirements();

@@ -747,20 +747,6 @@ TEST_F(FetchDiscountWorkerTest, TestUpdateFreeListingCouponsWithCode) {
 
 class FetchMerchantWideDiscountWorkerTest : public FetchDiscountWorkerTestBase {
  public:
-  // Features need to be initialized before #SetUp runs, in
-  // order to avoid tsan data race error on FeatureList.
-  FetchMerchantWideDiscountWorkerTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    base::FieldTrialParams merchant_wide_params;
-    merchant_wide_params[commerce::kReadyToFetchMerchantWidePromotionParam] =
-        "true";
-
-    enabled_features.emplace_back(commerce::kMerchantWidePromotion,
-                                  merchant_wide_params);
-
-    features_.InitWithFeaturesAndParameters(enabled_features, {});
-  }
-
   void SetUp() override {
     FetchDiscountWorkerTestBase::SetUp();
 
@@ -797,47 +783,6 @@ TEST_F(FetchMerchantWideDiscountWorkerTest,
        TestNoFetchForMerchantWithoutDiscounts) {
   const char mock_merchant[] = "nodiscount.com";
   const char mock_merchant_url[] = "https://www.nodiscount.com/cart";
-  const cart_db::ChromeCartContentProto mock_merchant_cart_proto =
-      BuildCartContentProto(mock_merchant, mock_merchant_url,
-                            kMockMerchantATimestamp);
-
-  CartDiscountFetcher::CartDiscountMap fake_result;
-  CreateCartDiscountFetcherFactory(std::move(fake_result), false);
-
-  CartDB::KeyAndValue mockMerchantACartContentKeyAndProto =
-      std::make_pair(mock_merchant, mock_merchant_cart_proto);
-  std::vector<CartDB::KeyAndValue> loader_fake_data(
-      1, mockMerchantACartContentKeyAndProto);
-  fake_cart_service_delegate_->SetCartLoadFakeData(loader_fake_data);
-
-  CreateWorker();
-
-  fetch_discount_worker_->Start(base::Milliseconds(0));
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(0, FakeCartDiscountFetcher::GetFetchCount());
-}
-
-class FetchMerchantWideDiscountWorkerDisableFetchTest
-    : public FetchDiscountWorkerTestBase {
- public:
-  // Features need to be initialized before #SetUp runs, in
-  // order to avoid tsan data race error on FeatureList.
-  FetchMerchantWideDiscountWorkerDisableFetchTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    base::FieldTrialParams merchant_wide_params;
-    merchant_wide_params[commerce::kReadyToFetchMerchantWidePromotionParam] =
-        "false";
-
-    enabled_features.emplace_back(commerce::kMerchantWidePromotion,
-                                  merchant_wide_params);
-
-    features_.InitWithFeaturesAndParameters(enabled_features, {});
-  }
-};
-
-TEST_F(FetchMerchantWideDiscountWorkerDisableFetchTest, TestNoFetch) {
-  const char mock_merchant[] = "bar.com";
-  const char mock_merchant_url[] = "https://www.bar.com/cart";
   const cart_db::ChromeCartContentProto mock_merchant_cart_proto =
       BuildCartContentProto(mock_merchant, mock_merchant_url,
                             kMockMerchantATimestamp);

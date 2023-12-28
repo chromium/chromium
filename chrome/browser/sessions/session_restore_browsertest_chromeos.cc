@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, PRE_RestoreBrowserWindows) {
 IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, RestoreBrowserWindows) {
   size_t total_count = 0;
   size_t incognito_count = 0;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     ++total_count;
     if (browser->profile()->IsOffTheRecord())
       ++incognito_count;
@@ -294,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, RestoreAppsV1) {
   size_t total_count = 0;
   size_t app1_count = 0;
   size_t app2_count = 0;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     ++total_count;
     if (browser->app_name() == test_app_name1)
       ++app1_count;
@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, RestoreAppsPopup) {
   size_t total_count = 0;
   size_t app1_count = 0;
   size_t app2_count = 0;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     ++total_count;
     if (browser->app_name() == test_app_name1)
       ++app1_count;
@@ -344,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, PRE_RestoreNoDevtools) {
 IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, RestoreNoDevtools) {
   size_t total_count = 0;
   size_t devtools_count = 0;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     ++total_count;
     if (browser->is_type_devtools())
       ++devtools_count;
@@ -391,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, DISABLED_RestoreMaximized) {
   size_t app1_maximized_count = 0;
   size_t app2_maximized_count = 0;
   size_t total_maximized_count = 0;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     ++total_count;
     if (browser->window()->IsMaximized()) {
       ++total_maximized_count;
@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, PRE_RestoreMinimized) {
 IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, DISABLED_RestoreMinimized) {
   size_t total_count = 0;
   size_t minimized_count = 0;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     ++total_count;
     if (browser->window()->IsMinimized())
       ++minimized_count;

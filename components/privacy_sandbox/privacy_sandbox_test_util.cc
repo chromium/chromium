@@ -118,7 +118,8 @@ void ApplyTestState(
       user_content_setting_provider->SetWebsiteSetting(
           ContentSettingsPattern::Wildcard(),
           ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
-          base::Value(content_setting));
+          base::Value(content_setting), /*constraints=*/{},
+          content_settings::PartitionKey::GetDefaultForTesting());
       return;
     }
     case (StateKey::kSiteDataUserExceptions): {
@@ -129,7 +130,8 @@ void ApplyTestState(
         user_content_setting_provider->SetWebsiteSetting(
             ContentSettingsPattern::FromString(primary_pattern),
             ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
-            base::Value(content_setting));
+            base::Value(content_setting), /*constraints=*/{},
+            content_settings::PartitionKey::GetDefaultForTesting());
       }
       return;
     }
@@ -936,27 +938,35 @@ void SetupTestState(
   if (default_cookie_setting != kNoSetting) {
     user_provider->SetWebsiteSetting(
         ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-        ContentSettingsType::COOKIES, base::Value(default_cookie_setting));
+        ContentSettingsType::COOKIES, base::Value(default_cookie_setting),
+        /*constraints=*/{},
+        content_settings::PartitionKey::GetDefaultForTesting());
   }
 
   for (const auto& exception : user_cookie_exceptions) {
     user_provider->SetWebsiteSetting(
         ContentSettingsPattern::FromString(exception.primary_pattern),
         ContentSettingsPattern::FromString(exception.secondary_pattern),
-        ContentSettingsType::COOKIES, base::Value(exception.content_setting));
+        ContentSettingsType::COOKIES, base::Value(exception.content_setting),
+        /*constraints=*/{},
+        content_settings::PartitionKey::GetDefaultForTesting());
   }
 
   if (managed_cookie_setting != kNoSetting) {
     managed_provider->SetWebsiteSetting(
         ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-        ContentSettingsType::COOKIES, base::Value(managed_cookie_setting));
+        ContentSettingsType::COOKIES, base::Value(managed_cookie_setting),
+        /*constraints=*/{},
+        content_settings::PartitionKey::GetDefaultForTesting());
   }
 
   for (const auto& exception : managed_cookie_exceptions) {
     managed_provider->SetWebsiteSetting(
         ContentSettingsPattern::FromString(exception.primary_pattern),
         ContentSettingsPattern::FromString(exception.secondary_pattern),
-        ContentSettingsType::COOKIES, base::Value(exception.content_setting));
+        ContentSettingsType::COOKIES, base::Value(exception.content_setting),
+        /*constraints=*/{},
+        content_settings::PartitionKey::GetDefaultForTesting());
   }
 
   content_settings::TestUtils::OverrideProvider(

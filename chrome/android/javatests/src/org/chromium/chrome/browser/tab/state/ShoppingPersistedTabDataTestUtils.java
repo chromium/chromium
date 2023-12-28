@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tab.state;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
@@ -21,9 +20,7 @@ import com.google.protobuf.ByteString;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge.OptimizationGuideCallback;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -470,20 +467,6 @@ public abstract class ShoppingPersistedTabDataTestUtils {
                 .when(optimizationGuideJni)
                 .canApplyOptimization(
                         anyLong(), any(GURL.class), anyInt(), any(OptimizationGuideCallback.class));
-    }
-
-    static void verifyEndpointFetcherCalled(EndpointFetcher.Natives endpointFetcher, int numTimes) {
-        verify(endpointFetcher, times(numTimes))
-                .nativeFetchChromeAPIKey(
-                        any(Profile.class),
-                        anyString(),
-                        anyString(),
-                        anyString(),
-                        anyString(),
-                        anyLong(),
-                        any(String[].class),
-                        anyInt(),
-                        any(Callback.class));
     }
 
     static void verifyPriceTrackingOptimizationTypeCalled(

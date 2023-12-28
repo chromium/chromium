@@ -22,6 +22,7 @@ import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -62,13 +63,18 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.UiRestriction;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 /** Tests web navigations originating from a WebappActivity. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -417,6 +423,50 @@ public class WebappNavigationTest {
 
         // The WebappActivity should be navigated to the page prior to the redirect.
         ChromeTabUtils.waitForTabPageLoaded(activity.getActivityTab(), initialInScopeUrl);
+    }
+
+    /** Test a permission dialog can be correctly presented and dismissed by navigation. */
+    @Test
+    @LargeTest
+    @Feature({"Webapps"})
+    public void testShowPermissionPrompt() throws TimeoutException, ExecutionException {
+        Intent launchIntent = mActivityTestRule.createIntent();
+        mActivityTestRule.addTwaExtrasToIntent(launchIntent);
+
+        WebappActivity activity =
+                runWebappActivityAndWaitForIdleWithUrl(
+                        launchIntent,
+                        mActivityTestRule
+                                .getTestServer()
+                                .getURL("/content/test/data/android/permission_navigation.html"));
+        mActivityTestRule.runJavaScriptCodeInCurrentTab("requestGeolocationPermission()");
+        CriteriaHelper.pollUiThread(
+                () -> PermissionDialogController.getInstance().isDialogShownForTest(),
+                "Permission prompt did not appear in allotted time");
+        Assert.assertEquals(
+                "Only App modal dialog is supported on web apk",
+                activity.getModalDialogManager()
+                        .getPresenterForTest(ModalDialogManager.ModalDialogType.APP),
+                activity.getModalDialogManager().getCurrentPresenterForTest());
+        // Launch a new page, which should be in CCT
+        mActivityTestRule.runJavaScriptCodeInCurrentTab("navigate()");
+        CriteriaHelper.pollUiThread(
+                () -> !PermissionDialogController.getInstance().isDialogShownForTest(),
+                "Permission prompt is not dismissed.");
+
+        // Toolbar with the close button should be visible.
+        WebappActivityTestRule.assertToolbarShownMaybeHideable(activity);
+
+        // Navigate back to in-scope through a close button.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        activity.getToolbarManager()
+                                .getToolbarLayoutForTesting()
+                                .findViewById(R.id.close_button)
+                                .callOnClick());
+        CriteriaHelper.pollUiThread(
+                () -> !PermissionDialogController.getInstance().isDialogShownForTest(),
+                "Permission prompt is not dismissed.");
     }
 
     private WebappActivity runWebappActivityAndWaitForIdle(Intent intent) {

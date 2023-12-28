@@ -839,3 +839,72 @@ TEST_F(PrimaryAccountManagerTest, RestoreFailedFeatureNotEnabled) {
       PrimaryAccountManager::InitializeAccountInfoState::
           kEmptyAccountInfo_RestoreFailedAsRestoreFeatureIsDisabled);
 }
+
+TEST_F(PrimaryAccountManagerTest, ExplicitSigninPref) {
+  CreatePrimaryAccountManager();
+  CoreAccountId account_id =
+      AddToAccountTracker("account_id", "user@gmail.com");
+
+  ASSERT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  // Simulate an explicit signin through the Chrome Signin Intercept bubble.
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id),
+      signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE);
+
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Clearing signin.
+  manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest,
+                                signin_metrics::SignoutDelete::kIgnoreMetric);
+
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+#endif
+}
+
+TEST_F(PrimaryAccountManagerTest, ImplicitSigninDoesNotSetExplicitSigninPref) {
+  CreatePrimaryAccountManager();
+  CoreAccountId account_id =
+      AddToAccountTracker("account_id", "user@gmail.com");
+
+  ASSERT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  // Simulate an implicit signin through a web signin event.
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id),
+      signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+}
+
+TEST_F(PrimaryAccountManagerTest, ExplicitSigninFollowedByUnknownSignin) {
+  CreatePrimaryAccountManager();
+  CoreAccountId account_id =
+      AddToAccountTracker("account_id", "user@gmail.com");
+
+  ASSERT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  // Simulate an explicit signin through the Chrome Signin Intercept bubble.
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id),
+      signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE);
+
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  // Creating a second account.
+  CoreAccountId account_id2 =
+      AddToAccountTracker("account_id2", "user2@gmail.com");
+
+  // Simulating an sign in from an unknown access point without prior sign out.
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id2),
+      signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+
+  // The explicit sign in pref should be cleared.
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+}

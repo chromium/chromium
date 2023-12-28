@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -236,6 +235,12 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PaymentsSectionIban) {
   RunTest("settings/payments_section_iban_test.js", "mocha.run()");
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(SettingsTest, PdfOcrToggle) {
+  RunTest("settings/pdf_ocr_toggle_test.js", "mocha.run()");
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, PeoplePage) {
   RunTest("settings/people_page_test.js", "mocha.run()");
 }
@@ -302,6 +307,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, Search) {
   RunTest("settings/search_settings_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, SearchEngineEntry) {
+  RunTest("settings/search_engine_entry_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, SearchEngines) {
   RunTest("settings/search_engines_page_test.js", "mocha.run()");
 }
@@ -323,8 +332,9 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDns) {
   RunTest("settings/secure_dns_test.js", "runMochaSuite('SettingsSecureDns')");
 }
 
+// TODO(https://crbug.com/1514418): re-enable the test after fixed it.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDnsDialog) {
+IN_PROC_BROWSER_TEST_F(SettingsTest, DISABLED_SecureDnsDialog) {
   RunTest("settings/secure_dns_test.js",
           "runMochaSuite('OsSettingsRevampSecureDnsDialog')");
 }
@@ -619,7 +629,7 @@ IN_PROC_BROWSER_TEST_F(SettingsPerformancePageTest, ExceptionList) {
 class SettingsPerformancePageMultistateTest : public SettingsBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      performance_manager::features::kHighEfficiencyMultistateMode};
+      performance_manager::features::kMemorySaverMultistateMode};
 };
 
 IN_PROC_BROWSER_TEST_F(SettingsPerformancePageMultistateTest, Controls) {
@@ -1183,9 +1193,9 @@ IN_PROC_BROWSER_TEST_F(SettingsSpellCheckPageTest, OfficialBuild) {
 
 class SettingsSiteDetailsTest : public SettingsBrowserTest {};
 
-// Dabling on debug due to flaky timeout (crbug.com/825304,
-// crbug.com/1021219) and win10 x64 (crbug.com/1490294).
-#if !defined(NDEBUG) || (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_64))
+// Disabling on debug due to flaky timeout on Win7 Tests (dbg)(1) bot.
+// https://crbug.com/825304 - later for other platforms in crbug.com/1021219.
+#if !defined(NDEBUG)
 #define MAYBE_SiteDetails DISABLED_SiteDetails
 #else
 #define MAYBE_SiteDetails SiteDetails

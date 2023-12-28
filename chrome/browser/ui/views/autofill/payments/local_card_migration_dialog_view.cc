@@ -62,8 +62,9 @@ namespace {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 class AutofillMigrationHeaderView : public views::ImageView {
+  METADATA_HEADER(AutofillMigrationHeaderView, views::ImageView)
+
  public:
-  METADATA_HEADER(AutofillMigrationHeaderView);
   AutofillMigrationHeaderView() {
     constexpr int kImageBorderBottom = 8;
     SetBorder(views::CreateEmptyBorder(
@@ -82,7 +83,7 @@ class AutofillMigrationHeaderView : public views::ImageView {
   }
 };
 
-BEGIN_METADATA(AutofillMigrationHeaderView, views::ImageView)
+BEGIN_METADATA(AutofillMigrationHeaderView)
 END_METADATA
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
@@ -292,8 +293,9 @@ constexpr int kLegalMessageScrollViewHeight = 140;
 // LocalCardMigrationDialogView class when it offers the user the
 // option to upload all browser-saved credit cards.
 class LocalCardMigrationOfferView : public views::View {
+  METADATA_HEADER(LocalCardMigrationOfferView, views::View)
+
  public:
-  METADATA_HEADER(LocalCardMigrationOfferView);
   LocalCardMigrationOfferView(LocalCardMigrationDialogController* controller,
                               LocalCardMigrationDialogView* dialog_view) {
     DCHECK(controller);
@@ -350,8 +352,9 @@ class LocalCardMigrationOfferView : public views::View {
     for (views::View* child : card_list_view_->children()) {
       DCHECK(views::IsViewClass<MigratableCardView>(child));
       auto* card = static_cast<MigratableCardView*>(child);
-      if (card->GetSelected())
+      if (card->GetSelected()) {
         selected_cards.push_back(card->GetGuid());
+      }
     }
     return selected_cards;
   }
@@ -362,7 +365,7 @@ class LocalCardMigrationOfferView : public views::View {
   raw_ptr<views::View> card_list_view_ = nullptr;
 };
 
-BEGIN_METADATA(LocalCardMigrationOfferView, views::View)
+BEGIN_METADATA(LocalCardMigrationOfferView)
 ADD_READONLY_PROPERTY_METADATA(std::vector<std::string>, SelectedCardGuids)
 END_METADATA
 
@@ -523,7 +526,7 @@ LocalCardMigrationDialog* CreateLocalCardMigrationDialogView(
   return new LocalCardMigrationDialogView(controller);
 }
 
-BEGIN_METADATA(LocalCardMigrationDialogView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(LocalCardMigrationDialogView)
 ADD_READONLY_PROPERTY_METADATA(bool, EnableOkButton)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, OkButtonLabel)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, CancelButtonLabel)

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "media/gpu/frame_size_estimator.h"
+
+#include "media/gpu/h264_rate_control_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -19,17 +21,14 @@ class FrameSizeEstimatorTest : public testing::Test {
 
   void SetUp() override {
     float bytes_per_frame_avg = kCommonAvgBitrate / 8 / kCommonFps;
-    float qp_size_init = Qp2QStepSize(24) * bytes_per_frame_avg;
+    float qp_size_init =
+        h264_rate_control_util::QP2QStepSize(24) * bytes_per_frame_avg;
     float size_correction_init = 0.3f * bytes_per_frame_avg;
 
     frame_size_estimator_ = std::make_unique<FrameSizeEstimator>(
         base::Milliseconds(300), qp_size_init, size_correction_init);
     EXPECT_EQ(41660.0f, frame_size_estimator_->qp_size_mean());
     EXPECT_EQ(1249.800049f, frame_size_estimator_->size_correction_mean());
-  }
-
-  static float Qp2QStepSize(uint32_t qp) {
-    return 0.625f * std::powf(2, qp / 6.0f);
   }
 
  protected:
@@ -48,7 +47,8 @@ class FrameSizeEstimatorTest : public testing::Test {
     for (int i = 0; i < frame_count; ++i) {
       uint32_t qp = kQpValues[(i + 1) % (sizeof(kQpValues) / sizeof(uint32_t))];
       uint32_t qp_prev = kQpValues[i % (sizeof(kQpValues) / sizeof(uint32_t))];
-      size_t encoded_size = 0.625 * 16 * common_frame_size / Qp2QStepSize(qp);
+      size_t encoded_size = 0.625 * 16 * common_frame_size /
+                            h264_rate_control_util::QP2QStepSize(qp);
 
       frame_size_estimator_->Update(encoded_size, qp, qp_prev, timestamp);
 
@@ -111,7 +111,8 @@ TEST_F(FrameSizeEstimatorTest, CheckEstimatorStates) {
   for (int i = 0; i < 10; ++i) {
     uint32_t qp = kQpValues[(i + 1) % (sizeof(kQpValues) / sizeof(uint32_t))];
     uint32_t qp_prev = kQpValues[i % (sizeof(kQpValues) / sizeof(uint32_t))];
-    size_t encoded_size = 0.625 * 16 * common_frame_size / Qp2QStepSize(qp);
+    size_t encoded_size = 0.625 * 16 * common_frame_size /
+                          h264_rate_control_util::QP2QStepSize(qp);
 
     size_t estimated_size = frame_size_estimator_->Estimate(qp, qp_prev);
 

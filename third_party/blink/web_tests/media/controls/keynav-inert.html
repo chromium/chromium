@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" title="Di Zhang" href="mailto:dizhangg@chromium.org">
+<link rel="help" href="https://crbug.com/1502970">
+<title>Media inside inert element should not receive focus.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<button id="start">start</button>
+<div inert>
+  <video controls></video>
+  <button>inside</button>
+</div>
+<button id="end">end</button>
+
+<script>
+test(function(t) {
+  const video = document.querySelector('video');
+  video.src = "../content/test.ogv";
+
+  const start = document.getElementById('start');
+  const end = document.getElementById('end');
+
+  start.focus();
+  assert_equals(document.activeElement, start);
+  eventSender.keyDown('\t');
+  assert_equals(document.activeElement, end);
+}, `Verifies that focus only goes between elements that are not inert.`);
+
+</script>

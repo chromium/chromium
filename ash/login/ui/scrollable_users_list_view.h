@@ -39,10 +39,11 @@ class ASH_EXPORT ScrollableUsersListView : public views::ScrollView,
     explicit TestApi(ScrollableUsersListView* view);
     ~TestApi();
 
-    const std::vector<LoginUserView*>& user_views() const;
+    const std::vector<raw_ptr<LoginUserView, VectorExperimental>>& user_views()
+        const;
 
    private:
-    const raw_ptr<ScrollableUsersListView, ExperimentalAsh> view_;
+    const raw_ptr<ScrollableUsersListView> view_;
   };
 
   // TODO(jdufault): Pass AccountId or LoginUserView* instead of index.
@@ -101,12 +102,12 @@ class ASH_EXPORT ScrollableUsersListView : public views::ScrollView,
   const LoginDisplayStyle display_style_;
 
   // The view which contains all of the user views.
-  raw_ptr<views::View, ExperimentalAsh> user_view_host_ = nullptr;
+  raw_ptr<views::View> user_view_host_ = nullptr;
 
   // Layout for |user_view_host_|.
-  raw_ptr<views::BoxLayout, ExperimentalAsh> user_view_host_layout_ = nullptr;
+  raw_ptr<views::BoxLayout> user_view_host_layout_ = nullptr;
 
-  std::vector<LoginUserView*> user_views_;
+  std::vector<raw_ptr<LoginUserView, VectorExperimental>> user_views_;
 
   GradientParams gradient_params_;
 

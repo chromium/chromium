@@ -24,7 +24,7 @@ struct EditorField {
   enum class LengthHint : int { HINT_LONG, HINT_SHORT };
   enum class ControlType : int { TEXTFIELD, TEXTFIELD_NUMBER, COMBOBOX };
 
-  EditorField(ServerFieldType type,
+  EditorField(FieldType type,
               std::u16string label,
               LengthHint length_hint,
               bool is_required,
@@ -36,7 +36,7 @@ struct EditorField {
         control_type(control_type) {}
 
   // Data type in the field.
-  ServerFieldType type;
+  FieldType type;
   // Label to be shown alongside the field.
   std::u16string label;
   // Hint about the length of this field's contents.
@@ -69,9 +69,9 @@ class AddressEditorController {
   // Updates `editor_fields_` based on the current selected country.
   void UpdateEditorFields(const std::string& country_code);
 
-  void SetProfileInfo(ServerFieldType type, const std::u16string& value);
+  void SetProfileInfo(FieldType type, const std::u16string& value);
 
-  std::u16string GetProfileInfo(ServerFieldType type);
+  std::u16string GetProfileInfo(FieldType type);
 
   const AutofillProfile& GetAddressProfile();
 

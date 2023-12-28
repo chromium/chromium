@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_features.h"
@@ -22,6 +23,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/webapps/common/web_app_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -46,15 +48,32 @@ void PreventCloseTestBase::TearDownInProcessBrowserTestFixture() {
   policy::PolicyTest::TearDownInProcessBrowserTestFixture();
 }
 
-void PreventCloseTestBase::SetWebAppSettings(base::StringPiece config) {
+void PreventCloseTestBase::SetPolicies(
+    base::StringPiece web_app_settings,
+    base::StringPiece web_app_install_force_list) {
   policy::PolicyMap policies;
   SetPolicy(&policies, policy::key::kWebAppSettings,
-            ReturnPolicyValueFromJson(config));
+            ReturnPolicyValueFromJson(web_app_settings));
+  SetPolicy(&policies, policy::key::kWebAppInstallForceList,
+            ReturnPolicyValueFromJson(web_app_install_force_list));
   provider_.UpdateChromePolicy(policies);
 }
 
+void PreventCloseTestBase::SetPoliciesAndWaitUntilInstalled(
+    const webapps::AppId& app_id,
+    base::StringPiece web_app_settings,
+    base::StringPiece web_app_install_force_list) {
+  web_app::WebAppTestInstallObserver observer(browser()->profile());
+  observer.BeginListening({app_id});
+
+  SetPolicies(web_app_settings, web_app_install_force_list);
+
+  const webapps::AppId installed_app_id = observer.Wait();
+  ASSERT_EQ(installed_app_id, app_id);
+}
+
 void PreventCloseTestBase::ClearWebAppSettings() {
-  SetWebAppSettings(/*config=*/"[]");
+  SetPolicies(/*web_app_settings=*/"[]", /*web_app_install_force_list=*/"[]");
 }
 
 void PreventCloseTestBase::InstallPWA(const GURL& app_url,

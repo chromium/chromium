@@ -66,8 +66,8 @@ VirtualCardEnrollmentManager::~VirtualCardEnrollmentManager() = default;
 void VirtualCardEnrollmentManager::InitVirtualCardEnroll(
     const CreditCard& credit_card,
     VirtualCardEnrollmentSource virtual_card_enrollment_source,
-    absl::optional<payments::PaymentsNetworkInterface::
-                       GetDetailsForEnrollmentResponseDetails>
+    std::optional<payments::PaymentsNetworkInterface::
+                      GetDetailsForEnrollmentResponseDetails>
         get_details_for_enrollment_response_details,
     PrefService* user_prefs,
     RiskAssessmentFunction risk_assessment_function,
@@ -124,7 +124,7 @@ void VirtualCardEnrollmentManager::OnCardSavedAnimationComplete() {
 }
 
 void VirtualCardEnrollmentManager::Enroll(
-    absl::optional<VirtualCardEnrollmentUpdateResponseCallback>
+    std::optional<VirtualCardEnrollmentUpdateResponseCallback>
         virtual_card_enrollment_update_response_callback) {
   LogUpdateVirtualCardEnrollmentRequestAttempt(
       state_.virtual_card_enrollment_fields.virtual_card_enrollment_source,
@@ -159,7 +159,7 @@ void VirtualCardEnrollmentManager::Enroll(
 
 void VirtualCardEnrollmentManager::Unenroll(
     int64_t instrument_id,
-    absl::optional<VirtualCardEnrollmentUpdateResponseCallback>
+    std::optional<VirtualCardEnrollmentUpdateResponseCallback>
         virtual_card_enrollment_update_response_callback) {
   LogUpdateVirtualCardEnrollmentRequestAttempt(
       VirtualCardEnrollmentSource::kSettingsPage,
@@ -353,7 +353,7 @@ void VirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble() {
       state_.virtual_card_enrollment_fields,
       base::BindOnce(
           &VirtualCardEnrollmentManager::Enroll, weak_ptr_factory_.GetWeakPtr(),
-          /*virtual_card_enrollment_update_response_callback=*/absl::nullopt),
+          /*virtual_card_enrollment_update_response_callback=*/std::nullopt),
       base::BindOnce(
           &VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleCancelled,
           weak_ptr_factory_.GetWeakPtr()));

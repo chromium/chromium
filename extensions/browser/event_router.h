@@ -8,7 +8,9 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
+
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
@@ -17,7 +19,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -31,6 +32,7 @@
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "ipc/ipc_sender.h"
@@ -483,7 +485,8 @@ class EventRouter : public KeyedService,
                                const std::string& event_name,
                                base::TimeTicks dispatch_start_time,
                                int64_t service_worker_version_id,
-                               EventDispatchSource dispatch_source);
+                               EventDispatchSource dispatch_source,
+                               bool lazy_background_active_on_dispatch);
   void DecrementInFlightEventsForServiceWorker(
       const WorkerId& worker_id,
       int event_id,
@@ -568,7 +571,7 @@ struct Event {
   // given context and extension, and false otherwise.
   using WillDispatchCallback = base::RepeatingCallback<bool(
       content::BrowserContext*,
-      Feature::Context,
+      mojom::ContextType,
       const Extension*,
       const base::Value::Dict*,
       std::optional<base::Value::List>& event_args_out,
@@ -595,7 +598,7 @@ struct Event {
   const raw_ptr<content::BrowserContext> restrict_to_browser_context;
 
   // If present, then the event will only be sent to this context type.
-  const absl::optional<Feature::Context> restrict_to_context_type;
+  const absl::optional<mojom::ContextType> restrict_to_context_type;
 
   // If not empty, the event is only sent to extensions with host permissions
   // for this url.
@@ -604,6 +607,10 @@ struct Event {
   // When the event router received the event to be dispatched to the extension.
   // Used in UMA histograms.
   base::TimeTicks dispatch_start_time;
+
+  // `true` if the event was dispatched to a active/running lazy background.
+  // Used in UMA histograms.
+  bool lazy_background_active_on_dispatch;
 
   // Whether a user gesture triggered the event.
   EventRouter::UserGestureState user_gesture;
@@ -637,24 +644,25 @@ struct Event {
   // option to a constructor version for clients that need to disptach events to
   // related browser_contexts. See https://crbug.com/726022.
   Event(events::HistogramValue histogram_value,
-        base::StringPiece event_name,
+        std::string_view event_name,
         base::Value::List event_args);
 
   Event(events::HistogramValue histogram_value,
-        base::StringPiece event_name,
+        std::string_view event_name,
         base::Value::List event_args,
         content::BrowserContext* restrict_to_browser_context,
-        absl::optional<Feature::Context> restrict_to_context_type =
+        absl::optional<mojom::ContextType> restrict_to_context_type =
             absl::nullopt);
 
   Event(events::HistogramValue histogram_value,
-        base::StringPiece event_name,
+        std::string_view event_name,
         base::Value::List event_args,
         content::BrowserContext* restrict_to_browser_context,
-        absl::optional<Feature::Context> restrict_to_context_type,
+        absl::optional<mojom::ContextType> restrict_to_context_type,
         const GURL& event_url,
         EventRouter::UserGestureState user_gesture,
         mojom::EventFilteringInfoPtr info,
+        bool lazy_background_active_on_dispatch = false,
         base::TimeTicks dispatch_start_time = base::TimeTicks{});
 
   ~Event();

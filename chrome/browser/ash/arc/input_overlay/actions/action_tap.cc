@@ -27,7 +27,7 @@ namespace {
 gfx::Size GetBoundingBoxOfChildren(views::View* view) {
   int x = 0;
   int y = 0;
-  for (auto* child : view->children()) {
+  for (views::View* child : view->children()) {
     x = std::max(x, child->bounds().right());
     y = std::max(y, child->bounds().bottom());
   }
@@ -108,8 +108,8 @@ class ActionTap::ActionTapView : public ActionView {
     if (mouse_action != kPrimaryClick && mouse_action != kSecondaryClick) {
       return;
     }
-    const auto& input_binding = action_->GetCurrentDisplayedInput();
-    if (IsMouseBound(input_binding) &&
+    if (const auto& input_binding = action_->GetCurrentDisplayedInput();
+        IsMouseBound(input_binding) &&
         input_binding.mouse_action() ==
             ConvertToMouseActionEnum(mouse_action)) {
       return;
@@ -248,10 +248,10 @@ bool ActionTap::RewriteEvent(const ui::Event& origin,
   DCHECK_NE(IsKeyboardBound(*current_input_), IsMouseBound(*current_input_));
   LogEvent(origin);
   // Rewrite for key event.
-  auto content_bounds = touch_injector_->content_bounds_f();
+  const auto content_bounds = touch_injector_->content_bounds_f();
   if (IsKeyboardBound(*current_input())) {
     auto* key_event = origin.AsKeyEvent();
-    bool rewritten =
+    const bool rewritten =
         RewriteKeyEvent(key_event, content_bounds, rotation_transform,
                         touch_events, keep_original_event);
     LogTouchEvents(touch_events);
@@ -262,8 +262,8 @@ bool ActionTap::RewriteEvent(const ui::Event& origin,
     return false;
   }
   auto* mouse_event = origin.AsMouseEvent();
-  bool rewritten = RewriteMouseEvent(mouse_event, content_bounds,
-                                     rotation_transform, touch_events);
+  const bool rewritten = RewriteMouseEvent(mouse_event, content_bounds,
+                                           rotation_transform, touch_events);
   LogTouchEvents(touch_events);
   return rewritten;
 }
@@ -350,7 +350,7 @@ bool ActionTap::RewriteMouseEvent(const ui::MouseEvent* mouse_event,
                                   std::list<ui::TouchEvent>& rewritten_events) {
   DCHECK(mouse_event);
 
-  auto type = mouse_event->type();
+  const auto type = mouse_event->type();
   if (!current_input_->mouse_types().contains(type) ||
       (current_input_->mouse_flags() & mouse_event->changed_button_flags()) ==
           0) {
@@ -384,13 +384,12 @@ bool ActionTap::RewriteMouseEvent(const ui::MouseEvent* mouse_event,
 }
 
 std::unique_ptr<ActionProto> ActionTap::ConvertToProtoIfCustomized() const {
-  auto action_proto = Action::ConvertToProtoIfCustomized();
-  if (!action_proto) {
-    return nullptr;
+  if (auto action_proto = Action::ConvertToProtoIfCustomized()) {
+    action_proto->set_action_type(ActionType::TAP);
+    return action_proto;
   }
 
-  action_proto->set_action_type(ActionType::TAP);
-  return action_proto;
+  return nullptr;
 }
 
 }  // namespace arc::input_overlay

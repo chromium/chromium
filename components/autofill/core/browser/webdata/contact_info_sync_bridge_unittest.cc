@@ -5,17 +5,18 @@
 #include "components/autofill/core/browser/webdata/contact_info_sync_bridge.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/contact_info_sync_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
+#include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/data_batch.h"
@@ -64,7 +65,7 @@ std::vector<AutofillProfile> ExtractAutofillProfilesFromDataBatch(
   return profiles;
 }
 
-AutofillProfile TestProfile(base::StringPiece guid) {
+AutofillProfile TestProfile(std::string_view guid) {
   return AutofillProfile(std::string(guid), AutofillProfile::Source::kAccount,
                          i18n_model_definition::kLegacyHierarchyCountryCode);
 }
@@ -77,6 +78,7 @@ class ContactInfoSyncBridgeTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&table_);
+    db_.AddTable(&sync_metadata_table_);
     db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"));
     ON_CALL(backend_, GetDatabase()).WillByDefault(testing::Return(&db_));
 
@@ -144,7 +146,8 @@ class ContactInfoSyncBridgeTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   testing::NiceMock<MockAutofillWebDataBackend> backend_;
-  AutofillTable table_;
+  AddressAutofillTable table_;
+  AutofillSyncMetadataTable sync_metadata_table_;
   WebDatabase db_;
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
   std::unique_ptr<ContactInfoSyncBridge> bridge_;

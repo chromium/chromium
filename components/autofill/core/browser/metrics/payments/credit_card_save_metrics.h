@@ -225,6 +225,9 @@ void LogSaveCvcPromptResultMetric(SaveCardPromptResult metric,
                                   bool is_uploading,
                                   bool is_reshow);
 
+void LogCvcInfoBarMetric(AutofillMetrics::InfoBarMetric metric,
+                         bool is_uploading);
+
 void LogSaveCardRequestExpirationDateReasonMetric(
     SaveCardRequestExpirationDateReason metric);
 

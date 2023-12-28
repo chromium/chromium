@@ -52,13 +52,8 @@ void DesktopCapturerAsh::CaptureFrame() {
   const gfx::Rect bounds(window->bounds().size());
   ui::GrabWindowSnapshotAsync(
       window, bounds,
-      base::BindOnce(
-          [](Callback* callback, gfx::Image image) {
-            callback->OnCaptureResult(
-                Result::SUCCESS,
-                std::make_unique<content::DesktopFrameSkia>(image.AsBitmap()));
-          },
-          callback_));
+      base::BindOnce(&DesktopCapturerAsh::OnGrabWindowSnapsot,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 bool DesktopCapturerAsh::IsOccluded(const webrtc::DesktopVector& pos) {
@@ -69,5 +64,11 @@ void DesktopCapturerAsh::SetSharedMemoryFactory(
     std::unique_ptr<webrtc::SharedMemoryFactory> shared_memory_factory) {}
 
 void DesktopCapturerAsh::SetExcludedWindow(webrtc::WindowId window) {}
+
+void DesktopCapturerAsh::OnGrabWindowSnapsot(gfx::Image snapshot) {
+  callback_->OnCaptureResult(
+      Result::SUCCESS,
+      std::make_unique<content::DesktopFrameSkia>(snapshot.AsBitmap()));
+}
 
 }  // namespace content

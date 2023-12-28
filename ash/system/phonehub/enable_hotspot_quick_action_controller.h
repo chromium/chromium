@@ -40,9 +40,8 @@ class EnableHotspotQuickActionController
   // Set the item (including icon, label and tooltips) to a certain state.
   void SetState(ActionState state);
 
-  raw_ptr<phonehub::TetherController, ExperimentalAsh> tether_controller_ =
-      nullptr;
-  raw_ptr<QuickActionItem, ExperimentalAsh> item_ = nullptr;
+  raw_ptr<phonehub::TetherController> tether_controller_ = nullptr;
+  raw_ptr<QuickActionItem> item_ = nullptr;
 };
 
 }  // namespace ash

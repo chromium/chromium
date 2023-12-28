@@ -47,7 +47,7 @@ class ASH_EXPORT TouchHudRenderer : public views::WidgetObserver {
   friend class TouchHudProjectionTest;
 
   // The parent widget that all touch points would be drawn in.
-  raw_ptr<views::Widget, ExperimentalAsh> parent_widget_;
+  raw_ptr<views::Widget> parent_widget_;
 
   // A map of touch ids to TouchPointView.
   std::map<int, TouchPointView*> points_;

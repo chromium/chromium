@@ -6,9 +6,10 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_FILLING_ADDRESS_UTIL_H_
 
 #include <stdint.h>
-
 #include <optional>
 #include <string>
+
+#include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
 
@@ -18,15 +19,16 @@ class AutofillType;
 struct FormFieldData;
 
 // Returns the appropriate `profile` value based on `field_type` to fill
-// into `field_data`, and nullopt if no value could be found for the given
-// `field_data`.
-std::optional<std::u16string> GetValueForProfile(
-    const AutofillProfile& profile,
-    const std::string& app_locale,
-    const AutofillType& field_type,
-    const FormFieldData& field_data,
-    AddressNormalizer* address_normalizer,
-    std::string* failure_to_fill = nullptr);
+// into `field_data`, as well as the field type used to retrieve that value.
+// Returns std::nullopt if no value could be found for the given `field_data`
+// and `field_type`.
+std::optional<std::pair<std::u16string, FieldType>>
+GetFillingValueAndTypeForProfile(const AutofillProfile& profile,
+                                 const std::string& app_locale,
+                                 const AutofillType& field_type,
+                                 const FormFieldData& field_data,
+                                 AddressNormalizer* address_normalizer,
+                                 std::string* failure_to_fill = nullptr);
 
 // Returns the phone number value for the given `field_max_length`. The
 // returned value might be `number`, or `city_and_number`, or could possibly

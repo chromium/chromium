@@ -69,7 +69,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"
-#include "chrome/browser/auth_notification_types.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/application_lifetime_chromeos.h"
@@ -289,7 +288,7 @@ AccountId GetPublicSessionAutoLoginAccountId(
 int CountRegularUsers(const user_manager::UserList& users) {
   // Counts regular device users that can log in.
   int regular_users_counter = 0;
-  for (auto* user : users) {
+  for (user_manager::User* user : users) {
     // Skip kiosk apps for login screen user list. Kiosk apps as pods (aka new
     // kiosk UI) is currently disabled and it gets the apps directly from
     // KioskChromeAppManager, ArcKioskAppManager and WebKioskAppManager.
@@ -365,8 +364,9 @@ ExistingUserController::ExistingUserController()
     : cros_settings_(CrosSettings::Get()),
       network_state_helper_(new login::NetworkStateHelper),
       pin_salt_storage_(std::make_unique<quick_unlock::PinSaltStorage>()) {
-  registrar_.Add(this, chrome::NOTIFICATION_AUTH_SUPPLIED,
-                 content::NotificationService::AllSources());
+  HttpAuthDialog::AddObserver(this);
+
+  enable_ash_httpauth_ = HttpAuthDialog::Enable();
   show_user_names_subscription_ = cros_settings_->AddSettingsObserver(
       kAccountsPrefShowUserNamesOnSignIn,
       base::BindRepeating(&ExistingUserController::DeviceSettingsChanged,
@@ -446,17 +446,18 @@ void ExistingUserController::UpdateLoginDisplay(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// ExistingUserController, content::NotificationObserver implementation:
+// ExistingUserController, HttpAuthHandler implementation:
 //
 
-void ExistingUserController::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(type, chrome::NOTIFICATION_AUTH_SUPPLIED);
+void ExistingUserController::HttpAuthDialogShown(
+    content::WebContents* web_contents) {}
 
-  // Don't transfer http auth cache on NOTIFICATION_AUTH_SUPPLIED after user
-  // session starts.
+void ExistingUserController::HttpAuthDialogCancelled(
+    content::WebContents* web_contents) {}
+
+void ExistingUserController::HttpAuthDialogSupplied(
+    content::WebContents* web_contents) {
+  // Don't transfer http auth cache after user session starts.
   if (session_manager::SessionManager::Get()->IsSessionStarted()) {
     return;
   }
@@ -466,7 +467,7 @@ void ExistingUserController::Observe(
   // main `g_browser_process` request context (see bug
   // http://crosbug.com/24861). So we transfer any credentials to the global
   // request context here.
-  // The issue we have here is that the NOTIFICATION_AUTH_SUPPLIED is sent
+  // The issue we have here is that the HttpAuthDialogSupplied is sent
   // just after the UI is closed but before the new credentials were stored
   // in the profile. Therefore we have to give it some time to make sure it
   // has been updated before we copy it.
@@ -481,6 +482,7 @@ void ExistingUserController::Observe(
 // ExistingUserController, private:
 
 ExistingUserController::~ExistingUserController() {
+  HttpAuthDialog::RemoveObserver(this);
   ui::UserActivityDetector* activity_detector = ui::UserActivityDetector::Get();
   if (activity_detector) {
     activity_detector->RemoveObserver(this);
@@ -1103,7 +1105,7 @@ user_manager::UserList ExistingUserController::ExtractLoginUsers(
   CrosSettings::Get()->GetBoolean(kAccountsPrefShowUserNamesOnSignIn,
                                   &show_users_on_signin);
   user_manager::UserList filtered_users;
-  for (auto* user : users) {
+  for (user_manager::User* user : users) {
     // Skip kiosk apps for login screen user list. Kiosk apps as pods (aka new
     // kiosk UI) is currently disabled and it gets the apps directly from
     // KioskChromeAppManager, ArcKioskAppManager and WebKioskAppManager.

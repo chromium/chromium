@@ -37,6 +37,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/device_activity/device_activity_sampler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/kiosk_heartbeat/kiosk_heartbeat_telemetry_sampler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_event_detector.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_sampler.h"
@@ -86,6 +87,7 @@ constexpr char kPsrTelemetry[] = "psr_telemetry";
 constexpr char kDelayedPeripheralTelemetry[] = "delayed_peripheral_telemetry";
 constexpr char kDisplaysTelemetry[] = "displays_telemetry";
 constexpr char kDeviceActivityTelemetry[] = "device_activity_telemetry";
+constexpr char kKioskHeartbeatTelemetry[] = "kiosk_heartbeat_telemetry";
 constexpr char kWebsiteTelemetry[] = "website_telemetry";
 
 }  // namespace
@@ -214,8 +216,8 @@ void MetricReportingManager::DeviceSettingsUpdated() {
   }
 }
 
-std::vector<CollectorBase*> MetricReportingManager::GetTelemetryCollectors(
-    MetricEventType event_type) {
+std::vector<raw_ptr<CollectorBase, VectorExperimental>>
+MetricReportingManager::GetTelemetryCollectors(MetricEventType event_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (event_type) {
     case WIFI_SIGNAL_STRENGTH_LOW:
@@ -256,8 +258,8 @@ MetricReportingManager::MetricReportingManager(
   event_report_queue_ = delegate_->CreateMetricReportQueue(
       EventType::kDevice, Destination::EVENT_METRIC, Priority::SLOW_BATCH,
       /*rate_limiter=*/nullptr, source_info);
-  immediate_event_report_queue_ = delegate_->CreateMetricReportQueue(
-      EventType::kDevice, Destination::EVENT_METRIC, Priority::IMMEDIATE,
+  crash_event_report_queue_ = delegate_->CreateMetricReportQueue(
+      EventType::kDevice, Destination::CRASH_EVENTS, Priority::IMMEDIATE,
       /*rate_limiter=*/nullptr, std::move(source_info));
   DelayedInit();
 
@@ -284,7 +286,7 @@ void MetricReportingManager::Shutdown() {
   telemetry_report_queue_.reset();
   user_telemetry_report_queue_.reset();
   event_report_queue_.reset();
-  immediate_event_report_queue_.reset();
+  crash_event_report_queue_.reset();
   user_event_report_queue_.reset();
   app_event_report_queue_.reset();
   website_event_report_queue_.reset();
@@ -379,6 +381,7 @@ void MetricReportingManager::DelayedInitOnAffiliatedLogin(Profile* profile) {
   InitAudioCollectors();
   InitDisplayCollectors();
   InitDeviceActivityCollector();
+  InitKioskHeartbeatTelemetryCollector();
 
   initial_upload_timer_.Start(FROM_HERE, GetUploadDelay(), this,
                               &MetricReportingManager::UploadTelemetry);
@@ -696,7 +699,7 @@ void MetricReportingManager::InitFatalCrashCollectors() {
 
   if (base::FeatureList::IsEnabled(kEnableFatalCrashEventsObserver)) {
     event_observer_managers_.emplace_back(delegate_->CreateEventObserverManager(
-        FatalCrashEventsObserver::Create(), immediate_event_report_queue_.get(),
+        FatalCrashEventsObserver::Create(), crash_event_report_queue_.get(),
         &reporting_settings_, ash::kReportDeviceCrashReportInfo,
         metrics::kReportDeviceCrashReportInfoDefaultValue,
         /*collector_pool=*/this));
@@ -786,7 +789,25 @@ void MetricReportingManager::InitDeviceActivityCollector() {
   samplers_.push_back(std::move(device_activity_sampler));
 }
 
-std::vector<CollectorBase*>
+void MetricReportingManager::InitKioskHeartbeatTelemetryCollector() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto heartbeat_sampler = std::make_unique<KioskHeartbeatTelemetrySampler>();
+  InitPeriodicTelemetryCollector(
+      /*name=*/kKioskHeartbeatTelemetry,
+      /*sampler=*/heartbeat_sampler.get(),
+      /*queue=*/kiosk_heartbeat_telemetry_report_queue_.get(),
+      /*enable_setting_path=*/::ash::kHeartbeatEnabled,
+      /*enable_default_value=*/metrics::kHeartbeatTelemetryDefaultValue,
+      /*rate_setting_path=*/::ash::kHeartbeatFrequency,
+      /*default_rate=*/
+      metrics::GetDefaultCollectionRate(
+          metrics::kDefaultHeartbeatTelemetryCollectionRate),
+      /*rate_unit_to_ms=*/1,
+      /*init_delay=*/metrics::kDefaultHeartbeatTelemetryCollectionRate);
+  samplers_.push_back(std::move(heartbeat_sampler));
+}
+
+std::vector<raw_ptr<CollectorBase, VectorExperimental>>
 MetricReportingManager::GetTelemetryCollectorsFromSetting(
     std::string_view setting_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -798,7 +819,7 @@ MetricReportingManager::GetTelemetryCollectorsFromSetting(
     return {};
   }
 
-  std::vector<CollectorBase*> samplers;
+  std::vector<raw_ptr<CollectorBase, VectorExperimental>> samplers;
   for (const base::Value& telemetry : *telemetry_list) {
     if (samplers.size() == telemetry_collectors_.size()) {
       // All samplers are already used, remaining telemetry names would be

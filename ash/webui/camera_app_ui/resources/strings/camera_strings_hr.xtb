@@ -78,6 +78,7 @@
 <translation id="4705093842003735294">Puna razlučivost</translation>
 <translation id="4864143361253542638">Popis skeniranih stranica</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Kopiranje adrese veze <ph name="URL" /></translation>
 <translation id="491895758387112773">Emitiraj videosnimku na više kanala</translation>
 <translation id="495170559598752135">Radnje</translation>
 <translation id="4984613436295737187">Quad HD (1440 p)</translation>
@@ -129,6 +130,7 @@ Ako su vaše povratne informacije o kvaliteti slika ili videozapisa, priložite 
 <translation id="7450541714075000668">Tekst kopiran</translation>
 <translation id="7488619942230388918">Snimite GIF videozapis</translation>
 <translation id="7557677699350329807">Prijeđi na sljedeći fotoaparat</translation>
+<translation id="7562584071994185503">Kopiranje teksta <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Pauzirano</translation>
 <translation id="7608223098072244877">4 puta 4</translation>
 <translation id="761421184377987513">Kreće se prema dolje ulijevo</translation>
@@ -141,6 +143,7 @@ Ako su vaše povratne informacije o kvaliteti slika ili videozapisa, priložite 
 <translation id="7726641833034062494">Snimite normalan videozapis</translation>
 <translation id="7748344063862150053">Gornji desni kut dokumenta</translation>
 <translation id="7933675232020478311">Kreće se prema dolje udesno</translation>
+<translation id="7983668134180549431">Tekst je prepoznat.</translation>
 <translation id="8079255378695216066">Nije moguće započeti snimanje</translation>
 <translation id="8120146556401698679">Pomicanje, naginjanje, zumiranje</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
@@ -150,6 +153,7 @@ Ako su vaše povratne informacije o kvaliteti slika ili videozapisa, priložite 
 <translation id="8346544573713510785">Neka HAL kamere skalira okvire</translation>
 <translation id="8425673304802773841">Nagni dolje</translation>
 <translation id="8428213095426709021">Postavke</translation>
+<translation id="8609951387004618906">Otvori <ph name="URL" /></translation>
 <translation id="8629662593426079630">360 p</translation>
 <translation id="8711011893539266636">Prebacivanje isključivanja zvuka mikrofona. Isključivanje zvuka je uključeno</translation>
 <translation id="8730621377337864115">Gotovo</translation>
@@ -159,7 +163,6 @@ Ako su vaše povratne informacije o kvaliteti slika ili videozapisa, priložite 
 <translation id="8870695351537079478">Pokretanje snimanja nije uspjelo</translation>
 <translation id="8880167521484863515">4 naprema 3</translation>
 <translation id="8903921497873541725">Povećaj</translation>
-<translation id="8926890870105777777">Pridruživanje mreži <ph name="WIFINAME" /></translation>
 <translation id="9045010116236796332">Postavite sve rubove dokumenta unutar okvira</translation>
 <translation id="9045155556724273246">Deset sekundi</translation>
 <translation id="906331135292332864">Obrada slike...</translation>

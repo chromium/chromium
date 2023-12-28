@@ -209,3 +209,70 @@ TEST_F(BrowsingDataRemoverImplTest, PerformAfterBrowserStateDestruction) {
     return remaining_calls == 0;
   }));
 }
+
+// Tests that BrowsingDataRemoverImpl::RemoveInRange() invokes the observers.
+TEST_F(BrowsingDataRemoverImplTest, InvokesObservers_RemoveInRange) {
+  TestBrowsingDataRemoverObserver observer;
+  ASSERT_TRUE(observer.last_remove_mask() != kRemoveMask);
+
+  base::ScopedObservation<BrowsingDataRemover, BrowsingDataRemoverObserver>
+      scoped_observer(&observer);
+  scoped_observer.Observe(&browsing_data_remover_);
+
+  base::Time delete_start_time = base::Time::Now() - base::Hours(1);
+  base::Time delete_end_time = base::Time::Now();
+  browsing_data_remover_.RemoveInRange(delete_start_time, delete_end_time,
+                                       kRemoveMask, base::DoNothing());
+
+  TestBrowsingDataRemoverObserver* observer_ptr = &observer;
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+    // Spin the RunLoop as WaitUntilConditionOrTimeout doesn't.
+    base::RunLoop().RunUntilIdle();
+    return observer_ptr->last_remove_mask() == kRemoveMask;
+  }));
+}
+
+// Tests that BrowsingDataRemoverImpl::RemoveInRange() can be called multiple
+// times.
+TEST_F(BrowsingDataRemoverImplTest, SerializeRemovals_RemoveInRange) {
+  __block int remaining_calls = 2;
+  base::Time delete_start_time = base::Time::Now() - base::Hours(1);
+  base::Time delete_end_time = base::Time::Now();
+  browsing_data_remover_.RemoveInRange(delete_start_time, delete_end_time,
+                                       kRemoveMask, base::BindOnce(^{
+                                         --remaining_calls;
+                                       }));
+
+  browsing_data_remover_.RemoveInRange(delete_start_time, delete_end_time,
+                                       kRemoveMask, base::BindOnce(^{
+                                         --remaining_calls;
+                                       }));
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+    // Spin the RunLoop as WaitUntilConditionOrTimeout doesn't.
+    base::RunLoop().RunUntilIdle();
+    return remaining_calls == 0;
+  }));
+}
+
+// Tests that BrowsingDataRemoverImpl::RemoveInRange() can finish performing its
+// operation even if the BrowserState is destroyed.
+TEST_F(BrowsingDataRemoverImplTest,
+       PerformAfterBrowserStateDestruction_RemoveInRange) {
+  __block int remaining_calls = 1;
+  base::Time delete_start_time = base::Time::Now() - base::Hours(1);
+  base::Time delete_end_time = base::Time::Now();
+  browsing_data_remover_.RemoveInRange(delete_start_time, delete_end_time,
+                                       kRemoveMask, base::BindOnce(^{
+                                         --remaining_calls;
+                                       }));
+
+  // Simulate destruction of BrowserState.
+  browsing_data_remover_.Shutdown();
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+    // Spin the RunLoop as WaitUntilConditionOrTimeout doesn't.
+    base::RunLoop().RunUntilIdle();
+    return remaining_calls == 0;
+  }));
+}

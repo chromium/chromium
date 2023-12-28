@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, NoAccessingForWebApp) {
 
   // Launch `app_id` for the web app.
   web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
-  web_app::NavigateToURLAndWait(browser(), url);
+  web_app::NavigateViaLinkClickToURLAndWait(browser(), url);
   content::WebContents* web_content =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_content);

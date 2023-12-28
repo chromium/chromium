@@ -37,7 +37,7 @@ class KEYBOARD_EXPORT KeyboardLayoutManager : public aura::LayoutManager {
                       const gfx::Rect& requested_bounds) override;
 
  private:
-  raw_ptr<KeyboardUIController, ExperimentalAsh> controller_;
+  raw_ptr<KeyboardUIController> controller_;
 };
 
 }  // namespace keyboard

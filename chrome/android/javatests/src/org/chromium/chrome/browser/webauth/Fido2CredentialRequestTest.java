@@ -66,6 +66,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.webauthn.AuthenticatorImpl;
+import org.chromium.components.webauthn.CreateConfirmationUiDelegate;
 import org.chromium.components.webauthn.Fido2Api;
 import org.chromium.components.webauthn.Fido2ApiCallHelper;
 import org.chromium.components.webauthn.Fido2ApiTestHelper;
@@ -678,29 +679,6 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    public void testMakeCredential_noEligibleParameters2() {
-        PublicKeyCredentialCreationOptions customOptions = mCreationOptions;
-        PublicKeyCredentialParameters parameters = new PublicKeyCredentialParameters();
-        parameters.type = 10; // Not a valid type.
-        customOptions.publicKeyParameters = new PublicKeyCredentialParameters[] {parameters};
-
-        mRequest.handleMakeCredentialRequest(
-                mContext,
-                customOptions,
-                mFrameHost,
-                /* maybeClientDataHash= */ null,
-                mOrigin,
-                (responseStatus, response) ->
-                        mCallback.onRegisterResponse(responseStatus, response),
-                errorStatus -> mCallback.onError(errorStatus));
-        mCallback.blockUntilCalled();
-        Assert.assertEquals(
-                mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.ALGORITHM_UNSUPPORTED));
-        Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
-    }
-
-    @Test
-    @SmallTest
     public void testMakeCredential_parametersContainEligibleAndNoneligible() {
         PublicKeyCredentialCreationOptions customOptions = mCreationOptions;
         PublicKeyCredentialParameters parameters = new PublicKeyCredentialParameters();
@@ -736,7 +714,7 @@ public class Fido2CredentialRequestTest {
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
 
         PublicKeyCredentialCreationOptions customOptions = mCreationOptions;
-        customOptions.excludeCredentials = null;
+        customOptions.excludeCredentials = new PublicKeyCredentialDescriptor[0];
         mRequest.handleMakeCredentialRequest(
                 mContext,
                 customOptions,
@@ -782,7 +760,7 @@ public class Fido2CredentialRequestTest {
     @SmallTest
     public void testAuthenticatorImplMakeCredential_withConfirmationUi_success() {
         boolean[] wasCalled = new boolean[1];
-        AuthenticatorImpl.CreateConfirmationUiDelegate createConfirmationUiDelegate =
+        CreateConfirmationUiDelegate createConfirmationUiDelegate =
                 (accept, reject) -> {
                     wasCalled[0] = true;
                     accept.run();
@@ -812,7 +790,7 @@ public class Fido2CredentialRequestTest {
     @SmallTest
     public void testAuthenticatorImplMakeCredential_withConfirmationUi_rejected() {
         boolean[] wasCalled = new boolean[1];
-        AuthenticatorImpl.CreateConfirmationUiDelegate createConfirmationUiDelegate =
+        CreateConfirmationUiDelegate createConfirmationUiDelegate =
                 (accept, reject) -> {
                     wasCalled[0] = true;
                     reject.run();
@@ -1584,7 +1562,7 @@ public class Fido2CredentialRequestTest {
     public void testGetAssertion_emptyAllowCredentials1() {
         // Passes conversion and gets rejected by GmsCore
         PublicKeyCredentialRequestOptions customOptions = mRequestOptions;
-        customOptions.allowCredentials = null;
+        customOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createErrorIntent(
                         Fido2Api.NOT_ALLOWED_ERR,
@@ -1617,7 +1595,7 @@ public class Fido2CredentialRequestTest {
     public void testGetAssertion_emptyAllowCredentials2() {
         // Passes conversion and gets rejected by GmsCore
         PublicKeyCredentialRequestOptions customOptions = mRequestOptions;
-        customOptions.allowCredentials = null;
+        customOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createErrorIntent(
                         Fido2Api.NOT_ALLOWED_ERR,

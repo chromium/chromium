@@ -67,7 +67,7 @@ SMILTime ComputeNextRepeatTime(SMILTime interval_begin,
 
 void SMILInstanceTimeList::Append(SMILTime time, SMILTimeOrigin origin) {
   instance_times_.push_back(SMILTimeWithOrigin(time, origin));
-  AddOrigin(origin);
+  time_origins_.Put(origin);
 }
 
 void SMILInstanceTimeList::InsertSortedAndUnique(SMILTime time,
@@ -87,12 +87,13 @@ void SMILInstanceTimeList::InsertSortedAndUnique(SMILTime time,
   instance_times_.insert(
       static_cast<wtf_size_t>(position - instance_times_.begin()),
       time_with_origin);
-  AddOrigin(origin);
+  time_origins_.Put(origin);
 }
 
 void SMILInstanceTimeList::RemoveWithOrigin(SMILTimeOrigin origin) {
-  if (!HasOrigin(origin))
+  if (!time_origins_.Has(origin)) {
     return;
+  }
   auto* tail =
       std::remove_if(instance_times_.begin(), instance_times_.end(),
                      [origin](const SMILTimeWithOrigin& instance_time) {
@@ -100,7 +101,7 @@ void SMILInstanceTimeList::RemoveWithOrigin(SMILTimeOrigin origin) {
                      });
   instance_times_.Shrink(
       static_cast<wtf_size_t>(tail - instance_times_.begin()));
-  ClearOrigin(origin);
+  time_origins_.Remove(origin);
 }
 
 void SMILInstanceTimeList::Sort() {

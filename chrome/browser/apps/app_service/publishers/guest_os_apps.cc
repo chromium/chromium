@@ -190,6 +190,18 @@ AppPtr GuestOSApps::CreateApp(
   app->intent_filters =
       CreateIntentFilterForAppService(mime_types_service, registration);
 
+  app->SetExtraField("vm_name", registration.VmName());
+  app->SetExtraField("container_name", registration.ContainerName());
+  app->SetExtraField("desktop_file_id", registration.DesktopFileId());
+  app->SetExtraField("exec", registration.Exec());
+  app->SetExtraField("executable_file_name", registration.ExecutableFileName());
+  app->SetExtraField("no_display", registration.NoDisplay());
+  app->SetExtraField("terminal", registration.Terminal());
+  app->SetExtraField("scaled", registration.IsScaled());
+  app->SetExtraField("package_id", registration.PackageId());
+  app->SetExtraField("startup_wm_class", registration.StartupWmClass());
+  app->SetExtraField("startup_notify", registration.StartupNotify());
+
   // Allow subclasses of GuestOSApps to modify app.
   CreateAppOverrides(registration, app.get());
 
@@ -221,7 +233,7 @@ apps::IntentFilters CreateIntentFilterForAppService(
   // them with a single "text/*" mime type.
   if (base::Contains(mime_types, "text/plain")) {
     base::EraseIf(mime_types, [](const std::string& s) {
-        return base::StartsWith(s, "text/");
+      return base::StartsWith(s, "text/");
     });
     mime_types.push_back("text/*");
   }

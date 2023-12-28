@@ -935,7 +935,8 @@ TEST_F(IndexedDBFactoryTest, DatabaseFailedOpen) {
     IndexedDBBucketContext* bucket_context =
         factory()->GetBucketContextForTesting(bucket_locator.id);
     ASSERT_TRUE(bucket_context);
-    EXPECT_FALSE(base::Contains(bucket_context->databases(), db_name));
+    EXPECT_FALSE(
+        base::Contains(bucket_context->GetDatabasesForTesting(), db_name));
   }
 }
 

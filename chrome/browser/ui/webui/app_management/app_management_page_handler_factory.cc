@@ -26,7 +26,7 @@
 
 AppManagementPageHandlerFactory::AppManagementPageHandlerFactory(
     Profile* profile,
-    std::unique_ptr<AppManagementPageHandler::Delegate> delegate)
+    std::unique_ptr<AppManagementPageHandlerBase::Delegate> delegate)
     : profile_(profile), delegate_(std::move(delegate)) {}
 
 AppManagementPageHandlerFactory::~AppManagementPageHandlerFactory() = default;
@@ -43,6 +43,6 @@ void AppManagementPageHandlerFactory::CreatePageHandler(
     mojo::PendingReceiver<app_management::mojom::PageHandler> receiver) {
   DCHECK(page);
 
-  page_handler_ = std::make_unique<AppManagementPageHandler>(
+  page_handler_ = std::make_unique<AppManagementPageHandlerBase>(
       std::move(receiver), std::move(page), profile_, *delegate_);
 }

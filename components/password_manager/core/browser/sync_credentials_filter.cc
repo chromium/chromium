@@ -37,6 +37,8 @@ bool SyncCredentialsFilter::ShouldSave(const PasswordForm& form) const {
   if (form.form_data.is_gaia_with_skip_save_password_form)
     return false;
 
+  // Note that `sync_service` may be null in advanced cases like --disable-sync
+  // being used as per syncer::IsSyncAllowedByFlag().
   const syncer::SyncService* sync_service =
       sync_service_factory_function_.Run();
 
@@ -70,7 +72,10 @@ bool SyncCredentialsFilter::ShouldSave(const PasswordForm& form) const {
   // Let's assume that if the browser is signed-in, new passwords are saved to
   // the primary signed-in account. Per sync_util::GetAccountForSaving(), that's
   // not always true, but let's not overcomplicate.
-  const CoreAccountInfo primary_account = sync_service->GetAccountInfo();
+  const CoreAccountInfo primary_account = sync_service != nullptr
+                                              ? sync_service->GetAccountInfo()
+                                              : CoreAccountInfo();
+
   if (!primary_account.IsEmpty()) {
     // This returns false when `primary_account` just signed-in on the web and
     // already made it to the IdentityManager.

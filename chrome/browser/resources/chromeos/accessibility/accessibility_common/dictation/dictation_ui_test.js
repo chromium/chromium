@@ -212,8 +212,9 @@ AX_TEST_F(
       });
     });
 
+// TODO(crbug.com/1510428): This test is flaky.
 AX_TEST_F(
-    'DictationUIE2ETest', 'HintsTimeoutWithChromeVox',
+    'DictationUIE2ETest', 'DISABLED_HintsTimeoutWithChromeVox',
     async function() {
       // Turn on ChromeVox
       await this.setPref(Dictation.SPOKEN_FEEDBACK_PREF, true);

@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -30,6 +31,7 @@ class TreeScopeTest : public ::testing::Test {
   }
 
  private:
+  test::TaskEnvironment task_environment_;
   ScopedNullExecutionContext execution_context_;
   Persistent<Document> document_;
   Persistent<Element> body_;

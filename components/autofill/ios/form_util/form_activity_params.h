@@ -25,7 +25,7 @@ struct BaseFormActivityParams {
   virtual ~BaseFormActivityParams();
 
   // Comparison operator for the BaseFormActivityParams structure.
-  bool operator==(const BaseFormActivityParams& params) const;
+  bool operator==(const BaseFormActivityParams&) const;
 
   // Reads data from a message into a BaseFormActivityParams object.
   // Returns whether reading the information from the message was successful.

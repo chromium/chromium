@@ -26,15 +26,12 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/base_tracing.h"
-#include "base/trace_event/memory_dump_manager.h"
-#include "base/trace_event/process_memory_dump.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
@@ -174,17 +171,10 @@ std::tuple<bool, leveldb::Status> AreSchemasKnown(
 IndexedDBFactory::IndexedDBFactory(IndexedDBContextImpl* context)
     : context_(context) {
   DCHECK(context);
-  base::trace_event::MemoryDumpManager::GetInstance()
-      ->RegisterDumpProviderWithSequencedTaskRunner(
-          this, "IndexedDBFactory",
-          base::SequencedTaskRunner::GetCurrentDefault(),
-          base::trace_event::MemoryDumpProvider::Options());
 }
 
 IndexedDBFactory::~IndexedDBFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
-      this);
 }
 
 void IndexedDBFactory::AddReceiver(
@@ -288,7 +278,6 @@ void IndexedDBFactory::Open(
   const storage::BucketLocator bucket_locator = bucket->ToBucketLocator();
   const base::FilePath data_directory = context_->GetDataPath(bucket_locator);
 
-  IndexedDBDatabase::Identifier unique_identifier(bucket_locator, name);
   IndexedDBBucketContextHandle bucket_context_handle;
   leveldb::Status s;
   IndexedDBDatabaseError error;
@@ -323,7 +312,7 @@ void IndexedDBFactory::Open(
   }
   auto database = std::make_unique<IndexedDBDatabase>(
       name, *bucket_context_handle.bucket_context(),
-      std::move(unique_identifier));
+      IndexedDBDatabase::Identifier(bucket_locator, name));
   // The database must be added before the schedule call, as the
   // CreateDatabaseDeleteClosure can be called synchronously.
   auto* database_ptr = database.get();
@@ -343,18 +332,15 @@ void IndexedDBFactory::DeleteDatabase(
   const absl::optional<storage::BucketInfo>& bucket =
       receivers_.current_context().bucket;
 
-  auto factory_client = std::make_unique<IndexedDBFactoryClient>(
-      std::move(pending_factory_client));
-
   // Return error if failed to retrieve bucket from the QuotaManager.
   if (!bucket) {
-    factory_client->OnError(IndexedDBDatabaseError(
-        blink::mojom::IDBException::kUnknownError, u"Internal error."));
+    IndexedDBFactoryClient(std::move(pending_factory_client))
+        .OnError(IndexedDBDatabaseError(
+            blink::mojom::IDBException::kUnknownError, u"Internal error."));
     return;
   }
 
   const storage::BucketLocator bucket_locator = bucket->ToBucketLocator();
-  IndexedDBDatabase::Identifier unique_identifier(bucket_locator, name);
   IndexedDBBucketContextHandle bucket_context_handle;
   leveldb::Status s;
   IndexedDBDatabaseError error;
@@ -366,76 +352,23 @@ void IndexedDBFactory::DeleteDatabase(
   if (!bucket_context_handle.IsHeld() ||
       !bucket_context_handle.bucket_context()) {
     if (s.IsNotFound()) {
-      factory_client->OnDeleteSuccess(/*version=*/0);
+      IndexedDBFactoryClient(std::move(pending_factory_client))
+          .OnDeleteSuccess(/*version=*/0);
       return;
     }
 
-    factory_client->OnError(error);
+    IndexedDBFactoryClient(std::move(pending_factory_client)).OnError(error);
     if (s.IsCorruption()) {
       HandleBackingStoreCorruption(bucket_locator, error);
     }
     return;
   }
 
-  // First, check the databases that are already represented by
-  // `IndexedDBDatabase` objects. If one exists, schedule it to be deleted and
-  // we're done.
-  auto it = bucket_context_handle->databases().find(name);
-  if (it != bucket_context_handle->databases().end()) {
-    base::WeakPtr<IndexedDBDatabase> database = it->second->AsWeakPtr();
-    database->ScheduleDeleteDatabase(
-        std::move(factory_client),
-        base::BindOnce(&IndexedDBFactory::OnDatabaseDeleted,
-                       idb_context_destruction_weak_factory_.GetWeakPtr(),
-                       bucket_locator));
-    if (force_close) {
-      leveldb::Status status = database->ForceCloseAndRunTasks();
-      if (!status.ok()) {
-        OnDatabaseError(bucket_locator, status, "Error aborting transactions.");
-      }
-    }
-    return;
-  }
-
-  // Otherwise, verify that a database with the given name exists in the backing
-  // store. If not, report success.
-  std::vector<std::u16string> names;
-  s = bucket_context_handle->backing_store()->GetDatabaseNames(&names);
-  if (!s.ok()) {
-    error = IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError,
-                                   "Internal error opening backing store for "
-                                   "indexedDB.deleteDatabase.");
-    factory_client->OnError(error);
-    if (s.IsCorruption()) {
-      HandleBackingStoreCorruption(bucket_locator, error);
-    }
-    return;
-  }
-
-  if (!base::Contains(names, name)) {
-    factory_client->OnDeleteSuccess(/*version=*/0);
-    return;
-  }
-
-  // If it exists but does not already have an `IndexedDBDatabase` object,
-  // create it and initiate deletion.
-  auto database = std::make_unique<IndexedDBDatabase>(
-      name, *bucket_context_handle.bucket_context(),
-      std::move(unique_identifier));
-  base::WeakPtr<IndexedDBDatabase> database_ptr =
-      bucket_context_handle->AddDatabase(name, std::move(database))
-          ->AsWeakPtr();
-  database_ptr->ScheduleDeleteDatabase(
-      std::move(factory_client),
+  bucket_context_handle->DeleteDatabase(
+      std::move(pending_factory_client), name, force_close,
       base::BindOnce(&IndexedDBFactory::OnDatabaseDeleted,
                      idb_context_destruction_weak_factory_.GetWeakPtr(),
                      bucket_locator));
-  if (force_close) {
-    leveldb::Status status = database_ptr->ForceCloseAndRunTasks();
-    if (!status.ok()) {
-      OnDatabaseError(bucket_locator, status, "Error aborting transactions.");
-    }
-  }
 }
 
 void IndexedDBFactory::HandleBackingStoreFailure(
@@ -475,21 +408,6 @@ void IndexedDBFactory::HandleBackingStoreCorruption(
   leveldb::Status s =
       IndexedDBClassFactory::Get()->leveldb_factory().DestroyLevelDB(file_path);
   DLOG_IF(ERROR, !s.ok()) << "Unable to delete backing store: " << s.ToString();
-}
-
-std::vector<IndexedDBDatabase*> IndexedDBFactory::GetOpenDatabasesForBucket(
-    const storage::BucketLocator& bucket_locator) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = bucket_contexts_.find(bucket_locator.id);
-  if (it == bucket_contexts_.end()) {
-    return std::vector<IndexedDBDatabase*>();
-  }
-  IndexedDBBucketContext* factory = it->second.get();
-  std::vector<IndexedDBDatabase*> out;
-  out.reserve(factory->databases().size());
-  base::ranges::transform(factory->databases(), std::back_inserter(out),
-                          [](const auto& p) { return p.second.get(); });
-  return out;
 }
 
 void IndexedDBFactory::ForceClose(storage::BucketId bucket_id,
@@ -566,20 +484,6 @@ void IndexedDBFactory::BlobFilesCleaned(
   context_->BlobFilesCleaned(bucket_locator);
 }
 
-size_t IndexedDBFactory::GetConnectionCount(storage::BucketId bucket_id) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = bucket_contexts_.find(bucket_id);
-  if (it == bucket_contexts_.end()) {
-    return 0;
-  }
-  size_t count = 0;
-  for (const auto& name_database_pair : it->second->databases()) {
-    count += name_database_pair.second->ConnectionCount();
-  }
-
-  return count;
-}
-
 void IndexedDBFactory::ForEachBucketContext(
     IndexedDBBucketContext::InstanceClosure callback) {
   for_each_bucket_context_ = callback;
@@ -625,6 +529,25 @@ IndexedDBBucketContext* IndexedDBFactory::GetBucketContextForTesting(
     return it->second.get();
   }
   return nullptr;
+}
+
+void IndexedDBFactory::FillInBucketMetadata(
+    storage::mojom::IdbBucketMetadataPtr info,
+    base::OnceCallback<void(storage::mojom::IdbBucketMetadataPtr)> result) {
+  auto it = bucket_contexts_.find(info->bucket_locator.id);
+  if (it == bucket_contexts_.end()) {
+    std::move(result).Run(std::move(info));
+  } else {
+    it->second->FillInMetadata(std::move(info), std::move(result));
+  }
+}
+
+void IndexedDBFactory::CompactBackingStoreForTesting(
+    const storage::BucketLocator& bucket_locator) {
+  auto it = bucket_contexts_.find(bucket_locator.id);
+  if (it != bucket_contexts_.end()) {
+    it->second->CompactBackingStoreForTesting();  // IN-TEST
+  }
 }
 
 std::tuple<IndexedDBBucketContextHandle,
@@ -748,9 +671,19 @@ IndexedDBFactory::GetOrCreateBucketContext(const storage::BucketInfo& bucket,
   IndexedDBBucketContext::Delegate bucket_delegate;
   bucket_delegate.on_fatal_error = base::BindRepeating(
       [](const storage::BucketLocator& bucket_locator,
-         base::WeakPtr<IndexedDBFactory> factory, leveldb::Status s) {
+         base::WeakPtr<IndexedDBFactory> factory, leveldb::Status s,
+         const std::string& error_message) {
         if (factory) {
-          factory->OnDatabaseError(bucket_locator, s, nullptr);
+          factory->OnDatabaseError(bucket_locator, s, error_message);
+        }
+      },
+      bucket_locator, weak_factory_.GetWeakPtr());
+  bucket_delegate.on_corruption = base::BindRepeating(
+      [](const storage::BucketLocator& bucket_locator,
+         base::WeakPtr<IndexedDBFactory> factory,
+         const IndexedDBDatabaseError& error) {
+        if (factory) {
+          factory->HandleBackingStoreCorruption(bucket_locator, error);
         }
       },
       bucket_locator, weak_factory_.GetWeakPtr());
@@ -915,7 +848,7 @@ IndexedDBFactory::OpenAndVerifyIndexedDBBackingStore(
               if (!factory) {
                 return;
               }
-              factory->OnDatabaseError(bucket_locator, s, nullptr);
+              factory->OnDatabaseError(bucket_locator, s, {});
             },
             bucket_locator, weak_factory_.GetWeakPtr()));
     status = scopes->Initialize();
@@ -982,16 +915,13 @@ IndexedDBFactory::OpenAndVerifyIndexedDBBackingStore(
 void IndexedDBFactory::OnDatabaseError(
     const storage::BucketLocator& bucket_locator,
     leveldb::Status status,
-    const char* message) {
+    const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!status.ok());
   if (status.IsCorruption()) {
-    IndexedDBDatabaseError error =
-        message != nullptr
-            ? IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError,
-                                     message)
-            : IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError,
-                                     base::ASCIIToUTF16(status.ToString()));
+    IndexedDBDatabaseError error(
+        blink::mojom::IDBException::kUnknownError,
+        base::ASCIIToUTF16(message.empty() ? status.ToString() : message));
     HandleBackingStoreCorruption(bucket_locator, error);
     return;
   }
@@ -1009,33 +939,6 @@ void IndexedDBFactory::OnDatabaseDeleted(
     return;
   }
   context_->DatabaseDeleted(bucket_locator);
-}
-
-bool IndexedDBFactory::OnMemoryDump(
-    const base::trace_event::MemoryDumpArgs& args,
-    base::trace_event::ProcessMemoryDump* pmd) {
-  for (const auto& bucket_context_pair : bucket_contexts_) {
-    IndexedDBBucketContext* bucket_context = bucket_context_pair.second.get();
-    base::CheckedNumeric<uint64_t> total_memory_in_flight = 0;
-    for (const auto& db_name_object_pair : bucket_context->databases()) {
-      for (IndexedDBConnection* connection :
-           db_name_object_pair.second->connections()) {
-        for (const auto& txn_id_pair : connection->transactions()) {
-          total_memory_in_flight += txn_id_pair.second->in_flight_memory();
-        }
-      }
-    }
-    // This pointer is used to match the pointer used in
-    // TransactionalLevelDBDatabase::OnMemoryDump.
-    leveldb::DB* db = bucket_context->backing_store()->db()->db();
-    auto* db_dump = pmd->CreateAllocatorDump(
-        base::StringPrintf("site_storage/index_db/in_flight_0x%" PRIXPTR,
-                           reinterpret_cast<uintptr_t>(db)));
-    db_dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
-                       base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                       total_memory_in_flight.ValueOrDefault(0));
-  }
-  return true;
 }
 
 IndexedDBFactory::ReceiverContext::ReceiverContext(

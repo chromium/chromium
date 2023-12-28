@@ -15,6 +15,9 @@
 
 extern "C" {
 
+// A function used to handle fatal errors.
+using ChromeMLFatalErrorFn = void (*)(const char* msg);
+
 // A scheduling function used to run arbitrary async tasks. Given to
 // CreateModelExecutor() and called into by ChromeML as needed. When called, the
 // value of `context` is the same value given to CreateModelExecutor().
@@ -116,6 +119,7 @@ struct ChromeMLExecuteOptions {
   int context_mode = ContextMode::kNone;
   uint32_t max_tokens = 0;
   uint32_t token_offset = 0;
+  uint32_t max_output_tokens = 0;
   const ChromeMLOutputFn* output_fn = nullptr;
   const ChromeMLContextSavedFn* context_saved_fn = nullptr;
   const ChromeMLCompletionFn* completion_fn = nullptr;
@@ -127,6 +131,7 @@ struct ChromeMLPerformanceInfo {
   float output_speed = 0.0f;
   bool is_integrated_gpu = false;
   uint64_t device_heap_size = 0;
+  uint64_t max_buffer_size = 0;
 };
 
 // Structure needed to determine if the gpu is blockedlisted. Fields correspond
@@ -142,11 +147,17 @@ struct GpuConfig {
   WGPUBackendType backend_type;
 };
 
+// IMPORTANT: All functions that call ChromeMLAPI should be annotated with
+// DISABLE_CFI_DLSYM.
+
 // Table of C API functions defined within the library.
 struct ChromeMLAPI {
   // Initializes the Dawn proc table. This must be called before any other
   // functions.
   void (*InitDawnProcs)(const DawnProcTable& procs);
+
+  // Sets an error handling function for fatal errors.
+  void (*SetFatalErrorFn)(ChromeMLFatalErrorFn error_fn) = nullptr;
 
   // Creates a new ChromeML model instance as described by `model`. The returned
   // object can be destroyed by passing it to DestroyModel(). `context` is

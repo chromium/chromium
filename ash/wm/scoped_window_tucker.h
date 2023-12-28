@@ -156,7 +156,7 @@ class ScopedWindowTucker : public wm::ActivationChangeObserver,
 
   // The window that is being tucked. Will be tucked and untucked by the tuck
   // handle.
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 
   // True if the window is tucked to the left screen edge, false otherwise.
   bool left_ = false;

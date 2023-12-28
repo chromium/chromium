@@ -585,6 +585,7 @@ static_library("test_support") {
     "//ui/base/clipboard",
     "//ui/base/clipboard:clipboard_test_support",
     "//ui/base/ime",
+    "//ui/color:mixers",
     "//ui/compositor:test_support",
     "//ui/display",
     "//ui/events:dom_keycode_converter",
@@ -623,6 +624,8 @@ static_library("test_support") {
     ]
   } else {
     sources += [
+      "../browser/renderer_host/media/mock_captured_surface_controller.cc",
+      "../browser/renderer_host/media/mock_captured_surface_controller.h",
       "../browser/serial/serial_test_utils.cc",
       "../browser/serial/serial_test_utils.h",
     ]
@@ -822,9 +825,6 @@ if (is_fuchsia) {
       "//testing:run_perf_test",
       "//tools/perf/:perf",
     ]
-    if (!optimize_for_size) {
-      data_deps += [ "//chrome/test:sync_performance_tests" ]
-    }
   }
   group("fuchsia_telemetry_test_data") {
     testonly = true
@@ -1079,7 +1079,7 @@ if (is_chromeos_ash) {
 
     # Generate WebUI bindings in JavaScript instead of TypeScript. This is
     # necessary since this target is intentionally testing JS WebUI bindings.
-    use_typescript_sources = false
+    generate_webui_js_bindings = true
   }
 }
 
@@ -1338,6 +1338,7 @@ test("content_browsertests") {
     "../browser/closewatcher/close_listener_host_browsertest.cc",
     "../browser/code_cache/generated_code_cache_browsertest.cc",
     "../browser/compute_pressure/compute_pressure_origin_trial_browsertest.cc",
+    "../browser/compute_pressure/pressure_service_browsertest.cc",
     "../browser/content_index/content_index_browsertest.cc",
     "../browser/content_security_policy_browsertest.cc",
     "../browser/cookie_deprecation_label/cookie_deprecation_label_browsertest.cc",
@@ -1619,7 +1620,7 @@ test("content_browsertests") {
     "../renderer/blink_platform_audio_hardware_browsertest.cc",
     "../renderer/fluent_scrollbar_browsertest.cc",
     "../renderer/gin_browsertest.cc",
-    "../renderer/media/renderer_webmediaplayer_delegate_browsertest.cc",
+    "../renderer/media/renderer_web_media_player_delegate_browsertest.cc",
     "../renderer/media/too_many_web_media_players_intervention_browsertest.cc",
     "../renderer/render_frame_impl_browsertest.cc",
     "../renderer/render_thread_impl_browsertest.cc",
@@ -2359,7 +2360,8 @@ test("content_unittests") {
     "../browser/client_hints/client_hints_unittest.cc",
     "../browser/code_cache/generated_code_cache_unittest.cc",
     "../browser/code_cache/simple_lru_cache_unittest.cc",
-    "../browser/compute_pressure/compute_pressure_unittest.cc",
+    "../browser/compute_pressure/pressure_service_for_frame_unittest.cc",
+    "../browser/compute_pressure/pressure_service_for_worker_unittest.cc",
     "../browser/content_index/content_index_database_unittest.cc",
     "../browser/content_index/content_index_service_impl_unittest.cc",
     "../browser/cookie_deprecation_label/cookie_deprecation_label_manager_impl_unittest.cc",
@@ -3065,7 +3067,7 @@ test("content_unittests") {
     "//ui/webui:test_support",
   ]
 
-  if (enable_nocompile_tests_new) {
+  if (enable_nocompile_tests) {
     deps += [ ":content_nocompile_tests" ]
   }
 
@@ -3167,6 +3169,8 @@ test("content_unittests") {
       ]
       sources += [
         "../browser/media/capture/desktop_capture_device_unittest.cc",
+        "../browser/renderer_host/media/captured_surface_controller_permission_manager_unittest.cc",
+        "../browser/renderer_host/media/captured_surface_controller_unittest.cc",
         "../browser/renderer_host/media/sub_capture_target_id_web_contents_helper_unittest.cc",
       ]
     }
@@ -3264,7 +3268,7 @@ test("content_unittests") {
     deps += [
       ":content_unittests_java",
       ":content_unittests_jni_headers",
-      "//base:base_java_unittest_support",
+      "//base:base_unittest_support_java",
       "//build/config/freetype",
       "//cc/slim",
       "//components/download/internal/common:internal_java",
@@ -3399,7 +3403,7 @@ if (is_apple) {
   }
 }
 
-if (enable_nocompile_tests_new) {
+if (enable_nocompile_tests) {
   nocompile_source_set("content_nocompile_tests") {
     sources = [ "../browser/browser_task_traits_nocompile.nc" ]
 

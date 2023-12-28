@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -81,10 +82,12 @@ WebAppFrameToolbarView::WebAppFrameToolbarView(BrowserView* browser_view)
          "an existing instance of this class during a window frame refresh.";
   browser_view_->SetToolbarButtonProvider(this);
 
-  if (browser_view_->IsWindowControlsOverlayEnabled())
+  if (browser_view_->IsWindowControlsOverlayEnabled()) {
     OnWindowControlsOverlayEnabledChanged();
-  if (browser_view_->AppUsesBorderlessMode())
+  }
+  if (browser_view_->AppUsesBorderlessMode()) {
     UpdateBorderlessModeEnabled();
+  }
 }
 
 WebAppFrameToolbarView::~WebAppFrameToolbarView() = default;
@@ -119,8 +122,9 @@ void WebAppFrameToolbarView::UpdateCaptionColors() {
 }
 
 void WebAppFrameToolbarView::SetPaintAsActive(bool active) {
-  if (paint_as_active_ == active)
+  if (paint_as_active_ == active) {
     return;
+  }
   paint_as_active_ = active;
   UpdateChildrenColor(/*color_changed=*/false);
   OnPropertyChanged(&paint_as_active_, views::kPropertyEffectsNone);
@@ -202,8 +206,9 @@ AppMenuButton* WebAppFrameToolbarView::GetAppMenuButton() {
 }
 
 gfx::Rect WebAppFrameToolbarView::GetFindBarBoundingBox(int contents_bottom) {
-  if (!IsDrawn())
+  if (!IsDrawn()) {
     return gfx::Rect();
+  }
 
   // If LTR find bar will be right aligned so align to right edge of app menu
   // button. Otherwise it will be left aligned so align to the left edge of the
@@ -266,8 +271,9 @@ DownloadToolbarButtonView* WebAppFrameToolbarView::GetDownloadButton() {
 bool WebAppFrameToolbarView::DoesIntersectRect(const View* target,
                                                const gfx::Rect& rect) const {
   DCHECK_EQ(target, this);
-  if (!views::ViewTargeterDelegate::DoesIntersectRect(this, rect))
+  if (!views::ViewTargeterDelegate::DoesIntersectRect(this, rect)) {
     return false;
+  }
 
   // If the rect is inside the bounds of the center_container, do not claim it.
   // There is no actionable content in the center_container, and it overlaps
@@ -337,7 +343,7 @@ views::View* WebAppFrameToolbarView::GetContentSettingContainerForTesting() {
   return right_container_->content_settings_container();
 }
 
-const std::vector<ContentSettingImageView*>&
+const std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>&
 WebAppFrameToolbarView::GetContentSettingViewsForTesting() const {
   return right_container_->content_settings_container()
       ->get_content_setting_views();
@@ -368,10 +374,11 @@ void WebAppFrameToolbarView::UpdateChildrenColor(bool color_changed) {
   right_container_->SetColors(foreground_color, background_color,
                               color_changed);
 
-  if (browser_view_->IsWindowControlsOverlayEnabled())
+  if (browser_view_->IsWindowControlsOverlayEnabled()) {
     SetBackground(views::CreateSolidBackground(background_color));
+  }
 }
 
-BEGIN_METADATA(WebAppFrameToolbarView, views::AccessiblePaneView)
+BEGIN_METADATA(WebAppFrameToolbarView)
 ADD_PROPERTY_METADATA(bool, PaintAsActive)
 END_METADATA

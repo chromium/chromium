@@ -68,17 +68,20 @@ bool AwCookieAccessPolicy::AllowCookies(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     base::optional_ref<const content::GlobalRenderFrameHostToken>
-        global_frame_token) {
+        global_frame_token,
+    bool has_storage_access) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   bool third_party = GetShouldAcceptThirdPartyCookies(
       global_frame_token, content::RenderFrameHost::kNoFrameTreeNodeId);
-  return CanAccessCookies(url, site_for_cookies, third_party);
+  return CanAccessCookies(url, site_for_cookies, third_party,
+                          has_storage_access);
 }
 
 bool AwCookieAccessPolicy::CanAccessCookies(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    bool accept_third_party_cookies) {
+    bool accept_third_party_cookies,
+    bool has_storage_access) {
   if (!accept_cookies_)
     return false;
 
@@ -91,6 +94,10 @@ bool AwCookieAccessPolicy::CanAccessCookies(
   // file URLs.
   if (url.SchemeIsFile())
     return true;
+
+  if (has_storage_access) {
+    return true;
+  }
 
   // Otherwise, block third-party cookies.
   return net::StaticCookiePolicy(

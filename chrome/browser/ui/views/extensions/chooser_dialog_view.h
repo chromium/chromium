@@ -22,8 +22,9 @@ class ChooserController;
 // to the window/tab displaying the given web contents.
 class ChooserDialogView : public views::DialogDelegateView,
                           public views::TableViewObserver {
+  METADATA_HEADER(ChooserDialogView, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(ChooserDialogView);
   explicit ChooserDialogView(
       std::unique_ptr<permissions::ChooserController> chooser_controller);
   ChooserDialogView(const ChooserDialogView&) = delete;

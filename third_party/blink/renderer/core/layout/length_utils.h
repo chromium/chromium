@@ -255,42 +255,6 @@ inline LayoutUnit ResolveMainBlockLength(
       /* override_percentage_resolution_size */ nullptr, anchor_evaluator);
 }
 
-// For the given |child|, computes the min and max content contribution
-// (https://drafts.csswg.org/css-sizing/#contributions).
-//
-// This is similar to ComputeInlineSizeForFragment except that it does not
-// require a constraint space (percentage sizes as well as auto margins compute
-// to zero) and an auto inline-size resolves to the respective min/max content
-// size.
-//
-// Additoinally, the min/max contribution includes the inline margins. Because
-// content contributions are commonly needed by a block's parent, we also take
-// a writing-mode here so we can compute this in the parent's coordinate system.
-//
-// Note that if the writing mode of the child is orthogonal to that of the
-// parent, we'll still return the inline min/max contribution in the writing
-// mode of the parent (i.e. typically something based on the preferred *block*
-// size of the child).
-MinMaxSizesResult ComputeMinAndMaxContentContribution(
-    const ComputedStyle& parent_style,
-    const BlockNode& child,
-    const ConstraintSpace& space,
-    const MinMaxSizesFloatInput float_input = MinMaxSizesFloatInput());
-
-// Similar to |ComputeMinAndMaxContentContribution| but ignores the parent
-// writing-mode, and instead computes the contribution relative to |child|'s
-// own writing-mode.
-MinMaxSizesResult ComputeMinAndMaxContentContributionForSelf(
-    const BlockNode& child,
-    const ConstraintSpace& space);
-
-// Used for unit-tests.
-CORE_EXPORT MinMaxSizes
-ComputeMinAndMaxContentContributionForTest(WritingMode writing_mode,
-                                           const BlockNode&,
-                                           const ConstraintSpace&,
-                                           const MinMaxSizes&);
-
 // Computes the min-block-size and max-block-size values for a node.
 MinMaxSizes ComputeMinMaxBlockSizes(
     const ConstraintSpace&,
@@ -518,7 +482,6 @@ CORE_EXPORT LogicalSize ComputeReplacedSize(
     const BlockNode&,
     const ConstraintSpace&,
     const BoxStrut& border_padding,
-    absl::optional<LogicalSize> override_available_size = absl::nullopt,
     ReplacedSizeMode = ReplacedSizeMode::kNormal,
     const Length::AnchorEvaluator* anchor_evaluator = nullptr);
 
@@ -799,6 +762,125 @@ LayoutUnit ClampIntrinsicBlockSize(
     const BoxStrut& border_scrollbar_padding,
     LayoutUnit current_intrinsic_block_size,
     absl::optional<LayoutUnit> body_margin_block_sum = absl::nullopt);
+
+template <typename MinMaxSizesFunc>
+MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
+    WritingMode parent_writing_mode,
+    const BlockNode& child,
+    const ConstraintSpace& space,
+    const MinMaxSizesFunc& min_max_sizes_func) {
+  const auto& style = child.Style();
+
+  const bool is_parallel_with_parent =
+      IsParallelWritingMode(parent_writing_mode, style.GetWritingMode());
+  const bool is_parent_writing_mode_horizontal =
+      IsHorizontalWritingMode(parent_writing_mode);
+
+  const auto border_padding =
+      ComputeBorders(space, child) + ComputePadding(space, style);
+  const auto& inline_size = is_parent_writing_mode_horizontal
+                                ? style.UsedWidth()
+                                : style.UsedHeight();
+
+  MinMaxSizesResult result;
+  if (inline_size.IsAuto() || inline_size.IsPercentOrCalc() ||
+      inline_size.IsFillAvailable() || inline_size.IsFitContent()) {
+    result = min_max_sizes_func(MinMaxSizesType::kContent);
+  } else {
+    const auto size =
+        is_parallel_with_parent
+            ? ResolveMainInlineLength(space, style, border_padding,
+                                      min_max_sizes_func, inline_size)
+            : ResolveMainBlockLength(
+                  space, style, border_padding, inline_size,
+                  [&]() -> LayoutUnit {
+                    return min_max_sizes_func(inline_size.IsMinIntrinsic()
+                                                  ? MinMaxSizesType::kIntrinsic
+                                                  : MinMaxSizesType::kContent)
+                        .sizes.max_size;
+                  });
+
+    // This child's contribution size is not dependent on the available size, so
+    // it's considered definite. Return this size for both min and max.
+    result = {{size, size}, /* depends_on_block_constraints */ false};
+  }
+
+  const auto& max_inline_size = is_parent_writing_mode_horizontal
+                                    ? style.UsedMaxWidth()
+                                    : style.UsedMaxHeight();
+  result.sizes.Constrain(
+      is_parallel_with_parent
+          ? ResolveMaxInlineLength(space, style, border_padding,
+                                   min_max_sizes_func, max_inline_size)
+          : ResolveMaxBlockLength(space, style, border_padding,
+                                  max_inline_size));
+
+  const auto& min_inline_size = is_parent_writing_mode_horizontal
+                                    ? style.UsedMinWidth()
+                                    : style.UsedMinHeight();
+  result.sizes.Encompass(
+      is_parallel_with_parent
+          ? ResolveMinInlineLength(space, style, border_padding,
+                                   min_max_sizes_func, min_inline_size)
+          : ResolveMinBlockLength(space, style, border_padding,
+                                  min_inline_size));
+
+  // Tables need to apply one final constraint. They are never allowed to go
+  // below their min-intrinsic size (even if they have an inline-size, etc).
+  if (child.IsTable()) {
+    result.sizes.Encompass(
+        min_max_sizes_func(MinMaxSizesType::kIntrinsic).sizes.min_size);
+  }
+  return result;
+}
+
+// For the given |child|, computes the min and max content contribution
+// (https://drafts.csswg.org/css-sizing/#contributions).
+//
+// This is similar to `ComputeInlineSizeForFragment` except that it does not
+// require a constraint space (percentage sizes as well as auto margins compute
+// to zero) and an auto inline-size resolves to the respective min/max content
+// size.
+//
+// Additionally, the min/max contribution includes the inline margins. Because
+// content contributions are commonly needed by a block's parent, we also take
+// a writing-mode here so we can compute this in the parent's coordinate system.
+//
+// Note that if the writing mode of the child is orthogonal to that of the
+// parent, we'll still return the inline min/max contribution in the writing
+// mode of the parent (i.e. typically something based on the preferred *block*
+// size of the child).
+MinMaxSizesResult ComputeMinAndMaxContentContribution(
+    const ComputedStyle& parent_style,
+    const BlockNode& child,
+    const ConstraintSpace& space,
+    const MinMaxSizesFloatInput float_input = MinMaxSizesFloatInput());
+
+// Similar to `ComputeMinAndMaxContentContribution` but ignores the writing mode
+// of the parent, and instead computes the contribution relative to the child's
+// own writing mode.
+MinMaxSizesResult ComputeMinAndMaxContentContributionForSelf(
+    const BlockNode& child,
+    const ConstraintSpace& space);
+
+// Same as above, but allows a custom function to compute min/max sizes.
+template <typename MinMaxSizesFunc>
+MinMaxSizesResult ComputeMinAndMaxContentContributionForSelf(
+    const BlockNode& child,
+    const ConstraintSpace& space,
+    const MinMaxSizesFunc& min_max_sizes_func) {
+  DCHECK(child.CreatesNewFormattingContext());
+
+  return ComputeMinAndMaxContentContributionInternal(
+      child.Style().GetWritingMode(), child, space, min_max_sizes_func);
+}
+
+// Used for unit-tests.
+CORE_EXPORT MinMaxSizes
+ComputeMinAndMaxContentContributionForTest(WritingMode writing_mode,
+                                           const BlockNode&,
+                                           const ConstraintSpace&,
+                                           const MinMaxSizes&);
 
 // This function checks if the inline size of this node has to be calculated
 // without considering children. If so, it returns the calculated size.

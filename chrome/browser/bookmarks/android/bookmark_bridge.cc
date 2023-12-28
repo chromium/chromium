@@ -25,6 +25,7 @@
 #include "base/i18n/string_compare.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "chrome/android/chrome_jni_headers/BookmarkBridge_jni.h"
@@ -50,6 +51,7 @@
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/query_parser/query_parser.h"
+#include "components/reading_list/core/dual_reading_list_model.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/undo/bookmark_undo_service.h"
 #include "components/undo/undo_manager.h"
@@ -116,8 +118,8 @@ void HandleImageUrlResponse(
     base::android::ScopedJavaGlobalRef<jobject> callback,
     const GURL& image_url) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  RunObjectCallbackAndroid(callback,
-                           url::GURLAndroid::FromNativeGURL(env, image_url));
+  base::android::RunObjectCallbackAndroid(
+      callback, url::GURLAndroid::FromNativeGURL(env, image_url));
 }
 
 }  // namespace
@@ -139,38 +141,62 @@ ScopedJavaLocalRef<jobject> JNI_BookmarkBridge_GetForProfile(
       model->GetUserData(kBookmarkBridgeUserDataKey));
 
   if (!bookmark_bridge) {
+    auto reading_list_id_generation_func =
+        base::BindRepeating([](int64_t* id) { return (*id)++; },
+                            base::Owned(std::make_unique<int64_t>(0)));
+    auto* dual_reading_list =
+        ReadingListModelFactory::GetAsDualReadingListForBrowserContext(profile);
+    std::unique_ptr<ReadingListManagerImpl> account_reading_list_manager =
+        nullptr;
+    auto* account_model = dual_reading_list->GetAccountModelIfSyncing();
+    if (account_model) {
+      account_reading_list_manager = std::make_unique<ReadingListManagerImpl>(
+          account_model, reading_list_id_generation_func);
+    }
     bookmark_bridge = new BookmarkBridge(
         profile, model, ManagedBookmarkServiceFactory::GetForProfile(profile),
         PartnerBookmarksShim::BuildForBrowserContext(
             chrome::GetBrowserContextRedirectedInIncognito(profile)),
         std::make_unique<ReadingListManagerImpl>(
-            ReadingListModelFactory::GetForBrowserContext(profile)),
+            dual_reading_list->GetLocalOrSyncableModel(),
+            reading_list_id_generation_func),
+        std::move(account_reading_list_manager),
         page_image_service::ImageServiceFactory::GetForBrowserContext(profile));
     model->SetUserData(kBookmarkBridgeUserDataKey,
                        base::WrapUnique(bookmark_bridge));
   }
 
-  return ScopedJavaLocalRef(bookmark_bridge->GetJavaBookmarkModel());
+  return ScopedJavaLocalRef<jobject>(bookmark_bridge->GetJavaBookmarkModel());
 }
 
+// TODO(crbug.com/1510547): Support the account reading list availability
+// changing at runtime.
 BookmarkBridge::BookmarkBridge(
     Profile* profile,
     BookmarkModel* model,
     bookmarks::ManagedBookmarkService* managed_bookmark_service,
     PartnerBookmarksShim* partner_bookmarks_shim,
-    std::unique_ptr<ReadingListManager> reading_list_manager,
+    std::unique_ptr<ReadingListManager> local_or_syncable_reading_list_manager,
+    std::unique_ptr<ReadingListManager> account_reading_list_manager,
     page_image_service::ImageService* image_service)
     : profile_(profile),
       bookmark_model_(model),
       managed_bookmark_service_(managed_bookmark_service),
       partner_bookmarks_shim_(partner_bookmarks_shim),
-      local_or_syncable_reading_list_manager_(std::move(reading_list_manager)),
+      local_or_syncable_reading_list_manager_(
+          std::move(local_or_syncable_reading_list_manager)),
+      account_reading_list_manager_(std::move(account_reading_list_manager)),
       image_service_(image_service),
       weak_ptr_factory_(this) {
-  profile_observation_.Observe(profile_.get());
-  bookmark_model_->AddObserver(this);
-  partner_bookmarks_shim_->AddObserver(this);
-  local_or_syncable_reading_list_manager_->AddObserver(this);
+  profile_observation_.Observe(profile_);
+  bookmark_model_observation_.Observe(bookmark_model_);
+  partner_bookmarks_shim_observation_.Observe(partner_bookmarks_shim_);
+  reading_list_manager_observations_.AddObservation(
+      local_or_syncable_reading_list_manager_.get());
+  if (account_reading_list_manager_) {
+    reading_list_manager_observations_.AddObservation(
+        account_reading_list_manager_.get());
+  }
 
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
@@ -191,14 +217,10 @@ BookmarkBridge::BookmarkBridge(
 }
 
 BookmarkBridge::~BookmarkBridge() {
-  if (profile_) {
-    DCHECK(profile_observation_.IsObservingSource(profile_.get()));
-    profile_observation_.Reset();
-  }
-  bookmark_model_->RemoveObserver(this);
-  if (partner_bookmarks_shim_)
-    partner_bookmarks_shim_->RemoveObserver(this);
-  local_or_syncable_reading_list_manager_->RemoveObserver(this);
+  reading_list_manager_observations_.RemoveAllObservations();
+  partner_bookmarks_shim_observation_.Reset();
+  bookmark_model_observation_.Reset();
+  profile_observation_.Reset();
 }
 
 void BookmarkBridge::Destroy(JNIEnv*) {
@@ -212,7 +234,7 @@ void BookmarkBridge::GetImageUrlForBookmark(
     const JavaParamRef<jobject>& j_callback) {
   ScopedJavaGlobalRef<jobject> callback(j_callback);
   if (!image_service_) {
-    RunObjectCallbackAndroid(callback, nullptr);
+    base::android::RunObjectCallbackAndroid(callback, nullptr);
     return;
   }
 
@@ -230,17 +252,37 @@ BookmarkBridge::GetMostRecentlyAddedUserBookmarkIdForUrl(
     const JavaParamRef<jobject>& j_url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
+  CHECK(url);
 
+  const BookmarkNode* node = GetMostRecentlyAddedUserBookmarkIdForUrlImpl(*url);
+  if (node) {
+    return JavaBookmarkIdCreateBookmarkId(env, node->id(),
+                                          GetBookmarkType(node));
+  }
+  return nullptr;
+}
+
+const bookmarks::BookmarkNode*
+BookmarkBridge::GetMostRecentlyAddedUserBookmarkIdForUrlImpl(const GURL& url) {
   std::vector<const bookmarks::BookmarkNode*> nodes;
   const auto* reading_list_node =
-      local_or_syncable_reading_list_manager_->Get(*url);
+      local_or_syncable_reading_list_manager_->Get(url);
   if (reading_list_node) {
     nodes.push_back(reading_list_node);
   }
 
+  if (account_reading_list_manager_) {
+    reading_list_node = account_reading_list_manager_->Get(url);
+    if (reading_list_node) {
+      nodes.push_back(reading_list_node);
+    }
+  }
+
   // Get all the nodes for |url| from BookmarkModel and sort them by date added.
-  std::vector<const bookmarks::BookmarkNode*> bookmarkModelResult =
-      BookmarkModelFactory::GetForBrowserContext(profile_)->GetNodesByURL(*url);
+  std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
+      bookmarkModelResult =
+          BookmarkModelFactory::GetForBrowserContext(profile_)->GetNodesByURL(
+              url);
   nodes.insert(nodes.end(), bookmarkModelResult.begin(),
                bookmarkModelResult.end());
   std::sort(nodes.begin(), nodes.end(), &bookmarks::MoreRecentlyAdded);
@@ -250,8 +292,7 @@ BookmarkBridge::GetMostRecentlyAddedUserBookmarkIdForUrl(
   }
 
   // Return the first node matching the search criteria.
-  return JavaBookmarkIdCreateBookmarkId(env, nodes.front()->id(),
-                                        GetBookmarkType(nodes.front()));
+  return nodes.front();
 }
 
 jboolean BookmarkBridge::IsEditBookmarksEnabled(JNIEnv* env) {
@@ -358,8 +399,18 @@ void BookmarkBridge::GetTopLevelFolderIds(
 }
 std::vector<const BookmarkNode*> BookmarkBridge::GetTopLevelFolderIdsImpl() {
   std::vector<const BookmarkNode*> top_level_folders;
-  // Query the root node for:
+  // Query for the top-level folders:
   // bookmarks bar, mobile node, other node, and managed node (if it exists).
+  // Account bookmarks come first, and local bookmarks after.
+
+  // TODO(crbug.com/1509189): Include account bookmarks when they're available.
+  // TODO(crbug.com/1509189): Hide empty local folders by default and add
+  // another function to get all top level folders to use when moving.
+  if (account_reading_list_manager_ &&
+      account_reading_list_manager_->GetRoot()) {
+    top_level_folders.push_back(account_reading_list_manager_->GetRoot());
+  }
+
   for (const auto& root_child : bookmark_model_->root_node()->children()) {
     if (!root_child->IsVisible()) {
       continue;
@@ -430,6 +481,19 @@ BookmarkBridge::GetLocalOrSyncableReadingListFolder(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const BookmarkNode* root_node =
       local_or_syncable_reading_list_manager_->GetRoot();
+  ScopedJavaLocalRef<jobject> folder_id_obj = JavaBookmarkIdCreateBookmarkId(
+      env, root_node->id(), GetBookmarkType(root_node));
+  return folder_id_obj;
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+BookmarkBridge::GetAccountReadingListFolder(JNIEnv* env) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!account_reading_list_manager_) {
+    return nullptr;
+  }
+
+  const BookmarkNode* root_node = account_reading_list_manager_->GetRoot();
   ScopedJavaLocalRef<jobject> folder_id_obj = JavaBookmarkIdCreateBookmarkId(
       env, root_node->id(), GetBookmarkType(root_node));
   return folder_id_obj;
@@ -565,6 +629,9 @@ void BookmarkBridge::SetBookmarkTitle(JNIEnv* env,
   } else if (local_or_syncable_reading_list_manager_->IsReadingListBookmark(
                  bookmark)) {
     local_or_syncable_reading_list_manager_->SetTitle(bookmark->url(), title);
+  } else if (account_reading_list_manager_ &&
+             account_reading_list_manager_->IsReadingListBookmark(bookmark)) {
+    account_reading_list_manager_->SetTitle(bookmark->url(), title);
   } else {
     bookmark_model_->SetTitle(bookmark, title,
                               bookmarks::metrics::BookmarkEditSource::kUser);
@@ -808,8 +875,10 @@ void BookmarkBridge::DeleteBookmark(
   if (partner_bookmarks_shim_->IsPartnerBookmark(node)) {
     partner_bookmarks_shim_->RemoveBookmark(node);
   } else if (type == BookmarkType::BOOKMARK_TYPE_READING_LIST) {
-    const BookmarkNode* reading_list_parent =
-        local_or_syncable_reading_list_manager_->GetRoot();
+    const BookmarkNode* reading_list_parent = node->parent();
+    ReadingListManager* reading_list_manager =
+        GetReadingListManagerFromParentNode(reading_list_parent);
+
     size_t index = reading_list_parent->GetIndexOf(node).value();
     // Intentionally left empty.
     std::set<GURL> removed_urls;
@@ -823,7 +892,7 @@ void BookmarkBridge::DeleteBookmark(
     // ReadingListModelImpl::RemoveEntryByURLImpl. To avoid the
     // heap-use-after-free, make a copy of node->url() and use it.
     GURL url(node->url());
-    local_or_syncable_reading_list_manager_->Delete(url);
+    reading_list_manager->Delete(url);
   } else {
     bookmark_model_->Remove(node,
                             bookmarks::metrics::BookmarkEditSource::kUser);
@@ -929,6 +998,23 @@ int BookmarkBridge::GetUnreadCount(JNIEnv* env,
   return count;
 }
 
+jboolean BookmarkBridge::IsAccountBookmark(JNIEnv* env,
+                                           const JavaParamRef<jobject>& j_id) {
+  return IsAccountBookmarkImpl(GetNodeByID(JavaBookmarkIdGetId(env, j_id),
+                                           JavaBookmarkIdGetType(env, j_id)));
+}
+
+bool BookmarkBridge::IsAccountBookmarkImpl(const BookmarkNode* node) {
+  if (account_reading_list_manager_ &&
+      account_reading_list_manager_->IsReadingListBookmark(node)) {
+    return true;
+  }
+
+  // TODO(crbug.com/1509189): Also check the bookmark model for account-ness
+  // when it's ready.
+  return false;
+}
+
 void BookmarkBridge::Undo(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
@@ -982,7 +1068,11 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::CreateJavaBookmark(
 
   int type = GetBookmarkType(node);
   bool read = false;
-  if (local_or_syncable_reading_list_manager_->IsReadingListBookmark(node)) {
+  if (account_reading_list_manager_ &&
+      account_reading_list_manager_->IsReadingListBookmark(node)) {
+    read = account_reading_list_manager_->GetReadStatus(node);
+  } else if (local_or_syncable_reading_list_manager_->IsReadingListBookmark(
+                 node)) {
     read = local_or_syncable_reading_list_manager_->GetReadStatus(node);
   }
 
@@ -1007,13 +1097,22 @@ void BookmarkBridge::ExtractBookmarkNodeInformation(
 }
 
 const BookmarkNode* BookmarkBridge::GetNodeByID(long node_id, int type) {
-  const BookmarkNode* node;
+  const BookmarkNode* node = nullptr;
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (type == BookmarkType::BOOKMARK_TYPE_PARTNER) {
     node = partner_bookmarks_shim_->GetNodeByID(static_cast<int64_t>(node_id));
   } else if (type == BookmarkType::BOOKMARK_TYPE_READING_LIST) {
-    node = local_or_syncable_reading_list_manager_->GetNodeByID(
-        static_cast<int64_t>(node_id));
+    // First check the account reading list if it's available.
+    if (account_reading_list_manager_) {
+      node = account_reading_list_manager_->GetNodeByID(
+          static_cast<int64_t>(node_id));
+    }
+
+    // If there were no results, check the local/syncable reading list.
+    if (!node) {
+      node = local_or_syncable_reading_list_manager_->GetNodeByID(
+          static_cast<int64_t>(node_id));
+    }
   } else {
     node = bookmarks::GetBookmarkNodeByID(bookmark_model_,
                                           static_cast<int64_t>(node_id));
@@ -1056,10 +1155,15 @@ bool BookmarkBridge::IsEditable(const BookmarkNode* node) const {
   }
   if (!IsEditBookmarksEnabled() || bookmark_model_->is_permanent_node(node))
     return false;
-  if (partner_bookmarks_shim_->IsPartnerBookmark(node))
+  if (partner_bookmarks_shim_->IsPartnerBookmark(node)) {
     return partner_bookmarks_shim_->IsEditable(node);
+  }
   if (local_or_syncable_reading_list_manager_->IsReadingListBookmark(node)) {
     return local_or_syncable_reading_list_manager_->GetRoot() != node;
+  }
+  if (account_reading_list_manager_ &&
+      account_reading_list_manager_->IsReadingListBookmark(node)) {
+    return account_reading_list_manager_->GetRoot() != node;
   }
 
   return !managed_bookmark_service_->IsNodeManaged(node);
@@ -1078,6 +1182,10 @@ const BookmarkNode* BookmarkBridge::GetParentNode(const BookmarkNode* node) {
   if (node == local_or_syncable_reading_list_manager_->GetRoot()) {
     return bookmark_model_->root_node();
   }
+  if (account_reading_list_manager_ &&
+      node == account_reading_list_manager_->GetRoot()) {
+    return bookmark_model_->root_node();
+  }
 
   return node->parent();
 }
@@ -1093,6 +1201,11 @@ int BookmarkBridge::GetBookmarkType(const BookmarkNode* node) {
       local_or_syncable_reading_list_manager_->IsReadingListBookmark(node)) {
     return BookmarkType::BOOKMARK_TYPE_READING_LIST;
   }
+  if (account_reading_list_manager_ &&
+      account_reading_list_manager_->IsLoaded() &&
+      account_reading_list_manager_->IsReadingListBookmark(node)) {
+    return BookmarkType::BOOKMARK_TYPE_READING_LIST;
+  }
 
   return BookmarkType::BOOKMARK_TYPE_NORMAL;
 }
@@ -1105,7 +1218,9 @@ bool BookmarkBridge::IsReachable(const BookmarkNode* node) const {
 
 bool BookmarkBridge::IsLoaded() const {
   return (bookmark_model_->loaded() && partner_bookmarks_shim_->IsLoaded() &&
-          local_or_syncable_reading_list_manager_->IsLoaded());
+          local_or_syncable_reading_list_manager_->IsLoaded() &&
+          (!account_reading_list_manager_ ||
+           account_reading_list_manager_->IsLoaded()));
 }
 
 bool BookmarkBridge::IsFolderAvailable(const BookmarkNode* folder) const {
@@ -1324,10 +1439,13 @@ void BookmarkBridge::DestroyJavaObject() {
 }
 
 ReadingListManager* BookmarkBridge::GetReadingListManagerFromParentNode(
-    const BookmarkNode* node) {
-  if (node == local_or_syncable_reading_list_manager_->GetRoot()) {
+    const bookmarks::BookmarkNode* node) {
+  if (account_reading_list_manager_ &&
+      node == account_reading_list_manager_->GetRoot()) {
+    return account_reading_list_manager_.get();
+  } else if (node == local_or_syncable_reading_list_manager_->GetRoot()) {
     return local_or_syncable_reading_list_manager_.get();
-  } else {
-    NOTREACHED_NORETURN();
   }
+
+  NOTREACHED_NORETURN();
 }

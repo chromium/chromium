@@ -92,11 +92,6 @@ void BlocklistStateFetcher::SendRequest(const std::string& id) {
             "and your device from dangerous sites' in Chromium settings under "
             "Privacy. This feature is enabled by default."
           chrome_policy {
-              SafeBrowsingExtensionProtectionAllowed {
-                SafeBrowsingExtensionProtectionAllowed: false
-            }
-          }
-          chrome_policy {
             SafeBrowsingProtectionLevel {
               policy_options {mode: MANDATORY}
               SafeBrowsingProtectionLevel: 0

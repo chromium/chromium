@@ -71,9 +71,9 @@ class ProfilePickerSignedInFlowController
   // Finishes the sign-in process by moving to the sync confirmation screen.
   virtual void SwitchToSyncConfirmation();
 
-  // Finishes the sign-in process by moving to the enterprise profile welcome
+  // Finishes the sign-in process by moving to the managed user profile notice
   // screen.
-  virtual void SwitchToEnterpriseProfileWelcome(
+  virtual void SwitchToManagedUserProfileNotice(
       ManagedUserProfileNoticeUI::ScreenType type,
       signin::SigninChoiceCallback proceed_callback);
 
@@ -121,7 +121,7 @@ class ProfilePickerSignedInFlowController
 
   // Callbacks that finalize initialization of WebUI pages.
   void SwitchToSyncConfirmationFinished();
-  void SwitchToEnterpriseProfileWelcomeFinished(
+  void SwitchToManagedUserProfileNoticeFinished(
       ManagedUserProfileNoticeUI::ScreenType type,
       signin::SigninChoiceCallback proceed_callback);
 

@@ -16,23 +16,23 @@ class PrefRegistrySyncable;
 
 namespace performance_manager::user_tuning::prefs {
 
-// DEPRECATED: being replaced by kHighEfficiencyModeState
-inline constexpr char kHighEfficiencyModeEnabled[] =
+// DEPRECATED: being replaced by kMemorySaverModeState
+inline constexpr char kMemorySaverModeEnabled[] =
     "performance_tuning.high_efficiency_mode.enabled";
 
-enum class HighEfficiencyModeState {
+enum class MemorySaverModeState {
   kDisabled = 0,
   kEnabled = 1,
   kEnabledOnTimer = 2,
 };
 
-inline constexpr char kHighEfficiencyModeState[] =
+inline constexpr char kMemorySaverModeState[] =
     "performance_tuning.high_efficiency_mode.state";
 
-inline constexpr char kHighEfficiencyModeTimeBeforeDiscardInMinutes[] =
+inline constexpr char kMemorySaverModeTimeBeforeDiscardInMinutes[] =
     "performance_tuning.high_efficiency_mode.time_before_discard_in_minutes";
 
-constexpr int kDefaultHighEfficiencyModeTimeBeforeDiscardInMinutes = 120;
+constexpr int kDefaultMemorySaverModeTimeBeforeDiscardInMinutes = 120;
 
 enum class BatterySaverModeState {
   kDisabled = 0,
@@ -63,19 +63,18 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-HighEfficiencyModeState GetCurrentHighEfficiencyModeState(
-    PrefService* pref_service);
+MemorySaverModeState GetCurrentMemorySaverModeState(PrefService* pref_service);
 
-base::TimeDelta GetCurrentHighEfficiencyModeTimeBeforeDiscard(
+base::TimeDelta GetCurrentMemorySaverModeTimeBeforeDiscard(
     PrefService* pref_service);
 
 BatterySaverModeState GetCurrentBatterySaverModeState(
     PrefService* pref_service);
 
-// This function migrates the old, boolean High Efficiency (Memory Saver)
-// preference to the new, integer one that represents a value of the
-// `HighEfficiencyModeState` enum. This is done once at startup.
-void MigrateHighEfficiencyModePref(PrefService* pref_service);
+// This function migrates the old, boolean Memory Saver preference to the new,
+// integer one that represents a value of the `MemorySaverModeState` enum. This
+// is done once at startup.
+void MigrateMemorySaverModePref(PrefService* pref_service);
 
 }  // namespace performance_manager::user_tuning::prefs
 

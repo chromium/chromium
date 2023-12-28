@@ -150,6 +150,11 @@ void LocalFileSuggestionProvider::GetSuggestFileData(
                      weak_factory_.GetWeakPtr()));
 }
 
+void LocalFileSuggestionProvider::MaybeUpdateItemSuggestCache(
+    base::PassKey<FileSuggestKeyedService>) {
+  NOTREACHED();
+}
+
 void LocalFileSuggestionProvider::OnFilesOpened(
     const std::vector<FileOpenEvent>& file_opens) {
   if (!files_ranker_) {
@@ -182,11 +187,6 @@ void LocalFileSuggestionProvider::OnFilesOpened(
                        weak_factory_.GetWeakPtr(),
                        FileSuggestionType::kLocalFile));
   }
-}
-
-bool LocalFileSuggestionProvider::HasPendingLocalSuggestionFetchForTest()
-    const {
-  return !on_validation_complete_callback_list_.empty();
 }
 
 void LocalFileSuggestionProvider::OnProtoInitialized(

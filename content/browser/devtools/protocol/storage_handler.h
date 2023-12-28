@@ -178,6 +178,9 @@ class StorageHandler
       base::Time source_time,
       absl::optional<uint64_t> cleared_debug_key,
       attribution_reporting::mojom::StoreSourceResult) override;
+  void OnTriggerHandled(const AttributionTrigger&,
+                        absl::optional<uint64_t> cleared_debug_key,
+                        const CreateReportResult&) override;
 
   void NotifySharedStorageAccessed(
       const base::Time& access_time,

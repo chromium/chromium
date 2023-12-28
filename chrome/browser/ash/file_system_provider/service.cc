@@ -31,8 +31,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/common/file_system/file_system_mount_option.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 namespace {
 
 // Maximum number of file systems to be mounted in the same time, per profile.
@@ -470,5 +469,4 @@ ProviderInterface* Service::GetProvider(const ProviderId& provider_id) {
   return it->second.get();
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

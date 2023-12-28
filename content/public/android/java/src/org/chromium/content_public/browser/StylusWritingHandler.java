@@ -29,10 +29,11 @@ public interface StylusWritingHandler {
     /**
      * Requests to start stylus writing for input field in web page.
      *
+     * @param view the view on which to start stylus handwriting.
      * @return true if writing can be started or if started successfully, false if writing cannot be
      *     started.
      */
-    boolean requestStartStylusWriting();
+    boolean requestStartStylusWriting(View view);
 
     /**
      * Update current input state parameters to stylus writing system.

@@ -6,15 +6,16 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './shimless_rma_shared_css.js';
+import './shimless_rma_shared.css.js';
 import './base_page.js';
-import './icons.js';
+import './icons.html.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {ProvisioningError, ProvisioningObserverInterface, ProvisioningObserverReceiver, ProvisioningStatus, RmadErrorCode, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {getTemplate} from './reimaging_provisioning_page.html.js';
+import {ProvisioningError, ProvisioningObserverInterface, ProvisioningObserverReceiver, ProvisioningStatus, RmadErrorCode, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
 import {disableNextButton, enableNextButton, executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 
 /**
@@ -44,7 +45,7 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -56,12 +57,12 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
       allButtonsDisabled: Boolean,
 
       /** @protected {!ProvisioningStatus} */
-      status_: {
+      status: {
         type: Object,
       },
 
       /** @protected {boolean} */
-      shouldShowSpinner_: {
+      shouldShowSpinner: {
         type: Boolean,
         value: true,
       },
@@ -71,16 +72,16 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService = getShimlessRmaService();
     /** @private {ProvisioningObserverReceiver} */
-    this.provisioningObserverReceiver_ = new ProvisioningObserverReceiver(
+    this.provisioningObserverReceiver = new ProvisioningObserverReceiver(
         /**
          * @type {!ProvisioningObserverInterface}
          */
         (this));
 
-    this.shimlessRmaService_.observeProvisioningProgress(
-        this.provisioningObserverReceiver_.$.bindNewPipeAndPassRemote());
+    this.shimlessRmaService.observeProvisioningProgress(
+        this.provisioningObserverReceiver.$.bindNewPipeAndPassRemote());
   }
 
   /** @override */
@@ -113,18 +114,18 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
       }));
     }
 
-    this.status_ = status;
+    this.status = status;
 
     // Transition to next state when provisioning is complete.
-    if (this.status_ === ProvisioningStatus.kComplete) {
-      this.shouldShowSpinner_ = false;
+    if (this.status === ProvisioningStatus.kComplete) {
+      this.shouldShowSpinner = false;
       executeThenTransitionState(
-          this, () => this.shimlessRmaService_.provisioningComplete());
+          this, () => this.shimlessRmaService.provisioningComplete());
       return;
     }
 
-    this.shouldShowSpinner_ =
-        isWpError || this.status_ === ProvisioningStatus.kInProgress;
+    this.shouldShowSpinner =
+        isWpError || this.status === ProvisioningStatus.kInProgress;
 
     if (isWpError) {
       const dialog = /** @type {!CrDialogElement} */ (
@@ -134,13 +135,13 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
   }
 
   /** @protected */
-  onTryAgainButtonClick_() {
+  onTryAgainButtonClick() {
     const dialog = /** @type {!CrDialogElement} */ (
         this.shadowRoot.querySelector('#wpEnabledDialog'));
     dialog.close();
 
     executeThenTransitionState(
-        this, () => this.shimlessRmaService_.retryProvisioning());
+        this, () => this.shimlessRmaService.retryProvisioning());
   }
 }
 

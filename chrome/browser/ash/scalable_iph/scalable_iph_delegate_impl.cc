@@ -23,7 +23,7 @@
 #include "ash/shelf/shelf_app_button.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
-#include "ash/system/message_center/message_view_factory.h"
+#include "ash/system/notification_center/message_view_factory.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/webui/grit/ash_print_management_resources.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"

@@ -22,6 +22,7 @@
 #include "ash/system/input_device_settings/input_device_key_alias_manager.h"
 #include "ash/system/input_device_settings/input_device_notifier.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
+#include "ash/system/input_device_settings/input_device_settings_metadata.h"
 #include "ash/system/input_device_settings/input_device_settings_notification_controller.h"
 #include "ash/system/input_device_settings/input_device_settings_policy_handler.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
@@ -220,10 +221,12 @@ mojom::PointingStickPtr BuildMojomPointingStick(
 }
 
 mojom::GraphicsTabletPtr BuildMojomGraphicsTablet(
-    const ui::InputDevice& graphics_tablet) {
+    const ui::InputDevice& graphics_tablet,
+    mojom::CustomizationRestriction customization_restriction) {
   mojom::GraphicsTabletPtr mojom_graphics_tablet = mojom::GraphicsTablet::New();
   mojom_graphics_tablet->name = graphics_tablet.name;
   mojom_graphics_tablet->id = graphics_tablet.id;
+  mojom_graphics_tablet->customization_restriction = customization_restriction;
   mojom_graphics_tablet->device_key =
       Shell::Get()->input_device_key_alias_manager()->GetAliasedDeviceKey(
           graphics_tablet);
@@ -1430,72 +1433,17 @@ void InputDeviceSettingsControllerImpl::DispatchGraphicsTabletSettingsChanged(
 mojom::CustomizationRestriction
 InputDeviceSettingsControllerImpl::GetMouseCustomizationRestriction(
     const ui::InputDevice& mouse) {
-  if (!features::IsPeripheralCustomizationEnabled()) {
-    return mojom::CustomizationRestriction::kAllowCustomizations;
+  const auto* mouse_metadata = GetMouseMetadata(mouse);
+  if (mouse_metadata) {
+    return mouse_metadata->customization_restriction;
+  }
+  const auto* keyboard_mouse_combo_metadata =
+      GetKeyboardMouseComboMetadata(mouse);
+  if (keyboard_mouse_combo_metadata) {
+    return keyboard_mouse_combo_metadata->customization_restriction;
   }
 
-  // If the mouse is not customizable, then the CustomizationRestriction is
-  // kDisallowCustomizations.
-  if (!IsMouseCustomizable(mouse)) {
-    return mojom::CustomizationRestriction::kDisallowCustomizations;
-  }
-
-  // If the mouse is customizable based on its vid and pid but there exists
-  // duplicate ids in the keyboard list, then the CustomizationRestriction is
-  // kDisableKeyEventRewrites to disable the key event rewrite from the mouse.
-  auto* duplicate_ids = duplicate_id_finder_->GetDuplicateDeviceIds(mouse.id);
-  CHECK(duplicate_ids);
-  for (const auto& duplicate_id : *duplicate_ids) {
-    if (keyboards_.contains(duplicate_id)) {
-      return mojom::CustomizationRestriction::kDisableKeyEventRewrites;
-    }
-  }
-
-  return mojom::CustomizationRestriction::kAllowCustomizations;
-}
-
-void InputDeviceSettingsControllerImpl::
-    ApplyCustomizationRestrictionFromKeyboard(DeviceId keyboard_id) {
-  if (!features::IsPeripheralCustomizationEnabled()) {
-    return;
-  }
-
-  bool changed_restriction = false;
-  auto* duplicate_ids =
-      duplicate_id_finder_->GetDuplicateDeviceIds(keyboard_id);
-  CHECK(duplicate_ids);
-  for (const auto& duplicate_id : *duplicate_ids) {
-    auto iter = mice_.find(duplicate_id);
-    if (iter == mice_.end()) {
-      continue;
-    }
-    auto& mouse = *iter->second;
-
-    if (mouse.customization_restriction ==
-        mojom::CustomizationRestriction::kDisableKeyEventRewrites) {
-      continue;
-    }
-
-    mouse.customization_restriction =
-        mojom::CustomizationRestriction::kDisableKeyEventRewrites;
-    changed_restriction = true;
-    InitializeMouseSettings(&mouse);
-    DispatchMouseSettingsChanged(mouse.id);
-  }
-
-  // If the restriction changed for any mouse, refresh the observing to match
-  // the new restriction.
-  if (changed_restriction) {
-    PeripheralCustomizationEventRewriter* rewriter =
-        Shell::Get()
-            ->event_rewriter_controller()
-            ->peripheral_customization_event_rewriter();
-    DeviceId id = *duplicate_ids->begin();
-    if (rewriter->mice_to_observe().contains(id)) {
-      rewriter->StopObserving();
-      StartObservingButtons(id);
-    }
-  }
+  return mojom::CustomizationRestriction::kDisableKeyEventRewrites;
 }
 
 void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
@@ -1508,8 +1456,6 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
     InitializeKeyboardSettings(mojom_keyboard.get());
     keyboards_.insert_or_assign(keyboard.id, std::move(mojom_keyboard));
     DispatchKeyboardConnected(keyboard.id);
-    // Update mouse restrictions if we have a keyboard with the same id.
-    ApplyCustomizationRestrictionFromKeyboard(keyboard.id);
   }
 
   for (const auto id : keyboard_ids_to_remove) {
@@ -1580,7 +1526,8 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated(
     std::vector<ui::InputDevice> graphics_tablets_to_add,
     std::vector<DeviceId> graphics_tablet_ids_to_remove) {
   for (const auto& graphics_tablet : graphics_tablets_to_add) {
-    auto mojom_graphics_tablet = BuildMojomGraphicsTablet(graphics_tablet);
+    auto mojom_graphics_tablet = BuildMojomGraphicsTablet(
+        graphics_tablet, mojom::CustomizationRestriction::kAllowCustomizations);
     InitializeGraphicsTabletSettings(mojom_graphics_tablet.get());
     if (features::IsPeripheralNotificationEnabled()) {
       notification_controller_->NotifyGraphicsTabletFirstTimeConnected(
@@ -1778,13 +1725,15 @@ void InputDeviceSettingsControllerImpl::StartObservingButtons(DeviceId id) {
   }
 
   auto* graphics_tablet = FindGraphicsTablet(id);
-  if (graphics_tablet) {
+  if (graphics_tablet &&
+      graphics_tablet->customization_restriction !=
+          ash::mojom::CustomizationRestriction::kDisallowCustomizations) {
     const auto* duplicate_ids =
         duplicate_id_finder_->GetDuplicateDeviceIds(graphics_tablet->id);
     CHECK(duplicate_ids);
     for (const auto& duplicate_id : *duplicate_ids) {
       rewriter->StartObservingGraphicsTablet(
-          duplicate_id, mojom::CustomizationRestriction::kAllowCustomizations);
+          duplicate_id, graphics_tablet->customization_restriction);
     }
     return;
   }

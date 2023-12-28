@@ -154,7 +154,7 @@ using ::testing::AssertionSuccess;
 // FAIL if a field with the supplied `name` and `fieldType` is not present on
 // the `form`.
 void CheckField(const FormStructure& form,
-                ServerFieldType fieldType,
+                FieldType fieldType,
                 const char* name) {
   for (const auto& field : form) {
     if (field->heuristic_type() == fieldType) {

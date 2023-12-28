@@ -4,7 +4,9 @@
 
 #include "chromeos/ash/components/login/integrity/misconfigured_user_cleaner.h"
 
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/session/session_controller.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -58,17 +60,27 @@ void MisconfiguredUserCleaner::DoCleanup(
   if (!existing_users_count.has_value()) {
     // We were not able to get the number of existing users, log error.
     LOG(ERROR) << "Unable to retrieve the number of existing users";
-  } else if (!is_enterprise_managed && existing_users_count.value() == 0) {
-    LOG(WARNING) << "User is owner, removing the user requires powerwash.";
-    // user is owner, TPM ownership was established, powerwash the device.
-    SessionManagerClient::Get()->StartDeviceWipe(
-        base::BindOnce(&MisconfiguredUserCleaner::OnStartDeviceWipe,
-                       weak_factory_.GetWeakPtr()));
-  } else {
-    LOG(WARNING) << "User is non-owner, trigger user removal.";
-    integrity_manager.RemoveUser(account_id);
-    integrity_manager.ClearPrefs();
+    return;
   }
+  bool is_owner = !is_enterprise_managed && existing_users_count.value() == 0;
+  bool ignore_owner_in_tests =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kCryptohomeIgnoreCleanupOwnershipForTesting);
+  if (is_owner) {
+    if (!ignore_owner_in_tests) {
+      LOG(WARNING) << "User is owner, removing the user requires powerwash.";
+      // user is owner, TPM ownership was established, powerwash the device.
+      SessionManagerClient::Get()->StartDeviceWipe(
+          base::BindOnce(&MisconfiguredUserCleaner::OnStartDeviceWipe,
+                         weak_factory_.GetWeakPtr()));
+      return;
+    }
+    LOG(WARNING) << "Treating owner user as non-owner due to test-only switch";
+  }
+
+  LOG(WARNING) << "User is non-owner, trigger user removal.";
+  integrity_manager.RemoveUser(account_id);
+  integrity_manager.ClearPrefs();
 }
 
 void MisconfiguredUserCleaner::OnStartDeviceWipe(bool result) {

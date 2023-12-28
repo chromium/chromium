@@ -172,6 +172,10 @@ scoped_refptr<Image> CSSGradientValue::GetImage(
       gradient = To<CSSConicGradientValue>(this)->CreateGradient(
           conversion_data, size, document, style);
       break;
+    case kConstantGradientClass:
+      gradient = To<CSSConstantGradientValue>(this)->CreateGradient(
+          conversion_data, size, document, style);
+      break;
     default:
       NOTREACHED();
   }
@@ -906,6 +910,9 @@ CSSGradientValue* CSSGradientValue::ComputedCSSValue(
           style, allow_visited_style);
     case kConicGradientClass:
       return To<CSSConicGradientValue>(this)->ComputedCSSValue(
+          style, allow_visited_style);
+    case kConstantGradientClass:
+      return To<CSSConstantGradientValue>(this)->ComputedCSSValue(
           style, allow_visited_style);
     default:
       NOTREACHED();
@@ -1877,6 +1884,53 @@ void CSSConicGradientValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(y_);
   visitor->Trace(from_angle_);
   CSSGradientValue::TraceAfterDispatch(visitor);
+}
+
+bool CSSConstantGradientValue::Equals(
+    const CSSConstantGradientValue& other) const {
+  return base::ValuesEquivalent(color_, other.color_);
+}
+
+void CSSConstantGradientValue::TraceAfterDispatch(
+    blink::Visitor* visitor) const {
+  visitor->Trace(color_);
+  CSSGradientValue::TraceAfterDispatch(visitor);
+}
+
+bool CSSConstantGradientValue::KnownToBeOpaque(
+    const Document& document,
+    const ComputedStyle& style) const {
+  return ResolveStopColor(*color_, document, style).IsOpaque();
+}
+
+scoped_refptr<Gradient> CSSConstantGradientValue::CreateGradient(
+    const CSSToLengthConversionData& conversion_data,
+    const gfx::SizeF& size,
+    const Document& document,
+    const ComputedStyle& style) const {
+  DCHECK(!size.IsEmpty());
+
+  GradientDesc desc({0.0f, 0.0f}, {1.0f, 1.0f}, kSpreadMethodPad);
+  const Color color = ResolveStopColor(*color_, document, style);
+  desc.stops.emplace_back(0.0f, color);
+  desc.stops.emplace_back(1.0f, color);
+
+  scoped_refptr<Gradient> gradient =
+      Gradient::CreateLinear(desc.p0, desc.p1, desc.spread_method,
+                             Gradient::ColorInterpolation::kPremultiplied);
+
+  gradient->SetColorInterpolationSpace(color_interpolation_space_,
+                                       hue_interpolation_method_);
+  gradient->AddColorStops(desc.stops);
+
+  return gradient;
+}
+
+CSSConstantGradientValue* CSSConstantGradientValue::ComputedCSSValue(
+    const ComputedStyle& style,
+    bool allow_visited_style) const {
+  return MakeGarbageCollected<CSSConstantGradientValue>(
+      GetComputedStopColor(color_, style, allow_visited_style));
 }
 
 }  // namespace blink::cssvalue

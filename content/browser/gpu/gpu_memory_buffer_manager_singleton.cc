@@ -14,6 +14,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/base/ui_base_features.h"
 
 #if BUILDFLAG(IS_OZONE)
@@ -37,13 +38,13 @@ viz::mojom::GpuService* GetGpuService(
   return nullptr;
 }
 
-#if defined(USE_OZONE_PLATFORM_X11)
+#if BUILDFLAG(IS_OZONE_X11)
 bool ShouldSetBufferFormatsFromGpuExtraInfo() {
   return ui::OzonePlatform::GetInstance()
       ->GetPlatformProperties()
       .fetch_buffer_formats_for_gmb_on_gpu;
 }
-#endif
+#endif  // BUILDFLAG(IS_OZONE_X11)
 
 scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() {
 #if BUILDFLAG(IS_MAC)
@@ -105,7 +106,7 @@ GpuMemoryBufferManagerSingleton::GetInstance() {
 }
 
 void GpuMemoryBufferManagerSingleton::OnGpuExtraInfoUpdate() {
-#if defined(USE_OZONE_PLATFORM_X11)
+#if BUILDFLAG(IS_OZONE_X11)
   // X11 fetches buffer formats on gpu and passes them via gpu extra info.
   if (ShouldSetBufferFormatsFromGpuExtraInfo()) {
     gpu::GpuMemoryBufferConfigurationSet configs;
@@ -115,7 +116,7 @@ void GpuMemoryBufferManagerSingleton::OnGpuExtraInfoUpdate() {
     }
     SetNativeConfigurations(std::move(configs));
   }
-#endif
+#endif  // BUILDFLAG(IS_OZONE_X11)
 #if BUILDFLAG(IS_LINUX)
   // Dynamic check whether the NV12 format is supported as it may be
   // inconsistent between the system GBM (Generic Buffer Management) and

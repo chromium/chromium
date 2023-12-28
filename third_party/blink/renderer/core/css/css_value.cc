@@ -230,6 +230,9 @@ bool CSSValue::operator==(const CSSValue& other) const {
         return CompareCSSValues<cssvalue::CSSConicGradientValue>(*this, other);
       case kCrossfadeClass:
         return CompareCSSValues<cssvalue::CSSCrossfadeValue>(*this, other);
+      case kConstantGradientClass:
+        return CompareCSSValues<cssvalue::CSSConstantGradientValue>(*this,
+                                                                    other);
       case kPaintClass:
         return CompareCSSValues<CSSPaintValue>(*this, other);
       case kCustomIdentClass:
@@ -385,6 +388,8 @@ String CSSValue::CssText() const {
       return To<cssvalue::CSSRadialGradientValue>(this)->CustomCSSText();
     case kConicGradientClass:
       return To<cssvalue::CSSConicGradientValue>(this)->CustomCSSText();
+    case kConstantGradientClass:
+      return To<cssvalue::CSSConstantGradientValue>(this)->CustomCSSText();
     case kCrossfadeClass:
       return To<cssvalue::CSSCrossfadeValue>(this)->CustomCSSText();
     case kPaintClass:
@@ -575,6 +580,9 @@ void CSSValue::Trace(Visitor* visitor) const {
       return;
     case kConicGradientClass:
       To<cssvalue::CSSConicGradientValue>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kConstantGradientClass:
+      To<cssvalue::CSSConstantGradientValue>(this)->TraceAfterDispatch(visitor);
       return;
     case kCrossfadeClass:
       To<cssvalue::CSSCrossfadeValue>(this)->TraceAfterDispatch(visitor);
@@ -788,6 +796,8 @@ String CSSValue::ClassTypeToString() const {
       return "RadialGradientClass";
     case kConicGradientClass:
       return "ConicGradientClass";
+    case kConstantGradientClass:
+      return "ConstantGradientClass";
     case kLinearTimingFunctionClass:
       return "LinearTimingFunctionClass";
     case kCubicBezierTimingFunctionClass:

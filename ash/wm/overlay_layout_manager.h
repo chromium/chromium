@@ -33,7 +33,7 @@ class ASH_EXPORT OverlayLayoutManager : public WmDefaultLayoutManager,
                                uint32_t changed_metrics) override;
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> overlay_container_;
+  raw_ptr<aura::Window> overlay_container_;
 
   display::ScopedDisplayObserver display_observer_{this};
 };

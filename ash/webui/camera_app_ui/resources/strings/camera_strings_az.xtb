@@ -78,6 +78,7 @@
 <translation id="4705093842003735294">Tam ayırdetmə dəqiqliyi</translation>
 <translation id="4864143361253542638">Skan edilmiş səhifə siyahısı</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Keçid ünvanını kopyalayın: <ph name="URL" /></translation>
 <translation id="491895758387112773">Çox-yayımlı video çəkilişi</translation>
 <translation id="495170559598752135">Fəaliyyətlər</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
@@ -129,6 +130,7 @@ Rəyiniz şəkil və ya video keyfiyyəti ilə bağlıdırsa, nümunə foto və 
 <translation id="7450541714075000668">Mətn kopyalandı</translation>
 <translation id="7488619942230388918">GIF video çəkin</translation>
 <translation id="7557677699350329807">Növbəti kameraya keçin</translation>
+<translation id="7562584071994185503">Mətni kopyalayın: <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Durduruldu</translation>
 <translation id="7608223098072244877">4x4</translation>
 <translation id="761421184377987513">Aşağı sol tərəfə daşınır</translation>
@@ -141,6 +143,7 @@ Rəyiniz şəkil və ya video keyfiyyəti ilə bağlıdırsa, nümunə foto və 
 <translation id="7726641833034062494">Normal video çəkin</translation>
 <translation id="7748344063862150053">Sənədin yuxarı sağ küncü</translation>
 <translation id="7933675232020478311">Aşağı sağ tərəfə daşınır</translation>
+<translation id="7983668134180549431">Mətn aşkarlanıb.</translation>
 <translation id="8079255378695216066">Qeydə almanı başlatmaq mümkün deyil</translation>
 <translation id="8120146556401698679">Kənarları yığma, əymə, miqyası dəyişmə</translation>
 <translation id="8131740175452115882">Təsdiq edin</translation>
@@ -150,6 +153,7 @@ Rəyiniz şəkil və ya video keyfiyyəti ilə bağlıdırsa, nümunə foto və 
 <translation id="8346544573713510785">Kamera HAL tərəfindən çərçivə miqyaslama</translation>
 <translation id="8425673304802773841">Aşağı əyin</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
+<translation id="8609951387004618906">Açın: <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Mikrofonu səssisə keçirin. Susdurma düyməsi aktivdir</translation>
 <translation id="8730621377337864115">Tamamdır</translation>
@@ -159,7 +163,6 @@ Rəyiniz şəkil və ya video keyfiyyəti ilə bağlıdırsa, nümunə foto və 
 <translation id="8870695351537079478">Çəkimə başlamaq mümkün deyil</translation>
 <translation id="8880167521484863515">4-3</translation>
 <translation id="8903921497873541725">Zoom</translation>
-<translation id="8926890870105777777">"<ph name="WIFINAME" />" şəbəkəsinə qoşulun</translation>
 <translation id="9045010116236796332">Sənədin bütün kənarlarını çərçivənin daxilinə yerləşdirin</translation>
 <translation id="9045155556724273246">10 saniyə</translation>
 <translation id="906331135292332864">Şəkil emal edilir...</translation>

@@ -48,7 +48,8 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
   // For SearchModel:
   void SetSearchEngineIsGoogle(bool is_google) override;
   void PublishSearchResults(
-      const std::vector<ChromeSearchResult*>& results,
+      const std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>&
+          results,
       const std::vector<ash::AppListSearchResultCategory>& categories) override;
   void ClearSearchResults() override;
 
@@ -73,7 +74,8 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
   // For SearchModel:
   bool SearchEngineIsGoogle() override;
   void RecalculateWouldTriggerLauncherSearchIph() override;
-  const std::vector<ChromeSearchResult*>& search_results() const {
+  const std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>&
+  search_results() const {
     return search_results_;
   }
 
@@ -91,7 +93,7 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
 
   bool search_engine_is_google_ = false;
   std::vector<std::unique_ptr<ChromeAppListItem>> items_;
-  std::vector<ChromeSearchResult*> search_results_;
+  std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>> search_results_;
   base::ObserverList<AppListModelUpdaterObserver> observers_;
 
   size_t update_image_count_ = 0;

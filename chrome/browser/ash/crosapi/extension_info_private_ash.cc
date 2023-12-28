@@ -7,7 +7,6 @@
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/stylus_utils.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -38,6 +37,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/error_utils.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+#include "ui/display/screen.h"
 
 using ash::NetworkHandler;
 
@@ -461,9 +461,8 @@ void ExtensionInfoPrivateAsh::SetBool(const std::string& property_name,
 void ExtensionInfoPrivateAsh::IsTabletModeEnabled(
     IsTabletModeEnabledCallback callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback),
-                     std::move(ash::TabletMode::Get()->InTabletMode())));
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                display::Screen::GetScreen()->InTabletMode()));
 }
 
 }  // namespace crosapi

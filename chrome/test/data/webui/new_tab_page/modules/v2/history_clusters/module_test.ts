@@ -457,39 +457,7 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
   });
 
   suite('Discounts', () => {
-    test('Discount is not initialized when feature is disabled', async () => {
-      loadTimeData.overrideValues({
-        historyClustersModuleDiscountsEnabled: false,
-      });
-
-      const instanceCount = 3;
-      const moduleElements =
-          await initializeModule(createSampleClusters(instanceCount));
-      assertEquals(instanceCount, moduleElements.length);
-
-      assertEquals(0, handler.getCallCount('getDiscountsForCluster'));
-      for (const moduleElement of moduleElements) {
-        assertTrue(!!moduleElement);
-        await waitAfterNextRender(moduleElement);
-        for (const discount of moduleElement.discounts) {
-          assertEquals('', discount);
-        }
-        const contentElement =
-            moduleElement.shadowRoot!
-                .querySelector('ntp-history-clusters-visit-tile')!.shadowRoot!
-                .querySelector('#content')! as HTMLElement;
-        assertEquals(
-            contentElement.getAttribute('aria-label'),
-            'Test Title 1, foo.com, 1 min ago');
-      }
-      assertEquals(0, metrics.count(`NewTabPage.HistoryClusters.HasDiscount`));
-    });
-
     test('Discount initialization', async () => {
-      loadTimeData.overrideValues({
-        historyClustersModuleDiscountsEnabled: true,
-      });
-
       const instanceCount = 2;
       const visitCount = 3;
       const clusters = createSampleClusters(instanceCount);
@@ -593,10 +561,6 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
     });
 
     test('Metrics for Discount click', async () => {
-      loadTimeData.overrideValues({
-        historyClustersModuleDiscountsEnabled: true,
-      });
-
       const instanceCount = 1;
       const visitCount = 3;
       const clusters = createSampleClusters(instanceCount);

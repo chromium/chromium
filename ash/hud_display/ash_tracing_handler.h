@@ -49,7 +49,7 @@ class ASH_EXPORT AshTracingHandler {
   void OnTracingStarted();
   void OnTracingFinished();
 
-  raw_ptr<AshTracingRequest, ExperimentalAsh> request_ = nullptr;
+  raw_ptr<AshTracingRequest> request_ = nullptr;
 
   std::unique_ptr<perfetto::TracingSession> tracing_session_;
 

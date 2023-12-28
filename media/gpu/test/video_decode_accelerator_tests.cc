@@ -846,6 +846,11 @@ int main(int argc, char** argv) {
 #endif
 
 #if BUILDFLAG(USE_V4L2_CODEC)
+  // For V4L2 testing with VISL, dumb driver is used with vkms for minigbm
+  // backend. In this case, the primary node needs to be used instead of the
+  // render node.
+  cmd_line->AppendSwitch(switches::kEnablePrimaryNodeAccessForVkmsTesting);
+
   std::unique_ptr<base::FeatureList> feature_list =
       std::make_unique<base::FeatureList>();
   feature_list->InitFromCommandLine(

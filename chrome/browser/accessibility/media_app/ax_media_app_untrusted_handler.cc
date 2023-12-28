@@ -190,7 +190,7 @@ void AXMediaAppUntrustedHandler::OnAXModeAdded(ui::AXMode mode) {
 }
 
 void AXMediaAppUntrustedHandler::DocumentUpdated(
-    const std::vector<gfx::Insets>& page_locations,
+    const std::vector<gfx::RectF>& page_locations,
     const std::vector<uint64_t>& dirty_pages) {
   // `page_locations` should contain the new locations of all pages, whilst
   // `dirty_pages` only the indices of all the pages that need to be OCRed.
@@ -218,12 +218,13 @@ void AXMediaAppUntrustedHandler::DocumentUpdated(
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 }
 
-void AXMediaAppUntrustedHandler::ViewportUpdated(
-    const gfx::Insets& viewport_box, float scaleFactor) {}
+void AXMediaAppUntrustedHandler::ViewportUpdated(const gfx::RectF& viewport_box,
+                                                 float scaleFactor) {}
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-void AXMediaAppUntrustedHandler::UpdatePageLocation(uint64_t page_index,
-                                           const gfx::Insets& page_location) {
+void AXMediaAppUntrustedHandler::UpdatePageLocation(
+    uint64_t page_index,
+    const gfx::RectF& page_location) {
   CHECK_LT(page_index, static_cast<uint64_t>(pages_.size()));
   ui::AXTreeManager* tree_manager = pages_[page_index].get();
   if (!tree_manager) {
@@ -232,9 +233,7 @@ void AXMediaAppUntrustedHandler::UpdatePageLocation(uint64_t page_index,
   ui::AXTree* tree = tree_manager->ax_tree();
   CHECK(tree->root());
   ui::AXNodeData root_data = tree->root()->data();
-  root_data.relative_bounds.bounds =
-      gfx::RectF(page_location.left(), page_location.top(),
-                 page_location.width(), page_location.height());
+  root_data.relative_bounds.bounds = page_location;
   ui::AXTreeUpdate location_update;
   location_update.root_id = tree->root()->id();
   location_update.nodes = {root_data};

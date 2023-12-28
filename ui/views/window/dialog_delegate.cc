@@ -121,6 +121,10 @@ Widget::InitParams DialogDelegate::GetDialogWidgetInitParams(
   // method behaviors.
   params.child = parent && (delegate->GetModalType() == ui::MODAL_TYPE_CHILD);
 #endif
+
+  if (dialog && dialog->widget_owns_native_widget_) {
+    params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  }
   return params;
 }
 
@@ -426,6 +430,11 @@ void DialogDelegate::SetCancelCallbackWithClose(
 
 void DialogDelegate::SetCloseCallback(base::OnceClosure callback) {
   close_callback_ = std::move(callback);
+}
+
+void DialogDelegate::SetWidgetOwnsNativeWidget() {
+  CHECK(!GetWidget());
+  widget_owns_native_widget_ = true;
 }
 
 std::unique_ptr<View> DialogDelegate::DisownExtraView() {

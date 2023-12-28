@@ -28,6 +28,7 @@ class Widget;
 
 namespace ash {
 
+class AnchoredNudge;
 class FeatureTile;
 class GameDashboardButton;
 class GameDashboardMainMenuView;
@@ -71,6 +72,9 @@ class GameDashboardContextTestApi {
   IconButton* GetMainMenuHelpButton();
   IconButton* GetMainMenuSettingsButton();
 
+  // Returns the Game Controls setup nudge.
+  AnchoredNudge* GetGameControlsSetupNudge();
+
   // Opens the main menu.
   // Before opening the main menu, verifies that the main menu is closed.
   // After opening the main menu, verifies it opened and waits for the thread to
@@ -113,9 +117,8 @@ class GameDashboardContextTestApi {
   // `view_id`.
   views::View* GetMainMenuViewById(int view_id);
 
-  const raw_ptr<GameDashboardContext, DanglingUntriaged | ExperimentalAsh>
-      context_;
-  const raw_ptr<ui::test::EventGenerator, ExperimentalAsh> event_generator_;
+  const raw_ptr<GameDashboardContext, DanglingUntriaged> context_;
+  const raw_ptr<ui::test::EventGenerator> event_generator_;
 };
 
 }  // namespace ash

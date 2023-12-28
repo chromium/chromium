@@ -499,7 +499,7 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
   ASSERT_TRUE(base::ReadFileToString(input_file, &input_json_text));
 
   // Convert to JSON dictionary.
-  absl::optional<base::Value> opt_json_file =
+  std::optional<base::Value> opt_json_file =
       base::JSONReader::Read(input_json_text);
   ASSERT_TRUE(opt_json_file);
   base::Value::Dict* json_file = opt_json_file->GetIfDict();
@@ -538,7 +538,8 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       // Other improvements.
       features::kAutofillEnableZipOnlyAddressForms,
       features::kAutofillDefaultToCityAndNumber,
-      features::kAutofillPreferLabelsInSomeCountries};
+      features::kAutofillPreferLabelsInSomeCountries,
+      features::kAutofillEnableCacheForRegexMatching};
   std::vector<base::test::FeatureRef> disabled_features = {};
 
   auto init_feature_to_value = [&](base::test::FeatureRef feature, bool value) {
@@ -590,7 +591,7 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
   std::string new_stats = SummarizeStatistics(*json_file);
 
   // Serialize the result.
-  absl::optional<std::string> output_json_text =
+  std::optional<std::string> output_json_text =
       base::WriteJsonWithOptions(*opt_json_file, base::OPTIONS_PRETTY_PRINT);
   ASSERT_TRUE(output_json_text);
 

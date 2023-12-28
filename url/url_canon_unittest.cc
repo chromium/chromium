@@ -93,6 +93,36 @@ void SetupReplComp(
   }
 }
 
+bool CanonicalizeSpecialPath(const char* spec,
+                             const Component& path,
+                             CanonOutput* output,
+                             Component* out_path) {
+  return CanonicalizePath(spec, path, CanonMode::kSpecialURL, output, out_path);
+}
+
+bool CanonicalizeSpecialPath(const char16_t* spec,
+                             const Component& path,
+                             CanonOutput* output,
+                             Component* out_path) {
+  return CanonicalizePath(spec, path, CanonMode::kSpecialURL, output, out_path);
+}
+
+bool CanonicalizeNonSpecialPath(const char* spec,
+                                const Component& path,
+                                CanonOutput* output,
+                                Component* out_path) {
+  return CanonicalizePath(spec, path, CanonMode::kNonSpecialURL, output,
+                          out_path);
+}
+
+bool CanonicalizeNonSpecialPath(const char16_t* spec,
+                                const Component& path,
+                                CanonOutput* output,
+                                Component* out_path) {
+  return CanonicalizePath(spec, path, CanonMode::kNonSpecialURL, output,
+                          out_path);
+}
+
 }  // namespace
 
 TEST(URLCanonTest, DoAppendUTF8) {
@@ -699,7 +729,7 @@ TEST_P(URLCanonHostTest, Host) {
   }
 }
 
-TEST(URLCanonTest, HostPuncutationChar) {
+TEST(URLCanonTest, SpecialHostPuncutationChar) {
   // '%' is not tested here. '%' is used for percent-escaping.
   const std::string_view allowed_host_chars[] = {
       "!", "\"", "$", "&", "'", "(", ")", "+", ",",
@@ -722,7 +752,8 @@ TEST(URLCanonTest, HostPuncutationChar) {
     Component in_comp(0, input.size());
     Component out_comp;
     StdStringCanonOutput output(&out_str);
-    bool success = CanonicalizeHost(input.data(), in_comp, &output, &out_comp);
+    bool success =
+        CanonicalizeSpecialHost(input.data(), in_comp, output, out_comp);
     EXPECT_TRUE(success) << "Input: " << input;
     output.Complete();
     EXPECT_EQ(out_str, input) << "Input: " << input;
@@ -733,7 +764,8 @@ TEST(URLCanonTest, HostPuncutationChar) {
     Component in_comp(0, input.size());
     Component out_comp;
     StdStringCanonOutput output(&out_str);
-    EXPECT_FALSE(CanonicalizeHost(input.data(), in_comp, &output, &out_comp))
+    EXPECT_FALSE(
+        CanonicalizeSpecialHost(input.data(), in_comp, output, out_comp))
         << "Input: " << input;
   }
 
@@ -743,11 +775,42 @@ TEST(URLCanonTest, HostPuncutationChar) {
     Component out_comp;
     StdStringCanonOutput output(&out_str);
     bool success =
-        CanonicalizeHost(c.input.data(), in_comp, &output, &out_comp);
+        CanonicalizeSpecialHost(c.input.data(), in_comp, output, out_comp);
     EXPECT_TRUE(success) << "Input: " << c.input;
     output.Complete();
     EXPECT_EQ(out_str, c.expected) << "Input: " << c.input;
   }
+}
+
+TEST(URLCanonTest, ForbiddenHostCodePoint) {
+  // Test only CanonicalizeNonSpecialHost.
+  // CanonicalizeSpecialHost is not standard compliant yet.
+  // See URLCanonTest::SpecialHostPuncutationChar.
+
+  // https://url.spec.whatwg.org/#forbidden-host-code-point
+  const std::string_view forbidden_host_chars[] = {
+      "\x09", "\x0A", "\x0D", " ", "#",  "/", ":", "<",
+      ">",    "?",    "@",    "[", "\\", "]", "^", "|",
+  };
+
+  for (const std::string_view input : forbidden_host_chars) {
+    std::string out_str;
+    Component in_comp(0, input.size());
+    Component out_comp;
+    StdStringCanonOutput output(&out_str);
+    EXPECT_FALSE(
+        CanonicalizeNonSpecialHost(input.data(), in_comp, output, out_comp))
+        << "Input: " << input;
+  }
+
+  // Test NULL manually.
+  const char host_with_null[] = "a\0b";
+  std::string out_str;
+  Component in_comp(0, 3);
+  Component out_comp;
+  StdStringCanonOutput output(&out_str);
+  EXPECT_FALSE(
+      CanonicalizeNonSpecialHost(host_with_null, in_comp, output, out_comp));
 }
 
 TEST(URLCanonTest, IPv4) {
@@ -1341,8 +1404,6 @@ DualComponentCase kCommonPathCases[] = {
      true},
     // Funny characters that are unescaped should be escaped
     {"/foo\tbar", L"/foo\tbar", "/foo%09bar", Component(0, 10), true},
-    // Backslashes should get converted to forward slashes
-    {"\\foo\\bar", L"\\foo\\bar", "/foo/bar", Component(0, 8), true},
     // Hashes found in paths (possibly only when the caller explicitly sets
     // the path on an already-parsed URL) should be escaped.
     {"/foo#bar", L"/foo#bar", "/foo%23bar", Component(0, 10), true},
@@ -1431,9 +1492,10 @@ void DoPathTest(const DualComponentCase* path_cases,
   }
 }
 
-TEST(URLCanonTest, Path) {
-  DoPathTest(kCommonPathCases, std::size(kCommonPathCases), CanonicalizePath,
-             CanonicalizePath);
+TEST(URLCanonTest, SpecialPath) {
+  // Common test cases
+  DoPathTest(kCommonPathCases, std::size(kCommonPathCases),
+             CanonicalizeSpecialPath, CanonicalizeSpecialPath);
 
   // Manual test: embedded NULLs should be escaped and the URL should be marked
   // as valid.
@@ -1443,10 +1505,42 @@ TEST(URLCanonTest, Path) {
 
   std::string out_str;
   StdStringCanonOutput output(&out_str);
-  bool success = CanonicalizePath(path_with_null, in_comp, &output, &out_comp);
+  bool success =
+      CanonicalizeSpecialPath(path_with_null, in_comp, &output, &out_comp);
   output.Complete();
   EXPECT_TRUE(success);
   EXPECT_EQ("/ab%00c", out_str);
+
+  // Test cases specific on special URLs.
+  DualComponentCase special_path_cases[] = {
+      // Canonical path for empty path is a slash.
+      {"", L"", "/", Component(0, 1), true},
+      // Backslashes should be used as path separators.
+      {"\\a\\b", L"\\a\\b", "/a/b", Component(0, 4), true},
+      {"/a\\..\\b", L"/a\\..\\b", "/b", Component(0, 2), true},
+      {"/a\\.\\b", L"/a\\.\\b", "/a/b", Component(0, 4), true},
+  };
+
+  DoPathTest(special_path_cases, std::size(special_path_cases),
+             CanonicalizeSpecialPath, CanonicalizePath);
+}
+
+TEST(URLCanonTest, NonSpecialPath) {
+  // Common test cases
+  DoPathTest(kCommonPathCases, std::size(kCommonPathCases),
+             CanonicalizeNonSpecialPath, CanonicalizeNonSpecialPath);
+
+  // Test cases specific on non-special URLs.
+  DualComponentCase non_special_path_cases[] = {
+      // Empty.
+      {"", L"", "", Component(0, 0), true},
+      // Backslashes.
+      {"/a\\..\\b", L"/a\\..\\b", "/a\\..\\b", Component(0, 7), true},
+      {"/a\\./b", L"/a\\./b", "/a\\./b", Component(0, 6), true},
+  };
+
+  DoPathTest(non_special_path_cases, std::size(non_special_path_cases),
+             CanonicalizeNonSpecialPath, CanonicalizeNonSpecialPath);
 }
 
 TEST(URLCanonTest, PartialPath) {
@@ -1675,12 +1769,109 @@ TEST(URLCanonTest, CanonicalizeStandardURL) {
     std::string out_str;
     StdStringCanonOutput output(&out_str);
     bool success = CanonicalizeStandardURL(
-        i.input, url_len, parsed, SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION,
-        nullptr, &output, &out_parsed);
+        i.input, parsed, SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr,
+        &output, &out_parsed);
     output.Complete();
 
     EXPECT_EQ(i.expected_success, success);
     EXPECT_EQ(i.expected, out_str);
+  }
+}
+
+TEST(URLCanonTest, CanonicalizeNonSpecialURL) {
+  // The individual component canonicalize tests should have caught the cases
+  // for each of those components. Here, we just need to test that the various
+  // parts are included or excluded properly, and have the correct separators.
+  struct URLCase {
+    const std::string_view input;
+    const std::string_view expected;
+    bool expected_success;
+  } cases[] = {
+      // Basic cases.
+      {"git://host:80/path?a=b#ref", "git://host:80/path?a=b#ref", true},
+      {"git://host", "git://host", true},
+      {"git://host/", "git://host/", true},
+      {"git://HosT/", "git://HosT/", true},
+      {"git://..", "git://..", true},
+      {"git://../", "git://../", true},
+      {"git://../..", "git://../", true},
+
+      // Empty hosts.
+      {"git://", "git://", true},
+      {"git:///", "git:///", true},
+      {"git:////", "git:////", true},
+      {"git:///a", "git:///a", true},
+      {"git:///a/../b", "git:///b", true},
+      {"git:///..", "git:///", true},
+
+      // No hosts.
+      {"git:/", "git:/", true},
+      {"git:/a", "git:/a", true},
+      {"git:/a/../b", "git:/b", true},
+      {"git:/..", "git:/", true},
+      {"git:/../", "git:/", true},
+      {"git:/../..", "git:/", true},
+
+      // Users.
+      {"git://@host", "git://host", true},
+      {"git:// @host", "git://%20@host", true},
+      {"git://\\@host", "git://%5C@host", true},
+
+      // Paths.
+      {"git://host/path", "git://host/path", true},
+      {"git://host/p ath", "git://host/p%20ath", true},
+      {"git://host/a/../b", "git://host/b", true},
+      {"git://host/..", "git://host/", true},
+      {"git://host/../", "git://host/", true},
+      {"git://host/../..", "git://host/", true},
+      {"git://host/.", "git://host/", true},
+      {"git://host/./", "git://host/", true},
+      {"git://host/./.", "git://host/", true},
+      // Backslashes.
+      {"git://host/a\\..\\b", "git://host/a\\..\\b", true},
+
+      // IPv6.
+      {"git://[1:2:0:0:5:0:0:0]", "git://[1:2:0:0:5::]", true},
+      {"git://[1:2:0:0:5:0:0:0]/", "git://[1:2:0:0:5::]/", true},
+      {"git://[1:2:0:0:5:0:0:0]/path", "git://[1:2:0:0:5::]/path", true},
+
+      // IPv4 is unsupported.
+      {"git://127.00.0.1", "git://127.00.0.1", true},
+      {"git://127.1000.0.1", "git://127.1000.0.1", true},
+
+      // Invalid URLs.
+      {"git://@", "git://", false},
+      // Forbidden host code points.
+      {"git://<", "git://", false},
+      {"git:// /", "git:///", false},
+      // Backslashes cannot be used as host terminators.
+      {"git://host\\a/../b", "git://host/b", false},
+
+      // Opaque paths.
+      {"git:", "git:", true},
+      {"git:opaque", "git:opaque", true},
+      {"git:o p a q u e", "git:o p a q u e", true},
+      {"git: <", "git: <", true},
+      {"git:opaque/a/../b", "git:opaque/a/../b", true},
+      {"git:opaque\\a\\..\\b", "git:opaque\\a\\..\\b", true},
+      {"git:\\a", "git:\\a", true},
+      // Like URNs.
+      {"git:a:b:c:123", "git:a:b:c:123", true},
+  };
+
+  for (const auto& i : cases) {
+    SCOPED_TRACE(i.input);
+    Parsed parsed;
+    ParseNonSpecialURL(i.input.data(), i.input.size(), &parsed);
+    Parsed out_parsed;
+    std::string out_str;
+    StdStringCanonOutput output(&out_str);
+    bool success = CanonicalizeNonSpecialURL(
+        i.input.data(), i.input.size(), parsed,
+        /*query_converter=*/nullptr, output, out_parsed);
+    output.Complete();
+    EXPECT_EQ(success, i.expected_success);
+    EXPECT_EQ(out_str, i.expected);
   }
 }
 
@@ -2151,8 +2342,8 @@ TEST(URLCanonTest, CanonicalizeFileSystemURL) {
     Parsed out_parsed;
     std::string out_str;
     StdStringCanonOutput output(&out_str);
-    bool success = CanonicalizeFileSystemURL(i.input, url_len, parsed, nullptr,
-                                             &output, &out_parsed);
+    bool success = CanonicalizeFileSystemURL(i.input, parsed, nullptr, &output,
+                                             &out_parsed);
     output.Complete();
 
     EXPECT_EQ(i.expected_success, success);
@@ -2852,6 +3043,130 @@ TEST(URLCanonTest, IDNToASCII) {
   str = u"xn--1⁄4";
   EXPECT_FALSE(IDNToASCII(str, &output));
   output.set_length(0);
+}
+
+void ComponentCaseMatches(bool success,
+                          std::string_view out_str,
+                          const Component& out_comp,
+                          const DualComponentCase& expected) {
+  EXPECT_EQ(success, expected.expected_success);
+  EXPECT_STREQ(out_str.data(), expected.expected);
+  EXPECT_EQ(out_comp, expected.expected_component);
+}
+
+TEST(URLCanonTest, OpaqueHost) {
+  DualComponentCase host_cases[] = {
+      {"", L"", "", Component(), true},
+      {"google.com", L"google.com", "google.com", Component(0, 10), true},
+      // Upper case letters should be preserved.
+      {"gooGle.com", L"gooGle.com", "gooGle.com", Component(0, 10), true},
+      {"\x41", L"\x41", "A", Component(0, 1), true},
+      {"\x61", L"\x61", "a", Component(0, 1), true},
+      // Percent encode.
+      {"\x10", L"\x10", "%10", Component(0, 3), true},
+      // A valid percent encoding should be preserved.
+      {"%41", L"%41", "%41", Component(0, 3), true},
+      // An invalid percent encoding should be preserved too.
+      {"%zz", L"%zz", "%zz", Component(0, 3), true},
+      // UTF-16 HIRAGANA LETTER A (codepoint U+3042, "\xe3\x81\x82" in UTF-8).
+      {"\xe3\x81\x82", L"\x3042", "%E3%81%82", Component(0, 9), true},
+  };
+
+  for (const auto& host_case : host_cases) {
+    SCOPED_TRACE(testing::Message() << "url: \"" << host_case.input8 << "\"");
+    std::string out_str;
+    StdStringCanonOutput output(&out_str);
+    Component out_comp;
+    bool success = CanonicalizeNonSpecialHost(
+        host_case.input8,
+        Component(0, static_cast<int>(strlen(host_case.input8))), output,
+        out_comp);
+    output.Complete();
+    ComponentCaseMatches(success, out_str, out_comp, host_case);
+  }
+
+  // UTF-16 version.
+  for (const auto& host_case : host_cases) {
+    SCOPED_TRACE(testing::Message() << "url: \"" << host_case.input16 << "\"");
+    std::u16string input16(
+        test_utils::TruncateWStringToUTF16(host_case.input16));
+    std::string out_str;
+    StdStringCanonOutput output(&out_str);
+    Component out_comp;
+    bool success = CanonicalizeNonSpecialHost(
+        input16.c_str(), Component(0, static_cast<int>(input16.length())),
+        output, out_comp);
+    output.Complete();
+    ComponentCaseMatches(success, out_str, out_comp, host_case);
+  }
+}
+
+void IPAddressCaseMatches(std::string_view out_str,
+                          const CanonHostInfo& host_info,
+                          const IPAddressCase& expected) {
+  EXPECT_EQ(host_info.family, expected.expected_family);
+  EXPECT_STREQ(out_str.data(), expected.expected);
+  EXPECT_EQ(base::HexEncode(host_info.address,
+                            static_cast<size_t>(host_info.AddressLength())),
+            expected.expected_address_hex);
+  if (expected.expected_family == CanonHostInfo::IPV4) {
+    EXPECT_EQ(host_info.num_ipv4_components,
+              expected.expected_num_ipv4_components);
+  }
+}
+
+TEST(URLCanonTest, NonSpecialHostIPv6Address) {
+  IPAddressCase ip_address_cases[] = {
+      // Non-special URLs don't support IPv4. Family must be NEUTRAL.
+      {"192.168.0.1", L"192.168.0.1", "192.168.0.1", Component(0, 11),
+       CanonHostInfo::NEUTRAL, 0, ""},
+      {"192", L"192", "192", Component(0, 3), CanonHostInfo::NEUTRAL, 0, ""},
+      // "257" is allowed since the number is not considered as a part of IPv4.
+      {"192.168.0.257", L"192.168.0.257", "192.168.0.257", Component(0, 13),
+       CanonHostInfo::NEUTRAL, 0, ""},
+      // IPv6.
+      {"[1:0:0:2::3:0]", L"[1:0:0:2::3:0]", "[1::2:0:0:3:0]", Component(0, 14),
+       CanonHostInfo::IPV6, -1, "00010000000000020000000000030000"},
+      {"[::]", L"[::]", "[::]", Component(0, 4), CanonHostInfo::IPV6, -1,
+       "00000000000000000000000000000000"},
+      // Invalid hosts.
+      {"#[::]", L"#[::]", "", Component(), CanonHostInfo::BROKEN, -1, ""},
+      {"[]", L"[]", "[]", Component(), CanonHostInfo::BROKEN, -1, ""},
+      {"a]", L"a]", "a]", Component(), CanonHostInfo::BROKEN, -1, ""},
+      {"[a", L"[a", "[a", Component(), CanonHostInfo::BROKEN, -1, ""},
+      {"a[]", L"a[]", "a[]", Component(), CanonHostInfo::BROKEN, -1, ""},
+      {"[]a", L"[]a", "[]a", Component(), CanonHostInfo::BROKEN, -1, ""},
+  };
+
+  for (const auto& ip_address_case : ip_address_cases) {
+    SCOPED_TRACE(testing::Message()
+                 << "url: \"" << ip_address_case.input8 << "\"");
+    std::string out_str;
+    StdStringCanonOutput output(&out_str);
+    CanonHostInfo host_info;
+    CanonicalizeNonSpecialHostVerbose(
+        ip_address_case.input8,
+        Component(0, static_cast<int>(strlen(ip_address_case.input8))), output,
+        host_info);
+    output.Complete();
+    IPAddressCaseMatches(out_str, host_info, ip_address_case);
+  }
+
+  // UTF-16 version.
+  for (const auto& ip_address_case : ip_address_cases) {
+    SCOPED_TRACE(testing::Message()
+                 << "url: \"" << ip_address_case.input16 << "\"");
+    std::u16string input16(
+        test_utils::TruncateWStringToUTF16(ip_address_case.input16));
+    std::string out_str;
+    StdStringCanonOutput output(&out_str);
+    CanonHostInfo host_info;
+    CanonicalizeNonSpecialHostVerbose(
+        input16.c_str(), Component(0, static_cast<int>(input16.length())),
+        output, host_info);
+    output.Complete();
+    IPAddressCaseMatches(out_str, host_info, ip_address_case);
+  }
 }
 
 }  // namespace url

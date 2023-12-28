@@ -144,7 +144,7 @@ class PciePeripheralNotificationControllerTest : public AshTestBase {
   }
 
  private:
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<MockNewWindowDelegate, DanglingUntriaged>
       new_window_delegate_primary_;
   std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
 };

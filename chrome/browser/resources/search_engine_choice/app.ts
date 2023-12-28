@@ -89,13 +89,6 @@ export class SearchEngineChoiceAppElement extends
         value: '',
       },
 
-      withMarketingSnippets_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('withMarketingSnippets');
-        },
-      },
-
       withForcedScroll_: {
         type: Boolean,
         value() {
@@ -120,7 +113,6 @@ export class SearchEngineChoiceAppElement extends
   private fakeOmniboxText_: string;
   private fakeOmniboxIconPath_: string;
   private pageHandler_: PageHandlerRemote;
-  private withMarketingSnippets_: boolean;
   private hasUserScrolledToTheBottom_: boolean;
   private withForcedScroll_: boolean;
   private actionButtonText_: string;

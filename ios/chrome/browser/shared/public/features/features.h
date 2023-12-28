@@ -33,6 +33,9 @@ BASE_DECLARE_FEATURE(kSafetyCheckMagicStack);
 // Feature flag to enable Shared Highlighting (Link to Text).
 BASE_DECLARE_FEATURE(kSharedHighlightingIOS);
 
+// Feature flag to enable Share button in web context menu in iOS.
+BASE_DECLARE_FEATURE(kShareInWebContextMenuIOS);
+
 // TODO(crbug.com/1128242): Remove this flag after the refactoring work is
 // finished. Flag to modernize the tabstrip without disturbing the existing one.
 BASE_DECLARE_FEATURE(kModernTabStrip);
@@ -305,6 +308,10 @@ BASE_DECLARE_FEATURE(kEnableBatchUploadFromBookmarksManager);
 // account settings when these types are disabled. Note: This should only be
 // used if kReplaceSyncPromosWithSignInPromos is enabled.
 BASE_DECLARE_FEATURE(kEnableReviewAccountSettingsPromo);
+
+// Enables linking account settings in the Privacy Settings page footer for
+// signed in non syncing users.
+BASE_DECLARE_FEATURE(kLinkAccountSettingsToPrivacyFooter);
 
 // Engagement criteria type for a feed refresh.
 enum class FeedRefreshEngagementCriteriaType {

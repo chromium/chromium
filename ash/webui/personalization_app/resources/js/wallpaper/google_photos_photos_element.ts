@@ -11,6 +11,8 @@ import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-thresh
 import '../../css/wallpaper.css.js';
 import '../../css/common.css.js';
 
+import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
+import {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/wallpaper_grid_item_element.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
@@ -21,14 +23,13 @@ import {CurrentWallpaper, GooglePhotosPhoto, WallpaperProviderInterface, Wallpap
 import {dismissErrorAction, setErrorAction} from '../personalization_actions.js';
 import {PersonalizationStateError} from '../personalization_state.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {getNumberOfGridItemsPerRow, isNonEmptyArray} from '../utils.js';
+import {getNumberOfGridItemsPerRow} from '../utils.js';
 
 import {DisplayableImage} from './constants.js';
 import {recordWallpaperGooglePhotosSourceUMA, WallpaperGooglePhotosSource} from './google_photos_metrics_logger.js';
 import {getTemplate} from './google_photos_photos_element.html.js';
 import {getLoadingPlaceholders, isGooglePhotosPhoto, isImageAMatchForKey, isImageEqualToSelected} from './utils.js';
 import {fetchGooglePhotosPhotos, selectWallpaper} from './wallpaper_controller.js';
-import {WallpaperGridItemSelectedEvent} from './wallpaper_grid_item_element.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 const ERROR_ID = 'GooglePhotosPhotos';

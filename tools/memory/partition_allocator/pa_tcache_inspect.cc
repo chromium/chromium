@@ -141,7 +141,7 @@ class ThreadCacheInspector {
   }
 
   std::vector<BucketStats> AccumulateThreadCacheBuckets();
-  std::uint8_t largest_active_bucket_index() {
+  std::uint16_t largest_active_bucket_index() {
     return registry_.get()->largest_active_bucket_index_;
   }
 

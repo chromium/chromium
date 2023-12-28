@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/public/cpp/tablet_mode.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/ui/ash/app_icon_color_cache.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/extension_system.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
@@ -133,7 +133,7 @@ app_list::AppContextMenu* ChromeAppListItem::GetAppContextMenu() {
 void ChromeAppListItem::MaybeDismissAppList() {
   // Launching apps can take some time. It looks nicer to dismiss the app list.
   // Do not close app list for home launcher.
-  if (!ash::TabletMode::Get() || !ash::TabletMode::Get()->InTabletMode()) {
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     GetController()->DismissView();
   }
 }
@@ -167,6 +167,10 @@ void ChromeAppListItem::LoadIcon() {
 void ChromeAppListItem::IncrementIconVersion() {
   ++metadata_->icon_version;
 
+  // The icon is going to update. Therefore, we remove the currently cached
+  // color.
+  ash::AppIconColorCache::GetInstance(profile()).RemoveColorDataForApp(id());
+
   AppListModelUpdater* updater = model_updater();
   if (updater)
     updater->SetItemIconVersion(id(), metadata_->icon_version);
@@ -178,14 +182,13 @@ void ChromeAppListItem::SetIcon(const gfx::ImageSkia& icon,
   metadata_->icon = icon;
   metadata_->icon.EnsureRepsForSupportedScales();
   metadata_->badge_color =
-      ash::AppIconColorCache::GetInstance().GetLightVibrantColorForApp(id(),
-                                                                       icon);
+      ash::AppIconColorCache::GetInstance(profile()).GetLightVibrantColorForApp(
+          id(), icon);
   metadata_->icon_color =
       is_place_holder_icon
           ? ash::IconColor()
-          : ash::AppIconColorCache::GetInstance().GetIconColorForApp(id(),
-                                                                     icon);
-  metadata_->is_placeholder_icon = is_place_holder_icon;
+          : ash::AppIconColorCache::GetInstance(profile()).GetIconColorForApp(
+                id(), icon);
 
   AppListModelUpdater* updater = model_updater();
   if (updater) {

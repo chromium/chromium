@@ -40,7 +40,7 @@ class WindowCycleList;
 class ASH_EXPORT WindowCycleController : public SessionObserver,
                                          public DesksController::Observer {
  public:
-  using WindowList = std::vector<aura::Window*>;
+  using WindowList = std::vector<raw_ptr<aura::Window, VectorExperimental>>;
 
   enum class WindowCyclingDirection { kForward, kBackward };
   enum class KeyboardNavDirection { kUp, kDown, kLeft, kRight, kInvalid };
@@ -206,8 +206,8 @@ class ASH_EXPORT WindowCycleController : public SessionObserver,
 
   // Tracks what Window was active when starting to cycle and used to determine
   // if the active Window changed in when ending cycling.
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh>
-      active_window_before_window_cycle_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged> active_window_before_window_cycle_ =
+      nullptr;
 
   // Non-null while actively cycling.
   std::unique_ptr<WindowCycleEventFilter> event_filter_;
@@ -217,7 +217,7 @@ class ASH_EXPORT WindowCycleController : public SessionObserver,
 
   // The pref service of the currently active user. Can be null in
   // ash_unittests.
-  raw_ptr<PrefService, ExperimentalAsh> active_user_pref_service_ = nullptr;
+  raw_ptr<PrefService> active_user_pref_service_ = nullptr;
 
   // The pref change registrar to observe changes in prefs value.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

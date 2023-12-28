@@ -15,7 +15,6 @@ import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.ALL_UPDATES;
 import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.NONE;
 import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.ON_SCROLL_END;
 
-import android.graphics.Point;
 import android.view.ViewGroup;
 
 import org.junit.Assert;
@@ -84,25 +83,13 @@ public class GestureListenerManagerImplUnitTest {
         Assert.assertTrue("Scroll should started.", mGestureManager.isScrollInProgress());
         verify(mGestureStateListener).onScrollStarted(anyInt(), anyInt(), eq(true));
 
-        mGestureManager.onEventAck(
-                EventType.GESTURE_SCROLL_UPDATE,
-                /* consumed= */ true,
-                /* scrollOffsetX= */ 0.f,
-                /* scrollOffsetY= */ 1.f);
-        verify(mGestureStateListener).onScrollUpdateGestureConsumed(eq(new Point(0, 1)));
+        mGestureManager.onEventAck(EventType.GESTURE_SCROLL_UPDATE, /* consumed= */ true);
+        verify(mGestureStateListener).onScrollUpdateGestureConsumed();
         Mockito.reset(mGestureStateListener);
-        mGestureManager.onEventAck(
-                EventType.GESTURE_SCROLL_UPDATE,
-                /* consumed= */ true,
-                /* scrollOffsetX= */ 1.f,
-                /* scrollOffsetY= */ 0.f);
-        verify(mGestureStateListener).onScrollUpdateGestureConsumed(eq(new Point(1, 0)));
+        mGestureManager.onEventAck(EventType.GESTURE_SCROLL_UPDATE, /* consumed= */ true);
+        verify(mGestureStateListener).onScrollUpdateGestureConsumed();
 
-        mGestureManager.onEventAck(
-                EventType.GESTURE_SCROLL_END,
-                /* consumed= */ true,
-                /* scrollOffsetX= */ 0.f,
-                /* scrollOffsetY= */ 0.f);
+        mGestureManager.onEventAck(EventType.GESTURE_SCROLL_END, /* consumed= */ true);
         verify(mGestureStateListener).onScrollEnded(anyInt(), anyInt());
     }
 

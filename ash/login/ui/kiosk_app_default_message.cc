@@ -11,7 +11,6 @@
 #include "ash/style/typography.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -70,13 +69,8 @@ KioskAppDefaultMessage::KioskAppDefaultMessage()
   title_->SetLineHeight(kTitleLineHeight);
   title_->SetMultiLine(true);
   title_->SetEnabledColorId(kColorAshTextColorPrimary);
-  if (chromeos::features::IsJellyEnabled()) {
-    title_->SetAutoColorReadabilityEnabled(false);
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *title_);
-  } else {
-    TrayPopupUtils::SetLabelFontList(title_,
-                                     TrayPopupUtils::FontStyle::kSmallTitle);
-  }
+  title_->SetAutoColorReadabilityEnabled(false);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *title_);
 }
 
 KioskAppDefaultMessage::~KioskAppDefaultMessage() = default;

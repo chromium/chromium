@@ -19,6 +19,7 @@ source_set("tab_context_menu") {
     "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/tabs/model:features",
     "//ios/chrome/browser/ui/bookmarks:utils",

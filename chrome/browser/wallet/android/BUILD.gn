@@ -17,6 +17,7 @@ android_library("java") {
     "//base:base_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
+    "//content/public/android:content_java",
     "//third_party/jni_zero:jni_zero_java",
     "//url:gurl_java",
   ]
@@ -36,6 +37,7 @@ robolectric_library("junit") {
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/wallet/android:java",
+    "//content/public/android:content_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit:junit",

@@ -27,9 +27,9 @@ class View;
 // 'RichHoverButton' inherits the interaction behavior from 'HoverButton'
 // but sets up its own layout and content.
 class RichHoverButton : public HoverButton {
- public:
-  METADATA_HEADER(RichHoverButton);
+  METADATA_HEADER(RichHoverButton, HoverButton)
 
+ public:
   // Creates a hoverable button that displays the string given by
   // |title_text| and |secondary_text| and displays the latter part in the
   // secondary text color. Optional |action_image_icon| is shown on right side.

@@ -12,3 +12,11 @@
 name = "minimal-lexical"
 version = "0.2.1"
 
+[features]
+"alloc" = []
+"compact" = []
+"default" = []
+"lint" = []
+"nightly" = []
+"std" = []
+

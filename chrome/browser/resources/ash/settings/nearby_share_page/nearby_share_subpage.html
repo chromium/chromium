@@ -26,16 +26,17 @@
 
   #highVisibilityContainer {
     border-top: none;
-    padding: 0 var(--cr-section-padding) 0 60px;
+    padding-inline-start: var(--cr-section-indent-padding);
+    padding-inline-end: var(--cr-section-padding);
   }
 
   .separator {
     margin: 0;
   }
 
-  #highVisibilityContainer cr-toggle {
+  #highVisibilityContainer > cr-toggle {
+    margin-inline-end: var(--cr-section-padding);
     margin-inline-start: var(--cr-section-padding);
-    padding-inline-end: var(--cr-section-padding);
   }
 
   .enabled-toggle-off {

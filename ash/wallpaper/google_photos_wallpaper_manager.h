@@ -79,8 +79,7 @@ class ASH_EXPORT GooglePhotosWallpaperManager {
 
   raw_ptr<WallpaperImageDownloader> wallpaper_image_downloader_;
 
-  raw_ptr<WallpaperControllerClient, ExperimentalAsh>
-      wallpaper_controller_client_;
+  raw_ptr<WallpaperControllerClient> wallpaper_controller_client_;
 
   raw_ptr<WallpaperFileManager> wallpaper_file_manager_;
 

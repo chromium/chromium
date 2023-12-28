@@ -27,8 +27,7 @@ namespace safe_browsing {
 // TestSafeBrowsingService functions:
 TestSafeBrowsingService::TestSafeBrowsingService()
     : test_shared_loader_factory_(
-          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-              &test_url_loader_factory_)) {
+          test_url_loader_factory_.GetSafeWeakWrapper()) {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   services_delegate_ = ServicesDelegate::CreateForTest(this, this);
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)

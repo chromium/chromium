@@ -79,8 +79,9 @@ class NotificationControlButtonsTest : public views::ViewsTestBase {
 
   bool MatchesIcon(views::ImageButton* button,
                    const gfx::VectorIcon& icon,
-                   SkColor color) {
-    SkBitmap expected = *gfx::CreateVectorIcon(icon, color).bitmap();
+                   SkColor color,
+                   int size = 0) {
+    SkBitmap expected = *gfx::CreateVectorIcon(icon, size, color).bitmap();
     SkBitmap actual = *button->GetImage(views::Button::STATE_NORMAL).bitmap();
     return gfx::test::AreBitmapsEqual(expected, actual);
   }
@@ -193,6 +194,50 @@ TEST_F(NotificationControlButtonsTest, SetIcons) {
                           default_icon_color));
   EXPECT_TRUE(MatchesIcon(buttons_view()->snooze_button(), test_icon,
                           default_icon_color));
+}
+
+// Tests that the icon size can be specified.
+TEST_F(NotificationControlButtonsTest, IconSize) {
+  // Set the control buttons to have a custom size.
+  int custom_size = 8;
+  buttons_view()->SetButtonIconSize(custom_size);
+
+  // Show the control buttons and verify that they are using the custom size.
+  buttons_view()->ShowCloseButton(true);
+  buttons_view()->ShowSettingsButton(true);
+  buttons_view()->ShowSnoozeButton(true);
+  const SkColor default_icon_color =
+      buttons_view()->GetColorProvider()->GetColor(ui::kColorIcon);
+  EXPECT_TRUE(MatchesIcon(buttons_view()->close_button(),
+                          NotificationControlButtonsView::kDefaultCloseIcon,
+                          default_icon_color, custom_size));
+  EXPECT_TRUE(MatchesIcon(buttons_view()->settings_button(),
+                          NotificationControlButtonsView::kDefaultSettingsIcon,
+                          default_icon_color, custom_size));
+  EXPECT_TRUE(MatchesIcon(buttons_view()->snooze_button(),
+                          NotificationControlButtonsView::kDefaultSnoozeIcon,
+                          default_icon_color, custom_size));
+
+  // Show the same control buttons with a different custom size.
+  buttons_view()->ShowCloseButton(false);
+  buttons_view()->ShowSettingsButton(false);
+  buttons_view()->ShowSnoozeButton(false);
+  custom_size = 12;
+  buttons_view()->SetButtonIconSize(custom_size);
+  buttons_view()->ShowCloseButton(true);
+  buttons_view()->ShowSettingsButton(true);
+  buttons_view()->ShowSnoozeButton(true);
+
+  // Verify that the control buttons are using the new custom size.
+  EXPECT_TRUE(MatchesIcon(buttons_view()->close_button(),
+                          NotificationControlButtonsView::kDefaultCloseIcon,
+                          default_icon_color, custom_size));
+  EXPECT_TRUE(MatchesIcon(buttons_view()->settings_button(),
+                          NotificationControlButtonsView::kDefaultSettingsIcon,
+                          default_icon_color, custom_size));
+  EXPECT_TRUE(MatchesIcon(buttons_view()->snooze_button(),
+                          NotificationControlButtonsView::kDefaultSnoozeIcon,
+                          default_icon_color, custom_size));
 }
 
 // Tests spacing between control buttons.

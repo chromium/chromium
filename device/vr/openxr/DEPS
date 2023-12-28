@@ -12,3 +12,9 @@ include_rules = [
   "+third_party/openxr/src/include/openxr",
   "+components/version_info",
 ]
+
+specific_include_rules = {
+  "openxr_extension_helper\..*" : [
+    "+third_party/openxr/dev/xr_android.h",
+  ]
+}

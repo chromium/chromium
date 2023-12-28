@@ -91,8 +91,7 @@ class FakeWebStateDelegate : public WebStateDelegate {
   void HandlePermissionsDecisionRequest(
       WebState* source,
       NSArray<NSNumber*>* permissions,
-      WebStatePermissionDecisionHandler handler) override
-      API_AVAILABLE(ios(15.0));
+      WebStatePermissionDecisionHandler handler) override;
 
   // Allows popups requested by a page with `opener_url`.
   void allow_popups(const GURL& opener_url) {

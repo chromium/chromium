@@ -26,9 +26,9 @@ class ProviderInterface {
   virtual ~ProviderInterface() = default;
 
   // Returns a |RuleIterator| over the content setting rules stored by this
-  // provider. If |incognito| is true, the iterator returns only the content
-  // settings which are applicable to the incognito mode and differ from the
-  // normal mode. Otherwise, it returns the content settings for the normal
+  // provider. If |off_the_record| is true, the iterator returns only the
+  // content settings which are applicable to the incognito mode and differ from
+  // the normal mode. Otherwise, it returns the content settings for the normal
   // mode. It is not allowed to call other |ProviderInterface| functions
   // (including |GetRuleIterator|) for the same provider until the
   // |RuleIterator| is destroyed.
@@ -38,9 +38,21 @@ class ProviderInterface {
   // |ShutdownOnUIThread| has been called.
   virtual std::unique_ptr<RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
-      bool incognito,
-      const PartitionKey& partition_key =
-          PartitionKey::WipGetDefault()) const = 0;
+      bool off_the_record,
+      const PartitionKey& partition_key) const = 0;
+
+  // Returns a ContentSettings Rule object if any rule stored by this provider
+  // matched primary_url and secondary_url. This method allows for more
+  // efficient lookups than GetRuleIterator.
+  //
+  // This method needs to be thread-safe and continue to work after
+  // |ShutdownOnUIThread| has been called.
+  virtual std::unique_ptr<OwnedRule> GetRule(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType content_type,
+      bool off_the_record,
+      const PartitionKey& partition_key) const;
 
   // Asks the provider to set the website setting for a particular
   // |primary_pattern|, |secondary_pattern|, |content_type| tuple. If the
@@ -56,7 +68,7 @@ class ProviderInterface {
       ContentSettingsType content_type,
       base::Value&& value,
       const ContentSettingConstraints& constraints,
-      const PartitionKey& partition_key = PartitionKey::WipGetDefault()) = 0;
+      const PartitionKey& partition_key) = 0;
 
   // Resets all content settings for the given |content_type| and empty resource
   // identifier to CONTENT_SETTING_DEFAULT.
@@ -65,7 +77,7 @@ class ProviderInterface {
   // ShutdownOnUIThread has been called.
   virtual void ClearAllContentSettingsRules(
       ContentSettingsType content_type,
-      const PartitionKey& partition_key = PartitionKey::WipGetDefault()) = 0;
+      const PartitionKey& partition_key) = 0;
 
   // Detaches the Provider from all Profile-related objects like PrefService.
   // This methods needs to be called before destroying the Profile.

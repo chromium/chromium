@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -154,7 +155,7 @@ class GFX_EXPORT NativeView {
   std::string ToString() const;
 
  private:
-#if defined(__has_feature) && __has_feature(objc_arc)
+#if HAS_FEATURE(objc_arc)
   __unsafe_unretained NSView* ns_view_ = nullptr;
 #else
   // This field is not a raw_ptr<> because it was filtered by the rewriter

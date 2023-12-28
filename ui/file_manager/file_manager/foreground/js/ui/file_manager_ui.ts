@@ -6,7 +6,7 @@ import '../../elements/icons.html.js';
 
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
 
-import {decorate} from '../../../common/js/cr_ui.js';
+import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 import {queryDecoratedElement, queryRequiredElement} from '../../../common/js/dom_utils.js';
 import {isDlpEnabled, isNewDirectoryTreeEnabled} from '../../../common/js/flags.js';
 import {str, strf} from '../../../common/js/translations.js';
@@ -155,7 +155,7 @@ export class FileManagerUI {
   /**
    * The container element of the dialog.
    */
-  dialogContainer: HTMLElement;
+  dialogContainer: HTMLDialogElement;
 
   /**
    * Context menu for texts.
@@ -167,7 +167,7 @@ export class FileManagerUI {
   /**
    * The toolbar which contains controls.
    */
-  readonly toolbar: Element;
+  readonly toolbar: HTMLElement;
 
   /**
    * The tooltip element.
@@ -292,8 +292,8 @@ export class FileManagerUI {
       launchParam: LaunchParam) {
     // Initialize the dialog label. This should be done before constructing
     // dialog instances.
-    BaseDialog.OK_LABEL = str('OK_LABEL');
-    BaseDialog.CANCEL_LABEL = str('CANCEL_LABEL');
+    BaseDialog.okLabel = str('OK_LABEL');
+    BaseDialog.cancelLabel = str('CANCEL_LABEL');
 
     this.dialogType_ = launchParam.type;
 
@@ -329,7 +329,8 @@ export class FileManagerUI {
         queryRequiredElement('#format-dialog') as FilesFormatDialog;
 
     this.dialogContainer =
-        queryRequiredElement('.dialog-container', this.element);
+        queryRequiredElement('.dialog-container', this.element) as
+        HTMLDialogElement;
 
     this.textContextMenu = queryDecoratedElement('#text-context-menu', Menu);
 
@@ -636,7 +637,7 @@ export class FileManagerUI {
 
     for (const filesMenuItem of filesMenuItems) {
       assertInstanceof(filesMenuItem, MenuItem);
-      decorate(filesMenuItem, FilesMenuItem);
+      crInjectTypeAndInit(filesMenuItem, FilesMenuItem);
     }
   }
 
@@ -730,7 +731,7 @@ export class FileManagerUI {
               displayName, response.currentProfileId);
 
           // Show the dialog.
-          this.alertDialog.showWithTitle(title, message, null, null, null);
+          this.alertDialog.showWithTitle(title, message);
         });
   }
 

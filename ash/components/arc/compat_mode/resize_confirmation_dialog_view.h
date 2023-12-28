@@ -42,7 +42,7 @@ class ResizeConfirmationDialogView : public views::BubbleDialogDelegateView,
     void SelectDoNotAskCheckbox();
 
    private:
-    const raw_ptr<ResizeConfirmationDialogView, ExperimentalAsh> view_;
+    const raw_ptr<ResizeConfirmationDialogView> view_;
   };
 
   ResizeConfirmationDialogView(views::Widget* parent,
@@ -75,10 +75,10 @@ class ResizeConfirmationDialogView : public views::BubbleDialogDelegateView,
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
 
-  raw_ptr<views::Checkbox, ExperimentalAsh> do_not_ask_checkbox_{nullptr};
-  raw_ptr<ash::Checkbox, ExperimentalAsh> do_not_ask_checkbox_jelly_{nullptr};
-  raw_ptr<views::LabelButton, ExperimentalAsh> accept_button_{nullptr};
-  raw_ptr<views::LabelButton, ExperimentalAsh> cancel_button_{nullptr};
+  raw_ptr<views::Checkbox> do_not_ask_checkbox_{nullptr};
+  raw_ptr<ash::Checkbox> do_not_ask_checkbox_jelly_{nullptr};
+  raw_ptr<views::LabelButton> accept_button_{nullptr};
+  raw_ptr<views::LabelButton> cancel_button_{nullptr};
 };
 
 }  // namespace arc

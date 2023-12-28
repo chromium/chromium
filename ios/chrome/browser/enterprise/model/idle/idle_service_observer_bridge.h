@@ -14,8 +14,9 @@
 @protocol IdleServiceObserving <NSObject>
 @optional
 - (void)onIdleTimeoutInForeground;
-- (void)onClearDataOnStartup;
+- (void)onIdleTimeoutOnStartup;
 - (void)onIdleTimeoutActionsCompleted;
+- (void)onApplicationWillEnterBackground;
 @end
 
 // Simple observer bridge that forwards all events to its delegate observer.
@@ -28,8 +29,9 @@ class IdleServiceObserverBridge
 
   // IdleService::Observer implementation.
   void OnIdleTimeoutInForeground() override;
-  void OnClearDataOnStartup() override;
+  void OnIdleTimeoutOnStartup() override;
   void OnIdleTimeoutActionsCompleted() override;
+  void OnApplicationWillEnterBackground() override;
 
  private:
   __weak id<IdleServiceObserving> observer_ = nil;

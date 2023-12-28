@@ -80,6 +80,14 @@ export class ProfilePickerMainViewElement extends
           return loadTimeData.getBoolean('askOnStartup');
         },
       },
+
+      forceSigninErrorDialogTitle_: {
+        type: String,
+      },
+
+      forceSigninErrorDialogBody_: {
+        type: String,
+      },
     };
   }
 
@@ -94,6 +102,9 @@ export class ProfilePickerMainViewElement extends
 
   private dragDelegate_: DragDropReorderTileListDelegate|null = null;
   private dragDuration_: number = 300;
+
+  private forceSigninErrorDialogTitle_: string;
+  private forceSigninErrorDialogBody_: string;
 
   override ready() {
     super.ready();
@@ -119,7 +130,8 @@ export class ProfilePickerMainViewElement extends
         'profile-removed', this.handleProfileRemoved_.bind(this));
     this.addWebUiListener(
         'display-force-signin-error-dialog',
-        () => this.showForceSigninErrorDialog());
+        (title: string, body: string) =>
+            this.showForceSigninErrorDialog(title, body));
     this.manageProfilesBrowserProxy_.initializeMainView();
   }
 
@@ -274,7 +286,9 @@ export class ProfilePickerMainViewElement extends
     return this.profilesList_;
   }
 
-  showForceSigninErrorDialog(): void {
+  showForceSigninErrorDialog(title: string, body: string): void {
+    this.forceSigninErrorDialogTitle_ = title;
+    this.forceSigninErrorDialogBody_ = body;
     this.$.forceSigninErrorDialog.showModal();
   }
 

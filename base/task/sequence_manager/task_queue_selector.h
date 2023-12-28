@@ -77,6 +77,9 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
 
     // Called when |queue| transitions from disabled to enabled.
     virtual void OnTaskQueueEnabled(internal::TaskQueueImpl* queue) = 0;
+
+    // Called when work becomes available.
+    virtual void OnWorkAvailable() = 0;
   };
 
   // Called once to set the Observer. This function is called

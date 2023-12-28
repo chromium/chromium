@@ -35,13 +35,12 @@ class FirstPartySetsNavigationThrottleTest
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     features_.InitWithFeaturesAndParameters(
         {
-            {features::kFirstPartySets,
-             {{features::kFirstPartySetsNavigationThrottleTimeout.name, "2s"},
-              {features::kFirstPartySetsClearSiteDataOnChangedSets.name,
-               "true"}}},
-            {net::features::kWaitForFirstPartySetsInit, {}},
+            {net::features::kWaitForFirstPartySetsInit,
+             {{net::features::
+                   kWaitForFirstPartySetsInitNavigationThrottleTimeout.name,
+               "2s"}}},
         },
-        {{blink::features::kStorageAccessAPI}});
+        {});
   }
 
   void SetUp() override {
@@ -76,20 +75,6 @@ class FirstPartySetsNavigationThrottleTest
   ScopedMockFirstPartySetsHandler first_party_sets_handler_;
   raw_ptr<FirstPartySetsPolicyService, DanglingUntriaged> service_;
 };
-
-TEST_F(FirstPartySetsNavigationThrottleTest,
-       MaybeCreateNavigationThrottle_ClearingFeatureDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kFirstPartySets,
-      {{features::kFirstPartySetsClearSiteDataOnChangedSets.name, "false"}});
-
-  content::MockNavigationHandle handle(GURL(kExampleURL), main_rfh());
-  ASSERT_TRUE(handle.IsInOutermostMainFrame());
-
-  EXPECT_FALSE(
-      FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(&handle));
-}
 
 TEST_F(FirstPartySetsNavigationThrottleTest,
        MaybeCreateNavigationThrottle_ClearingFeatureEnabled) {
@@ -248,10 +233,11 @@ class FirstPartySetsNavigationThrottleNoDelayTest
  public:
   FirstPartySetsNavigationThrottleNoDelayTest() {
     features_.InitAndEnableFeatureWithParameters(
-        features::kFirstPartySets,
+        net::features::kWaitForFirstPartySetsInit,
         {
-            {features::kFirstPartySetsClearSiteDataOnChangedSets.name, "true"},
-            {features::kFirstPartySetsNavigationThrottleTimeout.name, "0s"},
+            {net::features::kWaitForFirstPartySetsInitNavigationThrottleTimeout
+                 .name,
+             "0s"},
         });
   }
 

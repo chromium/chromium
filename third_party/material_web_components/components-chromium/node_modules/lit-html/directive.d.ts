@@ -12,7 +12,7 @@ export interface DirectiveClass {
  * This utility type extracts the signature of a directive class's render()
  * method so we can use it for the type of the generated directive function.
  */
-export declare type DirectiveParameters<C extends Directive> = Parameters<C['render']>;
+export type DirectiveParameters<C extends Directive> = Parameters<C['render']>;
 /**
  * A generated directive function doesn't evaluate the directive, but just
  * returns a DirectiveResult object that captures the arguments.
@@ -27,7 +27,7 @@ export declare const PartType: {
     readonly EVENT: 5;
     readonly ELEMENT: 6;
 };
-export declare type PartType = (typeof PartType)[keyof typeof PartType];
+export type PartType = (typeof PartType)[keyof typeof PartType];
 export interface ChildPartInfo {
     readonly type: typeof PartType.CHILD;
 }
@@ -46,7 +46,7 @@ export interface ElementPartInfo {
  * This is useful for checking that a directive is attached to a valid part,
  * such as with directive that can only be used on attribute bindings.
  */
-export declare type PartInfo = ChildPartInfo | AttributePartInfo | ElementPartInfo;
+export type PartInfo = ChildPartInfo | AttributePartInfo | ElementPartInfo;
 /**
  * Creates a user-facing directive function from a Directive class. This
  * function has the same parameters as the directive's render() method.

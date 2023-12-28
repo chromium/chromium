@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/fetch/fetch_header_list.h"
 #include "third_party/blink/renderer/platform/bindings/exception_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -48,6 +49,7 @@ TEST(FetchRequestDataTest, Not_For_ServiceWorkerFetchEvent_Headers) {
 }
 
 TEST(FetchRequestDataTest, CheckTrustTokenParamsAreCopiedWithCreate) {
+  test::TaskEnvironment task_environment;
   // create a fetch API request instance
   auto request = mojom::blink::FetchAPIRequest::New();
   // create a TrustTokenParams instance
@@ -58,7 +60,6 @@ TEST(FetchRequestDataTest, CheckTrustTokenParamsAreCopiedWithCreate) {
       ::blink::SecurityOrigin::CreateFromString("https://bbb.example"));
   WTF::Vector<WTF::String> additional_signed_headers = {"aaa", "bbb"};
   auto trust_token_params = network::mojom::blink::TrustTokenParams::New(
-      network::mojom::TrustTokenMajorVersion::kPrivateStateTokenV1,
       network::mojom::TrustTokenOperationType::kRedemption,
       network::mojom::TrustTokenRefreshPolicy::kUseCached,
       /* custom_key_commitment=*/"custom_key_commitment",
@@ -82,6 +83,7 @@ TEST(FetchRequestDataTest, CheckTrustTokenParamsAreCopiedWithCreate) {
 }
 
 TEST(FetchRequestDataTest, CheckServiceworkerRaceNetworkRequestToken) {
+  test::TaskEnvironment task_environment;
   // create a fetch API request instance
   auto request = PrepareFetchAPIRequest();
   const base::UnguessableToken token = base::UnguessableToken::Create();

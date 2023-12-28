@@ -46,7 +46,7 @@ class RealTimeReportingServer(Verifyable):
         userKey='all',
         applicationName='chrome',
         customerId='C029rpj4z',
-        eventName='MALWARE_TRANSFER',
+        eventName='UNSAFE_SITE_VISIT',
         startTime=content.timestamp.strftime(
             '%Y-%m-%dT%H:%M:%S.%fZ')).execute()
     activities = results.get('items', [])

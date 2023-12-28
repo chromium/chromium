@@ -18,6 +18,7 @@
 #include "base/check.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -38,7 +39,7 @@ constexpr int kTaskItemViewInsets = 6;
 constexpr int kTaskItemViewCornerRadius = 16;
 constexpr int kProgressIndicatorThickness = 2;
 constexpr auto kTaskTitleLabelInsets = gfx::Insets::TLBR(0, 12, 0, 18);
-constexpr auto kProgressIndicatorBounds = gfx::Rect(2, 0, 32, 32);
+constexpr auto kProgressIndicatorInsets = gfx::Insets(-6);
 constexpr base::TimeDelta kStartAnimationDelay = base::Milliseconds(300);
 constexpr base::TimeDelta kTaskItemViewFadeOutDuration =
     base::Milliseconds(200);
@@ -46,6 +47,8 @@ constexpr base::TimeDelta kTaskItemViewFadeOutDuration =
 }  // namespace
 
 class FocusModeTray::TaskItemView : public views::BoxLayoutView {
+  METADATA_HEADER(TaskItemView, views::BoxLayoutView)
+
  public:
   TaskItemView(const std::u16string& title, PressedCallback callback) {
     SetBorder(views::CreateEmptyBorder(kTaskItemViewInsets));
@@ -109,6 +112,9 @@ class FocusModeTray::TaskItemView : public views::BoxLayoutView {
   raw_ptr<views::Label> task_title_ = nullptr;
 };
 
+BEGIN_METADATA(FocusModeTray, TaskItemView, views::BoxLayoutView)
+END_METADATA
+
 FocusModeTray::FocusModeTray(Shelf* shelf)
     : TrayBackgroundView(shelf,
                          TrayBackgroundViewCatalogName::kFocusMode,
@@ -153,7 +159,6 @@ FocusModeTray::FocusModeTray(Shelf* shelf)
           },
           base::Unretained(tray_container()))));
   UpdateProgressRing();
-  progress_indicator_->layer()->SetBounds(kProgressIndicatorBounds);
 
   auto* controller = FocusModeController::Get();
   SetVisiblePreferred(controller->in_focus_session());
@@ -243,10 +248,8 @@ void FocusModeTray::ShowBubble() {
             base::UTF8ToUTF16(controller->selected_task_title()),
             base::BindRepeating(&FocusModeTray::OnCompleteTask,
                                 weak_ptr_factory_.GetWeakPtr())));
-    task_item_view_->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                                 views::MaximumFlexSizeRule::kPreferred));
+    task_item_view_->SetProperty(views::kBoxLayoutFlexKey,
+                                 views::BoxLayoutFlexSpecification());
   }
 
   bubble_ = std::make_unique<TrayBubbleWrapper>(this);
@@ -283,6 +286,20 @@ void FocusModeTray::OnTimerTick() {
 void FocusModeTray::OnSessionDurationChanged() {
   UpdateProgressRing();
   MaybeUpdateCountdownViewUI();
+}
+
+void FocusModeTray::Layout() {
+  views::View::Layout();
+
+  // Position the progress indicator based on the position of the image view.
+  // The centered position inside of the tray container changes based on shelf
+  // orientation and tablet mode, but there is already logic to keep the image
+  // view centered that we can use.
+  gfx::Rect progress_bounds = gfx::Rect(views::View::ConvertRectToTarget(
+      /*source=*/image_view_,
+      /*target=*/tray_container(), image_view_->GetImageBounds()));
+  progress_bounds.Inset(kProgressIndicatorInsets);
+  progress_indicator_->layer()->SetBounds(progress_bounds);
 }
 
 void FocusModeTray::UpdateTrayIcon() {

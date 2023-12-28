@@ -45,6 +45,7 @@ class KeyboardAccessoryIPHUtils {
             case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE:
             case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE:
             case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE:
+            case FeatureConstants.KEYBOARD_ACCESSORY_VIRTUAL_CARD_CVC_FILL_FEATURE:
                 tracker.notifyEvent(EventConstants.KEYBOARD_ACCESSORY_PAYMENT_AUTOFILLED);
                 return;
             case FeatureConstants.KEYBOARD_ACCESSORY_EXTERNAL_ACCOUNT_PROFILE_FEATURE:

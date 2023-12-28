@@ -24,6 +24,8 @@ const {Readiness} = appNotificationHandlerMojom;
 type App = appNotificationHandlerMojom.App;
 type ReadinessType = appNotificationHandlerMojom.Readiness;
 
+const isRevampWayfindingEnabled =
+    loadTimeData.getBoolean('isRevampWayfindingEnabled');
 let appsPage: OsSettingsAppsPageElement;
 let androidAppsBrowserProxy: TestAndroidAppsBrowserProxy;
 
@@ -36,7 +38,7 @@ function getFakePrefs() {
   return {
     arc: {
       enabled: {
-        key: 'arc.enabledd',
+        key: 'arc.enabled',
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: false,
       },
@@ -55,7 +57,7 @@ function setPrefs(restoreOption: number) {
   return {
     arc: {
       enabled: {
-        key: 'arc.enabledd',
+        key: 'arc.enabled',
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: false,
       },
@@ -94,18 +96,24 @@ function createApp(
 }
 
 suite('<os-apps-page> available settings rows', () => {
-  function initPage(): void {
-    loadTimeData.overrideValues({isPlayStoreAvailable: true});
+  async function initPage(): Promise<void> {
     appsPage = document.createElement('os-settings-apps-page');
     appsPage.prefs = getFakePrefs();
     document.body.appendChild(appsPage);
-    flush();
+    await flushTasks();
   }
 
   suiteSetup(() => {
-    loadTimeData.overrideValues({showOsSettingsAppNotificationsRow: true});
     androidAppsBrowserProxy = new TestAndroidAppsBrowserProxy();
     AndroidAppsBrowserProxyImpl.setInstanceForTesting(androidAppsBrowserProxy);
+  });
+
+  setup(() => {
+    loadTimeData.overrideValues({
+      showOsSettingsAppNotificationsRow: true,
+      isPlayStoreAvailable: true,
+    });
+    Router.getInstance().navigateTo(routes.APPS);
   });
 
   teardown(() => {
@@ -121,47 +129,58 @@ suite('<os-apps-page> available settings rows', () => {
   const queryAppsOnStartupRow = () =>
       appsPage.shadowRoot!.querySelector('#onStartupDropdown');
 
-  test('Only App Management is shown', () => {
+  test('Only App Management is shown', async () => {
     loadTimeData.overrideValues({
       shouldShowStartup: false,
       androidAppsVisible: false,
     });
-    initPage();
+    await initPage();
 
-    assertTrue(!!queryAppManagementRow());
+    assertTrue(isVisible(queryAppManagementRow()));
     assertNull(queryAndroidAppsRow());
     assertNull(queryAppsOnStartupRow());
   });
 
-  test('Android Apps and App Management are shown', () => {
+  test('Android Apps and App Management are shown', async () => {
     loadTimeData.overrideValues({
       shouldShowStartup: false,
       androidAppsVisible: true,
     });
-    initPage();
+    await initPage();
 
-    assertTrue(!!queryAppManagementRow());
-    assertTrue(!!queryAndroidAppsRow());
+    assertTrue(isVisible(queryAppManagementRow()));
+    assertTrue(isVisible(queryAndroidAppsRow()));
     assertNull(queryAppsOnStartupRow());
   });
 
-  test('Android Apps, On Startup, and App Management are shown', () => {
-    loadTimeData.overrideValues({
-      shouldShowStartup: true,
-      androidAppsVisible: true,
-    });
-    initPage();
+  if (isRevampWayfindingEnabled) {
+    test('On startup row does not exist in this page', async () => {
+      loadTimeData.overrideValues({
+        shouldShowStartup: true,
+        androidAppsVisible: true,
+      });
+      await initPage();
 
-    assertTrue(!!queryAppManagementRow());
-    assertTrue(!!queryAndroidAppsRow());
-    assertTrue(!!queryAppsOnStartupRow());
-    assertEquals(3, appsPage.get('onStartupOptions_').length);
-  });
+      assertFalse(isVisible(queryAppsOnStartupRow()));
+    });
+  } else {
+    test('Android Apps, On Startup, and App Management are shown', async () => {
+      loadTimeData.overrideValues({
+        shouldShowStartup: true,
+        androidAppsVisible: true,
+      });
+      await initPage();
+
+      assertTrue(isVisible(queryAppManagementRow()));
+      assertTrue(isVisible(queryAndroidAppsRow()));
+      assertTrue(isVisible(queryAppsOnStartupRow()));
+      assertEquals(3, appsPage.get('onStartupOptions_').length);
+    });
+  }
 });
 
 suite('<os-apps-page> Subpage trigger focusing', () => {
-  function initPage(): void {
-    Router.getInstance().navigateTo(routes.APPS);
+  async function initPage(): Promise<void> {
     appsPage = document.createElement('os-settings-apps-page');
     appsPage.prefs = getFakePrefs();
     appsPage.androidAppsInfo = {
@@ -169,7 +188,7 @@ suite('<os-apps-page> Subpage trigger focusing', () => {
       settingsAppAvailable: false,
     };
     document.body.appendChild(appsPage);
-    flush();
+    await flushTasks();
   }
 
   suiteSetup(() => {
@@ -184,6 +203,10 @@ suite('<os-apps-page> Subpage trigger focusing', () => {
 
     androidAppsBrowserProxy = new TestAndroidAppsBrowserProxy();
     AndroidAppsBrowserProxyImpl.setInstanceForTesting(androidAppsBrowserProxy);
+  });
+
+  setup(() => {
+    Router.getInstance().navigateTo(routes.APPS);
   });
 
   teardown(() => {
@@ -210,12 +233,13 @@ suite('<os-apps-page> Subpage trigger focusing', () => {
     test(
         `${routeName} subpage trigger is focused when returning from subpage`,
         async () => {
-          initPage();
+          await initPage();
 
           const subpageTrigger =
               appsPage.shadowRoot!.querySelector<HTMLButtonElement>(
                   triggerSelector);
           assertTrue(!!subpageTrigger);
+          assertTrue(isVisible(subpageTrigger));
 
           // Sub-page trigger navigates to Detailed build info subpage
           subpageTrigger.click();
@@ -242,6 +266,8 @@ suite('AppsPageTests', () => {
   }
 
   suiteSetup(() => {
+    disableAnimationsAndTransitions();
+
     loadTimeData.overrideValues({
       showOsSettingsAppNotificationsRow: true,
       isPlayStoreAvailable: true,
@@ -255,15 +281,16 @@ suite('AppsPageTests', () => {
     setAppNotificationProviderForTesting(mojoApi);
   });
 
-  setup(() => {
+  setup(async () => {
+    Router.getInstance().navigateTo(routes.APPS);
     appsPage = document.createElement('os-settings-apps-page');
     document.body.appendChild(appsPage);
-    disableAnimationsAndTransitions();
+    await flushTasks();
   });
 
   teardown(() => {
-    mojoApi.resetForTest();
     appsPage.remove();
+    mojoApi.resetForTest();
     androidAppsBrowserProxy.reset();
     Router.getInstance().resetRouteForTesting();
   });
@@ -278,46 +305,60 @@ suite('AppsPageTests', () => {
       flush();
     });
 
-    test('App notification row', async () => {
-      const rowLink = appsPage.shadowRoot!.querySelector<CrLinkRowElement>(
-          '#appNotificationsRow');
-      assertTrue(!!rowLink);
-      // Test default is to have 0 apps.
-      assertEquals('0 apps', rowLink.subLabel);
+    if (isRevampWayfindingEnabled) {
+      test('App notification row displays helpful description', async () => {
+        const rowLink = appsPage.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#appNotificationsRow');
+        assertTrue(!!rowLink);
+        assertTrue(isVisible(rowLink));
+        assertEquals(
+            'Manage app notifications, Do not disturb, and app badging',
+            rowLink.subLabel);
+      });
+    } else {
+      test('App notification row displays number of apps', async () => {
+        const rowLink = appsPage.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#appNotificationsRow');
+        assertTrue(!!rowLink);
+        assertTrue(isVisible(rowLink));
+        // Test default is to have 0 apps.
+        assertEquals('0 apps', rowLink.subLabel);
 
-      const permission1 = createBoolPermission(
-          /**id=*/ 1,
-          /**value=*/ false, /**is_managed=*/ false);
-      const permission2 = createBoolPermission(
-          /**id=*/ 2,
-          /**value=*/ true, /**is_managed=*/ false);
-      const app1 = createApp('1', 'App1', permission1);
-      const app2 = createApp('2', 'App2', permission2);
+        const permission1 = createBoolPermission(
+            /**id=*/ 1,
+            /**value=*/ false, /**is_managed=*/ false);
+        const permission2 = createBoolPermission(
+            /**id=*/ 2,
+            /**value=*/ true, /**is_managed=*/ false);
+        const app1 = createApp('1', 'App1', permission1);
+        const app2 = createApp('2', 'App2', permission2);
 
-      simulateNotificationAppChanged(app1);
-      simulateNotificationAppChanged(app2);
-      await flushTasks();
+        simulateNotificationAppChanged(app1);
+        simulateNotificationAppChanged(app2);
+        await flushTasks();
 
-      assertEquals('2 apps', rowLink.subLabel);
+        assertEquals('2 apps', rowLink.subLabel);
 
-      // Simulate an uninstalled app.
-      const app3 =
-          createApp('2', 'App2', permission2, Readiness.kUninstalledByUser);
-      simulateNotificationAppChanged(app3);
-      await flushTasks();
-      assertEquals('1 apps', rowLink.subLabel);
-    });
+        // Simulate an uninstalled app.
+        const app3 =
+            createApp('2', 'App2', permission2, Readiness.kUninstalledByUser);
+        simulateNotificationAppChanged(app3);
+        await flushTasks();
+        assertEquals('1 apps', rowLink.subLabel);
+      });
+    }
 
     test('Manage isolated web apps row', () => {
       const rowLink =
           appsPage.shadowRoot!.querySelector('#manageIsoalatedWebAppsRow');
-      assertTrue(!!rowLink);
+      assertTrue(isVisible(rowLink));
     });
 
     test('Clicking enable button enables ARC', () => {
       const button =
           appsPage.shadowRoot!.querySelector<HTMLButtonElement>('#enable');
       assertTrue(!!button);
+      assertTrue(isVisible(button));
       assertNull(appsPage.shadowRoot!.querySelector('.subpage-arrow'));
 
       button.click();
@@ -329,51 +370,53 @@ suite('AppsPageTests', () => {
         settingsAppAvailable: false,
       };
       flush();
-      assertTrue(!!appsPage.shadowRoot!.querySelector('.subpage-arrow'));
+      assertTrue(
+          isVisible(appsPage.shadowRoot!.querySelector('.subpage-arrow')));
     });
 
-    test('On startup dropdown menu', () => {
-      const getPref = () => {
-        const element =
-            appsPage.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
-                '#onStartupDropdown');
-        assertTrue(!!element);
-        const pref = element.pref;
-        assertTrue(!!pref);
-        return pref;
-      };
+    // On startup row does not exist in the apps page under the revamp.
+    if (!isRevampWayfindingEnabled) {
+      test('On startup dropdown menu', () => {
+        const getPrefValue = () => {
+          const element =
+              appsPage.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+                  '#onStartupDropdown');
+          assertTrue(!!element);
+          return element.pref!.value;
+        };
 
-      appsPage.prefs = setPrefs(1);
-      flush();
-      assertEquals(1, getPref().value);
+        appsPage.prefs = setPrefs(1);
+        flush();
+        assertEquals(1, getPrefValue());
 
-      appsPage.prefs = setPrefs(2);
-      flush();
-      assertEquals(2, getPref().value);
+        appsPage.prefs = setPrefs(2);
+        flush();
+        assertEquals(2, getPrefValue());
 
-      appsPage.prefs = setPrefs(3);
-      flush();
-      assertEquals(3, getPref().value);
-    });
+        appsPage.prefs = setPrefs(3);
+        flush();
+        assertEquals(3, getPrefValue());
+      });
 
-    test('Deep link to On startup dropdown menu', async () => {
-      const SETTING_ID_703 =
-          settingMojom.Setting.kRestoreAppsAndPages.toString();
-      const params = new URLSearchParams();
-      params.append('settingId', SETTING_ID_703);
-      Router.getInstance().navigateTo(routes.APPS, params);
+      test('Deep link to On startup dropdown menu', async () => {
+        const SETTING_ID_703 =
+            settingMojom.Setting.kRestoreAppsAndPages.toString();
+        const params = new URLSearchParams();
+        params.append('settingId', SETTING_ID_703);
+        Router.getInstance().navigateTo(routes.APPS, params);
 
-      const element = appsPage.shadowRoot!.querySelector('#onStartupDropdown');
-      assertTrue(!!element);
-      const deepLinkElement =
-          element.shadowRoot!.querySelector<HTMLElement>('#dropdownMenu');
-      assertTrue(!!deepLinkElement);
-      await waitAfterNextRender(deepLinkElement);
-      assertEquals(
-          deepLinkElement, getDeepActiveElement(),
-          `On startup dropdown menu should be focused for settingId=${
-              SETTING_ID_703}.`);
-    });
+        const deepLinkElement =
+            appsPage.shadowRoot!.querySelector('#onStartupDropdown')!
+                .shadowRoot!.querySelector<HTMLElement>('#dropdownMenu');
+        assertTrue(!!deepLinkElement);
+        assertTrue(isVisible(deepLinkElement));
+        await waitAfterNextRender(deepLinkElement);
+        assertEquals(
+            deepLinkElement, getDeepActiveElement(),
+            `On startup dropdown menu should be focused for settingId=${
+                SETTING_ID_703}.`);
+      });
+    }
 
     test('Deep link to manage android prefs', async () => {
       // Simulate showing manage apps link
@@ -386,11 +429,10 @@ suite('AppsPageTests', () => {
       params.append('settingId', SETTING_ID_700);
       Router.getInstance().navigateTo(routes.APPS, params);
 
-      const element = appsPage.shadowRoot!.querySelector('#manageApps');
-      assertTrue(!!element);
-      const deepLinkElement =
-          element.shadowRoot!.querySelector('cr-icon-button');
+      const deepLinkElement = appsPage.shadowRoot!.querySelector('#manageApps')!
+                                  .shadowRoot!.querySelector('cr-icon-button');
       assertTrue(!!deepLinkElement);
+      assertTrue(isVisible(deepLinkElement));
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
@@ -407,6 +449,7 @@ suite('AppsPageTests', () => {
       const deepLinkElement =
           appsPage.shadowRoot!.querySelector<HTMLButtonElement>('#enable');
       assertTrue(!!deepLinkElement);
+      assertTrue(isVisible(deepLinkElement));
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
@@ -420,6 +463,10 @@ suite('AppsPageTests', () => {
 
   suite('Android apps subpage', () => {
     let subpage: SettingsAndroidAppsSubpageElement;
+
+    function queryManageAppsElement(): HTMLElement|null {
+      return subpage.shadowRoot!.querySelector('#manageApps');
+    }
 
     setup(() => {
       preliminarySetupForAndroidAppsSubpage(/*loadTimeDataOverrides=*/ null);
@@ -449,25 +496,25 @@ suite('AppsPageTests', () => {
     });
 
     test('Sanity', () => {
-      assertTrue(!!subpage.shadowRoot!.querySelector('#remove'));
-      assertNull(subpage.shadowRoot!.querySelector('#manageApps'));
+      assertTrue(isVisible(subpage.shadowRoot!.querySelector('#remove')));
+      assertNull(queryManageAppsElement());
     });
 
     test('ManageAppsUpdate', () => {
-      assertNull(subpage.shadowRoot!.querySelector('#manageApps'));
+      assertNull(queryManageAppsElement());
       subpage.androidAppsInfo = {
         playStoreEnabled: true,
         settingsAppAvailable: true,
       };
       flush();
-      assertTrue(!!subpage.shadowRoot!.querySelector('#manageApps'));
+      assertTrue(isVisible(queryManageAppsElement()));
 
       subpage.androidAppsInfo = {
         playStoreEnabled: true,
         settingsAppAvailable: false,
       };
       flush();
-      assertNull(subpage.shadowRoot!.querySelector('#manageApps'));
+      assertNull(queryManageAppsElement());
     });
 
     test('ManageAppsOpenRequest', async () => {
@@ -476,9 +523,10 @@ suite('AppsPageTests', () => {
         settingsAppAvailable: true,
       };
       flush();
-      const button =
-          subpage.shadowRoot!.querySelector<HTMLButtonElement>('#manageApps');
+      const button = queryManageAppsElement();
       assertTrue(!!button);
+      assertTrue(isVisible(button));
+
       const promise =
           androidAppsBrowserProxy.whenCalled('showAndroidAppsSettings');
       button.click();
@@ -492,12 +540,11 @@ suite('AppsPageTests', () => {
       assertTrue(!!dialog);
       assertFalse(dialog.open);
 
-      const remove = subpage.shadowRoot!.querySelector('#remove');
-      assertTrue(!!remove);
-
-      const button = remove.querySelector('cr-button');
-      assertTrue(!!button);
-      button.click();
+      const removeButton =
+          subpage.shadowRoot!.querySelector<HTMLElement>('#remove > cr-button');
+      assertTrue(!!removeButton);
+      assertTrue(isVisible(removeButton));
+      removeButton.click();
       flush();
 
       assertTrue(dialog.open);
@@ -520,7 +567,7 @@ suite('AppsPageTests', () => {
       flush();
 
       assertNull(subpage.shadowRoot!.querySelector('#remove'));
-      assertTrue(!!subpage.shadowRoot!.querySelector('#manageApps'));
+      assertTrue(isVisible(queryManageAppsElement()));
     });
 
     test('Can open app settings without Play Store', async () => {
@@ -531,14 +578,13 @@ suite('AppsPageTests', () => {
       };
       flush();
 
-      const button =
-          subpage.shadowRoot!.querySelector<HTMLButtonElement>('#manageApps');
+      const button = queryManageAppsElement();
       assertTrue(!!button);
-      const promise =
-          androidAppsBrowserProxy.whenCalled('showAndroidAppsSettings');
+      assertTrue(isVisible(button));
+
       button.click();
       flush();
-      await promise;
+      await androidAppsBrowserProxy.whenCalled('showAndroidAppsSettings');
     });
 
     test('Deep link to manage android prefs - subpage', async () => {
@@ -554,11 +600,10 @@ suite('AppsPageTests', () => {
       params.append('settingId', SETTING_ID_700);
       Router.getInstance().navigateTo(routes.ANDROID_APPS_DETAILS, params);
 
-      const element = subpage.shadowRoot!.querySelector('#manageApps');
-      assertTrue(!!element);
       const deepLinkElement =
-          element.shadowRoot!.querySelector('cr-icon-button');
+          queryManageAppsElement()!.shadowRoot!.querySelector('cr-icon-button');
       assertTrue(!!deepLinkElement);
+      assertTrue(isVisible(deepLinkElement));
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
@@ -575,6 +620,7 @@ suite('AppsPageTests', () => {
       const deepLinkElement =
           subpage.shadowRoot!.querySelector<HTMLElement>('#remove cr-button');
       assertTrue(!!deepLinkElement);
+      assertTrue(isVisible(deepLinkElement));
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
@@ -592,70 +638,29 @@ suite('AppsPageTests', () => {
       // ARCMV is enabled
       subpage.isArcVmManageUsbAvailable = true;
       flush();
-      assertTrue(
-          !!subpage.shadowRoot!.querySelector('#manageArcvmShareUsbDevices'));
-    });
-  });
-
-  suite('with OsSettingsRevampWayfinding feature enabled', () => {
-    let subpage: SettingsAndroidAppsSubpageElement;
-
-    setup(() => {
-      const loadTimeDataOverrides = {
-        isRevampWayfindingEnabled: true,
-      };
-
-      preliminarySetupForAndroidAppsSubpage(loadTimeDataOverrides);
-
-      subpage = document.createElement('settings-android-apps-subpage');
-      document.body.appendChild(subpage);
-
-      flush();
+      assertTrue(isVisible(
+          subpage.shadowRoot!.querySelector('#manageArcvmShareUsbDevices')));
     });
 
-    teardown(() => {
-      document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      subpage.remove();
-    });
+    if (isRevampWayfindingEnabled) {
+      test(
+          'Open Google Play link row appears and once clicked, ' +
+              'opens the play store app',
+          async () => {
+            const row = subpage.shadowRoot!.querySelector<HTMLButtonElement>(
+                '#openGooglePlayRow');
+            assertTrue(!!row);
+            assertTrue(isVisible(row));
 
-    test(
-        'Open Google Play link row appears and once clicked, ' +
-            'opens the play store app',
-        async () => {
-          const row = subpage.shadowRoot!.querySelector<HTMLButtonElement>(
-              '#openGooglePlayRow');
-          assertTrue(!!row);
-
-          row.click();
-          flush();
-          await androidAppsBrowserProxy.whenCalled('showPlayStoreApps');
-        });
-  });
-
-  suite('with OsSettingsRevampWayfinding feature disabled', () => {
-    let subpage: SettingsAndroidAppsSubpageElement;
-
-    setup(() => {
-      const loadTimeDataOverrides = {
-        isRevampWayfindingEnabled: false,
-      };
-
-      preliminarySetupForAndroidAppsSubpage(loadTimeDataOverrides);
-
-      subpage = document.createElement('settings-android-apps-subpage');
-      document.body.appendChild(subpage);
-
-      flush();
-    });
-
-    teardown(() => {
-      document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      subpage.remove();
-    });
-
-    test('Open Google Play link row does not appear.', () => {
-      const row = subpage.shadowRoot!.querySelector('#openGooglePlayRow');
-      assertFalse(isVisible(row));
-    });
+            row.click();
+            flush();
+            await androidAppsBrowserProxy.whenCalled('showPlayStoreApps');
+          });
+    } else {
+      test('Open Google Play link row does not appear.', () => {
+        const row = subpage.shadowRoot!.querySelector('#openGooglePlayRow');
+        assertFalse(isVisible(row));
+      });
+    }
   });
 });

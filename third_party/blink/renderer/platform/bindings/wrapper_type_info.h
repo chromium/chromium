@@ -109,9 +109,8 @@ struct PLATFORM_EXPORT WrapperTypeInfo final {
     return false;
   }
 
-  void ConfigureWrapper(v8::TracedReference<v8::Object>* wrapper) const {
-    if (wrapper_class_id != kNoInternalFieldClassId)
-      wrapper->SetWrapperClassId(wrapper_class_id);
+  bool SupportsDroppingWrapper() const {
+    return wrapper_class_id != kNoInternalFieldClassId;
   }
 
   // Returns a v8::Template of interface object, namespace object, or the

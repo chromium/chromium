@@ -11,8 +11,6 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 #include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
-#include "components/services/app_service/public/cpp/app_types.h"
-#include "components/webapps/common/web_app_id.h"
 #include "ui/base/models/image_model.h"
 #include "url/gurl.h"
 
@@ -33,10 +31,9 @@ class AppsIntentPickerDelegate {
   virtual bool ShouldShowIntentPickerWithApps() = 0;
   virtual void FindAllAppsForUrl(const GURL& url,
                                  IntentPickerAppsCallback apps_callback) = 0;
-  virtual bool IsPreferredAppForSupportedLinks(
-      const webapps::AppId& app_id) = 0;
-  virtual void LoadSingleAppIcon(apps::AppType app_type,
-                                 const webapps::AppId& app_id,
+  virtual bool IsPreferredAppForSupportedLinks(const std::string& app_id) = 0;
+  virtual void LoadSingleAppIcon(PickerEntryType entry_type,
+                                 const std::string& app_id,
                                  int size_in_dep,
                                  IconLoadedCallback icon_loaded_callback) = 0;
   // Records metrics for usage of the intent picker icon which appears in the

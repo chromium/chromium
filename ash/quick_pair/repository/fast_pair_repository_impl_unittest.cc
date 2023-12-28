@@ -248,22 +248,15 @@ class FastPairRepositoryImplTest : public AshTestBase {
   scoped_refptr<Device> device_;
   gfx::Image test_image_;
 
-  raw_ptr<DeviceMetadataFetcher, DanglingUntriaged | ExperimentalAsh>
-      device_metadata_fetcher_;
-  raw_ptr<FakeDeviceMetadataHttpFetcher, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<DeviceMetadataFetcher, DanglingUntriaged> device_metadata_fetcher_;
+  raw_ptr<FakeDeviceMetadataHttpFetcher, DanglingUntriaged>
       metadata_http_fetcher_;
-  raw_ptr<FakeFootprintsFetcher, DanglingUntriaged | ExperimentalAsh>
-      footprints_fetcher_;
-  raw_ptr<MockFastPairImageDecoder, DanglingUntriaged | ExperimentalAsh>
-      image_decoder_;
-  raw_ptr<DeviceAddressMap, DanglingUntriaged | ExperimentalAsh>
-      device_address_map_;
-  raw_ptr<DeviceImageStore, DanglingUntriaged | ExperimentalAsh>
-      device_image_store_;
-  raw_ptr<PendingWriteStore, DanglingUntriaged | ExperimentalAsh>
-      pending_write_store_;
-  raw_ptr<SavedDeviceRegistry, DanglingUntriaged | ExperimentalAsh>
-      saved_device_registry_;
+  raw_ptr<FakeFootprintsFetcher, DanglingUntriaged> footprints_fetcher_;
+  raw_ptr<MockFastPairImageDecoder, DanglingUntriaged> image_decoder_;
+  raw_ptr<DeviceAddressMap, DanglingUntriaged> device_address_map_;
+  raw_ptr<DeviceImageStore, DanglingUntriaged> device_image_store_;
+  raw_ptr<PendingWriteStore, DanglingUntriaged> pending_write_store_;
+  raw_ptr<SavedDeviceRegistry, DanglingUntriaged> saved_device_registry_;
 
   base::WeakPtrFactory<FastPairRepositoryImplTest> weak_ptr_factory_{this};
 };

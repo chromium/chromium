@@ -51,6 +51,7 @@ public class PromoCardViewRenderTest extends BlankUiTestActivityTestCase {
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE)
+                    .setRevision(1)
                     .build();
 
     public PromoCardViewRenderTest(boolean nightModeEnabled) {

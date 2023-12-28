@@ -1250,9 +1250,6 @@ class Browser : public TabStripModelObserver,
   // restore the session.
   const bool should_trigger_session_restore_;
 
-  // The model for the toolbar view.
-  std::unique_ptr<LocationBarModel> location_bar_model_;
-
   // UI update coalescing and handling ////////////////////////////////////////
 
   typedef std::map<const content::WebContents*, int> UpdateMap;
@@ -1306,6 +1303,9 @@ class Browser : public TabStripModelObserver,
 
   // Helper which implements the LocationBarModelDelegate interface.
   std::unique_ptr<BrowserLocationBarModelDelegate> location_bar_model_delegate_;
+
+  // The model for the toolbar view.
+  std::unique_ptr<LocationBarModel> location_bar_model_;
 
   // Helper which implements the LiveTabContext interface.
   std::unique_ptr<BrowserLiveTabContext> live_tab_context_;

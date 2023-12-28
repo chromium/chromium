@@ -18,7 +18,7 @@ using ManualFillAddressFormAutofilliOSTest = PlatformTest;
 namespace {
 
 void SetProfileFieldTypeValue(AutofillProfile* profile,
-                              const autofill::ServerFieldType fieldType,
+                              const autofill::FieldType fieldType,
                               NSString* value) {
   const std::u16string v = base::SysNSStringToUTF16(value);
   const std::string& app_locale =

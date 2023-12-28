@@ -99,8 +99,8 @@ class FakeFastPairPresenterFactory
   }
 
  protected:
-  raw_ptr<FakeFastPairPresenter, DanglingUntriaged | ExperimentalAsh>
-      fake_fast_pair_presenter_ = nullptr;
+  raw_ptr<FakeFastPairPresenter, DanglingUntriaged> fake_fast_pair_presenter_ =
+      nullptr;
 };
 
 }  // namespace

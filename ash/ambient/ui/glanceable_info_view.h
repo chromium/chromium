@@ -62,14 +62,14 @@ class GlanceableInfoView : public views::View,
   std::u16string GetTemperatureText() const;
 
   // View for the time info. Owned by the view hierarchy.
-  raw_ptr<TimeView, ExperimentalAsh> time_view_ = nullptr;
+  raw_ptr<TimeView> time_view_ = nullptr;
 
   // Views for weather icon and temperature.
-  raw_ptr<views::ImageView, ExperimentalAsh> weather_condition_icon_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> temperature_ = nullptr;
+  raw_ptr<views::ImageView> weather_condition_icon_ = nullptr;
+  raw_ptr<views::Label> temperature_ = nullptr;
 
   // Owned by |AmbientController|.
-  const raw_ptr<AmbientViewDelegate, ExperimentalAsh> delegate_ = nullptr;
+  const raw_ptr<AmbientViewDelegate> delegate_ = nullptr;
 
   // Unowned. Must out live |GlancealeInfoView|.
   raw_ptr<GlanceableInfoView::Delegate> const glanceable_info_view_delegate_ =

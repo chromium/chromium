@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {BOOKMARKS_BAR_ID, IncognitoAvailability, ROOT_NODE_ID} from './constants.js';
-import {BookmarkNode, BookmarksPageState, NodeMap, ObjectMap} from './types.js';
+import type {BookmarkNode, BookmarksPageState, NodeMap, ObjectMap} from './types.js';
 
 /**
  * @fileoverview Utility functions for the Bookmarks page.

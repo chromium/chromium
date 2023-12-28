@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/auto_reset.h"
 #include "base/check_deref.h"
 #include "base/containers/map_util.h"
 #include "base/notreached.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/extensions/api/document_scan/document_scan_test_utils.h"
 #include "chrome/browser/extensions/api/document_scan/fake_document_scan_ash.h"
 #include "chrome/browser/extensions/api/document_scan/scanner_discovery_runner.h"
+#include "chrome/browser/extensions/api/document_scan/start_scan_runner.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
@@ -143,27 +145,37 @@ IN_PROC_BROWSER_TEST_P(DocumentScanApiTest, GetScannerList_DiscoveryDenied) {
   RunTest("get_scanner_list_denied.html");
 }
 
-IN_PROC_BROWSER_TEST_P(DocumentScanApiTest, GetScannerList_DiscoveryApproved) {
+IN_PROC_BROWSER_TEST_P(DocumentScanApiTest, StartScan_PermissionDenied) {
+  // There is a check for a valid scanner handle before the check for the
+  // permission from the user.  Even though this tests the permission denied
+  // case it still needs a valid scanner handle, so set the discovery
+  // confirmation result.
   ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(true);
   document_scan()->AddScanner(CreateTestScannerInfo());
-  RunTest("get_scanner_list_approved.html");
+  base::AutoReset<std::optional<bool>> testing_scope =
+      StartScanRunner::SetStartScanConfirmationResultForTesting(false);
+  RunTest("start_scan_denied.html");
 }
 
-IN_PROC_BROWSER_TEST_P(DocumentScanApiTest, GetScannerList_DiscoveryTrusted) {
+IN_PROC_BROWSER_TEST_P(DocumentScanApiTest, PerformScan_PermissionAllowed) {
+  ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(true);
+  base::AutoReset<std::optional<bool>> testing_scope =
+      StartScanRunner::SetStartScanConfirmationResultForTesting(true);
+  document_scan()->AddScanner(CreateTestScannerInfo());
+  RunTest("perform_scan.html");
+  // TODO(b/313494616): Load a second extension to verify (lack of)
+  // cross-extension handle sharing.
+}
+
+IN_PROC_BROWSER_TEST_P(DocumentScanApiTest, PerformScan_ExtensionTrusted) {
   AutoTruster extension_truster(extension_registry());
   // Confirmation would fail, but it doesn't matter because the extension is
   // trusted.
   ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(false);
+  base::AutoReset<std::optional<bool>> testing_scope =
+      StartScanRunner::SetStartScanConfirmationResultForTesting(false);
   document_scan()->AddScanner(CreateTestScannerInfo());
-  RunTest("get_scanner_list_approved.html");
-}
-
-IN_PROC_BROWSER_TEST_P(DocumentScanApiTest, OpenCloseScannerHandles) {
-  AutoTruster extension_truster(extension_registry());
-  document_scan()->AddScanner(CreateTestScannerInfo());
-  // TODO(b/313494616): Load a second extension to verify (lack of)
-  // cross-extension handle sharing.
-  RunTest("open_scanner.html");
+  RunTest("perform_scan.html");
 }
 
 // TODO (b/313494616): Add a test that checks for the expected unsupported

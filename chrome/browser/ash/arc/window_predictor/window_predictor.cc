@@ -149,7 +149,7 @@ arc::mojom::WindowInfoPtr WindowPredictor::PredictAppWindowInfo(
         window_info->display_id, &disp);
   }
 
-  if (ash::TabletMode::Get()->IsInTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     // TODO: Figure out why setting kMaximized doesn't work.
     window_info->state =
         static_cast<int32_t>(chromeos::WindowStateType::kDefault);

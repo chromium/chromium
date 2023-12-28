@@ -231,7 +231,7 @@ class ASH_EXPORT WindowTreeHostManager
 
   // Store the primary window tree host temporarily while replacing
   // display.
-  raw_ptr<AshWindowTreeHost, ExperimentalAsh> primary_tree_host_for_replace_;
+  raw_ptr<AshWindowTreeHost> primary_tree_host_for_replace_;
 
   std::unique_ptr<FocusActivationStore> focus_activation_store_;
 

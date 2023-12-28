@@ -813,7 +813,7 @@ TEST(DocumentScanAshTypeConvertersTest, GetOptionGroupsResponse_EmptyObject) {
   auto output = crosapi::mojom::GetOptionGroupsResponse::From(input);
   EXPECT_TRUE(output->scanner_handle.empty());
   EXPECT_EQ(output->result, crosapi::mojom::ScannerOperationResult::kUnknown);
-  EXPECT_FALSE(output->options.has_value());
+  EXPECT_FALSE(output->groups.has_value());
 }
 
 TEST(DocumentScanAshTypeConvertersTest, GetOptionGroupsResponse_Success) {
@@ -832,12 +832,12 @@ TEST(DocumentScanAshTypeConvertersTest, GetOptionGroupsResponse_Success) {
   auto output = crosapi::mojom::GetOptionGroupsResponse::From(input);
   EXPECT_EQ(output->scanner_handle, "scanner-handle");
   EXPECT_EQ(output->result, crosapi::mojom::ScannerOperationResult::kSuccess);
-  EXPECT_TRUE(output->options.has_value());
-  ASSERT_EQ(output->options.value().size(), 2U);
-  const auto& actual1 = output->options.value()[0];
+  EXPECT_TRUE(output->groups.has_value());
+  ASSERT_EQ(output->groups.value().size(), 2U);
+  const auto& actual1 = output->groups.value()[0];
   EXPECT_EQ(actual1->title, "group1");
   EXPECT_THAT(actual1->members, ElementsAre("group1-val1", "group1-val2"));
-  const auto& actual2 = output->options.value()[1];
+  const auto& actual2 = output->groups.value()[1];
   EXPECT_EQ(actual2->title, "group2");
   EXPECT_THAT(actual2->members, ElementsAre("group2-val1"));
 }

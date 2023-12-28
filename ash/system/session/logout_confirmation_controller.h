@@ -81,13 +81,13 @@ class ASH_EXPORT LogoutConfirmationController : public SessionObserver {
   class LastWindowClosedObserver;
   std::unique_ptr<LastWindowClosedObserver> last_window_closed_observer_;
 
-  raw_ptr<const base::TickClock, ExperimentalAsh> clock_;
+  raw_ptr<const base::TickClock> clock_;
 
   base::RepeatingCallback<void(Source)> logout_callback_;
   Source source_;
 
   base::TimeTicks logout_time_;
-  raw_ptr<LogoutConfirmationDialog, ExperimentalAsh> dialog_ =
+  raw_ptr<LogoutConfirmationDialog> dialog_ =
       nullptr;  // Owned by the Views hierarchy.
   base::OneShotTimer logout_timer_;
 

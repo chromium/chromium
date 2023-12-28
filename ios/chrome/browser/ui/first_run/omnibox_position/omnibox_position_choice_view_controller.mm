@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_view_controller.h"
 
+#import "base/ios/ios_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
@@ -13,6 +14,15 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+
+namespace {
+
+/// Leading and trailing padding for the `addressBarView`.
+constexpr CGFloat kAddressViewHorizontalPadding = 11;
+/// The size of the logo image.
+const CGFloat kLogoSize = 36;
+
+}  // namespace
 
 @implementation OmniboxPositionChoiceViewController {
   /// The view for the top address bar preference option.
@@ -43,19 +53,37 @@
 
 - (void)viewDidLoad {
   CHECK(IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAny));
-  // TODO(crbug.com/1503638): Implement this and remove placeholder text.
   self.view.accessibilityIdentifier =
       first_run::kFirstRunOmniboxPositionChoiceScreenAccessibilityIdentifier;
-  self.bannerName = @"default_browser_screen_banner";
-  self.titleText = @"**Tailor to Your Needs**";
-  self.subtitleText = @"**Decide the position of the search bar to tailor your "
-                      @"needs and browsing habits**";
+
+  self.shouldHideBanner = YES;
+  self.usePromoStyleBackground = YES;
+  self.hideHeaderOnTallContent = YES;
+
+  self.headerImageType = PromoStyleImageType::kImageWithShadow;
+  self.headerViewForceStyleLight = YES;
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  UIImage* logo = MakeSymbolMulticolor(
+      CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kLogoSize));
+#else
+  UIImage* logo = CustomSymbolWithPointSize(kChromeProductSymbol, kLogoSize);
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  self.headerImage = logo;
+
+  self.titleHorizontalMargin = 0;
+  self.titleText = l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_TITLE);
+  self.primaryActionString =
+      l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_VALIDATE);
   if (_isFirstRun) {
-    self.primaryActionString = @"**Finish**";
-    self.secondaryActionString = nil;
+    self.subtitleText =
+        l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_FRE_SUBTITLE);
+    self.secondaryActionString =
+        l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_SKIP);
   } else {
-    self.primaryActionString = @"**Confirm**";
-    self.secondaryActionString = @"**No, thanks**";
+    self.subtitleText =
+        l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_IPH_SUBTITLE);
+    self.secondaryActionString =
+        l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_DISCARD);
   }
 
   [_topAddressBar addTarget:self
@@ -77,9 +105,11 @@
   addressBarView.distribution = UIStackViewDistributionFillEqually;
   [self.specificContentView addSubview:addressBarView];
 
-  AddSameConstraintsToSides(
-      self.specificContentView, addressBarView,
-      LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
+  AddSameConstraintsToSidesWithInsets(
+      addressBarView, self.specificContentView,
+      LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing,
+      NSDirectionalEdgeInsetsMake(0, kAddressViewHorizontalPadding, 0,
+                                  kAddressViewHorizontalPadding));
 
   [NSLayoutConstraint activateConstraints:@[
     [self.specificContentView.bottomAnchor

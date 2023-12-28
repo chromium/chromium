@@ -82,7 +82,7 @@ class MockMediaNotificationContainer : public MediaNotificationContainer {
                void(SkColor foreground,
                     SkColor foreground_disabled,
                     SkColor background));
-  MOCK_METHOD0(OnHeaderClicked, void());
+  MOCK_METHOD1(OnHeaderClicked, void(bool activate_original_media));
 };
 
 }  // namespace
@@ -273,7 +273,7 @@ TEST_F(MediaNotificationViewImplTest, ButtonsSanityCheck) {
   auto buttons = view()->get_buttons_for_testing();
   EXPECT_EQ(6u, buttons.size());
 
-  for (auto* button : buttons) {
+  for (views::View* button : buttons) {
     EXPECT_TRUE(button->GetVisible());
     EXPECT_LT(kMediaButtonIconSize, button->width());
     EXPECT_LT(kMediaButtonIconSize, button->height());
@@ -917,7 +917,7 @@ TEST_F(MediaNotificationViewImplTest, AllowsHidingOfAppIcon) {
 }
 
 TEST_F(MediaNotificationViewImplTest, ClickHeader_NotifyContainer) {
-  EXPECT_CALL(container(), OnHeaderClicked());
+  EXPECT_CALL(container(), OnHeaderClicked(/*activate_original_media=*/true));
   SimulateHeaderClick();
 }
 

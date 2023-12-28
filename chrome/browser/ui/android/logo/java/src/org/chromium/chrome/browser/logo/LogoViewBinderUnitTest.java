@@ -99,7 +99,15 @@ public class LogoViewBinderUnitTest {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(mLogoModel, mLogoView, new LogoViewBinder());
         mLogoMediator =
-                new LogoMediator(null, null, mLogoModel, true, null, null, true, null, null);
+                new LogoMediator(
+                        /* context= */ null,
+                        /* logoClickedCallback= */ null,
+                        mLogoModel,
+                        /* shouldFetchDoodle= */ true,
+                        /* onLogoAvailableCallback= */ null,
+                        /* isParentSurfaceShown= */ true,
+                        /* visibilityObserver= */ null,
+                        /* defaultGoogleLogo= */ null);
     }
 
     @After

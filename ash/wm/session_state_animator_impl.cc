@@ -389,7 +389,7 @@ class SessionStateAnimatorImpl::AnimationSequence
     sequences_attached_++;
   }
 
-  raw_ptr<SessionStateAnimatorImpl, LeakedDanglingUntriaged | ExperimentalAsh>
+  raw_ptr<SessionStateAnimatorImpl, LeakedDanglingUntriaged>
       animator_;  // not owned
 
   // Number of sequences this observer was attached to.

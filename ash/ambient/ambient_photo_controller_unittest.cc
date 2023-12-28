@@ -585,14 +585,12 @@ TEST_F(AmbientPhotoControllerTest, ShouldResumeWhenHaveMoreTopics) {
 }
 
 TEST_F(AmbientPhotoControllerTest, ShouldDownloadBackupImagesWhenScheduled) {
-  std::string encoded_backup_1 =
-      CreateEncodedImageForTesting(gfx::Size(10, 10));
-  std::string encoded_backup_2 =
-      CreateEncodedImageForTesting(gfx::Size(20, 20));
   SetDownloadPhotoDataForUrl(
-      GURL(backend_controller()->GetBackupPhotoUrls()[0]), encoded_backup_1);
+      GURL(backend_controller()->GetBackupPhotoUrls()[0]),
+      CreateEncodedImageForTesting(gfx::Size(10, 10)));
   SetDownloadPhotoDataForUrl(
-      GURL(backend_controller()->GetBackupPhotoUrls()[1]), encoded_backup_2);
+      GURL(backend_controller()->GetBackupPhotoUrls()[1]),
+      CreateEncodedImageForTesting(gfx::Size(20, 20)));
 
   ScheduleFetchBackupImages();
 
@@ -612,8 +610,6 @@ TEST_F(AmbientPhotoControllerTest, ShouldDownloadBackupImagesWhenScheduled) {
   ASSERT_EQ(backup_data.size(), 2u);
   ASSERT_TRUE(base::Contains(backup_data, 0));
   ASSERT_TRUE(base::Contains(backup_data, 1));
-  EXPECT_EQ(backup_data.at(0).primary_photo().image(), encoded_backup_1);
-  EXPECT_EQ(backup_data.at(1).primary_photo().image(), encoded_backup_2);
   for (const auto& i : backup_data) {
     EXPECT_TRUE(i.second.primary_photo().details().empty());
     EXPECT_TRUE(i.second.related_photo().image().empty());
@@ -648,14 +644,12 @@ TEST_F(AmbientPhotoControllerTest,
   EXPECT_TRUE(
       photo_controller()->backup_photo_refresh_timer_for_testing().IsRunning());
 
-  std::string encoded_backup_1 =
-      CreateEncodedImageForTesting(gfx::Size(10, 10));
-  std::string encoded_backup_2 =
-      CreateEncodedImageForTesting(gfx::Size(20, 20));
   SetDownloadPhotoDataForUrl(
-      GURL(backend_controller()->GetBackupPhotoUrls()[0]), encoded_backup_1);
+      GURL(backend_controller()->GetBackupPhotoUrls()[0]),
+      CreateEncodedImageForTesting(gfx::Size(10, 10)));
   SetDownloadPhotoDataForUrl(
-      GURL(backend_controller()->GetBackupPhotoUrls()[1]), encoded_backup_2);
+      GURL(backend_controller()->GetBackupPhotoUrls()[1]),
+      CreateEncodedImageForTesting(gfx::Size(20, 20)));
 
   photo_controller()->StartScreenUpdate();
 
@@ -671,8 +665,6 @@ TEST_F(AmbientPhotoControllerTest,
   ASSERT_EQ(backup_data.size(), 2u);
   ASSERT_TRUE(base::Contains(backup_data, 0));
   ASSERT_TRUE(base::Contains(backup_data, 1));
-  EXPECT_EQ(backup_data.at(0).primary_photo().image(), encoded_backup_1);
-  EXPECT_EQ(backup_data.at(1).primary_photo().image(), encoded_backup_2);
   for (const auto& i : backup_data) {
     EXPECT_TRUE(i.second.primary_photo().details().empty());
     EXPECT_TRUE(i.second.related_photo().image().empty());

@@ -28,10 +28,6 @@ struct CTLogInfo {
   // translated.
   string name;
 
-  // Whether or not the log should should be considered a Google Log for the
-  // purposes of enforcing the "Certificate Transparency in Chrome" policy.
-  bool operated_by_google = false;
-
   // If set, the time since the Unix Epoch when the log was disqualified. This
   // is used to determine the "once or currently qualified" status of the log.
   // If the log is currently qualified, this will not be set.

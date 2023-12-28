@@ -5,7 +5,7 @@
 #include "ash/capture_mode/capture_mode_test_util.h"
 
 #include "ash/accessibility/a11y_feature_type.h"
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_controller.h"

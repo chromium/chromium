@@ -114,11 +114,42 @@ void EnclaveAuthenticator::GetAssertion(CtapGetAssertionRequest request,
   StartRequest();
 }
 
+void EnclaveAuthenticator::SetOauthToken(
+    absl::optional<std::string_view> token) {
+  if (token == absl::nullopt) {
+    state_ = State::kError;
+  } else {
+    websocket_client_->set_oauth_token(*token);
+  }
+
+  if (state_ == State::kWaitingForOauthToken) {
+    StartRequest();
+    return;
+  }
+
+  if (state_ == State::kInitialized) {
+    state_ = State::kOauthTokenReceived;
+  }
+}
+
 void EnclaveAuthenticator::StartRequest() {
   CHECK(!pending_get_assertion_request_ != !pending_make_credential_request_);
 
   if (state_ == State::kInitialized) {
+    state_ = State::kWaitingForOauthToken;
+    return;
+  }
+
+  if (state_ == State::kError) {
+    // This can mean we received a null OAuth token.
+    CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
+    return;
+  }
+
+  if (state_ == State::kOauthTokenReceived ||
+      state_ == State::kWaitingForOauthToken) {
     CHECK(!handshake_);
+
     state_ = State::kWaitingForHandshakeResponse;
 
     handshake_ = std::make_unique<cablev2::HandshakeInitiator>(

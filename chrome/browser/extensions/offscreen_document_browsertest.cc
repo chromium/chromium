@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "extensions/browser/offscreen_document_host.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 
 #include "base/test/bind.h"
 #include "base/test/values_test_util.h"
@@ -134,19 +135,19 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest,
   }
 
   {
-    Feature::Context context_type =
+    mojom::ContextType context_type =
         ProcessMap::Get(profile())->GetMostLikelyContextType(
             extension, contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
             &offscreen_url);
     // TODO(https://crbug.com/1339382): The following check should be:
-    //   EXPECT_EQ(Feature::OFFSCREEN_EXTENSION_CONTEXT, context_type);
+    //   EXPECT_EQ(mojom::ContextType::kOffscreenExtension, context_type);
     // However, currently the ProcessMap can't differentiate between a
     // blessed extension context and an offscreen document, as both run in the
     // primary extension process and have committed to the extension origin.
     // This is okay (this boundary isn't a security boundary), but is
     // technically incorrect.
     // See also comment in ProcessMap::GetMostLikelyContextType().
-    EXPECT_EQ(Feature::BLESSED_EXTENSION_CONTEXT, context_type);
+    EXPECT_EQ(mojom::ContextType::kPrivilegedExtension, context_type);
   }
 
   {

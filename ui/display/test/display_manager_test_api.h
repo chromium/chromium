@@ -15,6 +15,7 @@
 #include "ui/display/display.h"
 #include "ui/display/display_export.h"
 #include "ui/display/display_layout.h"
+#include "ui/display/manager/util/display_manager_util.h"
 #include "ui/display/types/display_constants.h"
 
 namespace gfx {
@@ -48,9 +49,11 @@ class DISPLAY_EXPORT DisplayManagerTestApi {
   // native information, such as display zoom, will be ignored and instead
   // copied from the current configuration.  Note: To add rounded-corners
   // properly upon startup, set it via specifying the command line switch
-  // `ash-host-window-bounds`.
+  // `ash-host-window-bounds`. If `generate_new_ids` is true displays in
+  // `display_spec` will be created with new display ids.
   void UpdateDisplay(const std::string& display_specs,
-                     bool from_native_platform = false);
+                     bool from_native_platform = false,
+                     bool generate_new_ids = false);
 
   void UpdateDisplayWithDisplayInfoList(
       const std::vector<ManagedDisplayInfo>& display_info_list,
@@ -83,7 +86,7 @@ class DISPLAY_EXPORT DisplayManagerTestApi {
   // Indicate the maximum number of displays that chrome device can support.
   static size_t maximum_support_display_;
 
-  raw_ptr<DisplayManager, ExperimentalAsh> display_manager_;  // not owned
+  raw_ptr<DisplayManager> display_manager_;  // not owned
 };
 
 class DISPLAY_EXPORT ScopedSetInternalDisplayId {

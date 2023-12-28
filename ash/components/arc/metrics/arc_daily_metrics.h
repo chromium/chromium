@@ -71,7 +71,7 @@ class ArcDailyMetrics {
     kKillCountNum,
   };
 
-  const raw_ptr<PrefService, ExperimentalAsh> prefs_;
+  const raw_ptr<PrefService> prefs_;
   std::unique_ptr<metrics::DailyEvent> daily_event_;
 
   // Members for tracking Android App kill counts.

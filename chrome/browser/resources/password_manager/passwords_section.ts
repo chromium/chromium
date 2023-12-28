@@ -14,24 +14,25 @@ import './user_utils_mixin.js';
 import './promo_cards/promo_card.js';
 import './promo_cards/promo_cards_browser_proxy.js';
 
-
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FocusConfig} from './focus_config.js';
+import type {FocusConfig} from './focus_config.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './passwords_section.html.js';
 import {PromoCardId} from './promo_cards/promo_card.js';
-import {PromoCard, PromoCardsProxyImpl} from './promo_cards/promo_cards_browser_proxy.js';
-import {Page, Route, RouteObserverMixin, Router, UrlParam} from './router.js';
+import type {PromoCard} from './promo_cards/promo_cards_browser_proxy.js';
+import {PromoCardsProxyImpl} from './promo_cards/promo_cards_browser_proxy.js';
+import type {Route} from './router.js';
+import {Page, RouteObserverMixin, Router, UrlParam} from './router.js';
 import {UserUtilMixin} from './user_utils_mixin.js';
 
 export interface PasswordsSectionElement {

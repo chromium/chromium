@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
 namespace blink {
@@ -43,6 +44,7 @@ class HTMLMetricsTest : public testing::Test {
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   frame_test_helpers::WebViewHelper helper_;
 };
 
@@ -240,7 +242,7 @@ TEST_F(HTMLMetricsTest, UkmStoresValuesCorrectly) {
   // Check we have a single entry
   entries = recorder.GetEntriesByName("Blink.HTMLParsing");
   EXPECT_EQ(entries.size(), 1u);
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
 
   // Verify all the values
   EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(entry, "ChunkCount"));

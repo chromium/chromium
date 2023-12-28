@@ -45,9 +45,7 @@ class SubresourceFilterAgentUnderTest : public SubresourceFilterAgent {
       bool is_provisional,
       bool is_parent_ad_frame,
       bool is_frame_created_by_ad_script)
-      : SubresourceFilterAgent(nullptr /* RenderFrame */,
-                               ruleset_dealer,
-                               nullptr /* AdResourceTracker */),
+      : SubresourceFilterAgent(nullptr /* RenderFrame */, ruleset_dealer),
         is_subresource_filter_root_(is_subresource_filter_root),
         is_provisional_(is_provisional),
         is_parent_ad_frame_(is_parent_ad_frame),
@@ -137,8 +135,7 @@ constexpr const char kTestBothURLsPathSuffix[] = "a";
 // Histogram names.
 constexpr const char kDocumentLoadRulesetIsAvailable[] =
     "SubresourceFilter.DocumentLoad.RulesetIsAvailable";
-constexpr const char kDocumentLoadActivationLevel[] =
-    "SubresourceFilter.DocumentLoad.ActivationState";
+
 constexpr const char kMainFrameLoadRulesetIsAvailableAnyActivationLevel[] =
     "SubresourceFilter.MainFrameLoad.RulesetIsAvailableAnyActivationLevel";
 
@@ -322,9 +319,6 @@ TEST_F(SubresourceFilterAgentTest, RulesetUnset_RulesetNotAvailable) {
   StartLoadWithoutSettingActivationState();
   FinishLoad();
 
-  histogram_tester.ExpectUniqueSample(
-      kDocumentLoadActivationLevel,
-      static_cast<int>(mojom::ActivationLevel::kDisabled), 1);
   histogram_tester.ExpectTotalCount(kDocumentLoadRulesetIsAvailable, 0);
   histogram_tester.ExpectUniqueSample(
       kMainFrameLoadRulesetIsAvailableAnyActivationLevel, 0, 1);
@@ -338,9 +332,6 @@ TEST_F(SubresourceFilterAgentTest, DisabledByDefault_NoFilterIsInjected) {
   StartLoadWithoutSettingActivationState();
   FinishLoad();
 
-  histogram_tester.ExpectUniqueSample(
-      kDocumentLoadActivationLevel,
-      static_cast<int>(mojom::ActivationLevel::kDisabled), 1);
   histogram_tester.ExpectTotalCount(kDocumentLoadRulesetIsAvailable, 0);
   histogram_tester.ExpectUniqueSample(
       kMainFrameLoadRulesetIsAvailableAnyActivationLevel, 1, 1);
@@ -376,9 +367,6 @@ TEST_F(SubresourceFilterAgentTest,
   StartLoadAndSetActivationState(mojom::ActivationLevel::kEnabled);
   FinishLoad();
 
-  histogram_tester.ExpectUniqueSample(
-      kDocumentLoadActivationLevel,
-      static_cast<int>(mojom::ActivationLevel::kEnabled), 1);
   histogram_tester.ExpectUniqueSample(kDocumentLoadRulesetIsAvailable, 0, 1);
   histogram_tester.ExpectUniqueSample(
       kMainFrameLoadRulesetIsAvailableAnyActivationLevel, 0, 1);
@@ -396,7 +384,6 @@ TEST_F(SubresourceFilterAgentTest, EmptyDocumentLoad_NoFilterIsInjected) {
   StartLoadAndSetActivationState(mojom::ActivationLevel::kEnabled);
   FinishLoad();
 
-  histogram_tester.ExpectTotalCount(kDocumentLoadActivationLevel, 0);
   histogram_tester.ExpectTotalCount(kDocumentLoadRulesetIsAvailable, 0);
   histogram_tester.ExpectTotalCount(
       kMainFrameLoadRulesetIsAvailableAnyActivationLevel, 0);
@@ -434,11 +421,6 @@ TEST_F(SubresourceFilterAgentTest, Enabled_FilteringIsInEffectForOneLoad) {
   // the figures below, as they came after the original page load event. There
   // should be no samples recorded into subresource count histograms during the
   // final load where there is no activation.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kDocumentLoadActivationLevel),
-      ::testing::ElementsAre(
-          base::Bucket(static_cast<int>(mojom::ActivationLevel::kDisabled), 1),
-          base::Bucket(static_cast<int>(mojom::ActivationLevel::kEnabled), 1)));
   histogram_tester.ExpectUniqueSample(kDocumentLoadRulesetIsAvailable, 1, 1);
   histogram_tester.ExpectUniqueSample(
       kMainFrameLoadRulesetIsAvailableAnyActivationLevel, 1, 2);
@@ -481,9 +463,6 @@ TEST_F(SubresourceFilterAgentTest, Enabled_HistogramSamplesOverTwoLoads) {
     ExpectDocumentLoadStatisticsSent();
     FinishLoad();
 
-    histogram_tester.ExpectUniqueSample(
-        kDocumentLoadActivationLevel,
-        static_cast<int>(mojom::ActivationLevel::kEnabled), 2);
     histogram_tester.ExpectUniqueSample(kDocumentLoadRulesetIsAvailable, 1, 2);
     histogram_tester.ExpectUniqueSample(
         kMainFrameLoadRulesetIsAvailableAnyActivationLevel, 1, 2);
@@ -560,9 +539,6 @@ TEST_F(SubresourceFilterAgentTest, DryRun_ResourcesAreEvaluatedButNotFiltered) {
   ExpectDocumentLoadStatisticsSent();
   FinishLoad();
 
-  histogram_tester.ExpectUniqueSample(
-      kDocumentLoadActivationLevel,
-      static_cast<int>(mojom::ActivationLevel::kDryRun), 1);
   histogram_tester.ExpectUniqueSample(kDocumentLoadRulesetIsAvailable, 1, 1);
   histogram_tester.ExpectUniqueSample(
       kMainFrameLoadRulesetIsAvailableAnyActivationLevel, 1, 1);

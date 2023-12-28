@@ -190,7 +190,7 @@ class CONTENT_EXPORT ContextRecycler {
       set_priority_signals_override_bindings_;
 
   // everything here is owned by one of the unique_ptr's above.
-  std::vector<Bindings*> bindings_list_;
+  std::vector<raw_ptr<Bindings, VectorExperimental>> bindings_list_;
 
   std::unique_ptr<InterestGroupLazyFiller> interest_group_lazy_filler_;
   std::unique_ptr<BiddingBrowserSignalsLazyFiller>

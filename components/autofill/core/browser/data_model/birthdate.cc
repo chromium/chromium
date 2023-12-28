@@ -15,8 +15,8 @@ bool operator==(const Birthdate& a, const Birthdate& b) {
   return a.day_ == b.day_ && a.month_ == b.month_ && a.year_ == b.year_;
 }
 
-std::u16string Birthdate::GetRawInfo(ServerFieldType type) const {
-  DCHECK_EQ(GroupTypeOfServerFieldType(type), FieldTypeGroup::kBirthdateField);
+std::u16string Birthdate::GetRawInfo(FieldType type) const {
+  DCHECK_EQ(GroupTypeOfFieldType(type), FieldTypeGroup::kBirthdateField);
 
   switch (type) {
     case BIRTHDATE_DAY:
@@ -31,7 +31,7 @@ std::u16string Birthdate::GetRawInfo(ServerFieldType type) const {
   }
 }
 
-int Birthdate::GetRawInfoAsInt(ServerFieldType type) const {
+int Birthdate::GetRawInfoAsInt(FieldType type) const {
   switch (type) {
     case BIRTHDATE_DAY:
       return day_;
@@ -45,10 +45,10 @@ int Birthdate::GetRawInfoAsInt(ServerFieldType type) const {
   }
 }
 
-void Birthdate::SetRawInfoWithVerificationStatus(ServerFieldType type,
+void Birthdate::SetRawInfoWithVerificationStatus(FieldType type,
                                                  const std::u16string& value,
                                                  VerificationStatus status) {
-  DCHECK_EQ(GroupTypeOfServerFieldType(type), FieldTypeGroup::kBirthdateField);
+  DCHECK_EQ(GroupTypeOfFieldType(type), FieldTypeGroup::kBirthdateField);
 
   switch (type) {
     case BIRTHDATE_DAY:
@@ -67,7 +67,7 @@ void Birthdate::SetRawInfoWithVerificationStatus(ServerFieldType type,
 }
 
 void Birthdate::SetRawInfoAsIntWithVerificationStatus(
-    ServerFieldType type,
+    FieldType type,
     int value,
     VerificationStatus status) {
   auto ValueIfInRangeOrZero = [value](int lower_bound, int upper_bound) {
@@ -90,7 +90,7 @@ void Birthdate::SetRawInfoAsIntWithVerificationStatus(
   }
 }
 
-void Birthdate::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
+void Birthdate::GetSupportedTypes(FieldTypeSet* supported_types) const {
   supported_types->insert(BIRTHDATE_DAY);
   supported_types->insert(BIRTHDATE_MONTH);
   supported_types->insert(BIRTHDATE_4_DIGIT_YEAR);

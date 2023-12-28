@@ -8,41 +8,33 @@ import xml.dom.minidom
 
 import generate_histograms_variants_allowlist
 
-_EXPECTED_HEADER_FILE_CONTENT = (
+_EXPECTED_FILE_CONTENT = (
     """// Generated from generate_histograms_variants_allowlist.py. Do not edit!
 
 #ifndef TEST_TEST_H_
 #define TEST_TEST_H_
 
-#include <array>
-#include <stddef.h>
+#include <algorithm>
+#include <string_view>
 
 namespace test_namespace {
 
-extern const char* kTestNameVariantAllowList[];
-extern const size_t kTestNameVariantAllowListSize;
-
-}  // namespace test_namespace
-
-#endif  // TEST_TEST_H_
-""")
-
-_EXPECTED_SOURCE_FILE_CONTENT = (
-    """// Generated from generate_histograms_variants_allowlist.py. Do not edit!
-#include "test/test.h"
-
-namespace test_namespace {
-
-const char* kTestNameVariantAllowList[] = {
+inline constexpr std::string_view kTestNameVariantAllowList[] = {
   "All",
   "DownloadView",
   "PageInfoView",
 };
 
-const size_t kTestNameVariantAllowListSize =
-    std::size(kTestNameVariantAllowList);
+constexpr bool IsValidTestNameVariant(std::string_view s) {
+  return std::binary_search(
+    std::cbegin(kTestNameVariantAllowList),
+    std::cend(kTestNameVariantAllowList),
+    s);
+}
 
 }  // namespace test_namespace
+
+#endif  // TEST_TEST_H_
 """)
 
 _EXPECTED_VARIANT_LIST = [{
@@ -58,33 +50,23 @@ _EXPECTED_VARIANT_LIST = [{
 
 
 class VariantAllowListTest(unittest.TestCase):
-  def testGenerateHeaderFileContent(self):
-    header_filename = "test/test.h"
-    namespace = "test_namespace"
-
-    allow_list_name = "TestName"
-
-    content = generate_histograms_variants_allowlist._GenerateHeaderFileContent(
-        header_filename, namespace, allow_list_name)
-
-    self.assertEqual(_EXPECTED_HEADER_FILE_CONTENT, content)
-
   def testGenerateSourceFileContent(self):
-    header_filename = "test/test.h"
     namespace = "test_namespace"
 
     allow_list_name = "TestName"
 
+    # Provide an unsorted list to ensure the list gets sorted since the check
+    # function relies on being sorted.
     variant_list = [{
-        'name': 'All'
-    }, {
         'name': 'DownloadView'
+    }, {
+        'name': 'All'
     }, {
         'name': 'PageInfoView'
     }]
-    content = generate_histograms_variants_allowlist._GenerateSourceFileContent(
-        header_filename, namespace, variant_list, allow_list_name)
-    self.assertEqual(_EXPECTED_SOURCE_FILE_CONTENT, content)
+    content = generate_histograms_variants_allowlist._GenerateStaticFile(
+        "test/test.h", namespace, variant_list, allow_list_name)
+    self.assertEqual(_EXPECTED_FILE_CONTENT, content)
 
   def testGenerateVariantList(self):
     histograms = xml.dom.minidom.parseString("""

@@ -269,7 +269,7 @@ class BluetoothAdvertisementServiceProviderImpl
     dbus::MessageWriter variant_writer(NULL);
 
     writer.OpenVariant("ay", &variant_writer);
-    variant_writer.AppendArrayOfBytes(value.data(), value.size());
+    variant_writer.AppendArrayOfBytes(value);
     writer.CloseContainer(&variant_writer);
 
     std::move(response_sender).Run(std::move(response));
@@ -361,17 +361,17 @@ class BluetoothAdvertisementServiceProviderImpl
 
   void AppendManufacturerDataVariant(dbus::MessageWriter* writer) {
     DCHECK(manufacturer_data_);
-    dbus::MessageWriter array_writer(NULL);
+    dbus::MessageWriter array_writer(nullptr);
     writer->OpenArray("{qv}", &array_writer);
     for (const auto& m : *manufacturer_data_) {
-      dbus::MessageWriter entry_writer(NULL);
+      dbus::MessageWriter entry_writer(nullptr);
 
       array_writer.OpenDictEntry(&entry_writer);
 
       entry_writer.AppendUint16(m.first);
-      dbus::MessageWriter variant_writer(NULL);
+      dbus::MessageWriter variant_writer(nullptr);
       entry_writer.OpenVariant("ay", &variant_writer);
-      variant_writer.AppendArrayOfBytes(m.second.data(), m.second.size());
+      variant_writer.AppendArrayOfBytes(m.second);
       entry_writer.CloseContainer(&variant_writer);
 
       array_writer.CloseContainer(&entry_writer);
@@ -381,17 +381,17 @@ class BluetoothAdvertisementServiceProviderImpl
 
   void AppendServiceDataVariant(dbus::MessageWriter* writer) {
     DCHECK(service_data_);
-    dbus::MessageWriter array_writer(NULL);
+    dbus::MessageWriter array_writer(nullptr);
     writer->OpenArray("{sv}", &array_writer);
     for (const auto& m : *service_data_) {
-      dbus::MessageWriter entry_writer(NULL);
+      dbus::MessageWriter entry_writer(nullptr);
 
       array_writer.OpenDictEntry(&entry_writer);
 
       entry_writer.AppendString(m.first);
-      dbus::MessageWriter variant_writer(NULL);
+      dbus::MessageWriter variant_writer(nullptr);
       entry_writer.OpenVariant("ay", &variant_writer);
-      variant_writer.AppendArrayOfBytes(m.second.data(), m.second.size());
+      variant_writer.AppendArrayOfBytes(m.second);
       entry_writer.CloseContainer(&variant_writer);
 
       array_writer.CloseContainer(&entry_writer);
@@ -411,7 +411,7 @@ class BluetoothAdvertisementServiceProviderImpl
       entry_writer.AppendByte(m.first);
       dbus::MessageWriter variant_writer(nullptr);
       entry_writer.OpenVariant("ay", &variant_writer);
-      variant_writer.AppendArrayOfBytes(m.second.data(), m.second.size());
+      variant_writer.AppendArrayOfBytes(m.second);
       entry_writer.CloseContainer(&variant_writer);
 
       array_writer.CloseContainer(&entry_writer);

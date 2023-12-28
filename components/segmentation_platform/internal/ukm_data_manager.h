@@ -35,8 +35,9 @@ class UkmDataManager {
 
   // Initializes UKM database and the observer of all UKM events.
   virtual void Initialize(const base::FilePath& database_path,
-                          bool in_memory,
-                          UkmObserver* ukm_observer) = 0;
+                          bool in_memory) = 0;
+
+  virtual void StartObservation(UkmObserver* ukm_observer) = 0;
 
   // Returns true when UKM engine is usable. If false, then UKM based engine is
   // disabled and this class is a no-op. UkmObserver, UrlSignalHandler and

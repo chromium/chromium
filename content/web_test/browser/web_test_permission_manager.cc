@@ -296,7 +296,7 @@ WebTestPermissionManager::GetPermissionStatusForEmbeddedRequester(
 }
 
 WebTestPermissionManager::SubscriptionId
-WebTestPermissionManager::SubscribePermissionStatusChange(
+WebTestPermissionManager::SubscribeToPermissionStatusChange(
     blink::PermissionType permission,
     RenderProcessHost* render_process_host,
     RenderFrameHost* render_frame_host,
@@ -324,7 +324,7 @@ WebTestPermissionManager::SubscribePermissionStatusChange(
   return id;
 }
 
-void WebTestPermissionManager::UnsubscribePermissionStatusChange(
+void WebTestPermissionManager::UnsubscribeFromPermissionStatusChange(
     SubscriptionId subscription_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

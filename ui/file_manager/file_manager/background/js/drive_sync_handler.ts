@@ -16,6 +16,7 @@ import {toFilesAppURL} from '../../common/js/url_constants.js';
 import {visitURL} from '../../common/js/util.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {MetadataModelInterface} from '../../externs/metadata_model.js';
+import type {MetadataKey} from '../../foreground/js/metadata/metadata_item.js';
 import {getStore} from '../../state/store.js';
 
 /**
@@ -100,13 +101,15 @@ export class DriveSyncHandlerImpl extends EventTarget {
 
     if (entriesToUpdate.length) {
       this.metadataModel_?.notifyEntriesChanged(entriesToUpdate);
+      // TODO(austinct): Check if we can remove the `as MetadataKey[]` assertion
+      // once we only have typescript bindings for fileManagerPrivate.
       this.metadataModel_?.get(entriesToUpdate, [
         SYNC_STATUS,
         PROGRESS,
         AVAILABLE_OFFLINE,
         PINNED,
         CAN_PIN,
-      ]);
+      ] as MetadataKey[]);
     }
 
     this.updateCompletedRateLimiter_.run();
@@ -146,8 +149,10 @@ export class DriveSyncHandlerImpl extends EventTarget {
       return [null, 0];
     }
 
-    const metadata =
-        this.metadataModel_?.getCache([entry], [SYNC_COMPLETED_TIME])[0];
+    // TODO(austinct): Check if we can remove the `as MetadataKey` assertion
+    // once we only have typescript bindings for fileManagerPrivate.
+    const metadata = this.metadataModel_?.getCache(
+        [entry], [SYNC_COMPLETED_TIME as MetadataKey])[0];
 
     return [
       unwrapEntry(entry) as Entry,

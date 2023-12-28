@@ -19,7 +19,6 @@ class Window;
 
 namespace gfx {
 class Rect;
-class Transform;
 }  // namespace gfx
 
 namespace views {
@@ -65,12 +64,6 @@ void ImmediatelyCloseWidgetOnExit(std::unique_ptr<views::Widget> widget);
 // window's transient hierarchy.
 gfx::RectF GetUnionScreenBoundsForWindow(aura::Window* window);
 
-// Applies the `transform` to `window` and all of its transient children. Note
-// `transform` is the transform that is applied to `window` and needs to be
-// adjusted for the transient child windows.
-ASH_EXPORT void SetTransform(aura::Window* window,
-                             const gfx::Transform& transform);
-
 // Maximize the window if it is snapped without animation.
 void MaximizeIfSnapped(aura::Window* window);
 
@@ -84,7 +77,6 @@ gfx::Rect GetGridBoundsInScreen(
     aura::Window* target_root,
     std::optional<SplitViewDragIndicators::WindowDraggingState>
         window_dragging_state,
-    bool divider_changed,
     bool account_for_hotseat);
 
 // Gets the bounds of a window if it were to be snapped or about to be snapped

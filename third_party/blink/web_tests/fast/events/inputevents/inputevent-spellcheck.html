@@ -16,16 +16,116 @@ test(() => {
       internals.setMarker(document, selection.getRangeAt(0), 'Spelling');
       const editable = document.getElementById('editable');
 
+      let beforeinputDispatched = false;
       editable.addEventListener('beforeinput', (event) => {
+        beforeinputDispatched = true;
         assert_equals(event.inputType, 'insertReplacementText');
         assert_equals(event.dataTransfer.getData('text/plain'), 'apple');
         assert_equals(event.getTargetRanges().length, 1);
       });
 
+      let inputDispatched = false;
+      editable.addEventListener('input', (event) => {
+        inputDispatched = true;
+      });
+
       internals.replaceMisspelled(document, 'apple');
+
+      assert_true(beforeinputDispatched);
+      assert_true(inputDispatched);
     },
     '<div contenteditable id="editable">apple| </div>');
 }, 'spellcheck-replace-in-contenteditable');
+
+test(() => {
+  assert_not_equals(window.internals,
+                    undefined,
+                    'This test requires internals.');
+  assert_selection(
+    [
+      '<div contenteditable>',
+        '<span style="color: rgb(255, 0, 0);">',
+          'this is a ^appla|.',
+        '</span>',
+      '</div>',
+    ],
+    selection => {
+      const document = selection.document;
+      internals.setMarker(document, selection.getRangeAt(0), 'Spelling');
+      const editable = document.querySelector('div');
+
+      let beforeinputDispatched = false;
+      editable.addEventListener('beforeinput', (event) => {
+        beforeinputDispatched = true;
+        assert_equals(event.inputType, 'insertReplacementText');
+        assert_equals(event.dataTransfer.getData('text/plain'), 'apple');
+        assert_equals(event.getTargetRanges().length, 1);
+      });
+
+      let inputDispatched = false;
+      editable.addEventListener('input', (event) => {
+        inputDispatched = true;
+      });
+
+      internals.replaceMisspelled(document, 'apple');
+
+      assert_true(beforeinputDispatched);
+      assert_true(inputDispatched);
+    },
+    [
+      '<div contenteditable>',
+        '<span style="color: rgb(255, 0, 0);">',
+          'this is a apple|.',
+        '</span>',
+      '</div>',
+    ],
+  );
+}, 'spellcheck-replace-contenteditable-with-rgb-color.');
+
+test(() => {
+  assert_not_equals(window.internals,
+                    undefined,
+                    'This test requires internals.');
+  assert_selection(
+    [
+      '<div contenteditable style="--darkColor__06400c: #a3da9b;">',
+        '<span style="color: var(--darkColor__06400c);">',
+          'this is a ^appla|.',
+        '</span>',
+      '</div>',
+    ],
+    selection => {
+      const document = selection.document;
+      internals.setMarker(document, selection.getRangeAt(0), 'Spelling');
+      const editable = document.querySelector('div');
+
+      let beforeinputDispatched = false;
+      editable.addEventListener('beforeinput', (event) => {
+        beforeinputDispatched = true;
+        assert_equals(event.inputType, 'insertReplacementText');
+        assert_equals(event.dataTransfer.getData('text/plain'), 'apple');
+        assert_equals(event.getTargetRanges().length, 1);
+      });
+
+      let inputDispatched = false;
+      editable.addEventListener('input', (event) => {
+        inputDispatched = true;
+      });
+
+      internals.replaceMisspelled(document, 'apple');
+
+      assert_true(beforeinputDispatched);
+      assert_true(inputDispatched);
+    },
+    [
+      '<div contenteditable style="--darkColor__06400c: #a3da9b;">',
+        '<span style="color: var(--darkColor__06400c);">',
+          'this is a apple|.',
+        '</span>',
+      '</div>',
+    ],
+  );
+}, 'spellcheck-replace-contenteditable-with-css-variables');
 
 test(() => {
   assert_not_equals(window.internals,
@@ -43,13 +143,23 @@ test(() => {
       const range = selection1.getRangeAt(0);
       internals.setMarker(document, range, 'Spelling');
 
+      let beforeinputDispatched = false;
       textarea.addEventListener('beforeinput', (event) => {
+        beforeinputDispatched = true;
         assert_equals(event.inputType, 'insertReplacementText');
         assert_equals(event.data, 'apple');
         assert_equals(event.getTargetRanges().length, 0);
       });
 
+      let inputDispatched = false;
+      textarea.addEventListener('input', (event) => {
+        inputDispatched = true;
+      });
+
       internals.replaceMisspelled(document, 'apple');
+
+      assert_true(beforeinputDispatched);
+      assert_true(inputDispatched);
     },
     '<textarea id="ta">apple| </textarea>');
 }, 'spellcheck-replace-in-textarea');

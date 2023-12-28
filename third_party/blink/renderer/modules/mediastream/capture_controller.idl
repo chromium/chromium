@@ -38,7 +38,7 @@ interface CaptureController : EventTarget {
   [RuntimeEnabled=CapturedSurfaceControl] long getMaxZoomLevel();
 
   [RuntimeEnabled=CapturedSurfaceControl, CallWith = ScriptState] Promise<long> getZoomLevel();
-  [RuntimeEnabled=CapturedSurfaceControl]
+  [RuntimeEnabled=CapturedSurfaceControl, CallWith = ScriptState]
   Promise<undefined> setZoomLevel(long zoomLevel);
 
   [RuntimeEnabled=CapturedSurfaceControl]

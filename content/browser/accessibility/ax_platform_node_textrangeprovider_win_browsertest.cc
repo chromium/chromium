@@ -2735,6 +2735,60 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       MoveEndpointByUnitLineInertSpan) {
+  // Spans need to be in the same line: see https://crbug.com/1511390.
+  LoadInitialAccessibilityTreeFromHtml(
+      R"HTML(<!DOCTYPE html>
+      <div>
+        <div>first line</div>
+        <span id="span1">go </span><span inert>inert1</span><span inert>inert2</span><span>blue</span>
+        <div>last line</div>
+      </div>)HTML");
+  BrowserAccessibility* start_node =
+      FindNode(ax::mojom::Role::kStaticText, "first line");
+  ASSERT_NE(nullptr, start_node);
+
+  BrowserAccessibility* end_node =
+      FindNode(ax::mojom::Role::kStaticText, "last line");
+  ASSERT_NE(nullptr, start_node);
+
+  // Navigating forward to the next line.
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(*start_node, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"first line");
+
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(text_range_provider,
+                                   TextPatternRangeEndpoint_End, TextUnit_Line,
+                                   /*count*/ 1,
+                                   /*expected_text*/ L"first line\ngo blue",
+                                   /*expected_count*/ 1);
+
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Line,
+      /*count*/ 1,
+      /*expected_text*/ L"go blue",
+      /*expected_count*/ 1);
+
+  // Navigating to the previous line.
+  GetTextRangeProviderFromTextNode(*end_node, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"last line");
+
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Line,
+      /*count*/ -1,
+      /*expected_text*/ L"go blue\nlast line",
+      /*expected_count*/ -1);
+
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(text_range_provider,
+                                   TextPatternRangeEndpoint_End, TextUnit_Line,
+                                   /*count*/ -1,
+                                   /*expected_text*/ L"go blue",
+                                   /*expected_count*/ -1);
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                        IFrameTraversal) {
   LoadInitialAccessibilityTreeFromUrl(embedded_test_server()->GetURL(
       "/accessibility/html/iframe-cross-process.html"));

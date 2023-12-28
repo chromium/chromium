@@ -64,7 +64,7 @@ class ArcIioSensorBridge : public KeyedService,
   void OnGetSwitchStates(
       std::optional<chromeos::PowerManagerClient::SwitchStates> states);
 
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
   std::optional<bool> is_tablet_mode_on_;
 

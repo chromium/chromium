@@ -153,10 +153,12 @@ void LocaleSwitchScreen::HideImpl() {
 void LocaleSwitchScreen::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
     const GoogleServiceAuthError& error) {
-  if (account_info.gaia != gaia_id_)
+  if (error == GoogleServiceAuthError::AuthErrorNone()) {
     return;
-  if (error == GoogleServiceAuthError::AuthErrorNone())
+  }
+  if (account_info.gaia != gaia_id_) {
     return;
+  }
   ResetState();
   exit_callback_.Run(Result::kLocaleFetchFailed);
 }

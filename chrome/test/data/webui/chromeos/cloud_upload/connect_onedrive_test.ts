@@ -4,11 +4,11 @@
 
 import 'chrome://cloud-upload/connect_onedrive.js';
 
-import {DialogPage, OperationType} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
+import {UserAction} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
 import {ConnectOneDriveElement} from 'chrome://cloud-upload/connect_onedrive.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {CloudUploadTestBrowserProxy, ProxyOptions} from './cloud_upload_test_browser_proxy.js';
 
@@ -57,8 +57,9 @@ suite('<connect-onedrive>', () => {
       officeWebAppInstalled: true,
       installOfficeWebAppResult: true,
       odfsMounted: true,
-      dialogPage: DialogPage.kConnectToOneDrive,
-      operationType: OperationType.kMove,
+      dialogSpecificArgs: {
+        connectToOneDriveDialogArgs: {},
+      },
     });
 
     const svgSuccess = connectOneDriveApp.$('#success')!;
@@ -85,8 +86,9 @@ suite('<connect-onedrive>', () => {
       officeWebAppInstalled: true,
       installOfficeWebAppResult: true,
       odfsMounted: true,
-      dialogPage: DialogPage.kConnectToOneDrive,
-      operationType: OperationType.kMove,
+      dialogSpecificArgs: {
+        connectToOneDriveDialogArgs: {},
+      },
     });
 
     testProxy.handler.setResultFor('signInToOneDrive', {success: false});
@@ -104,5 +106,55 @@ suite('<connect-onedrive>', () => {
 
     await testProxy.handler.whenCalled('signInToOneDrive');
     assertFalse(errorMessage.hasAttribute('hidden'));
+  });
+
+  /**
+   * Test that clicking the cancel button triggers the right
+   * `respondWithUserActionAndClose` mojo request.
+   */
+  test('Cancel', async () => {
+    await setUp({
+      fileNames: [],
+      officeWebAppInstalled: true,
+      installOfficeWebAppResult: true,
+      odfsMounted: true,
+      dialogSpecificArgs: {
+        connectToOneDriveDialogArgs: {},
+      },
+    });
+
+
+    connectOneDriveApp.$('.cancel-button').click();
+    await testProxy.handler.whenCalled('respondWithUserActionAndClose');
+    assertEquals(
+        1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+    assertDeepEquals(
+        [UserAction.kCancel],
+        testProxy.handler.getArgs('respondWithUserActionAndClose'));
+  });
+
+  /**
+   * Test that an Escape keydown triggers the right
+   * `respondWithUserActionAndClose` mojo request.
+   */
+  test('Escape', async () => {
+    await setUp({
+      fileNames: [],
+      officeWebAppInstalled: true,
+      installOfficeWebAppResult: true,
+      odfsMounted: true,
+      dialogSpecificArgs: {
+        connectToOneDriveDialogArgs: {},
+      },
+    });
+
+
+    document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
+    await testProxy.handler.whenCalled('respondWithUserActionAndClose');
+    assertEquals(
+        1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+    assertDeepEquals(
+        [UserAction.kCancel],
+        testProxy.handler.getArgs('respondWithUserActionAndClose'));
   });
 });

@@ -13,6 +13,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_heuristics_data.h"
 #include "components/commerce/core/mock_shopping_service.h"
@@ -54,7 +55,8 @@ void GetEvaluationMerchantCartWithUtmSource(
     std::vector<chrome_cart::mojom::MerchantCartPtr> found) {
   EXPECT_EQ(1U, found.size());
   EXPECT_EQ(expected_has_utm_source,
-            found[0]->cart_url.spec().find("utm_source") != std::string::npos);
+            found[0]->cart_url.spec().find(commerce::kUTMSourceLabel) !=
+                std::string::npos);
   if (expected_has_utm_source) {
     EXPECT_EQ(expected_has_utm_source,
               found[0]->cart_url.spec().find(
@@ -76,10 +78,14 @@ cart_db::ChromeCartContentProto BuildProto(const char* key,
 
 const char kFakeMerchantKey[] = "Fake:foo.com";
 const char kFakeMerchant[] = "foo.com";
-const char kFakeMerchantURL[] = "https://www.foo.com";
+const char kFakeMerchantURL[] =
+    "https://www.foo.com/"
+    "?utm_source=chrome&utm_medium=app&utm_campaign=chrome-cart";
 const char kMockMerchantBKey[] = "bar.com";
 const char kMockMerchantB[] = "bar.com";
-const char kMockMerchantURLB[] = "https://www.bar.com";
+const char kMockMerchantURLB[] =
+    "https://www.bar.com/"
+    "?utm_source=chrome&utm_medium=app&utm_campaign=chrome-cart";
 const cart_db::ChromeCartContentProto kFakeProto =
     BuildProto(kFakeMerchantKey, kFakeMerchant, kFakeMerchantURL);
 const cart_db::ChromeCartContentProto kMockProtoB =
@@ -99,10 +105,7 @@ class CartHandlerTest : public testing::Test {
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         fake_merchant_url_(kFakeMerchantURL),
         mock_merchant_url_(kMockMerchantURLB) {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        ntp_features::kNtpChromeCartModule,
-        {{ntp_features::kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam,
-          "false"}});
+    feature_list_.InitAndEnableFeature(ntp_features::kNtpChromeCartModule);
   }
 
   void SetUp() override {
@@ -443,9 +446,7 @@ class CartHandlerNtpModuleFakeDataTest : public CartHandlerTest {
     // if a feature is enabled.
     feature_list_.InitAndEnableFeatureWithParameters(
         ntp_features::kNtpChromeCartModule,
-        {{"NtpChromeCartModuleDataParam", "fake"},
-         {ntp_features::kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam,
-          "false"}});
+        {{"NtpChromeCartModuleDataParam", "fake"}});
   }
 
  private:
@@ -491,9 +492,7 @@ class CartHandlerNtpModuleDiscountTest : public CartHandlerTest {
     // if a feature is enabled.
     feature_list_.InitAndEnableFeatureWithParameters(
         ntp_features::kNtpChromeCartModule,
-        {{"NtpChromeCartModuleAbandonedCartDiscountParam", "true"},
-         {ntp_features::kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam,
-          "false"}});
+        {{"NtpChromeCartModuleAbandonedCartDiscountParam", "true"}});
   }
 
   void SetUp() override {
@@ -702,9 +701,7 @@ class CartHandlerCartURLUTMTest : public CartHandlerTest {
     // if a feature is enabled.
     feature_list_.InitAndEnableFeatureWithParameters(
         ntp_features::kNtpChromeCartModule,
-        {{"NtpChromeCartModuleAbandonedCartDiscountParam", "true"},
-         {ntp_features::kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam,
-          "true"}});
+        {{"NtpChromeCartModuleAbandonedCartDiscountParam", "true"}});
   }
 
   void SetUp() override {

@@ -113,6 +113,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       const GURL& browser_signal_render_url,
       const std::vector<GURL>& browser_signal_ad_components,
       uint32_t browser_signal_bidding_duration_msecs,
+      bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
       const absl::optional<base::TimeDelta> seller_timeout,
       uint64_t trace_id,
       mojo::PendingRemote<auction_worklet::mojom::ScoreAdClient>
@@ -174,6 +175,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     // ScoringSignals code with BidderWorklets.
     std::vector<std::string> browser_signal_ad_components;
     uint32_t browser_signal_bidding_duration_msecs;
+    bool browser_signal_for_debugging_only_in_cooldown_or_lockout;
     absl::optional<base::TimeDelta> seller_timeout;
     uint64_t trace_id;
 
@@ -334,6 +336,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         const GURL& browser_signal_render_url,
         const std::vector<std::string>& browser_signal_ad_components,
         uint32_t browser_signal_bidding_duration_msecs,
+        bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
         const absl::optional<base::TimeDelta> seller_timeout,
         uint64_t trace_id,
         base::ScopedClosureRunner cleanup_score_ad_task,

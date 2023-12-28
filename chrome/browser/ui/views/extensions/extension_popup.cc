@@ -413,5 +413,5 @@ void ExtensionPopup::HandleCloseExtensionHost(extensions::ExtensionHost* host) {
   CloseDeferredIfNecessary();
 }
 
-BEGIN_METADATA(ExtensionPopup, views::BubbleDialogDelegateView)
+BEGIN_METADATA(ExtensionPopup)
 END_METADATA

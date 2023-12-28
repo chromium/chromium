@@ -346,7 +346,11 @@ template("msvc_toolchain") {
 
         default_output_extension = ".lib"
         output_prefix = "lib"
-        default_output_dir = "{{root_out_dir}}"
+
+        # Static libraries go in the target out directory by default so we can
+        # generate different targets with the same name and not have them
+        # collide.
+        default_output_dir = "{{target_out_dir}}"
         description = "RUST(STATICLIB) {{output}}"
         outputs = [ libname ]
 
@@ -368,7 +372,11 @@ template("msvc_toolchain") {
 
         # This is prefixed unconditionally in `rlibname`.
         # output_prefix = "lib"
-        default_output_dir = "{{root_out_dir}}"
+
+        # Static libraries go in the target out directory by default so we can
+        # generate different targets with the same name and not have them
+        # collide.
+        default_output_dir = "{{target_out_dir}}"
         description = "RUST {{output}}"
         outputs = [ rlibname ]
 

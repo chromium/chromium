@@ -13,7 +13,6 @@ APP_ENUM_TO_STRING(AppType,
                    kCrostini,
                    kChromeApp,
                    kWeb,
-                   kMacOs,
                    kPluginVm,
                    kStandaloneBrowser,
                    kRemote,
@@ -156,6 +155,10 @@ bool App::operator==(const App& other) const {
     return false;
   }
 
+  if (this->extra != other.extra) {
+    return false;
+  }
+
   return true;
 }
 
@@ -211,6 +214,10 @@ AppPtr App::Clone() const {
   app->supported_locales = supported_locales;
   app->selected_locale = selected_locale;
 
+  if (extra.has_value()) {
+    app->extra = extra->Clone();
+  }
+
   return app;
 }
 
@@ -242,8 +249,6 @@ ApplicationType ConvertAppTypeToProtoApplicationType(AppType app_type) {
       return ApplicationType::APPLICATION_TYPE_CHROME_APP;
     case AppType::kWeb:
       return ApplicationType::APPLICATION_TYPE_WEB;
-    case AppType::kMacOs:
-      return ApplicationType::APPLICATION_TYPE_MAC_OS;
     case AppType::kPluginVm:
       return ApplicationType::APPLICATION_TYPE_PLUGIN_VM;
     case AppType::kStandaloneBrowser:

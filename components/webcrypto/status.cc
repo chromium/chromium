@@ -6,7 +6,6 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 
 namespace webcrypto {
@@ -42,20 +41,20 @@ Status Status::ErrorJwkNotDictionary() {
                 "JWK input could not be parsed to a JSON dictionary");
 }
 
-Status Status::ErrorJwkMemberMissing(base::StringPiece member_name) {
+Status Status::ErrorJwkMemberMissing(std::string_view member_name) {
   return Status(blink::kWebCryptoErrorTypeData,
                 base::StrCat({"The required JWK member \"", member_name,
                               "\" was missing"}));
 }
 
-Status Status::ErrorJwkMemberWrongType(base::StringPiece member_name,
-                                       base::StringPiece expected_type) {
+Status Status::ErrorJwkMemberWrongType(std::string_view member_name,
+                                       std::string_view expected_type) {
   return Status(blink::kWebCryptoErrorTypeData,
                 base::StrCat({"The JWK member \"", member_name, "\" must be a ",
                               expected_type}));
 }
 
-Status Status::ErrorJwkBase64Decode(base::StringPiece member_name) {
+Status Status::ErrorJwkBase64Decode(std::string_view member_name) {
   return Status(
       blink::kWebCryptoErrorTypeData,
       base::StrCat({"The JWK member \"", member_name,
@@ -105,7 +104,7 @@ Status Status::ErrorJwkUseAndKeyopsInconsistent() {
                 "but are inconsistent with each other.");
 }
 
-Status Status::ErrorJwkUnexpectedKty(base::StringPiece expected) {
+Status Status::ErrorJwkUnexpectedKty(std::string_view expected) {
   return Status(
       blink::kWebCryptoErrorTypeData,
       base::StrCat({"The JWK \"kty\" member was not \"", expected, "\""}));
@@ -117,13 +116,13 @@ Status Status::ErrorJwkIncorrectKeyLength() {
                 "of key data for the given algorithm.");
 }
 
-Status Status::ErrorJwkEmptyBigInteger(base::StringPiece member_name) {
+Status Status::ErrorJwkEmptyBigInteger(std::string_view member_name) {
   return Status(
       blink::kWebCryptoErrorTypeData,
       base::StrCat({"The JWK \"", member_name, "\" member was empty."}));
 }
 
-Status Status::ErrorJwkBigIntegerHasLeadingZero(base::StringPiece member_name) {
+Status Status::ErrorJwkBigIntegerHasLeadingZero(std::string_view member_name) {
   return Status(blink::kWebCryptoErrorTypeData,
                 base::StrCat({"The JWK \"", member_name,
                               "\" member contained a leading zero."}));
@@ -231,7 +230,7 @@ Status Status::ErrorUnsupported() {
   return ErrorUnsupported("The requested operation is unsupported");
 }
 
-Status Status::ErrorUnsupported(base::StringPiece message) {
+Status Status::ErrorUnsupported(std::string_view message) {
   return Status(blink::kWebCryptoErrorTypeNotSupported, message);
 }
 
@@ -327,7 +326,7 @@ Status Status::ErrorEcKeyInvalid() {
                 "The imported EC key is invalid");
 }
 
-Status Status::JwkOctetStringWrongLength(base::StringPiece member_name,
+Status Status::JwkOctetStringWrongLength(std::string_view member_name,
                                          size_t expected_length,
                                          size_t actual_length) {
   return Status(
@@ -416,7 +415,7 @@ Status Status::ErrorX25519LengthTooLong() {
 }
 
 Status::Status(blink::WebCryptoErrorType error_type,
-               base::StringPiece error_details_utf8)
+               std::string_view error_details_utf8)
     : type_(TYPE_ERROR),
       error_type_(error_type),
       error_details_(error_details_utf8) {}

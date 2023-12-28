@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "components/segmentation_platform/internal/data_collection/training_data_collector.h"
@@ -55,7 +56,8 @@ class ExecutionService {
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       const base::flat_set<SegmentId>& legacy_output_segment_ids,
       ModelProviderFactory* model_provider_factory,
-      std::vector<ModelExecutionScheduler::Observer*>&& observers,
+      std::vector<raw_ptr<ModelExecutionScheduler::Observer,
+                          VectorExperimental>>&& observers,
       const PlatformOptions& platform_options,
       std::unique_ptr<processing::InputDelegateHolder> input_delegate_holder,
       PrefService* profile_prefs,

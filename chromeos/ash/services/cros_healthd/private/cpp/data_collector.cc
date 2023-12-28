@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -182,7 +183,11 @@ void DataCollector::GetTouchscreenDevices(
 
 void DataCollector::GetTouchpadLibraryName(
     GetTouchpadLibraryNameCallback callback) {
-  std::move(callback).Run(delegate_->GetTouchpadLibraryName());
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&Delegate::GetTouchpadLibraryName,
+                     base::Unretained(delegate_)),
+      std::move(callback));
 }
 
 void DataCollector::SetPrivacyScreenState(

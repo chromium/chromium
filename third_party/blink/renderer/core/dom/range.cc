@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
+#include "third_party/blink/renderer/core/page/scrolling/sync_scroll_attempt_heuristic.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -1611,6 +1612,9 @@ void Range::expand(const String& unit, ExceptionState& exception_state) {
 }
 
 DOMRectList* Range::getClientRects() const {
+  // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
+  // impact is understood.
+  SyncScrollAttemptHeuristic::DidAccessScrollOffset();
   DisplayLockUtilities::ScopedForcedUpdate force_locks(
       this, DisplayLockContext::ForcedPhase::kLayout);
   owner_document_->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
@@ -1622,6 +1626,9 @@ DOMRectList* Range::getClientRects() const {
 }
 
 DOMRect* Range::getBoundingClientRect() const {
+  // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
+  // impact is understood.
+  SyncScrollAttemptHeuristic::DidAccessScrollOffset();
   return DOMRect::FromRectF(BoundingRect());
 }
 

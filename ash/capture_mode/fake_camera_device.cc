@@ -341,7 +341,7 @@ class FakeCameraDevice::Subscription
   }
 
   // The camera device which owns this object.
-  const raw_ptr<FakeCameraDevice, ExperimentalAsh> owner_device_;
+  const raw_ptr<FakeCameraDevice> owner_device_;
 
   mojo::Receiver<video_capture::mojom::PushVideoStreamSubscription> receiver_{
       this};

@@ -79,7 +79,8 @@ class SyncExplicitPassphraseClientLacrosTest : public testing::Test {
         .WillByDefault(Return(true));
     ON_CALL(*sync_service_.GetMockUserSettings(), IsUsingExplicitPassphrase())
         .WillByDefault(Return(true));
-    ON_CALL(*sync_service_.GetMockUserSettings(), GetDecryptionNigoriKey())
+    ON_CALL(*sync_service_.GetMockUserSettings(),
+            GetExplicitPassphraseDecryptionNigoriKey())
         .WillByDefault(Return(ByMove(nullptr)));
     for (auto& observer : sync_service_observers_) {
       observer.OnStateChanged(&sync_service_);
@@ -91,7 +92,8 @@ class SyncExplicitPassphraseClientLacrosTest : public testing::Test {
         .WillByDefault(Return(false));
     ON_CALL(*sync_service_.GetMockUserSettings(), IsUsingExplicitPassphrase())
         .WillByDefault(Return(true));
-    ON_CALL(*sync_service_.GetMockUserSettings(), GetDecryptionNigoriKey())
+    ON_CALL(*sync_service_.GetMockUserSettings(),
+            GetExplicitPassphraseDecryptionNigoriKey())
         .WillByDefault(MakeTestNigoriKey);
     for (auto& observer : sync_service_observers_) {
       observer.OnStateChanged(&sync_service_);
@@ -154,7 +156,8 @@ TEST_F(SyncExplicitPassphraseClientLacrosTest,
 TEST_F(SyncExplicitPassphraseClientLacrosTest, ShouldGetNigoriKeyFromAsh) {
   MimicLacrosPassphraseRequired();
 
-  EXPECT_CALL(user_settings(), SetDecryptionNigoriKey(NotNull()));
+  EXPECT_CALL(user_settings(),
+              SetExplicitPassphraseDecryptionNigoriKey(NotNull()));
   client_ash().MimicPassphraseAvailable(MakeTestMojoNigoriKey());
 }
 
@@ -164,8 +167,9 @@ TEST_F(SyncExplicitPassphraseClientLacrosTest,
   // client_ash() will notify observers that passphrase is available, but expose
   // nullptr when GetDecryptionNigoriKey() is called. Lacros client should
   // handle this nullptr and shouldn't call
-  // SyncUserSettings::SetDecryptionNigoriKey().
-  EXPECT_CALL(user_settings(), SetDecryptionNigoriKey(_)).Times(0);
+  // SyncUserSettings::SetExplicitPassphraseDecryptionNigoriKey().
+  EXPECT_CALL(user_settings(), SetExplicitPassphraseDecryptionNigoriKey(_))
+      .Times(0);
   client_ash().MimicPassphraseAvailable(/*nigori_key=*/nullptr);
 }
 
@@ -174,7 +178,7 @@ TEST_F(SyncExplicitPassphraseClientLacrosTest,
   MimicLacrosPassphraseAvailable();
   // Mimic rare corner case, when IsPassphraseAvailable() false positive
   // detection happens.
-  ON_CALL(user_settings(), GetDecryptionNigoriKey())
+  ON_CALL(user_settings(), GetExplicitPassphraseDecryptionNigoriKey())
       .WillByDefault(Return(ByMove(nullptr)));
   client_ash().MimicPassphraseRequired(MakeTestMojoNigoriKey());
   client_lacros().FlushMojoForTesting();

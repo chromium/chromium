@@ -9,7 +9,7 @@
 #import "base/check.h"
 #import "components/search_engines/search_engine_choice_utils.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/browser/policy/browser_state_policy_connector.h"
+#import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"

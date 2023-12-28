@@ -62,7 +62,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 
 /**
  * Contains the logic for the TouchToFill component. It sets the state of the model and reacts to
@@ -85,6 +88,8 @@ class TouchToFillMediator {
     private BottomSheetFocusHelper mBottomSheetFocusHelper;
     private final ImageFetcher mImageFetcher;
     private CallbackController mCallbackController;
+    private CyclicBarrier mAvatarFetcherCyclicBarrier;
+    private List<Bitmap> mAvatarImages = Collections.synchronizedList(new ArrayList<>());
 
     public TouchToFillMediator(ImageFetcher imageFetcher) {
         mImageFetcher = imageFetcher;
@@ -136,11 +141,15 @@ class TouchToFillMediator {
                                         .getPasswordManagerIcon())
                         .build();
         sheetItems.add(new ListItem(TouchToFillProperties.ItemType.HEADER, headerModel));
-
-        if (getSharedPasswordsThatRequireNotification(credentials).size() > 0) {
+        List<Credential> sharedUnnotifiedCredentials =
+                getSharedPasswordsThatRequireNotification(credentials);
+        if (sharedUnnotifiedCredentials.size() > 0) {
             // TODO(http://crbug.com/1504098): support the case when multiple senders have shared
             // passwords.
-            requestSenderProfileImage(credentials.get(0).getSenderProfileImageUrl(), headerModel);
+            mCallbackController = new CallbackController();
+            mAvatarFetcherCyclicBarrier = new CyclicBarrier(1, new BuildAvatarThread(headerModel));
+            requestSenderProfileImage(
+                    sharedUnnotifiedCredentials.get(0).getSenderProfileImageUrl());
         }
 
         int fillableItemsTotal = credentials.size() + webAuthnCredentials.size();
@@ -233,7 +242,6 @@ class TouchToFillMediator {
             boolean isOriginSecure,
             boolean triggerSubmission,
             List<Credential> credentials) {
-        // TODO(http://crbug.com/1504098) :  Format the sender name to be in bold
         String formattedUrl =
                 UrlFormatter.formatUrlForSecurityDisplay(url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
         List<Credential> sharedCredentials = getSharedPasswordsThatRequireNotification(credentials);
@@ -337,26 +345,23 @@ class TouchToFillMediator {
         mLargeIconBridge.getLargeIconForStringUrl(iconOrigin, mDesiredIconSize, setIconOrRetry);
     }
 
-    private void requestSenderProfileImage(GURL url, PropertyModel headerModel) {
+    private void requestSenderProfileImage(GURL url) {
         mCallbackController = new CallbackController();
-        final Callback<Bitmap> senderAvatarCallback =
+        final Callback<Bitmap> imageFetchedCallback =
                 mCallbackController.makeCancelable(
                         (image) -> {
                             if (image != null) {
-                                headerModel.set(
-                                        AVATAR,
-                                        AvatarGenerator.makeRoundAvatar(
-                                                mContext.getResources(),
-                                                image,
-                                                mContext.getResources()
-                                                        .getDimensionPixelSize(
-                                                                R.dimen.touch_to_fill_avatar)));
+                                mAvatarImages.add(image);
+                            }
+                            try {
+                                mAvatarFetcherCyclicBarrier.await();
+                            } catch (InterruptedException | BrokenBarrierException e) {
                             }
                         });
 
         mImageFetcher.fetchImage(
                 ImageFetcher.Params.create(url, ImageFetcher.PASSWORD_BOTTOM_SHEET_CLIENT_NAME),
-                senderAvatarCallback);
+                imageFetchedCallback);
     }
 
     private String getIconOrigin(String credentialOrigin, GURL siteUrl) {
@@ -466,5 +471,24 @@ class TouchToFillMediator {
             }
         }
         return sharedCredentials;
+    }
+
+    class BuildAvatarThread implements Runnable {
+        private PropertyModel mHeaderModel;
+
+        BuildAvatarThread(PropertyModel headerModel) {
+            mHeaderModel = headerModel;
+        }
+
+        @Override
+        public void run() {
+            mHeaderModel.set(
+                    AVATAR,
+                    AvatarGenerator.makeRoundAvatar(
+                            mContext.getResources(),
+                            mAvatarImages.get(0),
+                            mContext.getResources()
+                                    .getDimensionPixelSize(R.dimen.touch_to_fill_avatar)));
+        }
     }
 }

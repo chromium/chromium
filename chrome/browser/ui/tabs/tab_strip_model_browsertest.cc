@@ -42,6 +42,13 @@ constexpr char kPreventCloseEnabledForCalculator[] = R"([
   }
 ])";
 
+constexpr char kCalculatorForceInstalled[] = R"([
+  {
+    "url": "https://calculator.apps.chrome/",
+    "default_launch_container": "window"
+  }
+])";
+
 #if BUILDFLAG(IS_CHROMEOS)
 constexpr bool kShouldPreventClose = true;
 #else
@@ -55,8 +62,9 @@ using TabStripModelPreventCloseTest = PreventCloseTestBase;
 IN_PROC_BROWSER_TEST_F(TabStripModelPreventCloseTest,
                        PreventCloseEnforedByPolicy) {
   InstallPWA(GURL(kCalculatorAppUrl), web_app::kCalculatorAppId);
-  SetWebAppSettings(kPreventCloseEnabledForCalculator);
-
+  SetPoliciesAndWaitUntilInstalled(web_app::kCalculatorAppId,
+                                   kPreventCloseEnabledForCalculator,
+                                   kCalculatorForceInstalled);
   Browser* const browser =
       LaunchPWA(web_app::kCalculatorAppId, /*launch_in_window=*/true);
   ASSERT_TRUE(browser);
@@ -82,8 +90,9 @@ IN_PROC_BROWSER_TEST_F(TabStripModelPreventCloseTest,
 IN_PROC_BROWSER_TEST_F(TabStripModelPreventCloseTest,
                        PreventCloseEnforedByPolicyTabbedAppShallBeClosable) {
   InstallPWA(GURL(kCalculatorAppUrl), web_app::kCalculatorAppId);
-  SetWebAppSettings(kPreventCloseEnabledForCalculator);
-
+  SetPoliciesAndWaitUntilInstalled(web_app::kCalculatorAppId,
+                                   kPreventCloseEnabledForCalculator,
+                                   kCalculatorForceInstalled);
   Browser* const browser =
       LaunchPWA(web_app::kCalculatorAppId, /*launch_in_window=*/false);
   ASSERT_TRUE(browser);
@@ -123,6 +132,6 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandOrganizeTabs) {
   const TabOrganizationSession* const session =
       service->GetSessionForBrowser(browser());
   EXPECT_NE(session, nullptr);
-  EXPECT_NE(session->request()->state(),
+  EXPECT_EQ(session->request()->state(),
             TabOrganizationRequest::State::NOT_STARTED);
 }

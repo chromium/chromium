@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "cc/tiles/raster_tile_priority_queue_all.h"
 #include "cc/tiles/raster_tile_priority_queue_required.h"
@@ -14,8 +15,10 @@ namespace cc {
 
 // static
 std::unique_ptr<RasterTilePriorityQueue> RasterTilePriorityQueue::Create(
-    const std::vector<PictureLayerImpl*>& active_layers,
-    const std::vector<PictureLayerImpl*>& pending_layers,
+    const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>&
+        active_layers,
+    const std::vector<raw_ptr<PictureLayerImpl, VectorExperimental>>&
+        pending_layers,
     TreePriority tree_priority,
     Type type) {
   switch (type) {

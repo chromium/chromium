@@ -71,7 +71,7 @@ class ChromeLabsFooter : public views::View {
                      .SetCallback(restart_callback)
                      .SetText(l10n_util::GetStringUTF16(
                          IDS_CHROMELABS_RELAUNCH_BUTTON_LABEL))
-                     .SetProminent(true)
+                     .SetStyle(ui::ButtonStyle::kProminent)
                      .Build());
     SetBackground(
         views::CreateThemedSolidBackground(ui::kColorBubbleFooterBackground));
@@ -209,5 +209,5 @@ bool ChromeLabsBubbleView::IsRestartPromptVisibleForTesting() {
   return restart_prompt_->GetVisible();
 }
 
-BEGIN_METADATA(ChromeLabsBubbleView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(ChromeLabsBubbleView)
 END_METADATA

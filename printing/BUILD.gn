@@ -72,6 +72,7 @@ component("printing_base") {
   public_deps = [
     "//build:chromeos_buildflags",
     "//printing/buildflags",
+    "//printing/mojom",
   ]
   deps = [
     "//base",

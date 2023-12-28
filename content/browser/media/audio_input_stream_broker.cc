@@ -62,7 +62,8 @@ AudioInputStreamBroker::AudioInputStreamBroker(
   renderer_factory_client_.set_disconnect_handler(base::BindOnce(
       &AudioInputStreamBroker::ClientBindingLost, base::Unretained(this)));
 
-  NotifyFrameHostOfAudioStreamStarted(render_process_id, render_frame_id);
+  NotifyFrameHostOfAudioStreamStarted(render_process_id, render_frame_id,
+                                      /*is_capturing=*/true);
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseFakeDeviceForMediaStream)) {
@@ -78,7 +79,8 @@ AudioInputStreamBroker::~AudioInputStreamBroker() {
   if (user_input_monitor_)
     user_input_monitor_->DisableKeyPressMonitoring();
 
-  NotifyFrameHostOfAudioStreamStopped(render_process_id(), render_frame_id());
+  NotifyFrameHostOfAudioStreamStopped(render_process_id(), render_frame_id(),
+                                      /*is_capturing=*/true);
 
   // TODO(https://crbug.com/829317) update tab recording indicator.
 

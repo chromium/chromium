@@ -78,6 +78,7 @@
 <translation id="4705093842003735294">Máxima resolución</translation>
 <translation id="4864143361253542638">Lista de páginas escaneadas</translation>
 <translation id="4890010094662541459">3 × 3</translation>
+<translation id="4892746741161549733">Copiar dirección del vínculo <ph name="URL" /></translation>
 <translation id="491895758387112773">Crear transmisión múltiple de grabación de video</translation>
 <translation id="495170559598752135">Acciones</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
@@ -129,6 +130,7 @@ Si tus comentarios están relacionados con la calidad de imagen o video, adjunta
 <translation id="7450541714075000668">Se copió el texto.</translation>
 <translation id="7488619942230388918">Grabar video de GIF</translation>
 <translation id="7557677699350329807">Cambiar a la siguiente cámara</translation>
+<translation id="7562584071994185503">Copiar texto <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Detenido</translation>
 <translation id="7608223098072244877">4 por 4</translation>
 <translation id="761421184377987513">Se está moviendo hacia la esquina inferior izquierda</translation>
@@ -141,6 +143,7 @@ Si tus comentarios están relacionados con la calidad de imagen o video, adjunta
 <translation id="7726641833034062494">Grabar video en modo normal</translation>
 <translation id="7748344063862150053">Esquina superior derecha del documento</translation>
 <translation id="7933675232020478311">Se está moviendo hacia la esquina inferior derecha</translation>
+<translation id="7983668134180549431">Se detectó texto.</translation>
 <translation id="8079255378695216066">No se pudo iniciar la grabación</translation>
 <translation id="8120146556401698679">Desplazamiento, inclinación, ampliación</translation>
 <translation id="8131740175452115882">Confirmar</translation>
@@ -150,6 +153,7 @@ Si tus comentarios están relacionados con la calidad de imagen o video, adjunta
 <translation id="8346544573713510785">Ajustar marcos con la HAL de la cámara</translation>
 <translation id="8425673304802773841">Inclinar hacia abajo</translation>
 <translation id="8428213095426709021">Configuración</translation>
+<translation id="8609951387004618906">Abrir <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Activar o desactivar la función para silenciar el micrófono, la función para silenciar está activada</translation>
 <translation id="8730621377337864115">Listo</translation>
@@ -159,7 +163,6 @@ Si tus comentarios están relacionados con la calidad de imagen o video, adjunta
 <translation id="8870695351537079478">No es posible comenzar a grabar</translation>
 <translation id="8880167521484863515">4:3</translation>
 <translation id="8903921497873541725">Acercar</translation>
-<translation id="8926890870105777777">Unirse a la red "<ph name="WIFINAME" />"</translation>
 <translation id="9045010116236796332">Coloca todos los bordes del documento dentro del cuadro.</translation>
 <translation id="9045155556724273246">10 segundos</translation>
 <translation id="906331135292332864">Procesando imagen…</translation>

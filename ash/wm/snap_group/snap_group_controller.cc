@@ -166,7 +166,7 @@ void SnapGroupController::MinimizeTopMostSnapGroup() {
 SnapGroup* SnapGroupController::GetTopmostSnapGroup() {
   auto windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  for (auto* window : windows) {
+  for (aura::Window* window : windows) {
     if (auto* snap_group = GetSnapGroupForGivenWindow(window)) {
       if (!WindowState::Get(snap_group->window1())->IsMinimized() &&
           !WindowState::Get(snap_group->window2())->IsMinimized()) {
@@ -180,7 +180,7 @@ SnapGroup* SnapGroupController::GetTopmostSnapGroup() {
 void SnapGroupController::RestoreTopmostSnapGroup() {
   auto windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  for (auto* window : windows) {
+  for (aura::Window* window : windows) {
     if (auto* snap_group = GetSnapGroupForGivenWindow(window)) {
       CHECK(WindowState::Get(snap_group->window1())->IsMinimized());
       CHECK(WindowState::Get(snap_group->window2())->IsMinimized());

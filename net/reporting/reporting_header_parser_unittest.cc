@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/reporting/mock_persistent_reporting_store.h"
 #include "net/reporting/reporting_cache.h"
@@ -91,7 +92,7 @@ class ReportingHeaderParserTestBase
   const std::string kGroup1_ = "group1";
   const std::string kGroup2_ = "group2";
   // There are 2^3 = 8 of these to test the different combinations of matching
-  // vs mismatching NIK, origin, and group.
+  // vs mismatching NAK, origin, and group.
   const ReportingEndpointGroupKey kGroupKey11_ =
       ReportingEndpointGroupKey(kNak_, kOrigin1_, kGroup1_);
   const ReportingEndpointGroupKey kGroupKey21_ =
@@ -758,7 +759,7 @@ TEST_P(ReportingHeaderParserTest, MultipleHeadersFromDifferentOrigins) {
   }
 }
 
-// Test that each combination of NIK, origin, and group name is considered
+// Test that each combination of NAK, origin, and group name is considered
 // distinct.
 // See also: ReportingCacheTest.ClientsKeyedByEndpointGroupKey
 TEST_P(ReportingHeaderParserTest, EndpointGroupKey) {
@@ -801,7 +802,7 @@ TEST_P(ReportingHeaderParserTest, EndpointGroupKey) {
   MockPersistentReportingStore::CommandList expected_commands;
 
   // Set 2 endpoints in each of 2 groups for each of 2x2 combinations of
-  // (NIK, origin).
+  // (NAK, origin).
   for (const auto& source : kHeaderSources) {
     // Verify pre-parsing state
     EXPECT_FALSE(FindEndpointInCache(source.group1_key, kEndpoint1_));

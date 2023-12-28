@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
@@ -179,7 +180,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, MAYBE_Persist) {
   BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
 
   GURL url(kPersistBookmarkURL);
-  std::vector<const BookmarkNode*> nodes = bookmark_model->GetNodesByURL(url);
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes =
+      bookmark_model->GetNodesByURL(url);
 
   ASSERT_EQ(1u, nodes.size());
   ASSERT_EQ(url, nodes[0]->url());
@@ -320,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllBookmarks) {
       chrome::OpenAllIfAllowed(regular_browser, {bbar},
                                WindowOpenDisposition::NEW_WINDOW, false);
       Browser* regular_browser2 = nullptr;
-      for (auto* browser_instance : *BrowserList::GetInstance()) {
+      for (Browser* browser_instance : *BrowserList::GetInstance()) {
         if (browser_instance != incognito_browser &&
             browser_instance != regular_browser)
           regular_browser2 = browser_instance;
@@ -372,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllBookmarks) {
       chrome::OpenAllIfAllowed(incognito_browser, {incognito_bbar},
                                WindowOpenDisposition::NEW_WINDOW, false);
       Browser* incognito_browser2 = nullptr;
-      for (auto* browser_instance : *BrowserList::GetInstance()) {
+      for (Browser* browser_instance : *BrowserList::GetInstance()) {
         if (browser_instance != incognito_browser &&
             browser_instance != regular_browser)
           incognito_browser2 = browser_instance;

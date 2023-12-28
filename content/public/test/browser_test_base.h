@@ -177,7 +177,7 @@ class BrowserTestBase : public ::testing::Test {
   // Sets expected browser exit code, in case it's different than 0 (success).
   void set_expected_exit_code(int code) { expected_exit_code_ = code; }
 
-  // Returns the embedded test server. Guaranteed to be non-NULL.
+  // Returns the HTTP embedded test server. Guaranteed to be non-NULL.
   const net::EmbeddedTestServer* embedded_test_server() const {
     return embedded_test_server_.get();
   }
@@ -247,7 +247,7 @@ class BrowserTestBase : public ::testing::Test {
   // CreatedBrowserMainParts().
   void CreatedBrowserMainPartsImpl(BrowserMainParts* browser_main_parts);
 
-  // Embedded test server, cheap to create, started on demand.
+  // Embedded HTTP test server, cheap to create, started on demand.
   std::unique_ptr<net::EmbeddedTestServer> embedded_test_server_;
 
   // Host resolver used during tests.

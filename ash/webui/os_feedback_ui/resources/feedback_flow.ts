@@ -154,8 +154,8 @@ export class FeedbackFlowElement extends PolymerElement {
 
   static get properties() {
     return {
-      currentState: {type: FeedbackFlowState},
-      feedbackContext: {type: FeedbackContext, readonly: false, notify: true},
+      currentState: {type: String},
+      feedbackContext: {type: Object, readonly: false, notify: true},
     };
   }
 
@@ -621,11 +621,13 @@ export class FeedbackFlowElement extends PolymerElement {
     return this.descriptionPlaceholderText;
   }
 
-
   getIsUserLoggedInForTesting(): boolean {
     return this.isUserLoggedIn;
   }
 
+  getFeedbackContextForTesting(): FeedbackContext|null {
+    return this.feedbackContext;
+  }
 
   getShouldShowWifiDebugLogsCheckboxForTesting(): boolean {
     return this.shouldShowWifiDebugLogsCheckbox;

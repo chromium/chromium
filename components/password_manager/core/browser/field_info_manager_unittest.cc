@@ -14,8 +14,8 @@
 
 using autofill::FieldRendererId;
 using autofill::FieldSignature;
+using autofill::FieldType;
 using autofill::FormSignature;
-using autofill::ServerFieldType;
 
 namespace password_manager {
 
@@ -26,20 +26,20 @@ constexpr FormSignature kTestFormSignature(100);
 constexpr FieldSignature kTestFieldSignature(200);
 constexpr int kTestDriverId = 1;
 constexpr FieldRendererId kTestFieldId(1);
-constexpr ServerFieldType kTestFieldType = autofill::USERNAME;
+constexpr FieldType kTestFieldType = autofill::USERNAME;
 
 const char kAnotherDomain[] = "https://seconddomain.com";
 constexpr FormSignature kAnotherFormSignature(300);
 constexpr FieldSignature kAnotherFieldSignature(400);
 constexpr int kAnotherDriverId = 2;
 constexpr FieldRendererId kAnotherFieldId(2);
-constexpr ServerFieldType kAnotherFieldType = autofill::PASSWORD;
+constexpr FieldType kAnotherFieldType = autofill::PASSWORD;
 
 FormPredictions CreateTestPredictions(int driver_id,
                                       FormSignature form_signature,
                                       FieldSignature field_signature,
                                       FieldRendererId renderer_id,
-                                      ServerFieldType type) {
+                                      FieldType type) {
   FormPredictions predictions;
   predictions.driver_id = driver_id;
   predictions.form_signature = form_signature;

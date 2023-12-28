@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script>
+    function unload() {
+      window.parent.imageLoad();
+    }
+
+    function load() {
+      window.top.test();
+    }
+  </script>
+</head>
+
+<body onload="load();" onpagehide="unload();">
+  This subframe has an pagehide handler.
+</body>
+
+</html>

@@ -201,54 +201,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "fuchsia-official",
-    branch_selector = branches.selector.FUCHSIA_BRANCHES,
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "fuchsia_x64",
-                "checkout_pgo_profiles",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            target_bits = 64,
-            target_platform = builder_config.target_platform.FUCHSIA,
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "official_optimize",
-            "reclient",
-            "fuchsia",
-        ],
-    ),
-    builderless = False,
-    cores = 32,
-    sheriff_rotations = args.ignore_default(None),
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "fuchsia",
-            short_name = "off",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.selector.MAIN,
-            console_view = "sheriff.fuchsia",
-            category = "gardener|ci|x64",
-            short_name = "off",
-        ),
-    ],
-    # TODO: Change this back down to something reasonable once these builders
-    # have populated their cached by getting through the compile step
-    execution_timeout = 10 * time.hour,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-)
-
-ci.builder(
     name = "linux-chromeos-archive-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(

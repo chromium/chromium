@@ -144,7 +144,7 @@ DiceWebSigninInterceptionBubbleView::CreateBubble(
   if (bubble_parameters.interception_type ==
       WebSigninInterceptor::SigninInterceptionType::kChromeSignin) {
     AvatarToolbarButton* button = GetAvatarToolbarButton(*browser);
-    button->DisableActionButton();
+    button->SetButtonActionDisabled(true);
     button->ShowSignInText();
   }
 
@@ -296,7 +296,7 @@ void DiceWebSigninInterceptionBubbleView::OnWebUIUserChoice(
   if (bubble_parameters_.interception_type ==
       WebSigninInterceptor::SigninInterceptionType::kChromeSignin) {
     AvatarToolbarButton* button = GetAvatarToolbarButton(*browser_);
-    button->ResetActionButton();
+    button->SetButtonActionDisabled(false);
     button->HideSignInText();
   }
   std::move(callback_).Run(result);

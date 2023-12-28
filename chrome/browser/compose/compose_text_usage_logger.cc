@@ -74,7 +74,7 @@ void ComposeTextUsageLogger::OnAfterTextFieldDidChange(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form,
     autofill::FieldGlobalId field,
-    std::u16string text_value) {
+    const std::u16string& text_value) {
   autofill::FormType form_type = autofill::FormType::kUnknownFormType;
   int64_t form_control_type = -1;
   autofill::FormStructure* form_structure = manager.FindCachedFormById(form);

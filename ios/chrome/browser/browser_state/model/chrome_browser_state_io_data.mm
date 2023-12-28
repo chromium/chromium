@@ -33,10 +33,10 @@
 #import "ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/content_settings/model/cookie_settings_factory.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
-#import "ios/chrome/browser/net/accept_language_pref_watcher.h"
-#import "ios/chrome/browser/net/ios_chrome_http_user_agent_settings.h"
-#import "ios/chrome/browser/net/ios_chrome_network_delegate.h"
-#import "ios/chrome/browser/net/ios_chrome_url_request_context_getter.h"
+#import "ios/chrome/browser/net/model/accept_language_pref_watcher.h"
+#import "ios/chrome/browser/net/model/ios_chrome_http_user_agent_settings.h"
+#import "ios/chrome/browser/net/model/ios_chrome_network_delegate.h"
+#import "ios/chrome/browser/net/model/ios_chrome_url_request_context_getter.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -57,7 +57,6 @@
 #import "net/proxy_resolution/proxy_resolution_service.h"
 #import "net/quic/quic_context.h"
 #import "net/traffic_annotation/network_traffic_annotation.h"
-#import "net/url_request/report_sender.h"
 #import "net/url_request/url_request.h"
 #import "net/url_request/url_request_context.h"
 #import "net/url_request/url_request_context_builder.h"
@@ -124,14 +123,6 @@ ChromeBrowserStateIOData::~ChromeBrowserStateIOData() {
   if (web::WebThread::IsThreadInitialized(web::WebThread::IO)) {
     DCHECK_CURRENTLY_ON(web::WebThread::IO);
   }
-
-  if (main_request_context_) {
-    main_request_context_->transport_security_state()->SetReportSender(nullptr);
-  }
-
-  // Destroy certificate_report_sender_ before main_request_context_,
-  // since the former has a reference to the latter.
-  certificate_report_sender_.reset();
 }
 
 net::URLRequestContext* ChromeBrowserStateIOData::GetMainRequestContext()
@@ -206,34 +197,6 @@ void ChromeBrowserStateIOData::Init(
         profile_params_->path.Append(FILE_PATH_LITERAL("TransportSecurity")));
   }
 
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("domain_security_policy", R"(
-        semantics {
-          sender: "Domain Security Policy"
-          description:
-            "Websites can opt in to have Chrome send reports to them when "
-            "Chrome observes connections to that website that do not meet "
-            "stricter security policies, such as with HTTP Public Key Pinning. "
-            "Websites can use this feature to discover misconfigurations that "
-            "prevent them from complying with stricter security policies that "
-            "they've opted in to."
-          trigger:
-            "Chrome observes that a user is loading a resource from a website "
-            "that has opted in for security policy reports, and the connection "
-            "does not meet the required security policies."
-          data:
-            "The time of the request, the hostname and port being requested, "
-            "the certificate chain, and sometimes certificate revocation "
-            "information included on the connection."
-          destination: OTHER
-        }
-        policy {
-          cookies_allowed: NO
-          setting: "This feature cannot be disabled by settings."
-          policy_exception_justification:
-            "Not implemented, this is a feature that websites can opt into and "
-            "thus there is no Chrome-wide policy to disable it."
-        })");
   // Take ownership over these parameters.
   cookie_settings_ = profile_params_->cookie_settings;
   host_content_settings_map_ = profile_params_->host_content_settings_map;
@@ -256,10 +219,6 @@ void ChromeBrowserStateIOData::Init(
   InitializeInternal(&context_builder, profile_params_.get());
 
   main_request_context_ = context_builder.Build();
-  certificate_report_sender_ = std::make_unique<net::ReportSender>(
-      main_request_context_.get(), traffic_annotation);
-  main_request_context_->transport_security_state()->SetReportSender(
-      certificate_report_sender_.get());
 
   profile_params_.reset();
   initialized_ = true;

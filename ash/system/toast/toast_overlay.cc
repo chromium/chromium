@@ -92,7 +92,7 @@ class ToastOverlay::ToastDisplayObserver : public display::DisplayObserver {
   }
 
  private:
-  const raw_ptr<ToastOverlay, ExperimentalAsh> overlay_;
+  const raw_ptr<ToastOverlay> overlay_;
 
   display::ScopedDisplayObserver display_observer_{this};
 };

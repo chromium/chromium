@@ -10,7 +10,7 @@
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/system/model/system_tray_model.h"
@@ -84,10 +84,9 @@ class CalendarEmptyEventListView : public PillButton {
       label()->SetTextContext(CONTEXT_CALENDAR_DATE);
     }
 
-    SetBorder(views::CreateRoundedRectBorder(
+    SetBorder(views::CreateThemedRoundedRectBorder(
         kOpenGoogleCalendarBorderThickness, GetPreferredSize().height() / 2,
-        AshColorProvider::Get()->GetControlsLayerColor(
-            ColorProvider::ControlsLayerType::kHairlineBorderColor)));
+        kColorAshHairlineBorderColor));
     SetTooltipText(
         l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_EVENT_BUTTON_TOOL_TIP));
   }
@@ -113,7 +112,7 @@ class CalendarEmptyEventListView : public PillButton {
 
  private:
   // Owned by the parent view. Guaranteed to outlive this.
-  const raw_ptr<CalendarViewController, ExperimentalAsh> controller_;
+  const raw_ptr<CalendarViewController> controller_;
 };
 
 BEGIN_METADATA(CalendarEmptyEventListView)
@@ -284,7 +283,7 @@ std::unique_ptr<views::View> CalendarEventListView::CreateChildEventListView(
     // The `current_or_next_event_view_` is the first event that is not an
     // all-day or multi-day event, and is the ongoing or the following event.
     if (!current_or_next_event_view_ &&
-        event_list_item_view->is_current_or_next_event()) {
+        event_list_item_view->is_current_or_next_single_day_event()) {
       current_or_next_event_view_ = event_list_item_view;
       current_or_next_event_index_ = event_index - 1;
     }

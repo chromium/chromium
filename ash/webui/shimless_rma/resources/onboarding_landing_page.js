@@ -4,15 +4,16 @@
 
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './shimless_rma_shared_css.js';
+import './shimless_rma_shared.css.js';
 import './base_page.js';
-import './icons.js';
+import './icons.html.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {HardwareVerificationStatusObserverInterface, HardwareVerificationStatusObserverReceiver, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {getTemplate} from './onboarding_landing_page.html.js';
+import {HardwareVerificationStatusObserverInterface, HardwareVerificationStatusObserverReceiver, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
 import {enableNextButton, executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 
 /**
@@ -36,7 +37,7 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -51,22 +52,22 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
        * List of unqualified components from rmad service, not i18n.
        * @protected
        */
-      componentsList_: {
+      componentsList: {
         type: String,
         value: '',
       },
 
       /** @protected */
-      verificationInProgress_: {
+      verificationInProgress: {
         type: Boolean,
         value: true,
       },
 
       /**
-       * isCompliant_ is not valid until verificationInProgress_ is false.
+       * isCompliant is not valid until verificationInProgress is false.
        * @protected
        */
-      isCompliant_: {
+      isCompliant: {
         type: Boolean,
         value: false,
       },
@@ -90,7 +91,7 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
       },
 
       /** @protected */
-      verificationFailedMessage_: {
+      verificationFailedMessage: {
         type: String,
         value: '',
       },
@@ -100,17 +101,17 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService = getShimlessRmaService();
     /** @protected {?HardwareVerificationStatusObserverReceiver} */
-    this.hwVerificationObserverReceiver_ =
+    this.hwVerificationObserverReceiver =
         new HardwareVerificationStatusObserverReceiver(
             /**
              * @type {!HardwareVerificationStatusObserverInterface}
              */
             (this));
 
-    this.shimlessRmaService_.observeHardwareVerificationStatus(
-        this.hwVerificationObserverReceiver_.$.bindNewPipeAndPassRemote());
+    this.shimlessRmaService.observeHardwareVerificationStatus(
+        this.hwVerificationObserverReceiver.$.bindNewPipeAndPassRemote());
   }
 
   /** @override */
@@ -122,22 +123,22 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
 
   /** @return {!Promise<{stateResult: !StateResult}>} */
   onNextButtonClick() {
-    if (!this.verificationInProgress_) {
-      return this.shimlessRmaService_.beginFinalization();
+    if (!this.verificationInProgress) {
+      return this.shimlessRmaService.beginFinalization();
     }
 
     return Promise.reject(new Error('Hardware verification is not complete.'));
   }
 
   /** @protected */
-  onGetStartedButtonClicked_(e) {
+  onGetStartedButtonClicked(e) {
     e.preventDefault();
 
     this.getStartedButtonClicked = true;
 
     executeThenTransitionState(this, () => {
-      if (!this.verificationInProgress_) {
-        return this.shimlessRmaService_.beginFinalization();
+      if (!this.verificationInProgress) {
+        return this.shimlessRmaService.beginFinalization();
       }
 
       return Promise.reject(
@@ -148,7 +149,7 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
   /**
    * @protected
    */
-  onLandingExitButtonClicked_(e) {
+  onLandingExitButtonClicked(e) {
     e.preventDefault();
 
     this.dispatchEvent(new CustomEvent(
@@ -164,8 +165,8 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
    * @return {string}
    * @protected
    */
-  getVerificationIcon_() {
-    return this.isCompliant_ ? 'shimless-icon:check' : 'shimless-icon:warning';
+  getVerificationIcon() {
+    return this.isCompliant ? 'shimless-icon:check' : 'shimless-icon:warning';
   }
 
   /**
@@ -175,18 +176,18 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
    * @param {string} errorMessage
    */
   onHardwareVerificationResult(isCompliant, errorMessage) {
-    this.isCompliant_ = isCompliant;
-    this.verificationInProgress_ = false;
+    this.isCompliant = isCompliant;
+    this.verificationInProgress = false;
 
-    if (!this.isCompliant_) {
-      this.componentsList_ = errorMessage;
-      this.setVerificationFailedMessage_();
+    if (!this.isCompliant) {
+      this.componentsList = errorMessage;
+      this.setVerificationFailedMessage();
     }
   }
 
   /** @private */
-  setVerificationFailedMessage_() {
-    this.verificationFailedMessage_ =
+  setVerificationFailedMessage() {
+    this.verificationFailedMessage =
         this.i18nAdvanced('validatedComponentsFailText', {attrs: ['id']});
     const linkElement =
         this.shadowRoot.querySelector('#unqualifiedComponentsLink');
@@ -198,13 +199,13 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
   }
 
   /** @private */
-  closeDialog_() {
+  closeDialog() {
     this.shadowRoot.querySelector('#unqualifiedComponentsDialog').close();
   }
 
   /** @protected */
-  isGetStartedButtonDisabled_() {
-    return this.verificationInProgress_ || this.allButtonsDisabled;
+  isGetStartedButtonDisabled() {
+    return this.verificationInProgress || this.allButtonsDisabled;
   }
 }
 

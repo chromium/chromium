@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -52,6 +53,8 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/web_contents.h"
@@ -370,7 +373,7 @@ TabDragController::~TabDragController() {
 TabDragController::Liveness TabDragController::Init(
     TabDragContext* source_context,
     TabSlotView* source_view,
-    const std::vector<TabSlotView*>& dragging_views,
+    const std::vector<raw_ptr<TabSlotView, VectorExperimental>>& dragging_views,
     const gfx::Point& mouse_offset,
     int source_view_offset,
     ui::ListSelectionModel initial_selection_model,
@@ -418,7 +421,7 @@ TabDragController::Liveness TabDragController::Init(
   if (source_browser->app_controller() &&
       source_browser->app_controller()->has_tab_strip() &&
       web_app::HasPinnedHomeTab(source_browser->tab_strip_model())) {
-    for (auto* dragging_view : dragging_views) {
+    for (TabSlotView* dragging_view : dragging_views) {
       if (source_context->GetIndexOf(dragging_view) == 0) {
         detach_behavior_ = NOT_DETACHABLE;
       }
@@ -1185,9 +1188,10 @@ void TabDragController::MoveAttached(const gfx::Point& point_in_screen,
 
   const int threshold = attached_context_->GetHorizontalDragThreshold();
 
-  std::vector<TabSlotView*> views(drag_data_.size());
+  std::vector<raw_ptr<TabSlotView, VectorExperimental>> views(
+      drag_data_.size());
   for (size_t i = 0; i < drag_data_.size(); ++i)
-    views[i] = drag_data_[i].attached_view;
+    views[i] = drag_data_[i].attached_view.get();
 
   bool did_layout = false;
 
@@ -1378,7 +1382,7 @@ void TabDragController::Attach(TabDragContext* attached_context,
 
   attached_context_ = attached_context;
 
-  std::vector<TabSlotView*> views =
+  std::vector<raw_ptr<TabSlotView, VectorExperimental>> views =
       GetViewsMatchingDraggedContents(attached_context_);
 
   if (views.empty()) {
@@ -1439,7 +1443,7 @@ void TabDragController::Attach(TabDragContext* attached_context,
   }
   DCHECK_EQ(views.size(), drag_data_.size());
   for (size_t i = 0; i < drag_data_.size(); ++i) {
-    drag_data_[i].attached_view = views[i];
+    drag_data_[i].attached_view = views[i].get();
     attached_views_.push_back(views[i]);
   }
 
@@ -1451,7 +1455,7 @@ void TabDragController::Attach(TabDragContext* attached_context,
 
   // The size of the dragged tab may have changed. Adjust the x offset so that
   // ratio of mouse_offset_ to original width is maintained.
-  std::vector<TabSlotView*> tabs_to_source(views);
+  std::vector<raw_ptr<TabSlotView, VectorExperimental>> tabs_to_source(views);
   tabs_to_source.erase(tabs_to_source.begin() + source_view_index_ + 1,
                        tabs_to_source.end());
   int new_x = TabStrip::GetSizeNeededForViews(tabs_to_source) -
@@ -1778,15 +1782,15 @@ gfx::Point TabDragController::GetAttachedDragPoint(
   return gfx::Point(std::clamp(x, 0, max_x), 0);
 }
 
-std::vector<TabSlotView*> TabDragController::GetViewsMatchingDraggedContents(
-    TabDragContext* context) {
+std::vector<raw_ptr<TabSlotView, VectorExperimental>>
+TabDragController::GetViewsMatchingDraggedContents(TabDragContext* context) {
   const TabStripModel* const model = context->GetTabStripModel();
-  std::vector<TabSlotView*> views;
+  std::vector<raw_ptr<TabSlotView, VectorExperimental>> views;
   for (size_t i = first_tab_index(); i < drag_data_.size(); ++i) {
     const int model_index =
         model->GetIndexOfWebContents(drag_data_[i].contents);
     if (model_index == TabStripModel::kNoTab)
-      return std::vector<TabSlotView*>();
+      return std::vector<raw_ptr<TabSlotView, VectorExperimental>>();
     views.push_back(context->GetTabAt(model_index));
   }
   if (header_drag_)
@@ -1892,13 +1896,13 @@ void TabDragController::AttachTabsToNewBrowserOnDrop() {
 }
 
 void TabDragController::RevertDrag() {
-  std::vector<TabSlotView*> views;
+  std::vector<raw_ptr<TabSlotView, VectorExperimental>> views;
   if (header_drag_)
-    views.push_back(drag_data_[0].attached_view);
+    views.push_back(drag_data_[0].attached_view.get());
   for (size_t i = first_tab_index(); i < drag_data_.size(); ++i) {
     if (drag_data_[i].contents) {
       // Contents is NULL if a tab was destroyed while the drag was under way.
-      views.push_back(drag_data_[i].attached_view);
+      views.push_back(drag_data_[i].attached_view.get());
       RevertDragAt(i);
     }
   }
@@ -2398,6 +2402,26 @@ void TabDragController::AdjustBrowserAndTabBoundsForDrag(
   attached_context_->SetBoundsForDrag(attached_views_, *drag_bounds);
 }
 
+std::optional<webapps::AppId> TabDragController::GetControllingAppForDrag(
+    Browser* browser) {
+  content::WebContents* active_contents = source_dragged_contents();
+  if (!base::FeatureList::IsEnabled(
+          features::kTearOffWebAppTabOpensWebAppWindow) ||
+      drag_data_.size() != 1 || !active_contents) {
+    return std::nullopt;
+  }
+  const web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(browser->profile());
+  const base::flat_map<webapps::AppId, std::string> all_controlling_apps =
+      provider->registrar_unsafe().GetAllAppsControllingUrl(
+          active_contents->GetLastCommittedURL());
+  if (all_controlling_apps.size() != 1) {
+    return std::nullopt;
+  }
+
+  return all_controlling_apps.begin()->first;
+}
+
 Browser* TabDragController::CreateBrowserForDrag(
     TabDragContext* source,
     const gfx::Point& point_in_screen,
@@ -2415,14 +2439,34 @@ Browser* TabDragController::CreateBrowserForDrag(
       CalculateDraggedBrowserBounds(source, point_in_screen, drag_bounds));
   *drag_offset = point_in_screen - new_bounds.origin();
 
+  // Find if there's a controlling app, and thus we should open an app window.
+  Browser* from_browser = BrowserView::GetBrowserViewForNativeWindow(
+                              GetAttachedBrowserWidget()->GetNativeWindow())
+                              ->browser();
+
+  const std::optional<webapps::AppId> controlling_app =
+      GetControllingAppForDrag(from_browser);
+  const bool open_as_web_app = controlling_app.has_value();
+
   Browser::CreateParams create_params =
-      BrowserView::GetBrowserViewForNativeWindow(
-          GetAttachedBrowserWidget()->GetNativeWindow())
-          ->browser()
-          ->create_params();
+      open_as_web_app
+          ? Browser::CreateParams::CreateForApp(
+                web_app::GenerateApplicationNameFromAppId(
+                    controlling_app.value()),
+                /* trusted_source=*/true, gfx::Rect(), from_browser->profile(),
+                /* user_gesture=*/true)
+          : BrowserView::GetBrowserViewForNativeWindow(
+                GetAttachedBrowserWidget()->GetNativeWindow())
+                ->browser()
+                ->create_params();
+
+  // Web app windows have their own initial size independent of the source
+  // browser window.
+  if (!open_as_web_app) {
+    create_params.initial_bounds = new_bounds;
+  }
   create_params.user_gesture = true;
   create_params.in_tab_dragging = true;
-  create_params.initial_bounds = new_bounds;
 #if BUILDFLAG(IS_CHROMEOS)
   // Do not copy attached window's restore id as this will cause Full Restore to
   // restore the newly created browser using the original browser's stored data.
@@ -2457,7 +2501,9 @@ Browser* TabDragController::CreateBrowserForDrag(
   // If the window is created maximized then the bounds we supplied are ignored.
   // We need to reset them again so they are honored. On ChromeOS, this is
   // handled in NativeWidgetAura.
-  browser->window()->SetBounds(new_bounds);
+  if (!open_as_web_app) {
+    browser->window()->SetBounds(new_bounds);
+  }
 #endif
 
   return browser;
@@ -2506,7 +2552,7 @@ TabDragController::Liveness TabDragController::GetLocalProcessWindow(
   // window which was used for dragging is not hidden once all of its tabs are
   // attached to another browser window in DragBrowserToNewTabStrip().
   // TODO(pkotwicz): Fix this properly (crbug.com/358482)
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->tab_strip_model()->empty())
       exclude.insert(browser->window()->GetNativeWindow());
   }

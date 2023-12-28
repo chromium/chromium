@@ -63,5 +63,5 @@ void ShareAudioView::SetAudioSharingApprovedByUser(bool is_on) {
   audio_toggle_button_->SetIsOn(is_on);
 }
 
-BEGIN_METADATA(ShareAudioView, views::View)
+BEGIN_METADATA(ShareAudioView)
 END_METADATA

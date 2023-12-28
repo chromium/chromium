@@ -39,19 +39,22 @@ class GraphInfoBuilder final {
                        const std::vector<uint32_t>& dimensions,
                        mojom::Operand::DataType type);
 
-  // A `ActivationAttributes` type should have the following members:
-  // struct ActivationAttributes {
-  //  absl::optional<mojom::Activation::Tag> activation;
+  // An `Activation` type should have the following members:
+  // struct Activation {
+  //  mojom::Activation::Tag kind;
   //  absl::optional<ClampTester::ClampAttributes> clamp_attributes;
   //  absl::optional<float> elu_alpha;
   //  absl::optional<float> leaky_relu_alpha;
+  //  absl::optional<float> linear_alpha;
+  //  absl::optional<float> linear_beta;
+  //  absl::optional<float> softplus_steepness;
   // };
   template <typename ActivationAttributes>
   mojom::ActivationPtr CreateActivation(
-      const ActivationAttributes& attributes) {
-    switch (attributes.activation.value()) {
+      const ActivationAttributes& activation) {
+    switch (activation.kind) {
       case mojom::Activation::Tag::kClamp: {
-        const auto clamp_attributes = attributes.clamp_attributes;
+        const auto clamp_attributes = activation.clamp_attributes;
         CHECK(clamp_attributes.has_value());
         auto clamp = mojom::Clamp::New();
         clamp->min_value = clamp_attributes->min_value;
@@ -60,15 +63,23 @@ class GraphInfoBuilder final {
       }
       case mojom::Activation::Tag::kElu: {
         auto elu = mojom::Elu::New();
-        CHECK(attributes.elu_alpha.has_value());
-        elu->alpha = attributes.elu_alpha.value();
+        CHECK(activation.elu_alpha.has_value());
+        elu->alpha = activation.elu_alpha.value();
         return mojom::Activation::NewElu(std::move(elu));
       }
       case mojom::Activation::Tag::kLeakyRelu: {
         auto leaky_relu = mojom::LeakyRelu::New();
-        CHECK(attributes.leaky_relu_alpha.has_value());
-        leaky_relu->alpha = attributes.leaky_relu_alpha.value();
+        CHECK(activation.leaky_relu_alpha.has_value());
+        leaky_relu->alpha = activation.leaky_relu_alpha.value();
         return mojom::Activation::NewLeakyRelu(std::move(leaky_relu));
+      }
+      case mojom::Activation::Tag::kLinear: {
+        auto linear = mojom::Linear::New();
+        CHECK(activation.linear_alpha.has_value());
+        linear->alpha = activation.linear_alpha.value();
+        CHECK(activation.linear_beta.has_value());
+        linear->beta = activation.linear_beta.value();
+        return mojom::Activation::NewLinear(std::move(linear));
       }
       case mojom::Activation::Tag::kRelu:
         return mojom::Activation::NewRelu(mojom::Relu::New());
@@ -76,6 +87,12 @@ class GraphInfoBuilder final {
         return mojom::Activation::NewSigmoid(mojom::Sigmoid::New());
       case mojom::Activation::Tag::kSoftmax:
         return mojom::Activation::NewSoftmax(mojom::Softmax::New());
+      case mojom::Activation::Tag::kSoftplus: {
+        auto softplus = mojom::Softplus::New();
+        CHECK(activation.softplus_steepness.has_value());
+        softplus->steepness = activation.softplus_steepness.value();
+        return mojom::Activation::NewSoftplus(std::move(softplus));
+      }
       case mojom::Activation::Tag::kTanh:
         return mojom::Activation::NewTanh(mojom::Tanh::New());
       default:
@@ -96,10 +113,7 @@ class GraphInfoBuilder final {
   //  absl::optional<uint64_t> bias_operand_id;
   //  uint32_t axis = 1;
   //  float epsilon = 1e-5;
-  //  absl::optional<mojom::Activation::Tag> activation;
-  //  absl::optional<ClampTester::ClampAttributes> clamp_attributes;
-  //  absl::optional<float> elu_alpha;
-  //  absl::optional<float> leaky_relu_alpha;
+  //  absl::optional<Activation> activation;
   // };
   template <typename BatchNormalizationAttributes>
   void BuildBatchNormalization(uint64_t input_operand_id,
@@ -120,7 +134,8 @@ class GraphInfoBuilder final {
     batch_normalization->epsilon = attributes.epsilon;
 
     if (attributes.activation.has_value()) {
-      batch_normalization->activation = std::move(CreateActivation(attributes));
+      batch_normalization->activation =
+          CreateActivation(attributes.activation.value());
     }
 
     graph_info_->operations.push_back(mojom::Operation::NewBatchNormalization(
@@ -144,10 +159,7 @@ class GraphInfoBuilder final {
   //   uint32_t groups;
   //   mojom::InputOperandLayout input_layout;
   //   absl::optional<uint64_t> bias_operand_id,
-  //   absl::optional<mojom::Activation::Tag> activation;
-  //   absl::optional<ClampAttributes> clamp_attributes;
-  //   absl::optional<float> elu_alpha;
-  //   absl::optional<float> leaky_relu_alpha;
+  //   absl::optional<Activation> activation;
   // };
   template <typename Conv2dAttributes>
   void BuildConv2d(mojom::Conv2d_Type type,
@@ -180,7 +192,7 @@ class GraphInfoBuilder final {
     conv2d->bias_operand_id = bias_operand_id;
 
     if (attributes.activation.has_value()) {
-      conv2d->activation = std::move(CreateActivation(attributes));
+      conv2d->activation = CreateActivation(attributes.activation.value());
     }
 
     graph_info_->operations.push_back(
@@ -260,9 +272,41 @@ class GraphInfoBuilder final {
         std::move(layer_normalization)));
   }
 
+  // A `InstanceNormalizationAttributes` type should have the following members:
+  // struct InstanceNormalizationAttributes {
+  //  absl::optional<uint64_t> scale_operand_id;
+  //  absl::optional<uint64_t> bias_operand_id;
+  //  float epsilon = 1e-5;
+  //  mojom::InputOperandLayout input_layout;
+  // };
+  template <typename InstanceNormalizationAttributes>
+  void BuildInstanceNormalization(
+      uint64_t input_operand_id,
+      uint64_t output_operand_id,
+      const InstanceNormalizationAttributes& attributes) {
+    mojom::InstanceNormalizationPtr instance_normalization =
+        mojom::InstanceNormalization::New();
+    instance_normalization->input_operand_id = input_operand_id;
+    instance_normalization->output_operand_id = output_operand_id;
+
+    instance_normalization->scale_operand_id = attributes.scale_operand_id;
+    instance_normalization->bias_operand_id = attributes.bias_operand_id;
+    instance_normalization->layout = attributes.layout;
+    instance_normalization->epsilon = attributes.epsilon;
+
+    graph_info_->operations.push_back(
+        mojom::Operation::NewInstanceNormalization(
+            std::move(instance_normalization)));
+  }
+
   void BuildLeakyRelu(uint64_t input_operand_id,
                       uint64_t output_operand_id,
                       float alpha);
+
+  void BuildLinear(uint64_t input_operand_id,
+                   uint64_t output_operand_id,
+                   float alpha,
+                   float beta);
 
   void BuildMatmul(uint64_t a_operand_id,
                    uint64_t b_operand_id,
@@ -355,6 +399,10 @@ class GraphInfoBuilder final {
   void BuildSigmoid(uint64_t input_operand_id, uint64_t output_operand_id);
 
   void BuildSoftmax(uint64_t input_operand_id, uint64_t output_operand_id);
+
+  void BuildSoftplus(uint64_t input_operand_id,
+                     uint64_t output_operand_id,
+                     float steepness);
 
   void BuildSplit(uint64_t input_operand_id,
                   const std::vector<uint64_t>& output_operand_ids,

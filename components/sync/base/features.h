@@ -27,6 +27,14 @@ BASE_DECLARE_FEATURE(kIgnoreSyncEncryptionKeysLongMissing);
 inline constexpr base::FeatureParam<int> kMinGuResponsesToIgnoreKey{
     &kIgnoreSyncEncryptionKeysLongMissing, "MinGuResponsesToIgnoreKey", 3};
 
+#if BUILDFLAG(IS_ANDROID)
+// If the user has an explicit sync passphrase and entered it in the browser,
+// this flag silently passes the (derived) passphrase to GmsCore. Then GmsCore
+// can decrypt synced data (mainly passwords) without the user entering the
+// passphrase a second time.
+BASE_DECLARE_FEATURE(kPassExplicitSyncPassphraseToGmsCore);
+#endif
+
 // Enables adding, displaying and modifying extra notes to stored credentials.
 // When enabled, "PasswordViewPageInSettings" feature in the password manager
 // codebase is ignored and the new password view subpage is force enabled. When
@@ -99,9 +107,6 @@ inline constexpr base::FeatureParam<bool>
         &kSyncEnableContactInfoDataTypeForDasherUsers,
         "enable_for_google_accounts", false};
 
-// If enabled, issues error and disables bookmarks sync when limit is crossed.
-BASE_DECLARE_FEATURE(kSyncEnforceBookmarksCountLimit);
-
 // Enables a separate account-scoped storage for preferences, for syncing users.
 // (Note that opposed to other "account storage" features, this one does not
 // have any effect for signed-in non-syncing users!)
@@ -141,7 +146,16 @@ BASE_DECLARE_FEATURE(kEnableBookmarkFoldersForAccountStorage);
 
 // Feature flag used for enabling sync (transport mode) for signed-in users that
 // haven't turned on full sync.
+#if !BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kReadingListEnableSyncTransportModeUponSignIn);
+// Returns whether reading list storage related UI can be enabled, by testing
+// `kReadingListEnableSyncTransportModeUponSignIn`.
+bool IsReadingListAccountStorageEnabled();
+#else
+constexpr bool IsReadingListAccountStorageEnabled() {
+  return true;
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 // Flags to allow AUTOFILL_WALLET_METADATA and AUTOFILL_WALLET_OFFER,
 // respectively, to run in transport mode.
@@ -180,6 +194,12 @@ BASE_DECLARE_FEATURE(kRestoreSyncedPlaceholderTabs);
 // -OnVisibilityChanged method is called.
 BASE_DECLARE_FEATURE(kSyncSessionOnVisibilityChanged);
 
+// The minimum time between two sync updates of last_active_time when
+inline constexpr base::FeatureParam<base::TimeDelta>
+    kSyncSessionOnVisibilityChangedTimeThreshold{
+        &kSyncSessionOnVisibilityChanged,
+        "SyncSessionOnVisibilityChangedTimeThreshold", base::Minutes(1)};
+
 // If enabled, the payment methods sync setting toggle is decoupled from
 // autofill. See crbug.com/1435431 for details.
 BASE_DECLARE_FEATURE(kSyncDecoupleAddressPaymentSettings);
@@ -187,6 +207,19 @@ BASE_DECLARE_FEATURE(kSyncDecoupleAddressPaymentSettings);
 // If enabled, sync-the-transport will auto-start (avoid deferring startup) if
 // sync metadata isn't available (i.e. initial sync never completed).
 BASE_DECLARE_FEATURE(kSyncAlwaysForceImmediateStartIfTransportDataMissing);
+
+// If enabled, the local change nudge delays for single-client users are
+// increased by some factor, specified via the FeatureParam below.
+BASE_DECLARE_FEATURE(kSyncIncreaseNudgeDelayForSingleClient);
+
+inline constexpr base::FeatureParam<double>
+    kSyncIncreaseNudgeDelayForSingleClientFactor{
+        &kSyncIncreaseNudgeDelayForSingleClient,
+        "SyncIncreaseNudgeDelayForSingleClientFactor", 2.0};
+
+// If enabled, SyncSchedulerImpl uses a WallClockTimer instead of a OneShotTimer
+// to schedule poll requests.
+BASE_DECLARE_FEATURE(kSyncSchedulerUseWallClockTimer);
 
 }  // namespace syncer
 

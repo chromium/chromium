@@ -63,6 +63,7 @@
 #include "absl/base/attributes.h"
 #include "absl/base/internal/throw_delegate.h"
 #include "absl/base/macros.h"
+#include "absl/base/nullability.h"
 #include "absl/base/optimization.h"
 #include "absl/base/port.h"    // TODO(strel): remove this include
 #include "absl/meta/type_traits.h"
@@ -172,6 +173,8 @@ class Span {
  public:
   using element_type = T;
   using value_type = absl::remove_cv_t<T>;
+  // TODO(b/316099902) - pointer should be Nullable<T*>, but this makes it hard
+  // to recognize foreach loops as safe.
   using pointer = T*;
   using const_pointer = const T*;
   using reference = T&;
@@ -679,12 +682,12 @@ bool operator>=(Span<T> a, const U& b) {
 //   }
 //
 template <int&... ExplicitArgumentBarrier, typename T>
-constexpr Span<T> MakeSpan(T* ptr, size_t size) noexcept {
+constexpr Span<T> MakeSpan(absl::Nullable<T*> ptr, size_t size) noexcept {
   return Span<T>(ptr, size);
 }
 
 template <int&... ExplicitArgumentBarrier, typename T>
-Span<T> MakeSpan(T* begin, T* end) noexcept {
+Span<T> MakeSpan(absl::Nullable<T*> begin, absl::Nullable<T*> end) noexcept {
   return ABSL_HARDENING_ASSERT(begin <= end),
          Span<T>(begin, static_cast<size_t>(end - begin));
 }
@@ -725,12 +728,14 @@ constexpr Span<T> MakeSpan(T (&array)[N]) noexcept {
 //   ProcessInts(absl::MakeConstSpan(std::vector<int>{ 0, 0, 0 }));
 //
 template <int&... ExplicitArgumentBarrier, typename T>
-constexpr Span<const T> MakeConstSpan(T* ptr, size_t size) noexcept {
+constexpr Span<const T> MakeConstSpan(absl::Nullable<T*> ptr,
+                                      size_t size) noexcept {
   return Span<const T>(ptr, size);
 }
 
 template <int&... ExplicitArgumentBarrier, typename T>
-Span<const T> MakeConstSpan(T* begin, T* end) noexcept {
+Span<const T> MakeConstSpan(absl::Nullable<T*> begin,
+                            absl::Nullable<T*> end) noexcept {
   return ABSL_HARDENING_ASSERT(begin <= end), Span<const T>(begin, end - begin);
 }
 

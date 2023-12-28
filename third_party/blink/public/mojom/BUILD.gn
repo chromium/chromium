@@ -371,6 +371,9 @@ mojom("mojom_platform") {
   if (is_android || is_apple) {
     enabled_features += [ "is_using_open_color_chooser" ]
   }
+  if (is_android || is_ios) {
+    enabled_features += [ "is_android_or_ios" ]
+  }
 
   shared_cpp_typemaps = [
     {

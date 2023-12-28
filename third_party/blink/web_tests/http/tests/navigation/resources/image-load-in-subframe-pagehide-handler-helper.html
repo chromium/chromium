@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+    function imageLoad() {
+        var img = new Image(1, 1);
+        // We're using a redirect here because it guarantees that if we're
+        // receiving callbacks in a detached Frame, we'll acceess members
+        // that are now invalid (e.g., DocumentLoaders).
+        img.src = "redirect302.pl";
+        document.getElementsByTagName("body")[0].appendChild(img);
+        window.top.finish();
+    }
+</script>
+<iframe src="subframe-with-pagehide-handler-in-parent.html">
+</body>
+</html>

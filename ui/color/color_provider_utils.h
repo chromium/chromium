@@ -86,7 +86,13 @@ ColorProvider COMPONENT_EXPORT(COLOR)
 // function should be updated once the web driver support spec for forced colors
 // mode is updated.
 ColorProvider COMPONENT_EXPORT(COLOR)
-    CreateEmulatedForcedColorsColorProviderForWebTests();
+    CreateEmulatedForcedColorsColorProviderForTest();
+
+// Creates a color provider for use in blink tests. Some Blink tests do not use
+// a renderer process and thus don't use the normal machinery to establish a
+// color provider in the renderer.
+ColorProvider COMPONENT_EXPORT(COLOR)
+    CreateColorProviderForBlinkTests(bool dark_mode);
 
 // Scrollbars have three main colors. This function completes the
 // definition of colors for all scrollbar parts in relation to the three main

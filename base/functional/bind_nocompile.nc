@@ -182,16 +182,16 @@ void CallbackConversion() {
   RepeatingClosure discarding_return = BindRepeating([] { return 0; });                  // expected-error {{no viable conversion from 'RepeatingCallback<UnboundRunType>' to 'RepeatingCallback<void ()>'}}
 }
 
-void CapturingOrStatefulLambdaOrFunctor() {
-  // Bind disallows capturing and stateful lambdas/functors.
+void CapturingLambdaOrFunctor() {
+  // Bind disallows capturing lambdas and stateful functors.
   int i = 0, j = 0;
   struct S {
     void operator()() const {}
     int x;
   };
-  BindOnce([&]() { j = i; });        // expected-error@*:* {{Capturing lambdas and stateful lambdas are intentionally not supported.}}
-  BindRepeating([&]() { j = i; });   // expected-error@*:* {{Capturing lambdas and stateful lambdas are intentionally not supported.}}
-  BindRepeating(S());                // expected-error@*:* {{Capturing lambdas and stateful lambdas are intentionally not supported.}}
+  BindOnce([&]() { j = i; });        // expected-error@*:* {{Capturing lambdas and stateful functors are intentionally not supported.}}
+  BindRepeating([&]() { j = i; });   // expected-error@*:* {{Capturing lambdas and stateful functors are intentionally not supported.}}
+  BindRepeating(S());                // expected-error@*:* {{Capturing lambdas and stateful functors are intentionally not supported.}}
 }
 
 void OnceCallbackRequiresNonConstRvalue() {
@@ -254,41 +254,59 @@ void OverloadedFunction() {
   BindRepeating(&F, 1.0f);  // expected-error {{reference to overloaded function could not be resolved; did you mean to call it?}}
 }
 
-void IncompleteType() {
-  // Argument types must be complete.
-  class A;
-  class B;
-  A* a;
-  B* b;
-  BindOnce([] (A*) {}, Unretained(a));  // expected-error@*:* {{T must be fully defined.}}
-  BindOnce([] (B*) {}, b);              // expected-error@*:* {{T must be fully defined.}}
+// Define a type that disallows `Unretained()` via the internal customization
+// point, so the next test can use it.
+struct BlockViaCustomizationPoint {};
+namespace internal {
+template <>
+constexpr bool kCustomizeSupportsUnretained<BlockViaCustomizationPoint> = false;
+}  // namespace internal
+
+void CanDetectTypesThatDisallowUnretained() {
+  // It shouldn't be possible to directly bind any type that doesn't support
+  // `Unretained()`, whether because it's incomplete, or is marked with
+  // `DISALLOW_RETAINED()`, or has `kCustomizeSupportsUnretained` specialized to
+  // be `false`.
+  struct BlockPublicly {
+    DISALLOW_UNRETAINED();
+  } publicly;
+  class BlockPrivately {
+    DISALLOW_UNRETAINED();
+  } privately;
+  struct BlockViaInheritance : BlockPublicly {} inheritance;
+  BlockViaCustomizationPoint customization;
+  struct BlockDueToBeingIncomplete;
+  BlockDueToBeingIncomplete* ptr_incomplete;
+  BindOnce([](BlockPublicly*) {}, &publicly);                    // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
+  BindOnce([](BlockPrivately*) {}, &privately);                  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
+  BindOnce([](BlockViaInheritance*) {}, &inheritance);           // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
+  BindOnce([](BlockViaCustomizationPoint*) {}, &customization);  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
+  BindOnce([](BlockDueToBeingIncomplete*) {}, ptr_incomplete);   // expected-error@*:* {{Argument requires unretained storage, but type is not fully defined.}}
 }
 
-void DisallowedType() {
-  // Arguments passed as pointers or refs cannot use DISALLOW_UNRETAINED().
+void OtherWaysOfPassingDisallowedTypes() {
+  // In addition to the direct passing tested above, arguments passed as
+  // `Unretained()` pointers or as refs must support `Unretained()`.
   struct A {
     void Method() {}
     DISALLOW_UNRETAINED();
-  };
+  } a;
   // Using distinct types causes distinct template instantiations, so we get
   // assertion failures below where we expect. This type facilitates that.
-  struct B : public A {};
-  A a;
-  B b;
-  BindOnce(&A::Method, Unretained(&a));      // expected-error@*:* {{Callback cannot capture an unprotected C++ pointer since this type is annotated with DISALLOW_UNRETAINED().}}
-  BindOnce([] (B*) {}, &b);                  // expected-error@*:* {{Callback cannot capture an unprotected C++ pointer since this type is annotated with DISALLOW_UNRETAINED().}}
-  BindOnce([] (const A&) {}, std::cref(a));  // expected-error@*:* {{Callback cannot capture an unprotected C++ reference since this type is annotated with DISALLOW_UNRETAINED().}}
-  BindOnce([] (A&) {}, std::ref(a));         // expected-error@*:* {{Callback cannot capture an unprotected C++ reference since this type is annotated with DISALLOW_UNRETAINED().}}
+  struct B : public A {} b;
+  BindOnce(&A::Method, Unretained(&a));      // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
+  BindOnce([] (const A&) {}, std::cref(a));  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
+  BindOnce([] (B&) {}, std::ref(b));         // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
 }
 
 void UnsafeDangling() {
   // Pointers marked as `UnsafeDangling` may only be be received by
   // `MayBeDangling` args with matching traits.
   int i;
-  BindOnce([] (int*) {}, UnsafeDangling(&i));                      // expected-error@*:* {{base::UnsafeDangling() pointers must be received by functors with MayBeDangling<T> as parameter.}}
+  BindOnce([] (int*) {}, UnsafeDangling(&i));                      // expected-error@*:* {{base::UnsafeDangling() pointers should only be passed to parameters marked MayBeDangling<T>.}}
   BindOnce([] (MayBeDangling<int>) {},
-           UnsafeDangling<int, RawPtrTraits::kDummyForTest>(&i));  // expected-error@*:* {{MayBeDangling<T> parameter must receive the same RawPtrTraits as the one passed to the corresponding base::UnsafeDangling() call.}}
-  BindOnce([] (raw_ptr<int>) {}, UnsafeDanglingUntriaged(&i));     // expected-error@*:* {{base::Bind() target functor has a parameter of type raw_ptr<T>. raw_ptr<T> should not be used for function parameters; please use T* or T& instead.}}
+           UnsafeDangling<int, RawPtrTraits::kDummyForTest>(&i));  // expected-error@*:* {{Pointers passed to MayBeDangling<T> parameters must be created by base::UnsafeDangling() with the same RawPtrTraits.}}
+  BindOnce([] (raw_ptr<int>) {}, UnsafeDanglingUntriaged(&i));     // expected-error@*:* {{Use T* or T& instead of raw_ptr<T> for function parameters, unless you must mark the parameter as MayBeDangling<T>.}}
 }
 
 }  // namespace base

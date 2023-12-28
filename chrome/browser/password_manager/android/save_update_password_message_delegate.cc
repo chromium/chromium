@@ -354,19 +354,17 @@ void SaveUpdatePasswordMessageDelegate::SavePassword() {
     passwords_state_.form_manager()->Save();
     return;
   }
-  if (auto* window = web_contents_->GetNativeView()->GetWindowAndroid()) {
-    device_lock_bridge_->LaunchDeviceLockUiBeforeRunningCallback(
-        window,
-        base::BindOnce(
-            &SaveUpdatePasswordMessageDelegate::SavePasswordAfterDeviceLockUi,
-            weak_ptr_factory_.GetWeakPtr()));
-  }
+  device_lock_bridge_->LaunchDeviceLockUiIfNeededBeforeRunningCallback(
+      web_contents_->GetNativeView()->GetWindowAndroid(),
+      base::BindOnce(
+          &SaveUpdatePasswordMessageDelegate::SavePasswordAfterDeviceLockUi,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SaveUpdatePasswordMessageDelegate::SavePasswordAfterDeviceLockUi(
-    bool is_device_lock_set) {
+    bool is_device_lock_requirement_met) {
   CHECK(device_lock_bridge_->RequiresDeviceLock());
-  if (is_device_lock_set) {
+  if (is_device_lock_requirement_met) {
     passwords_state_.form_manager()->Save();
     TryToShowPasswordMigrationWarning(create_migration_warning_callback_,
                                       web_contents_);

@@ -16,7 +16,7 @@ mojom("mojom") {
 
   # Used by ash/webui/common/resources/multidevice_setup, which is still using
   # JS + Closure.
-  use_typescript_sources = false
+  generate_webui_js_bindings = true
 
   cpp_typemaps = [
     {

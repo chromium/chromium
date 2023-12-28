@@ -305,7 +305,12 @@ const tab =
 <verify state>
 ```
 
-This, too, will be even more readable with Promise-based APIs.
+For Promise-based calls in MV3 tests this can be simplified even more:
+
+```js
+const tab = await chrome.tabs.create({url: url});
+<verify state>
+```
 
 ### listenOnce() and listenForever()
 `chrome.test.listenOnce()` and `chrome.test.listenForever()` are utility

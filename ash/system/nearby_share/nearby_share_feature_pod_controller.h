@@ -52,11 +52,10 @@ class ASH_EXPORT NearbyShareFeaturePodController
   base::RepeatingTimer countdown_timer_;
   base::TimeTicks shutoff_time_;
 
-  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
-  const raw_ptr<NearbyShareDelegate, ExperimentalAsh> nearby_share_delegate_;
-  const raw_ptr<NearbyShareControllerImpl, ExperimentalAsh>
-      nearby_share_controller_;
-  raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ = nullptr;
+  const raw_ptr<UnifiedSystemTrayController> tray_controller_;
+  const raw_ptr<NearbyShareDelegate> nearby_share_delegate_;
+  const raw_ptr<NearbyShareControllerImpl> nearby_share_controller_;
+  raw_ptr<FeatureTile, DanglingUntriaged> tile_ = nullptr;
 
   base::WeakPtrFactory<NearbyShareFeaturePodController> weak_ptr_factory_{this};
 };

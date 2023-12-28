@@ -6,8 +6,7 @@
 #define COMPONENTS_CAST_STREAMING_COMMON_MESSAGE_SERIALIZATION_H_
 
 #include <string>
-
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace cast_streaming {
 
@@ -42,7 +41,7 @@ extern const char kInitialConnectMessage[];
 
 // Parses |buffer| data into |sender_id|, |message_namespace| and |message|.
 // Returns true on success.
-bool DeserializeCastMessage(base::StringPiece buffer,
+bool DeserializeCastMessage(std::string_view buffer,
                             std::string* sender_id,
                             std::string* message_namespace,
                             std::string* message);

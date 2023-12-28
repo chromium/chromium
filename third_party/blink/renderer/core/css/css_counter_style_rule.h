@@ -15,7 +15,7 @@ namespace blink {
 class ExecutionContext;
 class StyleRuleCounterStyle;
 
-class CSSCounterStyleRule final : public CSSRule {
+class CORE_EXPORT CSSCounterStyleRule final : public CSSRule {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

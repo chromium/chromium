@@ -63,11 +63,6 @@ class CONTENT_EXPORT AudibleMetrics {
   size_t max_concurrent_audible_web_contents_in_session_;
   raw_ptr<const base::TickClock> clock_;
 
-  // This stores the audible web contents in insertion order. We add a
-  // web contents to the list when it becomes audible and remove it is
-  // destroyed.
-  std::list<const WebContents*> last_audible_web_contents_;
-
   // Stores all the web contents that are currently audible. We add a web
   // contents to the set when it becomes currently audible and remove it when it
   // is no longer audible.

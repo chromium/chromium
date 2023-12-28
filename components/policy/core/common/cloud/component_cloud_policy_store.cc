@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -87,7 +88,7 @@ base::Value::Dict TranslatePolicyMapEntryToJson(const PolicyMap::Entry& entry) {
   // not caring about its type.
   result.Set(kValue, entry.value_unsafe()->Clone());
   if (entry.level == POLICY_LEVEL_RECOMMENDED) {
-    result.Set(kLevel, base::StringPiece(kRecommended));
+    result.Set(kLevel, std::string_view(kRecommended));
   }
   return result;
 }

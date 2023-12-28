@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_hunspell_dictionary.h"
 #include "components/language/core/browser/pref_names.h"
@@ -46,7 +47,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
@@ -67,16 +67,7 @@ SpellcheckService::SpellCheckerBinder& GetSpellCheckerBinderOverride() {
 // Only record spelling-configuration metrics for profiles in which the user
 // can configure spelling.
 bool RecordSpellingConfigurationMetrics(content::BrowserContext* context) {
-  Profile* profile = Profile::FromBrowserContext(context);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // ChromeOS creates various unusual profiles (login, lock screen...) which
-  // pass the IsRegularProfile() test above yet for which users cannot
-  // configure spelling.
-  if (!ash::ProfileHelper::IsUserProfile(profile)) {
-    return false;
-  }
-#endif
-  return profile->IsRegularProfile();
+  return profiles::IsRegularUserProfile(Profile::FromBrowserContext(context));
 }
 
 }  // namespace

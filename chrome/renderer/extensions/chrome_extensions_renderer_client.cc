@@ -29,6 +29,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
 #include "extensions/renderer/dispatcher.h"
@@ -189,20 +190,20 @@ bool ChromeExtensionsRendererClient::AllowPopup() {
 
   // See http://crbug.com/117446 for the subtlety of this check.
   switch (current_context->context_type()) {
-    case extensions::Feature::UNSPECIFIED_CONTEXT:
-    case extensions::Feature::WEB_PAGE_CONTEXT:
-    case extensions::Feature::UNBLESSED_EXTENSION_CONTEXT:
-    case extensions::Feature::WEBUI_CONTEXT:
-    case extensions::Feature::WEBUI_UNTRUSTED_CONTEXT:
-    case extensions::Feature::OFFSCREEN_EXTENSION_CONTEXT:
-    case extensions::Feature::USER_SCRIPT_CONTEXT:
-    case extensions::Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
+    case extensions::mojom::ContextType::kUnspecified:
+    case extensions::mojom::ContextType::kWebPage:
+    case extensions::mojom::ContextType::kUnprivilegedExtension:
+    case extensions::mojom::ContextType::kWebUi:
+    case extensions::mojom::ContextType::kUntrustedWebUi:
+    case extensions::mojom::ContextType::kOffscreenExtension:
+    case extensions::mojom::ContextType::kUserScript:
+    case extensions::mojom::ContextType::kLockscreenExtension:
       return false;
-    case extensions::Feature::BLESSED_EXTENSION_CONTEXT:
+    case extensions::mojom::ContextType::kPrivilegedExtension:
       return !current_context->IsForServiceWorker();
-    case extensions::Feature::CONTENT_SCRIPT_CONTEXT:
+    case extensions::mojom::ContextType::kContentScript:
       return true;
-    case extensions::Feature::BLESSED_WEB_PAGE_CONTEXT:
+    case extensions::mojom::ContextType::kPrivilegedWebPage:
       return current_context->web_frame()->IsOutermostMainFrame();
   }
 }
@@ -217,18 +218,18 @@ ChromeExtensionsRendererClient::GetProtocolHandlerSecurityLevel() {
     return blink::ProtocolHandlerSecurityLevel::kStrict;
 
   switch (current_context->context_type()) {
-    case extensions::Feature::BLESSED_WEB_PAGE_CONTEXT:
-    case extensions::Feature::CONTENT_SCRIPT_CONTEXT:
-    case extensions::Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
-    case extensions::Feature::OFFSCREEN_EXTENSION_CONTEXT:
-    case extensions::Feature::UNBLESSED_EXTENSION_CONTEXT:
-    case extensions::Feature::UNSPECIFIED_CONTEXT:
-    case extensions::Feature::USER_SCRIPT_CONTEXT:
-    case extensions::Feature::WEBUI_CONTEXT:
-    case extensions::Feature::WEBUI_UNTRUSTED_CONTEXT:
-    case extensions::Feature::WEB_PAGE_CONTEXT:
+    case extensions::mojom::ContextType::kPrivilegedWebPage:
+    case extensions::mojom::ContextType::kContentScript:
+    case extensions::mojom::ContextType::kLockscreenExtension:
+    case extensions::mojom::ContextType::kOffscreenExtension:
+    case extensions::mojom::ContextType::kUnprivilegedExtension:
+    case extensions::mojom::ContextType::kUnspecified:
+    case extensions::mojom::ContextType::kUserScript:
+    case extensions::mojom::ContextType::kWebUi:
+    case extensions::mojom::ContextType::kUntrustedWebUi:
+    case extensions::mojom::ContextType::kWebPage:
       return blink::ProtocolHandlerSecurityLevel::kStrict;
-    case extensions::Feature::BLESSED_EXTENSION_CONTEXT:
+    case extensions::mojom::ContextType::kPrivilegedExtension:
       return blink::ProtocolHandlerSecurityLevel::kExtensionFeatures;
   }
 }

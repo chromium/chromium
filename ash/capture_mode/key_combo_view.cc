@@ -139,7 +139,7 @@ class ModifiersContainerView : public views::View {
 
  private:
   void RemoveModifier(ui::KeyboardCode key_code) {
-    for (auto* child : children()) {
+    for (views::View* child : children()) {
       if (static_cast<KeyItemView*>(child)->key_code() == key_code) {
         RemoveChildViewT(child);
         return;

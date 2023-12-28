@@ -31,10 +31,10 @@ AutofillMlPredictionModelHandler::AutofillMlPredictionModelHandler(
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::USER_VISIBLE}),
           std::make_unique<AutofillModelExecutor>(),
-          /*model_inference_timeout=*/absl::nullopt,
+          /*model_inference_timeout=*/std::nullopt,
           optimization_guide::proto::OptimizationTarget::
               OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION,
-          /*model_metadata=*/absl::nullopt) {
+          /*model_metadata=*/std::nullopt) {
   // Store the model in memory as soon as it is available and keep it loaded for
   // the whole browser session since we query predictions very regularly.
   // TODO(crbug.com/1465926): Maybe change both back to default behavior if we
@@ -60,12 +60,10 @@ void AutofillMlPredictionModelHandler::GetModelPredictionsForForm(
           [](base::WeakPtr<AutofillMlPredictionModelHandler> self,
              std::unique_ptr<FormStructure> form_structure,
              base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback,
-             const absl::optional<AutofillModelExecutor::ModelOutput>& output) {
-            if (!self) {
-              return;
+             const std::optional<AutofillModelExecutor::ModelOutput>& output) {
+            if (self && output) {
+              self->AssignMostLikelyTypes(*form_structure, *output);
             }
-            CHECK(output);
-            self->AssignMostLikelyTypes(*form_structure, *output);
             std::move(callback).Run(std::move(form_structure));
           },
           weak_ptr_factory_.GetWeakPtr(), std::move(form_structure),
@@ -135,7 +133,7 @@ void AutofillMlPredictionModelHandler::AssignMostLikelyTypes(
   }
 }
 
-ServerFieldType AutofillMlPredictionModelHandler::GetMostLikelyType(
+FieldType AutofillMlPredictionModelHandler::GetMostLikelyType(
     const std::vector<float>& model_output) const {
   CHECK(state_);
   int max_index =
@@ -143,8 +141,8 @@ ServerFieldType AutofillMlPredictionModelHandler::GetMostLikelyType(
   CHECK_LT(max_index, state_->metadata.output_type_size());
   if (!state_->metadata.has_confidence_threshold() ||
       model_output[max_index] >= state_->metadata.confidence_threshold()) {
-    return ToSafeServerFieldType(state_->metadata.output_type(max_index),
-                                 UNKNOWN_TYPE);
+    return ToSafeFieldType(state_->metadata.output_type(max_index),
+                           UNKNOWN_TYPE);
   }
   return UNKNOWN_TYPE;
 }

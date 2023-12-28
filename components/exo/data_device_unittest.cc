@@ -50,7 +50,7 @@ class TestSeat : public Seat {
   Surface* GetFocusedSurface() override { return surface_; }
 
  private:
-  raw_ptr<Surface, DanglingUntriaged | ExperimentalAsh> surface_ = nullptr;
+  raw_ptr<Surface, DanglingUntriaged> surface_ = nullptr;
 };
 
 class DataDeviceTest : public test::ExoTestBase {

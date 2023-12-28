@@ -7,6 +7,7 @@
 
 #include "components/ui_devtools/views/dom_agent_views.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/ui_devtools/css_agent.h"
@@ -250,7 +251,8 @@ class DOMAgentTest : public views::ViewsTestBase {
     }
 
     protocol::Array<DOM::Node>* children = root->getChildren(nullptr);
-    std::vector<views::View*> child_views = view->GetChildrenInZOrder();
+    std::vector<raw_ptr<views::View, VectorExperimental>> child_views =
+        view->GetChildrenInZOrder();
     const size_t child_count = child_views.size();
     if (child_count != children->size())
       return false;
@@ -476,7 +478,7 @@ TEST_F(DOMAgentTest, ViewInserted) {
 
   views::View* root_view = widget->GetRootView();
   ASSERT_FALSE(root_view->children().empty());
-  auto* last_child = root_view->children().back();
+  auto* last_child = root_view->children().back().get();
   root_view->AddChildView(std::make_unique<views::View>());
   EXPECT_TRUE(WasChildNodeInserted(root_view, last_child));
 }

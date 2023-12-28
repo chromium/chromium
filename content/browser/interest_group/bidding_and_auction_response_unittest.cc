@@ -229,10 +229,9 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
           }(),
       },
       {
-          base::Value(base::Value::Dict()
-                          .Set("isChaff", true)
-                          .Set("error", base::Value(base::Value::Dict().Set(
-                                            "message", "error message")))),
+          base::Value(base::Value::Dict().Set(
+              "error", base::Value(base::Value::Dict().Set("message",
+                                                           "error message")))),
           []() {
             BiddingAndAuctionResponse response;
             response.is_chaff = true;
@@ -246,19 +245,23 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
       },
       {
           base::Value(CreateValidResponseDict().Set("error", "not a dict")),
-          CreateExpectedValidResponse(),  // ignore the error
+          CreateExpectedValidResponse(),
       },
-      {
-          base::Value(CreateValidResponseDict().Set(
-              "error", base::Value(base::Value::Dict().Set("message", 1)))),
-          CreateExpectedValidResponse(),  // ignore the error
-      },
+      {base::Value(CreateValidResponseDict().Set(
+           "error", base::Value(base::Value::Dict().Set("message", 1)))),
+       []() {
+         BiddingAndAuctionResponse response;
+         response.is_chaff = true;
+         response.error = "Unknown server error";
+         return response;
+       }()},
       {
           base::Value(CreateValidResponseDict().Set(
               "error", base::Value(base::Value::Dict().Set("message",
                                                            "error message")))),
           []() {
-            BiddingAndAuctionResponse response = CreateExpectedValidResponse();
+            BiddingAndAuctionResponse response;
+            response.is_chaff = true;
             response.error = "error message";
             return response;
           }(),

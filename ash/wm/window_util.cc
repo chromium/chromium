@@ -36,6 +36,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
@@ -103,7 +104,7 @@ bool ContainsSystemModalWindow(const aura::Window* window) {
     return true;
   }
 
-  for (const auto* child : window->children()) {
+  for (const aura::Window* child : window->children()) {
     if (ContainsSystemModalWindow(child)) {
       return true;
     }
@@ -329,14 +330,12 @@ bool ShouldExcludeForCycleList(const aura::Window* window) {
 
 bool ShouldExcludeForOverview(const aura::Window* window) {
   // If we're currently in tablet splitview or in clamshell mode with
-  // `IsArm1AutomaticallyLockEnabled()` (see SnapGroupController for more
-  // details), remove the default snapped window from the window list. The
-  // default snapped window occupies one side of the screen, while the other
-  // windows occupy the other side of the screen in overview mode. The default
-  // snap position is the position where the window was first snapped. See
-  // `default_snap_position_` in SplitViewController for more details.
-  auto* split_view_controller =
-      SplitViewController::Get(window->GetRootWindow());
+  // `IsFasterSplitScreenOrSnapGroupEnabledInClamshell()`, remove the default
+  // snapped window from the window list. The default snapped window occupies
+  // one side of the screen, while the other windows occupy the other side of
+  // the screen in overview mode. The default snap position is the position
+  // where the window was first snapped. See `default_snap_position_` in
+  // SplitViewController for more details.
 
   // A window should be excluded from being shown in overview when:
   // 1. In tablet split view mode on one window snapped;
@@ -369,11 +368,13 @@ bool ShouldExcludeForOverview(const aura::Window* window) {
   }
 
   return display::Screen::GetScreen()->InTabletMode()
-             ? (window == split_view_controller->GetDefaultSnappedWindow())
+             ? (window == SplitViewController::Get(window->GetRootWindow())
+                              ->GetDefaultSnappedWindow())
              : should_exclude_in_clamshell();
 }
 
-void EnsureTransientRoots(std::vector<aura::Window*>* out_window_list) {
+void EnsureTransientRoots(
+    std::vector<raw_ptr<aura::Window, VectorExperimental>>* out_window_list) {
   for (auto it = out_window_list->begin(); it != out_window_list->end();) {
     aura::Window* transient_root = ::wm::GetTransientRoot(*it);
     if (*it != transient_root) {
@@ -390,8 +391,8 @@ void EnsureTransientRoots(std::vector<aura::Window*>* out_window_list) {
 }
 
 void MinimizeAndHideWithoutAnimation(
-    const std::vector<aura::Window*>& windows) {
-  for (auto* window : windows) {
+    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows) {
+  for (aura::Window* window : windows) {
     ScopedAnimationDisabler disable(window);
 
     // ARC windows are minimized asynchronously, so we hide them after
@@ -574,6 +575,25 @@ WindowTransientDescendantIteratorRange GetVisibleTransientTreeIterator(
   return GetTransientTreeIterator(window, base::BindRepeating(hide_predicate));
 }
 
+void SetTransform(aura::Window* window, const gfx::Transform& transform) {
+  const gfx::PointF target_origin(
+      GetUnionScreenBoundsForWindow(window).origin());
+  for (auto* window_iter :
+       window_util::GetVisibleTransientTreeIterator(window)) {
+    if (window_iter->GetProperty(kExcludeFromTransientTreeTransformKey)) {
+      continue;
+    }
+    aura::Window* parent_window = window_iter->parent();
+    gfx::RectF original_bounds(window_iter->GetTargetBounds());
+    ::wm::TranslateRectToScreen(parent_window, &original_bounds);
+    const gfx::Transform new_transform = TransformAboutPivot(
+        gfx::PointF(target_origin.x() - original_bounds.x(),
+                    target_origin.y() - original_bounds.y()),
+        transform);
+    window_iter->SetTransform(new_transform);
+  }
+}
+
 gfx::RectF GetTransformedBounds(aura::Window* transformed_window,
                                 int top_inset) {
   gfx::RectF bounds;
@@ -598,7 +618,7 @@ gfx::RectF GetTransformedBounds(aura::Window* transformed_window,
       header_bounds = new_transform.MapRect(header_bounds);
       window_bounds.Inset(gfx::InsetsF::TLBR(header_bounds.height(), 0, 0, 0));
     }
-    ::wm::TranslateRectToScreen(window->parent(), &window_bounds);
+    wm::TranslateRectToScreen(window->parent(), &window_bounds);
     bounds.Union(window_bounds);
   }
   return bounds;

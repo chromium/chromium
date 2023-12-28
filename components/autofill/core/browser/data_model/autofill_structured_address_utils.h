@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_constants.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_rewriter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace autofill {
@@ -35,26 +35,26 @@ struct AddressToken {
 enum class RegEx;
 
 // Enum to express the few quantifiers needed to parse values.
-enum MatchQuantifier {
+enum class MatchQuantifier {
   // The capture group is required.
-  MATCH_REQUIRED,
+  kRequired,
   // The capture group is optional.
-  MATCH_OPTIONAL,
+  kOptional,
   // The capture group is lazy optional meaning that it is avoided if an overall
   // match is possible.
-  MATCH_LAZY_OPTIONAL,
+  kLazyOptional,
 };
 
 // The result status of comparing two sets of sorted tokens.
-enum SortedTokenComparisonStatus {
+enum class SortedTokenComparisonStatus {
   // The tokens are neither the same nor super/sub sets.
-  DISTINCT,
+  kDistinct,
   // The token exactly match.
-  MATCH,
+  kMatch,
   // The first value is a subset of the second.
-  SUBSET,
+  kSubset,
   // The first value is a superset of the other.
-  SUPERSET
+  kSuperset
 };
 
 // The result from comparing two sets of sorted tokens containing the status and
@@ -67,7 +67,7 @@ struct SortedTokenComparisonResult {
   SortedTokenComparisonResult& operator=(SortedTokenComparisonResult&& other);
   ~SortedTokenComparisonResult();
   // The status of the token comparison.
-  SortedTokenComparisonStatus status = DISTINCT;
+  SortedTokenComparisonStatus status = SortedTokenComparisonStatus::kDistinct;
   // The additional elements in the super/subsets.
   std::vector<AddressToken> additional_tokens{};
   // Returns true if the first is a subset of the second;
@@ -91,7 +91,7 @@ struct CaptureOptions {
   // empty.
   std::string separator = ",|\\s+|$";
   // Indicates if the group is required, optional or even lazy optional.
-  MatchQuantifier quantifier = MATCH_REQUIRED;
+  MatchQuantifier quantifier = MatchQuantifier::kRequired;
 };
 
 // Returns true if honorific prefixes are enabled.
@@ -159,11 +159,11 @@ std::u16string ReduceToInitials(const std::u16string& value);
 // If the expression is fully matched, returns the matching results, keyed by
 // the name of the capture group with the captured substrings as the value.
 // Otherwise returns `nullopt`.
-absl::optional<base::flat_map<std::string, std::string>>
+std::optional<base::flat_map<std::string, std::string>>
 ParseValueByRegularExpression(const std::string& value, const RE2* regex);
 
 // Same as above, but accepts pattern instead of a compiled regular expression.
-absl::optional<base::flat_map<std::string, std::string>>
+std::optional<base::flat_map<std::string, std::string>>
 ParseValueByRegularExpression(const std::string& value,
                               const std::string& pattern);
 
@@ -194,15 +194,15 @@ std::string GetPlaceholderToken(std::string_view value);
 // StringPieces in |pattern_span_initializer_list|. The group is named by the
 // string representation of |type| and respects |options|.
 std::string CaptureTypeWithPattern(
-    const ServerFieldType& type,
-    std::initializer_list<base::StringPiece> pattern_span_initializer_list,
+    const FieldType& type,
+    std::initializer_list<std::string_view> pattern_span_initializer_list,
     const CaptureOptions& options);
 
 // Same as |CaptureTypeWithPattern(type, pattern_span_initializer_list,
 // options)| but uses default options.
 std::string CaptureTypeWithPattern(
-    const ServerFieldType& type,
-    std::initializer_list<base::StringPiece> pattern_span_initializer_list);
+    const FieldType& type,
+    std::initializer_list<std::string_view> pattern_span_initializer_list);
 
 // A pattern that is used to capture tokens that are not supposed to be
 // associated into a type.
@@ -213,7 +213,7 @@ std::string NoCapturePattern(const std::string& pattern,
 // matches |pattern| with an additional uncaptured |prefix_pattern| and
 // |suffix_pattern|.
 std::string CaptureTypeWithAffixedPattern(
-    const ServerFieldType& type,
+    const FieldType& type,
     const std::string& prefix_pattern,
     const std::string& pattern,
     const std::string& suffix_pattern,
@@ -222,7 +222,7 @@ std::string CaptureTypeWithAffixedPattern(
 // Convenience wrapper for |CaptureTypeWithAffixedPattern()| with an empty
 // |suffix_pattern|.
 std::string CaptureTypeWithPrefixedPattern(
-    const ServerFieldType& type,
+    const FieldType& type,
     const std::string& prefix_pattern,
     const std::string& pattern,
     const CaptureOptions& options = CaptureOptions());
@@ -230,7 +230,7 @@ std::string CaptureTypeWithPrefixedPattern(
 // Convenience wrapper for |CaptureTypeWithAffixedPattern()| with an empty
 // |prefix_pattern|.
 std::string CaptureTypeWithSuffixedPattern(
-    const ServerFieldType& type,
+    const FieldType& type,
     const std::string& pattern,
     const std::string& suffix_pattern,
     const CaptureOptions& options = CaptureOptions());
@@ -238,7 +238,7 @@ std::string CaptureTypeWithSuffixedPattern(
 // Convenience wrapper for |CaptureTypeWithAffixedPattern()| with an empty
 // |prefix_pattern| and |suffix_pattern|.
 std::string CaptureTypeWithPattern(
-    const ServerFieldType& type,
+    const FieldType& type,
     const std::string& pattern,
     const CaptureOptions options = CaptureOptions());
 

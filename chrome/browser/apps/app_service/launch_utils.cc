@@ -170,12 +170,14 @@ std::vector<base::FilePath> GetLaunchFilesFromCommandLine(
 #else
     GURL url(arg);
 #endif
-    if (url.is_valid() && !url.SchemeIsFile())
+    if (url.is_valid() && !url.SchemeIsFile()) {
       continue;
+    }
 
     base::FilePath path(arg);
-    if (path.empty())
+    if (path.empty()) {
       continue;
+    }
 
     launch_files.push_back(path);
   }

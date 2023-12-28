@@ -156,5 +156,5 @@ void CriticalNotificationBubbleView::ViewHierarchyChanged(
     NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
 }
 
-BEGIN_METADATA(CriticalNotificationBubbleView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(CriticalNotificationBubbleView)
 END_METADATA

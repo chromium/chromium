@@ -24,7 +24,8 @@ var NUMBER = '4111 1111 1111 1111';
 var EXP_MONTH = '02';
 var EXP_YEAR = '2999';
 var CVC = '987';
-MASKED_CVC = '•••';
+var MASKED_CVC = '•••';
+var NICKNAME = 'nickname';
 var IBAN_VALUE = 'AD1400080001001234567890';
 var INVALID_IBAN_VALUE = 'AD14000800010012345678900';
 
@@ -104,6 +105,62 @@ function updateExistingIban(updatedNickname) {
       nickname: updatedNickname
     });
   }));
+};
+
+function updateCreditCardForCvc(updatedCvcValue) {
+  // Reset onPersonalDataChanged.
+  chrome.autofillPrivate.onPersonalDataChanged.removeListener(failOnceCalled);
+
+  var UPDATED_CARD_NAME = 'UpdatedCardName';
+  var UPDATED_EXP_YEAR = '2888';
+  var UPDATED_NICKNAME = 'New nickname';
+
+  function filterCardProperties(cards) {
+    return cards.map(cards => {
+      var filteredCards = {};
+      ['guid', 'name', 'cardNumber', 'expirationMonth', 'expirationYear',
+       'nickname', 'cvc']
+          .forEach(property => {
+            filteredCards[property] = cards[property];
+          });
+      return filteredCards;
+    });
+  }
+
+  chrome.autofillPrivate.getCreditCardList(
+      chrome.test.callbackPass(function(cardList) {
+        // The card from the addNewCreditCard function should still be there.
+        chrome.test.assertEq(1, cardList.length);
+        var cardGuid = cardList[0].guid;
+
+        // Set up the callback that verifies that the card was correctly
+        // updated.
+        chrome.test.listenOnce(
+            chrome.autofillPrivate.onPersonalDataChanged,
+            chrome.test.callbackPass(function(addressList, cardList) {
+              chrome.test.assertEq(
+                  [{
+                    guid: cardGuid,
+                    name: UPDATED_CARD_NAME,
+                    cardNumber: MASKED_NUMBER,
+                    expirationMonth: EXP_MONTH,
+                    expirationYear: UPDATED_EXP_YEAR,
+                    nickname: UPDATED_NICKNAME,
+                    cvc: updatedCvcValue ? MASKED_CVC : undefined,
+                  }],
+                  filterCardProperties(cardList));
+            }));
+
+        // Update the card by saving a card with the same guid and using some
+        // different information.
+        chrome.autofillPrivate.saveCreditCard({
+          guid: cardGuid,
+          name: UPDATED_CARD_NAME,
+          expirationYear: UPDATED_EXP_YEAR,
+          nickname: UPDATED_NICKNAME,
+          cvc: updatedCvcValue
+        });
+      }));
 };
 
 var availableTests = [
@@ -203,43 +260,43 @@ var availableTests = [
           chrome.autofillPrivate.saveAddress({
             fields: [
               {
-                type: chrome.autofillPrivate.ServerFieldType.NAME_FULL,
+                type: chrome.autofillPrivate.FieldType.NAME_FULL,
                 value: NAME
               },
               {
-                type: chrome.autofillPrivate.ServerFieldType.ADDRESS_HOME_STATE,
+                type: chrome.autofillPrivate.FieldType.ADDRESS_HOME_STATE,
                 value: ADDRESS_LEVEL1
               },
               {
-                type: chrome.autofillPrivate.ServerFieldType.ADDRESS_HOME_CITY,
+                type: chrome.autofillPrivate.FieldType.ADDRESS_HOME_CITY,
                 value: ADDRESS_LEVEL2
               },
               {
-                type: chrome.autofillPrivate.ServerFieldType
+                type: chrome.autofillPrivate.FieldType
                           .ADDRESS_HOME_DEPENDENT_LOCALITY,
                 value: ADDRESS_LEVEL3
               },
               {
-                type: chrome.autofillPrivate.ServerFieldType.ADDRESS_HOME_ZIP,
+                type: chrome.autofillPrivate.FieldType.ADDRESS_HOME_ZIP,
                 value: POSTAL_CODE
               },
               {
-                type: chrome.autofillPrivate.ServerFieldType
+                type: chrome.autofillPrivate.FieldType
                           .ADDRESS_HOME_SORTING_CODE,
                 value: SORTING_CODE
               },
               {
                 type:
-                    chrome.autofillPrivate.ServerFieldType.ADDRESS_HOME_COUNTRY,
+                    chrome.autofillPrivate.FieldType.ADDRESS_HOME_COUNTRY,
                 value: COUNTRY_CODE
               },
               {
-                type: chrome.autofillPrivate.ServerFieldType
+                type: chrome.autofillPrivate.FieldType
                           .PHONE_HOME_WHOLE_NUMBER,
                 value: PHONE
               },
               {
-                type: chrome.autofillPrivate.ServerFieldType.EMAIL_ADDRESS,
+                type: chrome.autofillPrivate.FieldType.EMAIL_ADDRESS,
                 value: EMAIL
               },
             ],
@@ -300,11 +357,11 @@ var availableTests = [
             guid: addressGuid,
             fields: [
               {
-                type: chrome.autofillPrivate.ServerFieldType.NAME_FULL,
+                type: chrome.autofillPrivate.FieldType.NAME_FULL,
                 value: UPDATED_NAME
               },
               {
-                type: chrome.autofillPrivate.ServerFieldType
+                type: chrome.autofillPrivate.FieldType
                           .PHONE_HOME_WHOLE_NUMBER,
                 value: UPDATED_PHONE
               },
@@ -341,7 +398,7 @@ var availableTests = [
                       cardNumber: MASKED_NUMBER,
                       expirationMonth: EXP_MONTH,
                       expirationYear: EXP_YEAR,
-                      nickname: undefined,
+                      nickname: NICKNAME,
                       cvc: MASKED_CVC
                     }],
                     filterCardProperties(cardList));
@@ -352,6 +409,7 @@ var availableTests = [
             cardNumber: NUMBER,
             expirationMonth: EXP_MONTH,
             expirationYear: EXP_YEAR,
+            nickname: NICKNAME,
             cvc: CVC
           });
         }));
@@ -419,7 +477,7 @@ var availableTests = [
         cardNumber: NUMBER,
         expirationMonth: EXP_MONTH,
         expirationYear: EXP_YEAR,
-        cvc: CVC
+        cvc: undefined
       });
     }));
   },
@@ -463,7 +521,7 @@ var availableTests = [
                       expirationMonth: EXP_MONTH,
                       expirationYear: UPDATED_EXP_YEAR,
                       nickname: UPDATED_NICKNAME,
-                      cvc: MASKED_CVC
+                      cvc: undefined
                     }],
                     filterCardProperties(cardList));
               }));
@@ -477,6 +535,18 @@ var availableTests = [
             nickname: UPDATED_NICKNAME
           });
         }));
+  },
+
+  function updateExistingCreditCard_CvcRemoved() {
+    updateCreditCardForCvc(/*updatedCvcValue=*/ '');
+  },
+
+  function updateExistingCreditCard_CvcUpdated() {
+    updateCreditCardForCvc(/*updatedCvcValue=*/ '123');
+  },
+
+  function updateExistingCreditCard_UnchangedCvc() {
+    updateCreditCardForCvc(/*updatedCvcValue=*/ CVC);
   },
 
   function addNewIbanNoNickname() {
@@ -536,6 +606,26 @@ var availableTests = [
 
       // Remove the IBAN with the given guid.
       chrome.autofillPrivate.removeEntry(ibanGuid);
+    }));
+  },
+
+  function removeExistingCard() {
+    chrome.autofillPrivate.getCreditCardList(chrome.test.callbackPass(function(
+        cardList) {
+      // The card from the addNewCreditCard function should still be there.
+      chrome.test.assertEq(1, cardList.length);
+      var cardGuid = cardList[0].guid;
+
+      // Set up the callback that verifies that the card was correctly
+      // deleted.
+      chrome.test.listenOnce(
+          chrome.autofillPrivate.onPersonalDataChanged,
+          chrome.test.callbackPass(function(addressList, cardList, ibanList) {
+            chrome.test.assertEq(0, cardList.length);
+          }));
+
+      // Remove the card with the given guid.
+      chrome.autofillPrivate.removeEntry(cardGuid);
     }));
   },
 
@@ -635,9 +725,17 @@ var availableTests = [
 var TESTS_FOR_CONFIG = {
   'addAndUpdateAddress': ['addNewAddress', 'updateExistingAddress'],
   'addAndUpdateCreditCard': [
-    'addNewCreditCard', 'noChangesToExistingCreditCard',
+    'addNewCreditCardWithoutCvc', 'noChangesToExistingCreditCard',
     'updateExistingCreditCard'
   ],
+  'addAndUpdateCreditCard_AddCvc':
+      ['addNewCreditCardWithoutCvc', 'updateExistingCreditCard_CvcUpdated'],
+  'addAndUpdateCreditCard_RemoveCvc':
+      ['addNewCreditCard', 'updateExistingCreditCard_CvcRemoved'],
+  'addAndUpdateCreditCard_UpdateCvc':
+      ['addNewCreditCard', 'updateExistingCreditCard_CvcUpdated'],
+  'addAndUpdateCreditCard_UnchangedCvc':
+      ['addNewCreditCard', 'updateExistingCreditCard_UnchangedCvc'],
   'addNewIbanNoNickname': ['addNewIbanNoNickname'],
   'addNewIbanWithNickname': ['addNewIbanWithNickname'],
   'noChangesToExistingIban':
@@ -647,6 +745,9 @@ var TESTS_FOR_CONFIG = {
   'updateExistingIbanWithNickname':
       ['addNewIbanNoNickname', 'updateExistingIban_WithNickname'],
   'removeExistingIban': ['addNewIbanNoNickname', 'removeExistingIban'],
+  'removeExistingCard': ['addNewCreditCardWithoutCvc', 'removeExistingCard'],
+  'removeExistingCard_WithCvcAndNickname':
+      ['addNewCreditCard', 'removeExistingCard'],
   'isValidIban': ['isValidIban'],
   'authenticateUserAndFlipMandatoryAuthToggle':
       ['authenticateUserAndFlipMandatoryAuthToggle'],

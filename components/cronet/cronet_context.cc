@@ -469,7 +469,7 @@ void CronetContext::NetworkTasks::SetSharedURLRequestContextConfig(
     // Add the host pinning.
     context->transport_security_state()->AddHPKP(
         pkp->host, pkp->expiration_date, pkp->include_subdomains,
-        pkp->pin_hashes, GURL::EmptyGURL());
+        pkp->pin_hashes);
   }
 
   context->transport_security_state()

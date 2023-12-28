@@ -377,7 +377,8 @@ class SecureChannelBluetoothLowEnergyWeaveClientConnectionTest
             kCharacteristicProperties,
             device::BluetoothRemoteGattCharacteristic::PERMISSION_NONE);
 
-    std::vector<const device::BluetoothDevice*> devices;
+    std::vector<raw_ptr<const device::BluetoothDevice, VectorExperimental>>
+        devices;
     devices.push_back(mock_bluetooth_device_.get());
     ON_CALL(*adapter_, GetDevices()).WillByDefault(Return(devices));
     ON_CALL(*adapter_, GetDevice(kTestRemoteDeviceBluetoothAddress))

@@ -77,8 +77,6 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
 
       isNoiseCancellationEnabled_: {
         type: Boolean,
-        observer:
-            SettingsAudioElement.prototype.onNoiseCancellationEnabledChanged,
       },
 
       isNoiseCancellationSupported_: {
@@ -226,22 +224,6 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
         '#audioInputDeviceDropdown');
     assert(!!inputDeviceSelect);
     this.crosAudioConfig_.setActiveDevice(BigInt(inputDeviceSelect.value));
-  }
-
-  /** Handles updates to noise cancellation state. */
-  protected onNoiseCancellationEnabledChanged(
-      enabled: SettingsAudioElement['isNoiseCancellationEnabled_'],
-      previousEnabled: SettingsAudioElement['isNoiseCancellationEnabled_']):
-      void {
-    // Polymer triggers change event on all assignment to
-    // `isNoiseCancellationEnabled_` even if the value is logically unchanged.
-    // Check previous value before calling `setNoiseCancellationEnabled` to test
-    // if value actually updated.
-    if (previousEnabled === undefined || previousEnabled === enabled) {
-      return;
-    }
-
-    this.crosAudioConfig_.setNoiseCancellationEnabled(enabled);
   }
 
   /** Handles updates to force respect ui gains state. */
@@ -415,6 +397,10 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
     return this.isOutputMuted_ ?
         this.i18n('audioOutputMuteButtonAriaLabelMuted') :
         this.i18n('audioOutputMuteButtonAriaLabelNotMuted');
+  }
+
+  private toggleNoiseCancellationEnabled_(e: CustomEvent<boolean>): void {
+    this.crosAudioConfig_.setNoiseCancellationEnabled(e.detail);
   }
 
   private toggleStartupSoundEnabled_(e: CustomEvent<boolean>): void {

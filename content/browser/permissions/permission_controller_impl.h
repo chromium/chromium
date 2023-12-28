@@ -81,19 +81,19 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
 
   // Only one of |render_process_host| and |render_frame_host| should be set,
   // or neither. RenderProcessHost will be inferred from |render_frame_host|.
-  SubscriptionId SubscribePermissionStatusChange(
+  SubscriptionId SubscribeToPermissionStatusChange(
       PermissionType permission,
       RenderProcessHost* render_process_host,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const base::RepeatingCallback<void(PermissionStatus)>& callback);
-  SubscriptionId SubscribePermissionStatusChange(
+  SubscriptionId SubscribeToPermissionStatusChange(
       PermissionType permission,
       RenderProcessHost* render_process_host,
       const url::Origin& requesting_origin,
       const base::RepeatingCallback<void(PermissionStatus)>& callback) override;
 
-  void UnsubscribePermissionStatusChange(
+  void UnsubscribeFromPermissionStatusChange(
       SubscriptionId subscription_id) override;
 
   // If there's currently a permission prompt bubble for the given WebContents,

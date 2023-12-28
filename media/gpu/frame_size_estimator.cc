@@ -9,23 +9,17 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "media/gpu/h264_rate_control_util.h"
 
 namespace media {
 namespace {
-
-// Maps QP to quantizer step size. 0.625 is Q-step value for QP=0 for H.26x
-// codecs.
-float Qp2QStepSize(uint32_t qp) {
-  return 0.625f * std::pow(2.0f, static_cast<float>(qp) / 6.0f);
-}
-
 void CalculateQSteps(uint32_t qp,
                      uint32_t qp_prev,
                      float& q_step,
                      float& q_step_prev,
                      float& delta_q_step_factor) {
-  q_step = Qp2QStepSize(qp);
-  q_step_prev = Qp2QStepSize(qp_prev);
+  q_step = h264_rate_control_util::QP2QStepSize(qp);
+  q_step_prev = h264_rate_control_util::QP2QStepSize(qp_prev);
   delta_q_step_factor = q_step_prev / q_step;
 }
 

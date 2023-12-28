@@ -32,10 +32,21 @@ RemoteActivityNotificationController::RemoteActivityNotificationController(
 RemoteActivityNotificationController::~RemoteActivityNotificationController() =
     default;
 
-// We only can display UI elements (like the notification) after the login
-// screen is properly initialized.
+// Buttons (like the one on the notification) do not correctly respond to
+// on-click events if they are created before the login screen is properly
+// initialized, so only create the notification once that's the case.
 void RemoteActivityNotificationController::OnLoginOrLockScreenVisible() {
-  Init();
+  if (remote_admin_was_present_.GetValue()) {
+    notification_.Show();
+  }
+}
+
+void RemoteActivityNotificationController::OnClientConnecting() {
+  // The notification is meant for a local user not for the remote admin, so
+  // hide it during a CRD connection so we don't annoy them. This also prevents
+  // the notification from showing when the remote admin auto-reconnects after
+  // a Chrome crash/restart.
+  notification_.Hide();
 }
 
 void RemoteActivityNotificationController::OnClientConnected() {
@@ -44,24 +55,44 @@ void RemoteActivityNotificationController::OnClientConnected() {
   }
 }
 
-void RemoteActivityNotificationController::Init() {
+void RemoteActivityNotificationController::OnClientDisconnected() {
+  // Show the notification once the remote admin disconnects.
   if (remote_admin_was_present_.GetValue()) {
-    ShowNotification();
+    notification_.Show();
   }
-}
-
-void RemoteActivityNotificationController::ShowNotification() {
-  CHECK_DEREF(ash::LoginDisplayHost::default_host())
-      .ShowRemoteActivityNotificationScreen();
 }
 
 void RemoteActivityNotificationController::
     OnRemoteAdminWasPresentPrefChanged() {
-  if (is_current_session_curtained_.Run() &&
-      !remote_admin_was_present_.GetValue()) {
+  if (!remote_admin_was_present_.GetValue()) {
+    // Remember the notification was dismissed by the user.
+    notification_.Hide();
+  }
+
+  if (is_current_session_curtained_.Run()) {
     // When the notification is dismissed from inside a curtained session
     // we must ensure the notification is shown again the next time.
     remote_admin_was_present_.SetValue(true);
+  }
+}
+
+void RemoteActivityNotificationController::Notification::Show() {
+  if (!is_showing_) {
+    auto* default_host = ash::LoginDisplayHost::default_host();
+    if (default_host) {
+      default_host->ShowRemoteActivityNotificationScreen();
+      is_showing_ = true;
+    }
+  }
+}
+
+void RemoteActivityNotificationController::Notification::Hide() {
+  if (is_showing_) {
+    auto* default_host = ash::LoginDisplayHost::default_host();
+    if (default_host) {
+      default_host->HideOobeDialog();
+      is_showing_ = false;
+    }
   }
 }
 

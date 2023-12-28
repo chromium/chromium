@@ -1042,9 +1042,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   bool scheduled_kill_db_ = false;  // Database is being killed due to error.
   std::unique_ptr<favicon::FaviconBackend> favicon_backend_;
 
-  // Manages expiration between the various databases.
-  ExpireHistoryBackend expirer_;
-
   // A commit has been scheduled to occur sometime in the future. We can check
   // !IsCancelled() to see if there is a commit scheduled in the future (note
   // that CancelableOnceClosure starts cancelled with the default constructor),
@@ -1079,6 +1076,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // Used to determine if a URL is bookmarked; may be null.
   std::unique_ptr<HistoryBackendClient> backend_client_;
+
+  // Manages expiration between the various databases.
+  ExpireHistoryBackend expirer_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

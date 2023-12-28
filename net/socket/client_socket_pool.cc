@@ -195,10 +195,13 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
         is_for_websockets_);
   }
 
+  // Force a CONNECT tunnel for websockets. If this is false, the connect job
+  // may still use a tunnel for other reasons.
+  bool force_tunnel = is_for_websockets_;
   return connect_job_factory_->CreateConnectJob(
       group_id.destination(), proxy_chain, proxy_annotation_tag,
       socket_params->ssl_config_for_origin(),
-      socket_params->base_ssl_config_for_proxies(), is_for_websockets_,
+      socket_params->base_ssl_config_for_proxies(), force_tunnel,
       group_id.privacy_mode(), resolution_callback, request_priority,
       socket_tag, group_id.network_anonymization_key(),
       group_id.secure_dns_policy(), common_connect_job_params_, delegate);

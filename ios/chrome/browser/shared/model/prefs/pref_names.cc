@@ -436,8 +436,16 @@ const char kPrintingEnabled[] = "printing.enabled";
 const char kIncognitoAuthenticationSetting[] =
     "ios.settings.incognito_authentication_enabled";
 
+// Timestamp set when a user signs in. It is used for policies that clear data
+// on sign-out only for the duration the user was signed in. It is also used for
+// user policies that should clear data only from the time of sign-in and not
+// for the entire browser. An example of the latter would be when
+// `IdleTimeoutActions` policy is set to clear data as a user policy not a
+// browser policy.
+const char kLastSigninTimestamp[] = "signin.last_signin_timestamp";
+
 // Integer that represents the value of BrowserSigninPolicy. Values are defined
-// in ios/chrome/browser/policy/policy_util.h.
+// in ios/chrome/browser/policy/model/policy_util.h.
 const char kBrowserSigninPolicy[] = "signin.browser_signin_policy";
 
 // Bool that represents whether iCloud backups are allowed by policy.
@@ -486,5 +494,8 @@ const char kNotificationsPromoTimesShown[] =
     "ios.content_notifications.promo_times_shown";
 const char kNotificationsPromoTimesDismissed[] =
     "ios.content_notifications.promo_times_dismissed";
+
+const char kInsecureFormWarningsEnabled[] =
+    "ios.insecure_form_warnings_enabled";
 
 }  // namespace prefs

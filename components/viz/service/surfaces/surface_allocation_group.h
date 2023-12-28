@@ -127,19 +127,21 @@ class VIZ_SERVICE_EXPORT SurfaceAllocationGroup {
     return surfaces_.empty() ? nullptr : surfaces_.back();
   }
 
-  const std::vector<Surface*>& surfaces() const { return surfaces_; }
+  const std::vector<raw_ptr<Surface, VectorExperimental>>& surfaces() const {
+    return surfaces_;
+  }
 
  private:
   // Returns an iterator to the latest surface in |surfaces_| whose SurfaceId is
   // older than or equal to |surface_id|. The returned surface may not be active
   // yet.
-  std::vector<Surface*>::const_iterator FindLatestSurfaceUpTo(
-      const SurfaceId& surface_id) const;
+  std::vector<raw_ptr<Surface, VectorExperimental>>::const_iterator
+  FindLatestSurfaceUpTo(const SurfaceId& surface_id) const;
 
   // Returns an iterator to the latest active surface in |surfaces_| whose
   // SurfaceId is older than or equal to |surface_id|.
-  std::vector<Surface*>::const_iterator FindLatestActiveSurfaceUpTo(
-      const SurfaceId& surface_id) const;
+  std::vector<raw_ptr<Surface, VectorExperimental>>::const_iterator
+  FindLatestActiveSurfaceUpTo(const SurfaceId& surface_id) const;
 
   // Notifies SurfaceManager if this allocation group is ready for destruction
   // (see IsReadyToDestroy() for the requirements).
@@ -161,7 +163,7 @@ class VIZ_SERVICE_EXPORT SurfaceAllocationGroup {
   // The list of surfaces in this allocation group in the order of creation. The
   // parent and child sequence numbers of these surfaces is monotonically
   // increasing.
-  std::vector<Surface*> surfaces_;
+  std::vector<raw_ptr<Surface, VectorExperimental>> surfaces_;
 
   // A map from the surfaces that have an unresolved activation dependency in
   // this allocation group, to the said activation dependency.

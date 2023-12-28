@@ -7,8 +7,7 @@
 
 #include "base/files/file.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 class ProvidedFileSystemInfo;
 
@@ -37,7 +36,6 @@ class Observer {
       base::File::Error error) = 0;
 };
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_OBSERVER_H_

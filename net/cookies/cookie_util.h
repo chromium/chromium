@@ -284,6 +284,8 @@ NET_EXPORT bool IsPortBoundCookiesEnabled();
 
 NET_EXPORT bool IsSchemeBoundCookiesEnabled();
 
+NET_EXPORT bool IsTimeLimitedInsecureCookiesEnabled();
+
 // Returns whether the respective feature is enabled.
 NET_EXPORT bool IsSchemefulSameSiteEnabled();
 

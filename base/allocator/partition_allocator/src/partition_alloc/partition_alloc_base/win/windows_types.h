@@ -10,6 +10,7 @@
 
 // Needed for function prototypes.
 #include <specstrings.h>
+#include <cstdint>
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,8 +20,8 @@ extern "C" {
 
 typedef unsigned long DWORD;
 typedef long LONG;
-typedef __int64 LONGLONG;
-typedef unsigned __int64 ULONGLONG;
+typedef int64_t LONGLONG;
+typedef uint64_t ULONGLONG;
 
 #define VOID void
 typedef char CHAR;
@@ -29,7 +30,7 @@ typedef long LONG;
 typedef int INT;
 typedef unsigned int UINT;
 typedef unsigned int* PUINT;
-typedef unsigned __int64 UINT64;
+typedef uint64_t UINT64;
 typedef void* LPVOID;
 typedef void* PVOID;
 typedef void* HANDLE;

@@ -51,7 +51,7 @@ RawDataPresenter::RawDataPresenter() = default;
 
 RawDataPresenter::~RawDataPresenter() = default;
 
-void RawDataPresenter::FeedBytes(base::StringPiece bytes) {
+void RawDataPresenter::FeedBytes(std::string_view bytes) {
   FeedNextBytes(bytes.data(), bytes.size());
 }
 
@@ -89,7 +89,7 @@ ParsedDataPresenter::ParsedDataPresenter(
 
 ParsedDataPresenter::~ParsedDataPresenter() = default;
 
-void ParsedDataPresenter::FeedBytes(base::StringPiece bytes) {
+void ParsedDataPresenter::FeedBytes(std::string_view bytes) {
   if (!success_)
     return;
 

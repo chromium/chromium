@@ -14,6 +14,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -64,19 +65,59 @@ class CalendarApiRequestsTest : public testing::Test {
       test_shared_loader_factory_;
   net::test_server::HttpRequest http_request_;
 
-  // Returns the mock calendar event list.
+  // Returns a mock response based on the request URL.
   std::unique_ptr<net::test_server::HttpResponse> HandleDataFileRequest(
       const net::test_server::HttpRequest& request) {
     http_request_ = request;
 
-    // Return the response from the event json file.
-    return test_util::CreateHttpResponseFromFile(
-        test_util::GetTestFilePath("calendar/events.json"));
+    if (net::test_server::ShouldHandle(
+            http_request_, "/calendar/v3/calendars/primary/events")) {
+      return test_util::CreateHttpResponseFromFile(
+          test_util::GetTestFilePath("calendar/events.json"));
+    }
+    if (net::test_server::ShouldHandle(http_request_,
+                                       "/calendar/v3/users/me/calendarList")) {
+      return test_util::CreateHttpResponseFromFile(
+          test_util::GetTestFilePath("calendar/calendar_list.json"));
+    }
+    NOTREACHED_NORETURN();
   }
 };
 
-// Tests the CalendarApiRequestsTest can generate the correct url and get the
-// correct response.
+// Checks that CalendarApiCalendarListRequest can generate the correct url
+// and get a calendar list response.
+TEST_F(CalendarApiRequestsTest, GetCalendarListRequest) {
+  ApiErrorCode error = OTHER_ERROR;
+  std::unique_ptr<CalendarList> calendars;
+
+  {
+    base::RunLoop run_loop;
+    auto request = std::make_unique<CalendarApiCalendarListRequest>(
+        request_sender_.get(), *url_generator_,
+        test_util::CreateQuitCallback(
+            &run_loop,
+            test_util::CreateCopyResultCallback(&error, &calendars)));
+
+    request_sender_->StartRequestWithAuthRetry(std::move(request));
+    run_loop.Run();
+  }
+
+  EXPECT_EQ(HTTP_SUCCESS, error);
+  EXPECT_EQ(net::test_server::METHOD_GET, http_request_.method);
+  EXPECT_EQ(
+      "/calendar/v3/users/me/calendarList"
+      "?maxResults=250"
+      "&fields=etag%2Ckind%2Citems(id%2CcolorId%2Cselected%2Cprimary)",
+      http_request_.relative_url);
+
+  ASSERT_TRUE(calendars.get());
+  EXPECT_EQ("calendar#calendarList", calendars->kind());
+  EXPECT_EQ(true, calendars->items()[0]->selected());
+  EXPECT_EQ(true, calendars->items()[0]->primary());
+}
+
+// Tests that CalendarApiEventsRequest can generate the correct url and get the
+// correct event list response.
 TEST_F(CalendarApiRequestsTest, GetEventListRequest) {
   ApiErrorCode error = OTHER_ERROR;
   std::unique_ptr<EventList> events;

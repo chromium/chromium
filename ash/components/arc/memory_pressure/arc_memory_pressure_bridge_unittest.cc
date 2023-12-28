@@ -101,7 +101,7 @@ class ArcMemoryPressureBridgeTest : public testing::Test {
   ArcServiceManager arc_service_manager_;
   user_prefs::TestBrowserContextWithPrefs context_;
   FakeProcessInstance fake_process_instance_;
-  const raw_ptr<ArcMemoryPressureBridge, ExperimentalAsh> bridge_;
+  const raw_ptr<ArcMemoryPressureBridge> bridge_;
 };
 
 TEST_F(ArcMemoryPressureBridgeTest, ConstructDestruct) {}

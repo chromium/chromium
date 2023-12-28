@@ -16,7 +16,14 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "ui/gfx/native_widget_types.h"
+
+#if BUILDFLAG(IS_WIN)
 #include "ui/gl/child_window_win.h"
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "ui/gl/android/scoped_a_native_window.h"
+#endif
 
 namespace gpu {
 class SharedContextState;
@@ -38,7 +45,11 @@ class SkiaOutputDeviceDawn : public SkiaOutputDevice {
 
   ~SkiaOutputDeviceDawn() override;
 
-  gpu::SurfaceHandle GetChildSurfaceHandle() const;
+#if BUILDFLAG(IS_WIN)
+  gpu::SurfaceHandle GetChildSurfaceHandle() const {
+    return child_window_.window();
+  }
+#endif
 
   // SkiaOutputDevice implementation:
   bool Reshape(const SkImageInfo& image_info,
@@ -65,12 +76,19 @@ class SkiaOutputDeviceDawn : public SkiaOutputDevice {
   sk_sp<SkColorSpace> sk_color_space_;
   int sample_count_ = 1;
 
-  // D3D12 requires that we use flip model swap chains. Flip swap chains
-  // require that the swap chain be connected with DWM. DWM requires that
-  // the rendering windows are owned by the process that's currently doing
-  // the rendering. gl::ChildWindowWin creates and owns a window which is
-  // reparented by the browser to be a child of its window.
+#if BUILDFLAG(IS_WIN)
+  // D3D requires that we use flip model swap chains. Flip swap chains require
+  // that the swap chain be connected with DWM. DWM requires that the rendering
+  // windows are owned by the process that's currently doing the rendering.
+  // gl::ChildWindowWin creates and owns a window which is reparented by the
+  // browser to be a child of its window.
   gl::ChildWindowWin child_window_;
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  // Use ScopedANativeWindow to keep the window alive
+  gl::ScopedANativeWindow android_native_window_;
+#endif
 };
 
 }  // namespace viz

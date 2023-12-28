@@ -24,6 +24,7 @@ import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fi
  *   autocomplete_attributes: string,
  *   max_length: number,
  *   is_autofilled: boolean,
+ *   is_user_edited: boolean,
  *   is_checkable: boolean,
  *   is_focusable: boolean,
  *   should_autocomplete: boolean,
@@ -116,6 +117,8 @@ function extractFieldsFromControlElements_(
     // To avoid overly expensive computation, we impose a maximum number of
     // allowable fields.
     if (formFields.length > fillConstants.MAX_EXTRACTABLE_FIELDS) {
+      childFrames.length = 0;
+      formFields.length = 0;
       return false;
     }
   }
@@ -350,8 +353,8 @@ __gCrWeb.fill.formOrFieldsetsToFormData = function(
   }
   for (let j = 0; j < iframeElements.length; ++j) {
     const frame = iframeElements[j];
-    childFrames[j]['token'] = registerChildFrame(frame);
 
+    childFrames[j]['token'] = registerChildFrame(frame);
     // TODO(crbug.com/1440471): Compute the actual predecessor and replace this
     // placeholder value.
     childFrames[j]['predecessor'] = 64;
@@ -511,6 +514,7 @@ __gCrWeb.fill.webFormControlElementToFormField = function(
       inferenceUtil.isTextAreaElement(element) ||
       __gCrWeb.fill.isSelectElement(element)) {
     field['is_autofilled'] = element['isAutofilled'];
+    field['is_user_edited'] = __gCrWeb.form.fieldWasEditedByUser(element);
     field['should_autocomplete'] = __gCrWeb.fill.shouldAutocomplete(element);
     field['is_focusable'] = !element.disabled && !element.readOnly &&
         element.tabIndex >= 0 && __gCrWeb.fill.isVisibleNode(element);

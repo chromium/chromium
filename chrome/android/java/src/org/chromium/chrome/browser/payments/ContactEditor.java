@@ -41,7 +41,7 @@ import org.chromium.chrome.browser.autofill.editors.EditorDialogViewBinder;
 import org.chromium.chrome.browser.autofill.editors.EditorFieldValidator;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
 import org.chromium.components.autofill.AutofillProfile;
-import org.chromium.components.autofill.ServerFieldType;
+import org.chromium.components.autofill.FieldType;
 import org.chromium.payments.mojom.PayerErrors;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -239,7 +239,7 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                     context.getString(R.string.pref_edit_dialog_field_required_validation_message);
             nameField =
                     new PropertyModel.Builder(TEXT_ALL_KEYS)
-                            .with(TEXT_FIELD_TYPE, ServerFieldType.NAME_FULL)
+                            .with(TEXT_FIELD_TYPE, FieldType.NAME_FULL)
                             .with(LABEL, label)
                             .with(TEXT_SUGGESTIONS, new ArrayList<>(mPayerNames))
                             .with(IS_REQUIRED, true)
@@ -259,7 +259,7 @@ public class ContactEditor extends EditorBase<AutofillContact> {
             String label = context.getString(R.string.autofill_profile_editor_phone_number);
             phoneField =
                     new PropertyModel.Builder(TEXT_ALL_KEYS)
-                            .with(TEXT_FIELD_TYPE, ServerFieldType.PHONE_HOME_WHOLE_NUMBER)
+                            .with(TEXT_FIELD_TYPE, FieldType.PHONE_HOME_WHOLE_NUMBER)
                             .with(LABEL, label)
                             .with(TEXT_SUGGESTIONS, new ArrayList<>(mPhoneNumbers))
                             .with(
@@ -277,7 +277,7 @@ public class ContactEditor extends EditorBase<AutofillContact> {
             String label = context.getString(R.string.autofill_profile_editor_email_address);
             emailField =
                     new PropertyModel.Builder(TEXT_ALL_KEYS)
-                            .with(TEXT_FIELD_TYPE, ServerFieldType.EMAIL_ADDRESS)
+                            .with(TEXT_FIELD_TYPE, FieldType.EMAIL_ADDRESS)
                             .with(LABEL, label)
                             .with(TEXT_SUGGESTIONS, new ArrayList<>(mEmailAddresses))
                             .with(IS_REQUIRED, true)

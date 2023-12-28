@@ -37,14 +37,11 @@ export class SharedFab extends LitElement {
         return html `
       <button
         class="fab ${classMap(this.getRenderClasses())}"
-        aria-label=${ariaLabel || nothing}
-      >
+        aria-label=${ariaLabel || nothing}>
         <md-elevation></md-elevation>
         <md-focus-ring part="focus-ring"></md-focus-ring>
         <md-ripple class="ripple"></md-ripple>
-        ${this.renderTouchTarget()}
-        ${this.renderIcon()}
-        ${this.renderLabel()}
+        ${this.renderTouchTarget()} ${this.renderIcon()} ${this.renderLabel()}
       </button>
     `;
     }
@@ -66,12 +63,14 @@ export class SharedFab extends LitElement {
     renderIcon() {
         const { ariaLabel } = this;
         return html `<span class="icon">
-        <slot
-            name="icon"
-            aria-hidden=${ariaLabel || this.label ? 'true' : nothing}>
-          <span></span>
-        </slot>
-      </span>`;
+      <slot
+        name="icon"
+        aria-hidden=${ariaLabel || this.label
+            ? 'true'
+            : nothing}>
+        <span></span>
+      </slot>
+    </span>`;
     }
 }
 (() => {

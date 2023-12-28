@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/constants/ash_features.h"
@@ -476,7 +476,7 @@ class AccessibilityDetailedViewTest : public AshTestBase,
     return detailed_menu_->GetClassName();
   }
 
-  AccessibilityControllerImpl* controller() { return controller_; }
+  AccessibilityController* controller() { return controller_; }
   AccessibilityDetailedView* detailed_menu() { return detailed_menu_; }
   views::View* scroll_content() { return detailed_menu_->scroll_content(); }
 
@@ -601,11 +601,11 @@ class AccessibilityDetailedViewTest : public AshTestBase,
     }
   }
 
-  raw_ptr<AccessibilityControllerImpl, ExperimentalAsh> controller_ = nullptr;
+  raw_ptr<AccessibilityController> controller_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<DetailedViewDelegate> delegate_;
-  raw_ptr<AccessibilityDetailedView, DanglingUntriaged | ExperimentalAsh>
-      detailed_menu_ = nullptr;
+  raw_ptr<AccessibilityDetailedView, DanglingUntriaged> detailed_menu_ =
+      nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -1039,7 +1039,7 @@ TEST_F(AccessibilityDetailedViewTest, CheckMenuVisibilityOnDetailMenu) {
 }
 
 TEST_F(AccessibilityDetailedViewTest, ClickDetailMenu) {
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   // Confirms that the check item toggles the spoken feedback.
   EXPECT_FALSE(accessibility_controller->spoken_feedback().enabled());

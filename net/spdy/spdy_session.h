@@ -315,13 +315,11 @@ class NET_EXPORT SpdySession
 
   // Returns true if |new_hostname| can be pooled into an existing connection to
   // |old_hostname| associated with |ssl_info|.
-  static bool CanPool(
-      TransportSecurityState* transport_security_state,
-      const SSLInfo& ssl_info,
-      const SSLConfigService& ssl_config_service,
-      const std::string& old_hostname,
-      const std::string& new_hostname,
-      const net::NetworkAnonymizationKey& network_anonymization_key);
+  static bool CanPool(TransportSecurityState* transport_security_state,
+                      const SSLInfo& ssl_info,
+                      const SSLConfigService& ssl_config_service,
+                      const std::string& old_hostname,
+                      const std::string& new_hostname);
 
   // Create a new SpdySession.
   // |spdy_session_key| is the host/port that this session connects to, privacy

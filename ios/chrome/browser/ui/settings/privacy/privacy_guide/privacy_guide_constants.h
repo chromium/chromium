@@ -7,7 +7,16 @@
 
 #import <Foundation/Foundation.h>
 
+// The possible step types that can be displayed as part of the Privacy Guide.
+enum PrivacyGuideStepType : NSInteger {
+  kPrivacyGuideWelcomeStep,
+  kPrivacyGuideURLUsageStep,
+};
+
 // The accessibility identifier for the Welcome step view.
-extern NSString* const kPrivacyGuideWelcomeViewId;
+extern NSString* const kPrivacyGuideWelcomeViewID;
+
+// The accessibility identifier for the URL usage step view.
+extern NSString* const kPrivacyGuideURLUsageViewID;
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PRIVACY_PRIVACY_GUIDE_PRIVACY_GUIDE_CONSTANTS_H_

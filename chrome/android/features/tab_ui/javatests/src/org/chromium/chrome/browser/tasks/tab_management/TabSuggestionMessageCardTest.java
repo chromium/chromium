@@ -141,7 +141,7 @@ public class TabSuggestionMessageCardTest {
 
     private void enteringTabSwitcherAndVerifySuggestionIsShown(String suggestionText) {
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         onView(allOf(withParent(withId(R.id.tab_grid_message_item)), withText(suggestionText)))
                 .check(matches(isDisplayed()));
     }
@@ -260,7 +260,7 @@ public class TabSuggestionMessageCardTest {
         CriteriaHelper.pollUiThread(TabSuggestionMessageService::isSuggestionAvailableForTesting);
 
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
-        CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
+        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
         onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
 
         dismissSuggestion(false);

@@ -181,9 +181,13 @@ class PLATFORM_EXPORT ScriptWrappable
       wrapper = MainWorldWrapper(isolate);
       return false;
     }
-    main_world_wrapper_.Reset(isolate, wrapper);
+    if (wrapper_type_info->SupportsDroppingWrapper()) {
+      main_world_wrapper_.Reset(
+          isolate, wrapper, TraceWrapperV8Reference<v8::Object>::IsDroppable{});
+    } else {
+      main_world_wrapper_.Reset(isolate, wrapper);
+    }
     DCHECK(ContainsWrapper());
-    wrapper_type_info->ConfigureWrapper(&main_world_wrapper_);
     return true;
   }
 
@@ -211,8 +215,8 @@ class PLATFORM_EXPORT ScriptWrappable
   }
 
   // Clear the main world wrapper if it is set to |handle|.
-  bool UnsetMainWorldWrapperIfSet(
-      const v8::TracedReference<v8::Object>& handle);
+  template <typename HandleType>
+  inline bool ClearMainWorldWrapperIfEqualTo(const HandleType& handle);
 
   static_assert(
       std::is_trivially_destructible<
@@ -225,11 +229,10 @@ class PLATFORM_EXPORT ScriptWrappable
   // world wrapper.
   friend class DOMDataStore;
   friend class DOMWrapperWorld;
-  friend class HeapSnaphotWrapperVisitor;
 };
 
-inline bool ScriptWrappable::UnsetMainWorldWrapperIfSet(
-    const v8::TracedReference<v8::Object>& handle) {
+template <typename HandleType>
+bool ScriptWrappable::ClearMainWorldWrapperIfEqualTo(const HandleType& handle) {
   if (main_world_wrapper_ == handle) {
     main_world_wrapper_.Reset();
     return true;

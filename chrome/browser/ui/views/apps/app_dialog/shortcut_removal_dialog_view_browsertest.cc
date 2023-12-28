@@ -47,12 +47,8 @@ class ShortcutRemovalDialogViewBrowserTest
   apps::ShortcutId CreateWebAppBasedShortcut(
       const GURL& shortcut_url,
       const std::u16string& shortcut_name) {
-    // Create web app based shortcut.
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_info->start_url = shortcut_url;
-    web_app_info->title = shortcut_name;
-    auto local_shortcut_id = web_app::test::InstallWebApp(
-        browser()->profile(), std::move(web_app_info));
+    webapps::AppId local_shortcut_id = web_app::test::InstallShortcut(
+        browser()->profile(), base::UTF16ToUTF8(shortcut_name), shortcut_url);
     return apps::GenerateShortcutId(app_constants::kChromeAppId,
                                     local_shortcut_id);
   }
@@ -110,10 +106,10 @@ class ShortcutRemovalDialogViewBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(ShortcutRemovalDialogViewBrowserTest, InvokeUi) {
-  GURL app_url = GURL("https://example.org/");
+  GURL shortcut_url = GURL("https://example.org/");
   std::u16string shortcut_name = u"Example";
   apps::ShortcutId shortcut_id =
-      CreateWebAppBasedShortcut(app_url, shortcut_name);
+      CreateWebAppBasedShortcut(shortcut_url, shortcut_name);
   SetStubIconLoaders(shortcut_id, app_constants::kChromeAppId);
   EXPECT_EQ(0, NumLoadShortcutIcon());
   EXPECT_EQ(0, NumLoadBadgeIcon());

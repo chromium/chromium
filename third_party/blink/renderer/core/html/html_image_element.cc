@@ -533,16 +533,10 @@ LayoutObject* HTMLImageElement::CreateLayoutObject(const ComputedStyle& style) {
 void HTMLImageElement::AttachLayoutTree(AttachContext& context) {
   HTMLElement::AttachLayoutTree(context);
   if (auto* layout_image = DynamicTo<LayoutImage>(GetLayoutObject())) {
-    LayoutImageResource* layout_image_resource = layout_image->ImageResource();
-    if (is_fallback_image_)
-      layout_image_resource->UseBrokenImage();
-
-    if (layout_image_resource->HasImage())
-      return;
-
-    if (!GetImageLoader().GetContent() && !layout_image_resource->CachedImage())
-      return;
-    layout_image_resource->SetImageResource(GetImageLoader().GetContent());
+    if (is_fallback_image_) {
+      layout_image->ImageResource()->UseBrokenImage();
+    }
+    GetImageLoader().OnAttachLayoutTree();
   }
 }
 

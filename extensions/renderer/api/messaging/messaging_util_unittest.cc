@@ -10,6 +10,7 @@
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
@@ -193,7 +194,7 @@ TEST_F(MessagingUtilWithSystemTest, TestGetTargetIdFromExtensionContext) {
   RegisterExtension(extension);
 
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   std::string other_id(32, 'a');
@@ -233,7 +234,7 @@ TEST_F(MessagingUtilWithSystemTest, TestGetTargetIdFromWebContext) {
   v8::Local<v8::Context> context = MainContext();
 
   ScriptContext* script_context =
-      CreateScriptContext(context, nullptr, Feature::WEB_PAGE_CONTEXT);
+      CreateScriptContext(context, nullptr, mojom::ContextType::kWebPage);
   script_context->set_url(GURL("https://example.com"));
 
   std::string other_id(32, 'a');
@@ -271,7 +272,7 @@ TEST_F(MessagingUtilWithSystemTest, TestGetTargetIdFromUserScriptContext) {
   RegisterExtension(extension);
 
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::USER_SCRIPT_CONTEXT);
+      context, extension.get(), mojom::ContextType::kUserScript);
   script_context->set_url(extension->url());
 
   std::string other_id(32, 'a');

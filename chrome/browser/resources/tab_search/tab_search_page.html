@@ -1,18 +1,4 @@
 <style include="mwb-shared-style tab-organization-shared-style">
-  :host {
-    --standard-curve: cubic-bezier(0.2, 0.0, 0, 1.0);
-  }
-
-  :host([tab-organization-enabled]:is(.iron-selected)) #tabSearchPage {
-    animation: fadeIn 200ms linear, paddingIn 250ms var(--standard-curve);
-    opacity: 1;
-  }
-
-  :host([tab-organization-enabled]:not(.iron-selected)) #tabSearchPage {
-    animation: fadeOut 200ms linear, marginOut 250ms var(--standard-curve);
-    opacity: 0;
-  }
-
   #searchField {
     align-items: center;
     background-color: var(--mwb-background-color);

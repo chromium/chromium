@@ -126,8 +126,7 @@ std::ostream& operator<<(std::ostream& out, DetailsTestCase test_case) {
 class PaymentRequestDetailsTest
     : public testing::TestWithParam<DetailsTestCase> {
  protected:
-  test::TaskEnvironment task_environment_{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment_;
 };
 
 TEST_P(PaymentRequestDetailsTest, ValidatesDetails) {

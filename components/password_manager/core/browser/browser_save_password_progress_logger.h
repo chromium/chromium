@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_BROWSER_SAVE_PASSWORD_PROGRESS_LOGGER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_BROWSER_SAVE_PASSWORD_PROGRESS_LOGGER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -13,6 +14,7 @@
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
+#include "components/password_manager/core/browser/votes_uploader.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -48,7 +50,10 @@ class BrowserSavePasswordProgressLogger
 
   // Browser-specific addition to the base class' Log* methods. The input is
   // sanitized and passed to SendLog for display.
-  void LogFormStructure(StringID label, const autofill::FormStructure& form);
+  void LogFormStructure(
+      StringID label,
+      const autofill::FormStructure& form,
+      std::optional<PasswordAttributesMetadata> password_attributes);
 
   // Browser-specific addition to the base class' Log* methods. The input is
   // sanitized and passed to SendLog for display.
@@ -88,10 +93,10 @@ class BrowserSavePasswordProgressLogger
   static std::string FormStructureToFieldsLogString(
       const autofill::FormStructure& form);
 
-  // Returns the string representation of password attributes for
-  // `FormStructure`.
-  static std::string FormStructurePasswordAttributesLogString(
-      const autofill::FormStructure& form);
+  // Returns the string representation of votes related password attributes from
+  // the `password_attributes`.
+  static std::string VotesPasswordAttributesLogString(
+      std::optional<PasswordAttributesMetadata> password_attributes);
 
   // Returns the string representation of a password attribute.
   static std::string PasswordAttributeLogString(

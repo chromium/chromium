@@ -225,6 +225,9 @@
       <message name="IDS_QUICK_ANSWERS_UNIT_CONVERSION_RESULT_TEXT" desc="The result text format string used for Quick Answers unit conversion result card. The first placeholder contains the value of result unit and the second placeholder contains the display name of the result unit.">
         <ph name="VALUE">$1<ex>220.462</ex></ph> <ph name="DISPLAY_NAME">$2<ex>pounds</ex></ph>
       </message>
+      <message name="IDS_QUICK_ANSWERS_DEFINITION_SYNONYMS_LABEL_TEXT" desc="The text that precedes a list of synonyms in a Quick Answers definition result card.">
+      Similar:
+       </message>
       <message name="IDS_UNIT_CONVERSION_POUND_DISPLAY_TEXT" desc="The display text of pound unit type.">
         pounds
       </message>
@@ -233,6 +236,9 @@
       </message>
       <message name="IDS_QUICK_ANSWERS_PHONETICS_BUTTON_TOOLTIP_TEXT" desc="Tootip text for the phonetics-button in Quick-Answers related views.">
         Listen
+      </message>
+      <message name="IDS_QUICK_ANSWERS_COPY_BUTTON_TOOLTIP_TEXT" desc="Tootip text for the copy-button in Quick-Answers related views.">
+        Copy text
       </message>
       <message name="IDS_QUICK_ANSWERS_DOGFOOD_FEEDBACK_BUTTON_TOOLTIP_TEXT" desc="Tootip text for the dogfood feedback button in Quick-Answers related views.">
         Send feedback
@@ -3025,6 +3031,47 @@
         <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT_ALT20" desc="Text for search result item which, when clicked, navigates the user to personalization app keyboard backlight setting. Alternate phrase 20">
           rgb controls
         </message>
+        <message name="IDS_PERSONALIZATION_APP_EXCLUSIVE_WALLPAPERS_HEADING" desc="Heading describing that the following section is exclusive for Chromebook Plus users.">
+          Exclusive for Chromebook Plus
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_CHOOSE_A_WALLPAPER_HEADING" desc="Heading describing that you can choose a wallpaper by clicking on the itemss below.">
+          Choose a wallpaper
+        </message>
+
+        <!-- Sea Pen UI -->
+        <message name="IDS_SEA_PEN_POWERED_BY_GOOGLE" desc="Subheading describing that Google made these wallpapers.">
+          Powered by Google
+        </message>
+        <message name="IDS_SEA_PEN_TEMPLATE_HEADING" desc="Section heading for wallpaper templates.">
+          Use a template
+        </message>
+        <message name="IDS_SEA_PEN_RECENT_WALLPAPERS_HEADING" desc="Section heading for recently-created wallpapers.">
+          Recent wallpapers
+        </message>
+        <message name="IDS_SEA_PEN_INSPIRE_ME_BUTTON" desc="Button that randomizes selected options.">
+          Inspire me
+        </message>
+        <message name="IDS_SEA_PEN_CREATE_BUTTON" desc="Button that creates a new wallpaper.">
+          Create
+        </message>
+        <message name="IDS_SEA_PEN_RECREATE_BUTTON" desc="Button that recreates a wallpaper.">
+          Recreate
+        </message>
+        <message name="IDS_SEA_PEN_WALLPAPER_POWERED_BY_GOOGLE" desc="Section heading that indicates Google made these wallpapers.">
+          Wallpaper powered by Google
+        </message>
+        <message name="IDS_SEA_PEN_DELETE_WALLPAPER" desc="Menu item that deletes a wallpaper.">
+          Delete
+        </message>
+        <message name="IDS_SEA_PEN_CREATE_MORE" desc="Menu item that, when clicked, will allow users to create more wallpapers like the selected wallpaper.">
+          Create more
+        </message>
+        <message name="IDS_SEA_PEN_ABOUT" desc="Menu item that, when clicked, will show users more about the selected wallpaper.">
+          About
+        </message>
+        <message name="IDS_SEA_PEN_EXPERIMENT_LABEL" desc="Label for experiment item indicating the feature is experimental.">
+          Experiment
+        </message>
 
         <!-- Traffic Counters UI -->
         <message name="IDS_TRAFFIC_COUNTERS_UNKNOWN" desc="Traffic counters related to an unknown source">
@@ -3885,6 +3932,9 @@
         <message name="IDS_FIRMWARE_RESTARTING_FOOTER_TEXT" desc="Label shown when a device is being restarted.">
           Restarting...
         </message>
+        <message name="IDS_FIRMWARE_WAITING_FOOTER_TEXT" desc="Label that displays what percentage of the update has been installed, shown while waiting for user action." translateable="false">
+          Paused (<ph name="PERCENTAGE_VALUE">$1<ex>94</ex></ph>% complete)
+        </message>
         <message name="IDS_FIRMWARE_UPDATE_FAILED_TITLE_TEXT" desc="Label shown when an update fails.">
           Can't update <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph>
         </message>
@@ -4677,7 +4727,7 @@
       </message>
 
       <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_LEARN_MORE" desc="This is the button-text of the notification when an application is automatically started on OS login.">
-        Learn more
+        Learn more about auto-launch
       </message>
 
       <message name="IDS_APP_CLOSE_BUTTON_DISABLED_BY_ADMIN" desc="Text for the close button when prevent close is enabled by the administrator">

@@ -40,8 +40,9 @@ class View;
 class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
                                    public ui::SimpleMenuModel::Delegate,
                                    public views::TabbedPaneListener {
+  METADATA_HEADER(PartialTranslateBubbleView, LocationBarBubbleDelegateView)
+
  public:
-  METADATA_HEADER(PartialTranslateBubbleView);
   // Item IDs for the option button's menu.
   enum OptionsMenuItem { CHANGE_TARGET_LANGUAGE, CHANGE_SOURCE_LANGUAGE };
 

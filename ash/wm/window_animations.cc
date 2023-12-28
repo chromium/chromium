@@ -182,8 +182,8 @@ class CrossFadeObserver : public aura::WindowObserver,
   // The window and the associated layer this observer is watching. The window
   // layer may be recreated during the course of the animation so |layer_| will
   // be different |window_->layer()| after construction.
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
-  raw_ptr<ui::Layer, ExperimentalAsh> layer_;
+  raw_ptr<aura::Window> window_;
+  raw_ptr<ui::Layer> layer_;
 
   std::unique_ptr<ui::LayerTreeOwner> layer_owner_;
 
@@ -251,7 +251,7 @@ class CrossFadeUpdateTransformObserver
   }
 
  private:
-  raw_ptr<ui::Compositor, ExperimentalAsh> compositor_ = nullptr;
+  raw_ptr<ui::Compositor> compositor_ = nullptr;
 };
 
 // Internal implementation of a cross fade animation. If

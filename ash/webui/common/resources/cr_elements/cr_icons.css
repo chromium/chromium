@@ -1,0 +1,125 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+.icon-arrow-back {
+  --cr-icon-image: url(chrome://resources/images/icon_arrow_back.svg);
+}
+
+.icon-arrow-dropdown {
+  --cr-icon-image: url(chrome://resources/images/icon_arrow_dropdown.svg);
+}
+
+.icon-arrow-drop-down-cr23 {
+  --cr-icon-image: url(chrome://resources/images/icon_arrow_drop_down_cr23.svg);
+}
+
+.icon-arrow-drop-up-cr23 {
+  --cr-icon-image: url(chrome://resources/images/icon_arrow_drop_up_cr23.svg);
+}
+
+.icon-cancel {
+  --cr-icon-image: url(chrome://resources/images/icon_cancel.svg);
+}
+
+.icon-clear {
+  --cr-icon-image: url(chrome://resources/images/icon_clear.svg);
+}
+
+.icon-copy-content {
+  --cr-icon-image: url(chrome://resources/images/icon_copy_content.svg);
+}
+
+.icon-delete-gray {
+  --cr-icon-image: url(chrome://resources/images/icon_delete_gray.svg);
+}
+
+.icon-edit {
+  --cr-icon-image: url(chrome://resources/images/icon_edit.svg);
+}
+
+.icon-file {
+  --cr-icon-image: url(chrome://resources/images/icon_filetype_generic.svg);
+}
+
+.icon-folder-open {
+  --cr-icon-image: url(chrome://resources/images/icon_folder_open.svg);
+}
+
+.icon-picture-delete {
+  --cr-icon-image: url(chrome://resources/images/icon_picture_delete.svg);
+}
+
+.icon-expand-less {
+  --cr-icon-image: url(chrome://resources/images/icon_expand_less.svg);
+}
+
+.icon-expand-more {
+  --cr-icon-image: url(chrome://resources/images/icon_expand_more.svg);
+}
+
+.icon-external {
+  --cr-icon-image: url(chrome://resources/images/open_in_new.svg);
+}
+
+.icon-more-vert {
+  --cr-icon-image: url(chrome://resources/images/icon_more_vert.svg);
+}
+
+.icon-refresh {
+  --cr-icon-image: url(chrome://resources/images/icon_refresh.svg);
+}
+
+.icon-search {
+  --cr-icon-image: url(chrome://resources/images/icon_search.svg);
+}
+
+.icon-settings {
+  --cr-icon-image: url(chrome://resources/images/icon_settings.svg);
+}
+
+.icon-visibility {
+  --cr-icon-image: url(chrome://resources/images/icon_visibility.svg);
+}
+
+.icon-visibility-off {
+  --cr-icon-image: url(chrome://resources/images/icon_visibility_off.svg);
+}
+
+.subpage-arrow {
+  --cr-icon-image: url(chrome://resources/images/arrow_right.svg);
+}
+
+.cr-icon {
+  -webkit-mask-image: var(--cr-icon-image);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: var(--cr-icon-size);
+  background-color: var(--cr-icon-color, var(--google-grey-700));
+  flex-shrink: 0;
+  height: var(--cr-icon-ripple-size);
+  margin-inline-end: var(--cr-icon-ripple-margin);
+  margin-inline-start: var(--cr-icon-button-margin-start);
+  user-select: none;
+  width: var(--cr-icon-ripple-size);
+}
+
+:host-context([dir=rtl]) .cr-icon {
+  transform: scaleX(-1);  /* Invert X: flip on the Y axis (aka mirror). */
+}
+
+.cr-icon.no-overlap {
+  margin-inline-end: 0;
+  margin-inline-start: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cr-icon {
+    background-color: var(--cr-icon-color, var(--google-grey-500));
+  }
+}

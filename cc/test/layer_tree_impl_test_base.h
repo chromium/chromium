@@ -98,7 +98,7 @@ class LayerTreeImplTestBase {
   void UpdatePendingTreeDrawProperties(float device_scale_factor = 1.0f);
 
   bool UpdateLayerImplListContains(int id) const {
-    for (const auto* layer : update_layer_impl_list_) {
+    for (const LayerImpl* layer : update_layer_impl_list_) {
       if (layer->id() == id)
         return true;
     }

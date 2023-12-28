@@ -30,26 +30,6 @@ std::vector<AssistantTimer> ConstructAssistantTimersFromProto(
   return assistant_timers;
 }
 
-void ConvertAssistantTimerToProtoTimer(
-    const AssistantTimer& input,
-    ::assistant::api::params::Timer* output) {
-  output->set_timer_id(input.id);
-  if (output->TimerStatus_IsValid(static_cast<int>(input.state))) {
-    output->set_status(
-        static_cast<::assistant::api::params::Timer::TimerStatus>(input.state));
-  }
-  output->set_original_duration(input.original_duration.InMilliseconds());
-
-  if (input.state == AssistantTimerState::kPaused) {
-    output->set_remaining_duration(input.remaining_time.InMilliseconds());
-  } else {
-    output->set_expire_time(
-        (input.fire_time - base::Time::UnixEpoch()).InMilliseconds());
-  }
-
-  output->set_label(input.label);
-}
-
 void ConvertProtoTimerToAssistantTimer(
     const ::assistant::api::params::Timer& input,
     AssistantTimer* output) {

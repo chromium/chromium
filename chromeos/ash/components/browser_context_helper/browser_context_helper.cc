@@ -5,9 +5,11 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -120,14 +122,29 @@ const user_manager::User* BrowserContextHelper::GetUserByBrowserContext(
   if (!IsUserBrowserContext(browser_context)) {
     return nullptr;
   }
+  // Use the original browser context, if it is off-the-record one.
+  browser_context = delegate_->GetOriginalBrowserContext(browser_context);
+  const AccountId* account_id = AnnotatedAccountId::Get(browser_context);
+  if (!account_id) {
+    // TODO(crbug.com/1325210): fix tests to annotate AccountId properly.
+    LOG(ERROR) << "AccountId is not annotated";
+    CHECK_IS_TEST();
+  }
 
   const std::string hash = GetUserIdHashFromBrowserContext(browser_context);
 
   // Finds the matching user in logged-in user list since only a logged-in
   // user would have a profile.
+  // TODO(crbug.com/1325210): find user by AccountId, once it is annotated
+  // to Profile in tests.
   auto* user_manager = user_manager::UserManager::Get();
-  for (const auto* user : user_manager->GetLoggedInUsers()) {
+  for (const user_manager::User* user : user_manager->GetLoggedInUsers()) {
     if (user->username_hash() == hash) {
+      if (!account_id || *account_id != user->GetAccountId()) {
+        // TODO(crbug.com/1325210): fix tests to annotate AccountId properly.
+        LOG(ERROR) << "AccountId is mismatched";
+        CHECK_IS_TEST();
+      }
       return user;
     }
   }

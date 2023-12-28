@@ -61,25 +61,55 @@ struct DialogTask {
   string icon_url;
 };
 
+struct OneDriveSetupDialogArgs {
+  // True if the setup flow should end with setting Microsoft 365 as default
+  // handler.
+  bool set_office_as_default_handler;
+};
+
+struct MoveConfirmationOneDriveDialogArgs {
+  // Indicates what operation is used to upload the source file (copy or move).
+  OperationType operation_type;
+};
+
+struct MoveConfirmationGoogleDriveDialogArgs {
+  // Indicates what operation is used to upload the source file (copy or move).
+  OperationType operation_type;
+};
+
+struct ConnectToOneDriveDialogArgs {};
+
+struct FileHandlerDialogArgs {
+  // The local file tasks the user can pick from to open the files. Displayed in
+  // the `kFileHandlerDialog` dialog.
+  array<DialogTask> local_tasks;
+
+  // Whether Google Workspace should be displayed in the `kFileHandlerDialog`
+  // dialog.
+  bool show_google_workspace_task;
+
+  // Whether Microsoft 365 should be displayed in the `kFileHandlerDialog`
+  // dialog.
+  bool show_microsoft_office_task;
+};
+
+union DialogSpecificArgs {
+  FileHandlerDialogArgs file_handler_dialog_args;
+  OneDriveSetupDialogArgs one_drive_setup_dialog_args;
+  MoveConfirmationOneDriveDialogArgs move_confirmation_one_drive_dialog_args;
+  MoveConfirmationGoogleDriveDialogArgs
+    move_confirmation_google_drive_dialog_args;
+  ConnectToOneDriveDialogArgs connect_to_one_drive_dialog_args;
+};
+
 // Contains the arguments used to set up the dialog.
 struct DialogArgs {
   // List of files that will be uploaded on dialog close if the user completes
   // the setup. May be empty if the dialog wasn't initiated from a file handler.
   array<string> file_names;
 
-  // Tells the dialog which sub-page/flow we want to show.
-  DialogPage dialog_page;
-
-  // The local file tasks the user can pick from to open the files. Displayed in
-  // the `kFileHandlerDialog` dialog.
-  array<DialogTask> local_tasks;
-
-  // True if the setup flow should end with setting Microsoft 365 as default
-  // handler.
-  bool set_office_as_default_handler;
-
-  // Indicates what operation is used to upload the source file (copy or move).
-  OperationType operation_type;
+  // Contains arguments specific to the given dialog.
+  DialogSpecificArgs dialog_specific_args;
 };
 
 // Lives in the browser process. A renderer uses this to create a page handler
@@ -92,8 +122,10 @@ interface PageHandlerFactory {
 // Lives in the browser process. A renderer uses this to invoke methods that
 // are implemented in the browser process.
 interface PageHandler {
-  // Returns arguments passed to the dialog on creation.
-  GetDialogArgs() => (DialogArgs args);
+  // Returns arguments passed to the dialog on creation. Might return nothing if
+  // called outside of a normal flow (say, when opening chrome://cloud-upload
+  // directly in the browser).
+  GetDialogArgs() => (DialogArgs? args);
 
   // Returns whether or not the Office web app is installed.
   IsOfficeWebAppInstalled() => (bool installed);

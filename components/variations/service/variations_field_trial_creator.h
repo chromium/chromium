@@ -16,6 +16,7 @@
 
 namespace variations {
 
+class LimitedEntropySyntheticTrial;
 class VariationsServiceClient;
 
 // Used to set up field trials based on stored variations seed data.
@@ -23,9 +24,11 @@ class VariationsFieldTrialCreator : public VariationsFieldTrialCreatorBase {
  public:
   // Caller is responsible for ensuring that objects passed to the constructor
   // stay valid for the lifetime of this object.
-  VariationsFieldTrialCreator(VariationsServiceClient* client,
-                              std::unique_ptr<VariationsSeedStore> seed_store,
-                              const UIStringOverrider& ui_string_overrider);
+  VariationsFieldTrialCreator(
+      VariationsServiceClient* client,
+      std::unique_ptr<VariationsSeedStore> seed_store,
+      const UIStringOverrider& ui_string_overrider,
+      LimitedEntropySyntheticTrial* limited_entropy_synthetic_trial);
 
   VariationsFieldTrialCreator(const VariationsFieldTrialCreator&) = delete;
   VariationsFieldTrialCreator& operator=(const VariationsFieldTrialCreator&) =

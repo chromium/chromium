@@ -55,10 +55,10 @@ class LayerAnimationVerifier : public ui::CompositorObserver {
   ui::Compositor* GetCompositor();
 
   // Indicates the layer on which an animation is going to apply.
-  const raw_ptr<ui::Layer, ExperimentalAsh> layer_with_animation_;
+  const raw_ptr<ui::Layer> layer_with_animation_;
 
   // Indicates the view that is observed during the layer animation.
-  const raw_ptr<const views::View, ExperimentalAsh> observed_view_;
+  const raw_ptr<const views::View> observed_view_;
 
   // The screen bounds of `observed_view_` in the most recent compositor commit.
   std::optional<gfx::Rect> last_screen_bounds_;

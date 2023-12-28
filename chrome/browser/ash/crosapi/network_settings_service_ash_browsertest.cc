@@ -85,7 +85,17 @@ class NetworkSettingsObserver : public crosapi::mojom::NetworkSettingsObserver {
     future_.SetValue(std::move(proxy_config));
   }
 
+  void OnAlwaysOnVpnPreConnectUrlAllowlistEnforcedChanged(
+      bool enforced) override {
+    alwayson_vpn_pre_connect_url_allowlist_enforced_changed_future_.SetValue(
+        enforced);
+  }
+
   crosapi::mojom::ProxyConfigPtr WaitForProxyConfig() { return future_.Take(); }
+  bool WaitForAlwaysOnVpnPreConnectUrlAllowlistEnforced() {
+    return alwayson_vpn_pre_connect_url_allowlist_enforced_changed_future_
+        .Take();
+  }
 
   mojo::Receiver<crosapi::mojom::NetworkSettingsObserver> receiver_{this};
 
@@ -93,6 +103,8 @@ class NetworkSettingsObserver : public crosapi::mojom::NetworkSettingsObserver {
 
  private:
   base::test::TestFuture<crosapi::mojom::ProxyConfigPtr> future_;
+  base::test::TestFuture<bool>
+      alwayson_vpn_pre_connect_url_allowlist_enforced_changed_future_;
 };
 
 }  // namespace
@@ -131,6 +143,13 @@ class NetworkSettingsServiceAshTest : public InProcessBrowserTest {
     network_service_ash_remote->AddNetworkSettingsObserver(
         observer_->receiver_.BindNewPipeAndPassRemote());
     ash_proxy_monitor_->SetProfileForTesting(browser()->profile());
+
+    network_service_ash_remote.FlushForTesting();
+    auto result = observer_->WaitForProxyConfig();
+
+    ASSERT_FALSE(result.is_null());
+    EXPECT_TRUE(result->proxy_settings->is_direct());
+    EXPECT_TRUE(result->extension.is_null());
   }
 
   void TearDownOnMainThread() override {
@@ -145,7 +164,7 @@ class NetworkSettingsServiceAshTest : public InProcessBrowserTest {
     ash::ShillServiceClient::TestInterface* service_test =
         ash::ShillServiceClient::Get()->GetTestInterface();
 
-    profile_test->AddProfile(kUserProfilePath, "user");
+    profile_test->AddProfile(kUserProfilePath, "test-user");
 
     service_test->ClearServices();
     ConnectWifiNetworkService(kWifiServicePath, kWifiGuid, kWifiSsid);
@@ -191,6 +210,17 @@ IN_PROC_BROWSER_TEST_F(NetworkSettingsServiceAshTest, ProxyConfigUpdate) {
   EXPECT_EQ(manual->http_proxies[0]->host, "proxyhost");
   EXPECT_EQ(manual->http_proxies[0]->port, 3128);
   EXPECT_TRUE(result->extension.is_null());
+}
+
+IN_PROC_BROWSER_TEST_F(NetworkSettingsServiceAshTest,
+                       SetAlwaysOnVpnPreConnectUrlAllowlistEnforced) {
+  network_service_ash_->SetAlwaysOnVpnPreConnectUrlAllowlistEnforced(
+      /*enforced=*/true);
+  EXPECT_TRUE(observer_->WaitForAlwaysOnVpnPreConnectUrlAllowlistEnforced());
+
+  network_service_ash_->SetAlwaysOnVpnPreConnectUrlAllowlistEnforced(
+      /*enforced=*/false);
+  EXPECT_FALSE(observer_->WaitForAlwaysOnVpnPreConnectUrlAllowlistEnforced());
 }
 
 // Test suite for testing the AshNetworkSettingsService with proxies set via

@@ -39,6 +39,7 @@
 //ios/chrome/test/data/policy/pref_mapping/IdleTimeout.json
 //ios/chrome/test/data/policy/pref_mapping/IdleTimeoutActions.json
 //ios/chrome/test/data/policy/pref_mapping/IncognitoModeAvailability.json
+//ios/chrome/test/data/policy/pref_mapping/InsecureFormsWarningsEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/LensCameraAssistedSearchEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/ManagedBookmarks.json
 //ios/chrome/test/data/policy/pref_mapping/MetricsReportingEnabled.json

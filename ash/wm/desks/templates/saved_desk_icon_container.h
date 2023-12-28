@@ -72,7 +72,7 @@ class SavedDeskIconContainer : public views::BoxLayoutView {
   // Given `windows`, determine which icons to show in this and create the
   // according SavedDeskIconView's.
   void PopulateIconContainerFromWindows(
-      const std::vector<aura::Window*>& windows);
+      const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows);
 
  private:
   // Return a copy of child icon views.
@@ -102,15 +102,14 @@ class SavedDeskIconContainer : public views::BoxLayoutView {
           icon_identifier_to_icon_info);
 
   // Pointer of the overflow icon view.
-  raw_ptr<views::View, ExperimentalAsh> overflow_icon_view_ = nullptr;
+  raw_ptr<views::View> overflow_icon_view_ = nullptr;
 
   // Number of apps that are not shown as icons in the container.
   int uncreated_app_count_ = 0;
 
   // If `this` is created with an incognito window, store the ui::ColorProvider
   // of one of the incognito windows to retrieve its icon's color.
-  raw_ptr<const ui::ColorProvider, ExperimentalAsh>
-      incognito_window_color_provider_ = nullptr;
+  raw_ptr<const ui::ColorProvider> incognito_window_color_provider_ = nullptr;
 
   base::WeakPtrFactory<SavedDeskIconContainer> weak_ptr_factory_{this};
 };
@@ -119,8 +118,9 @@ BEGIN_VIEW_BUILDER(/* no export */,
                    SavedDeskIconContainer,
                    views::BoxLayoutView)
 VIEW_BUILDER_METHOD(PopulateIconContainerFromTemplate, const DeskTemplate*)
-VIEW_BUILDER_METHOD(PopulateIconContainerFromWindows,
-                    const std::vector<aura::Window*>&)
+VIEW_BUILDER_METHOD(
+    PopulateIconContainerFromWindows,
+    const std::vector<raw_ptr<aura::Window, VectorExperimental>>&)
 END_VIEW_BUILDER
 
 }  // namespace ash

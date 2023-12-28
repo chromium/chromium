@@ -66,7 +66,7 @@ default_args = {
       "//third_party/llvm-build/Release+Asserts/bin/llvm-readelf"
 
   # Overwrite default args declared in the pdfium library
-  pdf_use_partition_alloc_new_location = true
+  pdf_partition_alloc_dir = "//base/allocator/partition_allocator"
 
   devtools_visibility = [ "*" ]
 }

@@ -12,6 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -33,10 +34,6 @@ class AuxiliarySearchProvider : public KeyedService {
 
   base::android::ScopedJavaLocalRef<jbyteArray> GetBookmarksSearchableData(
       JNIEnv* env) const;
-
-  base::android::ScopedJavaLocalRef<jobjectArray> GetSearchableTabs(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& j_tabs_android) const;
 
   void GetNonSensitiveTabs(
       JNIEnv* env,
@@ -69,10 +66,11 @@ class AuxiliarySearchProvider : public KeyedService {
       bookmarks::BookmarkModel* model) const;
 
   static std::vector<base::WeakPtr<TabAndroid>> FilterTabsByScheme(
-      const std::vector<TabAndroid*>& tabs);
+      const std::vector<raw_ptr<TabAndroid, VectorExperimental>>& tabs);
 
-  void GetNonSensitiveTabsInternal(const std::vector<TabAndroid*>& all_tabs,
-                                   NonSensitiveTabsCallback callback) const;
+  void GetNonSensitiveTabsInternal(
+      const std::vector<raw_ptr<TabAndroid, VectorExperimental>>& all_tabs,
+      NonSensitiveTabsCallback callback) const;
 
   raw_ptr<Profile> profile_;
   size_t max_bookmark_donation_count_;

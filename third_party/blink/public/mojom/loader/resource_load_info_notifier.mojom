@@ -27,7 +27,8 @@ interface ResourceLoadInfoNotifier {
   NotifyResourceResponseReceived(int64 request_id,
                                  url.mojom.SchemeHostPort final_response_url,
                                  network.mojom.URLResponseHead head,
-                                 network.mojom.RequestDestination request_destination);
+                                 network.mojom.RequestDestination request_destination,
+                                 bool is_ad_resource);
 
   // Called to notify the transfer size is updated.
   NotifyResourceTransferSizeUpdated(int64 request_id, int32 transfer_size_diff);

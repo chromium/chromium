@@ -1,17 +1,17 @@
 This is a testharness.js-based test.
 Found 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] background-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with linear easing
-  assert_equals: The value should be url("http://localhost/test-1") at 499ms expected "url(\\"http://localhost/test-1\\")" but got "-webkit-cross-fade(url(\\"http://localhost/test-1\\"), url(\\"http://localhost/test-2\\"), 0.499)"
+  assert_equals: The value should be url("http://localhost/test-1") at 499ms expected "url(\\"http://localhost/test-1\\")" but got "cross-fade(50.1% url(\\"http://localhost/test-1\\"), url(\\"http://localhost/test-2\\"))"
 [FAIL] background-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with effect easing
-  assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\\"http://localhost/test-1\\")" but got "-webkit-cross-fade(url(\\"http://localhost/test-1\\"), url(\\"http://localhost/test-2\\"), 0.428259)"
+  assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\\"http://localhost/test-1\\")" but got "cross-fade(57.1741% url(\\"http://localhost/test-1\\"), url(\\"http://localhost/test-2\\"))"
 [FAIL] background-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with keyframe easing
-  assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\\"http://localhost/test-1\\")" but got "-webkit-cross-fade(url(\\"http://localhost/test-1\\"), url(\\"http://localhost/test-2\\"), 0.428259)"
+  assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\\"http://localhost/test-1\\")" but got "cross-fade(57.1741% url(\\"http://localhost/test-1\\"), url(\\"http://localhost/test-2\\"))"
 [FAIL] border-image-source uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with linear easing
-  assert_equals: The value should be url("http://localhost/test-1") at 499ms expected "url(\\"http://localhost/test-1\\")" but got "-webkit-cross-fade(url(\\"http://localhost/test-1\\"), url(\\"http://localhost/test-2\\"), 0.499)"
+  assert_equals: The value should be url("http://localhost/test-1") at 499ms expected "url(\\"http://localhost/test-1\\")" but got "cross-fade(50.1% url(\\"http://localhost/test-1\\"), url(\\"http://localhost/test-2\\"))"
 [FAIL] border-image-source uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with effect easing
-  assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\\"http://localhost/test-1\\")" but got "-webkit-cross-fade(url(\\"http://localhost/test-1\\"), url(\\"http://localhost/test-2\\"), 0.428259)"
+  assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\\"http://localhost/test-1\\")" but got "cross-fade(57.1741% url(\\"http://localhost/test-1\\"), url(\\"http://localhost/test-2\\"))"
 [FAIL] border-image-source uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with keyframe easing
-  assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\\"http://localhost/test-1\\")" but got "-webkit-cross-fade(url(\\"http://localhost/test-1\\"), url(\\"http://localhost/test-2\\"), 0.428259)"
+  assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\\"http://localhost/test-1\\")" but got "cross-fade(57.1741% url(\\"http://localhost/test-1\\"), url(\\"http://localhost/test-2\\"))"
 [FAIL] font-style uses discrete animation when animating between "italic" and "oblique" with linear easing
   assert_equals: The value should be oblique at 500ms expected "oblique" but got "italic"
 [FAIL] font-style uses discrete animation when animating between "italic" and "oblique" with effect easing

@@ -20,8 +20,7 @@
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 namespace {
 
 // Size of the intermediate buffer in bytes.
@@ -422,5 +421,4 @@ TEST_F(FileSystemProviderBufferingFileStreamWriterTest, Flush_AfterWriteError) {
   EXPECT_EQ(0u, inner_flush_log.size());
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

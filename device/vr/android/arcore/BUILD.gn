@@ -53,6 +53,7 @@ component("arcore") {
     "//gpu/command_buffer/service:gles2",
     "//mojo/public/cpp/bindings",
     "//services/viz/privileged/mojom",
+    "//third_party/jni_zero",
     "//ui/android",
     "//ui/gfx",
     "//ui/gl/init",

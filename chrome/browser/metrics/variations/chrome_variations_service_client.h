@@ -37,7 +37,8 @@ class ChromeVariationsServiceClient
   TakeSeedFromNativeVariationsSeedStore() override;
   void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
       PrefService* local_state) override;
-  void RegisterLimitedEntropySyntheticTrial(std::string_view group_name);
+  void RegisterLimitedEntropySyntheticTrial(
+      std::string_view group_name) override;
 
  private:
   // variations::VariationsServiceClient:

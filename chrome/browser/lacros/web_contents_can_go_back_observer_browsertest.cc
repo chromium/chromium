@@ -74,13 +74,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest, CanGoBack_ServerSide) {
   ASSERT_TRUE(lacros_service);
   ASSERT_TRUE(lacros_service->IsAvailable<crosapi::mojom::TestController>());
 
-  aura::Window* window = BrowserView::GetBrowserViewForBrowser(browser())
-                             ->frame()
-                             ->GetNativeWindow();
-  std::string id =
-      lacros_window_utility::GetRootWindowUniqueId(window->GetRootWindow());
-  ASSERT_TRUE(browser_test_util::WaitForWindowCreation(id));
-
   EXPECT_FALSE(chrome::CanGoBack(browser()));
   EXPECT_FALSE(chrome::CanGoForward(browser()));
 
@@ -89,9 +82,12 @@ IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest, CanGoBack_ServerSide) {
                                WindowOpenDisposition::CURRENT_TAB,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
+  std::string window_id = lacros_window_utility::GetRootWindowUniqueId(
+      browser()->window()->GetNativeWindow()->GetRootWindow());
+
   EXPECT_TRUE(chrome::CanGoBack(browser()));
   EXPECT_FALSE(chrome::CanGoForward(browser()));
-  CheckCanGoBackOnServer(id, true /* expected_value */);
+  CheckCanGoBackOnServer(window_id, true /* expected_value */);
 
   // Tweak the back/forward list.
   chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
@@ -100,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest, CanGoBack_ServerSide) {
 
   EXPECT_FALSE(chrome::CanGoBack(browser()));
   EXPECT_TRUE(chrome::CanGoForward(browser()));
-  CheckCanGoBackOnServer(id, false /* expected_value */);
+  CheckCanGoBackOnServer(window_id, false /* expected_value */);
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest,
@@ -108,13 +104,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest,
   auto* lacros_service = chromeos::LacrosService::Get();
   ASSERT_TRUE(lacros_service);
   ASSERT_TRUE(lacros_service->IsAvailable<crosapi::mojom::TestController>());
-
-  aura::Window* window = BrowserView::GetBrowserViewForBrowser(browser())
-                             ->frame()
-                             ->GetNativeWindow();
-  std::string id =
-      lacros_window_utility::GetRootWindowUniqueId(window->GetRootWindow());
-  ASSERT_TRUE(browser_test_util::WaitForWindowCreation(id));
 
   EXPECT_FALSE(chrome::CanGoBack(browser()));
   EXPECT_FALSE(chrome::CanGoForward(browser()));
@@ -124,9 +113,12 @@ IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest,
                                WindowOpenDisposition::CURRENT_TAB,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
+  std::string window_id = lacros_window_utility::GetRootWindowUniqueId(
+      browser()->window()->GetNativeWindow()->GetRootWindow());
+
   EXPECT_TRUE(chrome::CanGoBack(browser()));
   EXPECT_FALSE(chrome::CanGoForward(browser()));
-  CheckCanGoBackOnServer(id, true /* expected_value */);
+  CheckCanGoBackOnServer(window_id, true /* expected_value */);
 
   NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUIVersionURL),
                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -135,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest,
   EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
   EXPECT_FALSE(chrome::CanGoBack(browser()));
   EXPECT_FALSE(chrome::CanGoForward(browser()));
-  CheckCanGoBackOnServer(id, false /* expected_value */);
+  CheckCanGoBackOnServer(window_id, false /* expected_value */);
 
   // Navigate the current (second) tab to a different URL, so we can test
   // back/forward later.
@@ -144,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_TRUE(chrome::CanGoBack(browser()));
   EXPECT_FALSE(chrome::CanGoForward(browser()));
-  CheckCanGoBackOnServer(id, true /* expected_value */);
+  CheckCanGoBackOnServer(window_id, true /* expected_value */);
 
   // Tweak the back/forward list of the 2nd tab, and verify.
   chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
@@ -153,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest,
 
   EXPECT_FALSE(chrome::CanGoBack(browser()));
   EXPECT_TRUE(chrome::CanGoForward(browser()));
-  CheckCanGoBackOnServer(id, false /* expected_value */);
+  CheckCanGoBackOnServer(window_id, false /* expected_value */);
 
   // Switch to a different tab, and verify whether the `can go back` property
   // updates accordingly.
@@ -164,5 +156,5 @@ IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest,
 
   EXPECT_TRUE(chrome::CanGoBack(browser()));
   EXPECT_FALSE(chrome::CanGoForward(browser()));
-  CheckCanGoBackOnServer(id, true /* expected_value */);
+  CheckCanGoBackOnServer(window_id, true /* expected_value */);
 }

@@ -146,7 +146,7 @@ bool MLPromotionBrowserTestBase::NavigateAndAwaitInstallabilityCheck(
   return false;
 #else
   auto* manager = TestAppBannerManagerDesktop::FromWebContents(web_contents());
-  web_app::NavigateToURLAndWait(browser(), url);
+  web_app::NavigateViaLinkClickToURLAndWait(browser(), url);
   return manager->WaitForInstallableCheck();
 #endif  // BUILDFLAG(IS_ANDROID)
 }

@@ -38,11 +38,12 @@ class VIZ_SERVICE_EXPORT BspWalkActionDrawPolygon : public BspWalkAction {
 
 class VIZ_SERVICE_EXPORT BspWalkActionToVector : public BspWalkAction {
  public:
-  explicit BspWalkActionToVector(std::vector<DrawPolygon*>* in_list);
+  explicit BspWalkActionToVector(
+      std::vector<raw_ptr<DrawPolygon, VectorExperimental>>* in_list);
   void operator()(DrawPolygon* item) override;
 
  private:
-  raw_ptr<std::vector<DrawPolygon*>> list_;
+  raw_ptr<std::vector<raw_ptr<DrawPolygon, VectorExperimental>>> list_;
 };
 
 }  // namespace viz

@@ -33,15 +33,13 @@ class PageInfoPermissionsTest : public PlatformTest {
         [[PageInfoPermissionsMediator alloc] initWithWebState:web_state_];
   }
 
-  PageInfoPermissionsMediator* mediator() API_AVAILABLE(ios(15.0)) {
-    return mediator_;
-  }
+  PageInfoPermissionsMediator* mediator() { return mediator_; }
 
   web::WebState* web_state() { return fake_web_state_.get(); }
 
  private:
   std::unique_ptr<web::FakeWebState> fake_web_state_;
-  PageInfoPermissionsMediator* mediator_ API_AVAILABLE(ios(15.0));
+  PageInfoPermissionsMediator* mediator_;
 };
 
 // Verifies that `updateStateForPermission:` updates correctly the web state

@@ -28,6 +28,7 @@ class SANDBOX_EXPORT BaselinePolicyAndroid : public BaselinePolicy {
     // Allows a subset of the userfaultfd ioctls that are needed for ART GC.
     bool allow_userfaultfd_ioctls = false;
     bool should_restrict_renderer_syscalls = false;
+    bool should_restrict_clone_params = false;
   };
 
   BaselinePolicyAndroid();

@@ -12,7 +12,7 @@ import type {VolumeInfo} from '../../externs/volume_info.js';
 import {updateIsInteractiveVolume} from '../../state/ducks/volumes.js';
 import {getStore} from '../../state/store.js';
 
-import {constants} from './constants.js';
+import {FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
 import {ProvidersModel} from './providers_model.js';
 
@@ -104,8 +104,7 @@ export class EmptyFolderController {
             // Find the reauthentication required action.
             for (const action of customActions) {
               if (action.id ===
-                      constants
-                          .FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED &&
+                      FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED &&
                   action.title === 'true') {
                 fulfill(true);
                 return;

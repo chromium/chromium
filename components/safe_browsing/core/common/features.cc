@@ -76,38 +76,9 @@ BASE_FEATURE(kEncryptedArchivesMetadata,
              "SafeBrowsingEncryptedArchivesMetadata",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEvaluateProtectedPasswordLengthMinimum,
-             "EvaluateProtectedPasswordLengthMinimum",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kEvaluateProtectedPasswordLengthMinimumValue{
-    &kEvaluateProtectedPasswordLengthMinimum, "MinimumValue",
-    /*default_value=*/4};
-
 BASE_FEATURE(kExtensionTelemetryConfiguration,
              "SafeBrowsingExtensionTelemetryConfiguration",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kExtensionTelemetryFileData,
-             "SafeBrowsingExtensionTelemetryFileData",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kExtensionTelemetryFileDataMaxFilesToProcess{
-    &kExtensionTelemetryFileData, "MaxFilesToProcess",
-    /*default_value=*/50};
-
-const base::FeatureParam<int> kExtensionTelemetryFileDataMaxFileSizeBytes{
-    &kExtensionTelemetryFileData, "MaxFileSizeBytes",
-    /*default_value=100KB*/ 100 * 1024};
-
-const base::FeatureParam<int>
-    kExtensionTelemetryFileDataCollectionIntervalSeconds{
-        &kExtensionTelemetryFileData, "CollectionIntervalSeconds",
-        /*default_value=*/7200};
-
-const base::FeatureParam<int> kExtensionTelemetryFileDataStartupDelaySeconds{
-    &kExtensionTelemetryFileData, "StartupDelaySeconds",
-    /*default_value=*/300};
 
 BASE_FEATURE(kExtensionTelemetryFileDataForCommandLineExtensions,
              "SafeBrowsingExtensionTelemetryFileDataForCommandLineExtensions",
@@ -168,10 +139,6 @@ constexpr base::FeatureParam<std::string> kHashRealTimeOverOhttpRelayUrl{
     &kHashRealTimeOverOhttp, "SafeBrowsingHashRealTimeOverOhttpRelayUrl",
     /*default_value=*/""};
 
-BASE_FEATURE(kImprovedDownloadBubbleWarnings,
-             "ImprovedDownloadBubbleWarnings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kImprovedDownloadPageWarnings,
              "ImprovedDownloadPageWarnings",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -221,10 +188,6 @@ constexpr base::FeatureParam<int> kReferrerChainEventMaximumCount{
     &kReferrerChainParameters, "MaximumEventCount",
     /*default_value=*/100};
 
-BASE_FEATURE(kSafeBrowsingCsbrrNewDownloadTrigger,
-             "SafeBrowsingCsbrrNewDownloadTrigger",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSafeBrowsingAsyncRealTimeCheck,
              "SafeBrowsingAsyncRealTimeCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -260,15 +223,6 @@ BASE_FEATURE(kSafeBrowsingRemoveCookiesInAuthRequests,
              "SafeBrowsingRemoveCookiesInAuthRequests",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSafeBrowsingSkipImageCssFont,
-             "SafeBrowsingSkipImageCssFont",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
 BASE_FEATURE(kSafeBrowsingSkipSubresources,
              "SafeBrowsingSkipSubResources",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -303,7 +257,7 @@ BASE_FEATURE(kSuspiciousSiteTriggerQuotaFeature,
 
 BASE_FEATURE(kTailoredSecurityRetryForSyncUsers,
              "TailoredSecurityRetryForSyncUsers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kTailoredSecurityObserverRetries,
@@ -368,9 +322,7 @@ constexpr struct {
     {&kCreateWarningShownClientSafeBrowsingReports, false},
     {&kDelayedWarnings, true},
     {&kDownloadTailoredWarnings, true},
-    {&kEvaluateProtectedPasswordLengthMinimum, false},
     {&kExtensionTelemetryDisableOffstoreExtensions, true},
-    {&kExtensionTelemetryFileData, true},
     {&kExtensionTelemetryInterceptRemoteHostsContactedInRenderer, true},
     {&kExtensionTelemetryPotentialPasswordTheft, true},
     {&kExtensionTelemetryReportContactedHosts, true},
@@ -379,17 +331,14 @@ constexpr struct {
     {&kExtensionTelemetryTabsExecuteScriptSignal, true},
     {&kHashPrefixRealTimeLookups, true},
     {&kHashRealTimeOverOhttp, true},
-    {&kImprovedDownloadBubbleWarnings, true},
     {&kImprovedDownloadPageWarnings, true},
     {&kLogAccountEnhancedProtectionStateInProtegoPings, true},
     {&kMmapSafeBrowsingDatabase, true},
     {&kNestedArchives, true},
     {&kRedInterstitialFacelift, false},
-    {&kSafeBrowsingCsbrrNewDownloadTrigger, true},
     {&kSafeBrowsingAsyncRealTimeCheck, true},
     {&kSafeBrowsingLookupMechanismExperiment, true},
     {&kSafeBrowsingRemoveCookiesInAuthRequests, true},
-    {&kSafeBrowsingSkipImageCssFont, true},
     {&kSafeBrowsingSkipSubresources, true},
     {&kSafeBrowsingSkipSubresources2, true},
     {&kSevenZipEvaluationEnabled, true},

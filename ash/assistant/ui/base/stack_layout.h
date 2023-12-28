@@ -59,7 +59,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) StackLayout : public views::LayoutManager {
                                    VerticalAlignment alignment);
 
  private:
-  raw_ptr<views::View, ExperimentalAsh> host_ = nullptr;
+  raw_ptr<views::View> host_ = nullptr;
   std::map<views::View*, RespectDimension> respect_dimension_map_;
   std::map<views::View*, VerticalAlignment> vertical_alignment_map_;
 };

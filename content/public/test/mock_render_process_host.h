@@ -200,6 +200,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   void SetIsUsed() override;
 
   bool HostHasNotBeenUsed() override;
+  bool IsSpare() const override;
   void SetProcessLock(const IsolationContext& isolation_context,
                       const ProcessLock& process_lock) override;
   ProcessLock GetProcessLock() const override;
@@ -291,6 +292,8 @@ class MockRenderProcessHost : public RenderProcessHost {
   void ReinitializeLogging(uint32_t logging_dest,
                            base::ScopedFD log_file_descriptor) override;
 #endif
+
+  void SetBatterySaverMode(bool battery_saver_mode_enabled) override {}
 
   void PauseSocketManagerForRenderFrameHost(
       const GlobalRenderFrameHostId& render_frame_host_id) override {}

@@ -122,13 +122,8 @@ class ImageRepSkia final : public ImageRep {
 };
 
 ImageStorage::ImageStorage(Image::RepresentationType default_type)
-    : default_representation_type_(default_type)
-#if BUILDFLAG(IS_MAC)
-      ,
-      default_representation_color_space_(base::mac::GetGenericRGBColorSpace())
-#endif  // BUILDFLAG(IS_MAC)
-{
-}
+    : default_representation_type_(default_type) {}
+
 ImageStorage::~ImageStorage() = default;
 
 Image::RepresentationType ImageStorage::default_representation_type() const {
@@ -316,22 +311,19 @@ NSImage* Image::ToNSImage() const {
   const internal::ImageRep* rep = GetRepresentation(kImageRepCocoa, false);
   if (!rep) {
     std::unique_ptr<internal::ImageRep> scoped_rep;
-    CGColorSpaceRef default_representation_color_space =
-        storage()->default_representation_color_space();
 
     switch (DefaultRepresentationType()) {
       case kImageRepPNG: {
         const internal::ImageRepPNG* png_rep =
             GetRepresentation(kImageRepPNG, true)->AsImageRepPNG();
-        scoped_rep = internal::MakeImageRepCocoa(internal::NSImageFromPNG(
-            png_rep->image_reps(), default_representation_color_space));
+        scoped_rep = internal::MakeImageRepCocoa(
+            internal::NSImageFromPNG(png_rep->image_reps()));
         break;
       }
       case kImageRepSkia: {
         const internal::ImageRepSkia* skia_rep =
             GetRepresentation(kImageRepSkia, true)->AsImageRepSkia();
-        NSImage* image = NSImageFromImageSkiaWithColorSpace(*skia_rep->image(),
-            default_representation_color_space);
+        NSImage* image = NSImageFromImageSkia(*skia_rep->image());
         scoped_rep = internal::MakeImageRepCocoa(image);
         break;
       }
@@ -452,13 +444,6 @@ gfx::Size Image::Size() const {
     return gfx::Size();
   return GetRepresentation(DefaultRepresentationType(), true)->Size();
 }
-
-#if BUILDFLAG(IS_MAC)
-void Image::SetSourceColorSpace(CGColorSpaceRef color_space) {
-  if (storage())
-    storage()->set_default_representation_color_space(color_space);
-}
-#endif  // BUILDFLAG(IS_MAC)
 
 Image::RepresentationType Image::DefaultRepresentationType() const {
   CHECK(storage());

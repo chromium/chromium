@@ -10,19 +10,23 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.safety_check.SafetyCheckProperties.COMPROMISED_PASSWORDS;
-import static org.chromium.chrome.browser.safety_check.SafetyCheckProperties.PASSWORDS_STATE;
+import static org.chromium.chrome.browser.password_manager.PasswordCheckReferrer.SAFETY_CHECK;
+import static org.chromium.chrome.browser.safety_check.PasswordsCheckPreferenceProperties.COMPROMISED_PASSWORDS_COUNT;
+import static org.chromium.chrome.browser.safety_check.PasswordsCheckPreferenceProperties.PASSWORDS_STATE;
 import static org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SAFE_BROWSING_STATE;
 import static org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UPDATES_STATE;
 
 import android.os.Handler;
 
+import androidx.preference.Preference;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -42,8 +46,10 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_check.PasswordCheckUIStatus;
@@ -60,8 +66,8 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.safety_check.PasswordsCheckPreferenceProperties.PasswordsState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckMediator.SafetyCheckInteractions;
-import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.PasswordsState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -75,12 +81,14 @@ import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 
 /** Unit tests for {@link SafetyCheckMediator}. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
@@ -104,7 +112,8 @@ public class SafetyCheckMediatorTest {
 
     @Rule public JniMocker mJniMocker = new JniMocker();
 
-    private PropertyModel mModel;
+    private PropertyModel mSafetyCheckModel;
+    private PropertyModel mPasswordCheckPreferenceModel;
 
     @Mock private SafetyCheckBridge.Natives mSafetyCheckBridge;
     @Mock private Profile mProfile;
@@ -123,8 +132,8 @@ public class SafetyCheckMediatorTest {
 
     // TODO(crbug.com/1346235): Use fake instead of mocking
     @Mock private PasswordManagerBackendSupportHelper mBackendSupportHelperMock;
-
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeNativeMock;
+    @Mock LoadingModalDialogCoordinator mLoadingModalDialogCoordinator;
 
     private SafetyCheckMediator mMediator;
 
@@ -137,6 +146,13 @@ public class SafetyCheckMediatorTest {
     private Callback<Exception> mRunPasswordCheckFailedCallback;
 
     private boolean mUseGmsApi;
+
+    private ModalDialogManager mModalDialogManager;
+
+    private final ObservableSupplierImpl<ModalDialogManager> mModalDialogManagerSupplier =
+            new ObservableSupplierImpl<>();
+
+    private LoadingModalDialogCoordinator.Observer mLoadingDialogCoordinatorObserver;
 
     @Parameters
     public static Collection<Object[]> data() {
@@ -204,7 +220,8 @@ public class SafetyCheckMediatorTest {
                                 return null;
                             })
                     .when(mPasswordCheckupHelper)
-                    .getBreachedCredentialsCount(anyInt(), any(), any(Callback.class), any());
+                    .getBreachedCredentialsCount(
+                            anyInt(), any(Optional.class), any(Callback.class), any());
             setPasswordCountOnStoreBridge(passwordCount);
         } else {
             doAnswer(
@@ -244,7 +261,7 @@ public class SafetyCheckMediatorTest {
                         })
                 .when(mPasswordCheckupHelper)
                 .getBreachedCredentialsCount(
-                        anyInt(), any(), any(Callback.class), any(Callback.class));
+                        anyInt(), any(Optional.class), any(Callback.class), any(Callback.class));
     }
 
     private void captureRunPasswordCheckCallback() {
@@ -257,7 +274,7 @@ public class SafetyCheckMediatorTest {
                         })
                 .when(mPasswordCheckupHelper)
                 .runPasswordCheckupInBackground(
-                        anyInt(), any(), any(Callback.class), any(Callback.class));
+                        anyInt(), any(Optional.class), any(Callback.class), any(Callback.class));
     }
 
     private void configureMockSyncService() {
@@ -268,6 +285,10 @@ public class SafetyCheckMediatorTest {
         when(mSyncService.hasSyncConsent()).thenReturn(true);
         when(mSyncService.getAccountInfo())
                 .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
+
+        // TODO(crbug.com/1511255): Parametrize the tests in SafetyCheckMediatorTest for local and
+        // account storage.
+        // This will no longer be true once the local and account store split happens.
         if (mUseGmsApi) {
             when(mSyncService.getSelectedTypes())
                     .thenReturn(CollectionUtil.newHashSet(UserSelectableType.PASSWORDS));
@@ -302,7 +323,9 @@ public class SafetyCheckMediatorTest {
         when(mPrefService.getBoolean(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS))
                 .thenReturn(false);
 
-        mModel = SafetyCheckProperties.createSafetyCheckModel();
+        mSafetyCheckModel = SafetyCheckProperties.createSafetyCheckModel();
+        mPasswordCheckPreferenceModel =
+                PasswordsCheckPreferenceProperties.createPasswordSafetyCheckModel();
         if (mUseGmsApi) {
             // TODO(crbug.com/1346235): Use existing fake instead of mocking
             PasswordCheckupClientHelperFactory mockPasswordCheckFactory =
@@ -311,24 +334,28 @@ public class SafetyCheckMediatorTest {
             PasswordCheckupClientHelperFactory.setFactoryForTesting(mockPasswordCheckFactory);
             mMediator =
                     new SafetyCheckMediator(
-                            mModel,
+                            mSafetyCheckModel,
+                            mPasswordCheckPreferenceModel,
                             mUpdatesDelegate,
                             mSettingsLauncher,
                             mSigninLauncher,
                             mSyncService,
                             mPasswordStoreBridge,
-                            mHandler);
+                            mHandler,
+                            mModalDialogManagerSupplier);
         } else {
             PasswordCheckFactory.setPasswordCheckForTesting(mPasswordCheck);
             mMediator =
                     new SafetyCheckMediator(
-                            mModel,
+                            mSafetyCheckModel,
+                            mPasswordCheckPreferenceModel,
                             mUpdatesDelegate,
                             mSettingsLauncher,
                             mSigninLauncher,
                             mSyncService,
                             null,
-                            mHandler);
+                            mHandler,
+                            mModalDialogManagerSupplier);
         }
 
         // Execute any delayed tasks immediately.
@@ -344,6 +371,19 @@ public class SafetyCheckMediatorTest {
         doReturn(true).when(mSafetyCheckBridge).userSignedIn(any(BrowserContextHandle.class));
         // Reset the histogram count.
         UmaRecorderHolder.resetForTesting();
+
+        mModalDialogManager =
+                new ModalDialogManager(
+                        mock(ModalDialogManager.Presenter.class),
+                        ModalDialogManager.ModalDialogType.APP);
+        mModalDialogManagerSupplier.set(mModalDialogManager);
+        doAnswer(
+                        invocation -> {
+                            mLoadingDialogCoordinatorObserver = invocation.getArgument(0);
+                            return null;
+                        })
+                .when(mLoadingModalDialogCoordinator)
+                .addObserver(any(LoadingModalDialogCoordinator.Observer.class));
     }
 
     @Test
@@ -370,7 +410,7 @@ public class SafetyCheckMediatorTest {
                 .checkForUpdates(any(WeakReference.class));
 
         mMediator.performSafetyCheck();
-        assertEquals(UpdatesState.UPDATED, mModel.get(UPDATES_STATE));
+        assertEquals(UpdatesState.UPDATED, mSafetyCheckModel.get(UPDATES_STATE));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -392,7 +432,7 @@ public class SafetyCheckMediatorTest {
                 .checkForUpdates(any(WeakReference.class));
 
         mMediator.performSafetyCheck();
-        assertEquals(UpdatesState.OUTDATED, mModel.get(UPDATES_STATE));
+        assertEquals(UpdatesState.OUTDATED, mSafetyCheckModel.get(UPDATES_STATE));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -406,7 +446,8 @@ public class SafetyCheckMediatorTest {
                 .checkSafeBrowsing(any(BrowserContextHandle.class));
 
         mMediator.performSafetyCheck();
-        assertEquals(SafeBrowsingState.ENABLED_STANDARD, mModel.get(SAFE_BROWSING_STATE));
+        assertEquals(
+                SafeBrowsingState.ENABLED_STANDARD, mSafetyCheckModel.get(SAFE_BROWSING_STATE));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -421,7 +462,7 @@ public class SafetyCheckMediatorTest {
                 .checkSafeBrowsing(any(BrowserContextHandle.class));
 
         mMediator.performSafetyCheck();
-        assertEquals(SafeBrowsingState.DISABLED, mModel.get(SAFE_BROWSING_STATE));
+        assertEquals(SafeBrowsingState.DISABLED, mSafetyCheckModel.get(SAFE_BROWSING_STATE));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -433,7 +474,7 @@ public class SafetyCheckMediatorTest {
         captureRunPasswordCheckCallback();
         mMediator.performSafetyCheck();
         setPasswordCheckResult(/* hasError= */ true);
-        assertEquals(PasswordsState.ERROR, mModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.ERROR, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -448,7 +489,9 @@ public class SafetyCheckMediatorTest {
         mRunPasswordCheckFailedCallback.onResult(
                 new PasswordCheckBackendException(
                         "test", CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED));
-        assertEquals(PasswordsState.BACKEND_VERSION_NOT_SUPPORTED, mModel.get(PASSWORDS_STATE));
+        assertEquals(
+                PasswordsState.BACKEND_VERSION_NOT_SUPPORTED,
+                mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -463,7 +506,8 @@ public class SafetyCheckMediatorTest {
         setPasswordCheckResult(/* hasError= */ false);
         fetchSavedPasswords(0);
         fetchBreachedPasswords(0);
-        assertEquals(PasswordsState.NO_PASSWORDS, mModel.get(PASSWORDS_STATE));
+        assertEquals(
+                PasswordsState.NO_PASSWORDS, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -478,7 +522,7 @@ public class SafetyCheckMediatorTest {
         setPasswordCheckResult(/* hasError= */ false);
         fetchSavedPasswords(20);
         fetchBreachedPasswords(0);
-        assertEquals(PasswordsState.SAFE, mModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.SAFE, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -494,8 +538,10 @@ public class SafetyCheckMediatorTest {
         setPasswordCheckResult(/* hasError= */ false);
         fetchSavedPasswords(199);
         fetchBreachedPasswords(numLeaks);
-        assertEquals(PasswordsState.COMPROMISED_EXIST, mModel.get(PASSWORDS_STATE));
-        assertEquals(numLeaks, mModel.get(COMPROMISED_PASSWORDS));
+        assertEquals(
+                PasswordsState.COMPROMISED_EXIST,
+                mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(numLeaks, mPasswordCheckPreferenceModel.get(COMPROMISED_PASSWORDS_COUNT));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -531,9 +577,10 @@ public class SafetyCheckMediatorTest {
                 .checkForUpdates(any(WeakReference.class));
         mMediator.setInitialState();
         // Verify the states.
-        assertEquals(SafeBrowsingState.ENABLED_STANDARD, mModel.get(SAFE_BROWSING_STATE));
-        assertEquals(PasswordsState.SAFE, mModel.get(PASSWORDS_STATE));
-        assertEquals(UpdatesState.OUTDATED, mModel.get(UPDATES_STATE));
+        assertEquals(
+                SafeBrowsingState.ENABLED_STANDARD, mSafetyCheckModel.get(SAFE_BROWSING_STATE));
+        assertEquals(PasswordsState.SAFE, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(UpdatesState.OUTDATED, mSafetyCheckModel.get(UPDATES_STATE));
     }
 
     @Test
@@ -564,9 +611,11 @@ public class SafetyCheckMediatorTest {
                 .checkForUpdates(any(WeakReference.class));
         mMediator.setInitialState();
         // Verify the states.
-        assertEquals(SafeBrowsingState.DISABLED_BY_ADMIN, mModel.get(SAFE_BROWSING_STATE));
-        assertEquals(PasswordsState.NO_PASSWORDS, mModel.get(PASSWORDS_STATE));
-        assertEquals(UpdatesState.OFFLINE, mModel.get(UPDATES_STATE));
+        assertEquals(
+                SafeBrowsingState.DISABLED_BY_ADMIN, mSafetyCheckModel.get(SAFE_BROWSING_STATE));
+        assertEquals(
+                PasswordsState.NO_PASSWORDS, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(UpdatesState.OFFLINE, mSafetyCheckModel.get(UPDATES_STATE));
     }
 
     @Test
@@ -597,9 +646,11 @@ public class SafetyCheckMediatorTest {
                 .checkForUpdates(any(WeakReference.class));
         mMediator.setInitialState();
         // Verify the states.
-        assertEquals(SafeBrowsingState.DISABLED, mModel.get(SAFE_BROWSING_STATE));
-        assertEquals(PasswordsState.COMPROMISED_EXIST, mModel.get(PASSWORDS_STATE));
-        assertEquals(UpdatesState.UPDATED, mModel.get(UPDATES_STATE));
+        assertEquals(SafeBrowsingState.DISABLED, mSafetyCheckModel.get(SAFE_BROWSING_STATE));
+        assertEquals(
+                PasswordsState.COMPROMISED_EXIST,
+                mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(UpdatesState.UPDATED, mSafetyCheckModel.get(UPDATES_STATE));
     }
 
     @Test
@@ -630,9 +681,9 @@ public class SafetyCheckMediatorTest {
                 .checkForUpdates(any(WeakReference.class));
         mMediator.setInitialState();
         // Verify the states.
-        assertEquals(SafeBrowsingState.UNCHECKED, mModel.get(SAFE_BROWSING_STATE));
-        assertEquals(PasswordsState.UNCHECKED, mModel.get(PASSWORDS_STATE));
-        assertEquals(UpdatesState.UNCHECKED, mModel.get(UPDATES_STATE));
+        assertEquals(SafeBrowsingState.UNCHECKED, mSafetyCheckModel.get(SAFE_BROWSING_STATE));
+        assertEquals(PasswordsState.UNCHECKED, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(UpdatesState.UNCHECKED, mSafetyCheckModel.get(UPDATES_STATE));
     }
 
     @Test
@@ -663,9 +714,11 @@ public class SafetyCheckMediatorTest {
         mMediator.setInitialState();
 
         // Verify the states.
-        assertEquals(SafeBrowsingState.UNCHECKED, mModel.get(SAFE_BROWSING_STATE));
-        assertEquals(PasswordsState.COMPROMISED_EXIST, mModel.get(PASSWORDS_STATE));
-        assertEquals(UpdatesState.UNCHECKED, mModel.get(UPDATES_STATE));
+        assertEquals(SafeBrowsingState.UNCHECKED, mSafetyCheckModel.get(SAFE_BROWSING_STATE));
+        assertEquals(
+                PasswordsState.COMPROMISED_EXIST,
+                mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+        assertEquals(UpdatesState.UNCHECKED, mSafetyCheckModel.get(UPDATES_STATE));
     }
 
     @Test
@@ -673,15 +726,17 @@ public class SafetyCheckMediatorTest {
         // Order: initial state -> load completed -> done.
         captureBreachPasswordsCallback();
         mMediator.setInitialState();
-        assertEquals(PasswordsState.CHECKING, mModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
 
         fetchBreachedPasswords(18);
         // Not complete fetch - still checking.
-        assertEquals(PasswordsState.CHECKING, mModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
 
         // Data available.
         fetchSavedPasswords(20);
-        assertEquals(PasswordsState.COMPROMISED_EXIST, mModel.get(PASSWORDS_STATE));
+        assertEquals(
+                PasswordsState.COMPROMISED_EXIST,
+                mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
     }
 
     @Test
@@ -689,24 +744,26 @@ public class SafetyCheckMediatorTest {
         // Order: initial state -> safety check triggered -> load completed -> check done.
         captureBreachPasswordsCallback();
         mMediator.setInitialState();
-        assertEquals(PasswordsState.CHECKING, mModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
 
         captureRunPasswordCheckCallback();
         mMediator.performSafetyCheck();
-        assertEquals(PasswordsState.CHECKING, mModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
 
         fetchSavedPasswords(20);
-        assertEquals(PasswordsState.CHECKING, mModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
 
         fetchBreachedPasswords(18);
-        assertEquals(PasswordsState.CHECKING, mModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
 
         setPasswordCheckResult(/* hasError= */ false);
         captureBreachPasswordsCallback();
         if (mUseGmsApi) {
             fetchBreachedPasswords(18);
         }
-        assertEquals(PasswordsState.COMPROMISED_EXIST, mModel.get(PASSWORDS_STATE));
+        assertEquals(
+                PasswordsState.COMPROMISED_EXIST,
+                mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -723,7 +780,7 @@ public class SafetyCheckMediatorTest {
         }
         captureRunPasswordCheckCallback();
         mMediator.performSafetyCheck();
-        assertEquals(PasswordsState.CHECKING, mModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
 
         if (!mUseGmsApi) {
             verify(mPasswordCheck).addObserver(mMediator, false);
@@ -732,28 +789,32 @@ public class SafetyCheckMediatorTest {
         captureBreachPasswordsCallback();
         setPasswordCheckResult(/* hasError= */ false);
         fetchBreachedPasswords(3);
-        assertEquals(PasswordsState.COMPROMISED_EXIST, mModel.get(PASSWORDS_STATE));
+        assertEquals(
+                PasswordsState.COMPROMISED_EXIST,
+                mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
     }
 
     @Test
     public void testPasswordsInitialLoadAfterRunningCheck() {
         // Order: initial state -> safety check triggered -> check done -> load completed.
         mMediator.setInitialState();
-        assertEquals(PasswordsState.CHECKING, mModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
 
         captureRunPasswordCheckCallback();
         mMediator.performSafetyCheck();
-        assertEquals(PasswordsState.CHECKING, mModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
 
         captureBreachPasswordsCallback();
         setPasswordCheckResult(/* hasError= */ false);
-        assertEquals(PasswordsState.CHECKING, mModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
 
         fetchSavedPasswords(20);
-        assertEquals(PasswordsState.CHECKING, mModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
 
         fetchBreachedPasswords(18);
-        assertEquals(PasswordsState.COMPROMISED_EXIST, mModel.get(PASSWORDS_STATE));
+        assertEquals(
+                PasswordsState.COMPROMISED_EXIST,
+                mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -765,18 +826,18 @@ public class SafetyCheckMediatorTest {
     public void testPasswordsInitialLoadCheckReturnsError() {
         // Order: initial state -> safety check triggered -> check error -> load ignored.
         mMediator.setInitialState();
-        assertEquals(PasswordsState.CHECKING, mModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
 
         captureRunPasswordCheckCallback();
         mMediator.performSafetyCheck();
-        assertEquals(PasswordsState.CHECKING, mModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
 
         setPasswordCheckResult(/* hasError= */ true);
-        assertEquals(PasswordsState.ERROR, mModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.ERROR, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
 
         // Previous check found compromises.
         fetchSavedPasswords(20);
-        assertEquals(PasswordsState.ERROR, mModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.ERROR, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -789,13 +850,13 @@ public class SafetyCheckMediatorTest {
         doReturn(false).when(mSafetyCheckBridge).userSignedIn(any(BrowserContextHandle.class));
         captureBreachPasswordsCallback();
         mMediator.setInitialState();
-        assertEquals(PasswordsState.SIGNED_OUT, mModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.SIGNED_OUT, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
 
         // Previous check found compromises.
         fetchSavedPasswords(20);
         fetchBreachedPasswords(18);
         // The results of the previous check should be ignored.
-        assertEquals(PasswordsState.SIGNED_OUT, mModel.get(PASSWORDS_STATE));
+        assertEquals(PasswordsState.SIGNED_OUT, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -840,5 +901,78 @@ public class SafetyCheckMediatorTest {
         setPasswordCheckResult(/* hasError= */ false);
         mMediator.destroy();
         failBreachedPasswordsFetch();
+    }
+
+    @Test
+    public void testClickListenerLeadsToUPMAccountPasswordCheckup() {
+        // Order: initial state -> safety check triggered -> check done -> load completed.
+        mMediator.setInitialState();
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+
+        captureRunPasswordCheckCallback();
+        mMediator.performSafetyCheck();
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+
+        captureBreachPasswordsCallback();
+        setPasswordCheckResult(/* hasError= */ false);
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+
+        fetchSavedPasswords(20);
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+
+        fetchBreachedPasswords(18);
+        assertEquals(
+                PasswordsState.COMPROMISED_EXIST,
+                mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+
+        Preference.OnPreferenceClickListener listener =
+                (Preference.OnPreferenceClickListener)
+                        mPasswordCheckPreferenceModel.get(
+                                PasswordsCheckPreferenceProperties.PASSWORDS_CLICK_LISTENER);
+        listener.onPreferenceClick(new Preference(ContextUtils.getApplicationContext()));
+
+        verify(mPasswordCheckupHelper, times(mUseGmsApi ? 1 : 0))
+                .getPasswordCheckupIntent(
+                        eq(SAFETY_CHECK), eq(Optional.of(TEST_EMAIL_ADDRESS)), any(), any());
+    }
+
+    @Test
+    public void testClickListenerLeadsToUPMLocalPasswordCheckup() {
+        // TODO(crbug.com/1511255): Parametrize the tests in SafetyCheckMediatorTest for local and
+        // account storage.
+        // These behaviours are set here again because the tests are currently not parametrised in
+        // a way to support UPM for non password syncing users.
+        when(mPasswordManagerUtilBridgeNativeMock.canUseUPMBackend(false, mPrefService))
+                .thenReturn(mUseGmsApi);
+        when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
+
+        // Order: initial state -> safety check triggered -> check done -> load completed.
+        mMediator.setInitialState();
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+
+        captureRunPasswordCheckCallback();
+        mMediator.performSafetyCheck();
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+
+        captureBreachPasswordsCallback();
+        setPasswordCheckResult(/* hasError= */ false);
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+
+        fetchSavedPasswords(20);
+        assertEquals(PasswordsState.CHECKING, mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+
+        fetchBreachedPasswords(18);
+        assertEquals(
+                PasswordsState.COMPROMISED_EXIST,
+                mPasswordCheckPreferenceModel.get(PASSWORDS_STATE));
+
+        Preference.OnPreferenceClickListener listener =
+                (Preference.OnPreferenceClickListener)
+                        mPasswordCheckPreferenceModel.get(
+                                PasswordsCheckPreferenceProperties.PASSWORDS_CLICK_LISTENER);
+        listener.onPreferenceClick(new Preference(ContextUtils.getApplicationContext()));
+
+        verify(mPasswordCheckupHelper, times(mUseGmsApi ? 1 : 0))
+                .getPasswordCheckupIntent(eq(SAFETY_CHECK), eq(Optional.empty()), any(), any());
     }
 }

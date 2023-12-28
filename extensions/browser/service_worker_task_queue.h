@@ -90,8 +90,17 @@ class ServiceWorkerTaskQueue : public KeyedService,
   // |context|.
   static ServiceWorkerTaskQueue* Get(content::BrowserContext* context);
 
+  // Always returns true since we currently request a worker to start for every
+  // task sent to it.
   bool ShouldEnqueueTask(content::BrowserContext* context,
                          const Extension* extension) override;
+
+  // Returns true if the service worker is blink::EmbeddedWorkerStatus::Running.
+  // This could, once service worker start logic is refactored in
+  // crbug.com/1467015, be refactored into `ShouldEnqueueTask()`.
+  bool IsReadyToRunTasks(content::BrowserContext* context,
+                         const Extension* extension) override;
+
   void AddPendingTask(const LazyContextId& context_id,
                       PendingTask task) override;
 
@@ -186,7 +195,16 @@ class ServiceWorkerTaskQueue : public KeyedService,
   size_t GetNumPendingTasksForTest(const LazyContextId& lazy_context_id);
 
  private:
-  using SequencedContextId = std::pair<LazyContextId, base::UnguessableToken>;
+  struct SequencedContextId {
+    ExtensionId extension_id;
+    raw_ptr<content::BrowserContext> browser_context;
+    base::UnguessableToken token;
+
+    bool operator<(const SequencedContextId& rhs) const {
+      return std::tie(extension_id, browser_context, token) <
+             std::tie(rhs.extension_id, rhs.browser_context, rhs.token);
+    }
+  };
 
   class WorkerState;
 
@@ -280,10 +298,9 @@ class ServiceWorkerTaskQueue : public KeyedService,
   // succeeded in the first step (triggering `DidRegisterServiceWorker`), but
   // have not yet been stored. They are cleared out (and the registration state
   // is stored) in response to `OnRegistrationStored`.
-  // The key is the service worker scope (which is the associated extension's
-  // base URL), and the value is the activation token expected for that
-  // registration.
-  std::map<GURL, base::UnguessableToken> pending_registrations_;
+  // The key is the extension's ID and the value is the activation token
+  // expected for that registration.
+  std::map<ExtensionId, base::UnguessableToken> pending_registrations_;
 
   base::WeakPtrFactory<ServiceWorkerTaskQueue> weak_factory_{this};
 };

@@ -297,7 +297,8 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
           TabSharingInfoBarDelegate::TabShareType::CAPTURE);
     } else {
       notification_ui = ScreenCaptureNotificationUI::Create(
-          GetNotificationText(application_title, capture_audio, media_id.type));
+          GetNotificationText(application_title, capture_audio, media_id.type),
+          web_contents);
     }
   }
 

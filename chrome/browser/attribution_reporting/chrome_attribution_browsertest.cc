@@ -107,9 +107,9 @@ class ChromeAttributionBrowserTest : public MixinBasedInProcessBrowserTest {
   }
 
   net::EmbeddedTestServer server_{net::EmbeddedTestServer::TYPE_HTTPS};
-  base::test::ScopedFeatureList scoped_feature_list_;
   privacy_sandbox::PrivacySandboxAttestationsMixin
       privacy_sandbox_attestations_mixin_{&mixin_host_};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 struct ExpectedReportWaiter {

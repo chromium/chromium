@@ -19,13 +19,15 @@ class WebContents;
 
 class ForceInstalledPreinstalledDeprecatedAppDialogView
     : public views::BoxLayoutView {
+  METADATA_HEADER(ForceInstalledPreinstalledDeprecatedAppDialogView,
+                  views::BoxLayoutView)
+
  public:
   struct LinkConfig {
     GURL link;
     std::u16string link_text;
   };
 
-  METADATA_HEADER(ForceInstalledPreinstalledDeprecatedAppDialogView);
   ForceInstalledPreinstalledDeprecatedAppDialogView(
       const ForceInstalledPreinstalledDeprecatedAppDialogView&) = delete;
   ForceInstalledPreinstalledDeprecatedAppDialogView& operator=(

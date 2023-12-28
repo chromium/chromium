@@ -152,7 +152,7 @@ async function defaultTaskDialog(appId, descriptor) {
   await remoteCall.waitForElement(appId, '#tasks-menu .change-default');
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'fakeEvent', appId,
-      ['#tasks', 'select', {item: {type: 'ChangeDefaultTask'}}]));
+      ['#tasks', 'combobutton-select', {detail: {type: 'ChangeDefaultTask'}}]));
 
   const caller = getCaller();
 
@@ -287,7 +287,7 @@ testcase.changeDefaultDialogScrollList = async () => {
   await remoteCall.waitForElement(appId, '#tasks-menu .change-default');
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'fakeEvent', appId,
-      ['#tasks', 'select', {item: {type: 'ChangeDefaultTask'}}]));
+      ['#tasks', 'combobutton-select', {detail: {type: 'ChangeDefaultTask'}}]));
 
   // Wait for Default Task Dialog with the scrollable list CSS class.
   await remoteCall.waitForElement(

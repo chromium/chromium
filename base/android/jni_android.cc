@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
+#include "third_party/jni_zero/core.h"
 
 namespace base {
 namespace android {
@@ -32,7 +33,6 @@ BASE_FEATURE(kHandleExceptionsInJava,
              "HandleJniExceptionsInJava",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-JavaVM* g_jvm = nullptr;
 jobject g_class_loader = nullptr;
 jclass g_out_of_memory_error_class = nullptr;
 jmethodID g_class_loader_load_class_method_id = nullptr;
@@ -71,77 +71,32 @@ ScopedJavaLocalRef<jclass> GetClassInternal(JNIEnv* env,
 
 }  // namespace
 
-JNIEnv* AttachCurrentThread() {
-  DCHECK(g_jvm);
-  JNIEnv* env = nullptr;
-  jint ret = g_jvm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_2);
-  if (ret == JNI_EDETACHED || !env) {
-    JavaVMAttachArgs args;
-    args.version = JNI_VERSION_1_2;
-    args.group = nullptr;
-
-    // 16 is the maximum size for thread names on Android.
-    char thread_name[16];
-    int err = prctl(PR_GET_NAME, thread_name);
-    if (err < 0) {
-      DPLOG(ERROR) << "prctl(PR_GET_NAME)";
-      args.name = nullptr;
-    } else {
-      args.name = thread_name;
-    }
-
-#if BUILDFLAG(IS_ANDROID)
-    ret = g_jvm->AttachCurrentThread(&env, &args);
-#else
-    ret = g_jvm->AttachCurrentThread(reinterpret_cast<void**>(&env), &args);
-#endif
-    CHECK_EQ(JNI_OK, ret);
-  }
-  return env;
-}
-
-JNIEnv* AttachCurrentThreadWithName(const std::string& thread_name) {
-  DCHECK(g_jvm);
-  JavaVMAttachArgs args;
-  args.version = JNI_VERSION_1_2;
-  args.name = const_cast<char*>(thread_name.c_str());
-  args.group = nullptr;
-  JNIEnv* env = nullptr;
-#if BUILDFLAG(IS_ANDROID)
-  jint ret = g_jvm->AttachCurrentThread(&env, &args);
-#else
-  jint ret = g_jvm->AttachCurrentThread(reinterpret_cast<void**>(&env), &args);
-#endif
-  CHECK_EQ(JNI_OK, ret);
-  return env;
-}
-
-void DetachFromVM() {
-  // Ignore the return value, if the thread is not attached, DetachCurrentThread
-  // will fail. But it is ok as the native thread may never be attached.
-  if (g_jvm)
-    g_jvm->DetachCurrentThread();
-}
+const char kUnableToGetStackTraceMessage[] =
+    "Unable to retrieve Java caller stack trace as the exception handler is "
+    "being re-entered";
+const char kReetrantOutOfMemoryMessage[] =
+    "While handling an uncaught Java exception, an OutOfMemoryError "
+    "occurred.";
+const char kReetrantExceptionMessage[] =
+    "While handling an uncaught Java exception, another exception "
+    "occurred.";
+const char kUncaughtExceptionMessage[] =
+    "Uncaught Java exception in native code. Please include the Java exception "
+    "stack from the Android log in your crash report.";
+const char kUncaughtExceptionHandlerFailedMessage[] =
+    "Uncaught Java exception in native code and the Java uncaught exception "
+    "handler did not terminate the process. Please include the Java exception "
+    "stack from the Android log in your crash report.";
+const char kOomInGetJavaExceptionInfoMessage[] =
+    "Unable to obtain Java stack trace due to OutOfMemoryError";
 
 void InitVM(JavaVM* vm) {
-  DCHECK(!g_jvm || g_jvm == vm);
-  g_jvm = vm;
-  JNIEnv* env = base::android::AttachCurrentThread();
+  jni_zero::InitVM(vm);
+  jni_zero::SetExceptionHandler(CheckException);
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   g_out_of_memory_error_class = static_cast<jclass>(
       env->NewGlobalRef(env->FindClass("java/lang/OutOfMemoryError")));
   DCHECK(g_out_of_memory_error_class);
-}
-
-bool IsVMInitialized() {
-  return g_jvm != nullptr;
-}
-
-JavaVM* GetVM() {
-  return g_jvm;
-}
-
-void DisableJvmForTesting() {
-  g_jvm = nullptr;
 }
 
 void InitGlobalClassLoader(JNIEnv* env) {
@@ -286,9 +241,10 @@ void CheckException(JNIEnv* env) {
   if (g_reentering) {
     // We were handling an uncaught Java exception already, but one of the Java
     // methods we called below threw another exception. (This is unlikely to
-    // happen as we are careful to never throw from these methods, but we can't
-    // rule it out entirely as the JVM itself may throw - think
-    // OutOfMemoryError, for example.)
+    // happen, as we are careful to never throw from these methods, but we
+    // can't rule it out entirely. E.g. an OutOfMemoryError when constructing
+    // the jstring for the return value of
+    // sanitizedStacktraceForUnhandledException().
     env->ExceptionDescribe();
     jthrowable raw_throwable = env->ExceptionOccurred();
     env->ExceptionClear();
@@ -297,19 +253,15 @@ void CheckException(JNIEnv* env) {
     env->Throw(raw_throwable);  // Ensure we don't re-enter Java.
 
     if (is_oom_error) {
-      constexpr char kMessage[] =
-          "While handling an uncaught Java exception, an OutOfMemoryError "
-          "occurred.";
-      base::android::SetJavaException(kMessage);
+      base::android::SetJavaException(kReetrantOutOfMemoryMessage);
       // Use different LOG(FATAL) statements to ensure unique stack traces.
-      LOG(FATAL) << kMessage;
+      LOG(FATAL) << kReetrantOutOfMemoryMessage;
     } else {
-      constexpr char kMessage[] =
-          "While handling an uncaught Java exception, another exception "
-          "occurred.";
-      base::android::SetJavaException(kMessage);
-      LOG(FATAL) << kMessage;
+      base::android::SetJavaException(kReetrantExceptionMessage);
+      LOG(FATAL) << kReetrantExceptionMessage;
     }
+    // Needed for tests, which do not terminate from LOG(FATAL).
+    return;
   }
   g_reentering = true;
 
@@ -345,9 +297,10 @@ void CheckException(JNIEnv* env) {
   if (!handle_exception_in_java) {
     base::android::SetJavaException(
         GetJavaExceptionInfo(env, throwable).c_str());
-    LOG(FATAL)
-        << "Uncaught Java exception in native code. Please include the Java "
-           "exception stack from the Android log in your crash report.";
+    LOG(FATAL) << kUncaughtExceptionMessage;
+    // Needed for tests, which do not terminate from LOG(FATAL).
+    g_reentering = false;
+    return;
   }
 
   // We don't need to call SetJavaException() in this branch because we
@@ -370,10 +323,9 @@ void CheckException(JNIEnv* env) {
       GetJavaExceptionInfo(
           env, secondary_exception ? secondary_exception : throwable)
           .c_str());
-  LOG(FATAL)
-      << "Uncaught Java exception in native code, and the Java uncaught "
-         "exception handler did not terminate the process. Please include the "
-         "Java exception stack from the Android log in your crash report.";
+  LOG(FATAL) << kUncaughtExceptionHandlerFailedMessage;
+  // Needed for tests, which do not terminate from LOG(FATAL).
+  g_reentering = false;
 }
 
 std::string GetJavaExceptionInfo(JNIEnv* env,
@@ -383,13 +335,14 @@ std::string GetJavaExceptionInfo(JNIEnv* env,
   // Returns null when PiiElider results in an OutOfMemoryError.
   return sanitized_exception_string
              ? ConvertJavaStringToUTF8(sanitized_exception_string)
-             : "Unable to obtain Java stack trace due to OutOfMemoryError";
+             : kOomInGetJavaExceptionInfoMessage;
 }
 
 std::string GetJavaStackTraceIfPresent() {
   JNIEnv* env = nullptr;
-  if (g_jvm) {
-    g_jvm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_2);
+  JavaVM* jvm = jni_zero::GetVM();
+  if (jvm) {
+    jvm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_2);
   }
   if (!env) {
     // JNI has not been initialized on this thread.
@@ -400,8 +353,7 @@ std::string GetJavaStackTraceIfPresent() {
     // This can happen if CheckException() is being re-entered, decided to
     // LOG(FATAL) immediately, and LOG(FATAL) itself is calling us. In that case
     // it is imperative that we don't try to call Java again.
-    return "Unable to retrieve Java caller stack trace as the exception "
-           "handler is being re-entered";
+    return kUnableToGetStackTraceMessage;
   }
 
   ScopedJavaLocalRef<jthrowable> throwable =

@@ -130,6 +130,11 @@ std::string GetSegmentForForcedDeviceSwitcherExperience();
 // Whether a phone backup/restore state should be simulated.
 bool SimulatePostDeviceRestore();
 
+// In production, the history sync opt-in isn't shown if it was declined too
+// recently or too many consecutive times. If this function is true, those
+// limits are suppressed for simpler testing.
+bool ShouldIgnoreHistorySyncDeclineLimits();
+
 }  // namespace experimental_flags
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_SYSTEM_FLAGS_H_

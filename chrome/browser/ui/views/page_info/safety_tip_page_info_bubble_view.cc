@@ -128,7 +128,7 @@ SafetyTipPageInfoBubbleView::SafetyTipPageInfoBubbleView(
               this),
           l10n_util::GetStringUTF16(
               GetSafetyTipLeaveButtonId(safety_tip_status))));
-  leave_button_->SetProminent(true);
+  leave_button_->SetStyle(ui::ButtonStyle::kProminent);
   leave_button_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_BUTTON_LEAVE_SITE);
 }

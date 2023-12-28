@@ -159,7 +159,7 @@ bool AndroidDlopenExt(void* mapping_start,
                       size_t mapping_size,
                       const char* filename,
                       void** handle) {
-  android_dlextinfo dlextinfo{};
+  android_dlextinfo dlextinfo = {};
   dlextinfo.flags = ANDROID_DLEXT_RESERVED_ADDRESS;
   dlextinfo.reserved_addr = mapping_start;
   dlextinfo.reserved_size = mapping_size;

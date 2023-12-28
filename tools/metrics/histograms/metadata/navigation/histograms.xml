@@ -27,6 +27,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Subframe"/>
 </variants>
 
+<variants name="NavigationStage">
+  <variant name="Commit"/>
+  <variant name="SwapRFH"/>
+</variants>
+
 <variants name="NavigationThrottleEvents">
   <variant name="WillFailRequest"/>
   <variant name="WillProcessResponse"/>
@@ -471,6 +476,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LinkPreview.Experimental.ZoomUsage"
+    enum="LinkPreviewZoomUsage" expires_after="2024-03-08">
+  <owner>kenoss@chromium.org</owner>
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records whether zoom was used for link preview.
+
+    It is recorded when a preview window is (shown and) closed, regardless
+    preview is activated or not.
+
+    It will be used to determine we should implement persistency for zoom levels
+    for preview.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.AnonymousIframeIsSandboxed" enum="Boolean"
     expires_after="2023-10-01">
   <owner>arthursonzogni@chromium.org</owner>
@@ -558,6 +579,32 @@ chromium-metrics-reviews@google.com.
     <variant name="Resource"/>
     <variant name="Subframe"/>
   </token>
+</histogram>
+
+<histogram name="Navigation.CompositorCreationTo{Stage}" units="ms"
+    expires_after="2024-03-03">
+  <owner>rakina@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    Records the time duration between the creation of CompositorFrameSink for a
+    new RenderWidgetHost to when the navigation that uses that RenderWidgetHost
+    reaches {Stage}. Logged when the navigation that uses a new RenderFrameHost
+    and RenderWidgetHost reaches {Stage}.
+  </summary>
+  <token key="Stage" variants="NavigationStage"/>
+</histogram>
+
+<histogram name="Navigation.CompositorRequestedBefore{Stage}" enum="Boolean"
+    expires_after="2024-03-03">
+  <owner>rakina@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    Records whether the creation of CompositorFrameSink for a new
+    RenderWidgetHost is already requested when the navigation that uses it
+    reaches {Stage}. Logged when the navigation that uses the new
+    RenderFrameHost and RenderWidgetHost reaches {Stage}.
+  </summary>
+  <token key="Stage" variants="NavigationStage"/>
 </histogram>
 
 <histogram name="Navigation.DidCommitSameDocumentNavigation.Duration"
@@ -907,16 +954,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.MainFrameFormSubmission.SiteEngagementLevel"
-    enum="SiteEngagementLevel" expires_after="2021-04-04">
-  <owner>meacer@chromium.org</owner>
-  <owner>security-enamel@chromium.org</owner>
-  <summary>
-    Site engagement level of the URL of the top frame of a form submission. This
-    is a subset of Navigation.MainFrame.SiteEngagementLevel.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.MainFrameHasRTLDomain2" enum="Boolean"
     expires_after="2024-05-19">
   <owner>cthomp@chromium.org</owner>
@@ -952,7 +989,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.MainFrameScheme2" enum="NavigationScheme"
-    expires_after="2024-01-15">
+    expires_after="2024-06-15">
   <owner>estark@chromium.org</owner>
   <owner>elawrence@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
@@ -978,6 +1015,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.MainFrameSchemeDifferentPage2NonUniqueHostname"
+    enum="NavigationScheme" expires_after="2024-09-01">
+  <owner>meacer@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    A subset of MainFrameSchemeDifferentPage2 only recorded for non-unique
+    hostnames. The scheme of the URL for each main-frame navigation that
+    replaces a document object. This is not reported for reference fragment
+    navigations, pushState/replaceState or same page history navigation. This is
+    only recorded for finished navigations and not attempts.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.MainFrameSchemeDifferentPageOTR2"
     enum="NavigationScheme" expires_after="2024-05-19">
   <owner>estark@chromium.org</owner>
@@ -992,7 +1042,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.MainFrameSchemeOTR2" enum="NavigationScheme"
-    expires_after="2024-01-15">
+    expires_after="2024-06-15">
   <owner>elawrence@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
@@ -1478,19 +1528,6 @@ chromium-metrics-reviews@google.com.
     reduction feature kReduceUserAgentMinorVersion is enabled. This histogram is
     recorded when a NavigationRequest is constructed, prior to sending the
     request to the network stack.
-  </summary>
-</histogram>
-
-<histogram name="Navigation.VerifyDidCommitParams"
-    enum="VerifyDidCommitParamsDifference" expires_after="2021-12-26">
-  <owner>rakina@chromium.org</owner>
-  <owner>altimin@chromium.org</owner>
-  <summary>
-    Logs inconsistencies between browser- vs renderer-calculated values of
-    DidCommitProvisionalLoadParams which are detected in RenderFrameHostImpl's
-    VerifyThatBrowserAndRendererCalculatedDidCommitParamsMatch(). This is used
-    to trigger traces to be uploaded to analyze what happened in these
-    navigations.
   </summary>
 </histogram>
 
@@ -1989,19 +2026,6 @@ chromium-metrics-reviews@google.com.
   <owner>tbansal@chromium.org</owner>
   <summary>
     Final status for prerender pages - either success, or why it was canceled.
-  </summary>
-</histogram>
-
-<histogram name="Prerender.NetworkBytesWasted" units="bytes"
-    expires_after="M77">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>
-    Number of bytes transferred on the network for URLRequests (not including
-    HTTP/TLS/TCP/IP overhead) for a prerender that was not used. All
-    nostate-prefetch bytes are currently counted as wasted because it is hard to
-    track byte use in HTTP cache.
   </summary>
 </histogram>
 

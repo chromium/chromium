@@ -626,7 +626,9 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
       }));
 }
 
-- (void)handleParsedForms:(const std::vector<autofill::FormStructure*>&)forms
+- (void)handleParsedForms:
+            (const std::vector<
+                raw_ptr<autofill::FormStructure, VectorExperimental>>&)forms
                   inFrame:(web::WebFrame*)frame {
 }
 

@@ -26,9 +26,6 @@ found in the LICENSE file.
         <item name="colorOnSurfaceInverse">@color/baseline_neutral_20</item>
         <item name="colorOutline">@color/baseline_neutral_variant_60</item>
         <item name="colorError">@color/baseline_error_80</item>
-
-        <!-- Elevation overlays -->
-        <item name="elevationOverlayColor">@color/baseline_neutral_80</item>
     </style>
 
     <!-- Colors should be mirrored by Theme.BrowserUI.DayNight. -->
@@ -50,9 +47,6 @@ found in the LICENSE file.
         <item name="colorOnSurfaceInverse">@color/baseline_neutral_20</item>
         <item name="colorOutline">@color/baseline_neutral_variant_60</item>
         <item name="colorError">@color/baseline_error_80</item>
-
-        <!-- Elevation overlays -->
-        <item name="elevationOverlayColor">@color/baseline_neutral_80</item>
     </style>
 
     <!-- Colors should be mirrored by Theme.BrowserUI.DayNight. -->
@@ -74,8 +68,5 @@ found in the LICENSE file.
         <item name="colorOnSurfaceInverse">@color/baseline_neutral_20</item>
         <item name="colorOutline">@color/baseline_neutral_variant_60</item>
         <item name="colorError">@color/baseline_error_80</item>
-
-        <!-- Elevation overlays -->
-        <item name="elevationOverlayColor">@color/baseline_neutral_80</item>
     </style>
 </resources>

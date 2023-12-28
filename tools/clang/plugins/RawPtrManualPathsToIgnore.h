@@ -45,7 +45,6 @@ constexpr const char* const kRawPtrManualPathsToIgnore[] = {
     // Exclude tools that do not ship in the Chrome binary. Can't depend on
     // //base.
     "base/android/linker/",
-    "chrome/chrome_cleaner/",
     "tools/",
     "net/tools/",
     "chrome/chrome_elf/",

@@ -1992,7 +1992,21 @@ xsltDefaultProcessOneNode(xsltTransformContextPtr ctxt, xmlNodePtr node,
 	    case XML_ELEMENT_NODE:
 		ctxt->xpathCtxt->contextSize = nbchild;
 		ctxt->xpathCtxt->proximityPosition = childno;
+
+                if (ctxt->depth >= ctxt->maxTemplateDepth) {
+                    xsltTransformError(ctxt, NULL, cur,
+                        "xsltDefaultProcessOneNode: Maximum template depth "
+                        "exceeded.\n"
+                        "You can adjust xsltMaxDepth (--maxdepth) in order to "
+                        "raise the maximum number of nested template calls and "
+                        "variables/params (currently set to %d).\n",
+                        ctxt->maxTemplateDepth);
+                    ctxt->state = XSLT_STATE_STOPPED;
+                    return;
+                }
+                ctxt->depth++;
 		xsltProcessOneNode(ctxt, cur, params);
+                ctxt->depth--;
 		break;
 	    case XML_CDATA_SECTION_NODE:
 		template = xsltGetTemplate(ctxt, cur, NULL);

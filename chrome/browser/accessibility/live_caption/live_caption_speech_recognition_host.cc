@@ -329,7 +329,8 @@ void LiveCaptionSpeechRecognitionHost::OnLanguageIdentificationEvent(
     if (language_identification_event_count_ ==
         kLanguageIdentificationEventCountThreshold) {
       std::optional<speech::SodaLanguagePackComponentConfig> language_config =
-          speech::GetLanguageComponentConfig(event->language);
+          speech::GetLanguageComponentConfigMatchingLanguageSubtag(
+              event->language);
 
       if (language_config.has_value() &&
           IsLanguageInstallable(language_config.value().language_name)) {

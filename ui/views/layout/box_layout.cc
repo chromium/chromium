@@ -85,6 +85,29 @@ bool BoxLayout::ViewWrapper::VisibleToLayout() const {
   return view_->GetVisible() && !view_->GetProperty(kViewIgnoredByLayoutKey);
 }
 
+// BoxLayoutFlexSpecification --------------------------------------------------
+
+BoxLayoutFlexSpecification::BoxLayoutFlexSpecification() = default;
+
+BoxLayoutFlexSpecification BoxLayoutFlexSpecification::WithWeight(
+    int weight) const {
+  DCHECK_GE(weight, 0);
+  BoxLayoutFlexSpecification spec = *this;
+  spec.weight_ = weight;
+  return spec;
+}
+
+BoxLayoutFlexSpecification BoxLayoutFlexSpecification::UseMinSize(
+    bool use_min_size) const {
+  BoxLayoutFlexSpecification spec = *this;
+  spec.use_min_size_ = use_min_size;
+  return spec;
+}
+
+BoxLayoutFlexSpecification::~BoxLayoutFlexSpecification() = default;
+
+// BoxLayout --------------------------------------------------
+
 BoxLayout::BoxLayout(BoxLayout::Orientation orientation,
                      const gfx::Insets& inside_border_insets,
                      int between_child_spacing,
@@ -125,13 +148,15 @@ void BoxLayout::SetFlexForView(const View* view,
   DCHECK(view);
   DCHECK_EQ(host_, view->parent());
   DCHECK_GE(flex_weight, 0);
-  flex_map_[view].flex_weight = flex_weight;
-  flex_map_[view].use_min_size = use_min_size;
+  const_cast<View*>(view)->SetProperty(kBoxLayoutFlexKey,
+                                       BoxLayoutFlexSpecification()
+                                           .WithWeight(flex_weight)
+                                           .UseMinSize(use_min_size));
 }
 
 void BoxLayout::ClearFlexForView(const View* view) {
   DCHECK(view);
-  flex_map_.erase(view);
+  const_cast<View*>(view)->ClearProperty(kBoxLayoutFlexKey);
 }
 
 void BoxLayout::SetDefaultFlex(int default_flex) {
@@ -382,12 +407,8 @@ void BoxLayout::ViewRemoved(View* host, View* view) {
 }
 
 int BoxLayout::GetFlexForView(const View* view) const {
-  // Give precedence to flex provided via the layout.
-  if (auto it = flex_map_.find(view); it != flex_map_.end()) {
-    return it->second.flex_weight;
-  }
-  // Respect flex provided via the `kFlexBehaviorKey`.
-  if (auto* flex_behavior_key = view->GetProperty(kFlexBehaviorKey)) {
+  // Respect flex provided via the `kBoxLayoutFlexKey`.
+  if (auto* flex_behavior_key = view->GetProperty(kBoxLayoutFlexKey)) {
     return flex_behavior_key->weight();
   }
   // Fall back to default.
@@ -395,9 +416,10 @@ int BoxLayout::GetFlexForView(const View* view) const {
 }
 
 int BoxLayout::GetMinimumSizeForView(const View* view) const {
-  auto it = flex_map_.find(view);
-  if (it == flex_map_.end() || !it->second.use_min_size)
+  auto* flex_behavior_key = view->GetProperty(kBoxLayoutFlexKey);
+  if (!flex_behavior_key || !flex_behavior_key->use_min_size()) {
     return 0;
+  }
 
   return (orientation_ == Orientation::kHorizontal)
              ? view->GetMinimumSize().width()

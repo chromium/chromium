@@ -669,7 +669,8 @@ CreateAndValidateSharedImageRepresentations::
 
   // SHARED_IMAGE_USAGE_DISPLAY_READ for skia read and SHARED_IMAGE_USAGE_RASTER
   // for skia write.
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_RASTER;
+  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_READ |
+                   SHARED_IMAGE_USAGE_GLES2_WRITE | SHARED_IMAGE_USAGE_RASTER;
   if (!is_thread_safe)
     usage |= SHARED_IMAGE_USAGE_DISPLAY_READ;
   if (upload_initial_data) {

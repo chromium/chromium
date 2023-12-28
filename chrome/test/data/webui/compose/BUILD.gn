@@ -6,8 +6,11 @@ import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
   files = [
+    "compose_animator_test.ts",
     "compose_app_test.ts",
     "compose_textarea_test.ts",
+    "compose_app_focus_test.ts",
+    "test_compose_api_proxy.ts",
   ]
 
   ts_path_mappings =

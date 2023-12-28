@@ -26,10 +26,10 @@ struct WaylandSeat {
   WaylandSeat& operator=(const WaylandSeat&) = delete;
 
   // Owned by Display, which always outlives wl_seat.
-  const raw_ptr<Seat, ExperimentalAsh> seat;
+  const raw_ptr<Seat> seat;
 
   // Owned by Server, which always outlives wl_seat.
-  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker;
+  const raw_ptr<SerialTracker> serial_tracker;
 };
 
 void bind_seat(wl_client* client, void* data, uint32_t version, uint32_t id);

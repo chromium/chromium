@@ -40,12 +40,6 @@ BASE_FEATURE(kAdaptiveChargingForTesting,
              "AdaptiveChargingForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Adjusts portrait mode split view to avoid the input field in the bottom
-// window being occluded by the virtual keyboard.
-BASE_FEATURE(kAdjustSplitViewForVK,
-             "AdjustSplitViewForVK",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether the advanced documentScan APIs for document scanners
 // are available.
 BASE_FEATURE(kAdvancedDocumentScanAPI,
@@ -186,12 +180,6 @@ BASE_FEATURE(kAssistMultiWordExpanded,
              "AssistMultiWordExpanded",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls enabling / disabling the orca feature from the feature management
-// module.
-BASE_FEATURE(kFeatureManagementOrca,
-             "FeatureManagementOrca",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAssistantNativeIcons,
              "AssistantNativeIcons",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -289,6 +277,9 @@ BASE_FEATURE(kBatterySaverAlwaysOn,
              "CrosBatterySaverAlwaysOn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls enabling/disabling the birch feature.
+BASE_FEATURE(kBirchFeature, "BirchFeature", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the usage of fixed Bluetooth A2DP packet size to improve
 // audio performance in noisy environment.
 BASE_FEATURE(kBluetoothFixA2dpPacketSize,
@@ -357,6 +348,20 @@ BASE_FEATURE(kBorealisScaleClientByDPI,
 BASE_FEATURE(kBorealisWebUIInstaller,
              "BorealisWebUIInstaller",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBorealisZinkGlDriver,
+             "BorealisZinkGlDriver",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<BorealisZinkGlDriverParam>::Option
+    borealis_zink_gl_driver_options[] = {
+        {BorealisZinkGlDriverParam::kZinkEnableRecommended,
+         "ZinkEnableRecommended"},
+        {BorealisZinkGlDriverParam::kZinkEnableAll, "ZinkEnableAll"}};
+const base::FeatureParam<BorealisZinkGlDriverParam> kBorealisZinkGlDriverParam{
+    &kBorealisZinkGlDriver, "BorealisZinkGlDriverParam",
+    BorealisZinkGlDriverParam::kZinkEnableRecommended,
+    &borealis_zink_gl_driver_options};
 
 // Controls whether the camera effects are supported by hardware.
 // Note that this feature can be overridden by login_manager based on
@@ -569,7 +574,7 @@ BASE_FEATURE(kCryptAuthV2Enrollment,
 // remaining steps are done by separate screens.
 BASE_FEATURE(kCryptohomeRecoveryBeforeFlowSplit,
              "CryptohomeRecoveryBeforeFlowSplit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Deprecates Ctrl+Alt+/ as shortcut to open Keyboard shortcuts app, shows
 // a notification if that shortcut is pressed, and replaces that shortcut with
@@ -783,7 +788,7 @@ BASE_FEATURE(kEnableKeyboardBacklightToggle,
 // When enabled, it will make login WebUI loaded only before showing it.
 BASE_FEATURE(kEnableLazyLoginWebUILoading,
              "EnableLazyLoginWebUILoading",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables LocalSearchService to be initialized.
 BASE_FEATURE(kEnableLocalSearchService,
@@ -1150,11 +1155,6 @@ BASE_FEATURE(kFilesTrashDrive,
              "FilesTrashDrive",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable the new Google Drive page in OS Settings.
-BASE_FEATURE(kFilesGoogleDriveSettingsPage,
-             "FilesGoogleDriveSettingsPage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, the jelly colors will be used in the firmware update app.
 // Requires jelly-colors flag to also be enabled.
 BASE_FEATURE(kFirmwareUpdateJelly,
@@ -1318,7 +1318,7 @@ BASE_FEATURE(kGesturePropertiesDBusService,
 
 // Enables the ability to record the screen into an animated GIF image from the
 // native screen capture tool.
-BASE_FEATURE(kGifRecording, "GifRecording", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGifRecording, "GifRecording", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables a Files banner about Google One offer.
 BASE_FEATURE(kGoogleOneOfferFilesBanner,
@@ -1335,17 +1335,16 @@ BASE_FEATURE(kGrowthCampaignsInDemoMode,
              "GrowthCampaignsInDemoMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables editing with handwriting gestures within the virtual keyboard.
-BASE_FEATURE(kHandwritingGestureEditing,
-             "HandwritingGestureEditing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables new on-device recognition for legacy handwriting input.
+// This flag should be OVERRIDDEN for devices which do not have on-device
+// handwriting (b/316981973). Please check before using this flag.
 BASE_FEATURE(kHandwritingLegacyRecognition,
              "HandwritingLegacyRecognition",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables downloading the handwriting libraries via DLC.
+// This flag should be OVERRIDDEN for devices which do not have on-device
+// handwriting (b/316981973). Please check before using this flag.
 BASE_FEATURE(kHandwritingLibraryDlc,
              "HandwritingLibraryDlc",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1431,6 +1430,11 @@ BASE_FEATURE(kHindiInscriptLayout,
 // Enables Camera app integration with holding space.
 BASE_FEATURE(kHoldingSpaceCameraAppIntegration,
              "HoldingSpaceCameraAppIntegration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables Photoshop Web integration with holding space.
+BASE_FEATURE(kHoldingSpacePhotoshopWebIntegration,
+             "HoldingSpacePhotoshopWeb",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables holding space icon to be permanently displayed with extended file
@@ -1762,13 +1766,6 @@ BASE_FEATURE(kMicMuteNotifications,
              "MicMuteNotifications",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable migration of the owner key from the public to the private slot. This
-// experiment represents the second stage of `kStoreOwnerKeyInPrivateSlot` and
-// is only respected if kStoreOwnerKeyInPrivateSlot is enabled.
-BASE_FEATURE(kMigrateOwnerKeyToPrivateSlot,
-             "MigrateOwnerKeyToPrivateSlot",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether to enable the requirement of a minimum chrome version on the
 // device through the policy DeviceMinimumVersion. If the requirement is
 // not met and the warning time in the policy has expired, the user is
@@ -1887,6 +1884,8 @@ BASE_FEATURE(kNotificationsInContextMenu,
              "NotificationsInContextMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOak, "Oak", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to enable on-device grammar check service.
 BASE_FEATURE(kOnDeviceGrammarCheck,
              "OnDeviceGrammarCheck",
@@ -1972,10 +1971,6 @@ BASE_FEATURE(kOobeSkipAssistant,
 BASE_FEATURE(kOobeQuickStart,
              "OobeQuickStart",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kOnlyShowNewShortcutsApp,
-             "OnlyShowNewShortcutsApp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables search customizable shortcuts in launcher.
 BASE_FEATURE(kSearchCustomizableShortcutsInLauncher,
@@ -2163,6 +2158,12 @@ BASE_FEATURE(kPhoneHubPingOnBubbleOpen,
 const base::FeatureParam<base::TimeDelta> kPhoneHubPingTimeout{
     &kPhoneHubPingOnBubbleOpen, "PhoneHubPingTimeout", base::Seconds(5)};
 
+BASE_FEATURE(kPhoneHubShortQuickActionPodsTitles,
+             "PhoneHubShortQuickActionPodsTitles",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPine, "Pine", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the new picker feature.
 BASE_FEATURE(kPicker, "Picker", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2186,10 +2187,6 @@ BASE_FEATURE(kPipTuck, "PipTuck", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPolicyProvidedTrustAnchorsAllowedAtLockScreen,
              "PolicyProvidedTrustAnchorsAllowedAtLockScreen",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPostLoginGlanceables,
-             "PostLoginGlanceables",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables the preference of using constant frame rate for camera
 // when streaming.
@@ -2521,7 +2518,7 @@ BASE_FEATURE(kShowBluetoothDebugLogToggle,
 // Shows live caption in the video conference tray.
 BASE_FEATURE(kShowLiveCaptionInVideoConferenceTray,
              "ShowLiveCaptionInVideoConferenceTray",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Shows the Play Store icon in Demo Mode.
 BASE_FEATURE(kShowPlayInDemoMode,
@@ -2583,11 +2580,6 @@ BASE_FEATURE(kSmdsSupport, "SmdsSupport", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the snap group feature is enabled or not.
 BASE_FEATURE(kSnapGroup, "SnapGroup", base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enable storing a newly created owner key in the private slot.
-BASE_FEATURE(kStoreOwnerKeyInPrivateSlot,
-             "StoreOwnerKeyInPrivateSlot",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables battery indicator for styluses in the palette tray
 BASE_FEATURE(kStylusBatteryStatus,
@@ -2800,11 +2792,6 @@ BASE_FEATURE(kVcWebApi, "VcWebApi", base::FEATURE_DISABLED_BY_DEFAULT);
 // Enable or disable round corners for virtual keyboard on ChromeOS.
 BASE_FEATURE(kVirtualKeyboardRoundCorners,
              "VirtualKeyboardRoundCorners",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enable or disable Nacl for virtual keyboard on ChromeOS.
-BASE_FEATURE(kVirtualKeyboardRemoveNacl,
-             "VirtualKeyboardRemoveNacl",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to allow enabling wake on WiFi features in shill.
@@ -3074,10 +3061,6 @@ bool IsAdaptiveChargingForTestingEnabled() {
   return base::FeatureList::IsEnabled(kAdaptiveChargingForTesting);
 }
 
-bool IsAdjustSplitViewForVKEnabled() {
-  return base::FeatureList::IsEnabled(kAdjustSplitViewForVK);
-}
-
 bool IsAdvancedDocumentScanAPIEnabled() {
   return base::FeatureList::IsEnabled(kAdvancedDocumentScanAPI);
 }
@@ -3170,6 +3153,10 @@ bool IsBatterySaverAvailable() {
 
 bool IsBatterySaverAlwaysOn() {
   return base::FeatureList::IsEnabled(kBatterySaverAlwaysOn);
+}
+
+bool IsBirchFeatureEnabled() {
+  return base::FeatureList::IsEnabled(kBirchFeature);
 }
 
 bool IsBluetoothQualityReportEnabled() {
@@ -3526,6 +3513,10 @@ bool IsGlanceablesV2ErrorMessageEnabled() {
   return base::FeatureList::IsEnabled(kGlanceablesV2ErrorMessage);
 }
 
+bool IsGlanceablesTimeManagementStableLaunchEnabled() {
+  return base::FeatureList::IsEnabled(kGlanceablesTimeManagementStableLaunch);
+}
+
 bool IsHibernateEnabled() {
   return base::FeatureList::IsEnabled(kHibernate);
 }
@@ -3540,6 +3531,10 @@ bool IsHideShelfControlsInTabletModeEnabled() {
 
 bool IsHoldingSpaceCameraAppIntegrationEnabled() {
   return base::FeatureList::IsEnabled(kHoldingSpaceCameraAppIntegration);
+}
+
+bool IsHoldingSpacePhotoshopWebIntegrationEnabled() {
+  return base::FeatureList::IsEnabled(kHoldingSpacePhotoshopWebIntegration);
 }
 
 bool IsHoldingSpacePredictabilityEnabled() {
@@ -3606,10 +3601,6 @@ bool IsSnoopingProtectionEnabled() {
 
 bool IsStartAssistantAudioDecoderOnDemandEnabled() {
   return base::FeatureList::IsEnabled(kStartAssistantAudioDecoderOnDemand);
-}
-
-bool IsStoreOwnerKeyInPrivateSlotEnabled() {
-  return base::FeatureList::IsEnabled(kStoreOwnerKeyInPrivateSlot);
 }
 
 bool IsImeTrayHideVoiceButtonEnabled() {
@@ -3767,11 +3758,6 @@ bool IsMinimumChromeVersionEnabled() {
   return base::FeatureList::IsEnabled(kMinimumChromeVersion);
 }
 
-bool ShouldMigrateOwnerKeyToPrivateSlot() {
-  return base::FeatureList::IsEnabled(kStoreOwnerKeyInPrivateSlot) &&
-         base::FeatureList::IsEnabled(kMigrateOwnerKeyToPrivateSlot);
-}
-
 bool IsMultiZoneRgbKeyboardEnabled() {
   return base::FeatureList::IsEnabled(kMultiZoneRgbKeyboard);
 }
@@ -3851,6 +3837,10 @@ bool IsNotificationsInContextMenuEnabled() {
   return base::FeatureList::IsEnabled(kNotificationsInContextMenu);
 }
 
+bool IsOakEnabled() {
+  return base::FeatureList::IsEnabled(kOak);
+}
+
 bool IsOobeChromeVoxHintEnabled() {
   return base::FeatureList::IsEnabled(kEnableOobeChromeVoxHint);
 }
@@ -3916,12 +3906,6 @@ bool IsOobeTouchpadScrollEnabled() {
 bool IsOobeDisplaySizeEnabled() {
   return IsOobeChoobeEnabled() &&
          base::FeatureList::IsEnabled(kOobeDisplaySize);
-}
-
-bool IsOrcaEnabled() {
-  return base::FeatureList::IsEnabled(chromeos::features::kOrcaDogfood) ||
-         (base::FeatureList::IsEnabled(chromeos::features::kOrca) &&
-          base::FeatureList::IsEnabled(kFeatureManagementOrca));
 }
 
 bool IsOsFeedbackDialogEnabled() {
@@ -4020,8 +4004,16 @@ bool IsPhoneHubCallNotificationEnabled() {
   return base::FeatureList::IsEnabled(kPhoneHubCallNotification);
 }
 
+bool IsPhoneHubShortQuickActionPodsTitlesEnabled() {
+  return base::FeatureList::IsEnabled(kPhoneHubShortQuickActionPodsTitles);
+}
+
 bool IsPickerUpdateEnabled() {
   return base::FeatureList::IsEnabled(kPicker);
+}
+
+bool IsPineEnabled() {
+  return base::FeatureList::IsEnabled(kPine);
 }
 
 bool IsPinAutosubmitBackfillFeatureEnabled() {
@@ -4046,10 +4038,6 @@ bool IsPipTiltEnabled() {
 
 bool IsPipTuckEnabled() {
   return base::FeatureList::IsEnabled(kPipTuck);
-}
-
-bool ArePostLoginGlanceablesEnabled() {
-  return base::FeatureList::IsEnabled(kPostLoginGlanceables);
 }
 
 bool IsPrinterSettingsPrinterStatusEnabled() {
@@ -4401,10 +4389,6 @@ bool IsWmModeEnabled() {
 
 bool ShouldArcFileTasksUseAppService() {
   return base::FeatureList::IsEnabled(kArcFileTasksUseAppService);
-}
-
-bool ShouldOnlyShowNewShortcutApp() {
-  return base::FeatureList::IsEnabled(kOnlyShowNewShortcutsApp);
 }
 
 bool isSearchCustomizableShortcutsInLauncherEnabled() {

@@ -447,7 +447,7 @@ class PageInfo : private content_settings::CookieControlsObserver {
   // specific data (local stored objects like cookies), site-specific
   // permissions (location, pop-up, plugin, etc. permissions) and site-specific
   // information (identity, connection status, etc.).
-  raw_ptr<PageInfoUI, DanglingUntriaged> ui_ = nullptr;
+  raw_ptr<PageInfoUI> ui_ = nullptr;
 
   // A web contents getter used to retrieve the associated WebContents object.
   base::WeakPtr<content::WebContents> web_contents_;

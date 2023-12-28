@@ -284,9 +284,7 @@ testcase.searchQueryLaunchParam = async () => {
   //        directory that contains query-matched files (*.gdoc).
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.waitForSelectedItemByLabel('My Drive');
-  // Focus on the tree before using ":focus" to check the tree item focus.
-  await directoryTree.focusTree();
-  await directoryTree.waitForFocusedItemByLabel('My Drive');
+  await directoryTree.waitForFocusableItemByLabel('My Drive');
 
   // Check: Query-matched files should be shown in the files list.
   await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
@@ -539,10 +537,12 @@ testcase.searchRemovableDevice = async () => {
  */
 testcase.searchPartitionedRemovableDevice = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
-  await mountUsb(appId, true);
+  await mountUsb(appId, /* withPartitions= */ true);
 
   // Wait for removable partition-1 to appear in the directory tree.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.expandTreeItemByLabel(
+      getUsbVolumeQuery(/* withPartitions= */ true));
   const partitionOne = await directoryTree.waitForItemByLabel('partition-1');
   chrome.test.assertEq(
       'removable', directoryTree.getItemVolumeType(partitionOne));

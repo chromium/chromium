@@ -21,16 +21,18 @@ const char kPriceTrackingIconColorsDescription[] =
     "Tonal colors for the expanded state of the price tracking chip on "
     "desktop.";
 
+const char kShoppingIconColorVariantName[] =
+    "Enable color variant for shopping icons";
+const char kShoppingIconColorVariantDescription[] =
+    "Enables a color variant for shopping page action icons (Price Insights & "
+    "Price Tracking)";
+
 const char kShoppingCollectionName[] = "Shopping Collection";
 const char kShoppingCollectionDescription[] =
     "Organize all products into an automatically created bookmark folder.";
 
 const char kShoppingListName[] = "Shopping List";
 const char kShoppingListDescription[] = "Enable shopping list in bookmarks.";
-
-const char kShoppingListTrackByDefaultName[] = "Shopping List Track By Default";
-const char kShoppingListTrackByDefaultDescription[] =
-    "Bookmarked product pages are tracked by default if they can be.";
 
 const char kChromeCartDomBasedHeuristicsName[] =
     "ChromeCart DOM-based heuristics";
@@ -43,10 +45,6 @@ const char kParcelTrackingTestDataDescription[] =
 
 const char kPriceInsightsName[] = "Price Insights";
 const char kPriceInsightsDescription[] = "Enable price insights experiment.";
-
-const char kShowDiscountOnNavigationName[] = "Show discount on navigation";
-const char kShowDiscountOnNavigationDescription[] =
-    "Enable discount to show on navigation";
 
 const char kShoppingPageTypesName[] = "Shopping Page Types";
 const char kShoppingPageTypesDescription[] =

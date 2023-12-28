@@ -36,10 +36,6 @@ namespace ukm {
 class UkmRecorder;
 }  // namespace ukm
 
-namespace web_app {
-class WebAppSyncBridge;
-}  // namespace web_app
-
 namespace badging {
 class BadgeManagerDelegate;
 
@@ -110,11 +106,6 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
   void ClearBadgeForTesting(const webapps::AppId& app_id,
                             ukm::UkmRecorder* test_recorder);
   const base::Clock* SetClockForTesting(const base::Clock* clock);
-  void SetSyncBridgeForTesting(web_app::WebAppSyncBridge* sync_bridge);
-
- protected:
-  // Protected for tests.
-  BadgeManager(Profile* profile, web_app::WebAppSyncBridge* sync_bridge);
 
  private:
   // The BindingContext of a mojo request. Allows mojo calls to be tied back
@@ -180,8 +171,6 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
   const raw_ptr<Profile, DanglingUntriaged> profile_;
 
   raw_ptr<const base::Clock> clock_;
-
-  raw_ptr<web_app::WebAppSyncBridge, DanglingUntriaged> sync_bridge_;
 
   // All the mojo receivers for the BadgeManager. Keeps track of the
   // render_frame the binding is associated with, so as to not have to rely

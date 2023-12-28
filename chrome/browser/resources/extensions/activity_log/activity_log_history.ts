@@ -14,7 +14,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './activity_log_history.html.js';
-import {ActivityGroup} from './activity_log_history_item.js';
+import type {ActivityGroup} from './activity_log_history_item.js';
 
 /**
  * The different states the activity log page can be in. Initial state is

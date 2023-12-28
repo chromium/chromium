@@ -52,7 +52,7 @@ class SplitViewDividerHandlerView::SelectionAnimation
         kSplitviewWhiteBarCornerRadius, kSplitviewWhiteBarRadius));
   }
 
-  raw_ptr<SplitViewDividerHandlerView, ExperimentalAsh> white_handler_view_;
+  raw_ptr<SplitViewDividerHandlerView> white_handler_view_;
 };
 
 class SplitViewDividerHandlerView::SpawningAnimation
@@ -108,7 +108,7 @@ class SplitViewDividerHandlerView::SpawningAnimation
     UpdateWhiteHandlerBounds();
   }
 
-  raw_ptr<SplitViewDividerHandlerView, ExperimentalAsh> white_handler_view_;
+  raw_ptr<SplitViewDividerHandlerView> white_handler_view_;
   int spawn_signed_offset_;
   base::OneShotTimer delay_timer_;
 };

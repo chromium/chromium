@@ -41,7 +41,10 @@ cargo_crate("lib") {
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
+  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
   build_root = "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.14/build/build.rs"
   build_sources = [ "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.14/build/build.rs" ]
-  build_script_outputs = [ "version.rs" ]
+  build_script_inputs = [ "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.14/src/../build/rustc.rs" ]
+  build_script_outputs = [ "version.expr" ]
 }

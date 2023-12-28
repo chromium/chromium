@@ -303,6 +303,9 @@ class TestProxyDelegateWithProxyInfo : public ProxyDelegate {
     return OK;
   }
 
+  void SetProxyResolutionService(
+      ProxyResolutionService* proxy_resolution_service) override {}
+
  private:
   ResolvedProxyInfo resolved_proxy_info_;
 };
@@ -734,8 +737,7 @@ TEST_F(WebSocketEndToEndTest, HostResolverEndpointResult) {
 // Test that wss connections can use EncryptedClientHello.
 TEST_F(WebSocketEndToEndTest, EncryptedClientHello) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {features::kUseDnsHttpsSvcb, features::kEncryptedClientHello}, {});
+  features.InitAndEnableFeature(features::kUseDnsHttpsSvcb);
 
   // SpawnedTestServer does not support ECH, while EmbeddedTestServer does not
   // support WebSockets (https://crbug.com/1281277). Until that is fixed, test

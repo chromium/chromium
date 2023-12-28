@@ -15,8 +15,9 @@ class BrowserView;
 // Button in the WebAppToolbarButtonContainer that allows users to toggle
 // window controls overlay on and off.
 class WindowControlsOverlayToggleButton : public ToolbarButton {
+  METADATA_HEADER(WindowControlsOverlayToggleButton, ToolbarButton)
+
  public:
-  METADATA_HEADER(WindowControlsOverlayToggleButton);
   explicit WindowControlsOverlayToggleButton(BrowserView* browser_view);
   WindowControlsOverlayToggleButton(const WindowControlsOverlayToggleButton&) =
       delete;

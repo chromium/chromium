@@ -108,23 +108,23 @@ class FormStructureRationalizer {
   // also autofilled to take care of the synthetic fields.
   void ApplyRationalizationsToHiddenSelects(
       size_t field_index,
-      ServerFieldType new_type,
+      FieldType new_type,
       FormSignature form_signature,
       AutofillMetrics::FormInteractionsUkmLogger*);
 
   // Returns true if we can replace server predictions with the heuristics one.
   bool HeuristicsPredictionsAreApplicable(size_t upper_index,
                                           size_t lower_index,
-                                          ServerFieldType first_type,
-                                          ServerFieldType second_type);
+                                          FieldType first_type,
+                                          FieldType second_type);
 
   // Applies upper type to upper field, and lower type to lower field, and
   // applies the rationalization also to hidden select fields if necessary.
   void ApplyRationalizationsToFields(
       size_t upper_index,
       size_t lower_index,
-      ServerFieldType upper_type,
-      ServerFieldType lower_type,
+      FieldType upper_type,
+      FieldType lower_type,
       FormSignature form_signature,
       AutofillMetrics::FormInteractionsUkmLogger*);
 
@@ -135,7 +135,7 @@ class FormStructureRationalizer {
   // Set fields_[|field_index|] to |new_type| and log this change.
   void ApplyRationalizationsToFieldAndLog(
       size_t field_index,
-      ServerFieldType new_type,
+      FieldType new_type,
       FormSignature form_signature,
       AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger);
 

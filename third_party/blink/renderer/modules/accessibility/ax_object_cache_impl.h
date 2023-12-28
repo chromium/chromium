@@ -70,7 +70,6 @@ namespace blink {
 class AXRelationCache;
 class AbstractInlineTextBox;
 class HTMLAreaElement;
-class LocalFrameView;
 class WebLocalFrameClient;
 
 // Describes a decicion on whether to create an AXNodeObject, an AXLayoutObject,
@@ -164,14 +163,6 @@ class MODULES_EXPORT AXObjectCacheImpl
     if (frozen_count_++) {
       // Already frozen.
       return;
-    }
-    // TODO(crbug.com/1477047): Remove this case once post lifecycle
-    // serialization is the only remaining code path. It's unclear why the
-    // document lifecycle check is necessary but this is short-lived code.
-    if (!serialize_post_lifecycle_ && frozen_count_ == 1 &&
-        GetDocument().Lifecycle().GetState() <
-            DocumentLifecycle::kPrePaintClean) {
-      UpdateAXForAllDocuments();
     }
     ax_tree_source_->Freeze();
     CHECK(FocusedObject());
@@ -321,7 +312,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void EmbeddingTokenChanged(HTMLFrameOwnerElement*) override;
 
   // Called when the scroll offset changes.
-  void HandleScrollPositionChanged(LocalFrameView*) override;
   void HandleScrollPositionChanged(LayoutObject*) override;
 
   void HandleScrolledToAnchor(const Node* anchor_node) override;
@@ -386,10 +376,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   // its parent, it will be set as the new parent.
   AXObject* Get(const LayoutObject*, AXObject* parent_for_repair = nullptr);
 
-  // Get an AXObject* for a node.
-  // TODO(accessibility) This is the same as Get(Node*), and should be removed.
-  AXObject* SafeGet(const Node* node);
-
   // Return true if the object is still part of the tree, meaning that ancestors
   // exist or can be repaired all the way to the root.
   bool IsStillInTree(AXObject*);
@@ -442,11 +428,6 @@ class MODULES_EXPORT AXObjectCacheImpl
                            const AriaNotificationOptions*) override;
 
   void PostNotification(const LayoutObject*, ax::mojom::blink::Event);
-  // Creates object if necessary.
-  void EnsurePostNotification(Node*, ax::mojom::blink::Event);
-  void EnsureMarkDirtyWithCleanLayout(Node*);
-  // Does not create object.
-  // TODO(accessibility) Find out if we can merge with EnsurePostNotification().
   void PostNotification(Node*, ax::mojom::blink::Event);
   void PostNotification(AXObject*, ax::mojom::blink::Event);
 
@@ -774,15 +755,15 @@ class MODULES_EXPORT AXObjectCacheImpl
     kMarkDirtyFromHandleLayout = 11,
     kMarkDirtyFromHandleScroll = 12,
     kMarkDirtyFromRemove = 13,
-    kNameAttributeChanged = 14,
-    kNodeGainedFocus = 15,
-    kNodeLostFocus = 16,
-    kPostNotificationFromHandleLoadComplete = 17,
-    kPostNotificationFromHandleLoadStart = 18,
-    kPostNotificationFromHandleScrolledToAnchor = 19,
-    kRemoveValidationMessageObjectFromFocusedUIElement = 20,
-    kRemoveValidationMessageObjectFromValidationMessageObject = 21,
-    kRoleChangeFromAriaHasPopup = 22,
+    kNodeGainedFocus = 14,
+    kNodeLostFocus = 15,
+    kPostNotificationFromHandleLoadComplete = 16,
+    kPostNotificationFromHandleLoadStart = 17,
+    kPostNotificationFromHandleScrolledToAnchor = 18,
+    kRemoveValidationMessageObjectFromFocusedUIElement = 19,
+    kRemoveValidationMessageObjectFromValidationMessageObject = 20,
+    kRoleChangeFromAriaHasPopup = 21,
+    kRoleChangeFromImageMapName = 22,
     kRoleChangeFromRoleOrType = 23,
     kRoleMaybeChangedFromEventListener = 24,
     kRoleMaybeChangedFromHref = 25,
@@ -869,7 +850,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   Member<Document> popup_document_;
 
   ui::AXMode ax_mode_;
-  const bool serialize_post_lifecycle_;
 
   HeapHashMap<AXID, Member<AXObject>> objects_;
   HeapHashMap<Member<AccessibleNode>, AXID> accessible_node_mapping_;
@@ -989,7 +969,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   // call children changed.
   void HandleTextMarkerDataAddedWithCleanLayout(Node*);
   void HandleUseMapAttributeChangedWithCleanLayout(Node*);
-  void HandleNameAttributeChangedWithCleanLayout(Node*);
+  void HandleNameAttributeChanged(Node*);
 
   bool DoesEventListenerImpactIgnoredState(const AtomicString& event_type,
                                            const Node& node) const;
@@ -1147,6 +1127,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   bool mark_all_dirty_ = false;
 
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, PauseUpdatesAfterMaxNumberQueued);
+  FRIEND_TEST_ALL_PREFIXES(AccessibilityTest,
+                           UpdateAXForAllDocumentsAfterPausedUpdates);
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, RemoveReferencesToAXID);
 
   // So we can ensure the serialization pipeline never stalls with dirty objects

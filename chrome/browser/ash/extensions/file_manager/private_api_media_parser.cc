@@ -184,8 +184,8 @@ void FileManagerPrivateInternalGetContentMetadataFunction::ParserDone(
   }
 
   if (image && size && !image->type.empty()) {  // Attach thumbnail image.
-    std::string url;
-    base::Base64Encode(base::StringPiece(image->data.data(), size), &url);
+    std::string url =
+        base::Base64Encode(base::StringPiece(image->data.data(), size));
     url.insert(0, base::StrCat({"data:", image->type, ";base64,"}));
 
     base::Value::Dict media_thumbnail_image;

@@ -12,7 +12,6 @@
 #include "content/browser/android/render_widget_host_connector.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
-#include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 
 namespace blink {
 class WebGestureEvent;
@@ -60,8 +59,7 @@ class CONTENT_EXPORT GestureListenerManager : public RenderWidgetHostConnector {
   }
   void SetRootScrollOffsetUpdateFrequency(JNIEnv* env, jint frequency);
   void GestureEventAck(const blink::WebGestureEvent& event,
-                       blink::mojom::InputEventResultState ack_result,
-                       blink::mojom::ScrollResultDataPtr scroll_result_data);
+                       blink::mojom::InputEventResultState ack_result);
   void DidStopFlinging();
   bool FilterInputEvent(const blink::WebInputEvent& event);
   void DidOverscroll(const ui::DidOverscrollParams& params);

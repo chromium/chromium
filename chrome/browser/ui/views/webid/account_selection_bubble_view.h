@@ -36,6 +36,8 @@ class IdpImageView;
 // user moves through the FedCM flow steps.
 class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
                                    public AccountSelectionBubbleViewInterface {
+  METADATA_HEADER(AccountSelectionBubbleView, views::BubbleDialogDelegateView)
+
  public:
   // Used to observe changes to the account selection bubble.
   class Observer {
@@ -79,7 +81,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
     virtual void CloseModalDialog() = 0;
   };
 
-  METADATA_HEADER(AccountSelectionBubbleView);
   AccountSelectionBubbleView(
       const std::u16string& top_frame_for_display,
       const std::optional<std::u16string>& iframe_for_display,
@@ -156,6 +157,10 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_display_data,
       bool should_hover);
+
+  // Creates the "Use other account" button.
+  std::unique_ptr<views::View> CreateUseOtherAccountButton(
+      const content::IdentityProviderMetadata& idp_metadata);
 
   // Updates the header title, the header icon visibility and the header back
   // button visibiltiy. `idp_metadata` is not null when we need to set a header

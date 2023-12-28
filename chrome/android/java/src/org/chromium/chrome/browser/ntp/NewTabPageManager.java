@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import org.chromium.chrome.browser.query_tiles.QueryTileSection.QueryInfo;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 
 /** Manages the view interaction with the rest of the system. */
@@ -21,12 +20,6 @@ public interface NewTabPageManager extends SuggestionsUiDelegate {
      * @param pastedText Text to paste in the omnibox after it's been focused. May be null.
      */
     void focusSearchBox(boolean beginVoiceSearch, String pastedText);
-
-    /**
-     * Performs a search query on the current {@link Tab}.
-     * @param queryInfo Object containing the query text and additional search params.
-     */
-    void performSearchQuery(QueryInfo queryInfo);
 
     /**
      * Returns whether the {@link NewTabPage} associated with this manager is the current page

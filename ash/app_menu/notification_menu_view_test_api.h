@@ -36,7 +36,7 @@ class NotificationMenuViewTestAPI {
   NotificationOverflowView* GetOverflowView() const;
 
  private:
-  const raw_ptr<NotificationMenuView, DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<NotificationMenuView, DanglingUntriaged>
       notification_menu_view_;
 };
 

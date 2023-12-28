@@ -127,15 +127,25 @@ void AppServiceProxyLacros::OnApps(std::vector<AppPtr> deltas,
 }
 
 std::unique_ptr<IconLoader::Releaser> AppServiceProxyLacros::LoadIcon(
+    const std::string& app_id,
+    const IconType& icon_type,
+    int32_t size_hint_in_dip,
+    bool allow_placeholder_icon,
+    apps::LoadIconCallback callback) {
+  return app_icon_loader()->LoadIcon(app_id, icon_type, size_hint_in_dip,
+                                     allow_placeholder_icon,
+                                     std::move(callback));
+}
+
+std::unique_ptr<IconLoader::Releaser> AppServiceProxyLacros::LoadIcon(
     AppType app_type,
     const std::string& app_id,
     const IconType& icon_type,
     int32_t size_hint_in_dip,
     bool allow_placeholder_icon,
     apps::LoadIconCallback callback) {
-  return app_icon_loader()->LoadIcon(app_type, app_id, icon_type,
-                                     size_hint_in_dip, allow_placeholder_icon,
-                                     std::move(callback));
+  return LoadIcon(app_id, icon_type, size_hint_in_dip, allow_placeholder_icon,
+                  std::move(callback));
 }
 
 void AppServiceProxyLacros::Launch(const std::string& app_id,

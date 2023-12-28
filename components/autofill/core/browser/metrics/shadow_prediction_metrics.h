@@ -35,9 +35,9 @@ enum class ShadowPredictionComparison {
 // The result is a pair of (`current`, `ShadowPredictionComparison`), encoded as
 // an int. This is used to emit a type-specific UMA metric, encoding how well
 // the shadow predictions perform compared to the `current` predictions.
-int GetShadowPrediction(ServerFieldType current,
-                        ServerFieldType next,
-                        const ServerFieldTypeSet& submitted_types);
+int GetShadowPrediction(FieldType current,
+                        FieldType next,
+                        const FieldTypeSet& submitted_types);
 
 // Logs Autofill.ShadowPredictions.* metrics by comparing the submitted
 // values to the actual and hypothetical predictions.

@@ -12,7 +12,7 @@
 #include "ash/public/cpp/external_arc/message_center/mock_arc_notification_surface.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
 #include "ash/shell.h"
-#include "ash/system/message_center/message_view_factory.h"
+#include "ash/system/notification_center/message_view_factory.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/functional/bind.h"
@@ -214,7 +214,7 @@ class ArcNotificationViewTest : public AshTestBase {
 
   std::unique_ptr<MockArcNotificationSurface> surface_;
   std::unique_ptr<Notification> notification_;
-  raw_ptr<ArcNotificationView, ExperimentalAsh> notification_view_ =
+  raw_ptr<ArcNotificationView> notification_view_ =
       nullptr;  // owned by its widget.
 
   std::unique_ptr<MockArcNotificationItem> item_;

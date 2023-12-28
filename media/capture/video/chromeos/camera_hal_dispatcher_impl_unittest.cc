@@ -241,7 +241,7 @@ class CameraHalDispatcherImplTest : public ::testing::Test {
  protected:
   // We can't use std::unique_ptr here because the constructor and destructor of
   // CameraHalDispatcherImpl are private.
-  raw_ptr<CameraHalDispatcherImpl, ExperimentalAsh> dispatcher_;
+  raw_ptr<CameraHalDispatcherImpl> dispatcher_;
   base::WaitableEvent register_client_event_;
   int32_t last_register_client_result_;
   std::atomic<int> quit_count_ = 0;

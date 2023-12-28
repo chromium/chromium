@@ -11,6 +11,7 @@
 #include "content/public/common/content_features.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/command_line.h"
@@ -32,7 +33,7 @@ namespace controlled_frame {
 
 bool AvailabilityCheck(const std::string& api_full_name,
                        const extensions::Extension* extension,
-                       extensions::Feature::Context context,
+                       extensions::mojom::ContextType context,
                        const GURL& url,
                        extensions::Feature::Platform platform,
                        int context_id,
@@ -51,7 +52,7 @@ bool AvailabilityCheck(const std::string& api_full_name,
   // Verify that the current context is an Isolated Web App and the API name is
   // in our expected list.
   return !extension && is_allowed_for_scheme &&
-         context == extensions::Feature::WEB_PAGE_CONTEXT &&
+         context == extensions::mojom::ContextType::kWebPage &&
          context_data.IsIsolatedApplication() &&
          base::Contains(GetControlledFrameFeatureList(), api_full_name);
 }

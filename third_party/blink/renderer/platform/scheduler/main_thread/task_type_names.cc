@@ -83,6 +83,8 @@ const char* TaskTypeNames::TaskTypeToString(TaskType task_type) {
       return "WebLocks";
     case TaskType::kStorage:
       return "Storage";
+    case TaskType::kClipboard:
+      return "Clipboard";
     case TaskType::kInternalDefault:
       return "InternalDefault";
     case TaskType::kInternalLoading:

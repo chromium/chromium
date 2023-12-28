@@ -59,9 +59,10 @@ class EditLabels : public views::View {
   // Called when this view is clicked upon.
   void FocusLabel();
 
-
   // Returns Action name, such as "Joystick WASD".
   std::u16string CalculateActionName();
+
+  void PerformPulseAnimationOnFirstLabel();
 
   void set_should_update_title(bool should_update_title) {
     should_update_title_ = should_update_title;
@@ -70,6 +71,7 @@ class EditLabels : public views::View {
  private:
   friend class ButtonOptionsMenuTest;
   friend class EditLabelTest;
+  friend class OverlayViewTestBase;
 
   void Init();
   void InitForActionTapKeyboard();
@@ -83,7 +85,7 @@ class EditLabels : public views::View {
   // Displays the content in `labels_`.
   raw_ptr<NameTag, DanglingUntriaged> name_tag_ = nullptr;
 
-  std::vector<EditLabel*> labels_;
+  std::vector<raw_ptr<EditLabel, VectorExperimental>> labels_;
 
   // It is true that at least one of `labels_` is unassigned.
   bool missing_assign_ = false;

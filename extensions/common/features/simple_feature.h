@@ -21,6 +21,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 
@@ -57,14 +58,14 @@ class SimpleFeature : public Feature {
   ~SimpleFeature() override;
 
   Availability IsAvailableToContext(const Extension* extension,
-                                    Context context,
+                                    mojom::ContextType context,
                                     int context_id,
                                     const ContextData& context_data) const {
     return IsAvailableToContext(extension, context, GURL(), context_id,
                                 context_data);
   }
   Availability IsAvailableToContext(const Extension* extension,
-                                    Context context,
+                                    mojom::ContextType context,
                                     Platform platform,
                                     int context_id,
                                     const ContextData& context_data) const {
@@ -72,7 +73,7 @@ class SimpleFeature : public Feature {
                                     context_id, true, context_data);
   }
   Availability IsAvailableToContext(const Extension* extension,
-                                    Context context,
+                                    mojom::ContextType context,
                                     const GURL& url,
                                     int context_id,
                                     const ContextData& context_data) const {
@@ -81,7 +82,7 @@ class SimpleFeature : public Feature {
                                     context_data);
   }
   Availability IsAvailableToContext(const Extension* extension,
-                                    Context context,
+                                    mojom::ContextType context,
                                     const GURL& url,
                                     Platform platform,
                                     int context_id,
@@ -131,7 +132,7 @@ class SimpleFeature : public Feature {
   void set_component_extensions_auto_granted(bool granted) {
     component_extensions_auto_granted_ = granted;
   }
-  void set_contexts(std::initializer_list<Context> contexts);
+  void set_contexts(std::initializer_list<mojom::ContextType> contexts);
   void set_dependencies(std::initializer_list<const char* const> dependencies);
   void set_extension_types(std::initializer_list<Manifest::Type> types);
   void set_feature_flag(base::StringPiece feature_flag);
@@ -172,7 +173,7 @@ class SimpleFeature : public Feature {
     return extension_types_;
   }
   const std::vector<Platform>& platforms() const { return platforms_; }
-  const std::optional<std::vector<Context>>& contexts() const {
+  const std::optional<std::vector<mojom::ContextType>>& contexts() const {
     return contexts_;
   }
   const std::vector<std::string>& dependencies() const { return dependencies_; }
@@ -198,7 +199,7 @@ class SimpleFeature : public Feature {
       AvailabilityResult result,
       Manifest::Type type,
       const GURL& url,
-      Context context,
+      mojom::ContextType context,
       version_info::Channel channel,
       mojom::FeatureSessionType session_type) const;
 
@@ -209,7 +210,7 @@ class SimpleFeature : public Feature {
   Availability CreateAvailability(AvailabilityResult result,
                                   const GURL& url) const;
   Availability CreateAvailability(AvailabilityResult result,
-                                  Context context) const;
+                                  mojom::ContextType context) const;
   Availability CreateAvailability(AvailabilityResult result,
                                   version_info::Channel channel) const;
   Availability CreateAvailability(AvailabilityResult result,
@@ -217,7 +218,7 @@ class SimpleFeature : public Feature {
 
   Availability IsAvailableToContextImpl(
       const Extension* extension,
-      Context context,
+      mojom::ContextType context,
       const GURL& url,
       Platform platform,
       int context_id,
@@ -236,7 +237,7 @@ class SimpleFeature : public Feature {
 
   static Feature::Availability IsAvailableToContextForBind(
       const Extension* extension,
-      Feature::Context context,
+      mojom::ContextType context,
       const GURL& url,
       Feature::Platform platform,
       int context_id,
@@ -276,7 +277,7 @@ class SimpleFeature : public Feature {
                                        int manifest_version) const;
 
   // Returns the availability of the feature with respect to a given context.
-  Availability GetContextAvailability(Context context,
+  Availability GetContextAvailability(mojom::ContextType context,
                                       const GURL& url,
                                       bool is_for_service_worker) const;
 
@@ -284,7 +285,7 @@ class SimpleFeature : public Feature {
   // handler.
   Availability RunDelegatedAvailabilityCheck(
       const Extension* extension,
-      Context context,
+      mojom::ContextType context,
       const GURL& url,
       Platform platform,
       int context_id,
@@ -300,7 +301,7 @@ class SimpleFeature : public Feature {
   std::vector<std::string> dependencies_;
   std::vector<Manifest::Type> extension_types_;
   std::vector<mojom::FeatureSessionType> session_types_;
-  std::optional<std::vector<Context>> contexts_;
+  std::optional<std::vector<mojom::ContextType>> contexts_;
   std::vector<Platform> platforms_;
   URLPatternSet matches_;
 

@@ -328,8 +328,8 @@ LayoutUnit MenuListIntrinsicInlineSize(const HTMLSelectElement& select,
   float max_option_width = 0;
   if (!box.ShouldApplySizeContainment()) {
     for (auto* const option : select.GetOptionList()) {
-      String text = option->TextIndentedToRespectGroupLabel();
-      style.ApplyTextTransform(&text);
+      String text =
+          style.ApplyTextTransform(option->TextIndentedToRespectGroupLabel());
       // We apply SELECT's style, not OPTION's style because max_option_width is
       // used to determine intrinsic width of the menulist box.
       max_option_width =
@@ -466,7 +466,6 @@ void LayoutBoxRareData::Trace(Visitor* visitor) const {
 LayoutBox::LayoutBox(ContainerNode* node)
     : LayoutBoxModelObject(node),
       intrinsic_logical_widths_initial_block_size_(LayoutUnit::Min()) {
-  SetIsBox();
   if (blink::IsA<HTMLLegendElement>(node))
     SetIsHTMLLegendElement();
 }
@@ -540,10 +539,6 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
   NOT_DESTROYED();
   const ComputedStyle* old_style = Style();
   if (old_style) {
-    LayoutFlowThread* flow_thread = FlowThreadContainingBlock();
-    if (flow_thread && flow_thread != this)
-      flow_thread->FlowThreadDescendantStyleWillChange(this, diff, new_style);
-
     if (IsDocumentElement() || IsBody()) {
       // The background of the root element or the body element could propagate
       // up to the canvas. Just dirty the entire canvas when our style changes
@@ -675,9 +670,6 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
     if (LayoutMultiColumnSpannerPlaceholder* placeholder =
             SpannerPlaceholder()) {
       placeholder->LayoutObjectInFlowThreadStyleDidChange(old_style);
-    } else if (LayoutFlowThread* flow_thread = FlowThreadContainingBlock()) {
-      if (flow_thread != this)
-        flow_thread->FlowThreadDescendantStyleDidChange(this, diff, *old_style);
     }
 
     UpdateScrollSnapMappingAfterStyleChange(*old_style);

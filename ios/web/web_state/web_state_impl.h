@@ -309,7 +309,7 @@ class WebStateImpl final : public WebState {
                             NSString* response_html_string) final;
   void LoadSimulatedRequest(const GURL& url,
                             NSData* response_data,
-                            NSString* mime_type) final API_AVAILABLE(ios(15.0));
+                            NSString* mime_type) final;
   void Stop() final;
   const NavigationManager* GetNavigationManager() const final;
   NavigationManager* GetNavigationManager() final;

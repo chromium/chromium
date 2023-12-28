@@ -279,6 +279,49 @@ std::vector<GroupedFacets> AffiliationDatabase::GetAllGroups() const {
   return results;
 }
 
+GroupedFacets AffiliationDatabase::GetGroup(const FacetURI& facet_uri) const {
+  sql::Statement statement(sql_connection_->GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT m2.facet_uri, m2.main_domain, c.group_display_name, "
+      "c.group_icon_url, c.id "
+      "FROM eq_class_groups m1, eq_class_groups m2, eq_classes c "
+      "WHERE m1.facet_uri = ? AND m1.set_id = m2.set_id AND m1.set_id = c.id "
+      "ORDER BY c.id"));
+  statement.BindString(0, facet_uri.potentially_invalid_spec());
+
+  GroupedFacets result;
+  if (!statement.Step()) {
+    // No such |facet_uri| in the database, return group with requested facet.
+    result.facets.emplace_back(facet_uri);
+    return result;
+  }
+
+  int64_t group_id = statement.ColumnInt64(4);
+
+  // Add branding info for a group as it's the same for all steps.
+  result.branding_info.name = statement.ColumnString(2);
+  result.branding_info.icon_url = GURL(statement.ColumnString(3));
+
+  result.facets.emplace_back(
+      FacetURI::FromCanonicalSpec(statement.ColumnString(0)),
+      FacetBrandingInfo(), /*change_password_url=*/GURL(),
+      statement.ColumnString(1));
+
+  while (statement.Step()) {
+    // Return only the first group from the response, as other groups are exact
+    // duplicates.
+    if (group_id != statement.ColumnInt64(4)) {
+      break;
+    }
+    result.facets.emplace_back(
+        FacetURI::FromCanonicalSpec(statement.ColumnString(0)),
+        FacetBrandingInfo(), /*change_password_url=*/GURL(),
+        statement.ColumnString(1));
+  }
+
+  return result;
+}
+
 std::vector<std::string> AffiliationDatabase::GetPSLExtensions() const {
   std::vector<std::string> result;
 

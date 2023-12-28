@@ -60,8 +60,7 @@ class FolderImageSource : public gfx::CanvasImageSource {
   // gfx::CanvasImageSource overrides:
   void Draw(gfx::Canvas* canvas) override;
 
-  const raw_ref<const AppListConfig, DanglingUntriaged | ExperimentalAsh>
-      app_list_config_;
+  const raw_ref<const AppListConfig, DanglingUntriaged> app_list_config_;
   Icons icons_;
   gfx::Size size_;
 };
@@ -143,14 +142,16 @@ FolderImage::FolderImage(const AppListConfig* app_list_config,
 }
 
 FolderImage::~FolderImage() {
-  for (auto* item : top_items_)
+  for (ash::AppListItem* item : top_items_) {
     item->RemoveObserver(this);
+  }
   item_list_->RemoveObserver(this);
 }
 
 void FolderImage::UpdateIcon() {
-  for (auto* item : top_items_)
+  for (ash::AppListItem* item : top_items_) {
     item->RemoveObserver(this);
+  }
   top_items_.clear();
 
   for (size_t i = 0;
@@ -342,8 +343,9 @@ void FolderImage::OnListItemMoved(size_t from_index,
 
 void FolderImage::RedrawIconAndNotify() {
   FolderImageSource::Icons top_icons;
-  for (const auto* item : top_items_)
+  for (const ash::AppListItem* item : top_items_) {
     top_icons.push_back(item->GetIcon(app_list_config_->type()));
+  }
   const gfx::Size icon_size = app_list_config_->folder_icon_size();
   icon_ = gfx::ImageSkia(std::make_unique<FolderImageSource>(
                              *app_list_config_, top_icons, icon_size),

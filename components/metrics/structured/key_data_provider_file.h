@@ -16,6 +16,9 @@
 namespace metrics::structured {
 
 // KeyDataProvider implementation that stores the keys in a file.
+//
+// (b/316198668): Explore to remove this layer of abstraction since it should
+// not be needed anymore.
 class KeyDataProviderFile : public KeyDataProvider, KeyDataProvider::Observer {
  public:
   KeyDataProviderFile(const base::FilePath& file_path,

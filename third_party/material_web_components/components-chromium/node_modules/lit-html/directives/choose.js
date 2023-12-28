@@ -3,5 +3,5 @@
  * Copyright 2021 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const o=(o,r,n)=>{for(const n of r)if(n[0]===o)return(0,n[1])();return null==n?void 0:n()};export{o as choose};
+const r=(r,o,t)=>{for(const t of o)if(t[0]===r)return(0,t[1])();return t?.()};export{r as choose};
 //# sourceMappingURL=choose.js.map

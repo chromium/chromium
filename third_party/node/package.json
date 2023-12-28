@@ -20,7 +20,6 @@
     "@types/wicg-file-system-access": "2020.09.05",
     "@typescript-eslint/eslint-plugin": "6.7.4",
     "@typescript-eslint/parser": "6.7.4",
-    "babel-eslint": "10.0.2",
     "eslint": "8.50.0",
     "eslint-plugin-jsdoc": "46.8.2",
     "html-minifier": "4.0.0",
@@ -28,6 +27,6 @@
     "rollup": "3.29.4",
     "svgo": "3.0.2",
     "terser": "5.20.0",
-    "typescript": "5.2.2"
+    "typescript": "5.3.3"
   }
 }

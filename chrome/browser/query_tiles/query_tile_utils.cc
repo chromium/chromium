@@ -8,11 +8,6 @@
 #include "components/query_tiles/switches.h"
 #include "components/variations/service/variations_service.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/jni_android.h"
-#include "chrome/android/chrome_jni_headers/QueryTileUtils_jni.h"
-#endif
-
 namespace query_tiles {
 
 // Issue 1076964: Currently the variation service can be only reached in full
@@ -49,11 +44,5 @@ bool IsQueryTilesEnabled() {
               GetCountryCode())) ||
          base::FeatureList::IsEnabled(query_tiles::features::kQueryTiles);
 }
-
-#if BUILDFLAG(IS_ANDROID)
-static jboolean JNI_QueryTileUtils_IsQueryTilesEnabled(JNIEnv* env) {
-  return IsQueryTilesEnabled();
-}
-#endif
 
 }  // namespace query_tiles

@@ -56,7 +56,7 @@ class Security : public SurfaceObserver {
   }
 
  private:
-  raw_ptr<Surface, ExperimentalAsh> surface_;
+  raw_ptr<Surface> surface_;
 };
 
 void security_destroy(wl_client* client, wl_resource* resource) {

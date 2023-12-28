@@ -2096,9 +2096,6 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoDetailsContent:
       return MatchesUAShadowElement(element,
                                     shadow_element_names::kIdDetailsContent);
-    case CSSSelector::kPseudoDetailsSummary:
-      return MatchesUAShadowElement(element,
-                                    shadow_element_names::kIdDetailsSummary);
     case CSSSelector::kPseudoWebKitCustomElement:
       return MatchesUAShadowElement(element, selector.Value());
     case CSSSelector::kPseudoBlinkInternalElement:

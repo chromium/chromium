@@ -76,7 +76,7 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/performance_controls/high_efficiency_opt_in_iph_controller.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_opt_in_iph_controller.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
@@ -226,6 +226,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/common/command.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -430,35 +431,6 @@ bool WidgetHasChildModalDialog(views::Widget* parent_widget) {
       return true;
   }
   return false;
-}
-
-// Return the DevTools docked placement. It infers the docked placement from
-// the bounds of contents_webview relative to the local bounds of the container
-// that holds both contents_webview and devtools_webview.
-BrowserView::DevToolsDockedPlacement GetDevToolsDockedPlacement(
-    const gfx::Rect& contents_webview_bounds,
-    const gfx::Rect& local_webview_container_bounds) {
-  // If contents_webview has the same bounds as webview_container, it either
-  // means that devtools are not open or devtools are open in a separate
-  // window (not docked).
-  if (contents_webview_bounds == local_webview_container_bounds) {
-    return BrowserView::DevToolsDockedPlacement::kNone;
-  }
-
-  if (contents_webview_bounds.x() > 0 && contents_webview_bounds.y() == 0 &&
-      contents_webview_bounds.x() + contents_webview_bounds.width() ==
-          local_webview_container_bounds.width()) {
-    return BrowserView::DevToolsDockedPlacement::kLeft;
-  } else if (contents_webview_bounds.origin().IsOrigin() &&
-             contents_webview_bounds.height() ==
-                 local_webview_container_bounds.height()) {
-    return BrowserView::DevToolsDockedPlacement::kRight;
-  } else if (contents_webview_bounds.width() ==
-             local_webview_container_bounds.width()) {
-    return BrowserView::DevToolsDockedPlacement::kBottom;
-  }
-
-  return BrowserView::DevToolsDockedPlacement::kUnknown;
 }
 
 bool IsManagedGuestSession() {
@@ -843,8 +815,6 @@ class BrowserView::AccessibilityModeObserver : public ui::AXModeObserver {
                                     browser_view_->GetAsWeakPtr()));
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-      // TODO(crbug.com/1442928): Check if PdfOcrController is correctly
-      // created on windows, macOS, and linux when screen reader is on.
       if (features::IsPdfOcrEnabled()) {
         screen_ai::PdfOcrControllerFactory::GetForProfile(
             browser_view_->GetProfile());
@@ -867,7 +837,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
       accessibility_mode_observer_(
           std::make_unique<AccessibilityModeObserver>(this)) {
   // Store the actions so that the access is available for other classes.
-  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+  if (features::IsSidePanelPinningEnabled()) {
     browser_->SetUserData(BrowserActions::UserDataKey(),
                           std::make_unique<BrowserActions>(*browser_));
   }
@@ -915,9 +885,6 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
     UpdateWindowControlsOverlayEnabled();
     UpdateBorderlessModeEnabled();
   }
-
-  // Initialize Blink's 'resizable' CSS @media feature state.
-  OnWidgetSizeConstraintsChanged(GetWidget());
 
   // TabStrip takes ownership of the controller.
   auto tabstrip_controller = std::make_unique<BrowserTabStripController>(
@@ -1018,9 +985,9 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   }
 #endif
 
-  // High Efficiency mode is default off but is available to turn on
-  high_efficiency_opt_in_iph_controller_ =
-      std::make_unique<HighEfficiencyOptInIPHController>(browser_.get());
+  // Memory Saver mode is default off but is available to turn on
+  memory_saver_opt_in_iph_controller_ =
+      std::make_unique<MemorySaverOptInIPHController>(browser_.get());
 
   registrar_.Init(GetProfile()->GetPrefs());
   registrar_.Add(
@@ -1596,6 +1563,33 @@ gfx::Point BrowserView::GetThemeOffsetFromBrowserView() const {
       ThemeProperties::kFrameHeightAboveTabs - browser_view_origin.y());
 }
 
+// static:
+BrowserView::DevToolsDockedPlacement BrowserView::GetDevToolsDockedPlacement(
+    const gfx::Rect& contents_webview_bounds,
+    const gfx::Rect& local_webview_container_bounds) {
+  // If contents_webview has the same bounds as webview_container, it either
+  // means that devtools are not open or devtools are open in a separate
+  // window (not docked).
+  if (contents_webview_bounds == local_webview_container_bounds) {
+    return BrowserView::DevToolsDockedPlacement::kNone;
+  }
+
+  if (contents_webview_bounds.x() > 0 && contents_webview_bounds.y() == 0 &&
+      contents_webview_bounds.x() + contents_webview_bounds.width() ==
+          local_webview_container_bounds.width()) {
+    return BrowserView::DevToolsDockedPlacement::kLeft;
+  } else if (contents_webview_bounds.origin().IsOrigin() &&
+             contents_webview_bounds.height() ==
+                 local_webview_container_bounds.height()) {
+    return BrowserView::DevToolsDockedPlacement::kRight;
+  } else if (contents_webview_bounds.width() ==
+             local_webview_container_bounds.width()) {
+    return BrowserView::DevToolsDockedPlacement::kBottom;
+  }
+
+  return BrowserView::DevToolsDockedPlacement::kUnknown;
+}
+
 bool BrowserView::IsLoadingAnimationRunningForTesting() const {
   return loading_animation_timer_.IsRunning();
 }
@@ -1756,7 +1750,7 @@ void BrowserView::OnTabDetached(content::WebContents* contents,
     contents->GetPrimaryMainFrame()
         ->GetBrowserContext()
         ->GetPermissionController()
-        ->UnsubscribePermissionStatusChange(
+        ->UnsubscribeFromPermissionStatusChange(
             window_management_subscription_id_.value());
     window_management_subscription_id_.reset();
   }
@@ -2336,7 +2330,7 @@ void BrowserView::SetWindowManagementPermissionSubscriptionForBorderlessMode(
   // It is safe to bind base::Unretained(this) because WebContents is
   // owned by BrowserView.
   window_management_subscription_id_ =
-      controller->SubscribePermissionStatusChange(
+      controller->SubscribeToPermissionStatusChange(
           blink::PermissionType::WINDOW_MANAGEMENT, rfh->GetProcess(), origin,
           base::BindRepeating(&BrowserView::UpdateWindowManagementPermission,
                               base::Unretained(this)));
@@ -2593,6 +2587,10 @@ void BrowserView::OnCanResizeFromWebAPIChanged() {
 }
 
 void BrowserView::SynchronizeRenderWidgetHostVisualPropertiesForMainFrame() {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kDesktopPWAsAdditionalWindowingControls)) {
+    return;
+  }
   content::WebContents* web_contents = GetActiveWebContents();
   if (!web_contents || !web_contents->GetPrimaryMainFrame()) {
     return;
@@ -3677,6 +3675,12 @@ bool BrowserView::ShouldShowWindowTitle() const {
   return browser_->SupportsWindowFeature(Browser::FEATURE_TITLEBAR);
 }
 
+bool BrowserView::ShouldShowWindowIcon() const {
+  return GetIsWebAppType()
+             ? base::FeatureList::IsEnabled(features::kWebAppIconInTitlebar)
+             : WidgetDelegate::ShouldShowWindowIcon();
+}
+
 ui::ImageModel BrowserView::GetWindowAppIcon() {
   web_app::AppBrowserController* app_controller = browser()->app_controller();
   return app_controller ? app_controller->GetWindowAppIcon() : GetWindowIcon();
@@ -4190,18 +4194,6 @@ void BrowserView::Layout() {
   toolbar_->location_bar()->omnibox_view()->SetFocusBehavior(
       IsToolbarVisible() ? FocusBehavior::ALWAYS : FocusBehavior::NEVER);
   frame()->GetFrameView()->UpdateMinimumSize();
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // In chromeOS ash we round the bottom two corners of the browser frame by
-  // rounding the respective corners of visible client contents i.e main web
-  // contents, devtools web contents and side panel. When ever there is change
-  // in the layout or visibility of these contents (devtools opened, devtools
-  // docked placement change, side panel open etc), we might need to update
-  // which corners are currently rounded. See
-  // `BrowserNonClientFrameViewChromeOS::UpdateWindowRoundedCorners()` for more
-  // details.
-  frame()->GetFrameView()->UpdateWindowRoundedCorners();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Some of the situations when the BrowserView is laid out are:
   // - Enter/exit immersive fullscreen mode.

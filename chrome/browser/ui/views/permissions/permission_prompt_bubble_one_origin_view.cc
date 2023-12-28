@@ -60,7 +60,8 @@ namespace {
 
 std::u16string GetAccessibleWindowTitleInternal(
     const std::u16string display_name,
-    std::vector<permissions::PermissionRequest*> visible_requests) {
+    std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+        visible_requests) {
   // Generate one of:
   //   $origin wants to: $permission
   //   $origin wants to: $permission and $permission
@@ -102,9 +103,10 @@ bool ShouldShowRequest(permissions::PermissionPrompt::Delegate& delegate,
   return true;
 }
 
-std::vector<permissions::PermissionRequest*> GetVisibleRequests(
-    permissions::PermissionPrompt::Delegate& delegate) {
-  std::vector<permissions::PermissionRequest*> visible_requests;
+std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+GetVisibleRequests(permissions::PermissionPrompt::Delegate& delegate) {
+  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+      visible_requests;
   for (permissions::PermissionRequest* request : delegate.Requests()) {
     if (ShouldShowRequest(delegate, request->request_type())) {
       visible_requests.push_back(request);
@@ -155,23 +157,27 @@ PermissionPromptBubbleOneOriginView::PermissionPromptBubbleOneOriginView(
     base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
     base::TimeTicks permission_requested_time,
     PermissionPromptStyle prompt_style)
-    : PermissionPromptBubbleBaseView(
-          browser,
-          delegate,
-          permission_requested_time,
-          prompt_style,
-          l10n_util::GetStringFUTF16(
-              IDS_PERMISSIONS_BUBBLE_PROMPT,
-              PermissionPromptBaseView::GetUrlIdentity(browser, *delegate)
-                  .name),
-          GetAccessibleWindowTitleInternal(
-              PermissionPromptBaseView::GetUrlIdentity(browser, *delegate).name,
-              GetVisibleRequests(*delegate.get())),
-          GetExtraText(*delegate.get())) {
+    : PermissionPromptBubbleBaseView(browser,
+                                     delegate,
+                                     permission_requested_time,
+                                     prompt_style) {
+  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
+      visible_requests = GetVisibleRequests(*delegate.get());
+
+  SetAccessibleTitle(GetAccessibleWindowTitleInternal(
+      GetUrlIdentityObject().name, visible_requests));
+  SetTitle(l10n_util::GetStringFUTF16(IDS_PERMISSIONS_BUBBLE_PROMPT,
+                                      GetUrlIdentityObject().name));
+
+  auto extra_text = GetExtraText(*delegate.get());
+  if (extra_text.has_value()) {
+    CreateExtraTextLabel(extra_text.value());
+  }
+
+  CreatePermissionButtons(GetAllowAlwaysText(visible_requests));
+
   bool has_camera_request = false;
   bool has_mic_request = false;
-  std::vector<permissions::PermissionRequest*> visible_requests =
-      GetVisibleRequests(*delegate.get());
   for (std::size_t i = 0; i < visible_requests.size(); i++) {
     AddRequestLine(visible_requests[i], i);
     if (visible_requests[i]->request_type() ==

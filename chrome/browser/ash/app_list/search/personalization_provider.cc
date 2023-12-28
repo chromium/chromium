@@ -159,7 +159,6 @@ void PersonalizationProvider::OnSearchDone(
 void PersonalizationProvider::StartLoadIcon() {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   proxy->LoadIcon(
-      proxy->AppRegistryCache().GetAppType(web_app::kPersonalizationAppId),
       web_app::kPersonalizationAppId, apps::IconType::kStandard,
       ash::SharedAppListConfig::instance().search_list_icon_dimension(),
       /*allow_placeholder_icon=*/false,

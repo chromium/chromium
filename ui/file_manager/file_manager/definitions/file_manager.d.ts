@@ -22,7 +22,7 @@ interface FileManager {
   directoryModel: DirectoryModel;
   directoryTreeNamingController: DirectoryTreeNamingController;
   ui: FileManagerUI;
-  getLastVisitedURL(): string;
+  getLastVisitedUrl(): string;
   getTranslatedString(id: string): string;
   onUnloadForTest(): void;
 }
@@ -30,6 +30,7 @@ interface FileManager {
 interface AppState {
   currentDirectoryURL?: string;
   selectionURL?: string;
+  viewOptions?: any;
 }
 
 /**
@@ -50,10 +51,6 @@ declare global {
 
     appState?: AppState;
 
-    webkitResolveLocalFileSystemURL(
-        url: string, successCallback: FileSystemEntryCallback,
-        errorCallback: ErrorCallback): void;
-
     // Only used for grid.ts
     cvox?: {
       Api?: {
@@ -70,6 +67,10 @@ declare global {
     // For unit test.
     chrome: typeof chrome;
   }
+
+  function webkitResolveLocalFileSystemURL(
+      url: string, successCallback: FileSystemEntryCallback,
+      errorCallback: ErrorCallback): void;
 }
 
 export {};

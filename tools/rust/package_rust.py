@@ -26,18 +26,23 @@ BUILDLOG_NAME = f'rust-buildlog-{PACKAGE_VERSION}.txt'
 RUST_TOOLCHAIN_PACKAGE_NAME = f'rust-toolchain-{PACKAGE_VERSION}.tar.xz'
 
 
+# TODO(https://crbug.com/1329611): Use this function (after integrating Crubit
+# into Chromium; this work is on hold right now - see also
+# https://crbug.com/1510943#c2).
 def BuildCrubit(build_mac_arm):
     with open(os.path.join(THIRD_PARTY_DIR, BUILDLOG_NAME), 'w') as log:
         build_cmd = [sys.executable, os.path.join(THIS_DIR, 'build_crubit.py')]
         if build_mac_arm:
             build_cmd.append('--build-mac-arm')
-        # TODO(lukasza): Default to `fail_hard` once we actually depend on the
-        # build step (i.e. once we start packaging Crubit).
+        # TODO(https://crbug.com/1329611): Default to `fail_hard` once we
+        # actually depend on the build step (i.e. once we start packaging
+        # Crubit).
         TeeCmd(build_cmd, log, fail_hard=False)
 
-    # TODO(lukasza): Rename this function to BuildAndInstallCrubit and actually
-    # install Crubit binaries into RUST_TOOLCHAIN_OUT_DIR/bin (once we gain
-    # confidence that Crubit continues to build uneventfully on the bots).
+    # TODO(https://crbug.com/1329611): Rename this function to
+    # BuildAndInstallCrubit and actually install Crubit binaries into
+    # RUST_TOOLCHAIN_OUT_DIR/bin (once we gain confidence that Crubit continues
+    # to build uneventfully on the bots).
 
 
 def main():
@@ -94,8 +99,6 @@ def main():
         if args.build_mac_arm:
             build_cmd.append('--build-mac-arm')
         TeeCmd(build_cmd, log)
-
-    BuildCrubit(args.build_mac_arm)
 
     # Strip everything in bin/ to reduce the package size.
     bin_dir_path = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'bin')

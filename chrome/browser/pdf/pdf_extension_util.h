@@ -15,6 +15,10 @@
 #error "PDF must be enabled"
 #endif
 
+namespace content {
+class RenderFrameHost;
+}
+
 namespace pdf_extension_util {
 
 // Return the extensions manifest for PDF. The manifest is loaded from
@@ -39,6 +43,11 @@ void AddStrings(PdfViewerContext context, base::Value::Dict* dict);
 void AddAdditionalData(bool enable_printing,
                        bool enable_annotations,
                        base::Value::Dict* dict);
+
+// For OOPIF PDF viewer only. Returns true if successfully sends a save event to
+// the PDF viewer, or false otherwise. Only successful if the PDF plugin should
+// handle the save event.
+bool MaybeDispatchSaveEvent(content::RenderFrameHost* embedder_host);
 
 }  // namespace pdf_extension_util
 

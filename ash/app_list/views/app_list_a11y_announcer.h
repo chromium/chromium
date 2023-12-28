@@ -73,7 +73,7 @@ class AppListA11yAnnouncer {
  private:
   // The view used to send accessibility announcements. Owned by the parent's
   // views hierarchy.
-  raw_ptr<views::View, ExperimentalAsh> announcement_view_;
+  raw_ptr<views::View> announcement_view_;
 };
 
 }  // namespace ash

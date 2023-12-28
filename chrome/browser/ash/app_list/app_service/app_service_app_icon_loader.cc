@@ -153,13 +153,7 @@ void AppServiceAppIconLoader::CallLoadIcon(const std::string& app_id,
     return;
   }
 
-  auto app_type = proxy->AppRegistryCache().GetAppType(app_id);
-  if (app_type == apps::AppType::kUnknown) {
-    return;
-  }
-
-  proxy->LoadIcon(app_type, app_id, icon_type, icon_size_in_dip(),
-                  allow_placeholder_icon,
+  proxy->LoadIcon(app_id, icon_type, icon_size_in_dip(), allow_placeholder_icon,
                   base::BindOnce(&AppServiceAppIconLoader::OnLoadIcon,
                                  weak_ptr_factory_.GetWeakPtr(), app_id));
 }

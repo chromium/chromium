@@ -710,7 +710,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     return &oof_data_->anchor_query;
   }
 
-  FragmentedOofData* GetFragmentedOofData() const;
+  const FragmentedOofData* GetFragmentedOofData() const;
 
   // Return true if there are nested multicol container descendants with OOFs
   // inside.

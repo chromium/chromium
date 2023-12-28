@@ -176,7 +176,7 @@ function addModelHeader(model) {
   function setFPS(cssClass, type) {
     const fps = calculateFPS(
         getGraphicsEvents(model, type), model.information.duration);
-    header.getElementsByClassName(cssClass)[0].textContext = fps.toFixed(2);
+    header.getElementsByClassName(cssClass)[0].textContent = fps.toFixed(2);
   }
   setFPS('arc-tracing-app-fps', kExoSurfaceCommit);
   setFPS('arc-tracing-perceived-fps', kChromeOSPresentationDone);

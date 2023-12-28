@@ -33,6 +33,7 @@ enum PermissionName {
   LOCAL_FONTS,
   DISPLAY_CAPTURE,
   TOP_LEVEL_STORAGE_ACCESS,
+  CAPTURED_SURFACE_CONTROL,
 };
 
 struct MidiPermissionDescriptor {

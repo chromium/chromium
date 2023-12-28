@@ -8,15 +8,16 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/features.h"
+#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_result.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -26,13 +27,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/origin_trial_features.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/runtime_feature_state/runtime_feature_state_override_context.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -45,10 +46,6 @@ namespace blink {
 namespace {
 
 constexpr char kDefaultTrialName[] = "UNKNOWN";
-
-void RecordTokenValidationResultHistogram(OriginTrialTokenStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("OriginTrials.ValidationResult", status);
-}
 
 bool IsWhitespace(UChar chr) {
   return (chr == ' ') || (chr == '\t');
@@ -445,6 +442,23 @@ bool OriginTrialContext::InstallSettingFeature(
       if (document.GetSettings())
         document.GetSettings()->SetForceDarkModeEnabled(true);
       return true;
+    case mojom::blink::OriginTrialFeature::kAttributionReportingCrossAppWeb:
+      static_assert(
+          network::AttributionReportingRuntimeFeature::kMaxValue ==
+              network::AttributionReportingRuntimeFeature::kCrossAppWeb,
+          "Any new attribution reporting runtime features with an associated "
+          "origin trial feature need to be able to update the browser when the "
+          "OT feature is installed. If your new runtime feature also has an OT "
+          "feature, please add a switch case for the new feature.");
+      // Tell the browser about this change, but return false so the feature can
+      // still be installed using the default method.
+      document.GetFrame()
+          ->GetLocalFrameHostRemote()
+          .SetAttributionReportingRuntimeFeatures(
+              document.GetFrame()
+                  ->GetAttributionSrcLoader()
+                  ->GetRuntimeFeatures());
+      return false;
 
     default:
       return false;
@@ -703,7 +717,6 @@ bool OriginTrialContext::EnableTrialFromToken(
                        script_origins);
   }
 
-  RecordTokenValidationResultHistogram(token_result.Status());
   CacheToken(token, token_result, trial_status);
   return trial_status == OriginTrialStatus::kEnabled;
 }

@@ -40,6 +40,9 @@ class AshBrowserTestStarter : public aura::WindowObserver {
   // this no earlier than SetUpOnMainThread().
   void StartLacros(InProcessBrowserTest* test_class_obj);
 
+  // Sets the browser manager's ownership waiter to a test fake.
+  void SetUpBrowserManager();
+
   net::EmbeddedTestServer* https_server();
   GURL base_url();
 

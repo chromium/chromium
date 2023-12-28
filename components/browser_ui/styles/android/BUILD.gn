@@ -231,6 +231,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_web_asset_24dp.xml",
     "java/res/drawable/ic_youtube_searched_for_24dp.xml",
     "java/res/drawable/smartphone_black_24dp.xml",
+    "java/res/drawable/star_outline_24dp.xml",
     "java/res/drawable/toolbar_hairline.xml",
     "java/res/values-night/colors.xml",
     "java/res/values-night/dimens.xml",

@@ -1445,12 +1445,6 @@ class CONTENT_EXPORT ContentBrowserClient {
       RenderProcessHost* render_process_host,
       mojo::GenericPendingReceiver receiver) {}
 
-  // Allows to override the visibility state of a RenderFrameHost.
-  // |visibility_state| should not be null. It will only be set if needed.
-  virtual void OverridePageVisibilityState(
-      RenderFrameHost* render_frame_host,
-      PageVisibilityState* visibility_state) {}
-
   // Allows an embedder to provide its own ControllerPresentationServiceDelegate
   // implementation. Returns nullptr if unavailable.
   virtual ControllerPresentationServiceDelegate*

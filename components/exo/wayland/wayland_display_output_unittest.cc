@@ -31,7 +31,10 @@ class WaylandDisplayOutputTest : public test::WaylandServerTest {
   ~WaylandDisplayOutputTest() override = default;
 
   void TearDown() override {
-    task_environment()->RunUntilIdle();
+    // Force a cleanup of any remaining outputs.
+    task_environment()->FastForwardBy(
+        WaylandDisplayOutput::kDeleteTaskDelay *
+        (WaylandDisplayOutput::kDeleteRetries + 1));
 
     test::WaylandServerTest::TearDown();
   }
@@ -42,7 +45,7 @@ class WaylandDisplayOutputTest : public test::WaylandServerTest {
 TEST_F(WaylandDisplayOutputTest, DelayedSelfDestruct) {
   class ClientData : public test::TestClient::CustomData {
    public:
-    raw_ptr<wl_output, DanglingUntriaged | ExperimentalAsh> output = nullptr;
+    raw_ptr<wl_output, DanglingUntriaged> output = nullptr;
   };
 
   // Start with 2 displays.
@@ -81,9 +84,6 @@ TEST_F(WaylandDisplayOutputTest, DelayedSelfDestruct) {
     client->Roundtrip();
     EXPECT_EQ(wl_display_get_error(client->display()), 0);
   });
-
-  task_environment()->FastForwardBy(WaylandDisplayOutput::kDeleteTaskDelay *
-                                    WaylandDisplayOutput::kDeleteRetries);
 }
 
 // Verify that in the case where an output is added and removed quickly before
@@ -119,9 +119,20 @@ TEST_F(WaylandDisplayOutputTest, DelayedSelfDestructBeforeFirstBind) {
   PostToClientAndWait([&](test::TestClient* client) {
     wl_output_release(client->globals().outputs.back().release());
   });
+}
 
-  task_environment()->FastForwardBy(WaylandDisplayOutput::kDeleteTaskDelay *
-                                    WaylandDisplayOutput::kDeleteRetries);
+// Tests to ensure exo processes added displays before removed displays for
+// display configuration updates. This ensures exo's clients always see a valid
+// Output during such configuration updates.
+TEST_F(WaylandDisplayOutputTest, MaintainsNonEmptyOutputList) {
+  // Start with 2 displays.
+  UpdateDisplay("300x400,500x600");
+
+  // Update to a new display configuration. The total global Outputs maintained
+  // by exo should remain non-zero while processing the change (exo will CHECK
+  // crash if it enters a zero output state).
+  UpdateDisplay("700x800,900x1000", /*from_native_platform=*/false,
+                /*generate_new_ids=*/true);
 }
 
 }  // namespace exo::wayland

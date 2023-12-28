@@ -25,9 +25,9 @@ interface IdbInternalsHandler {
 
   // Downloads the IDB in a zip file and closes it for the given bucket.
   DownloadBucketData(BucketId bucketId)
-    => (string? error, uint64 connection_count);
+    => (string? error);
 
   // Closes the IDB for the given bucket.
   ForceClose(BucketId bucketId)
-    => (string? error, uint64 connection_count);
+    => (string? error);
 };

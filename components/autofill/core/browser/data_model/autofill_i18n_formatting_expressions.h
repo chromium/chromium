@@ -16,10 +16,10 @@ namespace autofill::i18n_model_definition {
 
 // A pair of country code and server field type used as keys in the
 // `kAutofillFormattingRulesMap`.
-using CountryAndFieldType = std::pair<std::string_view, ServerFieldType>;
+using CountryAndFieldType = std::pair<std::string_view, FieldType>;
 
 // A lookup map for formatting expressions for countries and field types.
-constexpr auto kAutofillFormattingRulesMap =
+inline constexpr auto kAutofillFormattingRulesMap =
     base::MakeFixedFlatMap<CountryAndFieldType, std::u16string_view>({
       {{"BR", ADDRESS_HOME_ADDRESS}, u"${ADDRESS_HOME_STREET_ADDRESS;;}\n${ADDRESS_HOME_DEPENDENT_LOCALITY;;}\n${ADDRESS_HOME_CITY;;} - ${ADDRESS_HOME_STATE;;}\n${ADDRESS_HOME_ZIP;;}"},
       {{"BR", ADDRESS_HOME_STREET_ADDRESS}, u"${ADDRESS_HOME_STREET_LOCATION;;}\n${ADDRESS_HOME_OVERFLOW_AND_LANDMARK;;}"},

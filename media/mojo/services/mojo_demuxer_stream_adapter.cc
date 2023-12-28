@@ -108,14 +108,16 @@ void MojoDemuxerStreamAdapter::OnBufferReady(
   }
 
   DCHECK_EQ(status, kOk);
+  DCHECK_GT(batch_buffers.size(), 0u);
+
   status_ = status;
   actual_read_count_ = batch_buffers.size();
-  for (mojom::DecoderBufferPtr& buffer : batch_buffers) {
-    mojo_decoder_buffer_reader_->ReadDecoderBuffer(
-        std::move(buffer),
-        base::BindOnce(&MojoDemuxerStreamAdapter::OnBufferRead,
-                       weak_factory_.GetWeakPtr()));
-  }
+
+  batch_buffers_ = std::move(batch_buffers);
+  mojo_decoder_buffer_reader_->ReadDecoderBuffer(
+      std::move(batch_buffers_[0]),
+      base::BindOnce(&MojoDemuxerStreamAdapter::OnBufferRead,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void MojoDemuxerStreamAdapter::OnBufferRead(
@@ -125,12 +127,25 @@ void MojoDemuxerStreamAdapter::OnBufferRead(
     buffer_queue_.clear();
     return;
   }
-
   buffer_queue_.push_back(buffer);
-  if (buffer_queue_.size() == actual_read_count_) {
+  if (buffer_queue_.size() < actual_read_count_) {
+    int next_read_index = buffer_queue_.size();
+    // The `mojo_decoder_buffer_reader_` will run callback(OnBufferRead()) after
+    // reading a buffer from data pipe, in order to avoid reentrance
+    // OnBufferRead() and potential stack overflow , we use
+    // base::BindPostTaskToCurrentDefault here. Each callback will correspond
+    // one buffer until all buffers have been read.
+    mojo_decoder_buffer_reader_->ReadDecoderBuffer(
+        std::move(batch_buffers_[next_read_index]),
+        base::BindPostTaskToCurrentDefault(
+            base::BindOnce(&MojoDemuxerStreamAdapter::OnBufferRead,
+                           weak_factory_.GetWeakPtr())));
+  } else if (buffer_queue_.size() == actual_read_count_) {
     std::move(read_cb_).Run(status_, buffer_queue_);
     actual_read_count_ = 0;
     buffer_queue_.clear();
+  } else {
+    NOTREACHED();
   }
 }
 

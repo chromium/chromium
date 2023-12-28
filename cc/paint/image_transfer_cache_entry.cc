@@ -554,7 +554,9 @@ void ClientImageTransferCacheEntry::ComputeSize() {
   if (gainmap_image_) {
     DCHECK(gainmap_info_);
     safe_size += SafeSizeForImage(gainmap_image_.value());
-    safe_size += PaintOpWriter::SerializedSize<SkGainmapInfo>();
+    if (gainmap_info_.has_value()) {
+      safe_size += PaintOpWriter::SerializedSize(gainmap_info_.value());
+    }
   }
 
   size_ = safe_size.ValueOrDefault(0);

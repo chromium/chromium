@@ -12,6 +12,7 @@
 #include "device/bluetooth/jni_headers/ChromeBluetoothDevice_jni.h"
 
 using base::android::AttachCurrentThread;
+using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 
@@ -230,8 +231,7 @@ void BluetoothDeviceAndroid::CreateGattRemoteService(
     const JavaParamRef<jstring>& instance_id,
     const JavaParamRef<jobject>&
         bluetooth_gatt_service_wrapper) {  // BluetoothGattServiceWrapper
-  std::string instance_id_string =
-      base::android::ConvertJavaStringToUTF8(env, instance_id);
+  std::string instance_id_string = ConvertJavaStringToUTF8(env, instance_id);
 
   if (base::Contains(gatt_services_, instance_id_string))
     return;

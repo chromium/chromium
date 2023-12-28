@@ -50,6 +50,7 @@
 #include "third_party/blink/public/mojom/gpu/gpu.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_offscreencanvas.h"
 #include "third_party/blink/renderer/bindings/modules/v8/webgl_any.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -3432,12 +3433,9 @@ ScriptValue WebGLRenderingContextBase::getExtension(ScriptState* script_state,
   }
 
   WebGLExtension* extension = EnableExtensionIfSupported(name);
-
-  v8::Local<v8::Value> wrapped_extension =
-      ToV8(extension, script_state->GetContext()->Global(),
-           script_state->GetIsolate());
-
-  return ScriptValue(script_state->GetIsolate(), wrapped_extension);
+  return ScriptValue(
+      script_state->GetIsolate(),
+      ToV8Traits<IDLNullable<WebGLExtension>>::ToV8(script_state, extension));
 }
 
 ScriptValue WebGLRenderingContextBase::getFramebufferAttachmentParameter(

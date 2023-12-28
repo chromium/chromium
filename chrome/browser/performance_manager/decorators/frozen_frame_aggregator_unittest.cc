@@ -86,22 +86,46 @@ class FrozenFrameAggregatorTest : public GraphTestHarness {
   }
 
   void ExpectRunning() {
-    EXPECT_EQ(LifecycleState::kRunning, page_node_.get()->GetLifecycleState());
+    EXPECT_EQ(LifecycleState::kRunning, page_node_->GetLifecycleState());
   }
 
   void ExpectFrozen() {
-    EXPECT_EQ(LifecycleState::kFrozen, page_node_.get()->GetLifecycleState());
+    EXPECT_EQ(LifecycleState::kFrozen, page_node_->GetLifecycleState());
   }
 
-  TestNodeWrapper<FrameNodeImpl> CreateFrame(FrameNodeImpl* parent_frame_node) {
-    return CreateFrameNodeAutoId(process_node_.get(), page_node_.get(),
-                                 parent_frame_node);
+  TestNodeWrapper<FrameNodeImpl> CreateFrame(FrameNodeImpl* parent_frame_node,
+                                             bool is_current = true) {
+    return TestNodeWrapper<FrameNodeImpl>::Create(
+        graph(), process_node_.get(), page_node_.get(), parent_frame_node,
+        /*outer_document_for_fenced_frame=*/nullptr, NextTestFrameRoutingId(),
+        blink::LocalFrameToken(), content::BrowsingInstanceId(),
+        content::SiteInstanceId(), is_current);
   }
 
   raw_ptr<FrozenFrameAggregator> ffa_;
   TestNodeWrapper<ProcessNodeImpl> process_node_;
   TestNodeWrapper<PageNodeImpl> page_node_;
 };
+
+TEST_F(FrozenFrameAggregatorTest, NotCurrent) {
+  // The data should be created when the frame is made current.
+  ExpectNoProcessData();
+
+  // Add a non-current main frame.
+  auto f0 = CreateFrame(nullptr, /*is_current=*/false);
+  ExpectNoProcessData();
+
+  // Make it current. The frame starts being counted.
+  f0->SetIsCurrent(true);
+  ExpectProcessData(1, 0);
+
+  f0->SetLifecycleState(LifecycleState::kFrozen);
+  ExpectProcessData(1, 1);
+
+  // Make no longer current. Stops being counted.
+  f0->SetIsCurrent(false);
+  ExpectProcessData(0, 0);
+}
 
 TEST_F(FrozenFrameAggregatorTest, ProcessAggregation) {
   MockProcessNodeObserver obs;
@@ -112,15 +136,11 @@ TEST_F(FrozenFrameAggregatorTest, ProcessAggregation) {
 
   // Add a main frame.
   auto f0 = CreateFrame(nullptr);
-  ExpectNoProcessData();
-
-  // Make the frame current.
-  f0.get()->SetIsCurrent(true);
   ExpectProcessData(1, 0);
 
   // Make the frame frozen and expect a notification.
   EXPECT_CALL(obs, OnAllFramesInProcessFrozen(process_node_.get()));
-  f0.get()->SetLifecycleState(LifecycleState::kFrozen);
+  f0->SetLifecycleState(LifecycleState::kFrozen);
   testing::Mock::VerifyAndClear(&obs);
   ExpectProcessData(1, 1);
 
@@ -133,42 +153,34 @@ TEST_F(FrozenFrameAggregatorTest, ProcessAggregation) {
   auto f1 = CreateFrameNodeAutoId(proc2.get(), page_node_.get(), f0.get());
   ExpectProcessData(1, 1);
 
-  // Immediately make it current.
-  f1.get()->SetIsCurrent(true);
-  ExpectProcessData(1, 1);
-
   // Freeze the child frame and expect |proc2| to receive an event, but not
   // |process_node_|.
   EXPECT_CALL(obs, OnAllFramesInProcessFrozen(proc2.get()));
-  f1.get()->SetLifecycleState(LifecycleState::kFrozen);
+  f1->SetLifecycleState(LifecycleState::kFrozen);
   ExpectProcessData(1, 1);
 
   // Unfreeze both frames.
-  f0.get()->SetLifecycleState(LifecycleState::kRunning);
+  f0->SetLifecycleState(LifecycleState::kRunning);
   ExpectProcessData(1, 0);
-  f1.get()->SetLifecycleState(LifecycleState::kRunning);
+  f1->SetLifecycleState(LifecycleState::kRunning);
   ExpectProcessData(1, 0);
 
   // Create a main frame in the second page, but that's in the first process.
   auto f2 = CreateFrameNodeAutoId(process_node_.get(), page2.get(), nullptr);
-  ExpectProcessData(1, 0);
+  ExpectProcessData(2, 0);
 
   // Freeze the main frame in the second page.
-  f2.get()->SetLifecycleState(LifecycleState::kFrozen);
-  ExpectProcessData(1, 0);
-
-  // Make the frozen second main frame current.
-  f2.get()->SetIsCurrent(true);
+  f2->SetLifecycleState(LifecycleState::kFrozen);
   ExpectProcessData(2, 1);
 
   // Freeze the child frame of the first page, hosted in the other process.
   EXPECT_CALL(obs, OnAllFramesInProcessFrozen(proc2.get()));
-  f1.get()->SetLifecycleState(LifecycleState::kFrozen);
+  f1->SetLifecycleState(LifecycleState::kFrozen);
   ExpectProcessData(2, 1);
 
   // Freeze the main frame of the first page.
   EXPECT_CALL(obs, OnAllFramesInProcessFrozen(process_node_.get()));
-  f0.get()->SetLifecycleState(LifecycleState::kFrozen);
+  f0->SetLifecycleState(LifecycleState::kFrozen);
   testing::Mock::VerifyAndClear(&obs);
   ExpectProcessData(2, 2);
 
@@ -193,76 +205,67 @@ TEST_F(FrozenFrameAggregatorTest, PageAggregation) {
   ExpectPageData(0, 0);
   ExpectRunning();
 
-  // Add a non-current frame.
+  // Add a current frame.
   auto f0 = CreateFrame(nullptr);
-  ExpectPageData(0, 0);
-  ExpectRunning();
-
-  // Make the frame current.
-  f0.get()->SetIsCurrent(true);
   ExpectPageData(1, 0);
   ExpectRunning();
 
   // Freeze the frame.
-  f0.get()->SetLifecycleState(LifecycleState::kFrozen);
+  f0->SetLifecycleState(LifecycleState::kFrozen);
   ExpectPageData(1, 1);
   ExpectFrozen();
 
   // Unfreeze the frame.
-  f0.get()->SetLifecycleState(LifecycleState::kRunning);
+  f0->SetLifecycleState(LifecycleState::kRunning);
   ExpectPageData(1, 0);
   ExpectRunning();
 
   // Add a child frame.
   auto f1 = CreateFrame(f0.get());
-  ExpectPageData(1, 0);
-  ExpectRunning();
-
-  // Make it current as well.
-  f1.get()->SetIsCurrent(true);
   ExpectPageData(2, 0);
   ExpectRunning();
 
   // Freeze them both.
-  f1.get()->SetLifecycleState(LifecycleState::kFrozen);
+  f1->SetLifecycleState(LifecycleState::kFrozen);
   ExpectPageData(2, 1);
   ExpectRunning();
-  f0.get()->SetLifecycleState(LifecycleState::kFrozen);
+  f0->SetLifecycleState(LifecycleState::kFrozen);
   ExpectPageData(2, 2);
   ExpectFrozen();
 
   // Unfreeze them both.
-  f0.get()->SetLifecycleState(LifecycleState::kRunning);
+  f0->SetLifecycleState(LifecycleState::kRunning);
   ExpectPageData(2, 1);
   ExpectRunning();
-  f1.get()->SetLifecycleState(LifecycleState::kRunning);
+  f1->SetLifecycleState(LifecycleState::kRunning);
   ExpectPageData(2, 0);
   ExpectRunning();
 
-  // Create a third frame.
+  // Create a third frame that is not current.
   auto f1a = CreateFrame(f0.get());
+  f1a->SetIsCurrent(false);
   ExpectPageData(2, 0);
   ExpectRunning();
 
   // Swap the f1 and f1a.
-  f1.get()->SetIsCurrent(false);
+  f1->SetIsCurrent(false);
   ExpectPageData(1, 0);
   ExpectRunning();
-  f1a.get()->SetIsCurrent(true);
+  f1a->SetIsCurrent(true);
   ExpectPageData(2, 0);
   ExpectRunning();
 
   // Freeze the original frame and swap it back.
-  f1.get()->SetLifecycleState(LifecycleState::kFrozen);
-  f1a.get()->SetIsCurrent(false);
+  f1->SetLifecycleState(LifecycleState::kFrozen);
+  f1a->SetIsCurrent(false);
   ExpectPageData(1, 0);
   ExpectRunning();
-  f1.get()->SetIsCurrent(true);
+  f1->SetIsCurrent(true);
   ExpectPageData(2, 1);
   ExpectRunning();
 
   // Freeze the non-current frame and expect nothing to change.
-  f1a.get()->SetLifecycleState(LifecycleState::kFrozen);
+  f1a->SetLifecycleState(LifecycleState::kFrozen);
   ExpectPageData(2, 1);
   ExpectRunning();
 
@@ -277,7 +280,7 @@ TEST_F(FrozenFrameAggregatorTest, PageAggregation) {
   ExpectRunning();
 
   // Freeze the main frame again.
-  f0.get()->SetLifecycleState(LifecycleState::kFrozen);
+  f0->SetLifecycleState(LifecycleState::kFrozen);
   ExpectPageData(1, 1);
   ExpectFrozen();
 

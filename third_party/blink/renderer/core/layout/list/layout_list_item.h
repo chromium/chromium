@@ -43,7 +43,10 @@ class CORE_EXPORT LayoutListItem final : public LayoutNGBlockFlow {
   }
 
  private:
-  bool IsOfType(LayoutObjectType) const override;
+  bool IsLayoutListItem() const final {
+    NOT_DESTROYED();
+    return true;
+  }
 
   void InsertedIntoTree() override;
   void WillBeRemovedFromTree() override;

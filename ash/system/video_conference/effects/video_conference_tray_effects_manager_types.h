@@ -60,7 +60,7 @@ class ASH_EXPORT VcEffectState {
 
  private:
   // The icon to be displayed.
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon_;
+  raw_ptr<const gfx::VectorIcon> icon_;
 
   // The text to be displayed.
   std::u16string label_text_;
@@ -199,7 +199,7 @@ class ASH_EXPORT VcHostedEffect {
   std::optional<int> container_id_;
 
   // The effects delegate associated with this effect.
-  raw_ptr<VcEffectsDelegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<VcEffectsDelegate> delegate_ = nullptr;
 };
 
 }  // namespace ash

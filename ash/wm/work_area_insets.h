@@ -107,8 +107,7 @@ class ASH_EXPORT WorkAreaInsets : public KeyboardControllerObserver {
   void UpdateWorkArea();
 
   // RootWindowController associated with this work area.
-  const raw_ptr<RootWindowController, ExperimentalAsh> root_window_controller_ =
-      nullptr;
+  const raw_ptr<RootWindowController> root_window_controller_ = nullptr;
 
   // Cached bounds of user work area in screen coordinates DIPs.
   gfx::Rect user_work_area_bounds_;

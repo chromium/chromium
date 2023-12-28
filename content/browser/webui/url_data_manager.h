@@ -82,7 +82,7 @@ class CONTENT_EXPORT URLDataManager : public base::SupportsUserData::Data {
   // was invoked).
   static bool IsScheduledForDeletion(const URLDataSourceImpl* data_source);
 
-  raw_ptr<BrowserContext, DanglingUntriaged> browser_context_;
+  raw_ptr<BrowserContext> browser_context_;
 
   // |data_sources_| that are no longer referenced and scheduled for deletion.
   // Protected by g_delete_lock in the .cc file.

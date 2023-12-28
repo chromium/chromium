@@ -59,7 +59,7 @@ class ASH_EXPORT NetworkDetailedViewController
   void OnPropertiesUpdated(bluetooth_config::mojom::BluetoothSystemPropertiesPtr
                                properties) override;
 
-  const raw_ptr<TrayNetworkStateModel, ExperimentalAsh> model_;
+  const raw_ptr<TrayNetworkStateModel> model_;
 
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
@@ -73,7 +73,7 @@ class ASH_EXPORT NetworkDetailedViewController
   bluetooth_config::mojom::BluetoothSystemState bluetooth_system_state_ =
       bluetooth_config::mojom::BluetoothSystemState::kUnavailable;
 
-  raw_ptr<NetworkDetailedNetworkView, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<NetworkDetailedNetworkView, DanglingUntriaged>
       network_detailed_view_ = nullptr;
   std::unique_ptr<NetworkListViewController> network_list_view_controller_;
 };

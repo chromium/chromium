@@ -87,7 +87,7 @@ class SCTAuditingHandlerTest : public testing::Test {
     std::vector<mojom::CTLogInfoPtr> log_list;
     log_list.emplace_back(std::move(log));
     base::RunLoop run_loop;
-    network_service_->UpdateCtLogList(std::move(log_list), base::Time::Now(),
+    network_service_->UpdateCtLogList(std::move(log_list),
                                       run_loop.QuitClosure());
     run_loop.Run();
 
@@ -953,7 +953,7 @@ TEST_F(SCTAuditingHandlerTest, LogNotFound) {
   {
     std::vector<mojom::CTLogInfoPtr> log_list;
     base::RunLoop run_loop;
-    network_service_->UpdateCtLogList(std::move(log_list), base::Time::Now(),
+    network_service_->UpdateCtLogList(std::move(log_list),
                                       run_loop.QuitClosure());
     run_loop.Run();
   }

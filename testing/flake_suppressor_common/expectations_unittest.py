@@ -322,48 +322,45 @@ class CreateExpectationsForAllResultsUnittest(fake_filesystem_unittest.TestCase
         'pixel_integration_test': {
             'foo_test': {
                 tuple(['win']): [
-                    ct.ResultTupleType(ct.ResultStatus.FAIL,
-                                       'http://ci.chromium.org/b/1111',
-                                       datetime.date(2022, 1,
-                                                     2), False, ['Pass']),
-                    ct.ResultTupleType(ct.ResultStatus.FAIL,
-                                       'http://ci.chromium.org/b/2222',
-                                       datetime.date(2022, 1,
-                                                     1), False, ['Pass']),
+                    ct.ResultTupleType(
+                        ct.ResultStatus.FAIL, 'http://ci.chromium.org/b/1111',
+                        datetime.date.today() - datetime.timedelta(days=2),
+                        False, ['Pass']),
+                    ct.ResultTupleType(
+                        ct.ResultStatus.FAIL, 'http://ci.chromium.org/b/2222',
+                        datetime.date.today() - datetime.timedelta(days=3),
+                        False, ['Pass']),
                     ct.ResultTupleType(ct.ResultStatus.FAIL,
                                        'http://ci.chromium.org/b/3333',
-                                       datetime.date(2022, 1,
-                                                     4), False, ['Pass']),
+                                       datetime.date.today(), False, ['Pass']),
                 ],
                 tuple(['mac']): [
-                    ct.ResultTupleType(ct.ResultStatus.FAIL,
-                                       'http://ci.chromium.org/b/1111',
-                                       datetime.date(2022, 1,
-                                                     5), False, ['Pass']),
+                    ct.ResultTupleType(
+                        ct.ResultStatus.FAIL, 'http://ci.chromium.org/b/1111',
+                        datetime.date.today() - datetime.timedelta(days=1),
+                        False, ['Pass']),
                     ct.ResultTupleType(ct.ResultStatus.FAIL,
                                        'http://ci.chromium.org/b/2222',
-                                       datetime.date(2022, 1,
-                                                     6), False, ['Pass']),
-                    ct.ResultTupleType(ct.ResultStatus.FAIL,
-                                       'http://ci.chromium.org/b/3333',
-                                       datetime.date(2022, 1,
-                                                     3), False, ['Pass']),
+                                       datetime.date.today(), False, ['Pass']),
+                    ct.ResultTupleType(
+                        ct.ResultStatus.FAIL, 'http://ci.chromium.org/b/3333',
+                        datetime.date.today() - datetime.timedelta(days=3),
+                        False, ['Pass']),
                 ],
             },
             'bar_test': {
                 tuple(['win']): [
                     ct.ResultTupleType(ct.ResultStatus.FAIL,
                                        'http://ci.chromium.org/b/4444',
-                                       datetime.date(2022, 1,
-                                                     9), False, ['Pass']),
-                    ct.ResultTupleType(ct.ResultStatus.FAIL,
-                                       'http://ci.chromium.org/b/5555',
-                                       datetime.date(2022, 1,
-                                                     8), False, ['Pass']),
-                    ct.ResultTupleType(ct.ResultStatus.FAIL,
-                                       'http://ci.chromium.org/b/6666',
-                                       datetime.date(2022, 1,
-                                                     7), False, ['Pass']),
+                                       datetime.date.today(), False, ['Pass']),
+                    ct.ResultTupleType(
+                        ct.ResultStatus.FAIL, 'http://ci.chromium.org/b/5555',
+                        datetime.date.today() - datetime.timedelta(days=1),
+                        False, ['Pass']),
+                    ct.ResultTupleType(
+                        ct.ResultStatus.FAIL, 'http://ci.chromium.org/b/6666',
+                        datetime.date.today() - datetime.timedelta(days=2),
+                        False, ['Pass']),
                 ],
             },
             'baz_test': {
@@ -372,26 +369,21 @@ class CreateExpectationsForAllResultsUnittest(fake_filesystem_unittest.TestCase
                 tuple(['win']): [
                     ct.ResultTupleType(ct.ResultStatus.FAIL,
                                        'http://ci.chromium.org/b/7777',
-                                       datetime.date(2021, 1,
-                                                     10), False, ['Pass']),
+                                       datetime.date.today(), False, ['Pass']),
                     ct.ResultTupleType(ct.ResultStatus.FAIL,
                                        'http://ci.chromium.org/b/8888',
-                                       datetime.date(2022, 1,
-                                                     10), False, ['Pass']),
+                                       datetime.date.today(), False, ['Pass']),
                     ct.ResultTupleType(ct.ResultStatus.FAIL,
                                        'http://ci.chromium.org/b/9999',
-                                       datetime.date(2023, 1,
-                                                     10), False, ['Pass']),
+                                       datetime.date.today(), False, ['Pass']),
                 ],
                 tuple(['mac']): [
                     ct.ResultTupleType(ct.ResultStatus.FAIL,
                                        'http://ci.chromium.org/b/7777',
-                                       datetime.date(2022, 1,
-                                                     10), False, ['Pass']),
+                                       datetime.date.today(), False, ['Pass']),
                     ct.ResultTupleType(ct.ResultStatus.FAIL,
                                        'http://ci.chromium.org/b/8888',
-                                       datetime.date(2022, 1,
-                                                     10), False, ['Pass']),
+                                       datetime.date.today(), False, ['Pass']),
                 ],
             },
             'wpt_test': {
@@ -399,24 +391,23 @@ class CreateExpectationsForAllResultsUnittest(fake_filesystem_unittest.TestCase
                 tuple(['win']): [
                     ct.ResultTupleType(ct.ResultStatus.FAIL,
                                        'http://ci.chromium.org/b/1234',
-                                       datetime.date(2021, 1,
-                                                     10), False, ['Pass']),
+                                       datetime.date.today(), False, ['Pass']),
                 ],
                 tuple(['mac']): [
-                    ct.ResultTupleType(ct.ResultStatus.FAIL,
-                                       'http://ci.chromium.org/b/2345',
-                                       datetime.date(2022, 1,
-                                                     11), False, ['Pass']),
+                    ct.ResultTupleType(
+                        ct.ResultStatus.FAIL, 'http://ci.chromium.org/b/2345',
+                        datetime.date.today() - datetime.timedelta(days=1),
+                        False, ['Pass']),
                     ct.ResultTupleType(ct.ResultStatus.FAIL,
                                        'http://ci.chromium.org/b/3456',
-                                       datetime.date(2022, 1,
-                                                     12), False, ['Pass']),
+                                       datetime.date.today(), False, ['Pass']),
                 ],
             },
         },
     }
     self.build_fail_total_number_threshold = 3
     self.build_fail_consecutive_day_threshold = 2
+    self.build_fail_recent_day_threshold = 1
 
     self.expectation_file = os.path.join(uu.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
                                          'pixel_expectations.txt')
@@ -439,7 +430,8 @@ class CreateExpectationsForAllResultsUnittest(fake_filesystem_unittest.TestCase
     """Tests that threshold-based expectations work when grouping by tags."""
     self._expectations.CreateExpectationsForAllResults(
         self.result_map, True, True, self.build_fail_total_number_threshold,
-        self.build_fail_consecutive_day_threshold)
+        self.build_fail_consecutive_day_threshold,
+        self.build_fail_recent_day_threshold)
     expected_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure Pass ]
 [ win ] foo_test [ Failure Pass ]
@@ -457,7 +449,8 @@ class CreateExpectationsForAllResultsUnittest(fake_filesystem_unittest.TestCase
     """Tests that threshold-based expectations work when not grouping by tags"""
     self._expectations.CreateExpectationsForAllResults(
         self.result_map, False, True, self.build_fail_total_number_threshold,
-        self.build_fail_consecutive_day_threshold)
+        self.build_fail_consecutive_day_threshold,
+        self.build_fail_recent_day_threshold)
     expected_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure Pass ]
 [ mac ] some_test [ Failure Pass ]
@@ -477,48 +470,45 @@ class CreateExpectationsForAllResultsUnittest(fake_filesystem_unittest.TestCase
         'pixel_integration_test': {
             'foo_test': {
                 tuple(['win', 'win10']): [
-                    ct.ResultTupleType(ct.ResultStatus.FAIL,
-                                       'http://ci.chromium.org/b/1111',
-                                       datetime.date(2022, 1,
-                                                     2), False, ['Pass']),
-                    ct.ResultTupleType(ct.ResultStatus.FAIL,
-                                       'http://ci.chromium.org/b/2222',
-                                       datetime.date(2022, 1,
-                                                     1), False, ['Pass']),
+                    ct.ResultTupleType(
+                        ct.ResultStatus.FAIL, 'http://ci.chromium.org/b/1111',
+                        datetime.date.today() - datetime.timedelta(days=2),
+                        False, ['Pass']),
+                    ct.ResultTupleType(
+                        ct.ResultStatus.FAIL, 'http://ci.chromium.org/b/2222',
+                        datetime.date.today() - datetime.timedelta(days=3),
+                        False, ['Pass']),
                     ct.ResultTupleType(ct.ResultStatus.FAIL,
                                        'http://ci.chromium.org/b/3333',
-                                       datetime.date(2022, 1,
-                                                     4), False, ['Pass']),
+                                       datetime.date.today(), False, ['Pass']),
                 ],
                 tuple(['mac']): [
-                    ct.ResultTupleType(ct.ResultStatus.FAIL,
-                                       'http://ci.chromium.org/b/1111',
-                                       datetime.date(2022, 1,
-                                                     5), False, ['Pass']),
+                    ct.ResultTupleType(
+                        ct.ResultStatus.FAIL, 'http://ci.chromium.org/b/1111',
+                        datetime.date.today() - datetime.timedelta(days=1),
+                        False, ['Pass']),
                     ct.ResultTupleType(ct.ResultStatus.FAIL,
                                        'http://ci.chromium.org/b/2222',
-                                       datetime.date(2022, 1,
-                                                     6), False, ['Pass']),
-                    ct.ResultTupleType(ct.ResultStatus.FAIL,
-                                       'http://ci.chromium.org/b/3333',
-                                       datetime.date(2022, 1,
-                                                     3), False, ['Pass']),
+                                       datetime.date.today(), False, ['Pass']),
+                    ct.ResultTupleType(
+                        ct.ResultStatus.FAIL, 'http://ci.chromium.org/b/3333',
+                        datetime.date.today() - datetime.timedelta(days=3),
+                        False, ['Pass']),
                 ],
             },
             'bar_test': {
                 tuple(['win', 'win10']): [
                     ct.ResultTupleType(ct.ResultStatus.FAIL,
                                        'http://ci.chromium.org/b/4444',
-                                       datetime.date(2022, 1,
-                                                     9), False, ['Pass']),
-                    ct.ResultTupleType(ct.ResultStatus.FAIL,
-                                       'http://ci.chromium.org/b/5555',
-                                       datetime.date(2022, 1,
-                                                     8), False, ['Pass']),
-                    ct.ResultTupleType(ct.ResultStatus.FAIL,
-                                       'http://ci.chromium.org/b/6666',
-                                       datetime.date(2022, 1,
-                                                     7), False, ['Pass']),
+                                       datetime.date.today(), False, ['Pass']),
+                    ct.ResultTupleType(
+                        ct.ResultStatus.FAIL, 'http://ci.chromium.org/b/5555',
+                        datetime.date.today() - datetime.timedelta(days=1),
+                        False, ['Pass']),
+                    ct.ResultTupleType(
+                        ct.ResultStatus.FAIL, 'http://ci.chromium.org/b/6666',
+                        datetime.date.today() - datetime.timedelta(days=2),
+                        False, ['Pass']),
                 ],
             },
             'baz_test': {
@@ -527,33 +517,29 @@ class CreateExpectationsForAllResultsUnittest(fake_filesystem_unittest.TestCase
                 tuple(['win']): [
                     ct.ResultTupleType(ct.ResultStatus.FAIL,
                                        'http://ci.chromium.org/b/7777',
-                                       datetime.date(2021, 1,
-                                                     10), False, ['Pass']),
+                                       datetime.date.today(), False, ['Pass']),
                     ct.ResultTupleType(ct.ResultStatus.FAIL,
                                        'http://ci.chromium.org/b/8888',
-                                       datetime.date(2022, 1,
-                                                     10), False, ['Pass']),
+                                       datetime.date.today(), False, ['Pass']),
                     ct.ResultTupleType(ct.ResultStatus.FAIL,
                                        'http://ci.chromium.org/b/9999',
-                                       datetime.date(2023, 1,
-                                                     10), False, ['Pass']),
+                                       datetime.date.today(), False, ['Pass']),
                 ],
                 tuple(['mac']): [
                     ct.ResultTupleType(ct.ResultStatus.FAIL,
                                        'http://ci.chromium.org/b/7777',
-                                       datetime.date(2022, 1,
-                                                     10), False, ['Pass']),
+                                       datetime.date.today(), False, ['Pass']),
                     ct.ResultTupleType(ct.ResultStatus.FAIL,
                                        'http://ci.chromium.org/b/8888',
-                                       datetime.date(2022, 1,
-                                                     10), False, ['Pass']),
+                                       datetime.date.today(), False, ['Pass']),
                 ],
             },
         },
     }
     self._expectations.CreateExpectationsForAllResults(
         self.result_map, False, False, self.build_fail_total_number_threshold,
-        self.build_fail_consecutive_day_threshold)
+        self.build_fail_consecutive_day_threshold,
+        self.build_fail_recent_day_threshold)
     expected_contents = uu.TAG_HEADER + """\
 [ win ] some_test [ Failure Pass ]
 [ mac ] some_test [ Failure Pass ]
@@ -931,7 +917,7 @@ class OverFailedBuildThresholdUnittest(unittest.TestCase):
             result_tuple_list, self.build_fail_total_number_threshold))
 
 
-class OverFailedBuildByDayThresholdUnittest(unittest.TestCase):
+class OverFailedBuildByConsecutiveDayThresholdUnittest(unittest.TestCase):
   def setUp(self) -> None:
     self.build_fail_consecutive_day_threshold = 3
 
@@ -953,7 +939,7 @@ class OverFailedBuildByDayThresholdUnittest(unittest.TestCase):
                            datetime.date(2022, 1, 3), False, ['Pass']),
     ]
     self.assertTrue(
-        expectations.OverFailedBuildByDayThreshold(
+        expectations.OverFailedBuildByConsecutiveDayThreshold(
             result_tuple_list, self.build_fail_consecutive_day_threshold))
 
   def testUnderThreshold(self) -> None:
@@ -974,7 +960,7 @@ class OverFailedBuildByDayThresholdUnittest(unittest.TestCase):
                            datetime.date(2022, 1, 1), False, ['Pass']),
     ]
     self.assertFalse(
-        expectations.OverFailedBuildByDayThreshold(
+        expectations.OverFailedBuildByConsecutiveDayThreshold(
             result_tuple_list, self.build_fail_consecutive_day_threshold))
 
     result_tuple_list = [
@@ -986,7 +972,7 @@ class OverFailedBuildByDayThresholdUnittest(unittest.TestCase):
                            datetime.date(2022, 1, 2), False, ['Pass']),
     ]
     self.assertFalse(
-        expectations.OverFailedBuildByDayThreshold(
+        expectations.OverFailedBuildByConsecutiveDayThreshold(
             result_tuple_list, self.build_fail_consecutive_day_threshold))
 
     result_tuple_list = [
@@ -1001,8 +987,55 @@ class OverFailedBuildByDayThresholdUnittest(unittest.TestCase):
                            datetime.date(2022, 1, 4), False, ['Pass']),
     ]
     self.assertFalse(
-        expectations.OverFailedBuildByDayThreshold(
+        expectations.OverFailedBuildByConsecutiveDayThreshold(
             result_tuple_list, self.build_fail_consecutive_day_threshold))
+
+
+class FailedBuildWithinRecentDayThresholdUnittest(unittest.TestCase):
+  def setUp(self) -> None:
+    self.build_fail_recent_day_threshold = 3
+
+  def testWithinThreshold(self) -> None:
+    """Tests functionality when |result_tuple_list| has build fail within
+       |build_fail_recent_day_threshold|.
+
+    True is expected output on these inputs.
+    """
+    result_tuple_list = [
+        ct.ResultTupleType(ct.ResultStatus.FAIL,
+                           'http://ci.chromium.org/b/1111',
+                           datetime.date.today(), False, ['Pass']),
+        ct.ResultTupleType(ct.ResultStatus.FAIL,
+                           'http://ci.chromium.org/b/2222',
+                           datetime.date.today(), False, ['Pass']),
+        ct.ResultTupleType(ct.ResultStatus.FAIL,
+                           'http://ci.chromium.org/b/3333',
+                           datetime.date.today(), False, ['Pass']),
+    ]
+    self.assertTrue(
+        expectations.FailedBuildWithinRecentDayThreshold(
+            result_tuple_list, self.build_fail_recent_day_threshold))
+
+  def testBeyondThreshold(self) -> None:
+    """Tests functionality when |result_tuple_list| has no build fail within
+       |build_fail_recent_day_threshold|.
+
+    False is expected output on these inputs.
+    """
+    result_tuple_list = [
+        ct.ResultTupleType(ct.ResultStatus.FAIL,
+                           'http://ci.chromium.org/b/1111',
+                           datetime.date(2022, 1, 1), False, ['Pass']),
+        ct.ResultTupleType(ct.ResultStatus.FAIL,
+                           'http://ci.chromium.org/b/2222',
+                           datetime.date(2022, 1, 1), False, ['Pass']),
+        ct.ResultTupleType(ct.ResultStatus.FAIL,
+                           'http://ci.chromium.org/b/3333',
+                           datetime.date(2022, 1, 1), False, ['Pass']),
+    ]
+    self.assertFalse(
+        expectations.FailedBuildWithinRecentDayThreshold(
+            result_tuple_list, self.build_fail_recent_day_threshold))
 
 
 if __name__ == '__main__':

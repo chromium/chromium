@@ -141,7 +141,7 @@ class LocalNetworkRequestsPageLoadMetricsObserverTest
     auto entries = tester()->test_ukm_recorder().GetEntriesByName(
         ukm::builders::PageDomainInfo::kEntryName);
     EXPECT_EQ(1u, entries.size());
-    for (const auto* const entry : entries) {
+    for (const ukm::mojom::UkmEntry* const entry : entries) {
       tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(entry,
                                                             GURL(page.url));
       tester()->test_ukm_recorder().ExpectEntryMetric(

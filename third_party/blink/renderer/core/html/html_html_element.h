@@ -38,22 +38,12 @@ class CORE_EXPORT HTMLHtmlElement final : public HTMLElement {
 
   void InsertedByParser();
 
-  void ParseAttribute(const AttributeModificationParams&) override;
   bool HasNonInBodyInsertionMode() const override { return true; }
   void PropagateWritingModeAndDirectionFromBody();
   const ComputedStyle* LayoutStyleForElement(const ComputedStyle* style);
 
-  BlockingAttribute& blocking() const { return *blocking_attribute_; }
-  bool IsPotentiallyRenderBlocking() const override {
-    return blocking_attribute_->HasRenderToken();
-  }
-
-  void Trace(Visitor*) const override;
-
  private:
   bool IsURLAttribute(const Attribute&) const override;
-
-  Member<BlockingAttribute> blocking_attribute_;
 };
 
 }  // namespace blink

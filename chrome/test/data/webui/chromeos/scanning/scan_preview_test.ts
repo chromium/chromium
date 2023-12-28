@@ -5,9 +5,9 @@
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 import 'chrome://scanning/scan_preview.js';
 
+import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AccessibilityFeaturesInterface, ForceHiddenElementsVisibleObserverRemote} from 'chrome://scanning/accessibility_features.mojom-webui.js';

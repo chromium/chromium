@@ -13,7 +13,7 @@ struct wl_resource;
 
 namespace wl {
 
-extern const struct wl_pointer_interface kTestKeyboardImpl;
+extern const struct wl_keyboard_interface kTestKeyboardImpl;
 
 class TestKeyboard : public ServerObject {
  public:

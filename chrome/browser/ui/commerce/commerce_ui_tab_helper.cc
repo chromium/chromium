@@ -15,6 +15,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/commerce/commerce_page_action_controller.h"
+#include "chrome/browser/ui/commerce/price_tracking_page_action_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
@@ -56,36 +58,6 @@ END_METADATA
 namespace commerce {
 
 namespace {
-constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("shopping_list_ui_image_fetcher",
-                                        R"(
-        semantics {
-          sender: "Product image fetcher for the shopping list feature."
-          description:
-            "Retrieves the image for a product that is displayed on the active "
-            "web page. This will be shown to the user as part of the "
-            "bookmarking or price tracking action."
-          trigger:
-            "On navigation, if the URL of the page is determined to be a "
-            "product that can be price tracked, we will attempt to fetch the "
-            "image for it."
-          data:
-            "An image of a product that can be price tracked."
-          destination: WEBSITE
-        }
-        policy {
-          cookies_allowed: NO
-          setting:
-            "This fetch is enabled for any user with the 'Shopping List' "
-            "feature enabled."
-          chrome_policy {
-            ShoppingListEnabled {
-              policy_options {mode: MANDATORY}
-              ShoppingListEnabled: true
-            }
-          }
-        })");
-
 constexpr char kImageFetcherUmaClient[] = "ShoppingList";
 
 // price tracking chip (assuming price insights isn't expanded).
@@ -196,9 +168,7 @@ void CommerceUiTabHelper::DidFinishNavigation(
       base::BindOnce(&CommerceUiTabHelper::HandleProductInfoResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  if (shopping_service_->IsDiscountEligibleToShowOnNavigation() ||
-      base::FeatureList::IsEnabled(
-          ntp_features::kNtpHistoryClustersModuleDiscounts)) {
+  if (shopping_service_->IsDiscountEligibleToShowOnNavigation()) {
     shopping_service_->GetDiscountInfoForUrls(
         {web_contents()->GetLastCommittedURL()},
         base::BindOnce(&CommerceUiTabHelper::HandleDiscountsResponse,
@@ -344,7 +314,7 @@ void CommerceUiTabHelper::MaybeDoProductImageFetch(
       info.value().image_url,
       base::BindOnce(&CommerceUiTabHelper::HandleImageFetcherResponse,
                      weak_ptr_factory_.GetWeakPtr(), info.value().image_url),
-      image_fetcher::ImageFetcherParams(kTrafficAnnotation,
+      image_fetcher::ImageFetcherParams(kShoppingListTrafficAnnotation,
                                         kImageFetcherUmaClient));
 }
 
@@ -378,10 +348,8 @@ void CommerceUiTabHelper::HandleDiscountsResponse(const DiscountsMap& map) {
   page_has_discounts_ =
       response_has_discounts
           ? shopping_service_->IsDiscountEligibleToShowOnNavigation() ||
-                (base::FeatureList::IsEnabled(
-                     ntp_features::kNtpHistoryClustersModuleDiscounts) &&
-                 commerce::UrlContainsDiscountUtmTag(
-                     web_contents()->GetLastCommittedURL()))
+                commerce::UrlContainsDiscountUtmTag(
+                    web_contents()->GetLastCommittedURL())
           : false;
 
   got_discounts_response_for_page_ = true;
@@ -394,9 +362,7 @@ void CommerceUiTabHelper::MaybeComputePageActionToExpand() {
   }
 
   // Make sure we have responses from all the relevant features first.
-  if ((shopping_service_->IsDiscountEligibleToShowOnNavigation() ||
-       base::FeatureList::IsEnabled(
-           ntp_features::kNtpHistoryClustersModuleDiscounts)) &&
+  if (shopping_service_->IsDiscountEligibleToShowOnNavigation() &&
       !got_discounts_response_for_page_) {
     return;
   }
@@ -497,8 +463,8 @@ void CommerceUiTabHelper::UpdatePriceTrackingStateFromSubscriptions() {
   if (!cluster_id_for_page_.has_value())
     return;
 
-  shopping_service_->IsClusterIdTrackedByUser(
-      cluster_id_for_page_.value(),
+  shopping_service_->IsSubscribed(
+      BuildUserSubscriptionForClusterId(cluster_id_for_page_.value()),
       base::BindOnce(
           [](base::WeakPtr<CommerceUiTabHelper> helper, bool is_tracked) {
             if (!helper) {

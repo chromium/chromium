@@ -10,7 +10,7 @@ source_set("follow") {
   deps = [
     "//base",
     "//ios/chrome/browser/follow/model:enums",
-    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/net/model:crurl",
   ]
 }
 
@@ -43,7 +43,7 @@ source_set("first_follow") {
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/follow/model:enums",
     "//ios/chrome/browser/follow/model:service",
-    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",

@@ -31,37 +31,70 @@
 namespace blink {
 namespace cssvalue {
 
-CSSCrossfadeValue::CSSCrossfadeValue(CSSValue* from_value,
-                                     CSSValue* to_value,
-                                     CSSPrimitiveValue* percentage_value)
+CSSCrossfadeValue::CSSCrossfadeValue(
+    bool is_prefixed_variant,
+    HeapVector<std::pair<Member<CSSValue>, Member<CSSPrimitiveValue>>>
+        image_and_percentages)
     : CSSImageGeneratorValue(kCrossfadeClass),
-      from_value_(from_value),
-      to_value_(to_value),
-      percentage_value_(percentage_value) {}
+      is_prefixed_variant_(is_prefixed_variant),
+      image_and_percentages_(std::move(image_and_percentages)) {}
 
 CSSCrossfadeValue::~CSSCrossfadeValue() = default;
 
 String CSSCrossfadeValue::CustomCSSText() const {
   StringBuilder result;
-  result.Append("-webkit-cross-fade(");
-  result.Append(from_value_->CssText());
-  result.Append(", ");
-  result.Append(to_value_->CssText());
-  result.Append(", ");
-  result.Append(percentage_value_->CssText());
-  result.Append(')');
+  if (is_prefixed_variant_) {
+    CHECK_EQ(2u, image_and_percentages_.size());
+    result.Append("-webkit-cross-fade(");
+    result.Append(image_and_percentages_[0].first->CssText());
+    result.Append(", ");
+    result.Append(image_and_percentages_[1].first->CssText());
+    result.Append(", ");
+    result.Append(image_and_percentages_[1].second->CssText());
+    result.Append(')');
+    DCHECK_EQ(nullptr, image_and_percentages_[0].second);
+  } else {
+    result.Append("cross-fade(");
+    bool first = true;
+    for (const auto& [image, percentage] : image_and_percentages_) {
+      if (!first) {
+        result.Append(", ");
+      }
+      if (percentage) {
+        result.Append(percentage->CssText());
+        result.Append(' ');
+      }
+      result.Append(image->CssText());
+      first = false;
+    }
+    result.Append(')');
+  }
   return result.ReleaseString();
 }
 
 bool CSSCrossfadeValue::HasFailedOrCanceledSubresources() const {
-  return from_value_->HasFailedOrCanceledSubresources() ||
-         to_value_->HasFailedOrCanceledSubresources();
+  return std::any_of(
+      image_and_percentages_.begin(), image_and_percentages_.end(),
+      [](const auto& image_and_percent) {
+        return image_and_percent.first->HasFailedOrCanceledSubresources();
+      });
 }
 
 bool CSSCrossfadeValue::Equals(const CSSCrossfadeValue& other) const {
-  return base::ValuesEquivalent(from_value_, other.from_value_) &&
-         base::ValuesEquivalent(to_value_, other.to_value_) &&
-         base::ValuesEquivalent(percentage_value_, other.percentage_value_);
+  if (image_and_percentages_.size() != other.image_and_percentages_.size()) {
+    return false;
+  }
+  for (unsigned i = 0; i < image_and_percentages_.size(); ++i) {
+    if (!base::ValuesEquivalent(image_and_percentages_[i].first,
+                                other.image_and_percentages_[i].first)) {
+      return false;
+    }
+    if (!base::ValuesEquivalent(image_and_percentages_[i].second,
+                                other.image_and_percentages_[i].second)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 class CSSCrossfadeValue::ObserverProxy final
@@ -120,9 +153,7 @@ ImageResourceObserver* CSSCrossfadeValue::GetObserverProxy() {
 }
 
 void CSSCrossfadeValue::TraceAfterDispatch(Visitor* visitor) const {
-  visitor->Trace(from_value_);
-  visitor->Trace(to_value_);
-  visitor->Trace(percentage_value_);
+  visitor->Trace(image_and_percentages_);
   visitor->Trace(observer_proxy_);
   CSSImageGeneratorValue::TraceAfterDispatch(visitor);
 }

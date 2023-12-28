@@ -51,12 +51,11 @@ class ASH_EXPORT AccessibilityFeaturePodController
   void UpdateTileStateIfExists();
 
   // Unowned.
-  const raw_ptr<UnifiedSystemTrayController,
-                DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<UnifiedSystemTrayController, DanglingUntriaged>
       tray_controller_;
 
   // Owned by views hierarchy.
-  raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ = nullptr;
+  raw_ptr<FeatureTile, DanglingUntriaged> tile_ = nullptr;
 
   base::WeakPtrFactory<AccessibilityFeaturePodController> weak_ptr_factory_{
       this};

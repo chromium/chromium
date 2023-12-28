@@ -7,7 +7,7 @@
 #include <utility>
 #include <vector>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -41,6 +41,7 @@
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -258,7 +259,8 @@ aura::Window* OverviewItem::GetWindow() {
   return transform_window_.window();
 }
 
-std::vector<aura::Window*> OverviewItem::GetWindows() {
+std::vector<raw_ptr<aura::Window, VectorExperimental>>
+OverviewItem::GetWindows() {
   return {transform_window_.window()};
 }
 
@@ -797,7 +799,7 @@ void OverviewItem::OnOverviewItemContinuousScroll(
   } else {
     gfx::Transform transform = gfx::Tween::TransformValueBetween(
         scroll_ratio, gfx::Transform(), target_transform);
-    SetTransform(window, transform);
+    window_util::SetTransform(window, transform);
   }
 }
 
@@ -1187,7 +1189,7 @@ void OverviewItem::PerformItemSpawnedAnimation(
   // window.
   gfx::Transform initial_transform = target_transform;
   initial_transform.Scale(kInitialScaler, kInitialScaler);
-  SetTransform(window, initial_transform);
+  window_util::SetTransform(window, initial_transform);
   transform_window_.SetOpacity(kInitialScaler);
 
   ScopedOverviewTransformWindow::ScopedAnimationSettings animation_settings;
@@ -1204,7 +1206,7 @@ void OverviewItem::PerformItemSpawnedAnimation(
         base::BindOnce(&OverviewItem::OnItemSpawnedAnimationCompleted,
                        weak_ptr_factory_.GetWeakPtr())});
   }
-  SetTransform(window, target_transform);
+  window_util::SetTransform(window, target_transform);
   transform_window_.SetOpacity(kTargetScaler);
 
   if (cannot_snap_widget_) {
@@ -1227,19 +1229,30 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
   // Determine the amount of clipping we should put on the window. Note that the
   // clipping goes after setting a transform, as layer transform affects layer
   // clip.
-  using ClippingType = ScopedOverviewTransformWindow::ClippingType;
-  ScopedOverviewTransformWindow::ClippingData clipping_data{
-      ClippingType::kCustom, gfx::SizeF()};
+  gfx::Rect clip_rect;
   if (unclipped_size_) {
-    clipping_data.second = GetTargetBoundsWithInsets().size();
-  } else if (is_first_update) {
-    clipping_data.first = ClippingType::kEnter;
+    gfx::SizeF clip_size(GetTargetBoundsWithInsets().size());
+
+    // Transform affects the clip rect, so take that into account.
+    const gfx::Vector2dF scale = transform.To2dScale();
+    clip_size.Scale(1 / scale.x(), 1 / scale.y());
+    gfx::RectF clip_rect_f(clip_size);
+    clip_rect = gfx::ToRoundedRect(clip_rect_f);
+  } else {
+    clip_rect = gfx::Rect(window->bounds().size());
+    // We add 1 to the `top_inset`, because in some cases, the header is not
+    // clipped fully due to what seems to be a rounding error.
+    // TODO(afakhry|sammiequon): Investigate a proper fix for this.
+    const int top_inset = transform_window_.GetTopInset();
+    if (top_inset > 0 && !clip_rect.IsEmpty()) {
+      clip_rect.Inset(gfx::Insets::TLBR(top_inset + 1, 0, 0, 0));
+    }
   }
 
   if (is_first_update &&
       animation_type == OVERVIEW_ANIMATION_SPAWN_ITEM_IN_OVERVIEW) {
     PerformItemSpawnedAnimation(window, transform);
-    transform_window_.SetClipping(clipping_data);
+    transform_window_.SetClipping(clip_rect);
     return;
   }
 
@@ -1253,8 +1266,8 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
         base::BindOnce(&OverviewItem::OnItemBoundsAnimationEnded,
                        weak_ptr_factory_.GetWeakPtr())});
   }
-  SetTransform(window, transform);
-  transform_window_.SetClipping(clipping_data);
+  window_util::SetTransform(window, transform);
+  transform_window_.SetClipping(clip_rect);
 }
 
 void OverviewItem::UpdateHeaderLayout(OverviewAnimationType animation_type) {

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {isNonEmptyArray, isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
@@ -10,10 +11,9 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {CurrentWallpaper, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperProviderInterface, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {setErrorAction} from '../personalization_actions.js';
 import {PersonalizationStore} from '../personalization_store.js';
-import {isNonEmptyArray} from '../utils.js';
 
 import {DisplayableImage} from './constants.js';
-import {isDefaultImage, isFilePath, isGooglePhotosPhoto, isImageAMatchForKey, isImageEqualToSelected, isWallpaperImage} from './utils.js';
+import {isDefaultImage, isGooglePhotosPhoto, isImageAMatchForKey, isImageEqualToSelected, isWallpaperImage} from './utils.js';
 import * as action from './wallpaper_actions.js';
 import {DailyRefreshType} from './wallpaper_state.js';
 
@@ -361,7 +361,7 @@ export async function selectWallpaper(
           image.unitId, /*preview_mode=*/ shouldPreview);
     } else if (isDefaultImage(image)) {
       return provider.selectDefaultImage();
-    } else if (isFilePath(image)) {
+    } else if (isNonEmptyFilePath(image)) {
       return provider.selectLocalImage(
           image, layout, /*preview_mode=*/ shouldPreview);
     } else if (isGooglePhotosPhoto(image)) {

@@ -14,4 +14,7 @@ extern NSString* const kIncognitoTabStripId;
 // The size of the tab strip view.
 extern const CGFloat kTabStripHeight;
 
+// The size of the modern tab strip view.
+extern const CGFloat kModernTabStripHeight;
+
 #endif  // IOS_CHROME_BROWSER_UI_TABS_TAB_STRIP_CONSTANTS_H_

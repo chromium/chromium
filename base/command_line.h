@@ -21,6 +21,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
@@ -48,7 +49,7 @@ class BASE_EXPORT CommandLine {
 #endif
 
   using CharType = StringType::value_type;
-  using StringPieceType = base::BasicStringPiece<CharType>;
+  using StringPieceType = std::basic_string_view<CharType>;
   using StringVector = std::vector<StringType>;
   using SwitchMap = std::map<std::string, StringType, std::less<>>;
 

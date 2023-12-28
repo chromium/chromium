@@ -169,6 +169,8 @@ class ConnectJobFactoryTest : public TestWithTaskEnvironment {
            transport_job_factory_->params().size();
   }
 
+  const NextProtoVector alpn_protos_{kProtoHTTP2, kProtoHTTP11};
+  const SSLConfig::ApplicationSettings application_settings_{{kProtoHTTP2, {}}};
   const CommonConnectJobParams common_connect_job_params_{
       /*client_socket_factory=*/nullptr,
       /*host_resolver=*/nullptr,
@@ -185,8 +187,8 @@ class ConnectJobFactoryTest : public TestWithTaskEnvironment {
       /*net_log=*/nullptr,
       /*websocket_endpoint_lock_manager=*/nullptr,
       /*http_server_properties=*/nullptr,
-      /*alpn_protos=*/nullptr,
-      /*application_settings=*/nullptr,
+      &alpn_protos_,
+      &application_settings_,
       /*ignore_certificate_errors=*/nullptr};
   TestConnectJobDelegate delegate_;
 
@@ -531,6 +533,7 @@ TEST_F(ConnectJobFactoryTest, CreateNestedHttpsProxyConnectJob) {
   // We should to send a CONNECT to `kProxyServer2` for `kEndpoint`.
   EXPECT_EQ(proxy_server2_http_params.endpoint(),
             HostPortPair::FromSchemeHostPort(kEndpoint));
+  EXPECT_TRUE(proxy_server2_http_params.tunnel());
 
   const SSLSocketParams& proxy_server2_ssl_params =
       *proxy_server2_http_params.ssl_params();

@@ -17,6 +17,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/pattern.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -36,6 +37,7 @@ using testing::Eq;
 using testing::Pointee;
 
 const char kTestMapperScript[] = "Lorem ipsum dolor sit amet";
+const base::Value::Dict empty_mapper_options;
 
 testing::AssertionResult StatusOk(const Status& status) {
   if (status.IsOk()) {
@@ -2853,6 +2855,7 @@ struct BidiMapperState {
   bool mapper_is_initiated = false;
   bool mapper_instance_is_running = false;
   bool subscribed_to_cdp = false;
+  bool mapper_is_started_with_options = false;
 };
 class BidiServerMockSyncWebSocket : public BidiMockSyncWebSocket {
  public:
@@ -2890,8 +2893,17 @@ class BidiServerMockSyncWebSocket : public BidiMockSyncWebSocket {
         if (mapper_state_->fail_on_mapper_init) {
           return false;
         }
-      } else if (*expression == "window.runMapperInstance(\"mapper_client\")") {
+      } else if (*expression ==
+                 "window.runMapperInstance(\"mapper_client\", {})") {
         mapper_state_->mapper_instance_is_running = true;
+        if (mapper_state_->fail_on_mapper_run_instnace) {
+          return false;
+        }
+      } else if (base::MatchPattern(
+                     *expression,
+                     "window\\.runMapperInstance(\"mapper_client\", {?*})")) {
+        mapper_state_->mapper_instance_is_running = true;
+        mapper_state_->mapper_is_started_with_options = true;
         if (mapper_state_->fail_on_mapper_run_instnace) {
           return false;
         }
@@ -2938,12 +2950,14 @@ TEST_F(DevToolsClientImplTest, StartBidiServer) {
   mapper_client.SetMainPage(true);
   ASSERT_TRUE(StatusOk(mapper_client.AttachTo(&root_client)));
 
-  EXPECT_TRUE(StatusOk(mapper_client.StartBidiServer(kTestMapperScript)));
+  EXPECT_TRUE(StatusOk(
+      mapper_client.StartBidiServer(kTestMapperScript, empty_mapper_options)));
   EXPECT_TRUE(mapper_state.devtools_exposed);
   EXPECT_TRUE(mapper_state.mapper_is_initiated);
   EXPECT_TRUE(mapper_state.mapper_instance_is_running);
   EXPECT_TRUE(mapper_state.send_bidi_response_binding_added);
   EXPECT_TRUE(mapper_state.subscribed_to_cdp);
+  EXPECT_FALSE(mapper_state.mapper_is_started_with_options);
 }
 
 TEST_F(DevToolsClientImplTest, StartBidiServerNotConnected) {
@@ -2955,7 +2969,9 @@ TEST_F(DevToolsClientImplTest, StartBidiServerNotConnected) {
   mapper_client.SetMainPage(true);
   ASSERT_TRUE(mapper_client.AttachTo(&root_client).IsError());
 
-  EXPECT_TRUE(mapper_client.StartBidiServer(kTestMapperScript).IsError());
+  EXPECT_TRUE(
+      mapper_client.StartBidiServer(kTestMapperScript, empty_mapper_options)
+          .IsError());
 }
 
 TEST_F(DevToolsClientImplTest, StartBidiServerNotAPageClient) {
@@ -2968,7 +2984,9 @@ TEST_F(DevToolsClientImplTest, StartBidiServerNotAPageClient) {
   mapper_client.EnableEventTunnelingForTesting();
   ASSERT_TRUE(StatusOk(mapper_client.AttachTo(&root_client)));
 
-  EXPECT_TRUE(mapper_client.StartBidiServer(kTestMapperScript).IsError());
+  EXPECT_TRUE(
+      mapper_client.StartBidiServer(kTestMapperScript, empty_mapper_options)
+          .IsError());
 }
 
 TEST_F(DevToolsClientImplTest, StartBidiServerTunnelIsAlreadySet) {
@@ -2985,7 +3003,9 @@ TEST_F(DevToolsClientImplTest, StartBidiServerTunnelIsAlreadySet) {
   ASSERT_TRUE(StatusOk(mapper_client.AttachTo(&root_client)));
   mapper_client.SetTunnelSessionId(pink_client.SessionId());
 
-  EXPECT_TRUE(mapper_client.StartBidiServer(kTestMapperScript).IsError());
+  EXPECT_TRUE(
+      mapper_client.StartBidiServer(kTestMapperScript, empty_mapper_options)
+          .IsError());
 }
 
 TEST_F(DevToolsClientImplTest, StartBidiServerFailOnAddBidiResponseBinding) {
@@ -3000,7 +3020,9 @@ TEST_F(DevToolsClientImplTest, StartBidiServerFailOnAddBidiResponseBinding) {
   mapper_client.SetMainPage(true);
   ASSERT_TRUE(StatusOk(mapper_client.AttachTo(&root_client)));
 
-  EXPECT_TRUE(mapper_client.StartBidiServer(kTestMapperScript).IsError());
+  EXPECT_TRUE(
+      mapper_client.StartBidiServer(kTestMapperScript, empty_mapper_options)
+          .IsError());
 }
 
 TEST_F(DevToolsClientImplTest, StartBidiServerFailOnRunMapperInstnace) {
@@ -3015,7 +3037,9 @@ TEST_F(DevToolsClientImplTest, StartBidiServerFailOnRunMapperInstnace) {
   mapper_client.SetMainPage(true);
   ASSERT_TRUE(StatusOk(mapper_client.AttachTo(&root_client)));
 
-  EXPECT_TRUE(mapper_client.StartBidiServer(kTestMapperScript).IsError());
+  EXPECT_TRUE(
+      mapper_client.StartBidiServer(kTestMapperScript, empty_mapper_options)
+          .IsError());
 }
 
 TEST_F(DevToolsClientImplTest, StartBidiServerFailOnExposeDevTools) {
@@ -3030,7 +3054,9 @@ TEST_F(DevToolsClientImplTest, StartBidiServerFailOnExposeDevTools) {
   mapper_client.SetMainPage(true);
   ASSERT_TRUE(StatusOk(mapper_client.AttachTo(&root_client)));
 
-  EXPECT_TRUE(mapper_client.StartBidiServer(kTestMapperScript).IsError());
+  EXPECT_TRUE(
+      mapper_client.StartBidiServer(kTestMapperScript, empty_mapper_options)
+          .IsError());
 }
 
 TEST_F(DevToolsClientImplTest, StartBidiServerFailOnMapperInit) {
@@ -3045,7 +3071,9 @@ TEST_F(DevToolsClientImplTest, StartBidiServerFailOnMapperInit) {
   mapper_client.SetMainPage(true);
   ASSERT_TRUE(StatusOk(mapper_client.AttachTo(&root_client)));
 
-  EXPECT_TRUE(mapper_client.StartBidiServer(kTestMapperScript).IsError());
+  EXPECT_TRUE(
+      mapper_client.StartBidiServer(kTestMapperScript, empty_mapper_options)
+          .IsError());
 }
 
 TEST_F(DevToolsClientImplTest, StartBidiServerFailOnSubscribeToCdp) {
@@ -3060,5 +3088,30 @@ TEST_F(DevToolsClientImplTest, StartBidiServerFailOnSubscribeToCdp) {
   mapper_client.SetMainPage(true);
   ASSERT_TRUE(StatusOk(mapper_client.AttachTo(&root_client)));
 
-  EXPECT_TRUE(mapper_client.StartBidiServer(kTestMapperScript).IsError());
+  EXPECT_TRUE(
+      mapper_client.StartBidiServer(kTestMapperScript, empty_mapper_options)
+          .IsError());
+}
+
+TEST_F(DevToolsClientImplTest, StartBidiServerWithOptions) {
+  BidiMapperState mapper_state;
+  SocketHolder<BidiServerMockSyncWebSocket> socket_holder{&mapper_state};
+  DevToolsClientImpl root_client("root", "root_session");
+  ASSERT_TRUE(socket_holder.ConnectSocket());
+  ASSERT_TRUE(StatusOk(root_client.SetSocket(socket_holder.Wrapper())));
+  DevToolsClientImpl mapper_client("mapper_client", "mapper_session");
+  mapper_client.EnableEventTunnelingForTesting();
+  mapper_client.SetMainPage(true);
+  ASSERT_TRUE(StatusOk(mapper_client.AttachTo(&root_client)));
+
+  base::Value::Dict mapper_options;
+  mapper_options.Set("divide_by_zero", true);
+  EXPECT_TRUE(StatusOk(
+      mapper_client.StartBidiServer(kTestMapperScript, mapper_options)));
+  EXPECT_TRUE(mapper_state.devtools_exposed);
+  EXPECT_TRUE(mapper_state.mapper_is_initiated);
+  EXPECT_TRUE(mapper_state.mapper_instance_is_running);
+  EXPECT_TRUE(mapper_state.send_bidi_response_binding_added);
+  EXPECT_TRUE(mapper_state.subscribed_to_cdp);
+  EXPECT_TRUE(mapper_state.mapper_is_started_with_options);
 }

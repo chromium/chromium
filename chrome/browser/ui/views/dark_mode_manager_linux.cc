@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -29,18 +30,20 @@ scoped_refptr<dbus::Bus> CreateBus() {
 }  // namespace
 
 DarkModeManagerLinux::DarkModeManagerLinux()
-    : DarkModeManagerLinux(CreateBus(),
-                           ui::GetDefaultLinuxUiTheme(),
-                           &ui::GetLinuxUiThemes(),
-                           std::vector<ui::NativeTheme*>{
-                               ui::NativeTheme::GetInstanceForNativeUi(),
-                               ui::NativeTheme::GetInstanceForWeb()}) {}
+    : DarkModeManagerLinux(
+          CreateBus(),
+          ui::GetDefaultLinuxUiTheme(),
+          &ui::GetLinuxUiThemes(),
+          std::vector<raw_ptr<ui::NativeTheme, VectorExperimental>>{
+              ui::NativeTheme::GetInstanceForNativeUi(),
+              ui::NativeTheme::GetInstanceForWeb()}) {}
 
 DarkModeManagerLinux::DarkModeManagerLinux(
     scoped_refptr<dbus::Bus> bus,
     LinuxUiTheme* default_linux_ui_theme,
-    const std::vector<LinuxUiTheme*>* linux_ui_themes,
-    std::vector<NativeTheme*> native_themes)
+    const std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>*
+        linux_ui_themes,
+    std::vector<raw_ptr<NativeTheme, VectorExperimental>> native_themes)
     : linux_ui_themes_(linux_ui_themes),
       native_themes_(native_themes),
       bus_(bus),
@@ -164,7 +167,7 @@ void DarkModeManagerLinux::SetColorScheme(bool prefer_dark_theme,
     return;
   }
   if (!from_toolkit_theme) {
-    for (auto* linux_ui_theme : *linux_ui_themes_) {
+    for (ui::LinuxUiTheme* linux_ui_theme : *linux_ui_themes_) {
       linux_ui_theme->SetDarkTheme(prefer_dark_theme);
     }
   }

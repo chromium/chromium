@@ -170,9 +170,6 @@ CreateSafeBrowsingBlockingPage(web::WebState* web_state, const GURL& url) {
     } else if (type_param == kChromeInterstitialSafeBrowsingTypeUnwantedValue) {
       threat_type = safe_browsing::SB_THREAT_TYPE_URL_UNWANTED;
     } else if (type_param ==
-               kChromeInterstitialSafeBrowsingTypeClientsideMalwareValue) {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE;
-    } else if (type_param ==
                kChromeInterstitialSafeBrowsingTypeClientsidePhishingValue) {
       threat_type = safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
     } else if (type_param == kChromeInterstitialSafeBrowsingTypeBillingValue) {

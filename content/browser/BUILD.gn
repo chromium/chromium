@@ -731,6 +731,13 @@ source_set("browser") {
     "code_cache/simple_lru_cache.h",
     "compositor/surface_utils.cc",
     "compositor/surface_utils.h",
+    "compute_pressure/pressure_client_impl.cc",
+    "compute_pressure/pressure_client_impl.h",
+    "compute_pressure/pressure_service_base.cc",
+    "compute_pressure/pressure_service_base.h",
+    "compute_pressure/pressure_service_for_frame.cc",
+    "compute_pressure/pressure_service_for_frame.h",
+    "compute_pressure/pressure_service_for_worker.h",
     "contacts/contacts_manager_impl.cc",
     "contacts/contacts_manager_impl.h",
     "contacts/contacts_provider.h",
@@ -1010,6 +1017,8 @@ source_set("browser") {
     "first_party_sets/first_party_sets_handler_impl_instance.h",
     "first_party_sets/first_party_sets_loader.cc",
     "first_party_sets/first_party_sets_loader.h",
+    "first_party_sets/first_party_sets_overrides_policy.cc",
+    "first_party_sets/first_party_sets_overrides_policy.h",
     "first_party_sets/first_party_sets_site_data_remover.cc",
     "first_party_sets/first_party_sets_site_data_remover.h",
     "font_access/font_access_manager.cc",
@@ -2746,6 +2755,10 @@ source_set("browser") {
         "media/capture/desktop_capture_device.h",
         "media/capture/mouse_cursor_overlay_controller.cc",
         "media/capture/mouse_cursor_overlay_controller.h",
+        "renderer_host/media/captured_surface_control_permission_manager.cc",
+        "renderer_host/media/captured_surface_control_permission_manager.h",
+        "renderer_host/media/captured_surface_controller.cc",
+        "renderer_host/media/captured_surface_controller.h",
       ]
       public_deps += [ "//ui/base/cursor" ]
       deps += [ "//third_party/webrtc_overrides:webrtc_component" ]

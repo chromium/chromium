@@ -717,7 +717,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   MemoryHistory* memory_history() { return memory_history_.get(); }
   DebugRectHistory* debug_rect_history() { return debug_rect_history_.get(); }
   viz::ClientResourceProvider* resource_provider() {
-    return &resource_provider_;
+    return resource_provider_.get();
   }
   BrowserControlsOffsetManager* browser_controls_manager() {
     return browser_controls_offset_manager_.get();
@@ -1069,7 +1069,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // This is usually turned on only in some tests (e.g. web-tests).
   const bool is_synchronous_single_threaded_;
 
-  viz::ClientResourceProvider resource_provider_;
+  std::unique_ptr<viz::ClientResourceProvider> resource_provider_;
 
   std::unordered_map<UIResourceId, UIResourceData> ui_resource_map_;
   // UIResources are held here once requested to be deleted until they are

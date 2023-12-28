@@ -86,26 +86,26 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionAutomaticLanguageDownloadTest,
       media::mojom::AsrSwitchResult::kDefaultNoSwitch);
 
   OnLanguageIdentificationEvent(
-      frame_host, "es-es", media::mojom::ConfidenceLevel::kHighlyConfident,
+      frame_host, "it-it", media::mojom::ConfidenceLevel::kHighlyConfident,
       media::mojom::AsrSwitchResult::kDefaultNoSwitch);
   OnLanguageIdentificationEvent(
       frame_host, "de-de", media::mojom::ConfidenceLevel::kHighlyConfident,
       media::mojom::AsrSwitchResult::kDefaultNoSwitch);
   OnLanguageIdentificationEvent(
-      frame_host, "es-es", media::mojom::ConfidenceLevel::kHighlyConfident,
+      frame_host, "it-it", media::mojom::ConfidenceLevel::kHighlyConfident,
       media::mojom::AsrSwitchResult::kDefaultNoSwitch);
   OnLanguageIdentificationEvent(
-      frame_host, "es-es", media::mojom::ConfidenceLevel::kHighlyConfident,
+      frame_host, "it-it", media::mojom::ConfidenceLevel::kHighlyConfident,
       media::mojom::AsrSwitchResult::kDefaultNoSwitch);
 
   OnLanguageIdentificationEvent(
-      frame_host, "fr-fr", media::mojom::ConfidenceLevel::kHighlyConfident,
+      frame_host, "fr-ca", media::mojom::ConfidenceLevel::kHighlyConfident,
       media::mojom::AsrSwitchResult::kDefaultNoSwitch);
   OnLanguageIdentificationEvent(
-      frame_host, "fr-fr", media::mojom::ConfidenceLevel::kHighlyConfident,
+      frame_host, "fr-ca", media::mojom::ConfidenceLevel::kHighlyConfident,
       media::mojom::AsrSwitchResult::kDefaultNoSwitch);
   OnLanguageIdentificationEvent(
-      frame_host, "fr-fr", media::mojom::ConfidenceLevel::kHighlyConfident,
+      frame_host, "fr-ca", media::mojom::ConfidenceLevel::kHighlyConfident,
       media::mojom::AsrSwitchResult::kDefaultNoSwitch);
 
   size_t expected_language_pack_count = 2u;

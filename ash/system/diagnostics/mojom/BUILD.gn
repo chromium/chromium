@@ -13,5 +13,5 @@ mojom("mojom") {
   webui_module_path = "/ash/webui/diagnostics_ui"
 
   # Generate WebUI bindings in JavaScript rather than TypeScript.
-  use_typescript_sources = false
+  generate_webui_js_bindings = true
 }

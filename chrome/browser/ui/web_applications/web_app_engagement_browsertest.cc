@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, AppInWindow) {
   webapps::AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
 
   Browser* app_browser = LaunchWebAppBrowserAndWait(app_id);
-  NavigateToURLAndWait(app_browser, example_url);
+  NavigateViaLinkClickToURLAndWait(app_browser, example_url);
 
   EXPECT_EQ(GetAppIdFromApplicationName(app_browser->app_name()), app_id);
 
@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, AppInTab) {
 
   Browser* browser = LaunchBrowserForWebAppInTab(app_id);
   EXPECT_FALSE(browser->app_controller());
-  NavigateToURLAndWait(browser, example_url);
+  NavigateViaLinkClickToURLAndWait(browser, example_url);
 
   Histograms histograms;
   histograms[kHistogramInTab] = true;
@@ -277,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, AppWithoutScope) {
 
   EXPECT_EQ(GetAppIdFromApplicationName(browser->app_name()), app_id);
   EXPECT_TRUE(browser->app_controller());
-  NavigateToURLAndWait(browser, example_url);
+  NavigateViaLinkClickToURLAndWait(browser, example_url);
 
   Histograms histograms;
   histograms[kHistogramInWindow] = true;
@@ -373,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, ManyUserApps) {
     Browser* browser = LaunchWebAppBrowserAndWait(app_ids[i]);
 
     const GURL url = GetUrlForSuffix(base_url, i);
-    NavigateToURLAndWait(browser, url);
+    NavigateViaLinkClickToURLAndWait(browser, url);
   }
 
   Histograms histograms;
@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, MAYBE_DefaultApp) {
   // TODO(ericwilligers): Assert app_id was installed by default.
 
   Browser* browser = LaunchWebAppBrowserAndWait(*app_id);
-  NavigateToURLAndWait(browser, example_url);
+  NavigateViaLinkClickToURLAndWait(browser, example_url);
 
   Histograms histograms;
   histograms[kHistogramInWindow] = true;
@@ -425,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, MAYBE_DefaultApp) {
   ExpectBucketCounts(tester, histograms,
                      site_engagement::EngagementType::kNavigation, 1);
   ExpectTotalCounts(tester, ~histograms, 0);
-  NavigateToURLAndWait(browser, example_url);
+  NavigateViaLinkClickToURLAndWait(browser, example_url);
   TestEngagementEventsAfterLaunch(histograms, browser);
   ExpectLaunchCounts(tester, /*windowLaunches=*/1, /*tabLaunches=*/0);
 }
@@ -448,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, NavigateAwayFromAppTab) {
   Browser* browser = LaunchBrowserForWebAppInTab(app_id);
   EXPECT_FALSE(browser->app_controller());
 
-  NavigateToURLAndWait(browser, start_url);
+  NavigateViaLinkClickToURLAndWait(browser, start_url);
   {
     Histograms histograms;
     histograms[kHistogramInTab] = true;
@@ -458,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, NavigateAwayFromAppTab) {
   }
 
   // Navigate away from the web app to an outer simple web site:
-  NavigateToURLAndWait(browser, outer_url);
+  NavigateViaLinkClickToURLAndWait(browser, outer_url);
   {
     Histograms histograms;
     histograms[kHistogramUpToThreeUserInstalledApps] = true;
@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, RecordedForNonApps) {
   // Launch a non-app tab in default browser.
   const GURL example_url =
       embedded_test_server()->GetURL("/banners/no_manifest_test_page.html");
-  NavigateToURLAndWait(browser(), example_url);
+  NavigateViaLinkClickToURLAndWait(browser(), example_url);
 
   // Check that no histograms recorded, e.g. no
   // SiteEngagementService::ENGAGEMENT_WEBAPP_SHORTCUT_LAUNCH.

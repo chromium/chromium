@@ -193,6 +193,13 @@ class HostContentSettingsMap : public content_settings::Observer,
       absl::optional<content_settings::SessionModel> session_model =
           absl::nullopt) const;
 
+  // Returns the correct patterns for the scoping of the particular content
+  // type.
+  static content_settings::PatternPair GetPatternsForContentSettingsType(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType type);
+
   // Sets the default setting for a particular content type. This method must
   // not be invoked on an incognito map.
   //
@@ -471,6 +478,12 @@ class HostContentSettingsMap : public content_settings::Observer,
       content_settings::RuleMetaData* metadata,
       base::Clock* clock);
 
+  static base::Value GetContentSettingValueAndPatterns(
+      content_settings::Rule* rule,
+      ContentSettingsPattern* primary_pattern,
+      ContentSettingsPattern* secondary_pattern,
+      content_settings::RuleMetaData* metadata);
+
   // Migrate requesting and top level origin content settings to remove all
   // settings that have a top level pattern. If there is a pattern set for
   // (http://x.com, http://y.com) this will remove that pattern and also remove
@@ -544,7 +557,8 @@ class HostContentSettingsMap : public content_settings::Observer,
   // List of content settings providers containing settings which can be
   // modified by the user. Members are owned by the
   // |content_settings_providers_| map above.
-  std::vector<content_settings::UserModifiableProvider*>
+  std::vector<
+      raw_ptr<content_settings::UserModifiableProvider, VectorExperimental>>
       user_modifiable_providers_;
 
   // content_settings_providers_[PREF_PROVIDER] but specialized.

@@ -46,6 +46,9 @@ class User;
 // These methods are used by ash-chrome.
 namespace crosapi::browser_util {
 
+// Enable pre-launching Lacros at login screen.
+BASE_DECLARE_FEATURE(kLacrosLaunchAtLoginScreen);
+
 // Indicates how the decision for the usage of Lacros has been made.
 enum class LacrosLaunchSwitchSource {
   // It is unknown yet if and how Lacros will be used.
@@ -211,12 +214,8 @@ bool IsLacrosEnabledForMigration(const user_manager::User* user,
 
 // Returns true if Ash browser is enabled. Returns false iff Lacros is
 // enabled and is the only browser.
+// DEPRECATED. Please use !IsLacrosEnabled().
 bool IsAshWebBrowserEnabled();
-
-// Similar to `IsAshWebBrowserEnabled()` but it is calleable even before primary
-// profile and policy are initialized.
-bool IsAshWebBrowserEnabledForMigration(const user_manager::User* user,
-                                        PolicyInitState policy_init_state);
 
 // Returns true if Lacros can be used as the only browser
 // for the current session.

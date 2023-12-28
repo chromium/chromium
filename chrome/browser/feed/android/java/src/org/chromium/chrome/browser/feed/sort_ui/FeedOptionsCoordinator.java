@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.v2.ContentOrder;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.chips.ChipViewBinder;
@@ -44,7 +43,6 @@ public class FeedOptionsCoordinator {
     }
 
     private final FeedOptionsView mView;
-    private @Nullable FeedOptionsView mStickyHeaderOptionsView;
     private final Context mContext;
     private List<PropertyModel> mChipModels;
     private PropertyModel mModel;
@@ -57,19 +55,11 @@ public class FeedOptionsCoordinator {
                 context,
                 (FeedOptionsView)
                         LayoutInflater.from(context)
-                                .inflate(R.layout.feed_options_panel, null, false),
-                ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_HEADER_STICK_TO_TOP)
-                        ? (FeedOptionsView)
-                                LayoutInflater.from(context)
-                                        .inflate(R.layout.feed_options_panel, null, false)
-                        : null);
+                                .inflate(R.layout.feed_options_panel, null, false));
     }
 
     @VisibleForTesting
-    FeedOptionsCoordinator(
-            Context context,
-            FeedOptionsView view,
-            @Nullable FeedOptionsView stickyHeaderOptionsView) {
+    FeedOptionsCoordinator(Context context, FeedOptionsView view) {
         mContext = context;
         mView = view;
         mModel =
@@ -78,11 +68,6 @@ public class FeedOptionsCoordinator {
                         .build();
         PropertyModelChangeProcessor.create(mModel, mView, FeedOptionsCoordinator::bind);
 
-        if (stickyHeaderOptionsView != null) {
-            mStickyHeaderOptionsView = stickyHeaderOptionsView;
-            PropertyModelChangeProcessor.create(
-                    mModel, mStickyHeaderOptionsView, FeedOptionsCoordinator::bind);
-        }
         // Create chip models last, after all expected option views are created.
         mChipModels = createAndBindChips();
     }
@@ -95,12 +80,6 @@ public class FeedOptionsCoordinator {
     /** Returns the view that this coordinator manages. */
     public View getView() {
         return mView;
-    }
-
-    /** Returns the options view which should be added to the sticky header. */
-    public View getStickyHeaderOptionsView() {
-        assert mStickyHeaderOptionsView != null : "mStickyHeaderOptionsView is null!";
-        return mStickyHeaderOptionsView;
     }
 
     /** Toggles visibility of the options panel. */
@@ -185,11 +164,6 @@ public class FeedOptionsCoordinator {
         for (PropertyModel model : chipModels) {
             ChipView chip = mView.createNewChip();
             PropertyModelChangeProcessor.create(model, chip, ChipViewBinder::bind);
-
-            if (mStickyHeaderOptionsView != null) {
-                ChipView stickyHeaderChip = mStickyHeaderOptionsView.createNewChip();
-                PropertyModelChangeProcessor.create(model, stickyHeaderChip, ChipViewBinder::bind);
-            }
         }
         return chipModels;
     }

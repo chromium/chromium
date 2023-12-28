@@ -84,7 +84,7 @@ void ExtensionUninstallDialogViews::Show() {
       .AddOkButton(
           base::BindOnce(&ExtensionUninstallDialogViews::DialogAccepted,
                          weak_ptr_factory_.GetWeakPtr()),
-          ui::DialogModelButton::Params().SetLabel(
+          ui::DialogModel::Button::Params().SetLabel(
               l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_BUTTON)))
       .AddCancelButton(
           base::DoNothing() /* Cancel is covered by WindowClosingCallback */);

@@ -17,7 +17,7 @@
 // before we immediately exit. We provide a weak symbol so that
 // this causes no link problems on configurations that don't involve
 // coverage.
-extern "C" void __attribute__((weak)) __llvm_profile_write_file() {}
+extern "C" int __attribute__((weak)) __llvm_profile_write_file(void);
 #endif  // BUILDFLAG(IS_LINUX)
 
 #endif  // BUILDFLAG(USE_FUZZING_ENGINE)
@@ -167,7 +167,9 @@ namespace base {
   // handlers. We want to dump coverage information so we'll do that
   // here explicitly too.
 #if BUILDFLAG(IS_LINUX)
-  __llvm_profile_write_file();
+  if (__llvm_profile_write_file) {
+    __llvm_profile_write_file();
+  }
 #endif  // BUILDFLAG(IS_LINUX)
   exit(-1);
 #else   // BUILDFLAG(USE_FUZZING_ENGINE)

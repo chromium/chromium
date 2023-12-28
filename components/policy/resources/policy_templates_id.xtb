@@ -389,7 +389,6 @@ Tindakan ini akan menggantikan kebijakan <ph name="DEFAULT_WINDOW_PLACEMENT_SETT
 <translation id="1305400589435476516">Jika kebijakan disetel ke Aktif, roaming data akan diizinkan untuk perangkat.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, roaming data menjadi tidak tersedia.</translation>
-<translation id="1307454923744766368">Asal atau pola hostname yang semestinya tidak dikenai pembatasan untuk asal yang tidak aman</translation>
 <translation id="1308526987406924874">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang tidak dapat meminta izin pengguna untuk mengakses port serial.
 
       Tidak menyetel kebijakan berarti <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
@@ -1540,6 +1539,7 @@ Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_P
       Jika kebijakan disetel ke benar (true) atau tidak disetel, status jaringan perangkat akan dilaporkan.</translation>
 <translation id="2223393221350938149">Jangan izinkan situs apa pun menjalankan JIT JavaScript</translation>
 <translation id="2223598546285729819">Setelan pemberitahuan default</translation>
+<translation id="2224706708550115831">Mengizinkan browser pengguna mengakses daftar URL saat VPN Selalu Aktif diaktifkan dalam mode ketat dengan mengaktifkan kunci total dan saat VPN tidak terhubung</translation>
 <translation id="222673035924187991">Mengaktifkan Encrypted ClientHello TLS</translation>
 <translation id="2231817271680715693">Impor histori browseran dari browser default saat pertama kali dijalankan</translation>
 <translation id="2231962946025538735">Kebijakan ini tidak digunakan lagi. Gunakan kebijakan <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> untuk mengontrol ketersediaan plugin Flash dan <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> untuk mengontrol apakah penampil PDF yang terintegrasi akan digunakan untuk membuka file PDF atau tidak.
@@ -2331,6 +2331,7 @@ Kebijakan ini hanya dapat disetel sebagai kebijakan pengguna cloud.</translation
 <translation id="2896434627453256512">Menyetel kebijakan akan mengaktifkan fitur jendela bayangan.
       Jika kebijakan ini disetel ke benar (true), jendela bayangan ARC akan dibuat sebelum ARC melakukan booting setelah terjadi error atau dimulai ulang berdasarkan setelan aplikasi pemulihan.
       Jika kebijakan ini disetel ke salah (false), jendela bayangan tidak akan dibuat sebelum ARC melakukan booting. Aplikasi ARC dipulihkan setelah ARC melakukan booting</translation>
+<translation id="2897716186959852329">Jangan pernah izinkan baca lisan</translation>
 <translation id="2899002520262095963">Aplikasi Android dapat menggunakan konfigurasi jaringan dan sertifikat CA yang disetel melalui kebijakan ini, namun tidak memiliki akses ke beberapa opsi konfigurasi.</translation>
 <translation id="2899213072616346687">Membatasi mode pencetakan grafis latar belakang. Kebijakan yang tidak ditetapkan dianggap sebagai tidak ada batasan.</translation>
 <translation id="2899640611559504158">Nonaktifkan akses command line mesin virtual</translation>
@@ -2950,6 +2951,15 @@ Jika disetel ke Nonaktif, fitur penulisan prediktif tidak akan diizinkan di keyb
 <translation id="3398051852031115795">Perilaku sistem default (bergantung pada ukuran layar)</translation>
 <translation id="3399859571630358395">Paksa penonaktifan Sambungan Cepat (penyambungan Bluetooth cepat).</translation>
 <translation id="3404681701763345449">Aktifkan Integrasi <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
+<translation id="3405361833556012520">Kebijakan ini hanya berlaku untuk traffic browser. Play Store, navigasi web aplikasi Android, dan traffic pengguna lainnya seperti traffic VM Linux atau tugas pencetakan masih mematuhi batasan yang diberlakukan oleh VPN Selalu Aktif. Kebijakan ini hanya diterapkan saat VPN tidak terhubung dan hanya untuk traffic browser pengguna. Meskipun kebijakan ini diterapkan, traffic sistem juga dapat tidak menggunakan VPN Selalu Aktif untuk melakukan tugas seperti pengambilan kebijakan dan sinkronisasi jam sistem.
+
+Gunakan kebijakan ini untuk membuka pengecualian untuk skema tertentu, subdomain dari domain lain, port, atau jalur khusus, menggunakan format yang ditentukan di https://support.google.com/chrome/a?p=url_blocklist_filter_format. Filter yang paling spesifik akan menentukan apakah URL diblokir atau diizinkan.
+
+Jika <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> disetel, VPN Selalu Aktif dikonfigurasi, dan VPN Selalu Aktif tidak terhubung, navigasi ke semua host akan diblokir, kecuali yang diizinkan oleh kebijakan <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />. Dalam status perangkat ini, <ph name="URL_BLOCKLIST_POLICY_NAME" /> dan <ph name="URL_ALLOWLIST_POLICY_NAME" /> diabaikan. Jika VPN Selalu Aktif terhubung, kebijakan <ph name="URL_BLOCKLIST_POLICY_NAME" /> dan <ph name="URL_ALLOWLIST_POLICY_NAME" /> diterapkan dan kebijakan <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> diabaikan.
+
+Kebijakan ini terbatas untuk 1.000 entri.
+
+Jika kebijakan tidak disetel, navigasi browser apa pun akan dicegah saat VPN Selalu Aktif dengan mode ketat diaktifkan dan VPN tidak terhubung.</translation>
 <translation id="3405997282295704902">Jangan izinkan pengguna menggunakan <ph name="PRODUCT_NAME" /></translation>
 <translation id="3406122462682235653">Jangan tanya pengguna (download langsung dimulai)</translation>
 <translation id="3408078762098350617">Mengontrol pengalaman pengguna fitur yang dinonaktifkan yang tercantum di <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.
@@ -3278,7 +3288,6 @@ Jika kebijakan ini disetel ke Salah (False), informasi versi tidak akan dikumpul
 
 Kebijakan ini hanya berlaku saat perangkat didaftarkan dengan <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> untuk <ph name="PRODUCT_NAME" />.
 Kebijakan ini selalu berlaku untuk <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="3642557248926713561">Nonaktifkan Perlindungan Ekstensi Safe Browsing</translation>
 <translation id="3644735978203799620">Mengaktifkan pemilihan otomatis untuk multi-screenshot</translation>
 <translation id="3646859102161347133">Menyetel jenis lup</translation>
 <translation id="3647212518036289905">Menyetel kebijakan akan menentukan library GSSAPI mana yang akan digunakan untuk autentikasi HTTP. Setel kebijakan ke nama library atau jalur lengkap.
@@ -5249,6 +5258,11 @@ kebijakan khususnya.
 Catatan: Kebijakan ini tidak berlaku untuk upgrade HSTS.</translation>
 <translation id="5297948043665200363">Izinkan pengguna tetap login setelah akunnya menjadi tidak terautentikasi</translation>
 <translation id="5298949392804966105">Tidak ada batasan di akun terkelola</translation>
+<translation id="5300770793658186741">Menyetel kebijakan akan menentukan daftar origin (URL) dan pola nama host (seperti *.example.com) yang tidak dikenai pembatasan keamanan untuk origin yang tidak aman. Organisasi dapat menentukan origin untuk aplikasi lama yang tidak dapat men-deploy TLS atau menyiapkan server staging untuk pengembangan web internal, sehingga developer dapat menguji fitur yang memerlukan konteks aman tanpa harus men-deploy TLS di server staging. Dengan kebijakan ini, origin tidak akan dilabeli "Not Secure" (Tidak Aman) di kolom URL.
+
+Menetapkan daftar URL dalam kebijakan ini memiliki efek yang sama dengan menetapkan tanda command line --unsafely-treat-insecure-origin-as-secure ke daftar yang dipisahkan koma, yang berisi URL yang sama. Jika disetel, kebijakan ini akan mengganti tanda command line dan UnsafelyTreatInsecureOriginAsSecure.
+
+Untuk mendapatkan informasi selengkapnya tentang konteks aman, lihat Konteks Aman (https://www.w3.org/TR/secure-contexts ).</translation>
 <translation id="530134925949808452">Waktu dalam hari dalam waktu lokal saat kuota penggunaan diperpanjang.</translation>
 <translation id="5303080953475303561">Menyetel kebijakan akan mengontrol frekuensi layar kunci meminta sandi untuk mode buka kunci cepat. Setiap kali layar kunci ditampilkan, jika entri sandi terakhir terjadi sebelum jangka waktu yang ditentukan oleh nilai yang dipilih, mode buka kunci cepat tidak akan tersedia. Jika pengguna tetap berada di layar kunci setelah jangka waktu ini, sandi akan diminta saat pengguna salah memasukkan kode lagi atau masuk kembali ke layar kunci, mana saja yang terjadi lebih dahulu.
 
@@ -5458,6 +5472,7 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, setelan pemulihan penuh a
 <translation id="547601067149622666">Jangan izinkan iklan di situs yang menayangkan iklan mengganggu</translation>
 <translation id="5476152378885134514">Memblokir papan klip di situs ini</translation>
 <translation id="5480380613778757009">Jika kebijakan ini dinonaktifkan atau tidak disetel, semua setelan tampilan yang disetel di Sesi tamu terkelola akan direset segera setelah sesi selesai. Jika kebijakan ini disetel ke Benar (True), properti tampilan akan tetap tersimpan setelah keluar dari sesi tamu terkelola.</translation>
+<translation id="5483012943408894695">Origin atau pola nama host yang semestinya tidak dikenai pembatasan untuk origin yang tidak aman</translation>
 <translation id="5483065054530244863">Mengizinkan sertifikat bertanda tangan SHA-1 yang dikeluarkan oleh trust anchor lokal</translation>
 <translation id="5487758664517243511">Jika setelan ini diaktifkan, pengguna yang telah memilih untuk menggunakan Phone Hub akan dapat melanjutkan tugas seperti melihat halaman web ponsel di ChromeOS.
 
@@ -5809,8 +5824,6 @@ Jika kebijakan ini disetel ke nonaktif atau tidak disetel, widget Sekilas Info t
       Jika kebijakan ini ditetapkan ke False atau tidak ditetapkan, fitur Web Components v0 akan dinonaktifkan secara default, mulai dari M80.
 
       Kebijakan ini akan dihapus setelah Chrome 84.</translation>
-<translation id="5755149423476170868">Jika kebijakan ini disetel ke aktif atau tidak disetel, perlindungan ekstensi <ph name="SAFE_BROWSING_NAME" /> untuk <ph name="PRODUCT_NAME" /> akan dikontrol oleh <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />. Jika <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> disetel ke <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_STANDARD" /> atau <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_ENHANCED" />, ekstensi berbahaya akan dinonaktifkan lebih cepat di <ph name="PRODUCT_NAME" />. <ph name="PRODUCT_NAME" /> mengirim permintaan ke server Google Safe Browsing untuk memeriksa apakah ekstensi telah dihapus dari Chrome Web Store karena dianggap bermasalah, yaitu software berbahaya, rentan, tidak diinginkan, atau melanggar kebijakan Chrome Web Store (CWS). Jika ekstensi dihapus, <ph name="PRODUCT_NAME" /> akan memblokir pengguna agar tidak menginstal ekstensi dan akan menonaktifkan ekstensi tersebut jika sudah diinstal.
-Jika kebijakan ini dinonaktifkan, perlindungan ekstensi <ph name="SAFE_BROWSING_NAME" /> akan dinonaktifkan dan ekstensi berbahaya akan diperiksa dan dihapus lebih jarang melalui <ph name="GOOGLE_UPDATE_NAME" />. Tidak ada data yang dikirim ke Google <ph name="SAFE_BROWSING_NAME" /> untuk meminta keputusan.</translation>
 <translation id="575647238840663288">Secara default, dokumen dapat ditempatkan di cluster agen dengan kunci asal. document.domain tidak dapat disetel untuk dokumen semacam ini.</translation>
 <translation id="5756680608782814094">Melaporkan informasi VPD perangkat.
 
@@ -5927,7 +5940,6 @@ Jika kebijakan ini dinonaktifkan, perlindungan ekstensi <ph name="SAFE_BROWSING_
 <translation id="5883754873839596178">Menyetel kebijakan akan menentukan jumlah maksimal koneksi simultan ke server proxy. Beberapa server proxy tidak dapat menangani koneksi serentak tiap klien dalam jumlah besar, yang dapat diselesaikan dengan menyetel kebijakan ini ke nilai yang lebih rendah. Nilai harus lebih rendah dari 100 dan lebih tinggi dari 6. Beberapa aplikasi web diketahui menggunakan banyak koneksi dengan GET yang macet, jadi dengan menyetel nilai lebih rendah dari 32 dapat menyebabkan jaringan browser menjadi macet jika terlalu banyak aplikasi web dengan jaringan macet terbuka. Turunkan di bawah nilai default dengan menanggung sendiri risikonya.
 
       Tidak menyetel kebijakan berarti nilai default 32 akan digunakan.</translation>
-<translation id="5885770645815872943">Izinkan Perlindungan Ekstensi Safe Browsing</translation>
 <translation id="5887414688706570295">Mengonfigurasi awalan TalkGadget yang akan digunakan oleh hosting akses jarak jauh dan mencegah pengguna mengubahnya.
 
           Jika ditentukan, awalan ini ditambahkan di depan nama TalkGadget dasar untuk membuat nama domain TalkGadget lengkap. Nama domain TalkGadget dasar adalah '.talkgadget.google.com'.
@@ -6622,7 +6634,6 @@ Lihat juga kebijakan <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
           Jika kebijakan ini disetel ke nonaktif, perangkat <ph name="PRODUCT_OS_NAME" /> tidak dapat mengambil acara <ph name="GOOGLE_CALENDAR_NAME" /> untuk mengisi widget kalender <ph name="PRODUCT_OS_NAME" /> di status bar sistem bagi pengguna yang login.
 
           Jika kebijakan ini tidak disetel, fitur <ph name="GOOGLE_CALENDAR_NAME" /> akan dinonaktifkan secara default bagi pengguna versi bisnis.</translation>
-<translation id="6450607392928079050">Perlindungan Ekstensi Safe Browsing dikontrol oleh kebijakan <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /></translation>
 <translation id="6452882999388592166">Jika disetel ke Aktif, ekstensi komponen CryptoToken bawaan akan dimuat saat browser dimulai. Jika disetel ke Nonaktif atau tidak disetel, CryptoToken tidak akan dimuat saat browser dimulai. Kebijakan ini dimaksudkan sebagai solusi sementara untuk situs yang rusak karena `chrome.runtime` tidak ditentukan sebagai efek samping penghapusan CryptoToken di M106. Situs tidak boleh bergantung pada `chrome.runtime` yang ditentukan tanpa syarat.</translation>
 <translation id="6453641799812499182">Mengaktifkan mitigasi pemeriksaan <ph name="CORS" /> dalam implementasi <ph name="CORS" /> yang baru</translation>
 <translation id="645425387487868471">Aktifkan login paksa untuk <ph name="PRODUCT_NAME" /></translation>
@@ -7074,6 +7085,7 @@ Untuk <ph name="PRODUCT_OS_NAME" />, kebijakan ini selalu berlaku.</translation>
       Jika disetel ke Aktif, situs dapat menggunakan SharedArrayBuffer tanpa batasan.
 
       Jika disetel ke Nonaktif atau tidak disetel, situs hanya dapat menggunakan SharedArrayBuffer saat diisolasi lintas asal.</translation>
+<translation id="6734397897213913438">Selalu izinkan baca lisan</translation>
 <translation id="6735701345096330595">Mengaktifkan paksa pemeriksaan ejaan bahasa</translation>
 <translation id="6736283207617136584">Aktifkan pelaporan status update OS perangkat</translation>
 <translation id="6739541168983991680">Otomatiskan penyiapan alur <ph name="CLOUD_UPLOAD_NAME" /> untuk <ph name="MICROSOFT_ONE_DRIVE_NAME" /> dan <ph name="MICROSOFT_365_NAME" /></translation>
@@ -7450,11 +7462,6 @@ Jika kebijakan tidak disetel, kebijakan akan mengizinkan gambar, tetapi pengguna
 
       Kebijakan ini memerlukan penyiapan tambahan agar dapat berlaku. Buka https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting untuk informasi selengkapnya.</translation>
 <translation id="7032813174556919004">Nonaktifkan DNS-over-HTTPS</translation>
-<translation id="7033778618670823541">Menyetel kebijakan akan menentukan daftar sumber (URL) dan pola hostname (seperti *.example.com) yang tidak dikenai pembatasan keamanan untuk sumber yang tidak aman. Organisasi dapat menentukan sumber untuk aplikasi lama yang tidak dapat menerapkan TLS atau menyiapkan server staging untuk pengembangan web internal, sehingga developer dapat menguji fitur yang memerlukan konteks aman tanpa harus menerapkan TLS di server staging. Kebijakan ini juga mencegah sumber diberi label "Not Secure" (Tidak Aman) di kolom URL.
-
-      Menetapkan daftar URL dalam kebijakan ini memiliki efek yang sama dengan menetapkan tanda command line --unsafely-treat-insecure-origin-as-secure ke daftar yang dipisahkan koma, yang berisi URL yang sama. Jika ditetapkan, kebijakan ini akan mengganti tanda command line dan UnsafelyTreatInsecureOriginAsSecure.
-
-      Untuk informasi selengkapnya tentang konteks aman, lihat Secure Contexts (https://www.w3.org/TR/secure-contexts ).</translation>
 <translation id="703672323011778742">Kebijakan ini tidak digunakan lagi di M88, Flash tidak lagi didukung oleh Chrome. Jika kebijakan disetel ke 1, Anda dapat menyetel apakah semua situs dapat otomatis menjalankan plugin <ph name="FLASH_PLUGIN_NAME" />. Jika kebijakan disetel ke 2, plugin ini akan ditolak untuk semua situs. Fungsi klik untuk putar akan membuat plugin <ph name="FLASH_PLUGIN_NAME" /> berjalan, tetapi pengguna harus mengklik placeholder untuk memulainya.
 
       Jika kebijakan tidak disetel, <ph name="BLOCK_PLUGINS_POLICY_NAME" /> akan digunakan dan pengguna akan dapat mengubah setelan ini.
@@ -7939,6 +7946,10 @@ Jika kebijakan ini tidak disetel, hal ini setara dengan menyetel kebijakan ke '<
 <translation id="7443356543619955157">Jika kebijakan disetel, pendorongan konfigurasi jaringan akan diizinkan untuk semua pengguna perangkat <ph name="PRODUCT_OS_NAME" />. Konfigurasi jaringan berupa string berformat JSON, seperti yang didefinisikan oleh format Konfigurasi Jaringan Terbuka.</translation>
 <translation id="7446978687387327623">Mengizinkan Pemeriksaan Real-Time lewat Proxy Safe Browsing</translation>
 <translation id="7448430478749155471">Mengaktifkan fitur klik untuk diucapkan di layar login</translation>
+<translation id="7455912144588577399">Jika kebijakan disetel ke benar (true), pengguna akan dapat membuat halaman web
+yang memenuhi syarat dibacakan secara lisan menggunakan text-to-speech. Hal ini dilakukan dengan distilasi
+konten sisi server dan sintesis audio. Jika kebijakan disetel ke salah (false), fitur ini akan dinonaktifkan. Jika kebijakan ini disetel ke default atau tidak disetel,
+baca lisan akan diaktifkan.</translation>
 <translation id="7456922722153109956">Kebijakan ini mengontrol visibilitas pengumuman slot tengah di Halaman Tab Baru.
 
       Jika kebijakan disetel ke Aktif, Halaman Tab Baru akan menampilkan pengumuman slot tengah jika tersedia.
@@ -8897,19 +8908,6 @@ Jika kebijakan disetel ke Nonaktif, halaman akan diblokir.</translation>
 
       Jika tidak disetel, situs akan dapat meminta akses tetapi pengguna dapat mengubah setelan ini.</translation>
 <translation id="8267520984570984190">Perilaku pengubahan ukuran keyboard virtual default tidak diubah</translation>
-<translation id="8267887696930711948">Tidak digunakan lagi di M69. Sebagai gantinya,
-      gunakan OverrideSecurityRestrictionsOnInsecureOrigin.
-
-      Kebijakan ini menentukan daftar asal (URL) atau pola nama host (seperti "*.example.com") yang tidak dikenai pembatasan keamanan untuk asal yang tidak aman.
-
-      Tujuannya adalah mengizinkan organisasi memberikan akses ke asal untuk aplikasi lama yang tidak dapat menerapkan TLS, atau menyiapkan server staging untuk pengembangan web internal agar developer mereka dapat menguji fitur yang memerlukan konteks aman tanpa harus menerapkan TLS di server staging. Dengan kebijakan ini, asal tidak akan dilabeli "Not Secure" di omnibox.
-
-      Menetapkan daftar URL dalam kebijakan ini memiliki efek yang sama dengan menyetel tanda command line '--unsafely-treat-insecure-origin-as-secure' ke daftar yang dipisahkan koma yang berisi URL yang sama. Jika disetel, kebijakan ini akan mengganti tanda command line.
-
-      Kebijakan ini tidak lagi digunakan di M69 dan diganti dengan OverrideSecurityRestrictionsOnInsecureOrigin. Jika kedua kebijakan ini ada, OverrideSecurityRestrictionsOnInsecureOrigin akan menggantikan kebijakan ini.
-
-      Untuk informasi selengkapnya tentang konteks aman, lihat https://www.w3.org/TR/secure-contexts/
-      </translation>
 <translation id="8269238942896230153">Akun terkelola harus berupa akun utama, dan pengguna dapat mengimpor data penjelajahan yang ada pada saat pembuatan profil</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="827054846390793641">Mengaktifkan UI terkait koneksi pada desktop host saat koneksi aktif</translation>
@@ -9462,6 +9460,7 @@ tidak akan ada URL "pelajari lebih lanjut" di penginstal. Jika ada, URL harus me
 skema HTTPS.</translation>
 <translation id="8715885991031124968">Izinkan dialog JavaScript yang dipicu dari subframe asal yang berbeda.</translation>
 <translation id="8720547069538712402">Izinkan pengguna mengaktifkan atau menonaktifkan periksa ejaan</translation>
+<translation id="8721685661759544418">Mengaktifkan fitur baca lisan (distilasi teks dan sintesis text-to-speech) untuk halaman web</translation>
 <translation id="8726080977639508431">Kebijakan ini mengontrol cara <ph name="PRODUCT_NAME" /> menafsirkan kebijakan sitelist/daftar abu-abu untuk fitur Dukungan Browser Lama. Kebijakan ini akan memengaruhi kebijakan berikut: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" />, dan <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
 
       Jika disetel ke 'Default' (0) atau tidak disetel, pencocokan URL kurang ketat. Aturan yang tidak berisi "/" akan mencari substring di mana pun di nama host URL. Pencocokan komponen jalur URL peka huruf besar/kecil.
@@ -9992,6 +9991,17 @@ Kebijakan ini hanya berlaku jika kebijakan <ph name="FULL_RESTORE_ENABLED_NAME" 
 <translation id="9135095804754272364">Menampilkan notifikasi saat perangkat USB terdeteksi</translation>
 <translation id="9136212796239682721">Nonaktifkan UI balon download</translation>
 <translation id="9136399279941091445">Interval di luar jam kerja saat kebijakan perangkat yang ditentukan dirilis</translation>
+<translation id="9140064482233876338">Tidak digunakan lagi di M69. Sebagai gantinya, gunakan OverrideSecurityRestrictionsOnInsecureOrigin.
+
+Kebijakan ini menentukan daftar origin (URL) atau pola nama host (seperti "*.example.com") yang tidak dikenai pembatasan keamanan untuk origin yang tidak aman.
+
+Tujuannya adalah mengizinkan organisasi memberikan akses ke origin untuk aplikasi lama yang tidak dapat men-deploy TLS, atau menyiapkan server staging untuk pengembangan web internal agar developer mereka dapat menguji fitur yang memerlukan konteks aman tanpa harus men-deploy TLS di server staging. Dengan kebijakan ini, origin tidak akan dilabeli "Not Secure" (Tidak Aman) di omnibox.
+
+Menetapkan daftar URL dalam kebijakan ini memiliki efek yang sama dengan menetapkan tanda command line '--unsafely-treat-insecure-origin-as-secure' ke daftar yang dipisahkan koma yang berisi URL yang sama. Jika disetel, kebijakan ini akan mengganti tanda command line tersebut.
+
+Kebijakan ini tidak lagi digunakan di M69 dan diganti dengan OverrideSecurityRestrictionsOnInsecureOrigin. Jika kedua kebijakan ini ada, OverrideSecurityRestrictionsOnInsecureOrigin akan menggantikan kebijakan ini.
+
+Untuk mengetahui informasi selengkapnya tentang konteks aman, lihat https://www.w3.org/TR/secure-contexts/</translation>
 <translation id="9142561920976791097">Perilaku baru pengiriman peristiwa pada kontrol formulir yang dinonaktifkan akan digunakan.</translation>
 <translation id="91459503271584213">Luncurkan langsung Host Pesan Native yang dapat dieksekusi di Windows</translation>
 <translation id="9148720248753722892">Larang sertifikat yang ditandatangani SHA-1</translation>

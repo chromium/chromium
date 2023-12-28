@@ -111,7 +111,7 @@ class ASH_EXPORT PaletteTool {
   bool enabled_ = false;
 
   // Unowned pointer to the delegate. The delegate should outlive this instance.
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
 };
 
 }  // namespace ash

@@ -48,6 +48,8 @@ void ScreenCaptureNotificationUIAsh::ProcessStopRequestFromUI() {
 
 // static
 std::unique_ptr<ScreenCaptureNotificationUI>
-ScreenCaptureNotificationUI::Create(const std::u16string& text) {
+ScreenCaptureNotificationUI::Create(
+    const std::u16string& text,
+    content::WebContents* capturing_web_contents) {
   return std::make_unique<ash::ScreenCaptureNotificationUIAsh>(text);
 }

@@ -21,7 +21,8 @@ void OpenXrPlatformHelper::GetRequiredExtensions(
 
 // static
 std::vector<const char*> OpenXrPlatformHelper::GetOptionalExtensions() {
-  return {XR_ANDROID_HAND_GESTURE_EXTENSION_NAME};
+  return {XR_ANDROID_HAND_GESTURE_EXTENSION_NAME,
+          XR_ANDROID_REFERENCE_SPACE_BOUNDS_POLYGON_EXTENSION_NAME};
 }
 
 }  // namespace device

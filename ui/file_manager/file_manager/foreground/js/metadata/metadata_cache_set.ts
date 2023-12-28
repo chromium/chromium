@@ -8,7 +8,7 @@ import {entriesToURLs} from '../../../common/js/entry_utils.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 
 import {MetadataCacheItem} from './metadata_cache_item.js';
-import {MetadataItem, MetadataKey} from './metadata_item.js';
+import {MetadataItem, type MetadataKey} from './metadata_item.js';
 import {MetadataRequest} from './metadata_request.js';
 
 /**
@@ -24,6 +24,27 @@ export class MetadataSetEvent extends Event {
   }
 }
 
+export interface MetadataModelMap extends Record<string, MetadataSetEvent> {
+  'update': MetadataSetEvent;
+}
+
+interface MetadataSetEventTarget {
+  addEventListener<K extends keyof MetadataModelMap>(
+      type: K, listener: (event: MetadataModelMap[K]) => void,
+      options?: boolean|AddEventListenerOptions|undefined): void;
+  addEventListener(
+      type: string, callback: EventListenerOrEventListenerObject|null,
+      options?: AddEventListenerOptions|boolean): void;
+  removeEventListener<K extends keyof MetadataModelMap>(
+      type: K, listener: (event: MetadataModelMap[K]) => void,
+      options?: boolean|EventListenerOptions): void;
+  removeEventListener(
+      type: string, listener: EventListenerOrEventListenerObject|null,
+      options?: boolean|EventListenerOptions): void;
+}
+
+class MetadataSetEventTarget extends EventTarget {}
+
 /**
  * A collection of MetadataCacheItem objects. This class acts as a map from file
  * entry URLs to metadata items. You can store metadata for entries, you can
@@ -31,7 +52,7 @@ export class MetadataSetEvent extends Event {
  * entries. In addition, you can generate MetadataRequests and start them (i.e.,
  * put them in the LOADING state).
  */
-export class MetadataCacheSet extends EventTarget {
+export class MetadataCacheSet extends MetadataSetEventTarget {
   private items_ = new Map<string, MetadataCacheItem>();
   private requestIdCounter_: number = 0;
 

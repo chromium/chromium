@@ -46,12 +46,55 @@ bool ExistingSettingsHasValue(base::StringPiece setting_key,
   return existing_settings_dict->Find(setting_key) != nullptr;
 }
 
-}  // namespace
-
-constexpr bool VendorProductId::operator<(const VendorProductId& other) const {
-  return vendor_id == other.vendor_id ? product_id < other.product_id
-                                      : vendor_id < other.vendor_id;
+bool IsAlphaKeyboardCode(ui::KeyboardCode key_code) {
+  return key_code >= ui::VKEY_A && key_code <= ui::VKEY_Z;
 }
+
+bool IsNumberKeyboardCode(ui::KeyboardCode key_code) {
+  return key_code >= ui::VKEY_0 && key_code <= ui::VKEY_9;
+}
+
+// Verify if the customization restriction blocks the button remapping.
+// Block button remapping in the following cases:
+// 1. Customization restriction is kAllowCustomizations.
+// 2. Customization restriction is kDisableKeyEventRewrites and button is not
+// a keyboard key.
+// 3. Customization restriction is kAllowAlphabetKeyEventRewrites and button
+// is a mouse button or alphabet keyboard key.
+// 4. Customization restriction is kAllowAlphabetOrNumberKeyEventRewrites and
+// button is a mouse button or alphabet or number keyboard key.
+// In other cases, block button remapping.
+bool RestrictionBlocksRemapping(
+    const mojom::ButtonRemapping& remapping,
+    mojom::CustomizationRestriction customization_restriction) {
+  switch (customization_restriction) {
+    case mojom::CustomizationRestriction::kAllowCustomizations:
+      return false;
+    case mojom::CustomizationRestriction::kDisallowCustomizations:
+      return true;
+    case mojom::CustomizationRestriction::kDisableKeyEventRewrites:
+      if (remapping.button->is_vkey()) {
+        return true;
+      }
+      return false;
+    case mojom::CustomizationRestriction::kAllowAlphabetKeyEventRewrites:
+      if (remapping.button->is_vkey() &&
+          !IsAlphaKeyboardCode(remapping.button->get_vkey())) {
+        return true;
+      }
+      return false;
+    case mojom::CustomizationRestriction::
+        kAllowAlphabetOrNumberKeyEventRewrites:
+      if (remapping.button->is_vkey() &&
+          !IsAlphaKeyboardCode(remapping.button->get_vkey()) &&
+          !IsNumberKeyboardCode(remapping.button->get_vkey())) {
+        return true;
+      }
+      return false;
+  }
+}
+
+}  // namespace
 
 bool VendorProductId::operator==(const VendorProductId& other) const {
   return vendor_id == other.vendor_id && product_id == other.product_id;
@@ -166,15 +209,6 @@ const base::Value::List* GetLoginScreenButtonRemappingList(
   return &list_value->GetList();
 }
 
-bool IsMouseCustomizable(const ui::InputDevice& device) {
-  // TODO(wangdanny): Update uncustomizable mice set with devices' vid and pid.
-  static constexpr auto kUncustomizableMice =
-      base::MakeFixedFlatSet<VendorProductId>({
-          {0xffff, 0xffff},  // Fake data for testing.
-      });
-  return !kUncustomizableMice.contains({device.vendor_id, device.product_id});
-}
-
 bool IsKeyboardPretendingToBeMouse(const ui::InputDevice& device) {
   static base::NoDestructor<base::flat_set<VendorProductId>> logged_devices;
   static constexpr auto kKeyboardsPretendingToBeMice =
@@ -242,11 +276,7 @@ base::Value::Dict ConvertButtonRemappingToDict(
     mojom::CustomizationRestriction customization_restriction) {
   base::Value::Dict dict;
 
-  if (customization_restriction ==
-          mojom::CustomizationRestriction::kDisallowCustomizations ||
-      (remapping.button->is_vkey() &&
-       customization_restriction ==
-           mojom::CustomizationRestriction::kDisableKeyEventRewrites)) {
+  if (RestrictionBlocksRemapping(remapping, customization_restriction)) {
     return dict;
   }
 

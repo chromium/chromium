@@ -10,25 +10,18 @@
 namespace ash {
 
 // IMPORTANT PLEASE READ.
-// Please ensure that the order of these enums are stable. If adding a new
-// accelerator action, please but at the end and before DEBUG-related
-// accelerator actions.
+// Add new actions to the bottom of the list and ensure that the order of these
+// enums are stable.
 //
 // Please keep the ActionName in sync with the ActionName under
 // <histogram name="Ash.Accelerators.Actions.{ActionName}" in this file
 // tools/metrics/histograms/metadata/ash/histograms.xml.
 //
-// Please keep the ActionName in sync with the AcceleratorAction enum
-// in this file tools/metrics/histograms/metadata/chromeos/enums.xml.
+// Please also keep the enums in sync with the `AcceleratorAction` enum
+// in tools/metrics/histograms/metadata/chromeos/enums.xml.
 //
-// Example:
-//
-// If you add a new Action here,
+// Accelerator actions are defined as:
 //  ACCELERATOR_ACTION_ENTRY(NewAction) \
-// then, add an new entry inside <token key="ActionName">:
-//  <variant name="NewAction" />
-// in the histograms.xml file.
-// Please also add a new AcceleratorAction enum in the enums.xml file.
 //
 // The added enum member is kNewAction. Its string name is NewAction.
 //
@@ -166,9 +159,6 @@ namespace ash {
   ACCELERATOR_ACTION_ENTRY(WindowMinimize)                              \
   ACCELERATOR_ACTION_ENTRY(MinimizeTopWindowOnBack)                     \
   ACCELERATOR_ACTION_ENTRY(VolumeMuteToggle)                            \
-  /* Debug accelerators are intentionally at the end, so that if you */ \
-  /* remove one, you don't need to update tests which check*/           \
-  /* hashes of the ids.*/                                               \
   ACCELERATOR_ACTION_ENTRY(DebugClearUseKMeansPref)                     \
   ACCELERATOR_ACTION_ENTRY(DebugKeyboardBacklightToggle)                \
   ACCELERATOR_ACTION_ENTRY(DebugMicrophoneMuteToggle)                   \

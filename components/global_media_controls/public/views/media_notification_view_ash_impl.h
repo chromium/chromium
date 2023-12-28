@@ -6,6 +6,7 @@
 #define COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_NOTIFICATION_VIEW_ASH_IMPL_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/global_media_controls/public/views/media_item_ui_device_selector.h"
 #include "components/global_media_controls/public/views/media_item_ui_footer.h"
@@ -35,6 +36,7 @@ namespace global_media_controls {
 
 namespace {
 class MediaButton;
+class MediaLabelButton;
 }
 
 // Indicates this media notification view will be displayed on which page. These
@@ -103,8 +105,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaNotificationViewAshImpl
   // Helper functions for testing:
   views::ImageView* GetArtworkViewForTesting();
   views::Label* GetSourceLabelForTesting();
-  views::Label* GetArtistLabelForTesting();
   views::Label* GetTitleLabelForTesting();
+  views::Label* GetArtistLabelForTesting();
   views::ImageView* GetChevronIconForTesting();
   views::Button* GetActionButtonForTesting(
       media_session::mojom::MediaSessionAction action);
@@ -117,6 +119,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaNotificationViewAshImpl
  private:
   friend class MediaNotificationViewAshImplTest;
 
+  // Callback for a media label being pressed.
+  void MediaLabelPressed(MediaLabelButton* button);
+
   MediaButton* CreateMediaButton(views::View* parent,
                                  int button_id,
                                  const gfx::VectorIcon& vector_icon,
@@ -124,8 +129,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaNotificationViewAshImpl
 
   void UpdateActionButtonsVisibility();
 
-  // Callback for media action buttons.
-  void ButtonPressed(views::Button* button);
+  // Callback for a media action button being pressed.
+  void MediaButtonPressed(views::Button* button);
 
   // Callback for the user dragging the squiggly progress view. A playing media
   // should be temporarily paused when the user is dragging the progress line.
@@ -158,7 +163,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaNotificationViewAshImpl
   media_session::MediaPosition position_;
 
   // The list of action buttons in the view.
-  std::vector<views::Button*> action_buttons_;
+  std::vector<raw_ptr<views::Button, VectorExperimental>> action_buttons_;
 
   // Set of enabled actions.
   base::flat_set<media_session::mojom::MediaSessionAction> enabled_actions_;
@@ -167,9 +172,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaNotificationViewAshImpl
   bool in_picture_in_picture_ = false;
 
   raw_ptr<views::ImageView> artwork_view_ = nullptr;
-  raw_ptr<views::Label> source_label_ = nullptr;
-  raw_ptr<views::Label> artist_label_ = nullptr;
-  raw_ptr<views::Label> title_label_ = nullptr;
+  raw_ptr<MediaLabelButton> source_label_ = nullptr;
+  raw_ptr<MediaLabelButton> artist_label_ = nullptr;
+  raw_ptr<MediaLabelButton> title_label_ = nullptr;
   raw_ptr<views::ImageView> chevron_icon_ = nullptr;
 
   raw_ptr<media_message_center::MediaSquigglyProgressView>

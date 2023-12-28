@@ -120,6 +120,7 @@ bool HoldingSpaceItem::IsCameraAppType(HoldingSpaceItem::Type type) {
     case Type::kLocalSuggestion:
     case Type::kNearbyShare:
     case Type::kPhoneHubCameraRoll:
+    case Type::kPhotoshopWeb:
     case Type::kPinnedFile:
     case Type::kPrintedPdf:
     case Type::kScan:
@@ -147,6 +148,7 @@ bool HoldingSpaceItem::IsDownloadType(HoldingSpaceItem::Type type) {
     case Type::kLocalSuggestion:
     case Type::kNearbyShare:
     case Type::kPhoneHubCameraRoll:
+    case Type::kPhotoshopWeb:
     case Type::kPinnedFile:
     case Type::kPrintedPdf:
     case Type::kScan:
@@ -177,6 +179,7 @@ bool HoldingSpaceItem::IsScreenCaptureType(HoldingSpaceItem::Type type) {
     case Type::kLocalSuggestion:
     case Type::kNearbyShare:
     case Type::kPhoneHubCameraRoll:
+    case Type::kPhotoshopWeb:
     case Type::kPinnedFile:
     case Type::kPrintedPdf:
     case Type::kScan:
@@ -201,6 +204,7 @@ bool HoldingSpaceItem::IsSuggestionType(HoldingSpaceItem::Type type) {
     case Type::kLacrosDownload:
     case Type::kNearbyShare:
     case Type::kPhoneHubCameraRoll:
+    case Type::kPhotoshopWeb:
     case Type::kPinnedFile:
     case Type::kPrintedPdf:
     case Type::kScan:

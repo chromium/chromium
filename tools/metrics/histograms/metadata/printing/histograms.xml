@@ -498,6 +498,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Printing.PrintDuration.Success" units="seconds"
+    expires_after="2024-08-14">
+  <owner>awscreen@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Records the time to successfully print a document to a local printer. All
+    print job settings are determined before the start of the measurement. This
+    time represents the period from when a print job is started until a document
+    done completes successfully, after the document has been fully spooled to
+    the platform for transmission to the printer. This includes the time for any
+    required data format conversions, such as from PDF to another format like
+    EMF, PostScript, or XPS. Specifically excluded from collection for this
+    metric are Windows print jobs which use a printer driver that prompts the
+    user with a &quot;Save Print Output As&quot; dialog, since such print jobs
+    could be arbitrarily long waiting for data entry by users.
+  </summary>
+</histogram>
+
 <histogram name="Printing.PrintServers.ServersToQuery" units="servers"
     expires_after="2024-09-01">
   <owner>pawliczek@chromium.org</owner>

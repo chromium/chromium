@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ipc/ipc_message_start.h"
 
 namespace IPC {
@@ -16,7 +17,8 @@ class MessageFilter;
 
 class MessageFilterRouter {
  public:
-  typedef std::vector<MessageFilter*> MessageFilters;
+  typedef std::vector<raw_ptr<MessageFilter, VectorExperimental>>
+      MessageFilters;
 
   MessageFilterRouter();
   ~MessageFilterRouter();

@@ -137,7 +137,7 @@ class LoginExpandedPublicAccountEventHandler : public ui::EventHandler {
   }
   void OnKeyEvent(ui::KeyEvent* event) override { view_->OnKeyEvent(event); }
 
-  raw_ptr<LoginExpandedPublicAccountView, ExperimentalAsh> view_;
+  raw_ptr<LoginExpandedPublicAccountView> view_;
 };
 
 }  // namespace
@@ -244,10 +244,10 @@ class SelectionButtonView : public LoginButton {
  private:
   int left_margin_ = 0;
   int right_margin_ = 0;
-  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> left_margin_view_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> right_margin_view_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
+  raw_ptr<views::View> left_margin_view_ = nullptr;
+  raw_ptr<views::View> right_margin_view_ = nullptr;
 };
 
 BEGIN_METADATA(SelectionButtonView)
@@ -355,8 +355,8 @@ class MonitoringWarningView : public NonAccessibleView {
 
   WarningType warning_type_;
   std::optional<std::string> device_manager_;
-  raw_ptr<views::ImageView, ExperimentalAsh> image_;
-  raw_ptr<views::Label, ExperimentalAsh> label_;
+  raw_ptr<views::ImageView> image_;
+  raw_ptr<views::Label> label_;
 };
 
 BEGIN_METADATA(MonitoringWarningView)
@@ -608,16 +608,16 @@ class RightPaneView : public NonAccessibleView {
 
   LoginUserInfo current_user_;
 
-  raw_ptr<SelectionButtonView, ExperimentalAsh> advanced_view_button_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> advanced_view_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> language_title_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> keyboard_title_ = nullptr;
-  raw_ptr<views::StyledLabel, ExperimentalAsh> learn_more_label_ = nullptr;
+  raw_ptr<SelectionButtonView> advanced_view_button_ = nullptr;
+  raw_ptr<views::View> advanced_view_ = nullptr;
+  raw_ptr<views::View> language_title_ = nullptr;
+  raw_ptr<views::View> keyboard_title_ = nullptr;
+  raw_ptr<views::StyledLabel> learn_more_label_ = nullptr;
 
-  raw_ptr<PublicAccountMenuView, DanglingUntriaged | ExperimentalAsh>
-      language_menu_view_ = nullptr;
-  raw_ptr<PublicAccountMenuView, DanglingUntriaged | ExperimentalAsh>
-      keyboard_menu_view_ = nullptr;
+  raw_ptr<PublicAccountMenuView, DanglingUntriaged> language_menu_view_ =
+      nullptr;
+  raw_ptr<PublicAccountMenuView, DanglingUntriaged> keyboard_menu_view_ =
+      nullptr;
 
   std::string selected_language_item_value_;
   std::string selected_keyboard_item_value_;

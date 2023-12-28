@@ -1611,7 +1611,7 @@ class CONTENT_EXPORT NavigationRequest
   // Called before a commit. Updates the history index and length held in
   // CommitNavigationParams. This is used to update this shared state with the
   // renderer process.
-  void UpdateCommitNavigationParamsHistory();
+  void UpdateHistoryParamsInCommitNavigationParams();
 
   // The disconnect handler for the NavigationClient Mojo interface; used as a
   // signal to potentially cancel navigations, e.g. when the renderer replaces

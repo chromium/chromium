@@ -228,6 +228,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                         getCompositorViewHolderSupplier(),
                         getTabContentManagerSupplier(),
                         this::getSnackbarManager,
+                        getEdgeToEdgeSupplier(),
                         getActivityType(),
                         this::isInOverviewMode,
                         this::isWarmOnResume,
@@ -571,6 +572,12 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     @Override
     protected boolean handleBackPressed() {
+        if (!BackPressManager.isEnabled()
+                && getTabModalLifetimeHandler() != null
+                && getTabModalLifetimeHandler().onBackPressed()) {
+            BackPressManager.record(BackPressHandler.Type.TAB_MODAL_HANDLER);
+            return true;
+        }
         if (BackPressManager.correctTabNavigationOnFallback()) {
             if (getToolbarManager() != null && getToolbarManager().back()) {
                 return true;
@@ -774,9 +781,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     @Override
     protected boolean shouldShowTabOnActivityShown() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PREFETCH_DELAY_SHOW_ON_START)) {
-            return true;
-        }
         // Hidden tabs from speculation will be shown and added to the tab model in
         // CustomTabActivityTabController#finalizeCreatingTab.
         return didFinishNativeInitialization()

@@ -62,6 +62,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcTosHostForTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPrivacyPolicyHostForTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcVmMountDebugFs[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcVmUreadaheadMode[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcHostUreadaheadMode[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcVmUseHugePages[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshClearFastInkBuffer[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshBypassGlanceablesPref[];
@@ -95,6 +96,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshUiMode[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshUiModeClamshell[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshUiModeTablet[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAuraLegacyPowerButton[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kBirchFeatureKey[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCellularFirst[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kChildWallpaperLarge[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kChildWallpaperSmall[];
@@ -106,6 +108,8 @@ extern const char kCryptohomeRecoveryUseTestEnvironment[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCryptohomeUseAuthSession[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kCryptohomeUseOldEncryptionForTesting[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kCryptohomeIgnoreCleanupOwnershipForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDefaultWallpaperIsOem[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDefaultWallpaperLarge[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDefaultWallpaperSmall[];
@@ -492,6 +496,12 @@ bool UseFakeCrasAudioClientForDBus();
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool ShouldAllowDefaultShelfPinLayoutIgnoringSync();
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsBirchSecretKeyMatched();
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+void SetIgnoreBirchSecretKeyForTest(bool ignore);
 
 }  // namespace ash::switches
 

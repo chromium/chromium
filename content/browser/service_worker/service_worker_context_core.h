@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
+#include "base/observer_list_types.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/browser/service_worker/service_worker_info.h"
@@ -107,6 +108,15 @@ class CONTENT_EXPORT ServiceWorkerContextCore
     const raw_ptr<ContainerHostByClientUUIDMap, DanglingUntriaged> map_;
     ContainerHostPredicate predicate_;
     ContainerHostByClientUUIDMap::iterator container_host_iterator_;
+  };
+
+  class TestVersionObserver : public base::CheckedObserver {
+   public:
+    TestVersionObserver() = default;
+
+    // Called when a new `ServiceWorkerVersion` is added to this context.
+    virtual void OnServiceWorkerVersionCreated(
+        ServiceWorkerVersion* service_worker_version) {}
   };
 
   // This is owned by ServiceWorkerContextWrapper. |observer_list| is created in
@@ -416,6 +426,14 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   void BeginProcessingWarmingUp() { is_processing_warming_up_ = true; }
   void EndProcessingWarmingUp() { is_processing_warming_up_ = false; }
 
+  void AddVersionObserverForTest(TestVersionObserver* observer) {
+    test_version_observers_.AddObserver(observer);
+  }
+
+  void RemoveVersionObserverForTest(TestVersionObserver* observer) {
+    test_version_observers_.RemoveObserver(observer);
+  }
+
 #if !BUILDFLAG(IS_ANDROID)
   ServiceWorkerHidDelegateObserver* hid_delegate_observer();
 
@@ -567,6 +585,8 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   std::unique_ptr<ServiceWorkerHidDelegateObserver> hid_delegate_observer_;
   std::unique_ptr<ServiceWorkerUsbDelegateObserver> usb_delegate_observer_;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  base::ObserverList<TestVersionObserver> test_version_observers_;
 
   base::WeakPtrFactory<ServiceWorkerContextCore> weak_factory_{this};
 };

@@ -132,8 +132,10 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/buildflags.h"
+#include "components/compose/core/browser/compose_features.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/download/public/common/download_url_parameters.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/google/core/common/google_util.h"
 #include "components/guest_view/browser/guest_view_base.h"
@@ -818,7 +820,8 @@ RenderViewContextMenu::RenderViewContextMenu(
       autofill_context_menu_manager_(
           autofill::PersonalDataManagerFactory::GetForProfile(GetProfile()),
           this,
-          &menu_model_) {
+          &menu_model_),
+      new_badge_tracker_(GetProfile()) {
   if (!g_custom_id_ranges_initialized) {
     g_custom_id_ranges_initialized = true;
     SetContentCustomCommandIdRange(IDC_CONTENT_CONTEXT_CUSTOM_FIRST,
@@ -1184,7 +1187,14 @@ void RenderViewContextMenu::InitMenu() {
   }
 
   // Show Read Anything option if it's not already open in the side panel.
-  if (features::IsReadAnythingEnabled()) {
+  // Only show it on the context menu for the page, selections without links,
+  // and editables.
+  if (features::IsReadAnythingEnabled() &&
+      (content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_PAGE) ||
+       content_type_->SupportsGroup(
+           ContextMenuContentType::ITEM_GROUP_SMART_SELECTION) ||
+       content_type_->SupportsGroup(
+           ContextMenuContentType::ITEM_GROUP_EDITABLE))) {
     if (GetBrowser() && GetBrowser()->is_type_normal() &&
         !IsReadAnythingEntryShowing(GetBrowser())) {
       AppendReadingModeItem();
@@ -2200,9 +2210,7 @@ void RenderViewContextMenu::AppendMediaRouterItem() {
 void RenderViewContextMenu::AppendReadingModeItem() {
   menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
                                   IDS_CONTENT_CONTEXT_READING_MODE);
-  menu_model_.SetIsNewFeatureAt(
-      menu_model_.GetItemCount() - 1,
-      !content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_LINK));
+  menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -2344,8 +2352,9 @@ void RenderViewContextMenu::AppendSpellingAndSearchSuggestionItems() {
       // TODO(b/303646344): Remove new feature tag when no longer new.
       menu_model_.SetIsNewFeatureAt(
           menu_model_.GetItemCount() - 1,
-          !content_type_->SupportsGroup(
-              ContextMenuContentType::ITEM_GROUP_LINK));
+          new_badge_tracker_.TryShowNewBadge(
+              feature_engagement::kIPHComposeMenuNewBadgeFeature,
+              &compose::features::kEnableCompose));
 
       render_separator = true;
     }
@@ -3377,21 +3386,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
 #if BUILDFLAG(ENABLE_COMPOSE)
     case IDC_CONTEXT_COMPOSE: {
-      auto* client = GetChromeComposeClient();
-      compose::ComposeManager* compose_manager =
-          client ? &client->GetManager() : nullptr;
-      RenderFrameHost* render_frame_host = GetRenderFrameHost();
-      if (compose_manager && render_frame_host) {
-        auto* content_autofill_driver =
-            autofill::ContentAutofillDriver::GetForRenderFrameHost(
-                render_frame_host);
-        if (content_autofill_driver) {
-          compose_manager->OpenComposeFromContextMenu(
-              content_autofill_driver,
-              autofill::FormRendererId(params_.form_renderer_id),
-              autofill::FieldRendererId(params_.field_renderer_id));
-        }
-      }
+      ExecOpenCompose();
       break;
     }
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
@@ -3929,6 +3924,31 @@ void RenderViewContextMenu::ExecOpenLinkInProfile(int profile_index) {
       base::BindRepeating(OnBrowserCreated, params_.link_url));
 }
 
+#if BUILDFLAG(ENABLE_COMPOSE)
+void RenderViewContextMenu::ExecOpenCompose() {
+  ChromeComposeClient* client = GetChromeComposeClient();
+  if (!client) {
+    return;
+  }
+  RenderFrameHost* render_frame_host = GetRenderFrameHost();
+  if (!render_frame_host) {
+    return;
+  }
+  if (auto* driver = autofill::ContentAutofillDriver::GetForRenderFrameHost(
+          render_frame_host)) {
+    autofill::LocalFrameToken frame_token = driver->GetFrameToken();
+    client->GetManager().OpenCompose(
+        *driver,
+        autofill::FormGlobalId(
+            frame_token, autofill::FormRendererId(params_.form_renderer_id)),
+        autofill::FieldGlobalId(
+            frame_token, autofill::FieldRendererId(params_.field_renderer_id)),
+        compose::ComposeManagerImpl::UiEntryPoint::kContextMenu);
+    new_badge_tracker_.ActionPerformed("compose_menu_item_activated");
+  }
+}
+#endif
+
 void RenderViewContextMenu::ExecOpenInReadAnything() {
   Browser* browser = GetBrowser();
   if (!browser) {
@@ -4121,6 +4141,10 @@ void RenderViewContextMenu::ExecRegionSearch(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   Browser* browser = GetBrowser();
   CHECK(browser);
+  if (lens::features::IsLensRegionSearchStaticPageEnabled()) {
+    lens::OpenLensStaticPage(browser);
+    return;
+  }
 
   // We don't use `source_web_contents_` here because it doesn't work with the
   // PDF reader.

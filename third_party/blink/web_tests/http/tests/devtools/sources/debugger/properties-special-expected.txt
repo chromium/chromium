@@ -7,7 +7,7 @@ properties-special.js:14 ƒ anonymous(a,b)
     caller: null
     length: 2
     name: ""
-    prototype: {constructor: ƒ}
+    prototype: {}
     [[FunctionLocation]]: properties-special.js:14
     [[Prototype]]: ƒ ()
     [[Scopes]]: Scopes[1]

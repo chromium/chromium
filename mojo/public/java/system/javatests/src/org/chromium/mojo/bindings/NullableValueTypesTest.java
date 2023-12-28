@@ -54,15 +54,11 @@ public class NullableValueTypesTest {
             remote.methodWithEnums(
                     inEnumValue,
                     inMappedEnumValue,
-                    new InterfaceV2.MethodWithEnums_Response() {
-                        @Override
-                        public void call(
-                                @Nullable @RegularEnum.EnumType Integer outEnumValue,
-                                @Nullable @TypemappedEnum.EnumType Integer outMappedEnumValue) {
-                            Assert.assertNull(outEnumValue);
-                            Assert.assertNull(outMappedEnumValue);
-                            mTestRule.quitLoop();
-                        }
+                    (@Nullable @RegularEnum.EnumType Integer outEnumValue,
+                            @Nullable @TypemappedEnum.EnumType Integer outMappedEnumValue) -> {
+                        Assert.assertNull(outEnumValue);
+                        Assert.assertNull(outMappedEnumValue);
+                        mTestRule.quitLoop();
                     });
             mTestRule.runLoopForever();
         }
@@ -74,13 +70,10 @@ public class NullableValueTypesTest {
 
             remote.methodWithStructWithEnums(
                     in,
-                    new InterfaceV2.MethodWithStructWithEnums_Response() {
-                        @Override
-                        public void call(StructWithEnums out) {
-                            Assert.assertNull(out.enumValue);
-                            Assert.assertNull(out.mappedEnumValue);
-                            mTestRule.quitLoop();
-                        }
+                    (StructWithEnums out) -> {
+                        Assert.assertNull(out.enumValue);
+                        Assert.assertNull(out.mappedEnumValue);
+                        mTestRule.quitLoop();
                     });
             mTestRule.runLoopForever();
         }
@@ -110,33 +103,29 @@ public class NullableValueTypesTest {
                     inI64Value,
                     inFloatValue,
                     inDoubleValue,
-                    new InterfaceV2.MethodWithNumerics_Response() {
-                        @Override
-                        public void call(
-                                @Nullable Boolean outBoolValue,
-                                @Nullable Byte outU8Value,
-                                @Nullable Short outU16Value,
-                                @Nullable Integer outU32Value,
-                                @Nullable Long outU64Value,
-                                @Nullable Byte outI8Value,
-                                @Nullable Short outI16Value,
-                                @Nullable Integer outI32Value,
-                                @Nullable Long outI64Value,
-                                @Nullable Float outFloatValue,
-                                @Nullable Double outDoubleValue) {
-                            Assert.assertNull(outBoolValue);
-                            Assert.assertNull(outU8Value);
-                            Assert.assertNull(outU16Value);
-                            Assert.assertNull(outU32Value);
-                            Assert.assertNull(outU64Value);
-                            Assert.assertNull(outI8Value);
-                            Assert.assertNull(outI16Value);
-                            Assert.assertNull(outI32Value);
-                            Assert.assertNull(outI64Value);
-                            Assert.assertNull(outFloatValue);
-                            Assert.assertNull(outDoubleValue);
-                            mTestRule.quitLoop();
-                        }
+                    (@Nullable Boolean outBoolValue,
+                            @Nullable Byte outU8Value,
+                            @Nullable Short outU16Value,
+                            @Nullable Integer outU32Value,
+                            @Nullable Long outU64Value,
+                            @Nullable Byte outI8Value,
+                            @Nullable Short outI16Value,
+                            @Nullable Integer outI32Value,
+                            @Nullable Long outI64Value,
+                            @Nullable Float outFloatValue,
+                            @Nullable Double outDoubleValue) -> {
+                        Assert.assertNull(outBoolValue);
+                        Assert.assertNull(outU8Value);
+                        Assert.assertNull(outU16Value);
+                        Assert.assertNull(outU32Value);
+                        Assert.assertNull(outU64Value);
+                        Assert.assertNull(outI8Value);
+                        Assert.assertNull(outI16Value);
+                        Assert.assertNull(outI32Value);
+                        Assert.assertNull(outI64Value);
+                        Assert.assertNull(outFloatValue);
+                        Assert.assertNull(outDoubleValue);
+                        mTestRule.quitLoop();
                     });
             mTestRule.runLoopForever();
         }
@@ -157,22 +146,19 @@ public class NullableValueTypesTest {
 
             remote.methodWithStructWithNumerics(
                     in,
-                    new InterfaceV2.MethodWithStructWithNumerics_Response() {
-                        @Override
-                        public void call(StructWithNumerics out) {
-                            Assert.assertNull(out.boolValue);
-                            Assert.assertNull(out.u8Value);
-                            Assert.assertNull(out.u16Value);
-                            Assert.assertNull(out.u32Value);
-                            Assert.assertNull(out.u64Value);
-                            Assert.assertNull(out.i8Value);
-                            Assert.assertNull(out.i16Value);
-                            Assert.assertNull(out.i32Value);
-                            Assert.assertNull(out.i64Value);
-                            Assert.assertNull(out.floatValue);
-                            Assert.assertNull(out.doubleValue);
-                            mTestRule.quitLoop();
-                        }
+                    (StructWithNumerics out) -> {
+                        Assert.assertNull(out.boolValue);
+                        Assert.assertNull(out.u8Value);
+                        Assert.assertNull(out.u16Value);
+                        Assert.assertNull(out.u32Value);
+                        Assert.assertNull(out.u64Value);
+                        Assert.assertNull(out.i8Value);
+                        Assert.assertNull(out.i16Value);
+                        Assert.assertNull(out.i32Value);
+                        Assert.assertNull(out.i64Value);
+                        Assert.assertNull(out.floatValue);
+                        Assert.assertNull(out.doubleValue);
+                        mTestRule.quitLoop();
                     });
             mTestRule.runLoopForever();
         }
@@ -194,15 +180,11 @@ public class NullableValueTypesTest {
             remote.methodWithEnums(
                     inEnumValue,
                     inMappedEnumValue,
-                    new InterfaceV2.MethodWithEnums_Response() {
-                        @Override
-                        public void call(
-                                @Nullable @RegularEnum.EnumType Integer outEnumValue,
-                                @Nullable @TypemappedEnum.EnumType Integer outMappedEnumValue) {
-                            Assert.assertEquals(inEnumValue, outEnumValue);
-                            Assert.assertEquals(inMappedEnumValue, outMappedEnumValue);
-                            mTestRule.quitLoop();
-                        }
+                    (@Nullable @RegularEnum.EnumType Integer outEnumValue,
+                            @Nullable @TypemappedEnum.EnumType Integer outMappedEnumValue) -> {
+                        Assert.assertEquals(inEnumValue, outEnumValue);
+                        Assert.assertEquals(inMappedEnumValue, outMappedEnumValue);
+                        mTestRule.quitLoop();
                     });
             mTestRule.runLoopForever();
         }
@@ -214,13 +196,10 @@ public class NullableValueTypesTest {
 
             remote.methodWithStructWithEnums(
                     in,
-                    new InterfaceV2.MethodWithStructWithEnums_Response() {
-                        @Override
-                        public void call(StructWithEnums out) {
-                            Assert.assertEquals(in.enumValue, out.enumValue);
-                            Assert.assertEquals(in.mappedEnumValue, out.mappedEnumValue);
-                            mTestRule.quitLoop();
-                        }
+                    (StructWithEnums out) -> {
+                        Assert.assertEquals(in.enumValue, out.enumValue);
+                        Assert.assertEquals(in.mappedEnumValue, out.mappedEnumValue);
+                        mTestRule.quitLoop();
                     });
             mTestRule.runLoopForever();
         }
@@ -250,33 +229,29 @@ public class NullableValueTypesTest {
                     inI64Value,
                     inFloatValue,
                     inDoubleValue,
-                    new InterfaceV2.MethodWithNumerics_Response() {
-                        @Override
-                        public void call(
-                                @Nullable Boolean outBoolValue,
-                                @Nullable Byte outU8Value,
-                                @Nullable Short outU16Value,
-                                @Nullable Integer outU32Value,
-                                @Nullable Long outU64Value,
-                                @Nullable Byte outI8Value,
-                                @Nullable Short outI16Value,
-                                @Nullable Integer outI32Value,
-                                @Nullable Long outI64Value,
-                                @Nullable Float outFloatValue,
-                                @Nullable Double outDoubleValue) {
-                            Assert.assertEquals(inBoolValue, outBoolValue);
-                            Assert.assertEquals(inU8Value, outU8Value);
-                            Assert.assertEquals(inU16Value, outU16Value);
-                            Assert.assertEquals(inU32Value, outU32Value);
-                            Assert.assertEquals(inU64Value, outU64Value);
-                            Assert.assertEquals(inI8Value, outI8Value);
-                            Assert.assertEquals(inI16Value, outI16Value);
-                            Assert.assertEquals(inI32Value, outI32Value);
-                            Assert.assertEquals(inI64Value, outI64Value);
-                            Assert.assertEquals(inFloatValue, outFloatValue);
-                            Assert.assertEquals(inDoubleValue, outDoubleValue);
-                            mTestRule.quitLoop();
-                        }
+                    (@Nullable Boolean outBoolValue,
+                            @Nullable Byte outU8Value,
+                            @Nullable Short outU16Value,
+                            @Nullable Integer outU32Value,
+                            @Nullable Long outU64Value,
+                            @Nullable Byte outI8Value,
+                            @Nullable Short outI16Value,
+                            @Nullable Integer outI32Value,
+                            @Nullable Long outI64Value,
+                            @Nullable Float outFloatValue,
+                            @Nullable Double outDoubleValue) -> {
+                        Assert.assertEquals(inBoolValue, outBoolValue);
+                        Assert.assertEquals(inU8Value, outU8Value);
+                        Assert.assertEquals(inU16Value, outU16Value);
+                        Assert.assertEquals(inU32Value, outU32Value);
+                        Assert.assertEquals(inU64Value, outU64Value);
+                        Assert.assertEquals(inI8Value, outI8Value);
+                        Assert.assertEquals(inI16Value, outI16Value);
+                        Assert.assertEquals(inI32Value, outI32Value);
+                        Assert.assertEquals(inI64Value, outI64Value);
+                        Assert.assertEquals(inFloatValue, outFloatValue);
+                        Assert.assertEquals(inDoubleValue, outDoubleValue);
+                        mTestRule.quitLoop();
                     });
             mTestRule.runLoopForever();
         }
@@ -297,22 +272,19 @@ public class NullableValueTypesTest {
 
             remote.methodWithStructWithNumerics(
                     in,
-                    new InterfaceV2.MethodWithStructWithNumerics_Response() {
-                        @Override
-                        public void call(StructWithNumerics out) {
-                            Assert.assertEquals(in.boolValue, out.boolValue);
-                            Assert.assertEquals(in.u8Value, out.u8Value);
-                            Assert.assertEquals(in.u16Value, out.u16Value);
-                            Assert.assertEquals(in.u32Value, out.u32Value);
-                            Assert.assertEquals(in.u64Value, out.u64Value);
-                            Assert.assertEquals(in.i8Value, out.i8Value);
-                            Assert.assertEquals(in.i16Value, out.i16Value);
-                            Assert.assertEquals(in.i32Value, out.i32Value);
-                            Assert.assertEquals(in.i64Value, out.i64Value);
-                            Assert.assertEquals(in.floatValue, out.floatValue);
-                            Assert.assertEquals(in.doubleValue, out.doubleValue);
-                            mTestRule.quitLoop();
-                        }
+                    (StructWithNumerics out) -> {
+                        Assert.assertEquals(in.boolValue, out.boolValue);
+                        Assert.assertEquals(in.u8Value, out.u8Value);
+                        Assert.assertEquals(in.u16Value, out.u16Value);
+                        Assert.assertEquals(in.u32Value, out.u32Value);
+                        Assert.assertEquals(in.u64Value, out.u64Value);
+                        Assert.assertEquals(in.i8Value, out.i8Value);
+                        Assert.assertEquals(in.i16Value, out.i16Value);
+                        Assert.assertEquals(in.i32Value, out.i32Value);
+                        Assert.assertEquals(in.i64Value, out.i64Value);
+                        Assert.assertEquals(in.floatValue, out.floatValue);
+                        Assert.assertEquals(in.doubleValue, out.doubleValue);
+                        mTestRule.quitLoop();
                     });
             mTestRule.runLoopForever();
         }

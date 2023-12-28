@@ -12,6 +12,7 @@ const TypedArrayDict = {
   uint32: Uint32Array,
   int8: Int8Array,
   uint8: Uint8Array,
+  int64: BigInt64Array,
 };
 
 const getTypedArrayData = (type, data) => {
@@ -21,6 +22,11 @@ const getTypedArrayData = (type, data) => {
     outData = new TypedArrayDict[type](data.length);
     for (let i = 0; i < data.length; i++) {
       outData[i] = toHalf(data[i]);
+    }
+  } else if (type === 'int64') {
+    outData = new TypedArrayDict[type](data.length);
+    for (let i = 0; i < data.length; i++) {
+      outData[i] = BigInt(data[i]);
     }
   } else {
     outData = new TypedArrayDict[type](data);
@@ -280,6 +286,8 @@ const getReductionPrecisionTolerance = (resources, operationName) => {
 
 // Refer to precision metrics on https://github.com/webmachinelearning/webnn/issues/265#issuecomment-1256242643
 const PrecisionMetrics = {
+  argMax: {ULP: {int64: 0}},
+  argMin: {ULP: {int64: 0}},
   batchNormalization: {ULP: {float32: 6, float16: 6}},
   clamp: {ULP: {float32: 0, float16: 0}},
   concat: {ULP: {float32: 0, float16: 0}},
@@ -306,6 +314,7 @@ const PrecisionMetrics = {
   abs: {ULP: {float32: 0, float16: 0}},
   ceil: {ULP: {float32: 0, float16: 0}},
   cos: {ATOL: {float32: 1/1024, float16: 1/512}},
+  erf: {ATOL: {float32: 1/1024, float16: 1/512}},
   exp: {ULP: {float32: 32, float16: 1}},
   floor: {ULP: {float32: 0, float16: 0}},
   identity: {ULP: {float32: 0, float16: 0}},
@@ -317,6 +326,7 @@ const PrecisionMetrics = {
   tan: {ATOL: {float32: 1/1024, float16: 1/512}},
   // End Element-wise unary operations
   elu: {ULP: {float32: 18, float16: 18}},
+  expand: {ULP: {float32: 0, float16: 0}},
   gemm: {ULP: {float32: getGemmPrecisionTolerance, float16: getGemmPrecisionTolerance}},
   hardSigmoid: {ULP: {float32: 2, float16: 2}},
   hardSwish: {ULP: {float32: 4, float16: 4}},
@@ -352,6 +362,7 @@ const PrecisionMetrics = {
   squeeze: {ULP: {float32: 0, float16: 0}},
   tanh: {ATOL: {float32: 1/1024, float16: 1/512}},
   transpose: {ULP: {float32: 0, float16: 0}},
+  where: {ULP: {float32: 0, float16: 0}},
 };
 
 /**
@@ -425,6 +436,9 @@ const assert_array_approx_equals_ulp = (actual, expected, nulp, dataType, descri
         actualBitwise = actual[i];
         // convert expected data of Float16 to Uint16
         expectedBitwise = toHalf(expected[i]);
+      } else if (dataType === 'int64') {
+        actualBitwise = actual[i];
+        expectedBitwise = BigInt(expected[i]);
       }
       distance = actualBitwise - expectedBitwise;
       distance = distance >= 0 ? distance : -distance;
@@ -660,10 +674,11 @@ const buildPad = (operationName, builder, resources) => {
 };
 
 const buildReshape = (operationName, builder, resources) => {
-  // MLOperand reshape(MLOperand input, sequence<unsigned long?> newShape);
+  // MLOperand reshape(MLOperand input, sequence<unsigned long> newShape);
+  // MLOperand expand(MLOperand input, sequence<unsigned long> newShape);
   const namedOutputOperand = {};
   const inputOperand = createSingleInputOperand(builder, resources);
-  // invoke builder.reshape()
+  // invoke builder.reshape() or builder.expand()
   namedOutputOperand[resources.expected.name] = builder[operationName](inputOperand, resources.newShape);
   return namedOutputOperand;
 };
@@ -688,6 +703,15 @@ const buildSplit = (operationName, builder, resources) => {
   resources.expected.forEach((resourceDict, index) => {
     namedOutputOperand[resourceDict.name] = outputOperands[index];
   });
+  return namedOutputOperand;
+};
+
+const buildWhere = (operationName, builder, resources) => {
+  // MLOperand where(MLOperand condition, MLOperand trueValues, MLOperand falseValues);
+  const namedOutputOperand = {};
+  const [conditionOperand, trueValuesOperand, falseValuesOperand] = createMultiInputOperands(builder, resources);
+  // invoke builder.where()
+  namedOutputOperand[resources.expected.name] = builder[operationName](conditionOperand, trueValuesOperand, falseValuesOperand);
   return namedOutputOperand;
 };
 

@@ -39,7 +39,9 @@ SetsMutation::SetsMutation(
 
 SetsMutation::SetsMutation() = default;
 SetsMutation::SetsMutation(SetsMutation&&) = default;
+SetsMutation& SetsMutation::operator=(SetsMutation&&) = default;
 SetsMutation::SetsMutation(const SetsMutation&) = default;
+SetsMutation& SetsMutation::operator=(const SetsMutation&) = default;
 SetsMutation::~SetsMutation() = default;
 
 bool SetsMutation::operator==(const SetsMutation& other) const = default;

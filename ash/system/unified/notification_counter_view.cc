@@ -9,8 +9,8 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
-#include "ash/system/message_center/message_center_utils.h"
+#include "ash/system/notification_center/ash_message_center_lock_screen_controller.h"
+#include "ash/system/notification_center/message_center_utils.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_item_view.h"
 #include "ash/system/unified/notification_icons_controller.h"
@@ -113,7 +113,7 @@ class NumberIconImageSource : public gfx::CanvasImageSource {
   }
 
  private:
-  raw_ptr<NotificationCounterView, ExperimentalAsh> notification_counter_view_;
+  raw_ptr<NotificationCounterView> notification_counter_view_;
   size_t count_;
 };
 

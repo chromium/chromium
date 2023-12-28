@@ -220,6 +220,12 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // Returns the base extension url for a given |extension_id|.
   static GURL GetBaseURLFromExtensionId(const ExtensionId& extension_id);
 
+  // Returns for scope for the extension's service worker.
+  static GURL GetServiceWorkerScopeFromExtensionId(
+      const ExtensionId& extension_id) {
+    return GetBaseURLFromExtensionId(extension_id);
+  }
+
   // Returns the extension origin for a given |extension_id|.
   static url::Origin CreateOriginFromExtensionId(
       const ExtensionId& extension_id);
@@ -457,7 +463,7 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   base::Uuid guid_;
 };
 
-typedef std::vector<scoped_refptr<const Extension>> ExtensionList;
+using ExtensionList = std::vector<scoped_refptr<const Extension>>;
 
 // Handy struct to pass core extension info around.
 struct ExtensionInfo {

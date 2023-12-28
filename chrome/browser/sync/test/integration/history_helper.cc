@@ -457,7 +457,6 @@ ServerHistoryMatchChecker::ServerHistoryMatchChecker(const Matcher& matcher)
 ServerHistoryMatchChecker::~ServerHistoryMatchChecker() = default;
 
 void ServerHistoryMatchChecker::OnCommit(
-    const std::string& committer_invalidator_client_id,
     syncer::ModelTypeSet committed_model_types) {
   if (committed_model_types.Has(syncer::HISTORY)) {
     CheckExitCondition();

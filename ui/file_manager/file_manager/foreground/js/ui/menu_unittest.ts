@@ -4,7 +4,7 @@
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {decorate} from '../../../common/js/cr_ui.js';
+import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 
 import {Command} from './command.js';
 import {Menu} from './menu.js';
@@ -34,7 +34,7 @@ function mouseUpAt(x: number, y: number): boolean {
 
 export function setUp() {
   menu = document.createElement('cr-menu') as Menu;
-  decorate(menu, Menu);
+  crInjectTypeAndInit(menu, Menu);
 }
 
 export function testHandleMouseOver() {
@@ -85,7 +85,7 @@ export function testShowViaKeyboardIgnoresMouseUps() {
 export function testCommandMenuItem() {
   // Test 1: The case that the command label is set and other attributes copied.
   const command = document.createElement('command') as Command;
-  decorate(command, Command);
+  crInjectTypeAndInit(command, Command);
   command.id = 'the-command';
   command.label = 'CommandLabel';
   command.disabled = true;
@@ -106,7 +106,7 @@ export function testCommandMenuItem() {
   // Test 2: The case that the command label is not set, and other attributes
   // have default values.
   const command2 = document.createElement('command') as Command;
-  decorate(command2, Command);
+  crInjectTypeAndInit(command2, Command);
   command2.id = 'the-command2';
   document.body.appendChild(command2);
 
@@ -174,7 +174,7 @@ export function testSeparators() {
  */
 export function testFocusSelectedItems() {
   const menu = document.createElement('div') as unknown as Menu;
-  decorate(menu, Menu);
+  crInjectTypeAndInit(menu, Menu);
   const item1 = menu.addMenuItem({label: 'item1'});
   menu.addSeparator();
   const item2 = menu.addMenuItem({label: 'item2'});
@@ -232,7 +232,7 @@ export function testMenuItemTabIndex() {
   // Keeps previously set tabindex.
   const itemDiv = document.createElement('div');
   itemDiv.setAttribute('tabindex', '0');
-  decorate(itemDiv, MenuItem);
+  crInjectTypeAndInit(itemDiv, MenuItem);
   assertEquals('0', itemDiv.getAttribute('tabindex'));
 
   // Separator doesn't get tabindex.

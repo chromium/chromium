@@ -1,0 +1,6 @@
+include_rules = [
+  "+content/public/renderer",
+  "+content/public/test",
+  "+mojo/public/cpp/bindings",
+  "+third_party/blink/public",
+]

@@ -143,7 +143,7 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
 
   // The root MenuItemView which contains all child MenuItemViews. Owned by
   // `menu_runner_`.
-  raw_ptr<views::MenuItemView, ExperimentalAsh> root_view_ = nullptr;
+  raw_ptr<views::MenuItemView> root_view_ = nullptr;
 
   // The timestamp taken when the menu is opened. Used in metrics.
   base::TimeTicks menu_open_time_;
@@ -164,7 +164,7 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
   // It updates synchronously when a item is removed.
   ItemViewsByCommandId item_views_by_command_id_;
 
-  const raw_ptr<const ClipboardHistory, ExperimentalAsh> clipboard_history_;
+  const raw_ptr<const ClipboardHistory> clipboard_history_;
 
   // Indicates the number of item deletion operations in progress. Note that
   // a `ClipboardHistoryItemView` instance is deleted asynchronously.

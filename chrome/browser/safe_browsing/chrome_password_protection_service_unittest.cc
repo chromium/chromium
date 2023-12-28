@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -61,6 +62,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/password_manager/android/password_manager_android_util.h"
+#endif
 
 // All tests related to extension is disabled on Android, because enterprise
 // reporting extension is not supported.
@@ -1537,6 +1542,9 @@ class ChromePasswordProtectionServiceWithAccountPasswordStoreTest
          password_manager::features::
              kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration},
         {});
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        password_manager_android_util::
+            kSkipLocalUpmGmsCoreVersionCheckForTesting);
 #else
     feature_list_.InitAndEnableFeature(
         password_manager::features::kEnablePasswordsAccountStorage);

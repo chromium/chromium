@@ -242,7 +242,7 @@ class MODULES_EXPORT WebRtcAudioRenderer
  private:
   // Holds raw pointers to PlaingState objects.  Ownership is managed outside
   // of this type.
-  typedef std::vector<PlayingState*> PlayingStates;
+  typedef std::vector<raw_ptr<PlayingState, VectorExperimental>> PlayingStates;
   // Maps an audio source to a list of playing states that collectively hold
   // volume information for that source.
   typedef std::map<webrtc::AudioSourceInterface*, PlayingStates>

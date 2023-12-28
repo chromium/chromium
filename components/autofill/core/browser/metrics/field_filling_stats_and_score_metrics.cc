@@ -103,7 +103,7 @@ void LogAddressFieldFillingStatsForAutofillFillingMethod(
   LogFieldFillingStatsWithHistogramPrefix(
       FormType::kAddressForm,
       base::StrCat({"Autofill.FieldFillingStats.",
-                    AutofillFillingMethodToStringPiece(filling_method), "."}),
+                    AutofillFillingMethodToStringView(filling_method), "."}),
       filling_stats);
 }
 

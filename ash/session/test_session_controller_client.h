@@ -168,9 +168,8 @@ class TestSessionControllerClient : public SessionControllerClient {
  private:
   void DoSwitchUser(const AccountId& account_id, bool switch_user);
 
-  const raw_ptr<SessionControllerImpl, DanglingUntriaged | ExperimentalAsh>
-      controller_;
-  const raw_ptr<TestPrefServiceProvider, ExperimentalAsh> prefs_provider_;
+  const raw_ptr<SessionControllerImpl, DanglingUntriaged> controller_;
+  const raw_ptr<TestPrefServiceProvider> prefs_provider_;
 
   int fake_session_id_ = 0;
   SessionInfo session_info_;

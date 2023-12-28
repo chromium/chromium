@@ -15,12 +15,10 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.FieldTrialList;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.build.BuildConfig;
-import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
-import org.chromium.chrome.browser.customtabs.features.branding.BrandingController;
 import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.CachedFieldTrialParameter;
@@ -83,10 +81,6 @@ public class ChromeCachedFlags {
 
         List<CachedFieldTrialParameter> fieldTrialsToCache =
                 List.of(
-                        BrandingController.BRANDING_CADENCE_MS,
-                        BrandingController.MAX_BLANK_TOOLBAR_TIMEOUT_MS,
-                        BrandingController.USE_TEMPORARY_STORAGE,
-                        BrandingController.ANIMATE_TOOLBAR_ICON_TRANSITION,
                         ChimeFeatures.ALWAYS_REGISTER,
                         FeedPlaceholderLayout.ENABLE_INSTANT_START_ANIMATION,
                         HubFieldTrial.FLOATING_ACTION_BUTTON,
@@ -97,10 +91,8 @@ public class ChromeCachedFlags {
                         OptimizationGuidePushNotificationManager.MAX_CACHE_SIZE,
                         OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET,
                         OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_ACTIVE_COLOR_ON_OMNIBOX,
-                        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_MERGE_CLIPBOARD_ON_NTP,
-                        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN,
-                        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLER_MARGINS,
                         OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS,
+                        OmniboxFeatures.QUERY_TILES_SHOW_AS_CAROUSEL,
                         CustomTabIntentDataProvider.AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES,
                         CustomTabIntentDataProvider.AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST,
                         CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY,
@@ -108,7 +100,6 @@ public class ChromeCachedFlags {
                         CustomTabIntentDataProvider.ALLOWLIST_ENTRIES,
                         DseNewTabUrlManager.EEA_COUNTRY_ONLY,
                         DseNewTabUrlManager.SWAP_OUT_NTP,
-                        WarmupManager.SPARE_TAB_INITIALIZE_RENDERER,
                         RestoreTabsFeatureHelper.RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT,
                         StartSurfaceConfiguration.IS_DOODLE_SUPPORTED,
                         StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS,
@@ -129,6 +120,10 @@ public class ChromeCachedFlags {
                         TabUiFeatureUtilities.ANIMATION_START_TIMEOUT_MS,
                         TabUiFeatureUtilities.ZOOMING_MIN_MEMORY,
                         TabUiFeatureUtilities.SKIP_SLOW_ZOOMING,
+                        TabUiFeatureUtilities.DISABLE_STRIP_TO_CONTENT_DD,
+                        TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DD,
+                        TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DIFF_MODEL_DD,
+                        TabUiFeatureUtilities.DISABLE_DRAG_TO_NEW_INSTANCE_DD,
                         TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
                         VersionNumberGetter.MIN_SDK_VERSION,
                         MinimizeAppAndCloseTabBackPressHandler.SYSTEM_BACK,

@@ -2910,8 +2910,10 @@ TEST_F(StyleEngineTest, ColorSchemeBaseBackgroundChange) {
 
   color_scheme_helper.SetForcedColors(GetDocument(), ForcedColors::kActive);
   UpdateAllLifecyclePhases();
+  mojom::blink::ColorScheme color_scheme = mojom::blink::ColorScheme::kLight;
   Color system_background_color = LayoutTheme::GetTheme().SystemColor(
-      CSSValueID::kCanvas, mojom::blink::ColorScheme::kLight);
+      CSSValueID::kCanvas, color_scheme,
+      GetDocument().GetColorProviderForPainting(color_scheme));
 
   EXPECT_EQ(system_background_color,
             GetDocument().View()->BaseBackgroundColor());
@@ -4557,9 +4559,10 @@ TEST_F(StyleEngineContainerQueryTest,
   // do a layout upgrade for elements that are 1) in display:none, and 2)
   // inside a container query container.
   //
-  // See implementation of `NodeLayoutUpgrade::ShouldUpgrade` for more
+  // See implementation of `ElementLayoutUpgrade::ShouldUpgrade` for more
   // information.
-  GetDocument().UpdateStyleAndLayoutTreeForNode(a, DocumentUpdateReason::kTest);
+  GetDocument().UpdateStyleAndLayoutTreeForElement(a,
+                                                   DocumentUpdateReason::kTest);
   EXPECT_FALSE(GetStyleEngine().StyleAffectedByLayout());
   EXPECT_FALSE(GetDocument().View()->NeedsLayout());
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdateForNode(*a));
@@ -7032,6 +7035,7 @@ TEST_F(StyleEngineTest, UseCountCSSDeclarationAfterNestedRule) {
 }
 
 TEST_F(StyleEngineTest, EnsureAppRegionTriggersRelayout) {
+  GetDocument().GetFrame()->SetSupportsAppRegion(true);
   GetDocument().body()->setInnerHTML(R"HTML(
     <head>
     <style>

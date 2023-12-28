@@ -21,11 +21,6 @@ LayoutListMarkerImage* LayoutListMarkerImage::CreateAnonymous(
   return object;
 }
 
-bool LayoutListMarkerImage::IsOfType(LayoutObjectType type) const {
-  NOT_DESTROYED();
-  return type == kLayoutObjectListMarkerImage || LayoutImage::IsOfType(type);
-}
-
 gfx::SizeF LayoutListMarkerImage::DefaultSize() const {
   NOT_DESTROYED();
   const SimpleFontData* font_data = Style()->GetFont().PrimaryFont();

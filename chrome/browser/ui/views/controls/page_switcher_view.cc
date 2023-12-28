@@ -33,5 +33,5 @@ void PageSwitcherView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
 }
 
-BEGIN_METADATA(PageSwitcherView, views::View)
+BEGIN_METADATA(PageSwitcherView)
 END_METADATA

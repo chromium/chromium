@@ -92,15 +92,12 @@ class WaylandDisplayObserverTest : public test::ExoTestBase {
   }
 
   int fds_[2] = {0, 0};
-  raw_ptr<wl_display, DanglingUntriaged | ExperimentalAsh> wayland_display_ =
+  raw_ptr<wl_display, DanglingUntriaged> wayland_display_ = nullptr;
+  raw_ptr<wl_client, DanglingUntriaged> client_ = nullptr;
+  raw_ptr<wl_resource, DanglingUntriaged> aura_output_manager_resource_ =
       nullptr;
-  raw_ptr<wl_client, DanglingUntriaged | ExperimentalAsh> client_ = nullptr;
-  raw_ptr<wl_resource, DanglingUntriaged | ExperimentalAsh>
-      aura_output_manager_resource_ = nullptr;
-  raw_ptr<wl_resource, DanglingUntriaged | ExperimentalAsh>
-      wl_output_resource_ = nullptr;
-  raw_ptr<wl_resource, DanglingUntriaged | ExperimentalAsh>
-      xdg_output_resource_ = nullptr;
+  raw_ptr<wl_resource, DanglingUntriaged> wl_output_resource_ = nullptr;
+  raw_ptr<wl_resource, DanglingUntriaged> xdg_output_resource_ = nullptr;
   std::unique_ptr<WaylandDisplayOutput> output_;
   std::unique_ptr<MockWaylandDisplayHandler> handler_;
 };

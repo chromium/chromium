@@ -35,7 +35,7 @@ void TestSelectURLFencedFrameConfigObserverImpl::OnUrnUuidGenerated(
 void TestSelectURLFencedFrameConfigObserverImpl::OnConfigPopulated(
     const absl::optional<FencedFrameConfig>& config) {
   if (config_observed_ || !urn_uuid_.has_value() || !config.has_value() ||
-      (urn_uuid_.value() != config->urn_uuid_)) {
+      (urn_uuid_.value() != config->urn_uuid())) {
     // 1. This observer has already observed a config.
     // 2. This observer hasn't observed an urn::uuid yet.
     // 3. The given config is `absl::nullopt`.

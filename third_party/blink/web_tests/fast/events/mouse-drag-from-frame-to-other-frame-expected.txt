@@ -1,5 +1,0 @@
-This tests that dragging from an element that returns false from its mousedown handler will not let the subsequent mousemove events be captured by the containing frame, and allows the mouse move to get to other subframes.
- 
-Drag Started
-received mousemove
-received mouseup

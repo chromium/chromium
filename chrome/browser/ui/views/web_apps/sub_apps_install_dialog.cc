@@ -174,10 +174,10 @@ views::Widget* CreateSubAppsInstallDialogWidget(
                                      std::move(settings_page_callback)))
           .AddOkButton(
               base::DoNothing(),
-              ui::DialogModelButton::Params().SetLabel(AcceptButtonLabel()))
+              ui::DialogModel::Button::Params().SetLabel(AcceptButtonLabel()))
           .AddCancelButton(
               base::DoNothing(),
-              ui::DialogModelButton::Params().SetLabel(CancelButtonLabel()))
+              ui::DialogModel::Button::Params().SetLabel(CancelButtonLabel()))
           .OverrideShowCloseButton(false)
           .Build();
 

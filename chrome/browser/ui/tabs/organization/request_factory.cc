@@ -30,9 +30,9 @@
 namespace {
 
 bool CanUseOptimizationGuide(Profile* profile) {
-  return OptimizationGuideKeyedServiceFactory::GetForProfile(profile) &&
-         base::FeatureList::IsEnabled(
-             optimization_guide::features::kOptimizationGuideModelExecution);
+  return base::FeatureList::IsEnabled(
+             optimization_guide::features::kOptimizationGuideModelExecution) &&
+         OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
 }
 
 void OnLogResults(Profile* profile,
@@ -94,20 +94,16 @@ void OnTabOrganizationModelExecutionResult(
                                std::move(response_tab_ids));
   }
 
-  if (organizations.size() > 0) {
-    const std::string server_execution_id = log_entry->log_ai_data_request()
-                                                ->mutable_model_execution_info()
-                                                ->server_execution_id();
+  const std::string server_execution_id = log_entry->log_ai_data_request()
+                                              ->mutable_model_execution_info()
+                                              ->server_execution_id();
 
-    std::unique_ptr<TabOrganizationResponse> local_response =
-        std::make_unique<TabOrganizationResponse>(
-            std::move(organizations), base::UTF8ToUTF16(server_execution_id),
-            base::BindOnce(OnLogResults, profile, std::move(log_entry)));
+  std::unique_ptr<TabOrganizationResponse> local_response =
+      std::make_unique<TabOrganizationResponse>(
+          std::move(organizations), base::UTF8ToUTF16(server_execution_id),
+          base::BindOnce(OnLogResults, profile, std::move(log_entry)));
 
-    std::move(on_completion).Run(std::move(local_response));
-  } else {
-    std::move(on_failure).Run();
-  }
+  std::move(on_completion).Run(std::move(local_response));
 }
 
 void PerformTabOrganizationExecution(
@@ -130,6 +126,10 @@ void PerformTabOrganizationExecution(
     tab->set_tab_id(tab_data->tab_id());
     tab->set_title(base::UTF16ToUTF8(tab_data->web_contents()->GetTitle()));
     tab->set_url(tab_data->original_url().spec());
+  }
+
+  if (request->base_tab_id().has_value()) {
+    tab_organization_request.set_active_tab_id(request->base_tab_id().value());
   }
 
   OptimizationGuideKeyedService* optimization_guide_keyed_service =

@@ -21,7 +21,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -34,8 +33,6 @@ public class LongScreenshotsCoordinatorTest {
     @Mock private FragmentActivity mActivity;
 
     @Mock private ChromeOptionShareCallback mChromeOptionShareCallback;
-
-    @Mock private ImageEditorModuleProvider mImageEditorModuleProviderMock;
 
     @Mock private BottomSheetController mBottomSheetControllerMock;
 
@@ -57,7 +54,6 @@ public class LongScreenshotsCoordinatorTest {
                         JUnitTestGURLs.EXAMPLE_URL.getSpec(),
                         mChromeOptionShareCallback,
                         mBottomSheetControllerMock,
-                        mImageEditorModuleProviderMock,
                         mManager,
                         mMediator);
     }

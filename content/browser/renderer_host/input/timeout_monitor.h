@@ -16,8 +16,10 @@ namespace content {
 class CONTENT_EXPORT TimeoutMonitor {
  public:
   typedef base::RepeatingClosure TimeoutHandler;
-
-  explicit TimeoutMonitor(const TimeoutHandler& timeout_handler);
+  // |task_runner| must run tasks on the same sequence which TimeoutMonitor is
+  // constructed on.
+  explicit TimeoutMonitor(const TimeoutHandler& timeout_handler,
+                          scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   TimeoutMonitor(const TimeoutMonitor&) = delete;
   TimeoutMonitor& operator=(const TimeoutMonitor&) = delete;

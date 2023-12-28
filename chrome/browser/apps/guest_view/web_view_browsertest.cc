@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_timeouts.h"
@@ -44,7 +45,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/login/login_handler.h"
-#include "chrome/browser/ui/login/login_handler_test_utils.h"
 #include "chrome/browser/usb/usb_browser_test_utils.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
@@ -116,6 +116,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "media/base/media_switches.h"
 #include "net/dns/mock_host_resolver.h"
@@ -3546,7 +3547,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, DownloadCookieIsolation) {
           download_manager, 2,
           content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL));
 
-  for (auto* download : downloads) {
+  for (download::DownloadItem* download : downloads) {
     ASSERT_TRUE(download->CanResume());
     EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED,
               download->GetLastReason());
@@ -3557,7 +3558,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, DownloadCookieIsolation) {
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   std::set<std::string> cookies;
-  for (auto* download : downloads) {
+  for (download::DownloadItem* download : downloads) {
     ASSERT_EQ(download::DownloadItem::COMPLETE, download->GetState());
     ASSERT_TRUE(base::PathExists(download->GetTargetFilePath()));
     std::string content;
@@ -3654,7 +3655,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, DownloadCookieIsolation_CrossSession) {
   // try to talk to the old EmbeddedTestServer instance. We need to update the
   // URL to point to the new instance, which should only differ by the port
   // number.
-  for (auto* download : saved_downloads) {
+  for (download::DownloadItem* download : saved_downloads) {
     const std::string port_string =
         base::NumberToString(embedded_test_server()->port());
     GURL::Replacements replacements;
@@ -3684,7 +3685,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, DownloadCookieIsolation_CrossSession) {
       download_manager, 2,
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
 
-  for (auto* download : downloads) {
+  for (download::DownloadItem* download : downloads) {
     ASSERT_TRUE(download->CanResume());
     ASSERT_TRUE(download->GetFullPath().empty());
     ASSERT_TRUE(download::DOWNLOAD_INTERRUPT_REASON_CRASH ==
@@ -4017,10 +4018,6 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, HttpAuth) {
   LoadAppWithGuest("web_view/simple");
 
   const GURL auth_url = embedded_test_server()->GetURL("/auth-basic");
-  content::NavigationController* guest_controller =
-      &GetGuestView()->GetController();
-  WindowedAuthNeededObserver auth_needed(guest_controller);
-  WindowedAuthSuppliedObserver auth_supplied(guest_controller);
   // There are two navigations occurring here. The first fails due to the need
   // for auth. After it's supplied, a second navigation will succeed.
   content::TestNavigationObserver nav_observer(GetGuestWebContents(), 2);
@@ -4030,12 +4027,12 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, HttpAuth) {
   EXPECT_TRUE(
       content::ExecJs(GetGuestRenderFrameHost(),
                       content::JsReplace("location.href = $1;", auth_url)));
-  auth_needed.Wait();
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
 
   LoginHandler* login_handler =
       LoginHandler::GetAllLoginHandlersForTest().front();
   login_handler->SetAuth(u"basicuser", u"secret");
-  auth_supplied.Wait();
   nav_observer.WaitForNavigationFinished();
 }
 
@@ -4044,13 +4041,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, HttpAuthIdentical) {
   LoadAppWithGuest("web_view/simple");
 
   const GURL auth_url = embedded_test_server()->GetURL("/auth-basic");
-  content::NavigationController* guest_controller =
-      &GetGuestView()->GetController();
   content::NavigationController* tab_controller =
       &browser()->tab_strip_model()->GetActiveWebContents()->GetController();
-  WindowedAuthNeededObserver guest_auth_needed(guest_controller);
-  WindowedAuthNeededObserver tab_auth_needed(tab_controller);
-  WindowedAuthSuppliedObserver guest_auth_supplied(guest_controller);
   // There are two navigations occurring here. The first fails due to the need
   // for auth. After it's supplied, a second navigation will succeed.
   content::TestNavigationObserver guest_nav_observer(GetGuestWebContents(), 2);
@@ -4060,13 +4052,15 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, HttpAuthIdentical) {
   EXPECT_TRUE(
       content::ExecJs(GetGuestRenderFrameHost(),
                       content::JsReplace("location.href = $1;", auth_url)));
-  guest_auth_needed.Wait();
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
 
   // While the login UI is showing for the app, navigate a tab to the same URL
   // requiring auth.
   tab_controller->LoadURL(auth_url, content::Referrer(),
                           ui::PAGE_TRANSITION_TYPED, std::string());
-  tab_auth_needed.Wait();
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 2; }));
 
   // Both the guest and the tab should be prompting for credentials and the auth
   // challenge should be the same. Normally, the login code de-duplicates
@@ -4084,7 +4078,6 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, HttpAuthIdentical) {
       tab_login_handler->auth_info()));
 
   guest_login_handler->SetAuth(u"basicuser", u"secret");
-  guest_auth_supplied.Wait();
   guest_nav_observer.WaitForNavigationFinished();
 
   // The tab should still be prompting for credentials.
@@ -4547,7 +4540,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, NavigateGuestToWebviewAccessibleResource) {
       extensions::ExtensionRegistry::Get(browser()->profile());
   const extensions::Extension* extension =
       registry->enabled_extensions().GetByID(guest_url.host());
-  EXPECT_EQ(extensions::Feature::UNBLESSED_EXTENSION_CONTEXT,
+  EXPECT_EQ(extensions::mojom::ContextType::kUnprivilegedExtension,
             process_map->GetMostLikelyContextType(
                 extension, guest_process->GetID(), &guest_url));
 }

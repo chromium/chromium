@@ -78,6 +78,7 @@
 <translation id="4705093842003735294">רזולוציה מלאה</translation>
 <translation id="4864143361253542638">רשימת הדפים שנסרקו</translation>
 <translation id="4890010094662541459">‎3 x 3</translation>
+<translation id="4892746741161549733">העתקת הכתובת של הקישור <ph name="URL" /></translation>
 <translation id="491895758387112773">הקלטת סרטון במולטי-סטרימינג</translation>
 <translation id="495170559598752135">פעולות</translation>
 <translation id="4984613436295737187">‏Quad HD‏ (1440p)</translation>
@@ -129,6 +130,7 @@
 <translation id="7450541714075000668">הטקסט הועתק</translation>
 <translation id="7488619942230388918">‏צילום סרטון בפורמט GIF</translation>
 <translation id="7557677699350329807">מעבר למצלמה הבאה</translation>
+<translation id="7562584071994185503">העתקת הטקסט "<ph name="TEXT" />"</translation>
 <translation id="7607002721634913082">ההורדה בהשהיה</translation>
 <translation id="7608223098072244877">4 על 4</translation>
 <translation id="761421184377987513">מתבצעת תזוזה לשמאל למטה</translation>
@@ -141,6 +143,7 @@
 <translation id="7726641833034062494">צילום סרטון רגיל</translation>
 <translation id="7748344063862150053">הפינה השמאלית העליונה במסמך</translation>
 <translation id="7933675232020478311">מתבצעת תזוזה לימין למטה</translation>
+<translation id="7983668134180549431">זוהה טקסט.</translation>
 <translation id="8079255378695216066">לא ניתן להתחיל את צילום הסרטון</translation>
 <translation id="8120146556401698679">הזזה הטיה זום</translation>
 <translation id="8131740175452115882">אישור</translation>
@@ -150,6 +153,7 @@
 <translation id="8346544573713510785">‏התאמת גודל הפריים במצלמה עם HAL</translation>
 <translation id="8425673304802773841">הטייה מטה</translation>
 <translation id="8428213095426709021">הגדרות</translation>
+<translation id="8609951387004618906">פתיחה של <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">החלפת המצב של השתקת המיקרופון. ההשתקה פועלת</translation>
 <translation id="8730621377337864115">בוצע</translation>
@@ -159,7 +163,6 @@
 <translation id="8870695351537079478">לא ניתן להתחיל בצילום סרטון</translation>
 <translation id="8880167521484863515">4 על 3</translation>
 <translation id="8903921497873541725">התקרבות לתצוגה</translation>
-<translation id="8926890870105777777">הצטרפות לרשת "<ph name="WIFINAME" />"</translation>
 <translation id="9045010116236796332">צריך למקם את כל קצות המסמך בתוך המסגרת</translation>
 <translation id="9045155556724273246">10 שניות</translation>
 <translation id="906331135292332864">התמונה עוברת עיבוד…</translation>

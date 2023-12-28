@@ -108,6 +108,8 @@ public class ReadAloudController
         private final Tab mTab;
         // Paragraph index to resume from.
         private final int mParagraphIndex;
+        // Optional - position within the paragraph to resume from.
+        private final long mOffsetNanos;
         // True if audio should start playing immediately when this state is restored.
         private final boolean mPlaying;
 
@@ -118,13 +120,33 @@ public class ReadAloudController
          * @param data Current PlaybackData which may be null if playback hasn't started yet.
          */
         RestoreState(Tab tab, @Nullable PlaybackData data) {
+            this(tab, data, /* useOffsetInParagraph= */ true, /* shouldPlayOverride= */ null);
+        }
+
+        /**
+         * Constructor.
+         *
+         * @param tab Tab to play.
+         * @param data Current PlaybackData which may be null if playback hasn't started yet.
+         */
+        RestoreState(
+                Tab tab,
+                @Nullable PlaybackData data,
+                boolean useOffsetInParagraph,
+                @Nullable Boolean shouldPlayOverride) {
             mTab = tab;
             if (data == null) {
                 mParagraphIndex = 0;
-                mPlaying = true;
+                mOffsetNanos = 0L;
             } else {
                 mParagraphIndex = data.paragraphIndex();
-                mPlaying = data.state() != PAUSED && data.state() != STOPPED;
+                mOffsetNanos = data.positionInParagraphNanos();
+            }
+
+            if (shouldPlayOverride != null) {
+                mPlaying = shouldPlayOverride;
+            } else {
+                mPlaying = data == null ? true : data.state() != PAUSED && data.state() != STOPPED;
             }
         }
 
@@ -140,9 +162,9 @@ public class ReadAloudController
                                     mPlayerCoordinator.playbackReady(playback, PAUSED);
                                 }
 
-                                if (mParagraphIndex != 0) {
+                                if (mParagraphIndex != 0 || mOffsetNanos != 0) {
                                     playback.seekToParagraph(
-                                            mParagraphIndex, /* offsetNanos= */ 0L);
+                                            mParagraphIndex, /* offsetNanos= */ mOffsetNanos);
                                 }
                             },
                             exception -> {
@@ -157,6 +179,8 @@ public class ReadAloudController
     // State of playback that was interrupted by a voice preview and should be
     // restored when closing the voice menu.
     @Nullable private RestoreState mStateToRestoreOnVoiceMenuClose;
+    // State of playback that was interrupted by backgrounding Chrome.
+    @Nullable private RestoreState mStateToRestoreOnBringingToForeground;
 
     // Whether or not to highlight the page. Change will only have effect if
     // isHighlightingSupported() returns true.
@@ -196,6 +220,10 @@ public class ReadAloudController
                 @Override
                 public void onSuccess(String url, boolean isReadable, boolean timepointsSupported) {
                     Log.d(TAG, "onSuccess called for %s", url);
+                    ReadAloudMetrics.recordIsPageReadable(isReadable);
+                    ReadAloudMetrics.recordIsPageReadabilitySuccessful(true);
+                    // isPlaybackEnabled() should only be checked if isReadable == true.
+                    isReadable = isReadable && ReadAloudFeatures.isPlaybackEnabled();
                     mReadabilityMap.put(url, isReadable);
                     mTimepointsSupportedMap.put(url, timepointsSupported);
                     mPendingRequests.remove(url);
@@ -205,6 +233,7 @@ public class ReadAloudController
                 @Override
                 public void onFailure(String url, Throwable t) {
                     Log.d(TAG, "onFailure called for %s because %s", url, t);
+                    ReadAloudMetrics.recordIsPageReadabilitySuccessful(false);
                     mPendingRequests.remove(url);
                 }
             };
@@ -257,6 +286,12 @@ public class ReadAloudController
                             maybeCheckReadability(url);
                             maybeHandleTabReload(tab, url);
                             maybeStopPlayback(tab);
+                            boolean isAllowed = ReadAloudFeatures.isAllowed(mProfileSupplier.get());
+                            ReadAloudMetrics.recordIsUserEligible(isAllowed);
+                            if (!isAllowed) {
+                                ReadAloudMetrics.recordIneligibilityReason(
+                                        ReadAloudFeatures.getIneligibilityReason());
+                            }
                         }
 
                         @Override
@@ -280,6 +315,7 @@ public class ReadAloudController
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void maybeCheckReadability(GURL url) {
         if (!isURLReadAloudSupported(url)) {
+            ReadAloudMetrics.recordIsPageReadable(false);
             return;
         }
 
@@ -350,6 +386,7 @@ public class ReadAloudController
                         playback -> {
                             mPlayerCoordinator.playbackReady(playback, PLAYING);
                             playback.play();
+                            ReadAloudMetrics.recordPlaybackStarted();
                         },
                         exception -> {
                             Log.d(TAG, "playTab failed: %s", exception.getMessage());
@@ -404,6 +441,7 @@ public class ReadAloudController
         promise.then(
                 playback -> {
                     Log.d(TAG, "Playback created");
+                    ReadAloudMetrics.recordIsTabPlaybackCreationSuccessful(true);
                     maybeSetUpHighlighter(playback.getMetadata());
 
                     mHighlightingEnabled.addObserver(
@@ -415,6 +453,7 @@ public class ReadAloudController
                 },
                 exception -> {
                     Log.e(TAG, exception.getMessage());
+                    ReadAloudMetrics.recordIsTabPlaybackCreationSuccessful(false);
                     mPlayerCoordinator.playbackFailed();
                 });
 
@@ -473,6 +512,7 @@ public class ReadAloudController
         mHighlightingEnabled.removeObserver(ReadAloudController.this::onHighlightingEnabledChanged);
         ApplicationStatus.unregisterApplicationStateListener(this);
         resetCurrentPlayback();
+        mStateToRestoreOnBringingToForeground = null;
     }
 
     private void maybeSetUpHighlighter(Playback.Metadata metadata) {
@@ -776,7 +816,19 @@ public class ReadAloudController
         if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES
                 && DeviceConditions.isCurrentlyScreenOnAndUnlocked(
                         mActivity.getApplicationContext())) {
-            maybeStopPlayback(/* tab= */ null);
+            if (mCurrentlyPlayingTab != null) {
+                mStateToRestoreOnBringingToForeground =
+                        new RestoreState(
+                                mCurrentlyPlayingTab,
+                                mCurrentPlaybackData,
+                                /* useOffsetInParagraph= */ true,
+                                /* shouldPlayOverride= */ false);
+            }
+            resetCurrentPlayback();
+        } else if (newState == ApplicationState.HAS_RUNNING_ACTIVITIES
+                && mStateToRestoreOnBringingToForeground != null) {
+            mStateToRestoreOnBringingToForeground.restore();
+            mStateToRestoreOnBringingToForeground = null;
         }
     }
 

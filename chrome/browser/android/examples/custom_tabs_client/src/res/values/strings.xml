@@ -51,7 +51,6 @@
     <string name="pcct_initial_width_slider_label_desc">PCCT initial width slider</string>
     <string name="pcct_breakpoint_text">PCCT Breakpoint</string>
     <string name="pcct_breakpoint_slider_label_desc">PCCT breakpoint slider</string>
-    <string name="force_engagement_signals">Force Engagement Signals</string>
     <string name="px_template">%dpx</string>
     <string name="url_hiding_text">Enable URL Bar Hiding (PCCT ignores)</string>
     <string name="color">Toolbar Color:</string>

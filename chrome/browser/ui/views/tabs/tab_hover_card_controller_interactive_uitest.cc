@@ -17,7 +17,8 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/performance_controls/high_efficiency_utils.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
+#include "chrome/browser/ui/performance_controls/test_support/memory_saver_browser_test_mixin.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/fade_footer_view.h"
@@ -105,42 +106,10 @@ GetTabHoverCardFooterTestFeatureConfig() {
   };
 }
 
-class MemoryMetricsRefreshWaiter : public performance_manager::user_tuning::
-                                       UserPerformanceTuningManager::Observer {
- public:
-  MemoryMetricsRefreshWaiter() = default;
-  ~MemoryMetricsRefreshWaiter() override = default;
-
-  void OnMemoryMetricsRefreshed() override { std::move(quit_closure_).Run(); }
-
-  // Forces and waits for the memory metrics to refresh
-  void Wait() {
-    auto* const manager = performance_manager::user_tuning::
-        UserPerformanceTuningManager::GetInstance();
-    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-    quit_closure_ = run_loop.QuitClosure();
-    base::ScopedObservation<
-        performance_manager::user_tuning::UserPerformanceTuningManager,
-        MemoryMetricsRefreshWaiter>
-        memory_metrics_observer(this);
-    memory_metrics_observer.Observe(manager);
-    performance_manager::PerformanceManager::CallOnGraph(
-        FROM_HERE,
-        base::BindLambdaForTesting([](performance_manager::Graph* graph) {
-          auto* metrics_decorator = graph->GetRegisteredObjectAs<
-              performance_manager::ProcessMetricsDecorator>();
-          metrics_decorator->RequestImmediateMetrics();
-        }));
-    run_loop.Run();
-  }
-
- private:
-  base::OnceClosure quit_closure_;
-};
 }  // namespace
 
 class TabHoverCardInteractiveUiTest
-    : public InteractiveBrowserTest,
+    : public MemorySaverBrowserTestMixin<InteractiveBrowserTest>,
       public test::TabHoverCardTestUtil,
       public testing::WithParamInterface<TabHoverCardTestFeatureConfig> {
  public:
@@ -534,42 +503,20 @@ INSTANTIATE_TEST_SUITE_P(All,
 class TabHoverCardFadeFooterInteractiveUiTest
     : public TabHoverCardInteractiveUiTest {
  public:
-  TabHoverCardFadeFooterInteractiveUiTest() = default;
-  ~TabHoverCardFadeFooterInteractiveUiTest() override = default;
-
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    https_server_ = std::make_unique<net::EmbeddedTestServer>(
-        net::EmbeddedTestServer::TYPE_HTTPS);
-    ASSERT_TRUE(https_server()->InitializeAndListen());
-    https_server()->StartAcceptingConnections();
-    TabHoverCardInteractiveUiTest::SetUpOnMainThread();
-  }
-
   GURL GetTestingURL(std::string hostname) {
-    return https_server()->GetURL(hostname, "/title1.html");
+    return embedded_test_server()->GetURL(hostname, "/title1.html");
   }
 
   auto TryDiscardTab(int tab_index) {
-    return Do(base::BindLambdaForTesting([=]() {
-      performance_manager::user_tuning::UserPerformanceTuningManager::
-          GetInstance()
-              ->DiscardPageForTesting(
-                  browser()->tab_strip_model()->GetWebContentsAt(tab_index));
-    }));
+    return Do(
+        base::BindLambdaForTesting([=]() { TryDiscardTabAt(tab_index); }));
   }
 
   auto ForceRefreshMemoryMetrics() {
-    return Steps(FlushEvents(), Do(base::BindLambdaForTesting([]() {
-                   MemoryMetricsRefreshWaiter waiter;
-                   waiter.Wait();
+    return Steps(FlushEvents(), Do(base::BindLambdaForTesting([=]() {
+                   ForceRefreshMemoryMetricsAndWait();
                  })));
   }
-
-  net::EmbeddedTestServer* https_server() { return https_server_.get(); }
-
- private:
-  std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 
 // Mocks the hover card footer is playing audio and verifies that
@@ -739,7 +686,7 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
                       content::WebContents* const web_contents =
                           browser->tab_strip_model()->GetWebContentsAt(0);
                       const uint64_t memory_estimate =
-                          high_efficiency::GetDiscardedMemorySavingsInBytes(
+                          memory_saver::GetDiscardedMemorySavingsInBytes(
                               web_contents);
                       return label->GetText() ==
                              l10n_util::GetStringFUTF16(
@@ -751,16 +698,9 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
 
 // The hover card should stop showing memory usage data after navigating to
 // another site since the data is now out of date
-// TODO(crbug.com/1483255): Flaky on mac
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_HoverCardStopShowingMemoryOnNavigation \
-  DISABLED_HoverCardStopShowingMemoryOnNavigation
-#else
-#define MAYBE_HoverCardStopShowingMemoryOnNavigation \
-  HoverCardStopShowingMemoryOnNavigation
-#endif
+// TODO(crbug.com/1483255): Re-enable after resolving flakiness.
 IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterInteractiveUiTest,
-                       MAYBE_HoverCardStopShowingMemoryOnNavigation) {
+                       DISABLED_HoverCardStopShowingMemoryOnNavigation) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetTestingURL("a.com")),

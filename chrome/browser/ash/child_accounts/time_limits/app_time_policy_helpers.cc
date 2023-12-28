@@ -55,8 +55,6 @@ apps::AppType PolicyStringToAppType(const std::string& app_type) {
     return apps::AppType::kStandaloneBrowserChromeApp;
   if (app_type == "LACROS-EXTENSION")
     return apps::AppType::kStandaloneBrowserExtension;
-  if (app_type == "MAC-OS")
-    return apps::AppType::kMacOs;
   if (app_type == "PLUGIN-VM")
     return apps::AppType::kPluginVm;
   if (app_type == "REMOTE")
@@ -94,8 +92,6 @@ std::string AppTypeToPolicyString(apps::AppType app_type) {
       return "LACROS-CHROME-APP";
     case apps::AppType::kStandaloneBrowserExtension:
       return "LACROS-EXTENSION";
-    case apps::AppType::kMacOs:
-      return "MAC-OS";
     case apps::AppType::kPluginVm:
       return "PLUGIN-VM";
     case apps::AppType::kRemote:

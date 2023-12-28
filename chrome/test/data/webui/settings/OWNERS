@@ -1,7 +1,7 @@
 file://chrome/browser/resources/settings/OWNERS
 
 per-file collapse_radio_button_tests.ts=sauski@google.com
-per-file cookies_page_test.ts=sauski@google.com,rainhard@chromium.org
+per-file cookies_page_test.ts=fmacintosh@google.com,sauski@google.com,rainhard@chromium.org
 per-file clear_browsing_data_test.ts=sauski@google.com
 per-file do_not_track_toggle_test.ts=sauski@google.com
 per-file do_not_track_toggle_test.ts=sauski@google.com

@@ -10,7 +10,6 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_observer.h"
 #include "ash/wm/window_util.h"
@@ -23,6 +22,7 @@
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
+#include "ui/display/screen.h"
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/wm/public/activation_client.h"
@@ -666,8 +666,7 @@ void ScreenOrientationController::ApplyLockForTopMostWindowOnInternalDisplay() {
     return;
   }
 
-  bool in_tablet_mode = Shell::Get()->tablet_mode_controller()->InTabletMode();
-  if (!in_tablet_mode) {
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     if (IsAutoRotationAllowed()) {
       // We ignore windows and app requested orientation locks while the UI is
       // in clamshell mode when the device is physically in a tablet state.
@@ -682,7 +681,7 @@ void ScreenOrientationController::ApplyLockForTopMostWindowOnInternalDisplay() {
       Shell::Get()->mru_window_tracker()->BuildWindowListIgnoreModal(
           kActiveDesk));
 
-  for (auto* window : mru_windows) {
+  for (aura::Window* window : mru_windows) {
     if (window->GetRootWindow() != internal_display_root)
       continue;
 

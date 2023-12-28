@@ -58,6 +58,7 @@ class MEDIA_GPU_EXPORT FrameSizeEstimator {
 
   float qp_size_mean() const { return qp_size_stats_.mean(); }
   float size_correction_mean() const { return size_correction_stats_.mean(); }
+
   void UpdateMaxWindowSize(base::TimeDelta max_window_size);
 
  private:

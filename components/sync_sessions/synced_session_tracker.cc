@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/sync/protocol/session_specifics.pb.h"
@@ -191,12 +192,12 @@ const std::string& SyncedSessionTracker::GetLocalSessionTag() const {
   return local_session_tag_;
 }
 
-std::vector<const SyncedSession*> SyncedSessionTracker::LookupAllSessions(
-    SessionLookup lookup) const {
+std::vector<raw_ptr<const SyncedSession, VectorExperimental>>
+SyncedSessionTracker::LookupAllSessions(SessionLookup lookup) const {
   return LookupSessions(lookup, /*exclude_local_session=*/false);
 }
 
-std::vector<const SyncedSession*>
+std::vector<raw_ptr<const SyncedSession, VectorExperimental>>
 SyncedSessionTracker::LookupAllForeignSessions(SessionLookup lookup) const {
   return LookupSessions(lookup, /*exclude_local_session=*/true);
 }
@@ -346,10 +347,10 @@ SyncedSessionTracker::TrackedSession* SyncedSessionTracker::GetTrackedSession(
   return session;
 }
 
-std::vector<const SyncedSession*> SyncedSessionTracker::LookupSessions(
-    SessionLookup lookup,
-    bool exclude_local_session) const {
-  std::vector<const SyncedSession*> sessions;
+std::vector<raw_ptr<const SyncedSession, VectorExperimental>>
+SyncedSessionTracker::LookupSessions(SessionLookup lookup,
+                                     bool exclude_local_session) const {
+  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions;
   for (const auto& [session_tag, tracked_session] : session_map_) {
     const SyncedSession& session = tracked_session.synced_session;
     if (lookup == PRESENTABLE && !IsPresentable(sessions_client_, session)) {

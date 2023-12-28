@@ -229,8 +229,9 @@ using PriceNotificationItems =
       [self createPriceNotificationTableViewItem:NO
                                  fromProductInfo:productInfo
                                            atURL:URL];
-  self.shoppingService->IsClusterIdTrackedByUser(
-      productInfo->product_cluster_id.value(),
+  self.shoppingService->IsSubscribed(
+      commerce::BuildUserSubscriptionForClusterId(
+          productInfo->product_cluster_id.value()),
       base::BindOnce(^(bool isTracked) {
         [weakSelf.consumer setTrackableItem:item currentlyTracking:isTracked];
       }));

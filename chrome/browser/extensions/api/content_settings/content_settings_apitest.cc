@@ -488,19 +488,14 @@ class ImageContentSettingApiTest : public ExtensionApiTest {
 //   primaryPattern: 'example1.com'
 //   secondaryPattern: 'example2.com'
 // Should only block images with origin=example2.com.
-// Unfortunately, the blocked image does not result in an onerror callback, nor
-// any way to distinguish between an image that is still in the process of
-// loading. For the purposes of this test, we try to load two images. We wait
-// for the second image to successfully load, and check that the first one has
-// not loaded.
-// TODO(https://crbug.com/1208547): Fix content setting blocking so that the
-// onerror callback is fired, and then listen to the onerror callback.
 IN_PROC_BROWSER_TEST_F(ImageContentSettingApiTest, OriginBlocking) {
   LoadImageContentSettingExtension();
   std::string page_js =
       R"(
+         <body onload="console.log('body load');">
          <img src=$2 onload="console.log('example2 load');">
          <img src=$1 onload="console.log('example1 load');">
+         </body>
            )";
   GURL example1_img =
       embedded_test_server()->GetURL("example1.com", "/test.png");
@@ -523,18 +518,25 @@ IN_PROC_BROWSER_TEST_F(ImageContentSettingApiTest, OriginBlocking) {
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::WebContentsConsoleObserver example1_load_observer(web_contents);
-  example1_load_observer.SetPattern("example1 load");
+  content::WebContentsConsoleObserver body_load_observer(web_contents);
+  body_load_observer.SetPattern("body load");
   content::WebContentsConsoleObserver observer(web_contents);
 
   GURL example1_index =
       embedded_test_server()->GetURL("example1.com", "/index.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), example1_index));
 
-  EXPECT_TRUE(example1_load_observer.Wait());
-  // There should be exactly 1 message, and it should be the message we waited
-  // for.
-  EXPECT_EQ(observer.messages().size(), 1u);
+  // The onload event will fire when there are no more pending image loads. We
+  // should then have two messages -- one for the onload event and one for
+  // "example 1" loading. "example 2" was blocked and should never load.
+  EXPECT_TRUE(body_load_observer.Wait());
+
+  std::vector<std::u16string> message_strings;
+  for (const auto& message : observer.messages()) {
+    message_strings.push_back(message.message);
+  }
+  EXPECT_THAT(message_strings,
+              testing::UnorderedElementsAre(u"example1 load", u"body load"));
 }
 
 }  // namespace extensions

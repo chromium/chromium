@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/cart/cart_handler.h"
@@ -617,10 +618,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
           base::FeatureList::IsEnabled(
               ntp_features::kNtpChromeCartInHistoryClusterModule));
 
-  source->AddBoolean("historyClustersModuleDiscountsEnabled",
-                     base::FeatureList::IsEnabled(
-                         ntp_features::kNtpHistoryClustersModuleDiscounts));
-
   webui::SetupChromeRefresh2023(source);
 
   RealboxHandler::SetupWebUIDataSource(source, profile);
@@ -685,13 +682,16 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
 
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 
-  // Give OGB 3P Cookie Permissions.
+// Give OGB 3P Cookie Permissions. Only necessary on non-Ash builds. Granting
+// 3P cookies on Ash causes b/314326552.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   WebUIAllowlist::GetOrCreate(profile_)->RegisterAutoGrantedThirdPartyCookies(
       url::Origin::Create(GURL(chrome::kChromeUIUntrustedNewTabPageUrl)),
       {
           ContentSettingsPattern::FromURL(GURL("https://ogs.google.com")),
           ContentSettingsPattern::FromURL(GURL("https://corp.google.com")),
       });
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
@@ -714,7 +714,9 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
   if (customize_chrome::IsSidePanelEnabled()) {
     auto* customize_chrome_tab_helper =
         CustomizeChromeTabHelper::FromWebContents(web_contents());
-    customize_chrome_tab_helper->CreateAndRegisterEntry();
+    if (customize_chrome_tab_helper) {
+      customize_chrome_tab_helper->CreateAndRegisterEntry();
+    }
   }
 
   // Populates the load time data with basic info.
@@ -740,7 +742,9 @@ NewTabPageUI::~NewTabPageUI() {
   }
   auto* customize_chrome_tab_helper =
       CustomizeChromeTabHelper::FromWebContents(web_contents());
-  customize_chrome_tab_helper->DeregisterEntry();
+  if (customize_chrome_tab_helper) {
+    customize_chrome_tab_helper->DeregisterEntry();
+  }
 }
 
 // static

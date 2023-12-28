@@ -253,10 +253,7 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
                                     mActivityTabSupplier,
                                     mShouldCloseTab,
                                     mSendToBackground,
-                                    mFinalCallback,
-                                    () -> {
-                                        return -1L;
-                                    });
+                                    mFinalCallback);
                         });
     }
 }

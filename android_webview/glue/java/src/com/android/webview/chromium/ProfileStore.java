@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.android_webview.AwBrowserContext;
+import org.chromium.android_webview.AwBrowserContextStore;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ThreadUtils;
 
@@ -36,7 +37,8 @@ public class ProfileStore {
         ThreadUtils.checkUiThread();
         return mProfiles.computeIfAbsent(
                 name,
-                profileName -> new Profile(AwBrowserContext.getNamedContext(profileName, true)));
+                profileName ->
+                        new Profile(AwBrowserContextStore.getNamedContext(profileName, true)));
     }
 
     @Nullable
@@ -46,7 +48,7 @@ public class ProfileStore {
                 name,
                 profileName -> {
                     AwBrowserContext browserContext =
-                            AwBrowserContext.getNamedContext(profileName, false);
+                            AwBrowserContextStore.getNamedContext(profileName, false);
                     return browserContext != null ? new Profile(browserContext) : null;
                 });
     }
@@ -54,13 +56,13 @@ public class ProfileStore {
     @NonNull
     public List<String> getAllProfileNames() {
         ThreadUtils.checkUiThread();
-        return AwBrowserContext.listAllContexts();
+        return AwBrowserContextStore.listAllContexts();
     }
 
     @NonNull
     public boolean deleteProfile(@NonNull String name) {
         ThreadUtils.checkUiThread();
-        boolean deletionResult = AwBrowserContext.deleteNamedContext(name);
+        boolean deletionResult = AwBrowserContextStore.deleteNamedContext(name);
         if (deletionResult) {
             mProfiles.remove(name);
         } else {

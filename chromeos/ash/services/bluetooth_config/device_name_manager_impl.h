@@ -33,6 +33,10 @@ class DeviceNameManagerImpl : public DeviceNameManager {
   void SetPrefs(PrefService* local_state) override;
 
  private:
+  // Migrates the IDs used to persist nicknames in |local_state_| from the BlueZ
+  // format to the Floss format.
+  void MigrateExistingNicknames();
+
   // Returns true if a BluetoothDevice* with identifier |device_id| exists in
   // |bluetooth_adapter_|, else false.
   bool DoesDeviceExist(const std::string& device_id) const;

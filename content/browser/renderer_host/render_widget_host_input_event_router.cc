@@ -678,6 +678,11 @@ void RenderWidgetHostInputEventRouter::DispatchMouseEvent(
   }
 
   target->ProcessMouseEvent(event, latency);
+
+  if (root_view_receive_additional_mouse_up_ && target != root_view &&
+      mouse_event.GetType() == blink::WebInputEvent::Type::kMouseUp) {
+    root_view->ProcessMouseEvent(event, latency);
+  }
 }
 
 void RenderWidgetHostInputEventRouter::RouteMouseWheelEvent(
@@ -1608,8 +1613,7 @@ void RenderWidgetHostInputEventRouter::DispatchTouchscreenGestureEvent(
 
   if (!touchscreen_gesture_target_) {
     root_view->GestureEventAck(
-        gesture_event, blink::mojom::InputEventResultState::kNoConsumerExists,
-        nullptr);
+        gesture_event, blink::mojom::InputEventResultState::kNoConsumerExists);
     return;
   }
 
@@ -1716,7 +1720,7 @@ void RenderWidgetHostInputEventRouter::DispatchTouchpadGestureEvent(
     } else {
       root_view->GestureEventAck(
           touchpad_gesture_event,
-          blink::mojom::InputEventResultState::kNoConsumerExists, nullptr);
+          blink::mojom::InputEventResultState::kNoConsumerExists);
     }
     return;
   }
@@ -1731,7 +1735,7 @@ void RenderWidgetHostInputEventRouter::DispatchTouchpadGestureEvent(
     } else {
       root_view->GestureEventAck(
           touchpad_gesture_event,
-          blink::mojom::InputEventResultState::kNoConsumerExists, nullptr);
+          blink::mojom::InputEventResultState::kNoConsumerExists);
     }
     return;
   }
@@ -1746,7 +1750,7 @@ void RenderWidgetHostInputEventRouter::DispatchTouchpadGestureEvent(
   if (!touchpad_gesture_target_) {
     root_view->GestureEventAck(
         touchpad_gesture_event,
-        blink::mojom::InputEventResultState::kNoConsumerExists, nullptr);
+        blink::mojom::InputEventResultState::kNoConsumerExists);
     return;
   }
 
@@ -2022,6 +2026,11 @@ void RenderWidgetHostInputEventRouter::SetMouseCaptureTarget(
 
   if (mouse_capture_target_ == target)
     mouse_capture_target_ = nullptr;
+}
+
+void RenderWidgetHostInputEventRouter::RootViewReceivesMouseUpIfNecessary(
+    bool root_view_receives_mouse_up) {
+  root_view_receive_additional_mouse_up_ = root_view_receives_mouse_up;
 }
 
 void RenderWidgetHostInputEventRouter::SetAutoScrollInProgress(

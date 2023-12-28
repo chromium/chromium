@@ -62,13 +62,7 @@ web_app::WebAppSyncBridge* GetWebAppSyncBridgeForProfile(Profile* profile) {
 namespace badging {
 
 BadgeManager::BadgeManager(Profile* profile)
-    : BadgeManager(profile, GetWebAppSyncBridgeForProfile(profile)) {}
-
-BadgeManager::BadgeManager(Profile* profile,
-                           web_app::WebAppSyncBridge* sync_bridge)
-    : profile_(profile),
-      clock_(base::DefaultClock::GetInstance()),
-      sync_bridge_(sync_bridge) {
+    : profile_(profile), clock_(base::DefaultClock::GetInstance()) {
   // The delegate is also set for Chrome OS but is set from the constructor of
   // web_apps_chromeos.cc.
 #if BUILDFLAG(IS_MAC)
@@ -181,17 +175,14 @@ const base::Clock* BadgeManager::SetClockForTesting(const base::Clock* clock) {
   return previous;
 }
 
-void BadgeManager::SetSyncBridgeForTesting(
-    web_app::WebAppSyncBridge* sync_bridge) {
-  sync_bridge_ = sync_bridge;
-}
-
 void BadgeManager::UpdateBadge(const webapps::AppId& app_id,
                                std::optional<BadgeValue> value) {
-  if (sync_bridge_ &&
+  web_app::WebAppSyncBridge* sync_bridge =
+      GetWebAppSyncBridgeForProfile(profile_.get());
+  if (sync_bridge &&
       !IsLastBadgingTimeWithin(badging::kBadgingMinimumUpdateInterval, app_id,
                                clock_, profile_)) {
-    sync_bridge_->SetAppLastBadgingTime(app_id, clock_->Now());
+    sync_bridge->SetAppLastBadgingTime(app_id, clock_->Now());
   }
 
   if (!value)

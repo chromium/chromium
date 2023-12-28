@@ -24,7 +24,8 @@ struct InstallWarning;
 class Manifest final {
  public:
   // Do not change the order of entries or remove entries in this list as this
-  // is used in ExtensionType enum in tools/metrics/histograms/enums.xml.
+  // is used in ExtensionType enum in
+  // tools/metrics/histograms/metadata/extensions/enums.xml.
   enum Type {
     TYPE_UNKNOWN = 0,
     TYPE_EXTENSION = 1,

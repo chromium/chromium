@@ -82,7 +82,7 @@ TEST_P(GetDetailsForEnrollmentRequestTest, GetRequestContent) {
 }
 
 TEST_P(GetDetailsForEnrollmentRequestTest, ParseResponse) {
-  absl::optional<base::Value> response = base::JSONReader::Read(
+  std::optional<base::Value> response = base::JSONReader::Read(
       "{ \"google_legal_message\": {}, \"external_legal_message\": {}, "
       "\"context_token\": \"some_token\" }");
   ASSERT_TRUE(response.has_value());

@@ -71,6 +71,21 @@ constexpr char kUserActionConfirmOrUploadToGoogleDrive[] =
 constexpr char kUserActionConfirmOrUploadToOneDrive[] =
     "confirm-or-upload-onedrive";
 
+// Options for which sub-page/flow we want to show.
+enum class DialogPage {
+  // The user can choose between apps for handling office files.
+  kFileHandlerDialog,
+  // Set up OneDrive (multi-page).
+  kOneDriveSetup,
+  // Confirm that the user wants to move the file to OneDrive.
+  kMoveConfirmationOneDrive,
+  // Confirm that the user wants to move the file to Google Drive.
+  kMoveConfirmationGoogleDrive,
+
+  // A separate dialog when we're only connecting OneDrive by itself.
+  kConnectToOneDrive,
+};
+
 class CloudUploadDialog;
 
 // The business logic for running setup, moving files to a cloud provider, and
@@ -151,6 +166,7 @@ class CloudOpenTask : public BrowserListObserver,
 
   // See the .cc implementation for comments on private methods.
   bool ExecuteInternal();
+  bool MaybeRunFixupFlow();
   void OpenOrMoveFiles();
   void OpenAlreadyHostedDriveUrls();
   void OnGoogleDriveGetMetadata(drive::FileError error,
@@ -186,10 +202,9 @@ class CloudOpenTask : public BrowserListObserver,
   void LogOneDriveOpenResultUMA(OfficeTaskResult success_task_result,
                                 OfficeOneDriveOpenErrors open_result);
 
-  bool InitAndShowDialog(mojom::DialogPage dialog_page);
-  mojom::DialogArgsPtr CreateDialogArgs(mojom::DialogPage dialog_page);
+  bool InitAndShowDialog(DialogPage dialog_page);
+  mojom::DialogArgsPtr CreateDialogArgs(DialogPage dialog_page);
   void ShowDialog(mojom::DialogArgsPtr args,
-                  const mojom::DialogPage dialog_page,
                   std::unique_ptr<::file_manager::file_tasks::ResultingTasks>
                       resulting_tasks);
   void SetTaskArgs(mojom::DialogArgsPtr& args,
@@ -282,7 +297,6 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
 
   CloudUploadDialog(mojom::DialogArgsPtr args,
                     UploadRequestCallback callback,
-                    const mojom::DialogPage dialog_page,
                     bool office_move_confirmation_shown);
 
   void OnDialogShown(content::WebUI* webui) override;
@@ -304,9 +318,10 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
 
   mojom::DialogArgsPtr dialog_args_;
   UploadRequestCallback callback_;
-  mojom::DialogPage dialog_page_;
-  size_t num_local_tasks_;
   bool office_move_confirmation_shown_;
+
+  // Only relevant for `mojom::DialogPage::kFileHandlerDialog`.
+  bool is_microsoft_office_or_google_workspace_disabled_by_policy_ = false;
 };
 
 }  // namespace ash::cloud_upload

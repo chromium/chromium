@@ -1,3 +1,6 @@
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS
+
 qjw@chromium.org
 ningxin.hu@intel.com
 rafael.cintron@microsoft.com

@@ -1,0 +1,9 @@
+Document Name='Hello World'
+++Text Name='Heading'
+++++Text Name='Heading' IsControlElement=false
+++Group IsControlElement=false
+++++Text Name='Paragraph'
+++Group IsControlElement=false
+++++Edit
+++Button Name='c'
+++Button Name='Click'

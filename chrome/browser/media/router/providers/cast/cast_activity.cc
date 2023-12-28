@@ -5,10 +5,13 @@
 #include "chrome/browser/media/router/providers/cast/cast_activity.h"
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_client_impl.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
+#include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 
 namespace media_router {
 
@@ -155,12 +158,22 @@ void CastActivity::StopSessionOnReceiver(
                                 std::move(callback));
 }
 
-void CastActivity::CloseConnectionOnReceiver(const std::string& client_id) {
+void CastActivity::CloseConnectionOnReceiver(
+    const std::string& client_id,
+    blink::mojom::PresentationConnectionCloseReason reason) {
   CastSession* session = GetSession();
-  if (!session)
+  if (!session) {
     return;
-  message_handler_->CloseConnection(cast_channel_id(), client_id,
-                                    session->destination_id());
+  }
+  if (reason == blink::mojom::PresentationConnectionCloseReason::CLOSED ||
+      !base::FeatureList::IsEnabled(kCastSilentlyRemoveVcOnNavigation)) {
+    message_handler_->CloseConnection(cast_channel_id(), client_id,
+                                      session->destination_id());
+
+  } else {
+    message_handler_->RemoveConnection(cast_channel_id(), client_id,
+                                       session->destination_id());
+  }
 }
 
 void CastActivity::HandleLeaveSession(const std::string& client_id) {

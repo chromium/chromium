@@ -60,7 +60,6 @@ import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardMediator.TouchToFillCreditCardOutcome;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -178,7 +177,6 @@ public class TouchToFillCreditCardControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures(AutofillFeatures.AUTOFILL_TOUCH_TO_FILL_FOR_CREDIT_CARDS_ANDROID)
     public void testShowCreditCardsWithOneEntry() throws TimeoutException {
         mCoordinator.showSheet(new CreditCard[] {VISA}, false);
 
@@ -198,7 +196,6 @@ public class TouchToFillCreditCardControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures(AutofillFeatures.AUTOFILL_TOUCH_TO_FILL_FOR_CREDIT_CARDS_ANDROID)
     public void testShowCreditCardsWithTwoEntries() throws TimeoutException {
         mCoordinator.showSheet(new CreditCard[] {VISA, MASTER_CARD}, false);
 
@@ -268,7 +265,6 @@ public class TouchToFillCreditCardControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures(AutofillFeatures.AUTOFILL_TOUCH_TO_FILL_FOR_CREDIT_CARDS_ANDROID)
     public void testNoCallbackForCreditCardOnSelectingItemBeforeInputTime() {
         mCoordinator.showSheet(new CreditCard[] {VISA}, false);
         assertThat(mTouchToFillCreditCardModel.get(VISIBLE), is(true));
@@ -290,7 +286,6 @@ public class TouchToFillCreditCardControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures(AutofillFeatures.AUTOFILL_TOUCH_TO_FILL_FOR_CREDIT_CARDS_ANDROID)
     public void testCallsCallbackForCreditCardOnSelectingItem() {
         mCoordinator.showSheet(new CreditCard[] {VISA}, false);
         assertThat(mTouchToFillCreditCardModel.get(VISIBLE), is(true));
@@ -316,7 +311,6 @@ public class TouchToFillCreditCardControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures(AutofillFeatures.AUTOFILL_TOUCH_TO_FILL_FOR_CREDIT_CARDS_ANDROID)
     public void testCallsCallbackForVirtualCardOnSelectingItem() {
         mCoordinator.showSheet(new CreditCard[] {VIRTUAL_CARD}, false);
         assertThat(mTouchToFillCreditCardModel.get(VISIBLE), is(true));

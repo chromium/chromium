@@ -507,7 +507,7 @@ TEST_F(AdditionalBidsUtilTest, MinimalValid) {
   ASSERT_TRUE(bid_state->bidder->interest_group.ads.has_value());
   ASSERT_EQ(1u, bid_state->bidder->interest_group.ads->size());
   EXPECT_EQ("https://en.wikipedia.test/wiki/Train",
-            bid_state->bidder->interest_group.ads.value()[0].render_url.spec());
+            bid_state->bidder->interest_group.ads.value()[0].render_url());
 
   EXPECT_EQ(InterestGroupAuction::Bid::BidRole::kBothKAnonModes, bid->bid_role);
   EXPECT_EQ("null", bid->ad_metadata);
@@ -766,10 +766,10 @@ TEST_F(AdditionalBidsUtilTest, ValidAdComponents) {
             result->bid_state->bidder->interest_group.ad_components->size());
   EXPECT_EQ("https://en.wikipedia.test/wiki/Locomotive",
             result->bid_state->bidder->interest_group.ad_components.value()[0]
-                .render_url.spec());
+                .render_url());
   EXPECT_EQ("https://en.wikipedia.test/wiki/High-speed_rail",
             result->bid_state->bidder->interest_group.ad_components.value()[1]
-                .render_url.spec());
+                .render_url());
 }
 
 TEST_F(AdditionalBidsUtilTest, ValidAdComponentsEmpty) {

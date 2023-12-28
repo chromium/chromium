@@ -109,7 +109,7 @@ class PageActionIconController : public PageActionIconViewObserver,
 
   IconViews page_action_icon_views_;
 
-  std::map<GURL, std::vector<PageActionIconView*>>
+  std::map<GURL, std::vector<raw_ptr<PageActionIconView, VectorExperimental>>>
       page_actions_excluded_from_logging_;
 
   base::ScopedObservation<zoom::ZoomEventManager,

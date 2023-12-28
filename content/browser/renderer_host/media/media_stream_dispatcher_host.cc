@@ -34,6 +34,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "url/origin.h"
@@ -46,7 +47,7 @@ namespace content {
 
 namespace {
 
-using blink::mojom::CapturedSurfaceControlResult;
+using ::blink::mojom::CapturedSurfaceControlResult;
 
 void BindMediaStreamDeviceObserverReceiver(
     GlobalRenderFrameHostId render_frame_host_id,
@@ -78,7 +79,7 @@ StartObservingWebContents(GlobalRenderFrameHostId render_frame_host_id,
   return web_contents_observer;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Checks whether a track living in the WebContents indicated by
 // (render_process_id, render_frame_id) may be cropped or restricted
 // to the target indicated by |target|.
@@ -137,7 +138,7 @@ WrapApplySubCaptureTarget(
       },
       std::move(callback), std::move(bad_message_callback));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 bool AllowedStreamTypeCombination(
     blink::mojom::MediaStreamType audio_stream_type,
@@ -627,7 +628,7 @@ void MediaStreamDispatcherHost::KeepDeviceAliveForTransfer(
       render_frame_host_id_, requester_id_, session_id, transfer_id));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void MediaStreamDispatcherHost::FocusCapturedSurface(const std::string& label,
                                                      bool focus) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -690,20 +691,8 @@ void MediaStreamDispatcherHost::SendWheel(
     return;
   }
 
-  const GlobalRenderFrameHostId captured_id =
-      media_stream_manager_->video_capture_manager()
-          ->GetGlobalRenderFrameHostId(device_id);
-  if (!captured_id) {
-    // Either the capture session has ended, or the capture was not of a tab.
-    // Note that this is not a BadMessage, because the session might have
-    // ended asynchronously.
-    std::move(callback).Run(
-        CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError);
-    return;
-  }
-
-  // TODO(crbug.com/1466247): Implement (with a permission prompt).
-  std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);
+  media_stream_manager_->SendWheel(render_frame_host_id_, device_id,
+                                   std::move(action), std::move(callback));
 }
 
 void MediaStreamDispatcherHost::GetZoomLevel(
@@ -735,6 +724,45 @@ void MediaStreamDispatcherHost::GetZoomLevel(
   // TODO(crbug.com/1466247): Implement (with a permission prompt).
   std::move(callback).Run(absl::nullopt,
                           CapturedSurfaceControlResult::kUnknownError);
+}
+
+void MediaStreamDispatcherHost::SetZoomLevel(
+    const base::UnguessableToken& device_id,
+    int32_t zoom_level,
+    SetZoomLevelCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  if (!base::FeatureList::IsEnabled(blink::features::kCapturedSurfaceControl)) {
+    ReceivedBadMessage(
+        render_frame_host_id_.child_id,
+        bad_message::MSDH_GET_ZOOM_LEVEL_BUT_CSC_FEATURE_DISABLED);
+    std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);
+    return;
+  }
+
+  if (zoom_level <
+          static_cast<int>(std::ceil(100 * blink::kMinimumPageZoomFactor)) ||
+      static_cast<int>(std::floor(100 * blink::kMaximumPageZoomFactor)) <
+          zoom_level) {
+    ReceivedBadMessage(render_frame_host_id_.child_id,
+                       bad_message::MSDH_SET_ZOOM_LEVEL_INVALID_LEVEL);
+    std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);
+    return;
+  }
+
+  const GlobalRenderFrameHostId captured_id =
+      media_stream_manager_->video_capture_manager()
+          ->GetGlobalRenderFrameHostId(device_id);
+  if (!captured_id) {
+    // Either the capture session has ended, or the capture was not of a tab.
+    // Note that this is not a BadMessage, because the session might have
+    // ended asynchronously.
+    std::move(callback).Run(
+        CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError);
+    return;
+  }
+
+  // TODO(crbug.com/1466247): Implement (with a permission prompt).
+  std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);
 }
 
 void MediaStreamDispatcherHost::OnSubCaptureTargetValidationComplete(

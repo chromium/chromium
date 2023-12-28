@@ -67,10 +67,6 @@ To use a third-party crate "bar" version 3 from first party code:
    * `git add -f third_party/rust/chromium_crates_io/vendor`
    * The `-f` is important, as files may be skipped otherwise from a
      `.gitignore` inside the crate.
-1. If a crate in `//third_party/rust/chromium_crates_io/patches` was updated
-   as part of vendoring, then reapply patches to it:
-   * Go to the `//third_party/rust/chromium_crates_io` directory.
-   * `./apply_patches.sh` (this currently requires linux).
 1. (optional) If the crate is only to be used by tests and tooling, then
    specify the `"test"` group in `//third_party/rust/chromium_crates_io/gnrt_config.toml`:
    ```

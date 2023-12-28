@@ -76,6 +76,15 @@ struct MediaImage {
   array<gfx.mojom.Size> sizes;
 };
 
+// Chapter info in MediaMetadata
+// Spec: https://wicg.github.io/mediasession/
+[Stable]
+struct ChapterInformation {
+  mojo_base.mojom.String16 title;
+  mojo_base.mojom.TimeDelta startTime;
+  array<MediaImage> artwork;
+};
+
 // MediaMetadata
 [Stable]
 struct MediaMetadata {

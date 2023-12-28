@@ -193,7 +193,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
           address->fields.begin(), address->fields.end(),
           [](const auto& field) {
             return field.type ==
-                   autofill_private::ServerFieldType::kAddressHomeCountry;
+                   autofill_private::FieldType::kAddressHomeCountry;
           });
       it != address->fields.end()) {
     country_code = it->value;
@@ -205,7 +205,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
   // TODO(crbug.com/1441904): Fields not visible for the autofill profile's
   // country must be reset.
   for (const api::autofill_private::AddressField& field : address->fields) {
-    if (field.type == autofill_private::ServerFieldType::kNameFull) {
+    if (field.type == autofill_private::FieldType::kNameFull) {
       profile.SetInfoWithVerificationStatus(
           autofill::AutofillType(autofill::NAME_FULL),
           base::UTF8ToUTF16(field.value),
@@ -386,6 +386,34 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveCreditCardFunction::Run() {
     if (existing_card && existing_card->Compare(credit_card) == 0)
       return RespondNow(NoArguments());
 
+    if (existing_card->cvc().empty()) {
+      if (credit_card.cvc().empty()) {
+        // Record when an existing card without CVC is edited and no CVC was
+        // added.
+        base::RecordAction(base::UserMetricsAction(
+            "AutofillCreditCardsEditedAndCvcWasLeftBlank"));
+      } else {
+        // Record when an existing card without CVC is edited and CVC was added.
+        base::RecordAction(
+            base::UserMetricsAction("AutofillCreditCardsEditedAndCvcWasAdded"));
+      }
+    } else {
+      if (credit_card.cvc().empty()) {
+        // Record when an existing card with CVC is edited and CVC was removed.
+        base::RecordAction(base::UserMetricsAction(
+            "AutofillCreditCardsEditedAndCvcWasRemoved"));
+      } else if (credit_card.cvc() != existing_card->cvc()) {
+        // Record when an existing card with CVC is edited and CVC was updated.
+        base::RecordAction(base::UserMetricsAction(
+            "AutofillCreditCardsEditedAndCvcWasUpdated"));
+      } else {
+        // Record when an existing card with CVC is edited and CVC was
+        // unchanged.
+        base::RecordAction(base::UserMetricsAction(
+            "AutofillCreditCardsEditedAndCvcWasUnchanged"));
+      }
+    }
+
     // Record when nickname is updated.
     if (credit_card.HasNonEmptyValidNickname() &&
         existing_card->nickname() != credit_card.nickname()) {
@@ -431,6 +459,17 @@ ExtensionFunction::ResponseAction AutofillPrivateRemoveEntryFunction::Run() {
 
   if (personal_data->GetIbanByGUID(parameters->guid)) {
     base::RecordAction(base::UserMetricsAction("AutofillIbanDeleted"));
+  } else if (autofill::CreditCard* credit_card =
+                 personal_data->GetCreditCardByGUID(parameters->guid)) {
+    base::RecordAction(base::UserMetricsAction("AutofillCreditCardDeleted"));
+    if (!credit_card->cvc().empty()) {
+      base::RecordAction(
+          base::UserMetricsAction("AutofillCreditCardDeletedAndHadCvc"));
+    }
+    if (credit_card->HasNonEmptyValidNickname()) {
+      base::RecordAction(
+          base::UserMetricsAction("AutofillCreditCardDeletedAndHadNickname"));
+    }
   }
   personal_data->RemoveByGUID(parameters->guid);
   return RespondNow(NoArguments());

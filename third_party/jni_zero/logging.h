@@ -7,6 +7,12 @@
 
 #include "third_party/jni_zero/jni_export.h"
 
+#if defined(NDEBUG) && !defined(DCHECK_ALWAYS_ON)
+#define JNI_ZERO_DCHECK_IS_ON() false
+#else
+#define JNI_ZERO_DCHECK_IS_ON() true
+#endif
+
 // Simplified version of Google's logging. Adapted from perfetto's
 // implementation.
 namespace jni_zero {
@@ -72,12 +78,12 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT void LogMessage(LogLev,
       JNI_ZERO_FLOG("%s", "JNI_ZERO_CHECK(" #x ")"); \
     }                                                \
   } while (0)
-#if defined(NDEBUG) && !defined(DCHECK_ALWAYS_ON)
+#if JNI_ZERO_DCHECK_IS_ON()
+#define JNI_ZERO_DCHECK(x) JNI_ZERO_CHECK(x)
+#else
 #define JNI_ZERO_DCHECK(x) \
   do {                     \
   } while (false && (x))
-#else
-#define JNI_ZERO_DCHECK(x) JNI_ZERO_CHECK(x)
 #endif
 }  // namespace jni_zero
 

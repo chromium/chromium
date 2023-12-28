@@ -61,8 +61,4 @@ void TabletMode::Waiter::OnDisplayTabletStateChanged(
   }
 }
 
-bool TabletMode::IsInTabletMode() {
-  return display::Screen::GetScreen()->InTabletMode();
-}
-
 }  // namespace ash

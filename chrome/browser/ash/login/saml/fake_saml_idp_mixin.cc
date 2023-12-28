@@ -173,7 +173,7 @@ void FakeSamlIdpMixin::SetSamlResponseFile(const std::string& xml_file) {
   base::ScopedAllowBlockingForTesting allow_io;
   EXPECT_TRUE(base::ReadFileToString(saml_response_dir_.Append(xml_file),
                                      &saml_response_));
-  base::Base64Encode(saml_response_, &saml_response_);
+  saml_response_ = base::Base64Encode(saml_response_);
 }
 
 bool FakeSamlIdpMixin::DeviceTrustHeaderRecieved() const {

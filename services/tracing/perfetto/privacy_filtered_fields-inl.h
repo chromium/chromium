@@ -460,6 +460,19 @@ constexpr MessageInfo const* kScrollPredictorMetricsComplexMessages[] = {
 constexpr MessageInfo kScrollPredictorMetrics = {
     kScrollPredictorMetricsIndices, kScrollPredictorMetricsComplexMessages};
 
+// Proto Message: PageLoad
+constexpr int kPageLoadIndices[] = {1, -1};
+constexpr MessageInfo kPageLoad = {kPageLoadIndices, nullptr};
+
+// Proto Message: StartUp
+constexpr int kStartUpIndices[] = {1, 3, -1};
+constexpr MessageInfo kStartUp = {kStartUpIndices, nullptr};
+
+// Proto Message: WebContentInteraction
+constexpr int kWebContentInteractionIndices[] = {1, 2, -1};
+constexpr MessageInfo kWebContentInteraction = {kWebContentInteractionIndices,
+                                                nullptr};
+
 // Proto Message: TrackEvent
 constexpr int kTrackEventIndices[] = {
     1,    2,    3,    5,    6,    9,    10,   11,   12,   16,   17,   22,
@@ -468,7 +481,7 @@ constexpr int kTrackEventIndices[] = {
     1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014,
     1015, 1016, 1017, 1018, 1019, 1020, 1021, 1022, 1023, 1024, 1025, 1028,
     1031, 1032, 1033, 1034, 1036, 1038, 1039, 1040, 1041, 1042, 1046, 1047,
-    1048, 1049, 1050, 1051, 1052, 1053, 1054, 1055, -1};
+    1048, 1049, 1050, 1051, 1052, 1053, 1054, 1055, 1056, 1057, 1058, -1};
 constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
@@ -549,7 +562,10 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     &kChromeGraphicsPipeline,
     &kCrasUnified,
     &kLibunwindstackUnwinder,
-    &kScrollPredictorMetrics};
+    &kScrollPredictorMetrics,
+    &kPageLoad,
+    &kStartUp,
+    &kWebContentInteraction};
 constexpr MessageInfo kTrackEvent = {kTrackEventIndices,
                                      kTrackEventComplexMessages};
 
@@ -632,9 +648,9 @@ constexpr int kNamedRuleIndices[] = {1, 2, -1};
 constexpr MessageInfo kNamedRule = {kNamedRuleIndices, nullptr};
 
 // Proto Message: TriggerRule
-constexpr int kTriggerRuleIndices[] = {1, 2, 3, -1};
+constexpr int kTriggerRuleIndices[] = {1, 2, 3, 4, -1};
 constexpr MessageInfo const* kTriggerRuleComplexMessages[] = {
-    nullptr, &kHistogramRule, &kNamedRule};
+    nullptr, &kHistogramRule, &kNamedRule, nullptr};
 constexpr MessageInfo kTriggerRule = {kTriggerRuleIndices,
                                       kTriggerRuleComplexMessages};
 
@@ -724,9 +740,14 @@ constexpr MessageInfo const* kTrackDescriptorComplexMessages[] = {
 constexpr MessageInfo kTrackDescriptor = {kTrackDescriptorIndices,
                                           kTrackDescriptorComplexMessages};
 
+// Proto Message: TraceUuid
+constexpr int kTraceUuidIndices[] = {1, 2, -1};
+constexpr MessageInfo kTraceUuid = {kTraceUuidIndices, nullptr};
+
 // Proto Message: TracePacket
-constexpr int kTracePacketIndices[] = {6,  8,  10, 11, 12, 13, 35, 36, 41, 42,
-                                       43, 44, 51, 54, 56, 58, 59, 60, 87, -1};
+constexpr int kTracePacketIndices[] = {6,  8,  10, 11, 12, 13, 35,
+                                       36, 41, 42, 43, 44, 51, 54,
+                                       56, 58, 59, 60, 87, 89, -1};
 constexpr MessageInfo const* kTracePacketComplexMessages[] = {
     &kClockSnapshot,
     nullptr,
@@ -746,7 +767,8 @@ constexpr MessageInfo const* kTracePacketComplexMessages[] = {
     nullptr,
     &kTracePacketDefaults,
     &kTrackDescriptor,
-    nullptr};
+    nullptr,
+    &kTraceUuid};
 constexpr MessageInfo kTracePacket = {kTracePacketIndices,
                                       kTracePacketComplexMessages};
 

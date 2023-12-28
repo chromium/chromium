@@ -14,8 +14,9 @@
 // browser window being smaller than usual. Left press on it displays a drop
 // down list of overflowed elements.
 class OverflowButton : public ToolbarButton {
+  METADATA_HEADER(OverflowButton, ToolbarButton)
+
  public:
-  METADATA_HEADER(OverflowButton);
   using CreateMenuModelCallback =
       base::RepeatingCallback<std::unique_ptr<ui::SimpleMenuModel>()>;
 

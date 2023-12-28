@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
@@ -120,9 +121,11 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   // Highlight and text colors for TextMatches.
   Color PlatformTextSearchHighlightColor(
       bool active_match,
-      mojom::blink::ColorScheme color_scheme) const;
+      mojom::blink::ColorScheme color_scheme,
+      const ui::ColorProvider* color_provider) const;
   Color PlatformTextSearchColor(bool active_match,
-                                mojom::blink::ColorScheme color_scheme) const;
+                                mojom::blink::ColorScheme color_scheme,
+                                const ui::ColorProvider* color_provider) const;
 
   virtual Color FocusRingColor(mojom::blink::ColorScheme color_scheme) const;
   virtual Color PlatformFocusRingColor() const { return Color(0, 0, 0); }
@@ -145,7 +148,8 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   // System fonts and colors for CSS.
   void SystemFont(CSSValueID system_font_id, FontDescription&, const Document*);
   virtual Color SystemColor(CSSValueID,
-                            mojom::blink::ColorScheme color_scheme) const;
+                            mojom::blink::ColorScheme color_scheme,
+                            const ui::ColorProvider* color_provider) const;
 
   virtual void AdjustSliderThumbSize(ComputedStyleBuilder&) const;
 

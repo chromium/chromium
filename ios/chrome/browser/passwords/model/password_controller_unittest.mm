@@ -506,8 +506,10 @@ class PasswordControllerTest : public PlatformTest {
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  std::unique_ptr<web::WebState> web_state_;
+  // `autofill_client_` mocks KeyedServices, which need to outlive the
+  // `BrowserAutofillManager` owned by frame (`web_state`).
   autofill::TestAutofillClient autofill_client_;
+  std::unique_ptr<web::WebState> web_state_;
 
   // SuggestionController for testing.
   PasswordsTestSuggestionController* suggestionController_;

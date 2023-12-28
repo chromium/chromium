@@ -81,13 +81,14 @@ button#disconnect {
   --mdc-theme-on-primary: white;
 }
 
-.default-orientation {
-  background: white;
+.nonzero-orientation {
+  background: rgba(255, 0, 0, 0.2);;
   color: black;
 }
 
-.selected-orientation {
-  background: rgba(255, 0, 0, 0.2);;
+/* Don't color the option elements */
+.nonzero-orientation > option {
+  background: white;
   color: black;
 }
 
@@ -96,4 +97,52 @@ button#live {
   --mdc-theme-primary:#FF0000;
   --mdc-theme-on-primary:black;
   opacity: 0.8;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 10px;
+}
+
+.collapsible.collapsed {
+  margin-bottom: 10px;
+}
+
+.collapsible.collapsed .section {
+  display: none;
+}
+
+.collapsible.collapsed .minus {
+  display: none;
+}
+
+.collapsible:not(.collapsed) .plus {
+  display: none;
+}
+
+.minus,
+.plus {
+  display: inline-block;
+  min-width: 30px;
+  text-align: center;
+}
+
+#filter-container {
+  max-width: 450px;
+  min-width: 350px;
+  font-family: Roboto;
+  font-size: 10pt;
+  background-color: white;
+  padding: 10px;
+}
+
+#saveFilter {
+  margin: 20px 10px;
+  margin-right: 0px;
+}
+
+#opacityVal {
+  display: inline-block;
+  width: 30px;
 }

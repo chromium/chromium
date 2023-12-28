@@ -2074,6 +2074,11 @@ void RenderProcessHostImpl::ReinitializeLogging(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+void RenderProcessHostImpl::SetBatterySaverMode(
+    bool battery_saver_mode_enabled) {
+  GetRendererInterface()->SetBatterySaverMode(battery_saver_mode_enabled);
+}
+
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 void RenderProcessHostImpl::CreateStableVideoDecoder(
     mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder> receiver) {
@@ -2222,8 +2227,9 @@ RenderProcessHostImpl::GetInfoForBrowserContextDestructionCrashReporting() {
   if (HostHasNotBeenUsed())
     ret += " hnbu";
 
-  if (IsSpareProcessForCrashReporting(this))
+  if (IsSpare()) {
     ret += " spr";
+  }
 
   if (delayed_cleanup_needed_)
     ret += " dcn";
@@ -3012,25 +3018,39 @@ void RenderProcessHostImpl::DumpProcessStack() {
 #endif
 
 void RenderProcessHostImpl::OnMediaStreamAdded() {
+  CHECK_NE(media_stream_count_, std::numeric_limits<int>::max());
   ++media_stream_count_;
-  UpdateProcessPriority();
+
+  if (media_stream_count_ == 1) {
+    UpdateProcessPriority();
+  }
 }
 
 void RenderProcessHostImpl::OnMediaStreamRemoved() {
-  DCHECK_GT(media_stream_count_, 0);
+  CHECK_GT(media_stream_count_, 0);
   --media_stream_count_;
-  UpdateProcessPriority();
+
+  if (media_stream_count_ == 0) {
+    UpdateProcessPriority();
+  }
 }
 
 void RenderProcessHostImpl::OnForegroundServiceWorkerAdded() {
+  CHECK_NE(foreground_service_worker_count_, std::numeric_limits<int>::max());
   foreground_service_worker_count_ += 1;
-  UpdateProcessPriority();
+
+  if (foreground_service_worker_count_ == 1) {
+    UpdateProcessPriority();
+  }
 }
 
 void RenderProcessHostImpl::OnForegroundServiceWorkerRemoved() {
-  DCHECK_GT(foreground_service_worker_count_, 0);
+  CHECK_GT(foreground_service_worker_count_, 0);
   foreground_service_worker_count_ -= 1;
-  UpdateProcessPriority();
+
+  if (foreground_service_worker_count_ == 0) {
+    UpdateProcessPriority();
+  }
 }
 
 // static
@@ -3149,13 +3169,6 @@ bool RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes() {
 }
 
 // static
-bool RenderProcessHostImpl::IsSpareProcessForCrashReporting(
-    RenderProcessHost* render_process_host) {
-  return render_process_host == SpareRenderProcessHostManager::GetInstance()
-                                    .spare_render_process_host();
-}
-
-// static
 void RenderProcessHostImpl::ClearAllResourceCaches() {
   for (iterator iter(AllHostsIterator()); !iter.IsAtEnd(); iter.Advance()) {
     mojom::Renderer* renderer_interface =
@@ -3167,6 +3180,11 @@ void RenderProcessHostImpl::ClearAllResourceCaches() {
 bool RenderProcessHostImpl::HostHasNotBeenUsed() {
   return IsUnused() && listeners_.IsEmpty() && AreAllRefCountsZero() &&
          pending_views_ == 0;
+}
+
+bool RenderProcessHostImpl::IsSpare() const {
+  return this == SpareRenderProcessHostManager::GetInstance()
+                     .spare_render_process_host();
 }
 
 void RenderProcessHostImpl::SetProcessLock(
@@ -3454,7 +3472,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kV,
     switches::kVideoCaptureUseGpuMemoryBuffer,
     switches::kVideoThreads,
-    switches::kVideoUnderflowThresholdMs,
     switches::kVModule,
     switches::kWaitForDebuggerOnNavigation,
     switches::kWebAuthRemoteDesktopSupport,
@@ -3527,6 +3544,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
 #endif
 #if BUILDFLAG(IS_WIN)
     switches::kDisableHighResTimer,
+    switches::kTrySupportedChannelLayouts,
     switches::kRaiseTimerFrequency,
 #endif
 #if BUILDFLAG(IS_OZONE)

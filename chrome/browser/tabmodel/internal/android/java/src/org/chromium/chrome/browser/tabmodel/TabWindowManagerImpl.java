@@ -11,6 +11,7 @@ import android.util.SparseArray;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.base.Log;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -27,6 +28,8 @@ import java.util.Map;
  * Also manages tabs being reparented in AsyncTabParamsManager.
  */
 public class TabWindowManagerImpl implements ActivityStateListener, TabWindowManager {
+
+    public static final String TAG_MULTI_INSTANCE = "MultiInstance";
     private TabModelSelectorFactory mSelectorFactory;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final int mMaxSelectors;
@@ -65,7 +68,9 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
             TabModelSelector assignedSelector = mAssignments.get(activity);
             for (int i = 0; i < mSelectors.size(); i++) {
                 if (mSelectors.get(i) == assignedSelector) {
-                    return Pair.create(i, assignedSelector);
+                    Pair res = Pair.create(i, assignedSelector);
+                    Log.i(TAG_MULTI_INSTANCE, "Returning existing selector with index: " + res);
+                    return res;
                 }
             }
             // The following log statement is used in tools/android/build_speed/benchmark.py. Please
@@ -95,7 +100,9 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
         mSelectors.set(index, selector);
         mAssignments.put(activity, selector);
 
-        return Pair.create(index, selector);
+        Pair res = Pair.create(index, selector);
+        Log.i(TAG_MULTI_INSTANCE, "Returning new selector with index: " + res);
+        return res;
     }
 
     @Override

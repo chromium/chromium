@@ -258,7 +258,7 @@ scoped_refptr<SkottieWrapper> CreateSkottie(const gfx::Size& size,
   return CreateSkottieFromString(json);
 }
 
-scoped_refptr<SkottieWrapper> CreateSkottieFromString(base::StringPiece json) {
+scoped_refptr<SkottieWrapper> CreateSkottieFromString(std::string_view json) {
   base::span<const uint8_t> json_span = base::as_bytes(base::make_span(json));
   return SkottieWrapper::CreateSerializable(
       std::vector<uint8_t>(json_span.begin(), json_span.end()));

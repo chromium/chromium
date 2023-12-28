@@ -336,7 +336,12 @@ class COMPONENT_EXPORT(SQL) Database {
   bool has_error_callback() const { return !error_callback_.is_null(); }
 
   // Developer-friendly database ID used in logging output and memory dumps.
-  void set_histogram_tag(const std::string& tag);
+  void set_histogram_tag(const std::string& histogram_tag) {
+    DCHECK(!is_open());
+    histogram_tag_ = histogram_tag;
+  }
+
+  const std::string& histogram_tag() const { return histogram_tag_; }
 
   // Asks SQLite to perform a full integrity check on the database.
   //

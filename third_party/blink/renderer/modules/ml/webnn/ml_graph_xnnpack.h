@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_XNNPACK_H_
 
 #include "base/task/sequenced_task_runner.h"
+#include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -39,7 +40,8 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
   // Create and build an MLGraphXnnpack object. Resolve the promise with
   // this concrete object if the underlying XNNPACK subgraph builds
   // successfully.
-  static void ValidateAndBuildAsync(MLContext* context,
+  static void ValidateAndBuildAsync(ScopedMLTrace scoped_trace,
+                                    MLContext* context,
                                     const MLNamedOperands& named_outputs,
                                     ScriptPromiseResolver* resolver);
 
@@ -88,22 +90,26 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
   //          post task ------------> `CreateXnnRuntimeOnBackgroundThread()`
   //                                                  |
   //   `OnDidCreateXnnRuntime()  <-----------------post task
-  void BuildAsyncImpl(const MLNamedOperands& named_outputs,
+  void BuildAsyncImpl(ScopedMLTrace scoped_trace,
+                      const MLNamedOperands& named_outputs,
                       ScriptPromiseResolver* resolver) override;
 
   static void GetSharedXnnpackContextOnBackgroundThread(
+      ScopedMLTrace scoped_trace,
       CrossThreadHandle<MLGraphXnnpack> graph,
       CrossThreadHandle<MLNamedOperands> named_outputs,
       CrossThreadHandle<ScriptPromiseResolver> resolver,
       scoped_refptr<base::SequencedTaskRunner> resolver_task_runner);
 
   void OnDidGetSharedXnnpackContext(
+      ScopedMLTrace scoped_trace,
       scoped_refptr<SharedXnnpackContext> xnn_context,
       MLNamedOperands* named_outputs,
       ScriptPromiseResolver* resolver,
       String error_message = String());
 
   static void CreateXnnRuntimeOnBackgroundThread(
+      ScopedMLTrace scoped_trace,
       XnnSubgraphPtr subgraph,
       scoped_refptr<SharedXnnpackContext> xnn_context,
       Vector<DataBufferPtr> static_data_buffers,
@@ -113,6 +119,7 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
       scoped_refptr<base::SequencedTaskRunner> resolver_task_runner);
 
   void OnDidCreateXnnRuntime(
+      ScopedMLTrace scoped_trace,
       scoped_refptr<XnnRuntimeWrapper> xnn_runtime_wrapper,
       ScriptPromiseResolver* resolver,
       String error_message = String());
@@ -132,7 +139,8 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
   // `ArrayBufferView` while the background thread is accessing them. And it
   // would also avoid accessing the heap-allocated `ArrayBufferView` in the
   // background thread.
-  void ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,
+  void ComputeAsyncImpl(ScopedMLTrace scoped_trace,
+                        const MLNamedArrayBufferViews& inputs,
                         const MLNamedArrayBufferViews& outputs,
                         ScriptPromiseResolver* resolver,
                         ExceptionState& exception_state) override;
@@ -146,6 +154,7 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
   // passed forward to `OnDidCompute()` which is called on the thread
   // owning these GC objects.
   static void ComputeOnBackgroundThread(
+      ScopedMLTrace scoped_trace,
       scoped_refptr<XnnRuntimeWrapper> xnn_runtime_wrapper,
       XnnExternalValuesPtr external_values,
       NamedArrayBufferViewsInfoPtr inputs_info,
@@ -160,7 +169,8 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
   // from the `inputs_info` and `outputs_info` that carry the backing memory in
   // `ArrayBufferContents` transferred from the original user supplied
   // `ArrayBufferView`s.
-  void OnDidCompute(xnn_status status,
+  void OnDidCompute(ScopedMLTrace scoped_trace,
+                    xnn_status status,
                     NamedArrayBufferViewsInfoPtr inputs_info,
                     NamedArrayBufferViewsInfoPtr outputs_info,
                     ScriptPromiseResolver* resolver,

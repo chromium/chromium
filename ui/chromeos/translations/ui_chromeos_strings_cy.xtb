@@ -505,6 +505,7 @@
 <translation id="4935975195727477204">Blodyn Gasania</translation>
 <translation id="4943368462779413526">Pêl-droed</translation>
 <translation id="4961158930123534723">Rhennir 1 ffolder â Parallels Desktop</translation>
+<translation id="4965874878399872778">Wrthi'n gwirio ffeiliau yn erbyn polisïau diogelwch eich sefydliad...</translation>
 <translation id="496656650103537022">Adferwyd <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Albwm</translation>
 <translation id="4972330214479971536">Methu â gorffen gosod cysoni ffeil</translation>
@@ -560,7 +561,6 @@
 <translation id="5275973617553375938">Ffeiliau sydd wedi'u hadfer o Google Drive</translation>
 <translation id="5278111733643988471">I adfer yr eitem hon, llusgwch hi i ffolder newydd y tu allan i'r bin sbwriel. Mae'r ffolder gwreiddiol "<ph name="PARENT_FOLDER_NAME" />" ar gyfer yr eitem hon wedi'i ddileu.</translation>
 <translation id="5283101102242354279">Trowch estyniad ymlaen yn y modd Anhysbys ymlaen:</translation>
-<translation id="5286194356314741248">Wrthi'n sganio</translation>
 <translation id="5288441970121584418">Byrgyr</translation>
 <translation id="5293615890992542006">Mae symud y ffeil hon wedi'i rwystro gan bolisi gweinyddwr</translation>
 <translation id="5305688511332277257">Dim wedi'i osod</translation>
@@ -711,6 +711,7 @@
 <translation id="6430271654280079150">Mae gennych 1 ymgais ar ôl.</translation>
 <translation id="643243556292470964">Mae ffeiliau sydd wedi'u dileu bellach wedi'u symud i'r bin sbwriel</translation>
 <translation id="6438480100790416671">Wrthi'n gwirio gofod storio…</translation>
+<translation id="6451527188465304418">Wrthi'n gwirio ffeil yn erbyn polisïau diogelwch eich sefydliad...</translation>
 <translation id="6485131920355264772">Methwyd ag adfer gwybodaeth am le</translation>
 <translation id="6495925982925244349">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />%, Rheolir gan eich Gweinyddwr, Manylion</translation>
 <translation id="649877868557234318">Yn echdynnu <ph name="FILE_NAME" /> i <ph name="FOLDER_NAME" /></translation>

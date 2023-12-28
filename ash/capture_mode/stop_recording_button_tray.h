@@ -43,7 +43,7 @@ class StopRecordingButtonTray : public TrayBackgroundView {
   void HideBubble(const TrayBubbleView* bubble_view) override {}
 
   // Image view of the stop recording icon.
-  const raw_ptr<views::ImageView, ExperimentalAsh> image_view_;
+  const raw_ptr<views::ImageView> image_view_;
 };
 
 }  // namespace ash

@@ -33,7 +33,7 @@ class ASH_EXPORT GameCaptureBarView : public CaptureModeBarView {
   // Called when clicking on the start recording button inside the bar.
   void StartRecording();
 
-  raw_ptr<PillButton, ExperimentalAsh> start_recording_button_;
+  raw_ptr<PillButton> start_recording_button_;
 };
 
 }  // namespace ash

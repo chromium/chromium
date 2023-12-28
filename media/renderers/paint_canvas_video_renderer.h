@@ -30,6 +30,7 @@ class RectF;
 
 namespace gpu {
 struct Capabilities;
+class ClientSharedImage;
 
 namespace gles2 {
 class GLES2Interface;
@@ -297,7 +298,7 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
     gfx::Size size;
 
     // The shared image backing the texture.
-    gpu::Mailbox mailbox;
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
 
     // Used to perform YUV->RGB conversion on video frames. Internally caches
     // shared images that are created to upload CPU video frame data to the GPU.

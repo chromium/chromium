@@ -15,7 +15,7 @@
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/schema_registry.h"
-#include "ios/chrome/browser/policy/status_provider/user_cloud_policy_status_provider.h"
+#include "ios/chrome/browser/policy/model/status_provider/user_cloud_policy_status_provider.h"
 #include "ios/web/public/webui/web_ui_ios.h"
 #include "ios/web/public/webui/web_ui_ios_data_source.h"
 #include "ios/web/public/webui/web_ui_ios_message_handler.h"

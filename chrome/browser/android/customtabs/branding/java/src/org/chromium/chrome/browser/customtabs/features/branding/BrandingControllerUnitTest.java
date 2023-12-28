@@ -10,6 +10,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.customtabs.features.branding.BrandingController.BRANDING_CADENCE_MS;
+import static org.chromium.chrome.browser.customtabs.features.branding.BrandingController.MAX_BLANK_TOOLBAR_TIMEOUT_MS;
+
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
@@ -54,9 +57,6 @@ import java.util.concurrent.TimeUnit;
         shadows = {ShadowSystemClock.class, ShadowPostTask.class, ShadowToast.class})
 @LooperMode(Mode.PAUSED)
 public class BrandingControllerUnitTest {
-    private static final int TEST_BRANDING_CADENCE = 10_000;
-    private static final int TEST_MAX_TOOLBAR_BLANK_TIMEOUT = 1000;
-
     @Rule public MockitoRule mTestRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
@@ -80,11 +80,6 @@ public class BrandingControllerUnitTest {
         ShadowPostTask.setTestImpl(mShadowPostTaskImpl);
 
         SystemClock.setCurrentTimeMillis(TimeUtils.currentTimeMillis());
-
-        BrandingController.BRANDING_CADENCE_MS.setForTesting(TEST_BRANDING_CADENCE);
-        BrandingController.MAX_BLANK_TOOLBAR_TIMEOUT_MS.setForTesting(
-                TEST_MAX_TOOLBAR_BLANK_TIMEOUT);
-        BrandingController.USE_TEMPORARY_STORAGE.setForTesting(false);
     }
 
     @After
@@ -143,7 +138,7 @@ public class BrandingControllerUnitTest {
                 .assertShownToastBranding(true)
                 .assertShownRegularLocationBar(true)
                 // Start 2nd branding with delay.
-                .advanceMills(TEST_BRANDING_CADENCE + 1)
+                .advanceMills(BRANDING_CADENCE_MS + 1)
                 .newBrandingController()
                 .idleMainLooper() // Finish branding checker.
                 .assertBrandingDecisionMade(BrandingDecision.TOOLBAR)
@@ -180,48 +175,16 @@ public class BrandingControllerUnitTest {
                 .assertShownToastBranding(true)
                 .newBrandingController()
                 .onToolbarInitialized()
-                .advanceMills(TEST_MAX_TOOLBAR_BLANK_TIMEOUT)
+                .advanceMills(MAX_BLANK_TOOLBAR_TIMEOUT_MS)
                 .idleMainLooper() // Branding checker is finished, but timed out comes first.
                 .assertBrandingDecisionMade(BrandingDecision.TOAST)
                 .assertShownRegularLocationBar(true);
 
-        // BrandingController.TOTAL_BRANDING_DELAY_MS - TEST_MAX_TOOLBAR_BLANK_TIMEOUT = 800
+        // BrandingController.TOTAL_BRANDING_DELAY_MS - MAX_BLANK_TOOLBAR_TIMEOUT_MS = 1300
         assertEquals(
                 "Toast duration is different.",
                 Toast.LENGTH_LONG,
                 ShadowToast.getLatestToast().getDuration());
-    }
-
-    @Test
-    public void testInMemoryStorage() {
-        BrandingController.USE_TEMPORARY_STORAGE.setForTesting(true);
-
-        new BrandingCheckTester()
-                .newBrandingController()
-                .idleMainLooper()
-                .onToolbarInitialized()
-                .assertBrandingDecisionMade(BrandingDecision.TOAST)
-                .assertShownBrandingLocationBar(false)
-                .advanceMills(TEST_BRANDING_CADENCE - 1)
-                .newBrandingController()
-                .idleMainLooper()
-                .onToolbarInitialized()
-                .assertBrandingDecisionMade(BrandingDecision.NONE)
-                // Advance one more bit so branding will show again with toolbar.
-                .advanceMills(1)
-                .newBrandingController()
-                .idleMainLooper()
-                .onToolbarInitialized()
-                .assertBrandingDecisionMade(BrandingDecision.TOOLBAR);
-
-        SharedPreferencesBrandingTimeStorage.resetInstance();
-
-        // After reset storage instance, decision should be in use again.
-        new BrandingCheckTester()
-                .newBrandingController()
-                .idleMainLooper()
-                .onToolbarInitialized()
-                .assertBrandingDecisionMade(BrandingDecision.TOAST);
     }
 
     @Test

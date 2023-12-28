@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/view_shadow.h"
 #include "ash/shell.h"

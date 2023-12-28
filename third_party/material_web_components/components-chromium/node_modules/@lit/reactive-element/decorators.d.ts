@@ -3,7 +3,6 @@
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-export * from './decorators/base.js';
 export * from './decorators/custom-element.js';
 export * from './decorators/property.js';
 export * from './decorators/state.js';

@@ -13,7 +13,6 @@
 #include "base/functional/overloaded.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
-#include "components/js_injection/common/features.h"
 #include "components/js_injection/common/interfaces.mojom-forward.h"
 #include "components/js_injection/renderer/js_communication.h"
 #include "content/public/renderer/render_frame.h"
@@ -219,8 +218,7 @@ void JsBinding::PostMessage(gin::Arguments* args) {
     gin::Converter<std::u16string>::FromV8(args->isolate(), js_payload,
                                            &string);
     message_payload = std::move(string);
-  } else if (IsJsToBrowserArrayBufferSupported() &&
-             js_payload->IsArrayBuffer()) {
+  } else if (js_payload->IsArrayBuffer()) {
     v8::Local<v8::ArrayBuffer> array_buffer = js_payload.As<v8::ArrayBuffer>();
     message_payload = std::make_unique<V8ArrayBufferPayload>(array_buffer);
   } else {

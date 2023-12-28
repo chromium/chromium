@@ -15,8 +15,8 @@ namespace {
 using WebAppStatusBarTest = WebAppControllerBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(WebAppStatusBarTest, NoStatusBar) {
-  NavigateToURLAndWait(browser(),
-                       https_server()->GetURL("/web_apps/basic.html"));
+  NavigateViaLinkClickToURLAndWait(
+      browser(), https_server()->GetURL("/web_apps/basic.html"));
   const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
   Browser* const app_browser =
       ::web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
@@ -24,7 +24,7 @@ IN_PROC_BROWSER_TEST_F(WebAppStatusBarTest, NoStatusBar) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppStatusBarTest, DisplayBrowserHasStatusBar) {
-  NavigateToURLAndWait(
+  NavigateViaLinkClickToURLAndWait(
       browser(), https_server()->GetURL("/web_apps/display_browser.html"));
   const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
   Browser* const app_browser =
@@ -33,7 +33,7 @@ IN_PROC_BROWSER_TEST_F(WebAppStatusBarTest, DisplayBrowserHasStatusBar) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppStatusBarTest, NoManifestHasStatusBar) {
-  NavigateToURLAndWait(
+  NavigateViaLinkClickToURLAndWait(
       browser(), https_server()->GetURL("/banners/no_manifest_test_page.html"));
   const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
   Browser* const app_browser =
@@ -42,7 +42,7 @@ IN_PROC_BROWSER_TEST_F(WebAppStatusBarTest, NoManifestHasStatusBar) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppStatusBarTest, DisplayMinimalUiHasStatusBar) {
-  NavigateToURLAndWait(
+  NavigateViaLinkClickToURLAndWait(
       browser(), https_server()->GetURL("/web_apps/minimal_ui/basic.html"));
   const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());
   Browser* const app_browser =

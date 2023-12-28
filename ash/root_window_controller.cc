@@ -274,7 +274,7 @@ void ReparentAllWindows(aura::Window* src, aura::Window* dst) {
     }
   }
 
-  const std::vector<aura::Window*> mru_list =
+  const std::vector<raw_ptr<aura::Window, VectorExperimental>> mru_list =
       Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kAllDesks);
   for (int id : container_ids) {
     aura::Window* src_container = src->GetChildById(id);
@@ -452,21 +452,23 @@ class RootWindowMenuModelAdapter : public AppMenuModelAdapter {
     const base::TimeDelta user_journey_time =
         base::TimeTicks::Now() - menu_open_time();
 
-    UMA_HISTOGRAM_TIMES("Apps.ContextMenuUserJourneyTime.Desktop",
+    UMA_HISTOGRAM_TIMES("Apps.ContextMenuUserJourneyTimeV2.Desktop",
                         user_journey_time);
-    UMA_HISTOGRAM_ENUMERATION("Apps.ContextMenuShowSource.Desktop",
+    UMA_HISTOGRAM_ENUMERATION("Apps.ContextMenuShowSourceV2.Desktop",
                               source_type(), ui::MENU_SOURCE_TYPE_LAST);
     if (is_tablet_mode()) {
-      UMA_HISTOGRAM_TIMES("Apps.ContextMenuUserJourneyTime.Desktop.TabletMode",
-                          user_journey_time);
-      UMA_HISTOGRAM_ENUMERATION("Apps.ContextMenuShowSource.Desktop.TabletMode",
-                                source_type(), ui::MENU_SOURCE_TYPE_LAST);
-    } else {
       UMA_HISTOGRAM_TIMES(
-          "Apps.ContextMenuUserJourneyTime.Desktop.ClamshellMode",
+          "Apps.ContextMenuUserJourneyTimeV2.Desktop.TabletMode",
           user_journey_time);
       UMA_HISTOGRAM_ENUMERATION(
-          "Apps.ContextMenuShowSource.Desktop.ClamshellMode", source_type(),
+          "Apps.ContextMenuShowSourceV2.Desktop.TabletMode", source_type(),
+          ui::MENU_SOURCE_TYPE_LAST);
+    } else {
+      UMA_HISTOGRAM_TIMES(
+          "Apps.ContextMenuUserJourneyTimeV2.Desktop.ClamshellMode",
+          user_journey_time);
+      UMA_HISTOGRAM_ENUMERATION(
+          "Apps.ContextMenuShowSourceV2.Desktop.ClamshellMode", source_type(),
           ui::MENU_SOURCE_TYPE_LAST);
     }
   }
@@ -495,7 +497,7 @@ class FillLayoutManager : public aura::LayoutManager {
   void Relayout() {
     // Fill the window that is set to be maximizable.
     const gfx::Rect fullscreen(container_->bounds().size());
-    for (auto* child : container_->children()) {
+    for (aura::Window* child : container_->children()) {
       const int resize_behavior =
           child->GetProperty(aura::client::kResizeBehaviorKey);
       if (resize_behavior & aura::client::kResizeBehaviorCanMaximize) {
@@ -504,7 +506,7 @@ class FillLayoutManager : public aura::LayoutManager {
     }
   }
 
-  raw_ptr<aura::Window, ExperimentalAsh> container_;
+  raw_ptr<aura::Window> container_;
 };
 
 }  // namespace

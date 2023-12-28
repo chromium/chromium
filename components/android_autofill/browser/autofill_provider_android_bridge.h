@@ -13,11 +13,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base::android {
-template <typename T>
-class JavaRef;
-}  // namespace base::android
+#include "third_party/jni_zero/scoped_java_ref.h"
 
 namespace gfx {
 class RectF;
@@ -41,9 +37,8 @@ class AutofillProviderAndroidBridge {
 
     virtual void OnAutofillAvailable() = 0;
     virtual void OnAcceptDatalistSuggestion(const std::u16string& value) = 0;
-    virtual void SetAnchorViewRect(
-        const base::android::JavaRef<jobject>& anchor,
-        const gfx::RectF& bounds) = 0;
+    virtual void SetAnchorViewRect(const jni_zero::JavaRef<jobject>& anchor,
+                                   const gfx::RectF& bounds) = 0;
     virtual void OnShowBottomSheetResult(bool is_shown,
                                          bool provided_autofill_structure) = 0;
   };
@@ -59,7 +54,7 @@ class AutofillProviderAndroidBridge {
   // Attaches the bridge to its Java counterpart.
   virtual void AttachToJavaAutofillProvider(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& jcaller) = 0;
+      const jni_zero::JavaRef<jobject>& jcaller) = 0;
 
   // Sends a prefill request to the Android Autofill framework.
   virtual void SendPrefillRequest(FormDataAndroid& form) = 0;
@@ -70,7 +65,7 @@ class AutofillProviderAndroidBridge {
                                     bool has_server_predictions) = 0;
 
   // Informs the Java side that the server prediction request is completed.
-  virtual void OnServerPredictionQueryDone(bool success) = 0;
+  virtual void OnServerPredictionsAvailable() = 0;
 
   // Shows a Datalist popup.
   virtual void ShowDatalistPopup(

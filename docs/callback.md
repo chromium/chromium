@@ -854,9 +854,7 @@ of its implementation.
 namespace base {
 
 template <typename Receiver>
-struct IsWeakReceiver {
-  static constexpr bool value = false;
-};
+struct IsWeakReceiver : std::false_type {};
 
 template <typename Obj>
 struct BindUnwrapTraits {

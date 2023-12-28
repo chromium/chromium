@@ -101,6 +101,19 @@ size_t PaintOpWriter::SerializedSize(const gfx::HDRMetadata& hdr_metadata) {
 }
 
 // static
+size_t PaintOpWriter::SerializedSize(const SkGainmapInfo& gainmap_info) {
+  return SerializedSizeSimple<SkColor4f>() +  // fGainmapRatioMin
+         SerializedSizeSimple<SkColor4f>() +  // fGainmapRatioMax
+         SerializedSizeSimple<SkColor4f>() +  // fGainmapGamma
+         SerializedSizeSimple<SkColor4f>() +  // fEpsilonSdr
+         SerializedSizeSimple<SkColor4f>() +  // fEpsilonHdr
+         SerializedSizeSimple<SkScalar>() +   // fDisplayRatioSdr
+         SerializedSizeSimple<SkScalar>() +   // fDisplayRatioHdr
+         SerializedSizeSimple<uint32_t>() +   // fBaseImageType
+         SerializedSize(gainmap_info.fGainmapMathColorSpace.get());
+}
+
+// static
 size_t PaintOpWriter::SerializedSize(const PaintRecord& record) {
   // TODO(khushalsagar): Querying the size of a PaintRecord is not supported.
   // This works only for security constrained serialization which ignores
@@ -484,6 +497,7 @@ void PaintOpWriter::Write(const SkGainmapInfo& gainmap_info) {
       break;
   }
   Write(base_image_type);
+  Write(gainmap_info.fGainmapMathColorSpace.get());
 }
 
 void PaintOpWriter::Write(const sk_sp<sktext::gpu::Slug>& slug) {

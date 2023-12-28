@@ -76,7 +76,7 @@ class MockMediaNotificationContainer : public MediaNotificationContainer {
                void(SkColor foreground,
                     SkColor foreground_disabled,
                     SkColor background));
-  MOCK_METHOD0(OnHeaderClicked, void());
+  MOCK_METHOD1(OnHeaderClicked, void(bool activate_original_media));
 };
 
 }  // namespace
@@ -171,7 +171,7 @@ class MediaNotificationViewModernImplTest : public views::ViewsTestBase {
     auto children = view()->media_controls_container_->children();
     base::ranges::transform(
         children, std::back_inserter(buttons),
-        [](auto* view) { return views::Button::AsButton(view); });
+        [](views::View* view) { return views::Button::AsButton(view); });
     buttons.push_back(views::Button::AsButton(picture_in_picture_button()));
     return buttons;
   }

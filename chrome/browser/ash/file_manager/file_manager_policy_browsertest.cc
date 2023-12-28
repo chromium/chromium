@@ -946,7 +946,7 @@ class FileTransferConnectorFilesAppBrowserTest
 
     // Verify the displayed blocked files shown in the dialog.
     std::vector<std::string> displayed_files;
-    for (const auto* row_view : view->children()) {
+    for (const views::View* row_view : view->children()) {
       const views::Label* label =
           static_cast<const views::Label*>(row_view->GetViewByID(
               policy::PolicyDialogBase::kConfidentialRowTitleViewId));
@@ -988,7 +988,7 @@ class FileTransferConnectorFilesAppBrowserTest
 
     // Verify the displayed blocked files shown in the dialog.
     std::vector<std::string> displayed_files;
-    for (const auto* row_view : view->children()) {
+    for (const views::View* row_view : view->children()) {
       const views::Label* label =
           static_cast<const views::Label*>(row_view->GetViewByID(
               policy::PolicyDialogBase::kConfidentialRowTitleViewId));

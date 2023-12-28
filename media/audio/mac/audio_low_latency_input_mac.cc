@@ -22,6 +22,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "media/audio/apple/audio_manager_apple.h"
 #include "media/audio/mac/core_audio_util_mac.h"
 #include "media/audio/mac/scoped_audio_unit.h"
 #include "media/base/audio_bus.h"
@@ -112,7 +113,7 @@ static OSStatus OnGetPlayoutData(void* in_ref_con,
 // for more details and background regarding this implementation.
 
 AUAudioInputStream::AUAudioInputStream(
-    AudioManagerMac* manager,
+    AudioManagerApple* manager,
     const AudioParameters& input_params,
     AudioDeviceID audio_device_id,
     const AudioManager::LogCallback& log_callback,
@@ -212,7 +213,7 @@ AudioInputStream::OpenOutcome AUAudioInputStream::Open() {
 
   // The requested sample-rate must match the hardware sample-rate.
   const int sample_rate =
-      AudioManagerMac::HardwareSampleRateForDevice(input_device_id_);
+      manager_->HardwareSampleRateForDevice(input_device_id_);
   DCHECK_EQ(sample_rate, format_.mSampleRate);
 
   log_callback_.Run(base::StrCat(
@@ -675,13 +676,13 @@ void AUAudioInputStream::Close() {
 }
 
 double AUAudioInputStream::GetMaxVolume() {
-  return AudioManagerMac::GetMaxInputVolume(input_device_id_);
+  return manager_->GetMaxInputVolume(input_device_id_);
 }
 
 void AUAudioInputStream::SetVolume(double volume) {
   DVLOG(1) << __FUNCTION__ << " this " << this << " volume=" << volume << ")";
 
-  AudioManagerMac::SetInputVolume(input_device_id_, volume);
+  manager_->SetInputVolume(input_device_id_, volume);
 
   // Update the AGC volume level based on the last setting above. Note that,
   // the volume-level resolution is not infinite and it is therefore not
@@ -692,11 +693,11 @@ void AUAudioInputStream::SetVolume(double volume) {
 }
 
 double AUAudioInputStream::GetVolume() {
-  return AudioManagerMac::GetInputVolume(input_device_id_);
+  return manager_->GetInputVolume(input_device_id_);
 }
 
 bool AUAudioInputStream::IsMuted() {
-  return AudioManagerMac::IsMuted(input_device_id_);
+  return manager_->IsInputMuted(input_device_id_);
 }
 
 void AUAudioInputStream::SetOutputDeviceForAec(
@@ -982,14 +983,6 @@ OSStatus AUAudioInputStream::Provide(UInt32 number_of_frames,
   }
 
   return noErr;
-}
-
-int AUAudioInputStream::HardwareSampleRate() {
-  // Determine the default input device's sample-rate.
-  AudioDeviceID input_device_id = kAudioObjectUnknown;
-  AudioManagerMac::GetDefaultInputDevice(&input_device_id);
-  return static_cast<int>(
-      AudioManagerMac::HardwareSampleRateForDevice(input_device_id));
 }
 
 base::TimeTicks AUAudioInputStream::GetCaptureTime(

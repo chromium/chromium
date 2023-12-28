@@ -48,6 +48,7 @@ absl_source_set("flags") {
     "//third_party/abseil-cpp/absl/flags:marshalling",
     "//third_party/abseil-cpp/absl/log/internal:config",
     "//third_party/abseil-cpp/absl/log/internal:flags",
+    "//third_party/abseil-cpp/absl/log/internal:vlog_config",
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/strings:string_view",
   ]
@@ -80,7 +81,10 @@ absl_source_set("initialize") {
 
 absl_source_set("log") {
   public = [ "log.h" ]
-  deps = [ "//third_party/abseil-cpp/absl/log/internal:log_impl" ]
+  deps = [
+    ":vlog_is_on",
+    "//third_party/abseil-cpp/absl/log/internal:log_impl",
+  ]
 }
 
 absl_source_set("log_entry") {
@@ -152,6 +156,36 @@ absl_source_set("structured") {
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/log/internal:structured",
     "//third_party/abseil-cpp/absl/strings:string_view",
+  ]
+}
+
+absl_source_set("absl_vlog_is_on") {
+  public = [ "absl_vlog_is_on.h" ]
+  visibility = [ "./*" ]
+  deps = [
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/log/internal:vlog_config",
+    "//third_party/abseil-cpp/absl/strings",
+  ]
+}
+
+absl_source_set("vlog_is_on") {
+  public = [ "vlog_is_on.h" ]
+  visibility = [ "./*" ]
+  deps = [ ":absl_vlog_is_on" ]
+}
+
+absl_test("vlog_is_on_test") {
+  sources = [ "vlog_is_on_test.cc" ]
+  deps = [
+    ":flags",
+    ":log",
+    ":scoped_mock_log",
+    ":vlog_is_on",
+    "//third_party/abseil-cpp/absl/base:log_severity",
+    "//third_party/abseil-cpp/absl/flags:flag",
+    "//third_party/abseil-cpp/absl/types:optional",
   ]
 }
 
@@ -384,6 +418,7 @@ absl_test("stripping_test") {
     "//third_party/abseil-cpp/absl/base:strerror",
     "//third_party/abseil-cpp/absl/flags:program_name",
     "//third_party/abseil-cpp/absl/log/internal:test_helpers",
+    "//third_party/abseil-cpp/absl/status",
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/strings:str_format",
     "//third_party/abseil-cpp/absl/strings:string_view",

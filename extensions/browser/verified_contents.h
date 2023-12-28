@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -47,7 +48,7 @@ class VerifiedContents {
   // |public_key| must remain valid for the lifetime of the returned object.
   static std::unique_ptr<VerifiedContents> Create(
       base::span<const uint8_t> public_key,
-      base::StringPiece contents);
+      std::string_view contents);
 
   int block_size() const { return block_size_; }
   const ExtensionId& extension_id() const { return extension_id_; }
@@ -72,7 +73,7 @@ class VerifiedContents {
 
   // Returns the base64url-decoded "payload" field from the |contents|, if
   // the signature was valid.
-  bool GetPayload(base::StringPiece contents, std::string* payload);
+  bool GetPayload(std::string_view contents, std::string* payload);
 
   // The |protected_value| and |payload| arguments should be base64url encoded
   // strings, and |signature_bytes| should be a byte array. See comments in the

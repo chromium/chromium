@@ -23,7 +23,7 @@
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/model/util.h"
 #import "ios/chrome/browser/main/model/browser_util.h"
-#import "ios/chrome/browser/policy/policy_util.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
@@ -334,7 +334,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 - (void)stopChildCoordinatorsWithCompletion:(ProceduralBlock)completion {
   // A modal may be presented on top of the Recent Tabs or tab grid.
   [self.baseViewController dismissModals];
-  self.baseViewController.tabGridMode = TabGridModeNormal;
+  [self setActiveMode:TabGridModeNormal];
 
   [_incognitoGridCoordinator stopChildCoordinators];
   [_regularGridCoordinator stopChildCoordinators];
@@ -362,7 +362,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)setActiveMode:(TabGridMode)mode {
-  self.baseViewController.tabGridMode = mode;
+  [_mediator setModeOnCurrentPage:mode];
 }
 
 - (UIViewController*)activeViewController {
@@ -527,7 +527,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       // In search mode, the tabgrid mode is not reset before the animation so
       // the animation can start from the correct cell. Once the animation is
       // complete, reset the tab grid mode.
-      self.baseViewController.tabGridMode = TabGridModeNormal;
+      [self setActiveMode:TabGridModeNormal];
     }
     Browser* browser = self.bvcContainer.incognito ? self.incognitoBrowser
                                                    : self.regularBrowser;
@@ -639,6 +639,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                          animationEnabled:(BOOL)animationEnabled
                                                completion:
                                                    (ProceduralBlock)completion {
+  if (!self.bvcContainer) {
+    // It is possible that the Grid is presented twice in a row. Because the
+    // detection of "the Browser is visible" is based on a null check of
+    // `self.bvcContainer` which is nullified at the end of the animation, so
+    // two animations could be started in a short sequence.
+    return;
+  }
   self.legacyTransitionHandler =
       [self createTransitionHanlderWithAnimationEnabled:animationEnabled];
   [self.legacyTransitionHandler transitionFromBrowser:self.bvcContainer
@@ -709,7 +716,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       [[TabGridToolbarsCoordinator alloc] initWithBaseViewController:nil
                                                              browser:nil];
   _toolbarsCoordinator.searchDelegate = self.baseViewController;
-  _toolbarsCoordinator.actionWrangler = self.baseViewController;
+  _toolbarsCoordinator.toolbarTabGridDelegate = self.baseViewController;
   [_toolbarsCoordinator start];
   self.baseViewController.topToolbar = _toolbarsCoordinator.topToolbar;
   self.baseViewController.bottomToolbar = _toolbarsCoordinator.bottomToolbar;
@@ -841,7 +848,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                 disabledByPolicy:_pageConfiguration ==
                                  TabGridPageConfiguration::kIncognitoPageOnly];
   self.remoteTabsMediator.consumer = baseViewController.remoteTabsConsumer;
-  self.remoteTabsMediator.toolbarActionWrangler = self.baseViewController;
+  self.remoteTabsMediator.toolbarTabGridDelegate = self.baseViewController;
   baseViewController.remoteTabsViewController.imageDataSource =
       self.remoteTabsMediator;
   baseViewController.remoteTabsViewController.delegate =
@@ -1326,6 +1333,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.pinnedTabsMediator setPinState:NO forItemWithID:identifier];
 }
 
+- (void)createNewTabGroupWithIdentifier:(web::WebStateID)identifier {
+  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+      << "You should not be able to create a new tab group outside the Tab "
+         "Groups experiment.";
+  // TODO(crbug.com/1501837): Display the tab group creation view.
+}
+
 - (void)closeTabWithIdentifier:(web::WebStateID)identifier
                      incognito:(BOOL)incognito
                         pinned:(BOOL)pinned {
@@ -1346,7 +1360,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 - (void)selectTabs {
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridTabContextMenuSelectTabs"));
-  self.baseViewController.tabGridMode = TabGridModeSelection;
+  [self setActiveMode:TabGridModeSelection];
 }
 
 - (void)removeSessionAtTableSectionWithIdentifier:(NSInteger)sectionIdentifier {

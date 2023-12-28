@@ -10,6 +10,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
+#include "components/optimization_guide/core/model_execution/redactor.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -75,7 +76,8 @@ class SessionImpl::ContextProcessor
     }
     session_->GetOrCreateSession().AddContext(
         on_device_model::mojom::InputOptions::New(
-            input_, num_tokens, tokens_processed_, /*ignore_context=*/false),
+            input_, num_tokens, tokens_processed_, /*ignore_context=*/false,
+            /*max_output_tokens=*/std::nullopt),
         client_.BindNewPipeAndPassRemote());
   }
 
@@ -266,7 +268,8 @@ void SessionImpl::ExecuteModel(
   GetOrCreateSession().Execute(
       on_device_model::mojom::InputOptions::New(
           input->input_string, features::GetOnDeviceModelMaxTokensForExecute(),
-          /*token_offset=*/std::nullopt, input->should_ignore_input_context),
+          /*token_offset=*/std::nullopt, input->should_ignore_input_context,
+          features::GetOnDeviceModelMaxTokensForOutput()),
       on_device_state_->receiver.BindNewPipeAndPassRemote());
   on_device_state_->receiver.set_disconnect_handler(
       base::BindOnce(&SessionImpl::OnDisconnect, base::Unretained(this)));
@@ -283,12 +286,10 @@ void SessionImpl::OnResponse(const std::string& response) {
         base::TimeTicks::Now() - on_device_state_->start);
   }
   on_device_state_->current_response += response;
-  SendResponse(/*is_complete=*/false);
+  SendResponse(ResponseType::kPartial);
 }
 
 void SessionImpl::OnComplete(on_device_model::mojom::ResponseStatus status) {
-  on_device_state_->histogram_logger.reset();
-  // TODO(b/302395507): Handle a retracted response.
   base::UmaHistogramMediumTimes(
       base::StrCat(
           {"OptimizationGuide.ModelExecution.OnDeviceResponseCompleteTime.",
@@ -297,7 +298,9 @@ void SessionImpl::OnComplete(on_device_model::mojom::ResponseStatus status) {
   if (controller_) {
     controller_->access_controller(/*pass_key=*/{})->OnResponseCompleted();
   }
-  SendResponse(/*is_complete=*/true);
+  SendResponse(status == on_device_model::mojom::ResponseStatus::kOk
+                   ? ResponseType::kComplete
+                   : ResponseType::kCompleteUnsafeOutput);
   on_device_state_->ResetRequestState();
 }
 
@@ -345,14 +348,35 @@ void SessionImpl::CancelPendingResponse(ExecuteModelResult result,
   }
 }
 
-void SessionImpl::SendResponse(bool is_complete) {
+void SessionImpl::SendResponse(ResponseType response_type) {
   on_device_state_->timer_for_first_response.Stop();
   if (!on_device_state_->callback) {
+    on_device_state_->histogram_logger.get();
     return;
   }
 
+  std::string current_response = on_device_state_->current_response;
+  if (auto* redactor =
+          on_device_state_->config_interpreter->GetRedactorForFeature(
+              feature_)) {
+    auto redact_string_input =
+        on_device_state_->config_interpreter->GetStringToCheckForRedacting(
+            feature_, *last_message_);
+    if (redactor->Redact(redact_string_input, current_response) ==
+        RedactResult::kReject) {
+      if (on_device_state_->histogram_logger) {
+        on_device_state_->histogram_logger->set_result(
+            ExecuteModelResult::kContainedPII);
+        on_device_state_->histogram_logger.reset();
+      }
+      CancelPendingResponse(ExecuteModelResult::kUsedOnDeviceOutputUnsafe,
+                            ModelExecutionError::kFiltered);
+      return;
+    }
+  }
+
   auto output = on_device_state_->config_interpreter->ConstructOutputMetadata(
-      feature_, on_device_state_->current_response);
+      feature_, current_response);
   if (!output) {
     if (on_device_state_->histogram_logger) {
       on_device_state_->histogram_logger->set_result(
@@ -366,14 +390,29 @@ void SessionImpl::SendResponse(bool is_complete) {
   }
 
   std::unique_ptr<ModelQualityLogEntry> log_entry;
-  if (is_complete && on_device_state_->log_ai_data_request) {
-    SetExecutionResponse(feature_, *(on_device_state_->log_ai_data_request),
-                         *output);
-    // Create corresponding log entry for `log_ai_data_request` to pass it with
-    // the callback.
-    log_entry = std::make_unique<ModelQualityLogEntry>(
-        std::move(on_device_state_->log_ai_data_request));
-    on_device_state_->log_ai_data_request.reset();
+  const bool is_complete = response_type != ResponseType::kPartial;
+  if (is_complete) {
+    if (on_device_state_->log_ai_data_request) {
+      SetExecutionResponse(feature_, *(on_device_state_->log_ai_data_request),
+                           *output);
+      // Create corresponding log entry for `log_ai_data_request` to pass it
+      // with the callback.
+      log_entry = std::make_unique<ModelQualityLogEntry>(
+          std::move(on_device_state_->log_ai_data_request));
+      on_device_state_->log_ai_data_request.reset();
+    }
+    if (response_type == ResponseType::kCompleteUnsafeOutput) {
+      if (on_device_state_->histogram_logger) {
+        on_device_state_->histogram_logger->set_result(
+            ExecuteModelResult::kUsedOnDeviceOutputUnsafe);
+      }
+      if (features::GetOnDeviceModelRetractUnsafeContent()) {
+        on_device_state_->current_response.clear();
+        CancelPendingResponse(ExecuteModelResult::kUsedOnDeviceOutputUnsafe,
+                              ModelExecutionError::kFiltered);
+        return;
+      }
+    }
   }
 
   on_device_state_->callback.Run(

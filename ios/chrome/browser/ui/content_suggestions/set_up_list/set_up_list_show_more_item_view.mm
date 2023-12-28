@@ -170,8 +170,8 @@ NSAttributedString* Strikethrough(NSString* text) {
     case SetUpListItemType::kAutofill:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_AUTOFILL_TITLE);
     case SetUpListItemType::kContentNotification:
-      // TODO(b/310713830): add strings when they are finalized.
-      return @"Get Content Notifications";
+      return l10n_util::GetNSString(
+          IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_TITLE);
     case SetUpListItemType::kAllSet:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_ALL_SET_TITLE);
     case SetUpListItemType::kFollow:
@@ -210,8 +210,8 @@ NSAttributedString* Strikethrough(NSString* text) {
       return l10n_util::GetNSString(
           IDS_IOS_SET_UP_LIST_AUTOFILL_SEE_MORE_DESCRIPTION);
     case SetUpListItemType::kContentNotification:
-      // TODO(b/310713830): add strings when they are finalized.
-      return @"Keep up with news, sports, and more based on your interest";
+      return l10n_util::GetNSString(
+          IDS_IOS_SET_UP_LIST_CONTENT_NOTIFICATION_DESCRIPTION);
     case SetUpListItemType::kAllSet:
     case SetUpListItemType::kFollow:
       NOTREACHED_NORETURN();

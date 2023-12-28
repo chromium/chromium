@@ -147,7 +147,9 @@ export class XfSplitter extends XfBase {
   private onTouchstart_(event: TouchEvent) {
     if (event.touches.length === 1) {
       this.setupDrag_(event.touches[0]!.clientX, true);
-      event.preventDefault();
+      if (event.cancelable) {
+        event.preventDefault();
+      }
     }
   }
 

@@ -145,17 +145,17 @@ INSTANTIATE_TEST_SUITE_P(
     JankMetricUMARecorderPerScrollTests,
     testing::ValuesIn<ScrollTestCase>({
         {JankScenario::WEBVIEW_SCROLLING, "EmitsSmallScrollHistogramInWebview",
-         10, "Small"},
+         10, ".Small"},
         {JankScenario::WEBVIEW_SCROLLING, "EmitsMediumScrollHistogramInWebview",
-         50, "Medium"},
+         50, ".Medium"},
         {JankScenario::WEBVIEW_SCROLLING, "EmitsLargeScrollHistogramInWebview",
-         65, "Large"},
+         65, ".Large"},
         {JankScenario::FEED_SCROLLING, "EmitsSmallScrollHistogramInFeed", 10,
-         "Small"},
+         ".Small"},
         {JankScenario::FEED_SCROLLING, "EmitsMediumScrollHistogramInFeed", 50,
-         "Medium"},
+         ".Medium"},
         {JankScenario::FEED_SCROLLING, "EmitsLargeScrollHistogramInFeed", 65,
-         "Large"},
+         ".Large"},
     }),
     [](const testing::TestParamInfo<
         JankMetricUMARecorderPerScrollTests::ParamType>& info) {
@@ -202,24 +202,31 @@ TEST_P(JankMetricUMARecorderPerScrollTests, EmitsPerScrollHistograms) {
   std::string delayed_frames_histogram = "Android.FrameTimelineJank." +
                                          scenario_name +
                                          ".DelayedFramesPercentage."
-                                         "PerScroll." +
-                                         params.suffix;
+                                         "PerScroll";
   std::string missed_vsyncs_max_histogram = "Android.FrameTimelineJank." +
                                             scenario_name +
                                             ".MissedVsyncsMax."
-                                            "PerScroll." +
-                                            params.suffix;
+                                            "PerScroll";
   std::string missed_vsyncs_sum_histogram = "Android.FrameTimelineJank." +
                                             scenario_name +
                                             ".MissedVsyncsSum."
-                                            "PerScroll." +
-                                            params.suffix;
+                                            "PerScroll";
+  // Should emit non-bucketed scroll histograms.
   histogram_tester.ExpectUniqueSample(delayed_frames_histogram,
                                       expected_delayed_frames_percentage, 1);
   histogram_tester.ExpectUniqueSample(missed_vsyncs_max_histogram,
                                       expected_vsyncs_max, 1);
   histogram_tester.ExpectUniqueSample(missed_vsyncs_sum_histogram,
                                       expected_vsyncs_sum, 1);
+
+  // Should emit bucketed scroll histograms, suffixed with scroll size like
+  // Small, Medium, Large.
+  histogram_tester.ExpectUniqueSample(delayed_frames_histogram + params.suffix,
+                                      expected_delayed_frames_percentage, 1);
+  histogram_tester.ExpectUniqueSample(
+      missed_vsyncs_max_histogram + params.suffix, expected_vsyncs_max, 1);
+  histogram_tester.ExpectUniqueSample(
+      missed_vsyncs_sum_histogram + params.suffix, expected_vsyncs_sum, 1);
 }
 
 }  // namespace base::android

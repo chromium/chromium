@@ -76,7 +76,7 @@ class FakeStreamActionObserver : public mojom::StreamActionObserver {
 
  private:
   size_t num_stream_action_state_calls_ = 0;
-  raw_ptr<TaskRunner, ExperimentalAsh> task_runner_;
+  raw_ptr<TaskRunner> task_runner_;
   mojo::Receiver<mojom::StreamActionObserver> receiver_;
 };
 

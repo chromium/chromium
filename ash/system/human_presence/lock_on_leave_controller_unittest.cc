@@ -37,8 +37,7 @@ class LockOnLeaveControllerTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<FakeHumanPresenceDBusClient, ExperimentalAsh> human_presence_client_ =
-      nullptr;
+  raw_ptr<FakeHumanPresenceDBusClient> human_presence_client_ = nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

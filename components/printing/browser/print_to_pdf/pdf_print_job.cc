@@ -92,9 +92,10 @@ void PdfPrintJob::OnDidPrintWithParams(
 
   // Otherwise assume this is a composite document and invoke compositor.
   printing::PrintCompositeClient::FromWebContents(web_contents())
-      ->DoCompositeDocumentToPdf(
+      ->CompositeDocument(
           params->document_cookie, printing_rfh_, content,
           result->get_data()->accessibility_tree,
+          printing::mojom::PrintCompositor::DocumentType::kPDF,
           base::BindOnce(&PdfPrintJob::OnCompositeDocumentToPdfDone,
                          weak_ptr_factory_.GetWeakPtr()));
 }

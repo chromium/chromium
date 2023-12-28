@@ -192,7 +192,7 @@ TEST_F(FrameNodeImplTest, ObserverWorks) {
 
   // Invoke "SetIsCurrent" and expect a "OnIsCurrentChanged" callback.
   EXPECT_CALL(obs, OnIsCurrentChanged(raw_frame_node));
-  frame_node->SetIsCurrent(true);
+  frame_node->SetIsCurrent(false);
   testing::Mock::VerifyAndClear(&obs);
 
   // Invoke "SetNetworkAlmostIdle" and expect an "OnNetworkAlmostIdleChanged"

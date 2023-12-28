@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/page_content_annotation_type.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
@@ -94,6 +95,8 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kModelQualityLogging);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kLogOnDeviceMetricsOnStartup);
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+BASE_DECLARE_FEATURE(kTextSafetyClassifier);
 
 // Enables use of task runner with trait CONTINUE_ON_SHUTDOWN for page content
 // annotations on-device models.
@@ -290,11 +293,6 @@ bool ShouldOverrideOptimizationTargetDecisionForMetricsPurposes(
 // |request_context|.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldEnablePersonalizedMetadata(proto::RequestContext request_context);
-
-// Returns true if the allowed contexts contains |request_context|
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool IsAllowedContextForPersonalizedMetadata(
-    proto::RequestContext request_context);
 
 // Returns the minimum random delay before starting to fetch for prediction
 // models and host model features.
@@ -535,9 +533,42 @@ base::TimeDelta GetOnDeviceModelTimeForInitialResponse();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool GetOnDeviceFallbackToServerOnDisconnect();
 
-// Whether any features are enabled that allow launching the on-device service.
+// Returns whether the performance class is compatible with executing the
+// on-device model. Used to determine whether or not to fetch the on-device
+// model.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+bool IsPerformanceClassCompatibleWithOnDeviceModel(
+    OnDeviceModelPerformanceClass performance_class);
+
+// Whether any features are enabled that allow launching the on-device
+// service.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool CanLaunchOnDeviceModelService();
+
+// Whether on-device execution is enabled.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+bool IsOnDeviceExecutionEnabled();
+
+// The on-device model is fetched when the device is considered eligible for
+// on-device execution. When the device stops being eligible, the model is
+// retained for this amount of time. This protects the user from repeatedly
+// downloading the model in the event eligibility fluctuates. for on-device
+// evaluation
+// See on_device_model_component.cc for how eligibility is computed.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+base::TimeDelta GetOnDeviceModelRetentionTime();
+
+// Returns true if unsafe content should be removed.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+bool GetOnDeviceModelRetractUnsafeContent();
+
+// Returns true if the safety model must be used.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+bool GetOnDeviceModelMustUseSafetyModel();
+
+// Whether we should initiate download of the text safety classifier model.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+bool ShouldDownloadTextSafetyClassifierModel();
 
 }  // namespace features
 }  // namespace optimization_guide

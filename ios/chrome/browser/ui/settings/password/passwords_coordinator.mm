@@ -506,6 +506,15 @@ using password_manager::WarningType;
     _reauthCoordinator.delegate = nil;
     _reauthCoordinator = nil;
   }
+
+  // Make sure that the Password Manager's toolbar is in the correct state once
+  // the reauthentication view controller is dismissed. This is a fix for
+  // crbug.com/1503081 that works well in pratice, but isn't perfect due to
+  // possible race conditions.
+  if (_baseNavigationController.topViewController ==
+      self.passwordsViewController) {
+    [self.passwordsViewController updateUIForEditState];
+  }
 }
 
 - (void)dismissUIAfterFailedReauthenticationWithCoordinator:

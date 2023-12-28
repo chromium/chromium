@@ -483,6 +483,8 @@ Browser::Browser(const CreateParams& params)
       content_setting_bubble_model_delegate_(
           new BrowserContentSettingBubbleModelDelegate(this)),
       location_bar_model_delegate_(new BrowserLocationBarModelDelegate(this)),
+      location_bar_model_(std::make_unique<LocationBarModelImpl>(
+          location_bar_model_delegate_.get(), content::kMaxURLDisplayChars)),
       live_tab_context_(new BrowserLiveTabContext(this)),
       synced_window_delegate_(new BrowserSyncedWindowDelegate(this)),
       app_controller_(web_app::MaybeCreateAppBrowserController(this)),
@@ -512,9 +514,6 @@ Browser::Browser(const CreateParams& params)
   }
 
   tab_strip_model_->AddObserver(this);
-
-  location_bar_model_ = std::make_unique<LocationBarModelImpl>(
-      location_bar_model_delegate_.get(), content::kMaxURLDisplayChars);
 
   ThemeServiceFactory::GetForProfile(profile_)->AddObserver(this);
 
@@ -1016,7 +1015,7 @@ Browser::DownloadCloseType Browser::OkToCloseWithInProgressDownloads(
   // profile, that are relevant for the ok-to-close decision.
   int profile_window_count = 0;
   int total_window_count = 0;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     // Don't count this browser window or any other in the process of closing.
     // Window closing may be delayed, and windows that are in the process of
     // closing don't count against our totals.

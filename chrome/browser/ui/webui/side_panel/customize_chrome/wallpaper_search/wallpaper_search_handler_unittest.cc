@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.h"
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <vector>
 
@@ -26,6 +25,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
+#include "chrome/browser/search/background/wallpaper_search/wallpaper_search_data.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
@@ -46,6 +46,7 @@
 #include "skia/ext/image_operations.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image.h"
@@ -97,7 +98,8 @@ class MockWallpaperSearchBackgroundManager
                void(const base::Token&,
                     const SkBitmap&,
                     base::ElapsedTimer timer));
-  MOCK_METHOD0(SaveCurrentBackgroundToHistory, std::optional<base::Token>());
+  MOCK_METHOD1(SaveCurrentBackgroundToHistory,
+               absl::optional<base::Token>(const HistoryEntry& history_entry));
 };
 
 std::unique_ptr<TestingProfile> MakeTestingProfile(
@@ -110,7 +112,7 @@ std::unique_ptr<TestingProfile> MakeTestingProfile(
       base::BindRepeating([](content::BrowserContext* context)
                               -> std::unique_ptr<KeyedService> {
         return std::make_unique<
-            testing::NiceMock<MockOptimizationGuideKeyedService>>(context);
+            testing::NiceMock<MockOptimizationGuideKeyedService>>();
       }));
   profile_builder.SetSharedURLLoaderFactory(url_loader_factory);
   auto profile = profile_builder.Build();
@@ -127,10 +129,9 @@ std::unique_ptr<optimization_guide::ModelQualityLogEntry> ModelQuality() {
 class WallpaperSearchHandlerTest : public testing::Test {
  public:
   WallpaperSearchHandlerTest()
-      : profile_(MakeTestingProfile(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_),
-            &local_state_)),
+      : profile_(
+            MakeTestingProfile(test_url_loader_factory_.GetSafeWeakWrapper(),
+                               &local_state_)),
         mock_optimization_guide_keyed_service_(
             static_cast<MockOptimizationGuideKeyedService*>(
                 OptimizationGuideKeyedServiceFactory::GetForProfile(
@@ -166,8 +167,6 @@ class WallpaperSearchHandlerTest : public testing::Test {
   }
 
   std::unique_ptr<WallpaperSearchHandler> MakeHandler(int64_t session_id) {
-    EXPECT_CALL(mock_wallpaper_search_background_manager(),
-                SaveCurrentBackgroundToHistory);
     auto handler = std::make_unique<WallpaperSearchHandler>(
         mojo::PendingReceiver<
             side_panel::customize_chrome::mojom::WallpaperSearchHandler>(),
@@ -198,10 +197,10 @@ class WallpaperSearchHandlerTest : public testing::Test {
   // NOTE: The initialization order of these members matters.
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  network::TestURLLoaderFactory test_url_loader_factory_;
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<TestingProfile> profile_;
   base::test::ScopedFeatureList feature_list_;
-  network::TestURLLoaderFactory test_url_loader_factory_;
   raw_ptr<MockOptimizationGuideKeyedService>
       mock_optimization_guide_keyed_service_;
   image_fetcher::MockImageDecoder mock_image_decoder_;
@@ -583,6 +582,13 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_Success) {
             EXPECT_TRUE(log_entry->log_ai_data_request()
                             ->mutable_wallpaper_search()
                             ->has_quality_data());
+            // Images should be cleared for logging.
+            EXPECT_EQ(log_entry->log_ai_data_request()
+                          ->mutable_wallpaper_search()
+                          ->mutable_response_data()
+                          ->images_size(),
+                      0);
+
             qualities.push_back(
                 std::make_unique<
                     optimization_guide::proto::WallpaperSearchQuality>(
@@ -660,6 +666,10 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_MultipleRequests) {
             side_panel::customize_chrome::mojom::WallpaperSearchStatus::kError);
   ASSERT_EQ(static_cast<int>(images1.size()), response1.images_size());
 
+  // Simulate that front-end has received the images and rendered them.
+  handler->SetResultRenderTime(
+      {}, base::Time::Now().InMillisecondsFSinceUnixEpoch());
+
   // SECOND REQUEST.
   optimization_guide::proto::WallpaperSearchRequest request2;
   optimization_guide::OptimizationGuideModelExecutionResultCallback
@@ -731,6 +741,13 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_MultipleRequests) {
                         ->quality_data()));
           }));
 
+  // Simulate that front-end has received the images and rendered them.
+  handler->SetResultRenderTime(
+      {}, base::Time::Now().InMillisecondsFSinceUnixEpoch());
+
+  // Advance clock to test complete latency.
+  task_environment().AdvanceClock(base::Milliseconds(567));
+
   // Quality logs on destruction and when a second request is made.
   handler.reset();
   EXPECT_EQ(2u, qualities.size());
@@ -739,12 +756,14 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_MultipleRequests) {
   EXPECT_EQ(0, qualities[0]->index());
   EXPECT_FALSE(qualities[0]->final_request_in_session());
   EXPECT_EQ(321, qualities[0]->request_latency_ms());
+  EXPECT_EQ(456, qualities[0]->complete_latency_ms());
   EXPECT_EQ(0, qualities[0]->images_quality_size());
   // Second request.
   EXPECT_EQ(123, qualities[1]->session_id());
   EXPECT_EQ(1, qualities[1]->index());
   EXPECT_TRUE(qualities[1]->final_request_in_session());
   EXPECT_EQ(456, qualities[1]->request_latency_ms());
+  EXPECT_EQ(567, qualities[1]->complete_latency_ms());
   EXPECT_EQ(0, qualities[1]->images_quality_size());
 }
 
@@ -1046,6 +1065,7 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToHistoryImage) {
   base::Token token_arg;
   gfx::Image image_arg;
   base::ElapsedTimer timer;
+  HistoryEntry history_entry_arg;
   EXPECT_CALL(mock_wallpaper_search_background_manager(),
               SelectHistoryImage(_, _, _))
       .WillOnce(DoAll(MoveArg<0>(&token_arg), MoveArg<1>(&image_arg),
@@ -1076,6 +1096,9 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToHistoryImage) {
                       chrome::kChromeUIUntrustedNewTabPageBackgroundFilename),
                   base::as_bytes(base::make_span(
                       std::string(encoded.begin(), encoded.end()))));
+  EXPECT_CALL(mock_wallpaper_search_background_manager(),
+              SaveCurrentBackgroundToHistory(_))
+      .WillOnce(MoveArgAndReturn<0>(&history_entry_arg, token));
 
   handler->SetBackgroundToHistoryImage(token);
   task_environment().RunUntilIdle();
@@ -1094,6 +1117,10 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToHistoryImage) {
 
   // Check that the processing timer is being passed.
   EXPECT_EQ(timer.Elapsed().InMilliseconds(), 321);
+
+  // Check that the set theme is saved to history on destruction.
+  handler.reset();
+  EXPECT_EQ(token_arg.ToString(), history_entry_arg.id.ToString());
 }
 
 TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
@@ -1215,9 +1242,11 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
   EXPECT_EQ(timer.Elapsed().InMilliseconds(), 123);
 
   // Simulate current background is saved to history.
-  ON_CALL(mock_wallpaper_search_background_manager(),
-          SaveCurrentBackgroundToHistory)
-      .WillByDefault(Return(std::make_optional(token)));
+  HistoryEntry history_entry_arg;
+  EXPECT_CALL(mock_wallpaper_search_background_manager(),
+              SaveCurrentBackgroundToHistory)
+      .WillOnce(
+          MoveArgAndReturn(&history_entry_arg, std::make_optional(token)));
 
   std::vector<
       std::unique_ptr<optimization_guide::proto::WallpaperSearchQuality>>
@@ -1237,12 +1266,16 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
                         ->quality_data()));
           }));
 
+  // Advance clock to test complete latency.
+  task_environment().AdvanceClock(base::Milliseconds(432));
+
   // Quality logs on destruction.
   handler.reset();
   EXPECT_EQ(123, qualities[0]->session_id());
   EXPECT_EQ(0, qualities[0]->index());
   EXPECT_TRUE(qualities[0]->final_request_in_session());
   EXPECT_EQ(321, qualities[0]->request_latency_ms());
+  EXPECT_EQ(555, qualities[0]->complete_latency_ms());
   ASSERT_EQ(2, qualities[0]->images_quality_size());
   EXPECT_EQ(111, qualities[0]->images_quality(0).image_id());
   EXPECT_FALSE(qualities[0]->images_quality(0).previewed());
@@ -1251,6 +1284,9 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
   EXPECT_TRUE(qualities[0]->images_quality(1).previewed());
   EXPECT_TRUE(qualities[0]->images_quality(1).selected());
   EXPECT_EQ(123, qualities[0]->images_quality(1).preview_latency_ms());
+
+  // Set background saves on destruction.
+  EXPECT_EQ(history_entry_arg.id, token);
 }
 
 TEST_F(WallpaperSearchHandlerTest, SetUserFeedback) {

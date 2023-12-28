@@ -55,8 +55,7 @@ class MemoryGraphPageView : public GraphPageViewBase {
   // Share of the total RAM occupied by Chrome browser process shared RSS.
   Graph graph_chrome_rss_shared_;
 
-  raw_ptr<ReferenceLines, ExperimentalAsh> reference_lines_ =
-      nullptr;  // not owned.
+  raw_ptr<ReferenceLines> reference_lines_ = nullptr;  // not owned.
 };
 
 }  // namespace hud_display

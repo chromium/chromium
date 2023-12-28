@@ -976,15 +976,13 @@ public class PaymentRequestService
                 mBrowserPaymentRequest.showOrSkipAppSelector(
                         mIsShowWaitingForUpdatedDetails, mSpec.getRawTotal(), shouldSkip);
         if (showError != null) {
-            return new PaymentNotShownError(
-                    NotShownReason.OTHER, showError, PaymentErrorReason.NOT_SUPPORTED);
+            return new PaymentNotShownError(showError, PaymentErrorReason.NOT_SUPPORTED);
         }
 
         if (mIsShowWaitingForUpdatedDetails) return null;
         String error = onShowCalledAndAppsQueriedAndDetailsFinalized();
         if (error != null) {
-            return new PaymentNotShownError(
-                    NotShownReason.OTHER, error, PaymentErrorReason.NOT_SUPPORTED);
+            return new PaymentNotShownError(error, PaymentErrorReason.NOT_SUPPORTED);
         }
 
         return null;
@@ -1079,18 +1077,16 @@ public class PaymentRequestService
     }
 
     private void onShowFailed(String error) {
-        onShowFailed(NotShownReason.OTHER, error, PaymentErrorReason.USER_CANCEL);
+        onShowFailed(error, PaymentErrorReason.USER_CANCEL);
     }
 
     private void onShowFailed(PaymentNotShownError error) {
-        onShowFailed(
-                error.getNotShownReason(), error.getErrorMessage(), error.getPaymentErrorReason());
+        onShowFailed(error.getErrorMessage(), error.getPaymentErrorReason());
     }
 
-    // notShowReason is defined in NotShownReason.
     // paymentErrorReason is defined in PaymentErrorReason.
-    private void onShowFailed(int notShowReason, String error, int paymentErrorReason) {
-        mJourneyLogger.setNotShown(notShowReason);
+    private void onShowFailed(String error, int paymentErrorReason) {
+        mJourneyLogger.setNotShown();
         disconnectFromClientWithDebugMessage(error, paymentErrorReason);
         if (sObserverForTest != null) sObserverForTest.onPaymentRequestServiceShowFailed();
     }
@@ -1107,10 +1103,6 @@ public class PaymentRequestService
             // All factories have responded, but none of them have apps. It's possible to add credit
             // cards, but the merchant does not support them either. The payment request must be
             // rejected.
-            int notShowReason =
-                    mCanMakePayment
-                            ? NotShownReason.NO_MATCHING_PAYMENT_METHOD
-                            : NotShownReason.NO_SUPPORTED_PAYMENT_METHOD;
             String debugMessage;
             int paymentErrorReason;
             if (mDelegate.isOffTheRecord()) {
@@ -1135,7 +1127,7 @@ public class PaymentRequestService
                                         : " " + mRejectShowErrorMessage);
                 paymentErrorReason = PaymentErrorReason.NOT_SUPPORTED;
             }
-            return new PaymentNotShownError(notShowReason, debugMessage, paymentErrorReason);
+            return new PaymentNotShownError(debugMessage, paymentErrorReason);
         }
         return null;
     }
@@ -1321,7 +1313,6 @@ public class PaymentRequestService
             // one. Only the first one will be shown. This also prevents multiple tabs and windows
             // from showing PaymentRequest UI at the same time.
             onShowFailed(
-                    NotShownReason.CONCURRENT_REQUESTS,
                     ErrorStrings.ANOTHER_UI_SHOWING,
                     PaymentErrorReason.ALREADY_SHOWING);
             return;
@@ -1334,7 +1325,6 @@ public class PaymentRequestService
                 // page.
                 mRejectShowForUserActivation = true;
                 onShowFailed(
-                        NotShownReason.OTHER,
                         ErrorStrings.CANNOT_SHOW_WITHOUT_USER_ACTIVATION,
                         PaymentErrorReason.USER_ACTIVATION_REQUIRED);
                 return;

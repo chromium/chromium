@@ -758,14 +758,14 @@ TEST_P(HttpProxyConnectJobTest, NestedProxyProxyDelegateExtraHeaders) {
   // previously, from a socket-perspective these need to be wrapped as data
   // frames.
   spdy::SpdySerializedFrame wrapped_second_hop_req(
-      new_spdy_util.ConstructWrappedSpdyFrame(second_hop_req, 1));
+      spdy_util_.ConstructWrappedSpdyFrame(second_hop_req, 1));
 
   spdy::SpdySerializedFrame second_hop_resp(new_spdy_util.ConstructSpdyGetReply(
       kSecondHopExtraResponseHeaders,
       std::size(kSecondHopExtraResponseHeaders) / 2, 1));
 
   spdy::SpdySerializedFrame wrapped_second_hop_resp(
-      new_spdy_util.ConstructWrappedSpdyFrame(second_hop_resp, 1));
+      spdy_util_.ConstructWrappedSpdyFrame(second_hop_resp, 1));
 
   MockWrite spdy_writes[] = {
       CreateMockWrite(first_hop_req, 0),

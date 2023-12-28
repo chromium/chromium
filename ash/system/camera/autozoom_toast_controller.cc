@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/camera/autozoom_controller_impl.h"

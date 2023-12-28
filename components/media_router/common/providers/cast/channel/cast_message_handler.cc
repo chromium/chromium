@@ -128,21 +128,28 @@ void CastMessageHandler::CloseConnection(int channel_id,
   }
 
   VirtualConnection connection(socket->id(), source_id, destination_id);
-  if (virtual_connections_.find(connection) == virtual_connections_.end())
+  if (virtual_connections_.find(connection) == virtual_connections_.end()) {
     return;
-
+  }
   VLOG(1) << "Closing VC for channel: " << connection.channel_id
           << ", source: " << connection.source_id
           << ", dest: " << connection.destination_id;
+  // Assume the virtual connection close will succeed.  Eventually the receiver
+  // will remove the connection even if it doesn't succeed.
   socket->transport()->SendMessage(
       CreateVirtualConnectionClose(connection.source_id,
                                    connection.destination_id),
       base::BindOnce(&CastMessageHandler::OnMessageSent,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  // Assume the virtual connection close will succeed.  Eventually the receiver
-  // will remove the connection even if it doesn't.
-  virtual_connections_.erase(connection);
+  RemoveConnection(channel_id, source_id, destination_id);
+}
+
+void CastMessageHandler::RemoveConnection(int channel_id,
+                                          const std::string& source_id,
+                                          const std::string& destination_id) {
+  virtual_connections_.erase(
+      VirtualConnection(channel_id, source_id, destination_id));
 }
 
 CastMessageHandler::PendingRequests*

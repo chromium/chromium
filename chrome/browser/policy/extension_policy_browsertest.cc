@@ -2485,7 +2485,7 @@ class ExtensionPolicyTest2Contexts : public PolicyTest {
  protected:
   void SetTabSpecificPermissionsForURL(const extensions::Extension* extension,
                                        int tab_id,
-                                       GURL& url,
+                                       const GURL& url,
                                        int url_scheme) {
     extensions::URLPatternSet new_hosts;
     new_hosts.AddOrigin(url_scheme, url);

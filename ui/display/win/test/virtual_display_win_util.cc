@@ -15,17 +15,47 @@
 
 namespace display::test {
 
+namespace {
+
+// Returns true if the current environment is detected to be headless.
+bool IsHeadless() {
+  DISPLAY_DEVICE adapter{};
+  adapter.cb = sizeof(adapter);
+  for (DWORD i = 0;
+       EnumDisplayDevices(nullptr, i, &adapter, EDD_GET_DEVICE_INTERFACE_NAME);
+       i++) {
+    if (adapter.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP) {
+      // If any driver is considered attached, then not headless.
+      // Note the default stub driver ("Microsoft Basic Display Driver") is
+      // never considered "attached".
+      return false;
+    }
+  }
+  return true;
+}
+
+}  // namespace
+
 struct DisplayParams {
   explicit DisplayParams(MonitorConfig config) : monitor_config(config) {}
   MonitorConfig monitor_config;
 };
 
-VirtualDisplayWinUtil::VirtualDisplayWinUtil(Screen* screen) : screen_(screen) {
+VirtualDisplayWinUtil::VirtualDisplayWinUtil(Screen* screen)
+    : screen_(screen), is_headless_(IsHeadless()) {
   screen_->AddObserver(this);
+  if (IsAPIAvailable()) {
+    ResetDisplays();
+  }
 }
 
 VirtualDisplayWinUtil::~VirtualDisplayWinUtil() {
-  RemoveAllDisplays();
+  if (IsAPIAvailable()) {
+    driver_controller_.Reset();
+    if (virtual_displays_.size() > 0) {
+      StartWaiting();
+    }
+  }
   screen_->RemoveObserver(this);
 }
 
@@ -33,16 +63,14 @@ bool VirtualDisplayWinUtil::IsAPIAvailable() {
   return DisplayDriverController::IsDriverInstalled();
 }
 
-int64_t VirtualDisplayWinUtil::AddDisplay(unsigned short id,
+int64_t VirtualDisplayWinUtil::AddDisplay(uint8_t id,
                                           const DisplayParams& display_params) {
   if (virtual_displays_.find(id) != virtual_displays_.end()) {
     LOG(ERROR) << "Duplicate virtual display ID added: " << id;
     return kInvalidDisplayId;
   }
   std::vector<MonitorConfig> monitors;
-  if (current_config_.has_value()) {
-    monitors = current_config_->requested_configs();
-  }
+  monitors = current_config_.requested_configs();
   MonitorConfig new_config = display_params.monitor_config;
   new_config.set_product_code(id);
   monitors.push_back(new_config);
@@ -65,7 +93,7 @@ void VirtualDisplayWinUtil::RemoveDisplay(int64_t display_id) {
     LOG(WARNING) << "Display ID " << display_id << " is not a virtual display.";
     return;
   }
-  std::vector<MonitorConfig> monitors = current_config_->requested_configs();
+  std::vector<MonitorConfig> monitors = current_config_.requested_configs();
   std::erase_if(monitors, [&it](MonitorConfig& c) {
     return c.product_code() == it->first;
   });
@@ -74,22 +102,35 @@ void VirtualDisplayWinUtil::RemoveDisplay(int64_t display_id) {
   }
 }
 
-void VirtualDisplayWinUtil::RemoveAllDisplays() {
-  driver_controller_.Reset();
-  if (current_config_.has_value()) {
-    current_config_ = DriverProperties();
+void VirtualDisplayWinUtil::ResetDisplays() {
+  // Internal virtual display ID used for replacing a headless stub display.
+  // This is arbitrarily chosen to be the max value that
+  // MonitorConfig::set_product_code() supports.
+  constexpr unsigned short kHeadlessDisplayId = 65535;
+  DriverProperties prev_config = current_config_;
+  DriverProperties new_config{};
+  if (is_headless_) {
+    LOG(INFO) << "Headless detected, setting base virtual display.";
+    // In a headless environment, when no working display adapter is attached,
+    // windows defaults to a pseudo/stub display. This causes the first call to
+    // AddDisplay() to not add a display, but *replace* the stub with our
+    // virtualized adapter. Therefore, we replace the default stub display with
+    // our own virtual one. See:
+    // https://learn.microsoft.com/en-us/windows-hardware/drivers/display/support-for-headless-systems
+    std::vector<MonitorConfig> configs{k1920x1080.monitor_config};
+    configs[0].set_product_code(kHeadlessDisplayId);
+    new_config = DriverProperties(configs);
+  }
+  SetDriverProperties(new_config);
+  if (current_config_.requested_configs().size() !=
+      prev_config.requested_configs().size()) {
     StartWaiting();
   }
-  virtual_displays_.clear();
-  current_config_.reset();
 }
 
 void VirtualDisplayWinUtil::OnDisplayAdded(
     const display::Display& new_display) {
-  if (!current_config_.has_value()) {
-    return;
-  }
-  std::vector<MonitorConfig> requested = current_config_->requested_configs();
+  std::vector<MonitorConfig> requested = current_config_.requested_configs();
   HMONITOR monitor = ::MonitorFromPoint(
       win::ScreenWin::DIPToScreenPoint(new_display.work_area().CenterPoint())
           .ToPOINT(),
@@ -127,22 +168,23 @@ bool VirtualDisplayWinUtil::SetDriverProperties(DriverProperties properties) {
 }
 
 void VirtualDisplayWinUtil::OnDisplayAddedOrRemoved(int64_t id) {
-  if (!current_config_.has_value() ||
-      virtual_displays_.size() != current_config_->requested_configs().size()) {
+  if (virtual_displays_.size() != current_config_.requested_configs().size()) {
     return;
   }
   StopWaiting();
 }
 
 void VirtualDisplayWinUtil::StartWaiting() {
-  DCHECK(!run_loop_);
+  CHECK(!run_loop_);
   run_loop_ = std::make_unique<base::RunLoop>();
-  run_loop_->Run();
+  if (virtual_displays_.size() != current_config_.requested_configs().size()) {
+    run_loop_->Run();
+  }
   run_loop_.reset();
 }
 
 void VirtualDisplayWinUtil::StopWaiting() {
-  DCHECK(run_loop_);
+  CHECK(run_loop_);
   run_loop_->Quit();
 }
 

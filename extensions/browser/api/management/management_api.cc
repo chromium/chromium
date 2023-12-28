@@ -47,6 +47,7 @@
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/manifest_handlers/replacement_apps.h"
 #include "extensions/common/manifest_url_handlers.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permission_message.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern.h"
@@ -643,7 +644,7 @@ ExtensionFunction::ResponseAction ManagementUninstallFunctionBase::Uninstall(
 
   // A null extension() should only happen if the call is coming from WebUI or
   // the new Webstore which is a webpage the management API is exposed on.
-  DCHECK(extension() || source_context_type() == Feature::WEBUI_CONTEXT ||
+  DCHECK(extension() || source_context_type() == mojom::ContextType::kWebUi ||
          extension_urls::IsWebstoreDomain(source_url()));
 
   bool self_uninstall = extension() && extension_id() == target_extension_id_;

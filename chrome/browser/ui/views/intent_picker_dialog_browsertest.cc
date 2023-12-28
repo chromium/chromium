@@ -95,7 +95,8 @@ class IntentPickerDialogGridViewTest : public IntentPickerDialogTest {
         ui::test::EventGenerator(views::GetRootWindow(bubble->GetWidget()));
     auto* button =
         bubble->GetViewByID(IntentPickerBubbleView::ViewId::kItemContainer)
-            ->children()[0];
+            ->children()[0]
+            .get();
     event_generator.MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
     event_generator.ClickLeftButton();
   }

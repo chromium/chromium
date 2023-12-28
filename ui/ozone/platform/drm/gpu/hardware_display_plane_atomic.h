@@ -44,8 +44,6 @@ class HardwareDisplayPlaneAtomic : public HardwareDisplayPlane {
   // Sets the props on |property_set| for commit.
   bool SetPlaneProps(drmModeAtomicReq* property_set);
 
-  bool SetPlaneCtm(drmModeAtomicReq* property_set, uint32_t ctm_blob_id);
-
   uint32_t AssignedCrtcId() const;
 
  private:

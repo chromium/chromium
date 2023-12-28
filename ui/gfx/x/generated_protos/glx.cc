@@ -81,7 +81,7 @@ void ReadError<Glx::GenericError>(Glx::GenericError* error_,
   // pad0
   Pad(&buf, 21);
 
-  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 std::string Glx::BadContextError::ToString() const {
@@ -128,7 +128,7 @@ void ReadError<Glx::BadContextError>(Glx::BadContextError* error_,
   // pad0
   Pad(&buf, 21);
 
-  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 std::string Glx::BadContextStateError::ToString() const {
@@ -175,7 +175,7 @@ void ReadError<Glx::BadContextStateError>(Glx::BadContextStateError* error_,
   // pad0
   Pad(&buf, 21);
 
-  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 std::string Glx::BadDrawableError::ToString() const {
@@ -222,7 +222,7 @@ void ReadError<Glx::BadDrawableError>(Glx::BadDrawableError* error_,
   // pad0
   Pad(&buf, 21);
 
-  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 std::string Glx::BadPixmapError::ToString() const {
@@ -269,7 +269,7 @@ void ReadError<Glx::BadPixmapError>(Glx::BadPixmapError* error_,
   // pad0
   Pad(&buf, 21);
 
-  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 std::string Glx::BadContextTagError::ToString() const {
@@ -316,7 +316,7 @@ void ReadError<Glx::BadContextTagError>(Glx::BadContextTagError* error_,
   // pad0
   Pad(&buf, 21);
 
-  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 std::string Glx::BadCurrentWindowError::ToString() const {
@@ -363,7 +363,7 @@ void ReadError<Glx::BadCurrentWindowError>(Glx::BadCurrentWindowError* error_,
   // pad0
   Pad(&buf, 21);
 
-  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 std::string Glx::BadRenderRequestError::ToString() const {
@@ -410,7 +410,7 @@ void ReadError<Glx::BadRenderRequestError>(Glx::BadRenderRequestError* error_,
   // pad0
   Pad(&buf, 21);
 
-  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 std::string Glx::BadLargeRequestError::ToString() const {
@@ -457,7 +457,7 @@ void ReadError<Glx::BadLargeRequestError>(Glx::BadLargeRequestError* error_,
   // pad0
   Pad(&buf, 21);
 
-  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 std::string Glx::UnsupportedPrivateRequestError::ToString() const {
@@ -505,7 +505,7 @@ void ReadError<Glx::UnsupportedPrivateRequestError>(
   // pad0
   Pad(&buf, 21);
 
-  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 std::string Glx::BadFBConfigError::ToString() const {
@@ -552,7 +552,7 @@ void ReadError<Glx::BadFBConfigError>(Glx::BadFBConfigError* error_,
   // pad0
   Pad(&buf, 21);
 
-  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 std::string Glx::BadPbufferError::ToString() const {
@@ -599,7 +599,7 @@ void ReadError<Glx::BadPbufferError>(Glx::BadPbufferError* error_,
   // pad0
   Pad(&buf, 21);
 
-  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 std::string Glx::BadCurrentDrawableError::ToString() const {
@@ -647,7 +647,7 @@ void ReadError<Glx::BadCurrentDrawableError>(
   // pad0
   Pad(&buf, 21);
 
-  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 std::string Glx::BadWindowError::ToString() const {
@@ -694,7 +694,7 @@ void ReadError<Glx::BadWindowError>(Glx::BadWindowError* error_,
   // pad0
   Pad(&buf, 21);
 
-  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 std::string Glx::GLXBadProfileARBError::ToString() const {
@@ -741,7 +741,7 @@ void ReadError<Glx::GLXBadProfileARBError>(Glx::GLXBadProfileARBError* error_,
   // pad0
   Pad(&buf, 21);
 
-  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -805,7 +805,7 @@ void ReadEvent<Glx::PbufferClobberEvent>(Glx::PbufferClobberEvent* event_,
   // pad1
   Pad(&buf, 4);
 
-  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 template <>
@@ -858,7 +858,7 @@ void ReadEvent<Glx::BufferSwapCompleteEvent>(
   // sbc
   Read(&sbc, &buf);
 
-  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 Future<void> Glx::Render(const Glx::RenderRequest& request) {
@@ -887,7 +887,7 @@ Future<void> Glx::Render(const Glx::RenderRequest& request) {
   buf.Write(&context_tag);
 
   // data
-  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(data_len), data.size());
+  CHECK_EQ(static_cast<size_t>(data_len), data.size());
   for (auto& data_elem : data) {
     // data_elem
     buf.Write(&data_elem);
@@ -941,7 +941,7 @@ Future<void> Glx::RenderLarge(const Glx::RenderLargeRequest& request) {
   buf.Write(&data_len);
 
   // data
-  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(data_len), data.size());
+  CHECK_EQ(static_cast<size_t>(data_len), data.size());
   for (auto& data_elem : data) {
     // data_elem
     buf.Write(&data_elem);
@@ -1125,7 +1125,7 @@ std::unique_ptr<Glx::MakeCurrentReply> detail::ReadReply<Glx::MakeCurrentReply>(
   Pad(&buf, 20);
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1194,7 +1194,7 @@ std::unique_ptr<Glx::IsDirectReply> detail::ReadReply<Glx::IsDirectReply>(
   Pad(&buf, 23);
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1275,7 +1275,7 @@ std::unique_ptr<Glx::QueryVersionReply> detail::ReadReply<
   Pad(&buf, 16);
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1609,7 +1609,7 @@ std::unique_ptr<Glx::GetVisualConfigsReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1677,7 +1677,7 @@ Future<void> Glx::VendorPrivate(const Glx::VendorPrivateRequest& request) {
   buf.Write(&context_tag);
 
   // data
-  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(data_len), data.size());
+  CHECK_EQ(static_cast<size_t>(data_len), data.size());
   for (auto& data_elem : data) {
     // data_elem
     buf.Write(&data_elem);
@@ -1726,7 +1726,7 @@ Future<Glx::VendorPrivateWithReplyReply> Glx::VendorPrivateWithReply(
   buf.Write(&context_tag);
 
   // data
-  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(data_len), data.size());
+  CHECK_EQ(static_cast<size_t>(data_len), data.size());
   for (auto& data_elem : data) {
     // data_elem
     buf.Write(&data_elem);
@@ -1791,7 +1791,7 @@ std::unique_ptr<Glx::VendorPrivateWithReplyReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1865,7 +1865,7 @@ std::unique_ptr<Glx::QueryExtensionsStringReply> detail::ReadReply<
   Pad(&buf, 16);
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1953,7 +1953,7 @@ std::unique_ptr<Glx::QueryServerStringReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -1993,7 +1993,7 @@ Future<void> Glx::ClientInfo(const Glx::ClientInfoRequest& request) {
   buf.Write(&str_len);
 
   // string
-  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(str_len), string.size());
+  CHECK_EQ(static_cast<size_t>(str_len), string.size());
   for (auto& string_elem : string) {
     // string_elem
     buf.Write(&string_elem);
@@ -2089,7 +2089,7 @@ std::unique_ptr<Glx::GetFBConfigsReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -2136,8 +2136,7 @@ Future<void> Glx::CreatePixmap(const Glx::CreatePixmapRequest& request) {
   buf.Write(&num_attribs);
 
   // attribs
-  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>((num_attribs) * (2)),
-                        attribs.size());
+  CHECK_EQ(static_cast<size_t>((num_attribs) * (2)), attribs.size());
   for (auto& attribs_elem : attribs) {
     // attribs_elem
     buf.Write(&attribs_elem);
@@ -2326,7 +2325,7 @@ std::unique_ptr<Glx::QueryContextReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -2413,7 +2412,7 @@ std::unique_ptr<Glx::MakeContextCurrentReply> detail::ReadReply<
   Pad(&buf, 20);
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -2456,8 +2455,7 @@ Future<void> Glx::CreatePbuffer(const Glx::CreatePbufferRequest& request) {
   buf.Write(&num_attribs);
 
   // attribs
-  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>((num_attribs) * (2)),
-                        attribs.size());
+  CHECK_EQ(static_cast<size_t>((num_attribs) * (2)), attribs.size());
   for (auto& attribs_elem : attribs) {
     // attribs_elem
     buf.Write(&attribs_elem);
@@ -2585,7 +2583,7 @@ std::unique_ptr<Glx::GetDrawableAttributesReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -2621,8 +2619,7 @@ Future<void> Glx::ChangeDrawableAttributes(
   buf.Write(&num_attribs);
 
   // attribs
-  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>((num_attribs) * (2)),
-                        attribs.size());
+  CHECK_EQ(static_cast<size_t>((num_attribs) * (2)), attribs.size());
   for (auto& attribs_elem : attribs) {
     // attribs_elem
     buf.Write(&attribs_elem);
@@ -2684,8 +2681,7 @@ Future<void> Glx::CreateWindow(const Glx::CreateWindowRequest& request) {
   buf.Write(&num_attribs);
 
   // attribs
-  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>((num_attribs) * (2)),
-                        attribs.size());
+  CHECK_EQ(static_cast<size_t>((num_attribs) * (2)), attribs.size());
   for (auto& attribs_elem : attribs) {
     // attribs_elem
     buf.Write(&attribs_elem);
@@ -2787,16 +2783,14 @@ Future<void> Glx::SetClientInfoARB(
   buf.Write(&glx_str_len);
 
   // gl_versions
-  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>((num_versions) * (2)),
-                        gl_versions.size());
+  CHECK_EQ(static_cast<size_t>((num_versions) * (2)), gl_versions.size());
   for (auto& gl_versions_elem : gl_versions) {
     // gl_versions_elem
     buf.Write(&gl_versions_elem);
   }
 
   // gl_extension_string
-  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(gl_str_len),
-                        gl_extension_string.size());
+  CHECK_EQ(static_cast<size_t>(gl_str_len), gl_extension_string.size());
   for (auto& gl_extension_string_elem : gl_extension_string) {
     // gl_extension_string_elem
     buf.Write(&gl_extension_string_elem);
@@ -2806,8 +2800,7 @@ Future<void> Glx::SetClientInfoARB(
   Align(&buf, 4);
 
   // glx_extension_string
-  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(glx_str_len),
-                        glx_extension_string.size());
+  CHECK_EQ(static_cast<size_t>(glx_str_len), glx_extension_string.size());
   for (auto& glx_extension_string_elem : glx_extension_string) {
     // glx_extension_string_elem
     buf.Write(&glx_extension_string_elem);
@@ -2879,8 +2872,7 @@ Future<void> Glx::CreateContextAttribsARB(
   buf.Write(&num_attribs);
 
   // attribs
-  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>((num_attribs) * (2)),
-                        attribs.size());
+  CHECK_EQ(static_cast<size_t>((num_attribs) * (2)), attribs.size());
   for (auto& attribs_elem : attribs) {
     // attribs_elem
     buf.Write(&attribs_elem);
@@ -2953,16 +2945,14 @@ Future<void> Glx::SetClientInfo2ARB(
   buf.Write(&glx_str_len);
 
   // gl_versions
-  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>((num_versions) * (3)),
-                        gl_versions.size());
+  CHECK_EQ(static_cast<size_t>((num_versions) * (3)), gl_versions.size());
   for (auto& gl_versions_elem : gl_versions) {
     // gl_versions_elem
     buf.Write(&gl_versions_elem);
   }
 
   // gl_extension_string
-  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(gl_str_len),
-                        gl_extension_string.size());
+  CHECK_EQ(static_cast<size_t>(gl_str_len), gl_extension_string.size());
   for (auto& gl_extension_string_elem : gl_extension_string) {
     // gl_extension_string_elem
     buf.Write(&gl_extension_string_elem);
@@ -2972,8 +2962,7 @@ Future<void> Glx::SetClientInfo2ARB(
   Align(&buf, 4);
 
   // glx_extension_string
-  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(glx_str_len),
-                        glx_extension_string.size());
+  CHECK_EQ(static_cast<size_t>(glx_str_len), glx_extension_string.size());
   for (auto& glx_extension_string_elem : glx_extension_string) {
     // glx_extension_string_elem
     buf.Write(&glx_extension_string_elem);
@@ -3177,7 +3166,7 @@ std::unique_ptr<Glx::GenListsReply> detail::ReadReply<Glx::GenListsReply>(
   Read(&ret_val, &buf);
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -3349,7 +3338,7 @@ std::unique_ptr<Glx::RenderModeReply> detail::ReadReply<Glx::RenderModeReply>(
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -3410,7 +3399,7 @@ std::unique_ptr<Glx::FinishReply> detail::ReadReply<Glx::FinishReply>(
   Read(&length, &buf);
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -3610,7 +3599,7 @@ std::unique_ptr<Glx::ReadPixelsReply> detail::ReadReply<Glx::ReadPixelsReply>(
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -3701,7 +3690,7 @@ std::unique_ptr<Glx::GetBooleanvReply> detail::ReadReply<Glx::GetBooleanvReply>(
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -3781,7 +3770,7 @@ std::unique_ptr<Glx::GetClipPlaneReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -3872,7 +3861,7 @@ std::unique_ptr<Glx::GetDoublevReply> detail::ReadReply<Glx::GetDoublevReply>(
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -3938,7 +3927,7 @@ std::unique_ptr<Glx::GetErrorReply> detail::ReadReply<Glx::GetErrorReply>(
   Read(&error, &buf);
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4029,7 +4018,7 @@ std::unique_ptr<Glx::GetFloatvReply> detail::ReadReply<Glx::GetFloatvReply>(
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4120,7 +4109,7 @@ std::unique_ptr<Glx::GetIntegervReply> detail::ReadReply<Glx::GetIntegervReply>(
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4216,7 +4205,7 @@ std::unique_ptr<Glx::GetLightfvReply> detail::ReadReply<Glx::GetLightfvReply>(
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4312,7 +4301,7 @@ std::unique_ptr<Glx::GetLightivReply> detail::ReadReply<Glx::GetLightivReply>(
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4407,7 +4396,7 @@ std::unique_ptr<Glx::GetMapdvReply> detail::ReadReply<Glx::GetMapdvReply>(
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4502,7 +4491,7 @@ std::unique_ptr<Glx::GetMapfvReply> detail::ReadReply<Glx::GetMapfvReply>(
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4597,7 +4586,7 @@ std::unique_ptr<Glx::GetMapivReply> detail::ReadReply<Glx::GetMapivReply>(
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4695,7 +4684,7 @@ std::unique_ptr<Glx::GetMaterialfvReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4793,7 +4782,7 @@ std::unique_ptr<Glx::GetMaterialivReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4885,7 +4874,7 @@ std::unique_ptr<Glx::GetPixelMapfvReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -4977,7 +4966,7 @@ std::unique_ptr<Glx::GetPixelMapuivReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -5069,7 +5058,7 @@ std::unique_ptr<Glx::GetPixelMapusvReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -5151,7 +5140,7 @@ std::unique_ptr<Glx::GetPolygonStippleReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -5238,7 +5227,7 @@ std::unique_ptr<Glx::GetStringReply> detail::ReadReply<Glx::GetStringReply>(
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -5334,7 +5323,7 @@ std::unique_ptr<Glx::GetTexEnvfvReply> detail::ReadReply<Glx::GetTexEnvfvReply>(
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -5430,7 +5419,7 @@ std::unique_ptr<Glx::GetTexEnvivReply> detail::ReadReply<Glx::GetTexEnvivReply>(
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -5526,7 +5515,7 @@ std::unique_ptr<Glx::GetTexGendvReply> detail::ReadReply<Glx::GetTexGendvReply>(
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -5622,7 +5611,7 @@ std::unique_ptr<Glx::GetTexGenfvReply> detail::ReadReply<Glx::GetTexGenfvReply>(
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -5718,7 +5707,7 @@ std::unique_ptr<Glx::GetTexGenivReply> detail::ReadReply<Glx::GetTexGenivReply>(
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -5834,7 +5823,7 @@ std::unique_ptr<Glx::GetTexImageReply> detail::ReadReply<Glx::GetTexImageReply>(
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -5932,7 +5921,7 @@ std::unique_ptr<Glx::GetTexParameterfvReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -6030,7 +6019,7 @@ std::unique_ptr<Glx::GetTexParameterivReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -6133,7 +6122,7 @@ std::unique_ptr<Glx::GetTexLevelParameterfvReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -6236,7 +6225,7 @@ std::unique_ptr<Glx::GetTexLevelParameterivReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -6308,7 +6297,7 @@ std::unique_ptr<Glx::IsEnabledReply> detail::ReadReply<Glx::IsEnabledReply>(
   Read(&ret_val, &buf);
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -6378,7 +6367,7 @@ std::unique_ptr<Glx::IsListReply> detail::ReadReply<Glx::IsListReply>(
   Read(&ret_val, &buf);
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -6447,7 +6436,7 @@ Future<Glx::AreTexturesResidentReply> Glx::AreTexturesResident(
   buf.Write(&n);
 
   // textures
-  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(n), textures.size());
+  CHECK_EQ(static_cast<size_t>(n), textures.size());
   for (auto& textures_elem : textures) {
     // textures_elem
     buf.Write(&textures_elem);
@@ -6506,7 +6495,7 @@ std::unique_ptr<Glx::AreTexturesResidentReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -6542,7 +6531,7 @@ Future<void> Glx::DeleteTextures(const Glx::DeleteTexturesRequest& request) {
   buf.Write(&n);
 
   // textures
-  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(n), textures.size());
+  CHECK_EQ(static_cast<size_t>(n), textures.size());
   for (auto& textures_elem : textures) {
     // textures_elem
     buf.Write(&textures_elem);
@@ -6633,7 +6622,7 @@ std::unique_ptr<Glx::GenTexturesReply> detail::ReadReply<Glx::GenTexturesReply>(
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -6705,7 +6694,7 @@ std::unique_ptr<Glx::IsTextureReply> detail::ReadReply<Glx::IsTextureReply>(
   Read(&ret_val, &buf);
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -6809,7 +6798,7 @@ std::unique_ptr<Glx::GetColorTableReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -6907,7 +6896,7 @@ std::unique_ptr<Glx::GetColorTableParameterfvReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -7005,7 +6994,7 @@ std::unique_ptr<Glx::GetColorTableParameterivReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -7113,7 +7102,7 @@ std::unique_ptr<Glx::GetConvolutionFilterReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -7211,7 +7200,7 @@ std::unique_ptr<Glx::GetConvolutionParameterfvReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -7309,7 +7298,7 @@ std::unique_ptr<Glx::GetConvolutionParameterivReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -7417,7 +7406,7 @@ std::unique_ptr<Glx::GetSeparableFilterReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -7525,7 +7514,7 @@ std::unique_ptr<Glx::GetHistogramReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -7623,7 +7612,7 @@ std::unique_ptr<Glx::GetHistogramParameterfvReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -7721,7 +7710,7 @@ std::unique_ptr<Glx::GetHistogramParameterivReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -7822,7 +7811,7 @@ std::unique_ptr<Glx::GetMinmaxReply> detail::ReadReply<Glx::GetMinmaxReply>(
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -7920,7 +7909,7 @@ std::unique_ptr<Glx::GetMinmaxParameterfvReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -8018,7 +8007,7 @@ std::unique_ptr<Glx::GetMinmaxParameterivReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -8112,7 +8101,7 @@ std::unique_ptr<Glx::GetCompressedTexImageARBReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -8149,7 +8138,7 @@ Future<void> Glx::DeleteQueriesARB(
   buf.Write(&n);
 
   // ids
-  DUMP_WILL_BE_CHECK_EQ(static_cast<size_t>(n), ids.size());
+  CHECK_EQ(static_cast<size_t>(n), ids.size());
   for (auto& ids_elem : ids) {
     // ids_elem
     buf.Write(&ids_elem);
@@ -8241,7 +8230,7 @@ std::unique_ptr<Glx::GenQueriesARBReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -8313,7 +8302,7 @@ std::unique_ptr<Glx::IsQueryARBReply> detail::ReadReply<Glx::IsQueryARBReply>(
   Read(&ret_val, &buf);
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -8411,7 +8400,7 @@ std::unique_ptr<Glx::GetQueryivARBReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -8509,7 +8498,7 @@ std::unique_ptr<Glx::GetQueryObjectivARBReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -8607,7 +8596,7 @@ std::unique_ptr<Glx::GetQueryObjectuivARBReply> detail::ReadReply<
   }
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }

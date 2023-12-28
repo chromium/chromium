@@ -28,12 +28,15 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocationType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -220,7 +223,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
 
     @Override
     public List<InstanceInfo> getInstanceInfo() {
-        removeInvalidInstanceData();
+        removeInvalidInstanceData(/* cleanupApplicationStatus= */ false);
         List<InstanceInfo> result = new ArrayList<>();
         SparseBooleanArray visibleTasks = MultiWindowUtils.getVisibleTasks();
         int currentItemPos = -1;
@@ -275,7 +278,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
 
     @Override
     public Pair<Integer, Integer> allocInstanceId(int windowId, int taskId, boolean preferNew) {
-        removeInvalidInstanceData();
+        removeInvalidInstanceData(/* cleanupApplicationStatus= */ true);
 
         int instanceId = getInstanceByTask(taskId);
 
@@ -471,7 +474,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         ChromeSharedPreferences.getInstance().writeInt(taskMapKey(instanceId), taskId);
     }
 
-    private void removeInvalidInstanceData() {
+    private void removeInvalidInstanceData(boolean cleanupApplicationStatus) {
         // Remove tasks that do not exist any more from the task map
         Set<Integer> validTasks = getAllChromeTasks();
         Map<String, Integer> taskMap =
@@ -482,6 +485,19 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
             if (!validTasks.contains(entry.getValue())) {
                 tasksRemoved.add(entry.getKey() + " - " + entry.getValue());
                 ChromeSharedPreferences.getInstance().removeKey(entry.getKey());
+                if (ChromeFeatureList.sMultiInstanceApplicationStatusCleanup.isEnabled()
+                        && cleanupApplicationStatus) {
+                    boolean foundTasks = ApplicationStatus.cleanupInvalidTask(entry.getValue());
+                    if (foundTasks) {
+                        if (BuildConfig.ENABLE_ASSERTS) {
+                            String logMessage =
+                                    "This is not a crash. Found tracked ApplicationStatus for Task "
+                                            + " that no longer exists in #getAppTasks().";
+                            ChromePureJavaExceptionReporter.reportJavaException(
+                                    new Throwable(logMessage));
+                        }
+                    }
+                }
             }
         }
 
@@ -789,7 +805,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         if (mTabModelObserver != null) mTabModelObserver.destroy();
         // This handles a case where an instance is deleted within Chrome but not through
         // Window manager UI, and the task is removed by system. See https://crbug.com/1241719.
-        removeInvalidInstanceData();
+        removeInvalidInstanceData(/* cleanupApplicationStatus= */ false);
         if (mInstanceId != INVALID_INSTANCE_ID) {
             ApplicationStatus.unregisterActivityStateListener(this);
         }

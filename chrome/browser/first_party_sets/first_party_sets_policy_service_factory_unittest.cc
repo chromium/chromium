@@ -5,7 +5,6 @@
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 
 #include "base/json/json_reader.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -37,8 +36,6 @@ class FirstPartySetsPolicyServiceFactoryTest : public testing::Test {
 
 TEST_F(FirstPartySetsPolicyServiceFactoryTest,
        ServiceCreatedRegardlessIfPolicyEnabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(features::kFirstPartySets);
   TestingProfile* disabled_profile =
       profile_manager().CreateTestingProfile("disabled");
   TestingProfile* enabled_profile =
@@ -74,8 +71,6 @@ TEST_F(FirstPartySetsPolicyServiceFactoryTest,
 
 TEST_F(FirstPartySetsPolicyServiceFactoryTest,
        OffTheRecordProfile_DistinctAndDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(features::kFirstPartySets);
   TestingProfile* profile =
       profile_manager().CreateTestingProfile("TestProfile");
 

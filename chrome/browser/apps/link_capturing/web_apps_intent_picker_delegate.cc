@@ -89,8 +89,8 @@ bool WebAppsIntentPickerDelegate::IsPreferredAppForSupportedLinks(
 }
 
 void WebAppsIntentPickerDelegate::LoadSingleAppIcon(
-    apps::AppType app_type,
-    const webapps::AppId& app_id,
+    PickerEntryType entry_type,
+    const std::string& app_id,
     int size_in_dep,
     IconLoadedCallback icon_loaded_callback) {
   web_app::WebAppIconManager& icon_manager = provider_->icon_manager();

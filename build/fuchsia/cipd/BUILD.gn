@@ -36,9 +36,6 @@ if (fuchsia_cipd_package_base_path == "") {
 # Archives related specifically to `fuchsia.web`
 _web_engine_directory = "web_engine"
 
-# Archives related specifically to Chrome browser.
-_chrome_directory = "chrome"
-
 # Archives of tools intended to be run on a Linux/Mac host rather than the
 # Fuchsia device.
 _host_tools_directory = "host_tools"
@@ -364,38 +361,6 @@ fuchsia_cipd_package(_web_engine_debug_symbols_archive_name) {
   deps = [ ":${_web_engine_build_ids_target}" ]
 }
 
-cipd_archive("chrome") {
-  package_subdirectory = _chrome_directory
-  description = "Prebuilt Chrome browser package."
-
-  deps = [ "//chrome/app:chrome_pkg" ]
-  sources = [ "${root_gen_dir}/chrome/app/chrome/chrome.far" ]
-}
-
-_chrome_build_ids_target = "chrome_debug_symbol_directory"
-_chrome_debug_symbols_archive_name = "chrome_debug_symbols"
-_chrome_debug_symbols_outdir = "${target_gen_dir}/${_chrome_debug_symbols_archive_name}/${_chrome_build_ids_target}"
-
-build_id_dir(_chrome_build_ids_target) {
-  testonly = true  # Some of the archives contain test packages.
-  output_path = _chrome_debug_symbols_outdir
-  deps = [ ":chrome${_archive_suffix}" ]
-}
-
-fuchsia_cipd_package(_chrome_debug_symbols_archive_name) {
-  testonly = true
-  package =
-      "${package_base_path}/${_chrome_directory}/${targetarch}/debug-symbols"
-  package_root = _chrome_debug_symbols_outdir
-  package_definition_name = "${target_name}.yaml"
-  package_definition_dir = "${target_gen_dir}/${target_name}"
-  description = "Debugging symbols for prebuilt binaries from Chromium."
-  use_absolute_root_path = true
-
-  directories = [ "." ]
-  deps = [ ":${_chrome_build_ids_target}" ]
-}
-
 # A group for production archives to ensure nothing is testonly.
 group("web_engine_production_archives") {
   deps = [
@@ -428,12 +393,6 @@ group("cipd") {
     ":chromedriver${_archive_suffix}",
     ":web_engine_debug_symbols",
   ]
-  if (!optimize_for_size) {
-    deps += [
-      ":chrome${_archive_suffix}",
-      ":chrome_debug_symbols",
-    ]
-  }
   visibility = []  # Required to replace the file default.
   visibility = [ "//:gn_all" ]
 }

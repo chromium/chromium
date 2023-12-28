@@ -9,7 +9,6 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
-import android.view.WindowInsets;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
@@ -19,8 +18,10 @@ import androidx.annotation.Px;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Log;
+import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -47,6 +48,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
 
     private final @NonNull Activity mActivity;
     private final @NonNull TabSupplierObserver mTabSupplierObserver;
+    private final ObserverList<EdgeToEdgePadAdjuster> mPadAdjusters = new ObserverList<>();
     private final @NonNull TabObserver mTabObserver;
 
     /** Multiplier to convert from pixels to DPs. */
@@ -57,7 +59,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
     private Tab mCurrentTab;
     private WebContentsObserver mWebContentsObserver;
     private boolean mIsActivityToEdge;
-    private Insets mSystemInsets;
+    private @Nullable Insets mSystemInsets;
     private boolean mDidSetDecorAndListener;
 
     /**
@@ -102,8 +104,8 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
                 };
     }
 
-    @Override
-    public void onTabSwitched(@Nullable Tab tab) {
+    @VisibleForTesting
+    void onTabSwitched(@Nullable Tab tab) {
         if (mCurrentTab != null) mCurrentTab.removeObserver(mTabObserver);
         mCurrentTab = tab;
         if (tab != null) {
@@ -144,6 +146,24 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
         // and whether the Gesture Navigation is appropriately enabled or not.
         if (alwaysDrawToEdgeForTabKind(tab)) return true;
         return wantsToEdge;
+    }
+
+    @Override
+    public void registerAdjuster(EdgeToEdgePadAdjuster adjuster) {
+        mPadAdjusters.addObserver(adjuster);
+        if (mSystemInsets != null) adjuster.adjustToEdge(mIsActivityToEdge, mSystemInsets.bottom);
+    }
+
+    @Override
+    public void unregisterAdjuster(EdgeToEdgePadAdjuster adjuster) {
+        mPadAdjusters.removeObserver(adjuster);
+    }
+
+    @Override
+    public int getBottomInset() {
+        return mSystemInsets == null || !isToEdge()
+                ? 0
+                : (int) Math.ceil(mSystemInsets.bottom * mPxToDp);
     }
 
     /**
@@ -197,7 +217,6 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
      * @param toEdge Whether to draw ToEdge.
      * @param webContents The {@link WebContents} to notify of inset env() changes.
      */
-    @SuppressWarnings("WrongConstant") // For WindowInsets.Type on U+
     private void drawToEdge(int viewId, boolean toEdge, @Nullable WebContents webContents) {
         if (toEdge == mIsActivityToEdge) return;
 
@@ -216,8 +235,8 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
                     (view, windowInsets) -> {
                         Insets newInsets =
                                 windowInsets.getInsets(
-                                        WindowInsets.Type.navigationBars()
-                                                + WindowInsets.Type.statusBars());
+                                        WindowInsetsCompat.Type.navigationBars()
+                                                + WindowInsetsCompat.Type.statusBars());
                         if (!newInsets.equals(mSystemInsets)) {
                             mSystemInsets = newInsets;
                             Log.w(TAG, "System Bar insets changed to: %s", mSystemInsets);
@@ -254,6 +273,10 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
                 mSystemInsets.top,
                 mSystemInsets.right,
                 bottomInset);
+
+        for (var adjuster : mPadAdjusters) {
+            adjuster.adjustToEdge(toEdge, mSystemInsets.bottom);
+        }
 
         // We only make the Nav Bar transparent because it's the only thing we want to draw
         // underneath.
@@ -351,7 +374,7 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
         return mWebContentsObserver;
     }
 
-    void setToEdgeForTesting(boolean toEdge) {
+    public void setToEdgeForTesting(boolean toEdge) {
         mIsActivityToEdge = toEdge;
     }
 

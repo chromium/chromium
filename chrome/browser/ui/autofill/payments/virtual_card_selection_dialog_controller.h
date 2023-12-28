@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+
 namespace autofill {
 
 class CreditCard;
@@ -25,7 +27,8 @@ class VirtualCardSelectionDialogController {
   virtual std::u16string GetOkButtonLabel() const = 0;
   virtual std::u16string GetCancelButtonLabel() const = 0;
 
-  virtual const std::vector<CreditCard*>& GetCardList() const = 0;
+  virtual const std::vector<raw_ptr<CreditCard, VectorExperimental>>&
+  GetCardList() const = 0;
 
   virtual void OnCardSelected(const std::string& selected_card_id) = 0;
   virtual void OnOkButtonClicked() = 0;

@@ -141,7 +141,7 @@ class ClientControlledStateDelegate
   }
 
  private:
-  raw_ptr<ClientControlledShellSurface, ExperimentalAsh> shell_surface_;
+  raw_ptr<ClientControlledShellSurface> shell_surface_;
 };
 
 // A WindowStateDelegate that implements ToggleFullscreen behavior for
@@ -221,10 +221,8 @@ class ClientControlledWindowStateDelegate : public ash::WindowStateDelegate {
   }
 
  private:
-  raw_ptr<ClientControlledShellSurface, ExperimentalAsh> shell_surface_;
-  raw_ptr<ash::ClientControlledState::Delegate,
-          DanglingUntriaged | ExperimentalAsh>
-      delegate_;
+  raw_ptr<ClientControlledShellSurface> shell_surface_;
+  raw_ptr<ash::ClientControlledState::Delegate, DanglingUntriaged> delegate_;
 };
 
 bool IsPinned(const ash::WindowState* window_state) {
@@ -281,15 +279,17 @@ class EventTargetingBlocker : aura::WindowObserver {
     window->AddObserver(this);
     event_targeting_blocker_map_[window] =
         std::make_unique<aura::ScopedWindowEventTargetingBlocker>(window);
-    for (auto* child : window->children())
+    for (aura::Window* child : window->children()) {
       Register(child);
+    }
   }
 
   void Unregister(aura::Window* window) {
     window->RemoveObserver(this);
     event_targeting_blocker_map_.erase(window);
-    for (auto* child : window->children())
+    for (aura::Window* child : window->children()) {
       Unregister(child);
+    }
   }
 
   void OnWindowDestroying(aura::Window* window) override {
@@ -301,7 +301,7 @@ class EventTargetingBlocker : aura::WindowObserver {
   std::map<aura::Window*,
            std::unique_ptr<aura::ScopedWindowEventTargetingBlocker>>
       event_targeting_blocker_map_;
-  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
+  raw_ptr<aura::Window> window_ = nullptr;
 };
 
 }  // namespace
@@ -319,7 +319,7 @@ class ClientControlledShellSurface::ScopedSetBoundsLocally {
   ~ScopedSetBoundsLocally() { state_->set_bounds_locally(false); }
 
  private:
-  const raw_ptr<ash::ClientControlledState, ExperimentalAsh> state_;
+  const raw_ptr<ash::ClientControlledState> state_;
 };
 
 class ClientControlledShellSurface::ScopedLockedToRoot {
@@ -335,7 +335,7 @@ class ClientControlledShellSurface::ScopedLockedToRoot {
   ~ScopedLockedToRoot() { window_->ClearProperty(ash::kLockedToRootKey); }
 
  private:
-  const raw_ptr<aura::Window, ExperimentalAsh> window_;
+  const raw_ptr<aura::Window> window_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

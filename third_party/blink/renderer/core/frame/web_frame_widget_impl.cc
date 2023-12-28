@@ -422,22 +422,6 @@ ukm::SourceId WebFrameWidgetImpl::MainFrameUkmSourceId() {
   return local_root_->GetFrame()->DomWindow()->UkmSourceID();
 }
 
-bool WebFrameWidgetImpl::IsMainFrameFullyLoaded() const {
-  DCHECK(local_root_);
-  if (!local_root_->IsOutermostMainFrame()) {
-    return false;
-  }
-
-  return local_root_->GetFrame() &&
-         local_root_->GetFrame()->Loader().GetDocumentLoader() &&
-         !local_root_->GetFrame()
-              ->Loader()
-              .GetDocumentLoader()
-              ->GetTiming()
-              .LoadEventEnd()
-              .is_null();
-}
-
 gfx::Rect WebFrameWidgetImpl::ComputeBlockBound(
     const gfx::Point& point_in_root_frame,
     bool ignore_clipping) const {
@@ -3847,6 +3831,15 @@ void WebFrameWidgetImpl::SetMouseCapture(bool capture) {
   }
 }
 
+void WebFrameWidgetImpl::NotifyAutoscrollForSelectionInMainFrame(
+    bool autoscroll_selection) {
+  if (mojom::blink::WidgetInputHandlerHost* host =
+          widget_base_->widget_input_handler_manager()
+              ->GetWidgetInputHandlerHost()) {
+    host->SetAutoscrollSelectionActiveInMainFrame(autoscroll_selection);
+  }
+}
+
 gfx::Range WebFrameWidgetImpl::CompositionRange() {
   WebLocalFrame* focused_frame = FocusedWebLocalFrameInWidget();
   if (!focused_frame || ShouldDispatchImeEventsToPlugin())
@@ -4837,11 +4830,7 @@ void WebFrameWidgetImpl::SetWindowRect(const gfx::Rect& requested_rect,
 void WebFrameWidgetImpl::SetWindowRectSynchronouslyForTesting(
     const gfx::Rect& new_window_rect) {
   DCHECK(ForMainFrame());
-  SetWindowRectSynchronously(new_window_rect);
-}
 
-void WebFrameWidgetImpl::SetWindowRectSynchronously(
-    const gfx::Rect& new_window_rect) {
   // This method is only call in tests, and it applies the |new_window_rect| to
   // all three of:
   // a) widget size (in |size_|)

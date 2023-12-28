@@ -60,6 +60,7 @@ picture-in-picture
 private-aggregation
 private-state-token-issuance
 private-state-token-redemption
+publickey-credentials-create
 publickey-credentials-get
 run-ad-auction
 screen-wake-lock
@@ -69,6 +70,7 @@ shared-storage
 shared-storage-select-url
 smart-card
 storage-access
+sub-apps
 sync-xhr
 unload
 usb

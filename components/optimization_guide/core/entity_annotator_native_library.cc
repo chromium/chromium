@@ -4,12 +4,16 @@
 
 #include "components/optimization_guide/core/entity_annotator_native_library.h"
 
+#include <optional>
+
 #include "base/base_paths.h"
 #include "base/compiler_specific.h"
+#include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -27,30 +31,40 @@ namespace optimization_guide {
 
 namespace {
 
-const char kModelMetadataBaseName[] = "model_metadata.pb";
-const char kWordEmbeddingsBaseName[] = "word_embeddings";
-const char kNameTableBaseName[] = "entities_names";
-const char kMetadataTableBaseName[] = "entities_metadata";
-const char kNameFilterBaseName[] = "entities_names_filter";
-const char kPrefixFilterBaseName[] = "entities_prefixes_filter";
+const base::FilePath::CharType kModelMetadataBaseName[] =
+    FILE_PATH_LITERAL("model_metadata.pb");
+const base::FilePath::CharType kWordEmbeddingsBaseName[] =
+    FILE_PATH_LITERAL("word_embeddings");
+const base::FilePath::CharType kNameTableBaseName[] =
+    FILE_PATH_LITERAL("entities_names");
+const base::FilePath::CharType kMetadataTableBaseName[] =
+    FILE_PATH_LITERAL("entities_metadata");
+const base::FilePath::CharType kNameFilterBaseName[] =
+    FILE_PATH_LITERAL("entities_names_filter");
+const base::FilePath::CharType kPrefixFilterBaseName[] =
+    FILE_PATH_LITERAL("entities_prefixes_filter");
 
-// Sets |field_to_set| with the full file path of |base_name|'s entry in
-// |base_to_full_file_path|. Returns whether |base_name| is in
-// |base_to_full_file_path|.
-absl::optional<std::string> GetFilePathFromMap(
-    const std::string& base_name,
-    const base::flat_map<std::string, base::FilePath>& base_to_full_file_path) {
-  auto it = base_to_full_file_path.find(base_name);
-  return it == base_to_full_file_path.end()
-             ? absl::nullopt
-             : absl::make_optional(FilePathToString(it->second));
+std::optional<std::string> GetStringFilePathForAdditionalFile(
+    const ModelInfo& model_info,
+    const base::FilePath::StringType& base_name) {
+  std::optional<base::FilePath> file_path =
+      model_info.GetAdditionalFileWithBaseName(base_name);
+  if (!file_path) {
+    return std::nullopt;
+  }
+  return FilePathToString(*file_path);
 }
 
 // Returns the expected base name for |slice|. Will be of the form
 // |slice|-|base_name|.
-std::string GetSliceBaseName(const std::string& slice,
-                             const std::string& base_name) {
-  return slice + "-" + base_name;
+base::FilePath::StringType GetSliceBaseName(
+    const std::string& slice,
+    const base::FilePath::StringType& base_name) {
+#if BUILDFLAG(IS_WIN)
+  return base::UTF8ToWide(slice) + FILE_PATH_LITERAL("-") + base_name;
+#else
+  return slice + FILE_PATH_LITERAL("-") + base_name;
+#endif
 }
 
 class ScopedEntityAnnotatorCreationStatusRecorder {
@@ -339,7 +353,7 @@ bool EntityAnnotatorNativeLibrary::PopulateEntityAnnotatorOptionsFromModelInfo(
   }
 
   // // Validate the model metadata.
-  absl::optional<proto::PageEntitiesModelMetadata> entities_model_metadata =
+  std::optional<proto::PageEntitiesModelMetadata> entities_model_metadata =
       ParsedAnyMetadata<proto::PageEntitiesModelMetadata>(
           model_info.GetModelMetadata().value());
   if (!entities_model_metadata) {
@@ -357,13 +371,8 @@ bool EntityAnnotatorNativeLibrary::PopulateEntityAnnotatorOptionsFromModelInfo(
       options, FilePathToString(model_info.GetModelFilePath()).c_str());
 
   // Attach the additional files required by the model.
-  base::flat_map<std::string, base::FilePath> base_to_full_file_path;
-  for (const auto& model_file : model_info.GetAdditionalFiles()) {
-    base_to_full_file_path.insert(
-        {FilePathToString(model_file.BaseName()), model_file});
-  }
-  absl::optional<std::string> model_metadata_file_path =
-      GetFilePathFromMap(kModelMetadataBaseName, base_to_full_file_path);
+  std::optional<std::string> model_metadata_file_path =
+      GetStringFilePathForAdditionalFile(model_info, kModelMetadataBaseName);
   if (!model_metadata_file_path) {
     *status = EntityAnnotatorCreationStatus::
         kMissingAdditionalEntitiesModelMetadataPath;
@@ -371,8 +380,8 @@ bool EntityAnnotatorNativeLibrary::PopulateEntityAnnotatorOptionsFromModelInfo(
   }
   options_set_model_metadata_file_path_func_(options,
                                              model_metadata_file_path->c_str());
-  absl::optional<std::string> word_embeddings_file_path =
-      GetFilePathFromMap(kWordEmbeddingsBaseName, base_to_full_file_path);
+  std::optional<std::string> word_embeddings_file_path =
+      GetStringFilePathForAdditionalFile(model_info, kWordEmbeddingsBaseName);
   if (!word_embeddings_file_path) {
     *status =
         EntityAnnotatorCreationStatus::kMissingAdditionalWordEmbeddingsPath;
@@ -384,37 +393,36 @@ bool EntityAnnotatorNativeLibrary::PopulateEntityAnnotatorOptionsFromModelInfo(
   base::flat_set<std::string> slices(entities_model_metadata->slice().begin(),
                                      entities_model_metadata->slice().end());
   for (const auto& slice_id : slices) {
-    absl::optional<std::string> name_filter_path;
+    std::optional<std::string> name_filter_path;
     if (should_provide_filter_path_) {
-      name_filter_path =
-          GetFilePathFromMap(GetSliceBaseName(slice_id, kNameFilterBaseName),
-                             base_to_full_file_path);
+      name_filter_path = GetStringFilePathForAdditionalFile(
+          model_info, GetSliceBaseName(slice_id, kNameFilterBaseName));
       if (!name_filter_path) {
         *status =
             EntityAnnotatorCreationStatus::kMissingAdditionalNameFilterPath;
         return false;
       }
     }
-    absl::optional<std::string> name_table_path = GetFilePathFromMap(
-        GetSliceBaseName(slice_id, kNameTableBaseName), base_to_full_file_path);
+    std::optional<std::string> name_table_path =
+        GetStringFilePathForAdditionalFile(
+            model_info, GetSliceBaseName(slice_id, kNameTableBaseName));
     if (!name_table_path) {
       *status = EntityAnnotatorCreationStatus::kMissingAdditionalNameTablePath;
       return false;
     }
-    absl::optional<std::string> prefix_filter_path;
+    std::optional<std::string> prefix_filter_path;
     if (should_provide_filter_path_) {
-      prefix_filter_path =
-          GetFilePathFromMap(GetSliceBaseName(slice_id, kPrefixFilterBaseName),
-                             base_to_full_file_path);
+      prefix_filter_path = GetStringFilePathForAdditionalFile(
+          model_info, GetSliceBaseName(slice_id, kPrefixFilterBaseName));
       if (!prefix_filter_path) {
         *status =
             EntityAnnotatorCreationStatus::kMissingAdditionalPrefixFilterPath;
         return false;
       }
     }
-    absl::optional<std::string> metadata_table_path =
-        GetFilePathFromMap(GetSliceBaseName(slice_id, kMetadataTableBaseName),
-                           base_to_full_file_path);
+    std::optional<std::string> metadata_table_path =
+        GetStringFilePathForAdditionalFile(
+            model_info, GetSliceBaseName(slice_id, kMetadataTableBaseName));
     if (!metadata_table_path) {
       *status =
           EntityAnnotatorCreationStatus::kMissingAdditionalMetadataTablePath;
@@ -441,7 +449,7 @@ void EntityAnnotatorNativeLibrary::DeleteEntityAnnotator(
 }
 
 DISABLE_CFI_DLSYM
-absl::optional<std::vector<ScoredEntityMetadata>>
+std::optional<std::vector<ScoredEntityMetadata>>
 EntityAnnotatorNativeLibrary::AnnotateText(void* annotator,
                                            const std::string& text) {
   DCHECK(IsValid());
@@ -472,7 +480,7 @@ EntityAnnotatorNativeLibrary::AnnotateText(void* annotator,
 }
 
 DISABLE_CFI_DLSYM
-absl::optional<EntityMetadata>
+std::optional<EntityMetadata>
 EntityAnnotatorNativeLibrary::GetEntityMetadataForEntityId(
     void* annotator,
     const std::string& entity_id) {

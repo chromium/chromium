@@ -10,20 +10,23 @@ import '/shared/settings/controls/extension_controlled_indicator.js';
 
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 // <if expr="is_win or is_macosx">
 import {PasskeysBrowserProxyImpl} from './passkeys_browser_proxy.js';
 // </if>
-import {BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordManagerImpl} from './password_manager_proxy.js';
-import {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
-import {Route, RouteObserverMixin, Router, UrlParam} from './router.js';
+import type {BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener} from './password_manager_proxy.js';
+import {PasswordManagerImpl} from './password_manager_proxy.js';
+import type {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
+import type {Route} from './router.js';
+import {RouteObserverMixin, Router, UrlParam} from './router.js';
 import {getTemplate} from './settings_section.html.js';
 import {SyncBrowserProxyImpl, TrustedVaultBannerState} from './sync_browser_proxy.js';
 import {UserUtilMixin} from './user_utils_mixin.js';
@@ -111,6 +114,13 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
           return loadTimeData.getBoolean('canAddShortcut');
         },
       },
+
+      enableButterOnDesktopFollowup_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableButterOnDesktopFollowup');
+        },
+      },
     };
   }
 
@@ -119,6 +129,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   private hasPasswordsToExport_: boolean;
   private showPasswordsImporter_: boolean;
   private trustedVaultBannerState_: TrustedVaultBannerState;
+  private enableButterOnDesktopFollowup_: boolean;
 
   private setBlockedSitesListListener_: BlockedSitesListChangedListener|null =
       null;
@@ -285,6 +296,14 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     } else {
       this.optInForAccountStorage();
     }
+  }
+
+  private getToggleSubLabelForAccountStorageOptIn_(accountEmail: string):
+      string {
+    if (this.enableButterOnDesktopFollowup_) {
+      return this.i18n('accountStorageToggleSubLabel', accountEmail);
+    }
+    return accountEmail;
   }
 
   // <if expr="is_win or is_macosx">

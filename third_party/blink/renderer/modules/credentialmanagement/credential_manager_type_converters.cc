@@ -73,6 +73,7 @@ using blink::mojom::blink::DigitalCredentialProvider;
 using blink::mojom::blink::DigitalCredentialProviderPtr;
 using blink::mojom::blink::DigitalCredentialSelector;
 using blink::mojom::blink::DigitalCredentialSelectorPtr;
+using blink::mojom::blink::Hint;
 using blink::mojom::blink::IdentityCredentialDisconnectOptions;
 using blink::mojom::blink::IdentityCredentialDisconnectOptionsPtr;
 using blink::mojom::blink::IdentityProvider;
@@ -590,6 +591,8 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
         AuthenticatorSelectionCriteria::From(*options.authenticatorSelection());
   }
 
+  mojo_options->hints = ConvertTo<Vector<Hint>>(options.hints());
+
   mojo_options->attestation = AttestationConveyancePreference::NONE;
   if (options.hasAttestation()) {
     absl::optional<AttestationConveyancePreference> attestation =
@@ -754,6 +757,8 @@ TypeConverter<PublicKeyCredentialRequestOptionsPtr,
     }
   }
 
+  mojo_options->hints = ConvertTo<Vector<Hint>>(options.hints());
+
   if (options.hasExtensions()) {
     mojo_options->extensions =
         ConvertTo<blink::mojom::blink::AuthenticationExtensionsClientInputsPtr>(
@@ -857,11 +862,11 @@ TypeConverter<IdentityProviderRequestOptionsPtr,
     Convert(const blink::IdentityProviderRequestOptions& options) {
   auto mojo_options = IdentityProviderRequestOptions::New();
   mojo_options->config = IdentityProviderConfig::New();
-  if (options.hasRegistered() &&
-      blink::RuntimeEnabledFeatures::FedCmIdPRegistrationEnabled()) {
-    mojo_options->config->use_registered_config_urls = options.registered();
+  CHECK(options.hasConfigURL());
+  if (blink::RuntimeEnabledFeatures::FedCmIdPRegistrationEnabled() &&
+      options.configURL() == "any") {
+    mojo_options->config->use_registered_config_urls = true;
   } else {
-    CHECK(options.hasConfigURL());
     mojo_options->config->config_url = blink::KURL(options.configURL());
   }
   mojo_options->config->client_id = options.clientId();
@@ -1076,6 +1081,24 @@ TypeConverter<IdentityCredentialDisconnectOptionsPtr,
 
   mojo_disconnect_options->account_hint = options.accountHint();
   return mojo_disconnect_options;
+}
+
+Vector<Hint> TypeConverter<Vector<Hint>, Vector<String>>::Convert(
+    const Vector<String>& hints) {
+  Vector<Hint> ret;
+
+  for (const String& hint : hints) {
+    if (hint == "security-key") {
+      ret.push_back(Hint::SECURITY_KEY);
+    } else if (hint == "client-device") {
+      ret.push_back(Hint::CLIENT_DEVICE);
+    } else if (hint == "hybrid") {
+      ret.push_back(Hint::HYBRID);
+    }
+    // Unrecognised values are ignored.
+  }
+
+  return ret;
 }
 
 }  // namespace mojo

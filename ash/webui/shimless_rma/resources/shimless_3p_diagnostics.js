@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './shimless_rma_shared_css.js';
+import './shimless_rma_shared.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
 import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {Shimless3pDiagnosticsAppInfo, ShimlessRmaServiceInterface, Show3pDiagnosticsAppResult} from './shimless_rma_types.js';
+import {getTemplate} from './shimless_3p_diagnostics.html.js';
+import {Shimless3pDiagnosticsAppInfo, ShimlessRmaServiceInterface, Show3pDiagnosticsAppResult} from './shimless_rma.mojom-webui.js';
 import {disableAllButtons, enableAllButtons} from './shimless_rma_util.js';
 
 /**
@@ -36,43 +37,43 @@ export class Shimless3pDiagnostics extends Shimless3pDiagnosticsBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
       /** @private */
-      hasPendingLaunch_: {
+      hasPendingLaunch: {
         type: Boolean,
         value: false,
       },
 
       /** @protected */
-      providerName_: {
+      providerName: {
         type: String,
         value: '',
       },
 
       /** @protected */
-      installableAppPath_: {
+      installableAppPath: {
         type: String,
         value: '',
       },
 
       /** @protected {Shimless3pDiagnosticsAppInfo} */
-      appInfo_: {
+      appInfo: {
         type: Object,
         value: null,
       },
 
       /** @protected */
-      errorTitle_: {
+      errorTitle: {
         type: String,
         value: '',
       },
 
       /** @protected */
-      errorMessage_: {
+      errorMessage: {
         type: String,
         value: '',
       },
@@ -88,10 +89,10 @@ export class Shimless3pDiagnostics extends Shimless3pDiagnosticsBase {
     }
 
     /** @private {!ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
-    this.shimlessRmaService_.get3pDiagnosticsProvider().then(
+    this.shimlessRmaService = getShimlessRmaService();
+    this.shimlessRmaService.get3pDiagnosticsProvider().then(
         /**@type function({provider: ?string})*/ (({provider}) => {
-          this.providerName_ = provider;
+          this.providerName = provider;
         }));
   }
 
@@ -99,8 +100,8 @@ export class Shimless3pDiagnostics extends Shimless3pDiagnosticsBase {
    * Ends the launch process and enables all buttons.
    * @private
    */
-  completeLaunch_() {
-    this.hasPendingLaunch_ = false;
+  completeLaunch() {
+    this.hasPendingLaunch = false;
     enableAllButtons(this);
   }
 
@@ -110,9 +111,9 @@ export class Shimless3pDiagnostics extends Shimless3pDiagnosticsBase {
    * @param {string} messageId
    * @private
    */
-  showError_(titleId, messageId) {
-    this.errorTitle_ = this.i18n(titleId, this.providerName_);
-    this.errorMessage_ = this.i18n(messageId);
+  showError(titleId, messageId) {
+    this.errorTitle = this.i18n(titleId, this.providerName);
+    this.errorMessage = this.i18n(messageId);
     this.root.querySelector('#shimless3pDiagErrorDialog').showModal();
   }
 
@@ -122,8 +123,8 @@ export class Shimless3pDiagnostics extends Shimless3pDiagnosticsBase {
    * @param {mojoBase.mojom.FilePath} appPath
    * @private
    */
-  showFindInstallableDialog_(appPath) {
-    this.installableAppPath_ = appPath.path;
+  showFindInstallableDialog(appPath) {
+    this.installableAppPath = appPath.path;
     this.root.querySelector('#shimless3pDiagFindInstallableDialog').showModal();
   }
 
@@ -134,10 +135,10 @@ export class Shimless3pDiagnostics extends Shimless3pDiagnosticsBase {
    * @param {boolean} isApproved
    * @private
    */
-  completeLastInstall_(isApproved) {
-    this.shimlessRmaService_.completeLast3pDiagnosticsInstallation(isApproved)
+  completeLastInstall(isApproved) {
+    this.shimlessRmaService.completeLast3pDiagnosticsInstallation(isApproved)
         .then(() => {
-          isApproved ? this.show3pDiagnosticsApp_() : this.completeLaunch_();
+          isApproved ? this.show3pDiagnosticsApp() : this.completeLaunch();
         });
   }
 
@@ -148,13 +149,13 @@ export class Shimless3pDiagnostics extends Shimless3pDiagnosticsBase {
    * @param {Shimless3pDiagnosticsAppInfo} appInfo
    * @private
    */
-  showPermissionReviewDialogOrCompleteLastInstall_(appInfo) {
+  showPermissionReviewDialogOrCompleteLastInstall(appInfo) {
     if (!appInfo.permissionMessage) {
-      this.completeLastInstall_(true);
+      this.completeLastInstall(true);
       return;
     }
 
-    this.appInfo_ = appInfo;
+    this.appInfo = appInfo;
     this.root.querySelector('#shimless3pDiagReviewPermissionDialog')
         .showModal();
   }
@@ -165,18 +166,18 @@ export class Shimless3pDiagnostics extends Shimless3pDiagnosticsBase {
    * installed app, shows the error.
    * @private
    */
-  show3pDiagnosticsApp_() {
-    this.shimlessRmaService_.show3pDiagnosticsApp().then((result) => {
+  show3pDiagnosticsApp() {
+    this.shimlessRmaService.show3pDiagnosticsApp().then((result) => {
       switch (result.result) {
         case Show3pDiagnosticsAppResult.kOk:
-          this.completeLaunch_();
+          this.completeLaunch();
           return;
         case Show3pDiagnosticsAppResult.kAppNotInstalled:
-          this.showError_(
+          this.showError(
               '3pNotInstalledDialogTitle', '3pCheckWithOemDialogMessage');
           return;
         case Show3pDiagnosticsAppResult.kFailedToLoad:
-          this.showError_(
+          this.showError(
               '3pFailedToLoadDialogTitle', '3pFailedToLoadDialogMessage');
           return;
       }
@@ -189,27 +190,26 @@ export class Shimless3pDiagnostics extends Shimless3pDiagnosticsBase {
    * install process and tries to load the installed app.
    * @protected
    */
-  onCancelOrSkipInstallButtonClicked_() {
+  onCancelOrSkipInstallButtonClicked() {
     this.shadowRoot.querySelector('#shimless3pDiagFindInstallableDialog')
         .close();
-    this.show3pDiagnosticsApp_();
+    this.show3pDiagnosticsApp();
   }
 
   /**
    * Handles install button of installable dialog. Installs the installable app.
    * @protected
    */
-  onInstallButtonClicked_() {
+  onInstallButtonClicked() {
     this.shadowRoot.querySelector('#shimless3pDiagFindInstallableDialog')
         .close();
-    this.shimlessRmaService_.installLastFound3pDiagnosticsApp().then(
+    this.shimlessRmaService.installLastFound3pDiagnosticsApp().then(
         (result) => {
-          result.appInfo ?
-              this.showPermissionReviewDialogOrCompleteLastInstall_(
-                  result.appInfo) :
-              this.showError_(
-                  '3pFailedToInstallDialogTitle',
-                  '3pCheckWithOemDialogMessage');
+          result.appInfo ? this.showPermissionReviewDialogOrCompleteLastInstall(
+                               result.appInfo) :
+                           this.showError(
+                               '3pFailedToInstallDialogTitle',
+                               '3pCheckWithOemDialogMessage');
         });
   }
 
@@ -218,10 +218,10 @@ export class Shimless3pDiagnostics extends Shimless3pDiagnosticsBase {
    * the installation and ends the launch process.
    * @protected
    */
-  onCancelOrCancelInstallButtonClicked_() {
+  onCancelOrCancelInstallButtonClicked() {
     this.shadowRoot.querySelector('#shimless3pDiagReviewPermissionDialog')
         .close();
-    this.completeLastInstall_(/*isApproved=*/ false);
+    this.completeLastInstall(/*isApproved=*/ false);
   }
 
   /**
@@ -229,10 +229,10 @@ export class Shimless3pDiagnostics extends Shimless3pDiagnosticsBase {
    * installation.
    * @protected
    */
-  onAcceptPermissionButtonClicked_() {
+  onAcceptPermissionButtonClicked() {
     this.shadowRoot.querySelector('#shimless3pDiagReviewPermissionDialog')
         .close();
-    this.completeLastInstall_(/*isApproved=*/ true);
+    this.completeLastInstall(/*isApproved=*/ true);
   }
 
   /**
@@ -240,9 +240,9 @@ export class Shimless3pDiagnostics extends Shimless3pDiagnosticsBase {
    * ends the launch process.
    * @protected
    */
-  onErrorDialogCancelOrBackButtonClicked_() {
+  onErrorDialogCancelOrBackButtonClicked() {
     this.shadowRoot.querySelector('#shimless3pDiagErrorDialog').close();
-    this.completeLaunch_();
+    this.completeLaunch();
   }
 
   /**
@@ -252,23 +252,23 @@ export class Shimless3pDiagnostics extends Shimless3pDiagnosticsBase {
    */
   launch3pDiagnostics() {
     if (!loadTimeData.getBoolean('3pDiagnosticsEnabled') ||
-        this.hasPendingLaunch_) {
+        this.hasPendingLaunch) {
       return;
     }
 
     // If there is no provider or provider is not yet fetched, don't show
     // any UI action and just return.
-    if (!this.providerName_) {
+    if (!this.providerName) {
       return;
     }
 
-    this.hasPendingLaunch_ = true;
+    this.hasPendingLaunch = true;
     disableAllButtons(this, /*showBusyStateOverlay=*/ true);
 
-    this.shimlessRmaService_.getInstallable3pDiagnosticsAppPath().then(
+    this.shimlessRmaService.getInstallable3pDiagnosticsAppPath().then(
         (result) => {
-          result.appPath ? this.showFindInstallableDialog_(result.appPath) :
-                           this.show3pDiagnosticsApp_();
+          result.appPath ? this.showFindInstallableDialog(result.appPath) :
+                           this.show3pDiagnosticsApp();
         });
   }
 }

@@ -4,8 +4,6 @@
 
 static_library("renderer") {
   sources = [
-    "ad_resource_tracker.cc",
-    "ad_resource_tracker.h",
     "subresource_filter_agent.cc",
     "subresource_filter_agent.h",
     "unverified_ruleset_dealer.cc",

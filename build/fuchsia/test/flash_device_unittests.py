@@ -45,7 +45,7 @@ class FlashDeviceTest(unittest.TestCase):
 
     def test_update_required_on_ignore_returns_immediately(self) -> None:
         """Test |os_check|='ignore' skips all checks."""
-        result, new_image_dir = flash_device.update_required(
+        result, new_image_dir = flash_device._update_required(
             'ignore', 'some-image-dir', None)
 
         self.assertFalse(result)
@@ -54,7 +54,7 @@ class FlashDeviceTest(unittest.TestCase):
     def test_update_required_raises_value_error_if_no_image_dir(self) -> None:
         """Test |os_check|!='ignore' checks that image dir is non-Falsey."""
         with self.assertRaises(ValueError):
-            flash_device.update_required('update', None, None)
+            flash_device._update_required('update', None, None)
 
     def test_update_required_logs_missing_image_dir(self) -> None:
         """Test |os_check|!='ignore' warns if image dir does not exist."""
@@ -62,7 +62,7 @@ class FlashDeviceTest(unittest.TestCase):
                 mock.patch('flash_device.find_image_in_sdk'), \
                 mock.patch('flash_device._get_system_info'), \
                 self.assertLogs() as logger:
-            flash_device.update_required('update', 'some/image/dir', None)
+            flash_device._update_required('update', 'some/image/dir', None)
             self.assertIn('image directory does not exist', logger.output[0])
 
     def test_update_required_searches_and_returns_sdk_if_image_found(self
@@ -74,7 +74,7 @@ class FlashDeviceTest(unittest.TestCase):
                 mock.patch('common.SDK_ROOT', 'path/to/sdk/dir'), \
                 self.assertLogs():
             mock_find.return_value = 'path/to/image/dir'
-            update_required, new_image_dir = flash_device.update_required(
+            update_required, new_image_dir = flash_device._update_required(
                 'update', 'product-bundle', None, None)
             self.assertTrue(update_required)
             self.assertEqual(new_image_dir, 'path/to/image/dir')
@@ -88,7 +88,7 @@ class FlashDeviceTest(unittest.TestCase):
                 mock.patch('common.SDK_ROOT', 'path/to/sdk/dir'), \
                 self.assertLogs(), \
                 self.assertRaises(FileNotFoundError):
-            flash_device.update_required('update', 'product-bundle', None)
+            flash_device._update_required('update', 'product-bundle', None)
 
     def test_update_ignore(self) -> None:
         """Test setting |os_check| to 'ignore'."""
@@ -128,13 +128,8 @@ class FlashDeviceTest(unittest.TestCase):
                 '[{"title": "Build", "child": [{"value": "wrong.version"}, ' \
                 '{"value": "wrong_product"}]}]'
             flash_device.update(_TEST_IMAGE_DIR, 'check', None)
-            mock_boot.assert_has_calls([
-                mock.call(mock.ANY, boot_device.BootMode.REGULAR, None),
-                mock.call(mock.ANY,
-                          boot_device.BootMode.REGULAR,
-                          None,
-                          must_boot=True)
-            ])
+            mock_boot.assert_called_with(mock.ANY,
+                                         boot_device.BootMode.REGULAR, None)
             self.assertEqual(self._ffx_mock.call_count, 1)
 
             # get_system_info should not even be called due to early exit.
@@ -152,13 +147,8 @@ class FlashDeviceTest(unittest.TestCase):
                 '[{"title": "Build", "child": [{"value": "wrong.version"}, ' \
                 '{"value": "wrong_product"}]}]'
             flash_device.update(_TEST_IMAGE_DIR, 'check', None)
-            mock_boot.assert_has_calls([
-                mock.call(mock.ANY, boot_device.BootMode.REGULAR, None),
-                mock.call(mock.ANY,
-                          boot_device.BootMode.REGULAR,
-                          None,
-                          must_boot=True)
-            ])
+            mock_boot.assert_called_with(mock.ANY,
+                                         boot_device.BootMode.REGULAR, None)
             self.assertEqual(self._ffx_mock.call_count, 2)
 
     def test_incorrect_target_info(self) -> None:
@@ -176,15 +166,10 @@ class FlashDeviceTest(unittest.TestCase):
                 mock.patch('os.path.exists', return_value=True), \
                 mock.patch('flash_device.boot_device') as mock_boot:
             flash_device.update(_TEST_IMAGE_DIR, 'update', None, 'test_serial')
-            mock_boot.assert_has_calls([
-                mock.call(mock.ANY, boot_device.BootMode.BOOTLOADER,
-                          'test_serial'),
-                mock.call(mock.ANY,
-                          boot_device.BootMode.REGULAR,
-                          'test_serial',
-                          must_boot=True)
-            ])
-        self.assertEqual(self._ffx_mock.call_count, 2)
+            mock_boot.assert_called_with(mock.ANY,
+                                         boot_device.BootMode.BOOTLOADER,
+                                         'test_serial')
+        self.assertEqual(self._ffx_mock.call_count, 1)
 
     def test_reboot_failure(self) -> None:
         """Test update when |serial_num| is specified."""
@@ -194,8 +179,8 @@ class FlashDeviceTest(unittest.TestCase):
                 mock.patch('flash_device.running_unattended',
                            return_value=True), \
                 mock.patch('flash_device.boot_device'):
-            required, _ = flash_device.update_required('check',
-                                                       _TEST_IMAGE_DIR, None)
+            required, _ = flash_device._update_required(
+                'check', _TEST_IMAGE_DIR, None)
             self.assertEqual(required, True)
 
     def test_update_on_swarming(self) -> None:
@@ -207,15 +192,10 @@ class FlashDeviceTest(unittest.TestCase):
              mock.patch('flash_device.boot_device') as mock_boot, \
              mock.patch('subprocess.run'):
             flash_device.update(_TEST_IMAGE_DIR, 'update', None, 'test_serial')
-            mock_boot.assert_has_calls([
-                mock.call(mock.ANY, boot_device.BootMode.BOOTLOADER,
-                          'test_serial'),
-                mock.call(mock.ANY,
-                          boot_device.BootMode.REGULAR,
-                          'test_serial',
-                          must_boot=True)
-            ])
-        self.assertEqual(self._ffx_mock.call_count, 2)
+            mock_boot.assert_called_with(mock.ANY,
+                                         boot_device.BootMode.BOOTLOADER,
+                                         'test_serial')
+        self.assertEqual(self._ffx_mock.call_count, 1)
 
     def test_main(self) -> None:
         """Tests |main| function."""

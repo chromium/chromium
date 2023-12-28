@@ -10,7 +10,7 @@
       ]
     },
     {
-      "name": "LayoutTableCell TD id='target'",
+      "name": "LayoutTableCell (children-inline) TD id='target'",
       "bounds": [58, 64],
       "transform": 1
     }

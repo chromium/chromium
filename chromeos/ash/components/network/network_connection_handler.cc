@@ -68,7 +68,7 @@ const char NetworkConnectionHandler::kErrorCellularOutOfCredits[] =
     "cellular-out-of-credits";
 const char NetworkConnectionHandler::kErrorESimProfileIssue[] =
     "esim-profile-issue";
-const char NetworkConnectionHandler::kErrorSimLocked[] = "sim-locked";
+const char NetworkConnectionHandler::kErrorSimPinPukLocked[] = "sim-locked";
 const char NetworkConnectionHandler::kErrorSimCarrierLocked[] =
     "sim-carrier-locked";
 const char NetworkConnectionHandler::kErrorCellularDeviceBusy[] =

@@ -67,6 +67,7 @@
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/warning_service.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "net/base/filename_util.h"
@@ -1019,7 +1020,7 @@ bool OnDeterminingFilenameWillDispatchCallback(
     bool* any_determiners,
     ExtensionDownloadsEventRouterData* data,
     content::BrowserContext* browser_context,
-    Feature::Context target_context,
+    mojom::ContextType target_context,
     const Extension* extension,
     const base::Value::Dict* listener_filter,
     absl::optional<base::Value::List>& event_args_out,
@@ -1332,7 +1333,7 @@ ExtensionFunction::ResponseAction DownloadsEraseFunction::Run() {
   if (!error.empty())
     return RespondNow(Error(std::move(error)));
   base::Value::List json_results;
-  for (auto* result : results) {
+  for (download::DownloadItem* result : results) {
     json_results.Append(static_cast<int>(result->GetId()));
     result->Remove();
   }
@@ -1586,7 +1587,7 @@ ExtensionFunction::ResponseAction DownloadsSetShelfEnabledFunction::Run() {
 
   BrowserList* browsers = BrowserList::GetInstance();
   if (browsers) {
-    for (auto* browser : *browsers) {
+    for (Browser* browser : *browsers) {
       DownloadCoreService* current_service =
           DownloadCoreServiceFactory::GetForBrowserContext(browser->profile());
       // The following code is to hide the download UI explicitly if the UI is
@@ -1642,7 +1643,7 @@ ExtensionFunction::ResponseAction DownloadsSetUiOptionsFunction::Run() {
 
   BrowserList* browsers = BrowserList::GetInstance();
   if (browsers) {
-    for (auto* browser : *browsers) {
+    for (Browser* browser : *browsers) {
       DownloadCoreService* current_service =
           DownloadCoreServiceFactory::GetForBrowserContext(browser->profile());
       // The following code is to hide the download UI explicitly if the UI is

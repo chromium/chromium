@@ -99,15 +99,15 @@ class ASH_EXPORT ImeMenuTray : public TrayBackgroundView,
   // `label_` otherwise.
   void UpdateTrayImageOrLabelColor(bool is_image);
 
-  raw_ptr<ImeControllerImpl, ExperimentalAsh> ime_controller_;
+  raw_ptr<ImeControllerImpl> ime_controller_;
 
   // Bubble for default and detailed views.
   std::unique_ptr<TrayBubbleWrapper> bubble_;
-  raw_ptr<ImeListView, ExperimentalAsh> ime_list_view_;
+  raw_ptr<ImeListView> ime_list_view_;
 
   // Only one of |label_| and |image_view_| can be non null at the same time.
-  raw_ptr<views::Label, ExperimentalAsh> label_;
-  raw_ptr<views::ImageView, ExperimentalAsh> image_view_;
+  raw_ptr<views::Label> label_;
+  raw_ptr<views::ImageView> image_view_;
 
   bool keyboard_suppressed_;
   bool show_bubble_after_keyboard_hidden_;

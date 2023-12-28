@@ -54,16 +54,15 @@ class HRDBufferTest : public testing::Test {
     return start_frame_index + kFrameCount;
   }
 
-  // HRD buffer delay is in milliseconds.
+  // Size of HRD buffer calculated from the buffer delay is in milliseconds.
   int GetBufferSizeFromDelay(uint32_t avg_bitrate,
                              base::TimeDelta buffer_delay) const {
-    return avg_bitrate * buffer_delay.InMilliseconds() /
-           base::Time::kMillisecondsPerSecond;
+    return static_cast<int>(avg_bitrate * buffer_delay.InSecondsF() / 8);
   }
 
   int GetBufferFullness(base::TimeDelta timestamp) const {
-    int buffer_size = hrd_buffer_->buffer_size() / 8;
-    return 100 * hrd_buffer_->GetBytesAtTime(timestamp) / buffer_size;
+    return 100 * hrd_buffer_->GetBytesAtTime(timestamp) /
+           hrd_buffer_->buffer_size();
   }
 
   std::unique_ptr<HRDBuffer> hrd_buffer_;
@@ -80,6 +79,7 @@ TEST_F(HRDBufferTest, RunBasicBufferTest) {
   constexpr int kExpectedBufferBytesRemaining = 108399;
   constexpr int kExpectedLastFrameBufferBytes = 20771;
   constexpr int kExpectedFrameOvershooting = false;
+  constexpr int kExpectedBufferFullnessBadTimestamp = 16;
 
   size_t buffer_size =
       GetBufferSizeFromDelay(kCommonAvgBitrate, kCommonBufferDelay);
@@ -108,7 +108,7 @@ TEST_F(HRDBufferTest, RunBasicBufferTest) {
       base::Microseconds(last_frame_index * base::Time::kMicrosecondsPerSecond /
                          kCommonFps) -
       base::Microseconds(60000);
-  EXPECT_EQ(0, GetBufferFullness(timestamp));
+  EXPECT_EQ(kExpectedBufferFullnessBadTimestamp, GetBufferFullness(timestamp));
 }
 
 // The test runs the predefined test sequence three times using different buffer
@@ -265,12 +265,12 @@ TEST_F(HRDBufferTest, CheckBufferLastFrameTimestamp) {
 
 // Checks the buffer fullness parameter when the size of the buffer is being
 // reduced. The size should follow strictly the predefined buffer size values.
-TEST_F(HRDBufferTest, ChecBufferShrinking) {
+TEST_F(HRDBufferTest, CheckBufferShrinking) {
   constexpr int kFrameSequenceValues[] = {10000, 10000, 10000, 10000, 10000,
                                           10000, 10000, 10000, 10000, 10000};
-  constexpr size_t kBufferShrinkingValues[] = {983334, 966668, 950002, 933336,
-                                               916670, 900004, 883338, 866672,
-                                               850006, 833340};
+  constexpr size_t kBufferShrinkingValues[] = {122917, 120834, 118751, 116668,
+                                               114585, 112502, 110419, 108336,
+                                               106253, 104170};
 
   const size_t buffer_size =
       GetBufferSizeFromDelay(kCommonAvgBitrate, kCommonBufferDelay);

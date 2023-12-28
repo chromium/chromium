@@ -32,7 +32,7 @@ BubbleSyncPromoView::BubbleSyncPromoView(
     BubbleSyncPromoDelegate* delegate,
     signin_metrics::AccessPoint access_point,
     int accounts_promo_message_resource_id,
-    bool signin_button_prominent,
+    ui::ButtonStyle button_style,
     int text_style)
     : delegate_(delegate) {
   DCHECK(!profile->IsGuestSession());
@@ -90,7 +90,7 @@ BubbleSyncPromoView::BubbleSyncPromoView(
 
   if (account.IsEmpty()) {
     signin_button_pointer = std::make_unique<BubbleSyncPromoSigninButtonView>(
-        std::move(callback), signin_button_prominent);
+        std::move(callback), button_style);
   } else {
     gfx::Image account_icon = account.account_image;
     if (account_icon.IsEmpty()) {

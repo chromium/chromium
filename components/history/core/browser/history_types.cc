@@ -313,7 +313,7 @@ HistoryAddPageArgs::HistoryAddPageArgs(
     absl::optional<std::u16string> title,
     absl::optional<GURL> top_level_url,
     absl::optional<Opener> opener,
-    absl::optional<base::Uuid> bookmark_id,
+    absl::optional<int64_t> bookmark_id,
     absl::optional<VisitContextAnnotations::OnVisitFields> context_annotations)
     : url(url),
       time(time),

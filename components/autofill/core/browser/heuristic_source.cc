@@ -52,7 +52,7 @@ DenseSet<HeuristicSource> GetNonActiveHeuristicSources() {
   return sources;
 }
 
-absl::optional<PatternSource> HeuristicSourceToPatternSource(
+std::optional<PatternSource> HeuristicSourceToPatternSource(
     HeuristicSource source) {
   switch (source) {
     case HeuristicSource::kLegacy:
@@ -66,7 +66,7 @@ absl::optional<PatternSource> HeuristicSourceToPatternSource(
       return PatternSource::kNextGen;
 #endif
     case autofill::HeuristicSource::kMachineLearning:
-      return absl::nullopt;
+      return std::nullopt;
   }
   NOTREACHED_NORETURN();
 }

@@ -22,9 +22,9 @@ static_library("connectivity_diagnostics") {
   deps = [
     "//ash/webui/common:chrome_os_webui_config",
     "//ash/webui/common:trusted_types_util",
+    "//ash/webui/connectivity_diagnostics/resources:resources",
     "//ash/webui/network_ui:network_diagnostics_resource_provider",
     "//ash/webui/network_ui:network_health_resource_provider",
-    "//ash/webui/resources:connectivity_diagnostics_resources",
     "//ash/webui/web_applications",
     "//chromeos/services/network_health/public/mojom",
     "//chromeos/strings/",
@@ -32,8 +32,4 @@ static_library("connectivity_diagnostics") {
     "//ui/base",
     "//ui/resources",
   ]
-}
-
-group("closure_compile") {
-  deps = [ "resources:closure_compile_module" ]
 }

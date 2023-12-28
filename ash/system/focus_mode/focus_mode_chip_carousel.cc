@@ -7,6 +7,7 @@
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/containers/adapters.h"
+#include "base/i18n/rtl.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -80,9 +81,7 @@ void SetupOverflowIcon(views::ImageButton* overflow_icon, bool left) {
 FocusModeChipCarousel::FocusModeChipCarousel(
     ChipPressedCallback on_chip_pressed)
     : on_chip_pressed_(std::move(on_chip_pressed)) {
-  SetProperty(views::kFlexBehaviorKey,
-              views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                                       views::MaximumFlexSizeRule::kUnbounded));
+  SetProperty(views::kBoxLayoutFlexKey, views::BoxLayoutFlexSpecification());
   SetBorder(views::CreateEmptyBorder(kCarouselInsets));
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetNotifyEnterExitOnChild(true);
@@ -139,7 +138,6 @@ void FocusModeChipCarousel::Layout() {
   right_overflow_icon_->SetBoundsRect(
       gfx::Rect(contents_bounds.right() - kOverflowButtonWidth, y,
                 kOverflowButtonWidth, h));
-  scroll_view_->SetBoundsRect(contents_bounds);
 
   UpdateGradient();
 }
@@ -169,6 +167,9 @@ void FocusModeChipCarousel::SetTasks(
             base::UTF8ToUTF16(task->title)));
     SetupChip(chip, /*first=*/(i == 0));
   }
+
+  // Scroll back to the beginning after repopulating the carousel.
+  scroll_view_->ScrollToOffset(gfx::PointF(0, 0));
 }
 
 void FocusModeChipCarousel::UpdateGradient() {
@@ -202,8 +203,9 @@ void FocusModeChipCarousel::UpdateGradient() {
   const float gradient_end_position =
       (chevron_space + kGradientWidth) / scroll_view_->bounds().width();
 
-  // Left fade in section.
-  if (show_left_gradient) {
+  // Left fade in section. Gradients don't account for RTL like other `Views`
+  // coordinates do, so we need to flip to account for RTL ourselves.
+  if (base::i18n::IsRTL() ? show_right_gradient : show_left_gradient) {
     gradient_mask.AddStep(/*fraction=*/0, /*alpha=*/0);
     if (hovered) {
       gradient_mask.AddStep(gradient_start_position, 0);
@@ -212,7 +214,7 @@ void FocusModeChipCarousel::UpdateGradient() {
   }
 
   // Right fade out section.
-  if (show_right_gradient) {
+  if (base::i18n::IsRTL() ? show_left_gradient : show_right_gradient) {
     gradient_mask.AddStep(/*fraction=*/(1 - gradient_end_position),
                           /*alpha=*/255);
     if (hovered) {

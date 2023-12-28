@@ -15,7 +15,6 @@
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/browser/host_indexed_content_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -23,6 +22,7 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/content_settings/core/common/host_indexed_content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -114,24 +114,22 @@ bool CookieSettings::IsAllowedByTpcdMetadataGrant(
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "ContentSettings.IsAllowedByTpcdMetadataGrant.Duration");
   base::AutoLock lock(tpcd_lock_);
+  const ContentSettingPatternSource* result = nullptr;
   if (base::FeatureList::IsEnabled(features::kHostIndexedMetadataGrants) &&
       std::cmp_greater_equal(settings_for_3pcd_metadata_grants_.size(),
                              features::kMetadataGrantsThreshold.Get())) {
-    DCHECK(
-        FindInHostIndexedContentSettings(
-            url, first_party_url, indexed_settings_for_3pcd_metadata_grants_) ==
-        FindContentSetting(url, first_party_url,
-                           settings_for_3pcd_metadata_grants_))
-        << " Different result in index lookup: " << url.spec() << " "
+    DCHECK(SettingsLookupsAreConsistent(
+        url, first_party_url, settings_for_3pcd_metadata_grants_,
+        indexed_settings_for_3pcd_metadata_grants_))
+        << "Different result in index lookup: " << url.spec() << " "
         << first_party_url.spec();
-    return FindInHostIndexedContentSettings(
-               url, first_party_url,
-               indexed_settings_for_3pcd_metadata_grants_) ==
-           CONTENT_SETTING_ALLOW;
+    result = FindInHostIndexedContentSettings(
+        url, first_party_url, indexed_settings_for_3pcd_metadata_grants_);
+  } else {
+    result = FindContentSetting(url, first_party_url,
+                                settings_for_3pcd_metadata_grants_);
   }
-  return FindContentSetting(url, first_party_url,
-                            settings_for_3pcd_metadata_grants_) ==
-         CONTENT_SETTING_ALLOW;
+  return result ? result->GetContentSetting() == CONTENT_SETTING_ALLOW : false;
 }
 
 void CookieSettings::SetTemporaryCookieGrantForHeuristic(
@@ -362,9 +360,7 @@ bool CookieSettings::IsStorageAccessApiEnabled() const {
   // the feature here, we should rely on CookieSettingsFactory to plumb in this
   // boolean instead.
 #if BUILDFLAG(USE_BLINK)
-  return base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI) ||
-         base::FeatureList::IsEnabled(
-             permissions::features::kPermissionStorageAccessAPI);
+  return true;
 #else
   return false;
 #endif

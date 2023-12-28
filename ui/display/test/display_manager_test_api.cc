@@ -15,7 +15,6 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/manager/util/display_manager_test_util.h"
-#include "ui/display/manager/util/display_manager_util.h"
 #include "ui/display/screen.h"
 #include "ui/display/util/display_util.h"
 
@@ -26,9 +25,9 @@ namespace {
 // Indicates the default maximum of displays that chrome device can support.
 constexpr size_t kDefaultMaxSupportDisplayTest = 10;
 
-DisplayInfoList CreateDisplayInfoListFromString(
-    const std::string specs,
-    DisplayManager* display_manager) {
+DisplayInfoList CreateDisplayInfoListFromString(const std::string specs,
+                                                DisplayManager* display_manager,
+                                                bool generate_new_ids) {
   DisplayInfoList display_info_list;
   std::vector<std::string> parts = base::SplitString(
       specs, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -40,7 +39,9 @@ DisplayInfoList CreateDisplayInfoListFromString(
 
   for (std::vector<std::string>::const_iterator iter = parts.begin();
        iter != parts.end(); ++iter, ++index) {
-    int64_t id = (index < list.size()) ? list[index].id() : kInvalidDisplayId;
+    const int64_t id = (index < list.size() && !generate_new_ids)
+                           ? list[index].id()
+                           : kInvalidDisplayId;
     display_info_list.push_back(
         ManagedDisplayInfo::CreateFromSpecWithID(*iter, id));
   }
@@ -85,9 +86,10 @@ void DisplayManagerTestApi::ResetMaximumDisplay() {
 }
 
 void DisplayManagerTestApi::UpdateDisplay(const std::string& display_specs,
-                                          bool from_native_platform) {
-  DisplayInfoList display_info_list =
-      CreateDisplayInfoListFromString(display_specs, display_manager_);
+                                          bool from_native_platform,
+                                          bool generate_new_ids) {
+  DisplayInfoList display_info_list = CreateDisplayInfoListFromString(
+      display_specs, display_manager_, generate_new_ids);
   UpdateDisplayWithDisplayInfoList(display_info_list, from_native_platform);
 }
 

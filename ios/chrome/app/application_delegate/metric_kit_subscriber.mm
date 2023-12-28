@@ -296,6 +296,8 @@ std::string HistogramPrefix(bool include_mismatch) {
                      payload.applicationTimeMetrics.cumulativeForegroundTime);
   ReportLongDuration(prefix + "BackgroundTimePerDay",
                      payload.applicationTimeMetrics.cumulativeBackgroundTime);
+  ReportLongDuration(prefix + "CPUTimePerDay",
+                     payload.cpuMetrics.cumulativeCPUTime);
   ReportMemory(prefix + "AverageSuspendedMemory",
                payload.memoryMetrics.averageSuspendedMemory.averageMeasurement);
   ReportMemory(prefix + "PeakMemoryUsage",

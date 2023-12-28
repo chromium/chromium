@@ -282,6 +282,9 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
 
   base::TimeTicks initial_preview_start_time_;
 
+  // Tracks if this is the first instance created since the browser started.
+  const bool first_print_usage_since_startup_;
+
   // The unique ID for this class instance. Stored here to avoid calling
   // GetIDForPrintPreviewUI() everywhere.
   std::optional<int32_t> id_;

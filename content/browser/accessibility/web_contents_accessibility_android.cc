@@ -789,7 +789,8 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
       node->IsChecked(), node->IsClickable(), node->IsContentInvalid(),
       node->IsEnabled(), node->IsFocusable(), node->IsFocused(),
       node->HasImage(), node->IsPasswordField(), node->IsScrollable(),
-      node->IsSelected(), node->IsVisibleToUser());
+      node->IsSelected(), node->IsVisibleToUser(),
+      node->HasCharacterLocations());
 
   Java_AccessibilityNodeInfoBuilder_addAccessibilityNodeInfoActions(
       env, obj, info, unique_id, node->CanScrollForward(),
@@ -856,10 +857,6 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
   }
 
   UpdateAccessibilityNodeInfoBoundsRect(env, obj, info, unique_id, node);
-
-  Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoOAttributes(
-      env, obj, info, node->HasCharacterLocations(), node->HasImage(),
-      base::android::ConvertUTF16ToJavaString(env, node->GetHint()));
 
   if (node->IsCollection()) {
     Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoCollectionInfo(

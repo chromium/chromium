@@ -24,7 +24,8 @@ class RequestHandlerImpl : public RequestHandler {
  public:
   RequestHandlerImpl(const Config& config,
                      std::unique_ptr<SegmentResultProvider> result_provider,
-                     ExecutionService* execution_service);
+                     ExecutionService* execution_service,
+                     StorageService* storage_service);
   ~RequestHandlerImpl() override;
 
   // Disallow copy/assign.
@@ -42,6 +43,7 @@ class RequestHandlerImpl : public RequestHandler {
                       SegmentResultProvider::SegmentResultCallback callback);
 
   void OnGetPredictionResult(
+      const PredictionOptions& options,
       scoped_refptr<InputContext> input_context,
       RawResultCallback callback,
       std::unique_ptr<SegmentResultProvider::SegmentResult> result);
@@ -60,16 +62,20 @@ class RequestHandlerImpl : public RequestHandler {
   // Pointer to the execution service.
   const raw_ptr<ExecutionService> execution_service_ = nullptr;
 
+  const raw_ptr<StorageService> storage_service_ = nullptr;
+
   base::WeakPtrFactory<RequestHandlerImpl> weak_ptr_factory_{this};
 };
 
 RequestHandlerImpl::RequestHandlerImpl(
     const Config& config,
     std::unique_ptr<SegmentResultProvider> result_provider,
-    ExecutionService* execution_service)
+    ExecutionService* execution_service,
+    StorageService* storage_service)
     : config_(config),
       result_provider_(std::move(result_provider)),
-      execution_service_(execution_service) {}
+      execution_service_(execution_service),
+      storage_service_(storage_service) {}
 
 RequestHandlerImpl::~RequestHandlerImpl() = default;
 
@@ -77,11 +83,12 @@ void RequestHandlerImpl::GetPredictionResult(
     const PredictionOptions& options,
     scoped_refptr<InputContext> input_context,
     RawResultCallback callback) {
-  DCHECK(options.on_demand_execution);
+  DCHECK(options.on_demand_execution ||
+         (!options.on_demand_execution && options.fallback_allowed));
   GetModelResult(options, input_context,
                  base::BindOnce(&RequestHandlerImpl::OnGetPredictionResult,
-                                weak_ptr_factory_.GetWeakPtr(), input_context,
-                                std::move(callback)));
+                                weak_ptr_factory_.GetWeakPtr(), options,
+                                input_context, std::move(callback)));
 }
 
 void RequestHandlerImpl::GetModelResult(
@@ -94,7 +101,7 @@ void RequestHandlerImpl::GetModelResult(
 
   // Note that, this assumes that a client has only one model.
   result_options->segment_id = config_->segments.begin()->first;
-  result_options->ignore_db_scores = options.on_demand_execution;
+  result_options->ignore_db_scores = true;
   result_options->input_context = input_context;
   result_options->callback = std::move(callback);
 
@@ -102,6 +109,7 @@ void RequestHandlerImpl::GetModelResult(
 }
 
 void RequestHandlerImpl::OnGetPredictionResult(
+    const PredictionOptions& options,
     scoped_refptr<InputContext> input_context,
     RawResultCallback callback,
     std::unique_ptr<SegmentResultProvider::SegmentResult> segment_result) {
@@ -121,13 +129,16 @@ void RequestHandlerImpl::OnGetPredictionResult(
     stats::RecordSegmentSelectionFailure(
         *config_, stats::GetSuccessOrFailureReason(segment_result->state));
     stats::RecordClassificationResultComputed(*config_, segment_result->result);
-  } else {
-    stats::RecordSegmentSelectionFailure(
-        *config_, stats::SegmentationSelectionFailureReason::
-                      kOnDemandModelExecutionFailed);
+    // Update prefs for future requests.
+    if (options.can_update_cache_for_future_requests) {
+      proto::ClientResult client_result =
+          metadata_utils::CreateClientResultFromPredResult(
+              segment_result->result, base::Time::Now());
+      storage_service_->cached_result_writer()->UpdatePrefsIfExpired(
+          &(*config_), client_result, PlatformOptions::CreateDefault());
+    }
   }
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+  std::move(callback).Run(std::move(result));
 }
 
 TrainingRequestId RequestHandlerImpl::CollectTrainingData(
@@ -149,9 +160,10 @@ TrainingRequestId RequestHandlerImpl::CollectTrainingData(
 std::unique_ptr<RequestHandler> RequestHandler::Create(
     const Config& config,
     std::unique_ptr<SegmentResultProvider> result_provider,
-    ExecutionService* execution_service) {
+    ExecutionService* execution_service,
+    StorageService* storage_service) {
   return std::make_unique<RequestHandlerImpl>(
-      config, std::move(result_provider), execution_service);
+      config, std::move(result_provider), execution_service, storage_service);
 }
 
 }  // namespace segmentation_platform

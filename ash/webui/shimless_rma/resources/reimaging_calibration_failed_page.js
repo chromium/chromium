@@ -7,16 +7,17 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './base_page.js';
 import './calibration_component_chip.js';
-import './icons.js';
-import './shimless_rma_shared_css.js';
+import './icons.html.js';
+import './shimless_rma_shared.css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ComponentTypeToId} from './data.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {CalibrationComponentStatus, CalibrationStatus, ComponentType, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {getTemplate} from './reimaging_calibration_failed_page.html.js';
+import {CalibrationComponentStatus, CalibrationStatus, ComponentType, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
 import {disableNextButton, enableNextButton, executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 
 /**
@@ -57,7 +58,7 @@ export class ReimagingCalibrationFailedPage extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -69,17 +70,17 @@ export class ReimagingCalibrationFailedPage extends
       allButtonsDisabled: Boolean,
 
       /** @private {!Array<!ComponentCheckbox>} */
-      componentCheckboxes_: {
+      componentCheckboxes: {
         type: Array,
         value: () => [],
       },
 
       /**
-       * The index into componentCheckboxes_ for keyboard navigation between
+       * The index into componentCheckboxes for keyboard navigation between
        * components.
        * @private
        */
-      focusedComponentIndex_: {
+      focusedComponentIndex: {
         type: Number,
         value: -1,
       },
@@ -88,33 +89,33 @@ export class ReimagingCalibrationFailedPage extends
 
   static get observers() {
     return [
-      'updateIsFirstClickableComponent_(componentCheckboxes_.*)',
-      'updateNextButtonAvailability_(componentCheckboxes_.*)',
+      'updateIsFirstClickableComponent(componentCheckboxes.*)',
+      'updateNextButtonAvailability(componentCheckboxes.*)',
     ];
   }
 
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService = getShimlessRmaService();
 
     /**
-     * The componentClickedCallback_ callback is used to capture events when
+     * The componentClickedCallback callback is used to capture events when
      * components are clicked, so that the page can put the focus on the
      * component that was clicked.
      * @private {?Function}
      */
-    this.componentClicked_ = (event) => {
-      const componentIndex = this.componentCheckboxes_.findIndex(
+    this.componentClicked = (event) => {
+      const componentIndex = this.componentCheckboxes.findIndex(
           component => component.uniqueId === event.detail);
 
       if (componentIndex === -1 ||
-          this.componentCheckboxes_[componentIndex].disabled) {
+          this.componentCheckboxes[componentIndex].disabled) {
         return;
       }
 
-      this.focusedComponentIndex_ = componentIndex;
-      this.focusOnCurrentComponent_();
+      this.focusedComponentIndex = componentIndex;
+      this.focusOnCurrentComponent();
     };
 
     /**
@@ -130,7 +131,7 @@ export class ReimagingCalibrationFailedPage extends
       }
 
       // If there are no selectable components, do nothing.
-      if (this.focusedComponentIndex_ === -1) {
+      if (this.focusedComponentIndex === -1) {
         return;
       }
 
@@ -150,17 +151,17 @@ export class ReimagingCalibrationFailedPage extends
           step = NUM_COLUMNS;
         }
 
-        let newIndex = this.focusedComponentIndex_ + step;
+        let newIndex = this.focusedComponentIndex + step;
         // Keep skipping disabled components until we encounter one that is
         // not disabled.
-        while (newIndex < this.componentCheckboxes_.length &&
-               this.componentCheckboxes_[newIndex].disabled) {
+        while (newIndex < this.componentCheckboxes.length &&
+               this.componentCheckboxes[newIndex].disabled) {
           newIndex += step;
         }
         // Check that we haven't ended up outside of the array before
         // applying the changes.
-        if (newIndex < this.componentCheckboxes_.length) {
-          this.focusedComponentIndex_ = newIndex;
+        if (newIndex < this.componentCheckboxes.length) {
+          this.focusedComponentIndex = newIndex;
         }
       }
 
@@ -172,16 +173,16 @@ export class ReimagingCalibrationFailedPage extends
           step = NUM_COLUMNS;
         }
 
-        let newIndex = this.focusedComponentIndex_ - step;
-        while (newIndex >= 0 && this.componentCheckboxes_[newIndex].disabled) {
+        let newIndex = this.focusedComponentIndex - step;
+        while (newIndex >= 0 && this.componentCheckboxes[newIndex].disabled) {
           newIndex -= step;
         }
         if (newIndex >= 0) {
-          this.focusedComponentIndex_ = newIndex;
+          this.focusedComponentIndex = newIndex;
         }
       }
 
-      this.focusOnCurrentComponent_();
+      this.focusOnCurrentComponent();
     };
 
     /**
@@ -192,20 +193,20 @@ export class ReimagingCalibrationFailedPage extends
      * @return {!Promise<!{stateResult: !StateResult}>}
      */
     this.onExitButtonClick = () => {
-      if (this.tryingToSkipWithFailedComponents_()) {
+      if (this.tryingToSkipWithFailedComponents()) {
         this.shadowRoot.querySelector('#failedComponentsDialog').showModal();
         return Promise.reject(
             new Error('Attempting to skip with failed components.'));
       }
 
-      return this.skipCalibration_();
+      return this.skipCalibration();
     };
   }
 
   /** @override */
   ready() {
     super.ready();
-    this.getInitialComponentsList_();
+    this.getInitialComponentsList();
 
     // Hide the gradient when the list is scrolled to the end.
     this.shadowRoot.querySelector('.scroll-container')
@@ -223,15 +224,15 @@ export class ReimagingCalibrationFailedPage extends
   }
 
   /** @private */
-  getInitialComponentsList_() {
-    this.shimlessRmaService_.getCalibrationComponentList().then((result) => {
+  getInitialComponentsList() {
+    this.shimlessRmaService.getCalibrationComponentList().then((result) => {
       if (!result || !result.hasOwnProperty('components')) {
         // TODO(gavindodd): Set an error state?
         console.error('Could not get components!');
         return;
       }
 
-      this.componentCheckboxes_ = result.components.map((item, index) => {
+      this.componentCheckboxes = result.components.map((item, index) => {
         return {
           component: item.component,
           uniqueId: index,
@@ -246,8 +247,8 @@ export class ReimagingCalibrationFailedPage extends
       });
 
       // Focus on the first clickable component at the beginning.
-      this.focusedComponentIndex_ =
-          this.componentCheckboxes_.findIndex(component => !component.disabled);
+      this.focusedComponentIndex =
+          this.componentCheckboxes.findIndex(component => !component.disabled);
     });
   }
 
@@ -256,7 +257,7 @@ export class ReimagingCalibrationFailedPage extends
     super.connectedCallback();
     window.addEventListener('keydown', this.HandleKeyDownEvent);
     window.addEventListener(
-        'click-calibration-component-button', this.componentClicked_);
+        'click-calibration-component-button', this.componentClicked);
   }
 
   /** @override */
@@ -264,17 +265,17 @@ export class ReimagingCalibrationFailedPage extends
     super.disconnectedCallback();
     window.removeEventListener('keydown', this.HandleKeyDownEvent);
     window.removeEventListener(
-        'click-calibration-component-button', this.componentClicked_);
+        'click-calibration-component-button', this.componentClicked);
   }
 
   /**
-   * Make the page focus on the component at focusedComponentIndex_.
+   * Make the page focus on the component at focusedComponentIndex.
    * @private
    */
-  focusOnCurrentComponent_() {
-    if (this.focusedComponentIndex_ != -1) {
+  focusOnCurrentComponent() {
+    if (this.focusedComponentIndex != -1) {
       const componentChip = this.shadowRoot.querySelector(`[unique-id="${
-          this.componentCheckboxes_[this.focusedComponentIndex_].uniqueId}"]`);
+          this.componentCheckboxes[this.focusedComponentIndex].uniqueId}"]`);
       componentChip.shadowRoot.querySelector('#componentButton').focus();
     }
   }
@@ -284,8 +285,8 @@ export class ReimagingCalibrationFailedPage extends
    * @return {!Array<!CalibrationComponentStatus>}
    * @private
    */
-  getComponentsList_() {
-    return this.componentCheckboxes_.map(item => {
+  getComponentsList() {
+    return this.componentCheckboxes.map(item => {
       // These statuses tell rmad how to treat each component in this request.
       // If the component didn't fail a calibration, its status needs to be
       // `kCalibrationComplete`. If the user checked a component, it wants to
@@ -312,8 +313,8 @@ export class ReimagingCalibrationFailedPage extends
    * @return {!Promise<!{stateResult: !StateResult}>}
    * @private
    */
-  skipCalibration_() {
-    const skippedComponents = this.componentCheckboxes_.map(item => {
+  skipCalibration() {
+    const skippedComponents = this.componentCheckboxes.map(item => {
       return {
         component: item.component,
         // This status tells rmad how to treat each component in this request.
@@ -324,12 +325,12 @@ export class ReimagingCalibrationFailedPage extends
         progress: 0.0,
       };
     });
-    return this.shimlessRmaService_.startCalibration(skippedComponents);
+    return this.shimlessRmaService.startCalibration(skippedComponents);
   }
 
   /** @return {!Promise<!{stateResult: !StateResult}>} */
   onNextButtonClick() {
-    return this.shimlessRmaService_.startCalibration(this.getComponentsList_());
+    return this.shimlessRmaService.startCalibration(this.getComponentsList());
   }
 
   /**
@@ -337,18 +338,18 @@ export class ReimagingCalibrationFailedPage extends
    * @return {boolean}
    * @private
    */
-  isComponentDisabled_(componentDisabled) {
+  isComponentDisabled(componentDisabled) {
     return componentDisabled || this.allButtonsDisabled;
   }
 
   /** @protected */
-  onSkipDialogButtonClicked_() {
-    this.closeDialog_();
-    executeThenTransitionState(this, () => this.skipCalibration_());
+  onSkipDialogButtonClicked() {
+    this.closeDialog();
+    executeThenTransitionState(this, () => this.skipCalibration());
   }
 
   /** @protected */
-  closeDialog_() {
+  closeDialog() {
     this.shadowRoot.querySelector('#failedComponentsDialog').close();
   }
 
@@ -356,24 +357,24 @@ export class ReimagingCalibrationFailedPage extends
    * @return {boolean}
    * @private
    */
-  tryingToSkipWithFailedComponents_() {
-    return this.componentCheckboxes_.some(
+  tryingToSkipWithFailedComponents() {
+    return this.componentCheckboxes.some(
         component => component.failed && !component.checked);
   }
 
   /** @private */
-  updateIsFirstClickableComponent_() {
+  updateIsFirstClickableComponent() {
     const firstClickableComponent =
-        this.componentCheckboxes_.find(component => !component.disabled);
-    this.componentCheckboxes_.forEach(component => {
+        this.componentCheckboxes.find(component => !component.disabled);
+    this.componentCheckboxes.forEach(component => {
       component.isFirstClickableComponent =
           (component === firstClickableComponent) ? true : false;
     });
   }
 
   /** @private */
-  updateNextButtonAvailability_() {
-    if (this.componentCheckboxes_.some(component => component.checked)) {
+  updateNextButtonAvailability() {
+    if (this.componentCheckboxes.some(component => component.checked)) {
       enableNextButton(this);
     } else {
       disableNextButton(this);

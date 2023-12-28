@@ -93,6 +93,15 @@ class TestUserMetricsServiceClient
   bool current_user_metrics_consent_ = false;
 };
 
+class MockErrorDelegate : public ArcSupportHost::ErrorDelegate {
+ public:
+  MOCK_METHOD0(OnWindowClosed, void());
+  MOCK_METHOD0(OnRetryClicked, void());
+  MOCK_METHOD0(OnSendFeedbackClicked, void());
+  MOCK_METHOD0(OnRunNetworkTestsClicked, void());
+  MOCK_METHOD1(OnErrorPageShown, void(bool network_tests_shown));
+};
+
 }  // namespace
 
 namespace arc {
@@ -153,6 +162,7 @@ class ArcTermsOfServiceDefaultNegotiatorTest
   void TearDown() override {
     negotiator_.reset();
     fake_arc_support_.reset();
+    support_host_->SetErrorDelegate(nullptr);
     support_host_.reset();
     fake_user_manager_.Reset();
     owner_key_util_->Clear();
@@ -225,6 +235,7 @@ class ArcTermsOfServiceDefaultNegotiatorTest
   std::unique_ptr<ArcSupportHost> support_host_;
   std::unique_ptr<FakeArcSupport> fake_arc_support_;
   std::unique_ptr<ArcTermsOfServiceDefaultNegotiator> negotiator_;
+  std::unique_ptr<MockErrorDelegate> error_delegate_;
 };
 
 class ArcTermsOfServiceDefaultNegotiatorForNonOwnerTest
@@ -735,6 +746,9 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Cancel) {
 }
 
 TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Retry) {
+  error_delegate_ = std::make_unique<MockErrorDelegate>();
+  support_host()->SetErrorDelegate(error_delegate_.get());
+
   // Show Terms of service page.
   Status status = Status::PENDING;
   negotiator()->StartNegotiation(UpdateStatusCallback(&status));
@@ -744,6 +758,7 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, Retry) {
   EXPECT_EQ(fake_arc_support()->ui_page(), ArcSupportHost::UIPage::TERMS);
 
   // Switch to error page.
+  EXPECT_CALL(*error_delegate_, OnErrorPageShown(true));
   support_host()->ShowError(
       ArcSupportHost::ErrorInfo(ArcSupportHost::Error::SIGN_IN_NETWORK_ERROR),
       false /* should_show_send_feedback */,

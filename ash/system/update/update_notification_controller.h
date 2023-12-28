@@ -56,12 +56,11 @@ class ASH_EXPORT UpdateNotificationController : public UpdateObserver {
   void GenerateUpdateNotification(
       std::optional<bool> slow_boot_file_path_exists);
 
-  const raw_ptr<UpdateModel, ExperimentalAsh> model_;
+  const raw_ptr<UpdateModel> model_;
 
   base::FilePath slow_boot_file_path_;
   bool slow_boot_file_path_exists_ = false;
-  raw_ptr<ShutdownConfirmationDialog, ExperimentalAsh> confirmation_dialog_ =
-      nullptr;
+  raw_ptr<ShutdownConfirmationDialog> confirmation_dialog_ = nullptr;
 
   base::WeakPtrFactory<UpdateNotificationController> weak_ptr_factory_{this};
 };

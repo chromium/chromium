@@ -17,7 +17,8 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PasswordManagerImpl, PasswordManagerProxy} from '../password_manager_proxy.js';
+import type {PasswordManagerProxy} from '../password_manager_proxy.js';
+import {PasswordManagerImpl} from '../password_manager_proxy.js';
 
 import {getTemplate} from './share_password_flow.html.js';
 

@@ -47,7 +47,7 @@ class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) SoundsManager {
   // the flac audio data. Returns true if SoundsManager was successfully
   // initialized.
   virtual bool Initialize(SoundKey key,
-                          const std::string_view& data,
+                          std::string_view data,
                           media::AudioCodec codec) = 0;
 
   // Plays sound identified by |key|, returns false if SoundsManager

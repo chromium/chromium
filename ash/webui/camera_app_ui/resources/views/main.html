@@ -105,10 +105,14 @@
           </div>
         </div>
         <div id="barcode-chip-url-container"
-             class="invisible barcode-chip-container">
-          <button id="barcode-chip-url" tabindex="0">
+             class="invisible barcode-chip-container"
+             role="dialog"
+             i18n-label="label_barcode_url">
+          <button id="barcode-chip-url"
+                  class="barcode-chip-button" tabindex="0">
             <svg-wrapper name="barcode_url.svg"></svg-wrapper>
-            <span id="barcode-chip-url-content"></span>
+            <span id="barcode-chip-url-content"
+                  class="barcode-chip-button-content"></span>
           </button>
           <div class="circle">
             <button class="barcode-copy-button" tabindex="0"
@@ -118,7 +122,7 @@
         <div id="barcode-chip-text-container"
              class="invisible barcode-chip-container"
              role="dialog"
-             aria-describedby="barcode-chip-text-content">
+             i18n-label="label_barcode_text">
           <div class="barcode-chip-text">
             <span id="barcode-chip-text-content"></span>
             <button id="barcode-chip-text-expand"
@@ -135,12 +139,15 @@
           </div>
         </div>
         <div id="barcode-chip-wifi-container"
-            class="invisible barcode-chip-container">
-          <div id="barcode-chip-wifi" tabindex="0"
-              role="button">
+            class="invisible barcode-chip-container"
+            role="dialog"
+            i18n-label="label_barcode_wifi">
+          <button id="barcode-chip-wifi"
+                  class="barcode-chip-button" tabindex="0">
             <svg-wrapper name="wifi.svg"></svg-wrapper>
-            <span id="barcode-chip-wifi-content"></span>
-          </div>
+            <span id="barcode-chip-wifi-content"
+                  class="barcode-chip-button-content"></span>
+          </button>
         </div>
       </div>
       <div class="top-stripe left-stripe buttons circle">
@@ -271,12 +278,8 @@
       </switch-device-button>
       <mode-selector class="bottom-stripe" tabindex="0"></mode-selector>
       <div id="document-page-count" class="bottom-stripe"></div>
-      <div class="bottom-stripe right-stripe buttons circle">
-        <button id="gallery-enter" tabindex="0"
-                i18n-label="gallery_button" hidden>
-          <img alt="">
-        </button>
-      </div>
+      <gallery-button class="bottom-stripe right-stripe" tabindex="0">
+      </gallery-button>
       <record-time-chip hidden></record-time-chip>
       <div class="centered-overlay">
         <div id="timer-tick-msg"></div>

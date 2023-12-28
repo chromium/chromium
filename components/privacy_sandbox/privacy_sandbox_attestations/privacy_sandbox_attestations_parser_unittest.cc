@@ -11,7 +11,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#include <sstream>
 #include <string>
 
 namespace privacy_sandbox {
@@ -25,10 +24,9 @@ TEST_F(PrivacySandboxAttestationsParserTest, EmptyProto) {
 
   std::string serialized_proto;
   proto.SerializeToString(&serialized_proto);
-  std::istringstream iss(serialized_proto);
 
   absl::optional<PrivacySandboxAttestationsMap> optional_map =
-      ParseAttestationsFromStream(iss);
+      ParseAttestationsFromString(serialized_proto);
   ASSERT_TRUE(optional_map.has_value());
   ASSERT_TRUE(optional_map->empty());
 }
@@ -36,9 +34,8 @@ TEST_F(PrivacySandboxAttestationsParserTest, EmptyProto) {
 // A malformed proto returns absl::nullopt to represent an error.
 TEST_F(PrivacySandboxAttestationsParserTest, InvalidProto) {
   std::string serialized_proto("invalid proto");
-  std::istringstream iss(serialized_proto);
   absl::optional<PrivacySandboxAttestationsMap> optional_map =
-      ParseAttestationsFromStream(iss);
+      ParseAttestationsFromString(serialized_proto);
   ASSERT_FALSE(optional_map.has_value());
 }
 
@@ -77,10 +74,9 @@ TEST_F(PrivacySandboxAttestationsParserTest, OneSitePerAPIProto) {
 
   std::string serialized_proto;
   proto.SerializeToString(&serialized_proto);
-  std::istringstream iss(serialized_proto);
 
   absl::optional<PrivacySandboxAttestationsMap> optional_map =
-      ParseAttestationsFromStream(iss);
+      ParseAttestationsFromString(serialized_proto);
   ASSERT_TRUE(optional_map.has_value());
   ASSERT_TRUE(optional_map->size() == 5UL);
 
@@ -136,10 +132,9 @@ TEST_F(PrivacySandboxAttestationsParserTest, MultipleAPIsPerSiteProto) {
 
   std::string serialized_proto;
   proto.SerializeToString(&serialized_proto);
-  std::istringstream iss(serialized_proto);
 
   absl::optional<PrivacySandboxAttestationsMap> optional_map =
-      ParseAttestationsFromStream(iss);
+      ParseAttestationsFromString(serialized_proto);
   ASSERT_TRUE(optional_map.has_value());
   ASSERT_TRUE(optional_map->size() == 1UL);
 
@@ -184,10 +179,9 @@ TEST_F(PrivacySandboxAttestationsParserTest, AllAPIsProto) {
 
   std::string serialized_proto;
   proto.SerializeToString(&serialized_proto);
-  std::istringstream iss(serialized_proto);
 
   absl::optional<PrivacySandboxAttestationsMap> optional_map =
-      ParseAttestationsFromStream(iss);
+      ParseAttestationsFromString(serialized_proto);
   ASSERT_TRUE(optional_map.has_value());
   ASSERT_TRUE(optional_map->size() == 3UL);
 
@@ -241,10 +235,9 @@ TEST_F(PrivacySandboxAttestationsParserTest, RepeatedSiteProto) {
 
   std::string serialized_proto;
   proto.SerializeToString(&serialized_proto);
-  std::istringstream iss(serialized_proto);
 
   absl::optional<PrivacySandboxAttestationsMap> optional_map =
-      ParseAttestationsFromStream(iss);
+      ParseAttestationsFromString(serialized_proto);
   ASSERT_TRUE(optional_map.has_value());
   // The three mappings for the same site get deduplicated to 1.
   ASSERT_TRUE(optional_map->size() == 1UL);
@@ -282,10 +275,9 @@ TEST_F(PrivacySandboxAttestationsParserTest, InvalidAllAPIsProto) {
 
   std::string serialized_proto;
   proto.SerializeToString(&serialized_proto);
-  std::istringstream iss(serialized_proto);
 
   absl::optional<PrivacySandboxAttestationsMap> optional_map =
-      ParseAttestationsFromStream(iss);
+      ParseAttestationsFromString(serialized_proto);
   ASSERT_TRUE(optional_map.has_value());
   ASSERT_TRUE(optional_map->size() == 1UL);
 

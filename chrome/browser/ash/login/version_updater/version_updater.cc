@@ -133,6 +133,13 @@ void VersionUpdater::SetUpdateOverCellularOneTimePermission() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void VersionUpdater::StopObserving() {
+  UpdateEngineClient::Get()->RemoveObserver(this);
+  if (NetworkHandler::IsInitialized()) {
+    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
+  }
+}
+
 void VersionUpdater::RejectUpdateOverCellular() {
   // Reset UI context to show curtain again when the user goes back to the
   // screen.

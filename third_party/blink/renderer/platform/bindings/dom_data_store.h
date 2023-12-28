@@ -133,27 +133,30 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
       return object->SetWrapper(isolate, wrapper_type_info, wrapper);
 
     auto result = wrapper_map_.insert(
-        object, TraceWrapperV8Reference<v8::Object>(isolate, wrapper));
-    if (LIKELY(result.is_new_entry)) {
-      wrapper_type_info->ConfigureWrapper(&result.stored_value->value);
-    } else {
+        object, wrapper_type_info->SupportsDroppingWrapper()
+                    ? TraceWrapperV8Reference<v8::Object>(
+                          isolate, wrapper,
+                          TraceWrapperV8Reference<v8::Object>::IsDroppable{})
+                    : TraceWrapperV8Reference<v8::Object>(isolate, wrapper));
+    // TODO(mlippautz): Check whether there's still recursive cases of
+    // Wrap()/AssociateWithWrapper() that can run into the case of an existing
+    // entry.
+    if (UNLIKELY(!result.is_new_entry)) {
       DCHECK(!result.stored_value->value.IsEmpty());
       wrapper = result.stored_value->value.Get(isolate);
     }
     return result.is_new_entry;
   }
 
-  bool UnsetSpecificWrapperIfSet(
-      ScriptWrappable* object,
-      const v8::TracedReference<v8::Object>& handle) {
+  template <typename HandleType>
+  bool ClearWrapperIfEqualTo(ScriptWrappable* object,
+                             const HandleType& handle) {
     DCHECK(!is_main_world_);
     const auto& it = wrapper_map_.find(object);
-    if (it != wrapper_map_.end()) {
-      if (it->value == handle) {
-        it->value.Reset();
-        wrapper_map_.erase(it);
-        return true;
-      }
+    if (it != wrapper_map_.end() && it->value == handle) {
+      it->value.Reset();
+      wrapper_map_.erase(it);
+      return true;
     }
     return false;
   }

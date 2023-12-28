@@ -111,8 +111,10 @@ class DevToolsClientImpl : public DevToolsClient {
   // Precondition: IsMainPage()
   // Precondition: IsConnected()
   // Precondition: BiDi tunnel for CDP traffic is not set.
-  Status StartBidiServer(std::string bidi_mapper_script) override;
   Status StartBidiServer(std::string bidi_mapper_script,
+                         const base::Value::Dict& mapper_options) override;
+  Status StartBidiServer(std::string bidi_mapper_script,
+                         const base::Value::Dict& mapper_options,
                          const Timeout& timeout);
   // If the object IsNull then it cannot be connected to the remote end.
   // Such an object needs to be attached to some !IsNull() parent first.

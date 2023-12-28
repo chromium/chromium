@@ -64,6 +64,44 @@ void ForEachPixelColor(const RgbVideoFrame& rgb_video_frame, Functor f) {
   ForEachPixelColor(const_cast<RgbVideoFrame&>(rgb_video_frame), f);
 }
 
+// Defines a color error per each color channel (R, G, and B), which is the
+// difference between the original color of a pixel, and the quantized
+// (predicted) color that we get from the Octree.
+//
+// We use this type instead of `RgbColor` (whose components are `uint8_t`s), as
+// we need the components to be represented as `int`s, since the difference can
+// be negative, and when scaled by the Floyd-Steinberg factors, the values can
+// exceed the maximum of 255.
+struct ErrorVector {
+  inline bool IsZero() const { return r == 0 && g == 0 && b == 0; }
+
+  int r;
+  int g;
+  int b;
+};
+
+// Given the `original_color` of a pixel, and its `quantized_color`, returns the
+// color error vector, which is the difference between the two.
+ErrorVector GetErrorVector(const RgbColor& original_color,
+                           const RgbColor& quantized_color) {
+  return ErrorVector(original_color.r - quantized_color.r,
+                     original_color.g - quantized_color.g,
+                     original_color.b - quantized_color.b);
+}
+
+// Diffuses the given color `error_vector` over the given `color` by a factor
+// equal to `factor / 16`. This means that each color component of
+// `error_vector` will be multiplied by a `factor / 16` and added to the
+// corresponding color component of `color`. The resulting `RgbColor` is
+// returned.
+RgbColor DiffuseErrorOnColor(const ErrorVector& error_vector,
+                             const RgbColor& color,
+                             int factor) {
+  return RgbColor(std::clamp(error_vector.r * factor / 16 + color.r, 0, 255),
+                  std::clamp(error_vector.g * factor / 16 + color.g, 0, 255),
+                  std::clamp(error_vector.b * factor / 16 + color.b, 0, 255));
+}
+
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -101,20 +139,83 @@ void OctreeColorQuantizer::ExtractColorPalette(ColorTable& out_color_palette) {
   Node* curr = leaf_nodes_head_;
   while (curr != nullptr) {
     out_color_palette.push_back(curr->GetColor());
-    curr->palette_index_ = color_palette_index;
+    curr->palette_index_ = color_palette_index++;
     curr = curr->next_;
-    ++color_palette_index;
   }
 }
 
 void OctreeColorQuantizer::ExtractPixelColorIndices(
-    const RgbVideoFrame& rgb_video_frame,
+    RgbVideoFrame& rgb_video_frame,
+    const ColorTable& color_palette,
     ColorIndices& out_pixel_color_indices) const {
   size_t pixel_index = 0;
+  const int width = rgb_video_frame.width();
+  const int height = rgb_video_frame.height();
   ForEachPixelColor(rgb_video_frame, [&](const RgbColor& color) {
     const auto color_index = FindColorIndex(color);
     out_pixel_color_indices[pixel_index] = color_index;
+
+    const int row = pixel_index / width;
+    const int column = pixel_index % width;
+
     ++pixel_index;
+
+    // The below implements the "Floyd-Steinberg" dithering algorithm (see
+    // https://en.wikipedia.org/wiki/Floyd%E2%80%93Steinberg_dithering). It
+    // works by diffusing (i.e. distributing) the color error of a pixel over
+    // neighboring pixels by the following factors:
+    //
+    // ----------------+----------+---------------+----------+------------------
+    //                 |          | current pixel |  7 / 16  |
+    // ----------------+----------+---------------+----------+------------------
+    //                 |  3 / 16  |     5 / 16    |  1 / 16  |
+    // ----------------+----------+---------------+----------+------------------
+    //
+    // It actually modifies the colors of the pixels that haven't been processed
+    // yet in the `rgb_video_frame` which will affect their quantized color when
+    // they get processed in the upcoming iterations. This results in the
+    // dithering of the quantized image.
+    const ErrorVector error_vector =
+        GetErrorVector(/*original_color=*/color,
+                       /*quantized_color=*/color_palette[color_index]);
+    if (error_vector.IsZero()) {
+      return;
+    }
+
+    const auto next_column = column + 1;
+    const auto next_row = row + 1;
+    const bool is_next_row_valid = next_row < height;
+
+    if (next_column < width) {
+      // Same row, next column. Add error with a factor of `7 / 16`.
+      auto& next_col_color = rgb_video_frame.pixel_color(row, next_column);
+      next_col_color =
+          DiffuseErrorOnColor(error_vector, next_col_color, /*factor=*/7);
+
+      if (is_next_row_valid) {
+        // Next row, next column. Add error with a factor of `1 / 16`.
+        auto& next_row_col_color =
+            rgb_video_frame.pixel_color(next_row, next_column);
+        next_row_col_color =
+            DiffuseErrorOnColor(error_vector, next_row_col_color, /*factor=*/1);
+      }
+    }
+
+    if (is_next_row_valid) {
+      // Next row, same column. Add error with a factor of `5 / 16`.
+      auto& next_row_color = rgb_video_frame.pixel_color(next_row, column);
+      next_row_color =
+          DiffuseErrorOnColor(error_vector, next_row_color, /*factor=*/5);
+
+      // Next row, previous column. Add error with a factor of `3 / 16`.
+      const auto prev_column = column - 1;
+      if (prev_column >= 0) {
+        auto& next_row_prev_col_color =
+            rgb_video_frame.pixel_color(next_row, prev_column);
+        next_row_prev_col_color = DiffuseErrorOnColor(
+            error_vector, next_row_prev_col_color, /*factor=*/3);
+      }
+    }
   });
 }
 
@@ -255,17 +356,18 @@ size_t OctreeColorQuantizer::FindColorIndexInternal(
     return node->palette_index_;
   }
 
+  // We found that the colors look better when we start searching backwards
+  // first starting at `index`.
   const auto index = GetColorIndexAtLevel(color, level);
-
-  // Search forward starting at `index` then search backward.
-  for (uint8_t i = index; i < kNumBitsPerColorChannel; ++i) {
+  for (int8_t i = index; i >= 0; --i) {
     if (const auto& child = node->child_nodes_[i]) {
       return FindColorIndexInternal(child.get(), level + 1, color);
     }
   }
 
-  for (uint8_t i = index; i > 0; --i) {
-    if (const auto& child = node->child_nodes_[i - 1]) {
+  // Search forward starting at `index + 1`.
+  for (uint8_t i = index + 1; i < kNumBitsPerColorChannel; ++i) {
+    if (const auto& child = node->child_nodes_[i]) {
       return FindColorIndexInternal(child.get(), level + 1, color);
     }
   }

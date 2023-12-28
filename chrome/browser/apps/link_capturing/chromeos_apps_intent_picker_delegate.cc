@@ -21,7 +21,6 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
-#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/display/types/display_constants.h"
 #include "url/gurl.h"
@@ -52,9 +51,6 @@ PickerEntryType GetPickerEntryType(AppType app_type) {
     case AppType::kWeb:
     case AppType::kSystemWeb:
       picker_entry_type = PickerEntryType::kWeb;
-      break;
-    case AppType::kMacOs:
-      picker_entry_type = PickerEntryType::kMacOs;
       break;
   }
   return picker_entry_type;
@@ -117,14 +113,14 @@ void ChromeOsAppsIntentPickerDelegate::FindAllAppsForUrl(
 }
 
 bool ChromeOsAppsIntentPickerDelegate::IsPreferredAppForSupportedLinks(
-    const webapps::AppId& app_id) {
+    const std::string& app_id) {
   CHECK(proxy_);
   return proxy_->PreferredAppsList().IsPreferredAppForSupportedLinks(app_id);
 }
 
 void ChromeOsAppsIntentPickerDelegate::LoadSingleAppIcon(
-    apps::AppType app_type,
-    const webapps::AppId& app_id,
+    PickerEntryType entry_type,
+    const std::string& app_id,
     int size_in_dep,
     IconLoadedCallback icon_loaded_callback) {
   CHECK(proxy_);
@@ -139,7 +135,7 @@ void ChromeOsAppsIntentPickerDelegate::LoadSingleAppIcon(
 
         return ui::ImageModel::FromImageSkia(icon_ptr->uncompressed);
       });
-  proxy_->LoadIcon(app_type, app_id, apps::IconType::kStandard, size_in_dep,
+  proxy_->LoadIcon(app_id, apps::IconType::kStandard, size_in_dep,
                    /*allow_placeholder_icon=*/false,
                    std::move(transform_icon_to_metadata)
                        .Then(std::move(icon_loaded_callback)));

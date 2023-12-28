@@ -29,6 +29,7 @@
 #import "content/browser/renderer_host/render_widget_host_view_mac_editcommand_helper.h"
 #include "content/common/features.h"
 #import "content/public/browser/render_widget_host_view_mac_delegate.h"
+#include "content/public/common/content_features.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
@@ -2226,6 +2227,16 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
     }
 
     if (fixLiveConversion) {
+      CHECK_LE(_markedRange.location + newSelRange.location,
+               std::numeric_limits<uint32_t>::max())
+          << "`start` is too large; _markedRange.location="
+          << _markedRange.location
+          << "; newSelRange.location=" << newSelRange.location;
+      CHECK_LE(_markedRange.location + NSMaxRange(newSelRange),
+               std::numeric_limits<uint32_t>::max())
+          << "`end` is too large; _markedRange.location="
+          << _markedRange.location
+          << "; NSMaxRange(newSelRange)=" << NSMaxRange(newSelRange);
       _textSelectionRange =
           gfx::Range(_markedRange.location + newSelRange.location,
                      _markedRange.location + NSMaxRange(newSelRange));
@@ -2234,6 +2245,8 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
     // An empty text means the composition is about to be cancelled,
     // collapse the selection to the beginning of the current marked range.
     if (fixLiveConversion && _hasMarkedText) {
+      CHECK_LE(_markedRange.location, std::numeric_limits<uint32_t>::max())
+          << "_markedRange.location is too large.";
       _textSelectionRange =
           gfx::Range(_markedRange.location, _markedRange.location);
     }

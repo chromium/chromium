@@ -549,7 +549,7 @@ protocol::Response InspectorAccessibilityAgent::getPartialAXTree(
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
       document.Lifecycle());
 
-  AXObject* inspected_ax_object = cache.GetOrCreate(dom_node);
+  AXObject* inspected_ax_object = cache.Get(dom_node);
   *nodes = std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
   if (inspected_ax_object) {
     (*nodes)->emplace_back(
@@ -574,12 +574,12 @@ protocol::Response InspectorAccessibilityAgent::getPartialAXTree(
     auto* shadow_root = DynamicTo<ShadowRoot>(dom_node);
     Node* parent_node = shadow_root ? &shadow_root->host()
                                     : FlatTreeTraversal::Parent(*dom_node);
-    parent_ax_object = cache.GetOrCreate(parent_node);
+    parent_ax_object = cache.Get(parent_node);
     while (parent_node && !parent_ax_object) {
       shadow_root = DynamicTo<ShadowRoot>(parent_node);
       parent_node = shadow_root ? &shadow_root->host()
                                 : FlatTreeTraversal::Parent(*parent_node);
-      parent_ax_object = cache.GetOrCreate(parent_node);
+      parent_ax_object = cache.Get(parent_node);
     }
   }
   if (!parent_ax_object)
@@ -884,7 +884,7 @@ protocol::Response InspectorAccessibilityAgent::getAXNodeAndAncestors(
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
       document.Lifecycle());
 
-  AXObject* ax_object = cache.GetOrCreate(dom_node);
+  AXObject* ax_object = cache.Get(dom_node);
 
   ScopedFreezeAXCache freeze(cache);
 
@@ -1084,7 +1084,7 @@ void InspectorAccessibilityAgent::CompleteQuery(AXQuery& query) {
 
   std::unique_ptr<protocol::Array<AXNode>> nodes =
       std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
-  AXObject* root_ax_node = cache.GetOrCreate(root_dom_node);
+  AXObject* root_ax_node = cache.Get(root_dom_node);
 
   HeapVector<Member<AXObject>> reachable;
   if (root_ax_node)

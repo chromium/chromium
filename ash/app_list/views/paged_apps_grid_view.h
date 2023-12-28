@@ -289,11 +289,11 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   int GetPaddingBetweenPages() const;
 
   // Created by AppListMainView, owned by views hierarchy.
-  const raw_ptr<ContentsView, ExperimentalAsh> contents_view_;
+  const raw_ptr<ContentsView> contents_view_;
 
   // Used to get information about whether a point is within the page flip drag
   // buffer area around this view.
-  const raw_ptr<ContainerDelegate, ExperimentalAsh> container_delegate_;
+  const raw_ptr<ContainerDelegate> container_delegate_;
 
   // Depends on |pagination_model_|.
   std::unique_ptr<PaginationController> pagination_controller_;

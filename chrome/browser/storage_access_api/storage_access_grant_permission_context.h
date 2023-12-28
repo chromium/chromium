@@ -77,6 +77,9 @@ class StorageAccessGrantPermissionContext
       permissions::PermissionRequestData request_data,
       permissions::BrowserPermissionCallback callback);
 
+  static int GetImplicitGrantLimitForTesting();
+  static void SetImplicitGrantLimitForTesting(int limit);
+
  private:
   // PermissionContextBase:
   void DecidePermission(

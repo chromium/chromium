@@ -16,7 +16,7 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 
-#if defined(__has_feature) && __has_feature(objc_arc)
+#if HAS_FEATURE(objc_arc)
 #error "Do not use scoped_nsobject in ARC code; use __strong instead."
 #endif
 

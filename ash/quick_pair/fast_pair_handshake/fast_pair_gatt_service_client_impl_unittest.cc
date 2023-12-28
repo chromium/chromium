@@ -226,10 +226,8 @@ class FakeBluetoothDevice
   bool has_gatt_connection_hang_ = false;
   bool has_disconnect_error_ = false;
   bool no_disconnect_response_ = false;
-  raw_ptr<base::test::TaskEnvironment, ExperimentalAsh> task_environment_ =
-      nullptr;
-  raw_ptr<ash::quick_pair::FakeBluetoothAdapter, ExperimentalAsh>
-      fake_adapter_ = nullptr;
+  raw_ptr<base::test::TaskEnvironment> task_environment_ = nullptr;
+  raw_ptr<ash::quick_pair::FakeBluetoothAdapter> fake_adapter_ = nullptr;
 };
 
 class FakeBluetoothGattCharacteristic
@@ -316,8 +314,7 @@ class FakeBluetoothGattCharacteristic
   bool write_remote_error_ = false;
   bool notify_timeout_ = false;
   bool write_timeout_ = false;
-  raw_ptr<base::test::TaskEnvironment, ExperimentalAsh> task_environment_ =
-      nullptr;
+  raw_ptr<base::test::TaskEnvironment> task_environment_ = nullptr;
 };
 
 std::unique_ptr<FakeBluetoothDevice> CreateTestBluetoothDevice(
@@ -703,16 +700,15 @@ class FastPairGattServiceClientTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
   std::unique_ptr<FastPairGattServiceClient> gatt_service_client_;
-  raw_ptr<FakeBluetoothDevice, DanglingUntriaged | ExperimentalAsh>
-      raw_fake_bt_device_;
+  raw_ptr<FakeBluetoothDevice, DanglingUntriaged> raw_fake_bt_device_;
   scoped_refptr<FakeBluetoothAdapter> adapter_;
 
  private:
   // We need temporary pointers to use for write/ready requests because we
   // move the unique pointers when we notify the session.
-  raw_ptr<FakeBluetoothGattCharacteristic, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakeBluetoothGattCharacteristic, DanglingUntriaged>
       temp_fake_key_based_characteristic_;
-  raw_ptr<FakeBluetoothGattCharacteristic, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakeBluetoothGattCharacteristic, DanglingUntriaged>
       temp_passkey_based_characteristic_;
   std::optional<ash::quick_pair::AccountKeyFailure> account_key_error_ =
       std::nullopt;

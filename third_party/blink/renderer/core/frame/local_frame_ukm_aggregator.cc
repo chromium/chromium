@@ -615,6 +615,7 @@ void LocalFrameUkmAggregator::ReportPreFCPEvent(int64_t source_id,
   RECORD_METRIC(JavascriptDocumentUpdate);
   RECORD_METRIC(ParseStyleSheet);
   RECORD_METRIC(Accessibility);
+  RECORD_METRIC(PossibleSynchronizedScrollCount);
 
   builder.Record(recorder);
 #undef RECORD_METRIC
@@ -672,6 +673,7 @@ void LocalFrameUkmAggregator::ReportUpdateTimeEvent(
   RECORD_METRIC(JavascriptDocumentUpdate);
   RECORD_METRIC(ParseStyleSheet);
   RECORD_METRIC(Accessibility);
+  RECORD_METRIC(PossibleSynchronizedScrollCount);
 
   builder.Record(recorder);
 #undef RECORD_METRIC

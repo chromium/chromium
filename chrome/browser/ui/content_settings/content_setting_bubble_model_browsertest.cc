@@ -102,7 +102,9 @@ class ContentSettingBubbleModelMediaStreamTest : public InProcessBrowserTest {
       provider->SetWebsiteSetting(
           ContentSettingsPattern::Wildcard(),
           ContentSettingsPattern::Wildcard(), type,
-          base::Value(ContentSetting::CONTENT_SETTING_BLOCK));
+          base::Value(ContentSetting::CONTENT_SETTING_BLOCK),
+          /*constraints=*/{},
+          content_settings::PartitionKey::GetDefaultForTesting());
     }
     HostContentSettingsMap* map =
         HostContentSettingsMapFactory::GetForProfile(browser()->profile());

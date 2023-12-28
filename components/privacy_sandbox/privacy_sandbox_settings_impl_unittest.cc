@@ -336,9 +336,7 @@ TEST_F(PrivacySandboxSettingsTest, FledgeJoinSettingTimeRangeDeletion) {
 
 TEST_F(PrivacySandboxSettingsTest, OnRelatedWebsiteSetsEnabledChanged) {
   // OnRelatedWebsiteSetsEnabledChanged() should only call observers when the
-  // base::Feature is enabled and the pref changes.
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(features::kFirstPartySets);
+  // pref changes.
   privacy_sandbox_test_util::MockPrivacySandboxObserver observer;
   privacy_sandbox_settings()->AddObserver(&observer);
   EXPECT_CALL(observer, OnFirstPartySetsEnabledChanged(/*enabled=*/true));
@@ -349,18 +347,9 @@ TEST_F(PrivacySandboxSettingsTest, OnRelatedWebsiteSetsEnabledChanged) {
   EXPECT_CALL(observer, OnFirstPartySetsEnabledChanged(/*enabled=*/false));
   prefs()->SetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, false);
   testing::Mock::VerifyAndClearExpectations(&observer);
-
-  feature_list_.Reset();
-  feature_list_.InitAndDisableFeature(features::kFirstPartySets);
-  EXPECT_CALL(observer, OnFirstPartySetsEnabledChanged(testing::_)).Times(0);
-
-  prefs()->SetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
-  prefs()->SetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, false);
 }
 
 TEST_F(PrivacySandboxSettingsTest, OnFirstPartySetsEnabledChanged3pcd) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(features::kFirstPartySets);
   privacy_sandbox_test_util::MockPrivacySandboxObserver observer;
   privacy_sandbox_settings()->AddObserver(&observer);
 

@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_PROFILE_IMPORT_PROCESS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_PROFILE_IMPORT_PROCESS_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/types/id_type.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace autofill {
@@ -131,15 +131,15 @@ class ProfileImportProcess {
   // Returns true if showing the prompt was initiated for this import process.
   bool prompt_shown() const;
 
-  const absl::optional<AutofillProfile>& import_candidate() const {
+  const std::optional<AutofillProfile>& import_candidate() const {
     return import_candidate_;
   }
 
-  const absl::optional<AutofillProfile>& confirmed_import_candidate() const {
+  const std::optional<AutofillProfile>& confirmed_import_candidate() const {
     return confirmed_import_candidate_;
   }
 
-  const absl::optional<AutofillProfile>& merge_candidate() const {
+  const std::optional<AutofillProfile>& merge_candidate() const {
     return merge_candidate_;
   }
 
@@ -248,7 +248,7 @@ class ProfileImportProcess {
   // - The `profile`'s country isn't set to an unsupported country.
   // - Not only silent updates are allowed.
   void MaybeSetMigrationCandidate(
-      absl::optional<AutofillProfile>& migration_candidate,
+      std::optional<AutofillProfile>& migration_candidate,
       const AutofillProfile& profile) const;
 
   // Computes the settings-visible profile difference between the
@@ -273,11 +273,11 @@ class ProfileImportProcess {
 
   // A profile in its original state that can be merged with the observed
   // profile.
-  absl::optional<AutofillProfile> merge_candidate_;
+  std::optional<AutofillProfile> merge_candidate_;
 
   // The import candidate that is presented to the user. In case of a migration,
   // this is an existing profile.
-  absl::optional<AutofillProfile> import_candidate_;
+  std::optional<AutofillProfile> import_candidate_;
 
   // The type of the import indicates if the profile is just a duplicate of an
   // existing profile, if an existing profile can be silently updated, or if
@@ -288,7 +288,7 @@ class ProfileImportProcess {
 
   // The profile as it was confirmed by the user or as it should be imported if
   // user interactions are disabled.
-  absl::optional<AutofillProfile> confirmed_import_candidate_;
+  std::optional<AutofillProfile> confirmed_import_candidate_;
 
   // The decision the user made when prompted.
   AutofillClient::SaveAddressProfileOfferUserDecision user_decision_{

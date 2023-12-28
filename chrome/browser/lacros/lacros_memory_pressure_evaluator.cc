@@ -47,9 +47,10 @@ LacrosMemoryPressureEvaluator* LacrosMemoryPressureEvaluator::Get() {
   return g_lacros_evaluator;
 }
 
-uint64_t LacrosMemoryPressureEvaluator::GetCachedReclaimTargetKB() {
+memory_pressure::ReclaimTarget
+LacrosMemoryPressureEvaluator::GetCachedReclaimTarget() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return cached_reclaim_target_kb_;
+  return cached_reclaim_target_;
 }
 
 bool LacrosMemoryPressureEvaluator::ShouldNotify(
@@ -81,15 +82,16 @@ void LacrosMemoryPressureEvaluator::MemoryPressure(
   if (pressure->level == crosapi::mojom::MemoryPressureLevel::kCritical) {
     listener_level =
         base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
-    cached_reclaim_target_kb_ = pressure->reclaim_target_kb;
+    cached_reclaim_target_ = memory_pressure::ReclaimTarget(
+        pressure->reclaim_target_kb, pressure->signal_origin);
   } else if (pressure->level ==
              crosapi::mojom::MemoryPressureLevel::kModerate) {
     listener_level =
         base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE;
-    cached_reclaim_target_kb_ = 0;
+    cached_reclaim_target_ = memory_pressure::ReclaimTarget();
   } else {
     listener_level = base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
-    cached_reclaim_target_kb_ = 0;
+    cached_reclaim_target_ = memory_pressure::ReclaimTarget();
   }
 
   bool notify = ShouldNotify(current_vote(), listener_level);

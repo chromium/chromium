@@ -23,7 +23,7 @@ enum class FallbackReason {
 };
 
 using DialogChoiceCallback =
-    base::OnceCallback<void(const std::string& choice)>;
+    base::OnceCallback<void(std::optional<const std::string>)>;
 
 // Defines the web dialog used to allow users to choose what to do when failing
 // to open office files.

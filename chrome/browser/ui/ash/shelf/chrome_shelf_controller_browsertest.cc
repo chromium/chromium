@@ -168,7 +168,7 @@ ash::ShelfAction SelectItem(
 
 // Find the browser that associated with |app_name|.
 Browser* FindBrowserForApp(const std::string& app_name) {
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     std::string browser_app_name =
         web_app::GetAppIdFromApplicationName(browser->app_name());
     if (browser_app_name == app_name)
@@ -962,8 +962,8 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, SetIcon) {
 
   gfx::ImageSkia image_skia;
   int32_t size_hint_in_dip = 48;
-  image_skia = app_service_test().LoadAppIconBlocking(
-      apps::AppType::kChromeApp, extension->id(), size_hint_in_dip);
+  image_skia =
+      app_service_test().LoadAppIconBlocking(extension->id(), size_hint_in_dip);
 
   // Create non-shelf window.
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
@@ -3096,13 +3096,8 @@ class AppServiceShortcutShelfBrowserTest : public ShelfAppBrowserTest {
   apps::ShortcutId CreateWebAppBasedShortcut(
       const GURL& shortcut_url,
       const std::u16string& shortcut_name) {
-    // Create web app based shortcut.
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_info->start_url = shortcut_url;
-    web_app_info->title = shortcut_name;
-    auto local_shortcut_id = web_app::test::InstallWebApp(
-        profile(), std::move(web_app_info),
-        /*overwrite_existing_manifest_fields=*/true);
+    webapps::AppId local_shortcut_id = web_app::test::InstallShortcut(
+        browser()->profile(), base::UTF16ToUTF8(shortcut_name), shortcut_url);
     return apps::GenerateShortcutId(app_constants::kChromeAppId,
                                     local_shortcut_id);
   }

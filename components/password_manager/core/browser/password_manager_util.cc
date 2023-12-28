@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -187,10 +188,13 @@ GetLoginMatchType GetMatchType(const password_manager::PasswordForm& form) {
 }
 
 void FindBestMatches(
-    const std::vector<const PasswordForm*>& non_federated_matches,
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+        non_federated_matches,
     PasswordForm::Scheme scheme,
-    std::vector<const PasswordForm*>* non_federated_same_scheme,
-    std::vector<const PasswordForm*>* best_matches) {
+    std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
+        non_federated_same_scheme,
+    std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
+        best_matches) {
   DCHECK(base::ranges::none_of(non_federated_matches,
                                &PasswordForm::blocked_by_user));
   DCHECK(non_federated_same_scheme);
@@ -199,7 +203,7 @@ void FindBestMatches(
   best_matches->clear();
   non_federated_same_scheme->clear();
 
-  for (auto* match : non_federated_matches) {
+  for (const password_manager::PasswordForm* match : non_federated_matches) {
     if (match->scheme == scheme)
       non_federated_same_scheme->push_back(match);
   }
@@ -239,7 +243,7 @@ void FindBestMatches(
 }
 
 const PasswordForm* FindFormByUsername(
-    const std::vector<const PasswordForm*>& forms,
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& forms,
     const std::u16string& username_value) {
   for (const PasswordForm* form : forms) {
     if (form->username_value == username_value)
@@ -250,7 +254,8 @@ const PasswordForm* FindFormByUsername(
 
 const PasswordForm* GetMatchForUpdating(
     const PasswordForm& submitted_form,
-    const std::vector<const PasswordForm*>& credentials,
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+        credentials,
     bool username_updated_in_bubble) {
   // This is the case for the credential management API. It should not depend on
   // form managers. Once that's the case, this should be turned into a DCHECK.
@@ -431,7 +436,7 @@ bool IsSpecialSymbol(char16_t c) {
   return base::Contains(kSpecialSymbols, c);
 }
 
-bool IsSingleUsernameType(autofill::ServerFieldType type) {
+bool IsSingleUsernameType(autofill::FieldType type) {
   return type == autofill::SINGLE_USERNAME ||
          (type == autofill::SINGLE_USERNAME_FORGOT_PASSWORD &&
           base::FeatureList::IsEnabled(

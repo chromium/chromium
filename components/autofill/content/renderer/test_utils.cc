@@ -24,7 +24,7 @@ namespace autofill {
 using AllowNull = base::StrongAlias<struct AllowNullTag, bool>;
 
 WebElement GetElementById(const WebDocument& doc,
-                          base::StringPiece id,
+                          std::string_view id,
                           AllowNull allow_null) {
   WebElement e = doc.GetElementById(WebString::FromASCII(std::string(id)));
   CHECK(allow_null || !e.IsNull());
@@ -32,19 +32,19 @@ WebElement GetElementById(const WebDocument& doc,
 }
 
 WebFormControlElement GetFormControlElementById(const WebDocument& doc,
-                                                base::StringPiece id,
+                                                std::string_view id,
                                                 AllowNull allow_null) {
   return GetElementById(doc, id, allow_null).To<WebFormControlElement>();
 }
 
 WebFormElement GetFormElementById(const WebDocument& doc,
-                                  base::StringPiece id,
+                                  std::string_view id,
                                   AllowNull allow_null) {
   return GetElementById(doc, id, allow_null).To<WebFormElement>();
 }
 
 content::RenderFrame* GetIframeById(const WebDocument& doc,
-                                    base::StringPiece id,
+                                    std::string_view id,
                                     AllowNull allow_null) {
   WebElement iframe = GetElementById(doc, id, allow_null);
   CHECK(allow_null || iframe.HasHTMLTagName("iframe"));
@@ -55,7 +55,7 @@ content::RenderFrame* GetIframeById(const WebDocument& doc,
 }
 
 FrameToken GetFrameToken(const blink::WebDocument& doc,
-                         base::StringPiece id,
+                         std::string_view id,
                          AllowNull allow_null) {
   WebElement iframe = GetElementById(doc, id, allow_null);
   CHECK(allow_null || iframe.HasHTMLTagName("iframe"));

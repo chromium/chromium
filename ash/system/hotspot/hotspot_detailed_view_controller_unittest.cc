@@ -95,7 +95,7 @@ class HotspotDetailedViewControllerTest : public AshTestBase {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<HotspotDetailedViewController, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<HotspotDetailedViewController, DanglingUntriaged>
       hotspot_detailed_view_controller_;
 };
 

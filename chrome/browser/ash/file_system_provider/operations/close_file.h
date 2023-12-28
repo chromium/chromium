@@ -12,9 +12,7 @@
 #include "chrome/browser/ash/file_system_provider/request_value.h"
 #include "storage/browser/file_system/async_file_util.h"
 
-namespace ash {
-namespace file_system_provider {
-namespace operations {
+namespace ash::file_system_provider::operations {
 
 // Opens a file for either read or write, with optionally creating the file
 // first. Note, that this is part of storage::CreateOrOpen file, but it does
@@ -45,8 +43,6 @@ class CloseFile : public Operation {
   storage::AsyncFileUtil::StatusCallback callback_;
 };
 
-}  // namespace operations
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider::operations
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_OPERATIONS_CLOSE_FILE_H_

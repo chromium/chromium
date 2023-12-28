@@ -30,6 +30,7 @@
 #include <ostream>
 #include <random>
 #include <string>
+#include <tuple>
 #include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
@@ -48,8 +49,12 @@
 #include "absl/container/internal/hash_function_defaults.h"
 #include "absl/container/internal/hash_policy_testing.h"
 #include "absl/container/internal/hashtable_debug.h"
+#include "absl/container/internal/hashtablez_sampler.h"
 #include "absl/container/internal/test_allocator.h"
+#include "absl/hash/hash.h"
 #include "absl/log/log.h"
+#include "absl/memory/memory.h"
+#include "absl/meta/type_traits.h"
 #include "absl/strings/string_view.h"
 
 namespace absl {
@@ -231,6 +236,25 @@ TEST(Group, MaskEmpty) {
   }
 }
 
+TEST(Group, MaskFull) {
+  if (Group::kWidth == 16) {
+    ctrl_t group[] = {
+        ctrl_t::kEmpty, CtrlT(1),          ctrl_t::kDeleted,  CtrlT(3),
+        ctrl_t::kEmpty, CtrlT(5),          ctrl_t::kSentinel, CtrlT(7),
+        CtrlT(7),       CtrlT(5),          ctrl_t::kDeleted,  CtrlT(1),
+        CtrlT(1),       ctrl_t::kSentinel, ctrl_t::kEmpty,    CtrlT(1)};
+    EXPECT_THAT(Group{group}.MaskFull(),
+                ElementsAre(1, 3, 5, 7, 8, 9, 11, 12, 15));
+  } else if (Group::kWidth == 8) {
+    ctrl_t group[] = {ctrl_t::kEmpty,    CtrlT(1), ctrl_t::kEmpty,
+                      ctrl_t::kDeleted,  CtrlT(2), ctrl_t::kSentinel,
+                      ctrl_t::kSentinel, CtrlT(1)};
+    EXPECT_THAT(Group{group}.MaskFull(), ElementsAre(1, 4, 7));
+  } else {
+    FAIL() << "No test coverage for Group::kWidth==" << Group::kWidth;
+  }
+}
+
 TEST(Group, MaskEmptyOrDeleted) {
   if (Group::kWidth == 16) {
     ctrl_t group[] = {ctrl_t::kEmpty,   CtrlT(1), ctrl_t::kEmpty,    CtrlT(3),
@@ -293,13 +317,13 @@ TEST(Group, CountLeadingEmptyOrDeleted) {
       std::vector<ctrl_t> f(Group::kWidth, empty);
       f[Group::kWidth * 2 / 3] = full;
       f[Group::kWidth / 2] = full;
-      EXPECT_EQ(
-          Group::kWidth / 2, Group{f.data()}.CountLeadingEmptyOrDeleted());
+      EXPECT_EQ(Group::kWidth / 2,
+                Group{f.data()}.CountLeadingEmptyOrDeleted());
     }
   }
 }
 
-template <class T>
+template <class T, bool kTransferable = false>
 struct ValuePolicy {
   using slot_type = T;
   using key_type = T;
@@ -317,10 +341,11 @@ struct ValuePolicy {
   }
 
   template <class Allocator>
-  static void transfer(Allocator* alloc, slot_type* new_slot,
-                       slot_type* old_slot) {
+  static std::integral_constant<bool, kTransferable> transfer(
+      Allocator* alloc, slot_type* new_slot, slot_type* old_slot) {
     construct(alloc, new_slot, std::move(*old_slot));
     destroy(alloc, old_slot);
+    return {};
   }
 
   static T& element(slot_type* slot) { return *slot; }
@@ -336,6 +361,8 @@ struct ValuePolicy {
 
 using IntPolicy = ValuePolicy<int64_t>;
 using Uint8Policy = ValuePolicy<uint8_t>;
+
+using TranferableIntPolicy = ValuePolicy<int64_t, /*kTransferable=*/true>;
 
 class StringPolicy {
   template <class F, class K, class V,
@@ -409,15 +436,18 @@ struct StringTable
   using Base::Base;
 };
 
-template <typename T>
-struct ValueTable : raw_hash_set<ValuePolicy<T>, hash_default_hash<T>,
-                                 std::equal_to<T>, std::allocator<T>> {
+template <typename T, bool kTransferable = false>
+struct ValueTable
+    : raw_hash_set<ValuePolicy<T, kTransferable>, hash_default_hash<T>,
+                   std::equal_to<T>, std::allocator<T>> {
   using Base = typename ValueTable::raw_hash_set;
   using Base::Base;
 };
 
 using IntTable = ValueTable<int64_t>;
 using Uint8Table = ValueTable<uint8_t>;
+
+using TransferableIntTable = ValueTable<int64_t, /*kTransferable=*/true>;
 
 template <typename T>
 struct CustomAlloc : std::allocator<T> {
@@ -426,7 +456,8 @@ struct CustomAlloc : std::allocator<T> {
   template <typename U>
   explicit CustomAlloc(const CustomAlloc<U>& /*other*/) {}
 
-  template<class U> struct rebind {
+  template <class U>
+  struct rebind {
     using other = CustomAlloc<U>;
   };
 };
@@ -622,6 +653,23 @@ TEST(Table, InsertCollisionAndFindAfterDelete) {
   EXPECT_TRUE(t.empty());
 }
 
+TEST(Table, EraseInSmallTables) {
+  for (int64_t size = 0; size < 64; ++size) {
+    IntTable t;
+    for (int64_t i = 0; i < size; ++i) {
+      t.insert(i);
+    }
+    for (int64_t i = 0; i < size; ++i) {
+      t.erase(i);
+      EXPECT_EQ(t.size(), size - i - 1);
+      for (int64_t j = i + 1; j < size; ++j) {
+        EXPECT_THAT(*t.find(j), j);
+      }
+    }
+    EXPECT_TRUE(t.empty());
+  }
+}
+
 TEST(Table, InsertWithinCapacity) {
   IntTable t;
   t.reserve(10);
@@ -652,6 +700,68 @@ TEST(Table, InsertWithinCapacity) {
   EXPECT_THAT(t.capacity(), original_capacity);
   EXPECT_THAT(addr(0), original_addr_0);
 }
+
+template <class TableType>
+class SmallTableResizeTest : public testing::Test {};
+
+TYPED_TEST_SUITE_P(SmallTableResizeTest);
+
+TYPED_TEST_P(SmallTableResizeTest, InsertIntoSmallTable) {
+  TypeParam t;
+  for (int i = 0; i < 32; ++i) {
+    t.insert(i);
+    ASSERT_EQ(t.size(), i + 1);
+    for (int j = 0; j < i + 1; ++j) {
+      EXPECT_TRUE(t.find(j) != t.end());
+      EXPECT_EQ(*t.find(j), j);
+    }
+  }
+}
+
+TYPED_TEST_P(SmallTableResizeTest, ResizeGrowSmallTables) {
+  TypeParam t;
+  for (size_t source_size = 0; source_size < 32; ++source_size) {
+    for (size_t target_size = source_size; target_size < 32; ++target_size) {
+      for (bool rehash : {false, true}) {
+        for (size_t i = 0; i < source_size; ++i) {
+          t.insert(static_cast<int>(i));
+        }
+        if (rehash) {
+          t.rehash(target_size);
+        } else {
+          t.reserve(target_size);
+        }
+        for (size_t i = 0; i < source_size; ++i) {
+          EXPECT_TRUE(t.find(static_cast<int>(i)) != t.end());
+          EXPECT_EQ(*t.find(static_cast<int>(i)), static_cast<int>(i));
+        }
+      }
+    }
+  }
+}
+
+TYPED_TEST_P(SmallTableResizeTest, ResizeReduceSmallTables) {
+  TypeParam t;
+  for (size_t source_size = 0; source_size < 32; ++source_size) {
+    for (size_t target_size = 0; target_size <= source_size; ++target_size) {
+      size_t inserted_count = std::min<size_t>(source_size, 5);
+      for (size_t i = 0; i < inserted_count; ++i) {
+        t.insert(static_cast<int>(i));
+      }
+      t.rehash(target_size);
+      for (size_t i = 0; i < inserted_count; ++i) {
+        EXPECT_TRUE(t.find(static_cast<int>(i)) != t.end());
+        EXPECT_EQ(*t.find(static_cast<int>(i)), static_cast<int>(i));
+      }
+    }
+  }
+}
+
+REGISTER_TYPED_TEST_SUITE_P(SmallTableResizeTest, InsertIntoSmallTable,
+                            ResizeGrowSmallTables, ResizeReduceSmallTables);
+using SmallTableTypes = ::testing::Types<IntTable, TransferableIntTable>;
+INSTANTIATE_TYPED_TEST_SUITE_P(InstanceSmallTableResizeTest,
+                               SmallTableResizeTest, SmallTableTypes);
 
 TEST(Table, LazyEmplace) {
   StringTable t;
@@ -1071,7 +1181,7 @@ TEST(Table, Erase) {
 TEST(Table, EraseMaintainsValidIterator) {
   IntTable t;
   const int kNumElements = 100;
-  for (int i = 0; i < kNumElements; i ++) {
+  for (int i = 0; i < kNumElements; i++) {
     EXPECT_TRUE(t.emplace(i).second);
   }
   EXPECT_EQ(t.size(), kNumElements);
@@ -1292,15 +1402,15 @@ ExpectedStats XorSeedExpectedStats() {
   switch (container_internal::Group::kWidth) {
     case 8:
       if (kRandomizesInserts) {
-  return {0.05,
-          1.0,
-          {{0.95, 0.5}},
-          {{0.95, 0}, {0.99, 2}, {0.999, 4}, {0.9999, 10}}};
+        return {0.05,
+                1.0,
+                {{0.95, 0.5}},
+                {{0.95, 0}, {0.99, 2}, {0.999, 4}, {0.9999, 10}}};
       } else {
-  return {0.05,
-          2.0,
-          {{0.95, 0.1}},
-          {{0.95, 0}, {0.99, 2}, {0.999, 4}, {0.9999, 10}}};
+        return {0.05,
+                2.0,
+                {{0.95, 0.1}},
+                {{0.95, 0}, {0.99, 2}, {0.999, 4}, {0.9999, 10}}};
       }
     case 16:
       if (kRandomizesInserts) {
@@ -1346,7 +1456,7 @@ ProbeStats CollectProbeStatsOnLinearlyTransformedKeys(
   std::random_device rd;
   std::mt19937 rng(rd());
   auto linear_transform = [](size_t x, size_t y) { return x * 17 + y * 13; };
-  std::uniform_int_distribution<size_t> dist(0, keys.size()-1);
+  std::uniform_int_distribution<size_t> dist(0, keys.size() - 1);
   while (num_iters--) {
     IntTable t1;
     size_t num_keys = keys.size() / 10;
@@ -2258,20 +2368,33 @@ TEST(RawHashSamplerTest, DoNotSampleCustomAllocators) {
 }
 
 #ifdef ABSL_HAVE_ADDRESS_SANITIZER
-TEST(Sanitizer, PoisoningUnused) {
-  IntTable t;
-  t.reserve(5);
-  // Insert something to force an allocation.
-  int64_t& v1 = *t.insert(0).first;
+template <class TableType>
+class SanitizerTest : public testing::Test {};
 
-  // Make sure there is something to test.
-  ASSERT_GT(t.capacity(), 1);
+TYPED_TEST_SUITE_P(SanitizerTest);
 
-  int64_t* slots = RawHashSetTestOnlyAccess::GetSlots(t);
-  for (size_t i = 0; i < t.capacity(); ++i) {
-    EXPECT_EQ(slots + i != &v1, __asan_address_is_poisoned(slots + i));
+TYPED_TEST_P(SanitizerTest, PoisoningUnused) {
+  TypeParam t;
+  for (size_t reserve_size = 2; reserve_size < 1024;
+       reserve_size = reserve_size * 3 / 2) {
+    t.reserve(reserve_size);
+    // Insert something to force an allocation.
+    int64_t& v = *t.insert(0).first;
+
+    // Make sure there is something to test.
+    ASSERT_GT(t.capacity(), 1);
+
+    int64_t* slots = RawHashSetTestOnlyAccess::GetSlots(t);
+    for (size_t i = 0; i < t.capacity(); ++i) {
+      EXPECT_EQ(slots + i != &v, __asan_address_is_poisoned(slots + i)) << i;
+    }
   }
 }
+
+REGISTER_TYPED_TEST_SUITE_P(SanitizerTest, PoisoningUnused);
+using SanitizerTableTypes = ::testing::Types<IntTable, TransferableIntTable>;
+INSTANTIATE_TYPED_TEST_SUITE_P(InstanceSanitizerTest, SanitizerTest,
+                               SanitizerTableTypes);
 
 TEST(Sanitizer, PoisoningOnErase) {
   IntTable t;
@@ -2491,6 +2614,69 @@ using RawHashSetAlloc = raw_hash_set<IntPolicy, hash_default_hash<int64_t>,
                                      std::equal_to<int64_t>, Alloc>;
 
 TEST(Table, AllocatorPropagation) { TestAllocPropagation<RawHashSetAlloc>(); }
+
+struct CountedHash {
+  size_t operator()(int value) const {
+    ++count;
+    return static_cast<size_t>(value);
+  }
+  mutable int count = 0;
+};
+
+struct CountedHashIntTable
+    : raw_hash_set<IntPolicy, CountedHash, std::equal_to<int>,
+                   std::allocator<int>> {
+  using Base = typename CountedHashIntTable::raw_hash_set;
+  using Base::Base;
+};
+
+TEST(Table, CountedHash) {
+  // Verify that raw_hash_set does not compute redundant hashes.
+#ifdef NDEBUG
+  constexpr bool kExpectMinimumHashes = true;
+#else
+  constexpr bool kExpectMinimumHashes = false;
+#endif
+  if (!kExpectMinimumHashes) {
+    GTEST_SKIP() << "Only run under NDEBUG: `assert` statements may cause "
+                    "redundant hashing.";
+  }
+
+  using Table = CountedHashIntTable;
+  auto HashCount = [](const Table& t) { return t.hash_function().count; };
+  {
+    Table t;
+    EXPECT_EQ(HashCount(t), 0);
+  }
+  {
+    Table t;
+    t.insert(1);
+    EXPECT_EQ(HashCount(t), 1);
+    t.erase(1);
+    EXPECT_EQ(HashCount(t), 2);
+  }
+  {
+    Table t;
+    t.insert(3);
+    EXPECT_EQ(HashCount(t), 1);
+    auto node = t.extract(3);
+    EXPECT_EQ(HashCount(t), 2);
+    t.insert(std::move(node));
+    EXPECT_EQ(HashCount(t), 3);
+  }
+  {
+    Table t;
+    t.emplace(5);
+    EXPECT_EQ(HashCount(t), 1);
+  }
+  {
+    Table src;
+    src.insert(7);
+    Table dst;
+    dst.merge(src);
+    EXPECT_EQ(HashCount(dst), 1);
+  }
+}
 
 }  // namespace
 }  // namespace container_internal

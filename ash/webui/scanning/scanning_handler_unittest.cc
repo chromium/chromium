@@ -223,7 +223,7 @@ class ScanningHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::TestWebUI web_ui_;
   std::unique_ptr<ScanningHandler> scanning_handler_;
-  raw_ptr<FakeScanningAppDelegate, ExperimentalAsh> fake_scanning_app_delegate_;
+  raw_ptr<FakeScanningAppDelegate> fake_scanning_app_delegate_;
   base::ScopedTempDir temp_dir_;
   base::FilePath my_files_path_;
 };

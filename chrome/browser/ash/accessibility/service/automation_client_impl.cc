@@ -20,9 +20,8 @@ AutomationClientImpl::~AutomationClientImpl() {
       nullptr);
 }
 
-void AutomationClientImpl::Bind(
-    mojo::PendingAssociatedRemote<ax::mojom::Automation> automation,
-    mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client) {
+void AutomationClientImpl::BindAutomation(
+    mojo::PendingAssociatedRemote<ax::mojom::Automation> automation) {
   // Launches the service if it wasn't running yet.
   // Development note (crbug.com/1355633): Using the remote router means
   // extensions don't get a11y events when AutomationClientImpl is bound, so
@@ -34,6 +33,10 @@ void AutomationClientImpl::Bind(
         this);
   }
   automation_remotes_.Add(std::move(automation));
+}
+
+void AutomationClientImpl::BindAutomationClient(
+    mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client) {
   automation_client_receivers_.Add(this, std::move(automation_client));
 }
 

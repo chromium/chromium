@@ -50,14 +50,14 @@ class AutoclickMenuView : public views::BoxLayoutView {
   void OnPositionButtonPressed();
 
   // Unowned. Owned by views hierarchy.
-  raw_ptr<FloatingMenuButton, ExperimentalAsh> left_click_button_ = nullptr;
-  raw_ptr<FloatingMenuButton, ExperimentalAsh> right_click_button_ = nullptr;
-  raw_ptr<FloatingMenuButton, ExperimentalAsh> double_click_button_ = nullptr;
-  raw_ptr<FloatingMenuButton, ExperimentalAsh> drag_button_ = nullptr;
-  raw_ptr<FloatingMenuButton, ExperimentalAsh> scroll_button_ = nullptr;
-  raw_ptr<FloatingMenuButton, ExperimentalAsh> pause_button_ = nullptr;
-  raw_ptr<FloatingMenuButton, ExperimentalAsh> position_button_ = nullptr;
-  raw_ptr<views::Separator, ExperimentalAsh> separator_ = nullptr;
+  raw_ptr<FloatingMenuButton> left_click_button_ = nullptr;
+  raw_ptr<FloatingMenuButton> right_click_button_ = nullptr;
+  raw_ptr<FloatingMenuButton> double_click_button_ = nullptr;
+  raw_ptr<FloatingMenuButton> drag_button_ = nullptr;
+  raw_ptr<FloatingMenuButton> scroll_button_ = nullptr;
+  raw_ptr<FloatingMenuButton> pause_button_ = nullptr;
+  raw_ptr<FloatingMenuButton> position_button_ = nullptr;
+  raw_ptr<views::Separator> separator_ = nullptr;
 
   // The most recently selected event_type_ excluding kNoAction. This is used
   // when the pause button is selected in order to unpause and reset to the

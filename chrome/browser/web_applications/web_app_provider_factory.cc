@@ -16,9 +16,10 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
-#include "chrome/browser/web_applications/web_app_prefs_utils.h"
+#include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
@@ -82,8 +83,10 @@ void WebAppProviderFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   UserUninstalledPreinstalledWebAppPrefs::RegisterProfilePrefs(registry);
   PreinstalledWebAppManager::RegisterProfilePrefs(registry);
+  WebAppPrefGuardrails::RegisterProfilePrefs(registry);
   WebAppPolicyManager::RegisterProfilePrefs(registry);
-  WebAppPrefsUtilsRegisterProfilePrefs(registry);
+  registry->RegisterBooleanPref(prefs::kShouldGarbageCollectStoragePartitions,
+                                false);
   RegisterInstallBounceMetricProfilePrefs(registry);
   RegisterDailyWebAppMetricsProfilePrefs(registry);
   WebAppShortcutManager::RegisterProfilePrefs(registry);

@@ -65,11 +65,8 @@ HistoryClustersPageHandler::HistoryClustersPageHandler(
         CartServiceFactory::GetForProfile(profile_));
   }
 
-  if (base::FeatureList::IsEnabled(
-          ntp_features::kNtpHistoryClustersModuleDiscounts)) {
     discount_processor_ = std::make_unique<DiscountProcessor>(
         commerce::ShoppingServiceFactory::GetForBrowserContext(profile_));
-  }
 }
 
 HistoryClustersPageHandler::~HistoryClustersPageHandler() {
@@ -166,14 +163,6 @@ void HistoryClustersPageHandler::GetCartForCluster(
 void HistoryClustersPageHandler::GetDiscountsForCluster(
     history_clusters::mojom::ClusterPtr cluster,
     GetDiscountsForClusterCallback callback) {
-  if (!base::FeatureList::IsEnabled(
-          ntp_features::kNtpHistoryClustersModuleDiscounts)) {
-    std::move(callback).Run(
-        base::flat_map<
-            GURL, std::vector<
-                      ntp::history_clusters::discount::mojom::DiscountPtr>>());
-    return;
-  }
   DCHECK(discount_processor_);
   discount_processor_->GetDiscountsForCluster(std::move(cluster),
                                               std::move(callback));

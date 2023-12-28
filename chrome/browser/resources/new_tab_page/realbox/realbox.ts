@@ -70,6 +70,11 @@ export class RealboxElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
+      colorSourceIsBaseline: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
+
       /** Whether the cr-realbox-dropdown should be visible. */
       dropdownIsVisible: {
         type: Boolean,
@@ -113,10 +118,9 @@ export class RealboxElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
-      /** Whether to display single-colored icons or not. */
-      singleColoredIcons: {
+      realboxChromeRefreshTheming: {
         type: Boolean,
-        value: false,
+        value: () => loadTimeData.getBoolean('realboxCr23Theming'),
         reflectToAttribute: true,
       },
 
@@ -221,13 +225,14 @@ export class RealboxElement extends PolymerElement {
   }
 
   canShowSecondarySide: boolean;
+  colorSourceIsBaseline: boolean;
   dropdownIsVisible: boolean;
   hadSecondarySide: boolean;
   hasSecondarySide: boolean;
   isDark: boolean;
   matchSearchbox: boolean;
   realboxLensSearchEnabled: boolean;
-  singleColoredIcons: boolean;
+  realboxChromeRefreshTheming: boolean;
   private inputAriaLive_: string;
   private isDeletingInput_: boolean;
   private lastIgnoredEnterEvent_: KeyboardEvent|null;

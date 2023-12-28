@@ -25,7 +25,7 @@ import type {TaskController} from './task_controller.js';
 import {Command} from './ui/command.js';
 import type {DirectoryItem} from './ui/directory_tree.js';
 import type {FileManagerUI} from './ui/file_manager_ui.js';
-import {FileTapHandler} from './ui/file_tap_handler.js';
+import {FileTapHandler, TapEvent} from './ui/file_tap_handler.js';
 import {EventType, ListType, ListTypesForUMA} from './ui/list_container.js';
 
 /**
@@ -112,7 +112,7 @@ export class MainWindowComponent {
     // Also the 2nd parameter of handleTouchEvents is just passed back to the
     // callback. Therefore we can pass a dummy value -1.
     this.tapHandler_.handleTouchEvents(event, -1, (_e, _index, eventType) => {
-      if (eventType == FileTapHandler.TapEvent.TAP) {
+      if (eventType == TapEvent.TAP) {
         const target = event.target as HTMLElement;
         // Taps on the checkmark should only toggle select the item.
         if (target.classList.contains('detail-checkmark') ||

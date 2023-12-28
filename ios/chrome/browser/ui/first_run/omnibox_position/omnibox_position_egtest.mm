@@ -127,7 +127,9 @@ void SkipScreensBeforeOmniboxPositionChoice() {
         kBottomOmniboxPromoFRE.name);
   } else if ([self
                  isRunningTest:@selector(testSelectBottomWithBottomDefault)] ||
-             [self isRunningTest:@selector(testSelectTopWithBottomDefault)]) {
+             [self isRunningTest:@selector(testSelectTopWithBottomDefault)] ||
+             [self
+                 isRunningTest:@selector(testSkipSelectionWithBottomDefault)]) {
     std::string bottom_option_by_default =
         std::string(kBottomOmniboxPromoDefaultPosition.name) + ":" +
         kBottomOmniboxPromoDefaultPositionParam + "/" +
@@ -240,6 +242,33 @@ void SkipScreensBeforeOmniboxPositionChoice() {
   // Verify that the preferred omnibox position is top.
   GREYAssertFalse([ChromeEarlGrey userBooleanPref:prefs::kBottomOmnibox],
                   @"Failed to set preferred omnibox position to top");
+}
+
+// Tests skipping the screen in FRE when bottom is selected by default.
+- (void)testSkipSelectionWithBottomDefault {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped for iPad (no choice for omnibox position on tablet)");
+  }
+
+  SkipScreensBeforeOmniboxPositionChoice();
+
+  // The bottom address bar option should be selected.
+  [[EarlGrey selectElementWithMatcher:BottomAddressBarOptionSelected()]
+      assertWithMatcher:grey_notNil()];
+
+  // Skip promo screen.
+  TapPromoStyleButton(kPromoStyleSecondaryActionAccessibilityIdentifier);
+
+  // Verify that the omnibox is at the bottom by default.
+  GREYAssertTrue(
+      [ChromeEarlGrey prefWithNameIsDefaultValue:prefs::kBottomOmnibox],
+      @"The omnibox position pref should not have a user value");
+  GREYAssertTrue([ChromeEarlGrey userBooleanPref:prefs::kBottomOmnibox],
+                 @"Failed to set the omnibox position to bottom");
+  GREYAssertTrue(
+      [ChromeEarlGrey userBooleanPref:prefs::kBottomOmniboxByDefault],
+      @"Failed to set preferred default omnibox position to bottom");
 }
 
 @end

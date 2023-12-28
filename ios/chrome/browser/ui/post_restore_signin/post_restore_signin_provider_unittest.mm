@@ -12,12 +12,14 @@
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/ui/post_restore_signin/metrics.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/device_form_factor.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 const char kFakePreRestoreAccountEmail[] = "person@example.org";
@@ -83,7 +85,9 @@ TEST_F(PostRestoreSignInProviderTest, standardPromoAlertDefaultAction) {
 
 // Test the title text.
 TEST_F(PostRestoreSignInProviderTest, title) {
-  EXPECT_TRUE([[provider_ title] isEqualToString:@"Chrome is Signed Out"]);
+  EXPECT_TRUE([[provider_ title]
+      isEqualToString:l10n_util::GetNSString(
+                          IDS_IOS_POST_RESTORE_SIGN_IN_ALERT_PROMO_TITLE)]);
 }
 
 // Tests the alert message.

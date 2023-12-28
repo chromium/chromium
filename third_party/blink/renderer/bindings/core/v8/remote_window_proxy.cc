@@ -73,9 +73,9 @@ void RemoteWindowProxy::DisposeContext(Lifecycle next_status,
        next_status == Lifecycle::kGlobalObjectIsDetached) &&
       !global_proxy_.IsEmpty()) {
     v8::HandleScope handle_scope(GetIsolate());
-    global_proxy_.SetWrapperClassId(0);
-    V8DOMWrapper::ClearNativeInfo(GetIsolate(),
-                                  global_proxy_.Get(GetIsolate()));
+    v8::Local<v8::Object> global = global_proxy_.Get(GetIsolate());
+    V8DOMWrapper::ClearNativeInfo(GetIsolate(), global);
+    DOMWrapperWorld::ClearWrapperIfEqualTo(GetFrame()->DomWindow(), global);
 #if DCHECK_IS_ON()
     DidDetachGlobalObject();
 #endif
@@ -135,9 +135,9 @@ void RemoteWindowProxy::SetupWindowPrototypeChain() {
   v8::Local<v8::Object> global_proxy = global_proxy_.Get(GetIsolate());
   V8DOMWrapper::SetNativeInfo(GetIsolate(), global_proxy, wrapper_type_info,
                               window);
-  // Mark the handle to be traced by Oilpan, since the global proxy has a
-  // reference to the DOMWindow.
-  global_proxy_.SetWrapperClassId(wrapper_type_info->wrapper_class_id);
+  CHECK(global_proxy == window->AssociateWithWrapper(GetIsolate(), world_,
+                                                     wrapper_type_info,
+                                                     global_proxy));
 
   // The global object, aka window wrapper object.
   v8::Local<v8::Object> window_wrapper =

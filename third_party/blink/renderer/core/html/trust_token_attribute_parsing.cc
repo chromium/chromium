@@ -3,25 +3,16 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/html/trust_token_attribute_parsing.h"
+#include "base/logging.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "third_party/blink/renderer/core/fetch/trust_token_to_mojom.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace blink {
-
-namespace internal {
+namespace blink::internal {
 
 namespace {
-bool ParseMajorVersion(int in, network::mojom::TrustTokenMajorVersion* out) {
-  if (in == 1) {
-    *out = network::mojom::TrustTokenMajorVersion::kPrivateStateTokenV1;
-    return true;
-  } else {
-    return false;
-  }
-}
 bool ParseOperation(const String& in,
                     network::mojom::TrustTokenOperationType* out) {
   if (in == "token-request") {
@@ -62,12 +53,16 @@ network::mojom::blink::TrustTokenParamsPtr TrustTokenParamsFromJson(
 
   auto ret = network::mojom::blink::TrustTokenParams::New();
 
-  // |version| is required.
+  // |version| is required, though unused.
   int version;
   if (!object->GetInteger("version", &version)) {
+    LOG(WARNING) << "expected integer trust token version, got none";
     return nullptr;
   }
-  if (!ParseMajorVersion(version, &ret->version)) {
+  // Although we don't use the version number internally, it's still the case
+  // that we only understand version 1.
+  if (version != 1) {
+    LOG(WARNING) << "expected trust token version 1, got " << version;
     return nullptr;
   }
 
@@ -117,5 +112,4 @@ network::mojom::blink::TrustTokenParamsPtr TrustTokenParamsFromJson(
   return ret;
 }
 
-}  // namespace internal
-}  // namespace blink
+}  // namespace blink::internal

@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.chrome.browser.readaloud.player.Colors;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -63,6 +64,9 @@ class MenuSheetContent implements BottomSheetContent {
                             onBackPressed();
                         });
         mOpeningSubmenu = false;
+
+        // Apply dynamic background color.
+        Colors.setBottomSheetContentBackground(mMenu);
     }
 
     // TODO(b/306426853) Replace this with a BottomSheetObserver.

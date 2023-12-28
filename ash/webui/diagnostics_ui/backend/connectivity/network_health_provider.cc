@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
 #include "ash/system/diagnostics/networking_log.h"
 #include "ash/webui/diagnostics_ui/backend/common/histogram_util.h"
@@ -240,13 +241,24 @@ mojom::RoamingState GetRoamingState(std::optional<std::string>& roaming_state) {
 }
 
 constexpr mojom::LockType GetLockType(const std::string& lock_type) {
-  // Possible values are 'sim-pin', 'sim-puk' or empty.
+  // Possible values are 'sim-pin', 'sim-puk', 'network-pin' or empty.
   if (lock_type.empty()) {
     return mojom::LockType::kNone;
   }
-  DCHECK(lock_type == "sim-pin" || lock_type == "sim-puk");
-  return lock_type == "sim-pin" ? mojom::LockType::kSimPin
-                                : mojom::LockType::kSimPuk;
+
+  DCHECK(lock_type == "sim-pin" || lock_type == "sim-puk" ||
+         lock_type == "network-pin");
+
+  if (lock_type == "sim-pin") {
+    return mojom::LockType::kSimPin;
+  }
+  if (lock_type == "sim-puk") {
+    return mojom::LockType::kSimPuk;
+  }
+  if (features::IsCellularCarrierLockEnabled() && lock_type == "network-pin") {
+    return mojom::LockType::kNetworkPin;
+  }
+  return mojom::LockType::kNone;
 }
 
 void UpdateNetwork(

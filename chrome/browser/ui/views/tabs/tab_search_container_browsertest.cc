@@ -8,6 +8,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -29,25 +30,9 @@ class TabSearchContainerBrowserTest : public InProcessBrowserTest {
   TabSearchContainerBrowserTest() {
     feature_list_.InitWithFeatures(
         {features::kTabOrganization, features::kChromeRefresh2023,
-         features::kChromeWebuiRefresh2023,
-         optimization_guide::features::internal::
-             kTabOrganizationSettingsVisibility,
-         optimization_guide::features::kOptimizationGuideModelExecution},
+         features::kChromeWebuiRefresh2023},
         {});
-  }
-
-  void EnableOptGuide() {
-    signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForProfile(browser()->profile()),
-        "test@example.com", signin::ConsentLevel::kSync);
-
-    PrefService* prefs = browser()->profile()->GetPrefs();
-    prefs->SetInteger(
-        optimization_guide::prefs::GetSettingEnabledPrefName(
-            optimization_guide::proto::ModelExecutionFeature::
-                MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION),
-        static_cast<int>(
-            optimization_guide::prefs::FeatureOptInState::kEnabled));
+    TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
   }
 
   TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
@@ -65,11 +50,6 @@ class TabSearchContainerBrowserTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
 };
-
-IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
-                       PRE_TogglesActionUIState) {
-  EnableOptGuide();
-}
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest, TogglesActionUIState) {
   ASSERT_FALSE(
@@ -122,11 +102,6 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest, DelaysHide) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
-                       PRE_ImmediatelyHidesWhenOrganizeButtonClicked) {
-  EnableOptGuide();
-}
-
-IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                        ImmediatelyHidesWhenOrganizeButtonClicked) {
   tab_search_container()->expansion_animation_for_testing()->Reset(1);
   tab_search_container()->SetLockedExpansionModeForTesting(
@@ -136,11 +111,6 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 
   EXPECT_TRUE(
       tab_search_container()->expansion_animation_for_testing()->IsClosing());
-}
-
-IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
-                       PRE_ImmediatelyHidesWhenOrganizeButtonDismissed) {
-  EnableOptGuide();
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,

@@ -28,9 +28,9 @@ constexpr uint64_t kNamedMessagePortConnectorBindingsId = 1000;
 bool AddReturnValue(
     base::WeakPtr<BindingsMessagePortConnector> ptr,
     base::RepeatingCallback<
-        void(base::StringPiece,
-             std::unique_ptr<cast_api_bindings::MessagePort>)> callback,
-    base::StringPiece port_name,
+        void(std::string_view, std::unique_ptr<cast_api_bindings::MessagePort>)>
+        callback,
+    std::string_view port_name,
     std::unique_ptr<cast_api_bindings::MessagePort> port) {
   callback.Run(std::move(port_name), std::move(port));
   return !!ptr;
@@ -85,12 +85,12 @@ void BindingsMessagePortConnector::ConnectToBindingsService() {
 
 void BindingsMessagePortConnector::AddBeforeLoadJavaScript(
     uint64_t id,
-    base::StringPiece script) {
+    std::string_view script) {
   script_injector_.AddScriptForAllOrigins(id, std::string(script));
 }
 
 void BindingsMessagePortConnector::OnPortConnected(
-    base::StringPiece port_name,
+    std::string_view port_name,
     std::unique_ptr<cast_api_bindings::MessagePort> port) {
   client_->Connect(
       std::string(port_name),

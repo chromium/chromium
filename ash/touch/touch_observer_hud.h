@@ -83,9 +83,9 @@ class ASH_EXPORT TouchObserverHud
   friend class TouchHudTestBase;
 
   const int64_t display_id_;
-  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
+  raw_ptr<aura::Window> root_window_;
 
-  raw_ptr<views::Widget, ExperimentalAsh> widget_;
+  raw_ptr<views::Widget> widget_;
 
   display::ScopedDisplayObserver display_observer_{this};
 };

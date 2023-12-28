@@ -13,17 +13,26 @@ export type GroupButtonClickEvent = CustomEvent<{group: string}>;
 
 export const GROUP_BUTTON_CLICK = 'group-button-click';
 
-export type EmojiTextButtonClickEvent = CustomEvent<{
-  isVariant: boolean,
-  baseEmoji?: string, allVariants: Emoji[],
-  name?: string, text: string, category: CategoryEnum,
-}>;
+export interface TextItem {
+  name?: string;
+  category: CategoryEnum;
+  text: string;
+  baseEmoji?: string;
+  isVariant: boolean;
+  alternates: Emoji[];
+}
+
+export type EmojiTextButtonClickEvent = CustomEvent<TextItem>;
 
 export const EMOJI_TEXT_BUTTON_CLICK = 'emoji-text-button-click';
 
-export type EmojiImgButtonClickEvent = CustomEvent<{
-  name?: string, visualContent: VisualContent, category: CategoryEnum,
-}>;
+export interface VisualItem {
+  name?: string;
+  category: CategoryEnum;
+  visualContent: VisualContent;
+}
+
+export type EmojiImgButtonClickEvent = CustomEvent<VisualItem>;
 
 export const EMOJI_IMG_BUTTON_CLICK = 'emoji-img-button-click';
 

@@ -166,10 +166,6 @@ void ProcessPriorityAggregator::OnProcessNodeAdded(
     const ProcessNode* process_node) {
   auto* process_node_impl = ProcessNodeImpl::FromNode(process_node);
   DCHECK(!DataImpl::Get(process_node_impl));
-  DataImpl* data = DataImpl::GetOrCreate(process_node_impl);
-  DCHECK(data->IsEmpty());
-  DCHECK_EQ(base::TaskPriority::LOWEST, process_node_impl->GetPriority());
-  DCHECK_EQ(base::TaskPriority::LOWEST, data->GetPriority());
 }
 
 void ProcessPriorityAggregator::OnBeforeProcessNodeRemoved(
@@ -177,14 +173,16 @@ void ProcessPriorityAggregator::OnBeforeProcessNodeRemoved(
 #if DCHECK_IS_ON()
   auto* process_node_impl = ProcessNodeImpl::FromNode(process_node);
   DataImpl* data = DataImpl::Get(process_node_impl);
-  DCHECK(data->IsEmpty());
+  if (data) {
+    DCHECK(data->IsEmpty());
+  }
 #endif
 }
 
 void ProcessPriorityAggregator::OnExecutionContextAdded(
     const execution_context::ExecutionContext* ec) {
   auto* process_node = ProcessNodeImpl::FromNode(ec->GetProcessNode());
-  DataImpl* data = DataImpl::Get(process_node);
+  DataImpl* data = DataImpl::GetOrCreate(process_node);
   data->Increment(ec->GetPriorityAndReason().priority());
   // This is a nop if the priority didn't actually change.
   process_node->set_priority(data->GetPriority());

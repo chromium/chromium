@@ -19,10 +19,6 @@
 #include "third_party/libvpx/source/libvpx/vpx/vpx_encoder.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_image.h"
 
-// The libvpx API uses the unsigned long type.
-// NOLINTBEGIN(runtime/int)
-// NOLINTBEGIN(google-runtime-int)
-
 using fuzztest::Arbitrary;
 using fuzztest::ElementOf;
 using fuzztest::FlatMap;
@@ -43,7 +39,7 @@ struct Configure {
   // scalabilityMode.
   vpx_rc_mode end_usage;   // Implies bitrateMode: constant, variable.
                            // Note: quantizer not implemented for VP8.
-  unsigned long deadline;  // Implies LatencyMode: quality, realtime.
+  vpx_enc_deadline_t deadline;  // Implies LatencyMode: quality, realtime.
   // TODO(wtc): contentHint.
 };
 
@@ -54,7 +50,7 @@ auto AnyConfigureWithSize(unsigned int width, unsigned int height) {
       /*height=*/Just(height),
       /*end_usage=*/ElementOf({VPX_VBR, VPX_CBR}),
       /*deadline=*/
-      ElementOf<unsigned long>({VPX_DL_GOOD_QUALITY, VPX_DL_REALTIME}));
+      ElementOf({VPX_DL_GOOD_QUALITY, VPX_DL_REALTIME}));
 }
 
 auto AnyConfigureWithMaxSize(unsigned int max_width, unsigned int max_height) {
@@ -65,7 +61,7 @@ auto AnyConfigureWithMaxSize(unsigned int max_width, unsigned int max_height) {
       /*height=*/InRange(1u, max_height),
       /*end_usage=*/ElementOf({VPX_VBR, VPX_CBR}),
       /*deadline=*/
-      ElementOf<unsigned long>({VPX_DL_GOOD_QUALITY, VPX_DL_REALTIME}));
+      ElementOf({VPX_DL_GOOD_QUALITY, VPX_DL_REALTIME}));
 }
 
 // Represents a VideoEncoder::encode() method call.
@@ -107,8 +103,8 @@ auto AnyCallSequence() {
 }
 
 void VP8EncodeArbitraryCallSequenceSucceeds(int speed,
-                                            CallSequence call_sequence) {
-  vpx_codec_iface_t* iface = vpx_codec_vp8_cx();
+                                            const CallSequence& call_sequence) {
+  vpx_codec_iface_t* const iface = vpx_codec_vp8_cx();
   vpx_codec_enc_cfg_t cfg;
   ASSERT_EQ(vpx_codec_enc_config_default(iface, &cfg, /*usage=*/0),
             VPX_CODEC_OK);
@@ -128,7 +124,7 @@ void VP8EncodeArbitraryCallSequenceSucceeds(int speed,
 
   ASSERT_EQ(vpx_codec_control(&enc, VP8E_SET_CPUUSED, speed), VPX_CODEC_OK);
 
-  unsigned long deadline = call_sequence.initialize.deadline;
+  vpx_enc_deadline_t deadline = call_sequence.initialize.deadline;
   const vpx_codec_cx_pkt_t* pkt;
 
   int frame_index = 0;
@@ -146,21 +142,22 @@ void VP8EncodeArbitraryCallSequenceSucceeds(int speed,
       // Encode a frame.
       const Encode& encode = std::get<Encode>(call);
       // VP8 supports only one image format: 8-bit YUV 4:2:0.
-      vpx_image_t* image =
+      vpx_image_t* const image =
           vpx_img_alloc(nullptr, VPX_IMG_FMT_I420, cfg.g_w, cfg.g_h, 1);
       ASSERT_NE(image, nullptr);
 
       for (unsigned int i = 0; i < image->d_h; ++i) {
         memset(image->planes[0] + i * image->stride[0], 128, image->d_w);
       }
-      unsigned int uv_h = (image->d_h + 1) / 2;
-      unsigned int uv_w = (image->d_w + 1) / 2;
+      const unsigned int uv_h = (image->d_h + 1) / 2;
+      const unsigned int uv_w = (image->d_w + 1) / 2;
       for (unsigned int i = 0; i < uv_h; ++i) {
         memset(image->planes[1] + i * image->stride[1], 128, uv_w);
         memset(image->planes[2] + i * image->stride[2], 128, uv_w);
       }
 
-      vpx_enc_frame_flags_t flags = encode.key_frame ? VPX_EFLAG_FORCE_KF : 0;
+      const vpx_enc_frame_flags_t flags =
+          encode.key_frame ? VPX_EFLAG_FORCE_KF : 0;
       ASSERT_EQ(vpx_codec_encode(&enc, image, frame_index, 1, flags, deadline),
                 VPX_CODEC_OK);
       frame_index++;
@@ -182,6 +179,7 @@ void VP8EncodeArbitraryCallSequenceSucceeds(int speed,
     got_data = false;
     vpx_codec_iter_t iter = nullptr;
     while ((pkt = vpx_codec_get_cx_data(&enc, &iter)) != nullptr) {
+      ASSERT_EQ(pkt->kind, VPX_CODEC_CX_FRAME_PKT);
       got_data = true;
     }
   } while (got_data);
@@ -201,7 +199,7 @@ void VP8EncodeSucceeds(unsigned int threads,
                        unsigned int width,
                        unsigned int height,
                        int num_frames) {
-  vpx_codec_iface_t* iface = vpx_codec_vp8_cx();
+  vpx_codec_iface_t* const iface = vpx_codec_vp8_cx();
   vpx_codec_enc_cfg_t cfg;
   ASSERT_EQ(vpx_codec_enc_config_default(iface, &cfg, /*usage=*/0),
             VPX_CODEC_OK);
@@ -222,27 +220,28 @@ void VP8EncodeSucceeds(unsigned int threads,
   ASSERT_EQ(vpx_codec_control(&enc, VP8E_SET_CPUUSED, speed), VPX_CODEC_OK);
 
   // VP8 supports only one image format: 8-bit YUV 4:2:0.
-  vpx_image_t* image =
+  vpx_image_t* const image =
       vpx_img_alloc(nullptr, VPX_IMG_FMT_I420, cfg.g_w, cfg.g_h, 1);
   ASSERT_NE(image, nullptr);
 
   for (unsigned int i = 0; i < image->d_h; ++i) {
     memset(image->planes[0] + i * image->stride[0], 128, image->d_w);
   }
-  unsigned int uv_h = (image->d_h + 1) / 2;
-  unsigned int uv_w = (image->d_w + 1) / 2;
+  const unsigned int uv_h = (image->d_h + 1) / 2;
+  const unsigned int uv_w = (image->d_w + 1) / 2;
   for (unsigned int i = 0; i < uv_h; ++i) {
     memset(image->planes[1] + i * image->stride[1], 128, uv_w);
     memset(image->planes[2] + i * image->stride[2], 128, uv_w);
   }
 
   // Encode frames.
-  const unsigned long deadline = VPX_DL_REALTIME;
+  const vpx_enc_deadline_t deadline = VPX_DL_REALTIME;
   const vpx_codec_cx_pkt_t* pkt;
   for (int i = 0; i < num_frames; ++i) {
     ASSERT_EQ(vpx_codec_encode(&enc, image, i, 1, 0, deadline), VPX_CODEC_OK);
     vpx_codec_iter_t iter = nullptr;
     while ((pkt = vpx_codec_get_cx_data(&enc, &iter)) != nullptr) {
+      ASSERT_EQ(pkt->kind, VPX_CODEC_CX_FRAME_PKT);
     }
   }
 
@@ -253,6 +252,7 @@ void VP8EncodeSucceeds(unsigned int threads,
     got_data = false;
     vpx_codec_iter_t iter = nullptr;
     while ((pkt = vpx_codec_get_cx_data(&enc, &iter)) != nullptr) {
+      ASSERT_EQ(pkt->kind, VPX_CODEC_CX_FRAME_PKT);
       got_data = true;
     }
   } while (got_data);
@@ -269,6 +269,3 @@ FUZZ_TEST(VP8EncodeFuzzTest, VP8EncodeSucceeds)
                  /*width=*/InRange(1u, 1920u),
                  /*height=*/InRange(1u, 1080u),
                  /*num_frames=*/InRange(1, 10));
-
-// NOLINTEND(google-runtime-int)
-// NOLINTEND(runtime/int)

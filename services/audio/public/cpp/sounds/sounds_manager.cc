@@ -5,6 +5,7 @@
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -36,7 +37,7 @@ class SoundsManagerImpl : public SoundsManager {
 
   // SoundsManager implementation:
   bool Initialize(SoundKey key,
-                  const std::string_view& data,
+                  std::string_view data,
                   media::AudioCodec codec) override;
   bool Play(SoundKey key) override;
   bool Stop(SoundKey key) override;
@@ -55,7 +56,7 @@ class SoundsManagerImpl : public SoundsManager {
 };
 
 bool SoundsManagerImpl::Initialize(SoundKey key,
-                                   const std::string_view& data,
+                                   std::string_view data,
                                    media::AudioCodec codec) {
   if (AudioStreamHandler* handler = GetHandler(key)) {
     DCHECK(handler->IsInitialized());

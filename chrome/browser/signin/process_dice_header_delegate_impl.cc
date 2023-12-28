@@ -83,7 +83,6 @@ ProcessDiceHeaderDelegateImpl::Create(content::WebContents* web_contents) {
       signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
   signin_metrics::PromoAction promo_action =
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
-  signin_metrics::Reason reason = signin_metrics::Reason::kUnknownReason;
   GURL redirect_url;
   EnableSyncCallback enable_sync_callback;
   OnSigninHeaderReceived on_signin_header_received;
@@ -95,7 +94,6 @@ ProcessDiceHeaderDelegateImpl::Create(content::WebContents* web_contents) {
     redirect_url = tab_helper->redirect_url();
     access_point = tab_helper->signin_access_point();
     promo_action = tab_helper->signin_promo_action();
-    reason = tab_helper->signin_reason();
     // `show_signin_error_callback` may be null if the `DiceTabHelper` was reset
     // after completion of a signin flow.
     show_signin_error_callback =
@@ -118,7 +116,7 @@ ProcessDiceHeaderDelegateImpl::Create(content::WebContents* web_contents) {
   }
 
   return std::make_unique<ProcessDiceHeaderDelegateImpl>(
-      web_contents, is_sync_signin_tab, access_point, promo_action, reason,
+      web_contents, is_sync_signin_tab, access_point, promo_action,
       std::move(redirect_url), std::move(enable_sync_callback),
       std::move(on_signin_header_received),
       std::move(show_signin_error_callback));
@@ -129,7 +127,6 @@ ProcessDiceHeaderDelegateImpl::ProcessDiceHeaderDelegateImpl(
     bool is_sync_signin_tab,
     signin_metrics::AccessPoint access_point,
     signin_metrics::PromoAction promo_action,
-    signin_metrics::Reason reason,
     GURL redirect_url,
     EnableSyncCallback enable_sync_callback,
     OnSigninHeaderReceived on_signin_header_received,
@@ -140,7 +137,6 @@ ProcessDiceHeaderDelegateImpl::ProcessDiceHeaderDelegateImpl(
       is_sync_signin_tab_(is_sync_signin_tab),
       access_point_(access_point),
       promo_action_(promo_action),
-      reason_(reason),
       redirect_url_(std::move(redirect_url)),
       enable_sync_callback_(std::move(enable_sync_callback)),
       on_signin_header_received_(std::move(on_signin_header_received)),
@@ -202,7 +198,7 @@ void ProcessDiceHeaderDelegateImpl::EnableSync(
 
   VLOG(1) << "Start sync after web sign-in.";
   std::move(enable_sync_callback_)
-      .Run(&profile_.get(), access_point_, promo_action_, reason_, web_contents,
+      .Run(&profile_.get(), access_point_, promo_action_, web_contents,
            account_info);
 
   Redirect();

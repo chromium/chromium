@@ -237,7 +237,7 @@ class LocalTestInfoBarVisibilityManager :
       model->AddObserver(this);
     }
 #else
-    for (auto* browser : *BrowserList::GetInstance()) {
+    for (Browser* browser : *BrowserList::GetInstance()) {
       CHECK(browser);
 
       OnBrowserAdded(browser);
@@ -255,6 +255,7 @@ class LocalTestInfoBarVisibilityManager :
 
   void AddInfobarForActiveLocalTestPolicies(
       content::WebContents* web_contents) {
+    infobars::ContentInfoBarManager::CreateForWebContents(web_contents);
     CreateSimpleAlertInfoBar(
         infobars::ContentInfoBarManager::FromWebContents(web_contents),
         infobars::InfoBarDelegate::LOCAL_TEST_POLICIES_APPLIED_INFOBAR, nullptr,
@@ -275,7 +276,7 @@ class LocalTestInfoBarVisibilityManager :
       model->RemoveObserver(this);
     }
 #else
-    for (auto* browser : *BrowserList::GetInstance()) {
+    for (Browser* browser : *BrowserList::GetInstance()) {
       CHECK(browser);
 
       browser->tab_strip_model()->RemoveObserver(this);
@@ -293,6 +294,7 @@ class LocalTestInfoBarVisibilityManager :
 
   void DismissInfobarForActiveLocalTestPolicies(
       content::WebContents* web_contents) {
+    infobars::ContentInfoBarManager::CreateForWebContents(web_contents);
     auto* infobar_manager =
         infobars::ContentInfoBarManager::FromWebContents(web_contents);
     const auto it = base::ranges::find(
@@ -718,7 +720,8 @@ void ProfilePolicyConnector::RevertUseLocalTestPolicyProvider() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<PolicyService>
 ProfilePolicyConnector::CreatePolicyServiceWithInitializationThrottled(
-    const std::vector<ConfigurationPolicyProvider*>& policy_providers,
+    const std::vector<raw_ptr<ConfigurationPolicyProvider, VectorExperimental>>&
+        policy_providers,
     std::vector<std::unique_ptr<PolicyMigrator>> migrators,
     ConfigurationPolicyProvider* user_policy_delegate) {
   DCHECK(user_policy_delegate);

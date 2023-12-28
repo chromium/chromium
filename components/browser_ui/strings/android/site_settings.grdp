@@ -127,6 +127,9 @@
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_ALLOWED" desc="Summary text explaining that a permission is allowed, e.g. JavaScript: allowed.">
     Allowed
   </message>
+    <message name="IDS_WEBSITE_SETTINGS_CATEGORY_ALLOWED_THIS_TIME" desc="Summary text explaining that a permission is allowed ephemerally, e.g. JavaScript: allowed.">
+    Allowed this time
+  </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_ALLOWED_EXCEPT_THIRD_PARTY" desc="Summary text for when only third-party cookies are blocked.">
     Allowed, except third-party
   </message>
@@ -155,18 +158,6 @@
   </message>
   <message name="IDS_ENABLE_NOTIFICATIONS_VIBRATE_SUMMARY" desc="Summary for the preference to enable vibration for notifications">
     Notifications may vibrate the device
-  </message>
-    <message name="IDS_ENABLE_DESKTOP_SITE_PERIPHERAL_TITLE" translateable="false" desc="Title for the preference to enable peripheral setting for request desktop site">
-    Accessories
-  </message>
-  <message name="IDS_ENABLE_DESKTOP_SITE_PERIPHERAL_SUMMARY" translateable="false" desc="Summary for the preference to enable peripheral setting for request desktop site">
-    Always request desktop site if a keyboard, trackpad, or mouse is attached
-  </message>
-  <message name="IDS_ENABLE_DESKTOP_SITE_EXTERNAL_DISPLAY_TITLE" translateable="false" desc="Title for the preference to enable display setting for request desktop site">
-    Displays
-  </message>
-  <message name="IDS_ENABLE_DESKTOP_SITE_EXTERNAL_DISPLAY_SUMMARY" translateable="false" desc="Summary for the preference to enable display setting for request desktop site">
-    Always request desktop site if a monitor is connected
   </message>
   <message name="IDS_ENABLE_DESKTOP_SITE_WINDOW_SETTING_TITLE" desc="Title for the preference to enable window setting for request desktop site">
     When the window is narrow, request mobile view

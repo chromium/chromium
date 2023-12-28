@@ -19,11 +19,9 @@
 #endif
 
 // This class changes requests for Google-specific features (e.g. adding &
-// removing Varitaions headers, Safe Search & Restricted YouTube & restricting
+// removing Variations headers, Safe Search & Restricted YouTube & restricting
 // consumer accounts through group policy.
-class GoogleURLLoaderThrottle
-    : public blink::URLLoaderThrottle,
-      public base::SupportsWeakPtr<GoogleURLLoaderThrottle> {
+class GoogleURLLoaderThrottle final : public blink::URLLoaderThrottle {
  public:
   explicit GoogleURLLoaderThrottle(
 #if BUILDFLAG(IS_ANDROID)

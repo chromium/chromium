@@ -39,7 +39,7 @@ namespace ash {
 // user to stop the recording.
 //
 // The first "icon_view" always shows the gamepad icon.
-// The second "icon_view" shows a dropdown arrow. Calling `SetToggled()` with
+// The second "icon_view" shows an up or down arrow. Calling `SetToggled()` with
 // true will replace the second "icon_view" with an the up arrow. Called with
 // false, it will show the down arrow.
 class GameDashboardButton : public views::Button {
@@ -78,9 +78,9 @@ class GameDashboardButton : public views::Button {
  private:
   friend class GameDashboardContextTestApi;
 
-  // Updates the `dropdown_icon_view_` icon. If `toggled_` is true, it'll show
+  // Updates the icon in `arrow_icon_view_`. If `toggled_` is true, it'll show
   // the up arrow, otherwise the down arrow.
-  void UpdateDropDownArrow();
+  void UpdateArrowIcon();
 
   // Updates `is_recording_` with `is_recording`, then updates all the views.
   void UpdateRecordingState(bool is_recording);
@@ -95,9 +95,9 @@ class GameDashboardButton : public views::Button {
   void SetTitle(const std::u16string& title_text);
 
   // Owned by views hierarchy.
-  raw_ptr<views::ImageView, ExperimentalAsh> gamepad_icon_view_;
-  raw_ptr<views::Label, ExperimentalAsh> title_view_;
-  raw_ptr<views::ImageView, ExperimentalAsh> dropdown_icon_view_;
+  raw_ptr<views::ImageView> gamepad_icon_view_;
+  raw_ptr<views::Label> title_view_;
+  raw_ptr<views::ImageView> arrow_icon_view_;
 
   // If true, the game window is being recorded, otherwise false.
   bool is_recording_ = false;

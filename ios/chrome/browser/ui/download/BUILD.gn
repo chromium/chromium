@@ -6,8 +6,6 @@ source_set("download") {
   sources = [
     "ar_quick_look_coordinator.h",
     "ar_quick_look_coordinator.mm",
-    "download_manager_animation_constants.h",
-    "download_manager_animation_constants.mm",
     "download_manager_consumer.h",
     "download_manager_coordinator.h",
     "download_manager_coordinator.mm",
@@ -34,6 +32,7 @@ source_set("download") {
     "vcard_coordinator.mm",
   ]
   deps = [
+    ":constants",
     ":features",
     "resources:background_compact",
     "resources:background_regular",
@@ -42,6 +41,9 @@ source_set("download") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/download/model",
+    "//ios/chrome/browser/drive/model:drive_availability",
+    "//ios/chrome/browser/drive/model:drive_service_factory",
+    "//ios/chrome/browser/drive/model:drive_tab_helper",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/overlays/model",
@@ -55,6 +57,8 @@ source_set("download") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/store_kit/model",
     "//ios/chrome/browser/ui/download/activities",
     "//ios/chrome/browser/ui/presenters",
@@ -78,6 +82,13 @@ source_set("download") {
     "ARKit.framework",
     "StoreKit.framework",
     "UIKit.framework",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "download_manager_constants.h",
+    "download_manager_constants.mm",
   ]
 }
 

@@ -25,6 +25,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SIMPLE_FONT_DATA_H_
 
 #include <memory>
+#include <mutex>
 #include <utility>
 
 #include "build/build_config.h"

@@ -23,13 +23,6 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ViewStub
-            android:id="@+id/cryptid_holder"
-            android:layout="@layout/new_tab_page_cryptid_holder"
-            android:layout_width="@dimen/cryptid_width_in_logo_wrapper"
-            android:layout_height="@dimen/cryptid_height_in_logo_wrapper"
-            android:layout_gravity="bottom|start" />
-
         <include layout="@layout/logo_view_layout"/>
     </FrameLayout>
 

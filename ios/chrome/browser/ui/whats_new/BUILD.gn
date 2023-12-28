@@ -27,8 +27,10 @@ source_set("whats_new") {
   deps = [
     ":util",
     "//base",
+    "//components/feature_engagement/public",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
@@ -38,6 +40,7 @@ source_set("whats_new") {
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/lens:lens_entrypoint",
     "//ios/chrome/browser/ui/promos_manager:promos",
     "//ios/chrome/browser/ui/whats_new/cells",
     "//ios/chrome/browser/ui/whats_new/data_source",
@@ -70,7 +73,6 @@ source_set("util") {
     "//ios/chrome/browser/promos_manager",
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/promos_manager:features",
-    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/whats_new/data_source:whats_new_item",
   ]

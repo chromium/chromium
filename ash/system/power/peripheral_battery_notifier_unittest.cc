@@ -130,10 +130,8 @@ class PeripheralBatteryNotifierTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<message_center::MessageCenter, DanglingUntriaged | ExperimentalAsh>
-      message_center_;
-  raw_ptr<TestSystemTrayClient, DanglingUntriaged | ExperimentalAsh>
-      system_tray_client_;
+  raw_ptr<message_center::MessageCenter, DanglingUntriaged> message_center_;
+  raw_ptr<TestSystemTrayClient, DanglingUntriaged> system_tray_client_;
   std::unique_ptr<PeripheralBatteryNotifier> battery_notifier_;
   std::unique_ptr<PeripheralBatteryListener> battery_listener_;
 

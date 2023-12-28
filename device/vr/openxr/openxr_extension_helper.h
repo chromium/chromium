@@ -10,6 +10,7 @@
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "build/buildflag.h"
 #include "device/vr/openxr/openxr_anchor_manager.h"
 #include "device/vr/openxr/openxr_hand_tracker.h"
 #include "device/vr/openxr/openxr_platform.h"
@@ -17,6 +18,10 @@
 #include "device/vr/openxr/openxr_stage_bounds_provider.h"
 #include "device/vr/public/mojom/xr_session.mojom-forward.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "third_party/openxr/dev/xr_android.h"
+#endif
 
 namespace device {
 struct OpenXrExtensionMethods {
@@ -49,6 +54,14 @@ struct OpenXrExtensionMethods {
   // Time
   PFN_xrConvertWin32PerformanceCounterToTimeKHR
       xrConvertWin32PerformanceCounterToTimeKHR{nullptr};
+#endif
+
+  // While these extensions don't need to be gated to a particular platform,
+  // since the API is still under development we'll try to limit the scope for
+  // the time being.
+#if BUILDFLAG(IS_ANDROID)
+  PFN_xrGetReferenceSpaceBoundsPolygonANDROID
+      xrGetReferenceSpaceBoundsPolygonANDROID{nullptr};
 #endif
 };
 

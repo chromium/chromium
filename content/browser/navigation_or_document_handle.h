@@ -8,8 +8,11 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/weak_document_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -22,7 +25,7 @@ class RenderFrameHostImpl;
 // document, supporting a seamless transfer from a navigation to a committed
 // document. Typically this is needed when processing events which are racing
 // against the navigation (e.g. notifications from the network service).
-class NavigationOrDocumentHandle
+class CONTENT_EXPORT NavigationOrDocumentHandle
     : public base::RefCounted<NavigationOrDocumentHandle> {
  public:
   static scoped_refptr<NavigationOrDocumentHandle> CreateForDocument(
@@ -42,6 +45,10 @@ class NavigationOrDocumentHandle
   WebContents* GetWebContents() const;
 
   FrameTreeNode* GetFrameTreeNode() const;
+
+  // Returns the outermost top-frame origin, if available; otherwise
+  // `absl::nullopt`.
+  absl::optional<url::Origin> GetTopmostFrameOrigin() const;
 
   bool IsInPrimaryMainFrame() const;
 

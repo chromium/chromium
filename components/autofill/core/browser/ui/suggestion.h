@@ -5,18 +5,18 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_SUGGESTION_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_SUGGESTION_H_
 
+#include <optional>
 #include <ostream>
 #include <string>
+#include <string_view>
 
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
@@ -104,17 +104,17 @@ struct Suggestion {
   Suggestion(std::u16string main_text, PopupItemId popup_item_id);
   // Constructor for unit tests. It will convert the strings from UTF-8 to
   // UTF-16.
-  Suggestion(base::StringPiece main_text,
-             base::StringPiece label,
+  Suggestion(std::string_view main_text,
+             std::string_view label,
              Icon icon,
              PopupItemId popup_item_id);
-  Suggestion(base::StringPiece main_text,
+  Suggestion(std::string_view main_text,
              std::vector<std::vector<Text>> labels,
              Icon icon,
              PopupItemId popup_item_id);
-  Suggestion(base::StringPiece main_text,
-             base::StringPiece minor_text,
-             base::StringPiece label,
+  Suggestion(std::string_view main_text,
+             std::string_view minor_text,
+             std::string_view label,
              Icon icon,
              PopupItemId popup_item_id);
   Suggestion(const Suggestion& other);
@@ -225,8 +225,12 @@ struct Suggestion {
 
   // When `popup_item_id` is
   // `PopupItemId::k(Address|CreditCard)FieldByFieldFilling`, specifies the
-  // `ServerFieldType` used to build the suggestion's `main_text`.
-  std::optional<ServerFieldType> field_by_field_filling_type_used;
+  // `FieldType` used to build the suggestion's `main_text`.
+  std::optional<FieldType> field_by_field_filling_type_used;
+
+  // Whether the user is able to preview the suggestion by hovering on it or
+  // accept it by clicking on it.
+  bool is_acceptable = true;
 
   // Denotes whether this suggestion was hidden prior to the effects caused by
   // kAutofillUseAddressRewriterInProfileSubsetComparison.

@@ -12,10 +12,6 @@ export function deviceIdToString(deviceId: XRDeviceId): string {
       return 'Fake Device';
     case XRDeviceId.ORIENTATION_DEVICE_ID:
       return 'Orientation Device';
-    // <if expr="enable_gvr_services">
-    case XRDeviceId.GVR_DEVICE_ID:
-      return 'GVR Device';
-    // </if>
     // <if expr="enable_arcore">
     case XRDeviceId.ARCORE_DEVICE_ID:
       return 'ARCore Device';

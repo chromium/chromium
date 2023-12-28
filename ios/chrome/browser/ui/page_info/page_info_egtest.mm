@@ -88,8 +88,7 @@ id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
 // permissions of the active web state; checks will fail if there is no active
 // web state.
 - (void)checkStatesForPermissions:
-    (NSDictionary<NSNumber*, NSNumber*>*)expectedStatesForPermissions
-    API_AVAILABLE(ios(15.0)) {
+    (NSDictionary<NSNumber*, NSNumber*>*)expectedStatesForPermissions {
   NSDictionary<NSNumber*, NSNumber*>* actualStatesForPermissions =
       [PermissionsAppInterface statesForAllPermissions];
   GREYAssertEqualObjects(

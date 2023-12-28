@@ -79,7 +79,7 @@ class FileStreamForwarderTest : public testing::Test {
 
     ASSERT_EQ(base::File::FILE_OK,
               storage::AsyncFileTestHelper::CreateFileWithData(
-                  context_.get(), url_, test_data_.data(), test_data_.size()));
+                  context_.get(), url_, test_data_));
   }
 
  protected:

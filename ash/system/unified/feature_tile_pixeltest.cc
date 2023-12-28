@@ -263,10 +263,8 @@ class FeatureTileVcDlcUiEnabledPixelTest : public FeatureTilePixelTest {
                     views::Button::PressedCallback(), /*is_togglable=*/true,
                     FeatureTile::TileType::kCompact))
                 ->GetWeakPtr();
-    tile_->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                                 views::MaximumFlexSizeRule::kUnbounded));
+    tile_->SetProperty(views::kBoxLayoutFlexKey,
+                       views::BoxLayoutFlexSpecification());
     tile_->SetTooltipText(u"Tooltip");
     tile_->SetVectorIcon(vector_icons::kDogfoodIcon);
     tile_->SetLabel(u"One-line label");

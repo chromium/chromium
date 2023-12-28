@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Kích thước trang</translation>
 <translation id="1082009148392559545">Đang tải trình bảo vệ màn hình xuống</translation>
 <translation id="1094693127011229778">Địa chỉ IP không có sẵn</translation>
+<translation id="1116694919640316211">Giới thiệu về</translation>
 <translation id="1118572504348554005">Chúng tôi có thể chia sẻ ý kiến phản hồi bạn gửi qua biểu mẫu này với các đối tác nhằm khắc phục lỗi và các vấn đề khác mà bạn báo cáo cho chúng tôi. Bạn không nên gửi thông tin nhạy cảm, như mật khẩu chẳng hạn.</translation>
 <translation id="1119447706177454957">Lỗi nội bộ</translation>
 <translation id="1124772482545689468">Người dùng</translation>
@@ -378,6 +379,7 @@
 <translation id="3866249974567520381">Mô tả</translation>
 <translation id="387301095347517405">Số lần pin của bạn được sạc đầy</translation>
 <translation id="3885327323343477505">Thay đổi trình bảo vệ màn hình</translation>
+<translation id="3892148308691398805">Sao chép văn bản</translation>
 <translation id="391412459402535266">Không kiểm tra được thiết bị. Chuyển sang chế độ máy tính xách tay để kiểm tra.</translation>
 <translation id="3916998944874125962">chụp ảnh màn hình</translation>
 <translation id="3923184630988645767">Chế độ sử dụng dữ liệu</translation>
@@ -403,6 +405,7 @@
 <translation id="4060260348856573701">APN mới</translation>
 <translation id="4093865285251893588">Ảnh hồ sơ</translation>
 <translation id="409427325554347132">Lưu thông tin chi tiết của quá trình kiểm tra</translation>
+<translation id="409469431304488632">Thử nghiệm</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Chọn album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Bàn di chuột USB</translation>
@@ -693,6 +696,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Dung lượng pin sụt giảm theo mức sử dụng</translation>
 <translation id="6191293864534840972">Máy chủ định danh không hợp lệ</translation>
+<translation id="6196607555925437199">Tạo lại</translation>
 <translation id="6205145102504628069">Luồng đám mây</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Không có máy quét nào</translation>
@@ -727,7 +731,7 @@
 <translation id="6410257289063177456">Tệp hình ảnh</translation>
 <translation id="641081527798843608">Khớp với chủ đề</translation>
 <translation id="6411934471898487866">độ sáng bàn phím</translation>
-<translation id="6412715219990689313">Bàn phím tích hợp sẵn</translation>
+<translation id="6412715219990689313">Bàn phím tích hợp</translation>
 <translation id="6417265370957905582">Trợ lý Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Yếu (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -869,7 +873,9 @@
 <translation id="7502658306369382406">Địa chỉ IPv6</translation>
 <translation id="7513770521371759388">dưới cùng</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Tạo</translation>
 <translation id="7528507600602050979">Không có nội dung trợ giúp</translation>
+<translation id="753556296624075801">Do Google cung cấp</translation>
 <translation id="7535791657097741517">Bật giao diện sáng</translation>
 <translation id="7550715992156305117">Quy trình chẩn đoán</translation>
 <translation id="7551123448725492271">Thiết bị là thiết bị âm thanh.</translation>
@@ -960,6 +966,7 @@
 <translation id="8227119283605456246">Đính kèm tệp</translation>
 <translation id="8230672074305416752">Không ping được cổng của mạng mặc định</translation>
 <translation id="8246209727385807362">Nhà cung cấp dịch vụ không xác định</translation>
+<translation id="8261506727792406068">Xoá</translation>
 <translation id="8262870577632766028">1 giờ</translation>
 <translation id="827422111966801947">Màu chàm</translation>
 <translation id="8286154143153872371">Vui lòng kết nối mạng và tải lại trang để xem hình nền.</translation>
@@ -970,6 +977,7 @@
 <translation id="8318753676953949627">Không có hình ảnh nào</translation>
 <translation id="8329018942023753850">ứng dụng máy tính</translation>
 <translation id="8336739000755212683">Thay đổi hình ảnh tài khoản trên thiết bị</translation>
+<translation id="8339024191194156249">Tìm hiểu thêm về chế độ tự động chạy</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> hoặc <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Lệnh in</translation>
 <translation id="8349826889576450703">trình khởi chạy</translation>

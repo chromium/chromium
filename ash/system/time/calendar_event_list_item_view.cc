@@ -5,6 +5,7 @@
 #include "ash/system/time/calendar_event_list_item_view.h"
 
 #include <string>
+#include <string_view>
 
 #include "ash/bubble/bubble_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -57,10 +58,16 @@ constexpr int kColorDotViewSize = kColorDotRadius * 2;
 // Default Calendar API color ID to use when no event color is specifified.
 constexpr char kDefaultColorId[] = "7";
 
-// Map of Calendar API color ids and their respective hex color code.
+// The color ID for past event items.
+constexpr char kPastEventsColorId[] = "0";
+
+// Map of Calendar API color ids and their respective hex color code. For color
+// id "0", it's not part of the Calendar API color, but it's used for past
+// events for a gray out effect.
 constexpr auto kEventHexColorCodes =
     base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>(
-        {{"1", "6994FF"},
+        {{"0", "1B1B1F"},
+         {"1", "6994FF"},
          {"2", "3CBD8E"},
          {"3", "BB74F2"},
          {"4", "FA827A"},
@@ -72,15 +79,20 @@ constexpr auto kEventHexColorCodes =
          {"10", "5B9157"},
          {"11", "D45D5D"}});
 
+constexpr SkAlpha SK_Alpha38Opacity = 0x61;
+constexpr SkAlpha SK_Alpha50Opacity = 0x80;
+
 // Renders an Event color dot.
 class CalendarEventListItemDot : public views::View {
   METADATA_HEADER(CalendarEventListItemDot, views::View)
 
  public:
-  explicit CalendarEventListItemDot(std::string color_id) {
+  explicit CalendarEventListItemDot(std::string color_id)
+      : alpha_(color_id == kPastEventsColorId ? SK_Alpha38Opacity
+                                              : SK_AlphaOPAQUE) {
     DCHECK(color_id.empty() || kEventHexColorCodes.count(color_id));
 
-    base::BasicStringPiece<char> hex_code = LookupColorId(color_id);
+    std::string_view hex_code = LookupColorId(color_id);
     base::HexStringToInt(hex_code, &color_);
     SetPreferredSize(gfx::Size(
         kColorDotViewSize,
@@ -94,7 +106,7 @@ class CalendarEventListItemDot : public views::View {
   // Draws the circle for the event color dot.
   void OnPaint(gfx::Canvas* canvas) override {
     cc::PaintFlags color_dot;
-    color_dot.setColor(SkColorSetA(color_, SK_AlphaOPAQUE));
+    color_dot.setColor(SkColorSetA(color_, alpha_));
     color_dot.setStyle(cc::PaintFlags::kFill_Style);
     color_dot.setAntiAlias(true);
     canvas->DrawCircle(GetContentsBounds().CenterPoint(), kColorDotRadius,
@@ -102,7 +114,7 @@ class CalendarEventListItemDot : public views::View {
   }
 
  private:
-  base::BasicStringPiece<char> LookupColorId(std::string color_id) {
+  std::string_view LookupColorId(std::string color_id) {
     const auto* iter = kEventHexColorCodes.find(color_id);
     if (iter == kEventHexColorCodes.end()) {
       return kEventHexColorCodes.at(kDefaultColorId);
@@ -110,8 +122,9 @@ class CalendarEventListItemDot : public views::View {
     return iter->second;
   }
 
-  // The color value of the dot.
+  // The color value and the opacity of the dot.
   int color_;
+  const SkAlpha alpha_;
 };
 
 BEGIN_METADATA(CalendarEventListItemDot)
@@ -121,14 +134,16 @@ END_METADATA
 views::Builder<views::Label> CreateSummaryLabel(
     const std::string& event_summary,
     const std::u16string& tooltip_text,
-    const int& fixed_width) {
+    const int& fixed_width,
+    const bool is_past_event) {
   return views::Builder<views::Label>(
              bubble_utils::CreateLabel(
                  TypographyToken::kCrosButton2,
                  event_summary.empty()
                      ? l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_TITLE)
                      : base::UTF8ToUTF16(event_summary),
-                 cros_tokens::kCrosSysOnSurface))
+                 is_past_event ? cros_tokens::kCrosSysDisabled
+                               : cros_tokens::kCrosSysOnSurface))
       .SetID(kSummaryLabelID)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetAutoColorReadabilityEnabled(false)
@@ -141,12 +156,14 @@ views::Builder<views::Label> CreateSummaryLabel(
 }
 
 // Creates and returns a label containing the event time.
-views::Builder<views::Label> CreateTimeLabel(
-    const std::u16string& title,
-    const std::u16string& tooltip_text) {
+views::Builder<views::Label> CreateTimeLabel(const std::u16string& title,
+                                             const std::u16string& tooltip_text,
+                                             const bool is_past_event) {
   return views::Builder<views::Label>(
-             bubble_utils::CreateLabel(TypographyToken::kCrosAnnotation1, title,
-                                       cros_tokens::kCrosSysOnSurfaceVariant))
+             bubble_utils::CreateLabel(
+                 TypographyToken::kCrosAnnotation1, title,
+                 is_past_event ? cros_tokens::kCrosSysDisabled
+                               : cros_tokens::kCrosSysOnSurfaceVariant))
       .SetID(kTimeLabelID)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetAutoColorReadabilityEnabled(false)
@@ -234,6 +251,8 @@ CalendarEventListItemView::CalendarEventListItemView(
   SetUpFocusHighlight(item_corner_radius);
 
   std::u16string formatted_time_text;
+
+  is_past_event_ = end_time < base::Time::NowFromSystemTime();
   if (calendar_utils::IsMultiDayEvent(&event) || event.all_day_event()) {
     formatted_time_text = event_date_formatter_util::GetMultiDayText(
         &event, selected_date_params_.selected_date_midnight,
@@ -241,8 +260,9 @@ CalendarEventListItemView::CalendarEventListItemView(
   } else {
     formatted_time_text =
         event_date_formatter_util::GetFormattedInterval(start_time, end_time);
-    is_current_or_next_event_ = end_time >= base::Time::NowFromSystemTime();
+    is_current_or_next_single_day_event_ = !is_past_event_;
   }
+
   const auto tooltip_text = l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_EVENT_ENTRY_TOOL_TIP, base::UTF8ToUTF16(event.summary()),
       formatted_time_text);
@@ -266,8 +286,8 @@ CalendarEventListItemView::CalendarEventListItemView(
     layout_vertical_start->set_main_axis_alignment(
         views::BoxLayout::MainAxisAlignment::kStart);
     event_list_dot_container
-        ->AddChildView(
-            std::make_unique<CalendarEventListItemDot>(event.color_id()))
+        ->AddChildView(std::make_unique<CalendarEventListItemDot>(
+            is_past_event_ ? kPastEventsColorId : event.color_id()))
         ->SetID(kEventListItemDotID);
   }
 
@@ -277,14 +297,16 @@ CalendarEventListItemView::CalendarEventListItemView(
   vertical_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   vertical_container->AddChildView(
-      CreateSummaryLabel(event.summary(), tooltip_text, ui_params.fixed_width)
+      CreateSummaryLabel(event.summary(), tooltip_text, ui_params.fixed_width,
+                         is_past_event_)
           .Build());
   vertical_container->AddChildView(
-      CreateTimeLabel(formatted_time_text, tooltip_text).Build());
+      CreateTimeLabel(formatted_time_text, tooltip_text, is_past_event_)
+          .Build());
   horizontal_container_layout_manager->SetFlexForView(vertical_container, 1);
 
-  // Join button.
-  if (!video_conference_url_.is_empty()) {
+  // Join button. Only shows it if the event is not the past event.
+  if (!video_conference_url_.is_empty() && !is_past_event_) {
     views::View* join_button_container =
         horizontal_container->AddChildView(std::make_unique<views::View>());
     auto* layout_vertical_center = join_button_container->SetLayoutManager(
@@ -311,7 +333,8 @@ CalendarEventListItemView::~CalendarEventListItemView() = default;
 void CalendarEventListItemView::OnThemeChanged() {
   views::View::OnThemeChanged();
   SetBackground(views::CreateSolidBackground(
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysSurface5)));
+      SkColorSetA(GetColorProvider()->GetColor(cros_tokens::kCrosSysSurface5),
+                  is_past_event_ ? SK_Alpha50Opacity : SK_AlphaOPAQUE)));
 }
 
 void CalendarEventListItemView::PerformAction(const ui::Event& event) {

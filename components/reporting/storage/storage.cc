@@ -108,7 +108,7 @@ class Storage::QueueUploaderInterface : public UploaderInterface {
       StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
     if (!uploader_result.has_value()) {
       std::move(start_uploader_cb)
-          .Run(base::unexpected(uploader_result.error()));
+          .Run(base::unexpected(std::move(uploader_result).error()));
       return;
     }
     std::move(start_uploader_cb)
@@ -197,7 +197,7 @@ class Storage::KeyDelivery {
       StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
     if (!uploader_result.has_value()) {
       std::move(start_uploader_cb)
-          .Run(base::unexpected(uploader_result.error()));
+          .Run(base::unexpected(std::move(uploader_result).error()));
       return;
     }
     std::move(start_uploader_cb)

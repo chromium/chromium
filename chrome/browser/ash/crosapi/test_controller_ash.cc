@@ -8,10 +8,9 @@
 #include <utility>
 #include <vector>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/tablet_mode.h"
@@ -160,7 +159,7 @@ class TestControllerAsh::SelfOwnedAshBrowserWindowCloser
             &SelfOwnedAshBrowserWindowCloser::OnAllBrowserWindowsClosed,
             base::Unretained(this), /*success=*/false));
 
-    for (auto* browser : *BrowserList::GetInstance()) {
+    for (Browser* browser : *BrowserList::GetInstance()) {
       // Close the browser asynchronously.
       browser->window()->Close();
     }
@@ -618,7 +617,7 @@ void TestControllerAsh::GetOpenAshBrowserWindows(
 
 void TestControllerAsh::CloseAllBrowserWindows(
     CloseAllBrowserWindowsCallback callback) {
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     browser->window()->Close();
   }
 

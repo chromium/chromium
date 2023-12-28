@@ -45,8 +45,11 @@ class HatsHandlerTest : public ChromeRenderViewHostTestHarness {
     base::test::FeatureRefAndParams privacy_guide{
         features::kHappinessTrackingSurveysForDesktopPrivacyGuide,
         {{"settings-time", "15s"}}};
+    base::test::FeatureRefAndParams security_page{
+        features::kHappinessTrackingSurveysForSecurityPage,
+        {{"security-page-time", "15s"}}};
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {settings_privacy, privacy_sandbox, privacy_guide}, {});
+        {settings_privacy, privacy_sandbox, privacy_guide, security_page}, {});
   }
 
   void SetUp() override {
@@ -139,39 +142,138 @@ TEST_F(HatsHandlerTest, PrivacyGuideHats) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_SecurityPageInteractions DISABLED_SecurityPageInteractions
+#define MAYBE_HandleSecurityPageHatsRequestPassesArgumentsToHatsService \
+  DISABLED_HandleSecurityPageHatsRequestPassesArgumentsToHatsService
 #else
-#define MAYBE_SecurityPageInteractions SecurityPageInteractions
+#define MAYBE_HandleSecurityPageHatsRequestPassesArgumentsToHatsService \
+  HandleSecurityPageHatsRequestPassesArgumentsToHatsService
 #endif
-TEST_F(HatsHandlerTest, MAYBE_SecurityPageInteractions) {
+TEST_F(HatsHandlerTest,
+       MAYBE_HandleSecurityPageHatsRequestPassesArgumentsToHatsService) {
   SurveyStringData expected_product_specific_data = {
-    {"Security Page User Action", "enhanced_protection_radio_button_clicked"},
-    {"Safe Browsing Setting Before Trigger", "standard_protection"},
-    {"Safe Browsing Setting After Trigger", "standard_protection"},
+      {"Security Page User Action", "enhanced_protection_radio_button_clicked"},
+      {"Safe Browsing Setting Before Trigger", "standard_protection"},
+      {"Safe Browsing Setting After Trigger", "standard_protection"},
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    {"Client Channel", "stable"},
+      {"Client Channel", "stable"},
 #else
-    {"Client Channel", "unknown"},
+      {"Client Channel", "unknown"},
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      {"Time On Page", "20000.000000"},
   };
 
   // Check that triggering the security page handler function will trigger HaTS
   // correctly.
   EXPECT_CALL(*mock_hats_service_,
-              LaunchDelayedSurveyForWebContents(
-                  kHatsSurveyTriggerSettingsSecurity, web_contents(), 15000, _,
-                  expected_product_specific_data, true, _, _, _))
+              LaunchSurvey(kHatsSurveyTriggerSettingsSecurity, _, _, _,
+                           expected_product_specific_data))
       .Times(1);
 
   base::Value::List args;
   args.Append(static_cast<int>(
       HatsHandler::SecurityPageInteraction::RADIO_BUTTON_ENHANCED_CLICK));
   args.Append(static_cast<int>(HatsHandler::SafeBrowsingSetting::STANDARD));
+  // Set the time spent on the page to 20,000 milliseconds, which is longer than
+  // the configured value from Finch, 15,000 milliseconds.
+  args.Append(20000);
 
   profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
   profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingSurveysEnabled, true);
 
-  handler()->HandleSecurityPageInteractionOccurred(args);
+  handler()->HandleSecurityPageHatsRequest(args);
+  task_environment()->RunUntilIdle();
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNotEnoughTime \
+  DISABLED_HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNotEnoughTime
+#else
+#define MAYBE_HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNotEnoughTime \
+  HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNotEnoughTime
+#endif
+TEST_F(
+    HatsHandlerTest,
+    MAYBE_HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNotEnoughTime) {
+  SurveyStringData expected_product_specific_data = {
+      {"Security Page User Action", "enhanced_protection_radio_button_clicked"},
+      {"Safe Browsing Setting Before Trigger", "standard_protection"},
+      {"Safe Browsing Setting After Trigger", "standard_protection"},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      {"Client Channel", "stable"},
+#else
+      {"Client Channel", "unknown"},
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      {"Time On Page", "10000"},
+  };
+
+  // Check that staying on the security page less than 15,000 ms will not
+  // trigger the survey.
+  EXPECT_CALL(*mock_hats_service_,
+              LaunchSurvey(kHatsSurveyTriggerSettingsSecurity, _, _, _,
+                           expected_product_specific_data))
+      .Times(0);
+
+  base::Value::List args;
+  args.Append(static_cast<int>(
+      HatsHandler::SecurityPageInteraction::RADIO_BUTTON_ENHANCED_CLICK));
+  args.Append(static_cast<int>(HatsHandler::SafeBrowsingSetting::STANDARD));
+  args.Append(10000);
+
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingSurveysEnabled, true);
+
+  handler()->HandleSecurityPageHatsRequest(args);
+  task_environment()->RunUntilIdle();
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNoInteraction \
+  DISABLED_HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNoInteraction
+#else
+#define MAYBE_HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNoInteraction \
+  HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNoInteraction
+#endif
+TEST_F(
+    HatsHandlerTest,
+    MAYBE_HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNoInteraction) {
+  SurveyStringData expected_product_specific_data = {
+      {"Security Page User Action", "no_interaction"},
+      {"Safe Browsing Setting Before Trigger", "standard_protection"},
+      {"Safe Browsing Setting After Trigger", "standard_protection"},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      {"Client Channel", "stable"},
+#else
+      {"Client Channel", "unknown"},
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      {"Time On Page", "20000.000000"},
+  };
+
+  // Reconfigure the feature parameter to require interaction to launch the
+  // survey.
+  base::test::FeatureRefAndParams security_page{
+      features::kHappinessTrackingSurveysForSecurityPage,
+      {{"security-page-time", "15s"},
+       {"security-page-require-interaction", "true"}}};
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters({security_page}, {});
+
+  // Verify that if there are no interactions on the security page but user
+  // interactions are required through finch, the survey will not be shown.
+  EXPECT_CALL(*mock_hats_service_,
+              LaunchSurvey(kHatsSurveyTriggerSettingsSecurity, _, _, _,
+                           expected_product_specific_data))
+      .Times(0);
+
+  base::Value::List args;
+  args.Append(
+      static_cast<int>(HatsHandler::SecurityPageInteraction::NO_INTERACTION));
+  args.Append(static_cast<int>(HatsHandler::SafeBrowsingSetting::STANDARD));
+  args.Append(20000);
+
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingSurveysEnabled, true);
+
+  handler()->HandleSecurityPageHatsRequest(args);
   task_environment()->RunUntilIdle();
 }
 

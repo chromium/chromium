@@ -15,8 +15,8 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 
-using performance_manager::user_tuning::prefs::HighEfficiencyModeState;
-using performance_manager::user_tuning::prefs::kHighEfficiencyModeState;
+using performance_manager::user_tuning::prefs::kMemorySaverModeState;
+using performance_manager::user_tuning::prefs::MemorySaverModeState;
 
 namespace performance_manager {
 
@@ -134,8 +134,8 @@ void MetricsProviderDesktop::Initialize() {
 
   pref_change_registrar_.Init(local_state_);
   pref_change_registrar_.Add(
-      kHighEfficiencyModeState,
-      base::BindRepeating(&MetricsProviderDesktop::OnHighEfficiencyPrefChanged,
+      kMemorySaverModeState,
+      base::BindRepeating(&MetricsProviderDesktop::OnMemorySaverPrefChanged,
                           base::Unretained(this)));
   performance_manager::user_tuning::BatterySaverModeManager::GetInstance()
       ->AddObserver(this);
@@ -152,7 +152,7 @@ void MetricsProviderDesktop::Initialize() {
 void MetricsProviderDesktop::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
   // It's valid for this to be called when `initialized_` is false if the finch
-  // features controlling battery saver and high efficiency are disabled.
+  // features controlling battery saver and memory saver are disabled.
   // TODO(crbug.com/1348590): CHECK(initialized_) when the features are enabled
   // and removed.
   base::UmaHistogramEnumeration("PerformanceManager.UserTuning.EfficiencyMode",
@@ -185,8 +185,8 @@ void MetricsProviderDesktop::OnBatterySaverActiveChanged(bool is_active) {
   OnTuningModesChanged();
 }
 
-void MetricsProviderDesktop::OnHighEfficiencyPrefChanged() {
-  high_efficiency_mode_tracker_->ModeChanged(IsHighEfficiencyEnabled());
+void MetricsProviderDesktop::OnMemorySaverPrefChanged() {
+  memory_saver_mode_tracker_->ModeChanged(IsMemorySaverEnabled());
   OnTuningModesChanged();
 }
 
@@ -215,14 +215,14 @@ MetricsProviderDesktop::ComputeCurrentMode() const {
   // BatterySaverModeManager is destroyed. Do not access UPTM directly from
   // here.
 
-  bool high_efficiency_enabled = IsHighEfficiencyEnabled();
+  bool high_efficiency_enabled = IsMemorySaverEnabled();
 
   if (high_efficiency_enabled && battery_saver_enabled_) {
     return EfficiencyMode::kBoth;
   }
 
   if (high_efficiency_enabled) {
-    return EfficiencyMode::kHighEfficiency;
+    return EfficiencyMode::kMemorySaver;
   }
 
   if (battery_saver_enabled_) {
@@ -232,9 +232,9 @@ MetricsProviderDesktop::ComputeCurrentMode() const {
   return EfficiencyMode::kNormal;
 }
 
-bool MetricsProviderDesktop::IsHighEfficiencyEnabled() const {
-  return local_state_->GetInteger(kHighEfficiencyModeState) !=
-         static_cast<int>(HighEfficiencyModeState::kDisabled);
+bool MetricsProviderDesktop::IsMemorySaverEnabled() const {
+  return local_state_->GetInteger(kMemorySaverModeState) !=
+         static_cast<int>(MemorySaverModeState::kDisabled);
 }
 
 void MetricsProviderDesktop::RecordAvailableMemoryMetrics() {
@@ -265,8 +265,8 @@ void MetricsProviderDesktop::ResetTrackers() {
   battery_saver_mode_tracker_ = std::make_unique<ScopedTimeInModeTracker>(
       battery_saver_enabled_,
       "PerformanceManager.UserTuning.BatterySaverModeEnabledPercent");
-  high_efficiency_mode_tracker_ = std::make_unique<ScopedTimeInModeTracker>(
-      IsHighEfficiencyEnabled(),
+  memory_saver_mode_tracker_ = std::make_unique<ScopedTimeInModeTracker>(
+      IsMemorySaverEnabled(),
       "PerformanceManager.UserTuning.MemorySaverModeEnabledPercent");
 }
 

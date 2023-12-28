@@ -17,7 +17,9 @@ bool LcppEnabled() {
          base::FeatureList::IsEnabled(
              blink::features::kLCPPLazyLoadImagePreload) ||
          base::FeatureList::IsEnabled(
-             blink::features::kDelayAsyncScriptExecution);
+             blink::features::kDelayAsyncScriptExecution) ||
+         base::FeatureList::IsEnabled(
+             blink::features::kHttpDiskCachePrewarming);
 }
 
 }  // namespace blink

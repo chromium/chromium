@@ -256,7 +256,10 @@ void CloudBinaryUploadService::MaybeUploadForDeepScanning(
     return;
   }
 
-  if (!can_upload_enterprise_data_.contains(token_and_connector)) {
+  // Validate if `token_and_connector` is authorized to upload data if this is
+  // the first time or the previous check failed.
+  if (!can_upload_enterprise_data_.contains(token_and_connector) ||
+      !can_upload_enterprise_data_[token_and_connector]) {
     // Get data from `request` before calling `IsAuthorized` since it is about
     // to move.
     GURL url = request->GetUrlWithParams();
@@ -798,7 +801,10 @@ void CloudBinaryUploadService::IsAuthorized(
   }
 
   TokenAndConnector token_and_connector = {dm_token, connector};
-  if (!can_upload_enterprise_data_.contains(token_and_connector)) {
+  // Validate if `token_and_connector` is authorized to upload data if this is
+  // the first time or the previous check failed.
+  if (!can_upload_enterprise_data_.contains(token_and_connector) ||
+      !can_upload_enterprise_data_[token_and_connector]) {
     // Send a request to check if the browser can upload data.
     authorization_callbacks_[token_and_connector].push_back(
         std::move(callback));

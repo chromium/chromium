@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -13,6 +14,7 @@ namespace {
 // Ideally, this would be tested by BoxStrut::ConvertToPhysical, but
 // this has not been implemented yet.
 TEST(GeometryUnitsTest, ConvertPhysicalStrutToLogical) {
+  test::TaskEnvironment task_environment;
   LayoutUnit left{5}, right{10}, top{15}, bottom{20};
   PhysicalBoxStrut physical{top, right, bottom, left};
 
@@ -48,6 +50,7 @@ TEST(GeometryUnitsTest, ConvertPhysicalStrutToLogical) {
 }
 
 TEST(GeometryUnitsTest, ConvertLogicalStrutToPhysical) {
+  test::TaskEnvironment task_environment;
   LayoutUnit left{5}, right{10}, top{15}, bottom{20};
   BoxStrut logical(left, right, top, bottom);
   BoxStrut converted =
@@ -95,6 +98,7 @@ TEST(GeometryUnitsTest, ConvertLogicalStrutToPhysical) {
 }
 
 TEST(PhysicalBoxStrutTest, Constructors) {
+  test::TaskEnvironment task_environment;
   PhysicalBoxStrut result(0, std::numeric_limits<int>::max(), -1,
                           std::numeric_limits<int>::min());
   EXPECT_EQ(LayoutUnit(), result.top);
@@ -105,6 +109,7 @@ TEST(PhysicalBoxStrutTest, Constructors) {
 }
 
 TEST(PhysicalBoxStrutTest, Enclosing) {
+  test::TaskEnvironment task_environment;
   ASSERT_LT(0.01f, LayoutUnit::Epsilon());
   auto result = PhysicalBoxStrut::Enclosing(
       gfx::OutsetsF()
@@ -119,6 +124,7 @@ TEST(PhysicalBoxStrutTest, Enclosing) {
 }
 
 TEST(PhysicalBoxStrutTest, Unite) {
+  test::TaskEnvironment task_environment;
   PhysicalBoxStrut strut(LayoutUnit(10));
   strut.Unite(
       {LayoutUnit(10), LayoutUnit(11), LayoutUnit(0), LayoutUnit::Max()});

@@ -115,7 +115,7 @@ void PwaNotifierController::CallLoadIcon(const std::string& app_id,
       observed_profile_));
 
   apps::AppServiceProxyFactory::GetForProfile(observed_profile_)
-      ->LoadIcon(apps::AppType::kWeb, app_id, apps::IconType::kStandard,
+      ->LoadIcon(app_id, apps::IconType::kStandard,
                  message_center::kQuickSettingIconSizeInDp,
                  allow_placeholder_icon,
                  base::BindOnce(&PwaNotifierController::OnLoadIcon,

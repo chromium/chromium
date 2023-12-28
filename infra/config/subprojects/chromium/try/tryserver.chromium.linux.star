@@ -264,9 +264,6 @@ try_.builder(
     branch_selector = branches.selector.LINUX_BRANCHES,
     executable = "recipe:chromium/fuzz",
     builderless = not settings.is_main,
-    experiments = {
-        "chromium.skip_successful_tests": 50,
-    },
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -317,14 +314,14 @@ try_.orchestrator_builder(
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
-        "chromium.skip_successful_tests": 50,
     },
     main_list_view = "try",
-    tryjob = try_.job(),
-    use_clang_coverage = True,
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
+    siso_enabled = True,
+    tryjob = try_.job(),
+    use_clang_coverage = True,
 )
 
 try_.compilator_builder(
@@ -446,9 +443,6 @@ try_.builder(
         ],
     ),
     builderless = not settings.is_main,
-    experiments = {
-        "chromium.skip_successful_tests": 50,
-    },
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     siso_enabled = True,
@@ -516,7 +510,6 @@ try_.orchestrator_builder(
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
         "chromium.compilator_can_outlive_parent": 100,
-        "chromium.skip_successful_tests": 50,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -549,6 +542,7 @@ This builder should be removed after migrating linux_chromium_asan_rel_ng from N
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
+    siso_enabled = True,
     tryjob = try_.job(
         experiment_percentage = 10,
     ),
@@ -601,6 +595,9 @@ try_.builder(
         "ci/Linux Chromium OS ASan LSan Tests (1)",
     ],
     gn_args = "ci/Linux Chromium OS ASan LSan Builder",
+    # TODO(crbug.com/1510339): Remove this when memory consumption during links
+    # is reduced.
+    cores = 16,
     ssd = True,
     # TODO(crbug/1144484): Remove this timeout once we figure out the
     # regression in compiler or toolchain.
@@ -651,9 +648,6 @@ try_.builder(
             path = "linux_debug",
         ),
     ],
-    experiments = {
-        "chromium.skip_successful_tests": 50,
-    },
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(),
@@ -763,7 +757,6 @@ try_.orchestrator_builder(
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
-        "chromium.skip_successful_tests": 50,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -796,6 +789,7 @@ This builder should be removed after migrating linux_chromium_tsan_rel_ng from N
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
+    siso_enabled = True,
     tryjob = try_.job(
         experiment_percentage = 10,
     ),

@@ -67,13 +67,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Content.Classification.OpenGraph"
-    enum="ContentClassificationOpenGraph" expires_after="2024-01-31">
+    enum="ContentClassificationOpenGraph" expires_after="2024-04-28">
   <owner>sophey@chromium.org</owner>
   <owner>chrome-sherlock@google.com</owner>
   <summary>
     What the Open Graph Protocol classification of the page is. This is logged
     when the user navigates to the current page. It is only logged if there is
     an 'og:type' property in the HTML of the page.
+  </summary>
+</histogram>
+
+<histogram name="ContentNotifications.Promo.SetUpList.Action"
+    enum="ContentNotificationSetUpListPromoAction" expires_after="2024-04-28">
+  <owner>tinazwang@chromium.org</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <summary>
+    The action taken by the user in response to the Set Up List Content
+    Notification promo.
   </summary>
 </histogram>
 
@@ -129,6 +139,17 @@ chromium-metrics-reviews@google.com.
     pattern is specified. Exactly one of this or
     ContentSettings.ExtensionEmbeddedSettingSet will be emitted per call to
     contentSettings.set(), if the arguments to the call are valid.
+  </summary>
+</histogram>
+
+<histogram name="ContentSettings.GetContentSetting.Network.Duration"
+    units="microseconds" expires_after="2024-04-30">
+  <owner>trishalfonso@google.com</owner>
+  <owner>wanderview@chromium.org</owner>
+  <summary>
+    Measures how long a call to network::CookieSettings::GetContentSetting
+    takes. Logged each time a call is made. Note that histogram samples for
+    clients without high-resolution clocks are dropped.
   </summary>
 </histogram>
 
@@ -225,7 +246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.RegularProfile.DefaultAutoVerifySetting"
-    enum="ContentSetting" expires_after="2024-04-16">
+    enum="ContentSetting" expires_after="2024-06-16">
   <owner>ryankalla@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -438,7 +459,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.{RegularProfileFiltered}DefaultPopupsSetting"
-    enum="ContentSetting" expires_after="2024-04-16">
+    enum="ContentSetting" expires_after="2024-06-16">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -455,7 +476,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSettings.{RegularProfileFiltered}DefaultRequestDesktopSiteSetting"
-    enum="ContentSetting" expires_after="2024-04-06">
+    enum="ContentSetting" expires_after="2024-06-09">
   <owner>shuyng@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -621,7 +642,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ActivityLoggingEnabled" enum="Boolean"
-    expires_after="2024-01-31">
+    expires_after="2024-06-09">
   <owner>dewittj@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1534,7 +1555,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.WebFeed.SortType" enum="FeedSortType"
-    expires_after="2024-03-31">
+    expires_after="2024-06-23">
   <owner>adamta@google.com</owner>
   <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>

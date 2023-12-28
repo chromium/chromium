@@ -15,7 +15,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/webdata/autocomplete_entry.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill {
@@ -30,9 +30,7 @@ class AutocompleteChange {
   Type type() const { return type_; }
   const AutocompleteKey& key() const { return key_; }
 
-  bool operator==(const AutocompleteChange& change) const {
-    return type() == change.type() && key() == change.key();
-  }
+  bool operator==(const AutocompleteChange&) const = default;
 
  private:
   Type type_;

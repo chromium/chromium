@@ -189,7 +189,8 @@ class MediaStreamCaptureIndicator
   // A vector which maps command IDs to their associated WebContents
   // instance. This is rebuilt each time the status tray icon context menu is
   // updated.
-  typedef std::vector<content::WebContents*> CommandTargets;
+  typedef std::vector<raw_ptr<content::WebContents, VectorExperimental>>
+      CommandTargets;
   CommandTargets command_targets_;
 
   base::ObserverList<Observer, /* check_empty =*/true> observers_;

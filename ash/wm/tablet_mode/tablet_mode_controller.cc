@@ -8,7 +8,7 @@
 #include <string>
 #include <utility>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -334,7 +334,7 @@ class TabletModeController::DestroyObserver : public aura::WindowObserver {
   aura::Window* window() { return window_; }
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
   base::OnceCallback<void(void)> callback_;
 };
 
@@ -377,7 +377,7 @@ class TabletModeController::ScopedContainerHider {
   }
 
  private:
-  const raw_ptr<aura::Window, ExperimentalAsh> root_window_;
+  const raw_ptr<aura::Window> root_window_;
 
   // The layer that holds the clone of shelf and float layers while the
   // originals are hidden.
@@ -545,10 +545,6 @@ void TabletModeController::AddObserver(TabletModeObserver* observer) {
 
 void TabletModeController::RemoveObserver(TabletModeObserver* observer) {
   tablet_mode_observers_.RemoveObserver(observer);
-}
-
-bool TabletModeController::InTabletMode() const {
-  return display::Screen::GetScreen()->InTabletMode();
 }
 
 bool TabletModeController::ForceUiTabletModeState(std::optional<bool> enabled) {
@@ -880,7 +876,7 @@ void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
   // Hide the context menu on entering tablet mode to prevent users from
   // accessing forbidden options. Hide the context menu on exiting tablet mode
   // to match behaviors.
-  for (auto* root_window : Shell::Get()->GetAllRootWindows()) {
+  for (aura::Window* root_window : Shell::Get()->GetAllRootWindows()) {
     RootWindowController::ForWindow(root_window)->HideContextMenu();
   }
 
@@ -930,9 +926,6 @@ void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
     Shell::Get()->display_manager()->SetTabletState(
         display::TabletState::kExitingTabletMode);
 
-    for (auto& observer : tablet_mode_observers_)
-      observer.OnTabletModeEnding();
-
     if (tablet_mode_window_manager_)
       tablet_mode_window_manager_->Shutdown();
     tablet_mode_window_manager_.reset();
@@ -941,8 +934,6 @@ void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
     RecordTabletModeUsageInterval(TABLET_MODE_INTERVAL_ACTIVE);
     Shell::Get()->display_manager()->SetTabletState(
         display::TabletState::kInClamshellMode);
-    for (auto& observer : tablet_mode_observers_)
-      observer.OnTabletModeEnded();
     VLOG(1) << "Exit tablet mode.";
 
     UpdateInternalInputDevicesEventBlocker();
@@ -1192,8 +1183,6 @@ void TabletModeController::FinishInitTabletMode() {
   DCHECK_EQ(display::TabletState::kEnteringTabletMode,
             display::Screen::GetScreen()->GetTabletState());
 
-  for (auto& observer : tablet_mode_observers_)
-    observer.OnTabletModeStarting();
   tablet_mode_window_manager_ = std::make_unique<TabletModeWindowManager>();
   tablet_mode_window_manager_->Init();
 
@@ -1201,9 +1190,6 @@ void TabletModeController::FinishInitTabletMode() {
   RecordTabletModeUsageInterval(TABLET_MODE_INTERVAL_INACTIVE);
   Shell::Get()->display_manager()->SetTabletState(
       display::TabletState::kInTabletMode);
-
-  for (auto& observer : tablet_mode_observers_)
-    observer.OnTabletModeStarted();
 
   // In some cases, TabletModeWindowManager::TabletModeWindowManager uses
   // split view to represent windows that were snapped in desktop mode. If

@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -71,6 +72,11 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/base_paths_win.h"
+#include "base/test/scoped_path_override.h"
+#endif
 
 using DevToolsProtocolTest = DevToolsProtocolTestBase;
 using testing::AllOf;
@@ -934,6 +940,13 @@ class ExtensionProtocolTest : public DevToolsProtocolTest {
   extensions::ExtensionService* extension_service_;
   extensions::ExtensionRegistry* extension_registry_;
   content::WebContents* background_web_contents_;
+#if BUILDFLAG(IS_WIN)
+  // This is needed to stop ExtensionProtocolTestsfrom creating a
+  // shortcut in the Windows start menu. The override needs to last until the
+  // test is destroyed, because Windows shortcut tasks which create the shortcut
+  // can run after the test body returns.
+  base::ScopedPathOverride override_start_dir{base::DIR_START_MENU};
+#endif  // BUILDFLAG(IS_WIN
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest, ReloadTracedExtension) {
@@ -1017,7 +1030,7 @@ class WebContentsBarrier {
   WebContentsBarrier(std::initializer_list<Predicate> predicates)
       : predicates_(predicates) {}
 
-  std::vector<content::WebContents*> Await() {
+  std::vector<raw_ptr<content::WebContents, VectorExperimental>> Await() {
     if (!IsReady()) {
       base::RunLoop run_loop;
       ready_callback_ = run_loop.QuitClosure();
@@ -1069,8 +1082,8 @@ class WebContentsBarrier {
 
   const std::vector<Predicate> predicates_;
 
-  std::vector<content::WebContents*> ready_web_contents_{predicates_.size(),
-                                                         nullptr};
+  std::vector<raw_ptr<content::WebContents, VectorExperimental>>
+      ready_web_contents_{predicates_.size(), nullptr};
   size_t pending_contents_count_{predicates_.size()};
   base::CallbackListSubscription creation_subscription_{
       content::RegisterWebContentsCreationCallback(
@@ -1097,7 +1110,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest, TabTargetWithGuestView) {
 
   LaunchApp(extension->id());
 
-  std::vector<content::WebContents*> wcs = barrier.Await();
+  std::vector<raw_ptr<content::WebContents, VectorExperimental>> wcs =
+      barrier.Await();
   ASSERT_THAT(wcs, testing::SizeIs(2));
   EXPECT_NE(wcs[0], wcs[1]);
   // Assure host and view have different DevTools hosts.

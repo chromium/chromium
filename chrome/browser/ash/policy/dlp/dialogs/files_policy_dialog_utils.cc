@@ -109,6 +109,7 @@ policy::FilesPolicyDialog::Info GetDialogInfoForEnterpriseConnectorsBlockReason(
 }
 
 void AddLearnMoreLink(const std::u16string& text,
+                      const std::u16string& accessible_name,
                       const GURL& url,
                       views::View* view) {
   views::Link* learn_more_link =
@@ -120,6 +121,7 @@ void AddLearnMoreLink(const std::u16string& text,
   learn_more_link->SetEnabledColor(
       ash::ColorProvider::Get()->GetContentLayerColor(
           ash::ColorProvider::ContentLayerType::kTextColorURL));
+  learn_more_link->SetAccessibleName(accessible_name);
 }
 
 }  // namespace policy::files_dialog_utils

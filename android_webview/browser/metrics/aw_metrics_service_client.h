@@ -151,12 +151,8 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
   // Always returns `true`, indicating to record the package name
   bool ShouldRecordPackageName() override;
 
-  // If `android_webview::features::kWebViewMetricsFiltering` is
-  // enabled:
   // - return `true` if client used to be sampled out.
   // - return `false` if client used to be in-sampled.
-  //
-  // If the feature isn't enabled, return false.
   virtual bool ShouldApplyMetricsFiltering() const;
 
  protected:

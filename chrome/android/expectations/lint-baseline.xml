@@ -257,17 +257,6 @@
     <issue
         id="WrongCommentType"
         message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param activity The activity the share sheet belongs to."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/content_creation/notes/internal/android/java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationDialog.java"
-            line="120"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
         errorLine1="             * @param dataType  The type of the data contained in the section."
         errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -1735,28 +1724,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: ShowQueryTilesSegmentationResult.UNINITIALIZED, ShowQueryTilesSegmentationResult.DONT_SHOW, ShowQueryTilesSegmentationResult.SHOW"
-        errorLine1="        return segmentationResult;"
-        errorLine2="               ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/query_tiles/QueryTileUtils.java"
-            line="179"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ShowQueryTilesSegmentationResult.UNINITIALIZED, ShowQueryTilesSegmentationResult.DONT_SHOW, ShowQueryTilesSegmentationResult.SHOW"
-        errorLine1="        return segmentationResult;"
-        errorLine2="               ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/query_tiles/QueryTileUtils.java"
-            line="179"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: PageTransition.FIRST, PageTransition.LINK, PageTransition.TYPED, PageTransition.AUTO_BOOKMARK, PageTransition.AUTO_SUBFRAME, PageTransition.MANUAL_SUBFRAME, PageTransition.GENERATED, PageTransition.AUTO_TOPLEVEL, PageTransition.FORM_SUBMIT, PageTransition.RELOAD, PageTransition.KEYWORD, PageTransition.KEYWORD_GENERATED, PageTransition.LAST_CORE, PageTransition.CORE_MASK, PageTransition.BLOCKED, PageTransition.FORWARD_BACK, PageTransition.FROM_ADDRESS_BAR, PageTransition.HOME_PAGE, PageTransition.FROM_API, PageTransition.CHAIN_START, PageTransition.CHAIN_END, PageTransition.CLIENT_REDIRECT, PageTransition.SERVER_REDIRECT, PageTransition.IS_REDIRECT_MASK, PageTransition.QUALIFIER_MASK"
         errorLine1="                    false, url, params.getTransitionType());"
         errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~~~~~~">
@@ -2280,17 +2247,6 @@
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
             line="202"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NotifyDataSetChanged"
-        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
-        errorLine1="        noteCarousel.getAdapter().notifyDataSetChanged();"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/content_creation/notes/internal/android/java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationDialog.java"
-            line="113"
             column="9"/>
     </issue>
 

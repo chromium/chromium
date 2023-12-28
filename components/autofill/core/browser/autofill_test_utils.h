@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -36,30 +37,20 @@ namespace autofill {
 
 class AutofillExternalDelegate;
 class AutofillProfile;
-class AutofillTable;
 class BankAccount;
 struct FormData;
 struct FormFieldData;
 struct FormDataPredictions;
 struct FormFieldDataPredictions;
+class PaymentsAutofillTable;
 
 // Defined by pair-wise equality of all members.
 bool operator==(const FormFieldDataPredictions& a,
                 const FormFieldDataPredictions& b);
 
-inline bool operator!=(const FormFieldDataPredictions& a,
-                       const FormFieldDataPredictions& b) {
-  return !(a == b);
-}
-
 // Holds iff the underlying FormDatas sans field values are equal and the
 // remaining members are pairwise equal.
 bool operator==(const FormDataPredictions& a, const FormDataPredictions& b);
-
-inline bool operator!=(const FormDataPredictions& a,
-                       const FormDataPredictions& b) {
-  return !(a == b);
-}
 
 // Common utilities shared amongst Autofill tests.
 namespace test {
@@ -67,7 +58,7 @@ namespace test {
 // A compound data type that contains the type, the value and the verification
 // status for a form group entry (an AutofillProfile).
 struct FormGroupValue {
-  ServerFieldType type;
+  FieldType type;
   std::string value;
   VerificationStatus verification_status = VerificationStatus::kNoStatus;
 };
@@ -291,18 +282,18 @@ void DisableSystemServices(PrefService* prefs);
 void ReenableSystemServices();
 
 // Sets |cards| for |table|. |cards| may contain full, unmasked server cards,
-// whereas AutofillTable::SetServerCreditCards can only contain masked cards.
-void SetServerCreditCards(AutofillTable* table,
+// whereas PaymentsAutofillTable::SetServerCreditCards can only contain masked
+// cards.
+void SetServerCreditCards(PaymentsAutofillTable* table,
                           const std::vector<CreditCard>& cards);
 
 // Adds an element at the end of |possible_field_types| and
 // |possible_field_types_validities| given |possible_type| and their
 // corresponding |validity_state|.
 void InitializePossibleTypesAndValidities(
-    std::vector<ServerFieldTypeSet>& possible_field_types,
-    std::vector<ServerFieldTypeValidityStatesMap>&
-        possible_field_types_validities,
-    const std::vector<ServerFieldType>& possible_type,
+    std::vector<FieldTypeSet>& possible_field_types,
+    std::vector<FieldTypeValidityStatesMap>& possible_field_types_validities,
+    const std::vector<FieldType>& possible_type,
     const std::vector<AutofillDataModel::ValidityState>& validity_state = {});
 
 // Fills the upload |field| with the information passed by parameter.
@@ -329,12 +320,12 @@ void FillUploadField(AutofillUploadContents::Field* field,
 // Perhaps a neater way would be to move this to TestFormStructure.
 std::vector<FormSignature> GetEncodedSignatures(const FormStructure& form);
 std::vector<FormSignature> GetEncodedSignatures(
-    const std::vector<FormStructure*>& forms);
+    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms);
 
 std::vector<FormSignature> GetEncodedAlternativeSignatures(
     const FormStructure& form);
 std::vector<FormSignature> GetEncodedAlternativeSignatures(
-    const std::vector<FormStructure*>& forms);
+    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms);
 
 // Calls the required functions on the given external delegate to cause the
 // delegate to display a popup.
@@ -353,24 +344,24 @@ std::string TenYearsFromNow();
 // Creates a `FieldPrediction` instance.
 ::autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
     FieldPrediction
-    CreateFieldPrediction(ServerFieldType type,
+    CreateFieldPrediction(FieldType type,
                           ::autofill::AutofillQueryResponse::FormSuggestion::
                               FieldSuggestion::FieldPrediction::Source source);
 
 // Creates a `FieldPrediction` instance, with a plausible value for `source()`.
 ::autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
     FieldPrediction
-    CreateFieldPrediction(ServerFieldType type, bool is_override = false);
+    CreateFieldPrediction(FieldType type, bool is_override = false);
 
 void AddFieldPredictionToForm(
     const autofill::FormFieldData& field_data,
-    ServerFieldType field_type,
+    FieldType field_type,
     ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion,
     bool is_override = false);
 
 void AddFieldPredictionsToForm(
     const autofill::FormFieldData& field_data,
-    const std::vector<ServerFieldType>& field_types,
+    const std::vector<FieldType>& field_types,
     ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion);
 
 void AddFieldPredictionsToForm(

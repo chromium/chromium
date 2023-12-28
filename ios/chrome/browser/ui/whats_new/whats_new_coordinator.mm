@@ -9,9 +9,13 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/time/time.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_ui_handler.h"
@@ -39,12 +43,15 @@ NSString* const kTableViewNavigationDismissButtonId =
 // The coordinator used for What's New feature.
 @property(nonatomic, strong)
     WhatsNewDetailCoordinator* whatsNewDetailCoordinator;
-// Browser coordinator command handler.
-@property(nonatomic, readonly) id<ApplicationCommands> applicationHandler;
 // The starting time of What's New.
 @property(nonatomic, assign) base::TimeTicks whatsNewStartTime;
+// Application command handler.
+@property(nonatomic, readonly) id<ApplicationCommands> applicationHandler;
+// Dispatcher for handling Lens promo actions.
+@property(nonatomic, readonly) id<LensCommands> lensHandler;
 // Browser coordinator command handler.
-@property(nonatomic, readonly) id<BrowserCoordinatorCommands> handler;
+@property(nonatomic, readonly) id<BrowserCoordinatorCommands>
+    browserCoordinatorHandler;
 // Number of clicked items in What's New
 @property(nonatomic, assign) int clicksOnWhatsNewItemsCount;
 
@@ -55,6 +62,12 @@ NSString* const kTableViewNavigationDismissButtonId =
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  DCHECK(tracker);
+  tracker->NotifyEvent(feature_engagement::events::kViewedWhatsNew);
+
   self.clicksOnWhatsNewItemsCount = 0;
   base::RecordAction(base::UserMetricsAction("WhatsNew.Started"));
   self.mediator = [[WhatsNewMediator alloc] init];
@@ -67,7 +80,9 @@ NSString* const kTableViewNavigationDismissButtonId =
   self.tableViewController.delegate = self;
   self.tableViewController.actionHandler = self.mediator;
   self.mediator.consumer = self.tableViewController;
-  self.mediator.handler = self.applicationHandler;
+  self.mediator.applicationHandler = self.applicationHandler;
+  self.mediator.browserCoordinatorHandler = self.browserCoordinatorHandler;
+  self.mediator.lensHandler = self.lensHandler;
 
   [self.tableViewController reloadData];
 
@@ -109,7 +124,7 @@ NSString* const kTableViewNavigationDismissButtonId =
   [self.promosUIHandler promoWasDismissed];
 
   if (self.shouldShowBubblePromoOnDismiss) {
-    [self.handler showWhatsNewIPH];
+    [self.browserCoordinatorHandler showWhatsNewIPH];
   }
 
   [super stop];
@@ -161,6 +176,23 @@ NSString* const kTableViewNavigationDismissButtonId =
 - (id<ApplicationCommands>)applicationHandler {
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
+  DCHECK(handler);
+
+  return handler;
+}
+
+- (id<BrowserCoordinatorCommands>)browserCoordinatorHandler {
+  id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  DCHECK(handler);
+
+  return handler;
+}
+
+- (id<LensCommands>)lensHandler {
+  id<LensCommands> handler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands);
+  DCHECK(handler);
 
   return handler;
 }
@@ -175,15 +207,7 @@ NSString* const kTableViewNavigationDismissButtonId =
 }
 
 - (void)dismiss {
-  [self.handler dismissWhatsNew];
-}
-
-- (id<BrowserCoordinatorCommands>)handler {
-  id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
-  DCHECK(handler);
-
-  return handler;
+  [self.browserCoordinatorHandler dismissWhatsNew];
 }
 
 @end

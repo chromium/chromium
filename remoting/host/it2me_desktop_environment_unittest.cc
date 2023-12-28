@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/curtain/security_curtain_controller.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -90,35 +89,6 @@ class FakeClientSessionEvents : public ClientSessionEvents {
   base::WeakPtrFactory<FakeClientSessionEvents> weak_ptr_factory_{this};
 };
 
-class FakeSecurityCurtainController
-    : public ash::curtain::SecurityCurtainController {
- public:
-  FakeSecurityCurtainController() = default;
-  FakeSecurityCurtainController(const FakeSecurityCurtainController&) = delete;
-  FakeSecurityCurtainController& operator=(
-      const FakeSecurityCurtainController&) = delete;
-  ~FakeSecurityCurtainController() override = default;
-
-  // ash::curtain::SecurityCurtainController implementation:
-  void Enable(InitParams params) override {
-    DCHECK(!is_enabled_);
-    is_enabled_ = true;
-    init_params_ = params;
-  }
-  void Disable() override {
-    DCHECK(is_enabled_);
-    is_enabled_ = false;
-  }
-  bool IsEnabled() const override { return is_enabled_; }
-
-  // InitParams passed to the last |Enable()| call.
-  InitParams last_init_params() const { return init_params_; }
-
- private:
-  bool is_enabled_ = false;
-  InitParams init_params_;
-};
-
 class It2MeDesktopEnvironmentTest : public ::testing::Test {
  public:
 #if BUILDFLAG(IS_CHROMEOS)
@@ -184,10 +154,6 @@ class It2MeDesktopEnvironmentTest : public ::testing::Test {
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  FakeSecurityCurtainController& security_curtain_controller() {
-    return security_curtain_controller_;
-  }
-
   test::ScopedFakeAshProxy& ash_proxy() { return ash_proxy_; }
 
   user_manager::FakeUserManager& user_manager() { return *fake_user_manager_; }
@@ -217,8 +183,7 @@ class It2MeDesktopEnvironmentTest : public ::testing::Test {
   FakeClientSessionEvents session_events_;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  FakeSecurityCurtainController security_curtain_controller_;
-  test::ScopedFakeAshProxy ash_proxy_{&security_curtain_controller_};
+  test::ScopedFakeAshProxy ash_proxy_;
 
   user_manager::ScopedUserManager scoped_user_manager_;
   const raw_ref<user_manager::FakeUserManager> fake_user_manager_;
@@ -226,158 +191,6 @@ class It2MeDesktopEnvironmentTest : public ::testing::Test {
 };
 
 #if BUILDFLAG(IS_CHROMEOS)
-ui::KeyEvent EventWithSource(int source_device_id) {
-  ui::KeyEvent result{ui::EventType::ET_KEY_PRESSED, ui::KeyboardCode::VKEY_C,
-                      /*flags=*/0};
-  result.set_source_device_id(source_device_id);
-  return result;
-}
-
-TEST_F(It2MeDesktopEnvironmentTest,
-       ShouldStartCurtainWhenEnableCurtainingIsTrue) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kEnableCrdAdminRemoteAccess);
-  DesktopEnvironmentOptions options(default_options());
-
-  options.set_enable_curtaining(true);
-
-  auto desktop_environment = Create(options);
-  FlushUiSequence();
-
-  EXPECT_THAT(desktop_environment->is_curtained(), Eq(true));
-}
-
-TEST_F(It2MeDesktopEnvironmentTest,
-       ShouldNotStartCurtainWhenEnableCurtainingIsFalse) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kEnableCrdAdminRemoteAccess);
-  DesktopEnvironmentOptions options(default_options());
-
-  options.set_enable_curtaining(false);
-
-  auto desktop_environment = Create(options);
-  FlushUiSequence();
-
-  EXPECT_THAT(desktop_environment->is_curtained(), Eq(false));
-}
-
-TEST_F(It2MeDesktopEnvironmentTest,
-       ShouldNotStartCurtainWhenCrdAdminRemoteAccessFeatureIsDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kEnableCrdAdminRemoteAccess);
-  DesktopEnvironmentOptions options(default_options());
-
-  options.set_enable_curtaining(true);
-
-  auto desktop_environment = Create(options);
-  FlushUiSequence();
-
-  EXPECT_THAT(desktop_environment->is_curtained(), Eq(false));
-}
-
-TEST_F(It2MeDesktopEnvironmentTest,
-       ACurtainedSessionShouldEnableSecurityCurtain) {
-  ASSERT_THAT(security_curtain_controller().IsEnabled(), Eq(false));
-
-  auto desktop_environment = CreateCurtainedSession();
-  FlushUiSequence();
-
-  EXPECT_THAT(security_curtain_controller().IsEnabled(), Eq(true));
-}
-
-TEST_F(It2MeDesktopEnvironmentTest,
-       ACurtainedSessionShouldFilterNonRemoteEvents) {
-  ASSERT_THAT(security_curtain_controller().IsEnabled(), Eq(false));
-
-  auto desktop_environment = CreateCurtainedSession();
-  FlushUiSequence();
-
-  ash::curtain::EventFilter event_filter =
-      security_curtain_controller().last_init_params().event_filter;
-
-  EXPECT_THAT(event_filter.Run(EventWithSource(ui::ED_REMOTE_INPUT_DEVICE)),
-              Eq(ash::curtain::FilterResult::kKeepEvent));
-
-  EXPECT_THAT(event_filter.Run(EventWithSource(5)),
-              Eq(ash::curtain::FilterResult::kSuppressEvent));
-}
-
-TEST_F(It2MeDesktopEnvironmentTest,
-       ClosingACurtainedSessionShouldDisableCurtainMode) {
-  auto desktop_environment = CreateCurtainedSession();
-  FlushUiSequence();
-
-  // Closing the CRD session will destroy the desktop environment.
-  desktop_environment.reset();
-  FlushUiSequence();
-
-  EXPECT_THAT(security_curtain_controller().IsEnabled(), Eq(false));
-}
-
-TEST_F(It2MeDesktopEnvironmentTest,
-       ShouldLogoutUserInDestructorIfCurtainModeIsEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kEnableCrdAdminRemoteAccess);
-  DesktopEnvironmentOptions options(default_options());
-
-  options.set_enable_curtaining(true);
-
-  auto desktop_environment = Create(options);
-
-  FlushUiSequence();
-  EXPECT_THAT(ash_proxy().request_sign_out_count(), Eq(0));
-
-  desktop_environment = nullptr;
-
-  FlushUiSequence();
-  EXPECT_THAT(ash_proxy().request_sign_out_count(), Eq(1));
-}
-
-TEST_F(It2MeDesktopEnvironmentTest,
-       ShouldNotLogoutUserInDestructorIfCurtainModeIsDisabled) {
-  base::test::ScopedFeatureList feature_list{
-      features::kEnableCrdAdminRemoteAccess};
-  DesktopEnvironmentOptions options(default_options());
-
-  options.set_enable_curtaining(false);
-
-  auto desktop_environment = Create(options);
-  desktop_environment = nullptr;
-
-  FlushUiSequence();
-  EXPECT_THAT(ash_proxy().request_sign_out_count(), Eq(0));
-}
-
-TEST_F(It2MeDesktopEnvironmentTest,
-       ShouldRefuseCurtainSessionIfUserIsLoggedIn) {
-  base::test::ScopedFeatureList feature_list{
-      features::kEnableCrdAdminRemoteAccess};
-
-  EXPECT_CALL(session_control(),
-              DisconnectSession(protocol::ErrorCode::HOST_CONFIGURATION_ERROR));
-
-  LogInUser();
-  auto desktop_environment = CreateCurtainedSession();
-  FlushUiSequence();
-}
-
-TEST_F(It2MeDesktopEnvironmentTest,
-       ShouldNotForceLogoutUserIfInitializeCurtainModeFails) {
-  base::test::ScopedFeatureList feature_list{
-      features::kEnableCrdAdminRemoteAccess};
-  EXPECT_CALL(session_control(),
-              DisconnectSession(protocol::ErrorCode::HOST_CONFIGURATION_ERROR));
-
-  LogInUser();
-  auto desktop_environment = CreateCurtainedSession();
-  desktop_environment = nullptr;
-
-  FlushUiSequence();
-  EXPECT_THAT(ash_proxy().request_sign_out_count(), Eq(0));
-
-  EXPECT_THAT(ash_proxy().request_sign_out_count(), Eq(0));
-}
-
 TEST_F(It2MeDesktopEnvironmentTest,
        ShouldHaveFileTransferCapabilitiesWhenEnabled) {
   base::test::ScopedFeatureList feature_list;

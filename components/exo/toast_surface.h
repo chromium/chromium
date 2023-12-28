@@ -30,7 +30,7 @@ class ToastSurface : public ClientControlledShellSurface {
   void OnSurfaceCommit() override;
 
  private:
-  const raw_ptr<ToastSurfaceManager, ExperimentalAsh> manager_;
+  const raw_ptr<ToastSurfaceManager> manager_;
   bool added_to_manager_ = false;
 };
 

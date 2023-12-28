@@ -1085,7 +1085,7 @@ WebAXObject WebAXObject::FromWebDocument(const WebDocument& web_document) {
   DCHECK(cache);
   if (!cache->Root())
     return WebAXObject();  // Accessibility not yet active in this cache.
-  return WebAXObject(cache->GetOrCreate(document));
+  return WebAXObject(cache->Get(document));
 }
 
 // static

@@ -202,8 +202,7 @@ class HashRealTimeServiceTest : public PlatformTest {
     test_url_loader_factory_ =
         std::make_unique<network::TestURLLoaderFactory>();
     test_shared_loader_factory_ =
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            test_url_loader_factory_.get());
+        test_url_loader_factory_->GetSafeWeakWrapper();
     auto network_context_callback = base::BindRepeating(
         [](HashRealTimeServiceTest* test) { return test->GetNetworkContext(); },
         base::Unretained(this));

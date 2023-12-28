@@ -11,7 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "ios/chrome/browser/net/net_types.h"
+#include "ios/chrome/browser/net/model/net_types.h"
 #include "ios/web/public/browser_state.h"
 #include "net/url_request/url_request_job_factory.h"
 

@@ -24,6 +24,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/window_state.h"
+#include "base/bit_cast.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
@@ -592,9 +593,6 @@ void AuraSurface::ComputeAndSendOcclusion(
       const gfx::Rect bounds_in_screen = GetTransformedBoundsInScreen(window);
       const int tracked_area =
           bounds_in_screen.width() * bounds_in_screen.height();
-      SkRegion tracked_and_occluded_region = occluded_region;
-      tracked_and_occluded_region.op(gfx::RectToSkIRect(bounds_in_screen),
-                                     SkRegion::Op::kIntersect_Op);
 
       // Clip the area outside of the display.
       gfx::Rect area_inside_display = bounds_in_screen;
@@ -602,6 +600,12 @@ void AuraSurface::ComputeAndSendOcclusion(
       int occluded_area = tracked_area - area_inside_display.width() *
                                              area_inside_display.height();
 
+      // We already marked the area outside the display as occluded, so
+      // intersect the occluded region with the region of the window which is
+      // inside the display.
+      SkRegion tracked_and_occluded_region = occluded_region;
+      tracked_and_occluded_region.op(gfx::RectToSkIRect(area_inside_display),
+                                     SkRegion::Op::kIntersect_Op);
       for (SkRegion::Iterator i(tracked_and_occluded_region); !i.done();
            i.next()) {
         occluded_area += i.rect().width() * i.rect().height();
@@ -1027,13 +1031,29 @@ void AuraToplevel::OnConfigure(
   wl_array_init(&states);
   if (state_type == chromeos::WindowStateType::kMaximized)
     AddState(&states, XDG_TOPLEVEL_STATE_MAXIMIZED);
-  // TODO(crbug/1250129): Pinned states need to be handled properly.
   // TODO(crbug/1250129): Support snapped state.
   if (IsFullscreenOrPinnedWindowStateType(state_type)) {
-    AddState(&states, XDG_TOPLEVEL_STATE_FULLSCREEN);
+    // If pinned state is not yet supported, always set fullscreen.
+    if (wl_resource_get_version(aura_toplevel_resource_) <
+        ZAURA_TOPLEVEL_STATE_TRUSTED_PINNED_SINCE_VERSION) {
+      AddState(&states, XDG_TOPLEVEL_STATE_FULLSCREEN);
+    } else if (state_type == chromeos::WindowStateType::kFullscreen) {
+      AddState(&states, XDG_TOPLEVEL_STATE_FULLSCREEN);
+    } else if (state_type == chromeos::WindowStateType::kPinned) {
+      AddState(&states, ZAURA_TOPLEVEL_STATE_PINNED);
+    } else if (state_type == chromeos::WindowStateType::kTrustedPinned) {
+      AddState(&states, ZAURA_TOPLEVEL_STATE_TRUSTED_PINNED);
+    }
+
     if (shell_surface_->GetWidget() &&
         shell_surface_->GetWidget()->GetNativeWindow()->GetProperty(
             chromeos::kImmersiveImpliedByFullscreen)) {
+      // Imemrsive state should NOT be set for pinned state.
+      // TODO(crbug.com/1511187): Lacros randomly enters/exits immersive state
+      // when transitioning to pinned/unpinned state. Add CHECK to guarantee
+      // `state_type` is as same as chrome::WindowStateType::kFullscreen here
+      // after resolving this bug.
+
       // TODO(oshima): Immersive should probably be default.
       // Investigate and fix.
       AddState(&states, ZAURA_TOPLEVEL_STATE_IMMERSIVE);
@@ -1073,7 +1093,7 @@ void AuraToplevel::OnConfigure(
 
   if (wl_resource_get_version(aura_toplevel_resource_) >=
       ZAURA_TOPLEVEL_CONFIGURE_RASTER_SCALE_SINCE_VERSION) {
-    uint32_t value = *reinterpret_cast<uint32_t*>(&raster_scale);
+    uint32_t value = base::bit_cast<uint32_t>(raster_scale);
     zaura_toplevel_send_configure_raster_scale(aura_toplevel_resource_, value);
   }
 }
@@ -1428,7 +1448,7 @@ class WaylandAuraShell : public ash::DesksController::Observer,
 
   // The aura shell resource associated with observer.
   const raw_ptr<wl_resource, DanglingUntriaged> aura_shell_resource_;
-  const raw_ptr<Seat, ExperimentalAsh> seat_;
+  const raw_ptr<Seat> seat_;
 
   bool last_has_focused_client_ = false;
 
@@ -1534,14 +1554,14 @@ void aura_toplevel_unset_float(wl_client* client, wl_resource* resource) {
 void aura_toplevel_set_snap_primary(wl_client* client,
                                     wl_resource* resource,
                                     uint32_t snap_ratio_as_uint) {
-  float snap_ratio = *reinterpret_cast<float*>(&snap_ratio_as_uint);
+  float snap_ratio = base::bit_cast<float>(snap_ratio_as_uint);
   GetUserDataAs<AuraToplevel>(resource)->SetSnapPrimary(snap_ratio);
 }
 
 void aura_toplevel_set_snap_secondary(wl_client* client,
                                       wl_resource* resource,
                                       uint32_t snap_ratio_as_uint) {
-  float snap_ratio = *reinterpret_cast<float*>(&snap_ratio_as_uint);
+  float snap_ratio = base::bit_cast<float>(snap_ratio_as_uint);
   GetUserDataAs<AuraToplevel>(resource)->SetSnapSecondary(snap_ratio);
 }
 
@@ -1631,7 +1651,7 @@ void aura_toplevel_set_scale_factor(wl_client* client,
                                     uint32_t scale_factor_as_uint) {
   static_assert(sizeof(uint32_t) == sizeof(float),
                 "Sizes much match for reinterpret cast to be meaningful");
-  float scale_factor = *reinterpret_cast<float*>(&scale_factor_as_uint);
+  float scale_factor = base::bit_cast<float>(scale_factor_as_uint);
   GetUserDataAs<AuraToplevel>(resource)->SetScaleFactor(scale_factor);
 }
 
@@ -1756,7 +1776,7 @@ void aura_popup_release(wl_client* client, wl_resource* resource) {
 void aura_popup_set_scale_factor(wl_client* client,
                                  wl_resource* resource,
                                  uint32_t scale_factor_as_uint) {
-  float scale_factor = *reinterpret_cast<float*>(&scale_factor_as_uint);
+  float scale_factor = base::bit_cast<float>(scale_factor_as_uint);
   GetUserDataAs<AuraPopup>(resource)->SetScaleFactor(scale_factor);
 }
 

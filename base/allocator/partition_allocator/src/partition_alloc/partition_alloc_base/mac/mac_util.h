@@ -6,7 +6,7 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_MAC_MAC_UTIL_H_
 
 #include <AvailabilityMacros.h>
-#import <CoreGraphics/CoreGraphics.h>
+#include <CoreGraphics/CoreGraphics.h>
 
 #include "partition_alloc/partition_alloc_base/component_export.h"
 

@@ -302,6 +302,17 @@ def _FormatNumber(number):
   return '{:+,}'.format(number)
 
 
+# TODO(https://crbug.com/1414410): If missing and file is x32y, return xy; else
+# return original filename. Basically allows comparing x_32 targets with x
+# targets built under 32bit target_cpu without failing the script due to
+# different file names. Remove once migration is complete.
+def _UseAlterantiveIfMissing(path):
+  if not os.path.isfile(path):
+    parent, name = os.path.split(path)
+    path = os.path.join(parent, name.replace('32', '', 1))
+  return path
+
+
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--author', required=True, help='CL author')
@@ -356,10 +367,12 @@ def main():
     size_filename = config['supersize_input_file'] + '.size'
 
   before_mapping_paths = [
-      before_path_resolver(f) for f in config['mapping_files']
+      _UseAlterantiveIfMissing(before_path_resolver(f))
+      for f in config['mapping_files']
   ]
   after_mapping_paths = [
-      after_path_resolver(f) for f in config['mapping_files']
+      _UseAlterantiveIfMissing(after_path_resolver(f))
+      for f in config['mapping_files']
   ]
 
   max_size_increase = _MaxSizeIncrease(args.author, args.review_subject)
@@ -369,7 +382,8 @@ def main():
 
   logging.info('Creating Supersize diff')
   supersize_diff_lines, delta_size_info = _CreateSupersizeDiff(
-      before_path_resolver(size_filename), after_path_resolver(size_filename),
+      _UseAlterantiveIfMissing(before_path_resolver(size_filename)),
+      _UseAlterantiveIfMissing(after_path_resolver(size_filename)),
       args.review_subject, args.review_url)
 
   changed_symbols = delta_size_info.raw_symbols.WhereDiffStatusIs(

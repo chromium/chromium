@@ -874,6 +874,8 @@ std::unique_ptr<protocol::DictionaryValue> BuildAreaNamePaths(
   LayoutUnit row_gap = grid->GridGap(kForRows);
   LayoutUnit column_gap = grid->GridGap(kForColumns);
 
+  // TODO(kschmi) - merge area names in `GridLineResolver` so that
+  // subgrid-inherited grid areas are included.
   for (const auto& item : grid->StyleRef().GridTemplateAreas()->named_areas) {
     const GridArea& area = item.value;
     const String& name = item.key;
@@ -959,19 +961,13 @@ std::unique_ptr<protocol::ListValue> BuildGridLineNames(
   };
 
   const NamedGridLinesMap& explicit_lines_map =
-      (direction == kForColumns)
-          ? grid_container_style.GridTemplateColumns().named_grid_lines
-          : grid_container_style.GridTemplateRows().named_grid_lines;
+      grid->CachedPlacementData().line_resolver.ExplicitNamedLinesMap(
+          direction);
   process_grid_lines_map(explicit_lines_map);
-
-  if (const auto& grid_template_areas =
-          grid_container_style.GridTemplateAreas()) {
-    const NamedGridLinesMap& implicit_lines_map =
-        (direction == kForColumns)
-            ? grid_template_areas->implicit_named_grid_column_lines
-            : grid_template_areas->implicit_named_grid_row_lines;
-    process_grid_lines_map(implicit_lines_map);
-  }
+  const NamedGridLinesMap& implicit_lines_map =
+      grid->CachedPlacementData().line_resolver.ImplicitNamedLinesMap(
+          direction);
+  process_grid_lines_map(implicit_lines_map);
 
   return lines;
 }
@@ -1486,8 +1482,10 @@ void CollectQuads(Node* node,
     for (wtf_size_t i = old_size; i < new_size; i++) {
       if (containing_view)
         FrameQuadToViewport(containing_view, out_quads[i]);
-      if (adjust_for_absolute_zoom)
-        AdjustForAbsoluteZoom::AdjustQuad(out_quads[i], *layout_object);
+      if (adjust_for_absolute_zoom) {
+        AdjustForAbsoluteZoom::AdjustQuadMaybeExcludingCSSZoom(out_quads[i],
+                                                               *layout_object);
+      }
     }
   }
 }
@@ -2042,10 +2040,14 @@ bool InspectorHighlight::GetBoxModel(
   }
 
   if (use_absolute_zoom) {
-    AdjustForAbsoluteZoom::AdjustQuad(content, *layout_object);
-    AdjustForAbsoluteZoom::AdjustQuad(padding, *layout_object);
-    AdjustForAbsoluteZoom::AdjustQuad(border, *layout_object);
-    AdjustForAbsoluteZoom::AdjustQuad(margin, *layout_object);
+    AdjustForAbsoluteZoom::AdjustQuadMaybeExcludingCSSZoom(content,
+                                                           *layout_object);
+    AdjustForAbsoluteZoom::AdjustQuadMaybeExcludingCSSZoom(padding,
+                                                           *layout_object);
+    AdjustForAbsoluteZoom::AdjustQuadMaybeExcludingCSSZoom(border,
+                                                           *layout_object);
+    AdjustForAbsoluteZoom::AdjustQuadMaybeExcludingCSSZoom(margin,
+                                                           *layout_object);
   }
 
   float scale = PageScaleFromFrameView(view);

@@ -132,4 +132,10 @@ interface InputDeviceSettingsProvider {
   // customization.
   GetActionsForGraphicsTabletButtonCustomization() =>
       (array<ActionChoice> options);
+
+  // Returns whether any of the keyboards has launcher button.
+  // True if the keyboard has launcher button as meta key and we display the
+  // launcher icon in settings. False if the keyboard has other buttons as meta
+  // key and we display the search icon in settings.
+  HasLauncherButton() => (bool has_launcher_button);
 };

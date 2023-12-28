@@ -49,7 +49,7 @@
 <translation id="2295140143284145483">Utafiti</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
 <translation id="2353636109065292463">Inaangalia muunganisho wako wa intaneti</translation>
-<translation id="2388990488038464401">Je, ungependa kutumia simu yako kupigia nambari hii?</translation>
+<translation id="2388990488038464401">Je, ungependa kutumia simu yako kupigia namba hii?</translation>
 <translation id="2435457462613246316">Onyesha nenosiri</translation>
 <translation id="24452542372838207">Panua arifa</translation>
 <translation id="2445449901874883781">Tumia uzito wa juu</translation>
@@ -110,7 +110,7 @@
 <translation id="4588090240171750605">Sogeza Kulia</translation>
 <translation id="4689010477870442157">{YEARS,plural, =1{Mwaka 1 Uliopita}other{Miaka # Iliyopita}}</translation>
 <translation id="4724120544754982507">Kituo cha Arifa, arifa <ph name="UNREAD_NOTIFICATION_COUNT" /> ambazo hujasoma</translation>
-<translation id="4729257764711776855">nambari</translation>
+<translation id="4729257764711776855">namba</translation>
 <translation id="4746179598275229723">Kiendelezi kimebanduliwa</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Umesalia mwezi 1}other{Imesalia miezi #}}</translation>
 <translation id="4888938634149558681">Piga simu</translation>

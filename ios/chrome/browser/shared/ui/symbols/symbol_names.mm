@@ -53,6 +53,7 @@ NSString* const kMoveFolderSymbol = @"folder_badge_arrow_forward";
 NSString* const kTopOmniboxOptionSymbol = @"top_omnibox_option";
 NSString* const kBottomOmniboxOptionSymbol = @"bottom_omnibox_option";
 NSString* const kDangerousOmniboxSymbol = @"dangerous_omnibox";
+NSString* const kArrowDownSymbol = @"arrow.down";
 
 // Custom symbol names which can be configured with a color palette.
 NSString* const kIncognitoCircleFillSymbol = @"incognito_circle_fill";
@@ -191,6 +192,9 @@ NSString* const kCircleCircleFillSymbol = @"circle.circle.fill";
 NSString* const kLockSymbol = @"lock";
 NSString* const kRulerSymbol = @"ruler";
 NSString* const kLaptopAndIphoneSymbol = @"laptopcomputer.and.iphone";
+NSString* const kNewTabGroupActionSymbol = @"plus.square.on.square";
+NSString* const kRemoveTabFromGroupActionSymbol = @"minus.square";
+NSString* const kMoveTabToGroupActionSymbol = @"arrow.up.right.square";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

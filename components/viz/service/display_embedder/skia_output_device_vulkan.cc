@@ -192,7 +192,7 @@ SkSurface* SkiaOutputDeviceVulkan::BeginPaint(
       sk_surface_size_pairs_[scoped_write.image_index()].sk_surface;
 
   if (UNLIKELY(!sk_surface)) {
-    SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
+    SkSurfaceProps surface_props;
     const auto surface_format = vulkan_surface_->surface_format().format;
     DCHECK(surface_format == VK_FORMAT_B8G8R8A8_UNORM ||
            surface_format == VK_FORMAT_R8G8B8A8_UNORM);

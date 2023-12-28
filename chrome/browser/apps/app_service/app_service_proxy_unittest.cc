@@ -317,7 +317,7 @@ class AppServiceProxyIconTest : public AppServiceProxyTest {
   UniqueReleaser LoadIcon(apps::AppServiceProxy* proxy,
                           const std::string& app_id) {
     return proxy->LoadIcon(
-        AppType::kWeb, app_id, IconType::kUncompressed, /*size_hint_in_dip=*/1,
+        app_id, IconType::kUncompressed, /*size_hint_in_dip=*/1,
         /*allow_placeholder_icon=*/false,
         base::BindOnce([](int* num_callbacks,
                           apps::IconValuePtr icon) { ++(*num_callbacks); },

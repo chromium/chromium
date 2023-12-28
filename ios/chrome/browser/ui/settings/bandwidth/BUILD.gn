@@ -15,7 +15,7 @@ source_set("bandwidth") {
     "//components/prefs",
     "//components/prefs/ios",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/prerender/model:prerender_pref",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

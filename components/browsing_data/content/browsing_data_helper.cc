@@ -180,6 +180,12 @@ void RemoveSiteSettingsData(const base::Time& delete_begin,
       ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION, delete_begin,
       delete_end, HostContentSettingsMap::PatternSourcePredicate());
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+  host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
+      ContentSettingsType::SMART_CARD_DATA, delete_begin, delete_end,
+      HostContentSettingsMap::PatternSourcePredicate());
+#endif
 }
 
 void RemoveFederatedSiteSettingsData(

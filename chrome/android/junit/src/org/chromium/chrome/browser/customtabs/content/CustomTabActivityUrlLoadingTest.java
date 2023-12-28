@@ -35,11 +35,9 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -54,7 +52,6 @@ import org.chromium.url.Origin;
 @Config(
         manifest = Config.NONE,
         shadows = {CustomTabActivityUrlLoadingTest.ShadowOrigin.class})
-@DisableFeatures(ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS)
 public class CustomTabActivityUrlLoadingTest {
     @Implements(Origin.class)
     public static class ShadowOrigin {

@@ -81,7 +81,7 @@ TEST(ProxyInfoTest, IsForIpProtection) {
   EXPECT_FALSE(info.is_for_ip_protection());
 }
 
-TEST(ProxyListTest, UseProxyChain) {
+TEST(ProxyInfoTest, UseProxyChain) {
   ProxyInfo info;
   ProxyChain proxy_chain =
       ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTP, "foo", 80);

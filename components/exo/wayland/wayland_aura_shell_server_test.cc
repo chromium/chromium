@@ -101,8 +101,8 @@ class WaylandAuraShellServerTest : public test::WaylandServerTest {
 
   struct ShellObserver {
     // For focus.
-    raw_ptr<wl_surface, ExperimentalAsh> gained_active;
-    raw_ptr<wl_surface, ExperimentalAsh> lost_active;
+    raw_ptr<wl_surface> gained_active;
+    raw_ptr<wl_surface> lost_active;
     int32_t activated_call_count = 0;
 
     // For overview.
@@ -151,7 +151,7 @@ class WaylandAuraShellServerTest : public test::WaylandServerTest {
                                                               surface_key);
   }
 
-  raw_ptr<Display, DanglingUntriaged | ExperimentalAsh> display_;
+  raw_ptr<Display, DanglingUntriaged> display_;
 };
 
 // Home screen -> any window

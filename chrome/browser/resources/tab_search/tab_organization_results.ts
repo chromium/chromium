@@ -8,11 +8,13 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/mwb_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
+import './strings.m.js';
 import './tab_organization_shared_style.css.js';
 import './tab_search_item.js';
 
-import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
+import {CrFeedbackButtonsElement, CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -26,7 +28,9 @@ const NON_SCROLLABLE_VERTICAL_SPACING: number = 120;
 
 export interface TabOrganizationResultsElement {
   $: {
+    feedbackButtons: CrFeedbackButtonsElement,
     input: CrInputElement,
+    learnMore: HTMLElement,
     scrollable: HTMLElement,
     selector: IronSelectorElement,
   };
@@ -51,9 +55,17 @@ export class TabOrganizationResultsElement extends PolymerElement {
         observer: 'onAvailableHeightChange_',
       },
 
+      isLastOrganization: Boolean,
+
       lastFocusedIndex_: {
         type: Number,
         value: 0,
+      },
+
+      showRefresh_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('tabOrganizationRefreshButtonEnabled'),
       },
 
       tabDatas_: {
@@ -67,8 +79,10 @@ export class TabOrganizationResultsElement extends PolymerElement {
   tabs: Tab[];
   name: string;
   availableHeight: number;
+  isLastOrganization: boolean;
 
   private lastFocusedIndex_: number;
+  private showRefresh_: boolean;
   private tabDatas_: TabData[];
 
   static get template() {
@@ -85,6 +99,13 @@ export class TabOrganizationResultsElement extends PolymerElement {
     if (this.lastFocusedIndex_ > this.tabs.length - 1) {
       this.lastFocusedIndex_ = 0;
     }
+  }
+
+  private getRefreshButtonText_(): string {
+    if (this.isLastOrganization) {
+      return loadTimeData.getString('rejectFinalSuggestion');
+    }
+    return loadTimeData.getString('rejectSuggestion');
   }
 
   private getTabIndex_(index: number): number {
@@ -156,6 +177,20 @@ export class TabOrganizationResultsElement extends PolymerElement {
     this.$.selector.selected = event.model.index;
   }
 
+  private onTabBlur_(_event: DomRepeatEvent<TabData>) {
+    // Ensure the selector deselects its current selection on blur. If
+    // selection should move to another element in the list, this will be done
+    // in onTabFocus_.
+    this.$.selector.selectIndex(-1);
+  }
+
+  private onRefreshClick_() {
+    this.dispatchEvent(new CustomEvent('refresh-click', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
   private onCreateGroupClick_() {
     this.dispatchEvent(new CustomEvent('create-group-click', {
       bubbles: true,
@@ -169,6 +204,39 @@ export class TabOrganizationResultsElement extends PolymerElement {
       bubbles: true,
       composed: true,
     }));
+  }
+
+  private onLearnMoreKeyDown_(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.onLearnMoreClick_();
+    }
+  }
+
+  private onFeedbackKeyDown_(event: KeyboardEvent) {
+    if ((event.key !== 'ArrowLeft' && event.key !== 'ArrowRight')) {
+      return;
+    }
+    const feedbackButtons =
+        this.$.feedbackButtons.shadowRoot!.querySelectorAll(`cr-icon-button`);
+    const focusableElements = [
+      this.$.learnMore,
+      feedbackButtons[0]!,
+      feedbackButtons[1]!,
+    ];
+    const focusableElementCount = focusableElements.length;
+    const focusedIndex =
+        focusableElements.findIndex((element) => element.matches(':focus'));
+    if (focusedIndex < 0) {
+      return;
+    }
+    let nextFocusedIndex = 0;
+    if (event.key === 'ArrowLeft') {
+      nextFocusedIndex =
+          (focusedIndex + focusableElementCount - 1) % focusableElementCount;
+    } else if (event.key === 'ArrowRight') {
+      nextFocusedIndex = (focusedIndex + 1) % focusableElementCount;
+    }
+    focusableElements[nextFocusedIndex]!.focus();
   }
 
   private onFeedbackSelectedOptionChanged_(

@@ -16,6 +16,7 @@
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace segmentation_platform {
 
@@ -42,6 +43,18 @@ constexpr std::array<MetadataWriter::UMAFeature, 1> kSearchUserUMAFeatures = {
 };
 
 constexpr char kUkmInputEnabled[] = "ukm-input-enabled";
+
+#if BUILDFLAG(IS_IOS)
+constexpr UkmEventHash kPageLoadHash = UkmEventHash::FromUnsafeValue(
+    ukm::builders::MainFrameNavigation::kEntryNameHash);
+constexpr UkmMetricHash kNavMetricHash = UkmMetricHash::FromUnsafeValue(
+    ukm::builders::MainFrameNavigation::kDidCommitNameHash);
+#else
+constexpr UkmEventHash kPageLoadHash =
+    UkmEventHash::FromUnsafeValue(ukm::builders::PageLoad::kEntryNameHash);
+constexpr UkmMetricHash kNavMetricHash = UkmMetricHash::FromUnsafeValue(
+    ukm::builders::PageLoad::kPaintTiming_NavigationToFirstPaintNameHash);
+#endif
 
 std::unique_ptr<DefaultModelProvider> GetSearchUserDefaultModel() {
   if (!base::GetFieldTrialParamByFeatureAsBool(
@@ -88,12 +101,10 @@ SearchUserModel::GetModelConfig() {
           features::kSegmentationPlatformSearchUser, kUkmInputEnabled, false)) {
     std::string query =
         "SELECT COUNT(id) FROM metrics WHERE metric_hash = '64BD7CCE5A95BF00'";
-    const std::array<UkmMetricHash, 1> kNavigationMetric = {
-        UkmMetricHash::FromUnsafeValue(7259095400115977984ull)};
+    const std::array<UkmMetricHash, 1> kNavigationMetric = {kNavMetricHash};
     const std::array<MetadataWriter::SqlFeature::EventAndMetrics, 1>
         kPageLoadEvent{MetadataWriter::SqlFeature::EventAndMetrics{
-            .event_hash =
-                UkmEventHash::FromUnsafeValue(12426032810838168341ull),
+            .event_hash = kPageLoadHash,
             .metrics = kNavigationMetric.data(),
             .metrics_size = kNavigationMetric.size()}};
 

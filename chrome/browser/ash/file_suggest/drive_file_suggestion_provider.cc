@@ -164,11 +164,6 @@ void DriveFileSuggestionProvider::MaybeUpdateItemSuggestCache(
   item_suggest_cache_->MaybeUpdateCache();
 }
 
-bool DriveFileSuggestionProvider::HasPendingDriveSuggestionFetchForTest()
-    const {
-  return !on_drive_results_ready_callback_list_.empty();
-}
-
 void DriveFileSuggestionProvider::EndDriveFilePathValidation(
     DriveSuggestValidationStatus validation_status,
     const std::optional<std::vector<FileSuggestData>>& suggest_results) {

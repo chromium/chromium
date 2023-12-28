@@ -5,7 +5,7 @@
 export class FakeObservables<T = any> {
   register(methodName: string): void;
   registerObservableWithArg(methodName: string): void;
-  observe(methodName: string, callback: (arg0: T) => void): void;
+  observe(methodName: string, callback: (...args: T[]) => void): void;
   observeWithArg(methodName: string, arg: string, callback: (arg0: T) => void):
       void;
   setObservableData(methodName: string, observations: T[]): void;

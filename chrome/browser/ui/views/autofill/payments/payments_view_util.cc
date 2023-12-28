@@ -166,7 +166,7 @@ gfx::Size TitleWithIconAndSeparatorView::GetMinimumSize() const {
   return gfx::Size(0, 0);
 }
 
-BEGIN_METADATA(TitleWithIconAndSeparatorView, views::View)
+BEGIN_METADATA(TitleWithIconAndSeparatorView)
 END_METADATA
 
 TitleWithIconAfterLabelView::TitleWithIconAfterLabelView(
@@ -206,7 +206,7 @@ gfx::Size TitleWithIconAfterLabelView::GetMinimumSize() const {
   return gfx::Size(0, 0);
 }
 
-BEGIN_METADATA(TitleWithIconAfterLabelView, views::View)
+BEGIN_METADATA(TitleWithIconAfterLabelView)
 END_METADATA
 
 std::unique_ptr<views::View> CreateTitleView(
@@ -269,14 +269,15 @@ LegalMessageView::LegalMessageView(const LegalMessageLines& legal_message_lines,
 
 LegalMessageView::~LegalMessageView() = default;
 
-BEGIN_METADATA(LegalMessageView, views::View)
+BEGIN_METADATA(LegalMessageView)
 END_METADATA
 
 PaymentsBubbleClosedReason GetPaymentsBubbleClosedReasonFromWidget(
     const views::Widget* widget) {
   DCHECK(widget);
-  if (!widget->IsClosed())
+  if (!widget->IsClosed()) {
     return PaymentsBubbleClosedReason::kUnknown;
+  }
 
   switch (widget->closed_reason()) {
     case views::Widget::ClosedReason::kUnspecified:
@@ -319,7 +320,7 @@ void ProgressBarWithTextView::AddedToWidget() {
   progress_throbber_->Start();
 }
 
-BEGIN_METADATA(ProgressBarWithTextView, views::View)
+BEGIN_METADATA(ProgressBarWithTextView)
 END_METADATA
 
 }  // namespace autofill

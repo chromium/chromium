@@ -12,7 +12,7 @@ import argparse
 import sys
 
 import codegen
-import model
+from sync import model
 import templates_events as templates
 
 parser = argparse.ArgumentParser(
@@ -23,7 +23,7 @@ parser.add_argument('--output', help='Path to generated files.')
 
 def main():
   args = parser.parse_args()
-  data = model.Model(open(args.input).read())
+  data = model.Model(open(args.input, encoding='utf-8').read())
 
   codegen.Template(
       data,

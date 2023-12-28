@@ -73,8 +73,7 @@ class CrtcController {
   // TODO(dnicoara) Add support for hardware mirroring (multiple connectors).
   const uint32_t connector_;
 
-  const raw_ref<const HardwareDisplayPlaneManager::CrtcState, ExperimentalAsh>
-      state_;
+  const raw_ref<const HardwareDisplayPlaneManager::CrtcState> state_;
 };
 
 }  // namespace ui

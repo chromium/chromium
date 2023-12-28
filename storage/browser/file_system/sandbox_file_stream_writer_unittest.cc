@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "storage/browser/file_system/sandbox_file_stream_writer.h"
-#include "base/test/test_future.h"
-#include "storage/browser/file_system/file_stream_writer_test.h"
 
 #include <stdint.h>
 
@@ -17,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
@@ -26,6 +25,7 @@
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_stream_test_utils.h"
 #include "storage/browser/file_system/file_stream_writer.h"
+#include "storage/browser/file_system/file_stream_writer_test.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/async_file_test_helper.h"
@@ -34,6 +34,7 @@
 #include "storage/browser/test/quota_manager_proxy_sync.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
@@ -113,9 +114,9 @@ class SandboxFileStreamWriterTest : public FileStreamWriterTest {
 
   bool CreateFileWithContent(const std::string& name,
                              const std::string& data) override {
-    return AsyncFileTestHelper::CreateFileWithData(
-               file_system_context_.get(), GetFileSystemURL(name), data.data(),
-               data.size()) == base::File::FILE_OK;
+    return AsyncFileTestHelper::CreateFileWithData(file_system_context_.get(),
+                                                   GetFileSystemURL(name),
+                                                   data) == base::File::FILE_OK;
   }
 
   std::unique_ptr<FileStreamWriter> CreateWriter(const std::string& name,
@@ -143,13 +144,11 @@ class SandboxFileStreamWriterTest : public FileStreamWriterTest {
         file_system_context_.get()->CreateFileStreamReader(url, 0, info.size,
                                                            base::Time()));
 
-    int result = 0;
-    std::string content;
-    ReadFromReader(reader.get(), &content, info.size, &result);
-    EXPECT_EQ(net::OK, result);
-    EXPECT_EQ(info.size, long(content.length()));
+    auto data_or_error = ReadFromReader(*reader, /*bytes_to_read=*/info.size);
+    EXPECT_TRUE(data_or_error.has_value());
+    EXPECT_THAT(data_or_error.value(), testing::SizeIs(info.size));
 
-    return content;
+    return data_or_error.value();
   }
 
   std::unique_ptr<SandboxFileStreamWriter> CreateSandboxWriter(

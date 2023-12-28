@@ -75,7 +75,6 @@ public class LogoMediator implements TemplateUrlServiceObserver {
     private ImageFetcher mImageFetcher;
     private final Callback<LoadUrlParams> mLogoClickedCallback;
     private final Callback<LogoBridge.Logo> mOnLogoAvailableRunnable;
-    private final Runnable mOnCachedLogoRevalidatedRunnable;
     private boolean mHasLogoLoadedForCurrentSearchEngine;
     private final boolean mShouldFetchDoodle;
     private boolean mIsParentSurfaceShown; // This value should always be true when this class
@@ -99,7 +98,6 @@ public class LogoMediator implements TemplateUrlServiceObserver {
      * @param logoModel The model that is required to build the logo on start surface or ntp.
      * @param shouldFetchDoodle Whether to fetch doodle if there is.
      * @param onLogoAvailableCallback The callback for when logo is available.
-     * @param onCachedLogoRevalidatedRunnable The runnable for when cached logo is revalidated.
      * @param isParentSurfaceShown Whether Start surface homepage or NTP is shown. This value
      *                             is true when this class is used by NTP; while used by Start,
      *                             it's only true on Start homepage.
@@ -113,7 +111,6 @@ public class LogoMediator implements TemplateUrlServiceObserver {
             PropertyModel logoModel,
             boolean shouldFetchDoodle,
             Callback<LogoBridge.Logo> onLogoAvailableCallback,
-            Runnable onCachedLogoRevalidatedRunnable,
             boolean isParentSurfaceShown,
             LogoCoordinator.VisibilityObserver visibilityObserver,
             CachedTintedBitmap defaultGoogleLogo) {
@@ -122,7 +119,6 @@ public class LogoMediator implements TemplateUrlServiceObserver {
         mLogoClickedCallback = logoClickedCallback;
         mShouldFetchDoodle = shouldFetchDoodle;
         mOnLogoAvailableRunnable = onLogoAvailableCallback;
-        mOnCachedLogoRevalidatedRunnable = onCachedLogoRevalidatedRunnable;
         mIsParentSurfaceShown = isParentSurfaceShown;
         mVisibilityObserver = visibilityObserver;
         mVisibilityObservers.addObserver(mVisibilityObserver);
@@ -272,13 +268,6 @@ public class LogoMediator implements TemplateUrlServiceObserver {
                             mOnLogoAvailableRunnable.onResult(logo);
                         }
                     }
-
-                    @Override
-                    public void onCachedLogoRevalidated() {
-                        if (mOnCachedLogoRevalidatedRunnable != null) {
-                            mOnCachedLogoRevalidatedRunnable.run();
-                        }
-                    }
                 });
     }
 
@@ -384,11 +373,6 @@ public class LogoMediator implements TemplateUrlServiceObserver {
                         mAnimatedLogoUrl = logo != null ? logo.animatedLogoUrl : null;
 
                         logoObserver.onLogoAvailable(logo, fromCache);
-                    }
-
-                    @Override
-                    public void onCachedLogoRevalidated() {
-                        logoObserver.onCachedLogoRevalidated();
                     }
                 };
 

@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -211,6 +212,68 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
     return factories;
   }
 
+  auto CheckNotShownMetrics(const base::Feature& feature,
+                            FeaturePromoResult result,
+                            int not_shown_count) {
+    EXPECT_EQ(not_shown_count, user_action_tester_.GetActionCount(
+                                   "UserEducation.MessageNotShown"));
+
+    auto action_with_iph_name =
+        base::StringPrintf("UserEducation.MessageNotShown.%s", feature.name);
+
+    EXPECT_EQ(not_shown_count,
+              user_action_tester_.GetActionCount(action_with_iph_name));
+
+    auto failure = result.failure();
+    if (!failure.has_value()) {
+      return;
+    }
+    std::string failure_action_name = "UserEducation.MessageNotShown.";
+    switch (failure.value()) {
+      case FeaturePromoResult::kCanceled:
+        failure_action_name.append("Canceled");
+        break;
+      case FeaturePromoResult::kError:
+        failure_action_name.append("Error");
+        break;
+      case FeaturePromoResult::kBlockedByUi:
+        failure_action_name.append("BlockedByUi");
+        break;
+      case FeaturePromoResult::kBlockedByPromo:
+        failure_action_name.append("BlockedByPromo");
+        break;
+      case FeaturePromoResult::kBlockedByConfig:
+        failure_action_name.append("BlockedByConfig");
+        break;
+      case FeaturePromoResult::kSnoozed:
+        failure_action_name.append("Snoozed");
+        break;
+      case FeaturePromoResult::kBlockedByContext:
+        failure_action_name.append("BlockedByContext");
+        break;
+      case FeaturePromoResult::kFeatureDisabled:
+        failure_action_name.append("FeatureDisabled");
+        break;
+      case FeaturePromoResult::kPermanentlyDismissed:
+        failure_action_name.append("PermanentlyDismissed");
+        break;
+      case FeaturePromoResult::kBlockedByGracePeriod:
+        failure_action_name.append("BlockedByGracePeriod");
+        break;
+      case FeaturePromoResult::kBlockedByCooldown:
+        failure_action_name.append("BlockedByCooldown");
+        break;
+      case FeaturePromoResult::kRecentlyAborted:
+        failure_action_name.append("RecentlyAborted");
+        break;
+      default:
+        NOTREACHED();
+    }
+
+    EXPECT_EQ(not_shown_count,
+              user_action_tester_.GetActionCount(failure_action_name));
+  }
+
  protected:
   FeaturePromoController* controller() { return controller_.get(); }
 
@@ -304,6 +367,7 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::UserActionTester user_action_tester_;
 };
 
 using BubbleCloseCallback = BrowserFeaturePromoController::BubbleCloseCallback;
@@ -367,7 +431,9 @@ TEST_F(BrowserFeaturePromoControllerTest,
 TEST_F(BrowserFeaturePromoControllerTest, ShowsBubble) {
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .WillOnce(Return(true));
-  EXPECT_TRUE(controller_->MaybeShowPromo(kTestIPHFeature));
+  auto result = controller_->MaybeShowPromo(kTestIPHFeature);
+  EXPECT_TRUE(result);
+  CheckNotShownMetrics(kTestIPHFeature, result, /*not_shown_count=*/0);
   EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_TRUE(GetPromoBubble());
 }
@@ -698,7 +764,9 @@ TEST_F(BrowserFeaturePromoControllerTest, SnoozeServiceBlocksPromo) {
   data.last_snooze_time = base::Time::Now();
   storage_service()->SavePromoData(kTutorialIPHFeature, data);
 
-  EXPECT_FALSE(controller_->MaybeShowPromo(kTutorialIPHFeature));
+  auto result = controller_->MaybeShowPromo(kTutorialIPHFeature);
+  EXPECT_FALSE(result);
+  CheckNotShownMetrics(kTutorialIPHFeature, result, /*not_shown_count=*/1);
   EXPECT_FALSE(controller_->IsPromoActive(kTutorialIPHFeature));
   EXPECT_FALSE(GetPromoBubble());
   storage_service()->Reset(kTutorialIPHFeature);
@@ -964,7 +1032,9 @@ TEST_F(BrowserFeaturePromoControllerTest, CriticalPromoBlocksNormalPromo) {
 
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .Times(0);
-  EXPECT_FALSE(controller_->MaybeShowPromo(kTestIPHFeature));
+  auto result = controller_->MaybeShowPromo(kTestIPHFeature);
+  EXPECT_FALSE(result);
+  CheckNotShownMetrics(kTestIPHFeature, result, /*not_shown_count=*/1);
 
   EXPECT_FALSE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_TRUE(GetCriticalPromoBubble());
@@ -1059,7 +1129,9 @@ TEST_F(BrowserFeaturePromoControllerTest, FailsIfBubbleIsShowing) {
       .Times(0);
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(0);
 
-  EXPECT_FALSE(controller_->MaybeShowPromo(kTestIPHFeature));
+  auto result = controller_->MaybeShowPromo(kTestIPHFeature);
+  EXPECT_FALSE(result);
+  CheckNotShownMetrics(kTestIPHFeature, result, /*not_shown_count=*/1);
 }
 
 // Test that a feature promo can chain into a tutorial.

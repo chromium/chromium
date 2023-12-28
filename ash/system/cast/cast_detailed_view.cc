@@ -21,6 +21,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
@@ -242,7 +243,7 @@ void CastDetailedView::AddReceiverActionButtons(
   if (route.freeze_info.can_freeze) {
     std::unique_ptr<PillButton> freeze_button = CreateFreezeButton(route);
     std::unique_ptr<views::View> button_container = MakeButtonContainer();
-    std::vector<views::View*> extra_views;
+    std::vector<raw_ptr<views::View, VectorExperimental>> extra_views;
     extra_views.emplace_back(
         button_container->AddChildView(std::move(freeze_button)));
     extra_views.emplace_back(

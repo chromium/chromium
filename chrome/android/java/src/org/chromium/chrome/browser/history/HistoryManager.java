@@ -752,21 +752,6 @@ public class HistoryManager
         }
     }
 
-    /**
-     * Called when the user presses the back key. This is only going to be called
-     * when the history UI is shown in a separate activity rather inside a tab.
-     * @return True if manager handles this event, false if it decides to ignore.
-     */
-    public boolean onBackPressed() {
-        if (mIsIncognito || mSelectableListLayout == null) {
-            // If Incognito placeholder is shown, the back press should handled by HistoryActivity.
-            return false;
-        } else if (isHistoryClustersUIShowing()) {
-            return mHistoryClustersCoordinator.onBackPressed();
-        }
-        return mSelectableListLayout.onBackPressed();
-    }
-
     // BackPressHandler implementation.
     @Override
     public @BackPressResult int handleBackPress() {
@@ -814,6 +799,22 @@ public class HistoryManager
     private void notifyHistoryClustersCoordinatorOfDeletion() {
         if (mHistoryClustersCoordinator == null) return;
         mHistoryClustersCoordinator.onHistoryDeletedExternally();
+    }
+
+    /**
+     * Called when the user presses the back key. This is only going to be called when the history
+     * UI is shown in a separate activity rather inside a tab.
+     *
+     * @return True if manager handles this event, false if it decides to ignore.
+     */
+    private boolean onBackPressed() {
+        if (mIsIncognito || mSelectableListLayout == null) {
+            // If Incognito placeholder is shown, the back press should handled by HistoryActivity.
+            return false;
+        } else if (isHistoryClustersUIShowing()) {
+            return mHistoryClustersCoordinator.onBackPressed();
+        }
+        return mSelectableListLayout.onBackPressed();
     }
 
     /**

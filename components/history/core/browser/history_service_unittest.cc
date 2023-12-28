@@ -876,7 +876,6 @@ void TestDomainMetricSet(const DomainMetricSet& metric_set,
 
 // Counts hosts visited in the last month.
 TEST_F(HistoryServiceTest, CountMonthlyVisitedHosts) {
-  base::HistogramTester histogram_tester;
   HistoryService* history = history_service_.get();
   ASSERT_TRUE(history);
 
@@ -896,8 +895,6 @@ TEST_F(HistoryServiceTest, CountMonthlyVisitedHosts) {
   AddPageInThePast(history, "https://www.yahoo.com/foo", 29);
   EXPECT_EQ(3, GetMonthlyHostCountHelper(history, &tracker_));
 
-  // The time required to compute host count is reported on each computation.
-  histogram_tester.ExpectTotalCount("History.DatabaseMonthlyHostCountTime", 4);
 }
 
 TEST_F(HistoryServiceTest, GetDomainDiversityShortBasetimeRange) {

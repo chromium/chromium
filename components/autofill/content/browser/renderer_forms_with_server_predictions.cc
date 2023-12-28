@@ -4,6 +4,7 @@
 
 #include "components/autofill/content/browser/renderer_forms_with_server_predictions.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -17,17 +18,16 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/global_routing_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
 // static
-absl::optional<RendererFormsWithServerPredictions>
+std::optional<RendererFormsWithServerPredictions>
 RendererFormsWithServerPredictions::FromBrowserForm(AutofillManager& manager,
                                                     FormGlobalId form_id) {
   FormStructure* browser_form = manager.FindCachedFormById(form_id);
   if (!browser_form) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   FormDataAndServerPredictions form_and_predictions =

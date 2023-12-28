@@ -69,7 +69,7 @@ class ASH_EXPORT TabletModeMultitaskMenu
  private:
   // The event handler that created this multitask menu. Guaranteed to outlive
   // `this`.
-  raw_ptr<TabletModeMultitaskMenuController, ExperimentalAsh> controller_;
+  raw_ptr<TabletModeMultitaskMenuController> controller_;
 
   // Widget implementation that is created and maintained by `this`.
   views::UniqueWidgetPtr widget_ = std::make_unique<views::Widget>();

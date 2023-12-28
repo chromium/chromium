@@ -87,6 +87,8 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
     case RequestType::kCameraStream:
       return cr23 ? vector_icons::kVideocamChromeRefreshIcon
                   : vector_icons::kVideocamIcon;
+    case RequestType::kCapturedSurfaceControl:
+      return vector_icons::kTouchpadMouseIcon;
     case RequestType::kClipboard:
       return cr23 ? vector_icons::kContentPasteChromeRefreshIcon
                   : vector_icons::kContentPasteIcon;
@@ -124,6 +126,12 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
 #endif
     case RequestType::kRegisterProtocolHandler:
       return vector_icons::kProtocolHandlerIcon;
+#if BUILDFLAG(IS_CHROMEOS)
+    case RequestType::kSmartCard:
+      // TODO(crbug.com/1503624): Use a proper smart card icon.
+      return cr23 ? vector_icons::kDevicesChromeRefreshIcon
+                  : vector_icons::kDevicesIcon;
+#endif
     case RequestType::kStorageAccess:
     case RequestType::kTopLevelStorageAccess:
       if (base::FeatureList::IsEnabled(
@@ -158,6 +166,11 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
     case RequestType::kCameraStream:
       return cr23 ? vector_icons::kVideocamOffChromeRefreshIcon
                   : vector_icons::kVideocamOffIcon;
+    case RequestType::kCapturedSurfaceControl:
+      // TODO(crbug.com/1466247): Either add an Off version of this icon,
+      // or drop a NOTRECHED here with an explanation that this cannot
+      // be blocked.
+      return vector_icons::kTouchpadMouseIcon;
     case RequestType::kClipboard:
       return cr23 ? vector_icons::kContentPasteOffChromeRefreshIcon
                   : vector_icons::kContentPasteOffIcon;
@@ -198,6 +211,8 @@ absl::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
 #if !BUILDFLAG(IS_ANDROID)
     case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
       return RequestType::kCameraPanTiltZoom;
+    case ContentSettingsType::CAPTURED_SURFACE_CONTROL:
+      return RequestType::kCapturedSurfaceControl;
 #endif
     case ContentSettingsType::MEDIASTREAM_CAMERA:
       return RequestType::kCameraStream;
@@ -245,6 +260,10 @@ absl::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
     case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
       return RequestType::kFileSystemAccess;
 #endif
+#if BUILDFLAG(IS_CHROMEOS)
+    case ContentSettingsType::SMART_CARD_DATA:
+      return RequestType::kSmartCard;
+#endif
     default:
       return absl::nullopt;
   }
@@ -271,6 +290,10 @@ absl::optional<ContentSettingsType> RequestTypeToContentSettingsType(
 #endif
     case RequestType::kCameraStream:
       return ContentSettingsType::MEDIASTREAM_CAMERA;
+#if !BUILDFLAG(IS_ANDROID)
+    case RequestType::kCapturedSurfaceControl:
+      return ContentSettingsType::CAPTURED_SURFACE_CONTROL;
+#endif
     case RequestType::kClipboard:
       return ContentSettingsType::CLIPBOARD_READ_WRITE;
 #if !BUILDFLAG(IS_ANDROID)
@@ -300,6 +323,10 @@ absl::optional<ContentSettingsType> RequestTypeToContentSettingsType(
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     case RequestType::kProtectedMediaIdentifier:
       return ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER;
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+    case RequestType::kSmartCard:
+      return ContentSettingsType::SMART_CARD_DATA;
 #endif
     case RequestType::kStorageAccess:
       return ContentSettingsType::STORAGE_ACCESS;
@@ -359,6 +386,10 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
 #endif
     case permissions::RequestType::kCameraStream:
       return "camera_stream";
+#if !BUILDFLAG(IS_ANDROID)
+    case permissions::RequestType::kCapturedSurfaceControl:
+      return "captured_surface_control";
+#endif
     case permissions::RequestType::kClipboard:
       return "clipboard";
     case permissions::RequestType::kDiskQuota:
@@ -400,6 +431,10 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
 #if !BUILDFLAG(IS_ANDROID)
     case permissions::RequestType::kRegisterProtocolHandler:
       return "register_protocol_handler";
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+    case RequestType::kSmartCard:
+      return "smart_card";
 #endif
     case permissions::RequestType::kStorageAccess:
       return "storage_access";

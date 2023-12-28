@@ -21,6 +21,11 @@ void BrowserParamsProxy::WaitForLogin() {
   BrowserPostLoginParams::WaitForLogin();
 }
 
+// static
+bool BrowserParamsProxy::IsLoggedIn() {
+  return BrowserPostLoginParams::IsLoggedIn();
+}
+
 bool BrowserParamsProxy::IsCrosapiDisabledForTesting() const {
   return BrowserInitParams::is_crosapi_disabled_for_testing();
 }
@@ -332,6 +337,10 @@ bool BrowserParamsProxy::IsCrosWebAppShortcutUiUpdateEnabled() const {
 
 bool BrowserParamsProxy::IsCrosShortstandEnabled() const {
   return BrowserInitParams::Get()->is_cros_shortstand_enabled;
+}
+
+bool BrowserParamsProxy::ShouldDisableChromeComposeOnChromeOS() const {
+  return BrowserInitParams::Get()->should_disable_chrome_compose_on_chromeos;
 }
 
 }  // namespace chromeos

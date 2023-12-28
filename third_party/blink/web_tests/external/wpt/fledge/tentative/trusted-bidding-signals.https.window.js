@@ -463,11 +463,11 @@ async function runTrustedBiddingSignalsSlotSizeTest(
     uuidOverride = null) {
   await runTrustedBiddingSignalsTest(
       test,
-      `trustedBiddingSignals["slot-size"] ===
+      `trustedBiddingSignals["slotSize"] ===
            ${JSON.stringify(expectedSlotSize)} &&
-       trustedBiddingSignals["all-slots-requested-sizes"] ===
+       trustedBiddingSignals["allSlotsRequestedSizes"] ===
            ${JSON.stringify(expectedAllSlotsRequestedSizes)}`,
-      { trustedBiddingSignalsKeys: ['slot-size', 'all-slots-requested-sizes'],
+      { trustedBiddingSignalsKeys: ['slotSize', 'allSlotsRequestedSizes'],
         trustedBiddingSignalsSlotSizeMode: trustedBiddingSignalsSlotSizeMode,
         trustedBiddingSignalsURL: TRUSTED_BIDDING_SIGNALS_URL},
       auctionConfigOverrides,
@@ -664,13 +664,13 @@ subsetTest(promise_test, async test => {
       [ joinInterestGroup(
           test, uuid,
           { name: 'group 1',
-            trustedBiddingSignalsKeys: ['slot-size', 'all-slots-requested-sizes'],
+            trustedBiddingSignalsKeys: ['slotSize', 'allSlotsRequestedSizes'],
             trustedBiddingSignalsSlotSizeMode: 'none',
             trustedBiddingSignalsURL: TRUSTED_BIDDING_SIGNALS_URL,
             biddingLogicURL: createBiddingScriptURL(
                 { generateBid:
-                    `if (trustedBiddingSignals["slot-size"] !== "not-found" ||
-                         trustedBiddingSignals["all-slots-requested-sizes"] !== "not-found") {
+                    `if (trustedBiddingSignals["slotSize"] !== "not-found" ||
+                         trustedBiddingSignals["allSlotsRequestedSizes"] !== "not-found") {
                        throw "unexpected trustedBiddingSignals";
                      }
                      return {bid: 5, render: interestGroup.ads[0].renderURL};`,
@@ -678,33 +678,33 @@ subsetTest(promise_test, async test => {
         joinInterestGroup(
           test, uuid,
           { name: 'group 2',
-            trustedBiddingSignalsKeys: ['slot-size', 'all-slots-requested-sizes'],
+            trustedBiddingSignalsKeys: ['slotSize', 'allSlotsRequestedSizes'],
             trustedBiddingSignalsSlotSizeMode: 'slot-size',
             trustedBiddingSignalsURL: TRUSTED_BIDDING_SIGNALS_URL,
             biddingLogicURL: createBiddingScriptURL(
                 { generateBid:
-                    `if (trustedBiddingSignals["slot-size"] === "not-found" ||
-                         trustedBiddingSignals["all-slots-requested-sizes"] !== "not-found") {
+                    `if (trustedBiddingSignals["slotSize"] === "not-found" ||
+                         trustedBiddingSignals["allSlotsRequestedSizes"] !== "not-found") {
                        throw "unexpected trustedBiddingSignals";
                      }
                      // Group 3 bids using the first digit of the first dimension.
-                     return { bid: trustedBiddingSignals["slot-size"].substr(0, 1),
+                     return { bid: trustedBiddingSignals["slotSize"].substr(0, 1),
                               render: interestGroup.ads[0].renderURL};`,
                   reportWin: `sendReportTo("${group2ReportURL}");`})}),
         joinInterestGroup(
           test, uuid,
           { name: 'group 3',
-            trustedBiddingSignalsKeys: ['slot-size', 'all-slots-requested-sizes'],
+            trustedBiddingSignalsKeys: ['slotSize', 'allSlotsRequestedSizes'],
             trustedBiddingSignalsSlotSizeMode: 'all-slots-requested-sizes',
             trustedBiddingSignalsURL: TRUSTED_BIDDING_SIGNALS_URL,
             biddingLogicURL: createBiddingScriptURL(
                 { generateBid:
-                    `if (trustedBiddingSignals["slot-size"] !== "not-found" ||
-                         trustedBiddingSignals["all-slots-requested-sizes"] === "not-found") {
+                    `if (trustedBiddingSignals["slotSize"] !== "not-found" ||
+                         trustedBiddingSignals["allSlotsRequestedSizes"] === "not-found") {
                        throw "unexpected trustedBiddingSignals";
                      }
                      // Group 3 bids using the second digit of the first dimension.
-                     return { bid: trustedBiddingSignals["all-slots-requested-sizes"].substr(1, 1),
+                     return { bid: trustedBiddingSignals["allSlotsRequestedSizes"].substr(1, 1),
                               render: interestGroup.ads[0].renderURL};`,
                   reportWin: `sendReportTo("${group3ReportURL}");`})}),
       ]

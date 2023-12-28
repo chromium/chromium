@@ -5,10 +5,11 @@
 #import "ios/chrome/browser/tabs/model/synced_window_delegate_browser_agent.h"
 
 #import "base/check_op.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/sync/model/ios_chrome_synced_tab_delegate.h"
+#import "ios/chrome/browser/tabs/model/ios_chrome_synced_tab_delegate.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 
 BROWSER_USER_DATA_KEY_IMPL(SyncedWindowDelegateBrowserAgent)
@@ -104,6 +105,22 @@ void SyncedWindowDelegateBrowserAgent::WebStateListDidChange(
           change.As<WebStateListChangeInsert>();
       SetWindowIdForWebState(insert_change.inserted_web_state());
       break;
+    }
+  }
+  if (base::FeatureList::IsEnabled(syncer::kSyncSessionOnVisibilityChanged)) {
+    if (status.active_web_state_change()) {
+      if (status.old_active_web_state &&
+          IOSChromeSyncedTabDelegate::FromWebState(
+              status.old_active_web_state)) {
+        IOSChromeSyncedTabDelegate::FromWebState(status.old_active_web_state)
+            ->ResetCachedLastActiveTime();
+      }
+      if (status.new_active_web_state &&
+          IOSChromeSyncedTabDelegate::FromWebState(
+              status.new_active_web_state)) {
+        IOSChromeSyncedTabDelegate::FromWebState(status.new_active_web_state)
+            ->ResetCachedLastActiveTime();
+      }
     }
   }
 }

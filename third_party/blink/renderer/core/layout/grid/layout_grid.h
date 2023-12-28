@@ -43,13 +43,12 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
 
   const GridLayoutData* LayoutData() const;
 
- protected:
-  bool IsOfType(LayoutObjectType type) const override {
+ private:
+  bool IsLayoutGrid() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectGrid || LayoutBlock::IsOfType(type);
+    return true;
   }
 
- private:
   Vector<LayoutUnit> ComputeTrackSizeRepeaterForRange(
       const GridLayoutTrackCollection& track_collection,
       wtf_size_t range_index) const;

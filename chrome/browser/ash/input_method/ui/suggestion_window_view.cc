@@ -327,7 +327,7 @@ void SuggestionWindowView::SetCandidateHighlighted(
     IndexedSuggestionCandidateButton* view,
     bool highlighted) {
   // Clear all highlights if any exists.
-  for (auto* candidate_button : multiple_candidate_area_->children()) {
+  for (views::View* candidate_button : multiple_candidate_area_->children()) {
     static_cast<IndexedSuggestionCandidateButton*>(candidate_button)
         ->SetHighlight(false);
   }

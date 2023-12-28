@@ -777,11 +777,7 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
   if (!speculative_render_frame_host_) {
     // There's no speculative RenderFrameHost so it must be that the current
     // RenderFrameHost completed a navigation.
-    // TODO(danakj): Make this a CHECK and stop handling it. Then make it a
-    // DCHECK when we're sure.
-    DCHECK_EQ(render_frame_host_.get(), render_frame_host);
-    if (render_frame_host != render_frame_host_.get())
-      return;
+    CHECK_EQ(render_frame_host_.get(), render_frame_host);
   }
 
   if (render_frame_host == speculative_render_frame_host_.get()) {
@@ -4415,6 +4411,23 @@ void RenderFrameHostManager::CommitPending(
   //    renderer, so it must have a live connection to its renderer frame in
   //    order to receive the IPC.
   DCHECK(pending_rfh->IsRenderFrameLive());
+  if (RenderWidgetHostImpl* rwh = pending_rfh->GetLocalRenderWidgetHost()) {
+    // The navigation commits in a new local root RenderFrameHost. Log the time
+    // between the creation of its compositor frame sink to swapping in the new
+    // RenderFrameHost.
+    if (rwh->create_frame_sink_timestamp() == base::TimeTicks()) {
+      // The compositor frame sink hasn't been requested yet.
+      UMA_HISTOGRAM_BOOLEAN("Navigation.CompositorRequestedBeforeSwapRFH",
+                            false);
+    } else {
+      UMA_HISTOGRAM_BOOLEAN("Navigation.CompositorRequestedBeforeSwapRFH",
+                            true);
+      base::TimeDelta time =
+          base::TimeTicks::Now() - rwh->create_frame_sink_timestamp();
+      UMA_HISTOGRAM_CUSTOM_TIMES("Navigation.CompositorCreationToSwapRFH", time,
+                                 base::Milliseconds(1), base::Minutes(3), 50);
+    }
+  }
 
 #if BUILDFLAG(IS_MAC)
   // The old RenderWidgetHostView will be hidden before the new
@@ -4583,9 +4596,7 @@ void RenderFrameHostManager::CommitPending(
     // not affect the visibility of the blink::WidgetBase. We should unify these
     // two visibility states to prevent them from drifting.
     old_view->Hide();
-    if (base::FeatureList::IsEnabled(
-            features::kNavigationUpdatesChildViewsVisibility) &&
-        old_render_frame_host->child_count()) {
+    if (old_render_frame_host->child_count()) {
       old_render_frame_host->SetVisibilityForChildViews(false);
     }
   }
@@ -4800,9 +4811,7 @@ void RenderFrameHostManager::CommitPending(
     // finishes, we show it if the delegate is shown.
     if (!frame_tree_node_->frame_tree().IsHidden()) {
       new_view->Show();
-      if (base::FeatureList::IsEnabled(
-              features::kNavigationUpdatesChildViewsVisibility) &&
-          render_frame_host_->child_count()) {
+      if (render_frame_host_->child_count()) {
         render_frame_host_->SetVisibilityForChildViews(true);
       }
     }

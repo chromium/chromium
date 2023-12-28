@@ -16,6 +16,7 @@
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -34,6 +35,20 @@ GURL GetLoadingScreenURL() {
   return url.Resolve(chrome::kChromeUISyncConfirmationLoadingPath);
 }
 
+ReauthUIError ComputeReauthUIError(ProfilePickerReauthResult result) {
+  switch (result) {
+    case ProfilePickerReauthResult::kSuccess:
+    case ProfilePickerReauthResult::kSuccessTokenAlreadyValid:
+      return ReauthUIError::kNone;
+    case ProfilePickerReauthResult::kErrorUsedNewEmail:
+    case ProfilePickerReauthResult::kErrorUsedOtherSignedInEmail:
+      return ReauthUIError::kWrongAccount;
+    case ProfilePickerReauthResult::kTimeoutForceSigninVerifierCheck:
+    case ProfilePickerReauthResult::kTimeoutSigninError:
+      return ReauthUIError::kTimeout;
+  }
+}
+
 }  // namespace
 
 ProfilePickerDiceReauthProvider::ProfilePickerDiceReauthProvider(
@@ -41,7 +56,7 @@ ProfilePickerDiceReauthProvider::ProfilePickerDiceReauthProvider(
     Profile* profile,
     const std::string& gaia_id_to_reauth,
     const std::string& email_to_reauth,
-    base::OnceCallback<void(bool)> on_reauth_completed)
+    base::OnceCallback<void(bool, ReauthUIError)> on_reauth_completed)
     : host_(*host),
       profile_(*profile),
       identity_manager_(*IdentityManagerFactory::GetForProfile(profile)),
@@ -232,5 +247,6 @@ void ProfilePickerDiceReauthProvider::Finish(bool success,
   // Hide the toolbar in case it was visible after showing the reauth page.
   host_->SetNativeToolbarVisible(false);
 
-  std::move(on_reauth_completed_).Run(success);
+  ReauthUIError error = ComputeReauthUIError(result);
+  std::move(on_reauth_completed_).Run(success, error);
 }

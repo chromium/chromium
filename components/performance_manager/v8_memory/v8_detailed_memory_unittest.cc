@@ -583,13 +583,13 @@ TEST_F(V8DetailedMemoryDecoratorTest, MultipleIsolatesInRenderer) {
   blink::LocalFrameToken frame1_id = blink::LocalFrameToken();
   auto frame1 = CreateNode<FrameNodeImpl>(
       process.get(), page.get(), /*parent_frame_node=*/nullptr,
-      /*fenced_frame_embedder_frame_node=*/nullptr, /*render_frame_id=*/1,
+      /*outer_document_for_fenced_frame=*/nullptr, /*render_frame_id=*/1,
       frame1_id);
 
   blink::LocalFrameToken frame2_id = blink::LocalFrameToken();
   auto frame2 = CreateNode<FrameNodeImpl>(
       process.get(), page.get(), /*parent_frame_node=*/nullptr,
-      /*fenced_frame_embedder_frame_node=*/nullptr,
+      /*outer_document_for_fenced_frame=*/nullptr,
       /*render_frame_id=*/2, frame2_id);
   {
     auto data = NewPerProcessV8MemoryUsage(2);
@@ -641,13 +641,13 @@ TEST_F(V8DetailedMemoryDecoratorTest, DataIsDistributed) {
   blink::LocalFrameToken frame1_id = blink::LocalFrameToken();
   auto frame1 = CreateNode<FrameNodeImpl>(
       process.get(), page.get(), /*parent_frame_node=*/nullptr,
-      /*fenced_frame_embedder_frame_node=*/nullptr,
+      /*outer_document_for_fenced_frame=*/nullptr,
       /*render_frame_id=*/1, frame1_id);
 
   blink::LocalFrameToken frame2_id = blink::LocalFrameToken();
   auto frame2 = CreateNode<FrameNodeImpl>(
       process.get(), page.get(), /*parent_frame_node=*/nullptr,
-      /*fenced_frame_embedder_frame_node=*/nullptr,
+      /*outer_document_for_fenced_frame=*/nullptr,
       /*render_frame_id=*/2, frame2_id);
   {
     auto data = NewPerProcessV8MemoryUsage(1);
@@ -1969,7 +1969,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, DedicatedWorkers) {
   blink::LocalFrameToken frame_id = blink::LocalFrameToken();
   auto frame = CreateNode<FrameNodeImpl>(
       process.get(), page.get(), /*parent_frame_node=*/nullptr,
-      /*fenced_frame_embedder_frame_node=*/nullptr,
+      /*outer_document_for_fenced_frame=*/nullptr,
       /*render_frame_id=*/1, frame_id);
 
   blink::DedicatedWorkerToken worker_id = blink::DedicatedWorkerToken();
@@ -2014,7 +2014,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, CanvasMemory) {
   blink::LocalFrameToken frame_id = blink::LocalFrameToken();
   auto frame = CreateNode<FrameNodeImpl>(
       process.get(), page.get(), /*parent_frame_node=*/nullptr,
-      /*fenced_frame_embedder_frame_node=*/nullptr,
+      /*outer_document_for_fenced_frame=*/nullptr,
       /*render_frame_id=*/1, frame_id);
 
   {

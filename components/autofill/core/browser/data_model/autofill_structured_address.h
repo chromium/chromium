@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "components/autofill/core/browser/data_model/autofill_feature_guarded_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/field_types.h"
 
@@ -26,27 +27,6 @@ class AddressComponentWithRewriter : public AddressComponent {
   std::u16string GetValueForComparison(
       const std::u16string& value,
       const AddressComponent& other) const override;
-};
-
-// This class represents a type that is controlled by a feature flag. It
-// overrides the SetValue method to prevent setting values to nodes for which
-// the flag is turned off. It further prevents exposing disabled types as
-// supported.
-class FeatureGuardedAddressComponent : public AddressComponent {
- public:
-  FeatureGuardedAddressComponent(raw_ptr<const base::Feature> feature,
-                                 ServerFieldType storage_type,
-                                 SubcomponentsList children,
-                                 unsigned int merge_mode);
-
-  // AddressComponent overrides:
-  void SetValue(std::u16string value, VerificationStatus status) override;
-  void GetTypes(bool storable_only,
-                ServerFieldTypeSet* supported_types) const override;
-
- private:
-  // Feature guarding the rollout of this address component.
-  const raw_ptr<const base::Feature> feature_;
 };
 
 // The name of the street.
@@ -156,7 +136,7 @@ class StreetAddressNode : public AddressComponentWithRewriter {
   explicit StreetAddressNode(SubcomponentsList children);
   ~StreetAddressNode() override;
 
-  const ServerFieldTypeSet GetAdditionalSupportedFieldTypes() const override;
+  const FieldTypeSet GetAdditionalSupportedFieldTypes() const override;
 
   void SetValue(std::u16string value, VerificationStatus status) override;
 
@@ -181,10 +161,10 @@ class StreetAddressNode : public AddressComponentWithRewriter {
  protected:
   // Implements support for getting the value of the individual address lines.
   std::u16string GetValueForOtherSupportedType(
-      ServerFieldType field_type) const override;
+      FieldType field_type) const override;
 
   // Implements support for setting the value of the individual address lines.
-  void SetValueForOtherSupportedType(ServerFieldType field_type,
+  void SetValueForOtherSupportedType(FieldType field_type,
                                      const std::u16string& value,
                                      const VerificationStatus& status) override;
 
@@ -197,7 +177,7 @@ class StreetAddressNode : public AddressComponentWithRewriter {
 
   // Returns the corresponding address line depending on `type`. Assumes that
   // `type` is ADDRESS_HOME_LINE(1|2|3).
-  std::u16string GetAddressLine(ServerFieldType type) const;
+  std::u16string GetAddressLine(FieldType type) const;
 
   // Holds the values of the individual address lines.
   // Must be recalculated if the value of the component changes.
@@ -235,7 +215,7 @@ class StateNode : public AddressComponentWithRewriter {
 
   // For states we use the AlternativeStateNameMap to offer canonicalized state
   // names.
-  absl::optional<std::u16string> GetCanonicalizedValue() const override;
+  std::optional<std::u16string> GetCanonicalizedValue() const override;
 };
 
 // Stores the postal code of an address.

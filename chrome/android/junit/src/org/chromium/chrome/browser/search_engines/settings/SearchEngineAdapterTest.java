@@ -23,6 +23,7 @@ import android.view.View;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
@@ -33,11 +34,14 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 
@@ -50,9 +54,16 @@ import java.util.List;
 public class SearchEngineAdapterTest {
     public @Rule TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    public final @Rule JniMocker mJniMocker = new JniMocker();
 
     private @Mock Profile mProfile;
     private @Mock TemplateUrlService mTemplateUrlService;
+    private @Mock LargeIconBridge.Natives mLargeIconBridgeNativeMock;
+
+    @Before
+    public void setUp() {
+        mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeNativeMock);
+    }
 
     @Test
     @Features.DisableFeatures(ChromeFeatureList.SEARCH_ENGINE_CHOICE)

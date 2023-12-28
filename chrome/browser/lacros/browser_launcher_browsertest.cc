@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest,
             tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
 
   Browser* app_browser = nullptr;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->type() != Browser::Type::TYPE_APP)
       continue;
     EXPECT_FALSE(app_browser);

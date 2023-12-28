@@ -58,7 +58,9 @@ mojom_component("base") {
 
   # Still widely used by Closure Compiler targets on ChromeOS, so generate
   # WebUI bindings in JavaScript for that platform.
-  use_typescript_sources = !is_chromeos_ash
+  if (is_chromeos_ash) {
+    generate_webui_js_bindings = true
+  }
 
   # Always generate legacy bindings since this target is used by Blink, fuzzers,
   # etc and not just by WebUI.

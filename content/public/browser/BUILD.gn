@@ -597,6 +597,7 @@ source_set("browser_sources") {
   if (is_android) {
     deps += [
       "//cc/slim",
+      "//third_party/jni_zero",
       "//ui/android",
     ]
     sources += [

@@ -169,7 +169,7 @@ HeapVector<Member<Animation>> Animatable::GetAnimationsInternal(
     element->GetDocument().UpdateStyleAndLayoutTreeForSubtree(
         element, DocumentUpdateReason::kWebAnimation);
   } else {
-    element->GetDocument().UpdateStyleAndLayoutTreeForNode(
+    element->GetDocument().UpdateStyleAndLayoutTreeForElement(
         element, DocumentUpdateReason::kWebAnimation);
   }
 

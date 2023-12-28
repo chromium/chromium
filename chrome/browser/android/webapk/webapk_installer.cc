@@ -263,9 +263,7 @@ void WebApkInstaller::InstallOrUpdateWebApk(const std::string& package_name,
 void WebApkInstaller::OnResult(webapps::WebApkInstallResult result) {
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  std::move(finish_callback_)
-      .Run(result, std::move(serialized_webapk_), relax_updates_,
-           webapk_package_);
+  std::move(finish_callback_).Run(result, relax_updates_, webapk_package_);
 
   if (task_type_ == WebApkInstaller::INSTALL) {
     if (result == webapps::WebApkInstallResult::SUCCESS) {

@@ -153,6 +153,50 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Rejected due to invalid origin"/>
 </enum>
 
+<enum name="SharedStorageHeaderObserverPermissionsPolicyDoubleCheckStatus">
+  <int value="0" label="SubresourceSourceNoRFH">
+    The RenderFrameHost was null, so no double check was run. Any previous
+    permissions policy checks were only done in the renderer, so this double
+    check was required, and hence any operations were dropped.
+  </int>
+  <int value="1" label="SubresourceSourceDefer">
+    The RenderFrameHost has not yet committed. Defer the operations until a
+    corresponding commit notification is received. If none is received, they
+    will be dropped when the RenderFrameHost dies.
+  </int>
+  <int value="2" label="SubresourceSourceOtherLifecycleState">
+    The RenderFrameHost's LifecycleState is neither PendingCommit nor Active. We
+    do not handle these cases as the PermissionsPolicy that we have access to
+    may not be correct. Any operations are dropped.
+  </int>
+  <int value="3" label="SubresourceSourceNoPolicy">
+    The RenderFrameHost was non-null, but it had a null PermissionsPolicy, so no
+    double check was run. Any previous PermissionsPolicy checks were done in the
+    renderer, so this double check was required, and hence any operations were
+    dropped.
+  </int>
+  <int value="4" label="NavigationSourceNoPolicy">
+    The parent PermissionPolicy for the navigating RenderFrameHost was null, so
+    no double check was run. The request source was an iframe navigation, which
+    already has a PermissionsPolicy check in the browser process, however, so
+    the double check was not required, and any operations were allowed to
+    proceed, pending a user profile check.
+  </int>
+  <int value="5" label="DisallowedMainFrameNavigation">
+    The request source was a main frame navigation, which is not supported, so
+    any operations were dropped.
+  </int>
+  <int value="6" label="Disabled">
+    The double check was run, and Shared Storage was reported as disabled for
+    the request's origin. Any operations were dropped.
+  </int>
+  <int value="7" label="Enabled">
+    The double check was run, and Shared Storage was reported as enabled for the
+    request's origin. Any operations were allowed to proceed, pending a user
+    profile check.
+  </int>
+</enum>
+
 <enum name="SharedStorageWorkletDestroyedStatus">
   <int value="0" label="DidNotEnterKeepAlive"/>
   <int value="1" label="KeepAliveEndedDueToOperationsFinished"/>

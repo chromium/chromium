@@ -195,12 +195,9 @@ using EnableBrp =
 using EnableMemoryTagging =
     partition_alloc::internal::base::StrongAlias<class EnableMemoryTaggingTag,
                                                  bool>;
-using SplitMainPartition =
-    partition_alloc::internal::base::StrongAlias<class SplitMainPartitionTag,
-                                                 bool>;
-using UseDedicatedAlignedPartition = partition_alloc::internal::base::
-    StrongAlias<class UseDedicatedAlignedPartitionTag, bool>;
 enum class BucketDistribution : uint8_t { kNeutral, kDenser };
+using SchedulerLoopQuarantine = partition_alloc::internal::base::
+    StrongAlias<class SchedulerLoopQuarantineTag, bool>;
 using ZappingByFreeFlags =
     partition_alloc::internal::base::StrongAlias<class ZappingByFreeFlagsTag,
                                                  bool>;
@@ -213,29 +210,11 @@ void ConfigurePartitions(
     EnableBrp enable_brp,
     EnableMemoryTagging enable_memory_tagging,
     partition_alloc::TagViolationReportingMode memory_tagging_reporting_mode,
-    SplitMainPartition split_main_partition,
-    UseDedicatedAlignedPartition use_dedicated_aligned_partition,
-    size_t ref_count_size,
     BucketDistribution distribution,
+    SchedulerLoopQuarantine scheduler_loop_quarantine,
     size_t scheduler_loop_quarantine_capacity_in_bytes,
+    size_t scheduler_loop_quarantine_capacity_count,
     ZappingByFreeFlags zapping_by_free_flags);
-
-// If |thread_cache_on_non_quarantinable_partition| is specified, the
-// thread-cache will be enabled on the non-quarantinable partition. The
-// thread-cache on the main (malloc) partition will be disabled.
-// This is the deprecated version of ConfigurePartitions, kept for compatibility
-// with pdfium's test setup, see
-// third_party/pdfium/testing/allocator_shim_config.cpp.
-// TODO(crbug.com/1137393): Remove this functions once pdfium has switched to
-// the new version.
-PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
-void ConfigurePartitions(
-    EnableBrp enable_brp,
-    EnableMemoryTagging enable_memory_tagging,
-    SplitMainPartition split_main_partition,
-    UseDedicatedAlignedPartition use_dedicated_aligned_partition,
-    size_t ref_count_size,
-    BucketDistribution distribution);
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) uint32_t GetMainPartitionRootExtrasSize();
 

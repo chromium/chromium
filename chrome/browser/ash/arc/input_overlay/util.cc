@@ -86,11 +86,9 @@ std::string GetCurrentSystemVersion() {
 
 void ResetFocusTo(views::View* view) {
   DCHECK(view);
-  auto* focus_manager = view->GetFocusManager();
-  if (!focus_manager) {
-    return;
+  if (auto* focus_manager = view->GetFocusManager()) {
+    focus_manager->SetFocusedView(view);
   }
-  focus_manager->SetFocusedView(view);
 }
 
 // For the keys that are caught by display overlay, check if they are reserved

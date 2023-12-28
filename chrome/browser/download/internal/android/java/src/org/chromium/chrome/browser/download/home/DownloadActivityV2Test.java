@@ -57,19 +57,15 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
-import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.download.home.list.ListUtils;
 import org.chromium.chrome.browser.download.home.list.holder.ListItemViewHolder;
 import org.chromium.chrome.browser.download.home.rename.RenameUtils;
 import org.chromium.chrome.browser.download.home.toolbar.DownloadHomeToolbar;
 import org.chromium.chrome.browser.download.internal.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.util.date.StringUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -208,19 +204,11 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
                         mStubbedOfflineContentProvider,
                         mDiscardableReferencePool);
         getActivity().setContentView(mDownloadCoordinator.getView());
-        if (BackPressManager.isSecondaryActivityEnabled()) {
-            BackPressHelper.create(
-                    getActivity(),
-                    getActivity().getOnBackPressedDispatcher(),
-                    mDownloadCoordinator.getBackPressHandlers(),
-                    SecondaryActivity.DOWNLOAD);
-        } else {
-            BackPressHelper.create(
-                    getActivity(),
-                    getActivity().getOnBackPressedDispatcher(),
-                    mDownloadCoordinator::onBackPressed,
-                    SecondaryActivity.DOWNLOAD);
-        }
+        BackPressHelper.create(
+                getActivity(),
+                getActivity().getOnBackPressedDispatcher(),
+                mDownloadCoordinator.getBackPressHandlers(),
+                SecondaryActivity.DOWNLOAD);
 
         mDownloadCoordinator.updateForUrl(UrlConstants.DOWNLOADS_URL);
     }
@@ -602,8 +590,6 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY})
-    @DisabledTest(message = "https://crbug.com/1416712")
     public void testDismissSearchViewByBackPress() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -643,13 +629,6 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
                 () -> {
                     onView(withId(R.id.search_text)).check(matches(not(isDisplayed())));
                 });
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY})
-    public void testDismissSearchViewByBackPress_BackPressRefactor() {
-        testDismissSearchViewByBackPress();
     }
 
     /**

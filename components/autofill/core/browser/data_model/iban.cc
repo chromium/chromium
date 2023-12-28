@@ -4,8 +4,6 @@
 
 #include "components/autofill/core/browser/data_model/iban.h"
 
-#include <string>
-
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -13,6 +11,8 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
+#include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
+#include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 
 namespace autofill {
@@ -22,7 +22,7 @@ namespace {
 // IBAN lengths taken from:
 // https://en.wikipedia.org/wiki/International_Bank_Account_Number#IBAN_formats_by_country.
 static constexpr auto kCountryToIbanLength =
-    base::MakeFixedFlatMap<base::StringPiece, size_t>({
+    base::MakeFixedFlatMap<std::string_view, size_t>({
         {"AD", 24},  // Andorra
         {"AE", 23},  // United Arab Emirates
         {"AL", 28},  // Albania
@@ -109,7 +109,7 @@ static constexpr auto kCountryToIbanLength =
 static constexpr int kPrefixLength = 4;
 static constexpr int kSuffixLength = 4;
 
-int GetIbanCountryToLength(base::StringPiece country_code) {
+int GetIbanCountryToLength(std::string_view country_code) {
   auto* it = kCountryToIbanLength.find(country_code);
   if (it == kCountryToIbanLength.end()) {
     return 0;
@@ -152,7 +152,7 @@ int GetRemainderOfIbanValue(const std::u16string& stripped_value) {
   // 2) a % 97 < 10^2. The remainder of a given number divided by 97 must be
   // less than 10^2, otherwise, it can be divided further.
   // 3) If a, b and c are integers, then (a + b) % c = ((a % c) + b) % c.
-  auto mod97 = [](base::StringPiece s) {
+  auto mod97 = [](std::string_view s) {
     DCHECK_LE(s.length(), 9u);
     uint32_t i = 0;
     bool success = base::StringToUint(s, &i);
@@ -245,7 +245,7 @@ bool Iban::SetMetadata(const AutofillMetadata& metadata) {
   return metadata.id != guid() && AutofillDataModel::SetMetadata(metadata);
 }
 
-std::u16string Iban::GetRawInfo(ServerFieldType type) const {
+std::u16string Iban::GetRawInfo(FieldType type) const {
   if (type == IBAN_VALUE) {
     return value_;
   }
@@ -254,7 +254,7 @@ std::u16string Iban::GetRawInfo(ServerFieldType type) const {
   return std::u16string();
 }
 
-void Iban::SetRawInfoWithVerificationStatus(ServerFieldType type,
+void Iban::SetRawInfoWithVerificationStatus(FieldType type,
                                             const std::u16string& value,
                                             VerificationStatus status) {
   if (type == IBAN_VALUE) {
@@ -264,12 +264,12 @@ void Iban::SetRawInfoWithVerificationStatus(ServerFieldType type,
   }
 }
 
-void Iban::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
+void Iban::GetSupportedTypes(FieldTypeSet* supported_types) const {
   supported_types->insert(IBAN_VALUE);
 }
 
 bool Iban::IsEmpty(const std::string& app_locale) const {
-  ServerFieldTypeSet types;
+  FieldTypeSet types;
   GetNonEmptyTypes(app_locale, &types);
   return types.empty();
 }
@@ -315,10 +315,6 @@ int Iban::Compare(const Iban& iban) const {
 
 bool Iban::operator==(const Iban& iban) const {
   return Compare(iban) == 0;
-}
-
-bool Iban::operator!=(const Iban& iban) const {
-  return !operator==(iban);
 }
 
 void Iban::set_identifier(const absl::variant<Guid, InstrumentId>& identifier) {
@@ -390,6 +386,12 @@ void Iban::set_length(int length) {
 bool Iban::IsValid() {
   CHECK_NE(record_type_, RecordType::kUnknown);
   return record_type_ == kServerIban || IsValid(value_);
+}
+
+void Iban::RecordAndLogUse() {
+  autofill_metrics::LogDaysSinceLastIbanUse(*this);
+  set_use_date(AutofillClock::Now());
+  set_use_count(use_count() + 1);
 }
 
 std::u16string Iban::GetIdentifierStringForAutofillDisplay(

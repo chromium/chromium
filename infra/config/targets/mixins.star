@@ -737,13 +737,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "linux-archive-rel-args",
-    args = [
-        "linux-release-64/sizes",
-    ],
-)
-
-targets.mixin(
     name = "linux-focal",
     swarming = targets.swarming(
         dimensions = {
@@ -880,13 +873,6 @@ targets.mixin(
 targets.mixin(
     name = "long_skylab_timeout",
     timeout_sec = 10800,
-)
-
-targets.mixin(
-    name = "mac-archive-rel-args",
-    args = [
-        "mac-release/sizes",
-    ],
 )
 
 targets.mixin(
@@ -1042,6 +1028,9 @@ targets.mixin(
     ),
 )
 
+# mac_default_x64 is used as a prefered OS dimension for mac platform
+# instead of any mac OS version. It selects the most representative
+# dimension on Swarming.
 targets.mixin(
     name = "mac_default_x64",
     swarming = targets.swarming(
@@ -1160,18 +1149,6 @@ targets.mixin(
                 revision = "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0",
             ),
         ],
-    ),
-)
-
-# mac_x64 is used as a prefered OS dimension for mac platform instead of any
-# mac OS version. It selects the most representative dimension on Swarming.
-targets.mixin(
-    name = "mac_x64",
-    swarming = targets.swarming(
-        dimensions = {
-            "os": "Mac-12",
-            "cpu": "x86-64",
-        },
     ),
 )
 
@@ -1460,14 +1437,6 @@ targets.mixin(
     ),
 )
 
-targets.mixin(
-    name = "vr_instrumentation_test",
-    args = [
-        "--remove-system-package=com.google.vr.vrcore",
-        "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk",
-    ],
-)
-
 # Pixel 2
 targets.mixin(
     name = "walleye",
@@ -1522,7 +1491,7 @@ targets.mixin(
             targets.cipd_package(
                 package = "chromium/android_webview/tools/cts_archive",
                 location = "android_webview/tools/cts_archive",
-                revision = "akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC",
+                revision = "dMHDxWyIpkzGNem_Z7ywDRj3Y2lUQKM7h4JT87_ejr8C",
             ),
         ],
     ),

@@ -16,10 +16,6 @@
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-namespace content {
-class ResourceContext;
-}
-
 namespace headless {
 
 class HeadlessBrowserContextOptions;
@@ -46,10 +42,6 @@ class HeadlessRequestContextManager {
       ::cert_verifier::mojom::CertVerifierCreationParams*
           cert_verifier_creation_params);
 
-  content::ResourceContext* GetResourceContext() {
-    return resource_context_.get();
-  }
-
  private:
   void ConfigureNetworkContextParamsInternal(
       ::network::mojom::NetworkContextParams* network_context_params,
@@ -66,7 +58,6 @@ class HeadlessRequestContextManager {
   std::unique_ptr<HeadlessProxyConfigMonitor> proxy_config_monitor_;
 
   mojo::PendingRemote<::network::mojom::NetworkContext> system_context_;
-  std::unique_ptr<content::ResourceContext> resource_context_;
 };
 
 }  // namespace headless

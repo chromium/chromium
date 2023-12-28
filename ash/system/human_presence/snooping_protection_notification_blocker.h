@@ -100,8 +100,8 @@ class ASH_EXPORT SnoopingProtectionNotificationBlocker
   // currently-blocked notifications.
   std::unique_ptr<message_center::Notification> CreateInfoNotification() const;
 
-  const raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
-  const raw_ptr<SnoopingProtectionController, ExperimentalAsh> controller_;
+  const raw_ptr<message_center::MessageCenter> message_center_;
+  const raw_ptr<SnoopingProtectionController> controller_;
 
   bool info_popup_exists_ = false;
 

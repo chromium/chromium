@@ -142,6 +142,34 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHSidePanelGenericMenuFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    // Show the promo once a year if the side panel was not opened.
+    config->trigger = EventConfig("side_panel_from_menu_trigger",
+                                  Comparator(EQUAL, 0), 360, 360);
+    config->used = EventConfig("side_panel_from_menu_shown",
+                               Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+
+  if (kIPHSidePanelGenericPinnableFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    // Show the promo once a year if the side panel was not opened.
+    config->trigger = EventConfig("side_panel_pinnable_trigger",
+                                  Comparator(EQUAL, 0), 360, 360);
+    config->used = EventConfig(feature_engagement::events::kSidePanelPinned,
+                               Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+
   if (kIPHGMCCastStartStopFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
@@ -228,7 +256,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPHHighEfficiencyModeFeature.name == feature->name) {
+  if (kIPHMemorySaverModeFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
@@ -473,6 +501,27 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHDownloadEsbPromoFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    SessionRateImpact session_rate_impact;
+    session_rate_impact.type = SessionRateImpact::Type::ALL;
+    config->session_rate_impact = session_rate_impact;
+    // Don't show if user has already seen an IPH this session.
+    // Show the promo max once a year if the user hasn't interacted with
+    // a dangerous download within the last 21 days.
+    config->trigger = EventConfig("download_bubble_esb_iph_trigger",
+                                  Comparator(EQUAL, 0), 360, 360);
+    config->used = EventConfig("enable_enhanced_protection",
+                               Comparator(EQUAL, 0), 21, 360);
+    config->event_configs.insert(
+        EventConfig("download_bubble_dangerous_download_detected",
+                    Comparator(GREATER_THAN_OR_EQUAL, 1), 21, 360));
+    return config;
+  }
+
   if (kIPHDownloadToolbarButtonFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
@@ -504,10 +553,26 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHComposeMenuNewBadgeFeature.name == feature->name) {
+    // A config that allows the new badge attached to the Compose feature
+    // entrypoint in the right-click menu to be shown at most 4 times in a
+    // 10-day window and only while the user has opened the Compose feature less
+    // than 3 times.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger = EventConfig("compose_menu_new_badge_triggered",
+                                  Comparator(LESS_THAN, 4), 10, 360);
+    config->used = EventConfig("compose_menu_item_activated",
+                               Comparator(LESS_THAN, 3), 360, 360);
+    return config;
+  }
+
   if (kIPHComposeNewBadgeFeature.name == feature->name) {
-    // A config that allows the new badge for the Compose feature to be shown at
-    // most 4 times in a 10-day window and only while the user has opened the
-    // Compose feature less than 3 times.
+    // A config that allows the new badge displayed in the Compose feature nudge
+    // to be shown at most 4 times in a 10-day window and only while the user
+    // has opened the Compose feature less than 3 times.
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
@@ -1991,6 +2056,31 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
   if (absl::optional<FeatureConfig> scalable_iph_feature_config =
           GetScalableIphFeatureConfig(feature)) {
     return scalable_iph_feature_config;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (kIPHLauncherSearchHelpUiFeature.name == feature->name) {
+    // A config that allows the ChromeOS Ash Launcher search IPH to be shown.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
+
+    // Can be shown any time until the `assistant_click` event is recorded.
+    config->trigger =
+        EventConfig("IPH_LauncherSearchHelpUi_trigger", Comparator(ANY, 0),
+                    kMaxStoragePeriod, kMaxStoragePeriod);
+    config->used =
+        EventConfig("IPH_LauncherSearchHelpUi_chip_click", Comparator(ANY, 0),
+                    kMaxStoragePeriod, kMaxStoragePeriod);
+    config->event_configs.insert(EventConfig(
+        "IPH_LauncherSearchHelpUi_assistant_click", Comparator(EQUAL, 0),
+        kMaxStoragePeriod, kMaxStoragePeriod));
+    return config;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

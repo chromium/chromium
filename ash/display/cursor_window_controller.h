@@ -124,8 +124,7 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
 
   base::ObserverList<Observer> observers_;
 
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> container_ =
-      nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged> container_ = nullptr;
 
   // The current cursor-compositing state.
   bool is_cursor_compositing_enabled_ = false;

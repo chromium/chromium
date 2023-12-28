@@ -172,22 +172,6 @@ class ScrollLatencyBrowserTest : public ContentBrowserTest {
     visual_state_callback_count_++;
   }
 
-  void RunMultipleWheelScroll() {
-    DoSmoothWheelScroll(gfx::Vector2d(0, 100));
-    // We expect to see one ScrollBegin and two ScrollUpdate swap values.
-    while (!VerifyRecordedSamplesForHistogram(
-        1, "Event.Latency.ScrollBegin.Wheel.TimeToScrollUpdateSwapBegin4")) {
-      GiveItSomeTime();
-      FetchHistogramsFromChildProcesses();
-    }
-
-    while (!VerifyRecordedSamplesForHistogram(
-        1, "Event.Latency.ScrollUpdate.Wheel.TimeToScrollUpdateSwapBegin4")) {
-      GiveItSomeTime();
-      FetchHistogramsFromChildProcesses();
-    }
-  }
-
   // Returns true if the given histogram has recorded the expected number of
   // samples.
   [[nodiscard]] bool VerifyRecordedSamplesForHistogram(
@@ -206,22 +190,6 @@ class ScrollLatencyBrowserTest : public ContentBrowserTest {
   base::HistogramTester histogram_tester_;
   uint32_t visual_state_callback_count_ = 0;
 };
-
-// Disabled due to flakiness https://crbug.com/1163246.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_ANDROID) ||                                         \
-    (BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER))
-#define MAYBE_MultipleWheelScroll DISABLED_MultipleWheelScroll
-#else
-#define MAYBE_MultipleWheelScroll MultipleWheelScroll
-#endif
-
-// Perform a smooth wheel scroll, and verify that our end-to-end wheel latency
-// metrics are recorded. See crbug.com/599910 for details.
-IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest, MAYBE_MultipleWheelScroll) {
-  LoadURL();
-  RunMultipleWheelScroll();
-}
 
 // Do an upward touch scroll, and verify that no scroll metrics is recorded when
 // the scroll event is ignored.
@@ -260,9 +228,6 @@ IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest,
           GetWidgetHost()->render_frame_metadata_provider());
   frame_observer->WaitForAnyFrameSubmission();
 
-  FetchHistogramsFromChildProcesses();
-  EXPECT_TRUE(VerifyRecordedSamplesForHistogram(
-      0, "Event.Latency.ScrollBegin.Touch.TimeToScrollUpdateSwapBegin4"));
   EXPECT_TRUE(VerifyRecordedSamplesForHistogram(
       0, "EventLatency.GestureScrollUpdate.TotalLatency"));
 }
@@ -299,104 +264,5 @@ IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest, ScrollingEventLatencyTrace) {
                   std::vector<std::string>{"GESTURE_SCROLL_UPDATE"}));
 }
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-
-class ScrollLatencyScrollbarBrowserTest : public ScrollLatencyBrowserTest {
- public:
-  ScrollLatencyScrollbarBrowserTest() = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ScrollLatencyBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(::switches::kDisableSmoothScrolling);
-
-    // The following features need to be disabled:
-    // - kOverlayScrollbar since overlay scrollbars are not hit-testable (thus
-    // input is not routed to scrollbars).
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {}, {features::kOverlayScrollbar});
-  }
-
-  ~ScrollLatencyScrollbarBrowserTest() override = default;
-
- private:
-#if BUILDFLAG(IS_MAC)
-  // Native scrollbars on Mac are overlay scrollbars. Hence they need to be
-  // disabled.
-  ui::test::ScopedPreferredScrollerStyle scroller_style_override{false};
-#endif
-
- protected:
-  void RunScrollbarThumbDragLatencyTest() {
-    // See above comment in RunScrollbarButtonLatencyTest for why this test
-    // doesn't run on Android.
-#if !BUILDFLAG(IS_ANDROID)
-    // Click on the scrollbar thumb and drag it twice to induce a compositor
-    // thread scrollbar ScrollBegin and ScrollUpdate.
-    gfx::PointF scrollbar_thumb(795, 30);
-    blink::WebMouseEvent mouse_down =
-        blink::SyntheticWebMouseEventBuilder::Build(
-            blink::WebInputEvent::Type::kMouseDown, scrollbar_thumb.x(),
-            scrollbar_thumb.y(), 0);
-    mouse_down.button = blink::WebMouseEvent::Button::kLeft;
-    mouse_down.SetTimeStamp(base::TimeTicks::Now());
-    GetWidgetHost()->ForwardMouseEvent(mouse_down);
-
-    // This is to avoid a race condition where a mousemove is processed before
-    // the renderer has had a chance to set up the scroll state (like the
-    // scroll_node etc). This happens due to the fact that when the renderer
-    // gets a mousedown, it is first "queued" as a GSB. At this point, the
-    // scroll node is not yet set up. Now, if a mousemove is sent from the
-    // browser proc before a frame is generated, it gets dispatched immediately
-    // and this can lead to nullptr derefernces.
-    RunUntilInputProcessed(GetWidgetHost());
-
-    blink::WebMouseEvent mouse_move =
-        blink::SyntheticWebMouseEventBuilder::Build(
-            blink::WebInputEvent::Type::kMouseMove, scrollbar_thumb.x(),
-            scrollbar_thumb.y() + 10, 0);
-    mouse_move.button = blink::WebMouseEvent::Button::kLeft;
-    mouse_move.SetTimeStamp(base::TimeTicks::Now());
-    GetWidgetHost()->ForwardMouseEvent(mouse_move);
-    RunUntilInputProcessed(GetWidgetHost());
-
-    mouse_move.SetPositionInWidget(scrollbar_thumb.x(),
-                                   scrollbar_thumb.y() + 20);
-    mouse_move.SetPositionInScreen(scrollbar_thumb.x(),
-                                   scrollbar_thumb.y() + 20);
-    GetWidgetHost()->ForwardMouseEvent(mouse_move);
-    RunUntilInputProcessed(GetWidgetHost());
-
-    blink::WebMouseEvent mouse_up = blink::SyntheticWebMouseEventBuilder::Build(
-        blink::WebInputEvent::Type::kMouseUp, scrollbar_thumb.x(),
-        scrollbar_thumb.y() + 20, 0);
-    mouse_up.button = blink::WebMouseEvent::Button::kLeft;
-    mouse_up.SetTimeStamp(base::TimeTicks::Now());
-    GetWidgetHost()->ForwardMouseEvent(mouse_up);
-
-    RunUntilInputProcessed(GetWidgetHost());
-
-    FetchHistogramsFromChildProcesses();
-    EXPECT_GT(
-        GetSampleCountForHistogram(
-            "Event.Latency.ScrollBegin.Scrollbar.TimeToScrollUpdateSwapBegin4"),
-        0u);
-#endif  // !BUILDFLAG(IS_ANDROID)
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Crashes on Mac ASAN.  https://crbug.com/1188553
-// TODO(crbug.com/1188553): Flaky on Linux Wayland CI/CQ builders.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_ScrollbarThumbDragLatency DISABLED_ScrollbarThumbDragLatency
-#else
-#define MAYBE_ScrollbarThumbDragLatency ScrollbarThumbDragLatency
-#endif
-IN_PROC_BROWSER_TEST_F(ScrollLatencyScrollbarBrowserTest,
-                       MAYBE_ScrollbarThumbDragLatency) {
-  LoadURL();
-
-  RunScrollbarThumbDragLatencyTest();
-}
 
 }  // namespace content

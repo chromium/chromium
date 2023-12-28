@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {State} from '../../externs/ts/state.js';
-import {constants} from '../../foreground/js/constants.js';
+import {ICON_TYPES} from '../../foreground/js/constants.js';
 import {setupStore, waitDeepEquals} from '../for_tests.js';
 
 import {addAndroidApps} from './android_apps.js';
@@ -36,7 +36,7 @@ export async function testAddAndroidApps(done: () => void) {
     },
     'com.test.app2': {
       ...app2,
-      icon: constants.ICON_TYPES.GENERIC,
+      icon: ICON_TYPES.GENERIC,
     },
   };
   await waitDeepEquals(store, want, (state) => state.androidApps);

@@ -95,11 +95,8 @@ BluetoothAdapterMac::BluetoothAdapterMac()
                               base::Unretained(this))),
       power_state_function_(
           base::BindRepeating(IOBluetoothPreferenceSetControllerPowerState)),
-      classic_discovery_manager_(
-          BluetoothDiscoveryManagerMac::CreateClassic(this)),
       device_paired_status_callback_(
           base::BindRepeating(&IsDeviceSystemPaired)) {
-  DCHECK(classic_discovery_manager_);
 }
 
 BluetoothAdapterMac::~BluetoothAdapterMac() = default;
@@ -190,7 +187,8 @@ void BluetoothAdapterMac::SetDiscoverable(bool discoverable,
 }
 
 bool BluetoothAdapterMac::IsDiscovering() const {
-  return classic_discovery_manager_->IsDiscovering() ||
+  return (classic_discovery_manager_ &&
+          classic_discovery_manager_->IsDiscovering()) ||
          BluetoothLowEnergyAdapterApple::IsDiscovering();
 }
 
@@ -257,6 +255,12 @@ void BluetoothAdapterMac::LazyInitialize() {
   if (lazy_initialized_)
     return;
 
+  // Defer classic_discovery_manager_ initialization here.
+  // This is to avoid system permission prompt caused by
+  // navigator.bluetooth.getAvailability() call. See crbug.com/1359338 for more
+  // information.
+  classic_discovery_manager_.reset(
+      BluetoothDiscoveryManagerMac::CreateClassic(this));
   BluetoothLowEnergyAdapterApple::LazyInitialize();
   PollAdapter();
 }
@@ -310,6 +314,10 @@ void BluetoothAdapterMac::SetGetDevicePairedStatusCallbackForTesting(
 void BluetoothAdapterMac::StartScanWithFilter(
     std::unique_ptr<BluetoothDiscoveryFilter> discovery_filter,
     DiscoverySessionResultCallback callback) {
+  // We need to make sure classic_discovery_manager_ is initialized properly
+  // before starting scanning.
+  const_cast<BluetoothAdapterMac*>(this)->LazyInitialize();
+
   // Default to dual discovery if |discovery_filter| is NULL.  IOBluetooth seems
   // to allow starting low energy and classic discovery at once.
   BluetoothTransport transport = BLUETOOTH_TRANSPORT_DUAL;
@@ -345,7 +353,8 @@ void BluetoothAdapterMac::StartScanWithFilter(
 void BluetoothAdapterMac::StopScan(DiscoverySessionResultCallback callback) {
   StopScanLowEnergy();
 
-  if (classic_discovery_manager_->IsDiscovering() &&
+  if (classic_discovery_manager_ &&
+      classic_discovery_manager_->IsDiscovering() &&
       !classic_discovery_manager_->StopDiscovery()) {
     DVLOG(1) << "Failed to stop classic discovery";
     // TODO: Provide a more precise error here.

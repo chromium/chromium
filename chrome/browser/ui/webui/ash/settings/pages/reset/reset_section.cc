@@ -29,6 +29,34 @@ using ::chromeos::settings::mojom::Setting;
 using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
+namespace {
+const std::vector<SearchConcept>& GetResetSearchConcept() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_RESET,
+       mojom::kResetSectionPath,
+       mojom::SearchResultIcon::kReset,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSection,
+       {.section = mojom::Section::kReset}},
+  });
+
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetRevampResetSearchConcept() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_RESET,
+       mojom::kSystemPreferencesSectionPath,
+       mojom::SearchResultIcon::kReset,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kPowerwash}},
+  });
+
+  return *tags;
+}
+}  // namespace
+
 ResetSection::ResetSection(Profile* profile,
                            SearchTagRegistry* search_tag_registry)
     : OsSettingsSection(profile, search_tag_registry),
@@ -36,7 +64,13 @@ ResetSection::ResetSection(Profile* profile,
           ash::features::IsOsSettingsRevampWayfindingEnabled()) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   if (IsPowerwashAllowed()) {
-    updater.AddSearchTags(GetSearchConcepts());
+    if (isRevampWayfindingEnabled_) {
+      updater.AddSearchTags(GetRevampResetSearchConcept());
+    } else {
+      updater.AddSearchTags(GetResetSearchConcept());
+    }
+
+    updater.AddSearchTags(GetPowerwashSearchConcept());
   }
 }
 
@@ -118,17 +152,10 @@ void ResetSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kPowerwash);
 }
 
-const std::vector<SearchConcept>& ResetSection::GetSearchConcepts() {
-  const mojom::Section section = GetSection();
+const std::vector<SearchConcept>& ResetSection::GetPowerwashSearchConcept() {
   const char* section_path = GetSectionPath();
 
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_RESET,
-       section_path,
-       mojom::SearchResultIcon::kReset,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSection,
-       {.section = section}},
       {IDS_OS_SETTINGS_TAG_RESET_POWERWASH,
        section_path,
        mojom::SearchResultIcon::kReset,

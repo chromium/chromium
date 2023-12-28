@@ -136,7 +136,7 @@ def CheckNoNewJs(input_api, output_api):
     'chrome/browser/resources/ash/settings/.eslintrc',
     'chrome/browser/resources/bluetooth_internals/',
     'chrome/browser/resources/chromeos/',
-    'chrome/browser/resources/device_log_ui/',
+    'chrome/browser/resources/device_log/',
     'chrome/browser/resources/explore_sites_internals/',
     'chrome/browser/resources/family_link_user_internals/',
     'chrome/browser/resources/feed_internals/',
@@ -166,7 +166,7 @@ def CheckNoNewJs(input_api, output_api):
 
   def excluded_path(f):
     for path in normalized_excluded_paths:
-      if f.LocalPath().startswith(path):
+      if f.LocalPath().startswith(path) or '.eslintrc.js' in f.LocalPath():
         return True
     return False
 

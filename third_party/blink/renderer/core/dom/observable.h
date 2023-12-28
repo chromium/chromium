@@ -34,7 +34,7 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
   class SubscribeDelegate : public GarbageCollected<SubscribeDelegate> {
    public:
     virtual ~SubscribeDelegate() = default;
-    virtual void OnSubscribe(Subscriber*) = 0;
+    virtual void OnSubscribe(Subscriber*, ScriptState*) = 0;
     virtual void Trace(Visitor* visitor) const {}
   };
 

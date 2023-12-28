@@ -300,6 +300,7 @@ testcase.fileDisplayUsbPartition = async () => {
   await directoryTree.waitForItemByLabel('Drive Label');
 
   // Wait for removable partition-1 to appear in the directory tree.
+  await directoryTree.expandTreeItemByLabel('Drive Label');
   const partitionOne = await directoryTree.waitForItemByLabel('partition-1');
   chrome.test.assertEq(
       'removable', directoryTree.getItemVolumeType(partitionOne));
@@ -316,19 +317,23 @@ testcase.fileDisplayUsbPartition = async () => {
       childEntries.map(child => directoryTree.getItemLabel(child));
   chrome.test.assertEq(['partition-1', 'partition-2'], childEntryLabels);
 
-  // Wait for USB to appear in the directory tree.
-  const fakeUsb = await directoryTree.waitForItemByLabel('fake-usb');
-  chrome.test.assertEq('removable', directoryTree.getItemVolumeType(fakeUsb));
-
   if (await isSinglePartitionFormat(appId)) {
+    // Wait for USB to appear in the directory tree.
+    await directoryTree.waitForItemByLabel('FAKEUSB');
+    // Expand it before checking children items.
+    await directoryTree.expandTreeItemByLabel('FAKEUSB');
     // Check unpartitioned USB has single partition as tree child.
     const itemEntries =
         await directoryTree.getChildItemsByParentLabel('FAKEUSB');
     chrome.test.assertEq(1, itemEntries.length);
     const childVolumeType = directoryTree.getItemVolumeType(itemEntries[0]);
-
-    chrome.test.assertTrue('removable' == childVolumeType);
+    chrome.test.assertTrue('removable' === childVolumeType);
   } else {
+    // Wait for USB to appear in the directory tree.
+    const fakeUsb = await directoryTree.waitForItemByLabel('fake-usb');
+    chrome.test.assertEq('removable', directoryTree.getItemVolumeType(fakeUsb));
+    // Expand it before checking children items.
+    await directoryTree.expandTreeItemByLabel('fake-usb');
     // Check unpartitioned USB does not have partitions as tree children.
     const itemEntries =
         await directoryTree.getChildItemsByParentLabel('fake-usb');

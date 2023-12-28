@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/ash/http_auth_dialog.h"
 #include "chrome/browser/ash/login/login_client_cert_usage_observer.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
@@ -23,8 +24,6 @@
 #include "chrome/browser/ui/webui/ash/login/saml_challenge_key_handler.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "components/user_manager/user_type.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
@@ -118,7 +117,7 @@ class GaiaScreenHandler
     : public BaseScreenHandler,
       public GaiaView,
       public chromeos::SecurityTokenPinDialogHost,
-      public content::NotificationObserver,
+      public HttpAuthDialog::Observer,
       public NetworkStateInformer::NetworkStateInformerObserver {
  public:
   using TView = GaiaView;
@@ -349,10 +348,10 @@ class GaiaScreenHandler
   void HideOfflineMessage(NetworkStateInformer::State state,
                           NetworkError::ErrorReason reason);
 
-  // content::NotificationObserver implementation:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // HttpAuthDialog::Observer implementation:
+  void HttpAuthDialogShown(content::WebContents* web_contents) override;
+  void HttpAuthDialogCancelled(content::WebContents* web_contents) override;
+  void HttpAuthDialogSupplied(content::WebContents* web_contents) override;
 
   // Returns true if current visible screen is the Gaia sign-in page.
   bool IsGaiaVisible();
@@ -485,7 +484,8 @@ class GaiaScreenHandler
   base::CancelableOnceCallback<void()> update_state_callback_;
   base::CancelableOnceCallback<void()> connecting_callback_;
 
-  content::NotificationRegistrar registrar_;
+  // Once Lacros is shipped, this will no longer be necessary.
+  std::unique_ptr<HttpAuthDialog::ScopedEnabler> enable_ash_httpauth_;
 
   // Whether we're currently ignoring network state updates because a proxy auth
   // UI pending (or we're waiting for a grace period after the proxy auth UI is

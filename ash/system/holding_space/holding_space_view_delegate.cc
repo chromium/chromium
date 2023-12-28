@@ -4,6 +4,7 @@
 
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -632,10 +633,13 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
   if (in_progress_commands.has_value()) {
     for (const HoldingSpaceItem::InProgressCommand& in_progress_command :
          in_progress_commands.value()) {
-      menu_sections.back().emplace_back(
-          MenuItemModel{.command_id = in_progress_command.command_id,
-                        .label_id = in_progress_command.label_id,
-                        .icon = raw_ref(*in_progress_command.icon)});
+      // `kOpenItem` is not accessible from the context menu.
+      if (in_progress_command.command_id != HoldingSpaceCommandId::kOpenItem) {
+        menu_sections.back().emplace_back(
+            MenuItemModel{.command_id = in_progress_command.command_id,
+                          .label_id = in_progress_command.label_id,
+                          .icon = raw_ref(*in_progress_command.icon)});
+      }
     }
   }
 

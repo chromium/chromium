@@ -96,7 +96,7 @@ class CustomWindowTargeter : public aura::WindowTargeter {
   }
 
  private:
-  const raw_ptr<SurfaceTreeHost, ExperimentalAsh> surface_tree_host_;
+  const raw_ptr<SurfaceTreeHost> surface_tree_host_;
 };
 
 }  // namespace

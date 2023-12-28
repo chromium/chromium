@@ -18,6 +18,7 @@
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
 #include "content/browser/webid/test/mock_permission_delegate.h"
+#include "content/browser/webid/webid_utils.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -28,7 +29,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using ApiPermissionStatus =
+using PermissionStatus =
     content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
 using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
 using ParseStatus = content::IdpNetworkRequestManager::ParseStatus;
@@ -39,7 +40,6 @@ using ::testing::Return;
 using DisconnectResponse =
     content::IdpNetworkRequestManager::DisconnectResponse;
 using DisconnectStatusForMetrics = content::FedCmDisconnectStatus;
-using FedCmEntry = ukm::builders::Blink_FedCm;
 using LoginState = content::IdentityRequestAccount::LoginState;
 using blink::mojom::DisconnectStatus;
 
@@ -77,6 +77,10 @@ Config kValidConfig = {
     /*config_fetch_status=*/{ParseStatus::kSuccess, net::HTTP_OK},
     /*disconnect_fetch_status=*/{ParseStatus::kSuccess, net::HTTP_OK},
     kProviderUrl};
+
+url::Origin OriginFromString(const std::string& url_string) {
+  return url::Origin::Create(GURL(url_string));
+}
 
 // Helper class for receiving the Disconnect method callback.
 class DisconnectRequestCallbackHelper {
@@ -137,6 +141,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
   }
 
   void FetchConfig(const GURL& provider,
+                   blink::mojom::RpMode rp_mode,
                    int idp_brand_icon_ideal_size,
                    int idp_brand_icon_minimum_size,
                    FetchConfigCallback callback) override {
@@ -175,49 +180,12 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
   const Config config_;
 };
 
-class TestApiPermissionDelegate : public MockApiPermissionDelegate {
- public:
-  ApiPermissionStatus GetApiPermissionStatus(
-      const url::Origin& origin) override {
-    return ApiPermissionStatus::GRANTED;
-  }
-};
-
 class TestPermissionDelegate : public MockPermissionDelegate {
  public:
-  bool HasSharingPermission(
-      const url::Origin& relying_party_requester,
-      const url::Origin& relying_party_embedder,
-      const url::Origin& identity_provider,
-      const absl::optional<std::string>& account_id) override {
-    url::Origin rp_origin_with_data = url::Origin::Create(GURL(kRpUrl));
-    url::Origin idp_origin_with_data = url::Origin::Create(GURL(kProviderUrl));
-    bool has_granted_permission_per_profile =
-        relying_party_requester == rp_origin_with_data &&
-        relying_party_embedder == rp_origin_with_data &&
-        identity_provider == idp_origin_with_data;
-    return has_granted_permission_per_profile &&
-           (account_id
-                ? accounts_with_sharing_permission_.count(account_id.value())
-                : !accounts_with_sharing_permission_.empty());
-  }
-
   absl::optional<bool> GetIdpSigninStatus(
       const url::Origin& idp_origin) override {
     return true;
   }
-
-  void SetConfig(const Config& config) {
-    accounts_with_sharing_permission_.clear();
-    for (const AccountConfig& account_config : config.accounts) {
-      if (account_config.was_granted_sharing_permission) {
-        accounts_with_sharing_permission_.insert(account_config.id);
-      }
-    }
-  }
-
- private:
-  std::set<std::string> accounts_with_sharing_permission_;
 };
 
 }  // namespace
@@ -234,7 +202,7 @@ class FederatedAuthDisconnectRequestTest
     RenderViewHostImplTestHarness::SetUp();
     scoped_feature_list_.InitAndEnableFeature(features::kFedCmDisconnect);
 
-    api_permission_delegate_ = std::make_unique<TestApiPermissionDelegate>();
+    api_permission_delegate_ = std::make_unique<MockApiPermissionDelegate>();
     permission_delegate_ = std::make_unique<TestPermissionDelegate>();
 
     static_cast<TestWebContents*>(web_contents())
@@ -247,15 +215,22 @@ class FederatedAuthDisconnectRequestTest
   }
 
   void RunDisconnectTest(const Config& config,
-                         DisconnectStatus expected_disconnect_status) {
-    permission_delegate_->SetConfig(config);
-
+                         DisconnectStatus expected_disconnect_status,
+                         RenderFrameHost* rfh = nullptr) {
     auto network_manager =
         std::make_unique<TestIdpNetworkRequestManager>(config);
     network_manager_ = network_manager.get();
 
+    if (!rfh) {
+      rfh = static_cast<RenderFrameHost*>(main_test_rfh());
+    }
+    if (expected_disconnect_status != DisconnectStatus::kSuccess) {
+      EXPECT_CALL(*permission_delegate_, RevokeSharingPermission(_, _, _, _))
+          .Times(0);
+    }
+
     metrics_ = std::make_unique<FedCmMetrics>(
-        GURL(config.config_url), main_test_rfh()->GetPageUkmSourceId(),
+        GURL(config.config_url), rfh->GetPageUkmSourceId(),
         /*session_id=*/1, /*is_disabled=*/false);
 
     blink::mojom::IdentityCredentialDisconnectOptionsPtr options =
@@ -267,7 +242,7 @@ class FederatedAuthDisconnectRequestTest
 
     DisconnectRequestCallbackHelper callback_helper;
     request_ = FederatedAuthDisconnectRequest::Create(
-        std::move(network_manager), permission_delegate_.get(), main_rfh(),
+        std::move(network_manager), permission_delegate_.get(), rfh,
         metrics_.get(), std::move(options));
     request_->SetCallbackAndStart(callback_helper.callback(),
                                   api_permission_delegate_.get());
@@ -276,8 +251,35 @@ class FederatedAuthDisconnectRequestTest
     EXPECT_EQ(expected_disconnect_status, callback_helper.status());
   }
 
-  void ExpectDisconnectStatusUKM(DisconnectStatusForMetrics status,
-                                 const char* entry_name) {
+  void ExpectDisconnectMetricsAndConsoleError(
+      DisconnectStatusForMetrics status,
+      FedCmRequesterFrameType requester_frame_type,
+      bool should_record_duration) {
+    histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.Disconnect",
+                                         status, 1);
+    histogram_tester_.ExpectUniqueSample("Blink.FedCm.Disconnect.FrameType",
+                                         requester_frame_type, 1);
+    histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.Disconnect",
+                                       should_record_duration ? 1 : 0);
+    ExpectDisconnectUKM(ukm::builders::Blink_FedCm::kEntryName, status,
+                        requester_frame_type, should_record_duration);
+    ExpectDisconnectUKM(ukm::builders::Blink_FedCmIdp::kEntryName, status,
+                        requester_frame_type, should_record_duration);
+
+    std::vector<std::string> messages =
+        RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
+    if (status == DisconnectStatusForMetrics::kSuccess) {
+      EXPECT_TRUE(messages.empty());
+    } else {
+      ASSERT_EQ(messages.size(), 1u);
+      EXPECT_EQ(messages[0], webid::GetDisconnectConsoleErrorMessage(status));
+    }
+  }
+
+  void ExpectDisconnectUKM(const char* entry_name,
+                           DisconnectStatusForMetrics status,
+                           FedCmRequesterFrameType requester_frame_type,
+                           bool should_record_duration) {
     auto entries = ukm_recorder()->GetEntriesByName(entry_name);
 
     ASSERT_FALSE(entries.empty())
@@ -286,10 +288,21 @@ class FederatedAuthDisconnectRequestTest
     // There are multiple types of metrics under the same FedCM UKM. We need to
     // make sure that the metric only includes the expected one.
     bool metric_found = false;
-    for (const auto* const entry : entries) {
+    for (const ukm::mojom::UkmEntry* const entry : entries) {
+      if (!should_record_duration) {
+        EXPECT_FALSE(ukm_recorder()->GetEntryMetric(entry, "Timing.Disconnect"))
+            << "Timing.Disconnect must not be present";
+      }
       const int64_t* metric =
           ukm_recorder()->GetEntryMetric(entry, "Status.Disconnect");
       if (!metric) {
+        EXPECT_FALSE(ukm_recorder()->GetEntryMetric(entry, "Timing.Disconnect"))
+            << "Timing.Disconnect must not be present when Status is not "
+               "present";
+        EXPECT_FALSE(
+            ukm_recorder()->GetEntryMetric(entry, "Disconnect.FrameType"))
+            << "Disconnect.FrameType must not be present when Status is not "
+               "present";
         continue;
       }
       EXPECT_FALSE(metric_found)
@@ -298,6 +311,18 @@ class FederatedAuthDisconnectRequestTest
       metric_found = true;
       EXPECT_EQ(static_cast<int>(status), *metric)
           << "Unexpected status recorded in " << entry_name;
+
+      metric = ukm_recorder()->GetEntryMetric(entry, "Disconnect.FrameType");
+      ASSERT_TRUE(metric)
+          << "Disconnect.FrameType must be present when Status is present";
+      EXPECT_EQ(static_cast<int>(requester_frame_type), *metric)
+          << "Unexpected frame type recorded in " << entry_name;
+
+      if (should_record_duration) {
+        EXPECT_TRUE(ukm_recorder()->GetEntryMetric(entry, "Timing.Disconnect"))
+            << "Timing.Disconnect must be present in the same entry as "
+               "Status.Disconnect";
+      }
     }
     EXPECT_TRUE(metric_found)
         << "No Status.Disconnect entry was found in " << entry_name;
@@ -309,12 +334,18 @@ class FederatedAuthDisconnectRequestTest
            network_manager_->has_fetched_disconnect_;
   }
 
+  bool DidFetchAllEndpoints() {
+    return network_manager_->has_fetched_well_known_ &&
+           network_manager_->has_fetched_config_ &&
+           network_manager_->has_fetched_disconnect_;
+  }
+
   ukm::TestAutoSetUkmRecorder* ukm_recorder() { return ukm_recorder_.get(); }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<TestIdpNetworkRequestManager> network_manager_;
-  std::unique_ptr<TestApiPermissionDelegate> api_permission_delegate_;
+  std::unique_ptr<MockApiPermissionDelegate> api_permission_delegate_;
   std::unique_ptr<TestPermissionDelegate> permission_delegate_;
   std::unique_ptr<FedCmMetrics> metrics_;
   std::unique_ptr<FederatedAuthDisconnectRequest> request_;
@@ -324,15 +355,25 @@ class FederatedAuthDisconnectRequestTest
 
 TEST_F(FederatedAuthDisconnectRequestTest, Success) {
   Config config = kValidConfig;
-  RunDisconnectTest(config, DisconnectStatus::kSuccess);
-  EXPECT_TRUE(network_manager_->has_fetched_well_known_);
-  EXPECT_TRUE(network_manager_->has_fetched_config_);
-  EXPECT_TRUE(network_manager_->has_fetched_disconnect_);
+  EXPECT_CALL(
+      *permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrl), _))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*permission_delegate_,
+              RevokeSharingPermission(OriginFromString(kRpUrl),
+                                      OriginFromString(kRpUrl),
+                                      OriginFromString(kProviderUrl), _));
+  EXPECT_CALL(*api_permission_delegate_,
+              GetApiPermissionStatus(OriginFromString(kRpUrl)))
+      .WillOnce(Return(PermissionStatus::GRANTED));
 
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.Disconnect",
-                                       DisconnectStatusForMetrics::kSuccess, 1);
-  ExpectDisconnectStatusUKM(DisconnectStatusForMetrics::kSuccess,
-                            FedCmEntry::kEntryName);
+  RunDisconnectTest(config, DisconnectStatus::kSuccess);
+  EXPECT_TRUE(DidFetchAllEndpoints());
+
+  ExpectDisconnectMetricsAndConsoleError(DisconnectStatusForMetrics::kSuccess,
+                                         FedCmRequesterFrameType::kMainFrame,
+                                         /*should_record_duration=*/true);
 }
 
 TEST_F(FederatedAuthDisconnectRequestTest, NotTrustworthyIdP) {
@@ -341,19 +382,14 @@ TEST_F(FederatedAuthDisconnectRequestTest, NotTrustworthyIdP) {
   RunDisconnectTest(config, DisconnectStatus::kError);
   EXPECT_FALSE(DidFetchAnyEndpoint());
 
-  histogram_tester_.ExpectUniqueSample(
-      "Blink.FedCm.Status.Disconnect",
-      DisconnectStatusForMetrics::kIdpNotPotentiallyTrustworthy, 1);
-  ExpectDisconnectStatusUKM(
+  ExpectDisconnectMetricsAndConsoleError(
       DisconnectStatusForMetrics::kIdpNotPotentiallyTrustworthy,
-      FedCmEntry::kEntryName);
+      FedCmRequesterFrameType::kMainFrame,
+      /*should_record_duration=*/false);
 }
 
 TEST_F(FederatedAuthDisconnectRequestTest,
        NoSharingPermissionButIdpHasThirdPartyCookiesAccessAndClaimsSignin) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmExemptIdpWithThirdPartyCookies);
-
   const char kAccountId[] = "account";
 
   Config config = kValidConfig;
@@ -365,16 +401,165 @@ TEST_F(FederatedAuthDisconnectRequestTest,
               HasThirdPartyCookiesAccess(_, GURL(kProviderUrl),
                                          url::Origin::Create(GURL(kRpUrl))))
       .WillOnce(Return(true));
+  EXPECT_CALL(*api_permission_delegate_,
+              GetApiPermissionStatus(OriginFromString(kRpUrl)))
+      .WillOnce(Return(PermissionStatus::GRANTED));
+  EXPECT_CALL(
+      *permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrl), _))
+      .WillOnce(Return(false));
+
+  EXPECT_CALL(*permission_delegate_,
+              RevokeSharingPermission(OriginFromString(kRpUrl),
+                                      OriginFromString(kRpUrl),
+                                      OriginFromString(kProviderUrl), _));
+  RunDisconnectTest(config, DisconnectStatus::kSuccess);
+  EXPECT_TRUE(DidFetchAllEndpoints());
+
+  ExpectDisconnectMetricsAndConsoleError(DisconnectStatusForMetrics::kSuccess,
+                                         FedCmRequesterFrameType::kMainFrame,
+                                         /*should_record_duration=*/true);
+}
+
+TEST_F(FederatedAuthDisconnectRequestTest, SameSiteIframe) {
+  const char kSameSiteIframeUrl[] = "https://rp.example/iframe.html";
+  RenderFrameHost* same_site_iframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL(kSameSiteIframeUrl),
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
+              ->AppendChild("same_site_iframe"));
+  Config config = kValidConfig;
+  EXPECT_CALL(*api_permission_delegate_,
+              GetApiPermissionStatus(OriginFromString(kRpUrl)))
+      .WillOnce(Return(PermissionStatus::GRANTED));
+  EXPECT_CALL(*permission_delegate_,
+              HasSharingPermission(OriginFromString(kSameSiteIframeUrl),
+                                   OriginFromString(kRpUrl),
+                                   OriginFromString(kProviderUrl), _))
+      .WillOnce(Return(true));
+
+  EXPECT_CALL(*permission_delegate_,
+              RevokeSharingPermission(OriginFromString(kSameSiteIframeUrl),
+                                      OriginFromString(kRpUrl),
+                                      OriginFromString(kProviderUrl), _));
+  RunDisconnectTest(config, DisconnectStatus::kSuccess, same_site_iframe);
+  EXPECT_TRUE(DidFetchAllEndpoints());
+
+  ExpectDisconnectMetricsAndConsoleError(
+      DisconnectStatusForMetrics::kSuccess,
+      FedCmRequesterFrameType::kSameSiteIframe,
+      /*should_record_duration=*/true);
+}
+
+TEST_F(FederatedAuthDisconnectRequestTest, CrossSiteIframe) {
+  // Use FedCmExemptIdpWithThirdPartyCookies since sharing permission is not set
+  // for the cross-site RP.
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmExemptIdpWithThirdPartyCookies);
+
+  const char kCrossSiteIframeUrl[] = "https://otherrp.com";
+  RenderFrameHost* cross_site_iframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL(kCrossSiteIframeUrl),
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
+              ->AppendChild("cross_site_iframe"));
+  EXPECT_CALL(*api_permission_delegate_,
+              GetApiPermissionStatus(OriginFromString(kRpUrl)))
+      .WillOnce(Return(PermissionStatus::GRANTED));
+  EXPECT_CALL(*permission_delegate_,
+              HasSharingPermission(OriginFromString(kCrossSiteIframeUrl),
+                                   OriginFromString(kRpUrl),
+                                   OriginFromString(kProviderUrl), _))
+      .WillOnce(Return(true));
+  Config config = kValidConfig;
+
+  EXPECT_CALL(*permission_delegate_,
+              RevokeSharingPermission(OriginFromString(kCrossSiteIframeUrl),
+                                      OriginFromString(kRpUrl),
+                                      OriginFromString(kProviderUrl), _));
+  RunDisconnectTest(config, DisconnectStatus::kSuccess, cross_site_iframe);
+  EXPECT_TRUE(DidFetchAllEndpoints());
+
+  ExpectDisconnectMetricsAndConsoleError(
+      DisconnectStatusForMetrics::kSuccess,
+      FedCmRequesterFrameType::kCrossSiteIframe,
+      /*should_record_duration=*/true);
+}
+
+TEST_F(FederatedAuthDisconnectRequestTest, NoAccountToDisconnect) {
+  Config config = kValidConfig;
+  EXPECT_CALL(*api_permission_delegate_,
+              GetApiPermissionStatus(OriginFromString(kRpUrl)))
+      .WillOnce(Return(PermissionStatus::GRANTED));
+  EXPECT_CALL(
+      *permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrl), _))
+      .WillOnce(Return(false));
+
+  RunDisconnectTest(config, DisconnectStatus::kError);
+  EXPECT_FALSE(DidFetchAnyEndpoint());
+
+  ExpectDisconnectMetricsAndConsoleError(
+      DisconnectStatusForMetrics::kNoAccountToDisconnect,
+      FedCmRequesterFrameType::kMainFrame,
+      /*should_record_duration=*/false);
+}
+
+TEST_F(FederatedAuthDisconnectRequestTest, DisabledInSettings) {
+  Config config = kValidConfig;
+  EXPECT_CALL(*api_permission_delegate_,
+              GetApiPermissionStatus(OriginFromString(kRpUrl)))
+      .WillOnce(Return(PermissionStatus::BLOCKED_SETTINGS));
+
+  RunDisconnectTest(config, DisconnectStatus::kError);
+  EXPECT_FALSE(DidFetchAnyEndpoint());
+
+  ExpectDisconnectMetricsAndConsoleError(
+      DisconnectStatusForMetrics::kDisabledInSettings,
+      FedCmRequesterFrameType::kMainFrame,
+      /*should_record_duration=*/false);
+}
+
+TEST_F(FederatedAuthDisconnectRequestTest, DisabledInFlags) {
+  Config config = kValidConfig;
+  EXPECT_CALL(*api_permission_delegate_,
+              GetApiPermissionStatus(OriginFromString(kRpUrl)))
+      .WillOnce(Return(PermissionStatus::BLOCKED_VARIATIONS));
+
+  RunDisconnectTest(config, DisconnectStatus::kError);
+  EXPECT_FALSE(DidFetchAnyEndpoint());
+
+  ExpectDisconnectMetricsAndConsoleError(
+      DisconnectStatusForMetrics::kDisabledInFlags,
+      FedCmRequesterFrameType::kMainFrame,
+      /*should_record_duration=*/false);
+}
+
+// Tests that disconnect() succeeds even if FedCM is under embargo (e.g.
+// cooldown).
+TEST_F(FederatedAuthDisconnectRequestTest, SuccessDespiteEmbargo) {
+  Config config = kValidConfig;
+  EXPECT_CALL(*api_permission_delegate_,
+              GetApiPermissionStatus(OriginFromString(kRpUrl)))
+      .WillOnce(Return(PermissionStatus::BLOCKED_EMBARGO));
+  EXPECT_CALL(
+      *permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrl), _))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*permission_delegate_,
+              RevokeSharingPermission(OriginFromString(kRpUrl),
+                                      OriginFromString(kRpUrl),
+                                      OriginFromString(kProviderUrl), _));
 
   RunDisconnectTest(config, DisconnectStatus::kSuccess);
-  EXPECT_TRUE(network_manager_->has_fetched_well_known_);
-  EXPECT_TRUE(network_manager_->has_fetched_config_);
-  EXPECT_TRUE(network_manager_->has_fetched_disconnect_);
+  EXPECT_TRUE(DidFetchAllEndpoints());
 
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.Disconnect",
-                                       DisconnectStatusForMetrics::kSuccess, 1);
-  ExpectDisconnectStatusUKM(DisconnectStatusForMetrics::kSuccess,
-                            FedCmEntry::kEntryName);
+  ExpectDisconnectMetricsAndConsoleError(DisconnectStatusForMetrics::kSuccess,
+                                         FedCmRequesterFrameType::kMainFrame,
+                                         /*should_record_duration=*/true);
 }
 
 }  // namespace content

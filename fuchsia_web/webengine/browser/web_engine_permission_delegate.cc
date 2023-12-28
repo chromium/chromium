@@ -109,7 +109,7 @@ WebEnginePermissionDelegate::GetPermissionStatusForEmbeddedRequester(
 }
 
 WebEnginePermissionDelegate::SubscriptionId
-WebEnginePermissionDelegate::SubscribePermissionStatusChange(
+WebEnginePermissionDelegate::SubscribeToPermissionStatusChange(
     blink::PermissionType permission,
     content::RenderProcessHost* render_process_host,
     content::RenderFrameHost* render_frame_host,
@@ -121,7 +121,7 @@ WebEnginePermissionDelegate::SubscribePermissionStatusChange(
   return SubscriptionId();
 }
 
-void WebEnginePermissionDelegate::UnsubscribePermissionStatusChange(
+void WebEnginePermissionDelegate::UnsubscribeFromPermissionStatusChange(
     SubscriptionId subscription_id) {
   // TODO(crbug.com/1063094): Implement permission status subscription. It's
   // used in blink to emit PermissionStatus.onchange notifications.

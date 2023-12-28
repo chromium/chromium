@@ -128,7 +128,9 @@ class FeatureTilesContainerViewTest : public AshTestBase,
 
   int GetVisibleCount() { return container()->GetVisibleFeatureTileCount(); }
 
-  std::vector<views::View*> pages() { return container()->children(); }
+  std::vector<raw_ptr<views::View, VectorExperimental>> pages() {
+    return container()->children();
+  }
 
   // Fills the container with a number of `pages` given the max amount of
   // displayable primary tiles per page.
@@ -152,8 +154,7 @@ class FeatureTilesContainerViewTest : public AshTestBase,
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
   scoped_refptr<UnifiedSystemTrayModel> tray_model_;
-  raw_ptr<FeatureTilesContainerView, DanglingUntriaged | ExperimentalAsh>
-      container_;
+  raw_ptr<FeatureTilesContainerView, DanglingUntriaged> container_;
 };
 
 // Tests `CalculateRowsFromHeight()` which returns the number of max displayable

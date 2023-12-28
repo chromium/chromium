@@ -24,6 +24,12 @@ namespace internal {
 
 #define HISTOGRAM_PREFIX "PageLoad.Clients.GoogleSearch."
 
+const char kHistogramGWSNavigationStartToFinalRequestStart[] =
+    HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFinalRequestStart";
+const char kHistogramGWSNavigationStartToFinalResponseStart[] =
+    HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFinalResponseStart";
+const char kHistogramGWSNavigationStartToFinalLoaderCallback[] =
+    HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFinalLoaderCallback";
 const char kHistogramGWSNavigationStartToFirstRequestStart[] =
     HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFirstRequestStart";
 const char kHistogramGWSNavigationStartToFirstResponseStart[] =
@@ -148,4 +154,12 @@ void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
   PAGE_LOAD_HISTOGRAM(
       internal::kHistogramGWSNavigationStartToFirstLoaderCallback,
       timing.first_loader_callback_time - navigation_start_time);
+  PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSNavigationStartToFinalRequestStart,
+                      timing.final_request_start_time - navigation_start_time);
+  PAGE_LOAD_HISTOGRAM(
+      internal::kHistogramGWSNavigationStartToFinalResponseStart,
+      timing.final_response_start_time - navigation_start_time);
+  PAGE_LOAD_HISTOGRAM(
+      internal::kHistogramGWSNavigationStartToFinalLoaderCallback,
+      timing.final_loader_callback_time - navigation_start_time);
 }

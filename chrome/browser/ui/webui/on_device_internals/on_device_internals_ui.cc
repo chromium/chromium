@@ -11,9 +11,11 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/on_device_internals_resources.h"
 #include "chrome/grit/on_device_internals_resources_map.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 
 OnDeviceInternalsUI::OnDeviceInternalsUI(content::WebUI* web_ui)
@@ -42,9 +44,17 @@ void OnDeviceInternalsUI::LoadModel(
     LoadModelCallback callback) {
   // Warm the service while assets load in the background.
   std::ignore = GetService();
+
+  on_device_model::ModelAssetPaths model_paths;
+  model_paths.sp_model = model_path.Append(optimization_guide::kSpModelFile);
+  model_paths.model = model_path.Append(optimization_guide::kModelFile);
+  model_paths.weights = model_path.Append(optimization_guide::kWeightsFile);
+  model_paths.ts_data = model_path.Append(optimization_guide::kTsDataFile);
+  model_paths.ts_sp_model =
+      model_path.Append(optimization_guide::kTsSpModelFile);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&on_device_model::LoadModelAssets, model_path, model_path),
+      base::BindOnce(&on_device_model::LoadModelAssets, model_paths),
       base::BindOnce(&OnDeviceInternalsUI::OnModelAssetsLoaded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(model),
                      std::move(callback)));
@@ -59,13 +69,17 @@ OnDeviceInternalsUI::GetService() {
         content::ServiceProcessHost::Options()
             .WithDisplayName("On-Device Model Service")
             .Pass());
+    service_.reset_on_disconnect();
   }
   return *service_.get();
 }
 
 void OnDeviceInternalsUI::GetEstimatedPerformanceClass(
     GetEstimatedPerformanceClassCallback callback) {
-  GetService().GetEstimatedPerformanceClass(std::move(callback));
+  GetService().GetEstimatedPerformanceClass(
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          std::move(callback),
+          on_device_model::mojom::PerformanceClass::kError));
 }
 
 void OnDeviceInternalsUI::OnModelAssetsLoaded(

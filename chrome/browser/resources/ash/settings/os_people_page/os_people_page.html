@@ -46,14 +46,15 @@
 </style>
 
 <os-settings-animated-pages id="pages" section="[[section_]]">
-  <!-- Show settings card is RavampWayfinding is enabled. -->
   <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
     <div route-path="default">
       <account-manager-settings-card
-          prefs="{{prefs}}">
+          prefs="{{prefs}}"
+          device-account="[[deviceAccount_]]">
       </account-manager-settings-card>
       <additional-accounts-settings-card
-          prefs="{{prefs}}">
+          prefs="{{prefs}}"
+          accounts="[[accounts_]]">
       </additional-accounts-settings-card>
       <template is="dom-if" if="[[showParentalControls_]]">
         <parental-controls-settings-card

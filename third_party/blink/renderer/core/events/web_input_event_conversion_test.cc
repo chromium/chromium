@@ -83,8 +83,7 @@ void RegisterMockedURL(const std::string& base_url,
 
 class WebInputEventConversionTest : public testing::Test {
  private:
-  test::TaskEnvironment task_environment_{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
+  test::TaskEnvironment task_environment;
 };
 
 TEST_F(WebInputEventConversionTest, WebKeyboardEventBuilder) {

@@ -160,5 +160,11 @@ const char kForcePermissionPolicyUnloadDefaultEnabled[] =
 const char kPPAPISharedImagesForVideoDecoderAllowed[] =
     "policy.ppapi_shared_images_for_video_decoder_allowed";
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Allows user browser navigation access to the listed host patterns. Only
+// applied when a AlwaysOn VPN is active but not connected.
+const char kAlwaysOnVpnPreConnectUrlAllowlist[] =
+    "policy.alwayson_vpn_pre_connect_url_allowlist";
+#endif
 }  // namespace policy_prefs
 }  // namespace policy

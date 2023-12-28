@@ -5,6 +5,7 @@
 #include "components/media_message_center/media_notification_view_impl.h"
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/media_message_center/media_notification_background_ash_impl.h"
 #include "components/media_message_center/media_notification_background_impl.h"
@@ -497,7 +498,7 @@ void MediaNotificationViewImpl::UpdateActionButtonsVisibility() {
       GetTopVisibleActions(enabled_actions_, ignored_actions,
                            GetMaxNumActions(GetActuallyExpanded()));
 
-  for (auto* view : GetButtons()) {
+  for (views::View* view : GetButtons()) {
     views::Button* action_button = views::Button::AsButton(view);
     bool should_show =
         base::Contains(visible_actions, GetActionFromButtonTag(*action_button));
@@ -785,7 +786,8 @@ void MediaNotificationViewImpl::MaybeShowOrHideArtistLabel() {
   artist_label_->SetVisible(!artist_label_->GetText().empty() || has_artwork_);
 }
 
-std::vector<views::View*> MediaNotificationViewImpl::GetButtons() {
+std::vector<raw_ptr<views::View, VectorExperimental>>
+MediaNotificationViewImpl::GetButtons() {
   auto buttons = button_row_->children();
   buttons.insert(buttons.cbegin(),
                  playback_button_container_->children().cbegin(),

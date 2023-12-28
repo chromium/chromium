@@ -121,8 +121,9 @@ void SetUpdateNeededForApp(Profile* profile,
   ScopedDictPrefUpdate generated_webapks(profile->GetPrefs(),
                                          kGeneratedWebApksPref);
   base::Value::Dict* app_dict = generated_webapks->FindDict(app_id);
-  if (app_dict)
+  if (app_dict) {
     app_dict->Set(kUpdateNeededKey, update_needed);
+  }
 }
 
 base::flat_set<std::string> GetUpdateNeededAppIds(Profile* profile) {

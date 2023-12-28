@@ -29,7 +29,8 @@ void EventAckData::IncrementInflightEvent(
     int64_t version_id,
     int event_id,
     base::TimeTicks dispatch_start_time,
-    EventDispatchSource dispatch_source) {
+    EventDispatchSource dispatch_source,
+    bool lazy_background_active_on_dispatch) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   base::Uuid request_uuid = base::Uuid::GenerateRandomV4();
@@ -51,8 +52,9 @@ void EventAckData::IncrementInflightEvent(
   // TODO(lazyboy): Clean up |unacked_events_| if RenderProcessHost died before
   // it got a chance to ack |event_id|. This shouldn't happen in common cases.
   auto insert_result = unacked_events_.try_emplace(
-      event_id, EventInfo{request_uuid, render_process_id, start_ok,
-                          dispatch_start_time, dispatch_source});
+      event_id,
+      EventInfo{request_uuid, render_process_id, start_ok, dispatch_start_time,
+                dispatch_source, lazy_background_active_on_dispatch});
   DCHECK(insert_result.second) << "EventAckData: Duplicate event_id.";
 
   if (dispatch_source == EventDispatchSource::kDispatchEventToProcess) {
@@ -83,6 +85,17 @@ void EventAckData::EmitDispatchTimeMetrics(EventInfo& event_info) {
       EventDispatchSource::kDispatchEventToProcess) {
     base::UmaHistogramCustomMicrosecondsTimes(
         "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2",
+        /*sample=*/base::TimeTicks::Now() - event_info.dispatch_start_time,
+        /*min=*/base::Microseconds(1), /*max=*/base::Minutes(5),
+        /*buckets=*/100);
+    const char* active_metric_name =
+        event_info.lazy_background_active_on_dispatch
+            ? "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2."
+              "Active"
+            : "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2."
+              "Inactive";
+    base::UmaHistogramCustomMicrosecondsTimes(
+        active_metric_name,
         /*sample=*/base::TimeTicks::Now() - event_info.dispatch_start_time,
         /*min=*/base::Microseconds(1), /*max=*/base::Minutes(5),
         /*buckets=*/100);

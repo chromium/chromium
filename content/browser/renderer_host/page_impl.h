@@ -31,7 +31,9 @@
 
 namespace content {
 
+class NavigationRequest;
 class PageDelegate;
+class PeakGpuMemoryTracker;
 class RenderFrameHostImpl;
 
 // This implements the Page interface that is exposed to embedders of content,
@@ -199,6 +201,27 @@ class CONTENT_EXPORT PageImpl : public Page {
   bool CheckAndMaybeDebitSelectURLBudgets(const net::SchemefulSite& site,
                                           double bits_to_charge);
 
+  // See documentation for |credentialless_iframes_nonce_|.
+  const base::UnguessableToken& credentialless_iframes_nonce() const {
+    return credentialless_iframes_nonce_;
+  }
+
+  // Take ownership of the loading memory tracker from the NavigationRequest
+  // that navigated to this page.
+  void TakeLoadingMemoryTracker(NavigationRequest* request);
+  // If we have a loading memory tracker, close it as loading has stopped. It
+  // will asynchronously receive the statistics from the GPU process, and update
+  // UMA stats.
+  void ResetLoadingMemoryTracker();
+  // If we have a loading memory tracker, cancel it as loading hasn't stopped
+  // and the page is being navigated away from. UMA stats will not be recorded.
+  void CancelLoadingMemoryTracker();
+
+  bool is_overriding_user_agent() { return is_overriding_user_agent_; }
+  void set_is_overriding_user_agent(bool is_overriding_user_agent) {
+    is_overriding_user_agent_ = is_overriding_user_agent;
+  }
+
  private:
   void DidActivateAllRenderViewsForPrerenderingOrPreview(
       base::OnceCallback<void(base::TimeTicks)> completion_callback);
@@ -320,6 +343,21 @@ class CONTENT_EXPORT PageImpl : public Page {
   std::string last_reported_encoding_;
   // The canonicalized character encoding.
   std::string canonical_encoding_;
+
+  // Nonce to be used for initializing the storage key and the network isolation
+  // key of credentialless iframes which are children of this page's main
+  // document.
+  const base::UnguessableToken credentialless_iframes_nonce_ =
+      base::UnguessableToken::Create();
+
+  // This is only set for primary pages.
+  // Created by NavigationRequest; ownership is maintained until the frame has
+  // stopped loading, or we navigate away from the page before it finishes
+  // loading.
+  std::unique_ptr<PeakGpuMemoryTracker> loading_memory_tracker_;
+
+  // Whether the page is overriding the user agent or not.
+  bool is_overriding_user_agent_ = false;
 
   base::WeakPtrFactory<PageImpl> weak_factory_{this};
 };

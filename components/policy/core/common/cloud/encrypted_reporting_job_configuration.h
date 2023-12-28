@@ -139,6 +139,7 @@ class POLICY_EXPORT EncryptedReportingJobConfiguration
   ::reporting::Priority priority_;
   int64_t generation_id_{-1};
   int64_t sequence_id_{-1};
+  size_t record_count_{0u};
 };
 
 }  // namespace policy

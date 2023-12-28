@@ -63,7 +63,7 @@ void GetUnmaskDetailsRequest::ParseResponse(const base::Value::Dict& response) {
     }
   }
 
-  const absl::optional<bool> offer_fido_opt_in =
+  const std::optional<bool> offer_fido_opt_in =
       response.FindBool("offer_fido_opt_in");
   unmask_details_.offer_fido_opt_in = offer_fido_opt_in.value_or(false);
 

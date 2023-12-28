@@ -149,6 +149,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       net::CookieAccessResultList& maybe_included_cookies,
       net::CookieAccessResultList& excluded_cookies) const;
 
+  // Check content settings to decide whether to allow PST operations from a
+  // given top level site. PST for specific origins can be disabled through
+  // content settings.
+  bool ArePrivateStateTokensAllowed(const GURL& primary_url) const {
+    ContentSetting setting = GetContentSetting(primary_url, primary_url,
+                                               ContentSettingsType::COOKIES);
+    return (setting == CONTENT_SETTING_ALLOW);
+  }
+
  private:
   // content_settings::CookieSettingsBase:
   bool ShouldAlwaysAllowCookies(const GURL& url,
@@ -165,6 +174,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   bool IsStorageAccessApiEnabled() const override;
 
   const ContentSettingsForOneType& GetContentSettings(
+      ContentSettingsType type) const;
+
+  // Returns a host-indexed map of ContentSettingPatternSources associated with
+  // the input `type`.
+  const HostIndexedContentSettings& GetHostIndexedContentSettings(
       ContentSettingsType type) const;
 
   // An enum that represents the scope of cookies to which the user's
@@ -206,6 +220,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
 
   base::flat_map<ContentSettingsType, ContentSettingsForOneType>
       content_settings_;
+
+  base::flat_map<ContentSettingsType, HostIndexedContentSettings>
+      host_indexed_content_settings_;
 };
 
 }  // namespace network

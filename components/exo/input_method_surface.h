@@ -38,7 +38,7 @@ class InputMethodSurface : public ClientControlledShellSurface {
   gfx::Rect GetBounds() const;
 
  private:
-  const raw_ptr<InputMethodSurfaceManager, ExperimentalAsh> manager_;
+  const raw_ptr<InputMethodSurfaceManager> manager_;
   bool added_to_manager_ = false;
   // The bounds of this surface in DIP.
   gfx::Rect input_method_bounds_;

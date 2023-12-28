@@ -4,5 +4,5 @@ tommi@chromium.org
 
 per-file *audio*=olka@chromium.org
 per-file low_latency_video*=kron@chromium.org
-per-file webmediaplayer_ms*=kron@chromium.org
+per-file web_media_player_ms*=kron@chromium.org
 per-file video_renderer_algorithm*=kron@chromium.org

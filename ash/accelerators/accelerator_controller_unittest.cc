@@ -11,7 +11,7 @@
 #include "ash/accelerators/accelerator_notifications.h"
 #include "ash/accelerators/accelerator_table.h"
 #include "ash/accelerators/pre_target_accelerator_handler.h"
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
@@ -436,11 +436,10 @@ class AcceleratorControllerTest : public AshTestBase {
     return true;
   }
 
-  raw_ptr<AcceleratorControllerImpl, DanglingUntriaged | ExperimentalAsh>
-      controller_ = nullptr;  // Not owned.
+  raw_ptr<AcceleratorControllerImpl, DanglingUntriaged> controller_ =
+      nullptr;  // Not owned.
   std::unique_ptr<AcceleratorControllerImpl::TestApi> test_api_;
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged | ExperimentalAsh>
-      new_window_delegate_;
+  raw_ptr<MockNewWindowDelegate, DanglingUntriaged> new_window_delegate_;
   std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
 };
 
@@ -993,7 +992,7 @@ TEST_F(AcceleratorControllerTest, RotateScreen) {
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
   display::Display::Rotation initial_rotation =
       GetActiveDisplayRotation(display.id());
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
 
   EXPECT_FALSE(accessibility_controller
@@ -1459,7 +1458,7 @@ TEST_F(AcceleratorControllerTest, GlobalAccelerators) {
 }
 
 TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleAppList) {
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
 
   // The press event should not toggle the AppList, the release should instead.
@@ -1515,6 +1514,21 @@ TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleAppList) {
       CreateReleaseAccelerator(ui::VKEY_LWIN, ui::EF_NONE)));
   base::RunLoop().RunUntilIdle();
   GetAppListTestHelper()->CheckVisibility(true);
+
+  // Verifies VKEY_RWIN triggers AppList, too. This happens if modifier
+  // keys are swapped.
+  GetAppListTestHelper()->DismissAndRunLoop();
+  EXPECT_FALSE(
+      ProcessInController(ui::Accelerator(ui::VKEY_RWIN, ui::EF_NONE)));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(ui::VKEY_RWIN, GetCurrentAccelerator().key_code());
+  GetAppListTestHelper()->CheckVisibility(false);
+
+  EXPECT_TRUE(ProcessInController(
+      CreateReleaseAccelerator(ui::VKEY_RWIN, ui::EF_NONE)));
+  base::RunLoop().RunUntilIdle();
+  GetAppListTestHelper()->CheckVisibility(true);
+  EXPECT_EQ(ui::VKEY_RWIN, GetPreviousAccelerator().key_code());
 }
 
 TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleQuickSettings) {
@@ -2220,7 +2234,7 @@ TEST_F(AcceleratorControllerTest, DisallowedAtModalWindow) {
 }
 
 TEST_F(AcceleratorControllerTest, DisallowedWithNoWindow) {
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   TestAccessibilityControllerClient client;
 
@@ -2279,7 +2293,7 @@ TEST_F(AcceleratorControllerTest, DisallowedWithNoWindow) {
 TEST_F(AcceleratorControllerTest, TestDialogCancel) {
   ui::Accelerator accelerator(ui::VKEY_H,
                               ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   // Pressing cancel on the dialog should have no effect.
   EXPECT_FALSE(accessibility_controller->high_contrast().WasDialogAccepted());
@@ -2301,7 +2315,7 @@ TEST_F(AcceleratorControllerTest, TestToggleHighContrast) {
                               ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
   // High Contrast Mode Enabled dialog and notification should be shown.
   EXPECT_FALSE(IsConfirmationDialogOpen());
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   EXPECT_FALSE(accessibility_controller->high_contrast().WasDialogAccepted());
   EXPECT_TRUE(ProcessInController(accelerator));
@@ -2437,8 +2451,8 @@ class AcceleratorControllerImprovedKeyboardShortcutsTest
   }
 
  protected:
-  raw_ptr<TestInputMethodManager, DanglingUntriaged | ExperimentalAsh>
-      input_method_manager_ = nullptr;  // Not owned.
+  raw_ptr<TestInputMethodManager, DanglingUntriaged> input_method_manager_ =
+      nullptr;  // Not owned.
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -2492,8 +2506,8 @@ class AcceleratorControllerInputMethodTest : public AcceleratorControllerTest {
   }
 
  protected:
-  raw_ptr<AcceleratorMockInputMethod, DanglingUntriaged | ExperimentalAsh>
-      mock_input_ = nullptr;  // Not owned.
+  raw_ptr<AcceleratorMockInputMethod, DanglingUntriaged> mock_input_ =
+      nullptr;  // Not owned.
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -2614,6 +2628,42 @@ TEST_F(DeprecatedAcceleratorTester, TestDeprecatedAcceleratorsBehavior) {
   }
 }
 
+TEST_F(DeprecatedAcceleratorTester, NoNotificationIfReplacementMissing) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kShortcutCustomization);
+
+  // Remove the replacements for all deprecated accelerators.
+  Shell::Get()->ash_accelerator_configuration()->RemoveAccelerator(
+      AcceleratorAction::kShowShortcutViewer,
+      ui::Accelerator{ui::VKEY_S, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN});
+
+  Shell::Get()->ash_accelerator_configuration()->RemoveAccelerator(
+      AcceleratorAction::kOpenGetHelp,
+      ui::Accelerator{ui::VKEY_H, ui::EF_COMMAND_DOWN});
+
+  for (size_t i = 0; i < kDeprecatedAcceleratorsLength; ++i) {
+    const AcceleratorData& entry = kDeprecatedAccelerators[i];
+
+    const DeprecatedAcceleratorData* data =
+        test_api_->GetDeprecatedAcceleratorData(entry.action);
+    DCHECK(data);
+
+    EXPECT_TRUE(IsMessageCenterEmpty());
+    ui::Accelerator deprecated_accelerator = CreateAccelerator(entry);
+    if (data->deprecated_enabled) {
+      EXPECT_TRUE(ProcessInController(deprecated_accelerator));
+    } else {
+      EXPECT_FALSE(ProcessInController(deprecated_accelerator));
+    }
+
+    // We do not expect to see a notification in the message center.
+    EXPECT_FALSE(
+        ContainsDeprecatedAcceleratorNotification(data->uma_histogram_name));
+
+    ResetStateIfNeeded();
+  }
+}
+
 TEST_F(DeprecatedAcceleratorTester, TestNewAccelerators) {
   // Add below the new accelerators that replaced the deprecated ones (if any).
   const AcceleratorData kNewAccelerators[] = {
@@ -2722,7 +2772,7 @@ class FakeMagnificationManager {
 
  private:
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  raw_ptr<PrefService, ExperimentalAsh> prefs_;
+  raw_ptr<PrefService> prefs_;
 };
 
 TEST_F(MagnifiersAcceleratorsTester, TestToggleFullscreenMagnifier) {
@@ -2736,7 +2786,7 @@ TEST_F(MagnifiersAcceleratorsTester, TestToggleFullscreenMagnifier) {
   EXPECT_FALSE(fullscreen_magnifier_controller()->IsEnabled());
   EXPECT_FALSE(IsConfirmationDialogOpen());
 
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   // Toggle the fullscreen magnifier on/off, dialog should be shown on first use
   // of accelerator.
@@ -2784,7 +2834,7 @@ TEST_F(MagnifiersAcceleratorsTester, TestToggleDockedMagnifier) {
   EXPECT_FALSE(fullscreen_magnifier_controller()->IsEnabled());
   EXPECT_FALSE(IsConfirmationDialogOpen());
 
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   // Toggle the docked magnifier on/off, dialog should be shown on first use of
   // accelerator.

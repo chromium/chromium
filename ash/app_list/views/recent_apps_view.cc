@@ -153,9 +153,8 @@ class RecentAppsView::GridDelegateImpl : public AppListItemView::GridDelegate {
   }
 
  private:
-  const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
-  raw_ptr<AppListItemView, DanglingUntriaged | ExperimentalAsh> selected_view_ =
-      nullptr;
+  const raw_ptr<AppListViewDelegate> view_delegate_;
+  raw_ptr<AppListItemView, DanglingUntriaged> selected_view_ = nullptr;
 };
 
 RecentAppsView::RecentAppsView(AppListKeyboardController* keyboard_controller,
@@ -198,8 +197,9 @@ void RecentAppsView::OnAppListItemWillBeDeleted(AppListItem* item) {
 void RecentAppsView::UpdateAppListConfig(const AppListConfig* app_list_config) {
   app_list_config_ = app_list_config;
 
-  for (auto* item_view : item_views_)
+  for (ash::AppListItemView* item_view : item_views_) {
     item_view->UpdateAppListConfig(app_list_config);
+  }
 }
 
 void RecentAppsView::UpdateResults(

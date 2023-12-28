@@ -4,30 +4,39 @@
 
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager.h"
 
+#include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/constants/ash_features.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_base.h"
 #include "base/test/metrics/histogram_enum_reader.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager_factory.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
+#include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/constants/constants_util.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_sections.h"
 #include "chrome/browser/ui/webui/ash/settings/search/hierarchy.h"
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
 #include "chromeos/ash/components/local_search_service/search_metrics_reporter.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/mock_input_method_manager.h"
@@ -44,19 +53,32 @@ using ::chromeos::settings::mojom::Subpage;
 class OsSettingsManagerTest : public testing::Test {
  protected:
   OsSettingsManagerTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
+        profile_manager_(TestingBrowserProcess::GetGlobal()) {}
   ~OsSettingsManagerTest() override = default;
 
   // testing::Test:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {ash::features::kInputDeviceSettingsSplit,
-         ash::features::kPeripheralCustomization},
+         ash::features::kPeripheralCustomization, arc::kPerAppLanguage},
         {});
     ASSERT_TRUE(profile_manager_.SetUp());
-    TestingProfile* profile =
-        profile_manager_.CreateTestingProfile("TestingProfile");
+    Profile* profile = profile_manager_.CreateTestingProfile(
+        TestingProfile::kDefaultProfileUserName);
+    // Log in user to ensure ARC PlayStore can be enabled.
+    const AccountId account_id(
+        AccountId::FromUserEmailGaiaId(profile->GetProfileUserName(), "1234"));
+    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
 
+    // Enables ARC for test profile.
+    arc::SetArcAvailableCommandLineForTesting(
+        base::CommandLine::ForCurrentProcess());
+    arc::SetArcPlayStoreEnabledForProfile(profile, true);
+
+    NearbySharingServiceFactory::
+        SetIsNearbyShareSupportedForBrowserContextForTesting(false);
     local_search_service::SearchMetricsReporter::RegisterLocalStatePrefs(
         pref_service_.registry());
     local_search_service::LocalSearchServiceProxyFactory::GetInstance()
@@ -79,6 +101,8 @@ class OsSettingsManagerTest : public testing::Test {
         eche_app::EcheAppManagerFactory::GetForProfile(profile));
   }
 
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   content::BrowserTaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
   TestingProfileManager profile_manager_;

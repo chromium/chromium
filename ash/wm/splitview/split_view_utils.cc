@@ -4,7 +4,7 @@
 
 #include "ash/wm/splitview/split_view_utils.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/system/toast_data.h"
@@ -19,7 +19,6 @@
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_types.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
@@ -228,7 +227,7 @@ void WindowTransformAnimationObserver::OnImplicitAnimationsCompleted() {
     return;
   }
 
-  for (auto* transient_window :
+  for (aura::Window* transient_window :
        wm::TransientWindowManager::GetOrCreate(window_)->transient_children()) {
     // For now we only care about bubble dialog type transient children.
     views::BubbleDialogDelegate* bubble_delegate_view =
@@ -568,19 +567,13 @@ SnapPosition GetSnapPosition(aura::Window* root_window,
       vertical_edge_inset);
 }
 
-bool IsInTabletMode() {
-  TabletModeController* tablet_mode_controller =
-      Shell::Get()->tablet_mode_controller();
-  return tablet_mode_controller && tablet_mode_controller->InTabletMode();
-}
-
 bool IsLayoutHorizontal(aura::Window* window) {
   return IsLayoutHorizontal(
       display::Screen::GetScreen()->GetDisplayNearestWindow(window));
 }
 
 bool IsLayoutHorizontal(const display::Display& display) {
-  if (IsInTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     return IsCurrentScreenOrientationLandscape();
   }
 
@@ -595,7 +588,7 @@ bool IsLayoutPrimary(aura::Window* window) {
 }
 
 bool IsLayoutPrimary(const display::Display& display) {
-  if (IsInTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     return IsCurrentScreenOrientationPrimary();
   }
 
@@ -636,17 +629,17 @@ int GetMinimumWindowLength(aura::Window* window, bool horizontal) {
 
 gfx::Rect CalculateSnappedWindowBoundsInScreen(
     SnapPosition snap_position,
+    aura::Window* root_window,
     aura::Window* window_for_minimum_size,
     int divider_position,
     int divider_width,
     bool is_resizing_with_divider) {
-  aura::Window* root_window = window_for_minimum_size->GetRootWindow();
   const gfx::Rect work_area_bounds_in_screen =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
           root_window);
   const bool horizontal = IsLayoutHorizontal(root_window);
   const bool snap_left_or_top = IsPhysicalLeftOrTop(snap_position, root_window);
-  const bool in_tablet_mode = IsInTabletMode();
+  const bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
   const int work_area_size = GetDividerPositionUpperLimit(root_window);
 
   // Edit `divider_position` if window restore is currently restoring a snapped
@@ -748,18 +741,6 @@ int GetWindowComponentForResize(aura::Window* window) {
   // TODO(b/288356322): Update the component for vertical splitview.
   return state_type == chromeos::WindowStateType::kPrimarySnapped ? HTRIGHT
                                                                   : HTLEFT;
-}
-
-views::Widget::InitParams CreateWidgetInitParams(
-    aura::Window* parent_window,
-    const std::string& widget_name) {
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
-  params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
-  params.activatable = views::Widget::InitParams::Activatable::kNo;
-  params.parent = parent_window;
-  params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
-  params.name = widget_name;
-  return params;
 }
 
 ASH_EXPORT std::string BuildWindowLayoutCompleteOnSessionExitHistogram() {

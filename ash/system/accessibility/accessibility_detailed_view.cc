@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/constants/ash_pref_names.h"
@@ -67,7 +67,7 @@ speech::LanguageCode GetSodaFeatureLocale(SodaFeature feature) {
 }
 
 bool IsSodaFeatureEnabled(SodaFeature feature) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   switch (feature) {
     case SodaFeature::kDictation:
@@ -155,7 +155,7 @@ AccessibilityDetailedView::~AccessibilityDetailedView() {
 
 void AccessibilityDetailedView::OnAccessibilityStatusChanged() {
   AccessibilityDelegate* delegate = Shell::Get()->accessibility_delegate();
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
 
   if (controller->IsSpokenFeedbackSettingVisibleInTray()) {
@@ -277,7 +277,7 @@ void AccessibilityDetailedView::AppendAccessibilityList() {
 }
 
 void AccessibilityDetailedView::AddEnabledFeatures(views::View* container) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
 
   if (controller->IsSpokenFeedbackSettingVisibleInTray() &&
@@ -356,7 +356,7 @@ void AccessibilityDetailedView::AddEnabledFeatures(views::View* container) {
 }
 
 void AccessibilityDetailedView::AddAllFeatures(views::View* container) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
 
   if (controller->IsSpokenFeedbackSettingVisibleInTray()) {
@@ -676,7 +676,7 @@ HoverHighlightView* AccessibilityDetailedView::AddScrollListToggleItem(
 
 void AccessibilityDetailedView::HandleViewClicked(views::View* view) {
   AccessibilityDelegate* delegate = Shell::Get()->accessibility_delegate();
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   using base::RecordAction;
   using base::UserMetricsAction;
@@ -905,7 +905,7 @@ void AccessibilityDetailedView::MaybeShowSodaMessage(
 }
 
 bool AccessibilityDetailedView::IsSodaFeatureInTray(SodaFeature feature) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   switch (feature) {
     case SodaFeature::kDictation:

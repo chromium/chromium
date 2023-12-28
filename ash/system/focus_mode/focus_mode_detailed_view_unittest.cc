@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
@@ -347,6 +348,24 @@ TEST_F(FocusModeDetailedViewTest, TimerSettingViewTextfield) {
   EXPECT_EQ(u"333", timer_textfield->GetText());
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   EXPECT_EQ(u"300", timer_textfield->GetText());
+}
+
+// Tests how the textfield for the timer setting view handles valid and invalid
+// inputs from virtual keyboard.
+TEST_F(FocusModeDetailedViewTest, TimerSettingViewTextfieldVK) {
+  SystemTextfield* timer_textfield = GetTimerSettingTextfield();
+  LeftClickOn(timer_textfield);
+  ASSERT_TRUE(timer_textfield->IsActive());
+
+  auto* event_generator = GetEventGenerator();
+  PressAndReleaseKeyOnVK(event_generator, ui::VKEY_DELETE);
+  PressAndReleaseKeyOnVK(event_generator, ui::VKEY_2);
+  PressAndReleaseKeyOnVK(event_generator, ui::VKEY_A);
+  PressAndReleaseKeyOnVK(event_generator, ui::VKEY_A);
+  PressAndReleaseKeyOnVK(event_generator, ui::VKEY_0);
+  PressAndReleaseKeyOnVK(event_generator, ui::VKEY_0);
+  PressAndReleaseKeyOnVK(event_generator, ui::VKEY_0);
+  EXPECT_EQ(u"200", timer_textfield->GetText());
 }
 
 // Tests that incrementing the duration of an inactive focus session follows a

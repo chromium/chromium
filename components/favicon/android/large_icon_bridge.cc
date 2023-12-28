@@ -55,14 +55,6 @@ void OnLargeIconAvailable(const JavaRef<jobject>& j_callback,
       static_cast<int>(result.bitmap.icon_type));
 }
 
-void OnGoogleFaviconServerResponse(
-    const JavaRef<jobject>& j_callback,
-    favicon_base::GoogleFaviconServerRequestStatus status) {
-  JNIEnv* env = AttachCurrentThread();
-  Java_GoogleFaviconServerCallback_onRequestComplete(env, j_callback,
-                                                     static_cast<int>(status));
-}
-
 }  // namespace
 
 static jlong JNI_LargeIconBridge_Init(JNIEnv* env) {
@@ -131,7 +123,8 @@ void LargeIconBridge::
       url::GURLAndroid::ToNativeGURL(env, j_page_url);
   CHECK(page_url);
   favicon_base::GoogleFaviconServerCallback callback =
-      base::BindOnce(&OnGoogleFaviconServerResponse,
+      base::BindOnce(&LargeIconBridge::OnGoogleFaviconServerResponse,
+                     weak_factory_.GetWeakPtr(),
                      ScopedJavaGlobalRef<jobject>(env, j_callback));
   large_icon_service
       ->GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
@@ -160,6 +153,14 @@ void LargeIconBridge::TouchIconFromGoogleServer(
       url::GURLAndroid::ToNativeGURL(env, j_icon_url);
   CHECK(icon_url);
   large_icon_service->TouchIconFromGoogleServer(*icon_url);
+}
+
+void LargeIconBridge::OnGoogleFaviconServerResponse(
+    const JavaRef<jobject>& j_callback,
+    favicon_base::GoogleFaviconServerRequestStatus status) const {
+  JNIEnv* env = AttachCurrentThread();
+  Java_GoogleFaviconServerCallback_onRequestComplete(env, j_callback,
+                                                     static_cast<int>(status));
 }
 
 }  // namespace favicon

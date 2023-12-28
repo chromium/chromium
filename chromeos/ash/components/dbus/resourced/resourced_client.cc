@@ -144,14 +144,24 @@ ResourcedClientImpl::ResourcedClientImpl() {
 void ResourcedClientImpl::MemoryPressureReceived(dbus::Signal* signal) {
   dbus::MessageReader signal_reader(signal);
 
+  memory_pressure::ReclaimTarget reclaim_target;
   uint8_t pressure_level_byte;
   PressureLevel pressure_level;
-  uint64_t reclaim_target_kb;
 
   if (!signal_reader.PopByte(&pressure_level_byte) ||
-      !signal_reader.PopUint64(&reclaim_target_kb)) {
+      !signal_reader.PopUint64(&reclaim_target.target_kb)) {
     LOG(ERROR) << "Error reading signal from resourced: " << signal->ToString();
     return;
+  }
+
+  int64_t signal_origin_timestamp_ms = -1;
+  // The signal origin timestamp may not be included by resourced, and if it is,
+  // it might be an invalid value.
+  if (signal_reader.PopInt64(&signal_origin_timestamp_ms) &&
+      signal_origin_timestamp_ms > 0) {
+    // Signal origin timestamp is received as a ms value from CLOCK_MONOTONIC.
+    reclaim_target.origin_time =
+        base::TimeTicks::FromUptimeMillis(signal_origin_timestamp_ms);
   }
 
   if (pressure_level_byte == resource_manager::PressureLevelChrome::NONE) {
@@ -167,13 +177,14 @@ void ResourcedClientImpl::MemoryPressureReceived(dbus::Signal* signal) {
     return;
   }
 
-  if (reclaim_target_kb > total_memory_kb_) {
-    LOG(ERROR) << "reclaim_target_kb is too large: " << reclaim_target_kb;
+  if (reclaim_target.target_kb > total_memory_kb_) {
+    LOG(ERROR) << "reclaim_target_kb is too large: "
+               << reclaim_target.target_kb;
     return;
   }
 
   for (auto& observer : observers_) {
-    observer.OnMemoryPressure(pressure_level, reclaim_target_kb);
+    observer.OnMemoryPressure(pressure_level, reclaim_target);
   }
 }
 

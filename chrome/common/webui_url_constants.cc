@@ -15,7 +15,6 @@
 #include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
-#include "components/signin/public/base/signin_buildflags.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
@@ -158,6 +157,8 @@ const char kChromeUIOmniboxHost[] = "omnibox";
 const char kChromeUIOmniboxURL[] = "chrome://omnibox/";
 #if !BUILDFLAG(IS_ANDROID)
 const char kChromeUIOnDeviceInternalsHost[] = "on-device-internals";
+const char kChromeUISearchEngineChoiceHost[] = "search-engine-choice";
+const char kChromeUISearchEngineChoiceURL[] = "chrome://search-engine-choice";
 #endif
 const char kChromeUIPasswordManagerInternalsHost[] =
     "password-manager-internals";
@@ -178,6 +179,9 @@ const char kChromeUIPredictorsHost[] = "predictors";
 const char kChromeUIPrefsInternalsHost[] = "prefs-internals";
 const char kChromeUIPrefsInternalsURL[] = "chrome://prefs-internals";
 const char kChromeUIPrintURL[] = "chrome://print/";
+const char kChromeUIPrivacySandboxInternalsHost[] = "privacy-sandbox-internals";
+const char kChromeUIPrivacySandboxInternalsURL[] =
+    "chrome://privacy-sandbox-internals";
 const char kChromeUIPrivacySandboxDialogHost[] = "privacy-sandbox-dialog";
 const char kChromeUIPrivacySandboxDialogURL[] =
     "chrome://privacy-sandbox-dialog";
@@ -544,14 +548,14 @@ const char kChromeUISandboxHost[] = "sandbox";
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 const char kChromeUIBrowserSwitchHost[] = "browser-switch";
 const char kChromeUIBrowserSwitchURL[] = "chrome://browser-switch/";
-const char kChromeUIEnterpriseProfileWelcomeHost[] =
-    "enterprise-profile-welcome";
-const char kChromeUIEnterpriseProfileWelcomeURL[] =
-    "chrome://enterprise-profile-welcome/";
 const char kChromeUIIntroHost[] = "intro";
 const char kChromeUIIntroURL[] = "chrome://intro";
 const char kChromeUIIntroDefaultBrowserSubPage[] = "default-browser";
 const char kChromeUIIntroDefaultBrowserURL[] = "chrome://intro/default-browser";
+const char kChromeUIManagedUserProfileNoticeHost[] =
+    "managed-user-profile-notice";
+const char kChromeUIManagedUserProfileNoticeUrl[] =
+    "chrome://managed-user-profile-notice/";
 const char kChromeUIProfileCustomizationHost[] = "profile-customization";
 const char kChromeUIProfileCustomizationURL[] =
     "chrome://profile-customization";
@@ -655,9 +659,10 @@ const char kCleanupSubPage[] = "cleanup";
 const char kChromeUICastFeedbackHost[] = "cast-feedback";
 #endif
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-const char kChromeUISearchEngineChoiceHost[] = "search-engine-choice";
-const char kChromeUISearchEngineChoiceURL[] = "chrome://search-engine-choice";
+#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+const char kChromeUILensURL[] = "chrome://lens/";
+const char kChromeUILensUntrustedURL[] = "chrome-untrusted://lens/";
+const char kChromeUILensHost[] = "lens";
 #endif
 
 // Extension sub pages.

@@ -11,8 +11,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 BufferingFileStreamWriter::BufferingFileStreamWriter(
     std::unique_ptr<storage::FileStreamWriter> file_stream_writer,
@@ -178,5 +177,4 @@ void BufferingFileStreamWriter::OnFlushIntermediateBufferForFlushCompleted(
   DCHECK_EQ(net::ERR_IO_PENDING, flush_result);
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

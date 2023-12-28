@@ -12,17 +12,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/intent_picker_bubble_view.h"
-#include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
+#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/web_app_pref_guardrails.h"
-#include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -37,8 +33,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -61,93 +57,6 @@ class DefaultLinkCapturingInteractiveUiTest
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
-  }
-
-  content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
-  IntentChipButton* GetIntentPickerIcon() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->toolbar_button_provider()
-        ->GetIntentChipButton();
-  }
-
-  IntentPickerBubbleView* intent_picker_bubble() {
-    return IntentPickerBubbleView::intent_picker_bubble();
-  }
-
-  testing::AssertionResult AwaitIntentPickerTabHelperIconUpdateComplete() {
-    base::test::TestFuture<void> future;
-    auto* tab_helper = IntentPickerTabHelper::FromWebContents(GetWebContents());
-    tab_helper->SetIconUpdateCallbackForTesting(  // IN-TEST
-        future.GetCallback(), /*include_latest_navigation=*/true);
-    if (!future.Wait()) {
-      return testing::AssertionFailure()
-             << "Intent picker app did not resolve an applicable app.";
-    }
-    return testing::AssertionSuccess();
-  }
-
-  testing::AssertionResult WaitForIntentPickerToShow() {
-    auto result = AwaitIntentPickerTabHelperIconUpdateComplete();
-    if (!result) {
-      return result;
-    }
-    IntentChipButton* intent_picker_icon = GetIntentPickerIcon();
-    if (!intent_picker_icon) {
-      return testing::AssertionFailure()
-             << "Intent picker icon does not exist.";
-    }
-
-    if (!intent_picker_icon->GetVisible()) {
-      web_app::IntentChipVisibilityObserver intent_chip_visibility_observer(
-          intent_picker_icon);
-      intent_chip_visibility_observer.WaitForChipToBeVisible();
-      if (!intent_picker_icon->GetVisible()) {
-        return testing::AssertionFailure()
-               << "Intent picker icon never became visible.";
-      }
-    }
-
-    return testing::AssertionSuccess();
-  }
-
-  testing::AssertionResult ClickIntentPickerChip() {
-    auto result = WaitForIntentPickerToShow();
-    if (!result) {
-      return result;
-    }
-
-    views::test::ButtonTestApi test_api(GetIntentPickerIcon());
-    test_api.NotifyClick(ui::MouseEvent(
-        ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), base::TimeTicks(),
-        ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-    return testing::AssertionSuccess();
-  }
-
-  testing::AssertionResult ClickIntentPickerAndWaitForBubble() {
-    auto result = WaitForIntentPickerToShow();
-    if (!result) {
-      return result;
-    }
-
-    views::NamedWidgetShownWaiter intent_picker_bubble_shown(
-        views::test::AnyWidgetTestPasskey{},
-        IntentPickerBubbleView::kViewClassName);
-    views::test::ButtonTestApi test_api(GetIntentPickerIcon());
-    test_api.NotifyClick(ui::MouseEvent(
-        ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), base::TimeTicks(),
-        ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-
-    if (!intent_picker_bubble_shown.WaitIfNeededAndGet()) {
-      return testing::AssertionFailure()
-             << "Intent picker bubble did not appear after click.";
-    }
-
-    EXPECT_NE(intent_picker_bubble(), nullptr)
-        << "intent picker not initialized";
-    return testing::AssertionSuccess();
   }
 
   size_t GetItemContainerSize(IntentPickerBubbleView* bubble) {
@@ -182,17 +91,6 @@ class DefaultLinkCapturingInteractiveUiTest
     return {outer_app_id, inner_app_id};
   }
 
-  views::Button* GetIntentPickerButtonAtIndex(size_t index) {
-    EXPECT_NE(intent_picker_bubble(), nullptr)
-        << " intent picker bubble not initialized";
-    auto children =
-        intent_picker_bubble()
-            ->GetViewByID(IntentPickerBubbleView::ViewId::kItemContainer)
-            ->children();
-    EXPECT_LE(index, children.size());
-    return static_cast<views::Button*>(children[index]);
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -202,13 +100,13 @@ IN_PROC_BROWSER_TEST_F(DefaultLinkCapturingInteractiveUiTest,
   const auto [outer_app_id, inner_app_id] = InstallOuterAppAndInnerApp();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetNestedPageUrl()));
-  EXPECT_TRUE(ClickIntentPickerAndWaitForBubble());
+  EXPECT_TRUE(web_app::ClickIntentPickerAndWaitForBubble(browser()));
 
   base::UserActionTester user_action_tester;
   // The app list is currently not deterministically ordered, so find the
   // correct item and select that.
   const auto& app_infos =
-      intent_picker_bubble()->app_info_for_testing();  // IN-TEST
+      web_app::intent_picker_bubble()->app_info_for_testing();  // IN-TEST
   auto it = base::ranges::find(app_infos, outer_app_id,
                                &apps::IntentPickerAppInfo::launch_name);
   ASSERT_NE(it, app_infos.end());
@@ -216,11 +114,12 @@ IN_PROC_BROWSER_TEST_F(DefaultLinkCapturingInteractiveUiTest,
 
   ui_test_utils::BrowserChangeObserver browser_added_waiter(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-  views::test::ButtonTestApi test_api(GetIntentPickerButtonAtIndex(index));
+  views::test::ButtonTestApi test_api(
+      web_app::GetIntentPickerButtonAtIndex(index));
   test_api.NotifyClick(ui::MouseEvent(
       ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), base::TimeTicks(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-  intent_picker_bubble()->AcceptDialog();
+  web_app::intent_picker_bubble()->AcceptDialog();
 
   EXPECT_EQ(
       1, user_action_tester.GetActionCount("IntentPickerViewAcceptLaunchApp"));
@@ -237,8 +136,8 @@ IN_PROC_BROWSER_TEST_F(DefaultLinkCapturingInteractiveUiTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetNestedPageUrl()));
   base::UserActionTester user_action_tester;
-  EXPECT_TRUE(ClickIntentPickerAndWaitForBubble());
-  intent_picker_bubble()->CancelDialog();
+  EXPECT_TRUE(web_app::ClickIntentPickerAndWaitForBubble(browser()));
+  web_app::intent_picker_bubble()->CancelDialog();
 
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "IntentPickerViewClosedStayInChrome"));
@@ -252,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(DefaultLinkCapturingInteractiveUiTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetNestedPageUrl()));
   base::UserActionTester user_action_tester;
-  EXPECT_TRUE(ClickIntentPickerAndWaitForBubble());
+  EXPECT_TRUE(web_app::ClickIntentPickerAndWaitForBubble(browser()));
   // Opening a new tab should ignore the current intent picker view.
   chrome::NewTab(browser());
 
@@ -278,8 +177,9 @@ IN_PROC_BROWSER_TEST_F(IntentPickerInteractiveUiTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
 
   // Verify that no icon was shown.
-  EXPECT_TRUE(AwaitIntentPickerTabHelperIconUpdateComplete());
-  ASSERT_FALSE(GetIntentPickerIcon()->GetVisible());
+  EXPECT_TRUE(web_app::AwaitIntentPickerTabHelperIconUpdateComplete(
+      browser()->tab_strip_model()->GetActiveWebContents()));
+  ASSERT_FALSE(web_app::GetIntentPickerIcon(browser())->GetVisible());
 
   // Load a different page while simulating it having a native app.
   apps::OverrideMacAppForUrlForTesting(true, kFinderAppPath);
@@ -287,11 +187,12 @@ IN_PROC_BROWSER_TEST_F(IntentPickerInteractiveUiTest,
 
   // Verify intent picker chip shows up, click on it, and wait for the bubble to
   // be populated
-  EXPECT_TRUE(ClickIntentPickerAndWaitForBubble());
-  EXPECT_TRUE(intent_picker_bubble()->GetVisible());
+  EXPECT_TRUE(web_app::ClickIntentPickerAndWaitForBubble(browser()));
+  EXPECT_TRUE(web_app::intent_picker_bubble()->GetVisible());
 
-  EXPECT_EQ(1U, GetItemContainerSize(intent_picker_bubble()));
-  auto& app_info = intent_picker_bubble()->app_info_for_testing();  // IN-TEST
+  EXPECT_EQ(1U, GetItemContainerSize(web_app::intent_picker_bubble()));
+  auto& app_info =
+      web_app::intent_picker_bubble()->app_info_for_testing();  // IN-TEST
   ASSERT_EQ(1U, app_info.size());
   EXPECT_EQ(kFinderAppPath, app_info[0].launch_name);
   EXPECT_EQ(kFinderAppName, app_info[0].display_name);
@@ -301,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerInteractiveUiTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
 
   // Verify that the icon was hidden.
-  ASSERT_FALSE(GetIntentPickerIcon()->GetVisible());
+  ASSERT_FALSE(web_app::GetIntentPickerIcon(browser())->GetVisible());
 }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -422,7 +323,7 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingIPHPromoTest,
   ui_test_utils::BrowserChangeObserver browser_added_waiter(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
 
-  ASSERT_TRUE(ClickIntentPickerChip());
+  ASSERT_TRUE(web_app::ClickIntentPickerChip(browser()));
   Browser* app_browser = browser_added_waiter.Wait();
   ASSERT_TRUE(app_browser);
   EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));

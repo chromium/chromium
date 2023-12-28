@@ -158,6 +158,16 @@ class MODULES_EXPORT MediaStreamTrack
   virtual void GetZoomLevel(
       base::OnceCallback<void(absl::optional<int>, const String&)>
           callback) = 0;
+
+  // When called on a "live" video track associated with tab-capture, asks to
+  // set the zoom level on the captured tab's viewport.  This is subject to a
+  // permission policy on the capturing origin.
+  //
+  // If successful, |callback| is invoked with `true` and an empty string.
+  // If unsuccessful, it is invoked with `false` and an error message.
+  virtual void SetZoomLevel(
+      int zoom_level,
+      base::OnceCallback<void(bool, const String&)> callback) = 0;
 #endif
 
   virtual std::unique_ptr<AudioSourceProvider> CreateWebAudioSource(

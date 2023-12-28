@@ -35,7 +35,7 @@ class ASH_EXPORT TimeTrayItemView : public TrayItemView {
  private:
   friend class TimeTrayItemViewTest;
 
-  raw_ptr<TimeView, ExperimentalAsh> time_view_ = nullptr;
+  raw_ptr<TimeView> time_view_ = nullptr;
 };
 
 }  // namespace ash

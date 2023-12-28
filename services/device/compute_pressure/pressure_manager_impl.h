@@ -22,7 +22,7 @@ namespace device {
 
 class CpuProbe;
 
-// Handles the communication between the renderer process and services.
+// Handles the communication between content/browser and services.
 //
 // This class owns one instance of probe for each PressureSource. The probe
 // instance keeps collecting compute pressure information from the

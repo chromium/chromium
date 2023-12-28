@@ -1,4 +1,5 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2016 The Chromium Authors
+
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -3279,8 +3280,8 @@ enum WebFeature {
   kClientHintsUAReduced = 3968, //Removed in M116.
   kSpeculationRulesPrerender = 3969,
   kOBSOLETE_ExecCommandWithTrustedTypes = 3970,
-  kCSSSelectorPseudoHasInSnapshotProfile = 3971,
-  kCSSSelectorPseudoHasInLiveProfile = 3972,
+  kOBSOLETE_CSSSelectorPseudoHasInSnapshotProfile = 3971,
+  kOBSOLETE_CSSSelectorPseudoHasInLiveProfile = 3972,
   kNavigatorPdfViewerEnabled = 3973,
   kCanvasRenderingContext2DContextLostEvent = 3974,
   kCanvasRenderingContext2DContextRestoredEvent = 3975,
@@ -3954,11 +3955,11 @@ enum WebFeature {
   kV8WasmMemory64 = 4615,
   kV8WasmMultiMemory = 4616,
   kV8WasmGC = 4617,
-  kORBBlockWithoutAnyEventHandler = 4618,
-  kORBBlockWithOnErrorButWithoutOnLoadEventHandler = 4619,
-  kORBBlockWithOnLoadButWithoutOnErrorEventHandler = 4620,
-  kORBBlockWithOnLoadAndOnErrorEventHandler = 4621,
-  kORBBlockWithAnyEventHandler = 4622,
+  kOBSOLETE_ORBBlockWithoutAnyEventHandler = 4618,
+  kOBSOLETE_ORBBlockWithOnErrorButWithoutOnLoadEventHandler = 4619,
+  kOBSOLETE_ORBBlockWithOnLoadButWithoutOnErrorEventHandler = 4620,
+  kOBSOLETE_ORBBlockWithOnLoadAndOnErrorEventHandler = 4621,
+  kOBSOLETE_ORBBlockWithAnyEventHandler = 4622,
   kV8RTCEncodedVideoFrame_SetMetadata_Method = 4623,
   kV8RTCEncodedVideoFrame_SetTimestamp_Method = 4624,
   kV8RTCEncodedAudioFrame_SetTimestamp_Method = 4625,
@@ -4092,6 +4093,11 @@ enum WebFeature {
   kTrustedTypesIsCheck = 4753,
   kMouseDragOnCancelledMouseMove = 4754,
   kFedCmDomainHint = 4755,
+  kLCPImageWasLazy = 4756,
+  kEventTargetOnObservable = 4757,
+  kCredentialManagerCrossOriginPublicKeyCreateRequest = 4758,
+  kViewTransitionNameAuto = 4759,
+  kV8WasmJavaScriptPromiseIntegration = 4760,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

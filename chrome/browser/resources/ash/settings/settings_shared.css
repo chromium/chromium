@@ -195,8 +195,13 @@ cr-radio-group {
   align-items: center;
   border-top: var(--cr-separator-line);
   display: flex;
-  min-height: var(--cr-section-min-height);
+  min-height: var(--settings-row-min-height);
   padding: 0 var(--cr-section-padding);
+}
+
+:host-context(body.revamp-wayfinding-enabled) cr-link-row,
+:host-context(body.revamp-wayfinding-enabled) settings-toggle-button {
+  min-height: var(--settings-row-min-height);
 }
 
 .settings-box.no-padding {
@@ -219,6 +224,7 @@ cr-radio-group {
   box-sizing: border-box;
   padding-bottom: var(--cr-section-vertical-padding);
   padding-top: var(--cr-section-vertical-padding);
+  padding-inline-end: 20px;
 }
 
 /* We use an explicit tag to remove the top border, rather than a
@@ -360,6 +366,7 @@ cr-dialog > [slot='title'] {
   font: var(--cros-title-1-font);
 }
 
+controlled-button,
 cr-button {
   font: var(--cros-button-2-font);
 }

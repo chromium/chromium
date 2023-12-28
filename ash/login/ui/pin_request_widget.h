@@ -42,8 +42,7 @@ class ASH_EXPORT PinRequestWidget {
     void SimulateValidationFinished(bool access_granted);
 
    private:
-    const raw_ptr<PinRequestWidget, DanglingUntriaged | ExperimentalAsh>
-        pin_request_widget_;
+    const raw_ptr<PinRequestWidget, DanglingUntriaged> pin_request_widget_;
   };
 
   PinRequestWidget(const PinRequestWidget&) = delete;

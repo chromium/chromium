@@ -639,14 +639,8 @@ class PrerenderBookmarkBarOnHoverNavigationTest
       ukm_entry_builder_;
 };
 
-// TODO(https://crbug.com/1491974): Times out on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_PrerenderActivation DISABLED_PrerenderActivation
-#else
-#define MAYBE_PrerenderActivation PrerenderActivation
-#endif
 IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
-                       MAYBE_PrerenderActivation) {
+                       PrerenderActivation) {
   base::HistogramTester histogram_tester;
   // Navigate to an non-empty tab
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

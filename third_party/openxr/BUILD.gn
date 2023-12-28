@@ -142,6 +142,7 @@ if (enable_openxr) {
 
     if (is_android) {
       sources += [
+        "dev/xr_android.h",
         "src/src/loader/android_utilities.cpp",
         "src/src/loader/android_utilities.h",
       ]

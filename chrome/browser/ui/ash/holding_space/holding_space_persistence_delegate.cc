@@ -169,11 +169,14 @@ void HoldingSpacePersistenceDelegate::MaybeRemoveItemsFromPersistence() {
 
   const bool remove_camera_app_items =
       !features::IsHoldingSpaceCameraAppIntegrationEnabled();
+  const bool remove_photoshop_web_items =
+      !features::IsHoldingSpacePhotoshopWebIntegrationEnabled();
   const bool remove_suggestion_items =
       !features::IsHoldingSpaceSuggestionsEnabled();
 
   // No-op when there are no item types we'd attempt to remove.
-  if (!remove_camera_app_items && !remove_suggestion_items) {
+  if (!remove_camera_app_items && !remove_photoshop_web_items &&
+      !remove_suggestion_items) {
     return;
   }
 
@@ -181,6 +184,8 @@ void HoldingSpacePersistenceDelegate::MaybeRemoveItemsFromPersistence() {
   update->EraseIf([&](const base::Value& persisted_item) {
     auto type = HoldingSpaceItem::DeserializeType(persisted_item.GetDict());
     if ((remove_camera_app_items && HoldingSpaceItem::IsCameraAppType(type)) ||
+        (remove_photoshop_web_items &&
+         type == HoldingSpaceItem::Type::kPhotoshopWeb) ||
         (remove_suggestion_items && HoldingSpaceItem::IsSuggestionType(type))) {
       return true;
     }

@@ -94,7 +94,6 @@ class StandaloneTrustedVaultBackend
   // Otherwise, attempts to download new keys from the server. In case of
   // failure or if current state isn't sufficient it will populate locally
   // available keys regardless of their freshness.
-  // Concurrent calls are not supported.
   void FetchKeys(const CoreAccountInfo& account_info,
                  FetchKeysCallback callback);
 

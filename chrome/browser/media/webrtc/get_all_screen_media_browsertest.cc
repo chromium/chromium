@@ -154,7 +154,7 @@ class GetAllScreensMediaBrowserTest : public WebRtcTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::vector<aura::Window*> windows_;
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> windows_;
 };
 
 IN_PROC_BROWSER_TEST_F(GetAllScreensMediaBrowserTest,

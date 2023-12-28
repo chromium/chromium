@@ -60,7 +60,7 @@ suite('onboardingNetworkPageTest', function() {
 
     const networkList = component.shadowRoot.querySelector('#networkList');
     const network = networkList.networks[1];
-    component.showConfig_(
+    component.showConfig(
         network.type,
         /* empty guid since network_config.js is not mocked */ undefined,
         'eth0');
@@ -92,7 +92,7 @@ suite('onboardingNetworkPageTest', function() {
     await initializeOnboardingNetworkPage();
 
     const networkList = component.shadowRoot.querySelector('#networkList');
-    component.onNetworkSelected_({detail: networkList.networks[1]});
+    component.onNetworkSelected({detail: networkList.networks[1]});
     await flushTasks();
 
     const networkDialog = component.shadowRoot.querySelector('#networkConfig');
@@ -158,12 +158,12 @@ suite('onboardingNetworkPageTest', function() {
     const dialog = /** @type {!CrDialogElement} */ (
         component.shadowRoot.querySelector('#dialog'));
     assertFalse(dialog.open);
-    component.showConfig_(network.type, network.guid, network.name);
+    component.showConfig(network.type, network.guid, network.name);
     assertTrue(dialog.open);
     await flushTasks();
 
     // Click connect button and dialog will be closed.
-    component.onNetworkSelected_({detail: network});
+    component.onNetworkSelected({detail: network});
     const connectButton = /** @type {!CrDialogElement} */ (
         component.shadowRoot.querySelector('#connectButton'));
     assertFalse(connectButton.hidden);
@@ -176,7 +176,7 @@ suite('onboardingNetworkPageTest', function() {
     const dialog2 = /** @type {!CrDialogElement} */ (
         component.shadowRoot.querySelector('#dialog'));
     assertFalse(dialog2.open);
-    component.showConfig_(network.type, network.guid, network.name);
+    component.showConfig(network.type, network.guid, network.name);
     assertTrue(dialog2.open);
   });
 
@@ -198,7 +198,7 @@ suite('onboardingNetworkPageTest', function() {
     assertEquals(network.connectionState, ConnectionStateType.kConnected);
 
     // Show the 'disconnect' button instead of 'connect'.
-    component.onNetworkSelected_({detail: network});
+    component.onNetworkSelected({detail: network});
     const connectButton = /** @type {!CrDialogElement} */ (
         component.shadowRoot.querySelector('#connectButton'));
     const disconnectButton = /** @type {!CrDialogElement} */ (

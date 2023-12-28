@@ -7,7 +7,7 @@
 
 #include <algorithm>
 #include <ostream>
-#include <type_traits>
+#include <utility>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -176,8 +176,8 @@ extern std::ostream& operator<<(std::ostream& os,
   DEFINE_ELEMENT_IDENTIFIER_VALUE(Name##Impl);            \
   constexpr ui::test::StateIdentifier<ObserverType> Name(Name##Impl)
 
-#define DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ObserverType, Name) \
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(Name##Impl);            \
+#define DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ObserverType, Name)          \
+  DEFINE_MACRO_ELEMENT_IDENTIFIER_VALUE(__FILE__, __LINE__, Name##Impl); \
   constexpr ui::test::StateIdentifier<ObserverType> Name(Name##Impl)
 
 #endif  // UI_BASE_INTERACTION_STATE_OBSERVER_H_

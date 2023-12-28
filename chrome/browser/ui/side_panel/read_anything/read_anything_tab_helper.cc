@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/side_panel/read_anything/read_anything_tab_helper.h"
 
 #include "chrome/browser/ui/side_panel/read_anything/read_anything_side_panel_controller_utils.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h"
 
 ReadAnythingTabHelper::ReadAnythingTabHelper(content::WebContents* web_contents)
     : content::WebContentsUserData<ReadAnythingTabHelper>(*web_contents),
@@ -20,6 +21,18 @@ void ReadAnythingTabHelper::CreateAndRegisterEntry() {
 void ReadAnythingTabHelper::DeregisterEntry() {
   CHECK(delegate_);
   delegate_->DeregisterEntry();
+}
+
+void ReadAnythingTabHelper::AddPageHandlerAsObserver(
+    base::WeakPtr<ReadAnythingUntrustedPageHandler> page_handler) {
+  CHECK(delegate_);
+  delegate_->AddPageHandlerAsObserver(page_handler);
+}
+
+void ReadAnythingTabHelper::RemovePageHandlerAsObserver(
+    base::WeakPtr<ReadAnythingUntrustedPageHandler> page_handler) {
+  CHECK(delegate_);
+  delegate_->RemovePageHandlerAsObserver(page_handler);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ReadAnythingTabHelper);

@@ -837,6 +837,93 @@ TEST_F(SpdySessionTest, GoAwayWhileDraining) {
   EXPECT_FALSE(session_);
 }
 
+// Regression test for https://crbug.com/1510327.
+// Have a session with active streams receive a GOAWAY frame. Ensure that
+// the session is drained after all streams receive DATA frames of which
+// END_STREAM flag is set, even when the peer doesn't close the connection.
+TEST_F(SpdySessionTest, GoAwayWithActiveStreamsThenEndStreams) {
+  const int kStreamId1 = 1;
+  const int kStreamId2 = 3;
+
+  spdy::SpdySerializedFrame req1(
+      spdy_util_.ConstructSpdyGet(nullptr, 0, kStreamId1, MEDIUM));
+  spdy::SpdySerializedFrame req2(
+      spdy_util_.ConstructSpdyGet(nullptr, 0, kStreamId2, MEDIUM));
+  MockWrite writes[] = {
+      CreateMockWrite(req1, 0),
+      CreateMockWrite(req2, 1),
+  };
+
+  spdy::SpdySerializedFrame resp1(
+      spdy_util_.ConstructSpdyGetReply(nullptr, 0, kStreamId1));
+  spdy::SpdySerializedFrame resp2(
+      spdy_util_.ConstructSpdyGetReply(nullptr, 0, kStreamId2));
+
+  spdy::SpdySerializedFrame body1(
+      spdy_util_.ConstructSpdyDataFrame(kStreamId1, true));
+  spdy::SpdySerializedFrame body2(
+      spdy_util_.ConstructSpdyDataFrame(kStreamId2, true));
+
+  spdy::SpdySerializedFrame goaway(spdy_util_.ConstructSpdyGoAway(kStreamId2));
+
+  MockRead reads[] = {
+      CreateMockRead(resp1, 2),           CreateMockRead(resp2, 3),
+      MockRead(ASYNC, ERR_IO_PENDING, 4),  // (1)
+      CreateMockRead(goaway, 5),          CreateMockRead(body1, 6),
+      MockRead(ASYNC, ERR_IO_PENDING, 7),  // (2)
+      CreateMockRead(body2, 8),
+      // No EOF.
+  };
+
+  SequencedSocketData data(reads, writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+  CreateSpdySession();
+
+  base::WeakPtr<SpdyStream> spdy_stream1 =
+      CreateStreamSynchronously(SPDY_REQUEST_RESPONSE_STREAM, session_,
+                                test_url_, MEDIUM, NetLogWithSource());
+  test::StreamDelegateDoNothing delegate1(spdy_stream1);
+  spdy_stream1->SetDelegate(&delegate1);
+
+  base::WeakPtr<SpdyStream> spdy_stream2 =
+      CreateStreamSynchronously(SPDY_REQUEST_RESPONSE_STREAM, session_,
+                                test_url_, MEDIUM, NetLogWithSource());
+  test::StreamDelegateDoNothing delegate2(spdy_stream2);
+  spdy_stream2->SetDelegate(&delegate2);
+
+  spdy::Http2HeaderBlock headers(
+      spdy_util_.ConstructGetHeaderBlock(kDefaultUrl));
+  spdy::Http2HeaderBlock headers2(headers.Clone());
+
+  spdy_stream1->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND);
+  spdy_stream2->SendRequestHeaders(std::move(headers2), NO_MORE_DATA_TO_SEND);
+
+  base::RunLoop().RunUntilIdle();
+
+  // (1) Read and process the GOAWAY frame and the response for kStreamId1.
+  data.Resume();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(spdy_stream1);
+  EXPECT_TRUE(spdy_stream2);
+
+  // (2) Read and process the response for kStreamId2.
+  data.Resume();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(spdy_stream1);
+  EXPECT_FALSE(spdy_stream2);
+
+  EXPECT_TRUE(data.AllWriteDataConsumed());
+  EXPECT_TRUE(data.AllReadDataConsumed());
+
+  EXPECT_FALSE(session_);
+}
+
 // Try to create a stream after receiving a GOAWAY frame. It should
 // fail.
 TEST_F(SpdySessionTest, CreateStreamAfterGoAway) {
@@ -6070,17 +6157,13 @@ TEST(CanPoolTest, CanPool) {
                                      "spdy_pooling.pem");
 
   EXPECT_TRUE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                   "www.example.org", "www.example.org",
-                                   NetworkAnonymizationKey()));
+                                   "www.example.org", "www.example.org"));
   EXPECT_TRUE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                   "www.example.org", "mail.example.org",
-                                   NetworkAnonymizationKey()));
+                                   "www.example.org", "mail.example.org"));
   EXPECT_TRUE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                   "www.example.org", "mail.example.com",
-                                   NetworkAnonymizationKey()));
+                                   "www.example.org", "mail.example.com"));
   EXPECT_FALSE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                    "www.example.org", "mail.google.com",
-                                    NetworkAnonymizationKey()));
+                                    "www.example.org", "mail.google.com"));
 }
 
 TEST(CanPoolTest, CanNotPoolWithCertErrors) {
@@ -6097,8 +6180,7 @@ TEST(CanPoolTest, CanNotPoolWithCertErrors) {
   ssl_info.cert_status = CERT_STATUS_REVOKED;
 
   EXPECT_FALSE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                    "www.example.org", "mail.example.org",
-                                    NetworkAnonymizationKey()));
+                                    "www.example.org", "mail.example.org"));
 }
 
 TEST(CanPoolTest, CanNotPoolWithClientCerts) {
@@ -6115,8 +6197,7 @@ TEST(CanPoolTest, CanNotPoolWithClientCerts) {
   ssl_info.client_cert_sent = true;
 
   EXPECT_FALSE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                    "www.example.org", "mail.example.org",
-                                    NetworkAnonymizationKey()));
+                                    "www.example.org", "mail.example.org"));
 }
 
 TEST(CanPoolTest, CanNotPoolWithBadPins) {
@@ -6137,8 +6218,7 @@ TEST(CanPoolTest, CanNotPoolWithBadPins) {
   ssl_info.public_key_hashes.push_back(test::GetTestHashValue(bad_pin));
 
   EXPECT_FALSE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                    "www.example.org", "example.test",
-                                    NetworkAnonymizationKey()));
+                                    "www.example.org", "example.test"));
 }
 
 TEST(CanPoolTest, CanNotPoolWithBadCTWhenCTRequired) {
@@ -6166,8 +6246,7 @@ TEST(CanPoolTest, CanNotPoolWithBadCTWhenCTRequired) {
   tss.SetRequireCTDelegate(&require_ct_delegate);
 
   EXPECT_FALSE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                    "www.example.org", "mail.example.org",
-                                    NetworkAnonymizationKey()));
+                                    "www.example.org", "mail.example.org"));
 }
 
 TEST(CanPoolTest, CanPoolWithBadCTWhenCTNotRequired) {
@@ -6195,8 +6274,7 @@ TEST(CanPoolTest, CanPoolWithBadCTWhenCTNotRequired) {
   tss.SetRequireCTDelegate(&require_ct_delegate);
 
   EXPECT_TRUE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                   "www.example.org", "mail.example.org",
-                                   NetworkAnonymizationKey()));
+                                   "www.example.org", "mail.example.org"));
 }
 
 TEST(CanPoolTest, CanPoolWithGoodCTWhenCTRequired) {
@@ -6224,8 +6302,7 @@ TEST(CanPoolTest, CanPoolWithGoodCTWhenCTRequired) {
   tss.SetRequireCTDelegate(&require_ct_delegate);
 
   EXPECT_TRUE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                   "www.example.org", "mail.example.org",
-                                   NetworkAnonymizationKey()));
+                                   "www.example.org", "mail.example.org"));
 }
 
 TEST(CanPoolTest, CanPoolWithAcceptablePins) {
@@ -6246,8 +6323,7 @@ TEST(CanPoolTest, CanPoolWithAcceptablePins) {
   ssl_info.public_key_hashes.push_back(hash);
 
   EXPECT_TRUE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                   "www.example.org", "mail.example.org",
-                                   NetworkAnonymizationKey()));
+                                   "www.example.org", "mail.example.org"));
 }
 
 TEST(CanPoolTest, CanPoolWithClientCertsAndPolicy) {
@@ -6267,14 +6343,11 @@ TEST(CanPoolTest, CanPoolWithClientCertsAndPolicy) {
   // CanShareConnectionWithClientCerts returns true for both hostnames, but not
   // just one hostname.
   EXPECT_TRUE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                   "www.example.org", "mail.example.org",
-                                   NetworkAnonymizationKey()));
+                                   "www.example.org", "mail.example.org"));
   EXPECT_FALSE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                    "www.example.org", "mail.example.com",
-                                    NetworkAnonymizationKey()));
+                                    "www.example.org", "mail.example.com"));
   EXPECT_FALSE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                    "mail.example.com", "www.example.org",
-                                    NetworkAnonymizationKey()));
+                                    "mail.example.com", "www.example.org"));
 }
 
 // Regression test for https://crbug.com/1115492.

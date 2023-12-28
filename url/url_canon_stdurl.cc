@@ -13,13 +13,15 @@ namespace url {
 
 namespace {
 
-template <typename CHAR, typename UCHAR>
+template <typename CHAR>
 bool DoCanonicalizeStandardURL(const URLComponentSource<CHAR>& source,
                                const Parsed& parsed,
                                SchemeType scheme_type,
                                CharsetConverter* query_converter,
                                CanonOutput* output,
                                Parsed* new_parsed) {
+  DCHECK(!parsed.has_opaque_path);
+
   // Scheme: this will append the colon.
   bool success = CanonicalizeScheme(source.scheme, parsed.scheme,
                                     output, &new_parsed->scheme);
@@ -143,27 +145,25 @@ int DefaultPortForScheme(const char* scheme, int scheme_len) {
 }
 
 bool CanonicalizeStandardURL(const char* spec,
-                             int spec_len,
                              const Parsed& parsed,
                              SchemeType scheme_type,
                              CharsetConverter* query_converter,
                              CanonOutput* output,
                              Parsed* new_parsed) {
-  return DoCanonicalizeStandardURL<char, unsigned char>(
-      URLComponentSource<char>(spec), parsed, scheme_type, query_converter,
-      output, new_parsed);
+  return DoCanonicalizeStandardURL(URLComponentSource(spec), parsed,
+                                   scheme_type, query_converter, output,
+                                   new_parsed);
 }
 
 bool CanonicalizeStandardURL(const char16_t* spec,
-                             int spec_len,
                              const Parsed& parsed,
                              SchemeType scheme_type,
                              CharsetConverter* query_converter,
                              CanonOutput* output,
                              Parsed* new_parsed) {
-  return DoCanonicalizeStandardURL<char16_t, char16_t>(
-      URLComponentSource<char16_t>(spec), parsed, scheme_type, query_converter,
-      output, new_parsed);
+  return DoCanonicalizeStandardURL(URLComponentSource(spec), parsed,
+                                   scheme_type, query_converter, output,
+                                   new_parsed);
 }
 
 // It might be nice in the future to optimize this so unchanged components don't
@@ -185,8 +185,8 @@ bool ReplaceStandardURL(const char* base,
   URLComponentSource<char> source(base);
   Parsed parsed(base_parsed);
   SetupOverrideComponents(base, replacements, &source, &parsed);
-  return DoCanonicalizeStandardURL<char, unsigned char>(
-      source, parsed, scheme_type, query_converter, output, new_parsed);
+  return DoCanonicalizeStandardURL(source, parsed, scheme_type, query_converter,
+                                   output, new_parsed);
 }
 
 // For 16-bit replacements, we turn all the replacements into UTF-8 so the
@@ -202,8 +202,8 @@ bool ReplaceStandardURL(const char* base,
   URLComponentSource<char> source(base);
   Parsed parsed(base_parsed);
   SetupUTF16OverrideComponents(base, replacements, &utf8, &source, &parsed);
-  return DoCanonicalizeStandardURL<char, unsigned char>(
-      source, parsed, scheme_type, query_converter, output, new_parsed);
+  return DoCanonicalizeStandardURL(source, parsed, scheme_type, query_converter,
+                                   output, new_parsed);
 }
 
 }  // namespace url

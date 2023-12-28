@@ -199,6 +199,46 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEnd) {
   EXPECT_EQ(3, access_count_);
 }
 
+// Fetch is called directly from top level (a.test), issuer origin (b.test)
+// is different from top frame origin.
+IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndThirdParty) {
+  ProvideRequestHandlerKeyCommitmentsToNetworkService({"b.test"});
+
+  const GURL start_url = server_.GetURL("a.test", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+
+  std::string command = R"(
+  (async () => {
+    await fetch($1, {privateToken: {version: 1,
+                                        operation: 'token-request'}});
+    await fetch($2, {privateToken: {version: 1,
+                                         operation: 'token-redemption'}});
+    await fetch($3, {privateToken: {version: 1,
+                                       operation: 'send-redemption-record',
+                                       issuers: [$4]}});
+    return "Success"; })(); )";
+
+  const std::string issuer_origin = IssuanceOriginFromHost("b.test");
+  const std::string issuance_url = server_.GetURL("b.test", "/issue").spec();
+  const std::string redemption_url = server_.GetURL("b.test", "/redeem").spec();
+  const std::string signature_url = server_.GetURL("b.test", "/sign").spec();
+
+  // We use EvalJs here, not ExecJs, because EvalJs waits for promises to
+  // resolve.
+  EXPECT_EQ("Success",
+            EvalJs(shell(), JsReplace(command, issuance_url, redemption_url,
+                                      signature_url, issuer_origin)));
+
+  EXPECT_THAT(
+      request_handler_.last_incoming_signed_request(),
+      Optional(AllOf(
+          HasHeader(network::kTrustTokensRequestHeaderSecRedemptionRecord),
+          HasHeader(network::kTrustTokensSecTrustTokenVersionHeader))));
+
+  // Expect three accesses, one for issue, redeem, and sign.
+  EXPECT_EQ(3, access_count_);
+}
+
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, XhrEndToEnd) {
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
 

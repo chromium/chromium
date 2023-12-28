@@ -7,7 +7,6 @@
 
 #import "build/blink_buildflags.h"
 #import "content/public/browser/browser_context.h"
-#import "content/public/browser/resource_context.h"
 #import "ios/web/public/browser_state.h"
 
 #if !BUILDFLAG(USE_BLINK)
@@ -40,7 +39,6 @@ class ContentBrowserContext : public content::BrowserContext {
       const base::FilePath& partition_path) override;
   bool IsOffTheRecord() override;
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
-  content::ResourceContext* GetResourceContext() override;
   content::BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
   content::PlatformNotificationService* GetPlatformNotificationService()
@@ -78,7 +76,6 @@ class ContentBrowserContext : public content::BrowserContext {
   // allowed on the current thread.
   void InitWhileIOAllowed();
   void FinishInitWhileIOAllowed();
-  std::unique_ptr<content::ResourceContext> resource_context_;
   web::BrowserState* browser_state_ = nullptr;
 };
 

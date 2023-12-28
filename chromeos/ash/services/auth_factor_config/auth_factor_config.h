@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_AUTH_FACTOR_CONFIG_AUTH_FACTOR_CONFIG_H_
 #define CHROMEOS_ASH_SERVICES_AUTH_FACTOR_CONFIG_AUTH_FACTOR_CONFIG_H_
 
+#include <optional>
+
 #include "base/containers/enum_set.h"
 #include "base/functional/callback_forward.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
@@ -33,6 +35,13 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
     void SetAddKnowledgeFactorCallback(base::OnceClosure callback) {
       auth_factor_config_.SetAddKnowledgeFactorCallbackForTesting(
           std::move(callback));
+    }
+
+    // Instructs AuthFactorConfig not to inform
+    // UserDirectoryIntegrityManager about added factors.
+    void SetSkipUserIntegrityNotification(bool skip_notification) {
+      auth_factor_config_.SetSkipUserIntegrityNotificationForTesting(
+          skip_notification);
     }
 
    private:
@@ -124,7 +133,9 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
       const std::string& auth_token,
       std::unique_ptr<UserContext> context,
       std::optional<AuthenticationError> error);
+
   void SetAddKnowledgeFactorCallbackForTesting(base::OnceClosure callback);
+  void SetSkipUserIntegrityNotificationForTesting(bool skip_notification);
 
   raw_ptr<QuickUnlockStorageDelegate> quick_unlock_storage_;
   // This instance is held by browser process (see in_process_instances)
@@ -138,6 +149,7 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
 
   // Used for testing, invoked when a knowledge factor is added.
   base::OnceClosure add_knowledge_factor_callback_;
+  std::optional<bool> skip_user_integrity_notification_;
 
   base::WeakPtrFactory<AuthFactorConfig> weak_factory_{this};
 };

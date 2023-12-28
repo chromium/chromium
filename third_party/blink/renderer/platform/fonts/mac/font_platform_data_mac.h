@@ -55,12 +55,12 @@ bool PLATFORM_EXPORT VariableAxisChangeEffective(SkTypeface* typeface,
                                                  SkFourByteTag axis,
                                                  float new_value);
 
-// Creates a FontPlatform object for specified original NSFont and font
-// parameters.  size is scaled size, specified size is passed in to control
+// Creates a FontPlatform object for specified original CTFont and font
+// parameters. `size` is scaled size, `specified_size` is passed in to control
 // optical sizing and tracking, needed in particular for the San Francisco
 // system font.
-std::unique_ptr<FontPlatformData> FontPlatformDataFromNSFont(
-    NSFont*,
+std::unique_ptr<FontPlatformData> FontPlatformDataFromCTFont(
+    base::apple::ScopedCFTypeRef<CTFontRef>,
     float size,
     float specified_size,
     bool synthetic_bold,

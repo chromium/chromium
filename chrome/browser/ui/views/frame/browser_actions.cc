@@ -165,7 +165,7 @@ void BrowserActions::InitializeBrowserActions() {
           performance_manager::features::kPerformanceControlsSidePanel)) {
     root_action_item_->AddChild(
         SidePanelAction(SidePanelEntryId::kPerformance, IDS_SHOW_PERFORMANCE,
-                        IDS_SHOW_PERFORMANCE, kHighEfficiencyIcon,
+                        IDS_SHOW_PERFORMANCE, kMemorySaverIcon,
                         kActionSidePanelShowPerformance, &(browser_.get()),
                         true)
             .Build());

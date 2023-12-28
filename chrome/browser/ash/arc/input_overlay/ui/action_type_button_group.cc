@@ -87,7 +87,7 @@ void ActionTypeButtonGroup::OnButtonSelected(ash::OptionButtonBase* button) {
     return;
   }
 
-  for (auto* b : buttons_) {
+  for (ash::OptionButtonBase* b : buttons_) {
     if (b != button) {
       b->SetSelected(false);
     }

@@ -45,7 +45,7 @@ bool MockTranslateDriver::IsLinkNavigation() {
   return false;
 }
 
-bool MockTranslateDriver::IsIncognito() {
+bool MockTranslateDriver::IsIncognito() const {
   return is_incognito_;
 }
 
@@ -53,7 +53,7 @@ const std::string& MockTranslateDriver::GetContentsMimeType() {
   return page_mime_type_;
 }
 
-const GURL&  MockTranslateDriver::GetLastCommittedURL() {
+const GURL& MockTranslateDriver::GetLastCommittedURL() const {
   return last_committed_url_;
 }
 
@@ -69,7 +69,7 @@ LanguageState& MockTranslateDriver::GetLanguageState() {
   return language_state_;
 }
 
-bool MockTranslateDriver::HasCurrentPage() {
+bool MockTranslateDriver::HasCurrentPage() const {
   return true;
 }
 

@@ -7,8 +7,10 @@
 #include <utility>
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/window_properties.h"
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "chrome/grit/generated_resources.h"
@@ -57,23 +59,32 @@ void DesktopMediaListAsh::EnumerateWindowsForRoot(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   aura::Window* container = ash::Shell::GetContainer(root_window, container_id);
-  if (!container)
+  if (!container) {
     return;
+  }
+
   // The |container| has all the top-level windows in reverse order, e.g. the
   // most top-level window is at the end. So iterate children reversely to make
   // sure |sources| is in the expected order.
   for (aura::Window* window : base::Reversed(container->children())) {
-    if (!window->IsVisible() || !window->CanFocus())
+    if (!window->IsVisible() || !window->CanFocus() ||
+        window->GetProperty(ash::kOverviewUiKey) ||
+        window->GetProperty(ash::kExcludeInMruKey)) {
       continue;
+    }
+
     content::DesktopMediaID id = content::DesktopMediaID::RegisterNativeWindow(
         content::DesktopMediaID::TYPE_WINDOW, window);
-    if (id.window_id == view_dialog_id_.window_id)
+    if (id.window_id == view_dialog_id_.window_id) {
       continue;
+    }
+
     SourceDescription window_source(id, window->GetTitle());
     sources->push_back(window_source);
 
-    if (update_thumbnails)
+    if (update_thumbnails) {
       CaptureThumbnail(window_source.id, window);
+    }
   }
 }
 

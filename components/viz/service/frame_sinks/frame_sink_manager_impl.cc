@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
+#include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -212,7 +213,11 @@ void FrameSinkManagerImpl::CreateFrameSinkBundle(
     mojo::PendingRemote<mojom::FrameSinkBundleClient> client) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (base::Contains(bundle_map_, bundle_id)) {
+    uint32_t client_id = bundle_id.client_id();
+    uint32_t bundle_id_value = bundle_id.bundle_id();
     receiver_.ReportBadMessage("Duplicate FrameSinkBundle ID");
+    base::debug::Alias(&client_id);
+    base::debug::Alias(&bundle_id_value);
     return;
   }
 

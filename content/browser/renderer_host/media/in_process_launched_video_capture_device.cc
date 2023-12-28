@@ -28,7 +28,6 @@ namespace {
 
 void StopAndReleaseDeviceOnDeviceThread(media::VideoCaptureDevice* device,
                                         base::OnceClosure done_cb) {
-  SCOPED_UMA_HISTOGRAM_TIMER("Media.VideoCaptureManager.StopDeviceTime");
   device->StopAndDeAllocate();
   DVLOG(3) << "StopAndReleaseDeviceOnDeviceThread";
   delete device;

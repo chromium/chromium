@@ -148,6 +148,7 @@
 <translation id="3448554387819310837">Quando l'opzione è attiva, i siti potrebbero chiederti di usare la videocamera. Quando l'opzione è disattivata, i siti non possono utilizzare la videocamera.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome bloccherà nuovamente i cookie domani}other{# giorni al nuovo blocco dei cookie in Chrome}}</translation>
 <translation id="3521663503435878242">Siti in <ph name="DOMAIN" /></translation>
+<translation id="3536227077203206203">Consentito questa volta</translation>
 <translation id="3538390592868664640">Impedisci ai siti di creare una mappa 3D dell'ambiente circostante o di monitorare la posizione della fotocamera</translation>
 <translation id="3544058026430919413">Una società può definire un gruppo di siti che possono utilizzare i cookie per condividere la tua attività nel gruppo. Questa opzione è disattivata nella modalità di navigazione in incognito.</translation>
 <translation id="3551268116566418498">Uscire da modalità in incognito?</translation>
@@ -318,14 +319,14 @@
 <translation id="6295158916970320988">Tutti i siti</translation>
 <translation id="6304434827459067558"><ph name="SITE" /> non può usare le tue informazioni su</translation>
 <translation id="6320088164292336938">Vibrazione</translation>
-<translation id="6344622098450209924">Protezione dal monitoraggio</translation>
+<translation id="6344622098450209924">Protezione antitracciamento</translation>
 <translation id="6367753977865761591">Blocca l'accesso di terze parti per un sito specifico.</translation>
 <translation id="6398765197997659313">Esci da schermo intero</translation>
 <translation id="640163077447496506">Scade oggi</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Impedisci ai siti di usare i dati e dispositivi della realtà virtuale</translation>
 <translation id="6447842834002726250">Cookie</translation>
-<translation id="6500423977866688905">Quando la finestra è stretta, richiedi una visualizzazione mobile</translation>
+<translation id="6500423977866688905">Richiedi la visualizzazione mobile se la finestra è stretta</translation>
 <translation id="6527303717912515753">Condividi</translation>
 <translation id="652937045869844725">Prova a consentire i cookie di terze parti, il che significa meno protezione, ma è più probabile che le funzionalità del sito funzionino.</translation>
 <translation id="6530703012083415527">Quando l'opzione è attiva, i siti possono utilizzare popup e reindirizzamenti. Quando l'opzione è disattivata, i siti non possono utilizzare popup e reindirizzamenti.</translation>

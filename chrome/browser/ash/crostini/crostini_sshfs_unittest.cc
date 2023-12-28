@@ -82,10 +82,8 @@ class CrostiniSshfsHelperTest : public testing::Test {
 
     DiskMountManager::InitializeForTesting(disk_manager_);
 
-    std::string known_hosts;
-    base::Base64Encode("[hostname]:2222 pubkey", &known_hosts);
-    std::string identity;
-    base::Base64Encode("privkey", &identity);
+    std::string known_hosts = base::Base64Encode("[hostname]:2222 pubkey");
+    std::string identity = base::Base64Encode("privkey");
   }
 
   CrostiniSshfsHelperTest(const CrostiniSshfsHelperTest&) = delete;

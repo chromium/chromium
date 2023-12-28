@@ -1,0 +1,188 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=./cr_shared_vars.css.js
+ * #import=./cr_hidden_style.css.js
+ * #import=./cr_icons.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style cr-icons
+ * #css_wrapper_metadata_end */
+
+html,
+:host {
+  --scrollable-border-color: var(--google-grey-300);
+}
+
+@media (prefers-color-scheme: dark) {
+  html,
+  :host {
+    --scrollable-border-color: var(--google-grey-700);
+  }
+}
+
+[actionable] {
+  cursor: pointer;
+}
+
+/* Horizontal rule line. */
+.hr {
+  border-top: var(--cr-separator-line);
+}
+
+iron-list.cr-separators > *:not([first]) {
+  border-top: var(--cr-separator-line);
+}
+
+[scrollable] {
+  border-color: transparent;
+  border-style: solid;
+  border-width: 1px 0;
+  overflow-y: auto;
+}
+[scrollable].is-scrolled {
+  border-top-color: var(--scrollable-border-color);
+}
+[scrollable].can-scroll:not(.scrolled-to-bottom) {
+  border-bottom-color: var(--scrollable-border-color);
+}
+[scrollable] iron-list > :not(.no-outline):focus,
+[selectable]:focus,
+[selectable] > :focus {
+  background-color: var(--cr-focused-item-color);
+  outline: none;
+}
+
+.scroll-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 1px;
+}
+
+[selectable] > * {
+  cursor: pointer;
+}
+
+.cr-centered-card-container {
+  box-sizing: border-box;
+  display: block;
+  height: inherit;
+  margin: 0 auto;
+  max-width: var(--cr-centered-card-max-width);
+  min-width: 550px;
+  position: relative;
+  width: calc(100% * var(--cr-centered-card-width-percentage));
+}
+
+.cr-container-shadow {
+  box-shadow: inset 0 5px 6px -3px rgba(0, 0, 0, .4);
+  height: var(--cr-container-shadow-height);
+  left: 0;
+  margin: 0 0 var(--cr-container-shadow-margin);
+  opacity: 0;
+  pointer-events: none;
+  position: relative;
+  right: 0;
+  top: 0;
+  transition: opacity 500ms;
+  z-index: 1;
+}
+
+/** Styles for elements that implement the CrContainerShadowBehavior */
+#cr-container-shadow-bottom {
+  margin-bottom: 0;
+  margin-top: var(--cr-container-shadow-margin);
+  transform: scaleY(-1);
+}
+
+#cr-container-shadow-top.has-shadow,
+#cr-container-shadow-bottom.has-shadow {
+  opacity: var(--cr-container-shadow-max-opacity);
+}
+
+.cr-row {
+  align-items: center;
+  border-top: var(--cr-separator-line);
+  display: flex;
+  min-height: var(--cr-section-min-height);
+  padding: 0 var(--cr-section-padding);
+}
+
+.cr-row.first,
+.cr-row.continuation {
+  border-top: none;
+}
+
+.cr-row-gap {
+  padding-inline-start: 16px;
+}
+
+.cr-button-gap {
+  margin-inline-start: 8px;
+}
+
+paper-tooltip::part(tooltip) {
+  border-radius: var(--paper-tooltip-border-radius, 2px);
+  font-size: 92.31%;  /* Effectively 12px if the host default is 13px. */
+  font-weight: 500;
+  max-width: 330px;
+  min-width: var(--paper-tooltip-min-width, 200px);
+  padding: var(--paper-tooltip-padding, 10px 8px);
+}
+
+/* Typography */
+
+.cr-padded-text {
+  padding-block-end: var(--cr-section-vertical-padding);
+  padding-block-start: var(--cr-section-vertical-padding);
+}
+
+.cr-title-text {
+  color: var(--cr-title-text-color);
+  font-size: 107.6923%; /* Go to 14px from 13px. */
+  font-weight: 500;
+}
+
+.cr-secondary-text {
+  color: var(--cr-secondary-text-color);
+  font-weight: 400;
+}
+
+.cr-form-field-label {
+  color: var(--cr-form-field-label-color);
+  display: block;
+  font-size: var(--cr-form-field-label-font-size);
+  font-weight: 500;
+  letter-spacing: .4px;
+  line-height: var(--cr-form-field-label-line-height);
+  margin-bottom: 8px;
+}
+
+.cr-vertical-tab {
+  align-items: center;
+  display: flex;
+}
+
+.cr-vertical-tab::before {
+  border-radius: 0 3px 3px 0;
+  content: '';
+  display: block;
+  flex-shrink: 0;
+  height: var(--cr-vertical-tab-height, 100%);
+  width: 4px;
+}
+
+.cr-vertical-tab.selected::before {
+  background: var(--cr-vertical-tab-selected-color, var(--cr-checked-color));
+}
+
+:host-context([dir=rtl]) .cr-vertical-tab::before {
+  /* Border-radius based on block/inline is not yet supported. */
+  transform: scaleX(-1);
+}
+
+.iph-anchor-highlight {
+  background-color: var(--cr-iph-anchor-highlight-color);
+}

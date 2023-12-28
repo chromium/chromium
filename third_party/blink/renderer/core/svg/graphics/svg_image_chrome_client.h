@@ -85,6 +85,8 @@ class CORE_EXPORT SVGImageChromeClient final : public EmptyChromeClient {
   FRIEND_TEST_ALL_PREFIXES(SVGImageSimTest, PageVisibilityHiddenToVisible);
   FRIEND_TEST_ALL_PREFIXES(SVGImageSimTest,
                            AnimationsPausedWhenImageScrolledOutOfView);
+  FRIEND_TEST_ALL_PREFIXES(SVGImageSimTest,
+                           AnimationsResumedWhenImageScrolledIntoView);
 };
 
 template <>

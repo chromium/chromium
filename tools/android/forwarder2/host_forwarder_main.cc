@@ -35,7 +35,7 @@ PipeNotifier* g_notifier = NULL;
 namespace {
 
 const char kLogFilePath[] = "/tmp/host_forwarder_log";
-const char kDaemonIdentifier[] = "chrome_host_forwarder_daemon";
+const char kDefaultDaemonIdentifier[] = "chrome_host_forwarder_daemon";
 
 const int kBufSize = 256;
 
@@ -188,11 +188,11 @@ int RunHostForwarder(int argc, char** argv) {
   const base::CommandLine& cmd_line = *base::CommandLine::ForCurrentProcess();
   std::string adb_path = "adb";
   bool kill_server = false;
+  std::string serial_id = cmd_line.HasSwitch("serial-id") ?
+          cmd_line.GetSwitchValueASCII("serial-id") : std::string();
 
   base::Pickle pickle;
-  pickle.WriteString(
-      cmd_line.HasSwitch("serial-id") ?
-          cmd_line.GetSwitchValueASCII("serial-id") : std::string());
+  pickle.WriteString(serial_id);
 
   const std::vector<std::string> args = cmd_line.GetArgs();
   if (cmd_line.HasSwitch("kill-server")) {
@@ -221,10 +221,15 @@ int RunHostForwarder(int argc, char** argv) {
   if (kill_server && args.size() > 0)
     ExitWithUsage();
 
+  std::string daemon_identifier = kDefaultDaemonIdentifier;
+  if (!serial_id.empty()) {
+    daemon_identifier += "_" + serial_id;
+  }
+
   ClientDelegate client_delegate(pickle);
   ServerDelegate daemon_delegate(adb_path);
   Daemon daemon(
-      kLogFilePath, kDaemonIdentifier, &client_delegate, &daemon_delegate,
+      kLogFilePath, daemon_identifier, &client_delegate, &daemon_delegate,
       &GetExitNotifierFD);
 
   if (kill_server)

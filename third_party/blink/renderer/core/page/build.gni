@@ -74,6 +74,8 @@ blink_core_sources_page = [
   "scrolling/root_scroller_controller.h",
   "scrolling/scrolling_coordinator.cc",
   "scrolling/scrolling_coordinator.h",
+  "scrolling/sync_scroll_attempt_heuristic.cc",
+  "scrolling/sync_scroll_attempt_heuristic.h",
   "scrolling/snap_coordinator.cc",
   "scrolling/snap_coordinator.h",
   "scrolling/sticky_position_scrolling_constraints.cc",

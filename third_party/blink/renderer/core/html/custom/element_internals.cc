@@ -364,8 +364,8 @@ HeapVector<Member<Element>>* ElementInternals::GetElementArrayAttribute(
   // HeapVector of strong references so that V8 can implicitly convert to a
   // FrozenArray.
   HeapVector<Member<Element>>* results =
-      MakeGarbageCollected<HeapVector<Member<Element>>>(
-          stored_elements->size());
+      MakeGarbageCollected<HeapVector<Member<Element>>>();
+  results->ReserveInitialCapacity(stored_elements->size());
   for (auto item : *stored_elements) {
     results->push_back(item);
   }

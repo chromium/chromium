@@ -28,14 +28,17 @@ import '../common_styles/oobe_common_styles.css.js';
 
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {OobeFocusBehavior, OobeFocusBehaviorInterface} from '../behaviors/oobe_focus_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../behaviors/oobe_i18n_behavior.js';
 
 /**
  * @constructor
  * @extends {PolymerElement}
+ * @implements {OobeFocusBehaviorInterface}
  * @implements {OobeI18nBehaviorInterface}
  */
-const OobeModalDialogBase = mixinBehaviors([OobeI18nBehavior], PolymerElement);
+const OobeModalDialogBase =
+    mixinBehaviors([OobeFocusBehavior, OobeI18nBehavior], PolymerElement);
 
 /** @polymer */
 export class OobeModalDialog extends OobeModalDialogBase {
@@ -92,22 +95,21 @@ export class OobeModalDialog extends OobeModalDialogBase {
   }
 
   get open() {
-    return this.$.modalDialog.open;
+    return this.shadowRoot.querySelector('#modalDialog').open;
   }
 
   ready() {
     super.ready();
   }
 
-  /* Shows the modal dialog and changes the focus to the close button. */
   showDialog() {
     chrome.send('enableShelfButtons', [false]);
-    this.$.modalDialog.showModal();
-    this.$.closeButton.focus();
+    this.shadowRoot.querySelector('#modalDialog').showModal();
+    this.focusMarkedElement(this);
   }
 
   hideDialog() {
-    this.$.modalDialog.close();
+    this.shadowRoot.querySelector('#modalDialog').close();
   }
 
   onClose_() {

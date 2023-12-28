@@ -104,16 +104,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmMetricsEndpoint);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmMultipleIdentityProviders);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmDisconnect);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmSelectiveDisclosure);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmSkipWellKnownForSameSite);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmWithoutWellKnownEnforcement);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFencedFramesEnforceFocus);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebIdentityDigitalCredentials);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kFirstPartySets);
-CONTENT_EXPORT extern const base::FeatureParam<bool>
-    kFirstPartySetsClearSiteDataOnChangedSets;
-CONTENT_EXPORT extern const base::FeatureParam<int>
-    kFirstPartySetsMaxAssociatedSites;
-CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kFirstPartySetsNavigationThrottleTimeout;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFractionalScrollOffsets);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kGreaseUACH);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kInstalledApp);
@@ -156,7 +150,6 @@ enum class MBIMode {
 CONTENT_EXPORT extern const base::FeatureParam<MBIMode> kMBIModeParam;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kMojoVideoCapture);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kNavigationNetworkResponseQueue);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kNavigationUpdatesChildViewsVisibility);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kNetworkQualityEstimatorWebHoldback);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kNetworkServiceInProcess);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kNotificationContentImage);
@@ -313,7 +306,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kAutoDisableAccessibilityV2);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kGinJavaBridgeMojo);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kReduceGpuPriorityOnBackground);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kMouseAndTrackpadDropdownMenu);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kRequestDesktopSiteAdditions);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kRequestDesktopSiteWindowSetting);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kRequestDesktopSiteZoom);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSelectionMenuItemModification);
@@ -325,6 +317,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebNfc);
 
 #if BUILDFLAG(IS_MAC)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kMacAllowBackgroundingRenderProcesses);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kMacImeLiveConversionFix);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kMacSyscallSandbox);
 #endif  // BUILDFLAG(IS_MAC)
 

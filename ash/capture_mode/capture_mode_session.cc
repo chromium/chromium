@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
@@ -464,11 +464,11 @@ class CaptureModeSession::ParentContainerObserver
             capture_mode_session_->weak_ptr_factory_.GetWeakPtr()));
   }
 
-  raw_ptr<aura::Window, ExperimentalAsh> parent_container_;
+  raw_ptr<aura::Window> parent_container_;
 
   // Pointer to current capture session. Not nullptr during this lifecycle.
   // Capture session owns `this`.
-  const raw_ptr<CaptureModeSession, ExperimentalAsh> capture_mode_session_;
+  const raw_ptr<CaptureModeSession> capture_mode_session_;
 };
 
 // -----------------------------------------------------------------------------
@@ -609,10 +609,9 @@ void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
     return;
   }
 
-  // Hide mouse cursor in tablet mode.
-  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
-  if (tablet_mode_controller->InTabletMode() &&
-      !tablet_mode_controller->IsInDevTabletMode()) {
+  // Hide mouse cursor in tablet mode except for the dev tablet mode.
+  if (display::Screen::GetScreen()->InTabletMode() &&
+      !Shell::Get()->tablet_mode_controller()->IsInDevTabletMode()) {
     cursor_setter_->HideCursor();
     return;
   }
@@ -2833,7 +2832,7 @@ void CaptureModeSession::InitInternal() {
   if (auto* capture_client = aura::client::GetCaptureClient(current_root_)) {
     input_capture_window_ = capture_client->GetCaptureWindow();
     if (input_capture_window_) {
-      aura::WindowTracker tracker({input_capture_window_});
+      aura::WindowTracker tracker({input_capture_window_.get()});
       capture_client->ReleaseCapture(input_capture_window_);
       if (tracker.windows().empty()) {
         input_capture_window_ = nullptr;

@@ -21,11 +21,11 @@ class ModelQualityLogEntry {
   virtual ~ModelQualityLogEntry();
 
   proto::LoggingMetadata* logging_metadata() {
-    return log_ai_data_request_.get()->mutable_logging_metadata();
+    return log_ai_data_request_->mutable_logging_metadata();
   }
 
   int64_t client_id() const {
-    return log_ai_data_request_.get()->mutable_logging_metadata()->client_id();
+    return log_ai_data_request_->mutable_logging_metadata()->client_id();
   }
 
   template <typename FeatureType>
@@ -35,9 +35,13 @@ class ModelQualityLogEntry {
   }
 
   void set_model_execution_id(const std::string& server_execution_id) {
-    log_ai_data_request_.get()
-        ->mutable_model_execution_info()
+    log_ai_data_request_->mutable_model_execution_info()
         ->set_server_execution_id(server_execution_id);
+  }
+
+  void set_error_response(const proto::ErrorResponse& error_response) {
+    *(log_ai_data_request_->mutable_model_execution_info()
+          ->mutable_error_response()) = error_response;
   }
 
   proto::LogAiDataRequest* log_ai_data_request() {

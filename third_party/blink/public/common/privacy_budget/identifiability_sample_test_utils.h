@@ -36,8 +36,6 @@ class COMPONENT_EXPORT(PRIVACY_BUDGET_TEST_SUPPORT)
 
   bool IsTypeAllowed(IdentifiableSurface::Type type) const override;
 
-  bool ShouldActivelySample() const override;
-
  private:
   raw_ptr<CallCounts> state_ = nullptr;
 };

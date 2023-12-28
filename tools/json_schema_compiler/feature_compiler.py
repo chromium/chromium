@@ -56,6 +56,7 @@ CC_FILE_BEGIN = """
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/features/manifest_feature.h"
 #include "extensions/common/features/permission_feature.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "printing/buildflags/buildflags.h"
 
@@ -106,9 +107,9 @@ def ListContainsOnlySha1Hashes(l):
 #                a value of "all" for a list value, and will replace it with
 #                the collection of all possible values. For instance, if a
 #                feature specifies 'contexts': 'all', the generated C++ will
-#                assign the list of Feature::BLESSED_EXTENSION_CONTEXT,
-#                Feature::BLESSED_WEB_PAGE_CONTEXT et al for contexts. If not
-#                specified, defaults to false.
+#                assign the list of mojom::ContextType::kPrivilegedExtension,
+#                mojom::ContextType::kPrivilegedWebPage et al for contexts. If
+#                not specified, defaults to false.
 #   'allow_empty': Only applicable for lists. Whether an empty list is a valid
 #                  value. If omitted, empty lists are prohibited.
 #   'validators': A list of (function, str) pairs with a function to run on the
@@ -168,17 +169,19 @@ FEATURE_GRAMMAR = ({
     'contexts': {
         list: {
             'enum_map': {
-                'blessed_extension': 'Feature::BLESSED_EXTENSION_CONTEXT',
-                'blessed_web_page': 'Feature::BLESSED_WEB_PAGE_CONTEXT',
-                'content_script': 'Feature::CONTENT_SCRIPT_CONTEXT',
+                'blessed_extension': 'mojom::ContextType::kPrivilegedExtension',
+                'blessed_web_page': 'mojom::ContextType::kPrivilegedWebPage',
+                'content_script': 'mojom::ContextType::kContentScript',
                 'lock_screen_extension':
-                'Feature::LOCK_SCREEN_EXTENSION_CONTEXT',
-                'offscreen_extension': 'Feature::OFFSCREEN_EXTENSION_CONTEXT',
-                'user_script': 'Feature::USER_SCRIPT_CONTEXT',
-                'web_page': 'Feature::WEB_PAGE_CONTEXT',
-                'webui': 'Feature::WEBUI_CONTEXT',
-                'webui_untrusted': 'Feature::WEBUI_UNTRUSTED_CONTEXT',
-                'unblessed_extension': 'Feature::UNBLESSED_EXTENSION_CONTEXT',
+                    'mojom::ContextType::kLockscreenExtension',
+                'offscreen_extension':
+                    'mojom::ContextType::kOffscreenExtension',
+                'user_script': 'mojom::ContextType::kUserScript',
+                'web_page': 'mojom::ContextType::kWebPage',
+                'webui': 'mojom::ContextType::kWebUi',
+                'webui_untrusted': 'mojom::ContextType::kUntrustedWebUi',
+                'unblessed_extension':
+                    'mojom::ContextType::kUnprivilegedExtension',
             },
             'allow_all': True,
             'allow_empty': True

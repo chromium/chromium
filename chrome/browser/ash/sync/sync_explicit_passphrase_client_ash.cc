@@ -71,7 +71,8 @@ void SyncExplicitPassphraseClientAsh::GetDecryptionNigoriKey(
   }
 
   std::unique_ptr<syncer::Nigori> decryption_key =
-      sync_service_->GetUserSettings()->GetDecryptionNigoriKey();
+      sync_service_->GetUserSettings()
+          ->GetExplicitPassphraseDecryptionNigoriKey();
   if (!decryption_key) {
     std::move(callback).Run(nullptr);
     return;
@@ -94,7 +95,7 @@ void SyncExplicitPassphraseClientAsh::SetDecryptionNigoriKey(
     // Nigori key.
     return;
   }
-  sync_service_->GetUserSettings()->SetDecryptionNigoriKey(
+  sync_service_->GetUserSettings()->SetExplicitPassphraseDecryptionNigoriKey(
       std::move(nigori_key));
 }
 

@@ -26,8 +26,9 @@ class View;
 // automatically close. It also has a header and close button, as well as a
 // footer with a link to chrome://downloads.
 class DownloadDialogView : public DownloadBubblePrimaryView {
+  METADATA_HEADER(DownloadDialogView, DownloadBubblePrimaryView)
+
  public:
-  METADATA_HEADER(DownloadDialogView);
   DownloadDialogView(const DownloadDialogView&) = delete;
   DownloadDialogView& operator=(const DownloadDialogView&) = delete;
 

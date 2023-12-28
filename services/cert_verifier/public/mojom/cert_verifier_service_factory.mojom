@@ -7,8 +7,12 @@ module cert_verifier.mojom;
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/read_only_buffer.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/cert_verifier_service.mojom";
 import "services/network/public/mojom/network_param.mojom";
+
+[EnableIf=is_ct_supported]
+import "services/network/public/mojom/ct_log_info.mojom";
 
 // Parameters to specify how the net::CertVerifier and net::CertVerifyProc
 // objects should be instantiated.
@@ -71,6 +75,12 @@ interface CertVerifierServiceFactory {
   // TODO(https://crbug.com/1431347): consider using ReadOnlySharedMemoryRegion
   // or ReadOnlyFile instead of BigBuffer for this and ChromeRootStore.
   UpdateCRLSet(mojo_base.mojom.BigBuffer crl_set) => ();
+
+  // Updates the log list used for CT verification. `update_time` should
+  // contain the log list timestamp.
+  [EnableIf=is_ct_supported]
+  UpdateCtLogList(array<network.mojom.CTLogInfo> log_list,
+                  mojo_base.mojom.Time update_time) => ();
 
   // Updates the ChromeRootStore used by the CertVerifierServiceFactory with a
   // new version. The callback will be run once the update has been processed

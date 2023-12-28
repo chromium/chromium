@@ -73,7 +73,6 @@ class ChromeEnterpriseRealTimeUrlLookupService
       const GURL& url,
       const GURL& last_committed_url,
       bool is_mainframe,
-      RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override;
 
@@ -82,7 +81,6 @@ class ChromeEnterpriseRealTimeUrlLookupService
       const GURL& url,
       const GURL& last_committed_url,
       bool is_mainframe,
-      RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::TimeTicks get_token_start_time,
@@ -90,7 +88,8 @@ class ChromeEnterpriseRealTimeUrlLookupService
 
   absl::optional<std::string> GetDMTokenString() const override;
   bool ShouldIncludeCredentials() const override;
-  base::Time GetMinAllowedTimestampForReferrerChains() const override;
+  absl::optional<base::Time> GetMinAllowedTimestampForReferrerChains()
+      const override;
 
   // Unowned object used for checking profile based settings.
   raw_ptr<Profile, DanglingUntriaged> profile_;

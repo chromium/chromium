@@ -11,8 +11,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 // static
 Service* ServiceFactory::Get(content::BrowserContext* context) {
@@ -56,5 +55,4 @@ ServiceFactory::BuildServiceInstanceForBrowserContext(
 
 bool ServiceFactory::ServiceIsCreatedWithBrowserContext() const { return true; }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

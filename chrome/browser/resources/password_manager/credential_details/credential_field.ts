@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
-import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -53,6 +53,11 @@ export class CredentialFieldElement extends PolymerElement {
        */
       value: String,
 
+      /*
+       * Placeholder when the value is empty.
+       */
+      placeholder: String,
+
       /**
        * If set, clicking the copy button will record this password view
        * interaction.
@@ -65,6 +70,7 @@ export class CredentialFieldElement extends PolymerElement {
   copyButtonLabel: string;
   valueCopiedToastLabel: string;
   value: string;
+  placeholder: string;
   interactionId: PasswordViewPageInteractions;
 
   override connectedCallback() {

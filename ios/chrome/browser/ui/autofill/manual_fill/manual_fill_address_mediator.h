@@ -9,6 +9,8 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+
 namespace autofill {
 class AutofillProfile;
 }  // namespace autofill

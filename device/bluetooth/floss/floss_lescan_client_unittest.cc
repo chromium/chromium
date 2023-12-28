@@ -151,7 +151,7 @@ class FlossLEScanClientTest : public testing::Test,
     method_call.SetSender(kTestSender);
     method_call.SetSerial(kTestSerial);
     dbus::MessageWriter writer(&method_call);
-    writer.AppendArrayOfBytes(kTestUuidByteArray, sizeof(kTestUuidByteArray));
+    writer.AppendArrayOfBytes(kTestUuidByteArray);
     writer.AppendByte(kTestScannerId);
     writer.AppendUint32(static_cast<uint32_t>(kTestStatus));
 
@@ -347,8 +347,7 @@ TEST_F(FlossLEScanClientTest, TestInitExportRegisterScanner) {
         // Create a fake response with UUID return value.
         auto response = ::dbus::Response::CreateEmpty();
         dbus::MessageWriter writer(response.get());
-        writer.AppendArrayOfBytes(kTestUuidByteArray,
-                                  sizeof(kTestUuidByteArray));
+        writer.AppendArrayOfBytes(kTestUuidByteArray);
         std::move(*cb).Run(response.get(), /*err=*/nullptr);
       });
   client_->RegisterScanner(

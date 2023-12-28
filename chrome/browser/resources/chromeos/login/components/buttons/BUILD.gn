@@ -2,79 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
+import("../../login.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  deps = [
-    ":oobe_back_button",
-    ":oobe_base_button",
-    ":oobe_icon_button",
-    ":oobe_next_button",
-    ":oobe_text_button",
+group("web_components") {
+  public_deps = [
+    ":copy_ts",
+    ":generate_web_component_html_wrapper_files",
   ]
 }
 
-#### Polymer3 / JS Modules libraries
-
-js_library("oobe_back_button") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/buttons/oobe_back_button.js" ]
-  deps = [
-    ":oobe_base_button",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("oobe_base_button") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/buttons/oobe_base_button.js" ]
-  deps = [
-    "../behaviors:oobe_i18n_behavior",
-    "//ash/webui/common/resources:assert",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":copy_js" ]
-}
-
-js_library("oobe_next_button") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/buttons/oobe_next_button.js" ]
-  deps = [
-    ":oobe_base_button",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("oobe_text_button") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/buttons/oobe_text_button.js" ]
-  deps = [
-    ":oobe_base_button",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("oobe_icon_button") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/buttons/oobe_icon_button.js" ]
-  deps = [
-    ":oobe_base_button",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-html_to_js("web_components") {
-  js_files = [
-    "oobe_back_button.js",
-    "oobe_icon_button.js",
-    "oobe_next_button.js",
-    "oobe_text_button.js",
-  ]
+html_to_wrapper("generate_web_component_html_wrapper_files") {
+  in_files = rebase_path(buttons_html_files, "./components/buttons", ".")
 }
 
 # Copy to target_gen_dir for closure compilation.
-copy("copy_js") {
-  sources = [ "oobe_base_button.js" ]
+copy("copy_ts") {
+  sources = rebase_path(buttons_ts_files, "./components/buttons", ".")
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }

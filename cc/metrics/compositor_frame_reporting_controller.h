@@ -206,6 +206,7 @@ class CC_EXPORT CompositorFrameReportingController {
   std::unique_ptr<PredictorJankTracker> predictor_jank_tracker_;
   std::unique_ptr<ScrollJankDroppedFrameTracker>
       scroll_jank_dropped_frame_tracker_;
+  std::unique_ptr<ScrollJankUkmReporter> scroll_jank_ukm_reporter_;
 
   std::unique_ptr<CompositorFrameReporter>
       reporters_[PipelineStage::kNumPipelineStages];

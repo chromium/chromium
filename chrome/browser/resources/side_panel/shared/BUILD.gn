@@ -17,7 +17,7 @@ build_webui("build") {
     "sp_list_item_badge.ts",
   ]
 
-  non_web_component_files = [ "commerce/shopping_list_api_proxy.ts" ]
+  non_web_component_files = [ "commerce/shopping_service_api_proxy.ts" ]
 
   css_files = [
     "sp_shared_vars.css",

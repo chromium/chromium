@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 106 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 118 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] cos float32 1D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (cos) is not supported.
 [FAIL] cos float32 2D tensor / sync
@@ -10,6 +10,18 @@ Found 106 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (cos) is not supported.
 [FAIL] cos float32 5D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (cos) is not supported.
+[FAIL] erf float32 0D scalar / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (erf) is not supported.
+[FAIL] erf float32 1D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (erf) is not supported.
+[FAIL] erf float32 2D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (erf) is not supported.
+[FAIL] erf float32 3D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (erf) is not supported.
+[FAIL] erf float32 4D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (erf) is not supported.
+[FAIL] erf float32 5D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (erf) is not supported.
 [FAIL] exp float32 1D tensor / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (exp) is not supported.
 [FAIL] exp float32 2D tensor / sync
@@ -115,6 +127,18 @@ Found 106 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] cos float32 4D tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] cos float32 5D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] erf float32 0D scalar / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] erf float32 1D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] erf float32 2D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] erf float32 3D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] erf float32 4D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] erf float32 5D tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] exp float32 1D tensor / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"

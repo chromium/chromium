@@ -10,6 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -94,9 +95,9 @@ class TestDeviceLockBridge : public DeviceLockBridge {
 
   bool RequiresDeviceLock() override { return requires_device_lock_; }
 
-  void LaunchDeviceLockUiBeforeRunningCallback(
+  void LaunchDeviceLockUiIfNeededBeforeRunningCallback(
       ui::WindowAndroid* window_android,
-      DeviceLockConfirmedCallback callback) override {
+      DeviceLockRequirementMetCallback callback) override {
     callback_ = std::move(callback);
     device_lock_ui_shown_count_++;
   }
@@ -116,7 +117,7 @@ class TestDeviceLockBridge : public DeviceLockBridge {
   bool requires_device_lock_ = false;
   bool should_show_device_lock_ui_ = false;
   int device_lock_ui_shown_count_ = 0;
-  DeviceLockConfirmedCallback callback_;
+  DeviceLockRequirementMetCallback callback_;
 };
 
 }  // namespace
@@ -144,7 +145,8 @@ class SaveUpdatePasswordMessageDelegateTest
 
   std::unique_ptr<MockPasswordFormManagerForUI> CreateFormManager(
       const GURL& password_form_url,
-      const std::vector<const PasswordForm*>* best_matches);
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
+          best_matches);
   void RecordPasswordSaved();
   void SetPendingCredentials(std::u16string username, std::u16string password);
   static PasswordForm CreatePasswordForm(std::u16string username,
@@ -206,20 +208,23 @@ class SaveUpdatePasswordMessageDelegateTest
     return &message_dispatcher_bridge_;
   }
 
-  const std::vector<const PasswordForm*>* empty_best_matches() {
+  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
+  empty_best_matches() {
     return &kEmptyBestMatches;
   }
 
-  const std::vector<const PasswordForm*>* two_forms_best_matches() {
+  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
+  two_forms_best_matches() {
     return &kTwoFormsBestMatches;
   }
 
  private:
   const PasswordForm kPasswordForm1 = CreatePasswordForm(kUsername, kPassword);
   const PasswordForm kPasswordForm2 = CreatePasswordForm(kUsername2, kPassword);
-  const std::vector<const PasswordForm*> kEmptyBestMatches = {};
-  const std::vector<const PasswordForm*> kTwoFormsBestMatches = {
-      &kPasswordForm1, &kPasswordForm2};
+  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+      kEmptyBestMatches = {};
+  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+      kTwoFormsBestMatches = {&kPasswordForm1, &kPasswordForm2};
 
   PasswordForm pending_credentials_;
   GURL password_form_url_;
@@ -272,7 +277,8 @@ void SaveUpdatePasswordMessageDelegateTest::TearDown() {
 std::unique_ptr<MockPasswordFormManagerForUI>
 SaveUpdatePasswordMessageDelegateTest::CreateFormManager(
     const GURL& password_form_url,
-    const std::vector<const PasswordForm*>* best_matches) {
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
+        best_matches) {
   password_form_url_ = password_form_url;
   auto form_manager =
       std::make_unique<testing::NiceMock<MockPasswordFormManagerForUI>>();
@@ -285,7 +291,8 @@ SaveUpdatePasswordMessageDelegateTest::CreateFormManager(
   ON_CALL(*form_manager, GetBestMatches())
       .WillByDefault(ReturnRef(*best_matches));
   ON_CALL(*form_manager, GetFederatedMatches())
-      .WillByDefault(Return(std::vector<const PasswordForm*>{}));
+      .WillByDefault(Return(
+          std::vector<raw_ptr<const PasswordForm, VectorExperimental>>{}));
   ON_CALL(*form_manager, GetMetricsRecorder())
       .WillByDefault(Return(metrics_recorder_.get()));
   ON_CALL(*form_manager, Save())
@@ -464,7 +471,7 @@ void SaveUpdatePasswordMessageDelegateTest::VerifyUkmMetrics(
   const auto& entries =
       ukm_recorder.GetEntriesByName(ukm::builders::PasswordForm::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     EXPECT_EQ(ukm_source_id_, entry->source_id);
     ukm_recorder.ExpectEntryMetric(
         entry, ukm::builders::PasswordForm::kSaving_Prompt_ShownName, 1);
@@ -479,8 +486,7 @@ void SaveUpdatePasswordMessageDelegateTest::VerifyUkmMetrics(
 }
 
 // Tests that secondary menu icon is set for the save password message
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       CogButton_SavePassword_PasswordEditDialogWithDetails) {
+TEST_F(SaveUpdatePasswordMessageDelegateTest, CogButton_SavePassword) {
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
@@ -496,7 +502,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 // Tests that secondary menu icon is set for the update password message
 // in case when user has only single credential stored for the web site
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       CogButton_SingleCredUpdatePassword_PasswordEditDialogWithDetails) {
+       CogButton_SingleCredUpdatePassword) {
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
@@ -512,7 +518,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 // Tests that secondary menu icon is not set for the update password message
 // in case when user has multiple credentials stored for the web site
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       NoCogButton_MultipleCredUpdatePassword_PasswordEditDialogWithDetails) {
+       NoCogButton_MultipleCredUpdatePassword) {
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), two_forms_best_matches());
@@ -642,7 +648,8 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
           kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
   SetPendingCredentials(kUsername, kPassword);
   PasswordForm password_form = CreatePasswordForm(kUsername, kPassword);
-  std::vector<const PasswordForm*> single_form_best_matches = {&password_form};
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+      single_form_best_matches = {&password_form};
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), &single_form_best_matches);
   EXPECT_CALL(*form_manager, Save());
@@ -665,7 +672,8 @@ TEST_F(
           kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
   SetPendingCredentials(kUsername, kPassword);
   PasswordForm password_form = CreatePasswordForm(kUsername, kPassword);
-  std::vector<const PasswordForm*> single_form_best_matches = {&password_form};
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+      single_form_best_matches = {&password_form};
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), &single_form_best_matches);
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
@@ -797,7 +805,8 @@ TEST_F(
     DontTriggerLocalPasswordMigrationWarning_OnUpdateMessageAutodismissTimer) {
   SetPendingCredentials(kUsername, kPassword);
   PasswordForm password_form = CreatePasswordForm(kUsername, kPassword);
-  std::vector<const PasswordForm*> single_form_best_matches = {&password_form};
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+      single_form_best_matches = {&password_form};
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), &single_form_best_matches);
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
@@ -816,7 +825,8 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest, UpdatePasswordWithSingleForm) {
 
   SetPendingCredentials(kUsername, kPassword);
   PasswordForm password_form = CreatePasswordForm(kUsername, kPassword);
-  std::vector<const PasswordForm*> single_form_best_matches = {&password_form};
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+      single_form_best_matches = {&password_form};
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), &single_form_best_matches);
   EXPECT_CALL(*form_manager, Save());
@@ -1181,10 +1191,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
                  /*update_password=*/false);
   EXPECT_NE(nullptr, GetMessageWrapper());
   TriggerActionClick(messages::DismissReason::UNKNOWN);
-
-  // Verify that device lock UI is not shown if window android is null, and
-  // password is not saved.
-  EXPECT_EQ(0, test_bridge()->device_lock_ui_shown_count());
 }
 
 // Tests parameterized with different feature states

@@ -5,14 +5,13 @@
 #include "components/autofill/core/browser/geo/autofill_country.h"
 
 #include <stddef.h>
+
 #include <array>
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
-
 #include "base/feature_list.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/country_data.h"
@@ -36,14 +35,14 @@ constexpr size_t kLocaleCapacity =
 // Mapping of fields needed for identifying libaddressinput fields that
 // considered required in Autofill.
 constexpr auto kRequiredFieldMapping =
-    base::MakeFixedFlatMap<ServerFieldType, RequiredFieldsForAddressImport>(
-        {{ServerFieldType::ADDRESS_HOME_STATE,
+    base::MakeFixedFlatMap<FieldType, RequiredFieldsForAddressImport>(
+        {{FieldType::ADDRESS_HOME_STATE,
           RequiredFieldsForAddressImport::ADDRESS_REQUIRES_STATE},
-         {ServerFieldType::ADDRESS_HOME_CITY,
+         {FieldType::ADDRESS_HOME_CITY,
           RequiredFieldsForAddressImport::ADDRESS_REQUIRES_CITY},
-         {ServerFieldType::ADDRESS_HOME_STREET_ADDRESS,
+         {FieldType::ADDRESS_HOME_STREET_ADDRESS,
           RequiredFieldsForAddressImport::ADDRESS_REQUIRES_LINE1},
-         {ServerFieldType::ADDRESS_HOME_ZIP,
+         {FieldType::ADDRESS_HOME_ZIP,
           RequiredFieldsForAddressImport::ADDRESS_REQUIRES_ZIP}});
 
 // Autofill is experimenting with a looser set of requirements based on a newer
@@ -53,7 +52,7 @@ constexpr auto kRequiredFieldMapping =
 // Set of countries where the current autofill country-specific address import
 // requirements differ from the updated ones.
 constexpr auto kAddressRequirementExceptionCountries =
-    base::MakeFixedFlatSet<base::StringPiece>(
+    base::MakeFixedFlatSet<std::string_view>(
         {"AF", "AI", "AL", "AM", "AR", "AZ", "BA", "BB", "BD", "BG", "BH", "BM",
          "BN", "BS", "BT", "CC", "CL", "CO", "CR", "CV", "CX", "CY", "DO", "DZ",
          "EC", "EH", "ET", "FO", "GE", "GN", "GT", "GW", "HM", "HR", "HT", "ID",
@@ -83,7 +82,7 @@ RequiredFieldsForAddressImport GetRequiredFieldsForAddressImport(
 }  // namespace
 
 AutofillCountry::AutofillCountry(const std::string& country_code,
-                                 const absl::optional<std::string>& locale) {
+                                 const std::optional<std::string>& locale) {
   CountryDataMap* country_data_map = CountryDataMap::GetInstance();
 
   // If the country code is an alias (e.g. "GB" for "UK") expand the country
@@ -152,21 +151,21 @@ AutofillCountry::address_format_extensions() const {
   // TODO(crbug.com/1300548): Extend more countries. FR and GB already have
   // overwrites, because libaddressinput already provides string literals.
   static constexpr std::array<AddressFormatExtension, 1> fr_extensions{
-      {{.type = ServerFieldType::ADDRESS_HOME_STATE,
+      {{.type = FieldType::ADDRESS_HOME_STATE,
         .label_id = IDS_LIBADDRESSINPUT_PROVINCE,
-        .placed_after = ServerFieldType::ADDRESS_HOME_CITY,
+        .placed_after = FieldType::ADDRESS_HOME_CITY,
         .separator_before_label = "\n",
         .large_sized = true}}};
   static constexpr std::array<AddressFormatExtension, 1> gb_extensions{
-      {{.type = ServerFieldType::ADDRESS_HOME_STATE,
+      {{.type = FieldType::ADDRESS_HOME_STATE,
         .label_id = IDS_LIBADDRESSINPUT_COUNTY,
-        .placed_after = ServerFieldType::ADDRESS_HOME_ZIP,
+        .placed_after = FieldType::ADDRESS_HOME_ZIP,
         .separator_before_label = "\n",
         .large_sized = true}}};
   static constexpr std::array<AddressFormatExtension, 1> mx_extensions{
-      {{.type = ServerFieldType::ADDRESS_HOME_ADMIN_LEVEL2,
+      {{.type = FieldType::ADDRESS_HOME_ADMIN_LEVEL2,
         .label_id = IDS_AUTOFILL_ADDRESS_EDIT_DIALOG_HISPANIC_MUNICIPIO,
-        .placed_after = ServerFieldType::ADDRESS_HOME_DEPENDENT_LOCALITY,
+        .placed_after = FieldType::ADDRESS_HOME_DEPENDENT_LOCALITY,
         .separator_before_label = "\n",
         .large_sized = true}}};
 
@@ -189,7 +188,7 @@ AutofillCountry::address_format_extensions() const {
 }
 
 bool AutofillCountry::IsAddressFieldSettingAccessible(
-    ServerFieldType field_type) const {
+    FieldType field_type) const {
   ::i18n::addressinput::AddressField libaddressinput_field;
   bool is_valid_field = i18n::FieldForType(field_type, &libaddressinput_field);
   // Check if `field_type` is part of libaddressinput's native address format
@@ -201,7 +200,7 @@ bool AutofillCountry::IsAddressFieldSettingAccessible(
              [](const AddressFormatExtension& rule) { return rule.type; });
 }
 
-bool AutofillCountry::IsAddressFieldRequired(ServerFieldType field_type) const {
+bool AutofillCountry::IsAddressFieldRequired(FieldType field_type) const {
   auto* mapping_it = kRequiredFieldMapping.find(field_type);
   return mapping_it != kRequiredFieldMapping.end() &&
          (required_fields_for_address_import_ & mapping_it->second);

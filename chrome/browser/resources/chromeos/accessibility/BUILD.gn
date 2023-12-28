@@ -4,15 +4,18 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//chrome/browser/resources/accessibility/tools/manifest.gni")
 import("//chrome/common/features.gni")
 import("//chrome/test/base/ash/js2gtest.gni")
+import("//tools/typescript/ts_library.gni")
 import("strings/accessibility_strings.gni")
-import("tools/manifest.gni")
 import("tools/run_jsbundler.gni")
 
 assert(is_chromeos_ash)
 
 accessibility_out_dir = "$root_out_dir/resources/chromeos/accessibility/"
+tsc_preprocess_folder = "$root_gen_dir/chrome/browser/resources/chromeos/accessibility/tsc_preprocessed"
+tsc_out_dir = "$target_gen_dir/tsc"
 
 group("build") {
   deps = [
@@ -44,11 +47,34 @@ group("build") {
   }
 }
 
+ts_library("ts_build") {
+  out_dir = tsc_out_dir
+  definitions = [
+    "definitions/accessibility_private_mv2.d.ts",
+    "definitions/automation.d.ts",
+    "definitions/command_line_private.d.ts",
+    "definitions/extension_types.d.ts",
+    "definitions/extensions.d.ts",
+    "definitions/runtime.d.ts",
+    "definitions/settings_private_mv2.d.ts",
+    "definitions/tabs.d.ts",
+    "//tools/typescript/definitions/windows.d.ts",
+  ]
+
+  in_files = [ "switch_access_loader.ts" ]
+
+  tsconfig_base = "tsconfig.base.json"
+}
+
 run_jsbundler("copied_loader_files") {
   mode = "copy"
+  deps = [ ":ts_build" ]
   dest_dir = accessibility_out_dir
-  sources = [ "switch_access_loader.js" ]
-  rewrite_rules = [ rebase_path(".", root_build_dir) + ":" ]
+  sources = filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
+  rewrite_rules = [
+    rebase_path(tsc_out_dir, root_build_dir) + ":",
+    rebase_path(".", root_build_dir) + ":",
+  ]
 }
 
 manifest("accessibility_common_manifest") {
@@ -156,10 +182,7 @@ group("browser_tests") {
 group("unit_tests_js") {
   testonly = true
   if (is_chromeos_ash) {
-    deps = [
-      ":misc_unit_tests_js",
-      "chromevox:chromevox_unit_js_tests",
-    ]
+    deps = [ ":misc_unit_tests_js" ]
   }
 }
 
@@ -168,4 +191,12 @@ js2gtest("misc_unit_tests_js") {
   sources = [ "braille_ime/braille_ime_unittest.js" ]
   gen_include_files = [ "common/testing/accessibility_test_base.js" ]
   extra_js_files = [ "braille_ime/braille_ime.js" ]
+}
+
+# Copy definitions from the main typescript folder into our local definitions
+# folder. This can only be done once, otherwise we will get collisions, so do
+# this at the very top-level of the build structure.
+copy("preprocess_files_for_ts_build") {
+  sources = [ "//tools/typescript/definitions/chrome_event.d.ts" ]
+  outputs = [ "$tsc_preprocess_folder/definitions/chrome_event.d.ts" ]
 }

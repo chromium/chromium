@@ -7,6 +7,7 @@ import("//build/config/android/config.gni")
 import("//build/config/arm.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+import("//testing/test.gni")
 import("//third_party/libaom/libaom_srcs.gni")
 import("//third_party/libaom/libaom_test_srcs.gni")
 import("//third_party/libaom/options.gni")
@@ -362,6 +363,19 @@ fuzzer_test("libaom_av1_dec_fuzzer") {
   seed_corpus = "fuzz/av1_dec_fuzzer_corpus"
   deps = [ ":libaom" ]
   additional_configs = [ ":libaom_config" ]
+}
+
+if (fuzztest_supported) {
+  test("av1_encoder_fuzz_test") {
+    sources = [ "fuzz/av1_encoder_fuzz_test.cc" ]
+
+    enable_fuzztest = true
+
+    deps = [
+      ":libaom",
+      "//third_party/fuzztest:fuzztest_gtest_main",
+    ]
+  }
 }
 
 config("test_libaom_config") {

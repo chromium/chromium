@@ -38,6 +38,10 @@ class AutomationTestUtils {
   // Gets the value of the node with the given `class_name`.
   std::string GetValueForNodeWithClassName(const std::string& class_name);
 
+  // Waits for the node with the given `class_name` to have the value `value`.
+  void WaitForNodeWithClassNameAndValue(const std::string& class_name,
+                                        const std::string& value);
+
   // Gets the bounds of the automation node with the given
   // `name` and `role` in density-independent pixels. Will wait
   // for the node to exist if it does not exist already.
@@ -57,6 +61,9 @@ class AutomationTestUtils {
   // node does not exist.
   bool NodeExistsNoWait(const std::string& name, const std::string& role);
 
+  // Does the default action on the node with `name` and `role`.
+  void DoDefault(const std::string& name, const std::string& role);
+
   // Various event waiters. This is the automation equivalent of
   // AccessibilityNotificationWaiter.
 
@@ -71,6 +78,9 @@ class AutomationTestUtils {
   // Waits for a chrome.automation.EventType.CHILDREN_CHANGED event to be fired
   // on the desktop node.
   void WaitForChildrenChangedEvent();
+
+  // Waits for there to be `num` tabs in the tabstrip with regex name `name`.
+  void WaitForNumTabsWithRegexName(int num, const std::string& name);
 
  private:
   std::string ExecuteScriptInExtensionPage(const std::string& script);

@@ -359,13 +359,6 @@ interface PrintRenderFrame {
   // Tells the RenderFrame to initiate printing or print preview for a
   // particular node, depending on which mode the RenderFrame is in.
   PrintNodeUnderContextMenu();
-
-  // Prints the content as a snapshot of the page to be analyzed for sensitive
-  // content. Returns nothing if the snapshot couldn't be obtained for any
-  // reason.
-  [EnableIf=enable_print_content_analysis]
-  SnapshotForContentAnalysis()
-      => (DidPrintDocumentParams? params);
 };
 
 // Browser process interface exposed to the renderer to handle the general

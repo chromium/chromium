@@ -75,53 +75,17 @@ class EditLabelTest : public OverlayViewTestBase {
     return IsNameTagInErrorState(list_item->labels_view_);
   }
 
-  void CheckAction(ActionType action_type,
-                   ButtonOptionsMenu* menu,
+  void CheckAction(Action* action,
+                   ActionType expect_action_type,
                    const std::vector<ui::DomCode>& expected_code,
-                   const std::vector<std::u16string>& expected_text) {
-    auto* action = menu->action();
-    auto* list_item = GetActionViewListItem(action);
-    EXPECT_TRUE(list_item);
-    switch (action_type) {
-      case ActionType::TAP:
-        if (expected_code.empty()) {
-          EXPECT_TRUE(action->current_input()->keys().empty());
-        } else {
-          EXPECT_EQ(expected_code[0], action->current_input()->keys()[0]);
-        }
-        EXPECT_EQ(expected_text[0],
-                  GetEditLabel(list_item, /*index=*/0)->GetText());
-        EXPECT_EQ(expected_text[0], GetEditLabel(menu, /*index=*/0)->GetText());
-        EXPECT_EQ(action->is_new()
-                      ? (expected_text[0].empty() ? u"?" : expected_text[0])
-                      : expected_text[0],
-                  GetLabel(action->action_view(), /*index=*/0)->GetText());
-        break;
-      case ActionType::MOVE:
-        for (size_t i = 0; i < kActionMoveKeysSize; i++) {
-          EXPECT_EQ(expected_code[i], action->current_input()->keys()[i]);
-          EXPECT_EQ(expected_text[i],
-                    GetEditLabel(list_item, /*index=*/i)->GetText());
-          EXPECT_EQ(expected_text[i],
-                    GetEditLabel(menu, /*index=*/i)->GetText());
-          EXPECT_EQ(action->is_new()
-                        ? (expected_text[i].empty() ? u"?" : expected_text[i])
-                        : expected_text[i],
-                    GetLabel(action->action_view(), /*index=*/i)->GetText());
-        }
-        break;
-      default:
-        NOTREACHED();
-    }
-  }
+                   const std::vector<std::u16string>& expected_labels,
+                   const std::u16string expected_name) {
+    DCHECK(action);
+    ShowButtonOptionsMenu(action);
 
-  void CheckActionName(std::u16string expected_name,
-                       ButtonOptionsMenu* menu,
-                       ActionViewListItem* list_item) {
-    EXPECT_EQ(menu->action_name_label_->GetText(), expected_name);
-    if (list_item) {
-      EXPECT_EQ(list_item->name_tag_->title_label_->GetText(), expected_name);
-    }
+    EXPECT_EQ(expect_action_type, action->GetType());
+    VerifyActionKeyBinding(action, expected_code);
+    VerifyUIDisplay(action, expected_labels, expected_name);
   }
 
   void CheckErrorState(ButtonOptionsMenu* menu,
@@ -144,9 +108,9 @@ class EditLabelTest : public OverlayViewTestBase {
     if (editing_list_->is_zero_state_) {
       return nullptr;
     }
-    for (auto* child : scroll_content->children()) {
-      auto* list_item = static_cast<ActionViewListItem*>(child);
-      if (list_item->action() == action) {
+    for (views::View* child : scroll_content->children()) {
+      if (auto* list_item = static_cast<ActionViewListItem*>(child);
+          list_item->action() == action) {
         return list_item;
       }
     }
@@ -176,41 +140,41 @@ class EditLabelTest : public OverlayViewTestBase {
 TEST_F(EditLabelTest, TestEditingListLabelEditing) {
   // Modify the label for ActionTap and noting is conflicted.
   // ActionTap: ␣ -> m.
-  auto* menu = ShowButtonOptionsMenu(tap_action_);
-  CheckAction(ActionType::TAP, menu, {ui::DomCode::SPACE}, {u"␣"});
-  CheckActionName(u"Game button ␣", menu, tap_action_list_item_);
-  CheckErrorState(menu, tap_action_list_item_, /*menu_has_error=*/false,
+  CheckAction(tap_action_, ActionType::TAP, {ui::DomCode::SPACE}, {u"␣"},
+              u"Game button ␣");
+  CheckErrorState(GetButtonOptionsMenu(), tap_action_list_item_,
+                  /*menu_has_error=*/false,
                   /*list_item_has_error=*/false);
   TapKeyboardKeyOnEditLabel(GetEditLabel(tap_action_list_item_, /*index=*/0),
                             ui::VKEY_M);
-  CheckAction(ActionType::TAP, menu, {ui::DomCode::US_M}, {u"m"});
-  CheckActionName(u"Game button m", menu, tap_action_list_item_);
-  CheckErrorState(menu, tap_action_list_item_, /*menu_has_error=*/false,
+  CheckAction(tap_action_, ActionType::TAP, {ui::DomCode::US_M}, {u"m"},
+              u"Game button m");
+  CheckErrorState(GetButtonOptionsMenu(), tap_action_list_item_,
+                  /*menu_has_error=*/false,
                   /*list_item_has_error=*/false);
   EXPECT_FALSE(tap_action_->IsDeleted());
   EXPECT_FALSE(move_action_->IsDeleted());
 
   // Modify the label for ActionMove and nothing is conflicted.
   // ActionMove: wasd -> lasd.
-  menu = ShowButtonOptionsMenu(move_action_);
-  CheckAction(ActionType::MOVE, menu,
+  CheckAction(move_action_, ActionType::MOVE,
               {ui::DomCode::US_W, ui::DomCode::US_A, ui::DomCode::US_S,
                ui::DomCode::US_D},
-              {u"w", u"a", u"s", u"d"});
-  CheckActionName(u"Joystick wasd", menu, move_action_list_item_);
-  CheckErrorState(menu, move_action_list_item_, /*menu_has_error=*/false,
+              {u"w", u"a", u"s", u"d"}, u"Joystick wasd");
+  CheckErrorState(GetButtonOptionsMenu(), move_action_list_item_,
+                  /*menu_has_error=*/false,
                   /*list_item_has_error=*/false);
   EXPECT_FALSE(tap_action_->IsDeleted());
   EXPECT_FALSE(move_action_->IsDeleted());
 
   TapKeyboardKeyOnEditLabel(GetEditLabel(move_action_list_item_, /*index=*/0),
                             ui::VKEY_L);
-  CheckAction(ActionType::MOVE, menu,
+  CheckAction(move_action_, ActionType::MOVE,
               {ui::DomCode::US_L, ui::DomCode::US_A, ui::DomCode::US_S,
                ui::DomCode::US_D},
-              {u"l", u"a", u"s", u"d"});
-  CheckActionName(u"Joystick lasd", menu, move_action_list_item_);
-  CheckErrorState(menu, move_action_list_item_, /*menu_has_error=*/false,
+              {u"l", u"a", u"s", u"d"}, u"Joystick lasd");
+  CheckErrorState(GetButtonOptionsMenu(), move_action_list_item_,
+                  /*menu_has_error=*/false,
                   /*list_item_has_error=*/false);
   EXPECT_FALSE(tap_action_->IsDeleted());
   EXPECT_FALSE(move_action_->IsDeleted());
@@ -219,12 +183,12 @@ TEST_F(EditLabelTest, TestEditingListLabelEditing) {
   // ActionMove: lasd -> ?ald.
   TapKeyboardKeyOnEditLabel(GetEditLabel(move_action_list_item_, /*index=*/2),
                             ui::VKEY_L);
-  CheckAction(ActionType::MOVE, menu,
+  CheckAction(move_action_, ActionType::MOVE,
               {ui::DomCode::NONE, ui::DomCode::US_A, ui::DomCode::US_L,
                ui::DomCode::US_D},
-              {u"?", u"a", u"l", u"d"});
-  CheckActionName(u"Joystick ald", menu, move_action_list_item_);
-  CheckErrorState(menu, move_action_list_item_, /*menu_has_error=*/true,
+              {u"?", u"a", u"l", u"d"}, u"Joystick ald");
+  CheckErrorState(GetButtonOptionsMenu(), move_action_list_item_,
+                  /*menu_has_error=*/true,
                   /*list_item_has_error=*/true);
   EXPECT_FALSE(tap_action_->IsDeleted());
   EXPECT_FALSE(move_action_->IsDeleted());
@@ -232,20 +196,19 @@ TEST_F(EditLabelTest, TestEditingListLabelEditing) {
   // Modify the label for ActionMove and it is conflicted outside.
   // ActionTap: m -> ?
   // ActionMove: ?ald -> mald.
-  menu = ShowButtonOptionsMenu(tap_action_);
   TapKeyboardKeyOnEditLabel(GetEditLabel(move_action_list_item_, /*index=*/0),
                             ui::VKEY_M);
-  CheckAction(ActionType::TAP, menu, {ui::DomCode::NONE}, {u"?"});
-  CheckActionName(u"Unassigned button", menu, tap_action_list_item_);
-  CheckErrorState(menu, tap_action_list_item_, /*menu_has_error=*/true,
+  CheckAction(tap_action_, ActionType::TAP, {ui::DomCode::NONE}, {u"?"},
+              u"Unassigned button");
+  CheckErrorState(GetButtonOptionsMenu(), tap_action_list_item_,
+                  /*menu_has_error=*/true,
                   /*list_item_has_error=*/true);
-  menu = ShowButtonOptionsMenu(move_action_);
-  CheckAction(ActionType::MOVE, menu,
+  CheckAction(move_action_, ActionType::MOVE,
               {ui::DomCode::US_M, ui::DomCode::US_A, ui::DomCode::US_L,
                ui::DomCode::US_D},
-              {u"m", u"a", u"l", u"d"});
-  CheckActionName(u"Joystick mald", menu, move_action_list_item_);
-  CheckErrorState(menu, move_action_list_item_, /*menu_has_error=*/false,
+              {u"m", u"a", u"l", u"d"}, u"Joystick mald");
+  CheckErrorState(GetButtonOptionsMenu(), move_action_list_item_,
+                  /*menu_has_error=*/false,
                   /*list_item_has_error=*/false);
   EXPECT_FALSE(tap_action_->IsDeleted());
   EXPECT_FALSE(move_action_->IsDeleted());
@@ -253,20 +216,19 @@ TEST_F(EditLabelTest, TestEditingListLabelEditing) {
   // Modify the label for ActionTap and it is conflicted outside.
   // ActionTap: ? -> d.
   // ActionMove: mald -> mal?.
-  menu = ShowButtonOptionsMenu(tap_action_);
   TapKeyboardKeyOnEditLabel(GetEditLabel(tap_action_list_item_, /*index=*/0),
                             ui::VKEY_D);
-  CheckAction(ActionType::TAP, menu, {ui::DomCode::US_D}, {u"d"});
-  CheckActionName(u"Game button d", menu, tap_action_list_item_);
-  CheckErrorState(menu, tap_action_list_item_, /*menu_has_error=*/false,
+  CheckAction(tap_action_, ActionType::TAP, {ui::DomCode::US_D}, {u"d"},
+              u"Game button d");
+  CheckErrorState(GetButtonOptionsMenu(), tap_action_list_item_,
+                  /*menu_has_error=*/false,
                   /*list_item_has_error=*/false);
-  menu = ShowButtonOptionsMenu(move_action_);
-  CheckAction(ActionType::MOVE, menu,
+  CheckAction(move_action_, ActionType::MOVE,
               {ui::DomCode::US_M, ui::DomCode::US_A, ui::DomCode::US_L,
                ui::DomCode::NONE},
-              {u"m", u"a", u"l", u"?"});
-  CheckActionName(u"Joystick mal", menu, move_action_list_item_);
-  CheckErrorState(menu, move_action_list_item_, /*menu_has_error=*/true,
+              {u"m", u"a", u"l", u"?"}, u"Joystick mal");
+  CheckErrorState(GetButtonOptionsMenu(), move_action_list_item_,
+                  /*menu_has_error=*/true,
                   /*list_item_has_error=*/true);
   EXPECT_FALSE(tap_action_->IsDeleted());
   EXPECT_FALSE(move_action_->IsDeleted());
@@ -275,44 +237,47 @@ TEST_F(EditLabelTest, TestEditingListLabelEditing) {
 TEST_F(EditLabelTest, TestEditingListLabelReservedKey) {
   // Press a reserved key on Action tap with no error state and then it shows
   // error state.
-  auto* menu = ShowButtonOptionsMenu(tap_action_);
+  ShowButtonOptionsMenu(tap_action_);
   FocusOnLabel(GetEditLabel(tap_action_list_item_, /*index=*/0));
   TapKeyboardKeyOnEditLabel(GetEditLabel(tap_action_list_item_, /*index=*/0),
                             ui::VKEY_ESCAPE);
   // Label is not changed.
-  CheckAction(ActionType::TAP, menu, {ui::DomCode::SPACE}, {u"␣"});
-  CheckActionName(u"Game button ␣", menu, tap_action_list_item_);
+  CheckAction(tap_action_, ActionType::TAP, {ui::DomCode::SPACE}, {u"␣"},
+              u"Game button ␣");
   // Error state shows temporarily on list item view.
-  CheckErrorState(menu, tap_action_list_item_, /*menu_has_error=*/false,
+  CheckErrorState(GetButtonOptionsMenu(), tap_action_list_item_,
+                  /*menu_has_error=*/false,
                   /*list_item_has_error=*/true);
   // Error state shows up temporarily and disappears after leaving focus.
   BlurOnLabel(GetEditLabel(tap_action_list_item_, /*index=*/0));
-  CheckErrorState(menu, tap_action_list_item_, /*menu_has_error=*/false,
+  CheckErrorState(GetButtonOptionsMenu(), tap_action_list_item_,
+                  /*menu_has_error=*/false,
                   /*list_item_has_error=*/false);
 
   // Press a reserved key on Action move which is already in error state.
   // ActionMove: wasd -> wal?.
-  menu = ShowButtonOptionsMenu(move_action_);
   FocusOnLabel(GetEditLabel(tap_action_list_item_, /*index=*/0));
   TapKeyboardKeyOnEditLabel(GetEditLabel(tap_action_list_item_, /*index=*/0),
                             ui::VKEY_D);
-  CheckAction(ActionType::MOVE, menu,
+  CheckAction(move_action_, ActionType::MOVE,
               {ui::DomCode::US_W, ui::DomCode::US_A, ui::DomCode::US_S,
                ui::DomCode::NONE},
-              {u"w", u"a", u"s", u"?"});
-  CheckActionName(u"Joystick was", menu, move_action_list_item_);
-  CheckErrorState(menu, move_action_list_item_, /*menu_has_error=*/true,
+              {u"w", u"a", u"s", u"?"}, u"Joystick was");
+  CheckErrorState(GetButtonOptionsMenu(), move_action_list_item_,
+                  /*menu_has_error=*/true,
                   /*list_item_has_error=*/true);
   FocusOnLabel(GetEditLabel(move_action_list_item_, /*index=*/0));
   // Press a reserved key on Action move and error state still shows up.
   TapKeyboardKeyOnEditLabel(GetEditLabel(move_action_list_item_,
                                          /*index=*/0),
                             ui::VKEY_ESCAPE);
-  CheckErrorState(menu, move_action_list_item_, /*menu_has_error=*/true,
+  CheckErrorState(GetButtonOptionsMenu(), move_action_list_item_,
+                  /*menu_has_error=*/true,
                   /*list_item_has_error=*/true);
   BlurOnLabel(GetEditLabel(move_action_list_item_, /*index=*/0));
   // Error state still shows up after leaving focus.
-  CheckErrorState(menu, move_action_list_item_, /*menu_has_error=*/true,
+  CheckErrorState(GetButtonOptionsMenu(), move_action_list_item_,
+                  /*menu_has_error=*/true,
                   /*list_item_has_error=*/true);
 }
 
@@ -324,31 +289,28 @@ TEST_F(EditLabelTest, TestEditingNewAction) {
   EXPECT_TRUE(menu);
   auto* action = GetAction(menu);
   EXPECT_TRUE(action->is_new());
-  CheckAction(ActionType::MOVE, menu,
+  CheckAction(action, ActionType::MOVE,
               {ui::DomCode::NONE, ui::DomCode::NONE, ui::DomCode::NONE,
                ui::DomCode::NONE},
-              {u"", u"", u"", u""});
-  CheckActionName(u"Unassigned joystick", menu, nullptr);
+              {u"", u"", u"", u""}, u"Unassigned joystick");
 
   auto* label0 = GetEditLabel(menu, /*index=*/0);
   FocusOnLabel(label0);
   TapKeyboardKeyOnEditLabel(label0, ui::VKEY_A);
   EXPECT_TRUE(action->is_new());
-  CheckAction(ActionType::MOVE, menu,
+  CheckAction(action, ActionType::MOVE,
               {ui::DomCode::US_A, ui::DomCode::NONE, ui::DomCode::NONE,
                ui::DomCode::NONE},
-              {u"a", u"", u"", u""});
-  CheckActionName(u"Joystick a", menu, nullptr);
+              {u"a", u"", u"", u""}, u"Joystick a");
 
   auto* label1 = GetEditLabel(menu, /*index=*/1);
   FocusOnLabel(label1);
   TapKeyboardKeyOnEditLabel(label1, ui::VKEY_A);
   EXPECT_TRUE(action->is_new());
-  CheckAction(ActionType::MOVE, menu,
+  CheckAction(action, ActionType::MOVE,
               {ui::DomCode::NONE, ui::DomCode::US_A, ui::DomCode::NONE,
                ui::DomCode::NONE},
-              {u"", u"a", u"", u""});
-  CheckActionName(u"Joystick a", menu, nullptr);
+              {u"", u"a", u"", u""}, u"Joystick a");
 }
 
 }  // namespace arc::input_overlay

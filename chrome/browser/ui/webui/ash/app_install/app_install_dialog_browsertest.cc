@@ -5,13 +5,17 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install_dialog.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -42,8 +46,10 @@ content::WebContents* GetWebContentsFromDialog() {
 class AppInstallDialogBrowserTest : public InProcessBrowserTest {
  public:
   AppInstallDialogBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kCrosWebAppInstallDialog);
+    feature_list_.InitWithFeatures(
+        {chromeos::features::kCrosWebAppInstallDialog,
+         chromeos::features::kCrosOmniboxInstallDialog},
+        {});
   }
 
  private:
@@ -85,6 +91,24 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, InstallApp) {
            "querySelector('.action-button').textContent.includes('Open app')")
            .ExtractBool()) {
   }
+
+  // Click the open app button and expect the dialog was closed.
+  content::WebContentsDestroyedWatcher watcher(web_contents);
+  EXPECT_TRUE(
+      content::ExecJs(web_contents,
+                      "document.querySelector('app-install-dialog')."
+                      "shadowRoot.querySelector('.action-button').click()"));
+  watcher.Wait();
+
+  // Expect the app is opened.
+  webapps::AppId app_id = web_app::GenerateAppIdFromManifestId(app_url);
+  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
+
+  // Expect the browser tab was not closed.
+  EXPECT_EQ(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      app_url);
 }
 
 IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, FailedInstall) {
@@ -97,13 +121,13 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, FailedInstall) {
 
   dialog_handle->Show(
       browser()->window()->GetNativeWindow(),
-      ChromeOsAppInstallDialogParams(
-          *web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
-              GURL("https://example.com/")),
-          std::vector<webapps::Screenshot>()),
+      /* dialog_args= */ ash::app_install::mojom::DialogArgs::New(),
+      /* expected_app_id= */ "",
       base::BindOnce(
           [](base::WeakPtr<AppInstallDialog> dialog_handle,
-             bool dialog_accepted) { dialog_handle->SetInstallSuccess(false); },
+             bool dialog_accepted) {
+            dialog_handle->SetInstallComplete(nullptr);
+          },
           dialog_handle));
 
   navigation_observer_dialog.Wait();

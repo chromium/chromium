@@ -22,6 +22,7 @@ BASE_DECLARE_FEATURE(kEnableArcIdleManager);
 extern const base::FeatureParam<bool> kEnableArcIdleManagerIgnoreBatteryForPLT;
 extern const base::FeatureParam<int> kEnableArcIdleManagerDelayMs;
 BASE_DECLARE_FEATURE(kEnableArcNearbyShareFuseBox);
+BASE_DECLARE_FEATURE(kEnableArcS2Idle);
 BASE_DECLARE_FEATURE(kEnableArcVmDataMigration);
 BASE_DECLARE_FEATURE(kEnableLazyWebViewInit);
 BASE_DECLARE_FEATURE(kEnablePerVmCoreScheduling);

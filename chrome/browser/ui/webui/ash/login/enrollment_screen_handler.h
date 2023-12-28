@@ -102,6 +102,7 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
   void HandleDeviceAttributesProvided(const std::string& asset_id,
                                       const std::string& location);
   void HandleOnLearnMore();
+  void HandleGetDeviceId(const std::string& callback_id);
 
   // Shows a given enrollment step.
   void ShowStep(const std::string& step);

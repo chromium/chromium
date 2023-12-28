@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/examples/example_base.h"
 
 namespace views {
@@ -31,7 +32,7 @@ class VIEWS_EXAMPLES_EXPORT RadioButtonExample : public ExampleBase {
   void StatusButtonPressed();
 
   // Group of 3 radio buttons.
-  std::vector<RadioButton*> radio_buttons_;
+  std::vector<raw_ptr<RadioButton, VectorExperimental>> radio_buttons_;
 };
 
 }  // namespace examples

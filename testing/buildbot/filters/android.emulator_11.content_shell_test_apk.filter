@@ -5,9 +5,6 @@
 -org.chromium.content.browser.input.ImeInputModeTest.testShowAndHideInputMode
 -org.chromium.content.browser.input.ImeInputModeTest.testShowAndHideInputModeWithPhysicalKeyboard
 
-# crbug.com/1220151
--org.chromium.base.task.AsyncTaskTest.testChromeThreadPoolExecutorOsAsyncTask
-
 # crbug.com/1220155
 -org.chromium.content.browser.ContentTextSelectionTest.testSelectionClearedAfterLossOfFocus
 -org.chromium.content.browser.ContentTextSelectionTest.testSelectionPreservedAfterLossOfFocusIfRequested

@@ -18,6 +18,7 @@
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/port_util.h"
 #include "net/base/privacy_mode.h"
 #include "net/http/http_server_properties.h"
@@ -152,13 +153,13 @@ std::string QuicServerIdToString(const quic::QuicServerId& server_id) {
          (server_id.privacy_mode_enabled() ? "/private" : "");
 }
 
-// Takes in a base::Value::Dict, and whether NetworkIsolationKeys are enabled
-// for HttpServerProperties, and extracts the NetworkAnonymizationKey stored
-// with the |kNetworkAnonymizationKey| in the dictionary, and writes it to
-// |out_network_anonymization_key|. Returns false if unable to load a
+// Takes in a base::Value::Dict, and whether NetworkAnonymizationKeys are
+// enabled for HttpServerProperties, and extracts the NetworkAnonymizationKey
+// stored with the `kNetworkAnonymizationKey` in the dictionary, and writes it
+// to `out_network_anonymization_key`. Returns false if unable to load a
 // NetworkAnonymizationKey, or the NetworkAnonymizationKey is non-empty, but
-// |use_network_anonymization_key| is false.
-bool GetNetworkIsolationKeyFromDict(
+// `use_network_anonymization_key` is false.
+bool GetNetworkAnonymizationKeyFromDict(
     const base::Value::Dict& dict,
     bool use_network_anonymization_key,
     NetworkAnonymizationKey* out_network_anonymization_key) {
@@ -171,8 +172,8 @@ bool GetNetworkIsolationKeyFromDict(
     return false;
   }
 
-  // Fail if NetworkIsolationKeys are disabled, but the entry has a non-empty
-  // NetworkAnonymizationKey.
+  // Fail if NetworkAnonymizationKeys are disabled, but the entry has a
+  // non-empty NetworkAnonymizationKey.
   if (!use_network_anonymization_key && !network_anonymization_key.IsEmpty())
     return false;
 
@@ -341,9 +342,9 @@ void HttpServerPropertiesManager::AddToBrokenAlternativeServices(
   }
 
   NetworkAnonymizationKey network_anonymization_key;
-  if (!GetNetworkIsolationKeyFromDict(broken_alt_svc_entry_dict,
-                                      use_network_anonymization_key,
-                                      &network_anonymization_key)) {
+  if (!GetNetworkAnonymizationKeyFromDict(broken_alt_svc_entry_dict,
+                                          use_network_anonymization_key,
+                                          &network_anonymization_key)) {
     return;
   }
 
@@ -409,9 +410,9 @@ void HttpServerPropertiesManager::AddServerData(
   // Get server's scheme/host/pair.
   const std::string* server_str = server_dict.FindString(kServerKey);
   NetworkAnonymizationKey network_anonymization_key;
-  // Can't load entry if server name missing, or if the network isolation key is
-  // missing or invalid.
-  if (!server_str || !GetNetworkIsolationKeyFromDict(
+  // Can't load entry if server name missing, or if the network anonymization
+  // key is missing or invalid.
+  if (!server_str || !GetNetworkAnonymizationKeyFromDict(
                          server_dict, use_network_anonymization_key,
                          &network_anonymization_key)) {
     return;
@@ -661,9 +662,9 @@ void HttpServerPropertiesManager::AddToQuicServerInfoMap(
     }
 
     NetworkAnonymizationKey network_anonymization_key;
-    if (!GetNetworkIsolationKeyFromDict(*quic_server_info_dict,
-                                        use_network_anonymization_key,
-                                        &network_anonymization_key)) {
+    if (!GetNetworkAnonymizationKeyFromDict(*quic_server_info_dict,
+                                            use_network_anonymization_key,
+                                            &network_anonymization_key)) {
       DVLOG(1) << "Malformed http_server_properties quic server dict: "
                << *quic_server_id_str;
       continue;
@@ -835,7 +836,7 @@ void HttpServerPropertiesManager::SaveQuicServerInfoMapToServerPrefs(
   base::Value::List quic_servers_list;
   for (const auto& [key, server_info] : base::Reversed(quic_server_info_map)) {
     base::Value network_anonymization_key_value;
-    // Don't save entries with ephemeral NIKs.
+    // Don't save entries with ephemeral NAKs.
     if (!key.network_anonymization_key.ToValue(
             &network_anonymization_key_value)) {
       continue;

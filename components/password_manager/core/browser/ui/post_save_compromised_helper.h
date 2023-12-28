@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
@@ -40,8 +41,10 @@ class PostSaveCompromisedHelper
 
   // |compromised| contains all insecure credentials for the current site.
   // |current_username| is the username that was just saved or updated.
-  PostSaveCompromisedHelper(const std::vector<const PasswordForm*>& compromised,
-                            const std::u16string& current_username);
+  PostSaveCompromisedHelper(
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+          compromised,
+      const std::u16string& current_username);
   ~PostSaveCompromisedHelper() override;
 
   PostSaveCompromisedHelper(const PostSaveCompromisedHelper&) = delete;

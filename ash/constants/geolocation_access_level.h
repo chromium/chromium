@@ -11,7 +11,8 @@ namespace ash {
 // Affects the entire ChromeOS system and all client applications.
 // Don't modify or reorder the enum elements. New values can be added at the
 // end. These values shall be in sync with the
-// `DeviceLoginScreenGeolocationAccessLevelProto::GeolocationAccessLevel`.
+// `DeviceLoginScreenGeolocationAccessLevelProto::GeolocationAccessLevel` and
+// //tools/metrics/histograms/metadata/chromeos/enums.xml.
 enum class GeolocationAccessLevel {
   kDisallowed = 0,
   kAllowed = 1,

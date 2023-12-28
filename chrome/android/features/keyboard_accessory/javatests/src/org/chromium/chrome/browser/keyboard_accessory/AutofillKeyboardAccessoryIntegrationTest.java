@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.keyboard_accessory;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
+import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
@@ -15,7 +16,6 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.selectTabAtPosition;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.waitToBeHidden;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.whenDisplayed;
-import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabTestHelper.isKeyboardAccessoryTabLayout;
 
 import android.app.Activity;
 import android.view.View;
@@ -33,6 +33,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupView;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -168,8 +169,11 @@ public class AutofillKeyboardAccessoryIntegrationTest {
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 
         whenDisplayed(withId(R.id.bar_items_view))
-                .perform(scrollTo(isKeyboardAccessoryTabLayout()))
-                .perform(actionOnItem(isKeyboardAccessoryTabLayout(), selectTabAtPosition(0)));
+                .perform(scrollTo(isAssignableFrom(KeyboardAccessoryButtonGroupView.class)))
+                .perform(
+                        actionOnItem(
+                                isAssignableFrom(KeyboardAccessoryButtonGroupView.class),
+                                selectTabAtPosition(0)));
 
         whenDisplayed(withChild(withId(R.id.keyboard_accessory_sheet_frame)));
 
@@ -196,8 +200,10 @@ public class AutofillKeyboardAccessoryIntegrationTest {
 
         whenDisplayed(withId(R.id.bar_items_view))
                 .perform(
-                        scrollTo(isKeyboardAccessoryTabLayout()),
-                        actionOnItem(isKeyboardAccessoryTabLayout(), selectTabAtPosition(0)));
+                        scrollTo(isAssignableFrom(KeyboardAccessoryButtonGroupView.class)),
+                        actionOnItem(
+                                isAssignableFrom(KeyboardAccessoryButtonGroupView.class),
+                                selectTabAtPosition(0)));
 
         whenDisplayed(withId(R.id.keyboard_accessory_sheet_frame))
                 .check(

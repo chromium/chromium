@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -375,8 +376,8 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
   // at the index in the UKM data specified by |expected_idx|.
   void CheckHeuristicsUkmRecord(const HeuristicsTestCase& test_case,
                                 size_t expected_idx) {
-    std::vector<const ukm::mojom::UkmEntry*> entries =
-        test_ukm_recorder_->GetEntriesByName(
+    std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>
+        entries = test_ukm_recorder_->GetEntriesByName(
             ukm::builders::Security_SafetyTip::kEntryName);
 
     EXPECT_LT(expected_idx, entries.size());

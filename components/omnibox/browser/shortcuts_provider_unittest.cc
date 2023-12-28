@@ -851,14 +851,10 @@ TEST_F(ShortcutsProviderTest, DoAutocompleteAggregateShortcuts) {
   }
 }
 
-// TODO(crbug.com/1509874): test is failing on iPhone device.
-#if TARGET_OS_IOS && !TARGET_IPHONE_SIMULATOR
-#define MAYBE_DoAutocompleteWithScoringSignals \
-  DISABLED_DoAutocompleteWithScoringSignals
-#else
-#define MAYBE_DoAutocompleteWithScoringSignals DoAutocompleteWithScoringSignals
-#endif
-TEST_F(ShortcutsProviderTest, MAYBE_DoAutocompleteWithScoringSignals) {
+TEST_F(ShortcutsProviderTest, DoAutocompleteWithScoringSignals) {
+  OmniboxFieldTrial::ScopedMLConfigForTesting scoped_ml_config;
+  scoped_ml_config.GetMLConfig().log_url_scoring_signals = true;
+
   TestShortcutData shortcut_data[] = {
       MakeShortcutData("wikipedia", "https://wikipedia.org/wilson7", 1, 1),
       MakeShortcutData("wilson7", "https://wikipedia.org/wilson7", 2, 2),

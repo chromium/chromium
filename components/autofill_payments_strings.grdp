@@ -440,6 +440,9 @@
     <message name="IDS_AUTOFILL_CARD_UNMASK_CVC_IMAGE_ANNOUNCEMENT_AMEX" desc="Announcement for the CVC image. It describes where to find the CVC on an American Express credit card.">
       Your CVC is on the front of your card. It’s the 4-digit code at the top right above your card number.
     </message>
+    <message name="IDS_AUTOFILL_IBAN_UNMASK_PROGRESS_DIALOG_TITLE" desc="Title for the progress dialog that occurs during server IBAN unmasking flows. The progress dialog is shown after the user selects a server IBAN, and will be dismissed once we receive a server response that indicates that we can continue to the next step. The main purpose of the dialog is to inform the user that something is happening in the background, but that task is not done yet.">
+      Filling IBAN
+    </message>
   </if>
   <if expr="is_ios">
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE" desc="Title for the credit card unmasking dialog.">
@@ -520,6 +523,9 @@
   <message name="IDS_AUTOFILL_MASKED_SERVER_CARD_RISK_BASED_UNMASK_PROGRESS_BAR_MESSAGE" desc="Loading message displayed after selecting/tapping a credit card entry in Autofill, before possibly showing the user any other verification steps.">
     Securely checking your payment details
   </message>
+  <message name="IDS_AUTOFILL_IBAN_UNMASK_PROGRESS_BAR_MESSAGE" desc="The progress dialog is shown after the user selects a server IBAN, and will be dismissed once we receive a server response that indicates that we can continue to the next step. The main purpose of the dialog is to inform the user that something is happening in the background, but that task is not done yet.">
+    Loading...
+  </message>
   <message name="IDS_AUTOFILL_CARD_UNMASK_CANCEL_BUTTON_LABEL" desc="Button that allows the user to cancel the card unmasking process.">
     Cancel
   </message>
@@ -528,6 +534,12 @@
   </message>
   <message name="IDS_AUTOFILL_FIDO_AUTHENTICATION_PROMPT_TITLE" desc="Title for FIDO authentication progress dialog">
       Verifying...
+  </message>
+  <message name="IDS_AUTOFILL_IBAN_UNMASK_ERROR_DIALOG_TITLE" desc="Title displayed when there is a server failure during the process of unmasking a server IBAN.">
+    IBAN not filled in
+  </message>
+  <message name="IDS_AUTOFILL_IBAN_UNMASK_ERROR_DIALOG_MESSAGE" desc="Message displayed when there is a server failure during the process of unmasking a server IBAN.">
+    Something went wrong. Try again.
   </message>
 
   <!-- DeviceAuthentication titles-->

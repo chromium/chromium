@@ -86,6 +86,7 @@ function emitExpectedResult(path, expected)
     case 'navigator.connection.rtt':
     case "navigator.deviceMemory":
     case "navigator.devicePosture.type":
+    case "navigator.gpu.wgslLanguageFeatures.size":
     case "navigator.hardwareConcurrency":
     case "navigator.language":
     case "navigator.onLine":

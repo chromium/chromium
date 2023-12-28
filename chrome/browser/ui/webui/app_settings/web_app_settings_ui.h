@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_APP_SETTINGS_WEB_APP_SETTINGS_UI_H_
 
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
+#include "chrome/browser/ui/webui/app_management/app_management_page_handler_base.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler_factory.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
@@ -25,7 +25,7 @@ class WebAppSettingsUI : public ui::MojoWebUIController,
 
   ~WebAppSettingsUI() override;
 
-  static std::unique_ptr<AppManagementPageHandler::Delegate>
+  static std::unique_ptr<AppManagementPageHandlerBase::Delegate>
   CreateAppManagementPageHandlerDelegate(Profile* profile);
 
   // Instantiates implementor of the mojom::PageHandlerFactory mojo interface

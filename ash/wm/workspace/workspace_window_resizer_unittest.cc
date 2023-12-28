@@ -174,7 +174,8 @@ class WorkspaceWindowResizerTest : public AshTestBase {
   std::unique_ptr<WorkspaceWindowResizer> CreateWorkspaceResizerForTest(
       aura::Window* window,
       int window_component,
-      const std::vector<aura::Window*>& attached_windows) {
+      const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
+          attached_windows) {
     return CreateWorkspaceResizerForTest(window, gfx::Point(), window_component,
                                          wm::WINDOW_MOVE_SOURCE_MOUSE,
                                          attached_windows);
@@ -185,7 +186,8 @@ class WorkspaceWindowResizerTest : public AshTestBase {
       const gfx::Point& point_in_parent,
       int window_component,
       wm::WindowMoveSource source,
-      const std::vector<aura::Window*>& attached_windows) {
+      const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
+          attached_windows) {
     WindowState* window_state = WindowState::Get(window);
     window_state->CreateDragDetails(gfx::PointF(point_in_parent),
                                     window_component, source);
@@ -246,8 +248,8 @@ class WorkspaceWindowResizerTest : public AshTestBase {
   TestWindowDelegate touch_resize_delegate_;
   std::unique_ptr<aura::Window> touch_resize_window_;
 
-  raw_ptr<WorkspaceWindowResizer, DanglingUntriaged | ExperimentalAsh>
-      workspace_resizer_ = nullptr;
+  raw_ptr<WorkspaceWindowResizer, DanglingUntriaged> workspace_resizer_ =
+      nullptr;
 };
 
 // Assertions around attached window resize dragging from the right with 2
@@ -539,7 +541,7 @@ TEST_F(WorkspaceWindowResizerTest, MouseMoveWithTouchDrag) {
   // The cursor should not be locked initially.
   EXPECT_FALSE(shell->cursor_manager()->IsCursorLocked());
 
-  std::vector<aura::Window*> windows;
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> windows;
   windows.push_back(window2_.get());
   std::unique_ptr<WorkspaceWindowResizer> resizer =
       CreateWorkspaceResizerForTest(window_.get(), gfx::Point(), HTRIGHT,
@@ -1548,7 +1550,7 @@ TEST_F(WorkspaceWindowResizerTest, DontRewardRightmostWindowForOverflows) {
   window4_->SetBounds(gfx::Rect(400, 100, 100, 100));
   delegate2_.set_max_size(gfx::Size(101, 0));
 
-  std::vector<aura::Window*> windows;
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> windows;
   windows.push_back(window2_.get());
   windows.push_back(window3_.get());
   windows.push_back(window4_.get());

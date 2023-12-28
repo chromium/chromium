@@ -9,17 +9,17 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/signatures.h"
-#include "components/variations/variations_ids_provider.h"
 #include "components/version_info/channel.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/isolation_info.h"
@@ -45,44 +45,12 @@ struct ScopedActiveAutofillExperiments {
 // Obtains Autofill server predictions and upload votes for generating them.
 class AutofillCrowdsourcingManager {
  public:
-  enum RequestType {
-    REQUEST_QUERY,
-    REQUEST_UPLOAD,
-  };
-
   // Names of UMA metrics recorded in this class.
   static constexpr char kUmaApiUrlIsTooLong[] =
       "Autofill.Query.ApiUrlIsTooLong";
   static constexpr char kUmaGetUrlLength[] = "Autofill.Query.GetUrlLength";
   static constexpr char kUmaMethod[] = "Autofill.Query.Method";
   static constexpr char kUmaWasInCache[] = "Autofill.Query.WasInCache";
-
-  // An interface used to notify clients of AutofillCrowdsourcingManager.
-  class Observer {
-   public:
-    // Called when field type predictions are successfully received from the
-    // server. |response| contains the server response for the forms
-    // represented by |queried_form_signatures|.
-    virtual void OnLoadedServerPredictions(
-        std::string response,
-        const std::vector<FormSignature>& queried_form_signatures) = 0;
-
-    // These notifications are used to help with testing.
-    // Called when heuristic either successfully considered for upload and
-    // not send or uploaded.
-    virtual void OnUploadedPossibleFieldTypes() {}
-
-    // Called when there was an error during the request.
-    // |form_signature| - the signature of the requesting form.
-    // |request_type| - type of request that failed.
-    // |http_error| - HTTP error code.
-    virtual void OnServerRequestError(FormSignature form_signature,
-                                      RequestType request_type,
-                                      int http_error) {}
-
-   protected:
-    virtual ~Observer() = default;
-  };
 
   // `client` owns (and hence survives) this AutofillCrowdsourcingManager.
   // `channel` determines the value for the the Google-API-key HTTP header and
@@ -93,12 +61,19 @@ class AutofillCrowdsourcingManager {
 
   virtual ~AutofillCrowdsourcingManager();
 
+  // The callback executed on successful completion of a query request. The
+  // first parameter contains the server response and the second parameter the
+  // queried form signatures.
+  using QueryRequestCompleteCallback =
+      base::OnceCallback<void(std::string, const std::vector<FormSignature>&)>;
+
   // Starts a query request to Autofill servers. The observer is called with the
   // list of the fields of all requested forms.
-  // |forms| - array of forms aggregated in this request.
-  virtual bool StartQueryRequest(const std::vector<FormStructure*>& forms,
-                                 net::IsolationInfo isolation_info,
-                                 base::WeakPtr<Observer> observer);
+  // `forms` - array of forms aggregated in this request.
+  virtual bool StartQueryRequest(
+      const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
+      net::IsolationInfo isolation_info,
+      QueryRequestCompleteCallback callback);
 
   // Starts an upload request for `upload_contents`. If `upload_contents` has
   // more than one element, then `upload_contents[0]` is expected to correspond
@@ -110,30 +85,7 @@ class AutofillCrowdsourcingManager {
       std::vector<AutofillUploadContents> upload_contents,
       mojom::SubmissionSource form_submission_source,
       int form_active_field_count,
-      PrefService* prefs,
-      base::WeakPtr<Observer> observer);
-
-  // DEPRECATED (crbug.com/1505969): Use the version that expect
-  // `AutofillUploadContents` instead of `FormStructure` instead.
-  //
-  // Starts an upload request for the given |form|. |available_field_types|
-  // should contain the types for which we have data stored on the local client.
-  // |login_form_signature| may be empty. It is non-empty when the user fills
-  // and submits a login form using a generated password. In this case,
-  // |login_form_signature| should be set to the submitted form's signature.
-  // Note that in this case, |form.FormSignature()| gives the signature for the
-  // registration form on which the password was generated, rather than the
-  // submitted form's signature.
-  // |observed_submission| indicates whether the upload request is the result of
-  // an observed submission event.
-  virtual bool StartUploadRequest(
-      const FormStructure& form,
-      bool form_was_autofilled,
-      const ServerFieldTypeSet& available_field_types,
-      const std::string& login_form_signature,
-      bool observed_submission,
-      PrefService* pref_service,
-      base::WeakPtr<Observer> observer);
+      PrefService* prefs);
 
   // Returns true if the autofill server communication is enabled.
   bool IsEnabled() const;
@@ -154,7 +106,7 @@ class AutofillCrowdsourcingManager {
   // Gets the length of the payload from request data. Used to simulate
   // different payload sizes when testing without the need for data. Do not use
   // this when the length is needed to read/write a buffer.
-  virtual size_t GetPayloadLength(base::StringPiece payload) const;
+  virtual size_t GetPayloadLength(std::string_view payload) const;
 
  private:
   friend class AutofillCrowdsourcingManagerTestApi;
@@ -196,9 +148,6 @@ class AutofillCrowdsourcingManager {
       base::TimeTicks request_start,
       std::unique_ptr<std::string> response_body);
 
-  static void InitActiveExperiments();
-  static void ResetActiveExperiments();
-
   // The AutofillClient that this instance will use. Must not be null, and must
   // outlive this instance.
   const raw_ptr<AutofillClient> client_;
@@ -215,9 +164,6 @@ class AutofillCrowdsourcingManager {
 
   // The period after which the tracked set of uploads to throttle is reset.
   const base::TimeDelta throttle_reset_period_;
-
-  // The set of active autofill server experiments.
-  static std::vector<variations::VariationID>* active_experiments_;
 
   // Loaders used for the processing the requests. Invalidated after completion.
   std::list<std::unique_ptr<network::SimpleURLLoader>> url_loaders_;

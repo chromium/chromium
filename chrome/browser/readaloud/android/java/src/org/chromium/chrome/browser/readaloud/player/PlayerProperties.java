@@ -40,6 +40,8 @@ public class PlayerProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey VOICE_PREVIEW_PLAYBACK_STATE =
             new WritableIntPropertyKey();
+    public static final WritableBooleanPropertyKey OPTION_SHEET_PENDING =
+            new WritableBooleanPropertyKey();
     public static final PropertyKey[] ALL_KEYS = {
         EXPANDED_PLAYER_VISIBILITY,
         TITLE,
@@ -56,5 +58,6 @@ public class PlayerProperties {
         SELECTED_VOICE_ID,
         PREVIEWING_VOICE_ID,
         VOICE_PREVIEW_PLAYBACK_STATE,
+        OPTION_SHEET_PENDING,
     };
 }

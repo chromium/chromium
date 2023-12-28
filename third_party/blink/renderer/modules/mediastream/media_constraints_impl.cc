@@ -618,6 +618,16 @@ bool ValidateAndCopyConstraintSet(
                           constraint_buffer.background_blur);
   }
 
+  if (constraints_in->hasEyeGazeCorrection()) {
+    CopyBooleanConstraint(constraints_in->eyeGazeCorrection(), naked_treatment,
+                          constraint_buffer.eye_gaze_correction);
+  }
+
+  if (constraints_in->hasFaceFraming()) {
+    CopyBooleanConstraint(constraints_in->faceFraming(), naked_treatment,
+                          constraint_buffer.face_framing);
+  }
+
   if (constraints_in->hasDisplaySurface()) {
     if (!ValidateAndCopyStringConstraint(
             constraints_in->displaySurface(), naked_treatment,
@@ -839,6 +849,13 @@ void ConvertConstraintSet(const MediaTrackConstraintSetPlatform& input,
   if (!input.background_blur.IsUnconstrained()) {
     output->setBackgroundBlur(
         ConvertBoolean(input.background_blur, naked_treatment));
+  }
+  if (!input.eye_gaze_correction.IsUnconstrained()) {
+    output->setEyeGazeCorrection(
+        ConvertBoolean(input.eye_gaze_correction, naked_treatment));
+  }
+  if (!input.face_framing.IsUnconstrained()) {
+    output->setFaceFraming(ConvertBoolean(input.face_framing, naked_treatment));
   }
   if (!input.suppress_local_audio_playback.IsUnconstrained()) {
     output->setSuppressLocalAudioPlayback(

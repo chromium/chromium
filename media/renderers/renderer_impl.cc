@@ -352,10 +352,10 @@ bool RendererImpl::GetWallClockTimes(
 }
 
 bool RendererImpl::HasEncryptedStream() {
-  std::vector<DemuxerStream*> demuxer_streams =
+  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> demuxer_streams =
       media_resource_->GetAllStreams();
 
-  for (auto* stream : demuxer_streams) {
+  for (media::DemuxerStream* stream : demuxer_streams) {
     if (stream->type() == DemuxerStream::AUDIO &&
         stream->audio_decoder_config().is_encrypted())
       return true;

@@ -21,11 +21,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/base/locale_util.h"
+#include "chrome/browser/ash/http_auth_dialog.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
@@ -78,7 +80,6 @@
 #include "chrome/browser/ash/policy/enrollment/fake_auto_enrollment_client.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
-#include "chrome/browser/auth_notification_types.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
@@ -619,12 +620,10 @@ class WizardControllerFlowTest : public WizardControllerTest {
     wizard_controller->SetCurrentScreen(nullptr);
     WaitForOobeUI();
     wizard_controller->SetSharedURLLoaderFactoryForTesting(
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_url_loader_factory_));
+        test_url_loader_factory_.GetSafeWeakWrapper());
     SimpleGeolocationProvider::GetInstance()
         ->SetSharedUrlLoaderFactoryForTesting(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_));
+            test_url_loader_factory_.GetSafeWeakWrapper());
 
     // Set up the mocks for all screens.
     mock_welcome_screen_ =
@@ -2327,15 +2326,18 @@ class WizardControllerProxyAuthOnSigninTest : public OobeBaseTest {
 };
 
 // TODO(crbug.com/1286218): Flakes on CrOS.
+// TODO(crbug.com/1514135): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ProxyAuthDialogOnSigninScreen \
+  DISABLED_ProxyAuthDialogOnSigninScreen
+#else
+#define MAYBE_ProxyAuthDialogOnSigninScreen ProxyAuthDialogOnSigninScreen
+#endif
 IN_PROC_BROWSER_TEST_F(WizardControllerProxyAuthOnSigninTest,
-                       ProxyAuthDialogOnSigninScreen) {
-  content::WindowedNotificationObserver auth_needed_waiter(
-      chrome::NOTIFICATION_AUTH_NEEDED,
-      content::NotificationService::AllSources());
-
+                       MAYBE_ProxyAuthDialogOnSigninScreen) {
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
-
-  auth_needed_waiter.Wait();
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return HttpAuthDialog::GetAllDialogsForTest().size() == 1; }));
 }
 
 class WizardControllerKioskFlowTest : public WizardControllerFlowTest {

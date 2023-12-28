@@ -76,6 +76,11 @@ class PdfViewerStreamManager
   PdfViewerStreamManager& operator=(const PdfViewerStreamManager&) = delete;
   ~PdfViewerStreamManager() override;
 
+  // Returns a pointer to the `PdfViewerStreamManager` instance associated with
+  // the `content::WebContents` of `render_frame_host`.
+  static PdfViewerStreamManager* FromRenderFrameHost(
+      content::RenderFrameHost* render_frame_host);
+
   // Starts tracking a `StreamContainer` in an embedder FrameTreeNode, before
   // the embedder host commits. The `StreamContainer` is considered unclaimed
   // until the embedder host commits, at which point the `StreamContainer` is
@@ -92,6 +97,13 @@ class PdfViewerStreamManager
   // nullptr if `embedder_host` hasn't claimed any stream containers.
   base::WeakPtr<extensions::StreamContainer> GetStreamContainer(
       content::RenderFrameHost* embedder_host);
+
+  // Returns whether the PDF plugin should handle save events.
+  bool PluginCanSave(content::RenderFrameHost* embedder_host);
+
+  // Set whether the PDF plugin should handle save events.
+  void SetPluginCanSave(content::RenderFrameHost* embedder_host,
+                        bool plugin_can_save);
 
   // WebContentsObserver overrides.
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
@@ -145,6 +157,12 @@ class PdfViewerStreamManager
 
     bool DidPdfContentNavigate() const;
 
+    bool plugin_can_save() const { return plugin_can_save_; }
+
+    void set_plugin_can_save(bool plugin_can_save) {
+      plugin_can_save_ = plugin_can_save;
+    }
+
    private:
     // A unique ID for the PDF viewer instance. Used to set up postMessage
     // support for the full-page PDF viewer.
@@ -166,6 +184,9 @@ class PdfViewerStreamManager
     // A unique ID for this instance. Used for postMessage support to identify
     // `extensions::MimeHandlerViewFrameContainer` objects.
     int32_t instance_id_;
+
+    // True if the PDF plugin should handle save events.
+    bool plugin_can_save_ = false;
   };
 
   explicit PdfViewerStreamManager(content::WebContents* contents);

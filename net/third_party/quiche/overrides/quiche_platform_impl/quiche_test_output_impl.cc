@@ -75,7 +75,7 @@ void QuicheRecordTraceImpl(std::string_view identifier, std::string_view data) {
   strftime(timestamp, sizeof(timestamp), "%Y%m%d%H%M%S", &now);
 
   std::string filename = base::StringPrintf(
-      "%s.%s.%s.%s.qtr", test_info->name(), test_info->test_case_name(),
+      "%s.%s.%s.%s.qtr", test_info->name(), test_info->test_suite_name(),
       identifier.data(), timestamp);
 
   QuicheRecordTestOutputToFile(filename, data);

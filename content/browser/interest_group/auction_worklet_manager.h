@@ -107,6 +107,9 @@ class CONTENT_EXPORT AuctionWorkletManager {
     // Returns the ClientSecurityState associated with the frame, for use in
     // bidder worklet and signals fetches.
     virtual network::mojom::ClientSecurityStatePtr GetClientSecurityState() = 0;
+
+    // Returns the cookie deprecation label for facilitated testing.
+    virtual absl::optional<std::string> GetCookieDeprecationLabel() = 0;
   };
 
   // Internal class that owns and creates worklets. It also tracks pending

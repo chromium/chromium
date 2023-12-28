@@ -41,7 +41,7 @@
 <translation id="2599796128805996109">دوربین پشت</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> ثانیه</translation>
 <translation id="2761536921376153655">نوع اسکن</translation>
-<translation id="28682968802727151">پیش‌نمایش بازتاب</translation>
+<translation id="28682968802727151">پیش‌نمایش قرینه‌سازی</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> متصل شد.</translation>
 <translation id="3067436040345934772">حرکت دادن به راست</translation>
 <translation id="3081586908890909590">رفتن به حالت فیلم‌برداری</translation>
@@ -78,6 +78,7 @@
 <translation id="4705093842003735294">وضوح کامل</translation>
 <translation id="4864143361253542638">فهرست صفحه اسکن‌شده</translation>
 <translation id="4890010094662541459">۳ × ۳</translation>
+<translation id="4892746741161549733">کپی کردن نشانی پیوند <ph name="URL" /></translation>
 <translation id="491895758387112773">ضبط ویدیو  چندجریانی</translation>
 <translation id="495170559598752135">کنش‌ها</translation>
 <translation id="4984613436295737187">‏Quad HD (۱۴۴۰ پیکسل)</translation>
@@ -112,7 +113,7 @@
 اگر بازخوردتان درباره کیفیت تصویر یا ویدیو است، لطفاً نمونه‌ای از عکس یا ویدیو را ضمیمه کنید و مشکل را توضیح دهید. (برای مثال، عکس خیلی تیره است یا روی سوژه موردنظر فوکوس نشده است.)</translation>
 <translation id="6527303717912515753">اشتراک‌گذاری</translation>
 <translation id="6617916774429601017">نمایش همه وضوح‌ها</translation>
-<translation id="6631515515009660915">بازتاب خاموش</translation>
+<translation id="6631515515009660915">قرینه‌سازی خاموش</translation>
 <translation id="6652737148136672975">موقعیت گوشه را بااستفاده از کلیدهای جهت‌نما تغییر دهید</translation>
 <translation id="667999046851023355">سند</translation>
 <translation id="6681668084120808868">عکسبرداری</translation>
@@ -129,6 +130,7 @@
 <translation id="7450541714075000668">نوشتار کپی شد</translation>
 <translation id="7488619942230388918">‏ضبط ویدیو  GIF</translation>
 <translation id="7557677699350329807">جابه‌جایی به دوربین بعدی</translation>
+<translation id="7562584071994185503">کپی کردن نوشتار <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">متوقف</translation>
 <translation id="7608223098072244877">۴ در ۴</translation>
 <translation id="761421184377987513">درحال انتقال به‌سمت چپ پایین</translation>
@@ -141,6 +143,7 @@
 <translation id="7726641833034062494">ضبط ویدیو  معمولی</translation>
 <translation id="7748344063862150053">گوشه بالا سمت راست سند</translation>
 <translation id="7933675232020478311">درحال انتقال به‌سمت راست پایین</translation>
+<translation id="7983668134180549431">نوشتار شناسایی شد.</translation>
 <translation id="8079255378695216066">نمی‌توان ضبط را شروع کرد</translation>
 <translation id="8120146556401698679">حرکت دادن، کج کردن، بزرگ‌نمایی</translation>
 <translation id="8131740175452115882">تأیید</translation>
@@ -150,6 +153,7 @@
 <translation id="8346544573713510785">‏مقیاس‌بندی قاب‌ها توسط Camera HAL</translation>
 <translation id="8425673304802773841">پایین کشیدن</translation>
 <translation id="8428213095426709021">تنظیمات</translation>
+<translation id="8609951387004618906">باز کردن <ph name="URL" /></translation>
 <translation id="8629662593426079630">۳۶۰ پیکسل</translation>
 <translation id="8711011893539266636">وضعیت بی‌صدا بودن میکروفون را تغییر دهید. میکروفون بی‌صدا است</translation>
 <translation id="8730621377337864115">تمام</translation>
@@ -159,11 +163,10 @@
 <translation id="8870695351537079478">شروع ضبط انجام نشد</translation>
 <translation id="8880167521484863515">۴ به ۳</translation>
 <translation id="8903921497873541725">بزرگ‌نمایی</translation>
-<translation id="8926890870105777777">پیوستن به شبکه «<ph name="WIFINAME" />»</translation>
 <translation id="9045010116236796332">همه لبه‌های سند را داخل قاب قرار دهید</translation>
 <translation id="9045155556724273246">۱۰ ثانیه</translation>
 <translation id="906331135292332864">درحال پردازش تصویر…</translation>
 <translation id="9161584225258678723">زمان‌گریز</translation>
-<translation id="922762992951083513">بازتاب روشن</translation>
+<translation id="922762992951083513">قرینه‌سازی روشن</translation>
 <translation id="945522503751344254">ارسال بازخورد</translation>
 </translationbundle>

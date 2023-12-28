@@ -38,7 +38,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BuildInfo;
-import org.chromium.base.BundleUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
@@ -129,6 +128,7 @@ import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureControll
 import org.chromium.chrome.browser.metrics.ActivityTabStartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
+import org.chromium.chrome.browser.modaldialog.TabModalLifetimeHandler;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
@@ -182,12 +182,12 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.device_lock.MissingDeviceLockLauncher;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
-import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -289,6 +289,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     /** Used to access the {@link TabCreatorManager} from {@link WindowAndroid}. */
     private final UnownedUserDataSupplier<TabCreatorManager> mTabCreatorManagerSupplier =
             new TabCreatorManagerSupplier();
+
+    private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier =
+            new ObservableSupplierImpl<>();
 
     private final UnownedUserDataSupplier<ManualFillingComponent> mManualFillingComponentSupplier =
             new ManualFillingComponentSupplier();
@@ -402,6 +405,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private boolean mIsRecreatingForTabletModeChange;
     // This is only used on automotive.
     private @Nullable MissingDeviceLockLauncher mMissingDeviceLockLauncher;
+    // Handling the dismissal of tab modal dialog.
+    private TabModalLifetimeHandler mTabModalLifetimeHandler;
 
     protected ChromeActivity() {
         mManualFillingComponentSupplier.set(ManualFillingComponentFactory.createComponent());
@@ -579,6 +584,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 mCompositorViewHolderSupplier,
                 getTabContentManagerSupplier(),
                 this::getSnackbarManager,
+                getEdgeToEdgeSupplier(),
                 getActivityType(),
                 this::isInOverviewMode,
                 this::isWarmOnResume,
@@ -708,8 +714,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
             mBottomContainer = (BottomContainer) findViewById(R.id.bottom_container);
 
-            // TODO(crbug.com/1199776): Move this to the RootUiCoordinator.
             mSnackbarManager = new SnackbarManager(this, mBottomContainer, getWindowAndroid());
+            mInsetObserverViewSupplier.get().addObserver(mSnackbarManager);
             SnackbarManagerProvider.attach(getWindowAndroid(), mSnackbarManager);
 
             // Make the activity listen to policy change events
@@ -1083,7 +1089,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                             getBrowserControlsManager(),
                             getWindowAndroid(),
                             getTabModelSelectorSupplier().get(),
-                            () -> getLastUserInteractionTime()));
+                            () -> getLastUserInteractionTime(),
+                            getEdgeToEdgeSupplier()));
         }
 
         TraceEvent.end("ChromeActivity:CompositorInitialization");
@@ -1135,14 +1142,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 tab.loadIfNeeded(TabLoadIfNeededCaller.ON_ACTIVITY_SHOWN);
             }
         }
-        VrModuleProvider.getDelegate().onActivityShown(this);
-
         MultiWindowUtils.getInstance().recordMultiWindowStateUkm(this, tab);
     }
 
     private void onActivityHidden() {
-        VrModuleProvider.getDelegate().onActivityHidden(this);
-
         Tab tab = getActivityTab();
         TabModelSelector tabModelSelector = mTabModelOrchestrator.getTabModelSelector();
         // If tab reparenting is in progress and the activity Tab isn't being reparented, e.g.
@@ -1745,7 +1748,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mStylusWritingCoordinator = null;
         }
 
-        // Destroy spare tab on activitiy destruction.
+        if (mInsetObserverViewSupplier.get() != null) {
+            mInsetObserverViewSupplier.get().removeObserver(mSnackbarManager);
+        }
+
+        // Destroy spare tab on activity destruction.
         WarmupManager warmupManager = WarmupManager.getInstance();
         warmupManager.destroySpareTab();
 
@@ -1785,8 +1792,40 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     @Override
     protected ModalDialogManager createModalDialogManager() {
-        return new ModalDialogManager(
-                new AppModalPresenter(this), ModalDialogManager.ModalDialogType.APP);
+        var dialogManager =
+                new ModalDialogManager(
+                        new AppModalPresenter(this), ModalDialogManager.ModalDialogType.APP);
+        // TODO(crbug.com/1157310): Transition this::method refs to dedicated suppliers.
+        if (supportsTabModalDialogs()) {
+            mTabModalLifetimeHandler =
+                    new TabModalLifetimeHandler(
+                            this,
+                            getLifecycleDispatcher(),
+                            dialogManager,
+                            () -> mRootUiCoordinator.getAppBrowserControlsVisibilityDelegate(),
+                            this::getTabObscuringHandler,
+                            this::getToolbarManager,
+                            getContextualSearchManagerSupplier(),
+                            getTabModelSelectorSupplier(),
+                            this::getBrowserControlsManager,
+                            this::getFullscreenManager,
+                            mBackPressManager);
+        }
+        return dialogManager;
+    }
+
+    /**
+     * Whether tab modal dialog is supported. If not, a dialog will be shown as a App modal dialog.
+     *
+     * @return True if tab modal dialog is supported.
+     */
+    protected boolean supportsTabModalDialogs() {
+        return false;
+    }
+
+    @Nullable
+    protected TabModalLifetimeHandler getTabModalLifetimeHandler() {
+        return mTabModalLifetimeHandler;
     }
 
     protected Drawable getBackgroundDrawable() {
@@ -1833,19 +1872,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         maybeRemoveWindowBackground();
         DownloadManagerService.getDownloadManagerService()
                 .onActivityLaunched(new DownloadMessageUiDelegate());
-        VrModuleProvider.maybeInit();
-        VrModuleProvider.getDelegate().onNativeLibraryAvailable();
 
         PowerMonitor.create();
-
-        // The first launch of the screenshot feature benefits from this DFM being installed
-        // proactively. However without the isolated split feature there are performance regressions
-        // as a result of adding this extra code.
-        if (BundleUtils.isolatedSplitsEnabled()
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && AppHooks.get().getImageEditorModuleProvider() != null) {
-            AppHooks.get().getImageEditorModuleProvider().maybeInstallModuleDeferred();
-        }
 
         super.finishNativeInitialization();
 
@@ -1998,6 +2026,14 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         return mTabCreatorManagerSupplier;
     }
 
+    /**
+     * @return a supplier for the {@link EdgeToEdgeController} that supports drawing to the edge of
+     *     the screen.
+     */
+    protected final ObservableSupplierImpl<EdgeToEdgeController> getEdgeToEdgeSupplier() {
+        return mEdgeToEdgeControllerSupplier;
+    }
+
     @Override
     public TabCreator getTabCreator(boolean incognito) {
         if (!areTabModelsInitialized()) {
@@ -2017,8 +2053,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     /**
      * Gets the {@link TabContentManager} instance which holds snapshots of the tabs in this model.
+     *
      * @return The thumbnail cache, possibly null.
-     * @Deprecated in favor of getTabContentManagerSupplier().
+     * @deprecated in favor of getTabContentManagerSupplier().
      */
     @Deprecated
     public TabContentManager getTabContentManager() {
@@ -2321,8 +2358,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             }
         }
 
-        VrModuleProvider.getDelegate().onMultiWindowModeChanged(isInMultiWindowMode);
-
         super.onMultiWindowModeChanged(isInMultiWindowMode);
     }
 
@@ -2363,11 +2398,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             // TODO(crbug.com/1279941): should this stop propagating the event?
             TextBubble.dismissBubbles();
             BackPressManager.record(Type.TEXT_BUBBLE);
-        }
-
-        if (VrModuleProvider.getDelegate().onBackPressed()) {
-            BackPressManager.record(Type.VR_DELEGATE);
-            return true;
         }
 
         XrDelegate xrDelegate = XrDelegateProvider.getDelegate();
@@ -2431,7 +2461,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             // TODO(crbug.com/1279941): consider move to RootUiCoordinator.
             mTextBubbleBackPressHandler = new TextBubbleBackPressHandler();
             mBackPressManager.addHandler(mTextBubbleBackPressHandler, Type.TEXT_BUBBLE);
-            mBackPressManager.addHandler(VrModuleProvider.getDelegate(), Type.VR_DELEGATE);
 
             if (XrDelegateProvider.getDelegate() != null) {
                 mBackPressManager.addHandler(XrDelegateProvider.getDelegate(), Type.XR_DELEGATE);
@@ -2475,7 +2504,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                     new OnBackPressedCallback(true) {
                         @Override
                         public void handleOnBackPressed() {
-                            mBackPressManager.recordLastPressInterval();
                             if (!ChromeActivity.this.handleOnBackPressed()) {
                                 if (BackPressManager.shouldMoveToBackDuringStartup()) {
                                     moveTaskToBack(true);
@@ -2900,9 +2928,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @Override
     public boolean onActivityResultWithNative(int requestCode, int resultCode, Intent intent) {
         if (super.onActivityResultWithNative(requestCode, resultCode, intent)) return true;
-        if (VrModuleProvider.getDelegate().onActivityResultWithNative(requestCode, resultCode)) {
-            return true;
-        }
         return false;
     }
 
@@ -3043,6 +3068,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     public boolean recreatingForTabletModeChangeForTesting() {
         return mIsRecreatingForTabletModeChange;
+    }
+
+    public ObservableSupplierImpl<EdgeToEdgeController>
+            getEdgeToEdgeControllerSupplierForTesting() {
+        return mEdgeToEdgeControllerSupplier;
     }
 
     /** Returns whether the print action was successfully started. */

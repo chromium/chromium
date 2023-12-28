@@ -56,6 +56,7 @@
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -815,6 +816,40 @@ void DedicatedWorkerHost::GetFileSystemAccessManager(
           GetStorageKey().origin().GetURL(), GetAssociatedRenderFrameHostId(),
           /*is_worker=*/true),
       std::move(receiver));
+}
+
+void DedicatedWorkerHost::BindPressureService(
+    mojo::PendingReceiver<device::mojom::PressureManager> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!network::IsOriginPotentiallyTrustworthy(creator_origin_)) {
+    return;
+  }
+
+  // https://www.w3.org/TR/compute-pressure/#policy-control
+  auto* ancestor_render_frame_host =
+      RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
+  if (!ancestor_render_frame_host) {
+    return;
+  }
+
+  if (!ancestor_render_frame_host->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kComputePressure)) {
+    ancestor_render_frame_host->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        "This frame is connected to a Dedicated Worker that has requested "
+        "access to the Compute Pressure API. This worker can't access the API "
+        "because this frame is not allowed to access this feature due to "
+        "Permissions Policy.");
+    return;
+  }
+
+  if (!pressure_service_) {
+    pressure_service_ =
+        std::make_unique<PressureServiceForWorker<DedicatedWorkerHost>>(this);
+  }
+
+  pressure_service_->BindReceiver(std::move(receiver));
 }
 
 void DedicatedWorkerHost::ObserveNetworkServiceCrash(

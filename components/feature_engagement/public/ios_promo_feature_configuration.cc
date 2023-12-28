@@ -8,6 +8,7 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/feature_engagement/public/configuration.h"
+#include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/group_constants.h"
 
@@ -43,9 +44,14 @@ absl::optional<FeatureConfig> GetStandardPromoConfig(
     config->groups.push_back(kiOSFullscreenPromosGroup.name);
     config->used =
         EventConfig("whats_new_promo_used", Comparator(ANY, 0), 365, 365);
-    // What's New promo should be trigger no more than once a month.
+    // What's New promo should be trigger no more than once every 14 days.
     config->trigger = EventConfig("whats_new_promo_trigger",
-                                  Comparator(LESS_THAN, 1), 30, 365);
+                                  Comparator(LESS_THAN, 1), 14, 365);
+    config->event_configs.insert(
+        EventConfig(feature_engagement::events::kViewedWhatsNew,
+                    Comparator(LESS_THAN, 1), 365, 365));
+    config->event_configs.insert(EventConfig(
+        "chrome_opened", Comparator(GREATER_THAN_OR_EQUAL, 7), 365, 365));
   }
 
   if (kIPHiOSPromoDefaultBrowserFeature.name == feature->name) {
@@ -117,6 +123,13 @@ absl::optional<FeatureConfig> GetStandardPromoConfig(
         EventConfig("omnibox_position_promo_trigger", Comparator(EQUAL, 0),
                     feature_engagement::kMaxStoragePeriod,
                     feature_engagement::kMaxStoragePeriod);
+
+    // Blocks the app launch promo if it has been shown in another context (the
+    // promo can also be shown in FRE).
+    config->event_configs.insert(
+        EventConfig(events::kOmniboxPositionPromoShown, Comparator(EQUAL, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod));
   }
 
   // All standard promos can only be shown once per month.
@@ -142,6 +155,23 @@ absl::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
     // from being signed-out after restoring their device.
     config->trigger =
         EventConfig("post_restore_promo_trigger", Comparator(ANY, 0), 365, 365);
+    return config;
+  }
+
+  if (kIPHWhatsNewUpdatedFeature.name == feature->name) {
+    // Should trigger and display What's New badged only when What's New was not
+    // viewed.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->used =
+        EventConfig("whats_new_updated_used", Comparator(ANY, 0), 365, 365);
+    config->trigger =
+        EventConfig("whats_new_updated_trigger", Comparator(ANY, 0), 365, 365);
+    config->event_configs.insert(
+        EventConfig(feature_engagement::events::kViewedWhatsNew,
+                    Comparator(LESS_THAN, 1), 365, 365));
     return config;
   }
 

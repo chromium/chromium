@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
@@ -47,7 +48,6 @@ class MetricsWebContentsObserver
     : public content::WebContentsObserver,
       public content::WebContentsUserData<MetricsWebContentsObserver>,
       public content::RenderWidgetHost::InputEventObserver,
-      public base::SupportsWeakPtr<MetricsWebContentsObserver>,
       public mojom::PageLoadMetrics {
  public:
   // Record a set of WebFeatures directly from the browser process. This
@@ -169,6 +169,10 @@ class MetricsWebContentsObserver
 
   // Returns the time this MetricsWebContentsObserver was created.
   base::TimeTicks GetCreated();
+
+  base::WeakPtr<MetricsWebContentsObserver> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  protected:
   // Protected rather than private so that derived test classes can call
@@ -362,6 +366,8 @@ class MetricsWebContentsObserver
   bool web_contents_will_soon_be_destroyed_ = false;
 
   base::TimeTicks created_;
+
+  base::WeakPtrFactory<MetricsWebContentsObserver> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

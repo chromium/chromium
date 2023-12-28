@@ -6,6 +6,7 @@
  * @fileoverview Plugin for rollup to correctly resolve resources.
  */
 import * as path from 'path';
+import * as assert from 'node:assert';
 
 function normalizeSlashes(filepath) {
   return filepath.replace(/\\/gi, '/');
@@ -48,6 +49,8 @@ function getPathForUrl(source, origin, urlPrefix, urlSrcPath, excludes) {
   if (source === urlPrefix) {
     // Handle case where 'urlPrefix` matches the entire `source` URL and
     // therefore is not just a prefix, but a complete URL.
+    assert.ok(!excludes.includes(source),
+        'Excluding non-prefix external paths not supprted yet.');
     return urlSrcPath;
   }
 

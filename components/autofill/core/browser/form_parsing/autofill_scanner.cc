@@ -5,12 +5,14 @@
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "components/autofill/core/browser/autofill_field.h"
 
 namespace autofill {
 
-AutofillScanner::AutofillScanner(const std::vector<AutofillField*>& fields) {
+AutofillScanner::AutofillScanner(
+    const std::vector<raw_ptr<AutofillField, VectorExperimental>>& fields) {
   Init(fields);
 }
 
@@ -63,7 +65,8 @@ size_t AutofillScanner::CursorPosition() {
   return static_cast<size_t>(cursor_ - begin_);
 }
 
-void AutofillScanner::Init(const std::vector<AutofillField*>& fields) {
+void AutofillScanner::Init(
+    const std::vector<raw_ptr<AutofillField, VectorExperimental>>& fields) {
   cursor_ = fields.begin();
   saved_cursor_ = fields.begin();
   begin_ = fields.begin();

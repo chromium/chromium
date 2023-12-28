@@ -103,7 +103,7 @@ class ShellSurfaceBuilder {
   absl::optional<gfx::Rect> geometry_;
   absl::optional<cc::Region> input_region_;
   absl::optional<SurfaceFrameType> type_;
-  raw_ptr<SecurityDelegate, ExperimentalAsh> security_delegate_ = nullptr;
+  raw_ptr<SecurityDelegate> security_delegate_ = nullptr;
   ash::AppType app_type_ = ash::AppType::NON_APP;
   std::string application_id_;
   bool use_system_modal_container_ = false;
@@ -118,7 +118,7 @@ class ShellSurfaceBuilder {
   absl::optional<gfx::Rect> bounds_;
 
   // ShellSurface-specific parameters.
-  raw_ptr<ShellSurface, ExperimentalAsh> parent_shell_surface_ = nullptr;
+  raw_ptr<ShellSurface> parent_shell_surface_ = nullptr;
   bool popup_ = false;
   bool menu_ = false;
   bool grab_ = false;

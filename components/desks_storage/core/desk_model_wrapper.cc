@@ -5,6 +5,7 @@
 #include "components/desks_storage/core/desk_model_wrapper.h"
 
 #include "ash/public/cpp/desk_template.h"
+#include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
 #include "components/account_id/account_id.h"
 #include "components/desks_storage/core/desk_model.h"
@@ -34,10 +35,12 @@ DeskModel::GetAllEntriesResult DeskModelWrapper::GetAllEntries() {
     return save_and_recall_result;
   }
 
-  std::vector<const ash::DeskTemplate*>& all_entries = templates_result.entries;
+  std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>&
+      all_entries = templates_result.entries;
 
-  for (auto* const entry : save_and_recall_result.entries)
+  for (const ash::DeskTemplate* const entry : save_and_recall_result.entries) {
     all_entries.push_back(entry);
+  }
 
   for (const auto& it : policy_entries_)
     all_entries.push_back(it.get());

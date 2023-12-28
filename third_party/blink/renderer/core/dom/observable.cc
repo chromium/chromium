@@ -75,7 +75,16 @@ void Observable::subscribe(ScriptState* script_state,
       break;
   }
 
-  DCHECK(subscribe_callback_);
+  // Exactly one of `subscribe_callback_` or `subscribe_delegate_` is non-null.
+  // Use whichever is provided.
+  CHECK_NE(!!subscribe_delegate_, !!subscribe_callback_)
+      << "Exactly one of subscribe_callback_ or subscribe_delegate_ should be "
+         "non-null";
+  if (subscribe_delegate_) {
+    subscribe_delegate_->OnSubscribe(subscriber, script_state);
+    return;
+  }
+
   // Ordinarily we'd just invoke `subscribe_callback_` with
   // `InvokeAndReportException()`, so that any exceptions get reported to the
   // global. However, Observables have special semantics with the error handler

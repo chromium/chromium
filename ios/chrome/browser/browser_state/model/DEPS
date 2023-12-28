@@ -1,8 +1,8 @@
 include_rules = [
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/bookmarks/model",
-  "+ios/chrome/browser/net",
-  "+ios/chrome/browser/policy",
+  "+ios/chrome/browser/net/model",
+  "+ios/chrome/browser/policy/model",
   "+ios/chrome/browser/prefs/model",
   "+ios/chrome/browser/content_settings/model",
   "+ios/chrome/browser/browser_state_metrics/model",

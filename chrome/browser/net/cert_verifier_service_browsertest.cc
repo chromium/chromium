@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/base64.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
@@ -31,6 +33,203 @@
 #else
 #include "chrome/test/base/in_process_browser_test.h"
 #endif
+
+#if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
+// Testing the CACertificates policy
+class CertVerifierServiceCACertificatesPolicyTest
+    : public policy::PolicyTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
+
+    if (add_cert_to_policy()) {
+      scoped_refptr<net::X509Certificate> root_cert = net::ImportCertFromFile(
+          net::EmbeddedTestServer::GetRootCertPemPath());
+      ASSERT_TRUE(root_cert);
+
+      std::string b64_cert = base::Base64Encode(
+          net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer()));
+      base::Value certs_value(base::Value::Type::LIST);
+      certs_value.GetList().Append(b64_cert);
+      policy::PolicyMap policies;
+      SetPolicy(&policies, policy::key::kCACertificates,
+                absl::make_optional(std::move(certs_value)));
+      UpdateProviderPolicy(policies);
+    }
+  }
+
+  bool add_cert_to_policy() const { return GetParam(); }
+};
+
+IN_PROC_BROWSER_TEST_P(CertVerifierServiceCACertificatesPolicyTest,
+                       TestCACertificatesPolicy) {
+  net::EmbeddedTestServer https_test_server(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_test_server.SetSSLConfig(
+      net::test_server::EmbeddedTestServer::CERT_AUTO);
+  https_test_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_test_server.Start());
+
+  // Clear test roots so that cert validation only happens with
+  // what's in the relevant root store + policies.
+  net::TestRootCerts::GetInstance()->Clear();
+
+  ASSERT_TRUE(NavigateToUrl(https_test_server.GetURL("/simple.html"), this));
+  EXPECT_NE(add_cert_to_policy(),
+            chrome_browser_interstitials::IsShowingInterstitial(
+                chrome_test_utils::GetActiveWebContents(this)));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CertVerifierServiceCACertificatesPolicyTest,
+                         ::testing::Bool());
+
+// Testing the CADistrutedCertificates policy
+class CertVerifierServiceCADistrustedCertificatesPolicyTest
+    : public policy::PolicyTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
+
+    scoped_refptr<net::X509Certificate> root_cert =
+        net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+    ASSERT_TRUE(root_cert);
+
+    std::string b64_cert = base::Base64Encode(
+        net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer()));
+    base::Value certs_value(base::Value::Type::LIST);
+    certs_value.GetList().Append(b64_cert);
+    policy::PolicyMap policies;
+    // Distrust the test server certificate
+    SetPolicy(&policies, policy::key::kCADistrustedCertificates,
+              absl::make_optional(std::move(certs_value)));
+    UpdateProviderPolicy(policies);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CertVerifierServiceCADistrustedCertificatesPolicyTest,
+                       TestPolicy) {
+  net::EmbeddedTestServer https_test_server(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_test_server.SetSSLConfig(
+      net::test_server::EmbeddedTestServer::CERT_AUTO);
+  https_test_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_test_server.Start());
+
+  // We don't clear the test roots but the cert should still be distrusted based
+  // on the enterprise policy.
+
+  ASSERT_TRUE(NavigateToUrl(https_test_server.GetURL("/simple.html"), this));
+
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
+      chrome_test_utils::GetActiveWebContents(this)));
+}
+
+class CertVerifierServiceCATrustedDistrustedCertificatesPolicyTest
+    : public policy::PolicyTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
+
+    scoped_refptr<net::X509Certificate> root_cert =
+        net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+    ASSERT_TRUE(root_cert);
+
+    std::string b64_cert = base::Base64Encode(
+        net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer()));
+    policy::PolicyMap policies;
+    // Distrust the test server certificate
+    {
+      base::Value certs_value(base::Value::Type::LIST);
+      certs_value.GetList().Append(b64_cert);
+      SetPolicy(&policies, policy::key::kCADistrustedCertificates,
+                absl::make_optional(std::move(certs_value)));
+    }
+    // Trust the test server certificate
+    {
+      base::Value certs_value(base::Value::Type::LIST);
+      certs_value.GetList().Append(b64_cert);
+      SetPolicy(&policies, policy::key::kCACertificates,
+                absl::make_optional(std::move(certs_value)));
+    }
+    UpdateProviderPolicy(policies);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    CertVerifierServiceCATrustedDistrustedCertificatesPolicyTest,
+    TestDistrustOverridesTrust) {
+  net::EmbeddedTestServer https_test_server(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_test_server.SetSSLConfig(
+      net::test_server::EmbeddedTestServer::CERT_AUTO);
+  https_test_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_test_server.Start());
+
+  // We don't clear the test roots but the cert should still be distrusted based
+  // on the enterprise policy.
+
+  ASSERT_TRUE(NavigateToUrl(https_test_server.GetURL("/simple.html"), this));
+
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
+      chrome_test_utils::GetActiveWebContents(this)));
+}
+
+// Testing the CAHintCertificate policy
+class CertVerifierServiceCAHintCertificatesPolicyTest
+    : public policy::PolicyTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
+
+    // Don't serve the intermediate either via AIA or as part of the handshake.
+    net::EmbeddedTestServer::ServerCertificateConfig cert_config;
+    cert_config.intermediate =
+        net::EmbeddedTestServer::IntermediateType::kMissing;
+    https_test_server_.SetSSLConfig(cert_config);
+    https_test_server_.ServeFilesFromSourceDirectory("chrome/test/data");
+    ASSERT_TRUE(https_test_server_.Start());
+
+    if (add_cert_to_policy()) {
+      // Add the intermediate as a hint.
+      scoped_refptr<net::X509Certificate> intermediate_cert =
+          https_test_server_.GetGeneratedIntermediate();
+      ASSERT_TRUE(intermediate_cert);
+
+      std::string b64_cert =
+          base::Base64Encode(net::x509_util::CryptoBufferAsStringPiece(
+              intermediate_cert->cert_buffer()));
+      base::Value certs_value(base::Value::Type::LIST);
+      certs_value.GetList().Append(b64_cert);
+      policy::PolicyMap policies;
+      SetPolicy(&policies, policy::key::kCAHintCertificates,
+                absl::make_optional(std::move(certs_value)));
+      UpdateProviderPolicy(policies);
+    }
+  }
+
+  net::EmbeddedTestServer https_test_server_{
+      net::EmbeddedTestServer::TYPE_HTTPS};
+
+  bool add_cert_to_policy() const { return GetParam(); }
+};
+
+IN_PROC_BROWSER_TEST_P(CertVerifierServiceCAHintCertificatesPolicyTest,
+                       TestPolicy) {
+  ASSERT_TRUE(NavigateToUrl(https_test_server_.GetURL("/simple.html"), this));
+
+  EXPECT_NE(add_cert_to_policy(),
+            chrome_browser_interstitials::IsShowingInterstitial(
+                chrome_test_utils::GetActiveWebContents(this)));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CertVerifierServiceCAHintCertificatesPolicyTest,
+                         ::testing::Bool());
+
+#endif  // BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 class CertVerifierServiceChromeRootStoreOptionalTest

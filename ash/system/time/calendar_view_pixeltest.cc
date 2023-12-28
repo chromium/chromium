@@ -86,8 +86,7 @@ class CalendarViewPixelTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<CalendarView, DanglingUntriaged | ExperimentalAsh> calendar_view_ =
-      nullptr;
+  raw_ptr<CalendarView, DanglingUntriaged> calendar_view_ = nullptr;
   static base::Time fake_time_;
 };
 
@@ -138,7 +137,7 @@ TEST_P(CalendarViewPixelTest, EventList) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "event_list_view",
-      /*revision_number=*/9, GetEventListView()));
+      /*revision_number=*/10, GetEventListView()));
 }
 
 }  // namespace ash

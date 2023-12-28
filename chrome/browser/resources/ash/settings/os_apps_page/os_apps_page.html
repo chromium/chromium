@@ -3,6 +3,11 @@
     margin-inline-end: 16px;
     --iron-icon-fill-color: var(--cros-sys-primary);
   }
+
+  #androidApps[actionable]:hover {
+    background-color: var(--cr-hover-background-color);
+    cursor: pointer;
+  }
 </style>
 
 <os-settings-animated-pages id="pages" section="[[section_]]">
@@ -141,7 +146,7 @@
           uninstall-label="$i18n{appManagementUninstallLabel}"
           policy-label="$i18n{appManagementAppInstalledByPolicyLabel}">
       </app-management-uninstall-button>
-      <app-management-app-detail-view>
+      <app-management-app-detail-view prefs="{{prefs}}">
       </app-management-app-detail-view>
     </os-settings-subpage>
   </template>

@@ -204,12 +204,12 @@ void StorageFrontend::OnSettingsChanged(
 
   // Restrict event to blessed context if session access level is set only to
   // trusted contexts.
-  absl::optional<Feature::Context> restrict_to_context_type = absl::nullopt;
+  absl::optional<mojom::ContextType> restrict_to_context_type = absl::nullopt;
   if (storage_area == StorageAreaNamespace::kSession) {
     CHECK(session_access_level.has_value());
     if (session_access_level.value() ==
         api::storage::AccessLevel::kTrustedContexts) {
-      restrict_to_context_type = Feature::BLESSED_EXTENSION_CONTEXT;
+      restrict_to_context_type = mojom::ContextType::kPrivilegedExtension;
     }
   }
 

@@ -19,7 +19,7 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
-using password_manager_test_utils::SaveCompromisedPasswordForm;
+using password_manager_test_utils::SaveCompromisedPasswordFormToProfileStore;
 
 namespace {
 
@@ -155,7 +155,7 @@ void ResetLastPasswordCheckTimestamp() {
 
 // Opens the Password Checkup UI from the Safety Check module.
 - (void)testOpenPasswordCheckup {
-  SaveCompromisedPasswordForm();
+  SaveCompromisedPasswordFormToProfileStore();
 
   OpenPasswordCheckup();
 
@@ -166,7 +166,7 @@ void ResetLastPasswordCheckTimestamp() {
 // authentication. Validates that the Password Checkup content is not revealed
 // and it is dismissed after the failed authentication.
 - (void)testOpenPasswordCheckupWithFailedAuth {
-  SaveCompromisedPasswordForm();
+  SaveCompromisedPasswordFormToProfileStore();
 
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];

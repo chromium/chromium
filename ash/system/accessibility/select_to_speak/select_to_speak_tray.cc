@@ -4,7 +4,7 @@
 
 #include "ash/system/accessibility/select_to_speak/select_to_speak_tray.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"

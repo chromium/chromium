@@ -27,6 +27,8 @@ BASE_DECLARE_FEATURE(kAllowWindowDragUsingSystemDragDrop);
 
 BASE_DECLARE_FEATURE(kAllowEyeDropperWGCScreenCapture);
 
+BASE_DECLARE_FEATURE(kWebAppIconInTitlebar);
+
 BASE_DECLARE_FEATURE(kChromeLabs);
 extern const char kChromeLabsActivationParameterName[];
 extern const base::FeatureParam<int> kChromeLabsActivationPercentage;
@@ -84,6 +86,8 @@ BASE_DECLARE_FEATURE(kSidePanelWebView);
 BASE_DECLARE_FEATURE(kSidePanelCompanionDefaultPinned);
 
 BASE_DECLARE_FEATURE(kSidePanelPinning);
+
+bool IsSidePanelPinningEnabled();
 
 BASE_DECLARE_FEATURE(kSidePanelMinimumWidth);
 extern const base::FeatureParam<int> kSidePanelMinimumWidthParameter;
@@ -143,6 +147,16 @@ extern const base::FeatureParam<double> kTabOrganizationTriggerBackoffBase;
 // The minimum score threshold for proactive nudge triggering to occur.
 extern const base::FeatureParam<double> kTabOrganizationTriggerThreshold;
 
+// The maximum sensitivity score for a tab to contribute to trigger scoring.
+extern const base::FeatureParam<double>
+    kTabOrganizationTriggerSensitivityThreshold;
+
+// Enable 'demo mode' for Tab Organization triggering, which triggers much more
+// predictably and frequently.
+extern const base::FeatureParam<bool> KTabOrganizationTriggerDemoMode;
+
+BASE_DECLARE_FEATURE(kTabOrganizationRefreshButton);
+
 BASE_DECLARE_FEATURE(kTabSearchChevronIcon);
 
 BASE_DECLARE_FEATURE(kTabSearchFeedback);
@@ -200,6 +214,8 @@ extern const base::FeatureParam<int>
 extern const base::FeatureParam<int> kTabSearchRecentlyClosedTabCountThreshold;
 
 BASE_DECLARE_FEATURE(kTabSearchUseMetricsReporter);
+
+BASE_DECLARE_FEATURE(kTearOffWebAppTabOpensWebAppWindow);
 
 // Determines how screenshots of the toolbar uses Software or Hardware drawing.
 // Works on Android 10+.

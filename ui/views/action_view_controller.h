@@ -81,15 +81,15 @@ class VIEWS_EXPORT ActionViewControllerTemplate
             &ActionViewControllerTemplate<ViewT>::ActionItemChanged,
             base::Unretained(this)));
     ActionItemChanged();
-    action_view->InvalidateLayout();
-    action_view->SchedulePaint();
   }
 
-  void TriggerAction() {
+  void InvokeAction() {
     actions::ActionItem* action_item = GetActionItem();
-    if (action_item) {
-      action_item->InvokeAction();
+    ViewT* action_view = GetActionView();
+    if (!action_item || !action_view) {
+      return;
     }
+    action_view->GetActionViewInterface()->InvokeActionImpl(action_item);
   }
 
   ViewT* GetActionView() {
@@ -103,8 +103,8 @@ class VIEWS_EXPORT ActionViewControllerTemplate
     action_view_tracker_.SetView(action_view);
     // base::Unretained is okay because by view controller patterns, view
     // controllers must outlive the views they manage.
-    action_view->GetActionViewInterface()->LinkActionTriggerToView(
-        base::BindRepeating(&ActionViewControllerTemplate::TriggerAction,
+    action_view->GetActionViewInterface()->LinkActionInvocationToView(
+        base::BindRepeating(&ActionViewControllerTemplate::InvokeAction,
                             base::Unretained(this)));
     LinkActionItemAndView();
   }

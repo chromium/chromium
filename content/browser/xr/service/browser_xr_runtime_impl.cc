@@ -194,9 +194,6 @@ bool BrowserXRRuntimeImpl::SupportsCustomIPD() const {
 #if BUILDFLAG(ENABLE_ARCORE)
     case device::mojom::XRDeviceId::ARCORE_DEVICE_ID:
 #endif  // ENABLE_ARCORE
-#if BUILDFLAG(ENABLE_GVR_SERVICES)
-    case device::mojom::XRDeviceId::GVR_DEVICE_ID:
-#endif  // ENABLE_GVR_SERVICES
 #if BUILDFLAG(ENABLE_CARDBOARD)
     case device::mojom::XRDeviceId::CARDBOARD_DEVICE_ID:
 #endif  // ENABLE_CARDBOARD
@@ -219,10 +216,6 @@ bool BrowserXRRuntimeImpl::SupportsNonEmulatedHeight() const {
     case device::mojom::XRDeviceId::ARCORE_DEVICE_ID:
 #endif  // ENABLE_ARCORE
       return false;
-#if BUILDFLAG(ENABLE_GVR_SERVICES)
-    case device::mojom::XRDeviceId::GVR_DEVICE_ID:
-      return true;
-#endif  // ENABLE_GVR_SERVICES
 #if BUILDFLAG(ENABLE_CARDBOARD)
     case device::mojom::XRDeviceId::CARDBOARD_DEVICE_ID:
       return true;

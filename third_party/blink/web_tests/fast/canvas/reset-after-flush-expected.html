@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<p>Resetting after flush shouldn't preserve previous drawing.</p>
+<canvas id="canvas" width="100" height="100"></canvas>
+<script>
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+ctx.fillStyle = 'blue';
+ctx.fillRect(32, 0, 16, 16);
+</script>

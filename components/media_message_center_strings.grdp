@@ -45,4 +45,7 @@
   <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME" desc="The accessible name for the media notification to control playback.">
     Media Controls
   </message>
+  <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_LABEL" is_accessibility_with_no_ui="true" desc="The label to display media information.">
+    Media Information
+  </message>
 </grit-part>

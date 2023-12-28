@@ -41,4 +41,33 @@ TEST(InterestGroupTest, KAnonKeyForAdNameReporting) {
       KAnonKeyForAdNameReporting(ig, ig.ads->at(2)));
 }
 
+// Test ParseTrustedBiddingSignalsSlotSizeMode() and
+// TrustedBiddingSignalsSlotSizeModeToString().
+TEST(InterestGroupTest, TrustedBiddingSignalsSlotSizeMode) {
+  EXPECT_EQ(InterestGroup::TrustedBiddingSignalsSlotSizeMode::kNone,
+            InterestGroup::ParseTrustedBiddingSignalsSlotSizeMode("none"));
+  EXPECT_EQ("none",
+            InterestGroup::TrustedBiddingSignalsSlotSizeModeToString(
+                InterestGroup::TrustedBiddingSignalsSlotSizeMode::kNone));
+
+  EXPECT_EQ(InterestGroup::TrustedBiddingSignalsSlotSizeMode::kSlotSize,
+            InterestGroup::ParseTrustedBiddingSignalsSlotSizeMode("slot-size"));
+  EXPECT_EQ("slot-size",
+            InterestGroup::TrustedBiddingSignalsSlotSizeModeToString(
+                InterestGroup::TrustedBiddingSignalsSlotSizeMode::kSlotSize));
+
+  EXPECT_EQ(
+      InterestGroup::TrustedBiddingSignalsSlotSizeMode::kAllSlotsRequestedSizes,
+      InterestGroup::ParseTrustedBiddingSignalsSlotSizeMode(
+          "all-slots-requested-sizes"));
+  EXPECT_EQ("all-slots-requested-sizes",
+            InterestGroup::TrustedBiddingSignalsSlotSizeModeToString(
+                InterestGroup::TrustedBiddingSignalsSlotSizeMode::
+                    kAllSlotsRequestedSizes));
+
+  EXPECT_EQ(InterestGroup::TrustedBiddingSignalsSlotSizeMode::kNone,
+            InterestGroup::ParseTrustedBiddingSignalsSlotSizeMode(
+                "not-a-valid-mode"));
+}
+
 }  // namespace blink

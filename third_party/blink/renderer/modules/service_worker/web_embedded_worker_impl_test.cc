@@ -89,7 +89,7 @@ class FakeURLLoader final : public URLLoader {
       client->DidReceiveResponse(response,
                                  /*body=*/mojo::ScopedDataPipeConsumerHandle(),
                                  /*cached_metadata=*/absl::nullopt);
-      client->DidFinishLoading(base::TimeTicks(), 0, 0, 0, false);
+      client->DidFinishLoading(base::TimeTicks(), 0, 0, 0);
       return;
     }
     // Don't handle other requests intentionally to emulate ongoing load.

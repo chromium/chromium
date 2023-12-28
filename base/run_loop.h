@@ -229,7 +229,9 @@ class BASE_EXPORT RunLoop {
     // A vector-based stack is more memory efficient than the default
     // deque-based stack as the active RunLoop stack isn't expected to ever
     // have more than a few entries.
-    using RunLoopStack = stack<RunLoop*, std::vector<RunLoop*>>;
+    using RunLoopStack =
+        stack<raw_ptr<RunLoop, VectorExperimental>,
+              std::vector<raw_ptr<RunLoop, VectorExperimental>>>;
 
     RunLoopStack active_run_loops_;
     ObserverList<RunLoop::NestingObserver>::Unchecked nesting_observers_;

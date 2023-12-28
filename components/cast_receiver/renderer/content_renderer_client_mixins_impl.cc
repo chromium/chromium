@@ -97,7 +97,7 @@ ContentRendererClientMixinsImpl::GetUrlRewriteRulesProvider(
 }
 
 bool ContentRendererClientMixinsImpl::IsCorsExemptHeader(
-    base::StringPiece header) {
+    std::string_view header) {
   return is_cors_exempt_header_callback_.Run(header);
 }
 

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/shell_observer.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -226,7 +227,8 @@ enum class DeskSwitchAnimationType {
 };
 
 class ASH_EXPORT RootWindowDeskSwitchAnimator
-    : public ui::ImplicitAnimationObserver {
+    : public ui::ImplicitAnimationObserver,
+      public ShellObserver {
  public:
   class Delegate {
    public:
@@ -274,10 +276,11 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
     is_combine_desks_type_ = is_combine_desks_type;
   }
 
-  // When true, this indicates that we have failed to take a screenshot (either
-  // the first or the second) and that the desk switch should proceed without
-  // any animation.
-  bool screenshot_failed() const { return screenshot_failed_; }
+  // When true, this indicates that the animator has failed and we cannot
+  // proceed. Reasons for failure currently includes failures to take a
+  // screenshot (either the first or the second), or that the root window has
+  // gone away.
+  bool animator_failed() const { return animator_failed_; }
 
   // Begins phase (1) of the animation by taking a screenshot of the starting
   // desk content. Delegate::OnStartingDeskScreenshotTaken() will be called once
@@ -330,6 +333,9 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
 
+  // ShellObserver:
+  void OnRootWindowWillShutdown(aura::Window* root_window) override;
+
   ui::Layer* GetAnimationLayerForTesting() const;
 
  private:
@@ -359,7 +365,7 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   int GetXPositionOfScreenshot(int index);
 
   // The root window that this animator is associated with.
-  const raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> root_window_;
+  raw_ptr<aura::Window, DanglingUntriaged> root_window_;
 
   // The type of animator, this will determine what type of animation is
   // created.
@@ -371,7 +377,7 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   // The index of the desk to activate and animate to with this animator.
   int ending_desk_index_;
 
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   // The owner of the layer tree of the old detached layers of the removed
   // desk's windows. This is only valid if |for_remove_| is true. This layer
@@ -389,7 +395,7 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   // screenshots of desk 0 and desk 1 stored at indices 0 and 1, but the
   // remaining indices will have nullptr. The layers, if not null are owned by
   // |animation_layer_owner_|.
-  std::vector<ui::Layer*> screenshot_layers_;
+  std::vector<raw_ptr<ui::Layer, VectorExperimental>> screenshot_layers_;
 
   // Stores the size of |root_window_| that takes into account all scale factors
   // by snapping to the edge of the display. This will prevent any 1px gaps we
@@ -422,8 +428,9 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   // True when phase (3) finishes.
   bool animation_finished_ = false;
 
-  // True if we have failed (including retries) to take any screenshot.
-  bool screenshot_failed_ = false;
+  // True if this animator has failed, for any reason. This currently includes
+  // repeated failures to screenshot a desk, or the root window going away.
+  bool animator_failed_ = false;
 
   // True if during a continuous swipe, the user went all the way left or right
   // and swiping in that direction will no longer update the UI.

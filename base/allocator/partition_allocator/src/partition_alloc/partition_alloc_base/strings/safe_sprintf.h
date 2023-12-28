@@ -24,7 +24,7 @@ namespace partition_alloc::internal::base::strings {
 #if defined(COMPILER_MSVC)
 // Define ssize_t inside of our namespace.
 #if defined(_WIN64)
-typedef __int64 ssize_t;
+typedef int64_t ssize_t;
 #else
 typedef long ssize_t;
 #endif

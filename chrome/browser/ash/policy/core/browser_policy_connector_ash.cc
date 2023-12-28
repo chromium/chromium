@@ -39,6 +39,7 @@
 #include "chrome/browser/ash/policy/external_data/handlers/device_wilco_dtc_configuration_external_data_handler.h"
 #include "chrome/browser/ash/policy/handlers/adb_sideloading_allowance_mode_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/bluetooth_policy_handler.h"
+#include "chrome/browser/ash/policy/handlers/device_dlc_predownload_list_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/device_dock_mac_address_source_handler.h"
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler_impl.h"
 #include "chrome/browser/ash/policy/handlers/device_wifi_allowed_handler.h"
@@ -287,6 +288,9 @@ void BrowserPolicyConnectorAsh::Init(
           std::make_unique<ScheduledTaskExecutorImpl>(
               DeviceScheduledRebootHandler::kRebootTimerTag),
           reboot_notifications_scheduler_.get());
+
+  device_dlc_predownload_list_policy_handler_ =
+      DeviceDlcPredownloadListPolicyHandler::Create();
 }
 
 void BrowserPolicyConnectorAsh::OnBrowserStarted() {
@@ -341,6 +345,8 @@ void BrowserPolicyConnectorAsh::Shutdown() {
   device_scheduled_update_checker_.reset();
 
   device_scheduled_reboot_handler_.reset();
+
+  device_dlc_predownload_list_policy_handler_.reset();
 
   reboot_notifications_scheduler_.reset();
 

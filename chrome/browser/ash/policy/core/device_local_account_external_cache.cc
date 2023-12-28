@@ -19,6 +19,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/device_local_account_external_policy_loader.h"
 #include "chrome/browser/extensions/external_loader.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace chromeos {
@@ -79,6 +81,19 @@ void DeviceLocalAccountExternalCache::OnExtensionListsUpdated(
     CHECK_IS_TEST();
   }
   loader_->OnExtensionListsUpdated(prefs);
+}
+
+bool DeviceLocalAccountExternalCache::IsRollbackAllowed() const {
+  return true;
+}
+
+bool DeviceLocalAccountExternalCache::CanRollbackNow() const {
+  // Allow immediate rollback only if current user is not this device local
+  // account.
+  if (auto* user = user_manager::UserManager::Get()->GetPrimaryUser()) {
+    return user_id_ != user->GetAccountId().GetUserEmail();
+  }
+  return true;
 }
 
 scoped_refptr<extensions::ExternalLoader>

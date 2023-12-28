@@ -17,8 +17,8 @@ found in the LICENSE file.
 
     <ImageView
         android:id="@+id/logo"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="@dimen/search_engine_favicon_size"
+        android:layout_height="@dimen/search_engine_favicon_size"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="10dp"
         android:importantForAccessibility="no" />

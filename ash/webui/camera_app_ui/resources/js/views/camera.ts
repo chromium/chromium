@@ -6,6 +6,7 @@ import * as animate from '../animation.js';
 import {
   assert,
   assertEnumVariant,
+  assertExists,
   assertInstanceof,
   assertNotReached,
 } from '../assert.js';
@@ -104,7 +105,7 @@ export class Camera extends View implements CameraViewUI {
    * Clock-wise rotation that needs to be applied to the recorded video in
    * order for the video to be replayed in upright orientation.
    */
-  private outputVideoRotation = 0;
+  protected outputVideoRotation = 0;
 
   /**
    * Device id of video device of active preview stream. Sets to null when
@@ -699,7 +700,7 @@ export class Camera extends View implements CameraViewUI {
   }
 
   createVideoSaver(): Promise<VideoSaver> {
-    return this.resultSaver.startSaveVideo(this.outputVideoRotation);
+    return VideoSaver.create(this.outputVideoRotation);
   }
 
   createTimeLapseSaver(encoderArgs: TimeLapseEncoderArgs, speed: number):
@@ -827,7 +828,8 @@ export class Camera extends View implements CameraViewUI {
         resolutionLevel: this.cameraManager.getVideoResolutionLevel(resolution),
         aspectRatioSet: this.cameraManager.getAspectRatioSet(resolution),
       });
-      await this.resultSaver.finishSaveVideo(videoSaver);
+      const file = assertExists(await videoSaver.endWrite());
+      await this.resultSaver.saveVideo(file);
       state.set(
           PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, false,
           {resolution, facing: this.getFacing()});
@@ -859,7 +861,8 @@ export class Camera extends View implements CameraViewUI {
         aspectRatioSet: this.cameraManager.getAspectRatioSet(resolution),
         timeLapseSpeed: speed,
       });
-      await this.resultSaver.finishSaveVideo(timeLapseSaver);
+      const file = assertExists(await timeLapseSaver.endWrite());
+      await this.resultSaver.saveVideo(file);
       state.set(
           PerfEvent.TIME_LAPSE_CAPTURE_POST_PROCESSING, false,
           {resolution, facing: this.getFacing()});

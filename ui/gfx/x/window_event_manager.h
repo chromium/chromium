@@ -53,6 +53,8 @@ class WindowEventManager {
 
   ~WindowEventManager();
 
+  void Reset();
+
  private:
   friend class ScopedEventSelector;
 
@@ -70,7 +72,7 @@ class WindowEventManager {
   // necessary.
   void AfterMaskChanged(Window window, EventMask old_mask);
 
-  const raw_ptr<Connection> connection_;
+  raw_ptr<Connection> connection_;
 
   std::map<Window, std::unique_ptr<MultiMask>> mask_map_;
 };

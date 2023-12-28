@@ -77,6 +77,9 @@ GLuint MakeTextureAndSetParameters(
     scoped_refptr<gles2::TexturePassthrough>* passthrough_texture,
     raw_ptr<gles2::Texture>* texture);
 
+// Returns whether `glTexStorage2DEXTFn` is available to call on the GL driver.
+bool IsTexStorage2DAvailable();
+
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_SHARED_IMAGE_GL_UTILS_H_

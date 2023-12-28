@@ -46,8 +46,6 @@ class FirstRunFlowControllerDice : public ProfileManagementFlowControllerImpl {
  protected:
   // ProfileManagementFlowControllerImpl
   bool PreFinishWithBrowser() override;
-  std::unique_ptr<ProfilePickerDiceSignInProvider> CreateDiceSignInProvider()
-      override;
   // `account_info` may not be set as the primary account yet.
   std::unique_ptr<ProfilePickerSignedInFlowController>
   CreateSignedInFlowController(

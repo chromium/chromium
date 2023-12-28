@@ -10,7 +10,7 @@
 
 namespace autofill {
 
-// All ServerFieldTypes stored for an AutofillProfile in the local_addresses or
+// All FieldTypes stored for an AutofillProfile in the local_addresses or
 // contact_info table (depending on the profile source) in AutofillTable.
 // When introducing a new field type, it suffices to add it here. When removing
 // a field type, removing it from the list suffices (no additional clean-up in
@@ -24,7 +24,7 @@ namespace autofill {
 // - Some supported types (like PHONE_HOME_CITY_CODE) are not stored.
 // - Some non-supported types are stored (usually types that don't have
 //   filling support yet).
-const ServerFieldTypeSet& GetDatabaseStoredTypesOfAutofillProfile();
+const FieldTypeSet& GetDatabaseStoredTypesOfAutofillProfile();
 
 // Return true if the `field` has at least one possible field type. A possible
 // field type is every type that is neither UNKNOWN_TYPE or EMPTY_TYPE. The
@@ -45,18 +45,18 @@ bool TypeOfFieldIsPossibleType(const AutofillField& field);
 // ADDRESS_HOME_HOUSE_NUMBER.
 // TODO(crbug/1410438): Remove when cleaning up feature
 // `kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete`.
-bool IsStreetNameOrHouseNumberType(const ServerFieldType type);
+bool IsStreetNameOrHouseNumberType(const FieldType type);
 
 // Returns true if `type` is address-related.
-bool IsAddressType(ServerFieldType type);
+bool IsAddressType(FieldType type);
 
 // Returns 0-based index of an address line type, which is X-1 for
 // ADDRESS_HOME_LINEX. Expects only ADDRESS_HOME_LINE(1|2|3) types.
-size_t AddressLineIndex(ServerFieldType type);
+size_t AddressLineIndex(FieldType type);
 
 // Returns whether the expiration year should be filled with two or four
 // digits.
-size_t DetermineExpirationYearLength(ServerFieldType assumed_field_type);
+size_t DetermineExpirationYearLength(FieldType assumed_field_type);
 
 }  // namespace autofill
 

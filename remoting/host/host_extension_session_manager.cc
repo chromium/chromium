@@ -23,7 +23,7 @@ HostExtensionSessionManager::~HostExtensionSessionManager() = default;
 
 std::string HostExtensionSessionManager::GetCapabilities() const {
   std::string capabilities;
-  for (auto* extension : extensions_) {
+  for (remoting::HostExtension* extension : extensions_) {
     const std::string& capability = extension->capability();
     if (capability.empty()) {
       continue;
@@ -53,7 +53,7 @@ void HostExtensionSessionManager::OnNegotiatedCapabilities(
 
   client_stub_ = client_stub;
 
-  for (auto* extension : extensions_) {
+  for (remoting::HostExtension* extension : extensions_) {
     // If the extension requires a capability that was not negotiated then do
     // not instantiate it.
     if (!extension->capability().empty() &&

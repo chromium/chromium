@@ -17,8 +17,6 @@
 #include "net/base/isolation_info.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/network_delegate.h"
-#include "net/cert/ct_policy_enforcer.h"
-#include "net/cert/ct_policy_status.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mapped_host_resolver.h"
 #include "net/dns/mock_host_resolver.h"
@@ -57,19 +55,6 @@ const char kTestServerHost[] = "test.example.com";
 const char kHelloPath[] = "/hello.txt";
 const char kHelloBodyValue[] = "Hello from QUIC Server";
 const int kHelloStatus = 200;
-
-class MockCTPolicyEnforcerNonCompliant : public CTPolicyEnforcer {
- public:
-  MockCTPolicyEnforcerNonCompliant() = default;
-  ~MockCTPolicyEnforcerNonCompliant() override = default;
-
-  ct::CTPolicyCompliance CheckCompliance(
-      X509Certificate* cert,
-      const ct::SCTList& verified_scts,
-      const NetLogWithSource& net_log) override {
-    return ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS;
-  }
-};
 
 class URLRequestQuicTest
     : public TestWithTaskEnvironment,

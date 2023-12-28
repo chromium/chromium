@@ -92,9 +92,6 @@ try_.builder(
     executable = "recipe:chromium/fuzz",
     builderless = False,
     os = os.WINDOWS_ANY,
-    experiments = {
-        "chromium.skip_successful_tests": 50,
-    },
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(),
@@ -125,14 +122,14 @@ try_.orchestrator_builder(
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 5,
         "chromium.compilator_can_outlive_parent": 100,
-        "chromium.skip_successful_tests": 50,
     },
     main_list_view = "try",
-    tryjob = try_.job(),
-    use_clang_coverage = True,
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     #use_orchestrator_pool = True,
+    siso_enabled = True,
+    tryjob = try_.job(),
+    use_clang_coverage = True,
 )
 
 try_.compilator_builder(
@@ -183,6 +180,31 @@ try_.builder(
         # TODO(crbug.com/1335555) Remove once cancelling doesn't wipe
         # out builder cache
         cancel_stale = False,
+    ),
+)
+
+try_.builder(
+    name = "win_chromium_compile_siso_dbg_ng",
+    description_html = """\
+This builder shadows win_chromium_compile_dbg_ng builder to compare between Siso builds and Ninja builds.<br/>
+This builder should be removed after migrating win_chromium_compile_dbg_ng from Ninja to Siso. b/277863839
+""",
+    mirrors = builder_config.copy_from("try/win_chromium_compile_dbg_ng"),
+    try_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
+    ),
+    gn_args = "try/win_chromium_compile_dbg_ng",
+    builderless = False,
+    cores = 16,
+    ssd = True,
+    contact_team_email = "chrome-build-team@google.com",
+    main_list_view = "try",
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+    siso_enabled = True,
+    tryjob = try_.job(
+        cancel_stale = False,
+        experiment_percentage = 10,
     ),
 )
 

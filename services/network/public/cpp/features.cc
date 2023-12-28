@@ -112,6 +112,14 @@ BASE_FEATURE(kMaskedDomainList,
              "MaskedDomainList",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When set, only resources in the MDL that are part of the experiment group
+// will be loaded into the proxy's allow list.
+const base::FeatureParam<int> kMaskedDomainListExperimentGroup{
+    &kMaskedDomainList, /*name=*/"MaskedDomainListExperimentGroup",
+    /*default_value=*/0};
+
+// Used to build the MDL component's installer attributes and possibly control
+// which release version is retrieved. Does not have any effect for WebView.
 const base::FeatureParam<std::string> kMaskedDomainListExperimentalVersion{
     &kMaskedDomainList, /*name=*/"MaskedDomainListExperimentalVersion",
     /*default_value=*/""};

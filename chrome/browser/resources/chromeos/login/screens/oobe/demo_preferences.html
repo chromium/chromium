@@ -28,10 +28,10 @@
   :host-context(.jelly-enabled) #store-number-input-display-text {
     color: var(--oobe-subheader-text-color);
   }
-  :host([store_number_input_invalid_]) #store-number-input-display-text {
+  :host([storeNumberInputInvalid]) #store-number-input-display-text {
     color: var(--cros-textfield-label-color-error);
   }
-  :host-context(.jelly-enabled):host([store_number_input_invalid_])
+  :host-context(.jelly-enabled):host([storeNumberInputInvalid])
     #store-number-input-display-text {
       color: var(--cros-sys-error);
   }
@@ -72,7 +72,7 @@
       <cr-input class="language-selection-title layout horizontal
           center-justified"
           slot="input" id="retailerNameInput"
-          value="{{retailer_name_input_}}"
+          value="{{retailerNameInput}}"
           on-keydown="onInputKeyDown_"
           placeholder=
               "[[i18nDynamic(locale, 'retailerNameInputPlaceholder')]]"
@@ -89,7 +89,7 @@
       <cr-input class="language-selection-title layout horizontal
           center-justified"
                 slot="input" id="storeNumberInput"
-                value="{{store_number_input_}}"
+                value="{{storeNumberInput}}"
                 on-keydown="onInputKeyDown_"
                 placeholder=
                     "[[i18nDynamic(locale, 'storeNumberInputPlaceholder')]]"
@@ -106,7 +106,7 @@
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="nextButton" inverse on-click="onNextClicked_"
-        disabled="[[!user_can_continue_]]"
+        disabled="[[!userCanContinue]]"
         text-key="demoPreferencesNextButtonLabel">
     </oobe-text-button>
   </div>

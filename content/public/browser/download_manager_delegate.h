@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "build/build_config.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_url_parameters.h"
@@ -234,6 +235,10 @@ class CONTENT_EXPORT DownloadManagerDelegate {
   // Attaches any extra per-DownloadItem info.
   virtual void AttachExtraInfo(download::DownloadItem* item) {}
 
+#if BUILDFLAG(IS_ANDROID)
+  // Returns whether download is triggered by an external app.
+  virtual bool IsFromExternalApp(download::DownloadItem* item);
+#endif  // BUILDFLAG(IS_ANDROID)
  protected:
   virtual ~DownloadManagerDelegate();
 };

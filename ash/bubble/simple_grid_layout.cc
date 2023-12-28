@@ -31,7 +31,7 @@ views::ProposedLayout SimpleGridLayout::CalculateProposedLayout(
   gfx::Size size = GetChildPreferredSize();
   int row = 0;
   int col = 0;
-  for (auto* child : host_view()->children()) {
+  for (views::View* child : host_view()->children()) {
     if (!IsChildIncludedInLayout(child))
       continue;
 
@@ -71,7 +71,7 @@ gfx::Size SimpleGridLayout::GetChildPreferredSize() const {
 
 gfx::Size SimpleGridLayout::CalculatePreferredSize() const {
   int total_children = 0;
-  for (auto* child : host_view()->children()) {
+  for (views::View* child : host_view()->children()) {
     if (IsChildIncludedInLayout(child))
       ++total_children;
   }

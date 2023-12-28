@@ -7,6 +7,8 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "ui/actions/actions.h"
+#include "ui/views/views_export.h"
 
 namespace actions {
 class ActionItem;
@@ -36,22 +38,20 @@ namespace views {
 //   explicit ViewTypeActionViewInterface(ViewType* action_view)
 //      : BaseActionViewInterface(action_view), action_view_(action_view) {}
 //   ~ViewTypeActionViewInterface() override = default;
-
-//   // optional overrides:
-//   void ActionItemChangedImpl(actions::ActionItem* action_item) override;
-//   void LinkActionTriggerToView(
-//       base::RepeatingClosure trigger_action_callback) override;
+//
+//   // optional: override virtual methods.
 
 //  private:
 //   raw_ptr<ViewType> action_view_;
 // };
-class ActionViewInterface {
+class VIEWS_EXPORT ActionViewInterface {
  public:
   ActionViewInterface() = default;
   virtual ~ActionViewInterface() = default;
   virtual void ActionItemChangedImpl(actions::ActionItem* action_item) {}
-  virtual void LinkActionTriggerToView(
+  virtual void LinkActionInvocationToView(
       base::RepeatingClosure trigger_action_callback) {}
+  virtual void InvokeActionImpl(actions::ActionItem* action_item);
 };
 
 }  // namespace views

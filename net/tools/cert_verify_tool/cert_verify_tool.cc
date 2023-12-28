@@ -20,6 +20,7 @@
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/cert_verify_proc_builtin.h"
 #include "net/cert/crl_set.h"
+#include "net/cert/do_nothing_ct_verifier.h"
 #include "net/cert/internal/system_trust_store.h"
 #include "net/cert/x509_util.h"
 #include "net/cert_net/cert_net_fetcher_url_request.h"
@@ -264,6 +265,9 @@ std::unique_ptr<CertVerifyImpl> CreateCertVerifyImplFromName(
         "CertVerifyProcBuiltin",
         net::CreateCertVerifyProcBuiltin(
             std::move(cert_net_fetcher), std::move(crl_set),
+            // TODO(https://crbug.com/848277): support CT.
+            std::make_unique<net::DoNothingCTVerifier>(),
+            base::MakeRefCounted<net::DefaultCTPolicyEnforcer>(),
             CreateSystemTrustStore(impl_name, root_store_type), {}));
   }
 

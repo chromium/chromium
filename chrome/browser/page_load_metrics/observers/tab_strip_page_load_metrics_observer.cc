@@ -39,7 +39,7 @@ std::vector<std::vector<content::WebContents*>> GetAllWebContents() {
     std::vector<content::WebContents*> web_contents_for_tab_strip = {};
     for (int i = 0; i < model->GetTabCount(); ++i) {
 #else   // BUILDFLAG(IS_ANDROID)
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     std::vector<content::WebContents*> web_contents_for_tab_strip = {};
     TabStripModel* model = browser->tab_strip_model();
     for (int i = 0; i < model->count(); ++i) {

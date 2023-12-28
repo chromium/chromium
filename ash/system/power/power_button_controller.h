@@ -257,14 +257,13 @@ class ASH_EXPORT PowerButtonController
   bool force_off_on_button_up_ = false;
 
   // Used to force backlights off, when needed.
-  raw_ptr<BacklightsForcedOffSetter, ExperimentalAsh>
+  raw_ptr<BacklightsForcedOffSetter>
       backlights_forced_off_setter_;  // Not owned.
 
-  raw_ptr<LockStateController, ExperimentalAsh>
-      lock_state_controller_;  // Not owned.
+  raw_ptr<LockStateController> lock_state_controller_;  // Not owned.
 
   // Time source for performed action times.
-  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Used to interact with the display.
   std::unique_ptr<PowerButtonDisplayController> display_controller_;

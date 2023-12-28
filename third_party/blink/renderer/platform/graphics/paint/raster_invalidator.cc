@@ -186,10 +186,8 @@ void RasterInvalidator::GenerateRasterInvalidations(
   wtf_size_t old_index = 0;
   wtf_size_t max_matched_old_index = 0;
 
-  const float absolute_translation_tolerance =
-      RuntimeEnabledFeatures::SvgRasterOptimizationsEnabled() ? 1e-2f : 1e-5f;
-  const float other_transform_tolerance =
-      RuntimeEnabledFeatures::SvgRasterOptimizationsEnabled() ? 1e-4f : 1e-5f;
+  const float absolute_translation_tolerance = 1e-2f;
+  const float other_transform_tolerance = 1e-4f;
 
   for (auto it = new_chunks.begin(); it != new_chunks.end(); ++it) {
     if (ShouldSkipForRasterInvalidation(it))

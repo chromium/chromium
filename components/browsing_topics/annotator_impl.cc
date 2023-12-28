@@ -493,15 +493,9 @@ void AnnotatorImpl::OnModelUpdated(
   version_ = model_metadata->version();
 
   // New model, new override list.
-  override_list_file_path_ = absl::nullopt;
+  override_list_file_path_ =
+      model_info->GetAdditionalFileWithBaseName(kOverrideListBasePath);
   override_list_ = absl::nullopt;
-  for (const base::FilePath& path : model_info->GetAdditionalFiles()) {
-    DCHECK(path.IsAbsolute());
-    if (path.BaseName() == base::FilePath(kOverrideListBasePath)) {
-      override_list_file_path_ = path;
-      break;
-    }
-  }
 
   // Run any callbacks that were waiting for an updated model.
   //

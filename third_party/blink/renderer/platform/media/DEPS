@@ -30,6 +30,7 @@ include_rules = [
   "+net/base/net_errors.h",
   "+net/http/http_byte_range.h",
   "+net/http/http_version.h",
+  "+net/url_request/url_request_job.h",
   "+services/device/public/mojom",
   "+services/media_session/public/cpp",
   "+third_party/blink/renderer/platform/allow_discouraged_type.h",

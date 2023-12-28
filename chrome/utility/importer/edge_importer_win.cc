@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -52,7 +53,7 @@ struct EdgeFavoriteEntry {
   GUID item_id;
   GUID parent_id;
 
-  std::vector<const EdgeFavoriteEntry*> children;
+  std::vector<raw_ptr<const EdgeFavoriteEntry, VectorExperimental>> children;
 
   ImportedBookmarkEntry ToBookmarkEntry(
       bool in_toolbar,

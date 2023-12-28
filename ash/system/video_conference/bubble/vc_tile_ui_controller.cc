@@ -4,7 +4,7 @@
 
 #include "ash/system/video_conference/bubble/vc_tile_ui_controller.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"

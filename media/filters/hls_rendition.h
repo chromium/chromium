@@ -26,14 +26,25 @@ class MEDIA_EXPORT HlsRenditionHost {
  public:
   virtual ~HlsRenditionHost() = 0;
 
-  // Lets a rendition read URL data from `uri`. Usually this will be a chunked
-  // read, but can be configured with `read_chunked`, since live video needs to
-  // download full manifests. Additionally, some manifests can specify a custom
-  // byte range, which can be forwarded as `range`.
-  virtual void ReadFromUrl(GURL uri,
-                           bool read_chunked,
-                           absl::optional<hls::types::ByteRange> range,
-                           HlsDataSourceProvider::ReadCb cb) = 0;
+  // Reads the entirety of an HLS manifest from `uri`, and posts the result back
+  // through `cb`.
+  virtual void ReadManifest(const GURL& uri,
+                            HlsDataSourceProvider::ReadCb cb) = 0;
+
+  // Reads media data from a media segment. If `read_chunked` is false, then
+  // the resulting stream will be fully read until either EOS, or its optional
+  // range is fully satisfied. If `read_chunked` is true, then only some data
+  // will be present in the resulting stream, and more data can be requested
+  // through the `ReadStream` method. If `include_init_segment` is true, then
+  // the init segment data will be prepended to the buffer returned if this
+  // segment has an initialization_segment.
+  // TODO (crbug.com/1266991): Remove `read_chunked`, which should ideally
+  // always be true for segments. HlsRenditionImpl needs to handle chunked reads
+  // more effectively first.
+  virtual void ReadMediaSegment(const hls::MediaSegment& segment,
+                                bool read_chunked,
+                                bool include_init_segment,
+                                HlsDataSourceProvider::ReadCb cb) = 0;
 
   // Continue reading from a partially read stream.
   virtual void ReadStream(std::unique_ptr<HlsDataSourceStream> stream,

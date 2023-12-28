@@ -18,7 +18,7 @@ import {NetworkPropertyListMojoElement} from 'chrome://resources/ash/common/netw
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {ActivationStateType, ApnAuthenticationType, ApnIpType, ApnState, DeviceStateProperties, GlobalPolicy, InhibitReason, ManagedOpenVPNProperties, ManagedProperties, MatchType, NetworkStateProperties, ProxyMode, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ActivationStateType, ApnAuthenticationType, ApnIpType, ApnState, DeviceStateProperties, GlobalPolicy, InhibitReason, ManagedOpenVPNProperties, ManagedProperties, MatchType, NetworkStateProperties, ProxyMode, SuppressionType, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, IPConfigType, NetworkType, OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
@@ -254,6 +254,7 @@ suite('<settings-internet-detail-subpage>', () => {
       blockedHexSsids: [],
       recommendedValuesAreEphemeral: false,
       userCreatedNetworkConfigurationsAreEphemeral: false,
+      allowTextMessages: SuppressionType.kUnset,
     };
   }
 

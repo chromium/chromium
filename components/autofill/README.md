@@ -298,7 +298,7 @@ may sacrifice a little bit of correctness in favor of simplicity.
     combinations that don't make sense (street-address followed by
     address-line1).
 
-Predicted types are represented as [ServerFieldTypes](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/field_types.h;l=125;drc=bce2963801691db93bc7f05b5d320cef32effa24)
+Predicted types are represented as [FieldTypes](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/field_types.h;l=130;drc=dbd8c8bb5f830b79e9d1f0f57a3e071b81f6d28b)
 and types derived from the autocomplete attribute are represented as [HtmlFieldTypes](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/common/mojom/autofill_types.mojom;l=24;drc=f330bdbafa2714f8a6431a9dee412fdb38d5adbe).
 
 ## What about forms in iframes?
@@ -317,9 +317,9 @@ and types derived from the autocomplete attribute are represented as [HtmlFieldT
 
 ## Field type terminology
 
-Several important subsets of ServerFieldTypes exist:
+Several important subsets of FieldTypes exist:
 * Supported types of a [form group](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:components/autofill/core/browser/data_model/form_group.h):
-  Every form group defines which ServerFieldTypes it maintains. For example:
+  Every form group defines which FieldTypes it maintains. For example:
   * The supported type of [EmailInfo](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:components/autofill/core/browser/data_model/contact_info.h;l=87;drc=10009f6ff9f3b626979c9422321686f360df7cee) is [EMAIL_ADDRESS](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:components/autofill/core/browser/data_model/contact_info.cc;l=184;drc=59b1cf76cc21ae34bc99073e963f7d268b0a5c17).
   * The supported types of AutofillProfile are all name, address, phone number, etc. types.
 * Stored types of AutofillProfile: The set of types stored in AutofillTable,
@@ -394,10 +394,7 @@ succeeded):
   (`AutofillAgent::AjaxSucceeded()`), the last interacted form is/becomes
   unfocusable or removed.
   * Triggers `SubmissionSource::XHR_SUCCEEDED` if the form is already
-    inaccessible or removed when the XHR succeeds (`known_success=true`).
-  * Triggers `SubmissionSource::DOM_MUTATION_AFTER_XHR` if the form becomes
-    inaccessible or removed after a successful XHR and the user does not
-    interact with any other forms in between (`known_success=true`).
+    inaccessible or removed and the XHR succeeds (`known_success=true`).
 * The **subframe** or non-primary main frame containing the form was
   **detached** (`FormTracker::WillDetach()`)
   * Triggers `SubmissionSource::FRAME_DETACHED` with `known_success=true`.

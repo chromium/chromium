@@ -36,7 +36,8 @@ class MockPrintCompositorImpl : public PrintCompositorImpl {
  protected:
   void FulfillRequest(base::span<const uint8_t> serialized_content,
                       const ContentToFrameMap& subframe_content_map,
-                      CompositeToPdfCallback callback) override {
+                      mojom::PrintCompositor::DocumentType document_type,
+                      CompositePageCallback callback) override {
     const auto* data =
         reinterpret_cast<const TestRequestData*>(serialized_content.data());
     OnFulfillRequest(data->frame_guid, data->page_num);
@@ -53,25 +54,26 @@ class MockCompletionPrintCompositorImpl : public PrintCompositorImpl {
                             nullptr /* io_task_runner */) {}
   ~MockCompletionPrintCompositorImpl() override = default;
 
-  MOCK_CONST_METHOD0(OnCompleteDocumentRequest, void());
-  MOCK_METHOD2(OnCompositeToPdf, void(uint64_t, int));
+  MOCK_CONST_METHOD0(OnFinishDocumentRequest, void());
+  MOCK_METHOD2(OnCompositePage, void(uint64_t, int));
 
  protected:
-  mojom::PrintCompositor::Status CompositeToPdf(
+  mojom::PrintCompositor::Status CompositePages(
       base::span<const uint8_t> serialized_content,
       const ContentToFrameMap& subframe_content_map,
-      base::ReadOnlySharedMemoryRegion* region) override {
+      base::ReadOnlySharedMemoryRegion* region,
+      mojom::PrintCompositor::DocumentType document_type) override {
     const auto* data =
         reinterpret_cast<const TestRequestData*>(serialized_content.data());
     if (docinfo_)
       docinfo_->pages_written++;
-    OnCompositeToPdf(data->frame_guid, data->page_num);
+    OnCompositePage(data->frame_guid, data->page_num);
     return mojom::PrintCompositor::Status::kSuccess;
   }
 
-  void CompleteDocumentRequest(
-      CompleteDocumentToPdfCallback callback) override {
-    OnCompleteDocumentRequest();
+  void FinishDocumentRequest(
+      FinishDocumentCompositionCallback callback) override {
+    OnFinishDocumentRequest();
   }
 };
 
@@ -93,18 +95,17 @@ class PrintCompositorImplTest : public testing::Test {
     return is_ready_;
   }
 
-  static void OnCompositeToPdfCallback(
-      mojom::PrintCompositor::Status status,
-      base::ReadOnlySharedMemoryRegion region) {
+  static void OnCompositePageCallback(mojom::PrintCompositor::Status status,
+                                      base::ReadOnlySharedMemoryRegion region) {
     // A stub for testing, no implementation.
   }
 
-  static void OnPrepareForDocumentToPdfCallback(
+  static void OnPrepareToCompositeDocumentCallback(
       mojom::PrintCompositor::Status status) {
     // A stub for testing, no implementation.
   }
 
-  void OnCompositeOrCompleteDocumentToPdfCallback(
+  void OnCompositeDocumentDoneCallback(
       mojom::PrintCompositor::Status status,
       base::ReadOnlySharedMemoryRegion region) {
     // A stub for testing, only care about status.
@@ -266,9 +267,9 @@ TEST_F(PrintCompositorImplTest, MultiRequestsBasic) {
   // When the content is not available, the request is not fulfilled.
   const ContentToFrameMap subframe_content_map = {{1, 8}};
   EXPECT_CALL(impl, OnFulfillRequest(testing::_, testing::_)).Times(0);
-  impl.CompositePageToPdf(
+  impl.CompositePage(
       3, CreateTestData(3, 0), subframe_content_map,
-      base::BindOnce(&PrintCompositorImplTest::OnCompositeToPdfCallback));
+      base::BindOnce(&PrintCompositorImplTest::OnCompositePageCallback));
   testing::Mock::VerifyAndClearExpectations(&impl);
 
   // When frame 8's content is ready, the previous request should be fulfilled.
@@ -280,13 +281,14 @@ TEST_F(PrintCompositorImplTest, MultiRequestsBasic) {
   // immediately fulfilled.
   EXPECT_CALL(impl, OnFulfillRequest(3, 1)).Times(1);
   EXPECT_CALL(impl, OnFulfillRequest(3, -1)).Times(1);
-  impl.CompositePageToPdf(
+  impl.CompositePage(
       3, CreateTestData(3, 1), subframe_content_map,
-      base::BindOnce(&PrintCompositorImplTest::OnCompositeToPdfCallback));
+      base::BindOnce(&PrintCompositorImplTest::OnCompositePageCallback));
 
-  impl.CompositeDocumentToPdf(
+  impl.CompositeDocument(
       3, CreateTestData(3, -1), subframe_content_map,
-      base::BindOnce(&PrintCompositorImplTest::OnCompositeToPdfCallback));
+      mojom::PrintCompositor::DocumentType::kPDF,
+      base::BindOnce(&PrintCompositorImplTest::OnCompositePageCallback));
 }
 
 TEST_F(PrintCompositorImplTest, MultiRequestsOrder) {
@@ -295,19 +297,20 @@ TEST_F(PrintCompositorImplTest, MultiRequestsOrder) {
   // When the content is not available, the request is not fulfilled.
   const ContentToFrameMap subframe_content_map = {{1, 8}};
   EXPECT_CALL(impl, OnFulfillRequest(testing::_, testing::_)).Times(0);
-  impl.CompositePageToPdf(
+  impl.CompositePage(
       3, CreateTestData(3, 0), subframe_content_map,
-      base::BindOnce(&PrintCompositorImplTest::OnCompositeToPdfCallback));
+      base::BindOnce(&PrintCompositorImplTest::OnCompositePageCallback));
 
   // The following requests which only depends on frame 8 should be
   // immediately fulfilled.
-  impl.CompositePageToPdf(
+  impl.CompositePage(
       3, CreateTestData(3, 1), subframe_content_map,
-      base::BindOnce(&PrintCompositorImplTest::OnCompositeToPdfCallback));
+      base::BindOnce(&PrintCompositorImplTest::OnCompositePageCallback));
 
-  impl.CompositeDocumentToPdf(
+  impl.CompositeDocument(
       3, CreateTestData(3, -1), subframe_content_map,
-      base::BindOnce(&PrintCompositorImplTest::OnCompositeToPdfCallback));
+      mojom::PrintCompositor::DocumentType::kPDF,
+      base::BindOnce(&PrintCompositorImplTest::OnCompositePageCallback));
   testing::Mock::VerifyAndClearExpectations(&impl);
 
   // When frame 8's content is ready, the previous request should be
@@ -325,17 +328,17 @@ TEST_F(PrintCompositorImplTest, MultiRequestsDepOrder) {
   // fulfilled.
   EXPECT_CALL(impl, OnFulfillRequest(testing::_, testing::_)).Times(0);
   ContentToFrameMap subframe_content_map = {{1, 2}};
-  impl.CompositePageToPdf(
+  impl.CompositePage(
       1, CreateTestData(1, 0), subframe_content_map,
-      base::BindOnce(&PrintCompositorImplTest::OnCompositeToPdfCallback));
+      base::BindOnce(&PrintCompositorImplTest::OnCompositePageCallback));
 
   // Page 1 with frame 1 has content 1, which refers to frame
   // 3. When the content is not available, the request is not
   // fulfilled either.
   subframe_content_map = {{1, 3}};
-  impl.CompositePageToPdf(
+  impl.CompositePage(
       1, CreateTestData(1, 1), subframe_content_map,
-      base::BindOnce(&PrintCompositorImplTest::OnCompositeToPdfCallback));
+      base::BindOnce(&PrintCompositorImplTest::OnCompositePageCallback));
   testing::Mock::VerifyAndClearExpectations(&impl);
 
   // When frame 3 and 2 become available, the pending requests should be
@@ -353,9 +356,9 @@ TEST_F(PrintCompositorImplTest, NotifyUnavailableSubframe) {
   // When the content is not available, the request is not fulfilled.
   const ContentToFrameMap subframe_content_map = {{1, 8}};
   EXPECT_CALL(impl, OnFulfillRequest(testing::_, testing::_)).Times(0);
-  impl.CompositePageToPdf(
+  impl.CompositePage(
       3, CreateTestData(3, 0), subframe_content_map,
-      base::BindOnce(&PrintCompositorImplTest::OnCompositeToPdfCallback));
+      base::BindOnce(&PrintCompositorImplTest::OnCompositePageCallback));
   testing::Mock::VerifyAndClearExpectations(&impl);
 
   // Notifies that frame 8's unavailable, the previous request should be
@@ -382,38 +385,39 @@ TEST_F(PrintCompositorImplCrashKeyTest, MAYBE_SetCrashKey) {
   EXPECT_EQ(crash_reporter::GetCrashKeyValue("main-frame-url"), url_str);
 }
 
-TEST_F(PrintCompositorImplTest, MultiRequestsBasicCompleteDocument) {
+TEST_F(PrintCompositorImplTest, MultiRequestsBasicFinishDocument) {
   MockCompletionPrintCompositorImpl impl;
   // Page 0 with frame 3 has content 1, which refers to frame 8.
   // When the content is not available, the request is not fulfilled.
   const ContentToFrameMap subframe_content_map = {{1, 8}};
-  impl.PrepareForDocumentToPdf(base::BindOnce(
-      &PrintCompositorImplTest::OnPrepareForDocumentToPdfCallback));
-  EXPECT_CALL(impl, OnCompositeToPdf(testing::_, testing::_)).Times(0);
-  impl.CompositePageToPdf(
+  impl.PrepareToCompositeDocument(
+      mojom::PrintCompositor::DocumentType::kPDF,
+      base::BindOnce(
+          &PrintCompositorImplTest::OnPrepareToCompositeDocumentCallback));
+  EXPECT_CALL(impl, OnCompositePage(testing::_, testing::_)).Times(0);
+  impl.CompositePage(
       3, CreateTestData(3, 0), subframe_content_map,
-      base::BindOnce(&PrintCompositorImplTest::OnCompositeToPdfCallback));
+      base::BindOnce(&PrintCompositorImplTest::OnCompositePageCallback));
   testing::Mock::VerifyAndClearExpectations(&impl);
 
   // When frame 8's content is ready, the previous request should be fulfilled.
-  EXPECT_CALL(impl, OnCompositeToPdf(testing::_, testing::_)).Times(1);
+  EXPECT_CALL(impl, OnCompositePage(testing::_, testing::_)).Times(1);
   impl.AddSubframeContent(8, CreateTestData(8, -1), ContentToFrameMap());
   testing::Mock::VerifyAndClearExpectations(&impl);
 
   // The following requests which only depends on frame 8 should be
   // immediately fulfilled.
-  EXPECT_CALL(impl, OnCompositeToPdf(testing::_, testing::_)).Times(1);
-  impl.CompositePageToPdf(
+  EXPECT_CALL(impl, OnCompositePage(testing::_, testing::_)).Times(1);
+  impl.CompositePage(
       3, CreateTestData(3, 1), subframe_content_map,
-      base::BindOnce(&PrintCompositorImplTest::OnCompositeToPdfCallback));
+      base::BindOnce(&PrintCompositorImplTest::OnCompositePageCallback));
   testing::Mock::VerifyAndClearExpectations(&impl);
 
-  EXPECT_CALL(impl, OnCompleteDocumentRequest()).Times(1);
-  impl.CompleteDocumentToPdf(
+  EXPECT_CALL(impl, OnFinishDocumentRequest()).Times(1);
+  impl.FinishDocumentComposition(
       2,
-      base::BindOnce(
-          &PrintCompositorImplTest::OnCompositeOrCompleteDocumentToPdfCallback,
-          base::Unretained(this)));
+      base::BindOnce(&PrintCompositorImplTest::OnCompositeDocumentDoneCallback,
+                     base::Unretained(this)));
   EXPECT_EQ(GetStatus(), mojom::PrintCompositor::Status::kSuccess);
 }
 

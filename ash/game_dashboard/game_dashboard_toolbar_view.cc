@@ -205,7 +205,7 @@ class ToolbarDragHandler : public ui::EventHandler {
   }
 
   // Allows this class to access `GameDashboardToolbarView` owned functions.
-  const raw_ptr<GameDashboardToolbarView, ExperimentalAsh> toolbar_view_;
+  const raw_ptr<GameDashboardToolbarView> toolbar_view_;
 
   // The location of the previous drag event in screen coordinates.
   gfx::PointF previous_location_in_screen_;

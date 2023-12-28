@@ -202,7 +202,7 @@ class ReturnToAppExpandButton : public views::ImageView,
 
   // Owned by the views hierarchy. Will be destroyed after this view since it is
   // the parent.
-  const raw_ptr<ReturnToAppButton, ExperimentalAsh> return_to_app_button_;
+  const raw_ptr<ReturnToAppButton> return_to_app_button_;
 };
 
 BEGIN_METADATA(ReturnToAppExpandButton)
@@ -515,7 +515,7 @@ void ReturnToAppPanel::OnExpandedStateChanged(bool expanded) {
       container_view_->GetPreferredSize().height());
   container_view_->AdjustLayoutForExpandCollapseState(expanded);
 
-  for (auto* child : container_view_->children()) {
+  for (views::View* child : container_view_->children()) {
     // Skip the first child since we always show the summary row. Otherwise,
     // show the other rows if `expanded` and vice versa.
     if (child == container_view_->children().front()) {

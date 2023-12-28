@@ -150,4 +150,41 @@ TEST_F(DlpDownloadObserverTest, TestBlobSchemeRewrite) {
   observer.OnDownloadUpdated(&item);
 }
 
+// Test if we request the file access for a data: url, while the tab is a blob:
+// url, the origin of the tab is used as source.
+TEST_F(DlpDownloadObserverTest, TestDataSchemeInBlobTabRewrite) {
+  base::MockRepeatingCallback<void(const dlp::AddFilesRequest,
+                                   chromeos::DlpClient::AddFilesCallback)>
+      add_files_cb;
+  EXPECT_CALL(
+      add_files_cb,
+      Run(testing::Property(&dlp::AddFilesRequest::add_file_requests,
+                            testing::ElementsAre(testing::Property(
+                                &dlp::AddFileRequest::source_url, kOriginUrl))),
+          _))
+      .WillOnce(base::test::RunOnceCallback<1>(
+          dlp::AddFilesResponse::default_instance()));
+  auto* dlp_client = chromeos::DlpClient::Get()->GetTestInterface();
+  dlp_client->SetAddFilesMock(add_files_cb.Get());
+
+  auto key = SimpleFactoryKey(base::FilePath(), false);
+  DlpDownloadObserver observer(&key);
+  testing::NiceMock<download::MockDownloadItem> item;
+  base::FilePath file_path(kFilePath);
+  GURL blob_url(kBlobUrl);
+  GURL referrer_url(kReferrerUrl);
+  GURL data_url(kDataUrl);
+
+  ON_CALL(item, IsSavePackageDownload).WillByDefault(testing::Return(false));
+  ON_CALL(item, GetState)
+      .WillByDefault(
+          testing::Return(download::DownloadItem::DownloadState::COMPLETE));
+  ON_CALL(item, GetFullPath).WillByDefault(testing::ReturnRef(file_path));
+  ON_CALL(item, GetURL).WillByDefault(testing::ReturnRef(data_url));
+  ON_CALL(item, GetReferrerUrl).WillByDefault(testing::ReturnRef(referrer_url));
+  ON_CALL(item, GetTabUrl).WillByDefault(testing::ReturnRef(blob_url));
+
+  observer.OnDownloadUpdated(&item);
+}
+
 }  // namespace policy

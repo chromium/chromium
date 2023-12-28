@@ -8,7 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/follow/model/followed_web_site_state.h"
-#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"

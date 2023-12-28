@@ -5,7 +5,7 @@
 #include "components/exo/keyboard.h"
 
 #include "ash/accelerators/accelerator_controller_impl.h"
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -17,7 +17,7 @@
 #include "ash/test/test_window_builder.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -123,7 +123,7 @@ class TestEventHandler : public ui::EventHandler {
         ->FocusWindow(focus_window_);
   }
 
-  raw_ptr<aura::Window, ExperimentalAsh> focus_window_;
+  raw_ptr<aura::Window> focus_window_;
 };
 
 // Verifies that switching desks via alt-tab doesn't prevent Seat from receiving
@@ -827,9 +827,7 @@ TEST_F(KeyboardTest, OnKeyboardTypeChanged) {
                             "touch", gfx::Size(600, 400), 1)};
   device_data_manager->OnTouchscreenDevicesUpdated(touch_screen);
 
-  ash::TabletModeController* tablet_mode_controller =
-      ash::Shell::Get()->tablet_mode_controller();
-  tablet_mode_controller->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
 
   Seat seat;
   auto keyboard = std::make_unique<Keyboard>(
@@ -856,7 +854,7 @@ TEST_F(KeyboardTest, OnKeyboardTypeChanged) {
 
   keyboard.reset();
 
-  tablet_mode_controller->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
 }
 
 TEST_F(KeyboardTest, OnKeyboardTypeChanged_AccessibilityKeyboard) {
@@ -883,7 +881,7 @@ TEST_F(KeyboardTest, OnKeyboardTypeChanged_AccessibilityKeyboard) {
   EXPECT_TRUE(keyboard.HasDeviceConfigurationDelegate());
   testing::Mock::VerifyAndClearExpectations(&configuration_delegate);
 
-  ash::AccessibilityControllerImpl* accessibility_controller =
+  ash::AccessibilityController* accessibility_controller =
       ash::Shell::Get()->accessibility_controller();
 
   // Enable a11y keyboard calls OnKeyboardTypeChanged() with false.

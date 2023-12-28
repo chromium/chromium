@@ -41,7 +41,9 @@ source_set("app_install_service") {
       "//chrome/browser/apps/almanac_api_client",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/webui/ash/app_install:mojo_bindings",
       "//chrome/browser/web_applications",
+      "//chromeos/constants:constants",
     ]
   }
 

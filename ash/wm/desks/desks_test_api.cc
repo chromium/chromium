@@ -112,7 +112,7 @@ ui::LayerTreeOwner* DesksTestApi::GetMirroredContentsLayerTreeForRootAndDesk(
                          ->GetGridWithRootWindow(root)
                          ->desks_bar_view()
                          ->mini_views();
-  for (auto* mini_view : mini_views) {
+  for (ash::DeskMiniView* mini_view : mini_views) {
     if (mini_view->desk() == desk) {
       return mini_view->desk_preview()
           ->desk_mirrored_contents_layer_tree_owner_.get();
@@ -180,6 +180,12 @@ void DesksTestApi::WaitForDeskBarUiUpdate(DeskBarViewBase* desk_bar_view) {
   base::RunLoop run_loop;
   desk_bar_view->on_update_ui_closure_for_testing_ = run_loop.QuitClosure();
   run_loop.Run();
+}
+
+// static
+void DesksTestApi::SetDeskBarUiUpdateCallback(DeskBarViewBase* desk_bar_view,
+                                              base::OnceClosure done) {
+  desk_bar_view->on_update_ui_closure_for_testing_ = std::move(done);
 }
 
 }  // namespace ash

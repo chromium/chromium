@@ -15,7 +15,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Picture;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.net.http.SslCertificate;
@@ -70,7 +69,7 @@ import org.chromium.android_webview.metrics.AwSiteVisitLogger;
 import org.chromium.android_webview.permission.AwGeolocationCallback;
 import org.chromium.android_webview.permission.AwPermissionRequest;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
-import org.chromium.android_webview.selection.SamsungSelectionActionMenuDelegate;
+import org.chromium.android_webview.selection.AwSelectionActionMenuDelegate;
 import org.chromium.base.BaseFeatures;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
@@ -95,7 +94,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.autofill.AutofillProvider;
-import org.chromium.components.autofill.AutofillSelectionMenuItemProvider;
+import org.chromium.components.autofill.AutofillSelectionMenuItemHelper;
 import org.chromium.components.content_capture.OnscreenContentProvider;
 import org.chromium.components.embedder_support.util.TouchEventFilter;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
@@ -888,7 +887,7 @@ public class AwContents implements SmartClipProvider {
         }
 
         @Override
-        public void onScrollUpdateGestureConsumed(Point rootScrollOffset) {
+        public void onScrollUpdateGestureConsumed() {
             mScrollAccessibilityHelper.postViewScrolledAccessibilityEventCallback();
             mZoomControls.invokeZoomPicker();
         }
@@ -1327,7 +1326,8 @@ public class AwContents implements SmartClipProvider {
             InternalAccessDelegate internalDispatcher,
             WebContents webContents,
             WindowAndroid windowAndroid,
-            WebContentsInternalsHolder internalsHolder) {
+            WebContentsInternalsHolder internalsHolder,
+            AwSelectionActionMenuDelegate selectionActionMenuDelegate) {
         webContents.initialize(
                 PRODUCT_VERSION, viewDelegate, internalDispatcher, windowAndroid, internalsHolder);
         mViewEventSink = ViewEventSink.from(mWebContents);
@@ -1335,7 +1335,7 @@ public class AwContents implements SmartClipProvider {
         SelectionPopupController controller = SelectionPopupController.fromWebContents(webContents);
         controller.setActionModeCallback(new AwActionModeCallback(mContext, this, webContents));
         controller.setSelectionClient(SelectionClient.createSmartSelectionClient(webContents));
-        SamsungSelectionActionMenuDelegate.maybeAttachActionMenuDelegate(controller);
+        controller.setSelectionActionMenuDelegate(selectionActionMenuDelegate);
 
         // Listen for dpad events from IMEs (e.g. Samsung Cursor Control) so we know to enable
         // spatial navigation mode to allow these events to move focus out of the WebView.
@@ -1351,7 +1351,8 @@ public class AwContents implements SmartClipProvider {
                         });
     }
 
-    private void initializeAutofillProviderIfNecessary() {
+    private void initializeAutofillProviderIfNecessary(
+            AwSelectionActionMenuDelegate selectionActionMenuDelegate) {
         if (AndroidAutofillSafeModeAction.isAndroidAutofillDisabled()) {
             Log.i(TAG, "Android autofill is disabled by SafeMode");
             return;
@@ -1363,9 +1364,8 @@ public class AwContents implements SmartClipProvider {
         } else {
             mAutofillProvider.setWebContents(mWebContents);
         }
-        SelectionPopupController.fromWebContents(mWebContents)
-                .setNonSelectionAdditionalMenuItemProvider(
-                        new AutofillSelectionMenuItemProvider(mContext, mAutofillProvider));
+        selectionActionMenuDelegate.setAutofillSelectionMenuItemHelper(
+                new AutofillSelectionMenuItemHelper(mContext, mAutofillProvider));
         AwContentsJni.get().initializeAndroidAutofill(mNativeAwContents);
     }
 
@@ -1804,12 +1804,15 @@ public class AwContents implements SmartClipProvider {
         mViewAndroidDelegate =
                 new AwViewAndroidDelegate(mContainerView, mContentsClient, mScrollOffsetManager);
         mWebContentsInternalsHolder = new WebContentsInternalsHolder(this);
+        AwSelectionActionMenuDelegate selectionActionMenuDelegate =
+                new AwSelectionActionMenuDelegate();
         initWebContents(
                 mViewAndroidDelegate,
                 mInternalAccessAdapter,
                 mWebContents,
                 mWindowAndroid.getWindowAndroid(),
-                mWebContentsInternalsHolder);
+                mWebContentsInternalsHolder,
+                selectionActionMenuDelegate);
         AwContentsJni.get()
                 .setJavaPeers(
                         mNativeAwContents,
@@ -1825,7 +1828,7 @@ public class AwContents implements SmartClipProvider {
         installWebContentsObservers();
         mSettings.setWebContents(mWebContents);
         mAwDarkMode.setWebContents(mWebContents);
-        initializeAutofillProviderIfNecessary();
+        initializeAutofillProviderIfNecessary(selectionActionMenuDelegate);
 
         mDisplayObserver.onDIPScaleChanged(getDeviceScaleFactor());
 

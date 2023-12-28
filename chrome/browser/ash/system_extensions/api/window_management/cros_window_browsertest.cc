@@ -281,14 +281,6 @@ IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosScreenProperties) {
   RunTest("cros_screen_properties.js");
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowMoveTo) {
-  RunTest("cros_window_move_to.js");
-}
-
-IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowMoveBy) {
-  RunTest("cros_window_move_by.js");
-}
-
 IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowResizeTo) {
   RunTest("cros_window_resize_to.js");
 }

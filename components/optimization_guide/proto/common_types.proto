@@ -86,14 +86,6 @@ message Any {
   optional bytes value = 2;
 }
 
-// Wrapper message for `string`.
-//
-// The JSON representation for `StringValue` is JSON string.
-message StringValue {
-  // The string value.
-  optional string value = 1;
-}
-
 // Information about the request origin, common to all Cacao requests.
 message OriginInfo {
   // The platform for the user's Chrome.

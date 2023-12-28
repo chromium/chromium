@@ -21,12 +21,11 @@ import {ReimagingDeviceInformationPage} from 'chrome://shimless-rma/reimaging_de
 import {UpdateRoFirmwarePage} from 'chrome://shimless-rma/reimaging_firmware_update_page.js';
 import {ReimagingProvisioningPage} from 'chrome://shimless-rma/reimaging_provisioning_page.js';
 import {StateComponentMapping} from 'chrome://shimless-rma/shimless_rma.js';
-import {CalibrationSetupInstruction, State} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {CalibrationSetupInstruction, State} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
 import {WrapupFinalizePage} from 'chrome://shimless-rma/wrapup_finalize_page.js';
 import {WrapupRepairCompletePage} from 'chrome://shimless-rma/wrapup_repair_complete_page.js';
 import {WrapupRestockPage} from 'chrome://shimless-rma/wrapup_restock_page.js';
 import {WrapupWaitForManualWpEnablePage} from 'chrome://shimless-rma/wrapup_wait_for_manual_wp_enable_page.js';
-
 import {assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 suite('allInputsDisabledTest', function() {

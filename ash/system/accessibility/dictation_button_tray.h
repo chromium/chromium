@@ -105,7 +105,7 @@ class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
   void TextInputChanged(const ui::TextInputClient* client);
 
   // Weak pointer, will be parented by TrayContainer for its lifetime.
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
 
   // SODA download progress. A value of 0 < X < 100 indicates that download is
   // in-progress.

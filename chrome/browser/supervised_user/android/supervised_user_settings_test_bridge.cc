@@ -18,7 +18,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
@@ -103,17 +102,13 @@ void JNI_SupervisedUserSettingsTestBridge_SetKidsManagementResponseForTesting(  
                                         response.SerializeAsString());
 
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-
-  std::unique_ptr<KidsChromeManagementClient>
-      test_kids_chrome_management_client_ =
-          std::make_unique<KidsChromeManagementClient>(
-              shared_url_loader_factory, identity_manager);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
 
   supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile);
   supervised_user_service->GetURLFilter()->InitAsyncURLChecker(
-      test_kids_chrome_management_client_.get());
+      identity_manager, shared_url_loader_factory);
 }
 
 void JNI_SupervisedUserSettingsTestBridge_SetSafeSearchResponseForTesting(  // IN-TEST

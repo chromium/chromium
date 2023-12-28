@@ -17,8 +17,9 @@ class VirtualCardEnrollBubbleController;
 // The location bar icon to show the Virtual Card Enroll bubble where the user
 // can choose to enroll in a virtual card.
 class VirtualCardEnrollIconView : public PageActionIconView {
+  METADATA_HEADER(VirtualCardEnrollIconView, PageActionIconView)
+
  public:
-  METADATA_HEADER(VirtualCardEnrollIconView);
   VirtualCardEnrollIconView(
       CommandUpdater* command_updater,
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,

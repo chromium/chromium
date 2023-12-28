@@ -25,9 +25,10 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
   static void TearDown();
   static void ResetForTesting();
 
-  explicit MockOptimizationGuideKeyedService(
-      content::BrowserContext* browser_context);
+  MockOptimizationGuideKeyedService();
   ~MockOptimizationGuideKeyedService() override;
+
+  void Shutdown() override;
 
   MOCK_METHOD(void,
               RegisterOptimizationTypes,
@@ -59,9 +60,31 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
               ShouldFeatureBeCurrentlyEnabledForUser,
               (optimization_guide::proto::ModelExecutionFeature),
               (const));
+  MOCK_METHOD(bool,
+              ShouldFeatureBeCurrentlyAllowedForLogging,
+              (optimization_guide::proto::ModelExecutionFeature feature),
+              (const));
   MOCK_METHOD(void,
               UploadModelQualityLogs,
               (std::unique_ptr<optimization_guide::ModelQualityLogEntry>));
+  MOCK_METHOD(void,
+              AddObserverForOptimizationTargetModel,
+              (optimization_guide::proto::OptimizationTarget,
+               const absl::optional<optimization_guide::proto::Any>&,
+               optimization_guide::OptimizationTargetModelObserver*),
+              (override));
+  MOCK_METHOD(void,
+              RemoveObserverForOptimizationTargetModel,
+              (optimization_guide::proto::OptimizationTarget,
+               optimization_guide::OptimizationTargetModelObserver*),
+              (override));
+
+  MOCK_METHOD(void,
+              OnNavigationStartOrRedirect,
+              (OptimizationGuideNavigationData*),
+              (override));
+
+  MOCK_METHOD(void, OnNavigationFinish, (const std::vector<GURL>&), (override));
 };
 
 #endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_MOCK_OPTIMIZATION_GUIDE_KEYED_SERVICE_H_

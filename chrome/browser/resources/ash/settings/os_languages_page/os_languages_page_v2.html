@@ -75,6 +75,17 @@
   </template>
 </div>
 
+<template is="dom-if" if="[[isPerAppLanguageEnabled_]]">
+  <cr-link-row
+      id="appLanguagesSection"
+      class="hr"
+      label="$i18n{appLanguagesTitle}"
+      sub-label="$i18n{appLanguagesDescription}"
+      on-click="onAppLanguagesClick_"
+      role-description="$i18n{subpageArrowRoleDescription}">
+  </cr-link-row>
+</template>
+
 <div class="hr bottom-margin">
   <h2 aria-hidden="true">
     [[getLanguagePreferenceTitle_(languageSettingsV2Update2Enabled_)]]

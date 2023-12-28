@@ -32,7 +32,7 @@ using extensions::Manifest;
 using extensions::mojom::ManifestLocation;
 using storage::SpecialStoragePolicy;
 
-typedef SpecialStoragePolicy::StoragePolicy StoragePolicy;
+using StoragePolicy = SpecialStoragePolicy::StoragePolicy;
 
 namespace keys = extensions::manifest_keys;
 

@@ -15,9 +15,7 @@ namespace ash {
 namespace attestation {
 namespace {
 std::string Base64EncodeStr(const std::string& str) {
-  std::string result;
-  base::Base64Encode(str, &result);
-  return result;
+  return base::Base64Encode(str);
 }
 }  // namespace
 

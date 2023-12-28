@@ -21,8 +21,6 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/cert_verifier.h"
-#include "net/cert/ct_policy_enforcer.h"
-#include "net/cert/ct_policy_status.h"
 #include "net/cert/ct_verifier.h"
 #include "net/cert/sct_auditing_delegate.h"
 #include "net/cert/x509_util.h"
@@ -54,7 +52,6 @@ class ProofVerifierChromium::Job {
  public:
   Job(ProofVerifierChromium* proof_verifier,
       CertVerifier* cert_verifier,
-      CTPolicyEnforcer* ct_policy_enforcer,
       TransportSecurityState* transport_security_state,
       SCTAuditingDelegate* sct_auditing_delegate,
       int cert_verify_flags,
@@ -129,7 +126,7 @@ class ProofVerifierChromium::Job {
 
   bool ShouldAllowUnknownRootForHost(const std::string& hostname);
 
-  int CheckCTCompliance();
+  int CheckCTRequirements();
 
   // Proof verifier to notify when this jobs completes.
   raw_ptr<ProofVerifierChromium> proof_verifier_;
@@ -137,8 +134,6 @@ class ProofVerifierChromium::Job {
   // The underlying verifier used for verifying certificates.
   raw_ptr<CertVerifier> verifier_;
   std::unique_ptr<CertVerifier::Request> cert_verifier_request_;
-
-  raw_ptr<CTPolicyEnforcer> policy_enforcer_;
 
   raw_ptr<TransportSecurityState> transport_security_state_;
 
@@ -174,14 +169,12 @@ class ProofVerifierChromium::Job {
 ProofVerifierChromium::Job::Job(
     ProofVerifierChromium* proof_verifier,
     CertVerifier* cert_verifier,
-    CTPolicyEnforcer* ct_policy_enforcer,
     TransportSecurityState* transport_security_state,
     SCTAuditingDelegate* sct_auditing_delegate,
     int cert_verify_flags,
     const NetLogWithSource& net_log)
     : proof_verifier_(proof_verifier),
       verifier_(cert_verifier),
-      policy_enforcer_(ct_policy_enforcer),
       transport_security_state_(transport_security_state),
       sct_auditing_delegate_(sct_auditing_delegate),
       cert_verify_flags_(cert_verify_flags),
@@ -189,7 +182,6 @@ ProofVerifierChromium::Job::Job(
       net_log_(net_log) {
   CHECK(proof_verifier_);
   CHECK(verifier_);
-  CHECK(policy_enforcer_);
   CHECK(transport_security_state_);
 }
 
@@ -404,16 +396,12 @@ int ProofVerifierChromium::Job::DoVerifyCertComplete(int result) {
   // If the connection was good, check HPKP and CT status simultaneously,
   // but prefer to treat the HPKP error as more serious, if there was one.
   if (result == OK) {
-    int ct_result = CheckCTCompliance();
+    int ct_result = CheckCTRequirements();
     TransportSecurityState::PKPStatus pin_validity =
         transport_security_state_->CheckPublicKeyPins(
             HostPortPair(hostname_, port_),
             cert_verify_result.is_issued_by_known_root,
-            cert_verify_result.public_key_hashes, cert_.get(),
-            cert_verify_result.verified_cert.get(),
-            TransportSecurityState::ENABLE_PIN_REPORTS,
-            proof_verifier_->network_anonymization_key_,
-            &verify_details_->pinning_failure_log);
+            cert_verify_result.public_key_hashes);
     switch (pin_validity) {
       case TransportSecurityState::PKPStatus::VIOLATED:
         result = ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN;
@@ -483,18 +471,17 @@ bool ProofVerifierChromium::Job::VerifySignature(
 
   crypto::SignatureVerifier verifier;
   if (!x509_util::SignatureVerifierInitWithCertificate(
-          &verifier, algorithm, base::as_bytes(base::make_span(signature)),
+          &verifier, algorithm, base::as_byte_span(signature),
           cert_->cert_buffer())) {
     DLOG(WARNING) << "SignatureVerifierInitWithCertificate failed";
     return false;
   }
 
-  verifier.VerifyUpdate(
-      base::as_bytes(base::make_span(quic::kProofSignatureLabel)));
+  verifier.VerifyUpdate(base::as_byte_span(quic::kProofSignatureLabel));
   uint32_t len = chlo_hash.length();
   verifier.VerifyUpdate(base::as_bytes(base::make_span(&len, 1u)));
-  verifier.VerifyUpdate(base::as_bytes(base::make_span(chlo_hash)));
-  verifier.VerifyUpdate(base::as_bytes(base::make_span(signed_data)));
+  verifier.VerifyUpdate(base::as_byte_span(chlo_hash));
+  verifier.VerifyUpdate(base::as_byte_span(signed_data));
 
   if (!verifier.VerifyFinal()) {
     DLOG(WARNING) << "VerifyFinal failed";
@@ -505,26 +492,17 @@ bool ProofVerifierChromium::Job::VerifySignature(
   return true;
 }
 
-int ProofVerifierChromium::Job::CheckCTCompliance() {
+int ProofVerifierChromium::Job::CheckCTRequirements() {
   const CertVerifyResult& cert_verify_result =
       verify_details_->cert_verify_result;
-
-  ct::SCTList verified_scts;
-  for (const auto& sct_and_status : cert_verify_result.scts) {
-    if (sct_and_status.status == ct::SCT_STATUS_OK)
-      verified_scts.push_back(sct_and_status.sct);
-  }
-  verify_details_->cert_verify_result.policy_compliance =
-      policy_enforcer_->CheckCompliance(cert_verify_result.verified_cert.get(),
-                                        verified_scts, net_log_);
 
   TransportSecurityState::CTRequirementsStatus ct_requirement_status =
       transport_security_state_->CheckCTRequirements(
           HostPortPair(hostname_, port_),
           cert_verify_result.is_issued_by_known_root,
           cert_verify_result.public_key_hashes,
-          cert_verify_result.verified_cert.get(), cert_.get(),
-          cert_verify_result.scts, cert_verify_result.policy_compliance);
+          cert_verify_result.verified_cert.get(),
+          cert_verify_result.policy_compliance);
 
   if (sct_auditing_delegate_) {
     sct_auditing_delegate_->MaybeEnqueueReport(
@@ -545,19 +523,16 @@ int ProofVerifierChromium::Job::CheckCTCompliance() {
 
 ProofVerifierChromium::ProofVerifierChromium(
     CertVerifier* cert_verifier,
-    CTPolicyEnforcer* ct_policy_enforcer,
     TransportSecurityState* transport_security_state,
     SCTAuditingDelegate* sct_auditing_delegate,
     std::set<std::string> hostnames_to_allow_unknown_roots,
     const NetworkAnonymizationKey& network_anonymization_key)
     : cert_verifier_(cert_verifier),
-      ct_policy_enforcer_(ct_policy_enforcer),
       transport_security_state_(transport_security_state),
       sct_auditing_delegate_(sct_auditing_delegate),
       hostnames_to_allow_unknown_roots_(hostnames_to_allow_unknown_roots),
       network_anonymization_key_(network_anonymization_key) {
   DCHECK(cert_verifier_);
-  DCHECK(ct_policy_enforcer_);
   DCHECK(transport_security_state_);
 }
 
@@ -584,9 +559,8 @@ quic::QuicAsyncStatus ProofVerifierChromium::VerifyProof(
   const ProofVerifyContextChromium* chromium_context =
       reinterpret_cast<const ProofVerifyContextChromium*>(verify_context);
   std::unique_ptr<Job> job = std::make_unique<Job>(
-      this, cert_verifier_, ct_policy_enforcer_, transport_security_state_,
-      sct_auditing_delegate_, chromium_context->cert_verify_flags,
-      chromium_context->net_log);
+      this, cert_verifier_, transport_security_state_, sct_auditing_delegate_,
+      chromium_context->cert_verify_flags, chromium_context->net_log);
   quic::QuicAsyncStatus status = job->VerifyProof(
       hostname, port, server_config, quic_version, chlo_hash, certs, cert_sct,
       signature, error_details, verify_details, std::move(callback));
@@ -615,9 +589,8 @@ quic::QuicAsyncStatus ProofVerifierChromium::VerifyCertChain(
   const ProofVerifyContextChromium* chromium_context =
       reinterpret_cast<const ProofVerifyContextChromium*>(verify_context);
   std::unique_ptr<Job> job = std::make_unique<Job>(
-      this, cert_verifier_, ct_policy_enforcer_, transport_security_state_,
-      sct_auditing_delegate_, chromium_context->cert_verify_flags,
-      chromium_context->net_log);
+      this, cert_verifier_, transport_security_state_, sct_auditing_delegate_,
+      chromium_context->cert_verify_flags, chromium_context->net_log);
   quic::QuicAsyncStatus status =
       job->VerifyCertChain(hostname, port, certs, ocsp_response, cert_sct,
                            error_details, verify_details, std::move(callback));

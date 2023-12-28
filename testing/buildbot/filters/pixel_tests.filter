@@ -26,6 +26,7 @@ DeepScanningFailureModalDialogTest.*
 *DiceWebSigninInterceptionBubbleV1SyncPromoPixelTest.InvokeUi_*
 *DiceWebSigninInterceptionBubbleV2PixelTest.InvokeUi_*
 DeleteAddressProfileDialogControllerImplTest.InvokeUi_*
+DocumentPictureInPicturePixelTest.*
 EditAddressProfileDialogControllerImplTest.InvokeUi_*
 ManagedUserNoticeUIDialogPixelTest.*
 ManagedUserNoticeUIWindowPixelTest.*
@@ -67,6 +68,7 @@ PageInfoBubbleViewIsolatedWebAppBrowserTest.*
 *PasswordGenerationPopupViewBrowsertest.*
 *PasswordManagementRevampedBubbleInteractiveUiTest.*
 PasswordReuseModalWarningTest.*
+PerformanceToolbarButtonInteractiveUiTest.*
 PermissionRequestChipBrowserUiTest.*
 *PermissionPromptBubble*ViewBrowserTest.InvokeUi_*
 *PopupViewViewsBrowsertest*

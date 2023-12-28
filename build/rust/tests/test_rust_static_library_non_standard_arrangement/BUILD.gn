@@ -4,7 +4,7 @@
 
 import("//build/rust/rust_static_library.gni")
 
-rust_static_library("test_rust_static_library_non_standard_arrangement") {
+rust_static_library("lib") {
   sources = [ "foo.rs" ]
   crate_root = "foo.rs"
   unit_test_target = "foo_tests"

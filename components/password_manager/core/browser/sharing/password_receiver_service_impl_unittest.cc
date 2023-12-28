@@ -33,6 +33,7 @@ using testing::AllOf;
 using testing::Bool;
 using testing::ElementsAre;
 using testing::Field;
+using testing::IsEmpty;
 
 const std::string kUrl = "https://www.test.com";
 const std::string kPslMatchUrl = "https://m.test.com";
@@ -669,6 +670,23 @@ TEST_P(PasswordReceiverServiceImplTest, ShouldAddAllCredentialsInInvitation) {
       metrics_util::ProcessIncomingPasswordSharingInvitationResult::
           kInvitationAutoApproved,
       2);
+}
+
+TEST_P(PasswordReceiverServiceImplTest, ShouldIgnoreInvalidPasswordForm) {
+  base::HistogramTester histogram_tester;
+  PasswordForm existing_password = CreatePasswordForm();
+  existing_password.password_value.clear();
+
+  password_receiver_service()->ProcessIncomingSharingInvitation(
+      PasswordFormToIncomingSharingInvitation(existing_password));
+  RunUntilIdle();
+
+  EXPECT_THAT(profile_password_store().stored_passwords(), IsEmpty());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ProcessIncomingPasswordSharingInvitationResult",
+      metrics_util::ProcessIncomingPasswordSharingInvitationResult::
+          kInvalidInvitation,
+      1);
 }
 
 INSTANTIATE_TEST_SUITE_P(, PasswordReceiverServiceImplTest, Bool());

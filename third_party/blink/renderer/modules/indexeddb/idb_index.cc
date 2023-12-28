@@ -92,7 +92,7 @@ void IDBIndex::setName(const String& name, ExceptionState& exception_state) {
                                       IDBDatabase::kIndexNameTakenErrorMessage);
     return;
   }
-  if (!BackendDB()) {
+  if (!db()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       IDBDatabase::kDatabaseClosedErrorMessage);
     return;
@@ -139,7 +139,7 @@ IDBRequest* IDBIndex::openCursor(ScriptState* script_state,
   if (exception_state.HadException())
     return nullptr;
 
-  if (!BackendDB()) {
+  if (!db()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       IDBDatabase::kDatabaseClosedErrorMessage);
     return nullptr;
@@ -155,8 +155,8 @@ IDBRequest* IDBIndex::openCursor(ScriptState* script_state,
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
   request->SetCursorDetails(indexed_db::kCursorKeyAndValue, direction);
-  BackendDB()->OpenCursor(object_store_->Id(), Id(), key_range, direction,
-                          false, mojom::IDBTaskType::Normal, request);
+  db()->OpenCursor(object_store_->Id(), Id(), key_range, direction, false,
+                   mojom::IDBTaskType::Normal, request);
   return request;
 }
 
@@ -183,7 +183,7 @@ IDBRequest* IDBIndex::count(ScriptState* script_state,
   if (exception_state.HadException())
     return nullptr;
 
-  if (!BackendDB()) {
+  if (!db()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       IDBDatabase::kDatabaseClosedErrorMessage);
     return nullptr;
@@ -191,9 +191,8 @@ IDBRequest* IDBIndex::count(ScriptState* script_state,
 
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
-  BackendDB()->Count(
-      transaction_->Id(), object_store_->Id(), Id(), key_range,
-      WTF::BindOnce(&IDBRequest::OnCount, WrapWeakPersistent(request)));
+  db()->Count(transaction_->Id(), object_store_->Id(), Id(), key_range,
+              WTF::BindOnce(&IDBRequest::OnCount, WrapWeakPersistent(request)));
   return request;
 }
 
@@ -222,7 +221,7 @@ IDBRequest* IDBIndex::openKeyCursor(ScriptState* script_state,
       ExecutionContext::From(script_state), range, exception_state);
   if (exception_state.HadException())
     return nullptr;
-  if (!BackendDB()) {
+  if (!db()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       IDBDatabase::kDatabaseClosedErrorMessage);
     return nullptr;
@@ -231,8 +230,8 @@ IDBRequest* IDBIndex::openKeyCursor(ScriptState* script_state,
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
   request->SetCursorDetails(indexed_db::kCursorKeyOnly, direction);
-  BackendDB()->OpenCursor(object_store_->Id(), Id(), key_range, direction, true,
-                          mojom::IDBTaskType::Normal, request);
+  db()->OpenCursor(object_store_->Id(), Id(), key_range, direction, true,
+                   mojom::IDBTaskType::Normal, request);
   return request;
 }
 
@@ -320,16 +319,15 @@ IDBRequest* IDBIndex::GetInternal(ScriptState* script_state,
         IDBDatabase::kNoKeyOrKeyRangeErrorMessage);
     return nullptr;
   }
-  if (!BackendDB()) {
+  if (!db()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       IDBDatabase::kDatabaseClosedErrorMessage);
     return nullptr;
   }
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
-  BackendDB()->Get(transaction_->Id(), object_store_->Id(), Id(), key_range,
-                   key_only,
-                   WTF::BindOnce(&IDBRequest::OnGet, WrapPersistent(request)));
+  db()->Get(transaction_->Id(), object_store_->Id(), Id(), key_range, key_only,
+            WTF::BindOnce(&IDBRequest::OnGet, WrapPersistent(request)));
   return request;
 }
 
@@ -358,7 +356,7 @@ IDBRequest* IDBIndex::GetAllInternal(ScriptState* script_state,
       ExecutionContext::From(script_state), range, exception_state);
   if (exception_state.HadException())
     return nullptr;
-  if (!BackendDB()) {
+  if (!db()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       IDBDatabase::kDatabaseClosedErrorMessage);
     return nullptr;
@@ -366,13 +364,13 @@ IDBRequest* IDBIndex::GetAllInternal(ScriptState* script_state,
 
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
-  BackendDB()->GetAll(transaction_->Id(), object_store_->Id(), Id(), key_range,
-                      max_count, key_only, request);
+  db()->GetAll(transaction_->Id(), object_store_->Id(), Id(), key_range,
+               max_count, key_only, request);
   return request;
 }
 
-WebIDBDatabase* IDBIndex::BackendDB() const {
-  return transaction_->BackendDB();
+IDBDatabase* IDBIndex::db() const {
+  return transaction_->db();
 }
 
 }  // namespace blink

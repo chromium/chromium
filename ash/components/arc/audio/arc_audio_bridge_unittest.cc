@@ -33,7 +33,7 @@ class ArcAudioBridgeTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   ArcServiceManager arc_service_manager_;
   user_prefs::TestBrowserContextWithPrefs context_;
-  raw_ptr<ArcAudioBridge, ExperimentalAsh> bridge_ = nullptr;
+  raw_ptr<ArcAudioBridge> bridge_ = nullptr;
 };
 
 TEST_F(ArcAudioBridgeTest, ConstructDestruct) {

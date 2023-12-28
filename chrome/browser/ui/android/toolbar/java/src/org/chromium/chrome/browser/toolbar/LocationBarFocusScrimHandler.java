@@ -5,10 +5,10 @@
 package org.chromium.chrome.browser.toolbar;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.view.View;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -33,16 +33,18 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
     private final LocationBarDataProvider mLocationBarDataProvider;
     private final Runnable mClickDelegate;
     private final Context mContext;
+    private ObservableSupplier<Integer> mTabStripHeightSupplier;
+    private Callback<Integer> mTabStripHeightChangeCallback;
 
     /**
-     *
      * @param scrimCoordinator Coordinator responsible for showing and hiding the scrim view.
      * @param visibilityChangeCallback Callback used to obscure/unobscure tabs when the scrim is
-     *         shown/hidden.
+     *     shown/hidden.
      * @param context Context for retrieving resources.
      * @param locationBarDataProvider Provider of location bar data, e.g. the NTP state.
-     * @param clickDelegate Click handler for the scrim
+     * @param clickDelegate Click handler for the scrim.
      * @param scrimTarget View that the scrim should be anchored to.
+     * @param tabStripHeightSupplier Supplier for the tab strip height.
      */
     public LocationBarFocusScrimHandler(
             ScrimCoordinator scrimCoordinator,
@@ -50,14 +52,14 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
             Context context,
             LocationBarDataProvider locationBarDataProvider,
             Runnable clickDelegate,
-            View scrimTarget) {
+            View scrimTarget,
+            ObservableSupplier<Integer> tabStripHeightSupplier) {
         mScrimCoordinator = scrimCoordinator;
         mLocationBarDataProvider = locationBarDataProvider;
         mClickDelegate = clickDelegate;
         mContext = context;
 
-        Resources resources = context.getResources();
-        int topMargin = resources.getDimensionPixelSize(R.dimen.tab_strip_height);
+        int topMargin = tabStripHeightSupplier.get() == null ? 0 : tabStripHeightSupplier.get();
         mLightScrimColor = context.getColor(R.color.omnibox_focused_fading_background_color_light);
         mScrimModel =
                 new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
@@ -69,6 +71,11 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
                         .with(ScrimProperties.VISIBILITY_CALLBACK, visibilityChangeCallback)
                         .with(ScrimProperties.BACKGROUND_COLOR, ScrimProperties.INVALID_COLOR)
                         .build();
+
+        mTabStripHeightSupplier = tabStripHeightSupplier;
+        mTabStripHeightChangeCallback =
+                newHeight -> mScrimModel.set(ScrimProperties.TOP_MARGIN, newHeight);
+        mTabStripHeightSupplier.addObserver(mTabStripHeightChangeCallback);
     }
 
     @Override
@@ -99,11 +106,19 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
         }
     }
 
+    public void destroy() {
+        mTabStripHeightSupplier.removeObserver(mTabStripHeightChangeCallback);
+    }
+
     /**
      * @return Whether the scrim should wait to be shown until after the omnibox is done
      *         animating.
      */
     private boolean showScrimAfterAnimationCompletes() {
         return mLocationBarDataProvider.getNewTabPageDelegate().isLocationBarShown();
+    }
+
+    PropertyModel getScrimModelForTesting() {
+        return mScrimModel;
     }
 }

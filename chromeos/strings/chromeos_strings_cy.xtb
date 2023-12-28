@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Maint y dudalen</translation>
 <translation id="1082009148392559545">Wrthi'n lawrlwytho'r arbedwr sgrîn</translation>
 <translation id="1094693127011229778">Nid yw'r cyfeiriad IP ar gael</translation>
+<translation id="1116694919640316211">Ynghylch</translation>
 <translation id="1118572504348554005">Mae’n bosib y byddwn yn rhannu adborth a gyflwynir drwy’r ffurflen hon gyda’n partneriaid i ddatrys problemau bygiau a materion eraill yr ydych yn rhoi gwybod i ni amdanynt. Peidiwch â chynnwys gwybodaeth sensitif fel cyfrineiriau.</translation>
 <translation id="1119447706177454957">Gwall mewnol</translation>
 <translation id="1124772482545689468">Defnyddiwr</translation>
@@ -378,6 +379,7 @@
 <translation id="3866249974567520381">Disgrifiad</translation>
 <translation id="387301095347517405">Nifer o weithiau y mae eich batri wedi mynd drwy gylch gwefru llawn</translation>
 <translation id="3885327323343477505">Newid arbedwr sgrîn</translation>
+<translation id="3892148308691398805">Copïo'r testun</translation>
 <translation id="391412459402535266">Methu â phrofi'r ddyfais. Newid i'r modd gliniadur i brofi.</translation>
 <translation id="3916998944874125962">tynnu sgrinlun</translation>
 <translation id="3923184630988645767">Defnydd data</translation>
@@ -693,6 +695,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Mae capasiti y batri yn gostwng gyda defnydd</translation>
 <translation id="6191293864534840972">Mae enwau gweinyddion wedi'u camffurfio</translation>
+<translation id="6196607555925437199">Ail-greu</translation>
 <translation id="6205145102504628069">Llif Cwmwl</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nid oes unrhyw sganwyr ar gael</translation>
@@ -869,7 +872,9 @@
 <translation id="7502658306369382406">Cyfeiriad IPv6</translation>
 <translation id="7513770521371759388">gwaelod</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Creu</translation>
 <translation id="7528507600602050979">Nid yw cynnwys help ar gael</translation>
+<translation id="753556296624075801">Pwerir gan Google</translation>
 <translation id="7535791657097741517">Troi'r thema olau ymlaen</translation>
 <translation id="7550715992156305117">Arferion Diagnostig</translation>
 <translation id="7551123448725492271">Mae'r ddyfais yn ddyfais sain.</translation>
@@ -960,6 +965,7 @@
 <translation id="8227119283605456246">Atodi ffeil</translation>
 <translation id="8230672074305416752">Wedi methu â phingio porth y rhwydwaith diofyn</translation>
 <translation id="8246209727385807362">Cludwr anhysbys</translation>
+<translation id="8261506727792406068">Dileu</translation>
 <translation id="8262870577632766028">1 awr</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Cysylltwch â rhwydwaith ac ail-lwythwch y dudalen i weld y papur wal.</translation>

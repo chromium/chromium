@@ -300,14 +300,10 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
             animation));
   }
 
-  const raw_ptr<ProgressIndicatorAnimationRegistry,
-                LeakedDanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<ProgressIndicatorAnimationRegistry, LeakedDanglingUntriaged>
       registry_;
-  const raw_ptr<HoldingSpaceController,
-                LeakedDanglingUntriaged | ExperimentalAsh>
-      controller_;
-  raw_ptr<HoldingSpaceModel, LeakedDanglingUntriaged | ExperimentalAsh> model_ =
-      nullptr;
+  const raw_ptr<HoldingSpaceController, LeakedDanglingUntriaged> controller_;
+  raw_ptr<HoldingSpaceModel, LeakedDanglingUntriaged> model_ = nullptr;
 
   // The cumulative progress for the attached `model_`, calculated and cached
   // with each call to `UpdateAnimations()`. This is used to determine when

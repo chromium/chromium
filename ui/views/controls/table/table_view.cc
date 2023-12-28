@@ -194,7 +194,7 @@ TableView::TableView() : weak_factory_(this) {
 
 TableView::TableView(ui::TableModel* model,
                      const std::vector<ui::TableColumn>& columns,
-                     TableTypes table_type,
+                     TableType table_type,
                      bool single_selection)
     : TableView() {
   Init(model, std::move(columns), table_type, single_selection);
@@ -230,7 +230,7 @@ Builder<ScrollView> TableView::CreateScrollViewBuilderWithTable(
 
 void TableView::Init(ui::TableModel* model,
                      const std::vector<ui::TableColumn>& columns,
-                     TableTypes table_type,
+                     TableType table_type,
                      bool single_selection) {
   SetColumns(columns);
   SetTableType(table_type);
@@ -268,14 +268,14 @@ void TableView::SetColumns(const std::vector<ui::TableColumn>& columns) {
   }
 }
 
-void TableView::SetTableType(TableTypes table_type) {
+void TableView::SetTableType(TableType table_type) {
   if (table_type_ == table_type)
     return;
   table_type_ = table_type;
   OnPropertyChanged(&table_type_, PropertyEffects::kPropertyEffectsLayout);
 }
 
-TableTypes TableView::GetTableType() const {
+TableType TableView::GetTableType() const {
   return table_type_;
 }
 
@@ -1003,7 +1003,7 @@ void TableView::OnPaintImpl(gfx::Canvas* canvas) {
       }
 
       // Always paint the icon in the first visible column.
-      if (j == 0 && table_type_ == ICON_AND_TEXT) {
+      if (j == 0 && table_type_ == TableType::kIconAndText) {
         gfx::ImageSkia image =
             model_->GetIcon(model_index).Rasterize(GetColorProvider());
         if (!image.isNull()) {
@@ -1161,8 +1161,9 @@ void TableView::AdjustCellBoundsForText(size_t visible_column_index,
   if (visible_column_index == 0) {
     if (grouper_)
       text_x += kGroupingIndicatorSize + cell_element_spacing;
-    if (table_type_ == ICON_AND_TEXT)
+    if (table_type_ == TableType::kIconAndText) {
       text_x += ui::TableModel::kIconSize + cell_element_spacing;
+    }
   }
   bounds->set_x(text_x);
   bounds->set_width(std::max(0, bounds->right() - cell_margin - text_x));
@@ -1194,8 +1195,9 @@ void TableView::UpdateVisibleColumnSizes() {
   const int cell_margin = GetCellMargin();
   const int cell_element_spacing = GetCellElementSpacing();
   int first_column_padding = 0;
-  if (table_type_ == ICON_AND_TEXT && header_)
+  if (table_type_ == TableType::kIconAndText && header_) {
     first_column_padding += ui::TableModel::kIconSize + cell_element_spacing;
+  }
   if (grouper_)
     first_column_padding += kGroupingIndicatorSize + cell_element_spacing;
 
@@ -1965,12 +1967,12 @@ ADD_PROPERTY_METADATA(TableViewObserver*, Observer)
 ADD_READONLY_PROPERTY_METADATA(int, RowHeight)
 ADD_PROPERTY_METADATA(bool, SingleSelection)
 ADD_PROPERTY_METADATA(bool, SelectOnRemove)
-ADD_PROPERTY_METADATA(TableTypes, TableType)
+ADD_PROPERTY_METADATA(TableType, TableType)
 ADD_PROPERTY_METADATA(bool, SortOnPaint)
 END_METADATA
 
 }  // namespace views
 
-DEFINE_ENUM_CONVERTERS(views::TableTypes,
-                       {views::TableTypes::TEXT_ONLY, u"TEXT_ONLY"},
-                       {views::TableTypes::ICON_AND_TEXT, u"ICON_AND_TEXT"})
+DEFINE_ENUM_CONVERTERS(views::TableType,
+                       {views::TableType::kTextOnly, u"TEXT_ONLY"},
+                       {views::TableType::kIconAndText, u"ICON_AND_TEXT"})

@@ -85,8 +85,7 @@ class ASH_EXPORT SearchResultActionsView : public views::View {
   // If an action is currently selected, the selected action index.
   std::optional<int> selected_action_;
 
-  const raw_ptr<SearchResultActionsViewDelegate, ExperimentalAsh>
-      delegate_;  // Not owned.
+  const raw_ptr<SearchResultActionsViewDelegate> delegate_;  // Not owned.
   std::list<base::CallbackListSubscription> subscriptions_;
 };
 

@@ -110,7 +110,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
     kPinLocked = 0,
     kPukLocked = 1,
     kUnlocked = 2,
-    kMaxValue = kUnlocked
+    kCarrierLocked = 3,
+    kMaxValue = kCarrierLocked
   };
 
   // Records the result of pin operations performed.
@@ -285,7 +286,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
     kCellularInhibitFailure = 7,
     kESimProfileIssue = 8,
     kCellularOutOfCredits = 9,
-    kSimLocked = 10,
+    kSimPinPukLocked = 10,
     kConnectFailed = 11,
     kNotConnected = 12,
     kActivateFailed = 13,
@@ -293,7 +294,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
     kErrorCellularDeviceBusy = 15,
     kErrorConnectTimeout = 16,
     kConnectableCellularTimeout = 17,
-    kMaxValue = kConnectableCellularTimeout,
+    kSimCarrierLocked = 18,
+    kMaxValue = kSimCarrierLocked,
   };
 
   // Result of state changes to a cellular network triggered by any connection
@@ -317,9 +319,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
     kTooManySTAs = 13,
     kBadPassphrase = 14,
     kBadWepKey = 15,
-    kErrorSimLocked = 16,
+    kErrorSimPinPukLocked = 16,
     kErrorNotRegistered = 17,
-    kMaxValue = kErrorNotRegistered,
+    kErrorSimCarrierLocked = 18,
+    kMaxValue = kErrorSimCarrierLocked,
   };
 
   // Convert shill error name string to SimPinOperationResult enum.

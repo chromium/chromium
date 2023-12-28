@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {FilesSettingsCardElement, OneDriveConnectionState, SmbBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {createRouterForTesting, CrLinkRowElement, CrSettingsPrefs, OneDriveBrowserProxy, Route, Router, routes, settingMojom, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {createRouterForTesting, CrLinkRowElement, CrSettingsPrefs, OneDriveBrowserProxy, Route, Router, routes, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -81,12 +81,11 @@ suite('<files-settings-card>', () => {
     await flushTasks();
   }
 
-  function getGoogleDriveRow(): CrLinkRowElement {
-    const googleDriveRow =
-        filesSettingsCard.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#googleDriveRow')!;
-    assert(googleDriveRow);
-    return googleDriveRow;
+  function getGoogleDriveRowSubLabel(): HTMLElement {
+    const subLabel =
+        filesSettingsCard.shadowRoot!.getElementById('googleDriveSubLabel');
+    assert(subLabel);
+    return subLabel;
   }
 
   async function assertSubpageTriggerFocused(
@@ -122,7 +121,6 @@ suite('<files-settings-card>', () => {
     loadTimeData.overrideValues({
       showOfficeSettings: false,
       enableDriveFsBulkPinning: false,
-      showGoogleDriveSettingsPage: false,
     });
 
     Router.getInstance().navigateTo(route);
@@ -149,48 +147,23 @@ suite('<files-settings-card>', () => {
         assertNull(filesSettingsCard.shadowRoot!.querySelector('#officeRow'));
       });
 
-  test(
-      'Google Drive row is not stamped when bulk pinning is disabled',
-      async () => {
-        await createFilesSettingsCard();
-        assertNull(
-            filesSettingsCard.shadowRoot!.querySelector('#googleDriveRow'));
-      });
-
-  test('Deep link to disconnect Google Drive toggle', async () => {
+  test('Google Drive row sublabel changes based on pref value', async () => {
     await createFilesSettingsCard();
-    const params = new URLSearchParams();
-    const setting = settingMojom.Setting.kGoogleDriveConnection;
-    params.append('settingId', setting.toString());
-    Router.getInstance().navigateTo(route, params);
+    filesSettingsCard.setPrefValue('gdata.disabled', true);
     flush();
 
-    const deepLinkElement =
-        filesSettingsCard.shadowRoot!.querySelector<HTMLElement>(
-            '#disconnectGoogleDriveAccountToggle');
-    assert(deepLinkElement);
-    assertTrue(isVisible(deepLinkElement));
-    await waitAfterNextRender(deepLinkElement);
-    assertEquals(
-        deepLinkElement, filesSettingsCard.shadowRoot!.activeElement,
-        'Disconnect Drive toggle should be focused for settingId=1300.');
+    const googleDriveRowSubLabel = getGoogleDriveRowSubLabel();
+    assertEquals('Not signed in', googleDriveRowSubLabel.innerText);
+
+    filesSettingsCard.setPrefValue('gdata.disabled', false);
+    flush();
+    assertTrue(googleDriveRowSubLabel.innerText.startsWith('Signed in as'));
   });
 
-  test('Disconnect Google Drive account toggle syncs to pref', async () => {
+  test('Google Drive row is focused when returning from subpage', async () => {
     await createFilesSettingsCard();
 
-    // The default state of the pref is disabled.
-    const disconnectToggle = filesSettingsCard.shadowRoot!
-                                 .querySelector<SettingsToggleButtonElement>(
-                                     '#disconnectGoogleDriveAccountToggle');
-    assert(disconnectToggle);
-
-    assertFalse(disconnectToggle.checked);
-    assertFalse(filesSettingsCard.getPref('gdata.disabled').value);
-    disconnectToggle.click();
-    flush();
-    assertTrue(disconnectToggle.checked);
-    assertTrue(filesSettingsCard.getPref('gdata.disabled').value);
+    await assertSubpageTriggerFocused('#googleDriveRow', routes.GOOGLE_DRIVE);
   });
 
   suite('with showOfficeSettings set to true', () => {
@@ -326,7 +299,6 @@ suite('<files-settings-card>', () => {
     setup(async () => {
       loadTimeData.overrideValues({
         enableDriveFsBulkPinning: true,
-        showGoogleDriveSettingsPage: false,
       });
     });
 
@@ -336,9 +308,7 @@ suite('<files-settings-card>', () => {
           await createFilesSettingsCard();
           filesSettingsCard.setPrefValue('gdata.disabled', true);
           flush();
-
-          const googleDriveRow = getGoogleDriveRow();
-          assertEquals('Not signed in', googleDriveRow.subLabel);
+          assertEquals('Not signed in', getGoogleDriveRowSubLabel().innerText);
         });
 
     test(
@@ -348,8 +318,8 @@ suite('<files-settings-card>', () => {
           filesSettingsCard.setPrefValue('drivefs.bulk_pinning_enabled', false);
           flush();
 
-          const googleDriveRow = getGoogleDriveRow();
-          assertTrue(googleDriveRow.subLabel.startsWith('Signed in as'));
+          assertTrue(
+              getGoogleDriveRowSubLabel().innerText.startsWith('Signed in as'));
         });
 
     test(
@@ -358,8 +328,7 @@ suite('<files-settings-card>', () => {
           filesSettingsCard.setPrefValue('drivefs.bulk_pinning_enabled', true);
           flush();
 
-          const googleDriveRow = getGoogleDriveRow();
-          assertEquals('File sync on', googleDriveRow.subLabel);
+          assertEquals('File sync on', getGoogleDriveRowSubLabel().innerText);
         });
 
     test('cycling through the prefs updates the sublabel texts', async () => {
@@ -368,51 +337,17 @@ suite('<files-settings-card>', () => {
       filesSettingsCard.setPrefValue('drivefs.bulk_pinning_enabled', false);
       flush();
 
-      const googleDriveRow = getGoogleDriveRow();
-      assertEquals('Not signed in', googleDriveRow.subLabel);
+      const googleDriveRowSubLabel = getGoogleDriveRowSubLabel();
+      assertEquals('Not signed in', googleDriveRowSubLabel.innerText);
 
       filesSettingsCard.setPrefValue('gdata.disabled', false);
       flush();
-      assertTrue(googleDriveRow.subLabel.startsWith('Signed in as'));
+      assertTrue(googleDriveRowSubLabel.innerText.startsWith('Signed in as'));
 
       filesSettingsCard.setPrefValue('drivefs.bulk_pinning_enabled', true);
       flush();
-      assertEquals('File sync on', googleDriveRow.subLabel);
+      assertEquals('File sync on', googleDriveRowSubLabel.innerText);
     });
-  });
-
-  suite('with showGoogleDriveSettingsPage set to true', async () => {
-    setup(async () => {
-      loadTimeData.overrideValues({
-        enableDriveFsBulkPinning: true,
-        showGoogleDriveSettingsPage: true,
-      });
-
-      // Reinitialize Router and routes based on load time data
-      const testRouter = createRouterForTesting();
-      Router.resetInstanceForTesting(testRouter);
-    });
-
-    test('Google Drive row sublabel changes based on pref value', async () => {
-      await createFilesSettingsCard();
-      filesSettingsCard.setPrefValue('gdata.disabled', true);
-      flush();
-
-      const googleDriveRow = getGoogleDriveRow();
-      assertEquals('Not signed in', googleDriveRow.subLabel);
-
-      filesSettingsCard.setPrefValue('gdata.disabled', false);
-      flush();
-      assertTrue(googleDriveRow.subLabel.startsWith('Signed in as'));
-    });
-
-    test(
-        'Google Drive row is focused when returning from subpage', async () => {
-          await createFilesSettingsCard();
-
-          await assertSubpageTriggerFocused(
-              '#googleDriveRow', routes.GOOGLE_DRIVE);
-        });
   });
 
   if (isRevampWayfindingEnabled) {

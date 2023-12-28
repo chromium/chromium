@@ -8,8 +8,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
@@ -36,13 +34,13 @@ class ScreenshotShareSheetMediator {
     private final Context mContext;
     private final Runnable mSaveRunnable;
     private final Runnable mCloseDialogRunnable;
-    private final @Nullable Callback<Runnable> mInstallCallback;
     private final ChromeOptionShareCallback mChromeOptionShareCallback;
     private final WindowAndroid mWindowAndroid;
     private final String mShareUrl;
 
     /**
      * The ScreenshotShareSheetMediator constructor.
+     *
      * @param context The context to use.
      * @param propertyModel The property model to use to communicate with views.
      * @param closeDialogRunnable The action to take to close the dialog.
@@ -50,8 +48,6 @@ class ScreenshotShareSheetMediator {
      * @param windowAndroid The {@link WindowAndroid} that originated this screenshot.
      * @param shareUrl The URL associated with the screenshot.
      * @param chromeOptionShareCallback The callback to share a screenshot via the share sheet.
-     * @param installCallback The action to take when install is called, will call runnable on
-     *         success.
      */
     ScreenshotShareSheetMediator(
             Context context,
@@ -60,8 +56,7 @@ class ScreenshotShareSheetMediator {
             Runnable saveRunnable,
             WindowAndroid windowAndroid,
             String shareUrl,
-            ChromeOptionShareCallback chromeOptionShareCallback,
-            @Nullable Callback<Runnable> installCallback) {
+            ChromeOptionShareCallback chromeOptionShareCallback) {
         mCloseDialogRunnable = closeDialogRunnable;
         mSaveRunnable = saveRunnable;
         mContext = context;
@@ -69,10 +64,6 @@ class ScreenshotShareSheetMediator {
         mWindowAndroid = windowAndroid;
         mShareUrl = shareUrl;
         mChromeOptionShareCallback = chromeOptionShareCallback;
-        mInstallCallback = installCallback;
-        mModel.set(
-                ScreenshotShareSheetViewProperties.SCREENSHOT_EDIT_DISABLED,
-                mInstallCallback == null);
         mModel.set(
                 ScreenshotShareSheetViewProperties.NO_ARG_OPERATION_LISTENER,
                 operation -> {
@@ -99,11 +90,6 @@ class ScreenshotShareSheetMediator {
             ScreenshotShareSheetMetrics.logScreenshotAction(
                     ScreenshotShareSheetMetrics.ScreenshotShareSheetAction.DELETE);
             mCloseDialogRunnable.run();
-        } else if (NoArgOperation.INSTALL == operation) {
-            assert mInstallCallback != null;
-            ScreenshotShareSheetMetrics.logScreenshotAction(
-                    ScreenshotShareSheetMetrics.ScreenshotShareSheetAction.EDIT);
-            mInstallCallback.onResult(mCloseDialogRunnable);
         }
     }
 

@@ -294,8 +294,7 @@ void PaymentRequest::Show(bool wait_for_updated_details,
     log_.Error(errors::kAnotherUiShowing);
     DCHECK(!has_recorded_completion_);
     has_recorded_completion_ = true;
-    journey_logger_.SetNotShown(
-        JourneyLogger::NOT_SHOWN_REASON_CONCURRENT_REQUESTS);
+    journey_logger_.SetNotShown();
     client_->OnError(mojom::PaymentErrorReason::ALREADY_SHOWING,
                      errors::kAnotherUiShowing);
     ResetAndDeleteThis();
@@ -310,7 +309,7 @@ void PaymentRequest::Show(bool wait_for_updated_details,
       log_.Error(errors::kCannotShowWithoutUserActivation);
       DCHECK(!has_recorded_completion_);
       has_recorded_completion_ = true;
-      journey_logger_.SetNotShown(JourneyLogger::NOT_SHOWN_REASON_OTHER);
+      journey_logger_.SetNotShown();
       client_->OnError(mojom::PaymentErrorReason::USER_ACTIVATION_REQUIRED,
                        errors::kCannotShowWithoutUserActivation);
       ResetAndDeleteThis();
@@ -325,7 +324,7 @@ void PaymentRequest::Show(bool wait_for_updated_details,
     log_.Error(errors::kCannotShowInBackgroundTab);
     DCHECK(!has_recorded_completion_);
     has_recorded_completion_ = true;
-    journey_logger_.SetNotShown(JourneyLogger::NOT_SHOWN_REASON_OTHER);
+    journey_logger_.SetNotShown();
     client_->OnError(mojom::PaymentErrorReason::USER_CANCEL,
                      errors::kCannotShowInBackgroundTab);
     ResetAndDeleteThis();
@@ -684,8 +683,7 @@ void PaymentRequest::AreRequestedMethodsSupportedCallback(
             << "): requested method not supported.";
     DCHECK(!has_recorded_completion_);
     has_recorded_completion_ = true;
-    journey_logger_.SetNotShown(
-        JourneyLogger::NOT_SHOWN_REASON_NO_SUPPORTED_PAYMENT_METHOD);
+    journey_logger_.SetNotShown();
     client_->OnError(mojom::PaymentErrorReason::NOT_SUPPORTED,
                      GetNotSupportedErrorMessage(
                          spec_ ? spec_->payment_method_identifiers_set()

@@ -298,6 +298,36 @@ HardwareDisplayPlaneManager::ResetConnectorsCacheAndGetValidIds(
   return valid_ids;
 }
 
+void HardwareDisplayPlaneManager::SetColorTemperatureAdjustment(
+    uint32_t crtc_id,
+    const display::ColorTemperatureAdjustment& cta) {
+  const auto crtc_index = LookupCrtcIndex(crtc_id);
+  DCHECK(crtc_index.has_value());
+  CrtcState* crtc_state = &crtc_state_[*crtc_index];
+  crtc_state->color_temperature_adjustment = cta;
+  // TODO(https://crbug.com/1505062): Re-compute and commit CRTC state.
+}
+
+void HardwareDisplayPlaneManager::SetColorCalibration(
+    uint32_t crtc_id,
+    const display::ColorCalibration& calibration) {
+  const auto crtc_index = LookupCrtcIndex(crtc_id);
+  DCHECK(crtc_index.has_value());
+  CrtcState* crtc_state = &crtc_state_[*crtc_index];
+  crtc_state->color_calibration = calibration;
+  // TODO(https://crbug.com/1505062): Re-compute and commit CRTC state.
+}
+
+void HardwareDisplayPlaneManager::SetGammaAdjustment(
+    uint32_t crtc_id,
+    const display::GammaAdjustment& adjustment) {
+  const auto crtc_index = LookupCrtcIndex(crtc_id);
+  DCHECK(crtc_index.has_value());
+  CrtcState* crtc_state = &crtc_state_[*crtc_index];
+  crtc_state->gamma_adjustment = adjustment;
+  // TODO(https://crbug.com/1505062): Re-compute and commit CRTC state.
+}
+
 bool HardwareDisplayPlaneManager::SetColorMatrix(
     uint32_t crtc_id,
     const std::vector<float>& color_matrix) {
@@ -313,13 +343,15 @@ bool HardwareDisplayPlaneManager::SetColorMatrix(
   CrtcState* crtc_state = &crtc_state_[*crtc_index];
 
   ScopedDrmColorCtmPtr ctm_blob_data = CreateCTMBlob(color_matrix);
-  if (!crtc_state->properties.ctm.id)
-    return SetColorCorrectionOnAllCrtcPlanes(crtc_id, std::move(ctm_blob_data));
+  if (!crtc_state->properties.ctm.id) {
+    LOG(ERROR) << "No CTM property to set.";
+    return false;
+  }
 
-  crtc_state->ctm_blob =
+  crtc_state->pending_ctm_blob =
       drm_->CreatePropertyBlob(ctm_blob_data.get(), sizeof(drm_color_ctm));
-  crtc_state->properties.ctm.value = crtc_state->ctm_blob->id();
-  return CommitColorMatrix(crtc_state->properties);
+
+  return CommitPendingCrtcState(crtc_state);
 }
 
 void HardwareDisplayPlaneManager::SetBackgroundColor(
@@ -366,24 +398,22 @@ bool HardwareDisplayPlaneManager::SetGammaCorrection(
       CreateLutBlob(gamma_curve, crtc_props->gamma_lut_size.value);
 
   if (degamma_blob_data) {
-    crtc_state->degamma_lut_blob = drm_->CreatePropertyBlob(
+    crtc_state->pending_degamma_lut_blob = drm_->CreatePropertyBlob(
         degamma_blob_data.get(),
         sizeof(drm_color_lut) * crtc_props->degamma_lut_size.value);
-    crtc_props->degamma_lut.value = crtc_state->degamma_lut_blob->id();
   } else {
-    crtc_props->degamma_lut.value = 0;
+    crtc_state->pending_degamma_lut_blob = nullptr;
   }
 
   if (gamma_blob_data) {
-    crtc_state->gamma_lut_blob = drm_->CreatePropertyBlob(
+    crtc_state->pending_gamma_lut_blob = drm_->CreatePropertyBlob(
         gamma_blob_data.get(),
         sizeof(drm_color_lut) * crtc_props->gamma_lut_size.value);
-    crtc_props->gamma_lut.value = crtc_state->gamma_lut_blob->id();
   } else {
-    crtc_props->gamma_lut.value = 0;
+    crtc_state->pending_gamma_lut_blob = nullptr;
   }
 
-  return CommitGammaCorrection(*crtc_props);
+  return CommitPendingCrtcState(crtc_state);
 }
 
 bool HardwareDisplayPlaneManager::InitializeCrtcState() {
@@ -556,5 +586,7 @@ HardwareCapabilities HardwareDisplayPlaneManager::GetHardwareCapabilities(
   hc.has_independent_cursor_plane = *driver != "amdgpu" && *driver != "radeon";
   return hc;
 }
+
+void HardwareDisplayPlaneManager::UpdateAndCommitCrtcState(CrtcState* state) {}
 
 }  // namespace ui

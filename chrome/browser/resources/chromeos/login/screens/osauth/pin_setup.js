@@ -25,6 +25,8 @@ import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/beha
 import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manager_types.js';
 import {OobeTypes} from '../../components/oobe_types.js';
 
+import {getTemplate} from './pin_setup.html.js';
+
 
 const PinSetupState = {
   START: 'start',
@@ -51,7 +53,7 @@ class PinSetup extends PinSetupBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

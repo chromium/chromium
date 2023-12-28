@@ -249,7 +249,7 @@ base::Value::Dict PolicyValueAndStatusAggregator::GetAggregatedPolicyValues() {
                             policy_ids);
   }
 
-  for (auto* value_provider : value_providers_unowned_) {
+  for (policy::PolicyValueProvider* value_provider : value_providers_unowned_) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // We only merge policy values for Lacros since policy ID is the same as
     // Chrome policies.
@@ -270,14 +270,14 @@ base::Value::Dict PolicyValueAndStatusAggregator::GetAggregatedPolicyNames() {
   for (auto& value_provider : value_providers_) {
     policy_names.Merge(value_provider->GetNames());
   }
-  for (auto* value_provider : value_providers_unowned_) {
+  for (policy::PolicyValueProvider* value_provider : value_providers_unowned_) {
     policy_names.Merge(value_provider->GetNames());
   }
   return policy_names;
 }
 
 void PolicyValueAndStatusAggregator::Refresh() {
-  for (auto* value_provider : value_providers_unowned_) {
+  for (policy::PolicyValueProvider* value_provider : value_providers_unowned_) {
     value_provider->Refresh();
   }
   for (auto& value_provider : value_providers_) {

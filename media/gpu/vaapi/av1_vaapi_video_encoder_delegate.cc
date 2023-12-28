@@ -465,7 +465,8 @@ BitstreamBufferMetadata AV1VaapiVideoEncoderDelegate::GetMetadata(
 // 2. If we're transmitting keyframe, a sequence header OBU (section 5.5).
 // 3. Frame OBU (section 5.10), which consists of a FrameHeader (5.9) and
 //    compressed data.
-bool AV1VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
+VaapiVideoEncoderDelegate::PrepareEncodeJobResult
+AV1VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   PicParamOffsets offsets;
 
   if (frame_num_ == current_params_.intra_period) {
@@ -474,13 +475,13 @@ bool AV1VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
 
   if (!SubmitTemporalDelimiter(offsets)) {
     LOG(ERROR) << "Failed to submit temporal delimiter";
-    return false;
+    return PrepareEncodeJobResult::kFail;
   }
 
   if (encode_job.IsKeyframeRequested()) {
     frame_num_ = 0;
     if (!SubmitSequenceHeader(offsets)) {
-      return false;
+      return PrepareEncodeJobResult::kFail;
     }
   }
 
@@ -488,17 +489,17 @@ bool AV1VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
 
   if (!SubmitFrame(encode_job, offsets)) {
     LOG(ERROR) << "Failed to submit frame";
-    return false;
+    return PrepareEncodeJobResult::kFail;
   }
 
   if (!SubmitTileGroup()) {
     LOG(ERROR) << "Failed to submit file group";
-    return false;
+    return PrepareEncodeJobResult::kFail;
   }
 
   frame_num_++;
 
-  return true;
+  return PrepareEncodeJobResult::kSuccess;
 }
 
 void AV1VaapiVideoEncoderDelegate::BitrateControlUpdate(

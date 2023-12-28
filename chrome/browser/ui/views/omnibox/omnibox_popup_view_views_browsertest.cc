@@ -351,11 +351,13 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   ACMatches matches;
   AutocompleteMatch match(nullptr, 500, false,
                           AutocompleteMatchType::HISTORY_TITLE);
+  match.destination_url = GURL("https://foobar.com");
   match.contents = u"https://foobar.com";
   match.description = u"FooBarCom";
   match.contents_class = {{0, 0}};
   match.description_class = {{0, 0}};
   matches.push_back(match);
+  match.destination_url = GURL("https://foobarbaz.com");
   match.contents = u"https://foobarbaz.com";
   match.description = u"FooBarBazCom";
   match.contents_class = {{0, 0}};
@@ -627,7 +629,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, DeleteSuggestion) {
   // Make sure the deleted match's OmniboxResultView was hidden.
   // (OmniboxResultViews are never deleted.)
   int visible_children = 0;
-  for (auto* child : popup_view()->children()) {
+  for (views::View* child : popup_view()->children()) {
     if (child->GetVisible()) {
       visible_children++;
     }
@@ -638,7 +640,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, DeleteSuggestion) {
   EXPECT_EQ(OmniboxPopupSelection(1), edit_model()->GetPopupSelection());
 }
 
-IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, SpaceEntersKeywordMode) {
+// Flaky on Mac: https://crbug.com/1511356
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SpaceEntersKeywordMode DISABLED_SpaceEntersKeywordMode
+#else
+#define MAYBE_SpaceEntersKeywordMode SpaceEntersKeywordMode
+#endif
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
+                       MAYBE_SpaceEntersKeywordMode) {
   CreatePopupForTestQuery();
   EXPECT_TRUE(popup_view()->IsOpen());
 

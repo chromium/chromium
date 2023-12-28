@@ -65,13 +65,12 @@ class ChannelIndicatorQuickSettingsViewPixelTest : public AshTestBase {
   }
 
  private:
-  raw_ptr<TestSystemTrayClient, DanglingUntriaged | ExperimentalAsh>
-      system_tray_client_ = nullptr;
+  raw_ptr<TestSystemTrayClient, DanglingUntriaged> system_tray_client_ =
+      nullptr;
   scoped_refptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<QuickSettingsHeader, DanglingUntriaged | ExperimentalAsh> header_ =
-      nullptr;
+  raw_ptr<QuickSettingsHeader, DanglingUntriaged> header_ = nullptr;
 };
 
 // Verifies the UI when the feedback button is visible.

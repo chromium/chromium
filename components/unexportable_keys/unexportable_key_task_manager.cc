@@ -19,6 +19,7 @@
 #include "components/unexportable_keys/background_long_task_scheduler.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/background_task_type.h"
+#include "components/unexportable_keys/features.h"
 #include "components/unexportable_keys/ref_counted_unexportable_signing_key.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
@@ -93,10 +94,6 @@ UnexportableKeyTaskManager::~UnexportableKeyTaskManager() = default;
 // static
 std::unique_ptr<crypto::UnexportableKeyProvider>
 UnexportableKeyTaskManager::GetUnexportableKeyProvider() {
-  static BASE_FEATURE(
-      kEnableBoundSessionCredentialsSoftwareKeysForManualTesting,
-      "EnableBoundSessionCredentialsSoftwareKeysForManualTesting",
-      base::FEATURE_DISABLED_BY_DEFAULT);
   if (base::FeatureList::IsEnabled(
           kEnableBoundSessionCredentialsSoftwareKeysForManualTesting)) {
     return crypto::GetSoftwareUnsecureUnexportableKeyProvider();

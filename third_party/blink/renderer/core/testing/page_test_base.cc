@@ -104,8 +104,7 @@ void PageTestBase::MockClipboardHostProvider::BindClipboardHost(
 PageTestBase::PageTestBase() = default;
 
 PageTestBase::PageTestBase(base::test::TaskEnvironment::TimeSource time_source)
-    : task_environment_(time_source,
-                        test::TaskEnvironment::RealMainThreadScheduler()) {}
+    : task_environment_(time_source) {}
 
 PageTestBase::~PageTestBase() {
   dummy_page_holder_.reset();

@@ -233,8 +233,9 @@ void ColorEnhancementController::OnRootWindowAdded(aura::Window* root_window) {
 }
 
 void ColorEnhancementController::UpdateAllDisplays() {
-  for (auto* root_window : Shell::GetAllRootWindows())
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
     UpdateDisplay(root_window);
+  }
 }
 
 void ColorEnhancementController::UpdateDisplay(aura::Window* root_window) {

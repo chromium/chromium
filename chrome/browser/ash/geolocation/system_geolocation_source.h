@@ -40,6 +40,7 @@ class SystemGeolocationSource : public device::SystemGeolocationSource,
       PermissionUpdateCallback callback) override;
   void TrackGeolocationAttempted() override;
   void TrackGeolocationRelinquished() override;
+  void OpenSystemPermissionSetting() override;
 
  private:
   // SessionObserver:

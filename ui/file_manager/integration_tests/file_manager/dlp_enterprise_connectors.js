@@ -131,7 +131,9 @@ testcase.twoWarningsProceeded = async () => {
 
   // Scanning Label.
   await remoteCall.waitForFeedbackPanelItem(
-      appId, new RegExp('^Copying.*$'), new RegExp('^Scanning$'));
+      appId, new RegExp('^Copying.*$'),
+      new RegExp(
+          '^Checking files against your organization\'s security policies…$'));
 
   // Issue the responses, s.t., the transfer can continue.
   await sendTestMessage({name: 'issueFileTransferResponses'});
@@ -227,7 +229,9 @@ testcase.differentBlockPolicies = async () => {
 
   // Scanning Label.
   await remoteCall.waitForFeedbackPanelItem(
-      appId, new RegExp('^Copying.*$'), new RegExp('^Scanning$'));
+      appId, new RegExp('^Copying.*$'),
+      new RegExp(
+          '^Checking files against your organization\'s security policies…$'));
 
   // Issue the responses, s.t., the transfer can continue.
   await sendTestMessage({name: 'issueFileTransferResponses'});

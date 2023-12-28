@@ -19,6 +19,7 @@
 #import "base/time/time.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
+#import "components/enterprise/idle/idle_features.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/infobars/core/infobar_manager.h"
@@ -50,6 +51,8 @@
 #import "ios/chrome/browser/crash_report/model/crash_report_helper.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/enterprise/model/idle/idle_service.h"
+#import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/geolocation/model/geolocation_logger.h"
@@ -62,10 +65,10 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
-#import "ios/chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
-#import "ios/chrome/browser/policy/policy_util.h"
-#import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
-#import "ios/chrome/browser/policy/policy_watcher_browser_agent_observer_bridge.h"
+#import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service_factory.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/policy/model/policy_watcher_browser_agent.h"
+#import "ios/chrome/browser/policy/model/policy_watcher_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
@@ -137,6 +140,7 @@
 #import "ios/chrome/browser/ui/main/ui_blocker_scene_agent.h"
 #import "ios/chrome/browser/ui/main/wrangled_browser.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
+#import "ios/chrome/browser/ui/policy/idle/idle_timeout_policy_scene_agent.h"
 #import "ios/chrome/browser/ui/policy/signin_policy_scene_agent.h"
 #import "ios/chrome/browser/ui/policy/user_policy_scene_agent.h"
 #import "ios/chrome/browser/ui/policy/user_policy_util.h"
@@ -377,6 +381,10 @@ void InjectNTP(Browser* browser) {
 // YES while activating a new browser (often leading to dismissing the tab
 // switcher.
 @property(nonatomic, assign) BOOL activatingBrowser;
+
+// YES if the scene has been backgrounded since it has last been
+// SceneActivationLevelForegroundActive.
+@property(nonatomic, assign) BOOL backgroundedSinceLastActivated;
 
 // Wrangler to handle BVC and tab model creation, access, and related logic.
 // Implements features exposed from this object through the
@@ -780,6 +788,17 @@ void InjectNTP(Browser* browser) {
 // in one place.
 - (void)transitionToSceneActivationLevel:(SceneActivationLevel)level
                             appInitStage:(InitStage)appInitStage {
+  // Update `backgroundedSinceLastActivated` and, if the scene has just been
+  // activated, mark its state before the current activation for future use.
+  BOOL transitionedToForegroundActiveFromBackground =
+      level == SceneActivationLevelForegroundActive &&
+      self.backgroundedSinceLastActivated;
+  if (level <= SceneActivationLevelBackground) {
+    self.backgroundedSinceLastActivated = YES;
+  } else if (level == SceneActivationLevelForegroundActive) {
+    self.backgroundedSinceLastActivated = NO;
+  }
+
   if (level == SceneActivationLevelDisconnected) {
     //  The scene may become disconnected at any time. In that case, any UI that
     //  was already set-up should be torn down.
@@ -813,7 +832,9 @@ void InjectNTP(Browser* browser) {
 
     [self handleExternalIntents];
 
-    if (!initializingUIInColdStart && self.mainCoordinator.isTabGridActive &&
+    if (!initializingUIInColdStart &&
+        transitionedToForegroundActiveFromBackground &&
+        self.mainCoordinator.isTabGridActive &&
         [self shouldOpenNTPTabOnActivationOfBrowser:self.currentInterface
                                                         .browser]) {
       DCHECK(!self.activatingBrowser);
@@ -955,6 +976,22 @@ void InjectNTP(Browser* browser) {
                                     mainBrowser:mainBrowser
                                   policyService:userPolicyService
                               userPolicyManager:userPolicyManager]];
+  }
+
+  if (base::FeatureList::IsEnabled(enterprise_idle::kIdleTimeout)) {
+    enterprise_idle::IdleService* idleService =
+        enterprise_idle::IdleServiceFactory::GetForBrowserState(
+            mainBrowser->GetBrowserState());
+    id<SnackbarCommands> snackbarCommandsHandler =
+        static_cast<id<SnackbarCommands>>(mainCommandDispatcher);
+
+    [sceneState
+        addAgent:[[IdleTimeoutPolicySceneAgent alloc]
+                        initWithSceneUIProvider:self
+                     applicationCommandsHandler:applicationCommandsHandler
+                        snackbarCommandsHandler:snackbarCommandsHandler
+                                    idleService:idleService
+                                    mainBrowser:mainBrowser]];
   }
 
   // Now that the main browser's command dispatcher is created and the newly
@@ -1636,12 +1673,30 @@ void InjectNTP(Browser* browser) {
 // TODO(crbug.com/779791) : Do not pass `baseViewController` through dispatcher.
 - (void)showSignin:(ShowSigninCommand*)command
     baseViewController:(UIViewController*)baseViewController {
+  // Calling this method when there is a signinCoordinator alive is incorrect
+  // as there should not be 2 signinCoordinators alive at the same time (note
+  // that allocating the second one will dealloc the first and this crashes in
+  // various ways).
   if (command.skipIfUINotAvaible &&
       (baseViewController.presentedViewController ||
        ![self isTabAvailableToPresentViewController])) {
     // Make sure the UI is available to present the sign-in view.
     return;
   }
+  if (self.signinCoordinator) {
+    // As of M121, the CHECK above is known to fire in various cases. The goal
+    // of the histograms below is to detect the number of incorrect cases and
+    // for which of the access points they are triggered.
+    base::UmaHistogramEnumeration(
+        "Signin.ShowSigninCoordinatorWhenAlreadyPresent.NewAccessPoint",
+        command.accessPoint, signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+    base::UmaHistogramEnumeration(
+        "Signin.ShowSigninCoordinatorWhenAlreadyPresent.OldAccessPoint",
+        self.signinCoordinator.accessPoint,
+        signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+  }
+  // TODO(crbug.com/1479861): Change this to a CHECK once this invariant is
+  // correct.
   DCHECK(!self.signinCoordinator)
       << "self.signinCoordinator: "
       << base::SysNSStringToUTF8([self.signinCoordinator description]);

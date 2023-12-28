@@ -269,33 +269,6 @@ std::unique_ptr<views::View> SaveCardOfferBubbleViews::CreateMainContentView() {
   return view;
 }
 
-std::unique_ptr<LegalMessageView>
-SaveCardOfferBubbleViews::CreateLegalMessageView() {
-  const LegalMessageLines message_lines = controller()->GetLegalMessageLines();
-
-  if (message_lines.empty()) {
-    return nullptr;
-  }
-
-  LegalMessageView::LinkClickedCallback LegalMessageCallBack =
-      base::BindRepeating(&SaveCardOfferBubbleViews::LinkClicked,
-                          base::Unretained(this));
-
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableNewSaveCardBubbleUi) ||
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableUserAvatarInSaveCardFooter)) {
-    return (std::make_unique<LegalMessageView>(
-        message_lines, base::UTF8ToUTF16(controller()->GetAccountInfo().email),
-        GetProfileAvatar(controller()->GetAccountInfo()),
-        LegalMessageCallBack));
-  }
-
-  return std::make_unique<LegalMessageView>(
-      message_lines, /*user_email=*/std::u16string(),
-      /*user_avatar=*/ui::ImageModel(), LegalMessageCallBack);
-}
-
 std::unique_ptr<views::View>
 SaveCardOfferBubbleViews::CreateRequestExpirationDateView() {
   auto expiration_date_view = std::make_unique<views::View>();
@@ -379,6 +352,33 @@ SaveCardOfferBubbleViews::CreateUploadExplanationView() {
       views::BubbleBorder::Arrow::TOP_RIGHT);
   upload_explanation_tooltip->SetID(DialogViewId::UPLOAD_EXPLANATION_TOOLTIP);
   return upload_explanation_tooltip;
+}
+
+std::unique_ptr<LegalMessageView>
+SaveCardOfferBubbleViews::CreateLegalMessageView() {
+  const LegalMessageLines message_lines = controller()->GetLegalMessageLines();
+
+  if (message_lines.empty()) {
+    return nullptr;
+  }
+
+  LegalMessageView::LinkClickedCallback LegalMessageCallBack =
+      base::BindRepeating(&SaveCardOfferBubbleViews::LinkClicked,
+                          base::Unretained(this));
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableNewSaveCardBubbleUi) ||
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableUserAvatarInSaveCardFooter)) {
+    return (std::make_unique<LegalMessageView>(
+        message_lines, base::UTF8ToUTF16(controller()->GetAccountInfo().email),
+        GetProfileAvatar(controller()->GetAccountInfo()),
+        LegalMessageCallBack));
+  }
+
+  return std::make_unique<LegalMessageView>(
+      message_lines, /*user_email=*/std::u16string(),
+      /*user_avatar=*/ui::ImageModel(), LegalMessageCallBack);
 }
 
 void SaveCardOfferBubbleViews::LinkClicked(const GURL& url) {

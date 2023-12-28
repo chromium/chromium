@@ -15,57 +15,63 @@ namespace data_controls {
 namespace dlp {
 
 // Constants with UMA histogram name suffixes.
-constexpr char kCaptureModeInitBlockedUMA[] = "CaptureModeInitBlocked";
-constexpr char kCaptureModeInitWarnedUMA[] = "CaptureModeInitWarned";
-constexpr char kClipboardReadBlockedUMA[] = "ClipboardReadBlocked";
-constexpr char kDataTransferReportingTimeDiffUMA[] =
+inline constexpr char kCaptureModeInitBlockedUMA[] = "CaptureModeInitBlocked";
+inline constexpr char kCaptureModeInitWarnedUMA[] = "CaptureModeInitWarned";
+inline constexpr char kClipboardReadBlockedUMA[] = "ClipboardReadBlocked";
+inline constexpr char kDataTransferReportingTimeDiffUMA[] =
     "DataTransferReportingTimeDiff";
-constexpr char kDataTransferControllerStartedUMA[] =
+inline constexpr char kDataTransferControllerStartedUMA[] =
     "DataTransferControllerStarted";
-constexpr char kDlpPolicyPresentUMA[] = "DlpPolicyPresent";
-constexpr char kDragDropBlockedUMA[] = "DragDropBlocked";
-constexpr char kFileActionBlockedUMA[] = "FileActionBlocked2";
-constexpr char kFileActionBlockReviewedUMA[] = "FileActionBlockReviewed";
-constexpr char kFilesBlockedCountUMA[] = "FilesBlockedCount";
-constexpr char kFileActionWarnedUMA[] = "FileActionWarned";
-constexpr char kFileActionWarnProceededUMA[] = "FileActionWarnProceeded";
-constexpr char kFileActionWarnTimedOutUMA[] = "FileActionWarnTimedOut";
-constexpr char kFileActionWarnReviewedUMA[] = "FileActionWarnReviewed";
-constexpr char kFilesWarnedCountUMA[] = "FilesWarnedCount";
-constexpr char kFilesAppOpenTimedOutUMA[] = "FilesAppOpenTimedOut";
-constexpr char kFilesDaemonStartedUMA[] = "FilesDaemonStarted";
-constexpr char kSameFileEventTimeDiffUMA[] = "SameFileEventTimeDiff";
-constexpr char kPrintingBlockedUMA[] = "PrintingBlocked";
-constexpr char kPrintingWarnedUMA[] = "PrintingWarned";
-constexpr char kPrintingWarnProceededUMA[] = "PrintingWarnProceeded";
-constexpr char kPrintingWarnSilentProceededUMA[] =
+inline constexpr char kDlpPolicyPresentUMA[] = "DlpPolicyPresent";
+inline constexpr char kDragDropBlockedUMA[] = "DragDropBlocked";
+inline constexpr char kFileActionBlockedUMA[] = "FileActionBlocked2";
+inline constexpr char kFileActionBlockReviewedUMA[] = "FileActionBlockReviewed";
+inline constexpr char kFilesBlockedCountUMA[] = "FilesBlockedCount";
+inline constexpr char kFileActionWarnedUMA[] = "FileActionWarned";
+inline constexpr char kFileActionWarnProceededUMA[] = "FileActionWarnProceeded";
+inline constexpr char kFileActionWarnTimedOutUMA[] = "FileActionWarnTimedOut";
+inline constexpr char kFileActionWarnReviewedUMA[] = "FileActionWarnReviewed";
+inline constexpr char kFilesWarnedCountUMA[] = "FilesWarnedCount";
+inline constexpr char kFilesAppOpenTimedOutUMA[] = "FilesAppOpenTimedOut";
+inline constexpr char kFilesDaemonStartedUMA[] = "FilesDaemonStarted";
+inline constexpr char kSameFileEventTimeDiffUMA[] = "SameFileEventTimeDiff";
+inline constexpr char kPrintingBlockedUMA[] = "PrintingBlocked";
+inline constexpr char kPrintingWarnedUMA[] = "PrintingWarned";
+inline constexpr char kPrintingWarnProceededUMA[] = "PrintingWarnProceeded";
+inline constexpr char kPrintingWarnSilentProceededUMA[] =
     "PrintingWarnSilentProceeded";
-constexpr char kPrivacyScreenEnforcedUMA[] = "PrivacyScreenEnforced";
-constexpr char kScreenShareBlockedUMA[] = "ScreenShareBlocked";
-constexpr char kScreenShareWarnedUMA[] = "ScreenShareWarned";
-constexpr char kScreenShareWarnProceededUMA[] = "ScreenShareWarnProceeded";
-constexpr char kScreenShareWarnSilentProceededUMA[] =
+inline constexpr char kPrivacyScreenEnforcedUMA[] = "PrivacyScreenEnforced";
+inline constexpr char kScreenShareBlockedUMA[] = "ScreenShareBlocked";
+inline constexpr char kScreenShareWarnedUMA[] = "ScreenShareWarned";
+inline constexpr char kScreenShareWarnProceededUMA[] =
+    "ScreenShareWarnProceeded";
+inline constexpr char kScreenShareWarnSilentProceededUMA[] =
     "ScreenShareWarnSilentProceeded";
-constexpr char kScreenSharePausedOrResumedUMA[] = "ScreenSharePausedOrResumed";
-constexpr char kScreenshotBlockedUMA[] = "ScreenshotBlocked";
-constexpr char kScreenshotWarnedUMA[] = "ScreenshotWarned";
-constexpr char kScreenshotWarnProceededUMA[] = "ScreenshotWarnProceeded";
-constexpr char kScreenshotWarnSilentProceededUMA[] =
+inline constexpr char kScreenSharePausedOrResumedUMA[] =
+    "ScreenSharePausedOrResumed";
+inline constexpr char kScreenshotBlockedUMA[] = "ScreenshotBlocked";
+inline constexpr char kScreenshotWarnedUMA[] = "ScreenshotWarned";
+inline constexpr char kScreenshotWarnProceededUMA[] = "ScreenshotWarnProceeded";
+inline constexpr char kScreenshotWarnSilentProceededUMA[] =
     "ScreenshotWarnSilentProceeded";
-constexpr char kVideoCaptureInterruptedUMA[] = "VideoCaptureInterrupted";
-constexpr char kReportedBlockLevelRestriction[] =
+inline constexpr char kVideoCaptureInterruptedUMA[] = "VideoCaptureInterrupted";
+inline constexpr char kReportedBlockLevelRestriction[] =
     "ReportedBlockLevelRestriction";
-constexpr char kReportedReportLevelRestriction[] =
+inline constexpr char kReportedReportLevelRestriction[] =
     "ReportedReportLevelRestriction";
-constexpr char kReportedWarnLevelRestriction[] = "ReportedWarnLevelRestriction";
-constexpr char kReportedWarnProceedLevelRestriction[] =
+inline constexpr char kReportedWarnLevelRestriction[] =
+    "ReportedWarnLevelRestriction";
+inline constexpr char kReportedWarnProceedLevelRestriction[] =
     "ReportedWarnProceedLevelRestriction";
-constexpr char kReportedEventStatus[] = "ReportedEventStatus";
-constexpr char kConfidentialContentsCount[] = "ConfidentialContentsCount";
-constexpr char kActiveFileEventsCount[] = "ActiveFileEventsCount";
-constexpr char kErrorsReportQueueNotReady[] = "Errors.ReportQueueNotReady";
-constexpr char kErrorsFilesPolicySetup[] = "Errors.FilesPolicySetup";
-constexpr char kFilesUnknownAccessLevel[] = "FilesUnknownAccessLevel";
+inline constexpr char kReportedEventStatus[] = "ReportedEventStatus";
+inline constexpr char kConfidentialContentsCount[] =
+    "ConfidentialContentsCount";
+inline constexpr char kActiveFileEventsCount[] = "ActiveFileEventsCount";
+inline constexpr char kErrorsReportQueueNotReady[] =
+    "Errors.ReportQueueNotReady";
+inline constexpr char kErrorsFilesPolicySetup[] = "Errors.FilesPolicySetup";
+inline constexpr char kFilesUnknownAccessLevel[] = "FilesUnknownAccessLevel";
+inline constexpr char kFilesDefaultFileAccess[] = "FilesDefaultFileAccess";
 
 }  // namespace dlp
 

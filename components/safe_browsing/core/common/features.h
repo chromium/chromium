@@ -68,40 +68,9 @@ BASE_DECLARE_FEATURE(kDownloadTailoredWarnings);
 // passwords for local decryption on encrypted archives.
 BASE_DECLARE_FEATURE(kEncryptedArchivesMetadata);
 
-// Enables decreased Phishguard password length minimum.
-BASE_DECLARE_FEATURE(kEvaluateProtectedPasswordLengthMinimum);
-
-// Specifies the minimum password length for password protection.
-extern const base::FeatureParam<int>
-    kEvaluateProtectedPasswordLengthMinimumValue;
-
 // Allows the Extension Telemetry Service to accept and use configurations
 // sent by the server.
 BASE_DECLARE_FEATURE(kExtensionTelemetryConfiguration);
-
-// Allows the Extension Telemetry Service to process installed extension files
-// and attach file data to reports.
-BASE_DECLARE_FEATURE(kExtensionTelemetryFileData);
-
-// Specifies the max number of files to process per extension in Extension
-// Telemetry's File Processor.
-extern const base::FeatureParam<int>
-    kExtensionTelemetryFileDataMaxFilesToProcess;
-
-// Specifies the max file size to process in Extension Telemetry's File
-// Processor.
-extern const base::FeatureParam<int>
-    kExtensionTelemetryFileDataMaxFileSizeBytes;
-
-// Specifies the interval for extension telemetry to collect offstore extension
-// file data.
-extern const base::FeatureParam<int>
-    kExtensionTelemetryFileDataCollectionIntervalSeconds;
-
-// Specifies the initial delay for extension telemetry to start collecting
-// offstore extension file data.
-extern const base::FeatureParam<int>
-    kExtensionTelemetryFileDataStartupDelaySeconds;
 
 // Allows the Extension Telemetry Service to include file data of extensions
 // specified in the --load-extension commandline switch in telemetry reports.
@@ -164,9 +133,7 @@ BASE_DECLARE_FEATURE(kHashRealTimeOverOhttp);
 // kHashRealTimeOverOhttp feature.
 extern const base::FeatureParam<std::string> kHashRealTimeOverOhttpRelayUrl;
 
-// UX improvements to download warnings in the download bubble and
-// chrome://downloads page, respectively.
-BASE_DECLARE_FEATURE(kImprovedDownloadBubbleWarnings);
+// UX improvements to download warnings on chrome://downloads page.
 BASE_DECLARE_FEATURE(kImprovedDownloadPageWarnings);
 
 // Enable logging of the account enhanced protection setting in Protego pings.
@@ -197,10 +164,6 @@ extern const base::FeatureParam<int> kReferrerChainEventMaximumAgeSeconds;
 
 // The maximum number of navigation events we keep in memory.
 extern const base::FeatureParam<int> kReferrerChainEventMaximumCount;
-
-// Controls whether download Client Safe Browsing Reports are sent under the
-// new triggers
-BASE_DECLARE_FEATURE(kSafeBrowsingCsbrrNewDownloadTrigger);
 
 // Controls whether asynchronous real-time check is enabled. When enabled, the
 // navigation can be committed before real-time Safe Browsing check is
@@ -237,10 +200,6 @@ BASE_DECLARE_FEATURE(kSafeBrowsingReferrerChainWithCopyPasteNavigation);
 
 // Controls whether cookies are removed when the access token is present.
 BASE_DECLARE_FEATURE(kSafeBrowsingRemoveCookiesInAuthRequests);
-
-// Controls whether to skip Safe Browsing checks on images, CSS and font URLs in
-// renderer URL loader throttle.
-BASE_DECLARE_FEATURE(kSafeBrowsingSkipImageCssFont);
 
 // Controls whether to skip Safe Browsing checks on all subresource URLs in
 // renderer and browser URL loader throttles.

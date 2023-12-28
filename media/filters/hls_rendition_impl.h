@@ -114,6 +114,7 @@ class MEDIA_EXPORT HlsRenditionImpl : public HlsRendition {
   bool set_stream_end_ = false;
   bool is_stopped_for_shutdown_ = false;
   bool has_ever_played_ = false;
+  bool requires_init_segment_ = true;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

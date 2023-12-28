@@ -311,6 +311,12 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // to the declaration of ChromeBrowserContext proto.
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) const;
 
+  // Deprecated. Do not add new callers.
+  // TODO(https://crbug.com/908955): Get rid of ResourceContext.
+  ResourceContext* GetResourceContext() const;
+
+  base::WeakPtr<BrowserContext> GetWeakPtr();
+
   //////////////////////////////////////////////////////////////////////////////
   // The //content embedder can override the methods below to change or extend
   // how the //content layer interacts with a BrowserContext.
@@ -334,9 +340,6 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // Note that for Chrome this does not imply Incognito as Guest sessions are
   // also off the record.
   virtual bool IsOffTheRecord() = 0;
-
-  // Returns the resource context.
-  virtual ResourceContext* GetResourceContext() = 0;
 
   // Returns the DownloadManagerDelegate for this context. This will be called
   // once per context. The embedder owns the delegate and is responsible for
@@ -466,6 +469,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   std::unique_ptr<BrowserContextImpl> impl_;
   BrowserContextImpl* impl() { return impl_.get(); }
   const BrowserContextImpl* impl() const { return impl_.get(); }
+  base::WeakPtrFactory<BrowserContext> weak_factory_{this};
 };
 
 }  // namespace content

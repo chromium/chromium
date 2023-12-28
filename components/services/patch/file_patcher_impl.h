@@ -32,14 +32,6 @@ class FilePatcherImpl : public mojom::FilePatcher {
 
  private:
   // patch::mojom::FilePatcher:
-  void PatchFileBsdiff(base::File input_file,
-                       base::File patch_file,
-                       base::File output_file,
-                       PatchFileBsdiffCallback callback) override;
-  void PatchFileCourgette(base::File input_file,
-                          base::File patch_file,
-                          base::File output_file,
-                          PatchFileCourgetteCallback callback) override;
   void PatchFilePuffPatch(base::File input_file_path,
                           base::File patch_file_path,
                           base::File output_file_path,

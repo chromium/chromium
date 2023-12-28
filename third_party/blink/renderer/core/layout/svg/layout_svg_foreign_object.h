@@ -54,7 +54,10 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
   // boundaries needs to be propagated (because of a change to the transform).
   bool UpdateAfterSvgLayout(bool bounds_changed);
   const char* GetName() const override;
-  bool IsOfType(LayoutObjectType type) const override;
+  bool IsSVGForeignObject() const final {
+    NOT_DESTROYED();
+    return true;
+  }
   bool IsChildAllowed(LayoutObject* child,
                       const ComputedStyle& style) const override;
   gfx::RectF ObjectBoundingBox() const override;

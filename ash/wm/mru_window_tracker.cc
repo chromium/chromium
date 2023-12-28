@@ -57,7 +57,7 @@ class ScopedWindowClosingObserver : public aura::WindowObserver {
   void OnWindowDestroyed(aura::Window* window) override { CHECK(false); }
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 };
 
 bool IsNonSysModalWindowConsideredActivatable(aura::Window* window) {
@@ -122,7 +122,7 @@ bool CanIncludeWindowInCycleWithPipList(aura::Window* window) {
 // include a window in the returned list or not.
 template <class CanIncludeWindowPredicate>
 MruWindowTracker::WindowList BuildWindowListInternal(
-    const std::vector<aura::Window*>* mru_windows,
+    const std::vector<raw_ptr<aura::Window, VectorExperimental>>* mru_windows,
     DesksMruType desks_mru_type,
     CanIncludeWindowPredicate can_include_window_predicate) {
   MruWindowTracker::WindowList windows;
@@ -134,7 +134,7 @@ MruWindowTracker::WindowList BuildWindowListInternal(
   if (mru_windows) {
     // The |mru_windows| are sorted such that the most recent window comes last,
     // hence iterate in reverse order.
-    for (auto* window : base::Reversed(*mru_windows)) {
+    for (aura::Window* window : base::Reversed(*mru_windows)) {
       // Exclude windows in non-switchable containers and those which should
       // not be included.
       if (window->parent()) {
@@ -187,14 +187,14 @@ MruWindowTracker::WindowList BuildWindowListInternal(
   // TODO(afakhry): Check with UX, if kAllDesks is desired, should we put
   // the active desk's windows at the front?
 
-  for (auto* root : base::Reversed(roots)) {
+  for (aura::Window* root : base::Reversed(roots)) {
     // |wm::kSwitchableWindowContainerIds[]| contains a list of the container
     // IDs sorted such that the ID of the top-most container comes last. Hence,
     // we iterate in reverse order so the top-most windows are added first.
     const auto switachable_containers =
         GetSwitchableContainersForRoot(root, active_desk_only);
     for (auto* container : base::Reversed(switachable_containers)) {
-      for (auto* child : base::Reversed(container->children())) {
+      for (aura::Window* child : base::Reversed(container->children())) {
         // Only add windows that the predicate allows.
         if (!can_include_window_predicate(child))
           continue;
@@ -234,8 +234,9 @@ MruWindowTracker::MruWindowTracker() {
 
 MruWindowTracker::~MruWindowTracker() {
   Shell::Get()->activation_client()->RemoveObserver(this);
-  for (auto* window : mru_windows_)
+  for (aura::Window* window : mru_windows_) {
     window->RemoveObserver(this);
+  }
 }
 
 WindowList MruWindowTracker::BuildAppWindowList(

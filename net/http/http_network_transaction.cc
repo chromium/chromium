@@ -739,8 +739,8 @@ bool HttpNetworkTransaction::IsSecureRequest() const {
 }
 
 bool HttpNetworkTransaction::UsingHttpProxyWithoutTunnel() const {
-  return proxy_info_.is_http_like() &&
-         !(request_->url.SchemeIs("https") || request_->url.SchemeIsWSOrWSS());
+  return proxy_info_.proxy_chain().is_get_to_proxy_allowed() &&
+         request_->url.SchemeIs("http");
 }
 
 void HttpNetworkTransaction::DoCallback(int rv) {
@@ -1107,6 +1107,10 @@ int HttpNetworkTransaction::BuildRequestHeaders(
   if (ShouldApplyServerAuth() && HaveAuth(HttpAuth::AUTH_SERVER))
     auth_controllers_[HttpAuth::AUTH_SERVER]->AddAuthorizationHeader(
         &request_headers_);
+
+  if (proxy_info_.is_for_ip_protection() && !proxy_info_.is_direct()) {
+    request_headers_.SetHeader("IP-Protection", "1");
+  }
 
   request_headers_.MergeFrom(request_->extra_headers);
 

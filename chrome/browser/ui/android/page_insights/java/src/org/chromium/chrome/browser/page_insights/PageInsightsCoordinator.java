@@ -23,6 +23,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
@@ -64,6 +65,7 @@ public class PageInsightsCoordinator {
      * @param browserControlsSizer Bottom browser controls resizer.
      * @param backPressManager Back press manager.
      * @param inMotionSupplier Supplier for whether the compositor is in motion.
+     * @param appViewportInsetSupplier App-wide viewport inset supplier.
      * @param isPageInsightsHubEnabled Supplier of the feature flag.
      * @param firstLoadTimeMs Timestamp for the first page load completion.
      */
@@ -80,6 +82,7 @@ public class PageInsightsCoordinator {
             BrowserControlsSizer browserControlsSizer,
             @Nullable BackPressManager backPressManager,
             @Nullable ObservableSupplier<Boolean> inMotionSupplier,
+            ApplicationViewportInsetSupplier appViewportInsetSupplier,
             BooleanSupplier isPageInsightsEnabledSupplier,
             Function<NavigationHandle, PageInsightsConfig> pageInsightsConfigProvider) {
         mContext = context;
@@ -103,6 +106,7 @@ public class PageInsightsCoordinator {
                         mBrowserControlsSizer,
                         backPressManager,
                         inMotionSupplier,
+                        appViewportInsetSupplier,
                         isPageInsightsEnabledSupplier,
                         pageInsightsConfigProvider);
     }

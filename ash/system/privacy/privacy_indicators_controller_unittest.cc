@@ -13,11 +13,11 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/message_center/ash_message_popup_collection.h"
-#include "ash/system/message_center/message_center_utils.h"
+#include "ash/system/notification_center/ash_message_popup_collection.h"
+#include "ash/system/notification_center/message_center_utils.h"
 #include "ash/system/notification_center/notification_center_tray.h"
-#include "ash/system/notification_center/notification_center_view.h"
-#include "ash/system/notification_center/notification_list_view.h"
+#include "ash/system/notification_center/views/notification_center_view.h"
+#include "ash/system/notification_center/views/notification_list_view.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
@@ -147,7 +147,7 @@ class PrivacyIndicatorsControllerTest : public AshTestBase {
     auto* action_buttons = view->GetViewByID(
         message_center::NotificationViewBase::kActionButtonsRow);
 
-    auto* button_view = action_buttons->children()[button_index];
+    auto* button_view = action_buttons->children()[button_index].get();
 
     ui::test::EventGenerator generator(GetRootWindow(button_view->GetWidget()));
     gfx::Point cursor_location = button_view->GetBoundsInScreen().CenterPoint();

@@ -107,7 +107,7 @@ class ASH_EXPORT ActiveNetworkIcon : public TrayNetworkStateObserver {
   const chromeos::network_config::mojom::NetworkStateProperties*
   GetNetworkForType(Type type);
 
-  raw_ptr<TrayNetworkStateModel, ExperimentalAsh> model_;
+  raw_ptr<TrayNetworkStateModel> model_;
 
   int cellular_uninitialized_msg_ = 0;
   base::Time uninitialized_state_time_;

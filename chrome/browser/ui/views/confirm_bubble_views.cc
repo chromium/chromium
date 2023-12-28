@@ -76,7 +76,7 @@ void ConfirmBubbleViews::OnWidgetInitialized() {
   GetWidget()->GetRootView()->SetAccessibleDescription(label_);
 }
 
-BEGIN_METADATA(ConfirmBubbleViews, views::DialogDelegateView)
+BEGIN_METADATA(ConfirmBubbleViews)
 END_METADATA
 
 namespace chrome {

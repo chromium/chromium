@@ -72,13 +72,13 @@ class ASH_EXPORT NetworkListNetworkHeaderView : public NetworkListHeaderView {
   // NetworkListHeaderView:
   void UpdateToggleState(bool has_new_state) override;
 
-  raw_ptr<TrayNetworkStateModel, ExperimentalAsh> model_;
+  raw_ptr<TrayNetworkStateModel> model_;
   int const enabled_label_id_;
 
   // `KnobSwitch` to toggle section on or off.
-  raw_ptr<Switch, ExperimentalAsh> toggle_ = nullptr;
+  raw_ptr<Switch> toggle_ = nullptr;
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   base::WeakPtrFactory<NetworkListNetworkHeaderView> weak_factory_{this};
 };

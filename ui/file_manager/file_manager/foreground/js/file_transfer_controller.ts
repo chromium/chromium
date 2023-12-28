@@ -91,6 +91,10 @@ enum DropEffectType {
   LINK = 'link',
 }
 
+export interface PasteWithDestDirectoryEvent extends ClipboardEvent {
+  destDirectory: Entry|FilesAppEntry;
+}
+
 /**
  * ConfirmationCallback called when operation requires user's confirmation. The
  * operation will be executed if the return value resolved to true.
@@ -1253,7 +1257,8 @@ export class FileTransferController {
     return true;
   }
 
-  private onPaste_(event: DragEvent|ClipboardEvent) {
+  private onPaste_(event: DragEvent|ClipboardEvent|
+                   PasteWithDestDirectoryEvent) {
     // If the event has destDirectory property, paste files into the directory.
     // This occurs when the command fires from menu item 'Paste into folder'.
     const destination =
@@ -1295,7 +1300,8 @@ export class FileTransferController {
 
   private canPasteOrDrop_(
       clipboardData: DataTransfer|null,
-      destinationEntry: FakeEntry|DirectoryEntry|FilesAppDirEntry) {
+      destinationEntry: FakeEntry|DirectoryEntry|FilesAppDirEntry|null|
+      undefined) {
     if (!clipboardData) {
       return false;
     }
@@ -1388,7 +1394,8 @@ export class FileTransferController {
   /**
    * Execute paste command.
    */
-  queryPasteCommandEnabled(destinationEntry: DirectoryEntry) {
+  queryPasteCommandEnabled(destinationEntry: DirectoryEntry|FilesAppDirEntry|
+                           null|undefined) {
     if (!this.isDocumentWideEvent_()) {
       return false;
     }

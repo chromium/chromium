@@ -366,17 +366,4 @@ suite('WallpaperGridItemElementTest', function() {
         wallpaperGridItemElement.shadowRoot!.getElementById('infoIcon')!.title,
         'correct title text now set');
   });
-
-  test('no info icon if isPersonalizationJellyEnabled false', async () => {
-    loadTimeData.overrideValues({isPersonalizationJellyEnabled: false});
-
-    wallpaperGridItemElement = initElement(
-        WallpaperGridItemElement,
-        {infoText: 'some text', src: {url: createSvgDataUrl('test')}});
-    await waitAfterNextRender(wallpaperGridItemElement);
-
-    assertEquals(
-        null, wallpaperGridItemElement.shadowRoot!.getElementById('infoIcon'),
-        'icon does not exist');
-  });
 });

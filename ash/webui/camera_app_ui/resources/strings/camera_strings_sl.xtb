@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">Premakni v desno</translation>
 <translation id="3081586908890909590">Preklop na snemanje videa</translation>
 <translation id="313467653172006084">30 sličic/s</translation>
+<translation id="3158534262962737808">Pridruži se omrežju »<ph name="WIFINAME" />«</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Povezava kopirana</translation>
 <translation id="3354465018370944241">Nastavitve fotografij</translation>
@@ -78,12 +79,14 @@
 <translation id="4705093842003735294">Polna ločljivost</translation>
 <translation id="4864143361253542638">Seznam optično prebranih strani</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Kopiraj naslov povezave <ph name="URL" /></translation>
 <translation id="491895758387112773">Večtokovno snemanje videoposnetkov</translation>
 <translation id="495170559598752135">Dejanja</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Razmerje stranic za fotografije</translation>
 <translation id="5057360777601936059">Fotoaparat trenutno ni na voljo.
         Preverite, ali je fotoaparat ustrezno povezan.</translation>
+<translation id="5157591164390831335">Zaznan je bil URL.</translation>
 <translation id="5163387177077603948">Premikanje proti desni</translation>
 <translation id="5235304959032763950">16 : 9</translation>
 <translation id="5266635337630551423">Zgornji levi kot dokumenta</translation>
@@ -110,6 +113,7 @@
 <translation id="6353688143752491039">Hvala za povratne informacije glede aplikacije Fotoaparat.
 
 Če so povratne informacije glede kakovosti slike ali videoposnetka, priložite vzorec fotografije ali videoposnetka ter opišite, kaj je narobe. (Primer: Fotografija je pretemna ali motiv ni izostren.)</translation>
+<translation id="6519884562954018934">Pridruži se omrežju <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Skupna raba</translation>
 <translation id="6617916774429601017">Prikaz vseh ločljivosti</translation>
 <translation id="6631515515009660915">Zrcaljenje izklopljeno</translation>
@@ -129,6 +133,7 @@
 <translation id="7450541714075000668">Besedilo je kopirano.</translation>
 <translation id="7488619942230388918">Snemanje videoposnetka GIF</translation>
 <translation id="7557677699350329807">Preklop na naslednji fotoaparat</translation>
+<translation id="7562584071994185503">Kopiraj besedilo <ph name="TEXT" /></translation>
 <translation id="7607002721634913082">Začasno ustavljeno</translation>
 <translation id="7608223098072244877">4 x 4</translation>
 <translation id="761421184377987513">Premikanje proti spodnjemu levemu kotu</translation>
@@ -141,6 +146,7 @@
 <translation id="7726641833034062494">Snemanje običajnega videoposnetka</translation>
 <translation id="7748344063862150053">Zgornji desni kot dokumenta</translation>
 <translation id="7933675232020478311">Premikanje proti spodnjemu desnemu kotu</translation>
+<translation id="7983668134180549431">Zaznano je bilo besedilo.</translation>
 <translation id="8079255378695216066">Snemanja ni mogoče začeti</translation>
 <translation id="8120146556401698679">Premikanje, nagibanje in povečanje/pomanjšanje</translation>
 <translation id="8131740175452115882">Potrdi</translation>
@@ -150,16 +156,17 @@
 <translation id="8346544573713510785">Prilagodi okvire glede na HAL kamere</translation>
 <translation id="8425673304802773841">Nagni navzdol</translation>
 <translation id="8428213095426709021">Nastavitve</translation>
+<translation id="8609951387004618906">Odpri povezavo <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Preklopite izklop zvoka. Izklop zvoka je aktiven.</translation>
 <translation id="8730621377337864115">Končano</translation>
 <translation id="8732462232047530626">Predogled metapodatkov</translation>
+<translation id="874854738381978209">Zaznano je omrežje Wi-Fi.</translation>
 <translation id="8815966864175525708">Preklop na snemanje portretnih fotografij</translation>
 <translation id="8828441885228359828">Nadaljevanje snemanja</translation>
 <translation id="8870695351537079478">Snemanja ni mogoče začeti</translation>
 <translation id="8880167521484863515">4 : 3</translation>
 <translation id="8903921497873541725">Povečaj</translation>
-<translation id="8926890870105777777">Pridružite se omrežju »<ph name="WIFINAME" />«</translation>
 <translation id="9045010116236796332">Postavite vse robove dokumenta znotraj okvira.</translation>
 <translation id="9045155556724273246">10 sekund</translation>
 <translation id="906331135292332864">Obdelava slike …</translation>

@@ -713,6 +713,109 @@ TEST_F(TrackingProtectionSentimentTracking, RegistersTreatmentAndAcksLater) {
       1);
 }
 
+class TrackingProtectionSentimentTrackinWithSilentOnboarding
+    : public TrackingProtectionSentimentTracking {
+ public:
+  void SetUp() override {
+    tracking_protection_onboarding_service_ =
+        std::make_unique<TrackingProtectionOnboarding>(
+            prefs(), version_info::Channel::UNKNOWN,
+            /* is_silent_onboarding_enabled=*/true);
+  }
+};
+
+TEST_F(TrackingProtectionSentimentTrackinWithSilentOnboarding,
+       RegistersControlBeforeOnboarding) {
+  // Setup
+  tracking_protection_onboarding()->MaybeMarkSilentEligible();
+
+  // Action: Register the group.
+  tracking_protection_onboarding()->RegisterSentimentSurveyGroup(
+      SentimentSurveyGroup::kControlImmediate);
+
+  // Verification: Registration no longer required.
+  EXPECT_FALSE(
+      tracking_protection_onboarding()->RequiresSentimentSurveyGroup());
+
+  // Registered group not yet returned
+  EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
+            SentimentSurveyGroup::kNotSet);
+
+  // Registered group Still not returned even after the survey start time, and
+  // before the survey end time.
+  task_env_.FastForwardBy(base::Minutes(3));
+
+  EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
+            SentimentSurveyGroup::kNotSet);
+}
+
+TEST_F(TrackingProtectionSentimentTrackinWithSilentOnboarding,
+       RegistersControlAfterSilentOnboarding) {
+  // Setup
+  tracking_protection_onboarding()->MaybeMarkSilentEligible();
+  tracking_protection_onboarding()->SilentOnboardingNoticeShown();
+
+  // Needs registration
+  EXPECT_TRUE(tracking_protection_onboarding()->RequiresSentimentSurveyGroup());
+
+  // Action: Register the group.
+  tracking_protection_onboarding()->RegisterSentimentSurveyGroup(
+      SentimentSurveyGroup::kControlDelayed);
+
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.SentimentSurvey.Registered",
+      TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+          kControlDelayed,
+      1);
+
+  // Verification: Registration no longer required.
+  EXPECT_FALSE(
+      tracking_protection_onboarding()->RequiresSentimentSurveyGroup());
+
+  // Registered group not yet returned
+  EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
+            SentimentSurveyGroup::kNotSet);
+
+  // Registered returned after the survey start time, and before the survey end
+  // time.
+  task_env_.FastForwardBy(base::Days(14));
+
+  EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
+            SentimentSurveyGroup::kControlDelayed);
+}
+
+TEST_F(TrackingProtectionSentimentTrackinWithSilentOnboarding,
+       RegistersControlAndOnboardsLater) {
+  // Setup
+  tracking_protection_onboarding()->MaybeMarkSilentEligible();
+
+  // Action: Register the group.
+  tracking_protection_onboarding()->RegisterSentimentSurveyGroup(
+      SentimentSurveyGroup::kControlImmediate);
+
+  // Verification: Registration no longer required.
+  EXPECT_FALSE(
+      tracking_protection_onboarding()->RequiresSentimentSurveyGroup());
+
+  // Action: Silently onboard.
+  tracking_protection_onboarding()->SilentOnboardingNoticeShown();
+
+  // Registered group still not returned after Acking the notice
+  EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
+            SentimentSurveyGroup::kNotSet);
+
+  // Registered group returned after the survey start time, and before the
+  // survey end time.
+  task_env_.FastForwardBy(base::Minutes(3));
+  EXPECT_EQ(tracking_protection_onboarding()->GetEligibleSurveyGroup(),
+            SentimentSurveyGroup::kControlImmediate);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.SentimentSurvey.Registered",
+      TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+          kControlImmediate,
+      1);
+}
+
 class TrackingProtectionOffboardingTest
     : public TrackingProtectionOnboardingTest {
  public:

@@ -109,49 +109,49 @@ found in the LICENSE file.
     aria-label$="[[i18nDynamic(locale, 'marketingOptInScreenTitle')]]"
     aria-describedby="marketing-opt-in-subtitle">
   <iron-icon slot="icon"
-      icon="[[getIcon_(isCloudGamingDevice_)]]">
+      icon="[[getIcon(isCloudGamingDevice)]]">
   </iron-icon>
 
-  <h1 hidden="[[isCloudGamingDevice_]]" slot="title">
+  <h1 hidden="[[isCloudGamingDevice]]" slot="title">
     [[i18nDynamic(locale, 'marketingOptInScreenTitle')]]
   </h1>
   <h1 id ="marketingOptInGameDeviceTitle"
-      hidden="[[!isCloudGamingDevice_]]" slot="title">
+      hidden="[[!isCloudGamingDevice]]" slot="title">
     [[i18nDynamic(locale, 'marketingOptInScreenGameDeviceTitle')]]
   </h1>
   <div slot="subtitle">
     <!-- No marketing opt in -->
-    <div hidden="[[isCloudGamingDevice_]]">
-      <div hidden="[[marketingOptInVisible_]]"
+    <div hidden="[[isCloudGamingDevice]]">
+      <div hidden="[[marketingOptInVisible]]"
         id="marketingOptInSubtitleWithDeviceName">
         [[i18nDynamic(locale,
               'marketingOptInScreenSubtitleWithDeviceName')]]
       </div>
       <!-- Marketing opt in -->
-      <div hidden="[[!marketingOptInVisible_]]" id="marketingOptInSubtitle">
+      <div hidden="[[!marketingOptInVisible]]" id="marketingOptInSubtitle">
         [[i18nDynamic(locale,
                 'marketingOptInScreenSubtitle')]]
       </div>
     </div>
-    <div hidden="[[!isCloudGamingDevice_]]"
+    <div hidden="[[!isCloudGamingDevice]]"
           id="marketingOptInGameDeviceSubtitle">
       [[i18nDynamic(locale,
               'marketingOptInScreenGameDeviceSubtitle')]]
     </div>
     <!-- Toggle row -->
     <div class="layout horizontal center"
-        hidden="[[!marketingOptInVisible_]]"
+        hidden="[[!marketingOptInVisible]]"
         id="toggleRow">
       <iron-icon id="toggleRowIcon" icon="oobe-32:chromebook"></iron-icon>
       <div id="chromebookUpdatesOptionLabel" class="flex layout vertical"
           aria-hidden="true">
-        <div class="toggle-title" hidden="[[isCloudGamingDevice_]]">
+        <div class="toggle-title" hidden="[[isCloudGamingDevice]]">
           [[i18nDynamic(locale, 'marketingOptInGetChromebookUpdates')]]
         </div>
-        <div class="toggle-title" hidden="[[!isCloudGamingDevice_]]">
+        <div class="toggle-title" hidden="[[!isCloudGamingDevice]]">
           [[i18nDynamic(locale, 'marketingOptInGameDeviceUpdates')]]
         </div>
-        <div class="legal-info" hidden="[[!isCloudGamingDevice_]]">
+        <div class="legal-info" hidden="[[!isCloudGamingDevice]]">
           [[i18nDynamic(locale, 'marketingOptInScreenSubtitle')]]
         </div>
         <div class="legal-info">
@@ -164,7 +164,7 @@ found in the LICENSE file.
     </div>
 
     <!-- Legal footer  -->
-    <div id="legalFooter" hidden="[[!hasLegalFooter_]]" class="legal-info">
+    <div id="legalFooter" hidden="[[!hasLegalFooter]]" class="legal-info">
       <div>
         Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA
       </div>
@@ -172,7 +172,7 @@ found in the LICENSE file.
     </div>
   </div>
 
-  <div hidden="[[isCloudGamingDevice_]]" id="contentArea"
+  <div hidden="[[isCloudGamingDevice]]" id="contentArea"
         slot="content" class="layout flex vertical">
     <!-- Animation -->
     <div  class="marketing-animation-content">
@@ -182,22 +182,22 @@ found in the LICENSE file.
       </oobe-cr-lottie>
     </div>
   </div>
-  <div hidden="[[!isCloudGamingDevice_]]" slot="content"
+  <div hidden="[[!isCloudGamingDevice]]" slot="content"
         class="flex layout vertical center-justified center">
     <iron-icon icon="oobe-illos:blazey-illo"
         class="illustration-jelly">
     </iron-icon>
   </div>
   <oobe-icon-button slot="bottom-buttons"
-      hidden="[[!isA11ySettingsButtonVisible_]]"
+      hidden="[[!isA11ySettingsButtonVisible]]"
       id="marketing-opt-in-accessibility-button"
-      on-click="onToggleAccessibilityPage_"
+      on-click="onToggleAccessibilityPage"
       icon1x="oobe-32:accessibility"
       icon2x="oobe-32:accessibility"
       text-key="marketingOptInA11yButtonLabel">
   </oobe-icon-button>
   <oobe-text-button slot="bottom-buttons"
-      on-click="onGetStarted_" class="focus-on-show"
+      on-click="onGetStarted" class="focus-on-show"
       inverse text-key="marketingOptInScreenAllSet"
       id="marketing-opt-in-next-button">
   </oobe-text-button>
@@ -213,7 +213,7 @@ found in the LICENSE file.
   </h1>
   <div slot="content" class="layout vertical">
     <oobe-a11y-option id="a11yNavButtonToggle"
-        on-change="onA11yNavButtonsSettingChanged_">
+        on-change="onA11yNavButtonsSettingChanged">
       <span slot="title">
         [[i18nDynamic(locale, 'finalA11yPageNavButtonSettingTitle')]]
       </span>
@@ -226,11 +226,11 @@ found in the LICENSE file.
     </oobe-a11y-option>
   </div>
   <div slot="back-navigation">
-    <oobe-back-button on-click="onToggleAccessibilityPage_"
+    <oobe-back-button on-click="onToggleAccessibilityPage"
         id="final-accessibility-back-button"></oobe-back-button>
   </div>
   <div slot="bottom-buttons">
-    <oobe-text-button on-click="onGetStarted_" class="focus-on-show"
+    <oobe-text-button on-click="onGetStarted" class="focus-on-show"
         id="final-accessibility-next-button" inverse
         text-key="finalA11yPageDoneButtonTitle">
     </oobe-text-button>

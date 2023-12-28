@@ -576,6 +576,10 @@ void ChromeRenderFrameObserver::LoadBlockedPlugins(
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 }
 
+void ChromeRenderFrameObserver::SetSupportsAppRegion(bool supports_app_region) {
+  render_frame()->GetWebView()->SetSupportsAppRegion(supports_app_region);
+}
+
 void ChromeRenderFrameObserver::SetClientSidePhishingDetection() {
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   phishing_classifier_ = safe_browsing::PhishingClassifierDelegate::Create(

@@ -323,7 +323,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoDefault:
     case kPseudoDefined:
     case kPseudoDetailsContent:
-    case kPseudoDetailsSummary:
     case kPseudoDialogInTopLayer:
     case kPseudoDir:
     case kPseudoDisabled:
@@ -493,7 +492,6 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"default", CSSSelector::kPseudoDefault},
     {"defined", CSSSelector::kPseudoDefined},
     {"details-content", CSSSelector::kPseudoDetailsContent},
-    {"details-summary", CSSSelector::kPseudoDetailsSummary},
     {"disabled", CSSSelector::kPseudoDisabled},
     {"double-button", CSSSelector::kPseudoDoubleButton},
     {"empty", CSSSelector::kPseudoEmpty},
@@ -645,8 +643,7 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
-  if ((match->type == CSSSelector::kPseudoDetailsContent ||
-       match->type == CSSSelector::kPseudoDetailsSummary) &&
+  if (match->type == CSSSelector::kPseudoDetailsContent &&
       !RuntimeEnabledFeatures::DetailsStylingEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
@@ -768,7 +765,6 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoViewTransitionOld:
     case kPseudoViewTransitionNew:
     case kPseudoDetailsContent:
-    case kPseudoDetailsSummary:
       if (match_ != kPseudoElement) {
         pseudo_type_ = kPseudoUnknown;
       }

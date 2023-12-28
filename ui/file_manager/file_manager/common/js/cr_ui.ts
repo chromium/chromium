@@ -80,22 +80,26 @@ export function domAttrSetter(self: any, name: string, value: unknown) {
  * It then calls the cr.ui element's `decorate()` which is the initializer for
  * its state, since it cannot run the constructor().
  */
-export function decorate<T extends HTMLElement>(
-    el: T, implementationClass: any): T {
+export function
+crInjectTypeAndInit<T extends HTMLElement, U extends typeof DecoratableElement>(
+    el: T, implementationClass: U): T&InstanceType<U> {
   if (implementationClass.prototype.isPrototypeOf(el)) {
-    return el as unknown as T;
+    return el as T & InstanceType<U>;
   }
 
+  // Inject the methods of the DecoratableElement in the HTMLElement.
   Object.setPrototypeOf(el, implementationClass.prototype);
-  if ('decorate' in el) {
-    // Calling instance decorate().
-    (el as any).decorate();
-  }
 
-  return el as unknown as T;
+  // Initialize since it doesn't run the constructor.
+  (el as InstanceType<U>).initialize();
+
+  return el as T & InstanceType<U>;
 }
 
-export interface DecoratableElement<T> {
-  new(...args: any): T;
-  decorate(el: HTMLElement): void;
+export abstract class DecoratableElement {
+  // If the class has a static decorate it can't be used with
+  // crInjectTypeAndInit(), use TheClass.decorate(...) instead.
+  static decorate?: never;
+
+  abstract initialize(): void;
 }

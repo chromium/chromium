@@ -42,9 +42,8 @@ GridLayoutAlgorithm::GridLayoutAlgorithm(const LayoutAlgorithmParams& params)
           // and also have something like "min-width: min-content". This is
           // cyclic. Just return the border/scrollbar/padding as our
           // "intrinsic" size.
-          return MinMaxSizesResult(
-              {border_scrollbar_padding, border_scrollbar_padding},
-              /* depends_on_block_constraints */ false);
+          return {{border_scrollbar_padding, border_scrollbar_padding},
+                  /* depends_on_block_constraints */ false};
         });
 
     grid_min_available_size_.inline_size =
@@ -418,21 +417,26 @@ MinMaxSizesResult GridLayoutAlgorithm::ComputeMinMaxSizes(
   // TODO(crbug.com/1272533): This should be |depends_on_block_constraints|
   // (rather than false). However we need more cache slots to handle the
   // performance degradation we currently experience. See bug for more details.
-  return MinMaxSizesResult(
-      sizes, RuntimeEnabledFeatures::LayoutNewMeasureCacheEnabled() &&
-                 depends_on_block_constraints);
+  return {sizes, RuntimeEnabledFeatures::LayoutNewMeasureCacheEnabled() &&
+                     depends_on_block_constraints};
 }
 
-MinMaxSizesResult GridLayoutAlgorithm::ComputeMinMaxSizes(
-    const GridSizingSubtree& sizing_subtree) {
+MinMaxSizesResult GridLayoutAlgorithm::ComputeSubgridMinMaxSizes(
+    const GridSizingSubtree& sizing_subtree) const {
   DCHECK(sizing_subtree);
 
-  return MinMaxSizesResult(
-      {ComputeSubgridContributionSize(sizing_subtree, kForColumns,
-                                      SizingConstraint::kMinContent),
-       ComputeSubgridContributionSize(sizing_subtree, kForColumns,
-                                      SizingConstraint::kMaxContent)},
-      /* depends_on_block_constraints */ false);
+  return {{ComputeSubgridIntrinsicSize(sizing_subtree, kForColumns,
+                                       SizingConstraint::kMinContent),
+           ComputeSubgridIntrinsicSize(sizing_subtree, kForColumns,
+                                       SizingConstraint::kMaxContent)},
+          /* depends_on_block_constraints */ false};
+}
+
+LayoutUnit GridLayoutAlgorithm::ComputeSubgridIntrinsicBlockSize(
+    const GridSizingSubtree& sizing_subtree) const {
+  DCHECK(sizing_subtree);
+  return ComputeSubgridIntrinsicSize(sizing_subtree, kForRows,
+                                     SizingConstraint::kMaxContent);
 }
 
 namespace {
@@ -471,7 +475,34 @@ MinMaxSizesResult ComputeMinMaxSizesForSubgrid(
                                        /* is_intrinsic */ true);
 
   return GridLayoutAlgorithm({subgrid_data.node, fragment_geometry, space})
-      .ComputeMinMaxSizes(sizing_subtree);
+      .ComputeSubgridMinMaxSizes(sizing_subtree);
+}
+
+LayoutUnit ComputeBlockSizeForSubgrid(const GridSizingSubtree& sizing_subtree,
+                                      const GridItemData& subgrid_data,
+                                      const ConstraintSpace& space) {
+  DCHECK(sizing_subtree);
+  DCHECK(subgrid_data.IsSubgrid());
+
+  const auto& node = subgrid_data.node;
+  const auto& style = node.Style();
+
+  const auto border_padding =
+      ComputeBorders(space, node) + ComputePadding(space, style);
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node,
+                                       /* break_token */ nullptr,
+                                       /* is_intrinsic */ true);
+
+  const absl::optional<LayoutUnit> available_inline_size =
+      space.AvailableSize().inline_size;
+
+  return ComputeBlockSizeForFragment(
+      space, style, border_padding,
+      GridLayoutAlgorithm({node, fragment_geometry, space})
+          .ComputeSubgridIntrinsicBlockSize(sizing_subtree),
+      (*available_inline_size == kIndefiniteSize) ? absl::nullopt
+                                                  : available_inline_size);
 }
 
 FragmentGeometry CalculateInitialFragmentGeometryForSubgrid(
@@ -1132,29 +1163,20 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
     baseline_shim = track_baseline - baseline - extra_margin;
   };
 
-  auto SubgridContributionSize = [&](bool is_min_content) -> LayoutUnit {
-    DCHECK(grid_item->IsSubgrid());
-
-    const auto fragment_geometry = CalculateInitialFragmentGeometry(
-        space, grid_item->node, /* break_token */ nullptr,
-        /* is_intrinsic */ true);
-
-    const GridLayoutAlgorithm subgrid_algorithm(
-        {node, fragment_geometry, space});
-
-    return subgrid_algorithm.ComputeSubgridContributionSize(
-        sizing_subtree.SubgridSizingSubtree(*grid_item),
-        RelativeDirectionInSubgrid(track_direction, *grid_item),
-        is_min_content ? SizingConstraint::kMinContent
-                       : SizingConstraint::kMaxContent);
+  auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
+    if (grid_item->IsSubgrid()) {
+      return ComputeMinMaxSizesForSubgrid(
+          sizing_subtree.SubgridSizingSubtree(*grid_item), *grid_item, space);
+    }
+    return node.ComputeMinMaxSizes(item_style.GetWritingMode(), type, space);
   };
 
   auto MinOrMaxContentSize = [&](bool is_min_content) -> LayoutUnit {
-    if (grid_item->IsSubgrid()) {
-      return SubgridContributionSize(is_min_content);
-    }
-
-    const auto result = ComputeMinAndMaxContentContributionForSelf(node, space);
+    const auto result =
+        grid_item->IsSubgrid()
+            ? ComputeMinAndMaxContentContributionForSelf(node, space,
+                                                         MinMaxSizesFunc)
+            : ComputeMinAndMaxContentContributionForSelf(node, space);
 
     // The min/max contribution may depend on the block-size of the grid-area:
     // <div style="display: inline-grid; grid-template-columns: auto auto;">
@@ -1198,7 +1220,8 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
     DCHECK(!is_parallel_with_track_direction);
 
     if (grid_item->IsSubgrid()) {
-      return SubgridContributionSize(/* is_min_content */ false);
+      return ComputeBlockSizeForSubgrid(
+          sizing_subtree.SubgridSizingSubtree(*grid_item), *grid_item, space);
     }
 
     // TODO(ikilpatrick): This check is potentially too broad, i.e. a fixed
@@ -1297,19 +1320,12 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
             // and apply the transferred min/max sizes when appropriate. We do
             // this sometimes elsewhere so should unify and simplify this code.
             if (is_parallel_with_track_direction) {
-              auto MinMaxSizesFunc =
-                  [&](MinMaxSizesType type) -> MinMaxSizesResult {
-                return node.ComputeMinMaxSizes(item_style.GetWritingMode(),
-                                               type, space);
-              };
-
-              contribution = ResolveMinInlineLength(
-                  space, item_style, border_padding, MinMaxSizesFunc,
-                  item_style.LogicalMinWidth());
-            } else {
               contribution =
-                  ResolveMinBlockLength(space, item_style, border_padding,
-                                        item_style.LogicalMinHeight());
+                  ResolveMinInlineLength(space, item_style, border_padding,
+                                         MinMaxSizesFunc, min_length);
+            } else {
+              contribution = ResolveMinBlockLength(space, item_style,
+                                                   border_padding, min_length);
             }
             break;
           }
@@ -2095,7 +2111,7 @@ void GridLayoutAlgorithm::ForEachSubgrid(
   }
 }
 
-LayoutUnit GridLayoutAlgorithm::ComputeSubgridContributionSize(
+LayoutUnit GridLayoutAlgorithm::ComputeSubgridIntrinsicSize(
     const GridSizingSubtree& sizing_subtree,
     GridTrackSizingDirection track_direction,
     SizingConstraint sizing_constraint) const {
@@ -3280,8 +3296,8 @@ ConstraintSpace GridLayoutAlgorithm::CreateConstraintSpace(
   }
 
   builder.SetPercentageResolutionSize(containing_grid_area_size);
-  builder.SetInlineAutoBehavior(grid_item.inline_auto_behavior);
-  builder.SetBlockAutoBehavior(grid_item.block_auto_behavior);
+  builder.SetInlineAutoBehavior(grid_item.column_auto_behavior);
+  builder.SetBlockAutoBehavior(grid_item.row_auto_behavior);
 
   if (container_constraint_space.HasBlockFragmentation() &&
       opt_fragment_relative_block_offset) {
@@ -3603,13 +3619,12 @@ void GridLayoutAlgorithm::PlaceGridItems(
         AlignmentOffset(containing_grid_area.size.inline_size,
                         fragment.InlineSize(), margins.inline_start,
                         margins.inline_end, inline_baseline_offset,
-                        grid_item.InlineAxisAlignment(),
-                        grid_item.IsInlineAxisOverflowSafe()),
-        AlignmentOffset(containing_grid_area.size.block_size,
-                        fragment.BlockSize(), margins.block_start,
-                        margins.block_end, block_baseline_offset,
-                        grid_item.BlockAxisAlignment(),
-                        grid_item.IsBlockAxisOverflowSafe()));
+                        grid_item.Alignment(kForColumns),
+                        grid_item.IsOverflowSafe(kForColumns)),
+        AlignmentOffset(
+            containing_grid_area.size.block_size, fragment.BlockSize(),
+            margins.block_start, margins.block_end, block_baseline_offset,
+            grid_item.Alignment(kForRows), grid_item.IsOverflowSafe(kForRows)));
 
     // Grid is special in that %-based offsets resolve against the grid-area.
     // Determine the relative offset here (instead of in the builder). This is
@@ -4158,8 +4173,8 @@ void GridLayoutAlgorithm::PlaceOutOfFlowItems(
     LogicalStaticPosition::InlineEdge inline_edge;
     LogicalStaticPosition::BlockEdge block_edge;
 
-    AlignmentOffsetForOutOfFlow(out_of_flow_item.InlineAxisAlignment(),
-                                out_of_flow_item.BlockAxisAlignment(),
+    AlignmentOffsetForOutOfFlow(out_of_flow_item.Alignment(kForColumns),
+                                out_of_flow_item.Alignment(kForRows),
                                 containing_block_size, &inline_edge,
                                 &block_edge, &child_offset);
 

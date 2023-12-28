@@ -25,10 +25,6 @@ BASE_FEATURE(kInterestFeedV2,
              "InterestFeedV2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kInterestFeedV2Autoplay,
-             "InterestFeedV2Autoplay",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kInterestFeedV2Hearts,
              "InterestFeedV2Hearts",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -50,9 +46,6 @@ BASE_FEATURE(kDiscoFeedEndpoint,
 BASE_FEATURE(kXsurfaceMetricsReporting,
              "XsurfaceMetricsReporting",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kFeedHeaderStickToTop,
-             "FeedHeaderStickToTop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFeedLoadingPlaceholder,
              "FeedLoadingPlaceholder",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -61,9 +54,6 @@ const base::FeatureParam<bool>
         &kFeedLoadingPlaceholder, "enable_animation_on_instant_start", false};
 BASE_FEATURE(kFeedImageMemoryCacheSizePercentage,
              "FeedImageMemoryCacheSizePercentage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kFeedBackToTop,
-             "FeedBackToTop",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 BASE_FEATURE(kFeedBottomSyncStringRemoval,

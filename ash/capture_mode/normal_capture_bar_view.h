@@ -56,9 +56,8 @@ class ASH_EXPORT NormalCaptureBarView : public CaptureModeBarView {
   void OnCaptureTypeChanged(CaptureModeType new_type) override;
 
  private:
-  raw_ptr<CaptureModeTypeView, ExperimentalAsh> capture_type_view_ = nullptr;
-  raw_ptr<CaptureModeSourceView, ExperimentalAsh> capture_source_view_ =
-      nullptr;
+  raw_ptr<CaptureModeTypeView> capture_type_view_ = nullptr;
+  raw_ptr<CaptureModeSourceView> capture_source_view_ = nullptr;
 };
 
 }  // namespace ash

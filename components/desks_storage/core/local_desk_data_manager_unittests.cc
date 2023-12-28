@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "components/desks_storage/core/local_desk_data_manager.h"
 
 #include <stddef.h>
@@ -43,8 +44,9 @@ using TestUuidId = base::StrongAlias<class TestUuidIdTag, int>;
 // found, false if not.
 bool FindUuidInUuidList(
     const base::Uuid& uuid,
-    const std::vector<const ash::DeskTemplate*>& entry_list) {
-  for (auto* entry : entry_list) {
+    const std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>&
+        entry_list) {
+  for (const ash::DeskTemplate* entry : entry_list) {
     if (entry->uuid() == uuid)
       return true;
   }

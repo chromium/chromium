@@ -7,12 +7,15 @@
 #import "base/ios/block_types.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
+#import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -30,7 +33,8 @@
 @interface ManualFillAllPasswordCoordinator () <
     ManualFillPasswordMediatorDelegate,
     PasswordViewControllerDelegate,
-    ReauthenticationCoordinatorDelegate>
+    ReauthenticationCoordinatorDelegate,
+    UIAdaptivePresentationControllerDelegate>
 
 // Fetches and filters the passwords for the view controller.
 @property(nonatomic, strong) ManualFillPasswordMediator* passwordMediator;
@@ -49,6 +53,10 @@
 
   // Navigation controller presented by this coordinator.
   TableViewNavigationController* _navigationController;
+
+  // Service which gives us a view on users' saved passwords.
+  std::unique_ptr<password_manager::SavedPasswordsPresenter>
+      _savedPasswordsPresenter;
 }
 
 - (void)start {
@@ -59,12 +67,6 @@
       initWithSearchController:searchController];
   self.passwordViewController.delegate = self;
 
-  auto profilePasswordStore =
-      IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-          self.browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
-  auto accountPasswordStore =
-      IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-          self.browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForBrowserState(
           self.browser->GetBrowserState());
@@ -73,14 +75,25 @@
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
   self.passwordMediator = [[ManualFillPasswordMediator alloc]
-      initWithProfilePasswordStore:profilePasswordStore
-              accountPasswordStore:accountPasswordStore
-                     faviconLoader:faviconLoader
-                          webState:webState
-                       syncService:syncService
-                               URL:GURL::EmptyGURL()
-            invokedOnPasswordField:NO];
-  [self.passwordMediator fetchPasswords];
+       initWithFaviconLoader:faviconLoader
+                    webState:webState
+                 syncService:syncService
+                         URL:GURL::EmptyGURL()
+      invokedOnPasswordField:NO];
+
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  _savedPasswordsPresenter =
+      std::make_unique<password_manager::SavedPasswordsPresenter>(
+          IOSChromeAffiliationServiceFactory::GetForBrowserState(browserState),
+          IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
+              browserState, ServiceAccessType::EXPLICIT_ACCESS),
+          IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
+              browserState, ServiceAccessType::EXPLICIT_ACCESS));
+  _savedPasswordsPresenter->Init();
+
+  [self.passwordMediator
+      setSavedPasswordsPresenter:_savedPasswordsPresenter.get()];
+  [self.passwordMediator fetchAllPasswords];
   self.passwordMediator.actionSectionEnabled = NO;
   self.passwordMediator.consumer = self.passwordViewController;
   self.passwordMediator.contentInjector = self.injectionHandler;
@@ -95,6 +108,7 @@
   _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
   _navigationController.modalTransitionStyle =
       UIModalTransitionStyleCoverVertical;
+  _navigationController.presentationController.delegate = self;
 
   [self.baseViewController presentViewController:_navigationController
                                         animated:YES
@@ -112,7 +126,10 @@
       dismissViewControllerAnimated:YES
                          completion:nil];
   self.passwordViewController = nil;
+  [self.passwordMediator disconnect];
+  self.passwordMediator.consumer = nil;
   self.passwordMediator = nil;
+  _savedPasswordsPresenter.reset();
   [super stop];
 }
 
@@ -167,6 +184,14 @@
 
 - (void)willPushReauthenticationViewController {
   // No-op.
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self.manualFillAllPasswordCoordinatorDelegate
+      manualFillAllPasswordCoordinatorWantsToBeDismissed:self];
 }
 
 #pragma mark - Private

@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
@@ -151,22 +151,6 @@ gfx::RectF GetUnionScreenBoundsForWindow(aura::Window* window) {
   return bounds;
 }
 
-void SetTransform(aura::Window* window, const gfx::Transform& transform) {
-  const gfx::PointF target_origin(
-      GetUnionScreenBoundsForWindow(window).origin());
-  for (auto* window_iter :
-       window_util::GetVisibleTransientTreeIterator(window)) {
-    aura::Window* parent_window = window_iter->parent();
-    gfx::RectF original_bounds(window_iter->GetTargetBounds());
-    ::wm::TranslateRectToScreen(parent_window, &original_bounds);
-    const gfx::Transform new_transform = TransformAboutPivot(
-        gfx::PointF(target_origin.x() - original_bounds.x(),
-                    target_origin.y() - original_bounds.y()),
-        transform);
-    window_iter->SetTransform(new_transform);
-  }
-}
-
 void MaximizeIfSnapped(aura::Window* window) {
   auto* window_state = WindowState::Get(window);
   if (window_state && window_state->IsSnapped()) {
@@ -179,7 +163,6 @@ void MaximizeIfSnapped(aura::Window* window) {
 gfx::Rect GetGridBoundsInScreen(aura::Window* target_root) {
   return GetGridBoundsInScreen(target_root,
                                /*window_dragging_state=*/std::nullopt,
-                               /*divider_changed=*/false,
                                /*account_for_hotseat=*/true);
 }
 
@@ -187,7 +170,6 @@ gfx::Rect GetGridBoundsInScreen(
     aura::Window* target_root,
     std::optional<SplitViewDragIndicators::WindowDraggingState>
         window_dragging_state,
-    bool divider_changed,
     bool account_for_hotseat) {
   auto* split_view_controller = SplitViewController::Get(target_root);
   SplitViewController::State state = split_view_controller->state();
@@ -215,8 +197,8 @@ gfx::Rect GetGridBoundsInScreen(
 
   // We should show partial overview for the following use cases:
   // 1. In tablet split view mode;
-  // 2. On one window snapped in clamshell mode with feature flag `kSnapGroup`
-  // is enabled and feature param `kAutomaticallyLockGroup` is true;
+  // 2. On one window snapped in clamshell mode with
+  // `IsFasterSplitScreenOrSnapGroupEnabledInClamshell()` enabled;
   // 3. On one window snapped in clamshell in overview session.
 
   // When `kFasterSplitScreenSetup` or `kSnapGroup` is enabled, we would only
@@ -284,11 +266,12 @@ gfx::Rect GetGridBoundsInScreen(
     }
   }
 
-  if (!divider_changed) {
+  if (!opposite_position) {
+    // `opposite_position` is only non-empty if we are in split view state not
+    // `kNoSnap`.
     return bounds;
   }
 
-  DCHECK(opposite_position);
   const bool horizontal = IsLayoutHorizontal(target_root);
   const int min_length =
       (horizontal ? work_area.width() : work_area.height()) / 3;
@@ -339,7 +322,6 @@ std::optional<gfx::RectF> GetSplitviewBoundsMaintainingAspectRatio() {
   // The hotseat bounds do not affect splitview after a window is snapped, so
   // the aspect ratio should reflect it and not worry about the hotseat.
   return gfx::RectF(GetGridBoundsInScreen(root_window, window_dragging_state,
-                                          /*divider_changed=*/false,
                                           /*account_for_hotseat=*/false));
 }
 
@@ -366,7 +348,7 @@ void SetWindowsVisibleDuringItemDragging(const aura::Window::Windows& windows,
                                          bool visible,
                                          bool animate) {
   float new_opacity = visible ? 1.f : 0.f;
-  for (auto* window : windows) {
+  for (aura::Window* window : windows) {
     ui::Layer* layer = window->layer();
     if (layer->GetTargetOpacity() == new_opacity) {
       continue;

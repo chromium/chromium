@@ -311,8 +311,8 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
                   image_size.height() / scaling_up_ratio));
   }
 
-  const raw_ptr<ClipboardHistoryBitmapItemView, ExperimentalAsh> container_;
-  raw_ptr<views::ImageView, ExperimentalAsh> image_view_ = nullptr;
+  const raw_ptr<ClipboardHistoryBitmapItemView> container_;
+  raw_ptr<views::ImageView> image_view_ = nullptr;
 };
 
 BEGIN_METADATA(ClipboardHistoryBitmapItemView, BitmapContentsView, ContentsView)

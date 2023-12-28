@@ -31,11 +31,8 @@ TranslateUIDelegate::TranslateUIDelegate(
     const base::WeakPtr<TranslateManager>& translate_manager,
     const std::string& source_language,
     const std::string& target_language)
-    : translate_driver_(
-          translate_manager->translate_client()->GetTranslateDriver()),
-      translate_manager_(translate_manager),
+    : translate_manager_(translate_manager),
       prefs_(translate_manager_->translate_client()->GetTranslatePrefs()) {
-  DCHECK(translate_driver_);
   DCHECK(translate_manager_);
 
   std::vector<std::string> language_codes;
@@ -155,7 +152,7 @@ void TranslateUIDelegate::GetContentLanguagesCodes(
 }
 
 void TranslateUIDelegate::Translate() {
-  if (!translate_driver_->IsIncognito()) {
+  if (!GetTranslateDriver().IsIncognito()) {
     prefs_->ResetTranslationDeniedCount(
         translate_ui_languages_manager_->GetSourceLanguageCode());
     prefs_->ResetTranslationIgnoredCount(
@@ -186,7 +183,7 @@ void TranslateUIDelegate::RevertTranslation() {
 }
 
 void TranslateUIDelegate::TranslationDeclined(bool explicitly_closed) {
-  if (!translate_driver_->IsIncognito()) {
+  if (!GetTranslateDriver().IsIncognito()) {
     const std::string& language =
         translate_ui_languages_manager_->GetSourceLanguageCode();
     if (explicitly_closed) {
@@ -311,14 +308,14 @@ bool TranslateUIDelegate::ShouldAlwaysTranslateBeCheckedByDefault() const {
 }
 
 bool TranslateUIDelegate::ShouldShowAlwaysTranslateShortcut() const {
-  return !translate_driver_->IsIncognito() &&
+  return !GetTranslateDriver().IsIncognito() &&
          prefs_->GetTranslationAcceptedCount(
              translate_ui_languages_manager_->GetSourceLanguageCode()) >=
              kAlwaysTranslateShortcutMinimumAccepts;
 }
 
 bool TranslateUIDelegate::ShouldShowNeverTranslateShortcut() const {
-  return !translate_driver_->IsIncognito() &&
+  return !GetTranslateDriver().IsIncognito() &&
          prefs_->GetTranslationDeniedCount(
              translate_ui_languages_manager_->GetSourceLanguageCode()) >=
              kNeverTranslateShortcutMinimumDenials;
@@ -423,10 +420,19 @@ bool TranslateUIDelegate::ShouldAutoNeverTranslate() {
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 std::string TranslateUIDelegate::GetPageHost() const {
-  if (!translate_driver_->HasCurrentPage()) {
+  const auto& translate_driver = GetTranslateDriver();
+  if (!translate_driver.HasCurrentPage()) {
     return std::string();
   }
-  return translate_driver_->GetLastCommittedURL().HostNoBrackets();
+  return translate_driver.GetLastCommittedURL().HostNoBrackets();
+}
+
+const TranslateDriver& TranslateUIDelegate::GetTranslateDriver() const {
+  // The translate client should always return a valid driver when needed.
+  TranslateDriver* translate_driver =
+      translate_manager_->translate_client()->GetTranslateDriver();
+  CHECK(translate_driver);
+  return *translate_driver;
 }
 
 }  // namespace translate

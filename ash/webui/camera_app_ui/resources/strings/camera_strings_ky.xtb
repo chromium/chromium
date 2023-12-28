@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">Оңго жылдырып кароо</translation>
 <translation id="3081586908890909590">Видео режимине которулуу</translation>
 <translation id="313467653172006084">30 кадр/сек</translation>
+<translation id="3158534262962737808">"<ph name="WIFINAME" />" тизмесине кошулуу</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3240426699337459095">Шилтеме көчүрүлдү</translation>
 <translation id="3354465018370944241">Сүрөттүн параметрлери</translation>
@@ -78,12 +79,14 @@
 <translation id="4705093842003735294">Толук резолюция</translation>
 <translation id="4864143361253542638">Скандалган барактардын тизмеси</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">Шилтеменин дарегин (<ph name="URL" />) көчүрүү</translation>
 <translation id="491895758387112773">Бир нече агымдагы видеону жаздыруу</translation>
 <translation id="495170559598752135">Аракеттер</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Сүрөттүн тараптарынын катнашы</translation>
 <translation id="5057360777601936059">Камераңыз учурда жеткиликсиз.
         Камера туура туташканын текшериңиз.</translation>
+<translation id="5157591164390831335">URL аныкталды.</translation>
 <translation id="5163387177077603948">Оң жакка жылууда</translation>
 <translation id="5235304959032763950">16–9</translation>
 <translation id="5266635337630551423">Документтин жогорку сол бурчу</translation>
@@ -110,6 +113,7 @@
 <translation id="6353688143752491039">Камера колдонмосу жөнүндө пикириңизди айтканыңыз үчүн ыраазычылык билдиребиз.
 
 Эгер сүрөттүн же видеонун сапаты жөнүндө пикир билдирип жатсаңыз, анын үлгүсүн тиркеп, маселе эмнеде экенин түшүндүрүңүз. (Мисалы, сүрөт өтө караңгы же объект бүдөмүк болуп турат.)</translation>
+<translation id="6519884562954018934"><ph name="WIFINAME" /> кошулуу</translation>
 <translation id="6527303717912515753">Бөлүшүү</translation>
 <translation id="6617916774429601017">Бардык резолюцияларды көрсөтүү</translation>
 <translation id="6631515515009660915">Чагылдыруу өчүк</translation>
@@ -129,6 +133,7 @@
 <translation id="7450541714075000668">Текст көчүрүлдү</translation>
 <translation id="7488619942230388918">GIF видеосун жаздыруу</translation>
 <translation id="7557677699350329807">Кийинки камераны иштетүү</translation>
+<translation id="7562584071994185503"><ph name="TEXT" /> текстин көчүрүү</translation>
 <translation id="7607002721634913082">Бир азга токтотулду</translation>
 <translation id="7608223098072244877">4 x 4</translation>
 <translation id="761421184377987513">Төмөнкү сол жакка жылууда</translation>
@@ -141,6 +146,7 @@
 <translation id="7726641833034062494">Кадимки видео жаздыруу</translation>
 <translation id="7748344063862150053">Документтин жогорку оң бурчу</translation>
 <translation id="7933675232020478311">Төмөнкү оң жакка жылууда</translation>
+<translation id="7983668134180549431">Текст аныкталды.</translation>
 <translation id="8079255378695216066">Видео тартылбай жатат</translation>
 <translation id="8120146556401698679">Жылдырып кароо, кыйшайтуу, чоңойтуп/кичирейтүү параметрлери</translation>
 <translation id="8131740175452115882">Ырастоо</translation>
@@ -150,16 +156,17 @@
 <translation id="8346544573713510785">Camera HAL менен кадрлардын өлчөмүн өзгөртүү</translation>
 <translation id="8425673304802773841">Төмөн кыйшайтуу</translation>
 <translation id="8428213095426709021">Параметрлер</translation>
+<translation id="8609951387004618906"><ph name="URL" /> шилтемесин ачуу</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Микрофондун үнүн өчүрүү/күйгүзүү. Үнсүз режим күйүк</translation>
 <translation id="8730621377337864115">Бүттү</translation>
 <translation id="8732462232047530626">Метадайындарды алдын ала көрүү</translation>
+<translation id="874854738381978209">Wi-Fi тармагы аныкталды.</translation>
 <translation id="8815966864175525708">Портрет тартууга өтүү</translation>
 <translation id="8828441885228359828">Видео тартууну улантуу</translation>
 <translation id="8870695351537079478">Видео тартылбай жатат</translation>
 <translation id="8880167521484863515">4–3</translation>
 <translation id="8903921497873541725">Чоңойтуу</translation>
-<translation id="8926890870105777777">"<ph name="WIFINAME" />" тармагына кошулуу</translation>
 <translation id="9045010116236796332">Документтин бардык бурчтары алкактын ичинде болгондой кылып түздөңүз</translation>
 <translation id="9045155556724273246">10 секунд</translation>
 <translation id="906331135292332864">Сүрөт иштетилүүдө...</translation>

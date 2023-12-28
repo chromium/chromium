@@ -16,7 +16,6 @@
 #include "base/threading/thread.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/cert_verifier.h"
-#include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/do_nothing_ct_verifier.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/dns/mock_host_resolver.h"
@@ -78,7 +77,6 @@ std::unique_ptr<URLRequestContextBuilder> CreateTestURLRequestContextBuilder() {
       ConfiguredProxyResolutionService::CreateDirect());
   builder->SetCertVerifier(
       CertVerifier::CreateDefault(/*cert_net_fetcher=*/nullptr));
-  builder->set_ct_policy_enforcer(std::make_unique<DefaultCTPolicyEnforcer>());
   builder->set_ssl_config_service(std::make_unique<SSLConfigServiceDefaults>());
   builder->SetHttpAuthHandlerFactory(HttpAuthHandlerFactory::CreateDefault());
   builder->SetHttpServerProperties(std::make_unique<HttpServerProperties>());

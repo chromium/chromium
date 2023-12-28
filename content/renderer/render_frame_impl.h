@@ -425,7 +425,8 @@ class CONTENT_EXPORT RenderFrameImpl
       int64_t request_id,
       const url::SchemeHostPort& final_response_url,
       network::mojom::URLResponseHeadPtr head,
-      network::mojom::RequestDestination request_destination) override;
+      network::mojom::RequestDestination request_destination,
+      bool is_ad_resource) override;
   void NotifyResourceTransferSizeUpdated(int64_t request_id,
                                          int32_t transfer_size_diff) override;
   void NotifyResourceLoadCompleted(
@@ -470,6 +471,8 @@ class CONTENT_EXPORT RenderFrameImpl
       const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
       blink::mojom::PolicyContainerPtr policy_container,
       mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
+      mojo::PendingRemote<blink::mojom::CodeCacheHost>
+          code_cache_host_for_background,
       mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache,
       mojom::CookieManagerInfoPtr cookie_manager_info,
       mojom::StorageInfoPtr storage_info,
@@ -633,14 +636,12 @@ class CONTENT_EXPORT RenderFrameImpl
   bool AllowContentInitiatedDataUrlNavigations(
       const blink::WebURL& url) override;
   void PostAccessibilityEvent(const ui::AXEvent& event) override;
-  void NotifyWebAXObjectMarkedDirty(const blink::WebAXObject& object) override;
   void AXReadyCallback() override;
   void CheckIfAudioSinkExistsAndIsAuthorized(
       const blink::WebString& sink_id,
       blink::WebSetSinkIdCompleteCallback callback) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
-  std::unique_ptr<blink::WebURLLoaderThrottleProviderForFrame>
-  CreateWebURLLoaderThrottleProviderForFrame() override;
+  blink::URLLoaderThrottleProvider* GetURLLoaderThrottleProvider() override;
   scoped_refptr<blink::WebBackgroundResourceFetchAssets>
   MaybeGetBackgroundResourceFetchAssets() override;
   void OnStopLoading() override;
@@ -772,7 +773,8 @@ class CONTENT_EXPORT RenderFrameImpl
   void DidStartResponse(const url::SchemeHostPort& final_response_url,
                         int request_id,
                         network::mojom::URLResponseHeadPtr response_head,
-                        network::mojom::RequestDestination request_destination);
+                        network::mojom::RequestDestination request_destination,
+                        bool is_ad_resource);
   void DidCompleteResponse(int request_id,
                            const network::URLLoaderCompletionStatus& status);
   void DidCancelResponse(int request_id);
@@ -1021,6 +1023,8 @@ class CONTENT_EXPORT RenderFrameImpl
       mojo::PendingAssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
           fetch_later_loader_factory,
       mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
+      mojo::PendingRemote<blink::mojom::CodeCacheHost>
+          code_cache_host_for_background,
       mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache,
       mojom::CookieManagerInfoPtr cookie_manager_info,
       mojom::StorageInfoPtr storage_info,
@@ -1468,6 +1472,8 @@ class CONTENT_EXPORT RenderFrameImpl
       background_resource_fetch_task_runner_;
 
   mojo::PendingRemote<blink::mojom::CodeCacheHost> pending_code_cache_host_;
+  mojo::PendingRemote<blink::mojom::CodeCacheHost>
+      pending_code_cache_host_for_background_;
   mojo::PendingRemote<blink::mojom::ResourceCache> pending_resource_cache_;
   mojom::CookieManagerInfoPtr pending_cookie_manager_info_;
   mojom::StorageInfoPtr pending_storage_info_;

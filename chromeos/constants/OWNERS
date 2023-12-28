@@ -3,3 +3,4 @@
 # of in chrome_features.{cc,h}
 per-file chromeos_features.cc=*
 per-file chromeos_features.h=*
+per-file pkcs11_definitions.h=file://chromeos/components/kcer/OWNERS

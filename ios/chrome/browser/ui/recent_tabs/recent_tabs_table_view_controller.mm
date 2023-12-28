@@ -32,7 +32,7 @@
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/model/table_view_url_drag_drop_handler.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
-#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/live_tab_context_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_util.h"
@@ -176,6 +176,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 @property(nonatomic, assign) sessions::TabRestoreService* tabRestoreService;
 // The sync state.
 @property(nonatomic, assign) SessionsSyncUserState sessionState;
+// Mediator in charge of inviting the user to sign-in with a Google account.
 @property(nonatomic, strong) SigninPromoViewMediator* signinPromoViewMediator;
 // The browser state used for many operations, derived from the one provided by
 // `self.browser`.
@@ -282,7 +283,9 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   }
 
   if (self.syncService->GetUserSettings()->IsTypeManagedByPolicy(
-          syncer::UserSelectableType::kTabs)) {
+          syncer::UserSelectableType::kTabs) ||
+      self.syncService->GetUserSettings()->IsTypeManagedByPolicy(
+          syncer::UserSelectableType::kHistory)) {
     // Return YES if the data type is disabled by the SyncTypesListDisabled
     // policy.
     return YES;

@@ -108,6 +108,7 @@ export class SettingsPerDeviceKeyboardElement extends
         value: () => {
           return isRevampWayfindingEnabled();
         },
+        readOnly: true,
       },
 
       /**
@@ -122,7 +123,7 @@ export class SettingsPerDeviceKeyboardElement extends
   protected shouldShowDiacriticSetting: boolean =
       loadTimeData.getBoolean('allowDiacriticsOnPhysicalKeyboardLongpress');
   private prefs: chrome.settingsPrivate.PrefObject;
-  private isRevampWayfindingEnabled_: boolean;
+  private readonly isRevampWayfindingEnabled_: boolean;
   private autoRepeatDelays: number[];
   private autoRepeatIntervals: number[];
   private browserProxy: DevicePageBrowserProxy =

@@ -11,14 +11,18 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
 #include "ui/aura/window_observer.h"
+#include "ui/display/display_observer.h"
 #include "ui/wm/core/transient_window_observer.h"
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace ash {
 
@@ -49,7 +53,7 @@ class ASH_EXPORT MultiUserWindowManagerImpl
       public SessionObserver,
       public aura::WindowObserver,
       public ::wm::TransientWindowObserver,
-      public TabletModeObserver {
+      public display::DisplayObserver {
  public:
   // The speed which should be used to perform animations.
   enum AnimationSpeed {
@@ -95,8 +99,8 @@ class ASH_EXPORT MultiUserWindowManagerImpl
   void OnTransientChildRemoved(aura::Window* window,
                                aura::Window* transient) override;
 
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // Disable any animations for unit tests.
   void SetAnimationSpeedForTest(AnimationSpeed speed);
@@ -207,7 +211,7 @@ class ASH_EXPORT MultiUserWindowManagerImpl
   // Returns the time for an animation.
   base::TimeDelta GetAdjustedAnimationTime(base::TimeDelta default_time) const;
 
-  raw_ptr<MultiUserWindowManagerDelegate, ExperimentalAsh> delegate_;
+  raw_ptr<MultiUserWindowManagerDelegate> delegate_;
 
   // A lookup to see to which user the given window belongs to, where and if it
   // should get shown.
@@ -229,6 +233,8 @@ class ASH_EXPORT MultiUserWindowManagerImpl
 
   // The animation between users.
   std::unique_ptr<UserSwitchAnimator> animation_;
+
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 }  // namespace ash

@@ -14,6 +14,7 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 import androidx.test.runner.lifecycle.Stage;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -34,8 +36,13 @@ import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBuilder;
+import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.webapk.lib.common.WebApkConstants;
+
+import java.util.concurrent.TimeoutException;
 
 /** Tests for WebAPK {@link WebappActivity}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -122,6 +129,26 @@ public final class WebApkActivityTest {
 
         // WebAPK Activity should have been brought back to the foreground.
         ChromeActivityTestRule.waitFor(WebappActivity.class);
+    }
+
+    /** Test a permission dialog can be correctly presented. */
+    @Test
+    @LargeTest
+    public void testShowPermissionPrompt() throws TimeoutException {
+        EmbeddedTestServer server = mActivityTestRule.getEmbeddedTestServerRule().getServer();
+        String url = server.getURL("/content/test/data/android/permission_navigation.html");
+        String baseUrl = server.getURL("/content/test/data/android/");
+        WebappActivity activity =
+                mActivityTestRule.startWebApkActivity(createIntentDataProvider(url, baseUrl));
+        mActivityTestRule.runJavaScriptCodeInCurrentTab("requestGeolocationPermission()");
+        CriteriaHelper.pollUiThread(
+                () -> PermissionDialogController.getInstance().isDialogShownForTest(),
+                "Permission prompt did not appear in allotted time");
+        Assert.assertEquals(
+                "Only App modal dialog is supported on web apk",
+                activity.getModalDialogManager()
+                        .getPresenterForTest(ModalDialogManager.ModalDialogType.APP),
+                activity.getModalDialogManager().getCurrentPresenterForTest());
     }
 
     private BrowserServicesIntentDataProvider createIntentDataProvider(

@@ -65,6 +65,9 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
   void SetReceivedValidKeyboardInputCallback(
       base::RepeatingCallback<void(uint64_t)> callback) override;
 
+  void SetReceivedValidMouseInputCallback(
+      base::RepeatingCallback<void(int)> callback) override;
+
   // Handler for gesture events generated from libgestures.
   void OnGestureReady(const Gesture* gesture);
 
@@ -144,6 +147,9 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
 
   // Callback for when a keyboard key press is registered.
   base::RepeatingCallback<void(uint64_t)> received_keyboard_input_;
+
+  // Callback for when a mouse rel event is registered.
+  base::RepeatingCallback<void(int)> received_mouse_input_;
 };
 
 }  // namespace ui

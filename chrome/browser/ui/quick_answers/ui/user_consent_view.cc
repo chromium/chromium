@@ -344,7 +344,7 @@ void UserConsentView::InitButtonBar() {
       l10n_util::GetStringUTF16(
           IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_ALLOW_BUTTON),
       ShouldUseCompactButtonLayout(anchor_view_bounds_.width()));
-  allow_button->SetProminent(true);
+  allow_button->SetStyle(ui::ButtonStyle::kProminent);
   allow_button_ = button_bar->AddChildView(std::move(allow_button));
 }
 

@@ -61,7 +61,7 @@ class CAPTURE_EXPORT RequestBuilder {
       StreamType stream_type,
       BufferInfo buffer_info);
 
-  raw_ptr<CameraDeviceContext, ExperimentalAsh> device_context_;
+  raw_ptr<CameraDeviceContext> device_context_;
 
   // The frame number. Increased by one for each capture request sent.
   uint32_t frame_number_;

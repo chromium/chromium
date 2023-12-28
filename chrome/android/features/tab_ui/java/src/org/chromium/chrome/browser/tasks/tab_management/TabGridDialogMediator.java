@@ -16,9 +16,12 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -108,7 +111,8 @@ public class TabGridDialogMediator
     private final Context mContext;
     private final PropertyModel mModel;
     private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
-    private final Callback<TabModelFilter> mOnTabModelFilterChanged = this::onTabModelFilterChanged;
+    private final ValueChangedCallback<TabModelFilter> mOnTabModelFilterChanged =
+            new ValueChangedCallback<>(this::onTabModelFilterChanged);
     private final TabModelObserver mTabModelObserver;
     private final TabCreatorManager mTabCreatorManager;
     private final DialogController mDialogController;
@@ -120,7 +124,6 @@ public class TabGridDialogMediator
     private final SnackbarManager mSnackbarManager;
     private final String mComponentName;
 
-    private TabModelFilter mCurrentTabModelFilter;
     private TabGroupTitleEditor mTabGroupTitleEditor;
     private Supplier<TabListEditorController> mTabListEditorControllerSupplier;
     private boolean mTabListEditorSetup;
@@ -175,7 +178,7 @@ public class TabGridDialogMediator
                     public void tabClosureUndone(Tab tab) {
                         updateDialog();
                         updateGridTabSwitcher();
-                        snackbarManager.dismissSnackbars(TabGridDialogMediator.this, tab.getId());
+                        dismissSingleTabSnackbar(tab.getId());
                     }
 
                     @Override
@@ -239,21 +242,21 @@ public class TabGridDialogMediator
 
                     @Override
                     public void tabClosureCommitted(Tab tab) {
-                        dismissSingleTabClosureSnackbar(tab.getId());
+                        dismissSingleTabSnackbar(tab.getId());
                     }
 
                     @Override
                     public void onFinishingMultipleTabClosure(List<Tab> tabs) {
                         if (tabs.size() == 1) {
-                            dismissSingleTabClosureSnackbar(tabs.get(0).getId());
+                            dismissSingleTabSnackbar(tabs.get(0).getId());
                             return;
                         }
-                        snackbarManager.dismissSnackbars(TabGridDialogMediator.this, tabs);
+                        dismissMultipleTabSnackbar(tabs);
                     }
 
                     @Override
                     public void allTabsClosureCommitted(boolean isIncognito) {
-                        snackbarManager.dismissSnackbars(TabGridDialogMediator.this);
+                        dismissAllSnackbars();
                     }
 
                     private void showSingleTabClosureSnackbar(Tab tab) {
@@ -268,12 +271,34 @@ public class TabGridDialogMediator
                                         .setAction(mContext.getString(R.string.undo), tab.getId()));
                     }
 
-                    private void dismissSingleTabClosureSnackbar(int tabId) {
-                        snackbarManager.dismissSnackbars(TabGridDialogMediator.this, tabId);
+                    private void dismissMultipleTabSnackbar(List<Tab> tabs) {
+                        PostTask.postTask(
+                                TaskTraits.UI_DEFAULT,
+                                () -> {
+                                    snackbarManager.dismissSnackbars(
+                                            TabGridDialogMediator.this, tabs);
+                                });
+                    }
+
+                    private void dismissSingleTabSnackbar(int tabId) {
+                        PostTask.postTask(
+                                TaskTraits.UI_DEFAULT,
+                                () -> {
+                                    snackbarManager.dismissSnackbars(
+                                            TabGridDialogMediator.this, tabId);
+                                });
+                    }
+
+                    private void dismissAllSnackbars() {
+                        PostTask.postTask(
+                                TaskTraits.UI_DEFAULT,
+                                () -> {
+                                    snackbarManager.dismissSnackbars(TabGridDialogMediator.this);
+                                });
                     }
                 };
 
-        onTabModelFilterChanged(
+        mOnTabModelFilterChanged.onResult(
                 mCurrentTabModelFilterSupplier.addObserver(mOnTabModelFilterChanged));
 
         // Setup ScrimView click Runnable.
@@ -401,7 +426,7 @@ public class TabGridDialogMediator
 
     /** Destroy any members that needs clean up. */
     public void destroy() {
-        removeCurrentTabModelFilterObservers();
+        removeTabModelFilterObserver(mCurrentTabModelFilterSupplier.get());
         mCurrentTabModelFilterSupplier.removeObserver(mOnTabModelFilterChanged);
         KeyboardVisibilityDelegate.getInstance()
                 .removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
@@ -743,20 +768,19 @@ public class TabGridDialogMediator
         return true;
     }
 
-    private void onTabModelFilterChanged(TabModelFilter filter) {
-        if (mCurrentTabModelFilter == filter) return;
+    private void onTabModelFilterChanged(
+            @Nullable TabModelFilter newFilter, @Nullable TabModelFilter oldFilter) {
+        removeTabModelFilterObserver(oldFilter);
 
-        updateColorProperties(mContext, filter.isIncognito());
-
-        removeCurrentTabModelFilterObservers();
-
-        filter.addObserver(mTabModelObserver);
-        mCurrentTabModelFilter = filter;
+        if (newFilter != null) {
+            updateColorProperties(mContext, newFilter.isIncognito());
+            newFilter.addObserver(mTabModelObserver);
+        }
     }
 
-    private void removeCurrentTabModelFilterObservers() {
-        if (mCurrentTabModelFilter != null) {
-            mCurrentTabModelFilter.removeObserver(mTabModelObserver);
+    private void removeTabModelFilterObserver(@Nullable TabModelFilter filter) {
+        if (filter != null) {
+            filter.removeObserver(mTabModelObserver);
         }
     }
 

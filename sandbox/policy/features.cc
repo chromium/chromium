@@ -171,6 +171,11 @@ BASE_FEATURE(kUseRendererProcessPolicy,
 BASE_FEATURE(kRestrictRendererPoliciesInBaseline,
              "RestrictRendererPoliciesInBaseline",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// When enabled, restrict clone to just flags used by fork and pthread_create on
+// android.
+BASE_FEATURE(kRestrictCloneParameters,
+             "RestrictCloneParameters",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)

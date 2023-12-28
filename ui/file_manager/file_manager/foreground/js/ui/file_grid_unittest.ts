@@ -13,7 +13,7 @@ import {FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIM
 import {MetadataModel} from '../metadata/metadata_model.js';
 import {MockMetadataModel} from '../metadata/mock_metadata.js';
 
-import {A11yAnnounce} from './a11y_announce.js';
+import type {A11yAnnounce} from './a11y_announce.js';
 import {FileGrid, FileGridSelectionController} from './file_grid.js';
 import {ListSelectionModel} from './list_selection_model.js';
 

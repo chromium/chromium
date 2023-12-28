@@ -4,17 +4,20 @@
 
 import 'chrome://os-settings/os_settings.js';
 
+import {AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
 import {CrSettingsPrefs, OsSettingsUiElement, Router, routes, setNearbyShareSettingsForTesting, setUserActionRecorderForTesting} from 'chrome://os-settings/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
 
 import {FakeUserActionRecorder} from '../fake_user_action_recorder.js';
+import {TestAccountManagerBrowserProxy} from '../os_people_page/test_account_manager_browser_proxy.js';
 
 suite('User action recorder', () => {
   let ui: OsSettingsUiElement;
   let fakeUserActionRecorder: FakeUserActionRecorder;
   let fakeNearbySettings: FakeNearbyShareSettings;
+  let testAccountManagerBrowserProxy: TestAccountManagerBrowserProxy;
 
   async function createElement(): Promise<OsSettingsUiElement> {
     const element = document.createElement('os-settings-ui');
@@ -27,6 +30,11 @@ suite('User action recorder', () => {
   suiteSetup(() => {
     fakeNearbySettings = new FakeNearbyShareSettings();
     setNearbyShareSettingsForTesting(fakeNearbySettings);
+
+    // Setup fake accounts.
+    testAccountManagerBrowserProxy = new TestAccountManagerBrowserProxy();
+    AccountManagerBrowserProxyImpl.setInstanceForTesting(
+        testAccountManagerBrowserProxy);
   });
 
   setup(async () => {
@@ -38,6 +46,7 @@ suite('User action recorder', () => {
   teardown(() => {
     ui.remove();
     Router.getInstance().resetRouteForTesting();
+    testAccountManagerBrowserProxy.reset();
   });
 
   test('Records navigation changes', () => {

@@ -160,7 +160,7 @@ void FakeUserManager::UserLoggedIn(const AccountId& account_id,
                                    const std::string& username_hash,
                                    bool browser_restart,
                                    bool is_child) {
-  for (auto* user : users_) {
+  for (user_manager::User* user : users_) {
     if (user->GetAccountId() == account_id) {
       user->set_is_logged_in(true);
       user->set_username_hash(username_hash);
@@ -208,7 +208,7 @@ void FakeUserManager::SwitchActiveUser(const AccountId& account_id) {
   for (UserList::const_iterator it = logged_in_users_.begin();
        it != logged_in_users_.end(); ++it) {
     if ((*it)->GetAccountId() == account_id) {
-      active_user_ = *it;
+      active_user_ = (*it).get();
       break;
     }
   }

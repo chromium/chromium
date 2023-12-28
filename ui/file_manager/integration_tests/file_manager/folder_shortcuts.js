@@ -250,7 +250,7 @@ testcase.addRemoveFolderShortcuts = async () => {
   // Open another Files app window on Drive.
   const appId2 = await openFilesAppOnDrive();
 
-  // appId1 window is focused now because that's the last opened window. We are
+  // appId2 window is focused now because that's the last opened window. We are
   // asserting on the appId1 window below, in order to use ":focus" selector in
   // `expectSelection`, we need to make sure the appId1 window is focused first.
   await sendTestMessage({appId: appId1, name: 'focusWindow'});

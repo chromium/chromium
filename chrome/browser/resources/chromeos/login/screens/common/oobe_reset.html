@@ -57,7 +57,7 @@ found in the LICENSE file.
     <if expr="_google_chrome">
       <a id="powerwash-help-link-md" class="oobe-local-link"
           hidden="[[inRevertState_]]" is="action-link"
-          on-click="onLearnMoreTap_">
+          on-click="onLearnMoreClick">
         [[i18nDynamic(locale, 'learnMore')]]
       </a>
     </if>
@@ -85,14 +85,14 @@ found in the LICENSE file.
           checked="{{tpmUpdateChecked_}}"
           disabled="[[!tpmUpdateEditable_]]"
           hidden="[[!tpmUpdateAvailable_]]"
-          on-change="onTPMFirmwareUpdateChanged_">
+          on-change="onTpmFirmwareUpdateChanged">
         <div id="tpmFirmwareUpdateContainer">
           <span>
             [[i18nDynamic(locale, 'resetTPMFirmwareUpdate')]]
           </span>
           <if expr="_google_chrome">
             <a class="oobe-local-link" is="action-link"
-                on-click="onTPMFirmwareUpdateLearnMore_">
+                on-click="onTpmFirmwareUpdateLearnMore">
               [[i18nDynamic(locale, 'learnMore')]]
             </a>
           </if>
@@ -102,15 +102,15 @@ found in the LICENSE file.
   </div>
   <div slot="bottom-buttons">
     <!-- Cancel button, only disabled when reverting -->
-    <oobe-text-button border on-click="onCancelTap_" text-key="cancelButton"
+    <oobe-text-button border on-click="onCancelClick" text-key="cancelButton"
         id="resetCancel" disabled="[[inRevertState_]]"></oobe-text-button>
     <!-- Restart button -->
-    <oobe-text-button inverse on-click="onRestartTap_" class="focus-on-show"
+    <oobe-text-button inverse on-click="onRestartClick" class="focus-on-show"
         id="restart" text-key="resetButtonRestart"
         for-step="restart-required">
     </oobe-text-button>
     <!-- Powerwash button (depends on powerwash mode) -->
-    <oobe-text-button inverse on-click="onPowerwashTap_"
+    <oobe-text-button inverse on-click="onPowerwashClick"
         class="focus-on-show" id="powerwash"
         for-step="powerwash-proposal"
         text-key="[[powerwashButtonTextKey_]]"
@@ -121,13 +121,13 @@ found in the LICENSE file.
 
 <!-- Powerwash confirmation dialog (depends on powerwash mode) -->
 <oobe-modal-dialog should-hide-backdrop id="confirmationDialog"
-    on-close="onDialogClosed_">
+    on-close="onDialogClosed">
   <div slot="title">[[confirmationDialogTitle_]]</div>
   <div slot="content">[[confirmationDialogText_]]</div>
   <div slot="buttons">
-    <oobe-text-button id="cancelButton" border on-click="onDialogCancelTap_"
-        text-key="cancel"></oobe-text-button>
-    <oobe-text-button inverse on-click="onDialogContinueTap_"
+    <oobe-text-button id="cancelButton" border on-click="onDialogCancelClick"
+        class="focus-on-show" text-key="cancel"></oobe-text-button>
+    <oobe-text-button inverse on-click="onDialogContinueClick"
         id="confirmPowerwash"
         text-key="confirmResetButton"></oobe-text-button>
   </div>
@@ -148,7 +148,7 @@ found in the LICENSE file.
     </iron-icon>
   </div>
   <div slot="bottom-buttons">
-    <oobe-text-button id="okButton" on-click="onCancelTap_"
+    <oobe-text-button id="okButton" on-click="onCancelClick"
         text-key="okButton" class="focus-on-show">
     </oobe-text-button>
   </div>

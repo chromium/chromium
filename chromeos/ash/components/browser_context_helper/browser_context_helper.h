@@ -53,6 +53,12 @@ class COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER) BrowserContextHelper {
     virtual content::BrowserContext* GetOrCreatePrimaryOTRBrowserContext(
         content::BrowserContext* browser_context) = 0;
 
+    // Returns the original BrowserContext instance. If the given
+    // `browser_context` is not an off-the-record browser context, itself will
+    // be returned.
+    virtual content::BrowserContext* GetOriginalBrowserContext(
+        content::BrowserContext* browser_context) = 0;
+
     // Returns the path to the user data directory.
     // If the system is not initialized, returns nullptr (for unittests).
     virtual const base::FilePath* GetUserDataDir() = 0;

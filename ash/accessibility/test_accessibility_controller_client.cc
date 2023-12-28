@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "ash/public/cpp/accessibility_controller.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "base/time/time.h"
 #include "ui/gfx/geometry/point_f.h"
 

@@ -26,8 +26,6 @@ class WorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
 
   WorkerDevToolsAgentHost(
       int process_id,
-      mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,
-      mojo::PendingReceiver<blink::mojom::DevToolsAgentHost> host_receiver,
       const GURL& url,
       const std::string& name,
       const base::UnguessableToken& devtools_worker_token,

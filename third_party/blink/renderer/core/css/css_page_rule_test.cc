@@ -4,15 +4,16 @@
 
 #include "third_party/blink/renderer/core/css/css_page_rule.h"
 
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
-
-#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(CSSPageRule, Serializing) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   const char* css_rule = "@page :left { size: auto; }";
@@ -27,6 +28,7 @@ TEST(CSSPageRule, Serializing) {
 }
 
 TEST(CSSPageRule, selectorText) {
+  test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
   const char* css_rule = "@page :left { size: auto; }";

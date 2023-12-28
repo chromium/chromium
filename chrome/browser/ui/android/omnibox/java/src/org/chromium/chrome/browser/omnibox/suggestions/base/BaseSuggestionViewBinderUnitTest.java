@@ -457,22 +457,6 @@ public class BaseSuggestionViewBinderUnitTest {
     }
 
     @Test
-    @Config(qualifiers = "ldltr")
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    public void iconStartPadding_smallerMarginsRevamp_ltr() {
-        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLER_MARGINS.setForTesting(true);
-        runDecorationIconPaddingTest();
-    }
-
-    @Test
-    @Config(qualifiers = "ldrtl")
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    public void iconStartPadding_smallerMarginsRevamp_rtl() {
-        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLER_MARGINS.setForTesting(true);
-        runDecorationIconPaddingTest();
-    }
-
-    @Test
     @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     @Config(qualifiers = "ldltr-sw600dp")
     public void iconStartPadding_tabletRevamp_ltr() {

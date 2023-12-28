@@ -31,7 +31,7 @@ class FormAutofillHistoryTest : public testing::Test {
                                    std::string_view name,
                                    std::string_view value,
                                    FormControlType type,
-                                   ServerFieldType field_type,
+                                   FieldType field_type,
                                    bool is_autofilled = false) {
     FormFieldData field = test::CreateTestFormField(label, name, value, type);
     field.is_autofilled = is_autofilled;

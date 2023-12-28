@@ -158,11 +158,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   bool isPointInStroke(const double x, const double y);
   bool isPointInStroke(Path2D*, const double x, const double y);
 
-  void clearRect(double x,
-                 double y,
-                 double width,
-                 double height,
-                 bool for_reset = false);
+  void clearRect(double x, double y, double width, double height);
   void fillRect(double x, double y, double width, double height);
   void strokeRect(double x, double y, double width, double height);
 
@@ -550,7 +546,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   virtual bool IsPaint2D() const { return false; }
   void WillOverwriteCanvas(OverdrawOp);
-  virtual void WillOverwriteCanvas() = 0;
+  virtual void SkipQueuedDrawCommands() = 0;
+  virtual void RestartRecording() = 0;
 
   void SetColorScheme(mojom::blink::ColorScheme color_scheme) {
     if (color_scheme == color_scheme_) {
@@ -712,6 +709,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   // Parses the string as a color and returns the result of parsing.
   ColorParseResult ParseColorOrCurrentColor(const String& color_string,
                                             Color& color) const;
+
+  cc::PaintFlags GetClearFlags() const;
 
   bool origin_tainted_by_content_;
   UsePaintCache path2d_use_paint_cache_;

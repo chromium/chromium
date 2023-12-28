@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -466,10 +467,7 @@ class Device final : public ui::GbmDevice {
     for (const auto& [entry_format, entry_flags, entry_modifier] :
          modifier_blocklist_) {
       if (entry_format == format && entry_flags == flags) {
-        filtered_modifiers.erase(
-            std::remove(filtered_modifiers.begin(), filtered_modifiers.end(),
-                        entry_modifier),
-            filtered_modifiers.end());
+        base::Erase(filtered_modifiers, entry_modifier);
       }
     }
 

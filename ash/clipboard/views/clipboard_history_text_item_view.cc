@@ -67,8 +67,8 @@ class ClipboardHistoryTextItemView::TextContentsView
         views::Builder<views::BoxLayoutView>()
             .SetOrientation(views::BoxLayout::Orientation::kVertical)
             .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
-            .SetProperty(views::kFlexBehaviorKey,
-                         views::FlexSpecification().WithWeight(1))
+            .SetProperty(views::kBoxLayoutFlexKey,
+                         views::BoxLayoutFlexSpecification())
             .AddChild(views::Builder<views::Label>(
                           std::make_unique<ClipboardHistoryLabel>(
                               container->text_, display_text_elide_behavior,

@@ -39,7 +39,7 @@ TEST_P(SetFullNameTest, SetFullName) {
   NameInfo name;
   name.SetInfo(AutofillType(NAME_FULL), ASCIIToUTF16(test_case.full_name_input),
                "en-US");
-  name.FinalizeAfterImport();
+  EXPECT_TRUE(name.FinalizeAfterImport());
   EXPECT_EQ(ASCIIToUTF16(test_case.given_name_output),
             name.GetInfo(AutofillType(NAME_FIRST), "en-US"));
   EXPECT_EQ(ASCIIToUTF16(test_case.middle_name_output),
@@ -91,20 +91,20 @@ TEST(NameInfoTest, GetMatchingTypesWithPrefix) {
 
   test::VerifyFormGroupValues(name, expectation);
 
-  ServerFieldTypeSet matching_types;
+  FieldTypeSet matching_types;
   name.GetMatchingTypes(u"Ruiz", "US", &matching_types);
-  EXPECT_EQ(matching_types, ServerFieldTypeSet({NAME_LAST_FIRST}));
+  EXPECT_EQ(matching_types, FieldTypeSet({NAME_LAST_FIRST}));
 
   name.GetMatchingTypes(u"Mr.", "US", &matching_types);
   EXPECT_EQ(matching_types,
-            ServerFieldTypeSet({NAME_LAST_FIRST, NAME_HONORIFIC_PREFIX}));
+            FieldTypeSet({NAME_LAST_FIRST, NAME_HONORIFIC_PREFIX}));
 
   // Verify that a field filled with |NAME_FULL_WITH_HONORIFIC_PREFIX| creates a
   // |NAME_FULL| vote.
   name.GetMatchingTypes(u"Mr. Pablo Diego Ruiz y Picasso", "US",
                         &matching_types);
-  EXPECT_EQ(matching_types, ServerFieldTypeSet({NAME_FULL, NAME_LAST_FIRST,
-                                                NAME_HONORIFIC_PREFIX}));
+  EXPECT_EQ(matching_types,
+            FieldTypeSet({NAME_FULL, NAME_LAST_FIRST, NAME_HONORIFIC_PREFIX}));
 }
 
 TEST(NameInfoTest, GetMatchingTypes) {
@@ -146,13 +146,13 @@ TEST(NameInfoTest, GetMatchingTypes) {
 
   test::VerifyFormGroupValues(name, expectation);
 
-  ServerFieldTypeSet matching_types;
+  FieldTypeSet matching_types;
   name.GetMatchingTypes(u"Ruiz", "US", &matching_types);
-  EXPECT_EQ(matching_types, ServerFieldTypeSet({NAME_LAST_FIRST}));
+  EXPECT_EQ(matching_types, FieldTypeSet({NAME_LAST_FIRST}));
 
   // The honorific prefix is ignored.
   name.GetMatchingTypes(u"Mr.", "US", &matching_types);
-  EXPECT_EQ(matching_types, ServerFieldTypeSet({NAME_LAST_FIRST}));
+  EXPECT_EQ(matching_types, FieldTypeSet({NAME_LAST_FIRST}));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -178,7 +178,9 @@ INSTANTIATE_TEST_SUITE_P(
         FullNameTestCase{"Mikhail Yevgrafovich Saltykov-Shchedrin", "Mikhail",
                          "Yevgrafovich", "Saltykov-Shchedrin"},
         FullNameTestCase{"Arthur Ignatius Conan Doyle", "Arthur",
-                         "Ignatius Conan", "Doyle"}));
+                         "Ignatius Conan", "Doyle"},
+        FullNameTestCase{"Pablo Diego Ruiz y Picasso", "Pablo Diego", "",
+                         "Ruiz y Picasso"}));
 
 TEST(CompanyTest, SetRawInfo) {
   CompanyInfo company;

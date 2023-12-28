@@ -139,8 +139,8 @@ enum class PrefetchStatus {
   kPrefetchIsPrivacyDecoy = 29,
 
   // The prefetch was eligible, but too much time elapsed between the prefetch
-  // and the interception. No longer used.
-  // kPrefetchIsStale = 30,
+  // and the interception.
+  kPrefetchIsStale = 30,
 
   // Deprecated. NSP no longer supported
   // kPrefetchIsStaleWithNSP = 31,
@@ -151,7 +151,7 @@ enum class PrefetchStatus {
   // initial eligibility check.
   kPrefetchNotUsedCookiesChanged = 34,
 
-  // Deprecated. Support for redirecs added.
+  // Deprecated. Support for redirects added.
   //
   // The prefetch was redirected, but following redirects was disabled.
   // See crbug.com/1266876 for more details.

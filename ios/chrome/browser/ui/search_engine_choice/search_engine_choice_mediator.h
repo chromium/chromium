@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-class FaviconLoader;
 @protocol SearchEngineChoiceConsumer;
 @class SnippetSearchEngineItem;
 
@@ -19,11 +18,6 @@ class FaviconLoader;
 // The item selected by the user. Set when the user taps on a row of the search
 // engines choice table.
 @property(nonatomic, weak) SnippetSearchEngineItem* selectedItem;
-
-- (instancetype)initWithFaviconLoader:(FaviconLoader*)faviconLoader
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
 
 // Disconnect the mediator.
 - (void)disconnect;

@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 
 import static org.hamcrest.core.AllOf.allOf;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -20,6 +21,7 @@ import android.view.View;
 
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -330,6 +332,20 @@ public class RecentTabsPageTest {
                                 withId(R.id.empty_state_container),
                                 withParent(withId(R.id.legacy_sync_promo_view_frame_layout))))
                 .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void testTabStripHeightChangeCallback() {
+        mPage = loadRecentTabsPage();
+        var tabStripHeightChangeCallback = mPage.getTabStripHeightChangeCallbackForTesting();
+        int newTabStripHeight = 40;
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> tabStripHeightChangeCallback.onResult(newTabStripHeight));
+        assertEquals(
+                "Top padding of page view should be updated when tab strip height changes.",
+                newTabStripHeight,
+                mPage.getView().getPaddingTop());
     }
 
     private CoreAccountInfo addAccountWithNonDisplayableEmail(String name) {

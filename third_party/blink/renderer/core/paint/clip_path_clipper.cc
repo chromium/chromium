@@ -276,8 +276,13 @@ gfx::RectF ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {
     } else if (clip_path.GetType() == ClipPathOperation::kReference) {
       geometry_box = GeometryBox::kFillBox;
     }
-    return SVGResources::ReferenceBoxForEffects(
+    gfx::RectF unzoomed_reference_box = SVGResources::ReferenceBoxForEffects(
         object, geometry_box, SVGResources::ForeignObjectQuirk::kDisabled);
+    if (UsesZoomedReferenceBox(object)) {
+      return gfx::ScaleRect(unzoomed_reference_box,
+                            object.StyleRef().EffectiveZoom());
+    }
+    return unzoomed_reference_box;
   }
 
   const auto& box = To<LayoutBoxModelObject>(object);

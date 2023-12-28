@@ -94,9 +94,11 @@ CreateMutableProfileOAuthDelegate(
     network::NetworkConnectionTracker* network_connection_tracker) {
   // When signin cookies are cleared on exit and Dice is enabled, all tokens
   // should also be cleared.
-  bool revoke_all_tokens_on_load =
+  RevokeAllTokensOnLoad revoke_all_tokens_on_load =
       (account_consistency == signin::AccountConsistencyMethod::kDice) &&
-      delete_signin_cookies_on_exit;
+              delete_signin_cookies_on_exit
+          ? RevokeAllTokensOnLoad::kDeleteSiteDataOnExit
+          : RevokeAllTokensOnLoad::kNo;
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   std::unique_ptr<TokenBindingHelper> token_binding_helper;

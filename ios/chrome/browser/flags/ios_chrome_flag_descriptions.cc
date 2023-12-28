@@ -135,12 +135,6 @@ const char kAutofillUpdateChromeSettingsLinkToGPayWebDescription[] =
     "When enabled, Chrome Settings link directs to GPay Web rather than "
     "Payments Center for payment methods management.";
 
-const char kAutofillUseMobileLabelDisambiguationName[] =
-    "Autofill Uses Mobile Label Disambiguation";
-const char kAutofillUseMobileLabelDisambiguationDescription[] =
-    "When enabled, Autofill suggestions' labels are displayed using a "
-    "mobile-friendly format.";
-
 const char kAutofillUseRendererIDsName[] =
     "Autofill logic uses unqiue renderer IDs";
 const char kAutofillUseRendererIDsDescription[] =
@@ -519,6 +513,10 @@ extern const char kIOSEditMenuHideSearchWebName[] =
 extern const char kIOSEditMenuHideSearchWebDescription[] =
     "Hides the Search Web entry in edit menu.";
 
+extern const char kIOSExternalActionURLsName[] = "iOS external action URLs";
+extern const char kIOSExternalActionURLsDescription[] =
+    "When enabled, the browser will support handling external action URLs.";
+
 const char kIOSIncognitoDownloadsWarningName[] =
     "Enable Incognito downloads warning on iOS";
 const char kIOSIncognitoDownloadsWarningDescription[] =
@@ -558,6 +556,11 @@ const char kIOSSaveToPhotosDescription[] =
 const char kIOSPasswordBottomSheetName[] = "IOS Password Manager Bottom Sheet";
 const char kIOSPasswordBottomSheetDescription[] =
     "Enables the display of the password bottom sheet on IOS.";
+
+const char kIOSPasswordBottomSheetAutofocusName[] =
+    "IOS Password Manager Bottom Sheet Autofocus";
+const char kIOSPasswordBottomSheetAutofocusDescription[] =
+    "Enables triggering the password bottom sheet on autofocus on IOS.";
 
 const char kIOSPasswordSettingsBulkUploadLocalPasswordsName[] =
     "iOS Bulk Upload Local Passwords";
@@ -739,11 +742,6 @@ extern const char kOmniboxSuggestionsRTLImprovementsName[] =
 extern const char kOmniboxSuggestionsRTLImprovementsDescription[] =
     "Improved layout for suggestions in right-to-left contexts";
 
-const char kOmniboxTailSuggestName[] = "Omnibox Tail suggestions";
-const char kOmniboxTailSuggestDescription[] =
-    "Enables tail search suggestions. Search suggestions only matching the end "
-    "of users input text.";
-
 const char kOmniboxZeroSuggestInMemoryCachingName[] =
     "Omnibox Zero Prefix Suggestion in-memory caching";
 const char kOmniboxZeroSuggestInMemoryCachingDescription[] =
@@ -835,10 +833,21 @@ const char kRemoveExcessNTPsExperimentDescription[] =
     "When enabled, extra tabs with the New Tab Page open and no navigation "
     "history will be removed.";
 
+const char kRemoveOldWebStateRestoreName[] = "Remove Old WebState Restoration";
+const char kRemoveOldWebStateRestoreDescription[] =
+    "When enabled, skips "
+    "attempting to restore WebState navigation history using "
+    "session_restore.html.";
+
 const char kReplaceSyncPromosWithSignInPromosName[] =
     "Replace all sync-related UI with sign-in ones";
 const char kReplaceSyncPromosWithSignInPromosDescription[] =
     "When enabled, all sync-related promos will be replaced by sign-in ones.";
+
+const char kRevampPageInfoIosName[] = "Revamp Page Info";
+const char kRevampPageInfoIosDescription[] =
+    "Revamps Page Info to add two new sections, AboutThisPage and Last "
+    "Visited.";
 
 const char kSafeBrowsingAvailableName[] = "Make Safe Browsing available";
 const char kSafeBrowsingAvailableDescription[] =
@@ -874,16 +883,14 @@ const char kSharedHighlightingIOSDescription[] =
     "Adds a Link to Text option in the Edit Menu which generates URLs with a "
     "text fragment.";
 
+const char kShareInWebContextMenuIOSName[] = "Share in web context menu";
+const char kShareInWebContextMenuIOSDescription[] =
+    "Enables the Share button in the web context menu in iOS 16.0 and above.";
+
 const char kShowAutofillTypePredictionsName[] = "Show Autofill predictions";
 const char kShowAutofillTypePredictionsDescription[] =
     "Annotates web forms with Autofill field type predictions as placeholder "
     "text.";
-
-const char kShowInactiveTabsCountName[] =
-    "Show Inactive Tabs count in Tab Grid";
-const char kShowInactiveTabsCountDescription[] =
-    "When enabled, the count of Inactive Tabs is shown in the Inactive Tabs "
-    "button that appears in the Tab Grid.";
 
 const char kSkipUndecryptablePasswordsName[] =
     "Enable silent ignoring of undecryptable passwords";

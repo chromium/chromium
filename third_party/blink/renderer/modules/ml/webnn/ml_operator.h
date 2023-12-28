@@ -21,6 +21,8 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
  public:
   enum class OperatorKind {
     // Keep the order as the same as build methods of MLGraphBuilder.
+    kArgMin,
+    kArgMax,
     kBatchNormalization,
     kCast,
     kClamp,
@@ -36,7 +38,9 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
     kPow,
     kEqual,
     kGreater,
+    kGreaterOrEqual,
     kLesser,
+    kLesserOrEqual,
     kAbs,
     kCeil,
     kCos,
@@ -81,6 +85,7 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
     kSigmoid,
     kSlice,
     kSoftmax,
+    kSoftplus,
     kSoftsign,
     kSplit,
     kTanh,

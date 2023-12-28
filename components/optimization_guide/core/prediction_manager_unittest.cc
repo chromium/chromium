@@ -855,8 +855,10 @@ TEST_P(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
     EXPECT_EQ(received_model->GetModelMetadata()->type_url(), "sometypeurl");
     EXPECT_EQ(base_model_dir.Append(GetBaseFileNameForModels()),
               received_model->GetModelFilePath());
-    EXPECT_EQ(received_model->GetAdditionalFiles(),
-              base::flat_set<base::FilePath>{additional_file_path});
+    auto additional_file = received_model->GetAdditionalFileWithBaseName(
+        base::FilePath::StringType(FILE_PATH_LITERAL("additional_file.txt")));
+    ASSERT_TRUE(additional_file);
+    EXPECT_EQ(*additional_file, additional_file_path);
 
     // Make sure we do not record the model available histogram again.
     model_ready_histogram_tester.ExpectTotalCount(

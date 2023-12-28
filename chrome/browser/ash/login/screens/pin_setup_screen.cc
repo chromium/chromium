@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -31,6 +30,7 @@
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
+#include "ui/display/screen.h"
 
 namespace ash {
 namespace {
@@ -127,7 +127,7 @@ bool PinSetupScreen::ShouldBeSkipped(const WizardContext& context) const {
 
   // Show the screen if the device is in tablet mode or tablet mode first user
   // run is forced on the device.
-  if (TabletMode::Get()->InTabletMode() ||
+  if (display::Screen::GetScreen()->InTabletMode() ||
       switches::ShouldOobeUseTabletModeFirstRun()) {
     return false;
   }

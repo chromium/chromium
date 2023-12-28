@@ -35,10 +35,11 @@ void DoCanonicalizePathComponent(const CHAR* source,
     size_t end = static_cast<size_t>(component.end());
     for (size_t i = static_cast<size_t>(component.begin); i < end; i++) {
       UCHAR uch = static_cast<UCHAR>(source[i]);
-      if (uch < 0x20 || uch > 0x7E)
+      if (IsInC0ControlPercentEncodeSet(uch)) {
         AppendUTF8EscapedChar(source, &i, end, output);
-      else
+      } else {
         output->push_back(static_cast<char>(uch));
+      }
     }
     new_component->len = output->length() - new_component->begin;
   } else {

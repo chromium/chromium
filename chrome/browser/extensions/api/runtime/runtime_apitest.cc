@@ -186,10 +186,23 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
       << message_;
 }
 
-// Tests chrome.runtime.getPackageDirectory with an extension.
+// Tests chrome.runtime.getPackageDirectory with an MV2 extension.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
-                       ChromeRuntimeGetPackageDirectoryEntryExtension) {
-  ASSERT_TRUE(RunExtensionTest("runtime/get_package_directory/extension"))
+                       ChromeRuntimeGetPackageDirectoryEntryMV2Extension) {
+  ASSERT_TRUE(RunExtensionTest("runtime/get_package_directory/extension",
+                               {.extension_url = "test/test.html"}))
+      << message_;
+}
+
+// Tests chrome.runtime.getPackageDirectory with an MV3 extension. Note: we use
+// an html page in this test as getPackageDirectory isn't exposed on service
+// workers.
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
+                       ChromeRuntimeGetPackageDirectoryEntryMV3Extension) {
+  SetCustomArg("run_promise_test");
+  ASSERT_TRUE(RunExtensionTest("runtime/get_package_directory/extension",
+                               {.extension_url = "test/test.html"},
+                               {.load_as_manifest_version_3 = true}))
       << message_;
 }
 
@@ -231,15 +244,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ExtensionTerminatedForRapidReloads) {
     unload_observer.WaitForExtensionUnloaded();
     base::RunLoop().RunUntilIdle();
 
-    if (registry->GetExtensionById(extension_id,
-                                   ExtensionRegistry::TERMINATED)) {
+    if (registry->terminated_extensions().GetByID(extension_id)) {
       break;
     } else {
       EXPECT_TRUE(ready_listener_reload.WaitUntilSatisfied());
     }
   }
-  ASSERT_TRUE(
-      registry->GetExtensionById(extension_id, ExtensionRegistry::TERMINATED));
+  ASSERT_TRUE(registry->terminated_extensions().GetByID(extension_id));
 }
 
 // Tests chrome.runtime.reload

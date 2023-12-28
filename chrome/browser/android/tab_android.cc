@@ -18,7 +18,6 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/slim/layer.h"
 #include "chrome/android/chrome_jni_headers/TabImpl_jni.h"
-#include "chrome/android/chrome_jni_headers/TabUtils_jni.h"
 #include "chrome/browser/android/background_tab_manager.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
@@ -104,10 +103,11 @@ TabAndroid* TabAndroid::GetNativeTab(JNIEnv* env, const JavaRef<jobject>& obj) {
   return reinterpret_cast<TabAndroid*>(Java_TabImpl_getNativePtr(env, obj));
 }
 
-std::vector<TabAndroid*> TabAndroid::GetAllNativeTabs(
+std::vector<raw_ptr<TabAndroid, VectorExperimental>>
+TabAndroid::GetAllNativeTabs(
     JNIEnv* env,
     const ScopedJavaLocalRef<jobjectArray>& obj_array) {
-  std::vector<TabAndroid*> tab_native_ptrs;
+  std::vector<raw_ptr<TabAndroid, VectorExperimental>> tab_native_ptrs;
   ScopedJavaLocalRef<jlongArray> j_tabs_ptr =
       Java_TabImpl_getAllNativePtrs(env, obj_array);
   if (j_tabs_ptr.is_null())
@@ -279,12 +279,6 @@ bool TabAndroid::IsCustomTab() {
 bool TabAndroid::IsHidden() {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_TabImpl_isHidden(env, weak_java_tab_.get(env));
-}
-
-bool TabAndroid::isHardwareKeyboardAvailable(TabAndroid* tab_android) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_TabUtils_isHardwareKeyboardAvailable(
-      env, tab_android->GetJavaObject());
 }
 
 void TabAndroid::AddObserver(Observer* observer) {

@@ -242,8 +242,7 @@ std::unique_ptr<views::Painter> TrayPopupUtils::CreateFocusPainter() {
       kFocusBorderThickness, gfx::InsetsF());
 }
 
-// TODO(b/309681875): Rename this method.
-void TrayPopupUtils::ConfigureAsStickyHeader(views::View* view) {
+void TrayPopupUtils::ConfigureHeader(views::View* view) {
   view->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(kMenuSeparatorVerticalPadding, 0)));
   view->SetPaintToLayer();
@@ -261,7 +260,7 @@ views::LabelButton* TrayPopupUtils::CreateTrayPopupButton(
     const std::u16string& text) {
   auto button =
       std::make_unique<views::MdTextButton>(std::move(callback), text);
-  button->SetProminent(true);
+  button->SetStyle(ui::ButtonStyle::kProminent);
   return button.release();
 }
 
@@ -351,11 +350,6 @@ ui::ImageModel TrayPopupUtils::CreateCheckMark(ui::ColorId color_id) {
   return ui::ImageModel::FromVectorIcon(
       kHollowCheckCircleIcon, color_id,
       GetDefaultSizeOfVectorIcon(kCheckCircleIcon));
-}
-
-// static
-void TrayPopupUtils::SetLabelFontList(views::Label* label, FontStyle style) {
-  // TODO(b/309681875): Remove this method.
 }
 
 }  // namespace ash

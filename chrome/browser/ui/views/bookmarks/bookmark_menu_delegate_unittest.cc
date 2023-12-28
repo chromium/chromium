@@ -209,9 +209,10 @@ TEST_F(BookmarkMenuDelegateTest, RemoveBookmarks) {
                                 BookmarkMenuDelegate::HIDE_PERMANENT_FOLDERS,
                                 BookmarkLaunchLocation::kNone);
   LoadAllMenus();
-  std::vector<const BookmarkNode*> nodes_to_remove = {
-      node->children()[1].get(),
-  };
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes_to_remove =
+      {
+          node->children()[1].get(),
+      };
   bookmark_menu_delegate_->WillRemoveBookmarks(nodes_to_remove);
   nodes_to_remove.clear();
   bookmark_menu_delegate_->DidRemoveBookmarks();

@@ -58,7 +58,7 @@ void V8CompileHintsTabHelperTest::SetUp() {
                   base::BindRepeating([](content::BrowserContext* context)
                                           -> std::unique_ptr<KeyedService> {
                     return std::make_unique<
-                        NiceMock<MockOptimizationGuideKeyedService>>(context);
+                        NiceMock<MockOptimizationGuideKeyedService>>();
                   })));
   V8CompileHintsTabHelper::MaybeCreateForWebContents(web_contents());
   tab_helper_ = V8CompileHintsTabHelper::FromWebContents(web_contents());

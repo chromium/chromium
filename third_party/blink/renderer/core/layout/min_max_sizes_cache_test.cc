@@ -5,12 +5,14 @@
 #include "third_party/blink/renderer/core/layout/min_max_sizes_cache.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 namespace {
 
 TEST(MinMaxSizesCacheTest, Eviction) {
+  test::TaskEnvironment task_environment;
   auto* cache = MakeGarbageCollected<MinMaxSizesCache>();
 
   // Populate the cache with the max number of entries.

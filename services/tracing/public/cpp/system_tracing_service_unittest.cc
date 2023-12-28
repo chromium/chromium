@@ -46,6 +46,7 @@ class SystemTracingServiceTest : public testing::Test {
   }
 
   void TearDown() override {
+    system_service_ = nullptr;
     // Restore the value of Perfetto producer socket name env variable.
     if (saved_producer_sock_env_) {
       ASSERT_EQ(0,

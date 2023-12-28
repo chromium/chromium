@@ -31,10 +31,6 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
 
   r.TRACKING_PROTECTION = r.PRIVACY.createChild('/trackingProtection');
   r.COOKIES = r.PRIVACY.createChild('/cookies');
-  if (!loadTimeData.getBoolean(
-          'isPerformanceSettingsPreloadingSubpageEnabled')) {
-    r.PRELOADING = r.COOKIES.createChild('/preloading');
-  }
 
   if (!loadTimeData.getBoolean('isPrivacySandboxRestricted')) {
     r.PRIVACY_SANDBOX = r.PRIVACY.createChild('/adPrivacy');

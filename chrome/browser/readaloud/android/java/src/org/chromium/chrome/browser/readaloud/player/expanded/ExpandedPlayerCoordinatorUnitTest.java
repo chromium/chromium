@@ -110,7 +110,8 @@ public class ExpandedPlayerCoordinatorUnitTest {
     }
 
     @Test
-    public void testOnSheetClosed_reasonNone() {
+    public void testOnSheetClosed_OptionsSheetWillOpen() {
+        when(mMediator.getOptionSheetPending()).thenReturn(true);
         when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
         mBottomSheetObserver.onSheetClosed(StateChangeReason.NONE);
         verify(mSheetContent).notifySheetClosed(eq(mSheetContent));
@@ -118,7 +119,8 @@ public class ExpandedPlayerCoordinatorUnitTest {
     }
 
     @Test
-    public void testOnSheetClosed_backPress() {
+    public void testOnSheetClosed_onlyMainSheet() {
+        when(mMediator.getOptionSheetPending()).thenReturn(false);
         when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
         mBottomSheetObserver.onSheetClosed(StateChangeReason.BACK_PRESS);
         verify(mSheetContent).notifySheetClosed(eq(mSheetContent));

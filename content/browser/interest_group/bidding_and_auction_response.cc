@@ -57,7 +57,11 @@ absl::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
     std::string* message = error_struct->FindString("message");
     if (message) {
       output.error = *message;
+    } else {
+      output.error = "Unknown server error";
     }
+    output.is_chaff = true;  // Mark it as a no-bid result.
+    return std::move(output);
   }
 
   absl::optional<bool> maybe_is_chaff = input_dict->FindBool("isChaff");
@@ -170,6 +174,10 @@ absl::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
       return absl::nullopt;
     }
     output.top_level_seller = std::move(top_level_seller);
+  }
+  std::string* maybe_ad_metadata = input_dict->FindString("adMetadata");
+  if (maybe_ad_metadata) {
+    output.ad_metadata = *maybe_ad_metadata;
   }
 
   output.result = AuctionResult::kSuccess;

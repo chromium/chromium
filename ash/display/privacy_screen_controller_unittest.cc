@@ -102,15 +102,14 @@ class PrivacyScreenControllerTest : public NoSessionAshTestBase {
         AccountId::FromUserEmail(email));
   }
 
-  // Builds displays snapshots into |owned_snapshots_| and update the display
-  // configurator and display manager with it.
+  // Builds display snapshots into |native_display_delegate_| and update the
+  // display configurator and display manager with it.
   void BuildAndUpdateDisplaySnapshots(
       const std::vector<TestSnapshotParams>& snapshot_params) {
-    owned_snapshots_.clear();
-    std::vector<display::DisplaySnapshot*> outputs;
+    std::vector<std::unique_ptr<display::DisplaySnapshot>> outputs;
 
     for (const auto& param : snapshot_params) {
-      owned_snapshots_.emplace_back(
+      outputs.push_back(
           display::FakeDisplaySnapshot::Builder()
               .SetId(param.id)
               .SetNativeMode(kDisplaySize)
@@ -122,14 +121,14 @@ class PrivacyScreenControllerTest : public NoSessionAshTestBase {
                                     ? display::kDisabled
                                     : display::kNotSupported)
               .Build());
-      outputs.push_back(owned_snapshots_.back().get());
     }
 
-    native_display_delegate_->set_outputs(outputs);
+    native_display_delegate_->SetOutputs(std::move(outputs));
     display_manager()->configurator()->OnConfigurationChanged();
     display_manager()->configurator()->ForceInitialConfigure();
     EXPECT_TRUE(test_api_->TriggerConfigureTimeout());
-    display_change_observer_->OnDisplayModeChanged(outputs);
+    display_change_observer_->OnDisplayModeChanged(
+        native_display_delegate_->GetOutputs());
   }
 
   MockObserver* observer() { return &observer_; }
@@ -137,11 +136,10 @@ class PrivacyScreenControllerTest : public NoSessionAshTestBase {
  private:
   std::unique_ptr<display::test::ActionLogger> logger_;
   raw_ptr<display::test::TestNativeDisplayDelegate,
-          DanglingUntriaged | ExperimentalAsh>
+          DanglingUntriaged>
       native_display_delegate_;  // Not owned.
   std::unique_ptr<display::DisplayChangeObserver> display_change_observer_;
   std::unique_ptr<display::DisplayConfigurator::TestApi> test_api_;
-  std::vector<std::unique_ptr<display::DisplaySnapshot>> owned_snapshots_;
   ::testing::NiceMock<MockObserver> observer_;
 };
 

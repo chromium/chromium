@@ -18,6 +18,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/network_service_instance.h"
@@ -53,16 +54,15 @@ class OptimizationGuideBridgeTest : public testing::Test {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     optimization_guide::prefs::RegisterProfilePrefs(pref_service_->registry());
 
-    optimization_guide_keyed_service_ =
-        static_cast<MockOptimizationGuideKeyedService*>(
-            OptimizationGuideKeyedServiceFactory::GetInstance()
-                ->SetTestingFactoryAndUse(
-                    profile_,
-                    base::BindRepeating([](content::BrowserContext* context)
-                                            -> std::unique_ptr<KeyedService> {
-                      return std::make_unique<
-                          MockOptimizationGuideKeyedService>(context);
-                    })));
+    optimization_guide_keyed_service_ = static_cast<
+        MockOptimizationGuideKeyedService*>(
+        OptimizationGuideKeyedServiceFactory::GetInstance()
+            ->SetTestingFactoryAndUse(
+                profile_,
+                base::BindRepeating([](content::BrowserContext* context)
+                                        -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<MockOptimizationGuideKeyedService>();
+                })));
   }
 
   void RegisterOptimizationTypes() {

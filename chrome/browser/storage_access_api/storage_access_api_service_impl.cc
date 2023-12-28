@@ -25,15 +25,8 @@ constexpr base::TimeDelta kTimerPeriod = base::Days(1);
 StorageAccessAPIServiceImpl::StorageAccessAPIServiceImpl(
     content::BrowserContext* browser_context)
     : browser_context_(
-          raw_ref<content::BrowserContext>::from_ptr(browser_context)),
-      grant_refreshes_enabled_(
-          blink::features::kStorageAccessAPIRefreshGrantsOnUserInteraction
-              .Get()) {
+          raw_ref<content::BrowserContext>::from_ptr(browser_context)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!grant_refreshes_enabled_) {
-    return;
-  }
 
   periodic_timer_.Start(
       FROM_HERE, kTimerPeriod,
@@ -51,8 +44,7 @@ StorageAccessAPIServiceImpl::RenewPermissionGrant(
   CHECK(!embedded_origin.opaque());
   CHECK(!top_frame_origin.opaque());
 
-  if (!grant_refreshes_enabled_ ||
-      embedded_origin.scheme() != url::kHttpsScheme ||
+  if (embedded_origin.scheme() != url::kHttpsScheme ||
       top_frame_origin.scheme() != url::kHttpsScheme ||
       !updated_grants_.Insert(embedded_origin, top_frame_origin)) {
     return absl::nullopt;
@@ -74,7 +66,6 @@ void StorageAccessAPIServiceImpl::Shutdown() {
 
 void StorageAccessAPIServiceImpl::OnPeriodicTimerFired() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(grant_refreshes_enabled_);
   updated_grants_.Clear();
 }
 

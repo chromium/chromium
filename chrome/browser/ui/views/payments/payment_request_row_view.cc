@@ -80,6 +80,10 @@ void PaymentRequestRowView::SetClickable(bool clickable) {
   OnPropertyChanged(&clickable_, views::PropertyEffects::kPropertyEffectsPaint);
 }
 
+base::WeakPtr<PaymentRequestRowView> PaymentRequestRowView::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 gfx::Insets PaymentRequestRowView::GetRowInsets() const {
   return row_insets_;
 }

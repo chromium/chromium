@@ -310,10 +310,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     /** Apply theme overlay to this activity class. */
     @CallSuper
     protected void applyThemeOverlays() {
-        if (ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()) {
-            getTheme().applyStyle(R.style.SurfaceColorsThemeOverlay, /* force= */ true);
-            mThemeResIds.add(R.style.SurfaceColorsThemeOverlay);
-        }
         DynamicColors.applyToActivityIfAvailable(this);
 
         DeferredStartupHandler.getInstance()
@@ -336,6 +332,12 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
                     R.style.ThemeOverlay_BrowserUI_Automotive_PersistentBackButtonToolbar;
             getTheme().applyStyle(automotiveOverlay, /* force= */ true);
             mThemeResIds.add(automotiveOverlay);
+        }
+
+        if (ChromeFeatureList.sAndroidElegantTextHeight.isEnabled()) {
+            int elegantTextHeightOverlay = R.style.ThemeOverlay_BrowserUI_ElegantTextHeight;
+            getTheme().applyStyle(elegantTextHeightOverlay, true);
+            mThemeResIds.add(elegantTextHeightOverlay);
         }
     }
 

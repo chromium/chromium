@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
@@ -69,9 +70,10 @@ class ASH_EXPORT WindowRestoreController
   // should be inserted. The insertion point is determined by iterating from LRU
   // to MRU, returning the an iter to the first window that has no activation
   // index or a lower activation index.
-  static std::vector<aura::Window*>::const_iterator GetWindowToInsertBefore(
+  static std::vector<raw_ptr<aura::Window, VectorExperimental>>::const_iterator
+  GetWindowToInsertBefore(
       aura::Window* window,
-      const std::vector<aura::Window*>& windows);
+      const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows);
 
   const aura::Window* to_be_snapped_window() const {
     return to_be_snapped_window_;
@@ -97,9 +99,11 @@ class ASH_EXPORT WindowRestoreController
   // `this`.
   bool IsRestoringWindow(aura::Window* window) const;
 
-  // Starts an overview session with the informed restore dialog if certain
-  // conditions are met.
-  void MaybeStartInformedRestore();
+  // Starts an overview session with the pine contents view if certain
+  // conditions are met. Triggered by developer accelerator.
+  // TODO(sammiequon): This function is temporary and should be repurposed or
+  // removed for production.
+  void MaybeStartPineOverviewSession();
 
   // display::DisplayObserver:
   void OnDisplayTabletStateChanged(display::TabletState state) override;

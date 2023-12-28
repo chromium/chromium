@@ -17,6 +17,7 @@
 #include "chromeos/crosapi/mojom/editor_panel.mojom-forward.h"
 #include "chromeos/crosapi/mojom/emoji_picker.mojom-forward.h"
 #include "chromeos/crosapi/mojom/firewall_hole.mojom.h"
+#include "chromeos/crosapi/mojom/lacros_shelf_item_tracker.mojom.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "media/gpu/buildflags.h"
@@ -35,6 +36,7 @@ class ProbeServiceAsh;
 class SmartReaderManagerAsh;
 class TelemetryDiagnosticsRoutineServiceAsh;
 class TelemetryEventServiceAsh;
+class TelemetryManagementServiceAsh;
 class VideoConferenceManagerAsh;
 
 namespace auth {
@@ -52,6 +54,7 @@ class BrowserVersionServiceAsh;
 class GuestOsSkForwarderFactoryAsh;
 class CertDatabaseAsh;
 class CertProvisioningAsh;
+class ChapsServiceAsh;
 class ChromeAppKioskServiceAsh;
 class ChromeAppWindowTrackerAsh;
 class ClipboardAsh;
@@ -89,6 +92,7 @@ class ImageWriterAsh;
 class KerberosInBrowserAsh;
 class KeystoreServiceAsh;
 class KioskSessionServiceAsh;
+class LacrosShelfItemTracker;
 class LocalPrinterAsh;
 class LoginAsh;
 class LoginScreenStorageAsh;
@@ -180,6 +184,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::CertDatabase> receiver) override;
   void BindCertProvisioning(
       mojo::PendingReceiver<mojom::CertProvisioning> receiver) override;
+  void BindChapsService(
+      mojo::PendingReceiver<mojom::ChapsService> receiver) override;
   void BindChromeAppKioskService(
       mojo::PendingReceiver<mojom::ChromeAppKioskService> receiver) override;
   void BindChromeAppPublisher(
@@ -273,6 +279,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::KeystoreService> receiver) override;
   void BindKioskSessionService(
       mojo::PendingReceiver<mojom::KioskSessionService> receiver) override;
+  void BindLacrosShelfItemTracker(
+      mojo::PendingReceiver<mojom::LacrosShelfItemTracker> receiver) override;
   void BindLacrosAppPublisher(
       mojo::PendingReceiver<mojom::AppPublisher> receiver) override;
   void BindLocalPrinter(
@@ -365,6 +373,9 @@ class CrosapiAsh : public mojom::Crosapi {
       override;
   void BindTelemetryEventService(
       mojo::PendingReceiver<mojom::TelemetryEventService> receiver) override;
+  void BindTelemetryManagementService(
+      mojo::PendingReceiver<mojom::TelemetryManagementService> receiver)
+      override;
   void BindTelemetryProbeService(
       mojo::PendingReceiver<mojom::TelemetryProbeService> receiver) override;
   void BindTestController(
@@ -422,6 +433,8 @@ class CrosapiAsh : public mojom::Crosapi {
   CertProvisioningAsh* cert_provisioning_ash() {
     return cert_provisioning_ash_.get();
   }
+
+  ChapsServiceAsh* chaps_service_ash() { return chaps_service_ash_.get(); }
 
   ChromeAppKioskServiceAsh* chrome_app_kiosk_service() {
     return chrome_app_kiosk_service_ash_.get();
@@ -582,6 +595,10 @@ class CrosapiAsh : public mojom::Crosapi {
 
   VpnServiceAsh* vpn_service_ash() { return vpn_service_ash_.get(); }
 
+  NetworkSettingsServiceAsh* network_settings_service_ash() {
+    return network_settings_service_ash_.get();
+  }
+
   // Caller is responsible for ensuring that the pointer stays valid.
   void SetTestControllerForTesting(TestControllerReceiver* test_controller);
 
@@ -598,6 +615,7 @@ class CrosapiAsh : public mojom::Crosapi {
       guest_os_sk_forwarder_factory_ash_;
   std::unique_ptr<CertDatabaseAsh> cert_database_ash_;
   std::unique_ptr<CertProvisioningAsh> cert_provisioning_ash_;
+  std::unique_ptr<ChapsServiceAsh> chaps_service_ash_;
   std::unique_ptr<ChromeAppKioskServiceAsh> chrome_app_kiosk_service_ash_;
   std::unique_ptr<ChromeAppWindowTrackerAsh> chrome_app_window_tracker_ash_;
   std::unique_ptr<ClipboardAsh> clipboard_ash_;
@@ -640,6 +658,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<KerberosInBrowserAsh> kerberos_in_browser_ash_;
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;
   std::unique_ptr<KioskSessionServiceAsh> kiosk_session_service_ash_;
+  std::unique_ptr<LacrosShelfItemTracker> lacros_shelf_item_tracker_;
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
   std::unique_ptr<LoginAsh> login_ash_;
   std::unique_ptr<LoginScreenStorageAsh> login_screen_storage_ash_;
@@ -665,6 +684,8 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ash::TelemetryDiagnosticsRoutineServiceAsh>
       telemetry_diagnostic_routine_service_ash_;
   std::unique_ptr<ash::TelemetryEventServiceAsh> telemetry_event_service_ash_;
+  std::unique_ptr<ash::TelemetryManagementServiceAsh>
+      telemetry_management_service_ash_;
   std::unique_ptr<ash::ProbeServiceAsh> probe_service_ash_;
   std::unique_ptr<RemotingAsh> remoting_ash_;
   std::unique_ptr<ResourceManagerAsh> resource_manager_ash_;

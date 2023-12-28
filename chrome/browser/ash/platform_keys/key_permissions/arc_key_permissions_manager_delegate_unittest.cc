@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/test/fake_app_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
@@ -61,8 +62,9 @@ class ArcKeyPermissionsManagerDelegateTest : public testing::Test {
     policy_provider_->SetDefaultReturns(
         /*is_initialization_complete_return=*/true,
         /*is_first_policy_load_complete_return=*/true);
-    std::vector<policy::ConfigurationPolicyProvider*> providers = {
-        policy_provider_.get()};
+    std::vector<
+        raw_ptr<policy::ConfigurationPolicyProvider, VectorExperimental>>
+        providers = {policy_provider_.get()};
     auto policy_service_ =
         std::make_unique<policy::PolicyServiceImpl>(providers);
 

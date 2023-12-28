@@ -127,13 +127,15 @@ void WaitForSuggestionsInModel(
   base::RunLoop run_loop;
   ON_CALL(mock, OnHoldingSpaceItemsAdded)
       .WillByDefault([&](const std::vector<const HoldingSpaceItem*>& items) {
-        if (GetSuggestionsInModel(*model) == expected_suggestions)
+        if (GetSuggestionsInModel(*model) == expected_suggestions) {
           run_loop.Quit();
+        }
       });
   ON_CALL(mock, OnHoldingSpaceItemsRemoved)
       .WillByDefault([&](const std::vector<const HoldingSpaceItem*>& items) {
-        if (GetSuggestionsInModel(*model) == expected_suggestions)
+        if (GetSuggestionsInModel(*model) == expected_suggestions) {
           run_loop.Quit();
+        }
       });
 
   run_loop.Run();

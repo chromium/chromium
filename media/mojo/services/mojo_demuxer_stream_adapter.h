@@ -90,6 +90,8 @@ class MEDIA_MOJO_EXPORT MojoDemuxerStreamAdapter : public DemuxerStream {
 
   DemuxerStream::DecoderBufferVector buffer_queue_;
 
+  std::vector<mojom::DecoderBufferPtr> batch_buffers_;
+
   std::unique_ptr<MojoDecoderBufferReader> mojo_decoder_buffer_reader_;
 
   base::WeakPtrFactory<MojoDemuxerStreamAdapter> weak_factory_{this};

@@ -29,6 +29,7 @@
 #include <algorithm>
 #include <ostream>
 
+#include "base/containers/enum_set.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -154,6 +155,10 @@ enum class SMILTimeOrigin {
   kLinkActivation,  // Link activation (Click on link referring to timed
                     // element.)
 };
+
+using SMILTimeOriginSet = base::EnumSet<SMILTimeOrigin,
+                                        SMILTimeOrigin::kAttribute,
+                                        SMILTimeOrigin::kLinkActivation>;
 
 class SMILTimeWithOrigin {
   DISALLOW_NEW();

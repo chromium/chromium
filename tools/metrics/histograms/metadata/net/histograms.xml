@@ -1723,27 +1723,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.ErrorPageCounts.SuggestionClicked"
-    enum="NetErrorOfflineSuggestionType" expires_after="2021-12-19">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Counts of the type of offline content suggestions clicked on the network
-    error page. Reported upon click.
-  </summary>
-</histogram>
-
-<histogram name="Net.ErrorPageCounts.SuggestionPresented"
-    enum="NetErrorOfflineSuggestionType" expires_after="2021-12-05">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Counts of the type of offline content suggestions shown on the network error
-    page. Multiple suggestions can be shown at the same time. Reported when the
-    suggestions are presented.
-  </summary>
-</histogram>
-
 <histogram name="Net.ErrorPageCounts.WebAppAlternativeErrorPage"
     enum="NetErrorCodes" expires_after="2024-04-28">
   <owner>finnur@chromium.org</owner>
@@ -1797,13 +1776,6 @@ chromium-metrics-reviews@google.com.
     Note that NTLMv2 being enabled makes the client behavior equivalent to
     setting LmCompatibilityLevel to 3 or higher.
   </summary>
-</histogram>
-
-<histogram name="Net.HttpAuthPromptType" enum="HttpAuthPromptType"
-    expires_after="2021-12-26">
-  <owner>meacer@chromium.org</owner>
-  <owner>src/chrome/browser/ui/login/OWNERS</owner>
-  <summary>Type of the HTTP auth prompt displayed.</summary>
 </histogram>
 
 <histogram name="Net.HttpAuthTarget" enum="HttpAuthTarget"
@@ -2136,18 +2108,6 @@ chromium-metrics-reviews@google.com.
     Time from when an HTTP request to a Google host is issued to when the first
     byte is processed, if the response was not cached and received over TLS 1.3
     and TCP. This is recorded to measure the impact of 0-RTT.
-  </summary>
-</histogram>
-
-<histogram name="Net.MediaCache.Response.EnabledOrDisabled"
-    enum="MediaResponseCacheType" expires_after="2020-12-31">
-  <owner>morlovich@chromium.org</owner>
-  <owner>wicarr@microsoft.com</owner>
-  <owner>webmedia@microsoft.com</owner>
-  <summary>
-    Records decision points on whether response-side media content will be
-    cached or not. This is determined after receiving the HTTP response headers
-    and before attempting to write the the cache.
   </summary>
 </histogram>
 
@@ -3641,7 +3601,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.NumPingsSent" units="pings"
-    expires_after="2024-04-03">
+    expires_after="2024-06-09">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3928,17 +3888,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.ReceivedSettings.EnableExtendedConnect"
-    enum="Boolean" expires_after="2024-01-21">
-  <owner>momoka@google.com</owner>
-  <owner>ricea@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The value of the SETTINGS_ENABLE_CONNECT_PROTOCOL parameter received on an
-    HTTP/3 connection, if the parameter is not present log false.
-  </summary>
-</histogram>
-
 <histogram name="Net.QuicSession.ReceivedSettings.MaxHeaderListSize2"
     units="bytes" expires_after="2023-09-24">
   <owner>dschinazi@chromium.org</owner>
@@ -4086,7 +4035,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.StaleConnectionTime" units="ms"
-    expires_after="2024-04-03">
+    expires_after="2024-06-16">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4722,6 +4671,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.SafeSearch.CacheHit" enum="CacheAccessStatus"
+    expires_after="2024-04-28">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Records if a URL classification in safe_search_api::URLChecker was provided
+    from the cache or not. In the latter case, it distinguishes between true
+    cache misses and cache hits which were unfit for classification.
+  </summary>
+</histogram>
+
 <histogram name="Net.SharedDictionaryManagerOnDisk.DictionarySizeKB" units="KB"
     expires_after="2024-03-03">
   <owner>horo@chromium.org</owner>
@@ -4912,7 +4872,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionaryTransaction.NetResultWithDict.{CertState}"
-    enum="NetErrorCodes" expires_after="2024-02-15">
+    enum="NetErrorCodes" expires_after="2024-06-09">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -4929,7 +4889,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryUsedByResponseWhenAvailable.MainFrame.{ConnectionType}.{CertState}"
-    enum="Boolean" expires_after="2024-02-15">
+    enum="Boolean" expires_after="2024-06-09">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
@@ -4952,7 +4912,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryUsedResponseErrorCodes.{DestinationType}.{CertState}"
-    enum="NetErrorCodes" expires_after="2024-02-15">
+    enum="NetErrorCodes" expires_after="2024-06-09">
   <owner>horo@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>

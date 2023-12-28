@@ -14,6 +14,7 @@
 
 namespace ash {
 
+class AnchoredNudge;
 class FeatureTile;
 class GameDashboardContext;
 class PillButton;
@@ -126,8 +127,11 @@ class ASH_EXPORT GameDashboardMainMenuView
   // Shows education nudge for `game_controls_setup_button_`.
   void ShowNudgeForSetupButton();
 
+  // For test to access the nudge ID in the anonymous namespace.
+  AnchoredNudge* GetGameControlsSetupNudgeForTesting();
+
   // Allows this class to access `GameDashboardContext` owned functions/objects.
-  const raw_ptr<GameDashboardContext, ExperimentalAsh> context_;
+  const raw_ptr<GameDashboardContext> context_;
 
   // Shortcut Tiles:
   // Toolbar button to toggle the `GameDashboardToolbarView`.

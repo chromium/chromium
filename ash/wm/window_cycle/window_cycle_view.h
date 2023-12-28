@@ -41,7 +41,7 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
  public:
   METADATA_HEADER(WindowCycleView);
 
-  using WindowList = std::vector<aura::Window*>;
+  using WindowList = std::vector<raw_ptr<aura::Window, VectorExperimental>>;
 
   // Horizontal padding between the alt-tab bandshield and the window
   // previews.
@@ -138,7 +138,8 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
     return mirror_container_;
   }
 
-  const std::vector<WindowMiniViewBase*>& cycle_views_for_testing() const {
+  const std::vector<raw_ptr<WindowMiniViewBase, VectorExperimental>>&
+  cycle_views_for_testing() const {
     return cycle_views_;
   }
 
@@ -155,42 +156,40 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   WindowMiniViewBase* GetCycleViewForWindow(aura::Window* window) const;
 
   // The root window that `this` resides on.
-  const raw_ptr<aura::Window, ExperimentalAsh> root_window_;
+  const raw_ptr<aura::Window> root_window_;
 
   // True if the `this` is built for same app cycling.
   const bool same_app_only_;
 
   // Constructed as the child views of `mirror_container` and used for window
   // cycling.
-  std::vector<WindowMiniViewBase*> cycle_views_;
+  std::vector<raw_ptr<WindowMiniViewBase, VectorExperimental>> cycle_views_;
 
   // A container that hosts and lays out all the `WindowMiniViewBase`s.
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> mirror_container_ =
-      nullptr;
+  raw_ptr<views::View, DanglingUntriaged> mirror_container_ = nullptr;
 
   // Tells users that there are no app windows on the active desk. It only shows
   // when there're more than 1 desk.
-  raw_ptr<views::Label, DanglingUntriaged | ExperimentalAsh>
-      no_recent_items_label_ = nullptr;
+  raw_ptr<views::Label, DanglingUntriaged> no_recent_items_label_ = nullptr;
 
   // The `tab_slider_` only shows when there're more than 1 desk. It contains
   // `all_desks_tab_slider_button_` and `current_desk_tab_slider_button_` which
   // user can tab through or toggle between.
-  raw_ptr<TabSlider, DanglingUntriaged | ExperimentalAsh> tab_slider_ = nullptr;
-  raw_ptr<LabelSliderButton, DanglingUntriaged | ExperimentalAsh>
-      all_desks_tab_slider_button_ = nullptr;
-  raw_ptr<LabelSliderButton, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<TabSlider, DanglingUntriaged> tab_slider_ = nullptr;
+  raw_ptr<LabelSliderButton, DanglingUntriaged> all_desks_tab_slider_button_ =
+      nullptr;
+  raw_ptr<LabelSliderButton, DanglingUntriaged>
       current_desk_tab_slider_button_ = nullptr;
 
   // The |target_window_| is the window that has the focus ring. When the user
   // completes cycling the |target_window_| is activated.
-  raw_ptr<aura::Window, ExperimentalAsh> target_window_ = nullptr;
+  raw_ptr<aura::Window> target_window_ = nullptr;
 
   // The |current_window_| is the window that the window cycle list uses to
   // determine the layout and positioning of the list's items. If this window's
   // preview can equally divide the list it is centered, otherwise it is
   // off-center.
-  raw_ptr<aura::Window, ExperimentalAsh> current_window_ = nullptr;
+  raw_ptr<aura::Window> current_window_ = nullptr;
 
   // Used when the widget bounds update should be deferred during the cycle
   // view's scaling animation..
@@ -199,7 +198,8 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   // List which contains items which have been created but have some of their
   // performance heavy elements not created yet. These elements will be created
   // once onscreen to improve fade in performance, then removed from this set.
-  std::vector<WindowMiniViewBase*> no_previews_list_;
+  std::vector<raw_ptr<WindowMiniViewBase, VectorExperimental>>
+      no_previews_list_;
 
   // Tracks the distance that a user has dragged, offsetting the
   // |mirror_container_|. This should be reset only when a user cycles the

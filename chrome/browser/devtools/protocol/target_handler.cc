@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 
@@ -102,7 +103,7 @@ protocol::Response TargetHandler::CreateTarget(
   if (!create_new_window) {
     // Find a browser to open a new tab.
     // We shouldn't use browser that is scheduled to close.
-    for (auto* browser : *BrowserList::GetInstance()) {
+    for (Browser* browser : *BrowserList::GetInstance()) {
       if (browser->profile() == profile &&
           !browser->IsAttemptingToCloseBrowser()) {
         target_browser = browser;
@@ -135,6 +136,10 @@ protocol::Response TargetHandler::CreateTarget(
   Navigate(&params);
   if (!params.navigated_or_inserted_contents)
     return protocol::Response::ServerError("Failed to open a new tab");
+
+  if (!create_in_background) {
+    params.navigated_or_inserted_contents->Focus();
+  }
 
   if (for_tab.value_or(false)) {
     *out_target_id = content::DevToolsAgentHost::GetOrCreateForTab(

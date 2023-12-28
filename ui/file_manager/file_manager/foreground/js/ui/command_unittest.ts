@@ -4,7 +4,7 @@
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {decorate} from '../../../common/js/cr_ui.js';
+import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 
 import {CanExecuteEvent, Command} from './command.js';
 
@@ -25,7 +25,7 @@ export function testCommandDefaultPrevented() {
     assertTrue(e.defaultPrevented);
   });
   const command = document.querySelector<Command>('command')!;
-  decorate(command, Command);
+  crInjectTypeAndInit(command, Command);
   command.canExecuteChange();
   assertEquals(1, calls);
 }
@@ -44,7 +44,7 @@ function createEvent(key: string, code: string, keyCode: number): Event {
 
 export function testShortcuts() {
   const cmd = document.querySelector<Command>('command')!;
-  decorate(cmd, Command);
+  crInjectTypeAndInit(cmd, Command);
   // US keyboard - qwerty-N should work.
   assertTrue(cmd.matchesEvent(createEvent('n', 'KeyN', 0x4e)));
   // DV keyboard - qwerty-L (dvorak-N) should work.

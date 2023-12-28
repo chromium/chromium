@@ -7,22 +7,38 @@
 #include "base/functional/callback_forward.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "ui/accessibility/ax_tree_id.h"
 
 namespace ax {
 FakeServiceClient::FakeServiceClient(mojom::AccessibilityService* service)
-    : service_(service) {}
+    : service_(service) {
+  desktop_tree_id_ = ui::AXTreeID::CreateNewAXTreeID();
+}
 
 FakeServiceClient::~FakeServiceClient() = default;
 
 void FakeServiceClient::BindAutomation(
-    mojo::PendingAssociatedRemote<ax::mojom::Automation> automation,
-    mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client) {
-  automation_client_receivers_.Add(this, std::move(automation_client));
+    mojo::PendingAssociatedRemote<ax::mojom::Automation> automation) {
   automation_remotes_.Add(std::move(automation));
   if (automation_bound_closure_) {
     std::move(automation_bound_closure_).Run();
   }
 }
+
+void FakeServiceClient::BindAutomationClient(
+    mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client) {
+  automation_client_receivers_.Add(this, std::move(automation_client));
+}
+
+void FakeServiceClient::Enable(EnableCallback callback) {
+  std::move(callback).Run(desktop_tree_id_);
+}
+
+void FakeServiceClient::Disable() {}
+
+void FakeServiceClient::EnableTree(const ui::AXTreeID& tree_id) {}
+
+void FakeServiceClient::PerformAction(const ui::AXActionData& data) {}
 
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
 void FakeServiceClient::BindAutoclickClient(
@@ -333,6 +349,17 @@ const std::vector<mojom::FocusRingInfoPtr>&
 FakeServiceClient::GetFocusRingsForType(
     mojom::AssistiveTechnologyType type) const {
   return focus_rings_for_type_.at(type);
+}
+
+void FakeServiceClient::SendAccessibilityEvents(
+    const ui::AXTreeID& tree_id,
+    const std::vector<ui::AXTreeUpdate>& updates,
+    const gfx::Point& mouse_location,
+    const std::vector<ui::AXEvent>& events) {
+  for (auto& remote : automation_remotes_) {
+    remote->DispatchAccessibilityEvents(tree_id, updates, mouse_location,
+                                        events);
+  }
 }
 
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)

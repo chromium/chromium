@@ -52,13 +52,15 @@ WebAppContentSettingsContainer::WebAppContentSettingsContainer(
 WebAppContentSettingsContainer::~WebAppContentSettingsContainer() = default;
 
 void WebAppContentSettingsContainer::UpdateContentSettingViewsVisibility() {
-  for (auto* v : content_setting_views_)
+  for (ContentSettingImageView* v : content_setting_views_) {
     v->Update();
+  }
 }
 
 void WebAppContentSettingsContainer::SetIconColor(SkColor icon_color) {
-  for (auto* v : content_setting_views_)
+  for (ContentSettingImageView* v : content_setting_views_) {
     v->SetIconColor(icon_color);
+  }
 }
 
 void WebAppContentSettingsContainer::SetUpForFadeIn() {
@@ -69,8 +71,9 @@ void WebAppContentSettingsContainer::SetUpForFadeIn() {
 }
 
 void WebAppContentSettingsContainer::FadeIn() {
-  if (GetVisible())
+  if (GetVisible()) {
     return;
+  }
 
   // The layer may have been destroyed since SetUpForFadeIn() was called.
   SetPaintToLayer();
@@ -83,9 +86,10 @@ void WebAppContentSettingsContainer::FadeIn() {
 
 void WebAppContentSettingsContainer::EnsureVisible() {
   SetVisible(true);
-  if (layer())
+  if (layer()) {
     layer()->SetOpacity(1);
+  }
 }
 
-BEGIN_METADATA(WebAppContentSettingsContainer, views::View)
+BEGIN_METADATA(WebAppContentSettingsContainer)
 END_METADATA

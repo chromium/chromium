@@ -20,8 +20,6 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/vector_icons/vector_icons.h"
-#include "content/browser/speech/tts_controller_impl.h"
-#include "content/public/browser/tts_utterance.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -117,9 +115,6 @@ constexpr int kExpansionIndicatorIconSizeDip = 12;
 constexpr int kExpansionIndicatorIconBorderDip = 4;
 constexpr int kExpansionIndicatorSizeDip = 72;
 constexpr auto kExpansionIndicatorViewInsets = gfx::Insets::TLBR(4, 8, 16, 12);
-
-// TTS audio.
-constexpr char kGoogleTtsEngineId[] = "com.google.android.tts";
 
 gfx::Insets GetContentViewInsets() {
   if (chromeos::features::IsQuickAnswersRichCardEnabled()) {
@@ -259,55 +254,6 @@ class ReportQueryView : public views::Button {
 
 BEGIN_METADATA(ReportQueryView, views::Button)
 END_METADATA
-
-// The lifetime of instances of this class is manually bound to the lifetime of
-// the associated TtsUtterance. See OnTtsEvent.
-class QuickAnswersUtteranceEventDelegate
-    : public content::UtteranceEventDelegate {
- public:
-  QuickAnswersUtteranceEventDelegate() = default;
-  ~QuickAnswersUtteranceEventDelegate() override = default;
-
-  // UtteranceEventDelegate methods:
-  void OnTtsEvent(content::TtsUtterance* utterance,
-                  content::TtsEventType event_type,
-                  int char_index,
-                  int char_length,
-                  const std::string& error_message) override {
-    // For quick answers, the TTS events of interest are START, END, and ERROR.
-    switch (event_type) {
-      case content::TTS_EVENT_START:
-        quick_answers::RecordTtsEngineEvent(
-            quick_answers::TtsEngineEvent::TTS_EVENT_START);
-        break;
-      case content::TTS_EVENT_END:
-        quick_answers::RecordTtsEngineEvent(
-            quick_answers::TtsEngineEvent::TTS_EVENT_END);
-        break;
-      case content::TTS_EVENT_ERROR:
-        VLOG(1) << __func__ << ": " << error_message;
-        quick_answers::RecordTtsEngineEvent(
-            quick_answers::TtsEngineEvent::TTS_EVENT_ERROR);
-        break;
-      case content::TTS_EVENT_WORD:
-      case content::TTS_EVENT_SENTENCE:
-      case content::TTS_EVENT_MARKER:
-      case content::TTS_EVENT_INTERRUPTED:
-      case content::TTS_EVENT_CANCELLED:
-      case content::TTS_EVENT_PAUSE:
-      case content::TTS_EVENT_RESUME:
-        // Group the remaining TTS events that aren't of interest together
-        // into an unspecified "other" category.
-        quick_answers::RecordTtsEngineEvent(
-            quick_answers::TtsEngineEvent::TTS_EVENT_OTHER);
-        break;
-    }
-
-    if (utterance->IsFinished()) {
-      delete this;
-    }
-  }
-};
 
 }  // namespace
 
@@ -886,23 +832,8 @@ void QuickAnswersView::OnPhoneticsAudioButtonPressed(
     return;
   }
 
-  // Otherwise, generate and use tts audio.
-  auto* tts_controller = content::TtsControllerImpl::GetInstance();
-  std::unique_ptr<content::TtsUtterance> tts_utterance =
-      content::TtsUtterance::Create(
-          phonetics_audio_web_view_->GetBrowserContext());
-
-  tts_controller->SetStopSpeakingWhenHidden(false);
-
-  tts_utterance->SetShouldClearQueue(false);
-  tts_utterance->SetText(phonetics_info.query_text);
-  tts_utterance->SetLang(phonetics_info.locale);
-  // TtsController will use the default TTS engine if the Google TTS engine
-  // is not available.
-  tts_utterance->SetEngineId(kGoogleTtsEngineId);
-  tts_utterance->SetEventDelegate(new QuickAnswersUtteranceEventDelegate());
-
-  tts_controller->SpeakOrEnqueue(std::move(tts_utterance));
+  GenerateTTSAudio(phonetics_audio_web_view_->GetBrowserContext(),
+                   phonetics_info.query_text, phonetics_info.locale);
 }
 
 BEGIN_METADATA(QuickAnswersView, views::View)

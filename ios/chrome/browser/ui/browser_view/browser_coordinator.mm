@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/browser_view/browser_coordinator.h"
+#import "ios/chrome/browser/ui/browser_view/browser_coordinator+Testing.h"
 
 #import <StoreKit/StoreKit.h>
 
@@ -66,7 +67,6 @@
 #import "ios/chrome/browser/shared/coordinator/alert/repost_form_coordinator_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
@@ -96,6 +96,7 @@
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
+#import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
 #import "ios/chrome/browser/shared/public/commands/share_highlight_command.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
@@ -129,7 +130,6 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
-#import "ios/chrome/browser/ui/browser_view/browser_coordinator+private.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+private.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
@@ -190,6 +190,8 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/sad_tab/sad_tab_coordinator.h"
 #import "ios/chrome/browser/ui/safe_browsing/safe_browsing_coordinator.h"
+#import "ios/chrome/browser/ui/save_to_drive/save_to_drive_coordinator.h"
+#import "ios/chrome/browser/ui/save_to_photos/save_to_photos_coordinator.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator_delegate.h"
@@ -227,6 +229,7 @@
 #import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/webui/model/net_export_tab_helper_delegate.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
@@ -287,6 +290,7 @@ enum class ToolbarKind {
     RecentTabsCoordinatorDelegate,
     RepostFormCoordinatorDelegate,
     RepostFormTabHelperDelegate,
+    SaveToDriveCommands,
     SaveToPhotosCommands,
     SigninPresenter,
     SnapshotGeneratorDelegate,
@@ -396,6 +400,9 @@ enum class ToolbarKind {
 @property(nonatomic, strong)
     DefaultBrowserPromoNonModalCoordinator* nonModalPromoCoordinator;
 
+// Coordinator for new tab pages.
+@property(nonatomic, strong) NewTabPageCoordinator* NTPCoordinator;
+
 // Coordinator for Page Info UI.
 @property(nonatomic, strong) ChromeCoordinator* pageInfoCoordinator;
 
@@ -464,6 +471,12 @@ enum class ToolbarKind {
 
 // Coordinator for Safe Browsing.
 @property(nonatomic, strong) SafeBrowsingCoordinator* safeBrowsingCoordinator;
+
+// Coordinator for displaying the Save to Drive UI.
+@property(nonatomic, strong) SaveToDriveCoordinator* saveToDriveCoordinator;
+
+// Coordinator for displaying the Save to Photos UI.
+@property(nonatomic, strong) SaveToPhotosCoordinator* saveToPhotosCoordinator;
 
 // Coordinator for sharing scenarios.
 @property(nonatomic, strong) SharingCoordinator* sharingCoordinator;
@@ -648,6 +661,7 @@ enum class ToolbarKind {
 - (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox {
   [self stopSaveToPhotos];
+  [self hideSaveToDrive];
 
   [self.passKitCoordinator stop];
 
@@ -692,6 +706,8 @@ enum class ToolbarKind {
 
   [self.unitConversionCoordinator stop];
   self.unitConversionCoordinator = nil;
+
+  [_formInputAccessoryCoordinator clearPresentedState];
 
   [self.viewController clearPresentedStateWithCompletion:completion
                                           dismissOmnibox:dismissOmnibox];
@@ -837,6 +853,7 @@ enum class ToolbarKind {
     @protocol(PasswordsAccountStorageNoticeCommands),
     @protocol(PolicyChangeCommands),
     @protocol(PriceNotificationsCommands),
+    @protocol(SaveToDriveCommands),
     @protocol(SaveToPhotosCommands),
     @protocol(TextZoomCommands),
     @protocol(WebContentCommands),
@@ -1395,6 +1412,9 @@ enum class ToolbarKind {
 
   [self.miniMapCoordinator stop];
   self.miniMapCoordinator = nil;
+
+  [self.saveToDriveCoordinator stop];
+  self.saveToDriveCoordinator = nil;
 
   [self.saveToPhotosCoordinator stop];
   self.saveToPhotosCoordinator = nil;
@@ -2608,6 +2628,24 @@ enum class ToolbarKind {
                      [weakSelf showRestrictAccountSignedOutPrompt];
                    });
   }
+}
+
+#pragma mark - SaveToDriveCommands
+
+- (void)showSaveToDriveForDownload:(web::DownloadTask*)downloadTask {
+  // If the Save to Drive coordinator is not nil, stop it.
+  [self hideSaveToDrive];
+
+  _saveToDriveCoordinator = [[SaveToDriveCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                    downloadTask:downloadTask];
+  [_saveToDriveCoordinator start];
+}
+
+- (void)hideSaveToDrive {
+  [_saveToDriveCoordinator stop];
+  _saveToDriveCoordinator = nil;
 }
 
 #pragma mark - SaveToPhotosCommands

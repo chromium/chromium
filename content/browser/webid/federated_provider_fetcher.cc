@@ -57,6 +57,7 @@ FederatedProviderFetcher::~FederatedProviderFetcher() = default;
 
 void FederatedProviderFetcher::Start(
     const std::set<GURL>& identity_provider_config_urls,
+    blink::mojom::RpMode rp_mode,
     int icon_ideal_size,
     int icon_minimum_size,
     RequesterCallback callback) {
@@ -80,7 +81,7 @@ void FederatedProviderFetcher::Start(
         base::BindOnce(&FederatedProviderFetcher::OnWellKnownFetched,
                        weak_ptr_factory_.GetWeakPtr(), std::ref(fetch_result)));
     network_manager_->FetchConfig(
-        fetch_result.identity_provider_config_url, icon_ideal_size,
+        fetch_result.identity_provider_config_url, rp_mode, icon_ideal_size,
         icon_minimum_size,
         base::BindOnce(&FederatedProviderFetcher::OnConfigFetched,
                        weak_ptr_factory_.GetWeakPtr(), std::ref(fetch_result)));
@@ -96,7 +97,8 @@ void FederatedProviderFetcher::OnWellKnownFetched(
   constexpr char kWellKnownFileStr[] = "well-known file";
 
   if (status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess &&
-      !IsFedCmWithoutWellKnownEnforcementEnabled()) {
+      !ShouldSkipWellKnownEnforcementForIdp(
+          fetch_result.identity_provider_config_url)) {
     absl::optional<std::string> additional_console_error_message =
         webid::ComputeConsoleMessageForHttpResponseCode(kWellKnownFileStr,
                                                         status.response_code);
@@ -284,7 +286,8 @@ void FederatedProviderFetcher::ValidateAndMaybeSetError(FetchResult& result) {
   //     contains the config url passed in the JS call
 
   // (a)
-  if (IsFedCmWithoutWellKnownEnforcementEnabled()) {
+  if (ShouldSkipWellKnownEnforcementForIdp(
+          result.identity_provider_config_url)) {
     return;
   }
 
@@ -358,6 +361,29 @@ void FederatedProviderFetcher::RunCallbackIfDone() {
   }
 
   std::move(callback_).Run(std::move(fetch_results_));
+}
+
+bool FederatedProviderFetcher::ShouldSkipWellKnownEnforcementForIdp(
+    const GURL& idp_url) {
+  if (IsFedCmWithoutWellKnownEnforcementEnabled()) {
+    return true;
+  }
+
+  if (!IsFedCmSkipWellKnownForSameSiteEnabled()) {
+    return false;
+  }
+
+  // Skip if RP and IDP are same-site.
+  GURL rp_url = render_frame_host_->GetLastCommittedURL();
+  std::string rp_etld_plus_one =
+      webid::FormatUrlWithDomain(rp_url, /*for_display=*/false);
+  std::string idp_etld_plus_one =
+      webid::FormatUrlWithDomain(idp_url, /*for_display=*/false);
+  if (idp_etld_plus_one.empty() || rp_etld_plus_one.empty()) {
+    return false;
+  }
+
+  return rp_etld_plus_one == idp_etld_plus_one;
 }
 
 }  // namespace content

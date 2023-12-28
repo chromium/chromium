@@ -67,10 +67,17 @@ void AddFirmwareUpdateAppStrings(content::WebUIDataSource* source) {
       {"restartingBodyText", IDS_FIRMWARE_RESTARTING_BODY_TEXT},
       {"restartingFooterText", IDS_FIRMWARE_RESTARTING_FOOTER_TEXT},
       {"restartingTitleText", IDS_FIRMWARE_RESTARTING_TITLE_TEXT},
+      {"waitingFooterText", IDS_FIRMWARE_WAITING_FOOTER_TEXT},
       {"upToDate", IDS_FIRMWARE_UP_TO_DATE_TEXT},
       {"versionText", IDS_FIRMWARE_VERSION_TEXT},
       {"proceedConfirmationText", IDS_FIRMWARE_PROCEED_UPDATE_CONFIRMATION},
-      {"confirmationDisclaimer", IDS_FIRMWARE_CONFIRMATION_DISCLAIMER_TEXT}};
+      {"confirmationDisclaimer", IDS_FIRMWARE_CONFIRMATION_DISCLAIMER_TEXT},
+      {"requestIdRemoveReplug", IDS_FIRMWARE_REQUEST_ID_REMOVE_REPLUG},
+      {"requestIdRemoveUsbCable", IDS_FIRMWARE_REQUEST_ID_REMOVE_USB_CABLE},
+      {"requestIdInsertUsbCable", IDS_FIRMWARE_REQUEST_ID_INSERT_USB_CABLE},
+      {"requestIdPressUnlock", IDS_FIRMWARE_REQUEST_ID_PRESS_UNLOCK},
+      {"requestIdDoNotPowerOff", IDS_FIRMWARE_REQUEST_ID_DO_NOT_POWER_OFF},
+      {"requestIdReplugInstall", IDS_FIRMWARE_REQUEST_ID_REPLUG_INSTALL}};
 
   source->AddLocalizedStrings(kLocalizedStrings);
   source->UseStringsJs();

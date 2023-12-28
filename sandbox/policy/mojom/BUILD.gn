@@ -21,7 +21,7 @@ mojom("mojom") {
   # bindings in JavaScript rather than TypeScript to support this legacy code.
   if (is_chromeos_ash) {
     webui_module_path = "/"
-    use_typescript_sources = false
+    generate_webui_js_bindings = true
   }
 
   enabled_features = []

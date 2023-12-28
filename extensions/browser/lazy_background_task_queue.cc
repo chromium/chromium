@@ -77,6 +77,25 @@ bool LazyBackgroundTaskQueue::ShouldEnqueueTask(
   return false;
 }
 
+// TODO(crbug.com/1467015): Refactor into `ShouldEnqueueTask()` since they are
+// so similar.
+bool LazyBackgroundTaskQueue::IsReadyToRunTasks(
+    content::BrowserContext* browser_context,
+    const Extension* extension) {
+  // Note: browser_context may not be the same as browser_context_ for incognito
+  // extension tasks.
+  CHECK(extension);
+
+  if (!BackgroundInfo::HasBackgroundPage(extension)) {
+    return false;
+  }
+
+  ProcessManager* pm = ProcessManager::Get(browser_context);
+  ExtensionHost* background_host =
+      pm->GetBackgroundHostForExtension(extension->id());
+  return background_host && background_host->has_loaded_once();
+}
+
 void LazyBackgroundTaskQueue::AddPendingTask(const LazyContextId& context_id,
                                              PendingTask task) {
   if (ExtensionsBrowserClient::Get()->IsShuttingDown()) {
@@ -117,10 +136,15 @@ void LazyBackgroundTaskQueue::ProcessPendingTasks(
   DCHECK(extension);
 
   if (!ExtensionsBrowserClient::Get()->IsSameContext(browser_context,
-                                                     browser_context_))
+                                                     browser_context_)) {
     return;
+  }
 
-  PendingTasksKey key(browser_context, extension->id());
+  const auto key = LazyContextId::ForExtension(browser_context, extension);
+  if (key.IsForServiceWorker()) {
+    return;
+  }
+
   auto map_it = pending_tasks_.find(key);
   if (map_it == pending_tasks_.end()) {
     if (BackgroundInfo::HasLazyBackgroundPage(extension))
@@ -215,7 +239,8 @@ void LazyBackgroundTaskQueue::OnExtensionUnloaded(
 void LazyBackgroundTaskQueue::CreateLazyBackgroundHostOnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
-  PendingTasksKey key(browser_context, extension->id());
+  const auto key = LazyContextId::ForExtension(browser_context, extension);
+  CHECK(key.IsForBackgroundPage());
   if (!base::Contains(pending_tasks_, key))
     return;
 

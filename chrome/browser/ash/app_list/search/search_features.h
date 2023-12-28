@@ -33,6 +33,9 @@ BASE_DECLARE_FEATURE(kLauncherImageSearch);
 // Enable Image Content-based Annotation
 BASE_DECLARE_FEATURE(kLauncherImageSearchIca);
 
+// Indicates whether Image Content-based Annotation is supported by hardware.
+BASE_DECLARE_FEATURE(kICASupportedByHardware);
+
 // Enable Optical Character Recognition
 BASE_DECLARE_FEATURE(kLauncherImageSearchOcr);
 

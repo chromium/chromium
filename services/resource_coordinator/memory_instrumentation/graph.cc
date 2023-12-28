@@ -7,6 +7,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_tokenizer.h"
 
 namespace memory_instrumentation {
@@ -52,7 +53,7 @@ Node* GlobalDumpGraph::CreateNode(Process* process_graph, Node* parent) {
 }
 
 PreOrderIterator GlobalDumpGraph::VisitInDepthFirstPreOrder() {
-  std::vector<Node*> roots;
+  std::vector<raw_ptr<Node, VectorExperimental>> roots;
   for (const auto& [process_id, process] :
        base::Reversed(process_dump_graphs_)) {
     roots.push_back(process->root());
@@ -62,7 +63,7 @@ PreOrderIterator GlobalDumpGraph::VisitInDepthFirstPreOrder() {
 }
 
 PostOrderIterator GlobalDumpGraph::VisitInDepthFirstPostOrder() {
-  std::vector<Node*> roots;
+  std::vector<raw_ptr<Node, VectorExperimental>> roots;
   for (const auto& [process_id, process] :
        base::Reversed(process_dump_graphs_)) {
     roots.push_back(process->root());
@@ -193,7 +194,8 @@ Node::Entry::Entry(std::string value)
 Edge::Edge(Node* source, Node* target, int priority)
     : source_(source), target_(target), priority_(priority) {}
 
-PreOrderIterator::PreOrderIterator(std::vector<Node*> roots)
+PreOrderIterator::PreOrderIterator(
+    std::vector<raw_ptr<Node, VectorExperimental>> roots)
     : to_visit_(std::move(roots)) {}
 PreOrderIterator::PreOrderIterator(PreOrderIterator&& other) = default;
 PreOrderIterator::~PreOrderIterator() {}
@@ -223,7 +225,8 @@ Node* PreOrderIterator::next() {
     }
 
     // Visit all owners of this node.
-    for (auto* edge : base::Reversed(*node->owned_by_edges())) {
+    for (memory_instrumentation::GlobalDumpGraph::Edge* edge :
+         base::Reversed(*node->owned_by_edges())) {
       to_visit_.push_back(edge->source());
     }
 
@@ -234,7 +237,8 @@ Node* PreOrderIterator::next() {
   return nullptr;
 }
 
-PostOrderIterator::PostOrderIterator(std::vector<Node*> roots)
+PostOrderIterator::PostOrderIterator(
+    std::vector<raw_ptr<Node, VectorExperimental>> roots)
     : to_visit_(std::move(roots)) {}
 PostOrderIterator::PostOrderIterator(PostOrderIterator&& other) = default;
 PostOrderIterator::~PostOrderIterator() = default;
@@ -276,7 +280,8 @@ Node* PostOrderIterator::next() {
     }
 
     // Visit all owners of this node.
-    for (auto* edge : base::Reversed(*node->owned_by_edges())) {
+    for (memory_instrumentation::GlobalDumpGraph::Edge* edge :
+         base::Reversed(*node->owned_by_edges())) {
       to_visit_.push_back(edge->source());
     }
   }

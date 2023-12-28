@@ -200,7 +200,8 @@ class CC_EXPORT PictureLayerImpl
   // Returns false if raster translation is not applicable.
   bool CalculateRasterTranslation(gfx::Vector2dF& raster_translation) const;
   void CleanUpTilingsOnActiveLayer(
-      const std::vector<PictureLayerTiling*>& used_tilings);
+      const std::vector<raw_ptr<PictureLayerTiling, VectorExperimental>>&
+          used_tilings);
   float MinimumContentsScale() const;
   float MaximumContentsScale() const;
   void UpdateViewportRectForTilePriorityInContentSpace();
@@ -320,7 +321,8 @@ class CC_EXPORT PictureLayerImpl
   // drawn. Note that accessing this vector should only be done in the context
   // of comparing pointers, since objects pointed to are not guaranteed to
   // exist.
-  std::vector<PictureLayerTiling*> last_append_quads_tilings_;
+  std::vector<raw_ptr<PictureLayerTiling, VectorExperimental>>
+      last_append_quads_tilings_;
 
   // The set of PaintWorkletInputs that are part of this PictureLayerImpl, and
   // their painted results (if any). During commit, Blink hands us a set of

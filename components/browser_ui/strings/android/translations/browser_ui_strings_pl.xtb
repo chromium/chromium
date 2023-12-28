@@ -148,6 +148,7 @@
 <translation id="3448554387819310837">Gdy ta opcja jest włączona, strony internetowe mogą prosić o dostęp do kamery. Gdy jest wyłączona, strony nie mogą używać kamery.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome ponownie zablokuje pliki cookie jutro}few{Chrome ponownie zablokuje pliki cookie za # dni}many{Chrome ponownie zablokuje pliki cookie za # dni}other{Chrome ponownie zablokuje pliki cookie za # dnia}}</translation>
 <translation id="3521663503435878242">Witryny w domenie <ph name="DOMAIN" /></translation>
+<translation id="3536227077203206203">Przyznano jednorazowo</translation>
 <translation id="3538390592868664640">Nie zezwalaj stronom na tworzenie mapy 3D Twojego otoczenia ani na śledzenie pozycji kamery</translation>
 <translation id="3544058026430919413">Firma może zdefiniować grupę witryn, które mogą używać plików cookie, aby udostępniać dane o Twojej aktywności w tej grupie. Ta funkcja jest wyłączona w trybie incognito.</translation>
 <translation id="3551268116566418498">Wyłączyć tryb incognito?</translation>

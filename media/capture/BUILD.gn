@@ -252,7 +252,7 @@ component("capture_lib") {
   }
 
   # Establish GPU Channel
-  if (is_linux || is_win) {
+  if (is_linux || is_win || is_chromeos_ash) {
     sources += [
       "video/video_capture_gpu_channel_host.cc",
       "video/video_capture_gpu_channel_host.h",
@@ -548,6 +548,7 @@ test("capture_unittests") {
     ]
     deps += [
       "//build/config/linux/libdrm",
+      "//chromeos/ash/components/mojo_service_manager",
       "//media/capture/video/chromeos/mojom:cros_camera",
       "//media/capture/video/chromeos/public",
       "//mojo/core/embedder",

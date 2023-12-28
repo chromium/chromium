@@ -127,7 +127,7 @@ bool FloatEqualForHash(T a, T b) {
 
 template <typename T>
 unsigned HashPointer(T* key) {
-  return HashInt(base::bit_cast<internal::IntHashBits<T*>>(key));
+  return HashInt(reinterpret_cast<internal::IntHashBits<T*>>(key));
 }
 
 // Useful compounding hash functions.

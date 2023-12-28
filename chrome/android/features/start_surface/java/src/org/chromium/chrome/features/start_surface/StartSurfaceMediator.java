@@ -23,12 +23,10 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_SURFA
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_CARD_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.LENS_BUTTON_CLICK_LISTENER;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_LEFT_RIGHT_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.QUERY_TILES_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.RESET_TASK_SURFACE_HEADER_SCROLL_POSITION;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.SINGLE_TAB_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TASKS_SURFACE_BODY_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TOP_TOOLBAR_PLACEHOLDER_HEIGHT;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.VOICE_SEARCH_BUTTON_CLICK_LISTENER;
@@ -140,14 +138,12 @@ class StartSurfaceMediator
     private final boolean mIsStartSurfaceEnabled;
     private final ObserverList<StartSurface.StateObserver> mStateObservers = new ObserverList<>();
     private final boolean mHadWarmStart;
-    private final boolean mExcludeQueryTiles;
     private final Runnable mInitializeMVTilesRunnable;
     private final Supplier<Tab> mParentTabSupplier;
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
     private final CallbackController mCallbackController = new CallbackController();
     private final View mLogoContainerView;
-    private final boolean mIsFeedGoneImprovementEnabled;
     private final boolean mMoveDownLogo;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final TabCreatorManager mTabCreatorManager;
@@ -244,7 +240,6 @@ class StartSurfaceMediator
             BrowserControlsStateProvider browserControlsStateProvider,
             ActivityStateChecker activityStateChecker,
             @Nullable TabCreatorManager tabCreatorManager,
-            boolean excludeQueryTiles,
             OneshotSupplier<StartSurface> startSurfaceSupplier,
             boolean hadWarmStart,
             Runnable initializeMVTilesRunnable,
@@ -273,7 +268,6 @@ class StartSurfaceMediator
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mActivityStateChecker = activityStateChecker;
         mTabCreatorManager = tabCreatorManager;
-        mExcludeQueryTiles = excludeQueryTiles;
         mStartSurfaceSupplier = startSurfaceSupplier;
         mHadWarmStart = hadWarmStart;
         mLaunchOrigin = NewTabPageLaunchOrigin.UNKNOWN;
@@ -282,12 +276,6 @@ class StartSurfaceMediator
         mLogoContainerView = logoContainerView;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
-        // We need to check #shouldImproveStartWhenFeedIsDisabled and save it in the constructor
-        // here to keep consistent with toolbar's check. This cannot be moved to other places, since
-        // FEED_ARTICLES_LIST_VISIBLE may be changed after feed header is rendered, which then
-        // causes inconsistency with toolbar's check.
-        mIsFeedGoneImprovementEnabled =
-                ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(context);
         mMoveDownLogo = ReturnToChromeUtil.moveDownLogo();
         mIsStartSurfaceRefactorEnabled = ReturnToChromeUtil.isStartSurfaceRefactorEnabled(context);
         mTabSwitcherClickHandler = tabSwitcherClickHandler;
@@ -671,11 +659,6 @@ class StartSurfaceMediator
         mActivityLifecycleDispatcher.unregister(this);
     }
 
-    /** Returns true if START_SURFACE_SPARE_TAB feature is enabled. */
-    private static boolean isStartSurfaceSpareTabEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.START_SURFACE_SPARE_TAB);
-    }
-
     /**
      * Schedules creating a spare tab when native is initialized and when start surface is shown.
      */
@@ -689,9 +672,6 @@ class StartSurfaceMediator
         TabCreator tabCreator = mTabCreatorManager.getTabCreator(mIsIncognito);
         // Don't create a spare tab when no tab creator is present.
         if (tabCreator == null) return;
-
-        // Only create a spare tab if the StartSurfaceSpareTab feature is enabled.
-        if (!isStartSurfaceSpareTabEnabled()) return;
 
         // Only create a spare tab when start surface is shown.
         if (!isHomepageShown()) return;
@@ -730,8 +710,6 @@ class StartSurfaceMediator
         setLogoVisibility(!mIsIncognito);
         setTabCardVisibility(getNormalTabCount() > 0 && !mIsIncognito);
         setExploreSurfaceVisibility(!mIsIncognito && mExploreSurfaceCoordinatorFactory != null);
-        // TODO(qinmin): show query tiles when flag is enabled.
-        setQueryTilesVisibility(false);
         setFakeBoxVisibility(!mIsIncognito);
         updateTopToolbarPlaceholderHeight();
         // Set the top margin to the top controls min height (indicator height if it's shown)
@@ -911,7 +889,6 @@ class StartSurfaceMediator
             setLogoVisibility(!mIsIncognito);
             setTabCardVisibility(hasNormalTab && !mIsIncognito);
             setExploreSurfaceVisibility(!mIsIncognito && mExploreSurfaceCoordinatorFactory != null);
-            setQueryTilesVisibility(!mIsIncognito);
             setFakeBoxVisibility(!mIsIncognito);
             setSecondaryTasksSurfaceVisibility(mIsIncognito, /* skipUpdateController= */ false);
             updateTopToolbarPlaceholderHeight();
@@ -933,7 +910,6 @@ class StartSurfaceMediator
             setTabCardVisibility(false);
             setMVTilesVisibility(false);
             setLogoVisibility(false);
-            setQueryTilesVisibility(false);
             setFakeBoxVisibility(false);
             setSecondaryTasksSurfaceVisibility(
                     /* isVisible= */ true, /* skipUpdateController= */ false);
@@ -1487,7 +1463,7 @@ class StartSurfaceMediator
     }
 
     private void setLogoVisibility(boolean isVisible) {
-        if (!mIsFeedGoneImprovementEnabled && !mMoveDownLogo) return;
+        if (!mMoveDownLogo) return;
 
         if (isVisible && mLogoCoordinator == null) {
             mLogoCoordinator = initializeLogo();
@@ -1498,11 +1474,6 @@ class StartSurfaceMediator
             mLogoCoordinator.updateVisibilityAndMaybeCleanUp(
                     isShowingHomepage && isVisible, !isShowingHomepage, false);
         }
-    }
-
-    private void setQueryTilesVisibility(boolean isVisible) {
-        if (mExcludeQueryTiles || isVisible == mPropertyModel.get(QUERY_TILES_VISIBLE)) return;
-        mPropertyModel.set(QUERY_TILES_VISIBLE, isVisible);
     }
 
     private void setFakeBoxVisibility(boolean isVisible) {
@@ -1715,7 +1686,6 @@ class StartSurfaceMediator
                         logoView,
                         true,
                         null,
-                        null,
                         isHomepageShown(),
                         this);
         return mLogoCoordinator;
@@ -1728,38 +1698,17 @@ class StartSurfaceMediator
     }
 
     private void tweakMarginsBetweenSections() {
-        Resources resources = mContext.getResources();
-        if (!mIsSurfacePolishEnabled) {
-            mPropertyModel.set(
-                    TASKS_SURFACE_BODY_TOP_MARGIN,
-                    resources.getDimensionPixelSize(R.dimen.tasks_surface_body_top_margin));
-        }
+        if (mIsSurfacePolishEnabled) return;
 
-        if (mIsSurfacePolishEnabled && !mIsFeedGoneImprovementEnabled) return;
+        Resources resources = mContext.getResources();
+        mPropertyModel.set(
+                TASKS_SURFACE_BODY_TOP_MARGIN,
+                resources.getDimensionPixelSize(R.dimen.tasks_surface_body_top_margin));
 
         // TODO(crbug.com/1315676): Clean up this code when the refactor is enabled.
         mPropertyModel.set(
                 MV_TILES_CONTAINER_TOP_MARGIN,
                 resources.getDimensionPixelSize(R.dimen.mv_tiles_container_top_margin));
-
-        // If improving Start surface when Feed is disabled is needed, mvt grid layout (two row) is
-        // shown.
-        if (mIsFeedGoneImprovementEnabled) {
-            mPropertyModel.set(
-                    MV_TILES_CONTAINER_TOP_MARGIN,
-                    resources.getDimensionPixelOffset(R.dimen.tile_grid_layout_top_margin)
-                            + resources.getDimensionPixelOffset(
-                                    R.dimen.ntp_search_box_bottom_margin));
-            mPropertyModel.set(
-                    MV_TILES_CONTAINER_LEFT_RIGHT_MARGIN,
-                    resources.getDimensionPixelSize(R.dimen.ntp_header_lateral_paddings_v2));
-            if (isSingleTabSwitcher()) {
-                mPropertyModel.set(
-                        SINGLE_TAB_TOP_MARGIN,
-                        resources.getDimensionPixelOffset(
-                                R.dimen.single_tab_view_top_margin_for_feed_improvement));
-            }
-        }
     }
 
     @Override

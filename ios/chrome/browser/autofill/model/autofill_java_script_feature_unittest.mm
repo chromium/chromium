@@ -189,6 +189,7 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms) {
         @"should_autocomplete" : @true,
         @"is_checkable" : @false,
         @"is_focusable" : @true,
+        @"is_user_edited" : @true,
         @"value" : @"",
         @"label" : @"First Name",
         @"unique_renderer_id" : @"2"
@@ -206,6 +207,7 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms) {
         @"should_autocomplete" : @true,
         @"is_checkable" : @false,
         @"is_focusable" : @true,
+        @"is_user_edited" : @true,
         @"value" : @"",
         @"label" : @"Last Name",
         @"unique_renderer_id" : @"3"
@@ -223,6 +225,7 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms) {
         @"should_autocomplete" : @true,
         @"is_checkable" : @false,
         @"is_focusable" : @true,
+        @"is_user_edited" : @true,
         @"value" : @"",
         @"label" : @"",
         @"unique_renderer_id" : @"4"
@@ -286,6 +289,7 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms2) {
         @"should_autocomplete" : @true,
         @"is_checkable" : @false,
         @"is_focusable" : @true,
+        @"is_user_edited" : @true,
         @"value" : @"",
         @"label" : @"First Name",
         @"unique_renderer_id" : @"2"
@@ -303,6 +307,7 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms2) {
         @"should_autocomplete" : @true,
         @"is_checkable" : @false,
         @"is_focusable" : @true,
+        @"is_user_edited" : @true,
         @"value" : @"",
         @"label" : @"Last Name",
         @"unique_renderer_id" : @"3"
@@ -320,6 +325,7 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms2) {
         @"should_autocomplete" : @true,
         @"is_checkable" : @false,
         @"is_focusable" : @true,
+        @"is_user_edited" : @true,
         @"value" : @"",
         @"label" : @"",
         @"unique_renderer_id" : @"4"

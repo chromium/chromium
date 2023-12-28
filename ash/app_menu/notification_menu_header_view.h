@@ -42,11 +42,11 @@ class NotificationMenuHeaderView : public views::View {
   int number_of_notifications_ = 0;
 
   // Holds the "Notifications" label. Owned by the views hierarchy.
-  raw_ptr<views::Label, ExperimentalAsh> notification_title_ = nullptr;
+  raw_ptr<views::Label> notification_title_ = nullptr;
 
   // Holds a numeric string that indicates how many notifications are active.
   // Owned by the views hierarchy.
-  raw_ptr<views::Label, ExperimentalAsh> counter_ = nullptr;
+  raw_ptr<views::Label> counter_ = nullptr;
 };
 
 }  // namespace ash

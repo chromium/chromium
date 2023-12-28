@@ -9,6 +9,7 @@
 <template is="dom-if" if="[[showSelectLanguageDialog_]]" restamp>
   <app-language-selection-dialog
       app="[[app]]"
+      prefs="{{prefs}}"
       on-close="onSelectLanguageDialogClose_">
   </app-language-selection-dialog>
 </template>

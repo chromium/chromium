@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/sessions/core/session_id.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 
 namespace extensions {
 
@@ -62,7 +63,7 @@ bool BrowserExtensionWindowController::IsVisibleToTabsAPIForExtension(
     bool allow_dev_tools_windows) const {
   // TODO(joelhockey): We are assuming that the caller is webui when |extension|
   // is null and allowing access to all windows. It would be better if we could
-  // pass in Feature::Context or some way to detect caller type.
+  // pass in mojom::ContextType or some way to detect caller type.
   // Platform apps can only see their own windows.
   if (extension && extension->is_platform_app())
     return false;

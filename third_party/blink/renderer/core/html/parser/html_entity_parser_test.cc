@@ -5,10 +5,12 @@
 #include "third_party/blink/renderer/core/html/parser/html_entity_parser.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(HTMLEntityParserTest, ConsumeHTMLEntityIncomplete) {
+  test::TaskEnvironment task_environment;
   String original("am");  // Incomplete by purpose.
   SegmentedString src(original);
 

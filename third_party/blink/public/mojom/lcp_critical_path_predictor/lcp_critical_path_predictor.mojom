@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/byte_string.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
 // Interface for LCP Critical Path Predictor from the renderer process.
@@ -27,6 +28,14 @@ interface LCPCriticalPathPredictorHost {
   // - and the `font_url` scheme is HTTP or HTTPS,
   // Otherwise, the renderer will be killed.
   NotifyFetchedFont(url.mojom.Url font_url);
+
+  // This method is for letting the LCPP know the subresource URL.  This
+  // method should be called under the following conditions:
+  // - the `kHttpDiskCachePrewarming` feature is enabled,
+  // - and the `subresource_url` scheme is HTTP or HTTPS,
+  // Otherwise, the renderer will be killed.
+  // 'subresource_load_start' is the duration from navigation start to resource loading start time.
+  NotifyFetchedSubresource(url.mojom.Url subresource_url, mojo_base.mojom.TimeDelta subresource_load_start);
 };
 
 // LCP Critical Path Predictor hints provided at navigation time.

@@ -105,17 +105,17 @@ class ASH_EXPORT MultiWindowResizeController
     bool is_valid() const { return window1 && window2; }
 
     // The left/top window to resize.
-    raw_ptr<aura::Window, ExperimentalAsh> window1 = nullptr;
+    raw_ptr<aura::Window> window1 = nullptr;
 
     // Other window to resize.
-    raw_ptr<aura::Window, ExperimentalAsh> window2 = nullptr;
+    raw_ptr<aura::Window> window2 = nullptr;
 
     // Direction
     Direction direction;
 
     // Windows after |window2| that are to be resized. Determined at the time
     // the resize starts.
-    std::vector<aura::Window*> other_windows;
+    std::vector<raw_ptr<aura::Window, VectorExperimental>> other_windows;
   };
 
   void CreateMouseWatcher();
@@ -141,9 +141,10 @@ class ASH_EXPORT MultiWindowResizeController
                                    Direction direction) const;
 
   // Places any windows touching `start` into `others`.
-  void FindWindowsTouching(aura::Window* start,
-                           Direction direction,
-                           std::vector<aura::Window*>* others) const;
+  void FindWindowsTouching(
+      aura::Window* start,
+      Direction direction,
+      std::vector<raw_ptr<aura::Window, VectorExperimental>>* others) const;
 
   // Starts/Stops observing `window`.
   void StartObserving(aura::Window* window);

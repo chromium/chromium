@@ -33,9 +33,9 @@ void UnmapNow(uintptr_t reservation_start,
               pool_handle pool);
 
 PA_ALWAYS_INLINE void PartitionDirectUnmap(SlotSpanMetadata* slot_span) {
-  auto* root = PartitionRoot::FromSlotSpan(slot_span);
+  auto* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
   PartitionRootLock(root).AssertAcquired();
-  auto* extent = PartitionDirectMapExtent::FromSlotSpan(slot_span);
+  auto* extent = PartitionDirectMapExtent::FromSlotSpanMetadata(slot_span);
 
   // Maintain the doubly-linked list of all direct mappings.
   if (extent->prev_extent) {
@@ -81,7 +81,7 @@ PA_ALWAYS_INLINE void PartitionDirectUnmap(SlotSpanMetadata* slot_span) {
 
 PA_ALWAYS_INLINE void SlotSpanMetadata::RegisterEmpty() {
   PA_DCHECK(is_empty());
-  auto* root = PartitionRoot::FromSlotSpan(this);
+  auto* root = PartitionRoot::FromSlotSpanMetadata(this);
   PartitionRootLock(root).AssertAcquired();
 
   root->empty_slot_spans_dirty_bytes +=
@@ -149,7 +149,7 @@ SlotSpanMetadata::SlotSpanMetadata(PartitionBucket* bucket)
     : bucket(bucket), can_store_raw_size_(bucket->CanStoreRawSize()) {}
 
 void SlotSpanMetadata::FreeSlowPath(size_t number_of_freed) {
-  DCheckRootLockIsAcquired(PartitionRoot::FromSlotSpan(this));
+  DCheckRootLockIsAcquired(PartitionRoot::FromSlotSpanMetadata(this));
   PA_DCHECK(this != get_sentinel_slot_span());
 
   // The caller has already modified |num_allocated_slots|. It is a
@@ -308,33 +308,38 @@ void UnmapNow(uintptr_t reservation_start,
   if (pool == kBRPPoolHandle) {
     // In 32-bit mode, the beginning of a reservation may be excluded from the
     // BRP pool, so shift the pointer. Other pools don't have this logic.
-    PA_DCHECK(IsManagedByPartitionAllocBRPPool(
 #if BUILDFLAG(HAS_64_BIT_POINTERS)
-        reservation_start
+    PA_DCHECK(IsManagedByPartitionAllocBRPPool(reservation_start));
 #else
+    PA_DCHECK(IsManagedByPartitionAllocBRPPool(
         reservation_start +
         AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap *
-            AddressPoolManagerBitmap::kGuardOffsetOfBRPPoolBitmap
+            AddressPoolManagerBitmap::kGuardOffsetOfBRPPoolBitmap));
 #endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
-        ));
+
   } else
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   {
-    PA_DCHECK(pool == kRegularPoolHandle
+    const bool received_expected_pool_handle =
+        pool == kRegularPoolHandle
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
-              || pool == kThreadIsolatedPoolHandle
+        || pool == kThreadIsolatedPoolHandle
 #endif
 #if BUILDFLAG(HAS_64_BIT_POINTERS)
-              ||
-              (IsConfigurablePoolAvailable() && pool == kConfigurablePoolHandle)
+        || (pool == kConfigurablePoolHandle && IsConfigurablePoolAvailable())
 #endif
-    );
+        ;
+    PA_DCHECK(received_expected_pool_handle);
+
     // Non-BRP pools don't need adjustment that BRP needs in 32-bit mode.
-    PA_DCHECK(IsManagedByPartitionAllocRegularPool(reservation_start) ||
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
-              IsManagedByPartitionAllocThreadIsolatedPool(reservation_start) ||
-#endif
+    PA_DCHECK(IsManagedByPartitionAllocThreadIsolatedPool(reservation_start) ||
+              IsManagedByPartitionAllocRegularPool(reservation_start) ||
               IsManagedByPartitionAllocConfigurablePool(reservation_start));
+#else
+    PA_DCHECK(IsManagedByPartitionAllocRegularPool(reservation_start) ||
+              IsManagedByPartitionAllocConfigurablePool(reservation_start));
+#endif
   }
 #endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 

@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_user_data.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/views/side_panel/performance_controls/performance_state_observer.h"
 #include "chrome/browser/ui/webui/side_panel/performance_controls/performance.mojom-shared.h"
 #include "chrome/browser/ui/webui/side_panel/performance_controls/performance_side_panel_ui.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -43,6 +44,8 @@ class PerformanceSidePanelCoordinator
 
   std::vector<side_panel::mojom::PerformanceSidePanelNotification>
       side_panel_notifications_;
+
+  std::unique_ptr<PerformanceStateObserver> performance_state_observer_;
 
   BROWSER_USER_DATA_KEY_DECL();
 };

@@ -4418,6 +4418,14 @@ be describing additional metrics about the same event.
       `kFederatedIdentityAutoReauthnEmbargoDuration`).
     </summary>
   </metric>
+  <metric name="Disconnect.FrameType" enum="FedCmRequesterFrameType">
+    <summary>
+      Records the type of frame that invokes disconnect(). Records once for each
+      disconnect() call. Possible values are: main frame, same-site iframe, and
+      cross-site iframe, where the site of the iframe is compared with the site
+      of the main frame.
+    </summary>
+  </metric>
   <metric name="Error.ErrorDialogResult" enum="FedCmErrorDialogResult">
     <summary>
       Records the outcome of the error dialog. Recorded at most once per API
@@ -4458,13 +4466,12 @@ be describing additional metrics about the same event.
       the count is 0. The bucketing method used is base::UmaHistogramCounts100.
     </summary>
   </metric>
-  <metric name="PreventSilentAccessFrameType"
-      enum="FedCmPreventSilentAccessFrameType">
+  <metric name="PreventSilentAccessFrameType" enum="FedCmRequesterFrameType">
     <summary>
       Records the type of frame that invokes preventSilentAccess(). Records only
       when there is an existing FedCM sharing permission on the main frame, and
       some frame in the page invokes the preventSilentAccess() JavaScript call.
-      Possible values are: main frame, same-site iframe, and cros-site iframe,
+      Possible values are: main frame, same-site iframe, and cross-site iframe,
       where the site of the iframe is compared with the site of the main frame.
     </summary>
   </metric>
@@ -4524,6 +4531,14 @@ be describing additional metrics about the same event.
       to when the user presses the Continue button.
     </summary>
   </metric>
+  <metric name="Timing.Disconnect">
+    <summary>
+      Records the time in milliseconds from when the disconnect() request is
+      received by the browser process to the time in which it is completed, e.g.
+      right before sending the response back to the renderer process. Records
+      one sample for every disconnect call which sends a disconnect request.
+    </summary>
+  </metric>
   <metric name="Timing.IdTokenResponse">
     <summary>
       Records the time (in milliseconds) from when the user presses the Continue
@@ -4572,6 +4587,14 @@ be describing additional metrics about the same event.
   <metric name="AccountsRequestSent" enum="BooleanHit">
     <summary>
       Records a 1 each time a request is sent to the accounts endpoint.
+    </summary>
+  </metric>
+  <metric name="Disconnect.FrameType" enum="FedCmRequesterFrameType">
+    <summary>
+      Records the type of frame that invokes disconnect(). Records once for each
+      disconnect() call. Possible values are: main frame, same-site iframe, and
+      cross-site iframe, where the site of the iframe is compared with the site
+      of the main frame.
     </summary>
   </metric>
   <metric name="Error.ErrorDialogResult" enum="FedCmErrorDialogResult">
@@ -4657,6 +4680,14 @@ be describing additional metrics about the same event.
     <summary>
       Records the time (in milliseconds) from when the accounts dialog is shown
       to when the user presses the Continue button.
+    </summary>
+  </metric>
+  <metric name="Timing.Disconnect">
+    <summary>
+      Records the time in milliseconds from when the disconnect() request is
+      received by the browser process to the time in which it is completed, e.g.
+      right before sending the response back to the renderer process. Records
+      one sample for every disconnect call which sends a disconnect request.
     </summary>
   </metric>
   <metric name="Timing.IdTokenResponse">
@@ -4986,6 +5017,14 @@ be describing additional metrics about the same event.
   <metric name="ParseStyleSheet">
     <summary>
       The time spent parsing style sheets.
+    </summary>
+  </metric>
+  <metric name="PossibleSynchronizedScrollCount">
+    <summary>
+      The total number times a page (whose main frame is both the outermost main
+      frame and is local) is estimated to have attempted a sync- scroll update
+      (i.e., synchronizing an effect with scroll) between navigation and First
+      Contentful Paint.
     </summary>
   </metric>
   <metric name="PrePaint">
@@ -6047,6 +6086,27 @@ be describing additional metrics about the same event.
   <metric name="ParseStyleSheetBeginMainFrame">
     <summary>
       The total main frame time spent parsing style sheets.
+    </summary>
+  </metric>
+  <metric name="PossibleSynchronizedScrollCount">
+    <summary>
+      The total number times a page (whose main frame is both the outermost main
+      frame and is local) is estimated to have attempted a sync- scroll update
+      (i.e., synchronizing an effect with scroll).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="PossibleSynchronizedScrollCountBeginMainFrame">
+    <summary>
+      The total number times a page (whose main frame is both the outermost main
+      frame and is local) is estimated to have attempted a sync- scroll update
+      (i.e., synchronizing an effect with scroll).
     </summary>
   </metric>
   <metric name="PrePaint">
@@ -8852,6 +8912,51 @@ be describing additional metrics about the same event.
       A boolean denoting if the final download URL is the same host as the
       initiating frame (i.e., whether the initiating site likely controls the
       download itself).
+    </summary>
+  </metric>
+</event>
+
+<event name="Event.Scroll">
+  <owner>woa-performance@google.com</owner>
+  <summary>
+    Metrics related to scroll and scroll jank,
+  </summary>
+  <metric name="FrameCount">
+    <summary>
+      The number of frames that are presented during the scroll. If this is less
+      than or equal to 16, then the presented frame count is considered small;
+      if this is greater than 16 and less than or equal to 64 presented frames,
+      then it is considered medium; if this is greater than 64 presented frames,
+      then it is considered large.
+    </summary>
+  </metric>
+  <metric name="PredictorJankyFrameCount">
+    <summary>
+      The number of frames that are deemed janky to the human eye after Chrome
+      has applied its scroll prediction algorithm..
+    </summary>
+  </metric>
+  <metric name="ScrollJank.DelayedFrameCount">
+    <summary>
+      The number of delayed frames.
+    </summary>
+  </metric>
+  <metric name="ScrollJank.MissedVsyncsMax">
+    <summary>
+      The maximum number of vsyncs missed during any and all janks.
+    </summary>
+  </metric>
+  <metric name="ScrollJank.MissedVsyncsSum">
+    <summary>
+      The total number of vsyncs missed during any and all janks that occurred.
+    </summary>
+  </metric>
+  <metric name="VsyncCount">
+    <summary>
+      The number of vsyncs that occur during the scroll. If this is less than or
+      equal to 16, then the number of vsyncs is considered small; if this is
+      greater than 16 and less than or equal to 64 vsyncs, then it is considered
+      medium; if this is greater than 64 vsyncs, then is considered large.
     </summary>
   </metric>
 </event>
@@ -13285,6 +13390,20 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="MainFrameNavigation.ZstdContentEncoding">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Event recorded on navigation commit when a page load is content-encoded with
+    zstd and is a main frame navigation.
+  </summary>
+  <metric name="UsedZstd" enum="Boolean">
+    <summary>
+      Set to 1 if the main frame served zstd-compressed content.
+    </summary>
+  </metric>
+</event>
+
 <event name="Media.Autoplay.Attempt">
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
@@ -14462,6 +14581,20 @@ be describing additional metrics about the same event.
       media::PipelineStatus enum value. Always 0 if the playback succeeded; all
       other values indicate the playback ended in an error.
     </summary>
+  </metric>
+  <metric name="HasWaitingForKey" enum="Boolean">
+    <summary>
+      Boolean value indicating whether an EME playback has been blocked waiting
+      for the CDM to be set or waiting for decryption key. For an non-EME
+      playback, this is always reported as false.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="IsEME">
     <summary>
@@ -19923,6 +20056,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PerformanceManager.PageResourceUsage2">
+  <owner>agale@chromium.org</owner>
   <owner>anthonyvd@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
   <summary>
@@ -19936,6 +20070,12 @@ be describing additional metrics about the same event.
     <summary>
       Whether the page was in the foreground, background, or mixed during the
       last 2 minutes.
+    </summary>
+  </metric>
+  <metric name="MeasurementAlgorithm" enum="PageMeasurementAlgorithm">
+    <summary>
+      The algorithm used to estimate the resource usage of the page. If this is
+      missing, the Legacy algorithm was used.
     </summary>
   </metric>
   <metric name="PrivateFootprintEstimate">
@@ -19966,6 +20106,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PerformanceManager.PageTimelineState">
+  <obsolete>
+    Deprecated as of Dec 2023 (M122).
+  </obsolete>
   <owner>anthonyvd@chromium.org</owner>
   <owner>spvw@chromium.org</owner>
   <summary>
@@ -24329,6 +24472,20 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="SubresourceLoad.ZstdContentEncoding">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Event recorded when a response is received that is content-encoded with zstd
+    and is a subresource load.
+  </summary>
+  <metric name="UsedZstd" enum="Boolean">
+    <summary>
+      Set to 1 if the subresource served zstd-compressed content.
+    </summary>
+  </metric>
+</event>
+
 <event name="SubresourceRedirect.PublicSrcVideoCompression">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
@@ -27839,6 +27996,18 @@ be describing additional metrics about the same event.
         </statistics>
       </history>
     </aggregation>
+  </metric>
+</event>
+
+<event name="Wallet.BoardingPassDetect" singular="True">
+  <owner>hanfeng@google.com</owner>
+  <summary>
+    Records boarding pass barcode detection results.
+  </summary>
+  <metric name="Detected" enum="Boolean">
+    <summary>
+      Whether a boarding pass barocode is detected.
+    </summary>
   </metric>
 </event>
 

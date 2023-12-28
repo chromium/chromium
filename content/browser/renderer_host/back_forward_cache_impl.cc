@@ -49,6 +49,7 @@
 #include "net/http/http_status_code.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom-shared.h"
 #if BUILDFLAG(IS_ANDROID)
@@ -184,6 +185,7 @@ WebSchedulerTrackedFeatures GetDisallowedWebSchedulerTrackedFeatures() {
           WebSchedulerTrackedFeature::kIndexedDBEvent,
           WebSchedulerTrackedFeature::kKeyboardLock,
           WebSchedulerTrackedFeature::kKeepaliveRequest,
+          WebSchedulerTrackedFeature::kLiveMediaStreamTrack,
           WebSchedulerTrackedFeature::kPaymentManager,
           WebSchedulerTrackedFeature::kPictureInPicture,
           WebSchedulerTrackedFeature::kPortal,
@@ -966,12 +968,14 @@ void BackForwardCacheImpl::NotRestoredReasonBuilder::
     PopulateStickyReasonsForDocument(
         BackForwardCacheCanStoreDocumentResult& result,
         RenderFrameHostImpl* rfh) {
-  // If the rfh has ever granted media access, prevent it from entering cache.
-  // TODO(crbug.com/989379): Consider only blocking when there's an active
-  //                         media stream.
-  if (rfh->was_granted_media_access()) {
-    result.No(
-        BackForwardCacheMetrics::NotRestoredReason::kWasGrantedMediaAccess);
+  if (!blink::features::IsAllowBFCacheWhenClosedMediaStreamTrackEnabled()) {
+    // `kWasGrantedMediaAccess` is no longer a BFCache blocker when the flag is
+    // enabled. With https://crbug.com/1502395, frames with only "live" Media
+    // Stream Track will be blocked from BFCache.
+    if (rfh->was_granted_media_access()) {
+      result.No(
+          BackForwardCacheMetrics::NotRestoredReason::kWasGrantedMediaAccess);
+    }
   }
 
   if (rfh->IsBackForwardCacheDisabled() && !ShouldIgnoreBlocklists()) {

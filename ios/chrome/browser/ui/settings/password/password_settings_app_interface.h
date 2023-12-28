@@ -39,49 +39,50 @@
 // Dismisses snack bar.  Used before next test.
 + (void)dismissSnackBar;
 
-// Removes all credentials stored.
-+ (BOOL)clearPasswordStore;
+// Removes all credentials stored in the profile store.
++ (BOOL)clearProfilePasswordStore;
 
 // Creates multiple password form with index being part of the username,
-// password, origin and realm.
-+ (void)saveExamplePasswordWithCount:(NSInteger)count;
+// password, origin and realm in the profile store.
++ (void)saveExamplePasswordToProfileWithCount:(NSInteger)count;
 
-// Creates password form for given fields.
-+ (BOOL)saveExamplePassword:(NSString*)password
-                   username:(NSString*)username
-                     origin:(NSString*)origin;
+// Creates password form for given fields in the profile store.
++ (BOOL)saveExamplePasswordToProfileStore:(NSString*)password
+                                 username:(NSString*)username
+                                   origin:(NSString*)origin;
 
 // Creates password form for given fields and save it in the account store.
 + (BOOL)saveExamplePasswordToAccountStore:(NSString*)password
                                  username:(NSString*)username
                                    origin:(NSString*)origin;
 
-// Creates password form for given fields.
-+ (BOOL)saveExampleNote:(NSString*)note
-               password:(NSString*)password
-               username:(NSString*)username
-                 origin:(NSString*)origin;
+// Creates password form in profile store for given fields.
++ (BOOL)saveExampleNoteToProfileStore:(NSString*)note
+                             password:(NSString*)password
+                             username:(NSString*)username
+                               origin:(NSString*)origin;
 
-// Creates a compromised password form.
-+ (BOOL)saveCompromisedPassword:(NSString*)password
-                       username:(NSString*)username
-                         origin:(NSString*)origin;
+// Creates a compromised password form in profile store.
++ (BOOL)saveCompromisedPasswordToProfileStore:(NSString*)password
+                                     username:(NSString*)username
+                                       origin:(NSString*)origin;
 
-// Creates a muted compromised password form.
-+ (BOOL)saveMutedCompromisedPassword:(NSString*)password
-                            username:(NSString*)userName
-                              origin:(NSString*)origin;
+// Creates a muted compromised password form in profile password.
++ (BOOL)saveMutedCompromisedPasswordToProfilePassword:(NSString*)password
+                                             username:(NSString*)userName
+                                               origin:(NSString*)origin;
 
-// Creates a blocked password form for given origin.
-+ (BOOL)saveExampleBlockedOrigin:(NSString*)origin;
+// Creates a blocked password form for given origin in profile store.
++ (BOOL)saveExampleBlockedOriginToProfileStore:(NSString*)origin;
 
-// Creates a federated password form for given origins and user.
-+ (BOOL)saveExampleFederatedOrigin:(NSString*)federatedOrigin
-                          username:(NSString*)username
-                            origin:(NSString*)origin;
+// Creates a federated password form for given origins and user in the profile
+// store.
++ (BOOL)saveExampleFederatedOriginToProfileStore:(NSString*)federatedOrigin
+                                        username:(NSString*)username
+                                          origin:(NSString*)origin;
 
-// Gets number of password form stored.
-+ (NSInteger)passwordStoreResultsCount;
+// Gets number of password form stored in the profile store.
++ (NSInteger)passwordProfileStoreResultsCount;
 
 // Returns YES if credential service is enabled.
 + (BOOL)isCredentialsServiceEnabled;

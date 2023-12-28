@@ -92,6 +92,7 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
  private:
   class BlobPromiseResolverFunction;
   void HandlePromiseBlobsWrite(HeapVector<Member<Blob>>* blob_list);
+  void WriteBlobs(HeapVector<Member<Blob>>* blob_list);
 
   // Rejects the promise for blobs that have invalid MIME types or got rejected.
   // `exception_text` The JS exception text populated after the promises for
@@ -102,7 +103,7 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
   // Checks Read/Write permission (interacting with `PermissionService`).
   void HandleRead(ClipboardUnsanitizedFormats* formats);
   void HandleReadText();
-  void HandleWrite(HeapVector<Member<ClipboardItem>>* items);
+  void HandleWrite(const HeapVector<Member<ClipboardItem>>& items);
   void HandleWriteText(const String& text);
 
   // Reads/Writes after permission check.
@@ -135,7 +136,7 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
       bool will_be_sanitized,
       base::OnceCallback<void(::blink::mojom::PermissionStatus)> callback);
 
-  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
+  scoped_refptr<base::SingleThreadTaskRunner> GetClipboardTaskRunner();
 
   // ExecutionContextLifecycleObserver
   void ContextDestroyed() override;

@@ -4,16 +4,17 @@
 
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './shimless_rma_shared_css.js';
+import './shimless_rma_shared.css.js';
 import './base_page.js';
-import './icons.js';
+import './icons.html.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ComponentTypeToId} from './data.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {CalibrationComponentStatus, CalibrationObserverInterface, CalibrationObserverReceiver, CalibrationOverallStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {getTemplate} from './reimaging_calibration_run_page.html.js';
+import {CalibrationComponentStatus, CalibrationObserverInterface, CalibrationObserverReceiver, CalibrationOverallStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
 import {enableNextButton, executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 
 /**
@@ -38,7 +39,7 @@ export class ReimagingCalibrationRunPage extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -46,7 +47,7 @@ export class ReimagingCalibrationRunPage extends
       /**
        * @protected
        */
-      calibrationComplete_: {
+      calibrationComplete: {
         type: Boolean,
         value: false,
       },
@@ -56,13 +57,13 @@ export class ReimagingCalibrationRunPage extends
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService = getShimlessRmaService();
     /** @private {!CalibrationObserverReceiver} */
-    this.calibrationObserverReceiver_ = new CalibrationObserverReceiver(
+    this.calibrationObserverReceiver = new CalibrationObserverReceiver(
         /** @type {!CalibrationObserverInterface} */ (this));
 
-    this.shimlessRmaService_.observeCalibrationProgress(
-        this.calibrationObserverReceiver_.$.bindNewPipeAndPassRemote());
+    this.shimlessRmaService.observeCalibrationProgress(
+        this.calibrationObserverReceiver.$.bindNewPipeAndPassRemote());
   }
 
   /** @override */
@@ -74,8 +75,8 @@ export class ReimagingCalibrationRunPage extends
 
   /** @return {!Promise<!{stateResult: !StateResult}>} */
   onNextButtonClick() {
-    if (this.calibrationComplete_) {
-      return this.shimlessRmaService_.calibrationComplete();
+    if (this.calibrationComplete) {
+      return this.shimlessRmaService.calibrationComplete();
     }
     return Promise.reject(new Error('Calibration is not complete.'));
   }
@@ -93,14 +94,14 @@ export class ReimagingCalibrationRunPage extends
   onCalibrationStepComplete(status) {
     switch (status) {
       case CalibrationOverallStatus.kCalibrationOverallComplete:
-        this.calibrationComplete_ = true;
+        this.calibrationComplete = true;
         enableNextButton(this);
         break;
       case CalibrationOverallStatus.kCalibrationOverallCurrentRoundComplete:
       case CalibrationOverallStatus.kCalibrationOverallCurrentRoundFailed:
       case CalibrationOverallStatus.kCalibrationOverallInitializationFailed:
         executeThenTransitionState(
-            this, () => this.shimlessRmaService_.continueCalibration());
+            this, () => this.shimlessRmaService.continueCalibration());
         break;
     }
   }
@@ -109,10 +110,10 @@ export class ReimagingCalibrationRunPage extends
    * @return {string}
    * @protected
    */
-  getCalibrationTitleString_() {
+  getCalibrationTitleString() {
     return this.i18n(
-        this.calibrationComplete_ ? 'runCalibrationCompleteTitleText' :
-                                    'runCalibrationTitleText');
+        this.calibrationComplete ? 'runCalibrationCompleteTitleText' :
+                                   'runCalibrationTitleText');
   }
 }
 

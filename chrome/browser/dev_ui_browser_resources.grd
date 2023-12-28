@@ -18,10 +18,6 @@ This file specifies browser resources for developer-facing chrome:// pages
   </outputs>
   <release seq="1">
     <includes>
-      <include name="IDR_DEVICE_LOG_UI_HTML" file="resources\device_log_ui\device_log_ui.html" preprocess="true" type="BINDATA" />
-      <include name="IDR_DEVICE_LOG_UI_JS" file="resources\device_log_ui\device_log_ui.js" preprocess="true" type="BINDATA" />
-      <include name="IDR_DEVICE_LOG_UI_CSS" file="resources\device_log_ui\device_log_ui.css" type="BINDATA" />
-
       <if expr="enable_supervised_users">
         <include name="IDR_FAMILY_LINK_USER_INTERNALS_HTML" file="resources\family_link_user_internals\family_link_user_internals.html" allowexternalscript="true" type="BINDATA" />
         <include name="IDR_FAMILY_LINK_USER_INTERNALS_CSS" file="resources\family_link_user_internals\family_link_user_internals.css" type="BINDATA" />

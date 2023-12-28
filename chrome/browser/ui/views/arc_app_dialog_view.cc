@@ -41,8 +41,9 @@ using ArcAppConfirmCallback = base::OnceCallback<void(bool accept)>;
 
 class ArcAppDialogView : public views::DialogDelegateView,
                          public AppIconLoaderDelegate {
+  METADATA_HEADER(ArcAppDialogView, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(ArcAppDialogView);
   ArcAppDialogView(Profile* profile,
                    AppListControllerDelegate* controller,
                    const std::string& app_id,
@@ -134,8 +135,9 @@ ArcAppDialogView::ArcAppDialogView(Profile* profile,
   auto* text_container_ptr = AddChildView(std::move(text_container));
   DCHECK(!heading_text.empty());
   AddMultiLineLabel(text_container_ptr, heading_text);
-  if (!subheading_text.empty())
+  if (!subheading_text.empty()) {
     AddMultiLineLabel(text_container_ptr, subheading_text);
+  }
 
   // The icon should be loaded asynchronously.
   icon_loader_ = std::make_unique<AppServiceAppIconLoader>(
@@ -149,8 +151,9 @@ ArcAppDialogView::ArcAppDialogView(Profile* profile,
 }
 
 ArcAppDialogView::~ArcAppDialogView() {
-  if (g_current_arc_app_dialog_view == this)
+  if (g_current_arc_app_dialog_view == this) {
     g_current_arc_app_dialog_view = nullptr;
+  }
 }
 
 void ArcAppDialogView::AddMultiLineLabel(views::View* parent,
@@ -195,7 +198,7 @@ void ArcAppDialogView::OnAppImageUpdated(
   icon_view_->SetImage(image);
 }
 
-BEGIN_METADATA(ArcAppDialogView, views::DialogDelegateView)
+BEGIN_METADATA(ArcAppDialogView)
 END_METADATA
 
 std::unique_ptr<ArcAppListPrefs::AppInfo> GetArcAppInfo(
@@ -268,8 +271,9 @@ bool IsArcAppDialogViewAliveForTest() {
 }
 
 bool CloseAppDialogViewAndConfirmForTest(bool confirm) {
-  if (!g_current_arc_app_dialog_view)
+  if (!g_current_arc_app_dialog_view) {
     return false;
+  }
 
   g_current_arc_app_dialog_view->ConfirmOrCancelForTest(confirm);
   return true;

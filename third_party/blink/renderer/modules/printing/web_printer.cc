@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_print_document_description.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_print_job_template_attributes.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printer_attributes.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_resolution.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/modules/printing/web_print_job.h"
@@ -23,6 +24,24 @@ bool ValidatePrintJobTemplateAttributes(
     ExceptionState& exception_state) {
   if (pjt_attributes->hasCopies() && pjt_attributes->copies() < 1) {
     exception_state.ThrowTypeError("|copies| cannot be less than 1.");
+    return false;
+  }
+  if (pjt_attributes->hasPrinterResolution()) {
+    auto* printer_resolution = pjt_attributes->printerResolution();
+    if (!printer_resolution->hasCrossFeedDirectionResolution() ||
+        !printer_resolution->hasFeedDirectionResolution()) {
+      exception_state.ThrowTypeError(
+          "crossFeedDirectionResolution and feedDirectionResolution must be "
+          "specified if printerResolution is present.");
+      return false;
+    }
+    if (printer_resolution->crossFeedDirectionResolution() == 0 ||
+        printer_resolution->feedDirectionResolution() == 0) {
+      exception_state.ThrowTypeError(
+          "crossFeedDirectionResolution and feedDirectionResolution must be "
+          "greater than 0 if specified.");
+      return false;
+    }
   }
   return true;
 }

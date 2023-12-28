@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/payments/payments_requests/unmask_card_request.h"
 
+#include <string_view>
+
 #include "base/json/json_writer.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -68,7 +70,7 @@ void ParseAsOtpChallengeOption(
   // Get the OTP length for this challenge. This will be displayed to the user
   // in the OTP input dialog so that the user knows how many digits the OTP
   // should be.
-  absl::optional<int> otp_length =
+  std::optional<int> otp_length =
       defined_challenge_option->FindInt("otp_length");
   parsed_challenge_option->challenge_input_length =
       otp_length ? *otp_length : kDefaultOtpLength;
@@ -93,7 +95,7 @@ void ParseAsCvcChallengeOption(
   // Get the length of the CVC on the card. In most cases this is 3 digits,
   // but it is possible for this to be 4 digits, for example in the case of
   // the Card Identification Number on the front of an American Express card.
-  absl::optional<int> cvc_length =
+  std::optional<int> cvc_length =
       defined_challenge_option->FindInt("cvc_length");
   parsed_challenge_option->challenge_input_length =
       cvc_length ? *cvc_length : kDefaultCvcLength;
@@ -250,7 +252,7 @@ std::string UnmaskCardRequest::GetRequestContent() {
           base::NumberToString(request_details_.selected_challenge_option
                                    ->challenge_input_length));
 
-      base::StringPiece cvc_position = "CVC_POSITION_UNKNOWN";
+      std::string_view cvc_position = "CVC_POSITION_UNKNOWN";
       switch (request_details_.selected_challenge_option->cvc_position) {
         case autofill::CvcPosition::kFrontOfCard:
           cvc_position = "CVC_POSITION_FRONT";
@@ -338,11 +340,11 @@ void UnmaskCardRequest::ParseResponse(const base::Value::Dict& response) {
 
   const base::Value::Dict* expiration = response.FindDict("expiration");
   if (expiration) {
-    if (absl::optional<int> month = expiration->FindInt("month")) {
+    if (std::optional<int> month = expiration->FindInt("month")) {
       response_details_.expiration_month = base::NumberToString(month.value());
     }
 
-    if (absl::optional<int> year = expiration->FindInt("year")) {
+    if (std::optional<int> year = expiration->FindInt("year")) {
       response_details_.expiration_year = base::NumberToString(year.value());
     }
   }

@@ -30,10 +30,10 @@ class MlInstallOperationTracker;
 // CreateShortcutConfirmationView provides views for editing the details to
 // create a "shortcut" web app with (More tools > Create Shortcut).
 class CreateShortcutConfirmationView : public views::DialogDelegateView,
-                               public views::TextfieldController {
- public:
-  METADATA_HEADER(CreateShortcutConfirmationView);
+                                       public views::TextfieldController {
+  METADATA_HEADER(CreateShortcutConfirmationView, views::DialogDelegateView)
 
+ public:
   static CreateShortcutConfirmationView* GetDialogForTesting();
 
   CreateShortcutConfirmationView(

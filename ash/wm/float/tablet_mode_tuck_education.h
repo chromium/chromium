@@ -60,7 +60,7 @@ class ASH_EXPORT TabletModeTuckEducation : public aura::WindowObserver {
   // The floated window that `nudge_widget_` is a child of. Guaranteed to be
   // alive for the lifetime of `this` since the owner of `this` observes
   // `OnWindowDestroying()`.
-  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
+  raw_ptr<aura::Window> window_ = nullptr;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};

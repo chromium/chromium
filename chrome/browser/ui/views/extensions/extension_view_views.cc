@@ -163,7 +163,7 @@ void ExtensionViewViews::OnWebContentsAttached(views::WebView*) {
   SetVisible(false);
 }
 
-BEGIN_METADATA(ExtensionViewViews, views::WebView)
+BEGIN_METADATA(ExtensionViewViews)
 ADD_PROPERTY_METADATA(gfx::Size, MinimumSize)
 ADD_PROPERTY_METADATA(ExtensionViewViews::Container*, Container)
 END_METADATA

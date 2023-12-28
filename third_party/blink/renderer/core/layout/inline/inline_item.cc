@@ -178,7 +178,7 @@ const char* InlineItem::InlineItemTypeToString(InlineItemType val) const {
     case kInitialLetterBox:
       return "InitialLetterBox";
     case kListMarker:
-      return "ListMerker";
+      return "ListMarker";
     case kBidiControl:
       return "BidiControl";
   }

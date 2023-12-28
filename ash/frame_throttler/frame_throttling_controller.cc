@@ -13,6 +13,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -42,7 +43,7 @@ void CollectFrameSinkIds(const aura::Window* window,
     frame_sink_ids->insert(id);
     return;
   }
-  for (auto* child : window->children()) {
+  for (aura::Window* child : window->children()) {
     CollectFrameSinkIds(child, frame_sink_ids);
   }
 }
@@ -65,7 +66,7 @@ void CollectBrowserFrameSinkIdsInWindow(
     inside_browser = true;
   }
 
-  for (auto* child : window->children()) {
+  for (aura::Window* child : window->children()) {
     CollectBrowserFrameSinkIdsInWindow(child, inside_browser, ids,
                                        frame_sink_ids);
   }
@@ -122,7 +123,7 @@ FrameThrottlingController::~FrameThrottlingController() {
 }
 
 void FrameThrottlingController::StartThrottling(
-    const std::vector<aura::Window*>& windows,
+    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows,
     base::TimeDelta requested_frame_interval) {
   latest_custom_throttled_frame_interval_ = requested_frame_interval;
 
@@ -142,7 +143,7 @@ void FrameThrottlingController::StartThrottling(
 
   std::vector<aura::Window*> arc_windows;
   arc_windows.reserve(windows.size());
-  for (auto* window : windows) {
+  for (aura::Window* window : windows) {
     ash::AppType type =
         static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType));
     switch (type) {
@@ -361,7 +362,7 @@ void FrameThrottlingController::CollectLacrosWindowsInWindow(
     }
   }
 
-  for (auto* child : window->children()) {
+  for (aura::Window* child : window->children()) {
     CollectLacrosWindowsInWindow(child, inside_lacros, ids, candidates,
                                  lacros_window);
   }
@@ -379,8 +380,9 @@ void FrameThrottlingController::CollectLacrosCandidates(
       lacros_window->AddObserver(this);
     return;
   }
-  for (auto* child : window->children())
+  for (aura::Window* child : window->children()) {
     CollectLacrosCandidates(child, candidates, lacros_window);
+  }
 }
 
 bool FrameThrottlingController::HasCompositingBasedThrottling() const {

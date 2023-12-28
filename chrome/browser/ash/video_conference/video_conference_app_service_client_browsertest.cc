@@ -640,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest,
   for (const auto type :
        {apps::AppType::kUnknown, apps::AppType::kBuiltIn,
         apps::AppType::kCrostini, apps::AppType::kChromeApp,
-        apps::AppType::kWeb, apps::AppType::kMacOs, apps::AppType::kPluginVm,
+        apps::AppType::kWeb, apps::AppType::kPluginVm,
         apps::AppType::kStandaloneBrowser, apps::AppType::kRemote,
         apps::AppType::kBorealis, apps::AppType::kSystemWeb,
         apps::AppType::kStandaloneBrowserChromeApp, apps::AppType::kExtension,
@@ -792,7 +792,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, UkmTest) {
   base::RunLoop().RunUntilIdle();
 
   auto* vc_entry0 =
-      test_ukm_recorder_->GetEntriesByName(UkmEntry::kEntryName)[0];
+      test_ukm_recorder_->GetEntriesByName(UkmEntry::kEntryName)[0].get();
   test_ukm_recorder_->ExpectEntryMetric(vc_entry0,
                                         UkmEntry::kDidCaptureCameraName, true);
   test_ukm_recorder_->ExpectEntryMetric(
@@ -815,7 +815,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, UkmTest) {
   base::RunLoop().RunUntilIdle();
 
   auto* vc_entry1 =
-      test_ukm_recorder_->GetEntriesByName(UkmEntry::kEntryName)[1];
+      test_ukm_recorder_->GetEntriesByName(UkmEntry::kEntryName)[1].get();
   test_ukm_recorder_->ExpectEntryMetric(vc_entry1,
                                         UkmEntry::kDidCaptureCameraName, true);
   test_ukm_recorder_->ExpectEntryMetric(

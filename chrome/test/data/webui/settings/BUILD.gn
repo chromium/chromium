@@ -78,6 +78,7 @@ build_webui_tests("build") {
     "safety_hub_extensions_module_test.ts",
     "safety_hub_page_test.ts",
     "safety_hub_unused_site_permissions_module_test.ts",
+    "search_engine_entry_test.ts",
     "search_engines_page_test.ts",
     "search_page_test.ts",
     "search_settings_test.ts",
@@ -167,7 +168,6 @@ build_webui_tests("build") {
 
   if (!is_chromeos) {
     files += [
-      "a11y_page_test.ts",
       "live_caption_section_test.ts",
       "live_translate_section_test.ts",
       "test_captions_browser_proxy.ts",
@@ -189,6 +189,13 @@ build_webui_tests("build") {
     files += [ "passkeys_subpage_test.ts" ]
   }
 
+  if (is_win || is_mac || is_linux) {
+    files += [
+      "a11y_page_test.ts",
+      "pdf_ocr_toggle_test.ts",
+    ]
+  }
+
   if (is_win && is_chrome_branded) {
     files += [ "incompatible_applications_page_test.ts" ]
   }
@@ -197,6 +204,9 @@ build_webui_tests("build") {
     files += [ "get_most_chrome_page_test.ts" ]
   }
 
+  # Using custom config to turn off useDefineForClassFields TS compiler flag
+  # which is necessary when defining Polymer elements.
+  ts_tsconfig_base = "tsconfig_base.json"
   ts_path_mappings = [
     # Settings tests should only be importing from one of the URLs below, so
     # that tests work both in optimize_webui=true/false modes.

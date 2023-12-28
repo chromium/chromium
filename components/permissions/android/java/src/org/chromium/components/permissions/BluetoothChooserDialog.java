@@ -33,6 +33,7 @@ import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.content_public.browser.bluetooth.BluetoothChooserEvent;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.permissions.PermissionCallback;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -440,7 +441,8 @@ public class BluetoothChooserDialog
     }
 
     @CalledByNative
-    private static BluetoothChooserDialog create(
+    @VisibleForTesting
+    public static BluetoothChooserDialog create(
             WindowAndroid windowAndroid,
             String origin,
             int securityLevel,
@@ -452,6 +454,19 @@ public class BluetoothChooserDialog
             // the dialog.
             return null;
         }
+
+        // Avoid showing the chooser when ModalDialogManager indicates that
+        // tab-modal or app-modal dialogs are suspended.
+        // TODO(crbug.com/1511004): Integrate BluetoothChooserDialog with
+        // ModalDialogManager.
+        ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
+        if (modalDialogManager != null
+                && (modalDialogManager.isSuspended(ModalDialogManager.ModalDialogType.TAB)
+                        || modalDialogManager.isSuspended(
+                                ModalDialogManager.ModalDialogType.APP))) {
+            return null;
+        }
+
         BluetoothChooserDialog dialog =
                 new BluetoothChooserDialog(
                         windowAndroid,

@@ -10,6 +10,7 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -83,14 +84,12 @@ class SandboxFileStreamReaderTest : public FileStreamReaderTest {
   }
 
   void WriteFile(const std::string& file_name,
-                 const char* buf,
-                 size_t buf_size,
+                 std::string_view data,
                  base::Time* modification_time) override {
     FileSystemURL url = GetFileSystemURL(file_name);
 
-    ASSERT_EQ(base::File::FILE_OK,
-              AsyncFileTestHelper::CreateFileWithData(
-                  file_system_context_.get(), url, buf, buf_size));
+    ASSERT_EQ(base::File::FILE_OK, AsyncFileTestHelper::CreateFileWithData(
+                                       file_system_context_.get(), url, data));
 
     base::File::Info file_info;
     ASSERT_EQ(base::File::FILE_OK,

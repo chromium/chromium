@@ -221,18 +221,18 @@ std::string StrikeDatabaseIntegratorBase::GetKey(const std::string& id) const {
   return GetProjectPrefix() + kKeyDeliminator + id;
 }
 
-absl::optional<size_t> StrikeDatabaseIntegratorBase::GetMaximumEntries() const {
-  return absl::nullopt;
+std::optional<size_t> StrikeDatabaseIntegratorBase::GetMaximumEntries() const {
+  return std::nullopt;
 }
 
-absl::optional<size_t>
+std::optional<size_t>
 StrikeDatabaseIntegratorBase::GetMaximumEntriesAfterCleanup() const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 StrikeDatabaseIntegratorBase::GetRequiredDelaySinceLastStrike() const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace autofill

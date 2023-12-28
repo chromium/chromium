@@ -144,14 +144,17 @@ void NetLog::UpdateObserverCaptureModes() {
   lock_.AssertAcquired();
 
   NetLogCaptureModeSet capture_mode_set = 0;
-  for (const auto* observer : observers_)
+  for (const net::NetLog::ThreadSafeObserver* observer : observers_) {
     NetLogCaptureModeSetAdd(observer->capture_mode_, &capture_mode_set);
+  }
 
   base::subtle::NoBarrier_Store(&observer_capture_modes_, capture_mode_set);
 
   // Notify any capture mode observers with the new |capture_mode_set|.
-  for (auto* capture_mode_observer : capture_mode_observers_)
+  for (net::NetLog::ThreadSafeCaptureModeObserver* capture_mode_observer :
+       capture_mode_observers_) {
     capture_mode_observer->OnCaptureModeUpdated(capture_mode_set);
+  }
 }
 
 bool NetLog::HasObserver(ThreadSafeObserver* observer) {
@@ -248,7 +251,7 @@ void NetLog::AddEntryInternal(NetLogEventType type,
 
     // Notify all of the log observers with |capture_mode|.
     base::AutoLock lock(lock_);
-    for (auto* observer : observers_) {
+    for (net::NetLog::ThreadSafeObserver* observer : observers_) {
       if (observer->capture_mode() == capture_mode)
         observer->OnAddEntry(entry);
     }
@@ -272,7 +275,7 @@ void NetLog::AddEntryAtTimeWithMaterializedParams(NetLogEventType type,
 
   // Notify all of the log observers, regardless of capture mode.
   base::AutoLock lock(lock_);
-  for (auto* observer : observers_) {
+  for (net::NetLog::ThreadSafeObserver* observer : observers_) {
     observer->OnAddEntry(entry);
   }
 }

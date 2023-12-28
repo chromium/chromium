@@ -21,8 +21,6 @@ const char kChromeInterstitialSafeBrowsingTypeQueryKey[] = "type";
 const char kChromeInterstitialSafeBrowsingTypeMalwareValue[] = "malware";
 const char kChromeInterstitialSafeBrowsingTypePhishingValue[] = "phishing";
 const char kChromeInterstitialSafeBrowsingTypeUnwantedValue[] = "unwanted";
-const char kChromeInterstitialSafeBrowsingTypeClientsideMalwareValue[] =
-    "clientside_malware";
 const char kChromeInterstitialSafeBrowsingTypeClientsidePhishingValue[] =
     "clientside_phishing";
 const char kChromeInterstitialSafeBrowsingTypeBillingValue[] = "billing";

@@ -241,7 +241,7 @@ void GIFImageDecoder::InitializeNewFrame(wtf_size_t index) {
 }
 
 void GIFImageDecoder::Decode(wtf_size_t index) {
-  if (!codec_ || segment_stream_->IsCleared()) {
+  if (!codec_ || segment_stream_->IsCleared() || IsFailedFrameIndex(index)) {
     return;
   }
 
@@ -269,7 +269,7 @@ void GIFImageDecoder::Decode(wtf_size_t index) {
       if (previous_frame_index == kNotFound) {
         previous_frame_index = required_previous_frame_index;
         Decode(previous_frame_index);
-        if (Failed()) {
+        if (IsFailedFrameIndex(previous_frame_index)) {
           return;
         }
       }
@@ -282,7 +282,7 @@ void GIFImageDecoder::Decode(wtf_size_t index) {
       if ((!CanReusePreviousFrameBuffer(index) ||
            !frame.TakeBitmapDataIfWritable(&previous_frame)) &&
           !frame.CopyBitmapData(previous_frame)) {
-        SetFailed();
+        SetFailedFrameIndex(index);
         return;
       }
       prior_frame_ = previous_frame_index;
@@ -322,7 +322,7 @@ void GIFImageDecoder::Decode(wtf_size_t index) {
       case SkCodec::kIncompleteInput:
         return;
       default:
-        SetFailed();
+        SetFailedFrameIndex(index);
         return;
     }
     frame.SetStatus(ImageFrame::kFramePartial);
@@ -344,12 +344,12 @@ void GIFImageDecoder::Decode(wtf_size_t index) {
     case SkCodec::kIncompleteInput:
       frame.SetPixelsChanged(true);
       if (FrameIsReceivedAtIndex(index) || IsAllDataReceived()) {
-        SetFailed();
+        SetFailedFrameIndex(index);
       }
       break;
     default:
       frame.SetPixelsChanged(true);
-      SetFailed();
+      SetFailedFrameIndex(index);
       break;
   }
 }
@@ -393,6 +393,17 @@ wtf_size_t GIFImageDecoder::GetViableReferenceFrameIndex(
   }
 
   return kNotFound;
+}
+
+void GIFImageDecoder::SetFailedFrameIndex(wtf_size_t index) {
+  decode_failed_frames_.insert(index);
+  if (decode_failed_frames_.size() == DecodeFrameCount()) {
+    SetFailed();
+  }
+}
+
+bool GIFImageDecoder::IsFailedFrameIndex(wtf_size_t index) const {
+  return decode_failed_frames_.contains(index);
 }
 
 }  // namespace blink

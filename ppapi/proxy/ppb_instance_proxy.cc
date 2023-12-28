@@ -322,7 +322,7 @@ Resource* PPB_Instance_Proxy::GetSingletonResource(PP_Instance instance,
       new_singleton = new UMAPrivateResource(connection, instance);
       break;
 // Flash/trusted resources aren't needed for NaCl.
-#if !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
+#if !BUILDFLAG(IS_NACL)
     case BROWSER_FONT_SINGLETON_ID:
       new_singleton = new BrowserFontSingletonResource(connection, instance);
       break;
@@ -330,7 +330,7 @@ Resource* PPB_Instance_Proxy::GetSingletonResource(PP_Instance instance,
     case BROWSER_FONT_SINGLETON_ID:
       NOTREACHED();
       break;
-#endif  // !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
+#endif  // !BUILDFLAG(IS_NACL)
   }
 
   if (!new_singleton.get()) {

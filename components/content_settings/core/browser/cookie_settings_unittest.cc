@@ -152,11 +152,13 @@ class CookieSettingsTest
 
     if (Is3pcdMetadataGrantEligible()) {
       if (IsHostIndexedMetadataGrantsEnabled()) {
-        enabled_features.push_back({features::kHostIndexedMetadataGrants, {}});
+        enabled_features.push_back({features::kHostIndexedMetadataGrants,
+                                    {{"MetadataGrantsThreshold", "1"}}});
       } else {
         disabled_features.push_back(features::kHostIndexedMetadataGrants);
       }
-      enabled_features.push_back({net::features::kTpcdMetadataGrants, {}});
+      enabled_features.push_back({net::features::kTpcdMetadataGrants,
+                                  {{"MetadataGrantsThreshold", "1"}}});
     } else {
       disabled_features.push_back(net::features::kTpcdMetadataGrants);
       disabled_features.push_back(features::kHostIndexedMetadataGrants);
@@ -164,12 +166,6 @@ class CookieSettingsTest
 
     enabled_features.push_back({features::kTpcdHeuristicsGrants,
                                 {{"TpcdReadHeuristicsGrants", "true"}}});
-#if !BUILDFLAG(IS_IOS)
-    if (IsStorageAccessGrantEligible() ||
-        IsTopLevelStorageAccessGrantEligible()) {
-      enabled_features.push_back({blink::features::kStorageAccessAPI, {}});
-    }
-#endif
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
@@ -314,7 +310,9 @@ class CookieSettingsTest
  protected:
   bool ShouldDeleteCookieOnExit(const std::string& domain, bool is_https) {
     return cookie_settings_->ShouldDeleteCookieOnExit(
-        cookie_settings_->GetCookieSettings(), domain, is_https);
+        cookie_settings_->GetCookieSettings(), domain,
+        is_https ? net::CookieSourceScheme::kSecure
+                 : net::CookieSourceScheme::kNonSecure);
   }
 
   // There must be a valid SingleThreadTaskRunner::CurrentDefaultHandle in
@@ -356,12 +354,6 @@ class CookieSettingsTest
  private:
   base::test::ScopedFeatureList feature_list_;
 };
-
-#if !BUILDFLAG(IS_IOS)
-TEST(CookieSettings, TestDefaultStorageAccessSetting) {
-  EXPECT_TRUE(base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI));
-}
-#endif
 
 TEST_P(CookieSettingsTest, UserBypassPermanentExceptions) {
   // Bypass shouldn't be enabled.

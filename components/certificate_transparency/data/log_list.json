@@ -1,6 +1,6 @@
 {
-  "version": "28.10",
-  "log_list_timestamp": "2023-12-09T12:53:46Z",
+  "version": "29.9",
+  "log_list_timestamp": "2023-12-28T12:57:12Z",
   "operators": [
     {
       "name": "Google",
@@ -186,8 +186,8 @@
           "url": "https://ct.cloudflare.com/logs/nimbus2025/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-29T17:00:00Z"
+            "usable": {
+              "timestamp": "2023-12-19T07:00:00Z"
             }
           },
           "temporal_interval": {

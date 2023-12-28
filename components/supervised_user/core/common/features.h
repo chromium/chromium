@@ -32,9 +32,6 @@ BASE_DECLARE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
 // is enabled
 bool CanDisplayFirstTimeInterstitialBanner();
 
-// Experiments to enable proto fetchers
-BASE_DECLARE_FEATURE(kEnableProtoApiForClassifyUrl);
-
 // Request priority experiment for ClassifyUrl (for critical path of rendering).
 BASE_DECLARE_FEATURE(kHighestRequestPriorityForClassifyUrl);
 
@@ -60,9 +57,6 @@ BASE_DECLARE_FEATURE(kForceGoogleSafeSearchForSupervisedUsers);
 // Local web approvals are only available when refreshed version of web
 // filter interstitial is enabled.
 bool IsLocalWebApprovalsEnabled();
-
-// Returns whether the ClassifyUrl call uses proto apis.
-bool IsProtoApiForClassifyUrlEnabled();
 
 // Returns true if child account supervision features should be enabled for this
 // client.

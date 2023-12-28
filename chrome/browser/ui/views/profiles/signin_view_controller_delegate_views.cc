@@ -34,7 +34,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -57,8 +56,8 @@ namespace {
 const int kModalDialogWidth = 448;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
-const int kEnterpriseConfirmationDialogWidth = 512;
-const int kEnterpriseConfirmationDialogHeight = 576;
+const int kManagedUserNoticeConfirmationDialogWidth = 512;
+const int kManagedUserNoticeConfirmationDialogHeight = 576;
 #endif
 const int kSyncConfirmationDialogWidth = 512;
 const int kSyncConfirmationDialogHeight = 487;
@@ -86,14 +85,14 @@ void CloseModalSigninInBrowser(
     return;
 
   browser->signin_view_controller()->CloseModalSignin();
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+
   SearchEngineChoiceService* search_engine_choice_service =
       SearchEngineChoiceServiceFactory::GetForProfile(browser->profile());
   if (search_engine_choice_service &&
       search_engine_choice_service->CanShowDialog(CHECK_DEREF(browser.get()))) {
     ShowSearchEngineChoiceDialog(*browser);
   }
-#endif
+
   if (show_profile_switch_iph) {
     browser->window()->MaybeShowProfileSwitchIPH();
   }
@@ -185,15 +184,16 @@ SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
     BUILDFLAG(IS_CHROMEOS_LACROS)
 // static
 std::unique_ptr<views::WebView>
-SigninViewControllerDelegateViews::CreateEnterpriseConfirmationWebView(
+SigninViewControllerDelegateViews::CreateManagedUserNoticeConfirmationWebView(
     Browser* browser,
     const AccountInfo& account_info,
     bool profile_creation_required_by_policy,
     bool show_link_data_option,
     signin::SigninChoiceCallback callback) {
   std::unique_ptr<views::WebView> web_view = CreateDialogWebView(
-      browser, GURL(chrome::kChromeUIEnterpriseProfileWelcomeURL),
-      kEnterpriseConfirmationDialogHeight, kEnterpriseConfirmationDialogWidth,
+      browser, GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
+      kManagedUserNoticeConfirmationDialogHeight,
+      kManagedUserNoticeConfirmationDialogWidth,
       InitializeSigninWebDialogUI(false));
 
   ManagedUserProfileNoticeUI* web_dialog_ui =
@@ -493,16 +493,17 @@ SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
     BUILDFLAG(IS_CHROMEOS_LACROS)
 // static
 SigninViewControllerDelegate*
-SigninViewControllerDelegate::CreateEnterpriseConfirmationDelegate(
+SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
     Browser* browser,
     const AccountInfo& account_info,
     bool profile_creation_required_by_policy,
     bool show_link_data_option,
     signin::SigninChoiceCallback callback) {
   return new SigninViewControllerDelegateViews(
-      SigninViewControllerDelegateViews::CreateEnterpriseConfirmationWebView(
-          browser, account_info, profile_creation_required_by_policy,
-          show_link_data_option, std::move(callback)),
+      SigninViewControllerDelegateViews::
+          CreateManagedUserNoticeConfirmationWebView(
+              browser, account_info, profile_creation_required_by_policy,
+              show_link_data_option, std::move(callback)),
       browser, ui::MODAL_TYPE_WINDOW, true, false);
 }
 #endif

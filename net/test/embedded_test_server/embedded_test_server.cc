@@ -515,12 +515,17 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
     leaf->SetCaIssuersAndOCSPUrls(leaf_ca_issuers_urls, leaf_ocsp_urls);
   }
 
-  if (cert_config_.intermediate == IntermediateType::kByAIA) {
+  if (cert_config_.intermediate == IntermediateType::kByAIA ||
+      cert_config_.intermediate == IntermediateType::kMissing) {
     // Server certificate chain does not include the intermediate.
     x509_cert_ = leaf->GetX509Certificate();
   } else {
     // Server certificate chain will include the intermediate, if there is one.
     x509_cert_ = leaf->GetX509CertificateChain();
+  }
+
+  if (intermediate) {
+    intermediate_ = intermediate->GetX509Certificate();
   }
 
   private_key_ = bssl::UpRef(leaf->GetKey());
@@ -761,6 +766,13 @@ void EmbeddedTestServer::SetSSLConfig(
   SetSSLConfigInternal(CERT_AUTO, &cert_config, SSLServerConfig());
 }
 
+void EmbeddedTestServer::SetCertHostnames(std::vector<std::string> hostnames) {
+  ServerCertificateConfig cert_config;
+  cert_config.dns_names = std::move(hostnames);
+  cert_config.ip_addresses = {net::IPAddress::IPv4Localhost()};
+  SetSSLConfig(cert_config);
+}
+
 bool EmbeddedTestServer::ResetSSLConfigOnIOThread(
     ServerCertificate cert,
     const SSLServerConfig& ssl_config) {
@@ -827,6 +839,12 @@ scoped_refptr<X509Certificate> EmbeddedTestServer::GetCertificate() {
     CHECK(InitializeCertAndKeyFromFile());
   }
   return x509_cert_;
+}
+
+scoped_refptr<X509Certificate> EmbeddedTestServer::GetGeneratedIntermediate() {
+  DCHECK(is_using_ssl_);
+  DCHECK(!UsingStaticCert());
+  return intermediate_;
 }
 
 void EmbeddedTestServer::ServeFilesFromDirectory(

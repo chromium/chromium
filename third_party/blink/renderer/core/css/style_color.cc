@@ -264,7 +264,11 @@ Color StyleColor::ColorFromKeyword(CSSValueID keyword,
       return Color::FromRGBA32(named_color->argb_value);
     }
   }
-  return LayoutTheme::GetTheme().SystemColor(keyword, color_scheme);
+
+  // TODO(samomekarajr): Pass in the actual color provider from the Page via the
+  // Document.
+  return LayoutTheme::GetTheme().SystemColor(keyword, color_scheme,
+                                             /*color_provider=*/nullptr);
 }
 
 bool StyleColor::IsColorKeyword(CSSValueID id) {

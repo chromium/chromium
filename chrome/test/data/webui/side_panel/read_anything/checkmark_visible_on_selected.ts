@@ -13,6 +13,7 @@ suite('CheckmarkVisibleOnSelected', () => {
   let toolbar: ReadAnythingToolbarElement;
 
   setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
 

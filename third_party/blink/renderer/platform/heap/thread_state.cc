@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "base/functional/callback.h"
+#include "base/notreached.h"
 #include "gin/public/v8_platform.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -32,25 +33,20 @@ namespace {
 // lazily.
 class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
  public:
-  bool IsRoot(const v8::TracedReference<v8::Value>& handle) final {
-    const uint16_t class_id = handle.WrapperClassId();
-    // Stand-alone reference or kCustomWrappableId. Keep as root as
-    // we don't know better.
-    if (class_id != WrapperTypeInfo::kNodeClassId &&
-        class_id != WrapperTypeInfo::kObjectClassId)
-      return true;
+  BlinkRootsHandler()
+      : v8::EmbedderRootsHandler(v8::EmbedderRootsHandler::RootHandling::
+                                     kDontQueryEmbedderForAnyReference) {}
 
-    return false;
+  bool IsRoot(const v8::TracedReference<v8::Value>& handle) final {
+    NOTREACHED_NORETURN();
   }
 
   // ResetRoot() clears references to V8 wrapper objects in all worlds. It is
   // invoked for references where IsRoot() returned false during young
   // generation garbage collections.
   void ResetRoot(const v8::TracedReference<v8::Value>& handle) final {
-    DCHECK(handle.WrapperClassId() == WrapperTypeInfo::kNodeClassId ||
-           handle.WrapperClassId() == WrapperTypeInfo::kObjectClassId);
     const v8::TracedReference<v8::Object>& traced = handle.As<v8::Object>();
-    bool success = DOMWrapperWorld::UnsetSpecificWrapperIfSet(
+    bool success = DOMWrapperWorld::ClearWrapperIfEqualTo(
         ToScriptWrappable(traced), traced);
     // Since V8 found a handle, Blink needs to find it as well when trying to
     // remove it.
@@ -58,10 +54,8 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
   }
 
   bool TryResetRoot(const v8::TracedReference<v8::Value>& handle) final {
-    DCHECK(handle.WrapperClassId() == WrapperTypeInfo::kNodeClassId ||
-           handle.WrapperClassId() == WrapperTypeInfo::kObjectClassId);
     const v8::TracedReference<v8::Object>& traced = handle.As<v8::Object>();
-    return DOMWrapperWorld::UnsetMainWorldWrapperIfSet(
+    return DOMWrapperWorld::ClearMainWorldWrapperIfEqualTo(
         ToScriptWrappable(traced), traced);
   }
 };

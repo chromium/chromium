@@ -18,6 +18,10 @@ import './captions_subpage.js';
 import '../settings_page/settings_subpage.js';
 // </if>
 
+// <if expr="is_win or is_linux or is_macosx">
+import './pdf_ocr_toggle.js';
+// </if>
+
 // <if expr="is_win or is_macosx">
 import './live_caption_section.js';
 
@@ -26,7 +30,6 @@ import {CaptionsBrowserProxyImpl} from '/shared/settings/a11y_page/captions_brow
 // clang-format on
 import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -45,24 +48,8 @@ import {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.
 // </if>
 // clang-format on
 
-// TODO(crbug.com/1442928): Encapsulate all PDF OCR toggle logic to a dedicated
-// pdf-ocr-toggle-button element.
-// <if expr="is_win or is_linux or is_macosx">
-/**
- * Numerical values should not be changed because they must stay in sync with
- * screen_ai::ScreenAIInstallState::State defined in screen_ai_install_state.h.
- */
-export enum ScreenAiInstallStatus {
-  NOT_DOWNLOADED = 0,
-  DOWNLOADING = 1,
-  FAILED = 2,
-  DOWNLOADED = 3,
-  READY = 4,
-}
-// </if>
-
 const SettingsA11yPageElementBase =
-    PrefsMixin(WebUiListenerMixin(I18nMixin(BaseMixin(PolymerElement))));
+    PrefsMixin(WebUiListenerMixin(BaseMixin(PolymerElement)));
 
 export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   static get is() {
@@ -133,18 +120,7 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
 
       // <if expr="is_win or is_linux or is_macosx">
       /**
-       * `pdfOcrProgress_` stores the downloading progress in percentage of
-       * the ScreenAI library, which ranges from 0.0 to 100.0.
-       */
-      pdfOcrProgress_: Number,
-
-      /**
-       * `pdfOcrStatus_` stores the ScreenAI library install state.
-       */
-      pdfOcrStatus_: Number,
-
-      /**
-       * Whether to show pdf ocr settings.
+       * Whether to show the PDF OCR toggle.
        */
       showPdfOcrToggle_: {
         type: Boolean,
@@ -199,7 +175,7 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
     };
   }
 
-  private accessibilityBrowserProxy: AccessibilityBrowserProxy =
+  private browserProxy_: AccessibilityBrowserProxy =
       AccessibilityBrowserProxyImpl.getInstance();
 
   // <if expr="not is_chromeos">
@@ -213,35 +189,19 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   private captionSettingsOpensExternally_: boolean;
   private hasScreenReader_: boolean;
   private showOverscrollHistoryNavigationToggle_: boolean;
-
   // <if expr="is_win or is_linux or is_macosx">
-  private pdfOcrProgress_: number;
-  private pdfOcrStatus_: ScreenAiInstallStatus;
   private showPdfOcrToggle_: boolean;
   // </if>
 
-  override ready() {
-    super.ready();
+  override connectedCallback() {
+    super.connectedCallback();
 
+    const updateScreenReaderState = (hasScreenReader: boolean) => {
+      this.hasScreenReader_ = hasScreenReader;
+    };
+    this.browserProxy_.getScreenReaderState().then(updateScreenReaderState);
     this.addWebUiListener(
-        'screen-reader-state-changed', (hasScreenReader: boolean) => {
-          this.hasScreenReader_ = hasScreenReader;
-        });
-    // <if expr="is_win or is_linux or is_macosx">
-    if (loadTimeData.getBoolean('pdfOcrEnabled')) {
-      this.addWebUiListener(
-          'pdf-ocr-state-changed', (pdfOcrState: ScreenAiInstallStatus) => {
-            this.pdfOcrStatus_ = pdfOcrState;
-          });
-      this.addWebUiListener(
-          'pdf-ocr-downloading-progress-changed', (progress: number) => {
-            this.pdfOcrProgress_ = progress;
-          });
-    }
-    // </if>
-
-    // Enables javascript and gets the screen reader state.
-    chrome.send('a11yPageReady');
+        'screen-reader-state-changed', updateScreenReaderState);
   }
 
   private onA11yCaretBrowsingChange_(event: Event) {
@@ -263,26 +223,9 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   }
 
   // <if expr="is_win or is_linux or is_macosx">
-  private getPdfOcrToggleSublabel_(): string {
-    switch (this.pdfOcrStatus_) {
-      case ScreenAiInstallStatus.DOWNLOADING:
-        return this.pdfOcrProgress_ > 0 && this.pdfOcrProgress_ < 100 ?
-            this.i18n('pdfOcrDownloadProgressLabel', this.pdfOcrProgress_) :
-            this.i18n('pdfOcrDownloadingLabel');
-      case ScreenAiInstallStatus.FAILED:
-        return this.i18n('pdfOcrDownloadErrorLabel');
-      case ScreenAiInstallStatus.DOWNLOADED:
-        return this.i18n('pdfOcrDownloadCompleteLabel');
-      case ScreenAiInstallStatus.READY:  // fallthrough
-      case ScreenAiInstallStatus.NOT_DOWNLOADED:
-        // No subtitle update, so show a generic subtitle describing PDF OCR.
-        return this.i18n('pdfOcrSubtitle');
-    }
-  }
-
   /**
-   * Return whether to show a PDF OCR toggle button based on:
-   *    1. A PDF OCR feature flag is enabled.
+   * Return whether to show the PDF OCR toggle button based on:
+   *    1. The PDF OCR feature flag is enabled.
    *    2. Whether a screen reader is enabled.
    * Note: on ChromeOS, the PDF OCR toggle is shown on a different settings
    * page; i.e. Settings > Accessibility > Text-to-Speech.
@@ -325,14 +268,13 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   // <if expr="is_win or is_linux">
   private onOverscrollHistoryNavigationChange_(event: Event) {
     const enabled = (event.target as SettingsToggleButtonElement).checked;
-    this.accessibilityBrowserProxy.recordOverscrollHistoryNavigationChanged(
-        enabled);
+    this.browserProxy_.recordOverscrollHistoryNavigationChanged(enabled);
   }
   // </if>
 
   // <if expr="is_macosx">
   private onMacTrackpadGesturesLinkClick_() {
-    this.accessibilityBrowserProxy.openTrackpadGesturesSettings();
+    this.browserProxy_.openTrackpadGesturesSettings();
   }
   // </if>
 }

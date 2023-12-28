@@ -46,13 +46,14 @@ export class EmojiButton extends PolymerElement {
     if (this.disabled) {
       return;
     }
+
     this.dispatchEvent(createCustomEvent(EMOJI_TEXT_BUTTON_CLICK, {
-      text: this.emoji,
-      isVariant: this.variant,
-      baseEmoji: this.base,
-      allVariants: this.allVariants ? this.allVariants : [],
       name: this.tooltip,
       category: CategoryEnum.EMOJI,
+      text: this.emoji,
+      baseEmoji: this.base,
+      isVariant: this.variant,
+      alternates: this.allVariants ?? [],
     }));
   }
 

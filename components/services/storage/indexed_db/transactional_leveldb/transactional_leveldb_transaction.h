@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
@@ -15,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope_deletion_mode.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
@@ -49,17 +49,17 @@ class TransactionalLevelDBTransaction
   TransactionalLevelDBTransaction& operator=(
       const TransactionalLevelDBTransaction&) = delete;
 
-  [[nodiscard]] leveldb::Status Put(const base::StringPiece& key,
+  [[nodiscard]] leveldb::Status Put(const std::string_view& key,
                                     std::string* value);
 
-  [[nodiscard]] leveldb::Status Remove(const base::StringPiece& key);
+  [[nodiscard]] leveldb::Status Remove(const std::string_view& key);
 
   [[nodiscard]] leveldb::Status RemoveRange(
-      const base::StringPiece& begin,
-      const base::StringPiece& end,
+      const std::string_view& begin,
+      const std::string_view& end,
       LevelDBScopeDeletionMode deletion_mode);
 
-  [[nodiscard]] virtual leveldb::Status Get(const base::StringPiece& key,
+  [[nodiscard]] virtual leveldb::Status Get(const std::string_view& key,
                                             std::string* value,
                                             bool* found);
   [[nodiscard]] virtual leveldb::Status Commit(bool sync_on_commit);
@@ -151,11 +151,11 @@ class LevelDBDirectTransaction {
 
   virtual ~LevelDBDirectTransaction();
 
-  leveldb::Status Put(const base::StringPiece& key, const std::string* value);
-  virtual leveldb::Status Get(const base::StringPiece& key,
+  leveldb::Status Put(const std::string_view& key, const std::string* value);
+  virtual leveldb::Status Get(const std::string_view& key,
                               std::string* value,
                               bool* found);
-  void Remove(const base::StringPiece& key);
+  void Remove(const std::string_view& key);
   leveldb::Status Commit();
 
   TransactionalLevelDBDatabase* db() { return db_; }

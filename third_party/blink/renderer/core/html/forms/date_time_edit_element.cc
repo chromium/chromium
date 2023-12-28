@@ -653,8 +653,8 @@ void DateTimeEditElement::FocusByOwner(Element* old_focused_element) {
     DateTimeFieldElement* old_focused_field =
         static_cast<DateTimeFieldElement*>(old_focused_element);
     wtf_size_t index = FieldIndexOf(*old_focused_field);
-    GetDocument().UpdateStyleAndLayoutTreeForNode(old_focused_field,
-                                                  DocumentUpdateReason::kFocus);
+    GetDocument().UpdateStyleAndLayoutTreeForElement(
+        old_focused_field, DocumentUpdateReason::kFocus);
     if (index != kInvalidFieldIndex && old_focused_field->IsFocusable()) {
       old_focused_field->Focus(FocusParams(FocusTrigger::kUserGesture));
       return;

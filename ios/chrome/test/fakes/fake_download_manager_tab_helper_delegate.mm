@@ -30,29 +30,33 @@ using DecidePolicyForDownloadHandler = void (^)(NewDownloadPolicy);
   return YES;
 }
 
-- (void)downloadManagerTabHelper:(nonnull DownloadManagerTabHelper*)tabHelper
-               didCreateDownload:(nonnull web::DownloadTask*)download
+- (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
+               didCreateDownload:(web::DownloadTask*)download
                webStateIsVisible:(BOOL)webStateIsVisible {
   if (webStateIsVisible) {
     _state = std::make_unique<web::DownloadTask::State>(download->GetState());
   }
 }
 
-- (void)downloadManagerTabHelper:(nonnull DownloadManagerTabHelper*)tabHelper
-         decidePolicyForDownload:(nonnull web::DownloadTask*)download
-               completionHandler:(nonnull void (^)(NewDownloadPolicy))handler {
+- (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
+         decidePolicyForDownload:(web::DownloadTask*)download
+               completionHandler:(void (^)(NewDownloadPolicy))handler {
   _decidingPolicyForDownload = download;
   _decidePolicyForDownloadHandler = handler;
 }
 
-- (void)downloadManagerTabHelper:(nonnull DownloadManagerTabHelper*)tabHelper
-                 didHideDownload:(nonnull web::DownloadTask*)download {
+- (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
+                 didHideDownload:(web::DownloadTask*)download {
   _state = nullptr;
 }
 
-- (void)downloadManagerTabHelper:(nonnull DownloadManagerTabHelper*)tabHelper
-                 didShowDownload:(nonnull web::DownloadTask*)download {
+- (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
+                 didShowDownload:(web::DownloadTask*)download {
   _state = std::make_unique<web::DownloadTask::State>(download->GetState());
+}
+
+- (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
+     didAddDownloadToSaveToDrive:(web::DownloadTask*)download {
 }
 
 @end

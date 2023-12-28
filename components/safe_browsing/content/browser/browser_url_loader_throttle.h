@@ -135,9 +135,6 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   // necessary.
   void SkipChecks();
 
-  // Called when a slow safe browsing check is ongoing.
-  void NotifySyncSlowCheck();
-
   // Returns the suffixed to be used for the TotalDelay2 metrics that specifies
   // which type of check was performed.
   std::string GetUrlCheckTypeForLogging(
@@ -156,9 +153,6 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
 
   size_t pending_sync_checks_ = 0;
   size_t pending_async_checks_ = 0;
-
-  // How many slow checks that haven't received results.
-  size_t pending_sync_slow_checks_ = 0;
 
   // Whether future safe browsing checks should be skipped.
   bool skip_checks_ = false;

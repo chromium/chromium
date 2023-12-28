@@ -15,6 +15,28 @@ running fuzz tests are not included.
   can be referenced by compound suites in compound_suites.star, matrix compound
   suites in matrix_compound_suites.star or set as a test suite for a builder in
   [waterfalls.pyl][waterfalls.pyl].
+* [binaries.star](./binaries.star) - This contains declarations with binary
+  mappings used when declaring tests. The declarations map the GN target name to
+  the ninja label that needs to be built to produce the actual executable for
+  the test. Additional details can be specified as part of the declaration that
+  will be used as part of the process of generating target spec files. Tests
+  defined using targets.tests.gtest_test and target.tests.isolated_script_test
+  all require a binary to be defined, which is set via the binary field. If the
+  binary field is not set, then there must be a binary declared that has the
+  same name as the test. Tests defined using targets.tests.junit_test implicitly
+  define a binary that results in an entry in the generated gn_isolate_map.pyl
+  file.
+
+  Available binary types are:
+  * console_test_launcher
+  * generated_script
+  * script
+  * windowed_test_launcher
+* [compile_targets.star](./compile_targets.star) - This contains definition of
+  compile-only targets. These targets can only be built by a builder and have no
+  provision for execution. These targets can be included in the
+  additional_compile_targets field for a builder in
+  [waterfalls.pyl][waterfalls.pyl].
 * [compound_suites.star](./compound_suites.star) - This contains definitions of
   compound suites, which specify basic suites to collect into a larger suite.
   These suites can set as a test suite for a builder in
@@ -33,11 +55,18 @@ running fuzz tests are not included.
   configuring a basic suite in a matrix compound suite to modify all tests in
   that expansion of the basic suite or on a builder in
   [waterfalls.pyl][waterfalls.pyl] to modify all tests for the builder.
-* [targets.star](./targets.star) - This contains definitions of the target
-  "isolates", which maps the GN target name to the ninja target name and
-  specifies other details that are used in the process of generating the targets
-  spec files. These targets can be specified when defining the details of a test
-  in a basic suite.
+* [tests.star](./tests.star) - This contains definitions of test targets. These
+  targets can be referenced in basic suites. Additionally, they can contain
+  details such as args or mixins. These details will be transferred to the
+  generated test_suites.pyl since //testing/buildbot doesn't use separate target
+  declarations for tests.
+
+  Available test types are:
+  * gtest_test
+  * gpu_telemetry_test
+  * isolated_script_test
+  * junit_test
+  * script_test
 * [variants.star](./variants.star) - This contains definitions of variants,
   which allow for expanding a single test definition into multiple generated
   test specs and apply additional modifications to the generated test specs.
@@ -68,10 +97,10 @@ following process:
 
     | .pyl file | starlark file to edit |
     |-----------|-----------------------|
-    |gn_isolate_map.pyl|targets.star|
+    |gn_isolate_map.pyl|binaries.star (or tests.star for test defined using targets.test.junit_test)|
     |mixins.pyl|mixin.star|
     |variants.pyl|variants.star|
-    |test_suites.pyl (basic_suites entries)|basic_suites.star|
+    |test_suites.pyl (basic_suites entries)|basic_suites.star (or tests.star/binaries.star or for values that apply to all instances of a test/binary)|
     |test_suites.pyl (compound_suites entries)|compound_suites.star|
     |test_suites.pyl (matrix_compound_suites entries)|matrix_compound_suites.star|
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/app_list/search/test/app_list_search_test_helper.h"
+#include "base/memory/raw_ptr.h"
 
 #include "base/run_loop.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
@@ -67,7 +68,8 @@ void AppListSearchBrowserTest::SearchAndWaitForProviders(
   results_waiter.Wait();
 }
 
-std::vector<ChromeSearchResult*> AppListSearchBrowserTest::PublishedResults() {
+std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>
+AppListSearchBrowserTest::PublishedResults() {
   return GetClient()
       ->GetModelUpdaterForTest()
       ->GetPublishedSearchResultsForTest();
@@ -77,7 +79,7 @@ std::vector<ChromeSearchResult*>
 AppListSearchBrowserTest::PublishedResultsForProvider(
     const ResultType provider) {
   std::vector<ChromeSearchResult*> results;
-  for (auto* result : PublishedResults()) {
+  for (ChromeSearchResult* result : PublishedResults()) {
     if (result->result_type() == provider)
       results.push_back(result);
   }
@@ -88,7 +90,7 @@ AppListSearchBrowserTest::PublishedResultsForProvider(
 // search result exists.
 ChromeSearchResult* AppListSearchBrowserTest::FindResult(
     const std::string& id) {
-  for (auto* result : PublishedResults()) {
+  for (ChromeSearchResult* result : PublishedResults()) {
     if (result->id() == id)
       return result;
   }

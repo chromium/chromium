@@ -893,10 +893,6 @@ void HardwareRenderer::ReturnResourcesToCompositor(
     std::vector<viz::ReturnedResource> resources,
     const viz::FrameSinkId& frame_sink_id,
     uint32_t layer_tree_frame_sink_id) {
-  if (!base::FeatureList::IsEnabled(features::kWebViewCheckReturnResources) &&
-      layer_tree_frame_sink_id != last_committed_layer_tree_frame_sink_id_) {
-    return;
-  }
   render_thread_manager_->InsertReturnedResourcesOnRT(
       std::move(resources), frame_sink_id, layer_tree_frame_sink_id);
 }

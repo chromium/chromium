@@ -36,6 +36,8 @@ constexpr int kDefaultRealTimeUrlLookupReferrerLength = 2;
 // Probability for sending protego requests for urls on the allowlist
 const float kProbabilityForSendingSampledRequests = 0.01;
 
+constexpr char kCookieHistogramPrefix[] = "SafeBrowsing.RT.Request.HadCookie";
+
 }  // namespace
 
 namespace safe_browsing {
@@ -50,12 +52,14 @@ RealTimeUrlLookupService::RealTimeUrlLookupService(
     const ClientConfiguredForTokenFetchesCallback& client_token_config_callback,
     bool is_off_the_record,
     variations::VariationsService* variations_service,
-    ReferrerChainProvider* referrer_chain_provider)
+    ReferrerChainProvider* referrer_chain_provider,
+    WebUIDelegate* delegate)
     : RealTimeUrlLookupServiceBase(url_loader_factory,
                                    cache_manager,
                                    get_user_population_callback,
                                    referrer_chain_provider,
-                                   pref_service),
+                                   pref_service,
+                                   delegate),
       pref_service_(pref_service),
       token_fetcher_(std::move(token_fetcher)),
       client_token_config_callback_(client_token_config_callback),
@@ -76,14 +80,12 @@ void RealTimeUrlLookupService::GetAccessToken(
     const GURL& url,
     const GURL& last_committed_url,
     bool is_mainframe,
-    RTLookupRequestCallback request_callback,
     RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
   token_fetcher_->Start(base::BindOnce(
       &RealTimeUrlLookupService::OnGetAccessToken, weak_factory_.GetWeakPtr(),
-      url, last_committed_url, is_mainframe, std::move(request_callback),
-      std::move(response_callback), std::move(callback_task_runner),
-      base::TimeTicks::Now()));
+      url, last_committed_url, is_mainframe, std::move(response_callback),
+      std::move(callback_task_runner), base::TimeTicks::Now()));
 }
 
 void RealTimeUrlLookupService::OnPrefChanged() {
@@ -96,7 +98,6 @@ void RealTimeUrlLookupService::OnGetAccessToken(
     const GURL& url,
     const GURL& last_committed_url,
     bool is_mainframe,
-    RTLookupRequestCallback request_callback,
     RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::TimeTicks get_token_start_time,
@@ -109,8 +110,8 @@ void RealTimeUrlLookupService::OnGetAccessToken(
   base::UmaHistogramBoolean("SafeBrowsing.RT.HasTokenFromFetcher",
                             !access_token.empty());
   SendRequest(url, last_committed_url, is_mainframe, access_token,
-              std::move(request_callback), std::move(response_callback),
-              std::move(callback_task_runner), /* is_sampled_report */ false);
+              std::move(response_callback), std::move(callback_task_runner),
+              /* is_sampled_report */ false);
 }
 
 void RealTimeUrlLookupService::OnResponseUnauthorized(
@@ -230,17 +231,8 @@ bool RealTimeUrlLookupService::ShouldIncludeCredentials() const {
   return true;
 }
 
-base::Time RealTimeUrlLookupService::GetMinAllowedTimestampForReferrerChains()
-    const {
-  // TODO(crbug.com/1501054): Currently some unit tests can call this when this
-  // has not been explicitly set to base::Time::Now() by OnPrefChangeed().
-  //
-  // Either:
-  // 1. The tests need to make sure that OnPrefChanged() is appropriately
-  //    triggered, because CanPerformFullURLLookup() is true.
-  // 2. Or CanPerformFullURLLookup() is false and this function should not be
-  //    called, so this field should be set to a sentinel value and a CHECK()
-  //    added that the sentinel value is not returned here.
+absl::optional<base::Time>
+RealTimeUrlLookupService::GetMinAllowedTimestampForReferrerChains() const {
   return url_lookup_enabled_timestamp_;
 }
 
@@ -253,6 +245,23 @@ void RealTimeUrlLookupService::MaybeLogLastProtegoPingTimeToPrefs(
             ? prefs::kSafeBrowsingEsbProtegoPingWithTokenLastLogTime
             : prefs::kSafeBrowsingEsbProtegoPingWithoutTokenLastLogTime,
         base::Time::Now());
+  }
+}
+
+void RealTimeUrlLookupService::MaybeLogProtegoPingCookieHistograms(
+    bool request_had_cookie,
+    bool was_first_request,
+    bool sent_with_token) {
+  std::string histogram_name = kCookieHistogramPrefix;
+  base::StrAppend(&histogram_name,
+                  {was_first_request ? ".FirstRequest" : ".SubsequentRequest"});
+  base::UmaHistogramBoolean(histogram_name, request_had_cookie);
+  // `pref_service_` can be null in tests.
+  // This histogram variant is only logged for signed-out ESB users.
+  if (!sent_with_token && pref_service_ &&
+      IsEnhancedProtectionEnabled(*pref_service_)) {
+    base::StrAppend(&histogram_name, {".SignedOutEsbUser"});
+    base::UmaHistogramBoolean(histogram_name, request_had_cookie);
   }
 }
 

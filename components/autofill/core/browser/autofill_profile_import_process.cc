@@ -105,7 +105,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
           form_source_url_);
 
   int number_of_unchanged_profiles = 0;
-  absl::optional<AutofillProfile> migration_candidate;
+  std::optional<AutofillProfile> migration_candidate;
 
   // We don't offer an import if `observed_profile_` is a duplicate of an
   // existing profile.
@@ -276,7 +276,7 @@ void ProfileImportProcess::DetermineSourceOfImportCandidate() {
 }
 
 void ProfileImportProcess::MaybeSetMigrationCandidate(
-    absl::optional<AutofillProfile>& migration_candidate,
+    std::optional<AutofillProfile>& migration_candidate,
     const AutofillProfile& profile) const {
   // Basic checks: No migration candidate was selected yet, prompts can be shown
   // (i.e. not only silent updates) and the `profile` is not stored in the

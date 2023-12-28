@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <Foundation/Foundation.h>
-
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
+
+#import <Foundation/Foundation.h>
 
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/ntp/model/set_up_list.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
-#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view+private.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view+Testing.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
 #import "testing/platform_test.h"

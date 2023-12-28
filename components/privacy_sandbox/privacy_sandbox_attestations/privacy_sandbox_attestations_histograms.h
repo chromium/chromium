@@ -24,6 +24,8 @@ inline constexpr char kAttestationStatusUMA[] =
     "PrivacySandbox.Attestations.IsSiteAttested";
 inline constexpr char kAttestationsFileParsingStatusUMA[] =
     "PrivacySandbox.Attestations.Parsing.Status";
+inline constexpr char kSentinelVersionUMA[] =
+    "PrivacySandbox.Attestations.Parsing.SentinelVersion";
 inline constexpr char kAttestationsFileParsingTimeUMA[] =
     "PrivacySandbox.Attestations.InitializationDuration.Parsing";
 inline constexpr char kAttestationsMapMemoryUsageUMA[] =

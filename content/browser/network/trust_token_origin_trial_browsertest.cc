@@ -122,7 +122,6 @@ std::string ToString(TrialType trial_type) {
 }
 
 struct TestDescription {
-  network::mojom::TrustTokenMajorVersion version;
   Op op;
   Outcome outcome;
   TrialType trial_type;
@@ -240,42 +239,27 @@ class TrustTokenOriginTrialBrowsertest
 };
 
 const TestDescription kTestDescriptions[] = {
-    {network::mojom::TrustTokenMajorVersion::kPrivateStateTokenV1,
-     Op::kIssuance, Outcome::kSuccess,
+    {Op::kIssuance, Outcome::kSuccess,
      TrialType::kOnlyIssuanceRequiresOriginTrial, TrialEnabled::kEnabled},
 
-    {network::mojom::TrustTokenMajorVersion::kPrivateStateTokenV1,
-     Op::kRedemption, Outcome::kSuccess,
+    {Op::kRedemption, Outcome::kSuccess,
      TrialType::kOnlyIssuanceRequiresOriginTrial, TrialEnabled::kEnabled},
 
-    {network::mojom::TrustTokenMajorVersion::kPrivateStateTokenV1,
-     Op::kRedemption, Outcome::kSuccess,
+    {Op::kRedemption, Outcome::kSuccess,
      TrialType::kOnlyIssuanceRequiresOriginTrial, TrialEnabled::kDisabled},
 
-    {network::mojom::TrustTokenMajorVersion::kPrivateStateTokenV1,
-     Op::kIssuance, Outcome::kSuccess,
+    {Op::kIssuance, Outcome::kSuccess,
      TrialType::kAllOperationsRequireOriginTrial, TrialEnabled::kEnabled},
 
-    {network::mojom::TrustTokenMajorVersion::kPrivateStateTokenV1,
-     Op::kIssuance, Outcome::kSuccessWithoutTrustTokenParams,
+    {Op::kIssuance, Outcome::kSuccessWithoutTrustTokenParams,
      TrialType::kAllOperationsRequireOriginTrial, TrialEnabled::kDisabled},
 
-    {network::mojom::TrustTokenMajorVersion::kPrivateStateTokenV1,
-     Op::kRedemption, Outcome::kSuccess,
+    {Op::kRedemption, Outcome::kSuccess,
      TrialType::kAllOperationsRequireOriginTrial, TrialEnabled::kEnabled},
 
-    {network::mojom::TrustTokenMajorVersion::kPrivateStateTokenV1,
-     Op::kRedemption, Outcome::kSuccessWithoutTrustTokenParams,
+    {Op::kRedemption, Outcome::kSuccessWithoutTrustTokenParams,
      TrialType::kAllOperationsRequireOriginTrial, TrialEnabled::kDisabled},
 };
-
-std::string ToString(network::mojom::TrustTokenMajorVersion version) {
-  if (version == network::mojom::TrustTokenMajorVersion::kPrivateStateTokenV1) {
-    return "1";
-  }
-  NOTREACHED();
-  return "";
-}
 
 // Prints a string representation to use for generating test names.
 std::string ToString(Op op) {
@@ -297,9 +281,9 @@ std::string TestParamToString(
   const TestDescription& test_description = std::get<1>(info.param);
 
   return base::ReplaceStringPlaceholders(
-      "$1_$2_$3_$4_$5",
-      {ToString(interface), ToString(test_description.version),
-       ToString(test_description.op), ToString(test_description.trial_type),
+      "$1_$2_$3_$4",
+      {ToString(interface), ToString(test_description.op),
+       ToString(test_description.trial_type),
        ToString(test_description.trial_enabled)},
       nullptr);
 }
@@ -349,8 +333,7 @@ IN_PROC_BROWSER_TEST_P(TrustTokenOriginTrialBrowsertest,
   }
 
   network::TrustTokenTestParameters trust_token_params(
-      test_description.version, test_description.op, absl::nullopt,
-      absl::nullopt);
+      1, test_description.op, absl::nullopt, absl::nullopt);
 
   network::TrustTokenParametersAndSerialization
       expected_params_and_serialization =

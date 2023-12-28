@@ -107,7 +107,7 @@ class SystemInfoProvider
   mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfigObserver>
       cros_network_config_receiver_{this};
   std::unique_ptr<SystemInfo> system_info_;
-  raw_ptr<chromeos::network_config::mojom::CrosNetworkConfig, ExperimentalAsh>
+  raw_ptr<chromeos::network_config::mojom::CrosNetworkConfig>
       cros_network_config_;
   chromeos::network_config::mojom::ConnectionStateType wifi_connection_state_;
 };

@@ -75,7 +75,7 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
 
   friend class H264VaapiVideoEncoderDelegateTest;
 
-  bool PrepareEncodeJob(EncodeJob& encode_job) override;
+  PrepareEncodeJobResult PrepareEncodeJob(EncodeJob& encode_job) override;
   BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
                                       size_t payload_size) override;
 

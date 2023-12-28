@@ -63,6 +63,8 @@ const char kOtherBookmarksId[] = "other_bookmarks_id";
 const char kMobileBookmarksId[] = "mobile_bookmarks_id";
 const char kBookmarksRootId[] = "root_id";
 const char kCacheGuid[] = "generated_id";
+const char kPersistentModelTypeConfigurationTimeMetricName[] =
+    "Sync.ModelTypeConfigurationTime.Persistent.BOOKMARK";
 
 struct BookmarkInfo {
   std::string server_id;
@@ -392,6 +394,9 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldDoInitialMergeWithZeroBookmarks) {
       "Sync.ModelTypeInitialUpdateReceived",
       /*sample=*/syncer::ModelTypeHistogramValue(syncer::BOOKMARKS),
       /*expected_bucket_count=*/3);
+  histogram_tester.ExpectTotalCount(
+      kPersistentModelTypeConfigurationTimeMetricName,
+      /*count=*/1);
 }
 
 TEST_F(BookmarkModelTypeProcessorTest, ShouldDoInitialMergeWithOneBookmark) {
@@ -422,6 +427,9 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldDoInitialMergeWithOneBookmark) {
       "Sync.ModelTypeInitialUpdateReceived",
       /*sample=*/syncer::ModelTypeHistogramValue(syncer::BOOKMARKS),
       /*expected_bucket_count=*/4);
+  histogram_tester.ExpectTotalCount(
+      kPersistentModelTypeConfigurationTimeMetricName,
+      /*count=*/1);
 }
 
 TEST_F(BookmarkModelTypeProcessorTest,
@@ -459,6 +467,10 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
   // Not an actual requirement but it documents current behavior.
   EXPECT_THAT(bookmark_model()->bookmark_bar_node()->children(), SizeIs(1));
+
+  histogram_tester.ExpectTotalCount(
+      kPersistentModelTypeConfigurationTimeMetricName,
+      /*count=*/0);
 }
 
 TEST_F(BookmarkModelTypeProcessorTest,
@@ -499,6 +511,10 @@ TEST_F(BookmarkModelTypeProcessorTest,
   // `syncer::WipeModelUponSyncDisabledBehavior::kAlways`, reverting to the
   // pre-merge state means clearing all data.
   EXPECT_THAT(bookmark_model()->bookmark_bar_node()->children(), IsEmpty());
+
+  histogram_tester.ExpectTotalCount(
+      kPersistentModelTypeConfigurationTimeMetricName,
+      /*count=*/0);
 }
 
 TEST_F(BookmarkModelTypeProcessorTest, ShouldUpdateModelAfterRemoteCreation) {
@@ -523,6 +539,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldUpdateModelAfterRemoteCreation) {
       bookmark_model()->bookmark_bar_node();
   ASSERT_TRUE(bookmark_bar->children().empty());
 
+  base::HistogramTester histogram_tester;
   processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
                                 /*gc_directive=*/absl::nullopt);
 
@@ -530,6 +547,11 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldUpdateModelAfterRemoteCreation) {
   EXPECT_THAT(bookmark_bar->children().front()->GetTitle(),
               Eq(ASCIIToUTF16(kTitle)));
   EXPECT_THAT(bookmark_bar->children().front()->url(), Eq(GURL(kUrl)));
+
+  // Incremental updates to not contribute to Sync.ModelTypeConfigurationTime.
+  histogram_tester.ExpectTotalCount(
+      kPersistentModelTypeConfigurationTimeMetricName,
+      /*count=*/0);
 }
 
 TEST_F(BookmarkModelTypeProcessorTest, ShouldUpdateModelAfterRemoteUpdate) {
@@ -1053,8 +1075,6 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldReuploadLegacyBookmarksOnStart) {
 
 TEST_F(BookmarkModelTypeProcessorTest,
        ShouldReportErrorIfIncrementalLocalCreationCrossesMaxCountLimit) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
@@ -1086,8 +1106,6 @@ TEST_F(BookmarkModelTypeProcessorTest,
 TEST_F(
     BookmarkModelTypeProcessorTest,
     ShouldReportErrorIfBookmarksCountExceedsLimitOnStartupWhenMetadataMatchesModel) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
@@ -1138,8 +1156,6 @@ TEST_F(
 TEST_F(
     BookmarkModelTypeProcessorTest,
     ShouldReportErrorIfBookmarksCountExceedsLimitOnStartupWhenMetadataDoesNotMatchModel) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
@@ -1178,8 +1194,6 @@ TEST_F(
   // Ensure that bookmarks model works normally even after sync reports error
   // when max count limit is crossed.
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
@@ -1236,8 +1250,6 @@ TEST_F(
 
 TEST_F(BookmarkModelTypeProcessorTest,
        ShouldReportErrorIfBookmarksCountExceedsLimitAfterInitialUpdate) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
   // Set a limit of 4 bookmarks: 3 permanent nodes and 1 additional node which
   // is different from the remote.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(4);
@@ -1298,8 +1310,6 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
 TEST_F(BookmarkModelTypeProcessorTest,
        ShouldReportErrorIfBookmarksCountExceedsLimitAfterIncrementalUpdate) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
@@ -1349,8 +1359,6 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
 TEST_F(BookmarkModelTypeProcessorTest,
        ShouldReportErrorIfInitialUpdatesCrossMaxCountLimit) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
@@ -1409,8 +1417,6 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
 TEST_F(BookmarkModelTypeProcessorTest,
        ShouldSaveRemoteUpdatesCountExceedingLimitResultDuringInitialMerge) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
@@ -1463,8 +1469,6 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
 TEST_F(BookmarkModelTypeProcessorTest,
        ShouldReportErrorIfRemoteBookmarksCountExceededLimitOnLastTry) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 
@@ -1540,8 +1544,6 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
 TEST_F(BookmarkModelTypeProcessorTest,
        ShouldPersistRemoteBookmarksCountExceedingLimitAcrossBrowserRestarts) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kSyncEnforceBookmarksCountLimit);
   // Set a limit of 3 bookmarks, i.e. limit it to the 3 permanent nodes.
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
 

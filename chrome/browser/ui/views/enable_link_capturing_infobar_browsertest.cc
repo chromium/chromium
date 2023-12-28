@@ -14,11 +14,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/intent_picker_tab_helper.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/intent_picker_bubble_view.h"
-#include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -61,12 +56,6 @@ class EnableLinkCapturingInfobarBrowserTest
   }
 
   bool LinkCapturingEnabledByDefault() { return GetParam(); }
-
-  IntentChipButton* GetIntentPickerIcon() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->toolbar_button_provider()
-        ->GetIntentChipButton();
-  }
 
   // Returns [app_id, in_scope_url]
   std::tuple<webapps::AppId, GURL> InstallTestApp() {
@@ -129,88 +118,6 @@ class EnableLinkCapturingInfobarBrowserTest
     ASSERT_TRUE(preference_set.Wait());
   }
 
-  testing::AssertionResult WaitForIntentPickerToShow() {
-    base::test::TestFuture<void> future;
-    auto* tab_helper =
-        IntentPickerTabHelper::FromWebContents(GetActiveWebContents(browser()));
-    tab_helper->SetIconUpdateCallbackForTesting(
-        future.GetCallback(), /*include_latest_navigation=*/true);
-    if (!future.Wait()) {
-      return testing::AssertionFailure()
-             << "Intent picker app did not resolve an applicable app.";
-    }
-
-    IntentChipButton* intent_picker_icon = GetIntentPickerIcon();
-    if (!intent_picker_icon) {
-      return testing::AssertionFailure()
-             << "Intent picker icon does not exist.";
-    }
-
-    if (!intent_picker_icon->GetVisible()) {
-      web_app::IntentChipVisibilityObserver intent_chip_visibility_observer(
-          intent_picker_icon);
-      intent_chip_visibility_observer.WaitForChipToBeVisible();
-      if (!intent_picker_icon->GetVisible()) {
-        return testing::AssertionFailure()
-               << "Intent picker icon never became visible.";
-      }
-    }
-    EXPECT_TRUE(intent_picker_icon->GetVisible());
-
-    return testing::AssertionSuccess();
-  }
-
-  testing::AssertionResult ClickIntentPickerChip() {
-    testing::AssertionResult intent_picker_icon_shown =
-        WaitForIntentPickerToShow();
-    if (!intent_picker_icon_shown) {
-      return intent_picker_icon_shown;
-    }
-
-    views::test::ButtonTestApi test_api(GetIntentPickerIcon());
-    test_api.NotifyClick(ui::MouseEvent(
-        ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), base::TimeTicks(),
-        ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-    return testing::AssertionSuccess();
-  }
-
-  testing::AssertionResult ClickIntentPickerAndWaitForBubble() {
-    testing::AssertionResult intent_picker_icon_shown =
-        WaitForIntentPickerToShow();
-    if (!intent_picker_icon_shown) {
-      return intent_picker_icon_shown;
-    }
-
-    views::NamedWidgetShownWaiter intent_picker_bubble_shown(
-        views::test::AnyWidgetTestPasskey{},
-        IntentPickerBubbleView::kViewClassName);
-    views::test::ButtonTestApi test_api(GetIntentPickerIcon());
-    test_api.NotifyClick(ui::MouseEvent(
-        ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), base::TimeTicks(),
-        ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-
-    if (!intent_picker_bubble_shown.WaitIfNeededAndGet()) {
-      return testing::AssertionFailure()
-             << "Intent picker bubble did not appear after click.";
-    }
-    CHECK(intent_picker_bubble());
-    return testing::AssertionSuccess();
-  }
-
-  IntentPickerBubbleView* intent_picker_bubble() {
-    return IntentPickerBubbleView::intent_picker_bubble();
-  }
-
-  views::Button* GetIntentPickerButtonAtIndex(size_t index) {
-    CHECK(intent_picker_bubble());
-    auto children =
-        intent_picker_bubble()
-            ->GetViewByID(IntentPickerBubbleView::ViewId::kItemContainer)
-            ->children();
-    CHECK_LT(index, children.size());
-    return static_cast<views::Button*>(children[index]);
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -230,7 +137,7 @@ IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
 
   ui_test_utils::BrowserChangeObserver browser_added_waiter(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-  ASSERT_TRUE(ClickIntentPickerChip());
+  ASSERT_TRUE(web_app::ClickIntentPickerChip(browser()));
   Browser* app_browser = browser_added_waiter.Wait();
   ASSERT_TRUE(app_browser);
 
@@ -254,7 +161,7 @@ IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
   {
     ui_test_utils::BrowserChangeObserver browser_added_waiter(
         nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-    ASSERT_TRUE(ClickIntentPickerChip());
+    ASSERT_TRUE(web_app::ClickIntentPickerChip(browser()));
     app_browser = browser_added_waiter.Wait();
     ASSERT_TRUE(app_browser);
   }
@@ -296,7 +203,7 @@ IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
   // app is also set to capture links by default, the link should open in the
   // PWA automatically on clicking the intent chip without going through the
   // intent picker bubble.
-  ASSERT_TRUE(ClickIntentPickerChip());
+  ASSERT_TRUE(web_app::ClickIntentPickerChip(browser()));
   Browser* app_browser = browser_added_waiter.Wait();
   ASSERT_TRUE(app_browser);
 
@@ -318,7 +225,7 @@ IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
 
   ui_test_utils::BrowserChangeObserver browser_added_waiter(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-  ASSERT_TRUE(ClickIntentPickerChip());
+  ASSERT_TRUE(web_app::ClickIntentPickerChip(browser()));
   Browser* app_browser = browser_added_waiter.Wait();
   ASSERT_TRUE(app_browser);
 
@@ -356,7 +263,7 @@ IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
 
   ui_test_utils::BrowserChangeObserver browser_added_waiter(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-  ASSERT_TRUE(ClickIntentPickerChip());
+  ASSERT_TRUE(web_app::ClickIntentPickerChip(browser()));
   Browser* app_browser = browser_added_waiter.Wait();
   ASSERT_TRUE(app_browser);
 
@@ -392,7 +299,7 @@ IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest, AppLaunched) {
   {
     ui_test_utils::BrowserChangeObserver browser_added_waiter(
         nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-    ASSERT_TRUE(ClickIntentPickerChip());
+    ASSERT_TRUE(web_app::ClickIntentPickerChip(browser()));
     app_browser = browser_added_waiter.Wait();
     ASSERT_TRUE(app_browser);
   }
@@ -438,7 +345,7 @@ IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest, BarRemoved) {
 
   ui_test_utils::BrowserChangeObserver browser_added_waiter(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-  ASSERT_TRUE(ClickIntentPickerChip());
+  ASSERT_TRUE(web_app::ClickIntentPickerChip(browser()));
   Browser* app_browser = browser_added_waiter.Wait();
   ASSERT_TRUE(app_browser);
 
@@ -475,7 +382,7 @@ IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
 
     ui_test_utils::BrowserChangeObserver browser_added_waiter(
         nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-    ASSERT_TRUE(ClickIntentPickerChip());
+    ASSERT_TRUE(web_app::ClickIntentPickerChip(browser()));
     Browser* app_browser = browser_added_waiter.Wait();
     ASSERT_TRUE(app_browser);
 
@@ -503,7 +410,7 @@ IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
 
   ui_test_utils::BrowserChangeObserver browser_added_waiter(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-  ASSERT_TRUE(ClickIntentPickerChip());
+  ASSERT_TRUE(web_app::ClickIntentPickerChip(browser()));
   Browser* app_browser = browser_added_waiter.Wait();
   ASSERT_TRUE(app_browser);
 
@@ -525,11 +432,12 @@ IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
   }
 
   NavigateViaLinkClick(browser(), inner_app_scoped_url);
-  EXPECT_TRUE(ClickIntentPickerAndWaitForBubble());
+  EXPECT_TRUE(web_app::ClickIntentPickerAndWaitForBubble(browser()));
 
   // The app list is currently not deterministically ordered, so find the
   // correct item and select that.
-  const auto& app_infos = intent_picker_bubble()->app_info_for_testing();
+  const auto& app_infos =
+      web_app::intent_picker_bubble()->app_info_for_testing();
   auto it = base::ranges::find(app_infos, outer_app_id,
                                &apps::IntentPickerAppInfo::launch_name);
   ASSERT_NE(it, app_infos.end());
@@ -537,11 +445,12 @@ IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
 
   ui_test_utils::BrowserChangeObserver browser_added_waiter(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-  views::test::ButtonTestApi test_api(GetIntentPickerButtonAtIndex(index));
+  views::test::ButtonTestApi test_api(
+      web_app::GetIntentPickerButtonAtIndex(index));
   test_api.NotifyClick(ui::MouseEvent(
       ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), base::TimeTicks(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-  intent_picker_bubble()->AcceptDialog();
+  web_app::intent_picker_bubble()->AcceptDialog();
 
   Browser* app_browser = browser_added_waiter.Wait();
   ASSERT_TRUE(app_browser);

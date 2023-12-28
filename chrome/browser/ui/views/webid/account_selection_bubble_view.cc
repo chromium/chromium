@@ -9,7 +9,9 @@
 
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/ui/monogram_utils.h"
@@ -57,6 +59,8 @@ constexpr int kBubbleWidth = 375;
 constexpr int kDesiredAvatarSize = 30;
 // The desired size of the icon of the identity provider.
 constexpr int kDesiredIdpIconSize = 20;
+// The desired size of the icon for the "Use another account" button.
+constexpr int kDesiredUseOtherAccountIconSize = 20;
 // The size of the padding used at the top and bottom of the bubble.
 constexpr int kTopBottomPadding = 4;
 // The size of the horizontal padding between the bubble content and the edge of
@@ -196,8 +200,9 @@ class CircleCroppedImageSkiaSource : public gfx::CanvasImageSource {
 // - If `brand_text_color` is not provided, computes the text color such that it
 //   contrasts sufficiently with `brand_background_color`.
 class ContinueButton : public views::MdTextButton {
+  METADATA_HEADER(ContinueButton, views::MdTextButton)
+
  public:
-  METADATA_HEADER(ContinueButton);
   ContinueButton(views::MdTextButton::PressedCallback callback,
                  const std::u16string& text,
                  AccountSelectionBubbleView* bubble_view,
@@ -208,7 +213,7 @@ class ContinueButton : public views::MdTextButton {
         brand_text_color_(idp_metadata.brand_text_color) {
     SetCornerRadius(kButtonRadius);
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
-    SetProminent(true);
+    SetStyle(ui::ButtonStyle::kProminent);
   }
 
   ContinueButton(const ContinueButton&) = delete;
@@ -249,12 +254,13 @@ class ContinueButton : public views::MdTextButton {
   std::optional<SkColor> brand_text_color_;
 };
 
-BEGIN_METADATA(ContinueButton, views::MdTextButton)
+BEGIN_METADATA(ContinueButton)
 END_METADATA
 
 class AccountImageView : public views::ImageView {
+  METADATA_HEADER(AccountImageView, views::ImageView)
+
  public:
-  METADATA_HEADER(AccountImageView);
   AccountImageView() = default;
 
   AccountImageView(const AccountImageView&) = delete;
@@ -299,14 +305,15 @@ class AccountImageView : public views::ImageView {
   base::WeakPtrFactory<AccountImageView> weak_ptr_factory_{this};
 };
 
-BEGIN_METADATA(AccountImageView, views::ImageView)
+BEGIN_METADATA(AccountImageView)
 END_METADATA
 
 // Wrapper around ImageViews for IDP icons. Used to ensure that the fetch
 // callback is not run when the ImageView has been deleted.
 class IdpImageView : public views::ImageView {
+  METADATA_HEADER(IdpImageView, views::ImageView)
+
  public:
-  METADATA_HEADER(IdpImageView);
   explicit IdpImageView(AccountSelectionBubbleView* bubble_view)
       : bubble_view_(bubble_view) {}
 
@@ -351,7 +358,7 @@ class IdpImageView : public views::ImageView {
   base::WeakPtrFactory<IdpImageView> weak_ptr_factory_{this};
 };
 
-BEGIN_METADATA(IdpImageView, views::ImageView)
+BEGIN_METADATA(IdpImageView)
 END_METADATA
 
 void SendAccessibilityEvent(views::Widget* widget,
@@ -1023,13 +1030,8 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
   const content::IdentityProviderMetadata& idp_metadata =
       idp_display_data_list[0].idp_metadata;
   if (idp_metadata.supports_add_account) {
-    auto button = std::make_unique<ContinueButton>(
-        base::BindRepeating(&Observer::OnLoginToIdP,
-                            base::Unretained(observer_),
-                            idp_metadata.idp_login_url),
-        l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_ADD_ACCOUNT), this,
-        idp_metadata);
-    row->AddChildView(std::move(button));
+    row->AddChildView(std::make_unique<views::Separator>());
+    row->AddChildView(CreateUseOtherAccountButton(idp_metadata));
   }
 
   // The maximum height that the multi-account-picker can have. This value was
@@ -1118,6 +1120,21 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateAccountRow(
   return row;
 }
 
+std::unique_ptr<views::View>
+AccountSelectionBubbleView::CreateUseOtherAccountButton(
+    const content::IdentityProviderMetadata& idp_metadata) {
+  auto button = std::make_unique<HoverButton>(
+      base::BindRepeating(&Observer::OnLoginToIdP, base::Unretained(observer_),
+                          idp_metadata.idp_login_url),
+      ui::ImageModel::FromVectorIcon(kOpenInNewIcon, ui::kColorMenuIcon,
+                                     kDesiredUseOtherAccountIconSize),
+      l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_USE_OTHER_ACCOUNT));
+  button->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      /*top=*/2 * kVerticalSpacing, /*left=*/kLeftRightPadding, /*bottom=*/0,
+      /*right=*/kLeftRightPadding)));
+  return button;
+}
+
 void AccountSelectionBubbleView::UpdateHeader(
     const content::IdentityProviderMetadata& idp_metadata,
     const std::u16string subpage_title,
@@ -1166,7 +1183,8 @@ void AccountSelectionBubbleView::RemoveNonHeaderChildViews() {
   continue_button_ = nullptr;
   auto_reauthn_checkbox_ = nullptr;
 
-  const std::vector<views::View*> child_views = children();
+  const std::vector<raw_ptr<views::View, VectorExperimental>> child_views =
+      children();
   for (views::View* child_view : child_views) {
     if (child_view != header_view_) {
       RemoveChildView(child_view);
@@ -1175,5 +1193,5 @@ void AccountSelectionBubbleView::RemoveNonHeaderChildViews() {
   }
 }
 
-BEGIN_METADATA(AccountSelectionBubbleView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(AccountSelectionBubbleView)
 END_METADATA

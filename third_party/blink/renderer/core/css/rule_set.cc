@@ -295,7 +295,6 @@ static void ExtractSelectorValues(const CSSSelector* selector,
         case CSSSelector::kPseudoWebKitCustomElement:
         case CSSSelector::kPseudoBlinkInternalElement:
         case CSSSelector::kPseudoDetailsContent:
-        case CSSSelector::kPseudoDetailsSummary:
           custom_pseudo_element_name = selector->Value();
           break;
         case CSSSelector::kPseudoPart:

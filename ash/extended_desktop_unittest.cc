@@ -72,7 +72,7 @@ class MoveWindowByClickEventHandler : public ui::EventHandler {
     }
   }
 
-  raw_ptr<aura::Window, ExperimentalAsh> target_;
+  raw_ptr<aura::Window> target_;
 };
 
 // An event handler which records the event's locations.

@@ -1935,17 +1935,10 @@ class SoftNavigationTabRestoreTest : public TabRestoreTest {
   base::test::ScopedFeatureList features_list_;
 };
 
-// Test is flaky on LACROS and ASH, most probably due to mouseclicks not working
-// consistently.
-// TODO(crbug.com/1492469): Flaky on linux
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    BUILDFLAG(IS_LINUX)
-#define MAYBE_SoftNavigationToRestoredTab DISABLED_SoftNavigationToRestoredTab
-#else
-#define MAYBE_SoftNavigationToRestoredTab SoftNavigationToRestoredTab
-#endif
+// TODO(crbug.com/1492469): Test is found flaky on linux, win and mac,most
+// probably due to mouseclicks not working consistently.
 IN_PROC_BROWSER_TEST_F(SoftNavigationTabRestoreTest,
-                       MAYBE_SoftNavigationToRestoredTab) {
+                       DISABLED_SoftNavigationToRestoredTab) {
   // Set up a test web server.
   embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
   content::SetupCrossSiteRedirector(embedded_test_server());

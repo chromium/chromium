@@ -64,7 +64,7 @@ class AccessibilityFocusHelperView : public views::View {
   }
 
  private:
-  raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> controller_;
+  raw_ptr<UnifiedSystemTrayController> controller_;
 };
 
 BEGIN_METADATA(AccessibilityFocusHelperView)
@@ -97,7 +97,7 @@ class QuickSettingsView::SystemTrayContainer : public views::View {
   }
 
  private:
-  const raw_ptr<views::BoxLayout, ExperimentalAsh> layout_manager_;
+  const raw_ptr<views::BoxLayout> layout_manager_;
 };
 
 BEGIN_METADATA(QuickSettingsView, SystemTrayContainer, views::View)

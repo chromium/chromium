@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/sync/service/sync_prefs.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -22,6 +23,9 @@ using testing::Return;
 SyncServiceImplBundle::SyncServiceImplBundle()
     : identity_test_env_(&test_url_loader_factory_) {
   SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
+  // Pref is registered in signin internal `PrimaryAccountManager`.
+  pref_service_.registry()->RegisterBooleanPref(::prefs::kExplicitBrowserSignin,
+                                                false);
   identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
 }
 

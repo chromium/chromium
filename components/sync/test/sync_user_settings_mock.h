@@ -120,11 +120,11 @@ class SyncUserSettingsMock : public SyncUserSettings {
   MOCK_METHOD(void, SetEncryptionPassphrase, (const std::string&), (override));
   MOCK_METHOD(bool, SetDecryptionPassphrase, (const std::string&), (override));
   MOCK_METHOD(void,
-              SetDecryptionNigoriKey,
+              SetExplicitPassphraseDecryptionNigoriKey,
               (std::unique_ptr<Nigori>),
               (override));
   MOCK_METHOD(std::unique_ptr<Nigori>,
-              GetDecryptionNigoriKey,
+              GetExplicitPassphraseDecryptionNigoriKey,
               (),
               (const override));
 };

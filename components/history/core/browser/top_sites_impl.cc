@@ -18,7 +18,6 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -125,8 +124,6 @@ struct SitesAndQueriesRequest
 };
 
 // Initially, histogram is not recorded.
-bool TopSitesImpl::histogram_recorded_ = false;
-
 TopSitesImpl::TopSitesImpl(PrefService* pref_service,
                            HistoryService* history_service,
                            TemplateURLService* template_url_service,
@@ -376,21 +373,10 @@ void TopSitesImpl::SetTopSites(MostVisitedURLList top_sites,
   TopSitesDelta delta;
   DiffMostVisited(top_sites_, top_sites, &delta);
 
-  TopSitesBackend::RecordHistogram record_or_not =
-      TopSitesBackend::RECORD_HISTOGRAM_NO;
-
-  if (location == CALL_LOCATION_FROM_ON_GOT_MOST_VISITED_URLS &&
-      !histogram_recorded_) {
-    // Will be passed to TopSitesBackend to let it record the histogram.
-    record_or_not = TopSitesBackend::RECORD_HISTOGRAM_YES;
-    // Change it to true so that the histogram will not be recorded any more.
-    histogram_recorded_ = true;
-  }
-
   bool should_notify_observers = false;
   // If there is a change in urls, update the db and notify observers.
   if (!delta.deleted.empty() || !delta.added.empty() || !delta.moved.empty()) {
-    backend_->UpdateTopSites(delta, record_or_not);
+    backend_->UpdateTopSites(delta);
     should_notify_observers = true;
   }
   // If there is no url change in top sites, check if the titles have changes.

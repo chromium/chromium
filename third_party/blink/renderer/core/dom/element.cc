@@ -179,12 +179,14 @@
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
+#include "third_party/blink/renderer/core/page/scrolling/sync_scroll_attempt_heuristic.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -624,8 +626,8 @@ bool Element::IsFocusableStyle(UpdateBehavior update_behavior) const {
             *this, DisplayLockActivationReason::kUserFocus)) {
       return false;
     }
-    GetDocument().UpdateStyleAndLayoutTreeForNode(this,
-                                                  DocumentUpdateReason::kFocus);
+    GetDocument().UpdateStyleAndLayoutTreeForElement(
+        this, DocumentUpdateReason::kFocus);
   }
 
   DCHECK(
@@ -1556,6 +1558,10 @@ double Element::scrollLeft() {
     return 0;
   }
 
+  // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
+  // impact is understood.
+  SyncScrollAttemptHeuristic::DidAccessScrollOffset();
+
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
 
@@ -1591,6 +1597,10 @@ double Element::scrollTop() {
   if (!InActiveDocument()) {
     return 0;
   }
+
+  // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
+  // impact is understood.
+  SyncScrollAttemptHeuristic::DidAccessScrollOffset();
 
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
@@ -2150,6 +2160,9 @@ void Element::ClientQuads(Vector<gfx::QuadF>& quads) const {
 }
 
 DOMRectList* Element::getClientRects() {
+  // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
+  // impact is understood.
+  SyncScrollAttemptHeuristic::DidAccessScrollOffset();
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kJavaScript);
   Vector<gfx::QuadF> quads;
@@ -2199,6 +2212,9 @@ DOMRect* Element::GetBoundingClientRect() {
 }
 
 DOMRect* Element::GetBoundingClientRectForBinding() {
+  // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
+  // impact is understood.
+  SyncScrollAttemptHeuristic::DidAccessScrollOffset();
   return GetBoundingClientRect();
 }
 
@@ -2447,6 +2463,14 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
       AtomicString old_id = GetElementData()->SetIdForStyleResolution(new_id);
       GetDocument().GetStyleEngine().IdChangedForElement(old_id, new_id, *this);
     }
+
+    if (GetDocument().HasRenderBlockingExpectLinkElements() &&
+        IsFinishedParsingChildren()) {
+      DCHECK(GetDocument().GetRenderBlockingResourceManager());
+      GetDocument()
+          .GetRenderBlockingResourceManager()
+          ->RemovePendingParsingElement(GetIdAttribute());
+    }
   } else if (name == html_names::kClassAttr) {
     if (params.old_value == params.new_value &&
         params.reason != AttributeModificationReason::kByMoveToNewDocument &&
@@ -2471,7 +2495,7 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
       //
       // TODO(tkent): We should avoid updating style.  We'd like to check only
       // DOM-level focusability here.
-      GetDocument().UpdateStyleAndLayoutTreeForNode(
+      GetDocument().UpdateStyleAndLayoutTreeForElement(
           this, DocumentUpdateReason::kFocus);
       if (!IsFocusable() && !GetFocusableArea()) {
         blur();
@@ -3651,7 +3675,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
       new_style = nullptr;
       NotifyAXOfAttachedSubtree();
     } else {
-      if (!new_style->IsContentVisibilityVisible()) {
+      if (!old_style && !new_style->IsContentVisibilityVisible()) {
         NotifyAXOfAttachedSubtree();
       }
       if (new_style->IsContainerForSizeContainerQueries()) {
@@ -4978,14 +5002,13 @@ void Element::SetRestrictionTargetId(std::unique_ptr<RestrictionTargetId> id) {
   // into its own stacking context during rendering.
   rare_data.SetRestrictionTargetId(std::move(id));
 
-  // By forcing reattachment, we ensure that the element would now be
-  // picked up as in its own stacking context.
-  // There is no corresponding style change.
-  SetForceReattachLayoutTree();
-
   // If a LayoutObject does not yet exist, this full paint invalidation
   // will occur automatically after it is created.
   if (LayoutObject* layout_object = GetLayoutObject()) {
+    // The paint properties need to updated, even though the style hasn't
+    // changed.
+    layout_object->SetNeedsPaintPropertyUpdate();
+
     // The SubCaptureTarget ID needs to be propagated to the paint system.
     layout_object->SetShouldDoFullPaintInvalidation();
   }
@@ -5397,6 +5420,13 @@ void Element::FinishParsingChildren() {
   CheckForEmptyStyleChange(this, this);
   CheckForSiblingStyleChanges(kFinishedParsingChildren, nullptr, lastChild(),
                               nullptr);
+
+  if (GetDocument().HasRenderBlockingExpectLinkElements()) {
+    DCHECK(GetDocument().GetRenderBlockingResourceManager());
+    GetDocument()
+        .GetRenderBlockingResourceManager()
+        ->RemovePendingParsingElement(GetIdAttribute());
+  }
   GetDocument()
       .GetStyleEngine()
       .ScheduleInvalidationsForHasPseudoAffectedByInsertion(
@@ -5773,8 +5803,8 @@ void Element::Focus(const FocusParams& params) {
       focus_options ? focus_options : params.options, params.focus_trigger);
 
   // Ensure we have clean style (including forced display locks).
-  GetDocument().UpdateStyleAndLayoutTreeForNode(this,
-                                                DocumentUpdateReason::kFocus);
+  GetDocument().UpdateStyleAndLayoutTreeForElement(
+      this, DocumentUpdateReason::kFocus);
 
   // https://html.spec.whatwg.org/C/#focusing-steps
   //
@@ -6949,8 +6979,7 @@ void Element::SetShadowPseudoId(const AtomicString& id) {
         CSSSelectorParser::ParsePseudoType(id, false, &GetDocument());
     DCHECK(type == CSSSelector::kPseudoWebKitCustomElement ||
            type == CSSSelector::kPseudoBlinkInternalElement ||
-           type == CSSSelector::kPseudoDetailsContent ||
-           type == CSSSelector::kPseudoDetailsSummary)
+           type == CSSSelector::kPseudoDetailsContent)
         << type;
   }
 #endif

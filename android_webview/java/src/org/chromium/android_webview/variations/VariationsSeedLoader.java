@@ -16,6 +16,7 @@ import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
@@ -90,6 +91,9 @@ public class VariationsSeedLoader {
     public static final String APP_SEED_FRESHNESS_HISTOGRAM_NAME = "Variations.AppSeedFreshness";
 
     @VisibleForTesting
+    public static final String SEED_FRESHNESS_DIFF_HISTOGRAM_NAME = "Variations.SeedFreshnessDiff";
+
+    @VisibleForTesting
     public static final String DOWNLOAD_JOB_INTERVAL_HISTOGRAM_NAME =
             "Variations.WebViewDownloadJobInterval";
 
@@ -101,6 +105,10 @@ public class VariationsSeedLoader {
             "Variations.SeedLoadBlockingTime";
     // This metric is also written by VariationsSeedStore::LoadSeed and is used by other platforms.
     private static final String SEED_LOAD_RESULT_HISTOGRAM_NAME = "Variations.SeedLoadResult";
+    // These two variables below are used for caching the difference between Seed and
+    // AppSeed Freshness.
+    private static long sCachedSeedFreshness;
+    private static long sCachedAppSeedFreshness;
 
     private SeedLoadAndUpdateRunnable mRunnable;
     private SeedServerCallback mSeedServerCallback = new SeedServerCallback();
@@ -114,15 +122,60 @@ public class VariationsSeedLoader {
         RecordHistogram.recordTimesHistogram(SEED_LOAD_BLOCKING_TIME_HISTOGRAM_NAME, timeMs);
     }
 
-    private static void recordAppSeedFreshness(long freshnessMinutes) {
+    private static void recordAppSeedFreshness(long appSeedFreshnessMinutes) {
         // Bucket parameters should match Variations.SeedFreshness.
         // See variations::RecordSeedFreshness.
         RecordHistogram.recordCustomCountHistogram(
                 APP_SEED_FRESHNESS_HISTOGRAM_NAME,
-                (int) freshnessMinutes,
+                (int) appSeedFreshnessMinutes,
                 /* min= */ 1,
                 /* max= */ (int) TimeUnit.DAYS.toMinutes(30),
                 /* numBuckets= */ 50);
+        cacheAppSeedFreshness(appSeedFreshnessMinutes);
+    }
+
+    // This method is to cache the AppSeedFreshness value
+    @VisibleForTesting
+    public static void cacheAppSeedFreshness(long appSeedFreshnessMinutes) {
+        if (appSeedFreshnessMinutes < 0) {
+            return;
+        }
+        sCachedAppSeedFreshness = appSeedFreshnessMinutes;
+        calculateSeedFreshnessDiff();
+    }
+
+    // This method is to cache the SeedFreshness value
+    @CalledByNative
+    @VisibleForTesting
+    public static void cacheSeedFreshness(long seedFreshness) {
+        if (seedFreshness < 0) {
+            return;
+        }
+        sCachedSeedFreshness = seedFreshness;
+        calculateSeedFreshnessDiff();
+    }
+
+    // This method is to calculate the difference between SeedFreshness
+    // and AppSeedFreshness
+    private static void calculateSeedFreshnessDiff() {
+        if (sCachedSeedFreshness == 0 || sCachedAppSeedFreshness == 0) {
+            return;
+        }
+        long diff = sCachedSeedFreshness - sCachedAppSeedFreshness;
+        recordAppSeedFreshnessDiff(diff);
+    }
+
+    // This method is to record the difference between SeedFreshness
+    // and AppSeedFreshness
+    private static void recordAppSeedFreshnessDiff(long diff) {
+        RecordHistogram.recordCustomCountHistogram(
+                SEED_FRESHNESS_DIFF_HISTOGRAM_NAME,
+                (int) diff,
+                /* min= */ 1,
+                /* max= */ (int) TimeUnit.DAYS.toMinutes(30),
+                /* numBuckets= */ 50);
+        sCachedSeedFreshness = 0;
+        sCachedAppSeedFreshness = 0;
     }
 
     private static void recordMinuteHistogram(String name, long value, long maxValue) {
@@ -281,6 +334,10 @@ public class VariationsSeedLoader {
                         getServerIntent(),
                         Context.BIND_AUTO_CREATE)) {
                     Log.e(TAG, "Failed to bind to WebView service");
+                    // If we don't close the file descriptor here, it will be leaked since this
+                    // service only wants to close it once the service has been connected.
+                    // Problematic if we can't connect to the service in the first place.
+                    VariationsUtils.closeSafely(mNewSeedFd);
                 }
                 // Connect to nonembedded metrics Service at the same time we connect to variation
                 // service.

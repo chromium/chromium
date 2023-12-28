@@ -29,6 +29,7 @@
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -167,7 +168,8 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
   SendConfigRequestAndWaitForResponse(
       const char* test_data,
       net::HttpStatusCode http_status = net::HTTP_OK,
-      const std::string& mime_type = "application/json") {
+      const std::string& mime_type = "application/json",
+      blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kWidget) {
     GURL config_url(kTestConfigUrl);
     AddResponse(config_url, http_status, mime_type, test_data);
 
@@ -183,7 +185,8 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
         });
 
     std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
-    manager->FetchConfig(GURL(kTestConfigUrl), kTestIdpBrandIconIdealSize,
+    manager->FetchConfig(GURL(kTestConfigUrl), rp_mode,
+                         kTestIdpBrandIconIdealSize,
                          kTestIdpBrandIconMinimumSize, std::move(callback));
     run_loop.Run();
 
@@ -839,30 +842,114 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigBrandingMinSize) {
   }
 }
 
-TEST_F(IdpNetworkRequestManagerTest, ParseConfigSupportsAddAccount) {
+TEST_F(IdpNetworkRequestManagerTest,
+       ParseConfigSupportsOtherAccountButtonMode) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmAddAccount);
 
   const char test_json[] = R"({
-  "supports_add_account": true
+  "modes": {
+    "button": {
+      "supports_use_other_account": true
+    }
+  }
   })";
 
   FetchStatus fetch_status;
   IdentityProviderMetadata idp_metadata;
-  std::tie(fetch_status, idp_metadata) =
-      SendConfigRequestAndWaitForResponse(test_json);
+  std::tie(fetch_status, idp_metadata) = SendConfigRequestAndWaitForResponse(
+      test_json, net::HTTP_OK, "application/json",
+      blink::mojom::RpMode::kButton);
 
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
   EXPECT_EQ(true, idp_metadata.supports_add_account);
 }
 
-TEST_F(IdpNetworkRequestManagerTest, ParseConfigAddAccountDisabled) {
+TEST_F(IdpNetworkRequestManagerTest,
+       ParseConfigSupportsOtherAccountWidgetMode) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAddAccount);
+
+  const char test_json[] = R"({
+  "modes": {
+    "widget": {
+      "supports_use_other_account": true
+    }
+  }
+  })";
+
+  FetchStatus fetch_status;
+  IdentityProviderMetadata idp_metadata;
+  std::tie(fetch_status, idp_metadata) = SendConfigRequestAndWaitForResponse(
+      test_json, net::HTTP_OK, "application/json",
+      blink::mojom::RpMode::kWidget);
+
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
+  EXPECT_EQ(true, idp_metadata.supports_add_account);
+}
+
+TEST_F(IdpNetworkRequestManagerTest,
+       ParseConfigSupportsOtherAccountDifferentMode) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAddAccount);
+
+  const char test_json[] = R"({
+  "modes": {
+    "button": {
+      "supports_use_other_account": true
+    }
+  }
+  })";
+
+  FetchStatus fetch_status;
+  IdentityProviderMetadata idp_metadata;
+  std::tie(fetch_status, idp_metadata) = SendConfigRequestAndWaitForResponse(
+      test_json, net::HTTP_OK, "application/json",
+      blink::mojom::RpMode::kWidget);
+
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
+  EXPECT_EQ(false, idp_metadata.supports_add_account);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ParseConfigSupportsOtherAccountBothModes) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAddAccount);
+
+  const char test_json[] = R"({
+  "modes": {
+    "button": {
+      "supports_use_other_account": false
+    },
+    "widget": {
+      "supports_use_other_account": true
+    }
+  }
+  })";
+
+  FetchStatus fetch_status;
+  IdentityProviderMetadata idp_metadata;
+  std::tie(fetch_status, idp_metadata) = SendConfigRequestAndWaitForResponse(
+      test_json, net::HTTP_OK, "application/json",
+      blink::mojom::RpMode::kButton);
+
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
+  EXPECT_EQ(false, idp_metadata.supports_add_account);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ParseConfigUseOtherAccountDisabled) {
   base::test::ScopedFeatureList list;
   list.InitAndDisableFeature(features::kFedCmAddAccount);
 
   const char test_json[] = R"({
-  "supports_add_account": true
+  "modes": {
+    "widget": {
+      "supports_use_other_account": true
+    }
+  }
   })";
 
   FetchStatus fetch_status;
@@ -875,7 +962,8 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigAddAccountDisabled) {
   EXPECT_EQ(false, idp_metadata.supports_add_account);
 }
 
-TEST_F(IdpNetworkRequestManagerTest, ParseConfigSupportsAddAccountMissing) {
+TEST_F(IdpNetworkRequestManagerTest,
+       ParseConfigSupportsUseOtherAccountMissing) {
   const char test_json[] = R"({
   })";
 

@@ -4,16 +4,12 @@
 
 package org.chromium.chrome.browser.feed.sort_ui;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.FEED_HEADER_STICK_TO_TOP;
-
 import android.app.Activity;
 import android.content.Context;
-import android.view.View;
 import android.widget.TextView;
 
 import org.junit.Before;
@@ -29,9 +25,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.v2.ContentOrder;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -42,15 +35,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /** Tests for {@link FeedOptionsCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.FEED_HEADER_STICK_TO_TOP})
 public class FeedOptionsCoordinatorTest {
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
     @Mock private FeedOptionsView mView;
-    @Mock private FeedOptionsView mStickyHeaderOptionsView;
     @Mock private ChipView mChipView;
-    @Mock private ChipView mStickyHeaderChipView;
     @Mock private TextView mTextView;
-    @Mock private TextView mStickyHeaderTextView;
 
     @Rule public JniMocker mMocker = new JniMocker();
 
@@ -65,11 +54,9 @@ public class FeedOptionsCoordinatorTest {
         when(mFeedServiceBridgeJniMock.getContentOrderForWebFeed())
                 .thenReturn(ContentOrder.REVERSE_CHRON);
         when(mView.createNewChip()).thenReturn(mChipView);
-        when(mStickyHeaderOptionsView.createNewChip()).thenReturn(mStickyHeaderChipView);
         when(mChipView.getPrimaryTextView()).thenReturn(mTextView);
-        when(mStickyHeaderChipView.getPrimaryTextView()).thenReturn(mStickyHeaderTextView);
 
-        mCoordinator = new FeedOptionsCoordinator(mContext, mView, mStickyHeaderOptionsView);
+        mCoordinator = new FeedOptionsCoordinator(mContext, mView);
     }
 
     @Test
@@ -144,18 +131,5 @@ public class FeedOptionsCoordinatorTest {
         assertFalse(chipModels.get(1).get(ChipProperties.SELECTED));
         assertTrue(chipModels.get(0).get(ChipProperties.SELECTED));
         assertTrue(listenerCalled.get());
-    }
-
-    @DisableFeatures({FEED_HEADER_STICK_TO_TOP})
-    @Test
-    public void testStickyHeaderReturnsNullWhenFlagIsOff() {
-        mCoordinator = new FeedOptionsCoordinator(mContext, mView, null);
-        View stickyHeaderOptionsView = null;
-        try {
-            stickyHeaderOptionsView = mCoordinator.getStickyHeaderOptionsView();
-        } catch (AssertionError e) {
-            // Success when the assertions are enabled.
-        }
-        assertEquals(null, stickyHeaderOptionsView);
     }
 }

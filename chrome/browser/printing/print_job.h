@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PRINTING_PRINT_JOB_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -13,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/global_routing_id.h"
@@ -263,10 +265,13 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
 
   // The global PrintJobManager. May be null in testing contexts
   // only. Otherwise guaranteed to outlive this object.
-  raw_ptr<PrintJobManager, DanglingUntriaged> print_job_manager_ = nullptr;
+  raw_ptr<PrintJobManager> print_job_manager_ = nullptr;
 
   // The printed document.
   scoped_refptr<PrintedDocument> document_;
+
+  // Time at start of printing.  Used for metrics.
+  std::optional<base::TimeTicks> printing_start_time_;
 
   // Is the worker thread printing.
   bool is_job_pending_ = false;

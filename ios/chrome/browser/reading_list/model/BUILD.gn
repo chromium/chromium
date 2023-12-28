@@ -41,7 +41,6 @@ source_set("model") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/reading_list/core",
-    "//components/reading_list/features:flags",
     "//components/reading_list/ios",
     "//components/sync",
     "//components/ukm/ios:ukm_url_recorder",

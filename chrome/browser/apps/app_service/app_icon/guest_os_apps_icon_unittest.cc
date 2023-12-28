@@ -71,7 +71,7 @@ class AppServiceGuestOSIconTest : public testing::Test {
                               int size_dp,
                               IconType icon_type) {
     base::test::TestFuture<apps::IconValuePtr> result;
-    proxy().LoadIcon(AppType::kCrostini, app_id, icon_type, size_dp,
+    proxy().LoadIcon(app_id, icon_type, size_dp,
                      /*allow_placeholder_icon=*/false, result.GetCallback());
     return result.Take();
   }

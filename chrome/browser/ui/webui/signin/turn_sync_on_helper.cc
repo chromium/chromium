@@ -162,6 +162,14 @@ void SetCurrentTurnSyncOnHelper(Profile* profile, TurnSyncOnHelper* helper) {
   profile->SetUserData(kCurrentTurnSyncOnHelperKey, std::move(wrapper));
 }
 
+bool IsLacrosOrUnoDesktopEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return true;
+#else
+  return base::FeatureList::IsEnabled(switches::kUnoDesktop);
+#endif  // IS_CHROMEOS_LACROS
+}
+
 }  // namespace
 
 bool TurnSyncOnHelper::Delegate::
@@ -186,7 +194,6 @@ TurnSyncOnHelper::TurnSyncOnHelper(
     Profile* profile,
     signin_metrics::AccessPoint signin_access_point,
     signin_metrics::PromoAction signin_promo_action,
-    signin_metrics::Reason signin_reason,
     const CoreAccountId& account_id,
     SigninAbortedMode signin_aborted_mode,
     std::unique_ptr<Delegate> delegate,
@@ -196,15 +203,12 @@ TurnSyncOnHelper::TurnSyncOnHelper(
       identity_manager_(IdentityManagerFactory::GetForProfile(profile)),
       signin_access_point_(signin_access_point),
       signin_promo_action_(signin_promo_action),
-      signin_reason_(signin_reason),
       signin_aborted_mode_(signin_aborted_mode),
       account_info_(
           identity_manager_->FindExtendedAccountInfoByAccountId(account_id)),
       scoped_callback_runner_(std::move(callback)),
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
       initial_primary_account_(identity_manager_->GetPrimaryAccountId(
           signin::ConsentLevel::kSignin)),
-#endif
       shutdown_subscription_(
           TurnSyncOnHelperShutdownNotifierFactory::GetInstance()
               ->Get(profile)
@@ -231,13 +235,11 @@ TurnSyncOnHelper::TurnSyncOnHelper(
     Browser* browser,
     signin_metrics::AccessPoint signin_access_point,
     signin_metrics::PromoAction signin_promo_action,
-    signin_metrics::Reason signin_reason,
     const CoreAccountId& account_id,
     SigninAbortedMode signin_aborted_mode)
     : TurnSyncOnHelper(profile,
                        signin_access_point,
                        signin_promo_action,
-                       signin_reason,
                        account_id,
                        signin_aborted_mode,
                        std::make_unique<TurnSyncOnHelperDelegateImpl>(browser),
@@ -494,10 +496,8 @@ void TurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
                                              signin_access_point_);
   // If the account is already signed in, `SetPrimaryAccount()` above is a no-op
   // and the logs below are inaccurate.
-  // TODO(crbug.com/1402935): Review and rebuild the SigninReason logging.
   signin_metrics::LogSigninAccessPointCompleted(signin_access_point_,
                                                 signin_promo_action_);
-  signin_metrics::LogSigninReason(signin_reason_);
   base::RecordAction(base::UserMetricsAction("Signin_Signin_Succeed"));
 
   bool user_accepted_management =
@@ -686,9 +686,9 @@ void TurnSyncOnHelper::SwitchToProfile(Profile* new_profile) {
       ->ShutdownCloudPolicyManager();
   SetCurrentTurnSyncOnHelper(profile_, nullptr);  // Detach from old profile
   profile_ = new_profile;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  initial_primary_account_ = CoreAccountId();
-#endif
+  if (IsLacrosOrUnoDesktopEnabled()) {
+    initial_primary_account_ = CoreAccountId();
+  }
   AttachToProfile();
 
   identity_manager_ = IdentityManagerFactory::GetForProfile(profile_);
@@ -728,50 +728,61 @@ void TurnSyncOnHelper::AbortAndDelete() {
   // no token.
   AccountReconcilor::Lock lock(
       AccountReconcilorFactory::GetForProfile(profile_));
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // If the initial primary account is still valid, reset it. This is only
-  // on Lacros because the `SigninManager` does it automatically with DICE.
-  if (!initial_primary_account_.empty() &&
+
+  // If the initial primary account is still valid, reset it. This is only on
+  // Lacros or if the UNO Desktop model is enabled, because the `SigninManager`
+  // does it automatically with DICE.
+  if (IsLacrosOrUnoDesktopEnabled() && !initial_primary_account_.empty() &&
       identity_manager_->HasAccountWithRefreshToken(initial_primary_account_)) {
     identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
         initial_primary_account_, signin::ConsentLevel::kSignin);
   }
-#endif
 
-  if (signin_aborted_mode_ == SigninAbortedMode::REMOVE_ACCOUNT ||
-      signin_aborted_mode_ == SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY) {
-    policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
-        ->ShutdownCloudPolicyManager();
+  switch (signin_aborted_mode_) {
+    case SigninAbortedMode::REMOVE_ACCOUNT: {
+      policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
+          ->ShutdownCloudPolicyManager();
 
-    // The account being removed may be the current primary account. Unblock the
-    // `SigninManager` so that it can handle the state where there is a primary
-    // account with no token. See https://crbug.com/1404961
-    account_change_blocker_.reset();
+      // The account being removed may be the current primary account. Unblock
+      // the `SigninManager` so that it can handle the state where there is a
+      // primary account with no token. See https://crbug.com/1404961
+      account_change_blocker_.reset();
 
-    switch (signin_aborted_mode_) {
-      case SigninAbortedMode::REMOVE_ACCOUNT: {
-        // Revoke the token, and the `AccountReconcilor` and/or the Gaia server
-        // will take care of invalidating the cookies.
-        auto* accounts_mutator = identity_manager_->GetAccountsMutator();
-        accounts_mutator->RemoveAccount(
-            account_info_.account_id,
-            signin_metrics::SourceForRefreshTokenOperation::
-                kTurnOnSyncHelper_Abort);
-        break;
-      }
-      case SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY: {
-        CHECK(base::FeatureList::IsEnabled(switches::kUnoDesktop));
+      // Revoke the token, and the `AccountReconcilor` and/or the Gaia server
+      // will take care of invalidating the cookies.
+      auto* accounts_mutator = identity_manager_->GetAccountsMutator();
+      accounts_mutator->RemoveAccount(
+          account_info_.account_id,
+          signin_metrics::SourceForRefreshTokenOperation::
+              kTurnOnSyncHelper_Abort);
+      break;
+    }
+    case SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY: {
+      CHECK(base::FeatureList::IsEnabled(switches::kUnoDesktop));
+      if (account_info_.account_id ==
+          identity_manager_
+              ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+              .account_id) {
+        policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
+            ->ShutdownCloudPolicyManager();
+
+        // The account being removed may be the current primary account. Unblock
+        // the `SigninManager` so that it can handle the state where there is a
+        // primary account with no token. See https://crbug.com/1404961
+        account_change_blocker_.reset();
+
         auto* primary_account_mutator =
             identity_manager_->GetPrimaryAccountMutator();
         primary_account_mutator->RemovePrimaryAccountButKeepTokens(
             signin_metrics::ProfileSignout::
                 kCancelSyncConfirmationOnWebOnlySignedIn,
             signin_metrics::SignoutDelete::kIgnoreMetric);
-        break;
       }
-      case SigninAbortedMode::KEEP_ACCOUNT:
-        NOTREACHED_NORETURN();
+      break;
     }
+    case SigninAbortedMode::KEEP_ACCOUNT:
+      // Do nothing.
+      break;
   }
 
   delete this;

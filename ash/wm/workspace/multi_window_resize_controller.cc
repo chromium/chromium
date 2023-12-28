@@ -213,7 +213,7 @@ class MultiWindowResizeController::ResizeView : public views::View {
   }
 
  private:
-  raw_ptr<MultiWindowResizeController, ExperimentalAsh> controller_;
+  raw_ptr<MultiWindowResizeController> controller_;
   const Direction direction_;
 
   SkPath GeneratePath(const gfx::Rect& bounds) {
@@ -306,7 +306,7 @@ class MultiWindowResizeController::ResizeMouseWatcherHost
   }
 
  private:
-  raw_ptr<MultiWindowResizeController, ExperimentalAsh> host_;
+  raw_ptr<MultiWindowResizeController> host_;
 };
 
 MultiWindowResizeController::ResizeWindows::ResizeWindows()
@@ -652,7 +652,7 @@ void MultiWindowResizeController::Hide() {
     return;
   }
 
-  for (auto* window : windows_.other_windows) {
+  for (aura::Window* window : windows_.other_windows) {
     StopObserving(window);
   }
 
@@ -674,12 +674,12 @@ void MultiWindowResizeController::StartResize(
   gfx::PointF location_in_parent =
       ConvertPointFromScreen(windows_.window2->parent(), location_in_screen);
   aura::Window::Windows windows;
-  windows.push_back(windows_.window2);
+  windows.push_back(windows_.window2.get());
   DCHECK(windows_.other_windows.empty());
   FindWindowsTouching(windows_.window2, windows_.direction,
                       &windows_.other_windows);
 
-  for (auto* other_window : windows_.other_windows) {
+  for (aura::Window* other_window : windows_.other_windows) {
     StartObserving(other_window);
     windows.push_back(other_window);
   }
@@ -736,7 +736,7 @@ void MultiWindowResizeController::CompleteResize() {
     // If the mouse is over the resizer we need to remove observers on any of
     // the `other_windows`. If we start another resize we'll recalculate the
     // `other_windows` and invoke AddObserver() as necessary.
-    for (auto* other_window : windows_.other_windows) {
+    for (aura::Window* other_window : windows_.other_windows) {
       StopObserving(other_window);
     }
 

@@ -199,7 +199,6 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
 
   // Whether or not the window's position or size was changed by a user.
   bool bounds_changed_by_user() const { return bounds_changed_by_user_; }
-  void set_bounds_changed_by_user(bool bounds_changed_by_user);
 
   // True if the window should not adjust the window's bounds when
   // virtual keyboard bounds changes.
@@ -324,6 +323,10 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // state machine.
   void OnWMEvent(const WMEvent* event);
 
+  // Sets `bounds` as is and ensure the layer is aligned with pixel boundary.
+  // For use in unit tests.
+  void SetBoundsDirectForTesting(const gfx::Rect& bounds);
+
   // TODO(oshima): Try hiding these methods and making them accessible only to
   // state impl. State changes should happen through events (as much
   // as possible).
@@ -372,6 +375,12 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // snapped window.
   void UpdateSnapRatio();
 
+  // Forcefully updates `snap_ratio` based on the given `target_bounds`. You
+  // usually should use `UpdateSnapRatio()` instead. This method does not check
+  // whether `window()` is in the snapped state, so the caller must be sure that
+  // `window()` is to-be-snapped. Use with care.
+  void ForceUpdateSnapRatio(const gfx::Rect& target_bounds);
+
   // Gets/sets whether the shelf should be hidden when this window is
   // fullscreen.
   bool GetHideShelfWhenFullscreen() const;
@@ -396,6 +405,10 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // the top portion of the window through a touch / mouse gesture. It might
   // also allow the shelf to be shown in some situations.
   bool IsInImmersiveFullscreen() const;
+
+  // Sets `bounds_changed_by_user_` to the given value and resets the
+  // corresponding variables.
+  void SetBoundsChangedByUser(bool bounds_changed_by_user);
 
   // Creates and takes ownership of a pointer to DragDetails when resizing is
   // active. This should be done before a resizer gets created.
@@ -472,7 +485,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
     void OnWindowDestroying(aura::Window* window) override;
 
    private:
-    raw_ptr<aura::Window, ExperimentalAsh> window_;
+    raw_ptr<aura::Window> window_;
     BoundsChangeAnimationType previous_bounds_animation_type_;
   };
 
@@ -594,17 +607,16 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   bool has_ever_been_dragged_to_maximized_ = false;
 
   // The owner of this window settings.
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
   std::unique_ptr<WindowStateDelegate> delegate_;
 
-  bool bounds_changed_by_user_;
+  bool bounds_changed_by_user_ = false;
   std::unique_ptr<DragDetails> drag_details_;
 
-  bool unminimize_to_restore_bounds_;
+  bool unminimize_to_restore_bounds_ = false;
   bool ignore_keyboard_bounds_change_ = false;
-  bool hide_shelf_when_fullscreen_;
-  bool autohide_shelf_when_maximized_or_fullscreen_;
-  ui::ZOrderLevel cached_z_order_;
+  bool autohide_shelf_when_maximized_or_fullscreen_ = false;
+  ui::ZOrderLevel cached_z_order_ = ui::ZOrderLevel::kNormal;
   bool allow_set_bounds_direct_ = false;
   bool is_moving_to_another_display_ = false;
 
@@ -646,7 +658,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
 
   // True to ignore a property change event to avoid reentrance in
   // UpdateWindowStateType()
-  bool ignore_property_change_;
+  bool ignore_property_change_ = false;
 
   std::unique_ptr<State> current_state_;
 

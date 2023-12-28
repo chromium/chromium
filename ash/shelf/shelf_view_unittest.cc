@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/constants/ash_features.h"
@@ -196,7 +196,7 @@ class TestShelfObserver : public ShelfObserver {
   }
 
  private:
-  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  const raw_ptr<Shelf> shelf_;
   bool icon_positions_changed_ = false;
   base::TimeDelta icon_positions_animation_duration_;
 };
@@ -731,12 +731,10 @@ class ShelfViewTest : public AshTestBase {
         ui::HapticTouchpadEffectStrength::kMedium);
   }
 
-  raw_ptr<ShelfModel, DanglingUntriaged | ExperimentalAsh> model_ = nullptr;
-  raw_ptr<ShelfView, DanglingUntriaged | ExperimentalAsh> shelf_view_ = nullptr;
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> navigation_view_ =
-      nullptr;
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> status_area_ =
-      nullptr;
+  raw_ptr<ShelfModel, DanglingUntriaged> model_ = nullptr;
+  raw_ptr<ShelfView, DanglingUntriaged> shelf_view_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> navigation_view_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> status_area_ = nullptr;
 
   int id_ = 0;
 
@@ -2883,16 +2881,12 @@ class ShelfViewInkDropTest : public ShelfViewTest {
         .SetInkDrop(std::move(browser_button_ink_drop));
   }
 
-  raw_ptr<HomeButton, DanglingUntriaged | ExperimentalAsh> home_button_ =
+  raw_ptr<HomeButton, DanglingUntriaged> home_button_ = nullptr;
+  raw_ptr<InkDropSpy, DanglingUntriaged> home_button_ink_drop_ = nullptr;
+  raw_ptr<ShelfAppButton, DanglingUntriaged> browser_button_ = nullptr;
+  raw_ptr<InkDropSpy, DanglingUntriaged> browser_button_ink_drop_ = nullptr;
+  raw_ptr<views::InkDropImpl, DanglingUntriaged> browser_button_ink_drop_impl_ =
       nullptr;
-  raw_ptr<InkDropSpy, DanglingUntriaged | ExperimentalAsh>
-      home_button_ink_drop_ = nullptr;
-  raw_ptr<ShelfAppButton, DanglingUntriaged | ExperimentalAsh> browser_button_ =
-      nullptr;
-  raw_ptr<InkDropSpy, DanglingUntriaged | ExperimentalAsh>
-      browser_button_ink_drop_ = nullptr;
-  raw_ptr<views::InkDropImpl, DanglingUntriaged | ExperimentalAsh>
-      browser_button_ink_drop_impl_ = nullptr;
 };
 
 // Tests that changing visibility of the app list transitions home button's
@@ -3635,10 +3629,8 @@ class ShelfViewGestureTapTest : public ShelfViewTest {
   }
 
  protected:
-  raw_ptr<ShelfAppButton, DanglingUntriaged | ExperimentalAsh> app_icon1_ =
-      nullptr;
-  raw_ptr<ShelfAppButton, DanglingUntriaged | ExperimentalAsh> app_icon2_ =
-      nullptr;
+  raw_ptr<ShelfAppButton, DanglingUntriaged> app_icon1_ = nullptr;
+  raw_ptr<ShelfAppButton, DanglingUntriaged> app_icon2_ = nullptr;
 };
 
 // Verifies the shelf app button's inkdrop behavior when the mouse click
@@ -3826,7 +3818,7 @@ class ShelfViewDeskButtonTest : public ShelfViewTest {
     prefs_ = Shell::Get()->session_controller()->GetLastActiveUserPrefService();
   }
 
-  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> prefs_;
+  raw_ptr<PrefService, DanglingUntriaged> prefs_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

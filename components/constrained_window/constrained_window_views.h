@@ -63,6 +63,11 @@ views::Widget* ShowWebModalDialogViews(
     views::WidgetDelegate* dialog,
     content::WebContents* initiator_web_contents);
 
+// As above, but with an owned widget.
+std::unique_ptr<views::Widget> ShowWebModalDialogViewsOwned(
+    views::WidgetDelegate* dialog,
+    content::WebContents* initiator_web_contents);
+
 // Create a widget for |dialog| that is modal to |web_contents|.
 // The modal type of |dialog->GetModalType()| must be ui::MODAL_TYPE_CHILD.
 views::Widget* CreateWebModalDialogViews(views::WidgetDelegate* dialog,

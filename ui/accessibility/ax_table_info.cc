@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -76,7 +77,7 @@ bool isRowlessTable(AXNode* node) {
 // Returns false if cells were found. We should not reach cells if rows are
 // present.
 void FindRows(AXNode* node,
-              std::vector<AXNode*>* row_node_list,
+              std::vector<raw_ptr<AXNode, VectorExperimental>>* row_node_list,
               AXNodeID& caption_node_id) {
   for (auto iter = node->UnignoredChildrenBegin();
        iter != node->UnignoredChildrenEnd(); ++iter) {
@@ -95,9 +96,9 @@ void FindRows(AXNode* node,
 
 // For each row find its cells and add them to |cell_nodes_per_row| as a
 // 2-dimensional array.
-void FindCells(std::vector<AXNode*>* row_node_list,
+void FindCells(std::vector<raw_ptr<AXNode, VectorExperimental>>* row_node_list,
                std::vector<std::vector<AXNode*>>* cell_nodes_per_row) {
-  for (auto* row : *row_node_list) {
+  for (ui::AXNode* row : *row_node_list) {
     cell_nodes_per_row->emplace_back();
     FindCellsInRow(row, &cell_nodes_per_row->back());
   }
@@ -435,7 +436,7 @@ void AXTableInfo::BuildCellDataVectorFromCellNodes(
 }
 
 void AXTableInfo::BuildCellDataVectorFromRowAndCellNodes(
-    const std::vector<AXNode*>& row_node_list,
+    const std::vector<raw_ptr<AXNode, VectorExperimental>>& row_node_list,
     const std::vector<std::vector<AXNode*>>& cell_nodes_per_row) {
   // Iterate over the cells and build up an array of CellData
   // entries, one for each cell. Compute the actual row and column
@@ -563,7 +564,7 @@ void AXTableInfo::UpdateExtraMacNodes() {
   // There is one node for each column, and one more for the table header
   // container.
   size_t extra_node_count = col_count + 1;
-  std::vector<AXNode*> new_extra_mac_nodes;
+  std::vector<raw_ptr<AXNode, VectorExperimental>> new_extra_mac_nodes;
   new_extra_mac_nodes.reserve(extra_node_count);
   std::vector<AXTreeObserver::Change> changes;
   // Reserve room for the extra Mac nodes plus for the table itself.

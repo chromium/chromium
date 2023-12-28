@@ -95,7 +95,7 @@ void ChooserDialogView::OnSelectionChanged() {
   DialogModelChanged();
 }
 
-BEGIN_METADATA(ChooserDialogView, views::DialogDelegateView)
+BEGIN_METADATA(ChooserDialogView)
 END_METADATA
 
 void ShowConstrainedDeviceChooserDialog(

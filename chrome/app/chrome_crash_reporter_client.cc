@@ -42,6 +42,11 @@
 #include "ash/constants/ash_switches.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_params_proxy.h"  // nogncheck
+#include "chromeos/startup/startup.h"               // nogncheck
+#endif
+
 void ChromeCrashReporterClient::Create() {
   static base::NoDestructor<ChromeCrashReporterClient> crash_client;
   crash_reporter::SetCrashReporterClient(crash_client.get());
@@ -191,7 +196,20 @@ bool ChromeCrashReporterClient::GetCollectStatsConsent() {
             << "so returning false";
     return false;
   }
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool settings_consent;
+  // If Lacros is prelaunched at login screen and the user hasn't logged in,
+  // we use the same consent file as Ash until login.
+  if (chromeos::IsLaunchedWithPostLoginParams() &&
+      !chromeos::BrowserParamsProxy::IsLoggedIn()) {
+    settings_consent = GoogleUpdateSettings::GetCollectStatsConsentFromDir(
+        base::FilePath("/home/chronos"));
+  } else {
+    settings_consent = GoogleUpdateSettings::GetCollectStatsConsent();
+  }
+#else
   bool settings_consent = GoogleUpdateSettings::GetCollectStatsConsent();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   VLOG(1) << "GetCollectStatsConsent(): settings_consent: " << settings_consent
           << " so returning that";
   return settings_consent;

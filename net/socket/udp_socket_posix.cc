@@ -102,18 +102,6 @@ int change_fdguard_np(int fd,
 
 const guardid_t kSocketFdGuard = 0xD712BC0BC9A4EAD4;
 
-// Returns true if `socket` is connected to 0.0.0.0, false otherwise.
-// For detecting slow socket close due to a MacOS bug
-// (https://crbug.com/1194888).
-bool PeerIsZeroIPv4(const UDPSocketPosix& socket) {
-  IPEndPoint peer;
-  // Note this may call `getpeername` if the address is not cached, adding some
-  // overhead.
-  if (socket.GetPeerAddress(&peer) != OK)
-    return false;
-  return peer.address().IsIPv4() && peer.address().IsZero();
-}
-
 #endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
 
 int GetSocketFDHash(int fd) {
@@ -282,15 +270,9 @@ void UDPSocketPosix::Close() {
   // Verify that |socket_| hasn't been corrupted. Needed to debug
   // crbug.com/906005.
   CHECK_EQ(socket_hash_, GetSocketFDHash(socket_));
-#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
-  // A MacOS bug can cause sockets to 0.0.0.0 to take 1 second to close. Log a
-  // trace event for this case so that it can be correlated with jank in traces.
-  // Use the "base" category since "net" isn't enabled by default. See
-  // https://crbug.com/1194888.
-  TRACE_EVENT("base", PeerIsZeroIPv4(*this)
-                          ? perfetto::StaticString{"CloseSocketUDP.PeerIsZero"}
-                          : perfetto::StaticString{"CloseSocketUDP"});
+  TRACE_EVENT("base", perfetto::StaticString{"CloseSocketUDP"});
 
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
   // Attempt to clear errors on the socket so that they are not returned by
   // close(). This seems to be effective at clearing some, but not all,
   // EPROTOTYPE errors. See https://crbug.com/1151048.

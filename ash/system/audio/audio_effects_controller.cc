@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -94,7 +94,7 @@ void AudioEffectsController::OnEffectControlActivated(
     }
     case VcEffectId::kLiveCaption: {
       // Toggle live caption.
-      AccessibilityControllerImpl* controller =
+      AccessibilityController* controller =
           Shell::Get()->accessibility_controller();
       controller->live_caption().SetEnabled(
           !controller->live_caption().enabled());

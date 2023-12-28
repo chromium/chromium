@@ -17,6 +17,7 @@ class GURL;
 namespace net {
 
 class ProxyInfo;
+class ProxyResolutionService;
 
 class TestProxyDelegate : public ProxyDelegate {
  public:
@@ -56,6 +57,8 @@ class TestProxyDelegate : public ProxyDelegate {
       const ProxyChain& proxy_chain,
       size_t chain_index,
       const HttpResponseHeaders& response_headers) override;
+  void SetProxyResolutionService(
+      ProxyResolutionService* proxy_resolution_service) override;
 
  private:
   bool on_before_tunnel_request_called_ = false;

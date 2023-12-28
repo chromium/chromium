@@ -28,6 +28,9 @@ class CardUnmaskDelegate {
 
     // User is opting-in for FIDO Authentication for future card unmasking.
     bool enable_fido_auth = false;
+
+    // If the FIDO auth checkbox was visible to the user.
+    bool was_checkbox_visible = false;
   };
 
   // Called when the user has attempted a verification. Prompt is still

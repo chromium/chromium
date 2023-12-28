@@ -1,0 +1,79 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/chromeos/extensions/api/api_sources.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+
+source_set("management") {
+  sources = [
+    "management_api.cc",
+    "management_api.h",
+    "remote_telemetry_management_service_strategy.cc",
+    "remote_telemetry_management_service_strategy.h",
+  ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/chromeos/extensions/telemetry/api/common",
+    "//chrome/browser/extensions",
+    "//chrome/common/chromeos/extensions/api",
+    "//chromeos/crosapi/mojom",
+    "//extensions/browser",
+    "//extensions/common",
+    "//mojo/public/cpp/bindings",
+    "//third_party/abseil-cpp:absl",
+  ]
+
+  public_deps = [ "//extensions/browser" ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash/telemetry_extension/management" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros" ]
+  }
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "fake_telemetry_management_service.cc",
+    "fake_telemetry_management_service.h",
+    "management_api_browsertest.cc",
+  ]
+
+  deps = [
+    ":management",
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/chromeos/extensions/telemetry/api/common:test_support",
+    "//chrome/browser/chromeos/telemetry:test_support",
+    "//chromeos/crosapi/mojom",
+    "//content/test:test_support",
+    "//extensions/common",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+  ]
+
+  data = [ "//chrome/test/data" ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "fake_telemetry_management_service_factory.cc",
+      "fake_telemetry_management_service_factory.h",
+    ]
+
+    deps += [ "//chrome/browser/ash/telemetry_extension/management" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros" ]
+  }
+}

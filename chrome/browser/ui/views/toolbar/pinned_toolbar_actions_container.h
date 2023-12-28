@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
@@ -27,7 +28,8 @@ class BrowserView;
 class PinnedToolbarActionsContainer
     : public ToolbarIconContainerView,
       public PinnedToolbarActionsModel::Observer,
-      public views::DragController {
+      public views::DragController,
+      public ToolbarController::PinnedActionsDelegate {
   METADATA_HEADER(PinnedToolbarActionsContainer, ToolbarIconContainerView)
 
  public:
@@ -51,6 +53,9 @@ class PinnedToolbarActionsContainer
 
     bool IsActive();
     bool IsInvokingAction();
+
+    // View:
+    bool OnKeyPressed(const ui::KeyEvent& event) override;
 
     // Button:
     gfx::Size CalculatePreferredSize() const override;
@@ -86,6 +91,7 @@ class PinnedToolbarActionsContainer
 
   void UpdateActionState(actions::ActionId id, bool is_active);
   void UpdateDividerFlexSpecification();
+  void MovePinnedActionBy(actions::ActionId action_id, int delta);
 
   // ToolbarIconContainerView:
   void UpdateAllIcons() override;
@@ -117,6 +123,10 @@ class PinnedToolbarActionsContainer
                            const gfx::Point& press_pt,
                            const gfx::Point& p) override;
 
+  // ToolbarController::PinnedActionsDelegate:
+  actions::ActionItem* GetActionItemFor(const actions::ActionId& id) override;
+  bool IsOverflowed(const actions::ActionId& id) override;
+
   bool IsActionPinned(const actions::ActionId& id);
 
  private:
@@ -126,7 +136,6 @@ class PinnedToolbarActionsContainer
   // A struct representing the position and action being dragged.
   struct DropInfo;
 
-  actions::ActionItem* GetActionItemFor(const actions::ActionId& id);
   PinnedActionToolbarButton* AddPopOutButtonFor(const actions::ActionId& id);
   void RemovePoppedOutButtonFor(const actions::ActionId& id);
   void AddPinnedActionButtonFor(const actions::ActionId& id);
@@ -161,8 +170,10 @@ class PinnedToolbarActionsContainer
 
   const raw_ptr<BrowserView> browser_view_;
 
-  std::vector<PinnedActionToolbarButton*> pinned_buttons_;
-  std::vector<PinnedActionToolbarButton*> popped_out_buttons_;
+  std::vector<raw_ptr<PinnedActionToolbarButton, VectorExperimental>>
+      pinned_buttons_;
+  std::vector<raw_ptr<PinnedActionToolbarButton, VectorExperimental>>
+      popped_out_buttons_;
   raw_ptr<views::View> toolbar_divider_;
   raw_ptr<PinnedToolbarActionsModel> model_;
 

@@ -6,8 +6,9 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/check.h"
-#include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -30,7 +31,7 @@ std::unique_ptr<FormDataParser> InitParser(
 // On success, returns true and the parsed |output|, else false.
 // Parsed |output| has names on even positions (0, 2, ...), values on odd ones.
 bool RunParser(const std::string& content_type_header,
-               const std::vector<const base::StringPiece*>& bytes,
+               const std::vector<const std::string_view*>& bytes,
                std::vector<std::string>* output) {
   DCHECK(output);
   output->clear();
@@ -59,7 +60,7 @@ bool RunParser(const std::string& content_type_header,
 // on the source represented by the concatenation of blocks from |bytes|.
 // Checks that the parser fails parsing.
 bool CheckParserFails(const std::string& content_type_header,
-                      const std::vector<const base::StringPiece*>& bytes) {
+                      const std::vector<const std::string_view*>& bytes) {
   std::vector<std::string> output;
   std::unique_ptr<FormDataParser> parser(InitParser(content_type_header));
   if (!parser.get())
@@ -157,13 +158,13 @@ TEST(WebRequestFormDataParserTest, Parsing) {
       "&check=option+B&txtarea=Some+text.%0D%0AOther.%0D%0A&select=one"
       "&binary=%D0%A0%D0%BE%D0%B4%D0%B6%D0%B5%D1%80%20%D0%96%D0%B5%D0%BB%D1%8F%"
       "D0%B7%D0%BD%D1%8B";
-  const base::StringPiece kMultipartBytes(kBigBlock);
-  const base::StringPiece kMultipartBytesSplit1(kBlockStr1);
-  const base::StringPiece kMultipartBytesSplit2(kBlockStr2);
-  const base::StringPiece kMultipartBytesSplit3(kBlockStr3);
-  const base::StringPiece kUrlEncodedBytes(kUrlEncodedBlock);
+  const std::string_view kMultipartBytes(kBigBlock);
+  const std::string_view kMultipartBytesSplit1(kBlockStr1);
+  const std::string_view kMultipartBytesSplit2(kBlockStr2);
+  const std::string_view kMultipartBytesSplit3(kBlockStr3);
+  const std::string_view kUrlEncodedBytes(kUrlEncodedBlock);
   const std::string kPlainBlock = "abc";
-  const base::StringPiece kTextPlainBytes(kPlainBlock);
+  const std::string_view kTextPlainBytes(kPlainBlock);
   // Headers.
   const std::string kUrlEncoded = "application/x-www-form-urlencoded";
   const std::string kTextPlain = "text/plain";
@@ -191,7 +192,7 @@ TEST(WebRequestFormDataParserTest, Parsing) {
                            "\u0416\u0435\u043b\u044f\u0437\u043d\u044b")};
   const std::vector<std::string> kExpected(kPairs, kPairs + std::size(kPairs));
 
-  std::vector<const base::StringPiece*> input;
+  std::vector<const std::string_view*> input;
   std::vector<std::string> output;
 
   // First test: multipart POST data in one lump.
@@ -250,16 +251,16 @@ TEST(WebRequestFormDataParserTest, MalformedPayload) {
       "text=test%0Dtext%0Awith+non-CRLF+line+breaks"
       "&file==test&password=test+password&radio=Yes&check=option+A"
       "&check=option+B&txtarea=Some+text.%0D%0AOther.%0D%0A&select=one";
-  const base::StringPiece kMultipartBytes(kBlockStr);
-  const base::StringPiece kMultipartBytesEmpty("");
-  const base::StringPiece kUrlEncodedBytes(kUrlEncodedBlock);
-  const base::StringPiece kUrlEncodedBytesEmpty("");
+  const std::string_view kMultipartBytes(kBlockStr);
+  const std::string_view kMultipartBytesEmpty("");
+  const std::string_view kUrlEncodedBytes(kUrlEncodedBlock);
+  const std::string_view kUrlEncodedBytesEmpty("");
   // Headers.
   const std::string kUrlEncoded = "application/x-www-form-urlencoded";
   const std::string kMultipart =
       std::string("multipart/form-data; boundary=") + kBoundary;
 
-  std::vector<const base::StringPiece*> input;
+  std::vector<const std::string_view*> input;
 
   // First test: malformed multipart POST data.
   input.push_back(&kMultipartBytes);

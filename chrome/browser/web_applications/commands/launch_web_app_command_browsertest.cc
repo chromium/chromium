@@ -395,11 +395,8 @@ class LaunchWebAppCommandTest_Shortstand : public LaunchWebAppCommandTest {
 IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest_Shortstand,
                        ShortcutLaunchInTab) {
   const GURL kShortcutUrl("https://www.shortcut-example.com");
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
-  web_app_info->title = u"TestShortcut";
-  web_app_info->start_url = kShortcutUrl;
   webapps::AppId web_shortcut_id =
-      test::InstallWebApp(profile(), std::move(web_app_info));
+      test::InstallShortcut(profile(), "TestShortcut", kShortcutUrl);
 
   {
     apps::AppLaunchParams launch_params = CreateLaunchParams(

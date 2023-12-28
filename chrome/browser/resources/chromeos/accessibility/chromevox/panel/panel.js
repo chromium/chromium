@@ -563,7 +563,7 @@ export class Panel extends PanelInterface {
    * @private
    */
   onOptions_() {
-    chrome.runtime.openOptionsPage();
+    chrome.accessibilityPrivate.openSettingsSubpage('textToSpeech/chromeVox');
     this.setMode(PanelMode.COLLAPSED);
   }
 

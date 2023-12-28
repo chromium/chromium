@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "components/signin/public/android/jni_headers/ProfileOAuth2TokenServiceDelegate_jni.h"
 #include "components/signin/public/base/account_consistency_method.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
@@ -415,10 +416,21 @@ void ProfileOAuth2TokenServiceDelegateAndroid::RevokeAllCredentials() {
   for (const CoreAccountId& account : accounts_to_revoke)
     FireRefreshTokenRevoked(account);
 
-  JNIEnv* env = AttachCurrentThread();
-  signin::
-      Java_ProfileOAuth2TokenServiceDelegate_invalidateAccountsSeedingStatus(
-          env, java_ref_);
+  if (base::FeatureList::IsEnabled(switches::kSeedAccountsRevamp)) {
+    // We don't expose the list of accounts if the user is signed out, so it is
+    // safe to assume that the account list is empty here.
+    // TODO(crbug.com/1491005): Once we expose the list of accounts all the
+    // time, this assumption should be re-evaluated.
+    const std::vector<CoreAccountInfo> empty_accounts_list =
+        std::vector<CoreAccountInfo>();
+    SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
+        std::vector<CoreAccountInfo>(), absl::optional<CoreAccountId>());
+  } else {
+    JNIEnv* env = AttachCurrentThread();
+    signin::
+        Java_ProfileOAuth2TokenServiceDelegate_invalidateAccountsSeedingStatus(
+            env, java_ref_);
+  }
 }
 
 void ProfileOAuth2TokenServiceDelegateAndroid::LoadCredentials(

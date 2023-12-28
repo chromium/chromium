@@ -12,7 +12,7 @@ mojom("mojo_bindings") {
   webui_module_path = "/"
 
   # For Closure Compiler targets in chrome/browser/resources/chromeos/crostini
-  use_typescript_sources = false
+  generate_webui_js_bindings = true
   public_deps =
       [ "//chrome/browser/ash/crostini:crostini_installer_types_mojom" ]
 }

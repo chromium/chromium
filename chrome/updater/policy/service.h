@@ -137,6 +137,13 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   virtual ~PolicyService();
 
  private:
+  template <typename T>
+  using PolicyQueryFunction =
+      std::optional<T> (PolicyManagerInterface::*)() const;
+  template <typename T>
+  using AppPolicyQueryFunction =
+      std::optional<T> (PolicyManagerInterface::*)(const std::string&) const;
+
   friend class base::RefCountedThreadSafe<PolicyService>;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -160,21 +167,20 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   const scoped_refptr<ExternalConstants> external_constants_;
 
   // Helper function to query the policy from the managed policy providers and
-  // determines the policy status.
-  template <typename T>
-  PolicyStatus<T> QueryPolicy(
-      const base::RepeatingCallback<std::optional<T>(
-          const PolicyManagerInterface*)>& policy_query_callback,
-      const base::RepeatingCallback<bool(const T&)>& validator =
-          base::NullCallback()) const;
+  // determines the policy status. The provided `transform` can be used to
+  // modify the queried value to be a different type, or to nullify it when
+  // invalid.
+  template <typename T, typename U = T>
+  PolicyStatus<U> QueryPolicy(
+      PolicyQueryFunction<T> policy_query_function,
+      const base::RepeatingCallback<std::optional<U>(std::optional<T>)>&
+          transform = base::NullCallback()) const;
 
   // Helper function to query app policy from the managed policy providers and
   // determines the policy status.
   template <typename T>
   PolicyStatus<T> QueryAppPolicy(
-      const base::RepeatingCallback<
-          std::optional<T>(const PolicyManagerInterface*,
-                           const std::string& app_id)>& policy_query_callback,
+      AppPolicyQueryFunction<T> policy_query_function,
       const std::string& app_id) const;
 
   std::set<std::string> GetAppsWithPolicy() const;

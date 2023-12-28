@@ -39,13 +39,13 @@ class TestAtomicMiddleNameAddressComponent : public AddressComponent {
   TestAtomicMiddleNameAddressComponent()
       : AddressComponent(NAME_MIDDLE, {}, MergeMode::kDefault) {}
 
-  const ServerFieldTypeSet GetAdditionalSupportedFieldTypes() const override {
-    constexpr ServerFieldTypeSet supported_types{NAME_MIDDLE_INITIAL};
+  const FieldTypeSet GetAdditionalSupportedFieldTypes() const override {
+    constexpr FieldTypeSet supported_types{NAME_MIDDLE_INITIAL};
     return supported_types;
   }
 
   void SetValueForOtherSupportedType(
-      ServerFieldType field_type,
+      FieldType field_type,
       const std::u16string& value,
       const VerificationStatus& status) override {
     CHECK(IsSupportedType(field_type));
@@ -53,7 +53,7 @@ class TestAtomicMiddleNameAddressComponent : public AddressComponent {
   }
 
   std::u16string GetValueForOtherSupportedType(
-      ServerFieldType field_type) const override {
+      FieldType field_type) const override {
     CHECK(IsSupportedType(field_type));
     return GetValue().substr(0, 1);
   }
@@ -171,7 +171,7 @@ class TestNonProperFirstNameAddressComponent : public AddressComponent {
 // If |is_mergeable| it is expected that the two components are mergeable.
 // If |newer_was_more_recently_used| the newer component was also more recently
 // used which is true by default.
-void TestAtomMerging(ServerFieldType type,
+void TestAtomMerging(FieldType type,
                      AddressComponentTestValues older_values,
                      AddressComponentTestValues newer_values,
                      AddressComponentTestValues merge_expectation,
@@ -217,7 +217,7 @@ TEST(AutofillStructuredAddressAddressComponent, ConstructAndDestruct) {
 TEST(AutofillStructuredAddressAddressComponent,
      TestNonProperTreeDcheckFailure) {
   TestNonProperFirstNameAddressComponent non_proper_compound;
-  ServerFieldTypeSet supported_types;
+  FieldTypeSet supported_types;
   EXPECT_DCHECK_DEATH(non_proper_compound.GetSupportedTypes(&supported_types));
 }
 
@@ -244,11 +244,11 @@ TEST(AutofillStructuredAddressAddressComponent, TestGetSupportedFieldType) {
 
   // The first name does not have an additional supported field type.
   EXPECT_EQ(first_name_component.GetAdditionalSupportedFieldTypes(),
-            ServerFieldTypeSet({}));
+            FieldTypeSet({}));
 
   // The middle name supports an initial.
   EXPECT_EQ(middle_name_component.GetAdditionalSupportedFieldTypes(),
-            ServerFieldTypeSet({NAME_MIDDLE_INITIAL}));
+            FieldTypeSet({NAME_MIDDLE_INITIAL}));
 }
 
 // Tests setting an additional field type.
@@ -299,7 +299,7 @@ TEST(AutofillStructuredAddressAddressComponent,
 
 // Tests adding all supported types to the set.
 TEST(AutofillStructuredAddressAddressComponent, TestGetSupportedTypes) {
-  ServerFieldTypeSet field_type_set;
+  FieldTypeSet field_type_set;
 
   TestAtomicFirstNameAddressComponent first_name_component;
   TestAtomicMiddleNameAddressComponent middle_name_component;
@@ -307,25 +307,23 @@ TEST(AutofillStructuredAddressAddressComponent, TestGetSupportedTypes) {
 
   // The first name only supports NAME_FIRST.
   first_name_component.GetSupportedTypes(&field_type_set);
-  EXPECT_EQ(field_type_set, ServerFieldTypeSet({NAME_FIRST}));
+  EXPECT_EQ(field_type_set, FieldTypeSet({NAME_FIRST}));
 
   // The middle name supports an initial.
   field_type_set.clear();
   middle_name_component.GetSupportedTypes(&field_type_set);
-  EXPECT_EQ(field_type_set,
-            ServerFieldTypeSet({NAME_MIDDLE, NAME_MIDDLE_INITIAL}));
+  EXPECT_EQ(field_type_set, FieldTypeSet({NAME_MIDDLE, NAME_MIDDLE_INITIAL}));
 
   // Verify that all types are added correctly in a compound structure.
   field_type_set.clear();
   compound_name.GetSupportedTypes(&field_type_set);
-  EXPECT_EQ(field_type_set,
-            ServerFieldTypeSet({NAME_MIDDLE, NAME_MIDDLE_INITIAL, NAME_FIRST,
-                                NAME_LAST, NAME_FULL}));
+  EXPECT_EQ(field_type_set, FieldTypeSet({NAME_MIDDLE, NAME_MIDDLE_INITIAL,
+                                          NAME_FIRST, NAME_LAST, NAME_FULL}));
 }
 
 // Tests adding all storable types to the set.
 TEST(AutofillStructuredAddressAddressComponent, TestGetStorableTypes) {
-  ServerFieldTypeSet field_type_set;
+  FieldTypeSet field_type_set;
 
   TestAtomicFirstNameAddressComponent first_name_component;
   TestAtomicMiddleNameAddressComponent middle_name_component;
@@ -333,18 +331,18 @@ TEST(AutofillStructuredAddressAddressComponent, TestGetStorableTypes) {
 
   // The first name only supports NAME_FIRST.
   first_name_component.GetStorableTypes(&field_type_set);
-  EXPECT_EQ(field_type_set, ServerFieldTypeSet({NAME_FIRST}));
+  EXPECT_EQ(field_type_set, FieldTypeSet({NAME_FIRST}));
 
   // The middle name supports an initial.
   field_type_set.clear();
   middle_name_component.GetStorableTypes(&field_type_set);
-  EXPECT_EQ(field_type_set, ServerFieldTypeSet({NAME_MIDDLE}));
+  EXPECT_EQ(field_type_set, FieldTypeSet({NAME_MIDDLE}));
 
   // Verify that all types are added correctly in a compound structure.
   field_type_set.clear();
   compound_name.GetStorableTypes(&field_type_set);
-  EXPECT_EQ(field_type_set, ServerFieldTypeSet({NAME_MIDDLE, NAME_FIRST,
-                                                NAME_LAST, NAME_FULL}));
+  EXPECT_EQ(field_type_set,
+            FieldTypeSet({NAME_MIDDLE, NAME_FIRST, NAME_LAST, NAME_FULL}));
 }
 
 // Tests the comparison of the atoms of the same type.
@@ -605,8 +603,7 @@ TEST(AutofillStructuredAddressAddressComponent, GetSubcomponentTypes) {
   // Get the subcomponent types and verify the expectation.
   auto sub_component_types =
       compound_component.GetSubcomponentTypesForTesting();
-  std::vector<ServerFieldType> expected_types{NAME_FIRST, NAME_MIDDLE,
-                                              NAME_LAST};
+  std::vector<FieldType> expected_types{NAME_FIRST, NAME_MIDDLE, NAME_LAST};
   EXPECT_EQ(sub_component_types, expected_types);
 }
 
@@ -1804,6 +1801,9 @@ TEST(AutofillStructuredAddressAddressComponent,
 }
 
 TEST(AutofillStructuredAddressAddressComponent, TestFillTreeGaps) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      features::kAutofillEnableSupportForHonorificPrefixes);
   NameFullWithPrefix name;
 
   AddressComponentTestValues name_filled_values = {
@@ -1897,6 +1897,9 @@ TEST(AutofillStructuredAddressAddressComponent,
 }
 
 TEST(AutofillStructuredAddressAddressComponent, TestFillTreeGapsParsing) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      features::kAutofillEnableSupportForHonorificPrefixes);
   NameFullWithPrefix name;
 
   AddressComponentTestValues name_filled_values = {

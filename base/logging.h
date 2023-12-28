@@ -617,6 +617,10 @@ class BASE_EXPORT LogMessage {
  private:
   void Init(const char* file, int line);
 
+  // TODO(crbug.com/1409729): Mark (and make) this [[noreturn]] once no test
+  // relies on LogAssertHandlers to make LOG(FATAL) non-fatal.
+  void HandleFatal(size_t stack_start, const std::string& str_newline) const;
+
   const LogSeverity severity_;
   std::ostringstream stream_;
   size_t message_start_;  // Offset of the start of the message (past prefix

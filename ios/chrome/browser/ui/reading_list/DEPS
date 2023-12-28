@@ -3,8 +3,8 @@ include_rules = [
   "+ios/chrome/browser/ui/incognito_reauth",
   "+ios/chrome/browser/ui/menu",
   "+ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h",
-  "+ios/chrome/browser/ui/settings/cells/sync_switch_item.h",
   "+ios/chrome/browser/ui/sharing",
+  "+ios/chrome/browser/ui/settings",
 ]
 
 specific_include_rules = {

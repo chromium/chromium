@@ -50,6 +50,14 @@ void MockMediaStreamVideoSource::GetZoomLevel(
   std::move(callback).Run(get_zoom_level_result_->zoom_level,
                           get_zoom_level_result_->error);
 }
+
+void MockMediaStreamVideoSource::SetZoomLevel(
+    int zoom_level,
+    base::OnceCallback<void(bool, const String&)> callback) {
+  CHECK(set_zoom_level_result_);
+  std::move(callback).Run(set_zoom_level_result_->success,
+                          set_zoom_level_result_->error);
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 void MockMediaStreamVideoSource::StartMockedSource() {

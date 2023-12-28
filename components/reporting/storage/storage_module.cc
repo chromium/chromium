@@ -72,7 +72,8 @@ void StorageModule::Create(
                  callback,
              StatusOr<scoped_refptr<Storage>> storage) {
             if (!storage.has_value()) {
-              std::move(callback).Run(base::unexpected(storage.error()));
+              std::move(callback).Run(
+                  base::unexpected(std::move(storage).error()));
               return;
             }
             instance->storage_ = std::move(storage.value());

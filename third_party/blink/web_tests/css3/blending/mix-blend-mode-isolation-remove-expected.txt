@@ -14,7 +14,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='intermediary' class='accelerated-no-stacking-context'",
+      "name": "LayoutNGBlockFlow (children-inline) DIV id='intermediary' class='accelerated-no-stacking-context'",
       "bounds": [784, 90],
       "contentsOpaque": true,
       "backfaceVisibility": "hidden",

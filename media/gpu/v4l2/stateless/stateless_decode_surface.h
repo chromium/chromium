@@ -17,7 +17,7 @@ namespace media {
 
 class StatelessDecodeSurface : public base::RefCounted<StatelessDecodeSurface> {
  public:
-  StatelessDecodeSurface(uint32_t frame_id);
+  StatelessDecodeSurface(uint64_t frame_id, base::OnceClosure enqueue_cb);
 
   StatelessDecodeSurface(const StatelessDecodeSurface&) = delete;
   StatelessDecodeSurface& operator=(const StatelessDecodeSurface&) = delete;
@@ -26,15 +26,14 @@ class StatelessDecodeSurface : public base::RefCounted<StatelessDecodeSurface> {
   void SetColorSpace(const VideoColorSpace& color_space);
   void SetVideoFrameTimestamp(const base::TimeDelta timestamp);
 
-  int32_t FrameID() const { return frame_id_; }
+  uint64_t FrameID() const { return frame_id_; }
   VideoColorSpace ColorSpace() const { return color_space_; }
   base::TimeDelta VideoFrameTimestamp() const { return video_frame_timestamp_; }
-
   uint64_t GetReferenceTimestamp() const;
+
   void SetReferenceSurfaces(
       std::vector<scoped_refptr<StatelessDecodeSurface>> ref_surfaces);
   void ClearReferenceSurfaces();
-  void SetVideoFrame(scoped_refptr<VideoFrame> video_frame);
 
  protected:
   virtual ~StatelessDecodeSurface();
@@ -43,7 +42,7 @@ class StatelessDecodeSurface : public base::RefCounted<StatelessDecodeSurface> {
  private:
   // Identify this surface so that it can be matched up the the uncompressed
   // buffer when it is done being decompressed.
-  const uint32_t frame_id_;
+  const uint64_t frame_id_;
 
   // The visible size of the buffer.
   gfx::Rect visible_rect_;
@@ -54,8 +53,8 @@ class StatelessDecodeSurface : public base::RefCounted<StatelessDecodeSurface> {
   // Timestamp associated with when the frame should be displayed.
   base::TimeDelta video_frame_timestamp_;
 
-  // Reference to the video frame associated with this surface
-  scoped_refptr<VideoFrame> video_frame_;
+  // Callback to enqueue buffers once they are done being referenced.
+  base::OnceClosure enqueue_cb_;
 
   // Frames that this frames uses for references. These are held onto until the
   // decode is done so that they are not reused while they need to be

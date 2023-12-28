@@ -64,7 +64,7 @@ class Viewport : public SurfaceObserver {
   }
 
  private:
-  raw_ptr<Surface, ExperimentalAsh> surface_;
+  raw_ptr<Surface> surface_;
 };
 
 void viewport_destroy(wl_client* client, wl_resource* resource) {

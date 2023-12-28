@@ -17,6 +17,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/stringprintf.h"
@@ -277,7 +278,8 @@ std::unique_ptr<BlobDataHandle> BlobStorageContext::BuildBlobInternal(
     }
   }
 
-  std::vector<ShareableBlobDataItem*> transport_items;
+  std::vector<raw_ptr<ShareableBlobDataItem, VectorExperimental>>
+      transport_items;
   transport_items.reserve(content->pending_transport_items().size());
   for (const auto& item : content->pending_transport_items())
     transport_items.emplace_back(item.get());

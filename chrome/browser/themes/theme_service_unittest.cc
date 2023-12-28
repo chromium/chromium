@@ -189,9 +189,8 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
-  bool IsExtensionDisabled(const std::string& id) const {
-    return registry_->GetExtensionById(id,
-                                       extensions::ExtensionRegistry::DISABLED);
+  bool IsExtensionDisabled(const extensions::ExtensionId& id) const {
+    return registry_->disabled_extensions().GetByID(id);
   }
 
  protected:

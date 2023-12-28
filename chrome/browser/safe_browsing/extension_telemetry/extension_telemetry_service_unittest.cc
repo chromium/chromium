@@ -66,11 +66,6 @@ constexpr char kFileDataDictPref[] = "file_data";
 constexpr char kManifestFile[] = "manifest.json";
 constexpr char kJavaScriptFile[] = "js_file.js";
 
-// Delay (5 minutes) to start the initial offstore file data collection.
-constexpr int kFileDataStartUpDelaySeconds = 300;
-// Interval (2 hours) to repeat the offstore file data collection.
-constexpr int kFileDataCollectionIntervalSeconds = 300;
-
 }  // namespace
 
 class ExtensionTelemetryServiceTest : public ::testing::Test {
@@ -688,14 +683,8 @@ TEST_F(ExtensionTelemetryServiceTest, PersisterThreadSafetyCheck) {
 }
 
 TEST_F(ExtensionTelemetryServiceTest, FileData_ProcessesOffstoreExtensions) {
-  // Enable |kExtensionTelemetryFileData| feature and process.
-  telemetry_service_->SetEnabled(false);
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      {kExtensionTelemetryFileData},
-      {{"StartupDelaySeconds",
-        base::NumberToString(kFileDataStartUpDelaySeconds)}});
-  telemetry_service_->SetEnabled(true);
-  task_environment_.FastForwardBy(base::Seconds(kFileDataStartUpDelaySeconds));
+  task_environment_.FastForwardBy(
+      telemetry_service_->GetOffstoreFileDataCollectionStartupDelaySeconds());
   task_environment_.RunUntilIdle();
 
   auto& file_data_dict =
@@ -742,14 +731,8 @@ TEST_F(ExtensionTelemetryServiceTest, FileData_IgnoresNonOffstoreExtensions) {
                                         ManifestLocation::kExternalComponent,
                                         Extension::NO_FLAGS);
 
-  // Enable |kExtensionTelemetryFileData| feature and process.
-  telemetry_service_->SetEnabled(false);
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      {kExtensionTelemetryFileData},
-      {{"StartupDelaySeconds",
-        base::NumberToString(kFileDataStartUpDelaySeconds)}});
-  telemetry_service_->SetEnabled(true);
-  task_environment_.FastForwardBy(base::Seconds(kFileDataStartUpDelaySeconds));
+  task_environment_.FastForwardBy(
+      telemetry_service_->GetOffstoreFileDataCollectionStartupDelaySeconds());
   task_environment_.RunUntilIdle();
 
   auto& file_data_dict =
@@ -765,20 +748,16 @@ TEST_F(ExtensionTelemetryServiceTest, FileData_IgnoresNonOffstoreExtensions) {
 
 TEST_F(ExtensionTelemetryServiceTest, FileData_RemovesStaleExtensionFromPref) {
   // Process extension 0 and 1 and save to prefs.
-  telemetry_service_->SetEnabled(false);
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      {kExtensionTelemetryFileData},
-      {{"StartupDelaySeconds",
-        base::NumberToString(kFileDataStartUpDelaySeconds)}});
-  telemetry_service_->SetEnabled(true);
-  task_environment_.FastForwardBy(base::Seconds(kFileDataStartUpDelaySeconds));
+  task_environment_.FastForwardBy(
+      telemetry_service_->GetOffstoreFileDataCollectionStartupDelaySeconds());
   task_environment_.RunUntilIdle();
 
   UnregisterExtensionWithExtensionService(kExtensionId[0]);
 
   telemetry_service_->SetEnabled(false);
   telemetry_service_->SetEnabled(true);
-  task_environment_.FastForwardBy(base::Seconds(kFileDataStartUpDelaySeconds));
+  task_environment_.FastForwardBy(
+      telemetry_service_->GetOffstoreFileDataCollectionStartupDelaySeconds());
   task_environment_.RunUntilIdle();
 
   auto& file_data_dict =
@@ -792,15 +771,8 @@ TEST_F(ExtensionTelemetryServiceTest, FileData_RemovesStaleExtensionFromPref) {
 TEST_F(ExtensionTelemetryServiceTest,
        FileData_ProcessesEachExtensionOncePerDay) {
   // Process extension 0 and 1 and save to prefs.
-  telemetry_service_->SetEnabled(false);
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      {kExtensionTelemetryFileData},
-      {{"StartupDelaySeconds",
-        base::NumberToString(kFileDataStartUpDelaySeconds)},
-       {"CollectionIntervalSeconds",
-        base::NumberToString(kFileDataCollectionIntervalSeconds)}});
-  telemetry_service_->SetEnabled(true);
-  task_environment_.FastForwardBy(base::Seconds(kFileDataStartUpDelaySeconds));
+  task_environment_.FastForwardBy(
+      telemetry_service_->GetOffstoreFileDataCollectionStartupDelaySeconds());
   task_environment_.RunUntilIdle();
 
   // Save first processed timestamp.
@@ -815,7 +787,7 @@ TEST_F(ExtensionTelemetryServiceTest,
                                         ManifestLocation::kUnpacked,
                                         Extension::NO_FLAGS);
   task_environment_.FastForwardBy(
-      base::Seconds(kFileDataCollectionIntervalSeconds));
+      telemetry_service_->GetOffstoreFileDataCollectionIntervalSeconds());
   task_environment_.RunUntilIdle();
 
   // Extensions 0 and 1 match first processed timestamp.
@@ -849,13 +821,8 @@ TEST_F(ExtensionTelemetryServiceTest, FileData_HandlesEmptyTimestampsInPrefs) {
                                std::move(empty_timestamps_dict));
 
   // Process extension 0 and 1 and save to prefs.
-  telemetry_service_->SetEnabled(false);
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      {kExtensionTelemetryFileData},
-      {{"StartupDelaySeconds",
-        base::NumberToString(kFileDataStartUpDelaySeconds)}});
-  telemetry_service_->SetEnabled(true);
-  task_environment_.FastForwardBy(base::Seconds(kFileDataStartUpDelaySeconds));
+  task_environment_.FastForwardBy(
+      telemetry_service_->GetOffstoreFileDataCollectionStartupDelaySeconds());
   task_environment_.RunUntilIdle();
 
   auto& file_data_dict =
@@ -878,14 +845,8 @@ TEST_F(ExtensionTelemetryServiceTest, FileData_HandlesEmptyTimestampsInPrefs) {
 
 TEST_F(ExtensionTelemetryServiceTest,
        FileData_AttachesOffstoreFileDataToReport) {
-  // Enable |kExtensionTelemetryFileData| feature and starts collection.
-  telemetry_service_->SetEnabled(false);
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      {kExtensionTelemetryFileData},
-      {{"StartupDelaySeconds",
-        base::NumberToString(kFileDataStartUpDelaySeconds)}});
-  telemetry_service_->SetEnabled(true);
-  task_environment_.FastForwardBy(base::Seconds(kFileDataStartUpDelaySeconds));
+  task_environment_.FastForwardBy(
+      telemetry_service_->GetOffstoreFileDataCollectionStartupDelaySeconds());
   task_environment_.RunUntilIdle();
 
   std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
@@ -924,10 +885,7 @@ TEST_F(ExtensionTelemetryServiceTest,
   // Enable necessary features.
   scoped_feature_list.InitWithFeaturesAndParameters(
       // enabled_features
-      {{kExtensionTelemetryFileDataForCommandLineExtensions, {}},
-       {kExtensionTelemetryFileData,
-        {{"StartupDelaySeconds",
-          base::NumberToString(kFileDataStartUpDelaySeconds)}}}},
+      {{kExtensionTelemetryFileDataForCommandLineExtensions, {}}},
       // disabled_features
       {});
   // Create a commandline extension, set up the --load-extension commandline
@@ -936,7 +894,8 @@ TEST_F(ExtensionTelemetryServiceTest,
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       extensions::switches::kLoadExtension, path);
   telemetry_service_->SetEnabled(true);
-  task_environment_.FastForwardBy(base::Seconds(kFileDataStartUpDelaySeconds));
+  task_environment_.FastForwardBy(
+      telemetry_service_->GetOffstoreFileDataCollectionStartupDelaySeconds());
   task_environment_.RunUntilIdle();
 
   // Generate and verify telemetry report contents.
@@ -968,14 +927,8 @@ TEST_F(ExtensionTelemetryServiceTest,
   RegisterExtensionWithExtensionService(kExtensionId[2], kExtensionName[2],
                                         ManifestLocation::kInternal,
                                         Extension::FROM_WEBSTORE);
-  // Enable |kExtensionTelemetryFileData| feature and starts collection.
-  telemetry_service_->SetEnabled(false);
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      {kExtensionTelemetryFileData},
-      {{"StartupDelaySeconds",
-        base::NumberToString(kFileDataStartUpDelaySeconds)}});
-  telemetry_service_->SetEnabled(true);
-  task_environment_.FastForwardBy(base::Seconds(kFileDataStartUpDelaySeconds));
+  task_environment_.FastForwardBy(
+      telemetry_service_->GetOffstoreFileDataCollectionStartupDelaySeconds());
   task_environment_.RunUntilIdle();
 
   std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
@@ -999,14 +952,8 @@ TEST_F(ExtensionTelemetryServiceTest,
 }
 
 TEST_F(ExtensionTelemetryServiceTest, FileData_HandlesEmptyFileDataInPrefs) {
-  // Enable |kExtensionTelemetryFileData| feature and starts collection.
-  telemetry_service_->SetEnabled(false);
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      {kExtensionTelemetryFileData},
-      {{"StartupDelaySeconds",
-        base::NumberToString(kFileDataStartUpDelaySeconds)}});
-  telemetry_service_->SetEnabled(true);
-  task_environment_.FastForwardBy(base::Seconds(kFileDataStartUpDelaySeconds));
+  task_environment_.FastForwardBy(
+      telemetry_service_->GetOffstoreFileDataCollectionStartupDelaySeconds());
   task_environment_.RunUntilIdle();
 
   // Set up pref dict:
@@ -1035,17 +982,11 @@ TEST_F(ExtensionTelemetryServiceTest, FileData_HandlesEmptyFileDataInPrefs) {
 
 TEST_F(ExtensionTelemetryServiceTest,
        FileData_EnforcesCollectionDurationLimit) {
-  // Enable |kExtensionTelemetryFileData| feature and starts collection.
-  telemetry_service_->SetEnabled(false);
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      {kExtensionTelemetryFileData},
-      {{"StartupDelaySeconds",
-        base::NumberToString(kFileDataStartUpDelaySeconds)}});
   // Set collection duration limit to 0 milliseconds.
   telemetry_service_->offstore_file_data_collection_duration_limit_ =
       base::Milliseconds(0);
-  telemetry_service_->SetEnabled(true);
-  task_environment_.FastForwardBy(base::Seconds(kFileDataStartUpDelaySeconds));
+  task_environment_.FastForwardBy(
+      telemetry_service_->GetOffstoreFileDataCollectionStartupDelaySeconds());
   task_environment_.RunUntilIdle();
 
   std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();

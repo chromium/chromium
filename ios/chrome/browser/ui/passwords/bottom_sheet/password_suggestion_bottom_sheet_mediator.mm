@@ -121,6 +121,10 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
   // the bottom sheet is dismissed. Default is true.
   bool _needsRefocus;
 
+  // Whether the user has chosen to use one of the proposed suggestions to fill
+  // the fields. Default is false.
+  bool _suggestionSelected;
+
   // FaviconLoader is a keyed service that uses LargeIconService to retrieve
   // favicon images.
   raw_ptr<FaviconLoader> _faviconLoader;
@@ -154,6 +158,7 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
                       sharedURLLoaderFactory {
   if (self = [super init]) {
     _needsRefocus = true;
+    _suggestionSelected = false;
     _faviconLoader = faviconLoader;
     _prefService = prefService;
     _reauthenticationModule = reauthModule;
@@ -322,9 +327,11 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 
 - (void)dismiss {
   if (_needsRefocus && _webStateList) {
-    [self logExitReason:kDismissal];
-    [self incrementDismissCount];
-    [self markSharedPasswordNotificationsDisplayed];
+    if (!_suggestionSelected) {
+      [self logExitReason:kDismissal];
+      [self incrementDismissCount];
+      [self markSharedPasswordNotificationsDisplayed];
+    }
 
     web::WebState* activeWebState = _webStateList->GetActiveWebState();
     if (!activeWebState) {
@@ -344,6 +351,10 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 
 - (void)disableRefocus {
   _needsRefocus = false;
+}
+
+- (void)willSelectSuggestion {
+  _suggestionSelected = true;
 }
 
 - (NSString*)usernameAtRow:(NSInteger)row {
@@ -486,32 +497,33 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 
   password_manager::PasswordManagerDriver* driver =
       IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(webState, frame);
-  const std::vector<const password_manager::PasswordForm*>* passwordForms =
+  const std::vector<raw_ptr<const password_manager::PasswordForm,
+                            VectorExperimental>>* passwordForms =
       passwordManager->GetBestMatches(driver, formId);
   if (!passwordForms) {
     return;
   }
 
-  bool sharingNotificationEnabled = base::FeatureList::IsEnabled(
-      password_manager::features::kSharedPasswordNotificationUI);
-  for (const auto* form : *passwordForms) {
-    if (sharingNotificationEnabled &&
-        form->type ==
+  for (const password_manager::PasswordForm* form : *passwordForms) {
+    if (form->type ==
             password_manager::PasswordForm::Type::kReceivedViaSharing &&
         !form->sharing_notification_displayed) {
-      _sharedUnnotifiedForms.push_back(form);
-      __weak __typeof__(self) weakSelf = self;
-      image_fetcher::ImageFetcherParams params(NO_TRAFFIC_ANNOTATION_YET,
-                                               kImageFetcherUmaClient);
-      _imageFetcher->FetchImage(
-          form->sender_profile_image_url,
-          base::BindOnce(^(const gfx::Image& image,
-                           const image_fetcher::RequestMetadata& metadata) {
-            if (!image.IsEmpty()) {
-              [weakSelf onSenderImageFetched:[image.ToUIImage() copy]];
-            }
-          }),
-          params);
+      if (base::FeatureList::IsEnabled(
+              password_manager::features::kSharedPasswordNotificationUI)) {
+        _sharedUnnotifiedForms.push_back(form);
+        __weak __typeof__(self) weakSelf = self;
+        image_fetcher::ImageFetcherParams params(NO_TRAFFIC_ANNOTATION_YET,
+                                                 kImageFetcherUmaClient);
+        _imageFetcher->FetchImage(
+            form->sender_profile_image_url,
+            base::BindOnce(^(const gfx::Image& image,
+                             const image_fetcher::RequestMetadata& metadata) {
+              if (!image.IsEmpty()) {
+                [weakSelf onSenderImageFetched:[image.ToUIImage() copy]];
+              }
+            }),
+            params);
+      }
     }
     _credentials.push_back(password_manager::CredentialUIEntry(*form));
   }
@@ -520,9 +532,9 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 // Returns whether the bottom sheet should contain a notification about shared
 // passwords.
 - (BOOL)shouldDisplaySharingNotification {
-  return base::FeatureList::IsEnabled(
-             password_manager::features::kSharedPasswordNotificationUI) &&
-         _sharedUnnotifiedForms.size() > 0;
+  return (_sharedUnnotifiedForms.size() > 0) &&
+         base::FeatureList::IsEnabled(
+             password_manager::features::kSharedPasswordNotificationUI);
 }
 
 // Marks sharing notification as displayed in password store for all credentials

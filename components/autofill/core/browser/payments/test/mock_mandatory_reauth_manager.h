@@ -18,7 +18,7 @@ class MockMandatoryReauthManager : public MandatoryReauthManager {
 
   MOCK_METHOD(bool,
               ShouldOfferOptin,
-              (absl::optional<CreditCard::RecordType>),
+              (std::optional<CreditCard::RecordType>),
               (override));
   MOCK_METHOD(void, StartOptInFlow, (), (override));
   MOCK_METHOD(void, OnUserAcceptedOptInPrompt, (), (override));

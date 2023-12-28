@@ -541,8 +541,6 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
   assistant_button->SetAccessibleName(assistant_button_label);
   assistant_button->SetTooltipText(assistant_button_label);
   SetShowAssistantButton(search_box_model->show_assistant_button());
-
-  UpdateIphViewVisibility();
 }
 
 SearchBoxView::~SearchBoxView() {
@@ -582,6 +580,7 @@ void SearchBoxView::SetResultSelectionController(
 }
 
 void SearchBoxView::ResetForShow() {
+  UpdateIphViewVisibility(false);
   if (!is_search_box_active())
     return;
   ClearSearchAndDeactivateSearchBox();
@@ -603,11 +602,6 @@ void SearchBoxView::OnActiveAppListModelsChanged(AppListModel* model,
   ResetForShow();
   UpdateSearchIcon();
   ShowAssistantChanged();
-
-  // `UpdateIphViewVisibility` expect that `AppListModelProvider` returns the
-  // new model.
-  CHECK(search_model == AppListModelProvider::Get()->search_model());
-  UpdateIphViewVisibility();
 }
 
 void SearchBoxView::UpdateKeyboardVisibility() {
@@ -677,7 +671,8 @@ void SearchBoxView::HandleQueryChange(const std::u16string& query,
 
   current_query_ = query;
 
-  UpdateIphViewVisibility();
+  // Any query changes will dismiss the Launcher search IPH.
+  UpdateIphViewVisibility(false);
 
   // The search box background depens on whether the query is empty, so schedule
   // repaint when this changes.
@@ -824,6 +819,7 @@ void SearchBoxView::RunLauncherSearchQuery(const std::u16string& query) {
 }
 
 void SearchBoxView::OpenAssistantPage() {
+  UpdateIphViewVisibility(false);
   view_delegate_->StartAssistant(
       assistant::AssistantEntryPoint::kLauncherSearchIphChip);
 }
@@ -1188,28 +1184,33 @@ int SearchBoxView::GetSearchBoxButtonSize() {
   return kBubbleLauncherSearchBoxButtonSizeDip;
 }
 
-void SearchBoxView::SetIsIphAllowed(bool iph_allowed) {
-  if (is_iph_allowed_ == iph_allowed) {
-    return;
-  }
-
-  is_iph_allowed_ = iph_allowed;
-
-  UpdateIphViewVisibility();
-}
-
 void SearchBoxView::CloseButtonPressed() {
+  UpdateIphViewVisibility(false);
   delegate_->CloseButtonPressed();
 }
 
 void SearchBoxView::AssistantButtonPressed() {
-  // If Launcher search IPH view is showing, notify it that the Assistant
-  // button is pressed.
   if (GetIphView()) {
+    // Notify the Assistant button is pressed when the IPH is visible and close
+    // the IPH.
     GetIphView()->NotifyAssistantButtonPressedEvent();
+    UpdateIphViewVisibility(false);
+    delegate_->AssistantButtonPressed();
+    return;
   }
 
-  delegate_->AssistantButtonPressed();
+  // Tries to show an IPH. This can be rejected by various reasons.
+  UpdateIphViewVisibility(true);
+
+  // If UpdateIphViewVisibility() rejected the request, let the delegate_ handle
+  // this.
+  if (!GetIphView()) {
+    delegate_->AssistantButtonPressed();
+    return;
+  }
+
+  // Activate the search box based on UX SPEC.
+  SetSearchBoxActive(true, /*event_type=*/ui::ET_UNKNOWN);
 }
 
 void SearchBoxView::UpdateSearchIcon() {
@@ -1415,6 +1416,7 @@ void SearchBoxView::EnterSearchResultSelection(const ui::KeyEvent& event) {
 }
 
 void SearchBoxView::ClearSearchAndDeactivateSearchBox() {
+  UpdateIphViewVisibility(false);
   if (!is_search_box_active())
     return;
 
@@ -1653,26 +1655,14 @@ void SearchBoxView::ShowAssistantChanged() {
                              ->search_model()
                              ->search_box()
                              ->show_assistant_button());
-
-  // `LauncherSearchIphView` and an Assistant button have synchronized
-  // backgrounds. The IPH UI is integrated with the Assistant button. We don't
-  // show an IPH if Assistant is disabled. Both `LauncherSearchIphView` and the
-  // Assistant button are hosted by `SearchBoxViewBase`.
-  UpdateIphViewVisibility();
 }
 
-void SearchBoxView::UpdateIphViewVisibility() {
-  const bool show_assistant_button = AppListModelProvider::Get()
-                                         ->search_model()
-                                         ->search_box()
-                                         ->show_assistant_button();
+void SearchBoxView::UpdateIphViewVisibility(bool can_show_iph) {
   const bool would_trigger_iph =
       AppListModelProvider::Get()->search_model()->would_trigger_iph();
   const bool is_iph_showing = GetIphView() != nullptr;
 
-  const bool should_show_iph = show_assistant_button && is_iph_allowed_ &&
-                               !HasValidQuery() &&
-                               (would_trigger_iph || is_iph_showing);
+  const bool should_show_iph = can_show_iph && would_trigger_iph;
 
   if (should_show_iph == is_iph_showing) {
     return;
@@ -1687,7 +1677,8 @@ void SearchBoxView::UpdateIphViewVisibility() {
 
     SetIphView(std::make_unique<LauncherSearchIphView>(
         /*delegate=*/this, /*is_in_tablet_mode=*/!is_app_list_bubble_,
-        std::move(scoped_iph_session)));
+        std::move(scoped_iph_session),
+        LauncherSearchIphView::UiLocation::kSearchBox));
 
     assistant_button()->SetBackground(views::CreateThemedRoundedRectBackground(
         kColorAshControlBackgroundColorInactive,
@@ -1705,10 +1696,6 @@ void SearchBoxView::UpdateIphViewVisibility() {
   // we can have unnecessary spaces in `SearchBoxView` for an IPH dismiss under
   // some conditions.
   InvalidateLayout();
-}
-
-void SearchBoxView::OnWouldTriggerIphChanged() {
-  UpdateIphViewVisibility();
 }
 
 bool SearchBoxView::ShouldProcessAutocomplete() {

@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_sync_bridge.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/uuid.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #include "components/sync/base/model_type.h"
@@ -146,6 +147,17 @@ void IncomingPasswordSharingInvitationSyncBridge::ApplyDisableSyncChanges(
 
   CHECK(sync_metadata_store_);
   sync_metadata_store_->DeleteAllDataAndMetadata(base::DoNothing());
+}
+
+bool IncomingPasswordSharingInvitationSyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  // Verify that the invitation has some basic correct fields. All the other
+  // fields related to password data is verified by PasswordReceiverService.
+  const sync_pb::IncomingPasswordSharingInvitationSpecifics& specifics =
+      entity_data.specifics.incoming_password_sharing_invitation();
+  return base::Uuid::ParseLowercase(specifics.guid()).is_valid() &&
+         !specifics.sender_info().user_display_info().email().empty() &&
+         specifics.has_client_only_unencrypted_data();
 }
 
 void IncomingPasswordSharingInvitationSyncBridge::OnModelTypeStoreCreated(

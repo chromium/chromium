@@ -7,10 +7,42 @@
 
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace views {
+class Button;
+}  // namespace views
+
+namespace content {
+class WebContents;
+}  // namespace content
+
+class Browser;
 
 namespace web_app {
+
+// These test functions work only with the new intent picker UX and requires the
+// following flags to be enabled: features::kDesktopPWAsLinkCapturing on
+// Windows, Mac and Linux. apps::features::kLinkCapturingUiUpdate on CrOS.
+// Without these flags set on their respective platforms, the tests will CHECK
+// fail.
+IntentChipButton* GetIntentPickerIcon(Browser* browser);
+
+IntentPickerBubbleView* intent_picker_bubble();
+
+testing::AssertionResult AwaitIntentPickerTabHelperIconUpdateComplete(
+    content::WebContents* web_contents);
+
+testing::AssertionResult WaitForIntentPickerToShow(Browser* browser);
+
+testing::AssertionResult ClickIntentPickerChip(Browser* browser);
+
+testing::AssertionResult ClickIntentPickerAndWaitForBubble(Browser* browser);
+
+views::Button* GetIntentPickerButtonAtIndex(size_t index);
 
 // Testing utility to wait for the IntentChipButton to be visible. The correct
 // usage for this class is: apps::IntentChipVisibilityObserver

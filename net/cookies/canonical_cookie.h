@@ -463,9 +463,9 @@ class NET_EXPORT CanonicalCookie {
 
   // Per rfc6265bis the maximum expiry date is no further than 400 days in the
   // future.
-  static base::Time ValidateAndAdjustExpiryDate(
-      const base::Time& expiry_date,
-      const base::Time& creation_date);
+  static base::Time ValidateAndAdjustExpiryDate(const base::Time& expiry_date,
+                                                const base::Time& creation_date,
+                                                net::CookieSourceScheme scheme);
 
   // Cookie ordering methods.
 

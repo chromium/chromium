@@ -8,12 +8,10 @@
 #include "base/functional/callback.h"
 #include "storage/browser/file_system/async_file_util.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 typedef base::OnceClosure AbortCallback;
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_ABORT_CALLBACK_H_

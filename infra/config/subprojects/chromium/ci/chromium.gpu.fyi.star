@@ -1566,6 +1566,9 @@ gpu_fyi_windows_builder(
             "try_builder",
             "reclient",
             "disable_nacl",
+            # Remove this once the decision to use cross-compilation or not in
+            # crbug.com/1510985 is made.
+            "win_cross",
         ],
     ),
     console_view_entry = consoles.console_view_entry(

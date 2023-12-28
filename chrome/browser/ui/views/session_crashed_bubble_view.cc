@@ -259,7 +259,7 @@ views::BubbleDialogDelegate* SessionCrashedBubbleView::ShowBubble(
   dialog_builder.AddOkButton(
       base::BindOnce(&SessionCrashedBubbleDelegate::RestorePreviousSession,
                      base::Unretained(bubble_delegate), browser),
-      ui::DialogModelButton::Params().SetLabel(
+      ui::DialogModel::Button::Params().SetLabel(
           l10n_util::GetStringUTF16(IDS_SESSION_CRASHED_VIEW_RESTORE_BUTTON)));
 
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(

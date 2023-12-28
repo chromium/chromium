@@ -113,7 +113,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.BackgroundTimeBeforeColdStart" units="minutes"
-    expires_after="2024-04-06">
+    expires_after="2024-06-09">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -180,7 +180,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.BringAndroidTabs.ActionOnTabsList"
-    enum="IOSBringAndroidTabsTabsListActionType" expires_after="2024-02-28">
+    enum="IOSBringAndroidTabsTabsListActionType" expires_after="2024-06-23">
   <owner>hiramahmood@google.com</owner>
   <owner>ginnyhuang@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.BringAndroidTabs.DeselectedTabCount" units="count"
-    expires_after="2024-02-28">
+    expires_after="2024-06-23">
   <owner>hiramahmood@google.com</owner>
   <owner>ginnyhuang@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
@@ -293,7 +293,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.CopyPasswordCount" units="count"
-    expires_after="2024-01-07">
+    expires_after="2024-12-01">
   <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -304,29 +304,33 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.CopyURLCount" units="count"
-    expires_after="2023-06-11">
+    expires_after="2024-12-01">
   <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
     The number of times the Credential Extension user copied a URL since last
     Chrome foregrounding. Reported when Chrome is put in foreground. Note:
     events where the count is zero were removed in M91.
+
+    Note: this was expired from 2023-06 to 2023-12. Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="IOS.CredentialExtension.CopyUsernameCount" units="count"
-    expires_after="2023-06-11">
+    expires_after="2024-12-01">
   <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
     The number of times the Credential Extension user copied a Username since
     last Chrome foregrounding. Reported when Chrome is put in foreground. Note:
     events where the count is zero were removed in M91.
+
+    Note: this was expired from 2023-06 to 2023-12. Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="IOS.CredentialExtension.DisplayCount" units="count"
-    expires_after="2024-05-12">
+    expires_after="2024-12-01">
   <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -337,29 +341,33 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.FetchPasswordFailure" units="count"
-    expires_after="2023-06-11">
+    expires_after="2024-12-01">
   <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
     The number of times the Credential Extension password util failed to look up
     for a password since last Chrome foregrounding. Reported when Chrome is put
     in foreground. Note: events where the count is zero were removed in M91.
+
+    Note: this was expired from 2023-06 to 2023-12. Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="IOS.CredentialExtension.FetchPasswordNilArgument"
-    units="count" expires_after="2023-06-11">
+    units="count" expires_after="2024-12-01">
   <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
     The number of times the Credential Extension pasword util was queried with a
     nil argument since last Chrome foregrounding. Reported when Chrome is put in
     foreground. Note: events where the count is zero were removed in M91.
+
+    Note: this was expired from 2023-06 to 2023-12. Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="IOS.CredentialExtension.IsEnabled.Startup" enum="Boolean"
-    expires_after="2024-06-02">
+    expires_after="2024-12-01">
   <owner>veronguyen@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <summary>
@@ -369,40 +377,46 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.KeychainSavePasswordFailureCount"
-    units="count" expires_after="2023-06-11">
+    units="count" expires_after="2024-12-01">
   <owner>rkgibson@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
   <summary>
     The number of times the Credential Extension failed to save a
     newly-generated password into the system Keychain since last Chrome
     foregrounding. Reported when Chrome is put in foreground.
+
+    Note: this was expired from 2023-06 to 2023-12. Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="IOS.CredentialExtension.NewCredentialUsername"
     enum="IOSCredentialProviderNewCredentialUsername"
-    expires_after="2023-06-11">
+    expires_after="2024-12-01">
   <owner>rkgibson@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
   <summary>
     Recorded when a new credential is created via the Credential Provider
     extension and tracks the username state of the new credential. Reported when
     Chrome is put in the foreground.
+
+    Note: this was expired from 2023-06 to 2023-12. Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="IOS.CredentialExtension.PasswordCreated"
-    enum="IOSCredentialProviderPasswordCreated" expires_after="2023-06-11">
+    enum="IOSCredentialProviderPasswordCreated" expires_after="2024-12-01">
   <owner>rkgibson@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
   <summary>
     Recorded when a new password is created via the Credential Provider
     extension. Reported when Chrome is put in the foreground.
+
+    Note: this was expired from 2023-06 to 2023-12. Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="IOS.CredentialExtension.PasswordUseCount" units="count"
-    expires_after="2024-06-02">
+    expires_after="2024-12-01">
   <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -413,7 +427,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.QuickPasswordUseCount" units="count"
-    expires_after="2024-05-12">
+    expires_after="2024-12-01">
   <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -424,42 +438,48 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.ReauthCount" units="count"
-    expires_after="2023-06-11">
+    expires_after="2024-12-01">
   <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
     The number of times the Credential Extension needed user reauthentication
     since last Chrome foregrounding. Reported when Chrome is put in foreground.
     Note: events where the count is zero were removed in M91.
+
+    Note: this was expired from 2023-06 to 2023-12. Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="IOS.CredentialExtension.SaveCredentialFailureCount"
-    units="count" expires_after="2023-06-11">
+    units="count" expires_after="2024-12-01">
   <owner>rkgibson@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
   <summary>
     The number of times the Credential Extension failed to save a
     newly-generated credential to disk since last Chrome foregrounding. Reported
     when Chrome is put in foreground.
+
+    Note: this was expired from 2023-06 to 2023-12. Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="IOS.CredentialExtension.SearchCount" units="count"
-    expires_after="2023-10-15">
+    expires_after="2024-12-01">
   <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
     The number of times the Credential Extension user searched for a Password
     since last Chrome foregrounding. Reported when Chrome is put in foreground.
     Note: events where the count is zero were removed in M91.
+
+    Note: this was expired from 2023-10 to 2023-12. Data may be missing.
   </summary>
 </histogram>
 
 <histogram
     name="IOS.CredentialExtension.Service.Error.ReplaceCredentialIdentitiesWithIdentities"
     enum="iOSCredentialIdentityStoreErrorForReporting"
-    expires_after="2024-04-28">
+    expires_after="2024-12-01">
   <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -469,18 +489,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.ShowPasswordCount" units="count"
-    expires_after="2023-06-11">
+    expires_after="2024-12-01">
   <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
     The number of times the Credential Extension user unobfuscated a Password
     since last Chrome foregrounding. Reported when Chrome is put in foreground.
     Note: events where the count is zero were removed in M91.
+
+    Note: this was expired from 2023-06 to 2023-12. Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="IOS.CredentialExtension.StatusDidChangeTo.Startup"
-    enum="Boolean" expires_after="2024-06-02">
+    enum="Boolean" expires_after="2024-12-01">
   <owner>veronguyen@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <summary>
@@ -491,12 +513,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialProviderExtension.Promo.Impression{IsReminder}"
-    enum="IOSCredentialProviderPromoSource" expires_after="2023-09-01">
+    enum="IOSCredentialProviderPromoSource" expires_after="2024-12-01">
   <owner>huitingyu@google.com</owner>
   <owner>hiramahmood@google.com</owner>
   <summary>
     The impression count for the credential provider extention promo
     corresponding to a source of the promo.
+
+    Note: this was expired from 2023-09 to 2023-12. Data may be missing.
   </summary>
   <token key="IsReminder">
     <variant name="" summary="default impression of promo"/>
@@ -507,13 +531,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.CredentialProviderExtension.Promo.{PromoSource}{IsReminder}"
-    enum="IOSCredentialProviderPromoAction" expires_after="2023-09-01">
+    enum="IOSCredentialProviderPromoAction" expires_after="2024-12-01">
   <owner>huitingyu@google.com</owner>
   <owner>hiramahmood@google.com</owner>
   <summary>
     The action taken in the credential provider extention promo displayed for
     the user event {PromoSource}. If the promo is as a reminder, the histogram
     name is suffixed with &quot;IsReminder&quot;.
+
+    Note: this was expired from 2023-09 to 2023-12. Data may be missing.
   </summary>
   <token key="PromoSource">
     <variant name="OnPasswordCopied" summary="the user copies the password"/>
@@ -816,7 +842,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ExperienceKitCalendar.Present"
-    enum="ExperienceKitCalendarTypes" expires_after="2024-03-10">
+    enum="ExperienceKitCalendarTypes" expires_after="2024-06-09">
   <owner>djean@chromium.org</owner>
   <owner>erahmaoui@google.com</owner>
   <summary>
@@ -1090,7 +1116,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.IncognitoInterstitial.Settings"
-    enum="IncognitoInterstitialSettingsActionType" expires_after="2024-02-11">
+    enum="IncognitoInterstitialSettingsActionType" expires_after="2024-06-16">
   <owner>qpubert@google.com</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -1467,6 +1493,28 @@ chromium-metrics-reviews@google.com.
   <token key="MXVersion" variants="MXVersion"/>
 </histogram>
 
+<histogram name="IOS.MetricKit.{MXVersion}CPUTimePerDay" units="s"
+    expires_after="2024-12-14">
+  <owner>ajuma@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <summary>
+    The total amout of CPU time used by the app over a 24 hour period. This is
+    logged when an MXMetricPayload is received (one per day).
+
+    Recorded only if user opted in for sharing diagnostic data on iOS device.
+    The exact percentage of users who are opted into sharing data with Apple is
+    not known, but see go/chrome-uma-metrickit-sharing-rate for an estimate.
+
+    Note: Data is received from Apple once a day when Chrome is running,
+    covering the previous 24 hours as well as any older data that has not yet
+    been delivered to Chrome. This means that the date the data is reported may
+    be later than the user activity it corresponds to.
+
+    {MXVersion}
+  </summary>
+  <token key="MXVersion" variants="MXVersion"/>
+</histogram>
+
 <histogram name="IOS.MetricKit.{MXVersion}ExtendedLaunch" units="ms"
     expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
@@ -1752,6 +1800,49 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.Omnibox.Promo.Events.{Context}"
+    enum="OmniboxPositionChoiceScreenEvents" expires_after="2024-05-31">
+  <owner>christianxu@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records that the omnibox position choice screen was displayed during
+    {Context}. Also records when the user taps the different buttons in the
+    choice screen.
+  </summary>
+  <token key="Context">
+    <variant name="FRE" summary="FRE"/>
+    <variant name="Startup" summary="startup"/>
+  </token>
+</histogram>
+
+<histogram name="IOS.Omnibox.Promo.SelectedPosition.{Context}"
+    enum="OmniboxPromoSelectedPositions" expires_after="2024-05-31">
+  <owner>christianxu@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records the selected omnibox position when the promo is presented during
+    {Context}. Also records whether the selected position is the default one.
+  </summary>
+  <token key="Context">
+    <variant name="FRE" summary="FRE"/>
+    <variant name="Startup" summary="startup"/>
+  </token>
+</histogram>
+
+<histogram name="IOS.Omnibox.Promo.TimeOpen.{Context}" units="ms"
+    expires_after="2024-05-31">
+  <owner>christianxu@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    The amount of time the omnibox position choice screen is open during
+    {Context}.
+  </summary>
+  <token key="Context">
+    <variant name="FRE" summary="FRE"/>
+    <variant name="Startup" summary="startup"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.Omnibox.SearchSuggestionNumberOfLines" units="count"
     expires_after="2024-04-28">
   <owner>christianxu@chromium.org</owner>
@@ -1838,7 +1929,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.OverflowMenu.Customization.ActionAdded"
-    enum="IOSOverflowMenuAction" expires_after="2024-02-11">
+    enum="IOSOverflowMenuAction" expires_after="2024-06-23">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>The action added during an overflow menu customization.</summary>
@@ -1929,7 +2020,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.OverflowMenu.Customization.DestinationsReordered.FirstPosition"
-    enum="IOSOverflowMenuDestination" expires_after="2024-04-28">
+    enum="IOSOverflowMenuDestination" expires_after="2024-06-30">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -2018,7 +2109,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.OverflowMenu.TimeOpen.DestinationChosen" units="ms"
-    expires_after="2024-02-11">
+    expires_after="2024-06-09">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -2027,8 +2118,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.OverflowMenu.UserScrolledToEndAndStartedCustomization"
+    enum="Boolean" expires_after="2024-04-28">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Fired whenever the user ends an overflow menu session after having scrolled
+    to the end of the menu. Records whether the user started the menu
+    customization flow during that session.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PageLoad.DefaultModeMobile" enum="Boolean"
-    expires_after="2024-01-28">
+    expires_after="2025-01-28">
   <owner>gambard@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -2091,7 +2193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ParcelTracking.Tracked.{Source}" units="count"
-    expires_after="2024-03-07">
+    expires_after="2024-06-23">
   <owner>hiramahmood@google.com</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>Logs number of packages tracked from {Source}.</summary>
@@ -2873,7 +2975,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToPhotos.ContextMenu"
-    enum="IOSSaveToPhotosContextMenuType" expires_after="2024-04-16">
+    enum="IOSSaveToPhotosContextMenuType" expires_after="2024-06-16">
   <owner>qpubert@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -2921,6 +3023,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SaveToPhotos.UploadFailureType"
+    enum="IOSPhotosServiceUploadFailureType" expires_after="2024-06-02">
+  <owner>qpubert@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <summary>
+    Logged when the Photos service completes an image upload with failure. It
+    records the type of failure which occurred.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SaveToPhotos.UploadSuccessLatency" units="ms"
     expires_after="2024-06-02">
   <owner>qpubert@chromium.org</owner>
@@ -2955,7 +3067,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SearchWith.Trigger" enum="IOSSearchWithContext"
-    expires_after="2024-04-21">
+    expires_after="2024-06-23">
   <owner>olivierrobin@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>The context in which Search With has been triggered.</summary>
@@ -3103,7 +3215,22 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-06-01">
   <owner>olivierrobin@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
-  <summary>Number of bookmarks indexed during initial indexation.</summary>
+  <summary>
+    Number of bookmarks indexed during initial indexation. Starting in M122,
+    this is batched. Only recorded on successful reindexing.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Spotlight.BookmarksReindexRestarted" units="units"
+    expires_after="2024-06-01">
+  <owner>ameurhosni@google.com</owner>
+  <owner>stkhapugin@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    How many times full bookmarks reindex had to restart due to a model mutation
+    that happened during reindexing. Logged for each interruption (so for 3
+    interruptions it will log values 1, 2, and 3).
+  </summary>
 </histogram>
 
 <histogram name="IOS.Spotlight.DonatedIntentType"
@@ -3136,6 +3263,17 @@ chromium-metrics-reviews@google.com.
   <owner>stkhapugin@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>Number of open tabs indexed during initial indexation.</summary>
+</histogram>
+
+<histogram name="IOS.Spotlight.OpenTabsReindexRestarted" units="units"
+    expires_after="2024-06-01">
+  <owner>stkhapugin@chromium.org</owner>
+  <owner>ameurhosni@google.com</owner>
+  <summary>
+    How many times full open tabs reindex had to restart due to a model mutation
+    that happened during reindexing. Logged for each interruption (so for 3
+    interruptions it will log values 1, 2, and 3).
+  </summary>
 </histogram>
 
 <histogram name="IOS.Spotlight.Origin" enum="IOSSpotlightOrigin"
@@ -3190,18 +3328,6 @@ chromium-metrics-reviews@google.com.
     The time spent on the Start Home surface as measured from when it was loaded
     or last brought to the foreground until it was navigated away from or
     hidden. Only measured on iOS.
-  </summary>
-</histogram>
-
-<histogram name="IOS.StoreKit.ITunesURLsHandlingResult"
-    enum="IOSITunesURLsStoreKitHandlingResult" expires_after="2021-06-23">
-  <owner>mrefaat@chromium.org</owner>
-  <owner>rohitrao@chromium.org</owner>
-  <summary>
-    The result of StoreKit handling for a specific iTunes URL. Not Handled will
-    be logged when the LinksHandler didn't handle a specific URL on purpose (not
-    supported), and Failure will be logged when a URL that should have been
-    handled wasn't handled.
   </summary>
 </histogram>
 
@@ -3494,7 +3620,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.UnitConversion.DetectedMeasurements" units="measurements"
-    expires_after="2024-04-19">
+    expires_after="2024-06-23">
   <owner>erahmaoui@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -3504,7 +3630,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.UnitConversion.{Type}" enum="UnitChangeTypes"
-    expires_after="2024-04-19">
+    expires_after="2024-06-23">
   <owner>erahmaoui@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -3619,7 +3745,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.WhatsNew.InstructionsShown" enum="WhatsNewType"
-    expires_after="2024-03-17">
+    expires_after="2024-06-09">
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@google.com</owner>
   <summary>
@@ -3629,7 +3755,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.WhatsNew.ItemsClickedCount" units="count"
-    expires_after="2024-03-10">
+    expires_after="2024-06-09">
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@google.com</owner>
   <summary>The number of clicked What's New items per impression</summary>

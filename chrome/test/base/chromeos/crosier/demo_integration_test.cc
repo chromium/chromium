@@ -112,14 +112,7 @@ class DemoIntegrationTest : public MixinBasedInProcessBrowserTest {
   ChromeOSIntegrationTestMixin chromeos_integration_test_mixin_{&mixin_host_};
 };
 
-// TODO(b/313557752): Fix the flakiness on LACROS.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_NewTab DISABLED_NewTab
-#else
-#define MAYBE_NewTab NewTab
-#endif
-
-IN_PROC_BROWSER_TEST_F(DemoIntegrationTest, MAYBE_NewTab) {
+IN_PROC_BROWSER_TEST_F(DemoIntegrationTest, NewTab) {
   chrome_test_base_chromeos_crosier::TestInfo info;
   info.set_description(R"(
 This test verifies Chrome can launch and open version page.

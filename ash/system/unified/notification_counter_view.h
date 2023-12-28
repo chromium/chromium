@@ -56,9 +56,7 @@ class ASH_EXPORT NotificationCounterView : public TrayItemView {
   // |kTrayNotificationMaxCount| + 1 indicates the plus icon.
   int count_for_display_ = 0;
 
-  const raw_ptr<NotificationIconsController,
-                DanglingUntriaged | ExperimentalAsh>
-      controller_;
+  const raw_ptr<NotificationIconsController, DanglingUntriaged> controller_;
 };
 
 // A do-not-distrub icon view in UnifiedSystemTray button.
@@ -96,7 +94,7 @@ class SeparatorTrayItemView : public TrayItemView {
   void UpdateColor(session_manager::SessionState state);
 
  private:
-  raw_ptr<views::Separator, ExperimentalAsh> separator_ = nullptr;
+  raw_ptr<views::Separator> separator_ = nullptr;
 };
 
 }  // namespace ash

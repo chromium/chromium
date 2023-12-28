@@ -426,6 +426,12 @@ BASE_FEATURE(kFedCmSelectiveDisclosure,
              "FedCmSelectiveDisclosure",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Skips the .well-known file checks if the RP and IDP are under the same
+// eTLD+1.
+BASE_FEATURE(kFedCmSkipWellKnownForSameSite,
+             "FedCmSkipWellKnownForSameSite",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables bypassing the well-known file enforcement.
 BASE_FEATURE(kFedCmWithoutWellKnownEnforcement,
              "FedCmWithoutWellKnownEnforcement",
@@ -440,29 +446,6 @@ BASE_FEATURE(kFencedFramesEnforceFocus,
 BASE_FEATURE(kWebIdentityDigitalCredentials,
              "WebIdentityDigitalCredentials",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables usage of First Party Sets to determine cookie availability.
-BASE_FEATURE(kFirstPartySets,
-             "FirstPartySets",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls whether to clear sites data on FPS transitions.
-const base::FeatureParam<bool> kFirstPartySetsClearSiteDataOnChangedSets{
-    &kFirstPartySets, "FirstPartySetsClearSiteDataOnChangedSets", true};
-
-// Controls how many sites are allowed to be in the Associated subset (ignoring
-// ccTLD aliases).
-const base::FeatureParam<int> kFirstPartySetsMaxAssociatedSites{
-    &kFirstPartySets, "FirstPartySetsMaxAssociatedSites", 5};
-
-// Controls the maximum time duration an outermost frame navigation should be
-// deferred by FPS initialization.
-// Using 2s as the starting default timeout. This is based on the UMA metric
-// `History.ClearBrowsingData.Duration.OriginDeletion`.
-const base::FeatureParam<base::TimeDelta>
-    kFirstPartySetsNavigationThrottleTimeout{
-        &kFirstPartySets, "FirstPartySetsNavigationThrottleTimeout",
-        base::Seconds(0)};
 
 // Enables scrollers inside Blink to store scroll offsets in fractional
 // floating-point numbers rather than truncating to integers.
@@ -610,12 +593,6 @@ BASE_FEATURE(kNavigationNetworkResponseQueue,
              base::FEATURE_ENABLED_BY_DEFAULT
 #endif
 );
-
-// When enabled, RenderFrameHostManager::CommitPending will also update the
-// visibility of all child views, not just that of the main frame.
-BASE_FEATURE(kNavigationUpdatesChildViewsVisibility,
-             "NavigationUpdatesChildViewsVisibility",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If the network service is enabled, runs it in process.
 BASE_FEATURE(kNetworkServiceInProcess,
@@ -1285,12 +1262,6 @@ BASE_FEATURE(kMouseAndTrackpadDropdownMenu,
              "MouseAndTrackpadDropdownMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Request Desktop Site secondary settings for Android; including display
-// setting and peripheral setting.
-BASE_FEATURE(kRequestDesktopSiteAdditions,
-             "RequestDesktopSiteAdditions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Request Desktop Site based on window width for Android.
 BASE_FEATURE(kRequestDesktopSiteWindowSetting,
              "RequestDesktopSiteWindowSetting",
@@ -1330,6 +1301,12 @@ BASE_FEATURE(kWebNfc, "WebNFC", base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables backgrounding hidden renderers on Mac.
 BASE_FEATURE(kMacAllowBackgroundingRenderProcesses,
              "MacAllowBackgroundingRenderProcesses",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables a fix for a macOS IME Live Conversion issue. crbug.com/1328530 and
+// crbug.com/1342551
+BASE_FEATURE(kMacImeLiveConversionFix,
+             "MacImeLiveConversionFix",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMacSyscallSandbox,

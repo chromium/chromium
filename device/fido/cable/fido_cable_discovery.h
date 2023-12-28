@@ -52,8 +52,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
 
   // GetV2AdvertStream returns a stream of caBLEv2 BLE adverts. Only a single
   // stream is supported.
-  std::unique_ptr<FidoDeviceDiscovery::EventStream<
-      base::span<const uint8_t, cablev2::kAdvertSize>>>
+  std::unique_ptr<EventStream<base::span<const uint8_t, cablev2::kAdvertSize>>>
   GetV2AdvertStream();
 
   const std::map<CableEidArray, scoped_refptr<BluetoothAdvertisement>>&

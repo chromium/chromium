@@ -5,7 +5,7 @@
 import '../strings.m.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
-import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
+import {ShoppingServiceApiProxy, ShoppingServiceApiProxyImpl} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -29,8 +29,8 @@ export class InsightsCommentRow extends PolymerElement {
     };
   }
 
-  private shoppingApi_: ShoppingListApiProxy =
-      ShoppingListApiProxyImpl.getInstance();
+  private shoppingApi_: ShoppingServiceApiProxy =
+      ShoppingServiceApiProxyImpl.getInstance();
 
   private showFeedback_() {
     this.shoppingApi_.showFeedback();

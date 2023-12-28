@@ -10,8 +10,12 @@ import {
 // can be overridden by each component.
 export const DEFAULT_STYLE = css`
   /* https://web.dev/articles/custom-elements-best-practices#set-a-:host-display-style-e.g.-block,-inline-block,-flex-unless-you-prefer-the-default-of-inline. */
-  :where(:host) {
+  :host {
     display: block;
+  }
+
+  :host([hidden]) {
+    display: none;
   }
 
   :where(

@@ -20,7 +20,8 @@ class AutofillBottomSheetJavaScriptFeature : public web::JavaScriptFeature {
   // on these fields.
   void AttachListeners(
       const std::vector<autofill::FieldRendererId>& renderer_ids,
-      web::WebFrame* frame);
+      web::WebFrame* frame,
+      bool allow_autofocus);
 
   // This function will result in detaching listeners from the provided renderer
   // ids, which will prevent the associated bottom sheet from showing up until

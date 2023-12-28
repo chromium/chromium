@@ -43,24 +43,8 @@ try_.builder(
             "dcheck_always_on",
         ],
     ),
-    ssd = True,
+    builderless = False,
     contact_team_email = "clank-engprod@google.com",
-)
-
-try_.builder(
-    name = "fuchsia-official",
-    branch_selector = branches.selector.FUCHSIA_BRANCHES,
-    mirrors = [
-        "ci/fuchsia-official",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/fuchsia-official",
-            "minimal_symbols",
-            "dcheck_always_on",
-        ],
-    ),
-    ssd = True,
 )
 
 try_.builder(

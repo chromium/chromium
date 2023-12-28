@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/url/url_search_params.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -40,6 +41,9 @@ class RequestBodyTest : public testing::Test {
     request_init->setBody(blink::ScriptValue(scope.GetIsolate(), body_value));
     return request_init;
   }
+
+ private:
+  test::TaskEnvironment task_environment_;
 };
 
 TEST_F(RequestBodyTest, EmptyBody) {
@@ -147,6 +151,7 @@ TEST_F(RequestBodyTest, InitWithBlob) {
 }
 
 TEST(ServiceWorkerRequestTest, FromString) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DummyExceptionStateForTesting exception_state;
 
@@ -159,6 +164,7 @@ TEST(ServiceWorkerRequestTest, FromString) {
 }
 
 TEST(ServiceWorkerRequestTest, FromRequest) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DummyExceptionStateForTesting exception_state;
 
@@ -175,6 +181,7 @@ TEST(ServiceWorkerRequestTest, FromRequest) {
 }
 
 TEST(ServiceWorkerRequestTest, FromAndToFetchAPIRequest) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto fetch_api_request = mojom::blink::FetchAPIRequest::New();
 
@@ -251,6 +258,7 @@ TEST(ServiceWorkerRequestTest, FromAndToFetchAPIRequest) {
 }
 
 TEST(ServiceWorkerRequestTest, ToFetchAPIRequestDoesNotStripURLFragment) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DummyExceptionStateForTesting exception_state;
   String url_with_fragment = "http://www.example.com/#fragment";

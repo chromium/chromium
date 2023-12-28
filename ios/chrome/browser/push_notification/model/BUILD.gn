@@ -52,12 +52,16 @@ source_set("push_notification_service") {
     "push_notification_delegate.mm",
     "push_notification_service.h",
     "push_notification_service.mm",
+    "push_notification_settings_util.h",
+    "push_notification_settings_util.mm",
     "push_notification_util.h",
     "push_notification_util.mm",
   ]
   deps = [
+    ":constants",
     ":push_notification_client",
     "//base",
+    "//components/commerce/core:pref_names",
     "//components/optimization_guide/core:features",
     "//components/pref_registry",
     "//components/prefs",
@@ -78,6 +82,17 @@ source_set("push_notification_client") {
     "push_notification_client_id.h",
   ]
   deps = [ "//base" ]
+}
+
+source_set("alert_presenter") {
+  sources = [ "notifications_alert_presenter.h" ]
+}
+
+source_set("constants") {
+  sources = [
+    "constants.h",
+    "constants.mm",
+  ]
 }
 
 source_set("unit_tests") {

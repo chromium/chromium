@@ -1,7 +1,0 @@
-{
-  "gn_args": {
-    "is_official_build": true,
-    "target_os": "fuchsia",
-    "use_remoteexec": true
-  }
-}

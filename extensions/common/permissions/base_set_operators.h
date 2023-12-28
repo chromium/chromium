@@ -28,8 +28,8 @@ struct BaseSetOperatorsTraits {};
 template <typename T>
 class BaseSetOperators {
  public:
-  typedef typename BaseSetOperatorsTraits<T>::ElementType ElementType;
-  typedef typename BaseSetOperatorsTraits<T>::ElementIDType ElementIDType;
+  using ElementType = typename BaseSetOperatorsTraits<T>::ElementType;
+  using ElementIDType = typename BaseSetOperatorsTraits<T>::ElementIDType;
 
   using Map = std::map<ElementIDType, std::unique_ptr<ElementType>>;
 

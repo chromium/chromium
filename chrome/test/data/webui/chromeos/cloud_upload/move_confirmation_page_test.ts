@@ -4,10 +4,10 @@
 
 import 'chrome://cloud-upload/move_confirmation_page.js';
 
-import {DialogPage, OperationType, UserAction} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
+import {OperationType, UserAction} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
 import {CloudProvider, MoveConfirmationPageElement} from 'chrome://cloud-upload/move_confirmation_page.js';
-import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 import {CrosLottieEvent} from 'chrome://resources/cros_components/lottie_renderer/lottie-renderer.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -60,19 +60,21 @@ suite('<move-confirmation-page>', () => {
     container.appendChild(moveConfirmationPageApp);
 
     // Initialise dialog
-    switch (options.dialogPage) {
-      case DialogPage.kMoveConfirmationOneDrive: {
-        await moveConfirmationPageApp.setDialogAttributes(
-            1, options.operationType, CloudProvider.ONE_DRIVE);
-        break;
-      }
-      case DialogPage.kMoveConfirmationGoogleDrive: {
-        await moveConfirmationPageApp.setDialogAttributes(
-            1, options.operationType, CloudProvider.GOOGLE_DRIVE);
-        break;
-      }
-      default:
-        assertNotReached();
+    if (options.dialogSpecificArgs.moveConfirmationOneDriveDialogArgs) {
+      await moveConfirmationPageApp.setDialogAttributes(
+          1,
+          options.dialogSpecificArgs.moveConfirmationOneDriveDialogArgs
+              .operationType,
+          CloudProvider.ONE_DRIVE);
+    } else if (options.dialogSpecificArgs
+                   .moveConfirmationGoogleDriveDialogArgs) {
+      await moveConfirmationPageApp.setDialogAttributes(
+          1,
+          options.dialogSpecificArgs.moveConfirmationGoogleDriveDialogArgs
+              .operationType,
+          CloudProvider.GOOGLE_DRIVE);
+    } else {
+      assertNotReached();
     }
 
     // Ensure that the animation within the move confirmation page has been
@@ -112,9 +114,12 @@ suite('<move-confirmation-page>', () => {
       officeWebAppInstalled: true,
       installOfficeWebAppResult: true,
       odfsMounted: true,
-      dialogPage: DialogPage.kMoveConfirmationGoogleDrive,
+      dialogSpecificArgs: {
+        moveConfirmationGoogleDriveDialogArgs: {
+          operationType: OperationType.kMove,
+        },
+      },
       officeMoveConfirmationShownForDrive: false,
-      operationType: OperationType.kMove,
     });
     const checkbox = moveConfirmationPageApp.$<CrCheckboxElement>(
         '#always-copy-or-move-checkbox');
@@ -154,11 +159,14 @@ suite('<move-confirmation-page>', () => {
           officeWebAppInstalled: true,
           installOfficeWebAppResult: true,
           odfsMounted: true,
-          dialogPage: DialogPage.kMoveConfirmationGoogleDrive,
+          dialogSpecificArgs: {
+            moveConfirmationGoogleDriveDialogArgs: {
+              operationType: OperationType.kMove,
+            },
+          },
           alwaysMoveOfficeFilesToDrive: false,
           alwaysMoveOfficeFilesToOneDrive: true,
           officeMoveConfirmationShownForDrive: true,
-          operationType: OperationType.kMove,
         });
         const checkbox = moveConfirmationPageApp.$<CrCheckboxElement>(
             '#always-copy-or-move-checkbox');
@@ -209,11 +217,14 @@ suite('<move-confirmation-page>', () => {
           officeWebAppInstalled: true,
           installOfficeWebAppResult: true,
           odfsMounted: true,
-          dialogPage: DialogPage.kMoveConfirmationGoogleDrive,
+          dialogSpecificArgs: {
+            moveConfirmationGoogleDriveDialogArgs: {
+              operationType: OperationType.kMove,
+            },
+          },
           alwaysMoveOfficeFilesToDrive: false,
           alwaysMoveOfficeFilesToOneDrive: true,
           officeMoveConfirmationShownForDrive: true,
-          operationType: OperationType.kMove,
         });
         const checkbox = moveConfirmationPageApp.$<CrCheckboxElement>(
             '#always-copy-or-move-checkbox');
@@ -257,10 +268,13 @@ suite('<move-confirmation-page>', () => {
           officeWebAppInstalled: true,
           installOfficeWebAppResult: true,
           odfsMounted: true,
-          dialogPage: DialogPage.kMoveConfirmationGoogleDrive,
+          dialogSpecificArgs: {
+            moveConfirmationGoogleDriveDialogArgs: {
+              operationType: OperationType.kMove,
+            },
+          },
           officeMoveConfirmationShownForDrive: false,
           officeMoveConfirmationShownForOneDrive: true,
-          operationType: OperationType.kMove,
         });
         const hasCheckbox = moveConfirmationPageApp.$<CrCheckboxElement>(
                                 '#always-copy-or-move-checkbox') !== null;
@@ -278,9 +292,12 @@ suite('<move-confirmation-page>', () => {
       officeWebAppInstalled: true,
       installOfficeWebAppResult: true,
       odfsMounted: true,
-      dialogPage: DialogPage.kMoveConfirmationOneDrive,
+      dialogSpecificArgs: {
+        moveConfirmationOneDriveDialogArgs: {
+          operationType: OperationType.kMove,
+        },
+      },
       officeMoveConfirmationShownForOneDrive: false,
-      operationType: OperationType.kMove,
     });
     const hasCheckbox = moveConfirmationPageApp.$<CrCheckboxElement>(
                             '#always-copy-or-move-checkbox') !== null;
@@ -322,11 +339,14 @@ suite('<move-confirmation-page>', () => {
           officeWebAppInstalled: true,
           installOfficeWebAppResult: true,
           odfsMounted: true,
-          dialogPage: DialogPage.kMoveConfirmationOneDrive,
+          dialogSpecificArgs: {
+            moveConfirmationOneDriveDialogArgs: {
+              operationType: OperationType.kMove,
+            },
+          },
           alwaysMoveOfficeFilesToDrive: true,
           alwaysMoveOfficeFilesToOneDrive: false,
           officeMoveConfirmationShownForOneDrive: true,
-          operationType: OperationType.kMove,
         });
         const checkbox = moveConfirmationPageApp.$<CrCheckboxElement>(
             '#always-copy-or-move-checkbox');
@@ -380,11 +400,14 @@ suite('<move-confirmation-page>', () => {
           officeWebAppInstalled: true,
           installOfficeWebAppResult: true,
           odfsMounted: true,
-          dialogPage: DialogPage.kMoveConfirmationOneDrive,
+          dialogSpecificArgs: {
+            moveConfirmationOneDriveDialogArgs: {
+              operationType: OperationType.kMove,
+            },
+          },
           alwaysMoveOfficeFilesToDrive: true,
           alwaysMoveOfficeFilesToOneDrive: false,
           officeMoveConfirmationShownForOneDrive: true,
-          operationType: OperationType.kMove,
         });
         const checkbox = moveConfirmationPageApp.$<CrCheckboxElement>(
             '#always-copy-or-move-checkbox');
@@ -429,9 +452,12 @@ suite('<move-confirmation-page>', () => {
           officeWebAppInstalled: true,
           installOfficeWebAppResult: true,
           odfsMounted: true,
-          dialogPage: DialogPage.kMoveConfirmationOneDrive,
+          dialogSpecificArgs: {
+            moveConfirmationOneDriveDialogArgs: {
+              operationType: OperationType.kMove,
+            },
+          },
           officeMoveConfirmationShownForOneDrive: false,
-          operationType: OperationType.kMove,
         });
         const hasCheckbox = moveConfirmationPageApp.$<CrCheckboxElement>(
                                 '#always-copy-or-move-checkbox') !== null;
@@ -449,11 +475,14 @@ suite('<move-confirmation-page>', () => {
       officeWebAppInstalled: true,
       installOfficeWebAppResult: true,
       odfsMounted: true,
-      dialogPage: DialogPage.kMoveConfirmationGoogleDrive,
+      dialogSpecificArgs: {
+        moveConfirmationGoogleDriveDialogArgs: {
+          operationType: OperationType.kMove,
+        },
+      },
       alwaysMoveOfficeFilesToDrive: true,
       alwaysMoveOfficeFilesToOneDrive: false,
       officeMoveConfirmationShownForDrive: true,
-      operationType: OperationType.kMove,
     });
     const checkbox = moveConfirmationPageApp.$<CrCheckboxElement>(
         '#always-copy-or-move-checkbox');
@@ -471,11 +500,14 @@ suite('<move-confirmation-page>', () => {
       officeWebAppInstalled: true,
       installOfficeWebAppResult: true,
       odfsMounted: true,
-      dialogPage: DialogPage.kMoveConfirmationOneDrive,
+      dialogSpecificArgs: {
+        moveConfirmationOneDriveDialogArgs: {
+          operationType: OperationType.kMove,
+        },
+      },
       alwaysMoveOfficeFilesToDrive: false,
       alwaysMoveOfficeFilesToOneDrive: true,
       officeMoveConfirmationShownForOneDrive: true,
-      operationType: OperationType.kMove,
     });
     const checkbox = moveConfirmationPageApp.$<CrCheckboxElement>(
         '#always-copy-or-move-checkbox');
@@ -492,9 +524,12 @@ suite('<move-confirmation-page>', () => {
       officeWebAppInstalled: true,
       installOfficeWebAppResult: true,
       odfsMounted: true,
-      dialogPage: DialogPage.kMoveConfirmationGoogleDrive,
+      dialogSpecificArgs: {
+        moveConfirmationGoogleDriveDialogArgs: {
+          operationType: OperationType.kMove,
+        },
+      },
       officeMoveConfirmationShownForDrive: true,
-      operationType: OperationType.kMove,
     });
     // Title.
     const titleElement = moveConfirmationPageApp.$<HTMLElement>('#title')!;
@@ -520,9 +555,12 @@ suite('<move-confirmation-page>', () => {
       officeWebAppInstalled: true,
       installOfficeWebAppResult: true,
       odfsMounted: true,
-      dialogPage: DialogPage.kMoveConfirmationOneDrive,
+      dialogSpecificArgs: {
+        moveConfirmationOneDriveDialogArgs: {
+          operationType: OperationType.kMove,
+        },
+      },
       officeMoveConfirmationShownForOneDrive: true,
-      operationType: OperationType.kMove,
     });
     // Title.
     const titleElement = moveConfirmationPageApp.$<HTMLElement>('#title')!;
@@ -548,9 +586,12 @@ suite('<move-confirmation-page>', () => {
       officeWebAppInstalled: true,
       installOfficeWebAppResult: true,
       odfsMounted: true,
-      dialogPage: DialogPage.kMoveConfirmationGoogleDrive,
+      dialogSpecificArgs: {
+        moveConfirmationGoogleDriveDialogArgs: {
+          operationType: OperationType.kMove,
+        },
+      },
       officeMoveConfirmationShownForDrive: true,
-      operationType: OperationType.kMove,
     });
     // Title.
     const titleElement = moveConfirmationPageApp.$<HTMLElement>('#title')!;
@@ -571,9 +612,12 @@ suite('<move-confirmation-page>', () => {
       officeWebAppInstalled: true,
       installOfficeWebAppResult: true,
       odfsMounted: true,
-      dialogPage: DialogPage.kMoveConfirmationGoogleDrive,
+      dialogSpecificArgs: {
+        moveConfirmationGoogleDriveDialogArgs: {
+          operationType: OperationType.kCopy,
+        },
+      },
       officeMoveConfirmationShownForDrive: true,
-      operationType: OperationType.kCopy,
     });
     // Title.
     const titleElement = moveConfirmationPageApp.$<HTMLElement>('#title')!;
@@ -583,5 +627,59 @@ suite('<move-confirmation-page>', () => {
     const actionButton =
         moveConfirmationPageApp.$<HTMLElement>('.action-button')!;
     assertEquals('Copy and open', actionButton.innerText);
+  });
+
+  /**
+   * Test that clicking the cancel button triggers the right
+   * `respondWithUserActionAndClose` mojo request.
+   */
+  test('Cancel', async () => {
+    await setUp({
+      fileNames: ['text.docx'],
+      officeWebAppInstalled: true,
+      installOfficeWebAppResult: true,
+      odfsMounted: true,
+      dialogSpecificArgs: {
+        moveConfirmationGoogleDriveDialogArgs: {
+          operationType: OperationType.kCopy,
+        },
+      },
+      officeMoveConfirmationShownForDrive: true,
+    });
+
+    moveConfirmationPageApp.$('.cancel-button').click();
+    await testProxy.handler.whenCalled('respondWithUserActionAndClose');
+    assertEquals(
+        1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+    assertDeepEquals(
+        [UserAction.kCancelGoogleDrive],
+        testProxy.handler.getArgs('respondWithUserActionAndClose'));
+  });
+
+  /**
+   * Test that an Escape keydown triggers the right
+   * `respondWithUserActionAndClose` mojo request.
+   */
+  test('Escape', async () => {
+    await setUp({
+      fileNames: ['text.docx'],
+      officeWebAppInstalled: true,
+      installOfficeWebAppResult: true,
+      odfsMounted: true,
+      dialogSpecificArgs: {
+        moveConfirmationGoogleDriveDialogArgs: {
+          operationType: OperationType.kCopy,
+        },
+      },
+      officeMoveConfirmationShownForDrive: true,
+    });
+
+    document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
+    await testProxy.handler.whenCalled('respondWithUserActionAndClose');
+    assertEquals(
+        1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
+    assertDeepEquals(
+        [UserAction.kCancelGoogleDrive],
+        testProxy.handler.getArgs('respondWithUserActionAndClose'));
   });
 });

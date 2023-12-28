@@ -50,8 +50,9 @@ LaunchResult ConvertMojomLaunchResultToLaunchResult(
     crosapi::mojom::LaunchResultPtr mojom_launch_result) {
   auto launch_result = LaunchResult();
   if (mojom_launch_result->instance_ids) {
-    for (auto token : *mojom_launch_result->instance_ids)
+    for (auto token : *mojom_launch_result->instance_ids) {
       launch_result.instance_ids.push_back(std::move(token));
+    }
   } else {
     launch_result.instance_ids.push_back(
         std::move(mojom_launch_result->instance_id));

@@ -12,6 +12,7 @@
 #include "ash/controls/rounded_scroll_bar.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
@@ -239,10 +240,8 @@ std::unique_ptr<views::View> AppStreamLauncherView::CreateHeaderView() {
       views::BoxLayout::Orientation::kHorizontal, kHeaderViewInsets,
       kHeaderChildrenSpacing));
 
-  header->SetBackground(views::CreateSolidBackground(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::
-              kControlBackgroundColorInactive)));
+  header->SetBackground(views::CreateThemedSolidBackground(
+      kColorAshControlBackgroundColorInactive));
 
   // Add arrowback button
   arrow_back_button_ = header->AddChildView(CreateButton(
@@ -256,12 +255,8 @@ std::unique_ptr<views::View> AppStreamLauncherView::CreateHeaderView() {
       gfx::DirectionalityMode::DIRECTIONALITY_AS_URL));
   title->SetMultiLine(true);
   title->SetAllowCharacterBreak(true);
-  title->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded,
-                               /*adjust_height_for_width =*/true)
-          .WithWeight(1));
+  title->SetProperty(views::kBoxLayoutFlexKey,
+                     views::BoxLayoutFlexSpecification());
   title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_APP_STREAM_LAUNCHER_TITLE));

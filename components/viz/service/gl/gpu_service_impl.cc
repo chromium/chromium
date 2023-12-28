@@ -111,7 +111,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS)
-#include "components/ml/webnn/features.h"
+#include "components/ml/webnn/features.mojom-features.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -307,22 +307,6 @@ bool IsAcceleratedJpegDecodeSupported() {
 #else
   return false;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
-// Returns a callback which does a PostTask to run |callback| on the |runner|
-// task runner.
-template <typename... Params>
-base::OnceCallback<void(Params&&...)> WrapCallback(
-    scoped_refptr<base::SingleThreadTaskRunner> runner,
-    base::OnceCallback<void(Params...)> callback) {
-  return base::BindOnce(
-      [](base::SingleThreadTaskRunner* runner,
-         base::OnceCallback<void(Params && ...)> callback, Params&&... params) {
-        runner->PostTask(FROM_HERE,
-                         base::BindOnce(std::move(callback),
-                                        std::forward<Params>(params)...));
-      },
-      base::RetainedRef(std::move(runner)), std::move(callback));
 }
 
 bool WillGetGmbConfigFromGpu() {
@@ -937,8 +921,6 @@ void GpuServiceImpl::BindClientGmbInterface(
 void GpuServiceImpl::BindWebNNContextProvider(
     mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> pending_receiver,
     int client_id) {
-  CHECK(base::FeatureList::IsEnabled(
-      webnn::features::kEnableMachineLearningNeuralNetworkService));
   webnn::WebNNContextProviderImpl::Create(std::move(pending_receiver));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
@@ -981,7 +963,7 @@ void GpuServiceImpl::CopyGpuMemoryBuffer(
 void GpuServiceImpl::GetVideoMemoryUsageStats(
     GetVideoMemoryUsageStatsCallback callback) {
   if (io_runner_->BelongsToCurrentThread()) {
-    auto wrap_callback = WrapCallback(io_runner_, std::move(callback));
+    auto wrap_callback = base::BindPostTask(io_runner_, std::move(callback));
     main_runner_->PostTask(
         FROM_HERE, base::BindOnce(&GpuServiceImpl::GetVideoMemoryUsageStats,
                                   weak_ptr_, std::move(wrap_callback)));
@@ -1119,6 +1101,7 @@ void GpuServiceImpl::LoadedBlob(const gpu::GpuDiskCacheHandle& handle,
       GetHandleType(handle) == gpu::GpuDiskCacheType::kGlShaders) {
     std::string prefix = GetShaderPrefixKey();
     bool prefix_ok = !key.compare(0, prefix.length(), prefix);
+    UMA_HISTOGRAM_BOOLEAN("GPU.ShaderLoadPrefixOK", prefix_ok);
     if (prefix_ok) {
       // Remove the prefix from the key before load.
       no_prefix_key = key.substr(prefix.length() + 1);
@@ -1469,9 +1452,9 @@ void GpuServiceImpl::BeginCATransaction() {
 
 void GpuServiceImpl::CommitCATransaction(CommitCATransactionCallback callback) {
   DCHECK(io_runner_->BelongsToCurrentThread());
-  main_runner_->PostTaskAndReply(FROM_HERE,
-                                 base::BindOnce(&ui::CommitCATransaction),
-                                 WrapCallback(io_runner_, std::move(callback)));
+  main_runner_->PostTaskAndReply(
+      FROM_HERE, base::BindOnce(&ui::CommitCATransaction),
+      base::BindPostTask(io_runner_, std::move(callback)));
 }
 #endif
 

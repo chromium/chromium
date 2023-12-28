@@ -51,10 +51,6 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
         return new ViewResourceAdapter(this) {
             @Override
             public boolean isDirty() {
-                if (ToolbarFeatures.shouldBlockCapturesForAblation()) {
-                    return false;
-                }
-
                 if (ToolbarFeatures.shouldSuppressCaptures()) {
                     // Dirty rect tracking will claim changes more often than token differences due
                     // to model changes. It is also cheaper to simply check a boolean, so do it

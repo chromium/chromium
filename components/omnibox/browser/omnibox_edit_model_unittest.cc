@@ -680,6 +680,9 @@ class OmniboxEditModelPopupTest : public ::testing::Test {
     return static_cast<TestOmniboxEditModel*>(view_->model());
   }
   OmniboxController* controller() { return view_->controller(); }
+  TestOmniboxClient* client() {
+    return static_cast<TestOmniboxClient*>(controller()->client());
+  }
 
  protected:
   base::test::TaskEnvironment task_environment_;
@@ -1213,6 +1216,8 @@ TEST_F(OmniboxEditModelPopupTest, OpenActionSelectionLogsOmniboxEvent) {
   model()->OnPopupResultChanged();
   model()->OpenSelection(
       OmniboxPopupSelection(1, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION));
+  EXPECT_EQ(client()->last_log_disposition(),
+            WindowOpenDisposition::SWITCH_TO_TAB);
   histogram_tester.ExpectUniqueSample("Omnibox.EventCount", 1, 1);
 }
 #endif

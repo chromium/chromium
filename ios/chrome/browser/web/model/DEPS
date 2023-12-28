@@ -1,0 +1,136 @@
+include_rules = [
+  "+ios/chrome/browser/application_context/model",
+  "+ios/chrome/browser/autofill/model",
+  "+ios/chrome/browser/browser_state/model",
+  "+ios/chrome/browser/content_settings/model",
+  "+ios/chrome/browser/crash_report/model",
+  "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
+  "+ios/chrome/browser/first_run/model",
+  "+ios/chrome/browser/flags/about_flags.h",
+  "+ios/chrome/browser/flags/chrome_switches.h",
+  "+ios/chrome/browser/flags/ios_chrome_field_trials.h",
+  "+ios/chrome/browser/follow/model",
+  "+ios/chrome/browser/https_upgrades/model",
+  "+ios/chrome/browser/infobars/model",
+  "+ios/chrome/browser/lens/model/lens_browser_agent.h",
+  "+ios/chrome/browser/link_to_text/model",
+  "+ios/chrome/browser/mailto_handler/model",
+  "+ios/chrome/browser/metrics/model",
+  "+ios/chrome/browser/ntp/model",
+  "+ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h",
+  "+ios/chrome/browser/open_from_clipboard/model",
+  "+ios/chrome/browser/optimization_guide/model",
+  "+ios/chrome/browser/overlays/model/public",
+  "+ios/chrome/browser/parcel_tracking",
+  "+ios/chrome/browser/permissions/model/permissions_tab_helper.h",
+  "+ios/chrome/browser/policy/model",
+  "+ios/chrome/browser/prerender/model",
+  "+ios/chrome/browser/promos_manager",
+  "+ios/chrome/browser/reading_list/model",
+  "+ios/chrome/browser/rlz",
+  "+ios/chrome/browser/safe_browsing/model",
+  "+ios/chrome/browser/search_engines/model",
+  "+ios/chrome/browser/segmentation_platform/model",
+  "+ios/chrome/browser/sessions",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/snapshots/model/snapshot_tab_helper.h",
+  "+ios/chrome/browser/ssl/model",
+  "+ios/chrome/browser/supervised_user/model",
+  "+ios/chrome/browser/tab_insertion/model",
+  "+ios/chrome/browser/text_selection/model",
+  "+ios/chrome/browser/translate/model",
+  "+ios/chrome/browser/url_loading/model",
+  "+ios/chrome/browser/web_selection/model",
+]
+
+specific_include_rules = {
+  "page_placeholder_tab_helper.mm": [
+    "+ios/chrome/browser/shared/ui/util/named_guide.h",
+  ],
+  "page_placeholder_tab_helper.h": [
+    "+ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h",
+  ],
+  "browser_about_rewriter.cc": [
+    "+ios/chrome/browser/ui/ui_feature_flags.h",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "browsing_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "browsing_prevent_default_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "cache_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "child_window_open_by_dom_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  "chrome_main_parts\.(h|mm)": [
+    "+components/memory_system",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "forms_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "http_auth_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "js_print_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "progress_indicator_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "push_and_replace_state_navigation_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "stop_loading_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "visible_url_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  "window_open_by_dom_egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+
+  # TODO(crbug.com/1294160): Remove these dependencies.
+  "^chrome_web_client.mm": [
+    "+ios/chrome/browser/shared/ui/elements/windowed_container_view.h",
+  ],
+  "^sad_tab_tab_helper.mm": [
+    "+ios/chrome/browser/ui/fullscreen/fullscreen_controller.h",
+    "+ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h",
+  ],
+  "^web_state_delegate_browser_agent.h": [
+    "+ios/chrome/browser/ui/dialogs/overlay_java_script_dialog_presenter.h",
+  ],
+  "^web_state_delegate_browser_agent.mm": [
+    "+ios/chrome/browser/ui/dialogs/nsurl_protection_space_util.h",
+    "+ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h",
+  ],
+
+}

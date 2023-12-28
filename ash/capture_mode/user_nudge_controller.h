@@ -77,10 +77,10 @@ class UserNudgeController {
 
   // The session that owns `this`. Guaranteed to be non null for the lifetime of
   // `this`.
-  const raw_ptr<CaptureModeSession, ExperimentalAsh> capture_session_;
+  const raw_ptr<CaptureModeSession> capture_session_;
 
   // The view to which we're trying to grab the user's attention.
-  const raw_ptr<views::View, ExperimentalAsh> view_to_be_highlighted_;
+  const raw_ptr<views::View> view_to_be_highlighted_;
 
   // These are the two animation layers that will be used to highlight
   // `view_to_be_highlighted_` to nudge the user towards it.

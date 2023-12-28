@@ -13,3 +13,19 @@ imageset("promo_style_avatar_circle") {
     "promo_style_avatar_circle.imageset/promo_style_avatar_circle_dark@3x.png",
   ]
 }
+
+imageset("promo_background_left") {
+  sources = [
+    "promo_background_left.imageset/Contents.json",
+    "promo_background_left.imageset/promo_background_left.pdf",
+    "promo_background_left.imageset/promo_background_left_dark.pdf",
+  ]
+}
+
+imageset("promo_background_right") {
+  sources = [
+    "promo_background_right.imageset/Contents.json",
+    "promo_background_right.imageset/promo_background_right.pdf",
+    "promo_background_right.imageset/promo_background_right_dark.pdf",
+  ]
+}

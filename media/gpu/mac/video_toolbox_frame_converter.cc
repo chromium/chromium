@@ -33,7 +33,7 @@ namespace {
 constexpr uint32_t kSharedImageUsage =
     gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
     gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
-    gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_GLES2;
+    gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
 
 constexpr char kSharedImageDebugLabel[] = "VideoToolboxVideoDecoder";
 
@@ -230,6 +230,7 @@ void VideoToolboxFrameConverter::Convert(
   // IOSurface color space. There doesn't seem to be a way to specify it for
   // H.264 unless we create the format description manually.
   frame->set_color_space(metadata->color_space);
+  frame->set_hdr_metadata(metadata->hdr_metadata);
   frame->set_shared_image_format_type(
       IsMultiPlaneFormatForHardwareVideoEnabled()
           ? SharedImageFormatType::kSharedImageFormat

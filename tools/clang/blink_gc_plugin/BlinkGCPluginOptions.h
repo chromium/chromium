@@ -40,13 +40,9 @@ struct BlinkGCPluginOptions {
   // due to pointer compression).
   bool enable_extra_padding_check = false;
 
-  // Enables checking for `mojo::Associated{Remote,Receiver}` in the forbidden
-  // fields checker.
-  bool forbid_associated_remote_receiver = true;
-
   // Enables checks for GCed objects, Members, and pointers or references to
   // GCed objects and in stl and WTF collections.
-  bool enable_off_heap_collections_of_gced_check = false;
+  bool enable_off_heap_collections_of_gced_check = true;
 
   // Enables checks for WeakPtr and WeakPtrFactory with GCed types.
   bool enable_weak_ptrs_check = false;

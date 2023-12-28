@@ -252,6 +252,7 @@ base::Value::Dict SearchEnginesHandler::CreateDictionaryForEngine(
   dict.Set("canBeDeactivated", list_controller_.CanDeactivate(template_url));
   dict.Set("shouldConfirmDeletion",
            list_controller_.ShouldConfirmDeletion(template_url));
+  dict.Set("isManaged", list_controller_.IsManaged(template_url));
   TemplateURL::Type type = template_url->type();
   dict.Set("isOmniboxExtension", type == TemplateURL::OMNIBOX_API_EXTENSION);
   if (type == TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION ||
@@ -292,7 +293,6 @@ void SearchEnginesHandler::HandleSetDefaultSearchEngine(
 
   list_controller_.MakeDefaultTemplateURL(index);
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
   Profile& profile = CHECK_DEREF(Profile::FromWebUI(web_ui()));
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(&profile);
@@ -307,7 +307,6 @@ void SearchEnginesHandler::HandleSetDefaultSearchEngine(
   // search engine.
   search_engines::RecordChoiceMade(profile.GetPrefs(), choice_made_location,
                                    template_url_service);
-#endif
 
   base::RecordAction(base::UserMetricsAction("Options_SearchEngineSetDefault"));
 }

@@ -70,15 +70,15 @@ class SelectToSpeakMenuView : public views::BoxLayoutView {
   void OnKeyEvent(ui::KeyEvent* key_event) override;
 
   // Owned by views hierarchy.
-  raw_ptr<FloatingMenuButton, ExperimentalAsh> prev_paragraph_button_ = nullptr;
-  raw_ptr<FloatingMenuButton, ExperimentalAsh> prev_sentence_button_ = nullptr;
-  raw_ptr<FloatingMenuButton, ExperimentalAsh> pause_button_ = nullptr;
-  raw_ptr<FloatingMenuButton, ExperimentalAsh> next_sentence_button_ = nullptr;
-  raw_ptr<FloatingMenuButton, ExperimentalAsh> next_paragraph_button_ = nullptr;
-  raw_ptr<FloatingMenuButton, ExperimentalAsh> stop_button_ = nullptr;
-  raw_ptr<FloatingMenuButton, ExperimentalAsh> speed_button_ = nullptr;
+  raw_ptr<FloatingMenuButton> prev_paragraph_button_ = nullptr;
+  raw_ptr<FloatingMenuButton> prev_sentence_button_ = nullptr;
+  raw_ptr<FloatingMenuButton> pause_button_ = nullptr;
+  raw_ptr<FloatingMenuButton> next_sentence_button_ = nullptr;
+  raw_ptr<FloatingMenuButton> next_paragraph_button_ = nullptr;
+  raw_ptr<FloatingMenuButton> stop_button_ = nullptr;
+  raw_ptr<FloatingMenuButton> speed_button_ = nullptr;
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
   bool is_paused_ = false;
 };
 

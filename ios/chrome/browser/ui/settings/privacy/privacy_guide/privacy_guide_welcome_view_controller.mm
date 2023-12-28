@@ -20,7 +20,7 @@ constexpr NSString* kWelcomeBannerName = @"welcome_illustration";
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
-  self.view.accessibilityIdentifier = kPrivacyGuideWelcomeViewId;
+  self.view.accessibilityIdentifier = kPrivacyGuideWelcomeViewID;
 
   self.bannerName = kWelcomeBannerName;
   self.bannerSize = BannerImageSizeType::kTall;

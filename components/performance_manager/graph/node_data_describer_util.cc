@@ -22,14 +22,23 @@
 
 namespace performance_manager {
 
-base::Value TimeDeltaFromNowToValue(base::TimeTicks time_ticks) {
-  base::TimeDelta delta = base::TimeTicks::Now() - time_ticks;
-
+base::Value TimeDeltaToValue(base::TimeDelta delta) {
   std::u16string out;
-  bool succeeded = TimeDurationFormat(delta, base::DURATION_WIDTH_WIDE, &out);
+  bool succeeded =
+      TimeDurationFormatWithSeconds(delta, base::DURATION_WIDTH_SHORT, &out);
   DCHECK(succeeded);
-
   return base::Value(out);
+}
+
+base::Value TimeDeltaFromNowToValue(base::TimeTicks time_ticks) {
+  return TimeDeltaToValue(base::TimeTicks::Now() - time_ticks);
+}
+
+base::Value TimeSinceEpochToValue(base::TimeTicks time_ticks) {
+  const base::TimeDelta delta_since_epoch =
+      time_ticks - base::TimeTicks::UnixEpoch();
+  return base::Value(base::UnlocalizedTimeFormatWithPattern(
+      base::Time::UnixEpoch() + delta_since_epoch, "yyyy-MM-dd HH:mm:ss"));
 }
 
 base::Value MaybeNullStringToValue(base::StringPiece str) {

@@ -9,6 +9,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -113,6 +114,8 @@ class TouchInjector : public ui::EventRewriter {
   std::optional<gfx::Vector2dF> menu_entry_location() const {
     return menu_entry_location_;
   }
+
+  void MaybeBindDefaultInputElement(Action* action);
 
   // Update `content_bounds_f_` and touch positions for each `actions_` for
   // different reasons.

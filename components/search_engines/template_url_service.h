@@ -156,6 +156,14 @@ class TemplateURLService : public WebDataServiceConsumer,
   // very long).
   bool ShowInDefaultList(const TemplateURL* template_url) const;
 
+  // Returns whether |template_url| should be shown in the list of active
+  // engines, including active search engines and search engines created by
+  // the SiteSearchSettings policy.
+  bool ShowInActivesList(const TemplateURL* template_url) const;
+
+  // Returns whether |template_url| should be hidden from all lists of engines.
+  bool HiddenFromLists(const TemplateURL* template_url) const;
+
   // Adds to |matches| all TemplateURLs whose keywords begin with |prefix|,
   // sorted shortest-keyword-first. If |supports_replacement_only| is true, only
   // TemplateURLs that support replacement are returned. This method must be

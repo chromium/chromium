@@ -96,6 +96,15 @@ class CONTENT_EXPORT CodeCacheHostImpl : public blink::mojom::CodeCacheHost {
   void SetCacheStorageControlForTesting(
       storage::mojom::CacheStorageControl* cache_storage_control);
 
+  static void SetUseEmptySecondaryKeyForTesting() {
+    use_empty_secondary_key_for_testing_ = true;
+  }
+
+  enum class Operation {
+    kRead,
+    kWrite,
+  };
+
  private:
   // blink::mojom::CodeCacheHost implementation.
   void DidGenerateCacheableMetadata(blink::mojom::CodeCacheType cache_type,
@@ -121,12 +130,19 @@ class CONTENT_EXPORT CodeCacheHostImpl : public blink::mojom::CodeCacheHost {
                            const base::Time& response_time,
                            mojo_base::BigBuffer data);
 
+  std::optional<GURL> GetSecondaryKeyForCodeCache(
+      const GURL& resource_url,
+      int render_process_id,
+      CodeCacheHostImpl::Operation operation);
+
   // Our render process host ID, used to bind to the correct render process.
   const int render_process_id_;
 
   // Used to override the CacheStorageControl from the RHPI as needed.
   raw_ptr<storage::mojom::CacheStorageControl>
       cache_storage_control_for_testing_ = nullptr;
+
+  static bool use_empty_secondary_key_for_testing_;
 
   scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context_;
 

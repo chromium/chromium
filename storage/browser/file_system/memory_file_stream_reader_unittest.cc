@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -53,12 +54,10 @@ class MemoryFileStreamReaderTest : public FileStreamReaderTest {
   }
 
   void WriteFile(const std::string& file_name,
-                 const char* buf,
-                 size_t buf_size,
+                 std::string_view data,
                  base::Time* modification_time) override {
     base::FilePath path = test_dir().AppendASCII(file_name);
-    file_util_->CreateFileForTesting(path,
-                                     base::span<const char>(buf, buf_size));
+    file_util_->CreateFileForTesting(path, data);
     base::File::Info file_info;
     ASSERT_EQ(base::File::FILE_OK, file_util_->GetFileInfo(path, &file_info));
     if (modification_time)

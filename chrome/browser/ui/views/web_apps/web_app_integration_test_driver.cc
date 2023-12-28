@@ -62,6 +62,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
+#include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
@@ -71,6 +72,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/window_controls_overlay_toggle_button.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
+#include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -78,7 +80,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
-#include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
+#include "chrome/browser/ui/webui/app_management/app_management_page_handler_base.h"
 #include "chrome/browser/ui/webui/app_settings/web_app_settings_ui.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_handler.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
@@ -152,6 +154,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
+#include "chromeos/constants/chromeos_features.h"
 #else
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/ui/webui/app_home/app_home_page_handler.h"
@@ -684,14 +687,14 @@ std::optional<AppState> GetStateForAppId(StateSnapshot* state_snapshot,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-AppManagementPageHandler CreateAppManagementPageHandler(Profile* profile) {
+AppManagementPageHandlerBase CreateAppManagementPageHandler(Profile* profile) {
   mojo::PendingReceiver<app_management::mojom::Page> page;
   mojo::Remote<app_management::mojom::PageHandler> handler;
   static auto delegate =
       WebAppSettingsUI::CreateAppManagementPageHandlerDelegate(profile);
-  return AppManagementPageHandler(handler.BindNewPipeAndPassReceiver(),
-                                  page.InitWithNewPipeAndPassRemote(), profile,
-                                  *delegate);
+  return AppManagementPageHandlerBase(handler.BindNewPipeAndPassReceiver(),
+                                      page.InitWithNewPipeAndPassRemote(),
+                                      profile, *delegate);
 }
 #endif
 
@@ -1153,6 +1156,10 @@ void WebAppIntegrationTestDriver::EnableRunOnOsLoginFromAppHome(Site site) {
 }
 
 void WebAppIntegrationTestDriver::EnterFullScreenApp() {
+// TODO(crbug.com/1481727): Fullscreen is flaky on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  GTEST_SKIP() << "Flaky on Lacros (crbug.com/1481727)";
+#else
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
@@ -1164,9 +1171,14 @@ void WebAppIntegrationTestDriver::EnterFullScreenApp() {
   fullscreen_observer.Wait();
   ASSERT_TRUE(fullscreen_controller->IsFullscreenForBrowser());
   AfterStateChangeAction();
+#endif  // IS_CHROMEOS_LACROS
 }
 
 void WebAppIntegrationTestDriver::ExitFullScreenApp() {
+// TODO(crbug.com/1481727): Fullscreen is flaky on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  GTEST_SKIP() << "Flaky on Lacros (crbug.com/1481727)";
+#else
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
@@ -1178,6 +1190,7 @@ void WebAppIntegrationTestDriver::ExitFullScreenApp() {
   fullscreen_observer.Wait();
   ASSERT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
   AfterStateChangeAction();
+#endif  // IS_CHROMEOS_LACROS
 }
 
 void WebAppIntegrationTestDriver::DisableFileHandling(Site site) {
@@ -1198,11 +1211,20 @@ void WebAppIntegrationTestDriver::EnableFileHandling(Site site) {
 
 void WebAppIntegrationTestDriver::CreateShortcut(Site site,
                                                  WindowOptions options) {
+  bool open_in_window = options == WindowOptions::kWindowed;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (chromeos::features::IsCrosShortstandEnabled() && open_in_window) {
+    GTEST_SKIP() << "With project Shortstand, users are no longer allowed to "
+                    "create shortcut and open in window.";
+  }
+#endif
+
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
   MaybeNavigateTabbedBrowserInScope(site);
-  bool open_in_window = options == WindowOptions::kWindowed;
+
   SetAutoAcceptWebAppDialogForTesting(
       /*auto_accept=*/true,
       /*auto_open_in_window=*/open_in_window);
@@ -1652,10 +1674,9 @@ void WebAppIntegrationTestDriver::LaunchFromLaunchIcon(Site site) {
 
   NavigateTabbedBrowserToSite(GetInScopeURL(site), NavigationMode::kNewTab);
 
-  ASSERT_TRUE(intent_picker_view()->GetVisible());
   BrowserAddedWaiter browser_added_waiter;
 
-  intent_picker_view()->ExecuteForTesting();
+  EXPECT_TRUE(ClickIntentPickerChip(browser()));
   browser_added_waiter.Wait();
   app_browser_ = browser_added_waiter.browser_added();
   ASSERT_TRUE(app_browser_);
@@ -2078,7 +2099,7 @@ void WebAppIntegrationTestDriver::NavigatePwa(Site pwa, Site to) {
   content::TestNavigationObserver url_observer(GetUrlForSite(to));
   url_observer.StartWatchingNewWebContents();
   url_observer.WatchExistingWebContents();
-  NavigateToURLAndWait(app_browser(), GetUrlForSite(to), false);
+  NavigateViaLinkClickToURLAndWait(app_browser(), GetUrlForSite(to), false);
   url_observer.Wait();
   AfterStateChangeAction();
 }
@@ -3771,6 +3792,9 @@ bool WebAppIntegrationTestDriver::BeforeStateChangeAction(
   if (testing::Test::HasFatalFailure() && !in_tear_down_) {
     return false;
   }
+  if (testing::Test::IsSkipped() && !in_tear_down_) {
+    return false;
+  }
   LOG(INFO) << "BeforeStateChangeAction: "
             << std::string(executing_action_level_, ' ') << function;
   ++executing_action_level_;
@@ -3862,6 +3886,9 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
 bool WebAppIntegrationTestDriver::BeforeStateCheckAction(const char* function) {
   CHECK(base::StartsWith(function, "Check"));
   if (testing::Test::HasFatalFailure() && !in_tear_down_) {
+    return false;
+  }
+  if (testing::Test::IsSkipped() && !in_tear_down_) {
     return false;
   }
   ++executing_action_level_;
@@ -3982,18 +4009,12 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
         GURL url = tab->GetURL();
         tab_state_map.emplace(tab, TabState(url));
       }
-      content::WebContents* active_tab = tabs->GetActiveWebContents();
+      content::WebContents* active_tab_contents = tabs->GetActiveWebContents();
       bool launch_icon_shown = false;
       bool is_app_browser = AppBrowserController::IsWebApp(browser);
-      if (!is_app_browser && active_tab != nullptr) {
-        auto* tab_helper = IntentPickerTabHelper::FromWebContents(active_tab);
-        base::RunLoop run_loop;
-        tab_helper->SetIconUpdateCallbackForTesting(
-            run_loop.QuitClosure(),
-            /*include_latest_navigation*/ true);
-        run_loop.Run();
-
-        launch_icon_shown = intent_picker_view()->GetVisible();
+      if (!is_app_browser && active_tab_contents != nullptr) {
+        AwaitIntentPickerTabHelperIconUpdateComplete(active_tab_contents);
+        launch_icon_shown = intent_chip_view()->GetVisible();
       }
       webapps::AppId app_id;
       if (AppBrowserController::IsWebApp(browser)) {
@@ -4001,8 +4022,8 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
       }
 
       browser_state.emplace(
-          browser, BrowserState(browser, tab_state_map, active_tab, app_id,
-                                launch_icon_shown));
+          browser, BrowserState(browser, tab_state_map, active_tab_contents,
+                                app_id, launch_icon_shown));
     }
 
     WebAppProvider* provider = GetProviderForProfile(profile);
@@ -4533,13 +4554,10 @@ PageActionIconView* WebAppIntegrationTestDriver::pwa_install_view() {
   return pwa_install_view;
 }
 
-PageActionIconView* WebAppIntegrationTestDriver::intent_picker_view() {
-  PageActionIconView* intent_picker_view =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->toolbar_button_provider()
-          ->GetPageActionIconView(PageActionIconType::kIntentPicker);
-  CHECK(intent_picker_view);
-  return intent_picker_view;
+IntentChipButton* WebAppIntegrationTestDriver::intent_chip_view() {
+  IntentChipButton* intent_chip_button = GetIntentPickerIcon(browser());
+  CHECK(intent_chip_button);
+  return intent_chip_button;
 }
 
 const net::EmbeddedTestServer&
@@ -4569,12 +4587,17 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   enabled_features.push_back(blink::features::kDesktopPWAsTabStrip);
   enabled_features.push_back(features::kDesktopPWAsTabStripSettings);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
+  // WebAppIntegrationTest runs in Ash only when Lacros is disabled.
+  // If Lacros is enabled, WebAppIntegrationTest runs in Lacros with crosapi
+  // enabled.
   base::Extend(disabled_features, ash::standalone_browser::GetFeatureRefs());
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/1357905): Update test driver to work with new UI.
-  disabled_features.push_back(apps::features::kLinkCapturingUiUpdate);
+  enabled_features.push_back(apps::features::kLinkCapturingUiUpdate);
+#else
+  // TOOD(b/313492499): Update test driver to work with new intent picker UI.
+  enabled_features.push_back(features::kDesktopPWAsLinkCapturing);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }

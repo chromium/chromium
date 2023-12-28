@@ -895,7 +895,7 @@ TEST_F(UkmRecorderPermissionUmaUtilTest,
       "Permissions.Revocation.Notifications.DidRecordUkm", 1, 1);
   const auto entries = ukm_recorder.GetEntriesByName("Permission");
   ASSERT_EQ(1u, entries.size());
-  const auto* entry = entries.back();
+  const auto* entry = entries.back().get();
   EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "Action"),
             static_cast<int64_t>(PermissionAction::REVOKED));
 }
@@ -940,7 +940,7 @@ TEST_F(UkmRecorderPermissionUmaUtilTest,
                                1, 1);
   const auto entries = ukm_recorder.GetEntriesByName("PermissionUsage");
   ASSERT_EQ(1u, entries.size());
-  const auto* entry = entries.back();
+  const auto* entry = entries.back().get();
   EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "PermissionType"),
             content_settings_uma_util::ContentSettingTypeToHistogramValue(
                 ContentSettingsType::NOTIFICATIONS));

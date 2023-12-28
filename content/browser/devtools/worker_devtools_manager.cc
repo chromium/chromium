@@ -16,7 +16,7 @@ namespace content {
 // static
 WorkerDevToolsManager& WorkerDevToolsManager::GetInstance() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
+  CHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
   return *base::Singleton<WorkerDevToolsManager>::get();
 }
 
@@ -51,9 +51,8 @@ void WorkerDevToolsManager::WorkerCreated(
   DCHECK(!base::Contains(hosts_, host));
 
   hosts_[host] = base::MakeRefCounted<WorkerDevToolsAgentHost>(
-      process_id, /*agent_remote=*/mojo::NullRemote(),
-      /*host_receiver=*/mojo::NullReceiver(), /*url=*/GURL(), /*name=*/"",
-      host->GetToken().value(), /*parent_id=*/"",
+      process_id,
+      /*url=*/GURL(), /*name=*/"", host->GetToken().value(), /*parent_id=*/"",
       /*destroyed_callback=*/base::DoNothing());
 
   devtools_instrumentation::ThrottleWorkerMainScriptFetch(

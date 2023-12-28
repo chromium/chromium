@@ -25,7 +25,6 @@ namespace {
 // changes.
 OptionalTrustTokenParams NonemptyTrustTokenParams() {
   return mojom::TrustTokenParams(
-      mojom::TrustTokenMajorVersion::kPrivateStateTokenV1,
       mojom::TrustTokenOperationType::kRedemption,
       mojom::TrustTokenRefreshPolicy::kRefresh, "custom_key_commitment",
       url::Origin::Create(GURL("https://custom-issuer.com")),
@@ -81,11 +80,6 @@ TEST(OptionalTrustTokenParams, CopyAndMove) {
 
 TEST(OptionalTrustTokenParams, Dereference) {
   OptionalTrustTokenParams in = NonemptyTrustTokenParams();
-  EXPECT_EQ(in->version, mojom::TrustTokenMajorVersion::kPrivateStateTokenV1);
-  EXPECT_EQ(in.as_ptr()->version,
-            mojom::TrustTokenMajorVersion::kPrivateStateTokenV1);
-  EXPECT_EQ(in.value().version,
-            mojom::TrustTokenMajorVersion::kPrivateStateTokenV1);
   EXPECT_EQ(in->operation, mojom::TrustTokenOperationType::kRedemption);
   EXPECT_EQ(in.as_ptr()->operation,
             mojom::TrustTokenOperationType::kRedemption);

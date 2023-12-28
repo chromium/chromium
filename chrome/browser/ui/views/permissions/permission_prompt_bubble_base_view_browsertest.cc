@@ -205,7 +205,7 @@ class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
     // always matches with the output of the test.
     if (it->type == ContentSettingsType::STORAGE_ACCESS) {
       test_api_->manager()->set_embedding_origin_for_testing(
-          GURL("https://test.com"));
+          GURL("https://www.origin.test.com"));
     }
 
     switch (it->type) {

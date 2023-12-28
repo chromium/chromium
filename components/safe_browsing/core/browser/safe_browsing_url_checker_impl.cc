@@ -55,20 +55,6 @@ SafeBrowsingUrlCheckerImpl::Notifier::Notifier(Notifier&& other) = default;
 SafeBrowsingUrlCheckerImpl::Notifier&
 SafeBrowsingUrlCheckerImpl::Notifier::operator=(Notifier&& other) = default;
 
-void SafeBrowsingUrlCheckerImpl::Notifier::OnStartSlowCheck(
-    PerformedCheck performed_check) {
-  DCHECK(performed_check == PerformedCheck::kHashDatabaseCheck);
-  if (callback_) {
-    std::move(callback_).Run(slow_check_notifier_.BindNewPipeAndPassReceiver(),
-                             false, false);
-    return;
-  }
-
-  DCHECK(native_callback_);
-  std::move(native_callback_)
-      .Run(&native_slow_check_notifier_, false, false, performed_check);
-}
-
 void SafeBrowsingUrlCheckerImpl::Notifier::OnCompleteCheck(
     bool proceed,
     bool showed_interstitial,
@@ -133,7 +119,6 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
     GURL last_committed_url,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
-    UrlRealTimeMechanism::WebUIDelegate* webui_delegate,
     base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui,
     scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
         mechanism_experimenter,
@@ -158,7 +143,6 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
       last_committed_url_(last_committed_url),
       ui_task_runner_(ui_task_runner),
       url_lookup_service_on_ui_(url_lookup_service_on_ui),
-      webui_delegate_(webui_delegate),
       hash_realtime_service_on_ui_(hash_realtime_service_on_ui),
       mechanism_experimenter_(mechanism_experimenter),
       is_mechanism_experiment_allowed_(is_mechanism_experiment_allowed),
@@ -443,8 +427,8 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrlsAndMaybeDeleteSelf() {
       continue;
     }
 
-    // TODO(crbug.com/1420085): Remove this check when
-    // kSafeBrowsingSkipImageCssFont is launched.
+    // TODO(crbug.com/1486144): Remove this check when
+    // kSafeBrowsingSkipSubresources is launched.
     if (!database_manager_->CanCheckRequestDestination(request_destination_)) {
       UMA_HISTOGRAM_ENUMERATION("SB2.RequestDestination.Skipped",
                                 request_destination_);
@@ -500,20 +484,6 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrlsAndMaybeDeleteSelf() {
 
     state_ = STATE_CHECKING_URL;
 
-    // Only send out notification of starting a slow check if the database
-    // manager actually supports fast checks (i.e., synchronous checks) but is
-    // not able to complete the check synchronously in this case and we're doing
-    // hash-based database checks.
-    // Don't send out notification if the database manager doesn't support
-    // synchronous checks at all (e.g., on mobile), or if performing a real-time
-    // check since we don't want to block resource fetch while we perform that.
-    // Note that we won't parse the response until the Safe Browsing check is
-    // complete and return SAFE, so there's no Safe Browsing bypass risk here.
-    if (result.performed_check == PerformedCheck::kHashDatabaseCheck &&
-        !database_manager_->ChecksAreAlwaysAsync()) {
-      urls_[next_index_].notifier.OnStartSlowCheck(result.performed_check);
-    }
-
     break;
   }
 }
@@ -542,9 +512,8 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(const GURL& url) {
               request_destination_, database_manager_,
               can_check_high_confidence_allowlist_,
               url_lookup_service_metric_suffix_, last_committed_url_,
-              url_lookup_service_on_ui_, webui_delegate_,
-              hash_realtime_service_on_ui_, url_checker_delegate_,
-              web_contents_getter_);
+              url_lookup_service_on_ui_, hash_realtime_service_on_ui_,
+              url_checker_delegate_, web_contents_getter_);
       return KickOffLookupMechanismResult(start_check_result, performed_check);
     } else {
       lookup_mechanism = std::make_unique<UrlRealTimeMechanism>(
@@ -552,7 +521,7 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(const GURL& url) {
           database_manager_, can_check_db_,
           can_check_high_confidence_allowlist_,
           url_lookup_service_metric_suffix_, last_committed_url_,
-          ui_task_runner_, url_lookup_service_on_ui_, webui_delegate_,
+          ui_task_runner_, url_lookup_service_on_ui_,
           MechanismExperimentHashDatabaseCache::kNoExperiment,
           url_checker_delegate_, web_contents_getter_);
     }

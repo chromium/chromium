@@ -44,8 +44,12 @@ v8::Local<v8::Object> CustomWrappable::Wrap(ScriptState* script_state) {
           .ToLocalChecked();
   V8DOMWrapper::AssociateObjectWithWrapper(
       isolate, this, &custom_wrappable_info, wrapper_object);
-  wrapper_.Reset(isolate, wrapper_object);
-  custom_wrappable_info.ConfigureWrapper(&wrapper_);
+  if (custom_wrappable_info.SupportsDroppingWrapper()) {
+    wrapper_.Reset(isolate, wrapper_object,
+                   TraceWrapperV8Reference<v8::Object>::IsDroppable{});
+  } else {
+    wrapper_.Reset(isolate, wrapper_object);
+  }
   return wrapper_object;
 }
 

@@ -54,8 +54,7 @@ class TestObserver : public ScreenBacklightObserver {
   }
 
  private:
-  const raw_ptr<BacklightsForcedOffSetter, ExperimentalAsh>
-      backlights_forced_off_setter_;
+  const raw_ptr<BacklightsForcedOffSetter> backlights_forced_off_setter_;
 
   std::vector<bool> forced_off_states_;
 

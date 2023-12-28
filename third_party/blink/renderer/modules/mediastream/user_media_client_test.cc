@@ -220,7 +220,7 @@ class MediaDevicesDispatcherHostMock
     NOTREACHED();
   }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void CloseFocusWindowOfOpportunity(const String& label) override {
     NOTREACHED();
   }
@@ -339,7 +339,7 @@ class MockMediaDevicesDispatcherHost
     NOTREACHED();
   }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void CloseFocusWindowOfOpportunity(const String& label) override {
     NOTREACHED();
   }

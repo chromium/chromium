@@ -69,9 +69,9 @@ class DownloadItemView : public views::View,
                          public views::ContextMenuController,
                          public DownloadUIModel::Delegate,
                          public views::AnimationDelegateViews {
- public:
-  METADATA_HEADER(DownloadItemView);
+  METADATA_HEADER(DownloadItemView, views::View)
 
+ public:
   DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
                    DownloadShelfView* shelf,
                    views::View* accessible_alert);

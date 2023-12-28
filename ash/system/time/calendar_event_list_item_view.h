@@ -86,13 +86,15 @@ class ASH_EXPORT CalendarEventListItemView : public views::Button {
 
   void OnJoinMeetingButtonPressed(const ui::Event& event);
 
-  bool is_current_or_next_event() const { return is_current_or_next_event_; }
+  bool is_current_or_next_single_day_event() const {
+    return is_current_or_next_single_day_event_;
+  }
 
  private:
   friend class CalendarViewEventListViewTest;
 
   // Unowned.
-  const raw_ptr<CalendarViewController, DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<CalendarViewController, DanglingUntriaged>
       calendar_view_controller_;
 
   const SelectedDateParams selected_date_params_;
@@ -104,7 +106,10 @@ class ASH_EXPORT CalendarEventListItemView : public views::Button {
 
   // Whether this item which is not an all-day or multi-day event is the current
   // or next event. Used for auto scroll in the `CalendarEventListView`.
-  bool is_current_or_next_event_ = false;
+  bool is_current_or_next_single_day_event_ = false;
+
+  // Whether this event has ended by now.
+  bool is_past_event_ = false;
 
   base::WeakPtrFactory<CalendarEventListItemView> weak_ptr_factory_{this};
 };

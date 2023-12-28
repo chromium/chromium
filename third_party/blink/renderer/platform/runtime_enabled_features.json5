@@ -203,11 +203,6 @@
     {
       name: "AbortSignalAny",
       status: "stable",
-      depends_on: ["AbortSignalComposition"]
-    },
-    {
-      name: "AbortSignalComposition",
-      status: "stable"
     },
     {
       name: "Accelerated2dCanvas",
@@ -519,6 +514,10 @@
       name: "BlockRubyConsoleMessage",
       status: "stable",
     },
+    {
+      name: "BlockRubyWrappingInlineRuby",
+      status: "stable",
+    },
     // Mouse and Pointer boundary event dispatch (i.e. dispatch of enter, leave,
     // over, out events) tracks DOM node removal to fix event pairing on ancestor
     // nodes.
@@ -646,12 +645,6 @@
       status: "stable",
     },
     {
-      // Allows read/write of custom formats with unsanitized clipboard content.
-      // See crbug.com/106449.
-      name: "ClipboardCustomFormats",
-      status: "stable",
-    },
-    {
       name: "ClipboardSupportedTypes",
       status: "stable",
     },
@@ -667,7 +660,7 @@
     },
     {
       name: "ClipboardWellFormedHtmlSanitizationWrite",
-      status: "experimental",
+      status: "stable",
     },
     {
       // https://drafts.fxtf.org/css-masking/#typedef-geometry-box
@@ -742,6 +735,7 @@
       // feature is disabled, origin trial tokens are ignored.
       name: "ComputePressure",
       origin_trial_feature_name: "ComputePressure_v2",
+      origin_trial_allows_third_party: true,
       status: "experimental",
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
@@ -793,6 +787,10 @@
     {
       name: "CorsRFC1918",
       base_feature: "none",
+    },
+    {
+      name: "CounterStyleChangeShouleCollectInlines",
+      status: "stable",
     },
     {
       name: "CrossFramePerformanceTimeline",
@@ -876,6 +874,12 @@
       status: "stable",
     },
     {
+      // Unprefixed cross-fade() (in addition to the existing -webkit-cross-fade()).
+      // https://drafts.csswg.org/css-images-4/#cross-fade-function
+      name: "CSSCrossFade",
+      status: "experimental",
+    },
+    {
       name: "CSSDisplayAnimation",
       status: "stable",
     },
@@ -939,11 +943,6 @@
     {
       name: "CSSLinearTimingFunction",
       status: "stable"
-    },
-    {
-      name: "CSSLogical",
-      status: "stable",
-      base_feature: "none",
     },
     {
       name: "CSSLogicalOverflow",
@@ -1480,12 +1479,6 @@
       status: "experimental",
     },
     {
-      // If enabled, DOM Parts API tracks DOM mutations that cause part changes.
-      // If disabled, the parts list returned by getParts() can be stale.
-      name: "DOMPartsAPIActivePartTracking",
-      depends_on: ["DOMPartsAPI"],
-    },
-    {
       // Shipping in M121, so should be safe to remove in M126.
       name: "DontFireDblclickOnDisabledFormControls",
       status: "stable",
@@ -1691,10 +1684,22 @@
       public: true,
     },
     {
+      // Allows fenced frames to access unpartioned data via Shared Storage in
+      // exchange for disabling untrusted network access. This is the Blink
+      // counterpart of the base::Feature with the same name. Because local
+      // unpartitioned data access requires browser and renderer process
+      // coordination, the value of this flag is strictly controlled by the
+      // base::Feature variant, and setting this flag does nothing.
+      name: "FencedFramesLocalUnpartitionedDataAccess",
+      base_feature: "none",
+      public: true,
+    },
+    {
       // The Blink runtime-enabled feature name for the API's IDL.
       name: "FetchLaterAPI",
       status: "experimental",
       origin_trial_feature_name: "FetchLaterAPI",
+      origin_trial_allows_third_party: true,
       base_feature: "FetchLaterAPI",
       // base_feature is meant as kill-switch. This runtime-enabled feature
       // should follow the Origin Trial unless explicitly overriden by Finch or
@@ -1796,7 +1801,7 @@
     },
     {
       name: "FledgeNegativeTargeting",
-      status: "test",
+      status: "stable",
     },
     {
       name: "FledgeTrustedBiddingSignalsSlotSize",
@@ -1837,6 +1842,10 @@
     },
     {
       name: "FontationsFontBackend",
+    },
+    {
+      name: "FontMatchingCTMigration",
+      status: "test",
     },
     {
       name: "FontPaletteAnimation",
@@ -1895,7 +1904,10 @@
       name: "FormControlRestoreStateIfAutocompleteOff",
     },
     {
+      // TODO(crbug.com/1432009) Allow form controls with vertical writing mode
+      // to have direction affect the flow of the control.
       name: "FormControlsVerticalWritingModeDirectionSupport",
+      status: "experimental",
     },
     {
       // Allow these form controls to have vertical writing mode: select, meter,
@@ -1996,7 +2008,7 @@
     },
     {
       name: "HighlightInheritance",
-      status: "stable",
+      status: "experimental",
     },
     {
       name: "HighlightPointerEvents",
@@ -2188,12 +2200,16 @@
     },
     {
       name: "KeyboardFocusableScrollers",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "LangAttributeAwareFormControlUI",
       base_feature: "none",
       settable_from_internals: true,
+    },
+    {
+      name: "LayoutAlignForPositioned",
+      status: "stable",
     },
     {
       name: "LayoutFlexNewRowAlgorithmV3",
@@ -2293,7 +2309,10 @@
     },
     {
       name: "MachineLearningNeuralNetwork",
+      public: true,
       status: {
+        "ChromeOS_Ash": "experimental",
+        "ChromeOS_Lacros": "experimental",
         "Win": "experimental",
         "Mac": "experimental",
         "Linux": "experimental",
@@ -2397,6 +2416,10 @@
       base_feature: "none",
     },
     {
+      name: "MediaSessionChapterInformation",
+      status: "test",
+    },
+    {
       name: "MediaSessionEnterPictureInPicture",
       public: true,
       status: "experimental",
@@ -2462,6 +2485,12 @@
       // https://w3c.github.io/mediacapture-screen-share/#dom-displaymediastreamoptions-monitortypesurfaces
       name: "MonitorTypeSurfaces",
       status: "stable",
+    },
+    // crbug.com/269917: Make mouse event targets agnostic to mousedown event
+    // cancellation when the pointer is dragged out of an iframe.
+    {
+      name: "MouseDragFromIframeOnCancelledMouseDown",
+      status: "experimental",
     },
     // crbug.com/346473: Allow mouse-drag text selection even when mousemove
     // event is cancelled.
@@ -2555,6 +2584,10 @@
       name: "NonStandardAppearanceValuesLowUsage",
     },
     {
+      name: "NoOffsetMappingForInconsistentText",
+      status: "stable",
+    },
+    {
       name: "NotificationConstructor",
       // Android won't be able to reliably support non-persistent notifications, the
       // intended behavior for which is in flux by itself.
@@ -2612,6 +2645,10 @@
       name: "OffscreenCanvasCommit",
       status: "experimental",
       base_feature: "none",
+    },
+    {
+      name: "OffsetMappingUnitVariable",
+      status: "experimental",
     },
     {
       name: "OnDeviceChange",
@@ -2929,6 +2966,10 @@
       origin_trial_feature_name: "PNaCl",
     },
     {
+      name: "PointerCaptureLostOnRemovalDuringCapture",
+      status: "stable",
+    },
+    {
       name: "PointerEventDeviceId",
       status: "test",
     },
@@ -3139,6 +3180,11 @@
       base_feature: "none",
     },
     {
+      // See https://github.com/w3c/csswg-drafts/issues/9398
+      name: "RemoveZoomAdjustmentOfBoundingBox",
+      status: "test",
+    },
+    {
       name: "RenderBlockingStatus",
       status: "stable",
       base_feature: "none",
@@ -3240,7 +3286,7 @@
     {
       // crbug.com/1493273
       name: "RubyInlinify",
-      status: "experimental",
+      status: "stable",
       depends_on: ["CssDisplayRuby"],
     },
     {
@@ -3261,7 +3307,6 @@
       name: "SchedulerYield",
       origin_trial_feature_name: "SchedulerYield",
       origin_trial_allows_third_party: true,
-      depends_on: ["AbortSignalComposition"],
       status: "experimental",
     },
     {
@@ -3603,6 +3648,10 @@
       status: "stable",
     },
     {
+      name: "SpellCheckerReplaceRangeUseInsertText",
+      status: "stable",
+    },
+    {
       name: "SrcsetMaxDensity",
       base_feature: "none",
     },
@@ -3615,23 +3664,10 @@
       base_feature: "none",
     },
     {
-      // Enabled when blink::features::kStorageAccessAPI or
-      // permissions::features::kPermissionStorageAccessAPI is enabled.
-      name: "StorageAccessAPI",
-      public: true,
-      status: "stable",
-    },
-    {
       name: "StorageAccessAPIBeyondCookies",
       status: "experimental",
       base_feature: "none",
       origin_trial_feature_name: "StorageAccessAPIBeyondCookies",
-    },
-    {
-      name: "StorageAccessAPIForOriginExtension",
-      public: true,
-      status: "stable",
-      depends_on: ["StorageAccessAPI"],
     },
     {
       name: "StorageBuckets",
@@ -3668,10 +3704,6 @@
     },
     {
       name: "SvgNoPixelSnappingScaleAdjustment",
-      status: "stable",
-    },
-    {
-      name: "SvgRasterOptimizations",
       status: "stable",
     },
     {
@@ -3814,6 +3846,13 @@
       status: "experimental",
       base_feature: "none",
     },
+    {
+      name: "Tpcd1p",
+      origin_trial_feature_name: "Tpcd1p",
+      origin_trial_type: "deprecation",
+      status: "experimental",
+      base_feature: "none",
+    },
     // This is conditionally set if the platform supports translation.
     {
       name: "TranslateService",
@@ -3874,10 +3913,6 @@
       // return the original string of the attribute when a complete URL can't
       // be created instead of an empty string.
       name: "URLAttributeFix",
-      status: "stable",
-    },
-    {
-      name: "URLCanParse",
       status: "stable",
     },
     {
@@ -4016,12 +4051,6 @@
       base_feature: "none",
     },
     {
-      // A kill switch. Please consider removing this after M112.
-      name: "WarnSandboxIneffective",
-      status: "stable",
-      copied_from_base_feature_if: "overridden",
-    },
-    {
       name: "WebAnimationsSVG",
       status: "experimental",
       base_feature: "none",
@@ -4117,12 +4146,27 @@
       status: "stable",
       base_feature: "none",
     },
+    // Allow creation of WebAuth credentials in cross-origin contexts (as long
+    // as the 'publickey-credentials-create' permissions policy is set).
+    {
+      name: "WebAuthAllowCreateInCrossOriginFrame",
+      status: "experimental",
+      // This feature is controlled from the Blink side, unless there is a
+      // Finch override of it for a kill-switch.
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
+    },
     // When enabled adds the authenticator attachment used for registration and
     // authentication to the public key credential response.
     {
       name: "WebAuthAuthenticatorAttachment",
       status: "test",
       base_feature: "none",
+    },
+    // https://w3c.github.io/webauthn/#enum-hints
+    {
+      name: "WebAuthenticationHints",
+      status: "experimental",
     },
     // https://w3c.github.io/webauthn/#dom-publickeycredential-tojson
     // https://w3c.github.io/webauthn/#sctn-parseCreationOptionsFromJSON

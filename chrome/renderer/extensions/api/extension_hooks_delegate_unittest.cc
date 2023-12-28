@@ -11,6 +11,7 @@
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/api/messaging/messaging_util.h"
@@ -56,8 +57,9 @@ class ExtensionHooksDelegateTest
     v8::HandleScope handle_scope(isolate());
     v8::Local<v8::Context> context = MainContext();
 
-    script_context_ = CreateScriptContext(context, mutable_extension.get(),
-                                          Feature::BLESSED_EXTENSION_CONTEXT);
+    script_context_ =
+        CreateScriptContext(context, mutable_extension.get(),
+                            mojom::ContextType::kPrivilegedExtension);
     script_context_->set_url(extension_->url());
     bindings_system()->UpdateBindingsForContext(script_context_);
   }
@@ -128,7 +130,7 @@ TEST_F(ExtensionHooksDelegateTest, SendRequestDisabled) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = AddContext();
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
   bindings_system()->UpdateBindingsForContext(script_context);
   ASSERT_TRUE(messaging_util::IsSendRequestDisabled(script_context));

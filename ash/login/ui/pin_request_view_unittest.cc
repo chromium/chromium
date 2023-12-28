@@ -8,7 +8,7 @@
 #include <optional>
 #include <string>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/login/mock_login_screen_client.h"
 #include "ash/login/ui/arrow_button_view.h"
@@ -178,7 +178,7 @@ class PinRequestViewTest : public LoginTestBase,
   // Whether the next pin submission will trigger setting an error state.
   bool will_authenticate_ = true;
 
-  raw_ptr<PinRequestView, DanglingUntriaged | ExperimentalAsh> view_ =
+  raw_ptr<PinRequestView, DanglingUntriaged> view_ =
       nullptr;  // Owned by test widget view hierarchy.
 };
 
@@ -689,7 +689,7 @@ TEST_F(PinRequestViewTest, VirtualTextFieldForA11y) {
 TEST_F(PinRequestWidgetTest, SpokenFeedbackKeyCombo) {
   ShowWidget();
 
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   EXPECT_FALSE(controller->spoken_feedback().enabled());
 

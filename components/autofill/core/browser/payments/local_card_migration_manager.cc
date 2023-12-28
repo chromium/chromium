@@ -60,7 +60,7 @@ LocalCardMigrationManager::LocalCardMigrationManager(
 LocalCardMigrationManager::~LocalCardMigrationManager() {}
 
 bool LocalCardMigrationManager::ShouldOfferLocalCardMigration(
-    const absl::optional<CreditCard>& extracted_credit_card,
+    const std::optional<CreditCard>& extracted_credit_card,
     int credit_card_import_type) {
   // Reset and store the extracted credit card info for a later check of whether
   // the extracted card is supported.

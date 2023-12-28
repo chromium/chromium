@@ -394,6 +394,10 @@ class AppWindow : public content::WebContentsDelegate,
     native_app_window_ = std::move(native_app_window);
   }
 
+  void SetOnUpdateDraggableRegionsForTesting(base::OnceClosure callback) {
+    on_update_draggable_regions_callback_for_testing_ = std::move(callback);
+  }
+
   bool DidFinishFirstNavigation() { return did_finish_first_navigation_; }
 
  protected:
@@ -592,6 +596,9 @@ class AppWindow : public content::WebContentsDelegate,
   // Whether the first navigation was completed in both browser and renderer
   // processes.
   bool did_finish_first_navigation_ = false;
+
+  // Allows tests to wait for draggable regions to be sent from the renderer.
+  base::OnceClosure on_update_draggable_regions_callback_for_testing_;
 
   base::WeakPtrFactory<AppWindow> image_loader_ptr_factory_{this};
 };

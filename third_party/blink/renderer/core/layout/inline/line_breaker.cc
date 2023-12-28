@@ -2872,6 +2872,12 @@ void LineBreaker::HandleFloat(const InlineItem& item,
     item_result->positioned_float =
         leading_floats_.floats[leading_floats_index_++];
 
+    // Save a backup copy of `exclusion_space_` even if leading floats don't
+    // modify it. See `RewindFloat`.
+    DCHECK(exclusion_space_);
+    item_result->exclusion_space_before_position_float.CopyFrom(
+        *exclusion_space_);
+
     // Don't break after leading floats if indented.
     if (position_ != 0)
       item_result->can_break_after = false;
@@ -2948,6 +2954,21 @@ void LineBreaker::RewindFloats(unsigned new_end,
   for (const InlineItemResult& item_result :
        base::make_span(item_results).subspan(new_end)) {
     if (item_result.positioned_float) {
+      // Adjust `leading_floats_index_` if this is a leading float. See
+      // `HandleFloat` and `PositionLeadingFloats`.
+      if (item_result.item_index < leading_floats_.handled_index) {
+        for (unsigned i = 0; i < leading_floats_.floats.size(); ++i) {
+          if (leading_floats_.floats[i].layout_result ==
+              item_result.positioned_float->layout_result) {
+            leading_floats_index_ = i;
+            // Need to restore `exclusion_space_` even if leading floats don't
+            // modify `exclusion_space_`, because there may be following
+            // non-leading floats that modified it.
+            break;
+          }
+        }
+      }
+
       *exclusion_space_ = item_result.exclusion_space_before_position_float;
       UpdateLineOpportunity();
       break;

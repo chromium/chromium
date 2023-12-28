@@ -12,7 +12,7 @@ import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfa
 
 import {DirectoryModel} from './directory_model.js';
 import {FileTypeFiltersController} from './file_type_filters_controller.js';
-import {A11yAnnounce} from './ui/a11y_announce.js';
+import type {A11yAnnounce} from './ui/a11y_announce.js';
 
 /**
  */

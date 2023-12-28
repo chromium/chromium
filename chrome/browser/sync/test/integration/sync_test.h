@@ -141,6 +141,9 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
     WAIT_FOR_COMMITS_TO_COMPLETE,
   };
 
+  // Used unless specified otherwise by command line switches.
+  static constexpr char kDefaultUserEmail[] = "user@gmail.com";
+
   // A SyncTest must be associated with a particular test type.
   explicit SyncTest(TestType test_type);
 
@@ -167,7 +170,7 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
 
   // Returns a list of all profiles including the verifier if available. Callee
   // owns the objects and manages its lifetime.
-  std::vector<Profile*> GetAllProfiles();
+  std::vector<raw_ptr<Profile, VectorExperimental>> GetAllProfiles();
 
 #if !BUILDFLAG(IS_ANDROID)
   // Returns a pointer to a particular browser. Callee owns the object
@@ -195,7 +198,8 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   syncer::SyncServiceImpl* GetSyncService(int index) const;
 
   // Returns the set of SyncServiceImpls.
-  std::vector<syncer::SyncServiceImpl*> GetSyncServices();
+  std::vector<raw_ptr<syncer::SyncServiceImpl, VectorExperimental>>
+  GetSyncServices();
 
   // Returns the set of registered UserSelectableTypes.  This is retrieved from
   // the SyncServiceImpl at the given |index|.

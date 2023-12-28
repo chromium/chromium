@@ -150,7 +150,7 @@ class DragDropOperation::IconSurface final : public SurfaceTreeHost,
     operation_->OnDragIconCaptured(scoped_bitmap.GetOutScopedBitmap());
   }
 
-  const raw_ptr<DragDropOperation, ExperimentalAsh> operation_;
+  const raw_ptr<DragDropOperation> operation_;
   base::WeakPtrFactory<IconSurface> weak_ptr_factory_{this};
 };
 

@@ -97,6 +97,11 @@
       permissions_policy_name: "camera",
     },
     {
+      name: "CapturedSurfaceControl",
+      permissions_policy_name: "captured-surface-control",
+      depends_on: ["CapturedSurfaceControl"],
+    },
+    {
       name: "ClientHintDPR",
       permissions_policy_name: "ch-dpr",
     },
@@ -333,6 +338,11 @@
       depends_on: ["PrivateStateTokens"],
     },
     {
+      name: "PublicKeyCredentialsCreate",
+      permissions_policy_name: "publickey-credentials-create",
+      depends_on: ["WebAuthAllowCreateInCrossOriginFrame"],
+    },
+    {
       name: "PublicKeyCredentialsGet",
       permissions_policy_name: "publickey-credentials-get",
     },
@@ -381,7 +391,11 @@
       name: "StorageAccessAPI",
       feature_default: "EnableForAll",
       permissions_policy_name: "storage-access",
-      depends_on: ["StorageAccessAPI"],
+    },
+    {
+      name: "SubApps",
+      permissions_policy_name: "sub-apps",
+      depends_on: ["DesktopPWAsSubApps"],
     },
     {
       name: "SyncXHR",

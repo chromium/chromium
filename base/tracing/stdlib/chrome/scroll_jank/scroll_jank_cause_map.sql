@@ -2,6 +2,8 @@
 -- Use of this source code is governed by a BSD-style license that can be
 -- found in the LICENSE file.
 
+INCLUDE PERFETTO MODULE chrome.event_latency_description;
+
 -- Source of truth of the descriptions of EventLatency-based scroll jank causes.
 CREATE PERFETTO TABLE chrome_scroll_jank_cause_descriptions (
   -- The name of the EventLatency stage.
@@ -92,3 +94,27 @@ SELECT
   cause_thread,
   cause_description
 FROM cause_descriptions;
+
+-- Combined description of scroll jank cause and associated event latency stage.
+CREATE PERFETTO VIEW chrome_scroll_jank_causes_with_event_latencies(
+  -- The name of the EventLatency stage.
+  name STRING,
+  -- Description of the EventLatency stage.
+  description STRING,
+  -- The process name that may cause scroll jank.
+  cause_process STRING,
+  -- The thread name that may cause scroll jank. The thread will be on the
+  -- cause_process.
+  cause_thread STRING,
+  -- Description of the cause of scroll jank on this process and thread.
+  cause_description STRING
+) AS
+SELECT
+  stages.name,
+  stages.description,
+  causes.cause_process,
+  causes.cause_thread,
+  causes.cause_description
+FROM chrome_event_latency_stage_descriptions stages
+LEFT JOIN chrome_scroll_jank_cause_descriptions causes
+    ON causes.event_latency_stage = stages.name;

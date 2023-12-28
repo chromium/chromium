@@ -45,12 +45,11 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOptInView
 
   void OnButtonPressed();
 
-  raw_ptr<views::StyledLabel, ExperimentalAsh>
-      label_;  // Owned by view hierarchy.
+  raw_ptr<views::StyledLabel> label_;  // Owned by view hierarchy.
 
-  raw_ptr<views::Button, ExperimentalAsh> container_;
+  raw_ptr<views::Button> container_;
 
-  raw_ptr<AssistantViewDelegate, ExperimentalAsh> delegate_;
+  raw_ptr<AssistantViewDelegate> delegate_;
 };
 
 }  // namespace ash

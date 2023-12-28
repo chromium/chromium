@@ -90,7 +90,7 @@ public class AddToBookmarksToolbarButtonController extends BaseButtonDataProvide
         super(
                 activeTabSupplier,
                 /* modalDialogManager= */ null,
-                AppCompatResources.getDrawable(context, R.drawable.btn_star),
+                AppCompatResources.getDrawable(context, R.drawable.star_outline_24dp),
                 context.getString(R.string.accessibility_menu_bookmark),
                 /* actionChipLabelResId= */ Resources.ID_NULL,
                 /* supportsTinting= */ true,

@@ -41,6 +41,7 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.ref.WeakReference;
 import java.util.concurrent.TimeUnit;
 
 /** Class that manages minimizing a Custom Tab into picture-in-picture. */
@@ -67,6 +68,8 @@ public class CustomTabMinimizationManager
     }
 
     @VisibleForTesting static final Rational ASPECT_RATIO = new Rational(16, 9);
+
+    @VisibleForTesting static WeakReference<CustomTabMinimizeDelegate> sLastMinimizeDelegate;
     private final AppCompatActivity mActivity;
     private final ActivityTabProvider mTabProvider;
     private final MinimizedCustomTabFeatureEngagementDelegate mFeatureEngagementDelegate;
@@ -110,8 +113,13 @@ public class CustomTabMinimizationManager
         if (VERSION.SDK_INT >= VERSION_CODES.S) {
             builder.setSeamlessResizeEnabled(false);
         }
+
+        maybeDismissLastMinimizedTab();
+
         mMinimized = mActivity.enterPictureInPictureMode(builder.build());
         if (!mMinimized) return;
+
+        maybeSaveLastMinimizeDelegate();
 
         mActivity.addOnPictureInPictureModeChangedListener(this);
         notifyObservers(true);
@@ -155,6 +163,7 @@ public class CustomTabMinimizationManager
             mMinimized = false;
             mActivity.removeOnPictureInPictureModeChangedListener(this);
             notifyObservers(false);
+            maybeClearLastMinimizedTabRef();
             // We receive an update here when PiP is dismissed and the Activity is being stopped
             // before destruction. In that case, the state will be CREATED.
             var state = mActivity.getLifecycle().getCurrentState();
@@ -236,6 +245,47 @@ public class CustomTabMinimizationManager
     private void notifyObservers(boolean minimized) {
         for (var obs : mObservers) {
             obs.onMinimizationChanged(minimized);
+        }
+    }
+
+    private CustomTabMinimizeDelegate getLastMinimizeDelegate() {
+        if (sLastMinimizeDelegate == null) return null;
+
+        return sLastMinimizeDelegate.get();
+    }
+
+    private void maybeSaveLastMinimizeDelegate() {
+        if (VERSION.SDK_INT < VERSION_CODES.R || VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) return;
+
+        sLastMinimizeDelegate = new WeakReference<>(this);
+    }
+
+    private void clearLastMinimizeDelegate() {
+        if (sLastMinimizeDelegate == null) return;
+
+        sLastMinimizeDelegate.clear();
+        sLastMinimizeDelegate = null;
+    }
+
+    private void maybeDismissLastMinimizedTab() {
+        // On Android R and S, minimizing a tab while there is already an active PiP window unPiPs
+        // the current one instead of closing the Activity. This can cause some weird issues if it
+        // happens multiple times back-to-back. To prevent these issues, we dismiss the last
+        // minimized Custom Tab. This only works for the Minimized Custom Tabs feature and doesn't
+        // affect other uses of PiP such as fullscreen video.
+        if (VERSION.SDK_INT < VERSION_CODES.R || VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) return;
+
+        var lastMinimized = getLastMinimizeDelegate();
+        if (lastMinimized != null) {
+            lastMinimized.dismiss();
+            clearLastMinimizeDelegate();
+        }
+    }
+
+    private void maybeClearLastMinimizedTabRef() {
+        var lastMinimized = getLastMinimizeDelegate();
+        if (lastMinimized == this) {
+            clearLastMinimizeDelegate();
         }
     }
 }

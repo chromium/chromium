@@ -24,6 +24,7 @@ namespace commerce {
 // A mock ShoppingService that allows us to decide the response.
 class MockShoppingService : public commerce::ShoppingService {
  public:
+  // Produces a testing::NiceMock of the MockShoppingService.
   static std::unique_ptr<KeyedService> Build();
 
   MockShoppingService();
@@ -96,10 +97,6 @@ class MockShoppingService : public commerce::ShoppingService {
               WaitForReady,
               (base::OnceCallback<void(ShoppingService*)>),
               (override));
-  MOCK_METHOD(void,
-              IsClusterIdTrackedByUser,
-              (uint64_t cluster_id, base::OnceCallback<void(bool)> callback),
-              (override));
   MOCK_METHOD(bool, IsMerchantViewerEnabled, (), (override));
   MOCK_METHOD(bool, IsPriceInsightsEligible, (), (override));
   MOCK_METHOD(bool, IsDiscountEligibleToShowOnNavigation, (), (override));
@@ -122,6 +119,10 @@ class MockShoppingService : public commerce::ShoppingService {
                base::OnceCallback<void(bool)> callback),
               (override));
 
+  // Make this mock permissive for all features but default to providing empty
+  // data for all accessors of shopping data.
+  void SetupPermissiveMock();
+
   void SetResponseForGetProductInfoForUrl(
       absl::optional<commerce::ProductInfo> product_info);
   void SetResponseForGetPriceInsightsInfoForUrl(
@@ -138,7 +139,6 @@ class MockShoppingService : public commerce::ShoppingService {
       std::vector<CommerceSubscription> subscriptions);
   void SetIsShoppingListEligible(bool enabled);
   void SetIsReady(bool ready);
-  void SetIsClusterIdTrackedByUserResponse(bool is_tracked);
   void SetIsMerchantViewerEnabled(bool is_enabled);
   void SetGetAllPriceTrackedBookmarksCallbackValue(
       std::vector<const bookmarks::BookmarkNode*> bookmarks);

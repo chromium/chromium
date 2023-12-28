@@ -98,11 +98,12 @@ class PerformanceManagerImpl : public PerformanceManager {
       ProcessNodeImpl* process_node,
       PageNodeImpl* page_node,
       FrameNodeImpl* parent_frame_node,
-      FrameNodeImpl* fenced_frame_embedder_frame_node,
+      FrameNodeImpl* outer_document_for_fenced_frame,
       int render_frame_id,
       const blink::LocalFrameToken& frame_token,
       content::BrowsingInstanceId browsing_instance_id,
       content::SiteInstanceId site_instance_id,
+      bool is_current,
       FrameNodeCreationCallback creation_callback =
           FrameNodeCreationCallback());
   static std::unique_ptr<PageNodeImpl> CreatePageNode(
@@ -115,7 +116,8 @@ class PerformanceManagerImpl : public PerformanceManager {
   static std::unique_ptr<ProcessNodeImpl> CreateProcessNode(
       BrowserProcessNodeTag tag);
   static std::unique_ptr<ProcessNodeImpl> CreateProcessNode(
-      RenderProcessHostProxy proxy);
+      RenderProcessHostProxy proxy,
+      base::TaskPriority priority);
   static std::unique_ptr<ProcessNodeImpl> CreateProcessNode(
       content::ProcessType process_type,
       BrowserChildProcessHostProxy proxy);

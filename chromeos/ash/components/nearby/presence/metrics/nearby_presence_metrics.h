@@ -30,8 +30,8 @@ void RecordFirstTimeServerRegistrationDuration(
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. This enum should be kept in sync with
-// the FirstTimeRegistrationResult enum in
-// src/tools/metrics/histograms/enums.xml.
+// the NearbyPresenceFirstTimeRegistrationResult enum in
+// //tools/metrics/histograms/metadata/nearby/enums.xml.
 enum class FirstTimeRegistrationResult {
   kSuccess = 0,
   kRegistrationWithServerFailure = 1,

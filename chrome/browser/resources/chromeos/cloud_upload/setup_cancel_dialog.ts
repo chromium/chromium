@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 
 import {getTemplate} from './setup_cancel_dialog.html.js';
 
@@ -19,6 +19,10 @@ export class SetupCancelDialogElement extends HTMLElement {
   /** Callback called if the user chooses to cancel the setup. */
   private cancelCallback: (() => void)|null = null;
 
+  // Save reference to listener so it can be removed from the document in
+  // disconnectedCallback().
+  private boundKeyDownListener_: (e: KeyboardEvent) => void;
+
   constructor() {
     super();
 
@@ -28,6 +32,15 @@ export class SetupCancelDialogElement extends HTMLElement {
         'click', () => this.onResumeButtonClick());
     this.$('.cancel-button')!.addEventListener(
         'click', () => this.onCancelButtonClick());
+    this.boundKeyDownListener_ = this.onKeyDown.bind(this);
+  }
+
+  connectedCallback(): void {
+    document.addEventListener('keydown', this.boundKeyDownListener_);
+  }
+
+  disconnectedCallback(): void {
+    document.removeEventListener('keydown', this.boundKeyDownListener_);
   }
 
   $<T extends HTMLElement>(query: string): T {
@@ -49,6 +62,16 @@ export class SetupCancelDialogElement extends HTMLElement {
 
   private onCancelButtonClick(): void {
     this.cancelCallback!();
+  }
+
+  private onKeyDown(e: KeyboardEvent) {
+    if (e.key === 'Escape') {
+      // Handle Escape as a "resume".
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      this.onResumeButtonClick();
+      return;
+    }
   }
 }
 

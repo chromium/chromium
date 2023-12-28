@@ -143,7 +143,7 @@ class FakeInputMethod : public ui::DummyInputMethod {
   int count_dispatch_key_event() const { return count_dispatch_key_event_; }
 
  private:
-  raw_ptr<ui::TextInputClient, ExperimentalAsh> client_;
+  raw_ptr<ui::TextInputClient> client_;
   int count_show_ime_if_needed_;
   int count_cancel_composition_;
   int count_set_focused_text_input_client_;
@@ -190,7 +190,7 @@ class FakeArcWindowDelegate : public ArcImeService::ArcWindowDelegate {
   aura::test::TestWindowDelegate dummy_delegate_;
   int next_id_;
   std::set<int> arc_window_id_;
-  raw_ptr<ui::InputMethod, ExperimentalAsh> test_input_method_;
+  raw_ptr<ui::InputMethod> test_input_method_;
 };
 
 }  // namespace
@@ -203,11 +203,9 @@ class ArcImeServiceTest : public testing::Test {
   std::unique_ptr<ArcBridgeService> arc_bridge_service_;
   std::unique_ptr<FakeInputMethod> fake_input_method_;
   std::unique_ptr<ArcImeService> instance_;
-  raw_ptr<FakeArcImeBridge, ExperimentalAsh>
-      fake_arc_ime_bridge_;  // Owned by |instance_|
+  raw_ptr<FakeArcImeBridge> fake_arc_ime_bridge_;  // Owned by |instance_|
 
-  raw_ptr<FakeArcWindowDelegate, ExperimentalAsh>
-      fake_window_delegate_;  // Owned by |instance_|
+  raw_ptr<FakeArcWindowDelegate> fake_window_delegate_;  // Owned by |instance_|
   std::unique_ptr<aura::Window> arc_win_;
 
   // Needed by ArcImeService.

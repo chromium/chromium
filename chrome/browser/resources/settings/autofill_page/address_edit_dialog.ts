@@ -45,7 +45,7 @@ type AddressEntry = chrome.autofillPrivate.AddressEntry;
 type AccountInfo = chrome.autofillPrivate.AccountInfo;
 type AddressComponents = chrome.autofillPrivate.AddressComponents;
 const AddressSource = chrome.autofillPrivate.AddressSource;
-const ServerFieldType = chrome.autofillPrivate.ServerFieldType;
+const FieldType = chrome.autofillPrivate.FieldType;
 const SettingsAddressEditDialogElementBase = I18nMixin(PolymerElement);
 
 export class SettingsAddressEditDialogElement extends
@@ -116,9 +116,9 @@ export class SettingsAddressEditDialogElement extends
   private validationError_?: string;
   private countries_: CountryEntry[];
   private addressFields_:
-      Map<chrome.autofillPrivate.ServerFieldType, string|undefined> = new Map();
+      Map<chrome.autofillPrivate.FieldType, string|undefined> = new Map();
   private originalAddressFields_?:
-      Map<chrome.autofillPrivate.ServerFieldType, string|undefined>;
+      Map<chrome.autofillPrivate.FieldType, string|undefined>;
   private countryCode_: string|undefined;
   private components_: uiComponents.AddressComponentUi[][] = [];
   private canSave_: boolean;
@@ -154,17 +154,17 @@ export class SettingsAddressEditDialogElement extends
 
       microTask.run(() => {
         const countryField =
-            this.addressFields_.get(ServerFieldType.ADDRESS_HOME_COUNTRY);
+            this.addressFields_.get(FieldType.ADDRESS_HOME_COUNTRY);
         if (!countryField) {
           assert(countryList.length > 0);
           // If the address is completely empty, the dialog is creating a new
           // address. The first address in the country list is what we suspect
           // the user's country is.
           this.addressFields_.set(
-              ServerFieldType.ADDRESS_HOME_COUNTRY, countryList[0].countryCode);
+              FieldType.ADDRESS_HOME_COUNTRY, countryList[0].countryCode);
         }
         this.countryCode_ =
-            this.addressFields_.get(ServerFieldType.ADDRESS_HOME_COUNTRY);
+            this.addressFields_.get(FieldType.ADDRESS_HOME_COUNTRY);
       });
     });
 
@@ -193,12 +193,11 @@ export class SettingsAddressEditDialogElement extends
       this.components_ = [];
       for (const row of format.components) {
         // If this is the name field, add a honorific title row before it.
-        if (row.row[0].field === ServerFieldType.NAME_FULL &&
-            this.showHonorific_) {
+        if (row.row[0].field === FieldType.NAME_FULL && this.showHonorific_) {
           this.components_.push([new uiComponents.AddressComponentUi(
               this.addressFields_, this.originalAddressFields_,
-              ServerFieldType.NAME_HONORIFIC_PREFIX,
-              this.i18n('honorificLabel'), 'long')]);
+              FieldType.NAME_HONORIFIC_PREFIX, this.i18n('honorificLabel'),
+              'long')]);
         }
 
         this.components_.push(row.row.map(
@@ -206,7 +205,7 @@ export class SettingsAddressEditDialogElement extends
                 this.addressFields_, this.originalAddressFields_,
                 component.field, component.fieldName,
                 component.isLongField ? 'long' : '',
-                component.field === ServerFieldType.ADDRESS_HOME_STREET_ADDRESS,
+                component.field === FieldType.ADDRESS_HOME_STREET_ADDRESS,
                 skipValidation, component.isRequired)));
       }
 
@@ -215,11 +214,11 @@ export class SettingsAddressEditDialogElement extends
       this.components_.push([
         new uiComponents.AddressComponentUi(
             this.addressFields_, this.originalAddressFields_,
-            ServerFieldType.PHONE_HOME_WHOLE_NUMBER, this.i18n('addressPhone'),
+            FieldType.PHONE_HOME_WHOLE_NUMBER, this.i18n('addressPhone'),
             'last-row'),
         new uiComponents.AddressComponentUi(
             this.addressFields_, this.originalAddressFields_,
-            ServerFieldType.EMAIL_ADDRESS, this.i18n('addressEmail'),
+            FieldType.EMAIL_ADDRESS, this.i18n('addressEmail'),
             'long last-row'),
       ]);
 
@@ -406,7 +405,7 @@ export class SettingsAddressEditDialogElement extends
    */
   private onCountryCodeSelectChange_(): void {
     this.addressFields_.set(
-        ServerFieldType.ADDRESS_HOME_COUNTRY, this.$.country.value);
+        FieldType.ADDRESS_HOME_COUNTRY, this.$.country.value);
     this.countryCode_ = this.$.country.value;
   }
 }

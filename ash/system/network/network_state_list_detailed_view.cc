@@ -179,7 +179,7 @@ class NetworkStateListDetailedView::InfoBubble
   }
 
   // Not owned.
-  raw_ptr<NetworkStateListDetailedView, ExperimentalAsh> detailed_view_;
+  raw_ptr<NetworkStateListDetailedView> detailed_view_;
 };
 
 //------------------------------------------------------------------------------

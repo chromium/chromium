@@ -31,6 +31,7 @@ void WaitForEnrollmentScreen();
 void WaitForUserCreationScreen();
 void TapForPersonalUseCrRadioButton();
 void TapUserCreationNext();
+void WaitForGaiaInfoScreen();
 // Wait for OobeUI to finish loading.
 void WaitForOobeJSReady();
 

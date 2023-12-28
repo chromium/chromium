@@ -20,6 +20,7 @@ namespace navigation_metrics {
 // Names of the metrics logged by RecordPrimaryMainFrameNavigation() function.
 extern const char kMainFrameScheme[];
 extern const char kMainFrameSchemeDifferentPage[];
+extern const char kMainFrameSchemeDifferentPageNonUniqueHostname[];
 extern const char kMainFrameSchemeOTR[];
 extern const char kMainFrameSchemeDifferentPageOTR[];
 extern const char kMainFrameHasRTLDomain[];

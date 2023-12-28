@@ -232,9 +232,6 @@ const int kLargeVersionId = 0xFFFFFF;
 
 const char kHstsTestHostName[] = "hsts-example.test";
 
-constexpr char kPreloadedPKPHost[] = "with-report-uri-pkp.preloaded.test";
-constexpr char kPreloadedReportHost[] = "report-uri.preloaded.test";
-
 enum ProceedDecision {
   SSL_INTERSTITIAL_PROCEED,
   SSL_INTERSTITIAL_DO_NOT_PROCEED
@@ -403,25 +400,6 @@ void ExpectInterstitialElementHidden(WebContents* tab,
   EXPECT_EQ(expect_hidden ? security_interstitials::CMD_TEXT_FOUND
                           : security_interstitials::CMD_TEXT_NOT_FOUND,
             result);
-}
-
-// Runs |quit_callback| on the UI thread once a URL request has been seen.
-// If |hung_response| is true, returns a request that hangs.
-std::unique_ptr<net::test_server::HttpResponse> WaitForJsonRequest(
-    const base::RepeatingClosure& quit_closure,
-    bool hung_response,
-    const net::test_server::HttpRequest& request) {
-  // Basic sanity checks on the request.
-  EXPECT_EQ("/pkp", request.relative_url);
-  EXPECT_EQ("POST", request.method_string);
-  absl::optional<base::Value> value = base::JSONReader::Read(request.content);
-  EXPECT_TRUE(value);
-
-  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, quit_closure);
-
-  if (hung_response)
-    return std::make_unique<net::test_server::HungResponse>();
-  return nullptr;
 }
 
 }  // namespace
@@ -8038,144 +8016,6 @@ IN_PROC_BROWSER_TEST_F(SSLUIDynamicInterstitialTest, MismatchWhenOverridable) {
     EXPECT_NE(CaptivePortalBlockingPage::kTypeForTesting,
               interstitial_page->GetTypeForTesting());
   }
-}
-
-class SSLPKPBrowserTest : public CertVerifierBrowserTest {
- public:
-  void SetUpOnMainThread() override {
-    CertVerifierBrowserTest::SetUpOnMainThread();
-    host_resolver()->AddRule(kPreloadedPKPHost, "127.0.0.1");
-    host_resolver()->AddRule(kPreloadedReportHost, "127.0.0.1");
-  }
-
-  void TearDownOnMainThread() override {
-    if (content::IsOutOfProcessNetworkService()) {
-      mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-
-      mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-      content::GetNetworkService()->BindTestInterfaceForTesting(
-          network_service_test.BindNewPipeAndPassReceiver());
-      network_service_test->SetTransportSecurityStateSource(0);
-    } else {
-      RunOnIOThreadBlocking(base::BindOnce(
-          &SSLPKPBrowserTest::CleanUpOnIOThread, base::Unretained(this)));
-    }
-    CertVerifierBrowserTest::TearDownOnMainThread();
-  }
-
-  void EnableStaticPins(int reporting_port) {
-    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-    content::StoragePartition* partition =
-        browser()->profile()->GetDefaultStoragePartition();
-    partition->GetNetworkContext()->EnableStaticKeyPinningForTesting();
-    partition->FlushNetworkInterfaceForTesting();
-
-    if (content::IsOutOfProcessNetworkService()) {
-      mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-      content::GetNetworkService()->BindTestInterfaceForTesting(
-          network_service_test.BindNewPipeAndPassReceiver());
-      network_service_test->SetTransportSecurityStateSource(reporting_port);
-    } else {
-      // TODO(https://crbug.com/1008175):  This code is not threadsafe, as the
-      // network stack does not run on the IO thread. Ideally, the
-      // NetworkServiceTest object would be set up in-process on the network
-      // service's thread, and this path would be removed.
-      RunOnIOThreadBlocking(base::BindOnce(
-          &SSLPKPBrowserTest::SetTransportSecurityStateSourceOnIO,
-          base::Unretained(this), reporting_port));
-    }
-  }
-
- private:
-  void RunOnIOThreadBlocking(base::OnceClosure task) {
-    base::RunLoop run_loop;
-    content::GetIOThreadTaskRunner({})->PostTaskAndReply(
-        FROM_HERE, std::move(task), run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
-  void SetTransportSecurityStateSourceOnIO(int reporting_port) {
-    transport_security_state_source_ =
-        std::make_unique<net::ScopedTransportSecurityStateSource>(
-            reporting_port);
-  }
-
-  void CleanUpOnIOThread() { transport_security_state_source_.reset(); }
-
-  // Only used when NetworkService is disabled. Accessed on IO thread.
-  std::unique_ptr<net::ScopedTransportSecurityStateSource>
-      transport_security_state_source_;
-};
-
-// Test case where a PKP report is sent.
-IN_PROC_BROWSER_TEST_F(SSLPKPBrowserTest, SendPKPReport) {
-  base::RunLoop wait_for_report_loop;
-
-  // Server that PKP reports are sent to.
-  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-      &WaitForJsonRequest, wait_for_report_loop.QuitClosure(), false));
-  ASSERT_TRUE(embedded_test_server()->Start());
-  EnableStaticPins(embedded_test_server()->port());
-
-  // Server with static key pinning and a report-URI for pin validation
-  // failures.
-  net::EmbeddedTestServer pkp_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  pkp_test_server.SetSSLConfig(
-      net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
-  ASSERT_TRUE(pkp_test_server.Start());
-
-  // Set the cert verifier to cause the PKP check to fail.
-  net::CertVerifyResult verify_result;
-  verify_result.verified_cert = pkp_test_server.GetCertificate();
-  net::SHA256HashValue hash = {{0x00, 0x01}};
-  verify_result.public_key_hashes.push_back(net::HashValue(hash));
-  verify_result.is_issued_by_known_root = true;
-  mock_cert_verifier()->AddResultForCertAndHost(
-      pkp_test_server.GetCertificate(), kPreloadedPKPHost, verify_result,
-      net::OK);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), pkp_test_server.GetURL(kPreloadedPKPHost, "/")));
-  wait_for_report_loop.Run();
-
-  // Shut down the test server, to make it unlikely this will end up in the same
-  // situation as the next test, though it's still theoretically possible.
-  ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
-}
-
-// Test case where a PKP report is sent, and the server hasn't replied by the
-// time the profile is torn down. Test will crash if the URLRequestContext is
-// torn down before the request is torn down.
-IN_PROC_BROWSER_TEST_F(SSLPKPBrowserTest, SendPKPReportServerHangs) {
-  base::RunLoop wait_for_report_loop;
-
-  // Server that PKP reports are sent to. Have to use a class member to make
-  // sure that the test server outlives the IO thread.
-  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-      &WaitForJsonRequest, wait_for_report_loop.QuitClosure(), true));
-  ASSERT_TRUE(embedded_test_server()->Start());
-  EnableStaticPins(embedded_test_server()->port());
-
-  // Server with static key pinning and a report-URI for pin validation
-  // failures.
-  net::EmbeddedTestServer pkp_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  pkp_test_server.SetSSLConfig(
-      net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
-  ASSERT_TRUE(pkp_test_server.Start());
-
-  // Set the cert verifier to cause the PKP check to fail.
-  net::CertVerifyResult verify_result;
-  verify_result.verified_cert = pkp_test_server.GetCertificate();
-  net::SHA256HashValue hash = {{0x00, 0x01}};
-  verify_result.public_key_hashes.push_back(net::HashValue(hash));
-  verify_result.is_issued_by_known_root = true;
-  mock_cert_verifier()->AddResultForCertAndHost(
-      pkp_test_server.GetCertificate(), kPreloadedPKPHost, verify_result,
-      net::OK);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), pkp_test_server.GetURL(kPreloadedPKPHost, "/")));
-  wait_for_report_loop.Run();
 }
 
 class RecurrentInterstitialBrowserTest : public CertVerifierBrowserTest {

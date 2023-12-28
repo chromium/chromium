@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/sparse_vector.h"
 
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
 
 namespace blink {
@@ -68,6 +69,7 @@ class SparseVectorTest : public testing::Test {
 
   const TestSparseVector& sparse_vector() { return *sparse_vector_; }
 
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<TestSparseVector> sparse_vector_;
 };
 

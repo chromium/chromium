@@ -298,7 +298,6 @@ void ButtonOptionsMenu::OnDeleteButtonPressed() {
 
 void ButtonOptionsMenu::OnDoneButtonPressed() {
   controller_->SaveToProtoFile();
-  controller_->MayShowEduNudgeForEditingTip();
 
   // Remove this view at last.
   controller_->RemoveButtonOptionsMenuWidget();

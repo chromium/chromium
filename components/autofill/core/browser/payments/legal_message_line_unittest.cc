@@ -292,7 +292,7 @@ class LegalMessageLineTest : public ::testing::TestWithParam<int> {
 // Verifies that legal message parsing is correct.
 TEST_P(LegalMessageLineTest, Parsing) {
   const TestCase& test_case = TestCaseData()[GetParam()];
-  absl::optional<base::Value> value(
+  std::optional<base::Value> value(
       base::JSONReader::Read(test_case.message_json));
   ASSERT_TRUE(value);
   ASSERT_TRUE(value->is_dict());

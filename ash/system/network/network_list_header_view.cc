@@ -16,7 +16,7 @@
 namespace ash {
 
 NetworkListHeaderView::NetworkListHeaderView() {
-  TrayPopupUtils::ConfigureAsStickyHeader(this);
+  TrayPopupUtils::ConfigureHeader(this);
   SetUseDefaultFillLayout(true);
   entry_row_ =
       AddChildView(std::make_unique<HoverHighlightView>(/*listener=*/this));

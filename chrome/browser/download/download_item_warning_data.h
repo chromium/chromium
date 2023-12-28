@@ -30,9 +30,17 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
     // Applicable actions: PROCEED, DISCARD, DISMISS, CLOSE, BACK,
     // PROCEED_DEEP_SCAN, OPEN_LEARN_MORE_LINK
     BUBBLE_SUBPAGE = 2,
-    // Applicable actions: DISCARD, KEEP
+    // Applicable actions: DISCARD, KEEP, PROCEED
+    // Under ImprovedDownloadPageWarnings:
+    // PROCEED on the downloads page indicates saving a "suspicious" download
+    // directly, without going through the prompt. In contrast, KEEP indicates
+    // opening the prompt, for a "dangerous" download.
     DOWNLOADS_PAGE = 3,
     // Applicable actions: PROCEED, CANCEL, CLOSE
+    // Under ImprovedDownloadPageWarnings: CLOSE is no longer a separate option
+    // because the new dialog only has PROCEED and CANCEL buttons, and we treat
+    // dismissing it with Escape the same as pressing cancel.
+    // TODO(chlily): Clean this comment up once the feature launches.
     DOWNLOAD_PROMPT = 4,
     kMaxValue = DOWNLOAD_PROMPT
   };

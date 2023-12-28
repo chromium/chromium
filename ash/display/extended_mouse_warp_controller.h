@@ -123,7 +123,7 @@ class ASH_EXPORT ExtendedMouseWarpController : public MouseWarpController {
   void allow_non_native_event_for_test() { allow_non_native_event_ = true; }
 
   // The root window in which the dragging started.
-  raw_ptr<aura::Window, ExperimentalAsh> drag_source_root_;
+  raw_ptr<aura::Window> drag_source_root_;
 
   bool enabled_;
 

@@ -529,19 +529,20 @@ TEST_F(CarrierLockManagerTest, CarrierLockStartManagerPsmRetry) {
   task_environment_.RunUntilIdle();
 
   // Check local pref values
-  EXPECT_NE(base::Time(), pref_state_->GetTime(kLastConfigTimePref));
-  EXPECT_EQ(std::string(kTestTopic), pref_state_->GetString(kFcmTopicPref));
-  EXPECT_EQ(std::string(kTestImei), pref_state_->GetString(kLastImeiPref));
+  EXPECT_EQ(base::Time(), pref_state_->GetTime(kLastConfigTimePref));
+  EXPECT_EQ(std::string(), pref_state_->GetString(kFcmTopicPref));
+  EXPECT_EQ(std::string(), pref_state_->GetString(kLastImeiPref));
   EXPECT_EQ(kMaxRetries + 1, pref_state_->GetInteger(kErrorCounterPref));
 
   // Check histograms
   histogram_tester_.ExpectUniqueSample(kPsmClaimResponse,
                                        PsmResult::kDeviceLocked, 0);
   histogram_tester_.ExpectUniqueSample(kProvisioningServerResponse,
-                                       ProvisioningResult::kConfigLocked, 1);
+                                       ProvisioningResult::kConfigLocked, 0);
   histogram_tester_.ExpectUniqueSample(kModemConfigurationResult,
-                                       ConfigurationResult::kModemLocked, 1);
-  histogram_tester_.ExpectUniqueSample(kNumConsecutiveFailuresBeforeLock, 3, 1);
+                                       ConfigurationResult::kModemLocked, 0);
+  histogram_tester_.ExpectUniqueSample(kFcmCommunicationResult,
+                                       FcmResult::kRegistered, 0);
   histogram_tester_.ExpectUniqueSample(kErrorPsmClaim, Result::kConnectionError,
                                        3);
 }

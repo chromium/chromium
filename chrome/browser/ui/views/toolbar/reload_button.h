@@ -28,9 +28,9 @@ class CommandUpdater;
 
 class ReloadButton : public ToolbarButton,
                      public ui::SimpleMenuModel::Delegate {
- public:
-  METADATA_HEADER(ReloadButton);
+  METADATA_HEADER(ReloadButton, ToolbarButton)
 
+ public:
   enum class Mode { kReload = 0, kStop };
 
   explicit ReloadButton(CommandUpdater* command_updater);

@@ -85,12 +85,11 @@ class ASH_EXPORT UnifiedMediaControlsController
   void MaybeShowMediaControlsOrEmptyState();
 
   // Weak ptr, owned by view hierarchy.
-  raw_ptr<UnifiedMediaControlsView, DanglingUntriaged | ExperimentalAsh>
-      media_controls_ = nullptr;
+  raw_ptr<UnifiedMediaControlsView, DanglingUntriaged> media_controls_ =
+      nullptr;
 
   // Delegate for show/hide media controls.
-  const raw_ptr<Delegate, DanglingUntriaged | ExperimentalAsh> delegate_ =
-      nullptr;
+  const raw_ptr<Delegate, DanglingUntriaged> delegate_ = nullptr;
 
   mojo::Remote<media_session::mojom::MediaController> media_controller_remote_;
 

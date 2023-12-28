@@ -37,8 +37,10 @@ void Semaphore::Wait() {
 }
 
 bool Semaphore::TimedWait(TimeDelta timeout) {
-  dispatch_time_t wait_time =
-      dispatch_time(DISPATCH_TIME_NOW, timeout.InNanoseconds());
+  const dispatch_time_t wait_time =
+      timeout.is_max()
+          ? DISPATCH_TIME_FOREVER
+          : dispatch_time(DISPATCH_TIME_NOW, timeout.InNanoseconds());
   return dispatch_semaphore_wait(native_handle_, wait_time) == 0;
 }
 

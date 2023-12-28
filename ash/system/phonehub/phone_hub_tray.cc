@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/focus_cycler.h"
@@ -39,9 +39,11 @@
 #include "ash/system/tray/tray_utils.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_clock.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/phonehub/icon_decoder.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "chromeos/ash/components/phonehub/phone_model.h"
@@ -51,6 +53,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -62,11 +65,16 @@ namespace ash {
 
 namespace {
 
+// Command ID for Phone Hub context menu
+constexpr int kHidePhoneHubIconCommandId = 1;
+
 // Padding for tray icons (dp; the button that shows the phone_hub menu).
 constexpr int kTrayIconMainAxisInset = 6;
 constexpr int kTrayIconCrossAxisInset = 0;
 constexpr int kEcheIconMinSize = 24;
 constexpr int kIconSpacing = 12;
+
+constexpr int kHidePhoneHubContexMenuIconSize = 20;
 
 constexpr auto kBubblePadding =
     gfx::Insets::TLBR(0, 0, kBubbleBottomPaddingDip, 0);
@@ -473,8 +481,35 @@ void PhoneHubTray::UpdateVisibility() {
       !IsInsideUnlockWindow()) {
     return;
   }
+  icon_->set_context_menu_controller(
+      ui_state == PhoneHubUiController::UiState::kOnboardingWithPhone ||
+              ui_state == PhoneHubUiController::UiState::kOnboardingWithoutPhone
+          ? this
+          : nullptr);
+
   SetVisiblePreferred(ui_state != PhoneHubUiController::UiState::kHidden &&
                       IsInUserSession());
+}
+
+std::unique_ptr<ui::SimpleMenuModel> PhoneHubTray::CreateContextMenuModel() {
+  auto context_menu_model = std::make_unique<ui::SimpleMenuModel>(this);
+
+  context_menu_model->AddItemWithIcon(
+      kHidePhoneHubIconCommandId,
+      l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ICON_DISMISS_TEXT),
+      ui::ImageModel::FromVectorIcon(kVisibilityOffIcon,
+                                     ui::kColorAshSystemUIMenuIcon,
+                                     kHidePhoneHubContexMenuIconSize));
+
+  return context_menu_model;
+}
+
+void PhoneHubTray::ExecuteCommand(int command_id, int event_flags) {
+  if (command_id == kHidePhoneHubIconCommandId) {
+    phone_hub_manager_->GetOnboardingUiTracker()->DismissSetupUi();
+    return;
+  }
+  NOTREACHED();
 }
 
 void PhoneHubTray::UpdateHeaderVisibility() {

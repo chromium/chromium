@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
-#include "chrome/browser/ui/performance_controls/high_efficiency_opt_in_iph_controller.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_opt_in_iph_controller.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
@@ -126,17 +126,6 @@ class BrowserView : public BrowserWindow,
                     public webapps::AppBannerManager::Observer {
  public:
   METADATA_HEADER(BrowserView);
-
-  // Enumerates where the devtools are docked relative to the browser's main
-  // web contents.
-  enum class DevToolsDockedPlacement {
-    kLeft,
-    kRight,
-    kBottom,
-    // Devtools are not docked.
-    kNone,
-    kUnknown
-  };
 
   explicit BrowserView(std::unique_ptr<Browser> browser);
   BrowserView(const BrowserView&) = delete;
@@ -269,10 +258,6 @@ class BrowserView : public BrowserWindow,
   // Accessor for the contents and devtools WebViews.
   ContentsWebView* contents_web_view() { return contents_web_view_; }
   views::WebView* devtools_web_view() { return devtools_web_view_; }
-
-  DevToolsDockedPlacement devtools_docked_placement() const {
-    return current_devtools_docked_placement_;
-  }
 
   base::WeakPtr<BrowserView> GetAsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -683,6 +668,7 @@ class BrowserView : public BrowserWindow,
   std::u16string GetAccessibleWindowTitle() const override;
   views::View* GetInitiallyFocusedView() override;
   bool ShouldShowWindowTitle() const override;
+  bool ShouldShowWindowIcon() const override;
   ui::ImageModel GetWindowAppIcon() override;
   ui::ImageModel GetWindowIcon() override;
   bool ExecuteWindowsCommand(int command_id) override;
@@ -831,6 +817,29 @@ class BrowserView : public BrowserWindow,
   // NonClientFrameView to get the correct offset. See
   // TopContainerBackground::PaintThemeCustomImage for details.
   gfx::Point GetThemeOffsetFromBrowserView() const;
+
+ protected:
+  // Enumerates where the devtools are docked relative to the browser's main
+  // web contents.
+  enum class DevToolsDockedPlacement {
+    kLeft,
+    kRight,
+    kBottom,
+    // Devtools are not docked.
+    kNone,
+    kUnknown
+  };
+
+  DevToolsDockedPlacement devtools_docked_placement() const {
+    return current_devtools_docked_placement_;
+  }
+
+  // Return the DevTools docked placement. It infers the docked placement from
+  // the bounds of contents_webview relative to the local bounds of the
+  // container that holds both contents_webview and devtools_webview.
+  static DevToolsDockedPlacement GetDevToolsDockedPlacement(
+      const gfx::Rect& contents_webview_bounds,
+      const gfx::Rect& local_webview_container_bounds);
 
  private:
   // Do not friend BrowserViewLayout. Use the BrowserViewLayoutDelegate
@@ -1268,8 +1277,8 @@ class BrowserView : public BrowserWindow,
 
   OnLinkOpeningFromGestureCallbackList link_opened_from_gesture_callbacks_;
 
-  std::unique_ptr<HighEfficiencyOptInIPHController>
-      high_efficiency_opt_in_iph_controller_;
+  std::unique_ptr<MemorySaverOptInIPHController>
+      memory_saver_opt_in_iph_controller_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // |loading_animation_tracker_| is used to measure animation smoothness for

@@ -133,16 +133,17 @@ std::unique_ptr<FrameNodeImpl> PerformanceManagerImpl::CreateFrameNode(
     ProcessNodeImpl* process_node,
     PageNodeImpl* page_node,
     FrameNodeImpl* parent_frame_node,
-    FrameNodeImpl* fenced_frame_embedder_frame_node,
+    FrameNodeImpl* outer_document_for_fenced_frame,
     int render_frame_id,
     const blink::LocalFrameToken& frame_token,
     content::BrowsingInstanceId browsing_instance_id,
     content::SiteInstanceId site_instance_id,
+    bool is_current,
     FrameNodeCreationCallback creation_callback) {
   return CreateNodeImpl<FrameNodeImpl>(
       std::move(creation_callback), process_node, page_node, parent_frame_node,
-      fenced_frame_embedder_frame_node, render_frame_id, frame_token,
-      browsing_instance_id, site_instance_id);
+      outer_document_for_fenced_frame, render_frame_id, frame_token,
+      browsing_instance_id, site_instance_id, is_current);
 }
 
 // static
@@ -168,10 +169,11 @@ std::unique_ptr<ProcessNodeImpl> PerformanceManagerImpl::CreateProcessNode(
 
 // static
 std::unique_ptr<ProcessNodeImpl> PerformanceManagerImpl::CreateProcessNode(
-    RenderProcessHostProxy render_process_host_proxy) {
+    RenderProcessHostProxy render_process_host_proxy,
+    base::TaskPriority priority) {
   return CreateNodeImpl<ProcessNodeImpl>(
       base::OnceCallback<void(ProcessNodeImpl*)>(),
-      std::move(render_process_host_proxy));
+      std::move(render_process_host_proxy), priority);
 }
 
 // static

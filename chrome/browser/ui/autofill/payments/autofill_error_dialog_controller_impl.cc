@@ -75,6 +75,9 @@ const std::u16string AutofillErrorDialogControllerImpl::GetTitle() {
         kMaskedServerCardRiskBasedUnmaskingPermanentError:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_MASKED_SERVER_CARD_RISK_BASED_UNMASKING_ERROR_TITLE);
+    case AutofillErrorDialogType::kMaskedServerIbanUnmaskingTemporaryError:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_IBAN_UNMASK_ERROR_DIALOG_TITLE);
     case AutofillErrorDialogType::kTypeUnknown:
       NOTREACHED();
       return std::u16string();
@@ -110,6 +113,9 @@ const std::u16string AutofillErrorDialogControllerImpl::GetDescription() {
         kMaskedServerCardRiskBasedUnmaskingPermanentError:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_PERMANENT);
+    case AutofillErrorDialogType::kMaskedServerIbanUnmaskingTemporaryError:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_IBAN_UNMASK_ERROR_DIALOG_MESSAGE);
     case AutofillErrorDialogType::kTypeUnknown:
       NOTREACHED();
       return std::u16string();

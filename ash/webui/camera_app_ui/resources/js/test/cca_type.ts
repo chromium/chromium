@@ -54,8 +54,7 @@ export const SELECTOR_MAP = {
       '#view-photo-resolution-settings .menu-item>input[data-facing="user"]',
   frontVideoResolutionOptions:
       '#view-video-resolution-settings .menu-item>input[data-facing="user"]',
-  galleryButton: '#gallery-enter',
-  galleryButtonCover: '#gallery-enter>img',
+  galleryButton: 'gallery-button',
   gifRecordingOption: 'input[type=radio][data-state=record-type-gif]',
   gifReviewRetakeButton: '#review-retake',
   gifReviewSaveButton: '#view-review button[i18n-text=label_save]',

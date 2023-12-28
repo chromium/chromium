@@ -71,7 +71,7 @@ class AutoResumptionHandlerTest : public testing::Test {
         std::move(network_listener), std::move(task_manager), std::move(config),
         &clock_);
 
-    std::vector<DownloadItem*> empty_list;
+    std::vector<raw_ptr<DownloadItem, VectorExperimental>> empty_list;
     auto_resumption_handler_->SetResumableDownloads(empty_list);
     task_runner_->FastForwardUntilNoTasksRemain();
   }

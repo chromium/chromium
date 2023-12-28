@@ -409,5 +409,5 @@ SavedTabGroupButton::CreateDialogModelForContextMenu() {
   return dialog_model.Build();
 }
 
-BEGIN_METADATA(SavedTabGroupButton, MenuButton)
+BEGIN_METADATA(SavedTabGroupButton)
 END_METADATA

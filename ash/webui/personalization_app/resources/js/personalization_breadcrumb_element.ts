@@ -18,6 +18,9 @@ import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import '../css/common.css.js';
 import '../css/cros_button_style.css.js';
 
+import {assert} from 'chrome://resources/ash/common/assert.js';
+import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
+import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
@@ -26,8 +29,10 @@ import {GooglePhotosAlbum, TopicSource, WallpaperCollection} from '../personaliz
 import {getTemplate} from './personalization_breadcrumb_element.html.js';
 import {isPathValid, Paths, PersonalizationRouterElement} from './personalization_router_element.js';
 import {WithPersonalizationStore} from './personalization_store.js';
-import {inBetween, isNonEmptyArray} from './utils.js';
-import {findAlbumById, getSampleSeaPenTemplates, QUERY, SeaPenTemplate} from './wallpaper/utils.js';
+import {inBetween} from './utils.js';
+import {getSeaPenTemplates, SeaPenTemplate} from './wallpaper/sea_pen/constants.js';
+import {isSeaPenEnabled} from './wallpaper/sea_pen/load_time_booleans.js';
+import {findAlbumById} from './wallpaper/utils.js';
 
 /** Event interface for dom-repeat. */
 interface RepeaterEvent extends CustomEvent {
@@ -225,10 +230,7 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
         breadcrumbs.push(this.i18n('wallpaperLabel'));
         // TODO(b/308200616): Add real text
         breadcrumbs.push('Sea Pen');
-        if (this.seaPenTemplateId === QUERY) {
-          breadcrumbs.push(QUERY);
-        } else if (
-            this.seaPenTemplateId && isNonEmptyArray(this.seaPenTemplates_)) {
+        if (this.seaPenTemplateId && isNonEmptyArray(this.seaPenTemplates_)) {
           const template = this.seaPenTemplates_.find(
               template => template.id === this.seaPenTemplateId);
           if (template) {
@@ -260,7 +262,7 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
   }
 
   private computeSeaPenTemplates_(): SeaPenTemplate[] {
-    return getSampleSeaPenTemplates();
+    return getSeaPenTemplates();
   }
 
   private getBackButtonAriaLabel_(): string {
@@ -286,6 +288,45 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
         PersonalizationRouterElement.instance().goToRoute(newPath as Paths);
       }
     }
+  }
+
+  private onClickMenuIcon_(e: Event) {
+    const targetElement = e.currentTarget as HTMLElement;
+    const menuIconContainerRect = targetElement.getBoundingClientRect();
+    const config = {
+      // 8px is the padding of .menu-icon-container.
+      top: menuIconContainerRect.top - 8,
+      left: menuIconContainerRect.left - menuIconContainerRect.width / 2,
+      height: menuIconContainerRect.height,
+      width: menuIconContainerRect.width,
+      anchorAlignmentX: AnchorAlignment.CENTER,
+      anchorAlignmentY: AnchorAlignment.AFTER_END,
+    };
+    const menuElement = this.shadowRoot!.querySelector('cr-action-menu');
+    menuElement!.showAtPosition(config);
+  }
+
+  private onClickMenuItem_(e: Event) {
+    const targetElement = e.currentTarget as HTMLElement;
+    const templateId = targetElement.dataset['id'];
+    assert(!!templateId, 'templateId is required');
+    PersonalizationRouterElement.instance().goToRoute(
+        Paths.SEA_PEN_RESULTS, {seaPenTemplateId: templateId});
+  }
+
+  private shouldShowSeaPenDropdown_(path: string, breadcrumb: string): boolean {
+    if (!isSeaPenEnabled()) {
+      return false;
+    }
+    const template =
+        this.seaPenTemplates_?.find(template => template.title === breadcrumb);
+
+    return path === Paths.SEA_PEN_RESULTS && !!template;
+  }
+
+  private getAriaSelected_(templateId: string, seaPenTemplateId: string):
+      'true'|'false' {
+    return templateId === seaPenTemplateId ? 'true' : 'false';
   }
 
   private onHomeIconClick_() {

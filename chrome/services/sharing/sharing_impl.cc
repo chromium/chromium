@@ -114,6 +114,17 @@ void SharingImpl::InitializeNearbySharedRemotes(NearbyDependenciesPtr deps) {
         base::SequencedTaskRunner::GetCurrentDefault());
   }
 
+  if (deps->nearby_presence_credential_storage) {
+    nearby_shared_remotes_->nearby_presence_credential_storage.Bind(
+        std::move(deps->nearby_presence_credential_storage), io_task_runner_);
+    nearby_shared_remotes_->nearby_presence_credential_storage
+        .set_disconnect_handler(
+            base::BindOnce(
+                &SharingImpl::OnDisconnect, weak_ptr_factory_.GetWeakPtr(),
+                MojoDependencyName::kNearbyPresenceCredentialStorage),
+            base::SequencedTaskRunner::GetCurrentDefault());
+  }
+
   nearby_shared_remotes_->socket_manager.Bind(
       std::move(deps->webrtc_dependencies->socket_manager), io_task_runner_);
   nearby_shared_remotes_->socket_manager.set_disconnect_handler(
@@ -203,6 +214,8 @@ std::string SharingImpl::GetMojoDependencyName(
       return "Decoder";
     case MojoDependencyName::kQuickStartDecoder:
       return "Quick Start Decoder";
+    case MojoDependencyName::kNearbyPresenceCredentialStorage:
+      return "Nearby Presence Credential Storage";
   }
 }
 

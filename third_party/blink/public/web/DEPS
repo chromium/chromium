@@ -31,6 +31,7 @@ include_rules = [
     "+media/mojo/mojom/audio_processing.mojom-shared.h",
     "+mojo/public",
     "+net/cookies/site_for_cookies.h",
+    "+net/url_request/referrer_policy.h",
     "+printing/mojom/print.mojom-shared.h",
     "+services/metrics/public/cpp/ukm_source_id.h",
     "+services/network/public/cpp/web_sandbox_flags.h",

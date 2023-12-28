@@ -11,9 +11,6 @@ import("//chrome/android/modules/stack_unwinder/stack_unwinder_module.gni")
 import("//chrome/android/modules/test_dummy/test_dummy_module.gni")
 import("//device/vr/buildflags/buildflags.gni")
 
-if (enable_vr) {
-  import("//chrome/android/features/vr/vr_module.gni")
-}
 if (enable_arcore) {
   import("//chrome/android/features/ar/ar_module.gni")
 }
@@ -41,9 +38,6 @@ chrome_module_descs = [
   test_dummy_module_desc,
   stack_unwinder_module_desc,
 ]
-if (enable_vr) {
-  chrome_module_descs += [ vr_module_desc ]
-}
 if (dfmify_dev_ui) {
   chrome_module_descs += [ dev_ui_module_desc ]
 }

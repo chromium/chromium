@@ -108,13 +108,29 @@ HRESULT CommandRecorder::Open() {
     // It's safe to reset the command list while it is still being executed.
     RETURN_IF_FAILED(command_list_->Reset(command_allocator_.Get(), nullptr));
   }
+  command_resources_.clear();
   is_open_ = true;
   return S_OK;
 }
 
 HRESULT CommandRecorder::CloseAndExecute() {
+  RETURN_IF_FAILED(Close());
+  RETURN_IF_FAILED(Execute());
+  return S_OK;
+}
+
+HRESULT CommandRecorder::Close() {
   CHECK(is_open_);
   RETURN_IF_FAILED(command_list_->Close());
+  is_open_ = false;
+  return S_OK;
+}
+
+// `command_resources_` will be cleared in the `Open()` method when the command
+// list completes the previous execution and opens again. And the
+// `CommandRecorder` destructor will also clear it.
+HRESULT CommandRecorder::Execute() {
+  CHECK(!is_open_);
   RETURN_IF_FAILED(command_queue_->ExecuteCommandList(command_list_.Get()));
   last_submitted_fence_value_ = command_queue_->GetLastFenceValue();
 
@@ -126,11 +142,8 @@ HRESULT CommandRecorder::CloseAndExecute() {
   // command queue. The command queue would keep these resources alive until the
   // GPU work has been done.
   for (auto& resource : command_resources_) {
-    command_queue_->ReferenceUntilCompleted(std::move(resource));
+    command_queue_->ReferenceUntilCompleted(resource);
   }
-  command_resources_.clear();
-
-  is_open_ = false;
   return S_OK;
 }
 
@@ -257,6 +270,9 @@ HRESULT CommandRecorder::InitializeOperator(
     command_resources_.push_back(persistent_resource);
   }
 
+  // DirectML may remove the device if invalid bindings are provided.
+  RETURN_IF_FAILED(dml_device_->GetDeviceRemovedReason());
+
   command_recorder_->RecordDispatch(command_list_.Get(), initializer.Get(),
                                     binding_table.Get());
 
@@ -368,6 +384,9 @@ HRESULT CommandRecorder::ExecuteOperator(
   binding_table->BindOutputs(
       base::checked_cast<uint32_t>(output_bindings.size()),
       output_bindings.data());
+
+  // DirectML may remove the device if invalid bindings are provided.
+  RETURN_IF_FAILED(dml_device_->GetDeviceRemovedReason());
 
   // The output resources should be kept alive until the operator has been
   // executed on the GPU.

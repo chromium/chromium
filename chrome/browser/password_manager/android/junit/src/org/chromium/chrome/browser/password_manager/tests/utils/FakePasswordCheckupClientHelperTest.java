@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.password_manager.tests.utils;
 import static android.os.Looper.getMainLooper;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.PendingIntent;
@@ -15,6 +14,8 @@ import android.app.PendingIntent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -34,35 +35,55 @@ import java.util.Optional;
 public class FakePasswordCheckupClientHelperTest {
     private static final String TEST_ACCOUNT = "test@example.com";
     private FakePasswordCheckupClientHelper mFakeHelper;
+    @Mock private PendingIntent mPendingIntentForLocalCheckupMock;
+    @Mock private PendingIntent mPendingIntentForAccountCheckupMock;
+
+    private final PayloadCallbackHelper<PendingIntent> mSuccessCallbackHelper =
+            new PayloadCallbackHelper<>();
+    private final PayloadCallbackHelper<Exception> mFailureCallbackHelper =
+            new PayloadCallbackHelper<>();
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         mFakeHelper = new FakePasswordCheckupClientHelper();
-        mFakeHelper.setIntent(mock(PendingIntent.class));
+        mFakeHelper.setIntentForLocalCheckup(mPendingIntentForLocalCheckupMock);
+        mFakeHelper.setIntentForAccountCheckup(mPendingIntentForAccountCheckupMock);
     }
 
     @Test
-    public void testGetPasswordCheckupIntentSucceeds() {
-        final PendingIntent pendingIntentMock = mock(PendingIntent.class);
-        mFakeHelper.setIntent(pendingIntentMock);
-
-        final PayloadCallbackHelper<PendingIntent> successCallbackHelper =
-                new PayloadCallbackHelper<>();
-        final PayloadCallbackHelper<Exception> failureCallbackHelper =
-                new PayloadCallbackHelper<>();
-
+    public void testGetPasswordCheckupIntentForLocalCheckupSucceeds() {
         mFakeHelper.getPasswordCheckupIntent(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_ACCOUNT),
-                successCallbackHelper::notifyCalled,
-                failureCallbackHelper::notifyCalled);
+                Optional.empty(),
+                mSuccessCallbackHelper::notifyCalled,
+                mFailureCallbackHelper::notifyCalled);
 
         // Move the clock forward
         shadowOf(getMainLooper()).idle();
         // Verify that success callback was called.
-        assertEquals(successCallbackHelper.getOnlyPayloadBlocking(), pendingIntentMock);
+        assertEquals(
+                mSuccessCallbackHelper.getOnlyPayloadBlocking(), mPendingIntentForLocalCheckupMock);
         // Verify that failure callback was not called.
-        assertEquals(failureCallbackHelper.getCallCount(), 0);
+        assertEquals(mFailureCallbackHelper.getCallCount(), 0);
+    }
+
+    @Test
+    public void testGetPasswordCheckupIntentForAccountCheckupSucceeds() {
+        mFakeHelper.getPasswordCheckupIntent(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                Optional.of(TEST_ACCOUNT),
+                mSuccessCallbackHelper::notifyCalled,
+                mFailureCallbackHelper::notifyCalled);
+
+        // Move the clock forward
+        shadowOf(getMainLooper()).idle();
+        // Verify that success callback was called.
+        assertEquals(
+                mSuccessCallbackHelper.getOnlyPayloadBlocking(),
+                mPendingIntentForAccountCheckupMock);
+        // Verify that failure callback was not called.
+        assertEquals(mFailureCallbackHelper.getCallCount(), 0);
     }
 
     @Test

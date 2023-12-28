@@ -11,7 +11,6 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 
@@ -68,12 +67,6 @@ public class LibraryPrefetcher {
                         // process.
                         boolean prefetch = coldStart && percentage < 90;
                         if (prefetch) LibraryPrefetcherJni.get().forkAndPrefetchNativeLibrary();
-                        if (percentage != -1) {
-                            String histogram =
-                                    "LibraryLoader.PercentageOfResidentCodeBeforePrefetch"
-                                            + (coldStart ? ".ColdStartup" : ".WarmStartup");
-                            RecordHistogram.recordPercentageHistogram(histogram, percentage);
-                        }
                     }
                     // Removes a dead flag, don't remove the removal code before M77 at least.
                     ContextUtils.getAppSharedPreferences()

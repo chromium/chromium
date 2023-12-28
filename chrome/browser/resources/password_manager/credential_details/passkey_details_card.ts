@@ -11,13 +11,13 @@ import './credential_details_card.css.js';
 import '../dialogs/edit_passkey_dialog.js';
 import '../dialogs/delete_passkey_dialog.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl, PasswordViewPageInteractions} from '../password_manager_proxy.js';
 
-import {CredentialFieldElement} from './credential_field.js';
+import type {CredentialFieldElement} from './credential_field.js';
 import {getTemplate} from './passkey_details_card.html.js';
 
 export interface PasskeyDetailsCardElement {

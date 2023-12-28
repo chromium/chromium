@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/login/profile_auth_data.h"
 #include "chrome/browser/ash/login/ui/oobe_dialog_size_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/auth_notification_types.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
@@ -282,12 +281,9 @@ LockScreenStartReauthDialog::LockScreenStartReauthDialog()
   network_state_informer_->Init();
   scoped_observation_.Observe(network_state_informer_.get());
 
-  registrar_.Add(this, chrome::NOTIFICATION_AUTH_NEEDED,
-                 content::NotificationService::AllSources());
-  registrar_.Add(this, chrome::NOTIFICATION_AUTH_SUPPLIED,
-                 content::NotificationService::AllSources());
-  registrar_.Add(this, chrome::NOTIFICATION_AUTH_CANCELLED,
-                 content::NotificationService::AllSources());
+  HttpAuthDialog::AddObserver(this);
+
+  enable_ash_httpauth_ = HttpAuthDialog::Enable();
 
   g_browser_process->profile_manager()->CreateProfileAsync(
       ProfileHelper::GetLockScreenProfileDir(),
@@ -297,6 +293,7 @@ LockScreenStartReauthDialog::LockScreenStartReauthDialog()
 
 LockScreenStartReauthDialog::~LockScreenStartReauthDialog() {
   DCHECK_EQ(this, g_dialog);
+  HttpAuthDialog::RemoveObserver(this);
   scoped_observation_.Reset();
   DeleteLockScreenNetworkDialog();
   g_dialog = nullptr;
@@ -427,59 +424,57 @@ void LockScreenStartReauthDialog::TransferHttpAuthCaches() {
   }
 }
 
-void LockScreenStartReauthDialog::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
+void LockScreenStartReauthDialog::HttpAuthDialogShown(
+    content::WebContents* web_contents) {
+  if (!Matches(web_contents)) {
+    return;
+  }
+  is_proxy_auth_in_progress_ = true;
+}
+
+void LockScreenStartReauthDialog::HttpAuthDialogCancelled(
+    content::WebContents* web_contents) {
+  if (!Matches(web_contents)) {
+    return;
+  }
+  ReenableNetworkUpdates();
+  should_reload_gaia_ = true;
+  // If proxy authentication is canceled we disconnect from current network
+  // and it triggers offline state which leads to us showing network screen
+  // through `LockScreenStartReauthDialog::UpdateState`.
+  const std::string network_path =
+      NetworkHandler::Get()->network_state_handler()->DefaultNetwork()->path();
+  NetworkHandler::Get()->network_connection_handler()->DisconnectNetwork(
+      network_path, base::DoNothing(), network_handler::ErrorCallback());
+}
+
+void LockScreenStartReauthDialog::HttpAuthDialogSupplied(
+    content::WebContents* web_contents) {
+  if (!Matches(web_contents)) {
+    return;
+  }
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&LockScreenStartReauthDialog::ReenableNetworkUpdates,
+                     weak_factory_.GetWeakPtr()),
+      kProxyAuthTimeout);
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&LockScreenStartReauthDialog::TransferHttpAuthCaches,
+                     weak_factory_.GetWeakPtr()),
+      kAuthCacheTransferDelayMs);
+  Focus();
+}
+
+bool LockScreenStartReauthDialog::Matches(content::WebContents* web_contents) {
   // Check that notification source is related to this dialog's web contents.
   // Otherwise we might falsely react to notifications from chrome tabs which
   // are open in the user's active session. We use NavigationController objects
   // for comparison because `LoginHandler` uses them as the source of
   // proxy-related notifications.
-  if (!base::Contains(webui()->GetWebContents()->GetInnerWebContents(), source,
-                      [](content::WebContents* wc) {
-                        return content::Source(&wc->GetController());
-                      })) {
-    return;
-  }
-
-  switch (type) {
-    case chrome::NOTIFICATION_AUTH_NEEDED: {
-      is_proxy_auth_in_progress_ = true;
-      break;
-    }
-    case chrome::NOTIFICATION_AUTH_SUPPLIED: {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&LockScreenStartReauthDialog::ReenableNetworkUpdates,
-                         weak_factory_.GetWeakPtr()),
-          kProxyAuthTimeout);
-
-      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&LockScreenStartReauthDialog::TransferHttpAuthCaches,
-                         weak_factory_.GetWeakPtr()),
-          kAuthCacheTransferDelayMs);
-      Focus();
-      break;
-    }
-    case chrome::NOTIFICATION_AUTH_CANCELLED: {
-      ReenableNetworkUpdates();
-      should_reload_gaia_ = true;
-      // If proxy authentication is canceled we disconnect from current network
-      // and it triggers offline state which leads to us showing network screen
-      // through `LockScreenStartReauthDialog::UpdateState`.
-      const std::string network_path = NetworkHandler::Get()
-                                           ->network_state_handler()
-                                           ->DefaultNetwork()
-                                           ->path();
-      NetworkHandler::Get()->network_connection_handler()->DisconnectNetwork(
-          network_path, base::DoNothing(), network_handler::ErrorCallback());
-      break;
-    }
-    default:
-      NOTREACHED() << "Unexpected notification " << type;
-  }
+  return base::Contains(webui()->GetWebContents()->GetInnerWebContents(),
+                        web_contents);
 }
 
 void LockScreenStartReauthDialog::ReenableNetworkUpdates() {

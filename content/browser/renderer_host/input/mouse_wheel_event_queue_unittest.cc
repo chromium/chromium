@@ -288,10 +288,10 @@ class MouseWheelEventQueueTest : public testing::Test,
   }
 
   static void RunTasksAndWait(base::TimeDelta delay) {
+    base::RunLoop loop;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated(),
-        delay);
-    base::RunLoop().Run();
+        FROM_HERE, loop.QuitWhenIdleClosure(), delay);
+    loop.Run();
   }
 
   void GestureSendingTest(bool high_precision) {

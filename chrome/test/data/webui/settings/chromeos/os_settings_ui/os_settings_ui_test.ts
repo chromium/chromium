@@ -2,22 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview
+ * Suite of tests for the overall OS Settings UI.
+ */
+
 import 'chrome://os-settings/os_settings.js';
 
+import {AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
 import {CrDrawerElement, CrSettingsPrefs, MainPageContainerElement, OsSettingsMainElement, OsSettingsUiElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-/** @fileoverview Suite of tests for the OS Settings ui and main page. */
+import {TestAccountManagerBrowserProxy} from '../os_people_page/test_account_manager_browser_proxy.js';
 
-suite('OSSettingsUi', function() {
+suite('OSSettingsUi', () => {
   let ui: OsSettingsUiElement;
   let settingsMain: OsSettingsMainElement|null;
   let mainPageContainer: MainPageContainerElement|null;
+  let testAccountManagerBrowserProxy: TestAccountManagerBrowserProxy;
 
-  suiteSetup(async function() {
+  suiteSetup(async () => {
+    // Setup fake accounts. There must be a device account available for the
+    // Accounts menu item in <os-settings-menu>.
+    testAccountManagerBrowserProxy = new TestAccountManagerBrowserProxy();
+    AccountManagerBrowserProxyImpl.setInstanceForTesting(
+        testAccountManagerBrowserProxy);
+
+    // Create only one element instance for the entire suite since this element
+    // is large and expensive to render to the DOM.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     ui = document.createElement('os-settings-ui');
     document.body.appendChild(ui);
@@ -38,7 +53,15 @@ suite('OSSettingsUi', function() {
     flush();
   });
 
-  test('Update required end of life banner visibility', function() {
+  suiteTeardown(() => {
+    ui.remove();
+  });
+
+  teardown(() => {
+    testAccountManagerBrowserProxy.reset();
+  });
+
+  test('Update required end of life banner visibility', () => {
     flush();
     assert(mainPageContainer);
     assertEquals(
@@ -52,7 +75,7 @@ suite('OSSettingsUi', function() {
         '#updateRequiredEolBanner'));
   });
 
-  test('Update required end of life banner close button click', function() {
+  test('Update required end of life banner close button click', () => {
     assert(mainPageContainer);
     mainPageContainer.set('showUpdateRequiredEolBanner_', true);
     flush();
@@ -77,7 +100,7 @@ suite('OSSettingsUi', function() {
     await eventToPromise('cr-drawer-opened', drawer);
 
     // Clicking the drawer icon closes the drawer.
-    ui.shadowRoot!.querySelector<HTMLElement>('#iconButton')!.click();
+    ui.shadowRoot!.querySelector<HTMLElement>('#drawerIcon')!.click();
     await eventToPromise('close', drawer);
     assertFalse(drawer.open);
     assertTrue(drawer.wasCanceled());

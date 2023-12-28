@@ -18,7 +18,6 @@ struct CreditCardCloudTokenData {
   ~CreditCardCloudTokenData();
 
   bool operator==(const CreditCardCloudTokenData&) const;
-  bool operator!=(const CreditCardCloudTokenData&) const;
 
   std::u16string ExpirationMonthAsString() const;
   std::u16string Expiration2DigitYearAsString() const;

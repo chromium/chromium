@@ -148,6 +148,7 @@
 <translation id="3448554387819310837">Kun tämä on päällä, sivustot voivat pyytää lupaa kameran käyttöön. Kun tämä on pois päältä, sivustot eivät voi käyttää kameraasi.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome estää evästeet uudelleen huomenna}other{# päivää ennen kuin Chrome estää evästeet uudelleen}}</translation>
 <translation id="3521663503435878242">Sivustot, joiden verkkotunnus on <ph name="DOMAIN" /></translation>
+<translation id="3536227077203206203">Sallittu tällä kertaa</translation>
 <translation id="3538390592868664640">Estä sivustoja luomasta 3D-karttaa ympäristöstäsi tai seuraamasta kameran asentoa</translation>
 <translation id="3544058026430919413">Yritys voi määrittää ryhmän sivustoja, jotka voivat jakaa toimintasi ryhmässä evästeiden avulla. Tämä on poissa päältä incognito-tilassa.</translation>
 <translation id="3551268116566418498">Poistutaanko incognito-tilasta?</translation>

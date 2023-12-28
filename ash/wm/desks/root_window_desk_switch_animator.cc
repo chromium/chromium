@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/screen_util.h"
+#include "ash/shell.h"
 #include "ash/utility/layer_util.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_constants.h"
@@ -82,6 +83,8 @@ std::unique_ptr<ui::LayerTreeOwner> CreateAnimationLayerOwner(
 void TakeScreenshot(
     aura::Window* root,
     viz::CopyOutputRequest::CopyOutputRequestCallback on_screenshot_taken) {
+  CHECK(root);
+
   auto* screenshot_layer =
       root->GetChildById(kShellWindowId_ScreenAnimationContainer)->layer();
 
@@ -136,6 +139,9 @@ RootWindowDeskSwitchAnimator::RootWindowDeskSwitchAnimator(
   DCHECK_NE(starting_desk_index_, ending_desk_index_);
   DCHECK(delegate_);
 
+  // Observe root window removals.
+  Shell::Get()->AddShellObserver(this);
+
   screenshot_layers_.resize(desks_util::GetMaxNumberOfDesks());
 }
 
@@ -146,6 +152,8 @@ RootWindowDeskSwitchAnimator::~RootWindowDeskSwitchAnimator() {
   // display is removed.
   if (!attached_sequences().empty())
     StopObservingImplicitAnimations();
+
+  Shell::Get()->RemoveShellObserver(this);
 }
 
 void RootWindowDeskSwitchAnimator::TakeStartingDeskScreenshot() {
@@ -440,6 +448,18 @@ void RootWindowDeskSwitchAnimator::OnImplicitAnimationsCompleted() {
   delegate_->OnDeskSwitchAnimationFinished();
 }
 
+void RootWindowDeskSwitchAnimator::OnRootWindowWillShutdown(
+    aura::Window* root_window) {
+  if (root_window != root_window_) {
+    return;
+  }
+
+  // The root window we are working on is about to go away, so we must not use
+  // it anymore.
+  root_window_ = nullptr;
+  animator_failed_ = true;
+}
+
 ui::Layer* RootWindowDeskSwitchAnimator::GetAnimationLayerForTesting() const {
   return animation_layer_owner_->root();
 }
@@ -459,6 +479,7 @@ void RootWindowDeskSwitchAnimator::CompleteAnimationPhase1WithLayer(
   // Add the layers on top of everything, so that things that result from desk
   // activation (such as showing and hiding windows, exiting overview mode ...
   // etc.) are not visible to the user.
+  CHECK(root_window_);
   auto* root_layer = root_window_->layer();
   root_layer->Add(animation_layer);
 
@@ -482,6 +503,11 @@ void RootWindowDeskSwitchAnimator::CompleteAnimationPhase1WithLayer(
 
 void RootWindowDeskSwitchAnimator::OnStartingDeskScreenshotTaken(
     std::unique_ptr<viz::CopyOutputResult> copy_result) {
+  if (animator_failed_) {
+    delegate_->OnStartingDeskScreenshotTaken(ending_desk_index_);
+    return;
+  }
+
   if (!copy_result || copy_result->IsEmpty()) {
     // A frame may be activated before the screenshot requests are satisfied,
     // leading to us getting an empty |result|. Rerequest the screenshot.
@@ -490,7 +516,7 @@ void RootWindowDeskSwitchAnimator::OnStartingDeskScreenshotTaken(
       TakeStartingDeskScreenshot();
     } else {
       LOG(ERROR) << "Received multiple empty screenshots of the starting desk.";
-      screenshot_failed_ = true;
+      animator_failed_ = true;
       delegate_->OnStartingDeskScreenshotTaken(ending_desk_index_);
     }
 
@@ -503,6 +529,11 @@ void RootWindowDeskSwitchAnimator::OnStartingDeskScreenshotTaken(
 
 void RootWindowDeskSwitchAnimator::OnEndingDeskScreenshotTaken(
     std::unique_ptr<viz::CopyOutputResult> copy_result) {
+  if (animator_failed_) {
+    delegate_->OnStartingDeskScreenshotTaken(ending_desk_index_);
+    return;
+  }
+
   if (!copy_result || copy_result->IsEmpty()) {
     // A frame may be activated before the screenshot requests are satisfied,
     // leading to us getting an empty |result|. Rerequest the screenshot.
@@ -511,7 +542,7 @@ void RootWindowDeskSwitchAnimator::OnEndingDeskScreenshotTaken(
       TakeEndingDeskScreenshot();
     } else {
       LOG(ERROR) << "Received multiple empty screenshots of the ending desk.";
-      screenshot_failed_ = true;
+      animator_failed_ = true;
       delegate_->OnEndingDeskScreenshotTaken();
     }
 

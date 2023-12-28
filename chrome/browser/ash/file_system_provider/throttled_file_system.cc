@@ -14,8 +14,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/file_system_provider/queue.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 ThrottledFileSystem::ThrottledFileSystem(
     std::unique_ptr<ProvidedFileSystemInterface> file_system)
@@ -259,5 +258,4 @@ void ThrottledFileSystem::OnCloseFileCompleted(
   std::move(callback).Run(result);
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

@@ -59,8 +59,7 @@ class CaptureModeSettingsTestApi {
 
  private:
   // Valid only while the settings menu is shown.
-  const raw_ptr<CaptureModeSettingsView, DanglingUntriaged | ExperimentalAsh>
-      settings_view_;
+  const raw_ptr<CaptureModeSettingsView, DanglingUntriaged> settings_view_;
 };
 
 }  // namespace ash

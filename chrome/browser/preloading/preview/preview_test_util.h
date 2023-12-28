@@ -36,6 +36,7 @@ class PreviewTestHelper {
   explicit PreviewTestHelper(const content::WebContents::Getter& fn);
   ~PreviewTestHelper();
 
+  PreviewManager& GetManager();
   base::WeakPtr<content::WebContents> GetWebContentsForPreviewTab();
   void InitiatePreview(const GURL& url);
   void PromoteToNewTab();
@@ -48,8 +49,6 @@ class PreviewTestHelper {
   void CloseAndWaitUntilFinished();
 
  private:
-  PreviewManager& GetManager();
-
   content::WebContents::Getter get_web_contents_fn_;
   ScopedPreviewFeatureList scoped_feature_list_;
 };

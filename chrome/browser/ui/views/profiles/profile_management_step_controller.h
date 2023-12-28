@@ -62,7 +62,6 @@ class ProfileManagementStepController {
       ProfilePickerWebContentsHost* host,
       std::unique_ptr<ProfilePickerSignedInFlowController> signed_in_flow);
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
   static std::unique_ptr<ProfileManagementStepController>
   CreateForSearchEngineChoice(
       ProfilePickerWebContentsHost* host,
@@ -70,7 +69,6 @@ class ProfileManagementStepController {
       content::WebContents* web_contents,
       SearchEngineChoiceService::EntryPoint entry_point,
       base::OnceClosure callback);
-#endif
 
   // Creates the step that will finish the flow and launch the browser.
   static std::unique_ptr<ProfileManagementStepController>

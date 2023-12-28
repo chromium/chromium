@@ -31,6 +31,7 @@
 #include "chromeos/crosapi/mojom/browser_version.mojom.h"
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
 #include "chromeos/crosapi/mojom/cert_provisioning.mojom.h"
+#include "chromeos/crosapi/mojom/chaps_service.mojom.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "chromeos/crosapi/mojom/clipboard.mojom.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
@@ -72,6 +73,7 @@
 #include "chromeos/crosapi/mojom/kerberos_in_browser.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/kiosk_session_service.mojom.h"
+#include "chromeos/crosapi/mojom/lacros_shelf_item_tracker.mojom.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/crosapi/mojom/login.mojom.h"
@@ -104,6 +106,7 @@
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
+#include "chromeos/crosapi/mojom/telemetry_management_service.mojom.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/crosapi/mojom/timezone.mojom.h"
 #include "chromeos/crosapi/mojom/trusted_vault.mojom.h"
@@ -298,6 +301,8 @@ LacrosService::LacrosService()
   ConstructRemote<
       crosapi::mojom::CertProvisioning, &Crosapi::BindCertProvisioning,
       Crosapi::MethodMinVersions::kBindCertProvisioningMinVersion>();
+  ConstructRemote<crosapi::mojom::ChapsService, &Crosapi::BindChapsService,
+                  Crosapi::MethodMinVersions::kBindChapsServiceMinVersion>();
   ConstructRemote<crosapi::mojom::Clipboard, &Crosapi::BindClipboard,
                   Crosapi::MethodMinVersions::kBindClipboardMinVersion>();
   ConstructRemote<
@@ -441,6 +446,10 @@ LacrosService::LacrosService()
                   &Crosapi::BindDeviceLocalAccountExtensionService,
                   Crosapi::MethodMinVersions::
                       kBindDeviceLocalAccountExtensionServiceMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::LacrosShelfItemTracker,
+      &crosapi::mojom::Crosapi::BindLacrosShelfItemTracker,
+      Crosapi::MethodMinVersions::kBindLacrosShelfItemTrackerMinVersion>();
   ConstructRemote<crosapi::mojom::LocalPrinter,
                   &crosapi::mojom::Crosapi::BindLocalPrinter,
                   Crosapi::MethodMinVersions::kBindLocalPrinterMinVersion>();
@@ -555,6 +564,10 @@ LacrosService::LacrosService()
       crosapi::mojom::TelemetryEventService,
       &Crosapi::BindTelemetryEventService,
       Crosapi::MethodMinVersions::kBindTelemetryEventServiceMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::TelemetryManagementService,
+      &Crosapi::BindTelemetryManagementService,
+      Crosapi::MethodMinVersions::kBindTelemetryManagementServiceMinVersion>();
   ConstructRemote<
       crosapi::mojom::TelemetryProbeService,
       &crosapi::mojom::Crosapi::BindTelemetryProbeService,

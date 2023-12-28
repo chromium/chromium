@@ -34,8 +34,9 @@ void ShowExtensionInstallBlockedDialog(
               icon, skia::ImageOperations::ResizeMethod::RESIZE_BEST,
               gfx::Size(extension_misc::EXTENSION_ICON_SMALL,
                         extension_misc::EXTENSION_ICON_SMALL))))
-      .AddOkButton(base::DoNothing(), ui::DialogModelButton::Params().SetLabel(
-                                          l10n_util::GetStringUTF16(IDS_CLOSE)))
+      .AddOkButton(base::DoNothing(),
+                   ui::DialogModel::Button::Params().SetLabel(
+                       l10n_util::GetStringUTF16(IDS_CLOSE)))
       .SetDialogDestroyingCallback(std::move(done_callback));
 
   if (!custom_error_message.empty()) {

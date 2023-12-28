@@ -8,8 +8,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 namespace {
 
 }  // namespace
@@ -236,5 +235,4 @@ void RequestManager::DestroyRequest(int request_id,
                                   TRACE_ID_LOCAL(request_id));
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

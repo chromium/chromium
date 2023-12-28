@@ -39,6 +39,7 @@
 #include "media/base/cdm_context.h"
 #include "media/base/demuxer.h"
 #include "media/base/encryption_scheme.h"
+#include "media/base/key_systems.h"
 #include "media/base/limits.h"
 #include "media/base/media_content_type.h"
 #include "media/base/media_log.h"
@@ -63,11 +64,13 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/data_url.h"
+#include "net/url_request/url_request_job.h"
 #include "services/device/public/mojom/battery_monitor.mojom-blink.h"
 #include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/common/media/watch_time_reporter.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/media/url_index.h"
+#include "third_party/blink/public/platform/web_audio_source_provider_impl.h"
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_encrypted_media_types.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
@@ -80,9 +83,8 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_surface_layer_bridge.h"
 #include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/public/platform/webaudiosourceprovider_impl.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
-#include "third_party/blink/public/web/modules/media/webmediaplayer_util.h"
+#include "third_party/blink/public/web/modules/media/web_media_player_util.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -95,7 +97,8 @@
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
-#include "third_party/blink/renderer/platform/media/hls_data_source_provider_impl.h"
+#include "media/filters/hls_data_source_provider_impl.h"
+#include "third_party/blink/renderer/platform/media/multi_buffer_data_source_factory.h"
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1585,7 +1588,7 @@ void WebMediaPlayerImpl::GetUrlData(
 base::SequenceBound<media::HlsDataSourceProvider>
 WebMediaPlayerImpl::GetHlsDataSourceProvider() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  return base::SequenceBound<HlsDataSourceProviderImpl>(
+  return base::SequenceBound<media::HlsDataSourceProviderImpl>(
       main_task_runner_,
       std::make_unique<MultiBufferDataSourceFactory>(
           media_log_.get(),
@@ -2269,6 +2272,8 @@ void WebMediaPlayerImpl::OnWaiting(media::WaitingReason reason) {
   switch (reason) {
     case media::WaitingReason::kNoCdm:
     case media::WaitingReason::kNoDecryptionKey:
+      has_waiting_for_key_ = true;
+      media_metrics_provider_->SetHasWaitingForKey();
       encrypted_client_->DidBlockPlaybackWaitingForKey();
       // TODO(jrummell): didResumePlaybackBlockedForKey() should only be called
       // when a key has been successfully added (e.g. OnSessionKeysChange() with
@@ -2851,13 +2856,21 @@ void WebMediaPlayerImpl::StartPipeline() {
                      base::Unretained(compositor_.get()),
                      base::BindPostTaskToCurrentDefault(base::BindOnce(
                          &WebMediaPlayerImpl::OnFirstFrame, weak_this_))));
+  base::flat_map<std::string, std::string> headers;
+  headers["Referrer"] =
+      net::URLRequestJob::ComputeReferrerForPolicy(
+          frame_->GetDocument().GetReferrerPolicy(),
+          GURL(frame_->GetDocument().OutgoingReferrer().Utf8()),
+          demuxer_manager_->LoadedUrl())
+          .spec();
 
   // base::Unretained(this) is safe here, since |CreateDemuxer| calls the bound
   // method directly and immediately.
   auto create_demuxer_error = demuxer_manager_->CreateDemuxer(
       load_type_ == kLoadTypeMediaSource, preload_, needs_first_frame_,
       base::BindOnce(&WebMediaPlayerImpl::OnDemuxerCreated,
-                     base::Unretained(this)));
+                     base::Unretained(this)), 
+      headers);
 
   if (!create_demuxer_error.is_ok()) {
     return OnError(std::move(create_demuxer_error));
@@ -3960,6 +3973,14 @@ void WebMediaPlayerImpl::ReportSessionUMAs() const {
     uma_name = kFrameReadBackUmaPrefix;
     uma_name += GetRendererName(renderer_type_);
     base::UmaHistogramCounts10M(uma_name, video_frame_readback_count_);
+  }
+
+  if (cdm_config_) {
+    // Report the `Media.EME.{KeySystem}.{Robustness}.WaitingForKey` UMA.
+    auto key_system_name_for_uma = media::GetKeySystemNameForUMA(
+        cdm_config_->key_system, cdm_config_->use_hw_secure_codecs);
+    uma_name = "Media.EME." + key_system_name_for_uma + ".WaitingForKey";
+    base::UmaHistogramBoolean(uma_name, has_waiting_for_key_);
   }
 }
 

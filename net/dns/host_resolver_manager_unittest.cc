@@ -4250,7 +4250,7 @@ DnsConfig CreateUpgradableDnsConfig() {
   return config;
 }
 
-// Check that entries are written to the cache with the right NIK.
+// Check that entries are written to the cache with the right NAK.
 TEST_F(HostResolverManagerTest, NetworkAnonymizationKeyWriteToHostCache) {
   const SchemefulSite kSite1(GURL("https://origin1.test/"));
   const SchemefulSite kSite2(GURL("https://origin2.test/"));
@@ -4365,7 +4365,7 @@ TEST_F(HostResolverManagerTest, NetworkAnonymizationKeyWriteToHostCache) {
   }
 }
 
-// Check that entries are read to the cache with the right NIK.
+// Check that entries are read to the cache with the right NAK.
 TEST_F(HostResolverManagerTest, NetworkAnonymizationKeyReadFromHostCache) {
   const SchemefulSite kSite1(GURL("https://origin1.test/"));
   const SchemefulSite kSite2(GURL("https://origin2.test/"));
@@ -4385,7 +4385,7 @@ TEST_F(HostResolverManagerTest, NetworkAnonymizationKeyReadFromHostCache) {
       {kNetworkAnonymizationKey2, "192.168.1.44"},
   };
 
-  // Add entries to cache for the empty NIK, NIK1, and NIK2. Only the
+  // Add entries to cache for the empty NAK, NAK1, and NAK2. Only the
   // HostResolverManager obeys network state partitioning, so this is fine to do
   // regardless of the feature value.
   for (const auto& cache_entry : kCacheEntries) {

@@ -83,7 +83,7 @@ class ASH_EXPORT LockScreenMediaView
   void OnColorsChanged(SkColor foreground,
                        SkColor foreground_disabled,
                        SkColor background) override {}
-  void OnHeaderClicked() override {}
+  void OnHeaderClicked(bool activate_original_media) override {}
   void OnMediaSessionActionButtonPressed(
       media_session::mojom::MediaSessionAction action) override;
   void SeekTo(base::TimeDelta time) override;

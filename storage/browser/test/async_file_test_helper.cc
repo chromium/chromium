@@ -228,13 +228,12 @@ base::File::Error AsyncFileTestHelper::CreateFile(FileSystemContext* context,
 base::File::Error AsyncFileTestHelper::CreateFileWithData(
     FileSystemContext* context,
     const FileSystemURL& url,
-    const char* buf,
-    int buf_size) {
+    std::string_view data) {
   base::ScopedTempDir dir;
   if (!dir.CreateUniqueTempDir())
     return base::File::FILE_ERROR_FAILED;
   base::FilePath local_path = dir.GetPath().AppendASCII("tmp");
-  if (!base::WriteFile(local_path, std::string_view(buf, buf_size))) {
+  if (!base::WriteFile(local_path, data)) {
     return base::File::FILE_ERROR_FAILED;
   }
   base::File::Error result = base::File::FILE_ERROR_FAILED;

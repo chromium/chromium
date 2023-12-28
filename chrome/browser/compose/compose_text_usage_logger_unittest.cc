@@ -177,8 +177,8 @@ TEST_F(ComposeTextUsageLoggerTest, FormNotFound) {
 TEST_F(ComposeTextUsageLoggerTest, SensitiveFieldEntry) {
   FormData form_data = CreateForm();
   auto form_structure = std::make_unique<autofill::FormStructure>(form_data);
-  form_structure->field(0)->SetTypeTo(autofill::AutofillType(
-      autofill::ServerFieldType::CREDIT_CARD_NAME_FIRST));
+  form_structure->field(0)->SetTypeTo(
+      autofill::AutofillType(autofill::FieldType::CREDIT_CARD_NAME_FIRST));
   autofill_manager()->AddSeenFormStructure(std::move(form_structure));
 
   SimulateTyping(form_data.global_id(), form_data.fields[0].global_id(),
@@ -202,7 +202,7 @@ TEST_F(ComposeTextUsageLoggerTest, NonSensitiveAutofillFieldType) {
   FormData form_data = CreateForm();
   auto form_structure = std::make_unique<autofill::FormStructure>(form_data);
   form_structure->field(0)->SetTypeTo(
-      autofill::AutofillType(autofill::ServerFieldType::ADDRESS_HOME_ADDRESS));
+      autofill::AutofillType(autofill::FieldType::ADDRESS_HOME_ADDRESS));
   autofill_manager()->AddSeenFormStructure(std::move(form_structure));
 
   SimulateTyping(form_data.global_id(), form_data.fields[0].global_id(),
@@ -389,5 +389,105 @@ TEST_F(ComposeTextUsageLoggerTest, CountingWordsCorrectly) {
                       })));
 }
 
+TEST_F(ComposeTextUsageLoggerTest, ContentEditableEntry) {
+  FormData form_data = CreateForm(FormControlType::kContentEditable);
+  autofill_manager()->AddSeenFormStructure(
+      std::make_unique<autofill::FormStructure>(form_data));
+  SimulateTyping(form_data.global_id(), form_data.fields[0].global_id(),
+                 u"Some text");
+
+  DeleteContents();
+
+  EXPECT_THAT(LoggedTextUsage(),
+              testing::ElementsAre(ukm::TestUkmRecorder::HumanReadableUkmEntry(
+                  ukm_source_id_,
+                  {
+                      {"AutofillFormControlType",
+                       static_cast<int64_t>(FormControlType::kContentEditable)},
+                      {"IsAutofillFieldType", 0},
+                      {"TypedCharacterCount", 8},
+                      {"TypedWordCount", 2},
+                  })));
+}
+
+TEST_F(ComposeTextUsageLoggerTest, ContentEditableFormNotFound) {
+  // Not calling AddSeenFormStructure(), so the form won't be found.
+  FormData form_data = CreateForm(FormControlType::kContentEditable);
+  SimulateTyping(form_data.global_id(), form_data.fields[0].global_id(),
+                 u"Some text");
+
+  DeleteContents();
+
+  EXPECT_THAT(LoggedTextUsage(),
+              testing::ElementsAre(ukm::TestUkmRecorder::HumanReadableUkmEntry(
+                  ukm_source_id_, {
+                                      {"AutofillFormControlType", -1},
+                                      {"IsAutofillFieldType", 0},
+                                      {"TypedCharacterCount", 8},
+                                      {"TypedWordCount", 2},
+                                  })));
+}
+
+TEST_F(ComposeTextUsageLoggerTest, TwoTypesOfFormsModified) {
+  FormData form_data = CreateForm(FormControlType::kTextArea);
+  autofill_manager()->AddSeenFormStructure(
+      std::make_unique<autofill::FormStructure>(form_data));
+  SimulateTyping(form_data.global_id(), form_data.fields[0].global_id(),
+                 u"Some text");
+  SimulateTyping(form_data.global_id(), form_data.fields[1].global_id(),
+                 u"One two three four");
+  FormData content_editable_form_data =
+      CreateForm(FormControlType::kContentEditable);
+  autofill_manager()->AddSeenFormStructure(
+      std::make_unique<autofill::FormStructure>(content_editable_form_data));
+  SimulateTyping(content_editable_form_data.global_id(),
+                 content_editable_form_data.fields[0].global_id(),
+                 u"Some text");
+  SimulateTyping(content_editable_form_data.global_id(),
+                 content_editable_form_data.fields[1].global_id(),
+                 u"One two three four");
+  DeleteContents();
+
+  EXPECT_THAT(
+      LoggedTextUsage(),
+      testing::UnorderedElementsAre(
+          ukm::TestUkmRecorder::HumanReadableUkmEntry(
+              ukm_source_id_,
+              {
+                  {"AutofillFormControlType",
+                   static_cast<int64_t>(FormControlType::kTextArea)},
+                  {"IsAutofillFieldType", 0},
+                  {"TypedCharacterCount", 8 /*9 rounded down*/},
+                  {"TypedWordCount", 2},
+              }),
+          ukm::TestUkmRecorder::HumanReadableUkmEntry(
+              ukm_source_id_,
+              {
+                  {"AutofillFormControlType",
+                   static_cast<int64_t>(FormControlType::kTextArea)},
+                  {"IsAutofillFieldType", 0},
+                  {"TypedCharacterCount", 16 /*18 rounded down*/},
+                  {"TypedWordCount", 4},
+              }),
+
+          ukm::TestUkmRecorder::HumanReadableUkmEntry(
+              ukm_source_id_,
+              {
+                  {"AutofillFormControlType",
+                   static_cast<int64_t>(FormControlType::kContentEditable)},
+                  {"IsAutofillFieldType", 0},
+                  {"TypedCharacterCount", 8 /*9 rounded down*/},
+                  {"TypedWordCount", 2},
+              }),
+          ukm::TestUkmRecorder::HumanReadableUkmEntry(
+              ukm_source_id_,
+              {
+                  {"AutofillFormControlType",
+                   static_cast<int64_t>(FormControlType::kContentEditable)},
+                  {"IsAutofillFieldType", 0},
+                  {"TypedCharacterCount", 16 /*18 rounded down*/},
+                  {"TypedWordCount", 4},
+              })));
+}
 }  // namespace
 }  // namespace compose

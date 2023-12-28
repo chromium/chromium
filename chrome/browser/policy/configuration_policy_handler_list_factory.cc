@@ -28,7 +28,7 @@
 #include "chrome/browser/net/disk_cache_dir_policy_handler.h"
 #include "chrome/browser/net/explicitly_allowed_network_ports_policy_handler.h"
 #include "chrome/browser/net/secure_dns_policy_handler.h"
-#include "chrome/browser/performance_manager/public/user_tuning/high_efficiency_policy_handler.h"
+#include "chrome/browser/performance_manager/public/user_tuning/memory_saver_policy_handler.h"
 #include "chrome/browser/policy/browsing_history_policy_handler.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/policy/drive_file_sync_available_policy_handler.h"
@@ -976,6 +976,10 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kQuickOfficeForceFileDownloadEnabled,
     quickoffice::kQuickOfficeForceFileDownloadEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kAlwaysOnVpnPreConnectUrlAllowlist,
+    policy_prefs::kAlwaysOnVpnPreConnectUrlAllowlist,
+    base::Value::Type::LIST
+  },
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1484,9 +1488,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kQuickAnswersUnitConversionEnabled,
     quick_answers::prefs::kQuickAnswersUnitConversionEnabled,
     base::Value::Type::BOOLEAN },
-  { key::kChromadToCloudMigrationEnabled,
-    ash::prefs::kChromadToCloudMigrationEnabled,
-    base::Value::Type::BOOLEAN },
   { key::kProjectorEnabled,
     ash::prefs::kProjectorAllowByPolicy,
     base::Value::Type::BOOLEAN },
@@ -1863,9 +1864,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections,
     prefs::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections,
     base::Value::Type::BOOLEAN },
-  { key::kSafeBrowsingExtensionProtectionAllowed,
-    prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy,
-    base::Value::Type::BOOLEAN },
   // We avoid checking for BUILDFLAG(ENABLE_NACL) since we may want the policy
   // to exist (deprecated) even if NACL is no longer being built.
   { key::kNativeClientForceAllowed,
@@ -2066,6 +2064,18 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     optimization_guide::model_execution::prefs::kWallpaperSearchEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
 #endif
+
+#if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
+  { key::kCACertificates,
+    prefs::kCACertificates,
+    base::Value::Type::LIST },
+  { key::kCADistrustedCertificates,
+    prefs::kCADistrustedCertificates,
+    base::Value::Type::LIST },
+  { key::kCAHintCertificates,
+    prefs::kCAHintCertificates,
+    base::Value::Type::LIST },
+#endif // BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 };
 // clang-format on
 
@@ -2159,7 +2169,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_ASH)
   handlers->AddHandler(
-      std::make_unique<performance_manager::HighEfficiencyPolicyHandler>());
+      std::make_unique<performance_manager::MemorySaverPolicyHandler>());
   // Note: This needs to be created after `DefaultSearchPolicyHandler`.
   handlers->AddHandler(
       std::make_unique<SiteSearchPolicyHandler>(chrome_schema));

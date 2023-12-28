@@ -92,7 +92,7 @@ class SafeAreaInsetsHostImplTest : public RenderViewHostTestHarness {
 
   void NavigateToCover() {
     FocusWebContentsOnMainFrame();
-    NavigateAndCommit(GURL("www.viewportFitCover.com"));
+    NavigateAndCommit(GURL("https://www.viewportFitCover.com"));
     test_safe_area_insets_host()->ViewportFitChangedForFrame(
         main_rfh(), blink::mojom::ViewportFit::kCover);
     // Simulate window insets changing, e.g. java's
@@ -102,7 +102,7 @@ class SafeAreaInsetsHostImplTest : public RenderViewHostTestHarness {
 
   void NavigateToAuto() {
     FocusWebContentsOnMainFrame();
-    NavigateAndCommit(GURL("www.viewportFitAuto.com"));
+    NavigateAndCommit(GURL("https://www.viewportFitAuto.com"));
     test_safe_area_insets_host()->ViewportFitChangedForFrame(
         main_rfh(), blink::mojom::ViewportFit::kAuto);
     test_web_contents()->SetDisplayCutoutSafeArea(gfx::Insets(0));

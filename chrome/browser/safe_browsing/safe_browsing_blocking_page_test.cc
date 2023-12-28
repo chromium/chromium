@@ -75,6 +75,7 @@
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/fake_database_manager.h"
@@ -89,7 +90,6 @@
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/content/ssl_blocking_page.h"
-#include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
@@ -550,7 +550,7 @@ class TestSafeBrowsingBlockingPageFactory
         IsSafeBrowsingSurveysEnabled(*prefs);
 
     BaseSafeBrowsingErrorUI::SBErrorDisplayOptions display_options(
-        BaseBlockingPage::IsMainPageLoadBlocked(unsafe_resources),
+        BaseBlockingPage::IsMainPageLoadPending(unsafe_resources),
         is_extended_reporting_opt_in_allowed,
         web_contents->GetBrowserContext()->IsOffTheRecord(),
         IsExtendedReportingEnabled(*prefs),
@@ -2784,7 +2784,6 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(SB_THREAT_TYPE_URL_PHISHING,  // Threat types
                         SB_THREAT_TYPE_URL_MALWARE,
                         SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING,
-                        SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE,
                         SB_THREAT_TYPE_URL_UNWANTED),
         testing::Bool()));  // If isolate all sites for testing.
 
@@ -2832,8 +2831,7 @@ IN_PROC_BROWSER_TEST_P(RedInterstitialFaceliftBrowserTest,
     ASSERT_EQ(load_time_data.Find("finalParagraph")->GetString(),
               base::UTF16ToUTF8(l10n_util::GetStringUTF16(
                   IDS_PHISHING_V4_PROCEED_PARAGRAPH_NEW)));
-  } else if (threat_type == SB_THREAT_TYPE_URL_MALWARE ||
-             threat_type == SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE) {
+  } else if (threat_type == SB_THREAT_TYPE_URL_MALWARE) {
     ASSERT_EQ(load_time_data.Find("primaryParagraph")->GetString(),
               base::UTF16ToUTF8(l10n_util::GetStringUTF16(
                   IDS_MALWARE_V3_PRIMARY_PARAGRAPH_NEW)));
@@ -4284,9 +4282,9 @@ class SafeBrowsingThreatDetailsPrerenderBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     SafeBrowsingThreatDetailsPrerenderBrowserTest,
-    // We simulate a SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE to trigger DOM
+    // We simulate a SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING to trigger DOM
     // detail collection.
-    testing::Combine(testing::Values(SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE),
+    testing::Combine(testing::Values(SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING),
                      testing::Bool()));  // If isolate all sites for testing.
 
 // Test that the prerendering doesn't affect on the primary's threat report.

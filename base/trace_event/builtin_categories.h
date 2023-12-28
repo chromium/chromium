@@ -311,6 +311,7 @@
   X("benchmark,loading")                                                      \
   X("benchmark,rail")                                                         \
   X("benchmark,uma")                                                          \
+  X("benchmark,ui")                                                           \
   X("benchmark,viz")                                                          \
   X("benchmark,viz," TRACE_DISABLED_BY_DEFAULT("display.framedisplayed"))     \
   X("blink,benchmark")                                                        \
@@ -356,12 +357,14 @@
   X("input,rail")                                                             \
   X("input,input.scrolling")                                                  \
   X("input,views")                                                            \
+  X("interactions,startup")                                                   \
   X("ipc,security")                                                           \
   X("ipc,toplevel")                                                           \
   X("Java,devtools," TRACE_DISABLED_BY_DEFAULT("devtools.timeline"))          \
   X("loading,interactions")                                                   \
   X("loading,rail")                                                           \
   X("loading,rail,devtools.timeline")                                         \
+  X("login,screenlock_monitor")                                               \
   X("media,gpu")                                                              \
   X("media,rail")                                                             \
   X("navigation,benchmark,rail")                                              \

@@ -161,9 +161,7 @@ DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm,
       is_hdr_capable_ &&
       base::FeatureList::IsEnabled(display::features::kUseHDRTransferFunction);
 
-  if (is_hdr_capable_ &&
-      base::FeatureList::IsEnabled(
-          display::features::kEnableExternalDisplayHDR10Mode)) {
+  if (is_hdr_capable_) {
     current_color_space_ = display_snapshot.color_space();
     SetColorspaceProperty(display_snapshot.color_space());
     SetHdrOutputMetadata(display_snapshot.color_space());
@@ -310,6 +308,21 @@ bool DrmDisplay::SetHDCPState(
       connector_->connector_id, hdcp_property->prop_id,
       GetDrmValueForInternalType(state, *hdcp_property,
                                  kContentProtectionStates));
+}
+
+void DrmDisplay::SetColorTemperatureAdjustment(
+    const display::ColorTemperatureAdjustment& cta) {
+  drm_->plane_manager()->SetColorTemperatureAdjustment(crtc_, cta);
+}
+
+void DrmDisplay::SetColorCalibration(
+    const display::ColorCalibration& calibration) {
+  drm_->plane_manager()->SetColorCalibration(crtc_, calibration);
+}
+
+void DrmDisplay::SetGammaAdjustment(
+    const display::GammaAdjustment& adjustment) {
+  drm_->plane_manager()->SetGammaAdjustment(crtc_, adjustment);
 }
 
 void DrmDisplay::SetColorMatrix(const std::vector<float>& color_matrix) {
@@ -463,6 +476,14 @@ void DrmDisplay::SetColorSpace(const gfx::ColorSpace& color_space) {
   // the mode change brightness to be visible.
   if (current_color_space_.IsHDR())
     return CommitGammaCorrection({}, {});
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Do not dim SDR content when HDR10 flag is enabled
+  if (base::FeatureList::IsEnabled(
+          display::features::kEnableExternalDisplayHDR10Mode)) {
+    return;
+  }
+#endif
 
   // TODO(mcasas) This should be the inverse value of DisplayChangeObservers's
   // FillDisplayColorSpaces's kHDRLevel, move to a common place.

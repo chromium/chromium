@@ -49,7 +49,10 @@ enum BubbleViewID {
   // Linux apps.
   kLinuxAppBubbleView,
 
-  kNextAvailableId = kLinuxAppBubbleView + 1,
+  // The view that contains elements for setting camera background.
+  kSetCameraBackgroundView,
+
+  kNextAvailableId = kSetCameraBackgroundView + 1,
 };
 
 }  // namespace ash::video_conference

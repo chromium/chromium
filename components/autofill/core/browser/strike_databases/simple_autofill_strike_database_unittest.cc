@@ -24,8 +24,8 @@ struct TestStrikeDatabaseTraits {
   static constexpr size_t kMaxStrikeEntities = 100;
   static constexpr size_t kMaxStrikeEntitiesAfterCleanup = 50;
   static constexpr size_t kMaxStrikeLimit = 3;
-  static constexpr absl::optional<base::TimeDelta> kExpiryTimeDelta =
-      absl::nullopt;
+  static constexpr std::optional<base::TimeDelta> kExpiryTimeDelta =
+      std::nullopt;
   static constexpr bool kUniqueIdRequired = true;
 };
 

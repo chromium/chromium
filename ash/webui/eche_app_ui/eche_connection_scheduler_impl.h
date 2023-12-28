@@ -52,9 +52,8 @@ class EcheConnectionSchedulerImpl
   base::TimeDelta GetCurrentBackoffDelayTimeForTesting();
   int GetBackoffFailureCountForTesting();
 
-  raw_ptr<secure_channel::ConnectionManager, ExperimentalAsh>
-      connection_manager_;
-  raw_ptr<FeatureStatusProvider, ExperimentalAsh> feature_status_provider_;
+  raw_ptr<secure_channel::ConnectionManager> connection_manager_;
+  raw_ptr<FeatureStatusProvider> feature_status_provider_;
   // Provides us the backoff timers for RequestConnection().
   net::BackoffEntry retry_backoff_;
   FeatureStatus current_feature_status_;

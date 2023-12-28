@@ -266,8 +266,24 @@ void OnDialogChoiceReceived(
     ash::office_fallback::FallbackReason fallback_reason,
     gfx::NativeWindow modal_parent,
     std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics,
-    const std::string& choice) {
-  if (choice == ash::office_fallback::kDialogChoiceQuickOffice) {
+    std::optional<const std::string> choice) {
+  if (!choice.has_value()) {
+    // The user's choice was unable to be retrieved.
+    if (IsWebDriveOfficeTask(task)) {
+      LogGoogleDriveMetricsAfterFallback(
+          fallback_reason,
+          ash::cloud_upload::OfficeTaskResult::kCannotGetFallbackChoice,
+          std::move(cloud_open_metrics));
+    } else if (IsOpenInOfficeTask(task)) {
+      LogOneDriveMetricsAfterFallback(
+          fallback_reason,
+          ash::cloud_upload::OfficeTaskResult::kCannotGetFallbackChoice,
+          std::move(cloud_open_metrics));
+    }
+    return;
+  }
+
+  if (choice.value() == ash::office_fallback::kDialogChoiceQuickOffice) {
     if (IsWebDriveOfficeTask(task)) {
       LogGoogleDriveMetricsAfterFallback(
           fallback_reason,
@@ -280,7 +296,7 @@ void OnDialogChoiceReceived(
           std::move(cloud_open_metrics));
     }
     LaunchQuickOffice(profile, file_urls);
-  } else if (choice == ash::office_fallback::kDialogChoiceTryAgain) {
+  } else if (choice.value() == ash::office_fallback::kDialogChoiceTryAgain) {
     // When retrying, the original open result is thrown away, so that
     // (likely the same) result codes from repeated retries are not counted.
     // Only the last open result is recorded: when the user either selects
@@ -292,7 +308,7 @@ void OnDialogChoiceReceived(
       ExecuteOpenInOfficeTask(profile, task, file_urls, modal_parent,
                               std::move(cloud_open_metrics));
     }
-  } else if (choice == ash::office_fallback::kDialogChoiceCancel) {
+  } else if (choice.value() == ash::office_fallback::kDialogChoiceCancel) {
     if (IsWebDriveOfficeTask(task)) {
       LogGoogleDriveMetricsAfterFallback(
           fallback_reason,
@@ -314,11 +330,6 @@ bool GetUserFallbackChoice(
     gfx::NativeWindow modal_parent,
     ash::office_fallback::FallbackReason fallback_reason,
     std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics) {
-  // If QuickOffice is not installed, don't launch dialog.
-  if (!IsQuickOfficeInstalled(profile)) {
-    LOG(ERROR) << "Cannot fallback to QuickOffice when it is not installed";
-    return false;
-  }
   // TODO(b/242685536) Add support for multi-file
   // selection so the OfficeFallbackDialog can display multiple file names and
   // `OnDialogChoiceReceived()` can open multiple files.
@@ -327,6 +338,13 @@ bool GetUserFallbackChoice(
   ash::office_fallback::DialogChoiceCallback callback = base::BindOnce(
       &OnDialogChoiceReceived, profile, task, first_url, fallback_reason,
       modal_parent, std::move(cloud_open_metrics));
+
+  // If QuickOffice is not installed, don't launch dialog.
+  if (!IsQuickOfficeInstalled(profile)) {
+    LOG(ERROR) << "Cannot fallback to QuickOffice when it is not installed";
+    std::move(callback).Run(absl::nullopt);
+    return false;
+  }
 
   const std::string parsed_action_id = ParseFilesAppActionId(task.action_id);
 

@@ -45,7 +45,8 @@ class AccessibilityWindowInfoDataWrapper : public AccessibilityInfoDataWrapper {
   void Serialize(ui::AXNodeData* out_data) const override;
   std::string ComputeAXName(bool do_recursive) const override;
   void GetChildren(
-      std::vector<AccessibilityInfoDataWrapper*>* children) const override;
+      std::vector<raw_ptr<AccessibilityInfoDataWrapper, VectorExperimental>>*
+          children) const override;
   int32_t GetWindowId() const override;
 
  private:
@@ -58,9 +59,8 @@ class AccessibilityWindowInfoDataWrapper : public AccessibilityInfoDataWrapper {
   bool GetProperty(mojom::AccessibilityWindowIntListProperty prop,
                    std::vector<int32_t>* out_value) const;
 
-  raw_ptr<mojom::AccessibilityWindowInfoData,
-          DanglingUntriaged | ExperimentalAsh>
-      window_ptr_ = nullptr;
+  raw_ptr<mojom::AccessibilityWindowInfoData, DanglingUntriaged> window_ptr_ =
+      nullptr;
 };
 
 }  // namespace ax::android

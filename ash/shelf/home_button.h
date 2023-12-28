@@ -67,8 +67,7 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
     ~ScopedNoClipRect();
 
    private:
-    const raw_ptr<ShelfNavigationWidget, ExperimentalAsh>
-        shelf_navigation_widget_;
+    const raw_ptr<ShelfNavigationWidget> shelf_navigation_widget_;
     const gfx::Rect clip_rect_;
   };
 
@@ -240,22 +239,20 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
   base::ScopedObservation<AppListModelProvider, AppListModelProvider::Observer>
       app_list_model_observation_{this};
 
-  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  const raw_ptr<Shelf> shelf_;
 
   // The view that paints the home button content. In its own view to ensure
   // the background is stacked above `expandable_container_`.
-  raw_ptr<ButtonImageView, ExperimentalAsh> button_image_view_ = nullptr;
+  raw_ptr<ButtonImageView> button_image_view_ = nullptr;
 
   // The container of `nudge_label_` or `quick_app_button_`. This is also
   // responsible for painting the background of the contents. This container can
   // expand visually by animation.
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh>
-      expandable_container_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> expandable_container_ = nullptr;
 
   // The app button which is shown next to the home button. Only shown when
   // set by SetQuickApp().
-  raw_ptr<views::ImageButton, DanglingUntriaged | ExperimentalAsh>
-      quick_app_button_ = nullptr;
+  raw_ptr<views::ImageButton, DanglingUntriaged> quick_app_button_ = nullptr;
 
   // The controller used to determine the button's behavior.
   HomeButtonController controller_;
@@ -265,8 +262,7 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
   ui::LayerOwner nudge_ripple_layer_;
 
   // The label view and for launcher nudge animation.
-  raw_ptr<views::Label, DanglingUntriaged | ExperimentalAsh> nudge_label_ =
-      nullptr;
+  raw_ptr<views::Label, DanglingUntriaged> nudge_label_ = nullptr;
 
   // The timer that counts down to hide the nudge_label_ from showing state.
   base::OneShotTimer label_nudge_timer_;

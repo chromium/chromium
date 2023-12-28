@@ -36,8 +36,9 @@ class Widget;
 class SavedTabGroupBar : public views::AccessiblePaneView,
                          public SavedTabGroupModelObserver,
                          public views::WidgetObserver {
+  METADATA_HEADER(SavedTabGroupBar, views::AccessiblePaneView)
+
  public:
-  METADATA_HEADER(SavedTabGroupBar);
   SavedTabGroupBar(Browser* browser, bool animations_enabled);
   SavedTabGroupBar(Browser* browser,
                    SavedTabGroupModel* saved_tab_group_model,
@@ -64,7 +65,6 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   void OnDragEntered(const ui::DropTargetEvent& event) override;
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
-  void OnDragDone() override;
   views::View::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override;
   void OnPaint(gfx::Canvas* canvas) override;
@@ -143,8 +143,8 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // group into the tabstrip.
   void MaybeShowOverflowMenu();
 
-  // Hides the overflow menu if it is open.
-  void HideOverflowMenu();
+  // Updates the contents of the overflow menu if it is open.
+  void UpdateOverflowMenu();
 
   // TODO: Move implementation inside of STGOverflowButton.
   void HideOverflowButton();

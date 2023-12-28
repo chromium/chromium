@@ -1,4 +1,5 @@
 caption: Authentication data cache lifetime
+deprecated: true
 default: 73
 desc: |-
   Setting the policy specifies in hours the authentication data cache lifetime. The cache has data about realms trusted by the machine realm (affiliated realms). So, authentication data caching helps speed up sign-in. User-specific data and data for unaffiliated realms isn't cached.
@@ -19,10 +20,8 @@ schema:
   maximum: 9999
   minimum: 0
   type: integer
-supported_chrome_os_management:
-- active_directory
 supported_on:
-- chrome_os:73-
+- chrome_os:73-114
 tags:
 - admin-sharing
 type: int

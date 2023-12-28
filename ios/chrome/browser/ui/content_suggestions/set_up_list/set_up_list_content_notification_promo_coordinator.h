@@ -11,6 +11,19 @@
 
 @protocol SetUpListContentNotificationPromoCoordinatorDelegate;
 
+// Enum actions for content notification promo UMA metrics. Entries should not
+// be renumbered and numeric values should never be reused. This should align
+// with the ContentNotificationSetUpListPromoAction enum in enums.xml.
+//
+// LINT.IfChange
+enum class ContentNotificationSetUpListPromoAction {
+  kAccept = 0,
+  kCancel = 1,
+  kRemindMeLater = 2,
+  kMaxValue = kRemindMeLater,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/content/enums.xml)
+
 // A coordinator that handles the display of the Content Notification Promo for
 // the Set Up List.
 @interface SetUpListContentNotificationPromoCoordinator

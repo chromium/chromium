@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
@@ -70,17 +71,20 @@ class FormFetcher {
   // Returns all PasswordForm entries that have insecure features.
   // Do not store the result of this call. The pointers become invalid if `this`
   // receives new results from a password store.
-  virtual std::vector<const PasswordForm*> GetInsecureCredentials() const = 0;
+  virtual std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+  GetInsecureCredentials() const = 0;
 
   // Non-federated matches obtained from the backend.
   // Do not store the result of this call. The pointers become invalid if `this`
   // receives new results from a password store.
-  virtual std::vector<const PasswordForm*> GetNonFederatedMatches() const = 0;
+  virtual std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+  GetNonFederatedMatches() const = 0;
 
   // Federated matches obtained from the backend.
   // Do not store the result of this call. The pointers become invalid if `this`
   // receives new results from a password store.
-  virtual std::vector<const PasswordForm*> GetFederatedMatches() const = 0;
+  virtual std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+  GetFederatedMatches() const = 0;
 
   // Whether there are blocklisted matches in the backend. Valid only if
   // GetState() returns NOT_WAITING.
@@ -95,11 +99,12 @@ class FormFetcher {
 
   // Non-federated matches obtained from the backend that have the same scheme
   // of this form.
-  virtual const std::vector<const PasswordForm*>& GetAllRelevantMatches()
-      const = 0;
+  virtual const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+  GetAllRelevantMatches() const = 0;
 
   // Nonblocklisted matches obtained from the backend.
-  virtual const std::vector<const PasswordForm*>& GetBestMatches() const = 0;
+  virtual const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+  GetBestMatches() const = 0;
 
   // Pointer to a preferred entry in the vector returned by GetBestMatches().
   virtual const PasswordForm* GetPreferredMatch() const = 0;

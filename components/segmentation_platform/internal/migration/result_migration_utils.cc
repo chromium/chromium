@@ -40,8 +40,7 @@ proto::Predictor::PredictorTypeCase GetClassifierTypeForMigration(
              segmentation_key == kFrequentFeatureUserKey ||
              segmentation_key == kIntentionalUserKey ||
              segmentation_key == kResumeHeavyUserKey ||
-             segmentation_key == kShoppingUserSegmentationKey ||
-             segmentation_key == kQueryTilesSegmentationKey) {
+             segmentation_key == kShoppingUserSegmentationKey) {
     return proto::Predictor::kBinaryClassifier;
   } else if (segmentation_key == kFeedUserSegmentationKey ||
              segmentation_key == kPowerUserKey ||

@@ -45,7 +45,7 @@ class AutofillDriverIOS : public AutofillDriver,
 
   // AutofillDriver:
   LocalFrameToken GetFrameToken() const override;
-  absl::optional<LocalFrameToken> Resolve(FrameToken query) override;
+  std::optional<LocalFrameToken> Resolve(FrameToken query) override;
   AutofillDriverIOS* GetParent() override;
   BrowserAutofillManager& GetAutofillManager() override;
   bool IsInActiveFrame() const override;
@@ -58,8 +58,7 @@ class AutofillDriverIOS : public AutofillDriver,
       mojom::ActionPersistence action_persistence,
       const FormData& data,
       const url::Origin& triggered_origin,
-      const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
-      override;
+      const base::flat_map<FieldGlobalId, FieldType>& field_type_map) override;
   void ApplyFieldAction(mojom::ActionPersistence action_persistence,
                         mojom::TextReplacement text_replacement,
                         const FieldGlobalId& field,
@@ -70,7 +69,8 @@ class AutofillDriverIOS : public AutofillDriver,
           response_callback) override;
   void HandleParsedForms(const std::vector<FormData>& forms) override;
   void SendAutofillTypePredictionsToRenderer(
-      const std::vector<FormStructure*>& forms) override;
+      const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms)
+      override;
   void RendererShouldClearFilledSection() override;
   void RendererShouldClearPreviewedForm() override;
   void RendererShouldTriggerSuggestions(

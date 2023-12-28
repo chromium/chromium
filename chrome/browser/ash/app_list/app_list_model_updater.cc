@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
 
 namespace {
@@ -36,9 +37,9 @@ syncer::StringOrdinal AppListModelUpdater::GetFirstAvailablePosition() const {
   return (*last_item)->position().CreateAfter();
 }
 
-std::vector<ChromeSearchResult*>
+std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>
 AppListModelUpdater::GetPublishedSearchResultsForTest() {
-  return std::vector<ChromeSearchResult*>();
+  return std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>();
 }
 
 // static

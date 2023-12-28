@@ -233,9 +233,9 @@ bool VP8Delegate::SubmitDecode(
   if (!stateless_vp8_picture) {
     return false;
   }
-  if (!surface_handler_->SubmitFrame(
-          &ctrls, frame_hdr->data, frame_hdr->frame_size,
-          stateless_vp8_picture->dec_surface()->FrameID())) {
+  if (!surface_handler_->SubmitFrame(&ctrls, frame_hdr->data,
+                                     frame_hdr->frame_size,
+                                     stateless_vp8_picture->dec_surface())) {
     return false;
   }
 

@@ -95,4 +95,9 @@ bool ExtensionDownloaderDelegate::GetPingDataForExtension(
   return false;
 }
 
+ExtensionDownloaderDelegate::RequestRollbackResult
+ExtensionDownloaderDelegate::RequestRollback(const ExtensionId& id) {
+  return RequestRollbackResult::kDisallowed;
+}
+
 }  // namespace extensions

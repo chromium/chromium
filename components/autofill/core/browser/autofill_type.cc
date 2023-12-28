@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/autofill_type.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -12,7 +13,6 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -37,24 +37,23 @@ AutofillType::ServerPrediction& AutofillType::ServerPrediction::operator=(
 
 AutofillType::ServerPrediction::~ServerPrediction() = default;
 
-ServerFieldType AutofillType::ServerPrediction::server_type() const {
+FieldType AutofillType::ServerPrediction::server_type() const {
   return server_predictions.empty()
              ? NO_SERVER_DATA
-             : ToSafeServerFieldType(server_predictions[0].type(),
-                                     NO_SERVER_DATA);
+             : ToSafeFieldType(server_predictions[0].type(), NO_SERVER_DATA);
 }
 
 bool AutofillType::ServerPrediction::is_override() const {
   return server_predictions.empty() ? false : server_predictions[0].override();
 }
 
-AutofillType::AutofillType(ServerFieldType field_type)
-    : server_type_(ToSafeServerFieldType(field_type, UNKNOWN_TYPE)) {}
+AutofillType::AutofillType(FieldType field_type)
+    : server_type_(ToSafeFieldType(field_type, UNKNOWN_TYPE)) {}
 
 AutofillType::AutofillType(HtmlFieldType field_type) : html_type_(field_type) {}
 
 FieldTypeGroup AutofillType::group() const {
-  return server_type_ != UNKNOWN_TYPE ? GroupTypeOfServerFieldType(server_type_)
+  return server_type_ != UNKNOWN_TYPE ? GroupTypeOfFieldType(server_type_)
                                       : GroupTypeOfHtmlFieldType(html_type_);
 }
 
@@ -64,10 +63,10 @@ bool AutofillType::IsUnknown() const {
           html_type_ == HtmlFieldType::kUnrecognized);
 }
 
-ServerFieldType AutofillType::GetStorableType() const {
+FieldType AutofillType::GetStorableType() const {
   return server_type_ != UNKNOWN_TYPE
              ? server_type_
-             : HtmlFieldTypeToBestCorrespondingServerFieldType(html_type_);
+             : HtmlFieldTypeToBestCorrespondingFieldType(html_type_);
 }
 
 std::string AutofillType::ToString() const {

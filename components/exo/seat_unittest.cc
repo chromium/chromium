@@ -112,7 +112,7 @@ class TestSeat : public Seat {
   Surface* GetFocusedSurface() override { return surface_; }
 
  private:
-  raw_ptr<Surface, ExperimentalAsh> surface_ = nullptr;
+  raw_ptr<Surface> surface_ = nullptr;
 };
 
 TEST_F(SeatTest, OnSurfaceFocused) {

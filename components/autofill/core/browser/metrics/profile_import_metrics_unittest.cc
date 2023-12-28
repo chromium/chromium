@@ -183,7 +183,7 @@ TEST_F(AutofillProfileImportMetricsTest,
                   {.role = ADDRESS_HOME_ZIP, .value = u"37373"},
                   {.role = ADDRESS_HOME_COUNTRY, .value = u"USA"}}});
 
-  std::vector<ServerFieldType> field_types = {
+  std::vector<FieldType> field_types = {
       NAME_FULL,           ADDRESS_HOME_LINE1,
       ADDRESS_HOME_CITY,   PHONE_HOME_CITY_AND_NUMBER,
       ADDRESS_HOME_STATE,  ADDRESS_HOME_ZIP,
@@ -249,7 +249,7 @@ TEST_F(AutofillProfileImportMetricsTest,
            {.role = ADDRESS_HOME_ZIP, .value = u"37373"},
            {.role = ADDRESS_HOME_COUNTRY, .value = u"Germany"}}});
 
-  std::vector<ServerFieldType> field_types = {
+  std::vector<FieldType> field_types = {
       NAME_FULL,           ADDRESS_HOME_LINE1,
       ADDRESS_HOME_CITY,   PHONE_HOME_CITY_AND_NUMBER,
       ADDRESS_HOME_STATE,  ADDRESS_HOME_ZIP,
@@ -374,15 +374,15 @@ TEST_F(AutofillProfileImportMetricsTest,
            {.role = EMAIL_ADDRESS, .value = u"test_noat_test.io"},
            {.role = EMAIL_ADDRESS, .value = u"not_test@test.io"}}});
 
-  std::vector<ServerFieldType> field_types = {NAME_FULL,
-                                              ADDRESS_HOME_LINE1,
-                                              ADDRESS_HOME_CITY,
-                                              PHONE_HOME_CITY_AND_NUMBER,
-                                              ADDRESS_HOME_STATE,
-                                              ADDRESS_HOME_ZIP,
-                                              ADDRESS_HOME_COUNTRY,
-                                              EMAIL_ADDRESS,
-                                              EMAIL_ADDRESS};
+  std::vector<FieldType> field_types = {NAME_FULL,
+                                        ADDRESS_HOME_LINE1,
+                                        ADDRESS_HOME_CITY,
+                                        PHONE_HOME_CITY_AND_NUMBER,
+                                        ADDRESS_HOME_STATE,
+                                        ADDRESS_HOME_ZIP,
+                                        ADDRESS_HOME_COUNTRY,
+                                        EMAIL_ADDRESS,
+                                        EMAIL_ADDRESS};
 
   autofill_manager().AddSeenForm(form, field_types);
   FillTestProfile(form);
@@ -442,7 +442,7 @@ TEST_F(AutofillProfileImportMetricsTest,
            {.role = ADDRESS_HOME_ZIP, .value = u""},
            {.role = ADDRESS_HOME_COUNTRY, .value = u""}}});
 
-  std::vector<ServerFieldType> field_types = {
+  std::vector<FieldType> field_types = {
       NAME_FULL,           ADDRESS_HOME_LINE1,
       ADDRESS_HOME_CITY,   PHONE_HOME_CITY_AND_NUMBER,
       ADDRESS_HOME_STATE,  ADDRESS_HOME_ZIP,

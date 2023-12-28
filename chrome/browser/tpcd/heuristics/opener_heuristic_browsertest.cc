@@ -477,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
 
   ASSERT_THAT(OpenPopup(popup_url), HasValue());
 
-  std::vector<const ukm::mojom::UkmEntry*> entries =
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
       ukm_recorder.GetEntriesByName("OpenerHeuristic.PopupPastInteraction");
   ASSERT_EQ(entries.size(), 0u);
 }

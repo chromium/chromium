@@ -99,12 +99,10 @@ class ASH_EXPORT PowerButtonMenuScreenView : public views::View,
   // Created by PowerButtonMenuScreenView. Owned by views hierarchy. Only
   // power_button_menu_view_ or power_button_menu_curtain_view_ will be
   // available at a time.
-  raw_ptr<PowerButtonMenuView, ExperimentalAsh> power_button_menu_view_ =
-      nullptr;
-  raw_ptr<PowerButtonMenuCurtainView, ExperimentalAsh>
-      power_button_menu_curtain_view_ = nullptr;
+  raw_ptr<PowerButtonMenuView> power_button_menu_view_ = nullptr;
+  raw_ptr<PowerButtonMenuCurtainView> power_button_menu_curtain_view_ = nullptr;
 
-  raw_ptr<PowerButtonMenuBackgroundView, ExperimentalAsh>
+  raw_ptr<PowerButtonMenuBackgroundView>
       power_button_screen_background_shield_ = nullptr;
 
   // The physical display side of power button in landscape primary.

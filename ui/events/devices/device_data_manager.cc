@@ -7,6 +7,7 @@
 #include "base/at_exit.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
@@ -31,7 +32,8 @@ namespace {
 
 bool InputDeviceEquals(const ui::InputDevice& a, const ui::InputDevice& b) {
   return a.id == b.id && a.enabled == b.enabled &&
-         a.suspected_keyboard_imposter == b.suspected_keyboard_imposter;
+         a.suspected_keyboard_imposter == b.suspected_keyboard_imposter &&
+         a.suspected_mouse_imposter == b.suspected_mouse_imposter;
 }
 
 }  // namespace
@@ -107,15 +109,14 @@ void DeviceDataManager::UpdateTouchInfoFromTransform(
 void DeviceDataManager::UpdateTouchMap() {
   // Remove all entries for devices from the |touch_map_| that are not currently
   // connected.
-  auto last_iter = std::remove_if(
-      touch_map_.begin(), touch_map_.end(),
+  base::EraseIf(
+      touch_map_,
       [this](const std::pair<int, TouchDeviceTransform>& map_entry) {
         // Remove the device identified by |map_entry| from |touch_map_| if it
         // is not present in the list of currently connected devices.
         return !base::Contains(touchscreen_devices_, map_entry.second.device_id,
                                &TouchscreenDevice::id);
       });
-  touch_map_.erase(last_iter, touch_map_.end());
 }
 
 void DeviceDataManager::ApplyTouchRadiusScale(int touch_device_id,

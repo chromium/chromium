@@ -41,12 +41,6 @@ class TestNativeDisplayDelegate : public NativeDisplayDelegate {
 
   ~TestNativeDisplayDelegate() override;
 
-  const std::vector<DisplaySnapshot*>& outputs() const { return outputs_; }
-
-  void set_outputs(const std::vector<DisplaySnapshot*>& outputs) {
-    outputs_ = outputs;
-  }
-
   void set_max_configurable_pixels(int pixels) {
     max_configurable_pixels_ = pixels;
   }
@@ -75,6 +69,12 @@ class TestNativeDisplayDelegate : public NativeDisplayDelegate {
   }
 
   void set_run_async(bool run_async) { run_async_ = run_async; }
+
+  const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>> GetOutputs()
+      const;
+
+  // Sets and takes ownership of the provided |outputs|.
+  void SetOutputs(std::vector<std::unique_ptr<DisplaySnapshot>> outputs);
 
   // NativeDisplayDelegate overrides:
   void Initialize() override;
@@ -128,7 +128,9 @@ class TestNativeDisplayDelegate : public NativeDisplayDelegate {
       const std::vector<display::DisplayConfigurationParams>& config_requests);
 
   // Outputs to be returned by GetDisplays().
-  std::vector<DisplaySnapshot*> outputs_;
+  std::vector<std::unique_ptr<DisplaySnapshot>> outputs_;
+  // Outputs which are scheduled for deletion after the next invalidation.
+  std::vector<std::unique_ptr<DisplaySnapshot>> cached_outputs_;
 
   // |max_configurable_pixels_| represents the maximum number of pixels that
   // Configure will support.  Tests can use this to force Configure
@@ -151,8 +153,7 @@ class TestNativeDisplayDelegate : public NativeDisplayDelegate {
   // If true, the callbacks are posted on the message loop.
   bool run_async_;
 
-  raw_ptr<ActionLogger, DanglingUntriaged | ExperimentalAsh>
-      log_;  // Not owned.
+  raw_ptr<ActionLogger, DanglingUntriaged> log_;  // Not owned.
 
   base::ObserverList<NativeDisplayObserver>::Unchecked observers_;
 };

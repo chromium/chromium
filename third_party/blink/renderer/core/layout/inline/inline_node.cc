@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_offset_map.h"
 
 namespace blink {
 
@@ -943,9 +944,11 @@ bool InlineNode::SetTextWithOffset(LayoutText* layout_text,
   FontCachePurgePreventer font_cache_purge_preventer;
 
   String new_text(std::move(new_text_in));
-  layout_text->StyleRef().ApplyTextTransform(&new_text,
-                                             layout_text->PreviousCharacter());
+  TextOffsetMap offset_map;
+  new_text = layout_text->StyleRef().ApplyTextTransform(
+      new_text, layout_text->PreviousCharacter(), &offset_map);
   layout_text->SetTextInternal(new_text);
+  layout_text->SetHasVariableLengthTransform(!offset_map.IsEmpty());
 
   InlineNode node(editor.GetLayoutBlockFlow());
   InlineNodeData* data = node.MutableData();
@@ -978,7 +981,6 @@ const OffsetMapping* InlineNode::ComputeOffsetMappingIfNeeded() const {
   if (!data->offset_mapping) {
     DCHECK(!data->text_content.IsNull());
     ComputeOffsetMapping(GetLayoutBlockFlow(), data);
-    DCHECK(data->offset_mapping);
   }
 
   return data->offset_mapping.Get();
@@ -1020,9 +1022,11 @@ void InlineNode::ComputeOffsetMapping(LayoutBlockFlow* layout_block_flow,
   // TODO(xiaochengh): This doesn't compute offset mapping correctly when
   // text-transform CSS property changes text length.
   OffsetMappingBuilder& mapping_builder = builder.GetOffsetMappingBuilder();
-  mapping_builder.SetDestinationString(data->text_content);
-  data->offset_mapping = mapping_builder.Build();
-  DCHECK(data->offset_mapping);
+  data->offset_mapping = nullptr;
+  if (mapping_builder.SetDestinationString(data->text_content)) {
+    data->offset_mapping = mapping_builder.Build();
+    DCHECK(data->offset_mapping);
+  }
 }
 
 const OffsetMapping* InlineNode::GetOffsetMapping(
@@ -1104,7 +1108,7 @@ const SvgTextChunkOffsets* InlineNode::FindSvgTextChunks(
   data.svg_node_data_ = svg_attr_builder.CreateSvgInlineNodeData();
 
   // Compute DOM offsets of text chunks.
-  mapping_builder.SetDestinationString(ifc_text_content);
+  CHECK(mapping_builder.SetDestinationString(ifc_text_content));
   OffsetMapping* mapping = mapping_builder.Build();
   StringView ifc_text_view(ifc_text_content);
   for (wtf_size_t i = 0; i < data.svg_node_data_->character_data_list.size();
@@ -1530,24 +1534,24 @@ void InlineNode::ShapeTextForFirstLineIfNeeded(InlineNodeData* data) const {
     return;
 
   auto* first_line_items = MakeGarbageCollected<InlineItemsData>();
-  first_line_items->text_content = data->text_content;
+  String text_content = data->text_content;
   bool needs_reshape = false;
   if (first_line_style->TextTransform() != block_style->TextTransform()) {
     // TODO(kojii): This logic assumes that text-transform is applied only to
     // ::first-line, and does not work when the base style has text-transform
     // and ::first-line has different text-transform.
-    first_line_style->ApplyTextTransform(&first_line_items->text_content);
-    if (first_line_items->text_content != data->text_content) {
+    text_content = first_line_style->ApplyTextTransform(text_content);
+    if (text_content != data->text_content) {
       // TODO(kojii): When text-transform changes the length, we need to adjust
       // offset in InlineItem, or re-collect inlines. Other classes such as
       // line breaker need to support the scenario too. For now, we force the
       // string to be the same length to prevent them from crashing. This may
       // result in a missing or a duplicate character if the length changes.
-      TruncateOrPadText(&first_line_items->text_content,
-                        data->text_content.length());
+      TruncateOrPadText(&text_content, data->text_content.length());
       needs_reshape = true;
     }
   }
+  first_line_items->text_content = text_content;
 
   first_line_items->items.AppendVector(data->items);
   for (auto& item : first_line_items->items) {

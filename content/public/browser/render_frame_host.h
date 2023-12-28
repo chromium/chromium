@@ -15,6 +15,7 @@
 #include "base/memory/safety_checks.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
@@ -43,16 +44,13 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "third_party/jni_zero/scoped_java_ref.h"
+#endif
+
 class GURL;
 
 namespace base {
-#if BUILDFLAG(IS_ANDROID)
-namespace android {
-template <typename T>
-class JavaRef;
-}  // namespace android
-#endif
-
 class UnguessableToken;
 }  // namespace base
 
@@ -825,8 +823,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns the Java object of this instance.
-  virtual base::android::ScopedJavaLocalRef<jobject>
-  GetJavaRenderFrameHost() = 0;
+  virtual jni_zero::ScopedJavaLocalRef<jobject> GetJavaRenderFrameHost() = 0;
 
   // Returns an InterfaceProvider for Java-implemented interfaces that are
   // scoped to this RenderFrameHost. This provides access to interfaces

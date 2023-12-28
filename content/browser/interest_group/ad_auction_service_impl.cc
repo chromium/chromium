@@ -33,12 +33,14 @@
 #include "content/browser/interest_group/ad_auction_result_metrics.h"
 #include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/cookie_deprecation_label_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
@@ -246,11 +248,11 @@ void AdAuctionServiceImpl::LeaveInterestGroupForDocument() {
     return;
   }
 
-  if (!fenced_frame_properties->ad_auction_data_.has_value()) {
+  if (!fenced_frame_properties->ad_auction_data().has_value()) {
     return;
   }
 
-  if (fenced_frame_properties->is_ad_component_ &&
+  if (fenced_frame_properties->is_ad_component() &&
       !base::FeatureList::IsEnabled(
           blink::features::kFencedFramesM120FeaturesPart2)) {
     // The ability to leave interest group from an ad component is not supported
@@ -259,7 +261,7 @@ void AdAuctionServiceImpl::LeaveInterestGroupForDocument() {
   }
 
   const blink::FencedFrame::AdAuctionData& auction_data =
-      fenced_frame_properties->ad_auction_data_->GetValueIgnoringVisibility();
+      fenced_frame_properties->ad_auction_data()->GetValueIgnoringVisibility();
 
   if (auction_data.interest_group_owner != origin()) {
     // The ad page calling LeaveAdInterestGroup is not the owner of the group.
@@ -447,11 +449,11 @@ class FencedFrameURLMappingObserver
   void OnFencedFrameURLMappingComplete(
       const absl::optional<FencedFrameProperties>& properties) override {
     if (properties) {
-      if (properties->mapped_url_) {
-        *mapped_url_ = properties->mapped_url_->GetValueIgnoringVisibility();
+      if (properties->mapped_url()) {
+        *mapped_url_ = properties->mapped_url()->GetValueIgnoringVisibility();
       }
-      if (send_reports_ && properties->on_navigate_callback_) {
-        properties->on_navigate_callback_.Run();
+      if (send_reports_ && properties->on_navigate_callback()) {
+        properties->on_navigate_callback().Run();
       }
     }
     called_ = true;
@@ -644,6 +646,23 @@ scoped_refptr<SiteInstance> AdAuctionServiceImpl::GetFrameSiteInstance() {
 network::mojom::ClientSecurityStatePtr
 AdAuctionServiceImpl::GetClientSecurityState() {
   return GetFrame()->BuildClientSecurityState();
+}
+
+absl::optional<std::string> AdAuctionServiceImpl::GetCookieDeprecationLabel() {
+  if (!base::FeatureList::IsEnabled(
+          features::kFledgeFacilitatedTestingSignalsHeaders)) {
+    return absl::nullopt;
+  }
+
+  CookieDeprecationLabelManager* cdlm =
+      render_frame_host()
+          .GetStoragePartition()
+          ->GetCookieDeprecationLabelManager();
+  if (cdlm) {
+    return cdlm->GetValue();
+  } else {
+    return absl::nullopt;
+  }
 }
 
 AdAuctionServiceImpl::AdAuctionServiceImpl(

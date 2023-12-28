@@ -17,6 +17,13 @@ class Statement;
 
 namespace autofill {
 
+// Max length of values stored in address and payments related tables. This
+// limit is not enforced for autocomplete values.
+inline constexpr size_t kMaxDataLengthForDatabase = 1024;
+
+// Truncates `data` to `kMaxDataLengthForDatabase`.
+std::u16string Truncate(std::u16string_view data);
+
 // Helper functions to construct SQL statements from string constants.
 // - Functions with names corresponding to SQL keywords execute the statement
 //   directly and return if it was successful.

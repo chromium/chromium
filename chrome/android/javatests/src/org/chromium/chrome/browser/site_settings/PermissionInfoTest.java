@@ -31,6 +31,7 @@ import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.SessionModel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 
@@ -111,7 +112,9 @@ public class PermissionInfoTest {
             @ContentSettingValues int setting,
             Profile profile,
             @ContentSettingValues int expectedSetting) {
-        PermissionInfo info = new PermissionInfo(type, origin, embedder, /* isEmbargoed= */ false);
+        PermissionInfo info =
+                new PermissionInfo(
+                        type, origin, embedder, /* isEmbargoed= */ false, SessionModel.DURABLE);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> info.setContentSetting(profile, setting));
 

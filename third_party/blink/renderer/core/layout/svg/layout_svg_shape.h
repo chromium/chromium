@@ -183,10 +183,9 @@ class LayoutSVGShape : public LayoutSVGModelObject {
                     const WindRule fill_rule = RULE_NONZERO);
   bool StrokeContains(const HitTestLocation&, bool requires_stroke = true);
 
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsSVGShape() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectSVGShape ||
-           LayoutSVGModelObject::IsOfType(type);
+    return true;
   }
   void UpdateLayout() final;
   // Update LayoutObject state after layout has completed. Returns true if

@@ -4,7 +4,6 @@
 
 #include "ash/system/unified/classroom_bubble_student_view.h"
 
-#include <algorithm>
 #include <array>
 #include <memory>
 #include <utility>
@@ -19,6 +18,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -93,9 +93,8 @@ class ClassroomStudentComboboxModel : public ui::ComboboxModel {
     const auto selected_list_type = static_cast<StudentAssignmentsListType>(
         Shell::Get()->session_controller()->GetActivePrefService()->GetInteger(
             kLastSelectedAssignmentsListPref));
-    const auto* const iter =
-        std::find(kStudentAssignmentsListTypeOrdered.begin(),
-                  kStudentAssignmentsListTypeOrdered.end(), selected_list_type);
+    const auto* const iter = base::ranges::find(
+        kStudentAssignmentsListTypeOrdered, selected_list_type);
     return iter != kStudentAssignmentsListTypeOrdered.end()
                ? iter - kStudentAssignmentsListTypeOrdered.begin()
                : 0;

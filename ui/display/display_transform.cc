@@ -32,11 +32,11 @@ gfx::OverlayTransform DisplayRotationToOverlayTransform(
     case display::Display::ROTATE_0:
       return gfx::OVERLAY_TRANSFORM_NONE;
     case display::Display::ROTATE_90:
-      return gfx::OVERLAY_TRANSFORM_ROTATE_90;
+      return gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90;
     case display::Display::ROTATE_180:
-      return gfx::OVERLAY_TRANSFORM_ROTATE_180;
+      return gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180;
     case display::Display::ROTATE_270:
-      return gfx::OVERLAY_TRANSFORM_ROTATE_270;
+      return gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270;
   }
   NOTREACHED();
   return gfx::OVERLAY_TRANSFORM_NONE;

@@ -12,15 +12,15 @@
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/assistant/ui/main_stage/assistant_onboarding_view.h"
 #include "ash/assistant/ui/main_stage/launcher_search_iph_view.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -44,14 +44,16 @@ constexpr int kGreetingLabelTopMarginDip = 28;
 constexpr int kOnboardingViewTopMarginDip = 48;
 
 bool ShouldShowGreetingOrOnboarding(bool in_tablet_mode) {
-  if (assistant::features::IsAssistantLearnMoreEnabled()) {
+  if (base::FeatureList::IsEnabled(
+          feature_engagement::kIPHLauncherSearchHelpUiFeature)) {
     return !in_tablet_mode;
   }
   return true;
 }
 
 bool ShouldShowIph() {
-  return assistant::features::IsAssistantLearnMoreEnabled();
+  return base::FeatureList::IsEnabled(
+      feature_engagement::kIPHLauncherSearchHelpUiFeature);
 }
 
 }  // namespace
@@ -147,7 +149,8 @@ void AssistantZeroStateView::InitLayout() {
   // Launcher search IPH view:
   iph_view_ = AddChildView(std::make_unique<LauncherSearchIphView>(
       /*delegate=*/this, delegate_->IsTabletMode(),
-      /*scoped_iph_session=*/nullptr, /*show_assistant_chip=*/false));
+      /*scoped_iph_session=*/nullptr,
+      /*location=*/LauncherSearchIphView::UiLocation::kAssistantPage));
   iph_view_->SetID(AssistantViewID::kLauncherSearchIph);
 }
 

@@ -209,6 +209,9 @@ class AppStorageTest : public testing::Test {
     app2->data_size_in_bytes = 2048;
     app2->supported_locales = {"a", "b", "c"};
     app2->selected_locale = "a";
+    app2->SetExtraField("vm_name", "vm_name_value");
+    app2->SetExtraField("scales", true);
+    app2->SetExtraField("number", 100);
 
     apps.push_back(std::move(app2));
 
@@ -270,6 +273,15 @@ class AppStorageTest : public testing::Test {
     auto intent_filter = std::make_unique<apps::IntentFilter>();
     intent_filter->activity_name = "activity_name";
     app->intent_filters.push_back(std::move(intent_filter));
+    std::vector<AppPtr> apps;
+    apps.push_back(std::move(app));
+    app_registry_cache_.OnApps(std::move(apps), kAppType1,
+                               /*should_notify_initialized=*/false);
+  }
+
+  void ModifyExtra() {
+    AppPtr app = std::make_unique<App>(kAppType1, kAppId1);
+    app->SetExtraField("vm_name", "vm_name_value");
     std::vector<AppPtr> apps;
     apps.push_back(std::move(app));
     app_registry_cache_.OnApps(std::move(apps), kAppType1,
@@ -459,6 +471,11 @@ TEST_F(AppStorageTest, ReadAndWriteMultipleApps) {
   auto intent_filter = std::make_unique<apps::IntentFilter>();
   intent_filter->activity_name = "activity_name";
   apps[0]->intent_filters.push_back(std::move(intent_filter));
+  VerifySavedApps(apps);
+
+  ModifyExtra();
+  app_storage()->WaitForSaveFinished(/*expect_app_count=*/2);
+  apps[0]->SetExtraField("vm_name", "vm_name_value");
   VerifySavedApps(apps);
 
   // Verify `apps` are not changed.

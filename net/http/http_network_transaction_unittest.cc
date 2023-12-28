@@ -49,6 +49,8 @@
 #include "net/base/load_timing_info.h"
 #include "net/base/load_timing_info_test_util.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
@@ -384,16 +386,26 @@ class SingleProxyDelegate : public ProxyDelegate {
   void OnFallback(const ProxyChain& bad_chain, int net_error) override {}
   void OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
                              size_t chain_index,
-                             HttpRequestHeaders* extra_headers) override {}
+                             HttpRequestHeaders* extra_headers) override {
+    EXPECT_EQ(proxy_chain, proxy_chain_);
+    on_before_tunnel_request_call_count_++;
+  }
   Error OnTunnelHeadersReceived(
       const ProxyChain& proxy_chain,
       size_t chain_index,
       const HttpResponseHeaders& response_headers) override {
     return OK;
   }
+  void SetProxyResolutionService(
+      ProxyResolutionService* proxy_resolution_service) override {}
+
+  size_t on_before_tunnel_request_call_count() const {
+    return on_before_tunnel_request_call_count_;
+  }
 
  private:
   ProxyChain proxy_chain_;
+  size_t on_before_tunnel_request_call_count_ = 0;
 };
 
 // A default minimal HttpRequestInfo for use in tests, targeting HTTP.
@@ -4586,10 +4598,10 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyMatchesServerAuthNoTunnel) {
 
 // Test the no-tunnel HTTP auth case where proxy and server origins and realms
 // are the same, but the user/passwords are different, and with different
-// NetworkAnonymizationKeys. Sends one request with a NIK, response to both
-// proxy and auth challenges, sends another request with another NIK, expecting
+// NetworkAnonymizationKeys. Sends one request with a NAK, response to both
+// proxy and auth challenges, sends another request with another NAK, expecting
 // only the proxy credentials to be cached, and thus sees only a server auth
-// challenge. Then sends a request with the original NIK, expecting cached proxy
+// challenge. Then sends a request with the original NAK, expecting cached proxy
 // and auth credentials that match the ones used in the first request.
 //
 // Serves to verify credentials are correctly separated based on
@@ -4642,7 +4654,7 @@ TEST_P(HttpNetworkTransactionTest,
                 "Proxy-Connection: keep-alive\r\n"
                 "Proxy-Authorization: Basic Zm9vOmJhcg==\r\n"
                 "Authorization: Basic Zm9vMjpiYXIy\r\n\r\n"),
-      // Another request to the same server and using the same NIK should
+      // Another request to the same server and using the same NAK should
       // preemptively send the correct cached proxy and server
       // auth headers.
       MockWrite("GET http://myproxy:70/ HTTP/1.1\r\n"
@@ -4908,7 +4920,7 @@ TEST_P(HttpNetworkTransactionTest,
                 "Host: myproxy:70\r\n"
                 "Connection: keep-alive\r\n"
                 "Authorization: Basic Zm9vMjpiYXIy\r\n\r\n"),
-      // Another request to the same server and using the same NIK should
+      // Another request to the same server and using the same NAK should
       // preemptively send the correct cached server
       // auth header. Since a tunnel was already established, the proxy headers
       // won't be sent again except when establishing another tunnel.
@@ -4959,7 +4971,7 @@ TEST_P(HttpNetworkTransactionTest,
                 "Proxy-Connection: keep-alive\r\n"
                 "Proxy-Authorization: Basic Zm9vOmJhcg==\r\n\r\n"),
       // Request over the tunnel, which gets a server auth challenge. Cached
-      // credentials cannot be used, since the NIK is different.
+      // credentials cannot be used, since the NAK is different.
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: myproxy:70\r\n"
                 "Connection: keep-alive\r\n\r\n"),
@@ -6643,7 +6655,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyGet) {
 }
 
 // Test a simple GET (for an HTTP endpoint) through two HTTPS proxies
-// (HTTPS -> HTTPS -> HTTP).
+// (HTTPS -> HTTPS -> HTTP). This should tunnel through both proxies.
 TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyGet) {
   HttpRequestInfo request;
   request.method = "GET";
@@ -6673,14 +6685,16 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyGet) {
       MockWrite("CONNECT proxy2.test:71 HTTP/1.1\r\n"
                 "Host: proxy2.test:71\r\n"
                 "Proxy-Connection: keep-alive\r\n\r\n"),
-      // Since we are sending the GET request through the proxies, use the full
-      // URL.
-      MockWrite("GET http://www.example.org/ HTTP/1.1\r\n"
-                "Host: www.example.org\r\n"
+      MockWrite("CONNECT www.example.org:80 HTTP/1.1\r\n"
+                "Host: www.example.org:80\r\n"
                 "Proxy-Connection: keep-alive\r\n\r\n"),
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Connection: keep-alive\r\n\r\n"),
   };
 
   MockRead data_reads1[] = {
+      MockRead("HTTP/1.1 200 Connection Established\r\n\r\n"),
       MockRead("HTTP/1.1 200 Connection Established\r\n\r\n"),
       MockRead("HTTP/1.1 200 OK\r\n"),
       MockRead("Content-Type: text/html; charset=iso-8859-1\r\n"),
@@ -6863,25 +6877,55 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdyGet) {
   spdy::SpdySerializedFrame proxy2_connect_resp(
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
 
-  // fetch http://www.example.org/ via SPDY.
+  // CONNECT to www.example.org:80 via SPDY.
   // Need to use a new `SpdyTestUtil()` so that the stream parent ID of this
   // request is calculated correctly.
-  SpdyTestUtil new_spdy_util(/*use_priority_header=*/true);
-  spdy::SpdySerializedFrame req(
-      new_spdy_util.ConstructSpdyGet("http://www.example.org/", 1, LOWEST));
-  spdy::SpdySerializedFrame wrapped_req(
-      spdy_util_.ConstructWrappedSpdyFrame(req, 1));
+  SpdyTestUtil spdy_util2(/*use_priority_header=*/true);
+  spdy::SpdySerializedFrame endpoint_connect(spdy_util2.ConstructSpdyConnect(
+      /*extra_headers=*/nullptr, 0, 1,
+      HttpProxyConnectJob::kH2QuicTunnelPriority,
+      HostPortPair("www.example.org", 80)));
+  spdy::SpdySerializedFrame wrapped_endpoint_connect(
+      spdy_util_.ConstructWrappedSpdyFrame(endpoint_connect, 1));
 
-  spdy::SpdySerializedFrame resp(
-      new_spdy_util.ConstructSpdyGetReply(nullptr, 0, 1));
-  spdy::SpdySerializedFrame wrapped_resp(
-      spdy_util_.ConstructWrappedSpdyFrame(resp, 1));
-  spdy::SpdySerializedFrame data(new_spdy_util.ConstructSpdyDataFrame(1, true));
-  spdy::SpdySerializedFrame wrapped_data(
-      spdy_util_.ConstructWrappedSpdyFrame(data, 1));
+  spdy::SpdySerializedFrame endpoint_connect_resp(
+      spdy_util2.ConstructSpdyGetReply(nullptr, 0, 1));
+  spdy::SpdySerializedFrame wrapped_endpoint_connect_resp(
+      spdy_util_.ConstructWrappedSpdyFrame(endpoint_connect_resp, 1));
 
-  MockWrite spdy_writes[] = {CreateMockWrite(proxy2_connect, 0),
-                             CreateMockWrite(wrapped_req, 2)};
+  // fetch http://www.example.org/ via HTTP.
+  // Since this request will go over two tunnels, it needs to be double-wrapped.
+  const char get[] =
+      "GET / HTTP/1.1\r\n"
+      "Host: www.example.org\r\n"
+      "Connection: keep-alive\r\n\r\n";
+  spdy::SpdySerializedFrame wrapped_get(
+      spdy_util2.ConstructSpdyDataFrame(1, get, false));
+  spdy::SpdySerializedFrame wrapped_wrapped_get(
+      spdy_util_.ConstructWrappedSpdyFrame(wrapped_get, 1));
+
+  const char resp[] =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Length: 10\r\n\r\n";
+  spdy::SpdySerializedFrame wrapped_get_resp(
+      spdy_util2.ConstructSpdyDataFrame(1, resp, false));
+  spdy::SpdySerializedFrame wrapped_wrapped_get_resp(
+      spdy_util_.ConstructWrappedSpdyFrame(wrapped_get_resp, 1));
+
+  spdy::SpdySerializedFrame wrapped_body(
+      spdy_util2.ConstructSpdyDataFrame(1, "1234567890", false));
+  spdy::SpdySerializedFrame wrapped_wrapped_body(
+      spdy_util_.ConstructWrappedSpdyFrame(wrapped_body, 1));
+
+  spdy::SpdySerializedFrame window_update(
+      spdy_util_.ConstructSpdyWindowUpdate(1, wrapped_wrapped_get_resp.size()));
+
+  MockWrite spdy_writes[] = {
+      CreateMockWrite(proxy2_connect, 0),
+      CreateMockWrite(wrapped_endpoint_connect, 2),
+      CreateMockWrite(wrapped_wrapped_get, 5),
+      CreateMockWrite(window_update, 9),
+  };
 
   MockRead spdy_reads[] = {
       CreateMockRead(proxy2_connect_resp, 1),
@@ -6890,9 +6934,11 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdyGet) {
       // read before the write it initiated (the second CONNECT) finishes,
       // triggering a DCHECK.
       MockRead(ASYNC, ERR_IO_PENDING, 3),
-      CreateMockRead(wrapped_resp, 4),
-      CreateMockRead(wrapped_data, 5),
-      MockRead(ASYNC, 0, 6),
+      CreateMockRead(wrapped_endpoint_connect_resp, 4, ASYNC),
+      CreateMockRead(wrapped_wrapped_get_resp, 6, ASYNC),
+      CreateMockRead(wrapped_wrapped_body, 7, ASYNC),
+      CreateMockRead(wrapped_wrapped_body, 8, ASYNC),
+      MockRead(ASYNC, 0, 10),
   };
 
   SequencedSocketData spdy_data(spdy_reads, spdy_writes);
@@ -6936,7 +6982,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdyGet) {
   EXPECT_EQ(response->proxy_chain.GetProxyServer(/*chain_index=*/1),
             kProxyServer2);
   ASSERT_TRUE(response->headers);
-  EXPECT_EQ("HTTP/1.1 200", response->headers->GetStatusLine());
+  EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
 
   // DNS aliases should be empty when using a proxy.
   EXPECT_TRUE(response->dns_aliases.empty());
@@ -6944,12 +6990,12 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdyGet) {
   TransportInfo expected_transport;
   expected_transport.type = TransportType::kProxied;
   expected_transport.endpoint = IPEndPoint(IPAddress::IPv4Localhost(), 70);
-  expected_transport.negotiated_protocol = kProtoHTTP2;
+  expected_transport.negotiated_protocol = kProtoUnknown;
   EXPECT_THAT(connected_handler.transports(), ElementsAre(expected_transport));
 
   std::string response_data;
   ASSERT_THAT(ReadTransaction(&trans, &response_data), IsOk());
-  EXPECT_EQ(kUploadData, response_data);
+  EXPECT_EQ("1234567890", response_data);
 
   // Although we use an HTTPS proxy, the `SSLInfo` from that connection should
   // not be reported as a property of the origin.
@@ -6966,9 +7012,9 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySameProxyTwiceSpdyGet) {
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
   // Configure a nested proxy.
-  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
-                                  HostPortPair("proxy1.test", 70)};
-  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer1}};
+  const ProxyServer kProxyServer{ProxyServer::SCHEME_HTTPS,
+                                 HostPortPair("proxy.test", 70)};
+  const ProxyChain kNestedProxyChain{{kProxyServer, kProxyServer}};
 
   ProxyList proxy_list;
   proxy_list.AddProxyChain(kNestedProxyChain);
@@ -6982,45 +7028,77 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySameProxyTwiceSpdyGet) {
   session_deps_.net_log = NetLog::Get();
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
-  // CONNECT to proxy2.test:70 via SPDY.
-  spdy::SpdySerializedFrame proxy1_connect(spdy_util_.ConstructSpdyConnect(
+  // CONNECT to proxy.test:70 via SPDY.
+  spdy::SpdySerializedFrame proxy_connect(spdy_util_.ConstructSpdyConnect(
       /*extra_headers=*/nullptr, 0, 1,
       HttpProxyConnectJob::kH2QuicTunnelPriority,
-      kProxyServer1.host_port_pair()));
+      kProxyServer.host_port_pair()));
 
-  spdy::SpdySerializedFrame proxy1_connect_resp(
+  spdy::SpdySerializedFrame proxy_connect_resp(
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
 
-  // fetch http://www.example.org/ via SPDY.
+  // CONNECT to www.example.org:80 via SPDY.
   // Need to use a new `SpdyTestUtil()` so that the stream parent ID of this
   // request is calculated correctly.
   SpdyTestUtil new_spdy_util(/*use_priority_header=*/true);
-  spdy::SpdySerializedFrame req(
-      new_spdy_util.ConstructSpdyGet("http://www.example.org/", 1, LOWEST));
-  spdy::SpdySerializedFrame wrapped_req(
-      spdy_util_.ConstructWrappedSpdyFrame(req, 1));
+  spdy::SpdySerializedFrame endpoint_connect(new_spdy_util.ConstructSpdyConnect(
+      /*extra_headers=*/nullptr, 0, 1,
+      HttpProxyConnectJob::kH2QuicTunnelPriority,
+      HostPortPair("www.example.org", 80)));
+  spdy::SpdySerializedFrame wrapped_endpoint_connect(
+      spdy_util_.ConstructWrappedSpdyFrame(endpoint_connect, 1));
 
-  spdy::SpdySerializedFrame resp(
+  spdy::SpdySerializedFrame endpoint_connect_resp(
       new_spdy_util.ConstructSpdyGetReply(nullptr, 0, 1));
-  spdy::SpdySerializedFrame wrapped_resp(
-      spdy_util_.ConstructWrappedSpdyFrame(resp, 1));
-  spdy::SpdySerializedFrame data(new_spdy_util.ConstructSpdyDataFrame(1, true));
-  spdy::SpdySerializedFrame wrapped_data(
-      spdy_util_.ConstructWrappedSpdyFrame(data, 1));
+  spdy::SpdySerializedFrame wrapped_endpoint_connect_resp(
+      spdy_util_.ConstructWrappedSpdyFrame(endpoint_connect_resp, 1));
 
-  MockWrite spdy_writes[] = {CreateMockWrite(proxy1_connect, 0),
-                             CreateMockWrite(wrapped_req, 2)};
+  // fetch http://www.example.org/ via HTTP.
+  // Since this request will go over two tunnels, it needs to be double-wrapped.
+  const char get[] =
+      "GET / HTTP/1.1\r\n"
+      "Host: www.example.org\r\n"
+      "Connection: keep-alive\r\n\r\n";
+  spdy::SpdySerializedFrame wrapped_get(
+      new_spdy_util.ConstructSpdyDataFrame(1, get, false));
+  spdy::SpdySerializedFrame wrapped_wrapped_get(
+      spdy_util_.ConstructWrappedSpdyFrame(wrapped_get, 1));
+
+  const char resp[] =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Length: 10\r\n\r\n";
+  spdy::SpdySerializedFrame wrapped_get_resp(
+      new_spdy_util.ConstructSpdyDataFrame(1, resp, false));
+  spdy::SpdySerializedFrame wrapped_wrapped_get_resp(
+      spdy_util_.ConstructWrappedSpdyFrame(wrapped_get_resp, 1));
+
+  spdy::SpdySerializedFrame wrapped_body(
+      new_spdy_util.ConstructSpdyDataFrame(1, "1234567890", false));
+  spdy::SpdySerializedFrame wrapped_wrapped_body(
+      spdy_util_.ConstructWrappedSpdyFrame(wrapped_body, 1));
+
+  spdy::SpdySerializedFrame window_update(
+      spdy_util_.ConstructSpdyWindowUpdate(1, wrapped_wrapped_get_resp.size()));
+
+  MockWrite spdy_writes[] = {
+      CreateMockWrite(proxy_connect, 0),
+      CreateMockWrite(wrapped_endpoint_connect, 2),
+      CreateMockWrite(wrapped_wrapped_get, 5),
+      CreateMockWrite(window_update, 9),
+  };
 
   MockRead spdy_reads[] = {
-      CreateMockRead(proxy1_connect_resp, 1),
+      CreateMockRead(proxy_connect_resp, 1),
       // TODO(https://crbug.com/497228): We have to manually delay this read so
       // that the higher-level SPDY stream doesn't get notified of an available
       // read before the write it initiated (the second CONNECT) finishes,
       // triggering a DCHECK.
       MockRead(ASYNC, ERR_IO_PENDING, 3),
-      CreateMockRead(wrapped_resp, 4),
-      CreateMockRead(wrapped_data, 5),
-      MockRead(ASYNC, 0, 6),
+      CreateMockRead(wrapped_endpoint_connect_resp, 4, ASYNC),
+      CreateMockRead(wrapped_wrapped_get_resp, 6, ASYNC),
+      CreateMockRead(wrapped_wrapped_body, 7, ASYNC),
+      CreateMockRead(wrapped_wrapped_body, 8, ASYNC),
+      MockRead(ASYNC, 0, 10),
   };
 
   SequencedSocketData spdy_data(spdy_reads, spdy_writes);
@@ -7060,11 +7138,11 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySameProxyTwiceSpdyGet) {
   const HttpResponseInfo* response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
   EXPECT_EQ(response->proxy_chain.GetProxyServer(/*chain_index=*/0),
-            kProxyServer1);
+            kProxyServer);
   EXPECT_EQ(response->proxy_chain.GetProxyServer(/*chain_index=*/1),
-            kProxyServer1);
+            kProxyServer);
   ASSERT_TRUE(response->headers);
-  EXPECT_EQ("HTTP/1.1 200", response->headers->GetStatusLine());
+  EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
 
   // DNS aliases should be empty when using a proxy.
   EXPECT_TRUE(response->dns_aliases.empty());
@@ -7072,12 +7150,12 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySameProxyTwiceSpdyGet) {
   TransportInfo expected_transport;
   expected_transport.type = TransportType::kProxied;
   expected_transport.endpoint = IPEndPoint(IPAddress::IPv4Localhost(), 70);
-  expected_transport.negotiated_protocol = kProtoHTTP2;
+  expected_transport.negotiated_protocol = kProtoUnknown;
   EXPECT_THAT(connected_handler.transports(), ElementsAre(expected_transport));
 
   std::string response_data;
   ASSERT_THAT(ReadTransaction(&trans, &response_data), IsOk());
-  EXPECT_EQ(kUploadData, response_data);
+  EXPECT_EQ("1234567890", response_data);
 
   // Although we use an HTTPS proxy, the `SSLInfo` from that connection should
   // not be reported as a property of the origin.
@@ -7113,22 +7191,24 @@ TEST_P(HttpNetworkTransactionTest, NestedProxyHttpOverSpdyProtocolError) {
   spdy::SpdySerializedFrame proxy2_connect_resp(
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
 
-  // fetch http://www.example.org/ via SPDY.
+  // CONNECT to www.example.org:80 via SPDY.
   // Need to use a new `SpdyTestUtil()` so that the stream parent ID of this
   // request is calculated correctly.
-  SpdyTestUtil new_spdy_util(/*use_priority_header=*/true);
-  spdy::SpdySerializedFrame req(
-      new_spdy_util.ConstructSpdyGet("http://www.example.org/", 1, LOWEST));
-  spdy::SpdySerializedFrame wrapped_req(
-      spdy_util_.ConstructWrappedSpdyFrame(req, 1));
+  SpdyTestUtil spdy_util2(/*use_priority_header=*/true);
+  spdy::SpdySerializedFrame endpoint_connect(spdy_util2.ConstructSpdyConnect(
+      /*extra_headers=*/nullptr, 0, 1,
+      HttpProxyConnectJob::kH2QuicTunnelPriority,
+      HostPortPair("www.example.org", 80)));
+  spdy::SpdySerializedFrame wrapped_endpoint_connect(
+      spdy_util_.ConstructWrappedSpdyFrame(endpoint_connect, 1));
 
-  spdy::SpdySerializedFrame data(new_spdy_util.ConstructSpdyDataFrame(1, true));
+  spdy::SpdySerializedFrame data(spdy_util2.ConstructSpdyDataFrame(1, true));
   spdy::SpdySerializedFrame wrapped_data(
       spdy_util_.ConstructWrappedSpdyFrame(data, 1));
 
   MockWrite spdy_writes[] = {
       CreateMockWrite(proxy2_connect, 0),
-      CreateMockWrite(wrapped_req, 2),
+      CreateMockWrite(wrapped_endpoint_connect, 2),
   };
 
   MockRead spdy_reads[] = {
@@ -7413,18 +7493,24 @@ TEST_P(HttpNetworkTransactionTest,
   spdy::SpdySerializedFrame proxy2_connect_resp(
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
 
-  // fetch http://www.example.org/ via SPDY.
+  // CONNECT to www.example.org:80 via SPDY.
   // Need to use a new `SpdyTestUtil()` so that the stream parent ID of this
   // request is calculated correctly.
-  SpdyTestUtil new_spdy_util(/*use_priority_header=*/true);
-  spdy::SpdySerializedFrame req(
-      new_spdy_util.ConstructSpdyGet("http://www.example.org/", 1, LOWEST));
-  spdy::SpdySerializedFrame wrapped_req(
-      spdy_util_.ConstructWrappedSpdyFrame(req, 1));
+  SpdyTestUtil spdy_util2(/*use_priority_header=*/true);
+  spdy::SpdySerializedFrame endpoint_connect(spdy_util2.ConstructSpdyConnect(
+      /*extra_headers=*/nullptr, 0, 1,
+      HttpProxyConnectJob::kH2QuicTunnelPriority,
+      HostPortPair("www.example.org", 80)));
+  spdy::SpdySerializedFrame wrapped_endpoint_connect(
+      spdy_util_.ConstructWrappedSpdyFrame(endpoint_connect, 1));
 
+  spdy::SpdySerializedFrame spdy_response_go_away(
+      spdy_util_.ConstructSpdyGoAway(0, spdy::ERROR_CODE_PROTOCOL_ERROR,
+                                     "Error 110 reading from socket."));
   MockWrite spdy_writes[] = {
       CreateMockWrite(proxy2_connect, 0),
-      CreateMockWrite(wrapped_req, 2),
+      CreateMockWrite(wrapped_endpoint_connect, 2),
+      CreateMockWrite(spdy_response_go_away, 5),
   };
 
   MockRead spdy_reads[] = {
@@ -8676,7 +8762,9 @@ void HttpNetworkTransactionTestBase::HttpsNestedProxyNoSocketReuseHelper(
     const net::ProxyChain& chain2) {
   ASSERT_NE(chain1, chain2);
 
-  auto proxy_delegate = std::make_unique<SingleProxyDelegate>();
+  session_deps_.proxy_delegate = std::make_unique<SingleProxyDelegate>();
+  auto* proxy_delegate =
+      static_cast<SingleProxyDelegate*>(session_deps_.proxy_delegate.get());
   proxy_delegate->set_proxy(chain1);
 
   HttpRequestInfo request;
@@ -8688,8 +8776,7 @@ void HttpNetworkTransactionTestBase::HttpsNestedProxyNoSocketReuseHelper(
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
           "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
-  session_deps_.proxy_resolution_service->SetProxyDelegate(
-      proxy_delegate.get());
+  session_deps_.proxy_resolution_service->SetProxyDelegate(proxy_delegate);
   session_deps_.net_log = NetLog::Get();
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
@@ -8715,10 +8802,27 @@ void HttpNetworkTransactionTestBase::HttpsNestedProxyNoSocketReuseHelper(
     data_writes1.emplace_back(connects.back().c_str());
     data_reads1.emplace_back("HTTP/1.1 200 Connection Established\r\n\r\n");
   }
-  data_writes1.emplace_back(
-      "GET http://www.example.org/ HTTP/1.1\r\n"
-      "Host: www.example.org\r\n"
-      "Proxy-Connection: keep-alive\r\n\r\n");
+
+  if (chain1.is_multi_proxy()) {
+    // Since this is a multi-proxy chain, CONNECT to the endpoint.
+    data_writes1.emplace_back(
+        "CONNECT www.example.org:80 HTTP/1.1\r\n"
+        "Host: www.example.org:80\r\n"
+        "Proxy-Connection: keep-alive\r\n\r\n");
+    data_reads1.emplace_back("HTTP/1.1 200 Connection Established\r\n\r\n");
+
+    // Make the request to the endpoint.
+    data_writes1.emplace_back(
+        "GET / HTTP/1.1\r\n"
+        "Host: www.example.org\r\n"
+        "Connection: keep-alive\r\n\r\n");
+  } else {
+    // For a single-proxy chain, use GET.
+    data_writes1.emplace_back(
+        "GET http://www.example.org/ HTTP/1.1\r\n"
+        "Host: www.example.org\r\n"
+        "Proxy-Connection: keep-alive\r\n\r\n");
+  }
 
   data_reads1.emplace_back("HTTP/1.1 200 OK\r\n");
   data_reads1.emplace_back(SYNCHRONOUS, OK);
@@ -8769,11 +8873,27 @@ void HttpNetworkTransactionTestBase::HttpsNestedProxyNoSocketReuseHelper(
     data_writes2.emplace_back(connects.back().c_str());
     data_reads2.emplace_back("HTTP/1.1 200 Connection Established\r\n\r\n");
   }
-  data_writes2.emplace_back(
-      "GET http://www.example.org/ HTTP/1.1\r\n"
-      "Host: www.example.org\r\n"
-      "Proxy-Connection: keep-alive\r\n\r\n");
 
+  if (chain2.is_multi_proxy()) {
+    // Since this is a multi-proxy chain, CONNECT to the endpoint.
+    data_writes2.emplace_back(
+        "CONNECT www.example.org:80 HTTP/1.1\r\n"
+        "Host: www.example.org:80\r\n"
+        "Proxy-Connection: keep-alive\r\n\r\n");
+    data_reads2.emplace_back("HTTP/1.1 200 Connection Established\r\n\r\n");
+
+    // Make the request to the endpoint.
+    data_writes2.emplace_back(
+        "GET / HTTP/1.1\r\n"
+        "Host: www.example.org\r\n"
+        "Connection: keep-alive\r\n\r\n");
+  } else {
+    // For a single-proxy chain, use GET.
+    data_writes2.emplace_back(
+        "GET http://www.example.org/ HTTP/1.1\r\n"
+        "Host: www.example.org\r\n"
+        "Proxy-Connection: keep-alive\r\n\r\n");
+  }
   data_reads2.emplace_back("HTTP/1.1 200 OK\r\n");
   data_reads2.emplace_back(SYNCHRONOUS, OK);
 
@@ -8831,7 +8951,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyNoSocketReuseSecondHop) {
                                   HostPortPair("proxy2.test", 71)};
   const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
 
-  const ProxyChain kSecondHopOnlyChain{{kProxyServer1}};
+  const ProxyChain kSecondHopOnlyChain{{kProxyServer2}};
 
   HttpsNestedProxyNoSocketReuseHelper(kNestedProxyChain, kSecondHopOnlyChain);
 }
@@ -8873,14 +8993,16 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdySocketReuse) {
   const ProxyChain kFirstHopOnlyChain{{kProxyServer1}};
   const ProxyChain kSecondHopOnlyChain{{kProxyServer1}};
 
-  auto proxy_delegate = std::make_unique<SingleProxyDelegate>();
+  session_deps_.proxy_delegate = std::make_unique<SingleProxyDelegate>();
+  auto* proxy_delegate =
+      static_cast<SingleProxyDelegate*>(session_deps_.proxy_delegate.get());
   proxy_delegate->set_proxy(kNestedProxyChain);
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
           "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
-  session_deps_.proxy_resolution_service->SetProxyDelegate(
-      proxy_delegate.get());
+  session_deps_.proxy_resolution_service->SetProxyDelegate(proxy_delegate);
+
   session_deps_.net_log = NetLog::Get();
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
@@ -9110,6 +9232,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdySocketReuse) {
 
   ASSERT_THAT(ReadTransaction(&trans3, &response_data), IsOk());
   EXPECT_EQ("!@#$%^&*()", response_data);
+
+  EXPECT_EQ(proxy_delegate->on_before_tunnel_request_call_count(), 4u);
 
   EXPECT_TRUE(spdy_data1.AllReadDataConsumed());
   EXPECT_TRUE(spdy_data1.AllWriteDataConsumed());
@@ -10341,7 +10465,10 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAlive) {
 TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAliveChangeProxy) {
   const auto proxy_chain1 = PacResultElementToProxyChain("HTTPS myproxy:70");
   const auto proxy_chain2 = PacResultElementToProxyChain("HTTPS myproxy2:70");
-  auto proxy_delegate = std::make_unique<SingleProxyDelegate>();
+
+  session_deps_.proxy_delegate = std::make_unique<SingleProxyDelegate>();
+  auto* proxy_delegate =
+      static_cast<SingleProxyDelegate*>(session_deps_.proxy_delegate.get());
   proxy_delegate->set_proxy(proxy_chain1);
 
   HttpRequestInfo request;
@@ -10356,8 +10483,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAliveChangeProxy) {
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
           "https://myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
-  session_deps_.proxy_resolution_service->SetProxyDelegate(
-      proxy_delegate.get());
+  session_deps_.proxy_resolution_service->SetProxyDelegate(proxy_delegate);
   session_deps_.net_log = NetLog::Get();
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
@@ -10467,7 +10593,10 @@ TEST_P(HttpNetworkTransactionTest,
        HttpsProxyAuthRetryNoKeepAliveChangeToDirect) {
   const auto proxy_chain = PacResultElementToProxyChain("HTTPS myproxy:70");
   const auto direct = ProxyChain::Direct();
-  auto proxy_delegate = std::make_unique<SingleProxyDelegate>();
+
+  session_deps_.proxy_delegate = std::make_unique<SingleProxyDelegate>();
+  auto* proxy_delegate =
+      static_cast<SingleProxyDelegate*>(session_deps_.proxy_delegate.get());
   proxy_delegate->set_proxy(proxy_chain);
 
   HttpRequestInfo request;
@@ -10482,8 +10611,7 @@ TEST_P(HttpNetworkTransactionTest,
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
           "https://myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
-  session_deps_.proxy_resolution_service->SetProxyDelegate(
-      proxy_delegate.get());
+  session_deps_.proxy_resolution_service->SetProxyDelegate(proxy_delegate);
   session_deps_.net_log = NetLog::Get();
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
@@ -19690,14 +19818,15 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForProxyAndHostSpdy) {
       kProxyServer1,
   }};
 
-  auto proxy_delegate = std::make_unique<SingleProxyDelegate>();
+  session_deps_.proxy_delegate = std::make_unique<SingleProxyDelegate>();
+  auto* proxy_delegate =
+      static_cast<SingleProxyDelegate*>(session_deps_.proxy_delegate.get());
   proxy_delegate->set_proxy(kProxyServer1Chain);
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
           "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
-  session_deps_.proxy_resolution_service->SetProxyDelegate(
-      proxy_delegate.get());
+  session_deps_.proxy_resolution_service->SetProxyDelegate(proxy_delegate);
   session_deps_.net_log = NetLog::Get();
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
@@ -19763,6 +19892,7 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForProxyAndHostSpdy) {
                         NetLogWithSource::Make(NetLogSourceType::NONE));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
+  spdy_data.RunUntilPaused();
   base::RunLoop().RunUntilIdle();
   spdy_data.Resume();
 
@@ -19841,14 +19971,16 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForProxyAndHostHttp) {
       kProxyServer1,
   }};
 
-  auto proxy_delegate = std::make_unique<SingleProxyDelegate>();
+  session_deps_.proxy_delegate = std::make_unique<SingleProxyDelegate>();
+  auto* proxy_delegate =
+      static_cast<SingleProxyDelegate*>(session_deps_.proxy_delegate.get());
   proxy_delegate->set_proxy(kProxyServer1Chain);
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
           "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
-  session_deps_.proxy_resolution_service->SetProxyDelegate(
-      proxy_delegate.get());
+  session_deps_.proxy_resolution_service->SetProxyDelegate(proxy_delegate);
+
   session_deps_.net_log = NetLog::Get();
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
@@ -19968,14 +20100,16 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForTwoProxiesSpdy) {
       kProxyServer2,
   }};
 
-  auto proxy_delegate = std::make_unique<SingleProxyDelegate>();
+  session_deps_.proxy_delegate = std::make_unique<SingleProxyDelegate>();
+  auto* proxy_delegate =
+      static_cast<SingleProxyDelegate*>(session_deps_.proxy_delegate.get());
   proxy_delegate->set_proxy(kProxyServer1Chain);
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
           "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
-  session_deps_.proxy_resolution_service->SetProxyDelegate(
-      proxy_delegate.get());
+  session_deps_.proxy_resolution_service->SetProxyDelegate(proxy_delegate);
+
   session_deps_.net_log = NetLog::Get();
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
@@ -20041,6 +20175,7 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForTwoProxiesSpdy) {
                         NetLogWithSource::Make(NetLogSourceType::NONE));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
+  spdy_data.RunUntilPaused();
   base::RunLoop().RunUntilIdle();
   spdy_data.Resume();
 
@@ -20119,6 +20254,7 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForTwoProxiesSpdy) {
                     NetLogWithSource::Make(NetLogSourceType::NONE));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
+  spdy_data2.RunUntilPaused();
   base::RunLoop().RunUntilIdle();
   spdy_data2.Resume();
 
@@ -20153,14 +20289,15 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForTwoProxiesHttp) {
       kProxyServer2,
   }};
 
-  auto proxy_delegate = std::make_unique<SingleProxyDelegate>();
+  session_deps_.proxy_delegate = std::make_unique<SingleProxyDelegate>();
+  auto* proxy_delegate =
+      static_cast<SingleProxyDelegate*>(session_deps_.proxy_delegate.get());
   proxy_delegate->set_proxy(kProxyServer1Chain);
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
           "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
-  session_deps_.proxy_resolution_service->SetProxyDelegate(
-      proxy_delegate.get());
+  session_deps_.proxy_resolution_service->SetProxyDelegate(proxy_delegate);
   session_deps_.net_log = NetLog::Get();
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
@@ -27016,6 +27153,234 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_IpProtection) {
   EXPECT_EQ(response_info.was_fetched_via_proxy, true);
   EXPECT_EQ(response_info.was_ip_protected, true);
   EXPECT_EQ(response_info.proxy_chain, ip_protection_proxy_chain);
+}
+
+class IpProtectionProxyDelegate : public ProxyDelegate {
+ public:
+  explicit IpProtectionProxyDelegate(const ProxyChain& proxy_chain)
+      : proxy_chain_(proxy_chain) {}
+
+  // ProxyDelegate implementation:
+  void OnResolveProxy(const GURL& url,
+                      const NetworkAnonymizationKey& network_anonymization_key,
+                      const std::string& method,
+                      const ProxyRetryInfoMap& proxy_retry_info,
+                      ProxyInfo* result) override {
+    CHECK(proxy_chain_.IsValid());
+
+    ProxyList proxy_list;
+    proxy_list.AddProxyChain(proxy_chain_);
+
+    if (!proxy_chain_.is_direct()) {
+      proxy_list.AddProxyChain(ProxyChain::Direct());
+    }
+
+    result->UseProxyList(proxy_list);
+  }
+  void OnFallback(const ProxyChain& bad_chain, int net_error) override {}
+  void OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
+                             size_t chain_index,
+                             HttpRequestHeaders* extra_headers) override {
+    extra_headers->SetHeader(
+        net::HttpRequestHeaders::kAuthorization,
+        GetAuthorizationHeaderValue(proxy_chain.GetProxyServer(chain_index)));
+  }
+  Error OnTunnelHeadersReceived(
+      const ProxyChain& proxy_chain,
+      size_t chain_index,
+      const HttpResponseHeaders& response_headers) override {
+    return OK;
+  }
+  void SetProxyResolutionService(
+      ProxyResolutionService* proxy_resolution_service) override {}
+
+  static std::string GetAuthorizationHeaderValue(
+      const ProxyServer& proxy_server) {
+    return base::StrCat({"Auth token for ", proxy_server.GetHost()});
+  }
+
+ private:
+  ProxyChain proxy_chain_;
+};
+
+// Test that for requests sent through an IP Protection proxy, the
+// 'IP-Protection' header is sent as expected.
+TEST_P(HttpNetworkTransactionTest,
+       HttpsNestedProxyIpProtectionRequestHeaderAdded) {
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("https://www.example.org/");
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 70)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 71)};
+  ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  kNestedProxyChain = std::move(kNestedProxyChain).ForIpProtection();
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
+  session_deps_.proxy_delegate =
+      std::make_unique<IpProtectionProxyDelegate>(kNestedProxyChain);
+  session_deps_.proxy_resolution_service->SetProxyDelegate(
+      session_deps_.proxy_delegate.get());
+  session_deps_.net_log = NetLog::Get();
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  const std::string kProxyServer1AuthHeaderValue =
+      IpProtectionProxyDelegate::GetAuthorizationHeaderValue(kProxyServer1);
+  const std::string kProxyServer2AuthHeaderValue =
+      IpProtectionProxyDelegate::GetAuthorizationHeaderValue(kProxyServer2);
+
+  const std::string kProxyServer2Connect = base::StringPrintf(
+      "CONNECT proxy2.test:71 HTTP/1.1\r\n"
+      "Host: proxy2.test:71\r\n"
+      "Proxy-Connection: keep-alive\r\n"
+      "Authorization: %s\r\n\r\n",
+      kProxyServer1AuthHeaderValue.c_str());
+  const std::string kEndpointConnect = base::StringPrintf(
+      "CONNECT www.example.org:443 HTTP/1.1\r\n"
+      "Host: www.example.org:443\r\n"
+      "Proxy-Connection: keep-alive\r\n"
+      "Authorization: %s\r\n\r\n",
+      kProxyServer2AuthHeaderValue.c_str());
+
+  MockWrite data_writes[] = {
+      MockWrite(kProxyServer2Connect.c_str()),
+      MockWrite(kEndpointConnect.c_str()),
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Connection: keep-alive\r\n"
+                "IP-Protection: 1\r\n\r\n"),
+  };
+
+  MockRead data_reads[] = {
+      MockRead("HTTP/1.1 200 Connection Established\r\n\r\n"),
+      MockRead("HTTP/1.1 200 Connection Established\r\n\r\n"),
+      MockRead("HTTP/1.1 200\r\n\r\n"),
+      MockRead(SYNCHRONOUS, OK),
+  };
+
+  StaticSocketDataProvider data(data_reads, data_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+  SSLSocketDataProvider ssl2(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
+
+  SSLSocketDataProvider ssl3(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
+
+  TestCompletionCallback callback;
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  int rv = trans.Start(&request, callback.callback(),
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = callback.WaitForResult();
+  EXPECT_THAT(rv, IsOk());
+
+  const HttpResponseInfo* response = trans.GetResponseInfo();
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->headers);
+  EXPECT_EQ("HTTP/1.1 200", response->headers->GetStatusLine());
+}
+
+// Test that for a request that fails to be sent through an IP Protection proxy,
+// after we fallback to direct the 'IP-Protection' header is not added to the
+// request headers.
+TEST_P(HttpNetworkTransactionTest,
+       HttpsNestedProxyIpProtectionRequestHeaderNotAddedAfterFallback) {
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("https://www.example.org/");
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 70)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 71)};
+  ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  kNestedProxyChain = std::move(kNestedProxyChain).ForIpProtection();
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
+  session_deps_.proxy_delegate =
+      std::make_unique<IpProtectionProxyDelegate>(kNestedProxyChain);
+  session_deps_.proxy_resolution_service->SetProxyDelegate(
+      session_deps_.proxy_delegate.get());
+  session_deps_.net_log = NetLog::Get();
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  const std::string kProxyServer1AuthHeaderValue =
+      IpProtectionProxyDelegate::GetAuthorizationHeaderValue(kProxyServer1);
+
+  const std::string kProxyServer2Connect = base::StringPrintf(
+      "CONNECT proxy2.test:71 HTTP/1.1\r\n"
+      "Host: proxy2.test:71\r\n"
+      "Proxy-Connection: keep-alive\r\n"
+      "Authorization: %s\r\n\r\n",
+      kProxyServer1AuthHeaderValue.c_str());
+
+  MockWrite data_writes1[] = {
+      MockWrite(kProxyServer2Connect.c_str()),
+  };
+
+  MockRead data_reads1[] = {
+      MockRead("HTTP/1.1 401 Not Authorized\r\n\r\n"),
+      MockRead(SYNCHRONOUS, OK),
+  };
+
+  StaticSocketDataProvider data1(data_reads1, data_writes1);
+  session_deps_.socket_factory->AddSocketDataProvider(&data1);
+
+  SSLSocketDataProvider ssl1(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl1);
+
+  // The proxy delegate should implement falling back to direct after an error,
+  // and we don't expect any proxying or an IP Protection request header on the
+  // GET.
+  MockWrite data_writes2[] = {
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Connection: keep-alive\r\n\r\n"),
+  };
+
+  MockRead data_reads2[] = {
+      MockRead("HTTP/1.1 200\r\n\r\n"),
+      MockRead(SYNCHRONOUS, OK),
+  };
+
+  StaticSocketDataProvider data2(data_reads2, data_writes2);
+  session_deps_.socket_factory->AddSocketDataProvider(&data2);
+
+  SSLSocketDataProvider ssl2(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
+
+  TestCompletionCallback callback;
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  int rv = trans.Start(&request, callback.callback(),
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = callback.WaitForResult();
+  EXPECT_THAT(rv, IsOk());
+
+  const HttpResponseInfo* response = trans.GetResponseInfo();
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->headers);
+  EXPECT_EQ("HTTP/1.1 200", response->headers->GetStatusLine());
 }
 
 }  // namespace net

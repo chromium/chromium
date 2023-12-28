@@ -144,10 +144,11 @@ constexpr viz::SharedImageFormat kSupportedFormats[6]{
 // TODO(vikassoni): In future we will need to expose the set of formats and
 // constraints (e.g. max size) to the clients somehow that are available for
 // certain combinations of SharedImageUsage flags (e.g. when Vulkan is on,
-// SHARED_IMAGE_USAGE_GLES2 + SHARED_IMAGE_USAGE_DISPLAY_READ implies AHB, so
-// those restrictions apply, but that's decided on the service side). For now
-// getting supported format is a static mechanism like this. We probably need
-// something like gpu::Capabilities.texture_target_exception_list.
+// (SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE) +
+// SHARED_IMAGE_USAGE_DISPLAY_READ implies AHB, so those restrictions apply, but
+// that's decided on the service side). For now getting supported format is a
+// static mechanism like this. We probably need something like
+// gpu::Capabilities.texture_target_exception_list.
 bool AHardwareBufferSupportedFormat(viz::SharedImageFormat format) {
   return base::Contains(kSupportedFormats, format);
 }
@@ -175,7 +176,8 @@ unsigned int AHardwareBufferFormat(viz::SharedImageFormat format) {
 }
 
 constexpr uint32_t kSupportedUsage =
-    SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
+    SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
+    SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
     SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
     SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_WEBGPU |
@@ -677,9 +679,9 @@ AHardwareBufferImageBackingFactory::AHardwareBufferImageBackingFactory(
   // backing for import into GL)? We may use an AHardwareBuffer exclusively
   // with Vulkan, where there is no need to require that a GL context is
   // current. Maybe we can lazy init this if someone tries to create an
-  // AHardwareBuffer with SHARED_IMAGE_USAGE_GLES2 ||
-  // !gpu_preferences.enable_vulkan. When in Vulkan mode, we should only need
-  // this with GLES2.
+  // AHardwareBuffer with SHARED_IMAGE_USAGE_GLES2_READ |
+  // SHARED_IMAGE_USAGE_GLES2_WRITE || !gpu_preferences.enable_vulkan. When in
+  // Vulkan mode, we should only need this with GLES2.
   gl::GLApi* api = gl::g_current_gl_context;
   api->glGetIntegervFn(GL_MAX_TEXTURE_SIZE, &max_gl_texture_size_);
 
@@ -894,7 +896,7 @@ bool AHardwareBufferImageBackingFactory::IsSupported(
   bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER) ||
                       (usage & SHARED_IMAGE_USAGE_DISPLAY_READ) ||
                       (usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE);
-  bool used_by_gl = (usage & SHARED_IMAGE_USAGE_GLES2) ||
+  bool used_by_gl = (HasGLES2ReadOrWriteUsage(usage)) ||
                     (used_by_skia && gr_context_type == GrContextType::kGL);
 
   // If usage flags indicated this backing can be used as a GL texture, then

@@ -164,6 +164,8 @@ TEST_F(BookmarkUpdateManagerTest, RunScheduledTask) {
   test_features_.InitWithFeatures(
       {kShoppingList, kCommerceAllowOnDemandBookmarkUpdates}, {});
 
+  shopping_service_->SetIsShoppingListEligible(true);
+
   const int64_t cluster_id = 123L;
   const bookmarks::BookmarkNode* bookmark = AddProductBookmark(
       bookmark_model_.get(), u"Title", GURL("http://example.com"), cluster_id);
@@ -242,6 +244,10 @@ TEST_F(BookmarkUpdateManagerTest, RunBatchedUpdate) {
        kCommerceAllowOnDemandBookmarkBatchUpdates},
       {});
 
+  shopping_service_->SetIsShoppingListEligible(true);
+  ON_CALL(*shopping_service_, GetMaxProductBookmarkUpdatesPerBatch)
+      .WillByDefault(testing::Return(30));
+
   const size_t bookmark_count = 50;
   ASSERT_LT(shopping_service_->GetMaxProductBookmarkUpdatesPerBatch(),
             bookmark_count);
@@ -281,6 +287,10 @@ TEST_F(BookmarkUpdateManagerTest, RunBatchedUpdate_OverMaxAllowed) {
        kCommerceAllowOnDemandBookmarkBatchUpdates},
       {});
 
+  shopping_service_->SetIsShoppingListEligible(true);
+  ON_CALL(*shopping_service_, GetMaxProductBookmarkUpdatesPerBatch)
+      .WillByDefault(testing::Return(10));
+
   const size_t bookmark_count =
       kShoppingListBookmarkpdateBatchMaxParam.Get() + 10;
   const size_t expected_update_calls =
@@ -317,6 +327,10 @@ TEST_F(BookmarkUpdateManagerTest, RunBatchedUpdate_BatchingDisabled) {
   test_features_.InitWithFeatures(
       {kShoppingList, kCommerceAllowOnDemandBookmarkUpdates},
       {kCommerceAllowOnDemandBookmarkBatchUpdates});
+
+  shopping_service_->SetIsShoppingListEligible(true);
+  ON_CALL(*shopping_service_, GetMaxProductBookmarkUpdatesPerBatch)
+      .WillByDefault(testing::Return(10));
 
   const size_t bookmark_count = 50;
   ASSERT_LT(shopping_service_->GetMaxProductBookmarkUpdatesPerBatch(),

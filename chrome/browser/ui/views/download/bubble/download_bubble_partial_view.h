@@ -22,9 +22,9 @@ class DownloadBubbleNavigationHandler;
 // a compact representation of downloads that recently completed.
 class DownloadBubblePartialView : public DownloadBubblePrimaryView,
                                   public views::FocusChangeListener {
- public:
-  METADATA_HEADER(DownloadBubblePartialView);
+  METADATA_HEADER(DownloadBubblePartialView, DownloadBubblePrimaryView)
 
+ public:
   DownloadBubblePartialView(
       base::WeakPtr<Browser> browser,
       base::WeakPtr<DownloadBubbleUIController> bubble_controller,

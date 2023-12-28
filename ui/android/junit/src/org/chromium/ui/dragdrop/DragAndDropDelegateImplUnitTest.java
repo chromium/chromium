@@ -553,6 +553,83 @@ public class DragAndDropDelegateImplUnitTest {
     }
 
     @Test
+    public void testBuildFlag_Link() {
+        final DropDataAndroid data =
+                DropDataAndroid.create("", JUnitTestGURLs.EXAMPLE_URL, null, null, null);
+        int flag = mDragAndDropDelegateImpl.buildFlags(data);
+        Assert.assertEquals("Expect flag(s): DRAG_FLAG_GLOBAL.", flag, View.DRAG_FLAG_GLOBAL);
+    }
+
+    @Test
+    public void testBuildFlag_Text() {
+        final DropDataAndroid data = DropDataAndroid.create("text", null, null, null, null);
+        int flag = mDragAndDropDelegateImpl.buildFlags(data);
+        Assert.assertEquals("Expect flag(s): DRAG_FLAG_GLOBAL.", flag, View.DRAG_FLAG_GLOBAL);
+    }
+
+    @Test
+    public void testBuildFlag_LinkText() {
+        final DropDataAndroid data =
+                DropDataAndroid.create("text", JUnitTestGURLs.EXAMPLE_URL, null, null, null);
+        int flag = mDragAndDropDelegateImpl.buildFlags(data);
+        Assert.assertEquals("Expect flag(s): DRAG_FLAG_GLOBAL.", flag, View.DRAG_FLAG_GLOBAL);
+    }
+
+    @Test
+    public void testBuildFlag_Image() {
+        mDragAndDropDelegateImpl.setDragAndDropBrowserDelegate(mDragAndDropBrowserDelegate);
+        doReturn(true).when(mDragAndDropBrowserDelegate).getSupportAnimatedImageDragShadow();
+        final DropDataAndroid imageData =
+                DropDataAndroid.create("", null, new byte[] {1, 2, 3, 4}, "png", IMAGE_FILENAME);
+        int flag = mDragAndDropDelegateImpl.buildFlags(imageData);
+        Assert.assertEquals(
+                "Expect flag(s): DRAG_FLAG_GLOBAL | DRAG_FLAG_GLOBAL_URI_READ | DRAG_FLAG_OPAQUE.",
+                flag,
+                View.DRAG_FLAG_GLOBAL | View.DRAG_FLAG_GLOBAL_URI_READ | View.DRAG_FLAG_OPAQUE);
+    }
+
+    @Test
+    public void testBuildFlag_ImageLink() {
+        final DropDataAndroid imageData =
+                DropDataAndroid.create(
+                        "",
+                        JUnitTestGURLs.EXAMPLE_URL,
+                        new byte[] {1, 2, 3, 4},
+                        "png",
+                        IMAGE_FILENAME);
+        int flag = mDragAndDropDelegateImpl.buildFlags(imageData);
+        Assert.assertEquals(
+                "Expect flag(s): DRAG_FLAG_GLOBAL | DRAG_FLAG_GLOBAL_URI_READ.",
+                flag,
+                View.DRAG_FLAG_GLOBAL | View.DRAG_FLAG_GLOBAL_URI_READ);
+    }
+
+    @Test
+    public void testBuildFlag_BrowserContent() {
+        final DropDataAndroid browserData =
+                new DropDataAndroid(null, null, null, null, null) {
+                    @Override
+                    public boolean hasBrowserContent() {
+                        return true;
+                    }
+                };
+        int flag = mDragAndDropDelegateImpl.buildFlags(browserData);
+        Assert.assertEquals(
+                "Expect flag(s): DRAG_FLAG_GLOBAL | DRAG_FLAG_OPAQUE.",
+                flag,
+                View.DRAG_FLAG_GLOBAL | View.DRAG_FLAG_OPAQUE);
+    }
+
+    @Test
+    public void testBuildFlag_Invalid() {
+        final DropDataAndroid browserData = new DropDataAndroid(null, null, null, null, null);
+        Assert.assertEquals(
+                "Invalid data will not have flag set.",
+                0,
+                mDragAndDropDelegateImpl.buildFlags(browserData));
+    }
+
+    @Test
     public void testDropInChromeFromOutside() {
         mDragAndDropDelegateImpl.setDragAndDropBrowserDelegate(
                 mockDragAndDropBrowserDelegate(true, false, mDragAndDropPermissions, null));

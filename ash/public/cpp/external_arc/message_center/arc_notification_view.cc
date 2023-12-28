@@ -9,8 +9,8 @@
 #include "ash/public/cpp/external_arc/message_center/arc_notification_content_view.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_item.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
-#include "ash/style/ash_color_provider.h"
-#include "ash/system/message_center/message_center_constants.h"
+#include "ash/public/cpp/style/color_provider.h"
+#include "ash/system/notification_center/message_center_constants.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -70,12 +70,6 @@ ArcNotificationView::ArcNotificationView(
   item_->AddObserver(this);
 
   AddChildView(content_view_.get());
-
-  if (content_view_->background()) {
-    background()->SetNativeControlColor(
-        AshColorProvider::Get()->GetBaseLayerColor(
-            AshColorProvider::BaseLayerType::kTransparent80));
-  }
 
   if (shown_in_popup) {
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
@@ -147,20 +141,11 @@ void ArcNotificationView::UpdateBackgroundPainter() {
     return;
   }
 
-  const auto* ash_color_provider = AshColorProvider::Get();
   const auto* color_provider = GetColorProvider();
-
   const SkColor color_in_popup =
-      chromeos::features::IsJellyEnabled()
-          ? color_provider->GetColor(cros_tokens::kCrosSysSystemBaseElevated)
-          : ash_color_provider->GetBaseLayerColor(
-                AshColorProvider::BaseLayerType::kTransparent80);
+      color_provider->GetColor(cros_tokens::kCrosSysSystemBaseElevated);
   const SkColor color_in_message_center =
-      chromeos::features::IsJellyEnabled()
-          ? color_provider->GetColor(cros_tokens::kCrosSysSystemOnBase)
-          : ash_color_provider->GetControlsLayerColor(
-                AshColorProvider::ControlsLayerType::
-                    kControlBackgroundColorInactive);
+      color_provider->GetColor(cros_tokens::kCrosSysSystemOnBase);
   SetBackground(views::CreateBackgroundFromPainter(
       std::make_unique<message_center::NotificationBackgroundPainter>(
           top_radius(), bottom_radius(),
@@ -311,6 +296,15 @@ bool ArcNotificationView::HandleAccessibleAction(
     return true;
   }
   return false;
+}
+
+void ArcNotificationView::OnThemeChanged() {
+  message_center::MessageView::OnThemeChanged();
+
+  if (content_view_->background()) {
+    background()->SetNativeControlColor(
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemBaseElevated));
+  }
 }
 
 void ArcNotificationView::OnItemDestroying() {

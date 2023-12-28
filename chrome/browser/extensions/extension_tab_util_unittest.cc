@@ -14,6 +14,7 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -23,9 +24,9 @@ TEST(ExtensionTabUtilTest, ScrubTabBehaviorForTabsPermission) {
                        .AddPermission("tabs")
                        .Build();
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
-      ExtensionTabUtil::GetScrubTabBehavior(
-          extension.get(), Feature::Context::UNSPECIFIED_CONTEXT,
-          GURL("http://www.google.com"));
+      ExtensionTabUtil::GetScrubTabBehavior(extension.get(),
+                                            mojom::ContextType::kUnspecified,
+                                            GURL("http://www.google.com"));
   EXPECT_EQ(ExtensionTabUtil::kDontScrubTab, scrub_tab_behavior.committed_info);
   EXPECT_EQ(ExtensionTabUtil::kDontScrubTab, scrub_tab_behavior.pending_info);
 }
@@ -33,9 +34,9 @@ TEST(ExtensionTabUtilTest, ScrubTabBehaviorForTabsPermission) {
 TEST(ExtensionTabUtilTest, ScrubTabBehaviorForNoPermission) {
   auto extension = ExtensionBuilder("Extension with no permissions").Build();
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
-      ExtensionTabUtil::GetScrubTabBehavior(
-          extension.get(), Feature::Context::UNSPECIFIED_CONTEXT,
-          GURL("http://www.google.com"));
+      ExtensionTabUtil::GetScrubTabBehavior(extension.get(),
+                                            mojom::ContextType::kUnspecified,
+                                            GURL("http://www.google.com"));
   EXPECT_EQ(ExtensionTabUtil::kScrubTabFully,
             scrub_tab_behavior.committed_info);
   EXPECT_EQ(ExtensionTabUtil::kScrubTabFully, scrub_tab_behavior.pending_info);
@@ -47,7 +48,7 @@ TEST(ExtensionTabUtilTest, ScrubTabBehaviorForHostPermission) {
                        .Build();
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
       ExtensionTabUtil::GetScrubTabBehavior(
-          extension.get(), Feature::Context::UNSPECIFIED_CONTEXT,
+          extension.get(), mojom::ContextType::kUnspecified,
           GURL("http://www.google.com/some/path"));
   EXPECT_EQ(ExtensionTabUtil::kDontScrubTab, scrub_tab_behavior.committed_info);
   EXPECT_EQ(ExtensionTabUtil::kDontScrubTab, scrub_tab_behavior.pending_info);
@@ -55,9 +56,9 @@ TEST(ExtensionTabUtilTest, ScrubTabBehaviorForHostPermission) {
 
 TEST(ExtensionTabUtilTest, ScrubTabBehaviorForNoExtension) {
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
-      ExtensionTabUtil::GetScrubTabBehavior(
-          nullptr, Feature::Context::UNSPECIFIED_CONTEXT,
-          GURL("http://www.google.com"));
+      ExtensionTabUtil::GetScrubTabBehavior(nullptr,
+                                            mojom::ContextType::kUnspecified,
+                                            GURL("http://www.google.com"));
   EXPECT_EQ(ExtensionTabUtil::kScrubTabFully,
             scrub_tab_behavior.committed_info);
   EXPECT_EQ(ExtensionTabUtil::kScrubTabFully, scrub_tab_behavior.pending_info);
@@ -65,8 +66,7 @@ TEST(ExtensionTabUtilTest, ScrubTabBehaviorForNoExtension) {
 
 TEST(ExtensionTabUtilTest, ScrubTabBehaviorForWebUI) {
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
-      ExtensionTabUtil::GetScrubTabBehavior(nullptr,
-                                            Feature::Context::WEBUI_CONTEXT,
+      ExtensionTabUtil::GetScrubTabBehavior(nullptr, mojom::ContextType::kWebUi,
                                             GURL("http://www.google.com"));
   EXPECT_EQ(ExtensionTabUtil::kDontScrubTab, scrub_tab_behavior.committed_info);
   EXPECT_EQ(ExtensionTabUtil::kDontScrubTab, scrub_tab_behavior.pending_info);
@@ -74,9 +74,9 @@ TEST(ExtensionTabUtilTest, ScrubTabBehaviorForWebUI) {
 
 TEST(ExtensionTabUtilTest, ScrubTabBehaviorForWebUIUntrusted) {
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
-      ExtensionTabUtil::GetScrubTabBehavior(
-          nullptr, Feature::Context::WEBUI_UNTRUSTED_CONTEXT,
-          GURL("http://www.google.com"));
+      ExtensionTabUtil::GetScrubTabBehavior(nullptr,
+                                            mojom::ContextType::kUntrustedWebUi,
+                                            GURL("http://www.google.com"));
   EXPECT_EQ(ExtensionTabUtil::kScrubTabFully,
             scrub_tab_behavior.committed_info);
   EXPECT_EQ(ExtensionTabUtil::kScrubTabFully, scrub_tab_behavior.pending_info);

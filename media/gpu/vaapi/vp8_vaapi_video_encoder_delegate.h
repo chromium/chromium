@@ -32,12 +32,15 @@ class VP8VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
     VideoBitrateAllocation bitrate_allocation;
 
     // Framerate in FPS.
-    uint32_t framerate;
+    uint32_t framerate = 0;
 
     // Quantization parameter. They are vp8 ac/dc indices and their ranges are
     // 0-127.
     uint8_t min_qp;
     uint8_t max_qp;
+
+    // The rate controller drop frame threshold. 0-100 as this is percentage.
+    uint8_t drop_frame_thresh = 0;
 
     // Error resilient mode.
     bool error_resilient_mode = false;
@@ -64,13 +67,13 @@ class VP8VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
  private:
   void InitializeFrameHeader();
 
-  void SetFrameHeader(
+  PrepareEncodeJobResult SetFrameHeader(
       size_t frame_num,
       VP8Picture& picture,
       std::array<bool, kNumVp8ReferenceBuffers>& ref_frames_used);
   void UpdateReferenceFrames(scoped_refptr<VP8Picture> picture);
 
-  bool PrepareEncodeJob(EncodeJob& encode_job) override;
+  PrepareEncodeJobResult PrepareEncodeJob(EncodeJob& encode_job) override;
   BitstreamBufferMetadata GetMetadata(const EncodeJob& encode_job,
                                       size_t payload_size) override;
   void BitrateControlUpdate(const BitstreamBufferMetadata& metadata) override;

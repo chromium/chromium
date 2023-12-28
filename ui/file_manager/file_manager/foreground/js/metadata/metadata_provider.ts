@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {MetadataItem, MetadataKey} from './metadata_item.js';
+import {MetadataItem, type MetadataKey} from './metadata_item.js';
 import {MetadataRequest} from './metadata_request.js';
 
 export abstract class MetadataProvider {
@@ -14,7 +14,7 @@ export abstract class MetadataProvider {
     this.validPropertyNames_ = new Set(validPropertyNames);
   }
 
-  checkPropertyNames(names: string[]): asserts names is MetadataKey[] {
+  checkPropertyNames(names: readonly string[]): asserts names is MetadataKey[] {
     // Check if the property name is correct or not.
     for (const propertyName of names) {
       assert(this.validPropertyNames_.has(propertyName), propertyName);

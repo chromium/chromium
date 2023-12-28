@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "v8/include/v8.h"
 
@@ -139,6 +140,7 @@ class IncomingStreamTest : public ::testing::Test {
   }
 
   base::MockOnceCallback<void(absl::optional<uint8_t>)> mock_on_abort_;
+  test::TaskEnvironment task_environment_;
   mojo::ScopedDataPipeProducerHandle data_pipe_producer_;
   mojo::ScopedDataPipeConsumerHandle data_pipe_consumer_;
 };

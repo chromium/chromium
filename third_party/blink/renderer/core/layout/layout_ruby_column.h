@@ -42,7 +42,10 @@ class CORE_EXPORT LayoutRubyColumn final : public LayoutNGBlockFlow {
   void AddChild(LayoutObject* child,
                 LayoutObject* before_child = nullptr) override;
   void RemoveChild(LayoutObject* child) override;
-  bool IsOfType(LayoutObjectType type) const override;
+  bool IsRubyColumn() const final {
+    NOT_DESTROYED();
+    return true;
+  }
   void RemoveLeftoverAnonymousBlock(LayoutBlock*) override;
   void UpdateAnonymousChildStyle(const LayoutObject* child,
                                  ComputedStyleBuilder& builder) const override;

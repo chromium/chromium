@@ -302,12 +302,16 @@ TEST_F(CastSessionClientImplTest, SendStopSessionCommandToReceiver) {
 }
 
 TEST_F(CastSessionClientImplTest, CloseConnection) {
-  EXPECT_CALL(activity_, CloseConnectionOnReceiver("theClientId"));
+  EXPECT_CALL(activity_,
+              CloseConnectionOnReceiver(
+                  "theClientId", PresentationConnectionCloseReason::CLOSED));
   client_->CloseConnection(PresentationConnectionCloseReason::CLOSED);
 }
 
 TEST_F(CastSessionClientImplTest, DidCloseConnection) {
-  EXPECT_CALL(activity_, CloseConnectionOnReceiver("theClientId"));
+  EXPECT_CALL(activity_,
+              CloseConnectionOnReceiver(
+                  "theClientId", PresentationConnectionCloseReason::WENT_AWAY));
   client_->DidClose(PresentationConnectionCloseReason::WENT_AWAY);
 }
 

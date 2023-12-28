@@ -318,7 +318,7 @@ class PaymentSheetRowBuilder {
       bool button_enabled) {
     auto button = std::make_unique<views::MdTextButton>(GetPressedCallback(),
                                                         button_string);
-    button->SetProminent(true);
+    button->SetStyle(ui::ButtonStyle::kProminent);
     button->SetID(id_);
     button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     button->SetEnabled(button_enabled);
@@ -759,7 +759,7 @@ PaymentSheetViewController::CreateContactInfoRow() {
                                     l10n_util::GetStringUTF16(IDS_ADD),
                                     /*button_enabled=*/true);
   }
-  static constexpr autofill::ServerFieldType kLabelFields[] = {
+  static constexpr autofill::FieldType kLabelFields[] = {
       autofill::NAME_FULL, autofill::PHONE_HOME_WHOLE_NUMBER,
       autofill::EMAIL_ADDRESS};
   const std::u16string preview =

@@ -243,8 +243,11 @@ void ExtensionAppsChromeOs::Initialize() {
                                 ->GetMediaStreamCaptureIndicator()
                                 .get());
 
-  notification_display_service_.Observe(
-      NotificationDisplayServiceFactory::GetForProfile(profile()));
+  // NotificationDisplayService could be null in some tests.
+  if (auto* notification_display_service =
+          NotificationDisplayServiceFactory::GetForProfile(profile())) {
+    notification_display_service_.Observe(notification_display_service);
+  }
 
   profile_pref_change_registrar_.Init(profile()->GetPrefs());
   profile_pref_change_registrar_.Add(
@@ -780,8 +783,9 @@ bool ExtensionAppsChromeOs::IsBlocklisted(const std::string& app_id) {
   // In the App Service world, there should be a unique app publisher for any
   // given app. In this case, the ArcApps publisher publishes the Play Store
   // app, and the ExtensionApps publisher does not.
-  if (app_id == arc::kPlayStoreAppId)
+  if (app_id == arc::kPlayStoreAppId) {
     return true;
+  }
 
   // If lacros chrome apps is enabled, a small list of extension apps or
   // extensions on ash extension keeplist is allowed to run in both ash and

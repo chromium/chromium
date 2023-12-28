@@ -269,8 +269,12 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
   void SetTestAppIconColor(const std::string& app_id, SkColor color) {
     icon_loader_.SetAppIconColor(app_id, color);
     // Force icon reload after setting the test color.
+    // We cannot call LoadAppIcon directly because we need to invalidate the
+    // icon color cache. So we use `IncrementIconVersion()` to remove the
+    // icon color cache entry and trigger icon loading.
     test::GetModelUpdater(AppListClientImpl::GetInstance())
-        ->LoadAppIcon(app_id);
+        ->FindItem(app_id)
+        ->IncrementIconVersion();
   }
 
   // Helps to prevent flakiness due to conflicting animations (`AppListView`

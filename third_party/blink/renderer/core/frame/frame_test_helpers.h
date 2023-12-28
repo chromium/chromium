@@ -605,6 +605,8 @@ class TestWidgetInputHandlerHost : public mojom::blink::WidgetInputHandlerHost {
       const absl::optional<WTF::Vector<gfx::Rect>>& character_bounds,
       const absl::optional<WTF::Vector<gfx::Rect>>& line_bounds) override;
   void SetMouseCapture(bool capture) override;
+  void SetAutoscrollSelectionActiveInMainFrame(
+      bool autoscroll_selection) override;
   void RequestMouseLock(bool from_user_gesture,
                         bool unadjusted_movement,
                         RequestMouseLockCallback callback) override;

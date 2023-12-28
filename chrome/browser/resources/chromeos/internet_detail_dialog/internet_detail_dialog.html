@@ -80,13 +80,13 @@
       warning$="[[showRestrictedConnectivity_(managedProperties_)]]">
     [[getStateText_(managedProperties_)]]
   </div>
-  <cr-button class="signin-button" id="signinButton" on-click="onSigninTap_"
+  <cr-button class="signin-button" id="signinButton" on-click="onSigninClicked_"
       hidden$="[[!showSignin_(managedProperties_)]]"
       disabled="[[disableSignin_(managedProperties_, disabled_)]]">
     <div class="signin-icon cr-icon icon-external"></div>
     $i18n{networkButtonSignin}
   </cr-button>
-  <cr-button on-click="onForgetTap_"
+  <cr-button on-click="onForgetClicked_"
       hidden$="[[!showForget_(managedProperties_)]]"
       disabled="[[disabled_]]">
     $i18n{networkButtonForget}
@@ -201,7 +201,7 @@
     <!-- IP Config -->
     <div class="cr-row">
       <network-ip-config class="flex"
-          editable on-ip-change="onIPConfigChange_"
+          editable on-ip-change="onIpConfigChange_"
           managed-properties="[[managedProperties_]]"
           disabled="[[disabled_]]">
       </network-ip-config>
@@ -210,7 +210,7 @@
     <!-- Nameservers -->
     <div class="cr-row">
       <network-nameservers class="flex" editable
-          on-nameservers-change="onIPConfigChange_"
+          on-nameservers-change="onIpConfigChange_"
           managed-properties="[[managedProperties_]]"
           disabled="[[disabled_]]">
       </network-nameservers>

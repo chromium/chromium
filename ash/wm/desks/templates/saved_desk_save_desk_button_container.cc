@@ -6,7 +6,7 @@
 
 #include <array>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -137,7 +137,7 @@ class SavedDeskSaveDeskButtonContainer::
  private:
   base::RepeatingClosure accessibility_state_changed_callback_;
 
-  base::ScopedObservation<AccessibilityControllerImpl, AccessibilityObserver>
+  base::ScopedObservation<AccessibilityController, AccessibilityObserver>
       observation_{this};
 };
 

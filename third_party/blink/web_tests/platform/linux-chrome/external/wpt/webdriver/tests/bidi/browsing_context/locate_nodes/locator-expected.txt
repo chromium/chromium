@@ -1,0 +1,24 @@
+This is a wdspec test.
+[FAIL] test_find_by_locator[css-div]
+  AttributeError: 'BrowsingContext' object has no attribute 'locate_nodes'
+[FAIL] test_find_by_locator[xpath-//div]
+  AttributeError: 'BrowsingContext' object has no attribute 'locate_nodes'
+[FAIL] test_find_by_locator[innerText-foobarBARbaz]
+  AttributeError: 'BrowsingContext' object has no attribute 'locate_nodes'
+[FAIL] test_find_by_inner_text[ignore_case_true_full_match_no_max_depth]
+  AttributeError: 'BrowsingContext' object has no attribute 'locate_nodes'
+[FAIL] test_find_by_inner_text[ignore_case_false_full_match_no_max_depth]
+  AttributeError: 'BrowsingContext' object has no attribute 'locate_nodes'
+[FAIL] test_find_by_inner_text[ignore_case_true_partial_match_no_max_depth]
+  AttributeError: 'BrowsingContext' object has no attribute 'locate_nodes'
+[FAIL] test_find_by_inner_text[ignore_case_false_partial_match_no_max_depth]
+  AttributeError: 'BrowsingContext' object has no attribute 'locate_nodes'
+[FAIL] test_find_by_inner_text[ignore_case_true_full_match_max_depth_zero]
+  AttributeError: 'BrowsingContext' object has no attribute 'locate_nodes'
+[FAIL] test_find_by_inner_text[ignore_case_false_full_match_max_depth_zero]
+  AttributeError: 'BrowsingContext' object has no attribute 'locate_nodes'
+[FAIL] test_find_by_inner_text[ignore_case_true_partial_match_max_depth_zero]
+  AttributeError: 'BrowsingContext' object has no attribute 'locate_nodes'
+[FAIL] test_find_by_inner_text[ignore_case_false_partial_match_max_depth_zero]
+  AttributeError: 'BrowsingContext' object has no attribute 'locate_nodes'
+Harness: the test ran to completion.

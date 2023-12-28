@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/host/ash_window_tree_host_platform.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 
 namespace ash {
@@ -46,7 +47,7 @@ class AshWindowTreeHostUnified : public AshWindowTreeHostPlatform,
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
-  std::vector<AshWindowTreeHost*> mirroring_hosts_;
+  std::vector<raw_ptr<AshWindowTreeHost, VectorExperimental>> mirroring_hosts_;
 };
 
 }  // namespace ash

@@ -5,7 +5,7 @@
 #include "ash/scalable_iph/wallpaper_ash_notification_view.h"
 
 #include "ash/constants/notifier_catalogs.h"
-#include "ash/system/message_center/ash_notification_view.h"
+#include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"

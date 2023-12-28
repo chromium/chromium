@@ -52,7 +52,7 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set<Setting>([Setting.kGoogleDriveConnection]),
+        value: () => new Set<Setting>([]),
       },
 
       bulkPinningPrefEnabled_: Boolean,
@@ -106,15 +106,6 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
         },
       },
 
-      shouldShowGoogleDriveSettings_: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean('showGoogleDriveSettingsPage') ||
-              loadTimeData.getBoolean('enableDriveFsBulkPinning');
-        },
-        readOnly: true,
-      },
-
       shouldShowOfficeSettings_: {
         type: Boolean,
         value: () => {
@@ -157,7 +148,6 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
   private smbBrowserProxy_: SmbBrowserProxy;
   private shouldShowAddSmbButton_: boolean;
   private shouldShowAddSmbDialog_: boolean;
-  private shouldShowGoogleDriveSettings_: boolean;
   private shouldShowOfficeSettings_: boolean;
 
 
@@ -229,14 +219,18 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
     this.bulkPinningPrefEnabled_ = enabled;
   }
 
-  private computeGoogleDriveSublabel_(): string {
+  private getGoogleDriveSubLabelInnerHtml_(): TrustedHTML {
     if (this.driveDisabled_) {
-      return this.i18n('googleDriveNotSignedInSublabel');
+      return this.i18nAdvanced('googleDriveNotSignedInSublabel');
+    }
+
+    if (this.isBulkPinningEnabled_ && this.bulkPinningPrefEnabled_) {
+      return this.i18nAdvanced('googleDriveFileSyncOnSublabel');
     }
 
     return (this.isBulkPinningEnabled_ && this.bulkPinningPrefEnabled_) ?
-        this.i18n('googleDriveFileSyncOnSublabel') :
-        this.i18n('googleDriveSignedInAs');
+        this.i18nAdvanced('googleDriveFileSyncOnSublabel') :
+        this.i18nAdvanced('googleDriveSignedInAs', {attrs: ['id']});
   }
 
   private computeOneDriveSignedInLabel_(): string {

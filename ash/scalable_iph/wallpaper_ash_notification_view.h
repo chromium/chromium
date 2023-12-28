@@ -52,8 +52,9 @@ class ASH_EXPORT WallpaperAshNotificationView
 
   // The preview view created to replace the notification image.
   // Owned by the view hierarchy.
-  raw_ptr<views::View, ExperimentalAsh> preview_ = nullptr;
-  std::vector<RoundedImageView*> image_views_{4, nullptr};
+  raw_ptr<views::View> preview_ = nullptr;
+  std::vector<raw_ptr<RoundedImageView, VectorExperimental>> image_views_{
+      4, nullptr};
 };
 
 }  // namespace ash

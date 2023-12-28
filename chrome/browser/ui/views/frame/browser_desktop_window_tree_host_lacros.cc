@@ -236,15 +236,11 @@ void BrowserDesktopWindowTreeHostLacros::OnWindowStateChanged(
   UpdateFrameHints();
 }
 
-void BrowserDesktopWindowTreeHostLacros::OnImmersiveModeChanged(bool enabled) {
-  DesktopWindowTreeHostLacros::OnImmersiveModeChanged(enabled);
-  // Update the browser UI, because some fullscreen mode UI updates depend on
-  // immersive mode state. Unlike ash-chrome, Lacros's immersive mode is set
-  // to the system asynchronously.
-  browser_view_->browser()->FullscreenTopUIStateChanged();
-}
+void BrowserDesktopWindowTreeHostLacros::OnFullscreenTypeChanged(
+    ui::PlatformFullscreenType old_type,
+    ui::PlatformFullscreenType new_type) {
+  DesktopWindowTreeHostLacros::OnFullscreenTypeChanged(old_type, new_type);
 
-void BrowserDesktopWindowTreeHostLacros::OnFullscreenModeChanged() {
   // Finalizing full screen mode transition after Ash has also asynchronously
   // entered the full screen mode state for this window.
   browser_view_->FullscreenStateChanged();

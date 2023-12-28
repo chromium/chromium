@@ -95,15 +95,10 @@ std::unique_ptr<viz::CompositorFrame> FastInkHost::CreateCompositorFrame(
     CHECK(!gpu_memory_buffer_);
   }
 
-  // If FastInkHost is configured to hold a SharedImage, ensure that that
-  // SharedImage is used when creating compositor frames.
-  auto mailbox =
-      client_shared_image_ ? client_shared_image_->mailbox() : gpu::Mailbox();
-
   auto frame = fast_ink_internal::CreateCompositorFrame(
       begin_frame_ack, GetContentRect(), GetTotalDamage(), auto_update,
       *host_window(), buffer_size_, gpu_memory_buffer_.get(), &resource_manager,
-      mailbox, sync_token_);
+      client_shared_image_, sync_token_);
 
   ResetDamage();
 

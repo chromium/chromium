@@ -11,9 +11,13 @@
 
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/system/toast_data.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "ui/aura/client/focus_change_observer.h"
+#include "ui/display/display_observer.h"
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace crostini {
 
@@ -22,7 +26,7 @@ namespace crostini {
 // TODO(davidmunro): Emit metrics around how often we're hitting these issues so
 // we can prioritise appropriately.
 class CrostiniUnsupportedActionNotifier
-    : public ash::TabletModeObserver,
+    : public display::DisplayObserver,
       public aura::client::FocusChangeObserver,
       public ash::KeyboardControllerObserver {
  public:
@@ -52,8 +56,8 @@ class CrostiniUnsupportedActionNotifier
     virtual void AddFocusObserver(aura::client::FocusChangeObserver* observer);
     virtual void RemoveFocusObserver(
         aura::client::FocusChangeObserver* observer);
-    virtual void AddTabletModeObserver(ash::TabletModeObserver* observer);
-    virtual void RemoveTabletModeObserver(ash::TabletModeObserver* observer);
+    virtual void AddDisplayObserver(display::DisplayObserver* observer);
+    virtual void RemoveDisplayObserver(display::DisplayObserver* observer);
     virtual void AddKeyboardControllerObserver(
         ash::KeyboardControllerObserver* observer);
     virtual void RemoveKeyboardControllerObserver(
@@ -71,8 +75,8 @@ class CrostiniUnsupportedActionNotifier
 
   ~CrostiniUnsupportedActionNotifier() override;
 
-  // ash::TabletModeObserver:
-  void OnTabletModeStarted() override;
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // aura::client::FocusChangeObserver:
   void OnWindowFocused(aura::Window* gained_focus,

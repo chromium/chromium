@@ -17,7 +17,7 @@ namespace autofill {
 namespace {
 
 static constexpr auto kStandardizedAttributes =
-    base::MakeFixedFlatMap<base::StringPiece, HtmlFieldType>({
+    base::MakeFixedFlatMap<std::string_view, HtmlFieldType>({
         {"additional-name", HtmlFieldType::kAdditionalName},
         {"address-level1", HtmlFieldType::kAddressLevel1},
         {"address-level2", HtmlFieldType::kAddressLevel2},
@@ -60,12 +60,12 @@ static constexpr auto kStandardizedAttributes =
         {"transaction-currency", HtmlFieldType::kTransactionCurrency},
     });
 
-static constexpr base::StringPiece kWellIntendedAutocompleteValuesKeywords[] = {
+static constexpr std::string_view kWellIntendedAutocompleteValuesKeywords[] = {
     "street", "password", "address", "bday",     "cc-",         "family",
     "name",   "country",  "tel",     "phone",    "transaction", "code",
     "zip",    "state",    "city",    "shipping", "billing"};
 
-static constexpr base::StringPiece
+static constexpr std::string_view
     kNegativeMatchWellIntendedAutocompleteValuesKeywords[] = {
         "off", "disabled", "nope", "noop", "fake", "false", "new"};
 
@@ -104,20 +104,20 @@ bool ContactTypeHintMatchesFieldType(const std::string& token,
 // Chrome Autofill supports a subset of the field types listed at
 // http://is.gd/whatwg_autocomplete. Returns the corresponding HtmlFieldType, if
 // `value` matches any of them.
-absl::optional<HtmlFieldType> ParseStandardizedAutocompleteAttribute(
-    base::StringPiece value) {
+std::optional<HtmlFieldType> ParseStandardizedAutocompleteAttribute(
+    std::string_view value) {
   auto* it = kStandardizedAttributes.find(value);
   return it != kStandardizedAttributes.end()
-             ? absl::optional<HtmlFieldType>(it->second)
-             : absl::nullopt;
+             ? std::optional<HtmlFieldType>(it->second)
+             : std::nullopt;
 }
 
 // Maps `value`s that Autofill has proposed for the HTML autocomplete standard,
 // but which are not standardized, to their HtmlFieldType.
-absl::optional<HtmlFieldType> ParseProposedAutocompleteAttribute(
-    base::StringPiece value) {
+std::optional<HtmlFieldType> ParseProposedAutocompleteAttribute(
+    std::string_view value) {
   static constexpr auto proposed_attributes =
-      base::MakeFixedFlatMap<base::StringPiece, HtmlFieldType>({
+      base::MakeFixedFlatMap<std::string_view, HtmlFieldType>({
           {"address", HtmlFieldType::kStreetAddress},
           {"coupon-code", HtmlFieldType::kMerchantPromoCode},
           // TODO(crbug.com/1351760): Investigate if this mapping makes sense.
@@ -126,16 +126,16 @@ absl::optional<HtmlFieldType> ParseProposedAutocompleteAttribute(
 
   auto* it = proposed_attributes.find(value);
   return it != proposed_attributes.end()
-             ? absl::optional<HtmlFieldType>(it->second)
-             : absl::nullopt;
+             ? std::optional<HtmlFieldType>(it->second)
+             : std::nullopt;
 }
 
 // Maps non-standardized `value`s for the HTML autocomplete attribute to an
 // HtmlFieldType. This is primarily a list of "reasonable guesses".
-absl::optional<HtmlFieldType> ParseNonStandarizedAutocompleteAttribute(
-    base::StringPiece value) {
+std::optional<HtmlFieldType> ParseNonStandarizedAutocompleteAttribute(
+    std::string_view value) {
   static constexpr auto non_standardized_attributes =
-      base::MakeFixedFlatMap<base::StringPiece, HtmlFieldType>({
+      base::MakeFixedFlatMap<std::string_view, HtmlFieldType>({
           {"company", HtmlFieldType::kOrganization},
           {"first-name", HtmlFieldType::kGivenName},
           {"gift-code", HtmlFieldType::kMerchantPromoCode},
@@ -152,8 +152,8 @@ absl::optional<HtmlFieldType> ParseNonStandarizedAutocompleteAttribute(
 
   auto* it = non_standardized_attributes.find(value);
   return it != non_standardized_attributes.end()
-             ? absl::optional<HtmlFieldType>(it->second)
-             : absl::nullopt;
+             ? std::optional<HtmlFieldType>(it->second)
+             : std::nullopt;
 }
 
 // If the autocomplete `value` doesn't match any of Autofill's supported values,
@@ -162,28 +162,22 @@ absl::optional<HtmlFieldType> ParseNonStandarizedAutocompleteAttribute(
 // "address".
 // Ignoring autocomplete="off" and alike is treated separately in
 // `ParseAutocompleteAttribute()`.
-bool ShouldIgnoreAutocompleteValue(base::StringPiece value) {
+bool ShouldIgnoreAutocompleteValue(std::string_view value) {
   static constexpr char16_t kRegex[] = u"address";
   return MatchesRegex<kRegex>(base::UTF8ToUTF16(value));
 }
 
 }  // namespace
 
-bool operator==(const AutocompleteParsingResult& a,
-                const AutocompleteParsingResult& b) {
-  return std::tie(a.section, a.mode, a.field_type) ==
-         std::tie(b.section, b.mode, b.field_type);
-}
-bool operator!=(const AutocompleteParsingResult& a,
-                const AutocompleteParsingResult& b) {
-  return !(a == b);
-}
-
 std::string AutocompleteParsingResult::ToString() const {
   return base::StrCat({"section='", section, "' ", "mode='",
                        HtmlFieldModeToStringView(mode), "' ", "field_type='",
-                       FieldTypeToStringView(field_type), "'"});
+                       FieldTypeToStringView(field_type), "' ", "webauthn='",
+                       webauthn ? "true" : "false", "'"});
 }
+
+bool AutocompleteParsingResult::operator==(
+    const AutocompleteParsingResult&) const = default;
 
 HtmlFieldType FieldTypeFromAutocompleteAttributeValue(std::string value) {
   if (value.empty())
@@ -197,7 +191,7 @@ HtmlFieldType FieldTypeFromAutocompleteAttributeValue(std::string value) {
     base::ReplaceFirstSubstringAfterOffset(&value, 0, "phone", "tel");
   }
 
-  absl::optional<HtmlFieldType> type =
+  std::optional<HtmlFieldType> type =
       ParseStandardizedAutocompleteAttribute(value);
   if (!type.has_value()) {
     type = ParseProposedAutocompleteAttribute(value);
@@ -220,8 +214,8 @@ HtmlFieldType FieldTypeFromAutocompleteAttributeValue(std::string value) {
              : HtmlFieldType::kUnrecognized;
 }
 
-absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
-    base::StringPiece autocomplete_attribute) {
+std::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
+    std::string_view autocomplete_attribute) {
   std::vector<std::string> tokens =
       LowercaseAndTokenizeAttributeString(autocomplete_attribute);
 
@@ -230,7 +224,7 @@ absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
   // latter type of attribute value.
   if (tokens.empty() ||
       (tokens.size() == 1 && ShouldIgnoreAutocompleteAttribute(tokens[0]))) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   AutocompleteParsingResult result;
@@ -255,7 +249,7 @@ absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
     // Note that an invalid token invalidates the entire attribute value, even
     // if the other tokens are valid.
     if (!ContactTypeHintMatchesFieldType(tokens.back(), result.field_type))
-      return absl::nullopt;
+      return std::nullopt;
     // Chrome Autofill ignores these type hints.
     tokens.pop_back();
   }
@@ -273,7 +267,7 @@ absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
   }
 
   // (4) The preceding token, if any, may be a named section.
-  constexpr base::StringPiece kSectionPrefix = "section-";
+  constexpr std::string_view kSectionPrefix = "section-";
   if (!tokens.empty() && tokens.back().starts_with(kSectionPrefix)) {
     // Prepend this section name to the suffix set in the preceding block.
     result.section = tokens.back().substr(kSectionPrefix.size());
@@ -282,13 +276,13 @@ absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
 
   // (5) No other tokens are allowed. If there are any remaining, abort.
   if (!tokens.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   return result;
 }
 
 bool IsAutocompleteTypeWrongButWellIntended(
-    base::StringPiece autocomplete_attribute) {
+    std::string_view autocomplete_attribute) {
   std::vector<std::string> tokens =
       LowercaseAndTokenizeAttributeString(autocomplete_attribute);
 
@@ -320,8 +314,8 @@ bool IsAutocompleteTypeWrongButWellIntended(
     return false;
   }
 
-  auto contains_field_type_token = [&](base::StringPiece s) {
-    return base::StringPiece(field_type_token).find(s) != std::string::npos;
+  auto contains_field_type_token = [&](std::string_view s) {
+    return std::string_view(field_type_token).find(s) != std::string::npos;
   };
   bool token_is_wrong_but_has_well_intended_usage_keyword =
       base::ranges::any_of(kWellIntendedAutocompleteValuesKeywords,
@@ -333,7 +327,7 @@ bool IsAutocompleteTypeWrongButWellIntended(
          !developer_likely_tried_to_disable_autofill;
 }
 
-bool ShouldIgnoreAutocompleteAttribute(base::StringPiece autocomplete) {
+bool ShouldIgnoreAutocompleteAttribute(std::string_view autocomplete) {
   return autocomplete == "on" || autocomplete == "off" ||
          autocomplete == "false";
 }

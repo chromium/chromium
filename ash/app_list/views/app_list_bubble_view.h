@@ -188,7 +188,7 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   // Focuses the search box if the view is not hiding.
   void MaybeFocusAndActivateSearchBox();
 
-  const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
+  const raw_ptr<AppListViewDelegate> view_delegate_;
 
   std::unique_ptr<AppListA11yAnnouncer> a11y_announcer_;
 
@@ -204,20 +204,17 @@ class ASH_EXPORT AppListBubbleView : public views::View,
 
   // The individual views are implementation details and are intentionally not
   // exposed via getters (except for tests).
-  raw_ptr<SearchBoxView, ExperimentalAsh> search_box_view_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> separator_ = nullptr;
-  raw_ptr<AppListBubbleAppsPage, ExperimentalAsh> apps_page_ = nullptr;
-  raw_ptr<AppListBubbleSearchPage, ExperimentalAsh> search_page_ = nullptr;
-  raw_ptr<AppListBubbleAssistantPage, ExperimentalAsh> assistant_page_ =
-      nullptr;
+  raw_ptr<SearchBoxView> search_box_view_ = nullptr;
+  raw_ptr<views::View> separator_ = nullptr;
+  raw_ptr<AppListBubbleAppsPage> apps_page_ = nullptr;
+  raw_ptr<AppListBubbleSearchPage> search_page_ = nullptr;
+  raw_ptr<AppListBubbleAssistantPage> assistant_page_ = nullptr;
 
   // Lives in this class because it can overlap the search box.
-  raw_ptr<AppListFolderView, DanglingUntriaged | ExperimentalAsh> folder_view_ =
-      nullptr;
+  raw_ptr<AppListFolderView, DanglingUntriaged> folder_view_ = nullptr;
 
   // Used to close an open folder view.
-  raw_ptr<FolderBackgroundView, ExperimentalAsh> folder_background_view_ =
-      nullptr;
+  raw_ptr<FolderBackgroundView> folder_background_view_ = nullptr;
 
   // Whether we're showing the folder view. This is different from
   // folder_view_->GetVisible() because the view is "visible" but hidden when

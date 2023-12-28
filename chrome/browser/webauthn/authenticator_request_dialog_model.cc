@@ -508,6 +508,10 @@ void AuthenticatorRequestDialogModel::
     } else {
       SetCurrentStep(Step::kErrorNoAvailableTransports);
     }
+  } else if (transport_availability_.request_type ==
+                 device::FidoRequestType::kMakeCredential &&
+             hints_.transport &&
+             StartGuidedFlowForMakeCredentialFromHint(*hints_.transport)) {
   } else if (ephemeral_state_.priority_mechanism_index_) {
     Mechanism& mechanism =
         mechanisms_[*ephemeral_state_.priority_mechanism_index_];
@@ -533,7 +537,10 @@ void AuthenticatorRequestDialogModel::
 #endif
              )) {
       SetCurrentStep(Step::kSelectPriorityMechanism);
-    } else {
+    } else if (cred != nullptr || !hints_.transport.has_value() ||
+               transport_availability_.request_type !=
+                   device::FidoRequestType::kGetAssertion ||
+               !StartGuidedFlowForGetAssertionFromHint(*hints_.transport)) {
       mechanism.callback.Run();
     }
   } else {
@@ -595,8 +602,129 @@ void AuthenticatorRequestDialogModel::
       StartWinNativeApi();
       return;
     }
-    SetCurrentStep(Step::kMechanismSelection);
+    if (!hints_.transport.has_value() ||
+        transport_availability_.request_type !=
+            device::FidoRequestType::kGetAssertion ||
+        // If there were any matches, ignore a hint and show the user the list.
+        base::ranges::any_of(mechanisms_,
+                             [](const auto& mech) {
+                               return absl::get_if<Mechanism::Credential>(
+                                   &mech.type);
+                             }) ||
+        !StartGuidedFlowForGetAssertionFromHint(*hints_.transport)) {
+      SetCurrentStep(Step::kMechanismSelection);
+    }
   }
+}
+
+bool AuthenticatorRequestDialogModel::StartGuidedFlowForMakeCredentialFromHint(
+    AuthenticatorTransport transport) {
+  CHECK_EQ(transport_availability_.request_type,
+           device::FidoRequestType::kMakeCredential);
+
+  // The RP has given a hint about the expected transport for a create() call.
+  // See https://w3c.github.io/webauthn/#enum-hints
+  switch (*hints_.transport) {
+    case AuthenticatorTransport::kUsbHumanInterfaceDevice:
+      if (transport_availability_.has_win_native_api_authenticator) {
+        StartWinNativeApi();
+      } else if (base::Contains(
+                     transport_availability_.available_transports,
+                     AuthenticatorTransport::kUsbHumanInterfaceDevice)) {
+        StartGuidedFlowForTransport(*hints_.transport);
+      } else {
+        return false;
+      }
+      break;
+    case AuthenticatorTransport::kHybrid:
+      if (WebAuthnApiSupportsHybrid()) {
+        StartWinNativeApi();
+      } else if (base::Contains(transport_availability_.available_transports,
+                                AuthenticatorTransport::kHybrid)) {
+        if (!paired_phones_.empty()) {
+          SetCurrentStep(Step::kMechanismSelection);
+        } else {
+          StartGuidedFlowForAddPhone();
+        }
+      } else {
+        return false;
+      }
+      break;
+    case AuthenticatorTransport::kInternal:
+      if (transport_availability_.has_win_native_api_authenticator) {
+        StartWinNativeApi();
+      } else if (transport_availability_.has_icloud_keychain &&
+                 should_create_in_icloud_keychain_) {
+        StartICloudKeychain();
+      } else if (base::Contains(transport_availability_.available_transports,
+                                AuthenticatorTransport::kInternal)) {
+        StartGuidedFlowForTransport(*hints_.transport);
+      } else {
+        return false;
+      }
+      break;
+    default:
+      NOTREACHED();
+      return false;
+  }
+  return true;
+}
+
+bool AuthenticatorRequestDialogModel::StartGuidedFlowForGetAssertionFromHint(
+    AuthenticatorTransport transport) {
+  CHECK_EQ(transport_availability_.request_type,
+           device::FidoRequestType::kGetAssertion);
+
+  // The RP has given a hint about the expected transport for a get() call.
+  // See https://w3c.github.io/webauthn/#enum-hints
+  switch (*hints_.transport) {
+    case AuthenticatorTransport::kUsbHumanInterfaceDevice:
+      if (transport_availability_.has_win_native_api_authenticator) {
+        StartWinNativeApi();
+      } else if (base::Contains(
+                     transport_availability_.available_transports,
+                     AuthenticatorTransport::kUsbHumanInterfaceDevice)) {
+        StartGuidedFlowForTransport(*hints_.transport);
+      } else {
+        return false;
+      }
+      break;
+    case AuthenticatorTransport::kHybrid:
+      if (WebAuthnApiSupportsHybrid()) {
+        StartWinNativeApi();
+      } else if (base::Contains(transport_availability_.available_transports,
+                                AuthenticatorTransport::kHybrid)) {
+        if (base::ranges::any_of(mechanisms_, [](const auto& mechanism) {
+              return absl::get_if<Mechanism::Phone>(&mechanism.type) != nullptr;
+            })) {
+          SetCurrentStep(Step::kMechanismSelection);
+        } else {
+          StartGuidedFlowForAddPhone();
+        }
+      } else {
+        return false;
+      }
+      return true;
+    case AuthenticatorTransport::kInternal:
+      // If we can enumerate platform credentials, and there's a match, we'll
+      // either jump to it immediately, or show an account selector.
+      if (transport_availability_.has_win_native_api_authenticator) {
+        StartWinNativeApi();
+      } else {
+        // We might not be able to enumerate iCloud Keychain because of
+        // permissions issues, but that UI is bit limiting once we have jumped
+        // to it, and people who have denied Chrome that permission are a bit of
+        // a corner case, so we'll not currently jump to iCloud Keychain based
+        // on this hint. (It's only a click away.)
+        return false;
+      }
+      break;
+    default:
+      NOTREACHED();
+      return false;
+  }
+
+  return true;
 }
 
 void AuthenticatorRequestDialogModel::OnPhoneContactFailed(
@@ -1960,13 +2088,22 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
     }
   }
 
+  // If the new UI is enabled, only show USB as an option if the QR code is
+  // not available, if tapping it would trigger a prompt to enable BLE, or if
+  // hints will cause us to jump to USB UI.
+  const bool include_usb_option =
+      base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI) &&
+      base::Contains(transport_availability_.available_transports,
+                     AuthenticatorTransport::kUsbHumanInterfaceDevice) &&
+      (!include_add_phone_option || !transport_availability_.is_ble_powered ||
+       transport_availability_.ble_access_denied ||
+       hints_.transport == AuthenticatorTransport::kUsbHumanInterfaceDevice);
+
   if (include_add_phone_option) {
     std::u16string label;
     if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
-      label = l10n_util::GetStringUTF16(GetHybridButtonLabel(
-          base::Contains(transport_availability_.available_transports,
-                         AuthenticatorTransport::kUsbHumanInterfaceDevice),
-          specific_phones_listed));
+      label = l10n_util::GetStringUTF16(
+          GetHybridButtonLabel(!include_usb_option, specific_phones_listed));
     } else {
       label = l10n_util::GetStringUTF16(
           specific_phones_listed
@@ -1979,11 +2116,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
             &AuthenticatorRequestDialogModel::StartGuidedFlowForAddPhone,
             base::Unretained(this)));
   }
-  if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI) &&
-      (!include_add_phone_option || !transport_availability_.is_ble_powered ||
-       transport_availability_.ble_access_denied)) {
-    // If the new UI is enabled, only show USB as an option if the QR code is
-    // not available or if tapping it would trigger a prompt to enable BLE.
+  if (include_usb_option) {
     transports_to_list_if_active.push_back(
         AuthenticatorTransport::kUsbHumanInterfaceDevice);
   }
@@ -2078,6 +2211,7 @@ AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
     // For all other cases, go to the multi source passkey picker.
     return absl::nullopt;
   }
+
   if (mechanisms_.size() == 1) {
     return 0;
   } else if (mechanisms_.empty()) {

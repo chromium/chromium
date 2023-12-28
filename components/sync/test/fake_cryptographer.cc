@@ -91,8 +91,7 @@ bool FakeCryptographer::DecryptToString(const sync_pb::EncryptedData& encrypted,
 }
 
 const CrossUserSharingPublicPrivateKeyPair&
-FakeCryptographer::GetCrossUserSharingKeyPairForTesting(
-    uint32_t version) const {
+FakeCryptographer::GetCrossUserSharingKeyPair(uint32_t version) const {
   return cross_user_sharing_key_pair_;
 }
 

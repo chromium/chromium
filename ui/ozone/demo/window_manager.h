@@ -41,7 +41,8 @@ class WindowManager : public display::NativeDisplayObserver {
 
  private:
   void OnDisplaysAcquired(
-      const std::vector<display::DisplaySnapshot*>& displays);
+      const std::vector<raw_ptr<display::DisplaySnapshot, VectorExperimental>>&
+          displays);
   void OnDisplayConfigured(const int64_t display_id,
                            const gfx::Rect& bounds,
                            bool config_success);

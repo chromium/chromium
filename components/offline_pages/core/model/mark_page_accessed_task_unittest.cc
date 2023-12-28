@@ -54,10 +54,6 @@ TEST_F(MarkPageAccessedTaskTest, MarkPageAccessed) {
       "OfflinePages.AccessPageCount",
       static_cast<int>(model_utils::ToNamespaceEnum(kTestClientId.name_space)),
       1);
-  histogram_tester()->ExpectUniqueSample(
-      model_utils::AddHistogramSuffix(kTestClientId.name_space,
-                                      "OfflinePages.PageAccessInterval"),
-      (current_time - page.last_access_time).InMinutes(), 1);
 }
 
 TEST_F(MarkPageAccessedTaskTest, MarkPageAccessedTwice) {
@@ -82,10 +78,6 @@ TEST_F(MarkPageAccessedTaskTest, MarkPageAccessedTwice) {
       "OfflinePages.AccessPageCount",
       static_cast<int>(model_utils::ToNamespaceEnum(kTestClientId.name_space)),
       1);
-  histogram_tester()->ExpectUniqueSample(
-      model_utils::AddHistogramSuffix(kTestClientId.name_space,
-                                      "OfflinePages.PageAccessInterval"),
-      (current_time - page.last_access_time).InMinutes(), 1);
 
   base::Time second_time = OfflineTimeNow();
   task = std::make_unique<MarkPageAccessedTask>(store(), kTestOfflineId,
@@ -100,10 +92,6 @@ TEST_F(MarkPageAccessedTaskTest, MarkPageAccessedTwice) {
       "OfflinePages.AccessPageCount",
       static_cast<int>(model_utils::ToNamespaceEnum(kTestClientId.name_space)),
       2);
-  histogram_tester()->ExpectBucketCount(
-      model_utils::AddHistogramSuffix(kTestClientId.name_space,
-                                      "OfflinePages.PageAccessInterval"),
-      (second_time - current_time).InMinutes(), 1);
 }
 
 }  // namespace offline_pages

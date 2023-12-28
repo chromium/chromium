@@ -42,9 +42,10 @@ void ManualCollector::OnMetricDataCollected(
   CheckOnSequence();
   CHECK(metric_report_queue_);
   if (!metric_data.has_value()) {
-    base::UmaHistogramEnumeration(ManualCollector::kNoMetricDataMetricsName,
-                                  metric_report_queue_->GetDestination(),
-                                  Destination_MAX);
+    base::UmaHistogramExactLinear(
+        ManualCollector::kNoMetricDataMetricsName,
+        static_cast<int>(metric_report_queue_->GetDestination()),
+        Destination_ARRAYSIZE);
     return;
   }
   if (is_event_driven) {

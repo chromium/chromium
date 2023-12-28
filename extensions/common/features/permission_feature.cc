@@ -4,6 +4,7 @@
 
 #include "extensions/common/features/permission_feature.h"
 
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 
@@ -17,7 +18,7 @@ PermissionFeature::~PermissionFeature() {
 
 Feature::Availability PermissionFeature::IsAvailableToContextImpl(
     const Extension* extension,
-    Feature::Context context,
+    mojom::ContextType context,
     const GURL& url,
     Feature::Platform platform,
     int context_id,

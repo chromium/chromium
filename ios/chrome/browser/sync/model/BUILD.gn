@@ -10,8 +10,6 @@ source_set("model") {
     "enterprise_utils.h",
     "ios_chrome_sync_client.h",
     "ios_chrome_sync_client.mm",
-    "ios_chrome_synced_tab_delegate.h",
-    "ios_chrome_synced_tab_delegate.mm",
     "ios_user_event_service_factory.cc",
     "ios_user_event_service_factory.h",
     "send_tab_to_self_sync_service_factory.h",
@@ -87,15 +85,13 @@ source_set("model") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/supervised_user/model:sync_settings_factory",
     "//ios/chrome/browser/sync/model/glue",
-    "//ios/chrome/browser/sync/model/sessions",
     "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/browser/tabs/model:synced_tabs",
     "//ios/chrome/browser/trusted_vault/model",
     "//ios/chrome/browser/webdata_services/model",
     "//ios/chrome/common",
     "//ios/components/webui:url_constants",
     "//ios/web",
-    "//ios/web/common:features",
-    "//ios/web/public/session",
     "//net",
     "//ui/base",
     "//url",
@@ -106,7 +102,6 @@ source_set("model") {
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model/glue",
-    "//ios/chrome/browser/sync/model/sessions",
   ]
 }
 
@@ -169,7 +164,6 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "ios_chrome_synced_tab_delegate_unittest.mm",
     "session_sync_service_factory_unittest.cc",
     "sync_service_factory_unittest.cc",
   ]

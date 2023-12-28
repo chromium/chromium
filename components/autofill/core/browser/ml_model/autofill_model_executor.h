@@ -10,7 +10,6 @@
 
 #include "components/autofill/core/browser/ml_model/autofill_model_vectorizer.h"
 #include "components/optimization_guide/core/base_model_executor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -36,7 +35,7 @@ class AutofillModelExecutor
   // One element per `ModelInput::size()`, representing the raw model outputs
   // for the different field types. They don't have any meaning per-se, but
   // higher means more confidence. Since the model might not support all
-  // ServerFieldTypes, the indices don't map to field types directly. See
+  // FieldTypes, the indices don't map to field types directly. See
   // `AutofillMlPredictionModelHandler`.
   using ModelOutput = std::vector<std::vector<float>>;
 
@@ -50,7 +49,7 @@ class AutofillModelExecutor
   // optimization_guide::BaseModelExecutor:
   bool Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
                   const ModelInput& input) override;
-  absl::optional<ModelOutput> Postprocess(
+  std::optional<ModelOutput> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override;
 
   // Stores the number of fields sent to the model via `Preprocess()`. This will

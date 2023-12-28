@@ -36,9 +36,9 @@ class WebAppToolbarButtonContainer : public views::View,
                                      public ImmersiveModeController::Observer,
                                      public PageActionIconView::Delegate,
                                      public PageActionIconContainer {
- public:
-  METADATA_HEADER(WebAppToolbarButtonContainer);
+  METADATA_HEADER(WebAppToolbarButtonContainer, views::View)
 
+ public:
   // Timing parameters for the origin fade animation.
   // These control how long it takes for the origin text and menu button
   // highlight to fade in, pause then fade out.

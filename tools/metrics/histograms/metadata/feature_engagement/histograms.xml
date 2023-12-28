@@ -95,6 +95,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_CompanionSidePanelRegionSearch"
       summary="prompting users to use the region search feature in the
                companion side panel"/>
+  <variant name="IPH_ComposeMenuNewBadgeFeature"
+      summary="New badge shows on compose context menu item"/>
   <variant name="IPH_ComposeNewBadgeFeature"
       summary="New badge shows in Autofill popup entry"/>
   <variant name="IPH_ContextualPageActions_PriceTracking"
@@ -136,6 +138,7 @@ chromium-metrics-reviews@google.com.
       summary="PWA launch due to link capturing being enabled"/>
   <variant name="IPH_DesktopTabGroupsNewGroup"
       summary="creating a new tab group"/>
+  <variant name="IPH_DownloadEsbPromo" summary="download ESB promo"/>
   <variant name="IPH_DownloadHome" summary="download home"/>
   <variant name="IPH_DownloadInfobarDownloadContinuing"
       summary="download infobar informing that downloads are still in
@@ -476,6 +479,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_WebUiHelpBubbleTest"
       summary="testing the WebUI help bubble"/>
   <variant name="IPH_WebUITabStrip" summary="opening the WebUI tab strip"/>
+  <variant name="IPH_WhatsNewUpdated"
+      summary="educating user that what's new has new content"/>
 </variants>
 
 <variants name="TutorialID">
@@ -670,6 +675,30 @@ chromium-metrics-reviews@google.com.
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>Records what action was taken to close the In-Product Help.</summary>
+  <token key="IPHFeature" variants="IPHFeature"/>
+</histogram>
+
+<histogram name="UserEducation.MessageNotShown" enum="PromoFailure"
+    expires_after="2024-12-01">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records what failure prevented an In-Product Help from being shown to the
+    user. The failure defines the state of the User Education system, which can
+    be many varieties (e.g. snoozed, disabled blocked by another promo, etc.).
+  </summary>
+</histogram>
+
+<histogram name="UserEducation.MessageNotShown.{IPHFeature}"
+    enum="PromoFailure" expires_after="2024-12-01">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records what failure prevented a particular In-Product Help from being shown
+    to the user. The failure defines the state of the User Education system,
+    which can be many varieties (e.g. snoozed, disabled blocked by another
+    promo, etc.).
+  </summary>
   <token key="IPHFeature" variants="IPHFeature"/>
 </histogram>
 

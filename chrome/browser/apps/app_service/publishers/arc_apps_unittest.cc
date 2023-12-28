@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
@@ -735,6 +736,8 @@ TEST_F(ArcAppsPublisherTest, SetAppLocale_SendsLocaleToArc) {
   // Assert.
   ASSERT_EQ("ja",
             arc_test()->app_instance()->selected_locale(test_package_name));
+  ASSERT_EQ("ja",
+            profile()->GetPrefs()->GetString(arc::prefs::kArcLastSetAppLocale));
 }
 
 class ArcAppsPublisherPromiseAppTest : public ArcAppsPublisherTest {

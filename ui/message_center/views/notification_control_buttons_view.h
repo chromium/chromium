@@ -71,6 +71,13 @@ class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
   void SetSettingsButtonIcon(const gfx::VectorIcon& icon);
   void SetSnoozeButtonIcon(const gfx::VectorIcon& icon);
 
+  // Sets the icon size for the close, settings, and snooze buttons. Like
+  // `SetXYZButtonIcon()` above, this will only have an effect the next time the
+  // buttons are shown. Note that setting this to 0 (which is the default value)
+  // means `gfx::GetDefaultSizeOfVectorIcon()` is used to determine the icon
+  // size.
+  void SetButtonIconSize(int size);
+
   // Sets the icon color for the close, settings, and snooze buttons.
   void SetButtonIconColors(SkColor color);
 
@@ -125,6 +132,11 @@ class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
   // The horizontal spacing between buttons.
   int between_button_spacing_ = kDefaultBetweenButtonSpacing;
 
+  // The size of an icon within one of the control buttons. When set to 0, which
+  // is the default value, then `gfx::GetDefaultSizeOfVectorIcon()` is used to
+  // determine the icon size. Otherwise this value is used directly.
+  int icon_size_ = 0;
+
   // Owned by this `views::View`:
   std::unique_ptr<NotificationControlButtonFactory>
       notification_control_button_factory_;
@@ -143,6 +155,7 @@ VIEW_BUILDER_PROPERTY(const gfx::VectorIcon&,
 VIEW_BUILDER_PROPERTY(const gfx::VectorIcon&,
                       SnoozeButtonIcon,
                       const gfx::VectorIcon&)
+VIEW_BUILDER_PROPERTY(int, ButtonIconSize)
 VIEW_BUILDER_PROPERTY(SkColor, ButtonIconColors)
 VIEW_BUILDER_PROPERTY(int, BetweenButtonSpacing)
 VIEW_BUILDER_PROPERTY(std::unique_ptr<NotificationControlButtonFactory>,

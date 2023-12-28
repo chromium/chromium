@@ -339,7 +339,7 @@ class NetworkFeaturePodControllerTest : public AshTestBase {
   std::string wifi_path_;
   std::string tether_path_;
   std::string tether_wifi_path_;
-  raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> feature_tile_;
+  raw_ptr<FeatureTile, DanglingUntriaged> feature_tile_;
   std::unique_ptr<NetworkFeaturePodController> network_feature_pod_controller_;
 };
 

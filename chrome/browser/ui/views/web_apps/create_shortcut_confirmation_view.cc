@@ -301,7 +301,7 @@ void CreateShortcutConfirmationView::RunCloseCallbackIfExists() {
   }
 }
 
-BEGIN_METADATA(CreateShortcutConfirmationView, views::DialogDelegateView)
+BEGIN_METADATA(CreateShortcutConfirmationView)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, TrimmedTitle)
 END_METADATA
 
@@ -326,7 +326,7 @@ void ShowCreateShortcutDialog(
   }
 }
 
-void SetAutoAcceptWebAppDialogForTesting(bool auto_accept, // IN-TEST
+void SetAutoAcceptWebAppDialogForTesting(bool auto_accept,  // IN-TEST
                                          bool auto_open_in_window) {
   g_auto_accept_web_app_for_testing = auto_accept;
   g_auto_check_open_in_window_for_testing = auto_open_in_window;

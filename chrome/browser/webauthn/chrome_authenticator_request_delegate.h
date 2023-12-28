@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -15,11 +16,14 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
@@ -175,6 +179,8 @@ class ChromeAuthenticatorRequestDelegate
       base::span<const device::CableDiscoveryData> pairings_from_extension,
       bool is_enclave_authenticator_available,
       device::FidoDiscoveryFactory* discovery_factory) override;
+  void SetHints(
+      const AuthenticatorRequestClientDelegate::Hints& hints) override;
   void SelectAccount(
       std::vector<device::AuthenticatorGetAssertionResponse> responses,
       base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
@@ -260,6 +266,12 @@ class ChromeAuthenticatorRequestDelegate
   // Invoked when a new GPM passkey is created, to save it to sync data.
   void OnPasskeyCreated(sync_pb::WebauthnCredentialSpecifics passkey);
 
+  // Invoked when an OAuth access token is available for the Enclave.
+  void EnclaveAccessTokenFetched(
+      base::RepeatingCallback<void(absl::optional<std::string_view>)> callback,
+      GoogleServiceAuthError error,
+      signin::AccessTokenInfo access_token_info);
+
 #if BUILDFLAG(IS_MAC)
   // DaysSinceDate returns the number of days between `formatted_date` (in ISO
   // 8601 format) and `now`. It returns `nullopt` if `formatted_date` cannot be
@@ -329,6 +341,10 @@ class ChromeAuthenticatorRequestDelegate
 
   // True when the cloud enclave authenticator is available for use.
   bool is_enclave_authenticator_available_ = false;
+
+  // Fetcher for OAuth access tokens needed to use the enclave authenticator.
+  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
+      access_token_fetcher_;
 
   base::WeakPtrFactory<ChromeAuthenticatorRequestDelegate> weak_ptr_factory_{
       this};

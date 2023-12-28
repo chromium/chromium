@@ -30,6 +30,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/dom/dom_string_list.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
@@ -38,7 +39,6 @@
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_metadata.h"
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db.h"
-#include "third_party/blink/renderer/modules/indexeddb/web_idb_database.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
@@ -111,9 +111,6 @@ class MODULES_EXPORT IDBTransaction final
   void Trace(Visitor*) const override;
 
   static mojom::blink::IDBTransactionMode StringToMode(const String&);
-
-  // When the connection is closed backend will be 0.
-  WebIDBDatabase* BackendDB() const;
 
   int64_t Id() const { return id_; }
   bool IsActive() const { return state_ == kActive; }

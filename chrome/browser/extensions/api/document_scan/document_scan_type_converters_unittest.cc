@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/document_scan/document_scan_type_converters.h"
 
 #include "base/containers/contains.h"
+#include "chrome/browser/extensions/api/document_scan/document_scan_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -15,6 +16,7 @@ namespace document_scan = extensions::api::document_scan;
 namespace mojom = crosapi::mojom;
 
 using ::testing::ElementsAre;
+using ::testing::ElementsAreArray;
 using ::testing::UnorderedElementsAre;
 
 TEST(DocumentScanTypeConvertersTest, OperationResult) {
@@ -484,6 +486,34 @@ TEST(DocumentScanTypeConvertersTest, OpenScannerResponse_NonEmpty) {
   EXPECT_TRUE(base::Contains(output.options->additional_properties, "name2"));
 }
 
+TEST(DocumentScanTypeConvertersTest, GetOptionGroupsResponse_Empty) {
+  auto input = mojom::GetOptionGroupsResponse::New();
+  auto output = input.To<document_scan::GetOptionGroupsResponse>();
+  EXPECT_EQ(output.scanner_handle, "");
+  EXPECT_EQ(output.result, document_scan::OperationResult::kUnknown);
+  EXPECT_FALSE(output.groups.has_value());
+}
+
+TEST(DocumentScanTypeConvertersTest, GetOptionGroupsResponse_NonEmpty) {
+  auto input = mojom::GetOptionGroupsResponse::New();
+  input->scanner_handle = "scanner_handle";
+  input->result = mojom::ScannerOperationResult::kSuccess;
+  input->groups.emplace();
+  auto input_group = mojom::OptionGroup::New();
+  input_group->title = "title";
+  input_group->members.emplace_back("item1");
+  input_group->members.emplace_back("item2");
+  input->groups->emplace_back(std::move(input_group));
+
+  auto output = input.To<document_scan::GetOptionGroupsResponse>();
+  EXPECT_EQ(output.scanner_handle, "scanner_handle");
+  EXPECT_EQ(output.result, document_scan::OperationResult::kSuccess);
+  ASSERT_TRUE(output.groups.has_value());
+  ASSERT_EQ(output.groups->size(), 1U);
+  EXPECT_EQ(output.groups.value()[0].title, "title");
+  EXPECT_THAT(output.groups.value()[0].members, ElementsAre("item1", "item2"));
+}
+
 TEST(DocumentScanTypeConvertersTest, CloseScannerResponse_Empty) {
   auto input = mojom::CloseScannerResponse::New();
   auto output = input.To<document_scan::CloseScannerResponse>();
@@ -499,6 +529,264 @@ TEST(DocumentScanTypeConvertersTest, CloseScannerResponse_NonEmpty) {
   auto output = input.To<document_scan::CloseScannerResponse>();
   EXPECT_EQ(output.scanner_handle, "scanner_handle");
   EXPECT_EQ(output.result, document_scan::OperationResult::kSuccess);
+}
+
+TEST(DocumentScanTypeConvertersTest, OptionSetting_Empty) {
+  document_scan::OptionSetting input;
+  auto output = mojom::OptionSetting::From(input);
+  EXPECT_EQ(output->name, "");
+  EXPECT_EQ(output->type, mojom::OptionType::kUnknown);
+  EXPECT_TRUE(output->value.is_null());
+}
+
+TEST(DocumentScanTypeConvertersTest, OptionSetting_BoolValue) {
+  document_scan::OptionSetting input;
+  input.name = "name";
+  input.type = document_scan::OptionType::kBool;
+  input.value.emplace();
+  input.value->as_boolean = true;
+
+  auto output = mojom::OptionSetting::From(input);
+  EXPECT_EQ(output->name, "name");
+  EXPECT_EQ(output->type, mojom::OptionType::kBool);
+  ASSERT_FALSE(output->value.is_null());
+  ASSERT_TRUE(output->value->is_bool_value());
+  EXPECT_EQ(output->value->get_bool_value(), true);
+}
+
+TEST(DocumentScanTypeConvertersTest, OptionSetting_IntValue) {
+  document_scan::OptionSetting input;
+  input.name = "name";
+  input.type = document_scan::OptionType::kInt;
+  input.value.emplace();
+  input.value->as_integer = 42;
+
+  auto output = mojom::OptionSetting::From(input);
+  EXPECT_EQ(output->name, "name");
+  EXPECT_EQ(output->type, mojom::OptionType::kInt);
+  ASSERT_FALSE(output->value.is_null());
+  ASSERT_TRUE(output->value->is_int_value());
+  EXPECT_EQ(output->value->get_int_value(), 42);
+}
+
+TEST(DocumentScanTypeConvertersTest, OptionSetting_IntList) {
+  document_scan::OptionSetting input;
+  input.name = "name";
+  input.type = document_scan::OptionType::kInt;
+  input.value.emplace();
+  input.value->as_integers = {42, 10};
+
+  auto output = mojom::OptionSetting::From(input);
+  EXPECT_EQ(output->name, "name");
+  EXPECT_EQ(output->type, mojom::OptionType::kInt);
+  ASSERT_FALSE(output->value.is_null());
+  ASSERT_TRUE(output->value->is_int_list());
+  EXPECT_THAT(output->value->get_int_list(), ElementsAre(42, 10));
+}
+
+TEST(DocumentScanTypeConvertersTest, OptionSetting_FixedValue) {
+  document_scan::OptionSetting input;
+  input.name = "name";
+  input.type = document_scan::OptionType::kFixed;
+  input.value.emplace();
+  input.value->as_number = 42.25;
+
+  auto output = mojom::OptionSetting::From(input);
+  EXPECT_EQ(output->name, "name");
+  EXPECT_EQ(output->type, mojom::OptionType::kFixed);
+  ASSERT_FALSE(output->value.is_null());
+  ASSERT_TRUE(output->value->is_fixed_value());
+  EXPECT_EQ(output->value->get_fixed_value(), 42.25);
+}
+
+TEST(DocumentScanTypeConvertersTest, OptionSetting_FixedList) {
+  document_scan::OptionSetting input;
+  input.name = "name";
+  input.type = document_scan::OptionType::kFixed;
+  input.value.emplace();
+  input.value->as_numbers = {42.5, 10.75};
+
+  auto output = mojom::OptionSetting::From(input);
+  EXPECT_EQ(output->name, "name");
+  EXPECT_EQ(output->type, mojom::OptionType::kFixed);
+  ASSERT_FALSE(output->value.is_null());
+  ASSERT_TRUE(output->value->is_fixed_list());
+  EXPECT_THAT(output->value->get_fixed_list(), ElementsAre(42.5, 10.75));
+}
+
+TEST(DocumentScanTypeConvertersTest, OptionSetting_StringValue) {
+  document_scan::OptionSetting input;
+  input.name = "name";
+  input.type = document_scan::OptionType::kString;
+  input.value.emplace();
+  input.value->as_string = "hello";
+
+  auto output = mojom::OptionSetting::From(input);
+  EXPECT_EQ(output->name, "name");
+  EXPECT_EQ(output->type, mojom::OptionType::kString);
+  ASSERT_FALSE(output->value.is_null());
+  ASSERT_TRUE(output->value->is_string_value());
+  EXPECT_EQ(output->value->get_string_value(), "hello");
+}
+
+TEST(DocumentScanTypeConvertersTest, OptionSetting_Group) {
+  document_scan::OptionSetting input;
+  input.name = "name";
+  input.type = document_scan::OptionType::kGroup;
+
+  auto output = mojom::OptionSetting::From(input);
+  EXPECT_EQ(output->name, "name");
+  EXPECT_EQ(output->type, mojom::OptionType::kGroup);
+  EXPECT_TRUE(output->value.is_null());
+}
+
+TEST(DocumentScanTypeConvertersTest, OptionSetting_Button) {
+  document_scan::OptionSetting input;
+  input.name = "name";
+  input.type = document_scan::OptionType::kButton;
+
+  auto output = mojom::OptionSetting::From(input);
+  EXPECT_EQ(output->name, "name");
+  EXPECT_EQ(output->type, mojom::OptionType::kButton);
+  EXPECT_TRUE(output->value.is_null());
+}
+
+TEST(DocumentScanTypeConvertersTest, OptionSetting_None) {
+  document_scan::OptionSetting input;
+  input.name = "name";
+  input.type = document_scan::OptionType::kNone;
+
+  auto output = mojom::OptionSetting::From(input);
+  EXPECT_EQ(output->name, "name");
+  EXPECT_EQ(output->type, mojom::OptionType::kUnknown);
+  EXPECT_TRUE(output->value.is_null());
+}
+
+TEST(DocumentScanTypeConvertersTest, SetOptionsResponse_Empty) {
+  auto input = mojom::SetOptionsResponse::New();
+  auto output = input.To<document_scan::SetOptionsResponse>();
+  EXPECT_EQ(output.scanner_handle, "");
+  EXPECT_TRUE(output.results.empty());
+  EXPECT_FALSE(output.options.has_value());
+}
+
+TEST(DocumentScanTypeConvertersTest, SetOptionsResponse_NonEmpty) {
+  auto input = mojom::SetOptionsResponse::New();
+  input->scanner_handle = "scanner-handle";
+  input->results.emplace_back(mojom::SetOptionResult::New(
+      "name1", mojom::ScannerOperationResult::kWrongType));
+  input->results.emplace_back(mojom::SetOptionResult::New(
+      "name2", mojom::ScannerOperationResult::kSuccess));
+  input->options.emplace();
+  input->options->try_emplace(
+      "option1", extensions::CreateTestScannerOption("option1", 5));
+  input->options->try_emplace(
+      "option2", extensions::CreateTestScannerOption("option2", 10));
+
+  auto output = input.To<document_scan::SetOptionsResponse>();
+  EXPECT_EQ(output.scanner_handle, "scanner-handle");
+  ASSERT_EQ(output.results.size(), 2U);
+  EXPECT_EQ(output.results[0].name, "name1");
+  EXPECT_EQ(output.results[0].result,
+            document_scan::OperationResult::kWrongType);
+  EXPECT_EQ(output.results[1].name, "name2");
+  EXPECT_EQ(output.results[1].result, document_scan::OperationResult::kSuccess);
+  ASSERT_TRUE(output.options.has_value());
+  EXPECT_TRUE(base::Contains(output.options->additional_properties, "option1"));
+  EXPECT_TRUE(base::Contains(output.options->additional_properties, "option2"));
+}
+
+TEST(DocumentScanTypeConvertersTest, StartScanOptions_Empty) {
+  document_scan::StartScanOptions input;
+  auto output = mojom::StartScanOptions::From(input);
+  EXPECT_TRUE(output->format.empty());
+}
+
+TEST(DocumentScanTypeConvertersTest, StartScanOptions_Success) {
+  document_scan::StartScanOptions input;
+  input.format = "format";
+  auto output = mojom::StartScanOptions::From(input);
+  EXPECT_EQ(output->format, "format");
+}
+
+TEST(DocumentScanTypeConvertersTest, StartScanResponse_Empty) {
+  auto input = mojom::StartPreparedScanResponse::New();
+  auto output = input.To<document_scan::StartScanResponse>();
+  EXPECT_EQ(output.result, document_scan::OperationResult::kUnknown);
+  EXPECT_TRUE(output.scanner_handle.empty());
+  EXPECT_FALSE(output.job.has_value());
+}
+
+TEST(DocumentScanTypeConvertersTest, StartScanResponse_Success) {
+  auto input = mojom::StartPreparedScanResponse::New();
+  input->scanner_handle = "scanner-handle";
+  input->result = mojom::ScannerOperationResult::kSuccess;
+  input->job_handle = "job-handle";
+
+  auto output = input.To<document_scan::StartScanResponse>();
+  EXPECT_EQ(output.result, document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(output.scanner_handle, "scanner-handle");
+  ASSERT_TRUE(output.job.has_value());
+  EXPECT_EQ(output.job.value(), "job-handle");
+}
+
+TEST(DocumentScanTypeConvertersTest, CancelScanResponse_Empty) {
+  auto input = mojom::CancelScanResponse::New();
+  auto output = input.To<document_scan::CancelScanResponse>();
+  EXPECT_EQ(output.result, document_scan::OperationResult::kUnknown);
+  EXPECT_TRUE(output.job.empty());
+}
+
+TEST(DocumentScanTypeConvertersTest, CancelScanResponse_Success) {
+  auto input = mojom::CancelScanResponse::New();
+  input->job_handle = "job-handle";
+  input->result = mojom::ScannerOperationResult::kSuccess;
+
+  auto output = input.To<document_scan::CancelScanResponse>();
+  EXPECT_EQ(output.result, document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(output.job, "job-handle");
+}
+
+TEST(DocumentScanTypeConvertersTest, ReadScanDataResponse_Empty) {
+  auto input = mojom::ReadScanDataResponse::New();
+  auto output = input.To<document_scan::ReadScanDataResponse>();
+  EXPECT_EQ(output.result, document_scan::OperationResult::kUnknown);
+  EXPECT_TRUE(output.job.empty());
+  EXPECT_FALSE(output.data.has_value());
+  EXPECT_FALSE(output.estimated_completion.has_value());
+}
+
+TEST(DocumentScanTypeConvertersTest, ReadScanDataResponse_NonEmpty) {
+  auto input = mojom::ReadScanDataResponse::New();
+  input->job_handle = "job-handle";
+  input->result = mojom::ScannerOperationResult::kEndOfData;
+  input->data = std::vector<int8_t>('a', 10 * 1024 * 1024);
+  input->estimated_completion = 42;
+
+  auto output = input.To<document_scan::ReadScanDataResponse>();
+  EXPECT_EQ(output.result, document_scan::OperationResult::kEof);
+  EXPECT_EQ(output.job, "job-handle");
+  ASSERT_TRUE(output.data.has_value());
+  EXPECT_THAT(output.data.value(),
+              ElementsAreArray(input->data->data(), input->data->size()));
+  ASSERT_TRUE(output.estimated_completion.has_value());
+  EXPECT_EQ(output.estimated_completion.value(), 42);
+}
+
+TEST(DocumentScanTypeConvertersTest, ReadScanDataResponse_ZeroData) {
+  auto input = mojom::ReadScanDataResponse::New();
+  input->job_handle = "job-handle";
+  input->result = mojom::ScannerOperationResult::kEndOfData;
+  input->data = std::vector<int8_t>{};
+  input->estimated_completion = 42;
+
+  auto output = input.To<document_scan::ReadScanDataResponse>();
+  EXPECT_EQ(output.result, document_scan::OperationResult::kEof);
+  EXPECT_EQ(output.job, "job-handle");
+  ASSERT_TRUE(output.data.has_value());
+  EXPECT_EQ(output.data.value().size(), 0U);
+  ASSERT_TRUE(output.estimated_completion.has_value());
+  EXPECT_EQ(output.estimated_completion.value(), 42);
 }
 
 }  // namespace

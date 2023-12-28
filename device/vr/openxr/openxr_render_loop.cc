@@ -62,8 +62,8 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
   // TODO(https://crbug.com/1441072): Make SwapchainInfo purely internal to the
   // graphics bindings so that this isn't necessary here.
   const auto& swap_chain_info = graphics_binding_->GetActiveSwapchainImage();
-  if (!swap_chain_info.mailbox_holder.mailbox.IsZero()) {
-    frame_data->buffer_holder = swap_chain_info.mailbox_holder;
+  if (swap_chain_info.shared_image) {
+    frame_data->buffer_holder = swap_chain_info.GetMailboxHolder();
   }
 
   frame_data->time_delta =

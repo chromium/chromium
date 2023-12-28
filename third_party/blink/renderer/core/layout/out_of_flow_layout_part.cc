@@ -205,6 +205,37 @@ class OOFCandidateStyleIterator {
     return auto_anchor_style_ ? *auto_anchor_style_ : *style_;
   }
 
+  const ComputedStyle& GetBaseStyle() const {
+    if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled() &&
+        UsesFallbackStyle()) {
+      return *GetStyle().GetBaseComputedStyleOrThis();
+    }
+    return GetStyle();
+  }
+
+  const ComputedStyle& ActivateBaseStyleForTryAttempt() {
+    if (!RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled() ||
+        !UsesFallbackStyle()) {
+      return GetStyle();
+    }
+    const ComputedStyle& base_style = GetBaseStyle();
+    if (&base_style != &GetStyle()) {
+      element_->GetLayoutObject()->SetStyle(
+          &base_style, LayoutObject::ApplyStyleChanges::kNo);
+    }
+    return base_style;
+  }
+
+  const ComputedStyle& ActivateStyleForChosenFallback() {
+    DCHECK(
+        RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled());
+    DCHECK(UsesFallbackStyle());
+    const ComputedStyle& style = GetStyle();
+    element_->GetLayoutObject()->SetStyle(&style,
+                                          LayoutObject::ApplyStyleChanges::kNo);
+    return style;
+  }
+
   absl::optional<wtf_size_t> PositionFallbackIndex() const {
     return position_fallback_index_;
   }
@@ -1058,8 +1089,6 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
   // the remaining OOFs.
   limited_multicol_container_builder.SetFragmentsTotalBlockSize(LayoutUnit());
 
-  limited_multicol_container_builder.SetDisableOOFDescendantsPropagation();
-
   WritingDirectionMode writing_direction =
       multicol.Style().GetWritingDirection();
   const PhysicalBoxFragment* last_fragment_with_fragmentainer = nullptr;
@@ -1128,9 +1157,10 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
 
     // Convert the OOF fragmentainer descendants to the logical coordinate space
     // and store the resulting nodes inside |oof_nodes_to_layout|.
-    for (const auto& descendant :
-         FragmentedOofData::OutOfFlowPositionedFragmentainerDescendants(
-             *multicol_box_fragment)) {
+    HeapVector<LogicalOofNodeForFragmentation> oof_fragmentainer_descendants;
+    limited_multicol_container_builder.SwapOutOfFlowFragmentainerDescendants(
+        &oof_fragmentainer_descendants);
+    for (const auto& descendant : oof_fragmentainer_descendants) {
       if (oof_nodes_to_layout.empty() &&
           multicol_info->fixedpos_containing_block.Fragment() &&
           previous_multicol_break_token) {
@@ -1142,70 +1172,16 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
         multicol_offset.block_offset -=
             previous_multicol_break_token->ConsumedBlockSize();
       }
-      const PhysicalFragment* containing_block_fragment =
-          descendant.containing_block.Fragment();
+
       // If the containing block is not set, that means that the inner multicol
-      // was its containing block, and the OOF will be laid out elsewhere.
-      if (!containing_block_fragment)
+      // was its containing block, and the OOF will be laid out elsewhere. Also
+      // skip descendants whose containing block is a column spanner, because
+      // those need to be laid out further up in the tree.
+      if (!descendant.containing_block.Fragment() ||
+          descendant.containing_block.IsInsideColumnSpanner()) {
         continue;
-      LogicalOffset containing_block_offset =
-          converter.ToLogical(descendant.containing_block.Offset(),
-                              containing_block_fragment->Size());
-      LogicalOffset containing_block_rel_offset =
-          converter.ToLogical(descendant.containing_block.RelativeOffset(),
-                              containing_block_fragment->Size());
-
-      const PhysicalFragment* fixedpos_containing_block_fragment =
-          descendant.fixedpos_containing_block.Fragment();
-      LogicalOffset fixedpos_containing_block_offset;
-      LogicalOffset fixedpos_containing_block_rel_offset;
-      if (fixedpos_containing_block_fragment) {
-        fixedpos_containing_block_offset =
-            converter.ToLogical(descendant.fixedpos_containing_block.Offset(),
-                                fixedpos_containing_block_fragment->Size());
-        fixedpos_containing_block_rel_offset = RelativeInsetToLogical(
-            descendant.fixedpos_containing_block.RelativeOffset(),
-            writing_direction);
       }
-
-      OofInlineContainer<LogicalOffset> inline_container(
-          descendant.inline_container.container,
-          converter.ToLogical(descendant.inline_container.relative_offset,
-                              PhysicalSize()));
-
-      OofInlineContainer<LogicalOffset> fixedpos_inline_container(
-          descendant.fixedpos_inline_container.container,
-          converter.ToLogical(
-              descendant.fixedpos_inline_container.relative_offset,
-              PhysicalSize()));
-
-      // The static position should remain relative to its containing block
-      // fragment.
-      const WritingModeConverter containing_block_converter(
-          writing_direction, containing_block_fragment->Size());
-      LogicalStaticPosition static_position =
-          descendant.StaticPosition().ConvertToLogical(
-              containing_block_converter);
-
-      LogicalOofNodeForFragmentation node = {
-          descendant.Node(),
-          static_position,
-          !!descendant.requires_content_before_breaking,
-          inline_container,
-          OofContainingBlock<LogicalOffset>(
-              containing_block_offset, containing_block_rel_offset,
-              containing_block_fragment,
-              descendant.containing_block.ClippedContainerBlockOffset(),
-              descendant.containing_block.IsInsideColumnSpanner()),
-          OofContainingBlock<LogicalOffset>(
-              fixedpos_containing_block_offset,
-              fixedpos_containing_block_rel_offset,
-              fixedpos_containing_block_fragment,
-              descendant.fixedpos_containing_block
-                  .ClippedContainerBlockOffset(),
-              descendant.fixedpos_containing_block.IsInsideColumnSpanner()),
-          fixedpos_inline_container};
-      oof_nodes_to_layout.push_back(node);
+      oof_nodes_to_layout.push_back(descendant);
     }
     previous_multicol_break_token = break_token;
   }
@@ -1219,6 +1195,15 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
 
   DCHECK(!limited_multicol_container_builder
               .HasOutOfFlowFragmentainerDescendants());
+
+  // Any candidates in the children of the inner multicol have already been
+  // propagated properly when the inner multicol was laid out.
+  //
+  // During layout of the OOF positioned descendants, which is about to take
+  // place, new candidates may be discovered (when there's a fixedpos inside an
+  // abspos, for instance), that will be transferred to the actual fragment
+  // builder further below.
+  limited_multicol_container_builder.ClearOutOfFlowPositionedCandidates();
 
   wtf_size_t old_fragment_count =
       limited_multicol_container_builder.Children().size();
@@ -1817,10 +1802,7 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     NonOverflowingScrollRange non_overflowing_range;
     // Do @try placement decisions on the *base style* to avoid interference
     // from animations and transitions.
-    const ComputedStyle& style =
-        RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled()
-            ? *iter.GetStyle().GetBaseComputedStyleOrThis()
-            : iter.GetStyle();
+    const ComputedStyle& style = iter.ActivateBaseStyleForTryAttempt();
     offset_info = TryCalculateOffset(node_info, style, anchor_queries,
                                      implicit_anchor, has_next_fallback_style,
                                      is_first_run, &non_overflowing_range);
@@ -1839,13 +1821,15 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     }
   }
 
-  if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled()) {
+  if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled() &&
+      iter.UsesFallbackStyle()) {
     // Once the @try placement has been decided, calculate the offset again,
     // using the non-base style.
     NonOverflowingScrollRange non_overflowing_range_unused;
-    offset_info = TryCalculateOffset(
-        node_info, iter.GetStyle(), anchor_queries, implicit_anchor,
-        iter.HasNextStyle(), is_first_run, &non_overflowing_range_unused);
+    offset_info =
+        TryCalculateOffset(node_info, iter.ActivateStyleForChosenFallback(),
+                           anchor_queries, implicit_anchor, iter.HasNextStyle(),
+                           is_first_run, &non_overflowing_range_unused);
   }
 
   if (iter.UsesFallbackStyle()) {
@@ -1970,8 +1954,49 @@ OutOfFlowLayoutPart::TryCalculateOffset(
 
   absl::optional<LogicalSize> replaced_size;
   if (node_info.node.IsReplaced()) {
+    // Create a new space with the IMCB size, and stretch constraints.
+    ConstraintSpaceBuilder builder(candidate_style.GetWritingMode(),
+                                   candidate_style.GetWritingDirection(),
+                                   /* is_new_fc */ true);
+    builder.SetAvailableSize(imcb.Size());
+    builder.SetPercentageResolutionSize(
+        node_info.constraint_space.PercentageResolutionSize());
+    builder.SetReplacedPercentageResolutionSize(
+        node_info.constraint_space.PercentageResolutionSize());
+
+    if (RuntimeEnabledFeatures::LayoutAlignForPositionedEnabled()) {
+      const bool is_parallel =
+          IsParallelWritingMode(container_writing_direction.GetWritingMode(),
+                                candidate_writing_direction.GetWritingMode());
+      const ItemPosition inline_position =
+          (is_parallel ? candidate_style.JustifySelf()
+                       : candidate_style.AlignSelf())
+              .GetPosition();
+      const bool is_inline_stretch =
+          !IsInsetAutoForAxis(candidate_style.LogicalInlineStart(),
+                              candidate_style.LogicalInlineEnd(),
+                              candidate_style, container_writing_direction,
+                              anchor_evaluator) &&
+          inline_position == ItemPosition::kStretch;
+      if (is_inline_stretch) {
+        builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
+      }
+      const ItemPosition block_position =
+          (is_parallel ? candidate_style.AlignSelf()
+                       : candidate_style.JustifySelf())
+              .GetPosition();
+      const bool is_block_stretch =
+          !IsInsetAutoForAxis(candidate_style.LogicalTop(),
+                              candidate_style.LogicalBottom(), candidate_style,
+                              container_writing_direction, anchor_evaluator) &&
+          block_position == ItemPosition::kStretch;
+      if (is_block_stretch) {
+        builder.SetBlockAutoBehavior(AutoSizeBehavior::kStretchExplicit);
+      }
+    }
+
     replaced_size = ComputeReplacedSize(
-        node_info.node, node_info.constraint_space, border_padding, imcb.Size(),
+        node_info.node, builder.ToConstraintSpace(), border_padding,
         ReplacedSizeMode::kNormal, anchor_evaluator);
   }
 
@@ -1996,7 +2021,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   if (try_fit_available_space) {
     imcb_for_position_fallback = ComputeIMCBForPositionFallback(
         node_info.constraint_space.AvailableSize(), insets,
-        node_info.static_position, container_writing_direction,
+        node_info.static_position, candidate_style, container_writing_direction,
         candidate_writing_direction);
     if (!CalculateNonOverflowingRangeInOneAxis(
             insets.inline_start, insets.inline_end,

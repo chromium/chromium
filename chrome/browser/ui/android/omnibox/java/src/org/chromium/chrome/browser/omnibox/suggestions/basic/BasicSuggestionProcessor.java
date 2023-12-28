@@ -83,7 +83,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         if (suggestion.isSearchSuggestion()) {
             switch (suggestion.getType()) {
                 case OmniboxSuggestionType.VOICE_SUGGEST:
-                    icon = R.drawable.btn_mic;
+                    icon = R.drawable.ic_mic_white_24dp;
                     break;
 
                 case OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED:
@@ -99,7 +99,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
             }
         } else if (
         /* !isSearchSuggestion && */ mBookmarkState.isBookmarked(suggestion.getUrl())) {
-            icon = R.drawable.btn_star;
+            icon = R.drawable.star_outline_24dp;
         }
 
         return icon == 0
@@ -110,7 +110,6 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
     @Override
     public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
         super.populateModel(suggestion, model, position);
-        final @OmniboxSuggestionType int suggestionType = suggestion.getType();
         final boolean isSearchSuggestion = suggestion.isSearchSuggestion();
         SuggestionSpannable textLine2 = null;
         boolean urlHighlighted = false;

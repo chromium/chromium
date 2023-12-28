@@ -64,8 +64,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) UiElementContainerView
       const AssistantUiElement* ui_element) override;
   void OnAllViewsAnimatedIn() override;
 
-  raw_ptr<views::View, ExperimentalAsh> scroll_indicator_ =
-      nullptr;  // Owned by view hierarchy.
+  raw_ptr<views::View> scroll_indicator_ = nullptr;  // Owned by view hierarchy.
 
   // Factory instance used to construct views for modeled UI elements.
   std::unique_ptr<AssistantUiElementViewFactory> view_factory_;

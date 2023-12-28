@@ -145,6 +145,9 @@ namespace base {
 class Environment;
 class File;
 class FilePath;
+namespace sequence_manager::internal {
+class WorkTracker;
+}  // namespace sequence_manager::internal
 }  // namespace base
 
 bool EnsureBrowserStateDirectoriesCreated(const base::FilePath&,
@@ -210,10 +213,6 @@ bool IsCoreSchedulingAvailable();
 int NumberOfPhysicalCores();
 }  // namespace system
 }  // namespace chromeos
-namespace chrome_cleaner {
-class ResetShortcutsComponent;
-class SystemReportComponent;
-}  // namespace chrome_cleaner
 namespace content {
 class BrowserGpuChannelHostFactory;
 class BrowserMainLoop;
@@ -313,6 +312,7 @@ class BlockingUrlProtocol;
 class FileVideoCaptureDeviceFactory;
 class MojoVideoEncodeAccelerator;
 class PaintCanvasVideoRenderer;
+class VpxChangeStateScopedAllowBaseSyncPrimitives;
 }  // namespace media
 namespace memory_instrumentation {
 class OSMetrics;
@@ -739,8 +739,6 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBaseSyncPrimitives {
   friend class blink::scheduler::NonMainThreadImpl;
   friend class cc::CategorizedWorkerPoolImpl;
   friend class cc::CategorizedWorkerPoolJob;
-  friend class chrome_cleaner::ResetShortcutsComponent;
-  friend class chrome_cleaner::SystemReportComponent;
   friend class content::BrowserMainLoop;
   friend class content::BrowserProcessIOThread;
   friend class content::DWriteFontCollectionProxy;
@@ -753,6 +751,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBaseSyncPrimitives {
   friend class leveldb::port::CondVar;
   friend class nearby::chrome::ScheduledExecutor;
   friend class nearby::chrome::SubmittableExecutor;
+  friend class media::VpxChangeStateScopedAllowBaseSyncPrimitives;
   friend class media::AudioOutputDevice;
   friend class media::BlockingUrlProtocol;
   friend class media::MojoVideoEncodeAccelerator;
@@ -816,6 +815,7 @@ class BASE_EXPORT
   friend class base::StackSamplingProfiler;
   friend class base::internal::JobTaskSource;
   friend class base::sequence_manager::internal::TaskQueueImpl;
+  friend class base::sequence_manager::internal::WorkTracker;
   friend class base::win::ObjectWatcher;
   friend class blink::AudioDestination;
   friend class blink::RTCVideoDecoderAdapter;

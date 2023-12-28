@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/fake_browser_context_helper_delegate.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/cellular_metrics_logger.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
@@ -25,39 +26,6 @@
 #include "components/user_manager/scoped_user_manager.h"
 
 namespace ash::sync_wifi {
-namespace {
-
-class FakeBrowserContextHelperDelegate
-    : public ash::BrowserContextHelper::Delegate {
- public:
-  FakeBrowserContextHelperDelegate() = default;
-  ~FakeBrowserContextHelperDelegate() override = default;
-
-  content::BrowserContext* GetBrowserContextByPath(
-      const base::FilePath& path) override {
-    NOTREACHED();
-    return nullptr;
-  }
-
-  content::BrowserContext* DeprecatedGetBrowserContext(
-      const base::FilePath& path) override {
-    NOTREACHED();
-    return nullptr;
-  }
-
-  content::BrowserContext* GetOrCreatePrimaryOTRBrowserContext(
-      content::BrowserContext* browser_context) override {
-    NOTREACHED();
-    return nullptr;
-  }
-
-  const base::FilePath* GetUserDataDir() override { return &user_data_dir_; }
-
- private:
-  const base::FilePath user_data_dir_{"fake_user_data_dir"};
-};
-
-}  // namespace
 
 NetworkTestHelper::NetworkTestHelper()
     : CrosNetworkConfigTestHelper(/*initialize= */ false) {

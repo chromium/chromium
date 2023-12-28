@@ -182,8 +182,7 @@ class ClassroomBubbleViewTest : public AshTestBase {
   // ClassroomBubbleStudentViewTest.ReadsInitialComboBoxViewValueFromPrefs
   // -
   // https://ci.chromium.org/ui/p/chromium/builders/try/linux-chromeos-rel/1690881/overview
-  raw_ptr<ClassroomBubbleBaseView, FlakyDanglingUntriaged | ExperimentalAsh>
-      view_;
+  raw_ptr<ClassroomBubbleBaseView, FlakyDanglingUntriaged> view_;
   const GlanceablesTestNewWindowDelegate new_window_delegate_;
 
  private:

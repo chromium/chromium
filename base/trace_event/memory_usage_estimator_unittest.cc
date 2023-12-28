@@ -247,19 +247,18 @@ TEST(EstimateMemoryUsageTest, IsStandardContainerComplexIteratorTest) {
   };
 
   static_assert(
-      internal::IsStandardContainerComplexIterator<std::list<int>::iterator>(),
+      internal::IsIteratorOfStandardContainer<std::list<int>::iterator>, "");
+  static_assert(
+      internal::IsIteratorOfStandardContainer<std::list<int>::const_iterator>,
       "");
-  static_assert(internal::IsStandardContainerComplexIterator<
-                    std::list<int>::const_iterator>(),
+  static_assert(
+      internal::IsIteratorOfStandardContainer<std::list<int>::reverse_iterator>,
+      "");
+  static_assert(internal::IsIteratorOfStandardContainer<
+                    std::list<int>::const_reverse_iterator>,
                 "");
-  static_assert(internal::IsStandardContainerComplexIterator<
-                    std::list<int>::reverse_iterator>(),
-                "");
-  static_assert(internal::IsStandardContainerComplexIterator<
-                    std::list<int>::const_reverse_iterator>(),
-                "");
-  static_assert(!internal::IsStandardContainerComplexIterator<int>(), "");
-  static_assert(!internal::IsStandardContainerComplexIterator<abstract*>(), "");
+  static_assert(!internal::IsIteratorOfStandardContainer<int>, "");
+  static_assert(!internal::IsIteratorOfStandardContainer<abstract*>, "");
 }
 
 }  // namespace trace_event

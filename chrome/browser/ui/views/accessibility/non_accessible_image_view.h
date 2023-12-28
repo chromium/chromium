@@ -11,8 +11,9 @@
 // ImageView that sets the "invisible" state on AXNodeData so that
 // the image is not traversed by screen readers.
 class NonAccessibleImageView : public views::ImageView {
+  METADATA_HEADER(NonAccessibleImageView, views::ImageView)
+
  public:
-  METADATA_HEADER(NonAccessibleImageView);
   NonAccessibleImageView();
   NonAccessibleImageView(const NonAccessibleImageView&) = delete;
   NonAccessibleImageView& operator=(const NonAccessibleImageView&) = delete;

@@ -574,8 +574,6 @@ class BFCachedRenderWidgetHostViewBrowserTest
     std::vector<base::test::FeatureRefAndParams> enabled_features =
         GetDefaultEnabledBackForwardCacheFeaturesForTesting(
             /*ignore_outstanding_network_request=*/false);
-    // To evict the main frame's `viz::SurfaceId` while in BFCache.
-    enabled_features.push_back({features::kEvictSubtree, {{}}});
 
     scoped_feature_list_.InitWithFeaturesAndParameters(
         enabled_features,

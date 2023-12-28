@@ -5,10 +5,6 @@
 #ifndef NET_SSL_SSL_INFO_H_
 #define NET_SSL_SSL_INFO_H_
 
-#include <stdint.h>
-
-#include <vector>
-
 #include "base/memory/scoped_refptr.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
@@ -95,11 +91,6 @@ class NET_EXPORT SSLInfo {
   // The hashes, in several algorithms, of the SubjectPublicKeyInfos from
   // each certificate in the chain.
   HashValueVector public_key_hashes;
-
-  // pinning_failure_log contains a message produced by
-  // TransportSecurityState::PKPState::CheckPublicKeyPins in the event of a
-  // pinning failure. It is a (somewhat) human-readable string.
-  std::string pinning_failure_log;
 
   // List of SignedCertificateTimestamps and their corresponding validation
   // status.

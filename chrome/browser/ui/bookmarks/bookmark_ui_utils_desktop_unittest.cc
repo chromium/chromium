@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
@@ -27,7 +28,7 @@ TEST_F(BookmarkUIUtilsTest, HasBookmarkURLs) {
   std::unique_ptr<BookmarkModel> model(
       bookmarks::TestBookmarkClient::CreateModel());
 
-  std::vector<const BookmarkNode*> nodes;
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
 
   // This tests that |nodes| contains an URL.
   const BookmarkNode* page1 = model->AddURL(
@@ -68,7 +69,7 @@ TEST_F(BookmarkUIUtilsTest, HasBookmarkURLsAllowedInIncognitoMode) {
       bookmarks::TestBookmarkClient::CreateModel());
   TestingProfile profile;
 
-  std::vector<const BookmarkNode*> nodes;
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
 
   // This tests that |nodes| contains an disabled-in-incognito URL.
   const BookmarkNode* page1 =

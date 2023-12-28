@@ -26,7 +26,7 @@
 #import "google_apis/gaia/gaia_auth_util.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
-#import "ios/chrome/browser/policy/policy_util.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -135,10 +135,9 @@ void AuthenticationService::Initialize(
                                    browser_signin_policy_callback);
 
   // Reload credentials to ensure the accounts from the token service are
-  // up-to-date.
-  // As UpdateHaveAccountsChangedAtColdStart is only called while the
-  // application is cold starting, `keychain_reload` must be set to true.
-  ReloadCredentialsFromIdentities(/*keychain_reload=*/true);
+  // up-to-date. As this is called while the application is started,
+  // `should_prompt` must be set to true.
+  ReloadCredentialsFromIdentities(/*should_prompt=*/true);
 
   OnApplicationWillEnterForeground();
   bool has_primary_account_after_initialize =
@@ -335,6 +334,7 @@ void AuthenticationService::SignIn(id<SystemIdentity> identity,
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   CHECK(!primary_account.empty());
   CHECK_EQ(account_id, primary_account);
+  pref_service_->SetTime(prefs::kLastSigninTimestamp, base::Time::Now());
   crash_keys::SetCurrentlySignedIn(true);
 }
 
@@ -480,7 +480,7 @@ void AuthenticationService::OnPrimaryAccountChanged(
   }
 }
 
-void AuthenticationService::OnIdentityListChanged(bool need_user_approval) {
+void AuthenticationService::OnIdentityListChanged(bool notify_user) {
   ClearAccountSettingsPrefsOfRemovedAccounts();
 
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
@@ -500,7 +500,7 @@ void AuthenticationService::OnIdentityListChanged(bool need_user_approval) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&AuthenticationService::ReloadCredentialsFromIdentities,
-                     GetWeakPtr(), need_user_approval));
+                     GetWeakPtr(), /*should_prompt=*/notify_user));
 }
 
 bool AuthenticationService::HandleMDMError(id<SystemIdentity> identity,
@@ -662,13 +662,13 @@ void AuthenticationService::HandleForgottenIdentity(
 }
 
 void AuthenticationService::ReloadCredentialsFromIdentities(
-    bool keychain_reload) {
+    bool should_prompt) {
   if (is_reloading_credentials_)
     return;
 
   base::AutoReset<bool> auto_reset(&is_reloading_credentials_, true);
 
-  HandleForgottenIdentity(nil, keychain_reload, /*device_restore=*/false);
+  HandleForgottenIdentity(nil, should_prompt, /*device_restore=*/false);
   if (!HasPrimaryIdentity(signin::ConsentLevel::kSignin))
     return;
 

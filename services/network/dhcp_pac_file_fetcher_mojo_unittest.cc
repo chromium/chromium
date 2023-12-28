@@ -44,7 +44,7 @@ class DhcpPacFileFetcherMojoTest : public testing::Test {
   }
 
   std::unique_ptr<DhcpPacFileFetcherMojo> dhcp_pac_file_fetcher_mojo_;
-  raw_ptr<net::MockPacFileFetcher, ExperimentalAsh> mock_pac_file_fetcher_;
+  raw_ptr<net::MockPacFileFetcher> mock_pac_file_fetcher_;
 
  private:
   base::test::TaskEnvironment task_environment_;

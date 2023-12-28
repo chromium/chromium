@@ -73,8 +73,7 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
 
     // Called after FakeServer has processed a successful commit. The types
     // updated as part of the commit are passed in |committed_model_types|.
-    virtual void OnCommit(const std::string& committer_invalidator_client_id,
-                          syncer::ModelTypeSet committed_model_types) {}
+    virtual void OnCommit(syncer::ModelTypeSet committed_model_types) {}
 
     // Called after FakeServer has processed a successful get updates request.
     virtual void OnSuccessfulGetUpdates() {}
@@ -248,13 +247,11 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   void TriggerMigrationDoneError(syncer::ModelTypeSet types);
 
   // Implement LoopbackServer::ObserverForTests:
-  void OnCommit(const std::string& committer_invalidator_client_id,
-                syncer::ModelTypeSet committed_model_types) override;
+  void OnCommit(syncer::ModelTypeSet committed_model_types) override;
   void OnHistoryCommit(const std::string& url) override;
 
-  // Returns all URLs that were committed to server-side history, which happens
-  // either through SESSIONS (if the "History" toggle is enabled) or through
-  // HISTORY.
+  // Returns all URLs that were committed to server-side history through the
+  // HISTORY data type.
   const std::set<std::string>& GetCommittedHistoryURLs() const;
 
   std::string GetStoreBirthday() const;
@@ -270,6 +267,11 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // exponential backoff, which can cause tests to be slow or time out.
   void OverrideResponseType(
       syncer::LoopbackServer::ResponseTypeProvider response_type_override);
+
+  // Performs any pending disk write immediately. This is useful on platforms
+  // where shutdown isn't graceful, and this object may not be destructed
+  // properly (otherwise, the destructor takes care of this automatically).
+  void FlushToDisk();
 
  private:
   // Analogous to HandleCommand() but deals with parsed protos.
@@ -300,8 +302,7 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // If set, the server will return HTTP errors.
   absl::optional<net::HttpStatusCode> http_error_status_code_;
 
-  // All URLs received via history sync (powered either by SESSIONS or by
-  // HISTORY).
+  // All URLs received via HISTORY sync.
   std::set<std::string> committed_history_urls_;
 
   // Used as the error_code field of ClientToServerResponse on all commit

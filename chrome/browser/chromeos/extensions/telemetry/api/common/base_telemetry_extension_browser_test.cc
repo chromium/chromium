@@ -90,6 +90,7 @@ std::string BaseTelemetryExtensionBrowserTest::GetManifestFile(
           "os.bluetooth_peripherals_info",
           "os.diagnostics",
           "os.events",
+          "os.management.audio",
           "os.telemetry",
           "os.telemetry.serial_number",
           "os.telemetry.network_info"

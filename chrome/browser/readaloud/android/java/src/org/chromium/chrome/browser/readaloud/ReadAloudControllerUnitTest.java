@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.readaloud;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
+import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -23,6 +26,7 @@ import android.app.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,9 +41,12 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.ApplicationState;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
@@ -47,6 +54,7 @@ import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.readaloud.ReadAloudMetrics.IneligibilityReason;
 import org.chromium.chrome.browser.search_engines.SearchEngineType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
@@ -62,6 +70,7 @@ import org.chromium.chrome.modules.readaloud.Player;
 import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooks;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -80,7 +89,7 @@ import java.util.List;
 /** Unit tests for {@link ReadAloudController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures(ChromeFeatureList.READALOUD)
+@EnableFeatures({ChromeFeatureList.READALOUD, ChromeFeatureList.READALOUD_PLAYBACK})
 public class ReadAloudControllerUnitTest {
     private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
 
@@ -120,6 +129,7 @@ public class ReadAloudControllerUnitTest {
     @Mock private RenderFrameHost mRenderFrameHost;
     @Mock private TemplateUrl mSearchEngine;
     private GlobalRenderFrameHostId mGlobalRenderFrameHostId = new GlobalRenderFrameHostId(1, 1);
+    public UserActionTester mUserActionTester;
 
     @Before
     public void setUp() {
@@ -188,6 +198,12 @@ public class ReadAloudControllerUnitTest {
         doReturn(List.of(new PlaybackVoice("en", "voiceA", "")))
                 .when(mPlaybackHooks)
                 .getVoicesFor(anyString());
+        mUserActionTester = new UserActionTester();
+    }
+
+    @After
+    public void tearDown() {
+        mUserActionTester.tearDown();
     }
 
     @Test
@@ -1078,6 +1094,176 @@ public class ReadAloudControllerUnitTest {
         mCallbackCaptor.getValue().onSuccess(testUrl, true, false);
 
         assertEquals(mController.getReadabilitySupplier().get(), testUrl);
+    }
+
+    @Test
+    public void testMetricRecorded_isReadable() {
+        final String histogramName = ReadAloudMetrics.IS_READABLE;
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, true);
+        mController.maybeCheckReadability(sTestGURL);
+        verify(mHooksImpl, times(1))
+                .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), true, false);
+        histogram.assertExpected();
+
+        histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, false);
+        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), false, false);
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testMetricRecorded_readabilitySuccessful() {
+        final String histogramName = ReadAloudMetrics.READABILITY_SUCCESS;
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, true);
+        mController.maybeCheckReadability(sTestGURL);
+        verify(mHooksImpl, times(1))
+                .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), true, false);
+        histogram.assertExpected();
+
+        histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, false);
+        mController.maybeCheckReadability(sTestGURL);
+        verify(mHooksImpl, times(1))
+                .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+        mCallbackCaptor
+                .getValue()
+                .onFailure(sTestGURL.getSpec(), new Throwable("Something went wrong"));
+        histogram.assertExpected();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.READALOUD_PLAYBACK)
+    public void testReadAloudPlaybackFlagCheckedAfterReadability() {
+        mController.maybeCheckReadability(sTestGURL);
+        verify(mHooksImpl, times(1))
+                .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), true, false);
+
+        assertFalse(mController.isReadable(mTab));
+    }
+
+    @Test
+    public void testPlaybackStopsAndStateSavedWhenAppBackgrounded() {
+        // Play tab.
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+        mController.playTab(mTab);
+        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
+        onPlaybackSuccess(mPlayback);
+        verify(mPlayback, times(1)).play();
+        var data = Mockito.mock(PlaybackData.class);
+        // set progress
+        doReturn(2).when(data).paragraphIndex();
+        doReturn(1000000L).when(data).positionInParagraphNanos();
+        mController.onPlaybackDataChanged(data);
+
+        // App is backgrounded. Make sure playback stops.
+        mController.onApplicationStateChange(ApplicationState.HAS_STOPPED_ACTIVITIES);
+        verify(mPlayback).release();
+        reset(mPlayback);
+
+        // App goes back in foreground. Restore progress.
+        mController.onApplicationStateChange(ApplicationState.HAS_RUNNING_ACTIVITIES);
+        verify(mPlaybackHooks, times(2)).createPlayback(any(), mPlaybackCallbackCaptor.capture());
+        onPlaybackSuccess(mPlayback);
+        verify(mPlayback).seekToParagraph(2, 1000000L);
+        verify(mPlayback, never()).play();
+
+        // once saved state is restored, it's cleared and no further interactions with playback
+        // should happen.
+        reset(mPlayback);
+        reset(mPlaybackHooks);
+        mController.onApplicationStateChange(ApplicationState.HAS_PAUSED_ACTIVITIES);
+        mController.onApplicationStateChange(ApplicationState.HAS_RUNNING_ACTIVITIES);
+        verify(mPlaybackHooks, never()).createPlayback(any(), mPlaybackCallbackCaptor.capture());
+        verify(mPlayback, never()).release();
+    }
+
+    @Test
+    public void testMetricRecorded_eligibility() {
+        final String histogramName = ReadAloudMetrics.IS_USER_ELIGIBLE;
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, true);
+        mController.getTabModelTabObserverforTests().onPageLoadStarted(mTab, mTab.getUrl());
+        histogram.assertExpected();
+
+        histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, false);
+        when(mPrefService.getBoolean("readaloud.listen_to_this_page_enabled")).thenReturn(false);
+        mController.getTabModelTabObserverforTests().onPageLoadStarted(mTab, mTab.getUrl());
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testMetricRecorded_ineligibilityReason() {
+        final String histogramName = ReadAloudMetrics.INELIGIBILITY_REASON;
+
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        histogramName, IneligibilityReason.POLICY_DISABLED);
+        when(mPrefService.getBoolean("readaloud.listen_to_this_page_enabled")).thenReturn(false);
+        mController.getTabModelTabObserverforTests().onPageLoadStarted(mTab, mTab.getUrl());
+        histogram.assertExpected();
+        when(mPrefService.getBoolean("readaloud.listen_to_this_page_enabled")).thenReturn(true);
+
+        histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        histogramName, IneligibilityReason.DEFAULT_SEARCH_ENGINE_GOOGLE_FALSE);
+        doReturn(SearchEngineType.SEARCH_ENGINE_OTHER)
+                .when(mTemplateUrlService)
+                .getSearchEngineTypeFromTemplateUrl(anyString());
+        mController.getTabModelTabObserverforTests().onPageLoadStarted(mTab, mTab.getUrl());
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testMetricRecorded_isPlaybackCreationSuccessful_True() {
+        final String histogramName = ReadAloudMetrics.IS_TAB_PLAYBACK_CREATION_SUCCESSFUL;
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, true);
+        mController.playTab(mTab);
+        verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+        onPlaybackSuccess(mPlayback);
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testMetricRecorded_isPlaybackCreationSuccessful_False() {
+        final String histogramName = ReadAloudMetrics.IS_TAB_PLAYBACK_CREATION_SUCCESSFUL;
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, false);
+        mController.playTab(mTab);
+        verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+        mPlaybackCallbackCaptor.getValue().onFailure(new Exception("Very bad error"));
+        resolvePromises();
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testMetricNotRecorded_isPlaybackCreationSuccessful() {
+        final String histogramName = ReadAloudMetrics.IS_TAB_PLAYBACK_CREATION_SUCCESSFUL;
+        var histogram = HistogramWatcher.newBuilder().expectNoRecords(histogramName).build();
+
+        // Play tab to set up playbackhooks
+        mController.playTab(mTab);
+
+        // Preview a voice.
+        var voice = new PlaybackVoice("en", "asdf", "");
+        doReturn(List.of(voice)).when(mPlaybackHooks).getVoicesFor(anyString());
+        doReturn(List.of(voice)).when(mPlaybackHooks).getPlaybackVoiceList(any());
+        mController.previewVoice(voice);
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testMetricRecorded_playbackStarted() {
+        final String actionName = "ReadAloud.PlaybackStarted";
+        ReadAloudMetrics.recordPlaybackStarted();
+        assertThat(mUserActionTester.getActions(), hasItems(actionName));
     }
 
     private void onPlaybackSuccess(Playback playback) {

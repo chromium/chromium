@@ -32,7 +32,7 @@ bool ProofSourceChromium::Initialize(const base::FilePath& cert_path,
   }
 
   certs_in_file_ = X509Certificate::CreateCertificateListFromBytes(
-      base::as_bytes(base::make_span(cert_data)), X509Certificate::FORMAT_AUTO);
+      base::as_byte_span(cert_data), X509Certificate::FORMAT_AUTO);
 
   if (certs_in_file_.empty()) {
     DLOG(FATAL) << "No certificates.";

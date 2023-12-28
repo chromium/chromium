@@ -6,8 +6,7 @@
 
 #include "base/check_op.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 ProviderId::ProviderId(const std::string& internal_id,
                        ProviderType provider_type)
@@ -145,5 +144,4 @@ ProvidedFileSystemInfo::ProvidedFileSystemInfo(
 
 ProvidedFileSystemInfo::~ProvidedFileSystemInfo() {}
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

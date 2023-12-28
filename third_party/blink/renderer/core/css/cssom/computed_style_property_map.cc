@@ -69,7 +69,7 @@ const ComputedStyle* ComputedStylePropertyMap::UpdateStyle() const {
   // Update style before getting the value for the property
   // This could cause the element to be blown away. This code is copied from
   // CSSComputedStyleDeclaration::GetPropertyCSSValue.
-  element->GetDocument().UpdateStyleAndLayoutTreeForNode(
+  element->GetDocument().UpdateStyleAndLayoutTreeForElement(
       element, DocumentUpdateReason::kComputedStyle);
   element = StyledElement();
   if (!element) {

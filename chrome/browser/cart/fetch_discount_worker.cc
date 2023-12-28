@@ -156,15 +156,11 @@ void FetchDiscountWorker::ReadyToFetch(
     auto cart_url = pair.second.merchant_cart_url();
     bool is_partner_merchant = commerce::IsPartnerMerchant(GURL(cart_url));
     bool is_potential_merchant =
-        base::FeatureList::IsEnabled(commerce::kMerchantWidePromotion) &&
         !commerce::IsNoDiscountMerchant(GURL(cart_url));
     has_partner_merchant |= is_partner_merchant;
     has_potential_merchant |= is_potential_merchant;
   }
-  bool allow_to_fetch = base::GetFieldTrialParamByFeatureAsBool(
-      commerce::kMerchantWidePromotion,
-      commerce::kReadyToFetchMerchantWidePromotionParam, true);
-  if (has_partner_merchant || (has_potential_merchant && allow_to_fetch)) {
+  if (has_partner_merchant || has_potential_merchant) {
     backend_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(

@@ -139,11 +139,19 @@ class MacAudioInputTest : public testing::Test {
 #endif
   }
 
+  int HardwareSampleRateForDefaultInputDevice() {
+    // Determine the default input device's sample-rate.
+    AudioDeviceID input_device_id = kAudioObjectUnknown;
+    AudioManagerMac::GetDefaultInputDevice(&input_device_id);
+    auto* manager = static_cast<AudioManagerApple*>(audio_manager_.get());
+    return manager->HardwareSampleRateForDevice(input_device_id);
+  }
+
   // Convenience method which creates a default AudioInputStream object using
   // a 10ms frame size and a sample rate which is set to the hardware sample
   // rate.
   AudioInputStream* CreateDefaultAudioInputStream() {
-    int fs = static_cast<int>(AUAudioInputStream::HardwareSampleRate());
+    int fs = HardwareSampleRateForDefaultInputDevice();
     int samples_per_packet = fs / 100;
     AudioInputStream* ais = audio_manager_->MakeAudioInputStream(
         AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
@@ -159,7 +167,7 @@ class MacAudioInputTest : public testing::Test {
   // specified channel layout.
   AudioInputStream* CreateAudioInputStream(
       ChannelLayoutConfig channel_layout_config) {
-    int fs = static_cast<int>(AUAudioInputStream::HardwareSampleRate());
+    int fs = HardwareSampleRateForDefaultInputDevice();
     int samples_per_packet = fs / 100;
     AudioInputStream* ais = audio_manager_->MakeAudioInputStream(
         AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
@@ -289,7 +297,7 @@ TEST_F(MacAudioInputTest, DISABLED_AUAudioInputStreamRecordToFile) {
   ABORT_AUDIO_TEST_IF_NOT(InputDevicesAvailable());
   const char* file_name = "out_stereo_10sec.pcm";
 
-  int fs = static_cast<int>(AUAudioInputStream::HardwareSampleRate());
+  int fs = HardwareSampleRateForDefaultInputDevice();
   AudioInputStream* ais = CreateDefaultAudioInputStream();
   EXPECT_EQ(ais->Open(), AudioInputStream::OpenOutcome::kSuccess);
 

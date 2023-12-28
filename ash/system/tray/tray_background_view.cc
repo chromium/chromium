@@ -174,7 +174,7 @@ class HighlightPathGenerator : public views::HighlightPathGenerator {
   }
 
  private:
-  const raw_ptr<TrayBackgroundView, ExperimentalAsh> tray_background_view_;
+  const raw_ptr<TrayBackgroundView> tray_background_view_;
   const gfx::Insets insets_;
 };
 
@@ -214,7 +214,7 @@ class TrayBackgroundView::TrayWidgetObserver : public views::WidgetObserver {
   void Add(views::Widget* widget) { observations_.AddObservation(widget); }
 
  private:
-  raw_ptr<TrayBackgroundView, ExperimentalAsh> host_;
+  raw_ptr<TrayBackgroundView> host_;
   base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
       observations_{this};
 };
@@ -250,7 +250,7 @@ class TrayBackgroundView::TrayBackgroundViewSessionChangeHandler
         FROM_HERE, callback.Release());
   }
 
-  const raw_ptr<TrayBackgroundView, ExperimentalAsh> tray_;
+  const raw_ptr<TrayBackgroundView> tray_;
   ScopedSessionObserver session_observer_{this};
 };
 

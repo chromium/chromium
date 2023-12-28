@@ -11,7 +11,6 @@
 #define ASSISTANT_SOCKETS_STRING "sockets"
 #define ASSISTANT_TEMP_DIR "/tmp/libassistant/"
 #define LIBASSISTANT_DLC_DIR "opt/google/chrome/"
-#define LIBASSISTANT_V1_NAME "libassistant.so"
 #define LIBASSISTANT_V2_NAME "libassistant_v2.so"
 
 namespace ash::libassistant {
@@ -26,9 +25,6 @@ const base::FilePath::CharType kLibAssistantSocketPath[] =
 const char kLibAssistantDlcRootPath[] =
     "/run/imageloader/assistant-dlc/package/root";
 
-const base::FilePath::CharType kLibAssistantV1DlcPath[] =
-    FILE_PATH_LITERAL(LIBASSISTANT_DLC_DIR LIBASSISTANT_V1_NAME);
-
 const base::FilePath::CharType kLibAssistantV2DlcPath[] =
     FILE_PATH_LITERAL(LIBASSISTANT_DLC_DIR LIBASSISTANT_V2_NAME);
 #else
@@ -40,9 +36,6 @@ const base::FilePath::CharType kLibAssistantSocketPath[] =
     FILE_PATH_LITERAL(ASSISTANT_TEMP_DIR ASSISTANT_SOCKETS_STRING);
 
 const char kLibAssistantDlcRootPath[] = "";
-
-const base::FilePath::CharType kLibAssistantV1DlcPath[] =
-    FILE_PATH_LITERAL(LIBASSISTANT_V1_NAME);
 
 const base::FilePath::CharType kLibAssistantV2DlcPath[] =
     FILE_PATH_LITERAL(LIBASSISTANT_V2_NAME);

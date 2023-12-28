@@ -123,7 +123,6 @@ TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoSuccessfulResponse) {
       .is_masking_allowed = true,
   }};
   auto& web_app_data = expected_data.app_type_data.emplace<WebAppInstallData>();
-  web_app_data.manifest_id = GURL("https://example.com/");
   web_app_data.original_manifest_url =
       GURL("https://example.com/manifest.json");
   web_app_data.proxied_manifest_url =

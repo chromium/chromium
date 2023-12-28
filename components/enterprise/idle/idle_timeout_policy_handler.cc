@@ -123,6 +123,15 @@ void IdleTimeoutActionsPolicyHandler::ApplyPolicySettings(
   if (!log_message.empty()) {
     LOG_POLICY(INFO, POLICY_PROCESSING) << log_message;
   }
+
+#if BUILDFLAG(IS_IOS)
+  // Set the `kIdleTimeoutPolicyAppliesToUserOnly`pref if the policy is set as a
+  // user policy. This will determine whether data should be cleared for
+  // `TimePeriod::ALL_TIME` or only for the time the user was signed in.
+  bool user_policy =
+      policies.Get(policy_name())->scope == policy::POLICY_SCOPE_USER;
+  prefs->SetBoolean(prefs::kIdleTimeoutPolicyAppliesToUserOnly, user_policy);
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 bool IdleTimeoutActionsPolicyHandler::CheckPolicySettings(

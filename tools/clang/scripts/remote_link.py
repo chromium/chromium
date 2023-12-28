@@ -224,6 +224,11 @@ class RemoteLinkBase(object):
       return [param]
     if param.startswith('-g'):
       return [param]
+    if param.startswith('-m'):
+      # Note: -mllvm is handled separately above.
+      return [param]
+    if param.startswith('--target'):
+      return [param]
     return None
 
   def output_path(self, args):

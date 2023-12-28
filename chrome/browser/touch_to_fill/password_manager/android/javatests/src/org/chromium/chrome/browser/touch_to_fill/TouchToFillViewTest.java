@@ -11,7 +11,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
@@ -712,8 +711,14 @@ public class TouchToFillViewTest {
 
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        // The sheet should be expanded to half height.
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
+        // The sheet should be expanded to half height if possible, the half height state is
+        // disabled on small screens.
+        @BottomSheetController.SheetState
+        int desiredState =
+                mBottomSheetController.isSmallScreen()
+                        ? BottomSheetController.SheetState.FULL
+                        : BottomSheetController.SheetState.HALF;
+        pollUiThread(() -> getBottomSheetState() == desiredState);
     }
 
     @Test
@@ -728,7 +733,7 @@ public class TouchToFillViewTest {
 
         // The sheet should be expanded to half height and suppress scrolling.
         RecyclerView recyclerView = mTouchToFillView.getSheetItemListView();
-        assertTrue(recyclerView.isLayoutSuppressed());
+        assertEquals(!mBottomSheetController.isSmallScreen(), recyclerView.isLayoutSuppressed());
 
         // Expand the sheet to the full height and scrolling .
         TestThreadUtils.runOnUiThreadBlocking(

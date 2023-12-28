@@ -9,7 +9,7 @@
 #include "base/memory/ref_counted.h"
 #include "components/prefs/pref_store.h"
 #include "ios/chrome/browser/browser_state/model/chrome_browser_state_io_data.h"
-#include "ios/chrome/browser/net/net_types.h"
+#include "ios/chrome/browser/net/model/net_types.h"
 
 class ChromeBrowserState;
 class JsonPrefStore;

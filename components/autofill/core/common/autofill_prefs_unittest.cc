@@ -110,7 +110,7 @@ TEST_F(AutofillPrefsTest, WalletSyncTransportPref_UsesHashAccountId) {
   // Make sure that the dictionary keys don't contain the account id.
   const auto& dictionary =
       pref_service()->GetDict(prefs::kAutofillSyncTransportOptIn);
-  EXPECT_EQ(absl::nullopt, dictionary.FindInt(account1.ToString()));
+  EXPECT_EQ(std::nullopt, dictionary.FindInt(account1.ToString()));
 }
 
 // Tests that clearing the AutofillSyncTransportOptIn works as expected.

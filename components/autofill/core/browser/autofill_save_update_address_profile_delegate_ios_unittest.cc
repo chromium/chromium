@@ -31,7 +31,7 @@ class AutofillSaveUpdateAddressProfileDelegateIOSTest : public testing::Test {
   std::unique_ptr<AutofillSaveUpdateAddressProfileDelegateIOS>
   CreateAutofillSaveUpdateAddressProfileDelegate(
       AutofillProfile* original_profile = nullptr,
-      absl::optional<std::u16string> email = absl::nullopt,
+      std::optional<std::u16string> email = std::nullopt,
       bool is_migration_to_account = false,
       bool is_account_profile = false) {
     profile_ = std::make_unique<AutofillProfile>(test::GetFullProfile());

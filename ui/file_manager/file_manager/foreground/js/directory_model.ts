@@ -10,7 +10,7 @@ import {Aggregator, AsyncQueue} from '../../common/js/async_util.js';
 import {isModal} from '../../common/js/dialog_type.js';
 import {convertURLsToEntries, entriesToURLs, getRootType, isFakeEntry, isGuestOs, isNativeEntry, isOneDriveId, isRecentRootType, isSameEntry, urlToEntry} from '../../common/js/entry_utils.js';
 import type {GuestOsPlaceholder} from '../../common/js/files_app_entry_types.js';
-import {CustomEventMap, FilesEventTarget} from '../../common/js/files_event_target.js';
+import {type CustomEventMap, FilesEventTarget} from '../../common/js/files_event_target.js';
 import {isDlpEnabled, isDriveFsBulkPinningEnabled} from '../../common/js/flags.js';
 import {recordMediumCount, recordUserAction} from '../../common/js/metrics.js';
 import {getEntryLabel} from '../../common/js/translations.js';
@@ -27,10 +27,11 @@ import {changeDirectory} from '../../state/ducks/current_directory.js';
 import {clearSearch, getDefaultSearchOptions, updateSearch} from '../../state/ducks/search.js';
 import {getFileData, getStore, getVolume} from '../../state/store.js';
 
-import {constants} from './constants.js';
+import {CROSTINI_CONNECT_ERR, DLP_METADATA_PREFETCH_PROPERTY_NAMES, LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES} from './constants.js';
 import {ContentScanner, CrostiniMounter, DirectoryContents, DirectoryContentScanner, DriveMetadataSearchContentScanner, EmptyContentScanner, FileFilter, FileListContext, GuestOsMounter, MediaViewContentScanner, RecentContentScanner, SearchV2ContentScanner, TrashContentScanner} from './directory_contents.js';
 import {FileListModel} from './file_list_model.js';
 import {FileWatcher, type WatcherDirectoryChangedEvent} from './file_watcher.js';
+import type {MetadataKey} from './metadata/metadata_item.js';
 import type {MetadataModel} from './metadata/metadata_model.js';
 import {FileListSelectionModel, FileListSingleSelectionModel} from './ui/file_list_selection_model.js';
 import type {ListSelectionModel} from './ui/list_selection_model.js';
@@ -101,8 +102,8 @@ function getFileCategory(
 }
 
 export type DirectoryChangeEvent = CustomEvent<{
-  previousDirEntry: DirectoryEntry | FilesAppDirEntry | FakeEntry,
-  newDirEntry: DirectoryEntry | FilesAppDirEntry | FakeEntry,
+  previousDirEntry: DirectoryEntry | FilesAppDirEntry,
+  newDirEntry: DirectoryEntry | FilesAppDirEntry,
   volumeChanged: boolean,
 }>;
 
@@ -330,7 +331,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
   /**
    * Metadata property names that are expected to be Prefetched.
    */
-  getPrefetchPropertyNames(): string[] {
+  getPrefetchPropertyNames(): MetadataKey[] {
     return this.currentFileListContext_.prefetchPropertyNames;
   }
 
@@ -838,10 +839,10 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
         chrome.fileManagerPrivate.pollDriveHostedFilePinStates();
       }
       if (!isFakeEntry(currentEntry)) {
-        this.metadataModel_.get(
-            [currentEntry],
-            constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES.concat(
-                constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES));
+        this.metadataModel_.get([currentEntry], [
+          ...LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES,
+          ...DLP_METADATA_PREFETCH_PROPERTY_NAMES,
+        ]);
       }
     }
 
@@ -989,30 +990,30 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
       maybeRunPendingRescan();
     };
 
-    const onFailure =
-        ((event: CustomEvent<{error: DOMError}>) => {
-          onFinished();
+    const onFailure = ((event: CustomEvent<{error: DOMError}>) => {
+                        onFinished();
 
-          this.runningScan_ = null;
-          this.scanFailures_++;
-          failureCallback(event.detail.error);
+                        this.runningScan_ = null;
+                        this.scanFailures_++;
+                        failureCallback(event.detail.error);
 
-          if (maybeRunPendingRescan()) {
-            return;
-          }
+                        if (maybeRunPendingRescan()) {
+                          return;
+                        }
 
-          // Do not rescan for Guest OS (including Crostini) errors.
-          // TODO(crbug/1293229): Guest OS currently reuses the Crostini error
-          // string, but once it gets its own strings this needs to include
-          // both.
-          if (event.detail.error.name === constants.CROSTINI_CONNECT_ERR) {
-            return;
-          }
+                        // Do not rescan for Guest OS (including Crostini)
+                        // errors.
+                        // TODO(crbug/1293229): Guest OS currently reuses the
+                        // Crostini error string, but once it gets its own
+                        // strings this needs to include both.
+                        if (event.detail.error.name === CROSTINI_CONNECT_ERR) {
+                          return;
+                        }
 
-          if (this.scanFailures_ <= 1) {
-            this.rescanLater(refresh);
-          }
-        }) as EventListenerOrEventListenerObject;
+                        if (this.scanFailures_ <= 1) {
+                          this.rescanLater(refresh);
+                        }
+                      }) as EventListenerOrEventListenerObject;
 
     const onCancelled = () => {
       onFinished();
@@ -1087,7 +1088,8 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
    * @param newEntry The new entry.
    * @return Resolves on completion.
    */
-  onRenameEntry(oldEntry: Entry, newEntry: Entry|FilesAppEntry): Promise<void> {
+  onRenameEntry(oldEntry: Entry|FilesAppEntry, newEntry: Entry|FilesAppEntry):
+      Promise<void> {
     return new Promise(resolve => {
       this.currentDirContents_.prefetchMetadata([newEntry], true, () => {
         // If the current directory is the old entry, then quietly change to the
@@ -1253,6 +1255,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
           volumeChanged: (previousVolumeInfo !== currentVolumeInfo),
         },
       });
+      await currentVolumeInfo?.resolveDisplayRoot();
       this.dispatchEvent(event);
       if (previousDirEntry) {
         // If we changed from a directory to another directory always clear

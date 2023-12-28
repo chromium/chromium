@@ -343,6 +343,8 @@ void AwPermissionManager::RequestPermissions(
       case PermissionType::WINDOW_MANAGEMENT:
       case PermissionType::LOCAL_FONTS:
       case PermissionType::DISPLAY_CAPTURE:
+      case PermissionType::CAPTURED_SURFACE_CONTROL:
+      case PermissionType::SMART_CARD:
         NOTIMPLEMENTED() << "RequestPermissions is not implemented for "
                          << static_cast<int>(permissions[i]);
         pending_request_raw->SetPermissionStatus(permissions[i],
@@ -507,7 +509,7 @@ PermissionStatus AwPermissionManager::GetPermissionStatusForEmbeddedRequester(
 }
 
 AwPermissionManager::SubscriptionId
-AwPermissionManager::SubscribePermissionStatusChange(
+AwPermissionManager::SubscribeToPermissionStatusChange(
     PermissionType permission,
     content::RenderProcessHost* render_process_host,
     content::RenderFrameHost* render_frame_host,
@@ -516,7 +518,7 @@ AwPermissionManager::SubscribePermissionStatusChange(
   return SubscriptionId();
 }
 
-void AwPermissionManager::UnsubscribePermissionStatusChange(
+void AwPermissionManager::UnsubscribeFromPermissionStatusChange(
     SubscriptionId subscription_id) {}
 
 void AwPermissionManager::CancelPermissionRequest(int request_id) {
@@ -589,6 +591,8 @@ void AwPermissionManager::CancelPermissionRequest(int request_id) {
       case PermissionType::WINDOW_MANAGEMENT:
       case PermissionType::LOCAL_FONTS:
       case PermissionType::DISPLAY_CAPTURE:
+      case PermissionType::CAPTURED_SURFACE_CONTROL:
+      case PermissionType::SMART_CARD:
         NOTIMPLEMENTED() << "CancelPermission not implemented for "
                          << static_cast<int>(permission);
         break;

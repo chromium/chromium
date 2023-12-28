@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
 #include "third_party/blink/renderer/platform/loader/testing/replaying_bytes_consumer.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -30,6 +31,7 @@ namespace blink {
 namespace {
 
 TEST(ServiceWorkerResponseTest, FromFetchResponseData) {
+  test::TaskEnvironment task_environment;
   auto page = std::make_unique<DummyPageHolder>(gfx::Size(1, 1));
   const KURL url("http://www.response.com");
 
@@ -108,6 +110,7 @@ BodyStreamBuffer* CreateHelloWorldBuffer(ScriptState* script_state) {
 }
 
 TEST(ServiceWorkerResponseTest, BodyStreamBufferCloneDefault) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   BodyStreamBuffer* buffer = CreateHelloWorldBuffer(scope.GetScriptState());
   FetchResponseData* fetch_response_data =
@@ -122,6 +125,7 @@ TEST(ServiceWorkerResponseTest, BodyStreamBufferCloneDefault) {
 }
 
 TEST(ServiceWorkerResponseTest, BodyStreamBufferCloneBasic) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   BodyStreamBuffer* buffer = CreateHelloWorldBuffer(scope.GetScriptState());
   FetchResponseData* fetch_response_data =
@@ -137,6 +141,7 @@ TEST(ServiceWorkerResponseTest, BodyStreamBufferCloneBasic) {
 }
 
 TEST(ServiceWorkerResponseTest, BodyStreamBufferCloneCors) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   BodyStreamBuffer* buffer = CreateHelloWorldBuffer(scope.GetScriptState());
   FetchResponseData* fetch_response_data =
@@ -152,6 +157,7 @@ TEST(ServiceWorkerResponseTest, BodyStreamBufferCloneCors) {
 }
 
 TEST(ServiceWorkerResponseTest, BodyStreamBufferCloneOpaque) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   BodyStreamBuffer* buffer = CreateHelloWorldBuffer(scope.GetScriptState());
   FetchResponseData* fetch_response_data =
@@ -167,6 +173,7 @@ TEST(ServiceWorkerResponseTest, BodyStreamBufferCloneOpaque) {
 }
 
 TEST(ServiceWorkerResponseTest, BodyStreamBufferCloneError) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   BodyStreamBuffer* buffer = BodyStreamBuffer::Create(
       scope.GetScriptState(),

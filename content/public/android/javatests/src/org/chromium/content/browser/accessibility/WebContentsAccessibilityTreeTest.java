@@ -10,7 +10,6 @@ import static org.chromium.content.browser.accessibility.AccessibilityContentShe
 
 import android.annotation.SuppressLint;
 import android.os.Build.VERSION_CODES;
-import android.os.Environment;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.test.filters.SmallTest;
@@ -28,8 +27,6 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
-
-import java.io.File;
 
 /** Tests for WebContentsAccessibilityImpl integration with accessibility services. */
 @RunWith(ContentJUnit4ClassRunner.class)
@@ -51,11 +48,10 @@ public class WebContentsAccessibilityTreeTest {
 
     /**
      * Perform a single test which will:
-     *      1. Open the given HTML file
-     *      2. Generate the full AccessibilityNodeInfo tree
-     *      3. Read expectations file and compare with results
-     *      4. Generate an AssistData structure for the page
-     *      5. Read AssistData expectations file and compare with results
+     *     1. Open the given HTML file
+     *     2. Generate the full AccessibilityNodeInfo tree
+     *     3. Generate the full AssistData tree
+     *     4. Read expectations file and compare both trees with results
      *
      * @param inputFile HTML test input file
      * @param expectationFile TXT expectations file
@@ -65,47 +61,76 @@ public class WebContentsAccessibilityTreeTest {
         // Build page from given file and enable testing framework.
         mActivityTestRule.setupTestFromFile(expectationFilePath + inputFile);
 
-        // Create an extra string to print to logs along with potential error for rebase tool.
-        String errorStringPrefix =
+        // Create extra strings to print to logs along with potential error(s) for rebase tool.
+        String accessibilityNodeInfoErrorPrefix =
                 String.format(
                         "\n\nTesting: %s%s\nExpected output: %s%s",
-                        expectationFilePath, inputFile, expectationFilePath, expectationFile);
+                        expectationFilePath,
+                        inputFile,
+                        expectationFilePath,
+                        expectationFile + DEFAULT_FILE_SUFFIX);
+        String assistDataErrorPrefix =
+                String.format(
+                        "\n\nTesting: %s%s\nExpected output: %s%s",
+                        expectationFilePath,
+                        inputFile,
+                        expectationFilePath,
+                        expectationFile + ASSIST_DATA_FILE_SUFFIX);
 
-        // Generate full AccessibilityNodeInfo tree and verify results.
-        assertResults(
-                expectationFilePath + expectationFile,
-                generateAccessibilityNodeInfoTree(),
-                errorStringPrefix);
+        // Generate full AccessibilityNodeInfo and AssistData trees
+        String accessibilityNodeInfoTree = generateAccessibilityNodeInfoTree();
+        String assistDataTree = generateViewStructureTree();
+        Assert.assertNotNull(RESULTS_NULL, accessibilityNodeInfoTree);
+        Assert.assertNotNull(RESULTS_NULL, assistDataTree);
 
-        // TODO(mschillaci): remove this and add to verifyInputFile when upgrade is complete.
-        String assistDataFileName =
-                inputFile.substring(0, inputFile.length() - 5) + ASSIST_DATA_FILE_SUFFIX;
-        String directory =
-                Environment.getExternalStorageDirectory().getPath()
-                        + "/chromium_tests_root/"
-                        + expectationFilePath;
-        File expectedFile = new File(directory, "/" + assistDataFileName);
-        if (expectedFile.exists()) {
-            errorStringPrefix =
-                    String.format(
-                            "\n\nTesting: %s%s\nExpected output: %s%s",
-                            expectationFilePath,
-                            inputFile,
-                            expectationFilePath,
-                            assistDataFileName);
-            // Generate full AssistData tree and verify results.
-            assertResults(
-                    expectationFilePath + "/" + assistDataFileName,
-                    generateViewStructureTree(),
-                    errorStringPrefix);
+        // Attempt to read expectation files (will throw an error if files do not exist).
+        String accessibilityNodeInfoTreeExpectedResults =
+                mActivityTestRule
+                        .readExpectationFile(
+                                expectationFilePath + expectationFile + DEFAULT_FILE_SUFFIX)
+                        .trim();
+        String assistDataTreeExpectedResults =
+                mActivityTestRule
+                        .readExpectationFile(
+                                expectationFilePath + expectationFile + ASSIST_DATA_FILE_SUFFIX)
+                        .trim();
+
+        // We want to test both trees so that the rebase tree only needs to be run once for newly
+        // added tests, so we will first check equivalency without using Assert and create an error
+        // message that can include results for both tree tests.
+        String outputError = "";
+        if (!accessibilityNodeInfoTree.equals(accessibilityNodeInfoTreeExpectedResults)) {
+            outputError +=
+                    NODE_ERROR
+                            + accessibilityNodeInfoErrorPrefix
+                            + "\n\nExpected\n--------\n"
+                            + accessibilityNodeInfoTreeExpectedResults
+                            + "\n\nActual\n------\n"
+                            + accessibilityNodeInfoTree
+                            + "\n<-- End-of-file -->\n\n\n";
         }
+        if (!assistDataTree.equals(assistDataTreeExpectedResults)) {
+            outputError +=
+                    NODE_ERROR
+                            + assistDataErrorPrefix
+                            + "\n\nExpected\n--------\n"
+                            + assistDataTreeExpectedResults
+                            + "\n\nActual\n------\n"
+                            + assistDataTree
+                            + "\n<-- End-of-file -->\n\n\n";
+        }
+
+        // Assert expectations and print error if needed.
+        Assert.assertEquals(
+                outputError, accessibilityNodeInfoTreeExpectedResults, accessibilityNodeInfoTree);
+        Assert.assertEquals(outputError, assistDataTreeExpectedResults, assistDataTree);
     }
 
     // Helper methods to pass-through to the performTest method so each individual test does
     // not need to include its own filepath.
     private void performAccnameTest(String input) {
         // Remove the '.html' from the input file, and append the standard suffix.
-        performAccnameTest(input, input.substring(0, input.length() - 5) + DEFAULT_FILE_SUFFIX);
+        performAccnameTest(input, input.substring(0, input.length() - 5));
     }
 
     private void performAccnameTest(String inputFile, String expectationFile) {
@@ -114,7 +139,7 @@ public class WebContentsAccessibilityTreeTest {
 
     private void performAriaTest(String input) {
         // Remove the '.html' from the input file, and append the standard suffix.
-        performAriaTest(input, input.substring(0, input.length() - 5) + DEFAULT_FILE_SUFFIX);
+        performAriaTest(input, input.substring(0, input.length() - 5));
     }
 
     private void performAriaTest(String inputFile, String expectationFile) {
@@ -123,7 +148,7 @@ public class WebContentsAccessibilityTreeTest {
 
     private void performCssTest(String input) {
         // Remove the '.html' from the input file, and append the standard suffix.
-        performCssTest(input, input.substring(0, input.length() - 5) + DEFAULT_FILE_SUFFIX);
+        performCssTest(input, input.substring(0, input.length() - 5));
     }
 
     private void performCssTest(String inputFile, String expectationFile) {
@@ -132,34 +157,11 @@ public class WebContentsAccessibilityTreeTest {
 
     private void performHtmlTest(String input) {
         // Remove the '.html' from the input file, and append the standard suffix.
-        performHtmlTest(input, input.substring(0, input.length() - 5) + DEFAULT_FILE_SUFFIX);
+        performHtmlTest(input, input.substring(0, input.length() - 5));
     }
 
     private void performHtmlTest(String inputFile, String expectationFile) {
         performTest(inputFile, expectationFile, BASE_HTML_FILE_PATH);
-    }
-
-    /**
-     * Helper method to compare test outputs with expected results. Reads content of expectations
-     * file, asserts non-null, then compares with results.
-     *
-     * @param expectationFile File of the expectations for the test (including path)
-     * @param actualResults Actual results generated by the accessibility code
-     */
-    private void assertResults(String expectationFile, String actualResults, String errorPrefix) {
-        String expectedResults = mActivityTestRule.readExpectationFile(expectationFile).trim();
-
-        Assert.assertNotNull(RESULTS_NULL, actualResults);
-        Assert.assertEquals(
-                NODE_ERROR
-                        + errorPrefix
-                        + "\n\nExpected\n--------\n"
-                        + expectedResults
-                        + "\n\nActual\n------\n"
-                        + actualResults
-                        + "\n<-- End-of-file -->\n\n\n",
-                expectedResults,
-                actualResults);
     }
 
     /**
@@ -594,6 +596,12 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_ariaLabel() {
         performAriaTest("aria-label.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaLabelAugmentInnerText() {
+        performAriaTest("aria-label-augment-inner-text.html");
     }
 
     @Test
@@ -1624,6 +1632,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_htmlAttributesAndTagNames() {
+        performHtmlTest("html-attributes-and-tag-names.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_i() {
         performHtmlTest("i.html");
     }
@@ -1811,6 +1825,12 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_inputNumber() {
         performHtmlTest("input-number.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_inputPasswordObscured() {
+        performHtmlTest("input-password-obscured.html");
     }
 
     @Test
@@ -2225,6 +2245,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_staticList() {
+        performHtmlTest("static-list.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_strong() {
         performHtmlTest("strong.html");
     }
@@ -2377,6 +2403,13 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_textAlign() {
         performHtmlTest("text-align.html");
+    }
+
+    @Test
+    @SmallTest
+    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1224422")
+    public void test_textColorsAndStyles() {
+        performHtmlTest("text-colors-and-styles.html");
     }
 
     @Test

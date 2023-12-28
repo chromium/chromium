@@ -29,6 +29,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/switch.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
@@ -391,8 +392,7 @@ class GameDashboardContextTest : public GameDashboardTestBase {
 
  protected:
   std::unique_ptr<aura::Window> game_window_;
-  raw_ptr<chromeos::FrameHeader, DanglingUntriaged | ExperimentalAsh>
-      frame_header_;
+  raw_ptr<chromeos::FrameHeader, DanglingUntriaged> frame_header_;
   std::unique_ptr<GameDashboardContextTestApi> test_api_;
 
   void DragToolbarToPoint(Movement move_type,
@@ -502,6 +502,22 @@ TEST_F(GameDashboardContextTest, GameControlsMenuState) {
       /*feature_switch_states=*/
       {/*expect_exists=*/true, /*expect_toggled=*/true},
       /*setup_exists=*/false);
+}
+
+TEST_F(GameDashboardContextTest, GameControlsSetupNudge) {
+  CreateGameWindow(/*is_arc_window=*/true);
+
+  game_window_->SetProperty(
+      kArcGameControlsFlagsKey,
+      static_cast<ArcGameControlsFlag>(
+          ArcGameControlsFlag::kKnown | ArcGameControlsFlag::kAvailable |
+          ArcGameControlsFlag::kEmpty | ArcGameControlsFlag::kEnabled));
+
+  test_api_->OpenTheMainMenu();
+  EXPECT_TRUE(test_api_->GetGameControlsSetupNudge());
+  task_environment()->FastForwardBy(
+      AnchoredNudgeManagerImpl::kNudgeMediumDuration);
+  EXPECT_FALSE(test_api_->GetGameControlsSetupNudge());
 }
 
 // Verifies Game Controls button logics.
@@ -1317,7 +1333,7 @@ class OnOverviewModeEndedWaiter : public OverviewObserver {
  private:
   base::RunLoop run_loop_;
   // Owned by Shell.
-  const raw_ptr<OverviewController, ExperimentalAsh> overview_controller_;
+  const raw_ptr<OverviewController> overview_controller_;
 };
 
 // Verifies that in overview mode, the Game Dashboard button is not visible, the

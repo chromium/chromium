@@ -119,9 +119,7 @@ class GetHashProtocolManagerFactoryWithTestUrlLoader
  public:
   GetHashProtocolManagerFactoryWithTestUrlLoader(
       network::TestURLLoaderFactory* test_url_loader_factory) {
-    test_shared_loader_factory_ =
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            test_url_loader_factory);
+    test_shared_loader_factory_ = test_url_loader_factory->GetSafeWeakWrapper();
   }
 
   std::unique_ptr<V4GetHashProtocolManager> CreateProtocolManager(
@@ -740,7 +738,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdAllowlistWithNoMatch) {
   ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
 
   TestAllowlistClient client(
-      /* match_expected= */ true,
+      /* match_expected= */ false,
       /* expected_sb_threat_type= */ SB_THREAT_TYPE_CSD_ALLOWLIST);
   const GURL url_check("https://other.com/");
   auto result =

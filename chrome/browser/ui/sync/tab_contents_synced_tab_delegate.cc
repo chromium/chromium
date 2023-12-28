@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/supervised_user/core/common/buildflags.h"
+#include "components/sync/base/features.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 #include "components/sync_sessions/synced_window_delegate.h"
 #include "components/sync_sessions/synced_window_delegates_getter.h"
@@ -51,12 +52,24 @@ NavigationEntry* GetPossiblyPendingEntryAtIndex(
 
 }  // namespace
 
-base::Time TabContentsSyncedTabDelegate::GetLastActiveTime() const {
+void TabContentsSyncedTabDelegate::ResetCachedLastActiveTime() {
+  cached_last_active_time_.reset();
+}
+
+base::Time TabContentsSyncedTabDelegate::GetLastActiveTime() {
   // Use the TimeDelta common ground between the two units to make the
   // conversion.
   const base::TimeDelta delta_since_epoch =
       web_contents_->GetLastActiveTime() - base::TimeTicks::UnixEpoch();
   const base::Time converted_time = base::Time::UnixEpoch() + delta_since_epoch;
+  if (base::FeatureList::IsEnabled(syncer::kSyncSessionOnVisibilityChanged)) {
+    if (cached_last_active_time_.has_value() &&
+        converted_time - cached_last_active_time_.value() <
+            syncer::kSyncSessionOnVisibilityChangedTimeThreshold.Get()) {
+      return cached_last_active_time_.value();
+    }
+    cached_last_active_time_ = converted_time;
+  }
   return converted_time;
 }
 

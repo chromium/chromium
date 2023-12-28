@@ -7,8 +7,6 @@ package org.chromium.components.browser_ui.site_settings;
 import static org.chromium.components.browser_ui.settings.SearchUtils.handleSearchNavigation;
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
-import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_DISPLAY_SETTING_ENABLED;
-import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_PERIPHERAL_SETTING_ENABLED;
 import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_WINDOW_SETTING_ENABLED;
 import static org.chromium.components.content_settings.PrefNames.ENABLE_QUIET_NOTIFICATION_PERMISSION_UI;
 import static org.chromium.components.content_settings.PrefNames.NOTIFICATIONS_VIBRATE_ENABLED;
@@ -177,10 +175,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     private @GlobalToggleLayout int mGlobalToggleLayout = GlobalToggleLayout.BINARY_TOGGLE;
     // The "notifications_quiet_ui" preference to allow hiding/showing it.
     private ChromeBaseCheckBoxPreference mNotificationsQuietUiPref;
-    // The "desktop_site_peripheral" preference to allow hiding/showing it.
-    private ChromeBaseCheckBoxPreference mDesktopSitePeripheralPref;
-    // The "desktop_site_display" preference to allow hiding/showing it.
-    private ChromeBaseCheckBoxPreference mDesktopSiteDisplayPref;
     // The "desktop_site_window" preference to allow hiding/showing it.
     private ChromeBaseCheckBoxPreference mDesktopSiteWindowPref;
     private CardPreference mCardPreference;
@@ -231,8 +225,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     // Keys for category-specific preferences (toggle, link, button etc.), dynamically shown.
     public static final String NOTIFICATIONS_VIBRATE_TOGGLE_KEY = "notifications_vibrate";
     public static final String NOTIFICATIONS_QUIET_UI_TOGGLE_KEY = "notifications_quiet_ui";
-    public static final String DESKTOP_SITE_PERIPHERAL_TOGGLE_KEY = "desktop_site_peripheral";
-    public static final String DESKTOP_SITE_DISPLAY_TOGGLE_KEY = "desktop_site_display";
     public static final String DESKTOP_SITE_WINDOW_TOGGLE_KEY = "desktop_site_window";
     public static final String EXPLAIN_PROTECTED_MEDIA_KEY = "protected_content_learn_more";
     public static final String ADD_EXCEPTION_KEY = "add_exception";
@@ -641,7 +633,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                         AutoDarkSettingsChangeSource.SITE_SETTINGS_GLOBAL, toggleValue);
             } else if (type == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
                 recordSiteLayoutChanged(toggleValue);
-                updateDesktopSiteSecondaryControls();
                 updateDesktopSiteWindowSetting();
             }
             getInfoForOrigins();
@@ -662,10 +653,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 // Clear the pref so if the default changes later the user will get the new default.
                 prefService.clearPref(ENABLE_QUIET_NOTIFICATION_PERMISSION_UI);
             }
-        } else if (DESKTOP_SITE_PERIPHERAL_TOGGLE_KEY.equals(preference.getKey())) {
-            prefService.setBoolean(DESKTOP_SITE_PERIPHERAL_SETTING_ENABLED, (boolean) newValue);
-        } else if (DESKTOP_SITE_DISPLAY_TOGGLE_KEY.equals(preference.getKey())) {
-            prefService.setBoolean(DESKTOP_SITE_DISPLAY_SETTING_ENABLED, (boolean) newValue);
         } else if (DESKTOP_SITE_WINDOW_TOGGLE_KEY.equals(preference.getKey())) {
             prefService.setBoolean(DESKTOP_SITE_WINDOW_SETTING_ENABLED, (boolean) newValue);
             RecordHistogram.recordBooleanHistogram(
@@ -1152,8 +1139,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 screen.findPreference(TRI_STATE_COOKIE_TOGGLE);
         Preference notificationsVibrate = screen.findPreference(NOTIFICATIONS_VIBRATE_TOGGLE_KEY);
         mNotificationsQuietUiPref = screen.findPreference(NOTIFICATIONS_QUIET_UI_TOGGLE_KEY);
-        mDesktopSitePeripheralPref = screen.findPreference(DESKTOP_SITE_PERIPHERAL_TOGGLE_KEY);
-        mDesktopSiteDisplayPref = screen.findPreference(DESKTOP_SITE_DISPLAY_TOGGLE_KEY);
         mDesktopSiteWindowPref = screen.findPreference(DESKTOP_SITE_WINDOW_TOGGLE_KEY);
         Preference explainProtectedMediaKey = screen.findPreference(EXPLAIN_PROTECTED_MEDIA_KEY);
         PreferenceGroup allowedGroup = screen.findPreference(ALLOWED_GROUP);
@@ -1220,8 +1205,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
             screen.removePreference(notificationsVibrate);
             screen.removePreference(mNotificationsQuietUiPref);
-            screen.removePreference(mDesktopSitePeripheralPref);
-            screen.removePreference(mDesktopSiteDisplayPref);
             screen.removePreference(mDesktopSiteWindowPref);
             screen.removePreference(explainProtectedMediaKey);
             screen.removePreference(allowedGroup);
@@ -1250,17 +1233,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         } else {
             screen.removePreference(notificationsVibrate);
             screen.removePreference(mNotificationsQuietUiPref);
-        }
-
-        // Configure/hide the desktop site peripheral/display settings, as needed.
-        if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE
-                && ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_ADDITIONS)) {
-            mDesktopSitePeripheralPref.setOnPreferenceChangeListener(this);
-            mDesktopSiteDisplayPref.setOnPreferenceChangeListener(this);
-            updateDesktopSiteSecondaryControls();
-        } else {
-            screen.removePreference(mDesktopSitePeripheralPref);
-            screen.removePreference(mDesktopSiteDisplayPref);
         }
 
         // Configure/hide the desktop site window setting, as needed.
@@ -1443,34 +1415,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
     // TODO(crbug.com/1343640): Looking at a different class setup for SingleCategorySettings that
     // allows category specific logic to live in separate files.
-    private void updateDesktopSiteSecondaryControls() {
-        if (!ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_ADDITIONS)) {
-            return;
-        }
-
-        BrowserContextHandle browserContextHandle =
-                getSiteSettingsDelegate().getBrowserContextHandle();
-        Boolean categoryEnabled =
-                WebsitePreferenceBridge.isCategoryEnabled(
-                        browserContextHandle, ContentSettingsType.REQUEST_DESKTOP_SITE);
-
-        if (categoryEnabled) {
-            // When the global setting for RDS is on, secondary settings for peripherals and
-            // external display should be hidden.
-            getPreferenceScreen().removePreference(mDesktopSitePeripheralPref);
-            getPreferenceScreen().removePreference(mDesktopSiteDisplayPref);
-        } else {
-            // Otherwise, ensure secondary settings are displayed.
-            getPreferenceScreen().addPreference(mDesktopSitePeripheralPref);
-            getPreferenceScreen().addPreference(mDesktopSiteDisplayPref);
-            PrefService prefService = UserPrefs.get(browserContextHandle);
-            mDesktopSitePeripheralPref.setChecked(
-                    prefService.getBoolean(DESKTOP_SITE_PERIPHERAL_SETTING_ENABLED));
-            mDesktopSiteDisplayPref.setChecked(
-                    prefService.getBoolean(DESKTOP_SITE_DISPLAY_SETTING_ENABLED));
-        }
-    }
-
     private void updateDesktopSiteWindowSetting() {
         if (!ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)) {
             return;

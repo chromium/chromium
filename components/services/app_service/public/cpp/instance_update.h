@@ -81,8 +81,8 @@ class InstanceUpdate {
   bool BrowserContextChanged() const;
 
  private:
-  raw_ptr<const Instance, ExperimentalAsh> state_;
-  raw_ptr<const Instance, ExperimentalAsh> delta_;
+  raw_ptr<const Instance> state_;
+  raw_ptr<const Instance> delta_;
 };
 
 }  // namespace apps

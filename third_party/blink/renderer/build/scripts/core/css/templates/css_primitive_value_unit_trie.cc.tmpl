@@ -16,8 +16,8 @@ CSSPrimitiveValue::UnitType cssPrimitiveValueUnitFromTrie(
     const CharacterType* data, unsigned length) {
   DCHECK(data);
   DCHECK(length);
-  {% macro trie_return_statement(unit_name) %}CSSPrimitiveValue::UnitType::{{unit_name}}{% endmacro %}
-  {{ trie_length_switch(length_tries, trie_return_statement, True) | indent(4) }}
+  {% macro trie_return_expression(unit_name) %}CSSPrimitiveValue::UnitType::{{unit_name}}{% endmacro %}
+  {{ trie_length_switch(length_tries, trie_return_expression, True) | indent(2) }}
   return CSSPrimitiveValue::UnitType::kUnknown;
 }
 

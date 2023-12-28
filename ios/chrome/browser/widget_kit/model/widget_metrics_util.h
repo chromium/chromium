@@ -9,7 +9,7 @@
 
 @interface WidgetMetricsUtil : NSObject
 
-+ (void)logInstalledWidgets API_AVAILABLE(ios(14));
++ (void)logInstalledWidgets;
 
 @end
 

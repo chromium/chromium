@@ -19,6 +19,11 @@ interface PrintCompositor {
     kCompositingFailure = 3,
   };
 
+  enum DocumentType {
+    kPDF = 0,
+    kXPS = 1,
+  };
+
   // Notifies that a subframe is unavailable, such as the render frame process
   // hosting it crashed or terminated. The subframe will be composited with no
   // content in the composited result.
@@ -46,42 +51,48 @@ interface PrintCompositor {
   SetAccessibilityTree(ax.mojom.AXTreeUpdate accessibility_tree);
 
   // Requests to composite a page and convert it into a PDF file.
+  // When doing concurrent document composition, this converts the page a
+  // second time to include it in the document provided by the call to
+  // `FinishDocumentComposition()`.  Note that this page conversion into the
+  // document might be PDF or XPS.
   // `frame_guid` is the global unique id of the frame to be composited.
   // `sk_region` is a buffer of a Skia MultiPictureDocument which has
   //             the drawing content of this frame or a page of this frame.
   // `subframe_content_map` records content id and its corresponding frame's
   //                        global unique id.
-  CompositePageToPdf(uint64 frame_guid,
-                     mojo_base.mojom.ReadOnlySharedMemoryRegion sk_region,
-                     map<uint32, uint64> subframe_content_info)
+  CompositePage(uint64 frame_guid,
+                mojo_base.mojom.ReadOnlySharedMemoryRegion sk_region,
+                map<uint32, uint64> subframe_content_info)
       => (Status status,
-          mojo_base.mojom.ReadOnlySharedMemoryRegion? pdf_region);
+          mojo_base.mojom.ReadOnlySharedMemoryRegion? document_region);
 
-  // Requests to composite the entire document and convert it into a PDF file.
-  // All the arguments carry the same meaning as CompositePageToPdf() above,
-  // except this call doesn't have `page_num`.  Cannot be used in conjunction
-  // with PrepareForDocumentToPdf()/CompleteDocumentToPdf().
-  CompositeDocumentToPdf(uint64 frame_guid,
-                         mojo_base.mojom.ReadOnlySharedMemoryRegion sk_region,
-                         map<uint32, uint64> subframe_content_info)
+  // Requests to composite the entire document and convert it into a print
+  // document file.  All the arguments carry the same meaning as
+  // `CompositePage()` above, except this call doesn't have `page_num`.  Cannot
+  // be used in conjunction with `PrepareToCompositeDocument()` /
+  // `FinishDocumentComposition()`.
+  CompositeDocument(uint64 frame_guid,
+                    mojo_base.mojom.ReadOnlySharedMemoryRegion sk_region,
+                    map<uint32, uint64> subframe_content_info,
+                    DocumentType document_type)
       => (Status status,
-          mojo_base.mojom.ReadOnlySharedMemoryRegion? pdf_region);
+          mojo_base.mojom.ReadOnlySharedMemoryRegion? document_region);
 
   // Notifies that composition is to collect individual pages from
-  // CompositePageToPdf() concurrently into a document.  Must be issued once
-  // prior to any CompositePageToPdf() calls in order for concurrent collection
+  // `CompositePage()` concurrently into a document.  Must be issued once
+  // prior to any `CompositePage()` calls in order for concurrent collection
   // to be performed.
-  PrepareForDocumentToPdf()
+  PrepareToCompositeDocument(DocumentType document_type)
       => (Status status);
 
   // Signals that all pages for a composite document have been sent via
-  // CompositePageToPdf(), allowing for document composition to be wrapped up.
-  // Is to be used in conjunction with PrepareForDocumentToPdf(), which must be
-  // made prior to this and any CompositePageToPdf() calls.  This must be called
-  // exactly once to wrap up the document.
-  CompleteDocumentToPdf(uint32 pages_count)
+  // `CompositePage()`, allowing for document composition to be wrapped up.
+  // Is to be used in conjunction with `PrepareToCompositeDocument()`, which
+  // must be made prior to this and any `CompositePage()` calls.  This must be
+  // called exactly once to wrap up the document.
+  FinishDocumentComposition(uint32 pages_count)
       => (Status status,
-          mojo_base.mojom.ReadOnlySharedMemoryRegion? pdf_region);
+          mojo_base.mojom.ReadOnlySharedMemoryRegion? document_region);
 
   // Tells the service what URL is committed in the main frame of the
   // WebContents that is printing, for use in crash diagnosis.

@@ -135,5 +135,5 @@ bool BackForwardButton::ShouldShowInkdropAfterIphInteraction() {
   return false;
 }
 
-BEGIN_METADATA(BackForwardButton, ToolbarButton)
+BEGIN_METADATA(BackForwardButton)
 END_METADATA

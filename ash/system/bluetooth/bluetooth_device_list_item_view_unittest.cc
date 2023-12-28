@@ -142,7 +142,7 @@ class BluetoothDeviceListItemViewTest : public AshTestBase {
  protected:
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<FakeBluetoothDetailedView> fake_bluetooth_detailed_view_;
-  raw_ptr<BluetoothDeviceListItemView, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<BluetoothDeviceListItemView, DanglingUntriaged>
       bluetooth_device_list_item_;
 };
 

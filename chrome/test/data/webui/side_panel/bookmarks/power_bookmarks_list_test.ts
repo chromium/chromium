@@ -8,7 +8,7 @@ import {SortOrder, ViewType} from 'chrome://bookmarks-side-panel.top-chrome/book
 import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
 import {PowerBookmarkRowElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
 import {PowerBookmarksListElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
-import {ShoppingListApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
+import {ShoppingServiceApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
 import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
@@ -20,13 +20,13 @@ import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://w
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
-import {TestShoppingListApiProxy} from './commerce/test_shopping_list_api_proxy.js';
+import {TestShoppingServiceApiProxy} from './commerce/test_shopping_service_api_proxy.js';
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 
 suite('SidePanelPowerBookmarksListTest', () => {
   let powerBookmarksList: PowerBookmarksListElement;
   let bookmarksApi: TestBookmarksApiProxy;
-  let shoppingListApi: TestShoppingListApiProxy;
+  let shoppingServiceApi: TestShoppingServiceApiProxy;
   let imageServiceHandler: TestMock<PageImageServiceHandlerRemote>&
       PageImageServiceHandlerRemote;
 
@@ -135,8 +135,8 @@ suite('SidePanelPowerBookmarksListTest', () => {
     bookmarksApi.setFolders(structuredClone(folders));
     BookmarksApiProxyImpl.setInstance(bookmarksApi);
 
-    shoppingListApi = new TestShoppingListApiProxy();
-    ShoppingListApiProxyImpl.setInstance(shoppingListApi);
+    shoppingServiceApi = new TestShoppingServiceApiProxy();
+    ShoppingServiceApiProxyImpl.setInstance(shoppingServiceApi);
 
     imageServiceHandler = TestMock.fromClass(PageImageServiceHandlerRemote);
     PageImageServiceBrowserProxy.setInstance(
@@ -631,7 +631,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
         clusterId: BigInt(12345),
       },
     };
-    shoppingListApi.getCallbackRouterRemote().priceTrackedForBookmark(
+    shoppingServiceApi.getCallbackRouterRemote().priceTrackedForBookmark(
         newProduct);
     await flushTasks();
     assertFalse(isHidden(labels));

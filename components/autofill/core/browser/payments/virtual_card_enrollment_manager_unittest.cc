@@ -200,7 +200,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, InitVirtualCardEnroll) {
 #endif
 
       virtual_card_enrollment_manager_->InitVirtualCardEnroll(
-          *card_, virtual_card_enrollment_source, absl::nullopt,
+          *card_, virtual_card_enrollment_source, std::nullopt,
           virtual_card_enrollment_manager_->AutofillClientIsPresent()
               ? user_prefs()
               : nullptr,
@@ -242,8 +242,8 @@ TEST_F(VirtualCardEnrollmentManagerTest,
       issuer_test_legal_message_line};
   get_details_for_enrollment_response_details.vcn_context_token =
       "vcn_context_token";
-  absl::optional<payments::PaymentsNetworkInterface::
-                     GetDetailsForEnrollmentResponseDetails>
+  std::optional<payments::PaymentsNetworkInterface::
+                    GetDetailsForEnrollmentResponseDetails>
       get_details_for_enrollment_response_details_optional =
           get_details_for_enrollment_response_details;
   virtual_card_enrollment_manager_->InitVirtualCardEnroll(
@@ -493,7 +493,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, Enroll) {
     payments_network_interface().set_update_virtual_card_enrollment_result(
         AutofillClient::PaymentsRpcResult::kSuccess);
     virtual_card_enrollment_manager_->Enroll(
-        /*virtual_card_enrollment_update_response_callback=*/absl::nullopt);
+        /*virtual_card_enrollment_update_response_callback=*/std::nullopt);
 
     payments::PaymentsNetworkInterface::
         UpdateVirtualCardEnrollmentRequestDetails request_details =
@@ -536,7 +536,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, Enroll) {
     payments_network_interface().set_update_virtual_card_enrollment_result(
         AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure);
     virtual_card_enrollment_manager_->Enroll(
-        /*virtual_card_enrollment_update_response_callback=*/absl::nullopt);
+        /*virtual_card_enrollment_update_response_callback=*/std::nullopt);
 
     // Verifies the logging.
     histogram_tester.ExpectUniqueSample(
@@ -557,7 +557,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, Unenroll) {
 
   virtual_card_enrollment_manager_->Unenroll(
       /*instrument_id=*/9223372036854775807,
-      /*virtual_card_enrollment_update_response_callback=*/absl::nullopt);
+      /*virtual_card_enrollment_update_response_callback=*/std::nullopt);
 
   payments::PaymentsNetworkInterface::UpdateVirtualCardEnrollmentRequestDetails
       request_details = payments_network_interface()
@@ -587,7 +587,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, Unenroll) {
       AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure);
   virtual_card_enrollment_manager_->Unenroll(
       /*instrument_id=*/9223372036854775807,
-      /*virtual_card_enrollment_update_response_callback=*/absl::nullopt);
+      /*virtual_card_enrollment_update_response_callback=*/std::nullopt);
 
   // Verifies the logging.
   histogram_tester.ExpectUniqueSample(
@@ -620,7 +620,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleAccepted) {
 
   // Ensure a strike has been removed after enrollment accepted.
   virtual_card_enrollment_manager_->Enroll(
-      /*virtual_card_enrollment_update_response_callback=*/absl::nullopt);
+      /*virtual_card_enrollment_update_response_callback=*/std::nullopt);
   EXPECT_EQ(
       virtual_card_enrollment_manager_->GetVirtualCardEnrollmentStrikeDatabase()
           ->GetStrikes(
@@ -702,7 +702,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleBlocked) {
        {VirtualCardEnrollmentSource::kUpstream,
         VirtualCardEnrollmentSource::kDownstream}) {
     virtual_card_enrollment_manager_->InitVirtualCardEnroll(
-        *card_, source, absl::nullopt,
+        *card_, source, std::nullopt,
         virtual_card_enrollment_manager_->AutofillClientIsPresent()
             ? user_prefs()
             : nullptr,
@@ -849,7 +849,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, RequiredDelaySinceLastStrike) {
   state->virtual_card_enrollment_fields.credit_card = *card_;
 
   virtual_card_enrollment_manager_->InitVirtualCardEnroll(
-      *card_, VirtualCardEnrollmentSource::kDownstream, absl::nullopt,
+      *card_, VirtualCardEnrollmentSource::kDownstream, std::nullopt,
       virtual_card_enrollment_manager_->AutofillClientIsPresent() ? user_prefs()
                                                                   : nullptr,
       base::DoNothing());

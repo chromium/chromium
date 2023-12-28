@@ -239,6 +239,23 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="The request was cancelled"/>
 </enum>
 
+<enum name="OptimizationGuideModelQualityLogsUploadStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="UploadSuccessful">Logs upload was successful.</int>
+  <int value="2" label="Logging Not Enabled">
+    Upload is disabled due to logging feature not enabled.
+  </int>
+  <int value="3" label="Net Error">
+    Upload was not successful because of network error.
+  </int>
+  <int value="4" label="No User Metrics Consent">
+    Upload was not allowed due to user metrics consent.
+  </int>
+  <int value="5" label="Disabled due to Enterprise Policy">
+    Upload was disabled due to enterprise policy.
+  </int>
+</enum>
+
 <enum name="OptimizationGuideOnDeviceAddContextResult">
   <int value="0" label="Used Server"/>
   <int value="1" label="Used on-device">
@@ -275,6 +292,12 @@ chromium-metrics-reviews@google.com.
     The Session was destroyed while waiting for a response. This likely means
     the user closed the bubble before the response completed.
   </int>
+  <int value="9" label="Used on-device, but output considered unsafe">
+    On-device model was used, it completed successfully, but considered unsafe.
+  </int>
+  <int value="10" label="Used on-device, but output contained PII">
+    On-device model was used, but was cancelled because it surfaced PII.
+  </int>
 </enum>
 
 <enum name="OptimizationGuideOnDeviceModelEligibilityReason">
@@ -297,6 +320,28 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="7" label="Too many recent timeouts">
     The service took too long to respond too many times in a row.
+  </int>
+  <int value="8" label="Safety model not available">
+    The on-device safety model is required but not available.
+  </int>
+</enum>
+
+<enum name="OptimizationGuideOnDeviceModelStatus">
+  <int value="0" label="Ready">The model is ready to use.</int>
+  <int value="1" label="Not eligible for installation">
+    The model is not eligible for installation.
+  </int>
+  <int value="2" label="Install not done">
+    The model installation has not been completed.
+  </int>
+  <int value="3" label="Model not registered">
+    The model installer was not registered, even though the client would be
+    eligible to install right now. This likely means the state of the system has
+    changed recently.
+  </int>
+  <int value="4" label="Installed too late">
+    The model is ready, but it wasn't ready early enough for
+    OnDeviceModelServiceController to use it.
   </int>
 </enum>
 
@@ -541,6 +586,12 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Base64 decoding error"/>
 </enum>
 
+<enum name="OptimizationGuideUserFeedback">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Thumbs Up"/>
+  <int value="2" label="Thumbs Down"/>
+</enum>
+
 <enum name="OptimizationType">
   <int value="0" label="TYPE_UNSPECIFIED"/>
   <int value="1" label="NOSCRIPT"/>
@@ -589,6 +640,8 @@ chromium-metrics-reviews@google.com.
   <int value="44" label="CAPITAL_ONE_CREDIT_CARD_GROCERY_BENEFITS"/>
   <int value="45" label="CAPITAL_ONE_CREDIT_CARD_ENTERTAINMENT_BENEFITS"/>
   <int value="46" label="CAPITAL_ONE_CREDIT_CARD_STREAMING_BENEFITS"/>
+  <int value="47" label="AMERICAN_EXPRESS_CREDIT_CARD_FLIGHT_BENEFITS"/>
+  <int value="48" label="AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS"/>
 </enum>
 
 </enums>

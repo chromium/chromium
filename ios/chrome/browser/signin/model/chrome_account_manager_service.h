@@ -37,10 +37,11 @@ class ChromeAccountManagerService : public KeyedService,
     ~Observer() override {}
 
     // Handles identity list changed events.
-    // If `need_user_approval` is true, the user need to approve the new account
-    // list (related to SignedInAccountsViewController). Notifications with no
-    // account list update are possible, this has to be handled by the observer.
-    virtual void OnIdentityListChanged(bool need_user_approval) {}
+    // If `notify_user` is true, then the user is not at the origin of this
+    // change and should be notified.
+    // Notifications with no account list update are possible, this has to be
+    // handled by the observer.
+    virtual void OnIdentityListChanged(bool notify_user) {}
 
     // Called when the identity is updated.
     virtual void OnIdentityUpdated(id<SystemIdentity> identity) {}
@@ -109,7 +110,7 @@ class ChromeAccountManagerService : public KeyedService,
   void RemoveObserver(Observer* observer);
 
   // SystemIdentityManagerObserver implementation.
-  void OnIdentityListChanged(bool need_user_approval) override;
+  void OnIdentityListChanged(bool notify_user) override;
   void OnIdentityUpdated(id<SystemIdentity> identity) override;
   void OnIdentityAccessTokenRefreshFailed(
       id<SystemIdentity> identity,

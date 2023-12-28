@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -148,7 +149,7 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
   content_settings::SettingInfo info;
 
-  for (const auto* request : delegate()->Requests()) {
+  for (const permissions::PermissionRequest* request : delegate()->Requests()) {
     ContentSettingsType type = request->GetContentSettingsType();
     ContentSetting setting =
         map->GetContentSetting(delegate()->GetRequestingOrigin(),
@@ -283,7 +284,7 @@ EmbeddedPermissionPrompt::GetPermissionPromptDelegate() const {
   return delegate_->GetWeakPtr();
 }
 
-const std::vector<permissions::PermissionRequest*>&
+const std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>&
 EmbeddedPermissionPrompt::Requests() const {
   return requests_;
 }
@@ -388,7 +389,7 @@ void EmbeddedPermissionPrompt::PrioritizeAndMergeNewVariant(
 void EmbeddedPermissionPrompt::RebuildRequests() {
   if (requests_.size() != prompt_types_.size()) {
     const auto& requests = delegate()->Requests();
-    for (auto* request : requests) {
+    for (permissions::PermissionRequest* request : requests) {
       if (prompt_types_.contains(request->GetContentSettingsType())) {
         requests_.push_back(request);
       }

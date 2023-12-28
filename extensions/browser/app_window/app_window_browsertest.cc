@@ -12,7 +12,7 @@ namespace extensions {
 
 namespace {
 
-typedef PlatformAppBrowserTest AppWindowBrowserTest;
+using AppWindowBrowserTest = PlatformAppBrowserTest;
 
 // This test is disabled on Linux because of the unpredictable nature of native
 // windows. We cannot assume that the window manager will insert any title bar
@@ -86,6 +86,28 @@ IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest, IncognitoOpenUrl) {
   EXPECT_TRUE(profile->IsOffTheRecord());
 
   CloseAppWindow(app_window);
+}
+
+IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest, DraggableFramelessWindow) {
+  AppWindow* app_window = CreateTestAppWindow(R"({ "frame": "none" })");
+
+  base::RunLoop run_loop;
+  app_window->SetOnUpdateDraggableRegionsForTesting(run_loop.QuitClosure());
+
+  static constexpr char kTestScript[] =
+      "window.document.body.style.height = '50px';"
+      "window.document.body.style.width = '100px';"
+      "window.document.body.style.appRegion = 'drag';";
+  content::WebContents* app_contents =
+      app_window->app_window_contents_for_test()->GetWebContents();
+  EXPECT_TRUE(ExecJs(app_contents->GetPrimaryMainFrame(), kTestScript));
+
+  run_loop.Run();
+
+  NativeAppWindow* native_window = GetNativeAppWindowForAppWindow(app_window);
+  SkRegion* draggable_region = native_window->GetDraggableRegion();
+  ASSERT_TRUE(draggable_region);
+  EXPECT_FALSE(draggable_region->isEmpty());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -51,9 +51,9 @@ class AccessibilityServiceClient : public ax::mojom::AccessibilityServiceClient,
 
   // ax::mojom::AccessibilityServiceClient:
   void BindAutomation(
-      mojo::PendingAssociatedRemote<ax::mojom::Automation> automation,
-      mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client)
-      override;
+      mojo::PendingAssociatedRemote<ax::mojom::Automation> automation) override;
+  void BindAutomationClient(mojo::PendingReceiver<ax::mojom::AutomationClient>
+                                automation_client) override;
   void BindAutoclickClient(mojo::PendingReceiver<ax::mojom::AutoclickClient>
                                autoclick_receiver) override;
   void BindSpeechRecognition(

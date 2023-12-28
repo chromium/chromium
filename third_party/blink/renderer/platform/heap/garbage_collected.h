@@ -57,15 +57,11 @@ T* MakeGarbageCollected(AdditionalBytes additional_bytes, Args&&... args) {
 
 namespace base::internal {
 
-// Do not copy this code. Chromium code should just use DISALLOW_UNRETAINED()
-// directly. This is needed because v8 lives outside the Chromium repository and
-// does not want to even indirectly rely on //base concepts.
+// v8 lives outside the Chromium repository and cannot rely on //base concepts
+// like `DISALLOW_UNRETAINED()`.
 template <typename T>
-struct TypeSupportsUnretained<
-    T,
-    std::enable_if_t<cppgc::IsGarbageCollectedOrMixinTypeV<T>>> {
-  static constexpr inline bool kValue = false;
-};
+  requires cppgc::IsGarbageCollectedOrMixinTypeV<T>
+inline constexpr bool kCustomizeSupportsUnretained<T> = false;
 
 }  // namespace base::internal
 

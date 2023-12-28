@@ -190,6 +190,17 @@ enum class ModelDeliveryEvent {
   kMaxValue = kModelDownloadDueToModelLoadFailure,
 };
 
+// The various model quality user feedback.
+enum class ModelQualityUserFeedback {
+  kUnknown = 0,
+  kThumbsUp = 1,
+  kThumbsDown = 2,
+
+  // Keep in sync with OptimizationGuideUserFeedback in
+  // tools/metrics/histograms/metadata/optimization/enums.xml.
+  kMaxValue = kThumbsDown,
+};
+
 // The various results of an access token request.
 //
 // Keep in sync with OptimizationGuideAccessTokenResult in enums.xml.
@@ -258,19 +269,70 @@ enum class OnDeviceModelEligibilityReason {
   kTooManyRecentCrashes = 6,
   // The on-device model took too long too many times for this version.
   kTooManyRecentTimeouts = 7,
+  // The on-device safety model was required but not available.
+  kSafetyModelNotAvailable = 8,
 
   // This must be kept in sync with
   // OptimizationGuideOnDeviceModelEligibilityReason in optimization/enums.xml.
 
   // Insert new values before this line.
-  kMaxValue = kTooManyRecentTimeouts,
+  kMaxValue = kSafetyModelNotAvailable,
+};
+
+// Status of the on-device model.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OnDeviceModelStatus {
+  // Model is installed and ready to use.
+  kReady = 0,
+  // Criteria to install model have not been met.
+  kNotEligible = 1,
+  // Criteria to install are met, but model not installed yet.
+  kInstallNotComplete = 2,
+  // The model installer was not registered, even though the client would be
+  // eligible to install right now. This likely means the state of the system
+  // has changed recently.
+  kModelInstallerNotRegisteredForUnknownReason = 3,
+  // The model is ready, but it wasn't ready early enough for
+  // OnDeviceModelServiceController to use it.
+  kModelInstalledTooLate = 4,
+  // The model is not ready, and the reason is unknown.
+  kNotReadyForUnknownReason = 5,
+
+  // This must be kept in sync with
+  // OptimizationGuideOnDeviceModelStatus in optimization/enums.xml.
+
+  // Insert new values before this line.
+  kMaxValue = kNotReadyForUnknownReason,
+};
+
+// Status of a model quality logs upload request.
+enum class ModelQualityLogsUploadStatus {
+  kUnknown = 0,
+  // Logs upload was successful.
+  kUploadSuccessful = 1,
+  // Upload is disabled due to logging feature not enabled.
+  kLoggingNotEnabled = 2,
+  // Upload was not successful because of network error.
+  kNetError = 3,
+  // Upload is disabled due to user's metrics consent.
+  kNoMetricsConsent = 4,
+  // Upload is disabled due to enterprise policy.
+  kDisabledDueToEnterprisePolicy = 5,
+
+  // Insert new values before this line.
+  // This enum must remain synchronized with the enum
+  // |OptimizationGuideModelQualityLogsUploadStatus| in
+  // tools/metrics/histograms/enums.xml.
+  kMaxValue = kDisabledDueToEnterprisePolicy,
 };
 
 // Performance class of this device.
 //
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class OnDeviceModelPerformanceClass {
+// These values are persisted to logs and prefs. Entries should not be
+// renumbered and numeric values should never be reused.
+enum class OnDeviceModelPerformanceClass : int {
   kUnknown = 0,
 
   // See on_device_model::mojom::PerformanceClass for explanation of these.
@@ -280,6 +342,9 @@ enum class OnDeviceModelPerformanceClass {
   kMedium = 4,
   kHigh = 5,
   kVeryHigh = 6,
+
+  // WARNING!: If you add a new performance class, please be aware of
+  // `IsPerformanceClassCompatibleWithOnDeviceModel`.
 
   // The service crashed, so a valid value was not returned.
   kServiceCrash = 7,

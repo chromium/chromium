@@ -57,7 +57,7 @@ class LinuxBufferRelease {
     wl_resource_destroy(resource_);
   }
 
-  raw_ptr<wl_resource, ExperimentalAsh> resource_;
+  raw_ptr<wl_resource> resource_;
   // Use a cancelable callback in case this object is destroyed while a commit
   // is still in flight.
   base::CancelableOnceCallback<void(gfx::GpuFenceHandle)> release_callback_;
@@ -98,7 +98,7 @@ class LinuxSurfaceSynchronization : public SurfaceObserver {
   }
 
  private:
-  raw_ptr<Surface, ExperimentalAsh> surface_;
+  raw_ptr<Surface> surface_;
 };
 
 void linux_surface_synchronization_destroy(struct wl_client* client,

@@ -1122,6 +1122,13 @@ void LocalFrameClientImpl::SetMouseCapture(bool capture) {
   web_frame_->LocalRoot()->FrameWidgetImpl()->SetMouseCapture(capture);
 }
 
+void LocalFrameClientImpl::NotifyAutoscrollForSelectionInMainFrame(
+    bool autoscroll_selection) {
+  web_frame_->LocalRoot()
+      ->FrameWidgetImpl()
+      ->NotifyAutoscrollForSelectionInMainFrame(autoscroll_selection);
+}
+
 bool LocalFrameClientImpl::UsePrintingLayout() const {
   return web_frame_->UsePrintingLayout();
 }

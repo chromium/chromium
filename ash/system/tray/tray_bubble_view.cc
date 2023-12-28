@@ -9,7 +9,7 @@
 #include <numeric>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/bubble/bubble_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
@@ -133,7 +133,7 @@ class BottomAlignedBoxLayout : public views::BoxLayout {
     }
   }
 
-  raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_;
+  raw_ptr<TrayBubbleView> bubble_view_;
 };
 
 }  // namespace
@@ -272,7 +272,7 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   DCHECK((init_params.anchor_mode != TrayBubbleView::AnchorMode::kView) ||
          anchor_widget());
   set_parent_window(params_.parent_window);
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   SetCanActivate(controller->spoken_feedback().enabled() ||
                  controller->dictation().enabled());

@@ -22,7 +22,8 @@ using testing::UnorderedElementsAre;
 namespace ui {
 
 using BasicAXTreeSerializer =
-    AXTreeSerializer<const AXNode*, std::vector<const AXNode*>>;
+    AXTreeSerializer<const AXNode*,
+                     std::vector<raw_ptr<const AXNode, VectorExperimental>>>;
 
 // The framework for these tests is that each test sets up |treedata0_|
 // and |treedata1_| and then calls GetTreeSerializer, which creates a
@@ -389,7 +390,7 @@ TEST_F(AXTreeSerializerTest, DuplicateIdsCrashes) {
   // This could not happen with an AXTree, but could happen with
   // another AXTreeSource if the structure it wraps is buggy. We want to
   // fail but not crash when that happens.
-  std::vector<AXNode*> node2_children;
+  std::vector<raw_ptr<AXNode, VectorExperimental>> node2_children;
   node2_children.push_back(tree1_->GetFromId(7));
   node2_children.push_back(tree1_->GetFromId(6));
   tree1_->GetFromId(2)->SwapChildren(&node2_children);

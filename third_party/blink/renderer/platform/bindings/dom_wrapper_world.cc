@@ -291,13 +291,27 @@ int DOMWrapperWorld::GenerateWorldIdForType(WorldType world_type) {
 }
 
 // static
-bool DOMWrapperWorld::UnsetNonMainWorldWrapperIfSet(
+bool DOMWrapperWorld::ClearNonMainWorldWrapperIfEqualTo(
+    ScriptWrappable* object,
+    const v8::Local<v8::Object>& handle) {
+  for (DOMWrapperWorld* world : GetWorldMap().Values()) {
+    DOMDataStore& data_store = world->DomDataStore();
+    if (data_store.ClearWrapperIfEqualTo(object, handle)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// static
+bool DOMWrapperWorld::ClearNonMainWorldWrapperIfEqualTo(
     ScriptWrappable* object,
     const v8::TracedReference<v8::Object>& handle) {
   for (DOMWrapperWorld* world : GetWorldMap().Values()) {
     DOMDataStore& data_store = world->DomDataStore();
-    if (data_store.UnsetSpecificWrapperIfSet(object, handle))
+    if (data_store.ClearWrapperIfEqualTo(object, handle)) {
       return true;
+    }
   }
   return false;
 }

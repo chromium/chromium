@@ -262,7 +262,6 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
                          bool discard_duplicates = false) {
     AddConsoleMessageImpl(message, discard_duplicates);
   }
-  virtual void AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr) = 0;
   virtual void AddInspectorIssue(AuditsIssue) = 0;
 
   void CountDeprecation(WebFeature feature) override;

@@ -592,6 +592,27 @@
   <message name="IDS_SETTINGS_LANGUAGES_LANGUAGE_PACKS_NOTICE" desc="Privacy notice on the language and input settings page that informs users that language files are visible to all users on the device. See go/language-pack-ux slide 4 for more details.">
     Choose which languages to install on this device. Language files are shared among users to save disk space. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
   </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_TITLE" desc="The label for the section where users can customize display language for supported apps.">
+    App languages
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_DESCRIPTION" desc="The description for section under app languages title, where clicking this will bring user to app languages settings subpage.">
+    Customize display language for supported apps
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_SUPPORTED_APPS_DESCRIPTION" desc="The description inside app languages subpage informing that only apps supporting per-app language selection are shown in this subpage.">
+    Only apps that support language selection are shown here
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_NO_APPS_SUPPORTED_DESCRIPTION" desc="The description for section under app languages title, when there's no apps supporting app language selection.">
+    No apps support app language selection
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_EDIT_SELECTION_LABEL" desc="The label inside app languages subpage when clicking 'three-dots more info' (kebab) button to edit app language.">
+    Edit language selection
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_RESET_SELECTION_LABEL" desc="The label inside app languages subpage when clicking 'three-dots more info' (kebab) button to reset app language back to device language.">
+    Reset to device language
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_CHANGE_LANGUAGE_BUTTON_DESCRIPTION" desc="The description read by screenreader for the button where users can change the app language, either to another one, or reset to device language.">
+    Change <ph name="APP">$1<ex>Google TV</ex></ph> language. Current language is <ph name="LANGUAGE">$2<ex>English (United States)</ex></ph>.
+  </message>
 
   <!-- Suggestions Section -->
   <message name="IDS_SETTINGS_SUGGESTIONS_TITLE" desc="The label for the suggestions section, which contains features to help users type faster or more expressively such as suggesting personal information or suggesting emoji to use.">
@@ -1031,7 +1052,7 @@
     Can’t clean up storage until offline storage size is known.
   </message>
   <message name="IDS_SETTINGS_GOOGLE_DRIVE_SIGNED_IN_AS" desc="Label indicating account signed in with Google Drive in Settings: Files: Google Drive.">
-    Signed in as <ph name="BEGIN_BOLD">&lt;strong&gt;</ph><ph name="DRIVE_ACCOUNT_EMAIL">$1<ex>john@google.com</ex></ph><ph name="END_BOLD">&lt;/strong&gt;</ph>
+    Signed in as <ph name="SPAN_START">&lt;span id="driveAccountEmail"&gt;</ph><ph name="DRIVE_ACCOUNT_EMAIL">$1<ex>john@google.com</ex></ph><ph name="SPAN_END">&lt;/span&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_TITLE" desc="Title for the everything offline feature in Settings: Files: Google Drive.">
     File sync
@@ -1109,7 +1130,7 @@
     File sync on
   </message>
   <message name="IDS_SETTINGS_GOOGLE_DRIVE_RECONNECT_AS" desc="Label indicating account that Google Drive would sign in as in Settings: Files: Google Drive.">
-    Connect <ph name="BEGIN_BOLD">&lt;strong&gt;</ph><ph name="DRIVE_ACCOUNT_EMAIL">$1<ex>john@google.com</ex></ph><ph name="END_BOLD">&lt;/strong&gt;</ph> to access your Drive files in the Files app
+    Connect <ph name="SPAN_START">&lt;span id="driveAccountEmail"&gt;</ph><ph name="DRIVE_ACCOUNT_EMAIL">$1<ex>john@google.com</ex></ph><ph name="SPAN_END">&lt;/span&gt;</ph> to access your Drive files in the Files app
   </message>
   <message name="IDS_SETTINGS_GOOGLE_DRIVE_CONNECT" desc="Action to connect Google Drive in Settings: Files: Google Drive.">
     Connect
@@ -1224,14 +1245,23 @@
   <message name="IDS_SETTINGS_LARGE_MOUSE_CURSOR_LABEL" desc="Label for checkbox which enables showing a larger mouse cursor than normal.">
     Show large mouse cursor
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACE_TRACKING_LABEL" desc="Label for checkbox which enables controlling the mouse cursor and keyboard with face movements.">
-    Face tracking
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_LABEL" desc="Label for checkbox which enables controlling the mouse cursor and keyboard with face movements." translateable="false">
+    Face control
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACE_TRACKING_DESCRIPTION" desc="The description for the checkbox that enables controlling the mouse cursor and keyboard with face movements.">
-    Control your cursor and keyboard with face movements
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_DESCRIPTION" desc="The description for the checkbox that enables controlling the mouse cursor and keyboard with face movements." translateable="false">
+    Use face and gaze movement to control cursor and keyboard
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACE_TRACKING_SETTINGS" desc="Label for the option to configure the feature that enables controlling the mouse cursor and keyboard with face movements.">
-    Face tracking settings
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SETTINGS_LABEL" desc="Label for the option to configure the feature that enables controlling the mouse cursor and keyboard with face movements." translateable="false">
+    Cursor control
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SETTINGS_DESCRIPTION" desc="Label description for the option to configure the feature that enables controlling the mouse cursor and keyboard with face movements." translateable="false">
+    Cursor calibration and movement settings
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_SETTINGS_LABEL" desc="Label for the option to configure facial expressions for Face Gaze." translateable="false">
+    Facial expressions
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_SETTINGS_DESCRIPTION" desc="Label description for the option to configure facial expressions for Face Gaze." translateable="false">
+    Use facial expressions to click and trigger key presses
   </message>
   <message name="IDS_SETTINGS_LARGE_MOUSE_CURSOR_SIZE_LABEL" desc="Label for a slider which changes the size of large mouse cursor.">
     Cursor size
@@ -2808,6 +2838,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_CUSTOMIZE_MOUSE_BUTTONS_TITLE" desc="Title of Customize mouse buttons page">
     Customize mouse buttons
   </message>
+  <message name="IDS_SETTINGS_CUSTOMIZE_MOUSE_BUTTONS_NUDGE_HEADER" desc="Header in the customize mouse buttons page nudge above the customize buttons subsection suggesting users to click buttons on their mice.">
+    Add or locate buttons on your mouse
+  </message>
   <message name="IDS_SETTINGS_KEY_COMBINATION_OPTION_LABEL" desc="Label of key combination option in the button remapping action dropdown menu.">
     Key combination
   </message>
@@ -2819,6 +2852,9 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_DIALOG_DESCRIPTION" desc="Description of dialog that allows the user to input shortcuts that will be used as the action on a button.">
     Press 1-4 modifier keys (ctrl, alt, shift, search, or launcher) and 1 more key. You can also select a single key.
+  </message>
+  <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_DIALOG_CHANGE" desc="Label of change button on dialogs in customize device buttons pages.">
+    Change
   </message>
   <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_DIALOG_CANCEL" desc="Label of cancel button on dialogs in customize device buttons pages.">
     Cancel
@@ -5323,7 +5359,7 @@ Press an assigned switch or key to remove assignment.
     <ph name="percentage">$1<ex>56</ex></ph>%
   </message>
   <message name="IDS_SETTINGS_POWER_BATTERY_SAVER_LABEL" desc="In Device Settings > Power, label for toggling battery saver mode">
-    Battery Saver
+    Battery saver
   </message>
   <message name="IDS_SETTINGS_POWER_BATTERY_SAVER_SUBTEXT" desc="In Device Settings > Power, description of the behavior of battery saver mode">
     Extends battery life by reducing brightness, limiting background activity and visual effects, delaying notifications, and turning on Chrome Energy Saver.

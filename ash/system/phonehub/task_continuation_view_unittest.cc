@@ -67,8 +67,7 @@ class TaskContinuationViewTest : public AshTestBase {
   phonehub::FakeUserActionRecorder fake_user_action_recorder_;
   phonehub::MutablePhoneModel phone_model_;
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged | ExperimentalAsh>
-      new_window_delegate_;
+  raw_ptr<MockNewWindowDelegate, DanglingUntriaged> new_window_delegate_;
   std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
 };
 
@@ -116,7 +115,7 @@ TEST_F(TaskContinuationViewTest, TaskChipsView) {
   expected_tabs = 2;
   EXPECT_EQ(expected_tabs, task_view()->chips_view_->children().size());
 
-  for (auto* child : task_view()->chips_view_->children()) {
+  for (views::View* child : task_view()->chips_view_->children()) {
     ContinueBrowsingChip* chip = static_cast<ContinueBrowsingChip*>(child);
     // OpenUrl is expected to call after button pressed simulation.
     EXPECT_CALL(new_window_delegate(),

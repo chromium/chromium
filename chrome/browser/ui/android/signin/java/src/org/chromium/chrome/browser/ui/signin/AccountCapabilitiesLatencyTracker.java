@@ -16,6 +16,8 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 /**
  * Utility for tracking how much time it will get to have {@link AccountCapabilities} ready for the
  * primary account.
+ *
+ * <p>See signin::AccountCapabilitiesLatencyTracker for iOS equivalent.
  */
 class AccountCapabilitiesLatencyTracker implements IdentityManager.Observer {
     private static final String USER_LATENCY_HISTOGRAM_NAME =

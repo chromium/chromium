@@ -4,16 +4,17 @@
 
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './shimless_rma_shared_css.js';
+import './shimless_rma_shared.css.js';
 import './base_page.js';
-import './icons.js';
+import './icons.html.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {CalibrationSetupInstruction, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {getTemplate} from './reimaging_calibration_setup_page.html.js';
+import {CalibrationSetupInstruction, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
 import {enableNextButton, focusPageTitle} from './shimless_rma_util.js';
 
 /** @type {!Object<!CalibrationSetupInstruction, string>} */
@@ -62,30 +63,30 @@ export class ReimagingCalibrationSetupPage extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
       /** @protected {?CalibrationSetupInstruction} */
-      calibrationSetupInstruction_: {
+      calibrationSetupInstruction: {
         type: Object,
       },
 
       /** @protected {string} */
-      imgSrc_: {
+      imgSrc: {
         type: String,
         value: '',
       },
 
       /** @protected {string} */
-      imgAlt_: {
+      imgAlt: {
         type: String,
         value: '',
       },
 
       /** @protected {string} */
-      calibrationInstructionsText_: {
+      calibrationInstructionsText: {
         type: String,
       },
     };
@@ -94,20 +95,19 @@ export class ReimagingCalibrationSetupPage extends
   constructor() {
     super();
     /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService_ = getShimlessRmaService();
+    this.shimlessRmaService = getShimlessRmaService();
   }
 
   static get observers() {
-    return ['onStatusChanged_(calibrationSetupInstruction_)'];
+    return ['onStatusChanged(calibrationSetupInstruction)'];
   }
 
   /** @override */
   ready() {
     super.ready();
-    this.shimlessRmaService_.getCalibrationSetupInstructions().then(
-        (result) => {
-          this.calibrationSetupInstruction_ = result.instructions;
-        });
+    this.shimlessRmaService.getCalibrationSetupInstructions().then((result) => {
+      this.calibrationSetupInstruction = result.instructions;
+    });
     enableNextButton(this);
 
     focusPageTitle(this);
@@ -115,37 +115,37 @@ export class ReimagingCalibrationSetupPage extends
 
   /** @return {!Promise<{stateResult: !StateResult}>} */
   onNextButtonClick() {
-    return this.shimlessRmaService_.runCalibrationStep();
+    return this.shimlessRmaService.runCalibrationStep();
   }
 
   /**
-   * Groups state changes related to the |calibrationSetupInstruction_|
+   * Groups state changes related to the |calibrationSetupInstruction|
    * updating.
    * @protected
    */
-  onStatusChanged_() {
-    this.setCalibrationInstructionsText_();
-    this.setImgSrcAndAlt_();
+  onStatusChanged() {
+    this.setCalibrationInstructionsText();
+    this.setImgSrcAndAlt();
   }
 
   /**
    * @protected
    */
-  setCalibrationInstructionsText_() {
-    assert(this.calibrationSetupInstruction_);
-    this.calibrationInstructionsText_ = this.i18n(
-        INSRUCTION_MESSAGE_KEY_MAP[this.calibrationSetupInstruction_]);
+  setCalibrationInstructionsText() {
+    assert(this.calibrationSetupInstruction);
+    this.calibrationInstructionsText =
+        this.i18n(INSRUCTION_MESSAGE_KEY_MAP[this.calibrationSetupInstruction]);
   }
 
   /**
    * @protected
    */
-  setImgSrcAndAlt_() {
-    assert(this.calibrationSetupInstruction_);
-    this.imgSrc_ = `illustrations/${
-        CALIBRATION_IMG_MAP[this.calibrationSetupInstruction_]}.svg`;
-    this.imgAlt_ =
-        this.i18n(CALIBRATION_ALT_MAP[this.calibrationSetupInstruction_]);
+  setImgSrcAndAlt() {
+    assert(this.calibrationSetupInstruction);
+    this.imgSrc = `illustrations/${
+        CALIBRATION_IMG_MAP[this.calibrationSetupInstruction]}.svg`;
+    this.imgAlt =
+        this.i18n(CALIBRATION_ALT_MAP[this.calibrationSetupInstruction]);
   }
 }
 

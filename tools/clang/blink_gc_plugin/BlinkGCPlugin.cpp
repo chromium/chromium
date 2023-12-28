@@ -43,8 +43,6 @@ class BlinkGCPluginAction : public PluginASTAction {
         options_.enable_members_on_stack_check = true;
       } else if (arg == "enable-extra-padding-check") {
         options_.enable_extra_padding_check = true;
-      } else if (arg == "forbid-associated-remote-receiver") {
-        options_.forbid_associated_remote_receiver = true;
       } else if (arg == "enable-off-heap-collections-of-gced-check") {
         options_.enable_off_heap_collections_of_gced_check = true;
       } else if (arg == "disable-off-heap-collections-of-gced-check") {

@@ -7,6 +7,7 @@
 #include "ash/bubble/bubble_utils.h"
 #include "ash/style/typography.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
@@ -22,11 +23,27 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 
 namespace arc::input_overlay {
+
+namespace {
+
+constexpr float kCornerRadius = 8.0f;
+constexpr int kLabelSize = 32;
+
+// Pulse animation specs.
+constexpr int kPulseTimes = 3;
+constexpr int kPulseExtraHalfSize = 32;
+constexpr base::TimeDelta kPulseDuration = base::Seconds(2);
+
+}  // namespace
 
 EditLabel::EditLabel(DisplayOverlayController* controller,
                      Action* action,
@@ -52,9 +69,58 @@ void EditLabel::RemoveNewState() {
   SetLabelContent();
 }
 
+void EditLabel::PerformPulseAnimation(int pulse_count) {
+  // Destroy the pulse layer if it pulses after `kPulseTimes` times.
+  if (pulse_count >= kPulseTimes) {
+    pulse_layer_.reset();
+    return;
+  }
+
+  auto* widget = GetWidget();
+  DCHECK(widget);
+
+  // Initiate pulse layer if it starts to pulse for the first time.
+  if (pulse_count == 0) {
+    pulse_layer_ = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
+    widget->GetLayer()->Add(pulse_layer_.get());
+    pulse_layer_->SetColor(widget->GetColorProvider()->GetColor(
+        cros_tokens::kCrosSysHighlightText));
+  }
+
+  DCHECK(pulse_layer_);
+
+  // Initial bounds in its widget coordinate.
+  auto view_bounds = ConvertRectToWidget(bounds());
+
+  // Set initial properties.
+  pulse_layer_->SetBounds(view_bounds);
+  pulse_layer_->SetOpacity(1.0f);
+  pulse_layer_->SetRoundedCornerRadius(gfx::RoundedCornersF(kCornerRadius));
+
+  // Animate from a square to a circle with larger target bounds and to a
+  // smaller opacity.
+  view_bounds.Outset(kPulseExtraHalfSize);
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(base::BindOnce(&EditLabel::PerformPulseAnimation,
+                              base::Unretained(this), pulse_count + 1))
+      .Once()
+      .SetDuration(kPulseDuration)
+      .SetBounds(pulse_layer_.get(), view_bounds,
+                 gfx::Tween::ACCEL_0_40_DECEL_100)
+      .SetOpacity(pulse_layer_.get(), /*opacity=*/0.0f,
+                  gfx::Tween::ACCEL_0_80_DECEL_80)
+      .SetRoundedCorners(
+          pulse_layer_.get(),
+          gfx::RoundedCornersF(kPulseExtraHalfSize + kLabelSize / 2.0f),
+          gfx::Tween::ACCEL_0_40_DECEL_100);
+}
+
 void EditLabel::Init() {
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  SetPreferredSize(gfx::Size(32, 32));
+  SetPreferredSize(gfx::Size(kLabelSize, kLabelSize));
   SetAccessibilityProperties(ax::mojom::Role::kLabelText,
                              CalculateAccessibleName());
   SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -95,7 +161,7 @@ void EditLabel::SetTextLabel(const std::u16string& text) {
       text == kUnknownBind && !action_->is_new()
           ? cros_tokens::kCrosSysErrorHighlight
           : cros_tokens::kCrosSysHighlightShape,
-      /*radius=*/8));
+      kCornerRadius));
   if (HasFocus()) {
     SetToFocused();
   } else {
@@ -128,7 +194,7 @@ void EditLabel::SetToFocused() {
                              ? cros_tokens::kCrosSysError
                              : cros_tokens::kCrosSysHighlightText);
   SetBorder(views::CreateThemedRoundedRectBorder(
-      /*thickness=*/2, /*corner_radius=*/8, cros_tokens::kCrosSysPrimary));
+      /*thickness=*/2, kCornerRadius, cros_tokens::kCrosSysPrimary));
 }
 
 void EditLabel::OnFocus() {

@@ -42,6 +42,11 @@ _REPOSITORY_ROOT = os.path.abspath(
 sys.path.insert(0, os.path.join(_REPOSITORY_ROOT, 'build'))
 import action_helpers
 
+METADATA_FILE_NAMES = frozenset({
+    "README.chromium", "README.crashpad", "README.v8", "README.pdfium",
+    "README.angle"
+})
+
 # Paths from the root of the tree to directories to skip.
 PRUNE_PATHS = set([
     # Placeholder directory only, not third-party code.
@@ -139,14 +144,11 @@ ADDITIONAL_PATHS = (
     os.path.join('chrome', 'test', 'chromeos', 'autotest'),
     os.path.join('chrome', 'test', 'data'),
     os.path.join('native_client'),
-    os.path.join('testing', 'gmock'),
-    os.path.join('testing', 'gtest'),
     os.path.join('third_party', 'boringssl', 'src', 'third_party', 'fiat'),
     os.path.join('third_party', 'devtools-frontend', 'src', 'front_end',
                  'third_party'),
     os.path.join('third_party', 'devtools-frontend-internal', 'front_end',
                  'third_party'),
-    os.path.join('tools', 'gyp'),
     os.path.join('tools', 'page_cycler', 'acid3'),
     os.path.join('url', 'third_party', 'mozilla'),
     os.path.join('v8'),
@@ -155,27 +157,21 @@ ADDITIONAL_PATHS = (
     os.path.join('v8', 'fdlibm'),
 )
 
-# Directories where we check out directly from upstream, and therefore
-# can't provide a README.chromium.  Please prefer a README.chromium
-# wherever possible.
+# SPECIAL_CASES are used for historical directories where we checked out
+# directly from upstream into the same directory as we would put metadata.
+# In new cases, you should check out upstream source into //root/foo/src
+# and keep the corresponding README.chromium file at //root/foo/README.chromium
+# instead of adding a SPECIAL_CASE.
+# These SPECIAL_CASES should not be used to suppress errors. Please fix
+# any metadata files with errors and if you encounter a parsing issue,
+# please file a bug.
 SPECIAL_CASES = {
     os.path.join('native_client'): {
         "Name": "native client",
         "URL": "https://code.google.com/p/nativeclient",
         "Shipped": "yes",
         "License": "BSD",
-    },
-    os.path.join('testing', 'gmock'): {
-        "Name": "gmock",
-        "URL": "https://github.com/google/googlemock",
-        "Shipped": "no",
-        "License": "BSD",
-    },
-    os.path.join('testing', 'gtest'): {
-        "Name": "gtest",
-        "URL": "https://github.com/google/googletest",
-        "Shipped": "no",
-        "License": "BSD",
+        "License File": ["//native_client/LICENSE"],
     },
     os.path.join('third_party', 'angle'): {
         "Name": "Almost Native Graphics Layer Engine",
@@ -248,18 +244,6 @@ SPECIAL_CASES = {
         "URL": "https://code.google.com/p/ppapi/",
         "Shipped": "yes",
     },
-    os.path.join('third_party', 'scons-2.0.1'): {
-        "Name": "scons-2.0.1",
-        "URL": "https://www.scons.org/",
-        "Shipped": "no",
-        "License": "MIT",
-    },
-    os.path.join('third_party', 'catapult'): {
-        "Name": "catapult",
-        "URL": "https://github.com/catapult-project/catapult",
-        "Shipped": "no",
-        "License": "BSD",
-    },
     os.path.join('third_party', 'crashpad', 'crashpad', 'third_party',
                  'getopt'): {
         "Name": "getopt",
@@ -270,32 +254,12 @@ SPECIAL_CASES = {
             "//third_party/crashpad/crashpad/third_party/getopt/LICENSE",
         ],
     },
-    os.path.join('third_party', 'crashpad', 'crashpad', 'third_party', 'lss'): {
-        "Name": "linux-syscall-support",
-        "URL": "https://chromium.googlesource.com/linux-syscall-support/",
-        "Shipped": "no",
-        "License": "BSD",
-    },
-    os.path.join('third_party', 'crashpad', 'crashpad', 'third_party',
-                 'mini_chromium'): {
-        "Name": "mini_chromium",
-        "URL": "https://chromium.googlesource.com/chromium/mini_chromium/",
-        "Shipped": "no",
-        "License": "BSD",
-    },
     os.path.join('third_party', 'crashpad', 'crashpad', 'third_party', 'xnu'): {
         "Name": "xnu",
         "URL": "https://opensource.apple.com/source/xnu/",
         "Shipped": "yes",
         "License": "Apple Public Source License 2.0",
         "License File": ["APPLE_LICENSE"],
-    },
-    os.path.join('third_party', 'crashpad', 'crashpad', 'third_party',
-                 'zlib'): {
-        "Name": "zlib",
-        "URL": "https://zlib.net/",
-        "Shipped": "no",
-        "License": "zlib",
     },
     os.path.join('third_party', 'v8-i18n'): {
         "Name": "Internationalization Library for v8",
@@ -314,18 +278,6 @@ SPECIAL_CASES = {
         "License": "BSD and LGPL v2 and LGPL v2.1",
         # Absolute path here is resolved as relative to the source root.
         "License File": ["//third_party/blink/LICENSE_FOR_ABOUT_CREDITS"],
-    },
-    os.path.join('third_party', 'webpagereplay'): {
-        "Name": "webpagereplay",
-        "URL": "https://github.com/chromium/web-page-replay",
-        "Shipped": "no",
-        "License": "Apache 2.0",
-    },
-    os.path.join('tools', 'gyp'): {
-        "Name": "gyp",
-        "URL": "https://gyp.gsrc.io/",
-        "Shipped": "no",
-        "License": "BSD",
     },
     os.path.join('v8'): {
         "Name": "V8 JavaScript Engine",
@@ -349,20 +301,6 @@ SPECIAL_CASES = {
         # Absolute path here is resolved as relative to the source root.
         "License File": ["//v8/LICENSE.fdlibm"],
         "License Android Compatible": "yes",
-    },
-    os.path.join('third_party', 'khronos_glcts'): {
-        # These sources are not shipped, are not public, and it isn't
-        # clear why they're tripping the license check.
-        "Name": "khronos_glcts",
-        "URL": "http://no-public-url",
-        "Shipped": "no",
-        "License": "Khronos",
-    },
-    os.path.join('tools', 'telemetry', 'third_party', 'gsutil'): {
-        "Name": "gsutil",
-        "URL": "https://cloud.google.com/storage/docs/gsutil",
-        "Shipped": "no",
-        "License": "Apache 2.0",
     },
     os.path.join('third_party', 'swiftshader'): {
         "Name": "SwiftShader",
@@ -397,28 +335,6 @@ SPECIAL_CASES = {
         "Shipped": "yes",
         "License": "Apache 2.0",
         "License File": ["//third_party/dawn/third_party/khronos/LICENSE"],
-    },
-    # Dependencies of Selenium Atoms
-    os.path.join('third_party', 'selenium-atoms', 'sizzle'): {
-        "Name": "Sizzle",
-        "URL": "https://sizzlejs.com/",
-        "Shipped": "yes",
-        "License": "MIT, BSD and GPL v2",
-        "License File": ["//third_party/selenium-atoms/LICENSE.sizzle"],
-    },
-    os.path.join('third_party', 'selenium-atoms', 'wgxpath'): {
-        "Name": "Wicked Good XPath",
-        "URL": "https://github.com/google/wicked-good-xpath",
-        "Shipped": "yes",
-        "License": "MIT",
-        "License File": ["//third_party/selenium-atoms/LICENSE.wgxpath"],
-    },
-    os.path.join('third_party', 'selenium-atoms', 'closure-lib'): {
-        "Name": "Closure Library",
-        "URL": "https://developers.google.com/closure/library",
-        "Shipped": "yes",
-        "License": "Apache 2.0",
-        "License File": ["//third_party/selenium-atoms/LICENSE.closure"],
     },
 }
 
@@ -623,15 +539,15 @@ def ProcessMetadata(metadata: Dict[str, Any],
                     root: str,
                     require_license_file: bool = True,
                     enable_warnings: bool = False) -> List[str]:
-  """Process a single dependency's metadata in-place. This function will
-  update the given metadata to use fallback field values, and update
-  filepaths to absolute paths.
+  """Processes a single dependency's metadata and returns the updated
+  data if it passes validation. This function updates the given metadata
+  to use fallback fields and change any relative paths to absolute.
 
   Args:
     metadata: a single dependency's metadata.
     readme_path: the source of the metadata (either a metadata file
                  or a SPECIAL_CASES entry).
-    path: the source directory for the metadata.
+    path: the source file for the metadata.
     root: the root directory of the repo.
     require_license_file: whether a license file is required.
     enable_warnings: whether warnings should be displayed.
@@ -642,10 +558,10 @@ def ProcessMetadata(metadata: Dict[str, Any],
   errors = []
 
   # The dependency reference, for more precise error messages.
-  dep_ref = readme_path
+  dep_ref = os.path.relpath(readme_path, root)
   dep_name = metadata.get("Name")
   if dep_name:
-    dep_ref = f"{readme_path}>>{dep_name}"
+    dep_ref = f"{dep_ref}>>{dep_name}"
 
   # Set field values for fields with aliases.
   for alias, field in ALIAS_FIELDS.items():
@@ -700,6 +616,11 @@ def ProcessMetadata(metadata: Dict[str, Any],
         "'License File:' line to README.chromium with the appropriate paths.")
   metadata["License File"] = license_paths
 
+  if errors:
+    # if there were any errors during parsing, clear all values from
+    # the dependenct metadata so no further processing occurs
+    metadata = {}
+
   return errors
 
 
@@ -707,51 +628,73 @@ def ParseDir(path,
              root,
              require_license_file=True,
              optional_keys=[],
-             enable_warnings=False):
+             enable_warnings=False,
+             metadata_file_names=METADATA_FILE_NAMES):
   """Examine a third_party path and extract that directory's metadata.
 
   Note: directory metadata can contain metadata for multiple
   dependencies.
+
+  Returns: A tuple with a list of directory metadata, and accrued parsing errors
+
   """
   if path in THIRD_PARTY_FOR_BUILD_FILES_ONLY:
-    return []
+    return [], []
 
   # Get the metadata values, from
   # (a) looking up the path in SPECIAL_CASES; or
   # (b) parsing the metadata from a README.chromium file.
-  readme_path = ""
   if path in SPECIAL_CASES:
     readme_path = f"licenses.py SPECIAL_CASES entry for {path}"
-    directory_metadata = [dict(SPECIAL_CASES[path])]
-  else:
-    # Try to find README.chromium.
-    readme_path = os.path.join(root, path, "README.chromium")
-    if not os.path.exists(readme_path):
-      raise LicenseError("missing README.chromium or licenses.py "
-                         "SPECIAL_CASES entry in %s\n" % path)
+    directory_metadata = dict(SPECIAL_CASES[path])
+    errors = ProcessMetadata(directory_metadata,
+                             readme_path,
+                             path,
+                             root,
+                             require_license_file=require_license_file,
+                             enable_warnings=enable_warnings)
 
-    try:
-      directory_metadata = ParseMetadataFile(readme_path,
-                                             optional_fields=optional_keys)
-    except InvalidMetadata as e:
-      raise LicenseError(f"Invalid metadata file: {e}")
+    return [directory_metadata], errors
 
   errors = []
-  for dependency_metadata in directory_metadata:
-    # Process the metadata for licensing info.
-    dependency_errors = ProcessMetadata(
-        dependency_metadata,
-        readme_path,
-        path,
-        root,
-        require_license_file=require_license_file,
-        enable_warnings=enable_warnings)
-    errors.extend(dependency_errors)
+  readmes_in_dir = False
+  valid_metadata = []
+  directory_metadata = []
 
-  if errors:
-    raise LicenseError("Errors in %s:\n %s\n" % (path, ";\n ".join(errors)))
+  for name in metadata_file_names:
+    for readme_path in (pathlib.Path(root) / path).glob(name):
+      readmes_in_dir = True
 
-  return directory_metadata
+      try:
+        file_metadata = ParseMetadataFile(str(readme_path),
+                                          optional_fields=optional_keys)
+        for dependency_metadata in file_metadata:
+          meta_errors = ProcessMetadata(
+              dependency_metadata,
+              readme_path,
+              path,
+              root,
+              require_license_file=require_license_file,
+              enable_warnings=enable_warnings)
+
+          if meta_errors:
+            errors.append(
+                "Errors in %s:\n %s\n" %
+                (os.path.relpath(readme_path, root), ";\n ".join(meta_errors)))
+            continue
+
+          if dependency_metadata:
+            valid_metadata.append(dependency_metadata)
+
+      except InvalidMetadata as e:
+        errors.append(f"Invalid metadata file: {e}")
+        continue
+
+  if not readmes_in_dir:
+    raise LicenseError(f"missing third party metadata file "
+                       f"or licenses.py SPECIAL_CASES entry in {path}\n")
+
+  return valid_metadata, errors
 
 
 def process_license_files(
@@ -845,10 +788,6 @@ def FindThirdPartyDirs(prune_paths, root, extra_third_party_dirs=None):
 
         ProcessAdditionalReadmePathsJson(root, dirpath, third_party_dirs)
 
-      # Don't recurse into any subdirs from here.
-      dirs[:] = []
-      continue
-
     # Don't recurse into paths in ADDITIONAL_PATHS, like we do with regular
     # third_party/foo paths.
     if path in ADDITIONAL_PATHS:
@@ -885,6 +824,14 @@ def _GnBinary():
     raise RuntimeError("Unsupported platform '%s'." % sys.platform)
 
   return os.path.join(_REPOSITORY_ROOT, 'buildtools', subdir, exe)
+
+
+def LogParseDirErrors(errors):
+  """Provides a convenience method for printing out the errors resulting
+  from running ParseDir() over a directory."""
+
+  for error in sorted(errors):
+    print(error)
 
 
 def GetThirdPartyDepsFromGNDepsOutput(
@@ -996,13 +943,12 @@ def ScanThirdPartyDirs(root=None):
   errors = []
   for path in sorted(third_party_dirs):
     try:
-      ParseDir(path, root, enable_warnings=True)
+      _, errors = ParseDir(path, root, enable_warnings=True)
     except LicenseError as e:
-      errors.append((path, e.args[0]))
+      errors.append(f"{path}: {e}")
       continue
 
-  for path, error in sorted(errors):
-    print(path + ": " + error)
+    LogParseDirErrors(errors)
 
   return len(errors) == 0
 
@@ -1030,7 +976,8 @@ def GenerateCredits(file_template_file,
   def MetadataToTemplateEntry(metadata, entry_template):
     licenses = []
     for filepath in metadata['License File']:
-      licenses.append(codecs.open(filepath, encoding='utf-8').read())
+      licenses.append(
+          codecs.open(filepath, errors="replace", encoding='utf-8').read())
     license_content = '\n\n'.join(licenses)
 
     env = {
@@ -1089,9 +1036,9 @@ def GenerateCredits(file_template_file,
   for path in third_party_dirs:
     try:
       # Directory metadata can be for multiple dependencies.
-      directory_metadata = ParseDir(path,
-                                    _REPOSITORY_ROOT,
-                                    enable_warnings=enable_warnings)
+      directory_metadata, _ = ParseDir(path,
+                                       _REPOSITORY_ROOT,
+                                       enable_warnings=enable_warnings)
       if not directory_metadata:
         continue
     except LicenseError:
@@ -1208,16 +1155,19 @@ def GenerateLicenseFile(args: argparse.Namespace):
   metadatas = {}
   for d in third_party_dirs:
     try:
-      directory_metadata = ParseDir(d,
-                                    _REPOSITORY_ROOT,
-                                    require_license_file=True,
-                                    enable_warnings=args.enable_warnings)
+      directory_metadata, errors = ParseDir(
+          d,
+          _REPOSITORY_ROOT,
+          require_license_file=True,
+          enable_warnings=args.enable_warnings)
       if directory_metadata:
         metadatas[d] = directory_metadata
     except LicenseError as lic_exp:
       # TODO(phajdan.jr): Convert to fatal error (https://crbug.com/39240).
       print(f"Error: {lic_exp}")
       continue
+
+    LogParseDirErrors(errors)
 
   if args.format == 'spdx':
     license_txt = GenerateLicenseFileSpdx(metadatas, args.spdx_link,

@@ -242,16 +242,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FamilyLinkUser.ClassifyUrlRequest.AuthError"
-    enum="GoogleServiceAuthError" expires_after="2024-05-05">
-  <owner>tju@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
-  <summary>
-    The detailed reason of GoogleServiceAuthError in calls to Kids Management
-    API::ClassifyURL.
-  </summary>
-</histogram>
-
 <histogram name="FamilyLinkUser.ClassifyUrlRequest.HttpStatusOrNetError"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-04-28">
   <owner>tju@google.com</owner>
@@ -273,16 +263,6 @@ chromium-metrics-reviews@google.com.
 
     Googlers only: See go/chrome-kids-backend-monitoring for backend-related
     metrics.
-  </summary>
-</histogram>
-
-<histogram name="FamilyLinkUser.ClassifyUrlRequest.ParsingResult"
-    enum="KidsChromeManagementClientParsingError" expires_after="2024-05-05">
-  <owner>tju@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
-  <summary>
-    Indicates success of a JSON response parsing from Kids Management
-    API::ClassifyURL, or a stage at which it failed.
   </summary>
 </histogram>
 
@@ -664,7 +644,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Crostini"/>
     <variant name="Extension"/>
     <variant name="Lacros"/>
-    <variant name="MacOs"/>
     <variant name="PluginVm"/>
     <variant name="Remote"/>
     <variant name="SystemWeb"/>
@@ -714,44 +693,6 @@ chromium-metrics-reviews@google.com.
     includes the outcome of the filter (i.e. allowed, blocked, or unknown) and
     the page transition type (how the user got there, e.g. typed URL, clicked
     link). For a more general metric see ManagedUsers.TopLevelFilteringResult
-  </summary>
-</histogram>
-
-<histogram name="ManagedUsers.KidsManagementClassifyUrlFailureDelay" units="ms"
-    expires_after="2024-12-12">
-  <owner>escordeiro@chromium.org</owner>
-  <owner>unichrome-eng@google.com</owner>
-  <owner>cros-families-eng@google.com</owner>
-  <summary>
-    The extra page load delays introduced by network requests due to the
-    supervised user url filtering feature, measured once per page load, for
-    failed requests. This is the delay to fetch the token and call the
-    ClassifyUrl rpc, when there is a cache miss.
-  </summary>
-</histogram>
-
-<histogram name="ManagedUsers.KidsManagementClassifyUrlSuccessDelay" units="ms"
-    expires_after="2024-12-12">
-  <owner>escordeiro@chromium.org</owner>
-  <owner>unichrome-eng@google.com</owner>
-  <owner>cros-families-eng@google.com</owner>
-  <summary>
-    The extra page load delays introduced by network requests due to the
-    supervised user url filtering feature, measured once per page load. This is
-    the delay to fetch the token and call the ClassifyUrl rpc, when there is a
-    cache miss. Only recorded for successful requests.
-  </summary>
-</histogram>
-
-<histogram name="ManagedUsers.KidsManagementUrlCheckerResponseStatus"
-    enum="KidsManagementURLCheckerResponseStatus" expires_after="2024-12-12">
-  <owner>escordeiro@chromium.org</owner>
-  <owner>unichrome-eng@google.com</owner>
-  <owner>cros-families-eng@google.com</owner>
-  <summary>
-    The counts of response status from supervised user
-    KidsManagementURLCheckerCLient. Each entry includes the outcome of a request
-    (i.e. success, net error, parsing error).
   </summary>
 </histogram>
 

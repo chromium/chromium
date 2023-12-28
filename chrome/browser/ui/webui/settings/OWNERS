@@ -18,3 +18,5 @@ per-file safety_check_handler*=andzaytsev@google.com,rainhard@chromium.org,sidey
 per-file settings_clear_browsing_data_handler*=sauski@google.com
 per-file settings_localized_strings_provider*=sauski@google.com
 per-file settings_security_key_handler*=file://device/fido/OWNERS
+
+per-file performance_*=file://chrome/browser/ui/performance_controls/OWNERS

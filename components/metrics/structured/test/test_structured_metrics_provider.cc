@@ -112,10 +112,6 @@ void TestStructuredMetricsProvider::OnEventRecord(const Event& event) {
   event_record_callback_.Run(event);
 }
 
-void TestStructuredMetricsProvider::OnReportingStateChanged(bool enabled) {
-  structured_metrics_provider_->recorder().OnReportingStateChanged(enabled);
-}
-
 void TestStructuredMetricsProvider::AddProfilePath(
     const base::FilePath& user_path) {
   OnProfileAdded(temp_dir_.GetPath().Append(user_path));

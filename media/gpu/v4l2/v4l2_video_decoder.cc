@@ -4,6 +4,8 @@
 
 #include "media/gpu/v4l2/v4l2_video_decoder.h"
 
+#include <drm_fourcc.h>
+
 #include <algorithm>
 
 #include "base/containers/contains.h"
@@ -736,7 +738,7 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
     }
 
     VLOGF(1) << "buffer modifier: " << std::hex << layout->modifier();
-    if (layout->modifier() &&
+    if (layout->modifier() != DRM_FORMAT_MOD_LINEAR &&
         layout->modifier() != gfx::NativePixmapHandle::kNoModifier) {
       absl::optional<struct v4l2_format> modifier_format =
           output_queue_->SetModifierFormat(layout->modifier(), picked_size);

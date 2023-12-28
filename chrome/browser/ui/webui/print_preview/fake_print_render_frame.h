@@ -43,10 +43,6 @@ class FakePrintRenderFrame : public mojom::PrintRenderFrame {
   void PrintingDone(bool success) override;
   void ConnectToPdfRenderer() override;
   void PrintNodeUnderContextMenu() override;
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-  void SnapshotForContentAnalysis(
-      SnapshotForContentAnalysisCallback callback) override;
-#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
   void BindPrintRenderFrameReceiver(mojo::ScopedInterfaceEndpointHandle handle);
 

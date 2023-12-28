@@ -1144,7 +1144,10 @@ class ComputedStyle final : public ComputedStyleBase {
   bool ShouldUseTextIndent(bool is_first_line) const;
 
   // text-transform utility functions.
-  void ApplyTextTransform(String*, UChar previous_character = ' ') const;
+  [[nodiscard]] String ApplyTextTransform(
+      const String&,
+      UChar previous_character = ' ',
+      TextOffsetMap* offset_map = nullptr) const;
 
   // Line-height utility functions.
   const Length& SpecifiedLineHeight() const { return LineHeightInternal(); }
@@ -2429,6 +2432,7 @@ class ComputedStyle final : public ComputedStyleBase {
     return display == EDisplay::kBlock || display == EDisplay::kListItem ||
            display == EDisplay::kInlineBlock ||
            display == EDisplay::kFlowRoot ||
+           display == EDisplay::kFlowRootListItem ||
            display == EDisplay::kInlineFlowRootListItem ||
            display == EDisplay::kTableCell ||
            display == EDisplay::kTableCaption;

@@ -6,7 +6,6 @@ import './icons.html.js';
 import './strings.m.js';
 import './textarea.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
-import '//resources/cr_elements/cr_hidden_style.css.js';
 import '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
@@ -23,6 +22,7 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {Debouncer, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ComposeAppAnimator} from './animations/app_animator.js';
 import {getTemplate} from './app.html.js';
 import {CloseReason, ComposeDialogCallbackRouter, ComposeResponse, ComposeStatus, ConfigurableParams, ConsentState, Length, StyleModifiers, Tone, UserFeedback} from './compose.mojom-webui.js';
 import {ComposeApiProxy, ComposeApiProxyImpl} from './compose_api_proxy.js';
@@ -41,6 +41,7 @@ export interface ComposeAppState {
 export interface ComposeAppElement {
   $: {
     consentDialog: HTMLElement,
+    freMsbbDialog: HTMLElement,
     consentFooter: HTMLElement,
     consentNoThanksButton: CrButtonElement,
     consentYesButton: CrButtonElement,
@@ -51,9 +52,10 @@ export interface ComposeAppElement {
     cancelEditButton: CrButtonElement,
     closeButton: HTMLElement,
     closeButtonConsent: HTMLElement,
+    closeButtonMSBB: HTMLElement,
     editTextarea: ComposeTextareaElement,
     errorFooter: HTMLElement,
-    insertButton: CrButtonElement,
+    acceptButton: CrButtonElement,
     loading: HTMLElement,
     undoButton: CrButtonElement,
     refreshButton: HTMLElement,
@@ -83,7 +85,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
         type: String,
         observer: 'onEditedInputChanged_',
       },
-      enableAnimations_: {
+      enableAnimations: {
         type: Boolean,
         value: loadTimeData.getBoolean('enableAnimations'),
         reflectToAttribute: true,
@@ -149,7 +151,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
             {
               value: Length.kUnset,
               label: loadTimeData.getString('lengthMenuTitle'),
-              hidden: true,
+              isDefault: true,
             },
             {
               value: Length.kShorter,
@@ -169,7 +171,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
             {
               value: Tone.kUnset,
               label: loadTimeData.getString('toneMenuTitle'),
-              hidden: true,
+              isDefault: true,
             },
             {
               value: Tone.kCasual,
@@ -192,11 +194,15 @@ export class ComposeAppElement extends ComposeAppElementBase {
     ];
   }
 
+  private animator_: ComposeAppAnimator;
   private apiProxy_: ComposeApiProxy = ComposeApiProxyImpl.getInstance();
-  private enableAnimations_: boolean;
+  enableAnimations: boolean;
   private eventTracker_: EventTracker = new EventTracker();
   private router_: ComposeDialogCallbackRouter = this.apiProxy_.getRouter();
+  private showConsentDialog_: boolean;
   private showMainAppDialog_: boolean;
+  private showMSBBDialog_: boolean;
+  private shouldShowMSBBDialog_: boolean;
   private showDisclaimerFooter_: boolean;
   private editedInput_: string;
   private feedbackState_: CrFeedbackOption;
@@ -210,6 +216,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private saveAppStateDebouncer_: Debouncer;
   private selectedLength_: Length;
   private selectedTone_: Tone;
+  private textSelected_: boolean;
   private submitted_: boolean;
   private undoEnabled_: boolean;
   private userHasModifiedState_: boolean = false;
@@ -217,6 +224,8 @@ export class ComposeAppElement extends ComposeAppElementBase {
   constructor() {
     super();
     ColorChangeUpdater.forDocument().start();
+    this.animator_ = new ComposeAppAnimator(
+        this, loadTimeData.getBoolean('enableAnimations'));
     this.getInitialState_();
     this.router_.responseReceived.addListener((response: ComposeResponse) => {
       this.composeResponseReceived_(response);
@@ -247,19 +256,32 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private getInitialState_() {
     this.apiProxy_.requestInitialState().then(initialState => {
       this.inputParams_ = initialState.configurableParams;
-      // The dialog can initially be in one of three view states. The consent
+      // The dialog can initially be in one of four view states. The consent
       // view is shown if consent is not currently granted. If consent was
       // granted but not through Compose use, the disclaimer view is shown.
-      // Otherwise, full consent causes the dialog to show at the main app
-      // state.
+      // Otherwise, full consent causes the dialog to show in either the
+      // main app state or the MSBB state if MSBB is not enabled.
+
       this.showMainAppDialog_ =
-          initialState.consentState === ConsentState.kConsented;
+          initialState.consentState === ConsentState.kConsented &&
+          initialState.msbbState;
+      if (!this.showMainAppDialog_) {
+        this.animator_.transitionToConsent();
+      }
+
+      this.showMSBBDialog_ =
+          initialState.consentState === ConsentState.kConsented &&
+          !initialState.msbbState;
+      this.shouldShowMSBBDialog_ = !initialState.msbbState;
+      this.showConsentDialog_ =
+          initialState.consentState !== ConsentState.kConsented;
       this.showDisclaimerFooter_ =
           initialState.consentState === ConsentState.kExternalConsented;
 
       if (initialState.initialInput) {
         this.input_ = initialState.initialInput;
       }
+      this.textSelected_ = initialState.textSelected;
       const composeState = initialState.composeState;
       this.feedbackState_ = userFeedbackToFeedbackOption(composeState.feedback);
       this.loading_ = composeState.hasPendingRequest;
@@ -299,13 +321,33 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   private onConsentYesButtonClick_() {
     this.apiProxy_.approveConsent();
-    this.showMainAppDialog_ = true;
+    this.animator_.transitionToInput();
+    if (this.shouldShowMSBBDialog_) {
+      this.showMSBBDialog_ = true;
+    } else {
+      this.showMainAppDialog_ = true;
+    }
+    this.showConsentDialog_ = false;
   }
 
   private onDisclaimerLetsGoButtonClick_() {
     this.apiProxy_.acknowledgeConsentDisclaimer();
     this.showDisclaimerFooter_ = false;
-    this.showMainAppDialog_ = true;
+    this.showConsentDialog_ = false;
+    if (this.shouldShowMSBBDialog_) {
+      this.showMSBBDialog_ = true;
+    } else {
+      this.showMainAppDialog_ = true;
+    }
+  }
+
+  private onFirstRunBottomTextClick_(e: Event) {
+    e.preventDefault();
+    // Embedded links do not work in WebUI so handle in the parent event
+    // listener.
+    if ((e.target as HTMLElement).tagName === 'A') {
+      this.apiProxy_.openComposeLearnMorePage();
+    }
   }
 
   private onCancelEditClick_() {
@@ -313,10 +355,20 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   private onClose_(e: Event) {
-    const closeReason = (e.target as HTMLElement).id === 'closeButtonConsent' ?
-        CloseReason.kConsentCloseButton :
-        CloseReason.kCloseButton;
-    this.apiProxy_.closeUi(closeReason);
+    switch ((e.target as HTMLElement).id) {
+      case 'closeButtonConsent': {
+        this.apiProxy_.closeUi(CloseReason.kConsentCloseButton);
+        break;
+      }
+      case 'closeButton': {
+        this.apiProxy_.closeUi(CloseReason.kCloseButton);
+        break;
+      }
+      case 'closeButtonMSBB': {
+        this.apiProxy_.closeUi(CloseReason.kMSBBCloseButton);
+        break;
+      }
+    }
   }
 
   private onEditedInputChanged_() {
@@ -339,6 +391,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
+  private onRefresh_() {
+    this.rewrite_(/*style=*/ null);
+  }
+
   private onSubmit_() {
     this.isSubmitEnabled_ = this.$.textarea.validate();
     if (!this.isSubmitEnabled_) {
@@ -346,7 +402,9 @@ export class ComposeAppElement extends ComposeAppElementBase {
       return;
     }
 
+    this.$.textarea.scrollInputToTop();
     this.submitted_ = true;
+    this.$.textarea.transitionToReadonly();
     this.compose_();
   }
 
@@ -392,7 +450,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private onFooterClick_(e: Event) {
     e.preventDefault();
     // The "File a bug" and "survey" links are embedded into the string.
-    // Embededd links do not work in WebUI so handle each click in the parent
+    // Embedded links do not work in WebUI so handle each click in the parent
     // event listener.
     switch ((e.target as HTMLElement).id) {
       case 'bugLink':
@@ -416,6 +474,12 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
+  private onMsbbSettingsClick_(e: Event) {
+    e.preventDefault();
+    // instruct the browser to open the corresponding settings page.
+    this.apiProxy_.openComposeSettings();
+  }
+
   private compose_(inputEdited: boolean = false) {
     assert(this.$.textarea.validate());
     assert(this.submitted_);
@@ -425,7 +489,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.apiProxy_.compose(this.input_, inputEdited);
   }
 
-  private rewrite_(style: StyleModifiers) {
+  private rewrite_(style: StyleModifiers|null) {
     assert(this.$.textarea.validate());
     assert(this.submitted_);
     this.loading_ = true;
@@ -452,6 +516,11 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
 
     return this.response_.status !== ComposeStatus.kOk;
+  }
+
+  private acceptButtonText_(): string {
+    return this.textSelected_ ? this.i18n('replaceButton') :
+                                this.i18n('insertButton');
   }
 
   private failedResponseErrorText_(): string {

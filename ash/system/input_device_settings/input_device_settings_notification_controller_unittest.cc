@@ -37,6 +37,8 @@ const mojom::GraphicsTablet kGraphicsTablet2 = mojom::GraphicsTablet(
     /*name=*/"Wacom Intuos S",
     /*id=*/2,
     /*device_key=*/"fake-device-key2",
+    /*customization_restriction=*/
+    ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
     mojom::GraphicsTabletSettings::New());
 
 int GetPrefNotificationCount(const char* pref_name) {
@@ -119,8 +121,7 @@ class InputDeviceSettingsNotificationControllerTest : public AshTestBase {
 
  protected:
   MockNewWindowDelegate& new_window_delegate() { return *new_window_delegate_; }
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged | ExperimentalAsh>
-      new_window_delegate_;
+  raw_ptr<MockNewWindowDelegate, DanglingUntriaged> new_window_delegate_;
   std::unique_ptr<TestMessageCenter> message_center_;
   std::unique_ptr<InputDeviceSettingsNotificationController> controller_;
   std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;

@@ -62,7 +62,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
     int label_id;
 
     // The icon to be displayed for the command.
-    raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon;
+    raw_ptr<const gfx::VectorIcon> icon;
 
     // The handler to be invoked to perform command execution.
     Handler handler;
@@ -92,7 +92,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
     kCameraAppScanPdf = 16,
     kCameraAppVideoGif = 17,
     kCameraAppVideoMp4 = 18,
-    kMaxValue = kCameraAppVideoMp4,
+    kPhotoshopWeb = 19,
+    kMaxValue = kPhotoshopWeb,
   };
 
   HoldingSpaceItem(const HoldingSpaceItem&) = delete;

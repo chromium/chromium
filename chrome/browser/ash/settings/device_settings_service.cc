@@ -395,6 +395,20 @@ void DeviceSettingsService::RunPendingOwnershipStatusCallbacks() {
   }
 }
 
+bool DeviceSettingsService::IsDeviceManaged() const {
+  if (!policy_data_ || policy_data_->state() != em::PolicyData::ACTIVE) {
+    return false;
+  }
+  if (policy_data_->has_management_mode()) {
+    return policy_data_->management_mode() ==
+           em::PolicyData::ENTERPRISE_MANAGED;
+  } else {
+    // The old device settings didn't have a management_mode. For those we
+    // have to rely on the presence of request_token.
+    return policy_data_->has_request_token();
+  }
+}
+
 std::ostream& operator<<(std::ostream& ostream,
                          DeviceSettingsService::OwnershipStatus status) {
   switch (status) {

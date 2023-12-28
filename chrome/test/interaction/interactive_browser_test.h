@@ -5,6 +5,7 @@
 #ifndef CHROME_TEST_INTERACTION_INTERACTIVE_BROWSER_TEST_H_
 #define CHROME_TEST_INTERACTION_INTERACTIVE_BROWSER_TEST_H_
 
+#include <concepts>
 #include <functional>
 #include <memory>
 #include <type_traits>
@@ -365,9 +366,8 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
 // `RunTestTestSequenceInContext()` instead.
 //
 // See README.md for usage.
-template <typename T,
-          typename =
-              std::enable_if_t<std::is_base_of_v<InProcessBrowserTest, T>>>
+template <typename T>
+  requires std::derived_from<T, InProcessBrowserTest>
 class InteractiveBrowserTestT : public T, public InteractiveBrowserTestApi {
  public:
   template <typename... Args>

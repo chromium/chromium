@@ -2,45 +2,78 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @fileoverview Definitions for chrome.storage API in Manifest V2 */
+/**
+ * @fileoverview Definitions for chrome.storage API
+ * Generated from: extensions/common/api/storage.json
+ * run `tools/json_schema_compiler/compiler.py
+ * extensions/common/api/storage.json -g ts_definitions` to regenerate.
+ */
+
 // This file exists because MV3 supports promises and MV2 does not.
 // TODO(b/260590502): Delete this after MV3 migration.
-// TODO(crbug.com/1203307): Auto-generate this file.
 
 import {ChromeEvent} from '../../../../../../tools/typescript/definitions/chrome_event';
 
 declare global {
   export namespace chrome {
+
     export namespace storage {
-      export const sync: StorageArea;
-      export const local: StorageArea;
+
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      interface sync_StorageArea extends StorageArea {
+        readonly QUOTA_BYTES: number;
+        readonly QUOTA_BYTES_PER_ITEM: number;
+        readonly MAX_ITEMS: number;
+        readonly MAX_WRITE_OPERATIONS_PER_HOUR: number;
+        readonly MAX_WRITE_OPERATIONS_PER_MINUTE: number;
+        readonly MAX_SUSTAINED_WRITE_OPERATIONS_PER_MINUTE: number;
+      }
+      export const sync: sync_StorageArea;
+
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      interface local_StorageArea extends StorageArea {
+        readonly QUOTA_BYTES: number;
+      }
+      export const local: local_StorageArea;
+
       export const managed: StorageArea;
-      export const onChanged: StorageChangeEvent;
 
-      export type StorageChangeEvent = ChromeEvent<
-          (changes: {[x: string]: StorageChange}, areaName: string) => void>;
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      interface session_StorageArea extends StorageArea {
+        readonly QUOTA_BYTES: number;
+      }
+      export const session: session_StorageArea;
 
-      export type StorageAreaChangeEvent =
-          ChromeEvent<(changes: {[x: string]: StorageChange}) => void>;
+      export enum AccessLevel {
+        TRUSTED_CONTEXTS = 'TRUSTED_CONTEXTS',
+        TRUSTED_AND_UNTRUSTED_CONTEXTS = 'TRUSTED_AND_UNTRUSTED_CONTEXTS',
+      }
 
       export interface StorageChange {
         oldValue?: any;
         newValue?: any;
       }
 
-      export class StorageArea {
-        get(keysOrCallback?: string|string[]|object|((obj: any) => void),
-            callback?: (obj: any) => void): void;
-
+      export interface StorageArea {
+        get(keys: string|string[]|{[key: string]: any}|undefined,
+            callback?: (result: {[key: string]: any}) => void): void;
         getBytesInUse(
-            keysOrCallback?: string|string[]|((obj: any) => void),
-            callback?: (num: number) => void): void;
-
-        set(items: {[x: string]: any}, callback?: () => void): void;
+            keys: string|string[]|undefined,
+            callback?: (bytes: number) => void): void;
+        set(items: {[key: string]: any}, callback?: () => void): void;
         remove(keys: string|string[], callback?: () => void): void;
-        clear(callback?: () => void): void;
-        onChanged: StorageAreaChangeEvent;
+        clear(callback: () => void): void;
+        setAccessLevel(
+            accessOptions: {
+              accessLevel: AccessLevel,
+            },
+            callback: () => void): void;
+        onChanged:
+            ChromeEvent<(changes: {[key: string]: StorageChange}) => void>;
       }
+
+      export const onChanged: ChromeEvent<
+          (changes: {[key: string]: StorageChange}, areaName: string) => void>;
     }
   }
 }

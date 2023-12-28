@@ -84,7 +84,7 @@ MandatoryReauthBubbleController* MandatoryReauthIconView::GetController()
   return MandatoryReauthBubbleControllerImpl::FromWebContents(web_contents);
 }
 
-BEGIN_METADATA(MandatoryReauthIconView, PageActionIconView)
+BEGIN_METADATA(MandatoryReauthIconView)
 END_METADATA
 
 }  // namespace autofill

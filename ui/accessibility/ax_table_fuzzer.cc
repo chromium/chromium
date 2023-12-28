@@ -140,8 +140,9 @@ void TestTableAPIs(const ui::AXNode* node) {
   node->GetTableCellColHeaders(&headers);
   node->GetTableCellRowHeaders(&headers);
 
-  for (const auto* child : node->children())
+  for (const ui::AXNode* child : node->children()) {
     TestTableAPIs(child);
+  }
 }
 
 // Entry point for LibFuzzer.

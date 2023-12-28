@@ -1629,6 +1629,13 @@ void SurfaceAggregator::CopyPasses(ResolvedFrameData& resolved_frame) {
 
   bool apply_surface_transform_to_root_pass = true;
   for (auto& resolved_pass : resolved_frame.GetResolvedPasses()) {
+    if (!resolved_pass.aggregation().will_draw &&
+        !resolved_pass.aggregation().in_copy_request_pass) {
+      // If the render pass isn't contributing pixels to the framebuffer or
+      // a CopyOutputRequest we should be able to skip it.
+      stats_->orphaned_render_pass++;
+    }
+
     const auto& source = resolved_pass.render_pass();
 
     size_t sqs_size = source.shared_quad_state_list.size();
@@ -2408,6 +2415,9 @@ void SurfaceAggregator::RecordStatHistograms() {
   UMA_HISTOGRAM_BOOLEAN(
       "Compositing.SurfaceAggregator.HasUnembeddedRenderPassesPerFrame",
       stats_->has_unembedded_pass);
+  UMA_HISTOGRAM_COUNTS_100(
+      "Compositing.SurfaceAggregator.OrphanedRenderPassCount",
+      stats_->orphaned_render_pass);
 
   stats_.reset();
 }

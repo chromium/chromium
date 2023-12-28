@@ -8,7 +8,6 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.graphics.Typeface;
 import android.view.ActionMode;
 import android.view.View;
 
@@ -105,7 +104,6 @@ public class LocationBarCoordinator
     private final @ColorInt int mDropdownIncognitoBackgroundColor;
     private final @ColorInt int mSuggestionStandardBackgroundColor;
     private final @ColorInt int mSuggestionIncognitoBackgroundColor;
-    private boolean mShortCircuitUnfocusAnimation;
 
     /**
      * Creates {@link LocationBarCoordinator} and its subcoordinator: {@link
@@ -500,8 +498,6 @@ public class LocationBarCoordinator
 
     @Override
     public void loadUrl(String url, int transition, long inputStart, boolean openInNewTab) {
-        mShortCircuitUnfocusAnimation =
-                isUrlBarFocused() && OmniboxFeatures.shouldShortCircuitUnfocusAnimation();
         mLocationBarMediator.loadUrl(url, transition, inputStart, openInNewTab);
     }
 
@@ -753,19 +749,6 @@ public class LocationBarCoordinator
         mLocationBarMediator.setShouldShowButtonsWhenUnfocusedForTablet(shouldShowButtons);
     }
 
-    /**
-     * Whether the unfocus animation should be skipped to speed up navigation. If short circuiting
-     * occurs, the caller should immediately call {@link #onUnfocusAnimationShortCircuited()}.
-     */
-    public boolean shouldShortCircuitUnfocusAnimation() {
-        return mShortCircuitUnfocusAnimation;
-    }
-
-    /** Call to report that the focus animation was short circuited. */
-    public void onUnfocusAnimationShortCircuited() {
-        mShortCircuitUnfocusAnimation = false;
-    }
-
     // End tablet-specific methods.
 
     public void setVoiceRecognitionHandlerForTesting(
@@ -831,26 +814,25 @@ public class LocationBarCoordinator
     }
 
     /**
-     * @see LocationBarMediator#setUrlBarHintTextColor(boolean)
+     * @see LocationBarMediator#updateUrlBarHintTextColor(boolean)
      */
-    public void setUrlBarHintTextColor(boolean isStartOrNtp) {
-        mLocationBarMediator.setUrlBarHintTextColor(isStartOrNtp);
+    public void updateUrlBarHintTextColor(boolean useDefaultUrlBarHintTextColor) {
+        mLocationBarMediator.updateUrlBarHintTextColor(useDefaultUrlBarHintTextColor);
     }
 
     /**
-     * @see LocationBarMediator#setUrlBarTypeface(Typeface)
+     * @see LocationBarMediator#updateUrlBarTypeface(boolean)
      */
-    public void setUrlBarTypeface(Typeface typeface) {
-        mLocationBarMediator.setUrlBarTypeface(typeface);
+    public void updateUrlBarTypeface(boolean useDefaultUrlBarTypeface) {
+        mLocationBarMediator.updateUrlBarTypeface(useDefaultUrlBarTypeface);
     }
 
     /**
-     * Updates the value for the end margin of the url action container in the search box.
-     *
-     * @param endMargin The end margin for the url action container in the search box.
+     * @see LocationBarMediator#updateUrlActionContainerEndMargin(boolean)
      */
-    public void updateUrlActionContainerEndMargin(int endMargin) {
-        mLocationBarMediator.updateUrlActionContainerEndMargin(endMargin);
+    public void updateUrlActionContainerEndMargin(boolean useDefaultUrlActionContainerEndMargin) {
+        mLocationBarMediator.updateUrlActionContainerEndMargin(
+                useDefaultUrlActionContainerEndMargin);
     }
 
     public int getUrlActionContainerEndMarginForTesting() {

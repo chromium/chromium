@@ -19,6 +19,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -47,7 +48,7 @@ class FakeSensorDisabledNotificationDelegate
   }
 
   void CloseApp(const std::u16string& app_name) {
-    auto it = std::find(apps_.begin(), apps_.end(), app_name);
+    auto it = base::ranges::find(apps_, app_name);
     if (it != apps_.end()) {
       apps_.erase(it);
     }

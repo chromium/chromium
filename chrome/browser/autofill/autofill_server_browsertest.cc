@@ -255,8 +255,6 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
     data_present.rbegin()[5] = '7';
   }
   upload->set_data_present(data_present);
-
-  upload->set_passwords_revealed(false);
   upload->set_submission_event(
       AutofillUploadContents_SubmissionIndicatorEvent_HTML_FORM_SUBMISSION);
   upload->set_has_form_tag(true);

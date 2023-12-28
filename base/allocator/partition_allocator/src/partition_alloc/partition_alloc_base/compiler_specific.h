@@ -127,6 +127,14 @@
 #endif  // defined(COMPILER_GCC)
 #endif  // !defined(PA_LIKELY)
 
+// Compiler feature-detection.
+// clang.llvm.org/docs/LanguageExtensions.html#has-feature-and-has-extension
+#if defined(__has_feature)
+#define PA_HAS_FEATURE(FEATURE) __has_feature(FEATURE)
+#else
+#define PA_HAS_FEATURE(FEATURE) 0
+#endif
+
 #if !defined(PA_CPU_ARM_NEON)
 #if defined(__arm__)
 #if !defined(__ARMEB__) && !defined(__ARM_EABI__) && !defined(__EABI__) && \

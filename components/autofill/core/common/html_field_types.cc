@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 #include "components/autofill/core/common/html_field_types.h"
 
-#include <string_view>
-
 #include "base/notreached.h"
 
 namespace autofill {

@@ -1073,28 +1073,11 @@ bool DirectRenderer::HasAllocatedResourcesForTesting(
 }
 
 bool DirectRenderer::ShouldApplyRoundedCorner(const DrawQuad* quad) const {
-  const SharedQuadState* sqs = quad->shared_quad_state;
-  const gfx::MaskFilterInfo& mask_filter_info = sqs->mask_filter_info;
-
-  // There is no rounded corner set.
-  if (!mask_filter_info.HasRoundedCorners())
-    return false;
-
-  const gfx::RRectF& rounded_corner_bounds =
-      mask_filter_info.rounded_corner_bounds();
-
   const gfx::RectF target_quad = cc::MathUtil::MapClippedRect(
-      sqs->quad_to_target_transform, gfx::RectF(quad->visible_rect));
+      quad->shared_quad_state->quad_to_target_transform,
+      gfx::RectF(quad->visible_rect));
 
-  const gfx::RRectF::Corner corners[] = {
-      gfx::RRectF::Corner::kUpperLeft, gfx::RRectF::Corner::kUpperRight,
-      gfx::RRectF::Corner::kLowerRight, gfx::RRectF::Corner::kLowerLeft};
-  for (auto c : corners) {
-    if (rounded_corner_bounds.CornerBoundingRect(c).Intersects(target_quad)) {
-      return true;
-    }
-  }
-  return false;
+  return QuadRoundedCornersBoundsIntersects(quad, target_quad);
 }
 
 float DirectRenderer::CurrentFrameSDRWhiteLevel() const {
@@ -1113,14 +1096,7 @@ gfx::ColorSpace DirectRenderer::RootRenderPassColorSpace() const {
       current_frame()->display_color_spaces.GetOutputColorSpace(
           current_frame()->root_render_pass->content_color_usage,
           current_frame()->root_render_pass->has_transparent_background);
-
-  if (root_color_space.IsAffectedBySDRWhiteLevel()) {
-    auto sk_color_space =
-        root_color_space.ToSkColorSpace(CurrentFrameSDRWhiteLevel());
-    root_color_space = gfx::ColorSpace(*sk_color_space, /*is_hdr=*/true);
-  }
-
-  return root_color_space;
+  return root_color_space.GetWithSdrWhiteLevel(CurrentFrameSDRWhiteLevel());
 }
 
 gfx::ColorSpace DirectRenderer::RenderPassColorSpace(
@@ -1128,9 +1104,11 @@ gfx::ColorSpace DirectRenderer::RenderPassColorSpace(
   if (render_pass == current_frame()->root_render_pass) {
     return RootRenderPassColorSpace();
   }
-  return current_frame()->display_color_spaces.GetCompositingColorSpace(
-      render_pass->has_transparent_background,
-      render_pass->content_color_usage);
+  return current_frame()
+      ->display_color_spaces
+      .GetCompositingColorSpace(render_pass->has_transparent_background,
+                                render_pass->content_color_usage)
+      .GetWithSdrWhiteLevel(CurrentFrameSDRWhiteLevel());
 }
 
 gfx::ColorSpace DirectRenderer::CurrentRenderPassColorSpace() const {

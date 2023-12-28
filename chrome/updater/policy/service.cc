@@ -4,6 +4,8 @@
 
 #include "chrome/updater/policy/service.h"
 
+#include <concepts>
+#include <functional>
 #include <optional>
 #include <set>
 #include <string>
@@ -193,121 +195,113 @@ std::string PolicyService::source() const {
 
 PolicyStatus<base::TimeDelta> PolicyService::GetLastCheckPeriod() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return QueryPolicy(
-      base::BindRepeating(&PolicyManagerInterface::GetLastCheckPeriod));
+  return QueryPolicy(&PolicyManagerInterface::GetLastCheckPeriod);
 }
 
 PolicyStatus<UpdatesSuppressedTimes> PolicyService::GetUpdatesSuppressedTimes()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return QueryPolicy(
-      base::BindRepeating(&PolicyManagerInterface::GetUpdatesSuppressedTimes));
+  return QueryPolicy(&PolicyManagerInterface::GetUpdatesSuppressedTimes);
 }
 
 PolicyStatus<std::string> PolicyService::GetDownloadPreference() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryPolicy(
-      base::BindRepeating(&PolicyManagerInterface::GetDownloadPreference),
-      base::BindRepeating([](const std::string& download_preference) {
-        return base::EqualsCaseInsensitiveASCII(download_preference,
-                                                kDownloadPreferenceCacheable);
+      &PolicyManagerInterface::GetDownloadPreference,
+      base::BindRepeating([](std::optional<std::string> download_preference) {
+        return (download_preference.has_value() &&
+                base::EqualsCaseInsensitiveASCII(download_preference.value(),
+                                                 kDownloadPreferenceCacheable))
+                   ? download_preference
+                   : std::nullopt;
       }));
 }
 
 PolicyStatus<int> PolicyService::GetPackageCacheSizeLimitMBytes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return QueryPolicy(base::BindRepeating(
-      &PolicyManagerInterface::GetPackageCacheSizeLimitMBytes));
+  return QueryPolicy(&PolicyManagerInterface::GetPackageCacheSizeLimitMBytes);
 }
 
 PolicyStatus<int> PolicyService::GetPackageCacheExpirationTimeDays() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return QueryPolicy(base::BindRepeating(
-      &PolicyManagerInterface::GetPackageCacheExpirationTimeDays));
+  return QueryPolicy(
+      &PolicyManagerInterface::GetPackageCacheExpirationTimeDays);
 }
 
 PolicyStatus<int> PolicyService::GetPolicyForAppInstalls(
     const std::string& app_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryAppPolicy(
-      base::BindRepeating(
-          &PolicyManagerInterface::GetEffectivePolicyForAppInstalls),
-      app_id);
+      &PolicyManagerInterface::GetEffectivePolicyForAppInstalls, app_id);
 }
 
 PolicyStatus<int> PolicyService::GetPolicyForAppUpdates(
     const std::string& app_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryAppPolicy(
-      base::BindRepeating(
-          &PolicyManagerInterface::GetEffectivePolicyForAppUpdates),
-      app_id);
+      &PolicyManagerInterface::GetEffectivePolicyForAppUpdates, app_id);
 }
 
 PolicyStatus<std::string> PolicyService::GetTargetChannel(
     const std::string& app_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return QueryAppPolicy(
-      base::BindRepeating(&PolicyManagerInterface::GetTargetChannel), app_id);
+  return QueryAppPolicy(&PolicyManagerInterface::GetTargetChannel, app_id);
 }
 
 PolicyStatus<std::string> PolicyService::GetTargetVersionPrefix(
     const std::string& app_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return QueryAppPolicy(
-      base::BindRepeating(&PolicyManagerInterface::GetTargetVersionPrefix),
-      app_id);
+  return QueryAppPolicy(&PolicyManagerInterface::GetTargetVersionPrefix,
+                        app_id);
 }
 
 PolicyStatus<bool> PolicyService::IsRollbackToTargetVersionAllowed(
     const std::string& app_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryAppPolicy(
-      base::BindRepeating(
-          &PolicyManagerInterface::IsRollbackToTargetVersionAllowed),
-      app_id);
+      &PolicyManagerInterface::IsRollbackToTargetVersionAllowed, app_id);
 }
 
 PolicyStatus<std::string> PolicyService::GetProxyMode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryPolicy(
-      base::BindRepeating(&PolicyManagerInterface::GetProxyMode),
-      base::BindRepeating([](const std::string& proxy_mode) {
-        return base::Contains(
-            std::vector<std::string>(
-                {kProxyModeDirect, kProxyModeSystem, kProxyModeFixedServers,
-                 kProxyModePacScript, kProxyModeAutoDetect}),
-            base::ToLowerASCII(proxy_mode));
+      &PolicyManagerInterface::GetProxyMode,
+      base::BindRepeating([](std::optional<std::string> proxy_mode) {
+        return (proxy_mode.has_value() &&
+                base::Contains(std::vector<std::string>(
+                                   {kProxyModeDirect, kProxyModeSystem,
+                                    kProxyModeFixedServers, kProxyModePacScript,
+                                    kProxyModeAutoDetect}),
+                               base::ToLowerASCII(proxy_mode.value())))
+                   ? proxy_mode
+                   : std::nullopt;
       }));
 }
 
 PolicyStatus<std::string> PolicyService::GetProxyPacUrl() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return QueryPolicy(
-      base::BindRepeating(&PolicyManagerInterface::GetProxyPacUrl));
+  return QueryPolicy(&PolicyManagerInterface::GetProxyPacUrl);
 }
 
 PolicyStatus<std::string> PolicyService::GetProxyServer() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return QueryPolicy(
-      base::BindRepeating(&PolicyManagerInterface::GetProxyServer));
+  return QueryPolicy(&PolicyManagerInterface::GetProxyServer);
 }
 
 PolicyStatus<std::vector<std::string>> PolicyService::GetForceInstallApps()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return QueryPolicy(
-      base::BindRepeating(&PolicyManagerInterface::GetForceInstallApps));
+  return QueryPolicy(&PolicyManagerInterface::GetForceInstallApps);
 }
 
 PolicyStatus<int> PolicyService::DeprecatedGetLastCheckPeriodMinutes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryPolicy(
-      base::BindRepeating(&PolicyManagerInterface::GetLastCheckPeriod)
-          .Then(base::BindRepeating([](std::optional<base::TimeDelta> period) {
-            return period ? std::optional<int>(period->InMinutes())
-                          : std::nullopt;
-          })));
+      &PolicyManagerInterface::GetLastCheckPeriod,
+      base::BindRepeating([](std::optional<base::TimeDelta> period) {
+        // TODO: C++23: `return period.transform(&base::TimeDelta::InMinutes);`
+        return period ? std::make_optional(period->InMinutes()) : std::nullopt;
+      }));
 }
 
 std::set<std::string> PolicyService::GetAppsWithPolicy() const {
@@ -582,44 +576,48 @@ bool PolicyService::AreUpdatesSuppressedNow(const base::Time& now) const {
   return are_updates_suppressed;
 }
 
-template <typename T>
-PolicyStatus<T> PolicyService::QueryPolicy(
-    const base::RepeatingCallback<
-        std::optional<T>(const PolicyManagerInterface*)>& policy_query_callback,
-    const base::RepeatingCallback<bool(const T&)>& validator) const {
+template <typename T, typename U>
+PolicyStatus<U> PolicyService::QueryPolicy(
+    PolicyQueryFunction<T> policy_query_function,
+    const base::RepeatingCallback<std::optional<U>(std::optional<T>)>&
+        transform) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::optional<T> query_result;
-  PolicyStatus<T> status;
+  PolicyStatus<U> status;
   for (const scoped_refptr<PolicyManagerInterface>& policy_manager :
        policy_managers_.vector) {
-    query_result = policy_query_callback.Run(policy_manager.get());
-    if (!query_result ||
-        (!validator.is_null() && !validator.Run(*query_result))) {
-      continue;
+    const std::optional<U> transformed_result =
+        [&transform](std::optional<T> query_result) {
+          if constexpr (std::same_as<T, U>) {
+            return transform.is_null() ? std::move(query_result)
+                                       : transform.Run(std::move(query_result));
+          } else {
+            CHECK(!transform.is_null());
+            return transform.Run(std::move(query_result));
+          }
+        }(std::invoke(policy_query_function, policy_manager));
+    if (transformed_result.has_value()) {
+      status.AddPolicyIfNeeded(policy_manager->HasActiveDevicePolicies(),
+                               policy_manager->source(),
+                               transformed_result.value());
     }
-    status.AddPolicyIfNeeded(policy_manager->HasActiveDevicePolicies(),
-                             policy_manager->source(), query_result.value());
   }
-
   return status;
 }
 
 template <typename T>
 PolicyStatus<T> PolicyService::QueryAppPolicy(
-    const base::RepeatingCallback<
-        std::optional<T>(const PolicyManagerInterface*, const std::string&)>&
-        policy_query_callback,
+    AppPolicyQueryFunction<T> policy_query_function,
     const std::string& app_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::optional<T> query_result;
   PolicyStatus<T> status;
   for (const scoped_refptr<PolicyManagerInterface>& policy_manager :
        policy_managers_.vector) {
-    query_result = policy_query_callback.Run(policy_manager.get(), app_id);
-    if (!query_result)
-      continue;
-    status.AddPolicyIfNeeded(policy_manager->HasActiveDevicePolicies(),
-                             policy_manager->source(), query_result.value());
+    std::optional<T> query_result =
+        std::invoke(policy_query_function, policy_manager, app_id);
+    if (query_result.has_value()) {
+      status.AddPolicyIfNeeded(policy_manager->HasActiveDevicePolicies(),
+                               policy_manager->source(), query_result.value());
+    }
   }
 
   return status;

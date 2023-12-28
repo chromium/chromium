@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
 #include "dbus/dbus_export.h"
@@ -319,16 +320,16 @@ class CHROME_DBUS_EXPORT MessageWriter {
   // Appends the array of bytes. Arrays of bytes are often used for
   // exchanging binary blobs hence it's worth having a specialized
   // function.
-  void AppendArrayOfBytes(const uint8_t* values, size_t length);
+  void AppendArrayOfBytes(base::span<const uint8_t> values);
 
   // Appends array of int32_ts.
-  void AppendArrayOfInt32s(const int32_t* values, size_t length);
+  void AppendArrayOfInt32s(base::span<const int32_t> values);
 
   // Appends array of uint32_ts.
-  void AppendArrayOfUint32s(const uint32_t* values, size_t length);
+  void AppendArrayOfUint32s(base::span<const uint32_t> values);
 
   // Appends the array of doubles. Used for audio mixer matrix doubles.
-  void AppendArrayOfDoubles(const double* values, size_t length);
+  void AppendArrayOfDoubles(base::span<const double> values);
 
   // Appends the array of strings. Arrays of strings are often used for
   // exchanging lists of names hence it's worth having a specialized

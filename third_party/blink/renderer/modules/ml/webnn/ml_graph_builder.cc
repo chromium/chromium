@@ -7,9 +7,9 @@
 #include <algorithm>
 
 #include "base/numerics/checked_math.h"
-#include "components/ml/webnn/features.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_softplus_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -424,7 +425,39 @@ absl::optional<Vector<uint32_t>> BroadcastShapes(
 constexpr bool IsLogicalBinaryOperator(MLOperator::OperatorKind kind) {
   return kind == MLOperator::OperatorKind::kEqual ||
          kind == MLOperator::OperatorKind::kGreater ||
-         kind == MLOperator::OperatorKind::kLesser;
+         kind == MLOperator::OperatorKind::kLesser ||
+         kind == MLOperator::OperatorKind::kLesserOrEqual ||
+         kind == MLOperator::OperatorKind::kGreaterOrEqual;
+}
+
+MLOperand* BuildArgMinMax(MLGraphBuilder* builder,
+                          MLOperator::OperatorKind kind,
+                          const MLOperand* input,
+                          const MLArgMinMaxOptions* options,
+                          ExceptionState& exception_state) {
+  const auto input_rank = input->Dimensions().size();
+  const auto axes = options->getAxesOr(CreateAllAxes(input_rank));
+  const auto validated_output = webnn::ValidateArgMinMaxAndInferOutput(
+      ConvertToComponentOperand(input), axes, options->keepDimensions());
+  if (!validated_output.has_value()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        WTF::String::FromUTF8(validated_output.error()));
+    return nullptr;
+  }
+
+  auto* arg_min_max = MakeGarbageCollected<MLOperator>(builder, kind, options);
+  auto output = MLOperand::ValidateAndCreateOutput(
+      builder, ComponentOperandTypeToBlink(validated_output->data_type),
+      Vector<uint32_t>(validated_output->dimensions), arg_min_max);
+  if (!output.has_value()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      output.error());
+    return nullptr;
+  }
+  arg_min_max->Connect({input}, {output.value()});
+
+  return output.value();
 }
 
 MLOperand* BuildElementWiseBinary(MLGraphBuilder* builder,
@@ -615,6 +648,20 @@ MLOperand* MLGraphBuilder::constant(const MLOperandDescriptor* desc,
     return nullptr;
   }
   return constant_operand.value();
+}
+
+MLOperand* MLGraphBuilder::argMin(const MLOperand* input,
+                                  const MLArgMinMaxOptions* options,
+                                  ExceptionState& exception_state) {
+  return BuildArgMinMax(this, MLOperator::OperatorKind::kArgMin, input, options,
+                        exception_state);
+}
+
+MLOperand* MLGraphBuilder::argMax(const MLOperand* input,
+                                  const MLArgMinMaxOptions* options,
+                                  ExceptionState& exception_state) {
+  return BuildArgMinMax(this, MLOperator::OperatorKind::kArgMax, input, options,
+                        exception_state);
 }
 
 MLOperand* MLGraphBuilder::batchNormalization(
@@ -813,7 +860,9 @@ BUILD_ELEMENTWISE_BINARY_OP(max, kMax)
 BUILD_ELEMENTWISE_BINARY_OP(pow, kPow)
 BUILD_ELEMENTWISE_BINARY_OP(equal, kEqual)
 BUILD_ELEMENTWISE_BINARY_OP(greater, kGreater)
+BUILD_ELEMENTWISE_BINARY_OP(greaterOrEqual, kGreaterOrEqual)
 BUILD_ELEMENTWISE_BINARY_OP(lesser, kLesser)
+BUILD_ELEMENTWISE_BINARY_OP(lesserOrEqual, kLesserOrEqual)
 
 #define BUILD_ELEMENTWISE_UNARY_OP(op, op_kind, data_type_constraint) \
   MLOperand* MLGraphBuilder::op(const MLOperand* input,               \
@@ -1454,6 +1503,28 @@ MLActivation* MLGraphBuilder::softmax(ExceptionState& exception_state) {
                                             MLOperator::OperatorKind::kSoftmax);
 }
 
+MLOperand* MLGraphBuilder::softplus(const MLOperand* input,
+                                    const MLSoftplusOptions* options,
+                                    ExceptionState& exception_state) {
+  // The current spec doesn't specify the operand data type constraints of
+  // softplus. An issue has been filed to track it:
+  // https://github.com/webmachinelearning/webnn/issues/283.
+  //
+  // According to WebNN spec
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-softplus, the output
+  // tensor of softplus has the same type and dimensions as its input.
+  return BuildUnaryOperator(this, exception_state,
+                            MLOperator::OperatorKind::kSoftplus,
+                            webnn::DataTypeConstraint::kFloat, input, options);
+}
+
+MLActivation* MLGraphBuilder::softplus(const MLSoftplusOptions* options,
+                                       ExceptionState& exception_state) {
+  // Create the softplus operator that would be used as an activation function.
+  return MakeGarbageCollected<MLActivation>(
+      this, MLOperator::OperatorKind::kSoftplus, options);
+}
+
 MLOperand* MLGraphBuilder::softsign(const MLOperand* input,
                                     ExceptionState& exception_state) {
   // The input data type must be one of the floating point types.
@@ -1635,6 +1706,7 @@ MLOperand* MLGraphBuilder::where(const MLOperand* condition,
 ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
                                     const MLNamedOperands& named_outputs,
                                     ExceptionState& exception_state) {
+  ScopedMLTrace scoped_trace("MLGraphBuilder::build");
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
@@ -1653,7 +1725,8 @@ ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
 
 #if BUILDFLAG(BUILD_WEBNN_WITH_XNNPACK)
   if (ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kCpu) {
-    MLGraphXnnpack::ValidateAndBuildAsync(ml_context_, named_outputs, resolver);
+    MLGraphXnnpack::ValidateAndBuildAsync(std::move(scoped_trace), ml_context_,
+                                          named_outputs, resolver);
     return promise;
   }
 #endif
@@ -1661,24 +1734,21 @@ ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
 #if BUILDFLAG(BUILD_WEBNN_ON_CROS)
   // On ChromeOS, ML model inferencing is off-loaded to ModelLoader service.
   if (ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kCpu) {
-    MLGraphCrOS::ValidateAndBuildAsync(ml_context_, named_outputs, resolver);
+    MLGraphCrOS::ValidateAndBuildAsync(std::move(scoped_trace), ml_context_,
+                                       named_outputs, resolver);
     return promise;
   }
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  // The runtime enable feature is used to disable the cross process hardware
-  // acceleration by default.
-  if (base::FeatureList::IsEnabled(
-          webnn::features::kEnableMachineLearningNeuralNetworkService) &&
-      ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kGpu) {
+  if (ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kGpu) {
     // Reject unsupported error on unimplemented platform when getting
     // `WebNNContext` mojo interface with BrowserInterfaceBroker's
     // GetInterface() method before creating `WebNNGraph` message pipe.
     MLContextMojo* ml_context_mojo =
         static_cast<MLContextMojo*>(ml_context_.Get());
-    MLGraphMojo::ValidateAndBuildAsync(ml_context_mojo, named_outputs,
-                                       resolver);
+    MLGraphMojo::ValidateAndBuildAsync(std::move(scoped_trace), ml_context_mojo,
+                                       named_outputs, resolver);
     return promise;
   }
 #endif
@@ -1691,6 +1761,7 @@ ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
 MLGraph* MLGraphBuilder::buildSync(ScriptState* script_state,
                                    const MLNamedOperands& named_outputs,
                                    ExceptionState& exception_state) {
+  ScopedMLTrace scoped_trace("MLGraphBuilder::buildSync");
   if (g_backend_for_testing) {
     return g_backend_for_testing->BuildGraphSyncImpl(
         script_state, ml_context_, named_outputs, exception_state);
@@ -1704,12 +1775,7 @@ MLGraph* MLGraphBuilder::buildSync(ScriptState* script_state,
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  // GPU support requires a cross-process WebNN acceleration service. This
-  // services is gated behind the EnableMachineLearningNeuralNetworkService
-  // runtime feature.
-  if (ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kGpu &&
-      base::FeatureList::IsEnabled(
-          webnn::features::kEnableMachineLearningNeuralNetworkService)) {
+  if (ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kGpu) {
     MLContextMojo* ml_context_mojo =
         static_cast<MLContextMojo*>(ml_context_.Get());
     return MLGraphMojo::ValidateAndBuildSync(script_state, ml_context_mojo,

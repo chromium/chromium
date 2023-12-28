@@ -42,8 +42,8 @@ class ASH_EXPORT KioskAppDefaultMessage
   gfx::Point CalculatePosition() override;
 
  private:
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
+  raw_ptr<views::Label> title_ = nullptr;
 
   ShelfBackgroundAnimator background_animator_;
   base::ScopedObservation<ShelfBackgroundAnimator,

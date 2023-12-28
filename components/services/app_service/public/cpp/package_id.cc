@@ -9,7 +9,6 @@
 
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -19,7 +18,7 @@ namespace {
 constexpr char kArcPlatformName[] = "android";
 constexpr char kWebPlatformName[] = "web";
 
-AppType PlatformNameToAppType(base::StringPiece platform_name) {
+AppType PlatformNameToAppType(std::string_view platform_name) {
   if (platform_name == kArcPlatformName) {
     return AppType::kArc;
   }
@@ -30,7 +29,7 @@ AppType PlatformNameToAppType(base::StringPiece platform_name) {
   return AppType::kUnknown;
 }
 
-base::StringPiece AppTypeToPlatformName(AppType app_type) {
+std::string_view AppTypeToPlatformName(AppType app_type) {
   switch (app_type) {
     case AppType::kArc:
       return kArcPlatformName;
@@ -44,7 +43,7 @@ base::StringPiece AppTypeToPlatformName(AppType app_type) {
 
 }  // namespace
 
-PackageId::PackageId(AppType app_type, base::StringPiece identifier)
+PackageId::PackageId(AppType app_type, std::string_view identifier)
     : app_type_(app_type), identifier_(identifier) {
   DCHECK(app_type_ == AppType::kArc || app_type_ == AppType::kWeb);
   DCHECK(!identifier_.empty());
@@ -79,7 +78,7 @@ bool PackageId::operator!=(const PackageId& rhs) const {
 
 // static
 absl::optional<PackageId> PackageId::FromString(
-    base::StringPiece package_id_string) {
+    std::string_view package_id_string) {
   size_t separator = package_id_string.find_first_of(':');
   if (separator == std::string::npos ||
       separator == package_id_string.size() - 1) {

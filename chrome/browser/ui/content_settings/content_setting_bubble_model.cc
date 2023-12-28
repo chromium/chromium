@@ -53,6 +53,7 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/permissions/constants.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
@@ -74,6 +75,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/device_features.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -91,7 +93,6 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #endif
 
 using base::UserMetricsAction;
@@ -777,7 +778,7 @@ void ContentSettingStorageAccessBubbleModel::CommitChanges() {
     auto* map = HostContentSettingsMapFactory::GetForProfile(GetProfile());
     content_settings::ContentSettingConstraints constraints;
     constraints.set_lifetime(
-        blink::features::kStorageAccessAPIExplicitPermissionLifetime.Get());
+        permissions::kStorageAccessAPIExplicitPermissionLifetime);
     map->SetNarrowestContentSetting(primary, secondary,
                                     ContentSettingsType::STORAGE_ACCESS,
                                     setting, constraints);
@@ -1305,7 +1306,7 @@ ContentSettingGeolocationBubbleModel::ContentSettingGeolocationBubbleModel(
                                      web_contents,
                                      ContentSettingsType::GEOLOCATION) {
   SetCustomLink();
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   // Get the stored geolocation content setting and the system permission state
   // to determine whether geolocation is blocked by a system permission.
   //
@@ -1326,25 +1327,23 @@ ContentSettingGeolocationBubbleModel::ContentSettingGeolocationBubbleModel(
     // the bubble to enable the user to trigger the system dialog.
     InitializeSystemGeolocationPermissionBubble();
   }
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 }
 
 ContentSettingGeolocationBubbleModel::~ContentSettingGeolocationBubbleModel() =
     default;
 
 void ContentSettingGeolocationBubbleModel::OnDoneButtonClicked() {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   if (show_system_geolocation_bubble_) {
-#if BUILDFLAG(IS_MAC)
-    if (show_system_geolocation_bubble_) {
-      base::RecordAction(UserMetricsAction(
-          "ContentSettings.GeolocationDialog.OpenPreferencesClicked"));
-    }
+    base::RecordAction(UserMetricsAction(
+        "ContentSettings.GeolocationDialog.OpenPreferencesClicked"));
 
-    base::mac::OpenSystemSettingsPane(
-        base::mac::SystemSettingsPane::kPrivacySecurity_LocationServices);
-    return;
-#endif  // BUILDFLAG(IS_MAC)
+    auto* geolocation_manager = device::GeolocationManager::GetInstance();
+    DCHECK(geolocation_manager);
+    geolocation_manager->OpenSystemPermissionSetting();
   }
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 }
 
 void ContentSettingGeolocationBubbleModel::OnManageButtonClicked() {
@@ -1360,6 +1359,7 @@ void ContentSettingGeolocationBubbleModel::CommitChanges() {
 
 void ContentSettingGeolocationBubbleModel::
     InitializeSystemGeolocationPermissionBubble() {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kLocationPermissionsExperiment)) {
     set_title(l10n_util::GetStringUTF16(
@@ -1367,6 +1367,9 @@ void ContentSettingGeolocationBubbleModel::
   } else {
     set_title(l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_MACOS));
   }
+#else
+  set_title(l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_OS));
+#endif
 
   clear_message();
   AddListItem(ContentSettingBubbleModel::ListItem(
@@ -1377,7 +1380,7 @@ void ContentSettingGeolocationBubbleModel::
   set_done_button_text(l10n_util::GetStringUTF16(IDS_OPEN_SETTINGS_LINK));
   set_radio_group(RadioGroup());
   show_system_geolocation_bubble_ = true;
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 }
 
 void ContentSettingGeolocationBubbleModel::SetCustomLink() {

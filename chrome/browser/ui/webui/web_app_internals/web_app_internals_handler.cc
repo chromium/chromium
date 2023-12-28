@@ -9,6 +9,7 @@
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/functional/overloaded.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -571,6 +572,43 @@ void WebAppInternalsHandler::OnIsolatedWebAppDevModeBundleSelected(
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void WebAppInternalsHandler::SelectFileAndUpdateIsolatedWebAppFromDevBundle(
+    const webapps::AppId& app_id,
+    SelectFileAndUpdateIsolatedWebAppFromDevBundleCallback callback) {
+  content::RenderFrameHost* render_frame_host = web_ui_->GetRenderFrameHost();
+  if (!render_frame_host) {
+    std::move(callback).Run("could not get render frame host");
+    return;
+  }
+
+  Browser* browser = chrome::FindBrowserWithTab(web_ui_->GetWebContents());
+  if (!browser) {
+    std::move(callback).Run("could not get browser");
+    return;
+  }
+
+  base::MakeRefCounted<IsolatedWebAppDevBundleSelectListener>(
+      base::BindOnce(&WebAppInternalsHandler::
+                         OnIsolatedWebAppDevModeBundleSelectedForUpdate,
+                     weak_ptr_factory_.GetWeakPtr(), app_id,
+                     std::move(callback)))
+      ->Show(browser, render_frame_host);
+}
+
+void WebAppInternalsHandler::OnIsolatedWebAppDevModeBundleSelectedForUpdate(
+    const webapps::AppId& app_id,
+    SelectFileAndUpdateIsolatedWebAppFromDevBundleCallback callback,
+    std::optional<base::FilePath> path) {
+  if (!path) {
+    std::move(callback).Run("no file selected");
+    return;
+  }
+
+  web_app::IsolatedWebAppLocation location =
+      web_app::DevModeBundle{.path = *path};
+  ApplyDevModeUpdate(app_id, location, std::move(callback));
+}
+
 void WebAppInternalsHandler::OnInstallIsolatedWebAppFromDevModeProxy(
     WebAppInternalsHandler::InstallIsolatedWebAppFromDevProxyCallback callback,
     web_app::IsolatedWebAppInstallationManager::
@@ -618,8 +656,8 @@ void WebAppInternalsHandler::SearchForIsolatedWebAppUpdates(
       "queued %zu update discovery tasks", queued_task_count));
 }
 
-void WebAppInternalsHandler::GetIsolatedWebAppDevModeProxyAppInfo(
-    GetIsolatedWebAppDevModeProxyAppInfoCallback callback) {
+void WebAppInternalsHandler::GetIsolatedWebAppDevModeAppInfo(
+    GetIsolatedWebAppDevModeAppInfoCallback callback) {
   if (!web_app::IsIwaDevModeEnabled(&*profile_)) {
     std::move(callback).Run({});
     return;
@@ -631,28 +669,47 @@ void WebAppInternalsHandler::GetIsolatedWebAppDevModeProxyAppInfo(
     return;
   }
 
-  std::vector<mojom::IwaDevProxyAppInfoPtr> installed_dev_mode_proxy_apps;
+  std::vector<mojom::IwaDevModeAppInfoPtr> dev_mode_apps;
   for (const web_app::WebApp& app : provider->registrar_unsafe().GetApps()) {
     if (!app.isolation_data().has_value()) {
       continue;
     }
-    auto* location =
-        absl::get_if<web_app::DevModeProxy>(&app.isolation_data()->location);
-    if (location == nullptr) {
-      continue;
-    }
 
-    installed_dev_mode_proxy_apps.emplace_back(mojom::IwaDevProxyAppInfo::New(
-        app.app_id(), app.untranslated_name(), location->proxy_url,
-        app.isolation_data()->version.GetString()));
+    absl::visit(
+        base::Overloaded{
+            [](const web_app::InstalledBundle& location) {},
+            [&](const web_app::DevModeBundle& location) {
+              dev_mode_apps.emplace_back(mojom::IwaDevModeAppInfo::New(
+                  app.app_id(), app.untranslated_name(),
+                  mojom::IwaDevModeLocation::NewBundlePath(location.path),
+                  app.isolation_data()->version.GetString()));
+            },
+            [&](const web_app::DevModeProxy& location) {
+              dev_mode_apps.emplace_back(mojom::IwaDevModeAppInfo::New(
+                  app.app_id(), app.untranslated_name(),
+                  mojom::IwaDevModeLocation::NewProxyOrigin(location.proxy_url),
+                  app.isolation_data()->version.GetString()));
+            },
+        },
+        app.isolation_data()->location);
   }
 
-  std::move(callback).Run(std::move(installed_dev_mode_proxy_apps));
+  std::move(callback).Run(std::move(dev_mode_apps));
 }
 
 void WebAppInternalsHandler::UpdateDevProxyIsolatedWebApp(
     const webapps::AppId& app_id,
     UpdateDevProxyIsolatedWebAppCallback callback) {
+  ApplyDevModeUpdate(app_id,
+                     // For dev mode proxy apps, the location remains the same
+                     // and does not change between updates.
+                     /*location=*/absl::nullopt, std::move(callback));
+}
+
+void WebAppInternalsHandler::ApplyDevModeUpdate(
+    const webapps::AppId& app_id,
+    base::optional_ref<const web_app::IsolatedWebAppLocation> location,
+    base::OnceCallback<void(const std::string&)> callback) {
   if (!web_app::IsIwaDevModeEnabled(&*profile_)) {
     std::move(callback).Run("IWA dev mode is not enabled");
     return;
@@ -670,11 +727,19 @@ void WebAppInternalsHandler::UpdateDevProxyIsolatedWebApp(
     return;
   }
   if (!absl::holds_alternative<web_app::DevModeProxy>(
+          app->isolation_data()->location) &&
+      !absl::holds_alternative<web_app::DevModeBundle>(
           app->isolation_data()->location)) {
-    std::move(callback).Run("can only update dev-mode proxy apps");
+    std::move(callback).Run("can only update dev-mode apps");
     return;
   }
-
+  if (location.has_value() &&
+      location->index() != app->isolation_data()->location.index()) {
+    // This error will also be caught deeper down in the update pipeline, but
+    // let's also catch it here just in case.
+    std::move(callback).Run("location type mismatch");
+    return;
+  }
   auto url_info = web_app::IsolatedWebAppUrlInfo::Create(app->manifest_id());
   if (!url_info.has_value()) {
     std::move(callback).Run("unable to create UrlInfo from start url");
@@ -683,7 +748,8 @@ void WebAppInternalsHandler::UpdateDevProxyIsolatedWebApp(
 
   auto& manager = provider->iwa_update_manager();
   manager.DiscoverApplyAndPrioritizeLocalDevModeUpdate(
-      app->isolation_data()->location, *url_info,
+      location.has_value() ? *location : app->isolation_data()->location,
+      *url_info,
       base::BindOnce([](base::expected<base::Version, std::string> result) {
         if (result.has_value()) {
           return base::StrCat(

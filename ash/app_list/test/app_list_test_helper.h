@@ -190,8 +190,7 @@ class AppListTestHelper {
   test::AppListTestModel model_;
   SearchModel search_model_;
   QuickAppAccessModel quick_app_access_model_;
-  raw_ptr<AppListControllerImpl, ExperimentalAsh> app_list_controller_ =
-      nullptr;
+  raw_ptr<AppListControllerImpl> app_list_controller_ = nullptr;
   std::unique_ptr<TestAppListClient> app_list_client_;
 
   AshTestColorGenerator icon_color_generator_{/*default_color=*/SK_ColorRED};

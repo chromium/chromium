@@ -232,7 +232,7 @@ class EffectRepository {
   ~EffectRepository();
 
  private:
-  raw_ptr<FakeVideoConferenceTrayController, ExperimentalAsh> controller_;
+  raw_ptr<FakeVideoConferenceTrayController> controller_;
   std::unique_ptr<CatEarsEffect> cat_ears_;
   std::unique_ptr<DogFurEffect> dog_fur_;
   std::unique_ptr<SpaceshipEffect> spaceship_;

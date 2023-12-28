@@ -771,7 +771,11 @@ public class FirstRunIntegrationTest {
                 0,
                 secondFreData.abortFirstRunExperienceCallback.getCallCount());
 
-        secondFreActivity.onBackPressed();
+        Assert.assertTrue(
+                "FirstRunActivity should intercept back press",
+                secondFreActivity.getOnBackPressedDispatcher().hasEnabledCallbacks());
+        TestThreadUtils.runOnUiThreadBlocking(
+                secondFreActivity.getOnBackPressedDispatcher()::onBackPressed);
         secondFreData.abortFirstRunExperienceCallback.waitForCallback(
                 "Second FirstRunActivity didn't abort", 0);
         CriteriaHelper.pollInstrumentationThread(
@@ -1285,7 +1289,8 @@ public class FirstRunIntegrationTest {
 
         protected FirstRunNavigationHelper goBackToPreviousPage() throws Exception {
             int jumpCallCount = mScopedObserverData.jumpToPageCallback.getCallCount();
-            TestThreadUtils.runOnUiThreadBlocking(() -> mFirstRunActivity.onBackPressed());
+            TestThreadUtils.runOnUiThreadBlocking(
+                    mFirstRunActivity.getOnBackPressedDispatcher()::onBackPressed);
             mScopedObserverData.jumpToPageCallback.waitForCallback(
                     "Failed go back to previous page", jumpCallCount);
 

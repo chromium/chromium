@@ -164,6 +164,20 @@ class DawnObject<WGPUDevice> : public DawnObjectBase {
   WGPUDevice const handle_;
 };
 
+template <>
+class DawnObject<WGPUAdapter> : public DawnObjectBase {
+ public:
+  DawnObject(scoped_refptr<DawnControlClientHolder> dawn_control_client,
+             WGPUAdapter handle)
+      : DawnObjectBase(dawn_control_client), handle_(handle) {}
+  ~DawnObject() { GetProcs().adapterRelease(handle_); }
+
+  WGPUAdapter GetHandle() const { return handle_; }
+
+ private:
+  WGPUAdapter const handle_;
+};
+
 }  // namespace blink
 
 #undef DAWN_OBJECTS

@@ -193,6 +193,9 @@ class WebClient {
   // set.
   virtual void SetOSLockdownModeEnabled(web::BrowserState* browser_state,
                                         bool enabled);
+
+  virtual bool IsInsecureFormWarningEnabled(
+      web::BrowserState* browser_state) const;
 };
 
 }  // namespace web

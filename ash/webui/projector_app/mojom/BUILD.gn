@@ -15,7 +15,7 @@ mojom("annotator_mojo_bindings") {
   webui_module_path = "/$cur_dir"
 
   # Projector app is still using JS + Closure Compiler.
-  use_typescript_sources = false
+  generate_webui_js_bindings = true
 }
 
 mojom("projector_mojo_bindings") {
@@ -28,5 +28,5 @@ mojom("projector_mojo_bindings") {
   webui_module_path = "/$cur_dir"
 
   # Projector app is still using JS + Closure Compiler.
-  use_typescript_sources = false
+  generate_webui_js_bindings = true
 }

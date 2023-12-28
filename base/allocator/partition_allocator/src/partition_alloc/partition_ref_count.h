@@ -395,11 +395,7 @@ PA_ALWAYS_INLINE PartitionRefCount::PartitionRefCount(
 static_assert(kAlignment % alignof(PartitionRefCount) == 0,
               "kAlignment must be multiples of alignof(PartitionRefCount).");
 
-// Allocate extra space for the reference count to satisfy the alignment
-// requirement.
 static constexpr size_t kInSlotRefCountBufferSize = sizeof(PartitionRefCount);
-constexpr size_t kPartitionRefCountOffsetAdjustment = 0;
-constexpr size_t kPartitionPastAllocationAdjustment = 0;
 
 #if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 
@@ -425,11 +421,15 @@ static constexpr size_t kPartitionRefCountSizeShift = 2;
 #endif  // PA_CONFIG(REF_COUNT_CHECK_COOKIE)
 static_assert((1 << kPartitionRefCountSizeShift) == sizeof(PartitionRefCount));
 
-// We need one PartitionRefCount for each system page in a super page. They take
-// `x = sizeof(PartitionRefCount) * (kSuperPageSize / SystemPageSize())` space.
-// They need to fit into a system page of metadata as sparsely as possible to
-// minimize cache line sharing, hence we calculate a multiplier as
-// `SystemPageSize() / x`.
+// The ref-count table is tucked in the metadata region of the super page,
+// and spans a single system page.
+//
+// We need one PartitionRefCount for each data system page in a super page. They
+// take `x = sizeof(PartitionRefCount) * (kSuperPageSize / SystemPageSize())`
+// space. They need to fit into a system page of metadata as sparsely as
+// possible to minimize cache line sharing, hence we calculate a multiplier as
+// `SystemPageSize() / x` which is equal to
+// `SystemPageSize()^2 / kSuperPageSize / sizeof(PartitionRefCount)`.
 //
 // The multiplier is expressed as a bitshift to optimize the code generation.
 // SystemPageSize() isn't always a constrexpr, in which case the compiler
@@ -442,44 +442,33 @@ GetPartitionRefCountIndexMultiplierShift() {
 
 PA_ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(
     uintptr_t slot_start) {
+  // In the "previous slot" mode, ref-counts that would be on a different page
+  // than their corresponding slot are instead placed in the super page metadata
+  // area. This is done so that they don't interfere with discarding of data
+  // pages.
   if (PA_LIKELY(slot_start & SystemPageOffsetMask())) {
     uintptr_t refcount_address = slot_start - sizeof(PartitionRefCount);
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     PA_CHECK(refcount_address % alignof(PartitionRefCount) == 0);
 #endif
-    // No need to tag because the ref count is not protected by MTE.
+    // No need to tag because the ref-count is not protected by MTE.
     return reinterpret_cast<PartitionRefCount*>(refcount_address);
   } else {
     // No need to tag, as the metadata region isn't protected by MTE.
-    PartitionRefCount* bitmap_base = reinterpret_cast<PartitionRefCount*>(
+    PartitionRefCount* table_base = reinterpret_cast<PartitionRefCount*>(
         (slot_start & kSuperPageBaseMask) + SystemPageSize() * 2);
     size_t index = ((slot_start & kSuperPageOffsetMask) >> SystemPageShift())
                    << GetPartitionRefCountIndexMultiplierShift();
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     PA_CHECK(sizeof(PartitionRefCount) * index <= SystemPageSize());
 #endif
-    return bitmap_base + index;
+    return table_base + index;
   }
 }
 
 #else  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 
-// Allocate extra space for the reference count to satisfy the alignment
-// requirement.
-static constexpr size_t kInSlotRefCountBufferSize = kAlignment;
-constexpr size_t kPartitionRefCountOffsetAdjustment = kInSlotRefCountBufferSize;
-
-// This is for adjustment of pointers right past the allocation, which may point
-// to the next slot. First subtract 1 to bring them to the intended slot, and
-// only then we'll be able to find ref-count in that slot.
-constexpr size_t kPartitionPastAllocationAdjustment = 1;
-
-PA_ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(
-    uintptr_t slot_start) {
-  // Have to MTE-tag, because the address is untagged, but lies within a slot
-  // area, which is protected by MTE.
-  return static_cast<PartitionRefCount*>(TagAddr(slot_start));
-}
+static_assert(false, "Not implemented.");
 
 #endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 
@@ -489,7 +478,6 @@ static_assert(sizeof(PartitionRefCount) <= kInSlotRefCountBufferSize,
 #else  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 static constexpr size_t kInSlotRefCountBufferSize = 0;
-constexpr size_t kPartitionRefCountOffsetAdjustment = 0;
 
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 

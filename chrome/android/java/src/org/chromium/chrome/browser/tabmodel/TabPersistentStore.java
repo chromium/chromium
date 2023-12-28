@@ -32,7 +32,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
@@ -193,8 +192,7 @@ public class TabPersistentStore {
 
                     @Override
                     public void onFinishingMultipleTabClosure(List<Tab> tabs) {
-                        if (!mTabModelSelector.isIncognitoSelected()
-                                && ChromeFeatureList.sCloseTabSaveTabList.isEnabled()) {
+                        if (!mTabModelSelector.isIncognitoSelected()) {
                             saveTabListAsynchronously();
                         }
                     }

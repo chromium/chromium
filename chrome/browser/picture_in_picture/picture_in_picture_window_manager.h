@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_WINDOW_MANAGER_H_
 
 #include <functional>
-#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
@@ -17,7 +16,6 @@
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_border.h"
-#include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
@@ -191,14 +189,6 @@ class PictureInPictureWindowManager {
   // window.
   PictureInPictureOcclusionTracker* GetOcclusionTracker();
 #endif
-
-  // Get the origins for initiators of active Picture-in-Picture sessions.
-  // Always returns an empty vector for Document Picture-in-Picture sessions.
-  // For Video picture-in-picture sessions, the maximum size of the vector
-  // will be 1, because only one window can be present per Chrome instances.
-  // See spec for detailed information:
-  // https://www.w3.org/TR/picture-in-picture/#defines
-  std::vector<url::Origin> GetActiveSessionOrigins();
 
   void set_window_controller_for_testing(
       content::PictureInPictureWindowController* controller) {

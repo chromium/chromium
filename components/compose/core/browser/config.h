@@ -20,7 +20,7 @@ struct Config {
   unsigned int inner_text_max_bytes = 1024 * 1024;
   // Whether to send a compose when the dialog is first opened,
   // if there is an acceptable input text selected.
-  bool auto_submit_with_selection = true;
+  bool auto_submit_with_selection = false;
   // If nudging is enabled, show the popup when focus appears on a field with no
   // saved state.
   bool popup_with_no_saved_state = false;

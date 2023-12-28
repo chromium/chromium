@@ -176,6 +176,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "SetUpList";
       case AccessPoint::ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
         return "PasswordMigrationWarning";
+      case AccessPoint::ACCESS_POINT_SAVE_TO_DRIVE_IOS:
+        return "SaveToDrive";
       case AccessPoint::ACCESS_POINT_SAVE_TO_PHOTOS_IOS:
         return "SaveToPhotos";
       case AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:

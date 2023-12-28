@@ -6,21 +6,13 @@ import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 
-assert(!is_android)
+assert(!is_android && !is_chromeos_ash)
 
 build_webui("build") {
   grd_prefix = "inline_login"
   static_files = [ "inline_login.html" ]
 
   web_component_files = [ "inline_login_app.ts" ]
-
-  if (is_chromeos_ash) {
-    web_component_files += [
-      "signin_blocked_by_policy_page.ts",
-      "signin_error_page.ts",
-      "welcome_page_app.ts",
-    ]
-  }
 
   non_web_component_files = [ "inline_login_browser_proxy.ts" ]
 
@@ -36,11 +28,4 @@ build_webui("build") {
       [ "chrome://chrome-signin/gaia_auth_host/*|" +
         rebase_path("//chrome/browser/resources/gaia_auth_host/*",
                     target_gen_dir) ]
-  if (is_chromeos_ash) {
-    ts_path_mappings +=
-        [ "chrome://chrome-signin/arc_account_picker/*|" +
-          rebase_path(
-              "//chrome/browser/resources/chromeos/arc_account_picker/*",
-              target_gen_dir) ]
-  }
 }

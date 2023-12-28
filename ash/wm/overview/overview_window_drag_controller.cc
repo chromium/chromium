@@ -227,7 +227,7 @@ class OverviewItemMoveHelper : public aura::WindowObserver {
   }
 
  private:
-  const raw_ptr<aura::Window, ExperimentalAsh> window_;
+  const raw_ptr<aura::Window> window_;
   const gfx::RectF target_item_bounds_;
 };
 

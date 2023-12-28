@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_DATA_IMPORTER_TEST_API_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_DATA_IMPORTER_TEST_API_H_
 
+#include <string>
+
+#include "base/containers/flat_map.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 
@@ -54,7 +58,7 @@ class FormDataImporterTestApi {
     return fdi_->iban_save_manager_.get();
   }
 
-  absl::optional<CreditCard> ExtractCreditCard(const FormStructure& form) {
+  std::optional<CreditCard> ExtractCreditCard(const FormStructure& form) {
     return fdi_->ExtractCreditCard(form);
   }
 
@@ -63,6 +67,17 @@ class FormDataImporterTestApi {
                                     address_profile_import_candidates) {
     return fdi_->ExtractAddressProfiles(form,
                                         address_profile_import_candidates);
+  }
+
+  base::flat_map<FieldType, std::u16string> GetObservedFieldValues(
+      base::span<const AutofillField* const> section_fields) {
+    ProfileImportMetadata import_metadata;
+    bool has_invalid_field_types = false;
+    bool has_multiple_distinct_email_addresses = false;
+    bool has_address_related_fields = false;
+    return fdi_->GetAddressObservedFieldValues(
+        section_fields, import_metadata, nullptr, has_invalid_field_types,
+        has_multiple_distinct_email_addresses, has_address_related_fields);
   }
 
   bool ProcessAddressProfileImportCandidates(
@@ -82,7 +97,7 @@ class FormDataImporterTestApi {
 
   bool ProcessExtractedCreditCard(
       const FormStructure& submitted_form,
-      const absl::optional<CreditCard>& credit_card_import_candidate,
+      const std::optional<CreditCard>& credit_card_import_candidate,
       bool payment_methods_autofill_enabled,
       bool is_credit_card_upstream_enabled) {
     return fdi_->ProcessExtractedCreditCard(
@@ -90,7 +105,7 @@ class FormDataImporterTestApi {
         payment_methods_autofill_enabled, is_credit_card_upstream_enabled);
   }
 
-  absl::optional<int64_t> fetched_card_instrument_id() {
+  std::optional<int64_t> fetched_card_instrument_id() {
     return fdi_->fetched_card_instrument_id_;
   }
 

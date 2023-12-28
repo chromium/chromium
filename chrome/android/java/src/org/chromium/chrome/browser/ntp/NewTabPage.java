@@ -68,7 +68,6 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
-import org.chromium.chrome.browser.query_tiles.QueryTileSection.QueryInfo;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionModuleCoordinator;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionModuleUtils;
@@ -161,12 +160,13 @@ public class NewTabPage
     // Whether destroy() has been called.
     private boolean mIsDestroyed;
 
-    private final int mTabStripAndToolbarHeight;
+    private final int mToolbarHeight;
 
     private final Supplier<Toolbar> mToolbarSupplier;
     private final TabModelSelector mTabModelSelector;
     private final TemplateUrlService mTemplateUrlService;
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
+    private final ObservableSupplier<Integer> mTabStripHeightSupplier;
 
     private SingleTabSwitcherCoordinator mSingleTabSwitcherCoordinator;
     private ViewGroup mSingleTabCardContainer;
@@ -273,12 +273,6 @@ public class NewTabPage
         }
 
         @Override
-        public void performSearchQuery(QueryInfo queryInfo) {
-            if (mOmniboxStub == null) return;
-            mOmniboxStub.performSearchQuery(queryInfo.queryText, queryInfo.searchParams);
-        }
-
-        @Override
         public boolean isCurrentPage() {
             if (mIsDestroyed) return false;
             if (mOmniboxStub == null) return false;
@@ -294,9 +288,6 @@ public class NewTabPage
         @Override
         public void onLoadingComplete() {
             if (mIsDestroyed) return;
-
-            long loadTimeMs = (System.nanoTime() - mConstructedTimeNs) / 1000000;
-            RecordHistogram.recordTimesHistogram("Tab.NewTabOnload", loadTimeMs);
             mIsLoaded = true;
             NewTabPageUma.recordNtpImpression(NewTabPageUma.NTP_IMPRESSION_REGULAR);
             // If not visible when loading completes, wait until onShown is received.
@@ -364,6 +355,7 @@ public class NewTabPage
      * @param toolbarSupplier Supplies the {@link Toolbar}.
      * @param homeSurfaceTracker Used to decide whether we are the home surface.
      * @param tabContentManagerSupplier Used to create tab thumbnails.
+     * @param tabStripHeightSupplier Supplier for the tab strip height.
      */
     public NewTabPage(
             Activity activity,
@@ -384,7 +376,8 @@ public class NewTabPage
             JankTracker jankTracker,
             Supplier<Toolbar> toolbarSupplier,
             HomeSurfaceTracker homeSurfaceTracker,
-            ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
+            ObservableSupplier<TabContentManager> tabContentManagerSupplier,
+            ObservableSupplier<Integer> tabStripHeightSupplier) {
         mConstructedTimeNs = System.nanoTime();
         TraceEvent.begin(TAG);
 
@@ -401,6 +394,7 @@ public class NewTabPage
         mHomeSurfaceTracker = homeSurfaceTracker;
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mIsInNightMode = isInNightMode;
+        mTabStripHeightSupplier = tabStripHeightSupplier;
 
         Profile profile = mTab.getProfile();
 
@@ -467,7 +461,6 @@ public class NewTabPage
 
                     @Override
                     public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
-                        mNewTabPageLayout.onLoadUrl(UrlUtilities.isNtpUrl(tab.getUrl()));
                     }
                 };
         mTab.addObserver(mTabObserver);
@@ -532,8 +525,8 @@ public class NewTabPage
         DownloadManagerService.getDownloadManagerService()
                 .checkForExternallyRemovedDownloads(ProfileKey.getLastUsedRegularProfileKey());
 
-        mTabStripAndToolbarHeight =
-                activity.getResources().getDimensionPixelSize(R.dimen.tab_strip_and_toolbar_height);
+        mToolbarHeight =
+                activity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
 
         uma.recordContentSuggestionsDisplayStatus(profile);
 
@@ -563,7 +556,8 @@ public class NewTabPage
                 isNtpAsHomeSurfaceOnTablet(),
                 mIsSurfacePolishEnabled,
                 mIsSurfacePolishOmniboxColorEnabled,
-                mIsTablet);
+                mIsTablet,
+                mTabStripHeightSupplier);
 
         // If new NewTabPage is created via back operations, re-show the single Tab card with the
         // previously tracked Tab.
@@ -639,7 +633,7 @@ public class NewTabPage
                         /* viewportView= */ null,
                         actionDelegate,
                         HelpAndFeedbackLauncherImpl.getForProfile(profile),
-                        mTabModelSelector);
+                        mTabStripHeightSupplier);
         mFeedSurfaceProvider = feedSurfaceCoordinator;
     }
 
@@ -698,7 +692,9 @@ public class NewTabPage
      *         strip.
      */
     private int getToolbarExtraYOffset() {
-        return mBrowserControlsStateProvider.getTopControlsHeight() - mTabStripAndToolbarHeight;
+        return mBrowserControlsStateProvider.getTopControlsHeight()
+                - mToolbarHeight
+                - mTabStripHeightSupplier.get();
     }
 
     /** @return The view container for the new tab layout. */

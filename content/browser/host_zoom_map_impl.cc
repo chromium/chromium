@@ -143,6 +143,10 @@ void HostZoomMapImpl::CopyFrom(HostZoomMap* copy_interface) {
     scheme_host_zoom_levels_[host].insert(it.second.begin(), it.second.end());
   }
   default_zoom_level_ = copy->default_zoom_level_;
+
+  host_zoom_levels_for_preview_.insert(
+      copy->host_zoom_levels_for_preview_.begin(),
+      copy->host_zoom_levels_for_preview_.end());
 }
 
 double HostZoomMapImpl::GetZoomLevelForHost(const std::string& host) const {
@@ -692,5 +696,22 @@ jdouble JNI_HostZoomMapImpl_GetDesktopSiteZoomScale(
       entry && entry->GetIsOverridingUserAgent());
 }
 #endif
+
+double HostZoomMapImpl::GetZoomLevelForPreviewAndHost(const std::string& host) {
+  const auto it = host_zoom_levels_for_preview_.find(host);
+  return it != host_zoom_levels_for_preview_.end() ? it->second.level
+                                                   : default_zoom_level_;
+}
+
+void HostZoomMapImpl::SetZoomLevelForPreviewAndHost(const std::string& host,
+                                                    double level) {
+  if (blink::PageZoomValuesEqual(level, default_zoom_level_)) {
+    host_zoom_levels_for_preview_.erase(host);
+  } else {
+    ZoomLevel& zoomLevel = host_zoom_levels_for_preview_[host];
+    zoomLevel.level = level;
+    zoomLevel.last_modified = clock_->Now();
+  }
+}
 
 }  // namespace content

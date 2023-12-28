@@ -95,7 +95,7 @@ class DeviceMetadataFetcherTest : public testing::Test {
   base::test::TaskEnvironment task_environment;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<DeviceMetadataFetcher> device_metadata_fetcher_;
-  raw_ptr<MockHttpFetcher, ExperimentalAsh> mock_http_fetcher_;
+  raw_ptr<MockHttpFetcher> mock_http_fetcher_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 

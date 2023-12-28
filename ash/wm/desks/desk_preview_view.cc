@@ -30,6 +30,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -151,7 +152,7 @@ void MirrorLayerTree(
   parent->Add(mirror);
 
   // Calculate child layers.
-  std::vector<ui::Layer*> children;
+  std::vector<raw_ptr<ui::Layer, VectorExperimental>> children;
   if (visible_on_all_desks_windows_to_mirror.empty()) {
     // Without all desk windows, there is no need to reorder layers, just use
     // them as is.
@@ -183,7 +184,7 @@ void MirrorLayerTree(
 
     // Define what to use for layer ordering.
     struct LayerOrderData {
-      raw_ptr<ui::Layer, ExperimentalAsh> layer;
+      raw_ptr<ui::Layer> layer;
       // z-order in target desk.
       size_t primary_key;
       // z-order in active desk.
@@ -218,7 +219,7 @@ void MirrorLayerTree(
 
     // Step 2: Populate child layers from `source_layer` with their orders.
     size_t order = 0;
-    for (auto* it : base::Reversed(source_layer->children())) {
+    for (ui::Layer* it : base::Reversed(source_layer->children())) {
       while (primary_key_taken.contains(order)) {
         order++;
       }
@@ -236,11 +237,11 @@ void MirrorLayerTree(
         });
     children.reserve(layer_orders.size());
     for (const auto& lo : layer_orders) {
-      children.emplace_back(lo.layer);
+      children.emplace_back(lo.layer.get());
     }
   }
 
-  for (auto* child : children) {
+  for (ui::Layer* child : children) {
     // Visible on all desks windows only needed to be added to the subtree once
     // so use an empty set for subsequent calls.
     MirrorLayerTree(child, mirror, layers_data, base::flat_set<aura::Window*>(),
@@ -322,8 +323,9 @@ void GetLayersData(aura::Window* window,
     layer_data.should_clear_transform = true;
   }
 
-  for (auto* child : window->children())
+  for (aura::Window* child : window->children()) {
     GetLayersData(child, out_layers_data);
+  }
 }
 
 }  // namespace

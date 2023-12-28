@@ -32,7 +32,7 @@ class DumpAccessibilityNodeTest : public DumpAccessibilityTestBase {
 
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override {
     std::vector<AXPropertyFilter> property_filters;
-    if (GetParam().first == ui::AXApiType::kMac) {
+    if (GetParam() == ui::AXApiType::kMac) {
       return property_filters;
     }
 
@@ -97,7 +97,7 @@ class DumpAccessibilityAccNameTest : public DumpAccessibilityNodeTest {
  public:
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override {
     std::vector<AXPropertyFilter> property_filters;
-    if (GetParam().first == ui::AXApiType::kMac) {
+    if (GetParam() == ui::AXApiType::kMac) {
       return property_filters;
     }
 
@@ -159,9 +159,8 @@ class DumpAccessibilityMathMLNodeTest : public DumpAccessibilityNodeTest {
 // Parameterize the tests so that each test-pass is run independently.
 struct TestPassToString {
   std::string operator()(
-      const ::testing::TestParamInfo<std::pair<ui::AXApiType::Type, bool>>& i)
-      const {
-    return std::string(i.param.first) + (i.param.second ? "1" : "0");
+      const ::testing::TestParamInfo<ui::AXApiType::Type>& i) const {
+    return std::string(i.param);
   }
 };
 

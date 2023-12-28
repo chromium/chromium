@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/service/display/direct_renderer.h"
 #include "components/viz/service/display/draw_polygon.h"
@@ -38,7 +39,8 @@ void BspWalkActionDrawPolygon::operator()(DrawPolygon* item) {
                            using_scissor_as_optimization_);
 }
 
-BspWalkActionToVector::BspWalkActionToVector(std::vector<DrawPolygon*>* in_list)
+BspWalkActionToVector::BspWalkActionToVector(
+    std::vector<raw_ptr<DrawPolygon, VectorExperimental>>* in_list)
     : list_(in_list) {}
 
 void BspWalkActionToVector::operator()(DrawPolygon* item) {

@@ -104,6 +104,7 @@ import './os_files_page/google_drive_subpage.js';
 import './os_files_page/office_page.js';
 import './os_files_page/one_drive_subpage.js';
 import './os_files_page/smb_shares_page.js';
+import './os_languages_page/app_languages_page.js';
 import './os_languages_page/input_method_options_page.js';
 import './os_languages_page/input_page.js';
 import './os_languages_page/os_edit_dictionary_page.js';
@@ -173,7 +174,11 @@ export {SettingsCustomizePenButtonsSubpageElement} from './device_page/customize
 export {SettingsCustomizeTabletButtonsSubpageElement} from './device_page/customize_tablet_buttons_subpage.js';
 export {DragAndDropManager, getDataTransferOriginIndex, setDataTransferOriginIndex} from './device_page/drag_and_drop_manager.js';
 export {KeyCombinationInputDialogElement} from './device_page/key_combination_input_dialog.js';
+export {SettingsKeyboardElement} from './device_page/keyboard.js';
+export {SettingsPointersElement} from './device_page/pointers.js';
 export {SettingsPowerElement} from './device_page/power.js';
+export {SettingsStorageElement} from './device_page/storage.js';
+export {SettingsStylusElement} from './device_page/stylus.js';
 export {ContainerInfo, CROSTINI_TYPE, GuestId, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice, PLUGIN_VM_TYPE, ShareableDevices} from './guest_os/guest_os_browser_proxy.js';
 export {ContainerSelectElement} from './guest_os/guest_os_container_select.js';
 export {SettingsGuestOsSharedPathsElement} from './guest_os/guest_os_shared_paths.js';
@@ -258,6 +263,7 @@ export {OneDriveConnectionState, SettingsOneDriveSubpageElement} from './os_file
 export {OsSettingsFilesPageElement} from './os_files_page/os_files_page.js';
 export {SettingsSmbSharesPageElement} from './os_files_page/smb_shares_page.js';
 export {OsSettingsAddItemsDialogElement} from './os_languages_page/add_items_dialog.js';
+export {OsSettingsAppLanguagesPageElement} from './os_languages_page/app_languages_page.js';
 export {OsSettingsChangeDeviceLanguageDialogElement} from './os_languages_page/change_device_language_dialog.js';
 export {CrCheckboxWithPolicyElement} from './os_languages_page/cr_checkbox_with_policy.js';
 export {SettingsInputMethodOptionsPageElement} from './os_languages_page/input_method_options_page.js';

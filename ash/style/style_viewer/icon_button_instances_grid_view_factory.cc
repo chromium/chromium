@@ -29,7 +29,7 @@ struct IconButtonInfo {
   IconButton::Type type;
   bool is_toggled;
   bool is_enabled;
-  raw_ptr<gfx::ImageSkia, ExperimentalAsh> bg_img;
+  raw_ptr<gfx::ImageSkia> bg_img;
 };
 
 }  // namespace

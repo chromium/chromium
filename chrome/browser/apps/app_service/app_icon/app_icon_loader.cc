@@ -392,8 +392,9 @@ void AppIconLoader::ApplyIconEffects(IconEffects icon_effects,
                                      const std::optional<std::string>& app_id,
                                      IconValuePtr iv) {
   TRACE_EVENT0("ui", "AppIconLoader::ApplyIconEffects");
-  if (!iv || iv->uncompressed.isNull())
+  if (!iv || iv->uncompressed.isNull()) {
     return;
+  }
 
   if (!standard_icon_task_runner_) {
     standard_icon_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(

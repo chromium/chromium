@@ -17,7 +17,6 @@
 #include "media/base/media_util.h"
 #include "media/media_buildflags.h"
 #include "media/video/gpu_video_accelerator_factories.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -541,18 +540,10 @@ void DecoderTemplate<Traits>::Shutdown(DOMException* exception) {
   // Prevent any further logging from being reported.
   logger_->Neuter();
 
-  // Clear decoding and JS-visible queue state. Use PostTask() to avoid deleting
-  // decoder_ when its callback (e.g. OnDecodeDone()) may be below us in the
-  // stack.
-  if (base::FeatureList::IsEnabled(
-          features::kUseBlinkSchedulerTaskRunnerWithCustomDeleter)) {
-    main_thread_task_runner_->DeleteSoon(FROM_HERE, std::move(decoder_));
-  } else {
-    // NOTE: This task runner may be destroyed without running tasks, so don't
-    // use DeleteSoon() which can leak the codec. See https://crbug.com/1376851.
-    main_thread_task_runner_->PostTask(
-        FROM_HERE, base::DoNothingWithBoundArgs(std::move(decoder_)));
-  }
+  // Clear decoding and JS-visible queue state. Use DeleteSoon() to avoid
+  // deleting decoder_ when its callback (e.g. OnDecodeDone()) may be below us
+  // in the stack.
+  main_thread_task_runner_->DeleteSoon(FROM_HERE, std::move(decoder_));
 
   if (pending_request_) {
     // This request was added as part of calling ResetAlgorithm above. However,

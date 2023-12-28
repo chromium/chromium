@@ -20,7 +20,7 @@ source_set("account_picker_selection") {
     ":identity_item_configurator",
     "//base",
     "//ios/chrome/app/strings:ios_strings",
-    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",

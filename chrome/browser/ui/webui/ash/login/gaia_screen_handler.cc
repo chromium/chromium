@@ -59,7 +59,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/auth_notification_types.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service.h"
@@ -334,11 +333,13 @@ GaiaScreenHandler::GaiaScreenHandler(
           ErrorScreensHistogramHelper::ErrorParentScreen::kSignin)) {
   DCHECK(network_state_informer_.get());
   DCHECK(error_screen_);
+  HttpAuthDialog::AddObserver(this);
 }
 
 GaiaScreenHandler::~GaiaScreenHandler() {
   if (is_security_token_pin_enabled_)
     GetLoginScreenPinDialogManager()->RemovePinDialogHost(this);
+  HttpAuthDialog::RemoveObserver(this);
 }
 
 void GaiaScreenHandler::LoadGaia(const login::GaiaContext& context) {
@@ -690,7 +691,7 @@ void GaiaScreenHandler::DeclareJSCallbacks() {
   AddCallback("passwordEntered", &GaiaScreenHandler::HandlePasswordEntered);
   AddCallback("showLoadingTimeoutError",
               &GaiaScreenHandler::HandleShowLoadingTimeoutError);
-  AddCallback("getDeviceId", &GaiaScreenHandler::HandleGetDeviceId);
+  AddCallback("getDeviceIdForLogin", &GaiaScreenHandler::HandleGetDeviceId);
 }
 
 void GaiaScreenHandler::HandleAuthenticatorLoaded() {
@@ -1254,12 +1255,7 @@ void GaiaScreenHandler::Show() {
   network_state_informer_->AddObserver(this);
 
   // Start listening for HTTP login requests.
-  registrar_.Add(this, chrome::NOTIFICATION_AUTH_NEEDED,
-                 content::NotificationService::AllSources());
-  registrar_.Add(this, chrome::NOTIFICATION_AUTH_SUPPLIED,
-                 content::NotificationService::AllSources());
-  registrar_.Add(this, chrome::NOTIFICATION_AUTH_CANCELLED,
-                 content::NotificationService::AllSources());
+  enable_ash_httpauth_ = HttpAuthDialog::Enable();
 
   base::Value::Dict data;
   if (LoginDisplayHost::default_host())
@@ -1272,7 +1268,7 @@ void GaiaScreenHandler::Show() {
 void GaiaScreenHandler::Hide() {
   hidden_ = true;
   network_state_informer_->RemoveObserver(this);
-  registrar_.RemoveAll();
+  enable_ash_httpauth_.reset();
 }
 
 void GaiaScreenHandler::LoadGaiaAsync(const AccountId& account_id) {
@@ -1642,43 +1638,37 @@ void GaiaScreenHandler::HideOfflineMessage(NetworkStateInformer::State state,
   }
 }
 
-void GaiaScreenHandler::Observe(int type,
-                                const content::NotificationSource& source,
-                                const content::NotificationDetails& details) {
-  switch (type) {
-    case chrome::NOTIFICATION_AUTH_NEEDED: {
-      network_state_ignored_until_proxy_auth_ = true;
-      update_state_callback_.Cancel();
-      break;
-    }
-    case chrome::NOTIFICATION_AUTH_SUPPLIED: {
-      if (IsGaiaHiddenByError()) {
-        // Start listening to network state notifications immediately, hoping
-        // that the network will switch to ONLINE soon.
-        update_state_callback_.Cancel();
-        ReenableNetworkStateUpdatesAfterProxyAuth();
-      } else {
-        // Gaia is not hidden behind an error yet. Discard last cached network
-        // state notification and wait for `kProxyAuthTimeout` before
-        // considering network update notifications again (hoping the network
-        // will become ONLINE by then).
-        update_state_callback_.Cancel();
-        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-            FROM_HERE,
-            base::BindOnce(
-                &GaiaScreenHandler::ReenableNetworkStateUpdatesAfterProxyAuth,
-                weak_factory_.GetWeakPtr()),
-            kProxyAuthTimeout);
-      }
-      break;
-    }
-    case chrome::NOTIFICATION_AUTH_CANCELLED: {
-      update_state_callback_.Cancel();
-      ReenableNetworkStateUpdatesAfterProxyAuth();
-      break;
-    }
-    default:
-      NOTREACHED() << "Unexpected notification " << type;
+void GaiaScreenHandler::HttpAuthDialogShown(
+    content::WebContents* web_contents) {
+  network_state_ignored_until_proxy_auth_ = true;
+  update_state_callback_.Cancel();
+}
+
+void GaiaScreenHandler::HttpAuthDialogCancelled(
+    content::WebContents* web_contents) {
+  update_state_callback_.Cancel();
+  ReenableNetworkStateUpdatesAfterProxyAuth();
+}
+
+void GaiaScreenHandler::HttpAuthDialogSupplied(
+    content::WebContents* web_contents) {
+  if (IsGaiaHiddenByError()) {
+    // Start listening to network state notifications immediately, hoping
+    // that the network will switch to ONLINE soon.
+    update_state_callback_.Cancel();
+    ReenableNetworkStateUpdatesAfterProxyAuth();
+  } else {
+    // Gaia is not hidden behind an error yet. Discard last cached network
+    // state notification and wait for `kProxyAuthTimeout` before
+    // considering network update notifications again (hoping the network
+    // will become ONLINE by then).
+    update_state_callback_.Cancel();
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &GaiaScreenHandler::ReenableNetworkStateUpdatesAfterProxyAuth,
+            weak_factory_.GetWeakPtr()),
+        kProxyAuthTimeout);
   }
 }
 

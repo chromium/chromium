@@ -848,7 +848,7 @@ class Condition {
   static bool CallVoidPtrFunction(const Condition*);
   template <typename T>
   static bool CastAndCallFunction(const Condition* c);
-  template <typename T>
+  template <typename T, typename ConditionMethodPtr>
   static bool CastAndCallMethod(const Condition* c);
 
   // Helper methods for storing, validating, and reading callback arguments.
@@ -1080,12 +1080,12 @@ inline void Mutex::Dtor() {}
 inline CondVar::CondVar() : cv_(0) {}
 
 // static
-template <typename T>
+template <typename T, typename ConditionMethodPtr>
 bool Condition::CastAndCallMethod(const Condition* c) {
   T* object = static_cast<T*>(c->arg_);
-  bool (T::*method_pointer)();
-  c->ReadCallback(&method_pointer);
-  return (object->*method_pointer)();
+  ConditionMethodPtr condition_method_pointer;
+  c->ReadCallback(&condition_method_pointer);
+  return (object->*condition_method_pointer)();
 }
 
 // static
@@ -1115,7 +1115,7 @@ inline Condition::Condition(bool (*func)(T*),
 template <typename T>
 inline Condition::Condition(T* object,
                             bool (absl::internal::identity<T>::type::*method)())
-    : eval_(&CastAndCallMethod<T>), arg_(object) {
+    : eval_(&CastAndCallMethod<T, decltype(method)>), arg_(object) {
   static_assert(sizeof(&method) <= sizeof(callback_),
                 "An overlarge method pointer was passed to Condition.");
   StoreCallback(method);
@@ -1125,7 +1125,7 @@ template <typename T>
 inline Condition::Condition(const T* object,
                             bool (absl::internal::identity<T>::type::*method)()
                                 const)
-    : eval_(&CastAndCallMethod<T>),
+    : eval_(&CastAndCallMethod<const T, decltype(method)>),
       arg_(reinterpret_cast<void*>(const_cast<T*>(object))) {
   StoreCallback(method);
 }

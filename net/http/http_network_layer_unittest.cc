@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/strings/stringprintf.h"
-#include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_network_session.h"
@@ -55,7 +54,6 @@ class HttpNetworkLayerTest : public PlatformTest, public WithTaskEnvironment {
     session_context.host_resolver = &host_resolver_;
     session_context.cert_verifier = cert_verifier_.get();
     session_context.transport_security_state = transport_security_state_.get();
-    session_context.ct_policy_enforcer = &ct_policy_enforcer_;
     session_context.proxy_resolution_service = proxy_resolution_service_.get();
     session_context.ssl_config_service = ssl_config_service_.get();
     session_context.http_server_properties = &http_server_properties_;
@@ -71,7 +69,6 @@ class HttpNetworkLayerTest : public PlatformTest, public WithTaskEnvironment {
       MockHostResolverBase::RuleResolver::GetLocalhostResult()};
   std::unique_ptr<CertVerifier> cert_verifier_;
   std::unique_ptr<TransportSecurityState> transport_security_state_;
-  DefaultCTPolicyEnforcer ct_policy_enforcer_;
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
   std::unique_ptr<SSLConfigService> ssl_config_service_;
   QuicContext quic_context_;

@@ -191,11 +191,11 @@ chromium-metrics-reviews@google.com.
     <variant name="CookieControls"/>
     <variant name="FileSystemAccess"/>
     <variant name="Find"/>
-    <variant name="HighEfficiency"/>
     <variant name="IntentPicker"/>
     <variant name="LocalCardMigration"/>
     <variant name="ManagePasswords"/>
     <variant name="MandatoryReauth"/>
+    <variant name="MemorySaver"/>
     <variant name="PaymentsOfferNotification"/>
     <variant name="PriceInsights"/>
     <variant name="PriceTracking"/>
@@ -272,7 +272,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.AllPages.NonAdNetworkBytes" units="KB"
-    expires_after="2024-04-17">
+    expires_after="2024-06-16">
   <owner>alexmt@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -286,7 +286,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.AllPages.PercentNetworkBytesAds"
-    units="%" expires_after="2024-04-17">
+    units="%" expires_after="2024-06-16">
   <owner>alexmt@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <summary>
@@ -389,7 +389,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.Resources.Bytes.Ads2" units="KB"
-    expires_after="2024-04-17">
+    expires_after="2024-06-16">
   <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -794,6 +794,48 @@ chromium-metrics-reviews@google.com.
     navigations from the side panel that happen entirely in the foreground. The
     metric is emitted when the navigation is completed or the app is
     backgrounded on Android.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.NavigationTiming.NavigationStartToFinalLoaderCallback"
+    units="ms" expires_after="2024-03-19">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The time relative to navigation start that a callback for the navigation
+    loader is last invoked for the main resource of a main frame navigation, for
+    Google Search page loads. Only recorded for Search navigations that happen
+    entirely in the foreground. The metric is emitted when the navigation is
+    completed or the app is backgrounded on Android.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.NavigationTiming.NavigationStartToFinalRequestStart"
+    units="ms" expires_after="2024-03-19">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The time relative to navigation start that the final HTTP request is sent
+    for the main resource of a main frame navigation, for Google Search page
+    loads. Only recorded for Search navigations that happen entirely in the
+    foreground. The metric is emitted when the navigation is completed or the
+    app is backgrounded on Android.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.NavigationTiming.NavigationStartToFinalResponseStart"
+    units="ms" expires_after="2024-03-19">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The time relative to navigation start that the headers of the final HTTP
+    response is received for the main resource of a main frame navigation, for
+    Google Search page loads. Only recorded for Search navigations that happen
+    entirely in the foreground. The metric is emitted when the navigation is
+    completed or the app is backgrounded on Android.
   </summary>
 </histogram>
 
@@ -1943,7 +1985,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Experimental.PageVisitFinalStatus"
-    enum="PageVisitFinalStatus" expires_after="2023-12-22">
+    enum="PageVisitFinalStatus" expires_after="2024-12-22">
   <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -2516,7 +2558,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Internal.Prerender2.Event"
-    enum="PageLoadPrerenderEvent" expires_after="2024-01-21">
+    enum="PageLoadPrerenderEvent" expires_after="2024-07-21">
   <owner>kenoss@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
@@ -3003,7 +3045,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint.ImageLCPLessThanLoadEnd"
-    enum="Boolean" expires_after="2024-04-24">
+    enum="Boolean" expires_after="2024-06-23">
   <owner>haoliuk@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -3027,7 +3069,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint.ImageLoadStartLessThanDocumentTTFB"
-    enum="Boolean" expires_after="2024-04-24">
+    enum="Boolean" expires_after="2024-06-23">
   <owner>haoliuk@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -3040,7 +3082,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint.ImageLoadStartLessThanDocumentTtfbCauses"
     enum="LargestContentfulPaintImageLoadStartLessThanDocumentTtfbCauses"
-    expires_after="2024-04-24">
+    expires_after="2024-06-23">
   <owner>haoliuk@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>

@@ -21,6 +21,8 @@
 #include <cstring>
 #include <ostream>
 
+#include "absl/base/nullability.h"
+
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 
@@ -28,8 +30,10 @@ namespace {
 
 // This is significantly faster for case-sensitive matches with very
 // few possible matches.
-const char* memmatch(const char* phaystack, size_t haylen, const char* pneedle,
-                     size_t neelen) {
+absl::Nullable<const char*> memmatch(absl::Nullable<const char*> phaystack,
+                                     size_t haylen,
+                                     absl::Nullable<const char*> pneedle,
+                                     size_t neelen) {
   if (0 == neelen) {
     return phaystack;  // even if haylen is 0
   }

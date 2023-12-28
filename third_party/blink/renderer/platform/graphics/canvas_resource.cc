@@ -463,7 +463,9 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
     if (!gpu_memory_buffer_)
       return;
 
+#if BUILDFLAG(IS_MAC)
     gpu_memory_buffer_->SetColorSpace(GetColorSpace());
+#endif
   }
 
   auto* shared_image_interface =
@@ -478,11 +480,13 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
     shared_image_usage_flags = shared_image_usage_flags |
                                gpu::SHARED_IMAGE_USAGE_RASTER |
                                gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
-                               gpu::SHARED_IMAGE_USAGE_GLES2 |
+                               gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                               gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
                                gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
   } else {
     shared_image_usage_flags = shared_image_usage_flags |
-                               gpu::SHARED_IMAGE_USAGE_GLES2 |
+                               gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                               gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
                                gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
   }
 
@@ -1212,7 +1216,8 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
     return;
 
   uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                   gpu::SHARED_IMAGE_USAGE_GLES2 |
+                   gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                   gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
                    gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
                    gpu::SHARED_IMAGE_USAGE_SCANOUT;
 

@@ -7,12 +7,12 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {ArrayDataModel} from '../../../common/js/array_data_model.js';
 import type {ChangeEvent, PermutationEvent} from '../../../common/js/array_data_model.js';
-import {boolAttrSetter, decorate, PropertyChangeEvent} from '../../../common/js/cr_ui.js';
+import {boolAttrSetter, crInjectTypeAndInit, type PropertyChangeEvent} from '../../../common/js/cr_ui.js';
 import {isNullOrUndefined} from '../../../common/js/util.js';
 
 import {createListItem, ListItem} from './list_item.js';
 import {ListSelectionController} from './list_selection_controller.js';
-import {ListSelectionModel, SelectionChangeEvent} from './list_selection_model.js';
+import {ListSelectionModel, type SelectionChangeEvent} from './list_selection_model.js';
 import {ListSingleSelectionModel} from './list_single_selection_model.js';
 
 /**
@@ -52,13 +52,14 @@ function getComputedStyle(el: HTMLElement) {
 
 export function createList(): List {
   const el = document.createElement('list') as List;
-  return decorate(el, List);
+  crInjectTypeAndInit(el, List);
+  return el;
 }
 
 /**
  * Creates a new list element.
  */
-export class List extends HTMLUListElement {
+export abstract class List extends HTMLUListElement {
   /**
    * Measured size of list items. This is lazily calculated the first time it
    * is needed. Note that lead item is allowed to have a different height, to
@@ -321,14 +322,10 @@ export class List extends HTMLUListElement {
     }
   }
 
-  static decorate(el: HTMLElement, ..._args: any[]) {
-    decorate(el, List);
-  }
-
   /**
    * Initializes the element.
    */
-  decorate() {
+  initialize() {
     // Add fillers.
     this.beforeFiller_ = this.ownerDocument.createElement('div');
     this.afterFiller_ = this.ownerDocument.createElement('div');
@@ -1440,6 +1437,18 @@ export class List extends HTMLUListElement {
   set hasElementFocus(value: boolean) {
     boolAttrSetter(this, 'hasElementFocus', value);
   }
+
+  /**
+   * Obtains the index list of elements that are hit by a point or rectangle.
+   *
+   * @param x X coordinate value.
+   * @param y Y coordinate value.
+   * @param width Width of the coordinate.
+   * @param height Height of the coordinate.
+   * @return Indexes of the hit elements.
+   */
+  abstract getHitElements(
+      x: number, y: number, width?: number, height?: number): number[];
 }
 
 

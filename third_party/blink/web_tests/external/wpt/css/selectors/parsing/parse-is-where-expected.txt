@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] ":host(:is(div .foo))" should be a valid selector
+  assert_equals: serialization should be canonical expected ":host(:is(div .foo))" but got ":host(:is())"
+[FAIL] ":host(:where(div .foo))" should be a valid selector
+  assert_equals: serialization should be canonical expected ":host(:where(div .foo))" but got ":host(:where())"
+[FAIL] ":is(::before)" should be a valid selector
+  assert_equals: serialization should be canonical expected ":is(::before)" but got ":is()"
+[FAIL] ":where(::before)" should be a valid selector
+  assert_equals: serialization should be canonical expected ":where(::before)" but got ":where()"
+[FAIL] "::part(foo):is([attr='value'])" should be a valid selector
+  assert_equals: serialization should be canonical expected "::part(foo):is([attr='value'])" but got "::part(foo):is()"
+[FAIL] "::part(foo):where([attr='value'])" should be a valid selector
+  assert_equals: serialization should be canonical expected "::part(foo):where([attr='value'])" but got "::part(foo):where()"
+[FAIL] ":is(# C4Ñ”Ð°Ð½Ð¹Ñ‚Ð¶â••/â”˜Ð“ÐÐ¶Ð®Ð¥Ñ”Ð°â–“â”ÐÐ­Ð‘ÐœÑ”Ð°Ð¡ÐµÐÐ­Ð–Ð%=[ÑÐ¼Ð¼0)" should be an invalid selector
+  assert_throws_dom: ":is(# C4Ñ”Ð°Ð½Ð¹Ñ‚Ð¶â••/â”˜Ð“ÐÐ¶Ð®Ð¥Ñ”Ð°â–“â”ÐÐ­Ð‘ÐœÑ”Ð°Ð¡ÐµÐÐ­Ð–Ð%=[ÑÐ¼Ð¼0)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+Harness: the test ran to completion.
+

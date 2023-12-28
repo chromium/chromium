@@ -492,7 +492,8 @@ XRWebGLDrawingBuffer::CreateColorBuffer() {
       drawing_buffer_->client());
   auto* sii = drawing_buffer_->ContextProvider()->SharedImageInterface();
   uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                   gpu::SHARED_IMAGE_USAGE_GLES2 |
+                   gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                   gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
                    gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
   auto client_shared_image = sii->CreateSharedImage(
       alpha_ ? viz::SinglePlaneFormat::kRGBA_8888

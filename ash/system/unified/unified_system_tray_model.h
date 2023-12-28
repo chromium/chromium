@@ -151,7 +151,7 @@ class ASH_EXPORT UnifiedSystemTrayModel
   // <notification ID, if notification is manually expanded>
   std::map<std::string, bool> notification_changes_;
 
-  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  const raw_ptr<Shelf> shelf_;
 
   std::unique_ptr<DBusObserver> dbus_observer_;
 

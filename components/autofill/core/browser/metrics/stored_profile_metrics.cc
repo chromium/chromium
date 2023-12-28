@@ -74,7 +74,7 @@ void LogStoredProfileMetrics(const std::vector<AutofillProfile*>& profiles) {
 }
 
 void LogLocalProfileSupersetMetrics(std::vector<AutofillProfile*> profiles,
-                                    base::StringPiece app_locale) {
+                                    std::string_view app_locale) {
   // Place all `kLocalOrSyncable` profiles before all `kAccount` profiles.
   std::vector<AutofillProfile*>::iterator begin_account_profiles =
       base::ranges::partition(profiles, [](AutofillProfile* profile) {

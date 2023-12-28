@@ -212,7 +212,7 @@ namespace documentScan {
       (long or double)? min;
       (long or double)? max;
       (long or double)? quant;
-      (long[] or double[] or DOMString[])? list;
+      (double[] or long[] or DOMString[])? list;
   };
 
   // How an option can be changed.
@@ -248,7 +248,7 @@ namespace documentScan {
 
     // Current value of the option if relevant. Note the type passed here must
     // match the type specified in <code>type</code>.
-    (boolean or long or long[] or double or double[] or DOMString)? value;
+    (boolean or double or double[] or long or long[] or DOMString)? value;
 
     // Constraint on possible values.
     OptionConstraint? constraint;
@@ -287,6 +287,19 @@ namespace documentScan {
     boolean? secure;
   };
 
+  // OptionGroup is a group containing a list of option names.  The groups and
+  // their contents are determined by the backend and do not have any defined
+  // semantics or consistent membership.  This structure is primarily intended
+  // for UI layout assistance; it does not affect the individual option
+  // behaviors.
+  [nodoc] dictionary OptionGroup {
+    // Printable title, e.g. "Geometry options".
+    DOMString title;
+
+    // Names of contained options, in backend-provided order.
+    DOMString[] members;
+  };
+
   // The response from <code>getScannerList()</code>.
   [nodoc] dictionary GetScannerListResponse {
     // The backend's enumeration result.  Note that partial results could be
@@ -315,6 +328,19 @@ namespace documentScan {
     object? options;
   };
 
+  // The response from <code>getOptionGroups()</code>.
+  [nodoc] dictionary GetOptionGroupsResponse {
+    // Same scanner handle passed to <code>getOptionGroups()</code>.
+    DOMString scannerHandle;
+
+    // The backend's result of getting the option groups.
+    OperationResult result;
+
+    // If <code>result</code> is <code>OperationResult.SUCCESS</code>, a list of
+    // option groups in the order supplied by the backend.
+    OptionGroup[]? groups;
+  };
+
   // The response from <code>closeScanner()</code>.
   [nodoc] dictionary CloseScannerResponse {
     // Same scanner handle passed to <code>closeScanner()</code>.
@@ -324,6 +350,102 @@ namespace documentScan {
     // <code>OperationResult.SUCCESS</code>, the handle will be invalid and
     // should not be used for any further operations.
     OperationResult result;
+  };
+
+  // A subset of <code>ScannerOption</code> that contains enough information to
+  // set an option to a new value.
+  [nodoc] dictionary OptionSetting {
+    // Name of the option to set.
+    DOMString name;
+
+    // Type of the option.  The requested type must match the real type of the
+    // underlying option.
+    OptionType type;
+
+    // Value to set.  Leave unset to request automatic setting for options that
+    // have <code>autoSettable</code> enabled.  The type supplied for
+    // <code>value</code> must match <code>type</code>.
+    (boolean or double or double[] or long or long[] or DOMString)? value;
+  };
+
+  // The result of setting an individual option.  Each individual option
+  // supplied to <code>setOptions()</code> produces a separate result on the
+  // backend due to things like rounding and constraints.
+  [nodoc] dictionary SetOptionResult {
+    // Name of the option that was set.
+    DOMString name;
+
+    // Backend result of setting the option.
+    OperationResult result;
+  };
+
+  // The response from a call to <code>setOptions()</code>.
+  [nodoc] dictionary SetOptionsResponse {
+    // The same scanner handle passed to <code>setOptions()</code>.
+    DOMString scannerHandle;
+
+    // One result per passed-in <code>OptionSetting</code>.
+    SetOptionResult[] results;
+
+    // Updated key-value mapping from option names to
+    // <code>ScannerOption</code> containing the new configuration after
+    // attempting to set all supplied options.  This has the same structure as
+    // the <code>options</code> field in <code>OpenScannerResponse</code>.
+    //
+    // This field will be set even if some options were not set successfully,
+    // but will be unset if retrieving the updated configuration fails (e.g.,
+    // if the scanner is disconnected in the middle).
+    object? options;
+  };
+
+  // Used to specify options for <code>startScan()</code>.
+  [nodoc] dictionary StartScanOptions {
+    // MIME type to return scanned data in.
+    DOMString format;
+  };
+
+  // The response from <code>startScan()</code>.
+  [nodoc] dictionary StartScanResponse {
+    // The same scanner handle that was passed to <code>startScan()</code>.
+    DOMString scannerHandle;
+
+    // The backend's start scan result.
+    OperationResult result;
+
+    // If <code>result</code> is <code>OperationResult.SUCCESS</code>, a handle
+    // that can be used to read scan data or cancel the job.
+    DOMString? job;
+  };
+
+  // The response from <code>cancelScan()</code>.
+  [nodoc] dictionary CancelScanResponse {
+    // The same job handle that was passed to <code>cancelScan()</code>.
+    DOMString job;
+
+    // The backend's cancel scan result.
+    OperationResult result;
+  };
+
+  // The response from <code>readScanData()</code>.
+  [nodoc] dictionary ReadScanDataResponse {
+    // Same job handle passed to <code>readScanData()</code>.
+    DOMString job;
+
+    // The backend result of reading data.  If this is
+    // <code>OperationResult.SUCCESS</code>, <code>data</code> will contain the
+    // next (possibly zero-length) chunk of image data that was ready for
+    // reading.  If this is <code>OperationResult.EOF</code>, <code>data</code>
+    // will contain the final chunk of image data.
+    OperationResult result;
+
+    // If result is <code>OperationResult.SUCCESS</code>, the next chunk of
+    // scanned image data.
+    ArrayBuffer? data;
+
+    // If result is <code>OperationResult.SUCCESS</code>, an estimate of how
+    // much of the total scan data has been delivered so far, in the range
+    // 0-100.
+    long? estimatedCompletion;
   };
 
   // Callback from the <code>scan</code> method.
@@ -341,10 +463,37 @@ namespace documentScan {
   // Otherwise will return null and set runtime.lastError.
   [nodoc] callback OpenScannerCallback = void (OpenScannerResponse response);
 
+  // Callback from the <code>getOptionGroups</code> method.
+  // |response| The response from getting the option groups, if the call was
+  // valid.  Otherwise will return null and set runtime.lastError.
+  [nodoc] callback GetOptionGroupsCallback =
+      void (GetOptionGroupsResponse response);
+
   // Callback from the <code>closeScanner</code> method.
   // |response| The response from closing the scanner, if the call was valid.
   // Otherwise will return null and set runtime.lastError.
   [nodoc] callback CloseScannerCallback = void (CloseScannerResponse response);
+
+  // Callback from the <code>setOptions</code> method.
+  // |response| The response from setting the options, if the call was valid.
+  // Otherwise will return null and set runtime.lastError.
+  [nodoc] callback SetOptionsCallback = void (SetOptionsResponse response);
+
+  // Callback from the <code>startScan</code> method.
+  // |response| The response from starting the scan, if the call was valid.
+  // Otherwise will return null and set runtime.lastError.
+  [nodoc] callback StartScanCallback = void (StartScanResponse response);
+
+  // Callback from the <code>cancelScan</code> method.
+  // |response| The response from canceling the scan, if the call was valid.
+  // Otherwise will return null and set runtime.lastError.
+  [nodoc] callback CancelScanCallback = void (CancelScanResponse response);
+
+  // Callback from the <code>readScanData</code> method.
+  // |response| The response from reading the next chunk of scanned image data,
+  // if the call was valid.  Otherwise will return null and set
+  // runtime.lastError.
+  [nodoc] callback ReadScanDataCallback = void (ReadScanDataResponse response);
 
   interface Functions {
     // Performs a document scan.  On success, the PNG data will be
@@ -370,6 +519,14 @@ namespace documentScan {
     [nodoc, supportsPromises] static void openScanner(
         DOMString scannerId, OpenScannerCallback callback);
 
+    // Gets the group names and member options from a scanner handle previously
+    // opened by <code>openScanner</code>.
+    // |scannerHandle| : Open scanner handle previously returned from
+    // <code>openScanner</code>.
+    // |callback| : Called with the result.
+    [nodoc, supportsPromises] static void getOptionGroups(
+        DOMString scannerHandle, GetOptionGroupsCallback callback);
+
     // Closes a previously opened scanner handle.  A response indicating the
     // outcome will be sent to the callback.  Even if the response is not a
     // success, the supplied handle will become invalid and should not be used
@@ -379,5 +536,59 @@ namespace documentScan {
     // |callback| : Called with the result.
     [nodoc, supportsPromises] static void closeScanner(
         DOMString scannerHandle, CloseScannerCallback callback);
+
+    // Sends the list of new option values in <code>options</code> as a bundle
+    // to be set on <code>scannerHandle</code>.  Each option will be set by the
+    // backend the order specified.  Returns a backend response indicating the
+    // result of each option setting and a new set of final option values after
+    // all options have been updated.
+    // |scannerHandle| : Open scanner handle previously returned from
+    // <code>openScanner</code>.
+    // |options| : A list of <code>OptionSetting</code>s that will be applied to
+    // <code>scannerHandle</code>.
+    // |callback| : Called with the result.
+    [nodoc, supportsPromises] static void setOptions(
+        DOMString scannerHandle, OptionSetting[] options,
+        SetOptionsCallback callback);
+
+    // Starts a scan using a previously opened scanner handle.  A response
+    // indicating the outcome will be sent to the callback.  If successful, the
+    // response will include a job handle that can be used in subsequent calls
+    // to read scan data or cancel a scan.
+    // |scannerHandle| : Open scanner handle previously returned from
+    // <code>openScanner</code>.
+    // |options| : <code>StartScanOptions</code> indicating what options are to
+    // be used for the scan.  <code>StartScanOptions.format</code> must match
+    // one of the entries returned in the scanner's <code>ScannerInfo</code>.
+    // |callback| : Called with the result.
+    [nodoc, supportsPromises] static void startScan(
+        DOMString scannerHandle, StartScanOptions options,
+        StartScanCallback callback);
+
+    // Cancels a scan that was previously started using <code>startScan</code>.
+    // The response is sent to the callback.
+    // |job| : An active scan job previously returned from
+    // <code>startScan</code>.
+    // |callback| : Called with the result.
+    [nodoc, supportsPromises] static void cancelScan(
+        DOMString job, CancelScanCallback callback);
+
+    // Reads the next chunk of available image data from an active job handle.
+    // A response indicating the outcome will be sent to the callback.
+    //
+    // It is valid for a response to have result
+    // <code>OperationResult.SUCCESS</code> with a zero-length
+    // <code>data</code> member.  This means the scanner is still working but
+    // does not yet have additional data ready.  The caller should wait a short
+    // time and try again.
+    //
+    // When the scan job completes, the response will have the result
+    // <code>OperationResult.EOF</code>.  This response may contain a final
+    // non-zero <code>data</code> member.
+    // |job| : Active job handle previously returned from
+    // <code>startScan</code>.
+    // |callback| : Called with the result.
+    [nodoc, supportsPromises] static void readScanData(
+        DOMString job, ReadScanDataCallback callback);
   };
 };

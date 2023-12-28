@@ -80,7 +80,7 @@ class ASH_EXPORT CaptureWindowObserver : public aura::WindowObserver,
   void RepaintCaptureRegion();
 
   // Current observed window.
-  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
+  raw_ptr<aura::Window> window_ = nullptr;
 
   // If true, the capture bar will be anchored to the selected window instead of
   // the bottom of the display by default. And the selected window is not
@@ -92,7 +92,7 @@ class ASH_EXPORT CaptureWindowObserver : public aura::WindowObserver,
   gfx::Point location_in_screen_;
 
   // Pointer to current capture session. Not nullptr during this lifecycle.
-  const raw_ptr<CaptureModeSession, ExperimentalAsh> capture_mode_session_;
+  const raw_ptr<CaptureModeSession> capture_mode_session_;
 };
 
 }  // namespace ash

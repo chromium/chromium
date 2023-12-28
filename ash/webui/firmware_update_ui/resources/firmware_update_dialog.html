@@ -12,6 +12,10 @@
     border: none;
   }
 
+  #updateDialogBody {
+    min-height: 100px;
+  }
+
   #progress {
     display: inline-block;
     margin: 8px 0;
@@ -43,20 +47,23 @@
     </div>
     <div slot="footer"
         hidden$="[[!shouldShowProgressBar(installationProgress.*,
-                   isInitiallyInflight)]]">
+                   isInitiallyInflight, lastDeviceRequestId)]]">
       <label id="progress" class="firmware-dialog-installing-font"
           aria-live="polite" tabindex="0">
         [[dialogContent.footer]]
       </label>
       <template is="dom-if"
-          if="[[!isInIndeterminateState(installationProgress.*)]]" restamp>
+          if="[[!isInIndeterminateState(installationProgress.*,
+                lastDeviceRequestId)]]" restamp>
         <paper-progress id="updateProgressBar"
             value="[[computePercentageValue(installationProgress.percentage)]]"
-            max="100">
+            max="100" disabled="[[isProgressBarDisabled(installationProgress.*,
+                                  lastDeviceRequestId)]]">
         </paper-progress>
       </template>
       <template is="dom-if"
-          if="[[isInIndeterminateState(installationProgress.*)]]" restamp>
+          if="[[isInIndeterminateState(installationProgress.*,
+                lastDeviceRequestId)]]" restamp>
         <paper-progress id="indeterminateProgressBar" indeterminate>
         </paper-progress>
       </template>

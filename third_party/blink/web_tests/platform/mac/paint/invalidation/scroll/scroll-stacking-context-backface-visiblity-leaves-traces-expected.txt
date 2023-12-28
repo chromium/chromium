@@ -8,7 +8,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) HEADER",
+      "name": "LayoutNGBlockFlow (relative positioned, children-inline) HEADER",
       "bounds": [769, 20],
       "drawsContent": false,
       "backfaceVisibility": "hidden",

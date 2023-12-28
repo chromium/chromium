@@ -7,7 +7,61 @@ import("//ios/web/public/js_messaging/optimize_ts.gni")
 source_set("font_size") {
   sources = [
     "font_size_java_script_feature.h",
+    "font_size_java_script_feature.mm",
     "font_size_tab_helper.h",
+    "font_size_tab_helper.mm",
   ]
-  public_deps = [ "//ios/chrome/browser/web/font_size" ]
+  deps = [
+    ":font_size_js",
+    "//base",
+    "//components/google/core/common",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/ukm/ios:ukm_url_recorder",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/web/model:feature_flags",
+    "//ios/components/ui_util",
+    "//ios/public/provider/chrome/browser/text_zoom:text_zoom_api",
+    "//services/metrics/public/cpp:ukm_builders",
+  ]
+  public_deps = [ "//ios/web/public/js_messaging" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "font_size_js_unittest.mm",
+    "font_size_tab_helper_unittest.mm",
+  ]
+  deps = [
+    ":font_size",
+    ":font_size_js",
+    "//base",
+    "//base/test:test_support",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/web/model:feature_flags",
+    "//ios/chrome/test/fakes",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}
+
+optimize_ts("font_size_js") {
+  visibility = [
+    ":font_size",
+    ":unit_tests",
+  ]
+
+  sources = [ "resources/font_size.ts" ]
+
+  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
 }

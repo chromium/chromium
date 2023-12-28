@@ -40,6 +40,7 @@ struct SpecMediaMetadata {
   mojo_base.mojom.String16 artist;
   mojo_base.mojom.String16 album;
   array<media_session.mojom.MediaImage> artwork;
+  array<media_session.mojom.ChapterInformation> chapterInfo;
 };
 
 interface MediaSessionService {

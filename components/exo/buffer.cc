@@ -194,8 +194,7 @@ class Buffer::Texture : public viz::ContextLostObserver {
   void ScheduleWaitForRelease(base::TimeDelta delay);
   void WaitForRelease();
 
-  const raw_ptr<gfx::GpuMemoryBuffer, DanglingUntriaged | ExperimentalAsh>
-      gpu_memory_buffer_;
+  const raw_ptr<gfx::GpuMemoryBuffer, DanglingUntriaged> gpu_memory_buffer_;
   const gfx::Size size_;
   scoped_refptr<viz::RasterContextProvider> context_provider_;
   const unsigned texture_target_;
@@ -222,9 +221,9 @@ Buffer::Texture::Texture(
   gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
 
   // Add GLES2 usage as it is used by RasterImplementationGLES.
-  const uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER |
-                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                         gpu::SHARED_IMAGE_USAGE_GLES2;
+  const uint32_t usage =
+      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
 
   shared_image_ = sii->CreateSharedImage(
       viz::SinglePlaneFormat::kRGBA_8888, size, color_space,
@@ -259,9 +258,9 @@ Buffer::Texture::Texture(
   gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
 
   // Add GLES2 usage as it is used by RasterImplementationGLES.
-  uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER |
-                   gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                   gpu::SHARED_IMAGE_USAGE_GLES2;
+  uint32_t usage =
+      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
   if (is_overlay_candidate) {
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }

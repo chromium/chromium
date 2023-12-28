@@ -16,11 +16,13 @@ namespace variations::cros_early_boot::evaluate_seed {
 CrOSVariationsFieldTrialCreator::CrOSVariationsFieldTrialCreator(
     VariationsServiceClient* client,
     std::unique_ptr<VariationsSeedStore> seed_store)
-    : VariationsFieldTrialCreatorBase(client,
-                                      std::move(seed_store),
-                                      base::BindOnce([](PrefService*) {
-                                        return std::string(kFakeLocale);
-                                      })) {}
+    : VariationsFieldTrialCreatorBase(
+          client,
+          std::move(seed_store),
+          base::BindOnce([](PrefService*) { return std::string(kFakeLocale); }),
+          // The limited entropy synthetic trial will not be registered for this
+          // purpose.
+          /*limited_entropy_synthetic_trial=*/nullptr) {}
 
 CrOSVariationsFieldTrialCreator::~CrOSVariationsFieldTrialCreator() = default;
 

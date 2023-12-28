@@ -19,6 +19,7 @@
 #include "build/chromeos_buildflags.h"
 #include "cc/base/features.h"
 #include "components/attribution_reporting/features.h"
+#include "components/ml/webnn/features.mojom-features.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
@@ -319,6 +320,9 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
 #endif
           {wf::EnableWebIdentityDigitalCredentials,
            raw_ref(features::kWebIdentityDigitalCredentials), kDefault},
+          {wf::EnableMachineLearningNeuralNetwork,
+           raw_ref(webnn::mojom::features::kWebMachineLearningNeuralNetwork),
+           kDefault},
           {wf::EnableWebOTP, raw_ref(features::kWebOTP), kSetOnlyIfOverridden},
           {wf::EnableWebOTPAssertionFeaturePolicy,
            raw_ref(features::kWebOTPAssertionFeaturePolicy),
@@ -388,6 +392,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(features::kCookieDeprecationFacilitatedTesting)},
           {"Database", raw_ref(blink::features::kWebSQLAccess),
            kSetOnlyIfOverridden},
+          {"FencedFramesLocalUnpartitionedDataAccess",
+           raw_ref(blink::features::kFencedFramesLocalUnpartitionedDataAccess)},
           {"Fledge", raw_ref(blink::features::kFledge), kSetOnlyIfOverridden},
           {"Fledge", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
            kSetOnlyIfOverridden},
@@ -404,7 +410,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"PartitionedCookies", raw_ref(net::features::kPartitionedCookies)},
           {"ReduceAcceptLanguage",
            raw_ref(network::features::kReduceAcceptLanguage)},
-          {"StorageAccessAPI", raw_ref(features::kFirstPartySets)},
           {"TopicsAPI", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
            kSetOnlyIfOverridden},
           {"TopicsAPI", raw_ref(features::kPrivacySandboxAdsAPIsM1Override),
@@ -627,6 +632,20 @@ void ResolveInvalidConfigurations() {
         << switches::kEnableFeatures << "="
         << blink::features::kFencedFrames.name << " instead.";
     WebRuntimeFeatures::EnableFencedFrames(false);
+  }
+
+  if (!base::FeatureList::IsEnabled(blink::features::kFencedFrames) &&
+      base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesLocalUnpartitionedDataAccess)) {
+    LOG_IF(
+        WARNING,
+        WebRuntimeFeatures::IsFencedFramesLocalUnpartitionedDataAccessEnabled())
+        << "Fenced frames must be enabled in order to enable local "
+           "unpartitioned "
+        << "data access. Use --" << switches::kEnableFeatures << "="
+        << blink::features::kFencedFrames.name << " in addition.";
+    WebRuntimeFeatures::EnableFeatureFromString(
+        "FencedFramesLocalUnpartitionedDataAccess", false);
   }
 
   // Topics API cannot be enabled without the support of the browser process.

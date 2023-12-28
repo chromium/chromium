@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ui/search_engines/keyword_editor_controller.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/search_engines/template_url_table_model.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 
 using base::UserMetricsAction;
@@ -59,8 +62,8 @@ void KeywordEditorController::ModifyTemplateURL(TemplateURL* template_url,
 
 bool KeywordEditorController::CanEdit(const TemplateURL* url) const {
   return (url->type() == TemplateURL::NORMAL) &&
-      (url != url_model_->GetDefaultSearchProvider() ||
-       !url_model_->is_default_search_managed());
+         (url != url_model_->GetDefaultSearchProvider() ||
+          !url_model_->is_default_search_managed());
 }
 
 bool KeywordEditorController::CanMakeDefault(const TemplateURL* url) const {
@@ -89,6 +92,16 @@ bool KeywordEditorController::ShouldConfirmDeletion(
   // Currently, only built-in search engines require confirmation before
   // deletion.
   return url->prepopulate_id() != 0;
+}
+
+bool KeywordEditorController::IsManaged(const TemplateURL* url) const {
+  return url->created_by_policy() ==
+             TemplateURLData::CreatedByPolicy::kSiteSearch ||
+         (base::FeatureList::IsEnabled(
+              omnibox::kPolicyIndicationForManagedDefaultSearch) &&
+          url->created_by_policy() ==
+              TemplateURLData::CreatedByPolicy::kDefaultSearchProvider &&
+          url->enforced_by_policy());
 }
 
 void KeywordEditorController::RemoveTemplateURL(int index) {

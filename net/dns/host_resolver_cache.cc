@@ -28,7 +28,7 @@ namespace net {
 
 namespace {
 
-constexpr base::StringPiece kNikKey = "network_anonymization_key";
+constexpr base::StringPiece kNakKey = "network_anonymization_key";
 constexpr base::StringPiece kSourceKey = "source";
 constexpr base::StringPiece kSecureKey = "secure";
 constexpr base::StringPiece kResultKey = "result";
@@ -196,7 +196,7 @@ bool HostResolverCache::RestoreFromValue(const base::Value& value) {
       return false;
     }
 
-    const base::Value* anonymization_key_value = dict->Find(kNikKey);
+    const base::Value* anonymization_key_value = dict->Find(kNakKey);
     NetworkAnonymizationKey anonymization_key;
     if (!anonymization_key_value ||
         !NetworkAnonymizationKey::FromValue(*anonymization_key_value,
@@ -441,7 +441,7 @@ base::Value HostResolverCache::SerializeEntries(
       }
     }
 
-    dict.Set(kNikKey, std::move(anonymization_key_value));
+    dict.Set(kNakKey, std::move(anonymization_key_value));
     dict.Set(kSourceKey, ToValue(entry.source));
     dict.Set(kSecureKey, entry.secure);
     dict.Set(kResultKey, entry.result->ToValue());

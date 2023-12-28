@@ -21,7 +21,6 @@
 #include "ash/system/power/power_button_menu_view_util.h"
 #include "ash/system/user/login_status.h"
 #include "ash/wm/lock_state_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
@@ -32,6 +31,7 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor_extra/shadow.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -114,7 +114,7 @@ PowerButtonMenuView::TransformDisplacement
 PowerButtonMenuView::GetTransformDisplacement() const {
   TransformDisplacement transform_displacement;
   if (power_button_position_ == PowerButtonPosition::NONE ||
-      !Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+      !display::Screen::GetScreen()->InTabletMode()) {
     transform_displacement.direction = TransformDirection::Y;
     transform_displacement.distance = kPowerButtonMenuTransformDistanceDp;
     return transform_displacement;
@@ -191,7 +191,7 @@ void PowerButtonMenuView::RecreateItems() {
   const bool create_lock_screen = login_status != LoginStatus::LOCKED &&
                                   session_controller->CanLockScreen();
   const bool create_capture_mode =
-      Shell::Get()->tablet_mode_controller()->InTabletMode() &&
+      display::Screen::GetScreen()->InTabletMode() &&
       !session_controller->IsUserSessionBlocked() &&
       login_status != LoginStatus::KIOSK_APP;
   const bool create_feedback = login_status != LoginStatus::LOCKED &&

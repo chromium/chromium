@@ -294,10 +294,6 @@ void DirectCompositionSurfaceWin::HandleVSyncOnMainThread(
   last_vsync_interval_ = interval;
 
   CheckPendingFrames();
-
-  UMA_HISTOGRAM_COUNTS_100("GPU.DirectComposition.NumPendingFrames",
-                           pending_frames_.size());
-
   if (SupportsLowLatencyPresentation() && VSyncCallbackEnabled() &&
       pending_frames_.size() < max_pending_frames_) {
     DCHECK(vsync_callback_);

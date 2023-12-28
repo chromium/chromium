@@ -152,7 +152,7 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
   // submit an unsolicited frame.
   bool UnsolicitedFrameAllowed() const;
 
-  raw_ptr<SurfaceTreeHost, ExperimentalAsh> surface_tree_host_;
+  raw_ptr<SurfaceTreeHost> surface_tree_host_;
   std::unique_ptr<cc::mojo_embedder::AsyncLayerTreeFrameSink> frame_sink_;
 
   FrameSinkResourceManager resource_manager_;
@@ -167,10 +167,9 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
   bool is_lost_ = false;
   bool delete_pending_ = false;
 
-  raw_ptr<WMHelper::LifetimeManager, ExperimentalAsh> lifetime_manager_ =
-      nullptr;
+  raw_ptr<WMHelper::LifetimeManager> lifetime_manager_ = nullptr;
 
-  raw_ptr<viz::BeginFrameSource, ExperimentalAsh> begin_frame_source_ = nullptr;
+  raw_ptr<viz::BeginFrameSource> begin_frame_source_ = nullptr;
   bool observing_begin_frame_source_ = false;
 
   base::queue<PendingBeginFrame> pending_begin_frames_;

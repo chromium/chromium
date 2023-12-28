@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["delete",""]] "<div style=white-space:nowrap>foo\\nb[]</div>" compare innerHTML
   assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div style=\\"white-space:nowrap\\">foo&nbsp;</div>" not in array ["<div style=\\"white-space:nowrap\\">foo\\n</div>", "<div style=\\"white-space:nowrap\\">foo<br></div>"]
 [FAIL] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font color=brown>[]bar</font>" compare innerHTML
@@ -28,5 +28,7 @@ Found 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font face=\\"monospace\\">foo</font><font face=\\"sans-serif\\">bar</font></p>" but got "<p><font face=\\"monospace\\">foo</font><span style=\\"font-family:sans-serif\\">bar</span></p>"
 [FAIL] [["delete",""]] "<div><span style=\\"display:list-item\\">abc</span><span style=\\"display:list-item\\">[]def</span></div>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><span style=\\"display:list-item\\">abcdef</span></div>" but got "<span style=\\"display:list-item\\">abcdef</span>"
+[FAIL] [["delete",""]] "<div>{abc</div><div>def</div>}" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><br></div>" but got "<br>"
 Harness: the test ran to completion.
 

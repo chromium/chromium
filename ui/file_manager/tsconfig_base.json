@@ -4,8 +4,7 @@
     "checkJs": true,
     "lib": ["dom", "ES2015.Generator", "ES2015.Iterable", "ESNext", "dom.iterable"],
 
-    "importsNotUsedAsValues": "preserve",
-    "ignoreDeprecations": "5.0",
+    "verbatimModuleSyntax": true,
     "typeRoots": [
       "../../third_party/node/node_modules/@types"
     ],
@@ -17,6 +16,7 @@
     "experimentalDecorators": true,
     "noEmitHelpers": true,
     "skipLibCheck": true,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "useDefineForClassFields": false
   }
 }

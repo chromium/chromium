@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>Document Picture-in-Picture</title>
+</head>
+<body>
+</body>
+<script>
+    async function createDocumentPipWindow({ width = 300, height = 300 } = {}) {
+        await documentPictureInPicture.requestWindow({ width: width, height: height, });
+        return true;
+    }
+</script>

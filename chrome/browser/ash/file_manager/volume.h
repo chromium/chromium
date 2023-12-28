@@ -70,7 +70,9 @@ class Volume {
   static std::unique_ptr<Volume> CreateForDrive(base::FilePath drive_path);
 
   static std::unique_ptr<Volume> CreateForDownloads(
-      base::FilePath downloads_path);
+      base::FilePath downloads_path,
+      base::FilePath optional_fusebox_path = {},
+      const char* optional_fusebox_volume_label = nullptr);
 
   static std::unique_ptr<Volume> CreateForRemovable(
       const ash::disks::DiskMountManager::MountPoint& mount_point,
@@ -78,20 +80,13 @@ class Volume {
 
   static std::unique_ptr<Volume> CreateForProvidedFileSystem(
       const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
-      MountContext mount_context);
-
-  static std::unique_ptr<Volume> CreateForFuseBoxProvidedFileSystem(
-      base::FilePath mount_path,
-      const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
-      MountContext mount_context);
+      MountContext mount_context,
+      base::FilePath optional_fusebox_path = {});
 
   static std::unique_ptr<Volume> CreateForMTP(base::FilePath mount_path,
                                               std::string label,
-                                              bool read_only);
-
-  static std::unique_ptr<Volume> CreateForFuseBoxMTP(base::FilePath mount_path,
-                                                     std::string label,
-                                                     bool read_only);
+                                              bool read_only,
+                                              bool use_fusebox = false);
 
   static std::unique_ptr<Volume> CreateForMediaView(
       const std::string& root_document_id);

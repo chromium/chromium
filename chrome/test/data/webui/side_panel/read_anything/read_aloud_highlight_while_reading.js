@@ -14,7 +14,7 @@
   const readAnythingApp = document.querySelector('read-anything-app');
   const container = readAnythingApp.shadowRoot.getElementById('container');
 
-  const sentence1 = 'Only need the light when it\'s burning low.';
+  const sentence1 = 'Only need the light when it\'s burning low. ';
   const sentence2 = 'Only miss the sun when it starts to snow.';
   const axTree = {
     rootId: 1,

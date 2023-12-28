@@ -79,8 +79,9 @@ class HUDTabStrip : public views::View {
   void ActivateTab(HUDDisplayMode mode);
 
  private:
-  raw_ptr<HUDDisplayView, ExperimentalAsh> hud_;
-  std::vector<HUDTabButton*> tabs_;  // Ordered list of child tabs.
+  raw_ptr<HUDDisplayView> hud_;
+  std::vector<raw_ptr<HUDTabButton, VectorExperimental>>
+      tabs_;  // Ordered list of child tabs.
 };
 
 }  // namespace hud_display

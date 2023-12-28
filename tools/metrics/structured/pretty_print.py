@@ -6,7 +6,7 @@
 import os
 import sys
 
-import model
+from sync import model
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import presubmit_util

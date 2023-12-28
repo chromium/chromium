@@ -372,7 +372,7 @@ class HoldingSpaceTrayIconPreview::ImageLayerOwner
     layer()->SetTransform(target_transform);
   }
 
-  raw_ptr<const HoldingSpaceItem, ExperimentalAsh> item_ = nullptr;
+  raw_ptr<const HoldingSpaceItem> item_ = nullptr;
   base::CallbackListSubscription item_deletion_subscription_;
   base::CallbackListSubscription item_image_skia_subscription_;
   base::CallbackListSubscription progress_ring_animation_changed_subscription_;

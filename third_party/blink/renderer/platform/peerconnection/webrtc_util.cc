@@ -23,9 +23,9 @@ String WebrtcCodecNameFromMimeType(const String& mime_type,
   return "";
 }
 
-webrtc::SdpVideoFormat::Parameters ConvertToSdpVideoFormatParameters(
+std::map<std::string, std::string> ConvertToSdpVideoFormatParameters(
     const ParsedContentHeaderFieldParameters& parameters) {
-  webrtc::SdpVideoFormat::Parameters sdp_parameters;
+  std::map<std::string, std::string> sdp_parameters;
   for (const auto& parameter : parameters) {
     sdp_parameters[parameter.name.Utf8()] = parameter.value.Utf8();
   }

@@ -16,7 +16,6 @@
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/resource_context.h"
 #include "headless/lib/browser/headless_browser_context_options.h"
 #include "headless/lib/browser/headless_request_context_manager.h"
 #include "headless/public/headless_browser_context.h"
@@ -59,7 +58,6 @@ class HEADLESS_EXPORT HeadlessBrowserContextImpl final
       const base::FilePath& partition_path) override;
   base::FilePath GetPath() override;
   bool IsOffTheRecord() override;
-  content::ResourceContext* GetResourceContext() override;
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
   content::BrowserPluginGuestManager* GetGuestManager() override;
   ::storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;

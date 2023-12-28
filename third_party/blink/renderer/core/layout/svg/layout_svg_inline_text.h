@@ -57,10 +57,13 @@ class LayoutSVGInlineText final : public LayoutText {
 
   gfx::RectF ObjectBoundingBox() const override;
 
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsSVG() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectSVG || type == kLayoutObjectSVGInlineText ||
-           LayoutText::IsOfType(type);
+    return true;
+  }
+  bool IsSVGInlineText() const final {
+    NOT_DESTROYED();
+    return true;
   }
 
   PhysicalRect PhysicalLinesBoundingBox() const override;

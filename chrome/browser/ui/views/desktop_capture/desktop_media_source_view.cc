@@ -190,6 +190,6 @@ void DesktopMediaSourceView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
           : label_->GetText());
 }
 
-BEGIN_METADATA(DesktopMediaSourceView, views::View)
+BEGIN_METADATA(DesktopMediaSourceView)
 ADD_PROPERTY_METADATA(bool, Selected)
 END_METADATA

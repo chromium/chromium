@@ -267,7 +267,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
 
   // Miscellaneous. TODO(stevenjb): categorize.
-  (*s_allowlist)[::prefs::kEnableDoNotTrack] = settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kEnableEncryptedMedia] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::language::prefs::kApplicationLocale] =
@@ -341,7 +340,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[::kGeneratedHttpsFirstModePref] =
       settings_api::PrefType::kNumber;
 
-  // Cookies page
+  // Tracking protection page
   (*s_allowlist)[::prefs::kCookieControlsMode] =
       settings_api::PrefType::kNumber;
   (*s_allowlist)[::content_settings::kCookieDefaultContentSetting] =
@@ -356,6 +355,9 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kTrackingProtectionLevel] =
       settings_api::PrefType::kNumber;
+  (*s_allowlist)[::prefs::kEnableDoNotTrack] = settings_api::PrefType::kBoolean;
+  (*s_allowlist)[::prefs::kIpProtectionEnabled] =
+      settings_api::PrefType::kBoolean;
 
   // Sync and personalization page.
   (*s_allowlist)[::prefs::kSearchSuggestEnabled] =
@@ -730,6 +732,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
 
   // Android Apps.
   (*s_allowlist)[arc::prefs::kArcEnabled] = settings_api::PrefType::kBoolean;
+  (*s_allowlist)[arc::prefs::kArcLastSetAppLocale] =
+      settings_api::PrefType::kString;
 
   // App Notifications
   (*s_allowlist)[::ash::prefs::kAppNotificationBadgingEnabled] =
@@ -1068,10 +1072,10 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
 
   // Performance settings.
   (*s_allowlist)
-      [performance_manager::user_tuning::prefs::kHighEfficiencyModeState] =
+      [performance_manager::user_tuning::prefs::kMemorySaverModeState] =
           settings_api::PrefType::kNumber;
   (*s_allowlist)[performance_manager::user_tuning::prefs::
-                     kHighEfficiencyModeTimeBeforeDiscardInMinutes] =
+                     kMemorySaverModeTimeBeforeDiscardInMinutes] =
       settings_api::PrefType::kNumber;
   (*s_allowlist)
       [performance_manager::user_tuning::prefs::kBatterySaverModeState] =

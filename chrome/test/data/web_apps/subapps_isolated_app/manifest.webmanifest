@@ -15,7 +15,8 @@
     "background_color": "#0000FF",
     "theme_color": "#000077",
     "permissions_policy": {
-      "cross-origin-isolated": ["self"]
+      "cross-origin-isolated": ["self"],
+      "sub-apps": ["self"]
     }
 
 }

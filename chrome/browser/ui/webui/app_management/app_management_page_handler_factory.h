@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
+#include "chrome/browser/ui/webui/app_management/app_management_page_handler_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -20,7 +20,7 @@ class AppManagementPageHandlerFactory
  public:
   AppManagementPageHandlerFactory(
       Profile* profile,
-      std::unique_ptr<AppManagementPageHandler::Delegate> delegate);
+      std::unique_ptr<AppManagementPageHandlerBase::Delegate> delegate);
 
   AppManagementPageHandlerFactory(const AppManagementPageHandlerFactory&) =
       delete;
@@ -41,8 +41,8 @@ class AppManagementPageHandlerFactory
 
   raw_ptr<Profile> profile_;
 
-  std::unique_ptr<AppManagementPageHandler::Delegate> delegate_;
-  std::unique_ptr<AppManagementPageHandler> page_handler_;
+  std::unique_ptr<AppManagementPageHandlerBase::Delegate> delegate_;
+  std::unique_ptr<AppManagementPageHandlerBase> page_handler_;
 
   mojo::Receiver<app_management::mojom::PageHandlerFactory>
       page_factory_receiver_{this};

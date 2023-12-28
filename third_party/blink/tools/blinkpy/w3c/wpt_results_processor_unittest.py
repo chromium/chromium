@@ -280,7 +280,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.assertEqual(result.expected, {'FAIL'})
         self.assertFalse(result.unexpected)
 
-    def test_report_subtest_upexpected_pass(self):
+    def test_report_subtest_unexpected_pass(self):
         """Unexpected subtest pass should be promoted to the test level.
 
         An unexpected subtest pass has priority over an expected subtest fail, and
@@ -581,6 +581,8 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     'variant_foo=baz-expected.txt')),
             textwrap.dedent("""\
                 This is a testharness.js-based test.
+                All subtests passed and are omitted for brevity.
+                See https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/writing_web_tests.md#Text-Test-Baselines for details.
                 Harness: the test ran to completion.
                 """))
 

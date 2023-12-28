@@ -27,11 +27,11 @@ const char* RendererTypeTestSuffix(RendererType type) {
   }
 }
 
-std::vector<RendererType> GetRendererTypes(bool include_software,
-                                           bool skia_only) {
+std::vector<RendererType> GetRendererTypes(bool include_software) {
   std::vector<RendererType> types;
-  if (include_software && !skia_only)
+  if (include_software) {
     types.push_back(RendererType::kSoftware);
+  }
 #if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
   types.push_back(RendererType::kSkiaGL);
 #endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
@@ -54,15 +54,11 @@ void PrintTo(RendererType type, std::ostream* os) {
 }
 
 std::vector<RendererType> GetRendererTypes() {
-  return GetRendererTypes(true, false);
+  return GetRendererTypes(true);
 }
 
 std::vector<RendererType> GetGpuRendererTypes() {
-  return GetRendererTypes(false, false);
-}
-
-std::vector<RendererType> GetRendererTypesSkiaOnly() {
-  return GetRendererTypes(false, true);
+  return GetRendererTypes(false);
 }
 
 }  // namespace viz

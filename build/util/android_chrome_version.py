@@ -104,6 +104,7 @@ _APKS = {
     ],
     'hybrid': [
         ('CHROME', 'CHROME', '64'),
+        ('CHROME_32', 'CHROME', '32'),
         ('CHROME_MODERN', 'CHROME_MODERN', '64'),
         ('MONOCHROME', 'MONOCHROME', '32_64'),
         ('MONOCHROME_32', 'MONOCHROME', '32'),

@@ -108,8 +108,7 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
   source->AddResourcePath("signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS);
 
   source->AddString("choiceList", GetChoiceListJSON(profile_.get()));
-  source->AddBoolean("withMarketingSnippets",
-                     switches::kWithSearchEngineMarketingSnippets.Get());
+
   source->AddBoolean("withForcedScroll",
                      switches::kWithForcedScrollEnabled.Get());
 

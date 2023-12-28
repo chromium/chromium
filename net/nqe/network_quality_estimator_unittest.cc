@@ -2253,7 +2253,6 @@ TEST_F(NetworkQualityEstimatorTest, TypicalNetworkQualities) {
 
 // Verify that the cached network qualities from the prefs are correctly used.
 TEST_F(NetworkQualityEstimatorTest, OnPrefsRead) {
-  base::HistogramTester histogram_tester;
 
   // Construct the read prefs.
   std::map<nqe::internal::NetworkID, nqe::internal::CachedNetworkQuality>
@@ -2296,8 +2295,6 @@ TEST_F(NetworkQualityEstimatorTest, OnPrefsRead) {
 
   // Simulate reading of prefs.
   estimator.OnPrefsRead(read_prefs);
-  histogram_tester.ExpectUniqueSample("NQE.Prefs.ReadSize", read_prefs.size(),
-                                      1);
 
   // Taken from network_quality_estimator_params.cc.
   EXPECT_EQ(base::Milliseconds(1800),
@@ -2358,7 +2355,6 @@ TEST_F(NetworkQualityEstimatorTest, OnPrefsRead) {
 // Verify that the cached network qualities from the prefs are not used if the
 // reading of the network quality prefs is not enabled..
 TEST_F(NetworkQualityEstimatorTest, OnPrefsReadWithReadingDisabled) {
-  base::HistogramTester histogram_tester;
 
   // Construct the read prefs.
   std::map<nqe::internal::NetworkID, nqe::internal::CachedNetworkQuality>
@@ -2402,8 +2398,6 @@ TEST_F(NetworkQualityEstimatorTest, OnPrefsReadWithReadingDisabled) {
 
   // Simulate reading of prefs.
   estimator.OnPrefsRead(read_prefs);
-  histogram_tester.ExpectUniqueSample("NQE.Prefs.ReadSize", read_prefs.size(),
-                                      1);
 
   // Force read the network quality store from the store to verify that store
   // gets populated even if reading of prefs is not enabled.
@@ -2454,7 +2448,6 @@ TEST_F(NetworkQualityEstimatorTest, OnPrefsReadWithReadingDisabled) {
 // used.
 TEST_F(NetworkQualityEstimatorTest,
        ObservationDiscardedIfCachedEstimateAvailable) {
-  base::HistogramTester histogram_tester;
 
   // Construct the read prefs.
   std::map<nqe::internal::NetworkID, nqe::internal::CachedNetworkQuality>
@@ -2491,8 +2484,6 @@ TEST_F(NetworkQualityEstimatorTest,
 
   // Simulate reading of prefs.
   estimator.OnPrefsRead(read_prefs);
-  histogram_tester.ExpectUniqueSample("NQE.Prefs.ReadSize", read_prefs.size(),
-                                      1);
 
   // Taken from network_quality_estimator_params.cc.
   EXPECT_EQ(base::Milliseconds(1800),

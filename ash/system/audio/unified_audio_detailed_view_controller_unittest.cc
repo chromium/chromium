@@ -4,7 +4,7 @@
 
 #include "ash/system/audio/unified_audio_detailed_view_controller.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/switch.h"
@@ -292,8 +292,8 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
       map_output_device_sliders_callback_;
   AudioDetailedView::NoiseCancellationCallback
       noise_cancellation_toggle_callback_;
-  raw_ptr<CrasAudioHandler, DanglingUntriaged | ExperimentalAsh>
-      cras_audio_handler_ = nullptr;  // Not owned.
+  raw_ptr<CrasAudioHandler, DanglingUntriaged> cras_audio_handler_ =
+      nullptr;  // Not owned.
   scoped_refptr<AudioDevicesPrefHandlerStub> audio_pref_handler_;
   std::unique_ptr<UnifiedAudioDetailedViewController>
       audio_detailed_view_controller_;

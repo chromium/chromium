@@ -88,5 +88,5 @@ std::u16string DownloadBubblePasswordPromptView::GetAccessibleName(
   }
 }
 
-BEGIN_METADATA(DownloadBubblePasswordPromptView, views::TableLayoutView)
+BEGIN_METADATA(DownloadBubblePasswordPromptView)
 END_METADATA

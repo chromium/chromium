@@ -74,6 +74,10 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaUrls {
   GURL LogOutURLWithSource(const std::string& source);
   GURL GetCheckConnectionInfoURLWithSource(const std::string& source);
 
+  // Returns a Logout URL that continues to the given continue_url.
+  // If no continue_url is given, continues to https://accounts.google.com.
+  GURL LogOutURLWithContinueURL(const GURL& contine_url);
+
  private:
   friend struct base::DefaultSingletonTraits<GaiaUrls>;
 

@@ -69,6 +69,12 @@ BASE_FEATURE(kCrosShortstand,
              "CrosShortstand",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the more detailed, OS-level dialog for web app installs from the
+// omnibox.
+BASE_FEATURE(kCrosOmniboxInstallDialog,
+             "CrosOmniboxInstallDialog",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the more detailed, OS-level dialog for web app installs.
 BASE_FEATURE(kCrosWebAppInstallDialog,
              "CrosWebAppInstallDialog",
@@ -149,6 +155,17 @@ BASE_FEATURE(kOrca, "Orca", base::FEATURE_DISABLED_BY_DEFAULT);
 // Controls enabling / disabling the orca feature for dogfood population.
 BASE_FEATURE(kOrcaDogfood, "OrcaDogfood", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls enabling / disabling the orca feature from the feature management
+// module.
+BASE_FEATURE(kFeatureManagementOrca,
+             "FeatureManagementOrca",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether to disable chrome compose.
+BASE_FEATURE(kFeatureManagementDisableChromeCompose,
+             "FeatureManagementDisableChromeCompose",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to enable quick answers V2 settings sub-toggles.
 BASE_FEATURE(kQuickAnswersV2SettingsSubToggle,
              "QuickAnswersV2SettingsSubToggle",
@@ -178,6 +195,11 @@ BASE_FEATURE(kMicrosoftOneDriveIntegrationForEnterprise,
 
 BASE_FEATURE(kRoundedWindows,
              "RoundedWindows",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables a content cache for FileSystemProvider extensions.
+BASE_FEATURE(kFileSystemProviderContentCache,
+             "FileSystemProviderContentCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kRoundedWindowsRadius[] = "window_radius";
@@ -270,11 +292,20 @@ bool IsJellyrollEnabled() {
   return IsJellyEnabled() && base::FeatureList::IsEnabled(kJellyroll);
 }
 
-// TODO:b/312592767 - Remove this function in favor of the equivalent ash
-// function.
 bool IsOrcaEnabled() {
-  return base::FeatureList::IsEnabled(kOrca) ||
-         base::FeatureList::IsEnabled(kOrcaDogfood);
+  return base::FeatureList::IsEnabled(chromeos::features::kOrcaDogfood) ||
+         (base::FeatureList::IsEnabled(chromeos::features::kOrca) &&
+          base::FeatureList::IsEnabled(kFeatureManagementOrca));
+}
+
+bool ShouldDisableChromeComposeOnChromeOS() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()
+      ->ShouldDisableChromeComposeOnChromeOS();
+#else
+  return base::FeatureList::IsEnabled(kFeatureManagementDisableChromeCompose) ||
+         IsOrcaEnabled();
+#endif
 }
 
 bool IsQuickAnswersV2TranslationDisabled() {

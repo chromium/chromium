@@ -153,7 +153,6 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_iterator.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
-#include "third_party/blink/renderer/core/dom/node_move_scope.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_with_index.h"
@@ -2430,40 +2429,42 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
   }
 }
 
-void Document::UpdateStyleAndLayoutTreeForNode(const Node* node,
-                                               DocumentUpdateReason) {
-  DCHECK(node);
-  if (!node->InActiveDocument()) {
+void Document::UpdateStyleAndLayoutTreeForElement(const Element* element,
+                                                  DocumentUpdateReason) {
+  DCHECK(element);
+  if (!element->InActiveDocument()) {
     // If |node| is not in the active document, we can't update its style or
     // layout tree.
-    DCHECK_EQ(node->ownerDocument(), this);
+    DCHECK_EQ(element->ownerDocument(), this);
     return;
   }
   DCHECK(!InStyleRecalc())
-      << "UpdateStyleAndLayoutTreeForNode called from within style recalc";
-  if (!NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*node))
+      << "UpdateStyleAndLayoutTreeForElement called from within style recalc";
+  if (!NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*element)) {
     return;
+  }
 
   DisplayLockUtilities::ScopedForcedUpdate scoped_update_forced(
-      node, DisplayLockContext::ForcedPhase::kStyleAndLayoutTree);
-  NodeLayoutUpgrade upgrade(*node);
+      element, DisplayLockContext::ForcedPhase::kStyleAndLayoutTree);
+  ElementLayoutUpgrade upgrade(*element);
   UpdateStyleAndLayoutTree(upgrade);
 }
 
-void Document::UpdateStyleAndLayoutTreeForSubtree(const Node* node,
+void Document::UpdateStyleAndLayoutTreeForSubtree(const Element* element,
                                                   DocumentUpdateReason) {
-  DCHECK(node);
-  if (!node->InActiveDocument()) {
-    DCHECK_EQ(node->ownerDocument(), this);
+  DCHECK(element);
+  if (!element->InActiveDocument()) {
+    DCHECK_EQ(element->ownerDocument(), this);
     return;
   }
   DCHECK(!InStyleRecalc())
       << "UpdateStyleAndLayoutTreeForSubtree called from within style recalc";
 
-  if (NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*node) ||
-      node->ChildNeedsStyleRecalc() || node->ChildNeedsStyleInvalidation()) {
+  if (NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*element) ||
+      element->ChildNeedsStyleRecalc() ||
+      element->ChildNeedsStyleInvalidation()) {
     DisplayLockUtilities::ScopedForcedUpdate scoped_update_forced(
-        node, DisplayLockContext::ForcedPhase::kStyleAndLayoutTree);
+        element, DisplayLockContext::ForcedPhase::kStyleAndLayoutTree);
     UpdateStyleAndLayoutTree();
   }
 }
@@ -2871,6 +2872,7 @@ void Document::UpdateUseShadowTreesIfNeeded() {
 }
 
 void Document::ScheduleSVGResourceInvalidation(LocalSVGResource& resource) {
+  DCHECK(InStyleRecalc() || GetStyleEngine().InDetachLayoutTree());
   svg_resources_needing_invalidation_.insert(&resource);
 }
 
@@ -5281,8 +5283,8 @@ bool Document::SetFocusedElement(Element* new_focused_element,
     return true;
 
   if (new_focused_element) {
-    UpdateStyleAndLayoutTreeForNode(new_focused_element,
-                                    DocumentUpdateReason::kFocus);
+    UpdateStyleAndLayoutTreeForElement(new_focused_element,
+                                       DocumentUpdateReason::kFocus);
   }
 
   if (new_focused_element && new_focused_element->IsFocusable()) {
@@ -7504,8 +7506,7 @@ void Document::OnLargestContentfulPaintUpdated() {
 
 void Document::OnPrepareToStopParsing() {
   if (render_blocking_resource_manager_) {
-    render_blocking_resource_manager_->SetMainDocumentParsingIsRenderBlocking(
-        false);
+    render_blocking_resource_manager_->ClearPendingParsingElements();
   }
   MaybeExecuteDelayedAsyncScripts(
       MilestoneForDelayedAsyncScript::kFinishedParsing);
@@ -8257,20 +8258,22 @@ Node* EventTargetNodeForDocument(Document* doc) {
 void Document::AdjustQuadsForScrollAndAbsoluteZoom(
     Vector<gfx::QuadF>& quads,
     const LayoutObject& layout_object) const {
-  if (!View())
+  if (!View()) {
     return;
+  }
 
   for (auto& quad : quads)
-    AdjustForAbsoluteZoom::AdjustQuad(quad, layout_object);
+    AdjustForAbsoluteZoom::AdjustQuadMaybeExcludingCSSZoom(quad, layout_object);
 }
 
 void Document::AdjustRectForScrollAndAbsoluteZoom(
     gfx::RectF& rect,
     const LayoutObject& layout_object) const {
-  if (!View())
+  if (!View()) {
     return;
+  }
 
-  AdjustForAbsoluteZoom::AdjustRectF(rect, layout_object);
+  AdjustForAbsoluteZoom::AdjustRectMaybeExcludingCSSZoom(rect, layout_object);
 }
 
 void Document::SetForceSynchronousParsingForTesting(bool enabled) {
@@ -8896,7 +8899,6 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(element_data_cache_);
   visitor->Trace(use_elements_needing_update_);
   visitor->Trace(svg_resources_needing_invalidation_);
-  visitor->Trace(node_move_scope_items_);
   visitor->Trace(template_document_);
   visitor->Trace(template_document_host_);
   visitor->Trace(user_action_elements_);

@@ -1,0 +1,61 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 5054],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) HEADER",
+      "bounds": [784, 20],
+      "drawsContent": false,
+      "backfaceVisibility": "hidden",
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='searchbar'",
+      "bounds": [150, 150],
+      "contentsOpaque": true,
+      "backgroundColor": "#800080",
+      "transform": 3
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [796, 0],
+      "bounds": [4, 600]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -1400, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 26, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [18, 450, 0, 1]
+      ]
+    }
+  ]
+}
+

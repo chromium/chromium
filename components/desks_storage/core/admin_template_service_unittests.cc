@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "components/desks_storage/core/admin_template_service.h"
 
 #include "ash/constants/ash_features.h"
@@ -118,7 +119,8 @@ GetAdminTemplatePolicyTemplateWithOneTemplate() {
 // Verifies that the two vectors contain equal contents.
 void ExpectTemplateVectorsEqual(
     const std::vector<std::unique_ptr<ash::DeskTemplate>>& expected_templates,
-    const std::vector<const ash::DeskTemplate*>& got_templates) {
+    const std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>&
+        got_templates) {
   EXPECT_EQ(expected_templates.size(), got_templates.size());
 
   // We expect the order of the templates to be the same as the expected
@@ -308,7 +310,8 @@ TEST_F(AdminTemplateServiceTest, WaitsForAppsCacheBeforeParsingPolicy) {
       GetAdminService()->GetFullDeskModel()->GetAllEntries();
 
   EXPECT_EQ(all_entries_result.status, DeskModel::GetAllEntriesStatus::kOk);
-  std::vector<const ash::DeskTemplate*>& entries = all_entries_result.entries;
+  std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>& entries =
+      all_entries_result.entries;
 
   std::vector<std::unique_ptr<ash::DeskTemplate>> expected_templates =
       GetDefaultAdminTemplatePolicyTemplates();
@@ -339,7 +342,8 @@ TEST_F(AdminTemplateServiceTest,
       GetAdminService()->GetFullDeskModel()->GetAllEntries();
 
   EXPECT_EQ(all_entries_result.status, DeskModel::GetAllEntriesStatus::kOk);
-  std::vector<const ash::DeskTemplate*>& entries = all_entries_result.entries;
+  std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>& entries =
+      all_entries_result.entries;
 
   std::vector<std::unique_ptr<ash::DeskTemplate>> expected_templates =
       GetDefaultAdminTemplatePolicyTemplates();

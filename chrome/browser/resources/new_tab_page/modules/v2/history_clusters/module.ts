@@ -300,33 +300,30 @@ async function createElement(cluster: Cluster):
   }
 
   element.discounts = [];
-  if (loadTimeData.getBoolean('historyClustersModuleDiscountsEnabled')) {
-    const {discounts} = await HistoryClustersProxyImpl.getInstance()
-                            .handler.getDiscountsForCluster(cluster);
-    for (const visit of cluster.visits) {
-      let discountInValue = '';
-      for (const [url, urlDiscounts] of discounts) {
-        if (url.url === visit.normalizedUrl.url && urlDiscounts.length > 0) {
-          // API is designed to support multiple discounts, but for now we only
-          // have one.
-          discountInValue = urlDiscounts[0].valueInText;
-          visit.normalizedUrl.url = urlDiscounts[0].annotatedVisitUrl.url;
-        }
+  const {discounts} = await HistoryClustersProxyImpl.getInstance()
+                          .handler.getDiscountsForCluster(cluster);
+  for (const visit of cluster.visits) {
+    let discountInValue = '';
+    for (const [url, urlDiscounts] of discounts) {
+      if (url.url === visit.normalizedUrl.url && urlDiscounts.length > 0) {
+        // API is designed to support multiple discounts, but for now we only
+        // have one.
+        discountInValue = urlDiscounts[0].valueInText;
+        visit.normalizedUrl.url = urlDiscounts[0].annotatedVisitUrl.url;
       }
-      element.discounts.push(discountInValue);
     }
-    // For visits without discounts, discount string in corresponding index in
-    // `discounts` array is empty.
-    // Only interested in the discounts for the first two visits (first three
-    // elements in the array) since they are the only visible ones.
-    const hasDiscount =
-        element.discounts.slice(0, CLUSTER_MIN_REQUIRED_URL_VISITS)
-            .some((discount) => discount.length > 0);
-    chrome.metricsPrivate.recordBoolean(
-        `NewTabPage.HistoryClusters.HasDiscount`, hasDiscount);
-  } else {
-    element.discounts = Array(cluster.visits.length).fill('');
+    element.discounts.push(discountInValue);
   }
+  // For visits without discounts, discount string in corresponding index in
+  // `discounts` array is empty.
+  // Only interested in the discounts for the first two visits (first three
+  // elements in the array) since they are the only visible ones.
+  const hasDiscount =
+      element.discounts.slice(0, CLUSTER_MIN_REQUIRED_URL_VISITS)
+          .some((discount) => discount.length > 0);
+  chrome.metricsPrivate.recordBoolean(
+      `NewTabPage.HistoryClusters.HasDiscount`, hasDiscount);
+
   return element;
 }
 

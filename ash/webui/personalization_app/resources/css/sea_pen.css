@@ -28,7 +28,7 @@ wallpaper-grid-item.sea-pen-image {
   border-radius: var(--personalization-app-grid-item-border-radius);
 }
 
-.sea-pen-image[aria-selected='true']::part(icon):before {
+.sea-pen-image[aria-selected='true']::part(icon)::before {
   border-top-left-radius: 50%;
   top: 8px;
   box-shadow: 0 -8px 0 0 var(--cros-bg-color);
@@ -39,9 +39,9 @@ wallpaper-grid-item.sea-pen-image {
   width: 16px;
 }
 
-.sea-pen-image[aria-selected='true']::part(icon):after {
+.sea-pen-image[aria-selected='true']::part(icon)::after {
   border-top-left-radius: 50%;
-  box-shadow: -8px 0px 0 0 var(--cros-bg-color);
+  box-shadow: -8px 0 0 0 var(--cros-bg-color);
   content: "";
   height: 16px;
   left: 8px;

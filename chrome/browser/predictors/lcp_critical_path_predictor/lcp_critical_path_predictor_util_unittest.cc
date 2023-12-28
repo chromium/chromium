@@ -11,8 +11,6 @@
 
 namespace predictors {
 
-namespace {
-
 TEST(IsValidLcppStatTest, Empty) {
   LcppStat lcpp_stat;
   EXPECT_TRUE(IsValidLcppStat(lcpp_stat));
@@ -325,6 +323,49 @@ TEST(PredictFetchedFontUrls, MaxUrls) {
   }
 }
 
-}  // namespace
+TEST(PredictFetchedSubresourceUrls, Empty) {
+  EXPECT_EQ(std::vector<GURL>(), PredictFetchedSubresourceUrls({}));
+}
+
+TEST(PredictFetchedSubresourceUrls, SingleEntry) {
+  LcppData lcpp_data;
+  lcpp_data.mutable_lcpp_stat()
+      ->mutable_fetched_subresource_url_stat()
+      ->mutable_main_buckets()
+      ->insert({"https://example.com/a.jpeg", 0.9});
+  EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/a.jpeg")}),
+            PredictFetchedSubresourceUrls(lcpp_data));
+}
+
+TEST(PredictFetchedSubresourceUrls, SortedByFrequencyInDescendingOrder) {
+  LcppData lcpp_data;
+  auto* buckets = lcpp_data.mutable_lcpp_stat()
+                      ->mutable_fetched_subresource_url_stat()
+                      ->mutable_main_buckets();
+  buckets->insert({"https://example.com/c.jpeg", 0.1});
+  buckets->insert({"https://example.com/a.jpeg", 0.3});
+  buckets->insert({"https://example.com/b.jpeg", 0.2});
+  EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/a.jpeg"),
+                               GURL("https://example.com/b.jpeg"),
+                               GURL("https://example.com/c.jpeg")}),
+            PredictFetchedSubresourceUrls(lcpp_data));
+}
+
+TEST(PredictFetchedSubresourceUrls, FilterUrls) {
+  LcppData lcpp_data;
+  auto* buckets = lcpp_data.mutable_lcpp_stat()
+                      ->mutable_fetched_subresource_url_stat()
+                      ->mutable_main_buckets();
+  buckets->insert({"https://example.com/a.jpeg", 0.1});
+  buckets->insert({"https://example.com/b.jpeg", 0.2});
+  // Not an HTTP/HTTPS.
+  buckets->insert({"file://example.com/c.jpeg", 0.7});
+  // Not an URL.
+  buckets->insert({"d.jpeg", 0.8});
+  EXPECT_EQ(4U, buckets->size());
+  EXPECT_EQ(std::vector<GURL>({GURL("https://example.com/b.jpeg"),
+                               GURL("https://example.com/a.jpeg")}),
+            PredictFetchedSubresourceUrls(lcpp_data));
+}
 
 }  // namespace predictors

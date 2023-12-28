@@ -263,9 +263,7 @@ class SessionManagerClientImpl : public SessionManagerClient {
     writer.AppendString(key);
 
     const std::string metadata_blob = metadata.SerializeAsString();
-    writer.AppendArrayOfBytes(
-        reinterpret_cast<const uint8_t*>(metadata_blob.data()),
-        metadata_blob.size());
+    writer.AppendArrayOfBytes(base::as_byte_span(metadata_blob));
     writer.AppendUint64(data.size());
 
     base::ScopedFD fd = CreateSharedMemoryRegionFDWithData(data);
@@ -861,9 +859,7 @@ class SessionManagerClientImpl : public SessionManagerClient {
     dbus::MessageWriter writer(&method_call);
     const std::string descriptor_blob = descriptor.SerializeAsString();
     // static_cast does not work due to signedness.
-    writer.AppendArrayOfBytes(
-        reinterpret_cast<const uint8_t*>(descriptor_blob.data()),
-        descriptor_blob.size());
+    writer.AppendArrayOfBytes(base::as_byte_span(descriptor_blob));
     session_manager_proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&SessionManagerClientImpl::OnRetrievePolicy,
@@ -881,9 +877,7 @@ class SessionManagerClientImpl : public SessionManagerClient {
     dbus::MessageWriter writer(&method_call);
     const std::string descriptor_blob = descriptor.SerializeAsString();
     // static_cast does not work due to signedness.
-    writer.AppendArrayOfBytes(
-        reinterpret_cast<const uint8_t*>(descriptor_blob.data()),
-        descriptor_blob.size());
+    writer.AppendArrayOfBytes(base::as_byte_span(descriptor_blob));
     auto result = blocking_method_caller_->CallMethodAndBlock(&method_call);
     RetrievePolicyResponseType response_type =
         RetrievePolicyResponseType::SUCCESS;
@@ -908,12 +902,8 @@ class SessionManagerClientImpl : public SessionManagerClient {
     dbus::MessageWriter writer(&method_call);
     const std::string descriptor_blob = descriptor.SerializeAsString();
     // static_cast does not work due to signedness.
-    writer.AppendArrayOfBytes(
-        reinterpret_cast<const uint8_t*>(descriptor_blob.data()),
-        descriptor_blob.size());
-    writer.AppendArrayOfBytes(
-        reinterpret_cast<const uint8_t*>(policy_blob.data()),
-        policy_blob.size());
+    writer.AppendArrayOfBytes(base::as_byte_span(descriptor_blob));
+    writer.AppendArrayOfBytes(base::as_byte_span(policy_blob));
     // The timeout is intentionally chosen to be that big because on some
     // devices the operation is slow and a short timeout would lead to
     // unnecessary enrollment failures. See crbug.com/1155533 for context.

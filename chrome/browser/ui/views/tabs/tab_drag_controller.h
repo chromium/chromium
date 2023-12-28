@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_scroll_session.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/webapps/common/web_app_id.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/gfx/geometry/rect.h"
@@ -135,13 +136,15 @@ class TabDragController : public views::WidgetObserver,
   // and is only non-empty if the original selection isn't the same as the
   // dragging set. Returns Liveness::DELETED if `this` was deleted during this
   // call, and Liveness::ALIVE if `this` still exists.
-  [[nodiscard]] Liveness Init(TabDragContext* source_context,
-                              TabSlotView* source_view,
-                              const std::vector<TabSlotView*>& dragging_views,
-                              const gfx::Point& mouse_offset,
-                              int source_view_offset,
-                              ui::ListSelectionModel initial_selection_model,
-                              ui::mojom::DragEventSource event_source);
+  [[nodiscard]] Liveness Init(
+      TabDragContext* source_context,
+      TabSlotView* source_view,
+      const std::vector<raw_ptr<TabSlotView, VectorExperimental>>&
+          dragging_views,
+      const gfx::Point& mouse_offset,
+      int source_view_offset,
+      ui::ListSelectionModel initial_selection_model,
+      ui::mojom::DragEventSource event_source);
 
   // Returns true if there is a drag underway and the drag is attached to
   // |tab_strip|.
@@ -460,8 +463,8 @@ class TabDragController : public views::WidgetObserver,
   // Finds the TabSlotViews within the specified TabDragContext that
   // corresponds to the WebContents of the dragged views. Also finds the group
   // header if it is dragging. Returns an empty vector if not attached.
-  std::vector<TabSlotView*> GetViewsMatchingDraggedContents(
-      TabDragContext* context);
+  std::vector<raw_ptr<TabSlotView, VectorExperimental>>
+  GetViewsMatchingDraggedContents(TabDragContext* context);
 
   // Does the work for EndDrag(). If we actually started a drag and |how_end| is
   // not TAB_DESTROYED then one of CompleteDrag() or RevertDrag() is invoked.
@@ -559,6 +562,11 @@ class TabDragController : public views::WidgetObserver,
                                         const gfx::Point& point_in_screen,
                                         gfx::Vector2d* drag_offset,
                                         std::vector<gfx::Rect>* drag_bounds);
+
+  // If the user is dragging a single tab that is controlled by one web app,
+  // and features::kTearOffWebAppTabOpensWebAppWindow is enabled,
+  // returns the app id of that web app, nullopt otherwise.
+  std::optional<webapps::AppId> GetControllingAppForDrag(Browser* browser);
 
   // Creates and returns a new Browser to handle the drag.
   Browser* CreateBrowserForDrag(TabDragContext* source,
@@ -682,7 +690,7 @@ class TabDragController : public views::WidgetObserver,
   size_t source_view_index_;
 
   // The attached views. Also found in |drag_data_|, but cached for convenience.
-  std::vector<TabSlotView*> attached_views_;
+  std::vector<raw_ptr<TabSlotView, VectorExperimental>> attached_views_;
 
   // Whether the drag originated from a group header.
   bool header_drag_;

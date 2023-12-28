@@ -70,6 +70,9 @@ bool StyleRecalcChange::ShouldUpdatePseudoElement(
   if (pseudo_element.NeedsStyleRecalc()) {
     return true;
   }
+  if (pseudo_element.ChildNeedsStyleRecalc()) {
+    return true;
+  }
   if (pseudo_element.NeedsLayoutSubtreeUpdate()) {
     return true;
   }

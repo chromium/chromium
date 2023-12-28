@@ -263,6 +263,7 @@ source_set("headers") {
     "page/drag_operation.h",
     "page/launching_process_state.h",
     "page/page_zoom.h",
+    "page/v8_compile_hints_histograms.h",
     "page_state/page_state.h",
     "page_state/page_state_serialization.h",
     "peerconnection/webrtc_ip_handling_policy.h",

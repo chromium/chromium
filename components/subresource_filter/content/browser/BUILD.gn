@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
+
 static_library("browser") {
   sources = [
     "activation_state_computing_navigation_throttle.cc",
@@ -207,5 +209,8 @@ source_set("unit_tests") {
       "//components/resources:android_resources",
       "//components/strings:components_strings_grit",
     ]
+  }
+  if (is_ios && use_blink) {
+    deps += [ "//components/test:subresource_filter_test_bundle_data" ]
   }
 }

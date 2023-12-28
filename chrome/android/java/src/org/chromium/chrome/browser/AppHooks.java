@@ -6,11 +6,7 @@ package org.chromium.chrome.browser;
 
 import androidx.annotation.Nullable;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-
 import org.chromium.base.ContextUtils;
-import org.chromium.base.PackageUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.gsa.GSAHelper;
@@ -30,15 +26,11 @@ import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.ui.signin.GoogleActivityController;
 import org.chromium.chrome.browser.usage_stats.DigitalWellbeingClient;
 import org.chromium.chrome.browser.webapps.GooglePlayWebApkInstallDelegate;
-import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.policy.AppRestrictionsProvider;
 import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.components.signin.AccountManagerDelegate;
 import org.chromium.components.signin.SystemAccountManagerDelegate;
 import org.chromium.components.webapps.AppDetailsDelegate;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Base class for defining methods where different behavior is required by downstream targets.
@@ -168,14 +160,6 @@ public abstract class AppHooks {
     }
 
     /**
-     * @return A list of allowlisted app package names whose completed notifications
-     * we should suppress.
-     */
-    public List<String> getOfflinePagesSuppressNotificationPackages() {
-        return Collections.emptyList();
-    }
-
-    /**
      * @return An iterator of partner bookmarks.
      */
     @Nullable
@@ -188,28 +172,6 @@ public abstract class AppHooks {
      */
     public DigitalWellbeingClient createDigitalWellbeingClient() {
         return new DigitalWellbeingClient();
-    }
-
-    /**
-     * Checks the Google Play services availability on the this device.
-     *
-     * This is a workaround for the
-     * versioned API of {@link GoogleApiAvailability#isGooglePlayServicesAvailable()}. The current
-     * Google Play services SDK version doesn't have this API yet.
-     *
-     * TODO(zqzhang): Remove this method after the SDK is updated.
-     *
-     * @return status code indicating whether there was an error. The possible return values are the
-     * same as {@link GoogleApiAvailability#isGooglePlayServicesAvailable()}.
-     */
-    public int isGoogleApiAvailableWithMinApkVersion(int minApkVersion) {
-        int apkVersion =
-                PackageUtils.getPackageVersion(GoogleApiAvailability.GOOGLE_PLAY_SERVICES_PACKAGE);
-        return apkVersion < 0
-                ? ConnectionResult.SERVICE_MISSING
-                : apkVersion < minApkVersion
-                        ? ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED
-                        : ConnectionResult.SUCCESS;
     }
 
     /** Returns a new {@link TrustedVaultClient.Backend} instance. */
@@ -227,16 +189,8 @@ public abstract class AppHooks {
         return new ChimeDelegate();
     }
 
-    public @Nullable ImageEditorModuleProvider getImageEditorModuleProvider() {
-        return null;
-    }
-
     public ChromeStartupDelegate createChromeStartupDelegate() {
         return new ChromeStartupDelegate();
-    }
-
-    public boolean canStartForegroundServiceWhileInvisible() {
-        return true;
     }
 
     public String getDefaultQueryTilesServerUrl() {

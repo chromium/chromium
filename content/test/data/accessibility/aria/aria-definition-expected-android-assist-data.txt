@@ -1,2 +1,2 @@
-WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
-++View textSize:16.00 style:0 bundle:[display="block", htmlTag="div", role="definition"]
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {role="definition"}]

@@ -143,8 +143,6 @@ public class IsReadyToPayServiceHelper extends IsReadyToPayServiceCallback.Stub
     @Override
     public void handleIsReadyToPay(boolean isReadyToPay) throws RemoteException {
         if (mResultHandler == null) return;
-        RecordHistogram.recordBooleanHistogram(
-                "PaymentRequest.EventResponse.IsReadyToPay", isReadyToPay);
         mResultHandler.onIsReadyToPayServiceResponse(isReadyToPay);
         mResultHandler = null;
         destroy();

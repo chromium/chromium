@@ -229,22 +229,21 @@ class ASH_EXPORT LockScreenMediaControlsView
   base::flat_set<media_session::mojom::MediaSessionAction> enabled_actions_;
 
   // Contains the visible and draggable UI of the media controls.
-  raw_ptr<views::View, ExperimentalAsh> contents_view_ = nullptr;
+  raw_ptr<views::View> contents_view_ = nullptr;
 
   // Whether the controls were shown or not and the reason why.
   std::optional<Shown> shown_;
 
   // Container views attached to |contents_view_|.
-  raw_ptr<MediaControlsHeaderView, ExperimentalAsh> header_row_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> session_artwork_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> artist_label_ = nullptr;
-  raw_ptr<NonAccessibleView, ExperimentalAsh> button_row_ = nullptr;
-  raw_ptr<MediaActionButton, ExperimentalAsh> play_pause_button_ = nullptr;
-  raw_ptr<media_message_center::MediaControlsProgressView, ExperimentalAsh>
-      progress_ = nullptr;
+  raw_ptr<MediaControlsHeaderView> header_row_ = nullptr;
+  raw_ptr<views::ImageView> session_artwork_ = nullptr;
+  raw_ptr<views::Label> title_label_ = nullptr;
+  raw_ptr<views::Label> artist_label_ = nullptr;
+  raw_ptr<NonAccessibleView> button_row_ = nullptr;
+  raw_ptr<MediaActionButton> play_pause_button_ = nullptr;
+  raw_ptr<media_message_center::MediaControlsProgressView> progress_ = nullptr;
 
-  std::vector<views::Button*> media_action_buttons_;
+  std::vector<raw_ptr<views::Button, VectorExperimental>> media_action_buttons_;
 
   // Callbacks.
   const MediaControlsEnabled media_controls_enabled_;

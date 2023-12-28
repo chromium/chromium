@@ -26,6 +26,7 @@ source_set("public") {
     "local_state_helper.h",
     "model_provider.cc",
     "model_provider.h",
+    "prediction_options.cc",
     "prediction_options.h",
     "result.cc",
     "result.h",

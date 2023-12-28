@@ -96,7 +96,7 @@ class IbanManagerTest : public testing::Test {
   // Adds an IBAN focused field to the suggestions context.
   SuggestionsContext GetIbanFocusedSuggestionsContext(
       AutofillField& autofill_field,
-      autofill::ServerFieldType type = IBAN_VALUE) {
+      autofill::FieldType type = IBAN_VALUE) {
     SuggestionsContext context;
     autofill_field.SetTypeTo(AutofillType(type));
     context.focused_field = &autofill_field;

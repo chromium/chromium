@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_base_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -41,15 +42,13 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
  public:
   METADATA_HEADER(PermissionPromptBubbleBaseView);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMainViewId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBlockButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAllowButtonElementId);
   PermissionPromptBubbleBaseView(
       Browser* browser,
       base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
       base::TimeTicks permission_requested_time,
-      PermissionPromptStyle prompt_style,
-      std::u16string window_title,
-      std::u16string accessible_window_title_,
-      std::optional<std::u16string> extra_text);
+      PermissionPromptStyle prompt_style);
   PermissionPromptBubbleBaseView(const PermissionPromptBubbleBaseView&) =
       delete;
   PermissionPromptBubbleBaseView& operator=(
@@ -72,22 +71,23 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
 
   void ShowWidget();
 
-  void SetPromptStyle(PermissionPromptStyle prompt_style);
-
   void ClosingPermission();
 
   // views::BubbleDialogDelegateView:
   bool ShouldShowCloseButton() const override;
-  std::u16string GetAccessibleWindowTitle() const override;
-  std::u16string GetWindowTitle() const override;
 
   // PermissionPromptBaseView:
   void RunButtonCallback(int button_id) override;
 
+  std::u16string GetPermissionFragmentForTesting() const;
+
  protected:
+  void CreatePermissionButtons(const std::u16string& allow_always_text);
+  void CreateExtraTextLabel(const std::u16string& extra_text);
+
   void CreateWidget();
 
-  base::WeakPtr<permissions::PermissionPrompt::Delegate> GetDelegate() {
+  base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate() const {
     return delegate_;
   }
 
@@ -97,7 +97,13 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
   static bool IsOneTimePermission(
       permissions::PermissionPrompt::Delegate& delegate);
 
+  static std::u16string GetAllowAlwaysText(
+      const std::vector<raw_ptr<permissions::PermissionRequest,
+                                VectorExperimental>>& visible_requests);
+
  private:
+  void SetPromptStyle(PermissionPromptStyle prompt_style);
+
   // Record UMA Permissions.*.TimeToDecision.|action| metric. Can be
   // Permissions.Prompt.TimeToDecision.* or Permissions.Chip.TimeToDecision.*,
   // depending on which UI is used.
@@ -120,8 +126,6 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
   PermissionPromptStyle prompt_style_;
 
   const bool is_one_time_permission_;
-  const std::u16string accessible_window_title_;
-  const std::u16string window_title_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BUBBLE_BASE_VIEW_H_

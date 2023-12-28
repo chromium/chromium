@@ -599,7 +599,7 @@ void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
   // All calls to this command in ash (and lacros soon) come from the ChromeOS
   // install dialog, which should never reparent the tab.
   if (base::FeatureList::IsEnabled(
-          chromeos::features::kCrosWebAppInstallDialog)) {
+          chromeos::features::kCrosOmniboxInstallDialog)) {
     should_reparent_tab = false;
   }
 #endif

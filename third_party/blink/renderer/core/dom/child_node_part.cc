@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_part_root.h"
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
-#include "third_party/blink/renderer/core/dom/node_move_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
@@ -20,6 +19,14 @@ ChildNodePart* ChildNodePart::Create(PartRootUnion* root_union,
                                      Node* next_sibling,
                                      const PartInit* init,
                                      ExceptionState& exception_state) {
+  if (!IsAcceptableNodeType(*previous_sibling) ||
+      !IsAcceptableNodeType(*next_sibling)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidNodeTypeError,
+        "The provided previous_sibling and next_sibling nodes are not valid "
+        "for a ChildNodePart.");
+    return nullptr;
+  }
   return MakeGarbageCollected<ChildNodePart>(*GetPartRootFromUnion(root_union),
                                              *previous_sibling, *next_sibling,
                                              init);
@@ -32,6 +39,8 @@ ChildNodePart::ChildNodePart(PartRoot& root,
     : Part(root, metadata),
       previous_sibling_(previous_sibling),
       next_sibling_(next_sibling) {
+  CHECK(IsAcceptableNodeType(previous_sibling));
+  CHECK(IsAcceptableNodeType(next_sibling));
   previous_sibling.AddDOMPart(*this);
   if (previous_sibling != next_sibling) {
     next_sibling.AddDOMPart(*this);

@@ -2,15 +2,21 @@
   h2 {
     padding-inline-start: var(--cr-section-padding);
   }
+
+  settings-dropdown-menu {
+    --md-select-width: 100%;
+  }
 </style>
 
 
 <div
-    id="geolocationDropdownMenu"
+    id="geolocationDropdownDiv"
     class="settings-box first">
   <settings-dropdown-menu
+      id="geolocationDropdown"
       label="Label here"
       menu-options="[[geolocationMapTargets_]]"
+      on-settings-control-change="recordMetric_"
       pref="{{prefs.ash.user.geolocation_access_level}}">
   </settings-dropdown-menu>
 </div>

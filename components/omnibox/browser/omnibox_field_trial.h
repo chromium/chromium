@@ -727,6 +727,11 @@ constexpr base::FeatureParam<bool> kQueryTilesShowAboveTrends(
     &omnibox::kQueryTilesInZPSOnNTP,
     "QueryTilesShowAboveTrends",
     true);
+
+constexpr base::FeatureParam<bool> kQueryTilesShowAsCarousel(
+    &omnibox::kQueryTilesInZPSOnNTP,
+    "QueryTilesShowAsCarousel",
+    false);
 // <- Inspire Me
 // ---------------------------------------------------------
 // Actions In Suggest ->

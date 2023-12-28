@@ -13,14 +13,14 @@
       <settings-toggle-button
           id="a11yImageLabelsToggle"
           icon="[[rowIcons_.imageDescription]]"
-          hidden="[[!showAccessibilityLabelsSetting_]]"
+          hidden="[[!hasScreenReader_]]"
           pref="{{prefs.settings.a11y.enable_accessibility_image_labels}}"
           on-change="onToggleAccessibilityImageLabels_"
           label="$i18n{accessibleImageLabelsTitle}"
           sub-label="$i18n{accessibleImageLabelsSubtitle}"
           deep-link-focus-id$="[[Setting.kGetImageDescriptionsFromGoogle]]">
       </settings-toggle-button>
-      <div class="hr" hidden="[[!showAccessibilityLabelsSetting_]]"></div>
+      <div class="hr" hidden="[[!hasScreenReader_]]"></div>
       <settings-toggle-button id="optionsInMenuToggle"
           icon="[[rowIcons_.showInQuickSettings]]"
           label="$i18n{optionsInMenuLabel}"
@@ -85,14 +85,14 @@
         hide-close-button>
       <settings-toggle-button
           id="a11yImageLabelsToggle"
-          hidden="[[!showAccessibilityLabelsSetting_]]"
+          hidden="[[!hasScreenReader_]]"
           pref="{{prefs.settings.a11y.enable_accessibility_image_labels}}"
           on-change="onToggleAccessibilityImageLabels_"
           label="$i18n{accessibleImageLabelsTitle}"
           sub-label="$i18n{accessibleImageLabelsSubtitle}"
           deep-link-focus-id$="[[Setting.kGetImageDescriptionsFromGoogle]]">
       </settings-toggle-button>
-      <div class="hr" hidden="[[!showAccessibilityLabelsSetting_]]"></div>
+      <div class="hr" hidden="[[!hasScreenReader_]]"></div>
       <cr-link-row id="textToSpeechSubpageTrigger"
           label="$i18n{textToSpeechLinkTitle}"
           on-click="onTextToSpeechClick_"

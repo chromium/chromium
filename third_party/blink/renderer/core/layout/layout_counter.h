@@ -108,9 +108,9 @@ class LayoutCounter : public LayoutText {
   void WillBeDestroyed() override;
 
  private:
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsCounter() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectCounter || LayoutText::IsOfType(type);
+    return true;
   }
   String OriginalText() const override;
 

@@ -53,9 +53,8 @@ bool ThirdPartyPartitionedStorageAllowedByDefault() {
 }
 
 bool ThirdPartyPartitionedStorageAllowedByStorageAccessAPI() {
-  return base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI) &&
-         base::FeatureList::IsEnabled(
-             net::features::kThirdPartyStoragePartitioning);
+  return base::FeatureList::IsEnabled(
+      net::features::kThirdPartyStoragePartitioning);
 }
 
 class CookiePolicyBrowserTest : public InProcessBrowserTest {

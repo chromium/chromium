@@ -1,0 +1,129 @@
+<style>
+  :host {
+    --dialog-top-border-size: 35px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .signin-frame {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+
+  .container,
+  #addAccount.active {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: center;
+  }
+
+  #addAccount {
+    /* margin-bottom = padding below button + button height
+     *                 + padding above button. */
+    margin-bottom: calc(3 * 32px);
+  }
+  /* Make distance to the top 64px. */
+  #welcome, #arcAccountPicker, #signinBlockedByPolicy, #signinError {
+    margin-top: calc(64px - var(--dialog-top-border-size));
+  }
+
+  .buttons {
+    display: flex;
+    padding: 0 32px 32px;
+  }
+
+  .action-buttons,
+  .next-button {
+    margin-inline-start: auto;
+  }
+
+  .rounded-button {
+    border-radius: 20px;
+  }
+
+  .signin-frame {
+    background-color: white;
+    overflow: hidden;
+  }
+
+  paper-spinner-lite {
+    --spinner-size: 24px;
+    display: none;
+    height: var(--spinner-size);
+    width: var(--spinner-size);
+  }
+
+  paper-spinner-lite[active] {
+    display: inline-block;
+  }
+</style>
+
+<div class="container">
+  <cr-view-manager id="viewManager">
+    <!-- Show welcome screen on Chrome OS to clarify that account will be
+         available in ARC. -->
+    <div id="[[viewEnum_.WELCOME]]" slot="view">
+      <welcome-page-app is-available-in-arc="{{isAvailableInArc_}}"
+          on-opened-new-window="closeDialog_">
+      </welcome-page-app>
+    </div>
+    <div id="[[viewEnum_.ARC_ACCOUNT_PICKER]]" slot="view">
+      <arc-account-picker-app on-opened-new-window="closeDialog_"
+          on-add-account="goToWelcomeScreen_">
+      </arc-account-picker-app>
+    </div>
+    <div id="[[viewEnum_.SIGNIN_BLOCKED_BY_POLICY]]" slot="view">
+      <signin-blocked-by-policy-page email="[[email_]]"
+        hosted-domain="[[hostedDomain_]]" device-type="[[deviceType_]]">
+      </signin-blocked-by-policy-page>
+    </div>
+    <div id="[[viewEnum_.SIGNIN_ERROR]]" slot="view">
+      <signin-error-page>
+      </signin-error-page>
+    </div>
+    <div id="[[viewEnum_.ADD_ACCOUNT]]" slot="view">
+      <paper-spinner-lite id="spinner"
+          active="[[isSpinnerActive_(loading_, verifyingAccount_)]]">
+      </paper-spinner-lite>
+      <p hidden$="[[!verifyingAccount_]]">
+        $i18n{accountManagerDialogSigninSpinnerText}
+      </p>
+
+      <webview id="signinFrame" name="signin-frame" class="signin-frame"
+        hidden$="[[isSpinnerActive_(loading_, verifyingAccount_)]]"
+        allowscaling>
+      </webview>
+    </div>
+  </cr-view-manager>
+</div>
+
+<div class="buttons"
+    hidden$="[[isSpinnerActive_(loading_, verifyingAccount_)]]">
+  <cr-button class="back-button rounded-button"
+      aria-label="$i18n{accessibleBackButtonLabel}"
+      on-click="handleGoBack_"
+      hidden$="[[!shouldShowBackButton_(currentView_, verifyingAccount_)]]">
+    <iron-icon icon="[[getBackButtonIcon_()]]"></iron-icon>
+    $i18n{accessibleBackButtonLabel}
+  </cr-button>
+
+  <div class="action-buttons"
+      hidden$="[[!shouldShowGaiaButtons_(currentView_)]]">
+    <gaia-action-buttons authenticator="[[authenticator_]]"
+        rounded-button="true"
+        on-set-focus-to-webview="setFocusToWebview_">
+    </gaia-action-buttons>
+  </div>
+
+  <cr-button class="next-button action-button rounded-button"
+      aria-label="[[getNextButtonLabel_(currentView_, isArcAccountRestrictionsEnabled_)]]"
+      on-click="onOkButtonClick_"
+      hidden$="[[!shouldShowOkButton_(currentView_)]]">
+    [[getNextButtonLabel_(currentView_, isArcAccountRestrictionsEnabled_)]]
+  </cr-button>
+</div>

@@ -17,6 +17,7 @@ cargo_metadata = "0.15"
 cargo-platform = "0.1"
 clap = {version = "4", features = ["derive"]}
 handlebars = "4.3.7"
+itertools = "0.12"
 flate2 = "1"
 reqwest = {version = "0.11", features = ["blocking"]}
 log = { version = "0.4", features = ["std"] }

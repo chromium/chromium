@@ -78,7 +78,8 @@ TEST_F(TabResumptionPageHandlerTest, GetTabs) {
               GetAllForeignSessions(testing::_))
       .WillOnce(testing::Invoke(
           [&sample_sessions](
-              std::vector<const sync_sessions::SyncedSession*>* sessions) {
+              std::vector<vector_experimental_raw_ptr<
+                  const sync_sessions::SyncedSession>>* sessions) {
             for (auto& sample_session : sample_sessions) {
               sessions->push_back(sample_session.get());
             }

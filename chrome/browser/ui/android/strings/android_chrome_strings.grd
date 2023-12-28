@@ -2577,9 +2577,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_WEBAPK_INSTALL_FAILED_ACTION_OPEN" desc="The label of the button which upon click would open the site user was trying to install as PWA. ">
         Go back to site
       </message>
-      <message name="IDS_WEBAPK_INSTALL_FAILED_ACTION_RETRY" desc="The label of the button which upon click would retry installing the PWA">
-        Try again
-      </message>
       <message name="IDS_IPH_PWA_INSTALL_AVAILABLE_TEXT" desc="The in-product-help message for PWAs that can be installed to the device.">
         Install this app
       </message>
@@ -3401,9 +3398,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       content.">
         To refresh the feed content, pull down the page
       </message>
-      <message name="IDS_FEED_BACK_TO_TOP_PROMPT" desc="A prompt for the user to click in order to go back to the top of the feed.">
-        Back to top
-      </message>
       <message name="IDS_RECENT_TABS_BULK_CLOSURE" desc="Text for a Recent Tabs Page > Recently closed row item that represents multiple tabs closed together. Can be used for the following cases: 1) at least two tabs closed at the same time, 2) at least one tab group and at least one tab closed at the same time, 3) at least two tab groups closed at the same time. TAB_COUNT is the total number of tabs closed in the action including grouped tabs.">
         <ph name="TAB_COUNT">%1$s<ex>6</ex></ph> tabs
       </message>
@@ -3636,12 +3630,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_ACCESSIBILITY_FOLLOW_ACCELERATOR_IPH" desc="In-product help that points at the menu icon for the news feed on Chrome's new tab page. This string informs the user about the  following feature.">
         Adds the current web site to the list of web sites that you are following.
-      </message>
-      <message name="IDS_MENU_ITEM_REQUEST_DESKTOP_SITE" desc="Menu item allowing users to change the website from the mobile site to desktop site. [CHAR_LIMIT=27]">
-        Request desktop site
-      </message>
-      <message name="IDS_MENU_ITEM_REQUEST_MOBILE_SITE" desc="Menu item allowing users to change the website from the desktop site to mobile site. [CHAR_LIMIT=27]">
-        Request mobile site
       </message>
       <message name="IDS_MENU_PAINT_PREVIEW_SHOW" desc="Menu item allowing users to capture and show a paint preview of a page. [CHAR_LIMIT=27]" translateable="false">
         Show Paint Preview
@@ -4608,17 +4596,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Webpage shortcuts
       </message>
 
-      <!-- VR module -->
-      <message name="IDS_VR_MODULE_TITLE" desc="Text shown when the VR module is referenced in install start, success, failure UI (e.g. in IDS_MODULE_INSTALL_START_TEXT, which will expand to 'Installing Virtual Reality for Chrome…').">
-        Virtual Reality
-      </message>
-      <message name="IDS_VR_PREPARING_VR_NOTIFICATION_TITLE" desc="Title of a notifaction shown in VR if VR browser not ready yet. [CHAR_LIMIT=23]">
-        Something went wrong.
-      </message>
-      <message name="IDS_VR_PREPARING_VR_NOTIFICATION_BODY" desc="Body of a notifaction shown in VR if VR browser not ready yet.">
-        Reopen Chrome.
-      </message>
-
       <if expr="enable_arcore">
         <!-- AR module -->
         <message name="IDS_AR_MODULE_TITLE" desc="Text shown when the AR module is referenced in install start, success, failure UI (e.g. in IDS_MODULE_INSTALL_START_TEXT, which will expand to 'Installing Augmented Reality for Chrome…').">
@@ -5261,16 +5238,8 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Copy image with link
       </message>
 
-      <message name="IDS_SHARING_COPY_GIF" desc="Label for the Copy GIF button in the sharing hub.">
-        Copy GIF
-      </message>
-
       <message name="IDS_SHARING_COPY_HIGHLIGHT_WITHOUT_LINK" desc="Label for the Copy highlighted text without link button in the sharing hub. This is used when sharing highlighted text with a generated link.">
         Copy without link
-      </message>
-
-      <message name="IDS_SHARING_SCREENSHOT" desc="Label for Screenshot button in the sharing hub.">
-        Screenshot
       </message>
 
       <message name="IDS_SHARING_LONG_SCREENSHOT" desc="Label for Long Screenshot button in the sharing hub.">
@@ -5301,28 +5270,12 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Something went wrong. Try again.
       </message>
 
-      <message name="IDS_SHARING_WEBNOTES_CREATE_CARD" desc="Label for the button in sharing hub for creating card for the highlight text.">
-        Create card
-      </message>
-
-      <message name="IDS_SHARING_WEBNOTES_ACCESSIBILITY_DESCRIPTION" desc="Accessibility description for the button in sharing hub for creating card for the highlight text.">
-        Create stylized card with highlight
-      </message>
-
-      <message name="IDS_SHARING_SAVE_IMAGE" desc="Label for the button in sharing hub for saving an image to device.">
-        Save to device
-      </message>
-
       <message name="IDS_SHARING_SEND_TAB_TO_SELF" desc="Label for the button in sharing hub for sending the current tab to other devices if user signed in (Send Tab to Self feature).">
         Send to devices
       </message>
 
       <message name="IDS_SHARING_INCLUDING_LINK_TITLE_TEMPLATE" desc="Title used in share sheet when sharing the highlighted text with a generated link.">
         Including link: <ph name="ORIGIN">%1$s<ex>https://www.example.com</ex></ph>
-      </message>
-
-      <message name="IDS_GIF_COPIED" desc="Text shown in the toast notification when Copy GIF is selected in the sharing hub.">
-        GIF Copied
       </message>
 
       <message name="IDS_QR_CODE_OPEN_SETTINGS_LABEL" desc="Text on button on QR Code sharing tab triggering Android settings.">
@@ -5357,10 +5310,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Include link
       </message>
 
-      <message name="IDS_LINK_TOGGLE_SHARE_WEBNOTE_ONLY" desc="Toast displayed when the toggle is clicked for a Webnote share and a link is excluded.">
-        Share card only
-      </message>
-
       <message name="IDS_LINK_TOGGLE_SHARE_SCREENSHOT_ONLY" desc="Toast displayed when the toggle is clicked for a screenshot share and a link is excluded.">
         Share screenshot only
       </message>
@@ -5373,19 +5322,11 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Share GIF only
       </message>
 
-      <message name="IDS_LINK_TOGGLE_SHARE_REACTION_ONLY" desc="Toast displayed when the toggle is clicked for a lightweight reaction share and a link is excluded.">
-        Share reaction only
-      </message>
-
       <message name="IDS_LINK_TOGGLE_SHARE_CONTENT_ONLY" desc="Fallback toast displayed when the toggle is clicked for a generic share and a link is excluded.">
         Share content only
       </message>
 
       <!-- Share Screenshot strings -->
-      <message name="IDS_SCREENSHOT_EDIT_TITLE" desc="The text shown on the share option for screenshots.">
-        Edit
-      </message>
-
       <message name="IDS_SCREENSHOT_DELETE_TITLE" desc="The text shown on the delete option for screenshots.">
         Delete
       </message>
@@ -5404,10 +5345,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
 
       <message name="IDS_SCREENSHOT_FILENAME_PREFIX" desc="File name prefix for downloaded screenshot that is followed by timestamp.">
         chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS">%1$s<ex>1582667748515</ex></ph>
-      </message>
-
-      <message name="IDS_SAVE_IMAGE_FILENAME_PREFIX" desc="File name prefix for downloaded image that is followed by timestamp.">
-        chrome_image_<ph name="CURRENT_TIMESTAMP_MS">%1$s<ex>1582667748515</ex></ph>
       </message>
 
       <!-- Chime DFM module strings -->
@@ -5585,10 +5522,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_ACCOUNT_SELECTION_SHEET_CLOSED" desc="Accessibility string read when the Account Selection bottom sheet showing a list of the user's accounts is closed." is_accessibility_with_no_ui="true">
         Sign in bottom sheet is closed.
       </message>
-      <message name="IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_BODY" desc="Body for mismatch dialog which is shown to prompt the user to sign in to a website using an account from an identity provider." translateable="false">
+      <message name="IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_BODY" desc="Body for mismatch dialog which is shown to prompt the user to sign in to a website using an account from an identity provider.">
         You can use your <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%1$s<ex>idp.com</ex></ph> account on this site. To continue, sign in to <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%1$s<ex>idp.com</ex></ph>.
       </message>
-      <message name="IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_CONTINUE" desc="Title of the button that allows the user to continue with signing in to an account from an identity provider." translateable="false">
+      <message name="IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_CONTINUE" desc="Title of the button that allows the user to continue with signing in to an account from an identity provider.">
         Continue
       </message>
       <message name="IDS_SIGNIN_ERROR_DIALOG_GOT_IT_BUTTON" desc="The button text on the error dialog for the user to acknowledge that an error has occurred in their attempt to sign in with an account from an identity provider.">
@@ -5650,29 +5587,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_VERIFY_SHEET_TITLE" desc="Header for verify sheet for explicit sign-in.">
         Verifying…
-      </message>
-
-      <!-- Content Creation strings -->
-      <message name="IDS_CONTENT_CREATION_NOTE_TITLE_FOR_SHARE" desc="The title of the share sheet when sharing a stylized note. The date will be formatted according to the current locale.">
-        Stylized highlight <ph name="CURRENT_DATE">%1$s<ex>2020-09-16</ex></ph>
-      </message>
-      <message name="IDS_CONTENT_CREATION_NOTE_FILENAME_PREFIX" desc="Prefix used to name files when saving a Note's image representation. Underscores need to be used in place of whitespaces to avoid breaking the file path. Random numbers will be appended to this suffix to guarantee uniqueness.">
-        chrome_stylized_highlight_
-      </message>
-      <message name="IDS_CONTENT_CREATION_NOTE_TEMPLATE_SELECTED" desc="Announcment string for accessibility when selected template changes.">
-        <ph name="TEMPLATE_TITLE">%1$s<ex>Classic</ex></ph> template selected
-      </message>
-      <message name="IDS_CONTENT_CREATION_NOTE_DIALOG_DESCRIPTION" desc="Accessibility information for note template picking dialog.">
-        Select a template for your highlight.
-      </message>
-      <message name="IDS_CONTENT_CREATION_NOTE_SHORTENED_MESSAGE" desc="Toast message displayed when highlighted text is too long and is cropped to fit in the note.">
-        Highlight was shortened
-      </message>
-      <message name="IDS_QUOTATION_MARK_PREFIX" desc="String to put in front of other text to represent it as a quote start.">
-        “
-      </message>
-      <message name="IDS_QUOTATION_MARK_SUFFIX" desc="String to put after other text to represent it as a quote end.">
-        ”
       </message>
 
       <!-- HTTPS-First Mode settings strings -->
@@ -5910,6 +5824,27 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
 
       <message name="IDS_READALOUD_VOICE_PREVIEW_MESSAGE" desc="String to be read aloud when a voice's preview button is clicked as a demonstration of how that voice sounds. It also explains how to select the voice by clicking the menu item.">
         Here are the voices you can pick for reading out your web pages. If you like this voice and want me to keep using it just tap the voice name.
+      </message>
+
+      <!-- WebAuthn -->
+      <message name="IDS_WEBAUTHN_INCOGNITO_CONFIRMATION_TITLE" desc="The title of a bottomsheet that appears before the user saves passkey in Incognito mode. (See the glossary for translations of the word 'passkey'. Do not translate as 'password'.)" formatter_data="android_java">
+        Save passkey outside Incognito?
+      </message>
+      <message name="IDS_WEBAUTHN_INCOGNITO_CONFIRMATION_BODY" desc="The body of a bottomsheet that appears before the user saves passkey in Incognito mode. (See the glossary for translations of the word 'passkey'. Do not translate as 'password'.)" formatter_data="android_java">
+        This passkey will be saved to your password manager. Anyone with access to it will be able to use this passkey.
+      </message>
+      <message name="IDS_WEBAUTHN_INCOGNITO_CONFIRMATION_CONTINUE" desc="The text of a button that the user will click to continue creating a passkey in Incognito mode" formatter_data="android_java">
+        Continue
+      </message>
+
+      <message name="IDS_WEBAUTHN_INCOGNITO_CONFIRMATION_SHEET_DESCRIPTION" desc="Accessibility string that describes a bottomsheet that confirms with the user that they want to create passkey while in Incognito mode. (See the glossary for translations of the word 'passkey'. Do not translate as 'password'." formatter_data="android_java">
+        Passkey confirmation sheet
+      </message>
+      <message name="IDS_WEBAUTHN_INCOGNITO_CONFIRMATION_SHEET_OPENED" desc="Accessibility string that describes opening a bottomsheet that confirms with the user that they want to create passkey while in Incognito mode. (See the glossary for translations of the word 'passkey'. Do not translate as 'password'." formatter_data="android_java">
+        Passkey confirmation sheet opened
+      </message>
+      <message name="IDS_WEBAUTHN_INCOGNITO_CONFIRMATION_SHEET_CLOSED" desc="Accessibility string that describes closing a bottomsheet that confirms with the user that they want to create passkey while in Incognito mode. (See the glossary for translations of the word 'passkey'. Do not translate as 'password'." formatter_data="android_java">
+        Passkey confirmation sheet closed
       </message>
     </messages>
   </release>

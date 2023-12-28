@@ -19,7 +19,8 @@ enum class BDMStartDownloadOutcome {
   kDownloadRecoveredFromCache = 1,
   kSessionHasOngoingDownload = 2,
   kNewDownloadTaskCreated = 3,
-  kMaxValue = kNewDownloadTaskCreated
+  kTooManyTasks = 4,
+  kMaxValue = kTooManyTasks
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

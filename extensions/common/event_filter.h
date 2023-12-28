@@ -24,7 +24,7 @@ namespace extensions {
 // passed a matching event.
 class EventFilter {
  public:
-  typedef int MatcherID;
+  using MatcherID = int;
   EventFilter();
 
   EventFilter(const EventFilter&) = delete;

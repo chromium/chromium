@@ -237,7 +237,8 @@ void BluetoothAdvertisementMonitorServiceProviderImpl::WritePattern(
 
   struct_writer.AppendByte(start_pos);
   struct_writer.AppendByte(ad_data_type);
-  struct_writer.AppendArrayOfBytes(content_of_pattern, pattern_length);
+  struct_writer.AppendArrayOfBytes(
+      base::make_span(content_of_pattern, pattern_length));
   pattern_array_writer->CloseContainer(&struct_writer);
 }
 

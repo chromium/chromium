@@ -27,6 +27,7 @@ export class FakeDisplaySettingsProvider implements
   private isTabletMode: boolean = false;
   private internalDisplayHistogram = new Map<DisplaySettingsType, number>();
   private externalDisplayHistogram = new Map<DisplaySettingsType, number>();
+  private displayHistogram = new Map<DisplaySettingsType, number>();
 
   // Implement DisplaySettingsProviderInterface.
   observeTabletMode(observer: TabletModeObserverInterface):
@@ -63,14 +64,14 @@ export class FakeDisplaySettingsProvider implements
   // Implement DisplaySettingsProviderInterface.
   recordChangingDisplaySettings(
       type: DisplaySettingsType, value: DisplaySettingsValue) {
+    let histogram: Map<DisplaySettingsType, number>;
     if (value.isInternalDisplay === undefined) {
-      // TODO(zhangwenyu): handle settings that apply to both internal and
-      // external display, such as toggling mirror mode.
-      return;
+      histogram = this.displayHistogram;
+    } else if (value.isInternalDisplay) {
+      histogram = this.internalDisplayHistogram;
+    } else {
+      histogram = this.externalDisplayHistogram;
     }
-
-    const histogram = value.isInternalDisplay ? this.internalDisplayHistogram :
-                                                this.externalDisplayHistogram;
     histogram.set(type, (histogram.get(type) || 0) + 1);
   }
 
@@ -80,5 +81,9 @@ export class FakeDisplaySettingsProvider implements
 
   getExternalDisplayHistogram(): Map<DisplaySettingsType, number> {
     return this.externalDisplayHistogram;
+  }
+
+  getDisplayHistogram(): Map<DisplaySettingsType, number> {
+    return this.displayHistogram;
   }
 }

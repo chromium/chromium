@@ -1,5 +1,5 @@
 include_rules = [
-  "+ios/chrome/browser/net",
+  "+ios/chrome/browser/net/model",
 ]
 
 specific_include_rules = {
@@ -9,7 +9,7 @@ specific_include_rules = {
     "+ios/web/webui/url_data_manager_ios_backend.h"
   ],
   "test_chrome_browser_state.*": [
-    "+ios/chrome/browser/policy",
+    "+ios/chrome/browser/policy/model",
     "+ios/chrome/browser/browser_state/model",
     "+ios/chrome/browser/prefs/model",
     "+ios/chrome/browser/supervised_user/model",

@@ -164,7 +164,7 @@ void LoginManagerMixin::SetUpLocalState() {
     ScopedDictPrefUpdate user_token_update(g_browser_process->local_state(),
                                            "OAuthTokenStatus");
     user_token_update->Set(user.account_id.GetUserEmail(),
-                           static_cast<int>(user.token_status));
+                           static_cast<int>(user.auth_config.token_status));
 
     user_manager::KnownUser known_user(g_browser_process->local_state());
     known_user.UpdateId(user.account_id);

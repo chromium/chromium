@@ -312,6 +312,7 @@ const char kFuseBoxMountNamePrefix[] = "fubomona:";
 
 const char kFuseBoxSubdirPrefixADP[] = "adp.";
 const char kFuseBoxSubdirPrefixFSP[] = "fsp.";
+const char kFuseBoxSubdirPrefixLOC[] = "loc.";
 const char kFuseBoxSubdirPrefixMTP[] = "mtp.";
 const char kFuseBoxSubdirPrefixTMP[] = "tmp.";
 

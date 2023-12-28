@@ -14,7 +14,7 @@ namespace content {
 // ResourceContext contains the relevant context information required for
 // resource loading. It lives on the IO thread, although it is constructed on
 // the UI thread. It must be destructed on the IO thread.
-// TODO(mmenke):  Get rid of this class.
+// TODO(https://crbug.com/908955): Get rid of this class.
 class CONTENT_EXPORT ResourceContext : public base::SupportsUserData {
  public:
   ResourceContext();

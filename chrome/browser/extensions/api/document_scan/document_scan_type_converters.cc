@@ -92,6 +92,29 @@ document_scan::OptionType ConvertForTesting(mojom::OptionType input) {
 }
 
 template <>
+struct TypeConverter<mojom::OptionType, document_scan::OptionType> {
+  static mojom::OptionType Convert(document_scan::OptionType input) {
+    switch (input) {
+      case document_scan::OptionType::kNone:
+      case document_scan::OptionType::kUnknown:
+        return mojom::OptionType::kUnknown;
+      case document_scan::OptionType::kBool:
+        return mojom::OptionType::kBool;
+      case document_scan::OptionType::kInt:
+        return mojom::OptionType::kInt;
+      case document_scan::OptionType::kFixed:
+        return mojom::OptionType::kFixed;
+      case document_scan::OptionType::kString:
+        return mojom::OptionType::kString;
+      case document_scan::OptionType::kButton:
+        return mojom::OptionType::kButton;
+      case document_scan::OptionType::kGroup:
+        return mojom::OptionType::kGroup;
+    }
+  }
+};
+
+template <>
 struct TypeConverter<document_scan::OptionUnit, mojom::OptionUnit> {
   static document_scan::OptionUnit Convert(mojom::OptionUnit input) {
     switch (input) {
@@ -276,6 +299,37 @@ document_scan::ScannerOption::Value ConvertForTesting(  // IN-TEST
 }
 
 template <>
+struct TypeConverter<mojom::OptionValuePtr,
+                     document_scan::OptionSetting::Value> {
+  static mojom::OptionValuePtr Convert(
+      const document_scan::OptionSetting::Value& input) {
+    if (input.as_boolean.has_value()) {
+      return mojom::OptionValue::NewBoolValue(input.as_boolean.value());
+    }
+    if (input.as_integer.has_value()) {
+      return mojom::OptionValue::NewIntValue(input.as_integer.value());
+    }
+    if (input.as_integers.has_value()) {
+      return mojom::OptionValue::NewIntList(
+          {input.as_integers->begin(), input.as_integers->end()});
+    }
+    if (input.as_number.has_value()) {
+      return mojom::OptionValue::NewFixedValue(input.as_number.value());
+    }
+    if (input.as_numbers.has_value()) {
+      return mojom::OptionValue::NewFixedList(
+          {input.as_numbers->begin(), input.as_numbers->end()});
+    }
+    if (input.as_string.has_value()) {
+      return mojom::OptionValue::NewStringValue(input.as_string.value());
+    }
+
+    NOTREACHED();
+    return {};
+  }
+};
+
+template <>
 struct TypeConverter<document_scan::ScannerOption, mojom::ScannerOptionPtr> {
   static document_scan::ScannerOption Convert(
       const mojom::ScannerOptionPtr& input) {
@@ -307,6 +361,18 @@ document_scan::ScannerOption ConvertForTesting(  // IN-TEST
     const mojom::ScannerOptionPtr& input) {
   return input.To<document_scan::ScannerOption>();
 }
+
+template <>
+struct TypeConverter<extensions::api::document_scan::SetOptionResult,
+                     crosapi::mojom::SetOptionResultPtr> {
+  static extensions::api::document_scan::SetOptionResult Convert(
+      const crosapi::mojom::SetOptionResultPtr& input) {
+    document_scan::SetOptionResult output;
+    output.name = input->name;
+    output.result = ConvertTo<document_scan::OperationResult>(input->result);
+    return output;
+  }
+};
 
 crosapi::mojom::ScannerEnumFilterPtr
 TypeConverter<crosapi::mojom::ScannerEnumFilterPtr,
@@ -359,6 +425,28 @@ TypeConverter<extensions::api::document_scan::OpenScannerResponse,
   return output;
 }
 
+extensions::api::document_scan::GetOptionGroupsResponse
+TypeConverter<extensions::api::document_scan::GetOptionGroupsResponse,
+              crosapi::mojom::GetOptionGroupsResponsePtr>::
+    Convert(const crosapi::mojom::GetOptionGroupsResponsePtr& input) {
+  document_scan::GetOptionGroupsResponse output;
+  output.scanner_handle = input->scanner_handle;
+  output.result = ConvertTo<document_scan::OperationResult>(input->result);
+  if (!input->groups.has_value()) {
+    return output;
+  }
+
+  output.groups.emplace();
+  output.groups->reserve(input->groups.value().size());
+  for (const mojom::OptionGroupPtr& group_in : input->groups.value()) {
+    document_scan::OptionGroup& group_out = output.groups->emplace_back();
+    group_out.title = group_in->title;
+    group_out.members = std::vector<std::string>(group_in->members.begin(),
+                                                 group_in->members.end());
+  }
+  return output;
+}
+
 extensions::api::document_scan::CloseScannerResponse
 TypeConverter<extensions::api::document_scan::CloseScannerResponse,
               crosapi::mojom::CloseScannerResponsePtr>::
@@ -366,6 +454,87 @@ TypeConverter<extensions::api::document_scan::CloseScannerResponse,
   document_scan::CloseScannerResponse output;
   output.scanner_handle = input->scanner_handle;
   output.result = ConvertTo<document_scan::OperationResult>(input->result);
+  return output;
+}
+
+mojom::OptionSettingPtr
+TypeConverter<mojom::OptionSettingPtr,
+              extensions::api::document_scan::OptionSetting>::
+    Convert(const extensions::api::document_scan::OptionSetting& input) {
+  auto output = mojom::OptionSetting::New();
+  output->name = input.name;
+  output->type = ConvertTo<mojom::OptionType>(input.type);
+  if (input.value.has_value()) {
+    output->value = mojom::OptionValue::From(input.value.value());
+  }
+  return output;
+}
+
+extensions::api::document_scan::SetOptionsResponse
+TypeConverter<extensions::api::document_scan::SetOptionsResponse,
+              crosapi::mojom::SetOptionsResponsePtr>::
+    Convert(const crosapi::mojom::SetOptionsResponsePtr& input) {
+  document_scan::SetOptionsResponse output;
+  output.scanner_handle = input->scanner_handle;
+  output.results.reserve(input->results.size());
+  for (const auto& result : input->results) {
+    output.results.emplace_back(result.To<document_scan::SetOptionResult>());
+  }
+  if (input->options) {
+    output.options = document_scan::SetOptionsResponse::Options();
+    for (const auto& [name, option] : *input->options) {
+      output.options->additional_properties.Set(
+          name, option.To<document_scan::ScannerOption>().ToValue());
+    }
+  }
+  return output;
+}
+
+crosapi::mojom::StartScanOptionsPtr
+TypeConverter<crosapi::mojom::StartScanOptionsPtr,
+              extensions::api::document_scan::StartScanOptions>::
+    Convert(const extensions::api::document_scan::StartScanOptions& input) {
+  auto output = crosapi::mojom::StartScanOptions::New();
+  output->format = input.format;
+  return output;
+}
+
+extensions::api::document_scan::StartScanResponse
+TypeConverter<extensions::api::document_scan::StartScanResponse,
+              crosapi::mojom::StartPreparedScanResponsePtr>::
+    Convert(const crosapi::mojom::StartPreparedScanResponsePtr& input) {
+  document_scan::StartScanResponse output;
+  output.scanner_handle = input->scanner_handle;
+  output.result = ConvertTo<document_scan::OperationResult>(input->result);
+  if (input->job_handle.has_value()) {
+    output.job = input->job_handle.value();
+  }
+  return output;
+}
+
+extensions::api::document_scan::CancelScanResponse
+TypeConverter<extensions::api::document_scan::CancelScanResponse,
+              crosapi::mojom::CancelScanResponsePtr>::
+    Convert(const crosapi::mojom::CancelScanResponsePtr& input) {
+  document_scan::CancelScanResponse output;
+  output.job = input->job_handle;
+  output.result = ConvertTo<document_scan::OperationResult>(input->result);
+  return output;
+}
+
+extensions::api::document_scan::ReadScanDataResponse
+TypeConverter<extensions::api::document_scan::ReadScanDataResponse,
+              crosapi::mojom::ReadScanDataResponsePtr>::
+    Convert(const crosapi::mojom::ReadScanDataResponsePtr& input) {
+  document_scan::ReadScanDataResponse output;
+  output.job = input->job_handle;
+  output.result = ConvertTo<document_scan::OperationResult>(input->result);
+  if (input->data.has_value()) {
+    output.data.emplace(input->data->begin(), input->data->end());
+  }
+  if (input->estimated_completion.has_value()) {
+    output.estimated_completion = input->estimated_completion.value();
+  }
   return output;
 }
 

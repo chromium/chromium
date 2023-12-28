@@ -785,6 +785,7 @@ class URLLoaderTest : public testing::Test {
 
   void TearDown() override {
     context().set_resource_scheduler_client(nullptr);
+    unowned_test_network_delegate_ = nullptr;
     url_request_context_.reset();
     net::QuicSimpleTestServer::Shutdown();
   }
@@ -1178,7 +1179,7 @@ class URLLoaderTest : public testing::Test {
   net::ScopedTestRoot scoped_test_root_;
   net::EmbeddedTestServer test_server_;
   std::unique_ptr<net::ScopedDefaultHostResolverProc> mock_host_resolver_;
-  raw_ptr<net::TestNetworkDelegate, DanglingUntriaged>
+  raw_ptr<net::TestNetworkDelegate>
       unowned_test_network_delegate_;  // owned by |url_request_context_|
   std::unique_ptr<net::URLRequestContext> url_request_context_;
   URLLoaderContextForTests url_loader_context_for_tests_;
@@ -3412,7 +3413,6 @@ TEST_F(URLLoaderTest, SSLInfoOnRedirectWithCertificateError) {
 
   base::RunLoop delete_run_loop;
   mojo::Remote<mojom::URLLoader> loader;
-  std::unique_ptr<URLLoader> url_loader;
   context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
   context().mutable_factory_params().is_corb_enabled = false;
   auto network_context_client = std::make_unique<TestNetworkContextClient>();
@@ -3425,7 +3425,7 @@ TEST_F(URLLoaderTest, SSLInfoOnRedirectWithCertificateError) {
       mojom::kURLLoadOptionSendSSLInfoForCertificateError;
   url_loader_options.url_loader_network_observer =
       url_loader_network_observer.Bind();
-  url_loader = url_loader_options.MakeURLLoader(
+  std::unique_ptr<URLLoader> url_loader = url_loader_options.MakeURLLoader(
       context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.BindNewPipeAndPassReceiver(), request, client.CreateRemote());
 

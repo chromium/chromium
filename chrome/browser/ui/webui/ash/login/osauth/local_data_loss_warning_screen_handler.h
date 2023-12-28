@@ -23,7 +23,9 @@ class LocalDataLossWarningScreenView
   LocalDataLossWarningScreenView& operator=(
       const LocalDataLossWarningScreenView&) = delete;
 
-  virtual void Show(const std::string& email) = 0;
+  virtual void Show(bool is_owner,
+                    const std::string& email,
+                    bool can_go_back) = 0;
 };
 
 // A class that handles WebUI hooks in Gaia screen.
@@ -43,7 +45,7 @@ class LocalDataLossWarningScreenHandler
   ~LocalDataLossWarningScreenHandler() override;
 
   // LocalDataLossWarningView:
-  void Show(const std::string& email) override;
+  void Show(bool is_owner, const std::string& email, bool can_go_back) override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(::login::LocalizedValuesBuilder* builder) final;

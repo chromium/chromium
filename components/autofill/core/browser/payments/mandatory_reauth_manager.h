@@ -68,7 +68,7 @@ class MandatoryReauthManager {
   // authentication, and will hold the record type of the card that had the most
   // recent non-interactive authentication.
   virtual bool ShouldOfferOptin(
-      absl::optional<CreditCard::RecordType>
+      std::optional<CreditCard::RecordType>
           card_record_type_if_non_interactive_authentication_flow_completed);
 
   // Starts the opt-in flow. This flow includes an opt-in bubble, an

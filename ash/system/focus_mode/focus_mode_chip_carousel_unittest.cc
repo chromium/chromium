@@ -7,6 +7,7 @@
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
+#include "base/i18n/rtl.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/layer.h"
@@ -25,6 +26,9 @@ std::vector<std::string> kTestTaskTitles = {"Preparing for I485 form",
                                             "Podcast interview Script",
                                             "Book a flight to Seoul"};
 
+constexpr int kWidgetWidth = 320;
+constexpr float kGradientWidth = 16;
+
 }  // namespace
 
 namespace ash {
@@ -38,7 +42,7 @@ class FocusModeChipCarouselTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
     widget_ = CreateFramelessTestWidget();
-    widget_->SetBounds(gfx::Rect(/*width=*/320, /*height=*/48));
+    widget_->SetBounds(gfx::Rect(/*width=*/kWidgetWidth, /*height=*/48));
 
     focus_mode_chip_carousel_ = widget_->SetContentsView(
         std::make_unique<FocusModeChipCarousel>(base::DoNothing()));
@@ -185,7 +189,8 @@ TEST_F(FocusModeChipCarouselTest, GradientOnScroll) {
   EXPECT_TRUE(GetRightOverflowIcon()->GetVisible());
 
   // Both overflow icons should be shown on top of the scroll view.
-  EXPECT_EQ(gfx::Size(320, 32), GetScrollView()->GetBoundsInScreen().size());
+  EXPECT_EQ(gfx::Size(kWidgetWidth, 32),
+            GetScrollView()->GetBoundsInScreen().size());
   EXPECT_EQ(gfx::Size(28, 32),
             GetLeftOverflowIcon()->GetBoundsInScreen().size());
   EXPECT_EQ(gfx::Size(28, 32),
@@ -198,6 +203,29 @@ TEST_F(FocusModeChipCarouselTest, GradientOnScroll) {
       GetRightOverflowIcon()->HitTestRect(views::View::ConvertRectToTarget(
           GetScrollContents(), GetRightOverflowIcon(),
           GetScrollView()->GetVisibleRect())));
+}
+
+// Tests that the gradient shows up on the correct side in RTL.
+TEST_F(FocusModeChipCarouselTest, GradientInRTL) {
+  base::i18n::SetRTLForTesting(true);
+
+  auto tasks = MakeTasks(kTestTaskTitles);
+  focus_mode_chip_carousel()->SetTasks(GetTaskPtrs(tasks));
+  views::test::RunScheduledLayout(focus_mode_chip_carousel());
+  EXPECT_TRUE(GetScrollView()->layer()->HasGradientMask());
+
+  // In RTL the carousel starts on the right side, so we can only scroll to the
+  // left and not to the right. Because of this the gradient should only be
+  // shown on the left side.
+  ASSERT_EQ(2u, GetScrollView()->layer()->gradient_mask().step_count());
+  auto steps = GetScrollView()->layer()->gradient_mask().steps();
+  const float allowed_difference = 0.0001f;
+
+  EXPECT_FLOAT_EQ(0.0f, steps.front().fraction);
+  EXPECT_EQ(0u, steps.front().alpha);
+  EXPECT_NEAR(kGradientWidth / kWidgetWidth, steps[1].fraction,
+              allowed_difference);
+  EXPECT_EQ(255u, steps[1].alpha);
 }
 
 }  // namespace ash

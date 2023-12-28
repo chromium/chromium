@@ -4,17 +4,17 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_mediator.h"
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_buttons_delegate.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_top_toolbar.h"
 
 @implementation TabGridToolbarsMediator {
   // Configuration that provides all buttons to display.
   TabGridToolbarsConfiguration* _configuration;
   TabGridToolbarsConfiguration* _previousConfiguration;
-  id<TabGridToolbarsButtonsDelegate> _buttonsDelegate;
+  id<TabGridToolbarsGridDelegate> _buttonsDelegate;
 
   TabGridMode _currentMode;
 
@@ -55,8 +55,7 @@
   [self.topToolbarConsumer setSearchButtonEnabled:_configuration.searchButton];
 }
 
-- (void)setToolbarsButtonsDelegate:
-    (id<TabGridToolbarsButtonsDelegate>)delegate {
+- (void)setToolbarsButtonsDelegate:(id<TabGridToolbarsGridDelegate>)delegate {
   _buttonsDelegate = delegate;
   self.topToolbarConsumer.buttonsDelegate = delegate;
   self.bottomToolbarConsumer.buttonsDelegate = delegate;
@@ -143,7 +142,7 @@
   if (shouldEnableEditButton) {
     ActionFactory* actionFactory = [[ActionFactory alloc]
         initWithScenario:kMenuScenarioHistogramTabGridEdit];
-    __weak id<TabGridToolbarsButtonsDelegate> weakButtonDelegate =
+    __weak id<TabGridToolbarsGridDelegate> weakButtonDelegate =
         _buttonsDelegate;
     NSMutableArray<UIMenuElement*>* menuElements =
         [@[ [actionFactory actionToCloseAllTabsWithBlock:^{

@@ -16,6 +16,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/screen.h"
 
 namespace ash {
 
@@ -78,7 +79,7 @@ TEST_F(QuickSettingsViewTest, CastAndAutoRotateCompactTiles) {
 
   // Test that the cast tile is in its primary form when in clamshell mode,
   // when the auto-rotate tile is not visible.
-  EXPECT_FALSE(tablet_mode_controller->IsInTabletMode());
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
   tray->ShowBubble();
 
   FeatureTile* cast_tile = GetTileById(VIEW_ID_CAST_MAIN_VIEW);
@@ -93,7 +94,7 @@ TEST_F(QuickSettingsViewTest, CastAndAutoRotateCompactTiles) {
 
   // Test that cast and auto-rotate tiles are compact in tablet mode.
   tablet_mode_controller->SetEnabledForTest(true);
-  EXPECT_TRUE(tablet_mode_controller->IsInTabletMode());
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
 
   tray->ShowBubble();
 

@@ -45,7 +45,7 @@ class FrameNodeImpl
   // Construct a frame node associated with a `process_node`, a `page_node` and
   // optionally with a `parent_frame_node`. For the main frame of `page_node`
   // the `parent_frame_node` parameter should be nullptr. For <fencedframe>s,
-  // `fenced_frame_embedder_frame_node` should be set to its outer document,
+  // `outer_document_for_fenced_frame` should be set to its outer document,
   // nullptr otherwise. `render_frame_id` is the routing id of the frame (from
   // RenderFrameHost::GetRoutingID).
   FrameNodeImpl(ProcessNodeImpl* process_node,
@@ -55,7 +55,8 @@ class FrameNodeImpl
                 int render_frame_id,
                 const blink::LocalFrameToken& frame_token,
                 content::BrowsingInstanceId browsing_instance_id,
-                content::SiteInstanceId site_instance_id);
+                content::SiteInstanceId site_instance_id,
+                bool is_current);
 
   FrameNodeImpl(const FrameNodeImpl&) = delete;
   FrameNodeImpl& operator=(const FrameNodeImpl&) = delete;

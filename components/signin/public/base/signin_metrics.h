@@ -192,6 +192,8 @@ enum class AccessPoint : int {
   ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD = 55,
   // Access point for the tab organization UI within the tab search bubble.
   ACCESS_POINT_TAB_ORGANIZATION = 56,
+  // Access point for the Save to Drive feature on iOS.
+  ACCESS_POINT_SAVE_TO_DRIVE_IOS = 57,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in tools/metrics/histograms/enums.xml
@@ -316,9 +318,6 @@ enum class AccountConsistencyPromoAction : int {
 // numeric values should never be reused.
 // Please keep in Sync with "SigninReason" in
 // src/tools/metrics/histograms/enums.xml.
-// A Java counterpart will be generated for this enum.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.metrics
-// GENERATED_JAVA_CLASS_NAME_OVERRIDE: SigninReason
 enum class Reason : int {
   kSigninPrimaryAccount = 0,
   kAddSecondaryAccount = 1,
@@ -479,9 +478,6 @@ void LogSigninAccessPointStarted(AccessPoint access_point,
                                  PromoAction promo_action);
 void LogSigninAccessPointCompleted(AccessPoint access_point,
                                    PromoAction promo_action);
-
-// Tracks the reason of sign in.
-void LogSigninReason(Reason reason);
 
 // Logs sign in offered events and their associated access points.
 // Access points (or features) are responsible for recording this where relevant

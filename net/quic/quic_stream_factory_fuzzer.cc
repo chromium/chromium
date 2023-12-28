@@ -12,7 +12,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/test_completion_callback.h"
-#include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/do_nothing_ct_verifier.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/x509_certificate.h"
@@ -86,7 +85,6 @@ struct FuzzerEnvironment {
   TransportSecurityState transport_security_state;
   quic::QuicTagVector connection_options;
   quic::QuicTagVector client_connection_options;
-  DefaultCTPolicyEnforcer ct_policy_enforcer;
   MockQuicContext quic_context;
 };
 
@@ -144,8 +142,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
           env->net_log.net_log(), host_resolver.get(),
           env->ssl_config_service.get(), &socket_factory,
           &http_server_properties, env->cert_verifier.get(),
-          &env->ct_policy_enforcer, &env->transport_security_state, nullptr,
-          nullptr, &env->crypto_client_stream_factory, &env->quic_context);
+          &env->transport_security_state, nullptr, nullptr,
+          &env->crypto_client_stream_factory, &env->quic_context);
 
   QuicStreamRequest request(factory.get());
   TestCompletionCallback callback;

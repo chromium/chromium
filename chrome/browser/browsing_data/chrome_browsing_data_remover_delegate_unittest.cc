@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
@@ -190,6 +191,7 @@
 #include "chrome/browser/android/customtabs/chrome_origin_verifier.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "chrome/browser/android/webapps/webapp_registry.h"
+#include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "components/feed/buildflags.h"
 #else
 #include "content/public/browser/host_zoom_map.h"
@@ -1086,9 +1088,11 @@ class MockReportingService : public net::ReportingService {
     return nullptr;
   }
 
-  std::vector<const net::ReportingReport*> GetReports() const override {
+  std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>>
+  GetReports() const override {
     NOTREACHED();
-    return std::vector<const net::ReportingReport*>();
+    return std::vector<
+        raw_ptr<const net::ReportingReport, VectorExperimental>>();
   }
 
   base::flat_map<url::Origin, std::vector<net::ReportingEndpoint>>
@@ -4001,6 +4005,9 @@ class ChromeBrowsingDataRemoverDelegateEnabledPasswordsTest
          password_manager::features::
              kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration},
         {});
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        password_manager_android_util::
+            kSkipLocalUpmGmsCoreVersionCheckForTesting);
 #else
     feature_list_.InitAndEnableFeature(
         password_manager::features::kEnablePasswordsAccountStorage);

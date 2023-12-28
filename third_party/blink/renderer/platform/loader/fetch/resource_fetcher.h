@@ -368,8 +368,7 @@ class PLATFORM_EXPORT ResourceFetcher
   bool StartLoad(Resource*,
                  ResourceRequestBody,
                  ImageLoadBlockingPolicy,
-                 RenderBlockingBehavior,
-                 absl::optional<mojom::blink::WebFeature> count_orb_block_as);
+                 RenderBlockingBehavior);
 
   void InitializeRevalidation(ResourceRequest&, Resource*);
   void AddToMemoryCacheIfNeeded(const FetchParameters&, Resource*);

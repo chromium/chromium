@@ -19,8 +19,6 @@
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/iterator.h"
 
-using base::StringPiece;
-
 namespace content {
 
 TransactionalLevelDBTransaction::TransactionalLevelDBTransaction(
@@ -33,23 +31,24 @@ TransactionalLevelDBTransaction::TransactionalLevelDBTransaction(
 
 TransactionalLevelDBTransaction::~TransactionalLevelDBTransaction() = default;
 
-leveldb::Status TransactionalLevelDBTransaction::Put(const StringPiece& key,
-                                                     std::string* value) {
+leveldb::Status TransactionalLevelDBTransaction::Put(
+    const std::string_view& key,
+    std::string* value) {
   leveldb::Status s = scope_->Put(leveldb_env::MakeSlice(key), *value);
   EvictLoadedIterators();
   return s;
 }
 
 leveldb::Status TransactionalLevelDBTransaction::Remove(
-    const StringPiece& key) {
+    const std::string_view& key) {
   leveldb::Status s = scope_->Delete(leveldb_env::MakeSlice(key));
   EvictLoadedIterators();
   return s;
 }
 
 leveldb::Status TransactionalLevelDBTransaction::RemoveRange(
-    const StringPiece& begin,
-    const StringPiece& end,
+    const std::string_view& begin,
+    const std::string_view& end,
     LevelDBScopeDeletionMode deletion_mode) {
   // The renderer-side code always issues range deletions even in the case of
   // single key, so handle that case here to avoid doing sub-optimal range
@@ -66,16 +65,17 @@ leveldb::Status TransactionalLevelDBTransaction::RemoveRange(
   return s;
 }
 
-leveldb::Status TransactionalLevelDBTransaction::Get(const StringPiece& key,
-                                                     std::string* value,
-                                                     bool* found) {
+leveldb::Status TransactionalLevelDBTransaction::Get(
+    const std::string_view& key,
+    std::string* value,
+    bool* found) {
   *found = false;
 #if DCHECK_IS_ON()
   DCHECK(!finished_);
   const std::vector<uint8_t>& prefix = db_->scopes()->metadata_key_prefix();
   DCHECK(!base::StartsWith(
-      key, base::StringPiece(reinterpret_cast<const char*>(prefix.data()),
-                             prefix.size())));
+      key, std::string_view(reinterpret_cast<const char*>(prefix.data()),
+                            prefix.size())));
 #endif
   leveldb::Status s = scope_->WriteChangesAndUndoLog();
   if (!s.ok() && !s.IsNotFound())
@@ -162,14 +162,14 @@ LevelDBDirectTransaction::LevelDBDirectTransaction(
 
 LevelDBDirectTransaction::~LevelDBDirectTransaction() = default;
 
-leveldb::Status LevelDBDirectTransaction::Put(const StringPiece& key,
+leveldb::Status LevelDBDirectTransaction::Put(const std::string_view& key,
                                               const std::string* value) {
   DCHECK(!IsFinished());
   write_batch_->Put(key, *value);
   return leveldb::Status::OK();
 }
 
-leveldb::Status LevelDBDirectTransaction::Get(const StringPiece& key,
+leveldb::Status LevelDBDirectTransaction::Get(const std::string_view& key,
                                               std::string* value,
                                               bool* found) {
   *found = false;
@@ -177,15 +177,15 @@ leveldb::Status LevelDBDirectTransaction::Get(const StringPiece& key,
   DCHECK(!IsFinished());
   const std::vector<uint8_t>& prefix = db_->scopes()->metadata_key_prefix();
   DCHECK(!base::StartsWith(
-      key, base::StringPiece(reinterpret_cast<const char*>(prefix.data()),
-                             prefix.size())));
+      key, std::string_view(reinterpret_cast<const char*>(prefix.data()),
+                            prefix.size())));
 #endif
   leveldb::Status s = db_->Get(key, value, found);
   DCHECK(s.ok() || !*found);
   return s;
 }
 
-void LevelDBDirectTransaction::Remove(const StringPiece& key) {
+void LevelDBDirectTransaction::Remove(const std::string_view& key) {
   DCHECK(!IsFinished());
   write_batch_->Remove(key);
 }

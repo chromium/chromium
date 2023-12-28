@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/autofill_driver.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_manager.h"
 
@@ -25,22 +26,30 @@ class ComposeManagerImpl : public ComposeManager {
   bool ShouldOfferComposePopup(
       const autofill::FormFieldData& trigger_field) override;
   bool HasSavedState(const autofill::FieldGlobalId& trigger_field_id) override;
-  void OpenCompose(UiEntryPoint ui_entry_point,
-                   const autofill::FormFieldData& trigger_field,
-                   std::optional<PopupScreenLocation> popup_screen_location,
-                   ComposeCallback callback) override;
+  void OpenCompose(autofill::AutofillDriver& driver,
+                   autofill::FormGlobalId form_id,
+                   autofill::FieldGlobalId field_id,
+                   UiEntryPoint ui_entry_point) override;
 
   // ComposeManager
-  void OpenComposeFromContextMenu(
-      autofill::AutofillDriver* driver,
-      const autofill::FormRendererId form_renderer_id,
-      const autofill::FieldRendererId field_renderer_id) override;
+  void OpenComposeWithFormFieldData(
+      UiEntryPoint ui_entry_point,
+      const autofill::FormFieldData& trigger_field,
+      std::optional<PopupScreenLocation> popup_screen_location,
+      ComposeCallback callback) override;
 
  private:
   bool IsEnabled() const;
+  void GetBrowserFormHandler(
+      autofill::FieldGlobalId field_id,
+      compose::ComposeManagerImpl::UiEntryPoint ui_entry_point,
+      autofill::AutofillDriver* driver,
+      const std::optional<autofill::FormData>& form_data);
 
   // A raw reference to the client, which owns `this` and therefore outlives it.
   const raw_ref<ComposeClient> client_;
+
+  base::WeakPtrFactory<ComposeManagerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace compose

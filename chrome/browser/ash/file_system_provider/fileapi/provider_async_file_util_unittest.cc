@@ -39,8 +39,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 namespace {
 
 const char kExtensionId[] = "mbflcebpggnecokmikipoihdbecnjfoj";
@@ -552,5 +551,4 @@ TEST_F(FileSystemProviderProviderAsyncFileUtilTest, CreateSnapshotFile) {
   EXPECT_EQ(base::File::FILE_ERROR_INVALID_OPERATION, *logger.result());
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

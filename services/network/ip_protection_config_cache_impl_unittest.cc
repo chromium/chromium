@@ -186,4 +186,43 @@ TEST_F(IpProtectionConfigCacheImplTest, GetProxyListFromManager) {
   EXPECT_EQ(ipp_config_cache_->GetProxyChainList(), proxy_chain_list);
 }
 
+// Token cache manager supports both hostnames and host:port for proxy servers
+// in list.
+TEST_F(IpProtectionConfigCacheImplTest, GetProxyChainList) {
+  const struct {
+    const net::ProxyServer::Scheme scheme;
+    const char* const host;
+    const std::optional<uint16_t> port;
+    const char* const proxy;
+  } tests[] = {
+      {net::ProxyServer::SCHEME_HTTPS, "a-proxy", 443, "a-proxy:443"},
+      {net::ProxyServer::SCHEME_HTTPS, "b-proxy", 443, "b-proxy:443"},
+
+      // No ports.
+      {net::ProxyServer::SCHEME_HTTPS, "a-proxy", absl::nullopt, "a-proxy"},
+      {net::ProxyServer::SCHEME_HTTPS, "b-proxy", absl::nullopt, "b-proxy"},
+
+      // Non-standard port.
+      {net::ProxyServer::SCHEME_HTTPS, "a-proxy", 10, "a-proxy:10"},
+      {net::ProxyServer::SCHEME_HTTPS, "b-proxy", 0, "b-proxy:0"},
+  };
+
+  for (size_t i = 0; i < std::size(tests); ++i) {
+    auto ip_protection_proxy_chain =
+        net::ProxyChain(net::ProxyServer::FromSchemeHostAndPort(
+                            tests[i].scheme, tests[i].host, tests[i].port))
+            .ForIpProtection();
+    const std::vector<net::ProxyChain> proxy_chain_list = {
+        std::move(ip_protection_proxy_chain)};
+    auto ipp_proxy_list_manager_ =
+        std::make_unique<MockIpProtectionProxyListManager>();
+    ipp_proxy_list_manager_->SetProxyList({{tests[i].proxy}});
+    ipp_config_cache_->SetIpProtectionProxyListManagerForTesting(
+        std::move(ipp_proxy_list_manager_));
+
+    ASSERT_TRUE(ipp_config_cache_->IsProxyListAvailable());
+    EXPECT_EQ(ipp_config_cache_->GetProxyChainList(), proxy_chain_list);
+  }
+}
+
 }  // namespace network

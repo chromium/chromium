@@ -848,8 +848,7 @@ def main():
   if sys.platform == 'darwin':
     isysroot = subprocess.check_output(['xcrun', '--show-sdk-path'],
                                        universal_newlines=True).rstrip()
-  else:
-    base_cmake_args += ['-DLLVM_ENABLE_UNWIND_TABLES=OFF']
+  base_cmake_args += ['-DLLVM_ENABLE_UNWIND_TABLES=OFF']
 
   # See https://crbug.com/1302636#c49 - #c56 -- intercepting crypt_r() does not
   # work with the sysroot for not fully understood reasons. Disable it.
@@ -1283,10 +1282,8 @@ def main():
       target_triple = target_arch
       if target_arch == 'arm':
         target_triple = 'armv7'
-      api_level = '19'
-      if target_arch == 'aarch64' or target_arch == 'x86_64':
-        api_level = '21'
-      elif target_arch == 'riscv64':
+      api_level = '21'
+      if target_arch == 'riscv64':
         api_level = '35'
         toolchain_dir = ANDROID_NDK_CANARY_TOOLCHAIN_DIR
       target_triple += '-linux-android' + api_level

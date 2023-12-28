@@ -119,8 +119,7 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
   }
 
   // Not owned.
-  raw_ptr<FrameCaptionButtonContainerView, ExperimentalAsh>
-      caption_button_container_;
+  raw_ptr<FrameCaptionButtonContainerView> caption_button_container_;
 };
 
 class FrameSizeButtonTest : public AshTestBase {
@@ -194,16 +193,12 @@ class FrameSizeButtonTest : public AshTestBase {
 
  private:
   // Not owned.
-  raw_ptr<WindowState, DanglingUntriaged | ExperimentalAsh> window_state_;
-  raw_ptr<views::Widget, DanglingUntriaged | ExperimentalAsh> widget_;
-  raw_ptr<views::FrameCaptionButton, DanglingUntriaged | ExperimentalAsh>
-      minimize_button_;
-  raw_ptr<views::FrameCaptionButton, DanglingUntriaged | ExperimentalAsh>
-      size_button_;
-  raw_ptr<views::FrameCaptionButton, DanglingUntriaged | ExperimentalAsh>
-      close_button_;
-  raw_ptr<TestWidgetDelegate, DanglingUntriaged | ExperimentalAsh>
-      widget_delegate_;
+  raw_ptr<WindowState, DanglingUntriaged> window_state_;
+  raw_ptr<views::Widget, DanglingUntriaged> widget_;
+  raw_ptr<views::FrameCaptionButton, DanglingUntriaged> minimize_button_;
+  raw_ptr<views::FrameCaptionButton, DanglingUntriaged> size_button_;
+  raw_ptr<views::FrameCaptionButton, DanglingUntriaged> close_button_;
+  raw_ptr<TestWidgetDelegate, DanglingUntriaged> widget_delegate_;
   bool resizable_ = true;
 };
 

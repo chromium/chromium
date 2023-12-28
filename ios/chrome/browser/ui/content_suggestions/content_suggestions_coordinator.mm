@@ -27,13 +27,13 @@
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/favicon/large_icon_cache.h"
-#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp_tiles/model/ios_most_visited_sites_factory.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
-#import "ios/chrome/browser/policy/policy_util.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
@@ -70,6 +70,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_delegate.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_image_data_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
@@ -262,6 +263,8 @@
       [[ContentSuggestionsViewController alloc] init];
   self.contentSuggestionsViewController.suggestionCommandHandler =
       self.contentSuggestionsMediator;
+  self.contentSuggestionsViewController.imageDataSource =
+      self.contentSuggestionsMediator;
   self.contentSuggestionsViewController.audience = self;
   self.contentSuggestionsViewController.menuProvider = self;
   self.contentSuggestionsViewController.urlLoadingBrowserAgent =
@@ -274,7 +277,6 @@
   self.contentSuggestionsViewController.parcelTrackingCommandHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(),
                          ParcelTrackingOptInCommands);
-  self.contentSuggestionsViewController.NTPViewDelegate = self.NTPViewDelegate;
 
   self.contentSuggestionsMediator.consumer =
       self.contentSuggestionsViewController;
@@ -356,6 +358,7 @@
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
+    case ContentSuggestionsModuleType::kSetUpListContentNotification:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
       [self.contentSuggestionsMediator disableSetUpList];
       break;

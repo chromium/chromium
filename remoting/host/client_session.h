@@ -125,7 +125,8 @@ class ClientSession : public protocol::HostStub,
                 const DesktopEnvironmentOptions& desktop_environment_options,
                 const base::TimeDelta& max_duration,
                 scoped_refptr<protocol::PairingRegistry> pairing_registry,
-                const std::vector<HostExtension*>& extensions);
+                const std::vector<raw_ptr<HostExtension, VectorExperimental>>&
+                    extensions);
 
   ClientSession(const ClientSession&) = delete;
   ClientSession& operator=(const ClientSession&) = delete;

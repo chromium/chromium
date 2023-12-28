@@ -74,8 +74,16 @@ class CaretDisplayItemClientTest : public PaintAndRasterInvalidationTest {
     return GetCaretDisplayItemClient().previous_layout_block_.Get();
   }
 
+  const PhysicalBoxFragment* CaretBoxFragment() {
+    return GetCaretDisplayItemClient().box_fragment_.Get();
+  }
+
   bool ShouldPaintCursorCaret(const LayoutBlock& block) {
     return Selection().ShouldPaintCaret(block);
+  }
+
+  bool ShouldPaintCursorCaret(const PhysicalBoxFragment& fragment) {
+    return Selection().ShouldPaintCaret(fragment);
   }
 
   Text* AppendTextNode(const String& data) {
@@ -688,6 +696,49 @@ TEST_P(CaretDisplayItemClientTest, CaretAtStartInWhiteSpacePreWrapRTL) {
   const Position& position = Position::FirstPositionInNode(div);
   const PhysicalRect& rect = ComputeCaretRect(PositionWithAffinity(position));
   EXPECT_EQ(94, rect.X());
+}
+
+// https://crbug.com/1499405
+TEST_P(CaretDisplayItemClientTest, CaretAtEdgeOfInlineBlock) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 0; padding: 0; font: 10px/10px Ahem; }"
+      "div#editable { width: 80px; padding: 0px 10px; text-align: center; }"
+      "span { padding: 0px 15px; display: inline-block }");
+  SetBodyContent(
+      "<div id=editable contenteditable>"
+      "<span contenteditable=false>foo</span>"
+      "</div>");
+
+  const Element& editable =
+      *GetDocument().QuerySelector(AtomicString("#editable"));
+  const LayoutBlock* editable_block =
+      To<LayoutBlock>(editable.GetLayoutObject());
+
+  GetDocument().GetPage()->GetFocusController().SetActive(true);
+  GetDocument().GetPage()->GetFocusController().SetFocused(true);
+
+  auto test = [this, editable_block](const Position& position,
+                                     const PhysicalRect& expected_rect) {
+    Selection().SetSelectionAndEndTyping(
+        SelectionInDOMTree::Builder().Collapse(position).Build());
+
+    UpdateAllLifecyclePhasesExceptPaint();
+    EXPECT_FALSE(GetCaretDisplayItemClient().IsValid());
+    UpdateAllLifecyclePhasesForCaretTest();
+
+    EXPECT_TRUE(ShouldPaintCursorCaret(*editable_block));
+    EXPECT_EQ(editable_block, CaretLayoutBlock());
+    EXPECT_EQ(expected_rect, CaretLocalRect());
+
+    DCHECK_EQ(editable_block->PhysicalFragmentCount(), 1u);
+    auto* editable_fragment = editable_block->GetPhysicalFragment(0);
+    EXPECT_TRUE(ShouldPaintCursorCaret(*editable_fragment));
+    EXPECT_EQ(editable_fragment, CaretBoxFragment());
+  };
+
+  test(Position::FirstPositionInNode(editable), PhysicalRect(20, 0, 1, 10));
+  test(Position::LastPositionInNode(editable), PhysicalRect(79, 0, 1, 10));
 }
 
 class ComputeCaretRectTest : public EditingTestBase {

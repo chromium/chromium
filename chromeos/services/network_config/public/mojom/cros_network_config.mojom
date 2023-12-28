@@ -1102,6 +1102,19 @@ struct GlobalPolicy {
   // If true, ChromeOS deletes shared non-managed on some occasions (see
   // //components/onc/docs/onc_spec.md).
   bool user_created_network_configurations_are_ephemeral = false;
+
+  // If set to kAllow, ChromeOS will allow showing text message notifications,
+  // when set to kSuppress, notifications will not be shown, when kUnset
+  // allows configuration by the user. (see //components/onc/docs/onc_spec.md).
+  SuppressionType allow_text_messages = kUnset;
+};
+
+// Type of the allow text messages property, mapped from onc strings. (see
+// components/onc/docs/onc_spec.md)
+enum SuppressionType {
+kUnset,
+kAllow,
+kSuppress,
 };
 
 // VPN providers for type kExtension and kArc are set via SetVpnProviders and

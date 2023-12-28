@@ -27,7 +27,7 @@ import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bun
 /**
  * @polymer
  */
-class HdIronIcon extends PolymerElement {
+export class HdIronIcon extends PolymerElement {
   static get is() {
     return 'hd-iron-icon';
   }

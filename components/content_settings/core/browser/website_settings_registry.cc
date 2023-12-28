@@ -136,7 +136,7 @@ void WebsiteSettingsRegistry::Init() {
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::LOSSY,
            WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE,
            DESKTOP | PLATFORM_ANDROID
-#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
+#if BUILDFLAG(USE_BLINK)
                | PLATFORM_IOS
 #endif
            ,
@@ -146,7 +146,7 @@ void WebsiteSettingsRegistry::Init() {
            WebsiteSettingsInfo::LOSSY,
            WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE,
            DESKTOP | PLATFORM_ANDROID
-#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
+#if BUILDFLAG(USE_BLINK)
                | PLATFORM_IOS
 #endif
            ,
@@ -176,11 +176,16 @@ void WebsiteSettingsRegistry::Init() {
   // Set when an origin is activated for subresource filtering and the
   // associated UI is shown to the user. Cleared when a site is de-activated or
   // the first URL matching the origin is removed from history.
-  Register(
-      ContentSettingsType::ADS_DATA, "subresource-filter-data", base::Value(),
-      WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
-      WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE, DESKTOP | PLATFORM_ANDROID,
-      WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
+  Register(ContentSettingsType::ADS_DATA, "subresource-filter-data",
+           base::Value(), WebsiteSettingsInfo::UNSYNCABLE,
+           WebsiteSettingsInfo::NOT_LOSSY,
+           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
+           DESKTOP | PLATFORM_ANDROID
+#if BUILDFLAG(USE_BLINK)
+               | PLATFORM_IOS
+#endif
+           ,
+           WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
   Register(
       ContentSettingsType::MEDIA_ENGAGEMENT, "media-engagement", base::Value(),
       WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::LOSSY,
@@ -298,6 +303,13 @@ void WebsiteSettingsRegistry::Init() {
            WebsiteSettingsInfo::REQUESTING_SCHEMEFUL_SITE_ONLY_SCOPE,
            DESKTOP | PLATFORM_ANDROID,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
+  Register(ContentSettingsType::SMART_CARD_DATA, "smart-card-data",
+           base::Value(), WebsiteSettingsInfo::UNSYNCABLE,
+           WebsiteSettingsInfo::NOT_LOSSY,
+           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
+           // Add more platforms as implementation progresses.
+           // Target is DESKTOP.
+           PLATFORM_CHROMEOS, WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
 }
 
 }  // namespace content_settings

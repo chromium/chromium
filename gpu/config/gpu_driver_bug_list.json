@@ -3311,6 +3311,18 @@
       "features": [
         "disable_svc_encoding"
       ]
+    },
+    {
+      "id": 425,
+      "cr_bugs": [1512211],
+      "description": "Single component images fail on some embedded Intel GPUs",
+      "os": {
+        "type": "android"
+      },
+      "gl_renderer": ".*HD Graphics 500.*",
+      "features": [
+        "avoid_one_component_egl_images"
+      ]
     }
   ]
 }

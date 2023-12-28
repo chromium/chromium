@@ -1,14 +1,14 @@
     <style>
       :host {
         --cr-drawer-width: 256px;
-        --cr-drawer-border-start-end-radius: 0;
       }
 
       :host dialog {
         --transition-timing: 200ms ease;
         background-color: var(--cr-drawer-background-color, #fff);
         border: none;
-        border-start-end-radius: var(--cr-drawer-border-start-end-radius);
+        border-start-end-radius: var(--cr-drawer-border-start-end-radius, 0);
+        border-end-end-radius: var(--cr-drawer-border-end-end-radius, 0);
         bottom: 0;
         left: calc(-1 * var(--cr-drawer-width));
         margin: 0;
@@ -71,6 +71,7 @@
         display: flex;
         font-size: 123.08%;  /* go to 16px from 13px */
         font-weight: var(--cr-drawer-header-font-weight, inherit);
+        font: var(--cr-drawer-header-font, inherit);
         min-height: 56px;
         padding-inline-start: var(--cr-drawer-header-padding, 24px);
       }

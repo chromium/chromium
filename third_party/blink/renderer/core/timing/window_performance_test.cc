@@ -674,7 +674,7 @@ TEST_P(WindowPerformanceTest, HoldingDownAKey) {
   expected_durations.emplace_back(std::make_pair(6, 6));
   expected_durations.emplace_back(std::make_pair(10, 11));
   for (std::size_t i = 0; i < entries.size(); ++i) {
-    auto* entry = entries[i];
+    auto* entry = entries[i].get();
     GetUkmRecorder()->ExpectEntryMetric(
         entry,
         ukm::builders::Responsiveness_UserInteraction::kMaxEventDurationName,
@@ -755,7 +755,7 @@ TEST_P(WindowPerformanceTest, PressMultipleKeys) {
   expected_durations.emplace_back(std::make_pair(10, 13));
   expected_durations.emplace_back(std::make_pair(15, 20));
   for (std::size_t i = 0; i < entries.size(); ++i) {
-    auto* entry = entries[i];
+    auto* entry = entries[i].get();
     GetUkmRecorder()->ExpectEntryMetric(
         entry,
         ukm::builders::Responsiveness_UserInteraction::kMaxEventDurationName,

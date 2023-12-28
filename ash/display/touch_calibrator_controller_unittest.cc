@@ -142,7 +142,7 @@ class TouchCalibratorControllerTest : public AshTestBase {
     // Get the correct EventTarget for the given |display|.
     aura::Window::Windows root_windows = Shell::GetAllRootWindows();
     ui::EventTarget* event_target = nullptr;
-    for (auto* window : root_windows) {
+    for (aura::Window* window : root_windows) {
       if (display::Screen::GetScreen()->GetDisplayNearestWindow(window).id() ==
           display.id()) {
         event_target = window;

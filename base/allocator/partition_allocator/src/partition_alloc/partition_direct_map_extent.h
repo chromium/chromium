@@ -24,18 +24,18 @@ struct PartitionDirectMapExtent {
   // the allocation.
   size_t padding_for_alignment;
 
-  PA_ALWAYS_INLINE static PartitionDirectMapExtent* FromSlotSpan(
+  PA_ALWAYS_INLINE static PartitionDirectMapExtent* FromSlotSpanMetadata(
       SlotSpanMetadata* slot_span);
 };
 
 // Metadata page for direct-mapped allocations.
 struct PartitionDirectMapMetadata {
-  // |page| and |subsequent_page| are needed to match the layout of normal
-  // buckets (specifically, of single-slot slot spans), with the caveat that
-  // only the first subsequent page is needed (for SubsequentPageMetadata) and
-  // others aren't used for direct map.
-  PartitionPage page;
-  PartitionPage subsequent_page;
+  // |page_metadata| and |second_page_metadata| are needed to match the
+  // layout of normal buckets (specifically, of single-slot slot spans), with
+  // the caveat that only the first subsequent page is needed (for
+  // SubsequentPageMetadata) and others aren't used for direct map.
+  PartitionPageMetadata page_metadata;
+  PartitionPageMetadata second_page_metadata;
   // The following fields are metadata specific to direct map allocations. All
   // these fields will easily fit into the precalculated metadata region,
   // because a direct map allocation starts no further than half way through the
@@ -43,23 +43,23 @@ struct PartitionDirectMapMetadata {
   PartitionBucket bucket;
   PartitionDirectMapExtent direct_map_extent;
 
-  PA_ALWAYS_INLINE static PartitionDirectMapMetadata* FromSlotSpan(
+  PA_ALWAYS_INLINE static PartitionDirectMapMetadata* FromSlotSpanMetadata(
       SlotSpanMetadata* slot_span);
 };
 
 PA_ALWAYS_INLINE PartitionDirectMapMetadata*
-PartitionDirectMapMetadata::FromSlotSpan(SlotSpanMetadata* slot_span) {
+PartitionDirectMapMetadata::FromSlotSpanMetadata(SlotSpanMetadata* slot_span) {
   PA_DCHECK(slot_span->bucket->is_direct_mapped());
   // |*slot_span| is the first field of |PartitionDirectMapMetadata|, just cast.
   auto* metadata = reinterpret_cast<PartitionDirectMapMetadata*>(slot_span);
-  PA_DCHECK(&metadata->page.slot_span_metadata == slot_span);
+  PA_DCHECK(&metadata->page_metadata.slot_span_metadata == slot_span);
   return metadata;
 }
 
 PA_ALWAYS_INLINE PartitionDirectMapExtent*
-PartitionDirectMapExtent::FromSlotSpan(SlotSpanMetadata* slot_span) {
+PartitionDirectMapExtent::FromSlotSpanMetadata(SlotSpanMetadata* slot_span) {
   PA_DCHECK(slot_span->bucket->is_direct_mapped());
-  return &PartitionDirectMapMetadata::FromSlotSpan(slot_span)
+  return &PartitionDirectMapMetadata::FromSlotSpanMetadata(slot_span)
               ->direct_map_extent;
 }
 

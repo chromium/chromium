@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
+#include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/pending_link_preload.h"
 #include "third_party/blink/renderer/core/script/script_element_base.h"
@@ -134,26 +135,90 @@ void RenderBlockingResourceManager::FontPreloadingTimerFired(TimerBase*) {
   document_->RenderBlockingResourceUnblocked();
 }
 
-void RenderBlockingResourceManager::SetMainDocumentParsingIsRenderBlocking(
-    bool blocking) {
-  if (blocked_on_main_document_parsing_ == blocking) {
-    return;
-  }
-
+void RenderBlockingResourceManager::AddPendingParsingElementLink(
+    const AtomicString& id,
+    const HTMLLinkElement* link) {
   if (!RuntimeEnabledFeatures::DocumentRenderBlockingEnabled()) {
     return;
   }
 
-  // render-blocking resources can only be added until the body element is
-  // parsed.
-  if (blocking && document_->body()) {
+  CHECK(link);
+
+  // We can only add resources until the body element is parsed.
+  // Also we need a valid id.
+  if (document_->body() || id.empty()) {
     return;
   }
 
-  blocked_on_main_document_parsing_ = blocking;
-  if (!blocked_on_main_document_parsing_) {
+  auto it = element_render_blocking_links_.find(id);
+  if (it == element_render_blocking_links_.end()) {
+    auto result = element_render_blocking_links_.insert(
+        id,
+        MakeGarbageCollected<HeapHashSet<WeakMember<const HTMLLinkElement>>>());
+    result.stored_value->value->insert(link);
+  } else {
+    it->value->insert(link);
+  }
+  document_->SetHasRenderBlockingExpectLinkElements(true);
+}
+
+void RenderBlockingResourceManager::RemovePendingParsingElement(
+    const AtomicString& id) {
+  if (!RuntimeEnabledFeatures::DocumentRenderBlockingEnabled()) {
+    return;
+  }
+
+  if (element_render_blocking_links_.empty() || id.empty()) {
+    return;
+  }
+
+  element_render_blocking_links_.erase(id);
+  if (element_render_blocking_links_.empty()) {
+    document_->SetHasRenderBlockingExpectLinkElements(false);
     RenderBlockingResourceUnblocked();
   }
+}
+
+void RenderBlockingResourceManager::RemovePendingParsingElementLink(
+    const AtomicString& id,
+    const HTMLLinkElement* link) {
+  if (!RuntimeEnabledFeatures::DocumentRenderBlockingEnabled()) {
+    return;
+  }
+
+  // We don't add empty ids.
+  if (id.empty()) {
+    return;
+  }
+
+  auto it = element_render_blocking_links_.find(id);
+  if (it == element_render_blocking_links_.end()) {
+    return;
+  }
+
+  it->value->erase(link);
+  if (it->value->empty()) {
+    element_render_blocking_links_.erase(it);
+  }
+
+  if (element_render_blocking_links_.empty()) {
+    document_->SetHasRenderBlockingExpectLinkElements(false);
+    RenderBlockingResourceUnblocked();
+  }
+}
+
+void RenderBlockingResourceManager::ClearPendingParsingElements() {
+  if (!RuntimeEnabledFeatures::DocumentRenderBlockingEnabled()) {
+    return;
+  }
+
+  if (element_render_blocking_links_.empty()) {
+    return;
+  }
+
+  document_->SetHasRenderBlockingExpectLinkElements(false);
+  element_render_blocking_links_.clear();
+  RenderBlockingResourceUnblocked();
 }
 
 void RenderBlockingResourceManager::SetFontPreloadTimeoutForTest(
@@ -237,6 +302,7 @@ void RenderBlockingResourceManager::EnsureStartFontPreloadMaxFCPDelayTimer() {
 }
 
 void RenderBlockingResourceManager::Trace(Visitor* visitor) const {
+  visitor->Trace(element_render_blocking_links_);
   visitor->Trace(document_);
   visitor->Trace(pending_stylesheet_owner_nodes_);
   visitor->Trace(pending_scripts_);

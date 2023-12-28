@@ -751,6 +751,7 @@ void AppBannerManager::MediaStoppedPlaying(
 
 void AppBannerManager::WebContentsDestroyed() {
   Terminate();
+  manager_ = nullptr;
 }
 
 void AppBannerManager::OnEngagementEvent(

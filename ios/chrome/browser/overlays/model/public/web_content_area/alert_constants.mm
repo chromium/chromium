@@ -11,3 +11,5 @@ NSString* const kJavaScriptDialogTextFieldAccessibilityIdentifier =
     @"JavaScriptDialogTextFieldAccessibiltyIdentifier";
 NSString* const kPermissionsDialogAccessibilityIdentifier =
     @"PermissionsDialogAccessibilityIdentifier";
+NSString* const kInsecureFormWarningAccessibilityIdentifier =
+    @"InsecureFormWarningAccessibilityIdentifier";

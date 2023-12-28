@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
@@ -46,6 +47,7 @@ ScopedNullExecutionContext MakeExecutionContext(bool has_permission) {
 }
 
 TEST(AttributionReportingToMojomTest, Convert) {
+  test::TaskEnvironment task_environment;
   const struct {
     bool event_source_eligible;
     bool trigger_eligible;

@@ -66,12 +66,12 @@ std::unique_ptr<syncer::MetadataChangeList>
 ContactInfoSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
-      GetAutofillTable(), syncer::CONTACT_INFO,
+      GetSyncMetadataStore(), syncer::CONTACT_INFO,
       base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
                           change_processor()->GetWeakPtr()));
 }
 
-absl::optional<syncer::ModelError> ContactInfoSyncBridge::MergeFullSyncData(
+std::optional<syncer::ModelError> ContactInfoSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   // Since the local storage is cleared when the data type is disabled in
@@ -81,10 +81,10 @@ absl::optional<syncer::ModelError> ContactInfoSyncBridge::MergeFullSyncData(
                                                std::move(entity_data))) {
     return error;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
@@ -134,7 +134,7 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
   if (!entity_changes.empty())
     web_data_backend_->NotifyOnAutofillChangedBySync(syncer::CONTACT_INFO);
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ContactInfoSyncBridge::GetData(StorageKeyList storage_keys,
@@ -273,8 +273,14 @@ bool ContactInfoSyncBridge::SyncMetadataCacheContainsSupportedFields(
   return false;
 }
 
-AutofillTable* ContactInfoSyncBridge::GetAutofillTable() {
-  return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
+AddressAutofillTable* ContactInfoSyncBridge::GetAutofillTable() {
+  return AddressAutofillTable::FromWebDatabase(
+      web_data_backend_->GetDatabase());
+}
+
+AutofillSyncMetadataTable* ContactInfoSyncBridge::GetSyncMetadataStore() {
+  return AutofillSyncMetadataTable::FromWebDatabase(
+      web_data_backend_->GetDatabase());
 }
 
 std::unique_ptr<syncer::MutableDataBatch>
@@ -303,8 +309,8 @@ ContactInfoSyncBridge::GetDataAndFilter(
 
 void ContactInfoSyncBridge::LoadMetadata() {
   auto batch = std::make_unique<syncer::MetadataBatch>();
-  if (!GetAutofillTable()->GetAllSyncMetadata(syncer::CONTACT_INFO,
-                                              batch.get())) {
+  if (!GetSyncMetadataStore()->GetAllSyncMetadata(syncer::CONTACT_INFO,
+                                                  batch.get())) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed reading CONTACT_INFO metadata from WebDatabase."});
     return;
@@ -315,7 +321,8 @@ void ContactInfoSyncBridge::LoadMetadata() {
     // contains supported fields, this means that the browser was updated and
     // we should force the initial sync flow to propagate the cached data into
     // the local model.
-    GetAutofillTable()->DeleteAllSyncMetadata(syncer::ModelType::CONTACT_INFO);
+    GetSyncMetadataStore()->DeleteAllSyncMetadata(
+        syncer::ModelType::CONTACT_INFO);
 
     batch = std::make_unique<syncer::MetadataBatch>();
   }

@@ -141,6 +141,7 @@ component("features") {
     "insertion_ordered_set.h",
     "optimization_guide_constants.cc",
     "optimization_guide_constants.h",
+    "optimization_guide_enums.h",
     "optimization_guide_features.cc",
     "optimization_guide_features.h",
     "optimization_guide_prefs.cc",
@@ -165,8 +166,6 @@ component("features") {
   defines = [ "IS_OPTIMIZATION_GUIDE_FEATURES_IMPL" ]
 }
 
-input_proto_descriptor_file =
-    "$root_gen_dir/components/optimization_guide/proto/compose.descriptor"
 output_proto_descriptors_cc_file = "$root_gen_dir/components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.cc"
 
 static_library("core") {
@@ -197,13 +196,14 @@ static_library("core") {
     "model_quality/model_quality_logs_uploader.h",
     "model_quality/model_quality_logs_uploader_service.cc",
     "model_quality/model_quality_logs_uploader_service.h",
+    "model_quality/model_quality_util.cc",
+    "model_quality/model_quality_util.h",
     "noisy_metrics_recorder.cc",
     "noisy_metrics_recorder.h",
     "optimization_filter.cc",
     "optimization_filter.h",
     "optimization_guide_decider.h",
     "optimization_guide_decision.h",
-    "optimization_guide_enums.h",
     "optimization_guide_logger.cc",
     "optimization_guide_logger.h",
     "optimization_guide_model_executor.h",
@@ -254,6 +254,8 @@ static_library("core") {
       "model_execution/model_execution_util.h",
       "model_execution/on_device_model_access_controller.cc",
       "model_execution/on_device_model_access_controller.h",
+      "model_execution/on_device_model_component.cc",
+      "model_execution/on_device_model_component.h",
       "model_execution/on_device_model_execution_config_interpreter.cc",
       "model_execution/on_device_model_execution_config_interpreter.h",
       "model_execution/on_device_model_execution_proto_descriptors.h",
@@ -263,6 +265,8 @@ static_library("core") {
       "model_execution/on_device_model_service_controller.h",
       "model_execution/optimization_guide_model_execution_error.cc",
       "model_execution/optimization_guide_model_execution_error.h",
+      "model_execution/redactor.cc",
+      "model_execution/redactor.h",
       "model_execution/session_impl.cc",
       "model_execution/session_impl.h",
       "model_execution/settings_enabled_observer.cc",
@@ -336,6 +340,7 @@ static_library("core") {
     deps += [
       ":on_device_model_execution_proto_generator",
       "//components/version_info",
+      "//third_party/re2",
     ]
   }
 
@@ -467,6 +472,7 @@ source_set("unit_tests") {
     "model_handler_unittest.cc",
     "model_quality/model_quality_log_entry_unittest.cc",
     "model_quality/model_quality_logs_uploader_service_unittest.cc",
+    "model_quality/model_quality_util_unittest.cc",
     "model_store_metadata_entry_unittest.cc",
     "model_util_unittest.cc",
     "noisy_metrics_recorder_unittest.cc",
@@ -496,10 +502,14 @@ source_set("unit_tests") {
       "model_execution/model_execution_features_unittest.cc",
       "model_execution/model_execution_fetcher_unittest.cc",
       "model_execution/model_execution_manager_unittest.cc",
+      "model_execution/on_device_model_component_unittest.cc",
       "model_execution/on_device_model_execution_config_interpreter_unittest.cc",
       "model_execution/on_device_model_execution_proto_value_utils_unittest.cc",
       "model_execution/on_device_model_service_controller_unittest.cc",
       "model_execution/optimization_guide_model_execution_error_unittest.cc",
+      "model_execution/redactor_unittest.cc",
+      "model_execution/test_on_device_model_component.cc",
+      "model_execution/test_on_device_model_component.h",
     ]
   }
   if (build_with_tflite_lib) {
@@ -628,18 +638,28 @@ action("on_device_model_execution_proto_generator") {
   script =
       "//components/optimization_guide/tools/gen_on_device_proto_descriptors.py"
 
-  inputs = [ input_proto_descriptor_file ]
+  inputs = [
+    "$root_gen_dir/components/optimization_guide/proto/compose.descriptor",
+    "$root_gen_dir/components/optimization_guide/proto/string_value.descriptor",
+  ]
   outputs = [ output_proto_descriptors_cc_file ]
 
   args = [
-    "--input_file=" + rebase_path(input_proto_descriptor_file, root_build_dir),
     "--output_cc=" +
         rebase_path(output_proto_descriptors_cc_file, root_build_dir),
     "--include=\"components/optimization_guide/proto/features/compose.pb.h\"",
+    "--include=\"components/optimization_guide/proto/string_value.pb.h\"",
   ]
+  foreach(file, inputs) {
+    args += [
+      "--input_file",
+      rebase_path(file, root_build_dir),
+    ]
+  }
 
   deps = [
     "//components/optimization_guide/proto:compose_proto_descriptor",
+    "//components/optimization_guide/proto:string_value_proto_descriptor",
     "//third_party/protobuf:py_proto_runtime",
   ]
 }

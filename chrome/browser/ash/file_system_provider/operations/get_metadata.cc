@@ -17,9 +17,7 @@
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
 
-namespace ash {
-namespace file_system_provider {
-namespace operations {
+namespace ash::file_system_provider::operations {
 namespace {
 
 // Convert |value| into |output|. If parsing fails, then returns false.
@@ -229,6 +227,4 @@ void GetMetadata::OnError(int /* request_id */,
   std::move(callback_).Run(nullptr, error);
 }
 
-}  // namespace operations
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider::operations

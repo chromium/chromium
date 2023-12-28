@@ -44,7 +44,6 @@
 namespace subresource_filter {
 
 // static
-const char SubresourceFilterBrowserTest::kDocumentLoadActivationLevel[];
 const char SubresourceFilterBrowserTest::kSubresourceLoadsTotalForPage[];
 const char SubresourceFilterBrowserTest::kSubresourceLoadsEvaluatedForPage[];
 const char SubresourceFilterBrowserTest::kSubresourceLoadsMatchedRulesForPage[];

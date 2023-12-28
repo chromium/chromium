@@ -5,7 +5,7 @@
 
 import base64
 import collections
-from datetime import timedelta
+from datetime import timedelta, date
 import itertools
 import os
 import posixpath
@@ -52,7 +52,7 @@ def OverFailedBuildThreshold(failed_result_tuple_list: List[ct.ResultTupleType],
   return False
 
 
-def OverFailedBuildByDayThreshold(
+def OverFailedBuildByConsecutiveDayThreshold(
     failed_result_tuple_list: List[ct.ResultTupleType],
     build_fail_consecutive_day_threshold: int) -> bool:
   """Check if the max number of build fail in consecutive date
@@ -86,6 +86,28 @@ def OverFailedBuildByDayThreshold(
       if count >= build_fail_consecutive_day_threshold:
         return True
 
+  return False
+
+
+def FailedBuildWithinRecentDayThreshold(
+    failed_result_tuple_list: List[ct.ResultTupleType],
+    build_fail_recent_day_threshold: int) -> bool:
+  """Check if there are any failed builds within the most
+    recent |build_fail_latest_day_threshold| days.
+
+  Args:
+    failed_result_tuple_list: A list of ct.ResultTupleType failed test result.
+    build_fail_recent_day_threshold: Threshold base on the recent day range
+      that the test caused build fail.
+
+  Returns:
+      Whether the test caused build fail within the recent day.
+  """
+  recent_check_day = date.today() - timedelta(
+      days=build_fail_recent_day_threshold)
+  for test in failed_result_tuple_list:
+    if test.date >= recent_check_day:
+      return True
   return False
 
 
@@ -191,7 +213,8 @@ class ExpectationProcessor():
   def CreateExpectationsForAllResults(
       self, result_map: ct.AggregatedStatusResultsType, group_by_tags: bool,
       include_all_tags: bool, build_fail_total_number_threshold: int,
-      build_fail_consecutive_day_threshold: int) -> None:
+      build_fail_consecutive_day_threshold: int,
+      build_fail_recent_day_threshold: int) -> None:
     """Iterates over |result_map|, selects tests that hit all
        build-fail*-thresholds and adds expectations for their results. Same
        test in all builders that caused build fail must be over all threshold
@@ -215,6 +238,11 @@ class ExpectationProcessor():
           expectations, if the consecutive days that it caused build fail
           are equal to or more than this. All build-fail*-thresholds
           must be hit in order for a test to actually be suppressed.
+      build_fail_recent_day_threshold: How many days worth of recent builds
+          to check for non-hidden failures. A test will be suppressed if
+          it has non-hidden failures within this time span. All
+          build-fail*-thresholds must be hit in order for a test to actually
+          be suppressed.
     """
     for suite, test_map in result_map.items():
       if self.IsSuiteUnsupported(suite):
@@ -225,10 +253,13 @@ class ExpectationProcessor():
         all_results = list(itertools.chain(*tag_map.values()))
         if (not OverFailedBuildThreshold(all_results,
                                          build_fail_total_number_threshold)
-            or not OverFailedBuildByDayThreshold(
+            or not OverFailedBuildByConsecutiveDayThreshold(
                 all_results, build_fail_consecutive_day_threshold)):
           continue
         for typ_tags, result_tuple_list in tag_map.items():
+          if not FailedBuildWithinRecentDayThreshold(
+              result_tuple_list, build_fail_recent_day_threshold):
+            continue
           status = set()
           for test_result in result_tuple_list:
             # Should always add a pass to all flaky web tests in

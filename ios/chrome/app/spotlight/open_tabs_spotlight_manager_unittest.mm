@@ -4,6 +4,7 @@
 
 #import "ios/chrome/app/spotlight/open_tabs_spotlight_manager.h"
 
+#import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
 #import "components/favicon/core/large_icon_service_impl.h"
 #import "components/favicon/core/test/mock_favicon_service.h"
@@ -23,6 +24,8 @@
 #import "third_party/skia/include/core/SkBitmap.h"
 #import "ui/base/test/ios/ui_image_test_utils.h"
 
+using base::test::ios::kWaitForActionTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 using testing::_;
 using ui::test::uiimage_utils::UIImageWithSizeAndSolidColor;
 
@@ -163,6 +166,12 @@ TEST_F(OpenTabsSpotlightManagerTest, TestClearAndReindexOpenTabs) {
       fakeSpotlightInterface_.indexSearchableItemsCallsCount;
 
   [manager_ clearAndReindexOpenTabs];
+
+  // Wait for indexing to complete.
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
+    return fakeSpotlightInterface_.indexSearchableItemsCallsCount ==
+           currentIndexedItemCount + 2;
+  }));
 
   // Current indexed items should be deleted.
   EXPECT_EQ(fakeSpotlightInterface_

@@ -68,6 +68,10 @@ interface MediaMetricsProvider {
   // be reported.
   SetKeySystem(string key_system);
 
+  // Called when the EME playback has been blocked waiting for the CDM to be set
+  // or waiting for decryption key.
+  SetHasWaitingForKey();
+
   // Called when the EME playback uses a hardware secure pipeline.
   SetIsHardwareSecure();
 

@@ -46,7 +46,6 @@ const CountryLocaleMap& GetAllowedCountryToLocaleMap() {
     map[&kCommerceMerchantViewerRegionLaunched] = {{"us", {"en-us"}}};
     map[&kCommercePriceTrackingRegionLaunched] = {{"us", {"en-us"}}};
     map[&kPriceInsightsRegionLaunched] = {{"us", {"en-us"}}};
-    map[&kShowDiscountOnNavigationRegionLaunched] = {{"us", {"en-us"}}};
     map[&kEnableDiscountInfoApiRegionLaunched] = {{"us", {"en-us"}}};
     map[&kShoppingPageTypesRegionLaunched] = {{"us", {"en-us"}}};
     map[&kParcelTrackingRegionLaunched] = {{"us", {"en-us"}}};
@@ -197,28 +196,20 @@ BASE_FEATURE(kPriceTrackingIconColors,
              "PriceTrackingIconColors",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kShoppingIconColorVariant,
+             "ShoppingIconColorVariant",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Discount on navigation
 BASE_FEATURE(kEnableDiscountInfoApi,
              "EnableDiscountInfoApi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kShowDiscountOnNavigation,
-             "ShowDiscountOnNavigation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kShowDiscountOnNavigationRegionLaunched,
-             "ShowDiscountOnNavigationRegionLaunched",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableDiscountInfoApiRegionLaunched,
              "EnableDiscountInfoApiRegionLaunched",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
-BASE_FEATURE(kShowDiscountOnNavigation,
-             "ShowDiscountOnNavigation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kShowDiscountOnNavigationRegionLaunched,
-             "ShowDiscountOnNavigationRegionLaunched",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableDiscountInfoApiRegionLaunched,
              "EnableDiscountInfoApiRegionLaunched",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -259,10 +250,6 @@ BASE_FEATURE(kShoppingListRegionLaunched,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kShoppingListTrackByDefault,
-             "ShoppingListTrackByDefault",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kShoppingPDPMetrics,
              "ShoppingPDPMetrics",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -295,10 +282,6 @@ BASE_FEATURE(kDiscountConsentV2,
 BASE_FEATURE(kCommerceHintAndroid,
              "CommerceHintAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kMerchantWidePromotion,
-             "MerchantWidePromotion",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCodeBasedRBD, "CodeBasedRBD", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -424,11 +407,6 @@ const base::FeatureParam<bool> kContextualConsentShowOnSRP{
 
 const char kCommerceHintAndroidHeuristicsImprovementParam[] =
     "CommerceHintAndroidHeuristicsImprovementParam";
-
-const char kReadyToFetchMerchantWidePromotionParam[] = "ready-to-fetch";
-const base::FeatureParam<bool> kReadyToFetchMerchantWidePromotion{
-    &commerce::kMerchantWidePromotion, kReadyToFetchMerchantWidePromotionParam,
-    true};
 
 const char kCodeBasedRuleDiscountParam[] = "code-based-rbd";
 const base::FeatureParam<bool> kCodeBasedRuleDiscount{

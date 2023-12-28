@@ -62,7 +62,7 @@ class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
  private:
   friend class ButtonOptionsMenuTest;
   friend class EditLabelTest;
-  friend class EditingListTest;
+  friend class OverlayViewTestBase;
 
   void Init();
 

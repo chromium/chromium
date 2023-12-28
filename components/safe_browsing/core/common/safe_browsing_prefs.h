@@ -187,13 +187,6 @@ extern const char kExtensionTelemetryConfig[];
 // Telemetry Service's file processor.
 extern const char kExtensionTelemetryFileData[];
 
-// A boolean indicating if Safe Browsing extension blocklist is allowed by
-// policy. If false, Safe Browsing extension blocklist will be disabled and no
-// ClientCRXListInfoRequest will be sent to Safe Browsing regardless of Safe
-// Browsing Protection Level. If true, follow Safe Browsing Protection Level.
-// This policy does not impact extension blocklist due to Omaha updater.
-extern const char kSafeBrowsingExtensionProtectionAllowedByPolicy[];
-
 // A boolean indicating if hash-prefix real-time lookups are allowed by policy.
 // If false, the lookups will instead be hash-prefix database lookups. If true,
 // there is no such override; the hash-prefix real-time lookups might still not
@@ -328,10 +321,6 @@ bool IsSafeBrowsingPolicyManaged(const PrefService& prefs);
 
 // Return whether the Safe Browsing preference is controlled by an extension.
 bool IsSafeBrowsingExtensionControlled(const PrefService& prefs);
-
-// Returns whether Safe Browsing extension protection is allowed for
-// the user.
-bool IsSafeBrowsingExtensionProtectionAllowed(const PrefService& prefs);
 
 // Returns whether a user can receive HaTS surveys.
 bool IsSafeBrowsingSurveysEnabled(const PrefService& prefs);

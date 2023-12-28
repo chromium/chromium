@@ -44,7 +44,7 @@ class PartialMagnifierControllerTestApi {
   }
 
  private:
-  raw_ptr<PartialMagnifierController, ExperimentalAsh> controller_;
+  raw_ptr<PartialMagnifierController> controller_;
 };
 
 class PartialMagnifierControllerTest : public AshTestBase {

@@ -202,6 +202,6 @@ bool LocationBarBubbleDelegateView::GetCloseOnMainFrameOriginNavigation()
   return close_on_main_frame_origin_navigation_;
 }
 
-BEGIN_METADATA(LocationBarBubbleDelegateView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(LocationBarBubbleDelegateView)
 ADD_READONLY_PROPERTY_METADATA(bool, CloseOnMainFrameOriginNavigation)
 END_METADATA

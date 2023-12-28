@@ -123,7 +123,6 @@ public class TabBookmarker {
                     }
 
                     BookmarkId bookmarkId = bookmarkModel.getUserBookmarkIdForTab(tabToBookmark);
-                    boolean isNewBookmark = bookmarkId == null;
                     BookmarkItem currentBookmarkItem =
                             bookmarkId == null ? null : bookmarkModel.getBookmarkById(bookmarkId);
                     onBookmarkModelLoaded(
@@ -131,8 +130,7 @@ public class TabBookmarker {
                             currentBookmarkItem,
                             bookmarkModel,
                             bookmarkType,
-                            fromExplicitTrackUi,
-                            isNewBookmark);
+                            fromExplicitTrackUi);
                 });
     }
 
@@ -141,16 +139,13 @@ public class TabBookmarker {
             @Nullable final BookmarkItem currentBookmarkItem,
             final BookmarkModel bookmarkModel,
             @BookmarkType int bookmarkType,
-            boolean fromExplicitTrackUi,
-            boolean isNewBookmark) {
+            boolean fromExplicitTrackUi) {
         BookmarkUtils.addOrEditBookmark(
                 currentBookmarkItem,
                 bookmarkModel,
                 tabToBookmark,
-                mSnackbarManagerSupplier.get(),
                 mBottomSheetControllerSupplier.get(),
                 mActivity,
-                mIsCustomTab,
                 bookmarkType,
                 (newBookmarkId) -> {
                     BookmarkId currentBookmarkId =

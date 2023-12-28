@@ -30,7 +30,7 @@ import {QuickViewUma, WayToOpen} from './quick_view_uma.js';
 import {TaskController} from './task_controller.js';
 import {THUMBNAIL_MAX_HEIGHT, THUMBNAIL_MAX_WIDTH} from './thumbnail_loader.js';
 import type {CommandEvent} from './ui/command.js';
-import {FileListSelectionModel} from './ui/file_list_selection_model.js';
+import {FileListSelectionModel, FileListSingleSelectionModel} from './ui/file_list_selection_model.js';
 import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
 import {ListContainer} from './ui/list_container.js';
 import {MultiMenuButton} from './ui/multi_menu_button.js';
@@ -75,7 +75,8 @@ export class QuickViewController {
       selectionMenuButton: MultiMenuButton,
       private quickViewModel_: QuickViewModel,
       private taskController_: TaskController,
-      private fileListSelectionModel_: FileListSelectionModel,
+      private fileListSelectionModel_: FileListSelectionModel|
+      FileListSingleSelectionModel,
       private quickViewUma_: QuickViewUma,
       private metadataBoxController_: MetadataBoxController,
       private dialogType_: DialogType, private volumeManager_: VolumeManager,

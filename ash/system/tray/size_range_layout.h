@@ -103,7 +103,7 @@ class ASH_EXPORT SizeRangeLayout : public views::LayoutManager {
   void ClampSizeToRange(gfx::Size* size) const;
 
   // The host View that this has been installed on.
-  raw_ptr<views::View, ExperimentalAsh> host_ = nullptr;
+  raw_ptr<views::View> host_ = nullptr;
 
   // The layout manager that actually performs the layout.
   std::unique_ptr<views::LayoutManager> layout_manager_;

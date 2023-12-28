@@ -148,16 +148,6 @@ void OnCrosMetricsReportingSettingChange(
     ChangeMetricsReportingStateCalledFrom called_from) {
   bool enable_metrics = ash::StatsReportingController::Get()->IsEnabled();
   ChangeMetricsReportingState(enable_metrics, called_from);
-
-  // TODO(crbug.com/1234538): This call ensures that structured metrics' state
-  // is deleted when the reporting state is disabled. Long-term this should
-  // happen via a call to all MetricsProviders eg. OnClientStateCleared. This is
-  // temporarily called here because it is close to the settings UI, and doesn't
-  // greatly affect the logging in crbug.com/1227585.
-  auto* recorder = metrics::structured::Recorder::GetInstance();
-  if (recorder) {
-    recorder->OnReportingStateChanged(enable_metrics);
-  }
 }
 #endif
 

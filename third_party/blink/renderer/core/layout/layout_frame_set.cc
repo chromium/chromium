@@ -19,11 +19,6 @@ const char* LayoutFrameSet::GetName() const {
   return "LayoutFrameSet";
 }
 
-bool LayoutFrameSet::IsOfType(LayoutObjectType type) const {
-  NOT_DESTROYED();
-  return type == kLayoutObjectFrameSet || LayoutBlock::IsOfType(type);
-}
-
 bool LayoutFrameSet::IsChildAllowed(LayoutObject* child,
                                     const ComputedStyle&) const {
   NOT_DESTROYED();

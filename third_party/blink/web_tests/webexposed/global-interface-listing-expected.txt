@@ -2677,6 +2677,7 @@ interface EventTarget
     method addEventListener
     method constructor
     method dispatchEvent
+    method on
     method removeEventListener
 interface External
     attribute @@toStringTag
@@ -4074,10 +4075,8 @@ interface HTMLHeadingElement : HTMLElement
     setter align
 interface HTMLHtmlElement : HTMLElement
     attribute @@toStringTag
-    getter blocking
     getter version
     method constructor
-    setter blocking
     setter version
 interface HTMLIFrameElement : HTMLElement
     attribute @@toStringTag
@@ -5622,6 +5621,8 @@ interface MLGraphBuilder
     attribute @@toStringTag
     method abs
     method add
+    method argMax
+    method argMin
     method averagePool2d
     method batchNormalization
     method build
@@ -5644,6 +5645,7 @@ interface MLGraphBuilder
     method gather
     method gemm
     method greater
+    method greaterOrEqual
     method hardSwish
     method identity
     method input
@@ -5651,6 +5653,7 @@ interface MLGraphBuilder
     method layerNormalization
     method leakyRelu
     method lesser
+    method lesserOrEqual
     method linear
     method log
     method logicalNot
@@ -5681,6 +5684,7 @@ interface MLGraphBuilder
     method sin
     method slice
     method softmax
+    method softplus
     method softsign
     method split
     method sqrt
@@ -6033,11 +6037,13 @@ interface MediaMetadata
     getter album
     getter artist
     getter artwork
+    getter chapterInfo
     getter title
     method constructor
     setter album
     setter artist
     setter artwork
+    setter chapterInfo
     setter title
 interface MediaQueryList : EventTarget
     attribute @@toStringTag

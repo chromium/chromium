@@ -58,7 +58,6 @@
 #include "services/viz/public/mojom/hit_test/input_target_client.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
-#include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_context.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
@@ -791,6 +790,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   bool IsWheelScrollInProgress() override;
   bool IsAutoscrollInProgress() override;
   void SetMouseCapture(bool capture) override;
+  void SetAutoscrollSelectionActiveInMainFrame(
+      bool autoscroll_selection) override;
   void RequestMouseLock(
       bool from_user_gesture,
       bool unadjusted_movement,
@@ -930,6 +931,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
     return view_is_frame_sink_id_owner_;
   }
 
+  base::TimeTicks create_frame_sink_timestamp() const {
+    return create_frame_sink_timestamp_;
+  }
+
  protected:
   // |routing_id| must not be MSG_ROUTING_NONE.
   // If this object outlives |delegate|, DetachDelegate() must be called when
@@ -964,8 +969,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void OnGestureEventAck(
       const GestureEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
-      blink::mojom::InputEventResultState ack_result,
-      blink::mojom::ScrollResultDataPtr scroll_result_data) override;
+      blink::mojom::InputEventResultState ack_result) override;
 
   // virtual for testing.
   virtual void OnMouseEventAck(const MouseEventWithLatencyInfo& event,
@@ -1092,8 +1096,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       const blink::WebInputEvent& event,
       const ui::LatencyInfo& latency_info) override;
   void IncrementInFlightEventCount() override;
-  void NotifyUISchedulerOfScrollStateUpdate(
-      BrowserUIThreadScheduler::ScrollState scroll_state) override;
+  void NotifyUISchedulerOfGestureEventUpdate(
+      blink::WebInputEvent::Type gesture_event) override;
   void DecrementInFlightEventCount(
       blink::mojom::InputEventResultSource ack_source) override;
   void DidOverscroll(const ui::DidOverscrollParams& params) override;
@@ -1534,6 +1538,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // produce frames associated with `frame_sink_id_` only when it owns that
   // FrameSinkId.
   bool view_is_frame_sink_id_owner_{false};
+
+  // The timestamp of the last call to `MaybeDispatchBufferedFrameSinkRequest()`
+  // where we run `create_frame_sink_callback_`.
+  base::TimeTicks create_frame_sink_timestamp_;
 
   // The View associated with the RenderWidgetHost. The lifetime of this object
   // is associated with the lifetime of the Render process. If the Renderer

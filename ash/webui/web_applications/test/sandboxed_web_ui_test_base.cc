@@ -35,8 +35,17 @@ void HandleTestFileRequestCallback(
 
   base::FilePath source_root;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root);
-  const base::FilePath test_file_path =
+  base::FilePath test_file_path =
       source_root.Append(test_file_location).AppendASCII(path);
+  // First try DIR_SRC_TEST_DATA_ROOT, then generated files.
+  if (!base::PathExists(test_file_path)) {
+    base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &source_root);
+    test_file_path = source_root.Append(test_file_location).AppendASCII(path);
+  }
+  if (!base::PathExists(test_file_path)) {
+    LOG(ERROR) << "Test file not found in source tree or generated files: "
+               << test_file_path;
+  }
 
   std::string contents;
   CHECK(base::ReadFileToString(test_file_path, &contents)) << test_file_path;
@@ -135,7 +144,7 @@ class SandboxedWebUiAppTestBase::TestCodeInjector
   }
 
  private:
-  const raw_ptr<SandboxedWebUiAppTestBase, ExperimentalAsh> owner_;
+  const raw_ptr<SandboxedWebUiAppTestBase> owner_;
 };
 
 SandboxedWebUiAppTestBase::SandboxedWebUiAppTestBase(

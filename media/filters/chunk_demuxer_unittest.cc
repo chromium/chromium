@@ -1002,8 +1002,9 @@ class ChunkDemuxerTest : public ::testing::Test {
   }
 
   DemuxerStream* GetStream(DemuxerStream::Type type) {
-    std::vector<DemuxerStream*> streams = demuxer_->GetAllStreams();
-    for (auto* stream : streams) {
+    std::vector<raw_ptr<DemuxerStream, VectorExperimental>> streams =
+        demuxer_->GetAllStreams();
+    for (media::DemuxerStream* stream : streams) {
       if (stream->type() == type)
         return stream;
     }
@@ -1392,8 +1393,9 @@ TEST_F(ChunkDemuxerTest, Init) {
       EXPECT_FALSE(video_stream);
     }
 
-    for (auto* stream : demuxer_->GetAllStreams())
+    for (media::DemuxerStream* stream : demuxer_->GetAllStreams()) {
       EXPECT_TRUE(stream->SupportsConfigChanges());
+    }
 
     ShutdownDemuxer();
     demuxer_.reset();

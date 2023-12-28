@@ -23,7 +23,8 @@ class BookmarkContextMenuObserver {
  public:
   // Invoked before the specified items are removed from the bookmark model.
   virtual void WillRemoveBookmarks(
-      const std::vector<const bookmarks::BookmarkNode*>& bookmarks) = 0;
+      const std::vector<raw_ptr<const bookmarks::BookmarkNode,
+                                VectorExperimental>>& bookmarks) = 0;
 
   // Invoked after the items have been removed from the model.
   virtual void DidRemoveBookmarks() = 0;
@@ -40,14 +41,14 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
  public:
   // |browser| is used to open bookmarks as well as the bookmark manager, and
   // is NULL in tests.
-  BookmarkContextMenu(
-      views::Widget* parent_widget,
-      Browser* browser,
-      Profile* profile,
-      BookmarkLaunchLocation opened_from,
-      const bookmarks::BookmarkNode* parent,
-      const std::vector<const bookmarks::BookmarkNode*>& selection,
-      bool close_on_remove);
+  BookmarkContextMenu(views::Widget* parent_widget,
+                      Browser* browser,
+                      Profile* profile,
+                      BookmarkLaunchLocation opened_from,
+                      const bookmarks::BookmarkNode* parent,
+                      const std::vector<raw_ptr<const bookmarks::BookmarkNode,
+                                                VectorExperimental>>& selection,
+                      bool close_on_remove);
 
   BookmarkContextMenu(const BookmarkContextMenu&) = delete;
   BookmarkContextMenu& operator=(const BookmarkContextMenu&) = delete;
@@ -81,7 +82,8 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
   void CloseMenu() override;
   void WillExecuteCommand(
       int command_id,
-      const std::vector<const bookmarks::BookmarkNode*>& bookmarks) override;
+      const std::vector<raw_ptr<const bookmarks::BookmarkNode,
+                                VectorExperimental>>& bookmarks) override;
   void DidExecuteCommand(int command_id) override;
 
  private:

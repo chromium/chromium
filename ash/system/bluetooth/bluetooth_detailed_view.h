@@ -97,7 +97,7 @@ class ASH_EXPORT BluetoothDetailedView {
   Delegate* delegate() { return delegate_; }
 
  private:
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
 };
 
 }  // namespace ash

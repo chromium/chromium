@@ -119,6 +119,30 @@ void DocumentScanOpenScannerFunction::OnResponseReceived(
       ArgumentList(api::document_scan::OpenScanner::Results::Create(response)));
 }
 
+DocumentScanGetOptionGroupsFunction::DocumentScanGetOptionGroupsFunction() =
+    default;
+DocumentScanGetOptionGroupsFunction::~DocumentScanGetOptionGroupsFunction() =
+    default;
+
+ExtensionFunction::ResponseAction DocumentScanGetOptionGroupsFunction::Run() {
+  auto params = api::document_scan::GetOptionGroups::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  DocumentScanAPIHandler::Get(browser_context())
+      ->GetOptionGroups(
+          extension_, std::move(params->scanner_handle),
+          base::BindOnce(
+              &DocumentScanGetOptionGroupsFunction::OnResponseReceived, this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void DocumentScanGetOptionGroupsFunction::OnResponseReceived(
+    api::document_scan::GetOptionGroupsResponse response) {
+  Respond(ArgumentList(
+      api::document_scan::GetOptionGroups::Results::Create(response)));
+}
+
 DocumentScanCloseScannerFunction::DocumentScanCloseScannerFunction() = default;
 DocumentScanCloseScannerFunction::~DocumentScanCloseScannerFunction() = default;
 
@@ -139,6 +163,97 @@ void DocumentScanCloseScannerFunction::OnResponseReceived(
     api::document_scan::CloseScannerResponse response) {
   Respond(ArgumentList(
       api::document_scan::CloseScanner::Results::Create(response)));
+}
+
+DocumentScanSetOptionsFunction::DocumentScanSetOptionsFunction() = default;
+DocumentScanSetOptionsFunction::~DocumentScanSetOptionsFunction() = default;
+
+ExtensionFunction::ResponseAction DocumentScanSetOptionsFunction::Run() {
+  auto params = api::document_scan::SetOptions::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  DocumentScanAPIHandler::Get(browser_context())
+      ->SetOptions(
+          extension_, std::move(params->scanner_handle),
+          std::move(params->options),
+          base::BindOnce(&DocumentScanSetOptionsFunction::OnResponseReceived,
+                         this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void DocumentScanSetOptionsFunction::OnResponseReceived(
+    api::document_scan::SetOptionsResponse response) {
+  Respond(
+      ArgumentList(api::document_scan::SetOptions::Results::Create(response)));
+}
+
+DocumentScanStartScanFunction::DocumentScanStartScanFunction() = default;
+DocumentScanStartScanFunction::~DocumentScanStartScanFunction() = default;
+
+ExtensionFunction::ResponseAction DocumentScanStartScanFunction::Run() {
+  auto params = api::document_scan::StartScan::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  DocumentScanAPIHandler::Get(browser_context())
+      ->StartScan(
+          ChromeExtensionFunctionDetails(this).GetNativeWindowForUI(),
+          extension_, std::move(params->scanner_handle),
+          std::move(params->options),
+          base::BindOnce(&DocumentScanStartScanFunction::OnResponseReceived,
+                         this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void DocumentScanStartScanFunction::OnResponseReceived(
+    api::document_scan::StartScanResponse response) {
+  Respond(
+      ArgumentList(api::document_scan::StartScan::Results::Create(response)));
+}
+
+DocumentScanCancelScanFunction::DocumentScanCancelScanFunction() = default;
+DocumentScanCancelScanFunction::~DocumentScanCancelScanFunction() = default;
+
+ExtensionFunction::ResponseAction DocumentScanCancelScanFunction::Run() {
+  auto params = api::document_scan::CancelScan::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  DocumentScanAPIHandler::Get(browser_context())
+      ->CancelScan(
+          extension_, std::move(params->job),
+          base::BindOnce(&DocumentScanCancelScanFunction::OnResponseReceived,
+                         this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void DocumentScanCancelScanFunction::OnResponseReceived(
+    api::document_scan::CancelScanResponse response) {
+  Respond(
+      ArgumentList(api::document_scan::CancelScan::Results::Create(response)));
+}
+
+DocumentScanReadScanDataFunction::DocumentScanReadScanDataFunction() = default;
+DocumentScanReadScanDataFunction::~DocumentScanReadScanDataFunction() = default;
+
+ExtensionFunction::ResponseAction DocumentScanReadScanDataFunction::Run() {
+  auto params = api::document_scan::ReadScanData::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  DocumentScanAPIHandler::Get(browser_context())
+      ->ReadScanData(
+          extension_, std::move(params->job),
+          base::BindOnce(&DocumentScanReadScanDataFunction::OnResponseReceived,
+                         this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void DocumentScanReadScanDataFunction::OnResponseReceived(
+    api::document_scan::ReadScanDataResponse response) {
+  Respond(ArgumentList(
+      api::document_scan::ReadScanData::Results::Create(response)));
 }
 
 }  // namespace extensions

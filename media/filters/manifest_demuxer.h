@@ -9,6 +9,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
@@ -173,7 +174,8 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
   ~ManifestDemuxer() override;
 
   // `media::Demuxer` implementation
-  std::vector<DemuxerStream*> GetAllStreams() override;
+  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> GetAllStreams()
+      override;
   std::string GetDisplayName() const override;
   DemuxerType GetDemuxerType() const override;
   void Initialize(DemuxerHost* host, PipelineStatusCallback status_cb) override;

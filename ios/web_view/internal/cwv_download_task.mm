@@ -12,6 +12,7 @@
 #include "base/task/thread_pool.h"
 #import "ios/web/public/download/download_task.h"
 #include "ios/web/public/download/download_task_observer.h"
+#import "ios/web/public/download/download_task_observer_bridge.h"
 #include "ios/web_view/internal/cwv_web_view_internal.h"
 #include "net/base/mac/url_conversions.h"
 #include "net/base/net_errors.h"
@@ -24,31 +25,12 @@ NSErrorDomain const CWVDownloadErrorDomain =
 NSInteger const CWVDownloadErrorFailed = -100;
 NSInteger const CWVDownloadErrorAborted = -101;
 
-@interface CWVDownloadTask ()
-
-// Called when the download task has started, downloaded a chunk of data or
-// the download has been completed.
-- (void)downloadWasUpdated;
+@interface CWVDownloadTask () <CRWDownloadTaskObserver>
 
 @end
 
-namespace {
-// Bridges C++ observer method calls to Objective-C.
-class DownloadTaskObserverBridge : public web::DownloadTaskObserver {
- public:
-  explicit DownloadTaskObserverBridge(CWVDownloadTask* task) : task_(task) {}
-
-  void OnDownloadUpdated(web::DownloadTask* task) override {
-    [task_ downloadWasUpdated];
-  }
-
- private:
-  __weak CWVDownloadTask* task_ = nil;
-};
-}  // namespace
-
 @implementation CWVDownloadTask {
-  std::unique_ptr<DownloadTaskObserverBridge> _observerBridge;
+  std::unique_ptr<web::DownloadTaskObserverBridge> _observerBridge;
   std::unique_ptr<web::DownloadTask> _internalTask;
 }
 
@@ -84,7 +66,7 @@ class DownloadTaskObserverBridge : public web::DownloadTaskObserver {
     (std::unique_ptr<web::DownloadTask>)internalTask {
   self = [super init];
   if (self) {
-    _observerBridge = std::make_unique<DownloadTaskObserverBridge>(self);
+    _observerBridge = std::make_unique<web::DownloadTaskObserverBridge>(self);
     _internalTask = std::move(internalTask);
     _internalTask->AddObserver(_observerBridge.get());
   }
@@ -103,9 +85,10 @@ class DownloadTaskObserverBridge : public web::DownloadTaskObserver {
   _internalTask->Cancel();
 }
 
-#pragma mark - Private
+#pragma mark - CRWDownloadTaskObserver
 
-- (void)downloadWasUpdated {
+- (void)downloadUpdated:(web::DownloadTask*)task {
+  CHECK_EQ(_internalTask.get(), task);
   switch (_internalTask->GetState()) {
     case web::DownloadTask::State::kInProgress: {
       if ([_delegate
@@ -130,6 +113,8 @@ class DownloadTaskObserverBridge : public web::DownloadTaskObserver {
     }
   }
 }
+
+#pragma mark - Private
 
 - (void)notifyFinishWithErrorCode:(int)errorCode {
   NSError* error = nil;

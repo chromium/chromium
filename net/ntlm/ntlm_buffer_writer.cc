@@ -104,7 +104,7 @@ bool NtlmBufferWriter::WriteAvPair(const AvPair& pair) {
 }
 
 bool NtlmBufferWriter::WriteUtf8String(const std::string& str) {
-  return WriteBytes(base::as_bytes(base::make_span(str)));
+  return WriteBytes(base::as_byte_span(str));
 }
 
 bool NtlmBufferWriter::WriteUtf16AsUtf8String(const std::u16string& str) {

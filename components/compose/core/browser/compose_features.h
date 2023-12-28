@@ -21,6 +21,9 @@ extern const base::FeatureParam<int> kEnableComposeInputMaxChars;
 // The maximum number of bytes allowed for the inner text sent to Compose.
 extern const base::FeatureParam<int> kEnableComposeInnerTextMaxBytes;
 
+// Force compose off even if enabled by other switches..
+BASE_DECLARE_FEATURE(kComposeEligible);
+
 // Controls whether or not the Nudge UI entrypoint is enabled for Compose.
 BASE_DECLARE_FEATURE(kEnableComposeNudge);
 

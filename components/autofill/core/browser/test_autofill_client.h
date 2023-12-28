@@ -67,6 +67,10 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
 #if !BUILDFLAG(IS_IOS)
 #include "components/autofill/core/browser/payments/test_internal_authenticator.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
@@ -300,7 +304,11 @@ class TestAutofillClientTemplate : public T {
 #if BUILDFLAG(IS_ANDROID)
   // Set up a mock to simulate successful mandatory reauth when autofilling
   // payment methods.
-  void SetUpDeviceBiometricAuthenticatorSuccessResponseMock() {
+  void SetUpDeviceBiometricAuthenticatorSuccessOnAutomotive() {
+    if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
+      return;
+    }
+
     payments::MockMandatoryReauthManager& mandatory_reauth_manager =
         *GetOrCreatePaymentsMandatoryReauthManager();
 
@@ -434,8 +442,6 @@ class TestAutofillClientTemplate : public T {
 
   void ScanCreditCard(
       AutofillClient::CreditCardScanCallback callback) override {}
-
-  bool IsTouchToFillCreditCardSupported() override { return false; }
 
   bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
@@ -831,11 +837,11 @@ class TestAutofillClientTemplate : public T {
   AutofillErrorDialogContext autofill_error_dialog_context_;
 
   // Populated if save was offered. True if bubble was shown, false otherwise.
-  absl::optional<bool> offer_to_save_credit_card_bubble_was_shown_;
+  std::optional<bool> offer_to_save_credit_card_bubble_was_shown_;
 
   // Populated if name fix flow was offered. True if bubble was shown, false
   // otherwise.
-  absl::optional<bool> credit_card_name_fix_flow_bubble_was_shown_;
+  std::optional<bool> credit_card_name_fix_flow_bubble_was_shown_;
 
   version_info::Channel channel_for_testing_ = version_info::Channel::UNKNOWN;
 
@@ -853,7 +859,7 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
 
   // Populated if credit card local save or upload was offered.
-  absl::optional<AutofillClient::SaveCreditCardOptions>
+  std::optional<AutofillClient::SaveCreditCardOptions>
       save_credit_card_options_;
 
   // User decision when credit card / CVC local save or upload was offered.

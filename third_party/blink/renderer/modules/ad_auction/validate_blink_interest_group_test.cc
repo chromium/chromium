@@ -16,6 +16,7 @@
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-blink.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -181,6 +182,7 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
   const scoped_refptr<const SecurityOrigin> kAggregationCoordinatorOrigin =
       SecurityOrigin::CreateFromString(
           String::FromUTF8(kAggregationCoordinatorOriginString));
+  test::TaskEnvironment task_environment_;
 };
 
 // Test behavior with an InterestGroup with as few fields populated as allowed.

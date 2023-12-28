@@ -39,7 +39,6 @@ SafeBrowsingLookupMechanismExperimenter::RunChecks(
     std::string url_lookup_service_metric_suffix,
     const GURL& last_committed_url,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
-    UrlRealTimeMechanism::WebUIDelegate* webui_delegate,
     base::WeakPtr<HashRealTimeService> hash_real_time_service_on_ui,
     scoped_refptr<UrlCheckerDelegate> url_checker_delegate,
     const base::RepeatingCallback<content::WebContents*()>&
@@ -48,7 +47,7 @@ SafeBrowsingLookupMechanismExperimenter::RunChecks(
       url, threat_types, request_destination, database_manager,
       /*can_check_db=*/true, can_check_high_confidence_allowlist,
       url_lookup_service_metric_suffix, last_committed_url, ui_task_runner_,
-      url_lookup_service_on_ui, webui_delegate,
+      url_lookup_service_on_ui,
       MechanismExperimentHashDatabaseCache::kUrlRealTimeOnly,
       url_checker_delegate, web_contents_getter);
   auto hash_database_mechanism = std::make_unique<DatabaseManagerMechanism>(

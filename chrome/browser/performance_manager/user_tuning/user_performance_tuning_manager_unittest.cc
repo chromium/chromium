@@ -14,7 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/performance_manager/test_support/fake_high_efficiency_mode_delegate.h"
+#include "chrome/browser/performance_manager/test_support/fake_memory_saver_mode_delegate.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/testing_pref_service.h"
@@ -24,7 +24,7 @@
 namespace performance_manager::user_tuning {
 namespace {
 
-using HighEfficiencyModeState = prefs::HighEfficiencyModeState;
+using MemorySaverModeState = prefs::MemorySaverModeState;
 using ::testing::Bool;
 using ::testing::Combine;
 using ::testing::Optional;
@@ -33,16 +33,16 @@ using ::testing::ValuesIn;
 }  // namespace
 
 struct PrefTestParams {
-  // State to store in the kHighEfficiencyModeState pref.
-  HighEfficiencyModeState pref_state = HighEfficiencyModeState::kDisabled;
+  // State to store in the kMemorySaverModeState pref.
+  MemorySaverModeState pref_state = MemorySaverModeState::kDisabled;
 
-  // Expected state passed to ToggleHighEfficiencyMode().
-  HighEfficiencyModeState expected_state = HighEfficiencyModeState::kDisabled;
+  // Expected state passed to ToggleMemorySaverMode().
+  MemorySaverModeState expected_state = MemorySaverModeState::kDisabled;
 
-  // Expected state passed to ToggleHighEfficiencyMode() when
+  // Expected state passed to ToggleMemorySaverMode() when
   // ForceHeuristicMemorySaver is enabled and not ignored.
-  HighEfficiencyModeState expected_state_with_force =
-      HighEfficiencyModeState::kDisabled;
+  MemorySaverModeState expected_state_with_force =
+      MemorySaverModeState::kDisabled;
 };
 
 class UserPerformanceTuningManagerTest
@@ -55,13 +55,13 @@ class UserPerformanceTuningManagerTest
   }
 
   void RegisterDelegate() {
-    auto fake_high_efficiency_mode_delegate =
-        std::make_unique<FakeHighEfficiencyModeDelegate>();
+    auto fake_memory_saver_mode_delegate =
+        std::make_unique<FakeMemorySaverModeDelegate>();
 
-    high_efficiency_mode_delegate_ = fake_high_efficiency_mode_delegate.get();
+    memory_saver_mode_delegate_ = fake_memory_saver_mode_delegate.get();
 
     manager_.reset(new UserPerformanceTuningManager(
-        &local_state_, nullptr, std::move(fake_high_efficiency_mode_delegate)));
+        &local_state_, nullptr, std::move(fake_memory_saver_mode_delegate)));
   }
 
   void StartManager() { manager()->Start(); }
@@ -74,9 +74,9 @@ class UserPerformanceTuningManagerTest
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
     if (is_multistate_enabled) {
-      enabled_features.push_back(features::kHighEfficiencyMultistateMode);
+      enabled_features.push_back(features::kMemorySaverMultistateMode);
     } else {
-      disabled_features.push_back(features::kHighEfficiencyMultistateMode);
+      disabled_features.push_back(features::kMemorySaverMultistateMode);
     }
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
@@ -90,8 +90,8 @@ class UserPerformanceTuningManagerTest
 
   TestingPrefServiceSimple local_state_;
 
-  raw_ptr<FakeHighEfficiencyModeDelegate, DanglingUntriaged>
-      high_efficiency_mode_delegate_;
+  raw_ptr<FakeMemorySaverModeDelegate, DanglingUntriaged>
+      memory_saver_mode_delegate_;
 
   std::unique_ptr<UserPerformanceTuningManager> manager_;
 
@@ -101,7 +101,7 @@ class UserPerformanceTuningManagerTest
 class MockUserPerformanceTuningManagerObserver
     : public UserPerformanceTuningManager::Observer {
  public:
-  MOCK_METHOD(void, OnHighEfficiencyModeChanged, (), (override));
+  MOCK_METHOD(void, OnMemorySaverModeChanged, (), (override));
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -109,25 +109,24 @@ INSTANTIATE_TEST_SUITE_P(
     UserPerformanceTuningManagerTest,
     ::testing::Values(
         PrefTestParams{
-            .pref_state = HighEfficiencyModeState::kDisabled,
-            .expected_state = HighEfficiencyModeState::kDisabled,
+            .pref_state = MemorySaverModeState::kDisabled,
+            .expected_state = MemorySaverModeState::kDisabled,
         },
         PrefTestParams{
-            .pref_state = HighEfficiencyModeState::kEnabled,
-            .expected_state = HighEfficiencyModeState::kEnabledOnTimer,
+            .pref_state = MemorySaverModeState::kEnabled,
+            .expected_state = MemorySaverModeState::kEnabledOnTimer,
         },
         PrefTestParams{
-            .pref_state = HighEfficiencyModeState::kEnabledOnTimer,
-            .expected_state = HighEfficiencyModeState::kEnabledOnTimer,
+            .pref_state = MemorySaverModeState::kEnabledOnTimer,
+            .expected_state = MemorySaverModeState::kEnabledOnTimer,
         }));
 
 TEST_P(UserPerformanceTuningManagerTest, OnPrefChanged) {
   InstallFeatures();
   RegisterDelegate();
   StartManager();
-  local_state_.SetUserPref(prefs::kHighEfficiencyModeState,
-                           ValueForPrefState());
-  EXPECT_THAT(high_efficiency_mode_delegate_->GetLastState(),
+  local_state_.SetUserPref(prefs::kMemorySaverModeState, ValueForPrefState());
+  EXPECT_THAT(memory_saver_mode_delegate_->GetLastState(),
               Optional(GetParam().expected_state));
 }
 
@@ -136,15 +135,14 @@ TEST_P(UserPerformanceTuningManagerTest, OnPrefChangedMultistate) {
   RegisterDelegate();
   StartManager();
 
-  // When the HighEfficiencyMultistateMode feature is enabled, all states should
-  // be passed to ToggleHighEfficiencyMode() unchanged.
-  local_state_.SetUserPref(prefs::kHighEfficiencyModeState,
-                           ValueForPrefState());
-  EXPECT_THAT(high_efficiency_mode_delegate_->GetLastState(),
+  // When the MemorySaverMultistateMode feature is enabled, all states should
+  // be passed to ToggleMemorySaverMode() unchanged.
+  local_state_.SetUserPref(prefs::kMemorySaverModeState, ValueForPrefState());
+  EXPECT_THAT(memory_saver_mode_delegate_->GetLastState(),
               Optional(GetParam().pref_state));
 }
 
-TEST_F(UserPerformanceTuningManagerTest, HighEfficiencyChangeObserver) {
+TEST_F(UserPerformanceTuningManagerTest, MemorySaverChangeObserver) {
   InstallFeatures();
   RegisterDelegate();
 
@@ -154,14 +152,14 @@ TEST_F(UserPerformanceTuningManagerTest, HighEfficiencyChangeObserver) {
       static_cast<MockUserPerformanceTuningManagerObserver*>(observer.get());
 
   // The observer shouldn't be called on startup.
-  EXPECT_CALL(*mock_observer, OnHighEfficiencyModeChanged).Times(0);
+  EXPECT_CALL(*mock_observer, OnMemorySaverModeChanged).Times(0);
   manager()->AddObserver(observer.get());
   StartManager();
   testing::Mock::VerifyAndClearExpectations(mock_observer);
 
   // The observer should be called on a subsequent pref change.
-  EXPECT_CALL(*mock_observer, OnHighEfficiencyModeChanged).Times(1);
-  manager()->SetHighEfficiencyModeEnabled(false);
+  EXPECT_CALL(*mock_observer, OnMemorySaverModeChanged).Times(1);
+  manager()->SetMemorySaverModeEnabled(false);
 }
 
 }  // namespace performance_manager::user_tuning

@@ -772,8 +772,12 @@ Response PageHandler::ResetNavigationHistory() {
     return response;
 
   NavigationController& controller = host_->frame_tree()->controller();
-  controller.DeleteNavigationEntries(base::BindRepeating(&ReturnTrue));
-  return Response::Success();
+  if (controller.CanPruneAllButLastCommitted()) {
+    controller.DeleteNavigationEntries(base::BindRepeating(&ReturnTrue));
+    return Response::Success();
+  } else {
+    return Response::ServerError("History cannot be pruned");
+  }
 }
 
 void PageHandler::CaptureSnapshot(
@@ -1626,6 +1630,8 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
       NOTREACHED_NORETURN();
     case WebSchedulerTrackedFeature::kSmartCard:
       return Page::BackForwardCacheNotRestoredReasonEnum::SmartCard;
+    case WebSchedulerTrackedFeature::kLiveMediaStreamTrack:
+      return Page::BackForwardCacheNotRestoredReasonEnum::LiveMediaStreamTrack;
   }
 }
 
@@ -1826,6 +1832,7 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kWebTransport:
     case WebSchedulerTrackedFeature::kIndexedDBEvent:
     case WebSchedulerTrackedFeature::kSmartCard:
+    case WebSchedulerTrackedFeature::kLiveMediaStreamTrack:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
     case WebSchedulerTrackedFeature::kPortal:
     case WebSchedulerTrackedFeature::kWebNfc:

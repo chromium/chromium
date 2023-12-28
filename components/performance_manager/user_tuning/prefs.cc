@@ -12,13 +12,12 @@
 namespace performance_manager::user_tuning::prefs {
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(kHighEfficiencyModeEnabled, false);
+  registry->RegisterBooleanPref(kMemorySaverModeEnabled, false);
   registry->RegisterIntegerPref(
-      kHighEfficiencyModeTimeBeforeDiscardInMinutes,
-      kDefaultHighEfficiencyModeTimeBeforeDiscardInMinutes);
+      kMemorySaverModeTimeBeforeDiscardInMinutes,
+      kDefaultMemorySaverModeTimeBeforeDiscardInMinutes);
   registry->RegisterIntegerPref(
-      kHighEfficiencyModeState,
-      static_cast<int>(HighEfficiencyModeState::kDisabled));
+      kMemorySaverModeState, static_cast<int>(MemorySaverModeState::kDisabled));
   registry->RegisterIntegerPref(
       kBatterySaverModeState,
       static_cast<int>(BatterySaverModeState::kEnabledBelowThreshold));
@@ -31,27 +30,26 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(kManagedTabDiscardingExceptions);
 }
 
-HighEfficiencyModeState GetCurrentHighEfficiencyModeState(
-    PrefService* pref_service) {
-  int state = pref_service->GetInteger(kHighEfficiencyModeState);
-  if (state < static_cast<int>(HighEfficiencyModeState::kDisabled) ||
-      state > static_cast<int>(HighEfficiencyModeState::kEnabledOnTimer)) {
-    int disabled_state = static_cast<int>(HighEfficiencyModeState::kDisabled);
-    pref_service->SetInteger(kHighEfficiencyModeState, disabled_state);
+MemorySaverModeState GetCurrentMemorySaverModeState(PrefService* pref_service) {
+  int state = pref_service->GetInteger(kMemorySaverModeState);
+  if (state < static_cast<int>(MemorySaverModeState::kDisabled) ||
+      state > static_cast<int>(MemorySaverModeState::kEnabledOnTimer)) {
+    int disabled_state = static_cast<int>(MemorySaverModeState::kDisabled);
+    pref_service->SetInteger(kMemorySaverModeState, disabled_state);
     state = disabled_state;
   }
 
-  return static_cast<HighEfficiencyModeState>(state);
+  return static_cast<MemorySaverModeState>(state);
 }
 
-base::TimeDelta GetCurrentHighEfficiencyModeTimeBeforeDiscard(
+base::TimeDelta GetCurrentMemorySaverModeTimeBeforeDiscard(
     PrefService* pref_service) {
   int time_before_discard_in_minutes =
-      pref_service->GetInteger(kHighEfficiencyModeTimeBeforeDiscardInMinutes);
+      pref_service->GetInteger(kMemorySaverModeTimeBeforeDiscardInMinutes);
   if (time_before_discard_in_minutes < 0) {
-    pref_service->ClearPref(kHighEfficiencyModeTimeBeforeDiscardInMinutes);
+    pref_service->ClearPref(kMemorySaverModeTimeBeforeDiscardInMinutes);
     time_before_discard_in_minutes =
-        pref_service->GetInteger(kHighEfficiencyModeTimeBeforeDiscardInMinutes);
+        pref_service->GetInteger(kMemorySaverModeTimeBeforeDiscardInMinutes);
   }
 
   return base::Minutes(time_before_discard_in_minutes);
@@ -70,30 +68,30 @@ BatterySaverModeState GetCurrentBatterySaverModeState(
   return static_cast<BatterySaverModeState>(state);
 }
 
-void MigrateHighEfficiencyModePref(PrefService* pref_service) {
+void MigrateMemorySaverModePref(PrefService* pref_service) {
   const PrefService::Preference* state_pref =
-      pref_service->FindPreference(kHighEfficiencyModeState);
+      pref_service->FindPreference(kMemorySaverModeState);
   if (!state_pref->IsDefaultValue()) {
     // The user has changed the new pref, no migration needed. Clear the old
     // pref because it won't be used anymore.
-    pref_service->ClearPref(kHighEfficiencyModeEnabled);
+    pref_service->ClearPref(kMemorySaverModeEnabled);
     return;
   }
 
   const PrefService::Preference* bool_pref =
-      pref_service->FindPreference(kHighEfficiencyModeEnabled);
+      pref_service->FindPreference(kMemorySaverModeEnabled);
 
   bool enabled = bool_pref->GetValue()->GetBool();
   int equivalent_int_pref =
-      enabled ? static_cast<int>(HighEfficiencyModeState::kEnabledOnTimer)
-              : static_cast<int>(HighEfficiencyModeState::kDisabled);
+      enabled ? static_cast<int>(MemorySaverModeState::kEnabledOnTimer)
+              : static_cast<int>(MemorySaverModeState::kDisabled);
   if (!bool_pref->IsDefaultValue()) {
     // The user has changed the old pref, but the new pref is still set to the
     // default value. This means the old pref's state needs to be migrated into
     // the new pref.
-    pref_service->SetInteger(kHighEfficiencyModeState, equivalent_int_pref);
+    pref_service->SetInteger(kMemorySaverModeState, equivalent_int_pref);
     // Clear the old pref because it won't be used anymore.
-    pref_service->ClearPref(kHighEfficiencyModeEnabled);
+    pref_service->ClearPref(kMemorySaverModeEnabled);
   }
 }
 

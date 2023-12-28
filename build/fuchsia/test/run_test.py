@@ -16,7 +16,7 @@ from typing import List
 from common import register_common_args, register_device_args, \
                    register_log_args, resolve_packages
 from compatible_utils import running_unattended
-from ffx_integration import ScopedFfxConfig, test_connection
+from ffx_integration import ScopedFfxConfig
 from flash_device import register_update_args, update
 from isolate_daemon import IsolateDaemon
 from log_manager import LogManager, start_system_log
@@ -28,6 +28,7 @@ from run_telemetry_test import TelemetryTestRunner
 from run_webpage_test import WebpageTestRunner
 from serve_repo import register_serve_args, serve_repository
 from start_emulator import create_emulator_from_args, register_emulator_args
+from test_connection import test_connection, test_device_connection
 from test_runner import TestRunner
 
 
@@ -115,11 +116,14 @@ def main():
         if runner_args.device:
             update(runner_args.system_image_dir, runner_args.os_check,
                    runner_args.target_id, runner_args.serial_num)
+            # Try to reboot the device if necessary since the ffx may ignore the
+            # device state after the flash. See
+            # https://cs.opensource.google/fuchsia/fuchsia/+/main:src/developer/ffx/lib/fastboot/src/common/fastboot.rs;drc=cfba0bdd4f8857adb6409f8ae9e35af52c0da93e;l=454
+            test_device_connection(runner_args.target_id)
         else:
             runner_args.target_id = stack.enter_context(
                 create_emulator_from_args(runner_args))
-
-        test_connection(runner_args.target_id)
+            test_connection(runner_args.target_id)
 
         test_runner = _get_test_runner(runner_args, test_args)
         package_deps = test_runner.package_deps

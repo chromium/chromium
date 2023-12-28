@@ -217,6 +217,10 @@ enum OptimizationType {
   CAPITAL_ONE_CREDIT_CARD_GROCERY_BENEFITS = 44;
   CAPITAL_ONE_CREDIT_CARD_ENTERTAINMENT_BENEFITS = 45;
   CAPITAL_ONE_CREDIT_CARD_STREAMING_BENEFITS = 46;
+  // The below optimizations provide information about merchant URLs that only
+  // American Express supports for credit card category benefits.
+  AMERICAN_EXPRESS_CREDIT_CARD_FLIGHT_BENEFITS = 47;
+  AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS = 48;
 }
 
 // Presents semantics for how page load URLs should be matched.

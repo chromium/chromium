@@ -72,8 +72,8 @@ class ASH_EXPORT GesturePropertiesServiceProvider
   ui::ozone::mojom::GesturePropertiesService* GetService();
 
   mojo::Remote<ui::ozone::mojom::GesturePropertiesService> service_;
-  raw_ptr<ui::ozone::mojom::GesturePropertiesService, ExperimentalAsh>
-      service_for_test_ = nullptr;
+  raw_ptr<ui::ozone::mojom::GesturePropertiesService> service_for_test_ =
+      nullptr;
 
   base::WeakPtrFactory<GesturePropertiesServiceProvider> weak_ptr_factory_;
 };

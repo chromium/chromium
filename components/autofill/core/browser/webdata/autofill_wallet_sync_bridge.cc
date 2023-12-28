@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -17,9 +18,10 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/sync/base/hash_util.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -69,7 +71,7 @@ std::unique_ptr<EntityData> CreateEntityDataFromCard(const CreditCard& card,
                                                      bool enforce_utf8) {
   auto entity_data = std::make_unique<EntityData>();
   entity_data->name =
-      "Server card " + GetBase64EncodedId(GetClientTagFromCreditCard(card));
+      "Server card " + base::Base64Encode(GetClientTagFromCreditCard(card));
 
   AutofillWalletSpecifics* wallet_specifics =
       entity_data->specifics.mutable_autofill_wallet();
@@ -85,7 +87,7 @@ std::unique_ptr<EntityData> CreateEntityDataFromPaymentsCustomerData(
   auto entity_data = std::make_unique<EntityData>();
   entity_data->name =
       "Payments customer data " +
-      GetBase64EncodedId(GetClientTagFromPaymentsCustomerData(customer_data));
+      base::Base64Encode(GetClientTagFromPaymentsCustomerData(customer_data));
 
   AutofillWalletSpecifics* wallet_specifics =
       entity_data->specifics.mutable_autofill_wallet();
@@ -104,7 +106,7 @@ std::unique_ptr<EntityData> CreateEntityDataFromCreditCardCloudTokenData(
   auto entity_data = std::make_unique<EntityData>();
   entity_data->name =
       "Server card cloud token data " +
-      GetBase64EncodedId(
+      base::Base64Encode(
           GetClientTagFromCreditCardCloudTokenData(cloud_token_data));
 
   AutofillWalletSpecifics* wallet_specifics =
@@ -119,7 +121,7 @@ std::unique_ptr<EntityData> CreateEntityDataFromIban(const Iban& iban,
                                                      bool enforce_utf8) {
   auto entity_data = std::make_unique<EntityData>();
   entity_data->name =
-      "Server IBAN " + GetBase64EncodedId(GetClientTagFromIban(iban));
+      "Server IBAN " + base::Base64Encode(GetClientTagFromIban(iban));
 
   AutofillWalletSpecifics* wallet_specifics =
       entity_data->specifics.mutable_autofill_wallet();
@@ -170,31 +172,31 @@ std::unique_ptr<syncer::MetadataChangeList>
 AutofillWalletSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
-      GetAutofillTable(), syncer::AUTOFILL_WALLET_DATA,
+      GetSyncMetadataStore(), syncer::AUTOFILL_WALLET_DATA,
       base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
                           change_processor()->GetWeakPtr()));
 }
 
-absl::optional<syncer::ModelError> AutofillWalletSyncBridge::MergeFullSyncData(
+std::optional<syncer::ModelError> AutofillWalletSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   // We want to notify the metadata bridge about all changes so that the
   // metadata bridge can track changes in the data bridge and react accordingly.
   SetSyncData(entity_data, /*notify_webdata_backend=*/true);
 
-  // TODO(crbug.com/853688): Update the AutofillTable API to know about write
-  // errors and report them here.
-  return absl::nullopt;
+  // TODO(crbug.com/853688): Update the PaymentsAutofillTable API to know about
+  // write errors and report them here.
+  return std::nullopt;
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 AutofillWalletSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   // This bridge does not support incremental updates, so whenever this is
   // called, the change list should be empty.
   DCHECK(entity_data.empty()) << "Received an unsupported incremental update.";
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void AutofillWalletSyncBridge::GetData(StorageKeyList storage_keys,
@@ -332,7 +334,7 @@ bool AutofillWalletSyncBridge::SetWalletCards(
   // Wallet CVC data is decoupled from the Wallet card data, so if
   // CVC data is present on the locally saved server card, copy that onto
   // `wallet_cards` to prevent deletion of CVC data.
-  AutofillTable* table = GetAutofillTable();
+  PaymentsAutofillTable* table = GetAutofillTable();
   CopyRelevantWalletMetadataAndCvc(*table, &wallet_cards);
 
   std::vector<std::unique_ptr<CreditCard>> existing_cards;
@@ -379,7 +381,7 @@ bool AutofillWalletSyncBridge::SetWalletCards(
 
 bool AutofillWalletSyncBridge::SetWalletIbans(std::vector<Iban> wallet_ibans,
                                               bool notify_webdata_backend) {
-  AutofillTable* table = GetAutofillTable();
+  PaymentsAutofillTable* table = GetAutofillTable();
 
   std::vector<std::unique_ptr<Iban>> existing_ibans;
   if (!table->GetServerIbans(existing_ibans)) {
@@ -419,7 +421,7 @@ bool AutofillWalletSyncBridge::SetWalletIbans(std::vector<Iban> wallet_ibans,
 
 bool AutofillWalletSyncBridge::SetPaymentsCustomerData(
     std::vector<PaymentsCustomerData> customer_data) {
-  AutofillTable* table = GetAutofillTable();
+  PaymentsAutofillTable* table = GetAutofillTable();
   std::unique_ptr<PaymentsCustomerData> existing_entry;
   table->GetPaymentsCustomerData(existing_entry);
 
@@ -449,7 +451,7 @@ bool AutofillWalletSyncBridge::SetPaymentsCustomerData(
 
 bool AutofillWalletSyncBridge::SetCreditCardCloudTokenData(
     const std::vector<CreditCardCloudTokenData>& cloud_token_data) {
-  AutofillTable* table = GetAutofillTable();
+  PaymentsAutofillTable* table = GetAutofillTable();
   std::vector<std::unique_ptr<CreditCardCloudTokenData>> existing_data;
   table->GetCreditCardCloudTokenData(existing_data);
 
@@ -460,21 +462,27 @@ bool AutofillWalletSyncBridge::SetCreditCardCloudTokenData(
   return false;
 }
 
-AutofillTable* AutofillWalletSyncBridge::GetAutofillTable() {
-  return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
+PaymentsAutofillTable* AutofillWalletSyncBridge::GetAutofillTable() {
+  return PaymentsAutofillTable::FromWebDatabase(
+      web_data_backend_->GetDatabase());
+}
+
+AutofillSyncMetadataTable* AutofillWalletSyncBridge::GetSyncMetadataStore() {
+  return AutofillSyncMetadataTable::FromWebDatabase(
+      web_data_backend_->GetDatabase());
 }
 
 void AutofillWalletSyncBridge::LoadMetadata() {
   if (!web_data_backend_ || !web_data_backend_->GetDatabase() ||
-      !GetAutofillTable()) {
+      !GetAutofillTable() || !GetSyncMetadataStore()) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load AutofillWebDatabase."});
     return;
   }
 
   auto batch = std::make_unique<syncer::MetadataBatch>();
-  if (!GetAutofillTable()->GetAllSyncMetadata(syncer::AUTOFILL_WALLET_DATA,
-                                              batch.get())) {
+  if (!GetSyncMetadataStore()->GetAllSyncMetadata(syncer::AUTOFILL_WALLET_DATA,
+                                                  batch.get())) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed reading autofill metadata from WebDatabase."});
     return;

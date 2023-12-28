@@ -12,18 +12,16 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/ash/services/federated/public/cpp/fake_service_connection.h"
-#include "chromeos/ash/services/federated/public/cpp/service_connection.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::federated {
 
+// Fake federated service connection is prepared by AshTestHelper.
 class FederatedServiceControllerImplTestBase : public NoSessionAshTestBase {
  public:
   FederatedServiceControllerImplTestBase()
       : NoSessionAshTestBase(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        scoped_fake_service_connection_for_test_(&fake_service_connection_) {
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kFederatedService,
                               features::kFederatedServiceScheduleTasks},
@@ -44,13 +42,11 @@ class FederatedServiceControllerImplTestBase : public NoSessionAshTestBase {
   }
 
  protected:
-  raw_ptr<FederatedServiceControllerImpl, DanglingUntriaged | ExperimentalAsh>
-      controller_ = nullptr;
+  raw_ptr<FederatedServiceControllerImpl, DanglingUntriaged> controller_ =
+      nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  FakeServiceConnectionImpl fake_service_connection_;
-  ScopedFakeServiceConnectionForTest scoped_fake_service_connection_for_test_;
 };
 
 TEST_F(FederatedServiceControllerImplTestBase, NormalUserLogin) {

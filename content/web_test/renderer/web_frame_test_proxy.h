@@ -80,7 +80,6 @@ class WebFrameTestProxy : public RenderFrameImpl,
                        ForRedirect for_redirect) override;
   void BeginNavigation(std::unique_ptr<blink::WebNavigationInfo> info) override;
   void PostAccessibilityEvent(const ui::AXEvent& event) override;
-  void NotifyWebAXObjectMarkedDirty(const blink::WebAXObject& object) override;
   void CheckIfAudioSinkExistsAndIsAuthorized(
       const blink::WebString& sink_id,
       blink::WebSetSinkIdCompleteCallback completion_callback) override;

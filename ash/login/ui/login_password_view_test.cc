@@ -65,8 +65,7 @@ class LoginPasswordViewTest : public LoginTestBase {
     is_password_field_empty_ = is_empty;
   }
 
-  raw_ptr<LoginPasswordView, DanglingUntriaged | ExperimentalAsh> view_ =
-      nullptr;
+  raw_ptr<LoginPasswordView, DanglingUntriaged> view_ = nullptr;
   std::optional<std::u16string> password_;
   bool is_password_field_empty_ = true;
   std::unique_ptr<LoginScreenArrowNavigationDelegate>

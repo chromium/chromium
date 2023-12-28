@@ -54,7 +54,7 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
   };
 
   // |cache| and |entry| must outlive this object.
-  Writers(HttpCache* cache, HttpCache::ActiveEntry* entry);
+  Writers(HttpCache* cache, scoped_refptr<HttpCache::ActiveEntry> entry);
 
   Writers(const Writers&) = delete;
   Writers& operator=(const Writers&) = delete;
@@ -236,7 +236,7 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
   raw_ptr<HttpCache> const cache_ = nullptr;
 
   // Owner of |this|.
-  raw_ptr<ActiveEntry, DanglingUntriaged> const entry_ = nullptr;
+  scoped_refptr<HttpCache::ActiveEntry> entry_;
 
   std::unique_ptr<HttpTransaction> network_transaction_;
 

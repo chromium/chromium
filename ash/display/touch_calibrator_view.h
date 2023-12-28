@@ -132,9 +132,9 @@ class ASH_EXPORT TouchCalibratorView : public views::View,
   gfx::RectF background_rect_;
 
   // Text label indicating how to exit the touch calibration.
-  raw_ptr<views::Label, ExperimentalAsh> exit_label_ = nullptr;
+  raw_ptr<views::Label> exit_label_ = nullptr;
   // Text label indicating the significance of the touch point on screen.
-  raw_ptr<views::Label, ExperimentalAsh> tap_label_ = nullptr;
+  raw_ptr<views::Label> tap_label_ = nullptr;
 
   // Start and end opacity values used during the fade animation. This is set
   // before the animation begins.
@@ -147,18 +147,18 @@ class ASH_EXPORT TouchCalibratorView : public views::View,
 
   // View responsible for displaying the animated circular icon that the user
   // touches to calibrate the screen.
-  raw_ptr<CircularThrobberView, ExperimentalAsh> throbber_circle_ = nullptr;
+  raw_ptr<CircularThrobberView> throbber_circle_ = nullptr;
 
   // A hint box displayed next to the first touch point to assist user with
   // information about the next step.
-  raw_ptr<HintBox, ExperimentalAsh> hint_box_view_ = nullptr;
+  raw_ptr<HintBox> hint_box_view_ = nullptr;
 
   // Final view containing the calibration complete message along with an icon.
-  raw_ptr<views::View, ExperimentalAsh> completion_message_view_ = nullptr;
+  raw_ptr<views::View> completion_message_view_ = nullptr;
 
   // View that contains the animated throbber circle and a text label informing
   // the user to tap the circle to continue calibration.
-  raw_ptr<views::View, ExperimentalAsh> touch_point_view_ = nullptr;
+  raw_ptr<views::View> touch_point_view_ = nullptr;
 
   State state_ = UNKNOWN;
 };

@@ -71,10 +71,10 @@ class ToggleEffectsButton : public views::Button {
   const VcEffectId effect_id_;
 
   // Owned by the views hierarchy.
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
 
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> vector_icon_;
+  raw_ptr<const gfx::VectorIcon> vector_icon_;
   const int accessible_name_id_;
 
   raw_ptr<views::FlexLayout> layout_ = nullptr;

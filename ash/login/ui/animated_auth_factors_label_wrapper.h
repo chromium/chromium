@@ -49,8 +49,8 @@ class ASH_EXPORT AnimatedAuthFactorsLabelWrapper : public views::View {
   // a non-accessible label that replaces |current_label_| at the start of the
   // animation so that |previous_label_| can fade out while |current_label_|
   // fades in.
-  raw_ptr<views::Label, ExperimentalAsh> previous_label_;
-  raw_ptr<views::Label, ExperimentalAsh> current_label_;
+  raw_ptr<views::Label> previous_label_;
+  raw_ptr<views::Label> current_label_;
 };
 
 }  // namespace ash

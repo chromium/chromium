@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/ml/ml_model_loader.h"
+
 #include "components/ml/mojom/web_platform_model.mojom-blink.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,6 +28,7 @@
 #include "third_party/blink/renderer/modules/ml/ml_model_loader_test_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -185,6 +187,7 @@ class MLModelLoaderTest : public testing::Test {
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   FakeMLService service_;
   FakeMLModelLoader loader_;
   FakeMLModel model_;

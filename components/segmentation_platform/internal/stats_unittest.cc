@@ -302,11 +302,13 @@ TEST_F(StatsTest, RecordModelExecutionResult) {
 
   // Test default case of multiplying result by 100.
   stats::RecordModelExecutionResult(
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES, 0.19,
-      proto::SegmentationModelMetadata::RETURN_TYPE_PROBABILITY);
-  EXPECT_EQ(1,
-            tester.GetBucketCount(
-                "SegmentationPlatform.ModelExecution.Result.QueryTiles", 19));
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT,
+      0.19, proto::SegmentationModelMetadata::RETURN_TYPE_PROBABILITY);
+  EXPECT_EQ(
+      1,
+      tester.GetBucketCount(
+          "SegmentationPlatform.ModelExecution.Result.ChromeLowUserEngagement",
+          19));
 
   // Test segments that uses rank as scores, which should be recorded as-is.
   stats::RecordModelExecutionResult(
@@ -382,7 +384,9 @@ class BackgroundRecorderTest : public testing::Test {
   base::test::TaskEnvironment task_env_;
 };
 
-TEST_F(BackgroundRecorderTest, Blah) {
+// TODO(ssid): This test may cause delay in the test framework, fix and re-enable the test.
+// Tracking: b/299529800.
+TEST_F(BackgroundRecorderTest, DISABLED_Recording) {
   BackgroundUmaRecorder& recorder = BackgroundUmaRecorder::GetInstance();
   recorder.InitializeForTesting(task_env_.GetMainThreadTaskRunner());
   int counter = 0;

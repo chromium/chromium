@@ -121,7 +121,7 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   // unsubscribe, which can be `is_null()` if the subscribe was not successful.
   // Exactly one of |render_process_host| and |render_frame_host| should be
   // set, RenderProcessHost will be inferred from |render_frame_host|.
-  virtual SubscriptionId SubscribePermissionStatusChange(
+  virtual SubscriptionId SubscribeToPermissionStatusChange(
       blink::PermissionType permission,
       content::RenderProcessHost* render_process_host,
       content::RenderFrameHost* render_frame_host,
@@ -130,9 +130,9 @@ class CONTENT_EXPORT PermissionControllerDelegate {
 
   // Unregisters from permission status change notifications. The
   // |subscription_id| must match the value returned by the
-  // SubscribePermissionStatusChange call. Unsubscribing an already
+  // SubscribeToPermissionStatusChange call. Unsubscribing an already
   // unsubscribed |subscription_id| or an `is_null()` ID is a no-op.
-  virtual void UnsubscribePermissionStatusChange(
+  virtual void UnsubscribeFromPermissionStatusChange(
       SubscriptionId subscription_id) = 0;
 
   // If there's currently a permission UI presenting for the given WebContents,

@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -69,13 +70,11 @@ namespace {
 // recurses one level deep, not infinitely.  TODO(pkasting): It's not clear why
 // this shouldn't just recurse infinitely.
 std::vector<UrlAndId> GetURLsToOpen(
-    const std::vector<const BookmarkNode*>& nodes,
+    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes,
     content::BrowserContext* browser_context = nullptr,
     bool incognito_urls_only = false) {
   std::vector<UrlAndId> url_and_ids;
-  const auto AddUrlIfLegal = [browser_context, incognito_urls_only,
-                              &url_and_ids](const GURL& url,
-                                            const base::Uuid& id) {
+  const auto AddUrlIfLegal = [&](const GURL url, int64_t id) {
     if (!incognito_urls_only || IsURLAllowedInIncognito(url, browser_context)) {
       UrlAndId url_and_id;
       url_and_id.url = url;
@@ -85,13 +84,13 @@ std::vector<UrlAndId> GetURLsToOpen(
   };
   for (const BookmarkNode* node : nodes) {
     if (node->is_url()) {
-      AddUrlIfLegal(node->url(), node->uuid());
+      AddUrlIfLegal(node->url(), node->id());
     } else {
       // If the node is not a URL, it is a folder. We want to add those of its
       // children which are URLs.
       for (const auto& child : node->children()) {
         if (child->is_url())
-          AddUrlIfLegal(child->url(), child->uuid());
+          AddUrlIfLegal(child->url(), child->id());
       }
     }
   }
@@ -210,7 +209,7 @@ OpenedWebContentsSet OpenAllHelper(
           ->SetLaunchAction(launch_action.value(), disposition);
     }
 
-    if (url_and_id_it->id.is_valid()) {
+    if (url_and_id_it->id != -1) {
       ChromeNavigationUIData* ui_data =
           static_cast<ChromeNavigationUIData*>(handle->GetNavigationUIData());
       if (ui_data)
@@ -259,7 +258,8 @@ OpenedWebContentsSet OpenAllHelper(
 
 void OpenAllIfAllowed(
     Browser* browser,
-    const std::vector<const bookmarks::BookmarkNode*>& nodes,
+    const std::vector<
+        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes,
     WindowOpenDisposition initial_disposition,
     bool add_to_group,
     BookmarkNavigationHandleUserData::InitiatorLocation navigation_type,
@@ -343,7 +343,8 @@ void OpenAllIfAllowed(
 }
 
 int OpenCount(gfx::NativeWindow parent,
-              const std::vector<const bookmarks::BookmarkNode*>& nodes,
+              const std::vector<raw_ptr<const bookmarks::BookmarkNode,
+                                        VectorExperimental>>& nodes,
               content::BrowserContext* incognito_context) {
   return GetURLsToOpen(nodes, incognito_context, incognito_context != nullptr)
       .size();
@@ -354,8 +355,11 @@ int OpenCount(gfx::NativeWindow parent,
               content::BrowserContext* incognito_context) {
   std::vector<const BookmarkNode*> nodes;
   nodes.push_back(node);
-  return OpenCount(parent, std::vector<const bookmarks::BookmarkNode*>{node},
-                   incognito_context);
+  return OpenCount(
+      parent,
+      std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>{
+          node},
+      incognito_context);
 }
 
 bool ConfirmDeleteBookmarkNode(gfx::NativeWindow window,
@@ -389,12 +393,15 @@ void ShowBookmarkAllTabsDialog(Browser* browser) {
                            base::Unretained(profile)));
 }
 
-bool HasBookmarkURLs(const std::vector<const BookmarkNode*>& selection) {
+bool HasBookmarkURLs(
+    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
+        selection) {
   return !GetURLsToOpen(selection).empty();
 }
 
 bool HasBookmarkURLsAllowedInIncognitoMode(
-    const std::vector<const BookmarkNode*>& selection,
+    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
+        selection,
     content::BrowserContext* browser_context) {
   return !GetURLsToOpen(selection, browser_context, true).empty();
 }

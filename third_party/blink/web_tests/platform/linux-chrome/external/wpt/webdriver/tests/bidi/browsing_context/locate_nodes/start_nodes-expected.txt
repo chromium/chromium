@@ -1,0 +1,14 @@
+This is a wdspec test.
+[FAIL] test_locate_with_context_nodes[css-div]
+  AttributeError: 'BrowsingContext' object has no attribute 'locate_nodes'
+[FAIL] test_locate_with_context_nodes[xpath-//div]
+  AttributeError: 'BrowsingContext' object has no attribute 'locate_nodes'
+[FAIL] test_locate_with_context_nodes[innerText-foo]
+  AttributeError: 'BrowsingContext' object has no attribute 'locate_nodes'
+[FAIL] test_locate_with_multiple_context_nodes[css-div[data-class='one']]
+  AttributeError: 'BrowsingContext' object has no attribute 'locate_nodes'
+[FAIL] test_locate_with_multiple_context_nodes[xpath-.//div[@data-class='one']]
+  AttributeError: 'BrowsingContext' object has no attribute 'locate_nodes'
+[FAIL] test_locate_with_multiple_context_nodes[innerText-foo]
+  AttributeError: 'BrowsingContext' object has no attribute 'locate_nodes'
+Harness: the test ran to completion.

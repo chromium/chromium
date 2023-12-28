@@ -61,8 +61,7 @@ class TouchToFillDelegateAndroidImpl;
 //
 // It is owned by the AutofillDriver.
 class AutofillManager
-    : public AutofillCrowdsourcingManager::Observer,
-      public translate::TranslateDriver::LanguageDetectionObserver {
+    : public translate::TranslateDriver::LanguageDetectionObserver {
  public:
   // Observer of AutofillManager events.
   //
@@ -99,7 +98,7 @@ class AutofillManager
     virtual void OnAfterTextFieldDidChange(AutofillManager& manager,
                                            FormGlobalId form,
                                            FieldGlobalId field,
-                                           std::u16string text_value) {}
+                                           const std::u16string& text_value) {}
 
     virtual void OnBeforeTextFieldDidScroll(AutofillManager& manager,
                                             FormGlobalId form,
@@ -177,7 +176,7 @@ class AutofillManager
   // AutofillManager.
   static void LogAutofillTypePredictionsAvailable(
       LogManager* log_manager,
-      const std::vector<FormStructure*>& forms);
+      const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms);
 
   AutofillManager(const AutofillManager&) = delete;
   AutofillManager& operator=(const AutofillManager&) = delete;
@@ -207,15 +206,6 @@ class AutofillManager
 
   // Returns true only if the previewed form should be cleared.
   virtual bool ShouldClearPreviewedForm() = 0;
-
-  // Records filling information and routes the filling back to the driver.
-  // TODO(crbug.com/1331312): Replace FormFieldData parameter by FieldGlobalId.
-  virtual void FillOrPreviewField(mojom::ActionPersistence action_persistence,
-                                  mojom::TextReplacement text_replacement,
-                                  const FormData& form,
-                                  const FormFieldData& field,
-                                  const std::u16string& value,
-                                  PopupItemId popup_item_id) = 0;
 
   // Invoked when the value of textfield is changed.
   // |bounding_box| are viewport coordinates.
@@ -383,10 +373,6 @@ class AutofillManager
 
   // The following do not check for prerendering. These should only used while
   // constructing or resetting the manager.
-  // TODO(crbug.com/1239281): if we never intend to support multiple navigations
-  // while prerendering, these will be unnecessary (they're used during Reset
-  // which can be called during prerendering, but we could skip Reset for
-  // prerendering if we never have state to clear).
   AutofillClient& unsafe_client() { return *client_; }
   const AutofillClient& unsafe_client() const { return *client_; }
 
@@ -457,7 +443,8 @@ class AutofillManager
   // appends them to |form_structures|. Runs in linear time.
   size_t FindCachedFormsBySignature(
       FormSignature form_signature,
-      std::vector<FormStructure*>* form_structures) const;
+      std::vector<raw_ptr<FormStructure, VectorExperimental>>* form_structures)
+      const;
 
   // Parses multiple forms in one go. The function proceeds in three stages:
   //
@@ -494,12 +481,6 @@ class AutofillManager
       const FormData& form,
       base::OnceCallback<void(AutofillManager&, const FormData&)> callback);
 
-  // Parses the |form| with the server data retrieved from the |cached_form|
-  // (if any). Returns nullptr if the form should not be parsed. Otherwise, adds
-  // the returned form structure to the |form_structures_|.
-  FormStructure* ParseForm(const FormData& form,
-                           const FormStructure* cached_form);
-
   std::map<FormGlobalId, std::unique_ptr<FormStructure>>*
   mutable_form_structures() {
     return &form_structures_;
@@ -508,10 +489,10 @@ class AutofillManager
  private:
   friend class AutofillManagerTestApi;
 
-  // AutofillCrowdsourcingManager::Observer:
+  // Invoked by `AutofillCrowdsourcingManager`.
   void OnLoadedServerPredictions(
       std::string response,
-      const std::vector<FormSignature>& queried_form_signatures) override;
+      const std::vector<FormSignature>& queried_form_signatures);
 
   // Invoked when forms from OnFormsSeen() have been parsed to
   // |form_structures|.

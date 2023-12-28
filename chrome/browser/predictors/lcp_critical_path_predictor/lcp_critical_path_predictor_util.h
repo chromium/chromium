@@ -24,6 +24,12 @@ ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(
 // vector.
 std::vector<GURL> PredictFetchedFontUrls(const LcppData& data);
 
+// Returns possible subresource URLs from past loads for a given `data`.
+// The returned URLs are ordered by descending frequency (the most
+// frequent one comes first). If there is no data, it returns an empty
+// vector.
+std::vector<GURL> PredictFetchedSubresourceUrls(const LcppData& data);
+
 // An input to update LcppData.
 struct LcppDataInputs {
   LcppDataInputs();
@@ -50,6 +56,10 @@ struct LcppDataInputs {
   // This field keeps the number of font URLs without omitting due to
   // reaching `kLCPPFontURLPredictorMaxUrlCountPerOrigin` or deduplication.
   size_t font_url_count = 0;
+  // This field keeps the subresource URLs as a key, and the TimeDelta as a
+  // value. TimeDelta stores the duration from navigation start to resource
+  // loading start time.
+  std::map<GURL, base::TimeDelta> subresource_urls;
 };
 
 bool UpdateLcppDataWithLcppDataInputs(const LoadingPredictorConfig& config,

@@ -30,9 +30,12 @@
   }
 
   .section-header {
+    color: var(--cr-primary-text-color);
     flex: 1;
     /* Should be 13px when html font-size is 16px */
-    font-size: 0.8125rem;
+    font-size: 108%;
+    font-weight: 400;
+    letter-spacing: .25px;
     margin-bottom: 16px;
     margin-top: 30px;
     width: 100%;
@@ -44,9 +47,9 @@
   }
 </style>
 
-<h5 class="section-header cr-secondary-text first">
+<h2 class="section-header cr-secondary-text first">
   $i18n{safetyHubPageCardSectionHeader}
-</h5>
+</h2>
 <div class="card-container">
   <settings-safety-hub-card id="passwords" class="card box"
       data="[[passwordCardData_]]" on-click="onPasswordsClick_"
@@ -61,9 +64,9 @@
       tabindex="0" on-keydown="onSafeBrowsingKeyPress_">
   </settings-safety-hub-card>
 </div>
-<h5 class="section-header cr-secondary-text">
+<h2 class="section-header cr-secondary-text">
   $i18n{safetyHubPageModuleSectionHeader}
-</h5>
+</h2>
 <template is="dom-if" if="[[showNotificationPermissions_]]">
   <settings-safety-hub-notification-permissions-module class="module box">
   </settings-safety-hub-notification-permissions-module>

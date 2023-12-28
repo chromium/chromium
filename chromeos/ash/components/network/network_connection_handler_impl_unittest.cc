@@ -1200,7 +1200,8 @@ TEST_F(NetworkConnectionHandlerImplTest, SimLocked) {
   SetCellularServiceConnectable();
 
   Connect(kTestCellularServicePath);
-  EXPECT_EQ(NetworkConnectionHandler::kErrorSimLocked, GetResultAndReset());
+  EXPECT_EQ(NetworkConnectionHandler::kErrorSimPinPukLocked,
+            GetResultAndReset());
 }
 
 TEST_F(NetworkConnectionHandlerImplTest, SimCarrierLocked) {

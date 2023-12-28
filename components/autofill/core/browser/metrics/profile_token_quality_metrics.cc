@@ -31,8 +31,8 @@ using ObservationType = ProfileTokenQuality::ObservationType;
 // Gets all types of the `profile` that are relevant for ProfileTokenQuality
 // metrics. This excludes additional supported types, since no observations
 // are tracked for them.
-ServerFieldTypeSet GetMetricRelevantTypes(const AutofillProfile& profile) {
-  ServerFieldTypeSet relevant_types;
+FieldTypeSet GetMetricRelevantTypes(const AutofillProfile& profile) {
+  FieldTypeSet relevant_types;
   profile.GetSupportedTypes(&relevant_types);
   relevant_types.intersect(GetDatabaseStoredTypesOfAutofillProfile());
   return relevant_types;
@@ -40,9 +40,9 @@ ServerFieldTypeSet GetMetricRelevantTypes(const AutofillProfile& profile) {
 
 // Returns the total number of observations for all `types`.
 size_t GetTotalObservationCount(const AutofillProfile& profile,
-                                const ServerFieldTypeSet& types) {
+                                const FieldTypeSet& types) {
   size_t total_observations = 0;
-  for (ServerFieldType type : types) {
+  for (FieldType type : types) {
     total_observations +=
         profile.token_quality().GetObservationTypesForFieldType(type).size();
   }
@@ -53,8 +53,8 @@ size_t GetTotalObservationCount(const AutofillProfile& profile,
 // Type in `types`. It tracks the different observation types available for that
 // Type.
 void LogStoredObservationsPerType(const AutofillProfile& profile,
-                                  const ServerFieldTypeSet& types) {
-  for (ServerFieldType type : types) {
+                                  const FieldTypeSet& types) {
+  for (FieldType type : types) {
     for (ObservationType observation :
          profile.token_quality().GetObservationTypesForFieldType(type)) {
       base::UmaHistogramEnumeration(
@@ -99,9 +99,9 @@ std::pair<size_t, size_t> CountObservationsByQuality(
 // Also emits Autofill.ProfileTokenQuality.PerProfile, which represents the same
 // acceptance rate, but accumulated over all `types`.
 void LogStoredTokenQuality(const AutofillProfile& profile,
-                           const ServerFieldTypeSet& types) {
+                           const FieldTypeSet& types) {
   size_t total_stored_good_observations = 0, total_stored_bad_observations = 0;
-  for (ServerFieldType type : types) {
+  for (FieldType type : types) {
     auto [good_observations, bad_observations] = CountObservationsByQuality(
         profile.token_quality().GetObservationTypesForFieldType(type));
     if (good_observations + bad_observations == 0) {
@@ -130,7 +130,7 @@ void LogStoredProfileTokenQualityMetrics(
     return;
   }
   for (const AutofillProfile* profile : profiles) {
-    ServerFieldTypeSet relevant_types = GetMetricRelevantTypes(*profile);
+    FieldTypeSet relevant_types = GetMetricRelevantTypes(*profile);
     base::UmaHistogramCounts1000(
         base::StrCat({kHistogramPrefix, "StoredObservationsCount.PerProfile"}),
         GetTotalObservationCount(*profile, relevant_types));
@@ -151,7 +151,7 @@ void LogObservationCountBeforeSubmissionMetric(const FormStructure& form,
     if (AutofillProfile* profile =
             pdm.GetProfileByGUID(*field->autofill_source_profile_guid())) {
       profiles_used.insert(profile);
-      ServerFieldType field_type = field->Type().GetStorableType();
+      FieldType field_type = field->Type().GetStorableType();
       base::UmaHistogramExactLinear(
           base::StrCat({kHistogramPrefix, "ObservationCountBeforeSubmission.",
                         FieldTypeToStringView(field_type)}),

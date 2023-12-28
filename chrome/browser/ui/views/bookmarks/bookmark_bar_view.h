@@ -72,10 +72,11 @@ class BookmarkBarView : public views::AccessiblePaneView,
                         public views::DragController,
                         public views::AnimationDelegateViews,
                         public BookmarkMenuControllerObserver {
+  METADATA_HEADER(BookmarkBarView, views::AccessiblePaneView)
+
  public:
   class ButtonSeparatorView;
 
-  METADATA_HEADER(BookmarkBarView);
   // |browser_view| can be NULL during tests.
   BookmarkBarView(Browser* browser, BrowserView* browser_view);
   BookmarkBarView(const BookmarkBarView&) = delete;
@@ -425,7 +426,8 @@ class BookmarkBarView : public views::AccessiblePaneView,
   raw_ptr<views::MenuButton> overflow_button_ = nullptr;
 
   // The individual bookmark buttons.
-  std::vector<views::LabelButton*> bookmark_buttons_;
+  std::vector<raw_ptr<views::LabelButton, VectorExperimental>>
+      bookmark_buttons_;
 
   raw_ptr<ButtonSeparatorView> bookmarks_separator_view_ = nullptr;
   raw_ptr<ButtonSeparatorView> saved_tab_groups_separator_view_ = nullptr;

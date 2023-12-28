@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/animation/animation_change_type.h"
 #include "ash/constants/app_types.h"
@@ -113,7 +113,7 @@ class ScopedWindowVisibilityAnimationTypeResetter {
       const ScopedWindowVisibilityAnimationTypeResetter&) = delete;
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 };
 
 // -----------------------------------------------------------------------------
@@ -138,7 +138,7 @@ aura::Window* GetBottomMostSnappedWindowForDeskContainer(
       split_view_controller->InSplitViewMode()) {
     aura::Window* left_window = split_view_controller->primary_window();
     aura::Window* right_window = split_view_controller->secondary_window();
-    for (auto* child : desk_container->children()) {
+    for (aura::Window* child : desk_container->children()) {
       if (child == left_window || child == right_window)
         return child;
     }
@@ -150,7 +150,7 @@ aura::Window* GetBottomMostSnappedWindowForDeskContainer(
   // tracks left/right snapped windows in the active desk only.
   // TODO(afakhry|xdai): SplitViewController should be changed to track snapped
   // windows per desk per display.
-  for (auto* child : desk_container->children()) {
+  for (aura::Window* child : desk_container->children()) {
     if (WindowState::Get(child)->IsSnapped())
       return child;
   }
@@ -199,8 +199,8 @@ class BackdropController::WindowAnimationWaiter
   }
 
  private:
-  raw_ptr<BackdropController, ExperimentalAsh> owner_;
-  raw_ptr<aura::Window, ExperimentalAsh> animating_window_;
+  raw_ptr<BackdropController> owner_;
+  raw_ptr<aura::Window> animating_window_;
 };
 
 // -----------------------------------------------------------------------------

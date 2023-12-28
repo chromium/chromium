@@ -227,14 +227,12 @@ mojom("geoposition") {
   export_header_blink = "third_party/blink/public/platform/web_common.h"
 
   webui_module_path = "/"
-  use_typescript_sources = true
   generate_legacy_js_bindings = true
 }
 
 mojom("geolocation_internals") {
   sources = [ "geolocation_internals.mojom" ]
   webui_module_path = "/"
-  use_typescript_sources = true
   public_deps = [
     ":geoposition",
     "//mojo/public/mojom/base",

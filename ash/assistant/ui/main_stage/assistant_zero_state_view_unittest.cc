@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -168,9 +169,9 @@ TEST_F(AssistantZeroStateViewUnittest, OnboardingViewIsNotVisible) {
 }
 
 TEST_F(AssistantZeroStateViewUnittest, IphViewIsNotVisible) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndDisableFeature(
-      assistant::features::kEnableAssistantLearnMore);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      feature_engagement::kIPHLauncherSearchHelpUiFeature);
 
   ShowAssistantUi();
 
@@ -183,8 +184,8 @@ TEST_F(AssistantZeroStateViewUnittest, IphViewIsNotVisible) {
 }
 
 TEST_F(AssistantZeroStateViewUnittest, IphViewIsVisible) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      assistant::features::kEnableAssistantLearnMore);
+  base::test::ScopedFeatureList feature_list(
+      feature_engagement::kIPHLauncherSearchHelpUiFeature);
 
   ShowAssistantUi();
 
@@ -197,8 +198,8 @@ TEST_F(AssistantZeroStateViewUnittest, IphViewIsVisible) {
 }
 
 TEST_F(AssistantZeroStateViewUnittest, IphViewIsNotVisibleAfterResponse) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      assistant::features::kEnableAssistantLearnMore);
+  base::test::ScopedFeatureList feature_list(
+      feature_engagement::kIPHLauncherSearchHelpUiFeature);
 
   ShowAssistantUi();
 
@@ -217,7 +218,7 @@ TEST_F(AssistantZeroStateViewUnittest, IphViewIsNotVisibleAfterResponse) {
 TEST_F(AssistantZeroStateViewUnittest, IphViewIsNotVisible_TabletMode) {
   base::test::ScopedFeatureList feature_list_;
   feature_list_.InitAndDisableFeature(
-      assistant::features::kEnableAssistantLearnMore);
+      feature_engagement::kIPHLauncherSearchHelpUiFeature);
 
   SetNumberOfSessionsWhereOnboardingShown(
       assistant::ui::kOnboardingMaxSessionsShown);
@@ -239,8 +240,8 @@ TEST_F(AssistantZeroStateViewUnittest, IphViewIsNotVisible_TabletMode) {
 }
 
 TEST_F(AssistantZeroStateViewUnittest, IphViewIsVisible_TabletMode) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      assistant::features::kEnableAssistantLearnMore);
+  base::test::ScopedFeatureList feature_list(
+      feature_engagement::kIPHLauncherSearchHelpUiFeature);
 
   SetNumberOfSessionsWhereOnboardingShown(
       assistant::ui::kOnboardingMaxSessionsShown);
@@ -263,8 +264,8 @@ TEST_F(AssistantZeroStateViewUnittest, IphViewIsVisible_TabletMode) {
 
 TEST_F(AssistantZeroStateViewUnittest,
        IphViewIsNotVisibleAfterResponse_TabletMode) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      assistant::features::kEnableAssistantLearnMore);
+  base::test::ScopedFeatureList feature_list(
+      feature_engagement::kIPHLauncherSearchHelpUiFeature);
 
   SetNumberOfSessionsWhereOnboardingShown(
       assistant::ui::kOnboardingMaxSessionsShown);

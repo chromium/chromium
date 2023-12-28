@@ -20,6 +20,7 @@
 #include "components/supervised_user/core/browser/remote_web_approvals_manager.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/supervised_users.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class PrefService;
 class SupervisedUserServiceObserver;
@@ -51,6 +52,16 @@ class SupervisedUserService : public KeyedService,
     virtual ~Delegate() {}
     // Allows the delegate to handle the (de)activation in a custom way.
     virtual void SetActive(bool active) = 0;
+  };
+
+  // Delegate encapsulating platform-specific logic that is invoked from SUS.
+  class PlatformDelegate {
+   public:
+    virtual ~PlatformDelegate() {}
+
+    // Close all incognito tabs for this service. Called the profile becomes
+    // supervised.
+    virtual void CloseIncognitoTabs() = 0;
   };
 
   SupervisedUserService(const SupervisedUserService&) = delete;
@@ -134,13 +145,15 @@ class SupervisedUserService : public KeyedService,
   // Public to allow visibility to iOS factory.
   SupervisedUserService(
       signin::IdentityManager* identity_manager,
-      KidsChromeManagementClient* kids_chrome_management_client,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService& user_prefs,
       supervised_user::SupervisedUserSettingsService& settings_service,
       syncer::SyncService* sync_service,
       ValidateURLSupportCallback check_webstore_url_callback,
       std::unique_ptr<supervised_user::SupervisedUserURLFilter::Delegate>
           url_filter_delegate,
+      std::unique_ptr<supervised_user::SupervisedUserService::PlatformDelegate>
+          platform_delegate,
       bool can_show_first_time_interstitial_banner);
 
  private:
@@ -192,11 +205,13 @@ class SupervisedUserService : public KeyedService,
 
   raw_ptr<signin::IdentityManager> identity_manager_;
 
-  raw_ptr<KidsChromeManagementClient> kids_chrome_management_client_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   bool active_ = false;
 
   raw_ptr<Delegate> delegate_;
+
+  std::unique_ptr<PlatformDelegate> platform_delegate_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

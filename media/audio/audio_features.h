@@ -25,4 +25,12 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kAllowIAudioClient3);
 
 }  // namespace features
 
+namespace media {
+
+#if BUILDFLAG(IS_LINUX)
+MEDIA_EXPORT bool IsPulseaudioLoopbackCaptureSupported();
+#endif  // BUILDFLAG(IS_LINUX)
+
+}  // namespace media
+
 #endif  // MEDIA_AUDIO_AUDIO_FEATURES_H_

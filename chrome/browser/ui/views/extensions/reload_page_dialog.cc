@@ -52,10 +52,10 @@ void ShowReloadPageDialog(
     }
 
     dialog_builder.SetTitle(GetTitle(actions))
-        .AddOkButton(
-            base::BindOnce(std::move(callback)),
-            ui::DialogModelButton::Params().SetLabel(l10n_util::GetStringUTF16(
-                IDS_EXTENSION_RELOAD_PAGE_BUBBLE_OK_BUTTON)));
+        .AddOkButton(base::BindOnce(std::move(callback)),
+                     ui::DialogModel::Button::Params().SetLabel(
+                         l10n_util::GetStringUTF16(
+                             IDS_EXTENSION_RELOAD_PAGE_BUBBLE_OK_BUTTON)));
 
     content::WebContents* web_contents =
         browser->tab_strip_model()->GetActiveWebContents();
@@ -73,10 +73,10 @@ void ShowReloadPageDialog(
     dialog_builder
         .SetTitle(l10n_util::GetStringUTF16(
             IDS_EXTENSION_SITE_RELOAD_PAGE_BUBBLE_HEADING))
-        .AddOkButton(
-            base::BindOnce(std::move(callback)),
-            ui::DialogModelButton::Params().SetLabel(l10n_util::GetStringUTF16(
-                IDS_EXTENSION_RELOAD_PAGE_BUBBLE_OK_BUTTON)));
+        .AddOkButton(base::BindOnce(std::move(callback)),
+                     ui::DialogModel::Button::Params().SetLabel(
+                         l10n_util::GetStringUTF16(
+                             IDS_EXTENSION_RELOAD_PAGE_BUBBLE_OK_BUTTON)));
   }
 
   ShowDialog(container, extension_ids, dialog_builder.Build());

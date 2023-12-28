@@ -15,6 +15,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
@@ -31,14 +32,15 @@ public class ManagementView extends ScrollView {
     private @Nullable String mManagerName;
 
     private LinearLayout mManagementContainer;
-    private TextView mTitle;
-    private TextView mDescription;
-    private TextView mLearnMore;
-    private TextView mBrowserReporting;
-    private TextView mBrowserReportingExplanation;
-    private TextView mReportUsername;
-    private TextView mReportVersion;
-    private TextView mReportLegacyTech;
+
+    @VisibleForTesting TextView mTitle;
+    @VisibleForTesting TextView mDescription;
+    @VisibleForTesting TextView mLearnMore;
+    @VisibleForTesting TextView mBrowserReporting;
+    @VisibleForTesting TextView mBrowserReportingExplanation;
+    @VisibleForTesting TextView mReportUsername;
+    @VisibleForTesting TextView mReportVersion;
+    @VisibleForTesting TextView mReportLegacyTech;
 
     @Nullable private UiConfig mUiConfig;
 

@@ -42,4 +42,19 @@ const base::FilePath::CharType kOptimizationGuideModelStoreDirPrefix[] =
 const base::FilePath::CharType kPageEntitiesMetadataStore[] =
     FILE_PATH_LITERAL("page_content_annotations_page_entities_metadata_store");
 
+const base::FilePath::CharType kSpModelFile[] = FILE_PATH_LITERAL("spm.model");
+
+const base::FilePath::CharType kModelFile[] = FILE_PATH_LITERAL("model.pb");
+
+const base::FilePath::CharType kWeightsFile[] =
+    FILE_PATH_LITERAL("weights.bin");
+
+const base::FilePath::CharType kTsDataFile[] = FILE_PATH_LITERAL("ts.bin");
+
+const base::FilePath::CharType kTsSpModelFile[] =
+    FILE_PATH_LITERAL("ts_spm.model");
+
+const base::FilePath::CharType kOnDeviceModelExecutionConfigFile[] =
+    FILE_PATH_LITERAL("on_device_model_execution_config.pb");
+
 }  // namespace optimization_guide

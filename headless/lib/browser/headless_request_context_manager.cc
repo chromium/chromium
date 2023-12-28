@@ -11,7 +11,6 @@
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/browser/resource_context.h"
 #include "headless/lib/browser/headless_browser_context_options.h"
 #include "headless/public/switches.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -223,8 +222,7 @@ HeadlessRequestContextManager::HeadlessRequestContextManager(
       proxy_config_(
           options->proxy_config()
               ? std::make_unique<net::ProxyConfig>(*options->proxy_config())
-              : nullptr),
-      resource_context_(std::make_unique<content::ResourceContext>()) {
+              : nullptr) {
   if (!proxy_config_) {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     if (command_line->HasSwitch(switches::kNoSystemProxyConfigService)) {

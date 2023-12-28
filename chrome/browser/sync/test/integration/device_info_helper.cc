@@ -13,7 +13,6 @@ ServerDeviceInfoMatchChecker::ServerDeviceInfoMatchChecker(
 ServerDeviceInfoMatchChecker::~ServerDeviceInfoMatchChecker() = default;
 
 void ServerDeviceInfoMatchChecker::OnCommit(
-    const std::string& committer_invalidator_client_id,
     syncer::ModelTypeSet committed_model_types) {
   if (committed_model_types.Has(syncer::DEVICE_INFO)) {
     CheckExitCondition();

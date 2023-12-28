@@ -120,12 +120,12 @@ class ArcVolumeMounterBridge
       std::optional<std::string> error_name,
       std::optional<std::string> error_message);
 
-  raw_ptr<Delegate, DanglingUntriaged | ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<Delegate, DanglingUntriaged> delegate_ = nullptr;
 
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 
-  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  const raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar change_registerar_;
 
   bool external_storage_mount_points_are_ready_ = false;

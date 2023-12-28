@@ -4,6 +4,7 @@
 
 #include "chrome/browser/segmentation_platform/client_util/tab_data_collection_util.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/android/tab_android.h"
@@ -29,8 +30,10 @@ class TabDataCollectionUtil::LocalTabModelObserver : public TabModelObserver {
   void TabPendingClosure(TabAndroid* tab) override {
     collection_util_->OnTabAction(tab, TabAction::kTabClose);
   }
-  void AllTabsPendingClosure(const std::vector<TabAndroid*>& tabs) override {
-    for (const auto* tab : tabs) {
+  void AllTabsPendingClosure(
+      const std::vector<raw_ptr<TabAndroid, VectorExperimental>>& tabs)
+      override {
+    for (const TabAndroid* tab : tabs) {
       collection_util_->OnTabAction(tab, TabAction::kTabClose);
     }
   }

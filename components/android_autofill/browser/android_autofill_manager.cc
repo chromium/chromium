@@ -163,14 +163,6 @@ void AndroidAutofillManager::OnFormProcessed(
   }
 }
 
-void AndroidAutofillManager::OnServerRequestError(
-    FormSignature form_signature,
-    AutofillCrowdsourcingManager::RequestType request_type,
-    int http_error) {
-  if (auto* provider = GetAutofillProvider())
-    provider->OnServerQueryRequestError(this, form_signature);
-}
-
 void AndroidAutofillManager::Reset() {
   // Inform the provider before resetting state in case it needs to access it.
   if (auto* rfh =
@@ -244,16 +236,6 @@ void AndroidAutofillManager::FillOrPreviewForm(
   if (auto* logger = GetEventFormLogger(field_type_group)) {
     logger->OnDidFillSuggestion();
   }
-}
-
-void AndroidAutofillManager::FillOrPreviewField(
-    mojom::ActionPersistence action_persistence,
-    mojom::TextReplacement text_replacement,
-    const FormData& form,
-    const FormFieldData& field,
-    const std::u16string& value,
-    PopupItemId popup_item_id) {
-  NOTIMPLEMENTED();
 }
 
 void AndroidAutofillManager::StartNewLoggingSession() {

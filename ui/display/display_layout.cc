@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -620,12 +621,9 @@ bool DisplayLayout::HasSamePlacementList(const DisplayLayout& layout) const {
 }
 
 void DisplayLayout::RemoveDisplayPlacements(const DisplayIdList& list) {
-  placement_list.erase(
-      std::remove_if(placement_list.begin(), placement_list.end(),
-                     [list](const DisplayPlacement& placement) {
-                       return base::Contains(list, placement.display_id);
-                     }),
-      placement_list.end());
+  base::EraseIf(placement_list, [&list](const DisplayPlacement& placement) {
+    return base::Contains(list, placement.display_id);
+  });
   for (DisplayPlacement& placement : placement_list) {
     if (base::Contains(list, placement.parent_display_id))
       placement.parent_display_id = primary_id;

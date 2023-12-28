@@ -32,6 +32,10 @@
 #include "ui/display/types/display_constants.h"
 #include "url/gurl.h"
 
+namespace {
+using webapps::AppId;
+}
+
 namespace web_app {
 
 class FakeShortcutPublisher : public crosapi::mojom::AppShortcutPublisher {
@@ -93,25 +97,11 @@ class LacrosBrowserShortcutsControllerTest : public testing::Test,
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
-  std::string CreateWebAppBasedShortcut(const GURL& shortcut_url,
-                                        const std::u16string& shortcut_name,
-                                        bool with_icon = false) {
-    // Create web app based shortcut.
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-    web_app_info->start_url = shortcut_url;
-    web_app_info->title = shortcut_name;
-
-    if (with_icon) {
-      const GeneratedIconsInfo icon_info(
-          IconPurpose::ANY, {web_app::icon_size::k32}, {SK_ColorBLACK});
-      web_app::AddIconsToWebAppInstallInfo(
-          web_app_info.get(), GURL(shortcut_url.spec() + "/icon"), {icon_info});
-    }
-
-    auto local_shortcut_id = web_app::test::InstallWebApp(
-        profile(), std::move(web_app_info),
-        /*overwrite_existing_manifest_fields=*/true);
-    return local_shortcut_id;
+  AppId CreateWebAppBasedShortcut(const GURL& shortcut_url,
+                                  const std::string& shortcut_name,
+                                  bool with_icon = true) {
+    return test::InstallShortcut(profile(), shortcut_name, shortcut_url,
+                                 with_icon);
   }
 
   std::string CreateWebApp(const GURL& app_url,
@@ -153,8 +143,13 @@ class LacrosBrowserShortcutsControllerTest : public testing::Test,
 };
 
 TEST_F(LacrosBrowserShortcutsControllerTest, PublishShortcuts) {
-  auto local_id_1 = CreateWebAppBasedShortcut(GURL("https://www.example.com/"),
-                                              u"shortcut name");
+  // Does not create a default icon with this shortcut so that we can
+  // verify the icon effect is set to be correct.
+  // TODO(b/315263875): Add a specific test to test the different icon
+  // effect to make this clearer.
+  AppId local_id_1 =
+      CreateWebAppBasedShortcut(GURL("https://www.example.com/"),
+                                "shortcut name", /*with_icon = */ false);
 
   InitializeLacrosBrowserShortcutsController();
   ASSERT_TRUE(fake_publisher()->controller_registered());
@@ -173,9 +168,8 @@ TEST_F(LacrosBrowserShortcutsControllerTest, PublishShortcuts) {
       apps::IconEffects::kRoundCorners | apps::IconEffects::kCrOsStandardMask);
   EXPECT_TRUE(fake_publisher()->get_deltas().back()->allow_removal);
 
-  auto local_id_2 = CreateWebAppBasedShortcut(
-      GURL("https://www.another-example.com/"), u"another shortcut name",
-      /*with_icon = */ true);
+  AppId local_id_2 = CreateWebAppBasedShortcut(
+      GURL("https://www.another-example.com/"), "another shortcut name");
 
   EXPECT_EQ(fake_publisher()->get_deltas().size(), 2U);
   EXPECT_EQ(fake_publisher()->get_deltas().back()->local_id, local_id_2);
@@ -210,8 +204,8 @@ TEST_F(LacrosBrowserShortcutsControllerTest, WebAppNotPublished) {
 TEST_F(LacrosBrowserShortcutsControllerTest, LaunchShortcut) {
   InitializeLacrosBrowserShortcutsController();
 
-  auto shortcut_id = CreateWebAppBasedShortcut(GURL("https://www.example.com/"),
-                                               u"shortcut name");
+  AppId shortcut_id = CreateWebAppBasedShortcut(
+      GURL("https://www.example.com/"), "shortcut name");
 
   base::RunLoop runloop;
   fake_publisher()->controller_->LaunchShortcut(
@@ -223,8 +217,8 @@ TEST_F(LacrosBrowserShortcutsControllerTest, LaunchShortcut) {
 TEST_F(LacrosBrowserShortcutsControllerTest, GetCompressedIcon) {
   InitializeLacrosBrowserShortcutsController();
 
-  auto shortcut_id = CreateWebAppBasedShortcut(GURL("https://www.example.com/"),
-                                               u"shortcut name");
+  AppId shortcut_id = CreateWebAppBasedShortcut(
+      GURL("https://www.example.com/"), "shortcut name");
   const float scale1 = 1.0;
   const float scale2 = 2.0;
   const int kIconSize1 = 64 * scale1;
@@ -259,8 +253,8 @@ TEST_F(LacrosBrowserShortcutsControllerTest, GetCompressedIcon) {
 TEST_F(LacrosBrowserShortcutsControllerTest, RemoveShortcut) {
   InitializeLacrosBrowserShortcutsController();
 
-  auto shortcut_id = CreateWebAppBasedShortcut(GURL("https://www.example.com/"),
-                                               u"shortcut name");
+  AppId shortcut_id = CreateWebAppBasedShortcut(
+      GURL("https://www.example.com/"), "shortcut name");
 
   base::RunLoop runloop;
   fake_publisher()->controller_->RemoveShortcut(

@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/system/progress_indicator/progress_icon_animation.h"
 #include "ash/system/progress_indicator/progress_ring_animation.h"
 #include "base/memory/raw_ptr.h"
@@ -244,7 +243,7 @@ class DefaultProgressIndicatorAnimationRegistry
 
   // The progress indicator for which to manage animations and a subscription
   // to receive notification of progress change events.
-  raw_ptr<ProgressIndicator, ExperimentalAsh> progress_indicator_ = nullptr;
+  raw_ptr<ProgressIndicator> progress_indicator_ = nullptr;
   base::CallbackListSubscription progress_changed_subscription_;
 
   // Instantiate `previous_progress_` to completion to avoid starting a pulse
@@ -512,11 +511,7 @@ void ProgressIndicator::OnPaintLayer(const ui::PaintContext& context) {
   flags.setStyle(cc::PaintFlags::Style::kStroke_Style);
 
   const SkColor color =
-      chromeos::features::IsJellyEnabled() || color_id_.has_value()
-          ? color_resolver_.Run(
-                color_id_.value_or(cros_tokens::kCrosSysPrimary))
-          : AshColorProvider::Get()->GetControlsLayerColor(
-                AshColorProvider::ControlsLayerType::kFocusRingColor);
+      color_resolver_.Run(color_id_.value_or(cros_tokens::kCrosSysPrimary));
 
   flags.setColor(SkColorSetA(
       color,

@@ -45,25 +45,6 @@
 
 namespace {
 
-apps::AppType GetAppType(apps::PickerEntryType picker_entry_type) {
-  apps::AppType app_type = apps::AppType::kUnknown;
-  switch (picker_entry_type) {
-    case apps::PickerEntryType::kUnknown:
-    case apps::PickerEntryType::kDevice:
-      break;
-    case apps::PickerEntryType::kArc:
-      app_type = apps::AppType::kArc;
-      break;
-    case apps::PickerEntryType::kWeb:
-      app_type = apps::AppType::kWeb;
-      break;
-    case apps::PickerEntryType::kMacOs:
-      app_type = apps::AppType::kMacOs;
-      break;
-  }
-  return app_type;
-}
-
 web_app::WebAppRegistrar* MaybeGetWebAppRegistrar(
     content::WebContents* web_contents) {
   // Profile for web contents might not contain a web app provider. eg. kiosk
@@ -134,6 +115,9 @@ bool IsShuttingDown(content::WebContents* web_contents) {
 IntentPickerTabHelper::~IntentPickerTabHelper() = default;
 
 void IntentPickerTabHelper::MaybeShowIntentPickerIcon() {
+  // Setting icon_resolved_ to false ensures testing callbacks can accurately
+  // wait for the entire async process to finish.
+  icon_resolved_ = false;
   CHECK(web_contents());
   if (!intent_picker_delegate_->ShouldShowIntentPickerWithApps() ||
       !IsValidWebContentsForIntentPicker(web_contents())) {
@@ -214,7 +198,7 @@ void IntentPickerTabHelper::MaybeShowIconForApps(
               current_app_id_);
 
       intent_picker_delegate_->LoadSingleAppIcon(
-          GetAppType(apps[0].type), current_app_id_,
+          apps[0].type, current_app_id_,
           GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
           base::BindOnce(&IntentPickerTabHelper::OnAppIconLoadedForChip,
                          per_navigation_weak_factory_.GetWeakPtr(),
@@ -273,7 +257,7 @@ void IntentPickerTabHelper::LoadAppIcon(
   }
 
   const std::string& app_id = apps[index].launch_name;
-  auto app_type = GetAppType(apps[index].type);
+  auto app_type = apps[index].type;
 
   intent_picker_delegate_->LoadSingleAppIcon(
       app_type, app_id, GetIntentPickerBubbleIconSize(),
@@ -309,8 +293,9 @@ void IntentPickerTabHelper::UpdateExpandedState(bool should_show_icon) {
 
 void IntentPickerTabHelper::OnAppIconLoadedForChip(const std::string& app_id,
                                                    ui::ImageModel app_icon) {
-  if (app_id != current_app_id_)
+  if (app_id != current_app_id_) {
     return;
+  }
 
   if (!app_icon.IsEmpty()) {
     current_app_icon_ = app_icon;
@@ -339,7 +324,7 @@ void IntentPickerTabHelper::ShowOrHideIconInternal(bool should_show_icon) {
   }
   browser->window()->UpdatePageActionIcon(PageActionIconType::kIntentPicker);
 
-  icon_resolved_after_last_navigation_ = true;
+  icon_resolved_ = true;
   if (icon_update_closure_for_testing_) {
     std::move(icon_update_closure_for_testing_).Run();
   }
@@ -427,7 +412,7 @@ void IntentPickerTabHelper::OnIntentPickerClosedMaybeLaunch(
 void IntentPickerTabHelper::SetIconUpdateCallbackForTesting(
     base::OnceClosure callback,
     bool include_latest_navigation) {
-  if (icon_resolved_after_last_navigation_ && include_latest_navigation) {
+  if (icon_resolved_ && include_latest_navigation) {
     std::move(callback).Run();
     return;
   }
@@ -437,7 +422,7 @@ void IntentPickerTabHelper::SetIconUpdateCallbackForTesting(
 void IntentPickerTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   if (IsNavigatingToNewSite(navigation_handle)) {
-    icon_resolved_after_last_navigation_ = false;
+    icon_resolved_ = false;
   }
 }
 

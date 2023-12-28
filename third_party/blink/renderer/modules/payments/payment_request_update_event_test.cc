@@ -43,8 +43,7 @@ class MockPaymentRequest : public GarbageCollected<MockPaymentRequest>,
 };
 
 TEST(PaymentRequestUpdateEventTest, OnUpdatePaymentDetailsCalled) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   PaymentRequestUpdateEvent* event = PaymentRequestUpdateEvent::Create(
       scope.GetExecutionContext(), event_type_names::kShippingaddresschange);
@@ -65,8 +64,7 @@ TEST(PaymentRequestUpdateEventTest, OnUpdatePaymentDetailsCalled) {
 }
 
 TEST(PaymentRequestUpdateEventTest, OnUpdatePaymentDetailsFailureCalled) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   PaymentRequestUpdateEvent* event = PaymentRequestUpdateEvent::Create(
       scope.GetExecutionContext(), event_type_names::kShippingaddresschange);
@@ -87,8 +85,7 @@ TEST(PaymentRequestUpdateEventTest, OnUpdatePaymentDetailsFailureCalled) {
 }
 
 TEST(PaymentRequestUpdateEventTest, CannotUpdateWithoutDispatching) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   PaymentRequestUpdateEvent* event = PaymentRequestUpdateEvent::Create(
       scope.GetExecutionContext(), event_type_names::kShippingaddresschange);
@@ -104,8 +101,7 @@ TEST(PaymentRequestUpdateEventTest, CannotUpdateWithoutDispatching) {
 }
 
 TEST(PaymentRequestUpdateEventTest, CannotUpdateTwice) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   PaymentRequestUpdateEvent* event = PaymentRequestUpdateEvent::Create(
       scope.GetExecutionContext(), event_type_names::kShippingaddresschange);
@@ -130,8 +126,7 @@ TEST(PaymentRequestUpdateEventTest, CannotUpdateTwice) {
 }
 
 TEST(PaymentRequestUpdateEventTest, UpdaterNotRequired) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   PaymentRequestUpdateEvent* event = PaymentRequestUpdateEvent::Create(
       scope.GetExecutionContext(), event_type_names::kShippingaddresschange);
@@ -147,8 +142,7 @@ TEST(PaymentRequestUpdateEventTest, UpdaterNotRequired) {
 }
 
 TEST(PaymentRequestUpdateEventTest, AddressChangeUpdateWithTimeout) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
@@ -188,8 +182,7 @@ TEST(PaymentRequestUpdateEventTest, AddressChangeUpdateWithTimeout) {
 }
 
 TEST(PaymentRequestUpdateEventTest, OptionChangeUpdateWithTimeout) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
@@ -229,8 +222,7 @@ TEST(PaymentRequestUpdateEventTest, OptionChangeUpdateWithTimeout) {
 }
 
 TEST(PaymentRequestUpdateEventTest, AddressChangePromiseTimeout) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
@@ -268,8 +260,7 @@ TEST(PaymentRequestUpdateEventTest, AddressChangePromiseTimeout) {
 }
 
 TEST(PaymentRequestUpdateEventTest, OptionChangePromiseTimeout) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
@@ -307,8 +298,7 @@ TEST(PaymentRequestUpdateEventTest, OptionChangePromiseTimeout) {
 }
 
 TEST(PaymentRequestUpdateEventTest, NotAllowUntrustedEvent) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   PaymentRequestUpdateEvent* event = PaymentRequestUpdateEvent::Create(
       scope.GetExecutionContext(), event_type_names::kShippingaddresschange);

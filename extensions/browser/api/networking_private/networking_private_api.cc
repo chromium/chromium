@@ -20,6 +20,7 @@
 #include "extensions/common/api/networking_private.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/features/feature_provider.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 
 namespace extensions {
 
@@ -50,7 +51,7 @@ NetworkingPrivateDelegate* GetDelegate(
 }
 
 bool HasPrivateNetworkingAccess(const Extension* extension,
-                                Feature::Context context,
+                                mojom::ContextType context,
                                 const GURL& source_url,
                                 int context_id,
                                 const ContextData& context_data) {
@@ -71,7 +72,7 @@ enum class PropertiesType { GET, SET };
 std::vector<std::string> FilterProperties(base::Value::Dict& properties,
                                           PropertiesType type,
                                           const Extension* extension,
-                                          Feature::Context context,
+                                          mojom::ContextType context,
                                           const GURL& source_url,
                                           int context_id,
                                           const ContextData& context_data) {
@@ -102,9 +103,9 @@ std::vector<std::string> FilterProperties(base::Value::Dict& properties,
 }
 
 bool CanChangeSharedConfig(const Extension* extension,
-                           Feature::Context context) {
+                           mojom::ContextType context) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return context == Feature::WEBUI_CONTEXT;
+  return context == mojom::ContextType::kWebUi;
 #else
   return true;
 #endif

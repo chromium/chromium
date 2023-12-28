@@ -18,7 +18,17 @@
 
 namespace url {
 
-// Canonicalizer output -------------------------------------------------------
+// Represents the different behavior between canonicalizing special URLs
+// (https://url.spec.whatwg.org/#is-special) and canonicalizing URLs which are
+// not special.
+//
+// Examples:
+// - Special URLs: "https://host/path", "ftp://host/path"
+// - Non Special URLs: "about:blank", "data:xxx", "git://host/path"
+enum class CanonMode { kSpecialURL, kNonSpecialURL };
+
+// Canonicalizer output
+// -------------------------------------------------------
 
 // Base class for the canonicalizer output, this maintains a buffer and
 // supports simple resizing and append operations on it.
@@ -396,10 +406,10 @@ struct CanonHostInfo {
   }
 };
 
-// Host.
+// Deprecated. Please call either CanonicalizeSpecialHost or
+// CanonicalizeNonSpecialHost.
 //
-// The 8-bit version requires UTF-8 encoding. Use this version when you only
-// need to know whether canonicalization succeeded.
+// TODO(crbug.com/1416006): Check the callers of these functions.
 COMPONENT_EXPORT(URL)
 bool CanonicalizeHost(const char* spec,
                       const Component& host,
@@ -411,10 +421,25 @@ bool CanonicalizeHost(const char16_t* spec,
                       CanonOutput* output,
                       Component* out_host);
 
-// Extended version of CanonicalizeHost, which returns additional information.
-// Use this when you need to know whether the hostname was an IP address.
-// A successful return is indicated by host_info->family != BROKEN. See the
-// definition of CanonHostInfo above for details.
+// Host in special URLs.
+//
+// The 8-bit version requires UTF-8 encoding. Use this version when you only
+// need to know whether canonicalization succeeded.
+COMPONENT_EXPORT(URL)
+bool CanonicalizeSpecialHost(const char* spec,
+                             const Component& host,
+                             CanonOutput& output,
+                             Component& out_host);
+COMPONENT_EXPORT(URL)
+bool CanonicalizeSpecialHost(const char16_t* spec,
+                             const Component& host,
+                             CanonOutput& output,
+                             Component& out_host);
+
+// Deprecated. Please call either CanonicalizeSpecialHostVerbose or
+// CanonicalizeNonSpecialHostVerbose.
+//
+// TODO(crbug.com/1416006): Check the callers of these functions.
 COMPONENT_EXPORT(URL)
 void CanonicalizeHostVerbose(const char* spec,
                              const Component& host,
@@ -425,6 +450,21 @@ void CanonicalizeHostVerbose(const char16_t* spec,
                              const Component& host,
                              CanonOutput* output,
                              CanonHostInfo* host_info);
+
+// Extended version of CanonicalizeSpecialHost, which returns additional
+// information. Use this when you need to know whether the hostname was an IP
+// address. A successful return is indicated by host_info->family != BROKEN. See
+// the definition of CanonHostInfo above for details.
+COMPONENT_EXPORT(URL)
+void CanonicalizeSpecialHostVerbose(const char* spec,
+                                    const Component& host,
+                                    CanonOutput& output,
+                                    CanonHostInfo& host_info);
+COMPONENT_EXPORT(URL)
+void CanonicalizeSpecialHostVerbose(const char16_t* spec,
+                                    const Component& host,
+                                    CanonOutput& output,
+                                    CanonHostInfo& host_info);
 
 // Canonicalizes a string according to the host canonicalization rules. Unlike
 // CanonicalizeHost, this will not check for IP addresses which can change the
@@ -455,6 +495,31 @@ bool CanonicalizeHostSubstring(const char16_t* spec,
                                const Component& host,
                                CanonOutput* output);
 
+// Host in non-special URLs.
+COMPONENT_EXPORT(URL)
+bool CanonicalizeNonSpecialHost(const char* spec,
+                                const Component& host,
+                                CanonOutput& output,
+                                Component& out_host);
+COMPONENT_EXPORT(URL)
+bool CanonicalizeNonSpecialHost(const char16_t* spec,
+                                const Component& host,
+                                CanonOutput& output,
+                                Component& out_host);
+
+// Extended version of CanonicalizeNonSpecialHost, which returns additional
+// information. See CanonicalizeSpecialHost for details.
+COMPONENT_EXPORT(URL)
+void CanonicalizeNonSpecialHostVerbose(const char* spec,
+                                       const Component& host,
+                                       CanonOutput& output,
+                                       CanonHostInfo& host_info);
+COMPONENT_EXPORT(URL)
+void CanonicalizeNonSpecialHostVerbose(const char16_t* spec,
+                                       const Component& host,
+                                       CanonOutput& output,
+                                       CanonHostInfo& host_info);
+
 // IP addresses.
 //
 // Tries to interpret the given host name as an IPv4 or IPv6 address. If it is
@@ -475,6 +540,19 @@ void CanonicalizeIPAddress(const char16_t* spec,
                            const Component& host,
                            CanonOutput* output,
                            CanonHostInfo* host_info);
+
+// Similar to CanonicalizeIPAddress, but supports only IPv6 address.
+COMPONENT_EXPORT(URL)
+void CanonicalizeIPv6Address(const char* spec,
+                             const Component& host,
+                             CanonOutput& output,
+                             CanonHostInfo& host_info);
+
+COMPONENT_EXPORT(URL)
+void CanonicalizeIPv6Address(const char16_t* spec,
+                             const Component& host,
+                             CanonOutput& output,
+                             CanonHostInfo& host_info);
 
 // Port: this function will add the colon for the port if a port is present.
 // The caller can pass PORT_UNSPECIFIED as the
@@ -508,6 +586,23 @@ int DefaultPortForScheme(const char* scheme, int scheme_len);
 // an issue. Somebody giving us an 8-bit path is responsible for generating
 // the path that the server expects (we'll escape high-bit characters), so
 // if something is invalid, it's their problem.
+COMPONENT_EXPORT(URL)
+bool CanonicalizePath(const char* spec,
+                      const Component& path,
+                      CanonMode canon_mode,
+                      CanonOutput* output,
+                      Component* out_path);
+COMPONENT_EXPORT(URL)
+bool CanonicalizePath(const char16_t* spec,
+                      const Component& path,
+                      CanonMode canon_mode,
+                      CanonOutput* output,
+                      Component* out_path);
+
+// Deprecated. Please pass CanonMode explicitly.
+//
+// These functions are also used in net/third_party code. So removing these
+// functions requires several steps.
 COMPONENT_EXPORT(URL)
 bool CanonicalizePath(const char* spec,
                       const Component& path,
@@ -604,7 +699,6 @@ void CanonicalizeRef(const char16_t* spec,
 // Use for standard URLs with authorities and paths.
 COMPONENT_EXPORT(URL)
 bool CanonicalizeStandardURL(const char* spec,
-                             int spec_len,
                              const Parsed& parsed,
                              SchemeType scheme_type,
                              CharsetConverter* query_converter,
@@ -612,12 +706,27 @@ bool CanonicalizeStandardURL(const char* spec,
                              Parsed* new_parsed);
 COMPONENT_EXPORT(URL)
 bool CanonicalizeStandardURL(const char16_t* spec,
-                             int spec_len,
                              const Parsed& parsed,
                              SchemeType scheme_type,
                              CharsetConverter* query_converter,
                              CanonOutput* output,
                              Parsed* new_parsed);
+
+// Use for non-special URLs.
+COMPONENT_EXPORT(URL)
+bool CanonicalizeNonSpecialURL(const char* spec,
+                               int spec_len,
+                               const Parsed& parsed,
+                               CharsetConverter* query_converter,
+                               CanonOutput& output,
+                               Parsed& new_parsed);
+COMPONENT_EXPORT(URL)
+bool CanonicalizeNonSpecialURL(const char16_t* spec,
+                               int spec_len,
+                               const Parsed& parsed,
+                               CharsetConverter* query_converter,
+                               CanonOutput& output,
+                               Parsed& new_parsed);
 
 // Use for file URLs.
 COMPONENT_EXPORT(URL)
@@ -638,14 +747,12 @@ bool CanonicalizeFileURL(const char16_t* spec,
 // Use for filesystem URLs.
 COMPONENT_EXPORT(URL)
 bool CanonicalizeFileSystemURL(const char* spec,
-                               int spec_len,
                                const Parsed& parsed,
                                CharsetConverter* query_converter,
                                CanonOutput* output,
                                Parsed* new_parsed);
 COMPONENT_EXPORT(URL)
 bool CanonicalizeFileSystemURL(const char16_t* spec,
-                               int spec_len,
                                const Parsed& parsed,
                                CharsetConverter* query_converter,
                                CanonOutput* output,

@@ -12,6 +12,7 @@
     "symbol_level": 0,
     "target_cpu": "x64",
     "use_clang_coverage": true,
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }

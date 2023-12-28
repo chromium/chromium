@@ -122,4 +122,11 @@ GLuint MakeTextureAndSetParameters(
   return service_id;
 }
 
+bool IsTexStorage2DAvailable() {
+  const auto* version_info = gl::g_current_gl_version;
+  const auto& ext = gl::g_current_gl_driver->ext;
+  return ext.b_GL_EXT_texture_storage || ext.b_GL_ARB_texture_storage ||
+         version_info->is_es3 || version_info->IsAtLeastGL(4, 2);
+}
+
 }  // namespace gpu

@@ -44,7 +44,7 @@ class AppStoreRatingSceneAgentTest : public PlatformTest {
   }
 
   ~AppStoreRatingSceneAgentTest() override {
-    ClearUserDefaults();
+    ClearDefaultBrowserPromoData();
     local_state_.Get()->ClearPref(prefs::kAppStoreRatingPolicyEnabled);
   }
 
@@ -101,11 +101,6 @@ class AppStoreRatingSceneAgentTest : public PlatformTest {
     NSDate* date = CreateDateFromToday(-daysAgo);
     GetApplicationContext()->GetLocalState()->SetTime(
         kAppStoreRatingLastShownPromoDayKey, base::Time::FromNSDate(date));
-  }
-
-  // Remove the keys added to NSUserDefaults.
-  void ClearUserDefaults() {
-    ClearDefaultBrowserPromoData();
   }
 
   // Ensure that Chrome is considered as default browser.

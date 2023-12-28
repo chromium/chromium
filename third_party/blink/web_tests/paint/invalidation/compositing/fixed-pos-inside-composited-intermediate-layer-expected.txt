@@ -15,7 +15,7 @@
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='containerOverlapsComposited'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='containerOverlapsComposited'",
       "position": [20, 20],
       "bounds": [100, 30000],
       "contentsOpaque": true,

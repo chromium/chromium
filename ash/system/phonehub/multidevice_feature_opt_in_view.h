@@ -46,7 +46,7 @@ class ASH_EXPORT MultideviceFeatureOptInView
   void UpdateVisibility(bool was_visible);
   void ClosePhoneHubBubble();
 
-  raw_ptr<phonehub::MultideviceFeatureAccessManager, ExperimentalAsh>
+  raw_ptr<phonehub::MultideviceFeatureAccessManager>
       multidevice_feature_access_manager_;
 
   base::ScopedObservation<phonehub::MultideviceFeatureAccessManager,

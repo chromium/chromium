@@ -80,6 +80,7 @@ class WebAppDatabaseTest : public WebAppTest {
         database_factory_, &provider_->GetCommandManager(),
         &provider_->scheduler(), &provider_->GetInstallManager());
 
+    provider_->Start();
     ON_CALL(mock_processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
   }

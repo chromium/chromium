@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -31,6 +32,7 @@ class CSSLazyParsingTest : public testing::Test {
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   Persistent<StyleSheetContents> cached_contents_;
 };
 
@@ -71,7 +73,7 @@ TEST_F(CSSLazyParsingTest, ChangeDocuments) {
 
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext,
-      CSSParserContext::kLiveProfile, &dummy_holder->GetDocument());
+      &dummy_holder->GetDocument());
   cached_contents_ = MakeGarbageCollected<StyleSheetContents>(context);
   {
     auto* sheet = MakeGarbageCollected<CSSStyleSheet>(

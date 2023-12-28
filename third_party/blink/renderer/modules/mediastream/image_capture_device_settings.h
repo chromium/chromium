@@ -16,6 +16,8 @@ struct MODULES_EXPORT ImageCaptureDeviceSettings {
   absl::optional<double> zoom;
   absl::optional<bool> torch;
   absl::optional<bool> background_blur;
+  absl::optional<bool> eye_gaze_correction;
+  absl::optional<bool> face_framing;
 };
 
 }  // namespace blink

@@ -207,7 +207,7 @@ class PagedAppsGridView::BackgroundCardLayer : public ui::LayerOwner,
   bool is_active_page_ = false;
 
   const bool is_jelly_enabled_;
-  const raw_ptr<PagedAppsGridView, ExperimentalAsh> paged_apps_grid_view_;
+  const raw_ptr<PagedAppsGridView> paged_apps_grid_view_;
 };
 
 PagedAppsGridView::PagedAppsGridView(

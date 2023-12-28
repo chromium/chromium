@@ -21,6 +21,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/display/tablet_state.h"
 #include "ui/events/event.h"
 #include "ui/wm/core/transient_window_manager.h"
 #include "ui/wm/core/window_animations.h"
@@ -83,7 +84,7 @@ class AnimationSetter {
 
  private:
   // The window which gets used.
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 
   // Previous animation type.
   const int previous_animation_type_;
@@ -104,7 +105,6 @@ MultiUserWindowManagerImpl::MultiUserWindowManagerImpl(
     : delegate_(delegate), current_account_id_(account_id) {
   DCHECK(delegate_);
   g_instance = this;
-  Shell::Get()->tablet_mode_controller()->AddObserver(this);
   Shell::Get()->session_controller()->AddObserver(this);
 }
 
@@ -125,7 +125,6 @@ MultiUserWindowManagerImpl::~MultiUserWindowManagerImpl() {
   }
 
   Shell::Get()->session_controller()->RemoveObserver(this);
-  Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   g_instance = nullptr;
 }
 
@@ -356,7 +355,12 @@ void MultiUserWindowManagerImpl::OnTransientChildRemoved(
   }
 }
 
-void MultiUserWindowManagerImpl::OnTabletModeStarted() {
+void MultiUserWindowManagerImpl::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  if (state != display::TabletState::kInTabletMode) {
+    return;
+  }
+
   for (auto& entry : window_to_entry_)
     Shell::Get()->tablet_mode_controller()->AddWindow(entry.first);
 }

@@ -4,7 +4,7 @@
 
 #include "ash/system/accessibility/autoclick_menu_bubble_controller.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/public/cpp/locale_update_controller.h"
 #include "ash/shelf/shelf.h"
@@ -117,7 +117,7 @@ TEST_F(AutoclickMenuBubbleControllerTest, ExistsOnlyWhenAutoclickIsRunning) {
 }
 
 TEST_F(AutoclickMenuBubbleControllerTest, CanSelectAutoclickTypeFromBubble) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   // Set to a different event type than the first event in kTestCases.
   controller->SetAutoclickEventType(AutoclickEventType::kRightClick);
@@ -152,7 +152,7 @@ TEST_F(AutoclickMenuBubbleControllerTest, CanSelectAutoclickTypeFromBubble) {
 }
 
 TEST_F(AutoclickMenuBubbleControllerTest, UnpausesWhenPauseAlreadySelected) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   views::View* pause_button =
       GetMenuButton(AutoclickMenuView::ButtonId::kPause);
@@ -181,7 +181,7 @@ TEST_F(AutoclickMenuBubbleControllerTest, UnpausesWhenPauseAlreadySelected) {
 }
 
 TEST_F(AutoclickMenuBubbleControllerTest, CanChangePosition) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
 
   // Set to a known position for than the first event in kTestCases.
@@ -247,7 +247,7 @@ TEST_F(AutoclickMenuBubbleControllerTest, DefaultChangesWithTextDirection) {
 }
 
 TEST_F(AutoclickMenuBubbleControllerTest, ScrollBubbleShowsAndCloses) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   controller->SetAutoclickEventType(AutoclickEventType::kLeftClick);
   // No scroll view yet.
@@ -268,7 +268,7 @@ TEST_F(AutoclickMenuBubbleControllerTest, ScrollBubbleShowsAndCloses) {
 }
 
 TEST_F(AutoclickMenuBubbleControllerTest, ScrollBubbleDefaultPositioning) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   controller->SetAutoclickEventType(AutoclickEventType::kScroll);
 
@@ -314,7 +314,7 @@ TEST_F(AutoclickMenuBubbleControllerTest, ScrollBubbleDefaultPositioning) {
 
 TEST_F(AutoclickMenuBubbleControllerTest,
        ScrollBubbleManualPositioningLargeScrollBounds) {
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   controller->SetAutoclickEventType(AutoclickEventType::kScroll);
 
@@ -388,7 +388,7 @@ TEST_F(AutoclickMenuBubbleControllerTest,
 TEST_F(AutoclickMenuBubbleControllerTest,
        ScrollBubbleManualPositioningSmallScrollBounds) {
   UpdateDisplay("1200x1000");
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   controller->SetAutoclickEventType(AutoclickEventType::kScroll);
 

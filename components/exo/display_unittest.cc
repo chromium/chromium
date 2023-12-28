@@ -80,7 +80,7 @@ class DisplayTest : public test::ExoTestBase {
   }
 
  private:
-  raw_ptr<TestPropertyResolver, DanglingUntriaged | ExperimentalAsh> resolver_;
+  raw_ptr<TestPropertyResolver, DanglingUntriaged> resolver_;
 };
 
 TEST_F(DisplayTest, CreateSurface) {

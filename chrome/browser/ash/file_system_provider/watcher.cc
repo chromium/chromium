@@ -4,8 +4,7 @@
 
 #include "chrome/browser/ash/file_system_provider/watcher.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 WatcherKey::WatcherKey(const base::FilePath& entry_path, bool recursive)
     : entry_path(entry_path), recursive(recursive) {
@@ -37,5 +36,4 @@ Watcher::Watcher(const Watcher& other) = default;
 Watcher::~Watcher() {
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

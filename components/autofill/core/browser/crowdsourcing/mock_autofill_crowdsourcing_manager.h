@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -27,20 +28,17 @@ class MockAutofillCrowdsourcingManager : public AutofillCrowdsourcingManager {
 
   MOCK_METHOD(bool,
               StartQueryRequest,
-              (const std::vector<FormStructure*>&,
+              (const std::vector<vector_experimental_raw_ptr<FormStructure>>&,
                net::IsolationInfo,
-               base::WeakPtr<Observer>),
+               QueryRequestCompleteCallback),
               (override));
 
   MOCK_METHOD(bool,
               StartUploadRequest,
-              (const FormStructure&,
-               bool,
-               const ServerFieldTypeSet&,
-               const std::string&,
-               bool,
-               PrefService*,
-               base::WeakPtr<Observer>),
+              (std::vector<AutofillUploadContents>,
+               mojom::SubmissionSource,
+               int,
+               PrefService*),
               (override));
 };
 

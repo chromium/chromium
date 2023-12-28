@@ -589,28 +589,6 @@ bool SuspendX11ScreenSaver(bool suspend) {
   return true;
 }
 
-bool IsSyncExtensionAvailable() {
-// Chrome for ChromeOS can be run with X11 on a Linux desktop. In this case,
-// NotifySwapAfterResize is never called as the compositor does not notify about
-// swaps after resize. Thus, simply disable usage of XSyncCounter on ChromeOS
-// builds.
-//
-// TODO(https://crbug.com/1036285): Also, disable sync extension for all ozone
-// builds as long as our EGL impl for Ozone/X11 is not mature enough and we do
-// not receive swap completions on time, which results in weird resize behaviour
-// as X Server waits for the XSyncCounter changes.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_OZONE)
-  return false;
-#else
-  static bool result =
-      x11::Connection::Get()
-          ->sync()
-          .Initialize({x11::Sync::major_version, x11::Sync::minor_version})
-          .Sync();
-  return result;
-#endif
-}
-
 SkColorType ColorTypeForVisual(x11::VisualId visual) {
   struct {
     SkColorType color_type;

@@ -26,10 +26,6 @@ void LayoutListItem::WillBeDestroyed() {
   LayoutNGBlockFlow::WillBeDestroyed();
 }
 
-bool LayoutListItem::IsOfType(LayoutObjectType type) const {
-  return type == kLayoutObjectListItem || LayoutNGBlockFlow::IsOfType(type);
-}
-
 void LayoutListItem::InsertedIntoTree() {
   LayoutNGBlockFlow::InsertedIntoTree();
 

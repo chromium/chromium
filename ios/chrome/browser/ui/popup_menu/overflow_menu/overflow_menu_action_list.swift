@@ -18,9 +18,18 @@ struct OverflowMenuActionList: View {
 
   var body: some View {
     List {
-      ForEach(actionGroups.filter({ !$0.actions.isEmpty })) { actionGroup in
+      let nonEmpty = actionGroups.filter({ !$0.actions.isEmpty })
+      ForEach(nonEmpty) { actionGroup in
+        let isLast = actionGroup == nonEmpty.last
         OverflowMenuActionSection(
-          actionGroup: actionGroup, metricsHandler: metricsHandler)
+          actionGroup: actionGroup, metricsHandler: metricsHandler,
+          footerBackground: {
+            if isLast {
+              Color.clear.onAppear {
+                metricsHandler?.popupMenuUserScrolledToEndOfActions()
+              }
+            }
+          })
       }
     }
     .matchedGeometryEffect(id: MenuCustomizationAnimationID.actions, in: namespace)

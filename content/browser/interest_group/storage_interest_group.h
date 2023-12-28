@@ -12,8 +12,8 @@
 #include "base/time/time.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
@@ -73,6 +73,38 @@ struct CONTENT_EXPORT StorageInterestGroup {
 CONTENT_EXPORT std::ostream& operator<<(
     std::ostream& out,
     const StorageInterestGroup::KAnonymityData& kanon);
+
+enum DebugReportCooldownType { kShortCooldown, kRestrictedCooldown };
+
+struct CONTENT_EXPORT DebugReportCooldown {
+  base::Time starting_time;
+  DebugReportCooldownType type;
+
+  bool operator==(const DebugReportCooldown& other) const = default;
+};
+
+struct CONTENT_EXPORT DebugReportLockoutAndCooldowns {
+  DebugReportLockoutAndCooldowns();
+  DebugReportLockoutAndCooldowns(
+      absl::optional<base::Time> last_report_sent_time,
+      std::map<url::Origin, DebugReportCooldown> debug_report_cooldown_map);
+  DebugReportLockoutAndCooldowns(DebugReportLockoutAndCooldowns&);
+  DebugReportLockoutAndCooldowns& operator=(DebugReportLockoutAndCooldowns&&) =
+      default;
+  DebugReportLockoutAndCooldowns(DebugReportLockoutAndCooldowns&&);
+  ~DebugReportLockoutAndCooldowns();
+
+  // The last time a forDebuggingOnly report was sent.
+  absl::optional<base::Time> last_report_sent_time;
+  // The key is an ad tech origin, and value is its cooldown of sending
+  // forDebuggingOnly reports.
+  std::map<url::Origin, DebugReportCooldown> debug_report_cooldown_map = {};
+};
+
+// Converts forDebuggingOnly API's cooldown type to its actual cooldown
+// duration.
+CONTENT_EXPORT absl::optional<base::TimeDelta>
+ConvertDebugReportCooldownTypeToDuration(int type);
 
 }  // namespace content
 

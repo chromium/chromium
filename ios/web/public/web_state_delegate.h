@@ -72,7 +72,7 @@ class WebStateDelegate {
   virtual void HandlePermissionsDecisionRequest(
       WebState* source,
       NSArray<NSNumber*>* permissions,
-      WebStatePermissionDecisionHandler handler) API_AVAILABLE(ios(15.0));
+      WebStatePermissionDecisionHandler handler);
 
   // Called when a request receives an authentication challenge specified by
   // `protection_space`, and is unable to respond using cached credentials.

@@ -6,7 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -256,11 +256,12 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
   [self.imagesSlidingOutAnimation startAnimation];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-  [super viewWillDisappear:animated];
+- (void)viewDidDisappear:(BOOL)animated {
+  // Stop the ongoing animations so that their completion is not called.
   [self.imagesSlidingOutAnimation stopAnimation:YES];
   [self.progressBarLoadingAnimation stopAnimation:YES];
   [self.imagesSlidingInAnimation stopAnimation:YES];
+  [super viewDidDisappear:animated];
 }
 
 #pragma mark - SharingStatusConsumer
@@ -632,6 +633,8 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
 
   [view setNeedsLayout];
   [view layoutIfNeeded];
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  self.titleLabel);
 }
 
 // Replaces text of the title label and adds a done button.
@@ -661,6 +664,8 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
 
   [view setNeedsLayout];
   [view layoutIfNeeded];
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  self.titleLabel);
 }
 
 // Stops any ongoing animations and starts a new one (profile images sliding to

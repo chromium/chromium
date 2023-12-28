@@ -138,7 +138,8 @@ class CallStackProfileBuilder : public base::ProfileBuilder {
   std::unordered_map<const base::ModuleCache::Module*, size_t> module_index_;
 
   // The distinct modules in the current profile.
-  std::vector<const base::ModuleCache::Module*> modules_;
+  std::vector<raw_ptr<const base::ModuleCache::Module, VectorExperimental>>
+      modules_;
 
   // Timestamps recording when each sample was taken.
   std::vector<base::TimeTicks> sample_timestamps_;

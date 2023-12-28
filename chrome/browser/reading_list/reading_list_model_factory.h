@@ -5,14 +5,16 @@
 #ifndef CHROME_BROWSER_READING_LIST_READING_LIST_MODEL_FACTORY_H_
 #define CHROME_BROWSER_READING_LIST_READING_LIST_MODEL_FACTORY_H_
 
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "components/reading_list/core/dual_reading_list_model.h"
+#include "components/reading_list/core/reading_list_model.h"
+#include "content/public/browser/browser_context.h"
 
 namespace base {
 template <typename T>
 class NoDestructor;
 }
-
-class ReadingListModel;
 
 // Singleton that owns all ReadingListModels and associates them with
 // BrowserContexts.
@@ -22,7 +24,12 @@ class ReadingListModelFactory : public ProfileKeyedServiceFactory {
   ReadingListModelFactory& operator=(const ReadingListModelFactory&) = delete;
 
   static ReadingListModel* GetForBrowserContext(
-      content::BrowserContext* browser_context);
+      content::BrowserContext* context);
+
+#if BUILDFLAG(IS_ANDROID)
+  static reading_list::DualReadingListModel*
+  GetAsDualReadingListForBrowserContext(content::BrowserContext* context);
+#endif
 
   static ReadingListModelFactory* GetInstance();
 

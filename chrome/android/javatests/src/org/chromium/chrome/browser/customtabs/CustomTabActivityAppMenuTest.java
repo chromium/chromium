@@ -54,6 +54,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.PackageManagerWrapper;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
@@ -76,6 +77,7 @@ import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -439,6 +441,7 @@ public class CustomTabActivityAppMenuTest {
     /** Tests if the default share item can be shown in the app menu. */
     @Test
     @SmallTest
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testShareMenuItem() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
         intent.putExtra(CustomTabsIntent.EXTRA_DEFAULT_SHARE_MENU_ITEM, true);

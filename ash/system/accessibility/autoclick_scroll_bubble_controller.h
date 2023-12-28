@@ -52,9 +52,9 @@ class AutoclickScrollBubbleController : public TrayBubbleView::Delegate {
   friend class AutoclickTest;
 
   // Owned by views hierarchy.
-  raw_ptr<AutoclickScrollBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
-  raw_ptr<AutoclickScrollView, ExperimentalAsh> scroll_view_ = nullptr;
-  raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_ = nullptr;
+  raw_ptr<AutoclickScrollBubbleView> bubble_view_ = nullptr;
+  raw_ptr<AutoclickScrollView> scroll_view_ = nullptr;
+  raw_ptr<views::Widget> bubble_widget_ = nullptr;
 
   // Whether the scroll bubble should be positioned based on a fixed rect
   // or just relative to the rect passed in UpdateAnchorRect.

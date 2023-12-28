@@ -25,11 +25,10 @@ class ASH_EXPORT AppListMenuModelAdapter : public AppMenuModelAdapter {
   // metrics, if a new value is added make sure to modify
   // RecordHistogramOnMenuClosed().
   enum AppListViewAppType {
-    FULLSCREEN_SEARCH_RESULT = 0,
-    FULLSCREEN_SUGGESTED = 1,
-    FULLSCREEN_APP_GRID = 2,
-
     // Usage removed.
+    // FULLSCREEN_SEARCH_RESULT = 0,
+    // FULLSCREEN_SUGGESTED = 1,
+    // FULLSCREEN_APP_GRID = 2,
     // PEEKING_SUGGESTED = 3,
     // HALF_SEARCH_RESULT = 4,
     // SEARCH_RESULT = 5,

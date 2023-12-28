@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="63">
+  <interface name="zaura_shell" version="64">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -805,7 +805,7 @@
     </event>
   </interface>
 
-  <interface name="zaura_toplevel" version="63">
+  <interface name="zaura_toplevel" version="64">
     <description summary="aura shell interface to the toplevel shell">
       An interface to the toplevel shell, which allows the
       client to access shell specific functionality.
@@ -922,6 +922,16 @@
       <entry name="pip" value="105" since="54">
         <description summary="window is PiP">
           The window is in PiP mode.
+        </description>
+      </entry>
+      <entry name="pinned" value="106" since="64">
+        <description summary="window is pinned">
+          The window is pinned.
+        </description>
+      </entry>
+      <entry name="trusted_pinned" value="107" since="64">
+        <description summary="window is trusted pinned">
+          The window is trusted pinned.
         </description>
       </entry>
     </enum>

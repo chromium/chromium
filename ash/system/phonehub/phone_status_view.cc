@@ -112,14 +112,8 @@ PhoneStatusView::PhoneStatusView(phonehub::PhoneModel* phone_model,
   phone_name_label_->SetEnabledColor(
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kTextColorPrimary));
-
-  if (chromeos::features::IsJellyrollEnabled()) {
-    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosHeadline1,
-                                          *phone_name_label_);
-  } else {
-    TrayPopupUtils::SetLabelFontList(phone_name_label_,
-                                     TrayPopupUtils::FontStyle::kSubHeader);
-  }
+  TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosHeadline1,
+                                        *phone_name_label_);
 
   phone_name_label_->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
   AddView(TriView::Container::START, phone_name_label_);

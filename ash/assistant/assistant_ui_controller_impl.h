@@ -94,13 +94,13 @@ class ASH_EXPORT AssistantUiControllerImpl
   void ShowUnboundErrorToast();
 
  private:
-  const raw_ptr<AssistantControllerImpl, ExperimentalAsh>
+  const raw_ptr<AssistantControllerImpl>
       assistant_controller_;  // Owned by Shell.
   AssistantUiModel model_;
   bool has_shown_onboarding_ = false;
 
   // Owned by AssistantService.
-  raw_ptr<assistant::Assistant, ExperimentalAsh> assistant_ = nullptr;
+  raw_ptr<assistant::Assistant> assistant_ = nullptr;
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};

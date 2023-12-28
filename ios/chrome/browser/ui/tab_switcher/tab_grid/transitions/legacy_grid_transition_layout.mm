@@ -75,11 +75,6 @@
 }
 
 - (void)populateWithSnapshotsFromView:(UIView*)view middleRect:(CGRect)rect {
-  if (!view) {
-    // TODO(crbug.com/1506555): Temporary investigation to see if there is a
-    // misconfiguration in the transition.
-    base::debug::DumpWithoutCrashing();
-  }
   self.cell.mainTabView = [view resizableSnapshotViewFromRect:rect
                                            afterScreenUpdates:YES
                                                 withCapInsets:UIEdgeInsetsZero];

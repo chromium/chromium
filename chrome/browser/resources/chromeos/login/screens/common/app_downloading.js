@@ -63,7 +63,7 @@ class AppDownloading extends AppDownloadingBase {
    * Returns the control which should receive initial focus.
    */
   get defaultControl() {
-    return this.$['app-downloading-dialog'];
+    return /** @type {HTMLElement} */ (this.$['app-downloading-dialog']);
   }
 
   /** Called when dialog is shown */

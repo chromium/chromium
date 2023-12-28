@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
+#include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
 #include "third_party/blink/renderer/core/paint/timing/media_record_id.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
@@ -289,8 +290,8 @@ class CORE_EXPORT ImagePaintTimingDetector final
   void ReportPresentationTime(unsigned last_queued_frame_index,
                               base::TimeTicks);
 
-  // Return the candidate.
-  ImageRecord* UpdateMetricsCandidate();
+  // Return the image LCP candidate and whether the candidate has changed.
+  std::pair<ImageRecord*, bool> UpdateMetricsCandidate();
 
   // Called when documentElement changes from zero to nonzero opacity. Makes the
   // largest image that was hidden due to this a Largest Contentful Paint

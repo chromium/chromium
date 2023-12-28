@@ -8,7 +8,6 @@ import static org.chromium.android_webview.test.AwActivityTestRule.WAIT_TIMEOUT_
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Point;
 
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
@@ -179,18 +178,18 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
     }
 
     private static final String TEST_PAGE_COMMON_HEADERS =
-            "<meta name=\"viewport\" content=\""
-                    + "width=device-width, initial-scale=1, minimum-scale=1\"> "
-                    + "<style type=\"text/css\"> "
-                    + "   body { "
-                    + "      margin: 0px; "
-                    + "   } "
-                    + "   div { "
-                    + "      width:10000px; "
-                    + "      height:10000px; "
-                    + "      background-color: blue; "
-                    + "   } "
-                    + "</style> ";
+            """
+            <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+            <style type="text/css">
+                body {
+                    margin: 0px;
+                }
+                div {
+                    width: 10000px;
+                    height: 10000px;
+                    background-color: blue;
+                }
+            </style>""";
     private static final String TEST_PAGE_COMMON_CONTENT = "<div>test div</div> ";
 
     private String makeTestPage(
@@ -198,30 +197,32 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
         String content = TEST_PAGE_COMMON_CONTENT + extraContent;
         if (onscrollObserver != null) {
             content +=
-                    "<script> "
-                            + "   window.onscroll = function(oEvent) { "
-                            + "       "
-                            + onscrollObserver
-                            + ".notifyJava(); "
-                            + "   } "
-                            + "</script>";
+                    String.format(
+                            """
+                            <script>
+                            window.onscroll = function(oEvent) {
+                                %s.notifyJava();
+                            }
+                            </script>""",
+                            onscrollObserver);
         }
         if (firstFrameObserver != null) {
             content +=
-                    "<script> "
-                            + "   window.framesToIgnore = 20; "
-                            + "   window.onAnimationFrame = function(timestamp) { "
-                            + "     if (window.framesToIgnore == 0) { "
-                            + "         "
-                            + firstFrameObserver
-                            + ".notifyJava(); "
-                            + "     } else {"
-                            + "       window.framesToIgnore -= 1; "
-                            + "       window.requestAnimationFrame(window.onAnimationFrame); "
-                            + "     } "
-                            + "   }; "
-                            + "   window.requestAnimationFrame(window.onAnimationFrame); "
-                            + "</script>";
+                    String.format(
+                            """
+                            <script>
+                            window.framesToIgnore = 20;
+                            window.onAnimationFrame = function(timestamp) {
+                                if (window.framesToIgnore == 0) {
+                                    %s.notifyJava();
+                                } else {
+                                    window.framesToIgnore -= 1;
+                                    window.requestAnimationFrame(window.onAnimationFrame);
+                                }
+                            };
+                            window.requestAnimationFrame(window.onAnimationFrame);
+                            </script>""",
+                            firstFrameObserver);
         }
         return CommonResources.makeHtmlPageFrom(TEST_PAGE_COMMON_HEADERS, content);
     }
@@ -829,7 +830,7 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
                 int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {}
 
         @Override
-        public void onScrollUpdateGestureConsumed(Point rootScrollOffset) {
+        public void onScrollUpdateGestureConsumed() {
             mOnScrollUpdateGestureConsumedHelper.notifyCalled();
         }
     }
@@ -856,9 +857,10 @@ public class AndroidScrollIntegrationTest extends AwParameterizedTest {
                 testContainerView,
                 contentsClient,
                 null,
-                "<div>"
-                        + "  <div style=\"width:10000px; height: 10000px;\"> force scrolling </div>"
-                        + "</div>");
+                """
+                <div>
+                    <div style="width:10000px; height: 10000px;"> force scrolling </div>
+                </div>""");
 
         InstrumentationRegistry.getInstrumentation()
                 .runOnMainSync(

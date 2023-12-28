@@ -47,7 +47,7 @@ class UDPSocketEventDispatcher : public BrowserContextKeyedAPI {
   static UDPSocketEventDispatcher* Get(content::BrowserContext* context);
 
  private:
-  typedef ApiResourceManager<ResumableUDPSocket>::ApiResourceData SocketData;
+  using SocketData = ApiResourceManager<ResumableUDPSocket>::ApiResourceData;
   friend class BrowserContextKeyedAPIFactory<UDPSocketEventDispatcher>;
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() { return "UDPSocketEventDispatcher"; }

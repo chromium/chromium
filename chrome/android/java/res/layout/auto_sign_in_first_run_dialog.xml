@@ -12,5 +12,5 @@ found in the LICENSE file.
     style="@style/AlertDialogContent">
     <org.chromium.ui.widget.TextViewWithClickableSpans
         android:id="@+id/summary"
-        style="@style/AlertDialogSummaryViewItem" />
+        style="@style/AlertDialogSummaryViewItem"/>
 </LinearLayout>

@@ -4,9 +4,6 @@
 
 #include "extensions/browser/url_request_util.h"
 
-#include <string>
-
-#include "base/strings/string_piece.h"
 #include "base/types/optional_util.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -35,7 +32,7 @@ bool AllowCrossRendererResourceLoad(
     const ProcessMap& process_map,
     bool* allowed) {
   const GURL& url = request.url;
-  base::StringPiece resource_path = url.path_piece();
+  std::string_view resource_path = url.path_piece();
 
   // This logic is performed for main frame requests in
   // ExtensionNavigationThrottle::WillStartRequest.
@@ -72,8 +69,8 @@ bool AllowCrossRendererResourceLoad(
   // hybrid hosted/packaged apps. The one exception is access to icons, since
   // some extensions want to be able to do things like create their own
   // launchers.
-  base::StringPiece resource_root_relative_path =
-      url.path_piece().empty() ? base::StringPiece()
+  std::string_view resource_root_relative_path =
+      url.path_piece().empty() ? std::string_view()
                                : url.path_piece().substr(1);
   if (extension->is_hosted_app() &&
       !IconsInfo::GetIcons(extension)
@@ -123,7 +120,7 @@ bool AllowCrossRendererResourceLoadHelper(bool is_guest,
                                           const Extension* extension,
                                           const Extension* owner_extension,
                                           const std::string& partition_id,
-                                          base::StringPiece resource_path,
+                                          std::string_view resource_path,
                                           ui::PageTransition page_transition,
                                           bool* allowed) {
   if (is_guest) {

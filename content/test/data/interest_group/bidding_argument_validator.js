@@ -40,7 +40,7 @@ function validateInterestGroup(interestGroup) {
   if (!interestGroup)
     throw 'No interest group';
 
-  if (Object.keys(interestGroup).length !== 15) {
+  if (Object.keys(interestGroup).length !== 16) {
     throw 'Wrong number of interestGroupFields ' +
         JSON.stringify(interestGroup);
   }
@@ -115,6 +115,11 @@ function validateInterestGroup(interestGroup) {
   if (trustedBiddingSignalsKeysJson !== "[\"key1\"]") {
     throw 'Incorrect trustedBiddingSignalsKeys ' +
         trustedBiddingSignalsKeysJson;
+  }
+
+  if (interestGroup.trustedBiddingSignalsSlotSizeMode != 'none') {
+    throw 'Incorrect trustedBiddingSignalsSlotSizeMode ' +
+        interestGroup.trustedBiddingSignalsSlotSizeMode;
   }
 
   // If userBiddingSignals is passed as a JSON string instead of an object,

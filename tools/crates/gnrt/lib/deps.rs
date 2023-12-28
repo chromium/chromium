@@ -279,6 +279,8 @@ pub fn collect_dependencies(
             }
         }
 
+        let allowed_bin_targets: HashSet<&str> =
+            extra_config.get_combined_set(&package.name, |crate_cfg| &crate_cfg.bin_targets);
         for target in package.targets.iter() {
             let src_root = target.src_path.clone().into_std_path_buf();
             let target_type = match target.kind.iter().find_map(|s| TargetType::from_name(s)) {
@@ -299,7 +301,10 @@ pub fn collect_dependencies(
                     dep.lib_target = Some(LibTarget { root: src_root, lib_type });
                 }
                 TargetType::Bin => {
-                    dep.bin_targets.push(BinTarget { root: src_root, name: target.name.clone() });
+                    if allowed_bin_targets.contains(target.name.as_str()) {
+                        dep.bin_targets
+                            .push(BinTarget { root: src_root, name: target.name.clone() });
+                    }
                 }
                 TargetType::BuildScript => {
                     assert_eq!(

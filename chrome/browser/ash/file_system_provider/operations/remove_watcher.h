@@ -16,9 +16,7 @@ namespace base {
 class FilePath;
 }  // namespace base
 
-namespace ash {
-namespace file_system_provider {
-namespace operations {
+namespace ash::file_system_provider::operations {
 
 // Removes a watcher at |entry_path| with the |recursive| mode.
 class RemoveWatcher : public Operation {
@@ -49,8 +47,6 @@ class RemoveWatcher : public Operation {
   storage::AsyncFileUtil::StatusCallback callback_;
 };
 
-}  // namespace operations
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider::operations
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_OPERATIONS_REMOVE_WATCHER_H_

@@ -310,7 +310,8 @@ void OffboardingNoticeActionTaken(
                            static_cast<int>(ToInternalAckAction(action)));
 }
 
-void MaybeSetStartAndEndSurveyTime(PrefService* pref_service) {
+void MaybeSetStartAndEndSurveyTime(PrefService* pref_service,
+                                   bool is_silent_onboarding_enabled) {
   if (pref_service->HasPrefPath(
           prefs::kTrackingProtectionSentimentSurveyStartTime)) {
     return;
@@ -319,15 +320,30 @@ void MaybeSetStartAndEndSurveyTime(PrefService* pref_service) {
   auto group = GetSurveyGroup(pref_service);
   // Setting the start and end time when applicable.
   // First, start by determining the anchor time. Control should be the first
-  // time this function runs. Treatment should be when the notice was acked.
-  // If the anchor time isn't year ready, return early.
+  // time this function runs (unless silent onbaording is enabled, in which
+  // case, we'd wait for the profile to get silentl Onboarded). Treatment should
+  // be when the notice was acked. If the anchor time isn't year ready, return
+  // early.
   base::Time anchor_time;
   switch (group) {
     case SentimentSurveyGroup::kNotSet:
       return;
     case SentimentSurveyGroup::kControlImmediate:
     case SentimentSurveyGroup::kControlDelayed:
-      anchor_time = base::Time::Now();
+      // If Silent Onboarding is enabled, we use the Onboarding time to
+      // determine when the survey anchor time (Used to calculate the survey
+      // start and end time). If it is not enabled, we use "Now" as the anchor
+      // time.
+      if (is_silent_onboarding_enabled) {
+        if (!pref_service->HasPrefPath(
+                prefs::kTrackingProtectionSilentOnboardedSince)) {
+          return;
+        }
+        anchor_time = pref_service->GetTime(
+            prefs::kTrackingProtectionSilentOnboardedSince);
+      } else {
+        anchor_time = base::Time::Now();
+      }
       break;
     case SentimentSurveyGroup::kTreatmentImmediate:
     case SentimentSurveyGroup::kTreatmentDelayed:
@@ -399,8 +415,11 @@ void RecordSilentOnboardingDidNoticeShownOnboard(bool result) {
 
 TrackingProtectionOnboarding::TrackingProtectionOnboarding(
     PrefService* pref_service,
-    version_info::Channel channel)
-    : pref_service_(pref_service), channel_(channel) {
+    version_info::Channel channel,
+    bool is_silent_onboarding_enabled)
+    : pref_service_(pref_service),
+      channel_(channel),
+      is_silent_onboarding_enabled_(is_silent_onboarding_enabled) {
   CHECK(pref_service_);
 
   pref_change_registrar_.Init(pref_service_);
@@ -451,7 +470,7 @@ void TrackingProtectionOnboarding::OnOnboardingPrefChanged() const {
 
 void TrackingProtectionOnboarding::OnOnboardingAckedChanged() const {
   // Maybe set the Hats start and end time now that the profile is onboarded.
-  MaybeSetStartAndEndSurveyTime(pref_service_);
+  MaybeSetStartAndEndSurveyTime(pref_service_, is_silent_onboarding_enabled_);
   for (auto& observer : observers_) {
     observer.OnShouldShowNoticeUpdated();
   }
@@ -569,7 +588,7 @@ void TrackingProtectionOnboarding::RegisterSentimentSurveyGroup(
   pref_service_->SetInteger(prefs::kTrackingProtectionSentimentSurveyGroup,
                             static_cast<int>(internal_group));
 
-  MaybeSetStartAndEndSurveyTime(pref_service_);
+  MaybeSetStartAndEndSurveyTime(pref_service_, is_silent_onboarding_enabled_);
 }
 
 TrackingProtectionOnboarding::SentimentSurveyGroup
@@ -683,6 +702,8 @@ void TrackingProtectionOnboarding::SilentOnboardingNoticeShown() {
       static_cast<int>(
           TrackingProtectionOnboarding::OnboardingStatus::kOnboarded));
   RecordSilentOnboardingDidNoticeShownOnboard(true);
+
+  MaybeSetStartAndEndSurveyTime(pref_service_, is_silent_onboarding_enabled_);
 }
 
 void TrackingProtectionOnboarding::NoticeShown(NoticeType notice_type) {

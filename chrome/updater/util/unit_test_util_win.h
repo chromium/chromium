@@ -9,8 +9,10 @@
 
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/win/atl.h"
 #include "base/win/registry.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/util/unit_test_util.h"
 
 namespace updater {
 
@@ -68,6 +70,10 @@ void SetupCmdExe(UpdaterScope scope,
 [[nodiscard]] bool CreateService(const std::wstring& service_name,
                                  const std::wstring& display_name,
                                  const std::wstring& command_line);
+
+// Creates an event accessible to all authenticated users on the machine.
+test::EventHolder CreateEveryoneWaitableEventForTest();
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UTIL_UNIT_TEST_UTIL_WIN_H_

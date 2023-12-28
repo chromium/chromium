@@ -12,26 +12,32 @@
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
+TextFragmentAnchorTestBase::TextFragmentAnchorTestBase()
+    : enable_virtual_time_(true) {}
+
+TextFragmentAnchorTestBase::TextFragmentAnchorTestBase(
+    base::test::TaskEnvironment::TimeSource time_source)
+    : SimTest(time_source) {}
+
 void TextFragmentAnchorTestBase::SetUp() {
   SimTest::SetUp();
-  // Most tests aren't concerned with the post-load task timers so use virtual
-  // time so tests don't spend time waiting for the real-clock timers to fire.
-  WebView().Scheduler()->GetVirtualTimeController()->EnableVirtualTime(
-      base::Time());
-
+  if (enable_virtual_time_) {
+    // Most tests aren't concerned with the post-load task timers so use virtual
+    // time so tests don't spend time waiting for the real-clock timers to fire.
+    WebView().Scheduler()->GetVirtualTimeController()->EnableVirtualTime(
+        base::Time());
+  }
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
 }
 
 void TextFragmentAnchorTestBase::TearDown() {
-  WebView()
-      .Scheduler()
-      ->GetVirtualTimeController()
-      ->DisableVirtualTimeForTesting();
+  DisableVirtualTimeIfSet();
   SimTest::TearDown();
 }
 
@@ -39,7 +45,11 @@ void TextFragmentAnchorTestBase::RunAsyncMatchingTasks() {
   ThreadScheduler::Current()
       ->ToMainThreadScheduler()
       ->StartIdlePeriodForTesting();
-  test::RunPendingTasks();
+  if (enable_virtual_time_) {
+    test::RunPendingTasks();
+  } else {
+    task_environment()->FastForwardUntilNoTasksRemain();
+  }
 }
 
 void TextFragmentAnchorTestBase::RunUntilTextFragmentFinalization() {
@@ -65,8 +75,12 @@ void TextFragmentAnchorTestBase::RunUntilTextFragmentFinalization() {
   }
   if (anchor->iteration_ == TextFragmentAnchor::kPostLoad) {
     // Run the TextFragmentAnchor::PostLoadTask which is on a timer delay.
-    test::RunDelayedTasks(TextFragmentAnchor::PostLoadTaskTimeout());
-
+    if (enable_virtual_time_) {
+      test::RunDelayedTasks(TextFragmentAnchor::PostLoadTaskTimeout());
+    } else {
+      task_environment()->FastForwardBy(
+          TextFragmentAnchor::PostLoadTaskTimeout());
+    }
     // PostLoadTask schedules a new frame to perform the final text search.
     // Perform that here.
     Compositor().BeginFrame();
@@ -77,6 +91,17 @@ void TextFragmentAnchorTestBase::RunUntilTextFragmentFinalization() {
   // Finalization occurs in the frame after the final search, where script
   // can run.
   Compositor().BeginFrame();
+}
+
+void TextFragmentAnchorTestBase::DisableVirtualTimeIfSet() {
+  if (!enable_virtual_time_) {
+    return;
+  }
+  auto* virtual_time_controller =
+      WebView().Scheduler()->GetVirtualTimeController();
+  if (virtual_time_controller) {
+    virtual_time_controller->DisableVirtualTimeForTesting();
+  }
 }
 
 }  // namespace blink

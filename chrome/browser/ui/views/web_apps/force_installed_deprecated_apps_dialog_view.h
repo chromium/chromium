@@ -16,8 +16,9 @@ class WebContents;
 }  // namespace content
 
 class ForceInstalledDeprecatedAppsDialogView : public views::BoxLayoutView {
+  METADATA_HEADER(ForceInstalledDeprecatedAppsDialogView, views::BoxLayoutView)
+
  public:
-  METADATA_HEADER(ForceInstalledDeprecatedAppsDialogView);
   ForceInstalledDeprecatedAppsDialogView(
       const ForceInstalledDeprecatedAppsDialogView&) = delete;
   ForceInstalledDeprecatedAppsDialogView& operator=(

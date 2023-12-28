@@ -40,8 +40,10 @@ void MediaItemUIObserverSet::OnMediaItemUIActionsChanged() {
   owner_->OnMediaItemUIActionsChanged();
 }
 
-void MediaItemUIObserverSet::OnMediaItemUIClicked(const std::string& id) {
-  owner_->OnMediaItemUIClicked(id);
+void MediaItemUIObserverSet::OnMediaItemUIClicked(
+    const std::string& id,
+    bool activate_original_media) {
+  owner_->OnMediaItemUIClicked(id, activate_original_media);
 }
 
 void MediaItemUIObserverSet::OnMediaItemUIDismissed(const std::string& id) {

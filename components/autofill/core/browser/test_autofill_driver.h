@@ -49,7 +49,7 @@ class TestAutofillDriverTemplate : public T {
   // AutofillDriver:
   LocalFrameToken GetFrameToken() const override { return frame_token_; }
   TestAutofillDriverTemplate* GetParent() override { return parent_; }
-  absl::optional<LocalFrameToken> Resolve(FrameToken query) override {
+  std::optional<LocalFrameToken> Resolve(FrameToken query) override {
     if (auto* local_frame_token = absl::get_if<LocalFrameToken>(&query)) {
       return *local_frame_token;
     }
@@ -57,7 +57,7 @@ class TestAutofillDriverTemplate : public T {
     if (it != remote_frame_tokens_.end()) {
       return it->second;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
   bool IsInActiveFrame() const override { return is_in_active_frame_; }
   bool IsInAnyMainFrame() const override { return is_in_any_main_frame_; }
@@ -70,7 +70,8 @@ class TestAutofillDriverTemplate : public T {
                         const std::u16string& value) override {}
   void HandleParsedForms(const std::vector<FormData>& forms) override {}
   void SendAutofillTypePredictionsToRenderer(
-      const std::vector<FormStructure*>& forms) override {}
+      const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms)
+      override {}
   void RendererShouldAcceptDataListSuggestion(
       const FieldGlobalId& field,
       const std::u16string& value) override {}
@@ -104,8 +105,7 @@ class TestAutofillDriverTemplate : public T {
       mojom::ActionPersistence action_persistence,
       const FormData& form_data,
       const url::Origin& triggered_origin,
-      const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
-      override {
+      const base::flat_map<FieldGlobalId, FieldType>& field_type_map) override {
     if (action_type == mojom::ActionType::kUndo) {
       return {};
     }
@@ -152,7 +152,7 @@ class TestAutofillDriverTemplate : public T {
   // The filter that determines the return value of FillOrPreviewForm().
   void SetFieldTypeMapFilter(
       base::RepeatingCallback<
-          bool(const url::Origin&, FieldGlobalId, ServerFieldType)> callback) {
+          bool(const url::Origin&, FieldGlobalId, FieldType)> callback) {
     field_type_map_filter_ = callback;
   }
 
@@ -173,8 +173,7 @@ class TestAutofillDriverTemplate : public T {
   bool is_in_any_main_frame_ = true;
   bool shared_autofill_ = false;
   net::IsolationInfo isolation_info_;
-  base::RepeatingCallback<
-      bool(const url::Origin&, FieldGlobalId, ServerFieldType)>
+  base::RepeatingCallback<bool(const url::Origin&, FieldGlobalId, FieldType)>
       field_type_map_filter_;
 
 #if !BUILDFLAG(IS_IOS)

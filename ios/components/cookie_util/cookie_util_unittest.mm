@@ -10,6 +10,10 @@
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/pref_service.h"
+#import "components/prefs/testing_pref_service.h"
+#import "ios/components/cookie_util/cookie_constants.h"
 #import "ios/net/cookies/cookie_store_ios_test_util.h"
 #import "ios/net/cookies/ns_http_system_cookie_store.h"
 #import "ios/net/cookies/system_cookie_store.h"
@@ -22,9 +26,6 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForCookiesTimeout;
 
 namespace {
-
-// Date of the last cookie deletion.
-NSString* const kLastCookieDeletionDate = @"LastCookieDeletionDate";
 
 class CookieUtilTest : public PlatformTest {
  public:
@@ -41,26 +42,28 @@ class CookieUtilTest : public PlatformTest {
 };
 
 TEST_F(CookieUtilTest, ShouldClearSessionCookies) {
-  time_t start_test_time;
-  time(&start_test_time);
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  std::unique_ptr<TestingPrefServiceSimple> pref_service =
+      std::make_unique<TestingPrefServiceSimple>();
+  pref_service->registry()->RegisterTimePref(kLastCookieDeletionDate,
+                                             base::Time());
+  base::Time start_test_time = base::Time::Now();
   // Delete cookies if the key is not present.
-  [defaults removeObjectForKey:kLastCookieDeletionDate];
-  EXPECT_TRUE(cookie_util::ShouldClearSessionCookies());
+  pref_service->ClearPref(kLastCookieDeletionDate);
+  EXPECT_TRUE(cookie_util::ShouldClearSessionCookies(pref_service.get()));
   // The deletion time should be created.
-  time_t deletion_time = [defaults integerForKey:kLastCookieDeletionDate];
-  time_t now;
-  time(&now);
+  base::Time deletion_time = pref_service->GetTime(kLastCookieDeletionDate);
+  base::Time now = base::Time::Now();
   EXPECT_LE(start_test_time, deletion_time);
   EXPECT_LE(deletion_time, now);
   // Cookies are not deleted again.
-  EXPECT_FALSE(cookie_util::ShouldClearSessionCookies());
+  EXPECT_FALSE(cookie_util::ShouldClearSessionCookies(pref_service.get()));
 
   // Set the deletion time before the machine was started.
   // Sometime in year 1980.
-  [defaults setInteger:328697227 forKey:kLastCookieDeletionDate];
-  EXPECT_TRUE(cookie_util::ShouldClearSessionCookies());
-  EXPECT_LE(now, [defaults integerForKey:kLastCookieDeletionDate]);
+  pref_service->SetTime(kLastCookieDeletionDate,
+                        base::Time::FromTimeT(328697227));
+  EXPECT_TRUE(cookie_util::ShouldClearSessionCookies(pref_service.get()));
+  EXPECT_LE(now, pref_service->GetTime(kLastCookieDeletionDate));
 }
 
 // Tests that CreateCookieStore returns the correct type of net::CookieStore
@@ -79,8 +82,7 @@ TEST_F(CookieUtilTest, CreateCookieStore) {
   cookie_util::CookieStoreConfig config(
       base::FilePath(),
       cookie_util::CookieStoreConfig::EPHEMERAL_SESSION_COOKIES,
-      cookie_util::CookieStoreConfig::CookieStoreType::COOKIE_STORE_IOS,
-      nullptr);
+      cookie_util::CookieStoreConfig::CookieStoreType::COOKIE_STORE_IOS);
   std::unique_ptr<net::CookieStore> cookie_store =
       cookie_util::CreateCookieStore(config, std::move(system_cookie_store),
                                      nullptr /* net_log */);

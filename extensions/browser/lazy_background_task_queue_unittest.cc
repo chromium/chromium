@@ -155,8 +155,8 @@ TEST_F(LazyBackgroundTaskQueueTest, AddPendingTask) {
 
   // Adding a pending task increases the number of extensions with tasks, but
   // doesn't run the task.
-  const LazyContextId no_background_context_id(browser_context(),
-                                               no_background->id());
+  const auto no_background_context_id =
+      LazyContextId::ForExtension(browser_context(), no_background.get());
   queue.AddPendingTask(
       no_background_context_id,
       base::BindOnce(&LazyBackgroundTaskQueueTest::RunPendingTask,
@@ -177,8 +177,8 @@ TEST_F(LazyBackgroundTaskQueueTest, AddPendingTask) {
   // a background host, and if that fails, runs the task immediately.
   scoped_refptr<const Extension> lazy_background =
       CreateLazyBackgroundExtension();
-  const LazyContextId lazy_background_context_id(browser_context(),
-                                                 lazy_background->id());
+  const auto lazy_background_context_id =
+      LazyContextId::ForExtension(browser_context(), lazy_background.get());
   queue.AddPendingTask(
       lazy_background_context_id,
       base::BindOnce(&LazyBackgroundTaskQueueTest::RunPendingTask,
@@ -201,7 +201,7 @@ TEST_F(LazyBackgroundTaskQueueTest, ProcessPendingTasks) {
 
   // Schedule a task to run.
   queue.AddPendingTask(
-      LazyContextId(browser_context(), extension->id()),
+      LazyContextId::ForExtension(browser_context(), extension.get()),
       base::BindOnce(&LazyBackgroundTaskQueueTest::RunPendingTask,
                      base::Unretained(this)));
   EXPECT_EQ(0, task_run_count());
@@ -237,7 +237,7 @@ TEST_F(LazyBackgroundTaskQueueTest, CreateLazyBackgroundPageOnExtensionLoaded) {
   EXPECT_EQ(0, process_manager()->create_count());
 
   queue.AddPendingTask(
-      LazyContextId(browser_context(), lazy_background->id()),
+      LazyContextId::ForExtension(browser_context(), lazy_background.get()),
       base::BindOnce(&LazyBackgroundTaskQueueTest::RunPendingTask,
                      base::Unretained(this)));
   EXPECT_EQ(1u, queue.pending_tasks_.size());

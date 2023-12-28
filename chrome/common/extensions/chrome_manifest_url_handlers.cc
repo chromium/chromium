@@ -67,8 +67,7 @@ bool DevToolsPageHandler::Parse(Extension* extension, std::u16string* error) {
   GURL url = extension->GetResourceURL(*devtools_str);
   const bool is_extension_url =
       url.SchemeIs(kExtensionScheme) && url.host_piece() == extension->id();
-  // TODO(caseq): using http(s) is unsupported and will be disabled in m83.
-  if (!is_extension_url && !url.SchemeIsHTTPOrHTTPS()) {
+  if (!is_extension_url) {
     *error = errors::kInvalidDevToolsPage;
     return false;
   }

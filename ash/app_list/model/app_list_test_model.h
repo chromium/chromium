@@ -43,7 +43,7 @@ class AppListTestModel : public AppListModel, public AppListModelDelegate {
     void SetPosition(const syncer::StringOrdinal& new_position);
 
    private:
-    const raw_ptr<AppListTestModel, ExperimentalAsh> model_;
+    const raw_ptr<AppListTestModel> model_;
   };
 
   static const char kItemType[];
@@ -119,7 +119,7 @@ class AppListTestModel : public AppListModel, public AppListModelDelegate {
   void ItemActivated(AppListTestItem* item);
 
   int activate_count_ = 0;
-  raw_ptr<AppListItem, ExperimentalAsh> last_activated_ = nullptr;
+  raw_ptr<AppListItem> last_activated_ = nullptr;
   int naming_index_ = 0;
 
   // The last sort order requested using `RequestAppListSort()`.

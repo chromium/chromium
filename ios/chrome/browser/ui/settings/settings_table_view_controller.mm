@@ -42,7 +42,7 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
-#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
@@ -50,6 +50,7 @@
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/photos/model/photos_service.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
@@ -119,7 +120,6 @@
 #import "ios/chrome/browser/ui/settings/language/language_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_coordinator.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
-#import "ios/chrome/browser/ui/settings/notifications/notifications_settings_util.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_coordinator.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
@@ -1385,7 +1385,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
           [[AutofillProfileTableViewController alloc] initWithBrowser:_browser];
       break;
     case SettingsItemTypeNotifications:
-      DCHECK(IsPriceNotificationsEnabled());
+      DCHECK(IsPriceNotificationsEnabled() ||
+             IsContentPushNotificationsEnabled());
       [self showNotifications];
       break;
     case SettingsItemTypeVoiceSearch:
@@ -2020,14 +2021,14 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   PrefService* prefService = _browserState->GetPrefs();
   const std::string& gaiaID = base::SysNSStringToUTF8(identity.gaiaID);
-  notifications_settings::ClientPermissionState permission_state =
-      notifications_settings::GetNotificationPermissionState(gaiaID,
-                                                             prefService);
+  push_notification_settings::ClientPermissionState permission_state =
+      push_notification_settings::GetNotificationPermissionState(gaiaID,
+                                                                 prefService);
   if (permission_state ==
-      notifications_settings::ClientPermissionState::ENABLED) {
+      push_notification_settings::ClientPermissionState::ENABLED) {
     detailText = l10n_util::GetNSString(IDS_IOS_SETTING_ON);
   } else if (permission_state ==
-             notifications_settings::ClientPermissionState::DISABLED) {
+             push_notification_settings::ClientPermissionState::DISABLED) {
     detailText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
   }
 

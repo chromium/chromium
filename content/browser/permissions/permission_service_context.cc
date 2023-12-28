@@ -63,7 +63,7 @@ class PermissionServiceContext::PermissionSubscription {
     BrowserContext* browser_context = context_->GetBrowserContext();
     if (browser_context) {
       PermissionControllerImpl::FromBrowserContext(browser_context)
-          ->UnsubscribePermissionStatusChange(id_);
+          ->UnsubscribeFromPermissionStatusChange(id_);
     }
   }
 
@@ -197,7 +197,7 @@ void PermissionServiceContext::CreateSubscription(
   GURL requesting_origin(origin.Serialize());
   auto subscription_id =
       PermissionControllerImpl::FromBrowserContext(browser_context)
-          ->SubscribePermissionStatusChange(
+          ->SubscribeToPermissionStatusChange(
               permission_type, render_process_host_, render_frame_host_,
               requesting_origin,
               base::BindRepeating(

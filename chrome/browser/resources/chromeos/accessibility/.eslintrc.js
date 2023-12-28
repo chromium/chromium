@@ -15,6 +15,7 @@ module.exports = {
     'object-shorthand' : ['error', 'always'],
     'prefer-const' : ['error', {'destructuring' : 'all'}],
     '@typescript-eslint/explicit-function-return-type' : 'off',
+    '@typescript-eslint/naming-convention' : 'off',
   },
   // clang-format off
   'overrides':
@@ -28,6 +29,72 @@ module.exports = {
               'error',
               {
                 'allowExpressions': true,
+              },
+            ],
+            // https://google.github.io/styleguide/jsguide.html#naming
+            '@typescript-eslint/naming-convention': [
+              'error',
+              {
+                selector: ['class', 'interface', 'typeAlias', 'enum', 'typeParameter'],
+                format: ['StrictPascalCase'],
+                filter: {
+                  regex: '^(' +
+                      // Exclude TypeScript defined interfaces HTMLElementTagNameMap
+                      // and HTMLElementEventMap.
+                      'HTMLElementTagNameMap|HTMLElementEventMap|' +
+                      // Exclude native DOM types which are always named like HTML<Foo>Element.
+                      'HTML[A-Za-z]{0,}Element|' +
+                      // Exclude native DOM interfaces.
+                      'UIEvent|UIEventInit|DOMError|' +
+                      // Exclude the SACache and SACommands classes.
+                      'SACache|SACommands)$',
+                  match: false,
+                },
+              },
+              {
+                selector: 'enumMember',
+                format: ['UPPER_CASE'],
+              },
+              {
+                selector: 'classMethod',
+                format: ['strictCamelCase'],
+                modifiers: ['public'],
+              },
+              {
+                selector: 'classMethod',
+                format: ['strictCamelCase'],
+                modifiers: ['private'],
+                trailingUnderscore: 'allow',
+              },
+              {
+                selector: 'classProperty',
+                format: ['UPPER_CASE'],
+                modifiers: ['private', 'static', 'readonly'],
+              },
+              {
+                selector: 'classProperty',
+                format: ['UPPER_CASE'],
+                modifiers: ['public', 'static', 'readonly'],
+              },
+              {
+                selector: 'classProperty',
+                format: ['camelCase'],
+                modifiers: ['public'],
+              },
+              {
+                selector: 'classProperty',
+                format: ['camelCase'],
+                modifiers: ['private'],
+                trailingUnderscore: 'allow',
+              },
+              {
+                selector: 'parameter',
+                format: ['camelCase'],
+                leadingUnderscore: 'allow',
+              },
+              {
+                selector: 'function',
+                format: ['camelCase'],
               },
             ],
         },

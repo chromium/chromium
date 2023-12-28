@@ -137,5 +137,5 @@ void BruschettaUninstallerView::UninstallBruschettaFinished(bool success) {
   GetWidget()->Close();
 }
 
-BEGIN_METADATA(BruschettaUninstallerView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(BruschettaUninstallerView)
 END_METADATA

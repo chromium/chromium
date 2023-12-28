@@ -20,7 +20,7 @@
 
 // Returns true if the field value is empty.
 - (BOOL)fieldValueEmptyOnProfileLoadForType:
-    (autofill::ServerFieldType)serverFieldType;
+    (autofill::FieldType)serverFieldType;
 
 // Notifies the class that conforms this delegate to update the profile
 // `serverFieldType` with `value`.

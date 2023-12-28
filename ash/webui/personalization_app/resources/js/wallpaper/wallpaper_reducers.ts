@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {isImageDataUrl, isNonEmptyArray, isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
@@ -9,13 +10,12 @@ import {WallpaperCollection} from '../../personalization_app.mojom-webui.js';
 import {Actions} from '../personalization_actions.js';
 import {ReducerFunction} from '../personalization_reducers.js';
 import {PersonalizationState} from '../personalization_state.js';
-import {isImageDataUrl, isNonEmptyArray} from '../utils.js';
 
 import {DefaultImageSymbol, kDefaultImageSymbol} from './constants.js';
 import {SeaPenActionName, SeaPenActions} from './sea_pen/sea_pen_actions.js';
 import {seaPenReducer} from './sea_pen/sea_pen_reducer.js';
 import {SeaPenState} from './sea_pen/sea_pen_state';
-import {findAlbumById, isDefaultImage, isFilePath, isImageEqualToSelected} from './utils.js';
+import {findAlbumById, isDefaultImage, isImageEqualToSelected} from './utils.js';
 import {WallpaperActionName} from './wallpaper_actions.js';
 import {DailyRefreshType, WallpaperState} from './wallpaper_state.js';
 
@@ -121,7 +121,7 @@ function loadingReducer(
         local: {
           data: imagesToKeep.reduce(
               (result, next) => {
-                const path = isFilePath(next) ? next.path : next;
+                const path = isNonEmptyFilePath(next) ? next.path : next;
                 if (state.local.data.hasOwnProperty(path)) {
                   result[path] = state.local.data[path];
                 }
@@ -269,7 +269,7 @@ function localReducer(
         return {
           images: [
             kDefaultImageSymbol,
-            ...(state.images || []).filter(img => isFilePath(img)),
+            ...(state.images || []).filter(img => isNonEmptyFilePath(img)),
           ],
           data: {
             ...state.data,
@@ -279,7 +279,7 @@ function localReducer(
       }
       return {
         images: Array.isArray(state.images) ?
-            state.images.filter(img => isFilePath(img)) :
+            state.images.filter(img => isNonEmptyFilePath(img)) :
             null,
         data: {...state.data, [kDefaultImageSymbol]: {url: ''}},
       };
@@ -305,7 +305,7 @@ function localReducer(
         // Only keep image thumbnails if the image is still in |images|.
         data: newImages.reduce(
             (result, next) => {
-              const key = isFilePath(next) ? next.path : next;
+              const key = isNonEmptyFilePath(next) ? next.path : next;
               if (state.data.hasOwnProperty(key)) {
                 result[key] = state.data[key];
               }

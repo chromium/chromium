@@ -101,6 +101,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
@@ -108,6 +109,7 @@ import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.FullScreenSyncPromoUtil;
@@ -119,7 +121,6 @@ import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
@@ -159,7 +160,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private NotificationPermissionController mNotificationPermissionController;
     private HistoryNavigationCoordinator mHistoryNavigationCoordinator;
     private NavigationSheet mNavigationSheet;
-    private ComposedBrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
     private LayoutManagerImpl mLayoutManager;
     private CommerceSubscriptionsService mCommerceSubscriptionsService;
     private UndoGroupSnackbarController mUndoGroupSnackbarController;
@@ -291,6 +291,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull Supplier<CompositorViewHolder> compositorViewHolderSupplier,
             @NonNull Supplier<TabContentManager> tabContentManagerSupplier,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
+            @NonNull ObservableSupplierImpl<EdgeToEdgeController> edgeToEdgeSupplier,
             @ActivityType int activityType,
             @NonNull Supplier<Boolean> isInOverviewModeSupplier,
             @NonNull Supplier<Boolean> isWarmOnResumeSupplier,
@@ -337,6 +338,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 compositorViewHolderSupplier,
                 tabContentManagerSupplier,
                 snackbarManagerSupplier,
+                edgeToEdgeSupplier,
                 activityType,
                 isInOverviewModeSupplier,
                 isWarmOnResumeSupplier,
@@ -569,7 +571,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mRootUiTabObserver.swapToTab(mActivityTabProvider.get());
 
         // TODO(crbug.com/1505851): Consider register this drag listener to other views besides CVH.
-        if (ChromeFeatureList.sTabLinkDragDropAndroid.isEnabled()) {
+        if (ChromeFeatureList.sTabLinkDragDropAndroid.isEnabled()
+                && !TabUiFeatureUtilities.DISABLE_STRIP_TO_CONTENT_DD.getValue()) {
             ChromeTabbedOnDragListener chromeTabbedOnDragListener =
                     new ChromeTabbedOnDragListener(
                             mMultiInstanceManager,
@@ -1068,16 +1071,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     @Override
     protected boolean supportsEdgeToEdge() {
         return EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity);
-    }
-
-    /**
-     * @return {@link ComposedBrowserControlsVisibilityDelegate} object for tabbed activity.
-     */
-    public ComposedBrowserControlsVisibilityDelegate getAppBrowserControlsVisibilityDelegate() {
-        if (mAppBrowserControlsVisibilityDelegate == null) {
-            mAppBrowserControlsVisibilityDelegate = new ComposedBrowserControlsVisibilityDelegate();
-        }
-        return mAppBrowserControlsVisibilityDelegate;
     }
 
     public StatusIndicatorCoordinator getStatusIndicatorCoordinatorForTesting() {

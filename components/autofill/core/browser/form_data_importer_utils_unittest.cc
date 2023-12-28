@@ -5,9 +5,9 @@
 #include "components/autofill/core/browser/form_data_importer_utils.h"
 #include "components/autofill/core/browser/country_type.h"
 
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -64,7 +64,7 @@ TEST(FormDataImporterUtilsTest, TimestampedSameOriginQueue_DifferentOrigins) {
   // The TTL or 1 hour is irrelevant here.
   queue.RemoveOutdatedItems(base::Hours(1),
                             url::Origin::Create(GURL("http://bar.com")));
-  EXPECT_EQ(queue.origin(), absl::nullopt);
+  EXPECT_EQ(queue.origin(), std::nullopt);
   EXPECT_TRUE(queue.empty());
 }
 
@@ -105,7 +105,7 @@ TEST(FormDataImporterUtilsTest, GetPredictedCountryCode) {
 // an address and a credit card form, respectively.
 // Using an upper case A or C, forms that are supposed to be part of the
 // association are marked.
-constexpr base::StringPiece kFormAssociatorTestCases[]{
+constexpr std::string_view kFormAssociatorTestCases[]{
     // A single address/credit card form is associated with itself.
     "A",
     "C",
@@ -120,7 +120,7 @@ constexpr base::StringPiece kFormAssociatorTestCases[]{
     "AAcC",
 };
 
-class FormAssociatorTest : public testing::TestWithParam<base::StringPiece> {};
+class FormAssociatorTest : public testing::TestWithParam<std::string_view> {};
 
 INSTANTIATE_TEST_SUITE_P(FormDataImporterUtilsTest,
                          FormAssociatorTest,
@@ -131,7 +131,7 @@ TEST_P(FormAssociatorTest, FormAssociator) {
   FormAssociator form_associator;
   url::Origin irrelevant_origin;
   FormStructure::FormAssociations expected_associations;
-  const base::StringPiece& test = GetParam();
+  const std::string_view& test = GetParam();
   // Each test verifies the association of the last form. If the last form is
   // not expected to be included, that's likely a typo.
   EXPECT_TRUE(!test.empty() && base::IsAsciiUpper(test.back()));

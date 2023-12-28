@@ -71,7 +71,6 @@
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -305,7 +304,9 @@ class AttributionSrcLoader::ResourceClient
   const SourceType source_type_;
 
   // Remote used for registering responses with the browser-process.
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
+  // Note that there's no check applied for `SharedRemote`, and it should be
+  // memory safe as long as `SharedRemote::set_disconnect_handler` is not
+  // installed. See https://crbug.com/1512895 for details.
   mojo::SharedRemote<mojom::blink::AttributionDataHost> data_host_;
 
   wtf_size_t num_registrations_ = 0;

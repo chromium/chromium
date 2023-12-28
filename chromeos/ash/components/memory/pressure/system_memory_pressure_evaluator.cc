@@ -56,27 +56,37 @@ SystemMemoryPressureEvaluator* SystemMemoryPressureEvaluator::Get() {
   return g_system_evaluator;
 }
 
-uint64_t SystemMemoryPressureEvaluator::GetCachedReclaimTargetKB() {
-  return cached_reclaim_target_kb_.load();
+memory_pressure::ReclaimTarget
+SystemMemoryPressureEvaluator::GetCachedReclaimTarget() {
+  base::AutoLock lock(reclaim_target_lock_);
+  return cached_reclaim_target_;
 }
 
 void SystemMemoryPressureEvaluator::OnMemoryPressure(
     ResourcedClient::PressureLevel level,
-    uint64_t reclaim_target_kb) {
+    memory_pressure::ReclaimTarget target) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::MemoryPressureListener::MemoryPressureLevel listener_level;
+  memory_pressure::ReclaimTarget new_reclaim_target;
+
   if (level == ResourcedClient::PressureLevel::CRITICAL) {
     listener_level =
         base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
-    cached_reclaim_target_kb_.store(reclaim_target_kb);
+
+    // Only update the received target if pressure level is critical.
+    new_reclaim_target = target;
   } else if (level == ResourcedClient::PressureLevel::MODERATE) {
     listener_level =
         base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE;
-    cached_reclaim_target_kb_.store(0);
   } else {
     listener_level = base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
-    cached_reclaim_target_kb_.store(0);
+  }
+
+  // Store the new reclaim target.
+  {
+    base::AutoLock lock(reclaim_target_lock_);
+    cached_reclaim_target_ = new_reclaim_target;
   }
 
   auto old_vote = current_vote();

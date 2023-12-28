@@ -153,9 +153,11 @@ class AppStorageFileHandlerTest : public testing::Test {
     app2->data_size_in_bytes = ULLONG_MAX - 1;
     app2->supported_locales = {"a", "b", "c"};
     app2->selected_locale = "c";
+    app2->SetExtraField("vm_name", "vm_name_value");
+    app2->SetExtraField("scales", true);
+    app2->SetExtraField("number", 100);
     apps.push_back(std::move(app2));
 
-    // TODO(crbug.com/1385932): Add other files in the App structure.
     return apps;
   }
 

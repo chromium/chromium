@@ -20,22 +20,17 @@ namespace autofill {
 
 class AutofillField;
 class AutofillScanner;
-class LogManager;
 
 class CreditCardField : public FormField {
  public:
-  explicit CreditCardField(LogManager* log_manager);
+  explicit CreditCardField();
 
   CreditCardField(const CreditCardField&) = delete;
   CreditCardField& operator=(const CreditCardField&) = delete;
 
   ~CreditCardField() override;
-  static std::unique_ptr<FormField> Parse(
-      AutofillScanner* scanner,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language,
-      PatternSource pattern_source,
-      LogManager* log_manager);
+  static std::unique_ptr<FormField> Parse(ParsingContext& context,
+                                          AutofillScanner* scanner);
 
   // Instructions for how to format an expiration date for a text field.
   struct ExpirationDateFormat {
@@ -67,19 +62,18 @@ class CreditCardField : public FormField {
   // CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR or CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR.
   static ExpirationDateFormat DetermineExpirationDateFormat(
       const AutofillField& field,
-      ServerFieldType fallback_type,
-      ServerFieldType server_hint,
-      ServerFieldType forced_field_type);
+      FieldType fallback_type,
+      FieldType server_hint,
+      FieldType forced_field_type);
 
   // Returns the field type for an expiration year field in the following order
   // of priority: `forced_field_type` > type derived from heuristically
   // determined signals > `server_hint` > `fallback_type`. The server field
   // types can be UNKOWN_TYPE in which case they are ignored.
-  static ServerFieldType DetermineExpirationYearType(
-      const AutofillField& field,
-      ServerFieldType fallback_type,
-      ServerFieldType server_hint,
-      ServerFieldType forced_field_type);
+  static FieldType DetermineExpirationYearType(const AutofillField& field,
+                                               FieldType fallback_type,
+                                               FieldType server_hint,
+                                               FieldType forced_field_type);
 
  protected:
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;
@@ -93,12 +87,9 @@ class CreditCardField : public FormField {
 
   // Returns true if |scanner| points to a field that looks like a year
   // <select> for a credit card. i.e. it contains the current year and
-  // the next few years. |log_manager| is used to log any parsing details
-  // to chrome://autofill-internals
-  static bool LikelyCardYearSelectField(AutofillScanner* scanner,
-                                        LogManager* log_manager,
-                                        const LanguageCode& page_language,
-                                        PatternSource pattern_source);
+  // the next few years.
+  static bool LikelyCardYearSelectField(ParsingContext* context,
+                                        AutofillScanner* scanner);
 
   // Returns true if |scanner| points to a <select> field that contains credit
   // card type options.
@@ -108,28 +99,21 @@ class CreditCardField : public FormField {
   // |scanner| advances if this returns true.
   // Prepaid debit cards do not count as gift cards, since they can be used like
   // a credit card.
-  static bool IsGiftCardField(AutofillScanner* scanner,
-                              LogManager* log_manager,
-                              const LanguageCode& page_language,
-                              PatternSource pattern_source);
+  static bool IsGiftCardField(ParsingContext& context,
+                              AutofillScanner* scanner);
 
   // Parses the expiration month/year/date fields. Returns true if it finds
   // something new.
-  bool ParseExpirationDate(AutofillScanner* scanner,
-                           LogManager* log_manager,
-                           const LanguageCode& page_language,
-                           PatternSource pattern_source);
+  bool ParseExpirationDate(ParsingContext& context, AutofillScanner* scanner);
 
   // For the combined expiration field we return |exp_year_type_|; otherwise if
   // |expiration_year_| is having year with |max_length| of 2-digits we return
   // |CREDIT_CARD_EXP_2_DIGIT_YEAR|; otherwise |CREDIT_CARD_EXP_4_DIGIT_YEAR|.
-  ServerFieldType GetExpirationYearType() const;
+  FieldType GetExpirationYearType() const;
 
   // Returns whether the expiration has been set for this credit card field.
   // It can be either a date or both the month and the year.
   bool HasExpiration() const;
-
-  raw_ptr<LogManager> log_manager_;  // Optional.
 
   raw_ptr<AutofillField> cardholder_;  // Optional.
 
@@ -143,7 +127,8 @@ class CreditCardField : public FormField {
   raw_ptr<AutofillField> cardholder_last_;
 
   raw_ptr<AutofillField> type_;          // Optional.
-  std::vector<AutofillField*> numbers_;  // Required.
+  std::vector<raw_ptr<AutofillField, VectorExperimental>>
+      numbers_;  // Required.
 
   // The 3-digit card verification number; we don't currently fill this.
   raw_ptr<AutofillField> verification_;
@@ -157,7 +142,7 @@ class CreditCardField : public FormField {
   // For combined expiration field having year as 2-digits we store here
   // |CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR|; otherwise we store
   // |CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR|.
-  ServerFieldType exp_year_type_;
+  FieldType exp_year_type_;
 };
 
 }  // namespace autofill

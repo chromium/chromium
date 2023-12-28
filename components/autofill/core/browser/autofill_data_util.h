@@ -57,7 +57,7 @@ bool ContainsPhone(uint32_t groups);
 // phone number FieldTypeGroups are associated with the given |form|'s storable
 // types or |types|, respectively.
 uint32_t DetermineGroups(const FormStructure& form);
-uint32_t DetermineGroups(const ServerFieldTypeSet& types);
+uint32_t DetermineGroups(const FieldTypeSet& types);
 
 // Returns true if a form has address fields or has least two supported
 // non-address fields.
@@ -70,7 +70,7 @@ std::string GetSuffixForProfileFormType(uint32_t bitmask);
 // the string less than or equal to the specified byte size.
 std::string TruncateUTF8(const std::string& data);
 
-bool IsCreditCardExpirationType(ServerFieldType type);
+bool IsCreditCardExpirationType(FieldType type);
 
 // Used to map Chrome card issuer networks to Payment Request API basic card
 // payment spec issuer networks and icons.

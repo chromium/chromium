@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/form_processing/name_processing_util.h"
 
+#include <string_view>
+
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -18,17 +20,17 @@ TEST(NameProcessingUtil, FindLongestCommonAffixLength) {
   std::vector<base::StringPiece16> strings = {
       u"123456XXX123456789", u"12345678XXX012345678_foo", u"1234567890123456",
       u"1234567XXX901234567890"};
-  EXPECT_EQ(base::StringPiece("123456").size(),
+  EXPECT_EQ(std::string_view("123456").size(),
             FindLongestCommonAffixLength(strings, /*prefix=*/true));
   strings = {u"1234567890"};
-  EXPECT_EQ(base::StringPiece("1234567890").size(),
+  EXPECT_EQ(std::string_view("1234567890").size(),
             FindLongestCommonAffixLength(strings, /*prefix=*/true));
   strings = {u"1234567890123456", u"4567890123456789", u"7890123456789012"};
   EXPECT_EQ(0u, FindLongestCommonAffixLength(strings, /*prefix=*/true));
   strings = {};
   EXPECT_EQ(0u, FindLongestCommonAffixLength(strings, /*prefix=*/true));
   strings = {u"a123", u"b123", u"c123"};
-  EXPECT_EQ(base::StringPiece("123").size(),
+  EXPECT_EQ(std::string_view("123").size(),
             FindLongestCommonAffixLength(strings,
                                          /*prefix=*/false));
 }

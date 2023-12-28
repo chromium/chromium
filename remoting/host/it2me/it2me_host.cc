@@ -474,14 +474,6 @@ void It2MeHost::OnPolicyUpdate(base::Value::Dict policies) {
           .FindBool(policy::key::kRemoteAccessHostAllowEnterpriseFileTransfer)
           .value_or(false);
 
-  if (base::FeatureList::IsEnabled(
-          remoting::features::kForceEnableEnterpriseCrdFileTransfer)) {
-    HOST_LOG
-        << "Overriding enable enterprise file transfer policy. Original value: "
-        << enterprise_file_transfer_allowed_;
-    enterprise_file_transfer_allowed_ = true;
-  }
-
   HOST_LOG << "RemoteAccessHostEnterpriseFileTransfer capability is enabled: "
            << enterprise_file_transfer_allowed_;
 #endif

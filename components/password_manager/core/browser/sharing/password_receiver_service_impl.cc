@@ -27,6 +27,44 @@ namespace password_manager {
 using metrics_util::ProcessIncomingPasswordSharingInvitationResult;
 
 namespace {
+
+// Copied from components/autofill/core/common/autofill_constants.h.
+constexpr size_t kMaxString16Length = 1024;
+
+bool IsValidString16(const std::u16string& str) {
+  return str.size() <= kMaxString16Length;
+}
+
+bool IsValidString(const std::string& str) {
+  return str.size() <= kMaxString16Length;
+}
+
+bool IsValidSharedPasswordForm(const PasswordForm& form) {
+  if (!form.url.is_valid() || form.url.is_empty()) {
+    return false;
+  }
+  if (!IsValidString16(form.username_element) ||
+      !IsValidString16(form.username_value) ||
+      !IsValidString16(form.password_element)) {
+    return false;
+  }
+  if (!IsValidString16(form.password_value) || form.password_value.empty()) {
+    return false;
+  }
+  if (!IsValidString(form.signon_realm) || form.signon_realm.empty()) {
+    return false;
+  }
+  if (!IsValidString16(form.display_name) ||
+      !IsValidString16(form.sender_name)) {
+    return false;
+  }
+  if (!form.sender_profile_image_url.is_empty() &&
+      !form.sender_profile_image_url.is_valid()) {
+    return false;
+  }
+  return true;
+}
+
 // Computes the status of processing sharing invitations when the invitation is
 // ignored due to having credentials with the same username and origin in the
 // password store.
@@ -265,8 +303,6 @@ void PasswordReceiverServiceImpl::ProcessIncomingSharingInvitation(
     return;
   }
 
-  // TODO(crbug.com/1445868): fill in creation date if still relevant and verify
-  // incoming invitations.
   // Prefer the modern proto format that supports representing password groups.
   std::vector<PasswordForm> incoming_credentials_list;
   if (invitation.client_only_unencrypted_data().has_password_group_data()) {
@@ -277,6 +313,11 @@ void PasswordReceiverServiceImpl::ProcessIncomingSharingInvitation(
         LegacyIncomingSharingInvitationToPasswordForm(invitation));
   }
   for (const PasswordForm& incoming_credentials : incoming_credentials_list) {
+    if (!IsValidSharedPasswordForm(incoming_credentials)) {
+      LogProcessIncomingPasswordSharingInvitationResult(
+          ProcessIncomingPasswordSharingInvitationResult::kInvalidInvitation);
+      continue;
+    }
     auto task = std::make_unique<ProcessIncomingSharingInvitationTask>(
         incoming_credentials, password_store,
         /*done_callback=*/

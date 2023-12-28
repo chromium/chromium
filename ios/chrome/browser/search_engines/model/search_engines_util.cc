@@ -28,7 +28,8 @@ static const int kGoogleEnginePrepopulatedId = 1;
 void UpdateSearchEngine(PrefService* preferences, TemplateURLService* service) {
   CHECK(service);
   CHECK(service->loaded());
-  std::vector<TemplateURL*> old_engines = service->GetTemplateURLs();
+  std::vector<raw_ptr<TemplateURL, VectorExperimental>> old_engines =
+      service->GetTemplateURLs();
   std::vector<std::unique_ptr<TemplateURLData>> new_engines;
   if (search_engines::IsChoiceScreenFlagEnabled(
           search_engines::ChoicePromo::kAny)) {
@@ -49,14 +50,14 @@ void UpdateSearchEngine(PrefService* preferences, TemplateURLService* service) {
   // third pass, it will add all new engines except Google.
   const TemplateURL* default_engine = service->GetDefaultSearchProvider();
   if (default_engine->prepopulate_id() > kGoogleEnginePrepopulatedId) {
-    for (auto* engine : old_engines) {
+    for (TemplateURL* engine : old_engines) {
       if (engine->prepopulate_id() == kGoogleEnginePrepopulatedId) {
         service->SetUserSelectedDefaultSearchProvider(engine);
         break;
       }
     }
   }
-  for (auto* engine : old_engines) {
+  for (TemplateURL* engine : old_engines) {
     if (engine->prepopulate_id() > kGoogleEnginePrepopulatedId)
       service->Remove(engine);
   }

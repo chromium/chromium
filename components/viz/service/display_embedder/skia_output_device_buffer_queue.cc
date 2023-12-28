@@ -616,14 +616,14 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
 
 gfx::Size SkiaOutputDeviceBufferQueue::GetSwapBuffersSize() {
   switch (overlay_transform_) {
-    case gfx::OVERLAY_TRANSFORM_ROTATE_90:
-    case gfx::OVERLAY_TRANSFORM_ROTATE_270:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270:
       return gfx::Size(image_size_.height(), image_size_.width());
     case gfx::OVERLAY_TRANSFORM_INVALID:
     case gfx::OVERLAY_TRANSFORM_NONE:
     case gfx::OVERLAY_TRANSFORM_FLIP_HORIZONTAL:
     case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL:
-    case gfx::OVERLAY_TRANSFORM_ROTATE_180:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180:
       return image_size_;
   }
 }

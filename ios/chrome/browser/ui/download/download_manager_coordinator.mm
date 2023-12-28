@@ -11,6 +11,7 @@
 #import <set>
 #import <utility>
 
+#import "base/apple/foundation_util.h"
 #import "base/apple/scoped_cftyperef.h"
 #import "base/check_op.h"
 #import "base/feature_list.h"
@@ -28,6 +29,7 @@
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/download/model/installation_notifier.h"
+#import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/overlays/model/public/common/confirmation/confirmation_overlay_response.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
@@ -38,7 +40,9 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/download/activities/open_downloads_folder_activity.h"
@@ -96,6 +100,16 @@
   _viewController.delegate = self;
   _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
   _viewController.incognito = isIncognito;
+
+  if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
+    _mediator.SetIsIncognito(isIncognito);
+    ChromeBrowserState* browserState = self.browser->GetBrowserState();
+    _mediator.SetIdentityManager(
+        IdentityManagerFactory::GetForBrowserState(browserState));
+    _mediator.SetDriveService(
+        drive::DriveServiceFactory::GetForBrowserState(browserState));
+  }
+
   _mediator.SetDownloadTask(_downloadTask);
   _mediator.SetConsumer(_viewController);
 
@@ -111,6 +125,9 @@
 }
 
 - (void)stop {
+  _mediator.SetDriveService(nullptr);
+  _mediator.SetIdentityManager(nullptr);
+
   if (_viewController) {
     [self.presenter dismissAnimated:self.animatesPresentation];
     // Prevent delegate callbacks for stopped coordinator.
@@ -135,8 +152,8 @@
 
 #pragma mark - DownloadManagerTabHelperDelegate
 
-- (void)downloadManagerTabHelper:(nonnull DownloadManagerTabHelper*)tabHelper
-               didCreateDownload:(nonnull web::DownloadTask*)download
+- (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
+               didCreateDownload:(web::DownloadTask*)download
                webStateIsVisible:(BOOL)webStateIsVisible {
   base::UmaHistogramEnumeration("Download.IOSDownloadFileUI",
                                 DownloadFileUI::DownloadFileStarted,
@@ -164,9 +181,9 @@
   }
 }
 
-- (void)downloadManagerTabHelper:(nonnull DownloadManagerTabHelper*)tabHelper
-         decidePolicyForDownload:(nonnull web::DownloadTask*)download
-               completionHandler:(nonnull void (^)(NewDownloadPolicy))handler {
+- (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
+         decidePolicyForDownload:(web::DownloadTask*)download
+               completionHandler:(void (^)(NewDownloadPolicy))handler {
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<ConfirmDownloadReplacingRequest>();
 
@@ -194,21 +211,29 @@
       ->AddRequest(std::move(request));
 }
 
-- (void)downloadManagerTabHelper:(nonnull DownloadManagerTabHelper*)tabHelper
-                 didHideDownload:(nonnull web::DownloadTask*)download {
+- (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
+                 didHideDownload:(web::DownloadTask*)download {
   DCHECK_EQ(_downloadTask, download);
   self.animatesPresentation = NO;
   [self stop];
   self.animatesPresentation = YES;
 }
 
-- (void)downloadManagerTabHelper:(nonnull DownloadManagerTabHelper*)tabHelper
-                 didShowDownload:(nonnull web::DownloadTask*)download {
+- (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
+                 didShowDownload:(web::DownloadTask*)download {
   DCHECK_NE(_downloadTask, download);
   _downloadTask = download;
   self.animatesPresentation = NO;
   [self start];
   self.animatesPresentation = YES;
+}
+
+- (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
+     didAddDownloadToSaveToDrive:(web::DownloadTask*)download {
+  DCHECK_EQ(_downloadTask, download);
+  base::RecordAction(
+      base::UserMetricsAction("IOSDownloadStartDownloadToDrive"));
+  _mediator.StartDownloading();
 }
 
 #pragma mark - ContainedPresenterDelegate
@@ -224,7 +249,7 @@
 #pragma mark - DownloadManagerViewControllerDelegate
 
 - (void)downloadManagerViewControllerDidClose:(UIViewController*)controller {
-  if (_downloadTask->GetState() != web::DownloadTask::State::kInProgress) {
+  if (_mediator.GetDownloadManagerState() != kDownloadManagerStateInProgress) {
     base::UmaHistogramEnumeration("Download.IOSDownloadFileResult",
                                   DownloadFileResult::NotStarted,
                                   DownloadFileResult::Count);
@@ -269,7 +294,15 @@
     base::RecordAction(base::UserMetricsAction("IOSDownloadStartDownload"));
     _unopenedDownloads.Add(_downloadTask);
   }
-  _mediator.StartDowloading();
+  _mediator.StartDownloading();
+}
+
+- (void)downloadManagerViewControllerDidStartDownloadToDrive:
+    (UIViewController*)controller {
+  CHECK(base::FeatureList::IsEnabled(kIOSSaveToDrive));
+  id<SaveToDriveCommands> saveToDriveHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SaveToDriveCommands);
+  [saveToDriveHandler showSaveToDriveForDownload:_downloadTask];
 }
 
 - (void)presentOpenInForDownloadManagerViewController:

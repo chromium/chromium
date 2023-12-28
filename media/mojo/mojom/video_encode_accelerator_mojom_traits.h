@@ -514,6 +514,11 @@ struct StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
     return input.content_type;
   }
 
+  static uint8_t drop_frame_thresh_percentage(
+      const media::VideoEncodeAccelerator::Config& input) {
+    return input.drop_frame_thresh_percentage;
+  }
+
   static const std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>&
   spatial_layers(const media::VideoEncodeAccelerator::Config& input) {
     return input.spatial_layers;

@@ -12,6 +12,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -195,13 +195,13 @@ class POLICY_EXPORT CloudPolicyClient {
   // DMToken for affiliated users. Could be null if it's not possible to use
   // device DMToken for user policy fetches.
   CloudPolicyClient(
-      base::StringPiece machine_id,
-      base::StringPiece machine_model,
-      base::StringPiece brand_code,
-      base::StringPiece attested_device_id,
+      std::string_view machine_id,
+      std::string_view machine_model,
+      std::string_view brand_code,
+      std::string_view attested_device_id,
       absl::optional<MacAddress> ethernet_mac_address,
       absl::optional<MacAddress> dock_mac_address,
-      base::StringPiece manufacture_date,
+      std::string_view manufacture_date,
       DeviceManagementService* service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       DeviceDMTokenCallback device_dm_token_callback);

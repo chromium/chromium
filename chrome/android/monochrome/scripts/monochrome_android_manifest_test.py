@@ -24,6 +24,13 @@ class MonochromeAndroidManifestCheckerTest(typ.TestCase):
     car_lib =  r'uses-library.*\n.*android.car'
     stripped_manifest = re.sub(car_lib, "", manifest)
 
+    # android.ext.adservices is a library needed for
+    # androidx.privacysandbox.ads:ads-adservices to work on Android R & S.
+    # Strip it from the manifest before asserting there are no other uses of
+    # uses-library.
+    ext_adservices_lib = r'uses-library.*\n.*android.ext.adservices'
+    stripped_manifest = re.sub(ext_adservices_lib, "", stripped_manifest)
+
     # Check that AndroidManifest.xml does not have any <uses-library> tags.
     # crbug.com/1115604
     self.assertNotIn('uses-library', stripped_manifest)

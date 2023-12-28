@@ -20,8 +20,9 @@ class ToolbarButtonProvider;
 // Holds controls in the far left of the toolbar.
 class WebAppNavigationButtonContainer : public views::View,
                                         public CommandObserver {
+  METADATA_HEADER(WebAppNavigationButtonContainer, views::View)
+
  public:
-  METADATA_HEADER(WebAppNavigationButtonContainer);
   WebAppNavigationButtonContainer(
       BrowserView* browser_view,
       ToolbarButtonProvider* toolbar_button_provider);

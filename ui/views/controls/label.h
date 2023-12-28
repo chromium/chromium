@@ -274,7 +274,7 @@ class VIEWS_EXPORT Label : public View,
   void SetCollapseWhenHidden(bool value);
 
   // Get the text as displayed to the user, respecting the obscured flag.
-  std::u16string GetDisplayTextForTesting();
+  const std::u16string GetDisplayTextForTesting() const;
 
   // Get the text direction, as displayed to the user.
   base::i18n::TextDirection GetTextDirectionForTesting();

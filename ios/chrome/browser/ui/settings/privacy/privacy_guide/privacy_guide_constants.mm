@@ -4,4 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_constants.h"
 
-NSString* const kPrivacyGuideWelcomeViewId = @"kPrivacyGuideWelcomeViewId";
+#import <Foundation/Foundation.h>
+
+NSString* const kPrivacyGuideWelcomeViewID = @"kPrivacyGuideWelcomeViewID";
+NSString* const kPrivacyGuideURLUsageViewID = @"kPrivacyGuideURLUsageViewID";

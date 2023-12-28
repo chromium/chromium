@@ -16,7 +16,6 @@
 #include "build/chromeos_buildflags.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chrome/common/buildflags.h"
-#include "components/signin/public/base/signin_buildflags.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/common/url_constants.h"
 #include "media/media_buildflags.h"
@@ -152,6 +151,8 @@ extern const char kChromeUIOmniboxPopupHost[];
 extern const char kChromeUIOmniboxPopupURL[];
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kChromeUIOnDeviceInternalsHost[];
+extern const char kChromeUISearchEngineChoiceURL[];
+extern const char kChromeUISearchEngineChoiceHost[];
 #endif
 extern const char kChromeUISuggestInternalsHost[];
 extern const char kChromeUISuggestInternalsURL[];
@@ -176,6 +177,8 @@ extern const char kChromeUIPrefsInternalsURL[];
 extern const char kChromeUIPrintURL[];
 extern const char kChromeUIPrivacySandboxDialogHost[];
 extern const char kChromeUIPrivacySandboxDialogURL[];
+extern const char kChromeUIPrivacySandboxInternalsHost[];
+extern const char kChromeUIPrivacySandboxInternalsURL[];
 extern const char kChromeUIPrivacySandboxDialogCombinedPath[];
 extern const char kChromeUIPrivacySandboxDialogNoticePath[];
 extern const char kChromeUIPrivacySandboxDialogNoticeRestrictedPath[];
@@ -460,23 +463,18 @@ extern const char kChromeUILinuxProxyConfigHost[];
 extern const char kChromeUISandboxHost[];
 #endif
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-extern const char kChromeUISearchEngineChoiceURL[];
-extern const char kChromeUISearchEngineChoiceHost[];
-#endif
-
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA) || \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 extern const char kChromeUIBrowserSwitchHost[];
 extern const char kChromeUIBrowserSwitchURL[];
-extern const char kChromeUIEnterpriseProfileWelcomeHost[];
-extern const char kChromeUIEnterpriseProfileWelcomeURL[];
 extern const char kChromeUIIntroHost[];
 extern const char kChromeUIIntroURL[];
 extern const char kChromeUIIntroDefaultBrowserSubPage[];
 extern const char kChromeUIIntroDefaultBrowserURL[];
+extern const char kChromeUIManagedUserProfileNoticeHost[];
+extern const char kChromeUIManagedUserProfileNoticeUrl[];
 extern const char kChromeUIProfileCustomizationHost[];
 extern const char kChromeUIProfileCustomizationURL[];
 extern const char kChromeUIProfilePickerHost[];
@@ -570,6 +568,12 @@ extern const char kCleanupSubPage[];
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 extern const char kChromeUICastFeedbackHost[];
+#endif
+
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+extern const char kChromeUILensUntrustedURL[];
+extern const char kChromeUILensURL[];
+extern const char kChromeUILensHost[];
 #endif
 
 // Extensions sub pages.

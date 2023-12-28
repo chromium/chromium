@@ -51,7 +51,6 @@ void FakeServerSyncInvalidationSender::OnWillCommit() {
 }
 
 void FakeServerSyncInvalidationSender::OnCommit(
-    const std::string& committer_invalidator_client_id,
     syncer::ModelTypeSet committed_model_types) {
   // Update token to interested data types mapping. This is needed to support
   // newly added DeviceInfos during commit request.

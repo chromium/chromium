@@ -78,6 +78,7 @@
 <translation id="4705093842003735294">पूर्ण रेझोल्यूशन</translation>
 <translation id="4864143361253542638">स्कॅन केलेली पेज सूची</translation>
 <translation id="4890010094662541459">३ x ३</translation>
+<translation id="4892746741161549733">लिंकचा अ‍ॅड्रेस <ph name="URL" /> कॉपी करा</translation>
 <translation id="491895758387112773">मल्टिस्ट्रीम व्हिडिओ रेकॉर्डिंग</translation>
 <translation id="495170559598752135">क्रिया</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
@@ -129,6 +130,7 @@
 <translation id="7450541714075000668">मजकूर कॉपी केला</translation>
 <translation id="7488619942230388918">GIF व्हिडिओ रेकॉर्ड करा</translation>
 <translation id="7557677699350329807">पुढील कॅमेर्‍यावर स्विच करा</translation>
+<translation id="7562584071994185503"><ph name="TEXT" /> हा मजकूर कॉपी करा</translation>
 <translation id="7607002721634913082">विराम द्या</translation>
 <translation id="7608223098072244877">४ बाय ४</translation>
 <translation id="761421184377987513">तळाशी डाव्या दिशेने हलत आहे</translation>
@@ -141,6 +143,7 @@
 <translation id="7726641833034062494">साधारण व्हिडिओ रेकॉर्ड करा</translation>
 <translation id="7748344063862150053">दस्तऐवजाचा सर्वात वरील उजवीकडील कोपरा</translation>
 <translation id="7933675232020478311">तळाशी उजव्या दिशेने हलत आहे</translation>
+<translation id="7983668134180549431">मजकूर डिटेक्ट केला.</translation>
 <translation id="8079255378695216066">रेकॉर्डिंग सुरू करू शकत नाही</translation>
 <translation id="8120146556401698679">पॅन टिल्ट झूम</translation>
 <translation id="8131740175452115882">पुष्टी करा</translation>
@@ -150,6 +153,7 @@
 <translation id="8346544573713510785">Camera HAL द्वारे फ्रेम स्केल करा</translation>
 <translation id="8425673304802773841">खाली टिल्ट करा</translation>
 <translation id="8428213095426709021">सेटिंग्ज</translation>
+<translation id="8609951387004618906"><ph name="URL" /> उघडा</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">मायक्रोफोन म्यूट टॉगल करा. म्यूट सुरू आहे</translation>
 <translation id="8730621377337864115">पूर्ण झाले</translation>
@@ -159,7 +163,6 @@
 <translation id="8870695351537079478">रेकॉर्डिंग सुरू करता आले नाही</translation>
 <translation id="8880167521484863515">चारास तीन</translation>
 <translation id="8903921497873541725">झूम इन करा</translation>
-<translation id="8926890870105777777">"<ph name="WIFINAME" />" नेटवर्क मध्ये सामील व्हा</translation>
 <translation id="9045010116236796332">दस्तऐवजाच्या सर्व कडा फ्रेमच्या आत ठेवा</translation>
 <translation id="9045155556724273246">१० सेकंद</translation>
 <translation id="906331135292332864">इमेजवर प्रक्रिया करत आहे...</translation>

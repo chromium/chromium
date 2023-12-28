@@ -53,12 +53,10 @@ class ASH_EXPORT AssistantMainView : public views::View,
  private:
   void InitLayout();
 
-  const raw_ptr<AssistantViewDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<AssistantViewDelegate> delegate_;
 
-  raw_ptr<AssistantDialogPlate, ExperimentalAsh>
-      dialog_plate_;  // Owned by view hierarchy.
-  raw_ptr<AppListAssistantMainStage, ExperimentalAsh>
-      main_stage_;  // Owned by view hierarchy.
+  raw_ptr<AssistantDialogPlate> dialog_plate_;     // Owned by view hierarchy.
+  raw_ptr<AppListAssistantMainStage> main_stage_;  // Owned by view hierarchy.
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};

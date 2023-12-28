@@ -49,6 +49,7 @@ class MockErrorDelegateNonStrict : public ArcSupportHost::ErrorDelegate {
   MOCK_METHOD0(OnRetryClicked, void());
   MOCK_METHOD0(OnSendFeedbackClicked, void());
   MOCK_METHOD0(OnRunNetworkTestsClicked, void());
+  MOCK_METHOD1(OnErrorPageShown, void(bool network_tests_shown));
 };
 
 using MockErrorDelegate = StrictMock<MockErrorDelegateNonStrict>;
@@ -172,6 +173,7 @@ TEST_F(ArcSupportHostTest, TermsOfServiceRetryOnError) {
   MockErrorDelegate* error_delegate = CreateMockErrorDelegate();
   support_host()->SetErrorDelegate(error_delegate);
 
+  EXPECT_CALL(*error_delegate, OnErrorPageShown(true));
   support_host()->ShowError(
       ArcSupportHost::ErrorInfo(
           ArcSupportHost::Error::NETWORK_UNAVAILABLE_ERROR),
@@ -199,6 +201,7 @@ TEST_F(ArcSupportHostTest, RetryOnGeneralError) {
   MockErrorDelegate* error_delegate = CreateMockErrorDelegate();
   support_host()->SetErrorDelegate(error_delegate);
 
+  EXPECT_CALL(*error_delegate, OnErrorPageShown(true));
   support_host()->ShowError(
       ArcSupportHost::ErrorInfo(
           ArcSupportHost::Error::NETWORK_UNAVAILABLE_ERROR),
@@ -213,6 +216,7 @@ TEST_F(ArcSupportHostTest, SendFeedbackOnError) {
   MockErrorDelegate* error_delegate = CreateMockErrorDelegate();
   support_host()->SetErrorDelegate(error_delegate);
 
+  EXPECT_CALL(*error_delegate, OnErrorPageShown(true));
   support_host()->ShowError(
       ArcSupportHost::ErrorInfo(
           ArcSupportHost::Error::NETWORK_UNAVAILABLE_ERROR),
@@ -227,6 +231,7 @@ TEST_F(ArcSupportHostTest, RunNetworkTestsOnError) {
   MockErrorDelegate* error_delegate = CreateMockErrorDelegate();
   support_host()->SetErrorDelegate(error_delegate);
 
+  EXPECT_CALL(*error_delegate, OnErrorPageShown(true));
   support_host()->ShowError(
       ArcSupportHost::ErrorInfo(
           ArcSupportHost::Error::NETWORK_UNAVAILABLE_ERROR),

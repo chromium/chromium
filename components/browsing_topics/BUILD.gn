@@ -90,12 +90,6 @@ source_set("unit_tests") {
     "topic_and_domains_unittest.cc",
   ]
 
-  if (is_ios) {
-    # TODO(crbug.com/1478669): BrowsingTopicsServiceImplTest are failing on iOS
-    # port.
-    sources -= [ "browsing_topics_service_impl_unittest.cc" ]
-  }
-
   if (build_with_tflite_lib) {
     sources += [ "annotator_impl_unittest.cc" ]
   }

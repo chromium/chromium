@@ -50,9 +50,9 @@ constexpr base::TimeDelta kTestPeriod = base::Seconds(1) / (60 / 20);
 constexpr int kMillisecondsToFirstFrame = 500;
 
 struct Application {
-  std::string package;
-  std::string activity;
-  std::string name;
+  const char* package;
+  const char* activity;
+  const char* name;
 };
 
 std::string GetStatisticName(const std::string& name,
@@ -79,6 +79,27 @@ int64_t ReadFocusStatistics(const std::string& name) {
   return ReadStatistics(name, kFocusCategory);
 }
 
+constexpr std::initializer_list<Application> kApplications{
+    {"com.mojang.minecraftpe", "com.mojang.minecraftpe.MainActivity",
+     "MinecraftConsumerEdition"},
+    {"com.innersloth.spacemafia",
+     "com.innersloth.spacemafia.EosUnityPlayerActivity", "AmongUs"},
+    {"com.plarium.raidlegends", "com.plarium.unity_app.UnityMainActivity",
+     "RaidLegends"},
+    {"com.valvesoftware.underlords", "com.valvesoftware.underlords.applauncher",
+     "Underlords"},
+    {"com.tocaboca.tocalifeworld", "com.tocaboca.activity.TocaBocaMainActivity",
+     "TocaLife"},
+    {"com.king.candycrushsaga",
+     "com.king.candycrushsaga.CandyCrushSagaActivity", "CandyCrush"},
+    {"com.playrix.homescapes", "com.playrix.homescapes.GoogleActivity",
+     "Homescapes"},
+    {"com.ea.gp.fifamobile", "com.ea.gp.fifamobile.FifaMainActivity",
+     "FIFAMobile"},
+    {"com.miHoYo.GenshinImpact", "com.miHoYo.GetMobileInfo.MainActivity",
+     "GenshinImpact"},
+};
+
 }  // namespace
 
 // BrowserWithTestWindowTest contains required ash/shell support that would not
@@ -97,6 +118,11 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
 
   // testing::Test:
   void SetUp() override {
+    ForgetAppMetrics(kFocusCategory);
+    for (const auto& app : kApplications) {
+      ForgetAppMetrics(app.name);
+    }
+
     BrowserWithTestWindowTest::SetUp();
 
     arc_test_.SetUp(profile());
@@ -120,6 +146,17 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
  protected:
   int64_t task_id = 1;
   std::unique_ptr<exo::Surface> shell_root_surface_;
+
+  void ForgetAppMetrics(const std::string& category) {
+    base::StatisticsRecorder::ForgetHistogramForTesting(
+        GetStatisticName("FPS2", category));
+    base::StatisticsRecorder::ForgetHistogramForTesting(
+        GetStatisticName("PerceivedFPS2", category));
+    base::StatisticsRecorder::ForgetHistogramForTesting(
+        GetStatisticName("CommitDeviation2", category));
+    base::StatisticsRecorder::ForgetHistogramForTesting(
+        GetStatisticName("RenderQuality2", category));
+  }
 
   // Ensures that tracing is ready to begin, which means up to the point that
   // waiting for the delayed start has just begun.
@@ -321,7 +358,7 @@ TEST_F(ArcAppPerformanceTracingTest, StatisticsReported) {
 
   tracing_helper().PlayDefaultSequence(shell_root_surface_.get());
   tracing_helper().FireTimerForTesting();
-  EXPECT_EQ(45L, ReadFocusStatistics("FPS2"));
+  EXPECT_EQ(48L, ReadFocusStatistics("FPS2"));
   EXPECT_EQ(216L, ReadFocusStatistics("CommitDeviation2"));
   EXPECT_EQ(48L, ReadFocusStatistics("RenderQuality2"));
   arc_widget->Close();
@@ -332,61 +369,37 @@ TEST_F(ArcAppPerformanceTracingTest, StatisticsReported) {
   arc_widget->Close();
 }
 
+TEST_F(ArcAppPerformanceTracingTest, DifferingFPSTypes) {
+  // 32 ms interval is 31.25 FPS.
+  constexpr base::TimeDelta kCommitInterval = base::Milliseconds(32);
+  constexpr int kFrameCount = 100;
+
+  UmaPerfReporting::SetTracingPeriodForTesting(kFrameCount * kCommitInterval);
+  views::Widget* arc_widget = PrepareArcFocusAppTracing();
+
+  tracing_helper().GetTracingSession()->FireTimerForTesting();
+  for (int frame = 0; frame < kFrameCount; frame++) {
+    tracing_helper().AdvanceTickCount(kCommitInterval);
+    // One frame of every ten is missed, so perceived FPS is 28.125.
+    tracing_helper().Commit(
+        shell_root_surface_.get(),
+        (frame % 10) == 0 ? PresentType::kDiscarded : PresentType::kSuccessful);
+  }
+
+  tracing_helper().FireTimerForTesting();
+  EXPECT_EQ(31L, ReadFocusStatistics("FPS2"));
+  EXPECT_EQ(28L, ReadFocusStatistics("PerceivedFPS2"));
+  arc_widget->Close();
+}
+
 TEST_F(ArcAppPerformanceTracingTest, ApplicationStatisticsReported) {
-  std::vector<const Application> applications;
-
-  const Application minecraft = {"com.mojang.minecraftpe",
-                                 "com.mojang.minecraftpe.MainActivity",
-                                 "MinecraftConsumerEdition"};
-  applications.push_back(minecraft);
-
-  const Application among_us = {
-      "com.innersloth.spacemafia",
-      "com.innersloth.spacemafia.EosUnityPlayerActivity", "AmongUs"};
-  applications.push_back(among_us);
-
-  const Application raid_legends = {"com.plarium.raidlegends",
-                                    "com.plarium.unity_app.UnityMainActivity",
-                                    "RaidLegends"};
-  applications.push_back(raid_legends);
-
-  const Application underlords = {"com.valvesoftware.underlords",
-                                  "com.valvesoftware.underlords.applauncher",
-                                  "Underlords"};
-  applications.push_back(underlords);
-
-  const Application toca_life = {"com.tocaboca.tocalifeworld",
-                                 "com.tocaboca.activity.TocaBocaMainActivity",
-                                 "TocaLife"};
-  applications.push_back(toca_life);
-
-  const Application candy_crush = {
-      "com.king.candycrushsaga",
-      "com.king.candycrushsaga.CandyCrushSagaActivity", "CandyCrush"};
-  applications.push_back(candy_crush);
-
-  const Application homescapes = {"com.playrix.homescapes",
-                                  "com.playrix.homescapes.GoogleActivity",
-                                  "Homescapes"};
-  applications.push_back(homescapes);
-
-  const Application fifa_mobile = {"com.ea.gp.fifamobile",
-                                   "com.ea.gp.fifamobile.FifaMainActivity",
-                                   "FIFAMobile"};
-  applications.push_back(fifa_mobile);
-
-  const Application genshin_impact = {"com.miHoYo.GenshinImpact",
-                                      "com.miHoYo.GetMobileInfo.MainActivity",
-                                      "GenshinImpact"};
-  applications.push_back(genshin_impact);
-
-  for (const Application& application : applications) {
+  for (const Application& application : kApplications) {
     views::Widget* const arc_widget =
         StartArcAppTracing(application.package, application.activity);
 
     tracing_helper().PlayDefaultSequence(shell_root_surface_.get());
     tracing_helper().FireTimerForTesting();
-    EXPECT_EQ(45L, ReadStatistics("FPS2", application.name));
+    EXPECT_EQ(48L, ReadStatistics("FPS2", application.name));
     EXPECT_EQ(216L, ReadStatistics("CommitDeviation2", application.name));
     EXPECT_EQ(48L, ReadStatistics("RenderQuality2", application.name));
     arc_widget->Close();

@@ -1223,10 +1223,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // Create server predictions.
   autofill::AutofillType::ServerPrediction username_prediction;
   username_prediction.server_predictions = {
-      CreateFieldPrediction(autofill::ServerFieldType::USERNAME)};
+      CreateFieldPrediction(autofill::FieldType::USERNAME)};
   autofill::AutofillType::ServerPrediction password_prediction;
   password_prediction.server_predictions = {
-      CreateFieldPrediction(autofill::ServerFieldType::PASSWORD)};
+      CreateFieldPrediction(autofill::FieldType::PASSWORD)};
 
   // Navigate to the page
   NavigateToFile("/password/nonplaceholder_username.html");
@@ -1283,13 +1283,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   // Create server predictions.
   autofill::AutofillType::ServerPrediction username_prediction;
   username_prediction.server_predictions = {
-      autofill::test::CreateFieldPrediction(
-          autofill::ServerFieldType::USERNAME)};
+      autofill::test::CreateFieldPrediction(autofill::FieldType::USERNAME)};
   username_prediction.may_use_prefilled_placeholder = true;
   autofill::AutofillType::ServerPrediction password_prediction;
   password_prediction.server_predictions = {
-      autofill::test::CreateFieldPrediction(
-          autofill::ServerFieldType::PASSWORD)};
+      autofill::test::CreateFieldPrediction(autofill::FieldType::PASSWORD)};
 
   // Navigate to the page
   NavigateToFile("/password/nonplaceholder_username.html");

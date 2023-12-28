@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -29,6 +30,7 @@ namespace blink {
   } while (false)
 
 TEST(EllipseShapeTest, ZeroRadii) {
+  test::TaskEnvironment task_environment;
   EllipseShape shape(gfx::PointF(), 0, 0);
   EXPECT_TRUE(shape.IsEmpty());
   EXPECT_EQ(LogicalRect(), shape.ShapeMarginLogicalBoundingBox());
@@ -37,6 +39,7 @@ TEST(EllipseShapeTest, ZeroRadii) {
 }
 
 TEST(EllipseShapeTest, ZeroRadiusX) {
+  test::TaskEnvironment task_environment;
   EllipseShape shape(gfx::PointF(), 0, 10);
   EXPECT_TRUE(shape.IsEmpty());
   EXPECT_EQ(LogicalRect(0, -10, 0, 20), shape.ShapeMarginLogicalBoundingBox());
@@ -45,6 +48,7 @@ TEST(EllipseShapeTest, ZeroRadiusX) {
 }
 
 TEST(EllipseShapeTest, ZeroRadiusY) {
+  test::TaskEnvironment task_environment;
   EllipseShape shape(gfx::PointF(), 10, 0);
   EXPECT_TRUE(shape.IsEmpty());
   EXPECT_EQ(LogicalRect(-10, 0, 20, 0), shape.ShapeMarginLogicalBoundingBox());
@@ -53,6 +57,7 @@ TEST(EllipseShapeTest, ZeroRadiusY) {
 }
 
 TEST(EllipseShapeTest, ZeroRadiiWithMargin) {
+  test::TaskEnvironment task_environment;
   EllipseShape shape(gfx::PointF(10, 20), 0, 0);
   shape.SetShapeMarginForTesting(5);
   EXPECT_TRUE(shape.IsEmpty());
@@ -80,6 +85,7 @@ TEST(EllipseShapeTest, ZeroRadiiWithMargin) {
 }
 
 TEST(EllipseShapeTest, NonZeroRadiiWithMargin) {
+  test::TaskEnvironment task_environment;
   EllipseShape shape(gfx::PointF(10, 20), 20, 10);
   shape.SetShapeMarginForTesting(5);
   EXPECT_FALSE(shape.IsEmpty());
@@ -107,6 +113,7 @@ TEST(EllipseShapeTest, NonZeroRadiiWithMargin) {
 }
 
 TEST(EllipseShapeTest, ShapeMarginLogicalBoundingBoxWithFloatValues) {
+  test::TaskEnvironment task_environment;
   EXPECT_EQ(LogicalRect(LayoutUnit(-2.25f), LayoutUnit(-2.125f), LayoutUnit(7),
                         LayoutUnit(9.75f)),
             EllipseShape(gfx::PointF(1.25f, 2.75f), 3.5f, 4.875f)

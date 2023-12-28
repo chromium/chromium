@@ -147,11 +147,10 @@ class StorageMonitorCrosTest : public testing::Test {
     return *mock_storage_observer_;
   }
 
-  raw_ptr<TestStorageMonitorCros, ExperimentalAsh> monitor_ = nullptr;
+  raw_ptr<TestStorageMonitorCros> monitor_ = nullptr;
 
   // Owned by DiskMountManager.
-  raw_ptr<ash::disks::MockDiskMountManager, ExperimentalAsh>
-      disk_mount_manager_mock_ = nullptr;
+  raw_ptr<ash::disks::MockDiskMountManager> disk_mount_manager_mock_ = nullptr;
 
   StorageMonitor::EjectStatus status_ = StorageMonitor::EJECT_FAILURE;
 

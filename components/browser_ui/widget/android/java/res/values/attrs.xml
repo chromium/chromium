@@ -125,8 +125,4 @@ found in the LICENSE file.
             <enum name="hard" value="2" />
         </attr>
     </declare-styleable>
-
-    <!-- Surface color resources. See https://crbug.com/1410537. -->
-    <attr name="tileViewIconBackgroundModern" format="reference"/>
-    <attr name="cardElevation" format="reference|dimension"/>
 </resources>

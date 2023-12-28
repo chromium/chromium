@@ -101,6 +101,9 @@ bool RenderHtmlInLacros(Browser* browser, const std::string& html) {
           ->GetNativeWindow()
           ->GetRootWindow());
   EXPECT_TRUE(browser_test_util::WaitForWindowCreation(window_id));
+  EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser)
+                  ->contents_web_view()
+                  ->HasFocus());
   return true;
 }
 
@@ -581,12 +584,14 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        CommitTextUpdatesSurroundingText) {
+  const std::string id = RenderAutofocusedInputFieldInLacros(browser());
+
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(GetParam());
   if (!input_method.is_bound()) {
     GTEST_SKIP() << "Unsupported ash version";
   }
-  const std::string id = RenderAutofocusedInputFieldInLacros(browser());
+
   InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
       input_method.get());
   input_method_async_waiter.WaitForFocus();
@@ -876,12 +881,14 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        SetCompositionUpdatesSurroundingText) {
+  const std::string id = RenderAutofocusedInputFieldInLacros(browser());
+
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(GetParam());
   if (!input_method.is_bound()) {
     GTEST_SKIP() << "Unsupported ash version";
   }
-  const std::string id = RenderAutofocusedInputFieldInLacros(browser());
+
   InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
       input_method.get());
   input_method_async_waiter.WaitForFocus();

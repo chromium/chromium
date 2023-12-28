@@ -49,10 +49,10 @@ class LegendEntry : public views::View {
 
  private:
   const SkColor color_;
-  const raw_ref<const Graph, ExperimentalAsh> graph_;
+  const raw_ref<const Graph> graph_;
   size_t value_index_ = 0;
   Legend::Formatter formatter_;
-  raw_ptr<views::Label, ExperimentalAsh> value_ = nullptr;
+  raw_ptr<views::Label> value_ = nullptr;
 };
 
 BEGIN_METADATA(LegendEntry, views::View)
@@ -182,7 +182,7 @@ void Legend::Layout() {
 
   gfx::Size max_size;
   bool updated = false;
-  for (auto* view : children()) {
+  for (views::View* view : children()) {
     if (std::string_view(view->GetClassName()) !=
         std::string_view(LegendEntry::kViewClassName)) {
       continue;
@@ -193,7 +193,7 @@ void Legend::Layout() {
     updated |= max_size != value->GetPreferredSize();
   }
   if (updated) {
-    for (auto* view : children()) {
+    for (views::View* view : children()) {
       if (std::string_view(view->GetClassName()) !=
           std::string_view(LegendEntry::kViewClassName)) {
         continue;
@@ -206,7 +206,7 @@ void Legend::Layout() {
 }
 
 void Legend::SetValuesIndex(size_t index) {
-  for (auto* view : children()) {
+  for (views::View* view : children()) {
     if (std::string_view(view->GetClassName()) !=
         std::string_view(LegendEntry::kViewClassName)) {
       continue;
@@ -217,7 +217,7 @@ void Legend::SetValuesIndex(size_t index) {
 }
 
 void Legend::RefreshValues() {
-  for (auto* view : children()) {
+  for (views::View* view : children()) {
     if (std::string_view(view->GetClassName()) !=
         std::string_view(LegendEntry::kViewClassName)) {
       continue;

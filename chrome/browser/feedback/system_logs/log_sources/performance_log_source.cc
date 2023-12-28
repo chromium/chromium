@@ -66,9 +66,8 @@ void PerformanceLogSource::Fetch(SysLogsSourceCallback callback) {
 
 void PerformanceLogSource::PopulatePerformanceSettingLogs(
     SystemLogsResponse* response) {
-  response->emplace(
-      "high_efficiency_mode_active",
-      BoolToString(tuning_manager_->IsHighEfficiencyModeActive()));
+  response->emplace("high_efficiency_mode_active",
+                    BoolToString(tuning_manager_->IsMemorySaverModeActive()));
 
   PrefService* local_prefs = g_browser_process->local_state();
   int battery_saver_state = local_prefs->GetInteger(kBatterySaverModeState);

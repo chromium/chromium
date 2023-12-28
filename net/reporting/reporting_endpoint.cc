@@ -8,6 +8,7 @@
 #include <tuple>
 
 #include "base/time/time.h"
+#include "net/base/network_anonymization_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -90,7 +91,7 @@ bool operator>(const ReportingEndpointGroupKey& lhs,
 std::string ReportingEndpointGroupKey::ToString() const {
   return "Source: " +
          (reporting_source ? reporting_source->ToString() : "null") +
-         "; NIK: " + network_anonymization_key.ToDebugString() +
+         "; NAK: " + network_anonymization_key.ToDebugString() +
          "; Origin: " + origin.Serialize() + "; Group name: " + group_name;
 }
 

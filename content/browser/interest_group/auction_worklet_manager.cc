@@ -341,6 +341,8 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
       base::BindRepeating(&Delegate::GetTrustedURLLoaderFactory,
                           base::Unretained(delegate)),
       base::BindOnce(&Delegate::PreconnectSocket, base::Unretained(delegate)),
+      base::BindRepeating(&Delegate::GetCookieDeprecationLabel,
+                          base::Unretained(delegate)),
       /*force_reload=*/rfh->reload_type() == ReloadType::BYPASSING_CACHE,
       worklet_manager_->top_window_origin(), worklet_manager_->frame_origin(),
       // NOTE: `rfh` can be null in tests.

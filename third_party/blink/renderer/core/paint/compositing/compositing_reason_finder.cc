@@ -285,6 +285,34 @@ bool ObjectTypeSupportsCompositedTransformAnimation(
   return object.IsBox();
 }
 
+// Defined by the Element Capture specification:
+// https://screen-share.github.io/element-capture/#elements-eligible-for-restriction
+bool IsEligibleForElementCapture(const LayoutObject& object) {
+  // The element forms a stacking context.
+  if (!object.IsStackingContext()) {
+    return false;
+  }
+
+  // The element is flattened in 3D.
+  if (!object.CreatesGroup()) {
+    return false;
+  }
+
+  // The element forms a backdrop root.
+  // See ViewTransitionUtils::IsViewTransitionParticipant and
+  // NeedsEffectIgnoringClipPath for how View Transitions meets this
+  // requirement.
+  // TODO(https://issuetracker.google.com/291602746): handle backdrop root case.
+
+  // The element has exactly one box fragment.
+  if (object.IsBox() && To<LayoutBox>(object).PhysicalFragmentCount() > 1) {
+    return false;
+  }
+
+  // Meets all of the conditions for element capture.
+  return true;
+}
+
 }  // anonymous namespace
 
 CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
@@ -359,7 +387,9 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
 
   auto* element = DynamicTo<Element>(object.GetNode());
   if (element && element->GetRestrictionTargetId()) {
-    reasons |= CompositingReason::kElementCapture;
+    if (IsEligibleForElementCapture(object)) {
+      reasons |= CompositingReason::kElementCapture;
+    }
   }
 
   return reasons;

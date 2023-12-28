@@ -157,7 +157,6 @@
 #include "chrome/browser/ssl/https_upgrades_navigation_throttle.h"
 #include "chrome/browser/ssl/sct_reporting_service.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
-#include "chrome/browser/ssl/ssl_client_auth_metrics.h"
 #include "chrome/browser/ssl/ssl_client_certificate_selector.h"
 #include "chrome/browser/ssl/typed_navigation_upgrade_throttle.h"
 #include "chrome/browser/task_manager/sampling/task_manager_impl.h"
@@ -169,9 +168,8 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
-#include "chrome/browser/ui/login/login_handler.h"
+#include "chrome/browser/ui/login/http_auth_coordinator.h"
 #include "chrome/browser/ui/login/login_navigation_throttle.h"
-#include "chrome/browser/ui/login/login_tab_helper.h"
 #include "chrome/browser/ui/passwords/password_manager_navigation_throttle.h"
 #include "chrome/browser/ui/passwords/well_known_change_password_navigation_throttle.h"
 #include "chrome/browser/ui/prefs/pref_watcher.h"
@@ -431,6 +429,7 @@
 #include "chrome/browser/ash/fileapi/external_file_url_loader_factory.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/fileapi/mtp_file_system_backend_delegate.h"
+#include "chrome/browser/ash/http_auth_dialog.h"
 #include "chrome/browser/ash/login/signin/merge_session_navigation_throttle.h"
 #include "chrome/browser/ash/login/signin/merge_session_throttling_utils.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
@@ -2418,11 +2417,6 @@ bool ChromeContentBrowserClient::IsIsolatedContextAllowedForUrl(
     return true;
   }
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (lock_url == chrome::kChromeUIUntrustedTerminalURL) {
-    return true;
-  }
-#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (ChromeContentBrowserClientExtensionsPart::AreExtensionsDisabledForProfile(
@@ -3796,7 +3790,6 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
         base::BindOnce(
             &content::ClientCertificateDelegate::ContinueWithCertificate,
             std::move(delegate), std::move(cert)));
-    LogClientAuthResult(ClientCertSelectionResult::kAutoSelect);
     return base::OnceClosure();
   }
 
@@ -3817,7 +3810,6 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
       !CanPromptWithNonmatchingCertificates(profile)) {
     LOG(WARNING) << "No client cert matched by policy and user selection is "
                     "not allowed.";
-    LogClientAuthResult(ClientCertSelectionResult::kNoSelectionAllowed);
     // Continue without client certificate. We do this to mimic the case of no
     // client certificate being present in the profile's certificate store.
     delegate->ContinueWithCertificate(nullptr, nullptr);
@@ -5261,8 +5253,7 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   auto* privacy_sandbox_settings =
       PrivacySandboxSettingsFactory::GetForProfile(profile);
   if (privacy_sandbox_settings &&
-      privacy_sandbox_settings->AreRelatedWebsiteSetsEnabled() &&
-      base::FeatureList::IsEnabled(features::kFirstPartySets)) {
+      privacy_sandbox_settings->AreRelatedWebsiteSetsEnabled()) {
     MaybeAddThrottle(first_party_sets::FirstPartySetsNavigationThrottle::
                          MaybeCreateNavigationThrottle(handle),
                      &throttles);
@@ -5419,24 +5410,6 @@ bool ChromeContentBrowserClient::IsPluginAllowedToUseDevChannelAPIs(
 #else
   return false;
 #endif
-}
-
-void ChromeContentBrowserClient::OverridePageVisibilityState(
-    RenderFrameHost* render_frame_host,
-    content::PageVisibilityState* visibility_state) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(render_frame_host);
-  DCHECK(web_contents);
-
-  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
-      prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
-          web_contents->GetBrowserContext());
-  if (no_state_prefetch_manager &&
-      no_state_prefetch_manager->IsWebContentsPrefetching(web_contents)) {
-    *visibility_state = content::PageVisibilityState::kHiddenButPainting;
-  }
 }
 
 void ChromeContentBrowserClient::InitOnUIThread() {
@@ -6709,23 +6682,21 @@ ChromeContentBrowserClient::CreateLoginDelegate(
     return system_proxy_manager->CreateLoginDelegate(
         std::move(auth_required_callback));
   }
+
+  if (ash::HttpAuthDialog::IsEnabled()) {
+    return ash::HttpAuthDialog::Create(auth_info, web_contents, url,
+                                       std::move(auth_required_callback));
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // For subresources, create a LoginHandler directly, which may show a login
-  // prompt to the user. Main frame resources go through LoginTabHelper, which
-  // manages a more complicated flow to avoid confusion about which website is
-  // showing the prompt.
-  if (is_request_for_primary_main_frame) {
-    LoginTabHelper::CreateForWebContents(web_contents);
-    return LoginTabHelper::FromWebContents(web_contents)
-        ->CreateAndStartMainFrameLoginDelegate(
-            auth_info, web_contents, request_id, url, response_headers,
-            std::move(auth_required_callback));
+  if (!http_auth_coordinator_) {
+    http_auth_coordinator_ = CreateHttpAuthCoordinator();
   }
-  std::unique_ptr<LoginHandler> login_handler = LoginHandler::Create(
-      auth_info, web_contents, std::move(auth_required_callback));
-  login_handler->StartSubresource(request_id, url, response_headers);
-  return login_handler;
+  // Once Lacros ships this logic will no longer need to be included in
+  // ash-chrome.
+  return http_auth_coordinator_->CreateLoginDelegate(
+      web_contents, auth_info, request_id, is_request_for_primary_main_frame,
+      url, response_headers, std::move(auth_required_callback));
 }
 
 bool ChromeContentBrowserClient::HandleExternalProtocol(
@@ -6964,6 +6935,11 @@ const ui::NativeTheme* ChromeContentBrowserClient::GetWebTheme() const {
 void ChromeContentBrowserClient::AddExtraPart(
     ChromeContentBrowserClientParts* part) {
   extra_parts_.push_back(base::WrapUnique(part));
+}
+
+std::unique_ptr<HttpAuthCoordinator>
+ChromeContentBrowserClient::CreateHttpAuthCoordinator() {
+  return std::make_unique<HttpAuthCoordinator>();
 }
 
 scoped_refptr<safe_browsing::UrlCheckerDelegate>
@@ -7853,8 +7829,7 @@ bool ChromeContentBrowserClient::WillProvidePublicFirstPartySets() {
 #if BUILDFLAG(ENABLE_COMPONENT_UPDATER)
   return !is_minimal_mode_ &&
          !base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kDisableComponentUpdate) &&
-         base::FeatureList::IsEnabled(features::kFirstPartySets);
+             switches::kDisableComponentUpdate);
 #else
   return false;
 #endif  // BUILDFLAG(ENABLE_COMPONENT_UPDATER)

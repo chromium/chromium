@@ -20,33 +20,29 @@ AutofillSaveCardDelegate::AutofillSaveCardDelegate(
 AutofillSaveCardDelegate::~AutofillSaveCardDelegate() = default;
 
 void AutofillSaveCardDelegate::OnUiShown() {
-  AutofillMetrics::LogCreditCardInfoBarMetric(AutofillMetrics::INFOBAR_SHOWN,
-                                              is_for_upload(), options_);
+  LogInfoBarAction(AutofillMetrics::INFOBAR_SHOWN);
 }
 
 void AutofillSaveCardDelegate::OnUiAccepted(base::OnceClosure callback) {
   on_finished_gathering_consent_callback_ = std::move(callback);
-
-  // TODO (crbug.com/1485194): Add metrics for CVC save.
-  if (options_.card_save_type != AutofillClient::CardSaveType::kCvcSaveOnly) {
-    // Acceptance can be logged immediately if:
-    // 1. the user is accepting local save.
-    // 2. or when we don't need more info in order to upload.
-    if (!is_for_upload() ||
-        (!options_.should_request_name_from_user &&
-         !options_.should_request_expiration_date_from_user)) {
-      LogSaveCreditCardPromptResult(
-          autofill_metrics::SaveCreditCardPromptResult::kAccepted,
-          is_for_upload(), options_);
-    }
-    LogUserAction(AutofillMetrics::INFOBAR_ACCEPTED);
+  // Credit card save acceptance can be logged immediately if:
+  // 1. the user is accepting card local save.
+  // 2. or when we don't need more info in order to upload.
+  if (options_.card_save_type != AutofillClient::CardSaveType::kCvcSaveOnly &&
+      (!is_for_upload() ||
+       !(options_.should_request_name_from_user ||
+         options_.should_request_expiration_date_from_user))) {
+    LogSaveCreditCardPromptResult(
+        autofill_metrics::SaveCreditCardPromptResult::kAccepted,
+        is_for_upload(), options_);
   }
+  LogInfoBarAction(AutofillMetrics::INFOBAR_ACCEPTED);
   GatherAdditionalConsentIfApplicable(/*user_provided_details=*/{});
 }
 
 void AutofillSaveCardDelegate::OnUiUpdatedAndAccepted(
     AutofillClient::UserProvidedCardDetails user_provided_details) {
-  LogUserAction(AutofillMetrics::INFOBAR_ACCEPTED);
+  LogInfoBarAction(AutofillMetrics::INFOBAR_ACCEPTED);
   GatherAdditionalConsentIfApplicable(user_provided_details);
 }
 
@@ -54,9 +50,8 @@ void AutofillSaveCardDelegate::OnUiCanceled() {
   RunSaveCardPromptCallback(
       AutofillClient::SaveCardOfferUserDecision::kDeclined,
       /*user_provided_details=*/{});
-  // TODO (crbug.com/1485194): Add metrics for CVC save.
+  LogInfoBarAction(AutofillMetrics::INFOBAR_DENIED);
   if (options_.card_save_type != AutofillClient::CardSaveType::kCvcSaveOnly) {
-    LogUserAction(AutofillMetrics::INFOBAR_DENIED);
     LogSaveCreditCardPromptResult(
         autofill_metrics::SaveCreditCardPromptResult::kDenied, is_for_upload(),
         options_);
@@ -68,9 +63,8 @@ void AutofillSaveCardDelegate::OnUiIgnored() {
     RunSaveCardPromptCallback(
         AutofillClient::SaveCardOfferUserDecision::kIgnored,
         /*user_provided_details=*/{});
-    // TODO (crbug.com/1485194): Add metrics for CVC save.
+    LogInfoBarAction(AutofillMetrics::INFOBAR_IGNORED);
     if (options_.card_save_type != AutofillClient::CardSaveType::kCvcSaveOnly) {
-      LogUserAction(AutofillMetrics::INFOBAR_IGNORED);
       LogSaveCreditCardPromptResult(
           autofill_metrics::SaveCreditCardPromptResult::kIgnored,
           is_for_upload(), options_);
@@ -108,13 +102,18 @@ void AutofillSaveCardDelegate::GatherAdditionalConsentIfApplicable(
       user_provided_details);
 }
 
-void AutofillSaveCardDelegate::LogUserAction(
-    AutofillMetrics::InfoBarMetric user_action) {
-  DCHECK(!had_user_interaction_);
-
-  AutofillMetrics::LogCreditCardInfoBarMetric(user_action, is_for_upload(),
-                                              options_);
-  had_user_interaction_ = true;
+void AutofillSaveCardDelegate::LogInfoBarAction(
+    AutofillMetrics::InfoBarMetric action) {
+  CHECK(!had_user_interaction_);
+  if (options_.card_save_type == AutofillClient::CardSaveType::kCvcSaveOnly) {
+    autofill_metrics::LogCvcInfoBarMetric(action, is_for_upload());
+  } else {
+    AutofillMetrics::LogCreditCardInfoBarMetric(action, is_for_upload(),
+                                                options_);
+  }
+  if (action != AutofillMetrics::INFOBAR_SHOWN) {
+    had_user_interaction_ = true;
+  }
 }
 
 }  // namespace autofill

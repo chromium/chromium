@@ -31,5 +31,5 @@ void SystemAppAccessibleName::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetNameChecked(app_name_);
 }
 
-BEGIN_METADATA(SystemAppAccessibleName, views::View)
+BEGIN_METADATA(SystemAppAccessibleName)
 END_METADATA

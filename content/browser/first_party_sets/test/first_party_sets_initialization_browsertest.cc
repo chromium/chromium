@@ -25,7 +25,7 @@ class FirstPartySetsDeadlockingQueriesBrowserTest
   FirstPartySetsDeadlockingQueriesBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kFirstPartySets},
+        /*enabled_features=*/{},
         /*disabled_features=*/{net::features::kWaitForFirstPartySetsInit});
   }
 

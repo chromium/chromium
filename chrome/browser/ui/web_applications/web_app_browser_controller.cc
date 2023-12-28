@@ -665,8 +665,7 @@ const WebAppInstallManager& WebAppBrowserController::install_manager() const {
 void WebAppBrowserController::LoadAppIcon(bool allow_placeholder_icon) const {
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
-  proxy->LoadIcon(proxy->AppRegistryCache().GetAppType(app_id()), app_id(),
-                  apps::IconType::kStandard, kWebAppIconSmall,
+  proxy->LoadIcon(app_id(), apps::IconType::kStandard, kWebAppIconSmall,
                   allow_placeholder_icon,
                   base::BindOnce(&WebAppBrowserController::OnLoadIcon,
                                  weak_ptr_factory_.GetWeakPtr()));

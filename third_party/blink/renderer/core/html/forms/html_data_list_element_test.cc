@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -28,6 +29,7 @@ TEST_F(HTMLDataListElementTest, FinishedParsingChildren) {
 }
 
 TEST(HTMLDataListElementTest2, DecrementedAfterGc) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   Persistent<Document> document =
       HTMLDocument::CreateForTest(execution_context.GetExecutionContext());

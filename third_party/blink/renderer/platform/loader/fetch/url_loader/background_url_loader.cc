@@ -343,7 +343,7 @@ class BackgroundURLLoader::Context
         cors_exempt_header_list, base::MakeRefCounted<RequestClient>(this),
         background_resource_fetch_context->GetLoaderFactory(),
         std::move(throttles), std::move(resource_load_info_notifier_wrapper),
-        should_use_code_cache_host
+        should_use_code_cache_host && background_code_cache_host_
             ? &background_code_cache_host_->GetCodeCacheHost(
                   background_task_runner_)
             : nullptr,
@@ -468,8 +468,7 @@ class BackgroundURLLoader::Context
                        encoded_body_size, status.decoded_body_length);
     } else {
       client_->DidFinishLoading(status.completion_time, total_transfer_size,
-                                encoded_body_size, status.decoded_body_length,
-                                status.should_report_corb_blocking);
+                                encoded_body_size, status.decoded_body_length);
     }
   }
 

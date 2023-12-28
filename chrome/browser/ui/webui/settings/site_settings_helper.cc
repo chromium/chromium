@@ -137,6 +137,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::ANTI_ABUSE, "anti-abuse"},
     {ContentSettingsType::STORAGE_ACCESS, "storage-access"},
     {ContentSettingsType::AUTO_PICTURE_IN_PICTURE, "auto-picture-in-picture"},
+    {ContentSettingsType::CAPTURED_SURFACE_CONTROL, "captured-surface-control"},
 
     // Add new content settings here if a corresponding Javascript string
     // representation for it is not required, for example if the content setting
@@ -205,6 +206,9 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION, nullptr},
     {ContentSettingsType::TPCD_HEURISTICS_GRANTS, nullptr},
     {ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION, nullptr},
+    // TODO(crbug.com/1464851): Update name once UI design is done.
+    {ContentSettingsType::SMART_CARD_GUARD, nullptr},
+    {ContentSettingsType::SMART_CARD_DATA, nullptr},
 };
 
 static_assert(std::size(kContentSettingsTypeGroupNames) ==

@@ -18,7 +18,6 @@ To run, `apt-get install python3-commentjson`, then
 import hashlib
 import os
 import re
-import shutil
 import sys
 import commentjson
 import requests
@@ -243,10 +242,11 @@ def create_adding_icons_to_source_function():
     utils_file.write(
         '#include "content/public/browser/web_ui_data_source.h"\n\n')
 
-    # Create the function name.
+    # Create the function `AddGeneratedIconResources()`.
     utils_file.write(
-        '// This code is generated using `generate_search_engine_icons.py`.'
-        " Don't modify it manually.\n")
+        ("// This code is generated using"
+         "`tools/search_engine_choice/generate_search_engine_icons.py`."
+         " Don't modify it manually.\n\n"))
     utils_file.write('void AddGeneratedIconResources(content::WebUIDataSource*'
                      ' source, const std::string& directory) {\n')
     utils_file.write('\tCHECK(source);\n')
@@ -266,6 +266,84 @@ def create_adding_icons_to_source_function():
                        local_image_path + '", ' + image_resource_id + ');\n')
 
     utils_file.write('}\n')
+
+
+def generate_get_icon_resource_id_function():
+  """Generates the `GetIconResourceId` function.
+
+  The code is generated in
+  `components/search_engines/generated_search_engine_resource_ids.cc`.
+  """
+  print('Creating `GetIconResourceId` function...')
+
+  with open(
+      '../../components/search_engines/generated_search_engine_resource_ids.cc',
+      'w',
+      encoding='utf-8',
+      newline='') as utils_file:
+
+    # Add the copyright notice.
+    utils_file.write('// Copyright 2023 The Chromium Authors\n')
+    utils_file.write('// Use of this source code is governed by a BSD-style'
+                     ' license that can be\n')
+    utils_file.write('// found in the LICENSE file.\n\n')
+
+    # Include the required header files.
+    utils_file.write(
+        '#include "components/search_engines/search_engine_choice_utils.h"\n')
+    utils_file.write('\n')
+    utils_file.write('#include "base/containers/fixed_flat_map.h"\n')
+    utils_file.write('#include "base/strings/utf_string_conversions.h"\n')
+    utils_file.write('#include "build/branding_buildflags.h"\n')
+    utils_file.write(
+        '#include "components/grit/components_scaled_resources.h"\n')
+    utils_file.write('#include "ui/resources/grit/ui_resources.h"\n')
+    utils_file.write('\n\n')
+
+    utils_file.write(
+        ("// This code is generated using"
+         "`tools/search_engine_choice/generate_search_engine_icons.py`."
+         " Don't modify it manually.\n\n"))
+
+    # Create the base::fixed_flat_map
+    utils_file.write('namespace {\n\n')
+
+    utils_file.write('constexpr auto kSearchEngineResourceIdMap =\n')
+    utils_file.write('\tbase::MakeFixedFlatMap<std::wstring_view, int>({\n')
+
+    for engine_keyword in engine_keyword_to_icon_name:
+      engine_name = keyword_to_identifer(engine_keyword)
+      utils_file.write('\t\t{L"' + engine_keyword + '",\n')
+      utils_file.write('\t\t IDR_' + engine_name.upper() + '_PNG},\n')
+
+    # Add Google to the map
+    utils_file.write('\t\t{L"google.com",\n')
+    utils_file.write('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)\n')
+    utils_file.write('\t\t IDR_GOOGLE_COM_PNG\n')
+    utils_file.write('#else\n')
+    utils_file.write('\t\t IDR_DEFAULT_FAVICON\n')
+    utils_file.write('#endif\n')
+
+    utils_file.write('\t}});\n\n')
+
+    utils_file.write('}  // namespace\n\n')
+
+    utils_file.write('namespace search_engines {\n\n')
+
+    # Create the function `GetIconResourceId()`.
+    utils_file.write(
+        'int GetIconResourceId(const std::u16string& engine_keyword) {\n')
+    utils_file.write('\tconst base::fixed_flat_map<std::wstring_view, int,\n')
+    utils_file.write(
+        '\t\tkSearchEngineResourceIdMap.size()>::const_iterator iterator =\n')
+    utils_file.write('\t\t\tkSearchEngineResourceIdMap.find(\n')
+    utils_file.write('\t\t\t\tbase::UTF16ToWide(engine_keyword));\n')
+    utils_file.write(
+        '\treturn iterator == kSearchEngineResourceIdMap.cend() ?\n')
+    utils_file.write('\t\t-1 : iterator->second;\n')
+    utils_file.write('}\n\n')
+
+    utils_file.write('}  // namespace search_engines\n')
 
 
 if sys.platform != 'linux':
@@ -288,6 +366,7 @@ engine_keyword_to_icon_name = {}
 populate_used_engines()
 download_icons_from_android_search()
 generate_icon_resource_code()
+generate_get_icon_resource_id_function()
 create_adding_icons_to_source_function()
 # Format the generated code
 os.system('git cl format')

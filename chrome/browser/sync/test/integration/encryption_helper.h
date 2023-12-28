@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,6 +17,25 @@
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/test/fake_server.h"
 #include "components/trusted_vault/trusted_vault_client.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+
+namespace encryption_helper {
+
+// Setups `test_server` in a way it will redirect from trusted vault URLs (key
+// retrieval URL and degraded recoverability URL) to fake pages. These pages
+// will populate parameters (`trusted_vault_key` and its version in case of key
+// retrieval, `recovery_method_public_key` in case of degraded recoverability)
+// to Chrome upon loading and will close themselves automatically.
+// Must be called before `test_server` starts to accept connections.
+// `test_server` must not be null.
+void SetupFakeTrustedVaultPages(
+    const std::string& gaia_id,
+    const std::vector<uint8_t>& trusted_vault_key,
+    int trusted_vault_key_version,
+    const std::vector<uint8_t>& recovery_method_public_key,
+    net::test_server::EmbeddedTestServer* test_server);
+
+}  // namespace encryption_helper
 
 // Checker used to block until a Nigori with a given passphrase type is
 // available on the server.

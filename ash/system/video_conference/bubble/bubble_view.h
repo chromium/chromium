@@ -43,11 +43,15 @@ class ASH_EXPORT BubbleView : public TrayBubbleView {
   // TrayBubbleView:
   bool CanActivate() const override;
 
+  void SetBackgroundReplaceUiVisible(bool visible);
+
  private:
   // Unowned by `BubbleView`.
-  raw_ptr<VideoConferenceTrayController, ExperimentalAsh> controller_;
+  raw_ptr<VideoConferenceTrayController> controller_;
 
   const raw_ref<const MediaApps> media_apps_;
+
+  raw_ptr<views::View> set_camera_background_view_ = nullptr;
 };
 
 }  // namespace video_conference

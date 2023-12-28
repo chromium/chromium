@@ -243,8 +243,8 @@ StoredSource SourceBuilder::BuildStored() const {
       source_id_, aggregatable_budget_consumed_, randomized_response_rate_,
       registration_.trigger_data_matching, registration_.event_level_epsilon,
       debug_cookie_set_);
-  source.SetDedupKeys(dedup_keys_);
-  source.SetAggregatableDedupKeys(aggregatable_dedup_keys_);
+  source.dedup_keys() = dedup_keys_;
+  source.aggregatable_dedup_keys() = aggregatable_dedup_keys_;
   return source;
 }
 

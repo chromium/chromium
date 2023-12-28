@@ -167,8 +167,8 @@ class PipWindowResizerTest : public AshTestBase,
 
  private:
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> window_;
-  raw_ptr<FakeWindowState, DanglingUntriaged | ExperimentalAsh> test_state_;
+  raw_ptr<aura::Window, DanglingUntriaged> window_;
+  raw_ptr<FakeWindowState, DanglingUntriaged> test_state_;
   base::HistogramTester histograms_;
   std::unique_ptr<display::ScopedDisplayForNewWindows> scoped_display_;
   base::test::ScopedFeatureList scoped_feature_list_;

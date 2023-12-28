@@ -111,7 +111,7 @@ BorealisSplashScreenView::BorealisSplashScreenView(Profile* profile)
                                              gfx::Font::NORMAL, 18,
                                              gfx::Font::Weight::MEDIUM)}));
 
-  upper_container->AddChildView(std::make_unique<views::BorealisBetaBadge>());
+  upper_container->AddChildView(std::make_unique<BorealisBetaBadge>());
 
   views::BoxLayoutView* lower_container =
       AddChildView(std::make_unique<views::BoxLayoutView>());

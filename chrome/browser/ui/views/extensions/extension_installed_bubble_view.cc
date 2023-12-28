@@ -88,7 +88,7 @@ std::unique_ptr<views::View> CreateSigninPromoView(
       profile, delegate,
       signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE,
       IDS_EXTENSION_INSTALLED_DICE_PROMO_SYNC_MESSAGE,
-      /*dice_signin_button_prominent=*/true);
+      ui::ButtonStyle::kProminent);
 }
 #endif
 
@@ -105,8 +105,9 @@ std::unique_ptr<views::View> CreateSigninPromoView(
 //                      specify a default icon.
 class ExtensionInstalledBubbleView : public BubbleSyncPromoDelegate,
                                      public views::BubbleDialogDelegateView {
+  METADATA_HEADER(ExtensionInstalledBubbleView, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(ExtensionInstalledBubbleView);
   ExtensionInstalledBubbleView(
       Browser* browser,
       std::unique_ptr<ExtensionInstalledBubbleModel> model);
@@ -258,7 +259,7 @@ void ExtensionInstalledBubbleView::LinkClicked() {
   GetWidget()->Close();
 }
 
-BEGIN_METADATA(ExtensionInstalledBubbleView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(ExtensionInstalledBubbleView)
 END_METADATA
 
 void ShowUiOnToolbarMenu(scoped_refptr<const extensions::Extension> extension,

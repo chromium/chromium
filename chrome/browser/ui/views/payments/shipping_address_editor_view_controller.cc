@@ -82,7 +82,7 @@ ShippingAddressEditorViewController::GetFieldDefinitions() {
 }
 
 std::u16string ShippingAddressEditorViewController::GetInitialValueForType(
-    autofill::ServerFieldType type) {
+    autofill::FieldType type) {
   return GetValueForType(temporary_profile_, type);
 }
 
@@ -126,7 +126,7 @@ ShippingAddressEditorViewController::CreateValidationDelegate(
 
 std::unique_ptr<ui::ComboboxModel>
 ShippingAddressEditorViewController::GetComboboxModelForType(
-    const autofill::ServerFieldType& type) {
+    const autofill::FieldType& type) {
   switch (type) {
     case autofill::ADDRESS_HOME_COUNTRY: {
       auto model = std::make_unique<autofill::CountryComboboxModel>();
@@ -332,7 +332,7 @@ bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
 
 std::u16string ShippingAddressEditorViewController::GetValueForType(
     const autofill::AutofillProfile& profile,
-    autofill::ServerFieldType type) {
+    autofill::FieldType type) {
   if (type == autofill::PHONE_HOME_WHOLE_NUMBER) {
     return autofill::i18n::GetFormattedPhoneNumberForDisplay(
         profile, state()->GetApplicationLocale());

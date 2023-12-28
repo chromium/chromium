@@ -25,6 +25,7 @@
 #include "components/live_caption/views/caption_bubble.h"
 #include "components/live_caption/views/caption_bubble_controller_views.h"
 #include "components/prefs/pref_service.h"
+#include "components/soda/soda_installer.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -83,6 +84,12 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
 
   views::Label* GetLabel() {
     return controller_ ? controller_->caption_bubble_->GetLabelForTesting()
+                       : nullptr;
+  }
+
+  views::Label* GetDownloadProgressLabel() {
+    return controller_ ? controller_->caption_bubble_
+                             ->GetDownloadProgressLabelForTesting()
                        : nullptr;
   }
 
@@ -293,6 +300,18 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
 
   void CaptionSettingsButtonPressed() {
     GetController()->caption_bubble_->CaptionSettingsButtonPressed();
+  }
+
+  void OnSodaProgress(int progress) {
+    speech::SodaInstaller::GetInstance()->NotifySodaProgressForTesting(
+        progress, speech::LanguageCode::kFrFr);
+  }
+
+  void OnSodaInstalled() {
+    // Install both the binary and a language pack.
+    speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+    speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
+        speech::LanguageCode::kFrFr);
   }
 
  private:
@@ -1013,6 +1032,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, PinAndUnpin) {
   ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
   test_task_runner->FastForwardBy(base::Seconds(15));
   EXPECT_TRUE(IsWidgetVisible());
+
+  SetTickClockForTesting(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, NonAsciiCharacter) {
@@ -1183,6 +1204,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   waiter.Wait();
   test_task_runner->FastForwardBy(base::Seconds(10));
   EXPECT_TRUE(IsWidgetVisible());
+
+  SetTickClockForTesting(nullptr);
 }
 
 // TODO(https://crbug.com/1207312): Flaky test.
@@ -1220,6 +1243,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   OnPartialTranscription("Killer whales");
   EXPECT_TRUE(IsWidgetVisible());
   EXPECT_EQ("Killer whales", GetLabelText());
+
+  SetTickClockForTesting(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
@@ -1270,6 +1295,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
   EXPECT_TRUE(IsWidgetVisible());
   EXPECT_EQ("", GetLabelText());
+
+  SetTickClockForTesting(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, LiveTranslateLabel) {
@@ -1321,8 +1348,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HeaderView) {
   // caption settings icon.
   EXPECT_EQ(2u, left_header_container->children().size());
 
-  auto* language_label = left_header_container->children()[0];
-  auto* caption_settings_icon = left_header_container->children()[1];
+  auto* language_label = left_header_container->children()[0].get();
+  auto* caption_settings_icon = left_header_container->children()[1].get();
   ASSERT_TRUE(language_label->GetVisible());
   ASSERT_TRUE(caption_settings_icon->GetVisible());
   ASSERT_EQ(4, static_cast<views::BoxLayout*>(
@@ -1417,5 +1444,40 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, LabelTextDirection) {
   EXPECT_EQ(gfx::HorizontalAlignment::ALIGN_RIGHT,
             GetLabel()->GetHorizontalAlignment());
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       DownloadProgressLabel) {
+  speech::SodaInstaller::GetInstance()->NeverDownloadSodaForTesting();
+  GetController();
+
+  OnSodaProgress(0);
+  EXPECT_FALSE(IsWidgetVisible());
+  ASSERT_FALSE(GetDownloadProgressLabel()->GetVisible());
+
+  OnPartialTranscription(
+      "Quokkas, known for their cute smiles, are also skilled tree climbers, "
+      "able to scale up to 2 meters high!");
+  EXPECT_TRUE(IsWidgetVisible());
+  ASSERT_TRUE(GetLabel()->GetVisible());
+  ASSERT_FALSE(GetDownloadProgressLabel()->GetVisible());
+
+  OnSodaProgress(12);
+  ASSERT_FALSE(GetLabel()->GetVisible());
+  ASSERT_TRUE(GetDownloadProgressLabel()->GetVisible());
+  ASSERT_EQ(u"Downloading French language pack...12%",
+            GetDownloadProgressLabel()->GetText());
+
+  OnPartialTranscription(
+      "Tasmanian devils hold the chomping champ title for mammals, crushing "
+      "bone with a bite four times their own weight.");
+  ASSERT_EQ(u"Downloading French language pack...12%",
+            GetDownloadProgressLabel()->GetText());
+
+  OnSodaInstalled();
+  ASSERT_TRUE(GetLabel()->GetVisible());
+  ASSERT_FALSE(GetDownloadProgressLabel()->GetVisible());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace captions

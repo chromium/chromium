@@ -9,10 +9,12 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
+#include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
@@ -156,9 +158,24 @@ QuickStartController::EntryPoint QuickStartController::GetExitPoint() {
   return exit_point_.value();
 }
 
+void QuickStartController::PrepareForUpdate() {
+  // TODO(b/280308569): Investigate whether state should be reset here in case
+  // of error installing update.
+  bootstrap_controller_->PrepareForUpdate();
+}
+
 void QuickStartController::InitTargetDeviceBootstrapController() {
   CHECK(LoginDisplayHost::default_host());
   CHECK(!bootstrap_controller_);
+
+  if (g_browser_process->local_state()->GetBoolean(
+          prefs::kShouldResumeQuickStartAfterReboot)) {
+    g_browser_process->local_state()->ClearPref(
+        prefs::kShouldResumeQuickStartAfterReboot);
+    LoginDisplayHost::default_host()
+        ->GetWizardContext()
+        ->quick_start_setup_ongoing = true;
+  }
 
   StartObservingScreenTransitions();
   LoginDisplayHost::default_host()->GetWizardContext()->quick_start_enabled =
@@ -320,10 +337,10 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
     CHECK(entry_point.has_value()) << "Unknown entry point!";
     exit_point_ = entry_point_ = entry_point;
   } else {
-    // The flow must be resuming after reaching the UserCreation screen. Note
-    // the the UserCreationScreen is technically never shown when it switches
-    // to QuickStart, so |previous_screen_| is one of the many screens that
-    // may have appeared up to this point.
+    // The flow must be resuming after reaching the GaiaInfoScreen or
+    // GaiaScreen. Note the the GaiaInfoScreen/GaiaScreen is technically never
+    // shown when it switches to QuickStart, so |previous_screen_| is one of the
+    // many screens that may have appeared up to this point.
     // TODO(b:283965994) - Imrpve the resume logic.
     CHECK(controller_state_ == ControllerState::CONNECTED);
     CHECK(LoginDisplayHost::default_host()
@@ -331,7 +348,7 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
               ->quick_start_setup_ongoing);
 
     // OOBE flow cannot go back after enrollment checks, update exit point.
-    exit_point_ = QuickStartController::EntryPoint::GAIA_SCREEN;
+    exit_point_ = QuickStartController::EntryPoint::GAIA_INFO_SCREEN;
 
     StartAccountTransfer();
   }
@@ -358,7 +375,7 @@ void QuickStartController::OnPhoneConnectionEstablished() {
       bootstrap_controller_->AttemptWifiCredentialTransfer();
     }
   } else {
-    // We are after the 'User Creation' screen. Transfer credentials.
+    // We are after the 'Gaia Info' screen. Transfer credentials.
     StartAccountTransfer();
   }
 }

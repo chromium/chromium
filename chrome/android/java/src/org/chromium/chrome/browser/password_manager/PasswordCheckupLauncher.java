@@ -7,6 +7,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 
+import androidx.annotation.Nullable;
+
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.supplier.ObservableSupplier;
@@ -28,8 +30,11 @@ public class PasswordCheckupLauncher {
     }
 
     @CalledByNative
-    private static void launchCheckupOnDevice(
-            WindowAndroid windowAndroid, @PasswordCheckReferrer int passwordCheckReferrer) {
+    static void launchCheckupOnDevice(
+            WindowAndroid windowAndroid,
+            @PasswordCheckReferrer int passwordCheckReferrer,
+            @Nullable String accountEmail) {
+        assert accountEmail == null || !accountEmail.isEmpty();
         if (windowAndroid.getContext().get() == null) return; // Window not available yet/anymore.
 
         if (PasswordManagerHelper.canUseUpm()) {
@@ -37,7 +42,8 @@ public class PasswordCheckupLauncher {
                     windowAndroid.getContext().get(),
                     passwordCheckReferrer,
                     SyncServiceFactory.get(),
-                    getModalDialogManagerSupplier(windowAndroid));
+                    getModalDialogManagerSupplier(windowAndroid),
+                    accountEmail);
             return;
         }
 

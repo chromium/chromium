@@ -98,15 +98,15 @@ class ASH_EXPORT HotspotDetailedView : public TrayDetailedView,
   hotspot_config::mojom::HotspotAllowStatus allow_status_ =
       hotspot_config::mojom::HotspotAllowStatus::kAllowed;
 
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   // Owned by views hierarchy.
-  raw_ptr<views::Button, ExperimentalAsh> settings_button_ = nullptr;
-  raw_ptr<RoundedContainer, ExperimentalAsh> row_container_ = nullptr;
-  raw_ptr<HoverHighlightView, ExperimentalAsh> entry_row_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> hotspot_icon_ = nullptr;
-  raw_ptr<Switch, ExperimentalAsh> toggle_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> extra_icon_ = nullptr;
+  raw_ptr<views::Button> settings_button_ = nullptr;
+  raw_ptr<RoundedContainer> row_container_ = nullptr;
+  raw_ptr<HoverHighlightView> entry_row_ = nullptr;
+  raw_ptr<views::ImageView> hotspot_icon_ = nullptr;
+  raw_ptr<Switch> toggle_ = nullptr;
+  raw_ptr<views::ImageView> extra_icon_ = nullptr;
 
   base::WeakPtrFactory<HotspotDetailedView> weak_factory_{this};
 };

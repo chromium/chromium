@@ -199,7 +199,8 @@
       </div>
       <cr-toggle id="audioInputNoiseCancellationToggle"
           checked="{{isNoiseCancellationEnabled_}}"
-          aria-labelledby="audioInputNoiseCancellationLabel">
+          aria-labelledby="audioInputNoiseCancellationLabel"
+          on-change="toggleNoiseCancellationEnabled_">
       </cr-toggle>
     </div>
     <div id="audioInputAllowAGCSubsection" class="settings-box"

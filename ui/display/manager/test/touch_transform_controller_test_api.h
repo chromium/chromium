@@ -27,7 +27,7 @@ class TouchTransformControllerTestApi {
   }
 
  private:
-  raw_ptr<TouchTransformController, ExperimentalAsh> controller_ = nullptr;
+  raw_ptr<TouchTransformController> controller_ = nullptr;
 };
 
 }  // namespace display::test

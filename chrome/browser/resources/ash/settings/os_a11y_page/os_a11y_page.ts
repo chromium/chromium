@@ -73,14 +73,6 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
       },
 
       /**
-       * Whether to show accessibility labels settings.
-       */
-      showAccessibilityLabelsSetting_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
        * Whether the user is in kiosk mode.
        */
       isKioskModeActive_: {
@@ -150,7 +142,6 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
   private isKioskModeActive_: boolean;
   private rowIcons_: Record<string, string>;
   private section_: Section;
-  private showAccessibilityLabelsSetting_: boolean;
 
   constructor() {
     super();
@@ -186,14 +177,17 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
       this.addFocusConfig(
           routes.A11Y_AUDIO_AND_CAPTIONS, '#audioAndCaptionsPageTrigger');
     }
+  }
 
+  override connectedCallback(): void {
+    super.connectedCallback();
+
+    const updateScreenReaderState = (hasScreenReader: boolean): void => {
+      this.hasScreenReader_ = hasScreenReader;
+    };
+    this.browserProxy_.getScreenReaderState().then(updateScreenReaderState);
     this.addWebUiListener(
-        'screen-reader-state-changed',
-        (hasScreenReader: boolean) =>
-            this.onScreenReaderStateChanged_(hasScreenReader));
-
-    // Enables javascript and gets the screen reader state.
-    this.browserProxy_.a11yPageReady();
+        'screen-reader-state-changed', updateScreenReaderState);
   }
 
   override currentRouteChanged(newRoute: Route, prevRoute?: Route): void {
@@ -202,11 +196,6 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
     if (newRoute === this.route) {
       this.attemptDeepLink();
     }
-  }
-
-  private onScreenReaderStateChanged_(hasScreenReader: boolean): void {
-    this.hasScreenReader_ = hasScreenReader;
-    this.showAccessibilityLabelsSetting_ = this.hasScreenReader_;
   }
 
   private onToggleAccessibilityImageLabels_(): void {

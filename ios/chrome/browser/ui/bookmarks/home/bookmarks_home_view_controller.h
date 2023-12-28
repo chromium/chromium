@@ -81,6 +81,9 @@ class GURL;
 // `BookmarksHomeViewController` is on the top of the navigation view.
 - (void)willDismissBySwipeDown;
 
+// Called to update the promo after account settings is closed.
+- (void)updateReviewSettingsPromo;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_HOME_BOOKMARKS_HOME_VIEW_CONTROLLER_H_

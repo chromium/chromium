@@ -18,7 +18,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Coordinator for the IPH dialog in grid tab switcher. */
-class TabGridIphDialogCoordinator implements TabSwitcherCoordinator.IphController {
+class TabGridIphDialogCoordinator implements TabSwitcherIphController {
     private final View mParentView;
     private final TabGridIphDialogView mIphDialogView;
     private final PropertyModel mModel;

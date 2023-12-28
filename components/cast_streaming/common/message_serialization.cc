@@ -51,7 +51,7 @@ const char kInitialConnectMessage[] = R"(
     }
     )";
 
-bool DeserializeCastMessage(base::StringPiece buffer,
+bool DeserializeCastMessage(std::string_view buffer,
                             std::string* sender_id,
                             std::string* message_namespace,
                             std::string* message) {

@@ -155,7 +155,7 @@ class COMPONENT_EXPORT(APP_RESTORE) ArcReadHandler {
   // from the hidden container.
   std::set<int32_t> not_restored_task_ids_;
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
 };
 
 }  // namespace app_restore

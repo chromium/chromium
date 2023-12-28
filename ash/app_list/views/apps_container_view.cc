@@ -226,11 +226,10 @@ class AppsContainerView::ContinueContainer : public views::View {
                            continue_section_->GetVisible());
   }
 
-  const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
-  raw_ptr<ContinueSectionView, ExperimentalAsh> continue_section_ = nullptr;
-  raw_ptr<RecentAppsView, ExperimentalAsh> recent_apps_ = nullptr;
-  raw_ptr<views::Separator, DanglingUntriaged | ExperimentalAsh> separator_ =
-      nullptr;
+  const raw_ptr<AppListViewDelegate> view_delegate_;
+  raw_ptr<ContinueSectionView> continue_section_ = nullptr;
+  raw_ptr<RecentAppsView> recent_apps_ = nullptr;
+  raw_ptr<views::Separator, DanglingUntriaged> separator_ = nullptr;
 };
 
 BEGIN_METADATA(AppsContainerView, ContinueContainer, views::View)

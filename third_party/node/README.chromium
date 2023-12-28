@@ -51,8 +51,8 @@ BDD / TDD assertion framework for node.js and the browser that can be
 paired with any testing framework.
 
 Local Modifications:
- - Applied chai.patch so that chai.js can run within a d8 shell, which is
-   used in unit_tests
+ - Applied patches/chai.patch so that chai.js can run within a d8 shell, which
+   is used in unit_tests
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
@@ -94,7 +94,7 @@ readable, standards-based JavaScript.
 The compiler is not shipped with Chrome but code compiled using it is.
 
 Local Modifications:
-See typescript.patch to work-around
+See patches/typescript.patch to work-around
 https://github.com/microsoft/TypeScript/issues/30024
 
 -------------------- DEPENDENCY DIVIDER --------------------
@@ -108,13 +108,13 @@ Security Critical: no
 Shipped: no
 
 Description:
-This package contains type definitions for d3.
+This package contains type definitions for d3 library.
 
 The types are only used when type checking in Chrome.
 
 Local Modifications:
-See chromium_d3_types_index.patch, which is used to reduce the types to only
-the necessary parts of the library.
+See patches/chromium_d3_types_index.patch, which is used to reduce the types to
+only the necessary parts of the library.
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
@@ -400,3 +400,28 @@ The types are only used when type checking in ChromeOS.
 
 Local Modifications:
 (none)
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: Lit
+Short Name: lit
+URL: https://lit.dev
+Version: 3.0.2
+Revision: N/A
+License: BSD 3-Clause
+License File: LICENSE
+Security Critical: no
+Shipped: yes
+
+Description:
+A thin library around native web component APIs, to be used in WebUI development
+as an alternative to Polymer.
+
+Local Modifications:
+See patches/lit_html.patch, which renames 'lit-html' trusted type policy to
+'lit-html-desktop' to workaround the fact that some CrOS-only UIs already use
+Lit via a different Lit bundle in third_party/material_web_components, which in
+turn results in an error as follows
+
+Uncaught TypeError: Failed to execute 'createPolicy' on
+'TrustedTypePolicyFactory': Policy with name "lit-html" already exists."

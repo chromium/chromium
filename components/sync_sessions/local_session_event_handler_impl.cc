@@ -137,7 +137,7 @@ void LocalSessionEventHandlerImpl::OnSessionRestoreComplete() {
 
 sync_pb::SessionTab
 LocalSessionEventHandlerImpl::GetTabSpecificsFromDelegateForTest(
-    const SyncedTabDelegate& tab_delegate) const {
+    SyncedTabDelegate& tab_delegate) const {
   return GetTabSpecificsFromDelegate(tab_delegate);
 }
 
@@ -388,7 +388,7 @@ void LocalSessionEventHandlerImpl::OnLocalTabModified(
 }
 
 sync_pb::SessionTab LocalSessionEventHandlerImpl::GetTabSpecificsFromDelegate(
-    const SyncedTabDelegate& tab_delegate) const {
+    SyncedTabDelegate& tab_delegate) const {
   sync_pb::SessionTab specifics;
   specifics.set_window_id(tab_delegate.GetWindowId().id());
   specifics.set_tab_id(tab_delegate.GetSessionId().id());

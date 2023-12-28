@@ -18,7 +18,6 @@
 namespace feed {
 
 BASE_DECLARE_FEATURE(kInterestFeedV2);
-BASE_DECLARE_FEATURE(kInterestFeedV2Autoplay);
 BASE_DECLARE_FEATURE(kInterestFeedV2Hearts);
 BASE_DECLARE_FEATURE(kInterestFeedV2Scrolling);
 
@@ -38,9 +37,6 @@ BASE_DECLARE_FEATURE(kDiscoFeedEndpoint);
 // xsurface feed.
 BASE_DECLARE_FEATURE(kXsurfaceMetricsReporting);
 
-// Feature that enables sticky header when users scroll down.
-BASE_DECLARE_FEATURE(kFeedHeaderStickToTop);
-
 // Feature that shows placeholder cards instead of a loading spinner at first
 // load.
 BASE_DECLARE_FEATURE(kFeedLoadingPlaceholder);
@@ -53,10 +49,6 @@ extern const base::FeatureParam<bool>
 // Feature that allows tuning the size of the image memory cache. Value is a
 // percentage of the maximum size calculated for the device.
 BASE_DECLARE_FEATURE(kFeedImageMemoryCacheSizePercentage);
-
-// Feature that enables showing a callout to help users return to the top of the
-// feeds quickly.
-BASE_DECLARE_FEATURE(kFeedBackToTop);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 // When enabled, causes the server to restrig the Sync Promo Banner for the

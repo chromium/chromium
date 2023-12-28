@@ -54,14 +54,14 @@ ConsentDialogCoordinator::CreateDeviceSignalsConsentDialogModel() {
       .AddOkButton(
           base::BindOnce(&ConsentDialogCoordinator::OnConsentDialogAccept,
                          weak_ptr_factory_.GetWeakPtr()),
-          ui::DialogModelButton::Params()
+          ui::DialogModel::Button::Params()
               .SetLabel(l10n_util::GetStringUTF16(
                   IDS_DEVICE_SIGNALS_CONSENT_DIALOG_PROCEED_BUTTON))
               .SetId(kDeviceSignalsConsentOkButtonElementId))
       .AddCancelButton(
           base::BindOnce(&ConsentDialogCoordinator::OnConsentDialogCancel,
                          weak_ptr_factory_.GetWeakPtr()),
-          ui::DialogModelButton::Params()
+          ui::DialogModel::Button::Params()
               .SetLabel(l10n_util::GetStringUTF16(
                   IDS_DEVICE_SIGNALS_CONSENT_DIALOG_CANCEL_BUTTON))
               .SetId(kDeviceSignalsConsentCancelButtonElementId))

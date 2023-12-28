@@ -51,14 +51,6 @@ BASE_FEATURE(kBackForwardCacheTimeToLiveControl,
              "BackForwardCacheTimeToLiveControl",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Sets moderate binding to background renderers playing media, when enabled.
-// Else the renderer will have strong binding.
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kBackgroundMediaRendererHasModerateBinding,
-             "BackgroundMediaRendererHasModerateBinding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // When enabled, the browser will schedule before unload tasks that continue
 // navigation network responses in a kHigh priority queue.
 // TODO(b/281094330): Run experiment on ChromeOS. Experiment was not run on
@@ -221,6 +213,12 @@ BASE_FEATURE(kFledgeUseInterestGroupCache,
              "FledgeUseInterestGroupCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables a delay for the post-auction interest group update to avoid
+// immediately invalidating cached values.
+BASE_FEATURE(kFledgeDelayPostAuctionInterestGroupUpdate,
+             "FledgeDelayPostAuctionInterestGroupUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables fixes for matching src: local() for web fonts correctly against full
 // font name or postscript name. Rolling out behind a flag, as enabling this
 // enables a font indexer on Android which we need to test in the field first.
@@ -293,12 +291,6 @@ BASE_FEATURE(kJavaScriptArrayGrouping,
              "JavaScriptArrayGrouping",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables a fix for a macOS IME Live Conversion issue. crbug.com/1328530 and
-// crbug.com/1342551
-BASE_FEATURE(kMacImeLiveConversionFix,
-             "MacImeLiveConversionFix",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Feature that controls whether WebContentsOcclusionChecker should handle
 // occlusion notifications.
 #if BUILDFLAG(IS_MAC)
@@ -337,6 +329,15 @@ BASE_FEATURE(kOptimizeImmHideCalls,
              "OptimizeImmHideCalls",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// This feature enables Permissions Policy verification in the Browser process
+// in content/. Additionally only for //chrome Permissions Policy verification
+// is enabled in components/permissions/permission_context_base.cc
+#if !BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kPermissionsPolicyVerificationInContent,
+             "kPermissionsPolicyVerificationInContent",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Preload cookie database on NetworkContext creation.
 BASE_FEATURE(kPreloadCookies,
@@ -578,11 +579,6 @@ BASE_FEATURE(kWebRtcUseGpuMemoryBufferVideoFrames,
 BASE_FEATURE(kWebOTPAssertionFeaturePolicy,
              "WebOTPAssertionFeaturePolicy",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Flag guard for fix for crbug.com/1414936.
-BASE_FEATURE(kWindowOpenFileSelectFix,
-             "WindowOpenFileSelectFix",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Please keep features in alphabetical order.
 

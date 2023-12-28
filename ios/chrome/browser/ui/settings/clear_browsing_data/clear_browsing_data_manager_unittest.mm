@@ -20,7 +20,7 @@
 #import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
 #import "ios/chrome/browser/browsing_data/model/cache_counter.h"
 #import "ios/chrome/browser/browsing_data/model/fake_browsing_data_remover.h"
-#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -220,7 +220,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestModelSignedInSyncOff) {
 }
 
 TEST_F(ClearBrowsingDataManagerTest, TestCacheCounterFormattingForAllTime) {
-  ASSERT_EQ("en", GetApplicationContext()->GetApplicationLocale());
+  ASSERT_EQ("en-US", GetApplicationContext()->GetApplicationLocale());
   PrefService* prefs = browser_state_->GetPrefs();
   prefs->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
                     static_cast<int>(browsing_data::TimePeriod::ALL_TIME));
@@ -251,7 +251,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestCacheCounterFormattingForAllTime) {
 
 TEST_F(ClearBrowsingDataManagerTest,
        TestCacheCounterFormattingForLessThanAllTime) {
-  ASSERT_EQ("en", GetApplicationContext()->GetApplicationLocale());
+  ASSERT_EQ("en-US", GetApplicationContext()->GetApplicationLocale());
 
   PrefService* prefs = browser_state_->GetPrefs();
   prefs->SetInteger(browsing_data::prefs::kDeleteTimePeriod,

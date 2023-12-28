@@ -392,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsUninstallDialogViewBrowserTest,
   }
 
   views::View* view = ActiveView()->GetWidget()->GetContentsView();
-  std::vector<views::View*> views_group;
+  std::vector<raw_ptr<views::View, VectorExperimental>> views_group;
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     views_group.clear();
@@ -404,12 +404,12 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsUninstallDialogViewBrowserTest,
   }));
 
   std::unordered_set<std::u16string> sub_apps_actual;
-  for (auto* label : views_group) {
+  for (views::View* label : views_group) {
     sub_apps_actual.emplace(static_cast<views::Label*>(label)->GetText());
   }
   EXPECT_EQ(sub_apps_actual, sub_apps_expected);
 
-  std::vector<views::View*> sub_app_icons;
+  std::vector<raw_ptr<views::View, VectorExperimental>> sub_app_icons;
   view->GetViewsInGroup(
       base::to_underlying(AppUninstallDialogView::DialogViewID::SUB_APP_ICON),
       &sub_app_icons);

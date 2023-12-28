@@ -10,10 +10,12 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(InlineStylePropertyMapTest, PendingSubstitutionValueCrash) {
+  test::TaskEnvironment task_environment;
   // Test that trying to reify any longhands with a CSSPendingSubstitutionValue
   // does not cause a crash.
 

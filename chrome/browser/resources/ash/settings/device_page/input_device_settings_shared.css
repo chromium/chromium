@@ -44,9 +44,9 @@
 }
 
 cr-dialog [slot='button-container'] {
-  padding: 0 32px 28px 32px;
   display: flex;
-  gap: 8px;
+  justify-content: space-between;
+  padding: 0 32px 28px 32px;
 }
 
 cr-dialog [slot='body'] {
@@ -57,7 +57,8 @@ cr-dialog [slot='title'] {
   padding: 32px 32px 0 32px;
 }
 
-cr-dialog #cancelButton {
+cr-dialog #cancelButton,
+cr-dialog #editButton {
   background-color: var(--cros-bg-color);
   border: solid 1px var(--cros-button-stroke-color-secondary);
 }

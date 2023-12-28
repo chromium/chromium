@@ -101,6 +101,21 @@ class AutomationTestSupport {
   }
 
   /**
+   * Does the default action on the node with the given `name` and `role` after
+   * waiting for that node to exist.
+   * @param {string} name
+   * @param {string} role
+   */
+  doDefault(name, role) {
+    const findParams = {role, attributes: {name}};
+    const node = this.desktop_.find(findParams);
+    if (node) {
+      node.doDefault();
+      this.notifyCcTests_('ready');
+    }
+  }
+
+  /**
    * @param {chrome.automation.FindParams} findParams
    * @private
    */
@@ -115,27 +130,40 @@ class AutomationTestSupport {
   }
 
   /**
-   * Finds the automation node with the given `findParams``. Waits
+   * Finds the automation node with the given `findParams`. Waits
    * for the node to exist if it does not yet.
    * @param {chrome.automation.FindParams} findParams
    * @return {chrome.automation.AutomationNode}
    * @private
    */
   async findNode_(findParams) {
-    const node = this.desktop_.find(findParams);
-    if (node) {
-      return node;
+    const nodes = await this.findNumNodes_(findParams, 1);
+    return nodes[0];
+  }
+
+  /**
+   * Finds at least `minToFind` of the automation nodes matching the given
+   * `findParams`.
+   * @param {chrome.automation.FindParams} findParams
+   * @param {Number} minToFind
+   * @return {!Array<!chrome.automation.AutomationNode}
+   * @private
+   */
+  async findNumNodes_(findParams, minToFind) {
+    const nodes = this.desktop_.findAll(findParams);
+    if (nodes && nodes.length >= minToFind) {
+      return nodes;
     }
-    // If it wasn't found yet, wait for it to show up.
+    // If there weren't enough found yet, wait for them to show up.
     return await new Promise(resolve => {
       const listener = event => {
-        const node = this.desktop_.find(findParams);
-        if (node) {
+        const nodes = this.desktop_.findAll(findParams);
+        if (nodes && nodes.length >= minToFind) {
           this.desktop_.removeEventListener(
               chrome.automation.EventType.LOAD_COMPLETE, listener, true);
           this.desktop_.removeEventListener(
               chrome.automation.EventType.CHILDREN_CHANGED, listener, true);
-          resolve(node);
+          resolve(nodes);
         }
       };
       this.desktop_.addEventListener(
@@ -172,17 +200,23 @@ class AutomationTestSupport {
   }
 
   /**
-   * @param {chrome.automation.EventType} event
-   * @private
+   * Waits for the browser to have `num` tabs with name `name`.
    */
-  async waitForEventHelper_(event) {
-    const desktop = await new Promise(resolve => {
-      chrome.automation.getDesktop(d => resolve(d));
-    });
-    await new Promise(resolve => {
-      desktop.addEventListener(event, resolve);
-    });
-    this.notifyCcTests_('ready');
+  async waitForNumTabsWithName(num, name) {
+    const findParams = {
+      role: 'tab',
+      attributes: {name, className: 'Tab'},
+    };
+    // This will not return until it finds at least num.
+    const nodes = await this.findNumNodes_(findParams, num);
+    if (nodes.length > num) {
+      // Fail if we've found too many.
+      console.error(
+          'Error: found ' + nodes.length + ' tabs with name ' + name +
+          ', expected only ' + num);
+    } else {
+      this.notifyCcTests_('ready');
+    }
   }
 
   /** @param {string} className */
@@ -194,6 +228,30 @@ class AutomationTestSupport {
     }
 
     this.notifyCcTests_(node.value);
+  }
+
+  /**
+   * @param {string} className
+   * @param {string} value
+   */
+  async waitForNodeWithClassNameAndValue(className, value) {
+    const findParams = {attributes: {className, value}};
+    const node = await this.findNode_(findParams);
+    this.notifyCcTests_('ready');
+  }
+
+  /**
+   * @param {chrome.automation.EventType} event
+   * @private
+   */
+  async waitForEventHelper_(event) {
+    const desktop = await new Promise(resolve => {
+      chrome.automation.getDesktop(d => resolve(d));
+    });
+    await new Promise(resolve => {
+      desktop.addEventListener(event, resolve);
+    });
+    this.notifyCcTests_('ready');
   }
 
   /**

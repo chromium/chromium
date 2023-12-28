@@ -314,7 +314,7 @@ class RendererPerfTest : public VizPerfTest {
     // histogram that can be graphed.
     auto* info = testing::UnitTest::GetInstance()->current_test_info();
     std::string temp_name = base::StringPrintf(
-        "%s.%s.DrawToSwapUs", info->test_case_name(), info->name());
+        "%s.%s.DrawToSwapUs", info->test_suite_name(), info->name());
     auto samples = histogram->SnapshotDelta();
     base::HistogramBase* temp_histogram =
         base::Histogram::FactoryMicrosecondsTimeGet(

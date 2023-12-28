@@ -194,7 +194,6 @@ ci.builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["checkout_rust"],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -225,7 +224,6 @@ ci.builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["checkout_rust"],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -254,7 +252,6 @@ ci.builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["checkout_rust"],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",

@@ -71,14 +71,13 @@ class EchePresenceManager : public FeatureStatusProvider::Observer,
   void StopMonitoring();
   void OnTimerExpired();
 
-  raw_ptr<FeatureStatusProvider, ExperimentalAsh> eche_feature_status_provider_;
-  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
-  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
-      multidevice_setup_client_;
+  raw_ptr<FeatureStatusProvider> eche_feature_status_provider_;
+  raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient> multidevice_setup_client_;
   std::unique_ptr<secure_channel::PresenceMonitorClient>
       presence_monitor_client_;
-  raw_ptr<EcheConnector, ExperimentalAsh> eche_connector_;
-  raw_ptr<EcheMessageReceiver, ExperimentalAsh> eche_message_receiver_;
+  raw_ptr<EcheConnector> eche_connector_;
+  raw_ptr<EcheMessageReceiver> eche_message_receiver_;
   base::RepeatingTimer timer_;
   base::OneShotTimer shorter_duty_cycle_timer_;
 

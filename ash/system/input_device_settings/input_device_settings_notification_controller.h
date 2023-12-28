@@ -86,8 +86,7 @@ class ASH_EXPORT InputDeviceSettingsNotificationController {
                                         const std::string& notification_id,
                                         std::optional<int> button_index);
   // MessageCenter for adding notifications.
-  const raw_ptr<message_center::MessageCenter,
-                DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<message_center::MessageCenter, DanglingUntriaged>
       message_center_;
 
   base::WeakPtrFactory<InputDeviceSettingsNotificationController>

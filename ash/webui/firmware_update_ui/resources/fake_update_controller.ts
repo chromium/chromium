@@ -7,13 +7,14 @@ import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js
 import {assert} from 'chrome://resources/js/assert.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
-import {fakeFirmwareUpdates, fakeInstallationProgress, fakeInstallationProgressFailure} from './fake_data.js';
-import {FirmwareUpdate, InstallationProgress, UpdateProgressObserverRemote, UpdateProviderInterface, UpdateState} from './firmware_update.mojom-webui.js';
+import {fakeDeviceRequest, fakeFirmwareUpdates, fakeInstallationProgress, fakeInstallationProgressFailure, fakeInstallationProgressWithRequest, fakeInstallationProgressWithRequestAndFailure} from './fake_data.js';
+import {DeviceRequest, DeviceRequestObserverRemote, FirmwareUpdate, InstallationProgress, UpdateProgressObserverRemote, UpdateProviderInterface, UpdateState} from './firmware_update.mojom-webui.js';
 import {FakeInstallControllerInterface, FakeUpdateProviderInterface} from './firmware_update_types.js';
 import {getUpdateProvider, setUseFakeProviders} from './mojo_interface_provider.js';
 
 // Method names.
 export const ON_PROGRESS_CHANGED = 'UpdateProgressObserver_onStatusChanged';
+export const ON_DEVICE_REQUEST = 'DeviceRequestObserver_onDeviceRequest';
 
 /**
  * @fileoverview
@@ -32,6 +33,15 @@ export class FakeUpdateController implements FakeInstallControllerInterface {
   constructor() {
     setUseFakeProviders(true);
     this.registerObservables();
+  }
+
+  /*
+   * Implements InstallControllerInterface.addDeviceRequestObserver.
+   */
+  addDeviceRequestObserver(remote: DeviceRequestObserverRemote): void {
+    this.observables.observe(ON_DEVICE_REQUEST, (request: DeviceRequest) => {
+      remote.onDeviceRequest(request);
+    });
   }
 
   /*
@@ -61,7 +71,15 @@ export class FakeUpdateController implements FakeInstallControllerInterface {
     assert(deviceId);
     assert(path);
     assert(this.startUpdatePromise);
-    this.triggerProgressChangedObserver();
+    if (deviceId == '4') {
+      this.triggerProgressChangedObserverForInstallationProgress(
+          fakeInstallationProgressWithRequest);
+    } else if (deviceId == '5') {
+      this.triggerProgressChangedObserverForInstallationProgress(
+          fakeInstallationProgressWithRequestAndFailure);
+    } else {
+      this.triggerProgressChangedObserver();
+    }
   }
 
   setDeviceIdForUpdateInProgress(deviceId: string): void {
@@ -85,6 +103,31 @@ export class FakeUpdateController implements FakeInstallControllerInterface {
   }
 
   /**
+   * Causes the progress changed observer to fire with device requests.
+   */
+  async triggerProgressChangedObserverForInstallationProgress(
+      allProgress: InstallationProgress[]): Promise<void> {
+    for (const progress of allProgress) {
+      this.observables.triggerWithArg(ON_PROGRESS_CHANGED, this.deviceId);
+      if (progress.state === UpdateState.kWaitingForUser) {
+        this.observables.trigger(ON_DEVICE_REQUEST);
+        // Wait a little longer than usual to give developers/testers time to
+        // view the request screen.
+        await this.wait(this.updateIntervalInMs * 2);
+      }
+      await this.wait(this.updateIntervalInMs);
+    }
+  }
+
+  /**
+   * Returns a promise that waits for the specified amount of time before
+   * resolving.
+   */
+  private async wait(timeoutMs: number): Promise<void> {
+    return new Promise(resolve => setTimeout(() => resolve(), timeoutMs));
+  }
+
+  /**
    * Causes the progress changed observer to fire.
    */
   triggerProgressChangedObserver(): void {
@@ -94,12 +137,27 @@ export class FakeUpdateController implements FakeInstallControllerInterface {
 
   registerObservables(): void {
     this.observables.registerObservableWithArg(ON_PROGRESS_CHANGED);
+    this.observables.register(ON_DEVICE_REQUEST);
     // Set up fake installation progress data for each fake firmware update.
     fakeFirmwareUpdates.flat().forEach(({deviceId}) => {
       // Use the third fake firmware update to mock a failed installation.
       if (deviceId === '3') {
         this.setFakeInstallationProgress(
             deviceId, fakeInstallationProgressFailure);
+        // Use the fourth fake firmware update to mock a successful installation
+        // that includes a device request.
+      } else if (deviceId === '4') {
+        this.observables.setObservableData(
+            ON_DEVICE_REQUEST, [fakeDeviceRequest]);
+        this.setFakeInstallationProgress(
+            deviceId, fakeInstallationProgressWithRequest);
+        // Use the fifth fake firmware update to mock a failed installation
+        // that includes a device request.
+      } else if (deviceId === '5') {
+        this.observables.setObservableData(
+            ON_DEVICE_REQUEST, [fakeDeviceRequest]);
+        this.setFakeInstallationProgress(
+            deviceId, fakeInstallationProgressWithRequestAndFailure);
       } else {
         this.setFakeInstallationProgress(deviceId, fakeInstallationProgress);
       }

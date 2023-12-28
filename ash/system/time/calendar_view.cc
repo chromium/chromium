@@ -373,7 +373,7 @@ class CalendarView::MonthHeaderLabelView : public views::View {
   std::u16string month_name_;
 
   // The month label in the view.
-  const raw_ptr<views::Label, ExperimentalAsh> month_label_ = nullptr;
+  const raw_ptr<views::Label> month_label_ = nullptr;
 };
 
 BEGIN_METADATA(CalendarView, MonthHeaderLabelView, views::View)
@@ -509,7 +509,7 @@ CalendarView::CalendarView(bool for_glanceables_container)
   if (calendar_utils::IsForGlanceablesV2()) {
     calendar_header_view = CreateCalendarHeaderRow();
   } else {
-    CreateCalendarTitleRow(IDS_ASH_CALENDAR_TITLE);
+    CreateCalendarTitleRow();
   }
 
   // Adds an empty view as a placeholder so that the views below won't move up
@@ -663,7 +663,7 @@ views::View* CalendarView::CreateCalendarHeaderRow() {
   return AddChildView(calendar_header_view);
 }
 
-void CalendarView::CreateCalendarTitleRow(int string_id) {
+void CalendarView::CreateCalendarTitleRow() {
   DCHECK(!tri_view_);
 
   tri_view_ =
@@ -674,7 +674,7 @@ void CalendarView::CreateCalendarTitleRow(int string_id) {
   ConfigureTitleTriView(tri_view_.get(), TriView::Container::END);
 
   auto* title_label = TrayPopupUtils::CreateDefaultLabel();
-  title_label->SetText(l10n_util::GetStringUTF16(string_id));
+  title_label->SetText(l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_TITLE));
   title_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
   ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosTitle1,
                                              *title_label);

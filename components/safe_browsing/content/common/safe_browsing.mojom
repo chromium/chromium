@@ -123,8 +123,27 @@ enum PhishingDetectorResult {
   // classifier previously ran on this URL, it did not run again.
   FORWARD_BACK_TRANSITION = 3,
 
-  // The classifier returned an invalid score.
+  // The classifier returned an invalid score because the model is
+  // misconfigured.
   INVALID_SCORE = 4,
+
+  // Invalid URL request came in that is not HTTP/HTTPS or GET requests.
+  INVALID_URL_FORMAT_REQUEST = 5,
+
+  // WebDocumentLoader failed to load.
+  INVALID_DOCUMENT_LOADER = 6,
+
+  // URL feature extraction has failed.
+  URL_FEATURE_EXTRACTION_FAILED = 7,
+
+  // DOM feature extraction failed.
+  DOM_EXTRACTION_FAILED = 8,
+
+  // Term feature extraction failed.
+  TERM_EXTRACTION_FAILED = 9,
+
+  // Visual extraction failed.
+  VISUAL_EXTRACTION_FAILED = 10,
 };
 
 [EnableIf=full_safe_browsing]

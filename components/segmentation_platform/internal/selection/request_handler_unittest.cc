@@ -8,9 +8,17 @@
 #include "base/metrics/user_metrics.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/data_collection/training_data_collector.h"
+#include "components/segmentation_platform/internal/database/signal_database.h"
+#include "components/segmentation_platform/internal/database/signal_storage_config.h"
+#include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/internal/mock_ukm_data_manager.h"
 #include "components/segmentation_platform/internal/post_processor/post_processing_test_utils.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/public/config.h"
@@ -34,6 +42,7 @@ namespace {
 // Test Ids.
 const proto::SegmentId kSegmentId =
     proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+const std::string& kTestClientKey = "test_client";
 
 class MockResultProvider : public SegmentResultProvider {
  public:
@@ -97,11 +106,30 @@ class RequestHandlerTest : public testing::Test {
     training_data_collector_ = training_data_collector.get();
     execution_service_.set_training_data_collector_for_testing(
         std::move(training_data_collector));
-    config_ = test_utils::CreateTestConfig("test_client", kSegmentId);
+    config_ = test_utils::CreateTestConfig(kTestClientKey, kSegmentId);
     auto provider = std::make_unique<MockResultProvider>();
     result_provider_ = provider.get();
-    request_handler_ = RequestHandler::Create(*config_, std::move(provider),
-                                              &execution_service_);
+
+    std::vector<std::unique_ptr<Config>> configs;
+    configs.emplace_back(
+        test_utils::CreateTestConfig(kTestClientKey, kSegmentId));
+    configs.back()->auto_execute_and_cache = false;
+    auto config_holder = std::make_unique<ConfigHolder>(std::move(configs));
+
+    prefs_.registry()->RegisterStringPref(kSegmentationClientResultPrefs,
+                                          std::string());
+    client_result_prefs_ = std::make_unique<ClientResultPrefs>(&prefs_);
+    auto cached_result_writer = std::make_unique<CachedResultWriter>(
+        client_result_prefs_.get(), &clock_);
+    cached_result_writer_ = cached_result_writer.get();
+    storage_service_ = std::make_unique<StorageService>(
+        nullptr, nullptr, nullptr, nullptr, std::move(config_holder),
+        &ukm_data_manager_);
+    storage_service_->set_cached_result_writer_for_testing(
+        std::move(cached_result_writer));
+    request_handler_ =
+        RequestHandler::Create(*(config_.get()), std::move(provider),
+                               &execution_service_, storage_service_.get());
   }
 
   void OnGetPredictionResult(base::RepeatingClosure closure,
@@ -115,8 +143,14 @@ class RequestHandlerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<Config> config_;
+  base::SimpleTestClock clock_;
+  TestingPrefServiceSimple prefs_;
+  std::unique_ptr<ClientResultPrefs> client_result_prefs_;
   ExecutionService execution_service_;
   raw_ptr<MockTrainingDataCollector> training_data_collector_;
+  MockUkmDataManager ukm_data_manager_;
+  std::unique_ptr<StorageService> storage_service_;
+  raw_ptr<CachedResultWriter> cached_result_writer_;
   std::unique_ptr<RequestHandler> request_handler_;
   raw_ptr<MockResultProvider> result_provider_ = nullptr;
 };
@@ -124,6 +158,7 @@ class RequestHandlerTest : public testing::Test {
 TEST_F(RequestHandlerTest, GetPredictionResult) {
   PredictionOptions options;
   options.on_demand_execution = true;
+  options.can_update_cache_for_future_requests = true;
 
   EXPECT_CALL(
       *training_data_collector_,
@@ -147,7 +182,46 @@ TEST_F(RequestHandlerTest, GetPredictionResult) {
           }));
 
   base::RunLoop loop;
-  RawResult result(PredictionStatus::kFailed);
+  request_handler_->GetPredictionResult(
+      options, scoped_refptr<InputContext>(),
+      base::BindOnce(&RequestHandlerTest::OnGetPredictionResult,
+                     base::Unretained(this), loop.QuitClosure()));
+  loop.Run();
+
+  // Check prefs is updated if `can_update_cache_for_future_requests` is set to
+  // true.
+  const proto::ClientResult* result_from_pref =
+      client_result_prefs_->ReadClientResultFromPrefs(
+          config_->segmentation_key);
+  EXPECT_EQ(CreatePredictionResultWithBinaryClassifier().SerializeAsString(),
+            result_from_pref->client_result().SerializeAsString());
+}
+
+TEST_F(RequestHandlerTest, ExecuteOndemandAsFallbackCase) {
+  PredictionOptions options;
+  options.on_demand_execution = false;
+  options.fallback_allowed = true;
+
+  EXPECT_CALL(
+      *training_data_collector_,
+      OnDecisionTime(
+          kSegmentId, _, proto::TrainingOutputs::TriggerConfig::ONDEMAND,
+          absl::make_optional(ModelProvider::Request{1, 2, 3}), false))
+      .WillOnce(Return(TrainingRequestId::FromUnsafeValue(15)));
+  EXPECT_CALL(*result_provider_, GetSegmentResult(_))
+      .WillOnce(Invoke([](std::unique_ptr<
+                           SegmentResultProvider::GetResultOptions> options) {
+        EXPECT_TRUE(options->ignore_db_scores);
+        EXPECT_EQ(options->segment_id, kSegmentId);
+        auto result = std::make_unique<SegmentResultProvider::SegmentResult>(
+            SegmentResultProvider::ResultState::kServerModelExecutionScoreUsed,
+            CreatePredictionResultWithBinaryClassifier(),
+            /*rank=*/2);
+        result->model_inputs = {1, 2, 3};
+        std::move(options->callback).Run(std::move(result));
+      }));
+
+  base::RunLoop loop;
   request_handler_->GetPredictionResult(
       options, scoped_refptr<InputContext>(),
       base::BindOnce(&RequestHandlerTest::OnGetPredictionResult,
@@ -158,6 +232,7 @@ TEST_F(RequestHandlerTest, GetPredictionResult) {
 TEST_F(RequestHandlerTest, GetGenericPredictionResult) {
   PredictionOptions options;
   options.on_demand_execution = true;
+  options.can_update_cache_for_future_requests = false;
 
   EXPECT_CALL(
       *training_data_collector_,
@@ -181,7 +256,6 @@ TEST_F(RequestHandlerTest, GetGenericPredictionResult) {
           }));
 
   base::RunLoop loop;
-  RawResult result(PredictionStatus::kFailed);
   request_handler_->GetPredictionResult(
       options, scoped_refptr<InputContext>(),
       base::BindOnce(&RequestHandlerTest::OnGetPredictionResult,

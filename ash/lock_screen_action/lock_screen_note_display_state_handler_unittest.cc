@@ -71,7 +71,7 @@ class TestPowerManagerObserver : public chromeos::PowerManagerClient::Observer {
   }
 
  private:
-  raw_ptr<chromeos::FakePowerManagerClient, ExperimentalAsh> power_manager_;
+  raw_ptr<chromeos::FakePowerManagerClient> power_manager_;
   std::vector<double> brightness_changes_;
 
   base::ScopedObservation<chromeos::PowerManagerClient,

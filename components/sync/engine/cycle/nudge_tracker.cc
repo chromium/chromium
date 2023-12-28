@@ -106,10 +106,11 @@ void NudgeTracker::RecordInitialSyncDone(ModelTypeSet types) {
   }
 }
 
-base::TimeDelta NudgeTracker::RecordLocalChange(ModelType type) {
+base::TimeDelta NudgeTracker::RecordLocalChange(ModelType type,
+                                                bool is_single_client) {
   DCHECK(base::Contains(type_trackers_, type));
   type_trackers_[type]->RecordLocalChange();
-  return type_trackers_[type]->GetLocalChangeNudgeDelay();
+  return type_trackers_[type]->GetLocalChangeNudgeDelay(is_single_client);
 }
 
 base::TimeDelta NudgeTracker::RecordLocalRefreshRequest(ModelTypeSet types) {

@@ -24,7 +24,7 @@ async_test(function(t) {
             // Find the play button and click the middle of its bounding box.
             var playCoords = elementCoordinates(enabledPlayButton(video));
 
-            eventSender.mouseMoveTo(playCoords[0] * 1.5, playCoords[1] * 1.5);
+            eventSender.mouseMoveTo(playCoords[0], playCoords[1]);
             eventSender.mouseDown();
             eventSender.mouseUp();
         }, 50);

@@ -26,12 +26,6 @@ public interface DownloadManagerCoordinator {
     void destroy();
 
     /**
-     * To be called when the back button is pressed.
-     * @return Whether or not the back event has been consumed by this coordinator.
-     */
-    boolean onBackPressed();
-
-    /**
      * Handlers interested in intercepting back events. The first handler has the top priority
      * and the last one has the least.
      * @return  Handlers which are interested in consuming back press event.

@@ -166,7 +166,8 @@ void ImagePaintTimingDetector::ReportNoCandidateToTrace() {
                GetFrameIdForTracing(&frame_view_->GetFrame()));
 }
 
-ImageRecord* ImagePaintTimingDetector::UpdateMetricsCandidate() {
+std::pair<ImageRecord*, bool>
+ImagePaintTimingDetector::UpdateMetricsCandidate() {
   ImageRecord* largest_image_record = records_manager_.LargestImage();
   base::TimeTicks time = largest_image_record ? largest_image_record->paint_time
                                               : base::TimeTicks();
@@ -207,8 +208,10 @@ ImageRecord* ImagePaintTimingDetector::UpdateMetricsCandidate() {
   //
   // Two different candidates are rare to have the same time and size.
   // So when they are unchanged, the candidate is considered unchanged.
-  bool changed = detector.NotifyMetricsIfLargestImagePaintChanged(
-      time, size, largest_image_record, bpp, std::move(priority));
+  bool changed =
+      detector.GetLargestContentfulPaintCalculator()
+          ->NotifyMetricsIfLargestImagePaintChanged(
+              time, size, largest_image_record, bpp, std::move(priority));
   if (changed) {
     if (!time.is_null() && largest_image_record->loaded) {
       ReportCandidateToTrace(*largest_image_record, time);
@@ -216,7 +219,7 @@ ImageRecord* ImagePaintTimingDetector::UpdateMetricsCandidate() {
       ReportNoCandidateToTrace();
     }
   }
-  return largest_image_record;
+  return {largest_image_record, changed};
 }
 
 void ImagePaintTimingDetector::OnPaintFinished() {
@@ -264,7 +267,6 @@ void ImagePaintTimingDetector::ReportPresentationTime(
   DCHECK(ThreadState::Current()->IsMainThread());
   records_manager_.AssignPaintTimeToRegisteredQueuedRecords(
       timestamp, last_queued_frame_index);
-  frame_view_->GetPaintTimingDetector().UpdateLargestContentfulPaintCandidate();
 }
 
 void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(

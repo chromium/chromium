@@ -25,6 +25,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
@@ -63,8 +64,7 @@ class FakeSensorDisabledNotificationDelegate
   }
 
   void CloseAppAccessingMicrophone(const std::u16string& app_name) {
-    auto it = std::find(apps_accessing_microphone_.begin(),
-                        apps_accessing_microphone_.end(), app_name);
+    auto it = base::ranges::find(apps_accessing_microphone_, app_name);
     ASSERT_NE(apps_accessing_microphone_.end(), it);
     apps_accessing_microphone_.erase(it);
 
@@ -243,8 +243,7 @@ class PrivacyHubMicrophoneControllerTest
 
  private:
   const base::HistogramTester histogram_tester_;
-  raw_ptr<MockNewWindowDelegate, ExperimentalAsh> new_window_delegate_ =
-      nullptr;
+  raw_ptr<MockNewWindowDelegate> new_window_delegate_ = nullptr;
   std::unique_ptr<TestNewWindowDelegateProvider> window_delegate_provider_;
   std::unique_ptr<FakeVideoConferenceTrayController>
       fake_video_conference_tray_controller_;

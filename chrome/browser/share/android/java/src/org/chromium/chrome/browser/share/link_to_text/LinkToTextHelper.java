@@ -8,7 +8,6 @@ import android.net.Uri;
 
 import org.chromium.base.Callback;
 import org.chromium.blink.mojom.TextFragmentReceiver;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -227,17 +226,10 @@ public class LinkToTextHelper {
     public static void requestSelector(
             TextFragmentReceiver producer, RequestSelectorCallback callback) {
         producer.requestSelector(
-                new TextFragmentReceiver.RequestSelector_Response() {
-                    @Override
-                    public void call(String selector, Integer error, Integer readyStatus) {
-                        if (ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
-                            LinkToTextMetricsHelper.recordLinkToTextDiagnoseStatus(
-                                    LinkToTextMetricsHelper.LinkToTextDiagnoseStatus
-                                            .SELECTOR_RECEIVED);
-                        }
-                        callback.apply(selector, error, readyStatus);
-                    }
+                (String selector, int error, int readyStatus) -> {
+                    LinkToTextMetricsHelper.recordLinkToTextDiagnoseStatus(
+                            LinkToTextMetricsHelper.LinkToTextDiagnoseStatus.SELECTOR_RECEIVED);
+                    callback.apply(selector, error, readyStatus);
                 });
     }
 

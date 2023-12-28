@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/metrics/user_metrics_recorder.h"
@@ -43,6 +43,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"
@@ -79,7 +80,7 @@ bool EndOverview(OverviewEndAction action) {
 // selected.
 aura::Window* GetWindowForSelection(
     OverviewItemBase* overview_item,
-    const std::vector<aura::Window*>& window_list) {
+    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& window_list) {
   const auto item_windows = overview_item->GetWindows();
   CHECK(!item_windows.empty());
   if (item_windows.size() == 1u) {
@@ -88,7 +89,7 @@ aura::Window* GetWindowForSelection(
 
   // When the given `overview_item` is a group item, return the first window in
   // the `window_list` that is contained in `item_windows`.
-  for (auto* window : window_list) {
+  for (aura::Window* window : window_list) {
     if (base::Contains(item_windows, window)) {
       return window;
     }
@@ -136,7 +137,7 @@ class AsyncWindowStateChangeObserver : public WindowStateObserver,
     window_->RemoveObserver(this);
   }
 
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 
   base::OnceCallback<void(WindowState*)> on_post_window_state_changed_;
 };
@@ -175,9 +176,10 @@ void OverviewSession::Init(const aura::Window::Windows& windows,
   Shell::Get()->AddShellObserver(this);
 
   if (saved_desk_util::IsSavedDesksEnabled()) {
-    hide_windows_for_saved_desks_grid_ =
-        std::make_unique<ScopedOverviewHideWindows>(
-            /*windows=*/std::vector<aura::Window*>{}, /*forced_hidden=*/true);
+    hide_windows_for_saved_desks_grid_ = std::make_unique<
+        ScopedOverviewHideWindows>(
+        /*windows=*/std::vector<raw_ptr<aura::Window, VectorExperimental>>{},
+        /*forced_hidden=*/true);
   }
 
   hide_overview_windows_ = std::make_unique<ScopedOverviewHideWindows>(
@@ -207,7 +209,7 @@ void OverviewSession::Init(const aura::Window::Windows& windows,
                      (b->GetBoundsInScreen().x() + b->GetBoundsInScreen().y());
             });
 
-  for (auto* root : root_windows) {
+  for (aura::Window* root : root_windows) {
     auto grid = std::make_unique<OverviewGrid>(root, windows, this);
     grid_list_.push_back(std::move(grid));
   }
@@ -305,8 +307,9 @@ void OverviewSession::Shutdown() {
 
   desks_controller_observation_.Reset();
   if (observing_desk_) {
-    for (auto* root : Shell::GetAllRootWindows())
+    for (aura::Window* root : Shell::GetAllRootWindows()) {
       observing_desk_->GetDeskContainerForRoot(root)->RemoveObserver(this);
+    }
   }
 
   Shell::Get()->RemovePreTargetHandler(this);
@@ -415,7 +418,7 @@ void OverviewSession::SelectWindow(OverviewItemBase* item) {
   CHECK(!windows.empty());
   aura::Window* window = windows.size() > 1u
                              ? GetWindowForSelection(item, window_list)
-                             : windows[0];
+                             : windows[0].get();
 
   if (!window_list.empty()) {
     // Record `WindowSelector_ActiveWindowChanged` if the user is selecting a
@@ -1151,11 +1154,13 @@ void OverviewSession::ShowSavedDeskLibrary(
   if (!library_view)
     return;
 
-  std::vector<SavedDeskGridView*> grid_views = library_view->grid_views();
+  std::vector<raw_ptr<SavedDeskGridView, VectorExperimental>> grid_views =
+      library_view->grid_views();
   if (grid_views.empty())
     return;
 
-  std::vector<SavedDeskItemView*> grid_items = grid_views.front()->grid_items();
+  std::vector<raw_ptr<SavedDeskItemView, VectorExperimental>> grid_items =
+      grid_views.front()->grid_items();
   if (grid_items.empty() ||
       library_view->GetWidget()->GetNativeWindow()->GetRootWindow() !=
           root_window) {
@@ -1250,7 +1255,7 @@ void OverviewSession::UpdateAccessibilityFocus() {
 }
 
 void OverviewSession::UpdateFrameThrottling() {
-  std::vector<aura::Window*> windows_to_throttle;
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> windows_to_throttle;
   if (!grid_list_.empty()) {
     windows_to_throttle.reserve(num_start_windows_ * 2);
     for (auto& grid : grid_list_) {
@@ -1259,7 +1264,7 @@ void OverviewSession::UpdateFrameThrottling() {
       }
 
       for (auto& item : grid->window_list()) {
-        for (auto* window : item->GetWindows()) {
+        for (aura::Window* window : item->GetWindows()) {
           windows_to_throttle.push_back(window);
         }
       }
@@ -1273,7 +1278,7 @@ void OverviewSession::OnDeskActivationChanged(const Desk* activated,
                                               const Desk* deactivated) {
   observing_desk_ = activated;
 
-  for (auto* root : Shell::GetAllRootWindows()) {
+  for (aura::Window* root : Shell::GetAllRootWindows()) {
     activated->GetDeskContainerForRoot(root)->AddObserver(this);
     deactivated->GetDeskContainerForRoot(root)->RemoveObserver(this);
 
@@ -1559,6 +1564,10 @@ void OverviewSession::OnSplitViewStateChanged(
   if (!OverviewController::Get()->InOverviewSession()) {
     return;
   }
+
+  // Entering or exiting splitview is unexpected behavior in a pine overview
+  // session.
+  CHECK_NE(OverviewEnterExitType::kPine, enter_exit_overview_type_);
 
   RefreshNoWindowsWidgetBoundsOnEachGrid(/*animate=*/false);
 }

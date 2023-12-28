@@ -19,9 +19,10 @@ class Profile;
 
 class CrostiniExpiredContainerWarningView
     : public views::BubbleDialogDelegateView {
- public:
-  METADATA_HEADER(CrostiniExpiredContainerWarningView);
+  METADATA_HEADER(CrostiniExpiredContainerWarningView,
+                  views::BubbleDialogDelegateView)
 
+ public:
   static void Show(Profile* profile, base::OnceClosure callback);
 
  private:

@@ -288,7 +288,7 @@ public class PlayerMediatorUnitTest {
         mModel.set(PlayerProperties.DURATION_NANOS, 40 * 1_000_000_000L);
 
         mMediator.onSeekForwardClick();
-        verify(mPlayback).seekRelative(30 * 1_000_000_000L);
+        verify(mPlayback).seekRelative(10 * 1_000_000_000L);
     }
 
     @Test

@@ -67,8 +67,7 @@ WindowCache::WindowCache(Connection* connection, Window root)
     : connection_(connection),
       root_(root),
       gtk_frame_extents_(GetAtom("_GTK_FRAME_EXTENTS")) {
-  DUMP_WILL_BE_CHECK(!instance_)
-      << "Only one WindowCache should be active at a time";
+  CHECK(!instance_) << "Only one WindowCache should be active at a time";
   instance_ = this;
 
   connection_->AddEventObserver(this);
@@ -85,7 +84,7 @@ WindowCache::WindowCache(Connection* connection, Window root)
 WindowCache::~WindowCache() {
   connection_->RemoveEventObserver(this);
 
-  DUMP_WILL_BE_CHECK_EQ(instance_, this);
+  CHECK_EQ(instance_, this);
   instance_ = nullptr;
 }
 
@@ -110,7 +109,7 @@ void WindowCache::WaitUntilReady() {
 }
 
 void WindowCache::BeginDestroyTimer(std::unique_ptr<WindowCache> self) {
-  DUMP_WILL_BE_CHECK_EQ(this, self.get());
+  CHECK_EQ(this, self.get());
   delete_when_destroy_timer_fires_ = false;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,

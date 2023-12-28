@@ -144,7 +144,7 @@ class TestingInputMethodObserver : public ui::InputMethodObserver {
               (override));
 
  private:
-  raw_ptr<ui::InputMethod, ExperimentalAsh> input_method_ = nullptr;
+  raw_ptr<ui::InputMethod> input_method_ = nullptr;
 };
 
 class TextInputTest : public test::ExoTestBase {

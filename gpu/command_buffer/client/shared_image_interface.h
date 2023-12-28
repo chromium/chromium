@@ -227,9 +227,10 @@ class GPU_EXPORT SharedImageInterface {
   // gpu channel and each can have only single reference.
   // Note: `usage` must be the same value as passed to CreateSharedImage call
   // and is just stored without validation.
-  virtual void AddReferenceToSharedImage(const SyncToken& sync_token,
-                                         const Mailbox& mailbox,
-                                         uint32_t usage) = 0;
+  virtual scoped_refptr<ClientSharedImage> AddReferenceToSharedImage(
+      const SyncToken& sync_token,
+      const Mailbox& mailbox,
+      uint32_t usage) = 0;
 
   struct SwapChainMailboxes {
     Mailbox front_buffer;

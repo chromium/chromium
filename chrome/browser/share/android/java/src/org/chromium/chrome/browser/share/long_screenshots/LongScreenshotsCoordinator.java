@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.Entr
 import org.chromium.chrome.browser.share.screenshot.ScreenshotCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.widget.Toast;
 
@@ -34,7 +33,6 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
      * @param shareUrl The URL associated with the screenshot.
      * @param chromeOptionShareCallback An interface to share sheet APIs.
      * @param sheetController The {@link BottomSheetController} for the current activity.
-     * @param imageEditorModuleProvider An interface to install and/or instantiate the image editor.
      * @param manager The {@link EntryManager} to retrieve bitmaps of the current tab.
      * @param mediator The {@link LongScreenshotsMediator} The mediator that controls the long
      * screenshots dialog behavior.
@@ -46,7 +44,6 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
             String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController,
-            ImageEditorModuleProvider imageEditorModuleProvider,
             EntryManager manager,
             @Nullable LongScreenshotsMediator mediator,
             boolean shouldWarmupCompositor) {
@@ -55,8 +52,7 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
                 tab.getWindowAndroid(),
                 shareUrl,
                 chromeOptionShareCallback,
-                sheetController,
-                imageEditorModuleProvider);
+                sheetController);
         mActivity = activity;
         mTab = tab;
         mEntryManager =
@@ -76,15 +72,13 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
             Tab tab,
             String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback,
-            BottomSheetController sheetController,
-            ImageEditorModuleProvider imageEditorModuleProvider) {
+            BottomSheetController sheetController) {
         return new LongScreenshotsCoordinator(
                 activity,
                 tab,
                 shareUrl,
                 chromeOptionShareCallback,
                 sheetController,
-                imageEditorModuleProvider,
                 null,
                 null,
                 true);
@@ -97,7 +91,6 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
             String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController,
-            ImageEditorModuleProvider imageEditorModuleProvider,
             EntryManager manager,
             LongScreenshotsMediator mediator) {
         return new LongScreenshotsCoordinator(
@@ -106,7 +99,6 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
                 shareUrl,
                 chromeOptionShareCallback,
                 sheetController,
-                imageEditorModuleProvider,
                 manager,
                 mediator,
                 false);

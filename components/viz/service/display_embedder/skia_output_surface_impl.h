@@ -140,7 +140,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       const gfx::Rect& update_rect,
       bool is_overlay) override;
   void MakePromiseSkImage(ImageContext* image_context,
-                          const gfx::ColorSpace& color_space) override;
+                          const gfx::ColorSpace& color_space,
+                          bool force_rgbx) override;
   sk_sp<SkImage> MakePromiseSkImageFromRenderPass(
       const AggregatedRenderPassId& id,
       const gfx::Size& size,
@@ -174,6 +175,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       const SkColor4f& color,
       const gfx::ColorSpace& color_space) override;
   void DestroySharedImage(const gpu::Mailbox& mailbox) override;
+  void SetSharedImagePurgeable(const gpu::Mailbox& mailbox,
+                               bool purgeable) override;
   bool SupportsBGRA() const override;
 
   // ExternalUseClient implementation:
@@ -256,7 +259,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       const gfx::ColorSpace& yuv_color_space);
   void MakePromiseSkImageSinglePlane(ImageContextImpl* image_context,
                                      bool mipmapped,
-                                     const gfx::ColorSpace& color_space);
+                                     const gfx::ColorSpace& color_space,
+                                     bool force_rgbx);
   void MakePromiseSkImageMultiPlane(ImageContextImpl* image_context,
                                     const gfx::ColorSpace& color_space);
   void ContextLost();
@@ -266,7 +270,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   bool needs_swap_size_notifications_ = false;
 
   // Images for current frame or render pass.
-  std::vector<ImageContextImpl*> images_in_current_paint_;
+  std::vector<raw_ptr<ImageContextImpl, VectorExperimental>>
+      images_in_current_paint_;
 
   THREAD_CHECKER(thread_checker_);
 

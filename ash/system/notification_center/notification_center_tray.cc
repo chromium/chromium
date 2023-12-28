@@ -14,7 +14,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/notification_center/notification_center_bubble.h"
-#include "ash/system/notification_center/notification_center_view.h"
+#include "ash/system/notification_center/views/notification_center_view.h"
 #include "ash/system/notification_center/notification_metrics_recorder.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/tray/tray_background_view.h"
@@ -54,7 +54,7 @@ NotificationCenterTray::NotificationCenterTray(Shelf* shelf)
 }
 
 NotificationCenterTray::~NotificationCenterTray() {
-  for (auto* tray_item : tray_container()->children()) {
+  for (views::View* tray_item : tray_container()->children()) {
     static_cast<TrayItemView*>(tray_item)->RemoveObserver(this);
   }
 }
@@ -123,7 +123,7 @@ void NotificationCenterTray::Initialize() {
     privacy_indicators_view_ = tray_container()->AddChildView(
         std::make_unique<PrivacyIndicatorsTrayItemView>(shelf()));
   }
-  for (auto* tray_item : tray_container()->children()) {
+  for (views::View* tray_item : tray_container()->children()) {
     static_cast<TrayItemView*>(tray_item)->AddObserver(this);
   }
   for (auto& observer : observers_) {
@@ -164,7 +164,7 @@ void NotificationCenterTray::ClickedOutsideBubble() {
 
 void NotificationCenterTray::UpdateTrayItemColor(bool is_active) {
   DCHECK(chromeos::features::IsJellyEnabled());
-  for (auto* tray_item : tray_container()->children()) {
+  for (views::View* tray_item : tray_container()->children()) {
     static_cast<TrayItemView*>(tray_item)->UpdateLabelOrImageViewColor(
         is_active);
   }

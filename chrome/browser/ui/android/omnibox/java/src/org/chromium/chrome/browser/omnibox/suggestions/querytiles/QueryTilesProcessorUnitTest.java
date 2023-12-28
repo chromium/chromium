@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.omnibox.suggestions.querytiles;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -28,6 +30,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
@@ -71,12 +74,26 @@ public class QueryTilesProcessorUnitTest {
     }
 
     @Test
-    public void doesProcessSuggestion() {
+    public void doesProcessSuggestion_carousel() {
+        OmniboxFeatures.QUERY_TILES_SHOW_AS_CAROUSEL.setForTesting(true);
+
         for (int type = 0; type < OmniboxSuggestionType.NUM_TYPES; type++) {
             var match = AutocompleteMatchBuilder.searchWithType(type).build();
             assertEquals(
                     type == OmniboxSuggestionType.TILE_SUGGESTION,
                     mProcessor.doesProcessSuggestion(match, 0));
+        }
+    }
+
+    @Test
+    public void doesProcessSuggestion_list() {
+        OmniboxFeatures.QUERY_TILES_SHOW_AS_CAROUSEL.setForTesting(false);
+
+        for (int type = 0; type < OmniboxSuggestionType.NUM_TYPES; type++) {
+            var match = AutocompleteMatchBuilder.searchWithType(type).build();
+            // We pass all the suggestions over to the BasicSuggestionProcessor when rendering as a
+            // list.
+            assertFalse(mProcessor.doesProcessSuggestion(match, 0));
         }
     }
 
@@ -165,6 +182,28 @@ public class QueryTilesProcessorUnitTest {
         assertEquals(bitmap, drawable.getBitmap());
 
         verifyNoMoreInteractions(mImageSupplier, mSuggestionHost);
+    }
+
+    @Test
+    public void createModel_padding() {
+        var model = mProcessor.createModel();
+
+        assertEquals(
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.omnibox_query_tiles_carousel_vertical_padding),
+                model.get(BaseCarouselSuggestionViewProperties.TOP_PADDING));
+        assertEquals(
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.omnibox_query_tiles_carousel_vertical_padding),
+                model.get(BaseCarouselSuggestionViewProperties.BOTTOM_PADDING));
+    }
+
+    @Test
+    public void createModel_carouselBackground() {
+        var model = mProcessor.createModel();
+        assertTrue(model.get(BaseCarouselSuggestionViewProperties.APPLY_BACKGROUND));
     }
 
     @Test

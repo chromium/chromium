@@ -16,6 +16,7 @@
 <translation id="1075811647922107217">Veličina stranice</translation>
 <translation id="1082009148392559545">Preuzimanje čuvara zaslona</translation>
 <translation id="1094693127011229778">IP adresa nije dostupna</translation>
+<translation id="1116694919640316211">O opcijama</translation>
 <translation id="1118572504348554005">Povratne informacije poslane putem ovog obrasca možemo podijeliti s našim partnerima radi rješavanja programskih pogrešaka i drugih problema koje nam prijavite. Ne navodite osjetljive podatke kao što su zaporke.</translation>
 <translation id="1119447706177454957">Interna pogreška</translation>
 <translation id="1124772482545689468">Korisnik</translation>
@@ -378,6 +379,7 @@
 <translation id="3866249974567520381">Opis</translation>
 <translation id="387301095347517405">Koliko se puta vaša baterija potpuno napunila</translation>
 <translation id="3885327323343477505">Promijeni čuvar zaslona</translation>
+<translation id="3892148308691398805">Kopiranje teksta</translation>
 <translation id="391412459402535266">Testiranje uređaja nije uspjelo. Prijeđite na način prijenosnog računala da biste testirali.</translation>
 <translation id="3916998944874125962">snimanje zaslona</translation>
 <translation id="3923184630988645767">Potrošnja podatkovnog prometa</translation>
@@ -403,6 +405,7 @@
 <translation id="4060260348856573701">Novi APN</translation>
 <translation id="4093865285251893588">Profilna slika</translation>
 <translation id="409427325554347132">Spremi pojedinosti testa</translation>
+<translation id="409469431304488632">Eksperiment</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Odaberite album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB dodirna podloga</translation>
@@ -693,6 +696,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Kapacitet baterije smanjuje se zbog upotrebe</translation>
 <translation id="6191293864534840972">Pogrešni poslužitelji naziva</translation>
+<translation id="6196607555925437199">Izradi ponovo</translation>
 <translation id="6205145102504628069">Protok oblaka</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nema dostupnih skenera</translation>
@@ -869,7 +873,9 @@
 <translation id="7502658306369382406">IPv6 adresa</translation>
 <translation id="7513770521371759388">na dnu</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7525067979554623046">Stvori</translation>
 <translation id="7528507600602050979">Sadržaj pomoći nije dostupan</translation>
+<translation id="753556296624075801">Omogućuje Google</translation>
 <translation id="7535791657097741517">Uključivanje svijetle teme</translation>
 <translation id="7550715992156305117">Dijagnostičke rutine</translation>
 <translation id="7551123448725492271">Uređaj je audiouređaj.</translation>
@@ -960,6 +966,7 @@
 <translation id="8227119283605456246">Priloži datoteku</translation>
 <translation id="8230672074305416752">Pinganje pristupnika zadane mreže nije uspjelo</translation>
 <translation id="8246209727385807362">Nepoznat mobilni operater</translation>
+<translation id="8261506727792406068">Izbriši</translation>
 <translation id="8262870577632766028">1 h</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Povežite se s mrežom i ponovo učitajte stranicu da biste pregledali pozadinu.</translation>
@@ -970,6 +977,7 @@
 <translation id="8318753676953949627">Nema slika</translation>
 <translation id="8329018942023753850">aplikacija kalkulator</translation>
 <translation id="8336739000755212683">Promijenite sliku računa uređaja</translation>
+<translation id="8339024191194156249">Saznajte više o automatskom pokretanju</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> ili <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Zadaci ispisa</translation>
 <translation id="8349826889576450703">pokretač</translation>

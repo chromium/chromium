@@ -216,6 +216,7 @@ class FakeMediaMetricsProvider
   void SetRendererType(
       media::mojom::blink::RendererType renderer_type) override {}
   void SetKeySystem(const String& key_system) override {}
+  void SetHasWaitingForKey() override {}
   void SetIsHardwareSecure() override {}
   void SetHasPlayed() override {}
   void SetHaveEnough() override {}
@@ -1149,8 +1150,7 @@ void RunCallbackPermutationTest(std::vector<PredictionType> callback_order) {
 // Test that decodingInfo() behaves correctly for all orderings/timings of the
 // underlying prediction services.
 TEST(MediaCapabilitiesTests, PredictionCallbackPermutations) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment;
   std::vector<PredictionType> callback_order(
       {PredictionType::kDB, PredictionType::kBadWindow, PredictionType::kNnr,
        PredictionType::kGpuFactories});

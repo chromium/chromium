@@ -58,8 +58,7 @@ class StabilityMetricsManager {
   ~StabilityMetricsManager();
 
   SEQUENCE_CHECKER(sequence_checker_);
-  const raw_ptr<PrefService, LeakedDanglingUntriaged | ExperimentalAsh>
-      local_state_;
+  const raw_ptr<PrefService, LeakedDanglingUntriaged> local_state_;
 };
 
 }  // namespace arc

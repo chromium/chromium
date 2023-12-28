@@ -225,6 +225,7 @@
 /* Input and Textarea */
 :host-context(body.jelly-enabled) cr-input,
 :host-context(body.jelly-enabled) cr-search-field::part(searchInput),
+:host-context(body.jelly-enabled) cr-searchable-drop-down::part(input),
 :host-context(body.jelly-enabled) cr-textarea {
   --cr-input-background-color: var(--cros-sys-input_field_on_base);
   --cr-input-error-color: var(--cros-sys-error);
@@ -232,7 +233,10 @@
   --cr-input-placeholder-color: var(--cros-sys-secondary);
 }
 
-:host-context([cros][chrome-refresh-2023]) cr-input {
+:host-context([cros][chrome-refresh-2023]) cr-input,
+:host-context([cros][chrome-refresh-2023]) cr-search-field::part(searchInput),
+:host-context([cros][chrome-refresh-2023])
+    cr-searchable-drop-down::part(input) {
   --cr-input-background-color: var(--cros-sys-input_field_on_base);
   --cr-input-border: none;
   --cr-input-border-bottom: none;
@@ -242,6 +246,8 @@
   --cr-input-padding-end: 16px;
   --cr-input-placeholder-color: var(--cros-sys-secondary);
   --cr-input-underline-display: none;
+
+  font: var(--cros-body-2-font);
 
   /* Focused state */
   --cr-input-focus-color: var(--cros-sys-primary);
@@ -354,6 +360,36 @@
   border-radius: 4px;
 }
 
+:host-context([cros][chrome-refresh-2023]) cr-search-field {
+  /* Search icon */
+  --cr-search-field-search-icon-fill: var(--cros-sys-secondary);
+  --cr-search-field-search-icon-inline-margin-start: 0;
+
+  /* Clear icon */
+  --cr-search-field-clear-icon-fill: var(--cros-sys-secondary);
+  --cr-search-field-clear-icon-margin-end: 6px;
+  --cr-search-field-clear-icon-size: 16px;
+}
+
+:host-context([cros][chrome-refresh-2023]) cr-search-field::part(searchInput) {
+  /* Modify the styles defined in "Input and Textarea" above. */
+  --cr-input-padding-bottom: 10px;
+  --cr-input-padding-end: 28px;
+  --cr-input-padding-start: 8px;
+  --cr-input-padding-top: 10px;
+}
+
+/* Searchable Dropdown */
+:host-context(body.jelly-enabled) cr-searchable-drop-down,
+:host-context([cros][chrome-refresh-2023]) cr-searchable-drop-down {
+  --cr-searchable-drop-down-bg-color: var(--cros-sys-base_elevated);
+  --cr-searchable-drop-down-icon-color-focus: var(--cros-sys-primary);
+  --cr-searchable-drop-down-list-bg-color-selected:
+      var(--cros-sys-base_highlight);
+  --cr-searchable-drop-down-list-item-color: var(--cros-sys-on_surface);
+  --cr-searchable-drop-down-shadow: var(--cros-elevation-3-shadow);
+}
+
 /* Slider */
 :host-context(body.jelly-enabled) cr-slider {
   --cr-slider-active-color: var(--cros-sys-primary);
@@ -428,4 +464,17 @@
 :host-context([cros][chrome-refresh-2023]):host-context(.focus-outline-visible)
     cr-toggle:focus {
   --cr-toggle-ripple-ring: none;
+}
+
+/* Tooltip */
+:host-context(body.jelly-enabled) cr-policy-indicator,
+:host-context(body.jelly-enabled) cr-policy-pref-indicator,
+:host-context(body.jelly-enabled) cr-tooltip-icon::part(tooltip),
+:host-context([cros][chrome-refresh-2023]) cr-policy-indicator,
+:host-context([cros][chrome-refresh-2023]) cr-policy-pref-indicator,
+:host-context([cros][chrome-refresh-2023]) cr-tooltip-icon::part(tooltip) {
+  --paper-tooltip-background: var(--cros-sys-on_surface);
+  --paper-tooltip-padding: 5px 8px;
+  --paper-tooltip-text-color: var(--cros-sys-inverse_on_surface);
+  font: var(--cros-annotation-1-font);
 }

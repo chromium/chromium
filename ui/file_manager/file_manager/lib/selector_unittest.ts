@@ -8,7 +8,7 @@ import {waitForElementUpdate} from '../common/js/unittest_util.js';
 import {customElement, html, XfBase} from '../widgets/xf_base.js';
 
 import {BaseStore, Slice} from './base_store.js';
-import {TestState} from './for_tests.js';
+import type {TestState} from './for_tests.js';
 import {combine2Selectors, SelectorEmitter, SelectorNode} from './selector.js';
 
 // Test that DAG nodes only emit if at least one of their parents also emits a

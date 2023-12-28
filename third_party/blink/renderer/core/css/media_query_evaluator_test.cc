@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/display_color_spaces.h"
@@ -632,6 +633,7 @@ TEST(MediaQueryEvaluatorTest, Cached) {
 }
 
 TEST(MediaQueryEvaluatorTest, Dynamic) {
+  test::TaskEnvironment task_environment;
   auto page_holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
   page_holder->GetFrameView().SetMediaType(media_type_names::kScreen);
 
@@ -651,6 +653,7 @@ TEST(MediaQueryEvaluatorTest, Dynamic) {
 }
 
 TEST(MediaQueryEvaluatorTest, DynamicNoView) {
+  test::TaskEnvironment task_environment;
   auto page_holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
   LocalFrame* frame = &page_holder->GetFrame();
   page_holder.reset();

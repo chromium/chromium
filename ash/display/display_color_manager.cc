@@ -220,7 +220,8 @@ void ColorMatrixVectorFromSrgbToDeviceAndColorMatrix(
 
 bool HasColorCorrectionMatrix(display::DisplayConfigurator* configurator,
                               int64_t display_id) {
-  for (const auto* display_snapshot : configurator->cached_displays()) {
+  for (const display::DisplaySnapshot* display_snapshot :
+       configurator->cached_displays()) {
     if (display_snapshot->display_id() != display_id)
       continue;
 
@@ -263,7 +264,8 @@ bool DisplayColorManager::SetDisplayColorTemperatureAdjustment(
   // Look up the calibration matrix, if one exists.
   SkM44 srgb_to_device_matrix;
   {
-    for (const auto* display_snapshot : configurator_->cached_displays()) {
+    for (const display::DisplaySnapshot* display_snapshot :
+         configurator_->cached_displays()) {
       if (display_snapshot->display_id() != display_id) {
         continue;
       }

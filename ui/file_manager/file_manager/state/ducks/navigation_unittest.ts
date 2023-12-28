@@ -8,7 +8,7 @@ import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {TrashRootEntry} from '../../common/js/trash.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {AndroidApp, FileData, NavigationSection, NavigationType, State, Volume} from '../../externs/ts/state.js';
-import {constants} from '../../foreground/js/constants.js';
+import {ICON_TYPES, ODFS_EXTENSION_ID} from '../../foreground/js/constants.js';
 import {convertEntryToFileData} from '../ducks/all_entries.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../for_tests.js';
 import {getEmptyState} from '../store.js';
@@ -80,7 +80,7 @@ function createAndroidApps(): [AndroidApp, AndroidApp] {
       packageName: 'com.test.app2',
       activityName: 'Activity2',
       iconSet: {icon16x16Url: '', icon32x32Url: ''},
-      icon: constants.ICON_TYPES.GENERIC,
+      icon: ICON_TYPES.GENERIC,
     },
   ];
 }
@@ -195,8 +195,7 @@ export async function testNavigationRoots(done: () => void) {
   initialState.volumes[smbVolume.volume.volumeId] = smbVolume.volume;
 
   const odfsVolume = createVolumeFileData(
-      VolumeType.PROVIDED, 'provided:odfs', '', '',
-      constants.ODFS_EXTENSION_ID);
+      VolumeType.PROVIDED, 'provided:odfs', '', '', ODFS_EXTENSION_ID);
   initialState.allEntries[odfsVolume.fileData.entry.toURL()] =
       odfsVolume.fileData;
   initialState.volumes[odfsVolume.volume.volumeId] = odfsVolume.volume;

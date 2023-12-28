@@ -38,6 +38,7 @@ from blinkpy.common.unified_diff import unified_diff
 from blinkpy.web_tests.port.base import Port
 from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.models.testharness_results import (
+    ABBREVIATED_ALL_PASS,
     LineType,
     Status,
     TestharnessLine,
@@ -143,8 +144,9 @@ class WPTResult(Result):
         try:
             status = Status[status]
         except KeyError:
+            # `OK` (and other statuses not recorded in baselines) aren't
+            # contained in `Status` and take this early out.
             return
-        # The optimizer removes unnecessary PASS lines later.
         line_type = LineType.SUBTEST if subtest else LineType.HARNESS_ERROR
         result = TestharnessLine(line_type, frozenset([status]), message,
                                  subtest)
@@ -213,14 +215,17 @@ class WPTResult(Result):
         self._maybe_add_testharness_result(status, message)
         self._maybe_set_statuses(status, expected)
 
-    def get_result(self):
+    def format_baseline(self) -> str:
+        if all(result.statuses <= {Status.PASS}
+               for result in self.testharness_results):
+            return ABBREVIATED_ALL_PASS
         header = (LineType.TESTHARNESS_HEADER if self.test_type
                   == 'testharness' else LineType.WDSPEC_HEADER)
-        return [
+        return format_testharness_baseline([
             TestharnessLine(header),
             *self.testharness_results,
             TestharnessLine(LineType.FOOTER),
-        ]
+        ])
 
 
 class Event(NamedTuple):
@@ -660,24 +665,25 @@ class WPTResultsProcessor:
             artifacts: Artifact manager (note that this is not the artifact ID
                 to paths mapping itself).
         """
-        actual_text = None
+        assert result.test_type in {
+            'testharness', 'wdspec'
+        }, (f'{result.name!r} cannot have a text baseline')
         actual_subpath = self.port.output_filename(
             result.name, test_failures.FILENAME_SUFFIX_ACTUAL, '.txt')
         expected_subpath = self.port.output_filename(
             result.name, test_failures.FILENAME_SUFFIX_EXPECTED, '.txt')
-        if result.testharness_results:
-            actual_text = format_testharness_baseline(result.get_result())
-            artifacts.CreateArtifact('actual_text', actual_subpath,
-                                     actual_text.encode())
-            if self.reset_results and self._iteration == 0 and result.actual not in {
-                    ResultType.Crash,
-                    ResultType.Timeout,
-            }:
-                source = self.fs.join(self.artifacts_dir, actual_subpath)
-                dest = self.fs.join(self.port.baseline_version_dir(),
-                                    expected_subpath)
-                self.fs.maybe_make_directory(self.fs.dirname(dest))
-                self.fs.copyfile(source, dest)
+        actual_text = result.format_baseline()
+        artifacts.CreateArtifact('actual_text', actual_subpath,
+                                 actual_text.encode())
+        if self.reset_results and self._iteration == 0 and result.actual not in {
+                ResultType.Crash,
+                ResultType.Timeout,
+        }:
+            source = self.fs.join(self.artifacts_dir, actual_subpath)
+            dest = self.fs.join(self.port.baseline_version_dir(),
+                                expected_subpath)
+            self.fs.maybe_make_directory(self.fs.dirname(dest))
+            self.fs.copyfile(source, dest)
 
         expected_text = self.port.expected_text(result.name)
         if expected_text:

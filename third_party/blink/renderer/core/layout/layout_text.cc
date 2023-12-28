@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_offset_map.h"
 #include "ui/gfx/geometry/quad_f.h"
 
 namespace blink {
@@ -159,8 +160,6 @@ LayoutText::LayoutText(Node* node, String str)
       text_(std::move(str)) {
   DCHECK(text_);
   DCHECK(!node || !node->IsDocumentNode());
-
-  SetIsText();
 
   if (node)
     GetFrameView()->IncrementVisuallyNonEmptyCharacterCount(text_.length());
@@ -717,16 +716,18 @@ PhysicalRect LayoutText::LocalCaretRect(
 bool LayoutText::IsAllCollapsibleWhitespace() const {
   NOT_DESTROYED();
   unsigned length = TextLength();
-  if (Is8Bit()) {
+  if (text_.Is8Bit()) {
     for (unsigned i = 0; i < length; ++i) {
-      if (!StyleRef().IsCollapsibleWhiteSpace(Characters8()[i]))
+      if (!StyleRef().IsCollapsibleWhiteSpace(text_.Characters8()[i])) {
         return false;
+      }
     }
     return true;
   }
   for (unsigned i = 0; i < length; ++i) {
-    if (!StyleRef().IsCollapsibleWhiteSpace(Characters16()[i]))
+    if (!StyleRef().IsCollapsibleWhiteSpace(text_.Characters16()[i])) {
       return false;
+    }
   }
   return true;
 }
@@ -879,7 +880,9 @@ void LayoutText::SetTextInternal(String text) {
 void LayoutText::ApplyTextTransform() {
   NOT_DESTROYED();
   if (const ComputedStyle* style = Style()) {
-    style->ApplyTextTransform(&text_, PreviousCharacter());
+    TextOffsetMap offset_map;
+    text_ = style->ApplyTextTransform(text_, PreviousCharacter(), &offset_map);
+    has_variable_length_transform_ = !offset_map.IsEmpty();
 
     // We use the same characters here as for list markers.
     // See CollectUACounterStyleRules() in ua_counter_style_map.cc.

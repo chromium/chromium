@@ -14,7 +14,9 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/highlight_button.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_background_view.h"
 #import "ios/chrome/common/ui/util/button_util.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/device_util.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
 #import "ios/chrome/common/ui/util/image_util.h"
@@ -97,6 +99,10 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   // Layout constraint for `headerBackgroundImageView` top margin.
   NSLayoutConstraint* _headerBackgroundImageViewTopMargin;
 
+  // Layout constraint for `titleLabel` top margin when there is no banner or
+  // header.
+  NSLayoutConstraint* _titleLabelNoHeaderTopMargin;
+
   // YES if the views can be updated on scroll updates (e.g., change the text
   // label string of the primary button) which corresponds to the moment where
   // the layout reflects the latest updates.
@@ -144,6 +150,15 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
   UIView* view = self.view;
   view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+
+  if (self.usePromoStyleBackground) {
+    CHECK(self.shouldHideBanner);
+    UIView* backgroundView = [[PromoStyleBackgroundView alloc] init];
+    backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    backgroundView.layer.zPosition = -1;
+    [view addSubview:backgroundView];
+    AddSameConstraints(view, backgroundView);
+  }
 
   // Create a layout guide for the margin between the subtitle and the screen-
   // specific content. A layout guide is needed because the margin scales with
@@ -484,6 +499,10 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
           constraintEqualToConstant:kLearnMoreButtonSide],
     ]];
   }
+
+  if (self.hideHeaderOnTallContent) {
+    [self updateActionButtonsAndPushUpScrollViewIfMandatory];
+  }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -539,6 +558,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   void (^transition)(id<UIViewControllerTransitionCoordinatorContext>) =
       ^(id<UIViewControllerTransitionCoordinatorContext> context) {
         [self updateViewsOnScrollViewUpdate];
+        [self hideHeaderOnTallContentIfNeeded];
       };
   [coordinator animateAlongsideTransition:transition completion:nil];
 }
@@ -570,6 +590,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   // right measurements to evaluate the scroll position.
   dispatch_async(dispatch_get_main_queue(), ^{
     [self updateViewsOnScrollViewUpdate];
+    [self hideHeaderOnTallContentIfNeeded];
   });
 }
 
@@ -602,6 +623,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     buttonConfiguration.attributedTitle = nil;
     buttonConfiguration.title = _primaryActionString;
     _primaryActionButton.configuration = buttonConfiguration;
+    [self setPrimaryActionButtonFont:_primaryActionButton];
   }
 }
 
@@ -629,6 +651,9 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     _headerImageView.image = _headerImage;
     _headerImageView.accessibilityLabel = _headerAccessibilityLabel;
     _headerImageView.isAccessibilityElement = _headerAccessibilityLabel != nil;
+    if (self.headerViewForceStyleLight) {
+      _headerImageView.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+    }
   }
   return _headerImageView;
 }
@@ -695,7 +720,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
     // Use `primaryActionString` even if scrolling to the end is mandatory
     // because at the viewDidLoad stage, the scroll view hasn't computed its
-    // content height, so there is no way to knOow if scrolling is needed.
+    // content height, so there is no way to know if scrolling is needed.
     // This label will be updated at the viewDidAppear stage if necessary.
     buttonConfiguration.title = self.primaryActionString;
     buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
@@ -1120,6 +1145,10 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   }
   if (self.scrollToEndMandatory) {
     _shouldScrollToBottom = YES;
+  } else if (self.hideHeaderOnTallContent) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self hideHeaderOnTallContentIfNeeded];
+    });
   }
   self.didReachBottom = YES;
 }
@@ -1232,6 +1261,9 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
       UIView* frameView = [[UIView alloc] init];
       frameView.translatesAutoresizingMaskIntoConstraints = NO;
       frameView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+      if (self.headerViewForceStyleLight) {
+        frameView.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+      }
       frameView.layer.cornerRadius = kHeaderImageCornerRadius;
       frameView.layer.shadowOffset =
           CGSizeMake(kHeaderImageShadowOffsetX, kHeaderImageShadowOffsetY);
@@ -1298,6 +1330,34 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
                 action:@selector(didTapTertiaryActionButton)
       forControlEvents:UIControlEventTouchUpInside];
   return button;
+}
+
+- (void)hideHeaderOnTallContentIfNeeded {
+  // Once hidden, the header will not reappear.
+  if (!self.hideHeaderOnTallContent || !_canUpdateViewsOnScroll ||
+      _fullHeaderImageView.hidden) {
+    return;
+  }
+  CHECK(self.headerImageType != PromoStyleImageType::kNone);
+
+  const BOOL contentFits = [self isScrolledToBottom];
+  if (contentFits) {
+    return;
+  }
+
+  _fullHeaderImageView.hidden = YES;
+  _headerBackgroundImageView.hidden = YES;
+  _headerImageView.hidden = YES;
+  if (!_titleLabelNoHeaderTopMargin) {
+    _titleLabelNoHeaderTopMargin = [_titleLabel.topAnchor
+        constraintEqualToAnchor:_scrollContentView.topAnchor
+                       constant:kDefaultMargin];
+  }
+  _titleLabelNoHeaderTopMargin.active = YES;
+  _headerBackgroundImageViewTopMargin.active = NO;
+
+  [_scrollView layoutIfNeeded];
+  [self updateViewsOnScrollViewUpdate];
 }
 
 #pragma mark - UIScrollViewDelegate

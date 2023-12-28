@@ -24,7 +24,6 @@
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
-#include "components/performance_manager/public/resource_attribution/scoped_cpu_query.h"
 #include "components/performance_manager/resource_attribution/cpu_measurement_monitor.h"
 #include "components/performance_manager/resource_attribution/query_params.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
@@ -36,7 +35,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace performance_manager::resource_attribution {
+namespace performance_manager::resource_attribution::internal {
 
 namespace {
 
@@ -44,8 +43,6 @@ using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAre;
-using QueryParams = internal::QueryParams;
-using ResourceContextTypeId = internal::ResourceContextTypeId;
 
 std::unique_ptr<QueryParams> CreateQueryParams(
     ResourceTypeSet resource_types = {},
@@ -53,7 +50,7 @@ std::unique_ptr<QueryParams> CreateQueryParams(
     std::set<ResourceContextTypeId> all_context_types = {}) {
   auto params = std::make_unique<QueryParams>();
   params->resource_types = std::move(resource_types);
-  params->contexts = internal::ContextCollection::CreateForTesting(
+  params->contexts = ContextCollection::CreateForTesting(
       std::move(resource_contexts), std::move(all_context_types));
   return params;
 }
@@ -206,4 +203,4 @@ TEST_F(ResourceAttrQuerySchedulerTest, CallWithScheduler) {
   run_loop.Run();
 }
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace performance_manager::resource_attribution::internal

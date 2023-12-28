@@ -315,6 +315,37 @@ void MigrateOptInPrefToSyncSelectedTypes(PrefService* pref_service) {
   }
 }
 
+void MigrateDeclinedSaveOptInToExplicitOptOut(PrefService* pref_service) {
+  ScopedDictPrefUpdate opt_in_pref_update(
+      pref_service, syncer::prefs::internal::kSelectedTypesPerAccount);
+  for (auto [serialized_gaia_id_hash, settings] :
+       pref_service->GetDict(prefs::kAccountStoragePerAccountSettings)) {
+    // `settings` should be a dict but check to avoid a possible startup crash.
+    if (!settings.is_dict()) {
+      continue;
+    }
+    // Do nothing if there is no password store set or if there is already a
+    // value set for SyncUserSettings::GetSelectedTypes().
+    std::optional<int> default_store =
+        settings.GetDict().FindInt(kAccountStorageDefaultStoreKey);
+    std::optional<bool> opt_in =
+        opt_in_pref_update->EnsureDict(serialized_gaia_id_hash)
+            ->FindBool(syncer::prefs::internal::kSyncPasswords);
+    if (!default_store || opt_in.has_value()) {
+      continue;
+    }
+
+    // Set password storage in the sync user settings to false if the default
+    // store has been set to kProfileStore before, e.g. through declining when
+    // asked through a Reauth bubble whether to save passwords to the account.
+    if (PasswordStoreFromInt(*default_store) ==
+        PasswordForm::Store::kProfileStore) {
+      opt_in_pref_update->EnsureDict(serialized_gaia_id_hash)
+          ->Set(syncer::prefs::internal::kSyncPasswords, false);
+    }
+  }
+}
+
 // Note: See also password_manager_features_util_common.cc for shared
 // (cross-platform) and password_manager_features_util_mobile.cc for
 // mobile-specific implementations.

@@ -111,7 +111,7 @@ class ArcDiskQuotaBridge : public KeyedService, public mojom::DiskQuotaHost {
   void OnGetFreeDiskSpace(GetFreeDiskSpaceCallback callback,
                           std::optional<int64_t> reply);
 
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 
   AccountId account_id_;

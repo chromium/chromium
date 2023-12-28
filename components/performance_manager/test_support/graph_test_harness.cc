@@ -9,6 +9,11 @@
 
 namespace performance_manager {
 
+int NextTestFrameRoutingId() {
+  static int next_frame_routing_id_;
+  return ++next_frame_routing_id_;
+}
+
 RenderProcessHostId NextTestRenderProcessHostId() {
   static RenderProcessHostId::Generator id_generator;
   return id_generator.GenerateNextId();
@@ -28,7 +33,7 @@ TestNodeWrapper<FrameNodeImpl> TestGraphImpl::CreateFrameNodeAutoId(
     FrameNodeImpl* parent_frame_node) {
   return TestNodeWrapper<FrameNodeImpl>::Create(
       this, process_node, page_node, parent_frame_node,
-      /*outer_document_for_fenced_frame=*/nullptr, ++next_frame_routing_id_);
+      /*outer_document_for_fenced_frame=*/nullptr, NextTestFrameRoutingId());
 }
 
 TestNodeWrapper<ProcessNodeImpl> TestGraphImpl::CreateBrowserProcessNode() {

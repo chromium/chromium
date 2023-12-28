@@ -76,6 +76,8 @@ cargo_crate("cxxbridge") {
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
+  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
     "//third_party/rust/clap/v4:lib",
     "//third_party/rust/codespan_reporting/v0_11:lib",

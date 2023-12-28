@@ -65,6 +65,9 @@ bool ShouldShowIbanOnSettingsPage(const std::string& user_country_code,
 bool IsDeviceAuthAvailable(
     device_reauth::DeviceAuthenticator* device_authenticator);
 
+// Returns true if the Touch To Fill feature is supported by platform.
+bool IsTouchToFillCreditCardSupported();
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_EXPERIMENTS_H_

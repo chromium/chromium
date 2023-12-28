@@ -103,7 +103,7 @@ class ASH_EXPORT TabletModeMultitaskCueController
   void OnTimerFinished();
 
   // The app window that the cue is associated with.
-  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
+  raw_ptr<aura::Window> window_ = nullptr;
 
   // Handles showing the educational nudge for the tablet multitask menu.
   chromeos::MultitaskMenuNudgeController nudge_controller_;

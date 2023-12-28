@@ -24,6 +24,7 @@ namespace blink {
 
 class ExceptionState;
 class MLActivation;
+class MLArgMinMaxOptions;
 class MLBatchNormalizationOptions;
 class MLContext;
 class MLClampOptions;
@@ -41,6 +42,7 @@ class MLPadOptions;
 class MLPool2dOptions;
 class MLReduceOptions;
 class MLResample2dOptions;
+class MLSoftplusOptions;
 class MLSplitOptions;
 class MLTransposeOptions;
 class MLOperand;
@@ -80,6 +82,13 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                       ExceptionState& exception_state);
 
   // The order of operations declaration is the same as spec.
+  MLOperand* argMin(const MLOperand* input,
+                    const MLArgMinMaxOptions* options,
+                    ExceptionState& exception_state);
+  MLOperand* argMax(const MLOperand* input,
+                    const MLArgMinMaxOptions* options,
+                    ExceptionState& exception_state);
+
   MLOperand* batchNormalization(const MLOperand* input,
                                 const MLOperand* mean,
                                 const MLOperand* variance,
@@ -134,9 +143,15 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* greater(const MLOperand* a,
                      const MLOperand* b,
                      ExceptionState& exception_state);
+  MLOperand* greaterOrEqual(const MLOperand* a,
+                            const MLOperand* b,
+                            ExceptionState& exception_state);
   MLOperand* lesser(const MLOperand* a,
                     const MLOperand* b,
                     ExceptionState& exception_state);
+  MLOperand* lesserOrEqual(const MLOperand* a,
+                           const MLOperand* b,
+                           ExceptionState& exception_state);
 
   // Element-wise unary operations
   MLOperand* abs(const MLOperand* input, ExceptionState& exception_state);
@@ -279,6 +294,12 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
 
   MLOperand* softmax(const MLOperand* input, ExceptionState& exception_state);
   MLActivation* softmax(ExceptionState& exception_state);
+
+  MLOperand* softplus(const MLOperand* input,
+                      const MLSoftplusOptions* options,
+                      ExceptionState& exception_state);
+  MLActivation* softplus(const MLSoftplusOptions* options,
+                         ExceptionState& exception_state);
 
   MLOperand* softsign(const MLOperand* input, ExceptionState& exception_state);
   MLActivation* softsign(ExceptionState& exception_state);

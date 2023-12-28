@@ -84,6 +84,12 @@ struct NativeValueTraitsBase {
       std::is_pointer_v<ImplType> ||
       requires(ImplType value) { value.IsNull(); };
 
+  // This should only be true for certain subclasses of ScriptWrappable
+  // that satisfy the assumptions of CreateIDLSequenceFromV8ArraySlow() with
+  // regards to how NativeValue() is implemented for the underlying type.
+  static constexpr bool supports_scriptwrappable_specific_fast_array_iteration =
+      false;
+
   template <typename... ExtraArgs>
   static decltype(auto) ArgumentValue(v8::Isolate* isolate,
                                       int argument_index,

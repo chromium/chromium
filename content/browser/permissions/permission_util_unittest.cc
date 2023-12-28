@@ -58,10 +58,6 @@ TEST_F(PermissionUtilTest, TestInvalidDomainOverrideFeatureDisabled) {
       {}, nullptr, blink::mojom::PermissionDescriptor::New()));
 }
 TEST_F(PermissionUtilTest, TestInvalidDomainOverrideMultiRequest) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      blink::features::kStorageAccessAPIForOriginExtension);
-
   EXPECT_FALSE(PermissionUtil::ValidateDomainOverride(
       {blink::PermissionType::STORAGE_ACCESS_GRANT,
        blink::PermissionType::STORAGE_ACCESS_GRANT},
@@ -69,9 +65,6 @@ TEST_F(PermissionUtilTest, TestInvalidDomainOverrideMultiRequest) {
 }
 TEST_F(PermissionUtilTest, TestInvalidDomainOverrideNullRfh) {
   content::BrowserTaskEnvironment task_environment;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      blink::features::kStorageAccessAPIForOriginExtension);
 
   TestBrowserContext browser_context;
   RenderViewHostTestEnabler enabler;
@@ -90,9 +83,6 @@ TEST_F(PermissionUtilTest, TestInvalidDomainOverrideNullRfh) {
 
 TEST_F(PermissionUtilTest, TestValidDomainOverride) {
   content::BrowserTaskEnvironment task_environment;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      blink::features::kStorageAccessAPIForOriginExtension);
 
   TestBrowserContext browser_context;
   RenderViewHostTestEnabler enabler;
@@ -122,9 +112,6 @@ TEST_F(PermissionUtilTest, TestValidDomainOverride) {
 
 TEST_F(PermissionUtilTest, TestSameOriginInvalidDomainOverride) {
   content::BrowserTaskEnvironment task_environment;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      blink::features::kStorageAccessAPIForOriginExtension);
 
   TestBrowserContext browser_context;
   RenderViewHostTestEnabler enabler;

@@ -81,8 +81,7 @@ class FakeBluetoothAdapter
   bool connect_device_failure_ = false;
   bool get_device_returns_nullptr_ = false;
   bool connect_device_timeout_ = false;
-  raw_ptr<device::BluetoothDevice::PairingDelegate,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<device::BluetoothDevice::PairingDelegate, DanglingUntriaged>
       pairing_delegate_ = nullptr;
   device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
       hardware_offloading_status_ = device::BluetoothAdapter::

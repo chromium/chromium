@@ -5,6 +5,8 @@
 #ifndef NET_CERT_CT_POLICY_STATUS_H_
 #define NET_CERT_CT_POLICY_STATUS_H_
 
+#include "net/base/net_export.h"
+
 namespace net::ct {
 
 // Information about the connection's compliance with the CT policy. This value
@@ -27,6 +29,8 @@ enum class CTPolicyCompliance {
   CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE = 4,
   CT_POLICY_COUNT
 };
+
+NET_EXPORT const char* CTPolicyComplianceToString(CTPolicyCompliance status);
 
 }  // namespace net::ct
 

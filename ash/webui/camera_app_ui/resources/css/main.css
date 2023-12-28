@@ -433,28 +433,7 @@ body.mode-switching:not(.streaming) #camera-mode {
   visibility: visible;
 }
 
-body.doc-mode-reviewing #gallery-enter {
-  visibility: hidden;
-}
-
-#gallery-enter {
-  border: 2px var(--cros-sys-primary_container) solid;
-  height: calc(var(--big-icon) - 4px);
-  overflow: hidden;
-  width: calc(var(--big-icon) - 4px);
-}
-
-#gallery-enter>img {
-  height: 100%;
-  object-fit: cover;
-  width: 100%;
-}
-
-#gallery-enter>img:not(.draggable) {
-  pointer-events: none;
-}
-
-body:is(.taking.video, .should-handle-intent-result) #gallery-enter {
+body:is(.taking.video, .should-handle-intent-result, .doc-mode-reviewing) gallery-button {
   display: none;
 }
 

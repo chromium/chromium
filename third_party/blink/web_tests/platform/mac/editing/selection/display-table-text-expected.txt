@@ -7,7 +7,7 @@ layer at (0,0)
       LayoutTable {DIV} at (0,0) size 354.59x18
         LayoutTableSection (anonymous) at (0,0) size 354.59x18
           LayoutTableRow (anonymous) at (0,0) size 354.59x18
-            LayoutTableCell (anonymous) at (0,0) size 354.59x18 [r=0 c=0 rs=1 cs=1]
+            LayoutTableCell (anonymous, children-inline) at (0,0) size 354.59x18 [r=0 c=0 rs=1 cs=1]
               LayoutText {#text} at (0,0) size 355x18
                 text run at (0,0) width 355: "Only the third word in this sentence should be selected."
 selection start: position 9 of child 0 {#text} of child 1 {DIV} of body

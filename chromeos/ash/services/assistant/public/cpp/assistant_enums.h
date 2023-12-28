@@ -136,6 +136,22 @@ enum class LibassistantDlcLoadStatus {
   kMaxValue = kLoaded,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// If any value is added, please update enums.xml
+// Assistant.LauncherSearchIphQueryType.{SearchBox, AssistantPage}
+// Enumeration of the query types of the chip inside LauncherSearchIph.
+enum class LauncherSearchIphQueryType {
+  kWeather = 0,
+  kUnitConversion1 = 1,
+  kUnitConversion2 = 2,
+  kTranslation = 3,
+  kDefinition = 4,
+  kCalculation = 5,
+
+  kMaxValue = kCalculation,
+};
+
 }  // namespace ash::assistant
 
 // TODO(b/258750971): remove when internal assistant codes are migrated to

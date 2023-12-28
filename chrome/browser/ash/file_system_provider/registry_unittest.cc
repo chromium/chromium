@@ -24,8 +24,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 namespace {
 
 const char kTemporaryOrigin[] =
@@ -308,5 +307,4 @@ TEST_F(FileSystemProviderRegistryTest, UpdateWatcherTag) {
   EXPECT_EQ(fake_watcher_.last_tag, *last_tag);
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

@@ -528,10 +528,10 @@ TEST_F(NavigationRequestTest, SharedStorageWritable) {
       content::RenderFrameHostTester::For(main_rfh())->AppendFencedFrame());
   FrameTreeNode* fenced_frame_node =
       static_cast<RenderFrameHostImpl*>(fenced_frame_root)->frame_tree_node();
-  absl::optional<FencedFrameProperties> new_props =
-      fenced_frame_node->GetFencedFrameProperties();
-  new_props->effective_enabled_permissions.push_back(
+  FencedFrameConfig new_config = FencedFrameConfig(GURL("about:blank"));
+  new_config.AddEffectiveEnabledPermissionForTesting(
       blink::mojom::PermissionsPolicyFeature::kSharedStorage);
+  FencedFrameProperties new_props = FencedFrameProperties(new_config);
   fenced_frame_node->set_fenced_frame_properties(new_props);
   fenced_frame_root->ResetPermissionsPolicy();
 
@@ -742,7 +742,7 @@ TEST_F(NavigationRequestTest, StorageKeyToCommit) {
   NavigationRequest* request =
       NavigationRequest::From(navigation->GetNavigationHandle());
   EXPECT_TRUE(request->commit_params().storage_key.nonce().has_value());
-  EXPECT_EQ(child_document->GetMainFrame()->credentialless_iframes_nonce(),
+  EXPECT_EQ(child_document->GetPage().credentialless_iframes_nonce(),
             request->commit_params().storage_key.nonce().value());
 
   navigation->Commit();
@@ -751,7 +751,7 @@ TEST_F(NavigationRequestTest, StorageKeyToCommit) {
   EXPECT_TRUE(child_document->IsCredentialless());
   EXPECT_EQ(blink::StorageKey::CreateWithNonce(
                 url::Origin::Create(kUrl),
-                child_document->GetMainFrame()->credentialless_iframes_nonce()),
+                child_document->GetPage().credentialless_iframes_nonce()),
             child_document->GetStorageKey());
 }
 
@@ -902,12 +902,12 @@ TEST_F(NavigationRequestTest,
           GURL("https://example.com/navigation.html"), child_frame);
   navigation->ReadyToCommit();
 
-  EXPECT_EQ(main_test_rfh()->credentialless_iframes_nonce(),
+  EXPECT_EQ(main_test_rfh()->GetPage().credentialless_iframes_nonce(),
             static_cast<NavigationRequest*>(navigation->GetNavigationHandle())
                 ->isolation_info_for_subresources()
                 .network_isolation_key()
                 .GetNonce());
-  EXPECT_EQ(main_test_rfh()->credentialless_iframes_nonce(),
+  EXPECT_EQ(main_test_rfh()->GetPage().credentialless_iframes_nonce(),
             static_cast<NavigationRequest*>(navigation->GetNavigationHandle())
                 ->GetIsolationInfo()
                 .network_isolation_key()

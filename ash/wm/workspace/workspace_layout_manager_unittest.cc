@@ -8,7 +8,7 @@
 #include <string>
 #include <utility>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/constants/app_types.h"
@@ -35,8 +35,8 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
-#include "ash/system/message_center/ash_message_popup_collection.h"
-#include "ash/system/message_center/message_popup_animation_waiter.h"
+#include "ash/system/notification_center/ash_message_popup_collection.h"
+#include "ash/system/notification_center/message_popup_animation_waiter.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
@@ -171,8 +171,7 @@ class ScopedStickyKeyboardEnabler {
   }
 
  private:
-  raw_ptr<AccessibilityControllerImpl, ExperimentalAsh>
-      accessibility_controller_;
+  raw_ptr<AccessibilityController> accessibility_controller_;
   const bool enabled_;
 };
 
@@ -260,7 +259,7 @@ TEST_F(WorkspaceLayoutManagerTest, KeepRestoredWindowInDisplay) {
   EXPECT_GE(window->bounds().y(), 0);
 
   // Minimized -> Normal transition.
-  window->SetBounds(gfx::Rect(-100, -100, 130, 40));
+  window_state->SetBoundsDirectForTesting(gfx::Rect(-100, -100, 130, 40));
   window_state->Minimize();
   EXPECT_FALSE(
       Shell::GetPrimaryRootWindow()->bounds().Intersects(window->bounds()));
@@ -407,7 +406,7 @@ class DontClobberRestoreBoundsWindowObserver : public aura::WindowObserver {
   }
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 };
 
 // Creates a window, maximized the window and from within the maximized
@@ -491,7 +490,7 @@ TEST_F(WorkspaceLayoutManagerTest, WindowShouldBeOnScreenWhenAdded) {
   parent->RemoveChild(out_window.get());
   out_window->SetBounds(gfx::Rect(-200, -200, 200, 200));
   // UserHasChangedWindowPositionOrSize flag shouldn't turn off this behavior.
-  WindowState::Get(window.get())->set_bounds_changed_by_user(true);
+  WindowState::Get(window.get())->SetBoundsChangedByUser(true);
   parent->AddChild(out_window.get());
   EXPECT_GT(bounds.width(), out_window->bounds().width() * 0.29);
   EXPECT_GT(bounds.height(), out_window->bounds().height() * 0.29);
@@ -1200,7 +1199,7 @@ class FocusDuringUnminimizeWindowObserver : public aura::WindowObserver {
   }
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
   ui::WindowShowState show_state_;
 };
 
@@ -1636,7 +1635,7 @@ class WorkspaceLayoutManagerBackdropTest : public AshTestBase {
 
  private:
   // The default container.
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> default_container_;
+  raw_ptr<aura::Window, DanglingUntriaged> default_container_;
 };
 
 constexpr std::optional<Sound> kNoSoundKey = std::nullopt;
@@ -1972,7 +1971,7 @@ TEST_F(WorkspaceLayoutManagerBackdropTest,
 TEST_F(WorkspaceLayoutManagerBackdropTest, SpokenFeedbackFullscreenBackground) {
   WorkspaceController* wc = ShellTestApi().workspace_controller();
   WorkspaceControllerTestApi test_helper(wc);
-  AccessibilityControllerImpl* controller =
+  AccessibilityController* controller =
       Shell::Get()->accessibility_controller();
   TestAccessibilityControllerClient client;
 
@@ -2084,8 +2083,7 @@ class WorkspaceLayoutManagerKeyboardTest : public AshTestBase {
  private:
   gfx::Insets restore_work_area_insets_;
   gfx::Rect keyboard_bounds_;
-  raw_ptr<WorkspaceLayoutManager, DanglingUntriaged | ExperimentalAsh>
-      layout_manager_;
+  raw_ptr<WorkspaceLayoutManager, DanglingUntriaged> layout_manager_;
 };
 
 // Tests that when a child window gains focus the top level window containing it
@@ -2250,7 +2248,7 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
   // Test that backdrop window is visible and is the second child in the
   // container. Its bounds should be the same as the container bounds.
   EXPECT_EQ(2U, default_container()->children().size());
-  for (auto* child : default_container()->children()) {
+  for (aura::Window* child : default_container()->children()) {
     EXPECT_TRUE(child->IsVisible());
   }
 
@@ -2299,7 +2297,7 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
   split_view_controller()->SnapWindow(window2.get(), SnapPosition::kSecondary);
 
   EXPECT_EQ(4U, default_container()->children().size());
-  for (auto* child : default_container()->children()) {
+  for (aura::Window* child : default_container()->children()) {
     EXPECT_TRUE(child->IsVisible());
   }
 

@@ -146,15 +146,22 @@ template("chrome_bundle") {
         parent_module_target = ":${_bundle_target_name}__chrome_bundle_module"
       }
 
+      if (android_64bit_target_cpu) {
+        _version_code_offset = chrome_32_version_code
+      } else {
+        _version_code_offset = chrome_version_code
+      }
+      not_needed([ _version_code_offset ])
+
       if (defined(invoker.expected_android_manifest_template)) {
-        expected_android_manifest_version_code_offset = chrome_version_code
+        expected_android_manifest_version_code_offset = _version_code_offset
         expected_android_manifest =
             string_replace(invoker.expected_android_manifest_template,
                            "SPLIT_NAME",
                            _module_desc.name)
       }
       if (defined(invoker.expected_android_manifest_base_template)) {
-        expected_android_manifest_version_code_offset = chrome_version_code
+        expected_android_manifest_version_code_offset = _version_code_offset
         if (defined(_module_desc.ignore_base_manifest_expectations) &&
             _module_desc.ignore_base_manifest_expectations) {
           # Remove ".diff" since it's not actually a diff.

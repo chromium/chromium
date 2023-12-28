@@ -33,9 +33,9 @@ class LockedTpmMessageView : public views::View {
   views::Label* CreateLabel();
 
   base::TimeDelta prev_time_left_;
-  raw_ptr<views::Label, ExperimentalAsh> message_warning_;
-  raw_ptr<views::Label, ExperimentalAsh> message_description_;
-  raw_ptr<views::ImageView, ExperimentalAsh> message_icon_;
+  raw_ptr<views::Label> message_warning_;
+  raw_ptr<views::Label> message_description_;
+  raw_ptr<views::ImageView> message_icon_;
 };
 
 }  // namespace ash

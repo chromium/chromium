@@ -50,6 +50,7 @@ void SignalHandler::Initialize(
 
 void SignalHandler::TearDown() {
   if (histogram_signal_handler_) {
+    signal_filter_processor_.reset();
     history_service_observer_.reset();
   }
 }

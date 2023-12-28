@@ -129,24 +129,26 @@ declare global {
       export function duplicate(tabId: number, callback: (tab: Tab) => void):
           void;
 
-      export function query(queryInfo: {
-        active?: boolean,
-        pinned?: boolean,
-        audible?: boolean,
-        muted?: boolean,
-        highlighted?: boolean,
-        discarded?: boolean,
-        autoDiscardable?: boolean,
-        currentWindow?: boolean,
-        lastFocusedWindow?: boolean,
-        status?: TabStatus,
-        title?: string,
-        url?: string|string[],
-        groupId?: number,
-        windowId?: number,
-        windowType?: WindowType,
-        index?: number,
-      }): Promise<Tab[]>;
+      export function query(
+          queryInfo: {
+            active?: boolean,
+            pinned?: boolean,
+            audible?: boolean,
+            muted?: boolean,
+            highlighted?: boolean,
+            discarded?: boolean,
+            autoDiscardable?: boolean,
+            currentWindow?: boolean,
+            lastFocusedWindow?: boolean,
+            status?: TabStatus,
+            title?: string,
+            url?: string|string[],
+            groupId?: number,
+            windowId?: number,
+            windowType?: WindowType,
+            index?: number,
+          },
+          callback: (tabs: Tab[]) => void): void;
 
       export function highlight(highlightInfo: {
         windowId?: number, tabs: number[]|number,

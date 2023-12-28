@@ -399,7 +399,7 @@ class TestWallpaperControllerObserver : public WallpaperControllerObserver {
   }
 
  private:
-  raw_ptr<WallpaperController, ExperimentalAsh> controller_;
+  raw_ptr<WallpaperController> controller_;
 
   base::RepeatingClosure resize_callback_;
   base::RepeatingClosure colors_calculated_callback_;
@@ -888,10 +888,9 @@ class WallpaperControllerTestBase : public AshTestBase {
     return base::Time();
   }
 
-  raw_ptr<WallpaperControllerImpl, DanglingUntriaged | ExperimentalAsh>
-      controller_;
-  raw_ptr<WallpaperPrefManager, DanglingUntriaged | ExperimentalAsh>
-      pref_manager_ = nullptr;  // owned by controller
+  raw_ptr<WallpaperControllerImpl, DanglingUntriaged> controller_;
+  raw_ptr<WallpaperPrefManager, DanglingUntriaged> pref_manager_ =
+      nullptr;  // owned by controller
 
   base::ScopedTempDir user_data_dir_;
   base::ScopedTempDir online_wallpaper_dir_;
@@ -2109,7 +2108,8 @@ TEST_P(WallpaperControllerTest, ShowSeaPenWallpaperOnLogin) {
       /*max_deviation=*/1));
 }
 
-TEST_P(WallpaperControllerTest, SetSeaPenWallpaperFromFile) {
+// TODO(https://crbug.com/1511896): Flaky on linux-chromeos-rel.
+TEST_P(WallpaperControllerTest, DISABLED_SetSeaPenWallpaperFromFile) {
   SimulateUserLogin(kAccountId1);
   TestWallpaperControllerObserver observer(controller_);
 
@@ -2431,6 +2431,23 @@ TEST_P(WallpaperControllerTest, SetDefaultWallpaperCallbackTiming) {
   loop.Run();
   // Wallpaper observer should have been notified of wallpaper change.
   EXPECT_EQ(1, observer.wallpaper_changed_count());
+}
+
+TEST_P(WallpaperControllerTest, DeleteRecentSeaPenImage) {
+  SimulateUserLogin(kAccountId1);
+  TestWallpaperControllerObserver observer(controller_);
+
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path = scoped_temp_dir.GetPath().Append("111.jpg");
+  ASSERT_TRUE(base::WriteFile(file_path, "test data"));
+
+  base::test::TestFuture<bool> delete_sea_pen_image_future;
+  controller_->DeleteRecentSeaPenImage(
+      kAccountId1, file_path, delete_sea_pen_image_future.GetCallback());
+
+  EXPECT_TRUE(delete_sea_pen_image_future.Get());
+  EXPECT_FALSE(base::PathExists(file_path));
 }
 
 TEST_P(WallpaperControllerTest, IgnoreWallpaperRequestInKioskMode) {

@@ -48,7 +48,7 @@ std::unique_ptr<base::trace_event::TracedValue> ThreatMetadata::ToTracedValue()
   }
   value->EndDictionary();
 
-  value->SetString("popuplation_id", population_id);
+  value->SetString("population_id", population_id);
   return value;
 }
 

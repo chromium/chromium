@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/chrome_app_list_item_manager.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/test/fake_app_list_model_updater.h"
 #include "components/crx_file/id_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,7 +25,8 @@ class ChromeAppListItemManagerTest : public testing::Test {
   ~ChromeAppListItemManagerTest() override = default;
 
  protected:
-  const std::map<std::string, std::vector<ChromeAppListItem*>>&
+  const std::map<std::string,
+                 std::vector<raw_ptr<ChromeAppListItem, VectorExperimental>>>&
   folder_item_mapping() {
     return item_manager_.folder_item_mappings_;
   }
@@ -46,7 +48,7 @@ TEST_F(ChromeAppListItemManagerTest, AddItemsWithValidPosition) {
   item_manager_.AddChromeItem(std::move(folder));
 
   EXPECT_EQ(1u, folder_item_mapping().size());
-  const std::vector<ChromeAppListItem*>& children =
+  const std::vector<raw_ptr<ChromeAppListItem, VectorExperimental>>& children =
       folder_item_mapping().find(kFolderId)->second;
   EXPECT_EQ(0u, children.size());
 
@@ -137,7 +139,7 @@ TEST_F(ChromeAppListItemManagerTest, AddItemsWithInvalidPosition) {
   item_manager_.AddChromeItem(std::move(child3));
 
   // Verify the children order after adding.
-  const std::vector<ChromeAppListItem*>& children =
+  const std::vector<raw_ptr<ChromeAppListItem, VectorExperimental>>& children =
       folder_item_mapping().find(kFolderId)->second;
   EXPECT_EQ(3u, children.size());
   EXPECT_EQ("A", children[0]->name());

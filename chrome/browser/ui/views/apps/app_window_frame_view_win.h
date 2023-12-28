@@ -13,8 +13,9 @@
 
 // A Windows app window frame view.
 class AppWindowFrameViewWin : public views::NonClientFrameView {
+  METADATA_HEADER(AppWindowFrameViewWin, views::NonClientFrameView)
+
  public:
-  METADATA_HEADER(AppWindowFrameViewWin);
   explicit AppWindowFrameViewWin(views::Widget* widget);
   AppWindowFrameViewWin(const AppWindowFrameViewWin&) = delete;
   AppWindowFrameViewWin& operator=(const AppWindowFrameViewWin&) = delete;

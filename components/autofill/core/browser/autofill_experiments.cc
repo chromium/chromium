@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/autofill_experiments.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -50,7 +51,7 @@
 namespace autofill {
 namespace {
 
-void LogCardUploadDisabled(LogManager* log_manager, base::StringPiece context) {
+void LogCardUploadDisabled(LogManager* log_manager, std::string_view context) {
   LOG_AF(log_manager) << LoggingScope::kCreditCardUploadStatus
                       << LogMessage::kCreditCardUploadDisabled << context
                       << CTag{};
@@ -256,6 +257,14 @@ bool IsDeviceAuthAvailable(
   return device_authenticator->CanAuthenticateWithBiometricOrScreenLock() &&
          base::FeatureList::IsEnabled(
              features::kAutofillEnablePaymentsMandatoryReauth);
+#else
+  return false;
+#endif
+}
+bool IsTouchToFillCreditCardSupported() {
+#if BUILDFLAG(IS_ANDROID)
+  // Touch To Fill is only supported on Android.
+  return true;
 #else
   return false;
 #endif

@@ -35,8 +35,8 @@ import zlib
 # https://chromium.googlesource.com/chromium/src/+/main/docs/updating_clang.md
 # Reverting problematic clang rolls is safe, though.
 # This is the output of `git describe` and is usable as a commit-ish.
-CLANG_REVISION = 'llvmorg-18-init-12938-geb1d5065'
-CLANG_SUB_REVISION = 1
+CLANG_REVISION = 'llvmorg-18-init-14420-gea3a3b25'
+CLANG_SUB_REVISION = 3
 
 PACKAGE_VERSION = '%s-%s' % (CLANG_REVISION, CLANG_SUB_REVISION)
 RELEASE_VERSION = '18'

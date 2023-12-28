@@ -58,6 +58,7 @@ class SearchEngineChoiceServiceTest : public BrowserWithTestWindowTest {
   std::unique_ptr<base::AutoReset<bool>> scoped_chrome_build_override_;
 };
 
+#if !BUILDFLAG(CHROME_FOR_TESTING)
 TEST_F(SearchEngineChoiceServiceTest, HandleLearnMoreLinkClicked) {
   SearchEngineChoiceService* search_engine_choice_service =
       SearchEngineChoiceServiceFactory::GetForProfile(profile());
@@ -128,3 +129,10 @@ TEST_F(SearchEngineChoiceServiceTest, NotifyChoiceMade) {
           kProfileCreationDefaultWasSet,
       1);
 }
+#else
+TEST_F(SearchEngineChoiceServiceTest, ServiceNotInitializedInChromeForTesting) {
+  SearchEngineChoiceService* search_engine_choice_service =
+      SearchEngineChoiceServiceFactory::GetForProfile(profile());
+  ASSERT_EQ(search_engine_choice_service, nullptr);
+}
+#endif

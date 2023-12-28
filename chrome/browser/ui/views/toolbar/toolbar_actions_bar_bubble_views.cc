@@ -195,6 +195,6 @@ void ToolbarActionsBarBubbleViews::OnWidgetVisibilityChanged(
       base::BindOnce(&views::Widget::Close, base::Unretained(GetWidget())));
 }
 
-BEGIN_METADATA(ToolbarActionsBarBubbleViews, views::BubbleDialogDelegateView)
+BEGIN_METADATA(ToolbarActionsBarBubbleViews)
 ADD_READONLY_PROPERTY_METADATA(std::string, AnchorActionId)
 END_METADATA

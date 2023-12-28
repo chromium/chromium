@@ -199,7 +199,6 @@ void HelpAppZeroStateProvider::OnLoadIcon(apps::IconValuePtr icon_value) {
 void HelpAppZeroStateProvider::LoadIcon() {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   proxy->LoadIcon(
-      proxy->AppRegistryCache().GetAppType(web_app::kHelpAppId),
       web_app::kHelpAppId, apps::IconType::kStandard,
       ash::SharedAppListConfig::instance().suggestion_chip_icon_dimension(),
       /*allow_placeholder_icon=*/false,

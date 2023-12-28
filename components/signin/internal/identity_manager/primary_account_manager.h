@@ -214,6 +214,13 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // ProfileOAuth2TokenServiceObserver:
   void OnRefreshTokensLoaded() override;
 
+  // Sets the value for `pref::kExplicitBrowserSignin` pref based on the access
+  // point when signing in.
+  void ComputeExplicitBrowserSignin(
+      const signin::PrimaryAccountChangeEvent& event_details,
+      const absl::variant<signin_metrics::AccessPoint,
+                          signin_metrics::ProfileSignout>& event_source);
+
   // Returns the primary account. Crashes if it is called before the primary
   // account was initialized.
   const PrimaryAccount& GetPrimaryAccount() const;

@@ -5,9 +5,11 @@
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
 
 #include <memory>
+
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
@@ -34,6 +36,7 @@
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -96,6 +99,7 @@ class BodyStreamBufferTest : public testing::Test,
   }
 
  private:
+  test::TaskEnvironment task_environment;
   ScopedByobFetchForTest byob_fetch_feature_;
 };
 
@@ -663,7 +667,9 @@ TEST_P(BodyStreamBufferTest, NestedPull) {
       scope.GetScriptState()->GetContext()->Global()->CreateDataProperty(
           scope.GetScriptState()->GetContext(),
           V8String(scope.GetIsolate(), "stream"),
-          ToV8(buffer->Stream(), scope.GetScriptState()));
+          ToV8Traits<ReadableStream>::ToV8(scope.GetScriptState(),
+                                           buffer->Stream())
+              .ToLocalChecked());
 
   ASSERT_TRUE(result.IsJust());
   ASSERT_TRUE(result.FromJust());

@@ -32,8 +32,4 @@ void StructuredMetricsWatcher::OnProfileAdded(
   /* Do nothing */
 }
 
-void StructuredMetricsWatcher::OnReportingStateChanged(bool enabled) {
-  /* Do nothing */
-}
-
 }  // namespace metrics::structured

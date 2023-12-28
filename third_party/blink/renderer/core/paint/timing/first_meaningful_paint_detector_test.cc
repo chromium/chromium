@@ -13,6 +13,10 @@
 namespace blink {
 
 class FirstMeaningfulPaintDetectorTest : public PageTestBase {
+ public:
+  FirstMeaningfulPaintDetectorTest()
+      : PageTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
  protected:
   void SetUp() override {
     EnablePlatform();

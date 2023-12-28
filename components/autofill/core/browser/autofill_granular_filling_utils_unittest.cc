@@ -14,13 +14,13 @@ TEST(
     AreFieldsGranularFillingGroup_ReturnsTrueWhenFieldsMatchAGroupFillingGroup) {
   // Test `FieldTypeGroup::kName` fields.
   EXPECT_TRUE(AreFieldsGranularFillingGroup(
-      GetServerFieldTypesOfGroup(FieldTypeGroup::kName)));
+      GetFieldTypesOfGroup(FieldTypeGroup::kName)));
   // Test `FieldTypeGroup::kPhone` fields.
   EXPECT_TRUE(AreFieldsGranularFillingGroup(
-      GetServerFieldTypesOfGroup(FieldTypeGroup::kPhone)));
+      GetFieldTypesOfGroup(FieldTypeGroup::kPhone)));
   // Test `FieldTypeGroup::kEmail` fields.
   EXPECT_TRUE(AreFieldsGranularFillingGroup(
-      GetServerFieldTypesOfGroup(FieldTypeGroup::kEmail)));
+      GetFieldTypesOfGroup(FieldTypeGroup::kEmail)));
   // Tests address fields, which in the context of granular filling
   // are both `FieldTypeGroup::kAddress` and `FieldTypeGroup::kCompany` fields.
   EXPECT_TRUE(AreFieldsGranularFillingGroup(GetAddressFieldsForGroupFilling()));
@@ -32,7 +32,7 @@ TEST(
 TEST(AutofillGranularFillingUtilsTest,
      AreFieldsGranularFillingGroup_ReturnsFalseForAutofillAddressFieldsOnly) {
   EXPECT_FALSE(AreFieldsGranularFillingGroup(
-      GetServerFieldTypesOfGroup(FieldTypeGroup::kAddress)));
+      GetFieldTypesOfGroup(FieldTypeGroup::kAddress)));
 }
 
 TEST(
@@ -40,7 +40,7 @@ TEST(
     GetTargetServerFieldsForTypeAndLastTargetedFields_SingleField_ReturnsTriggeringFieldType) {
   EXPECT_EQ(GetTargetServerFieldsForTypeAndLastTargetedFields(
                 {ADDRESS_HOME_LINE1}, NAME_FIRST),
-            ServerFieldTypeSet({NAME_FIRST}));
+            FieldTypeSet({NAME_FIRST}));
 }
 
 // The test below asserts that when the last targeted fields match
@@ -54,19 +54,19 @@ TEST(
   EXPECT_EQ(GetTargetServerFieldsForTypeAndLastTargetedFields(
                 GetAddressFieldsForGroupFilling(),
                 /*triggering_field_type=*/NAME_FIRST),
-            GetServerFieldTypesOfGroup(FieldTypeGroup::kName));
+            GetFieldTypesOfGroup(FieldTypeGroup::kName));
 
   //`FieldTypeGroup::kCompany` triggering field.
   // Note that `FieldTypeGroup::kCompany` behaves the same as
   // `FieldTypeGroup::kAddress`.
   EXPECT_EQ(GetTargetServerFieldsForTypeAndLastTargetedFields(
-                GetServerFieldTypesOfGroup(FieldTypeGroup::kName),
+                GetFieldTypesOfGroup(FieldTypeGroup::kName),
                 /*triggering_field_type=*/COMPANY_NAME),
             GetAddressFieldsForGroupFilling());
 
   //`FieldTypeGroup::kAddress` triggering field.
   EXPECT_EQ(GetTargetServerFieldsForTypeAndLastTargetedFields(
-                GetServerFieldTypesOfGroup(FieldTypeGroup::kName),
+                GetFieldTypesOfGroup(FieldTypeGroup::kName),
                 /*triggering_field_type=*/ADDRESS_HOME_LINE1),
             GetAddressFieldsForGroupFilling());
 
@@ -74,7 +74,7 @@ TEST(
   EXPECT_EQ(GetTargetServerFieldsForTypeAndLastTargetedFields(
                 GetAddressFieldsForGroupFilling(),
                 /*triggering_field_type=*/EMAIL_ADDRESS),
-            GetServerFieldTypesOfGroup(FieldTypeGroup::kEmail));
+            GetFieldTypesOfGroup(FieldTypeGroup::kEmail));
 }
 
 TEST(
@@ -86,19 +86,19 @@ TEST(
   // filling.
   EXPECT_EQ(GetTargetServerFieldsForTypeAndLastTargetedFields(
                 GetAddressFieldsForGroupFilling(), CREDIT_CARD_NAME_FULL),
-            kAllServerFieldTypes);
+            kAllFieldTypes);
 }
 
 TEST(
     AutofillGranularFillingUtilsTest,
     GetTargetServerFieldsForTypeAndLastTargetedFields_AllServerTypes_ReturnsAllServerTypes) {
   // Regardless of the triggering field, if the last targeted fields were
-  // kAllServerFieldTypes, i.e full form, we will also return
-  // kAllServerFieldTypes, so that the user stays in the full form granularity
+  // kAllFieldTypes, i.e full form, we will also return
+  // kAllFieldTypes, so that the user stays in the full form granularity
   // level.
-  EXPECT_EQ(GetTargetServerFieldsForTypeAndLastTargetedFields(
-                kAllServerFieldTypes, NAME_FIRST),
-            kAllServerFieldTypes);
+  EXPECT_EQ(GetTargetServerFieldsForTypeAndLastTargetedFields(kAllFieldTypes,
+                                                              NAME_FIRST),
+            kAllFieldTypes);
 }
 
 }  // namespace autofill

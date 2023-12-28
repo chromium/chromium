@@ -87,7 +87,7 @@ bool InfoBarContainerView::IsEmpty() const {
 }
 
 void InfoBarContainerView::Layout() {
-  const auto set_bounds = [this](int top, auto* child) {
+  const auto set_bounds = [this](int top, View* child) {
     const int height = static_cast<InfoBarView*>(child)->computed_height();
     // Do not add separator dip if it's the first infobar. The first infobar
     // should be flush with the top of InfoBarContainerView.
@@ -115,7 +115,7 @@ void InfoBarContainerView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 gfx::Size InfoBarContainerView::CalculatePreferredSize() const {
-  const auto enlarge_size = [this](const gfx::Size& size, const auto* child) {
+  const auto enlarge_size = [this](const gfx::Size& size, const View* child) {
     const gfx::Size child_size = child->GetPreferredSize();
     int add_separator_height =
         (child == children().front()) ? 0 : kSeparatorHeightDip;

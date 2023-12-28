@@ -103,7 +103,7 @@ class ASH_EXPORT FrameThrottlingController final
   // If the |requested_frame_interval| is zero, the default throttled frame rate
   // is used internally.
   void StartThrottling(
-      const std::vector<aura::Window*>& windows,
+      const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows,
       base::TimeDelta requested_frame_interval = base::TimeDelta());
 
   // Ends throttling of all windows specified via StartThrottling(). The
@@ -164,8 +164,7 @@ class ASH_EXPORT FrameThrottlingController final
 
   void ResetThrottleCandidates(ThrottleCandidates* candidates);
 
-  const raw_ptr<viz::HostFrameSinkManager, ExperimentalAsh>
-      host_frame_sink_manager_;
+  const raw_ptr<viz::HostFrameSinkManager> host_frame_sink_manager_;
   base::ObserverList<FrameThrottlingObserver> arc_observers_;
 
   // Maps aura::WindowTreeHost* to a set of FrameSinkIds to be throttled.

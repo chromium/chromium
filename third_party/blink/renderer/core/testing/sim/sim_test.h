@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SIM_SIM_TEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SIM_SIM_TEST_H_
 
+#include <optional>
+
 #include <gtest/gtest.h>
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
@@ -23,7 +25,8 @@ class LocalDOMWindow;
 
 class SimTest : public testing::Test {
  protected:
-  SimTest();
+  explicit SimTest(std::optional<base::test::TaskEnvironment::TimeSource>
+                       time_source = std::nullopt);
   ~SimTest() override;
 
   void SetUp() override;
@@ -76,10 +79,10 @@ class SimTest : public testing::Test {
       bool is_for_scalable_page);
 
   void SetPreferCompositingToLCDText(bool enabled);
+  test::TaskEnvironment& task_environment() { return task_environment_; }
 
  private:
-  test::TaskEnvironment task_environment_{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment_;
   // These are unique_ptrs in order to destroy them in TearDown. Subclasses
   // may override Platform::Current() and these must shutdown before the
   // subclass destructor.

@@ -152,7 +152,8 @@ class AURA_EXPORT Env : public ui::EventTarget {
     cursor_shape_client_ = cursor_shape_client;
   }
 
-  const std::vector<aura::WindowTreeHost*>& window_tree_hosts() const {
+  const std::vector<raw_ptr<aura::WindowTreeHost, VectorExperimental>>&
+  window_tree_hosts() const {
     return window_tree_hosts_;
   }
 
@@ -218,7 +219,8 @@ class AURA_EXPORT Env : public ui::EventTarget {
 
   std::unique_ptr<WindowOcclusionTracker> window_occlusion_tracker_;
 
-  std::vector<aura::WindowTreeHost*> window_tree_hosts_;
+  std::vector<raw_ptr<aura::WindowTreeHost, VectorExperimental>>
+      window_tree_hosts_;
 
   // Touch points. The `target` window may be stale and should not be accessed
   // other than looking up purpose.

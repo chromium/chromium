@@ -81,13 +81,13 @@ public class ContentSettingsResources {
 
         private int getEnabledSummary() {
             return mEnabledSummary == 0
-                    ? getCategorySummary(mDefaultEnabledValue)
+                    ? getCategorySummary(mDefaultEnabledValue, /* isOneTime= */ false)
                     : mEnabledSummary;
         }
 
         private int getDisabledSummary() {
             return mDisabledSummary == 0
-                    ? getCategorySummary(mDefaultDisabledValue)
+                    ? getCategorySummary(mDefaultDisabledValue, /* isOneTime= */ false)
                     : mDisabledSummary;
         }
 
@@ -602,12 +602,16 @@ public class ContentSettingsResources {
 
     /**
      * Returns the string resource id for a given ContentSetting to show with a permission category.
+     *
      * @param value The ContentSetting for which we want the resource.
+     * @param isOneTime Whether the content setting value has a OneTime session model.
      */
-    public static int getCategorySummary(@ContentSettingValues int value) {
+    public static int getCategorySummary(@ContentSettingValues int value, boolean isOneTime) {
         switch (value) {
             case ContentSettingValues.ALLOW:
-                return R.string.website_settings_category_allowed;
+                return isOneTime
+                        ? R.string.website_settings_category_allowed_this_time
+                        : R.string.website_settings_category_allowed;
             case ContentSettingValues.BLOCK:
                 return R.string.website_settings_category_blocked;
             case ContentSettingValues.ASK:
@@ -615,17 +619,6 @@ public class ContentSettingsResources {
             default:
                 return 0;
         }
-    }
-
-    /**
-     * Returns the string resource id for a content type to show with a permission category.
-     * @param enabled Whether the content type is enabled.
-     */
-    public static int getCategorySummary(int contentType, boolean enabled) {
-        return getCategorySummary(
-                enabled
-                        ? getDefaultEnabledValue(contentType)
-                        : getDefaultDisabledValue(contentType));
     }
 
     /**

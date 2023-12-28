@@ -52,7 +52,8 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
                absl::optional<types::ByteRange> byte_range,
                absl::optional<types::DecimalInteger> bitrate,
                bool has_discontinuity,
-               bool is_gap);
+               bool is_gap,
+               bool has_new_init_segment);
   MediaSegment(const MediaSegment&) = delete;
   MediaSegment(MediaSegment&&) = delete;
   MediaSegment& operator=(const MediaSegment&) = delete;
@@ -83,6 +84,10 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
     return initialization_segment_;
   }
 
+  // Returns whether this MediaSegment has a different InitializationSegment
+  // than the MediaSegment which immediately preceded this.
+  bool HasNewInitSegment() const { return has_new_init_segment_; }
+
   // If this media segment is a subrange of its resource, this indicates the
   // range.
   absl::optional<types::ByteRange> GetByteRange() const { return byte_range_; }
@@ -112,6 +117,7 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
   absl::optional<types::DecimalInteger> bitrate_;
   bool has_discontinuity_;
   bool is_gap_;
+  bool has_new_init_segment_;
 };
 
 }  // namespace media::hls

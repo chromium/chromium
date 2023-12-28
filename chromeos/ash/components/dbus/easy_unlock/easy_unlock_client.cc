@@ -39,8 +39,7 @@ std::string PopResponseData(dbus::MessageReader* reader) {
 // Converts string to array of bytes and writes it using dbus meddage writer.
 void AppendStringAsByteArray(const std::string& data,
                              dbus::MessageWriter* writer) {
-  writer->AppendArrayOfBytes(reinterpret_cast<const uint8_t*>(data.data()),
-                             data.length());
+  writer->AppendArrayOfBytes(base::as_byte_span(data));
 }
 
 // The EasyUnlockClient used in production.

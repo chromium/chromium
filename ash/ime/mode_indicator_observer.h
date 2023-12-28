@@ -31,7 +31,7 @@ class ModeIndicatorObserver : public views::WidgetObserver {
   void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
-  raw_ptr<views::Widget, ExperimentalAsh> active_widget_;
+  raw_ptr<views::Widget> active_widget_;
 };
 
 }  // namespace ash

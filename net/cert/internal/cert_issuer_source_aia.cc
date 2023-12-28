@@ -76,8 +76,7 @@ bool ParseCertFromPem(const uint8_t* data,
   if (!pem_tokenizer.GetNext())
     return false;
 
-  return ParseCertFromDer(base::as_bytes(base::make_span(pem_tokenizer.data())),
-                          results);
+  return ParseCertFromDer(base::as_byte_span(pem_tokenizer.data()), results);
 }
 
 class AiaRequest : public bssl::CertIssuerSource::Request {

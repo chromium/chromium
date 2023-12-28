@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
+#include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/containers/flat_set.h"
 #include "base/ranges/algorithm.h"
@@ -16,6 +17,7 @@
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash::settings {
@@ -565,6 +567,23 @@ void InputDeviceSettingsProvider::GetActionsForMouseButtonCustomization(
         l10n_util::GetStringUTF8(choice.id)));
   }
   std::move(callback).Run(std::move(choices));
+}
+
+void InputDeviceSettingsProvider::HasLauncherButton(
+    HasLauncherButtonCallback callback) {
+  DCHECK(features::IsInputDeviceSettingsSplitEnabled());
+  DCHECK(InputDeviceSettingsController::Get());
+
+  auto keyboards =
+      InputDeviceSettingsController::Get()->GetConnectedKeyboards();
+  for (const ::ash::mojom::KeyboardPtr& keyboard : keyboards) {
+    if (keyboard->meta_key == ::ash::mojom::MetaKey::kLauncher) {
+      std::move(callback).Run(true);
+      return;
+    }
+  }
+
+  std::move(callback).Run(/*has_launcher_button=*/false);
 }
 
 }  // namespace ash::settings

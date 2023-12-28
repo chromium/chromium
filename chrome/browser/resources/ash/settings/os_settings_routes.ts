@@ -184,6 +184,7 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   ONE_DRIVE: Route;
   OS_ACCESSIBILITY: Route;
   OS_LANGUAGES: Route;
+  OS_LANGUAGES_APP_LANGUAGES: Route;
   OS_LANGUAGES_EDIT_DICTIONARY: Route;
   OS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY: Route;
   OS_LANGUAGES_INPUT: Route;
@@ -533,12 +534,9 @@ export function createRoutes(): OsSettingsRoutes {
 
     // Files subpages.
     if (!isGuest()) {
-      if (loadTimeData.getBoolean('showGoogleDriveSettingsPage') ||
-          loadTimeData.getBoolean('enableDriveFsBulkPinning')) {
-        r.GOOGLE_DRIVE = createSubpage(
-            r.SYSTEM_PREFERENCES, routesMojom.GOOGLE_DRIVE_SUBPAGE_PATH,
-            Subpage.kGoogleDrive);
-      }
+      r.GOOGLE_DRIVE = createSubpage(
+          r.SYSTEM_PREFERENCES, routesMojom.GOOGLE_DRIVE_SUBPAGE_PATH,
+          Subpage.kGoogleDrive);
       if (loadTimeData.getBoolean('showOfficeSettings')) {
         r.OFFICE = createSubpage(
             r.SYSTEM_PREFERENCES, routesMojom.OFFICE_FILES_SUBPAGE_PATH,
@@ -556,6 +554,11 @@ export function createRoutes(): OsSettingsRoutes {
     r.OS_LANGUAGES_LANGUAGES = createSubpage(
         r.SYSTEM_PREFERENCES, routesMojom.LANGUAGES_SUBPAGE_PATH,
         Subpage.kLanguages);
+    if (loadTimeData.getBoolean('isPerAppLanguageEnabled')) {
+      r.OS_LANGUAGES_APP_LANGUAGES = createSubpage(
+          r.OS_LANGUAGES_LANGUAGES, routesMojom.APP_LANGUAGES_SUBPAGE_PATH,
+          Subpage.kAppLanguages);
+    }
 
     // Search and Assistant subpages.
     r.SEARCH_SUBPAGE = createSubpage(
@@ -621,12 +624,8 @@ export function createRoutes(): OsSettingsRoutes {
     if (!isGuest()) {
       r.FILES = createSection(
           r.ADVANCED, routesMojom.FILES_SECTION_PATH, Section.kFiles);
-      if (loadTimeData.getBoolean('showGoogleDriveSettingsPage') ||
-          loadTimeData.getBoolean('enableDriveFsBulkPinning')) {
-        r.GOOGLE_DRIVE = createSubpage(
-            r.FILES, routesMojom.GOOGLE_DRIVE_SUBPAGE_PATH,
-            Subpage.kGoogleDrive);
-      }
+      r.GOOGLE_DRIVE = createSubpage(
+          r.FILES, routesMojom.GOOGLE_DRIVE_SUBPAGE_PATH, Subpage.kGoogleDrive);
       if (loadTimeData.getBoolean('showOfficeSettings')) {
         r.OFFICE = createSubpage(
             r.FILES, routesMojom.OFFICE_FILES_SUBPAGE_PATH,
@@ -657,6 +656,11 @@ export function createRoutes(): OsSettingsRoutes {
         r.OS_LANGUAGES_INPUT,
         routesMojom.JAPANESE_MANAGE_USER_DICTIONARY_SUBPAGE_PATH,
         Subpage.kJapaneseManageUserDictionary);
+    if (loadTimeData.getBoolean('isPerAppLanguageEnabled')) {
+      r.OS_LANGUAGES_APP_LANGUAGES = createSubpage(
+          r.OS_LANGUAGES_LANGUAGES, routesMojom.APP_LANGUAGES_SUBPAGE_PATH,
+          Subpage.kAppLanguages);
+    }
 
     // Reset section.
     if (isPowerwashAllowed()) {

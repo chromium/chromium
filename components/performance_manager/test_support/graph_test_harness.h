@@ -31,6 +31,10 @@
 
 namespace performance_manager {
 
+// Returns a unique frame routing ID to use for test FrameNodes. The generated
+// id is not guaranteed to be different from ids set explicitly by the test.
+int NextTestFrameRoutingId();
+
 // Returns a unique RenderProcessHostId to use for test ProcessNodes. The
 // generated id is not guaranteed to be different from ids set explicitly by the
 // test.
@@ -101,16 +105,17 @@ struct TestNodeWrapper<FrameNodeImpl>::Factory {
       ProcessNodeImpl* process_node,
       PageNodeImpl* page_node,
       FrameNodeImpl* parent_frame_node,
-      FrameNodeImpl* fenced_frame_embedder_frame_node,
+      FrameNodeImpl* outer_document_for_fenced_frame,
       int render_frame_id,
       const blink::LocalFrameToken& frame_token = blink::LocalFrameToken(),
       content::BrowsingInstanceId browsing_instance_id =
           content::BrowsingInstanceId(0),
-      content::SiteInstanceId site_instance_id = content::SiteInstanceId(0)) {
+      content::SiteInstanceId site_instance_id = content::SiteInstanceId(0),
+      bool is_current = true) {
     return std::make_unique<FrameNodeImpl>(
         process_node, page_node, parent_frame_node,
-        fenced_frame_embedder_frame_node, render_frame_id, frame_token,
-        browsing_instance_id, site_instance_id);
+        outer_document_for_fenced_frame, render_frame_id, frame_token,
+        browsing_instance_id, site_instance_id, is_current);
   }
 };
 
@@ -137,7 +142,8 @@ struct TestNodeWrapper<ProcessNodeImpl>::Factory {
       proxy = RenderProcessHostProxy::CreateForTesting(
           NextTestRenderProcessHostId());
     }
-    return std::make_unique<ProcessNodeImpl>(std::move(proxy));
+    return std::make_unique<ProcessNodeImpl>(std::move(proxy),
+                                             base::TaskPriority::HIGHEST);
   }
 
   // Creates a ProcessNode for a non-renderer child process.
@@ -252,9 +258,6 @@ class TestGraphImpl : public GraphImpl {
   TestNodeWrapper<ProcessNodeImpl> CreateBrowserChildProcessNode(
       content::ProcessType process_type = content::PROCESS_TYPE_UTILITY,
       BrowserChildProcessHostProxy proxy = BrowserChildProcessHostProxy());
-
- private:
-  int next_frame_routing_id_ = 0;
 };
 
 // A test harness that initializes the graph without the rest of

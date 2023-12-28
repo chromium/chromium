@@ -11,7 +11,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Build.VERSION;
-import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.InputDevice;
 import android.view.MotionEvent;
@@ -29,7 +28,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.TooltipCompat;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.DestroyChecker;
@@ -60,8 +58,12 @@ import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColo
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.UrlExpansionObserver;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
 
 import java.util.function.BooleanSupplier;
@@ -73,7 +75,6 @@ import java.util.function.BooleanSupplier;
  */
 public abstract class ToolbarLayout extends FrameLayout
         implements Destroyable, TintObserver, ThemeColorObserver {
-    private Callback<Runnable> mInvalidator;
     private @Nullable ToolbarColorObserver mToolbarColorObserver;
 
     protected final ObserverList<UrlExpansionObserver> mUrlExpansionObservers =
@@ -90,9 +91,6 @@ public abstract class ToolbarLayout extends FrameLayout
 
     private boolean mNativeLibraryReady;
     private boolean mUrlHasFocus;
-
-    private long mFirstDrawTimeMs;
-
     private boolean mFindInPageToolbarShowing;
 
     private ThemeColorProvider mThemeColorProvider;
@@ -100,6 +98,12 @@ public abstract class ToolbarLayout extends FrameLayout
     private AppMenuButtonHelper mAppMenuButtonHelper;
 
     private TopToolbarOverlayCoordinator mOverlayCoordinator;
+
+    private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
+    private int mShowBrowserControlsToken = TokenHolder.INVALID_TOKEN;
+
+    private TabStripTransitionCoordinator mTabStripTransitionCoordinator;
+    private int mTabStripTransitionToken = TokenHolder.INVALID_TOKEN;
 
     protected final DestroyChecker mDestroyChecker;
 
@@ -431,12 +435,6 @@ public abstract class ToolbarLayout extends FrameLayout
         return mNativeLibraryReady;
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        recordFirstDrawTime();
-    }
-
     /** Add the toolbar's progress bar to the view hierarchy. */
     void addProgressBarToHierarchy() {
         ViewGroup controlContainer = (ViewGroup) getRootView().findViewById(R.id.control_container);
@@ -451,25 +449,6 @@ public abstract class ToolbarLayout extends FrameLayout
      */
     public ToolbarDataProvider getToolbarDataProvider() {
         return mToolbarDataProvider;
-    }
-
-    /**
-     * Sets the {@link Invalidator} that will be called when the toolbar attempts to invalidate the
-     * drawing surface.  This will give the object that registers as the host for the
-     * {@link Invalidator} a chance to defer the actual invalidate to sync drawing.
-     * @param invalidator An {@link Invalidator} instance.
-     */
-    void setInvalidatorCallback(Callback<Runnable> invalidator) {
-        mInvalidator = invalidator;
-    }
-
-    /**
-     * Triggers a paint but allows the {@link Invalidator} set by
-     * {@link #setPaintInvalidator(Invalidator)} to decide when to actually invalidate.
-     * @param client A {@link Invalidator.Client} instance that wants to be invalidated.
-     */
-    protected void triggerPaintInvalidate(Runnable clientInvalidator) {
-        mInvalidator.onResult(clientInvalidator);
     }
 
     /**
@@ -642,23 +621,16 @@ public abstract class ToolbarLayout extends FrameLayout
 
     /**
      * Called when start surface state is changed.
+     *
      * @param shouldBeVisible Whether toolbar layout should be visible.
      * @param isShowingStartSurfaceHomepage Whether start surface homepage is showing.
      * @param isShowingStartSurfaceTabSwitcher Whether the StartSurface-controlled TabSwitcher is
-     *         showing.
-     * @param isRealSearchBoxFocused Whether the real search box is focused.
+     *     showing.
      */
     void onStartSurfaceStateChanged(
             boolean shouldBeVisible,
             boolean isShowingStartSurfaceHomepage,
-            boolean isShowingStartSurfaceTabSwitcher,
-            boolean isRealSearchBoxFocused) {}
-
-    /**
-     * Force to hide toolbar shadow.
-     * @param forceHideShadow Whether toolbar shadow should be hidden.
-     */
-    void setForceHideShadow(boolean forceHideShadow) {}
+            boolean isShowingStartSurfaceTabSwitcher) {}
 
     /**
      * Gives inheriting classes the chance to observe tab count changes.
@@ -719,18 +691,6 @@ public abstract class ToolbarLayout extends FrameLayout
      */
     void onUrlFocusChange(boolean hasFocus) {
         mUrlHasFocus = hasFocus;
-    }
-
-    /** Keeps track of the first time the toolbar is drawn. */
-    private void recordFirstDrawTime() {
-        if (mFirstDrawTimeMs == 0) mFirstDrawTimeMs = SystemClock.elapsedRealtime();
-    }
-
-    /**
-     * Returns the elapsed realtime in ms of the time at which first draw for the toolbar occurred.
-     */
-    long getFirstDrawTime() {
-        return mFirstDrawTimeMs;
     }
 
     /** Notified when a navigation to a different page has occurred. */
@@ -867,7 +827,44 @@ public abstract class ToolbarLayout extends FrameLayout
      * the toolbar itself.
      */
     public void setBrowserControlsVisibilityDelegate(
-            BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate) {}
+            BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate) {
+        mBrowserControlsVisibilityDelegate = controlsVisibilityDelegate;
+    }
+
+    // TODO(crbug.com/1512232): Rework the API if this method is called by multiple clients.
+    protected void keepControlsShownForAnimation() {
+        // isShown() being false implies that the toolbar isn't visible. We don't want to force it
+        // back into visibility just so that we can show an animation.
+        if (!isShown()) return;
+
+        if (mBrowserControlsVisibilityDelegate != null) {
+            mShowBrowserControlsToken =
+                    mBrowserControlsVisibilityDelegate.showControlsPersistentAndClearOldToken(
+                            mShowBrowserControlsToken);
+        }
+        if (mTabStripTransitionCoordinator != null
+                && mTabStripTransitionToken == TokenHolder.INVALID_TOKEN) {
+            mTabStripTransitionToken =
+                    mTabStripTransitionCoordinator.requestDeferTabStripTransitionToken();
+        }
+    }
+
+    protected void allowBrowserControlsHide() {
+        if (mBrowserControlsVisibilityDelegate != null) {
+            mBrowserControlsVisibilityDelegate.releasePersistentShowingToken(
+                    mShowBrowserControlsToken);
+            mShowBrowserControlsToken = TokenHolder.INVALID_TOKEN;
+        }
+        if (mTabStripTransitionCoordinator != null) {
+            mTabStripTransitionCoordinator.releaseTabStripToken(mTabStripTransitionToken);
+            mTabStripTransitionToken = TokenHolder.INVALID_TOKEN;
+        }
+    }
+
+    /** Set the {@link TabStripTransitionCoordinator} that manages interactions around tab strip. */
+    public void setTabStripTransitionCoordinator(TabStripTransitionCoordinator coordinator) {
+        mTabStripTransitionCoordinator = coordinator;
+    }
 
     /**
      * Notify the observer that the toolbar color is changed and pass the toolbar color to the
@@ -901,4 +898,16 @@ public abstract class ToolbarLayout extends FrameLayout
      * {@link LayoutStateProvider.LayoutStateObserver#onFinishedShowing(int)}.
      */
     public void onTransitionEnd() {}
+
+    /**
+     * Called when the home button is pressed. Will record the home button action if the NTP is
+     * visible. Used on both phones and tablets.
+     */
+    protected void recordHomeModuleClickedIfNTPVisible() {
+        if (getToolbarDataProvider().getNewTabPageDelegate().isCurrentlyVisible()) {
+            // Record the clicking action on the home button.
+            BrowserUiUtils.recordModuleClickHistogram(
+                    HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNtp.HOME_BUTTON);
+        }
+    }
 }

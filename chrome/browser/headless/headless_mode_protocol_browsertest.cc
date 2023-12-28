@@ -204,6 +204,7 @@ void HeadlessModeProtocolBrowserTest::OnConsoleAPICalled(
 }
 
 HEADLESS_MODE_PROTOCOL_TEST(DomFocus, "input/dom-focus.js")
+HEADLESS_MODE_PROTOCOL_TEST(FocusEvent, "input/focus-event.js")
 
 // Flaky crbug/1431857
 HEADLESS_MODE_PROTOCOL_TEST(DISABLED_FocusBlurNotifications,

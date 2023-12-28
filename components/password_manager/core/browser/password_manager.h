@@ -183,9 +183,9 @@ class PasswordManager : public PasswordManagerInterface {
   // Returns the best matches from the manager which manages |form_id|. |driver|
   // is needed to determine the match. Returns nullptr when no matched manager
   // is found.
-  const std::vector<const PasswordForm*>* GetBestMatches(
-      PasswordManagerDriver* driver,
-      autofill::FormRendererId form_id);
+  const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
+  GetBestMatches(PasswordManagerDriver* driver,
+                 autofill::FormRendererId form_id);
 
   // Returns true if password element is detected on the current page.
   bool IsPasswordFieldDetectedOnPage() const;
@@ -261,10 +261,6 @@ class PasswordManager : public PasswordManagerInterface {
   // asks the user about saving the password or saves it directly, as
   // appropriate.
   void OnLoginSuccessful();
-
-  // Helper function called inside OnLoginSuccessful() to save password hash
-  // data from |submitted_manager| for password reuse detection purpose.
-  void MaybeSavePasswordHash(PasswordFormManager* submitted_manager);
 
   // Checks for every form in |forms_data| whether |pending_login_managers_|
   // already contain a manager for that form. If not, adds a manager for each

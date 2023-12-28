@@ -263,8 +263,7 @@ void ShillThirdPartyVpnDriverClientImpl::SendPacket(
   dbus::MessageWriter writer(&method_call);
   static_assert(sizeof(uint8_t) == sizeof(char),
                 "Can't reinterpret ip_packet if char is not 8 bit large.");
-  writer.AppendArrayOfBytes(reinterpret_cast<const uint8_t*>(ip_packet.data()),
-                            ip_packet.size());
+  writer.AppendArrayOfBytes(base::as_byte_span(ip_packet));
   GetHelper(object_path_value)
       ->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
                                         std::move(error_callback));

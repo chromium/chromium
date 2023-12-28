@@ -33,7 +33,7 @@
 
   <div>div</div>
   `,
-      'Test that values of property rules are computed correctly in the presence of var()');
+      'Test that values of registered properties are validated correctly in the presence of var()');
 
   await dp.DOM.enable();
   await dp.CSS.enable();
@@ -51,15 +51,39 @@
   const {result: {matchedCSSRules, cssKeyframesRules}} =
       await dp.CSS.getMatchedStylesForNode({nodeId});
 
+  const rules =
+      matchedCSSRules.filter(({rule}) => rule.selectorList.text === 'div');
   testRunner.log('Validated declarations:');
-  testRunner.log(
-      matchedCSSRules.filter(({rule}) => rule.selectorList.text === 'div')
-          .map(({rule}) => rule.style.cssProperties)
-          .flat()
-          .filter(({name}) => name.startsWith('--'))
-          .flat());
+  testRunner.log(rules.map(({rule}) => rule.style.cssProperties)
+                     .flat()
+                     .filter(({name}) => name.startsWith('--'))
+                     .flat());
   testRunner.log('Keyframes:');
   testRunner.log(cssKeyframesRules);
+
+  const {styleSheetId, range} = rules[1].rule.style;
+  testRunner.log('Editing a rule:');
+  {
+    const edits = [{styleSheetId, range, text: '--v: 5px; --len: var(--v);'}];
+    const {result: {styles: [{cssProperties}]}} =
+        await dp.CSS.setStyleTexts({edits, nodeForPropertySyntaxValidation: nodeId});
+    testRunner.log(cssProperties);
+  }
+
+  testRunner.log('Adding a rule:');
+  {
+    const location = rules[1].rule.selectorList.selectors[0].range;
+    location.endColumn = location.startColumn;
+    location.endLine = location.startLine;
+    const {result: {rule: {style: cssProperties}}} = await dp.CSS.addRule({
+      styleSheetId,
+      location,
+      ruleText: 'div { --v: 5px; --len: var(--v); }',
+      nodeForPropertySyntaxValidation: nodeId,
+    });
+    testRunner.log(cssProperties);
+  }
+
 
   testRunner.completeTest();
 });

@@ -193,7 +193,7 @@ def env_options():
             "supports_debugger": True}
 
 
-def run_info_extras(**kwargs):
+def run_info_extras(logger, **kwargs):
 
     def get_bool_pref_if_exists(pref):
         for key, value in kwargs.get('extra_prefs', []):
@@ -213,7 +213,8 @@ def run_info_extras(**kwargs):
           "fission": not kwargs.get("disable_fission"),
           "sessionHistoryInParent": (not kwargs.get("disable_fission") or
                                      not get_bool_pref("fission.disableSessionHistoryInParent")),
-          "swgl": get_bool_pref("gfx.webrender.software")}
+          "swgl": get_bool_pref("gfx.webrender.software"),
+          "privateBrowsing": (kwargs["tags"] is not None and ("privatebrowsing" in kwargs["tags"]))}
 
     rv.update(run_info_browser_version(**kwargs))
 
@@ -567,6 +568,7 @@ class FirefoxOutputHandler(OutputHandler):
         if self.lsan_handler:
             self.lsan_handler.process()
         if self.leak_report_file is not None:
+            processed_files = None
             if not clean_shutdown:
                 # If we didn't get a clean shutdown there probably isn't a leak report file
                 self.logger.warning("Firefox didn't exit cleanly, not processing leak logs")
@@ -575,7 +577,7 @@ class FirefoxOutputHandler(OutputHandler):
                 # content process crashed and in that case we don't want the test to fail.
                 # Ideally we would record which content process crashed and just skip those.
                 self.logger.info("PROCESS LEAKS %s" % self.leak_report_file)
-                mozleak.process_leak_log(
+                processed_files = mozleak.process_leak_log(
                     self.leak_report_file,
                     leak_thresholds=self.mozleak_thresholds,
                     ignore_missing_leaks=["tab", "gmplugin"],
@@ -583,6 +585,11 @@ class FirefoxOutputHandler(OutputHandler):
                     stack_fixer=self.stack_fixer,
                     scope=self.group_metadata.get("scope"),
                     allowed=self.mozleak_allowed)
+            if processed_files:
+                for path in processed_files:
+                    if os.path.exists(path):
+                        os.unlink(path)
+            # Fallback for older versions of mozleak, or if we didn't shutdown cleanly
             if os.path.exists(self.leak_report_file):
                 os.unlink(self.leak_report_file)
 

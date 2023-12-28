@@ -50,8 +50,8 @@ TEST_P(FormEventLoggerBaseFunnelTest, LogFunnelMetrics) {
        CreateTestFormField("City", "city", "", FormControlType::kInputText),
        CreateTestFormField("Street", "street", "",
                            FormControlType::kInputText)});
-  std::vector<ServerFieldType> field_types = {
-      ADDRESS_HOME_STATE, ADDRESS_HOME_CITY, ADDRESS_HOME_STREET_ADDRESS};
+  std::vector<FieldType> field_types = {ADDRESS_HOME_STATE, ADDRESS_HOME_CITY,
+                                        ADDRESS_HOME_STREET_ADDRESS};
 
   base::HistogramTester histogram_tester;
 
@@ -192,8 +192,8 @@ TEST_F(FormEventLoggerBaseFunnelTest, AblationState) {
        CreateTestFormField("City", "city", "", FormControlType::kInputText),
        CreateTestFormField("Street", "street", "",
                            FormControlType::kInputText)});
-  std::vector<ServerFieldType> field_types = {
-      ADDRESS_HOME_STATE, ADDRESS_HOME_CITY, ADDRESS_HOME_STREET_ADDRESS};
+  std::vector<FieldType> field_types = {ADDRESS_HOME_STATE, ADDRESS_HOME_CITY,
+                                        ADDRESS_HOME_STREET_ADDRESS};
 
   base::HistogramTester histogram_tester;
 
@@ -250,8 +250,8 @@ void FormEventLoggerBaseKeyMetricsTest::SetUp() {
       CreateTestFormField("State", "state", "", FormControlType::kInputText),
       CreateTestFormField("City", "city", "", FormControlType::kInputText),
       CreateTestFormField("Street", "street", "", FormControlType::kInputText)};
-  std::vector<ServerFieldType> field_types = {
-      ADDRESS_HOME_STATE, ADDRESS_HOME_CITY, ADDRESS_HOME_STREET_ADDRESS};
+  std::vector<FieldType> field_types = {ADDRESS_HOME_STATE, ADDRESS_HOME_CITY,
+                                        ADDRESS_HOME_STREET_ADDRESS};
 
   autofill_manager().AddSeenForm(form_, field_types, field_types);
 }
@@ -490,8 +490,8 @@ void FormEventLoggerBaseEmailHeuristicOnlyMetricsTest::SetUp() {
 
   // Load a fillable form.
   form_ = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
-  std::vector<ServerFieldType> heuristic_types = {EMAIL_ADDRESS};
-  std::vector<ServerFieldType> server_types = {NO_SERVER_DATA};
+  std::vector<FieldType> heuristic_types = {EMAIL_ADDRESS};
+  std::vector<FieldType> server_types = {NO_SERVER_DATA};
 
   autofill_manager().AddSeenForm(form_, heuristic_types, server_types);
 }
@@ -550,7 +550,7 @@ TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, ServerTypeKnown) {
 
   // Reset the form to include only a known server type.
   form_ = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
-  std::vector<ServerFieldType> field_types = {EMAIL_ADDRESS};
+  std::vector<FieldType> field_types = {EMAIL_ADDRESS};
   autofill_manager().AddSeenForm(form_, field_types, field_types);
 
   // Simulate that suggestion is shown and user accepts it.

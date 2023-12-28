@@ -90,7 +90,7 @@ const std::u16string& PromoCodeLabelView::GetPromoCodeLabelTextForTesting()
   return promo_code_label_->GetText();
 }
 
-BEGIN_METADATA(PromoCodeLabelView, views::FlexLayoutView)
+BEGIN_METADATA(PromoCodeLabelView)
 END_METADATA
 
 }  // namespace autofill

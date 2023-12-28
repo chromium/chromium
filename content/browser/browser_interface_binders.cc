@@ -22,6 +22,7 @@
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/browsing_topics/browsing_topics_document_host.h"
+#include "content/browser/compute_pressure/pressure_service_for_frame.h"
 #include "content/browser/contacts/contacts_manager_impl.h"
 #include "content/browser/content_index/content_index_service_impl.h"
 #include "content/browser/cookie_store/cookie_store_manager.h"
@@ -236,7 +237,7 @@
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
-#include "components/ml/webnn/features.h"
+#include "components/ml/webnn/features.mojom-features.h"
 #include "components/viz/host/gpu_client.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #endif
@@ -453,22 +454,6 @@ BindWorkerReceiver(
           (process_host->*method)(std::move(receiver));
       },
       base::Unretained(host), method);
-}
-
-template <typename WorkerHost>
-base::RepeatingCallback<
-    void(const url::Origin&,
-         mojo::PendingReceiver<device::mojom::PressureManager>)>
-BindPressureManagerWorkerForOrigin(WorkerHost* host) {
-  return base::BindRepeating(
-      [](WorkerHost* host, const url::Origin& origin,
-         mojo::PendingReceiver<device::mojom::PressureManager> receiver) {
-        if (!network::IsOriginPotentiallyTrustworthy(origin)) {
-          return;
-        }
-        GetDeviceService().BindPressureManager(std::move(receiver));
-      },
-      base::Unretained(host));
 }
 
 template <typename WorkerHost, typename Interface>
@@ -693,7 +678,8 @@ void BindPressureManager(
     return;
   }
 
-  GetDeviceService().BindPressureManager(std::move(receiver));
+  PressureServiceForFrame::GetOrCreateForCurrentDocument(host)->BindReceiver(
+      std::move(receiver));
 }
 
 void BindDevicePostureProvider(
@@ -916,7 +902,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(
-          webnn::features::kEnableMachineLearningNeuralNetworkService)) {
+          webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
     map->Add<webnn::mojom::WebNNContextProvider>(base::BindRepeating(
         &BindWebNNContextProviderForRenderFrame, base::Unretained(host)));
   }
@@ -1296,7 +1282,7 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
 
 #if !BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(
-          webnn::features::kEnableMachineLearningNeuralNetworkService)) {
+          webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
     // base::Unretained(host->GetProcessHost()) is safe because the map is owned
     // by |DedicatedWorkerHost::broker_|.
     map->Add<webnn::mojom::WebNNContextProvider>(base::BindRepeating(
@@ -1344,6 +1330,10 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
   map->Add<blink::mojom::FileSystemAccessManager>(
       base::BindRepeating(&DedicatedWorkerHost::GetFileSystemAccessManager,
                           base::Unretained(host)));
+  if (base::FeatureList::IsEnabled(blink::features::kComputePressure)) {
+    map->Add<device::mojom::PressureManager>(base::BindRepeating(
+        &DedicatedWorkerHost::BindPressureService, base::Unretained(host)));
+  }
 
   // RenderProcessHost binders
   map->Add<media::mojom::VideoDecodePerfHistory>(BindWorkerReceiver(
@@ -1379,13 +1369,6 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::CreatePaymentManagerForOrigin, host));
   map->Add<blink::mojom::PermissionService>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::CreatePermissionService, host));
-
-  // BindPressureManagerWorkerForOrigin() does not use RenderProcessHost,
-  // but also needs an origin for its checks.
-  if (base::FeatureList::IsEnabled(blink::features::kComputePressure)) {
-    map->Add<device::mojom::PressureManager>(
-        BindPressureManagerWorkerForOrigin(host));
-  }
   map->Add<blink::mojom::FileBackedBlobFactory>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindFileBackedBlobFactory, host));
 }
@@ -1446,6 +1429,10 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
       &CreateReportingServiceProxyForSharedWorker, base::Unretained(host)));
   map->Add<blink::mojom::BucketManagerHost>(base::BindRepeating(
       &SharedWorkerHost::CreateBucketManagerHost, base::Unretained(host)));
+  if (base::FeatureList::IsEnabled(blink::features::kComputePressure)) {
+    map->Add<device::mojom::PressureManager>(base::BindRepeating(
+        &SharedWorkerHost::BindPressureService, base::Unretained(host)));
+  }
 
   // RenderProcessHost binders
   map->Add<media::mojom::VideoDecodePerfHistory>(BindWorkerReceiver(
@@ -1481,13 +1468,6 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::CreatePaymentManagerForOrigin, host));
   map->Add<blink::mojom::PermissionService>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::CreatePermissionService, host));
-
-  // BindPressureManagerWorkerForOrigin() does not use RenderProcessHost,
-  // but also needs an origin for its checks.
-  if (base::FeatureList::IsEnabled(blink::features::kComputePressure)) {
-    map->Add<device::mojom::PressureManager>(
-        BindPressureManagerWorkerForOrigin(host));
-  }
   map->Add<blink::mojom::FileBackedBlobFactory>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindFileBackedBlobFactory, host));
 }

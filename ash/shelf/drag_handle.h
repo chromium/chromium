@@ -156,7 +156,7 @@ class ASH_EXPORT DragHandle : public views::Button,
   void StopDragHandleNudgeShowTimer();
 
   // Pointer to the shelf that owns the drag handle.
-  const raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  const raw_ptr<Shelf> shelf_;
 
   // Timer to hide drag handle nudge if it has a timed life.
   base::OneShotTimer hide_drag_handle_nudge_timer_;
@@ -179,7 +179,7 @@ class ASH_EXPORT DragHandle : public views::Button,
   bool window_drag_from_shelf_in_progress_ = false;
 
   // A label used to educate users about swipe gestures on the drag handle.
-  raw_ptr<ContextualNudge, ExperimentalAsh> drag_handle_nudge_ = nullptr;
+  raw_ptr<ContextualNudge> drag_handle_nudge_ = nullptr;
 
   std::unique_ptr<Shelf::ScopedAutoHideLock> auto_hide_lock_;
 

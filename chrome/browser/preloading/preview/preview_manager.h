@@ -14,6 +14,7 @@
 
 class GURL;
 class PreviewTab;
+class PreviewZoomController;
 
 // Handles requests of preview and manages ongoing previews.
 class PreviewManager final
@@ -37,10 +38,12 @@ class PreviewManager final
   // This method closes a preview page, and used for testing until the primary
   // page navigation closes existing preview pages.
   void CloseForTesting();
+  PreviewZoomController* PreviewZoomControllerForTesting() const;
 
  private:
-  explicit PreviewManager(content::WebContents* web_contents);
   friend class content::WebContentsUserData<PreviewManager>;
+
+  explicit PreviewManager(content::WebContents* web_contents);
 
   std::unique_ptr<PreviewTab> tab_;
 

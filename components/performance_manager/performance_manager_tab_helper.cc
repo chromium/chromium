@@ -225,15 +225,14 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
           outer_document_for_fenced_frame, render_frame_host->GetRoutingID(),
           blink::LocalFrameToken(render_frame_host->GetFrameToken()),
           site_instance->GetBrowsingInstanceId(), site_instance->GetId(),
+          render_frame_host->IsActive(),
           base::BindOnce(
-              [](const GURL& url, bool is_current, FrameNodeImpl* frame_node) {
+              [](const GURL& url, FrameNodeImpl* frame_node) {
                 if (!url.is_empty())
                   frame_node->OnNavigationCommitted(url,
                                                     /* same_document */ false);
-                frame_node->SetIsCurrent(is_current);
               },
-              render_frame_host->GetLastCommittedURL(),
-              render_frame_host->IsActive()));
+              render_frame_host->GetLastCommittedURL()));
 
   frames_[render_frame_host] = std::move(frame);
 }

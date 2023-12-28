@@ -147,7 +147,7 @@ TEST_F(InterestGroupKAnonymityManagerTest,
   manager->JoinInterestGroup(g, top_frame);
   // Set k_anon value to true so that it gets returned with the interest group.
   manager->UpdateKAnonymity(
-      {blink::KAnonKeyForAdBid(g, g.ads->at(0).render_url), true,
+      {blink::KAnonKeyForAdBid(g, g.ads->at(0).render_url()), true,
        base::Time::Min()});
 
   auto maybe_group = GetGroup(manager.get(), owner, name);

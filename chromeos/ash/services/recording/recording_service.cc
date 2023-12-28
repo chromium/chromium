@@ -25,6 +25,7 @@
 #include "chromeos/ash/services/recording/gif_encoder.h"
 #include "chromeos/ash/services/recording/recording_encoder.h"
 #include "chromeos/ash/services/recording/recording_service_constants.h"
+#include "chromeos/ash/services/recording/rgb_video_frame.h"
 #include "chromeos/ash/services/recording/video_capture_params.h"
 #include "chromeos/ash/services/recording/webm_encoder_muxer.h"
 #include "media/audio/audio_device_description.h"
@@ -413,6 +414,22 @@ void RecordingService::OnFrameCaptured(
         .Run(*frame, content_rect);
   }
 
+  if (encoder_capabilities_->SupportsRgbVideoFrame()) {
+    // This is the GIF encoding path.
+    encoder_muxer_.AsyncCall(&RecordingEncoder::EncodeRgbVideo)
+        .WithArgs(RgbVideoFrame(*frame));
+
+    // Note that we no longer need `frame`. `RgbVideoFrame` already copied the
+    // pixel colors (which is needed to be able to modify them later when we
+    // dither the image). Note that the video `frame`'s memory itself cannot be
+    // modified, as it is backed by a read-only shared memory region. This
+    // allows us to return the frame early to Viz capturer buffer pool, which
+    // has a maximum number of in-flight frames (See b/316588576).
+    frame.reset();
+    return;
+  }
+
+  // This is the WebM path.
   encoder_muxer_.AsyncCall(&RecordingEncoder::EncodeVideo)
       .WithArgs(std::move(frame));
 }

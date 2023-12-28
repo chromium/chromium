@@ -1,5 +1,4 @@
 include_rules = [
-  "+components/browser_ui/bottomsheet",
   "+components/keyed_service",
   "+components/payments/content/android/java/src/org/chromium/components/payments",
   "+components/sync",

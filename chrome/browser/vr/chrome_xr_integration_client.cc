@@ -27,10 +27,6 @@
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/vr/ui_host/vr_ui_host_impl.h"
 #elif BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(ENABLE_GVR_SERVICES)
-#include "chrome/browser/android/vr/gvr_install_helper.h"
-#include "device/vr/android/gvr/gvr_device_provider.h"
-#endif
 #if BUILDFLAG(ENABLE_ARCORE)
 #include "chrome/browser/android/vr/ar_jni_headers/ArCompositorDelegateProviderImpl_jni.h"
 #include "components/webxr/android/ar_compositor_delegate_provider.h"
@@ -125,10 +121,6 @@ std::unique_ptr<content::XrInstallHelper>
 ChromeXrIntegrationClient::GetInstallHelper(
     device::mojom::XRDeviceId device_id) {
   switch (device_id) {
-#if BUILDFLAG(ENABLE_GVR_SERVICES)
-    case device::mojom::XRDeviceId::GVR_DEVICE_ID:
-      return std::make_unique<GvrInstallHelper>();
-#endif  // BUILDFLAG(ENABLE_GVR_SERVICES)
 #if BUILDFLAG(ENABLE_ARCORE)
     case device::mojom::XRDeviceId::ARCORE_DEVICE_ID:
       return std::make_unique<webxr::ArCoreInstallHelper>();
@@ -156,8 +148,7 @@ content::XRProviderList ChromeXrIntegrationClient::GetAdditionalProviders() {
 #endif  // BUILDFLAG(ENABLE_OPENXR)
 #if BUILDFLAG(ENABLE_CARDBOARD)
   if (!preferred_vr_runtime_added &&
-      IsEnabled(command_line, switches::kWebXrRuntimeCardboard,
-                &device::features::kEnableCardboard)) {
+      IsEnabled(command_line, switches::kWebXrRuntimeCardboard)) {
     base::android::ScopedJavaLocalRef<jobject>
         j_vr_compositor_delegate_provider =
             vr::Java_VrCompositorDelegateProviderImpl_Constructor(
@@ -168,13 +159,6 @@ content::XRProviderList ChromeXrIntegrationClient::GetAdditionalProviders() {
     preferred_vr_runtime_added = true;
   }
 #endif  // BUILDFLAG(ENABLE_CARDBOARD)
-#if BUILDFLAG(ENABLE_GVR_SERVICES)
-  if (!preferred_vr_runtime_added &&
-      IsEnabled(command_line, switches::kWebXrRuntimeGVR)) {
-    providers.push_back(std::make_unique<device::GvrDeviceProvider>());
-    preferred_vr_runtime_added = true;
-  }
-#endif  // BUILDFLAG(ENABLE_GVR_SERVICES)
 #if BUILDFLAG(ENABLE_ARCORE)
   base::android::ScopedJavaLocalRef<jobject> j_ar_compositor_delegate_provider =
       vr::Java_ArCompositorDelegateProviderImpl_Constructor(

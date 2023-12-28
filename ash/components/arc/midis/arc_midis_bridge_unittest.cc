@@ -27,7 +27,7 @@ class ArcMidisBridgeTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   ArcServiceManager arc_service_manager_;
   user_prefs::TestBrowserContextWithPrefs context_;
-  const raw_ptr<ArcMidisBridge, ExperimentalAsh> bridge_;
+  const raw_ptr<ArcMidisBridge> bridge_;
 };
 
 TEST_F(ArcMidisBridgeTest, ConstructDestruct) {

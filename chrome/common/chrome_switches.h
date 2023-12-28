@@ -92,7 +92,6 @@ extern const char kDumpBrowserHistograms[];
 extern const char kEnableAudioDebugRecordingsFromExtension[];
 extern const char kEnableBookmarkUndo[];
 extern const char kEnableCloudPrintProxy[];
-extern const char kEnableCriticalPersistedTabData[];
 extern const char kEnableDomainReliability[];
 extern const char kEnableDownloadWarningImprovements[];
 extern const char kEnableExtensionActivityLogging[];

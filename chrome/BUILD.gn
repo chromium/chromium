@@ -106,7 +106,7 @@ group("assert_no_deps") {
 
   if (is_android) {
     deps += [ "//chrome/android:chrome_public_apk" ]
-  } else {
+  } else if (!is_fuchsia) {
     deps += [ ":chrome" ]
   }
 
@@ -129,7 +129,7 @@ group("assert_no_deps") {
   }
 }
 
-if (!is_android && !is_mac) {
+if (!is_android && !is_mac && !is_fuchsia) {
   group("chrome") {
     public_deps = [ ":chrome_initial" ]
     data_deps = [ ":chrome_initial" ]
@@ -1735,10 +1735,6 @@ if (is_android) {
 
     if (is_chromeos_ash) {
       public_deps += [ "//ui/lottie" ]
-    }
-
-    if (enable_vr) {
-      deps += [ "//third_party/gvr-android-sdk:gvr_shim" ]
     }
   }
 }

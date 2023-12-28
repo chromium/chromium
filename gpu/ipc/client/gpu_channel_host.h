@@ -15,11 +15,13 @@
 #include "base/atomic_sequence_num.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
+#include "base/observer_list.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/gpu_export.h"
+#include "gpu/ipc/client/gpu_channel_observer.h"
 #include "gpu/ipc/client/image_decode_accelerator_proxy.h"
 #include "gpu/ipc/client/shared_image_interface_proxy.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
@@ -148,6 +150,12 @@ class GPU_EXPORT GpuChannelHost
     return &image_decode_accelerator_proxy_;
   }
 
+  // Calls ConnectionTracker::AddObserver() directly.
+  void AddObserver(GpuChannelLostObserver* obs);
+
+  // Calls ConnectionTracker::RemoveObserver() directly.
+  void RemoveObserver(GpuChannelLostObserver* obs);
+
  protected:
   friend class base::RefCountedThreadSafe<GpuChannelHost>;
   virtual ~GpuChannelHost();
@@ -165,11 +173,26 @@ class GPU_EXPORT GpuChannelHost
 
     void OnDisconnectedFromGpuProcess();
 
+    // With |channel_obs_lock_|, it can becalled on any thread.
+    void AddObserver(GpuChannelLostObserver* obs);
+
+    // With |channel_obs_lock_|, it can be called on any thread.
+    // Cannot be called during NotifyGpuChannelLost(). This creates a deadlock.
+    void RemoveObserver(GpuChannelLostObserver* obs);
+
+    // Running on the IOThread.
+    void NotifyGpuChannelLost();
+
    private:
     friend class base::RefCountedThreadSafe<ConnectionTracker>;
     ~ConnectionTracker();
 
     std::atomic_bool is_connected_{true};
+
+    // The GpuChannelLost Monitor for LayerTreeFrameSink.
+    base::Lock channel_obs_lock_;
+    base::ObserverList<GpuChannelLostObserver>::Unchecked GUARDED_BY(
+        channel_obs_lock_) observer_list_;
   };
 
   // A filter used internally to route incoming messages from the IO thread

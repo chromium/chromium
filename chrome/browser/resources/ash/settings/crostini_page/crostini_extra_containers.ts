@@ -25,6 +25,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PrefsState} from '../common/types.js';
 import {ContainerInfo, GuestId, ShareableDevices, VM_DEVICE_MICROPHONE} from '../guest_os/guest_os_browser_proxy.js';
 import {equalContainerId} from '../guest_os/guest_os_container_select.js';
 
@@ -63,6 +64,11 @@ export class ExtraContainersElement extends ExtraContainersElementBase {
 
   static get properties() {
     return {
+      prefs: {
+        type: Object,
+        notify: true,
+      },
+
       showCreateContainerDialog_: {
         type: Boolean,
         value: false,
@@ -118,6 +124,7 @@ export class ExtraContainersElement extends ExtraContainersElementBase {
     };
   }
 
+  prefs: PrefsState;
   private allContainers_: CrostiniContainerInfo[];
   private allSharedVmDevices_: SharedVmDevices[];
   private allVms_: string[];

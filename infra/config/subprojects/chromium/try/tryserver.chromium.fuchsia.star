@@ -234,9 +234,9 @@ try_.orchestrator_builder(
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
         "chromium.compilator_can_outlive_parent": 100,
-        "chromium.skip_successful_tests": 50,
     },
     main_list_view = "try",
+    siso_enabled = True,
     tryjob = try_.job(),
     use_clang_coverage = True,
 )

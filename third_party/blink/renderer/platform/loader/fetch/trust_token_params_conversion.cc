@@ -16,7 +16,6 @@ network::OptionalTrustTokenParams ConvertTrustTokenParams(
 
   network::mojom::TrustTokenParamsPtr out =
       network::mojom::TrustTokenParams::New();
-  out->version = in.version;
   out->operation = in.operation;
   out->refresh_policy = in.refresh_policy;
   out->sign_request_data = in.sign_request_data;

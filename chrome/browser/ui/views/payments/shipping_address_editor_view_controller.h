@@ -55,13 +55,12 @@ class ShippingAddressEditorViewController : public EditorViewController {
   // EditorViewController:
   bool IsEditingExistingItem() override;
   std::vector<EditorField> GetFieldDefinitions() override;
-  std::u16string GetInitialValueForType(
-      autofill::ServerFieldType type) override;
+  std::u16string GetInitialValueForType(autofill::FieldType type) override;
   bool ValidateModelAndSave() override;
   std::unique_ptr<ValidationDelegate> CreateValidationDelegate(
       const EditorField& field) override;
   std::unique_ptr<ui::ComboboxModel> GetComboboxModelForType(
-      const autofill::ServerFieldType& type) override;
+      const autofill::FieldType& type) override;
   void OnPerformAction(ValidatingCombobox* combobox) override;
   void UpdateEditorView() override;
 
@@ -110,7 +109,7 @@ class ShippingAddressEditorViewController : public EditorViewController {
   };
 
   std::u16string GetValueForType(const autofill::AutofillProfile& profile,
-                                 autofill::ServerFieldType type);
+                                 autofill::FieldType type);
 
   bool GetSheetId(DialogViewID* sheet_id) override;
 

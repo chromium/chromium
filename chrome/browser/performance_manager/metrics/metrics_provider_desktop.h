@@ -28,8 +28,8 @@ class MetricsProviderDesktop : public ::metrics::MetricsProvider,
   enum class EfficiencyMode {
     // No efficiency mode for the entire upload window
     kNormal = 0,
-    // In high efficiency mode for the entire upload window
-    kHighEfficiency = 1,
+    // In memory saver mode for the entire upload window
+    kMemorySaver = 1,
     // In battery saver mode for the entire upload window
     kBatterySaver = 2,
     // Both modes enabled for the entire upload window
@@ -60,10 +60,10 @@ class MetricsProviderDesktop : public ::metrics::MetricsProvider,
   // BatterySaverModeManager::Observer:
   void OnBatterySaverActiveChanged(bool is_active) override;
 
-  void OnHighEfficiencyPrefChanged();
+  void OnMemorySaverPrefChanged();
   void OnTuningModesChanged();
   EfficiencyMode ComputeCurrentMode() const;
-  bool IsHighEfficiencyEnabled() const;
+  bool IsMemorySaverEnabled() const;
 
   void RecordAvailableMemoryMetrics();
   void ResetTrackers();
@@ -79,7 +79,7 @@ class MetricsProviderDesktop : public ::metrics::MetricsProvider,
   base::RepeatingTimer available_memory_metrics_timer_;
 
   std::unique_ptr<ScopedTimeInModeTracker> battery_saver_mode_tracker_;
-  std::unique_ptr<ScopedTimeInModeTracker> high_efficiency_mode_tracker_;
+  std::unique_ptr<ScopedTimeInModeTracker> memory_saver_mode_tracker_;
 };
 
 }  // namespace performance_manager

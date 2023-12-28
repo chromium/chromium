@@ -29,13 +29,13 @@ enum class CredentialFieldType {
 
 // Transforms the general field type to the information useful for password
 // forms.
-CredentialFieldType DeriveFromServerFieldType(autofill::ServerFieldType type);
+CredentialFieldType DeriveFromFieldType(autofill::FieldType type);
 
 // Contains server predictions for a field.
 struct PasswordFieldPrediction {
   autofill::FieldRendererId renderer_id;
   autofill::FieldSignature signature;
-  autofill::ServerFieldType type;
+  autofill::FieldType type;
   bool may_use_prefilled_placeholder = false;
   bool is_override = false;
 

@@ -103,7 +103,7 @@ base::apple::scoped_nsprotocol<id<MTLTexture>> CreateMetalTexture(
   }
 
   base::apple::scoped_nsobject<MTLTextureDescriptor> mtl_tex_desc(
-      [MTLTextureDescriptor new]);
+      [[MTLTextureDescriptor alloc] init]);
   [mtl_tex_desc.get() setTextureType:MTLTextureType2D];
   [mtl_tex_desc.get()
       setUsage:MTLTextureUsageShaderRead | MTLTextureUsageRenderTarget];

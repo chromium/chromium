@@ -53,9 +53,9 @@ class ASH_EXPORT SubFeatureOptInView : public views::View {
   PermissionsOnboardingSetUpMode setup_mode_;
 
   // Main components of this view. Owned by view hierarchy.
-  raw_ptr<views::Label, ExperimentalAsh> text_label_ = nullptr;
-  raw_ptr<views::LabelButton, ExperimentalAsh> set_up_button_ = nullptr;
-  raw_ptr<views::LabelButton, ExperimentalAsh> dismiss_button_ = nullptr;
+  raw_ptr<views::Label> text_label_ = nullptr;
+  raw_ptr<views::LabelButton> set_up_button_ = nullptr;
+  raw_ptr<views::LabelButton> dismiss_button_ = nullptr;
 };
 
 }  // namespace ash

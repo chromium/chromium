@@ -58,8 +58,8 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
   void OnSettingsButtonPressed(const ui::Event& event);
   void OnCloseButtonPressed();
 
-  raw_ptr<IconButton, ExperimentalAsh> settings_button_ = nullptr;
-  raw_ptr<IconButton, ExperimentalAsh> close_button_ = nullptr;
+  raw_ptr<IconButton> settings_button_ = nullptr;
+  raw_ptr<IconButton> close_button_ = nullptr;
   std::unique_ptr<SystemShadow> shadow_;
 };
 

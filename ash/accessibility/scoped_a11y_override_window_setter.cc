@@ -4,7 +4,7 @@
 
 #include "ash/accessibility/scoped_a11y_override_window_setter.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/shell.h"
 
 namespace ash {

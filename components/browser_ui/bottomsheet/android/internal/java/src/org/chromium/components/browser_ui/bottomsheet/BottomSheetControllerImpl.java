@@ -613,6 +613,12 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         mSheetStateBeforeSuppress = SheetState.NONE;
     }
 
+    @Override
+    @VisibleForTesting
+    public boolean isSmallScreen() {
+        return mBottomSheet.isSmallScreen();
+    }
+
     /**
      * Remove all contents from {@code iterator} that don't have a custom lifecycle.
      * @param iterator The iterator whose items must be removed.

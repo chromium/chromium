@@ -8,6 +8,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoDeps.java",
     "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoManager.java",
+    "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoMetrics.java",
     "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoUtils.java",
   ]
   deps = [
@@ -23,12 +24,17 @@ android_library("java") {
 }
 
 robolectric_library("junit") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoUtilsTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoManagerTest.java",
+    "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoUtilsTest.java",
+  ]
   deps = [
     ":java",
     "//base:base_java",
+    "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
   ]
 }

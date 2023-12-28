@@ -42,7 +42,9 @@ TabOrganizationSession::~TabOrganizationSession() {
 
 // static
 std::unique_ptr<TabOrganizationSession>
-TabOrganizationSession::CreateSessionForBrowser(const Browser* browser) {
+TabOrganizationSession::CreateSessionForBrowser(
+    const Browser* browser,
+    const content::WebContents* base_session_webcontents) {
   std::unique_ptr<TabOrganizationRequest> request =
       TabOrganizationRequestFactory::GetForProfile(browser->profile())
           ->CreateRequest(browser->profile());
@@ -51,10 +53,16 @@ TabOrganizationSession::CreateSessionForBrowser(const Browser* browser) {
   std::vector<std::unique_ptr<TabData>> tab_datas;
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   for (int index = 0; index < tab_strip_model->count(); index++) {
-    std::unique_ptr<TabData> tab_data = std::make_unique<TabData>(
-        tab_strip_model, tab_strip_model->GetWebContentsAt(index));
+    content::WebContents* web_contents =
+        tab_strip_model->GetWebContentsAt(index);
+    std::unique_ptr<TabData> tab_data =
+        std::make_unique<TabData>(tab_strip_model, web_contents);
     if (!tab_data->IsValidForOrganizing()) {
       continue;
+    }
+
+    if (base_session_webcontents && web_contents == base_session_webcontents) {
+      request->SetBaseTabID(tab_data->tab_id());
     }
 
     request->AddTabData(std::move(tab_data));

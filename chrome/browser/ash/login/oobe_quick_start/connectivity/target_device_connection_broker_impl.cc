@@ -91,8 +91,7 @@ std::vector<uint8_t> GetEndpointInfoDisplayNameBytes(
 std::vector<uint8_t> Base64EncodeOmitPadding(
     const std::vector<uint8_t>& bytes) {
   std::string input(bytes.begin(), bytes.end());
-  std::string output;
-  base::Base64Encode(input, &output);
+  std::string output = base::Base64Encode(input);
 
   // Strip padding characters from end.
   const size_t last_non_padding_pos =

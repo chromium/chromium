@@ -12,6 +12,8 @@
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
+#include "components/autofill/core/browser/field_type_utils.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/geo/state_names.h"
 #include "components/autofill/core/browser/select_control_util.h"
@@ -114,7 +116,7 @@ std::optional<std::u16string> GetStateSelectControlValue(
   std::vector<std::u16string> full_names;
 
   // Fetch the corresponding entry from AlternativeStateNameMap.
-  absl::optional<StateEntry> state_entry =
+  std::optional<StateEntry> state_entry =
       AlternativeStateNameMap::GetInstance()->GetEntry(
           AlternativeStateNameMap::CountryCode(country_code),
           AlternativeStateNameMap::StateName(value));
@@ -276,7 +278,7 @@ std::optional<std::u16string> GetStateTextForInput(
     // Return the state value directly.
     return state_value;
   }
-  absl::optional<StateEntry> state =
+  std::optional<StateEntry> state =
       AlternativeStateNameMap::GetInstance()->GetEntry(
           AlternativeStateNameMap::CountryCode(country_code),
           AlternativeStateNameMap::StateName(state_value));
@@ -372,7 +374,7 @@ std::optional<std::u16string> GetValueForProfileSelectControl(
     const std::u16string& value,
     const std::string& app_locale,
     base::span<const SelectOption> field_options,
-    ServerFieldType field_type,
+    FieldType field_type,
     AddressNormalizer* address_normalizer,
     std::string* failure_to_fill) {
   switch (field_type) {
@@ -394,22 +396,27 @@ std::optional<std::u16string> GetValueForProfileSelectControl(
 
 }  // namespace
 
-std::optional<std::u16string> GetValueForProfile(
-    const AutofillProfile& profile,
-    const std::string& app_locale,
-    const AutofillType& field_type,
-    const FormFieldData& field_data,
-    AddressNormalizer* address_normalizer,
-    std::string* failure_to_fill) {
+std::optional<std::pair<std::u16string, FieldType>>
+GetFillingValueAndTypeForProfile(const AutofillProfile& profile,
+                                 const std::string& app_locale,
+                                 const AutofillType& field_type,
+                                 const FormFieldData& field_data,
+                                 AddressNormalizer* address_normalizer,
+                                 std::string* failure_to_fill) {
+  AutofillType filling_type = profile.GetFillingType(field_type);
+  CHECK(IsAddressType(filling_type.GetStorableType()));
   std::optional<std::u16string> value = GetValueForProfileForInput(
-      profile, app_locale, field_type, field_data, failure_to_fill);
+      profile, app_locale, filling_type, field_data, failure_to_fill);
 
-  return value && field_data.IsSelectOrSelectListElement()
-             ? GetValueForProfileSelectControl(
-                   profile, *value, app_locale, field_data.options,
-                   field_type.GetStorableType(), address_normalizer,
-                   failure_to_fill)
-             : value;
+  if (value && field_data.IsSelectOrSelectListElement()) {
+    value = GetValueForProfileSelectControl(
+        profile, *value, app_locale, field_data.options,
+        filling_type.GetStorableType(), address_normalizer, failure_to_fill);
+  }
+
+  return value ? std::make_optional<std::pair<std::u16string, FieldType>>(
+                     std::move(*value), filling_type.GetStorableType())
+               : std::nullopt;
 }
 
 std::u16string GetPhoneNumberValueForInput(

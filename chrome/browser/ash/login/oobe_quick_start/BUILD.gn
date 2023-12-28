@@ -27,7 +27,6 @@ source_set("oobe_quick_start") {
     "//chromeos/ash/components/dbus/constants:constants",
     "//chromeos/ash/components/quick_start:quick_start",
     "//chromeos/ash/services/nearby/public/mojom",
-    "//chromeos/dbus/power:power",
     "//components/account_id:account_id",
     "//components/endpoint_fetcher:endpoint_fetcher",
     "//components/prefs:prefs",

@@ -36,7 +36,8 @@ class ASH_EXPORT FocusModeChipCarousel : public views::BoxLayoutView {
   ~FocusModeChipCarousel() override;
 
   // TODO(b/305085993): Update setting logic once API is integrated.
-  // Updates the carousel of task chips from the first 5 tasks in `tasks`.
+  // Updates the carousel of task chips from the first 5 tasks in `tasks` and
+  // scrolls the carousel back to the beginning.
   void SetTasks(const std::vector<const api::Task*>& tasks);
 
   // Returns whether the carousel is currently displaying any tasks.

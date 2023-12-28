@@ -712,11 +712,13 @@ TEST_F(BrowsingTopicsURLLoaderTest,
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &proxied_url_loader_factory.pending_requests()->back();
 
-  // The request won't be eligible for topics due to content client settings.
+  // When the request is ineligible for topics due to user settings, an empty
+  // list of topics will be sent in the header.
   std::string topics_header_value;
   bool has_topics_header = pending_request->request.headers.GetHeader(
       "Sec-Browsing-Topics", &topics_header_value);
-  EXPECT_FALSE(has_topics_header);
+  EXPECT_TRUE(has_topics_header);
+  EXPECT_EQ(topics_header_value, kExpectedHeaderForEmptyTopics);
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
 

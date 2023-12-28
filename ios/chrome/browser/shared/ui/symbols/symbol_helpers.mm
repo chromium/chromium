@@ -40,6 +40,8 @@ UIImage* SymbolWithConfiguration(NSString* symbol_name,
 
 }  // namespace
 
+extern "C" {
+
 UIImage* DefaultSymbolWithConfiguration(NSString* symbol_name,
                                         UIImageConfiguration* configuration) {
   return SymbolWithConfiguration(symbol_name, configuration, true);
@@ -112,3 +114,5 @@ UIImage* CustomSettingsRootMulticolorSymbol(NSString* symbol_name) {
   return MakeSymbolMulticolor(CustomSymbolWithPointSize(
       symbol_name, kSettingsRootSymbolImagePointSize));
 }
+
+}  // extern "C"

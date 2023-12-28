@@ -17,10 +17,13 @@ ChromeOnDeviceModelServiceController* g_instance = nullptr;
 
 }  // namespace
 
-ChromeOnDeviceModelServiceController::ChromeOnDeviceModelServiceController()
+ChromeOnDeviceModelServiceController::ChromeOnDeviceModelServiceController(
+    base::WeakPtr<OnDeviceModelComponentStateManager>
+        on_device_component_state_manager)
     : OnDeviceModelServiceController(
           std::make_unique<OnDeviceModelAccessController>(
-              *g_browser_process->local_state())) {
+              *g_browser_process->local_state()),
+          std::move(on_device_component_state_manager)) {
   CHECK_EQ(nullptr, g_instance);
   g_instance = this;
 }

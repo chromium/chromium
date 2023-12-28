@@ -64,22 +64,24 @@ void LargestTextPaintManager::ReportCandidateToTrace(
       GetFrameIdForTracing(&frame_view_->GetFrame()));
 }
 
-TextRecord* LargestTextPaintManager::UpdateMetricsCandidate() {
+std::pair<TextRecord*, bool> LargestTextPaintManager::UpdateMetricsCandidate() {
   if (!largest_text_) {
-    return nullptr;
+    return {nullptr, false};
   }
   const base::TimeTicks time = largest_text_->paint_time;
   const uint64_t size = largest_text_->recorded_size;
-  DCHECK(paint_timing_detector_);
-  bool changed = paint_timing_detector_->NotifyMetricsIfLargestTextPaintChanged(
-      time, size);
+  CHECK(paint_timing_detector_);
+  CHECK(paint_timing_detector_->GetLargestContentfulPaintCalculator());
+
+  bool changed = paint_timing_detector_->GetLargestContentfulPaintCalculator()
+                     ->NotifyMetricsIfLargestTextPaintChanged(time, size);
   if (changed) {
     // It is not possible for an update to happen with a candidate that has no
     // paint time.
     DCHECK(!time.is_null());
     ReportCandidateToTrace(*largest_text_);
   }
-  return largest_text_.Get();
+  return {largest_text_.Get(), changed};
 }
 
 void TextPaintTimingDetector::OnPaintFinished() {
@@ -119,8 +121,6 @@ void TextPaintTimingDetector::ReportPresentationTime(
     }
   }
   AssignPaintTimeToQueuedRecords(frame_index, timestamp);
-  if (recording_largest_text_paint_)
-    ltp_manager_->UpdateMetricsCandidate();
 }
 
 bool TextPaintTimingDetector::ShouldWalkObject(
@@ -179,8 +179,7 @@ void TextPaintTimingDetector::RecordAggregatedText(
   // Web font styled node should be rewalkable so that resizing during swap
   // would make the node eligible to be LCP candidate again.
   if (RuntimeEnabledFeatures::WebFontResizeLCPEnabled()) {
-    if (aggregator.GetNode()->GetComputedStyle() &&
-        aggregator.GetNode()->GetComputedStyle()->GetFont().HasCustomFont()) {
+    if (aggregator.StyleRef().GetFont().HasCustomFont()) {
       rewalkable_set_.insert(&aggregator);
     }
   }
@@ -288,10 +287,7 @@ void TextPaintTimingDetector::AssignPaintTimeToQueuedRecords(
     record->paint_time = timestamp;
     if (can_report_element_timing)
       text_element_timing_->OnTextObjectPainted(*record);
-
-    if (ltp_manager_ && (record->recorded_size > 0u) &&
-        !(record->node_ &&
-          ltp_manager_->IsUnrelatedSoftNavigationPaint(*(record->node_)))) {
+    if (ltp_manager_ && record->recorded_size > 0u) {
       ltp_manager_->MaybeUpdateLargestText(record);
     }
     keys_to_be_removed.push_back(it.key);

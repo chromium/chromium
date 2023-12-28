@@ -92,7 +92,8 @@ base::flat_map<VkFormat, VkImageUsageFlags> CreateImageUsageCache(
 bool IsFormatSupported(viz::SharedImageFormat format,
                        gfx::GpuMemoryBufferType gmb_type,
                        uint32_t usage) {
-  if (usage & SHARED_IMAGE_USAGE_GLES2 ||
+#if !BUILDFLAG(IS_FUCHSIA)
+  if (HasGLES2ReadOrWriteUsage(usage) ||
       usage & SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT) {
     if (format.IsLegacyMultiplanar() || format.PrefersExternalSampler()) {
       // GL interop does not work with external sampler. Also, see
@@ -100,6 +101,7 @@ bool IsFormatSupported(viz::SharedImageFormat format,
       return false;
     }
   }
+#endif
 
   if (format.is_multi_plane()) {
     if (gmb_type != gfx::GpuMemoryBufferType::EMPTY_BUFFER) {
@@ -141,7 +143,8 @@ constexpr uint32_t kSupportedUsage =
     SHARED_IMAGE_USAGE_WEBGPU | SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
     SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE |
 #endif
-    SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
+    SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
+    SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
     SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
     SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_VIDEO_DECODE |

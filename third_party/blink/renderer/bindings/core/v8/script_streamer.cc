@@ -15,6 +15,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/page/v8_compile_hints_histograms.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
@@ -767,6 +768,9 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
   if (compile_hints_producer && compile_hints_producer->MightGenerateData()) {
     DCHECK(base::FeatureList::IsEnabled(features::kProduceCompileHints2));
     compile_options = v8::ScriptCompiler::kProduceCompileHints;
+    base::UmaHistogramEnumeration(
+        v8_compile_hints::kStatusHistogram,
+        v8_compile_hints::Status::kProduceCompileHintsStreaming);
   } else if (local_compile_hints_enabled &&
              V8CodeCache::HasCompileHints(
                  script_resource_->CacheHandler(),
@@ -792,6 +796,9 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
       compile_hint_callback =
           v8_compile_hints::V8LocalCompileHintsConsumer::GetCompileHint;
       compile_options = v8::ScriptCompiler::kConsumeCompileHints;
+      base::UmaHistogramEnumeration(
+          v8_compile_hints::kStatusHistogram,
+          v8_compile_hints::Status::kConsumeLocalCompileHintsStreaming);
     }
   } else if (compile_hints_consumer && compile_hints_consumer->HasData()) {
     // This doesn't need to be gated behind a runtime flag, because there won't
@@ -805,11 +812,17 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
         &v8_compile_hints::V8CrowdsourcedCompileHintsConsumer::
             CompileHintCallback;
     compile_options = v8::ScriptCompiler::kConsumeCompileHints;
+    base::UmaHistogramEnumeration(
+        v8_compile_hints::kStatusHistogram,
+        v8_compile_hints::Status::kConsumeCrowdsourcedCompileHintsStreaming);
   } else if (local_compile_hints_enabled) {
     // Produce local compile hints. TODO(chromium:1495723): If we later find out
     // there were local compile hints (but the cache arrived late), we'll need
     // to use them.
     compile_options = v8::ScriptCompiler::kProduceCompileHints;
+    base::UmaHistogramEnumeration(
+        v8_compile_hints::kStatusHistogram,
+        v8_compile_hints::Status::kProduceCompileHintsStreaming);
   }
 
   std::unique_ptr<v8::ScriptCompiler::ScriptStreamingTask>

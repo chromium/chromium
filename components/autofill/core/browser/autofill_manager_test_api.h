@@ -27,10 +27,6 @@ class AutofillManagerTestApi {
     return manager_->mutable_form_structures();
   }
 
-  FormStructure* ParseForm(const FormData& form) {
-    return manager_->ParseForm(form, nullptr);
-  }
-
  private:
   raw_ref<AutofillManager> manager_;
 };

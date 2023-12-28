@@ -9,7 +9,11 @@
   }
 
   cr-search-field {
-    margin-bottom: 8px;
+    margin-top: 20px;
+  }
+
+  cr-search-field::part(searchInput) {
+    font: var(--cros-body-2-font);
   }
 
   .label {
@@ -28,12 +32,14 @@
 </style>
 
 <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
-  <div slot="title">[[header]]</div>
-  <div id="dialog-body" slot="body" scrollable>
+  <div slot="title">
+    <div id="heading">[[header]]</div>
     <cr-search-field label="[[searchLabel]]" id="search"
         clear-label="$i18n{clearSearch}" autofocus
         on-search-changed="onSearchChanged_" on-keydown="onKeydown_">
     </cr-search-field>
+  </div>
+  <div id="dialog-body" slot="body" scrollable>
     <template is="dom-if" if="[[showSuggestedList_]]">
       <div id="suggested-items-label" class="label">
         [[suggestedItemsLabel]]

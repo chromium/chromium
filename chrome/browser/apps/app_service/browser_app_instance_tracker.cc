@@ -60,15 +60,16 @@ bool HaveSameWindowTreeHostLacros(aura::Window* window1,
 #endif
 
 Browser* GetBrowserWithTabStripModel(TabStripModel* tab_strip_model) {
-  for (auto* browser : *BrowserList::GetInstance()) {
-    if (browser->tab_strip_model() == tab_strip_model)
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    if (browser->tab_strip_model() == tab_strip_model) {
       return browser;
+    }
   }
   return nullptr;
 }
 
 Browser* GetBrowserWithAuraWindow(aura::Window* aura_window) {
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     BrowserWindow* window = browser->window();
     if (window && window->GetNativeWindow() == aura_window) {
       return browser;
@@ -122,8 +123,9 @@ std::string GetAppIdForBrowser(Browser* browser) {
   auto* registry = extensions::ExtensionRegistry::Get(browser->profile());
   auto* extension = registry->GetInstalledExtension(app_id);
   // This is a web-app.
-  if (!extension)
+  if (!extension) {
     return app_id;
+  }
 
   if (extension->is_hosted_app() || extension->is_legacy_packaged_app()) {
     return app_id;
@@ -330,7 +332,7 @@ void BrowserAppInstanceTracker::OnAppUpdate(const AppUpdate& update) {
   // Sync app instances for existing tabs.
   // Iterate over the full list of browsers instead of tracked_browsers_ in case
   // tracked_browsers_ is out of date with global state.
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (!IsBrowserTracked(browser)) {
       continue;
     }
@@ -695,7 +697,7 @@ bool BrowserAppInstanceTracker::IsActivationClientTracked(
   // tracked_browsers_ is out of date with global state
   // TODO(crbug.com/1236273): This can be changed to iterate tracked_browsers_
   // when confident it doesn't get out of sync.
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (IsBrowserTracked(browser) &&
         ActivationClientForBrowser(browser) == client) {
       return true;

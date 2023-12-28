@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <string.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/containers/fixed_flat_map.h"
@@ -106,9 +107,9 @@ void XInputDataFetcherWin::EnumerateDevices() {
         pad.vibration_actuator.type = GamepadHapticActuatorType::kDualRumble;
         pad.vibration_actuator.not_null = true;
 
-        const auto name = [](BYTE sub_type) -> base::StringPiece16 {
+        const auto name = [](BYTE sub_type) -> std::u16string_view {
           static constexpr auto kNames =
-              base::MakeFixedFlatMap<BYTE, base::StringPiece16>({
+              base::MakeFixedFlatMap<BYTE, std::u16string_view>({
                   {kDeviceSubTypeGamepad, u"GAMEPAD"},
                   {kDeviceSubTypeWheel, u"WHEEL"},
                   {kDeviceSubTypeArcadeStick, u"ARCADE_STICK"},

@@ -193,6 +193,8 @@ class DlpFilesControllerAsh : public DlpFilesController,
       Profile* profile,
       const base::FilePath& file_path) override;
 
+  bool IsInLocalFileSystem(const base::FilePath& file_path) override;
+
   void ShowDlpBlockedFiles(
       std::optional<file_manager::io_task::IOTaskId> task_id,
       std::vector<base::FilePath> blocked_files,

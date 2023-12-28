@@ -41,9 +41,9 @@ class ASH_EXPORT PrivacyScreenToastView : public views::View,
   void OnViewFocused(views::View* observed_view) override;
   void OnViewBlurred(views::View* observed_view) override;
 
-  raw_ptr<PrivacyScreenToastController, ExperimentalAsh> controller_ = nullptr;
-  raw_ptr<FeaturePodIconButton, ExperimentalAsh> button_ = nullptr;
-  raw_ptr<PrivacyScreenToastLabelView, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<PrivacyScreenToastController> controller_ = nullptr;
+  raw_ptr<FeaturePodIconButton> button_ = nullptr;
+  raw_ptr<PrivacyScreenToastLabelView> label_ = nullptr;
   bool is_enabled_ = false;
   bool is_managed_ = false;
 };

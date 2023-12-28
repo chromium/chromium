@@ -67,15 +67,15 @@ CameraRollThumbnail::~CameraRollThumbnail() = default;
 void CameraRollThumbnail::PaintButtonContents(gfx::Canvas* canvas) {
   views::MenuButton::PaintButtonContents(canvas);
 
-  auto* color_provider = AshColorProvider::Get();
-  canvas->DrawColor(color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
+  canvas->DrawColor(
+      GetColorProvider()->GetColor(kColorAshControlBackgroundColorInactive));
 
   canvas->DrawImageInt(image_, 0, 0, image_.width(), image_.height(), 0, 0,
                        kCameraRollThumbnailBorderSize.width(),
                        kCameraRollThumbnailBorderSize.height(), false);
 
   if (video_type_) {
+    auto* color_provider = AshColorProvider::Get();
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setColor(GetColorProvider()->GetColor(kColorAshShieldAndBase80));

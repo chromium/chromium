@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
+#include "cc/metrics/scroll_jank_ukm_reporter.h"
 
 namespace cc {
 
@@ -33,6 +34,11 @@ class CC_EXPORT PredictorJankTracker {
   // Whenever a new scroll starts, data inside this class will be erased
   // as it should be comparing neighbouring frames only.
   void ResetCurrentScrollReporting();
+
+  void set_scroll_jank_ukm_reporter(
+      raw_ptr<ScrollJankUkmReporter> scroll_jank_ukm_reporter) {
+    scroll_jank_ukm_reporter_ = scroll_jank_ukm_reporter;
+  }
 
  private:
   // The metric works by storing a sliding window of the previous two
@@ -73,6 +79,8 @@ class CC_EXPORT PredictorJankTracker {
 
   float total_frames_ = 0;
   float janky_frames_ = 0;
+
+  raw_ptr<ScrollJankUkmReporter> scroll_jank_ukm_reporter_ = nullptr;
 };
 
 }  // namespace cc

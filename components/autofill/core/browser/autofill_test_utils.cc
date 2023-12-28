@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "base/memory/raw_ptr.h"
 
 #include <cstdint>
 #include <iterator>
@@ -26,7 +27,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -53,16 +54,7 @@ using FieldPrediction = ::autofill::AutofillQueryResponse::FormSuggestion::
 namespace autofill {
 
 bool operator==(const FormFieldDataPredictions& a,
-                const FormFieldDataPredictions& b) {
-  auto members = [](const FormFieldDataPredictions& p) {
-    return std::tie(p.host_form_signature, p.signature, p.heuristic_type,
-                    p.server_type, p.html_type, p.overall_type,
-                    p.parseable_name, p.section, p.rank,
-                    p.rank_in_signature_group, p.rank_in_host_form,
-                    p.rank_in_host_form_signature_group);
-  };
-  return members(a) == members(b);
-}
+                const FormFieldDataPredictions& b) = default;
 
 bool operator==(const FormDataPredictions& a, const FormDataPredictions& b) {
   return test::WithoutUnserializedData(a.data).SameFormAs(
@@ -176,7 +168,7 @@ std::unique_ptr<PrefService> PrefServiceForTesting(
 
 inline void check_and_set(
     FormGroup* profile,
-    ServerFieldType type,
+    FieldType type,
     const char* value,
     VerificationStatus status = VerificationStatus::kObserved) {
   if (value) {
@@ -732,7 +724,7 @@ void ReenableSystemServices() {
   OSCryptMocker::TearDown();
 }
 
-void SetServerCreditCards(AutofillTable* table,
+void SetServerCreditCards(PaymentsAutofillTable* table,
                           const std::vector<CreditCard>& cards) {
   std::vector<CreditCard> as_masked_cards = cards;
   for (CreditCard& card : as_masked_cards) {
@@ -754,19 +746,18 @@ void SetServerCreditCards(AutofillTable* table,
 }
 
 void InitializePossibleTypesAndValidities(
-    std::vector<ServerFieldTypeSet>& possible_field_types,
-    std::vector<ServerFieldTypeValidityStatesMap>&
-        possible_field_types_validities,
-    const std::vector<ServerFieldType>& possible_types,
+    std::vector<FieldTypeSet>& possible_field_types,
+    std::vector<FieldTypeValidityStatesMap>& possible_field_types_validities,
+    const std::vector<FieldType>& possible_types,
     const std::vector<AutofillDataModel::ValidityState>& validity_states) {
-  possible_field_types.push_back(ServerFieldTypeSet());
-  possible_field_types_validities.push_back(ServerFieldTypeValidityStatesMap());
+  possible_field_types.push_back(FieldTypeSet());
+  possible_field_types_validities.push_back(FieldTypeValidityStatesMap());
 
   if (validity_states.empty()) {
     for (const auto& possible_type : possible_types) {
       possible_field_types.back().insert(possible_type);
       possible_field_types_validities.back()[possible_type].push_back(
-          AutofillProfile::UNVALIDATED);
+          AutofillProfile::ValidityState::kUnvalidated);
     }
     return;
   }
@@ -775,7 +766,7 @@ void InitializePossibleTypesAndValidities(
   ASSERT_TRUE((possible_types.size() == validity_states.size()) ||
               (possible_types.size() == 1 && validity_states.size() > 1));
 
-  ServerFieldType possible_type = possible_types[0];
+  FieldType possible_type = possible_types[0];
   for (unsigned i = 0; i < validity_states.size(); ++i) {
     if (possible_types.size() == validity_states.size()) {
       possible_type = possible_types[i];
@@ -884,7 +875,7 @@ std::vector<FormSignature> GetEncodedSignatures(const FormStructure& form) {
 }
 
 std::vector<FormSignature> GetEncodedSignatures(
-    const std::vector<FormStructure*>& forms) {
+    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms) {
   std::vector<FormSignature> all_signatures;
   for (const FormStructure* form : forms)
     all_signatures.push_back(form->form_signature());
@@ -897,7 +888,7 @@ std::vector<FormSignature> GetEncodedAlternativeSignatures(
 }
 
 std::vector<FormSignature> GetEncodedAlternativeSignatures(
-    const std::vector<FormStructure*>& forms) {
+    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms) {
   std::vector<FormSignature> all_signatures;
   for (const FormStructure* form : forms) {
     all_signatures.push_back(form->alternative_form_signature());
@@ -905,7 +896,7 @@ std::vector<FormSignature> GetEncodedAlternativeSignatures(
   return all_signatures;
 }
 
-FieldPrediction CreateFieldPrediction(ServerFieldType type,
+FieldPrediction CreateFieldPrediction(FieldType type,
                                       FieldPrediction::Source source) {
   FieldPrediction field_prediction;
   field_prediction.set_type(type);
@@ -917,7 +908,7 @@ FieldPrediction CreateFieldPrediction(ServerFieldType type,
   return field_prediction;
 }
 
-FieldPrediction CreateFieldPrediction(ServerFieldType type, bool is_override) {
+FieldPrediction CreateFieldPrediction(FieldType type, bool is_override) {
   if (is_override) {
     return CreateFieldPrediction(type, FieldPrediction::SOURCE_OVERRIDE);
   }
@@ -925,14 +916,14 @@ FieldPrediction CreateFieldPrediction(ServerFieldType type, bool is_override) {
     return CreateFieldPrediction(type, FieldPrediction::SOURCE_UNSPECIFIED);
   }
   return CreateFieldPrediction(
-      type, GroupTypeOfServerFieldType(type) == FieldTypeGroup::kPasswordField
+      type, GroupTypeOfFieldType(type) == FieldTypeGroup::kPasswordField
                 ? FieldPrediction::SOURCE_PASSWORDS_DEFAULT
                 : FieldPrediction::SOURCE_AUTOFILL_DEFAULT);
 }
 
 void AddFieldPredictionToForm(
     const FormFieldData& field_data,
-    ServerFieldType field_type,
+    FieldType field_type,
     AutofillQueryResponse_FormSuggestion* form_suggestion,
     bool is_override) {
   auto* field_suggestion = form_suggestion->add_field_suggestions();
@@ -944,14 +935,13 @@ void AddFieldPredictionToForm(
 
 void AddFieldPredictionsToForm(
     const FormFieldData& field_data,
-    const std::vector<ServerFieldType>& field_types,
+    const std::vector<FieldType>& field_types,
     AutofillQueryResponse_FormSuggestion* form_suggestion) {
   std::vector<FieldPrediction> field_predictions;
   field_predictions.reserve(field_types.size());
-  base::ranges::transform(field_types, std::back_inserter(field_predictions),
-                          [](ServerFieldType field_type) {
-                            return CreateFieldPrediction(field_type);
-                          });
+  base::ranges::transform(
+      field_types, std::back_inserter(field_predictions),
+      [](FieldType field_type) { return CreateFieldPrediction(field_type); });
   return AddFieldPredictionsToForm(field_data, field_predictions,
                                    form_suggestion);
 }

@@ -110,6 +110,12 @@
     --iron-icon-width: 40px;
     --iron-icon-height: 40px;
   }
+
+  .utility-bar {
+    display: flex;
+    justify-content: end;
+    margin-bottom: 8px;
+  }
 </style>
 <div class="traces-header">
   <h1>Traces
@@ -126,6 +132,13 @@
 </template>
 
 <template is="dom-if" if="[[!isLoading]]">
+  <div class="utility-bar">
+    <cr-button class="floating-button" disabled$="[[hasTraces_(traces)]]"
+        on-click="onDeleteAllTracesClick_">
+      <iron-icon icon="cr:delete" aria-hidden="true"></iron-icon>
+      Delete All Traces
+    </cr-button>
+  </div>
   <template is="dom-repeat" items="[[traces]]">
     <trace-report trace="[[item]]" on-show-toast="showToastHandler_">
     </trace-report>

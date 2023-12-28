@@ -262,7 +262,7 @@ class AdTaggingBrowserTest : public SubresourceFilterBrowserTest {
 
     auto entries = ukm_recorder_->GetEntriesByName(
         ukm::builders::Blink_UseCounter::kEntryName);
-    for (auto* entry : entries) {
+    for (const ukm::mojom::UkmEntry* entry : entries) {
       const ukm::UkmSource* src =
           ukm_recorder_->GetSourceForSourceId(entry->source_id);
       if (src->url() != url) {

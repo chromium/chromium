@@ -150,7 +150,7 @@ void AddressProfileSaveManager::FinalizeProfileImport(
   AdjustMigrateProfileStrikes(*import_process);
 
   if (import_process->UserAccepted()) {
-    const absl::optional<AutofillProfile>& confirmed_import_candidate =
+    const std::optional<AutofillProfile>& confirmed_import_candidate =
         import_process->confirmed_import_candidate();
     DCHECK(confirmed_import_candidate);
     AddMultiStepComplementCandidate(client_->GetFormDataImporter(),

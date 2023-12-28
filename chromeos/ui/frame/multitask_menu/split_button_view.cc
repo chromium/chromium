@@ -273,7 +273,7 @@ void SplitButtonView::OnThemeChanged() {
   left_top_button_->set_button_color(border_color_);
 }
 
-BEGIN_METADATA(SplitButtonView, View)
+BEGIN_METADATA(SplitButtonView)
 END_METADATA
 
 }  // namespace chromeos

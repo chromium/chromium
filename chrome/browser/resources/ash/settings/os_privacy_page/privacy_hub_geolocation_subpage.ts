@@ -8,11 +8,13 @@
  * the state of the system geolocation access.
  */
 
-import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
+import {DropdownMenuOptionList, SettingsDropdownMenuElement} from '/shared/settings/controls/settings_dropdown_menu.js';
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './privacy_hub_geolocation_subpage.html.js';
+import {LOCATION_PERMISSION_CHANGE_FROM_SETTINGS_HISTOGRAM_NAME} from './privacy_hub_metrics_util.js';
 
 /**
  * Geolocation access levels for the ChromeOS system.
@@ -25,7 +27,17 @@ export enum GeolocationAccessLevel {
   ONLY_ALLOWED_FOR_SYSTEM = 2,
 }
 
-const SettingsPrivacyHubGeolocationSubpageBase = I18nMixin(PolymerElement);
+export const GEOLOCATION_ACCESS_LEVEL_ENUM_SIZE =
+    Object.keys(GeolocationAccessLevel).length;
+
+export interface SettingsPrivacyHubGeolocationSubpage {
+  $: {
+    geolocationDropdown: SettingsDropdownMenuElement,
+  };
+}
+
+const SettingsPrivacyHubGeolocationSubpageBase =
+    PrefsMixin(I18nMixin(PolymerElement));
 
 export class SettingsPrivacyHubGeolocationSubpage extends
     SettingsPrivacyHubGeolocationSubpageBase {
@@ -62,6 +74,14 @@ export class SettingsPrivacyHubGeolocationSubpage extends
   }
 
   private geolocationMapTargets_: DropdownMenuOptionList;
+
+  private recordMetric_(): void {
+    const accessLevel = this.$.geolocationDropdown.pref!.value;
+
+    chrome.metricsPrivate.recordEnumerationValue(
+        LOCATION_PERMISSION_CHANGE_FROM_SETTINGS_HISTOGRAM_NAME, accessLevel,
+        GEOLOCATION_ACCESS_LEVEL_ENUM_SIZE);
+  }
 }
 
 declare global {

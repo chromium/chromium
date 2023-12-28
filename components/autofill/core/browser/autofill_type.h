@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_TYPE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_TYPE_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -39,7 +39,7 @@ class AutofillType {
     ~ServerPrediction();
 
     // The most likely server-side prediction for the field's type.
-    ServerFieldType server_type() const;
+    FieldType server_type() const;
 
     // Checks whether server-side prediction for the field's type is an
     // override.
@@ -53,7 +53,7 @@ class AutofillType {
 
     // Requirements the site imposes on passwords (for password generation)
     // obtained from the Autofill server.
-    absl::optional<PasswordRequirementsSpec> password_requirements;
+    std::optional<PasswordRequirementsSpec> password_requirements;
 
     // The server-side predictions for the field's type.
     std::vector<
@@ -61,7 +61,7 @@ class AutofillType {
         server_predictions;
   };
 
-  explicit AutofillType(ServerFieldType field_type = NO_SERVER_DATA);
+  explicit AutofillType(FieldType field_type = NO_SERVER_DATA);
   explicit AutofillType(HtmlFieldType field_type);
   AutofillType(const AutofillType& autofill_type) = default;
   AutofillType& operator=(const AutofillType& autofill_type) = default;
@@ -80,13 +80,13 @@ class AutofillType {
   // parameter).  Note that the returned type might not be exactly equivalent to
   // `this` type.  For example, the HTML types 'country' and 'country-name' both
   // map to ADDRESS_HOME_COUNTRY.
-  ServerFieldType GetStorableType() const;
+  FieldType GetStorableType() const;
 
   std::string ToString() const;
 
  private:
   // The server-native field type, or UNKNOWN_TYPE if unset.
-  ServerFieldType server_type_ = UNKNOWN_TYPE;
+  FieldType server_type_ = UNKNOWN_TYPE;
 
   // The HTML autocomplete field type, if set.
   HtmlFieldType html_type_ = HtmlFieldType::kUnspecified;

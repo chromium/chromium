@@ -568,7 +568,8 @@ TEST_F(MLGraphXnnpackTest, ComputeAsyncTest) {
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
     ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
-    graph->ComputeAsync({{"a", a_buffer_view}, {"b", b_buffer_view}},
+    graph->ComputeAsync(ScopedMLTrace("ComputeAsync"),
+                        {{"a", a_buffer_view}, {"b", b_buffer_view}},
                         {{"output", output_buffer_view}}, resolver,
                         scope.GetExceptionState());
     tester.WaitUntilSettled();
@@ -595,7 +596,8 @@ TEST_F(MLGraphXnnpackTest, ComputeAsyncTest) {
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
     ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
-    graph->ComputeAsync({{"a", a_buffer_view}, {"b", b_buffer_view}},
+    graph->ComputeAsync(ScopedMLTrace("ComputeAsync"),
+                        {{"a", a_buffer_view}, {"b", b_buffer_view}},
                         {{"output", output_buffer_view}}, resolver,
                         scope.GetExceptionState());
     tester.WaitUntilSettled();
@@ -622,7 +624,8 @@ TEST_F(MLGraphXnnpackTest, ComputeAsyncTest) {
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
     ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
-    graph->ComputeAsync({{"a", a_buffer_view}, {"b", b_buffer_view}},
+    graph->ComputeAsync(ScopedMLTrace("ComputeAsync"),
+                        {{"a", a_buffer_view}, {"b", b_buffer_view}},
                         {{"output", output_buffer_view}}, resolver,
                         scope.GetExceptionState());
     tester.WaitUntilSettled();
@@ -648,7 +651,8 @@ TEST_F(MLGraphXnnpackTest, ComputeAsyncTest) {
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
     ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
-    graph->ComputeAsync({{"a", a_buffer_view}, {"b", b_buffer_view}},
+    graph->ComputeAsync(ScopedMLTrace("ComputeAsync"),
+                        {{"a", a_buffer_view}, {"b", b_buffer_view}},
                         {{"output", output_buffer_view}}, resolver,
                         scope.GetExceptionState());
     EXPECT_EQ(a_buffer_view->IsDetached(), true);
@@ -689,7 +693,8 @@ TEST_F(MLGraphXnnpackTest, ComputeAsyncTest) {
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
     ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
-    graph->ComputeAsync({{"a", a_buffer_view}, {"b", b_buffer_view}},
+    graph->ComputeAsync(ScopedMLTrace("ComputeAsync"),
+                        {{"a", a_buffer_view}, {"b", b_buffer_view}},
                         {{"output", output_buffer_view}}, resolver,
                         scope.GetExceptionState());
     tester.WaitUntilSettled();

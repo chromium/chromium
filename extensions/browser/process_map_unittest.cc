@@ -9,6 +9,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -120,32 +121,32 @@ TEST(ExtensionProcessMapTest, GetMostLikelyContextType) {
   const GURL extension_url("chrome-extension://foobar");
   const GURL untrusted_webui_url("chrome-untrusted://foo/index.html");
 
-  EXPECT_EQ(extensions::Feature::WEB_PAGE_CONTEXT,
+  EXPECT_EQ(extensions::mojom::ContextType::kWebPage,
             map.GetMostLikelyContextType(nullptr, 1, &web_url));
 
   scoped_refptr<const extensions::Extension> extension =
       CreateExtensionWithFlags(extensions::TypeToCreate::kExtension, "a");
 
-  EXPECT_EQ(extensions::Feature::CONTENT_SCRIPT_CONTEXT,
+  EXPECT_EQ(extensions::mojom::ContextType::kContentScript,
             map.GetMostLikelyContextType(extension.get(), 2, &extension_url));
 
-  EXPECT_EQ(extensions::Feature::CONTENT_SCRIPT_CONTEXT,
+  EXPECT_EQ(extensions::mojom::ContextType::kContentScript,
             map.GetMostLikelyContextType(extension.get(), 2, &web_url));
 
   EXPECT_EQ(
-      extensions::Feature::CONTENT_SCRIPT_CONTEXT,
+      extensions::mojom::ContextType::kContentScript,
       map.GetMostLikelyContextType(extension.get(), 2, &untrusted_webui_url));
 
   map.Insert("b", 3);
   extension =
       CreateExtensionWithFlags(extensions::TypeToCreate::kExtension, "b");
-  EXPECT_EQ(extensions::Feature::BLESSED_EXTENSION_CONTEXT,
+  EXPECT_EQ(extensions::mojom::ContextType::kPrivilegedExtension,
             map.GetMostLikelyContextType(extension.get(), 3, &extension_url));
 
   map.Insert("c", 4);
   extension =
       CreateExtensionWithFlags(extensions::TypeToCreate::kPlatformApp, "c");
-  EXPECT_EQ(extensions::Feature::BLESSED_EXTENSION_CONTEXT,
+  EXPECT_EQ(extensions::mojom::ContextType::kPrivilegedExtension,
             map.GetMostLikelyContextType(extension.get(), 4, &extension_url));
 
   map.set_is_lock_screen_context(true);
@@ -153,27 +154,27 @@ TEST(ExtensionProcessMapTest, GetMostLikelyContextType) {
   map.Insert("d", 5);
   extension =
       CreateExtensionWithFlags(extensions::TypeToCreate::kPlatformApp, "d");
-  EXPECT_EQ(extensions::Feature::LOCK_SCREEN_EXTENSION_CONTEXT,
+  EXPECT_EQ(extensions::mojom::ContextType::kLockscreenExtension,
             map.GetMostLikelyContextType(extension.get(), 5, &extension_url));
 
   map.Insert("e", 6);
   extension =
       CreateExtensionWithFlags(extensions::TypeToCreate::kExtension, "e");
-  EXPECT_EQ(extensions::Feature::LOCK_SCREEN_EXTENSION_CONTEXT,
+  EXPECT_EQ(extensions::mojom::ContextType::kLockscreenExtension,
             map.GetMostLikelyContextType(extension.get(), 6, &extension_url));
 
   map.Insert("f", 7);
   extension =
       CreateExtensionWithFlags(extensions::TypeToCreate::kHostedApp, "f");
-  EXPECT_EQ(extensions::Feature::BLESSED_WEB_PAGE_CONTEXT,
+  EXPECT_EQ(extensions::mojom::ContextType::kPrivilegedWebPage,
             map.GetMostLikelyContextType(extension.get(), 7, &web_url));
 
   map.Insert("g", 8);
-  EXPECT_EQ(extensions::Feature::WEBUI_UNTRUSTED_CONTEXT,
+  EXPECT_EQ(extensions::mojom::ContextType::kUntrustedWebUi,
             map.GetMostLikelyContextType(/*extension=*/nullptr, 8,
                                          &untrusted_webui_url));
 
   map.Insert("h", 9);
-  EXPECT_EQ(extensions::Feature::WEB_PAGE_CONTEXT,
+  EXPECT_EQ(extensions::mojom::ContextType::kWebPage,
             map.GetMostLikelyContextType(/*extension=*/nullptr, 9, &web_url));
 }

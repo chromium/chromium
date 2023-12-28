@@ -5,6 +5,7 @@
 #ifndef BASE_FUNCTIONAL_FUNCTION_REF_H_
 #define BASE_FUNCTIONAL_FUNCTION_REF_H_
 
+#include <concepts>
 #include <type_traits>
 #include <utility>
 
@@ -61,23 +62,33 @@ class FunctionRef;
 //   }([] { return 42; });
 template <typename R, typename... Args>
 class FunctionRef<R(Args...)> {
- private:
   template <typename Functor,
-            typename FunctorReturnType =
-                typename internal::BindTypeHelper<Functor>::ReturnType,
-            typename FunctorArgsAsTypeList =
-                typename internal::BindTypeHelper<Functor>::RunParamsList>
-  using EnableIfCompatible = std::enable_if_t<
-      std::is_convertible_v<FunctorReturnType, R> &&
-      std::is_same_v<FunctorArgsAsTypeList, internal::TypeList<Args...>>>;
+            typename RunType = internal::MakeFunctorTraits<Functor>::RunType>
+  static constexpr bool kCompatibleFunctor =
+      std::convertible_to<internal::ExtractReturnType<RunType>, R> &&
+      std::same_as<internal::ExtractArgs<RunType>, internal::TypeList<Args...>>;
 
  public:
-  // `ABSL_ATTRIBUTE_LIFETIME_BOUND` is important since `FunctionRef` retains
+  // `ABSL_ATTRIBUTE_LIFETIME_BOUND` is important; since `FunctionRef` retains
   // only a reference to `functor`, `functor` must outlive `this`.
-  template <typename Functor, typename = EnableIfCompatible<Functor>>
+  template <typename Functor>
+    requires kCompatibleFunctor<Functor>
   // NOLINTNEXTLINE(google-explicit-constructor)
   FunctionRef(const Functor& functor ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : wrapped_func_ref_(functor) {}
+
+  // Constructs a reference to the given function pointer. This constructor
+  // serves to exclude this case from lifetime analysis, since the underlying
+  // code pointed to by a function pointer is safe to invoke even if the
+  // lifetime of the pointer provided doesn't outlive us, e.g.:
+  //   `const FunctionRef<void(int)> ref = +[](int i) { ... };`
+  // Without this constructor, the above code would warn about dangling refs.
+  // TODO(pkasting): Also support ptr-to-member-functions; this requires changes
+  // in `absl::FunctionRef` or else rewriting this class to not use that one.
+  template <typename Func>
+    requires kCompatibleFunctor<Func*>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  FunctionRef(Func* func) : wrapped_func_ref_(func) {}
 
   // Null FunctionRefs are not allowed.
   FunctionRef() = delete;
@@ -89,13 +100,6 @@ class FunctionRef<R(Args...)> {
   R operator()(Args... args) const {
     return wrapped_func_ref_(std::forward<Args>(args)...);
   }
-
-  absl::FunctionRef<R(Args...)> ToAbsl() const { return wrapped_func_ref_; }
-
-  // In Chrome, converting to `absl::FunctionRef` should be explicitly done
-  // through `ToAbsl()`.
-  template <typename Signature>
-  operator absl::FunctionRef<Signature>() = delete;
 
  private:
   absl::FunctionRef<R(Args...)> wrapped_func_ref_;

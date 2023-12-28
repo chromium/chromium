@@ -741,7 +741,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
 // If we run in Ash however, we can check that the UI was correctly open.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool is_diagnostic_app_open = false;
-  for (auto* target_browser : *BrowserList::GetInstance()) {
+  for (Browser* target_browser : *BrowserList::GetInstance()) {
     TabStripModel* target_tab_strip = target_browser->tab_strip_model();
     for (int i = 0; i < target_tab_strip->count(); ++i) {
       content::WebContents* target_contents =

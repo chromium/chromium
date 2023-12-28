@@ -920,7 +920,8 @@ PaintOp* DrawSlugOp::Deserialize(PaintOpReader& reader, void* output) {
   reader.Read(&count);
   if (count > 0) {
     reader.Read(&op->slug);
-    op->extra_slugs.resize(count - 1);
+    op->extra_slugs.resize(
+        std::min<size_t>(op->extra_slugs.max_size(), count - 1));
     for (auto& extra_slug : op->extra_slugs) {
       reader.Read(&extra_slug);
     }

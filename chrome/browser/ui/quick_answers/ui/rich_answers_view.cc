@@ -39,6 +39,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -55,24 +56,18 @@ using quick_answers::ResultType;
 // Rich card dimensions.
 constexpr int kDefaultRichCardWidth = 360;
 constexpr int kMinimumRichCardHeight = 120;
-constexpr int kMaximumRichCardHeight = 600;
-constexpr int kContentViewWidth = 300;
+constexpr int kMaximumRichCardHeight = 464;
 
 // View dimensions.
-constexpr auto kMainViewInsets = gfx::Insets::TLBR(20, 20, 20, 20);
+constexpr auto kMainViewInsets = gfx::Insets::TLBR(20, 20, 8, 20);
 constexpr auto kContentViewInsets = gfx::Insets::TLBR(0, 16, 0, 0);
 
 // Buttons view.
-constexpr auto kSettingsButtonInsets = gfx::Insets::TLBR(0, 8, 8, 0);
+constexpr auto kSettingsButtonInsets = gfx::Insets::TLBR(0, 8, 0, 0);
 constexpr int kSettingsButtonSizeDip = 20;
 
 // Border corner radius.
 constexpr int kBorderCornerRadius = 12;
-
-// Result type icons.
-constexpr int kResultTypeIconContainerRadius = 24;
-constexpr int kResultTypeIconSizeDip = 16;
-constexpr auto kResultTypeIconContainerInsets = gfx::Insets::TLBR(4, 4, 4, 4);
 
 // Google search link.
 constexpr auto kSearchLinkViewInsets = gfx::Insets::TLBR(6, 60, 20, 20);
@@ -199,7 +194,23 @@ ui::ImageModel RichAnswersView::GetIconImageModelForTesting() {
 void RichAnswersView::InitLayout() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  // Set up the scroll view that contains all the rich card components.
+  // Set up the scrollable base view that contains all the rich card components.
+  SetUpBaseView();
+
+  // Set up the main view that contains the icon and content view.
+  SetUpMainView();
+
+  // Add icon that corresponds to the quick answer result type.
+  AddResultTypeIcon();
+
+  // Set up the content view that will be populated by the rich card subclasses.
+  SetUpContentView();
+
+  // Add google search link label at the bottom of the base view.
+  AddGoogleSearchLink();
+}
+
+void RichAnswersView::SetUpBaseView() {
   auto* scroll_view = AddChildView(std::make_unique<views::ScrollView>());
   scroll_view->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
@@ -210,7 +221,9 @@ void RichAnswersView::InitLayout() {
       base_view_->SetLayoutManager(std::make_unique<views::FlexLayout>());
   base_layout->SetOrientation(views::LayoutOrientation::kVertical)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+}
 
+void RichAnswersView::SetUpMainView() {
   main_view_ = base_view_->AddChildView(
       views::Builder<views::FlexLayoutView>()
           .SetOrientation(views::LayoutOrientation::kHorizontal)
@@ -218,21 +231,17 @@ void RichAnswersView::InitLayout() {
           .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
           .SetInteriorMargin(kMainViewInsets)
           .Build());
+}
 
-  // Add icon that corresponds to the quick answer result type.
-  AddResultTypeIcon();
-
-  // Add content view that will be populated by the rich card subclasses.
+void RichAnswersView::SetUpContentView() {
   content_view_ = main_view_->AddChildView(
-      views::Builder<views::FlexLayoutView>()
-          .SetOrientation(views::LayoutOrientation::kVertical)
-          .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
-          .SetInteriorMargin(kContentViewInsets)
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStretch)
+          .SetInsideBorderInsets(kContentViewInsets)
           .Build());
-  content_view_->SetMinimumCrossAxisSize(kContentViewWidth);
-
-  // Add google search link label at the bottom.
-  AddGoogleSearchLink();
+  content_view_->SetMinimumCrossAxisSize(kContentTextWidth);
+  content_view_->SetBetweenChildSpacing(kContentSingleSpacing);
 }
 
 void RichAnswersView::AddResultTypeIcon() {
@@ -241,29 +250,28 @@ void RichAnswersView::AddResultTypeIcon() {
   auto* vector_icon_container =
       main_view_->AddChildView(std::make_unique<views::FlexLayoutView>());
   vector_icon_container->SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysPrimary, kResultTypeIconContainerRadius));
+      cros_tokens::kCrosSysPrimary, kRichAnswersIconContainerRadius));
   vector_icon_container->SetBorder(
-      views::CreateEmptyBorder(kResultTypeIconContainerInsets));
+      views::CreateEmptyBorder(kRichAnswersIconBorderDip));
 
   vector_icon_ =
       vector_icon_container->AddChildView(std::make_unique<views::ImageView>());
   vector_icon_->SetImage(ui::ImageModel::FromVectorIcon(
       GetResultTypeIcon(result_type_), cros_tokens::kCrosSysSystemBaseElevated,
-      /*icon_size=*/kResultTypeIconSizeDip));
+      /*icon_size=*/kRichAnswersIconSizeDip));
 }
 
-void RichAnswersView::AddSettingsButtonTo(views::View* container_view) {
+views::View* RichAnswersView::AddSettingsButtonTo(views::View* container_view) {
   CHECK(container_view);
 
-  auto* buttons_view = container_view->AddChildView(
+  auto* settings_button_container = container_view->AddChildView(
       views::Builder<views::FlexLayoutView>()
           .SetOrientation(views::LayoutOrientation::kHorizontal)
           .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
-          .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
           .SetInteriorMargin(kSettingsButtonInsets)
           .Build());
 
-  settings_button_ = buttons_view->AddChildView(
+  settings_button_ = settings_button_container->AddChildView(
       std::make_unique<views::ImageButton>(base::BindRepeating(
           &QuickAnswersUiController::OnSettingsButtonPressed, controller_)));
   settings_button_->SetImageModel(
@@ -273,22 +281,30 @@ void RichAnswersView::AddSettingsButtonTo(views::View* container_view) {
                                      /*icon_size=*/kSettingsButtonSizeDip));
   settings_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT));
+
+  return settings_button_container;
 }
 
 void RichAnswersView::AddHeaderViewsTo(views::View* container_view,
-                                       std::string header_text) {
-  auto* header_view = AddFillLayoutChildView(container_view);
-  auto* header_label_container = header_view->AddChildView(
+                                       const std::string& header_text) {
+  // This box layout will have the view flex values as:
+  // - header_view (flex=1): resize (either shrink or expand as necessary)
+  // - settings_button_view (flex=0): no resize
+  views::BoxLayoutView* box_layout_view =
+      container_view->AddChildView(std::make_unique<views::BoxLayoutView>());
+  auto* header_view = box_layout_view->AddChildView(
       views::Builder<views::FlexLayoutView>()
           .SetOrientation(views::LayoutOrientation::kHorizontal)
           .Build());
-  header_label_container->AddChildView(
-      QuickAnswersTextLabel::CreateLabelWithStyle(
-          header_text, GetFontList(TypographyToken::kCrosButton2),
-          kContentHeaderWidth,
-          /*is_multi_line=*/false, cros_tokens::kCrosSysSecondary));
+  header_view->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
+      header_text, GetFontList(TypographyToken::kCrosButton2),
+      kContentHeaderWidth,
+      /*is_multi_line=*/false, cros_tokens::kCrosSysSecondary));
 
-  AddSettingsButtonTo(header_view);
+  views::View* settings_button_view = AddSettingsButtonTo(box_layout_view);
+
+  box_layout_view->SetFlexForView(header_view, /*flex=*/1);
+  box_layout_view->SetFlexForView(settings_button_view, /*flex=*/0);
 }
 
 void RichAnswersView::AddGoogleSearchLink() {

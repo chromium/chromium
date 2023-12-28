@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
+#include "third_party/blink/renderer/core/layout/layout_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
@@ -133,6 +134,13 @@ void LayoutBoxModelObject::StyleWillChange(StyleDifference diff,
     ObjectPaintInvalidator(*this).SlowSetPaintingLayerNeedsRepaint();
   }
 
+  if (Style()) {
+    LayoutFlowThread* flow_thread = FlowThreadContainingBlock();
+    if (flow_thread && flow_thread != this) {
+      flow_thread->FlowThreadDescendantStyleWillChange(this, diff, new_style);
+    }
+  }
+
   LayoutObject::StyleWillChange(diff, new_style);
 }
 
@@ -225,6 +233,12 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
   }
 
   if (old_style && Parent()) {
+    if (LayoutFlowThread* flow_thread = FlowThreadContainingBlock()) {
+      if (flow_thread != this) {
+        flow_thread->FlowThreadDescendantStyleDidChange(this, diff, *old_style);
+      }
+    }
+
     LayoutBlock* block =
         RuntimeEnabledFeatures::LayoutNewContainingBlockEnabled()
             ? InclusiveContainingBlock()

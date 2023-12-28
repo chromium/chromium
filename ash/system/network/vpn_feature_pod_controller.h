@@ -39,10 +39,10 @@ class ASH_EXPORT VPNFeaturePodController : public FeaturePodControllerBase,
  private:
   void Update();
 
-  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
+  const raw_ptr<UnifiedSystemTrayController> tray_controller_;
 
   // Owned by views hierarchy.
-  raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ = nullptr;
+  raw_ptr<FeatureTile, DanglingUntriaged> tile_ = nullptr;
 
   base::WeakPtrFactory<VPNFeaturePodController> weak_ptr_factory_{this};
 };

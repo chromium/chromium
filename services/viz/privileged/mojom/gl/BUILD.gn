@@ -19,6 +19,7 @@ mojom("gl") {
   deps = [ "//gpu/ipc/common:gmb_interface" ]
 
   public_deps = [
+    "//components/ml/webnn:features",
     "//gpu/ipc/common:interfaces",
     "//gpu/ipc/common:surface_handle",
     "//media/mojo/mojom",

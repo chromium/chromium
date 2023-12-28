@@ -16,9 +16,9 @@ import './shared_style.css.js';
 import './strings.m.js';
 import './edit_dialog.js';
 
-import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
@@ -32,13 +32,14 @@ import {afterNextRender, flush, PolymerElement} from 'chrome://resources/polymer
 import {deselectItems, selectAll, selectFolder} from './actions.js';
 import {highlightUpdatedItems, trackUpdatedItems} from './api_listener.js';
 import {BookmarkManagerApiProxyImpl} from './bookmark_manager_api_proxy.js';
-import {BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
+import type {BrowserProxy} from './browser_proxy.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
 import {getTemplate} from './command_manager.html.js';
 import {Command, IncognitoAvailability, MenuSource, OPEN_CONFIRMATION_LIMIT, ROOT_NODE_ID} from './constants.js';
 import {DialogFocusManager} from './dialog_focus_manager.js';
-import {BookmarksEditDialogElement} from './edit_dialog.js';
+import type {BookmarksEditDialogElement} from './edit_dialog.js';
 import {StoreClientMixin} from './store_client_mixin.js';
-import {BookmarkNode, OpenCommandMenuDetail} from './types.js';
+import type {BookmarkNode, OpenCommandMenuDetail} from './types.js';
 import {canEditNode, canReorderChildren, getDisplayedList} from './util.js';
 
 const BookmarksCommandManagerElementBase = StoreClientMixin(PolymerElement);

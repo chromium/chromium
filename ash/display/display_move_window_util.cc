@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <array>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/shell.h"
 #include "ash/wm/bounds_tracker/window_bounds_tracker.h"
 #include "ash/wm/mru_window_tracker.h"

@@ -10,6 +10,10 @@
 #import "base/strings/strcat.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
+#import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/whats_new/data_source/whats_new_data_source.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_mediator_consumer.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
@@ -61,16 +65,23 @@
       break;
     case WhatsNewPrimaryAction::kPrivacySettings:
       // Handles actions that open privacy in Chrome settings.
-      [self.handler
+      [self.applicationHandler
           showPrivacySettingsFromViewController:self.baseViewController];
       break;
     case WhatsNewPrimaryAction::kChromeSettings:
       // Handles actions that open Chrome Settings.
-      [self.handler showSettingsFromViewController:self.baseViewController];
+      [self.applicationHandler
+          showSettingsFromViewController:self.baseViewController];
       break;
     case WhatsNewPrimaryAction::kIOSSettingsPasswords:
       // Handles actions that open Passwords in iOS Settings.
       ios::provider::PasswordsInOtherAppsOpensSettings();
+      break;
+    case WhatsNewPrimaryAction::kLens:
+      // Handles actions that open Lens.
+      // TODO(crbug.com/1502927): Add the Lens promo that contains the
+      // button that triggers the Lens action.
+      [self openLens];
       break;
     case WhatsNewPrimaryAction::kNoAction:
     case WhatsNewPrimaryAction::kError:
@@ -140,6 +151,19 @@
                 openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
                 options:{}
       completionHandler:nil];
+}
+
+// Called to opens Lens.
+- (void)openLens {
+  // Dismiss the What's New modal since Lens must be displayed in a fullscreen
+  // modal.
+  [self.browserCoordinatorHandler dismissWhatsNew];
+  OpenLensInputSelectionCommand* command = [[OpenLensInputSelectionCommand
+      alloc]
+          initWithEntryPoint:LensEntrypoint::WhatsNewPromo
+           presentationStyle:LensInputSelectionPresentationStyle::SlideFromRight
+      presentationCompletion:nil];
+  [self.lensHandler openLensInputSelection:command];
 }
 
 // Update the consumer with What's New items.

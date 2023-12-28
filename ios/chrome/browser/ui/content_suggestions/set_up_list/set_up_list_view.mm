@@ -242,9 +242,8 @@ constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
   containerStack.axis = UILayoutConstraintAxisVertical;
   containerStack.spacing = kPadding;
   [self addSubview:containerStack];
-  AddSameConstraintsWithInsets(
-      containerStack, self,
-      NSDirectionalEdgeInsetsMake(0, kMargin, kMargin, kMargin));
+  AddSameConstraintsWithInsets(containerStack, self,
+                               NSDirectionalEdgeInsetsMake(0, 0, kMargin, 0));
 
   if (_expandButton) {
     self.accessibilityElements =

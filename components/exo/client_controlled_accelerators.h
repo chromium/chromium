@@ -43,7 +43,7 @@ class ClientControlledAcceleratorTarget : public ui::AcceleratorTarget {
   bool CanHandleAccelerators() const override;
 
  private:
-  raw_ptr<ClientControlledShellSurface, ExperimentalAsh> surface_;
+  raw_ptr<ClientControlledShellSurface> surface_;
   std::map<ui::Accelerator, ClientControlledAcceleratorAction> accelerators_;
 };
 

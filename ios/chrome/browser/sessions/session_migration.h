@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SESSIONS_SESSION_MIGRATION_H_
 
 #include <string>
+#include <vector>
 
 namespace base {
 class FilePath;
@@ -16,6 +17,12 @@ class TabRestoreService;
 }  // namespace sessions
 
 namespace ios::sessions {
+
+// Status of the storage migration.
+enum class MigrationStatus {
+  kSuccess,
+  kFailure,
+};
 
 // Migrates session named `name` in `path` from legacy to optimized.
 //
@@ -46,6 +53,24 @@ void MigrateNamedSessionToLegacy(
     const base::FilePath& directory,
     const std::string& name,
     ::sessions::TabRestoreService* restore_service);
+
+// Migrates all sessions found in `paths` from legacy to optimized format
+// and returns the status of the migration.
+//
+// If the migration was a success, all storage is in optimized format and
+// all legacy data has been deleted. Otherwise, the original data is left
+// untouched and the partially migrated data deleted.
+MigrationStatus MigrateSessionsInPathsToOptimized(
+    const std::vector<base::FilePath>& paths);
+
+// Migrates all sessions found in `paths` from optimized to legacy format
+// and returns the status of the migration.
+//
+// If the migration was a success, all storage is in optimized format and
+// all optimized data has been deleted. Otherwise, the original data is
+// left untouched and the partially migrated data deleted.
+MigrationStatus MigrateSessionsInPathsToLegacy(
+    const std::vector<base::FilePath>& paths);
 
 }  // namespace ios::sessions
 

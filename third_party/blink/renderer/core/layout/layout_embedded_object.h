@@ -60,10 +60,9 @@ class LayoutEmbeddedObject final : public LayoutEmbeddedContent {
   void UpdateLayout() final;
   void UpdateAfterLayout() final;
 
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsEmbeddedObject() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectEmbeddedObject ||
-           LayoutEmbeddedContent::IsOfType(type);
+    return true;
   }
   void ComputeIntrinsicSizingInfo(IntrinsicSizingInfo&) const override;
 

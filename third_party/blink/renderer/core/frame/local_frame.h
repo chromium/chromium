@@ -49,7 +49,6 @@
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-blink.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink-forward.h"
@@ -80,6 +79,7 @@
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/frame_types.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/loader/back_forward_cache_loader_helper_impl.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
@@ -755,7 +755,7 @@ class CORE_EXPORT LocalFrame final
 
   void NotifyUserActivation(
       mojom::blink::UserActivationNotificationType notification_type);
-  void AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr);
+  void AddInspectorIssue(AuditsIssue issue);
   void SaveImageAt(const gfx::Point& window_point);
   void AdvanceFocusForIME(mojom::blink::FocusType focus_type);
   void PostMessageEvent(
@@ -924,6 +924,10 @@ class CORE_EXPORT LocalFrame final
   // Gets the content settings associated with the current navigation commit.
   // Can only be called while the frame is not detached.
   const mojom::RendererContentSettingsPtr& GetContentSettings();
+
+  // Returns true if the frame supports app-region: drag/no-drag.
+  bool SupportsAppRegion();
+  void SetSupportsAppRegion(bool supports_app_region);
 
  private:
   friend class FrameNavigationDisabler;
@@ -1186,6 +1190,8 @@ class CORE_EXPORT LocalFrame final
 
   Member<v8_compile_hints::V8LocalCompileHintsProducer>
       v8_local_compile_hints_producer_;
+
+  bool supports_app_region_ = false;
 };
 
 inline FrameLoader& LocalFrame::Loader() const {

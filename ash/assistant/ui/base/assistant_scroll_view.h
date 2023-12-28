@@ -50,8 +50,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantScrollView
 
   base::ObserverList<Observer> observers_;
 
-  raw_ptr<views::View, ExperimentalAsh>
-      content_view_;  // Owned by view hierarchy.
+  raw_ptr<views::View> content_view_;  // Owned by view hierarchy.
 };
 
 }  // namespace ash

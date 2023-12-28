@@ -95,6 +95,9 @@ class FakeDownloadItem : public download::DownloadItem {
   const std::string& GetHash() const override;
   void DeleteFile(base::OnceCallback<void(bool)> callback) override;
   download::DownloadFile* GetDownloadFile() override;
+#if BUILDFLAG(IS_ANDROID)
+  bool IsFromExternalApp() override;
+#endif  // BUILDFLAG(IS_ANDROID)
   bool IsDangerous() const override;
   bool IsInsecure() const override;
   download::DownloadDangerType GetDangerType() const override;

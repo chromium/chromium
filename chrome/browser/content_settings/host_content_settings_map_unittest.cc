@@ -1877,6 +1877,83 @@ TEST_F(HostContentSettingsMapTest, GetPatternsFromScopingType) {
   }
 }
 
+TEST_F(HostContentSettingsMapTest, GetPatternsForContentSettingsType) {
+  const GURL primary_url("http://a.b.example1.com:8080");
+  const GURL secondary_url("http://a.b.example2.com:8080");
+
+  TestingProfile profile;
+  HostContentSettingsMapFactory::GetForProfile(&profile);
+
+  // Testing case:
+  //   WebsiteSettingsInfo::REQUESTING_ORIGIN_WITH_TOP_ORIGIN_EXCEPTIONS_SCOPE.
+  content_settings::PatternPair patterns =
+      HostContentSettingsMap::GetPatternsForContentSettingsType(
+          primary_url, secondary_url, ContentSettingsType::COOKIES);
+
+  EXPECT_EQ(patterns.first, ContentSettingsPattern::FromURL(primary_url));
+  EXPECT_EQ(patterns.second, ContentSettingsPattern::Wildcard());
+
+  // Testing cases:
+  //   WebsiteSettingsInfo::REQUESTING_AND_TOP_SCHEMEFUL_SITE_SCOPE,
+  patterns = HostContentSettingsMap::GetPatternsForContentSettingsType(
+      primary_url, secondary_url, ContentSettingsType::STORAGE_ACCESS);
+
+  EXPECT_EQ(patterns.first,
+            ContentSettingsPattern::FromURLToSchemefulSitePattern(primary_url));
+  EXPECT_EQ(
+      patterns.second,
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(secondary_url));
+
+  // Testing cases:
+  //   WebsiteSettingsInfo::REQUESTING_SCHEMEFUL_SITE_ONLY_SCOPE,
+  patterns = HostContentSettingsMap::GetPatternsForContentSettingsType(
+      primary_url, secondary_url,
+      ContentSettingsType::COOKIE_CONTROLS_METADATA);
+
+  EXPECT_EQ(patterns.first,
+            ContentSettingsPattern::FromURLToSchemefulSitePattern(primary_url));
+  EXPECT_EQ(patterns.second, ContentSettingsPattern::Wildcard());
+
+  // Testing cases:
+  //   WebsiteSettingsInfo::REQUESTING_AND_TOP_ORIGIN_SCOPE,
+  patterns = HostContentSettingsMap::GetPatternsForContentSettingsType(
+      primary_url, secondary_url,
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS);
+
+  EXPECT_EQ(patterns.first,
+            ContentSettingsPattern::FromURLNoWildcard(primary_url));
+  EXPECT_EQ(patterns.second,
+            ContentSettingsPattern::FromURLNoWildcard(secondary_url));
+
+  // Testing cases:
+  //   WebsiteSettingsInfo::REQUESTING_ORIGIN_AND_TOP_SCHEMEFUL_SITE_SCOPE,
+  patterns = HostContentSettingsMap::GetPatternsForContentSettingsType(
+      primary_url, secondary_url, ContentSettingsType::TPCD_SUPPORT);
+
+  EXPECT_EQ(patterns.first,
+            ContentSettingsPattern::FromURLNoWildcard(primary_url));
+  EXPECT_EQ(
+      patterns.second,
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(secondary_url));
+
+  // Testing cases:
+  //   WebsiteSettingsInfo::TOP_ORIGIN_WITH_RESOURCE_EXCEPTIONS_SCOPE,
+  //   WebsiteSettingsInfo::REQUESTING_ORIGIN_ONLY_SCOPE,
+  //   WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
+  //   WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE.
+  for (const auto& kContentSetting :
+       {ContentSettingsType::JAVASCRIPT, ContentSettingsType::NOTIFICATIONS,
+        ContentSettingsType::GEOLOCATION,
+        ContentSettingsType::FEDERATED_IDENTITY_API}) {
+    patterns = HostContentSettingsMap::GetPatternsForContentSettingsType(
+        primary_url, secondary_url, kContentSetting);
+
+    EXPECT_EQ(patterns.first,
+              ContentSettingsPattern::FromURLNoWildcard(primary_url));
+    EXPECT_EQ(patterns.second, ContentSettingsPattern::Wildcard());
+  }
+}
+
 // Tests if changing a settings in incognito mode does not affects the regular
 // mode.
 TEST_F(HostContentSettingsMapTest, IncognitoChangesDoNotPersist) {
@@ -2358,3 +2435,26 @@ TEST_F(HostContentSettingsMapTest, IncognitoInheritSaaAndRenew) {
                                ContentSetting::CONTENT_SETTING_ALLOW);
   EXPECT_EQ(CONTENT_SETTING_ASK, otr_map->GetContentSetting(host, host, type));
 }
+
+// File access is not implemented on Android. Luckily we don't need it for DevTools.
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(HostContentSettingsMapTest, DevToolsFileAccess) {
+  TestingProfile profile;
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(&profile);
+
+  GURL devtools_host("devtools://devtools/bundled/devtools_app.html");
+  GURL example_host("https://example.com");
+
+  host_content_settings_map->SetDefaultContentSetting(
+      ContentSettingsType::FILE_SYSTEM_WRITE_GUARD, CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            host_content_settings_map->GetContentSetting(
+                devtools_host, devtools_host,
+                ContentSettingsType::FILE_SYSTEM_WRITE_GUARD));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            host_content_settings_map->GetContentSetting(
+                example_host, example_host,
+                ContentSettingsType::FILE_SYSTEM_WRITE_GUARD));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)

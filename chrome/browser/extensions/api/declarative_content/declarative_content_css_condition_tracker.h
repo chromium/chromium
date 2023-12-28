@@ -157,7 +157,9 @@ class DeclarativeContentCssConditionTracker
   std::map<std::string, int> watched_css_selector_predicate_count_;
 
   // Grouped predicates tracked by this object.
-  std::map<const void*, std::vector<const DeclarativeContentCssPredicate*>>
+  std::map<const void*,
+           std::vector<raw_ptr<const DeclarativeContentCssPredicate,
+                               VectorExperimental>>>
       tracked_predicates_;
 
   // Maps WebContents to the tracker for that WebContents state.

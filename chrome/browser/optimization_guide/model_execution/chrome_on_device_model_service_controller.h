@@ -7,7 +7,10 @@
 
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 
+#include "base/memory/scoped_refptr.h"
+
 namespace optimization_guide {
+class OnDeviceModelComponentStateManager;
 
 // Chrome uses a single instance of OnDeviceModelServiceController. This is done
 // for two reasons:
@@ -19,7 +22,9 @@ namespace optimization_guide {
 class ChromeOnDeviceModelServiceController
     : public OnDeviceModelServiceController {
  public:
-  ChromeOnDeviceModelServiceController();
+  explicit ChromeOnDeviceModelServiceController(
+      base::WeakPtr<OnDeviceModelComponentStateManager>
+          on_device_component_state_manager);
 
   // Returns the OnDeviceModelServiceController, null if it one hasn't been
   // created yet.

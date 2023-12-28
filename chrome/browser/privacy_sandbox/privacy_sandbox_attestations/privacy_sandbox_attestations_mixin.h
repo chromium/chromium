@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 
 namespace privacy_sandbox {
@@ -17,6 +18,9 @@ namespace privacy_sandbox {
 // publicly from `MixinBasedInProcessBrowserTest` and initialize a
 // `PrivacySandboxAttestationsMixin` member to create a scoped attestations
 // instance.
+// Note: If test case also has `ScopedFeatureList`, it needs to make sure their
+// scoped feature list and this mixin instance are destroyed in the opposite
+// order they are initialized.
 class PrivacySandboxAttestationsMixin : public InProcessBrowserTestMixin {
  public:
   explicit PrivacySandboxAttestationsMixin(InProcessBrowserTestMixinHost* host);
@@ -26,6 +30,7 @@ class PrivacySandboxAttestationsMixin : public InProcessBrowserTestMixin {
 
  private:
   std::unique_ptr<ScopedPrivacySandboxAttestations> scoped_attestations_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace privacy_sandbox

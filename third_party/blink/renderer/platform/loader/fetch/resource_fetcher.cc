@@ -1075,7 +1075,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
       TRACE_ID_WITH_SCOPE("BlinkResourceID", TRACE_ID_LOCAL(identifier)), "url",
       resource_request.Url());
   base::ScopedClosureRunner timer(base::BindOnce(
-      [](base::TimeTicks start, bool is_data) {
+      [](base::TimeTicks start, bool is_data, bool is_preload_request) {
         base::TimeDelta elapsed = base::TimeTicks::Now() - start;
         base::UmaHistogramMicrosecondsTimes("Blink.Fetch.RequestResourceTime2",
                                             elapsed);
@@ -1083,8 +1083,13 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
           base::UmaHistogramMicrosecondsTimes(
               "Blink.Fetch.RequestResourceTime2.Data", elapsed);
         }
+        if (is_preload_request) {
+          base::UmaHistogramMicrosecondsTimes(
+              "Blink.Fetch.RequestResourceTime2.Preload", elapsed);
+        }
       },
-      base::TimeTicks::Now(), params.Url().ProtocolIsData()));
+      base::TimeTicks::Now(), params.Url().ProtocolIsData(),
+      params.IsSpeculativePreload() || params.IsLinkPreload()));
   TRACE_EVENT1("blink,blink.resource", "ResourceFetcher::requestResource",
                "url", params.Url().ElidedString().Utf8());
 
@@ -1270,8 +1275,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
     }
     if (!StartLoad(resource,
                    std::move(params.MutableResourceRequest().MutableBody()),
-                   load_blocking_policy, params.GetRenderBlockingBehavior(),
-                   params.CountORBBlockAs())) {
+                   load_blocking_policy, params.GetRenderBlockingBehavior())) {
       resource->FinishAsError(ResourceError::CancelledError(params.Url()),
                               freezable_task_runner_.get());
     }
@@ -1383,9 +1387,7 @@ std::unique_ptr<URLLoader> ResourceFetcher::CreateURLLoader(
       }
     }
   } else if (request.GetRequestContext() ==
-                 mojom::blink::RequestContextType::IMAGE &&
-             base::FeatureList::IsEnabled(
-                 features::kMainThreadHighPriorityImageLoading)) {
+             mojom::blink::RequestContextType::IMAGE) {
     if (auto* frame_or_worker_scheduler = GetFrameOrWorkerScheduler()) {
       if (auto* frame_scheduler =
               frame_or_worker_scheduler->ToFrameScheduler()) {
@@ -2220,15 +2222,14 @@ bool ResourceFetcher::StartLoad(Resource* resource) {
   }
   return StartLoad(resource, ResourceRequestBody(),
                    ImageLoadBlockingPolicy::kDefault,
-                   RenderBlockingBehavior::kNonBlocking, absl::nullopt);
+                   RenderBlockingBehavior::kNonBlocking);
 }
 
 bool ResourceFetcher::StartLoad(
     Resource* resource,
     ResourceRequestBody request_body,
     ImageLoadBlockingPolicy policy,
-    RenderBlockingBehavior render_blocking_behavior,
-    absl::optional<mojom::blink::WebFeature> count_orb_block_as_) {
+    RenderBlockingBehavior render_blocking_behavior) {
   DCHECK(resource);
   DCHECK(resource->StillNeedsLoad());
 
@@ -2274,7 +2275,7 @@ bool ResourceFetcher::StartLoad(
 
     loader = MakeGarbageCollected<ResourceLoader>(
         this, scheduler_, resource, context_lifecycle_notifier_,
-        std::move(request_body), size, count_orb_block_as_);
+        std::move(request_body), size);
     // Preload requests should not block the load event. IsLinkPreload()
     // actually continues to return true for Resources matched from the preload
     // cache that must block the load event, but that is OK because this method

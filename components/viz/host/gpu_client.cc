@@ -22,7 +22,7 @@
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "base/feature_list.h"
-#include "components/ml/webnn/features.h"
+#include "components/ml/webnn/features.mojom-features.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 namespace viz {
@@ -125,9 +125,6 @@ base::WeakPtr<GpuClient> GpuClient::GetWeakPtr() {
 #if !BUILDFLAG(IS_CHROMEOS)
 void GpuClient::BindWebNNContextProvider(
     mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver) {
-  CHECK(base::FeatureList::IsEnabled(
-      webnn::features::kEnableMachineLearningNeuralNetworkService));
-
   if (auto* gpu_host = delegate_->EnsureGpuHost()) {
     gpu_host->gpu_service()->BindWebNNContextProvider(std::move(receiver),
                                                       client_id_);

@@ -140,7 +140,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCacheRegistry {
   // Controls the thread cache size, by setting the multiplier to a value above
   // or below |ThreadCache::kDefaultMultiplier|.
   void SetThreadCacheMultiplier(float multiplier);
-  void SetLargestActiveBucketIndex(uint8_t largest_active_bucket_index);
+  void SetLargestActiveBucketIndex(uint16_t largest_active_bucket_index);
 
   // Controls the thread cache purging configuration.
   void SetPurgingConfiguration(
@@ -184,7 +184,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCacheRegistry {
   internal::base::TimeDelta periodic_purge_next_interval_;
   bool is_purging_configured_ = false;
 
-  uint8_t largest_active_bucket_index_ = internal::BucketIndexLookup::GetIndex(
+  uint16_t largest_active_bucket_index_ = internal::BucketIndexLookup::GetIndex(
       ThreadCacheLimits::kDefaultSizeThreshold);
 };
 
@@ -616,13 +616,10 @@ PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
 
   static const uint32_t poison_16_bytes[4] = {0xbadbad00, 0xbadbad00,
                                               0xbadbad00, 0xbadbad00};
-  // Give a hint to the compiler in hope it'll vectorize the loop.
-#if PA_HAS_BUILTIN(__builtin_assume_aligned)
-  void* slot_start_tagged = __builtin_assume_aligned(
-      internal::SlotStartAddr2Ptr(slot_start), internal::kAlignment);
-#else
-  void* slot_start_tagged = internal::SlotStartAddr2Ptr(slot_start);
-#endif
+
+  void* slot_start_tagged = std::assume_aligned<internal::kAlignment>(
+      internal::SlotStartAddr2Ptr(slot_start));
+
   uint32_t* address_aligned = static_cast<uint32_t*>(slot_start_tagged);
   for (int i = 0; i < slot_size_remaining_in_16_bytes; i++) {
     // Clang will expand the memcpy to a 16-byte write (movups on x86).

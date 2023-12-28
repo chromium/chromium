@@ -209,8 +209,7 @@ class CanvasRenderingContext2DTest : public ::testing::Test,
     GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   }
 
-  test::TaskEnvironment task_environment_{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<frame_test_helpers::WebViewHelper> web_view_helper_;
   Persistent<HTMLCanvasElement> canvas_element_;
 

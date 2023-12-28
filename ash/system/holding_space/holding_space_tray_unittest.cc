@@ -378,8 +378,8 @@ class ScopedTransformRecordingLayerDelegate : public ui::LayerDelegate {
     max_translation_.SetToMax(end_translation_);
   }
 
-  const raw_ptr<ui::Layer, ExperimentalAsh> layer_;
-  const raw_ptr<ui::LayerDelegate, ExperimentalAsh> layer_delegate_;
+  const raw_ptr<ui::Layer> layer_;
+  const raw_ptr<ui::LayerDelegate> layer_delegate_;
 
   bool did_animate_ = false;
   gfx::Vector2dF start_scale_;
@@ -2396,10 +2396,12 @@ TEST_F(HoldingSpacePreviewsTrayTest, ShelfAlignmentChangeWithMultipleDisplays) {
   views::View* const secondary_icon_previews_container =
       secondary_tray->GetViewByID(kHoldingSpaceTrayPreviewsIconId)
           ->children()[0];
-  const std::vector<ui::Layer*>& primary_icon_previews =
-      primary_icon_previews_container->layer()->children();
-  const std::vector<ui::Layer*>& secondary_icon_previews =
-      secondary_icon_previews_container->layer()->children();
+  const std::vector<raw_ptr<ui::Layer, VectorExperimental>>&
+      primary_icon_previews =
+          primary_icon_previews_container->layer()->children();
+  const std::vector<raw_ptr<ui::Layer, VectorExperimental>>&
+      secondary_icon_previews =
+          secondary_icon_previews_container->layer()->children();
 
   // Verify each tray contains three previews.
   ASSERT_EQ(primary_icon_previews.size(), 3u);

@@ -23,11 +23,11 @@ bool IsAffiliated(const base::flat_set<std::string>& user_ids,
 
 bool IsUserAffiliated(const base::flat_set<std::string>& user_affiliation_ids,
                       const base::flat_set<std::string>& device_affiliation_ids,
-                      base::StringPiece email) {
+                      std::string_view email) {
   // An empty username means incognito user in case of Chrome OS and no
   // logged-in user in case of Chrome (SigninService). Many tests use nonsense
   // email addresses (e.g. 'test') so treat those as non-enterprise users.
-  if (email.empty() || email.find('@') == base::StringPiece::npos) {
+  if (email.empty() || email.find('@') == std::string_view::npos) {
     return false;
   }
 

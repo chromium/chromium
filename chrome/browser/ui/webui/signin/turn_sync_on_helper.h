@@ -140,7 +140,6 @@ class TurnSyncOnHelper {
   TurnSyncOnHelper(Profile* profile,
                    signin_metrics::AccessPoint signin_access_point,
                    signin_metrics::PromoAction signin_promo_action,
-                   signin_metrics::Reason signin_reason,
                    const CoreAccountId& account_id,
                    SigninAbortedMode signin_aborted_mode,
                    std::unique_ptr<Delegate> delegate,
@@ -151,7 +150,6 @@ class TurnSyncOnHelper {
                    Browser* browser,
                    signin_metrics::AccessPoint signin_access_point,
                    signin_metrics::PromoAction signin_promo_action,
-                   signin_metrics::Reason signin_reason,
                    const CoreAccountId& account_id,
                    SigninAbortedMode signin_aborted_mode);
 
@@ -252,7 +250,6 @@ class TurnSyncOnHelper {
   raw_ptr<signin::IdentityManager> identity_manager_;
   const signin_metrics::AccessPoint signin_access_point_;
   const signin_metrics::PromoAction signin_promo_action_;
-  const signin_metrics::Reason signin_reason_;
 
   // Whether the refresh token should be deleted if the Sync flow is aborted.
   SigninAbortedMode signin_aborted_mode_;
@@ -277,12 +274,12 @@ class TurnSyncOnHelper {
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<ProfilePickerLacrosSignInProvider> lacros_sign_in_provider_;
+#endif
 
   // The initial primary account is restored if the flow aborts. This is only
-  // needed on Lacros, because the `SigninManager` does it automatically on
-  // DICE platforms.
+  // needed on Lacros or if UNO Desktop is enabled, because the `SigninManager`
+  // does it automatically on DICE platforms.
   CoreAccountId initial_primary_account_;
-#endif
   base::CallbackListSubscription shutdown_subscription_;
   bool enterprise_account_confirmed_ = false;
 

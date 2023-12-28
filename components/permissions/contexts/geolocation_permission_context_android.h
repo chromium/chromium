@@ -131,6 +131,7 @@ class GeolocationPermissionContextAndroid
       const GURL& embedding_origin,
       bool persist,
       ContentSetting content_setting,
+      bool is_one_time,
       LocationSettingsDialogOutcome prompt_outcome);
 
   void FinishNotifyPermissionSet(const PermissionRequestID& id,
@@ -138,7 +139,8 @@ class GeolocationPermissionContextAndroid
                                  const GURL& embedding_origin,
                                  BrowserPermissionCallback callback,
                                  bool persist,
-                                 ContentSetting content_setting);
+                                 ContentSetting content_setting,
+                                 bool is_one_time);
 
   std::unique_ptr<LocationSettings> location_settings_;
 

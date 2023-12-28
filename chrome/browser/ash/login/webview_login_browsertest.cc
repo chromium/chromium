@@ -25,9 +25,11 @@
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
+#include "chrome/browser/ash/http_auth_dialog.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
@@ -56,14 +58,12 @@
 #include "chrome/browser/ash/scoped_test_system_nss_key_slot_mixin.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
-#include "chrome/browser/auth_notification_types.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ssl/ssl_client_certificate_selector.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/marketing_opt_in_screen_handler.h"
@@ -896,9 +896,7 @@ class ReauthWebviewLoginTest : public WebviewLoginTest {
   LoginManagerMixin::TestUserInfo reauth_user_{
       AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
                                      FakeGaiaMixin::kFakeUserGaiaId),
-      test::kDefaultAuthSetup, user_manager::USER_TYPE_REGULAR,
-      /* invalid token status to force online signin */
-      user_manager::User::OAUTH2_TOKEN_STATUS_INVALID};
+      test::UserAuthConfig::Create(test::kDefaultAuthSetup).RequireReauth()};
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {reauth_user_}};
 };
 
@@ -1037,9 +1035,8 @@ class ReauthEndpointWebviewLoginTest : public WebviewLoginTest {
   LoginManagerMixin::TestUserInfo reauth_user_{
       AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
                                      FakeGaiaMixin::kFakeUserGaiaId),
-      test::kDefaultAuthSetup, user_manager::USER_TYPE_CHILD,
-      /* invalid token status to force online signin */
-      user_manager::User::OAUTH2_TOKEN_STATUS_INVALID};
+      test::UserAuthConfig::Create(test::kDefaultAuthSetup).RequireReauth(),
+      user_manager::USER_TYPE_CHILD};
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {reauth_user_}};
 };
 
@@ -2114,54 +2111,15 @@ class WebviewProxyAuthLoginTest : public WebviewLoginTest {
     FakeSessionManagerClient::Get()->set_server_backed_state_keys(state_keys);
   }
 
-  void SetUpOnMainThread() override {
-    // Setup the observer reacting on NOTIFICATION_AUTH_NEEDED before the test
-    // runs because there is no action we actively trigger to request proxy
-    // authentication. Instead, the sign-in screen automatically shows the gaia
-    // webview, which will request the gaia URL, which leads to a login prompt.
-    auth_needed_wait_loop_ = std::make_unique<base::RunLoop>();
-    auth_needed_observer_ =
-        std::make_unique<content::WindowedNotificationObserver>(
-            chrome::NOTIFICATION_AUTH_NEEDED,
-            base::BindRepeating(&WebviewProxyAuthLoginTest::OnAuthRequested,
-                                base::Unretained(this)));
-
-    WebviewLoginTest::SetUpOnMainThread();
-  }
-
-  void TearDownOnMainThread() override {
-    WebviewLoginTest::TearDownOnMainThread();
-
-    auth_needed_observer_.reset();
-    auth_needed_wait_loop_.reset();
-  }
-
-  bool OnAuthRequested(const content::NotificationSource& source,
-                       const content::NotificationDetails& details) {
-    // Only care for notifications originating from the frame which is
-    // displaying gaia.
-    content::WebContents* main_web_contents = GetLoginUI()->GetWebContents();
-    content::RenderFrameHost* gaia_rfh =
-        signin::GetAuthFrame(main_web_contents, gaia_frame_parent_);
-    LoginHandler* login_handler =
-        content::Details<LoginNotificationDetails>(details)->handler();
-    if (login_handler->web_contents() !=
-        content::WebContents::FromRenderFrameHost(gaia_rfh)) {
-      return false;
-    }
-
-    gaia_frame_login_handler_ = login_handler;
-    auth_needed_wait_loop_->Quit();
-    return true;
-  }
-
   // Waits until proxy authentication has been requested by the frame displaying
-  // gaia. Returns the LoginHandler handling this authentication request.
-  LoginHandler* WaitForAuthRequested() {
-    auth_needed_wait_loop_->Run();
-    LoginHandler* handler = gaia_frame_login_handler_;
-    gaia_frame_login_handler_ = nullptr;
-    return handler;
+  // gaia. Returns the HttpAuthDialog handling this authentication request.
+  HttpAuthDialog* WaitForAuthRequested() {
+    bool success = base::test::RunUntil(
+        []() { return HttpAuthDialog::GetAllDialogsForTest().size() == 1; });
+    if (!success) {
+      return nullptr;
+    }
+    return HttpAuthDialog::GetAllDialogsForTest().front();
   }
 
   void UpdateServedPolicyFromDevicePolicyTestHelper() {
@@ -2173,16 +2131,7 @@ class WebviewProxyAuthLoginTest : public WebviewLoginTest {
     return &device_policy_builder_;
   }
 
-  content::WindowedNotificationObserver* auth_needed_observer() {
-    return auth_needed_observer_.get();
-  }
-
  private:
-  std::unique_ptr<content::WindowedNotificationObserver> auth_needed_observer_;
-  std::unique_ptr<base::RunLoop> auth_needed_wait_loop_;
-  // Unowned pointer - set to the LoginHandler of the frame displaying gaia.
-  raw_ptr<LoginHandler, ExperimentalAsh> gaia_frame_login_handler_ = nullptr;
-
   // A proxy server which requires authentication using the 'Basic'
   // authentication method.
   std::unique_ptr<net::SpawnedTestServer> auth_proxy_server_;
@@ -2199,7 +2148,8 @@ class WebviewProxyAuthLoginTest : public WebviewLoginTest {
 IN_PROC_BROWSER_TEST_F(WebviewProxyAuthLoginTest, ProxyAuthTransfer) {
   WaitForSigninScreen();
 
-  LoginHandler* login_handler = WaitForAuthRequested();
+  HttpAuthDialog* auth_dialog = WaitForAuthRequested();
+  ASSERT_TRUE(auth_dialog);
 
   // Before entering auth data, make `policy_test_server_` serve a policy that
   // we can use to detect if policies have been fetched.
@@ -2225,7 +2175,7 @@ IN_PROC_BROWSER_TEST_F(WebviewProxyAuthLoginTest, ProxyAuthTransfer) {
 
   // Now enter auth data, which should trigger a gaia page which should now be
   // successful.
-  login_handler->SetAuth(u"foo", u"bar");
+  auth_dialog->SupplyCredentialsForTest(u"foo", u"bar");
   WaitForGaiaPageLoad();
 
   // Wait for the policy-mapped pref to change, because the supplied proxy auth

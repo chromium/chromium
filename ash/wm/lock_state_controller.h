@@ -217,8 +217,7 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   std::unique_ptr<base::ElapsedTimer> lock_duration_timer_;
 
   // Controller used to trigger the actual shutdown.
-  raw_ptr<ShutdownController, DanglingUntriaged | ExperimentalAsh>
-      shutdown_controller_;
+  raw_ptr<ShutdownController, DanglingUntriaged> shutdown_controller_;
 
   // Started when we request that the screen be locked.  When it fires, we
   // assume that our request got dropped.
@@ -250,7 +249,7 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   base::ObserverList<LockStateObserver>::Unchecked observers_;
 
   // To access the pref kLoginShutdownTimestampPrefName
-  raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  raw_ptr<PrefService> local_state_;
 
   base::WeakPtrFactory<LockStateController> weak_ptr_factory_{this};
 };

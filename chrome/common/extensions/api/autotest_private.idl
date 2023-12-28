@@ -374,7 +374,9 @@ namespace autotestPrivate {
   dictionary ArcAppTracingInfo {
     boolean success;
     double fps;
+    double perceivedFps;
     double commitDeviation;
+    double presentDeviation;
     double renderQuality;
   };
 

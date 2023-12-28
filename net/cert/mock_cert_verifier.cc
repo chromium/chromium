@@ -157,6 +157,19 @@ int MockCertVerifier::VerifyImpl(const RequestParams& params,
   return default_result_;
 }
 
+ParamRecordingMockCertVerifier::ParamRecordingMockCertVerifier() = default;
+ParamRecordingMockCertVerifier::~ParamRecordingMockCertVerifier() = default;
+
+int ParamRecordingMockCertVerifier::Verify(const RequestParams& params,
+                                           CertVerifyResult* verify_result,
+                                           CompletionOnceCallback callback,
+                                           std::unique_ptr<Request>* out_req,
+                                           const NetLogWithSource& net_log) {
+  params_.push_back(params);
+  return MockCertVerifier::Verify(params, verify_result, std::move(callback),
+                                  out_req, net_log);
+}
+
 CertVerifierObserverCounter::CertVerifierObserverCounter(
     CertVerifier* verifier) {
   obs_.Observe(verifier);

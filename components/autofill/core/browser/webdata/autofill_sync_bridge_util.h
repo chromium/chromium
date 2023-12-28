@@ -16,16 +16,12 @@ namespace autofill {
 class AutofillOfferData;
 struct ServerCvc;
 class AutofillWalletUsageData;
-class AutofillTable;
 class CreditCard;
 struct CreditCardCloudTokenData;
 class Iban;
+class PaymentsAutofillTable;
 struct PaymentsCustomerData;
 class VirtualCardUsageData;
-
-// Returns the specified |id| encoded in / decoded from base 64.
-std::string GetBase64EncodedId(const std::string& id);
-std::string GetBase64DecodedId(const std::string& id);
 
 // Returns the storage key to be used for wallet metadata for the specified
 // wallet metadata |type| and |specifics_id|.
@@ -104,7 +100,7 @@ VirtualCardUsageData VirtualCardUsageDataFromUsageSpecifics(
 // "Remove + Add" operation is handled by the AutofillWalletMetadataSyncBridge
 // and AutofillWalletCredentialSyncBridge.
 void CopyRelevantWalletMetadataAndCvc(
-    const AutofillTable& table,
+    const PaymentsAutofillTable& table,
     std::vector<CreditCard>* cards_from_server);
 
 // Populates the wallet datatypes from the sync data.

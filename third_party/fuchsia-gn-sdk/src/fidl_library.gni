@@ -261,6 +261,16 @@ template("fidl_cpp_codegen") {
       "--root",
       rebase_path(root, root_build_dir),
     ]
+
+    # TODO(fxbug.dev/39388): Remove after https://fxrev.dev/953989 rolls into chromium.
+    if (invoker.bindings_flavor == "hlcpp") {
+      script = gn_sdk_root + "/soft_transition_fidlgen.py"
+      _tables = filter_include(invoker.generated_sources, [ "*/tables.c" ])
+      args += [
+        "--tables",
+        rebase_path(root + "/" + _tables[0], root_build_dir),
+      ]
+    }
   }
 }
 
@@ -500,7 +510,10 @@ template("fidl_library") {
       "${_library_name_slashes}/cpp/fidl.h",
       "${_library_name_slashes}/cpp/fidl_test_base.h",
     ]
-    generated_sources = [ "${_library_name_slashes}/cpp/fidl.cc" ]
+    generated_sources = [
+      "${_library_name_slashes}/cpp/fidl.cc",
+      "${_library_name_slashes}/cpp/tables.c",
+    ]
   }
 
   fidl_cpp_codegen("${target_name}_hlcpp") {

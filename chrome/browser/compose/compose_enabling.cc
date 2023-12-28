@@ -10,6 +10,8 @@
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
 #include "chrome/browser/flag_descriptions.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/compose/buildflags.h"
 #include "components/compose/core/browser/compose_features.h"
@@ -17,7 +19,6 @@
 #include "components/compose/core/browser/config.h"
 #include "components/flags_ui/feature_entry.h"
 #include "components/flags_ui/flags_storage.h"
-#include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 
@@ -30,16 +31,21 @@ bool AutocompleteAllowed(std::string_view autocomplete_attribute) {
 
 }  // namespace
 
+bool ComposeEnabling::enabled_for_testing_{false};
+bool ComposeEnabling::skip_user_check_for_testing_{false};
+
 ComposeEnabling::ComposeEnabling(
     TranslateLanguageProvider* translate_language_provider,
-    Profile* profile)
+    Profile* profile,
+    signin::IdentityManager* identity_manager,
+    OptimizationGuideKeyedService* opt_guide)
     : optimization_guide::SettingsEnabledObserver(
           optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE),
-      profile_(profile) {
-  // TODO(b/314325398): Use this instance member profile in other methods.
+      profile_(profile),
+      opt_guide_(opt_guide),
+      identity_manager_(identity_manager) {
   DCHECK(profile_);
   translate_language_provider_ = translate_language_provider;
-  opt_guide_ = OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
   if (opt_guide_) {
     // TODO(b/314199871): Add test when this call becomes mock-able.
     opt_guide_->AddModelExecutionSettingsEnabledObserver(this);
@@ -53,16 +59,19 @@ ComposeEnabling::~ComposeEnabling() {
   if (opt_guide_) {
     opt_guide_->RemoveModelExecutionSettingsEnabledObserver(this);
   }
+
+  opt_guide_ = nullptr;
+  identity_manager_ = nullptr;
+  translate_language_provider_ = nullptr;
+  profile_ = nullptr;
 }
 
-void ComposeEnabling::SetEnabledForTesting() {
-  enabled_for_testing_ = true;
+// Static.
+void ComposeEnabling::SetEnabledForTesting(bool enabled) {
+  enabled_for_testing_ = enabled;
 }
 
-void ComposeEnabling::ClearEnabledForTesting() {
-  enabled_for_testing_ = false;
-}
-
+// Static.
 void ComposeEnabling::SkipUserEnabledCheckForTesting(bool skip) {
   skip_user_check_for_testing_ = skip;
 }
@@ -99,26 +108,39 @@ compose::ComposeHintDecision ComposeEnabling::GetOptimizationGuidanceForUrl(
   return compose_metadata->decision();
 }
 
-base::expected<void, compose::ComposeShowStatus>
-ComposeEnabling::IsEnabledForProfile(Profile* profile) {
-#if BUILDFLAG(ENABLE_COMPOSE)
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  return IsEnabled(profile, identity_manager);
-#else
-  return base::unexpected(compose::ComposeShowStatus::kGenericBlocked);
-#endif
+// Member function public entry point.
+base::expected<void, compose::ComposeShowStatus> ComposeEnabling::IsEnabled() {
+  return CheckEnabling(profile_, opt_guide_, identity_manager_);
 }
 
-base::expected<void, compose::ComposeShowStatus> ComposeEnabling::IsEnabled(
+// Static public entry point.
+bool ComposeEnabling::IsEnabledForProfile(Profile* profile) {
+  OptimizationGuideKeyedService* opt_guide =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfileIfExists(profile);
+  return CheckEnabling(profile, opt_guide, identity_manager).has_value();
+}
+
+// Internal static.
+base::expected<void, compose::ComposeShowStatus> ComposeEnabling::CheckEnabling(
     Profile* profile,
+    OptimizationGuideKeyedService* opt_guide,
     signin::IdentityManager* identity_manager) {
   if (enabled_for_testing_) {
+    DVLOG(2) << "enabled for testing";
     return base::ok();
   }
 
   if (profile == nullptr || identity_manager == nullptr) {
+    DVLOG(2) << "feature not reachable, a required pointer is nullptr";
     return base::unexpected(compose::ComposeShowStatus::kGenericBlocked);
+  }
+
+  // Check if the compose feature is still eligible.
+  if (!base::FeatureList::IsEnabled(compose::features::kComposeEligible)) {
+    DVLOG(2) << "feature not eligible";
+    return base::unexpected(compose::ComposeShowStatus::kNotComposeEligible);
   }
 
   // Check that the feature flag is enabled.
@@ -127,37 +149,27 @@ base::expected<void, compose::ComposeShowStatus> ComposeEnabling::IsEnabled(
     return base::unexpected(compose::ComposeShowStatus::kGenericBlocked);
   }
 
-  // Check MSBB.
-  std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper> helper =
-      unified_consent::UrlKeyedDataCollectionConsentHelper::
-          NewAnonymizedDataCollectionConsentHelper(profile->GetPrefs());
-  if (helper != nullptr && !helper->IsEnabled()) {
-    DVLOG(2) << "MSBB not enabled " << __func__;
-    return base::unexpected(compose::ComposeShowStatus::kDisabledMsbb);
-  }
-
   // Check signin status.
   CoreAccountInfo core_account_info =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   if (core_account_info.IsEmpty() ||
       identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
           core_account_info.account_id)) {
-    DVLOG(2) << "user not signed in " << __func__;
+    DVLOG(2) << "user not signed in";
     return base::unexpected(compose::ComposeShowStatus::kSignedOut);
   }
 
   // TODO(b/314199871): Remove test bypass once this check becomes mock-able.
   if (!skip_user_check_for_testing_ &&
-      !opt_guide_->ShouldFeatureBeCurrentlyEnabledForUser(
+      !opt_guide->ShouldFeatureBeCurrentlyEnabledForUser(
           optimization_guide::proto::ModelExecutionFeature::
               MODEL_EXECUTION_FEATURE_COMPOSE)) {
-    DVLOG(2) << "Feature not available for this user " << __func__;
+    DVLOG(2) << "Feature not available for this user";
     return base::unexpected(
         compose::ComposeShowStatus::kUserNotAllowedByOptimizationGuide);
   }
 
-  // TODO(b/305245736): Check consent once it is available to check.
-
+  DVLOG(2) << "enabled";
   return base::ok();
 }
 
@@ -185,7 +197,7 @@ bool ComposeEnabling::ShouldTriggerPopup(
     return false;
   }
 
-  if (!PageLevelChecks(profile, translate_manager, top_level_frame_origin,
+  if (!PageLevelChecks(translate_manager, top_level_frame_origin,
                        element_frame_origin)
            .has_value()) {
     return false;
@@ -202,6 +214,7 @@ bool ComposeEnabling::ShouldTriggerPopup(
       return false;
     }
     // Check autocomplete attribute if the proactive nudge would be presented.
+    // TODO(b/303288183): Decide if we should keep this check or not.
     if (!AutocompleteAllowed(autocomplete_attribute)) {
       DVLOG(2) << "autocomplete=off";
       return false;
@@ -240,7 +253,7 @@ bool ComposeEnabling::ShouldTriggerContextMenu(
   }
 
   auto show_status = PageLevelChecks(
-      profile, translate_manager, rfh->GetMainFrame()->GetLastCommittedOrigin(),
+      translate_manager, rfh->GetMainFrame()->GetLastCommittedOrigin(),
       params.frame_origin);
   if (show_status.has_value()) {
     compose::LogComposeContextMenuShowStatus(
@@ -281,11 +294,10 @@ void ComposeEnabling::PrepareToEnableOnRestart() {
 }
 
 base::expected<void, compose::ComposeShowStatus>
-ComposeEnabling::PageLevelChecks(Profile* profile,
-                                 translate::TranslateManager* translate_manager,
+ComposeEnabling::PageLevelChecks(translate::TranslateManager* translate_manager,
                                  const url::Origin& top_level_frame_origin,
                                  const url::Origin& element_frame_origin) {
-  if (auto profile_show_status = IsEnabledForProfile(profile);
+  if (auto profile_show_status = IsEnabled();
       !profile_show_status.has_value()) {
     DVLOG(2) << "not enabled";
     return profile_show_status;
@@ -309,7 +321,7 @@ ComposeEnabling::PageLevelChecks(Profile* profile,
     return base::unexpected(compose::ComposeShowStatus::kUnsupportedLanguage);
   }
 
-  // TODO(b/301609046): Check that we have enough space in the browser window to
+  // TODO(b/316628813): Check that we have enough space in the browser window to
   // show the dialog.
 
   return base::ok();

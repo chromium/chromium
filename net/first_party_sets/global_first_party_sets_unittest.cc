@@ -133,12 +133,15 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_Exists) {
 
 TEST_F(GlobalFirstPartySetsTest, FindEntry_NoNormalization) {
   SchemefulSite https_example(GURL("https://example.test"));
+  SchemefulSite associated(GURL("https://associated.test"));
   SchemefulSite wss_example(GURL("wss://example.test"));
   FirstPartySetEntry entry(https_example, SiteType::kPrimary, absl::nullopt);
+  FirstPartySetEntry assoc_entry(https_example, SiteType::kAssociated, 0);
 
   EXPECT_THAT(GlobalFirstPartySets(kVersion,
                                    {
                                        {https_example, entry},
+                                       {associated, assoc_entry},
                                    },
                                    {})
                   .FindEntry(wss_example, FirstPartySetsContextConfig()),
@@ -147,7 +150,9 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_NoNormalization) {
 
 TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsViaOverride) {
   SchemefulSite example(GURL("https://example.test"));
+  SchemefulSite associated(GURL("https://associated.test"));
   FirstPartySetEntry public_entry(example, SiteType::kPrimary, absl::nullopt);
+  FirstPartySetEntry assoc_entry(example, SiteType::kAssociated, 0);
   FirstPartySetEntry override_entry(example, SiteType::kAssociated, 1);
 
   FirstPartySetsContextConfig config(
@@ -156,6 +161,7 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsViaOverride) {
   EXPECT_THAT(GlobalFirstPartySets(kVersion,
                                    {
                                        {example, public_entry},
+                                       {associated, assoc_entry},
                                    },
                                    {})
                   .FindEntry(example, config),
@@ -164,7 +170,9 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsViaOverride) {
 
 TEST_F(GlobalFirstPartySetsTest, FindEntry_RemovedViaOverride) {
   SchemefulSite example(GURL("https://example.test"));
+  SchemefulSite associated(GURL("https://associated.test"));
   FirstPartySetEntry public_entry(example, SiteType::kPrimary, absl::nullopt);
+  FirstPartySetEntry assoc_entry(example, SiteType::kAssociated, 0);
 
   FirstPartySetsContextConfig config(
       {{example, net::FirstPartySetEntryOverride()}});
@@ -172,6 +180,7 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_RemovedViaOverride) {
   EXPECT_THAT(GlobalFirstPartySets(kVersion,
                                    {
                                        {example, public_entry},
+                                       {associated, assoc_entry},
                                    },
                                    {})
                   .FindEntry(example, config),

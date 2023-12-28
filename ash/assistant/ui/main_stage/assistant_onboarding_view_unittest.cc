@@ -73,8 +73,9 @@ void FindDescendentByClassName(views::View* parent, T** result) {
       return;
     }
 
-    for (auto* child : candidate->children())
+    for (views::View* child : candidate->children()) {
       children.push(child);
+    }
   }
 }
 
@@ -284,7 +285,7 @@ TEST_F(DISABLED_AssistantOnboardingViewTest, ShouldHaveExpectedSuggestions) {
     VectorIconWithColor(const gfx::VectorIcon& icon, SkColor color)
         : icon(icon), color(color) {}
 
-    const raw_ref<const gfx::VectorIcon, ExperimentalAsh> icon;
+    const raw_ref<const gfx::VectorIcon> icon;
     SkColor color;
   };
 

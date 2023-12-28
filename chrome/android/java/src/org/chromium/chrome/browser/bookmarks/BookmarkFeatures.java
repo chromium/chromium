@@ -12,9 +12,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 public class BookmarkFeatures {
     /** Returns whether an additional "add bookmark" item should be in the overflow menu. */
     public static boolean isBookmarkMenuItemAsDedicatedRowEnabled() {
-        // TODO(wylieb): Remove the BOOKMARKS_REFRESH flag.
         return FeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.BOOKMARKS_REFRESH)
                 && ShoppingFeatures.isShoppingListEligible();
     }
 

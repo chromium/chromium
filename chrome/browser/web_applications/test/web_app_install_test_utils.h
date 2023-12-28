@@ -57,6 +57,13 @@ webapps::AppId InstallWebApp(
     webapps::WebappInstallSource install_source =
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
 
+// Synchronously install a web-app-based shortcut for testing.
+webapps::AppId InstallShortcut(Profile* profile,
+                               const std::string& shortcut_name,
+                               const GURL& start_url,
+                               bool create_default_icon = true,
+                               bool is_policy_install = false);
+
 // Synchronously uninstall a web app. May be used in unit tests and browser
 // tests.
 void UninstallWebApp(Profile* profile, const webapps::AppId& app_id);

@@ -4,7 +4,7 @@
 
 #include "ash/system/accessibility/floating_accessibility_controller.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/bubble/bubble_constants.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
@@ -47,14 +47,13 @@ class ScopedBubbleViewActivator {
   ~ScopedBubbleViewActivator() { bubble_view_->SetCanActivate(false); }
 
  private:
-  raw_ptr<ash::FloatingAccessibilityBubbleView, ExperimentalAsh> bubble_view_ =
-      nullptr;
+  raw_ptr<ash::FloatingAccessibilityBubbleView> bubble_view_ = nullptr;
 };
 
 }  // namespace
 
 FloatingAccessibilityController::FloatingAccessibilityController(
-    AccessibilityControllerImpl* accessibility_controller)
+    AccessibilityController* accessibility_controller)
     : accessibility_controller_(accessibility_controller) {
   Shell::Get()->locale_update_controller()->AddObserver(this);
   accessibility_controller_->AddObserver(this);

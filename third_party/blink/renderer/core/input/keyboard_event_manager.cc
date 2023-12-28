@@ -257,7 +257,9 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
     should_send_key_events_to_js =
         display_mode == blink::mojom::DisplayMode::kMinimalUi ||
         display_mode == blink::mojom::DisplayMode::kStandalone ||
-        display_mode == blink::mojom::DisplayMode::kFullscreen;
+        display_mode == blink::mojom::DisplayMode::kFullscreen ||
+        display_mode == blink::mojom::DisplayMode::kBorderless ||
+        display_mode == blink::mojom::DisplayMode::kWindowControlsOverlay;
   }
 
   // We have 2 level of not exposing key event to js, not send and send but not

@@ -20,6 +20,9 @@ struct FormFieldDataPredictions {
   FormFieldDataPredictions& operator=(FormFieldDataPredictions&&);
   ~FormFieldDataPredictions();
 
+  friend bool operator==(const FormFieldDataPredictions&,
+                         const FormFieldDataPredictions&);
+
   std::string host_form_signature;
   std::string signature;
   std::string heuristic_type;

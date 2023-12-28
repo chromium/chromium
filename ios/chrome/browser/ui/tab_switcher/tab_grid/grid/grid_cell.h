@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_view.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_theme.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_to_tab_transition_view.h"
@@ -18,13 +19,6 @@
 @protocol GridCellDelegate
 - (void)closeButtonTappedForCell:(GridCell*)cell;
 @end
-
-// Values describing the editing state of the cell.
-typedef NS_ENUM(NSUInteger, GridCellState) {
-  GridCellStateNotEditing = 1,
-  GridCellStateEditingUnselected,
-  GridCellStateEditingSelected,
-};
 
 // A square-ish cell in a grid. Contains an icon, title, snapshot, and close
 // button.

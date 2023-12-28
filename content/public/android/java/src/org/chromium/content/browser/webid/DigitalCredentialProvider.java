@@ -15,7 +15,7 @@ import org.chromium.ui.base.WindowAndroid;
 @JNINamespace("content")
 public class DigitalCredentialProvider {
     private static final String TAG = "DigitalCredentialProvider";
-    private final long mDigitalCredentialProvider;
+    private long mDigitalCredentialProvider;
     private static IdentityCredentialsDelegate sCredentials = new IdentityCredentialsDelegateImpl();
 
     private DigitalCredentialProvider(long dcProvider) {
@@ -35,7 +35,9 @@ public class DigitalCredentialProvider {
     }
 
     @CalledByNative
-    private void destroy() {}
+    private void destroy() {
+        mDigitalCredentialProvider = 0;
+    }
 
     /**
      * Triggers a request to the Identity Credentials Manager in GMS.
@@ -50,11 +52,16 @@ public class DigitalCredentialProvider {
                 .get(window.getActivity().get(), origin, request)
                 .then(
                         data -> {
-                            DigitalCredentialProviderJni.get()
-                                    .onReceive(mDigitalCredentialProvider, new String(data));
+                            if (mDigitalCredentialProvider != 0) {
+                                DigitalCredentialProviderJni.get()
+                                        .onReceive(mDigitalCredentialProvider, new String(data));
+                            }
                         },
                         e -> {
-                            DigitalCredentialProviderJni.get().onError(mDigitalCredentialProvider);
+                            if (mDigitalCredentialProvider != 0) {
+                                DigitalCredentialProviderJni.get()
+                                        .onError(mDigitalCredentialProvider);
+                            }
                         });
     }
 

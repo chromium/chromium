@@ -37,8 +37,7 @@ class ASH_EXPORT LockScreenActionBackgroundViewTestApi {
   }
 
  private:
-  raw_ptr<LockScreenActionBackgroundView, ExperimentalAsh>
-      action_background_view_;
+  raw_ptr<LockScreenActionBackgroundView> action_background_view_;
 };
 
 }  // namespace ash

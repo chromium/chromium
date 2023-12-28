@@ -7,10 +7,10 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
-#include "base/strings/string_piece.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 
 namespace extensions::declarative_net_request {
@@ -273,7 +273,7 @@ extern const char kEmbedderConditionsBufferIdentifier[];
 // HTTP request headers that support multiple values in a single entry. This
 // list may be extended in the future to support custom headers.
 inline constexpr auto kDNRRequestHeaderAppendAllowList =
-    base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>(
+    base::MakeFixedFlatMap<std::string_view, std::string_view>(
         {{"accept", ", "},
          {"accept-encoding", ", "},
          {"accept-language", ", "},

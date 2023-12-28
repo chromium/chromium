@@ -55,6 +55,10 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSource {
   // function may be implemented if the OS specific implementation requires it.
   virtual void TrackGeolocationRelinquished() {}
 
+  // Opens system specific permission settings page (if available on this
+  // platform).
+  virtual void OpenSystemPermissionSetting() {}
+
 #if BUILDFLAG(IS_APPLE)
   // This method accepts a callback. The callback is called whenever a new
   // position estimate is available.

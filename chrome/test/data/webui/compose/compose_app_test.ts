@@ -5,134 +5,22 @@
 import 'chrome://compose/app.js';
 
 import {ComposeAppElement, ComposeAppState} from 'chrome://compose/app.js';
-import {CloseReason, ComposeDialogCallbackRouter, ComposeState, ComposeStatus, ConsentState, Length, OpenMetadata, StyleModifiers, Tone, UserFeedback} from 'chrome://compose/compose.mojom-webui.js';
-import {ComposeApiProxy, ComposeApiProxyImpl} from 'chrome://compose/compose_api_proxy.js';
+import {CloseReason, ComposeState, ComposeStatus, ConsentState, Length, Tone, UserFeedback} from 'chrome://compose/compose.mojom-webui.js';
+import {ComposeApiProxyImpl} from 'chrome://compose/compose_api_proxy.js';
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible, whenCheck} from 'chrome://webui-test/test_util.js';
 
-class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
-  private initialConsentState_: ConsentState = ConsentState.kConsented;
-  private initialInput_: string = '';
-  private initialState_: ComposeState = {
-    webuiState: '',
-    feedback: UserFeedback.kUserFeedbackUnspecified,
-    hasPendingRequest: false,
-  };
-  private router_: ComposeDialogCallbackRouter =
-      new ComposeDialogCallbackRouter();
-  remote = this.router_.$.bindNewPipeAndPassRemote();
-  private undoResponse_: ComposeState|null = null;
-
-  constructor() {
-    super([
-      'acceptComposeResult',
-      'closeUi',
-      'compose',
-      'rewrite',
-      'openBugReportingLink',
-      'openFeedbackSurveyLink',
-      'requestInitialState',
-      'saveWebuiState',
-      'setUserFeedback',
-      'undo',
-    ]);
-  }
-
-  acceptComposeResult(): Promise<boolean> {
-    this.methodCalled('acceptComposeResult');
-    return Promise.resolve(true);
-  }
-
-  acknowledgeConsentDisclaimer() {}
-
-  approveConsent() {}
-
-  closeUi(reason: CloseReason) {
-    this.methodCalled('closeUi', reason);
-  }
-
-  compose(input: string, edited: boolean): void {
-    this.methodCalled('compose', {input, edited});
-  }
-
-  rewrite(style: StyleModifiers): void {
-    this.methodCalled('rewrite', {style});
-  }
-
-  undo(): Promise<(ComposeState | null)> {
-    this.methodCalled('undo');
-    return Promise.resolve(this.undoResponse_);
-  }
-
-  getRouter() {
-    return this.router_;
-  }
-
-  openBugReportingLink() {
-    this.methodCalled('openBugReportingLink');
-  }
-
-  openFeedbackSurveyLink() {
-    this.methodCalled('openFeedbackSurveyLink');
-  }
-
-  openComposeSettings() {}
-
-  requestInitialState(): Promise<OpenMetadata> {
-    this.methodCalled('requestInitialState');
-    return Promise.resolve({
-      consentState: this.initialConsentState_,
-      composeState: this.initialState_,
-      initialInput: this.initialInput_,
-      configurableParams: {
-        minWordLimit: 2,
-        maxWordLimit: 50,
-        maxCharacterLimit: 100,
-      },
-    });
-  }
-
-  saveWebuiState(state: string) {
-    this.methodCalled('saveWebuiState', state);
-  }
-
-  setUserFeedback(feedback: UserFeedback) {
-    this.methodCalled('setUserFeedback', feedback);
-  }
-
-  setInitialConsentState(consent: ConsentState) {
-    this.initialConsentState_ = consent;
-  }
-
-  setInitialState(state: Partial<ComposeState>, input?: string) {
-    this.initialState_ = Object.assign(
-        {
-          webuiState: '',
-          style: {tone: Tone.kUnset, length: Length.kUnset},
-          feedback: UserFeedback.kUserFeedbackUnspecified,
-          hasPendingRequest: false,
-        },
-        state);
-    this.initialInput_ = input || '';
-  }
-
-  setUndoResponse(state: ComposeState|null) {
-    this.undoResponse_ = state;
-  }
-
-  showUi() {}
-}
+import {TestComposeApiProxy} from './test_compose_api_proxy.js';
 
 suite('ComposeApp', () => {
   let app: ComposeAppElement;
-  let testProxy: TestingApiProxy;
+  let testProxy: TestComposeApiProxy;
 
   setup(async () => {
-    testProxy = new TestingApiProxy();
+    testProxy = new TestComposeApiProxy();
     ComposeApiProxyImpl.setInstance(testProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -156,10 +44,10 @@ suite('ComposeApp', () => {
     return testProxy.remote.$.flushForTesting();
   }
 
-  async function initializeNewAppWithConsentState(consent: ConsentState):
-      Promise<ComposeAppElement> {
+  async function initializeNewAppWithConsentAndMsbbState(
+      consent: ConsentState, msbb: boolean): Promise<ComposeAppElement> {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testProxy.setInitialConsentState(consent);
+    testProxy.setOpenMetadata({consentState: consent, msbbState: msbb});
     const newApp = document.createElement('compose-app');
     document.body.appendChild(newApp);
     await flushTasks();
@@ -177,7 +65,7 @@ suite('ComposeApp', () => {
     assertTrue(isVisible(app.$.submitButton));
     assertFalse(app.$.submitButton.disabled);
     assertFalse(isVisible(app.$.resultContainer));
-    assertFalse(isVisible(app.$.insertButton));
+    assertFalse(isVisible(app.$.acceptButton));
 
     // Invalid input keeps submit enabled and error is not visible.
     mockInput('Short');
@@ -207,11 +95,32 @@ suite('ComposeApp', () => {
     assertFalse(isVisible(app.$.loading));
     assertFalse(isVisible(app.$.submitButton));
     assertTrue(app.$.textarea.readonly);
-    assertTrue(isVisible(app.$.insertButton));
+    assertTrue(isVisible(app.$.acceptButton));
 
-    // Clicking on Insert calls acceptComposeResult.
-    app.$.insertButton.click();
+    // Clicking on accept button calls acceptComposeResult.
+    app.$.acceptButton.click();
     await testProxy.whenCalled('acceptComposeResult');
+  });
+
+  test('AcceptButtonText', async () => {
+    async function initializeNewAppWithTextSelectedState(textSelected: boolean):
+        Promise<ComposeAppElement> {
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      testProxy.setOpenMetadata({textSelected});
+      const newApp = document.createElement('compose-app');
+      document.body.appendChild(newApp);
+      await flushTasks();
+      return newApp;
+    }
+    const appWithTextSelected =
+        await initializeNewAppWithTextSelectedState(true);
+    assertTrue(
+        appWithTextSelected.$.acceptButton.textContent!.includes('Replace'));
+
+    const appWithNoTextSelected =
+        await initializeNewAppWithTextSelectedState(false);
+    assertTrue(
+        appWithNoTextSelected.$.acceptButton.textContent!.includes('Insert'));
   });
 
   test('RefreshesResult', async () => {
@@ -229,10 +138,10 @@ suite('ComposeApp', () => {
     assertTrue(
         isVisible(app.$.loading), 'Loading indicator should be visible.');
 
-    const args = await testProxy.whenCalled('compose');
+    const args = await testProxy.whenCalled('rewrite');
     await mockResponse('Refreshed output.');
 
-    assertEquals('Input to refresh.', args.input);
+    assertEquals(null, args);
 
     // Verify UI has updated with refreshed results.
     assertFalse(isVisible(app.$.loading));
@@ -262,33 +171,44 @@ suite('ComposeApp', () => {
     assertTrue(220 < app.$.body.scrollHeight);
   });
 
-  test('ConsentStateDeterminesViewState', async () => {
-    const appWithConsentDialog =
-        await initializeNewAppWithConsentState(ConsentState.kUnset);
+  test('ConsentandMsbbStateDeterminesViewState', async () => {
+    const appWithConsentDialog = await initializeNewAppWithConsentAndMsbbState(
+        ConsentState.kUnset, true);
     // Check correct visibility for consent view state
     assertFalse(isVisible(appWithConsentDialog.$.appDialog));
     assertTrue(isVisible(appWithConsentDialog.$.consentDialog));
     assertTrue(isVisible(appWithConsentDialog.$.consentFooter));
     assertFalse(isVisible(appWithConsentDialog.$.disclaimerFooter));
+    assertFalse(isVisible(appWithConsentDialog.$.freMsbbDialog));
 
     const appWithDisclaimerDialog =
-        await initializeNewAppWithConsentState(ConsentState.kExternalConsented);
+        await initializeNewAppWithConsentAndMsbbState(
+            ConsentState.kExternalConsented, true);
     // Check correct visibility for disclaimer view state
     assertFalse(isVisible(appWithDisclaimerDialog.$.appDialog));
     assertTrue(isVisible(appWithDisclaimerDialog.$.consentDialog));
     assertFalse(isVisible(appWithDisclaimerDialog.$.consentFooter));
     assertTrue(isVisible(appWithDisclaimerDialog.$.disclaimerFooter));
+    assertFalse(isVisible(appWithDisclaimerDialog.$.freMsbbDialog));
 
-    const appWithMainDialog =
-        await initializeNewAppWithConsentState(ConsentState.kConsented);
+    const appWithMSBBDialog = await initializeNewAppWithConsentAndMsbbState(
+        ConsentState.kConsented, false);
+    // Check correct visibility for main app view state
+    assertFalse(isVisible(appWithMSBBDialog.$.appDialog));
+    assertFalse(isVisible(appWithMSBBDialog.$.consentDialog));
+    assertTrue(isVisible(appWithMSBBDialog.$.freMsbbDialog));
+
+    const appWithMainDialog = await initializeNewAppWithConsentAndMsbbState(
+        ConsentState.kConsented, true);
     // Check correct visibility for main app view state
     assertTrue(isVisible(appWithMainDialog.$.appDialog));
     assertFalse(isVisible(appWithMainDialog.$.consentDialog));
+    assertFalse(isVisible(appWithMainDialog.$.freMsbbDialog));
   });
 
   test('ConsentCloseButton', async () => {
-    const appWithConsentDialog =
-        await initializeNewAppWithConsentState(ConsentState.kUnset);
+    const appWithConsentDialog = await initializeNewAppWithConsentAndMsbbState(
+        ConsentState.kUnset, true);
 
     appWithConsentDialog.$.closeButtonConsent.click();
     // Close reason should match that given to the consent close button.
@@ -296,9 +216,19 @@ suite('ComposeApp', () => {
     assertEquals(CloseReason.kConsentCloseButton, closeReason);
   });
 
+  test('MSBBCloseButton', async () => {
+    const appWithMsbbDialog = await initializeNewAppWithConsentAndMsbbState(
+        ConsentState.kConsented, false);
+
+    appWithMsbbDialog.$.closeButtonMSBB.click();
+    // Close reason should match that given to the consent close button.
+    const closeReason = await testProxy.whenCalled('closeUi');
+    assertEquals(CloseReason.kMSBBCloseButton, closeReason);
+  });
+
   test('ConsentNoThanksButton', async () => {
-    const appWithConsentDialog =
-        await initializeNewAppWithConsentState(ConsentState.kUnset);
+    const appWithConsentDialog = await initializeNewAppWithConsentAndMsbbState(
+        ConsentState.kUnset, true);
 
     appWithConsentDialog.$.consentNoThanksButton.click();
     // Close reason should match that given to the consent no thanks button.
@@ -307,23 +237,49 @@ suite('ComposeApp', () => {
   });
 
   test('ConsentYesButton', async () => {
-    const appWithConsentDialog =
-        await initializeNewAppWithConsentState(ConsentState.kUnset);
+    const appWithConsentDialog = await initializeNewAppWithConsentAndMsbbState(
+        ConsentState.kUnset, true);
 
     appWithConsentDialog.$.consentYesButton.click();
     // View state should change from consent UI to main app UI.
     assertFalse(isVisible(appWithConsentDialog.$.consentDialog));
     assertTrue(isVisible(appWithConsentDialog.$.appDialog));
+    assertFalse(isVisible(appWithConsentDialog.$.freMsbbDialog));
+  });
+
+  test('ConsentYesButtonWithoutMSBB', async () => {
+    const appWithConsentDialog = await initializeNewAppWithConsentAndMsbbState(
+        ConsentState.kUnset, false);
+
+    appWithConsentDialog.$.consentYesButton.click();
+    // View state should change from consent UI to MSBB UI.
+    assertFalse(isVisible(appWithConsentDialog.$.consentDialog));
+    assertFalse(isVisible(appWithConsentDialog.$.appDialog));
+    assertTrue(isVisible(appWithConsentDialog.$.freMsbbDialog));
   });
 
   test('DisclaimerLetsGoButton', async () => {
     const appWithDisclaimerDialog =
-        await initializeNewAppWithConsentState(ConsentState.kExternalConsented);
+        await initializeNewAppWithConsentAndMsbbState(
+            ConsentState.kExternalConsented, true);
+
+    appWithDisclaimerDialog.$.disclaimerLetsGoButton.click();
+    // View state should change from disclaimer UI to MSBB UI.
+    assertFalse(isVisible(appWithDisclaimerDialog.$.consentDialog));
+    assertTrue(isVisible(appWithDisclaimerDialog.$.appDialog));
+    assertFalse(isVisible(appWithDisclaimerDialog.$.freMsbbDialog));
+  });
+
+  test('DisclaimerLetsGoButtonWithoutMSBB', async () => {
+    const appWithDisclaimerDialog =
+        await initializeNewAppWithConsentAndMsbbState(
+            ConsentState.kExternalConsented, false);
 
     appWithDisclaimerDialog.$.disclaimerLetsGoButton.click();
     // View state should change from disclaimer UI to main app UI.
     assertFalse(isVisible(appWithDisclaimerDialog.$.consentDialog));
-    assertTrue(isVisible(appWithDisclaimerDialog.$.appDialog));
+    assertFalse(isVisible(appWithDisclaimerDialog.$.appDialog));
+    assertTrue(isVisible(appWithDisclaimerDialog.$.freMsbbDialog));
   });
 
   test('InitializesWithState', async () => {
@@ -331,7 +287,7 @@ suite('ComposeApp', () => {
         state: Partial<ComposeState>,
         input?: string): Promise<ComposeAppElement> {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      testProxy.setInitialState(state, input);
+      testProxy.setOpenMetadata({initialInput: input}, state);
       const newApp = document.createElement('compose-app');
       document.body.appendChild(newApp);
       await flushTasks();
@@ -592,7 +548,7 @@ suite('ComposeApp', () => {
 
     assertTrue(isVisible(app.$.lengthMenu), 'Length menu should be visible.');
     assertEquals(
-        2, app.$.lengthMenu.querySelectorAll('option:not([hidden])').length);
+        2, app.$.lengthMenu.querySelectorAll('option:not([disabled])').length);
 
     app.$.lengthMenu.value = `${Length.kShorter}`;
     app.$.lengthMenu.dispatchEvent(new CustomEvent('change'));
@@ -600,13 +556,13 @@ suite('ComposeApp', () => {
     const args = await testProxy.whenCalled('rewrite');
     await mockResponse();
 
-    assertEquals(Length.kShorter, args.style.length);
+    assertEquals(Length.kShorter, args.length);
 
     testProxy.resetResolver('rewrite');
 
     assertTrue(isVisible(app.$.toneMenu), 'Tone menu should be visible.');
     assertEquals(
-        2, app.$.toneMenu.querySelectorAll('option:not([hidden])').length);
+        2, app.$.toneMenu.querySelectorAll('option:not([disabled])').length);
 
     app.$.toneMenu.value = `${Tone.kCasual}`;
     app.$.toneMenu.dispatchEvent(new CustomEvent('change'));
@@ -614,13 +570,13 @@ suite('ComposeApp', () => {
     const args2 = await testProxy.whenCalled('rewrite');
     await mockResponse();
 
-    assertEquals(Tone.kCasual, args2.style.tone);
+    assertEquals(Tone.kCasual, args2.tone);
   });
 
   test('Undo', async () => {
     // Set up initial state to show undo button and mock up a previous state.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testProxy.setInitialState({
+    testProxy.setOpenMetadata({}, {
       hasPendingRequest: false,
       response: {
         status: ComposeStatus.kOk,

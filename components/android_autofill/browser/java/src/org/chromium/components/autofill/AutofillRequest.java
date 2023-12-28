@@ -152,21 +152,17 @@ public class AutofillRequest {
         return mAutofillHintsService;
     }
 
-    public void onQueryDone(boolean success) {
+    public void onServerPredictionsAvailable() {
         if (mAutofillHintsService == null) return;
-        if (success) {
-            ArrayList<ViewType> viewTypes = new ArrayList<ViewType>();
-            for (FormFieldData field : mFormData.mFields) {
-                viewTypes.add(
-                        new ViewType(
-                                field.getAutofillId(),
-                                field.getServerType(),
-                                field.getComputedType(),
-                                field.getServerPredictions()));
+        ArrayList<ViewType> viewTypes = new ArrayList<ViewType>();
+        for (FormFieldData field : mFormData.mFields) {
+            viewTypes.add(
+                    new ViewType(
+                            field.getAutofillId(),
+                            field.getServerType(),
+                            field.getComputedType(),
+                            field.getServerPredictions()));
             }
-            mAutofillHintsService.onViewTypeAvailable(viewTypes);
-        } else {
-            mAutofillHintsService.onQueryFailed();
-        }
+        mAutofillHintsService.onViewTypeAvailable(viewTypes);
     }
 }

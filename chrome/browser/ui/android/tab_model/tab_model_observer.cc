@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/tab_android.h"
 
 TabModelObserver::TabModelObserver() {}
@@ -18,7 +19,7 @@ void TabModelObserver::WillCloseTab(TabAndroid* tab, bool animate) {}
 void TabModelObserver::OnFinishingTabClosure(int tab_id, bool incognito) {}
 
 void TabModelObserver::OnFinishingMultipleTabClosure(
-    const std::vector<TabAndroid*>& tabs) {}
+    const std::vector<raw_ptr<TabAndroid, VectorExperimental>>& tabs) {}
 
 void TabModelObserver::WillAddTab(TabAndroid* tab,
                                   TabModel::TabLaunchType type) {}
@@ -37,7 +38,7 @@ void TabModelObserver::TabClosureUndone(TabAndroid* tab) {}
 void TabModelObserver::TabClosureCommitted(TabAndroid* tab) {}
 
 void TabModelObserver::AllTabsPendingClosure(
-    const std::vector<TabAndroid*>& tabs) {}
+    const std::vector<raw_ptr<TabAndroid, VectorExperimental>>& tabs) {}
 
 void TabModelObserver::AllTabsClosureCommitted() {}
 

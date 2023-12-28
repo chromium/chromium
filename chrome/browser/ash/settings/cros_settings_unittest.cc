@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/ownership/owner_key_loader.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
@@ -67,8 +68,8 @@ class CrosSettingsTest : public testing::Test {
   void SetUp() override {
     // Disable owner key migration.
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kStoreOwnerKeyInPrivateSlot},
-        /*disabled_features=*/{features::kMigrateOwnerKeyToPrivateSlot});
+        /*enabled_features=*/{kStoreOwnerKeyInPrivateSlot},
+        /*disabled_features=*/{kMigrateOwnerKeyToPrivateSlot});
 
     device_policy_.Build();
 

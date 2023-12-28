@@ -134,6 +134,7 @@ class CORE_EXPORT RootFrameViewport final
   absl::optional<gfx::PointF> GetSnapPositionAndSetTarget(
       const cc::SnapSelectionStrategy& strategy) override;
   void UpdateSnappedTargetsAndEnqueueSnapChanged() override;
+  const cc::SnappedTargetData* GetSnapChangingTargetData() const override;
   void SetSnapChangingTargetData(
       absl::optional<cc::SnappedTargetData> data) override;
   const cc::SnapSelectionStrategy* GetImplSnapStrategy() const override;

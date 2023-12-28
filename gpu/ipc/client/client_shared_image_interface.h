@@ -17,12 +17,14 @@
 
 namespace gpu {
 class SharedImageInterfaceProxy;
+class GpuChannelHost;
 
 // Tracks shared images created by a single context and ensures they are deleted
 // if the context is lost.
 class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
  public:
-  ClientSharedImageInterface(SharedImageInterfaceProxy* proxy);
+  ClientSharedImageInterface(SharedImageInterfaceProxy* proxy,
+                             scoped_refptr<gpu::GpuChannelHost> channel);
   ~ClientSharedImageInterface() override;
 
   // SharedImageInterface implementation.
@@ -128,13 +130,18 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
   scoped_refptr<ClientSharedImage> NotifyMailboxAdded(const Mailbox& mailbox,
                                                       uint32_t usage) override;
 
-  void AddReferenceToSharedImage(const SyncToken& sync_token,
-                                 const Mailbox& mailbox,
-                                 uint32_t usage) override;
+  scoped_refptr<ClientSharedImage> AddReferenceToSharedImage(
+      const SyncToken& sync_token,
+      const Mailbox& mailbox,
+      uint32_t usage) override;
 
   const SharedImageCapabilities& GetCapabilities() override;
 
+  gpu::GpuChannelHost* gpu_channel() { return gpu_channel_.get(); }
+
  private:
+  scoped_refptr<gpu::GpuChannelHost> gpu_channel_;
+
   Mailbox AddMailbox(const Mailbox& mailbox);
 
   const raw_ptr<SharedImageInterfaceProxy> proxy_;

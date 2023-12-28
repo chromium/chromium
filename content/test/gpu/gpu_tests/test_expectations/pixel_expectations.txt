@@ -301,6 +301,8 @@ crbug.com/1488026 [ android android-nexus-5x ] Pixel_Video_HEVC [ Skip ]
 # JavaScript after the SVG is loaded.
 [ mac intel release no-asan graphite-disabled ] Pixel_SVGHuge [ Slow ]
 
+[ chromeos cros-chrome chromeos-board-volteer ] Pixel_WebGLContextRestored [ Slow ]
+
 ###################
 # Failures/Flakes #
 ###################

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -88,17 +89,19 @@ GetLoginMatchType GetMatchType(const password_manager::PasswordForm& form);
 // case of tie, an arbitrary credential from the tied ones is chosen for
 // |best_matches|.
 void FindBestMatches(
-    const std::vector<const password_manager::PasswordForm*>&
-        non_federated_matches,
+    const std::vector<raw_ptr<const password_manager::PasswordForm,
+                              VectorExperimental>>& non_federated_matches,
     password_manager::PasswordForm::Scheme scheme,
-    std::vector<const password_manager::PasswordForm*>*
-        non_federated_same_scheme,
-    std::vector<const password_manager::PasswordForm*>* best_matches);
+    std::vector<raw_ptr<const password_manager::PasswordForm,
+                        VectorExperimental>>* non_federated_same_scheme,
+    std::vector<raw_ptr<const password_manager::PasswordForm,
+                        VectorExperimental>>* best_matches);
 
 // Returns a form with the given |username_value| from |forms|, or nullptr if
 // none exists. If multiple matches exist, returns the first one.
 const password_manager::PasswordForm* FindFormByUsername(
-    const std::vector<const password_manager::PasswordForm*>& forms,
+    const std::vector<raw_ptr<const password_manager::PasswordForm,
+                              VectorExperimental>>& forms,
     const std::u16string& username_value);
 
 // If the user submits a form, they may have used existing credentials, new
@@ -113,7 +116,8 @@ const password_manager::PasswordForm* FindFormByUsername(
 // updated during the save prompt bubble.
 const password_manager::PasswordForm* GetMatchForUpdating(
     const password_manager::PasswordForm& submitted_form,
-    const std::vector<const password_manager::PasswordForm*>& credentials,
+    const std::vector<raw_ptr<const password_manager::PasswordForm,
+                              VectorExperimental>>& credentials,
     bool username_updated_in_bubble = false);
 
 // This method creates a blocklisted form with |digests|'s scheme, signon_realm
@@ -180,7 +184,7 @@ bool IsUppercaseLetter(char16_t c);
 bool IsSpecialSymbol(char16_t c);
 
 // Returns true if 'type' is a username in a password-less form.
-bool IsSingleUsernameType(autofill::ServerFieldType type);
+bool IsSingleUsernameType(autofill::FieldType type);
 
 }  // namespace password_manager_util
 

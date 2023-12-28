@@ -41,7 +41,7 @@ class ASH_EXPORT HoldingSpaceItemScreenCaptureView
   void UpdateImage();
 
   // Owned by view hierarchy.
-  raw_ptr<RoundedImageView, ExperimentalAsh> image_ = nullptr;
+  raw_ptr<RoundedImageView> image_ = nullptr;
 
   base::CallbackListSubscription image_skia_changed_subscription_;
 };

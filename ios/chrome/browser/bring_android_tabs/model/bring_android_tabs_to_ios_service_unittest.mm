@@ -134,10 +134,12 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
     create_duplicates_ = false;
   }
 
-  MOCK_METHOD(bool,
-              GetAllForeignSessions,
-              (std::vector<const sync_sessions::SyncedSession*>*),
-              (override));
+  MOCK_METHOD(
+      bool,
+      GetAllForeignSessions,
+      (std::vector<
+          vector_experimental_raw_ptr<const sync_sessions::SyncedSession>>*),
+      (override));
 
   MOCK_METHOD(bool,
               GetForeignSessionTabs,
@@ -194,7 +196,8 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
   void MockForeignSessions() {
     ON_CALL(*this, GetAllForeignSessions)
         .WillByDefault(
-            [this](std::vector<const sync_sessions::SyncedSession*>* sessions) {
+            [this](std::vector<raw_ptr<const sync_sessions::SyncedSession,
+                                       VectorExperimental>>* sessions) {
               for (size_t i = 0; i < kPhoneSessionCount; i++) {
                 sessions->push_back(
                     Session(sync_pb::SyncEnums_DeviceType_TYPE_PHONE,

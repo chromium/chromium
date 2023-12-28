@@ -154,7 +154,7 @@ class BoundsAnimatorDisabler {
   // The previous animation duration.
   base::TimeDelta old_duration_;
   // The bounds animator which gets used.
-  raw_ptr<views::BoundsAnimator, ExperimentalAsh> bounds_animator_;
+  raw_ptr<views::BoundsAnimator> bounds_animator_;
 };
 
 void ReportMoveAnimationSmoothness(int smoothness) {
@@ -257,7 +257,7 @@ class ShelfView::ViewOpacityResetter : public views::ViewObserver {
   }
 
  private:
-  raw_ptr<views::View, ExperimentalAsh> view_;
+  raw_ptr<views::View> view_;
   base::ScopedObservation<views::View, views::ViewObserver> view_observer_{
       this};
 };
@@ -276,7 +276,7 @@ class ShelfView::FadeInAnimationDelegate
     shelf_view_->OnFadeInAnimationEnded();
   }
 
-  raw_ptr<ShelfView, ExperimentalAsh> shelf_view_ = nullptr;
+  raw_ptr<ShelfView> shelf_view_ = nullptr;
 };
 
 // AnimationDelegate used when deleting an item. This steadily decreased the
@@ -307,7 +307,7 @@ class ShelfView::FadeOutAnimationDelegate : public gfx::AnimationDelegate {
   void AnimationCanceled(const Animation* animation) override {}
 
  private:
-  raw_ptr<ShelfView, ExperimentalAsh> shelf_view_;
+  raw_ptr<ShelfView> shelf_view_;
   std::unique_ptr<views::View> view_;
 };
 
@@ -334,8 +334,8 @@ class ShelfView::StartFadeAnimationDelegate : public gfx::AnimationDelegate {
   }
 
  private:
-  raw_ptr<ShelfView, ExperimentalAsh> shelf_view_;
-  raw_ptr<views::View, ExperimentalAsh> view_;
+  raw_ptr<ShelfView> shelf_view_;
+  raw_ptr<views::View> view_;
 };
 
 // static
@@ -524,7 +524,7 @@ bool ShelfView::ShouldHideTooltip(const gfx::Point& cursor_location,
 
 const std::vector<aura::Window*> ShelfView::GetOpenWindowsForView(
     views::View* view) {
-  std::vector<aura::Window*> window_list =
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> window_list =
       Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kActiveDesk);
   std::vector<aura::Window*> open_windows;
   const ShelfItem* item = ShelfItemForView(view);
@@ -534,7 +534,7 @@ const std::vector<aura::Window*> ShelfView::GetOpenWindowsForView(
   if (!item)
     return open_windows;
 
-  for (auto* window : window_list) {
+  for (aura::Window* window : window_list) {
     const std::string window_app_id =
         ShelfID::Deserialize(window->GetProperty(kShelfIDKey)).app_id;
     if (window_app_id == item->id.app_id) {
@@ -686,7 +686,7 @@ View* ShelfView::GetTooltipHandlerForPoint(const gfx::Point& point) {
   // Similar implementation as views::View, but without going into each
   // child's subviews.
   View::Views children = GetChildrenInZOrder();
-  for (auto* child : base::Reversed(children)) {
+  for (views::View* child : base::Reversed(children)) {
     if (!child->GetVisible())
       continue;
 
@@ -2638,8 +2638,6 @@ void ShelfView::ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
 
   context_menu_id_ = shelf_id;
 
-  menu_owner_ = source;
-
   closing_event_time_ = base::TimeTicks();
 
   // NOTE: If you convert to HAS_MNEMONICS be sure to update menu building code.
@@ -2683,7 +2681,6 @@ void ShelfView::ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
 }
 
 void ShelfView::OnMenuClosed(views::View* source) {
-  menu_owner_ = nullptr;
   context_menu_id_ = ShelfID();
 
   closing_event_time_ = shelf_menu_model_adapter_->GetClosingEventTime();

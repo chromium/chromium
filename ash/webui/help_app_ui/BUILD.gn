@@ -6,7 +6,6 @@ import("//ash/webui/help_app_ui/help_app_ui.gni")
 import("//ash/webui/web_applications/system_apps.gni")
 import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
-import("//chrome/test/base/ash/js2gtest.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
@@ -74,7 +73,7 @@ mojom("mojo_bindings") {
   webui_module_path = "/"
 
   # Help app is still using JS + Closure Compiler.
-  use_typescript_sources = false
+  generate_webui_js_bindings = true
 }
 
 source_set("unit_tests") {
@@ -107,20 +106,6 @@ group("closure_compile") {
   ]
 }
 
-js2gtest("browser_tests_js") {
-  test_type = "mojo_webui"
-
-  sources = [ "test/help_app_ui_gtest_browsertest.js" ]
-
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-  deps = [
-    ":browser_test_support",
-    "//ash/constants",
-    "//chromeos/constants",
-  ]
-}
-
 source_set("browser_test_support") {
   testonly = true
   sources = [
@@ -132,6 +117,7 @@ source_set("browser_test_support") {
 
   deps = [
     ":help_app_ui",
+    "//ash/public/cpp:cpp",
     "//ash/webui/web_applications/test:test_support",
     "//chrome/test:test_support_ui",
   ]
@@ -178,7 +164,6 @@ js_type_check("closure_compile_browsertests") {
   deps = [
     ":test_help_app_guest_ui_browsertest_js",
     ":test_help_app_ui_browsertest_js",
-    ":test_help_app_ui_gtest_browsertest_js",
   ]
 }
 
@@ -190,49 +175,46 @@ js_library("test_driver_api_js") {
 js_library("test_guest_query_receiver_js") {
   testonly = true
   sources = [ "test/guest_query_receiver.js" ]
+  externs_list = [ "//ash/webui/system_apps/public/js/message_pipe.externs.js" ]
   deps = [
     ":test_driver_api_js",
     "//ash/webui/help_app_ui/resources:receiver",
-    "//ash/webui/system_apps/public/js:message_pipe",
   ]
 }
 
 js_library("test_driver_js") {
   testonly = true
   sources = [ "test/driver.js" ]
-  externs_list = [ "//third_party/closure_compiler/externs/chai-3.5.js" ]
+  externs_list = [
+    "//third_party/closure_compiler/externs/chai-3.5.js",
+    "//ash/webui/system_apps/public/js/message_pipe.externs.js",
+  ]
   deps = [
     ":test_driver_api_js",
     "//ash/webui/help_app_ui/resources:browser_proxy",
-    "//ash/webui/system_apps/public/js:message_pipe",
   ]
-}
-
-js_library("test_help_app_ui_gtest_browsertest_js") {
-  testonly = true
-  sources = [ "test/help_app_ui_gtest_browsertest.js" ]
-  externs_list = [ "//ash/webui/web_applications/js2gtest_support.externs.js" ]
-  deps = [ ":test_help_app_ui_browsertest_js" ]
 }
 
 js_library("test_help_app_ui_browsertest_js") {
   testonly = true
   sources = [ "test/help_app_ui_browsertest.js" ]
+  externs_list = [ "//ash/webui/system_apps/public/js/message_pipe.externs.js" ]
   deps = [
     ":test_driver_js",
     "//ash/webui/help_app_ui/resources:browser_proxy",
-    "//ash/webui/system_apps/public/js:message_pipe",
   ]
 }
 
 js_library("test_help_app_guest_ui_browsertest_js") {
   testonly = true
   sources = [ "test/help_app_guest_ui_browsertest.js" ]
-  externs_list = [ "//ash/webui/web_applications/js2gtest_support.externs.js" ]
+  externs_list = [
+    "//ash/webui/web_applications/js2gtest_support.externs.js",
+    "//ash/webui/system_apps/public/js/message_pipe.externs.js",
+  ]
   deps = [
     ":test_driver_js",
     "//ash/webui/help_app_ui/resources:receiver",
-    "//ash/webui/system_apps/public/js:message_pipe",
   ]
 }
 

@@ -18,6 +18,7 @@
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "device/fido/fido_types.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -293,6 +294,17 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
       base::span<const device::CableDiscoveryData> pairings_from_extension,
       bool is_enclave_authenticator_available,
       device::FidoDiscoveryFactory* fido_discovery_factory);
+
+  // Hints reflects the "hints" parameter that can be set on a request. See
+  // https://w3c.github.io/webauthn/#enumdef-publickeycredentialhints
+  struct Hints {
+    // The site's preferred transport for this operation.
+    absl::optional<device::FidoTransportProtocol> transport;
+  };
+
+  // SetHints communicates the "hints" that were set in the request. See
+  // https://w3c.github.io/webauthn/#enumdef-publickeycredentialhints
+  virtual void SetHints(const Hints& hints);
 
   // SelectAccount is called to allow the embedder to select between one or more
   // accounts. This is triggered when the web page requests an unspecified

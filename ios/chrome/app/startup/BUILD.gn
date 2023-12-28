@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//ios/chrome/features.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 
 # Target for sources that don't depend on //ios/chrome/browser:browser
 source_set("startup_basic") {
@@ -78,7 +79,7 @@ source_set("startup") {
     "//ios/chrome/app",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/first_run/model",
-    "//ios/chrome/browser/net:net",
+    "//ios/chrome/browser/net/model:model",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features",
@@ -110,4 +111,50 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url",
   ]
+}
+
+# Groups and targets for fuzzer tests.
+
+group("chrome_app_startup_parameters_fuzzer_tests") {
+  testonly = true
+  deps = [
+    ":chrome_app_startup_parameters_external_actions_fuzzer",
+    ":chrome_app_startup_parameters_googlechromes_fuzzer",
+    ":chrome_app_startup_parameters_scheme_fuzzer",
+  ]
+}
+
+group("chrome_app_startup_parameters_fuzzers_deps") {
+  testonly = true
+  public_deps = [
+    ":startup",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/app:tests_fake_hook",
+    "//ios/chrome/browser/providers:chromium_providers",
+    "//ios/chrome/browser/tabs/model:tabs_internal",
+    "//ios/chrome/browser/ui/settings",
+    "//ios/chrome/browser/ui/sharing:sharing_internal",
+  ]
+}
+
+fuzzer_test("chrome_app_startup_parameters_external_actions_fuzzer") {
+  additional_configs = [ "//testing/libfuzzer:build_for_ios_clusterfuzz_job" ]
+  sources = [ "chrome_app_startup_parameters_external_actions_fuzzer.mm" ]
+  deps = [ ":chrome_app_startup_parameters_fuzzers_deps" ]
+  frameworks = [ "AuthenticationServices.framework" ]
+}
+
+fuzzer_test("chrome_app_startup_parameters_googlechromes_fuzzer") {
+  additional_configs = [ "//testing/libfuzzer:build_for_ios_clusterfuzz_job" ]
+  sources = [ "chrome_app_startup_parameters_googlechromes_fuzzer.mm" ]
+  deps = [ ":chrome_app_startup_parameters_fuzzers_deps" ]
+  frameworks = [ "AuthenticationServices.framework" ]
+}
+
+fuzzer_test("chrome_app_startup_parameters_scheme_fuzzer") {
+  additional_configs = [ "//testing/libfuzzer:build_for_ios_clusterfuzz_job" ]
+  sources = [ "chrome_app_startup_parameters_scheme_fuzzer.mm" ]
+  deps = [ ":chrome_app_startup_parameters_fuzzers_deps" ]
+  frameworks = [ "AuthenticationServices.framework" ]
 }

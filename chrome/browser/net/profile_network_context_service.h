@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/proxy_config_monitor.h"
+#include "chrome/common/buildflags.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -145,6 +146,17 @@ class ProfileNetworkContextService
 
   void ScheduleUpdateCTPolicy();
 
+#if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
+  // Get the current certificate policies from preferences.
+  cert_verifier::mojom::AdditionalCertificatesPtr GetCertificatePolicy();
+
+  // Update the certificate policy for all of the profile_'s
+  // CertVerifierServices.
+  void UpdateCertificatePolicy();
+
+  void ScheduleUpdateCertificatePolicy();
+#endif
+
   bool ShouldSplitAuthCacheByNetworkIsolationKey() const;
   void UpdateSplitAuthCacheByNetworkIsolationKey();
 
@@ -203,8 +215,11 @@ class ProfileNetworkContextService
                           privacy_sandbox::PrivacySandboxSettings::Observer>
       privacy_sandbox_settings_observer_{this};
 
-  // Used to post schedule CT policy updates
+  // Used to post schedule CT and Certificate policy updates
   base::OneShotTimer ct_policy_update_timer_;
+#if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
+  base::OneShotTimer cert_policy_update_timer_;
+#endif
 
   // Used for testing.
   base::RepeatingCallback<std::unique_ptr<net::ClientCertStore>()>

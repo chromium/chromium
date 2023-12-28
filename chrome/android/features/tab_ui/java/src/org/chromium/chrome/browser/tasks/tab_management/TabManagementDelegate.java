@@ -27,9 +27,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestions;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
@@ -159,16 +157,4 @@ public interface TabManagementDelegate {
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             @NonNull SnackbarManager snackbarManager);
-
-    /**
-     * Create a {@link TabSuggestions} for the given {@link Activity}
-     * @param context The activity context.
-     * @param tabModelSelector Allows access to the current set of {@link TabModel}.
-     * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
-     * @return the {@link TabSuggestions} for the activity
-     */
-    TabSuggestions createTabSuggestions(
-            @NonNull Context context,
-            @NonNull TabModelSelector tabModelSelector,
-            @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher);
 }

@@ -243,7 +243,7 @@ class RemoteAppsManagerBrowsertest
     ExpectImageDownloaderDownload(icon_url, icon);
     apps::AppUpdateWaiter waiter(profile_, app_id, IconChanged());
     AddApp(source_id, name, folder_id, icon_url, add_to_front);
-    waiter.Wait();
+    waiter.Await();
   }
 
   void AddAppAssertError(const std::string& source_id,
@@ -334,7 +334,8 @@ class RemoteAppsManagerBrowsertest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddApp) {
+// TODO: b/316517034 - Enable the test when flakiness issue is resolved.
+IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, DISABLED_AddApp) {
   AddScreenplayTag();
 
   // Show launcher UI so that app icons are loaded.

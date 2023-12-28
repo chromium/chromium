@@ -98,52 +98,10 @@ TEST_F(PriceTrackingUtilsTest,
                                   .value());
 }
 
-// Ensure bookmarks created by price tracking are deleted when the product is
-// unsubscribed.
-TEST_F(PriceTrackingUtilsTest,
-       SetPriceTrackingState_UnsubscribeDeletesBookmark) {
-  test_features_.InitAndDisableFeature(kShoppingListTrackByDefault);
-
-  const bookmarks::BookmarkNode* product =
-      AddProductBookmark(bookmark_model_.get(), u"product 1",
-                         GURL("http://example.com/1"), 12345L, true);
-
-  EXPECT_EQ(1U, bookmark_model_->other_node()->children().size());
-
-  // Simulate successful calls in the subscriptions manager.
-  shopping_service_->SetSubscribeCallbackValue(true);
-  shopping_service_->SetUnsubscribeCallbackValue(true);
-
-  base::RunLoop run_loop;
-  SetPriceTrackingStateForBookmark(
-      shopping_service_.get(), bookmark_model_.get(), product, true,
-      base::BindOnce(
-          [](base::RunLoop* run_loop, bool success) { run_loop->Quit(); },
-          &run_loop),
-      true);
-  run_loop.Run();
-
-  EXPECT_EQ(1U, bookmark_model_->other_node()->children().size());
-
-  base::RunLoop run_loop2;
-  SetPriceTrackingStateForBookmark(
-      shopping_service_.get(), bookmark_model_.get(), product, false,
-      base::BindOnce(
-          [](base::RunLoop* run_loop, bool success) { run_loop->Quit(); },
-          &run_loop2));
-  run_loop2.Run();
-
-  // Since the bookmark was marked as created by price tracking, unsubscribe
-  // should have deleted it.
-  EXPECT_EQ(0U, bookmark_model_->other_node()->children().size());
-}
-
 // Ensure bookmarks created by price tracking are kept when the product is
 // unsubscribed if the "track by default" feature is enabled.
 TEST_F(PriceTrackingUtilsTest,
        SetPriceTrackingState_Unsubscribe_TrackByDefault) {
-  test_features_.InitAndEnableFeature(kShoppingListTrackByDefault);
-
   const bookmarks::BookmarkNode* product =
       AddProductBookmark(bookmark_model_.get(), u"product 1",
                          GURL("http://example.com/1"), 12345L, true);
@@ -177,92 +135,9 @@ TEST_F(PriceTrackingUtilsTest,
   EXPECT_EQ(1U, bookmark_model_->other_node()->children().size());
 }
 
-// If a bookmark was created by price tracking, only delete the bookmark if the
-// relationship between cluster ID and bookmark is 1:1.
-TEST_F(PriceTrackingUtilsTest,
-       SetPriceTrackingState_UnsubscribeNoDeleteMultipleBookmarks) {
-  test_features_.InitAndDisableFeature(kShoppingListTrackByDefault);
-
-  const bookmarks::BookmarkNode* product =
-      AddProductBookmark(bookmark_model_.get(), u"product 1",
-                         GURL("http://example.com/1"), 12345L, true);
-  AddProductBookmark(bookmark_model_.get(), u"product 1 again",
-                     GURL("http://example.com/1_2"), 12345L, true);
-
-  EXPECT_EQ(2U, bookmark_model_->other_node()->children().size());
-
-  // Simulate successful calls in the subscriptions manager.
-  shopping_service_->SetSubscribeCallbackValue(true);
-  shopping_service_->SetUnsubscribeCallbackValue(true);
-
-  base::RunLoop run_loop;
-  SetPriceTrackingStateForBookmark(
-      shopping_service_.get(), bookmark_model_.get(), product, true,
-      base::BindOnce(
-          [](base::RunLoop* run_loop, bool success) { run_loop->Quit(); },
-          &run_loop),
-      true);
-  run_loop.Run();
-
-  EXPECT_EQ(2U, bookmark_model_->other_node()->children().size());
-
-  base::RunLoop run_loop2;
-  SetPriceTrackingStateForBookmark(
-      shopping_service_.get(), bookmark_model_.get(), product, false,
-      base::BindOnce(
-          [](base::RunLoop* run_loop, bool success) { run_loop->Quit(); },
-          &run_loop2));
-  run_loop2.Run();
-
-  // Both bookmarks should still exist after unsubscribe.
-  EXPECT_EQ(2U, bookmark_model_->other_node()->children().size());
-}
-
-// A bookmark that was created through the bookmark flow rather than price
-// tracking shouldn't be deleted after unsubscribe
-TEST_F(PriceTrackingUtilsTest,
-       SetPriceTrackingState_UnsubscribeKeepsExplicitBookmark) {
-  test_features_.InitAndDisableFeature(kShoppingListTrackByDefault);
-
-  const bookmarks::BookmarkNode* product =
-      AddProductBookmark(bookmark_model_.get(), u"product 1",
-                         GURL("http://example.com/1"), 12345L, true);
-
-  EXPECT_EQ(1U, bookmark_model_->other_node()->children().size());
-
-  // Simulate successful calls in the subscriptions manager.
-  shopping_service_->SetSubscribeCallbackValue(true);
-  shopping_service_->SetUnsubscribeCallbackValue(true);
-
-  base::RunLoop run_loop;
-  SetPriceTrackingStateForBookmark(
-      shopping_service_.get(), bookmark_model_.get(), product, true,
-      base::BindOnce(
-          [](base::RunLoop* run_loop, bool success) { run_loop->Quit(); },
-          &run_loop),
-      false);
-  run_loop.Run();
-
-  EXPECT_EQ(1U, bookmark_model_->other_node()->children().size());
-
-  base::RunLoop run_loop2;
-  SetPriceTrackingStateForBookmark(
-      shopping_service_.get(), bookmark_model_.get(), product, false,
-      base::BindOnce(
-          [](base::RunLoop* run_loop, bool success) { run_loop->Quit(); },
-          &run_loop2));
-  run_loop2.Run();
-
-  // Since the bookmark was marked as created explicitly by bookmarking,
-  // unsubscribe should not delete it.
-  EXPECT_EQ(1U, bookmark_model_->other_node()->children().size());
-}
-
 // Test that a bookmark is updated in-place if revisiting the page and it is
 // detected to be a trackable product.
 TEST_F(PriceTrackingUtilsTest, SetPriceTrackingState_SubscribeOldBookmark) {
-  test_features_.InitAndDisableFeature(kShoppingListTrackByDefault);
-
   const uint64_t cluster_id = 12345L;
 
   // This bookmark is intentionally a non-product bookmark to start with.
@@ -373,7 +248,7 @@ TEST_F(PriceTrackingUtilsTest, GetAllPriceTrackedBookmarks) {
   ASSERT_EQ(2U, bookmark_model_->other_node()->children().size());
 
   shopping_service_->SetGetAllSubscriptionsCallbackValue(
-      {CreateUserTrackedSubscription(12345L)});
+      {BuildUserSubscriptionForClusterId(12345L)});
 
   base::RunLoop run_loop;
   GetAllPriceTrackedBookmarks(

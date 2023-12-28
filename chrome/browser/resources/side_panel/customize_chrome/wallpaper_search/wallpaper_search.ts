@@ -14,8 +14,10 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_components/theme_color_picker/theme_hue_slider_dialog.js';
+import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 
 import {SpHeading} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import {ThemeHueSliderDialogElement} from 'chrome://resources/cr_components/theme_color_picker/theme_hue_slider_dialog.js';
@@ -35,7 +37,7 @@ import {CustomizeChromeApiProxy} from '../customize_chrome_api_proxy.js';
 import {DescriptorA, DescriptorB, DescriptorDValue, Descriptors, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchHandlerInterface, WallpaperSearchResult, WallpaperSearchStatus} from '../wallpaper_search.mojom-webui.js';
 import {WindowProxy} from '../window_proxy.js';
 
-import {CustomizeChromeCombobox} from './combobox/customize_chrome_combobox.js';
+import {ComboboxGroup, ComboboxItem, CustomizeChromeCombobox} from './combobox/customize_chrome_combobox.js';
 import {getTemplate} from './wallpaper_search.html.js';
 import {WallpaperSearchProxy} from './wallpaper_search_proxy.js';
 
@@ -74,6 +76,12 @@ interface ResultsDescriptors {
   c?: string|null;
 }
 
+interface ComboxItems {
+  a: ComboboxGroup[];
+  b: ComboboxItem[];
+  c: ComboboxItem[];
+}
+
 export interface ErrorState {
   title: string;
   description: string;
@@ -105,6 +113,12 @@ function getRandomDescriptorA(descriptorArrayA: DescriptorA[]): string {
   return randomLabels[Math.floor(Math.random() * randomLabels.length)];
 }
 
+function recordStatusChange(status: WallpaperSearchStatus) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      'NewTabPage.WallpaperSearch.Status', status,
+      WallpaperSearchStatus.MAX_VALUE);
+}
+
 const WallpaperSearchElementBase = I18nMixin(PolymerElement);
 
 export class WallpaperSearchElement extends WallpaperSearchElementBase {
@@ -118,6 +132,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
   static get properties() {
     return {
+      comboboxItems_: Array,
       descriptors_: {
         type: Object,
         value: null,
@@ -138,11 +153,32 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         value: false,
       },
       history_: Object,
+      inspirationCardEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('wallpaperSearchInspirationCardEnabled'),
+      },
       resultsDescriptors_: Object,
       results_: Object,
       selectedFeedbackOption_: {
         type: Number,
         value: CrFeedbackOption.UNSPECIFIED,
+      },
+      selectedDescriptorA_: {
+        type: String,
+        observer: 'onSubjectDescriptorChange_',
+      },
+      selectedDescriptorB_: {
+        type: String,
+        observer: 'onStyleDescriptorChange_',
+      },
+      selectedDescriptorC_: {
+        type: String,
+        observer: 'onMoodDescriptorChange_',
+      },
+      selectedDescriptorD_: {
+        type: Object,
+        observer: 'onColorDescriptorChange_',
       },
       selectedHue_: Number,
       status_: {
@@ -157,6 +193,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     };
   }
 
+  private comboboxItems_: ComboxItems|null;
   private descriptors_: Descriptors|null;
   private descriptorD_: string[];
   private emptyHistoryContainers_: number[] = [];
@@ -165,6 +202,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private errorState_: ErrorState|null = null;
   private expandedCategories_: {[categoryIndex: number]: boolean} = {};
   private history_: WallpaperSearchResult[] = [];
+  private inspirationCardEnabled_: boolean;
   private loading_: boolean;
   private results_: WallpaperSearchResult[] = [];
   private resultsDescriptors_: ResultsDescriptors = {};
@@ -285,12 +323,28 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     this.wallpaperSearchHandler_.getDescriptors().then(({descriptors}) => {
       if (descriptors) {
         this.descriptors_ = descriptors;
+        this.comboboxItems_ = {
+          a: descriptors.descriptorA.map((group) => {
+            return {
+              label: group.category,
+              items: group.labels.map((label) => {
+                return {label};
+              }),
+            };
+          }),
+          b: descriptors.descriptorB,
+          c: descriptors.descriptorC.map((label) => {
+            return {label};
+          }),
+        };
         this.errorCallback_ = undefined;
+        recordStatusChange(WallpaperSearchStatus.kOk);
       } else {
         this.errorCallback_ = () => this.fetchDescriptors_();
         this.status_ = WindowProxy.getInstance().onLine ?
             WallpaperSearchStatus.kError :
             WallpaperSearchStatus.kOffline;
+        recordStatusChange(this.status_);
       }
     });
   }
@@ -339,11 +393,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     return this.isBackgroundSelected_(id) ? 'true' : 'false';
   }
 
-  private getCategoryIcon_(categoryIndex: number): string {
-    return this.expandedCategories_[categoryIndex] ? 'cr:expand-less' :
-                                                     'cr:expand-more';
-  }
-
   private getColorCheckedStatus_(defaultColor: string): string {
     return this.isColorSelected_(defaultColor) ? 'true' : 'false';
   }
@@ -390,10 +439,6 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         this.theme_.backgroundImage.localBackgroundId.high === id.high);
   }
 
-  private isCategoryExpanded_(categoryIndex: number): boolean {
-    return this.expandedCategories_[categoryIndex];
-  }
-
   private isColorSelected_(defaultColor: string): boolean {
     return defaultColor === this.selectedDefaultColor_;
   }
@@ -417,6 +462,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
   private onErrorClick_() {
     this.status_ = WallpaperSearchStatus.kOk;
+    recordStatusChange(this.status_);
     if (this.errorCallback_) {
       this.errorCallback_();
     }
@@ -428,6 +474,26 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     this.selectedDescriptorD_ = {
       color: hexColorToSkColor(this.selectedDefaultColor_),
     };
+  }
+
+  private onColorDescriptorChange_() {
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.WALLPAPER_SEARCH_COLOR_DESCRIPTOR_UPDATED);
+  }
+
+  private onMoodDescriptorChange_() {
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.WALLPAPER_SEARCH_MOOD_DESCRIPTOR_UPDATED);
+  }
+
+  private onStyleDescriptorChange_() {
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.WALLPAPER_SEARCH_STYLE_DESCRIPTOR_UPDATED);
+  }
+
+  private onSubjectDescriptorChange_() {
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.WALLPAPER_SEARCH_SUBJECT_DESCRIPTOR_UPDATED);
   }
 
   private onFeedbackSelectedOptionChanged_(
@@ -469,13 +535,8 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
 
   private async onSearchClick_() {
     if (!WindowProxy.getInstance().onLine) {
-      this.errorCallback_ = () => {
-        if (WindowProxy.getInstance().onLine) {
-          this.status_ = WallpaperSearchStatus.kOk;
-          this.errorCallback_ = undefined;
-        }
-      };
       this.status_ = WallpaperSearchStatus.kOffline;
+      recordStatusChange(this.status_);
       return;
     }
 
@@ -502,6 +563,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       c: this.selectedDescriptorC_,
     };
     this.status_ = status;
+    recordStatusChange(status);
     this.selectedFeedbackOption_ = CrFeedbackOption.UNSPECIFIED;
     this.emptyResultContainers_ = this.calculateEmptyTiles(results);
   }

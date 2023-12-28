@@ -6,13 +6,20 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 
 namespace privacy_sandbox {
 
 PrivacySandboxAttestationsMixin::PrivacySandboxAttestationsMixin(
     InProcessBrowserTestMixinHost* host)
-    : InProcessBrowserTestMixin(host) {}
+    : InProcessBrowserTestMixin(host) {
+  // TODO(crbug/1511336): Once Privacy Sandbox is back to default-deny behavior,
+  // remove feature `kDefaultAllowPrivacySandboxAttestations`.
+  scoped_feature_list_.InitAndDisableFeature(
+      kDefaultAllowPrivacySandboxAttestations);
+}
 
 PrivacySandboxAttestationsMixin::~PrivacySandboxAttestationsMixin() = default;
 

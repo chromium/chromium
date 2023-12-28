@@ -129,7 +129,7 @@ void CleanUp() {
   [SigninEarlGrey signOut];
   [ChromeEarlGrey waitForSyncEngineInitialized:NO
                                    syncTimeout:kSyncOperationTimeout];
-  [ChromeEarlGrey clearSyncServerData];
+  [ChromeEarlGrey clearFakeSyncServerData];
   [ChromeEarlGreyAppInterface
       clearUserPrefWithName:@"ios.bring_android_tabs.prompt_displayed"];
 }

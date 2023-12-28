@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.chrome.browser.readaloud.player.Colors;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
@@ -28,10 +29,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 public class ExpandedPlayerSheetContent implements BottomSheetContent {
     private static final String TAG = "RAPlayerSheet";
-    // Note: if these times need to change, the "back 10" and "forward 30" icons
+    // Note: if these times need to change, the "back 10" and "forward 10" icons
     // should also be changed.
     private static final int BACK_SECONDS = 10;
-    private static final int FORWARD_SECONDS = 30;
+    private static final int FORWARD_SECONDS = 10;
 
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
@@ -85,6 +86,10 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         mNormalLayout = (LinearLayout) mContentView.findViewById(R.id.normal_layout);
         mErrorLayout = (LinearLayout) mContentView.findViewById(R.id.error_layout);
         mSeekBar = (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);
+
+        // Apply dynamic colors.
+        Colors.setBottomSheetContentBackground(mContentView);
+        Colors.setProgressBarColor(mSeekBar);
     }
 
     public void onPlaybackStateChanged(@PlaybackListener.State int state) {
@@ -203,6 +208,8 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     }
 
     public void showOptionsMenu() {
+        // set bit saying we're waiting for another sheet
+        mModel.set(PlayerProperties.OPTION_SHEET_PENDING, true);
         mBottomSheetController.hideContent(this, /* animate= */ false);
         mBottomSheetController.requestShowContent(mOptionsMenu, /* animate= */ true);
     }
@@ -221,6 +228,8 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     }
 
     public void showSpeedMenu() {
+        // set bit saying we're waiting for another sheet
+        mModel.set(PlayerProperties.OPTION_SHEET_PENDING, true);
         mBottomSheetController.hideContent(this, /* animate= */ false);
         mBottomSheetController.requestShowContent(mSpeedMenu, /* animate= */ true);
     }

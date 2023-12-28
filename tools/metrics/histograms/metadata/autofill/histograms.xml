@@ -95,7 +95,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Biometric" summary="biometric auth"/>
   <variant name="ScreenLock" summary="screen lock"/>
   <variant name="UnknownMethod" summary="an unknown auth type"/>
-  <variant name="Unsupported" summary="an unsupported auth type"/>
+  <variant name="UnsupportedMethod" summary="an unsupported auth type"/>
 </variants>
 
 <variants name="Autofill.MandatoryReauth.ChangingStatus">
@@ -181,6 +181,8 @@ chromium-metrics-reviews@google.com.
       summary="Progress dialog while authenticating with FIDO on Android"/>
   <variant name="ServerCardUnmask"
       summary="Progress dialog for the credit card risk-based unmask flow"/>
+  <variant name="ServerIbanUnmask"
+      summary="Progress dialog for the server IBAN unmask flow"/>
   <variant name="VirtualCardUnmask"
       summary="Progress dialog for the VCN Card Unmask Flow"/>
 </variants>
@@ -260,6 +262,11 @@ chromium-metrics-reviews@google.com.
 <variants name="AutofillCreditCardWebauthnOptInOrigin">
   <variant name=".FromCheckoutFlow" summary="Opt-in from a checkout flow"/>
   <variant name=".FromSettingsPage" summary="Opt-in from settings page"/>
+</variants>
+
+<variants name="AutofillFidoAuthenticationEnabledState">
+  <variant name="OptedIn" summary="FIDO authentication enabled"/>
+  <variant name="OptedOut" summary="FIDO authentication disabled"/>
 </variants>
 
 <variants name="AutofillFieldFillingStats">
@@ -436,8 +443,14 @@ chromium-metrics-reviews@google.com.
   <variant name=".WithOnlyServerData" summary="only server autofill data"/>
 </variants>
 
+<variants name="IbanRecordType">
+  <variant name="Local" summary="Local IBAN"/>
+  <variant name="Server" summary="Server IBAN"/>
+</variants>
+
 <variants name="IbanTypeToBeSaved">
   <variant name=".Local" summary="Local IBAN save"/>
+  <variant name=".Upload" summary="Server IBAN save"/>
 </variants>
 
 <histogram name="Autocomplete.DaysSinceLastUse" units="days"
@@ -1030,6 +1043,25 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Autofill.BetterAuth.PreflightCallResponseReceivedOnCardSelection.{AutofillFidoAuthenticationEnabledState}.{CardType}"
+    enum="AutofillCreditCardPreflightCallEvent" expires_after="2024-07-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The GetDetailsForGetRealPan call is made when card suggestions are shown.
+    This metric tracks whether the response is received before or after a card
+    is chosen by the user. For an opted-in user, a late response would imply
+    FIDO registration/authentication for the selected card will not be offered.
+    For an opted-out user, a late response would imply that opt-in may not have
+    been offered. This metric is split by whether the user is opted-out or
+    opted-in, and by the type of card used.
+  </summary>
+  <token key="AutofillFidoAuthenticationEnabledState"
+      variants="AutofillFidoAuthenticationEnabledState"/>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
+</histogram>
+
+<histogram
     name="Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.OptedIn.Duration"
     units="ms" expires_after="2024-07-01">
   <owner>jsaul@google.com</owner>
@@ -1061,7 +1093,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection{AutofillFidoAuthenticationEnabledState}"
+    name="Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.{AutofillFidoAuthenticationEnabledState}"
     enum="AutofillCreditCardPreflightCallEvent" expires_after="2024-07-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
@@ -1073,10 +1105,8 @@ chromium-metrics-reviews@google.com.
     perceived latency. For an opted-out user, a late response would imply that
     opt-in may not have been offered. {AutofillFidoAuthenticationEnabledState}
   </summary>
-  <token key="AutofillFidoAuthenticationEnabledState">
-    <variant name=".OptedIn" summary="FIDO authentication enabled"/>
-    <variant name=".OptedOut" summary="FIDO authentication disabled"/>
-  </token>
+  <token key="AutofillFidoAuthenticationEnabledState"
+      variants="AutofillFidoAuthenticationEnabledState"/>
 </histogram>
 
 <histogram name="Autofill.BetterAuth.UserVerifiabilityCheckDuration" units="ms"
@@ -1111,6 +1141,18 @@ chromium-metrics-reviews@google.com.
     <variant name=".SettingsPageOptIn"
         summary="Registering for WebAuthn on settings page"/>
   </token>
+</histogram>
+
+<histogram
+    name="Autofill.ButterForPayments.ShowCardsFromGoogleAccountButtonEvents"
+    enum="ShowCardsFromGoogleAccountButtonEvent" expires_after="2024-07-01">
+  <owner>averina@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs events for the 'Show cards from your Google Account' button, i.e.,
+    button shown, button shown (logged once per page), or clicked. Logged at the
+    time of the event happening.
+  </summary>
 </histogram>
 
 <histogram name="Autofill.CardholderNameFixFlowPrompt.Events"
@@ -1498,6 +1540,31 @@ chromium-metrics-reviews@google.com.
   <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
 </histogram>
 
+<histogram name="Autofill.CvcInfoBar{AutofillSaveCreditCardPromptDestination}"
+    enum="AutofillCreditCardInfoBar" expires_after="2024-07-01">
+  <owner>yishuil@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The relative frequency with which users accept, deny, or ignore the Autofill
+    info bar prompt for saving card CVC
+    {AutofillSaveCreditCardPromptDestination}.
+  </summary>
+  <token key="AutofillSaveCreditCardPromptDestination"
+      variants="AutofillSaveCreditCardPromptDestination"/>
+</histogram>
+
+<histogram name="Autofill.CvcStorage.CvcFilling.{CardType}"
+    enum="CvcFillingFlowType" expires_after="2024-07-01">
+  <owner>jialihuang@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Tracks the authentication method used to fill a card that has a saved CVC.
+    Logged when CVC was filled in the form.
+  </summary>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
+</histogram>
+
 <histogram name="Autofill.DaysSinceLastUse.CreditCard" units="days"
     expires_after="2024-12-12">
   <owner>battre@chromium.org</owner>
@@ -1532,7 +1599,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.DaysSinceLastUse.StoredIban{IbanTypeToBeSaved}"
+<histogram name="Autofill.DaysSinceLastUse.StoredIban.{IbanRecordType}"
     units="days" expires_after="2024-07-01">
   <owner>qihuizhao@google.com</owner>
   <owner>jsaul@google.com</owner>
@@ -1542,7 +1609,7 @@ chromium-metrics-reviews@google.com.
     given Chrome Profile was last used. This is logged for each Autofill IBAN
     once per Chrome User Profile load.
   </summary>
-  <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
+  <token key="IbanRecordType" variants="IbanRecordType"/>
 </histogram>
 
 <histogram name="Autofill.DaysSinceLastUse.StoredProfile.{Category}"
@@ -1683,17 +1750,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.ExtendedMenu.DeleteAddress"
-    enum="BooleanAutofillExtendedMenuDeleteAddress" expires_after="2024-10-01">
-  <owner>tchudakov@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    This metric measures how many users Clicked on the Delete Address option in
-    the extended Autofill menu and the next action. The metric is logged when
-    the user closes the delete address profile dialog.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.ExtendedMenu.EditAddress"
     enum="BooleanAutofillExtendedMenuEditAddress" expires_after="2024-10-01">
   <owner>tchudakov@google.com</owner>
@@ -1811,7 +1867,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.FieldFillingStats{AutofillFillingMethod}{AutofillFormType}{FillingStatus}"
-    units="fields" expires_after="2024-02-20">
+    units="fields" expires_after="2024-06-23">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2302,6 +2358,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.Iban.UnmaskIbanDuration{UnmaskIbanResult}" units="ms"
+    expires_after="2024-07-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Recorded at a successful return of an unmask server IBAN call. This metric
+    tracks the duration from the user's click on a server IBAN suggestion to the
+    successful reception of a response of unmasking a server IBAN.
+  </summary>
+  <token key="UnmaskIbanResult">
+    <variant name="" summary="UnmaskIban request overall"/>
+    <variant name=".Failure" summary="UnmaskIban request failed"/>
+    <variant name=".Success" summary="UnmaskIban request succeeded"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.IbanUploadEnabled" enum="IbanUploadEnabledStatus"
     expires_after="2024-07-01">
   <owner>qihuizhao@google.com</owner>
@@ -2701,7 +2774,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.ManualFallback.ExplicitlyTriggered.{AutocompleteState}.Address"
-    enum="BooleanSelectManualFallback" expires_after="M125">
+    enum="BooleanSelectManualFallback" expires_after="2024-06-23">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
@@ -3212,6 +3285,20 @@ chromium-metrics-reviews@google.com.
       variants="Autofill.MandatoryReauth.AuthenticationMethod"/>
 </histogram>
 
+<histogram name="Autofill.PaymentMethods.CvcStorageIsEnabled.Startup"
+    enum="BooleanEnabled" expires_after="2024-07-01">
+  <owner>koulvipul@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Tracks the user opt-in rate for CVC storage. This histogram will be
+    populated during profile loadup for users who have enabled autofill for
+    payments. It is not reported for incognito profiles. A value of true denotes
+    that the CVC feature is enabled, while false denotes the feature is
+    disabled.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.PaymentMethods.MandatoryReauth.AuthEvent.SettingsPage.{ActionType}"
     enum="MandatoryReauthAuthEvent" expires_after="2024-07-01">
@@ -3425,6 +3512,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.PreFilledFields.{FormType}"
+    enum="AutofillPreFilledFields" expires_after="2024-05-10">
+  <owner>bwolfgang@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records the number of fields that are pre-filled or empty on page load. The
+    metric is emitted on form submission.
+  </summary>
+  <token key="FormType" variants="Autofill.Ablation.FormType"/>
+</histogram>
+
 <histogram name="Autofill.PreviouslyHiddenSuggestionNumber" units="suggestions"
     expires_after="2024-12-12">
   <owner>jihadghanna@google.com</owner>
@@ -3443,6 +3541,35 @@ chromium-metrics-reviews@google.com.
   <summary>
     The profile action that took place when a form was submitted.
   </summary>
+</histogram>
+
+<histogram name="Autofill.ProfileDeleted.{DeletionType}"
+    enum="BooleanAutofillDeleteAddress" expires_after="2024-10-01">
+  <owner>tchudakov@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Autofill.ProfileDeleted can be emitted in 3 scenarios: ExtendedMenu,
+    Settings and Popup. This metric is emitted for the {DeletionType} scenario.
+    For ExtendedMenu and Settings, it counts how many users clicked on the
+    &quot;Delete Address&quot; option in the extended autofill menu or in
+    chrome://settings and whether they canceled or confirmed the deletion. The
+    metric is logged when the user closes the delete address profile dialog. For
+    Popup, it counts how many users deleted an address using shift+delete while
+    hovering on a first-level popup. This metric is emitted only for the
+    &quot;Confirmed&quot; bucket, as the user cannot cancel it. There is also
+    the &quot;Any&quot; variant, which is also recorded in all of the 3
+    scenarios in order to keep track of the total number of deletions regardless
+    where they come from.
+  </summary>
+  <token key="DeletionType">
+    <variant name="Any"
+        summary="All deletions are also recorded in this bucket."/>
+    <variant name="ExtendedMenu"
+        summary="Delete from the extended autofill menu."/>
+    <variant name="Popup"
+        summary="Delete using shift+delete on a first-level popup."/>
+    <variant name="Settings" summary="Delete from chrome://settings."/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.ProfileImport.InaccessibleFieldsRemoved.ByFieldType"
@@ -3708,19 +3835,6 @@ chromium-metrics-reviews@google.com.
     Logs the number of fields that have been edited by the user in the process
     of succesfully updating an existing profile after an observed form
     submission.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.ProfileSuggestionsMadeWithFormatter"
-    enum="BooleanCreated" expires_after="2024-12-12">
-  <owner>battre@chromium.org</owner>
-  <owner>src/components/autofill/OWNERS</owner>
-  <summary>
-    This metric is recorded when the autofill-use-improved-label-disambiguation
-    experiment is enabled and profile suggestions are available. This metric
-    measures how often suggestions were created with and without a formatter.
-    Warning: this histogram was expired from 2020-09-30 to 2022-04-07; data may
-    be missing.
   </summary>
 </histogram>
 
@@ -5054,7 +5168,8 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="AutofillUploadEvents">
     <variant name=""/>
-    <variant name=".DomMutationAfterXhr" summary="DOM Mutation After XHR"/>
+    <variant name=".DomMutationAfterAutofill"
+        summary="DOM Mutation After Autofill"/>
     <variant name=".FormSubmission" summary="Form Submission"/>
     <variant name=".FrameDetached" summary="Frame Detached"/>
     <variant name=".None" summary="None"/>
@@ -5696,7 +5811,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.WebView.OnDidFillAutofillFormDataEarlyReturnReason"
     enum="OnDidFillAutofillFormDataEarlyReturnReason"
-    expires_after="2024-01-31">
+    expires_after="2024-03-31">
   <owner>jihadghanna@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>

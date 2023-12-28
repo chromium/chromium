@@ -37,7 +37,6 @@
 #include "media/video/offloading_video_encoder.h"
 #include "media/video/video_encode_accelerator_adapter.h"
 #include "media/video/video_encoder_fallback.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -1127,12 +1126,13 @@ void VideoEncoder::OnEncodeDone(Request* request, media::EncoderStatus status) {
 void VideoEncoder::ProcessConfigure(Request* request) {
   DCHECK_NE(state_.AsEnum(), V8CodecState::Enum::kClosed);
   DCHECK_EQ(request->type, Request::Type::kConfigure);
-  DCHECK(active_config_);
+  DCHECK(request->config);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   request->StartTracing();
 
   blocking_request_in_progress_ = request;
 
+  active_config_ = request->config;
   String js_error_message;
   if (!VerifyCodecSupport(active_config_, &js_error_message)) {
     QueueHandleError(MakeGarbageCollected<DOMException>(
@@ -1156,7 +1156,7 @@ void VideoEncoder::ProcessConfigure(Request* request) {
 void VideoEncoder::ProcessReconfigure(Request* request) {
   DCHECK_EQ(state_.AsEnum(), V8CodecState::Enum::kConfigured);
   DCHECK_EQ(request->type, Request::Type::kReconfigure);
-  DCHECK(active_config_);
+  DCHECK(request->config);
   DCHECK(media_encoder_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   request->StartTracing();
@@ -1200,6 +1200,7 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
       return;
     }
 
+    self->active_config_ = req->config;
     auto output_cb =
         ConvertToBaseRepeatingCallback(WTF::CrossThreadBindRepeating(
             &VideoEncoder::CallOutputCallback,
@@ -1404,15 +1405,7 @@ static void isConfigSupportedWithSoftwareOnly(
                           media::EncoderStatus status) {
     support->setSupported(status.is_ok());
     resolver->Resolve(support);
-    if (base::FeatureList::IsEnabled(
-            features::kUseBlinkSchedulerTaskRunnerWithCustomDeleter)) {
-      runner->DeleteSoon(FROM_HERE, std::move(encoder));
-    } else {
-      // This task runner may be destroyed without running tasks, so don't use
-      // DeleteSoon() which can leak the codec. See https://crbug.com/1376851.
-      runner->PostTask(FROM_HERE,
-                       base::DoNothingWithBoundArgs(std::move(encoder)));
-    }
+    runner->DeleteSoon(FROM_HERE, std::move(encoder));
   };
 
   auto* context = ExecutionContext::From(script_state);

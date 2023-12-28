@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/token.h"
+#include "chrome/browser/search/background/wallpaper_search/wallpaper_search_data.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -121,8 +122,13 @@ class WallpaperSearchHandler
       wallpaper_search_background_manager_;
   // We keep all log entries alive until the session closes because whether and
   // which image was selected will only be known then.
-  std::vector<std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
+  std::vector<
+      std::pair<std::unique_ptr<optimization_guide::ModelQualityLogEntry>,
+                std::optional<base::Time>>>
       log_entries_;
+  // Theme to be sent to the background manager to be saved to history on
+  // destruction of this handler.
+  std::unique_ptr<HistoryEntry> history_entry_;
   // `wallpaper_search_results_` points to entries in `log_entries_`. Therefore,
   // `wallpaper_search_results_` is defined below so that the pointers get
   // destructed before the pointed to objects in `log_entries_`.

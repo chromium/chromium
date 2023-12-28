@@ -135,7 +135,7 @@ std::string TokenHardwareChecker::H(std::string input,
   std::string ret = std::move(input);
   for (unsigned i = 0; i < kHashIterations; ++i) {
     std::string raw_sha = crypto::SHA256HashString(ret + salt);
-    base::Base64Encode(raw_sha, &ret);
+    ret = base::Base64Encode(raw_sha);
   }
   return ret;
 }

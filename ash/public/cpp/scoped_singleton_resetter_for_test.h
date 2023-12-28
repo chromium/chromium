@@ -23,7 +23,7 @@ class ASH_PUBLIC_EXPORT ScopedSingletonResetterForTest {
  private:
   // Override this method to provide pointer holding singleton instance.
   T*& GetGlobalInstanceHolder();
-  const raw_ptr<T, ExperimentalAsh> instance_;
+  const raw_ptr<T> instance_;
 };
 
 }  // namespace ash

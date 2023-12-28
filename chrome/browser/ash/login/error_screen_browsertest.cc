@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/dialog_window_waiter.h"
 #include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
@@ -230,6 +231,12 @@ class GuestErrorScreenTest
     wizard_context_ = std::make_unique<WizardContext>();
   }
 
+  void ShowErrorScreenWithGuestSignin() {
+    GetScreen()->AllowGuestSignin(true);
+    GetScreen()->SetUIState(NetworkError::UI_STATE_UPDATE);
+    GetScreen()->Show(wizard_context_.get());
+  }
+
  protected:
   std::unique_ptr<WizardContext> wizard_context_;
   LoginManagerMixin login_manager_{&mixin_host_};
@@ -237,12 +244,34 @@ class GuestErrorScreenTest
 };
 
 // Test that guest signin option is shown when enabled and that clicking on it
-// starts a guest session.
+// shows the guest tos screen if EULA was not accepted.
 IN_PROC_BROWSER_TEST_P(GuestErrorScreenTest, PRE_GuestLogin) {
-  GetScreen()->AllowGuestSignin(true);
-  GetScreen()->SetUIState(NetworkError::UI_STATE_UPDATE);
-  GetScreen()->Show(wizard_context_.get());
+  ShowErrorScreenWithGuestSignin();
+  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+  test::OobeJS().ExpectVisiblePath(kErrorMessageGuestSigninLink);
 
+  base::RunLoop restart_job_waiter;
+  FakeSessionManagerClient::Get()->set_restart_job_callback(
+      restart_job_waiter.QuitClosure());
+
+  test::OobeJS().ClickOnPath(kErrorMessageGuestSigninLink);
+  test::WaitForGuestTosScreen();
+  test::TapGuestTosAccept();
+
+  restart_job_waiter.Run();
+}
+
+IN_PROC_BROWSER_TEST_P(GuestErrorScreenTest, GuestLogin) {
+  login_manager_.WaitForActiveSession();
+  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  EXPECT_TRUE(user_manager->IsLoggedInAsGuest());
+}
+
+// Test that guest signin option is shown when enabled and that clicking on it
+// directly starts a guest session if EULA was already accepted.
+IN_PROC_BROWSER_TEST_P(GuestErrorScreenTest, PRE_GuestLoginWithEulaAccepted) {
+  StartupUtils::MarkEulaAccepted();
+  ShowErrorScreenWithGuestSignin();
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
   test::OobeJS().ExpectVisiblePath(kErrorMessageGuestSigninLink);
 
@@ -254,7 +283,7 @@ IN_PROC_BROWSER_TEST_P(GuestErrorScreenTest, PRE_GuestLogin) {
   restart_job_waiter.Run();
 }
 
-IN_PROC_BROWSER_TEST_P(GuestErrorScreenTest, GuestLogin) {
+IN_PROC_BROWSER_TEST_P(GuestErrorScreenTest, GuestLoginWithEulaAccepted) {
   login_manager_.WaitForActiveSession();
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   EXPECT_TRUE(user_manager->IsLoggedInAsGuest());

@@ -81,6 +81,10 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
     kHideInOverviewKey;
 
+// A property key to exclude the window in the transient tree iterator.
+ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
+    kExcludeFromTransientTreeTransformKey;
+
 // A property key to indicate whether we should hide this window in the shelf.
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
     kHideInShelfKey;

@@ -453,6 +453,7 @@ testcase.openQuickViewRemovablePartitions = async () => {
   await directoryTree.navigateToPath('/Drive Label');
 
   // Wait for 2 removable partitions to appear in the directory tree.
+  await directoryTree.expandTreeItemByLabel('Drive Label');
   await directoryTree.waitForChildItemsCountByLabel('Drive Label', 2);
 
   // Click to open the first partition.

@@ -262,11 +262,11 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
   StartTetheringCallback start_tethering_callback_;
   std::unique_ptr<ViewShadow> view_shadow_;
 
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;
-  raw_ptr<views::StyledLabel, ExperimentalAsh> body_ = nullptr;
-  raw_ptr<views::Button, ExperimentalAsh> cancel_button_ = nullptr;
-  raw_ptr<views::Button, ExperimentalAsh> accept_button_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
+  raw_ptr<views::Label> title_ = nullptr;
+  raw_ptr<views::StyledLabel> body_ = nullptr;
+  raw_ptr<views::Button> cancel_button_ = nullptr;
+  raw_ptr<views::Button> accept_button_ = nullptr;
 };
 
 }  // namespace

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 43 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 49 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] cos float32 1D tensor / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (cos) is not supported."
 [FAIL] cos float32 2D tensor / async
@@ -10,6 +10,18 @@ Found 43 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (cos) is not supported."
 [FAIL] cos float32 5D tensor / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (cos) is not supported."
+[FAIL] erf float32 0D scalar / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (erf) is not supported."
+[FAIL] erf float32 1D tensor / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (erf) is not supported."
+[FAIL] erf float32 2D tensor / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (erf) is not supported."
+[FAIL] erf float32 3D tensor / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (erf) is not supported."
+[FAIL] erf float32 4D tensor / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (erf) is not supported."
+[FAIL] erf float32 5D tensor / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (erf) is not supported."
 [FAIL] exp float32 1D tensor / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The operator (exp) is not supported."
 [FAIL] exp float32 2D tensor / async

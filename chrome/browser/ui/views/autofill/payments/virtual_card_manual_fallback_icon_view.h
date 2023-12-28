@@ -17,8 +17,9 @@ class VirtualCardManualFallbackBubbleController;
 // The icon to show the virtual card manual fallback bubble after the user has
 // selected the virtual card to use and the information has been sent to Chrome.
 class VirtualCardManualFallbackIconView : public PageActionIconView {
+  METADATA_HEADER(VirtualCardManualFallbackIconView, PageActionIconView)
+
  public:
-  METADATA_HEADER(VirtualCardManualFallbackIconView);
   VirtualCardManualFallbackIconView(
       CommandUpdater* command_updater,
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,

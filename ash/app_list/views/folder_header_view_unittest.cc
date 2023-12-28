@@ -93,10 +93,8 @@ class FolderHeaderViewTest : public AshTestBase,
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<test::AppListTestModel, DanglingUntriaged | ExperimentalAsh> model_ =
-      nullptr;
-  raw_ptr<FolderHeaderView, DanglingUntriaged | ExperimentalAsh>
-      folder_header_view_ = nullptr;
+  raw_ptr<test::AppListTestModel, DanglingUntriaged> model_ = nullptr;
+  raw_ptr<FolderHeaderView, DanglingUntriaged> folder_header_view_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(Jelly, FolderHeaderViewTest, testing::Bool());

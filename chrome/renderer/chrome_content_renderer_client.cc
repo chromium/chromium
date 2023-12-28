@@ -171,6 +171,9 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/renderer/sandbox_status_extension_android.h"
+#include "chrome/renderer/wallet/boarding_pass_extractor.h"
+#include "components/facilitated_payments/content/renderer/facilitated_payments_agent.h"
+#include "components/facilitated_payments/core/features/features.h"
 #else
 #include "chrome/renderer/searchbox/searchbox.h"
 #include "chrome/renderer/searchbox/searchbox_extension.h"
@@ -562,11 +565,6 @@ void ChromeContentRendererClient::RenderThreadStarted() {
     blink::IdentifiabilityStudySettings::SetGlobalProvider(
         std::make_unique<PrivacyBudgetSettingsProvider>());
   }
-
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kPermissionStorageAccessAPI)) {
-    blink::WebRuntimeFeatures::EnableStorageAccessAPI(true);
-  }
 }
 
 void ChromeContentRendererClient::ExposeInterfacesToBrowser(
@@ -691,6 +689,15 @@ void ChromeContentRendererClient::RenderFrameCreated(
     new AutofillAgent(render_frame, std::move(password_autofill_agent),
                       std::move(password_generation_agent),
                       associated_interfaces);
+
+#if BUILDFLAG(IS_ANDROID)
+    if (render_frame->IsMainFrame() &&
+        base::FeatureList::IsEnabled(
+            payments::facilitated::kEnablePixDetection)) {
+      new payments::facilitated::FacilitatedPaymentsAgent(
+          render_frame, associated_interfaces);
+    }
+#endif
   }
 
   if (content_capture::features::IsContentCaptureEnabled()) {
@@ -707,21 +714,13 @@ void ChromeContentRendererClient::RenderFrameCreated(
 #endif
 
   // Owned by |render_frame|.
-  page_load_metrics::MetricsRenderFrameObserver* metrics_render_frame_observer =
-      new page_load_metrics::MetricsRenderFrameObserver(render_frame);
+  new page_load_metrics::MetricsRenderFrameObserver(render_frame);
   // There is no render thread, thus no UnverifiedRulesetDealer in
   // ChromeRenderViewTests.
   if (subresource_filter_ruleset_dealer_) {
-    // Create AdResourceTracker to tracker ad resource loads at the chrome
-    // layer.
-    auto ad_resource_tracker =
-        std::make_unique<subresource_filter::AdResourceTracker>();
-    metrics_render_frame_observer->SetAdResourceTracker(
-        ad_resource_tracker.get());
     auto* subresource_filter_agent =
         new subresource_filter::SubresourceFilterAgent(
-            render_frame, subresource_filter_ruleset_dealer_.get(),
-            std::move(ad_resource_tracker));
+            render_frame, subresource_filter_ruleset_dealer_.get());
     subresource_filter_agent->Initialize();
   }
 
@@ -775,6 +774,13 @@ void ChromeContentRendererClient::RenderFrameCreated(
   if (render_frame->IsMainFrame()) {
     new commerce::CommerceWebExtractor(render_frame, registry);
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kBoardingPassDetector) &&
+      render_frame->IsMainFrame()) {
+    new wallet::BoardingPassExtractor(render_frame, registry);
+  }
+#endif
 }
 
 void ChromeContentRendererClient::WebViewCreated(

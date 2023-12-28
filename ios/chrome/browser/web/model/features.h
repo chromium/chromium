@@ -5,6 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_WEB_MODEL_FEATURES_H_
 #define IOS_CHROME_BROWSER_WEB_MODEL_FEATURES_H_
 
-#include "ios/chrome/browser/web/features.h"
+#include "base/feature_list.h"
+
+namespace web {
+// Feature flag to tie the default zoom level for webpages to the current
+// dynamic type setting.
+BASE_DECLARE_FEATURE(kWebPageDefaultZoomFromDynamicType);
+
+// Used to enable a different method of zooming web pages.
+BASE_DECLARE_FEATURE(kWebPageAlternativeTextZoom);
+
+// Reneables text zoom on iPad.
+BASE_DECLARE_FEATURE(kWebPageTextZoomIPad);
+
+}  // namespace web
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_FEATURES_H_

@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 
@@ -14,6 +15,7 @@ namespace blink {
 namespace {
 
 TEST(SVGPathQueryTest, PointAtLength_ArcDecomposedToMultipleCubics) {
+  test::TaskEnvironment task_environment;
   SVGPathByteStream path_stream;
   ASSERT_EQ(BuildByteStreamFromString("M56.2,66.2a174.8,174.8,0,1,0,276.0,-2.0",
                                       path_stream),

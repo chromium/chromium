@@ -84,7 +84,7 @@ void ReadEvent<ScreenSaver::NotifyEvent>(ScreenSaver::NotifyEvent* event_,
   // pad0
   Pad(&buf, 14);
 
-  DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
+  CHECK_LE(buf.offset, 32ul);
 }
 
 Future<ScreenSaver::QueryVersionReply> ScreenSaver::QueryVersion(
@@ -166,7 +166,7 @@ std::unique_ptr<ScreenSaver::QueryVersionReply> detail::ReadReply<
   Pad(&buf, 20);
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }
@@ -256,7 +256,7 @@ std::unique_ptr<ScreenSaver::QueryInfoReply> detail::ReadReply<
   Pad(&buf, 7);
 
   Align(&buf, 4);
-  DUMP_WILL_BE_CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
+  CHECK_EQ(buf.offset < 32 ? 0 : buf.offset - 32, 4 * length);
 
   return reply;
 }

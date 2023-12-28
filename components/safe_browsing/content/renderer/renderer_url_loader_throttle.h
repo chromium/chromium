@@ -101,11 +101,7 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle,
       bool showed_interstitial);
 
   // Called by the two methods above.
-  // |slow_check| indicates whether it reports the result of a slow check.
-  // (Please see comments in safe_browsing.mojom for what slow check means).
-  void OnCompleteCheckInternal(bool slow_check,
-                               bool proceed,
-                               bool showed_interstitial);
+  void OnCompleteCheckInternal(bool proceed, bool showed_interstitial);
 
   void OnMojoDisconnect();
 
@@ -120,7 +116,6 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle,
   mojo::Remote<mojom::SafeBrowsingUrlChecker> url_checker_;
 
   size_t pending_checks_ = 0;
-  size_t pending_slow_checks_ = 0;
   bool blocked_ = false;
 
   // The time when |WillStartRequest| is called.

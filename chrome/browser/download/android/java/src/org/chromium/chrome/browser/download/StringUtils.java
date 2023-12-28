@@ -13,7 +13,6 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.TimeUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
@@ -157,9 +156,7 @@ public final class StringUtils {
         Context context = ContextUtils.getApplicationContext();
         // When foreground service restarts and there is no connection to native, use the default
         // pending status. The status will be replaced when connected to native.
-        if (BrowserStartupController.getInstance().isFullBrowserStarted()
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.OFFLINE_PAGES_DESCRIPTIVE_PENDING_STATUS)) {
+        if (BrowserStartupController.getInstance().isFullBrowserStarted()) {
             switch (pendingState) {
                 case PendingState.PENDING_NETWORK:
                     return context.getString(R.string.download_notification_pending_network);

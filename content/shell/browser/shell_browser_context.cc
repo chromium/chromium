@@ -41,15 +41,9 @@
 
 namespace content {
 
-ShellBrowserContext::ShellResourceContext::ShellResourceContext() {}
-
-ShellBrowserContext::ShellResourceContext::~ShellResourceContext() {
-}
-
 ShellBrowserContext::ShellBrowserContext(bool off_the_record,
                                          bool delay_services_creation)
-    : resource_context_(std::make_unique<ShellResourceContext>()),
-      off_the_record_(off_the_record) {
+    : off_the_record_(off_the_record) {
   InitWhileIOAllowed();
 #if BUILDFLAG(IS_WIN)
   base::SetExtraNoExecuteAllowedPath(SHELL_DIR_USER_DATA);
@@ -74,14 +68,6 @@ ShellBrowserContext::~ShellBrowserContext() {
 
   SimpleKeyMap::GetInstance()->Dissociate(this);
 
-  // Need to destruct the ResourceContext before posting tasks which may delete
-  // the URLRequestContext because ResourceContext's destructor will remove any
-  // outstanding request while URLRequestContext's destructor ensures that there
-  // are no more outstanding requests.
-  if (resource_context_) {
-    GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE,
-                                          resource_context_.release());
-  }
   ShutdownStoragePartitions();
 }
 
@@ -138,10 +124,6 @@ DownloadManagerDelegate* ShellBrowserContext::GetDownloadManagerDelegate()  {
   }
 
   return download_manager_delegate_.get();
-}
-
-ResourceContext* ShellBrowserContext::GetResourceContext()  {
-  return resource_context_.get();
 }
 
 BrowserPluginGuestManager* ShellBrowserContext::GetGuestManager() {

@@ -196,6 +196,10 @@ const char kArcVmDataMigrationStrategy[] = "arc.vm_data_migration_strategy";
 // of an enterprise account
 const char kUnaffiliatedDeviceArcAllowed[] = "arc.unaffiliated.device.allowed";
 
+// A preference indicating the last locale set for any apps. This will be used
+// as part of suggested locales for other apps' locale setting.
+const char kArcLastSetAppLocale[] = "arc.last_set_app_locale";
+
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Sorted in lexicographical order.
   RegisterDailyMetricsPrefs(registry);
@@ -241,6 +245,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kArcHasAccessToRemovableMedia, false);
   registry->RegisterBooleanPref(kArcInitialSettingsPending, false);
   registry->RegisterBooleanPref(kArcInitialLocationSettingSyncRequired, true);
+  registry->RegisterStringPref(kArcLastSetAppLocale, std::string());
   registry->RegisterBooleanPref(kArcPaiStarted, false);
   registry->RegisterBooleanPref(kArcFastAppReinstallStarted, false);
   registry->RegisterListPref(kArcFastAppReinstallPackages);

@@ -26,8 +26,9 @@ class Extension;
 class AppInfoFooterPanel
     : public AppInfoPanel,
       public extensions::ExtensionUninstallDialog::Delegate {
+  METADATA_HEADER(AppInfoFooterPanel, AppInfoPanel)
+
  public:
-  METADATA_HEADER(AppInfoFooterPanel);
   AppInfoFooterPanel(Profile* profile, const extensions::Extension* app);
   AppInfoFooterPanel(const AppInfoFooterPanel&) = delete;
   AppInfoFooterPanel& operator=(const AppInfoFooterPanel&) = delete;

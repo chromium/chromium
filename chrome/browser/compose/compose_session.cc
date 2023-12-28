@@ -15,6 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -68,6 +69,8 @@ bool IsValidComposePrompt(const std::string& prompt) {
 }
 
 const char kComposeBugReportURL[] = "https://goto.google.com/ccbrfd";
+const char kComposeLearnMorePageURL[] =
+    "https://support.google.com/chrome?p=help_me_write";
 const char kComposeFeedbackSurveyURL[] = "https://goto.google.com/ccfsfd";
 
 void LogComposeResponseStatus(compose::mojom::ComposeStatus status) {
@@ -139,8 +142,13 @@ ComposeSession::ComposeSession(
     ComposeCallback callback)
     : executor_(executor),
       handler_receiver_(this),
+      current_msbb_state_(false),
+      msbb_intilially_off_(false),
+      msbb_enabled_during_session_(false),
       consent_close_reason_(
           compose::ComposeConsentSessionCloseReason::kEndedImplicitly),
+      msbb_close_reason_(
+          compose::ComposeMSBBSessionCloseReason::kMSBBEndedImplicitly),
       close_reason_(compose::ComposeSessionCloseReason::kEndedImplicitly),
       final_status_(optimization_guide::proto::FinalStatus::STATUS_UNSPECIFIED),
       web_contents_(web_contents),
@@ -160,12 +168,25 @@ ComposeSession::ComposeSession(
 ComposeSession::~ComposeSession() {
   // Log separate metrics for sessions that only display consent/disclaimer
   // dialogs.
-  if (initial_consent_state_ != compose::mojom::ConsentState::kConsented &&
+  if (current_consent_state_ != compose::mojom::ConsentState::kConsented &&
       !consent_given_or_acknowledged_) {
     compose::LogComposeConsentSessionCloseReason(consent_close_reason_);
     compose::LogComposeConsentSessionDialogShownCount(consent_close_reason_,
                                                       dialog_shown_count_);
     return;
+  }
+  if (!current_msbb_state_ || msbb_enabled_during_session_) {
+    compose::LogComposeMSBBSessionDialogShownCount(msbb_close_reason_,
+                                                   msbb_dialog_shown_count_);
+    compose::LogComposeMSBBSessionCloseReason(msbb_close_reason_);
+    if (!current_msbb_state_) {
+      // Log whether or not the user inserted text after having
+      // accepted/acknowledged consent in the same session.
+      if (consent_given_in_session_) {
+        compose::LogComposeConsentSessionCloseReason(consent_close_reason_);
+      }
+      return;
+    }
   }
 
   // Log whether or not the user inserted text after having
@@ -176,7 +197,7 @@ ComposeSession::~ComposeSession() {
 
   LogComposeSessionCloseMetrics(close_reason_, compose_count_,
                                 dialog_shown_count_, undo_count_,
-                                consent_given_in_session_);
+                                update_input_count_, consent_given_in_session_);
 
   // If we have a modeling quality log entry, upload it.
 
@@ -229,6 +250,9 @@ void ComposeSession::Bind(
 
 // ComposeSessionPageHandler
 void ComposeSession::Compose(const std::string& input, bool is_input_edited) {
+  if (is_input_edited) {
+    update_input_count_ += 1;
+  }
   optimization_guide::proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input(input);
   MakeRequest(std::move(request), is_input_edited);
@@ -236,12 +260,14 @@ void ComposeSession::Compose(const std::string& input, bool is_input_edited) {
 
 void ComposeSession::Rewrite(compose::mojom::StyleModifiersPtr style) {
   optimization_guide::proto::ComposeRequest request;
-  if (style->is_tone()) {
+  if (style && style->is_tone()) {
     request.mutable_rewrite_params()->set_tone(
         optimization_guide::proto::ComposeTone(style->get_tone()));
-  } else if (style->is_length()) {
+  } else if (style && style->is_length()) {
     request.mutable_rewrite_params()->set_length(
         optimization_guide::proto::ComposeLength(style->get_length()));
+  } else {
+    request.mutable_rewrite_params()->set_regenerate(true);
   }
   request.mutable_rewrite_params()->set_previous_response(
       most_recent_ok_state_->mojo_state()->response->result);
@@ -265,7 +291,7 @@ void ComposeSession::MakeRequest(
   // Increase compose count regradless of status of request.
   compose_count_ += 1;
 
-  if (skip_inner_text_ || inner_text_.has_value()) {
+  if (skip_inner_text_ || got_inner_text_) {
     RequestWithSession(std::move(request), is_input_edited);
   } else {
     // Prepare the compose call, which will be invoked when inner text
@@ -387,8 +413,10 @@ void ComposeSession::RequestInitialState(RequestInitialStateCallback callback) {
     current_state_->response->undo_available = !undo_states_.empty();
   }
   auto compose_config = compose::GetComposeConfig();
+
   std::move(callback).Run(compose::mojom::OpenMetadata::New(
-      initial_consent_state_, initial_input_, current_state_->Clone(),
+      current_consent_state_, current_msbb_state_, initial_input_,
+      text_selected_, current_state_->Clone(),
       compose::mojom::ConfigurableParams::New(compose_config.input_min_words,
                                               compose_config.input_max_words,
                                               compose_config.input_max_chars)));
@@ -455,6 +483,13 @@ void ComposeSession::OpenBugReportingLink() {
       /* is_renderer_initiated= */ false));
 }
 
+void ComposeSession::OpenComposeLearnMorePage() {
+  web_contents_->OpenURL(content::OpenURLParams(
+      GURL(kComposeLearnMorePageURL), content::Referrer(),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+      /* is_renderer_initiated= */ false));
+}
+
 void ComposeSession::OpenFeedbackSurveyLink() {
   web_contents_->OpenURL(content::OpenURLParams(
       GURL(kComposeFeedbackSurveyURL), content::Referrer(),
@@ -483,6 +518,15 @@ void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
     // feedback to.
     return;
   }
+  OptimizationGuideKeyedService* opt_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+  if (!opt_guide_keyed_service ||
+      !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForLogging(
+          optimization_guide::proto::MODEL_EXECUTION_FEATURE_COMPOSE)) {
+    return;
+  }
+
   // Add to most_recent_ok_state_ in case of undos.
   most_recent_ok_state_->mojo_state()->feedback = feedback;
 
@@ -512,9 +556,16 @@ void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
   }
 }
 
-void ComposeSession::InitializeWithText(
-    const std::optional<std::string>& text) {
+void ComposeSession::InitializeWithText(const std::optional<std::string>& text,
+                                        const bool text_selected) {
+  if (!current_msbb_state_) {
+    msbb_dialog_shown_count_ += 1;
+    return;
+  }
+
   dialog_shown_count_ += 1;
+
+  text_selected_ = text_selected;
   RefreshInnerText();
 
   // If no text provided (even an empty string), then we are reopening without
@@ -527,7 +578,7 @@ void ComposeSession::InitializeWithText(
 
   if (!IsValidComposePrompt(initial_input_) ||
       !compose::GetComposeConfig().auto_submit_with_selection ||
-      initial_consent_state_ != compose::mojom::ConsentState::kConsented) {
+      current_consent_state_ != compose::mojom::ConsentState::kConsented) {
     return;
   }
 
@@ -554,14 +605,14 @@ void ComposeSession::SaveMostRecentOkStateToUndoStack() {
       most_recent_ok_state_->TakeMojoState()));
 }
 
-void ComposeSession::AddPageContentToSession(const std::string& inner_text) {
+void ComposeSession::AddPageContentToSession(std::string inner_text) {
   if (!session_) {
     return;
   }
   optimization_guide::proto::ComposePageMetadata page_metadata;
   page_metadata.set_page_url(web_contents_->GetLastCommittedURL().spec());
   page_metadata.set_page_title(base::UTF16ToUTF8(web_contents_->GetTitle()));
-  page_metadata.set_page_inner_text(inner_text);
+  page_metadata.set_page_inner_text(std::move(inner_text));
 
   optimization_guide::proto::ComposeRequest request;
   *request.mutable_page_metadata() = std::move(page_metadata);
@@ -570,25 +621,44 @@ void ComposeSession::AddPageContentToSession(const std::string& inner_text) {
 }
 
 void ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary(
-    const std::string& inner_text) {
-  inner_text_ = inner_text;
-  AddPageContentToSession(inner_text);
+    int request_id,
+    std::unique_ptr<content_extraction::InnerTextResult> result) {
+  if (request_id != current_inner_text_request_id_) {
+    // If this condition is hit, it means there are multiple requests for
+    // inner-text in flight. Early out so that we always use the most recent
+    // request.
+    return;
+  }
+  got_inner_text_ = true;
+  std::string inner_text;
+  if (result) {
+    const compose::Config& config = compose::GetComposeConfig();
+    inner_text = std::move(result->inner_text);
+    compose::LogComposeDialogInnerTextSize(inner_text.size());
+    if (inner_text.size() > config.inner_text_max_bytes) {
+      compose::LogComposeDialogInnerTextShortenedBy(
+          inner_text.size() - config.inner_text_max_bytes);
+      inner_text.erase(config.inner_text_max_bytes);
+    }
+  }
+  AddPageContentToSession(std::move(inner_text));
   if (!continue_compose_.is_null()) {
     std::move(continue_compose_).Run();
   }
 }
 
 void ComposeSession::RefreshInnerText() {
-  inner_text_ = std::nullopt;
+  got_inner_text_ = false;
   if (skip_inner_text_) {
     return;
   }
 
-  inner_text_extractor_.Extract(
-      web_contents_,
+  ++current_inner_text_request_id_;
+  content_extraction::GetInnerText(
+      *web_contents_->GetPrimaryMainFrame(), /*node_id*/ absl::nullopt,
       base::BindOnce(
           &ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(), current_inner_text_request_id_));
 }
 
 void ComposeSession::HandleEndOfConsentSession() {
@@ -606,6 +676,11 @@ void ComposeSession::HandleEndOfConsentSession() {
 void ComposeSession::SetConsentCloseReason(
     compose::ComposeConsentSessionCloseReason close_reason) {
   consent_close_reason_ = close_reason;
+}
+
+void ComposeSession::SetMSBBCloseReason(
+    compose::ComposeMSBBSessionCloseReason close_reason) {
+  msbb_close_reason_ = close_reason;
 }
 
 void ComposeSession::SetCloseReason(
@@ -647,5 +722,16 @@ void ComposeSession::SetQualityLogEntryUponError(
         ->set_was_generated_via_edit(was_input_edited);
 
     most_recent_error_log_ = std::move(log_entry);
+  }
+}
+
+void ComposeSession::set_current_msbb_state(bool msbb_enabled) {
+  current_msbb_state_ = msbb_enabled;
+  if (!msbb_enabled) {
+    msbb_intilially_off_ = true;
+  } else if (msbb_intilially_off_) {
+    msbb_enabled_during_session_ = true;
+    SetMSBBCloseReason(
+        compose::ComposeMSBBSessionCloseReason::kMSBBAcceptedWithoutInsert);
   }
 }

@@ -44,7 +44,8 @@ class IOSChromeVariationsServiceClient
       PrefService* local_state) override;
   std::unique_ptr<variations::SeedResponse>
   TakeSeedFromNativeVariationsSeedStore() override;
-  void RegisterLimitedEntropySyntheticTrial(std::string_view group_name);
+  void RegisterLimitedEntropySyntheticTrial(
+      std::string_view group_name) override;
 };
 
 #endif  // IOS_CHROME_BROWSER_VARIATIONS_MODEL_IOS_CHROME_VARIATIONS_SERVICE_CLIENT_H_

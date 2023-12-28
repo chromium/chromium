@@ -44,19 +44,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UKM.ConsentObserver.AllowedForAllProfiles" enum="Boolean"
-    expires_after="2020-08-30">
-  <owner>rkaplow@chromium.org</owner>
-  <owner>chrome-metrics-team@google.com</owner>
-  <summary>
-    Logged in UpdateUkmAllowedForAllProfiles from the UkmConsentStateObserver
-    which is called when UkmConsentStateObserver starts observing a new profile
-    and every time a URL-keyed anonymized data collection state changes or a
-    sync service state changes. This records whether UKM is allowed for all
-    profiles.
-  </summary>
-</histogram>
-
 <histogram name="UKM.ConsentObserver.AppSyncConsentChanged" enum="Boolean"
     expires_after="2024-04-28">
   <owner>andrewbregger@google.com</owner>
@@ -364,16 +351,6 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
     Counter for number of UKM unsent logs removed from persistent storage.
-  </summary>
-</histogram>
-
-<histogram name="UKM.UserDemographics.Status" enum="UserDemographicsStatus"
-    expires_after="2020-07-01">
-  <owner>vincb@google.com</owner>
-  <owner>chrome-metrics-team@google.com</owner>
-  <summary>
-    The status of the retrieval of user demographics from sync that are reported
-    to UKM. Emitted each time UKM metrics are reported.
   </summary>
 </histogram>
 

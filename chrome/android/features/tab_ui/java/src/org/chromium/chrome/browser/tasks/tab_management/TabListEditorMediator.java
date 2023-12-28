@@ -12,7 +12,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.Callback;
+import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.tab.Tab;
@@ -47,8 +47,8 @@ class TabListEditorMediator
                 TabListEditorAction.ActionDelegate {
     private final Context mContext;
     private final @NonNull ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
-    private final @NonNull Callback<TabModelFilter> mOnTabModelFilterChanged =
-            this::onTabModelFilterChanged;
+    private final @NonNull ValueChangedCallback<TabModelFilter> mOnTabModelFilterChanged =
+            new ValueChangedCallback<>(this::onTabModelFilterChanged);
     private final TabListCoordinator mTabListCoordinator;
     private final TabListEditorCoordinator.ResetHandler mResetHandler;
     private final PropertyModel mModel;
@@ -61,7 +61,6 @@ class TabListEditorMediator
             new ObservableSupplierImpl<>();
     private final List<Tab> mVisibleTabs = new ArrayList<>();
 
-    private TabModelFilter mCurrentTabModelFilter;
     private PropertyListModel<PropertyModel, PropertyKey> mActionListModel;
     private ListModelChangeProcessor mActionChangeProcessor;
     private TabListEditorMenu mTabListEditorMenu;
@@ -147,7 +146,7 @@ class TabListEditorMediator
                     }
                 };
 
-        onTabModelFilterChanged(
+        mOnTabModelFilterChanged.onResult(
                 mCurrentTabModelFilterSupplier.addObserver(mOnTabModelFilterChanged));
 
         mNavigationProvider =
@@ -355,27 +354,26 @@ class TabListEditorMediator
 
     /** Destroy any members that needs clean up. */
     public void destroy() {
-        removeCurrentTabModelFilterObserver();
+        removeTabModelFilterObserver(mCurrentTabModelFilterSupplier.get());
         mCurrentTabModelFilterSupplier.removeObserver(mOnTabModelFilterChanged);
     }
 
-    private void onTabModelFilterChanged(TabModelFilter newFilter) {
-        if (mCurrentTabModelFilterSupplier == newFilter) return;
+    private void onTabModelFilterChanged(
+            @Nullable TabModelFilter newFilter, @Nullable TabModelFilter oldFilter) {
+        removeTabModelFilterObserver(oldFilter);
 
-        // Incognito in both light/dark theme is the same as non-incognito mode in dark theme.
-        // Non-incognito mode and incognito in both light/dark themes in dark theme all look
-        // dark.
-        updateColors(newFilter.isIncognito());
-
-        removeCurrentTabModelFilterObserver();
-
-        newFilter.addObserver(mTabModelObserver);
-        mCurrentTabModelFilter = newFilter;
+        if (newFilter != null) {
+            // Incognito in both light/dark theme is the same as non-incognito mode in dark theme.
+            // Non-incognito mode and incognito in both light/dark themes in dark theme all look
+            // dark.
+            updateColors(newFilter.isIncognito());
+            newFilter.addObserver(mTabModelObserver);
+        }
     }
 
-    private void removeCurrentTabModelFilterObserver() {
-        if (mCurrentTabModelFilter != null) {
-            mCurrentTabModelFilter.removeObserver(mTabModelObserver);
+    private void removeTabModelFilterObserver(@Nullable TabModelFilter filter) {
+        if (filter != null) {
+            filter.removeObserver(mTabModelObserver);
         }
     }
 }

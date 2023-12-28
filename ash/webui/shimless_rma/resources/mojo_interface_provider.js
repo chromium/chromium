@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
-import {CrosNetworkConfig} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {CrosNetworkConfig, CrosNetworkConfigInterface as NetworkConfigServiceInterface} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
 import {fakeCalibrationComponentsWithFails, fakeChromeVersion, fakeComponents, fakeDeviceCustomLabels, fakeDeviceRegions, fakeDeviceSkus, fakeLog, fakeLogSavePath, fakeRsuChallengeCode, fakeRsuChallengeQrCode, fakeStates} from './fake_data.js';
 import {FakeShimlessRmaService} from './fake_shimless_rma_service.js';
-import {CalibrationSetupInstruction, FeatureLevel, NetworkConfigServiceInterface, RmadErrorCode, ShimlessRmaService, ShimlessRmaServiceInterface, WriteProtectDisableCompleteAction} from './shimless_rma_types.js';
+import {CalibrationSetupInstruction, FeatureLevel, RmadErrorCode, ShimlessRmaService, ShimlessRmaServiceInterface, WriteProtectDisableCompleteAction} from './shimless_rma.mojom-webui.js';
 
 /**
  * @fileoverview
@@ -35,7 +35,7 @@ let networkConfigService = null;
  * Sets up a FakeShimlessRmaService to be used at runtime.
  * TODO(gavindodd): Remove once mojo bindings are implemented.
  */
-function setupFakeShimlessRmaService_() {
+function setupFakeShimlessRmaService() {
   // Create provider.
   const service = new FakeShimlessRmaService();
 
@@ -45,17 +45,17 @@ function setupFakeShimlessRmaService_() {
 
   service.setAbortRmaResult(RmadErrorCode.kRmaNotRequired);
 
-  service.automaticallyTriggerHardwareVerificationStatusObservation();
+  service.enableAutomaticallyTriggerHardwareVerificationStatusObservation();
 
   service.setGetCurrentOsVersionResult(fakeChromeVersion[0]);
   service.setCheckForOsUpdatesResult('99.0.4844.74');
   service.setUpdateOsResult(true);
-  service.automaticallyTriggerOsUpdateObservation();
+  service.enableAutomaticallyTriggerOsUpdateObservation();
 
   service.setGetComponentListResult(fakeComponents);
-  service.automaticallyTriggerUpdateRoFirmwareObservation();
-  service.automaticallyTriggerDisableWriteProtectionObservation();
-  service.automaticallyTriggerCalibrationObservation();
+  service.enableAautomaticallyTriggerUpdateRoFirmwareObservation();
+  service.enableAutomaticallyTriggerDisableWriteProtectionObservation();
+  service.enableAutomaticallyTriggerCalibrationObservation();
 
   service.setGetRsuDisableWriteProtectChallengeResult(fakeRsuChallengeCode);
   service.setGetRsuDisableWriteProtectHwidResult('SAMUSTEST_2082');
@@ -81,10 +81,10 @@ function setupFakeShimlessRmaService_() {
   service.setGetCalibrationComponentListResult(
       fakeCalibrationComponentsWithFails);
 
-  service.automaticallyTriggerProvisioningObservation();
-  service.automaticallyTriggerFinalizationObservation();
+  service.enableAutomaticallyTriggerProvisioningObservation();
+  service.enableAutomaticallyTriggerFinalizationObservation();
 
-  service.automaticallyTriggerPowerCableStateObservation();
+  service.enableAutomaticallyTriggerPowerCableStateObservation();
   service.setGetLogResult(fakeLog);
   service.setSaveLogResult({'path': fakeLogSavePath});
   service.setGetPowerwashRequiredResult(true);
@@ -106,7 +106,7 @@ export function setShimlessRmaServiceForTesting(testService) {
 export function getShimlessRmaService() {
   if (!shimlessRmaService) {
     if (useFakeService) {
-      setupFakeShimlessRmaService_();
+      setupFakeShimlessRmaService();
     } else {
       shimlessRmaService = ShimlessRmaService.getRemote();
     }

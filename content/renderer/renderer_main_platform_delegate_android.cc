@@ -45,6 +45,10 @@ bool RendererMainPlatformDelegate::EnableSandbox() {
           sandbox::policy::features::kRestrictRendererPoliciesInBaseline)) {
     options.should_restrict_renderer_syscalls = true;
   }
+  if (base::FeatureList::IsEnabled(
+          sandbox::policy::features::kRestrictCloneParameters)) {
+    options.should_restrict_clone_params = true;
+  }
   if (sandbox::policy::SandboxTypeFromCommandLine(
           *base::CommandLine::ForCurrentProcess()) ==
           sandbox::mojom::Sandbox::kRenderer &&

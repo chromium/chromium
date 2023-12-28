@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/field_types.h"
 
+#include <string_view>
+
 #include "base/containers/fixed_flat_map.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -12,7 +14,7 @@
 
 namespace autofill {
 
-std::ostream& operator<<(std::ostream& o, ServerFieldTypeSet field_type_set) {
+std::ostream& operator<<(std::ostream& o, FieldTypeSet field_type_set) {
   o << "[";
   bool first = true;
   for (const auto type : field_type_set) {
@@ -27,12 +29,12 @@ std::ostream& operator<<(std::ostream& o, ServerFieldTypeSet field_type_set) {
   return o;
 }
 
-// This map should be extended for every added ServerFieldType.
-// You are free to add or remove the String representation of ServerFieldType,
+// This map should be extended for every added FieldType.
+// You are free to add or remove the String representation of FieldType,
 // but don't change any existing values, Android WebView presents them to
 // Autofill Service as part of APIs.
 static constexpr auto kTypeNameToFieldType =
-    base::MakeFixedFlatMap<base::StringPiece, ServerFieldType>(
+    base::MakeFixedFlatMap<std::string_view, FieldType>(
         {{"NO_SERVER_DATA", NO_SERVER_DATA},
          {"UNKNOWN_TYPE", UNKNOWN_TYPE},
          {"EMPTY_TYPE", EMPTY_TYPE},
@@ -136,7 +138,7 @@ static constexpr auto kTypeNameToFieldType =
          {"SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES",
           SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES}});
 
-bool IsFillableFieldType(ServerFieldType field_type) {
+bool IsFillableFieldType(FieldType field_type) {
   switch (field_type) {
     case NAME_HONORIFIC_PREFIX:
     case NAME_FIRST:
@@ -258,10 +260,9 @@ bool IsFillableFieldType(ServerFieldType field_type) {
   return false;
 }
 
-std::string_view FieldTypeToStringView(ServerFieldType type) {
-  static const base::NoDestructor<
-      base::flat_map<ServerFieldType, std::string_view>>
-      kFieldTypeToTypeName(base::MakeFlatMap<ServerFieldType, std::string_view>(
+std::string_view FieldTypeToStringView(FieldType type) {
+  static const base::NoDestructor<base::flat_map<FieldType, std::string_view>>
+      kFieldTypeToTypeName(base::MakeFlatMap<FieldType, std::string_view>(
           kTypeNameToFieldType, {}, [](const auto& item) {
             return std::make_pair(item.second, item.first);
           }));
@@ -273,17 +274,16 @@ std::string_view FieldTypeToStringView(ServerFieldType type) {
   NOTREACHED_NORETURN();
 }
 
-std::string FieldTypeToString(ServerFieldType type) {
+std::string FieldTypeToString(FieldType type) {
   return std::string(FieldTypeToStringView(type));
 }
 
-ServerFieldType TypeNameToFieldType(std::string_view type_name) {
+FieldType TypeNameToFieldType(std::string_view type_name) {
   auto* it = kTypeNameToFieldType.find(type_name);
   return it != kTypeNameToFieldType.end() ? it->second : UNKNOWN_TYPE;
 }
 
-std::string_view FieldTypeToDeveloperRepresentationString(
-    ServerFieldType type) {
+std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
   switch (type) {
     case NO_SERVER_DATA:
     case UNKNOWN_TYPE:
@@ -456,17 +456,17 @@ std::string_view FieldTypeToDeveloperRepresentationString(
   NOTREACHED_NORETURN();
 }
 
-ServerFieldTypeSet GetServerFieldTypesOfGroup(FieldTypeGroup group) {
-  ServerFieldTypeSet fields_matching_group;
-  for (ServerFieldType server_field_type : kAllServerFieldTypes) {
-    if (GroupTypeOfServerFieldType(server_field_type) == group) {
-      fields_matching_group.insert(server_field_type);
+FieldTypeSet GetFieldTypesOfGroup(FieldTypeGroup group) {
+  FieldTypeSet fields_matching_group;
+  for (FieldType field_type : kAllFieldTypes) {
+    if (GroupTypeOfFieldType(field_type) == group) {
+      fields_matching_group.insert(field_type);
     }
   }
   return fields_matching_group;
 }
 
-FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
+FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
   switch (field_type) {
     case NAME_HONORIFIC_PREFIX:
     case NAME_FIRST:
@@ -675,8 +675,7 @@ FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type) {
   NOTREACHED_NORETURN();
 }
 
-ServerFieldType HtmlFieldTypeToBestCorrespondingServerFieldType(
-    HtmlFieldType field_type) {
+FieldType HtmlFieldTypeToBestCorrespondingFieldType(HtmlFieldType field_type) {
   switch (field_type) {
     case HtmlFieldType::kUnspecified:
       return UNKNOWN_TYPE;

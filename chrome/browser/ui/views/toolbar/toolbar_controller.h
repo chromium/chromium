@@ -13,13 +13,51 @@
 #include "chrome/browser/ui/views/toolbar/overflow_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "ui/actions/action_id.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view.h"
+
+class Browser;
 
 // Manages toolbar elements' visibility using flex rules.
 class ToolbarController : public ui::SimpleMenuModel::Delegate {
  public:
-  // Data structure to store information of responsive elements.
+  // Manages action-based pinned toolbar elements.
+  class PinnedActionsDelegate {
+   public:
+    virtual actions::ActionItem* GetActionItemFor(
+        const actions::ActionId& id) = 0;
+
+    // Returns true if the corresponding element is hidden.
+    virtual bool IsOverflowed(const actions::ActionId& id) = 0;
+
+   protected:
+    virtual ~PinnedActionsDelegate() = default;
+  };
+
+  // Data structure to store information specifically used to support
+  // ui::ElementIdentifier as element reference.
+  struct ElementIdInfo {
+    // The identifier of toolbar element that potentially overflows.
+    ui::ElementIdentifier overflow_identifier;
+
+    // Menu text when the element is overflow to the overflow menu. For
+    // ActionId-based elements this value is supplied when constructing action
+    // items.
+    int menu_text_id;
+
+    // Menu item icon. nullptr if this menu item has no icon.
+    raw_ptr<const gfx::VectorIcon> menu_icon = nullptr;
+
+    // The toolbar button to be activated with menu text pressed. This is not
+    // necessarily the same as the element that overflows. E.g. when the
+    // overflowed element is kToolbarExtensionsContainerElementId the
+    // `activate_identifier` should be kExtensionsMenuButtonElementId.
+    ui::ElementIdentifier activate_identifier;
+  };
+
+  // Data structure to store information of responsive elements. Supports both
+  // ui::ElementIdentifier and ActionId as element reference.
   struct ResponsiveElementInfo {
     // Overflow menu structure:
     // -------------------
@@ -42,23 +80,21 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
     // | Profile         |
     // |-----------------|
 
+    ResponsiveElementInfo(absl::variant<ElementIdInfo, actions::ActionId>,
+                          bool = false,
+                          std::optional<ui::ElementIdentifier> = std::nullopt);
+    ResponsiveElementInfo(const ResponsiveElementInfo&);
+    ~ResponsiveElementInfo();
+
     // The toolbar element that potentially overflows.
-    ui::ElementIdentifier overflow_identifier;
-
-    // Menu text when the element is overflow to the overflow menu.
-    int menu_text_id = 0;
-
-    // The toolbar button to be activated with menu text pressed. This is not
-    // necessarily the same as the element that overflows. E.g. when the
-    // overflowed element is kToolbarExtensionsContainerElementId the
-    // `activate_identifier` should be kExtensionsMenuButtonElementId.
-    ui::ElementIdentifier activate_identifier;
+    absl::variant<ElementIdInfo, actions::ActionId> overflow_id;
 
     // True if current element is a section end in overflow menu structure.
     bool is_section_end = false;
 
     // Pop out button when `observed_identifier` is shown. End pop out when it's
-    // hidden.
+    // hidden. Could be empty e.g. when `overflow_key` is an ActionId that opens
+    // a side panel rather than a View bubble.
     std::optional<ui::ElementIdentifier> observed_identifier;
   };
 
@@ -67,7 +103,8 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
       const std::vector<ui::ElementIdentifier>& elements_in_overflow_order,
       int element_flex_order_start,
       views::View* toolbar_container_view,
-      views::View* overflow_button);
+      views::View* overflow_button,
+      PinnedActionsDelegate* PinnedActionsDelegate);
   ToolbarController(const ToolbarController&) = delete;
   ToolbarController& operator=(const ToolbarController&) = delete;
   ~ToolbarController() override;
@@ -120,7 +157,8 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
   };
 
   // Return the default responsive elements list in the toolbar.
-  static std::vector<ResponsiveElementInfo> GetDefaultResponsiveElements();
+  static std::vector<ResponsiveElementInfo> GetDefaultResponsiveElements(
+      Browser* browser);
 
   // Return the element list in desired overflow order. The list should contain
   // only the immediate children of toolbar i.e. those managed by
@@ -131,7 +169,7 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
 
   // Return the action name from element identifier. Return empty if not found.
   static std::string GetActionNameFromElementIdentifier(
-      ui::ElementIdentifier identifier);
+      absl::variant<ui::ElementIdentifier, actions::ActionId> identifier);
 
   // Force the UI element with the identifier to show. Return whether the action
   // is successful.
@@ -159,6 +197,10 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
   virtual std::u16string GetMenuText(
       const ResponsiveElementInfo& element_info) const;
 
+  // Get menu icon from the responsive element.
+  std::optional<ui::ImageModel> GetMenuIcon(
+      const ResponsiveElementInfo& element_info) const;
+
   // Utility that recursively searches for a view with `id` from `view`.
   static views::View* FindToolbarElementWithId(views::View* view,
                                                ui::ElementIdentifier id);
@@ -171,7 +213,7 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
   std::vector<const ResponsiveElementInfo*> GetOverflowedElements();
 
   // Check if element has overflowed.
-  bool IsOverflowed(ui::ElementIdentifier id) const;
+  bool IsOverflowed(const ResponsiveElementInfo& element) const;
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
@@ -193,6 +235,8 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
   // The button with a chevron icon that indicates at least one element in
   // `responsive_elements_` overflows. Owned by `toolbar_container_view_`.
   raw_ptr<views::View> overflow_button_;
+
+  const raw_ptr<PinnedActionsDelegate> pinned_actions_delegate_;
 
   // A map to save the original and modified FlexSpecification of responsive
   // elements that need to pop out. Set when ToolbarController is initialized.

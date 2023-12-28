@@ -22,6 +22,8 @@ import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 import {addSubmitListener} from '../../login_ui_tools.js';
 
+import {getTemplate} from './local_data_loss_warning.html.js';
+
 /**
  * @constructor
  * @extends {PolymerElement}
@@ -41,7 +43,7 @@ class LocalDataLossWarning extends LocalDataLossWarningBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -56,6 +58,10 @@ class LocalDataLossWarning extends LocalDataLossWarningBase {
       },
 
       isOwner: {
+        type: Boolean,
+      },
+
+      canGoBack: {
         type: Boolean,
       },
     };
@@ -85,6 +91,7 @@ class LocalDataLossWarning extends LocalDataLossWarningBase {
   onBeforeShow(data) {
     this.isOwner = data['isOwner'];
     this.email = data['email'];
+    this.canGoBack = data['canGoBack'];
   }
 
   /**
@@ -121,6 +128,13 @@ class LocalDataLossWarning extends LocalDataLossWarningBase {
       return;
     }
     this.userActed('back');
+  }
+
+  onCancelClicked_() {
+    if (this.disabled) {
+      return;
+    }
+    this.userActed('cancel');
   }
 }
 

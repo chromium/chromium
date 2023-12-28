@@ -43,9 +43,9 @@ class LayoutBR : public LayoutText {
   // to return a rect that includes space to illustrate a newline.
   using LayoutText::LocalSelectionVisualRect;
 
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsBR() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectBr || LayoutText::IsOfType(type);
+    return true;
   }
 
   int CaretMinOffset() const override;

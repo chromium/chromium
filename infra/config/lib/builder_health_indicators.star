@@ -137,12 +137,14 @@ def _convert_specs(specs):
     """
     converted_specs = []
     for name, spec in specs.items():
-        scoreless_spec = structs.to_proto_properties(spec)
-        scoreless_spec.pop("score")
+        thresholds_spec = structs.to_proto_properties(spec)
+        thresholds_spec.pop("score")
+        thresholds_spec.pop("period_days")
         converted_specs.append(struct(
             name = name,
             score = spec.score,
-            thresholds = scoreless_spec,
+            period_days = spec.period_days,
+            thresholds = thresholds_spec,
         ))
 
     return converted_specs
@@ -353,7 +355,6 @@ _exempted_from_contact_builders = {
         "chromeos-octopus-rel",
         "fuchsia-angle-builder",
         "fuchsia-code-coverage",
-        "fuchsia-official",
         "fuchsia-x64-accessibility-rel",
         "ios-angle-builder",
         "ios-asan",
@@ -628,7 +629,6 @@ _exempted_from_contact_builders = {
         "fuchsia-deterministic-dbg",
         "fuchsia-fyi-arm64-dbg",
         "fuchsia-fyi-x64-dbg",
-        "fuchsia-official",
         "fuchsia-x64-accessibility-rel",
         "fuchsia-x64-cast-receiver-rel",
         "fuchsia-x64-cast-receiver-rel-compilator",

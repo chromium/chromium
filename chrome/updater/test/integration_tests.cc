@@ -847,7 +847,7 @@ TEST_F(IntegrationTest, ReportsActive) {
       {request::GetUpdaterUserAgentMatcher(),
        request::GetContentMatcher(
            {R"(.*"appid":"test1","enabled":true,"installdate":-1,)",
-            R"("ping":{"a":-2,.*)"})},
+            R"("ping":{"ad":-1,.*)"})},
       R"()]}')"
       "\n"
       R"({"response":{"protocol":"3.1","daystart":{"elapsed_)"

@@ -124,7 +124,7 @@ class DeviceDisabled extends DeviceDisabledElementBase {
    * @override
    */
   get defaultControl() {
-    return this.$.dialog;
+    return /** @type {HTMLElement} */ (this.$.dialog);
   }
 
   /**

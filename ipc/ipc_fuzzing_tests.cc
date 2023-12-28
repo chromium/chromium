@@ -143,11 +143,11 @@ TEST(IPCMessageIntegrity, DISABLED_ReadVectorTooLarge3) {
 class SimpleListener : public IPC::Listener {
  public:
   SimpleListener() : other_(nullptr) {}
-  void Init(IPC::Sender* s) {
-    other_ = s;
-  }
+  void Init(IPC::Sender* s) { other_ = s; }
+  void Reset() { other_ = nullptr; }
+
  protected:
-  raw_ptr<IPC::Sender, DanglingUntriaged> other_;
+  raw_ptr<IPC::Sender> other_;
 };
 
 enum {
@@ -298,6 +298,7 @@ TEST_F(IPCFuzzingTest, SanityTest) {
   sender()->Send(msg);
   EXPECT_TRUE(listener.ExpectMessage(value, MsgClassSI::ID));
 
+  listener.Reset();
   EXPECT_TRUE(WaitForClientShutdown());
   DestroyChannel();
 }
@@ -323,6 +324,7 @@ TEST_F(IPCFuzzingTest, MsgBadPayloadShort) {
   sender()->Send(msg);
   EXPECT_TRUE(listener.ExpectMessage(1, MsgClassSI::ID));
 
+  listener.Reset();
   EXPECT_TRUE(WaitForClientShutdown());
   DestroyChannel();
 }
@@ -354,6 +356,7 @@ TEST_F(IPCFuzzingTest, MsgBadPayloadArgs) {
   sender()->Send(msg);
   EXPECT_TRUE(listener.ExpectMessage(3, MsgClassIS::ID));
 
+  listener.Reset();
   EXPECT_TRUE(WaitForClientShutdown());
   DestroyChannel();
 }

@@ -55,7 +55,7 @@ using remoting::features::kEnableCrdAdminRemoteAccessV2;
 namespace {
 
 // Time after which an access code is guaranteed to have expired.
-constexpr base::TimeDelta kMaxTimeUntilClientConnects = base::Minutes(15);
+constexpr base::TimeDelta kMaxTimeUntilClientConnects = base::Minutes(10);
 
 // Enables the security curtain upon construction, and disables it when
 // destroyed.
@@ -259,7 +259,7 @@ class SessionDurationObserver : public CrdSessionObserver {
   std::optional<base::Time> session_connected_time_;
 };
 
-// Rejects incoming sessions when there is more than 15 minutes between
+// Rejects incoming sessions when there is more than 10 minutes between
 // starting the CRD host and the remote admin connecting.
 // We should not need this since the server side already enforces a TTL of 5
 // minutes (at the time of writing), but we add this as a stopgap just in case a
@@ -289,11 +289,12 @@ class IdleHostTtlChecker : public CrdSessionObserver {
 };
 
 remoting::mojom::SupportSessionParamsPtr GetSessionParameters(
-    const SessionParameters& parameters) {
+    const SessionParameters& parameters,
+    std::string_view oauth_token) {
   auto result = remoting::mojom::SupportSessionParams::New();
   result->user_name = parameters.user_name;
   result->authorized_helper = parameters.admin_email;
-  result->oauth_access_token = parameters.oauth_token;
+  result->oauth_access_token = oauth_token;
 
   return result;
 }
@@ -399,9 +400,15 @@ class CrdAdminSessionController::CrdHostSession {
 // Launcher that starts a new CRD session.
 class CrdAdminSessionController::NewSessionLauncher : public SessionLauncher {
  public:
-  NewSessionLauncher(RemotingServiceProxy& remoting_service,
-                     const SessionParameters& parameters)
-      : remoting_service_(remoting_service), parameters_(parameters) {}
+  NewSessionLauncher(
+      RemotingServiceProxy& remoting_service,
+      ash::curtain::SecurityCurtainController& curtain_controller,
+      std::unique_ptr<CrdOAuthTokenFetcher> oauth_token_fetcher,
+      const SessionParameters& parameters)
+      : remoting_service_(remoting_service),
+        curtain_controller_(curtain_controller),
+        oauth_token_fetcher_(std::move(oauth_token_fetcher)),
+        parameters_(parameters) {}
 
   void Launch(SessionLaunchedCallback on_session_launched) override {
     on_session_launched_ = std::move(on_session_launched);
@@ -410,9 +417,23 @@ class CrdAdminSessionController::NewSessionLauncher : public SessionLauncher {
 
  private:
   void Start() {
+    CRD_VLOG(3) << "Fetching OAuth token for CRD session";
+    oauth_token_fetcher_->Start(base::BindOnce(
+        &NewSessionLauncher::ConnectToSession, weak_factory_.GetWeakPtr()));
+  }
+
+  void ConnectToSession(std::optional<std::string> oauth_token) {
+    if (!oauth_token.has_value()) {
+      CRD_LOG(WARNING) << "Failed to fetch OAuth token for CRD session";
+      ReportLaunchFailure(
+          ExtendedStartCrdSessionResultCode::kFailureNoOauthToken);
+      return;
+    }
+
     CRD_VLOG(3) << "Starting CRD session with parameters " << parameters_;
     remoting_service_->StartSession(
-        GetSessionParameters(parameters_), GetEnterpriseParameters(parameters_),
+        GetSessionParameters(parameters_, oauth_token.value()),
+        GetEnterpriseParameters(parameters_),
         base::BindOnce(&NewSessionLauncher::OnSessionStartResponse,
                        weak_factory_.GetWeakPtr()));
   }
@@ -426,7 +447,9 @@ class CrdAdminSessionController::NewSessionLauncher : public SessionLauncher {
     }
 
     ReportLaunchSuccess({.curtained = parameters_.curtain_local_user_session,
-                         .host_observer = std::move(response->get_observer())});
+                         .host_observer = std::move(response->get_observer()),
+                         .curtain = CreateCurtainMaybe(),
+                         .session_terminator = CreateSessionTerminatorMaybe()});
   }
 
   void ReportLaunchSuccess(SessionStartParameters parameters) {
@@ -437,8 +460,26 @@ class CrdAdminSessionController::NewSessionLauncher : public SessionLauncher {
     std::move(on_session_launched_).Run(base::unexpected(error));
   }
 
+  std::unique_ptr<ScopedCurtain> CreateCurtainMaybe() {
+    if (parameters_.curtain_local_user_session) {
+      return std::make_unique<ScopedCurtain>(
+          curtain_controller_.get(),
+          remoting::CurtainModeChromeOs::CreateInitParams());
+    }
+    return nullptr;
+  }
+
+  std::unique_ptr<ScopedSessionTerminator> CreateSessionTerminatorMaybe() {
+    if (parameters_.curtain_local_user_session) {
+      return std::make_unique<ScopedSessionTerminator>();
+    }
+    return nullptr;
+  }
+
   SessionLaunchedCallback on_session_launched_;
   raw_ref<RemotingServiceProxy> remoting_service_;
+  raw_ref<ash::curtain::SecurityCurtainController> curtain_controller_;
+  std::unique_ptr<CrdOAuthTokenFetcher> oauth_token_fetcher_;
   const SessionParameters parameters_;
 
   base::WeakPtrFactory<NewSessionLauncher> weak_factory_{this};
@@ -594,7 +635,7 @@ void CrdAdminSessionController::SetOAuthTokenForTesting(
   oauth_token_for_test_ = token;
 }
 
-void CrdAdminSessionController::ClearOAuthTokenForTesting() {
+void CrdAdminSessionController::FailOAuthTokenFetchForTesting() {
   CHECK_IS_TEST();
   oauth_token_for_test_.reset();
 }
@@ -615,9 +656,10 @@ void CrdAdminSessionController::TerminateSession() {
 void CrdAdminSessionController::OnHostStopped(
     ExtendedStartCrdSessionResultCode result,
     const std::string& message) {
-  CRD_VLOG(3) << "Destroying CRD host session asynchronously";
-
-  DeleteSoon(std::move(active_session_));
+  if (active_session_) {
+    CRD_VLOG(3) << "Destroying CRD host session asynchronously";
+    DeleteSoon(std::move(active_session_));
+  }
 }
 
 void CrdAdminSessionController::TryToReconnect(
@@ -649,8 +691,10 @@ void CrdAdminSessionController::StartCrdHostAndGetCode(
   active_session_->AddOwnedObserver(std::make_unique<SessionDurationObserver>(
       std::move(session_finished_callback)));
 
-  active_session_->Launch(
-      std::make_unique<NewSessionLauncher>(*remoting_service_, parameters));
+  active_session_->Launch(std::make_unique<NewSessionLauncher>(
+      *remoting_service_, *curtain_controller_,
+      CreateOAuthTokenFetcher(GetOAuthService(), oauth_token_for_test_),
+      parameters));
 }
 
 std::unique_ptr<CrdAdminSessionController::CrdHostSession>

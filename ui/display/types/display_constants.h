@@ -310,6 +310,9 @@ constexpr struct Data {
 // formats and modifiers
 using DrmFormatsAndModifiers = base::flat_map<uint32_t, std::vector<uint64_t>>;
 
+// Converts the display connection type from enum to string.
+std::string DisplayConnectionTypeString(DisplayConnectionType type);
+
 }  // namespace display
 
 #endif  // UI_DISPLAY_TYPES_DISPLAY_CONSTANTS_H_

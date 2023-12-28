@@ -458,4 +458,132 @@ suite('ShortcutInput', function() {
         prerewrittenReleasedKeyEvent,
         shortcutInputProvider.getPrerewrittenKeyEvent());
   });
+
+  test('PressAndReleaseSingleKeyWhenUpdateOnKeyPress', async () => {
+    shortcutInputElement!.updateOnKeyPress = true;
+    shortcutInputElement!.startObserving();
+
+    const keyEvent = {
+      vkey: VKey.kKeyA,
+      domCode: 0,
+      domKey: 0,
+      modifiers: 0,
+      keyDisplay: 'a',
+    };
+
+    // Press 'a', expect pendingKey keyDisplay is 'a'.
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
+    await flushTasks();
+    let pendingKey: ShortcutInputKeyElement|null =
+        getPendingKeyElement(shortcutInputElement);
+    assertTrue(isVisible(pendingKey));
+    assertEquals('a', pendingKey!.key);
+
+    // Release 'a', expect pendingKey keyDisplay has reset to 'key'.
+    shortcutInputProvider.sendKeyReleaseEvent(keyEvent, keyEvent);
+    await flushTasks();
+    pendingKey = getPendingKeyElement(shortcutInputElement);
+    assertTrue(isVisible(pendingKey));
+    assertEquals('key', pendingKey!.key);
+  });
+
+  test('PressAndReleaseMultipleKeysWhenUpdateOnKeyPress', async () => {
+    shortcutInputElement!.updateOnKeyPress = true;
+    shortcutInputElement!.startObserving();
+
+    const keyAEvent = {
+      vkey: VKey.kKeyA,
+      domCode: 0,
+      domKey: 0,
+      modifiers: 0,
+      keyDisplay: 'a',
+    };
+    const keyBEvent = {
+      vkey: VKey.kKeyB,
+      domCode: 0,
+      domKey: 0,
+      modifiers: 0,
+      keyDisplay: 'b',
+    };
+
+    // Press 'a', expect pendingKey keyDisplay is 'a'.
+    shortcutInputProvider.sendKeyPressEvent(keyAEvent, keyAEvent);
+    await flushTasks();
+    let pendingKey: ShortcutInputKeyElement|null =
+        getPendingKeyElement(shortcutInputElement);
+    assertEquals('a', pendingKey!.key);
+
+    // Press 'b', expect pendingKey keyDisplay updates to 'b'.
+    shortcutInputProvider.sendKeyPressEvent(keyBEvent, keyBEvent);
+    await flushTasks();
+    pendingKey = getPendingKeyElement(shortcutInputElement);
+    assertEquals('b', pendingKey!.key);
+
+    // Release 'a', expect pendingKey keyDisplay is reset to 'key'.
+    shortcutInputProvider.sendKeyReleaseEvent(keyAEvent, keyAEvent);
+    await flushTasks();
+    pendingKey = getPendingKeyElement(shortcutInputElement);
+    assertEquals('key', pendingKey!.key);
+
+    // Release 'b', expect pendingKey keyDisplay still 'key'.
+    shortcutInputProvider.sendKeyReleaseEvent(keyBEvent, keyBEvent);
+    await flushTasks();
+    pendingKey = getPendingKeyElement(shortcutInputElement);
+    assertEquals('key', pendingKey!.key);
+  });
+
+  test('PressAndReleaseModifiersWhenUpdateOnKeyPress', async () => {
+    shortcutInputElement!.updateOnKeyPress = true;
+    shortcutInputElement!.startObserving();
+
+    // Press and hold 'ctrl' and 'shift'.
+    const keyPressEvent = {
+      vkey: VKey.kControl,
+      domCode: 0,
+      domKey: 0,
+      modifiers: 6,
+      keyDisplay: 'Control',
+    };
+    // Expect 'ctrl' and 'shift' are highlighted.
+    shortcutInputProvider.sendKeyPressEvent(keyPressEvent, keyPressEvent);
+    await flushTasks();
+    let ctrlKey = getCtrlElement(shortcutInputElement);
+    let shiftKey = getShiftElement(shortcutInputElement);
+    assertEquals(KeyInputState.MODIFIER_SELECTED, ctrlKey!.keyState);
+    assertEquals(KeyInputState.MODIFIER_SELECTED, shiftKey!.keyState);
+
+    // Release 'ctrl'
+    const keyEventReleaseCtrl = {
+      vkey: VKey.kControl,
+      domCode: 0,
+      domKey: 0,
+      modifiers: 2,
+      keyDisplay: 'Control',
+    };
+    // Expect 'ctrl' is unhighlighted, but 'shift' is still highlighted.
+    shortcutInputProvider.sendKeyReleaseEvent(
+        keyEventReleaseCtrl, keyEventReleaseCtrl);
+    await flushTasks();
+    ctrlKey = getCtrlElement(shortcutInputElement);
+    shiftKey = getShiftElement(shortcutInputElement);
+    assertEquals(KeyInputState.NOT_SELECTED, ctrlKey!.keyState);
+    assertEquals(KeyInputState.MODIFIER_SELECTED, shiftKey!.keyState);
+
+    // Release 'shift'
+    const keyEventReleaseShift = {
+      vkey: VKey.kShift,
+      domCode: 0,
+      domKey: 0,
+      modifiers: 0,
+      keyDisplay: 'Shift',
+    };
+    // Expect both 'ctrl' and 'shift' are unhighlighted.
+    shortcutInputProvider.sendKeyReleaseEvent(
+        keyEventReleaseShift, keyEventReleaseShift);
+    await flushTasks();
+    ctrlKey = getCtrlElement(shortcutInputElement);
+    shiftKey = getShiftElement(shortcutInputElement);
+    assertEquals(KeyInputState.NOT_SELECTED, ctrlKey!.keyState);
+    assertEquals(KeyInputState.NOT_SELECTED, shiftKey!.keyState);
+  });
 });

@@ -127,7 +127,7 @@ class ScopedModelObservation : public HoldingSpaceModelObserver {
   // The last `HoldingSpaceItem` for which `OnHoldingSpaceItemUpdated()` was
   // called. May be `nullptr` prior to an update event or following a call to
   // `TakeLastUpdatedItem()`.
-  raw_ptr<const HoldingSpaceItem, ExperimentalAsh> last_updated_item_ = nullptr;
+  raw_ptr<const HoldingSpaceItem> last_updated_item_ = nullptr;
 
   // The last updated fields for which `OnHoldingSpaceItemUpdated()` was called.
   // May be zero prior to an update event or following a call to

@@ -89,10 +89,10 @@ TEST_F(BubbleDialogModelHostTest, ElementIDsReportedCorrectly) {
   menu_item_params.SetId(kMenuItemId);
   // TODO(crbug.com/1324298): Remove after addressing this issue.
   menu_item_params.SetIsEnabled(false);
-  ui::DialogModelButton::Params ok_button_params;
+  ui::DialogModel::Button::Params ok_button_params;
   ok_button_params.SetId(kOkButtonId);
   ok_button_params.SetLabel(kOkButtonText);
-  ui::DialogModelButton::Params extra_button_params;
+  ui::DialogModel::Button::Params extra_button_params;
   extra_button_params.SetId(kExtraButtonId);
   extra_button_params.SetLabel(kExtraButtonText);
   auto host = std::make_unique<BubbleDialogModelHost>(
@@ -189,8 +189,8 @@ TEST_F(BubbleDialogModelHostTest, SetEnabledButtons) {
       ui::DialogModel::Builder()
           .AddOkButton(base::DoNothing())
           .AddCancelButton(base::DoNothing(),
-                           ui::DialogModelButton::Params().SetEnabled(false))
-          .AddExtraButton(base::DoNothing(), ui::DialogModelButton::Params()
+                           ui::DialogModel::Button::Params().SetEnabled(false))
+          .AddExtraButton(base::DoNothing(), ui::DialogModel::Button::Params()
                                                  .SetLabel(kExtraButtonText)
                                                  .SetEnabled(true))
           .Build(),
@@ -254,7 +254,7 @@ TEST_F(BubbleDialogModelHostTest, TestFieldVisibility) {
   views::View* const text_field =
       views::ElementTrackerViews::GetInstance()->GetUniqueView(kField, context);
 
-  EXPECT_NE(text_field, nullptr);
+  ASSERT_NE(text_field, nullptr);
   EXPECT_TRUE(text_field->GetVisible());
 
   bubble_widget->CloseNow();
@@ -272,7 +272,7 @@ TEST_F(BubbleDialogModelHostTest, TestButtonLabelUpdate) {
 
   std::unique_ptr<ui::DialogModel> dialog_model =
       ui::DialogModel::Builder()
-          .AddOkButton(base::DoNothing(), ui::DialogModelButton::Params()
+          .AddOkButton(base::DoNothing(), ui::DialogModel::Button::Params()
                                               .SetLabel(kStartingButtonLabel)
                                               .SetEnabled(true)
                                               .SetId(kButtonId))
@@ -311,11 +311,11 @@ TEST_F(BubbleDialogModelHostTest, TestAddButtonsWithCloseCallback) {
       ui::DialogModel::Builder()
           .AddOkButton(
               base::BindRepeating([] { return false; }),
-              ui::DialogModelButton::Params().SetLabel(u"button").SetEnabled(
+              ui::DialogModel::Button::Params().SetLabel(u"button").SetEnabled(
                   true))
           .AddCancelButton(
               base::BindRepeating([] { return false; }),
-              ui::DialogModelButton::Params().SetLabel(u"button").SetEnabled(
+              ui::DialogModel::Button::Params().SetLabel(u"button").SetEnabled(
                   true))
           .Build();
 

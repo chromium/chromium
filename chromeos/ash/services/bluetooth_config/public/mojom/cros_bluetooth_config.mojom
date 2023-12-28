@@ -267,6 +267,9 @@ interface DevicePairingHandler {
   // |result| is returned when the pairing attempt completes. It is
   // possible that |result| is returned before any delegate function
   // is invoked.
+  // Only one pairing request should be made at a time. If a second request
+  // is made while a request is pending the second request will return with
+  // mojom::PairingResult::kNonAuthFailure.
   PairDevice(
       string device_id,
       pending_remote<DevicePairingDelegate> delegate) =>

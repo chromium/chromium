@@ -45,7 +45,7 @@ constexpr int kMaxSpeakerGroupIndex = std::size(kSpeakerIndicesMap);
 
 int ChannelMaskToChannelCount(int mask) {
   int channels = 0;
-  for (size_t i = 0; i < kMaxSpeakerGroupIndex i++) {
+  for (size_t i = 0; i < kMaxSpeakerGroupIndex; i++) {
     if ((mask >> i) & 0x1) {
       channels += kSpeakerIndicesMap[i];
     }

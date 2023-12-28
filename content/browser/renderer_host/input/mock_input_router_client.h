@@ -32,8 +32,8 @@ class MockInputRouterClient : public InputRouterClient,
   void IncrementInFlightEventCount() override;
   void DecrementInFlightEventCount(
       blink::mojom::InputEventResultSource ack_source) override;
-  void NotifyUISchedulerOfScrollStateUpdate(
-      BrowserUIThreadScheduler::ScrollState scroll_state) override;
+  void NotifyUISchedulerOfGestureEventUpdate(
+      blink::WebInputEvent::Type gesture_event) override;
   void DidOverscroll(const ui::DidOverscrollParams& params) override;
   void OnSetCompositorAllowedTouchAction(cc::TouchAction touch_action) override;
   void DidStartScrollingViewport() override;
@@ -46,6 +46,8 @@ class MockInputRouterClient : public InputRouterClient,
   bool IsWheelScrollInProgress() override;
   bool IsAutoscrollInProgress() override;
   void SetMouseCapture(bool capture) override {}
+  void SetAutoscrollSelectionActiveInMainFrame(
+      bool autoscroll_selection) override {}
   void RequestMouseLock(
       bool user_gesture,
       bool unadjusted_movement,

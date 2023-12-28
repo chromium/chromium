@@ -45,6 +45,12 @@ public class PaneManagerImpl implements PaneManager {
     public void destroy() {
         mHubVisibilitySupplier.removeObserver(mHubVisibilityObserver);
         mPaneTransitionHelper.destroy();
+        for (LazyOneshotSupplier<Pane> paneSupplier : mPanes.values()) {
+            if (paneSupplier == null || !paneSupplier.hasValue()) continue;
+
+            Pane pane = paneSupplier.get();
+            if (pane != null) pane.destroy();
+        }
     }
 
     @Override

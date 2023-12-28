@@ -1134,6 +1134,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Share.Onboarding.{EntryPoint}.Result"
+    enum="NearbyShareOnboardingFinalState" expires_after="2024-07-10">
+  <owner>brandosocarras@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records how far the user, whom entered the onboarding flow via EntryPoint,
+    made it through the onboarding flow. Emitted when onboarding is complete or
+    the user cancels during one of the steps.
+  </summary>
+  <token key="EntryPoint">
+    <variant name="NearbyDeviceTryingToShareNotification"
+        summary="Nearby device trying to share notification"/>
+    <variant name="Settings" summary="Settings page"/>
+    <variant name="ShareSheet" summary="Share Sheet"/>
+    <variant name="Tray" summary="Tray"/>
+  </token>
+</histogram>
+
 <histogram name="Nearby.Share.Payload.AttachmentType{Variation}"
     enum="NearbyShareAttachmentType" expires_after="2024-07-10">
   <owner>pushi@google.com</owner>

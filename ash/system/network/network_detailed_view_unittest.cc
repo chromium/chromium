@@ -122,8 +122,7 @@ class NetworkDetailedViewTest : public AshTestBase,
   }
 
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<NetworkDetailedView, DanglingUntriaged | ExperimentalAsh>
-      network_detailed_view_;
+  raw_ptr<NetworkDetailedView, DanglingUntriaged> network_detailed_view_;
   base::UserActionTester user_action_tester_;
 };
 

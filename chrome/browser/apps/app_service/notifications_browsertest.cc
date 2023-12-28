@@ -174,8 +174,9 @@ class AppNotificationsExtensionApiTest : public extensions::ExtensionApiTest {
 
     std::set<std::string> notifications =
         GetDisplayHelper()->GetNotificationIdsForExtension(extension->url());
-    if (notifications.size() != 1)
+    if (notifications.size() != 1) {
       return nullptr;
+    }
 
     return GetDisplayHelper()->GetByNotificationId(*notifications.begin());
   }
@@ -856,8 +857,9 @@ class AppNotificationsArcNotificationTest
   }
 
   void StopInstance() {
-    if (app_instance_)
+    if (app_instance_) {
       arc_bridge_service()->app()->CloseInstance(app_instance_.get());
+    }
     arc_session_manager()->Shutdown();
   }
 

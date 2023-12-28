@@ -926,6 +926,29 @@ TEST_F(AccessibilityTest, NextOnLine) {
   EXPECT_EQ("b", next->GetNode()->textContent());
 }
 
+TEST_F(AccessibilityTest, NextAndPreviousOnLineInert) {
+  // Spans need to be in the same line: see https://crbug.com/1511390.
+  SetBodyInnerHTML(R"HTML(
+    <div>
+    <div>first line</div>
+    <span id="span1">go </span><span inert>inert1</span><span inert>inert2</span><span>blue</span>
+    <div>last line</div>
+    </div>
+  )HTML");
+  const AXObject* span1 = GetAXObjectByElementId("span1");
+  ASSERT_NE(nullptr, span1);
+  EXPECT_EQ("go ", span1->GetNode()->textContent());
+
+  const AXObject* next = span1->NextOnLine();
+  ASSERT_NE(nullptr, next);
+  EXPECT_EQ("blue", next->GetNode()->textContent());
+
+  // Now we go backwards.
+
+  const AXObject* previous = next->PreviousOnLine();
+  EXPECT_EQ("go ", previous->GetNode()->textContent());
+}
+
 TEST_F(AccessibilityTest, TableRowAndCellIsLineBreakingObject) {
   SetBodyInnerHTML(R"HTML(
       <table id="table">
@@ -1163,7 +1186,7 @@ TEST_F(AccessibilityTest, CheckNoDuplicateChildren) {
 
   AXObject* ax_select = GetAXObjectByElementId("sel");
   ax_select->SetNeedsToUpdateChildren();
-  ax_select->UpdateChildrenIfNecessary();
+  GetAXObjectCache().UpdateAXForAllDocuments();
 
   ASSERT_EQ(
       ax_select->FirstChildIncludingIgnored()->ChildCountIncludingIgnored(), 1);
@@ -1323,7 +1346,7 @@ TEST_F(AccessibilityTest, ComputeIsInertReason) {
   Node* p2_text = p2->firstChild();
 
   auto AssertInertReasons = [&](Node* node, AXIgnoredReason expectation) {
-    AXObject* object = GetAXObjectCache().GetOrCreate(node);
+    AXObject* object = GetAXObjectCache().Get(node);
     ASSERT_NE(object, nullptr);
     AXObject::IgnoredReasons reasons;
     ASSERT_TRUE(object->ComputeIsInert(&reasons));
@@ -1331,7 +1354,7 @@ TEST_F(AccessibilityTest, ComputeIsInertReason) {
     ASSERT_EQ(reasons[0].reason, expectation);
   };
   auto AssertNotInert = [&](Node* node) {
-    AXObject* object = GetAXObjectCache().GetOrCreate(node);
+    AXObject* object = GetAXObjectCache().Get(node);
     ASSERT_NE(object, nullptr);
     AXObject::IgnoredReasons reasons;
     ASSERT_FALSE(object->ComputeIsInert(&reasons));
@@ -1480,13 +1503,13 @@ TEST_F(AccessibilityTest, ComputeIsInertWithNonHTMLElements) {
   Element* element = document.QuerySelector(AtomicString("main"));
   while (element) {
     Node* node = element->firstChild();
-    AXObject* ax_node = GetAXObjectCache().GetOrCreate(node);
+    AXObject* ax_node = GetAXObjectCache().Get(node);
 
     // The text indicates the expected inert root, which is the nearest HTML
     // element ancestor with the 'inert' attribute.
     AtomicString selector(node->textContent().Impl());
     Element* inert_root = document.QuerySelector(selector);
-    AXObject* ax_inert_root = GetAXObjectCache().GetOrCreate(inert_root);
+    AXObject* ax_inert_root = GetAXObjectCache().Get(inert_root);
 
     AXObject::IgnoredReasons reasons;
     ASSERT_TRUE(ax_node->ComputeIsInert(&reasons));

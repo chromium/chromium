@@ -49,7 +49,9 @@ namespace {
 
 using ::testing::_;
 using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 using QueryParams = internal::QueryParams;
+using QueryScheduler = internal::QueryScheduler;
 using ResourceContextTypeId = internal::ResourceContextTypeId;
 
 constexpr auto kFrameContextTypeId =
@@ -131,6 +133,11 @@ class ResourceAttrQueriesPMTest : public PerformanceManagerTestHarness {
     return main_frame_context_.value();
   }
 
+  // Lets tests update the fake results for kMemorySummary queries.
+  MemoryMeasurementDelegate::MemorySummaryMap& fake_memory_summaries() {
+    return memory_delegate_factory_.memory_summaries();
+  }
+
  private:
   raw_ptr<Graph> graph_ = nullptr;
 
@@ -156,13 +163,15 @@ QueryParams CreateQueryParams(
 // Returns a MemorySummaryResult containing the default fake memory results.
 // This can be used for the results from a process, or a page or frame that gets
 // all the memory from one process. `expected_algorithm` is the measurement
-// algorithm for that context type.
+// algorithm for that context type, and `expected_measurement_time` is the time
+// the measurement should be taken. By default, since the tests use the mock
+// clock, the expected measurement time is the same time the fake result is
+// created.
 MemorySummaryResult FakeMemorySummaryResult(
-    MeasurementAlgorithm expected_algorithm) {
-  // Since the tests use the mock clock, the measurement time is the same time
-  // the fake result is created.
+    MeasurementAlgorithm expected_algorithm,
+    base::TimeTicks expected_measurement_time = base::TimeTicks::Now()) {
   return {
-      .metadata = {.measurement_time = base::TimeTicks::Now(),
+      .metadata = {.measurement_time = expected_measurement_time,
                    .algorithm = expected_algorithm},
       .resident_set_size_kb = kFakeResidentSetSize,
       .private_footprint_kb = kFakePrivateFootprint,
@@ -532,6 +541,92 @@ TEST_F(ResourceAttrQueriesPMTest, ScopedQueryAndQueryOnce) {
   builder.Clone().QueryOnce(
       base::BindLambdaForTesting(expect_results).Then(run_loop.QuitClosure()));
   run_loop.Run();
+}
+
+TEST_F(ResourceAttrQueriesPMTest, RepeatingQueries) {
+  constexpr auto kDelay = base::Minutes(1);
+  constexpr int kRepetitions = 3;
+
+  absl::optional<ScopedResourceUsageQuery> scoped_query =
+      QueryBuilder()
+          .AddResourceContext(main_frame_context())
+          .AddResourceType(ResourceType::kMemorySummary)
+          .CreateScopedQuery();
+
+  MockQueryResultObserver observer;
+  scoped_query->AddObserver(&observer);
+
+  // Returns a gMock matcher expecting that a QueryResultMap has a
+  // MemorySummaryResult for main_frame_context().
+  auto memory_result_matcher = [&](base::TimeTicks expected_measurement_time) {
+    return ElementsAre(ResultForContextMatches<MemorySummaryResult>(
+        main_frame_context(),
+        FakeMemorySummaryResult(MeasurementAlgorithm::kSplit,
+                                expected_measurement_time)));
+  };
+
+  // Expect exactly 1 query per repetition, with exactly kDelay between
+  // measurements.
+  {
+    ::testing::InSequence s;
+    base::TimeTicks next_measurement_time = base::TimeTicks::Now();
+    for (int i = 0; i < kRepetitions; ++i) {
+      next_measurement_time += kDelay;
+      EXPECT_CALL(observer, OnResourceUsageUpdated(
+                                memory_result_matcher(next_measurement_time)))
+          .Times(1);
+    }
+  }
+
+  scoped_query->Start(kDelay);
+  task_environment()->FastForwardBy(kDelay * kRepetitions);
+
+  // Test changes that happen between repetitions.
+  {
+    ::testing::InSequence s;
+    base::TimeTicks next_measurement_time = base::TimeTicks::Now();
+
+    // Repetition 1.
+    next_measurement_time += kDelay;
+    EXPECT_CALL(observer, OnResourceUsageUpdated(
+                              memory_result_matcher(next_measurement_time)))
+        .Times(1);
+
+    // QueryOnce called half-way to repetition 2.
+    EXPECT_CALL(observer, OnResourceUsageUpdated(memory_result_matcher(
+                              next_measurement_time + kDelay / 2)))
+        .Times(1);
+
+    // Repetition 2.
+    next_measurement_time += kDelay;
+    EXPECT_CALL(observer, OnResourceUsageUpdated(
+                              memory_result_matcher(next_measurement_time)))
+        .Times(1);
+
+    // Memory provider returns error at next repetition. Observer should still
+    // be notified.
+    next_measurement_time += kDelay;
+    EXPECT_CALL(observer, OnResourceUsageUpdated(IsEmpty())).Times(1);
+  }
+
+  // Repetition 1.
+  task_environment()->FastForwardBy(kDelay);
+
+  // QueryOnce called half-way to repetition 2.
+  task_environment()->FastForwardBy(kDelay / 2);
+  scoped_query->QueryOnce();
+
+  // Repetition 2.
+  task_environment()->FastForwardBy(kDelay / 2);
+
+  // Memory provider returns error at next repetition.
+  fake_memory_summaries().clear();
+  task_environment()->FastForwardBy(kDelay);
+
+  // Reporting should stop once the query is deleted. StrictMock will give an
+  // error if OnResourceUsageUpdated() is called again.
+  scoped_query.reset();
+  task_environment()->FastForwardBy(kDelay);
 }
 
 }  // namespace performance_manager::resource_attribution

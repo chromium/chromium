@@ -36,7 +36,7 @@ constexpr char kHatsSurveyTriggerPerformanceControlsPerformance[] =
     "performance-general";
 constexpr char kHatsSurveyTriggerPerformanceControlsBatteryPerformance[] =
     "performance-battery";
-constexpr char kHatsSurveyTriggerPerformanceControlsHighEfficiencyOptOut[] =
+constexpr char kHatsSurveyTriggerPerformanceControlsMemorySaverOptOut[] =
     "performance-high-efficiency-opt-out";
 constexpr char kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut[] =
     "performance-battery-saver-opt-out";
@@ -99,6 +99,7 @@ constexpr char kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeSettings[] =
     "ts-v2-ps4-notice-settings";
 constexpr char kHatsSurveyTriggerTrustSafetyV2SafeBrowsingInterstitial[] =
     "ts-v2-safe-browsing-interstitial";
+constexpr char kHatsSurveyTriggerWallpaperSearch[] = "wallpaper-search";
 #else   // BUILDFLAG(IS_ANDROID)
 constexpr char kHatsSurveyTriggerAndroidStartupSurvey[] = "startup_survey";
 #endif  // #if !BUILDFLAG(IS_ANDROID)
@@ -400,6 +401,11 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(&features::kAutofillPasswordSurvey,
                               kHatsSurveyTriggerAutofillPassword);
 
+  // Wallpaper Search survey.
+  survey_configs.emplace_back(
+      &features::kHappinessTrackingSurveysForWallpaperSearch,
+      kHatsSurveyTriggerWallpaperSearch);
+
   // What's New survey.
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopWhatsNew,
@@ -421,8 +427,8 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       std::vector<std::string>{});
   survey_configs.emplace_back(
       &performance_manager::features::
-          kPerformanceControlsHighEfficiencyOptOutSurvey,
-      kHatsSurveyTriggerPerformanceControlsHighEfficiencyOptOut);
+          kPerformanceControlsMemorySaverOptOutSurvey,
+      kHatsSurveyTriggerPerformanceControlsMemorySaverOptOut);
   survey_configs.emplace_back(
       &performance_manager::features::
           kPerformanceControlsBatterySaverOptOutSurvey,

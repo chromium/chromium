@@ -36,6 +36,8 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
                       public views::WidgetDelegateView,
                       public views::WidgetFocusChangeListener,
                       public views::WidgetObserver {
+  METADATA_HEADER(PopupBaseView, views::WidgetDelegateView)
+
  public:
   // Consider the input element is `kElementBorderPadding` pixels larger at the
   // top and at the bottom in order to reposition the dropdown, so that it
@@ -48,8 +50,6 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
       kDefaultPreferredPopupSides = {
           views::BubbleArrowSide::kTop, views::BubbleArrowSide::kBottom,
           views::BubbleArrowSide::kLeft, views::BubbleArrowSide::kRight};
-
-  METADATA_HEADER(PopupBaseView);
 
   PopupBaseView(const PopupBaseView&) = delete;
   PopupBaseView& operator=(const PopupBaseView&) = delete;

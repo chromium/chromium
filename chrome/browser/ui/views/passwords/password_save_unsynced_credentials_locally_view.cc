@@ -121,7 +121,7 @@ void PasswordSaveUnsyncedCredentialsLocallyView::ButtonPressed(
 
 void PasswordSaveUnsyncedCredentialsLocallyView::OnSaveClicked() {
   std::vector<bool> was_credential_selected;
-  for (const auto* checkbox : checkboxes_) {
+  for (const views::Checkbox* checkbox : checkboxes_) {
     was_credential_selected.push_back(checkbox->GetChecked());
   }
   controller_.OnSaveClicked(was_credential_selected);

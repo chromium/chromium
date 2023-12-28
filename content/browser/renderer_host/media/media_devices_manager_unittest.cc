@@ -294,7 +294,7 @@ class MockMediaDevicesDispatcherHost
   MOCK_METHOD(void,
               SetCaptureHandleConfig,
               (::blink::mojom::CaptureHandleConfigPtr config));
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   MOCK_METHOD(void, CloseFocusWindowOfOpportunity, (const std::string& label));
   MOCK_METHOD(void,
               ProduceSubCaptureTargetId,

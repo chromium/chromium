@@ -513,7 +513,7 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
 
   std::vector<std::unique_ptr<Desk>> desks_;
 
-  raw_ptr<Desk, ExperimentalAsh> active_desk_ = nullptr;
+  raw_ptr<Desk> active_desk_ = nullptr;
 
   // Target desk if in middle of desk activation, `nullptr` otherwise.
   raw_ptr<Desk> desk_to_activate_ = nullptr;

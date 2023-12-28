@@ -53,9 +53,8 @@ class AutoclickRingHandler : public gfx::LinearAnimation {
   void AnimateToState(double state) override;
   void AnimationStopped() override;
 
-  raw_ptr<AutoclickRingView, DanglingUntriaged | ExperimentalAsh> view_ =
-      nullptr;
-  raw_ptr<views::Widget, ExperimentalAsh> ring_widget_ = nullptr;
+  raw_ptr<AutoclickRingView, DanglingUntriaged> view_ = nullptr;
+  raw_ptr<views::Widget> ring_widget_ = nullptr;
   // Location of the simulated mouse event from auto click in screen
   // coordinates.
   gfx::Point tap_down_location_;

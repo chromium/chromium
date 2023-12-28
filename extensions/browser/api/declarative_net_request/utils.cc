@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file.h"
@@ -91,7 +92,7 @@ std::string GetVersionHeader() {
 // Helper to ensure pointers to string literals can be used with
 // base::JoinString.
 std::string JoinString(base::span<const char* const> parts) {
-  std::vector<base::StringPiece> parts_piece;
+  std::vector<std::string_view> parts_piece;
   for (const char* part : parts)
     parts_piece.push_back(part);
   return base::JoinString(parts_piece, ", ");
@@ -144,8 +145,8 @@ void OverrideGetChecksumForTest(int checksum) {
 std::string GetIndexedRulesetData(base::span<const uint8_t> data) {
   return base::StrCat(
       {GetVersionHeader(),
-       base::StringPiece(reinterpret_cast<const char*>(data.data()),
-                         data.size())});
+       std::string_view(reinterpret_cast<const char*>(data.data()),
+                        data.size())});
 }
 
 bool PersistIndexedRuleset(const base::FilePath& path,
@@ -800,7 +801,7 @@ flat_rule::RequestMethod GetRequestMethod(bool http_or_https,
 
   using net::HttpRequestHeaders;
   static const base::NoDestructor<
-      base::flat_map<base::StringPiece, flat_rule::RequestMethod>>
+      base::flat_map<std::string_view, flat_rule::RequestMethod>>
       kRequestMethods(
           {{HttpRequestHeaders::kDeleteMethod, flat_rule::RequestMethod_DELETE},
            {HttpRequestHeaders::kGetMethod, flat_rule::RequestMethod_GET},

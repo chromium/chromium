@@ -41,7 +41,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.content.app.SandboxedProcessService;
 import org.chromium.content.common.ContentSwitchUtils;
 import org.chromium.content_public.browser.ChildProcessImportance;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_public.common.ContentSwitches;
@@ -769,19 +768,14 @@ public final class ChildProcessLauncherHelperImpl {
             boostForPendingViews = false;
         }
 
-        boolean mediaRendererHasModerate =
-                ContentFeatureMap.isEnabled(
-                        ContentFeatureList.BACKGROUND_MEDIA_RENDERER_HAS_MODERATE_BINDING);
-
         @ChildProcessImportance int newEffectiveImportance;
         if ((visible && frameDepth == 0)
                 || importance == ChildProcessImportance.IMPORTANT
-                || (hasMediaStream && !mediaRendererHasModerate)) {
+                || hasMediaStream) {
             newEffectiveImportance = ChildProcessImportance.IMPORTANT;
         } else if ((visible && frameDepth > 0 && intersectsViewport)
                 || boostForPendingViews
                 || importance == ChildProcessImportance.MODERATE
-                || (hasMediaStream && mediaRendererHasModerate)
                 || hasForegroundServiceWorker) {
             newEffectiveImportance = ChildProcessImportance.MODERATE;
         } else {

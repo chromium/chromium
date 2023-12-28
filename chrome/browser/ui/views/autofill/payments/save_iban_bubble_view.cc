@@ -203,10 +203,8 @@ void SaveIbanBubbleView::CreateMainContentView() {
   nickname_textfield_->set_controller(this);
   nickname_textfield_->SetPlaceholderText(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_PLACEHOLDER));
-  nickname_textfield_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                               views::MaximumFlexSizeRule::kScaleToMaximum));
+  nickname_textfield_->SetProperty(views::kBoxLayoutFlexKey,
+                                   views::BoxLayoutFlexSpecification());
   nickname_textfield_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   nickname_textfield_->SetBorder(views::NullBorder());
 

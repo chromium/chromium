@@ -11,10 +11,14 @@ namespace content {
 // `render_process_id` and `render_frame_id`` of a started stream to ensure that
 // the renderer is not backgrounded. Must be paired with a later call to
 // NotifyHostOfStoppedStream().
+// `is_capturing` indicates if the audio stream is capturing a user input. For
+// example, a stream capturing the microphone input.
 void NotifyFrameHostOfAudioStreamStarted(int render_process_id,
-                                         int render_frame_id);
+                                         int render_frame_id,
+                                         bool is_capturing);
 void NotifyFrameHostOfAudioStreamStopped(int render_process_id,
-                                         int render_frame_id);
+                                         int render_frame_id,
+                                         bool is_capturing);
 
 }  // namespace content
 

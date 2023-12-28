@@ -31,6 +31,7 @@ public class ExpandedPlayerCoordinator {
                 @Override
                 public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
                     if (mTrackedContent == mSheetContent && newContent != mSheetContent) {
+                        mMediator.setOptionSheetPending(false);
                         mMediator.setVisibility(VisibilityState.GONE);
                     }
                     mTrackedContent = newContent;
@@ -49,14 +50,9 @@ public class ExpandedPlayerCoordinator {
                         BottomSheetContent closingSheet =
                                 mDelegate.getBottomSheetController().getCurrentSheetContent();
                         mSheetContent.notifySheetClosed(closingSheet);
-
-                        boolean userDismissed =
-                                reason == StateChangeReason.SWIPE
-                                        || reason == StateChangeReason.BACK_PRESS
-                                        || reason == StateChangeReason.TAP_SCRIM
-                                        || reason == StateChangeReason.NAVIGATION
-                                        || reason == StateChangeReason.OMNIBOX_FOCUS;
-                        if (closingSheet == mSheetContent && userDismissed) {
+                        // If we're dismissing for a reason other than showing a menu sheet, notify
+                        // about closing.
+                        if (closingSheet == mSheetContent && !mMediator.getOptionSheetPending()) {
                             InteractionHandler handler =
                                     mModel.get(PlayerProperties.INTERACTION_HANDLER);
                             if (handler != null) {

@@ -253,7 +253,7 @@ export interface ConflictResult {
   checked: boolean;
 }
 
-export const enum ConflictResolveType {
+export enum ConflictResolveType {
   KEEPBOTH = 'keepboth',
   REPLACE = 'replace',
 }

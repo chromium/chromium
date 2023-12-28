@@ -72,11 +72,9 @@ BASE_EXPORT char* StreamValToStr(const void* v,
 #endif
 
 template <typename T>
-inline std::enable_if_t<
-    base::internal::SupportsOstreamOperator<const T&> &&
-        !std::is_function_v<typename std::remove_pointer<T>::type>,
-    char*>
-CheckOpValueStr(const T& v) {
+  requires(base::internal::SupportsOstreamOperator<const T&> &&
+           !std::is_function_v<std::remove_pointer_t<T>>)
+inline char* CheckOpValueStr(const T& v) {
   auto f = [](std::ostream& s, const void* p) {
     s << *reinterpret_cast<const T*>(p);
   };
@@ -98,10 +96,9 @@ CheckOpValueStr(const T& v) {
 
 // Overload for types that have no operator<< but do have .ToString() defined.
 template <typename T>
-inline std::enable_if_t<!base::internal::SupportsOstreamOperator<const T&> &&
-                            base::internal::SupportsToString<const T&>,
-                        char*>
-CheckOpValueStr(const T& v) {
+  requires(!base::internal::SupportsOstreamOperator<const T&> &&
+           base::internal::SupportsToString<const T&>)
+inline char* CheckOpValueStr(const T& v) {
   // .ToString() may not return a std::string, e.g. blink::WTF::String.
   return CheckOpValueStr(v.ToString());
 }
@@ -112,22 +109,18 @@ CheckOpValueStr(const T& v) {
 // standards-conforming here and converts function pointers to regular
 // pointers, so this is a no-op for MSVC.)
 template <typename T>
-inline std::enable_if_t<
-    std::is_function_v<typename std::remove_pointer<T>::type>,
-    char*>
-CheckOpValueStr(const T& v) {
+  requires(std::is_function_v<std::remove_pointer_t<T>>)
+inline char* CheckOpValueStr(const T& v) {
   return CheckOpValueStr(reinterpret_cast<const void*>(v));
 }
 
 // We need overloads for enums that don't support operator<<.
 // (i.e. scoped enums where no operator<< overload was declared).
 template <typename T>
-inline std::enable_if_t<!base::internal::SupportsOstreamOperator<const T&> &&
-                            std::is_enum_v<T>,
-                        char*>
-CheckOpValueStr(const T& v) {
-  return CheckOpValueStr(
-      static_cast<typename std::underlying_type<T>::type>(v));
+  requires(!base::internal::SupportsOstreamOperator<const T&> &&
+           std::is_enum_v<T>)
+inline char* CheckOpValueStr(const T& v) {
+  return CheckOpValueStr(static_cast<std::underlying_type_t<T>>(v));
 }
 
 // Takes ownership of `v1_str` and `v2_str`, destroying them with free(). For
@@ -175,27 +168,23 @@ BASE_EXPORT char* CreateCheckOpLogMessageString(const char* expr_str,
 
 // The second overload avoids address-taking of static members for
 // fundamental types.
-#define DEFINE_CHECK_OP_IMPL(name, op)                                         \
-  template <                                                                   \
-      typename T, typename U,                                                  \
-      std::enable_if_t<!std::is_fundamental_v<T> || !std::is_fundamental_v<U>, \
-                       int> = 0>                                               \
-  constexpr char* Check##name##Impl(const T& v1, const U& v2,                  \
-                                    const char* expr_str) {                    \
-    if (LIKELY(ANALYZER_ASSUME_TRUE(v1 op v2)))                                \
-      return nullptr;                                                          \
-    return CreateCheckOpLogMessageString(expr_str, CheckOpValueStr(v1),        \
-                                         CheckOpValueStr(v2));                 \
-  }                                                                            \
-  template <                                                                   \
-      typename T, typename U,                                                  \
-      std::enable_if_t<std::is_fundamental_v<T> && std::is_fundamental_v<U>,   \
-                       int> = 0>                                               \
-  constexpr char* Check##name##Impl(T v1, U v2, const char* expr_str) {        \
-    if (LIKELY(ANALYZER_ASSUME_TRUE(v1 op v2)))                                \
-      return nullptr;                                                          \
-    return CreateCheckOpLogMessageString(expr_str, CheckOpValueStr(v1),        \
-                                         CheckOpValueStr(v2));                 \
+#define DEFINE_CHECK_OP_IMPL(name, op)                                  \
+  template <typename T, typename U>                                     \
+    requires(!std::is_fundamental_v<T> || !std::is_fundamental_v<U>)    \
+  constexpr char* Check##name##Impl(const T& v1, const U& v2,           \
+                                    const char* expr_str) {             \
+    if (LIKELY(ANALYZER_ASSUME_TRUE(v1 op v2)))                         \
+      return nullptr;                                                   \
+    return CreateCheckOpLogMessageString(expr_str, CheckOpValueStr(v1), \
+                                         CheckOpValueStr(v2));          \
+  }                                                                     \
+  template <typename T, typename U>                                     \
+    requires(std::is_fundamental_v<T> && std::is_fundamental_v<U>)      \
+  constexpr char* Check##name##Impl(T v1, U v2, const char* expr_str) { \
+    if (LIKELY(ANALYZER_ASSUME_TRUE(v1 op v2)))                         \
+      return nullptr;                                                   \
+    return CreateCheckOpLogMessageString(expr_str, CheckOpValueStr(v1), \
+                                         CheckOpValueStr(v2));          \
   }
 
 // clang-format off

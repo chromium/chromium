@@ -36,10 +36,6 @@ namespace {
 // it can be used inline in other SQL statements below.
 #define OFFLINE_PAGES_TABLE_NAME "offlinepages_v1"
 
-void ReportStoreEvent(OfflinePagesStoreEvent event) {
-  UMA_HISTOGRAM_ENUMERATION("OfflinePages.SQLStorage.StoreEvent", event);
-}
-
 bool CreateOfflinePagesTable(sql::Database* db) {
   static const char kCreateLatestOfflinePagesTableSql[] =
       "CREATE TABLE IF NOT EXISTS " OFFLINE_PAGES_TABLE_NAME
@@ -397,9 +393,6 @@ StoreState OfflinePageMetadataStore::GetStateForTesting() const {
 void OfflinePageMetadataStore::OnOpenStart(base::TimeTicks last_closing_time) {
   TRACE_EVENT_ASYNC_BEGIN1("offline_pages", "Metadata Store", this, "is reopen",
                            !last_closing_time.is_null());
-  ReportStoreEvent(last_closing_time.is_null()
-                       ? OfflinePagesStoreEvent::kOpenedFirstTime
-                       : OfflinePagesStoreEvent::kReopened);
 }
 
 void OfflinePageMetadataStore::OnOpenDone(bool success) {
@@ -432,12 +425,9 @@ void OfflinePageMetadataStore::OnTaskReturnComplete() {
 void OfflinePageMetadataStore::OnCloseStart(
     InitializationStatus status_before_close) {
   if (status_before_close != InitializationStatus::kSuccess) {
-    ReportStoreEvent(OfflinePagesStoreEvent::kCloseSkipped);
     return;
   }
   TRACE_EVENT_ASYNC_STEP_PAST0("offline_pages", "Metadata Store", this, "Open");
-
-  ReportStoreEvent(OfflinePagesStoreEvent::kClosed);
 }
 
 void OfflinePageMetadataStore::OnCloseComplete() {

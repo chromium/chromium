@@ -3,19 +3,19 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_controller.h"
+#import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_controller+Testing.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
-#import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_controller+private.h"
 #import "ios/chrome/browser/ui/autofill/cells/cvc_header_item.h"
 #import "ios/chrome/browser/ui/autofill/cells/expiration_date_edit_item.h"
 #import "ios/chrome/browser/ui/autofill/cells/expiration_date_edit_item_delegate.h"
@@ -259,7 +259,8 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 
   controller->OnUnmaskPromptAccepted(
       base::SysNSStringToUTF16(CVC), base::SysNSStringToUTF16(month),
-      base::SysNSStringToUTF16(year), /*enable_fido_auth=*/false);
+      base::SysNSStringToUTF16(year), /*enable_fido_auth=*/false,
+      /*was_checkbox_visible=*/false);
 }
 
 #pragma mark - Private

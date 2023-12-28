@@ -127,12 +127,12 @@ void ProfileManagementFlowController::FinishFlowAndRunInBrowser(
 }
 
 base::OnceClosure
-ProfileManagementFlowController::CreateSwitchToCurrentStepPopCallback() {
+ProfileManagementFlowController::CreateSwitchToStepPopCallback(Step step) {
   return base::BindOnce(
       &ProfileManagementFlowController::SwitchToStep,
       // Binding as Unretained as `this` outlives the step
       // controllers.
-      base::Unretained(this), current_step(),
+      base::Unretained(this), step,
       /*reset_state=*/false,
       /*step_switch_finished_callback=*/StepSwitchFinishedCallback(),
       /*pop_step_callback=*/base::OnceClosure());

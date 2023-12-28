@@ -21,7 +21,6 @@ import static org.hamcrest.Matchers.not;
 
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.selectTabWithDescription;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.whenDisplayed;
-import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabTestHelper.isKeyboardAccessoryTabLayout;
 
 import android.widget.TextView;
 
@@ -41,6 +40,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.FakeKeyboard;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper;
 import org.chromium.chrome.browser.keyboard_accessory.R;
+import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupView;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.autofill.AutofillProfile;
@@ -129,9 +129,9 @@ public class AddressAccessoryIntegrationTest {
         // Scroll to last element and click the second icon:
         whenDisplayed(withId(R.id.bar_items_view))
                 .perform(
-                        scrollTo(isKeyboardAccessoryTabLayout()),
+                        scrollTo(isAssignableFrom(KeyboardAccessoryButtonGroupView.class)),
                         actionOnItem(
-                                isKeyboardAccessoryTabLayout(),
+                                isAssignableFrom(KeyboardAccessoryButtonGroupView.class),
                                 selectTabWithDescription(R.string.address_accessory_sheet_toggle)));
 
         // Wait for the sheet to come up and be stable.

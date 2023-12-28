@@ -11,7 +11,6 @@
 #include "base/strings/string_util.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
-#include "components/reading_list/features/reading_list_switches.h"
 #include "components/sync/base/features.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "url/gurl.h"
@@ -68,8 +67,7 @@ DualReadingListModel::GetSyncControllerDelegateForTransportMode() {
   // TODO(crbug.com/1402200): This logic should be moved to a controller and
   // made more sophisticated by enabling it only if the user opted in (possibly
   // pref-based).
-  if (base::FeatureList::IsEnabled(
-          syncer::kReadingListEnableSyncTransportModeUponSignIn)) {
+  if (syncer::IsReadingListAccountStorageEnabled()) {
     return account_model_->GetSyncControllerDelegate();
   }
 
@@ -609,9 +607,6 @@ void DualReadingListModel::ReadingListWillMoveEntry(
     return;
   }
 
-  // Only expected for changes received via sync.
-  DCHECK(ToReadingListModelImpl(model)->IsTrackingSyncMetadata());
-
   NotifyObserversWithWillMoveEntry(url);
   UpdateEntryStateCountersOnEntryRemoval(*GetEntryByURL(url));
 }
@@ -622,9 +617,6 @@ void DualReadingListModel::ReadingListDidMoveEntry(
   if (!loaded() || suppress_observer_notifications_) {
     return;
   }
-
-  // Only expected for changes received via sync.
-  DCHECK(ToReadingListModelImpl(model)->IsTrackingSyncMetadata());
 
   UpdateEntryStateCountersOnEntryInsertion(*GetEntryByURL(url));
   NotifyObserversWithDidMoveEntry(url);
@@ -810,6 +802,15 @@ base::flat_set<GURL> DualReadingListModel::GetKeysThatNeedUploadToSyncServer()
     return {};
   }
   return local_or_syncable_model_->GetKeys();
+}
+
+ReadingListModel* DualReadingListModel::GetLocalOrSyncableModel() {
+  return local_or_syncable_model_.get();
+}
+
+ReadingListModel* DualReadingListModel::GetAccountModelIfSyncing() {
+  return account_model_->IsTrackingSyncMetadata() ? account_model_.get()
+                                                  : nullptr;
 }
 
 }  // namespace reading_list

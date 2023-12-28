@@ -18,8 +18,6 @@ TouchToFillCreditCardViewImpl::TouchToFillCreditCardViewImpl(
     content::WebContents* web_contents)
     : web_contents_(web_contents) {
   DCHECK(web_contents);
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kAutofillTouchToFillForCreditCardsAndroid));
 }
 
 TouchToFillCreditCardViewImpl::~TouchToFillCreditCardViewImpl() {

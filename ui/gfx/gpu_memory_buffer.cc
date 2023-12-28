@@ -67,6 +67,4 @@ GpuMemoryBufferHandle GpuMemoryBufferHandle::Clone() const {
   return handle;
 }
 
-void GpuMemoryBuffer::SetColorSpace(const ColorSpace& color_space) {}
-
 }  // namespace gfx

@@ -451,7 +451,7 @@ source_set("unit_tests") {
     "media/audio/audio_renderer_sink_cache_test.cc",
     "media/audio/mojo_audio_input_ipc_test.cc",
     "media/audio/mojo_audio_output_ipc_test.cc",
-    "media/webmediaplayer_util_unittest.cc",
+    "media/web_media_player_util_unittest.cc",
     "media_capabilities/media_capabilities_test.cc",
     "media_controls/elements/media_control_animated_arrow_container_element_test.cc",
     "media_controls/elements/media_control_display_cutout_fullscreen_button_element_test.cc",
@@ -506,8 +506,8 @@ source_set("unit_tests") {
     "mediastream/transferred_media_stream_track_test.cc",
     "mediastream/user_media_client_test.cc",
     "mediastream/video_track_adapter_unittest.cc",
+    "mediastream/web_media_player_ms_test.cc",
     "mediastream/webaudio_media_stream_audio_sink_test.cc",
-    "mediastream/webmediaplayer_ms_test.cc",
     "nfc/nfc_proxy_test.cc",
     "notifications/notification_data_test.cc",
     "notifications/notification_resources_loader_test.cc",
@@ -621,9 +621,13 @@ source_set("unit_tests") {
       # Inline text box tests do not apply to Android, which only loads
       # AXInlineTextBox tests for the focused node.
       "accessibility/ax_inline_text_box_test.cc",
+    ]
+  }
 
-      # CaptureController is not Web-exposed on Android,
-      # so most of the logic is compile-guarded away on Android,
+  if (!is_android && !is_ios) {
+    sources += [
+      # CaptureController is not Web-exposed on Android and iOS,
+      # so most of the logic is compile-guarded away on Android and iOS,
       # preventing meaningful testing.
       "mediastream/capture_controller_test.cc",
     ]
@@ -788,7 +792,7 @@ source_set("unit_tests_v2") {
     "media/audio/audio_renderer_sink_cache_test.cc",
     "media/audio/mojo_audio_input_ipc_test.cc",
     "media/audio/mojo_audio_output_ipc_test.cc",
-    "media/webmediaplayer_util_unittest.cc",
+    "media/web_media_player_util_unittest.cc",
     "media_capabilities/media_capabilities_test.cc",
     "media_controls/elements/media_control_animated_arrow_container_element_test.cc",
     "media_controls/elements/media_control_display_cutout_fullscreen_button_element_test.cc",
@@ -843,8 +847,8 @@ source_set("unit_tests_v2") {
     "mediastream/transferred_media_stream_track_test.cc",
     "mediastream/user_media_client_test.cc",
     "mediastream/video_track_adapter_unittest.cc",
+    "mediastream/web_media_player_ms_test.cc",
     "mediastream/webaudio_media_stream_audio_sink_test.cc",
-    "mediastream/webmediaplayer_ms_test.cc",
     "nfc/nfc_proxy_test.cc",
     "notifications/notification_data_test.cc",
     "notifications/notification_resources_loader_test.cc",
@@ -958,9 +962,13 @@ source_set("unit_tests_v2") {
       # Inline text box tests do not apply to Android, which only loads
       # AXInlineTextBox tests for the focused node.
       "accessibility/ax_inline_text_box_test.cc",
+    ]
+  }
 
-      # CaptureController is not Web-exposed on Android,
-      # so most of the logic is compile-guarded away on Android,
+  if (!is_android && !is_ios) {
+    sources += [
+      # CaptureController is not Web-exposed on Android and iOS,
+      # so most of the logic is compile-guarded away on Android and iOS,
       # preventing meaningful testing.
       "mediastream/capture_controller_test.cc",
     ]
@@ -1007,13 +1015,21 @@ source_set("unit_tests_v2") {
     "//third_party/blink/renderer/core",
     "//third_party/blink/renderer/core:testing",
     "//third_party/blink/renderer/core:unit_test_support",
+    "//third_party/blink/renderer/modules/ad_auction:unit_tests",
+    "//third_party/blink/renderer/modules/breakout_box:unit_tests",
+    "//third_party/blink/renderer/modules/file_system_access:unit_tests",
     "//third_party/blink/renderer/modules/gamepad:unit_tests",
     "//third_party/blink/renderer/modules/hid:unit_tests",
+    "//third_party/blink/renderer/modules/idle:unit_tests",
     "//third_party/blink/renderer/modules/indexeddb:unit_tests",
     "//third_party/blink/renderer/modules/mediarecorder:buildflags",
     "//third_party/blink/renderer/modules/mediastream:test_support",
+    "//third_party/blink/renderer/modules/ml:unit_tests",
     "//third_party/blink/renderer/modules/peerconnection:test_support",
     "//third_party/blink/renderer/modules/storage:unit_tests",
+    "//third_party/blink/renderer/modules/webcodecs:unit_tests",
+    "//third_party/blink/renderer/modules/webgpu:unit_tests",
+    "//third_party/blink/renderer/modules/webtransport:unit_tests",
     "//third_party/blink/renderer/platform",
     "//third_party/blink/renderer/platform:test_support",
     "//third_party/blink/renderer/platform/wtf",
@@ -1032,6 +1048,7 @@ source_set("unit_tests_v2") {
     deps += [
       "//third_party/blink/renderer/modules/direct_sockets:unit_tests",
       "//third_party/blink/renderer/modules/serial:unit_tests",
+      "//third_party/blink/renderer/modules/smart_card:unit_tests",
     ]
   }
 

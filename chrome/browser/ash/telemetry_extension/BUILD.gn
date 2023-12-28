@@ -13,6 +13,7 @@ source_set("unit_tests") {
     "common:unit_tests",
     "diagnostics:unit_tests",
     "events:unit_tests",
+    "management:unit_tests",
     "routines:unit_tests",
     "telemetry:unit_tests",
   ]

@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enrollment_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/guest_tos_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/marketing_opt_in_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
@@ -182,6 +183,10 @@ void TapForPersonalUseCrRadioButton() {
 
 void TapUserCreationNext() {
   OobeJS().TapOnPath({"user-creation", "nextButton"});
+}
+
+void WaitForGaiaInfoScreen() {
+  WaitFor(GaiaInfoScreenView::kScreenId);
 }
 
 void WaitForOobeJSReady() {

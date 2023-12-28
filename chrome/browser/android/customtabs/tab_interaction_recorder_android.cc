@@ -72,7 +72,7 @@ void AutofillObserverImpl::OnAfterSelectControlDidChange(
 void AutofillObserverImpl::OnAfterTextFieldDidChange(autofill::AutofillManager&,
                                                      autofill::FormGlobalId,
                                                      autofill::FieldGlobalId,
-                                                     std::u16string) {
+                                                     const std::u16string&) {
   OnFormInteraction();
 }
 

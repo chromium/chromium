@@ -93,7 +93,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kInvalidReportingOrigin = 4,
     kInvalidReportType = 5,
     kReportingOriginMismatch = 6,
-    kMetadataAsStringFailed = 7,
+    // Obsolete: kMetadataAsStringFailed = 7,
     kSourceDataMissingEventLevel = 8,
     kSourceDataMissingAggregatable = 9,
     kSourceDataFoundNullAggregatable = 10,
@@ -191,7 +191,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   [[nodiscard]] bool DeleteExpiredSources()
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  bool HasCapacityForStoringSource(const std::string& serialized_origin)
+  bool HasCapacityForStoringSource(const std::string& serialized_origin,
+                                   base::Time now)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Returns the number of sources in storage.
@@ -242,9 +243,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   absl::optional<AttributionReport> GetReport(AttributionReport::Id report_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  absl::optional<std::vector<uint64_t>> ReadDedupKeys(
-      StoredSource::Id source_id,
-      AttributionReport::Type report_type)
+  [[nodiscard]] bool ReadDedupKeys(StoredSource&)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   bool StoreDedupKey(StoredSource::Id source_id,

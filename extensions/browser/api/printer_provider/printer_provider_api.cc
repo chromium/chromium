@@ -37,6 +37,7 @@
 #include "extensions/common/api/printer_provider_internal.h"
 #include "extensions/common/api/usb.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 
 namespace extensions {
@@ -303,7 +304,7 @@ class PrinterProviderAPIImpl : public PrinterProviderAPI,
   bool WillRequestPrinters(
       int request_id,
       content::BrowserContext* browser_context,
-      Feature::Context target_context,
+      mojom::ContextType target_context,
       const Extension* extension,
       const base::Value::Dict* listener_filter,
       std::optional<base::Value::List>& event_args_out,
@@ -783,7 +784,7 @@ void PrinterProviderAPIImpl::OnExtensionUnloaded(
 bool PrinterProviderAPIImpl::WillRequestPrinters(
     int request_id,
     content::BrowserContext* browser_context,
-    Feature::Context target_context,
+    mojom::ContextType target_context,
     const Extension* extension,
     const base::Value::Dict* listener_filter,
     std::optional<base::Value::List>& event_args_out,

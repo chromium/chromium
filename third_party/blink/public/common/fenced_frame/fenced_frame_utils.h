@@ -46,6 +46,9 @@ inline constexpr char kAutomaticBeaconOutcomeHistogram[] =
 inline constexpr char kAutomaticBeaconEventTypeHistogram[] =
     "Navigation.FencedFrameAutomaticBeaconEventType";
 
+inline constexpr char kFencedFrameBeaconReportingHttpResultUMA[] =
+    "Blink.FencedFrame.BeaconReportingHttpResult";
+
 // Corresponds to the "FencedFrameCreationOutcome" histogram enumeration type in
 // tools/metrics/histograms/enums.xml.
 //
@@ -84,6 +87,22 @@ enum class FencedFrameNavigationState {
   kMaxValue = kCommit
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FencedFrameBeaconReportingResult {
+  kUnknownResult = 0,
+  kDestinationEnumInvalid = 1,
+  kDestinationEnumSuccess = 2,
+  kDestinationEnumFailure = 3,
+  kDestinationUrlInvalid = 4,
+  kDestinationUrlSuccess = 5,
+  kDestinationUrlFailure = 6,
+  kAutomaticInvalid = 7,
+  kAutomaticSuccess = 8,
+  kAutomaticFailure = 9,
+  kMaxValue = kAutomaticFailure
+};
+
 // Whether or not a fenced frame is allowed to be navigated to `url`. For now
 // this is described by
 // https://github.com/WICG/fenced-frame/blob/master/explainer/modes.md.
@@ -110,6 +129,11 @@ inline constexpr char kFencedFrameTopNavigationStartBeaconType[] =
     "reserved.top_navigation_start";
 inline constexpr char kFencedFrameTopNavigationCommitBeaconType[] =
     "reserved.top_navigation_commit";
+
+inline constexpr const char* kFencedFrameAutomaticBeaconTypes[] = {
+    kDeprecatedFencedFrameTopNavigationBeaconType,
+    kFencedFrameTopNavigationStartBeaconType,
+    kFencedFrameTopNavigationCommitBeaconType};
 
 // Prefix of reserved event types for private aggregation API
 inline constexpr char kFencedFrameReservedPAEventPrefix[] = "reserved.";

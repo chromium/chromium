@@ -10,13 +10,6 @@
 #include "components/variations/service/variations_service.h"
 
 namespace {
-bool IsOsSupportedForRecipe() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  return true;
-#else
-  return false;
-#endif
-}
 
 bool IsOsSupportedForCart() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -57,7 +50,8 @@ bool IsRecipeTasksModuleEnabled() {
           ntp_features::kNtpRecipeTasksModule.name)) {
     return base::FeatureList::IsEnabled(ntp_features::kNtpRecipeTasksModule);
   }
-  return IsOsSupportedForRecipe() && IsInUS();
+
+  return false;
 }
 
 bool IsCartModuleEnabled() {

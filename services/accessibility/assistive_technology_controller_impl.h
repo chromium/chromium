@@ -49,9 +49,9 @@ class AssistiveTechnologyControllerImpl
   // mojo interfaces in the OS.
   // mojom::AccessibilityServiceClient:
   void BindAutomation(
-      mojo::PendingAssociatedRemote<mojom::Automation> automation,
-      mojo::PendingReceiver<mojom::AutomationClient> automation_client)
-      override;
+      mojo::PendingAssociatedRemote<mojom::Automation> automation) override;
+  void BindAutomationClient(mojo::PendingReceiver<mojom::AutomationClient>
+                                automation_client) override;
   void BindAutoclickClient(
       mojo::PendingReceiver<mojom::AutoclickClient> autoclick_client) override;
   void BindSpeechRecognition(

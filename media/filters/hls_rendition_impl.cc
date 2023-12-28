@@ -5,6 +5,7 @@
 #include "media/filters/hls_rendition_impl.h"
 
 #include "base/task/bind_post_task.h"
+#include "base/trace_event/trace_event.h"
 #include "media/filters/hls_manifest_demuxer_engine.h"
 
 namespace media {
@@ -196,6 +197,8 @@ void HlsRenditionImpl::FetchManifestUpdates(ManifestDemuxer::DelayCallback cb,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!is_stopped_for_shutdown_);
   last_download_time_ = base::TimeTicks::Now();
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "HLS::FetchManifestUpdates", this,
+                                    "uri", media_playlist_uri_);
   rendition_host_->UpdateRenditionManifestUri(
       role_, media_playlist_uri_,
       base::BindOnce(&HlsRenditionImpl::OnManifestUpdate,
@@ -204,6 +207,7 @@ void HlsRenditionImpl::FetchManifestUpdates(ManifestDemuxer::DelayCallback cb,
 
 void HlsRenditionImpl::OnManifestUpdate(ManifestDemuxer::DelayCallback cb,
                                        base::TimeDelta delay) {
+  TRACE_EVENT_NESTABLE_ASYNC_END0("media", "HLS::FetchManifestUpdates", this);
   auto update_duration = base::TimeTicks::Now() - last_download_time_;
   if (update_duration > delay) {
     std::move(cb).Run(base::Seconds(0));
@@ -277,6 +281,10 @@ ManifestDemuxer::SeekResponse HlsRenditionImpl::Seek(
         role_, segments_->NextSegmentStartTime());
   }
 
+  // If this stream uses initialization segments, we're going to need once now,
+  // since chunk demuxer is empty.
+  requires_init_segment_ = true;
+
   return ManifestDemuxer::SeekState::kNeedsData;
 }
 
@@ -334,8 +342,17 @@ void HlsRenditionImpl::FetchNext(base::OnceClosure cb, base::TimeDelta time) {
   base::TimeDelta segment_end;
   std::tie(segment, segment_start, segment_end) = segments_->GetNextSegment();
 
-  rendition_host_->ReadFromUrl(
-      segment->GetUri(), /*read_chunked=*/false, segment->GetByteRange(),
+  // If this segment has a different init segment than the segment before it,
+  // we need to include the init segment before we fetch. Alternatively, if
+  // we've seeked somewhere and flushed old data, we'll need the init segment
+  // again.
+  bool include_init = requires_init_segment_ || segment->HasNewInitSegment();
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2("media", "HLS::FetchSegment", this, "start",
+                                    segment_start, "include init",
+                                    include_init);
+  rendition_host_->ReadMediaSegment(
+      *segment, /*read_chunked=*/false, include_init,
       base::BindOnce(&HlsRenditionImpl::OnSegmentData,
                      weak_factory_.GetWeakPtr(), std::move(cb), time,
                      segment_end, base::TimeTicks::Now()));
@@ -347,6 +364,7 @@ void HlsRenditionImpl::OnSegmentData(base::OnceClosure cb,
                                      base::TimeTicks net_req_start,
                                      HlsDataSourceProvider::ReadResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT_NESTABLE_ASYNC_END0("media", "HLS::FetchSegment", this);
   if (is_stopped_for_shutdown_) {
     std::move(cb).Run();
     return;
@@ -368,6 +386,10 @@ void HlsRenditionImpl::OnSegmentData(base::OnceClosure cb,
           &parse_offset_, stream->raw_data(), stream->buffer_size())) {
     return engine_host_->OnError(DEMUXER_ERROR_COULD_NOT_PARSE);
   }
+
+  // Wince we've successfully parsed our data, we can mark that an init segment
+  // is not required due to seeking.
+  requires_init_segment_ = false;
 
   auto fetch_duration = base::TimeTicks::Now() - net_req_start;
   auto bps = stream->buffer_size() * 8 / fetch_duration.InSecondsF();

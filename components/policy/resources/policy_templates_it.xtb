@@ -378,7 +378,6 @@ Questo sostituisce il criterio <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY
 <translation id="1305400589435476516">Se il criterio viene impostato su Attivato, il roaming dei dati è consentito per il dispositivo.
 
       Se viene impostato su Disattivato o se non viene configurato, il roaming dei dati non è disponibile.</translation>
-<translation id="1307454923744766368">Origini o schemi di nomi host a cui non dovrebbero essere applicate limitazioni previste per le origini non sicure.</translation>
 <translation id="1308526987406924874">Se il criterio viene configurato, puoi elencare i pattern URL che specificano i siti che non possono chiedere agli utenti l'autorizzazione di accesso a una porta seriale.
 
       Se il criterio non viene configurato, <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
@@ -1113,7 +1112,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_NAME" /> chiude la scheda do
 
       L'API Managed Configuration è una configurazione di coppie chiave-valore accessibile tramite chiamata JavaScript navigator.managed.getManagedConfiguration(). Questa API è disponibile soltanto per le origini che corrispondono ad applicazioni web con installazione forzata tramite <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
      </translation>
-<translation id="1918690415433353669">Consenti Organizzazione schede, senza eseguire il logging dei dettagli della scheda</translation>
 <translation id="1919802376548418720">Utilizza il criterio KDC per delegare credenziali.</translation>
 <translation id="1920046221095339924">Consenti la sessione gestita sul dispositivo</translation>
 <translation id="1920772397574801429">La configurazione del criterio consente di specificare il tipo di account, tra quelli forniti dall'app di autenticazione Android, che supporta l'autenticazione <ph name="HTTP_NEGOTIATE" />, ad esempio Kerberos. Queste informazioni dovrebbero essere messe a disposizione dal fornitore dell'app di autenticazione. Per i dettagli, consulta la pagina I progetti di Chromium ( https://goo.gl/hajyfN )
@@ -1513,6 +1511,7 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
       Se impostato su Vero o non impostato, verrà segnalato lo stato di rete del dispositivo.</translation>
 <translation id="2223393221350938149">Non consentire ad alcun sito di eseguire JIT di JavaScript</translation>
 <translation id="2223598546285729819">Impostazione di notifica predefinita</translation>
+<translation id="2224706708550115831">Consente al browser dell'utente di accedere a un elenco di URL quando la VPN sempre attiva è attiva in modalità con restrizioni, il blocco è attivato e la VPN non è connessa</translation>
 <translation id="222673035924187991">Attiva TLS Encrypted ClientHello</translation>
 <translation id="2231817271680715693">Importa cronologia di navigazione dal browser predefinito alla prima esecuzione</translation>
 <translation id="2231962946025538735">Questo criterio è stato ritirato. Usa il criterio <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> per controllare la disponibilità del plug-in Flash e il criterio <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> per scegliere se utilizzare il visualizzatore PDF integrato per aprire i file PDF.
@@ -1688,7 +1687,6 @@ NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai pr
 Se il criterio viene impostato su disabled, gli utenti o le varianti <ph name="PRODUCT_NAME" /> non potranno attivare NewBaseUrlInheritanceBehavior in caso di problemi di compatibilità. Se il criterio viene impostato su enabled o se non viene configurato, consente l'attivazione di NewBaseUrlInheritanceBehavior.</translation>
 <translation id="2362469626417133796">Intervallo di tempo per il riavvio</translation>
 <translation id="2362539163677485510">Il token di registrazione della norma relativa al cloud</translation>
-<translation id="2362947328909044249">Consenti Organizzazione schede</translation>
 <translation id="2363928351203698966">Se per il criterio viene impostato un valore valido, <ph name="PRODUCT_NAME" /> non utilizzerà versioni SSL/TLS precedenti alla versione specificata. I valori non riconosciuti vengono ignorati.
 
       Se il criterio non viene impostato, <ph name="PRODUCT_NAME" /> mostra un errore per TLS 1.0 e TLS 1.1, ma l'utente può ignorarlo.
@@ -2022,7 +2020,6 @@ Il sistema eseguirà una query sui record AAAA soltanto quando può essere conne
 <translation id="2650049181907741121">Azione da compiere quando l'utente chiude lo schermo</translation>
 <translation id="2656559539624760733">Non utilizzare Chrome Root Store.</translation>
 <translation id="2658653824183107970">Usa l'implementazione <ph name="CORS" /> legacy anziché la nuova implementazione <ph name="CORS" /></translation>
-<translation id="2659064869547694451">Consenti Compose</translation>
 <translation id="2660846099862559570">Non utilizzare mai un proxy</translation>
 <translation id="2661628029848851543">Sono consentiti tutti gli utilizzi degli account gestiti</translation>
 <translation id="2664391398878045611">Nella pagina Nuova scheda non verrà mostrata la comunicazione dell'area centrale, anche se è disponibile</translation>
@@ -2267,6 +2264,7 @@ Questo criterio può essere impostato soltanto come criterio relativo agli utent
 <translation id="2896434627453256512">Se il criterio viene impostato su Attivato, la funzionalità di finestre nascoste viene attivata.
       Se viene impostato su Vero, le finestre nascoste ARC vengono create prima dell'avvio di ARC e dopo un arresto anomalo o un riavvio in base all'impostazione di ripristino dell'app.
       Se viene impostato su Falso, non viene creata alcuna finestra nascosta prima dell'avvio di ARC. Le app ARC vengono ripristinate dopo l'avvio di ARC</translation>
+<translation id="2897716186959852329">Non consentire mai Leggi schermo</translation>
 <translation id="2899002520262095963">Le app Android possono utilizzare le configurazioni di rete e i certificati CA impostati tramite questa norma ma non hanno accesso ad alcune opzioni di configurazione.</translation>
 <translation id="2899213072616346687">Consente di limitare la modalità di stampa delle immagini di sfondo. Se il criterio non viene impostato non vengono applicate limitazioni.</translation>
 <translation id="2899640611559504158">Disattiva l'accesso alla riga di comando delle macchine virtuali</translation>
@@ -2800,7 +2798,6 @@ Se il criterio viene disattivato, i file scaricati non vengono inviati per esser
 Queste limitazioni vengono applicate ai download attivati dai contenuti delle pagine web, nonché all'opzione di menu Link di download. Queste limitazioni non vengono applicate al salvataggio o al download della pagina attualmente visualizzata né alle opzioni di stampa relative al salvataggio come file PDF.
 
 Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
-<translation id="3300322252167923819">Consenti Organizzazione schede</translation>
 <translation id="3300784749135986828">Attiva o disattiva la funzionalità <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Attiva estensione Insights</translation>
 <translation id="3302829897293005699">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano informazioni relative alla sessione kiosk attiva quali ID applicazione e versione.
@@ -2886,6 +2883,15 @@ Se viene disattivato, la funzionalità di scrittura predittiva sulla tastiera fi
 <translation id="3398051852031115795">Comportamento predefinito del sistema (dipende dalle dimensioni dello schermo)</translation>
 <translation id="3399859571630358395">Viene forzata la disattivazione della funzionalità Accoppiamento rapido (accoppiamento rapido tramite Bluetooth)</translation>
 <translation id="3404681701763345449">Attiva integrazione di <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
+<translation id="3405361833556012520">Questo criterio si applica solo al traffico del browser; il Play Store, la navigazione web delle app per Android e altro traffico generato dagli utenti, ad esempio il traffico delle VM Linux o i processi di stampa, continueranno a rispettare le limitazioni imposte dalla VPN sempre attiva. Questo criterio viene applicato in modo forzato solo quando la VPN non è connessa e solo per il traffico generato dal browser degli utenti. Anche se questo criterio viene applicato in modo forzato, il traffico generato dal sistema può anche ignorare la VPN sempre attiva per eseguire attività come il recupero dei criteri e la sincronizzazione dell'orologio di sistema.
+
+Utilizza questo criterio per aprire le eccezioni di alcuni schemi, sottodomini di altri domini, porte o percorsi specifici utilizzando il formato specificato all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format. Il filtro più specifico consente di determinare se un URL è bloccato o consentito.
+
+Se il criterio <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> viene impostato, viene configurata una VPN sempre attiva che non sarà connessa, la navigazione verrà bloccata verso tutti gli host, ad eccezione di quelli consentiti dal criterio <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />. In questo stato del dispositivo, i criteri <ph name="URL_BLOCKLIST_POLICY_NAME" /> e <ph name="URL_ALLOWLIST_POLICY_NAME" /> vengono ignorati. Quando la VPN sempre attiva si connette, vengono applicati i criteri <ph name="URL_BLOCKLIST_POLICY_NAME" /> e <ph name="URL_ALLOWLIST_POLICY_NAME" />, mentre il criterio <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> viene ignorato.
+
+Per questo criterio è possibile definire al massimo 1000 voci.
+
+Se il criterio non viene impostato, non è possibile navigare nel browser se è attiva la VPN sempre attiva in modalità con restrizioni e la VPN non è connessa.</translation>
 <translation id="3405997282295704902">Non consentire agli utenti di utilizzare <ph name="PRODUCT_NAME" /></translation>
 <translation id="3406122462682235653">Non chiedere all'utente (il download inizia immediatamente)</translation>
 <translation id="3408078762098350617">Consente di controllare l'esperienza utente delle funzionalità disattivate elencate nel criterio <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.
@@ -3193,7 +3199,6 @@ Se il criterio viene impostato su False, le informazioni sulla versione non veng
 
 Questo criterio viene applicato soltanto se la macchina viene registrata con <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> per <ph name="PRODUCT_NAME" />.
 Questo criterio viene sempre applicato per <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="3642557248926713561">Disattiva la protezione delle estensioni di Navigazione sicura</translation>
 <translation id="3644735978203799620">Consente di attivare la selezione automatica per le acquisizioni multischermo</translation>
 <translation id="3646859102161347133">Impostazione tipo di ingrandimento dello schermo</translation>
 <translation id="3647212518036289905">La configurazione del criterio consente di specificare quale libreria GSSAPI utilizzare per l'autenticazione HTTP. Imposta il criterio sul nome di una libreria o su un percorso completo.
@@ -3411,7 +3416,6 @@ Questo criterio è una soluzione alternativa temporanea e verrà rimosso dopo il
 
           Se questo criterio non viene impostato, inizialmente la dettatura è disattivata nella schermata di accesso, ma l'utente può attivarla in qualsiasi momento.</translation>
 <translation id="3811562426301733860">Consenti annunci su tutti i siti</translation>
-<translation id="3816281648615435872">Disattiva Organizzazione schede</translation>
 <translation id="3816312845600780067">Attivazione scorciatoia da tastiera bailout per accesso automatico</translation>
 <translation id="3817323252437541502">Attiva protezioni aggiuntive per gli utenti iscritti al programma di protezione avanzata</translation>
 <translation id="3821861026311587684">Forza la disconnessione dell'utente quando il suo account non è più autenticato</translation>
@@ -3963,7 +3967,6 @@ Se il criterio viene impostato su Disattivato, viene visualizzato invece un mess
 <translation id="428948795004445932">La velocità di campionamento e raccolta dei dati di rete. Il valore minimo consentito è 1 minuto.
 
       Se il criterio non è impostato, viene applicata la velocità predefinita di 10 minuti.</translation>
-<translation id="4289628882370719584">La funzionalità Organizzazione schede consente agli utenti di organizzare le schede.</translation>
 <translation id="4290231183305601970">Il testo che verrà mostrato all'utente nel Chrome Web Store se l'installazione è bloccata.</translation>
 <translation id="4293187705196369087">Consente di attivare o di disattivare una notifica quando lo spazio sul disco è in esaurimento. La scelta si applica a tutti gli utenti sul dispositivo.
 
@@ -4253,7 +4256,6 @@ Questo criterio non ha effetto se viene attivato, lasciato vuoto o se non viene 
 <translation id="453031441196755904">Questa norma è obsoleta.</translation>
 <translation id="4531706050939927436">L'installazione di app Android può essere imposta dalla Console d'amministrazione Google tramite Google Play. Questa norma non viene utilizzata.</translation>
 <translation id="4534500438517478692">Nome della limitazione di Android:</translation>
-<translation id="4537645230504195464">Consenti Compose, senza eseguire il logging</translation>
 <translation id="4541530620466526913">Account del dispositivo</translation>
 <translation id="4542255783284620926">Blocca l'aggiunta di un account gestito come account secondario su ChromeOS (all'interno della sessione)</translation>
 <translation id="4543502256674577024">Impostazioni di aggiornamento dispositivo
@@ -4450,7 +4452,6 @@ Dopo la configurazione iniziale, gli utenti possono attivare o disattivare i Ser
 <translation id="4674871290487541952">Consente algoritmi non protetti nei controlli dell'integrità durante gli aggiornamenti e le installazioni delle estensioni</translation>
 <translation id="4680961954980851756">Abilita Compilazione automatica</translation>
 <translation id="4685721728282448265">Algoritmo di scambio di chiavi post-quantistico CECPQ2 attivo per TLS</translation>
-<translation id="4688118315245991650">Disattiva Compose</translation>
 <translation id="468822697351680932">Utilizza il criterio SiteList di Internet Explorer come fonte di regole</translation>
 <translation id="4693190628432874457">Attiva i report sulla posizione del dispositivo</translation>
 <translation id="4693779768620889402">Destinazioni basate su estensioni</translation>
@@ -5101,6 +5102,11 @@ I caratteri jolly nell'host globale (ad es. "*" o "[*]") non sono consentiti. La
 Nota: questo criterio non viene applicato agli upgrade a HSTS.</translation>
 <translation id="5297948043665200363">Consenti all'utente di mantenere l'accesso dopo che il suo account non è più autenticato</translation>
 <translation id="5298949392804966105">Nessuna limitazione per gli account gestiti</translation>
+<translation id="5300770793658186741">Questo criterio consente di specificare un elenco di origini (URL) o pattern di nomi host (ad esempio *.example.com) per cui non vengono applicate limitazioni di sicurezza sulle origini non sicure. Le organizzazioni possono specificare le origini delle applicazioni precedenti che non possono implementare TLS o configurare un server temporaneo per lo sviluppo web interno, così che gli sviluppatori possano testare le funzionalità che richiedono contesti sicuri senza dover implementare TLS sul server temporaneo. Inoltre questo criterio impedisce all'origine di essere etichettata come "Non sicura" nella barra degli indirizzi.
+
+La configurazione di un elenco di URL in questo criterio equivale a impostare il flag della riga di comando unsafely-treat-insecure-origin-as-secure su un elenco separato da virgole degli stessi URL. Il criterio sovrascrive il flag della riga di comando e UnsafelyTreatInsecureOriginAsSecure, se presenti.
+
+Per ulteriori informazioni sui contesti sicuri, visita il sito Secure Contexts: https://www.w3.org/TR/secure-contexts.</translation>
 <translation id="530134925949808452">L'ora del giorno, in ora locale, in cui viene rinnovata la quota di utilizzo.</translation>
 <translation id="5303080953475303561">La configurazione del criterio consente di stabilire la frequenza della richiesta della password nella schermata di blocco per lo sblocco rapido. Ogni volta che viene visualizzata la schermata di blocco, se l'ultimo inserimento della password si è verificato prima del periodo di tempo specificato dal valore scelto, lo sblocco rapido non sarà disponibile. Se l'utente rimane nella schermata di blocco per un tempo superiore a quello specificato in questo criterio, viene richiesta la password la volta successiva che inserisce il codice sbagliato o accede di nuovo alla schermata di blocco, a seconda dell'evento che si verifica per primo.
 
@@ -5140,7 +5146,6 @@ Se il criterio viene impostato su Disattivato, la cronologia di navigazione e qu
 <translation id="5340008866815063393">Attiva la generazione di report sui dati dei criteri</translation>
 <translation id="5345910753471481870">Non mostrare il pulsante di Google Lens nella casella di ricerca della pagina Nuova scheda.</translation>
 <translation id="5346587320074666194">Blocca l'accesso ai sensori su questi siti</translation>
-<translation id="5347809796754019202">Consenti Compose</translation>
 <translation id="534836255587440809">Disattiva i clic automatici nella schermata di accesso</translation>
 <translation id="5348658899015174540">L'API <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> consente alle applicazioni web di acquisire più schermate contemporaneamente.
       Questo criterio sblocca la proprietà <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> per le applicazioni web di origini definite.
@@ -5311,6 +5316,7 @@ Se il criterio viene impostato su Disabled o se non viene configurato, gli eleme
 <translation id="547601067149622666">Non consentire gli annunci su siti con annunci invasivi</translation>
 <translation id="5476152378885134514">Blocca gli appunti su questi siti</translation>
 <translation id="5480380613778757009">Se questo criterio viene disattivato o se non viene configurato, tutte le impostazioni di visualizzazione configurate nella sessione Ospite gestita verranno reimpostate al termine della sessione. Se questo criterio viene impostato su Vero, le proprietà di visualizzazione verranno memorizzate dopo la chiusura della sessione Ospite gestita.</translation>
+<translation id="5483012943408894695">Origini o pattern di nomi host a cui non dovrebbero essere applicate limitazioni previste per le origini non sicure.</translation>
 <translation id="5483065054530244863">Consenti i certificati SHA-1 firmati emessi dai trust anchor locali</translation>
 <translation id="5487758664517243511">Se questa impostazione viene attivata, gli utenti che hanno già attivato Phone Hub possono continuare attività su ChromeOS, come ad esempio la visualizzazione di pagine web che avevano iniziato a consultare sul telefono.
 
@@ -5651,8 +5657,6 @@ Se questo criterio viene disattivato o se non viene configurato, i Glanceables n
       Se questo criterio viene impostato su False o non viene impostato, le funzionalità Web Components v0 verranno disattivate per impostazione predefinita a partire dalla versione M80.
 
       Questo criterio verrà rimosso nelle versioni successive alla versione 84 di Chrome.</translation>
-<translation id="5755149423476170868">Se questo criterio viene attivato o se non viene configurato, la protezione delle estensioni di <ph name="SAFE_BROWSING_NAME" /> verrà controllata da <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> per<ph name="PRODUCT_NAME" />. Se <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> viene impostato su <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_STANDARD" /> o <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_ENHANCED" />, le estensioni dannose verranno disattivate più velocemente in <ph name="PRODUCT_NAME" />. <ph name="PRODUCT_NAME" /> invia una richiesta al server di Google Navigazione sicura per verificare se un'estensione è stata rimossa dal Chrome Web Store per essere considerata software problematico, ovvero dannoso, vulnerabile o indesiderato o per violazione dei criteri del Chrome Web Store (CWS). Se un'estensione è stata rimossa, <ph name="PRODUCT_NAME" /> impedirà agli utenti di installarla e, se è già installata, la disattiverà.
-Se questo criterio viene disattivato, la protezione delle estensioni di <ph name="SAFE_BROWSING_NAME" /> verrà disattivata e le estensioni dannose verranno controllate e rimosse meno regolarmente tramite <ph name="GOOGLE_UPDATE_NAME" />. Nessun dato viene inviato a Google<ph name="SAFE_BROWSING_NAME" /> per gli esiti.</translation>
 <translation id="575647238840663288">Per impostazione predefinita, i documenti potrebbero essere inseriti in cluster di agenti in base all'origine. La funzione di accesso document.domain non è configurabile per questi documenti.</translation>
 <translation id="5756680608782814094">Segnala informazioni sui VPD di un dispositivo.
 
@@ -5768,7 +5772,6 @@ Se questo criterio viene disattivato, la protezione delle estensioni di <ph name
 <translation id="5883754873839596178">La configurazione del criterio consente di specificare il numero massimo di connessioni simultanee al server proxy. Alcuni server proxy non riescono a gestire un numero elevato di connessioni contemporanee per client, ma è sufficiente impostare il criterio su un numero inferiore per risolvere questo problema. Il valore deve essere inferiore a 100 e superiore a 6. Alcune app web sono note per richiedere molte connessioni con Hanging-GET, pertanto impostare un valore inferiore a 32 potrebbe causare interruzioni di rete del browser se sono aperte troppe app web di questo tipo. È sconsigliato utilizzare un valore inferiore a quello predefinito.
 
       Se il criterio non viene configurato, viene utilizzato il valore predefinito 32.</translation>
-<translation id="5885770645815872943">Consenti la protezione delle estensioni di Navigazione sicura</translation>
 <translation id="5887414688706570295">Consente di configurare il prefisso TalkGadget che verrà utilizzato dagli host di accesso remoto e impedisce agli utenti di modificarlo.
 
           Se specificato, questo prefisso viene anteposto al nome TalkGadget di base per creare un nome di dominio completo per TalkGadget. Il nome TalkGadget di base del dominio è "Talkgadget.google.com".
@@ -6428,7 +6431,6 @@ Vedi anche il criterio <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
           Se questo criterio viene disattivato, il dispositivo <ph name="PRODUCT_OS_NAME" /> non può recuperare eventi <ph name="GOOGLE_CALENDAR_NAME" /> per completare il widget calendario di <ph name="PRODUCT_OS_NAME" /> nella barra di stato del sistema per l'utente che ha eseguito l'accesso.
 
           Se questo criterio non viene configurato, la funzionalità <ph name="GOOGLE_CALENDAR_NAME" /> è attiva per impostazione predefinita per gli utenti aziendali.</translation>
-<translation id="6450607392928079050">La protezione delle estensioni di Navigazione sicura viene controllata dal criterio <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /></translation>
 <translation id="6452882999388592166">Se impostato su Attivato, l'estensione del componente CryptoToken integrata viene caricata all'avvio. Se impostato su Disattivato o se non viene configurato, CryptoToken non viene caricato all'avvio del browser. Questo criterio è inteso come soluzione alternativa temporanea per i siti non funzionanti perché "chrome.runtime" non è definito come effetto collaterale della rimozione di CryptoToken nella versione M106. I siti web non devono dipendere dalla definizione senza condizioni di "chrome.runtime".</translation>
 <translation id="6453641799812499182">Attiva le mitigazioni dei controlli <ph name="CORS" /> nella nuova implementazione <ph name="CORS" /></translation>
 <translation id="645425387487868471">Attiva l'accesso forzato per <ph name="PRODUCT_NAME" /></translation>
@@ -6876,6 +6878,7 @@ Per <ph name="PRODUCT_OS_NAME" />, questo criterio viene sempre applicato.</tran
       Se questo criterio viene impostato su Attivato, i siti possono usare SharedArrayBuffer senza limitazioni.
 
       Se viene impostato su Disattivato o se non viene configurato, i siti possono usare SharedArrayBuffers soltanto con isolamento multiorigine.</translation>
+<translation id="6734397897213913438">Consenti sempre Leggi schermo</translation>
 <translation id="6735701345096330595">Forza attivazione lingue per controllo ortografico</translation>
 <translation id="6736283207617136584">Attiva i report sullo stato di aggiornamento del sistema operativo del dispositivo</translation>
 <translation id="6739541168983991680">Automatizza il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /></translation>
@@ -7226,11 +7229,6 @@ Se non viene configurato, le immagini sono consentite, ma gli utenti possono cam
 
       Questo criterio richiede una configurazione aggiuntiva per essere applicato. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting per maggiori informazioni.</translation>
 <translation id="7032813174556919004">Disattiva DNS over HTTPS</translation>
-<translation id="7033778618670823541">Questo criterio consente di specificare un elenco di origini (URL) o modelli di nomi host (ad esempio *.example.com) per cui non vengono applicate limitazioni di sicurezza sulle origini non sicure. Le organizzazioni possono specificare le origini delle applicazioni precedenti che non possono implementare TLS o configurare un server temporaneo per lo sviluppo web interno, così che gli sviluppatori possano testare le funzionalità che richiedono contesti sicuri senza dover implementare TLS sul server temporaneo. Inoltre questo criterio impedisce all'origine di essere etichettata come "Non sicura" nella barra degli indirizzi.
-
-      La configurazione di un elenco di URL in questo criterio equivale a impostare il flag della riga di comando unsafely-treat-insecure-origin-as-secure su un elenco separato da virgole degli stessi URL. Il criterio sovrascrive il flag della riga di comando e UnsafelyTreatInsecureOriginAsSecure, se presenti.
-
-      Per ulteriori informazioni sui contesti sicuri, visita la pagina https://www.w3.org/TR/secure-contexts.</translation>
 <translation id="703672323011778742">Questo criterio è deprecato in M88 e Flash non è più supportato da Chrome. Se il criterio viene impostato su 1, puoi decidere se tutti i siti web possono eseguire automaticamente il plug-in <ph name="FLASH_PLUGIN_NAME" />. Se il criterio viene impostato su 2, il plug-in viene negato per tutti i siti web. Click-to-play consente di eseguire il plug-in <ph name="FLASH_PLUGIN_NAME" />, ma gli utenti fanno clic sul segnaposto per avviarne l'esecuzione.
 
       Se il criterio non viene configurato, viene utilizzato <ph name="BLOCK_PLUGINS_POLICY_NAME" /> e gli utenti possono cambiare l'impostazione.
@@ -7715,6 +7713,7 @@ Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph n
 <translation id="7443356543619955157">La configurazione del criterio consente di forzare l'applicazione della configurazione di rete per tutti gli utenti di un dispositivo <ph name="PRODUCT_OS_NAME" />. La configurazione di rete è una stringa in formato JSON come definita nel formato Open Network Configuration.</translation>
 <translation id="7446978687387327623">Consenti i controlli in tempo reale inviati tramite proxy di Navigazione sicura</translation>
 <translation id="7448430478749155471">Attiva Seleziona per ascoltare nella schermata di accesso</translation>
+<translation id="7455912144588577399">Se il criterio viene impostato su true, gli utenti possono fare in modo che le pagine web idonee vengano lette utilizzando la sintesi vocale. Ciò si ottiene mediante la distillazione dei contenuti lato server e la sintesi audio. Se viene impostato su false, la funzionalità viene disattivata. Se questo criterio viene impostato sul valore predefinito o se non viene configurato, Leggi ad alta voce è attiva.</translation>
 <translation id="7456922722153109956">Questo criterio consente di stabilire la visibilità della comunicazione dell'area centrale nella pagina Nuova scheda.
 
       Se viene impostato su Attivato, nella pagina Nuova scheda verrà mostrata la comunicazione dell'area centrale, se è disponibile.
@@ -8649,18 +8648,6 @@ Se il criterio viene disattivato, la pagina verrà bloccata.</translation>
 
       Se non viene configurato, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>
 <translation id="8267520984570984190">Il comportamento di ridimensionamento predefinito della tastiera virtuale non viene modificato</translation>
-<translation id="8267887696930711948">Criterio ritirato nella versione M69. Usa il criterio OverrideSecurityRestrictionsOnInsecureOrigin.
-
-      Questo criterio consente di specificare un elenco di origini (URL) o di pattern di nomi host (ad esempio "*.example.com") a cui non vengono applicate le limitazioni di sicurezza previste per le origini non sicure.
-
-      Lo scopo è consentire alle organizzazioni di autorizzare le origini per le applicazioni precedenti che non possono eseguire il deployment di TLS o di configurare un server temporaneo per lo sviluppo web interno, affinché gli sviluppatori possano testare le funzionalità che richiedono contesti sicuri senza dover eseguire il deployment di TLS sul server temporaneo. Questo criterio impedisce inoltre che l'origine venga contrassegnata come "Non sicura" nella omnibox.
-
-      L'impostazione di un elenco di URL in questo criterio ha lo stesso effetto dell'impostazione del flag della riga di comando "--unsafely-treat-insecure-origin-as-secure" in un elenco separato da virgole degli stessi URL. Se viene configurato, questo criterio sostituisce il flag della riga di comando.
-
-      Questo criterio è stato ritirato nella versione M69 ed è stato sostituito dal criterio OverrideSecurityRestrictionsOnInsecureOrigin. Se sono presenti entrambi i criteri, viene usato il criterio OverrideSecurityRestrictionsOnInsecureOrigin.
-
-      Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.org/TR/secure-contexts/.
-      </translation>
 <translation id="8269238942896230153">Un account gestito deve essere un account principale. L'importazione dei dati di navigazione esistenti è consentita al momento della creazione del profilo</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="827054846390793641">Attiva l'interfaccia utente relativa alla connessione sul computer desktop host quando è attiva una connessione</translation>
@@ -9201,6 +9188,7 @@ nel programma di installazione non verrà visualizzato alcun URL "Scopri di più
 lo schema HTTPS.</translation>
 <translation id="8715885991031124968">Consenti le finestre di dialogo JavaScript attivate da un diverso frame secondario di origine.</translation>
 <translation id="8720547069538712402">Consenti all'utente di attivare o disattivare il controllo ortografico</translation>
+<translation id="8721685661759544418">Attiva Leggi schermo (distillazione del testo e sintesi vocale) per le pagine web</translation>
 <translation id="8726080977639508431">Questo criterio consente di stabilire in che modo <ph name="PRODUCT_NAME" /> deve interpretare i criteri relativi a elenchi dei siti/greylist della funzionalità Supporto dei browser precedenti. Incide sui seguenti criteri: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> e <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
 
       Se il criterio viene impostato su "Default" (0) o se non viene configurato, la corrispondenza degli URL è meno rigorosa. Per le regole che non contengono "/" viene cercata una sottostringa in un punto qualsiasi del nome host dell'URL. La corrispondenza del componente del percorso di un URL è sensibile alle maiuscole.
@@ -9692,6 +9680,17 @@ Questo criterio ha effetto soltanto se il criterio <ph name="FULL_RESTORE_ENABLE
 <translation id="9135095804754272364">Mostra una notifica quando viene rilevato un dispositivo USB</translation>
 <translation id="9136212796239682721">Disattiva l'UI del fumetto dei download</translation>
 <translation id="9136399279941091445">Intervalli di orari di minore attività quando vengono rilasciati i criteri del dispositivo specificati</translation>
+<translation id="9140064482233876338">Criterio ritirato nella versione M69. Usa invece il criterio OverrideSecurityRestrictionsOnInsecureOrigin.
+
+Questo criterio consente di specificare un elenco di origini (URL) o di pattern di nomi host (ad esempio "*.example.com") a cui non vengono applicate limitazioni di sicurezza previste per le origini non sicure.
+
+Lo scopo è consentire alle organizzazioni di autorizzare le origini per le applicazioni precedenti che non possono eseguire il deployment di TLS o di configurare un server di gestione temporanea per gli sviluppi web interni, affinché gli sviluppatori possano testare le funzionalità che richiedono contesti sicuri senza dover eseguire il deployment di TLS sul server di gestione temporanea. Questo criterio impedisce inoltre che l'origine venga contrassegnata come "Non sicura" nella omnibox.
+
+L'impostazione di un elenco di URL in questo criterio ha lo stesso effetto dell'impostazione del flag della riga di comando "--unsafely-treat-insecure-origin-as-secure" in un elenco separato da virgole degli stessi URL. Se viene impostato, questo criterio sovrascrive il flag della riga di comando.
+
+Questo criterio è stato ritirato nella versione M69 ed è stato sostituito dal criterio OverrideSecurityRestrictionsOnInsecureOrigin. Se sono presenti entrambi i criteri, viene usato il criterio OverrideSecurityRestrictionsOnInsecureOrigin.
+
+Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.org/TR/secure-contexts/</translation>
 <translation id="9142561920976791097">Verrà utilizzato il nuovo comportamento per l'esecuzione di eventi sui controlli dei moduli disattivati.</translation>
 <translation id="91459503271584213">Avvia direttamente gli host di messaggistica nativi eseguibili su Windows</translation>
 <translation id="9148720248753722892">Non consentire i certificati con firma SHA-1</translation>

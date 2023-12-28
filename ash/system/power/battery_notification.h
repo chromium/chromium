@@ -33,9 +33,8 @@ class ASH_EXPORT BatteryNotification {
   void Update();
 
  private:
-  raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
-  raw_ptr<PowerNotificationController, ExperimentalAsh>
-      power_notification_controller_;
+  raw_ptr<message_center::MessageCenter> message_center_;
+  raw_ptr<PowerNotificationController> power_notification_controller_;
 };
 
 }  // namespace ash

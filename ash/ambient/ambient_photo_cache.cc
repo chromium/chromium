@@ -170,12 +170,12 @@ void OnUrlDownloaded(
   std::move(callback).Run(std::string());
 }
 
-void OnUrlDownloadedToFile(
-    base::OnceCallback<void(bool)> callback,
+void OnUrlDownloadedToTempFile(
+    base::OnceCallback<void(base::FilePath)> callback,
     std::unique_ptr<network::SimpleURLLoader> simple_loader,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-    const base::FilePath& desired_path,
     base::FilePath temp_path) {
+  CHECK(callback);
   if (simple_loader->NetError() != net::OK || temp_path.empty()) {
     LOG(ERROR) << "Downloading to file failed with error code: "
                << GetResponseCode(simple_loader.get()) << " with network error "
@@ -189,38 +189,10 @@ void OnUrlDownloadedToFile(
               [](const base::FilePath& path) { base::DeleteFile(path); },
               temp_path));
     }
-    std::move(callback).Run(false);
+    std::move(callback).Run(base::FilePath());
     return;
   }
-
-  // Swap the temporary file to the desired path, and then run the callback.
-  GetFileTaskRunner()->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          [](const base::FilePath& to_path, const base::FilePath& from_path) {
-            ambient::PhotoCacheEntry cache_entry;
-            ambient::Photo* primary_photo = cache_entry.mutable_primary_photo();
-            std::string image;
-            bool has_error = false;
-
-            if (!base::ReadFileToString(from_path, &image)) {
-              has_error = true;
-              LOG(ERROR) << "Unable to read downloaded file";
-            } else {
-              primary_photo->set_image(std::move(image));
-            }
-
-            if (!has_error && !WriteOrDeleteFile(to_path, cache_entry)) {
-              has_error = true;
-              LOG(ERROR)
-                  << "Unable to move downloaded file to ambient directory";
-            }
-
-            base::DeleteFile(from_path);
-            return !has_error;
-          },
-          desired_path, temp_path),
-      std::move(callback));
+  std::move(callback).Run(std::move(temp_path));
 }
 
 void DownloadPhotoInternal(
@@ -241,31 +213,20 @@ void DownloadPhotoInternal(
       kMaxImageSizeInBytes);
 }
 
-void DownloadPhotoToFileInternal(
+void DownloadPhotoToTempFileInternal(
     const std::string& url,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-    base::OnceCallback<void(bool)> callback,
-    const base::FilePath& file_path,
+    base::OnceCallback<void(base::FilePath)> callback,
     const std::string& gaia_id,
     const std::string& access_token) {
   std::unique_ptr<network::SimpleURLLoader> simple_loader =
       CreateSimpleURLLoader(url, access_token);
   auto* loader_ptr = simple_loader.get();
   auto* loader_factory_ptr = loader_factory.get();
-
-  // Create a temporary file path as target for download to guard against race
-  // conditions in reading.
-  base::FilePath temp_path =
-      file_path.DirName().Append(base::UnguessableToken::Create().ToString());
-
-  // Download to temp file first to guarantee entire image is written without
-  // errors before attempting to read it.
-  loader_ptr->DownloadToFile(
+  loader_ptr->DownloadToTempFile(
       loader_factory_ptr,
-      base::BindOnce(&OnUrlDownloadedToFile, std::move(callback),
-                     std::move(simple_loader), std::move(loader_factory),
-                     file_path),
-      temp_path);
+      base::BindOnce(&OnUrlDownloadedToTempFile, std::move(callback),
+                     std::move(simple_loader), std::move(loader_factory)));
 }
 
 }  // namespace
@@ -284,37 +245,13 @@ void DownloadPhoto(const std::string& url,
       std::move(callback)));
 }
 
-void DownloadPhotoToFile(Store store,
-                         const std::string& url,
-                         AmbientAccessTokenController& access_token_controller,
-                         int cache_index,
-                         base::OnceCallback<void(bool)> callback) {
-  auto file_path = GetCachePath(cache_index, GetCacheRootDir(store));
-  base::OnceClosure download_callback;
-  download_callback = base::BindOnce(
-      [](base::WeakPtr<AmbientAccessTokenController> weak_ptr,
-         base::OnceCallback<void(const std::string&, const std::string&)>
-             callback) {
-        if (!weak_ptr) {
-          return;
-        }
-        weak_ptr->RequestAccessToken(std::move(callback));
-      },
-      access_token_controller.AsWeakPtr(),
-      base::BindOnce(&DownloadPhotoToFileInternal, url,
-                     AmbientClient::Get()->GetURLLoaderFactory(),
-                     std::move(callback), file_path));
-
-  GetFileTaskRunner()->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(
-          [](const base::FilePath& path) {
-            if (!CreateDirIfNotExists(path)) {
-              LOG(ERROR) << "Cannot create ambient mode directory";
-            }
-          },
-          GetCacheRootDir(store)),
-      std::move(download_callback));
+void DownloadPhotoToTempFile(
+    const std::string& url,
+    AmbientAccessTokenController& access_token_controller,
+    base::OnceCallback<void(base::FilePath)> callback) {
+  access_token_controller.RequestAccessToken(base::BindOnce(
+      &DownloadPhotoToTempFileInternal, url,
+      AmbientClient::Get()->GetURLLoaderFactory(), std::move(callback)));
 }
 
 void WritePhotoCache(Store store,

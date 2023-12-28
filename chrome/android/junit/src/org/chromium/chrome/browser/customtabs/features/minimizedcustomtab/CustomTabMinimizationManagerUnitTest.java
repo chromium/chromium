@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.customtabs.features.minimizedcustomtab;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -20,6 +21,7 @@ import static org.chromium.chrome.browser.tab.TabSelectionType.FROM_USER;
 
 import android.app.PictureInPictureParams;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,6 +29,7 @@ import androidx.core.app.PictureInPictureModeChangedInfo;
 import androidx.lifecycle.Lifecycle.State;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -56,6 +59,8 @@ import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link CustomTabMinimizationManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -87,6 +92,7 @@ public class CustomTabMinimizationManagerUnitTest {
     @Mock private Runnable mCloseTabRunnable;
     @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
     @Mock private CustomTabMinimizeDelegate.Observer mMinimizationObserver;
+    @Mock private CustomTabMinimizeDelegate mOtherMinimizeDelegate;
 
     private CustomTabMinimizationManager mManager;
 
@@ -111,6 +117,11 @@ public class CustomTabMinimizationManagerUnitTest {
                         mCloseTabRunnable,
                         mIntentData);
         mManager.addObserver(mMinimizationObserver);
+    }
+
+    @After
+    public void tearDown() {
+        CustomTabMinimizationManager.sLastMinimizeDelegate = null;
     }
 
     @Test
@@ -225,5 +236,39 @@ public class CustomTabMinimizationManagerUnitTest {
         mManager.accept(new PictureInPictureModeChangedInfo(true));
         // It should still be minimized once we actually go in PiP.
         assertTrue(mManager.isMinimized());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testMinimizeWhenThereIsAlreadyPip_S() {
+        // Simulate having another Custom Tab in PiP.
+        CustomTabMinimizationManager.sLastMinimizeDelegate =
+                new WeakReference<>(mOtherMinimizeDelegate);
+        mManager.minimize();
+        mManager.accept(new PictureInPictureModeChangedInfo(true));
+
+        // This should dismiss the other PiPed Custom Tab.
+        verify(mOtherMinimizeDelegate).dismiss();
+        // And replace sLastMinimizeDelegate.
+        assertEquals(mManager, CustomTabMinimizationManager.sLastMinimizeDelegate.get());
+
+        // Simulate restoring
+        mManager.accept(new PictureInPictureModeChangedInfo(false));
+        // This should clear the last.
+        assertNull(CustomTabMinimizationManager.sLastMinimizeDelegate);
+    }
+
+    @Test
+    @Config(sdk = VERSION_CODES.TIRAMISU)
+    public void testMinimizeWhenThereIsAlreadyPip_T() {
+        mManager.minimize();
+        mManager.accept(new PictureInPictureModeChangedInfo(true));
+
+        // This shouldn't save the last delegate.
+        assertNull(CustomTabMinimizationManager.sLastMinimizeDelegate);
+
+        mManager.accept(new PictureInPictureModeChangedInfo(false));
+        // Last delegate should still be null.
+        assertNull(CustomTabMinimizationManager.sLastMinimizeDelegate);
     }
 }

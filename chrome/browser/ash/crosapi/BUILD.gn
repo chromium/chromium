@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
+import("//media/media_options.gni")
 import("//printing/buildflags/buildflags.gni")
 
 assert(is_chromeos_ash)
@@ -34,6 +35,11 @@ source_set("browser_util") {
 }
 
 source_set("crosapi") {
+  defines = []
+  if (use_cras) {
+    defines += [ "USE_CRAS" ]
+  }
+
   sources = [
     "arc_ash.cc",
     "arc_ash.h",
@@ -67,6 +73,8 @@ source_set("crosapi") {
     "cert_database_ash.h",
     "cert_provisioning_ash.cc",
     "cert_provisioning_ash.h",
+    "chaps_service_ash.cc",
+    "chaps_service_ash.h",
     "chrome_app_kiosk_service_ash.cc",
     "chrome_app_kiosk_service_ash.h",
     "chrome_app_window_tracker_ash.cc",
@@ -169,6 +177,8 @@ source_set("crosapi") {
     "lacros_data_backward_migration_mode_policy_observer.cc",
     "lacros_data_backward_migration_mode_policy_observer.h",
     "lacros_selection_loader.h",
+    "lacros_shelf_item_tracker.cc",
+    "lacros_shelf_item_tracker.h",
     "local_printer_ash.cc",
     "local_printer_ash.h",
     "login_ash.cc",
@@ -303,6 +313,7 @@ source_set("crosapi") {
     "//chrome/browser/ash/system_web_apps/types:types",
     "//chrome/browser/ash/telemetry_extension/diagnostics",
     "//chrome/browser/ash/telemetry_extension/events",
+    "//chrome/browser/ash/telemetry_extension/management",
     "//chrome/browser/ash/telemetry_extension/routines",
     "//chrome/browser/ash/telemetry_extension/telemetry",
     "//chrome/browser/ash/video_conference",
@@ -320,6 +331,7 @@ source_set("crosapi") {
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/attestation:attestation_proto",
+    "//chromeos/ash/components/dbus/chaps",
     "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/ash/components/dbus/lorgnette_manager:lorgnette_proto",
     "//chromeos/ash/components/dbus/resourced",
@@ -389,6 +401,7 @@ source_set("crosapi") {
     "//extensions/browser/api/networking_private",
     "//extensions/browser/api/power",
     "//extensions/common",
+    "//headless:headless_non_renderer",
     "//media/mojo/mojom/stable:stable_video_decoder",
     "//printing/backend",
     "//remoting/host/chromeos:remoting_service",
@@ -400,6 +413,7 @@ source_set("crosapi") {
     "//ui/base",
     "//ui/message_center",
     "//ui/message_center/public/cpp",
+    "//ui/ozone",
     "//ui/shell_dialogs",
     "//ui/snapshot",
     "//ui/views",
@@ -492,6 +506,7 @@ source_set("unit_tests") {
     "browser_util_unittest.cc",
     "browser_version_service_ash_unittest.cc",
     "cert_provisioning_ash_unittest.cc",
+    "chaps_service_ash_unittest.cc",
     "chrome_app_window_tracker_ash_unittest.cc",
     "clipboard_history_ash_unittest.cc",
     "crosapi_util_unittest.cc",
@@ -514,6 +529,7 @@ source_set("unit_tests") {
     "keystore_service_ash_unittest.cc",
     "lacros_availability_policy_observer_unittest.cc",
     "lacros_data_backward_migration_mode_policy_observer_unittest.cc",
+    "lacros_shelf_item_tracker_unittest.cc",
     "local_printer_ash_unittest.cc",
     "login_screen_storage_ash_unittest.cc",
     "login_state_ash_unittest.cc",
@@ -545,6 +561,7 @@ source_set("unit_tests") {
     ":fake_device_ownership_waiter",
     ":test_support",
     "//ash",
+    "//ash:test_support",
     "//ash/components/arc:arc_test_support",
     "//ash/public/cpp/external_arc:test_support",
     "//base",
@@ -556,6 +573,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/audio",
+    "//chromeos/ash/components/dbus/chaps:test_support",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/login/login_state",

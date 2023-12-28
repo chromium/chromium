@@ -358,7 +358,7 @@ VideoDecoderBroker::VideoDecoderBroker(
               ? gpu_factories->GetTaskRunner()
               // Otherwise, use a worker task runner to avoid scheduling decoder
               // work on the main thread.
-              : worker_pool::CreateSequencedTaskRunner({})) {
+              : worker_pool::CreateSequencedTaskRunner({base::MayBlock()})) {
   DVLOG(2) << __func__;
   media_tasks_ = std::make_unique<MediaVideoTaskWrapper>(
       weak_factory_.GetWeakPtr(), execution_context, gpu_factories,

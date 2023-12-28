@@ -89,6 +89,9 @@ void WebGPUTextureAlphaClearer::ClearAlpha(WGPUTexture texture) {
 
   WGPURenderPassColorAttachment color_attachment = {
       .view = attachment_view,
+      // The depthSlice must be initialized with the 'undefined' value for 2d
+      // color attachments.
+      .depthSlice = WGPU_DEPTH_SLICE_UNDEFINED,
       .loadOp = WGPULoadOp_Load,
       .storeOp = WGPUStoreOp_Store,
   };

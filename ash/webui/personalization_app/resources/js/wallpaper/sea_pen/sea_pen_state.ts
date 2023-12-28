@@ -12,6 +12,8 @@ export interface SeaPenLoadingState {
   recentImageData: Record<FilePath['path'], boolean>;
   recentImages: boolean;
   thumbnails: boolean;
+  currentSelected: boolean;
+  setImage: number;
 }
 
 export interface SeaPenState {
@@ -19,6 +21,8 @@ export interface SeaPenState {
   recentImageData: Record<FilePath['path'], RecentSeaPenData>;
   recentImages: FilePath[]|null;
   thumbnails: SeaPenThumbnail[]|null;
+  currentSelected: string|null;
+  pendingSelected: FilePath|null;
 }
 
 export function emptyState(): SeaPenState {
@@ -27,9 +31,13 @@ export function emptyState(): SeaPenState {
       recentImages: false,
       recentImageData: {},
       thumbnails: false,
+      currentSelected: false,
+      setImage: 0,
     },
     recentImageData: {},
     recentImages: null,
     thumbnails: null,
+    currentSelected: null,
+    pendingSelected: null,
   };
 }

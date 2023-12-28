@@ -70,6 +70,7 @@ class CORE_EXPORT LCPCriticalPathPredictor final
     return lcp_script_observer_.Get();
   }
   void OnFontFetched(const KURL& url);
+  void OnStartPreload(const KURL& url);
   void Trace(Visitor*) const;
 
  private:

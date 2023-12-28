@@ -73,5 +73,5 @@ try_.builder(
     mirrors = ["ci/mac-rust-x64-dbg"],
     gn_args = "ci/mac-rust-x64-dbg",
     cores = None,
-    os = os.MAC_ANY,
+    os = os.MAC_DEFAULT,
 )

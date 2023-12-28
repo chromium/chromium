@@ -126,7 +126,7 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
     }
 
     @Override
-    public boolean requestStartStylusWriting() {
+    public boolean requestStartStylusWriting(View view) {
         if (!mDwServiceEnabled || !mBinder.isServiceConnected()) return false;
         StylusApiOption.recordStylusHandwritingTriggered(Api.DIRECT_WRITING);
         mStylusWritingDetected = true;

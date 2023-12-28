@@ -51,27 +51,27 @@ bool IsValidName(const String& name) {
 mojom::blink::BucketPoliciesPtr ToMojoBucketPolicies(
     const StorageBucketOptions* options) {
   auto policies = mojom::blink::BucketPolicies::New();
-  if (options->persisted()) {
-    policies->persisted = *options->persisted();
+  if (options->hasPersisted()) {
+    policies->persisted = options->persisted();
     policies->has_persisted = true;
   }
 
-  if (options->quota()) {
-    DCHECK_LE(*options->quota(), uint64_t{std::numeric_limits<int64_t>::max()});
-    policies->quota = *options->quota();
+  if (options->hasQuota()) {
+    DCHECK_LE(options->quota(), uint64_t{std::numeric_limits<int64_t>::max()});
+    policies->quota = options->quota();
     policies->has_quota = true;
   }
 
-  if (options->durability()) {
-    policies->durability = *options->durability() == "strict"
+  if (options->hasDurability()) {
+    policies->durability = options->durability() == "strict"
                                ? mojom::blink::BucketDurability::kStrict
                                : mojom::blink::BucketDurability::kRelaxed;
     policies->has_durability = true;
   }
 
-  if (options->expires()) {
+  if (options->hasExpires()) {
     policies->expires =
-        base::Time::FromMillisecondsSinceUnixEpoch(*options->expires());
+        base::Time::FromMillisecondsSinceUnixEpoch(options->expires());
   }
 
   return policies;
@@ -120,7 +120,7 @@ ScriptPromise StorageBucketManager::open(ScriptState* script_state,
     return promise;
   }
 
-  if (options->quota() && *options->quota() == 0) {
+  if (options->hasQuota() && options->quota() == 0) {
     resolver->Reject(V8ThrowException::CreateTypeError(
         script_state->GetIsolate(), "The bucket's quota cannot equal zero."));
     return promise;

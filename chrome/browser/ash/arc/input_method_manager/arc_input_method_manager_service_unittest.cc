@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_service.h"
 
 #include <memory>
-#include <optional>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -15,7 +14,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/keyboard/arc/arc_input_method_bounds_tracker.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
-#include "ash/public/cpp/tablet_mode.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/ptr_util.h"
@@ -43,6 +42,7 @@
 #include "ui/base/ime/ash/mock_input_method_manager.h"
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/mock_input_method.h"
+#include "ui/display/test/test_screen.h"
 #include "ui/views/widget/widget.h"
 
 namespace arc {
@@ -64,47 +64,6 @@ mojom::ImeInfoPtr GenerateImeInfo(const std::string& id,
   info->is_allowed_in_clamshell_mode = always_allowed;
   return info;
 }
-
-class FakeTabletMode : public ash::TabletMode {
- public:
-  FakeTabletMode() = default;
-  ~FakeTabletMode() override = default;
-
-  // ash::TabletMode overrides:
-  void AddObserver(ash::TabletModeObserver* observer) override {
-    observer_ = observer;
-  }
-
-  void RemoveObserver(ash::TabletModeObserver* observer) override {
-    observer_ = nullptr;
-  }
-
-  bool InTabletMode() const override { return in_tablet_mode; }
-
-  bool AreInternalInputDeviceEventsBlocked() const override {
-    return in_tablet_mode;
-  }
-
-  bool ForceUiTabletModeState(std::optional<bool> enabled) override {
-    return false;
-  }
-
-  void SetEnabledForTest(bool enabled) override {
-    bool changed = (in_tablet_mode != enabled);
-    in_tablet_mode = enabled;
-
-    if (changed && observer_) {
-      if (in_tablet_mode)
-        observer_->OnTabletModeStarted();
-      else
-        observer_->OnTabletModeEnded();
-    }
-  }
-
- private:
-  raw_ptr<ash::TabletModeObserver, ExperimentalAsh> observer_ = nullptr;
-  bool in_tablet_mode = false;
-};
 
 class FakeInputMethodBoundsObserver
     : public ArcInputMethodManagerService::Observer {
@@ -301,7 +260,9 @@ class ArcInputMethodManagerServiceTest : public testing::Test {
   TestWindowDelegate* window_delegate() { return window_delegate_; }
 
   void ToggleTabletMode(bool enabled) {
-    tablet_mode_controller_->SetEnabledForTest(enabled);
+    auto state = enabled ? display::TabletState::kInTabletMode
+                         : display::TabletState::kInClamshellMode;
+    display::Screen::GetScreen()->OverrideTabletStateForTesting(state);
   }
 
   void NotifyNewBounds(const gfx::Rect& bounds) {
@@ -327,7 +288,6 @@ class ArcInputMethodManagerServiceTest : public testing::Test {
     im::InputMethodManager::Initialize(input_method_manager_);
     profile_ = std::make_unique<TestingProfile>();
 
-    tablet_mode_controller_ = std::make_unique<FakeTabletMode>();
     input_method_bounds_tracker_ =
         std::make_unique<ash::ArcInputMethodBoundsTracker>();
 
@@ -350,7 +310,6 @@ class ArcInputMethodManagerServiceTest : public testing::Test {
     service_->Shutdown();
     chrome_keyboard_controller_client_test_helper_.reset();
     input_method_bounds_tracker_.reset();
-    tablet_mode_controller_.reset();
     profile_.reset();
     im::InputMethodManager::Shutdown();
   }
@@ -358,11 +317,12 @@ class ArcInputMethodManagerServiceTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
 
+  display::test::TestScreen test_screen_{/*create_dispay=*/true,
+                                         /*register_screen=*/true};
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       chrome_keyboard_controller_client_test_helper_;
-  std::unique_ptr<FakeTabletMode> tablet_mode_controller_;
   std::unique_ptr<ash::ArcInputMethodBoundsTracker>
       input_method_bounds_tracker_;
   raw_ptr<TestInputMethodManager, DanglingUntriaged | ExperimentalAsh>

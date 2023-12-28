@@ -17,6 +17,8 @@
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/public_key_credential_user_entity.h"
 
+using base::android::ConvertJavaStringToUTF8;
+using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace webauthn {
@@ -122,14 +124,14 @@ void WebAuthnBrowserBridge::OnCredentialsDetailsListReceived(
   if (jhybrid_callback != nullptr) {
     hybrid_callback = base::BindRepeating(
         &OnHybridAssertionInvoked,
-        base::android::ScopedJavaGlobalRef<jobject>(env, jhybrid_callback));
+        ScopedJavaGlobalRef<jobject>(env, jhybrid_callback));
   }
 
   client->OnWebAuthnRequestPending(
       render_frame_host, credentials_metadata, is_conditional_request,
-      base::BindRepeating(&OnWebAuthnCredentialSelected,
-                          base::android::ScopedJavaGlobalRef<jobject>(
-                              env, jget_assertion_callback)),
+      base::BindRepeating(
+          &OnWebAuthnCredentialSelected,
+          ScopedJavaGlobalRef<jobject>(env, jget_assertion_callback)),
       std::move(hybrid_callback));
 }
 
@@ -154,9 +156,9 @@ void WebAuthnBrowserBridge::OnCredManConditionalRequestPending(
   }
   client->OnCredManConditionalRequestPending(
       render_frame_host, jhas_results,
-      base::BindRepeating(&TriggerFullRequest,
-                          base::android::ScopedJavaGlobalRef<jobject>(
-                              env, jfull_request_runnable)));
+      base::BindRepeating(
+          &TriggerFullRequest,
+          ScopedJavaGlobalRef<jobject>(env, jfull_request_runnable)));
 }
 
 void WebAuthnBrowserBridge::OnCredManUiClosed(

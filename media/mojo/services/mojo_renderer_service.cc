@@ -79,6 +79,7 @@ void MojoRendererService::Initialize(
       nullptr, media_url_params->media_url, media_url_params->site_for_cookies,
       media_url_params->top_frame_origin, media_url_params->has_storage_access,
       media_url_params->allow_credentials, media_url_params->is_hls);
+  media_resource_->SetHeaders(media_url_params->headers);
   renderer_->Initialize(
       media_resource_.get(), this,
       base::BindOnce(&MojoRendererService::OnRendererInitializeDone, weak_this_,

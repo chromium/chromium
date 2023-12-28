@@ -39,7 +39,7 @@ class ASH_EXPORT PublicAccountMenuView : public views::Combobox {
   void OnSelectedIndexChanged();
 
  private:
-  const raw_ref<const std::vector<Item>, ExperimentalAsh> items_;
+  const raw_ref<const std::vector<Item>> items_;
   const OnSelect on_select_;
 
   base::CallbackListSubscription property_changed_subscription_;

@@ -37,6 +37,8 @@ QuickAnswersRequest::QuickAnswersRequest(const QuickAnswersRequest& other) =
 QuickAnswersRequest::~QuickAnswersRequest() = default;
 
 Sense::Sense() = default;
+Sense::Sense(const Sense& other) = default;
+Sense& Sense::Sense::operator=(const Sense& other) = default;
 Sense::~Sense() = default;
 
 DefinitionResult::DefinitionResult() = default;

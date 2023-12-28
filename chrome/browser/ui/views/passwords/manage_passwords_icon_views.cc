@@ -12,6 +12,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -83,7 +84,7 @@ bool ManagePasswordsIconViews::OnMousePressed(const ui::MouseEvent& event) {
 
 const gfx::VectorIcon& ManagePasswordsIconViews::GetVectorIcon() const {
   return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-             ? kKeyOpenChromeRefreshIcon
+             ? vector_icons::kPasswordManagerIcon
              : kKeyIcon;
 }
 

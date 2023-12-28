@@ -116,8 +116,8 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
       app_browser->app_controller()->GetWindowAppIcon().Rasterize(nullptr);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  gfx::ImageSkia image_skia = app_service_test().LoadAppIconBlocking(
-      apps::AppType::kWeb, app_id, kWebAppIconSmall);
+  gfx::ImageSkia image_skia =
+      app_service_test().LoadAppIconBlocking(app_id, kWebAppIconSmall);
   EXPECT_TRUE(app_service_test().AreIconImageEqual(image_skia, app_icon));
 #else
   const SkBitmap* bitmap = app_icon.bitmap();

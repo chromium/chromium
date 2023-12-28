@@ -261,18 +261,18 @@ public class AutofillProfile {
             ValueWithStatus emailAddress,
             String languageCode) {
         this(guid, source, languageCode);
-        mFields.put(ServerFieldType.NAME_HONORIFIC_PREFIX, honorificPrefix);
-        mFields.put(ServerFieldType.NAME_FULL, fullName);
-        mFields.put(ServerFieldType.COMPANY_NAME, companyName);
-        mFields.put(ServerFieldType.ADDRESS_HOME_STREET_ADDRESS, streetAddress);
-        mFields.put(ServerFieldType.ADDRESS_HOME_STATE, region);
-        mFields.put(ServerFieldType.ADDRESS_HOME_CITY, locality);
-        mFields.put(ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY, dependentLocality);
-        mFields.put(ServerFieldType.ADDRESS_HOME_ZIP, postalCode);
-        mFields.put(ServerFieldType.ADDRESS_HOME_SORTING_CODE, sortingCode);
-        mFields.put(ServerFieldType.ADDRESS_HOME_COUNTRY, countryCode);
-        mFields.put(ServerFieldType.PHONE_HOME_WHOLE_NUMBER, phoneNumber);
-        mFields.put(ServerFieldType.EMAIL_ADDRESS, emailAddress);
+        mFields.put(FieldType.NAME_HONORIFIC_PREFIX, honorificPrefix);
+        mFields.put(FieldType.NAME_FULL, fullName);
+        mFields.put(FieldType.COMPANY_NAME, companyName);
+        mFields.put(FieldType.ADDRESS_HOME_STREET_ADDRESS, streetAddress);
+        mFields.put(FieldType.ADDRESS_HOME_STATE, region);
+        mFields.put(FieldType.ADDRESS_HOME_CITY, locality);
+        mFields.put(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY, dependentLocality);
+        mFields.put(FieldType.ADDRESS_HOME_ZIP, postalCode);
+        mFields.put(FieldType.ADDRESS_HOME_SORTING_CODE, sortingCode);
+        mFields.put(FieldType.ADDRESS_HOME_COUNTRY, countryCode);
+        mFields.put(FieldType.PHONE_HOME_WHOLE_NUMBER, phoneNumber);
+        mFields.put(FieldType.EMAIL_ADDRESS, emailAddress);
     }
 
     /* Builds an AutofillProfile that is an exact copy of the one passed as parameter. */
@@ -306,7 +306,7 @@ public class AutofillProfile {
     }
 
     @CalledByNative
-    public String getInfo(@ServerFieldType int fieldType) {
+    public String getInfo(@FieldType int fieldType) {
         if (!mFields.containsKey(fieldType)) {
             return "";
         }
@@ -314,7 +314,7 @@ public class AutofillProfile {
     }
 
     @CalledByNative
-    public @VerificationStatus int getInfoStatus(@ServerFieldType int fieldType) {
+    public @VerificationStatus int getInfoStatus(@FieldType int fieldType) {
         if (!mFields.containsKey(fieldType)) {
             return VerificationStatus.NO_STATUS;
         }
@@ -322,111 +322,111 @@ public class AutofillProfile {
     }
 
     public String getHonorificPrefix() {
-        return getInfo(ServerFieldType.NAME_HONORIFIC_PREFIX);
+        return getInfo(FieldType.NAME_HONORIFIC_PREFIX);
     }
 
     private @VerificationStatus int getHonorificPrefixStatus() {
-        return getInfoStatus(ServerFieldType.NAME_HONORIFIC_PREFIX);
+        return getInfoStatus(FieldType.NAME_HONORIFIC_PREFIX);
     }
 
     public String getFullName() {
-        return getInfo(ServerFieldType.NAME_FULL);
+        return getInfo(FieldType.NAME_FULL);
     }
 
     @VisibleForTesting
     @VerificationStatus
     public int getFullNameStatus() {
-        return getInfoStatus(ServerFieldType.NAME_FULL);
+        return getInfoStatus(FieldType.NAME_FULL);
     }
 
     public String getCompanyName() {
-        return getInfo(ServerFieldType.COMPANY_NAME);
+        return getInfo(FieldType.COMPANY_NAME);
     }
 
     @VerificationStatus
     int getCompanyNameStatus() {
-        return getInfoStatus(ServerFieldType.COMPANY_NAME);
+        return getInfoStatus(FieldType.COMPANY_NAME);
     }
 
     public String getStreetAddress() {
-        return getInfo(ServerFieldType.ADDRESS_HOME_STREET_ADDRESS);
+        return getInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS);
     }
 
     @VisibleForTesting
     @VerificationStatus
     public int getStreetAddressStatus() {
-        return getInfoStatus(ServerFieldType.ADDRESS_HOME_STREET_ADDRESS);
+        return getInfoStatus(FieldType.ADDRESS_HOME_STREET_ADDRESS);
     }
 
     public String getRegion() {
-        return getInfo(ServerFieldType.ADDRESS_HOME_STATE);
+        return getInfo(FieldType.ADDRESS_HOME_STATE);
     }
 
     @VisibleForTesting
     @VerificationStatus
     public int getRegionStatus() {
-        return getInfoStatus(ServerFieldType.ADDRESS_HOME_STATE);
+        return getInfoStatus(FieldType.ADDRESS_HOME_STATE);
     }
 
     public String getLocality() {
-        return getInfo(ServerFieldType.ADDRESS_HOME_CITY);
+        return getInfo(FieldType.ADDRESS_HOME_CITY);
     }
 
     @VisibleForTesting
     @VerificationStatus
     public int getLocalityStatus() {
-        return getInfoStatus(ServerFieldType.ADDRESS_HOME_CITY);
+        return getInfoStatus(FieldType.ADDRESS_HOME_CITY);
     }
 
     public String getDependentLocality() {
-        return getInfo(ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY);
+        return getInfo(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY);
     }
 
     private @VerificationStatus int getDependentLocalityStatus() {
-        return getInfoStatus(ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY);
+        return getInfoStatus(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY);
     }
 
     public String getPostalCode() {
-        return getInfo(ServerFieldType.ADDRESS_HOME_ZIP);
+        return getInfo(FieldType.ADDRESS_HOME_ZIP);
     }
 
     @VisibleForTesting
     @VerificationStatus
     public int getPostalCodeStatus() {
-        return getInfoStatus(ServerFieldType.ADDRESS_HOME_ZIP);
+        return getInfoStatus(FieldType.ADDRESS_HOME_ZIP);
     }
 
     public String getSortingCode() {
-        return getInfo(ServerFieldType.ADDRESS_HOME_SORTING_CODE);
+        return getInfo(FieldType.ADDRESS_HOME_SORTING_CODE);
     }
 
     private @VerificationStatus int getSortingCodeStatus() {
-        return getInfoStatus(ServerFieldType.ADDRESS_HOME_SORTING_CODE);
+        return getInfoStatus(FieldType.ADDRESS_HOME_SORTING_CODE);
     }
 
     @CalledByNative
     public String getCountryCode() {
-        return getInfo(ServerFieldType.ADDRESS_HOME_COUNTRY);
+        return getInfo(FieldType.ADDRESS_HOME_COUNTRY);
     }
 
     private @VerificationStatus int getCountryCodeStatus() {
-        return getInfoStatus(ServerFieldType.ADDRESS_HOME_COUNTRY);
+        return getInfoStatus(FieldType.ADDRESS_HOME_COUNTRY);
     }
 
     public String getPhoneNumber() {
-        return getInfo(ServerFieldType.PHONE_HOME_WHOLE_NUMBER);
+        return getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER);
     }
 
     private @VerificationStatus int getPhoneNumberStatus() {
-        return getInfoStatus(ServerFieldType.PHONE_HOME_WHOLE_NUMBER);
+        return getInfoStatus(FieldType.PHONE_HOME_WHOLE_NUMBER);
     }
 
     public String getEmailAddress() {
-        return getInfo(ServerFieldType.EMAIL_ADDRESS);
+        return getInfo(FieldType.EMAIL_ADDRESS);
     }
 
     private @VerificationStatus int getEmailAddressStatus() {
-        return getInfoStatus(ServerFieldType.EMAIL_ADDRESS);
+        return getInfoStatus(FieldType.EMAIL_ADDRESS);
     }
 
     @CalledByNative
@@ -448,63 +448,61 @@ public class AutofillProfile {
 
     @CalledByNative
     public void setInfo(
-            @ServerFieldType int fieldType,
-            @Nullable String value,
-            @VerificationStatus int status) {
+            @FieldType int fieldType, @Nullable String value, @VerificationStatus int status) {
         value = value == null ? "" : value;
         mFields.put(fieldType, new ValueWithStatus(value, status));
     }
 
-    public void setInfo(@ServerFieldType int fieldType, @Nullable String value) {
+    public void setInfo(@FieldType int fieldType, @Nullable String value) {
         setInfo(fieldType, value, VerificationStatus.USER_VERIFIED);
     }
 
     public void setHonorificPrefix(String honorificPrefix) {
-        setInfo(ServerFieldType.NAME_HONORIFIC_PREFIX, honorificPrefix);
+        setInfo(FieldType.NAME_HONORIFIC_PREFIX, honorificPrefix);
     }
 
     public void setFullName(String fullName) {
-        setInfo(ServerFieldType.NAME_FULL, fullName);
+        setInfo(FieldType.NAME_FULL, fullName);
     }
 
     public void setCompanyName(String companyName) {
-        setInfo(ServerFieldType.COMPANY_NAME, companyName);
+        setInfo(FieldType.COMPANY_NAME, companyName);
     }
 
     public void setStreetAddress(String streetAddress) {
-        setInfo(ServerFieldType.ADDRESS_HOME_STREET_ADDRESS, streetAddress);
+        setInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS, streetAddress);
     }
 
     public void setRegion(String region) {
-        setInfo(ServerFieldType.ADDRESS_HOME_STATE, region);
+        setInfo(FieldType.ADDRESS_HOME_STATE, region);
     }
 
     public void setLocality(String locality) {
-        setInfo(ServerFieldType.ADDRESS_HOME_CITY, locality);
+        setInfo(FieldType.ADDRESS_HOME_CITY, locality);
     }
 
     public void setDependentLocality(String dependentLocality) {
-        setInfo(ServerFieldType.ADDRESS_HOME_DEPENDENT_LOCALITY, dependentLocality);
+        setInfo(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY, dependentLocality);
     }
 
     public void setPostalCode(String postalCode) {
-        setInfo(ServerFieldType.ADDRESS_HOME_ZIP, postalCode);
+        setInfo(FieldType.ADDRESS_HOME_ZIP, postalCode);
     }
 
     public void setSortingCode(String sortingCode) {
-        setInfo(ServerFieldType.ADDRESS_HOME_SORTING_CODE, sortingCode);
+        setInfo(FieldType.ADDRESS_HOME_SORTING_CODE, sortingCode);
     }
 
     public void setCountryCode(String countryCode) {
-        setInfo(ServerFieldType.ADDRESS_HOME_COUNTRY, countryCode);
+        setInfo(FieldType.ADDRESS_HOME_COUNTRY, countryCode);
     }
 
     public void setPhoneNumber(String phoneNumber) {
-        setInfo(ServerFieldType.PHONE_HOME_WHOLE_NUMBER, phoneNumber);
+        setInfo(FieldType.PHONE_HOME_WHOLE_NUMBER, phoneNumber);
     }
 
     public void setEmailAddress(String emailAddress) {
-        setInfo(ServerFieldType.EMAIL_ADDRESS, emailAddress);
+        setInfo(FieldType.EMAIL_ADDRESS, emailAddress);
     }
 
     public void setLanguageCode(String languageCode) {

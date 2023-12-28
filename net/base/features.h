@@ -99,23 +99,8 @@ NET_EXPORT BASE_DECLARE_FEATURE(kUseAlternativePortForGloballyReachableCheck);
 // IP addresses.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableIPv6ReachabilityOverride);
 
-// If enabled allows the use of SHA-1 by the server for signatures
-// in the TLS handshake.
-NET_EXPORT BASE_DECLARE_FEATURE(kSHA1ServerSignature);
-
 // Enables TLS 1.3 early data.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableTLS13EarlyData);
-
-// Enables the TLS Encrypted ClientHello feature.
-// https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-13
-NET_EXPORT BASE_DECLARE_FEATURE(kEncryptedClientHello);
-
-// Enables the TLS Encrypted ClientHello feature for QUIC. Only takes effect if
-// kEncryptedClientHello is also enabled.
-//
-// TODO(crbug.com/1287248): Remove this flag when ECH for QUIC is fully
-// implemented. This flag is just a temporary mechanism for now.
-NET_EXPORT BASE_DECLARE_FEATURE(kEncryptedClientHelloQuic);
 
 // Enables checking the X.509 keyUsage extension in TLS 1.2 for RSA server
 // certificates that chain to a local trust anchor.
@@ -302,6 +287,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kCookieSameSiteConsidersRedirectChain);
 // cookies.
 NET_EXPORT BASE_DECLARE_FEATURE(kWaitForFirstPartySetsInit);
 
+// Controls the maximum time duration an outermost frame navigation should be
+// deferred by RWS initialization.
+NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kWaitForFirstPartySetsInitNavigationThrottleTimeout;
+
 // When enabled, sites can opt-in to having their cookies partitioned by
 // top-level site with the Partitioned attribute. Partitioned cookies will only
 // be sent when the browser is on the same top-level site that it was on when
@@ -437,6 +427,11 @@ NET_EXPORT extern const base::FeatureParam<std::string> kIpPrivacyProxyBPsk;
 // `first_hop_hostnames` (and thus always single-proxy chains).
 NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyUseProxyChains;
 
+// If true, pass OAuth token to Phosphor in GetProxyConfig API for IP
+// Protection.
+NET_EXPORT extern const base::FeatureParam<bool>
+    kIpPrivacyIncludeOAuthTokenInGetProxyConfig;
+
 // Whether QuicParams::migrate_sessions_on_network_change_v2 defaults to true or
 // false. This is needed as a workaround to set this value to true on Android
 // but not on WebView (until crbug.com/1430082 has been fixed).
@@ -459,6 +454,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnablePortBoundCookies);
 // Enables binding of cookies to the scheme that originally set them. Also
 // enables domain cookie shadowing protection.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableSchemeBoundCookies);
+
+// Enables expiration duration limit (3 hours) for cookies on insecure websites.
+// This feature is a no-op unless kEnableSchemeBoundCookies is enabled.
+NET_EXPORT BASE_DECLARE_FEATURE(kTimeLimitedInsecureCookies);
 
 // Enables enabling third-party cookie blocking from the command line.
 NET_EXPORT BASE_DECLARE_FEATURE(kForceThirdPartyCookieBlocking);

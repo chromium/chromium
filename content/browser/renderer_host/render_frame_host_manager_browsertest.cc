@@ -6510,7 +6510,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerNoSiteIsolationTest,
 // With RenderDocument for subframes, removing a frame while it is executing
 // its own unload handler caused a crash. https://crbug.com/1148793
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
-                       RemoveSubframeInUnload_SameSite) {
+                       RemoveSubframeInPageHide_SameSite) {
   // TODO(https://crbug.com/1148793): Remove this early return. This doesn't
   // work for RenderDocumentLevel::kNonLocalRootSubframe or greater because
   // cancelling the navigation when detaching the subtree tries to restore the
@@ -6521,19 +6521,19 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
           /*is_main_frame=*/false, /*is_local_root=*/false)) {
     return;
   }
-  AssertCanRemoveSubframeInUnload(/*same_site=*/true);
+  AssertCanRemoveSubframeInPageHide(/*same_site=*/true);
 }
 
 // See RemoveSubframeInUnload_SameSite
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
-                       RemoveSubframeInUnload_CrossSite) {
+                       RemoveSubframeInPageHide_CrossSite) {
   // TODO(https://crbug.com/1148793): Remove this early return.
   if (ShouldCreateNewRenderFrameHostOnSameSiteNavigation(
           /*is_main_frame=*/false, /*is_local_root=*/false) &&
       !AreAllSitesIsolatedForTesting()) {
     return;
   }
-  AssertCanRemoveSubframeInUnload(/*same_site=*/false);
+  AssertCanRemoveSubframeInPageHide(/*same_site=*/false);
 }
 
 // This test demonstrates a similar issue to the previous two tests, but
@@ -6592,8 +6592,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest, NestedUnload) {
   ASSERT_TRUE(ExecJs(shell(), ""));
 }
 
-// See RemoveSubframeInUnload_SameSite
-void RenderFrameHostManagerTest::AssertCanRemoveSubframeInUnload(
+// See RemoveSubframeInPageHide_SameSite
+void RenderFrameHostManagerTest::AssertCanRemoveSubframeInPageHide(
     bool same_site) {
   StartEmbeddedServer();
 
@@ -6602,15 +6602,15 @@ void RenderFrameHostManagerTest::AssertCanRemoveSubframeInUnload(
       "a.com", "/cross_site_iframe_factory.html?a(a)"));
   ASSERT_TRUE(NavigateToURL(shell(), frame_url));
 
-  // Set up the subframe's unload handler to remove the subframe.
+  // Set up the subframe's pagehide handler to remove the subframe.
   ASSERT_TRUE(ExecJs(shell(), R"(
     const subframe = document.getElementById("child-0");
-    subframe.contentWindow.onunload = () => {
+    subframe.contentWindow.onpagehide = () => {
       subframe.remove();
     }
   )"));
 
-  // Navigate the subframe, triggering unload.
+  // Navigate the subframe, triggering pagehide.
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
 

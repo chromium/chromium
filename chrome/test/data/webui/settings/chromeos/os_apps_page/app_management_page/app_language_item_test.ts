@@ -24,6 +24,15 @@ suite('<app-management-app-language-item>', () => {
     fakeHandler = setupFakeHandler();
     appLanguageItem =
         document.createElement('app-management-app-language-item');
+    appLanguageItem.prefs = {
+      arc: {
+        last_set_app_locale: {
+          key: 'arc.last_set_app_locale',
+          type: chrome.settingsPrivate.PrefType.STRING,
+          value: '',
+        },
+      },
+    };
 
     replaceBody(appLanguageItem);
     flushTasks();

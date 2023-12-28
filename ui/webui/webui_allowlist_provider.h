@@ -35,8 +35,7 @@ class WebUIAllowlistProvider : public content_settings::ObservableProvider {
   std::unique_ptr<content_settings::RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
       bool incognito,
-      const content_settings::PartitionKey& partition_key =
-          content_settings::PartitionKey::WipGetDefault()) const override;
+      const content_settings::PartitionKey& partition_key) const override;
   void ShutdownOnUIThread() override;
   bool SetWebsiteSetting(
       const ContentSettingsPattern& primary_pattern,
@@ -44,12 +43,10 @@ class WebUIAllowlistProvider : public content_settings::ObservableProvider {
       ContentSettingsType content_type,
       base::Value&& value,
       const content_settings::ContentSettingConstraints& constraints,
-      const content_settings::PartitionKey& partition_key =
-          content_settings::PartitionKey::WipGetDefault()) override;
+      const content_settings::PartitionKey& partition_key) override;
   void ClearAllContentSettingsRules(
       ContentSettingsType content_type,
-      const content_settings::PartitionKey& partition_key =
-          content_settings::PartitionKey::WipGetDefault()) override;
+      const content_settings::PartitionKey& partition_key) override;
 
  private:
   const scoped_refptr<WebUIAllowlist> allowlist_;

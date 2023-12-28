@@ -23,9 +23,9 @@ namespace web_app {
 // User choice dialog for PWA file handling, shown before launching a PWA to
 // handle files. See https://web.dev/file-handling/
 class FileHandlerLaunchDialogView : public LaunchAppUserChoiceDialogView {
- public:
-  METADATA_HEADER(FileHandlerLaunchDialogView);
+  METADATA_HEADER(FileHandlerLaunchDialogView, LaunchAppUserChoiceDialogView)
 
+ public:
   FileHandlerLaunchDialogView(const std::vector<base::FilePath>& file_paths,
                               Profile* profile,
                               const webapps::AppId& app_id,

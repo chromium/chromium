@@ -185,14 +185,16 @@ class MockMemoryStat : public TabManagerDelegate::MemoryStat {
   MockMemoryStat() {}
   ~MockMemoryStat() override {}
 
-  int TargetMemoryToFreeKB() override { return target_memory_to_free_kb_; }
+  memory_pressure::ReclaimTarget TargetMemoryToFree() override {
+    return memory_pressure::ReclaimTarget(target_memory_to_free_kb_);
+  }
 
   int EstimatedMemoryFreedKB(base::ProcessHandle pid) override {
     return process_pss_[pid];
   }
 
   // unittest.
-  void SetTargetMemoryToFreeKB(const int target) {
+  void SetTargetMemoryToFreeKB(const uint64_t target) {
     target_memory_to_free_kb_ = target;
   }
 
@@ -202,7 +204,7 @@ class MockMemoryStat : public TabManagerDelegate::MemoryStat {
   }
 
  private:
-  int target_memory_to_free_kb_;
+  uint64_t target_memory_to_free_kb_;
   std::map<base::ProcessHandle, int> process_pss_;
 };
 

@@ -421,6 +421,19 @@ TEST_F(CastMessageHandlerTest, CloseConnectionFromReceiver) {
                             VirtualConnectionType::kStrong);
 }
 
+TEST_F(CastMessageHandlerTest, RemoveConnection) {
+  ExpectEnsureConnection();
+  handler_.EnsureConnection(channel_id_, kSourceId, kDestinationId,
+                            VirtualConnectionType::kStrong);
+
+  // Just removing a connection shouldn't send out a close request.
+  EXPECT_CALL(
+      *transport_,
+      SendMessage_(HasMessageType(CastMessageType::kCloseConnection), _))
+      .Times(0);
+  handler_.RemoveConnection(channel_id_, kSourceId, kDestinationId);
+}
+
 TEST_F(CastMessageHandlerTest, LaunchSession) {
   base::HistogramTester histogram_tester;
   cast_socket_.SetFlags(

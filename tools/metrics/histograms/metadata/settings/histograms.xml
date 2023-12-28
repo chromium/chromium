@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Settings.AdvancedSpellcheck.OnStartup2" enum="BooleanEnabled"
-    expires_after="2024-02-01">
+    expires_after="2024-06-09">
   <owner>harrisonsean@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
@@ -265,7 +265,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacyGuide.SettingsStates"
-    enum="SettingsPrivacyGuideSettingsStates" expires_after="2024-01-31">
+    enum="SettingsPrivacyGuideSettingsStates" expires_after="2024-06-02">
   <owner>harrisonsean@chromium.org</owner>
   <owner>rainhard@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -465,13 +465,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Settings.SafetyCheck.ExtensionsResult"
-    enum="SafetyCheckExtensionsStatus" expires_after="2021-06-20">
-  <owner>andzaytsev@google.com</owner>
-  <owner>msramek@chromium.org</owner>
-  <summary>Resulting state of the safety check extensions check.</summary>
-</histogram>
-
 <histogram name="Settings.SafetyCheck.Interactions"
     enum="SettingsSafetyCheckInteractions" expires_after="2024-04-28">
   <owner>rainhard@chromium.org</owner>
@@ -497,7 +490,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyCheck.NotificationsModuleEntryPointShown"
-    enum="BooleanVisible" expires_after="2023-12-21">
+    enum="BooleanVisible" expires_after="2024-06-01">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -593,7 +586,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Settings.SafetyCheck.UnusedSitePermissionsRegrantDays{SourceUI}.All"
-    units="days" expires_after="2023-12-21">
+    units="days" expires_after="2024-06-01">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>tov@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -612,7 +605,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Settings.SafetyCheck.UnusedSitePermissionsRegrantDays{SourceUI}.{PermissionType}"
-    units="days" expires_after="2023-12-21">
+    units="days" expires_after="2024-06-01">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>tov@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -637,6 +630,16 @@ chromium-metrics-reviews@google.com.
   <summary>Resulting state of the safety check updates check.</summary>
 </histogram>
 
+<histogram name="Settings.SafetyHub.DashboardWarning"
+    enum="SafetyHubModuleType" expires_after="2024-11-11">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <summary>
+    Captures the impressions of the different modules that have some warnings in
+    Safety Check page. Recorded whenever Safety Check page is loaded.
+  </summary>
+</histogram>
+
 <histogram name="Settings.SafetyHub.EntryPointImpression"
     enum="SafetyHubEntryPoint" expires_after="2024-11-11">
   <owner>sideyilmaz@chromium.org</owner>
@@ -656,6 +659,16 @@ chromium-metrics-reviews@google.com.
     Captures the interaction with an entry point of Safety Hub, that will
     eventually lead to the Safety Check page, password manager checkup page or
     the extensions page.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.HasDashboardShowAnyWarning"
+    enum="BooleanVisible" expires_after="2024-11-11">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <summary>
+    Captures whether the Safety Check dashboard has any warning. Recorded
+    whenever Safety Check page is loaded.
   </summary>
 </histogram>
 
@@ -703,8 +716,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.SafetyHub.NotificationPermissionsModule.Interactions"
+    enum="SafetyCheckNotificationsModuleInteractions"
+    expires_after="2024-05-30">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>aisulu@chromium.org</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <summary>
+    The user actions taken on the notification permissions module in Safety
+    Check page in settings. Recorded every time the user interacts with the
+    respective UI element.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.NotificationPermissionsModule.ListCount"
+    units="suggestions" expires_after="2024-05-30">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>aisulu@chromium.org</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <summary>
+    The number of notification permissions suggested to be removed. Recorded
+    when Safety Check page in Settings is opened.
+  </summary>
+</histogram>
+
 <histogram name="Settings.SafetyHub.PasswordsCard.StatusOnClick"
-    enum="SafetyHubCardState" expires_after="2024-04-08">
+    enum="SafetyHubCardState" expires_after="2024-06-16">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>aisulu@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -715,7 +752,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyHub.SafeBrowsingCard.StatusOnClick"
-    enum="SafetyHubCardState" expires_after="2024-04-08">
+    enum="SafetyHubCardState" expires_after="2024-06-16">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>aisulu@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -726,8 +763,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.SafetyHub.UnusedSitePermissionsModule.Interactions"
+    enum="SafetyCheckUnusedSitePermissionsModuleInteractions"
+    expires_after="2024-05-30">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>aisulu@chromium.org</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <summary>
+    The user actions taken on the unused site permissions module in Safety Check
+    page in settings. Recorded every time the user interacts with the respective
+    UI element.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.UnusedSitePermissionsModule.ListCount"
+    units="suggestions" expires_after="2024-05-30">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>aisulu@chromium.org</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <summary>
+    The number of unused site permissions suggested to be removed. Recorded when
+    Safety Check page in Settings is opened.
+  </summary>
+</histogram>
+
 <histogram name="Settings.SafetyHub.VersionCard.StatusOnClick"
-    enum="SafetyHubCardState" expires_after="2024-04-08">
+    enum="SafetyHubCardState" expires_after="2024-06-16">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>aisulu@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -860,17 +921,6 @@ chromium-metrics-reviews@google.com.
     The time between when the chrome://settings page is opened to the first time
     a search is done within that page. This is intended to evaluate how long a
     user looks for a setting before giving up and searching for it.
-  </summary>
-</histogram>
-
-<histogram name="Settings.TimeUntilInteractive" units="ms"
-    expires_after="2021-08-22">
-  <owner>dbeam@chromium.org</owner>
-  <owner>dpapad@chromium.org</owner>
-  <summary>
-    The time until the settings Web UI is loaded, rendered, and interactive for
-    users (as in they can change a setting). Automatically logged each time the
-    settings page is opened (if not closed before interactive).
   </summary>
 </histogram>
 

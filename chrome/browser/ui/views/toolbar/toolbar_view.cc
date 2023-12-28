@@ -397,7 +397,7 @@ void ToolbarView::Init() {
                   GetLayoutConstant(TOOLBAR_DIVIDER_HEIGHT)));
   }
 
-  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+  if (features::IsSidePanelPinningEnabled()) {
     pinned_toolbar_actions_container_ = container_view_->AddChildView(
         std::make_unique<PinnedToolbarActionsContainer>(browser_view_));
   }
@@ -422,9 +422,12 @@ void ToolbarView::Init() {
     }
   }
 
-  // Only show the Battery Saver button when it is not controlled by the OS. On
-  // ChromeOS the battery icon in the shelf shows the same information.
-  if (!performance_manager::user_tuning::IsBatterySaverModeManagedByOS()) {
+  // Only show the Battery Saver button when it is not controlled by the OS and
+  // the performance side panel is not enabled. On ChromeOS the battery icon in
+  // the shelf shows the same information.
+  if (!performance_manager::user_tuning::IsBatterySaverModeManagedByOS() &&
+      !base::FeatureList::IsEnabled(
+          performance_manager::features::kPerformanceControlsSidePanel)) {
     battery_saver_button_ = container_view_->AddChildView(
         std::make_unique<BatterySaverButton>(browser_view_));
   }
@@ -443,7 +446,7 @@ void ToolbarView::Init() {
     send_tab_to_self_button_ =
         container_view_->AddChildView(std::move(send_tab_to_self_button));
 
-  if (!base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+  if (!features::IsSidePanelPinningEnabled()) {
     if (companion::IsCompanionFeatureEnabled()) {
       side_panel_container_ = container_view_->AddChildView(
           std::make_unique<SidePanelToolbarContainer>(browser_view_));
@@ -980,9 +983,9 @@ void ToolbarView::InitLayout() {
 
     // TODO(crbug.com/1479588): Ignore containers till issue addressed.
     toolbar_controller_ = std::make_unique<ToolbarController>(
-        ToolbarController::GetDefaultResponsiveElements(),
+        ToolbarController::GetDefaultResponsiveElements(browser_),
         ToolbarController::GetDefaultOverflowOrder(), kToolbarFlexOrderStart,
-        container_view_, overflow_button_);
+        container_view_, overflow_button_, pinned_toolbar_actions_container_);
 
     overflow_button_->set_create_menu_model_callback(
         base::BindRepeating(&ToolbarController::CreateOverflowMenuModel,
@@ -1218,6 +1221,6 @@ void ToolbarView::OnTouchUiChanged() {
   }
 }
 
-BEGIN_METADATA(ToolbarView, views::AccessiblePaneView)
+BEGIN_METADATA(ToolbarView)
 ADD_READONLY_PROPERTY_METADATA(bool, AppMenuFocused)
 END_METADATA

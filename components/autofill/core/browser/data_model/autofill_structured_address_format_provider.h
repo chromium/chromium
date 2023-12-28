@@ -32,7 +32,7 @@ class StructuredAddressesFormatProvider {
 
   // Returns the formatting expression corresponding to the provided parameters.
   // If the expression can't be found, an empty string is returned.
-  std::u16string GetPattern(ServerFieldType type,
+  std::u16string GetPattern(FieldType type,
                             std::string_view country_code,
                             const ContextInfo& info = ContextInfo()) const;
 

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ip_protection/ip_protection_config_provider.h"
 
+#include <optional>
+
 #include "base/base64.h"
 #include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -135,7 +137,8 @@ class MockIpProtectionConfigHttp : public IpProtectionConfigHttp {
     NOTREACHED();
   }
 
-  void GetProxyConfig(IpProtectionConfigHttp::GetProxyConfigCallback callback,
+  void GetProxyConfig(std::optional<std::string> oauth_token,
+                      IpProtectionConfigHttp::GetProxyConfigCallback callback,
                       bool for_testing = false) override {
     if (!proxy_list_.has_value()) {
       std::move(callback).Run(absl::InternalError("uhoh"));
@@ -205,9 +208,7 @@ class IpProtectionConfigProviderTest : public testing::Test {
     return identity_test_env_.identity_manager();
   }
 
-  // Call `TryGetAuthTokens()` and run until it completes.
-  void TryGetAuthTokens(int num_tokens,
-                        network::mojom::IpProtectionProxyLayer proxy_layer) {
+  void SetupAccount() {
     if (primary_account_behavior_ == PrimaryAccountBehavior::kNone) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
       // Simulate a log out event on all platforms except ChromeOS Ash where
@@ -224,10 +225,9 @@ class IpProtectionConfigProviderTest : public testing::Test {
         SetCanUseChromeIpProtectionCapability(true);
       }
     }
+  }
 
-    getter_->TryGetAuthTokens(num_tokens, proxy_layer,
-                              tokens_future_.GetCallback());
-
+  void RespondToAccessTokenRequest() {
     switch (primary_account_behavior_) {
       case PrimaryAccountBehavior::kNone:
       case PrimaryAccountBehavior::kIneligible:
@@ -251,7 +251,26 @@ class IpProtectionConfigProviderTest : public testing::Test {
                 "access_token", base::Time::Now());
         break;
     }
+  }
+
+  // Call `TryGetAuthTokens()` and run until it completes.
+  void TryGetAuthTokens(int num_tokens,
+                        network::mojom::IpProtectionProxyLayer proxy_layer) {
+    SetupAccount();
+
+    getter_->TryGetAuthTokens(num_tokens, proxy_layer,
+                              tokens_future_.GetCallback());
+
+    RespondToAccessTokenRequest();
     ASSERT_TRUE(tokens_future_.Wait()) << "TryGetAuthTokens did not call back";
+  }
+
+  void GetProxyListWithOAuthToken() {
+    SetupAccount();
+
+    getter_->GetProxyList(proxy_list_future_.GetCallback());
+
+    RespondToAccessTokenRequest();
   }
 
   // Set the CanUseChromeIpProtection account capability. The capability tribool
@@ -304,6 +323,10 @@ class IpProtectionConfigProviderTest : public testing::Test {
       absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>,
       absl::optional<base::Time>>
       tokens_future_;
+
+  base::test::TestFuture<
+      const absl::optional<std::vector<std::vector<std::string>>>&>
+      proxy_list_future_;
 
   // Test environment for IdentityManager. This must come after the
   // TaskEnvironment.
@@ -704,6 +727,26 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListFirstHopHostnames) {
   getter_->GetProxyList(proxy_list_future.GetCallback());
   ASSERT_TRUE(proxy_list_future.Wait()) << "GetProxyList did not call back";
   EXPECT_THAT(proxy_list_future.Get(),
+              testing::Optional(testing::ElementsAreArray(proxy_list)));
+}
+
+TEST_F(IpProtectionConfigProviderTest,
+       GetProxyListFirstHopHostnamesWithOAuthTokenFlag) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kEnableIpProtectionProxy,
+      {{net::features::kIpPrivacyUseProxyChains.name, "false"},
+       {net::features::kIpPrivacyIncludeOAuthTokenInGetProxyConfig.name,
+        "true"}});
+  std::vector<std::vector<std::string>> proxy_list = {{"proxy1"}, {"proxy2"}};
+  getter_->SetUpForTesting(
+      std::make_unique<MockIpProtectionConfigHttp>(proxy_list), bsa_.get());
+
+  primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
+  GetProxyListWithOAuthToken();
+
+  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
+  EXPECT_THAT(proxy_list_future_.Get(),
               testing::Optional(testing::ElementsAreArray(proxy_list)));
 }
 

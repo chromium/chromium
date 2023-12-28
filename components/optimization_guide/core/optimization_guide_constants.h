@@ -64,6 +64,22 @@ extern const base::FilePath::CharType kOptimizationGuideModelStoreDirPrefix[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FilePath::CharType kPageEntitiesMetadataStore[];
 
+// Files expected to be in the on device model bundle.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const base::FilePath::CharType kSpModelFile[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const base::FilePath::CharType kModelFile[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const base::FilePath::CharType kWeightsFile[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const base::FilePath::CharType kOnDeviceModelExecutionConfigFile[];
+
+// Files expected to be in the text safety model bundle.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const base::FilePath::CharType kTsDataFile[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const base::FilePath::CharType kTsSpModelFile[];
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_CONSTANTS_H_

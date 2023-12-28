@@ -23,6 +23,7 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -64,8 +65,7 @@ class FakeSensorDisabledNotificationDelegate
   }
 
   void CloseAppAccessingCamera(const std::u16string& app_name) {
-    auto it = std::find(apps_accessing_camera_.begin(),
-                        apps_accessing_camera_.end(), app_name);
+    auto it = base::ranges::find(apps_accessing_camera_, app_name);
     if (it != apps_accessing_camera_.end()) {
       apps_accessing_camera_.erase(it);
     }
@@ -107,7 +107,7 @@ class ScopedCameraMuteToggler {
   }
 
  private:
-  const raw_ref<CameraPrivacySwitchController, ExperimentalAsh>
+  const raw_ref<CameraPrivacySwitchController>
       camera_privacy_switch_controller_;
   const bool software_switch_;
 };
@@ -192,9 +192,7 @@ class PrivacyHubCameraTestBase
   }
 
  protected:
-  raw_ptr<::testing::NiceMock<MockSwitchAPI>,
-          DanglingUntriaged | ExperimentalAsh>
-      mock_switch_;
+  raw_ptr<::testing::NiceMock<MockSwitchAPI>, DanglingUntriaged> mock_switch_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -319,8 +317,7 @@ class NotificationTestBase : public PrivacyHubCameraTestBase {
             ->sensor_disabled_notification_delegate());
   }
 
-  raw_ptr<CameraPrivacySwitchController, DanglingUntriaged | ExperimentalAsh>
-      controller_;
+  raw_ptr<CameraPrivacySwitchController, DanglingUntriaged> controller_;
   const base::HistogramTester histogram_tester_;
 };
 

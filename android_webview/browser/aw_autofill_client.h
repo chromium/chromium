@@ -104,7 +104,6 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
       AddressProfileDeleteDialogCallback delete_dialog_callback) override;
   bool HasCreditCardScanFeature() override;
   void ScanCreditCard(CreditCardScanCallback callback) override;
-  bool IsTouchToFillCreditCardSupported() override;
   bool ShowTouchToFillCreditCard(
       base::WeakPtr<autofill::TouchToFillDelegate> delegate,
       base::span<const autofill::CreditCard> cards_to_suggest) override;

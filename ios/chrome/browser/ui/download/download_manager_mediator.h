@@ -12,6 +12,14 @@
 
 @protocol DownloadManagerConsumer;
 
+namespace drive {
+class DriveService;
+}
+
+namespace signin {
+class IdentityManager;
+}
+
 namespace web {
 class DownloadTask;
 }  // namespace web
@@ -27,6 +35,15 @@ class DownloadManagerMediator : public web::DownloadTaskObserver {
 
   ~DownloadManagerMediator() override;
 
+  // Sets whether this download manager is in an Incognito browser.
+  void SetIsIncognito(bool is_incognito);
+
+  // Sets the identity manager.
+  void SetIdentityManager(signin::IdentityManager* identity_manager);
+
+  // Sets the Drive service.
+  void SetDriveService(drive::DriveService* drive_service);
+
   // Sets download manager consumer. Not retained by mediator.
   void SetConsumer(id<DownloadManagerConsumer> consumer);
 
@@ -38,7 +55,10 @@ class DownloadManagerMediator : public web::DownloadTaskObserver {
   base::FilePath GetDownloadPath();
 
   // Asynchronously starts download operation.
-  void StartDowloading();
+  void StartDownloading();
+
+  // Converts web::DownloadTask::State to DownloadManagerState.
+  DownloadManagerState GetDownloadManagerState() const;
 
  private:
   // Updates consumer from web::DownloadTask.
@@ -51,9 +71,6 @@ class DownloadManagerMediator : public web::DownloadTaskObserver {
   // Checks if the move has been completed.
   void MoveComplete(bool move_completed);
 
-  // Converts web::DownloadTask::State to DownloadManagerState.
-  DownloadManagerState GetDownloadManagerState() const;
-
   // Converts DownloadTask progress [0;100] to float progress [0.0f;1.0f].
   float GetDownloadManagerProgress() const;
 
@@ -65,8 +82,11 @@ class DownloadManagerMediator : public web::DownloadTaskObserver {
   void OnDownloadUpdated(web::DownloadTask* task) override;
   void OnDownloadDestroyed(web::DownloadTask* task) override;
 
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+  raw_ptr<drive::DriveService> drive_service_ = nullptr;
+  bool is_incognito_;
   base::FilePath download_path_;
-  web::DownloadTask* task_ = nullptr;
+  raw_ptr<web::DownloadTask> task_ = nullptr;
   __weak id<DownloadManagerConsumer> consumer_ = nil;
   base::WeakPtrFactory<DownloadManagerMediator> weak_ptr_factory_;
 };

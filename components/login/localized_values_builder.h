@@ -80,7 +80,7 @@ class LOGIN_EXPORT LocalizedValuesBuilder {
   std::string prefix_;
 
   // Not owned.
-  raw_ptr<base::Value::Dict, ExperimentalAsh> dict_;
+  raw_ptr<base::Value::Dict> dict_;
 };
 
 }  // namespace login

@@ -15,7 +15,6 @@ import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
@@ -31,10 +30,10 @@ public class ScrimProperties {
     @ColorInt public static final int INVALID_COLOR = Color.TRANSPARENT;
 
     /**
-     * The top margin of the scrim. This can be used to shrink the scrim to show items at the
-     * top of the screen.
+     * The top margin of the scrim. This can be used to shrink the scrim to show items at the top of
+     * the screen.
      */
-    public static final ReadableIntPropertyKey TOP_MARGIN = new ReadableIntPropertyKey();
+    public static final WritableIntPropertyKey TOP_MARGIN = new WritableIntPropertyKey();
 
     /** Whether the scrim should affect the status bar color. */
     public static final ReadableBooleanPropertyKey AFFECTS_STATUS_BAR =

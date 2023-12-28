@@ -42,6 +42,7 @@ class SigninScreenExtensionsExternalLoader : public extensions::ExternalLoader,
 
   // ExternalCacheDelegate:
   void OnExtensionListsUpdated(const base::Value::Dict& prefs) override;
+  bool IsRollbackAllowed() const override;
 
  private:
   friend class base::RefCounted<SigninScreenExtensionsExternalLoader>;

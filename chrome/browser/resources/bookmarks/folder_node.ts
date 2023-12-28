@@ -19,7 +19,7 @@ import {BookmarksCommandManagerElement} from './command_manager.js';
 import {FOLDER_OPEN_BY_DEFAULT_DEPTH, MenuSource, ROOT_NODE_ID} from './constants.js';
 import {getTemplate} from './folder_node.html.js';
 import {StoreClientMixin} from './store_client_mixin.js';
-import {BookmarkNode} from './types.js';
+import type {BookmarkNode} from './types.js';
 import {hasChildFolders, isShowingSearch} from './util.js';
 
 const BookmarksFolderNodeElementBase = StoreClientMixin(PolymerElement);

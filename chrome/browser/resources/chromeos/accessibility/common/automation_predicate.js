@@ -109,7 +109,7 @@ const nodeNameContainedInStaticTextChildren = function(node) {
 export class AutomationPredicate {
   /**
    * Constructs a predicate given a list of roles.
-   * @param {!Array<Role>} roles
+   * @param {!Array<chrome.automation.RoleType>} roles
    * @return {!AutomationPredicate.Unary}
    */
   static roles(roles) {

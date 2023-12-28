@@ -28,8 +28,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SKIP_CLOSING_ANIMATION;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
 
-import com.google.android.material.tabs.TabLayout;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,22 +36,20 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
+import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
-import org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutCoordinator;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.PopupItemId;
@@ -63,8 +59,6 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
 import org.chromium.ui.test.util.modelutil.FakeViewProvider;
-
-import java.util.HashMap;
 
 /** Controller tests for the keyboard accessory component. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -76,8 +70,8 @@ public class KeyboardAccessoryControllerTest {
     @Mock private ListObservable.ListObserver<Void> mMockActionListObserver;
     @Mock private KeyboardAccessoryCoordinator.BarVisibilityDelegate mMockBarVisibilityDelegate;
     @Mock private AccessorySheetCoordinator.SheetVisibilityDelegate mMockSheetVisibilityDelegate;
-    @Mock private KeyboardAccessoryModernView mMockView;
-    @Mock private KeyboardAccessoryTabLayoutCoordinator mMockTabLayout;
+    @Mock private KeyboardAccessoryView mMockView;
+    @Mock private KeyboardAccessoryButtonGroupCoordinator mMockButtonGroup;
     @Mock private KeyboardAccessoryCoordinator.TabSwitchingDelegate mMockTabSwitchingDelegate;
     @Mock private AutofillDelegate mMockAutofillDelegate;
 
@@ -92,23 +86,15 @@ public class KeyboardAccessoryControllerTest {
     public void setUp() {
         UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
-        setAutofillFeature(false);
-        when(mMockView.getTabLayout()).thenReturn(mock(TabLayout.class));
-        when(mMockTabLayout.getTabSwitchingDelegate()).thenReturn(mMockTabSwitchingDelegate);
+        when(mMockButtonGroup.getTabSwitchingDelegate()).thenReturn(mMockTabSwitchingDelegate);
         mCoordinator =
                 new KeyboardAccessoryCoordinator(
-                        mMockTabLayout,
+                        mMockButtonGroup,
                         mMockBarVisibilityDelegate,
                         mMockSheetVisibilityDelegate,
                         new FakeViewProvider<>(mMockView));
         mMediator = mCoordinator.getMediatorForTesting();
         mModel = mMediator.getModelForTesting();
-    }
-
-    private void setAutofillFeature(boolean enabled) {
-        HashMap<String, Boolean> features = new HashMap<>();
-        features.put(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY, enabled);
-        FeatureList.setTestFeatures(features);
     }
 
     @Test
@@ -144,48 +130,14 @@ public class KeyboardAccessoryControllerTest {
                 new PropertyProvider<>(GENERATE_PASSWORD_AUTOMATIC);
         mCoordinator.registerActionProvider(testProvider);
 
-        // If the coordinator receives an initial actions, the model should report an insertion.
-        mCoordinator.show();
-
-        Action testAction = new Action(0, null);
-        testProvider.notifyObservers(new Action[] {testAction});
-        verify(mMockActionListObserver).onItemRangeInserted(mModel.get(BAR_ITEMS), 0, 1);
-        assertThat(mModel.get(BAR_ITEMS).size(), is(1));
-        assertThat(mModel.get(BAR_ITEMS).get(0).getAction(), is(equalTo(testAction)));
-
-        // If the coordinator receives a new set of actions, the model should report a change.
-        testProvider.notifyObservers(new Action[] {testAction});
-        verify(mMockActionListObserver).onItemRangeChanged(mModel.get(BAR_ITEMS), 0, 1, null);
-        assertThat(mModel.get(BAR_ITEMS).size(), is(1));
-        assertThat(mModel.get(BAR_ITEMS).get(0).getAction(), is(equalTo(testAction)));
-
-        // If the coordinator receives an empty set of actions, the model should report a deletion.
-        testProvider.notifyObservers(new Action[] {});
-        verify(mMockActionListObserver).onItemRangeRemoved(mModel.get(BAR_ITEMS), 0, 1);
-        assertThat(mModel.get(BAR_ITEMS).size(), is(0));
-
-        // There should be no notification if no actions are reported repeatedly.
-        testProvider.notifyObservers(new Action[] {});
-        verifyNoMoreInteractions(mMockActionListObserver);
-    }
-
-    @Test
-    public void testModelNotifiesAboutActionsChangedByProviderForRedesign() {
-        setAutofillFeature(true);
-        // Set a default tab to prevent visibility changes to trigger now:
-        setTabs(new KeyboardAccessoryData.Tab[] {mTestTab});
-        mModel.get(BAR_ITEMS).addObserver(mMockActionListObserver);
-
-        PropertyProvider<Action[]> testProvider =
-                new PropertyProvider<>(GENERATE_PASSWORD_AUTOMATIC);
-        mCoordinator.registerActionProvider(testProvider);
-
         // If the coordinator receives an initial action, the model should report an insertion.
         mCoordinator.show();
 
         Action testAction = new Action(0, null);
         testProvider.notifyObservers(new Action[] {testAction});
-        verify(mMockActionListObserver).onItemRangeInserted(mModel.get(BAR_ITEMS), 0, 2);
+        // 1 item inserted, sheet opener is moved to the end.
+        verify(mMockActionListObserver).onItemRangeChanged(mModel.get(BAR_ITEMS), 0, 1, null);
+        verify(mMockActionListObserver).onItemRangeInserted(mModel.get(BAR_ITEMS), 1, 1);
         assertThat(mModel.get(BAR_ITEMS).size(), is(2)); // Plus tab switcher.
         assertThat(mModel.get(BAR_ITEMS).get(0).getAction(), is(equalTo(testAction)));
 
@@ -203,7 +155,7 @@ public class KeyboardAccessoryControllerTest {
 
         // There should be no notification if no actions are reported repeatedly.
         testProvider.notifyObservers(new Action[] {});
-        verify(mMockActionListObserver, times(2))
+        verify(mMockActionListObserver, times(3))
                 .onItemRangeChanged(mModel.get(BAR_ITEMS), 0, 1, null);
         verifyNoMoreInteractions(mMockActionListObserver);
     }
@@ -234,7 +186,6 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testSortsActionsBasedOnType() {
-        setAutofillFeature(true);
         PropertyProvider<Action[]> generationProvider =
                 new PropertyProvider<>(GENERATE_PASSWORD_AUTOMATIC);
         PropertyProvider<AutofillSuggestion[]> autofillSuggestionProvider =
@@ -288,7 +239,6 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testChangesCaptionIdForCredManEntry() {
-        setAutofillFeature(true);
         PropertyProvider<AutofillSuggestion[]> autofillSuggestionProvider =
                 new PropertyProvider<>(AUTOFILL_SUGGESTION);
         PropertyProvider<Action[]> credManProvider =
@@ -317,7 +267,6 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testMovesTabSwitcherToEnd() {
-        setAutofillFeature(true);
         PropertyProvider<Action[]> generationProvider =
                 new PropertyProvider<>(GENERATE_PASSWORD_AUTOMATIC);
         PropertyProvider<AutofillSuggestion[]> autofillSuggestionProvider =
@@ -368,17 +317,17 @@ public class KeyboardAccessoryControllerTest {
         autofillSuggestionProvider.notifyObservers(
                 new AutofillSuggestion[] {suggestion, suggestion});
         generationProvider.notifyObservers(new Action[] {generationAction});
-        assertThat(mModel.get(BAR_ITEMS).size(), is(3));
+        assertThat(mModel.get(BAR_ITEMS).size(), is(4));
 
         // Drop all Autofill suggestions. Only the generation action should remain.
         autofillSuggestionProvider.notifyObservers(new AutofillSuggestion[0]);
-        assertThat(mModel.get(BAR_ITEMS).size(), is(1));
+        assertThat(mModel.get(BAR_ITEMS).size(), is(2));
         assertThat(mModel.get(BAR_ITEMS).get(0).getAction(), is(generationAction));
 
         // Readd an Autofill suggestion and drop the generation. Only the suggestion should remain.
         autofillSuggestionProvider.notifyObservers(new AutofillSuggestion[] {suggestion});
         generationProvider.notifyObservers(new Action[0]);
-        assertThat(mModel.get(BAR_ITEMS).size(), is(1));
+        assertThat(mModel.get(BAR_ITEMS).size(), is(2));
         assertThat(mModel.get(BAR_ITEMS).get(0), instanceOf(AutofillBarItem.class));
         AutofillBarItem autofillBarItem = (AutofillBarItem) mModel.get(BAR_ITEMS).get(0);
         assertThat(autofillBarItem.getSuggestion(), is(suggestion));
@@ -388,16 +337,19 @@ public class KeyboardAccessoryControllerTest {
     public void testGenerationActionsRemovedWhenNotVisible() {
         // Make the accessory visible and add an action to it.
         mCoordinator.show();
+        // Ignore tab switcher item.
+        assertThat(mModel.get(BAR_ITEMS).size(), is(1));
         mModel.get(BAR_ITEMS)
                 .add(
                         new BarItem(
                                 BarItem.Type.ACTION_BUTTON,
                                 new Action(GENERATE_PASSWORD_AUTOMATIC, null),
                                 /* captionId= */ 0));
+        assertThat(mModel.get(BAR_ITEMS).size(), is(2));
 
         // Hiding the accessory should also remove actions.
         mCoordinator.dismiss();
-        assertThat(mModel.get(BAR_ITEMS).size(), is(0));
+        assertThat(mModel.get(BAR_ITEMS).size(), is(1));
     }
 
     @Test
@@ -608,8 +560,7 @@ public class KeyboardAccessoryControllerTest {
     }
 
     @Test
-    public void testModelChangesUpdatesTheContentDescriptionInModernView() {
-        setAutofillFeature(true);
+    public void testModelChangesUpdatesTheContentDescription() {
         PropertyProvider<AutofillSuggestion[]> autofillSuggestionProvider =
                 new PropertyProvider<>(AUTOFILL_SUGGESTION);
 

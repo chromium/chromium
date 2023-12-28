@@ -23,8 +23,8 @@ namespace {
 // Falls back to the union of all patterns of a the given name in the given
 // pattern source if there are no patterns for the given language.
 base::span<const MatchPatternRef> GetMatchPatterns(
-    base::StringPiece name,
-    base::StringPiece language_code,
+    std::string_view name,
+    std::string_view language_code,
     PatternSource pattern_source) {
   auto* it = kPatternMap.find(std::make_pair(name, language_code));
   if (!language_code.empty() && it == kPatternMap.end())
@@ -53,21 +53,21 @@ base::span<const MatchPatternRef> GetMatchPatterns(
 
 }  // namespace
 
-absl::optional<PatternSource> GetActivePatternSource() {
+std::optional<PatternSource> GetActivePatternSource() {
   return HeuristicSourceToPatternSource(GetActiveHeuristicSource());
 }
 
 base::span<const MatchPatternRef> GetMatchPatterns(
-    base::StringPiece name,
-    absl::optional<LanguageCode> language_code,
+    std::string_view name,
+    std::optional<LanguageCode> language_code,
     PatternSource pattern_source) {
   return language_code ? GetMatchPatterns(name, **language_code, pattern_source)
                        : GetMatchPatterns(name, "", pattern_source);
 }
 
 base::span<const MatchPatternRef> GetMatchPatterns(
-    ServerFieldType type,
-    absl::optional<LanguageCode> language_code,
+    FieldType type,
+    std::optional<LanguageCode> language_code,
     PatternSource pattern_source) {
   return GetMatchPatterns(FieldTypeToStringView(type), language_code,
                           pattern_source);

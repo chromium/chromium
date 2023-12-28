@@ -79,7 +79,7 @@ void TranslateInfoBarDelegate::Create(
   // Find any existing translate infobar delegate.
   infobars::InfoBar* old_infobar = NULL;
   TranslateInfoBarDelegate* old_delegate = NULL;
-  for (auto* infobar : infobar_manager->infobars()) {
+  for (infobars::InfoBar* infobar : infobar_manager->infobars()) {
     old_infobar = infobar;
     old_delegate = old_infobar->delegate()->AsTranslateInfoBarDelegate();
     if (old_delegate) {

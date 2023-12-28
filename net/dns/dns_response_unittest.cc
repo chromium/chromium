@@ -499,8 +499,8 @@ TEST(DnsResponseTest, InitParse) {
       "\x03"
       "org";
   // Compilers want to copy when binding temporary to const &, so must use heap.
-  auto query = std::make_unique<DnsQuery>(
-      0xcafe, base::as_bytes(base::make_span(qname)), dns_protocol::kTypeA);
+  auto query = std::make_unique<DnsQuery>(0xcafe, base::as_byte_span(qname),
+                                          dns_protocol::kTypeA);
 
   const uint8_t response_data[] = {
       // Header
@@ -566,7 +566,7 @@ TEST(DnsResponseTest, InitParse) {
 
   // Reject wrong question.
   auto wrong_query = std::make_unique<DnsQuery>(
-      0xcafe, base::as_bytes(base::make_span(qname)), dns_protocol::kTypeCNAME);
+      0xcafe, base::as_byte_span(qname), dns_protocol::kTypeCNAME);
   EXPECT_FALSE(resp.InitParse(sizeof(response_data), *wrong_query));
   EXPECT_FALSE(resp.IsValid());
   EXPECT_THAT(resp.id(), testing::Optional(0xcafe));
@@ -612,8 +612,8 @@ TEST(DnsResponseTest, InitParseInvalidFlags) {
       "\x03"
       "org";
   // Compilers want to copy when binding temporary to const &, so must use heap.
-  auto query = std::make_unique<DnsQuery>(
-      0xcafe, base::as_bytes(base::make_span(qname)), dns_protocol::kTypeA);
+  auto query = std::make_unique<DnsQuery>(0xcafe, base::as_byte_span(qname),
+                                          dns_protocol::kTypeA);
 
   const uint8_t response_data[] = {
       // Header
@@ -673,8 +673,7 @@ TEST(DnsResponseTest, InitParseRejectsResponseWithoutQuestions) {
 
   const char kQueryName[] = "\003www\006google\004test";
   DnsQuery query(
-      /*id=*/581, base::as_bytes(base::make_span(kQueryName)),
-      dns_protocol::kTypeA);
+      /*id=*/581, base::as_byte_span(kQueryName), dns_protocol::kTypeA);
   EXPECT_FALSE(resp.InitParse(sizeof(kResponse) - 1, query));
 }
 
@@ -701,8 +700,7 @@ TEST(DnsResponseTest, InitParseRejectsResponseWithTooManyQuestions) {
 
   const char kQueryName[] = "\003www\006google\004test";
   DnsQuery query(
-      /*id=*/582, base::as_bytes(base::make_span(kQueryName)),
-      dns_protocol::kTypeA);
+      /*id=*/582, base::as_byte_span(kQueryName), dns_protocol::kTypeA);
   EXPECT_FALSE(resp.InitParse(sizeof(kResponse) - 1, query));
 }
 
@@ -1009,8 +1007,7 @@ TEST(DnsResponseTest, InitParseRejectsQuestionWithTooLongName) {
   // a too-long name.
   const char kQueryName[] = "\005query\004test";
   DnsQuery query(
-      /*id=*/581, base::as_bytes(base::make_span(kQueryName)),
-      dns_protocol::kTypeA);
+      /*id=*/581, base::as_byte_span(kQueryName), dns_protocol::kTypeA);
   EXPECT_FALSE(resp.InitParse(response_data.size(), query));
 }
 
@@ -1036,8 +1033,7 @@ TEST(DnsResponseTest, InitParseRejectsQuestionWithNonendedName) {
 
   const char kQueryName[] = "\003www\006google\006testtt";
   DnsQuery query(
-      /*id=*/581, base::as_bytes(base::make_span(kQueryName)),
-      dns_protocol::kTypeA);
+      /*id=*/581, base::as_byte_span(kQueryName), dns_protocol::kTypeA);
   EXPECT_FALSE(resp.InitParse(sizeof(kResponse) - 1, query));
 }
 
@@ -1069,8 +1065,7 @@ TEST(DnsResponseTest, InitParseRejectsResponseWithMissingQuestions) {
 
   const char kQueryName[] = "\003www\006google\004test";
   DnsQuery query(
-      /*id=*/581, base::as_bytes(base::make_span(kQueryName)),
-      dns_protocol::kTypeA);
+      /*id=*/581, base::as_byte_span(kQueryName), dns_protocol::kTypeA);
   EXPECT_FALSE(resp.InitParse(sizeof(kResponse) - 1, query));
 }
 
@@ -1151,8 +1146,7 @@ TEST(DnsResponseTest, ParserLimitedToNumClaimedRecords) {
 
   const char kQueryName[] = "\003www\006google\004test";
   DnsQuery query(
-      /*id=*/581, base::as_bytes(base::make_span(kQueryName)),
-      dns_protocol::kTypeA);
+      /*id=*/581, base::as_byte_span(kQueryName), dns_protocol::kTypeA);
 
   ASSERT_TRUE(resp2.InitParse(sizeof(kResponse) - 1, query));
   DnsRecordParser parser2 = resp2.Parser();
@@ -1705,8 +1699,7 @@ TEST(DnsResponseWriteTest, WrittenResponseCanBeParsed) {
 TEST(DnsResponseWriteTest, CreateEmptyNoDataResponse) {
   DnsResponse response = DnsResponse::CreateEmptyNoDataResponse(
       /*id=*/4,
-      /*is_authoritative=*/true,
-      base::as_bytes(base::make_span("\x04name\x04test\x00")),
+      /*is_authoritative=*/true, base::as_byte_span("\x04name\x04test\x00"),
       dns_protocol::kTypeA);
 
   EXPECT_TRUE(response.IsValid());

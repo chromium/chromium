@@ -6,8 +6,18 @@
 #include <string>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
+#include "chrome/updater/test_scope.h"
+#include "chrome/updater/util/unit_test_util.h"
+#include "chrome/updater/util/unit_test_util_win.h"
+#include "chrome/updater/util/win_util.h"
+#include "chrome/updater/win/test/test_executables.h"
+#include "chrome/updater/win/test/test_strings.h"
 #include "chrome/updater/win/ui/progress_wnd.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -339,6 +349,45 @@ TEST_F(ProgressWndTest, OnComplete) {
     EXPECT_TRUE(::IsWindowEnabled(progress_wnd->GetDlgItem(IDC_CLOSE)));
     progress_wnd->DestroyWindow();
   }
+}
+
+TEST_F(ProgressWndTest, LaunchCmdLine) {
+  using ::testing::AnyNumber;
+  EXPECT_CALL(*mock_progress_wnd_events_, DoExit()).Times(AnyNumber());
+  EXPECT_CALL(*mock_progress_wnd_events_, DoClose()).Times(AnyNumber());
+
+  // Create a shared event to be waited for in this process and signaled in the
+  // test process. If the test is running elevated with UAC on, the test will
+  // also confirm that the test process is launched at medium integrity, by
+  // creating an event with a security descriptor that allows the medium
+  // integrity process to signal it.
+  test::EventHolder event_holder(IsElevatedWithUACOn()
+                                     ? CreateEveryoneWaitableEventForTest()
+                                     : test::CreateWaitableEventForTest());
+  ASSERT_NE(event_holder.event.handle(), nullptr);
+
+  base::CommandLine test_process_cmd_line =
+      GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
+  test_process_cmd_line.AppendSwitchNative(
+      IsElevatedWithUACOn() ? kTestEventToSignalIfMediumIntegrity
+                            : kTestEventToSignal,
+      event_holder.name);
+  WTL::CMessageLoop ui_message_loop;
+  std::unique_ptr<ProgressWnd> progress_wnd =
+      MakeProgressWindow(&ui_message_loop);
+  AppCompletionInfo app_completion_info;
+  app_completion_info.completion_code =
+      CompletionCodes::COMPLETION_CODE_EXIT_SILENTLY_ON_LAUNCH_COMMAND;
+  app_completion_info.post_install_launch_command_line =
+      base::WideToUTF8(test_process_cmd_line.GetCommandLineString());
+  ObserverCompletionInfo observer_completion_info;
+  observer_completion_info.completion_text = u"text";
+  observer_completion_info.apps_info.push_back(app_completion_info);
+  progress_wnd->OnComplete(observer_completion_info);
+
+  EXPECT_TRUE(event_holder.event.TimedWait(TestTimeouts::action_max_timeout()));
+  EXPECT_TRUE(test::WaitFor(
+      [] { return test::FindProcesses(kTestProcessExecutableName).empty(); }));
 }
 
 }  // namespace updater::ui

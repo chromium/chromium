@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -362,6 +363,7 @@ TEST_P(ScrollbarsTest, ScrollbarsUpdatedOnOverlaySettingsChange) {
 }
 
 TEST(ScrollbarsTestWithOwnWebViewHelper, ScrollbarSizeF) {
+  test::TaskEnvironment task_environment;
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
   frame_test_helpers::WebViewHelper web_view_helper;
   // Needed so visual viewport supplies its own scrollbars. We don't support

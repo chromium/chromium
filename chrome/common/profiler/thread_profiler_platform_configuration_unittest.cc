@@ -15,7 +15,8 @@
 
 #if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_64)) || BUILDFLAG(IS_MAC) || \
     (BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)) ||           \
-    (BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64))
+    (BUILDFLAG(IS_CHROMEOS) &&                                              \
+     (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)))
 #define THREAD_PROFILER_SUPPORTED_ON_PLATFORM true
 #else
 #define THREAD_PROFILER_SUPPORTED_ON_PLATFORM false

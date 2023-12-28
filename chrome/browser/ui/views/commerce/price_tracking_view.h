@@ -19,8 +19,9 @@ class Profile;
 
 class PriceTrackingView : public commerce::SubscriptionsObserver,
                           public views::FlexLayoutView {
+  METADATA_HEADER(PriceTrackingView, views::FlexLayoutView)
+
  public:
-  METADATA_HEADER(PriceTrackingView);
   PriceTrackingView(Profile* profile,
                     const GURL& page_url,
                     const gfx::ImageSkia& product_image,

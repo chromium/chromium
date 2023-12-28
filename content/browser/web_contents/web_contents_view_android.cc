@@ -701,4 +701,25 @@ void WebContentsViewAndroid::NotifyVirtualKeyboardOverlayRect(
     rwhv->NotifyVirtualKeyboardOverlayRect(keyboard_rect);
 }
 
+void WebContentsViewAndroid::AddScreenshotLayerForNavigationTransitions(
+    scoped_refptr<cc::slim::Layer> screenshot_layer,
+    bool screenshot_layer_on_top) {
+  CHECK_EQ(view_.GetLayer(), parent_for_web_page_widgets_->parent());
+
+  const auto& children = view_.GetLayer()->children();
+  auto itor = base::ranges::find(children, parent_for_web_page_widgets_);
+  CHECK(itor != children.end());
+
+  int index = std::distance(children.begin(), itor);
+  if (screenshot_layer_on_top) {
+    ++index;
+  }
+
+  CHECK_GE(index, 0);
+  CHECK_LE(index, static_cast<int>(children.size()));
+
+  view_.GetLayer()->InsertChild(std::move(screenshot_layer),
+                                static_cast<size_t>(index));
+}
+
 } // namespace content

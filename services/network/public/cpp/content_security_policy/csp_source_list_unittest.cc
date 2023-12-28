@@ -110,8 +110,10 @@ TEST(CSPSourceList, AllowStar) {
   EXPECT_EQ(Allow(source_list, GURL("wss://not-example.com"), *self),
             network::CSPCheckResult::AllowedOnlyIfWildcardMatchesWs());
   EXPECT_EQ(Allow(source_list, GURL("ftp://not-example.com"), *self),
-            network::CSPCheckResult::AllowedOnlyIfWildcardMatchesFtp());
-
+            base::FeatureList::IsEnabled(
+                network::features::kCspStopMatchingWildcardDirectivesToFtp)
+                ? network::CSPCheckResult::Blocked()
+                : network::CSPCheckResult::AllowedOnlyIfWildcardMatchesFtp());
   EXPECT_EQ(Allow(source_list, GURL("file://not-example.com"), *self),
             network::CSPCheckResult::Blocked());
   EXPECT_EQ(Allow(source_list, GURL("applewebdata://a.test"), *self),

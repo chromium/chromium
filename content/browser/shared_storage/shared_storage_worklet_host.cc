@@ -438,8 +438,7 @@ void SharedStorageWorkletHost::SelectURL(
   // Assert that `urn_uuid` was not in the set before.
   DCHECK(emplace_succeeded);
 
-  FencedFrameConfig config;
-  config.urn_uuid_ = absl::make_optional(urn_uuid);
+  FencedFrameConfig config(urn_uuid, GURL());
   std::move(callback).Run(
       /*success=*/true, /*error_message=*/{},
       /*result_config=*/

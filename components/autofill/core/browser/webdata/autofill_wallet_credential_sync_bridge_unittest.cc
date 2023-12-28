@@ -14,8 +14,9 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -59,6 +60,7 @@ class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
  public:
   void SetUp() override {
     OSCryptMocker::SetUp();
+    db_.AddTable(&sync_metadata_table_);
     db_.AddTable(&table_);
     db_.Init(base::FilePath(WebDatabase::kInMemoryPath));
     ON_CALL(backend_, GetDatabase()).WillByDefault(Return(&db_));
@@ -95,7 +97,7 @@ class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
 
   AutofillWalletCredentialSyncBridge* bridge() { return bridge_.get(); }
 
-  AutofillTable* table() { return &table_; }
+  PaymentsAutofillTable* table() { return &table_; }
 
   MockAutofillWebDataBackend& backend() { return backend_; }
 
@@ -128,7 +130,7 @@ class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
       initial_updates.push_back(SpecificsToUpdateResponse(specifics));
     }
     real_processor_->OnUpdateReceived(state, std::move(initial_updates),
-                                      /*gc_directive=*/absl::nullopt);
+                                      /*gc_directive=*/std::nullopt);
   }
 
   syncer::UpdateResponseData SpecificsToUpdateResponse(
@@ -146,7 +148,8 @@ class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
 
  private:
   NiceMock<MockAutofillWebDataBackend> backend_;
-  AutofillTable table_;
+  AutofillSyncMetadataTable sync_metadata_table_;
+  PaymentsAutofillTable table_;
   WebDatabase db_;
   NiceMock<MockModelTypeChangeProcessor> mock_processor_;
   std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor> real_processor_;
@@ -224,7 +227,7 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest, MergeFullSyncData) {
 
   EXPECT_EQ(bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
                                         std::move(entity_change_list)),
-            absl::nullopt);
+            std::nullopt);
   EXPECT_THAT(GetAllServerCvcDataFromTable(),
               testing::UnorderedElementsAre(server_cvc));
 }
@@ -261,7 +264,7 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest,
   EXPECT_EQ(
       bridge()->ApplyIncrementalSyncChanges(
           bridge()->CreateMetadataChangeList(), std::move(entity_change_list)),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_THAT(GetAllServerCvcDataFromTable(),
               testing::UnorderedElementsAre(server_cvc1, server_cvc2));
 }
@@ -294,7 +297,7 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest,
   EXPECT_EQ(
       bridge()->ApplyIncrementalSyncChanges(
           bridge()->CreateMetadataChangeList(), std::move(entity_change_list)),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_THAT(GetAllServerCvcDataFromTable(), testing::IsEmpty());
 }
 
@@ -330,7 +333,7 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest,
   EXPECT_EQ(
       bridge()->ApplyIncrementalSyncChanges(
           bridge()->CreateMetadataChangeList(), std::move(entity_change_list)),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_THAT(GetAllServerCvcDataFromTable(),
               testing::UnorderedElementsAre(server_cvc2));
 }

@@ -627,11 +627,8 @@ void ProfileMenuViewBase::BuildProfileBackgroundContainer(
 
   // The |edit_button| is on the right and has fixed width.
   if (edit_button) {
-    edit_button->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                                 views::MaximumFlexSizeRule::kPreferred)
-            .WithOrder(2));
+    edit_button->SetProperty(views::kBoxLayoutFlexKey,
+                             views::BoxLayoutFlexSpecification());
     views::View* edit_button_container =
         profile_background_container_->AddChildView(
             std::make_unique<views::View>());
@@ -806,7 +803,7 @@ void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
           base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
                               base::Unretained(this), std::move(action)),
           button_text));
-  button->SetProminent(true);
+  button->SetStyle(ui::ButtonStyle::kProminent);
 
   // TODO(crbug.com/1422119): Remove `background_color_id` parameter after
   // Chrome Refresh 2023 is launched.

@@ -41,8 +41,8 @@ class SkiaUtilsMacTest : public testing::Test {
   // Checks that the given bitmap is red.
   void TestSkBitmap(const SkBitmap& bitmap);
 
-  // Tests `SkBitmapToNSImageWithColorSpace` for a specific combination of color
-  // and color type. Creates a bitmap with `CreateSkBitmap`, converts it into an
+  // Tests `SkBitmapToNSImage` for a specific combination of color and color
+  // type. Creates a bitmap with `CreateSkBitmap`, converts it into an
   // `NSImage`, then tests it with `TestImageRep`.
   void ShapeHelper(int width,
                    int height,
@@ -155,8 +155,7 @@ void SkiaUtilsMacTest::ShapeHelper(int width,
   SkBitmap bitmap(CreateSkBitmap(width, height, test_color, color_type));
 
   // Confirm size
-  NSImage* image = skia::SkBitmapToNSImageWithColorSpace(
-      bitmap, base::mac::GetSRGBColorSpace());
+  NSImage* image = skia::SkBitmapToNSImage(bitmap);
   EXPECT_DOUBLE_EQ(image.size.width, (CGFloat)width);
   EXPECT_DOUBLE_EQ(image.size.height, (CGFloat)height);
 
@@ -186,8 +185,7 @@ TEST_F(SkiaUtilsMacTest, BitmapToNSBitmapImageRep_BlueRectangle20x30) {
 
   SkBitmap bitmap(
       CreateSkBitmap(width, height, TestColor::kBlue, ColorType::k24Bit));
-  NSBitmapImageRep* imageRep = skia::SkBitmapToNSBitmapImageRepWithColorSpace(
-      bitmap, base::mac::GetSRGBColorSpace());
+  NSBitmapImageRep* imageRep = skia::SkBitmapToNSBitmapImageRep(bitmap);
 
   EXPECT_DOUBLE_EQ(width, imageRep.size.width);
   EXPECT_DOUBLE_EQ(height, imageRep.size.height);
@@ -202,8 +200,7 @@ TEST_F(SkiaUtilsMacTest, NSImageRepToSkBitmap) {
   EXPECT_EQ(1u, image.representations.count);
   NSBitmapImageRep* imageRep = base::apple::ObjCCastStrict<NSBitmapImageRep>(
       image.representations.lastObject);
-  SkBitmap bitmap(skia::NSImageRepToSkBitmapWithColorSpace(
-      imageRep, image.size, false, base::mac::GetSRGBColorSpace()));
+  SkBitmap bitmap(skia::NSImageRepToSkBitmap(imageRep, image.size, false));
   TestSkBitmap(bitmap);
 }
 

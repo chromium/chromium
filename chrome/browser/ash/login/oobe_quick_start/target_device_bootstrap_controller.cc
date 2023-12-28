@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "base/check_op.h"
-#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -29,27 +28,12 @@
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/components/quick_start/types.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
-#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "url/origin.h"
 
 namespace ash::quick_start {
-
-namespace {
-
-// Passing "--quick-start-test-forced-update" on the command line will simulate
-// the "Forced Update" flow after the wifi credentials transfer is complete.
-// This is for testing only and will not install an actual update. If this
-// switch is present, the Chromebook reboots and attempts to automatically
-// resume the Quick Start connection after reboot.
-// TODO(b/280308144): Delete this switch. The OOBE update screen should call
-// PrepareForUpdate() and trigger the update/reboot.
-constexpr char kQuickStartTestForcedUpdateSwitch[] =
-    "quick-start-test-forced-update";
-
-}  // namespace
 
 TargetDeviceBootstrapController::TargetDeviceBootstrapController(
     std::unique_ptr<SecondDeviceAuthBroker> auth_broker,
@@ -258,13 +242,6 @@ void TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse(
   authenticated_connection_->Close(
       TargetDeviceConnectionBroker::ConnectionClosedReason::
           kTargetDeviceUpdate);
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kQuickStartTestForcedUpdateSwitch)) {
-    chromeos::PowerManagerClient::Get()->RequestRestart(
-        power_manager::REQUEST_RESTART_FOR_UPDATE,
-        "Testing OOBE Quick Start Forced Update flow");
-  }
 }
 
 void TargetDeviceBootstrapController::WaitForUserVerification() {
@@ -311,11 +288,6 @@ void TargetDeviceBootstrapController::OnWifiCredentialsReceived(
   // logged from the QuickStartDecoder class.
   QuickStartMetrics::RecordWifiTransferResult(
       /*succeeded=*/true, /*failure_reason=*/std::nullopt);
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kQuickStartTestForcedUpdateSwitch)) {
-    PrepareForUpdate();
-  }
 }
 
 void TargetDeviceBootstrapController::RequestGoogleAccountInfo() {

@@ -28,7 +28,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/webdata/autocomplete_entry.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/autocomplete_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/webdata/common/web_database.h"
@@ -38,7 +38,6 @@ using autofill::AutocompleteChangeList;
 using autofill::AutocompleteEntry;
 using autofill::AutocompleteKey;
 using autofill::AutofillProfile;
-using autofill::AutofillTable;
 using autofill::AutofillType;
 using autofill::AutofillWebDataService;
 using autofill::AutofillWebDataServiceObserverOnDBSequence;
@@ -106,7 +105,7 @@ void GetAllAutocompleteEntriesOnDBSequence(
     AutofillWebDataService* wds,
     std::vector<AutocompleteEntry>* entries) {
   DCHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence());
-  AutofillTable::FromWebDatabase(wds->GetDatabase())
+  autofill::AutocompleteTable::FromWebDatabase(wds->GetDatabase())
       ->GetAllAutocompleteEntries(entries);
 }
 

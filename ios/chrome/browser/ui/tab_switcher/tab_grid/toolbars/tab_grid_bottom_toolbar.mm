@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_new_tab_button.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_buttons_delegate.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_utils.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -448,7 +448,7 @@
 
   // A non-nil UIImage has to be added in the background of the toolbar to avoid
   // having an additional blur effect.
-  [_toolbar setBackgroundImage:[UIImage new]
+  [_toolbar setBackgroundImage:[[UIImage alloc] init]
             forToolbarPosition:UIBarPositionAny
                     barMetrics:UIBarMetricsDefault];
 }

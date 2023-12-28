@@ -117,7 +117,8 @@ class InterceptAndCancelDidCommitProvisionalLoad
     }
   }
 
-  const std::vector<NavigationRequest*>& intercepted_navigations() const {
+  const std::vector<raw_ptr<NavigationRequest, VectorExperimental>>&
+  intercepted_navigations() const {
     return intercepted_navigations_;
   }
 
@@ -143,7 +144,8 @@ class InterceptAndCancelDidCommitProvisionalLoad
 
   // Note: Do not dereference the intercepted_navigations_, they are used as
   // indices in the RenderFrameHostImpl and not for themselves.
-  std::vector<NavigationRequest*> intercepted_navigations_;
+  std::vector<raw_ptr<NavigationRequest, VectorExperimental>>
+      intercepted_navigations_;
   std::vector<mojom::DidCommitProvisionalLoadParamsPtr> intercepted_messages_;
   std::unique_ptr<base::RunLoop> loop_;
 };
@@ -6863,7 +6865,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestCredentiallessIframe,
   // A credentialless document has a storage key with a nonce.
   EXPECT_TRUE(child->current_frame_host()->GetStorageKey().nonce().has_value());
   base::UnguessableToken credentialless_nonce =
-      current_frame_host()->credentialless_iframes_nonce();
+      current_frame_host()->GetPage().credentialless_iframes_nonce();
   EXPECT_EQ(credentialless_nonce,
             child->current_frame_host()->GetStorageKey().nonce().value());
 
@@ -6968,7 +6970,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestCredentiallessIframe,
   EXPECT_TRUE(
       child_b->current_frame_host()->GetStorageKey().nonce().has_value());
   base::UnguessableToken credentialless_nonce_b =
-      current_frame_host()->credentialless_iframes_nonce();
+      current_frame_host()->GetPage().credentialless_iframes_nonce();
   EXPECT_NE(credentialless_nonce, credentialless_nonce_b);
   EXPECT_EQ(credentialless_nonce_b,
             child_b->current_frame_host()->GetStorageKey().nonce().value());
@@ -7089,12 +7091,6 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 class NavigationBrowserTestWarnSandboxIneffective
     : public NavigationBrowserTest {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    NavigationBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "WarnSandboxIneffective");
-  }
-
   static constexpr char kSandboxEscapeWarningMessage[] =
       "An iframe which has both allow-scripts and allow-same-origin for its "
       "sandbox attribute can escape its sandboxing.";

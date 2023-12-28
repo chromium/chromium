@@ -577,6 +577,9 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // crbug.com/738634.
   virtual bool HostHasNotBeenUsed() = 0;
 
+  // Returns true if this is a spare RenderProcessHost.
+  virtual bool IsSpare() const = 0;
+
   // Locks this RenderProcessHost to documents compatible with |process_lock|.
   // This method is public so that it can be called from within //content, and
   // used by MockRenderProcessHost. It isn't meant to be called outside of
@@ -741,6 +744,12 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void ReinitializeLogging(uint32_t logging_dest,
                                    base::ScopedFD log_file_descriptor) = 0;
 #endif
+
+  // Asks the renderer process to prioritize energy efficiency because the
+  // embedder is in battery saver mode. This signal is propagated to blink and
+  // v8. The default state is `false`, meaning the power/speed tuning is left up
+  // to the different components to figure out.
+  virtual void SetBatterySaverMode(bool battery_saver_mode_enabled) = 0;
 
   // Static management functions -----------------------------------------------
 

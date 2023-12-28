@@ -5,9 +5,9 @@
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 import 'chrome://scanning/multi_page_scan.js';
 
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {MultiPageScanElement} from 'chrome://scanning/multi_page_scan.js';
 import {AppState} from 'chrome://scanning/scanning_app_types.js';

@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='composited-parent'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='composited-parent'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#000000",
@@ -20,7 +20,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='software-parent'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='software-parent'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000"

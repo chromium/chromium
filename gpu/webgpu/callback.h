@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/types/is_instantiation.h"
 
 namespace gpu::webgpu {
 
@@ -37,16 +39,9 @@ class WGPURepeatingCallback;
 template <template <typename> class BaseCallbackTemplate,
           typename R,
           typename... Args>
+  requires base::IsBaseCallback<BaseCallbackTemplate<R(Args...)>>
 class WGPUCallbackBase<BaseCallbackTemplate<R(Args...)>> {
   using BaseCallback = BaseCallbackTemplate<R(Args...)>;
-
-  static constexpr bool is_once_callback =
-      std::is_same<BaseCallback, base::OnceCallback<R(Args...)>>::value;
-  static constexpr bool is_repeating_callback =
-      std::is_same<BaseCallback, base::RepeatingCallback<R(Args...)>>::value;
-  static_assert(
-      is_once_callback || is_repeating_callback,
-      "Callback must be base::OnceCallback or base::RepeatingCallback");
 
  public:
   explicit WGPUCallbackBase(BaseCallback callback)
@@ -61,17 +56,15 @@ class WGPUCallbackBase<BaseCallbackTemplate<R(Args...)>> {
     return static_cast<WGPUCallbackBase*>(userdata);
   }
 
-  R Run(Args... args) && {
-    static_assert(
-        is_once_callback,
-        "Run on a moved receiver must only be called on a once callback.");
+  R Run(Args... args) &&
+    requires base::is_instantiation<base::OnceCallback, BaseCallback>
+  {
     return std::move(callback_).Run(std::forward<Args>(args)...);
   }
 
-  R Run(Args... args) const& {
-    static_assert(is_repeating_callback,
-                  "Run on a unmoved receiver must only be called on a "
-                  "repeating callback.");
+  R Run(Args... args) const&
+    requires base::is_instantiation<base::RepeatingCallback, BaseCallback>
+  {
     return callback_.Run(std::forward<Args>(args)...);
   }
 
@@ -124,36 +117,26 @@ class WGPURepeatingCallback<R(Args...)>
 };
 
 template <typename CallbackType>
+  requires base::is_instantiation<base::OnceCallback, CallbackType>
 auto MakeWGPUOnceCallback(CallbackType&& cb) {
-  static_assert(
-      std::is_same<CallbackType,
-                   base::OnceCallback<typename CallbackType::RunType>>::value,
-      "Callback must be base::OnceCallback");
   return new gpu::webgpu::WGPUOnceCallback<typename CallbackType::RunType>(
       std::move(cb));
 }
 
 template <typename FunctionType, typename... BoundParameters>
+  requires(!base::internal::kIsWeakMethod<
+           base::internal::MakeFunctorTraits<FunctionType>::is_method,
+           BoundParameters...>)
 auto BindWGPUOnceCallback(FunctionType&& function,
                           BoundParameters&&... bound_parameters) {
-  static constexpr bool is_method =
-      base::internal::MakeFunctorTraits<FunctionType>::is_method;
-  static constexpr bool is_weak_method =
-      base::internal::IsWeakMethod<is_method, BoundParameters...>();
-  static_assert(!is_weak_method,
-                "BindWGPUOnceCallback cannot be used with weak methods");
-
   return MakeWGPUOnceCallback(
       base::BindOnce(std::forward<FunctionType>(function),
                      std::forward<BoundParameters>(bound_parameters)...));
 }
 
 template <typename CallbackType>
+  requires base::is_instantiation<base::RepeatingCallback, CallbackType>
 auto MakeWGPURepeatingCallback(CallbackType&& cb) {
-  static_assert(
-      std::is_same<CallbackType, base::RepeatingCallback<
-                                     typename CallbackType::RunType>>::value,
-      "Callback must be base::RepeatingCallback");
   return new gpu::webgpu::WGPURepeatingCallback<typename CallbackType::RunType>(
       std::move(cb));
 }

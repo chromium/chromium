@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow PRE id='scroller'",
+      "name": "LayoutNGBlockFlow (children-inline) PRE id='scroller'",
       "bounds": [185, 185],
       "drawsContent": false,
       "transform": 1
@@ -26,7 +26,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow PRE id='scroller'",
+      "name": "LayoutNGBlockFlow (children-inline) PRE id='scroller'",
       "bounds": [47, 615],
       "invalidations": [
         [0, 0, 47, 615]

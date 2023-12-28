@@ -35,9 +35,9 @@ void PerformanceHandler::RegisterMessages() {
           &PerformanceHandler::HandleOpenBatterySaverFeedbackDialog,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "openHighEfficiencyFeedbackDialog",
+      "openMemorySaverFeedbackDialog",
       base::BindRepeating(
-          &PerformanceHandler::HandleOpenHighEfficiencyFeedbackDialog,
+          &PerformanceHandler::HandleOpenMemorySaverFeedbackDialog,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "openSpeedFeedbackDialog",
@@ -73,7 +73,7 @@ base::Value PerformanceHandler::GetCurrentOpenSites() {
   std::set<std::pair<base::TimeTicks, std::string>, std::greater<>>
       last_active_time_host_pairs;
   const Profile* profile = Profile::FromWebUI(web_ui());
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     // Exclude browsers not signed into the current profile
     if (browser->profile() != profile) {
       continue;
@@ -127,7 +127,7 @@ void PerformanceHandler::HandleOpenBatterySaverFeedbackDialog(
   HandleOpenFeedbackDialog("performance_battery");
 }
 
-void PerformanceHandler::HandleOpenHighEfficiencyFeedbackDialog(
+void PerformanceHandler::HandleOpenMemorySaverFeedbackDialog(
     const base::Value::List& args) {
   HandleOpenFeedbackDialog("performance_tabs");
 }

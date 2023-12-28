@@ -26,6 +26,7 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_browsertest_base.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/drive/drive_pref_names.h"
@@ -35,8 +36,17 @@
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
-
 namespace {
+
+// Aliases ---------------------------------------------------------------------
+
+using ::testing::AllOf;
+using ::testing::Eq;
+using ::testing::IsFalse;
+using ::testing::IsTrue;
+using ::testing::ResultOf;
+
+// Constants -------------------------------------------------------------------
 
 // File paths for test data.
 constexpr char kTestDataDir[] = "chrome/test/data/chromeos/file_manager/";
@@ -111,12 +121,21 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, AddItemOfType) {
     const std::string& expected_id =
         client->AddItemOfType(expected_type, expected_file_path);
 
-    // Insertion into the model should only fail if the item is a Camera app
-    // item and Camera app integration is disabled.
+    // Insertion into the model should only fail if the item is:
+    // (a) a Camera app item and Camera app integration is disabled, or
+    // (b) a Photoshop Web item and Photoshop Web integration is disabled.
     if (expected_id.empty()) {
       EXPECT_EQ(model->items().size(), expected_count);
-      EXPECT_TRUE(HoldingSpaceItem::IsCameraAppType(expected_type));
-      EXPECT_FALSE(features::IsHoldingSpaceCameraAppIntegrationEnabled());
+      EXPECT_THAT(
+          expected_type,
+          ::testing::AnyOf(
+              AllOf(ResultOf(&HoldingSpaceItem::IsCameraAppType, IsTrue()),
+                    And(features::IsHoldingSpaceCameraAppIntegrationEnabled(),
+                        IsFalse())),
+              AllOf(
+                  Eq(HoldingSpaceItem::Type::kPhotoshopWeb),
+                  And(features::IsHoldingSpacePhotoshopWebIntegrationEnabled(),
+                      IsFalse()))));
       continue;
     }
 

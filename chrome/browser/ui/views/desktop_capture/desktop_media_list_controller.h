@@ -44,9 +44,9 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   // The abstract interface implemented by any view controlled by this
   // controller.
   class ListView : public views::View {
-   public:
-    METADATA_HEADER(ListView);
+    METADATA_HEADER(ListView, views::View)
 
+   public:
     // Returns the DesktopMediaID of the selected element of this list, or
     // nullopt if no element is selected.
     virtual std::optional<content::DesktopMediaID> GetSelection() = 0;

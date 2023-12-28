@@ -5,6 +5,7 @@
 #ifndef ASH_STYLE_CLOSE_BUTTON_H_
 #define ASH_STYLE_CLOSE_BUTTON_H_
 
+#include "ash/ash_export.h"
 #include "ash/style/ash_color_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
@@ -20,8 +21,8 @@ namespace ash {
 // A circular ImageButton with kCloseButtonIcon inside. It has small, medium and
 // large different sizes. The touch area of the small close button will be
 // expanded.
-class CloseButton : public views::ImageButton,
-                    public views::ViewTargeterDelegate {
+class ASH_EXPORT CloseButton : public views::ImageButton,
+                               public views::ViewTargeterDelegate {
  public:
   METADATA_HEADER(CloseButton);
 

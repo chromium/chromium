@@ -98,6 +98,8 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<int>
     kAutofillRankingFormulaVirtualCardBoostHalfLife;
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillRelaxCreditCardImport);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableEmailHeuristicOnlyAddressForms);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableSupportForApartmentNumbers);
@@ -158,8 +160,9 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<bool> kAutofillModelPredictionsAreActive;
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillOverwritePlaceholdersOnly);
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillSkipPreFilledFields);
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillPageLanguageDetection);
-COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillParseAsync);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillParseNameAsAutocompleteType);
 COMPONENT_EXPORT(AUTOFILL)
@@ -206,15 +209,18 @@ BASE_DECLARE_FEATURE(kAutofillSilentProfileUpdateForInsufficientImport);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillTextAreaChangeEvents);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillTrackProfileTokenQuality);
+BASE_DECLARE_FEATURE(kAutofillContentEditableChangeEvents);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillUseImprovedLabelDisambiguation);
+BASE_DECLARE_FEATURE(kAutofillTrackProfileTokenQuality);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillUseNewSectioningMethod);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillUseParameterizedSectioning);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillUseTypedCreditCardNumber);
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(
+    kAutofillDontCheckForDisappearingFormlessElementsForSubmission);
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<bool> kAutofillSectioningModeIgnoreAutocomplete;
 COMPONENT_EXPORT(AUTOFILL)
@@ -245,24 +251,18 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillVirtualCardsOnTouchToFillAndroid);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAndroidDisableSuggestionsOnJSFocus);
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillEnableCacheForRegexMatching);
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<int>
+    kAutofillEnableCacheForRegexMatchingCacheSizeParam;
 
 #if BUILDFLAG(IS_ANDROID)
-COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillKeyboardAccessory);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillTouchToFillForCreditCardsAndroid);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillVirtualViewStructureAndroid);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillUseMobileLabelDisambiguation);
-COMPONENT_EXPORT(AUTOFILL)
-extern const char kAutofillUseMobileLabelDisambiguationParameterName[];
-COMPONENT_EXPORT(AUTOFILL)
-extern const char kAutofillUseMobileLabelDisambiguationParameterShowOne[];
-COMPONENT_EXPORT(AUTOFILL)
-extern const char kAutofillUseMobileLabelDisambiguationParameterShowAll[];
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(
     kAutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile);

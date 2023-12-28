@@ -89,7 +89,7 @@ class AppsIconCoalescerTest : public testing::Test {
                           int* counter,
                           int delta) {
     return loader->LoadIcon(
-        apps::AppType::kWeb, app_id, apps::IconType::kUncompressed,
+        app_id, apps::IconType::kUncompressed,
         /*size_hint_in_dip=*/1, /*allow_placeholder_icon=*/false,
         base::BindOnce([](int* counter, int delta,
                           apps::IconValuePtr icon) { *counter += delta; },

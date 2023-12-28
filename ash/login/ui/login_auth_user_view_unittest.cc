@@ -133,9 +133,9 @@ class LoginAuthUserViewTestBase : public LoginTestBase {
 
   base::test::ScopedFeatureList feature_list_;
   LoginUserInfo user_;
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> container_ =
+  raw_ptr<views::View, DanglingUntriaged> container_ =
       nullptr;  // Owned by test widget view hierarchy.
-  raw_ptr<LoginAuthUserView, DanglingUntriaged | ExperimentalAsh> view_ =
+  raw_ptr<LoginAuthUserView, DanglingUntriaged> view_ =
       nullptr;  // Owned by test widget view hierarchy.
 };
 

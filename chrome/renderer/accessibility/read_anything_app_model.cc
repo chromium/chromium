@@ -166,8 +166,16 @@ void ReadAnythingAppModel::ComputeSelectionNodeIds() {
   ui::AXNode* end_node = GetAXNode(end_node_id_);
   DCHECK(end_node);
 
-  // If start node or end node is ignored, the selection was invalid.
-  if (start_node->IsIgnored() || end_node->IsIgnored()) {
+  if (!start_node || !end_node) {
+    DUMP_WILL_BE_NOTREACHED_NORETURN()
+        << "Selection is invalid. Start node existed? " << !!start_node
+        << " End node existed? " << !!end_node;
+    return;
+  }
+
+  // If start node or end node is invisible or ignored, the selection was
+  // invalid.
+  if (start_node->IsInvisibleOrIgnored() || end_node->IsInvisibleOrIgnored()) {
     return;
   }
 
@@ -269,7 +277,7 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
     // TODO(abigailbklein) This prevents the crash in crbug.com/1402788, but may
     // not be the correct approach. Do we need a version of
     // GetDeepestLastUnignoredDescendant() that works on ignored nodes?
-    if (!content_node || content_node->IsIgnored()) {
+    if (!content_node || content_node->IsInvisibleOrIgnored()) {
       continue;
     }
 
@@ -724,8 +732,11 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
   for (const auto& event : event_generator) {
     switch (event.event_params.event) {
       case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED:
+        // For selections in PDFs coming from the main pane or from the side
+        // panel, event_from is set to kNone so skip this check.
         if (event.event_params.event_from == ax::mojom::EventFrom::kUser ||
-            event.event_params.event_from == ax::mojom::EventFrom::kAction) {
+            event.event_params.event_from == ax::mojom::EventFrom::kAction ||
+            is_pdf_) {
           requires_post_process_selection_ = true;
           selection_from_action_ =
               event.event_params.event_from == ax::mojom::EventFrom::kAction;

@@ -4,7 +4,6 @@
 
 #include "ash/shelf/shelf_shutdown_confirmation_bubble.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
@@ -15,7 +14,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -97,14 +95,9 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
   title_ = AddChildView(std::make_unique<views::Label>());
   title_->SetMultiLine(true);
   title_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  if (chromeos::features::IsJellyEnabled()) {
-    title_->SetAutoColorReadabilityEnabled(false);
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosHeadline1,
-                                          *title_);
-  } else {
-    TrayPopupUtils::SetLabelFontList(title_,
-                                     TrayPopupUtils::FontStyle::kSubHeader);
-  }
+  title_->SetAutoColorReadabilityEnabled(false);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosHeadline1,
+                                        *title_);
   title_->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_SHUTDOWN_CONFIRMATION_TITLE));
   title_->SetProperty(

@@ -32,9 +32,9 @@
 #include "components/component_updater/component_updater_service_internal.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/update_client/component_unpacker.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/patcher.h"
+#include "components/update_client/puffin_component_unpacker.h"
 #include "components/update_client/test_configurator.h"
 #include "components/update_client/test_utils.h"
 #include "components/update_client/unzipper.h"
@@ -44,7 +44,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-using ComponentUnpacker = update_client::ComponentUnpacker;
 using Configurator = update_client::Configurator;
 using CrxUpdateItem = update_client::CrxUpdateItem;
 using TestConfigurator = update_client::TestConfigurator;
@@ -213,12 +212,15 @@ class ComponentInstallerTest : public testing::Test {
  protected:
   void RunThreads();
   void Unpack(const base::FilePath& crx_path);
-  ComponentUnpacker::Result result() const { return result_; }
+  update_client::PuffinComponentUnpacker::Result result() const {
+    return result_;
+  }
 
   base::test::TaskEnvironment task_environment_;
 
  private:
-  void UnpackComplete(const ComponentUnpacker::Result& result);
+  void UnpackComplete(
+      const update_client::PuffinComponentUnpacker::Result& result);
   void Schedule(const base::TimeDelta& initial_delay,
                 const base::TimeDelta& delay,
                 const UpdateScheduler::UserTask& user_task,
@@ -234,7 +236,7 @@ class ComponentInstallerTest : public testing::Test {
   scoped_refptr<TestConfigurator> config_;
   scoped_refptr<MockUpdateClient> update_client_ =
       base::MakeRefCounted<MockUpdateClient>();
-  ComponentUnpacker::Result result_;
+  update_client::PuffinComponentUnpacker::Result result_;
   std::unique_ptr<ComponentUpdateService> component_updater_;
   raw_ptr<MockUpdateScheduler> scheduler_ = nullptr;
 };
@@ -261,17 +263,17 @@ void ComponentInstallerTest::RunThreads() {
 }
 
 void ComponentInstallerTest::Unpack(const base::FilePath& crx_path) {
-  auto component_unpacker = base::MakeRefCounted<ComponentUnpacker>(
+  update_client::PuffinComponentUnpacker::Unpack(
       std::vector<uint8_t>(std::begin(kSha256Hash), std::end(kSha256Hash)),
-      crx_path, nullptr, config_->GetUnzipperFactory()->Create(),
-      config_->GetPatcherFactory()->Create(), crx_file::VerifierFormat::CRX3);
-  component_unpacker->Unpack(base::BindOnce(
-      &ComponentInstallerTest::UnpackComplete, base::Unretained(this)));
+      crx_path, config_->GetUnzipperFactory()->Create(),
+      crx_file::VerifierFormat::CRX3,
+      base::BindOnce(&ComponentInstallerTest::UnpackComplete,
+                     base::Unretained(this)));
   RunThreads();
 }
 
 void ComponentInstallerTest::UnpackComplete(
-    const ComponentUnpacker::Result& result) {
+    const update_client::PuffinComponentUnpacker::Result& result) {
   result_ = result;
 
   EXPECT_EQ(update_client::UnpackerError::kNone, result_.error);

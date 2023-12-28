@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/values.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
@@ -108,7 +109,11 @@ void ContentSettingsRegistry::Init() {
            /*valid_settings=*/{CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK},
            WebsiteSettingsInfo::TOP_ORIGIN_WITH_RESOURCE_EXCEPTIONS_SCOPE,
            WebsiteSettingsRegistry::DESKTOP |
-               WebsiteSettingsRegistry::PLATFORM_ANDROID,
+               WebsiteSettingsRegistry::PLATFORM_ANDROID
+#if BUILDFLAG(USE_BLINK)
+               | WebsiteSettingsRegistry::PLATFORM_IOS
+#endif
+           ,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
@@ -273,7 +278,11 @@ void ContentSettingsRegistry::Init() {
            /*valid_settings=*/{CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK},
            WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::DESKTOP |
-               WebsiteSettingsRegistry::PLATFORM_ANDROID,
+               WebsiteSettingsRegistry::PLATFORM_ANDROID
+#if BUILDFLAG(USE_BLINK)
+               | WebsiteSettingsRegistry::PLATFORM_IOS
+#endif
+           ,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
@@ -439,7 +448,8 @@ void ContentSettingsRegistry::Init() {
 
   Register(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
            "file-system-write-guard", CONTENT_SETTING_ASK,
-           WebsiteSettingsInfo::UNSYNCABLE, /*allowlisted_primary_schemes=*/{},
+           WebsiteSettingsInfo::UNSYNCABLE,
+           /*allowlisted_primary_schemes=*/{kChromeDevToolsScheme},
            /*valid_settings=*/
            {CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK},
            WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
@@ -593,7 +603,11 @@ void ContentSettingsRegistry::Init() {
            /*allowlisted_primary_schemes=*/{},
            /*valid_settings=*/{CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK},
            WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
-           WebsiteSettingsRegistry::PLATFORM_ANDROID,
+           WebsiteSettingsRegistry::PLATFORM_ANDROID
+#if BUILDFLAG(USE_BLINK)
+               | WebsiteSettingsRegistry::PLATFORM_IOS
+#endif
+           ,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
@@ -652,6 +666,28 @@ void ContentSettingsRegistry::Init() {
            {CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK},
            WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::DESKTOP,
+           ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
+           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+
+  Register(ContentSettingsType::CAPTURED_SURFACE_CONTROL,
+           "captured-surface-control", CONTENT_SETTING_ASK,
+           WebsiteSettingsInfo::UNSYNCABLE,
+           /*allowlisted_primary_schemes=*/{},
+           /*valid_settings=*/
+           {CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK},
+           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
+           WebsiteSettingsRegistry::DESKTOP,
+           ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
+           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+
+  Register(ContentSettingsType::SMART_CARD_GUARD, "smart-card-guard",
+           CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
+           /*allowlisted_primary_schemes=*/{},
+           /*valid_settings=*/{CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK},
+           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
+           // Add more platforms as implementation progresses.
+           // Target is DESKTOP.
+           WebsiteSettingsRegistry::PLATFORM_CHROMEOS,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 }

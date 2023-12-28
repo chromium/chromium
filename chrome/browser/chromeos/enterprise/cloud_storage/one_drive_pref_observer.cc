@@ -4,14 +4,17 @@
 
 #include "chrome/browser/chromeos/enterprise/cloud_storage/one_drive_pref_observer.h"
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/enterprise/cloud_storage/policy_utils.h"
 #include "chrome/browser/chromeos/extensions/odfs_config_private/odfs_config_private_api.h"
+#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/common/extensions/api/odfs_config_private.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -22,6 +25,8 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
+#include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
 
 using extensions::api::odfs_config_private::AccountRestrictionsInfo;
@@ -55,10 +60,13 @@ class OneDrivePrefObserver : public KeyedService {
   void BroadcastModeChanged(Mount mode);
   void BroadcastAccountRestrictionsChanged(base::Value::List restrictions);
 
+  void MaybeUninstallOdfsExtension(Mount mode);
+
   // Keyed services are shut down from the embedder's destruction of the profile
   // and this pointer is reset in `ShutDown`. Therefore it is safe to use this
   // raw pointer.
   raw_ptr<Profile> profile_ = nullptr;
+
   // This keyed service depends on the EventRouter keyed service and will be
   // destroyed before the EventRouter. Therefore it is safe to use this raw
   // pointer.
@@ -94,6 +102,8 @@ void OneDrivePrefObserver::Init() {
       base::BindRepeating(&OneDrivePrefObserver::
                               OnMicrosoftOneDriveAccountRestrictionsPrefChanged,
                           base::Unretained(this)));
+  OnMicrosoftOneDriveMountPrefChanged();
+  OnMicrosoftOneDriveAccountRestrictionsPrefChanged();
 }
 
 void OneDrivePrefObserver::Shutdown() {
@@ -103,12 +113,26 @@ void OneDrivePrefObserver::Shutdown() {
 }
 
 void OneDrivePrefObserver::OnMicrosoftOneDriveMountPrefChanged() {
-  BroadcastModeChanged(GetMicrosoftOneDriveMount(profile_.get()));
+  const Mount mount = GetMicrosoftOneDriveMount(profile_);
+  BroadcastModeChanged(mount);
+  MaybeUninstallOdfsExtension(mount);
 }
 
 void OneDrivePrefObserver::OnMicrosoftOneDriveAccountRestrictionsPrefChanged() {
   BroadcastAccountRestrictionsChanged(
       GetMicrosoftOneDriveAccountRestrictions(profile_.get()));
+}
+
+void OneDrivePrefObserver::MaybeUninstallOdfsExtension(Mount mount) {
+  if (cloud_upload::IsMicrosoftOfficeOneDriveIntegrationAllowed(profile_) ||
+      !CHECK_DEREF(extensions::ExtensionRegistry::Get(profile_))
+           .GetExtensionById(
+               extension_misc::kODFSExtensionId,
+               extensions::ExtensionRegistry::IncludeFlag::ENABLED)) {
+    return;
+  }
+  CHECK_DEREF(extensions::ExtensionSystem::Get(profile_)->extension_service())
+      .RemoveComponentExtension(extension_misc::kODFSExtensionId);
 }
 
 }  // namespace
@@ -123,6 +147,8 @@ OneDrivePrefObserverFactory::OneDrivePrefObserverFactory()
                                  ProfileSelections::BuildForRegularProfile()) {
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
   DependsOn(extensions::EventRouterFactory::GetInstance());
+  DependsOn(
+      extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 }
 
 OneDrivePrefObserverFactory::~OneDrivePrefObserverFactory() = default;

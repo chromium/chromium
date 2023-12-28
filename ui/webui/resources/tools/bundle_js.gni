@@ -116,6 +116,13 @@ template("bundle_js") {
     }
     external_paths += [ "//resources/polymer/v3_0/|$polymer_path" ]
 
+    lit_path = rebase_path("${root_gen_dir}/third_party/lit/v3_0/minified/",
+                           root_build_dir)
+    if (!is_chrome_untrusted) {
+      external_paths += [ "chrome://resources/lit/v3_0/|$lit_path" ]
+    }
+    external_paths += [ "//resources/lit/v3_0/|$lit_path" ]
+
     if (!is_chrome_untrusted) {
       external_paths += [ "chrome://resources/|$resources_path" ]
     }

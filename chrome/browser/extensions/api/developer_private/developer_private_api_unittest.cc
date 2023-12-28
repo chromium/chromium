@@ -70,6 +70,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/test_extension_dir.h"
@@ -427,7 +428,7 @@ void DeveloperPrivateApiUnitTest::TestExtensionPrefSetting(
 
     function = base::MakeRefCounted<
         api::DeveloperPrivateUpdateExtensionConfigurationFunction>();
-    function->set_source_context_type(Feature::WEBUI_CONTEXT);
+    function->set_source_context_type(mojom::ContextType::kWebUi);
     EXPECT_TRUE(RunFunction(function, args)) << key;
     EXPECT_TRUE(has_pref.Run()) << key;
   }

@@ -67,11 +67,6 @@ class Cryptographer {
       base::span<const uint8_t> sender_public_key,
       const uint32_t recipient_key_version) const = 0;
 
-  // For testing purposes only: returns the Public-private key-pair associated
-  // with |version|.
-  virtual const CrossUserSharingPublicPrivateKeyPair&
-  GetCrossUserSharingKeyPairForTesting(uint32_t version) const = 0;
-
   // Convenience function to deal with protocol buffers. It uses EncryptString()
   // after serialization.
   bool Encrypt(const ::google::protobuf::MessageLite& message,

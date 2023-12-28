@@ -176,6 +176,20 @@ TEST_F(GuestOSAppsTest, CreateApp) {
         EXPECT_TRUE(update.ShowInLauncher());
         EXPECT_TRUE(update.ShowInSearch());
         EXPECT_TRUE(update.ShowInShelf());
+        EXPECT_EQ(bruschetta::kBruschettaVmName,
+                  *update.Extra()->FindString("vm_name"));
+        EXPECT_EQ("test_container",
+                  *update.Extra()->FindString("container_name"));
+        EXPECT_EQ("desktop_file_id",
+                  *update.Extra()->FindString("desktop_file_id"));
+        EXPECT_EQ("", *update.Extra()->FindString("exec"));
+        EXPECT_EQ("", *update.Extra()->FindString("executable_file_name"));
+        EXPECT_FALSE(update.Extra()->FindBool("no_display").value());
+        EXPECT_FALSE(update.Extra()->FindBool("terminal").value());
+        EXPECT_FALSE(update.Extra()->FindBool("scaled").value());
+        EXPECT_EQ("", *update.Extra()->FindString("package_id"));
+        EXPECT_EQ("", *update.Extra()->FindString("startup_wm_class"));
+        EXPECT_FALSE(update.Extra()->FindBool("startup_notify").value());
       });
   EXPECT_TRUE(seen) << "Couldn't find test app in registry.";
 }

@@ -125,8 +125,7 @@ class AudioContextAutoplayTest
   }
 
  private:
-  test::TaskEnvironment task_environment_{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<AudioContextAutoplayTestPlatform> platform_;
   frame_test_helpers::WebViewHelper helper_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;

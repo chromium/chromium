@@ -59,7 +59,7 @@ class ArcCrashCollectorBridge : public KeyedService,
  private:
   std::vector<std::string> CreateCrashReporterArgs();
 
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 
   std::string device_;

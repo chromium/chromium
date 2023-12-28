@@ -49,7 +49,8 @@ class FakeNearbyShareDeviceDataUpdaterFactory
 
   // Returns all FakeNearbyShareDeviceDataUpdater instances created by
   // CreateInstance().
-  std::vector<FakeNearbyShareDeviceDataUpdater*>& instances() {
+  std::vector<raw_ptr<FakeNearbyShareDeviceDataUpdater, VectorExperimental>>&
+  instances() {
     return instances_;
   }
 
@@ -66,7 +67,8 @@ class FakeNearbyShareDeviceDataUpdaterFactory
       base::TimeDelta timeout,
       NearbyShareClientFactory* client_factory) override;
 
-  std::vector<FakeNearbyShareDeviceDataUpdater*> instances_;
+  std::vector<raw_ptr<FakeNearbyShareDeviceDataUpdater, VectorExperimental>>
+      instances_;
   base::TimeDelta latest_timeout_;
   raw_ptr<NearbyShareClientFactory, ExperimentalAsh> latest_client_factory_ =
       nullptr;

@@ -4,7 +4,7 @@
 
 #include "ash/wm/window_cycle/window_cycle_list.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -23,6 +23,7 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
@@ -76,7 +77,7 @@ class CustomWindowTargeter : public aura::WindowTargeter {
   }
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> tab_cycler_;
+  raw_ptr<aura::Window> tab_cycler_;
 };
 
 gfx::Point ConvertEventToScreen(const ui::LocatedEvent* event) {
@@ -99,7 +100,8 @@ bool IsWindowInSnapGroup(aura::Window* window) {
 // reordered to reflect the actual window layout with the primarily snapped
 // window comes before the secondarily snapped window, which makes the front
 // window in the window lists not guaranteed to be the mru window.
-aura::Window* GetMruWindow(const std::vector<aura::Window*>& windows) {
+aura::Window* GetMruWindow(
+    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows) {
   aura::Window* front_window = windows.front();
   if (IsWindowInSnapGroup(front_window)) {
     SnapGroup* snap_group =
@@ -128,8 +130,9 @@ WindowCycleList::WindowCycleList(const WindowList& windows, bool same_app_only)
     MakeSameAppOnly();
   }
 
-  for (auto* window : windows_)
+  for (aura::Window* window : windows_) {
     window->AddObserver(this);
+  }
 
   if (ShouldShowUi()) {
     // Disable the tab scrubber so three finger scrolling doesn't scrub tabs as
@@ -151,8 +154,9 @@ WindowCycleList::~WindowCycleList() {
 
   Shell::Get()->shell_delegate()->SetTabScrubberChromeOSEnabled(true);
 
-  for (auto* window : windows_)
+  for (aura::Window* window : windows_) {
     window->RemoveObserver(this);
+  }
 
   if (cycle_ui_widget_)
     cycle_ui_widget_->Close();
@@ -195,8 +199,9 @@ void WindowCycleList::ReplaceWindows(const WindowList& windows) {
     MakeSameAppOnly();
   }
 
-  for (auto* new_window : windows_)
+  for (aura::Window* new_window : windows_) {
     new_window->AddObserver(this);
+  }
 
   if (cycle_view_)
     cycle_view_->UpdateWindows(windows_);
@@ -327,7 +332,7 @@ void WindowCycleList::OnWindowDestroying(aura::Window* window) {
 
   if (cycle_view_) {
     auto* new_target_window =
-        windows_.empty() ? nullptr : windows_[current_index_];
+        windows_.empty() ? nullptr : windows_[current_index_].get();
     cycle_view_->HandleWindowDestruction(window, new_target_window);
 
     if (windows_.empty()) {
@@ -353,7 +358,7 @@ void WindowCycleList::OnDisplayMetricsChanged(const display::Display& display,
 }
 
 void WindowCycleList::RemoveAllWindows() {
-  for (auto* window : windows_) {
+  for (aura::Window* window : windows_) {
     window->RemoveObserver(this);
 
     if (cycle_view_)

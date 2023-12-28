@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KEYBOARD_EXTENSION_STATE;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.EXTENDING_KEYBOARD;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.FLOATING_BAR;
@@ -34,7 +33,6 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState;
@@ -201,10 +199,9 @@ class ManualFillingMediator extends EmptyTabObserver
         return isInitialized()
                 && !isSoftKeyboardShowing(view)
                 && (mKeyboardAccessory.hasActiveTab()
-                        || ChromeFeatureList.isEnabled(AUTOFILL_KEYBOARD_ACCESSORY)
-                                && (is(WAITING_TO_REPLACE)
-                                        || is(REPLACING_KEYBOARD)
-                                        || is(FLOATING_SHEET)));
+                        || (is(WAITING_TO_REPLACE)
+                                || is(REPLACING_KEYBOARD)
+                                || is(FLOATING_SHEET)));
     }
 
     ObservableSupplier<Integer> getBottomInsetSupplier() {
@@ -278,7 +275,7 @@ class ManualFillingMediator extends EmptyTabObserver
         if (state.addAvailableTab(accessorySheet.getTab())) {
             accessorySheet.registerDataProvider(state.getSheetDataProvider(tabType));
         }
-        if (ChromeFeatureList.isEnabled(AUTOFILL_KEYBOARD_ACCESSORY)) refreshTabs();
+        refreshTabs();
     }
 
     void registerAutofillProvider(
@@ -381,16 +378,10 @@ class ManualFillingMediator extends EmptyTabObserver
 
     private void onOrientationChange() {
         if (!isInitialized()) return;
-        if (ChromeFeatureList.isEnabled(AUTOFILL_KEYBOARD_ACCESSORY)
-                || is(REPLACING_KEYBOARD)
-                || is(FLOATING_SHEET)) {
-            mModel.set(KEYBOARD_EXTENSION_STATE, HIDDEN);
-            // Autofill suggestions are invalidated on rotation. Dismissing all filling UI forces
-            // the user to interact with the field they want to edit. This refreshes Autofill.
-            if (ChromeFeatureList.isEnabled(AUTOFILL_KEYBOARD_ACCESSORY)) {
-                hideSoftKeyboard();
-            }
-        }
+        mModel.set(KEYBOARD_EXTENSION_STATE, HIDDEN);
+        // Autofill suggestions are invalidated on rotation. Dismissing all filling UI forces
+        // the user to interact with the field they want to edit. This refreshes Autofill.
+        hideSoftKeyboard();
     }
 
     void resume() {
@@ -610,10 +601,6 @@ class ManualFillingMediator extends EmptyTabObserver
 
     @Override
     public void onBarFadeInAnimationEnd() {
-        if (requiresVisibleSheet(mModel.get(KEYBOARD_EXTENSION_STATE))
-                && !ChromeFeatureList.isEnabled(AUTOFILL_KEYBOARD_ACCESSORY)) {
-            return;
-        }
         mActivity.getCurrentWebContents().scrollFocusedEditableNodeIntoView();
     }
 
@@ -716,11 +703,9 @@ class ManualFillingMediator extends EmptyTabObserver
      */
     private @Px int calculateAccessorySheetHeight(View rootView) {
         int minimalSheetHeight = getIdealSheetHeight();
-        int newSheetHeight = mSoftKeyboardDelegate.calculateSoftKeyboardHeight(rootView);
-        newSheetHeight +=
-                ChromeFeatureList.isEnabled(AUTOFILL_KEYBOARD_ACCESSORY) ? getHeaderHeight() : 0;
-        newSheetHeight = Math.max(newSheetHeight, minimalSheetHeight);
-        return newSheetHeight;
+        int newSheetHeight =
+                mSoftKeyboardDelegate.calculateSoftKeyboardHeight(rootView) + getHeaderHeight();
+        return Math.max(newSheetHeight, minimalSheetHeight);
     }
 
     /** Double-checks that the accessory sheet height doesn't cover the whole page. */
@@ -779,24 +764,16 @@ class ManualFillingMediator extends EmptyTabObserver
         if (!canCreateSheet(tabType) || webContents.isDestroyed()) return null;
         AccessorySheetTabCoordinator sheet;
         ManualFillingState state = mStateCache.getStateFor(webContents);
-        sheet =
-                ChromeFeatureList.isEnabled(AUTOFILL_KEYBOARD_ACCESSORY)
-                        ? mSheets.get(tabType, null)
-                        : state.getAccessorySheet(tabType);
+        sheet = mSheets.get(tabType, null);
         if (sheet != null) return sheet;
         sheet = createNewSheet(tabType);
 
-        if (!ChromeFeatureList.isEnabled(AUTOFILL_KEYBOARD_ACCESSORY)) {
-            state.setAccessorySheet(tabType, sheet);
-        }
         mSheets.put(tabType, sheet);
         if (state.getSheetDataProvider(tabType) != null) {
             if (state.addAvailableTab(sheet.getTab())) {
                 sheet.registerDataProvider(state.getSheetDataProvider(tabType));
             }
         }
-        // TODO(crbug.com/1210831): This call could be entirely unnecessary.
-        if (!ChromeFeatureList.isEnabled(AUTOFILL_KEYBOARD_ACCESSORY)) refreshTabs();
         return sheet;
     }
 
@@ -899,9 +876,7 @@ class ManualFillingMediator extends EmptyTabObserver
                                 .getResources()
                                 .getDimensionPixelSize(
                                         R.dimen.keyboard_accessory_suggestion_height);
-        idealHeight +=
-                ChromeFeatureList.isEnabled(AUTOFILL_KEYBOARD_ACCESSORY) ? getHeaderHeight() : 0;
-        return idealHeight;
+        return idealHeight + getHeaderHeight();
     }
 
     TabModelObserver getTabModelObserverForTesting() {

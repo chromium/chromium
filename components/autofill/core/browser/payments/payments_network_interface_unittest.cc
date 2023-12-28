@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -11,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -42,7 +43,6 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::HasSubstr;
 
@@ -594,13 +594,13 @@ class PaymentsNetworkInterfaceTest : public testing::Test {
     return profiles;
   }
 
-  AutofillProfile BuildProfile(base::StringPiece first_name,
-                               base::StringPiece last_name,
-                               base::StringPiece address_line,
-                               base::StringPiece city,
-                               base::StringPiece state,
-                               base::StringPiece zip,
-                               base::StringPiece phone_number) {
+  AutofillProfile BuildProfile(std::string_view first_name,
+                               std::string_view last_name,
+                               std::string_view address_line,
+                               std::string_view city,
+                               std::string_view state,
+                               std::string_view zip,
+                               std::string_view phone_number) {
     AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
 
     profile.SetInfo(NAME_FIRST, base::ASCIIToUTF16(first_name), "en-US");
@@ -616,9 +616,9 @@ class PaymentsNetworkInterfaceTest : public testing::Test {
     return profile;
   }
 
-  absl::optional<PaymentsNetworkInterface::UnmaskDetails> unmask_details_;
+  std::optional<PaymentsNetworkInterface::UnmaskDetails> unmask_details_;
   // The UnmaskResponseDetails retrieved from an UnmaskRequest.  Includes PAN.
-  absl::optional<PaymentsNetworkInterface::UnmaskResponseDetails>
+  std::optional<PaymentsNetworkInterface::UnmaskResponseDetails>
       unmask_response_details_;
   base::WeakPtrFactory<PaymentsNetworkInterfaceTest> weak_ptr_factory_{this};
 };
@@ -1392,7 +1392,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UploadSuccessEmptyResponse) {
 TEST_F(PaymentsNetworkInterfaceTest, UploadSuccessInstrumentIdPresent) {
   StartUploading(UploadCardOptions());
   IssueOAuthToken();
-  upload_card_response_details_.instrument_id = absl::nullopt;
+  upload_card_response_details_.instrument_id = std::nullopt;
 
   // Test the conversion from string to int64_t using the max value for int64_t.
   ReturnResponse(net::HTTP_OK,

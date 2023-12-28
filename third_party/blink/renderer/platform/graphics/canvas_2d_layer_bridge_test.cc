@@ -171,8 +171,7 @@ class Canvas2DLayerBridgeTest : public Test {
   }
 
  protected:
-  test::TaskEnvironment task_environment_{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
+  test::TaskEnvironment task_environment_;
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
   ImageTrackingDecodeCache image_decode_cache_;
   std::unique_ptr<FakeCanvasResourceHost> host_;

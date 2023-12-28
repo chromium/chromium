@@ -5,14 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_COMPOSE_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_COMPOSE_DELEGATE_H_
 
-#include <optional>
-#include <string>
-
-#include "base/functional/callback.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 
+class AutofillDriver;
 struct FormFieldData;
 
 // The interface for communication from //components/autofill to
@@ -26,10 +23,6 @@ struct FormFieldData;
 // this interface exists and is injected via `AutofillClient`.
 class AutofillComposeDelegate {
  public:
-  // The callback to Autofill. When run, it fills the passed string into the
-  // form field on which it was triggered.
-  using ComposeCallback = base::OnceCallback<void(const std::u16string&)>;
-
   virtual ~AutofillComposeDelegate() = default;
 
   // Ui entry points for the compose offer.
@@ -45,15 +38,12 @@ class AutofillComposeDelegate {
   // resume where they left off.
   virtual bool HasSavedState(const FieldGlobalId& trigger_field_id) = 0;
 
-  // Opens the Compose UI. `ui_entry_point` and `trigger_field` describe the
-  // field on which Compose was triggered. `popup_screen_location` contains the
-  // location (and arrow position) of the currently open popup bubble (if there
-  // is one) and `callback` is the response callback to Autofill.
-  virtual void OpenCompose(
-      UiEntryPoint ui_entry_point,
-      const FormFieldData& trigger_field,
-      std::optional<AutofillClient::PopupScreenLocation> popup_screen_location,
-      ComposeCallback callback) = 0;
+  // Opens the Compose UI from the `ui_entry_point` given the 'driver',
+  // 'form_id', and 'field_id'.
+  virtual void OpenCompose(AutofillDriver& driver,
+                           FormGlobalId form_id,
+                           FieldGlobalId field_id,
+                           UiEntryPoint ui_entry_point) = 0;
 };
 
 }  // namespace autofill

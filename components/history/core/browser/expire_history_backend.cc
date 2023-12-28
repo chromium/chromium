@@ -367,8 +367,9 @@ void ExpireHistoryBackend::ClearOldOnDemandFaviconsIfPossible(
 void ExpireHistoryBackend::InitWorkQueue() {
   DCHECK(work_queue_.empty()) << "queue has to be empty prior to init";
 
-  for (const auto* reader : readers_)
+  for (const history::ExpiringVisitsReader* reader : readers_) {
     work_queue_.push(reader);
+  }
 }
 
 const ExpiringVisitsReader* ExpireHistoryBackend::GetAllVisitsReader() {

@@ -17,4 +17,9 @@ enum ContextType {
   kLockscreenExtension,
   kOffscreenExtension,
   kUserScript,
+
+  // An unspecified context type. Note that this should never be used in real-
+  // world scenarios.
+  // TODO(https://crbug.com/1506353): Remove this.
+  kUnspecified,
 };

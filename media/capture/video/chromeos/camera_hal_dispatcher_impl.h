@@ -339,6 +339,11 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   TokenManager* GetTokenManagerForTesting();
 
+  // This function is only for VCD Unittests.
+  void GetChromeClientObserverForTesting(
+      base::WaitableEvent* got_chrome_client,
+      CameraClientObserver** client_observer);
+
   // Functions to get/set the status of the service loop.
   bool IsServiceLoopRunning();
   void SetServiceLoopStatus(bool is_running);

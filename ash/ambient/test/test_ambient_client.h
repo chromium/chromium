@@ -57,8 +57,7 @@ class ASH_PUBLIC_EXPORT TestAmbientClient : public AmbientClient {
   bool is_automatic_ = false;
   GetAccessTokenCallback pending_callback_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  const raw_ptr<device::TestWakeLockProvider, ExperimentalAsh>
-      wake_lock_provider_;
+  const raw_ptr<device::TestWakeLockProvider> wake_lock_provider_;
 };
 
 }  // namespace ash

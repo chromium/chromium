@@ -70,7 +70,7 @@ class OfflinePageTabHelper : public web::WebStateUserData<OfflinePageTabHelper>,
   void LoadOfflineData(web::WebState* web_state,
                        const GURL& url,
                        bool is_pdf,
-                       const std::string& data) API_AVAILABLE(ios(15.0));
+                       const std::string& data);
   void PageLoaded(
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;

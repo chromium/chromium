@@ -5,6 +5,7 @@
 #include "content/browser/interest_group/interest_group_features.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace features {
 
@@ -24,6 +25,10 @@ BASE_FEATURE(kEnableUpdatingExecutionModeToFrozenContext,
 // Enable updating userBiddingSignals when updating a user's interests groups.
 BASE_FEATURE(kEnableUpdatingUserBiddingSignals,
              "EnableUpdatingUserBiddingSignals",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kFledgeFacilitatedTestingSignalsHeaders,
+             "FledgeFacilitatedTestingSignalsHeaders",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

@@ -50,10 +50,18 @@ bool& IsolateCurrentlyInBackground() EXCLUSIVE_LOCKS_REQUIRED(IsolatesLock()) {
   return isolate_currently_in_background;
 }
 
+bool& BatterySaverModeEnabled() EXCLUSIVE_LOCKS_REQUIRED(IsolatesLock()) {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(bool, battery_saver_mode_enabled, ());
+  return battery_saver_mode_enabled;
+}
+
 void AddWorkerIsolate(v8::Isolate* isolate) {
   base::AutoLock locker(IsolatesLock());
   if (IsolateCurrentlyInBackground()) {
     isolate->IsolateInBackgroundNotification();
+  }
+  if (BatterySaverModeEnabled()) {
+    isolate->SetBatterySaverMode(true);
   }
   Isolates().insert(isolate);
 }
@@ -106,6 +114,16 @@ void IsolateInForegroundNotification() {
         isolate->IsolateInForegroundNotification();
       }));
   WorkerBackingThread::IsolateInForegroundNotificationToWorkerThreadIsolates();
+}
+
+void SetBatterySaverModeForWorkerThreadIsolates(
+    bool battery_saver_mode_enabled) {
+  base::AutoLock locker(IsolatesLock());
+
+  for (v8::Isolate* isolate : Isolates()) {
+    isolate->SetBatterySaverMode(battery_saver_mode_enabled);
+  }
+  BatterySaverModeEnabled() = battery_saver_mode_enabled;
 }
 
 WorkerBackingThread::WorkerBackingThread(const ThreadCreationParams& params)

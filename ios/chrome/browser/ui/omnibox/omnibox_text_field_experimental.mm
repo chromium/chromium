@@ -15,7 +15,6 @@
 #import "components/grit/components_scaled_resources.h"
 #import "components/omnibox/browser/autocomplete_input.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/animation_util.h"
@@ -447,6 +446,18 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 - (CGRect)caretRectForPosition:(UITextPosition*)position {
   return ([self hasAutocompleteText]) ? CGRectZero
                                       : [super caretRectForPosition:position];
+}
+
+- (NSArray<UITextSelectionRect*>*)selectionRectsForRange:(UITextRange*)range {
+  // Hide the selection UI in pre-edit. UITextField is expected to hide the
+  // selection UI when `clearsOnInsertion` is YES, but this behavior is not
+  // working on iOS 17.
+  if (@available(iOS 17, *)) {
+    if (self.isPreEditing) {
+      return nil;
+    }
+  }
+  return [super selectionRectsForRange:range];
 }
 
 #pragma mark - UITextInput

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/to_vector.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -136,7 +136,7 @@ FormData CreateForm() {
 auto CreateFieldTypeMap(const FormData& form) {
   CHECK_EQ(form.fields.size() % 6, 0u);
   CHECK_GT(form.fields.size() / 6, 0u);
-  base::flat_map<FieldGlobalId, ServerFieldType> map;
+  base::flat_map<FieldGlobalId, FieldType> map;
   for (size_t i = 0; i < form.fields.size() / 6; ++i) {
     map[form.fields[6 * i + 0].global_id()] = CREDIT_CARD_NAME_FIRST;
     map[form.fields[6 * i + 1].global_id()] = CREDIT_CARD_NAME_LAST;
@@ -177,7 +177,7 @@ url::Origin Origin(const GURL& url) {
   return url::Origin::Create(url);
 }
 
-url::Origin Origin(base::StringPiece url) {
+url::Origin Origin(std::string_view url) {
   return Origin(GURL(url));
 }
 
@@ -516,7 +516,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
     CHECK(base::ranges::all_of(frame_datas(flattened_forms_), IsRoorOrEmpty));
   }
 
-  FakeAutofillDriver& GetDriverOfForm(base::StringPiece form_name) {
+  FakeAutofillDriver& GetDriverOfForm(std::string_view form_name) {
     LocalFrameToken frame_token = GetMockedForm(form_name).host_frame;
     const FrameData* frame_data =
         test_api(mocked_forms_).GetFrameData(frame_token);
@@ -525,14 +525,14 @@ class FormForestTestWithMockedTree : public FormForestTest {
     return static_cast<FakeAutofillDriver&>(*frame_data->driver);
   }
 
-  FrameData& GetMockedFrame(base::StringPiece form_name) {
+  FrameData& GetMockedFrame(std::string_view form_name) {
     FakeAutofillDriver& d = GetDriverOfForm(form_name);
     FrameData* frame = test_api(mocked_forms_).GetFrameData(d.GetFrameToken());
     CHECK(frame) << form_name;
     return *frame;
   }
 
-  FormData& GetMockedForm(base::StringPiece form_name) {
+  FormData& GetMockedForm(std::string_view form_name) {
     auto it = forms_.find(form_name);
     CHECK(it != forms_.end()) << form_name;
     FormData* form = test_api(mocked_forms_).GetFormData(it->second);
@@ -540,7 +540,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
     return *form;
   }
 
-  FormData& GetFlattenedForm(base::StringPiece form_name) {
+  FormData& GetFlattenedForm(std::string_view form_name) {
     CHECK(!GetDriverOfForm(form_name).GetParent() ||
           GetDriverOfForm(form_name).is_sub_root());
     auto it = forms_.find(form_name);
@@ -563,7 +563,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
 class FormForestTestUpdateTree : public FormForestTestWithMockedTree {
  public:
   // The subject of this test fixture.
-  void UpdateTreeOfRendererForm(FormForest& ff, base::StringPiece form_name) {
+  void UpdateTreeOfRendererForm(FormForest& ff, std::string_view form_name) {
     ff.UpdateTreeOfRendererForm(GetMockedForm(form_name),
                                 &GetDriverOfForm(form_name));
   }
@@ -650,7 +650,7 @@ TEST_F(FormForestTestUpdateTree, SizeLimit) {
   }());
   for (size_t i = kActualFlattened + 1; i <= kDescendants; ++i) {
     GetDriverOfForm(FormName(i)).set_sub_root(true);
-    GetMockedFrame(FormName(i)).parent_form = absl::nullopt;
+    GetMockedFrame(FormName(i)).parent_form = std::nullopt;
   }
 
   MockFlattening([&] {
@@ -787,7 +787,7 @@ class FormForestTestUpdateHorizontalMultiFormMultiFrameOrder
 // Tests that siblings from multiple and the same frame are merged into their
 // root form.
 TEST_P(FormForestTestUpdateHorizontalMultiFormMultiFrameOrder, Test) {
-  auto url = [](base::StringPiece path) {  // Needed due to crbug/1217402.
+  auto url = [](std::string_view path) {  // Needed due to crbug/1217402.
     return base::StrCat({kMainUrl, path});
   };
   MockFormForest(
@@ -873,7 +873,7 @@ class FormForestTestUpdateComplexOrder : public FormForestTestUpdateOrder {};
 
 // Tests for a complex tree that all descendants are merged into their root.
 TEST_P(FormForestTestUpdateComplexOrder, Test) {
-  auto url = [](base::StringPiece path) {  // Needed due to crbug/1217402.
+  auto url = [](std::string_view path) {  // Needed due to crbug/1217402.
     return base::StrCat({kMainUrl, path});
   };
   MockFormForest(
@@ -959,7 +959,7 @@ TEST_F(FormForestTestUpdateTree, EraseForm_ParentReset) {
       (*frame_datas(mocked_forms_).find(removed_form.frame_token))->child_forms,
       [&](const FormData& form) { return form.global_id() == removed_form; });
   GetDriverOfForm("leaf").set_sub_root(true);
-  GetMockedFrame("leaf").parent_form = absl::nullopt;
+  GetMockedFrame("leaf").parent_form = std::nullopt;
   MockFlattening({{"main"}});
   MockFlattening({{"leaf"}});
   base::ranges::copy(GetFlattenedForm("leaf").fields,
@@ -1026,7 +1026,7 @@ TEST_P(FormForestTestUpdateEraseFrame, EraseFrame_ParentReset) {
         ->child_forms.clear();
   }
   GetDriverOfForm("leaf").set_sub_root(true);
-  GetMockedFrame("leaf").parent_form = absl::nullopt;
+  GetMockedFrame("leaf").parent_form = std::nullopt;
   MockFlattening({{"main"}});
   MockFlattening({{"leaf"}});
   base::ranges::copy(GetFlattenedForm("leaf").fields,
@@ -1045,7 +1045,7 @@ INSTANTIATE_TEST_SUITE_P(FormForestTest,
 class FormForestTestUpdateFieldChange : public FormForestTestUpdateTree {
  protected:
   void MockFormForest() {
-    auto url = [](base::StringPiece path) {  // Needed due to crbug/1217402.
+    auto url = [](std::string_view path) {  // Needed due to crbug/1217402.
       return base::StrCat({kMainUrl, path});
     };
     FormForestTestWithMockedTree::MockFormForest(
@@ -1231,7 +1231,7 @@ INSTANTIATE_TEST_SUITE_P(
 // Tests that UpdateTreeOfRendererForm() converges, that is, multiple calls are
 // no-ops.
 TEST_F(FormForestTestUpdateTree, Converge) {
-  auto url = [](base::StringPiece path) {  // Needed due to crbug/1217402.
+  auto url = [](std::string_view path) {  // Needed due to crbug/1217402.
     return base::StrCat({kMainUrl, path});
   };
   MockFormForest(
@@ -1276,7 +1276,7 @@ TEST_F(FormForestTestUpdateTree, Converge) {
 // Tests that removing a frame from FormData::child_frames removes the fields
 // (but not the FrameData; this is taken care of by EraseFormsOfFrame()).
 TEST_F(FormForestTestUpdateTree, RemoveFrame) {
-  auto url = [](base::StringPiece path) {  // Needed due to crbug/1217402.
+  auto url = [](std::string_view path) {  // Needed due to crbug/1217402.
     return base::StrCat({kMainUrl, path});
   };
   // |child1| is a separate variable for better code formatting.
@@ -1314,7 +1314,7 @@ TEST_F(FormForestTestUpdateTree, RemoveFrame) {
   // indirectly "greatgrandchild".
   GetDriverOfForm("grandchild2").set_sub_root(true);
   GetMockedForm("child1").child_frames.pop_back();
-  GetMockedFrame("grandchild2").parent_form = absl::nullopt;
+  GetMockedFrame("grandchild2").parent_form = std::nullopt;
   GetMockedForm("grandchild2").fields.clear();
   GetMockedForm("greatgrandchild").fields.clear();
   MockFlattening({{"main"}, {"child1"}, {"grandchild1"}, {"child2"}},
@@ -1333,7 +1333,7 @@ TEST_F(FormForestTestUpdateTree, RemoveFrame) {
 class FormForestTestFlatten : public FormForestTestWithMockedTree {
  protected:
   // The subject of this test fixture.
-  FormData GetBrowserForm(base::StringPiece form_name) {
+  FormData GetBrowserForm(std::string_view form_name) {
     return flattened_forms_.GetBrowserForm(
         GetMockedForm(form_name).global_id());
   }
@@ -1373,7 +1373,7 @@ class FormForestTestUnflatten : public FormForestTestWithMockedTree {
  protected:
   // The subject of this test fixture.
   std::vector<FormData> GetRendererFormsOfBrowserForm(
-      base::StringPiece form_name,
+      std::string_view form_name,
       const FormForest::SecurityOptions& security) {
     return flattened_forms_
         .GetRendererFormsOfBrowserForm(WithValues(GetFlattenedForm(form_name)),
@@ -1384,14 +1384,14 @@ class FormForestTestUnflatten : public FormForestTestWithMockedTree {
   // This shorthand for GetRendererFormsOfBrowserForm() allows passing prvalues
   // for `triggered_origin`, e.g. `Origin("...")`.
   std::vector<FormData> GetRendererFormsOfBrowserForm(
-      base::StringPiece form_name,
+      std::string_view form_name,
       const url::Origin& triggered_origin,
-      const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
+      const base::flat_map<FieldGlobalId, FieldType>& field_type_map) {
     return GetRendererFormsOfBrowserForm(form_name,
                                          {&triggered_origin, &field_type_map});
   }
 
-  auto FieldTypeMap(base::StringPiece form_name) {
+  auto FieldTypeMap(std::string_view form_name) {
     return CreateFieldTypeMap(WithValues(GetFlattenedForm(form_name)));
   }
 };
@@ -1424,7 +1424,7 @@ TEST_F(FormForestTestUnflatten, ChildFrame) {
 // Test that a tree of forms is filled (assuming same origins), but other
 // neighboring trees are not.
 TEST_F(FormForestTestUnflatten, LargeTree) {
-  auto url = [](base::StringPiece path) {  // Needed due to crbug/1217402.
+  auto url = [](std::string_view path) {  // Needed due to crbug/1217402.
     return base::StrCat({kMainUrl, path});
   };
   MockFormForest(

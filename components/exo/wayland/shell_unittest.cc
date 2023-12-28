@@ -98,7 +98,10 @@ class ShellClientData : public test::TestClient::CustomData {
 
   void Commit() { wl_surface_commit(surface_.get()); }
 
-  void DestroySurface() { wl_surface_destroy(surface_.release()); }
+  void DestroySurface() {
+    zcr_remote_surface_v2_destroy(remote_surface_.release());
+    wl_surface_destroy(surface_.release());
+  }
 
   void RequestWindowBounds(const gfx::Rect& bounds, wl_output* target_output) {
     zaura_toplevel_set_window_bounds(aura_toplevel_.get(), bounds.x(),
@@ -138,7 +141,7 @@ class ShellClientData : public test::TestClient::CustomData {
 
  private:
   bool close_called_ = false;
-  const raw_ptr<test::TestClient, ExperimentalAsh> client_;
+  const raw_ptr<test::TestClient> client_;
   std::unique_ptr<wl_surface> surface_;
   std::unique_ptr<xdg_surface> xdg_surface_;
   std::unique_ptr<xdg_toplevel> xdg_toplevel_;
@@ -273,8 +276,8 @@ TEST_F(ShellWithClientTest, DestroyRootSurfaceBeforeCommit) {
                                                                  surface_key));
   PostToClientAndWait([&](test::TestClient* client) {
     auto* data_ptr = client->GetDataAs<ShellClientData>();
-    data_ptr->DestroySurface();
     data_ptr->Pin();
+    data_ptr->DestroySurface();
   });
   EXPECT_FALSE(test::server_util::GetUserDataForResource<Surface>(server_.get(),
                                                                   surface_key));

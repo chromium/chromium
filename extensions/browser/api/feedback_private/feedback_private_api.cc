@@ -118,7 +118,7 @@ void SendFeedback(content::BrowserContext* browser_context,
   FeedbackPrivateDelegate* delegate =
       ExtensionsAPIClient::Get()->GetFeedbackPrivateDelegate();
   base::WeakPtr<feedback::FeedbackUploader> uploader =
-      base::AsWeakPtr(delegate->GetFeedbackUploaderForContext(browser_context));
+      delegate->GetFeedbackUploaderForContext(browser_context)->AsWeakPtr();
   scoped_refptr<FeedbackData> feedback_data =
       base::MakeRefCounted<FeedbackData>(std::move(uploader),
                                          ContentTracingManager::Get());

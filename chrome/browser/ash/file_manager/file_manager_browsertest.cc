@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(QuickOfficeForceFileDownloadEnabledBrowserTest,
   EXPECT_EQ(1u,
             download_observer->NumDownloadsSeenInState(DownloadItem::COMPLETE));
 
-  std::vector<DownloadItem*> downloads;
+  std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
   download_manager->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
 
@@ -317,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(QuickOfficeForceFileDownloadDisabledBrowserTest,
   EXPECT_EQ(0u,
             download_observer->NumDownloadsSeenInState(DownloadItem::COMPLETE));
 
-  std::vector<DownloadItem*> downloads;
+  std::vector<raw_ptr<DownloadItem, VectorExperimental>> downloads;
   download_manager->GetAllDownloads(&downloads);
   ASSERT_EQ(0u, downloads.size());
 }
@@ -1925,9 +1925,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Recents, /* recents.js */
     FilesAppBrowserTest,
     ::testing::Values(
-#if !defined(ADDRESS_SANITIZER) && !defined(LEAK_SANITIZER)
         TestCase("recentsNested").NewDirectoryTree(),
-#endif
         TestCase("recentsFilterResetToAll").NewDirectoryTree(),
         TestCase("recentsA11yMessages")
             .NewDirectoryTree()

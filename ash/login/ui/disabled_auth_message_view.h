@@ -31,7 +31,7 @@ class DisabledAuthMessageView : public views::View {
     const std::u16string& GetDisabledAuthMessageContent() const;
 
    private:
-    const raw_ptr<DisabledAuthMessageView, ExperimentalAsh> view_;
+    const raw_ptr<DisabledAuthMessageView> view_;
   };
 
   DisabledAuthMessageView();
@@ -54,9 +54,9 @@ class DisabledAuthMessageView : public views::View {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
-  raw_ptr<views::Label, ExperimentalAsh> message_title_;
-  raw_ptr<views::Label, ExperimentalAsh> message_contents_;
-  raw_ptr<views::ImageView, ExperimentalAsh> message_icon_;
+  raw_ptr<views::Label> message_title_;
+  raw_ptr<views::Label> message_contents_;
+  raw_ptr<views::ImageView> message_icon_;
 };
 
 }  // namespace ash

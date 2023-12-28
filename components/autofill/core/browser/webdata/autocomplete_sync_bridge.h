@@ -6,12 +6,14 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOCOMPLETE_SYNC_BRIDGE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
+#include "components/autofill/core/browser/webdata/autocomplete_table.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
@@ -19,11 +21,10 @@
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_sync_bridge.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
-class AutofillTable;
+class AutofillSyncMetadataTable;
 class AutofillWebDataService;
 
 class AutocompleteSyncBridge
@@ -51,10 +52,10 @@ class AutocompleteSyncBridge
   // syncer::ModelTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  absl::optional<syncer::ModelError> MergeFullSyncData(
+  std::optional<syncer::ModelError> MergeFullSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
-  absl::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
+  std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -68,7 +69,9 @@ class AutocompleteSyncBridge
 
  private:
   // Returns the table associated with the |web_data_backend_|.
-  AutofillTable* GetAutofillTable() const;
+  AutocompleteTable* GetAutocompleteTable();
+
+  AutofillSyncMetadataTable* GetSyncMetadataStore();
 
   // Respond to local autocomplete entries changing by notifying sync of the
   // changes.

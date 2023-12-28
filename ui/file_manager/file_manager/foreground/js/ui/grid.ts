@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {decorate} from '../../../common/js/cr_ui.js';
+import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 
 import {List} from './list.js';
 import {ListItem} from './list_item.js';
@@ -20,7 +20,8 @@ import {ListSelectionModel} from './list_selection_model.js';
 export function createGridItem(dataItem: any): GridItem {
   const el = document.createElement('li') as GridItem;
   el.dataItem = dataItem;
-  return decorate(el, ListItem);
+  crInjectTypeAndInit(el, GridItem);
+  return el;
 }
 
 /** Creates a new grid item element. */
@@ -30,8 +31,8 @@ export class GridItem extends ListItem {
   /**
    * Called when an element is decorated as a grid item.
    */
-  override decorate() {
-    ListItem.prototype.decorate.apply(this);
+  override initialize() {
+    super.initialize();
     this.textContent = this.dataItem;
   }
 }
@@ -39,7 +40,7 @@ export class GridItem extends ListItem {
 /**
  * Creates a new grid element.
  */
-export class Grid extends List {
+export abstract class Grid extends List {
   /**
    * The number of columns in the grid. Either set by the user, or lazy
    * calculated as the maximum number of items fitting in the grid width.
@@ -63,9 +64,9 @@ export class Grid extends List {
   /**
    * Initializes the element.
    */
-  override decorate() {
+  override initialize() {
     this.columns_ = 0;
-    super.decorate();
+    super.initialize();
   }
 
   /**

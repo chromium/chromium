@@ -31,7 +31,7 @@ import {getTemplate} from './pointers.html.js';
 const SettingsPointersElementBase =
     DeepLinkingMixin(RouteObserverMixin(PrefsMixin(I18nMixin(PolymerElement))));
 
-class SettingsPointersElement extends SettingsPointersElementBase {
+export class SettingsPointersElement extends SettingsPointersElementBase {
   static get is() {
     return 'settings-pointers';
   }

@@ -122,7 +122,7 @@ TEST_F(PreloadingAttemptUKMTest, NoSampling) {
 
   // Make sure the attempt is recorded, with a sampling_likelihood of 1,000,000.
   EXPECT_EQ(ukm_recorder()->GetEntriesByName(entry_name).size(), 1ul);
-  auto* entry = ukm_recorder()->GetEntriesByName(entry_name)[0];
+  auto* entry = ukm_recorder()->GetEntriesByName(entry_name)[0].get();
   ukm_recorder()->EntryHasMetric(
       entry, ukm::builders::Preloading_Attempt_PreviousPrimaryPage::
                  kSamplingLikelihoodName);

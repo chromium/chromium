@@ -18,6 +18,7 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
+#include "chrome/browser/ash/http_auth_dialog.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_checkers_collection.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_mode.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -29,8 +30,6 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 #include "url/gurl.h"
@@ -56,7 +55,7 @@ class PinSaltStorage;
 // ExistingUserController is used to handle login when someone has already
 // logged into the machine. ExistingUserController is created and owned by
 // LoginDisplayHost.
-class ExistingUserController : public content::NotificationObserver,
+class ExistingUserController : public HttpAuthDialog::Observer,
                                public LoginPerformer::Delegate,
                                public UserSessionManagerDelegate,
                                public user_manager::UserManager::Observer,
@@ -124,10 +123,10 @@ class ExistingUserController : public content::NotificationObserver,
   // user_manager::UserManager::Observer:
   void LocalStateChanged(user_manager::UserManager* user_manager) override;
 
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // HttpAuthDialog::Observer implementation:
+  void HttpAuthDialogShown(content::WebContents* web_contents) override;
+  void HttpAuthDialogCancelled(content::WebContents* web_contents) override;
+  void HttpAuthDialogSupplied(content::WebContents* web_contents) override;
 
   // Add/remove a delegate that we will pass AuthStatusConsumer events to.
   void AddLoginStatusConsumer(AuthStatusConsumer* consumer);
@@ -341,8 +340,8 @@ class ExistingUserController : public content::NotificationObserver,
   // URL to append to start Guest mode with.
   GURL guest_mode_url_;
 
-  // Used for notifications during the login process.
-  content::NotificationRegistrar registrar_;
+  // Once Lacros is shipped, this will no longer be necessary.
+  std::unique_ptr<HttpAuthDialog::ScopedEnabler> enable_ash_httpauth_;
 
   // The displayed email for the next login attempt set by `SetDisplayEmail`.
   std::string display_email_;

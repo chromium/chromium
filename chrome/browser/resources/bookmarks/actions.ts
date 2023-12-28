@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {Action} from 'chrome://resources/js/store.js';
+import type {Action} from 'chrome://resources/js/store.js';
 
 import {IncognitoAvailability, ROOT_NODE_ID} from './constants.js';
-import {BookmarkNode, BookmarksPageState, NodeMap} from './types.js';
+import type {BookmarkNode, BookmarksPageState, NodeMap} from './types.js';
 import {getDescendants, getDisplayedList, normalizeNode} from './util.js';
 
 /**

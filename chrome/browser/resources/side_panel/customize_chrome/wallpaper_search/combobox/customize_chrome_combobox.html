@@ -54,6 +54,70 @@
 #dropdown::-webkit-scrollbar-thumb {
   background: var(--color-side-panel-scrollbar-thumb);
 }
+
+.group-item {
+  display: flex;
+  font-weight: 700;
+}
+
+.group-item iron-icon {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+  margin-inline-start: auto;
+}
+
+.group-item,
+.item {
+  align-items: center;
+  box-sizing: border-box;
+  border: none;
+  display: flex;
+  height: 28px;
+  padding: 0 20px;
+}
+
+.group-item[highlighted],
+.item[highlighted] {
+  background: var(--cr-active-neutral-on-subtle-background-color);
+}
+
+.item iron-icon {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+  flex-shrink: 0;
+  visibility: hidden;
+  margin-inline-end: 8px;
+}
+
+.item[selected] iron-icon {
+  visibility: visible;
+}
+
+.item:has(img) {
+  height: 48px;
+}
+
+.item customize-chrome-check-mark-wrapper {
+  --customize-chrome-check-mark-wrapper-end: -8px;
+  --customize-chrome-check-mark-wrapper-size: 16px;
+  --customize-chrome-check-mark-wrapper-top: -3px;
+}
+
+.item img {
+  border-radius: 8px;
+  height: 40px;
+  width: 40px;
+}
+
+.item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item:has(img) span {
+  padding-inline-start: 16px;
+}
 </style>
 
 <button id="input" class="md-select"
@@ -71,6 +135,37 @@
       on-pointerdown="onDropdownPointerdown_"
       on-pointermove="onDropdownPointermove_"
       on-pointerover="onDropdownPointerover_">
-    <slot></slot>
+    <template is="dom-repeat" items="[[items]]" restamp>
+      <template is="dom-if" if="[[isGroup_(item)]]" restamp>
+        <div class="group" role="group">
+          <label class="group-item" on-click="onGroupClick_">
+            [[item.label]]
+            <iron-icon icon="[[getGroupIcon_(index, expandedGroups_.*)]]">
+            </iron-icon>
+          </label>
+          <template is="dom-if" restamp if="[[isGroupExpanded_(index, expandedGroups_.*)]]">
+            <template is="dom-repeat" items="[[item.items]]" as="subitem">
+              <div class="item" role="option" value="[[subitem.label]]">
+                <iron-icon icon="cr:check"></iron-icon>
+                <span>[[subitem.label]]</span>
+              </div>
+            </template>
+          </template>
+        </div>
+      </template>
+
+      <template is="dom-if" if="[[!isGroup_(item)]]" restamp>
+        <div class="item" role="option" value="[[item.label]]">
+          <template is="dom-if" if="[[item.imagePath]]">
+            <customize-chrome-check-mark-wrapper
+                checked="[[isItemSelected_(item, value)]]">
+              <img is="cr-auto-img" auto-src="[[item.imagePath]]"></img>
+            </customize-chrome-check-mark-wrapper>
+          </template>
+          <iron-icon icon="cr:check" hidden$="[[item.imagePath]]"></iron-icon>
+          <span>[[item.label]]</span>
+        </div>
+      </template>
+    </template>
   </div>
 </div>

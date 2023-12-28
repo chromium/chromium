@@ -157,6 +157,7 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) TestMediaController
                      mojo::PendingRemote<mojom::MediaControllerImageObserver>
                          observer) override {}
   void SeekTo(base::TimeDelta seek_time) override;
+  void SkipAd() override;
   void ScrubTo(base::TimeDelta seek_time) override {}
   void EnterPictureInPicture() override;
   void ExitPictureInPicture() override;
@@ -164,7 +165,7 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) TestMediaController
   void ToggleMicrophone() override {}
   void ToggleCamera() override {}
   void HangUp() override {}
-  void Raise() override {}
+  void Raise() override;
   void SetMute(bool mute) override {}
   void RequestMediaRemoting() override;
   void EnterAutoPictureInPicture() override {}
@@ -181,6 +182,8 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) TestMediaController
   int seek_backward_count() const { return seek_backward_count_; }
   int seek_forward_count() const { return seek_forward_count_; }
   int seek_to_count() const { return seek_to_count_; }
+  int skip_ad_count() const { return skip_ad_count_; }
+  int raise_count() const { return raise_count_; }
   int request_media_remoting_count() const {
     return request_media_remoting_count_;
   }
@@ -206,6 +209,8 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) TestMediaController
   int seek_backward_count_ = 0;
   int seek_forward_count_ = 0;
   int seek_to_count_ = 0;
+  int skip_ad_count_ = 0;
+  int raise_count_ = 0;
   int request_media_remoting_count_ = 0;
 
   absl::optional<base::TimeDelta> seek_to_time_;

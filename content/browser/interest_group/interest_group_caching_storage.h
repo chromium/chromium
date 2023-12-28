@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
@@ -18,9 +19,12 @@
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace content {
+
+struct DebugReportLockoutAndCooldowns;
 
 class StorageInterestGroups;
 // SingleStorageInterestGroup ensures that pointers to values inside
@@ -152,6 +156,14 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
   // piece of opaque data to identify the winning ad.
   void RecordInterestGroupWin(const blink::InterestGroupKey& group_key,
                               const std::string& ad_json);
+  // Adds an entry to forDebuggingOnly report lockout table if the table is
+  // empty. Otherwise replaces the existing entry.
+  void RecordDebugReportLockout(base::Time last_report_sent_time);
+  // Adds an entry to forDebuggingOnly report cooldown table for `origin` if it
+  // does not exist, otherwise replaces the existing entry.
+  void RecordDebugReportCooldown(const url::Origin& origin,
+                                 base::Time cooldown_start,
+                                 DebugReportCooldownType cooldown_type);
   // Records K-anonymity.
   void UpdateKAnonymity(const StorageInterestGroup::KAnonymityData& data);
 
@@ -186,6 +198,12 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
       const blink::InterestGroupKey& group_key,
       base::OnceCallback<void(
           const std::vector<StorageInterestGroup::KAnonymityData>&)> callback);
+
+  // Gets lockout and cooldown for sending forDebuggingOnly reports.
+  void GetDebugReportLockoutAndCooldowns(
+      base::flat_set<url::Origin> origins,
+      base::OnceCallback<void(absl::optional<DebugReportLockoutAndCooldowns>)>
+          callback);
 
   // Gets a list of all interest group joining origins. Each joining origin
   // will only appear once.

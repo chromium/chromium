@@ -669,7 +669,7 @@ void ChromeNativeAppWindowViewsAuraAsh::LoadAppIcon(
 
     if (app_type != apps::AppType::kUnknown) {
       proxy->LoadIcon(
-          app_type, app_window()->extension_id(), apps::IconType::kStandard,
+          app_window()->extension_id(), apps::IconType::kStandard,
           app_window()->app_delegate()->PreferredIconSize(),
           allow_placeholder_icon,
           base::BindOnce(&ChromeNativeAppWindowViewsAuraAsh::OnLoadIcon,

@@ -79,6 +79,9 @@ enum ParamType {
 
   // Arguments for sending page title from browser to iframe.
   PAGE_TITLE = 'pageTitle',
+
+  // Arguments for sending innerHtml from browser to iframe.
+  INNER_HTML = 'innerHtml',
 }
 
 const companionProxy: CompanionProxy = CompanionProxyImpl.getInstance();
@@ -116,13 +119,14 @@ function initialize() {
         }
       });
 
-  companionProxy.callbackRouter.updatePageTitle.addListener(
-      (pageTitle: string) => {
+  companionProxy.callbackRouter.updatePageContent.addListener(
+      (pageTitle: string, innerHtml: string) => {
         const companionOrigin =
             new URL(loadTimeData.getString('companion_origin')).origin;
         const message = {
-          [ParamType.METHOD_TYPE]: MethodType.kUpdatePageTitle,
+          [ParamType.METHOD_TYPE]: MethodType.kUpdatePageContent,
           [ParamType.PAGE_TITLE]: pageTitle,
+          [ParamType.INNER_HTML]: innerHtml,
         };
 
         const frame = document.body.querySelector('iframe');

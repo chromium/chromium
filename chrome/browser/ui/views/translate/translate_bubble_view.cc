@@ -168,8 +168,9 @@ void TranslateBubbleView::Init() {
 
   UpdateChildVisibilities();
 
-  if (GetViewState() == TranslateBubbleModel::VIEW_STATE_ERROR)
+  if (GetViewState() == TranslateBubbleModel::VIEW_STATE_ERROR) {
     model_->ShowError(error_type_);
+  }
 }
 
 views::View* TranslateBubbleView::GetInitiallyFocusedView() {
@@ -259,8 +260,9 @@ bool TranslateBubbleView::AcceleratorPressed(
 
 gfx::Size TranslateBubbleView::CalculatePreferredSize() const {
   int width = 0;
-  for (const views::View* child : children())
+  for (const views::View* child : children()) {
     width = std::max(width, child->GetPreferredSize().width());
+  }
   return gfx::Size(width, GetCurrentView()->GetPreferredSize().height());
 }
 
@@ -426,9 +428,10 @@ TranslateBubbleView::TranslateBubbleView(
       on_closing_(std::move(on_closing)) {
   UpdateInsets(TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE);
 
-  if (web_contents)  // web_contents can be null in unit_tests.
+  if (web_contents) {  // web_contents can be null in unit_tests.
     mouse_handler_ =
         std::make_unique<WebContentMouseHandler>(this, web_contents);
+  }
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetFootnoteView(CreateWordmarkView());
   SetProperty(views::kElementIdentifierKey, kIdentifier);
@@ -511,16 +514,18 @@ void TranslateBubbleView::AlwaysTranslatePressed() {
 
 void TranslateBubbleView::UpdateChildVisibilities() {
   // Update the state of the always translate checkbox
-  if (advanced_always_translate_checkbox_)
+  if (advanced_always_translate_checkbox_) {
     advanced_always_translate_checkbox_->SetChecked(should_always_translate_);
+  }
   if (always_translate_checkbox_) {
     always_translate_checkbox_->SetText(l10n_util::GetStringFUTF16(
         IDS_TRANSLATE_BUBBLE_ALWAYS_TRANSLATE_LANG,
         model_->GetSourceLanguageNameAt(model_->GetSourceLanguageIndex())));
     always_translate_checkbox_->SetChecked(should_always_translate_);
   }
-  for (views::View* view : children())
+  for (views::View* view : children()) {
     view->SetVisible(view == GetCurrentView());
+  }
 
   // BoxLayout only considers visible children, so ensure any newly visible
   // child views are positioned correctly.
@@ -988,8 +993,9 @@ void TranslateBubbleView::SwitchView(
 
   UpdateViewState(view_state);
   if (view_state == TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE ||
-      view_state == TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE)
+      view_state == TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE) {
     UpdateAdvancedView();
+  }
 
   UpdateChildVisibilities();
   SizeToContents();
@@ -1094,5 +1100,5 @@ void TranslateBubbleView::RevertOrDeclineTranslation() {
   GetWidget()->Close();
 }
 
-BEGIN_METADATA(TranslateBubbleView, LocationBarBubbleDelegateView)
+BEGIN_METADATA(TranslateBubbleView)
 END_METADATA

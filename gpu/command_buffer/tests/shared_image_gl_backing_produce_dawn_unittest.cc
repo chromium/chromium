@@ -100,7 +100,7 @@ TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
       sii->CreateSharedImage(viz::SinglePlaneFormat::kRGBA_8888, {1, 1},
                              gfx::ColorSpace::CreateSRGB(),
                              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-                             SHARED_IMAGE_USAGE_GLES2, "TestLabel",
+                             SHARED_IMAGE_USAGE_GLES2_WRITE, "TestLabel",
                              kNullSurfaceHandle)
           ->mailbox();
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();

@@ -20,17 +20,17 @@ struct AutofillMetadata;
 class AutofillDataModel : public FormGroup {
  public:
   // TODO(crbug.com/1174203): Remove.
-  enum ValidityState {
+  enum class ValidityState {
     // The field has not been validated.
-    UNVALIDATED = 0,
+    kUnvalidated = 0,
     // The field is empty.
-    EMPTY = 1,
+    kEmpty = 1,
     // The field is valid.
-    VALID = 2,
+    kValid = 2,
     // The field is invalid.
-    INVALID = 3,
+    kInvalid = 3,
     // The validation for the field is unsupported.
-    UNSUPPORTED = 4,
+    kUnsupported = 4,
   };
 
   AutofillDataModel();

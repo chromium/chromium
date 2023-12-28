@@ -25,6 +25,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
@@ -1889,6 +1890,10 @@ void ProfileManager::OnProfileCreationFinished(Profile* profile,
 
 void ProfileManager::OnProfileCreationStarted(Profile* profile,
                                               Profile::CreateMode create_mode) {
+  for (auto& observer : observers_) {
+    observer.OnProfileCreationStarted(profile);
+  }
+
   if (create_mode == Profile::CREATE_MODE_ASYNCHRONOUS) {
     // Profile will be registered later, in CreateProfileAsync().
     return;
@@ -2085,7 +2090,7 @@ void ProfileManager::SaveActiveProfiles() {
   // profiles. Include each base name only once in the last active profile
   // list.
   std::set<base::FilePath> profile_paths;
-  std::vector<Profile*>::const_iterator it;
+  std::vector<raw_ptr<Profile, VectorExperimental>>::const_iterator it;
   for (it = active_profiles_.begin(); it != active_profiles_.end(); ++it) {
     // crbug.com/823338 -> CHECK that the profiles aren't guest or incognito,
     // causing a crash during session restore.
@@ -2148,7 +2153,7 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
 
   Profile* original_profile = profile->GetOriginalProfile();
   // Do nothing if the closed window is not the last window of the same profile.
-  for (auto* browser_iter : *BrowserList::GetInstance()) {
+  for (Browser* browser_iter : *BrowserList::GetInstance()) {
     if (browser_iter->profile()->GetOriginalProfile() == original_profile)
       return;
   }

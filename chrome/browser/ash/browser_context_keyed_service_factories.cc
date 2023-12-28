@@ -83,6 +83,7 @@
 #include "chrome/browser/ash/nearby/nearby_process_manager_factory.h"
 #include "chrome/browser/ash/nearby/presence/nearby_presence_service_factory.h"
 #include "chrome/browser/ash/nearby/quick_start_connectivity_service_factory.h"
+#include "chrome/browser/ash/net/alwayson_vpn_pre_connect_url_allowlist_service_factory.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_factory.h"
@@ -113,6 +114,7 @@
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
+#include "chrome/browser/ui/ash/birch/birch_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/calendar/calendar_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/desks/admin_template_service_factory.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_keyed_service_factory.h"
@@ -132,6 +134,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   AccountAppsAvailabilityFactory::GetInstance();
   AccountManagerPolicyControllerFactory::GetInstance();
   AdminTemplateServiceFactory::GetInstance();
+  ash::AlwaysOnVpnPreConnectUrlAllowlistServiceFactory::GetInstance();
   android_sms::AndroidSmsServiceFactory::GetInstance();
   ApkWebAppServiceFactory::GetInstance();
   app_list::ArcVpnProviderManagerFactory::GetInstance();
@@ -144,6 +147,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   ArcKioskAppServiceFactory::GetInstance();
   AuthErrorObserverFactory::GetInstance();
   ax::AccessibilityServiceRouterFactory::EnsureFactoryBuilt();
+  BirchKeyedServiceFactory::GetInstance();
   bluetooth::DebugLogsManagerFactory::GetInstance();
   borealis::BorealisServiceFactory::GetInstance();
   BrowserProcessPlatformPart::EnsureFactoryBuilt();

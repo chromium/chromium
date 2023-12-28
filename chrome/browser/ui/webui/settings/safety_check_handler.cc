@@ -392,10 +392,6 @@ void SafetyCheckHandler::OnExtensionsCheckResult(
             GetStringForExtensions(status, Blocklisted(blocklisted),
                                    reenabled_user, reenabled_admin));
   FireWebUIListener(kExtensionsEvent, event);
-  if (status != ExtensionsStatus::kChecking) {
-    base::UmaHistogramEnumeration("Settings.SafetyCheck.ExtensionsResult",
-                                  status);
-  }
   extensions_status_ = status;
   CompleteParentIfChildrenCompleted();
 }

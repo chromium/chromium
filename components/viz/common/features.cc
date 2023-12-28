@@ -186,11 +186,7 @@ BASE_FEATURE(kCVDisplayLinkBeginFrameSource,
 // RenderPassDrawQuad.
 BASE_FEATURE(kAllowBypassRenderPassQuads,
              "AllowBypassRenderPassQuads",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 BASE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip,
              "AllowUndamagedNonrootRenderPassToSkip",
@@ -237,22 +233,13 @@ BASE_FEATURE(kBufferQueueImageSetPurgeable,
 // render pass, instead of SkiaOutputDeviceBufferQueue itself.
 BASE_FEATURE(kRendererAllocatesImages,
              "RendererAllocatesImages",
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
-
-// On all platforms when attempting to evict a FrameTree, the active
-// viz::Surface can be not included. This feature ensures that the we always add
-// the active viz::Surface to the eviction list.
-//
-// Furthermore, by default on Android, when a client is being evicted, it only
-// evicts itself. This differs from Destkop platforms which evict the entire
-// FrameTree along with the topmost viz::Surface. When this feature is enabled,
-// Android will begin also evicting the entire FrameTree.
-BASE_FEATURE(kEvictSubtree, "EvictSubtree", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, CompositorFrameSinkClient::OnBeginFrame is also treated as the
 // DidReceiveCompositorFrameAck. Both in providing the Ack for the previous
@@ -325,6 +312,12 @@ BASE_FEATURE(kDrawImmediatelyWhenInteractive,
 #endif
 );
 
+// When enabled, SDR maximum luminance nits of then current display will be used
+// as the HDR metadata NDWL nits.
+BASE_FEATURE(kUseDisplaySDRMaxLuminanceNits,
+             "UseDisplaySDRMaxLuminanceNits",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Invalidate the `viz::LocalSurfaceId` on the browser side when the page is
 // navigated away. This flag serves as the kill-switch for the uncaught edge
 // cases in production.
@@ -343,6 +336,20 @@ BASE_FEATURE(kHideDelegatedFrameHostMac,
 // TransferableResources that have been returned as a part of eviction.
 BASE_FEATURE(kEvictionUnlocksResources,
              "EvictionUnlocksResources",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, FrameRateDecider will toggle to half framerate if there's only
+// one video on screen whose framerate is lower than the display vsync and in
+// perfect cadence.
+BASE_FEATURE(kSingleVideoFrameRateThrottling,
+             "SingleVideoFrameRateThrottling",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, ClientResourceProvider will take callbacks intended to be ran
+// on the Main-thread, and will batch them into a single jump to that thread.
+// Rather than each performing its own separate post task.
+BASE_FEATURE(kBatchMainThreadReleaseCallbacks,
+             "BatchMainThreadReleaseCallbacks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDelegatedCompositingEnabled() {

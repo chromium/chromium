@@ -11,36 +11,30 @@ import extract_histograms
 import xml.dom.minidom
 
 _SCRIPT_NAME = "generate_histograms_variants_allowlist.py"
-_HEADER = """// Generated from {script_name}. Do not edit!
+_FILE = """// Generated from {script_name}. Do not edit!
 
 #ifndef {include_guard}
 #define {include_guard}
 
-#include <array>
-#include <stddef.h>
+#include <algorithm>
+#include <string_view>
 
 namespace {namespace} {{
 
-extern const char* k{variant_name}VariantAllowList[];
-extern const size_t k{variant_name}VariantAllowListSize;
+inline constexpr std::string_view k{variant_name}VariantAllowList[] = {{
+{variants}
+}};
+
+constexpr bool IsValid{variant_name}Variant(std::string_view s) {{
+  return std::binary_search(
+    std::cbegin(k{variant_name}VariantAllowList),
+    std::cend(k{variant_name}VariantAllowList),
+    s);
+}}
 
 }}  // namespace {namespace}
 
 #endif  // {include_guard}
-"""
-_SOURCE = """// Generated from {script_name}. Do not edit!
-#include "{header_filepath}"
-
-namespace {namespace} {{
-
-const char* k{variant_name}VariantAllowList[] = {{
-{variants}
-}};
-
-const size_t k{variant_name}VariantAllowListSize =
-    std::size(k{variant_name}VariantAllowList);
-
-}}  // namespace {namespace}
 """
 
 
@@ -48,31 +42,11 @@ class Error(Exception):
   pass
 
 
-def _GenerateHeaderFileContent(header_filename, namespace, allow_list_name):
-  """Generates header file content.
+def _GenerateStaticFile(file_path, namespace, variant_list, allow_list_name):
+  """Generates a header file with constexpr facilities to check for the
+    existence of a variant.
 
   Args:
-    header_filename: A filename of the generated header file.
-    namespace: A namespace to contain generated array.
-    allow_list_name: A name of the variant list for an allow list.
-  Returns:
-    String with the generated content.
-  """
-  include_guard = header_filename.replace('\\', '_').replace('/', '_').replace(
-      '.', '_').upper() + "_"
-
-  return _HEADER.format(script_name=_SCRIPT_NAME,
-                        include_guard=include_guard,
-                        namespace=namespace,
-                        variant_name=allow_list_name)
-
-
-def _GenerateSourceFileContent(header_filename, namespace, variant_list,
-                               allow_list_name):
-  """Generates source file content.
-
-  Args:
-    source_filename: A filename of the generated source file.
     namespace: A namespace to contain generated array.
     variant_list(List[Dict]]):
       A list of variant objects [{variant: {name, summary, ...}}]
@@ -81,14 +55,16 @@ def _GenerateSourceFileContent(header_filename, namespace, variant_list,
     String with the generated content.
   """
   variant_list = sorted(variant_list, key=lambda d: d['name'])
+  include_guard = file_path.replace('\\', '_').replace('/', '_').replace(
+      '.', '_').upper() + "_"
 
   variants = "\n".join(
       ["  \"{name}\",".format(name=value['name']) for value in variant_list])
-  return _SOURCE.format(script_name=_SCRIPT_NAME,
-                        header_filepath=header_filename,
-                        namespace=namespace,
-                        variants=variants,
-                        variant_name=allow_list_name)
+  return _FILE.format(script_name=_SCRIPT_NAME,
+                      include_guard=include_guard,
+                      namespace=namespace,
+                      variants=variants,
+                      variant_name=allow_list_name)
 
 
 def _GenerateVariantList(histograms, allow_list_name):
@@ -109,8 +85,7 @@ def _GenerateFile(arguments):
   Args:
     arguments: An object with the following attributes:
       arguments.input: An xml file with histogram descriptions.
-      arguments.header_filename: A filename of the generated header file.
-      arguments.source_filename: A filename of the generated source file.
+      arguments.file: A filename of the generated source file.
       arguments.namespace: A namespace to contain generated array.
       arguments.output_dir: A directory to put the generated file.
       arguments.allow_list_name: A name of the variant list for an allow list.
@@ -118,23 +93,11 @@ def _GenerateFile(arguments):
   histograms = xml.dom.minidom.parse(arguments.input)
   variants = _GenerateVariantList(histograms, arguments.allow_list_name)
 
-  # Write the header file.
-  header_file_content = _GenerateHeaderFileContent(arguments.header_filename,
-                                                   arguments.namespace,
-                                                   arguments.allow_list_name)
-
-  with open(os.path.join(arguments.output_dir, arguments.header_filename),
+  static_check_header_file_content = _GenerateStaticFile(
+      arguments.file, arguments.namespace, variants, arguments.allow_list_name)
+  with open(os.path.join(arguments.output_dir, arguments.file),
             "w") as generated_file:
-    generated_file.write(header_file_content)
-
-  # Write the source file.
-  source_file_content = _GenerateSourceFileContent(arguments.header_filename,
-                                                   arguments.namespace,
-                                                   variants,
-                                                   arguments.allow_list_name)
-  with open(os.path.join(arguments.output_dir, arguments.source_filename),
-            "w") as generated_file:
-    generated_file.write(source_file_content)
+    generated_file.write(static_check_header_file_content)
 
 
 def _ParseArguments():
@@ -145,14 +108,10 @@ def _ParseArguments():
                           "-o",
                           required=True,
                           help="Base directory to for generated files.")
-  arg_parser.add_argument("--header_filename",
-                          "-H",
+  arg_parser.add_argument("--file",
+                          "-f",
                           required=True,
-                          help="File name of the generated header file.")
-  arg_parser.add_argument("--source_filename",
-                          "-s",
-                          required=True,
-                          help="File name of the generated source file.")
+                          help="File name of the generated file.")
   arg_parser.add_argument(
       "--allow_list_name",
       "-a",
@@ -163,7 +122,7 @@ def _ParseArguments():
                           required=True,
                           help="Namespace of the allow list array.")
   arg_parser.add_argument("--input",
-                          "-f",
+                          "-i",
                           help="Path to .xml file with histogram descriptions.")
   return arg_parser.parse_args()
 

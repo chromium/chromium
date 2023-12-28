@@ -16,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -330,13 +331,13 @@ const GURL& PasswordFormManager::GetURL() const {
   return observed_form() ? observed_form()->url : observed_digest()->url;
 }
 
-const std::vector<const PasswordForm*>& PasswordFormManager::GetBestMatches()
-    const {
+const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+PasswordFormManager::GetBestMatches() const {
   return form_fetcher_->GetBestMatches();
 }
 
-std::vector<const PasswordForm*> PasswordFormManager::GetFederatedMatches()
-    const {
+std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+PasswordFormManager::GetFederatedMatches() const {
   return form_fetcher_->GetFederatedMatches();
 }
 
@@ -358,8 +359,8 @@ base::span<const InteractionsStats> PasswordFormManager::GetInteractionsStats()
   return base::make_span(form_fetcher_->GetInteractionsStats());
 }
 
-std::vector<const PasswordForm*> PasswordFormManager::GetInsecureCredentials()
-    const {
+std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+PasswordFormManager::GetInsecureCredentials() const {
   return form_fetcher_->GetInsecureCredentials();
 }
 
@@ -852,13 +853,26 @@ void PasswordFormManager::CreatePendingCredentials() {
       IsCredentialAPISave());
 }
 
+void PasswordFormManager::RecordProvisionalSaveFailure(
+    PasswordManagerMetricsRecorder::ProvisionalSaveFailure failure,
+    const GURL& form_origin) {
+  std::unique_ptr<BrowserSavePasswordProgressLogger> logger;
+  if (password_manager_util::IsLoggingActive(client_)) {
+    logger = std::make_unique<BrowserSavePasswordProgressLogger>(
+        client_->GetLogManager());
+  }
+  if (client_->GetMetricsRecorder()) {
+    client_->GetMetricsRecorder()->RecordProvisionalSaveFailure(
+        failure, form_origin, form_origin, logger.get());
+  }
+}
+
 bool PasswordFormManager::ProvisionallySave(
     const FormData& submitted_form,
     const PasswordManagerDriver* driver,
     const base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>*
         possible_usernames) {
   DCHECK(DoesManage(submitted_form.unique_renderer_id, driver));
-  DCHECK(client_->IsSavingAndFillingEnabled(submitted_form.url));
   auto [parsed_submitted_form, in_form_username_detection_method] =
       ParseFormAndMakeLogging(submitted_form, FormDataParser::Mode::kSaving);
   RecordMetricOnReadonly(parser_.readonly_status(), !!parsed_submitted_form,
@@ -867,6 +881,12 @@ bool PasswordFormManager::ProvisionallySave(
     metrics_recorder_->CalculateParsingDifferenceOnSavingAndFilling(
         *parsed_submitted_form.get());
     CalculateFillingAssistanceMetric(*parsed_submitted_form);
+  }
+
+  if (!client_->IsSavingAndFillingEnabled(submitted_form.url)) {
+    RecordProvisionalSaveFailure(
+        PasswordManagerMetricsRecorder::SAVING_DISABLED, submitted_form.url);
+    is_saving_allowed_ = false;
   }
 
   bool have_password_to_save =
@@ -1161,7 +1181,8 @@ void PasswordFormManager::CalculateFillingAssistanceMetric(
   std::set<std::pair<std::u16string, PasswordForm::Store>> saved_usernames;
   std::set<std::pair<std::u16string, PasswordForm::Store>> saved_passwords;
 
-  for (auto* saved_form : form_fetcher_->GetNonFederatedMatches()) {
+  for (const password_manager::PasswordForm* saved_form :
+       form_fetcher_->GetNonFederatedMatches()) {
     // Saved credentials might have empty usernames which are not interesting
     // for filling assistance metric.
     if (!saved_form->username_value.empty())

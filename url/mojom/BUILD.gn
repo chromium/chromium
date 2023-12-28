@@ -46,7 +46,9 @@ mojom("url_mojom_gurl") {
 
   # Used by Closure compiler targets in ash/webui/help_app_ui/, so this needs
   # to generate WebUI bindings in JavaScript on Ash.
-  use_typescript_sources = !is_chromeos_ash
+  if (is_chromeos_ash) {
+    generate_webui_js_bindings = true
+  }
 
   # Legacy JS bindings are needed for Blink regardless of platform.
   generate_legacy_js_bindings = true

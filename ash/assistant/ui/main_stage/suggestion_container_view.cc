@@ -18,14 +18,14 @@
 #include "ash/assistant/ui/main_stage/element_animator.h"
 #include "ash/assistant/util/animation_util.h"
 #include "ash/assistant/util/assistant_util.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/controller/assistant_suggestions_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/layer.h"
@@ -98,7 +98,7 @@ class SuggestionChipAnimator : public ElementAnimator {
         0.f, kChipFadeOutDuration, gfx::Tween::Type::FAST_OUT_SLOW_IN));
   }
 
-  const raw_ptr<const SuggestionContainerView, ExperimentalAsh>
+  const raw_ptr<const SuggestionContainerView>
       parent_;  // |parent_| owns |this|.
 };
 
@@ -178,7 +178,8 @@ void SuggestionContainerView::OnConversationStartersChanged(
     return;
   }
 
-  if (assistant::features::IsAssistantLearnMoreEnabled()) {
+  if (base::FeatureList::IsEnabled(
+          feature_engagement::kIPHLauncherSearchHelpUiFeature)) {
     return;
   }
 

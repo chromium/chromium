@@ -133,6 +133,10 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // installed by PreinstalledWebAppManager.
   bool IsInstalledByDefaultManagement(const webapps::AppId& app_id) const;
 
+  // Returns true if an installed app was installed via policy, regardless of
+  // other install sources.
+  bool IsInstalledByPolicy(const webapps::AppId& app_id) const;
+
   // Returns true if the app was preinstalled and NOT installed via any other
   // mechanism.
   bool WasInstalledByDefaultOnly(const webapps::AppId& app_id) const;

@@ -51,7 +51,7 @@ class StylusTool : public SurfaceObserver {
   }
 
  private:
-  raw_ptr<Surface, ExperimentalAsh> surface_;
+  raw_ptr<Surface> surface_;
 };
 
 void stylus_tool_destroy(wl_client* client, wl_resource* resource) {

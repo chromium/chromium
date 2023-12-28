@@ -94,12 +94,12 @@ void AuthDialogContentsView::TestApi::FingerprintAuthComplete(
   view_->OnFingerprintAuthComplete(success, fingerprint_state);
 }
 
-raw_ptr<LoginPasswordView, ExperimentalAsh>
-AuthDialogContentsView::TestApi::GetPasswordView() const {
+raw_ptr<LoginPasswordView> AuthDialogContentsView::TestApi::GetPasswordView()
+    const {
   return view_->password_view_;
 }
 
-raw_ptr<LoginPasswordView, ExperimentalAsh>
+raw_ptr<LoginPasswordView>
 AuthDialogContentsView::TestApi::GetPinTextInputView() const {
   return view_->pin_text_input_view_;
 }
@@ -291,8 +291,8 @@ class AuthDialogContentsView::FingerprintView : public views::View {
     }
   }
 
-  raw_ptr<FingerprintLabel, ExperimentalAsh> label_ = nullptr;
-  raw_ptr<AnimatedRoundedImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<FingerprintLabel> label_ = nullptr;
+  raw_ptr<AnimatedRoundedImageView> icon_ = nullptr;
   FingerprintState state_ = FingerprintState::AVAILABLE_DEFAULT;
   bool can_use_pin_ = false;
   base::OneShotTimer reset_state_;

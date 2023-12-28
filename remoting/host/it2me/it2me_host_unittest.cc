@@ -940,20 +940,9 @@ TEST_F(It2MeHostTest,
   EXPECT_FALSE(GetHost()->desktop_environment_options().enable_file_transfer());
 }
 
-TEST_F(It2MeHostTest, AllowEnterpriseFileTransferWhenForcedByFeatureFlag) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(
-      remoting::features::kForceEnableEnterpriseCrdFileTransfer);
-
-  SetPolicies({{policy::key::kRemoteAccessHostAllowEnterpriseFileTransfer,
-                base::Value(false)}});
-
-  StartHost(ChromeOsEnterpriseParams{.allow_file_transfer = true});
-
-  EXPECT_TRUE(GetHost()->desktop_environment_options().enable_file_transfer());
-}
-
 TEST_F(It2MeHostTest, AllowEnterpriseFileTransferWithPolicyNotSet) {
+  SetPolicies({});
+
   StartHost(ChromeOsEnterpriseParams{.allow_file_transfer = true});
 
   EXPECT_FALSE(GetHost()->desktop_environment_options().enable_file_transfer());

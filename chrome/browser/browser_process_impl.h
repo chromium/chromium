@@ -29,7 +29,6 @@
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
-#include "components/signin/public/base/signin_buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -456,6 +455,9 @@ class BrowserProcessImpl : public BrowserProcess,
   std::unique_ptr<UsbSystemTrayIcon> usb_system_tray_icon_;
 
   BuildState build_state_;
+
+  std::unique_ptr<SearchEngineChoiceProfileTagger>
+      search_engine_choice_profile_tagger_;
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -468,11 +470,6 @@ class BrowserProcessImpl : public BrowserProcess,
       application_breadcrumbs_logger_;
 
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
-
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-  std::unique_ptr<SearchEngineChoiceProfileTagger>
-      search_engine_choice_profile_tagger_;
-#endif  // BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

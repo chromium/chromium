@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/input/input_router_config_helper.h"
 
 #include "base/command_line.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
@@ -13,7 +14,8 @@
 namespace content {
 namespace {
 
-PassthroughTouchEventQueue::Config GetTouchEventQueueConfig() {
+PassthroughTouchEventQueue::Config CreateTouchEventQueueConfig(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   PassthroughTouchEventQueue::Config config;
 
 #if BUILDFLAG(IS_ANDROID)
@@ -22,7 +24,7 @@ PassthroughTouchEventQueue::Config GetTouchEventQueueConfig() {
 #else
   config.touch_ack_timeout_supported = false;
 #endif
-
+  config.task_runner = task_runner;
   return config;
 }
 
@@ -51,10 +53,11 @@ GestureEventQueue::Config GetGestureEventQueueConfig() {
 
 InputRouter::Config::Config() {}
 
-InputRouter::Config GetInputRouterConfigForPlatform() {
+InputRouter::Config GetInputRouterConfigForPlatform(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   InputRouter::Config config;
   config.gesture_config = GetGestureEventQueueConfig();
-  config.touch_config = GetTouchEventQueueConfig();
+  config.touch_config = CreateTouchEventQueueConfig(std::move(task_runner));
   return config;
 }
 

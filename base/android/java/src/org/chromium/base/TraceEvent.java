@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.res.Resources.NotFoundException;
 import android.os.Looper;
 import android.os.MessageQueue;
+import android.os.SystemClock;
 import android.util.Log;
 import android.util.Printer;
 import android.view.View;
@@ -319,6 +320,11 @@ public class TraceEvent implements AutoCloseable {
             ThreadUtils.getUiThreadLooper()
                     .setMessageLogging(enabled ? LooperMonitorHolder.sInstance : null);
         }
+
+        if (sEnabled) {
+            EarlyTraceEvent.dumpActivityStartupEvents();
+        }
+
         if (sUiThreadReady) {
             ViewHierarchyDumper.updateEnabledState();
         }
@@ -445,10 +451,23 @@ public class TraceEvent implements AutoCloseable {
         }
     }
 
+    /** Records 'Startup.ActivityStart' event with the 'interactions' category. */
+    public static void startupActivityStart(long activityId, long startTimeMs) {
+        if (sEnabled) {
+            TraceEventJni.get().startupActivityStart(activityId, startTimeMs);
+        } else {
+            EarlyTraceEvent.startupActivityStart(activityId, startTimeMs);
+        }
+    }
+
     /** Records 'Startup.LaunchCause' event with the 'interactions' category. */
     public static void startupLaunchCause(long activityId, int launchCause) {
-        if (!sEnabled) return;
-        TraceEventJni.get().startupLaunchCause(activityId, launchCause);
+        if (sEnabled) {
+            TraceEventJni.get()
+                    .startupLaunchCause(activityId, SystemClock.uptimeMillis(), launchCause);
+        } else {
+            EarlyTraceEvent.startupLaunchCause(activityId, launchCause);
+        }
     }
 
     /** Records 'Startup.TimeToFirstVisibleContent2' event with the 'interactions' category. */
@@ -638,7 +657,9 @@ public class TraceEvent implements AutoCloseable {
 
         void webViewStartupStage2(long startTimeMs, long durationMs, boolean isColdStartup);
 
-        void startupLaunchCause(long activityId, int launchCause);
+        void startupActivityStart(long activityId, long startTimeMs);
+
+        void startupLaunchCause(long activityId, long startTimeMs, int launchCause);
 
         void startupTimeToFirstVisibleContent2(long activityId, long startTimeMs, long durationMs);
     }

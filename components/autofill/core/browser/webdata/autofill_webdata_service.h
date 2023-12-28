@@ -123,6 +123,9 @@ class AutofillWebDataService : public WebDataServiceBase {
   // `guid` is the identifier of the IBAN to remove.
   void RemoveLocalIban(const std::string& guid);
 
+  // Updates the metadata for a server IBAN.
+  void UpdateServerIbanMetadata(const Iban& iban);
+
   // Schedules a task to add credit card to the web database.
   void AddCreditCard(const CreditCard& credit_card);
 

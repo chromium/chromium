@@ -93,10 +93,6 @@ const std::map<uint32_t, std::string> kPlaneRequiredPropertyNames = {
     {kRotationPropId, "rotation"},
 };
 
-const std::map<uint32_t, std::string> kPlaneOptionalPropertyNames = {
-    {kPlaneCtmId, "PLANE_CTM"},
-};
-
 template <class T>
 uint32_t GetNextId(const std::vector<T>& collection, uint32_t base) {
   uint32_t max = 0;
@@ -214,8 +210,6 @@ MockDrmDevice::MockDrmState::CreateStateWithAllProperties() {
 
   // Separately add optional properties that will be used in some tests, but the
   // tests will append the property to the planes on a case-by-case basis.
-  state.property_names.insert(kPlaneOptionalPropertyNames.begin(),
-                              kPlaneOptionalPropertyNames.end());
   state.property_names.insert(kCrtcOptionalPropertyNames.begin(),
                               kCrtcOptionalPropertyNames.end());
 

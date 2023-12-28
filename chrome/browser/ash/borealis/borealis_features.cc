@@ -68,12 +68,15 @@ class AsyncAllowChecker : public guest_os::CachedCallback<AllowStatus, bool> {
                   base::BindOnce(&BorealisTokenHardwareChecker::BuildAndCheck,
                                  std::move(data)),
                   base::BindOnce(
-                      [](RealCallback callback, AllowStatus status) {
+                      [](RealCallback callback, bool has_sufficient_hardware) {
                         // "Success" here means we successfully determined the
                         // status, which we can't really fail to do because any
                         // failure to determine something is treated as a
                         // disallowed status.
-                        std::move(callback).Run(Success(status));
+                        std::move(callback).Run(
+                            Success(has_sufficient_hardware
+                                        ? AllowStatus::kAllowed
+                                        : AllowStatus::kInsufficientHardware));
                       },
                       std::move(callback)));
             },
@@ -227,11 +230,7 @@ std::ostream& operator<<(std::ostream& os, const AllowStatus& reason) {
     case AllowStatus::kBlockedByFlag:
       return os << "Borealis is still being worked on. You must set the "
                    "#borealis-enabled feature flag.";
-    case AllowStatus::kUnsupportedModel:
-      return os << "Borealis is not supported on this model hardware";
-    case AllowStatus::kHardwareChecksFailed:
-      return os << "Insufficient CPU/Memory to run Borealis";
-    case AllowStatus::kIncorrectToken:
-      return os << "Borealis needs a valid permission token";
+    case AllowStatus::kInsufficientHardware:
+      return os << "Borealis is not supported on this hardware";
   }
 }

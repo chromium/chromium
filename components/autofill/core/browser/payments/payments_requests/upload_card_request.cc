@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/payments/payments_requests/upload_card_request.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
@@ -122,7 +123,7 @@ void UploadCardRequest::ParseResponse(const base::Value::Dict& response) {
       response.FindString("instrument_id");
   if (response_instrument_id) {
     int64_t instrument_id;
-    if (base::StringToInt64(base::StringPiece(*response_instrument_id),
+    if (base::StringToInt64(std::string_view(*response_instrument_id),
                             &instrument_id)) {
       upload_card_response_details_.instrument_id = instrument_id;
     }

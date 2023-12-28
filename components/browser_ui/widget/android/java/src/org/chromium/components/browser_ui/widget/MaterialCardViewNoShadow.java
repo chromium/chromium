@@ -26,7 +26,6 @@ public class MaterialCardViewNoShadow extends FrameLayout {
     public MaterialCardViewNoShadow(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        // TODO(https://crbug.com/1410537): Cleanup baseline color experiment references.
         final TypedArray typedArray =
                 context.obtainStyledAttributes(
                         attrs,

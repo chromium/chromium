@@ -68,7 +68,8 @@ found in the LICENSE file.
     margin: 60px 64px 0 64px;
   }
 
-  #title-container {
+  .title-container {
+    padding-bottom: 8px;
     padding-top: 20px;
   }
 
@@ -81,14 +82,22 @@ found in the LICENSE file.
     margin: 0;
   }
 
-  #subtitle-container {
-    padding-top: 8px;
-  }
-
-  #subtitle-container * {
+  .enterprise-info {
     color: var(--oobe-subheader-text-color);
     line-height: var(--subtitle-line-height);
     margin: 0;
+  }
+
+  #passwordInput {
+    margin-bottom: 20px;
+  }
+
+  #passwordSectionEmailHeader {
+    font-family: var(--oobe-subheader-font-family);
+    font-size: var(--oobe-subheader-font-size);
+    font-weight: var(--oobe-subheader-font-weight);
+    line-height: var(--oobe-subheader-line-height);
+    margin-top: 5px;
   }
 
   /** ******** Animations ******* */
@@ -207,43 +216,38 @@ found in the LICENSE file.
     <div id="animation-inner-container" class="flex layout horizontal">
       <div id="email-section" class="section"
           on-animationend="onSlideAnimationEnd_">
-        <div id="title-container" class="layout vertical end-justified">
+        <div class="title-container layout vertical end-justified">
           <h1>[[i18nDynamic(locale, 'loginWelcomeMessage')]]</h1>
         </div>
-        <div id="subtitle-container">
-          <div id="managedBy" class="enterprise-info"
-              hidden$="[[!manager]]">
-              [[i18nDynamic(locale, 'enterpriseInfoMessage', manager)]]
-          </div>
+        <div id="managedBy" class="enterprise-info" hidden$="[[!manager]]">
+          [[i18nDynamic(locale, 'enterpriseInfoMessage', manager)]]
         </div>
-        <gaia-input-form id="email-input-form"
-            on-submit="onNextButtonClicked_" disabled="[[disabled]]">
-          <cr-input slot="inputs" id="emailInput" value="{{email_}}"
-              required error-message="[[i18nDynamic(
-                  locale, 'offlineLoginInvalidEmail')]]"
-              placeholder="[[i18nDynamic(locale, 'offlineLoginEmail')]]">
-            <span slot="inline-suffix">[[displayDomain_]]</span>
-          </cr-input>
-        </gaia-input-form>
+        <cr-input id="emailInput" value="{{email_}}"
+            on-keydown="onKeyDown_" disabled="[[disabled]]"
+            required error-message="[[i18nDynamic(
+                locale, 'offlineLoginInvalidEmail')]]"
+            placeholder="[[i18nDynamic(locale, 'offlineLoginEmail')]]">
+          <span slot="inline-suffix">[[displayDomain_]]</span>
+        </cr-input>
       </div>
       <div id="password-section" class="section">
-        <div id="title-container" class="layout vertical end-justified">
-          <gaia-header id="passwordHeader" email="[[fullEmail_]]">
-          </gaia-header>
+        <div class="title-container layout vertical">
+          <img src="chrome://theme/IDR_LOGO_AVATAR_CIRCLE_BLUE_COLOR" alt
+              class="self-start">
+          <div id="passwordSectionEmailHeader">[[fullEmail_]]</div>
         </div>
-        <div id="subtitle-container">
-        </div>
-        <gaia-input-form id="password-input-form"
-            on-submit="onNextButtonClicked_" disabled="[[disabled]]">
-          <cr-input slot="inputs" id="passwordInput" value="{{password_}}"
-              type="password" required error-message="[[i18nDynamic(
-                  locale, 'offlineLoginInvalidPassword')]]"
-              placeholder="[[i18nDynamic(locale, 'offlineLoginPassword')]]">
-          </cr-input>
-          <gaia-button on-click="onForgotPasswordClicked_" link>
+        <cr-input id="passwordInput" value="{{password_}}"
+            on-keydown="onKeyDown_" disabled="[[disabled]]"
+            type="password" required error-message="[[i18nDynamic(
+                locale, 'offlineLoginInvalidPassword')]]"
+            placeholder="[[i18nDynamic(locale, 'offlineLoginPassword')]]">
+        </cr-input>
+        <div class="layout horizontal-reverse">
+          <gaia-button on-click="onForgotPasswordClicked_" link
+              disabled="[[disabled]]">
             [[i18nDynamic(locale, 'offlineLoginForgotPasswordBtn')]]
           </gaia-button>
-        </gaia-input-form>
+        </div>
       </div>
     </div>
   </div>

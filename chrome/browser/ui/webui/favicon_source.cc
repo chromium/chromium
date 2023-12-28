@@ -122,18 +122,6 @@ void FaviconSource::StartDataRequest(
     return;
   }
 
-  if (url_format_ == chrome::FaviconUrlFormat::kFaviconLegacy) {
-    const extensions::Extension* extension =
-        extensions::ExtensionRegistry::Get(profile_)
-            ->enabled_extensions()
-            .GetExtensionOrAppByURL(GetUnsafeRequestOrigin(wc_getter));
-    if (extension) {
-      base::UmaHistogramEnumeration("Extensions.FaviconResourceRequested",
-                                    extension->GetType(),
-                                    extensions::Manifest::NUM_LOAD_TYPES);
-    }
-  }
-
   if (parsed.page_url.empty()) {
     // Request by icon url.
 

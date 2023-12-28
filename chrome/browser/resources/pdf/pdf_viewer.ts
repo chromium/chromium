@@ -340,7 +340,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         new NavigatorDelegateImpl(browserApi));
 
     // Listen for save commands from the browser.
-    if (chrome.mimeHandlerPrivate && chrome.mimeHandlerPrivate.onSave) {
+    if (this.pdfOopifEnabled) {
+      chrome.pdfViewerPrivate.onSave.addListener(this.onSave_.bind(this));
+    } else {
       chrome.mimeHandlerPrivate.onSave.addListener(this.onSave_.bind(this));
     }
 

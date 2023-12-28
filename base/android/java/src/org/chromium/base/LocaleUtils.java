@@ -195,7 +195,7 @@ public class LocaleUtils {
      * @return The default country code set during install.
      */
     @CalledByNative
-    private static String getDefaultCountryCode() {
+    public static String getDefaultCountryCode() {
         CommandLine commandLine = CommandLine.getInstance();
         return commandLine.hasSwitch(BaseSwitches.DEFAULT_COUNTRY_CODE_AT_INSTALL)
                 ? commandLine.getSwitchValue(BaseSwitches.DEFAULT_COUNTRY_CODE_AT_INSTALL)

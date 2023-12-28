@@ -59,10 +59,6 @@ final class ShareSheetLinkToggleMetricsHelper {
                 return "HighlightedText";
             case DetailedContentType.SCREENSHOT:
                 return "Screenshot";
-            case DetailedContentType.WEB_NOTES:
-                return "Webnotes";
-            case DetailedContentType.LIGHTWEIGHT_REACTION:
-                return "LightweightReaction";
             case DetailedContentType.NOT_SPECIFIED:
                 return "NotSpecified";
         }

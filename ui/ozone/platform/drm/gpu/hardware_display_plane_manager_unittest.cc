@@ -1008,48 +1008,6 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, PlanesUnpinnedOnDisable) {
       << "After disabling, the pinned overlay owner should be reset.";
 }
 
-TEST_P(HardwareDisplayPlaneManagerAtomicTest,
-       SetColorCorrectionOnAllCrtcPlanes_Success) {
-  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
-      /*crtc_count=*/1, /*planes_per_crtc=*/1);
-  drm_state.plane_properties[0].properties.push_back(
-      {.id = kPlaneCtmId, .value = 0});
-  drm_state.plane_properties[1].properties.push_back(
-      {.id = kPlaneCtmId, .value = 0});
-  fake_drm_->InitializeState(drm_state, use_atomic_);
-
-  ScopedDrmColorCtmPtr ctm_blob(CreateCTMBlob(std::vector<float>(9)));
-  EXPECT_TRUE(fake_drm_->plane_manager()->SetColorCorrectionOnAllCrtcPlanes(
-      fake_drm_->crtc_property(0).id, std::move(ctm_blob)));
-  EXPECT_EQ(1, fake_drm_->get_commit_count());
-}
-
-TEST_P(HardwareDisplayPlaneManagerAtomicTest,
-       SetColorCorrectionOnAllCrtcPlanes_NoPlaneCtmProperty) {
-  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
-      /*crtc_count=*/1, /*planes_per_crtc=*/1);
-  fake_drm_->InitializeState(drm_state, use_atomic_);
-
-  ScopedDrmColorCtmPtr ctm_blob(CreateCTMBlob(std::vector<float>(9)));
-  EXPECT_FALSE(fake_drm_->plane_manager()->SetColorCorrectionOnAllCrtcPlanes(
-      fake_drm_->crtc_property(0).id, std::move(ctm_blob)));
-  EXPECT_EQ(0, fake_drm_->get_commit_count());
-}
-
-TEST_P(HardwareDisplayPlaneManagerAtomicTest,
-       SetColorCorrectionOnAllCrtcPlanes_OnePlaneMissingCtmProperty) {
-  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
-      /*crtc_count=*/1, /*planes_per_crtc=*/2);
-  drm_state.plane_properties[0].properties.push_back(
-      {.id = kPlaneCtmId, .value = 0});
-  fake_drm_->InitializeState(drm_state, use_atomic_);
-
-  ScopedDrmColorCtmPtr ctm_blob(CreateCTMBlob(std::vector<float>(9)));
-  EXPECT_FALSE(fake_drm_->plane_manager()->SetColorCorrectionOnAllCrtcPlanes(
-      fake_drm_->crtc_property(0).id, std::move(ctm_blob)));
-  EXPECT_EQ(0, fake_drm_->get_commit_count());
-}
-
 TEST_P(HardwareDisplayPlaneManagerTest, SetColorMatrix_Success) {
   auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/1, /*planes_per_crtc=*/1);
@@ -1062,11 +1020,7 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetColorMatrix_Success) {
   if (use_atomic_) {
     HardwareDisplayPlaneList state;
     PerformPageFlip(/*crtc_idx=*/0, &state);
-#if defined(COMMIT_PROPERTIES_ON_PAGE_FLIP)
-    EXPECT_EQ(1, fake_drm_->get_commit_count());
-#else
     EXPECT_EQ(2, fake_drm_->get_commit_count());
-#endif
     EXPECT_NE(0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id, "CTM"));
   } else {
     EXPECT_EQ(1, fake_drm_->get_set_object_property_count());
@@ -1208,11 +1162,7 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetGammaCorrection_Success) {
       fake_drm_->crtc_property(0).id, {}, {}));
   if (use_atomic_) {
     PerformPageFlip(/*crtc_idx=*/0, &state);
-#if defined(COMMIT_PROPERTIES_ON_PAGE_FLIP)
-    EXPECT_EQ(1, fake_drm_->get_commit_count());
-#else
     EXPECT_EQ(2, fake_drm_->get_commit_count());
-#endif
     EXPECT_EQ(
         0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id, "GAMMA_LUT"));
     EXPECT_EQ(0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id,
@@ -1226,11 +1176,7 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetGammaCorrection_Success) {
       kNonemptyGammaCurve));
   if (use_atomic_) {
     PerformPageFlip(/*crtc_idx=*/0, &state);
-#if defined(COMMIT_PROPERTIES_ON_PAGE_FLIP)
-    EXPECT_EQ(2, fake_drm_->get_commit_count());
-#else
     EXPECT_EQ(4, fake_drm_->get_commit_count());
-#endif
     EXPECT_NE(
         0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id, "GAMMA_LUT"));
     EXPECT_NE(0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id,
@@ -1616,7 +1562,8 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, OriginalModifiersSupportOnly) {
         DrmFramebuffer::AddFramebuffer(fake_drm_, buffer.get(),
                                        kDefaultBufferSize, {}, true);
     assigns.emplace_back(framebuffer_original, nullptr);
-    assigns.back().plane_transform = gfx::OVERLAY_TRANSFORM_ROTATE_270;
+    assigns.back().plane_transform =
+        gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270;
 
     fake_drm_->plane_manager()->BeginFrame(&state_);
     // Rotation should be supported for this buffer as it is the original buffer
@@ -1643,7 +1590,8 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, OriginalModifiersSupportOnly) {
         DrmFramebuffer::AddFramebuffer(fake_drm_, buffer.get(),
                                        kDefaultBufferSize, {}, false);
     assigns.emplace_back(framebuffer_non_original, nullptr);
-    assigns.back().plane_transform = gfx::OVERLAY_TRANSFORM_ROTATE_270;
+    assigns.back().plane_transform =
+        gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270;
     EXPECT_FALSE(fake_drm_->plane_manager()->AssignOverlayPlanes(
         &state_, assigns, fake_drm_->crtc_property(0).id));
   }

@@ -15,22 +15,23 @@
 #ifndef ABSL_STRINGS_INTERNAL_STR_FORMAT_PARSER_H_
 #define ABSL_STRINGS_INTERNAL_STR_FORMAT_PARSER_H_
 
-#include <limits.h>
 #include <stddef.h>
 #include <stdlib.h>
 
 #include <cassert>
-#include <cstdint>
+#include <cstring>
 #include <initializer_list>
-#include <iosfwd>
-#include <iterator>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "absl/base/config.h"
+#include "absl/base/optimization.h"
 #include "absl/strings/internal/str_format/checker.h"
 #include "absl/strings/internal/str_format/constexpr_parser.h"
 #include "absl/strings/internal/str_format/extension.h"
+#include "absl/strings/string_view.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN

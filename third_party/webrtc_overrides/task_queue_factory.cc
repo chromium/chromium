@@ -153,25 +153,26 @@ base::TaskTraits TaskQueuePriority2Traits(
   // employs a PostTask/Wait pattern that uses TQ in a way that makes it
   // blocking and synchronous, which is why we allow WithBaseSyncPrimitives()
   // for OS_ANDROID.
+  // The libvpx threading adapters also need to wait for an event.
   switch (priority) {
     case webrtc::TaskQueueFactory::Priority::HIGH:
 #if defined(OS_ANDROID)
-      return {base::WithBaseSyncPrimitives(), base::TaskPriority::HIGHEST};
+      return {base::MayBlock(), base::WithBaseSyncPrimitives(),
+              base::TaskPriority::HIGHEST};
 #else
-      return {base::TaskPriority::HIGHEST};
+      return {base::MayBlock(), base::TaskPriority::HIGHEST};
 #endif
     case webrtc::TaskQueueFactory::Priority::LOW:
       return {base::MayBlock(), base::TaskPriority::BEST_EFFORT};
     case webrtc::TaskQueueFactory::Priority::NORMAL:
     default:
 #if defined(OS_ANDROID)
-      return {base::WithBaseSyncPrimitives()};
-#elif defined(OS_WIN)
-      // On Windows, software encoders need to map HW frames which requires
-      // blocking calls:
-      return {base::MayBlock()};
+      return {base::MayBlock(), base::WithBaseSyncPrimitives()};
 #else
-      return {};
+      // On Windows, software encoders need to map HW frames which requires
+      // blocking calls.
+      // The libvpx threading adapters also need to wait for an event.
+      return {base::MayBlock()};
 #endif
   }
 }

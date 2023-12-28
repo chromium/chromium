@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "media/base/video_color_space.h"
+#include "skia/ext/cicp.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
@@ -57,9 +58,13 @@ const char* AvifDecoderErrorMessage(const avifDecoder* decoder) {
                                       : "(no error message)";
 }
 
-// Builds a gfx::ColorSpace from the ITU-T H.273 (CICP) color description in the
-// image.
-gfx::ColorSpace GetColorSpace(const avifImage* image) {
+// Builds a gfx::ColorSpace from the ITU-T H.273 (CICP) color description.
+gfx::ColorSpace GetColorSpace(
+    avifColorPrimaries color_primaries,
+    avifTransferCharacteristics transfer_characteristics,
+    avifMatrixCoefficients matrix_coefficients,
+    avifRange yuv_range,
+    bool grayscale) {
   // (As of ISO/IEC 23000-22:2019 Amendment 2) MIAF Section 7.3.6.4 says:
   //   If a coded image has no associated colour property, the default property
   //   is defined as having colour_type equal to 'nclx' with properties as
@@ -82,20 +87,18 @@ gfx::ColorSpace GetColorSpace(const avifImage* image) {
   // and these are the most reasonable defaults to choose. We also advocate that
   // all AVIF decoders choose these defaults:
   // https://github.com/AOMediaCodec/av1-avif/issues/84
-  const auto primaries =
-      image->colorPrimaries == AVIF_COLOR_PRIMARIES_UNSPECIFIED
-          ? AVIF_COLOR_PRIMARIES_BT709
-          : image->colorPrimaries;
-  const auto transfer = image->transferCharacteristics ==
-                                AVIF_TRANSFER_CHARACTERISTICS_UNSPECIFIED
-                            ? AVIF_TRANSFER_CHARACTERISTICS_SRGB
-                            : image->transferCharacteristics;
+  const auto primaries = color_primaries == AVIF_COLOR_PRIMARIES_UNSPECIFIED
+                             ? AVIF_COLOR_PRIMARIES_BT709
+                             : color_primaries;
+  const auto transfer =
+      transfer_characteristics == AVIF_TRANSFER_CHARACTERISTICS_UNSPECIFIED
+          ? AVIF_TRANSFER_CHARACTERISTICS_SRGB
+          : transfer_characteristics;
   const auto matrix =
-      (image->yuvFormat == AVIF_PIXEL_FORMAT_YUV400 ||
-       image->matrixCoefficients == AVIF_MATRIX_COEFFICIENTS_UNSPECIFIED)
+      (grayscale || matrix_coefficients == AVIF_MATRIX_COEFFICIENTS_UNSPECIFIED)
           ? AVIF_MATRIX_COEFFICIENTS_BT601
-          : image->matrixCoefficients;
-  const auto range = image->yuvRange == AVIF_RANGE_FULL
+          : matrix_coefficients;
+  const auto range = yuv_range == AVIF_RANGE_FULL
                          ? gfx::ColorSpace::RangeID::FULL
                          : gfx::ColorSpace::RangeID::LIMITED;
   media::VideoColorSpace color_space(primaries, transfer, matrix, range);
@@ -106,10 +109,18 @@ gfx::ColorSpace GetColorSpace(const avifImage* image) {
   // MatrixCoefficients 12, 13, 14.
   DCHECK_GE(matrix, 12);
   DCHECK_LE(matrix, 14);
-  if (image->yuvRange == AVIF_RANGE_FULL) {
+  if (yuv_range == AVIF_RANGE_FULL) {
     return gfx::ColorSpace::CreateJpeg();
   }
   return gfx::ColorSpace::CreateREC709();
+}
+
+// Builds a gfx::ColorSpace from the ITU-T H.273 (CICP) color description in the
+// image.
+gfx::ColorSpace GetColorSpace(const avifImage* image) {
+  const bool grayscale = image->yuvFormat == AVIF_PIXEL_FORMAT_YUV400;
+  return GetColorSpace(image->colorPrimaries, image->transferCharacteristics,
+                       image->matrixCoefficients, image->yuvRange, grayscale);
 }
 
 // |y_size| is the width or height of the Y plane. Returns the width or height
@@ -222,6 +233,67 @@ float FractionToFloat(auto numerator, uint32_t denominator) {
   // First cast to double and not float because uint32_t->float conversion can
   // cause precision loss.
   return static_cast<double>(numerator) / denominator;
+}
+
+// If the image has a gain map, returns the alternate image's color space, if
+// it's different from the base image's and can be converted to a SkColorSpace.
+// If the alternate image color space is the same as the base image, there is no
+// need to specify it in SkGainmapInfo, and using the base image's color space
+// may be more accurate if the profile cannot be exactly represented as a
+// SkColorSpace object.
+sk_sp<SkColorSpace> GetAltImageColorSpace(const avifImage& image) {
+  const avifGainMap* gain_map = image.gainMap;
+  if (!gain_map) {
+    return nullptr;
+  }
+  sk_sp<SkColorSpace> color_space;
+  if (gain_map->altICC.size) {
+    if (image.icc.size == gain_map->altICC.size &&
+        memcmp(gain_map->altICC.data, image.icc.data, gain_map->altICC.size) ==
+            0) {
+      // Same ICC as the base image, no need to specify it.
+      return nullptr;
+    }
+    std::unique_ptr<ColorProfile> profile =
+        ColorProfile::Create(gain_map->altICC.data, gain_map->altICC.size);
+    if (!profile) {
+      DVLOG(1) << "Failed to parse gain map ICC profile";
+      return nullptr;
+    }
+    const skcms_ICCProfile* icc_profile = profile->GetProfile();
+    if (icc_profile->has_CICP) {
+      color_space =
+          skia::CICPGetSkColorSpace(icc_profile->CICP.color_primaries,
+                                    icc_profile->CICP.transfer_characteristics,
+                                    icc_profile->CICP.matrix_coefficients,
+                                    icc_profile->CICP.video_full_range_flag,
+                                    /*prefer_srgb_trfn=*/true);
+    } else if (icc_profile->has_toXYZD50) {
+      // The transfer function is irrelevant for gain map tone mapping,
+      // set it to something standard in case it's not set or not
+      // supported.
+      skcms_ICCProfile with_srgb = *icc_profile;
+      skcms_SetTransferFunction(&with_srgb, skcms_sRGB_TransferFunction());
+      color_space = SkColorSpace::Make(with_srgb);
+    }
+  } else if (gain_map->altColorPrimaries != AVIF_COLOR_PRIMARIES_UNSPECIFIED) {
+    if (image.icc.size == 0 &&
+        image.colorPrimaries == gain_map->altColorPrimaries) {
+      // Same as base image, no need to specify it.
+      return nullptr;
+    }
+    const bool grayscale = (gain_map->altPlaneCount == 1);
+    const gfx::ColorSpace alt_color_space = GetColorSpace(
+        gain_map->altColorPrimaries, gain_map->altTransferCharacteristics,
+        gain_map->altMatrixCoefficients, gain_map->altYUVRange, grayscale);
+    color_space = alt_color_space.GetAsFullRangeRGB().ToSkColorSpace();
+  }
+
+  if (!color_space) {
+    DVLOG(1) << "Gain map image contains an unsupported color space";
+  }
+
+  return color_space;
 }
 
 }  // namespace
@@ -1235,8 +1307,9 @@ bool AVIFImageDecoder::GetGainmapInfoAndData(
 
   // If libavif detected a gain map, it already parsed the metadata from the
   // 'tmap' box.
-  if (decoder_->gainMapPresent && decoder_->image->gainMap) {
-    const avifGainMapMetadata& metadata = decoder_->image->gainMap->metadata;
+  if (decoder_->gainMapPresent) {
+    const avifGainMap& gain_map = *decoder_->image->gainMap;
+    const avifGainMapMetadata& metadata = gain_map.metadata;
     if (metadata.baseHdrHeadroomD == 0 || metadata.alternateHdrHeadroomD == 0) {
       DVLOG(1) << "Invalid gainmap metadata: a denominator value is zero";
       return false;
@@ -1288,9 +1361,13 @@ bool AVIFImageDecoder::GetGainmapInfoAndData(
           base_is_hdr ? alternate_offset : base_offset;
       out_gainmap_info.fEpsilonHdr[i] =
           base_is_hdr ? base_offset : alternate_offset;
+
+      if (!metadata.useBaseColorSpace) {
+        // Try to use the alternate image's color space.
+        out_gainmap_info.fGainmapMathColorSpace =
+            GetAltImageColorSpace(*decoder_->image);
+      }
     }
-    // TODO(crbug.com/1451889): add support for 'useBaseColorSpace' which is
-    // ignored for now since SkGainmapInfo does not support it.
 
     return true;
   }

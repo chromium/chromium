@@ -8,9 +8,6 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.build.BuildConfig;
-
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -72,23 +69,10 @@ class ChromeThreadPoolExecutor extends ThreadPoolExecutor {
     @SuppressWarnings("NoAndroidAsyncTaskCheck")
     private static String getClassName(Runnable runnable) {
         Class blamedClass = runnable.getClass();
-        try {
-            if (blamedClass == AsyncTask.NamedFutureTask.class) {
+        if (blamedClass == AsyncTask.NamedFutureTask.class) {
                 blamedClass = ((AsyncTask.NamedFutureTask) runnable).getBlamedClass();
             } else if (blamedClass.getEnclosingClass() == android.os.AsyncTask.class) {
-                // This gets the AsyncTask that produced the runnable.
-                Field field = blamedClass.getDeclaredField("this$0");
-                field.setAccessible(true);
-                blamedClass = field.get(runnable).getClass();
-            }
-        } catch (NoSuchFieldException e) {
-            if (BuildConfig.ENABLE_ASSERTS) {
-                throw new RuntimeException(e);
-            }
-        } catch (IllegalAccessException e) {
-            if (BuildConfig.ENABLE_ASSERTS) {
-                throw new RuntimeException(e);
-            }
+            blamedClass = android.os.AsyncTask.class;
         }
         return blamedClass.getName();
     }

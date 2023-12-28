@@ -156,12 +156,10 @@ class LoginExpandedPublicAccountViewTest
   LoginUserInfo user_;
 
   // Owned by test widget view hierarchy.
-  raw_ptr<views::BoxLayoutView, DanglingUntriaged | ExperimentalAsh>
-      container_ = nullptr;
-  raw_ptr<LoginExpandedPublicAccountView, DanglingUntriaged | ExperimentalAsh>
-      public_account_ = nullptr;
-  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> other_view_ =
+  raw_ptr<views::BoxLayoutView, DanglingUntriaged> container_ = nullptr;
+  raw_ptr<LoginExpandedPublicAccountView, DanglingUntriaged> public_account_ =
       nullptr;
+  raw_ptr<views::View, DanglingUntriaged> other_view_ = nullptr;
 };
 
 }  // namespace
@@ -204,7 +202,7 @@ TEST_P(LoginExpandedPublicAccountViewTest, ShowLearnMoreDialog) {
 
   // Tap on the learn more link.
   const auto& children = test_api.learn_more_label()->children();
-  const auto it = base::ranges::find_if(children, [](auto* child) {
+  const auto it = base::ranges::find_if(children, [](views::View* child) {
     return views::IsViewClass<views::LinkFragment>(child);
   });
   DCHECK(it != children.cend());

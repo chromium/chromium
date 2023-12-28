@@ -30,21 +30,30 @@ class AwProxyingRestrictedCookieManagerListener
       const net::SiteForCookies& site_for_cookies,
       base::WeakPtr<AwProxyingRestrictedCookieManager>
           aw_restricted_cookie_manager,
-      mojo::PendingRemote<network::mojom::CookieChangeListener> client_listener)
+      mojo::PendingRemote<network::mojom::CookieChangeListener> client_listener,
+      bool has_storage_access)
       : url_(url),
         site_for_cookies_(site_for_cookies),
+        has_storage_access_(has_storage_access),
         aw_restricted_cookie_manager_(aw_restricted_cookie_manager),
         client_listener_(std::move(client_listener)) {}
 
   void OnCookieChange(const net::CookieChangeInfo& change) override {
     if (aw_restricted_cookie_manager_ &&
-        aw_restricted_cookie_manager_->AllowCookies(url_, site_for_cookies_))
+        aw_restricted_cookie_manager_->AllowCookies(url_, site_for_cookies_,
+                                                    has_storage_access_)) {
       client_listener_->OnCookieChange(change);
+    }
   }
 
  private:
   const GURL url_;
   const net::SiteForCookies site_for_cookies_;
+  // restricted_cookie_manager in services/network follows a similar pattern of
+  // using the state of "has_storage_access" at the time of the listener being
+  // added so we are matching that behaviour. If the storage access was enabled
+  // _after_ the listener was added, it will not be updated here.
+  bool has_storage_access_;
   base::WeakPtr<AwProxyingRestrictedCookieManager>
       aw_restricted_cookie_manager_;
   mojo::Remote<network::mojom::CookieChangeListener> client_listener_;
@@ -87,8 +96,7 @@ void AwProxyingRestrictedCookieManager::GetAllForUrl(
     bool is_ad_tagged,
     GetAllForUrlCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-
-  if (AllowCookies(url, site_for_cookies)) {
+  if (AllowCookies(url, site_for_cookies, has_storage_access)) {
     underlying_restricted_cookie_manager_->GetAllForUrl(
         url, site_for_cookies, top_frame_origin, has_storage_access,
         std::move(options), is_ad_tagged, std::move(callback));
@@ -107,7 +115,7 @@ void AwProxyingRestrictedCookieManager::SetCanonicalCookie(
     SetCanonicalCookieCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  if (AllowCookies(url, site_for_cookies)) {
+  if (AllowCookies(url, site_for_cookies, has_storage_access)) {
     underlying_restricted_cookie_manager_->SetCanonicalCookie(
         cookie, url, site_for_cookies, top_frame_origin, has_storage_access,
         status, std::move(callback));
@@ -130,7 +138,7 @@ void AwProxyingRestrictedCookieManager::AddChangeListener(
   auto proxy_listener =
       std::make_unique<AwProxyingRestrictedCookieManagerListener>(
           url, site_for_cookies, weak_factory_.GetWeakPtr(),
-          std::move(listener));
+          std::move(listener), has_storage_access);
 
   mojo::MakeSelfOwnedReceiver(
       std::move(proxy_listener),
@@ -150,7 +158,7 @@ void AwProxyingRestrictedCookieManager::SetCookieFromString(
     SetCookieFromStringCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  if (AllowCookies(url, site_for_cookies)) {
+  if (AllowCookies(url, site_for_cookies, has_storage_access)) {
     underlying_restricted_cookie_manager_->SetCookieFromString(
         url, site_for_cookies, top_frame_origin, has_storage_access, cookie,
         std::move(callback));
@@ -169,7 +177,7 @@ void AwProxyingRestrictedCookieManager::GetCookiesString(
     GetCookiesStringCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  if (AllowCookies(url, site_for_cookies)) {
+  if (AllowCookies(url, site_for_cookies, has_storage_access)) {
     // In Android Webview the access to cookies can change dynamically. For
     // now never request a shared memory region so that a full IPC is issued
     // every time. This prevents a client retaining access to the cookie value
@@ -191,7 +199,8 @@ void AwProxyingRestrictedCookieManager::CookiesEnabledFor(
     bool has_storage_access,
     CookiesEnabledForCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  std::move(callback).Run(AllowCookies(url, site_for_cookies));
+  std::move(callback).Run(
+      AllowCookies(url, site_for_cookies, has_storage_access));
 }
 
 AwProxyingRestrictedCookieManager::AwProxyingRestrictedCookieManager(
@@ -222,14 +231,15 @@ void AwProxyingRestrictedCookieManager::CreateAndBindOnIoThread(
 
 bool AwProxyingRestrictedCookieManager::AllowCookies(
     const GURL& url,
-    const net::SiteForCookies& site_for_cookies) const {
+    const net::SiteForCookies& site_for_cookies,
+    bool has_storage_access) const {
   if (is_service_worker_) {
     // Service worker cookies are always first-party, so only need to check
     // the global toggle.
     return AwCookieAccessPolicy::GetInstance()->GetShouldAcceptCookies();
   } else {
     return AwCookieAccessPolicy::GetInstance()->AllowCookies(
-        url, site_for_cookies, global_frame_token_);
+        url, site_for_cookies, global_frame_token_, has_storage_access);
   }
 }
 

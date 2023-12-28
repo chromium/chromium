@@ -6,10 +6,10 @@
 #define COMPONENTS_CAST_RECEIVER_RENDERER_CONTENT_RENDERER_CLIENT_MIXINS_IMPL_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
-#include "base/strings/string_piece.h"
 #include "components/cast_receiver/renderer/public/content_renderer_client_mixins.h"
 #include "components/cast_receiver/renderer/wrapping_url_loader_throttle_provider.h"
 
@@ -63,7 +63,7 @@ class ContentRendererClientMixinsImpl
   // WrappingURLLoaderThrottleProvider::Client implementation.
   UrlRewriteRulesProvider* GetUrlRewriteRulesProvider(
       const blink::LocalFrameToken& frame_token) override;
-  bool IsCorsExemptHeader(base::StringPiece header) override;
+  bool IsCorsExemptHeader(std::string_view header) override;
 
   IsCorsExemptHeadersCallback is_cors_exempt_header_callback_;
 

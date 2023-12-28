@@ -138,7 +138,7 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   // when the privacy notice does not have enough items after an update.
   void MaybeAnimateOutPrivacyNotice();
 
-  const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
+  const raw_ptr<AppListViewDelegate> view_delegate_;
 
   bool tablet_mode_ = false;
 
@@ -146,13 +146,11 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   base::OneShotTimer privacy_notice_shown_timer_;
 
   // Not owned.
-  raw_ptr<AppListNudgeController, DanglingUntriaged | ExperimentalAsh>
-      nudge_controller_ = nullptr;
-
-  raw_ptr<AppListToastView, DanglingUntriaged | ExperimentalAsh>
-      privacy_toast_ = nullptr;
-  raw_ptr<ContinueTaskContainerView, ExperimentalAsh> suggestions_container_ =
+  raw_ptr<AppListNudgeController, DanglingUntriaged> nudge_controller_ =
       nullptr;
+
+  raw_ptr<AppListToastView, DanglingUntriaged> privacy_toast_ = nullptr;
+  raw_ptr<ContinueTaskContainerView> suggestions_container_ = nullptr;
 
   base::WeakPtrFactory<ContinueSectionView> weak_ptr_factory_{this};
 };

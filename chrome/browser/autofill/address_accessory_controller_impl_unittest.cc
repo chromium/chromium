@@ -135,24 +135,18 @@ TEST_F(AddressAccessoryControllerTest, RefreshSuggestionsCallsUI) {
       result,
       AddressAccessorySheetDataBuilder(std::u16string())
           .AddUserInfo()
-          .AppendSimpleField(canadian.GetRawInfo(ServerFieldType::NAME_FULL))
-          .AppendSimpleField(canadian.GetRawInfo(ServerFieldType::COMPANY_NAME))
+          .AppendSimpleField(canadian.GetRawInfo(FieldType::NAME_FULL))
+          .AppendSimpleField(canadian.GetRawInfo(FieldType::COMPANY_NAME))
+          .AppendSimpleField(canadian.GetRawInfo(FieldType::ADDRESS_HOME_LINE1))
+          .AppendSimpleField(canadian.GetRawInfo(FieldType::ADDRESS_HOME_LINE2))
+          .AppendSimpleField(canadian.GetRawInfo(FieldType::ADDRESS_HOME_ZIP))
+          .AppendSimpleField(canadian.GetRawInfo(FieldType::ADDRESS_HOME_CITY))
+          .AppendSimpleField(canadian.GetRawInfo(FieldType::ADDRESS_HOME_STATE))
           .AppendSimpleField(
-              canadian.GetRawInfo(ServerFieldType::ADDRESS_HOME_LINE1))
+              canadian.GetRawInfo(FieldType::ADDRESS_HOME_COUNTRY))
           .AppendSimpleField(
-              canadian.GetRawInfo(ServerFieldType::ADDRESS_HOME_LINE2))
-          .AppendSimpleField(
-              canadian.GetRawInfo(ServerFieldType::ADDRESS_HOME_ZIP))
-          .AppendSimpleField(
-              canadian.GetRawInfo(ServerFieldType::ADDRESS_HOME_CITY))
-          .AppendSimpleField(
-              canadian.GetRawInfo(ServerFieldType::ADDRESS_HOME_STATE))
-          .AppendSimpleField(
-              canadian.GetRawInfo(ServerFieldType::ADDRESS_HOME_COUNTRY))
-          .AppendSimpleField(
-              canadian.GetRawInfo(ServerFieldType::PHONE_HOME_WHOLE_NUMBER))
-          .AppendSimpleField(
-              canadian.GetRawInfo(ServerFieldType::EMAIL_ADDRESS))
+              canadian.GetRawInfo(FieldType::PHONE_HOME_WHOLE_NUMBER))
+          .AppendSimpleField(canadian.GetRawInfo(FieldType::EMAIL_ADDRESS))
           .Build());
 }
 
@@ -184,28 +178,28 @@ TEST_F(AddressAccessoryControllerTest, TriggersRefreshWhenDataChanges) {
   AutofillProfile email = test::GetIncompleteProfile2();
   personal_data_manager()->AddProfile(email);
   EXPECT_EQ(result, controller()->GetSheetData());
-  EXPECT_EQ(result, AddressAccessorySheetDataBuilder(std::u16string())
-                        .AddUserInfo()
-                        /*name full:*/
-                        .AppendSimpleField(std::u16string())
-                        /*company name:*/
-                        .AppendSimpleField(std::u16string())
-                        /*address line1:*/
-                        .AppendSimpleField(std::u16string())
-                        /*address line2:*/
-                        .AppendSimpleField(std::u16string())
-                        /*address zip:*/
-                        .AppendSimpleField(std::u16string())
-                        /*address city:*/
-                        .AppendSimpleField(std::u16string())
-                        /*address state:*/
-                        .AppendSimpleField(std::u16string())
-                        /*address country:*/
-                        .AppendSimpleField(std::u16string())
-                        /*phone number:*/.AppendSimpleField(std::u16string())
-                        .AppendSimpleField(
-                            email.GetRawInfo(ServerFieldType::EMAIL_ADDRESS))
-                        .Build());
+  EXPECT_EQ(result,
+            AddressAccessorySheetDataBuilder(std::u16string())
+                .AddUserInfo()
+                /*name full:*/
+                .AppendSimpleField(std::u16string())
+                /*company name:*/
+                .AppendSimpleField(std::u16string())
+                /*address line1:*/
+                .AppendSimpleField(std::u16string())
+                /*address line2:*/
+                .AppendSimpleField(std::u16string())
+                /*address zip:*/
+                .AppendSimpleField(std::u16string())
+                /*address city:*/
+                .AppendSimpleField(std::u16string())
+                /*address state:*/
+                .AppendSimpleField(std::u16string())
+                /*address country:*/
+                .AppendSimpleField(std::u16string())
+                /*phone number:*/.AppendSimpleField(std::u16string())
+                .AppendSimpleField(email.GetRawInfo(FieldType::EMAIL_ADDRESS))
+                .Build());
 }
 
 }  // namespace autofill

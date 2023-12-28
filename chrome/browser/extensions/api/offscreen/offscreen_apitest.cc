@@ -19,8 +19,9 @@
 #include "extensions/browser/api/offscreen/offscreen_document_manager.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/lazy_context_id.h"
+#include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/browser/offscreen_document_host.h"
-#include "extensions/browser/service_worker_task_queue.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature_channel.h"
@@ -99,8 +100,10 @@ scoped_refptr<const Extension> SetExtensionIncognitoEnabled(
 // Wakes up the service worker for the `extension` in the given `profile`.
 void WakeUpServiceWorker(const Extension& extension, Profile& profile) {
   base::RunLoop run_loop;
-  ServiceWorkerTaskQueue::Get(&profile)->AddPendingTask(
-      LazyContextId(&profile, extension.id(), extension.url()),
+  const auto context_id = LazyContextId::ForExtension(&profile, &extension);
+  ASSERT_TRUE(context_id.IsForServiceWorker());
+  context_id.GetTaskQueue()->AddPendingTask(
+      context_id,
       base::BindOnce([](std::unique_ptr<LazyContextTaskQueue::ContextInfo>) {
       }).Then(run_loop.QuitWhenIdleClosure()));
   run_loop.Run();
@@ -681,6 +684,56 @@ class OffscreenApiTestWithoutCommandLineFlag : public OffscreenApiTest {
     ExtensionApiTest::SetUpCommandLine(command_line);
   }
 };
+
+// Tests opening an offscreen document that takes awhile to load properly waits
+// for the document to load before resolving the promise, ensuring the document
+// is ready to receive messages by the time the promise resolves.
+IN_PROC_BROWSER_TEST_F(OffscreenApiTest, LongLoadOffscreenDocument) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Offscreen Document Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "permissions": ["offscreen"],
+           "background": { "service_worker": "background.js" }
+         })";
+  static constexpr char kOffscreenHtml[] =
+      R"(<html><script src="offscreen.js"></script></html>)";
+  // This script busy-waits for two seconds before (synchronously) adding a
+  // message listener.
+  static constexpr char kOffscreenJs[] =
+      R"(const startTime = performance.now();
+         const endTime = startTime + 2000;
+         while (performance.now() < endTime) { /* Spin our wheels! */ }
+         chrome.runtime.onMessage.addListener((msg, sender, reply) => {
+           reply(msg + ' reply');
+         });)";
+  // The background script will open an offscreen document and, once the
+  // createDocument() call resolves, send a message. Since createDocument()
+  // should wait for document to finish loading, this should work.
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+           async function longLoadDocAndSendMessage() {
+             await chrome.offscreen.createDocument(
+                       {
+                           url: 'offscreen.html',
+                           reasons: ['TESTING'],
+                           justification: 'testing'
+                       });
+             const reply = await chrome.runtime.sendMessage('test message');
+             chrome.test.assertEq('test message reply', reply);
+             chrome.test.succeed();
+           },
+         ]);)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.html"), kOffscreenHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("offscreen.js"), kOffscreenJs);
+
+  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
+}
 
 // Tests that the `TESTING` reason is disallowed without the appropriate
 // commandline switch.

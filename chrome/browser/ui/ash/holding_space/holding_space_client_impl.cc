@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_client_impl.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
@@ -13,6 +14,7 @@
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
@@ -21,6 +23,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/clipboard_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
@@ -63,6 +66,25 @@ void GetFileInfo(Profile* profile,
                                         : std::nullopt);
           },
           std::move(callback)));
+}
+
+// Opens an in-progress item and returns the reason for failure if any. Returns
+// `std::nullopt` if successful. Runs the command `kOpenItem` if there is one;
+// otherwise, opens `item` when the underlying download completes.
+std::optional<ItemFailureToLaunchReason> OpenInProgressItem(
+    Profile* profile,
+    const HoldingSpaceItem& item) {
+  CHECK(!item.progress().IsComplete());
+
+  auto command_iter = base::ranges::find(
+      item.in_progress_commands(), HoldingSpaceCommandId::kOpenItem,
+      &HoldingSpaceItem::InProgressCommand::command_id);
+  if (command_iter != item.in_progress_commands().end()) {
+    command_iter->handler.Run(&item, command_iter->command_id);
+    return std::nullopt;
+  }
+
+  return GetHoldingSpaceKeyedService(profile)->OpenItemWhenComplete(&item);
 }
 
 // Returns the reason for failing to launch a holding space item for the
@@ -191,7 +213,7 @@ void HoldingSpaceClientImpl::OpenItems(
     }
     if (!item->progress().IsComplete()) {
       const std::optional<ItemFailureToLaunchReason> failure_to_launch_reason =
-          GetHoldingSpaceKeyedService(profile_)->OpenItemWhenComplete(item);
+          OpenInProgressItem(profile_, *item);
       if (failure_to_launch_reason) {
         holding_space_metrics::RecordItemFailureToLaunch(
             item->type(), item->file().file_path,

@@ -93,7 +93,7 @@ TEST_F(MediaMetricsProviderTest, TestUkm) {
     const auto& entries =
         test_recorder_->GetEntriesByName(UkmEntry::kEntryName);
     EXPECT_EQ(1u, entries.size());
-    for (const auto* entry : entries) {
+    for (const ukm::mojom::UkmEntry* entry : entries) {
       test_recorder_->ExpectEntrySourceHasUrl(entry, GURL(kTestOrigin));
       EXPECT_HAS_UKM(UkmEntry::kPlayerIDName);
       EXPECT_UKM(UkmEntry::kIsTopFrameName, true);
@@ -125,6 +125,7 @@ TEST_F(MediaMetricsProviderTest, TestUkm) {
   Initialize(false, false, false, kTestOrigin2, mojom::MediaURLScheme::kHttps);
   provider_->SetIsEME();
   provider_->SetKeySystem(kClearKeyKeySystem);
+  provider_->SetHasWaitingForKey();
   provider_->SetIsHardwareSecure();
   provider_->SetAudioPipelineInfo(
       {false, false, AudioDecoderType::kMojo, EncryptionType::kClear});
@@ -143,12 +144,13 @@ TEST_F(MediaMetricsProviderTest, TestUkm) {
     const auto& entries =
         test_recorder_->GetEntriesByName(UkmEntry::kEntryName);
     EXPECT_EQ(1u, entries.size());
-    for (const auto* entry : entries) {
+    for (const ukm::mojom::UkmEntry* entry : entries) {
       test_recorder_->ExpectEntrySourceHasUrl(entry, GURL(kTestOrigin2));
       EXPECT_HAS_UKM(UkmEntry::kPlayerIDName);
       EXPECT_UKM(UkmEntry::kIsTopFrameName, false);
       EXPECT_UKM(UkmEntry::kIsEMEName, true);
       EXPECT_UKM(UkmEntry::kKeySystemName, 1);
+      EXPECT_UKM(UkmEntry::kHasWaitingForKeyName, true);
       EXPECT_UKM(UkmEntry::kIsHardwareSecureName, true);
       EXPECT_UKM(UkmEntry::kAudioEncryptionTypeName,
                  static_cast<int64_t>(EncryptionType::kClear));

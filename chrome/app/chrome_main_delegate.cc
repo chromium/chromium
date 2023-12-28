@@ -494,6 +494,26 @@ void SetUpProfilingShutdownHandler() {
 
 #endif  // BUILDFLAG(IS_POSIX)
 
+// Returns true if the browser will exit before feature list initialization
+// happens in the browser process.
+bool WillExitBeforeBrowserFeatureListInitialization() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+  // Note: empty value for --process-type indicates its the browser process.
+  CHECK_EQ("", command_line->GetSwitchValueASCII(switches::kProcessType))
+      << "This should only be invoked in the browser process.";
+
+  if (command_line->HasSwitch(switches::kPackExtension)) {
+    // --pack-extension results in immediately packing the extension and
+    // exiting, and happens before the feature list is initialized.
+    return true;
+  }
+#endif
+
+  return false;
+}
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 absl::optional<int> HandlePackExtensionSwitches(
     const base::CommandLine& command_line) {
@@ -501,6 +521,13 @@ absl::optional<int> HandlePackExtensionSwitches(
   // startup action and exit.
   if (!command_line.HasSwitch(switches::kPackExtension))
     return absl::nullopt;
+
+  // This happens before the default flow for FeatureList initialization, but
+  // packing an extension can depend on different base::Features. Thus, we
+  // should have always created a stub FeatureList by this point.
+  // See https://crbug.com/1506254.
+  CHECK(WillExitBeforeBrowserFeatureListInitialization());
+  CHECK(base::FeatureList::GetInstance());
 
   // Ensure there is an instance of ResourceBundle that is initialized for
   // localized string resource accesses.
@@ -975,9 +1002,17 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
 }
 
 bool ChromeMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
-  // In the browser process Chrome creates the FeatureList, so content should
-  // not.
-  return absl::holds_alternative<InvokedInChildProcess>(invoked_in);
+  // The //content layer is always responsible for creating the FeatureList in
+  // child processes.
+  if (absl::holds_alternative<InvokedInChildProcess>(invoked_in)) {
+    return true;
+  }
+
+  // Otherwise, normally the browser process in Chrome is responsible for
+  // creating the FeatureList. The exception to this is if the browser will
+  // perform some operation and then early-exit. In this case, we allow the
+  // //content layer to create the FeatureList.
+  return WillExitBeforeBrowserFeatureListInitialization();
 }
 
 bool ChromeMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {

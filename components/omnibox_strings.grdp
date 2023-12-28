@@ -292,4 +292,10 @@
   <message name="IDS_OMNIBOX_ONE_LINE_CALCULATOR_SUGGESTION_TEMPLATE" desc = "The string displayed when a calculator answer is suggested.">
     <ph name="EXPRESSION">$1</ph> = <ph name="ANSWER">$2</ph>
   </message>
+
+  <!-- Supplementary Omnibox header strings, that appear above suggestion groups. -->
+  <message name="IDS_OMNIBOX_HEADER_POPULAR_TOPICS" desc="The text displayed above the popular topic search suggestions section.">
+    Popular topics
+  </message>
+
 </grit-part>

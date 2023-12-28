@@ -198,12 +198,25 @@ TestSharedImageInterface::CreateSharedImage(SharedImageFormat format,
                                             base::StringPiece debug_label,
                                             gpu::SurfaceHandle surface_handle,
                                             gfx::BufferUsage buffer_usage) {
+  if (fail_shared_image_creation_with_buffer_usage_) {
+    return nullptr;
+  }
+
   // Create a ClientSharedImage with a GMB.
   auto client_shared_image =
       CreateSharedImage(format, size, color_space, surface_origin, alpha_type,
                         usage, std::move(debug_label), surface_handle);
   CHECK(client_shared_image);
   auto mailbox = client_shared_image->mailbox();
+
+  if (test_gmb_manager_) {
+    auto gpu_memory_buffer = test_gmb_manager_->CreateGpuMemoryBuffer(
+        size, SinglePlaneSharedImageFormatToBufferFormat(format), buffer_usage,
+        surface_handle, nullptr);
+    return gpu::ClientSharedImage::CreateForTesting(
+        mailbox, std::move(gpu_memory_buffer));
+  }
+
   auto gmb_handle = CreateGMBHandle(format, size, buffer_usage);
 
   return base::MakeRefCounted<gpu::ClientSharedImage>(
@@ -283,11 +296,13 @@ void TestSharedImageInterface::UpdateSharedImage(
   DCHECK(shared_images_.find(mailbox) != shared_images_.end());
 }
 
-void TestSharedImageInterface::AddReferenceToSharedImage(
+scoped_refptr<gpu::ClientSharedImage>
+TestSharedImageInterface::AddReferenceToSharedImage(
     const gpu::SyncToken& sync_token,
     const gpu::Mailbox& mailbox,
     uint32_t usage) {
   shared_images_.insert(mailbox);
+  return base::MakeRefCounted<gpu::ClientSharedImage>(mailbox);
 }
 
 void TestSharedImageInterface::DestroySharedImage(

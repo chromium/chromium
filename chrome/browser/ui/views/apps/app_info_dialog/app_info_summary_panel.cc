@@ -68,8 +68,7 @@ LaunchOptionsComboboxModel::LaunchOptionsComboboxModel() {
       l10n_util::GetStringUTF16(IDS_APP_CONTEXT_MENU_OPEN_WINDOW));
 }
 
-LaunchOptionsComboboxModel::~LaunchOptionsComboboxModel() {
-}
+LaunchOptionsComboboxModel::~LaunchOptionsComboboxModel() {}
 
 extensions::LaunchType LaunchOptionsComboboxModel::GetLaunchTypeAtIndex(
     int index) const {
@@ -156,8 +155,9 @@ void AppInfoSummaryPanel::AddDescriptionAndLinksControl(
 
 void AppInfoSummaryPanel::AddDetailsControl(views::View* vertical_stack) {
   // Component apps have no details.
-  if (app_->location() == extensions::mojom::ManifestLocation::kComponent)
+  if (app_->location() == extensions::mojom::ManifestLocation::kComponent) {
     return;
+  }
 
   std::unique_ptr<views::View> details_list =
       CreateVerticalStack(ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -188,8 +188,9 @@ void AppInfoSummaryPanel::AddDetailsControl(views::View* vertical_stack) {
 }
 
 void AppInfoSummaryPanel::AddLaunchOptionControl(views::View* vertical_stack) {
-  if (!CanSetLaunchType())
+  if (!CanSetLaunchType()) {
     return;
+  }
 
   launch_options_combobox_model_ =
       std::make_unique<LaunchOptionsComboboxModel>();
@@ -272,8 +273,9 @@ bool AppInfoSummaryPanel::CanShowAppHomePage() const {
 
 void AppInfoSummaryPanel::DisplayLicenses() {
   DCHECK(CanDisplayLicenses());
-  for (const auto& license_url : GetLicenseUrls())
+  for (const auto& license_url : GetLicenseUrls()) {
     OpenLink(license_url);
+  }
   Close();
 }
 
@@ -282,8 +284,9 @@ bool AppInfoSummaryPanel::CanDisplayLicenses() const {
 }
 
 std::vector<GURL> AppInfoSummaryPanel::GetLicenseUrls() const {
-  if (!extensions::SharedModuleInfo::ImportsModules(app_))
+  if (!extensions::SharedModuleInfo::ImportsModules(app_)) {
     return std::vector<GURL>();
+  }
 
   std::vector<GURL> license_urls;
   extensions::ExtensionRegistry* registry =
@@ -298,11 +301,12 @@ std::vector<GURL> AppInfoSummaryPanel::GetLicenseUrls() const {
     DCHECK(imported_module);
 
     GURL about_page = extensions::ManifestURL::GetAboutPage(imported_module);
-    if (about_page != GURL::EmptyGURL())
+    if (about_page != GURL::EmptyGURL()) {
       license_urls.push_back(about_page);
+    }
   }
   return license_urls;
 }
 
-BEGIN_METADATA(AppInfoSummaryPanel, AppInfoPanel)
+BEGIN_METADATA(AppInfoSummaryPanel)
 END_METADATA

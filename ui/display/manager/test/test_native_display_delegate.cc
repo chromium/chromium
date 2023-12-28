@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/display/manager/test/action_logger.h"
@@ -42,6 +43,22 @@ TestNativeDisplayDelegate::TestNativeDisplayDelegate(ActionLogger* log)
 
 TestNativeDisplayDelegate::~TestNativeDisplayDelegate() = default;
 
+const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>
+TestNativeDisplayDelegate::GetOutputs() const {
+  std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>> outputs;
+  for (const auto& output : outputs_) {
+    outputs.push_back(output.get());
+  }
+  return outputs;
+}
+
+void TestNativeDisplayDelegate::SetOutputs(
+    std::vector<std::unique_ptr<DisplaySnapshot>> outputs) {
+  std::move(begin(outputs_), end(outputs_),
+            std::back_inserter(cached_outputs_));
+  outputs_ = std::move(outputs);
+}
+
 void TestNativeDisplayDelegate::Initialize() {
   log_->AppendAction(kInit);
 }
@@ -62,12 +79,13 @@ void TestNativeDisplayDelegate::GetDisplays(GetDisplaysCallback callback) {
   // This mimics the behavior of Ozone DRM when new display state arrives.
   for (NativeDisplayObserver& observer : observers_)
     observer.OnDisplaySnapshotsInvalidated();
+  cached_outputs_.clear();
 
   if (run_async_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), outputs_));
+        FROM_HERE, base::BindOnce(std::move(callback), GetOutputs()));
   } else {
-    std::move(callback).Run(outputs_);
+    std::move(callback).Run(GetOutputs());
   }
 }
 

@@ -44,13 +44,13 @@ class WaylandRemoteOutput : public WaylandDisplayObserver {
   void OnOutputDestroyed() override;
 
  private:
-  const raw_ptr<wl_resource, ExperimentalAsh> resource_;
+  const raw_ptr<wl_resource> resource_;
 
   bool initial_config_sent_ = false;
 
   WaylandRemoteOutputEventMapping const event_mapping_;
 
-  raw_ptr<WaylandDisplayHandler, ExperimentalAsh> display_handler_;
+  raw_ptr<WaylandDisplayHandler> display_handler_;
 };
 
 // Implements remote shell interface and monitors workspace state needed
@@ -157,10 +157,10 @@ class WaylandRemoteShell : public display::DisplayObserver,
   };
 
   // The exo display instance. Not owned.
-  const raw_ptr<Display, ExperimentalAsh> display_;
+  const raw_ptr<Display> display_;
 
   // The remote shell resource associated with observer.
-  const raw_ptr<wl_resource, ExperimentalAsh> remote_shell_resource_;
+  const raw_ptr<wl_resource> remote_shell_resource_;
 
   // Callback to get the wl_output resource for a given display_id.
   OutputResourceProvider const output_provider_;
@@ -186,7 +186,7 @@ class WaylandRemoteShell : public display::DisplayObserver,
                           display::DisplayManagerObserver>
       display_manager_observation_{this};
 
-  const raw_ptr<Seat, ExperimentalAsh> seat_;
+  const raw_ptr<Seat> seat_;
 
   base::WeakPtrFactory<WaylandRemoteShell> weak_ptr_factory_{this};
 
@@ -220,7 +220,7 @@ class WaylandRemoteSurfaceDelegate
   void OnZoomLevelChanged(ZoomChange zoom_change) override;
 
   base::WeakPtr<WaylandRemoteShell> shell_;
-  raw_ptr<wl_resource, ExperimentalAsh> resource_;
+  raw_ptr<wl_resource> resource_;
   WaylandRemoteShellEventMapping const event_mapping_;
 };
 

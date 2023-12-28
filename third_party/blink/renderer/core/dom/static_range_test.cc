@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -29,6 +30,7 @@ class StaticRangeTest : public testing::Test {
   HTMLDocument& GetDocument() const;
 
  private:
+  test::TaskEnvironment task_environment_;
   ScopedNullExecutionContext execution_context_;
   Persistent<HTMLDocument> document_;
 };

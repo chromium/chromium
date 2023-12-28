@@ -94,8 +94,6 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   void OnMediaItemUISizeChanged() override;
   void OnMediaItemUIMetadataChanged() override;
   void OnMediaItemUIActionsChanged() override;
-  void OnMediaItemUIClicked(const std::string& id) override {}
-  void OnMediaItemUIDismissed(const std::string& id) override {}
   void OnMediaItemUIDestroyed(const std::string& id) override;
 
   void AddObserver(MediaDialogViewObserver* observer);

@@ -148,6 +148,7 @@ TEST_F(TargetViewTest, TestKeyboardSupport) {
   EXPECT_FALSE(GetTargetView());
   VerifyLastActionPosition(action_view_size + 1,
                            GetPointInScreenFromTargetView(local_center));
+  PressDoneButtonOnButtonOptionsMenu();
 
   // Enter into the button placement mode again and check whether the key `esc`
   // exits the button placement mode without adding anything.
@@ -170,6 +171,7 @@ TEST_F(TargetViewTest, TestGestureSupport) {
   EXPECT_FALSE(GetTargetView());
   // Check if the action is dropped on the expect position.
   VerifyLastActionPosition(action_view_size + 1, global_center);
+  PressDoneButtonOnButtonOptionsMenu();
 
   // Enter into the button placement mode and test the gesture scroll.
   PressAddButton();

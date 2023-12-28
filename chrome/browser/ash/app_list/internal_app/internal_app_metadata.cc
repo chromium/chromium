@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/public/cpp/keyboard_shortcut_viewer.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
@@ -40,33 +39,11 @@
 
 namespace app_list {
 
-namespace {
-
-const std::vector<InternalApp>&
-GetInternalAppListWithoutOldKeyboardShortcuts() {
+// TODO(longbowei): Remove InternalApp related code since it returns an empty
+// list.
+const std::vector<InternalApp>& GetInternalAppList(const Profile* profile) {
   static base::NoDestructor<std::vector<InternalApp>> internal_app_list_static;
   return *internal_app_list_static;
-}
-
-const std::vector<InternalApp>& GetInternalAppListWithOldKeyboardShortcuts() {
-  static base::NoDestructor<std::vector<InternalApp>> internal_app_list_static(
-      {{ash::kInternalAppIdKeyboardShortcutViewer,
-        IDS_INTERNAL_APP_KEYBOARD_SHORTCUT_VIEWER, IDR_SHORTCUT_VIEWER_LOGO_192,
-        /*recommendable=*/false,
-        /*searchable=*/true,
-        /*show_in_launcher=*/false,
-        apps::BuiltInAppName::kKeyboardShortcutViewer,
-        IDS_LAUNCHER_SEARCHABLE_KEYBOARD_SHORTCUT_VIEWER}});
-  return *internal_app_list_static;
-}
-
-}  // namespace
-
-const std::vector<InternalApp>& GetInternalAppList(const Profile* profile) {
-  if (ash::features::ShouldOnlyShowNewShortcutApp()) {
-    return GetInternalAppListWithoutOldKeyboardShortcuts();
-  }
-  return GetInternalAppListWithOldKeyboardShortcuts();
 }
 
 const InternalApp* FindInternalApp(const std::string& app_id) {

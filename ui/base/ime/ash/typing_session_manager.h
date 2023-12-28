@@ -39,7 +39,7 @@ class TypingSessionManager {
 
   base::Time last_user_action_time_;
 
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<base::Clock> clock_;
 
   bool is_active_;
 };

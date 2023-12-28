@@ -10,11 +10,13 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(HTMLLinkElementSizesAttributeTest,
      setHTMLForProperty_updatesForAttribute) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       Document::CreateForTest(execution_context.GetExecutionContext());
@@ -25,6 +27,7 @@ TEST(HTMLLinkElementSizesAttributeTest,
 }
 
 TEST(HTMLOutputElementTest, setForAttribute_updatesHTMLForPropertyValue) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       Document::CreateForTest(execution_context.GetExecutionContext());

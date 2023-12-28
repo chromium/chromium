@@ -20,8 +20,6 @@
 
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 
-import {decorate} from '../../../common/js/cr_ui.js';
-
 interface SplitterHandlers {
   touchmove?: (event: TouchEvent) => void;
   touchstart?: (event: TouchEvent) => void;
@@ -41,14 +39,10 @@ export class Splitter extends HTMLDivElement {
   private startX_: number = 0;
   private startWidth_: number = 0;
 
-  static decorate(el: HTMLElement, ..._args: any[]) {
-    decorate(el, Splitter);
-  }
-
   /**
    * Initializes the element.
    */
-  decorate(..._args: any[]) {
+  initialize(..._args: any[]) {
     this.addEventListener('mousedown', this.handleMouseDown_.bind(this), true);
     this.addEventListener(
         'touchstart', this.handleTouchStart_.bind(this), true);

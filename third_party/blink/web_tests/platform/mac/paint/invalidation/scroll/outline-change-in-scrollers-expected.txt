@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
+      "name": "LayoutNGBlockFlow (relative positioned, inline) DIV class='scroll'",
       "position": [10, 10],
       "bounds": [95, 95],
       "drawsContent": false,
@@ -28,12 +28,12 @@
       "transform": 1
     },
     {
-      "name": "Scroll corner of LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
+      "name": "Scroll corner of LayoutNGBlockFlow (relative positioned, inline) DIV class='scroll'",
       "position": [113, 8],
       "bounds": [293, 130]
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
+      "name": "LayoutNGBlockFlow (relative positioned, inline) DIV class='scroll'",
       "position": [10, 10],
       "bounds": [150, 150],
       "invalidations": [
@@ -42,7 +42,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
+      "name": "LayoutNGBlockFlow (relative positioned, inline) DIV class='scroll'",
       "position": [10, 10],
       "bounds": [95, 95],
       "drawsContent": false,
@@ -64,7 +64,7 @@
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
+      "name": "LayoutNGBlockFlow (relative positioned, inline) DIV class='scroll'",
       "position": [10, 10],
       "bounds": [95, 150],
       "invalidations": [
@@ -73,7 +73,7 @@
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
+      "name": "LayoutNGBlockFlow (relative positioned, inline) DIV class='scroll'",
       "position": [10, 10],
       "bounds": [95, 95],
       "drawsContent": false,
@@ -94,12 +94,12 @@
       "transform": 3
     },
     {
-      "name": "Scroll corner of LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
+      "name": "Scroll corner of LayoutNGBlockFlow (relative positioned, inline) DIV class='scroll'",
       "position": [276, 113],
       "bounds": [130, 159]
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
+      "name": "LayoutNGBlockFlow (relative positioned, inline) DIV class='scroll'",
       "position": [10, 10],
       "bounds": [150, 150],
       "invalidations": [
@@ -108,7 +108,7 @@
       "transform": 3
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
+      "name": "LayoutNGBlockFlow (relative positioned, inline) DIV class='scroll'",
       "position": [25, 10],
       "bounds": [95, 95],
       "drawsContent": false,
@@ -127,7 +127,7 @@
       "transform": 4
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
+      "name": "LayoutNGBlockFlow (relative positioned, inline) DIV class='scroll'",
       "position": [25, 10],
       "bounds": [95, 150],
       "invalidations": [
@@ -136,7 +136,7 @@
       "transform": 4
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
+      "name": "LayoutNGBlockFlow (relative positioned, inline) DIV class='scroll'",
       "position": [10, 10],
       "bounds": [95, 95],
       "drawsContent": false,
@@ -156,7 +156,7 @@
       "transform": 5
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
+      "name": "LayoutNGBlockFlow (relative positioned, inline) DIV class='scroll'",
       "position": [10, 10],
       "bounds": [150, 95],
       "invalidations": [

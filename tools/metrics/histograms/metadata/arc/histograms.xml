@@ -1380,21 +1380,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.LowLatencyStylusLibrary.PredictionTarget" units="ms"
-    expires_after="2022-04-24">
-  <owner>phshah@chromium.org</owner>
-  <owner>arc-app-dev@google.com</owner>
+    expires_after="2024-04-24">
+  <owner>yhanada@chromium.org</owner>
+  <owner>arc-framework@google.com</owner>
   <summary>
-    Prediction target used in ChromeOS Low-latency Stylus Library.
+    Prediction target used in ChromeOS Low-latency Stylus Library. Warning: this
+    histogram was expired from 2022-04-24 to 2023-12-12; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Arc.LowLatencyStylusLibraryApisCounter"
-    enum="LowLatencyStylusLibraryApisList" expires_after="2022-04-24">
-  <owner>phshah@chromium.org</owner>
-  <owner>arc-app-dev@google.com</owner>
+    enum="LowLatencyStylusLibraryApisList" expires_after="2024-04-24">
+  <owner>yhanada@chromium.org</owner>
+  <owner>arc-framework@google.com</owner>
   <summary>
     Records the number of times ChromeOS Low-latency Stylus Library API called.
     Counter adding when its Stub library receive the call from applications.
+    Warning: this histogram was expired from 2022-04-24 to 2023-12-12; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -1989,6 +1992,22 @@ chromium-metrics-reviews@google.com.
     Percentage ratio of janky frames to total frames recorded in a 5 minute
     interval.
   </summary>
+</histogram>
+
+<histogram
+    name="Arc.Runtime.Performance.PerceivedFPS2{ArcPerformanceAppCategories}"
+    units="fps" expires_after="2024-05-05">
+  <owner>khmel@google.com</owner>
+  <owner>matvore@google.com</owner>
+  <summary>
+    Render frames per second, not considering frames which exo could not
+    present. Only collected if the user has app syncing enabled and doesn't have
+    a custom passphrase set. {ArcPerformanceAppCategories}
+  </summary>
+  <token key="ArcPerformanceAppCategories"
+      variants="ArcPerformanceAppCategories">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram
@@ -2670,6 +2689,18 @@ chromium-metrics-reviews@google.com.
     Records the time elapsed from window minimizing operation until the window
     state is changed to be minimized. The data is collected once when a
     minimizing operation happens.
+  </summary>
+  <token key="ChromeOSAppType" variants="ChromeOSAppType"/>
+</histogram>
+
+<histogram name="Arc.WM.WindowRotateDelayTime.{ChromeOSAppType}" units="ms"
+    expires_after="2024-11-30">
+  <owner>lingyufeng@google.com</owner>
+  <owner>arc-framework@google.com</owner>
+  <summary>
+    Records the time elapsed from display rotates in tablet mode until the
+    window bounds is changed. The data is only collected for the top maximized
+    window shown in tablet mode.
   </summary>
   <token key="ChromeOSAppType" variants="ChromeOSAppType"/>
 </histogram>

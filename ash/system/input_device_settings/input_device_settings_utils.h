@@ -20,7 +20,10 @@ namespace ash {
 struct VendorProductId {
   uint16_t vendor_id;
   uint16_t product_id;
-  constexpr bool operator<(const VendorProductId& other) const;
+  constexpr bool operator<(const VendorProductId& other) const {
+    return vendor_id == other.vendor_id ? product_id < other.product_id
+                                        : vendor_id < other.vendor_id;
+  }
   bool operator==(const VendorProductId& other) const;
 };
 
@@ -131,9 +134,6 @@ ASH_EXPORT bool IsKeyboardPretendingToBeMouse(const ui::InputDevice& device);
 
 // Returns whether the given keyboard is ChromeOS layout keyboard.
 ASH_EXPORT bool IsChromeOSKeyboard(const mojom::Keyboard& keyboard);
-
-// This helper function checks if the mouse is customizable.
-ASH_EXPORT bool IsMouseCustomizable(const ui::InputDevice& device);
 
 }  // namespace ash
 

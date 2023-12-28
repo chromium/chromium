@@ -48,7 +48,6 @@
 #include "components/prefs/pref_service_factory.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
-#include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
@@ -63,6 +62,7 @@
 #include "net/cert/cert_verifier.h"
 #include "net/cert/coalescing_cert_verifier.h"
 #include "net/cookies/cookie_access_delegate.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/dns/host_cache.h"
@@ -84,7 +84,6 @@
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "net/url_request/report_sender.h"
 #include "net/url_request/static_http_user_agent_settings.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
@@ -148,13 +147,10 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
-#include "components/certificate_transparency/chrome_ct_policy_enforcer.h"
-#include "components/certificate_transparency/chrome_require_ct_delegate.h"
-#include "components/certificate_transparency/ct_known_logs.h"
-#include "net/cert/cert_and_ct_verifier.h"
-#include "net/cert/ct_log_verifier.h"
-#include "net/cert/multi_log_ct_verifier.h"
-#include "services/network/ct_log_list_distributor.h"
+// gn check does not account for BUILDFLAG(). So, for iOS builds, it will
+// complain about a missing dependency on the target exposing this header. Add a
+// nogncheck to stop it from yelling.
+#include "components/certificate_transparency/chrome_require_ct_delegate.h"  // nogncheck
 #include "services/network/sct_auditing/sct_auditing_cache.h"
 #include "services/network/sct_auditing/sct_auditing_handler.h"
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
@@ -401,38 +397,6 @@ void SCTAuditingDelegate::MaybeEnqueueReport(
     return;
   context_->MaybeEnqueueSCTReport(host_port_pair, validated_certificate_chain,
                                   signed_certificate_timestamps);
-}
-
-// Filters `log_list` for disqualified or Google-operated logs,
-// returning them as sorted vectors in `disqualified_logs` and
-// `operated_by_google_logs` suitable for use with a `CTPolicyEnforcer`.
-void GetCTPolicyConfigForCTLogInfo(
-    const std::vector<mojom::CTLogInfoPtr>& log_list,
-    std::vector<std::pair<std::string, base::Time>>* disqualified_logs,
-    std::vector<std::string>* operated_by_google_logs,
-    std::map<std::string, certificate_transparency::OperatorHistoryEntry>*
-        operator_history) {
-  for (const auto& log : log_list) {
-    std::string log_id = crypto::SHA256HashString(log->public_key);
-    if (log->operated_by_google || log->disqualified_at) {
-      if (log->operated_by_google)
-        operated_by_google_logs->push_back(log_id);
-      if (log->disqualified_at) {
-        disqualified_logs->emplace_back(log_id, log->disqualified_at.value());
-      }
-    }
-    certificate_transparency::OperatorHistoryEntry entry;
-    entry.current_operator_ = log->current_operator;
-    for (const auto& previous_operator : log->previous_operators) {
-      entry.previous_operators_.emplace_back(previous_operator->name,
-                                             previous_operator->end_time);
-    }
-    (*operator_history)[log_id] = entry;
-  }
-
-  std::sort(std::begin(*operated_by_google_logs),
-            std::end(*operated_by_google_logs));
-  std::sort(std::begin(*disqualified_logs), std::end(*disqualified_logs));
 }
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
@@ -722,14 +686,6 @@ NetworkContext::~NetworkContext() {
 
   if (url_request_context_ &&
       url_request_context_->transport_security_state()) {
-    if (certificate_report_sender_) {
-      // Destroy |certificate_report_sender_| before |url_request_context_|,
-      // since the former has a reference to the latter.
-      url_request_context_->transport_security_state()->SetReportSender(
-          nullptr);
-      certificate_report_sender_.reset();
-    }
-
 #if BUILDFLAG(IS_CT_SUPPORTED)
     if (require_ct_delegate_) {
       url_request_context_->transport_security_state()->SetRequireCTDelegate(
@@ -1088,7 +1044,7 @@ void NetworkContext::ClearTrustTokenSessionOnlyData(
 
   auto store_predicate = base::BindRepeating(
       [](DeleteCookiePredicate predicate, const std::string& origin) {
-        return predicate.Run(origin, true);
+        return predicate.Run(origin, net::CookieSourceScheme::kSecure);
       },
       std::move(cookie_predicate));
   trust_token_store_->ExecuteOrEnqueue(base::BindOnce(
@@ -1362,7 +1318,7 @@ void NetworkContext::AddReportingApiObserver(
 
     auto service_reports =
         url_request_context()->reporting_service()->GetReports();
-    for (const auto* service_report : service_reports) {
+    for (const net::ReportingReport* service_report : service_reports) {
       reporting_api_observers_.Get(id)->OnReportAdded(*service_report);
     }
 
@@ -1488,29 +1444,16 @@ void NetworkContext::SetCTPolicy(mojom::CTPolicyPtr ct_policy) {
                                          ct_policy->excluded_legacy_spkis);
 }
 
-int NetworkContext::CheckCTComplianceForSignedExchange(
+int NetworkContext::CheckCTRequirementsForSignedExchange(
     net::CertVerifyResult& cert_verify_result,
-    const net::X509Certificate& certificate,
     const net::HostPortPair& host_port_pair) {
   net::X509Certificate* verified_cert = cert_verify_result.verified_cert.get();
-
-  net::ct::SCTList verified_scts;
-  for (const auto& sct_and_status : cert_verify_result.scts) {
-    if (sct_and_status.status == net::ct::SCT_STATUS_OK)
-      verified_scts.push_back(sct_and_status.sct);
-  }
-  cert_verify_result.policy_compliance =
-      url_request_context_->ct_policy_enforcer()->CheckCompliance(
-          verified_cert, verified_scts,
-          net::NetLogWithSource::Make(
-              url_request_context_->net_log(),
-              net::NetLogSourceType::CERT_VERIFIER_JOB));
 
   net::TransportSecurityState::CTRequirementsStatus ct_requirement_status =
       url_request_context_->transport_security_state()->CheckCTRequirements(
           host_port_pair, cert_verify_result.is_issued_by_known_root,
-          cert_verify_result.public_key_hashes, verified_cert, &certificate,
-          cert_verify_result.scts, cert_verify_result.policy_compliance);
+          cert_verify_result.public_key_hashes, verified_cert,
+          cert_verify_result.policy_compliance);
 
   if (url_request_context_->sct_auditing_delegate()) {
     url_request_context_->sct_auditing_delegate()->MaybeEnqueueReport(
@@ -1555,31 +1498,8 @@ void NetworkContext::MaybeEnqueueSCTReport(
                                              signed_certificate_timestamps);
 }
 
-void NetworkContext::SetCTLogListAlwaysTimelyForTesting() {
-  if (!ct_policy_enforcer_)
-    return;
-  ct_policy_enforcer_->SetCTLogListAlwaysTimelyForTesting(true);
-}
-
 void NetworkContext::SetSCTAuditingMode(mojom::SCTAuditingMode mode) {
   sct_auditing_handler()->SetMode(mode);
-}
-
-void NetworkContext::OnCTLogListUpdated(
-    const std::vector<network::mojom::CTLogInfoPtr>& log_list,
-    base::Time update_time) {
-  if (!ct_policy_enforcer_)
-    return;
-  std::vector<std::pair<std::string, base::Time>> disqualified_logs;
-  std::vector<std::string> operated_by_google_logs;
-  std::map<std::string, certificate_transparency::OperatorHistoryEntry>
-      log_operator_history;
-  GetCTPolicyConfigForCTLogInfo(log_list, &disqualified_logs,
-                                &operated_by_google_logs,
-                                &log_operator_history);
-  ct_policy_enforcer_->UpdateCTLogList(
-      update_time, std::move(disqualified_logs),
-      std::move(operated_by_google_logs), std::move(log_operator_history));
 }
 
 void NetworkContext::CanSendSCTAuditingReport(
@@ -1807,14 +1727,9 @@ void NetworkContext::CreateHostResolver(
 void NetworkContext::VerifyCertForSignedExchange(
     const scoped_refptr<net::X509Certificate>& certificate,
     const GURL& url,
-    const net::NetworkAnonymizationKey& network_anonymization_key,
     const std::string& ocsp_result,
     const std::string& sct_list,
     VerifyCertForSignedExchangeCallback callback) {
-  if (require_network_anonymization_key_) {
-    DCHECK(!network_anonymization_key.IsEmpty());
-  }
-
   uint64_t cert_verify_id = ++next_cert_verify_id_;
   CHECK_NE(0u, next_cert_verify_id_);  // The request ID should not wrap around.
   auto pending_cert_verify = std::make_unique<PendingCertVerify>();
@@ -1822,7 +1737,6 @@ void NetworkContext::VerifyCertForSignedExchange(
   pending_cert_verify->result = std::make_unique<net::CertVerifyResult>();
   pending_cert_verify->certificate = certificate;
   pending_cert_verify->url = url;
-  pending_cert_verify->network_anonymization_key = network_anonymization_key;
   pending_cert_verify->ocsp_result = ocsp_result;
   pending_cert_verify->sct_list = sct_list;
   net::CertVerifier* cert_verifier =
@@ -2410,24 +2324,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
             &NetworkContext::CreateURLLoaderFactoryForCertNetFetcher,
             base::Unretained(this)));
 
-#if BUILDFLAG(IS_CT_SUPPORTED)
-    std::vector<scoped_refptr<const net::CTLogVerifier>> ct_logs;
-    for (const auto& log : network_service_->log_list()) {
-      scoped_refptr<const net::CTLogVerifier> log_verifier =
-          net::CTLogVerifier::Create(log->public_key, log->name);
-      if (!log_verifier) {
-        // TODO: Signal bad configuration (such as bad key).
-        continue;
-      }
-      ct_logs.push_back(std::move(log_verifier));
-    }
-    auto ct_verifier = std::make_unique<net::MultiLogCTVerifier>(
-        network_service_->ct_log_list_distributor());
-    ct_verifier->SetLogs(ct_logs);
-    cert_verifier = std::make_unique<net::CertAndCTVerifier>(
-        std::move(cert_verifier), std::move(ct_verifier));
-#endif  // BUILDFLAG(IS_CT_SUPPORTED)
-
     // Whether the cert verifier is remote or in-process, we should wrap it in
     // caching and coalescing layers to avoid extra verifications and IPCs.
     cert_verifier = std::make_unique<net::CachingCertVerifier>(
@@ -2451,23 +2347,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
       *command_line, nullptr, std::move(cert_verifier)));
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
-  if (params_->enforce_chrome_ct_policy) {
-    std::vector<std::pair<std::string, base::Time>> disqualified_logs;
-    std::vector<std::string> operated_by_google_logs;
-    std::map<std::string, certificate_transparency::OperatorHistoryEntry>
-        log_operator_history;
-    GetCTPolicyConfigForCTLogInfo(network_service_->log_list(),
-                                  &disqualified_logs, &operated_by_google_logs,
-                                  &log_operator_history);
-    auto ct_policy_enforcer =
-        std::make_unique<certificate_transparency::ChromeCTPolicyEnforcer>(
-            network_service_->ct_log_list_update_time(),
-            std::move(disqualified_logs), std::move(operated_by_google_logs),
-            std::move(log_operator_history));
-    ct_policy_enforcer_ = ct_policy_enforcer.get();
-    builder.set_ct_policy_enforcer(std::move(ct_policy_enforcer));
-  }
-
   builder.set_sct_auditing_delegate(
       std::make_unique<SCTAuditingDelegate>(weak_factory_.GetWeakPtr()));
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
@@ -2488,6 +2367,12 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
             std::move(params_->custom_proxy_config_client_receiver),
             std::move(params_->custom_proxy_connection_observer_remote),
             network_service_->network_service_proxy_allow_list());
+    if (params_->ip_protection_config_getter) {
+      proxy_delegate->SetIpProtectionConfigCache(
+          std::make_unique<IpProtectionConfigCacheImpl>(
+              std::move(params_->ip_protection_config_getter)));
+      proxy_delegate->GetIpProtectionConfigCache()->SetUp();
+    }
     proxy_delegate_ = proxy_delegate.get();
     builder.set_proxy_delegate(std::move(proxy_delegate));
   }
@@ -2797,41 +2682,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   // TransportSecurityState.  Since no requests have been made yet, safe to do
   // this even after the call to Build().
 
-  if (params_->enable_certificate_reporting) {
-    net::NetworkTrafficAnnotationTag traffic_annotation =
-        net::DefineNetworkTrafficAnnotation("domain_security_policy", R"(
-        semantics {
-          sender: "Domain Security Policy"
-          description:
-            "Websites can opt in to have Chrome send reports to them when "
-            "Chrome observes connections to that website that do not meet "
-            "stricter security policies, such as with HTTP Public Key Pinning. "
-            "Websites can use this feature to discover misconfigurations that "
-            "prevent them from complying with stricter security policies that "
-            "they\'ve opted in to."
-          trigger:
-            "Chrome observes that a user is loading a resource from a website "
-            "that has opted in for security policy reports, and the connection "
-            "does not meet the required security policies."
-          data:
-            "The time of the request, the hostname and port being requested, "
-            "the certificate chain, and sometimes certificate revocation "
-            "information included on the connection."
-          destination: OTHER
-        }
-        policy {
-          cookies_allowed: NO
-          setting: "This feature cannot be disabled by settings."
-          policy_exception_justification:
-            "Not implemented, this is a feature that websites can opt into and "
-            "thus there is no Chrome-wide policy to disable it."
-        })");
-    certificate_report_sender_ = std::make_unique<net::ReportSender>(
-        result.url_request_context.get(), traffic_annotation);
-    result.url_request_context->transport_security_state()->SetReportSender(
-        certificate_report_sender_.get());
-  }
-
   if (network_service_->pins_list_updated()) {
     result.url_request_context->transport_security_state()->UpdatePinList(
         network_service_->pinsets(), network_service_->host_pins(),
@@ -2857,18 +2707,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     domain_reliability_monitor_->AddBakedInConfigs();
     domain_reliability_monitor_->SetDiscardUploads(
         params_->discard_domain_reliablity_uploads);
-  }
-
-  if (proxy_delegate_) {
-    proxy_delegate_->SetProxyResolutionService(
-        result.url_request_context->proxy_resolution_service());
-
-    if (params_->ip_protection_config_getter) {
-      proxy_delegate_->SetIpProtectionConfigCache(
-          std::make_unique<IpProtectionConfigCacheImpl>(
-              std::move(params_->ip_protection_config_getter)));
-      proxy_delegate_->GetIpProtectionConfigCache()->SetUp();
-    }
   }
 
   return result;
@@ -2998,23 +2836,17 @@ void NetworkContext::OnVerifyCertForSignedExchangeComplete(
   cert_verifier_requests_.erase(iter);
 
   bool pkp_bypassed = false;
-  std::string pinning_failure_log;
   if (result == net::OK) {
 #if BUILDFLAG(IS_CT_SUPPORTED)
-    int ct_result = CheckCTComplianceForSignedExchange(
-        *pending_cert_verify->result, *pending_cert_verify->certificate,
+    int ct_result = CheckCTRequirementsForSignedExchange(
+        *pending_cert_verify->result,
         net::HostPortPair::FromURL(pending_cert_verify->url));
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
     net::TransportSecurityState::PKPStatus pin_validity =
         url_request_context_->transport_security_state()->CheckPublicKeyPins(
             net::HostPortPair::FromURL(pending_cert_verify->url),
             pending_cert_verify->result->is_issued_by_known_root,
-            pending_cert_verify->result->public_key_hashes,
-            pending_cert_verify->certificate.get(),
-            pending_cert_verify->result->verified_cert.get(),
-            net::TransportSecurityState::ENABLE_PIN_REPORTS,
-            pending_cert_verify->network_anonymization_key,
-            &pinning_failure_log);
+            pending_cert_verify->result->public_key_hashes);
     switch (pin_validity) {
       case net::TransportSecurityState::PKPStatus::VIOLATED:
         pending_cert_verify->result->cert_status |=
@@ -3036,8 +2868,7 @@ void NetworkContext::OnVerifyCertForSignedExchangeComplete(
   }
 
   std::move(pending_cert_verify->callback)
-      .Run(result, *pending_cert_verify->result.get(), pkp_bypassed,
-           pinning_failure_log);
+      .Run(result, *pending_cert_verify->result.get(), pkp_bypassed);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

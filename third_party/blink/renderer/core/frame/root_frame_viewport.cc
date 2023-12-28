@@ -747,6 +747,11 @@ void RootFrameViewport::UpdateSnappedTargetsAndEnqueueSnapChanged() {
   LayoutViewport().UpdateSnappedTargetsAndEnqueueSnapChanged();
 }
 
+const cc::SnappedTargetData* RootFrameViewport::GetSnapChangingTargetData()
+    const {
+  return LayoutViewport().GetSnapChangingTargetData();
+}
+
 void RootFrameViewport::SetSnapChangingTargetData(
     absl::optional<cc::SnappedTargetData> data) {
   LayoutViewport().SetSnapChangingTargetData(data);

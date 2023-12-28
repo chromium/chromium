@@ -18,12 +18,11 @@ namespace autofill {
 
 namespace {
 
-bool HaveSeenSimilarType(ServerFieldType type,
-                         const ServerFieldTypeSet& seen_types) {
+bool HaveSeenSimilarType(FieldType type, const FieldTypeSet& seen_types) {
   // Forms sometimes have a different format of inputting names in
   // different sections. If we believe a new name is being entered, assume
   // it is a new section.
-  ServerFieldTypeSet first_last_name = {NAME_FIRST, NAME_LAST};
+  FieldTypeSet first_last_name = {NAME_FIRST, NAME_LAST};
   if ((type == NAME_FULL && seen_types.contains_any(first_last_name)) ||
       (first_last_name.contains(type) && seen_types.contains(NAME_FULL))) {
     return true;
@@ -41,17 +40,17 @@ bool HaveSeenSimilarType(ServerFieldType type,
 //  * In Japan, forms commonly have separate inputs for phonetic names. In
 //    practice this means consecutive name field types (e.g. first name and last
 //    name).
-bool ConsecutiveSimilarFieldType(ServerFieldType current_type,
-                                 ServerFieldType previous_type) {
+bool ConsecutiveSimilarFieldType(FieldType current_type,
+                                 FieldType previous_type) {
   if (previous_type == current_type)
     return true;
-  if (GroupTypeOfServerFieldType(current_type) == FieldTypeGroup::kName &&
-      GroupTypeOfServerFieldType(previous_type) == FieldTypeGroup::kName) {
+  if (GroupTypeOfFieldType(current_type) == FieldTypeGroup::kName &&
+      GroupTypeOfFieldType(previous_type) == FieldTypeGroup::kName) {
     return true;
   }
-  if (ServerFieldTypeSet({ADDRESS_HOME_ZIP, ADDRESS_HOME_DEPENDENT_LOCALITY,
-                          ADDRESS_HOME_CITY, ADDRESS_HOME_ADMIN_LEVEL2,
-                          ADDRESS_HOME_STATE, ADDRESS_HOME_COUNTRY})
+  if (FieldTypeSet({ADDRESS_HOME_ZIP, ADDRESS_HOME_DEPENDENT_LOCALITY,
+                    ADDRESS_HOME_CITY, ADDRESS_HOME_ADMIN_LEVEL2,
+                    ADDRESS_HOME_STATE, ADDRESS_HOME_COUNTRY})
           .contains_all({previous_type, current_type})) {
     return true;
   }
@@ -131,13 +130,13 @@ void ExpandSections(base::span<const std::unique_ptr<AutofillField>> fields) {
   }
 }
 
-bool BelongsToCurrentSection(const ServerFieldTypeSet& seen_types,
+bool BelongsToCurrentSection(const FieldTypeSet& seen_types,
                              const AutofillField& current_field,
                              const AutofillField& previous_field) {
   if (current_field.section)
     return !features::kAutofillSectioningModeCreateGaps.Get();
 
-  const ServerFieldType current_type = current_field.Type().GetStorableType();
+  const FieldType current_type = current_field.Type().GetStorableType();
   if (current_type == UNKNOWN_TYPE)
     return true;
 
@@ -151,7 +150,7 @@ bool BelongsToCurrentSection(const ServerFieldTypeSet& seen_types,
   // There are many phone number field types and their classification is
   // generally a little bit off. Furthermore, forms often ask for multiple phone
   // numbers, e.g. both a daytime and evening phone number.
-  if (GroupTypeOfServerFieldType(current_type) == FieldTypeGroup::kPhone) {
+  if (GroupTypeOfFieldType(current_type) == FieldTypeGroup::kPhone) {
     return true;
   }
 
@@ -182,7 +181,7 @@ base::span<const std::unique_ptr<AutofillField>>::iterator FindEndOfNextSection(
     base::span<const std::unique_ptr<AutofillField>>::iterator begin,
     base::span<const std::unique_ptr<AutofillField>>::iterator end) {
   // Keeps track of the focusable types we've seen in this section.
-  ServerFieldTypeSet seen_types;
+  FieldTypeSet seen_types;
   // The `prev_field` is from the section whose end we are currently searching.
   const AutofillField* prev_field = nullptr;
   for (auto it = begin; it != end; it++) {

@@ -15,9 +15,9 @@ class Label;
 namespace autofill {
 
 class PopupRowContentView : public views::View {
- public:
-  METADATA_HEADER(PopupRowContentView);
+  METADATA_HEADER(PopupRowContentView, views::View)
 
+ public:
   PopupRowContentView();
   PopupRowContentView(const PopupRowContentView&) = delete;
   PopupRowContentView& operator=(const PopupRowContentView&) = delete;

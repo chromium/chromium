@@ -24,6 +24,7 @@
 #include "base/logging.h"
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
@@ -162,7 +163,6 @@
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkGraphics.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/base/ui_base_switches_util.h"
 #include "ui/display/display_switches.h"
@@ -502,11 +502,6 @@ void RenderThreadImpl::Init() {
 
 #if BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
   // On Mac and Android Java UI, the select popups are rendered by the browser.
-#if BUILDFLAG(IS_MAC)
-  // When UseCommonSelectPopup is enabled, the internal popup menu should be
-  // used.
-  if (!features::IsUseCommonSelectPopupEnabled())
-#endif
     blink::WebView::SetUseExternalPopupMenus(true);
 #endif
 
@@ -1314,6 +1309,21 @@ void RenderThreadImpl::SetProcessState(
 
   background_state_ = background_state;
   visible_state_ = visible_state;
+}
+
+void RenderThreadImpl::SetBatterySaverMode(bool battery_saver_mode_enabled) {
+  if (battery_saver_mode_enabled) {
+    base::MessagePump::OverrideAlignWakeUpsState(true, base::Milliseconds(32));
+  } else {
+    base::MessagePump::ResetAlignWakeUpsState();
+  }
+
+  if (!blink::MainThreadIsolate()) {
+    return;
+  }
+
+  blink::MainThreadIsolate()->SetBatterySaverMode(battery_saver_mode_enabled);
+  blink::SetBatterySaverModeForWorkerThreadIsolates(battery_saver_mode_enabled);
 }
 
 void RenderThreadImpl::SetIsLockedToSite() {

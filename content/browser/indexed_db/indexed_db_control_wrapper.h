@@ -54,8 +54,6 @@ class IndexedDBControlWrapper : public storage::mojom::IndexedDBControl {
   void ForceClose(storage::BucketId bucket_id,
                   storage::mojom::ForceCloseReason reason,
                   base::OnceClosure callback) override;
-  void GetConnectionCount(storage::BucketId bucket_id,
-                          GetConnectionCountCallback callback) override;
   void DownloadBucketData(storage::BucketId bucket_id,
                           DownloadBucketDataCallback callback) override;
   void GetAllBucketsDetails(GetAllBucketsDetailsCallback callback) override;

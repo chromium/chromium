@@ -317,7 +317,6 @@ void SigninInterceptFirstRunExperienceDialog::DoTurnOnSync() {
 
   // TurnSyncOnHelper deletes itself once done.
   new TurnSyncOnHelper(browser_->profile(), access_point, promo_action,
-                       signin_metrics::Reason::kSigninPrimaryAccount,
                        account_id_, abort_mode,
                        std::make_unique<InterceptTurnSyncOnHelperDelegate>(
                            weak_ptr_factory_.GetWeakPtr()),

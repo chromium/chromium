@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/webidl_compat.h"
+#include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 #include "v8/include/v8-context.h"
@@ -81,6 +82,18 @@ void RegisterAdBeaconBindings::RegisterAdBeacon(
 
   std::vector<std::pair<std::string, GURL>> ad_beacon_list;
   for (const auto& [key_string, url_string] : idl_map) {
+    if (key_string.starts_with(blink::kFencedFrameReservedPAEventPrefix) &&
+        std::find(std::begin(blink::kFencedFrameAutomaticBeaconTypes),
+                  std::end(blink::kFencedFrameAutomaticBeaconTypes),
+                  key_string) ==
+            std::end(blink::kFencedFrameAutomaticBeaconTypes)) {
+      std::string error_msg =
+          base::StrCat({"registerAdBeacon(): Invalid reserved type '",
+                        key_string, "' cannot be used"});
+      isolate->ThrowException(v8::Exception::TypeError(
+          v8_helper->CreateUtf8String(error_msg).ToLocalChecked()));
+      return;
+    }
     GURL url(url_string);
     if (!url.is_valid() || !url.SchemeIs(url::kHttpsScheme)) {
       std::string error_msg =

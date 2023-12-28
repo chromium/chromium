@@ -19,14 +19,14 @@ extern const char kCommercePriceTrackingDescription[];
 extern const char kPriceTrackingIconColorsName[];
 extern const char kPriceTrackingIconColorsDescription[];
 
+extern const char kShoppingIconColorVariantName[];
+extern const char kShoppingIconColorVariantDescription[];
+
 extern const char kShoppingCollectionName[];
 extern const char kShoppingCollectionDescription[];
 
 extern const char kShoppingListName[];
 extern const char kShoppingListDescription[];
-
-extern const char kShoppingListTrackByDefaultName[];
-extern const char kShoppingListTrackByDefaultDescription[];
 
 extern const char kChromeCartDomBasedHeuristicsName[];
 extern const char kChromeCartDomBasedHeuristicsDescription[];
@@ -36,9 +36,6 @@ extern const char kParcelTrackingTestDataDescription[];
 
 extern const char kPriceInsightsName[];
 extern const char kPriceInsightsDescription[];
-
-extern const char kShowDiscountOnNavigationName[];
-extern const char kShowDiscountOnNavigationDescription[];
 
 extern const char kShoppingPageTypesName[];
 extern const char kShoppingPageTypesDescription[];

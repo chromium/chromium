@@ -239,10 +239,10 @@ class SQLitePersistentReportingAndNelStoreTest
   // from different sources.
   const NetworkAnonymizationKey kNak1_ =
       NetworkAnonymizationKey::CreateCrossSite(
-          SchemefulSite(GURL("https://top-frame-origin-nik1.test")));
+          SchemefulSite(GURL("https://top-frame-origin-nak1.test")));
   const NetworkAnonymizationKey kNak2_ =
       NetworkAnonymizationKey::CreateCrossSite(
-          SchemefulSite(GURL("https://top-frame-origin-nik2.test")));
+          SchemefulSite(GURL("https://top-frame-origin-nak2.test")));
 
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<SQLitePersistentReportingAndNelStore> store_;
@@ -771,9 +771,9 @@ TEST_F(SQLitePersistNelTest, AddAndDeleteNelPolicy) {
 TEST_F(SQLitePersistNelTest, ExpirationTimeIsPersisted) {
   const GURL kUrl("https://www.foo.test");
   const url::Origin kOrigin = url::Origin::Create(kUrl);
-  const NetworkAnonymizationKey kNik;
+  const NetworkAnonymizationKey kNak;
 
-  service_->OnHeader(kNik, kOrigin, kServerIP, kHeader);
+  service_->OnHeader(kNak, kOrigin, kServerIP, kHeader);
   RunUntilIdle();
 
   // Makes the policy we just added expired.
@@ -781,17 +781,17 @@ TEST_F(SQLitePersistNelTest, ExpirationTimeIsPersisted) {
 
   SimulateRestart();
 
-  service_->OnRequest(MakeRequestDetails(kNik, kUrl, ERR_INVALID_RESPONSE));
+  service_->OnRequest(MakeRequestDetails(kNak, kUrl, ERR_INVALID_RESPONSE));
   RunUntilIdle();
 
   EXPECT_EQ(0u, reporting_service_->reports().size());
 
   // Add the policy again so that it is not expired.
-  service_->OnHeader(kNik, kOrigin, kServerIP, kHeader);
+  service_->OnHeader(kNak, kOrigin, kServerIP, kHeader);
 
   SimulateRestart();
 
-  service_->OnRequest(MakeRequestDetails(kNik, kUrl, ERR_INVALID_RESPONSE));
+  service_->OnRequest(MakeRequestDetails(kNak, kUrl, ERR_INVALID_RESPONSE));
   RunUntilIdle();
 
   EXPECT_THAT(reporting_service_->reports(),

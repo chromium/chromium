@@ -183,10 +183,12 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
     ADD_FAILURE();
   }
 
-  void AddReferenceToSharedImage(const gpu::SyncToken& sync_token,
-                                 const gpu::Mailbox& mailbox,
-                                 uint32_t usage) override {
+  scoped_refptr<gpu::ClientSharedImage> AddReferenceToSharedImage(
+      const gpu::SyncToken& sync_token,
+      const gpu::Mailbox& mailbox,
+      uint32_t usage) override {
     ADD_FAILURE();
+    return nullptr;
   }
 
   void DestroySharedImage(const gpu::SyncToken& sync_token,

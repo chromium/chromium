@@ -129,7 +129,7 @@ class NET_EXPORT ProxyInfo {
   }
 
   // Returns true if the first proxy chain corresponds to one used for IP
-  // Protection.
+  // Protection. For more info, see `ProxyChain::is_for_ip_protection()`.
   bool is_for_ip_protection() const;
 
   // Returns true if the request that uses this proxy config caused a match with

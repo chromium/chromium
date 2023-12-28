@@ -16,16 +16,16 @@ TestAutofillDataModel::TestAutofillDataModel(size_t use_count,
 
 TestAutofillDataModel::~TestAutofillDataModel() = default;
 
-std::u16string TestAutofillDataModel::GetRawInfo(ServerFieldType type) const {
+std::u16string TestAutofillDataModel::GetRawInfo(FieldType type) const {
   return std::u16string();
 }
 
 void TestAutofillDataModel::SetRawInfoWithVerificationStatus(
-    ServerFieldType type,
+    FieldType type,
     const std::u16string& value,
     VerificationStatus status) {}
 
 void TestAutofillDataModel::GetSupportedTypes(
-    ServerFieldTypeSet* supported_types) const {}
+    FieldTypeSet* supported_types) const {}
 
 }  // namespace autofill

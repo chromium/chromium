@@ -13,4 +13,5 @@
     attribute DOMString artist;
     attribute DOMString album;
     [CallWith=ScriptState, RaisesException=Setter] attribute FrozenArray<MediaImage> artwork;
+    [RuntimeEnabled=MediaSessionChapterInformation, CallWith=ScriptState, RaisesException=Setter] attribute FrozenArray<ChapterInformation> chapterInfo;
 };

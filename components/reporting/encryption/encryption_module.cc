@@ -33,7 +33,7 @@ void AddToRecord(std::string_view record,
              base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb,
              Status status) {
             if (!status.ok()) {
-              std::move(cb).Run(base::unexpected(status));
+              std::move(cb).Run(base::unexpected(std::move(status)));
               return;
             }
             base::ThreadPool::PostTask(
@@ -66,7 +66,7 @@ void EncryptionModule::EncryptRecordImpl(
          base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb,
          StatusOr<Encryptor::Handle*> handle_result) {
         if (!handle_result.has_value()) {
-          std::move(cb).Run(base::unexpected(handle_result.error()));
+          std::move(cb).Run(base::unexpected(std::move(handle_result).error()));
           return;
         }
         base::ThreadPool::PostTask(

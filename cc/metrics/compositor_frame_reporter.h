@@ -49,6 +49,7 @@ struct GlobalMetricsTrackers {
   raw_ptr<PredictorJankTracker> predictor_jank_tracker = nullptr;
   raw_ptr<ScrollJankDroppedFrameTracker> scroll_jank_dropped_frame_tracker =
       nullptr;
+  raw_ptr<ScrollJankUkmReporter> scroll_jank_ukm_reporter = nullptr;
 };
 
 // This is used for tracing and reporting the duration of pipeline stages within

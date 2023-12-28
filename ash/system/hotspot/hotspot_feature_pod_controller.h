@@ -73,10 +73,9 @@ class ASH_EXPORT HotspotFeaturePodController
   hotspot_config::mojom::HotspotInfoPtr hotspot_info_;
 
   // Owned by views hierarchy.
-  raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ = nullptr;
+  raw_ptr<FeatureTile, DanglingUntriaged> tile_ = nullptr;
 
-  raw_ptr<UnifiedSystemTrayController, DanglingUntriaged | ExperimentalAsh>
-      tray_controller_;
+  raw_ptr<UnifiedSystemTrayController, DanglingUntriaged> tray_controller_;
 
   base::WeakPtrFactory<HotspotFeaturePodController> weak_ptr_factory_{this};
 };

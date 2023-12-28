@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.share.link_to_text;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -53,11 +52,6 @@ public class LinkToTextIPHController {
                         new EmptyTabObserver() {
                             @Override
                             public void onPageLoadFinished(Tab tab, GURL url) {
-                                if (!ChromeFeatureList.isEnabled(
-                                        ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE)) {
-                                    return;
-                                }
-
                                 if (!LinkToTextHelper.hasTextFragment(url)) return;
 
                                 Profile profile = profileSupplier.get();

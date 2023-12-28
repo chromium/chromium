@@ -258,21 +258,16 @@ void FakeLocalFrameHost::ReceivedDelegatedCapability(
 void FakeLocalFrameHost::SendFencedFrameReportingBeacon(
     const WTF::String& event_data,
     const WTF::String& event_type,
-    const WTF::Vector<blink::FencedFrame::ReportingDestination>& destinations,
-    network::AttributionReportingRuntimeFeatures
-        attribution_reporting_runtime_features) {}
+    const WTF::Vector<blink::FencedFrame::ReportingDestination>& destinations) {
+}
 
 void FakeLocalFrameHost::SendFencedFrameReportingBeaconToCustomURL(
-    const blink::KURL& destination_url,
-    network::AttributionReportingRuntimeFeatures
-        attribution_reporting_runtime_features) {}
+    const blink::KURL& destination_url) {}
 
 void FakeLocalFrameHost::SetFencedFrameAutomaticBeaconReportEventData(
     blink::mojom::AutomaticBeaconType event_type,
     const WTF::String& event_data,
     const WTF::Vector<blink::FencedFrame::ReportingDestination>& destinations,
-    network::AttributionReportingRuntimeFeatures
-        attribution_reporting_runtime_features,
     bool once,
     bool cross_origin_exposed) {}
 
@@ -282,6 +277,9 @@ void FakeLocalFrameHost::SendLegacyTechEvent(
 
 void FakeLocalFrameHost::SendPrivateAggregationRequestsForFencedFrameEvent(
     const WTF::String& event_type) {}
+
+void FakeLocalFrameHost::SetAttributionReportingRuntimeFeatures(
+    network::AttributionReportingRuntimeFeatures features) {}
 
 void FakeLocalFrameHost::CreateFencedFrame(
     mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>,

@@ -23,6 +23,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {AppManagementStoreMixin} from '../../common/app_management/store_mixin.js';
 import {isRevampWayfindingEnabled} from '../../common/load_time_booleans.js';
+import {PrefsState} from '../../common/types.js';
 
 import {getTemplate} from './arc_detail_view.html.js';
 
@@ -52,6 +53,10 @@ export class AppManagementArcDetailViewElement extends
 
   static get properties() {
     return {
+      prefs: {
+        type: Object,
+        notify: true,
+      },
       app_: Object,
 
       apps_: Object,
@@ -107,6 +112,10 @@ export class AppManagementArcDetailViewElement extends
       },
     };
   }
+
+  // Public API: Bidirectional data flow.
+  /** Passed down to children. Do not access without using PrefsMixin. */
+  prefs: PrefsState;
 
   private app_: App;
   private apps_: AppMap;

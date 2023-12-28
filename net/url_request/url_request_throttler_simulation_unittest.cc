@@ -98,11 +98,11 @@ class DiscreteTimeSimulation {
     TimeTicks start_time = TimeTicks();
     TimeTicks now = start_time;
     while ((now - start_time) <= maximum_simulated_duration) {
-      for (auto* actor : actors_) {
+      for (DiscreteTimeSimulation::Actor* actor : actors_) {
         actor->AdvanceTime(now);
       }
 
-      for (auto* actor : actors_) {
+      for (DiscreteTimeSimulation::Actor* actor : actors_) {
         actor->PerformAction();
       }
 
@@ -111,7 +111,7 @@ class DiscreteTimeSimulation {
   }
 
  private:
-  std::vector<Actor*> actors_;
+  std::vector<raw_ptr<Actor, VectorExperimental>> actors_;
 };
 
 // Represents a web server in a simulation of a server under attack by

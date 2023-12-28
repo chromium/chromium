@@ -4,6 +4,7 @@
 
 #include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -362,9 +363,10 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion55ToCurrent) {
         db.GetUniqueStatement("SELECT read_only_source_data FROM sources"));
     ASSERT_TRUE(s.Step());
     proto::AttributionReadOnlySourceData msg;
-    std::string blob;
-    ASSERT_TRUE(s.ColumnBlobAsString(0, &blob));
-    ASSERT_TRUE(msg.ParseFromString(blob));
+    {
+      base::span<const uint8_t> blob = s.ColumnBlob(0);
+      ASSERT_TRUE(msg.ParseFromArray(blob.data(), blob.size()));
+    }
     EXPECT_EQ(3, msg.max_event_level_reports());
     EXPECT_FALSE(msg.has_randomized_response_rate());
     EXPECT_EQ(0, msg.event_level_report_window_start_time());

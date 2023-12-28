@@ -13,7 +13,7 @@ swift_source_set("popup_swift") {
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
-    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/common/ui/colors:swift",
     "//ui/base",
   ]
@@ -75,10 +75,10 @@ source_set("popup") {
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/history/model",
-    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/model:util",
-    "//ios/chrome/browser/policy:policy_util",
+    "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/default_browser_promo:default_browser_promo_scene_agent_utils",
@@ -104,6 +104,7 @@ source_set("popup") {
     "//ios/chrome/browser/ui/omnibox",
     "//ios/chrome/browser/ui/omnibox:features",
     "//ios/chrome/browser/ui/omnibox:omnibox_util",
+    "//ios/chrome/browser/ui/omnibox/popup/carousel",
     "//ios/chrome/browser/ui/omnibox/popup/debugger",
     "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/toolbar/buttons",
@@ -129,17 +130,10 @@ source_set("popup_accessibility_identifier_constants") {
 
 source_set("popup_ui") {
   sources = [
-    "carousel_item.h",
-    "carousel_item.mm",
-    "carousel_item_menu_provider.h",
     "favicon_retriever.h",
     "image_retriever.h",
     "omnibox_icon_view.h",
     "omnibox_icon_view.mm",
-    "omnibox_popup_carousel_cell.h",
-    "omnibox_popup_carousel_cell.mm",
-    "omnibox_popup_carousel_control.h",
-    "omnibox_popup_carousel_control.mm",
     "omnibox_popup_row_cell.h",
     "omnibox_popup_row_cell.mm",
     "omnibox_popup_row_cell_experimental.h",
@@ -168,7 +162,7 @@ source_set("popup_ui") {
     "//components/omnibox/common",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
-    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
@@ -182,6 +176,7 @@ source_set("popup_ui") {
     "//ios/chrome/browser/ui/omnibox:omnibox_popup_shared",
     "//ios/chrome/browser/ui/omnibox:omnibox_suggestion_icon_util",
     "//ios/chrome/browser/ui/omnibox:omnibox_util",
+    "//ios/chrome/browser/ui/omnibox/popup/carousel",
     "//ios/chrome/browser/ui/toolbar/buttons",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements:elements",
@@ -208,7 +203,7 @@ source_set("popup_internal") {
     ":popup_ui_protocols",
     "//base",
     "//components/omnibox/browser",
-    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/omnibox:features",
@@ -233,9 +228,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "omnibox_pedal_annotator_unittest.mm",
-    "omnibox_popup_carousel_control_unittest.mm",
-    "omnibox_popup_carousel_control_unittest_util.h",
-    "omnibox_popup_carousel_control_unittest_util.mm",
     "omnibox_popup_mediator_unittest.mm",
     "omnibox_popup_row_cell_unittest.mm",
     "omnibox_popup_view_controller_unittest.mm",
@@ -257,7 +249,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser",
     "//components/search_engines",
     "//ios/chrome/browser/favicon",
-    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/common/ui/favicon",
     "//testing/gtest",
     "//third_party/ocmock",
@@ -269,7 +261,6 @@ source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
-    "omnibox_popup_carousel_egtest.mm",
     "omnibox_popup_egtest.mm",
     "omnibox_popup_pedal_egtest.mm",
   ]

@@ -98,5 +98,5 @@ static void JNI_WebsiteParentApproval_FetchFavicon(
 
   faviconFetcher->FetchFavicon(
       url, true, min_source_size_in_pixel, desired_size_in_pixel,
-      base::android::ScopedJavaGlobalRef(on_favicon_fetched_callback));
+      base::android::ScopedJavaGlobalRef<jobject>(on_favicon_fetched_callback));
 }

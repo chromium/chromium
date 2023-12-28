@@ -4,6 +4,8 @@
 
 #include "ui/gfx/x/visual_manager.h"
 
+#include <bitset>
+
 #include "base/strings/string_number_conversions.h"
 #include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/event.h"

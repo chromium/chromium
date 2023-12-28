@@ -21,13 +21,18 @@ import android.view.accessibility.AccessibilityEvent;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -41,6 +46,24 @@ import java.util.Set;
 public class AccessibilityStateTest {
     private static final String EVENT_TYPE_MASK_ERROR =
             "Conversion of event masks to event types not correct.";
+
+    private static final int MOCK_EVENT_TYPE_MASK =
+            AccessibilityEvent.TYPE_VIEW_CLICKED
+                    | AccessibilityEvent.TYPE_VIEW_FOCUSED
+                    | AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED
+                    | AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
+
+    private static final int MOCK_FLAG_TYPE_MASK =
+            AccessibilityServiceInfo.DEFAULT
+                    | AccessibilityServiceInfo.FLAG_REQUEST_TOUCH_EXPLORATION_MODE
+                    | AccessibilityServiceInfo.FLAG_REQUEST_ENHANCED_WEB_ACCESSIBILITY
+                    | AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
+                    | AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
+
+    private static final int MOCK_CAPABILITY_TYPE_MASK =
+            AccessibilityServiceInfo.CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT;
+
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private Context mContext;
 
@@ -57,6 +80,11 @@ public class AccessibilityStateTest {
         AccessibilityState.setStateMaskForTesting(FEEDBACK_TYPE_MASK_HEURISTIC, 0);
         AccessibilityState.setStateMaskForTesting(FLAGS_MASK_HEURISTIC, 0);
         AccessibilityState.setStateMaskForTesting(CAPABILITIES_MASK_HEURISTIC, 0);
+    }
+
+    @After
+    public void tearDown() {
+        AccessibilityState.uninitializeForTesting();
     }
 
     @Test
@@ -287,6 +315,7 @@ public class AccessibilityStateTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK)
     public void testCalculateHeuristicState_Autofill_passwordManager() {
         AccessibilityServiceInfo myService =
                 new BuilderForTests(mContext)
@@ -297,14 +326,19 @@ public class AccessibilityStateTest {
                         .setFlags(AccessibilityState.PASSWORD_MANAGER_FLAG_TYPE_MASK)
                         .setCapabilities(AccessibilityState.PASSWORD_MANAGER_CAPABILITY_TYPE_MASK)
                         .build();
+        startTestWithService(
+                myService,
+                "android/com.android.server.autofill.AutofillCompatAccessibilityService");
 
-        Assert.assertNotNull(myService);
-        AccessibilityState.calculateHeuristicState(myService);
+        AccessibilityState.updateAccessibilityServices();
+
+        Assert.assertTrue(AccessibilityState.isAnyAccessibilityServiceEnabled());
         Assert.assertFalse(AccessibilityState.areOnlyPasswordManagerMasksRequested());
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK)
     public void testCalculateHeuristicState_notAutofill_notPasswordManager() {
         AccessibilityServiceInfo myService =
                 new BuilderForTests(mContext)
@@ -312,14 +346,17 @@ public class AccessibilityStateTest {
                         .setFlags(~0)
                         .setCapabilities(~0)
                         .build();
+        startTestWithService(myService);
 
-        Assert.assertNotNull(myService);
-        AccessibilityState.calculateHeuristicState(myService);
+        AccessibilityState.updateAccessibilityServices();
+
+        Assert.assertTrue(AccessibilityState.isAnyAccessibilityServiceEnabled());
         Assert.assertFalse(AccessibilityState.areOnlyPasswordManagerMasksRequested());
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK)
     public void testCalculateHeuristicState_notAutofill_passwordManager() {
         AccessibilityServiceInfo myService =
                 new BuilderForTests(mContext)
@@ -327,10 +364,65 @@ public class AccessibilityStateTest {
                         .setFlags(AccessibilityState.PASSWORD_MANAGER_FLAG_TYPE_MASK)
                         .setCapabilities(AccessibilityState.PASSWORD_MANAGER_CAPABILITY_TYPE_MASK)
                         .build();
+        startTestWithService(myService);
 
-        Assert.assertNotNull(myService);
-        AccessibilityState.calculateHeuristicState(myService);
+        AccessibilityState.updateAccessibilityServices();
+
+        Assert.assertTrue(AccessibilityState.isAnyAccessibilityServiceEnabled());
         Assert.assertTrue(AccessibilityState.areOnlyPasswordManagerMasksRequested());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK)
+    public void testTogglingMisconfiguredAccessibilityServices() {
+        // This service has the same config as Microsoft Authenticator during recent P0.
+        AccessibilityServiceInfo errorProneService =
+                new BuilderForTests(mContext)
+                        .setEventTypes(MOCK_EVENT_TYPE_MASK)
+                        .setFlags(MOCK_FLAG_TYPE_MASK)
+                        .setCapabilities(MOCK_CAPABILITY_TYPE_MASK)
+                        .build();
+
+        // This service has the correct config for a password manager.
+        AccessibilityServiceInfo properConfigService =
+                new BuilderForTests(mContext)
+                        .setEventTypes(MOCK_EVENT_TYPE_MASK)
+                        .setFlags(MOCK_FLAG_TYPE_MASK)
+                        .setCapabilities(
+                                MOCK_CAPABILITY_TYPE_MASK
+                                        | AccessibilityServiceInfo
+                                                .CAPABILITY_CAN_REQUEST_TOUCH_EXPLORATION)
+                        .build();
+
+        startTestWithService(errorProneService);
+
+        AccessibilityState.updateAccessibilityServices();
+
+        Assert.assertTrue(AccessibilityState.isAnyAccessibilityServiceEnabled());
+        // Before P0 fix, this call would have (incorrectly) returned true.
+        Assert.assertFalse(AccessibilityState.isTouchExplorationEnabled());
+
+        // Now enable the proper config, and ensure we do not enter an infinite loop and that
+        // we now show touch exploration as being enabled.
+        AccessibilityState.setEnabledServiceInfoListForTesting(List.of(properConfigService));
+
+        AccessibilityState.updateAccessibilityServices();
+
+        Assert.assertTrue(AccessibilityState.isAnyAccessibilityServiceEnabled());
+        Assert.assertTrue(AccessibilityState.isTouchExplorationEnabled());
+    }
+
+    private void startTestWithService(AccessibilityServiceInfo newService) {
+        startTestWithService(
+                newService, "com.example.google/app.accessibility.AccessibilityService");
+    }
+
+    private void startTestWithService(AccessibilityServiceInfo newService, String serviceName) {
+        Assert.assertNotNull(newService);
+        Assert.assertFalse(AccessibilityState.isAnyAccessibilityServiceEnabled());
+        AccessibilityState.setEnabledServiceInfoListForTesting(List.of(newService));
+        AccessibilityState.setEnabledServiceStringForTesting(serviceName);
     }
 
     public static class BuilderForTests {

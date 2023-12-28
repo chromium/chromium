@@ -454,16 +454,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.CryptidRenderResult" enum="CryptidRenderResult"
-    expires_after="2022-01-23">
-  <owner>tmartino@chromium.org</owner>
-  <owner>chrome-creation@google.com</owner>
-  <summary>
-    Tracks the outcome of Probabilistic Cryptid Rendering (succeeded, failed, or
-    was disabled because preconditions were not met).
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.CustomizeChromeBackgroundAction"
     enum="NTPCustomizeChromeBackgroundAction" expires_after="2024-01-31">
   <owner>tiborg@chromium.org</owner>
@@ -939,9 +929,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.LogoDownloadOutcome"
-    enum="NewTabPageLogoDownloadOutcome" expires_after="2024-01-14">
+    enum="NewTabPageLogoDownloadOutcome" expires_after="2025-01-14">
   <owner>tiborg@chromium.org</owner>
-  <owner>danpeng@google.com</owner>
+  <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     Outcome of downloading search provider's logos. It measures whether
@@ -950,7 +940,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.LogoDownloadTime" units="ms"
-    expires_after="2024-01-31">
+    expires_after="2025-01-31">
   <owner>tiborg@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -963,9 +953,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.LogoImageDownloaded" enum="BooleanFromHTTPCache"
-    expires_after="2024-01-14">
+    expires_after="2025-01-14">
   <owner>tiborg@chromium.org</owner>
-  <owner>danpeng@google.com</owner>
+  <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     A logo image (static or CTA) was downloaded. Recorded only when the image
@@ -974,9 +964,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.LogoShown" enum="NewTabPageLogoShown"
-    expires_after="2024-01-14">
+    expires_after="2025-01-14">
   <owner>tiborg@chromium.org</owner>
-  <owner>danpeng@google.com</owner>
+  <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     The number of static logos and animated logos shown to users. Note that the
@@ -986,9 +976,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.LogoShownTime2" units="ms"
-    expires_after="2024-01-14">
+    expires_after="2025-01-14">
   <owner>tiborg@chromium.org</owner>
-  <owner>danpeng@google.com</owner>
+  <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     The amount of time between opening an NTP and the logo appearing. Only
@@ -1905,6 +1895,18 @@ chromium-metrics-reviews@google.com.
     result as the current theme. This tracks how long the image processing takes
     from the time image processing starts for setting a Wallpaper Search result
     theme to when the profile preference is set to change the background image.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.WallpaperSearch.Status"
+    enum="NtpWallpaperSearchStatus" expires_after="2024-04-28">
+  <owner>tiborg@chromium.org</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Histogram of the statuses shown for Wallpaper Search within the Customize
+    Chrome Side Panel. This records the status is of Wallpaper Search's UI
+    whenever it loads, a search is triggered, or a search completes.
   </summary>
 </histogram>
 

@@ -164,7 +164,7 @@ class MockAutofillProviderAndroidBridge : public AutofillProviderAndroidBridge {
               StartAutofillSession,
               (FormDataAndroid&, const FieldInfo&, bool),
               (override));
-  MOCK_METHOD(void, OnServerPredictionQueryDone, (bool success), (override));
+  MOCK_METHOD(void, OnServerPredictionsAvailable, (), (override));
   MOCK_METHOD(void,
               ShowDatalistPopup,
               (base::span<const SelectOption>, bool),
@@ -500,12 +500,11 @@ TEST_F(AutofillProviderAndroidTest, FormSubmissionHappensOnReset) {
 
   EXPECT_CALL(provider_bridge(), OnFormSubmitted).Times(0);
   android_autofill_manager().SimulateOnFormSubmitted(
-      form, /*known_success=*/false,
-      mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR);
+      form, /*known_success=*/false, mojom::SubmissionSource::XHR_SUCCEEDED);
   Mock::VerifyAndClearExpectations(&provider_bridge());
 
   EXPECT_CALL(provider_bridge(),
-              OnFormSubmitted(mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR));
+              OnFormSubmitted(mojom::SubmissionSource::XHR_SUCCEEDED));
   android_autofill_manager().Reset();
 }
 
@@ -535,12 +534,11 @@ TEST_F(AutofillProviderAndroidTest, FormSubmissionHappensOnFrameDestruction) {
 
   EXPECT_CALL(provider_bridge(), OnFormSubmitted).Times(0);
   android_autofill_manager(child_rfh).SimulateOnFormSubmitted(
-      form, /*known_success=*/false,
-      mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR);
+      form, /*known_success=*/false, mojom::SubmissionSource::XHR_SUCCEEDED);
   Mock::VerifyAndClearExpectations(&provider_bridge());
 
   EXPECT_CALL(provider_bridge(),
-              OnFormSubmitted(mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR));
+              OnFormSubmitted(mojom::SubmissionSource::XHR_SUCCEEDED));
   content::RenderFrameHostTester::For(std::exchange(child_rfh, nullptr))
       ->Detach();
 }
@@ -942,11 +940,6 @@ class AutofillProviderAndroidTestHidingLogic
     sub_frame_ = content::RenderFrameHostTester::For(main_frame())
                      ->AppendChild(std::string("child"));
     sub_frame_ = NavigateAndCommitFrame(sub_frame_, GURL("https://bar.com"));
-    // Make sure the driver (and the manager) is created as there is an early
-    // return in `ContentAutofillDriverFactory::DidFinishNavigation` before
-    // `DriverForFrame()` call.
-    ContentAutofillDriverFactory::FromWebContents(web_contents())
-        ->DriverForFrame(sub_frame_);
   }
 
   void TearDown() override {
@@ -1004,7 +997,7 @@ TEST_F(AutofillProviderAndroidTestHidingLogic, HideInMainFrameOnDestruction) {
 // *sub frame* hides the popup.
 TEST_F(AutofillProviderAndroidTestHidingLogic, HideInSubFrameOnDestruction) {
   AskForValuesToFill(sub_frame_);
-  EXPECT_CALL(provider_bridge(), HideDatalistPopup).Times(AtLeast(1));
+  EXPECT_CALL(provider_bridge(), Reset);
   NavigateAndCommitFrame(sub_frame_, GURL("https://bar.com/"));
   // Verify and clear before TearDown() closes the popup.
   Mock::VerifyAndClearExpectations(&provider_bridge());
@@ -1047,7 +1040,7 @@ TEST_F(AutofillProviderAndroidTestHidingLogic,
        FollowAskForValuesInDifferentFrames) {
   AskForValuesToFill(main_frame());
   AskForValuesToFill(sub_frame_);
-  EXPECT_CALL(provider_bridge(), HideDatalistPopup).Times(AtLeast(1));
+  EXPECT_CALL(provider_bridge(), Reset);
   NavigateAndCommitFrame(sub_frame_, GURL("https://bar.com/"));
 }
 

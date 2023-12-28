@@ -155,7 +155,9 @@
         </settings-subpage>
       </template>
 
-      <template is="dom-if" route-path="/adPrivacy">
+      <template is="dom-if" route-path="/adPrivacy"
+          no-search="[[!shouldShowAdPrivacy_(isPrivacySandboxRestricted_,
+                isPrivacySandboxRestrictedNoticeEnabled_)]]">
         <settings-subpage id="privacy-sandbox"
             page-title="$i18n{adPrivacyPageTitle}"
             associated-control="[[$$('#privacySandboxLinkRow')]]"
@@ -166,7 +168,8 @@
         </settings-subpage>
       </template>
 
-      <template is="dom-if" route-path="/adPrivacy/interests">
+      <template is="dom-if" route-path="/adPrivacy/interests"
+          no-search="[[isPrivacySandboxRestricted_]]">
         <settings-subpage id="privacy-sandbox-topics"
             page-title="$i18n{topicsPageTitle}"
             associated-control="[[$$('#privacySandboxLinkRow')]]"
@@ -176,7 +179,8 @@
         </settings-subpage>
       </template>
 
-      <template is="dom-if" route-path="/adPrivacy/sites">
+      <template is="dom-if" route-path="/adPrivacy/sites"
+          no-search="[[isPrivacySandboxRestricted_]]">
         <settings-subpage id="privacy-sandbox-fledge"
             page-title="$i18n{fledgePageTitle}"
             associated-control="[[$$('#privacySandboxLinkRow')]]"
@@ -186,7 +190,9 @@
         </settings-subpage>
       </template>
 
-      <template is="dom-if" route-path="/adPrivacy/measurement">
+      <template is="dom-if" route-path="/adPrivacy/measurement"
+          no-search="[[!shouldShowAdPrivacy_(isPrivacySandboxRestricted_,
+              isPrivacySandboxRestrictedNoticeEnabled_)]]">
         <settings-subpage id="privacy-sandbox-ad-measurement"
             page-title="$i18n{adMeasurementPageTitle}"
             associated-control="[[$$('#privacySandboxLinkRow')]]"

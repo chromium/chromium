@@ -14,38 +14,12 @@ namespace ash {
 // An interface implemented by Ash that provides colors for the system UI.
 class ASH_PUBLIC_EXPORT ColorProvider {
  public:
-  // Types of Shield layer. Number at the end of each type indicates the alpha
-  // value.
-  enum class ShieldLayerType {
-    kShield20 = 0,
-    kShield40,
-    kShield60,
-    kShield80,
-    kShield90,
-    kShield95,
-  };
-
   // Blur sigma for system UI layers.
   static constexpr float kBackgroundBlurSigma = 30.f;
 
   // The default blur quality for background blur. Using a value less than 1
   // improves performance.
   static constexpr float kBackgroundBlurQuality = 0.33f;
-
-  // Types of Base layer.
-  enum class BaseLayerType {
-    // Number at the end of each transparent type indicates the alpha value.
-    kTransparent20 = 0,
-    kTransparent40,
-    kTransparent60,
-    kTransparent80,
-    kInvertedTransparent80,
-    kTransparent90,
-    kTransparent95,
-
-    // Base layer is opaque.
-    kOpaque,
-  };
 
   // Types of Controls layer.
   enum class ControlsLayerType {
@@ -146,7 +120,6 @@ class ASH_PUBLIC_EXPORT ColorProvider {
 
   // Gets the color of |type| of the corresponding layer based on the current
   // color mode.
-  virtual SkColor GetBaseLayerColor(BaseLayerType type) const = 0;
   virtual SkColor GetControlsLayerColor(ControlsLayerType type) const = 0;
   virtual SkColor GetContentLayerColor(ContentLayerType type) const = 0;
 

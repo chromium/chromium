@@ -35,7 +35,7 @@ class ASH_EXPORT ScopedClipboardHistoryPauseImpl
   ~ScopedClipboardHistoryPauseImpl() override;
 
  private:
-  const raw_ref<const base::Token, ExperimentalAsh> pause_id_;
+  const raw_ref<const base::Token> pause_id_;
   base::WeakPtr<ClipboardHistory> const clipboard_history_;
 };
 

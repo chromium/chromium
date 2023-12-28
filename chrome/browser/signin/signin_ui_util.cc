@@ -351,12 +351,9 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
   // turning on sync will sign the account in the profile and show the sync
   // confirmation dialog. Cancelling the sync confirmation should revert to the
   // initial state, signing out the account from the profile and keeping it on
-  // the web only.
-  // TODO(b/312935856): For now, aborting the sync confirmation for a secondary
-  // account when there is a primary account will revert it to the original
-  // state, and keep all the accounts on web only signed in state. The original
-  // primary account should be reset to primary, remembering this account in
-  // TurnSyncOnHelper.
+  // the web only. Aborting the sync confirmation for a secondary account
+  // reverts the original primary account as primary, and keeps the secondary
+  // account.
   TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode =
       base::FeatureList::IsEnabled(switches::kUnoDesktop) &&
               account.account_id !=
@@ -369,8 +366,7 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
                                               existing_account_promo_action);
   signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
   GetSigninUiDelegate()->ShowTurnSyncOnUI(
-      profile, access_point, existing_account_promo_action,
-      signin_metrics::Reason::kSigninPrimaryAccount, account.account_id,
+      profile, access_point, existing_account_promo_action, account.account_id,
       signin_aborted_mode);
 #else
   NOTREACHED();

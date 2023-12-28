@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/image_track_list.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -95,6 +96,7 @@ class ImageDecoderTest : public testing::Test {
     return false;
 #endif
   }
+  test::TaskEnvironment task_environment_;
 };
 
 TEST_F(ImageDecoderTest, IsTypeSupported) {

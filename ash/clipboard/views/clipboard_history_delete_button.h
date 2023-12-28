@@ -40,10 +40,10 @@ class ClipboardHistoryDeleteButton : public views::ImageButton,
 
   // Used to accommodate the ink drop layer. It ensures that the ink drop is
   // above the view background.
-  raw_ptr<views::View, ExperimentalAsh> ink_drop_container_ = nullptr;
+  raw_ptr<views::View> ink_drop_container_ = nullptr;
 
   // The listener of button events.
-  const raw_ptr<ClipboardHistoryItemView, ExperimentalAsh> listener_;
+  const raw_ptr<ClipboardHistoryItemView> listener_;
 };
 
 }  // namespace ash

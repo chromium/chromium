@@ -20,6 +20,7 @@ import "chromeos/crosapi/mojom/browser_version.mojom";
 import "chromeos/crosapi/mojom/guest_os_sk_forwarder.mojom";
 import "chromeos/crosapi/mojom/cert_database.mojom";
 import "chromeos/crosapi/mojom/cert_provisioning.mojom";
+import "chromeos/crosapi/mojom/chaps_service.mojom";
 import "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom";
 import "chromeos/crosapi/mojom/clipboard.mojom";
 import "chromeos/crosapi/mojom/clipboard_history.mojom";
@@ -60,6 +61,7 @@ import "chromeos/crosapi/mojom/idle_service.mojom";
 import "chromeos/crosapi/mojom/image_writer.mojom";
 import "chromeos/crosapi/mojom/kerberos_in_browser.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
+import "chromeos/crosapi/mojom/lacros_shelf_item_tracker.mojom";
 import "chromeos/crosapi/mojom/launcher_search.mojom";
 import "chromeos/crosapi/mojom/local_printer.mojom";
 import "chromeos/crosapi/mojom/login.mojom";
@@ -96,6 +98,7 @@ import "chromeos/crosapi/mojom/system_display.mojom";
 import "chromeos/crosapi/mojom/task_manager.mojom";
 import "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_event_service.mojom";
+import "chromeos/crosapi/mojom/telemetry_management_service.mojom";
 import "chromeos/crosapi/mojom/test_controller.mojom";
 import "chromeos/crosapi/mojom/timezone.mojom";
 import "chromeos/crosapi/mojom/tts.mojom";
@@ -151,8 +154,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 125
-// Next method id: 127
+// Next version: 128
+// Next method id: 130
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -237,6 +240,11 @@ interface Crosapi {
   // Added in M102.
   [MinVersion=83]
   BindCertProvisioning@86(pending_receiver<CertProvisioning> receiver);
+
+  // Binds the ChapsService interface for communicating with the Chaps daemon.
+  // Added in M121.
+  [MinVersion=125] BindChapsService@127(
+      pending_receiver<ChapsService> receiver);
 
   // Binds the chrome app publisher service, which allows Lacros to connect its
   // Chrome apps to the app service.
@@ -456,6 +464,12 @@ interface Crosapi {
   // Binds the KeystoreService interface for challenging keys.
   // Added in M87.
   BindKeystoreService@2(pending_receiver<KeystoreService> receiver);
+
+  // Binds the LacrosShelfItemTracker interface for integrating ephemeral Lacros
+  // Windows with Ash Shelf.
+  [MinVersion=126]
+  BindLacrosShelfItemTracker@128(
+      pending_receiver<LacrosShelfItemTracker> receiver);
 
   // Binds the Lacros app publisher service, which allows Lacros to connect the
   // Lacros app to the app service.
@@ -698,6 +712,12 @@ interface Crosapi {
   // Added in M114.
   [MinVersion=106] BindTelemetryEventService@109(
     pending_receiver<TelemetryEventService> receiver);
+
+  // Binds the TelemetryManagementService interface for managing ChromeOS
+  // settings in Lacros-Chrome.
+  // Added in M122.
+  [MinVersion=127] BindTelemetryManagementService@129(
+    pending_receiver<TelemetryManagementService> receiver);
 
   // Binds the telemetry probe service to allow Lacros request telemetry data
   // from Ash.
@@ -1521,6 +1541,10 @@ struct BrowserInitParams {
   // behaviour between web apps and browser created shortcuts to be displayed.
   [MinVersion=74]
   bool is_cros_shortstand_enabled@74;
+
+  // If true, "Compose" will be disabled. Only applies on chromeos devices.
+  [MinVersion=75]
+  bool should_disable_chrome_compose_on_chromeos@75;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

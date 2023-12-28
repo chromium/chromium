@@ -13,6 +13,7 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
@@ -49,7 +50,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, Basic) {
   v8::Local<v8::Context> context = MainContext();
 
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);
@@ -155,7 +156,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, Events) {
   v8::Local<v8::Context> context = MainContext();
 
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);
@@ -201,7 +202,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, APIObjectsAreEqual) {
   v8::Local<v8::Context> context = MainContext();
 
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);
@@ -229,7 +230,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
   v8::Local<v8::Context> context = MainContext();
 
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);
@@ -288,7 +289,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestBridgingToJSCustomBindings) {
   v8::Local<v8::Context> context = MainContext();
 
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);
@@ -377,7 +378,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestSendRequestHook) {
   v8::Local<v8::Context> context = MainContext();
 
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);
@@ -411,7 +412,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestEventRegistration) {
   v8::Local<v8::Context> context = MainContext();
 
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);
@@ -462,7 +463,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
   v8::Local<v8::Context> context = MainContext();
 
   ScriptContext* script_context = CreateScriptContext(
-      context, app.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, app.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(app->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);
@@ -500,7 +501,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
   v8::Local<v8::Context> context = MainContext();
 
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);
@@ -540,7 +541,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestLastError) {
   v8::Local<v8::Context> context = MainContext();
 
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);
@@ -590,7 +591,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestCustomProperties) {
   v8::Local<v8::Context> context = MainContext();
 
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);
@@ -627,12 +628,12 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
   v8::Local<v8::Context> context_b = AddContext();
 
   ScriptContext* script_context_a = CreateScriptContext(
-      context_a, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context_a, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context_a->set_url(extension->url());
   bindings_system()->UpdateBindingsForContext(script_context_a);
 
   ScriptContext* script_context_b = CreateScriptContext(
-      context_b, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context_b, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context_b->set_url(extension->url());
   bindings_system()->UpdateBindingsForContext(script_context_b);
 
@@ -684,18 +685,18 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
   // context.
   ScriptContext* blessed_script_context =
       CreateScriptContext(blessed_context, connectable_extension.get(),
-                          Feature::BLESSED_EXTENSION_CONTEXT);
+                          mojom::ContextType::kPrivilegedExtension);
   blessed_script_context->set_url(connectable_extension->url());
   bindings_system()->UpdateBindingsForContext(blessed_script_context);
 
   ScriptContext* connectable_webpage_script_context = CreateScriptContext(
-      connectable_webpage_context, nullptr, Feature::WEB_PAGE_CONTEXT);
+      connectable_webpage_context, nullptr, mojom::ContextType::kWebPage);
   connectable_webpage_script_context->set_url(GURL("http://example.com"));
   bindings_system()->UpdateBindingsForContext(
       connectable_webpage_script_context);
 
   ScriptContext* nonconnectable_webpage_script_context = CreateScriptContext(
-      nonconnectable_webpage_context, nullptr, Feature::WEB_PAGE_CONTEXT);
+      nonconnectable_webpage_context, nullptr, mojom::ContextType::kWebPage);
   nonconnectable_webpage_script_context->set_url(GURL("http://notexample.com"));
   bindings_system()->UpdateBindingsForContext(
       nonconnectable_webpage_script_context);
@@ -732,10 +733,10 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestUsingOtherChromeObjects) {
   v8::Local<v8::Context> context_b = AddContext();
 
   ScriptContext* script_context_a = CreateScriptContext(
-      context_a, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context_a, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context_a->set_url(extension->url());
   ScriptContext* script_context_b = CreateScriptContext(
-      context_b, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context_b, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context_b->set_url(extension->url());
 
   auto check_runtime = [this, context_a, context_b, script_context_a,
@@ -800,7 +801,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestUpdatingPermissions) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
   bindings_system()->UpdateBindingsForContext(script_context);
 
@@ -897,7 +898,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, UnmanagedEvents) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);
@@ -933,7 +934,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
 
   bindings_system()->UpdateBindingsForContext(script_context);
 
@@ -964,7 +965,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
 
   bindings_system()->UpdateBindingsForContext(script_context);
 
@@ -994,7 +995,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, AliasedAPIsAreDifferentObjects) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
 
   bindings_system()->UpdateBindingsForContext(script_context);
 
@@ -1028,7 +1029,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, CanOverwriteAPIs) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);
@@ -1052,7 +1053,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, CanDeleteAPIs) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);
@@ -1099,7 +1100,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, APIIsInitializedByOwningContext) {
   v8::Local<v8::Context> context = MainContext();
 
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);
@@ -1193,7 +1194,7 @@ TEST_P(SignatureValidationNativeExtensionBindingsSystemUnittest,
   v8::Local<v8::Context> context = MainContext();
 
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);
@@ -1267,7 +1268,7 @@ TEST_P(SignatureValidationNativeExtensionBindingsSystemUnittest,
   v8::Local<v8::Context> context = MainContext();
 
   ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
   script_context->set_url(extension->url());
 
   bindings_system()->UpdateBindingsForContext(script_context);

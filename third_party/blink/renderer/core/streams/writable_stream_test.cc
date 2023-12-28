@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "v8/include/v8.h"
 
@@ -23,6 +24,7 @@ namespace blink {
 namespace {
 
 TEST(WritableStreamTest, CreateWithoutArguments) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   WritableStream* stream =
@@ -33,6 +35,7 @@ TEST(WritableStreamTest, CreateWithoutArguments) {
 
 // Testing getWriter, locked and IsLocked.
 TEST(WritableStreamTest, GetWriter) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
@@ -48,6 +51,7 @@ TEST(WritableStreamTest, GetWriter) {
 }
 
 TEST(WritableStreamTest, Serialize) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* script_state = scope.GetScriptState();
 

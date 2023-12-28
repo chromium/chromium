@@ -50,7 +50,8 @@ void UkmDatabaseClient::PreProfileInit(bool in_memory_database) {
   DCHECK(result);
   ukm_data_manager_->Initialize(
       local_data_dir.Append(FILE_PATH_LITERAL("segmentation_platform/ukm_db")),
-      in_memory_database, ukm_observer_.get());
+      in_memory_database);
+  ukm_data_manager_->StartObservation(ukm_observer_.get());
 }
 
 void UkmDatabaseClient::TearDownForTesting() {

@@ -309,19 +309,19 @@ views::View::Views TabStripRegionView::GetChildrenInZOrder() {
   views::View::Views children;
 
   if (tab_strip_container_) {
-    children.emplace_back(tab_strip_container_);
+    children.emplace_back(tab_strip_container_.get());
   }
 
   if (new_tab_button_) {
-    children.emplace_back(new_tab_button_);
+    children.emplace_back(new_tab_button_.get());
   }
 
   if (tab_search_container_) {
-    children.emplace_back(tab_search_container_);
+    children.emplace_back(tab_search_container_.get());
   }
 
   if (reserved_grab_handle_space_) {
-    children.emplace_back(reserved_grab_handle_space_);
+    children.emplace_back(reserved_grab_handle_space_.get());
   }
 
   return children;

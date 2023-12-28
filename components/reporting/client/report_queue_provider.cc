@@ -155,7 +155,8 @@ void ReportQueueProvider::CreateNewQueue(
                   // If configuration hit an error, we abort and
                   // report this through the callback
                   if (!config_result.has_value()) {
-                    std::move(cb).Run(base::unexpected(config_result.error()));
+                    std::move(cb).Run(
+                        base::unexpected(std::move(config_result).error()));
                     return;
                   }
 
@@ -208,7 +209,7 @@ ReportQueueProvider::CreateSpeculativeQueue(
         "The Encrypted Reporting Pipeline is not enabled. Please enable it on "
         "the command line using --enable-features=EncryptedReportingPipeline");
     VLOG(1) << not_enabled;
-    return base::unexpected(not_enabled);
+    return base::unexpected(std::move(not_enabled));
   }
   // Instantiate speculative queue, bail out in case of an error.
   CHECK(config);

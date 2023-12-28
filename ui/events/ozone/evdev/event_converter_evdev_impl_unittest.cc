@@ -73,6 +73,7 @@ member class=ui::InputDevice id=1
  phys=""
  enabled=1
  suspected_keyboard_imposter=0
+ suspected_mouse_imposter=0
  sys_path=""
  vendor_id=0000
  product_id=0000
@@ -94,6 +95,7 @@ member class=ui::InputDevice id=1
  phys=""
  enabled=1
  suspected_keyboard_imposter=0
+ suspected_mouse_imposter=0
  sys_path=""
  vendor_id=046D
  product_id=C31C
@@ -115,6 +117,7 @@ member class=ui::InputDevice id=1
  phys=""
  enabled=1
  suspected_keyboard_imposter=0
+ suspected_mouse_imposter=0
  sys_path=""
  vendor_id=0001
  product_id=0001
@@ -136,6 +139,7 @@ member class=ui::InputDevice id=1
  phys=""
  enabled=1
  suspected_keyboard_imposter=0
+ suspected_mouse_imposter=0
  sys_path=""
  vendor_id=04F3
  product_id=323B
@@ -927,7 +931,7 @@ TEST_F(EventConverterEvdevImplLogTest, ChangeEnabled) {
   EXPECT_EQ(output.str(), log);
 }
 
-TEST_F(EventConverterEvdevImplLogTest, ChangeImposter) {
+TEST_F(EventConverterEvdevImplLogTest, ChangeKeyboardImposter) {
   ui::EventDeviceInfo devinfo;
   SetUpDevice(devinfo);
 
@@ -937,6 +941,19 @@ TEST_F(EventConverterEvdevImplLogTest, ChangeImposter) {
   device()->DescribeForLog(output);
   std::string log = LogSubst(kDefaultDeviceLogDescription,
                              "suspected_keyboard_imposter", "1");
+  EXPECT_EQ(output.str(), log);
+}
+
+TEST_F(EventConverterEvdevImplLogTest, ChangeMouseImposter) {
+  ui::EventDeviceInfo devinfo;
+  SetUpDevice(devinfo);
+
+  device()->SetSuspectedMouseImposter(true);
+
+  std::stringstream output;
+  device()->DescribeForLog(output);
+  std::string log =
+      LogSubst(kDefaultDeviceLogDescription, "suspected_mouse_imposter", "1");
   EXPECT_EQ(output.str(), log);
 }
 

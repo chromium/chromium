@@ -4,7 +4,8 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {cancelPreviewWallpaper, DailyRefreshType, DefaultImageSymbol, DisplayableImage, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchGooglePhotosEnabled, fetchGooglePhotosPhotos, fetchLocalData, getDefaultImageThumbnail, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, isDefaultImage, isFilePath, isGooglePhotosPhoto, isWallpaperImage, kDefaultImageSymbol, selectGooglePhotosAlbum, selectWallpaper, setDailyRefreshCollectionId, updateDailyRefreshWallpaper, WallpaperLayout, WallpaperObserver, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import {cancelPreviewWallpaper, DailyRefreshType, DefaultImageSymbol, DisplayableImage, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchGooglePhotosEnabled, fetchGooglePhotosPhotos, fetchLocalData, getDefaultImageThumbnail, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, isDefaultImage, isGooglePhotosPhoto, isWallpaperImage, kDefaultImageSymbol, selectGooglePhotosAlbum, selectWallpaper, setDailyRefreshCollectionId, updateDailyRefreshWallpaper, WallpaperLayout, WallpaperObserver, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import {isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
@@ -24,7 +25,7 @@ function getImageKey(image: DisplayableImage): string|undefined {
   if (isWallpaperImage(image)) {
     return image.unitId.toString();
   }
-  if (isFilePath(image)) {
+  if (isNonEmptyFilePath(image)) {
     return image.path;
   }
   assertNotReached('unknown wallpaper type');
@@ -873,7 +874,7 @@ suite('does not respond to re-selecting the current wallpaper', () => {
     if (isWallpaperImage(image)) {
       return WallpaperType.kOnline;
     }
-    if (isFilePath(image)) {
+    if (isNonEmptyFilePath(image)) {
       return WallpaperType.kCustomized;
     }
     assertNotReached('unknown wallpaper type');
@@ -997,7 +998,7 @@ suite('updates default image', () => {
         'wallpaper.local.images is not array');
     assertTrue(
         personalizationStore.data.wallpaper.local.images.every(
-            (image: FilePath|DefaultImageSymbol) => isFilePath(image) &&
+            (image: FilePath|DefaultImageSymbol) => isNonEmptyFilePath(image) &&
                 !!personalizationStore.data.wallpaper.local.data[image.path]),
         'every image is file path with data');
 

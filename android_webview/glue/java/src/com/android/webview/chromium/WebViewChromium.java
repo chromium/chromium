@@ -59,6 +59,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.AwBrowserContext;
+import org.chromium.android_webview.AwBrowserContextStore;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwPrintDocumentAdapter;
@@ -842,7 +843,7 @@ class WebViewChromium
                     ManifestMetadataUtil.getAppMultiProfileProfileNameTagKey();
             if (appProfileNameTagKey != null
                     && mWebView.getTag(appProfileNameTagKey) instanceof String profileName) {
-                browserContext = AwBrowserContext.getNamedContext(profileName, true);
+                browserContext = AwBrowserContextStore.getNamedContext(profileName, true);
             }
 
             if (browserContext == null) {

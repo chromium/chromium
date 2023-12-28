@@ -58,6 +58,27 @@ IN_PROC_BROWSER_TEST_F(ComputePressureOriginTrialBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ComputePressureOriginTrialBrowserTest,
+                       ValidThirdPartyOriginTrialToken) {
+  // In this test, we use an EmbeddedTestServer because we need two
+  // different origins to test the third-party OT token mechanism for
+  // ComputePressure.
+  // We use the URL provided by |https_server| for the main frame because we do
+  // not care about the port number EmbeddedTestServer gives us. The page we
+  // navigate to then loads a script served via |interceptor_|, as we need a
+  // specific origin.
+  embedded_https_test_server().ServeFilesFromSourceDirectory(
+      GetTestDataFilePath());
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_https_test_server().GetURL(
+                                 "/compute_pressure/third_party_token.html")));
+  EXPECT_FALSE(HasComputePressureApi());
+  ASSERT_TRUE(ExecJs(shell(), "insert3rdPartyToken()"));
+  EXPECT_TRUE(HasComputePressureApi());
+}
+
+IN_PROC_BROWSER_TEST_F(ComputePressureOriginTrialBrowserTest,
                        NoOriginTrialToken) {
   ASSERT_TRUE(NavigateToURL(shell(), kNoTokenUrl));
   EXPECT_FALSE(HasComputePressureApi());

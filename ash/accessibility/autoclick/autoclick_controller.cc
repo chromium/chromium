@@ -6,7 +6,7 @@
 
 #include <tuple>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/autoclick/autoclick_drag_event_rewriter.h"
 #include "ash/accessibility/autoclick/autoclick_ring_handler.h"
 #include "ash/accessibility/autoclick/autoclick_scroll_position_handler.h"

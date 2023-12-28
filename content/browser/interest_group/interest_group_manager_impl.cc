@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -34,10 +35,11 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
-
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -317,11 +319,24 @@ void InterestGroupManagerImpl::UpdateInterestGroupsOfOwner(
 }
 
 void InterestGroupManagerImpl::UpdateInterestGroupsOfOwners(
-    base::span<url::Origin> owners,
+    std::vector<url::Origin> owners,
     network::mojom::ClientSecurityStatePtr client_security_state,
     AreReportingOriginsAttestedCallback callback) {
   update_manager_.UpdateInterestGroupsOfOwners(
       owners, std::move(client_security_state), std::move(callback));
+}
+
+void InterestGroupManagerImpl::UpdateInterestGroupsOfOwnersWithDelay(
+    std::vector<url::Origin> owners,
+    network::mojom::ClientSecurityStatePtr client_security_state,
+    AreReportingOriginsAttestedCallback callback,
+    const base::TimeDelta& delay) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&InterestGroupManagerImpl::UpdateInterestGroupsOfOwners,
+                     weak_factory_.GetWeakPtr(), std::move(owners),
+                     std::move(client_security_state), std::move(callback)),
+      delay);
 }
 
 void InterestGroupManagerImpl::RecordInterestGroupBids(
@@ -336,6 +351,19 @@ void InterestGroupManagerImpl::RecordInterestGroupWin(
     const blink::InterestGroupKey& group_key,
     const std::string& ad_json) {
   caching_storage_.RecordInterestGroupWin(group_key, ad_json);
+}
+
+void InterestGroupManagerImpl::RecordDebugReportLockout(
+    base::Time last_report_sent_time) {
+  caching_storage_.RecordDebugReportLockout(last_report_sent_time);
+}
+
+void InterestGroupManagerImpl::RecordDebugReportCooldown(
+    const url::Origin& origin,
+    base::Time cooldown_start,
+    DebugReportCooldownType cooldown_type) {
+  caching_storage_.RecordDebugReportCooldown(origin, cooldown_start,
+                                             cooldown_type);
 }
 
 void InterestGroupManagerImpl::RegisterAdKeysAsJoined(
@@ -626,6 +654,14 @@ void InterestGroupManagerImpl::GetKAnonymityDataForUpdate(
     base::OnceCallback<void(
         const std::vector<StorageInterestGroup::KAnonymityData>&)> callback) {
   caching_storage_.GetKAnonymityDataForUpdate(group_key, std::move(callback));
+}
+
+void InterestGroupManagerImpl::GetDebugReportLockoutAndCooldowns(
+    base::flat_set<url::Origin> origins,
+    base::OnceCallback<void(absl::optional<DebugReportLockoutAndCooldowns>)>
+        callback) {
+  caching_storage_.GetDebugReportLockoutAndCooldowns(std::move(origins),
+                                                     std::move(callback));
 }
 
 void InterestGroupManagerImpl::UpdateInterestGroup(

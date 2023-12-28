@@ -137,13 +137,14 @@ class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
     return platform_->GetTestingPlatformSupport();
   }
 
+  test::TaskEnvironment& task_environment() { return task_environment_; }
+
   void FastForwardBy(base::TimeDelta);
   void FastForwardUntilNoTasksRemain();
   void AdvanceClock(base::TimeDelta);
 
  private:
-  test::TaskEnvironment task_environment_{
-      test::TaskEnvironment::RealMainThreadScheduler()};
+  test::TaskEnvironment task_environment_;
   // The order is important: |platform_| must be destroyed after
   // |dummy_page_holder_| is destroyed.
   std::unique_ptr<ScopedTestingPlatformSupport<TestingPlatformSupport>>

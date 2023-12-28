@@ -6,9 +6,41 @@
 
 #include "base/check_op.h"
 #include "base/ranges/algorithm.h"
+#include "build/build_config.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
+
+OpenXrViewProperties::OpenXrViewProperties(
+    XrViewConfigurationView xr_properties,
+    uint32_t view_count)
+    : xr_properties_(xr_properties), view_count_(view_count) {}
+OpenXrViewProperties::~OpenXrViewProperties() = default;
+
+uint32_t OpenXrViewProperties::Width() const {
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    // TODO(https://crbug.com/1508028): Devise a more robust way of calculating
+    // the max size and per view width. (e.g. (viewWidth/totalWidth) *
+    // maxWidth).
+    constexpr uint32_t kMaxImageWidth = 4096;
+    return std::min(xr_properties_.recommendedImageRectWidth,
+                    kMaxImageWidth / view_count_);
+  }
+
+  return xr_properties_.recommendedImageRectWidth;
+}
+
+uint32_t OpenXrViewProperties::Height() const {
+  return xr_properties_.recommendedImageRectHeight;
+}
+
+uint32_t OpenXrViewProperties::RecommendedSwapchainSampleCount() const {
+  return xr_properties_.recommendedSwapchainSampleCount;
+}
+
+uint32_t OpenXrViewProperties::MaxSwapchainSampleCount() const {
+  return xr_properties_.maxSwapchainSampleCount;
+}
 
 OpenXrViewConfiguration::OpenXrViewConfiguration() = default;
 OpenXrViewConfiguration::OpenXrViewConfiguration(OpenXrViewConfiguration&&) =
@@ -54,7 +86,7 @@ void OpenXrViewConfiguration::Initialize(
   type_ = type;
   active_ = false;
   viewport_ = gfx::Rect();
-  properties_ = std::move(properties);
+  SetProperties(std::move(properties));
   local_from_view_.resize(properties_.size());
   projection_views_.resize(properties_.size());
 
@@ -91,8 +123,8 @@ void OpenXrViewConfiguration::SetViewport(uint32_t x,
   viewport_ = gfx::Rect(x, y, width, height);
 }
 
-const std::vector<XrViewConfigurationView>&
-OpenXrViewConfiguration::Properties() const {
+const std::vector<OpenXrViewProperties>& OpenXrViewConfiguration::Properties()
+    const {
   return properties_;
 }
 
@@ -100,8 +132,14 @@ void OpenXrViewConfiguration::SetProperties(
     std::vector<XrViewConfigurationView> properties) {
   // The number of views in a view configuration should not change throughout
   // the lifetime of the OpenXR instance.
-  DCHECK_EQ(properties.size(), properties_.size());
-  properties_ = std::move(properties);
+  CHECK(properties_.empty() || properties.size() == properties_.size());
+  uint32_t size = properties.size();
+  properties_.clear();
+  properties_.reserve(size);
+  base::ranges::transform(properties, std::back_inserter(properties_),
+                          [size](const XrViewConfigurationView& view) {
+                            return OpenXrViewProperties(view, size);
+                          });
 }
 
 const std::vector<XrView>& OpenXrViewConfiguration::Views() const {
@@ -132,8 +170,8 @@ bool OpenXrViewConfiguration::CanEnableAntiAliasing() const {
   // To ease the workload on low end devices, we disable anti-aliasing when the
   // max sample count is 1.
   return base::ranges::all_of(properties_,
-                              [](const XrViewConfigurationView& view) {
-                                return view.maxSwapchainSampleCount > 1;
+                              [](const OpenXrViewProperties& view) {
+                                return view.MaxSwapchainSampleCount() > 1;
                               });
 }
 

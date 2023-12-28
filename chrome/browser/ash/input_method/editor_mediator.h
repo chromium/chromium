@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_MEDIATOR_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_MEDIATOR_H_
 
-#include "ash/public/cpp/tablet_mode.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/input_method/editor_client_connector.h"
 #include "chrome/browser/ash/input_method/editor_consent_store.h"
@@ -22,6 +19,11 @@
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "ui/display/display_observer.h"
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace ash {
 namespace input_method {
@@ -33,7 +35,7 @@ namespace input_method {
 class EditorMediator : public EditorEventSink,
                        public EditorPanelManager::Delegate,
                        public EditorTextActuator::Delegate,
-                       public TabletModeObserver,
+                       public display::DisplayObserver,
                        public KeyedService {
  public:
   // country_code that determines the country/territory in which the device is
@@ -71,10 +73,8 @@ class EditorMediator : public EditorEventSink,
   EditorOpportunityMode GetEditorOpportunityMode() const override;
   void CacheContext() override;
 
-  // TabletModeObserver overrides
-  void OnTabletModeStarting() override;
-  void OnTabletModeEnded() override;
-  void OnTabletControllerDestroyed() override;
+  // display::DisplayObserver overrides
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // EditorTextActuator::Delegate overrides
   void OnTextInserted() override;
@@ -127,8 +127,7 @@ class EditorMediator : public EditorEventSink,
 
   SurroundingText surrounding_text_;
 
-  base::ScopedObservation<TabletMode, TabletModeObserver>
-      tablet_mode_observation_{this};
+  display::ScopedDisplayObserver display_observer_{this};
 
   base::WeakPtrFactory<EditorMediator> weak_ptr_factory_{this};
 };

@@ -102,7 +102,7 @@ class ASH_EXPORT WindowResizer {
       std::unique_ptr<PresentationTimeRecorder> recorder);
 
   // WindowState of the drag target.
-  raw_ptr<WindowState, ExperimentalAsh> window_state_;
+  raw_ptr<WindowState> window_state_;
 
  private:
   // In case of touch resizing, adjusts deltas so that the border is positioned

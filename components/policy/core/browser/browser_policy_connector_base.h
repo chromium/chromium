@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_registry.h"
@@ -97,7 +98,8 @@ class POLICY_EXPORT BrowserPolicyConnectorBase {
   // Returns the providers to pass to the PolicyService. Generally this is the
   // same as |policy_providers_|, unless SetPolicyProviderForTesting() has been
   // called.
-  std::vector<ConfigurationPolicyProvider*> GetProvidersForPolicyService();
+  std::vector<raw_ptr<ConfigurationPolicyProvider, VectorExperimental>>
+  GetProvidersForPolicyService();
 
   // Set to true when the PolicyService has been created, and false in
   // Shutdown(). Once created the PolicyService is destroyed in the destructor,

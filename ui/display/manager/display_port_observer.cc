@@ -107,7 +107,7 @@ void DisplayPortObserver::OnDisplayModeChanged(
   // If no changes in base connector ids, then assume no changes on ports, so
   // return early to prevent overkill.
   std::set<uint64_t> base_connector_ids_;
-  for (auto* state : display_states) {
+  for (display::DisplaySnapshot* state : display_states) {
     base_connector_ids_.insert(state->base_connector_id());
   }
   if (base_connector_ids_ == prev_base_connector_ids_) {
@@ -118,7 +118,7 @@ void DisplayPortObserver::OnDisplayModeChanged(
   // For each DisplaySnapshot, extract base_connector_id and sys_path.
   std::vector<std::pair<uint64_t, base::FilePath>>
       base_connector_id_and_syspath;
-  for (auto* state : display_states) {
+  for (display::DisplaySnapshot* state : display_states) {
     base_connector_id_and_syspath.push_back(
         std::make_pair(state->base_connector_id(), state->sys_path()));
   }

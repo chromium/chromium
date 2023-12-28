@@ -23,7 +23,7 @@ Should be composited
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='test1 box'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='test1 box'",
       "position": [11, 21],
       "bounds": [100, 100],
       "contentsOpaque": true,
@@ -31,7 +31,7 @@ Should be composited
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='box'",
+      "name": "LayoutNGBlockFlow (relative positioned, children-inline) DIV class='box'",
       "position": [18, 230],
       "bounds": [100, 100],
       "contentsOpaque": true,

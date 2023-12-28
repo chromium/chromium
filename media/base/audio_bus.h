@@ -12,6 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/aligned_memory.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/media_shmem_export.h"
 
@@ -230,7 +231,8 @@ class MEDIA_SHMEM_EXPORT AudioBus {
   // that channel. If the memory is owned by this instance, this will
   // point to the memory in |data_|. Otherwise, it may point to memory provided
   // by the client.
-  std::vector<float*> channel_data_;
+  // FIELD excluded due to ptr arithmetic in audio_buss.cc channel_data_[i][j]
+  RAW_PTR_EXCLUSION std::vector<float*> channel_data_;
   int frames_;
 
   // Protect SetChannelData(), set_frames() and SetWrappedDataDeleter() for use

@@ -116,6 +116,7 @@ extern const char kIosUserZoomMultipliers[];
 
 extern const char kIncognitoAuthenticationSetting[];
 
+extern const char kLastSigninTimestamp[];
 extern const char kBrowserSigninPolicy[];
 extern const char kAllowChromeDataInBackups[];
 
@@ -135,6 +136,8 @@ extern const char kNotificationsPromoLastDismissed[];
 extern const char kNotificationsPromoLastShown[];
 extern const char kNotificationsPromoTimesShown[];
 extern const char kNotificationsPromoTimesDismissed[];
+
+extern const char kInsecureFormWarningsEnabled[];
 
 }  // namespace prefs
 

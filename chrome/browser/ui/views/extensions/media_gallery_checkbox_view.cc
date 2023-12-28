@@ -82,5 +82,5 @@ void MediaGalleryCheckboxView::Layout() {
   }
 }
 
-BEGIN_METADATA(MediaGalleryCheckboxView, views::BoxLayoutView)
+BEGIN_METADATA(MediaGalleryCheckboxView)
 END_METADATA

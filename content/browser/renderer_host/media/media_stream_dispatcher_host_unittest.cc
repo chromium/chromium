@@ -566,9 +566,9 @@ class MediaStreamDispatcherHostTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<MockMediaStreamDispatcherHost> host_;
   std::unique_ptr<MediaStreamManager> media_stream_manager_;
-  BrowserTaskEnvironment task_environment_;
   std::unique_ptr<media::AudioManager> audio_manager_;
   std::unique_ptr<media::AudioSystem> audio_system_;
+  BrowserTaskEnvironment task_environment_;
   MediaDeviceSaltAndOrigin salt_and_origin_;
   media::AudioDeviceDescriptions audio_device_descriptions_;
   std::vector<std::string> stub_video_device_ids_;

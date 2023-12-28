@@ -1,0 +1,74 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("drive_availability") {
+  sources = [
+    "drive_availability.h",
+    "drive_availability.mm",
+  ]
+  deps = [
+    ":drive_service",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/public/features",
+  ]
+}
+
+source_set("drive_tab_helper") {
+  sources = [
+    "download_task_save_to_drive_data.h",
+    "drive_tab_helper.h",
+    "drive_tab_helper.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/web/public",
+    "//ios/web/public:web_state_observer",
+    "//ios/web/public/download",
+  ]
+}
+
+source_set("drive_service") {
+  sources = [
+    "drive_service.h",
+    "drive_service.mm",
+    "drive_service_configuration.h",
+  ]
+  deps = [
+    "//components/keyed_service/core",
+    "//ios/chrome/browser/shared/model/browser_state",
+  ]
+}
+
+source_set("drive_service_factory") {
+  sources = [
+    "drive_service_factory.h",
+    "drive_service_factory.mm",
+  ]
+  deps = [
+    ":drive_service",
+    "//base",
+    "//components/keyed_service/ios",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/public/provider/chrome/browser/drive:drive_api",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "drive_service_factory_unittest.mm",
+    "drive_tab_helper_unittest.mm",
+  ]
+  deps = [
+    ":drive_service_factory",
+    ":drive_tab_helper",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+}

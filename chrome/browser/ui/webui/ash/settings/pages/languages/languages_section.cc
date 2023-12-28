@@ -28,6 +28,7 @@
 namespace ash::settings {
 
 namespace mojom {
+using ::chromeos::settings::mojom::kAppLanguagesSubpagePath;
 using ::chromeos::settings::mojom::kLanguagesAndInputSectionPath;
 using ::chromeos::settings::mojom::kLanguagesSubpagePath;
 using ::chromeos::settings::mojom::kSystemPreferencesSectionPath;
@@ -68,6 +69,18 @@ const std::vector<SearchConcept>& GetLanguagesPageSearchConceptsV2() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetAppLanguagesPageSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_LANGUAGES_APP_LANGUAGES,
+       mojom::kAppLanguagesSubpagePath,
+       mojom::SearchResultIcon::kLanguage,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSubpage,
+       {.subpage = mojom::Subpage::kAppLanguages}},
+  });
+  return *tags;
+}
+
 void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"deviceLanguageTitle", IDS_OS_SETTINGS_LANGUAGES_DEVICE_LANGUAGE_TITLE},
@@ -101,6 +114,19 @@ void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_LANGUAGES_GOOGLE_ACCOUNT_LANGUAGE_DESCRIPTION},
       {"manageGoogleAccountLanguageLabel",
        IDS_OS_SETTINGS_LANGUAGES_MANAGE_GOOGLE_ACCOUNT_LANGUAGE_LABEL},
+      {"appLanguagesTitle", IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_TITLE},
+      {"appLanguagesDescription",
+       IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_DESCRIPTION},
+      {"appLanguagesSupportedAppsDescription",
+       IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_SUPPORTED_APPS_DESCRIPTION},
+      {"appLanguagesNoAppsSupportedDescription",
+       IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_NO_APPS_SUPPORTED_DESCRIPTION},
+      {"appLanguagesEditSelectionLabel",
+       IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_EDIT_SELECTION_LABEL},
+      {"appLanguagesResetSelectionLabel",
+       IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_RESET_SELECTION_LABEL},
+      {"appLanguagesChangeLanguageButtonDescription",
+       IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_CHANGE_LANGUAGE_BUTTON_DESCRIPTION},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -147,6 +173,9 @@ LanguagesSection::LanguagesSection(Profile* profile,
               : std::nullopt) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetLanguagesPageSearchConceptsV2());
+  if (IsPerAppLanguageEnabled(profile)) {
+    updater.AddSearchTags(GetAppLanguagesPageSearchConcepts());
+  }
 }
 
 LanguagesSection::~LanguagesSection() = default;
@@ -166,6 +195,8 @@ void LanguagesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"noSearchResults", IDS_SEARCH_NO_RESULTS},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+  html_source->AddBoolean("isPerAppLanguageEnabled",
+                          IsPerAppLanguageEnabled(profile()));
 
   AddLanguagesPageStringsV2(html_source);
 
@@ -221,6 +252,17 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   };
   RegisterNestedSettingBulk(mojom::Subpage::kLanguages, kLanguagesPageSettings,
                             generator);
+
+  if (IsPerAppLanguageEnabled(profile())) {
+    // App language subpage.
+    generator->RegisterNestedSubpage(
+        IDS_OS_SETTINGS_LANGUAGES_APP_LANGUAGES_TITLE,
+        mojom::Subpage::kAppLanguages, mojom::Subpage::kLanguages,
+        mojom::SearchResultIcon::kLanguage,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::kAppLanguagesSubpagePath);
+  }
+
   // Inputs subsection exists only when the OsSettingsRevampWayfinding feature
   // is disabled. It is part of the Device section when the feature is enabled.
   if (!ash::features::IsOsSettingsRevampWayfindingEnabled()) {

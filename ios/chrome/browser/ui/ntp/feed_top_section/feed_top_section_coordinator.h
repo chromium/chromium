@@ -7,12 +7,14 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/push_notification/model/notifications_alert_presenter.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol NewTabPageDelegate;
 
 // The top-level owner of the feed top section.
-@interface FeedTopSectionCoordinator : ChromeCoordinator
+@interface FeedTopSectionCoordinator
+    : ChromeCoordinator <NotificationsAlertPresenter>
 
 @property(nonatomic, readonly, strong) UIViewController* viewController;
 

@@ -31,6 +31,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -76,7 +77,9 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
@@ -502,7 +505,7 @@ user_manager::UserList ChromeUserManagerImpl::GetUnlockUsers() const {
   if (logged_in_users.size() == 1 ||
       primary_policy == MultiUserSignInPolicy::kPrimaryOnly) {
     if (can_primary_lock) {
-      unlock_users.push_back(primary_user_);
+      unlock_users.push_back(primary_user_.get());
     }
   } else {
     // Fill list of potential unlock users based on multi-profile policy state.
@@ -704,7 +707,7 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
     ScopedListPrefUpdate prefs_users_update(GetLocalState(),
                                             user_manager::kRegularUsersPref);
     // Take snapshot because DeleteUser called in the loop will update it.
-    std::vector<user_manager::User*> users = users_;
+    std::vector<raw_ptr<user_manager::User, VectorExperimental>> users = users_;
     for (user_manager::User* user : users) {
       const AccountId account_id = user->GetAccountId();
       if (user->HasGaiaAccount() && account_id != GetOwnerAccountId() &&
@@ -962,7 +965,7 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
 
   // Get the current list of device local accounts.
   std::vector<std::string> old_accounts;
-  for (auto* user : users_) {
+  for (user_manager::User* user : users_) {
     if (user->IsDeviceLocalAccount()) {
       old_accounts.push_back(user->GetAccountId().GetUserEmail());
     }
@@ -995,7 +998,7 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
 
   // Remove the old device local accounts from the user list.
   // Take snapshot because DeleteUser will update |user_|.
-  std::vector<user_manager::User*> users = users_;
+  std::vector<raw_ptr<user_manager::User, VectorExperimental>> users = users_;
   for (user_manager::User* user : users) {
     if (user->IsDeviceLocalAccount()) {
       if (user != GetActiveUser()) {
@@ -1074,6 +1077,29 @@ bool ChromeUserManagerImpl::IsGaiaUserAllowed(
 
 void ChromeUserManagerImpl::OnMinimumVersionStateChanged() {
   NotifyUsersSignInConstraintsChanged();
+}
+
+void ChromeUserManagerImpl::OnProfileCreationStarted(Profile* profile) {
+  // Find a User instance from directory path, and annotate the AccountId.
+  // Hereafter, we can use AnnotatedAccountId::Get() to find the User.
+  if (ash::IsUserBrowserContext(profile)) {
+    bool found = false;
+    std::string username_hash =
+        ash::BrowserContextHelper::GetUserIdHashFromBrowserContext(profile);
+    for (const user_manager::User* user : GetLoggedInUsers()) {
+      if (user->username_hash() == username_hash) {
+        found = true;
+        ash::AnnotatedAccountId::Set(profile, user->GetAccountId());
+        break;
+      }
+    }
+    // For user profile, corresponding User instance must be found.
+    if (!found) {
+      // User may not be found for now on testing.
+      // TODO(crbug.com/1325210): fix tests to annotate AccountId properly.
+      CHECK_IS_TEST();
+    }
+  }
 }
 
 void ChromeUserManagerImpl::OnProfileAdded(Profile* profile) {

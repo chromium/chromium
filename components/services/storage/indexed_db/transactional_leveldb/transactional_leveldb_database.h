@@ -8,13 +8,13 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_set.h"
 #include "base/containers/lru_cache.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -62,9 +62,9 @@ class TransactionalLevelDBDatabase
 
   ~TransactionalLevelDBDatabase() override;
 
-  leveldb::Status Put(const base::StringPiece& key, std::string* value);
-  leveldb::Status Remove(const base::StringPiece& key);
-  virtual leveldb::Status Get(const base::StringPiece& key,
+  leveldb::Status Put(const std::string_view& key, std::string* value);
+  leveldb::Status Remove(const std::string_view& key);
+  virtual leveldb::Status Get(const std::string_view& key,
                               std::string* value,
                               bool* found);
   virtual leveldb::Status Write(LevelDBWriteBatch* write_batch);
@@ -77,7 +77,7 @@ class TransactionalLevelDBDatabase
   std::unique_ptr<TransactionalLevelDBIterator> CreateIterator(
       leveldb::ReadOptions options);
 
-  void Compact(const base::StringPiece& start, const base::StringPiece& stop);
+  void Compact(const std::string_view& start, const std::string_view& stop);
   void CompactAll();
 
   leveldb::ReadOptions DefaultReadOptions();

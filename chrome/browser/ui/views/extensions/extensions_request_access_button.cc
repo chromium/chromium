@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_hover_card_coordinator.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_chip_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "content/public/browser/web_contents.h"
@@ -54,9 +55,10 @@ std::vector<const extensions::Extension*> GetExtensions(
 ExtensionsRequestAccessButton::ExtensionsRequestAccessButton(
     Browser* browser,
     ExtensionsContainer* extensions_container)
-    : ToolbarButton(
+    : ToolbarChipButton(
           base::BindRepeating(&ExtensionsRequestAccessButton::OnButtonPressed,
-                              base::Unretained(this))),
+                              base::Unretained(this)),
+          ToolbarChipButton::Edge::kRight),
       browser_(browser),
       extensions_container_(extensions_container),
       hover_card_coordinator_(
@@ -209,5 +211,5 @@ content::WebContents* ExtensionsRequestAccessButton::GetActiveWebContents()
   return browser_->tab_strip_model()->GetActiveWebContents();
 }
 
-BEGIN_METADATA(ExtensionsRequestAccessButton, ToolbarButton)
+BEGIN_METADATA(ExtensionsRequestAccessButton)
 END_METADATA

@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -73,7 +74,13 @@ public class PaneManagerImplUnitTest {
         assertTrue(paneManager.focusPane(PaneId.TAB_SWITCHER));
         assertEquals(mTabSwitcherPane, paneManager.getFocusedPaneSupplier().get());
 
+        verify(mTabSwitcherPane, never()).destroy();
+        verify(mIncognitoTabSwitcherPane, never()).destroy();
+
         paneManager.destroy();
+
+        verify(mTabSwitcherPane).destroy();
+        verify(mIncognitoTabSwitcherPane).destroy();
     }
 
     @Test
@@ -140,6 +147,20 @@ public class PaneManagerImplUnitTest {
         verify(mPaneSupplier).get();
 
         paneManager.destroy();
+    }
+
+    @Test
+    @SmallTest
+    public void testPaneNotDestroyedIfNotSupplied() {
+        PaneListBuilder builder =
+                new PaneListBuilder(new DefaultPaneOrderController())
+                        .registerPane(
+                                PaneId.TAB_SWITCHER,
+                                LazyOneshotSupplier.fromValue(mTabSwitcherPane));
+        PaneManagerImpl paneManager = new PaneManagerImpl(builder, mHubVisibilitySupplier);
+
+        paneManager.destroy();
+        verifyNoInteractions(mTabSwitcherPane);
     }
 
     @Test

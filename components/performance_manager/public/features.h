@@ -49,10 +49,13 @@ BASE_DECLARE_FEATURE(kBackgroundTabLoadingFromPerformanceManager);
 // toggling it.
 BASE_DECLARE_FEATURE(kBatterySaverModeAvailable);
 
+// If enabled, makes battery saver request render process tuning.
+BASE_DECLARE_FEATURE(kBatterySaverModeRenderTuning);
+
 // Flag to control a baseline HaTS survey for Chrome performance.
 BASE_DECLARE_FEATURE(kPerformanceControlsPerformanceSurvey);
 BASE_DECLARE_FEATURE(kPerformanceControlsBatteryPerformanceSurvey);
-BASE_DECLARE_FEATURE(kPerformanceControlsHighEfficiencyOptOutSurvey);
+BASE_DECLARE_FEATURE(kPerformanceControlsMemorySaverOptOutSurvey);
 BASE_DECLARE_FEATURE(kPerformanceControlsBatterySaverOptOutSurvey);
 
 // Defines the time delta to look back when checking if a device has used
@@ -62,11 +65,11 @@ extern const base::FeatureParam<base::TimeDelta>
 
 // Round 2 Performance Controls features
 
-// This enables the UI for the multi-state version of high efficiency mode.
-BASE_DECLARE_FEATURE(kHighEfficiencyMultistateMode);
+// This enables the UI for the multi-state version of memory saver mode.
+BASE_DECLARE_FEATURE(kMemorySaverMultistateMode);
 // When true, a recommended badge will be shown next to the heuristic memory
 // saver option.
-extern const base::FeatureParam<bool> kHighEfficiencyShowRecommendedBadge;
+extern const base::FeatureParam<bool> kMemorySaverShowRecommendedBadge;
 
 // This shows more information about discarded tabs in the tab strip and
 // hovercards.
@@ -81,21 +84,21 @@ BASE_DECLARE_FEATURE(kMemorySavingsReportingImprovements);
 
 // The minimum time between instances where the chip is shown in expanded mode.
 extern const base::FeatureParam<base::TimeDelta>
-    kExpandedHighEfficiencyChipFrequency;
+    kExpandedMemorySaverChipFrequency;
 
 // The minimum discard savings that a tab must have for the chip to be expanded.
-extern const base::FeatureParam<int> kExpandedHighEfficiencyChipThresholdBytes;
+extern const base::FeatureParam<int> kExpandedMemorySaverChipThresholdBytes;
 
 // The minimum time a tab must be discarded before the chip can be shown
 // expanded.
 extern const base::FeatureParam<base::TimeDelta>
-    kExpandedHighEfficiencyChipDiscardedDuration;
+    kExpandedMemorySaverChipDiscardedDuration;
 
 // Percentiles of PMF across all tabs on all browsers.
-extern const base::FeatureParam<int> kHighEfficiencyChartPmf25PercentileBytes;
-extern const base::FeatureParam<int> kHighEfficiencyChartPmf50PercentileBytes;
-extern const base::FeatureParam<int> kHighEfficiencyChartPmf75PercentileBytes;
-extern const base::FeatureParam<int> kHighEfficiencyChartPmf99PercentileBytes;
+extern const base::FeatureParam<int> kMemorySaverChartPmf25PercentileBytes;
+extern const base::FeatureParam<int> kMemorySaverChartPmf50PercentileBytes;
+extern const base::FeatureParam<int> kMemorySaverChartPmf75PercentileBytes;
+extern const base::FeatureParam<int> kMemorySaverChartPmf99PercentileBytes;
 
 // Final opacity of the favicon after the discard animation completes
 extern const base::FeatureParam<double> kDiscardedTabTreatmentOpacity;
@@ -191,18 +194,6 @@ BASE_DECLARE_FEATURE(kBFCachePerformanceManagerPolicy);
 // Whether tabs are discarded under high memory pressure.
 BASE_DECLARE_FEATURE(kUrgentPageDiscarding);
 
-// Enable PageTimelineMonitor timer and by extension, PageTimelineState event
-// collection.
-BASE_DECLARE_FEATURE(kPageTimelineMonitor);
-
-// Set the interval in seconds between calls of
-// PageTimelineMonitor::CollectSlice()
-extern const base::FeatureParam<base::TimeDelta> kPageTimelineStateIntervalTime;
-
-// Whether to use the resource_attribution::CPUMeasurementMonitor for logging
-// UKM.
-extern const base::FeatureParam<bool> kUseResourceAttributionCPUMonitor;
-
 // This enables logging to evaluate the efficacy of potential CPU interventions.
 BASE_DECLARE_FEATURE(kCPUInterventionEvaluationLogging);
 
@@ -212,6 +203,10 @@ extern const base::FeatureParam<base::TimeDelta> kDelayBeforeLogging;
 
 // If Chrome CPU utilization is over the specified percent then we will log it.
 extern const base::FeatureParam<int> kThresholdChromeCPUPercent;
+
+// When enabled, the PageResource2 UKM is logged twice, once using Resource
+// Attribution and once using legacy measurements, to compare the results.
+BASE_DECLARE_FEATURE(kResourceAttributionValidation);
 
 }  // namespace performance_manager::features
 

@@ -384,6 +384,11 @@ void HttpStreamFactory::Job::GetSSLInfo(SSLInfo* ssl_info) {
   connection_->socket()->GetSSLInfo(ssl_info);
 }
 
+bool HttpStreamFactory::Job::UsingHttpProxyWithoutTunnel() const {
+  return !using_ssl_ && !is_websocket_ &&
+         proxy_info_.proxy_chain().is_get_to_proxy_allowed();
+}
+
 // static
 bool HttpStreamFactory::Job::OriginToForceQuicOn(
     const QuicParams& quic_params,
@@ -427,14 +432,14 @@ SpdySessionKey HttpStreamFactory::Job::GetSpdySessionKey(
     const SocketTag& socket_tag,
     const NetworkAnonymizationKey& network_anonymization_key,
     SecureDnsPolicy secure_dns_policy) {
-  // In the case that we're using an HTTPS proxy chain for an HTTP url, look for
-  // a HTTP/2 proxy session *to* the last proxy, instead of to the origin
-  // server. The way HTTP over HTTPS proxies work is that the ConnectJob makes a
-  // SpdyProxy, and then the HttpStreamFactory detects it when it's added to the
+  // In the case that we'll be sending a GET request to the proxy, look for a
+  // HTTP/2 proxy session *to* the proxy, instead of to the origin server. The
+  // way HTTP over HTTPS proxies work is that the ConnectJob makes a SpdyProxy,
+  // and then the HttpStreamFactory detects it when it's added to the
   // SpdySession pool, and uses it directly (completely ignoring the result of
   // the ConnectJob, and in fact cancelling it). So we need to create the same
   // key used by the HttpProxyConnectJob for the last proxy in the chain.
-  if (!proxy_chain.is_direct() &&
+  if (proxy_chain.is_get_to_proxy_allowed() &&
       proxy_chain.GetProxyServer(proxy_chain.length() - 1).is_https() &&
       origin_url.SchemeIs(url::kHttpScheme)) {
     // For this to work as expected, the whole chain should be HTTPS.
@@ -784,12 +789,14 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
     server_ssl_config_.renego_allowed_for_protos.push_back(kProtoHTTP11);
   }
 
-  SSLConfig base_proxy_ssl_config;
+  // TODO(mmenke): This should be set in ClientSocketFactory. There's a bit of a
+  // problem, though. This is overwritten some ways down with "{kProtoHTTP11}"
+  // in the WebSocket case, and ProxyResolvingClientSocket leaves it empty, so
+  // there are three different values of this we want.
   server_ssl_config_.alpn_protos = session_->GetAlpnProtos();
-  base_proxy_ssl_config.alpn_protos = session_->GetAlpnProtos();
   server_ssl_config_.application_settings = session_->GetApplicationSettings();
-  base_proxy_ssl_config.application_settings =
-      session_->GetApplicationSettings();
+
+  SSLConfig base_proxy_ssl_config;
 
   // TODO(https://crbug.com/964642): Also enable 0-RTT for TLS proxies.
   server_ssl_config_.early_data_enabled = session_->params().enable_early_data;
@@ -855,7 +862,7 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
   }
 
   if (proxy_info_.is_http_like()) {
-    establishing_tunnel_ = using_ssl_ || is_websocket_;
+    establishing_tunnel_ = !UsingHttpProxyWithoutTunnel();
   }
 
   HttpServerProperties* http_server_properties =
@@ -865,6 +872,7 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
         url::SchemeHostPort(request_info_.url),
         request_info_.network_anonymization_key, &server_ssl_config_);
   }
+
   if (job_type_ == PRECONNECT) {
     DCHECK(!is_websocket_);
     DCHECK(request_info_.socket_tag == SocketTag());
@@ -1181,15 +1189,15 @@ int HttpStreamFactory::Job::DoCreateStream() {
 
   if (!using_spdy()) {
     DCHECK(!expect_spdy_);
-    bool using_proxy = (proxy_info_.is_http_like()) &&
-                       request_info_.url.SchemeIs(url::kHttpScheme);
+    bool is_for_get_to_http_proxy = UsingHttpProxyWithoutTunnel();
     if (is_websocket_) {
       DCHECK_NE(job_type_, PRECONNECT);
       DCHECK_NE(job_type_, PRECONNECT_DNS_ALPN_H3);
       DCHECK(delegate_->websocket_handshake_stream_create_helper());
       websocket_stream_ =
           delegate_->websocket_handshake_stream_create_helper()
-              ->CreateBasicStream(std::move(connection_), using_proxy,
+              ->CreateBasicStream(std::move(connection_),
+                                  is_for_get_to_http_proxy,
                                   session_->websocket_endpoint_lock_manager());
     } else {
       if (request_info_.upload_data_stream &&
@@ -1197,7 +1205,7 @@ int HttpStreamFactory::Job::DoCreateStream() {
         return ERR_H2_OR_QUIC_REQUIRED;
       }
       stream_ = std::make_unique<HttpBasicStream>(std::move(connection_),
-                                                  using_proxy);
+                                                  is_for_get_to_http_proxy);
     }
     return OK;
   }

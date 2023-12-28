@@ -134,7 +134,7 @@ std::wstring GetAppContainerProfileName() {
   // multiple tests are running concurrently they don't mess with each other's
   // app containers.
   std::string appcontainer_id(
-      testing::UnitTest::GetInstance()->current_test_info()->test_case_name());
+      testing::UnitTest::GetInstance()->current_test_info()->test_suite_name());
   appcontainer_id +=
       testing::UnitTest::GetInstance()->current_test_info()->name();
   auto sha1 = base::SHA1HashString(appcontainer_id);

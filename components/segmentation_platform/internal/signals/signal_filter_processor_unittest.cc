@@ -91,8 +91,8 @@ class SignalFilterProcessorTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MockUserActionSignalHandler> user_action_signal_handler_;
   std::unique_ptr<MockHistogramSignalHandler> histogram_signal_handler_;
-  std::unique_ptr<SignalFilterProcessor> signal_filter_processor_;
   std::unique_ptr<MockHistoryObserver> history_observer_;
+  std::unique_ptr<SignalFilterProcessor> signal_filter_processor_;
   std::unique_ptr<MockUkmDataManager> ukm_data_manager_;
   std::unique_ptr<StorageService> storage_service_;
   raw_ptr<test::TestSegmentInfoDatabase> segment_database_;

@@ -189,11 +189,6 @@ uint64_t GetDefaultMemoryLimit() {
     int64_t shmem_dir_amount_of_free_space_mb =
         shmem_dir_amount_of_free_space / kMegabyte;
 
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Memory.ShmemDir.AmountOfFreeSpace",
-                                shmem_dir_amount_of_free_space_mb, 1,
-                                4 * 1024,  // 4 GB
-                                50);
-
     if (shmem_dir_amount_of_free_space_mb < 64) {
       LOG(WARNING) << "Less than 64MB of free space in temporary directory for "
                       "shared memory files: "

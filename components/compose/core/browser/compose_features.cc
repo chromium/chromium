@@ -16,13 +16,17 @@ const base::FeatureParam<int> kEnableComposeInputMaxChars{
 const base::FeatureParam<int> kEnableComposeInnerTextMaxBytes{
     &kEnableCompose, "inner_text_max_bytes", 1024 * 1024};
 
+BASE_FEATURE(kComposeEligible,
+             "ComposeEligible",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableComposeNudge,
              "ComposeNudge",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableComposeLanguageBypass,
              "ComposeLanguageBypass",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableComposeWebUIAnimations,
              "ComposeWebUIAnimations",

@@ -17,7 +17,7 @@ source_set("consistency_promo_signin") {
     "//components/signin/ios/browser:features",
     "//components/signin/public/identity_manager/objc",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",

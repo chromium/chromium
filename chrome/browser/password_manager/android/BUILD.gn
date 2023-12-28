@@ -8,10 +8,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
 java_cpp_enum("android_backend_java_enums_srcjar") {
-  sources = [
-    "chromesync_status_code.h",
-    "password_store_operation_target.h",
-  ]
+  sources = [ "chromesync_status_code.h" ]
 }
 
 # Wrap the java_cpp_enum in android_library so it can be used by both
@@ -78,7 +75,6 @@ source_set("backend") {
     "password_store_android_backend_receiver_bridge_impl.h",
     "password_store_backend_migration_decorator.cc",
     "password_store_backend_migration_decorator.h",
-    "password_store_operation_target.h",
     "password_store_proxy_backend.cc",
     "password_store_proxy_backend.h",
     "password_sync_controller_delegate_android.cc",
@@ -216,6 +212,7 @@ robolectric_binary("password_manager_junit_tests") {
     "junit/src/org/chromium/chrome/browser/password_manager/FakePasswordStoreAndroidBackendTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/OutdatedGmsCoreDialogTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordCheckupClientMetricsRecorderTest.java",
+    "junit/src/org/chromium/chrome/browser/password_manager/PasswordCheckupLauncherTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordManagerAndroidBackendUtilTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordManagerErrorMessageHelperBridgeTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordManagerHelperTest.java",
@@ -456,6 +453,8 @@ source_set("utils") {
 
   deps = [
     "//components/autofill/core/common",
+    "//components/browser_sync",
+    "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:common",
     "//components/prefs:prefs",
@@ -524,6 +523,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/browser/affiliation:affiliation_fetching",
     "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/browser/password_store:test_support",
     "//components/password_manager/core/common",
     "//components/safe_browsing/core/browser/password_protection:test_support",
     "//components/security_state/core",

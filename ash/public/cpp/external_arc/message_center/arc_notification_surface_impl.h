@@ -43,8 +43,8 @@ class ArcNotificationSurfaceImpl : public ArcNotificationSurface {
   exo::NotificationSurface* surface() const { return surface_; }
 
  private:
-  raw_ptr<exo::NotificationSurface, ExperimentalAsh> surface_;
-  raw_ptr<views::NativeViewHost, ExperimentalAsh> native_view_host_ = nullptr;
+  raw_ptr<exo::NotificationSurface> surface_;
+  raw_ptr<views::NativeViewHost> native_view_host_ = nullptr;
   std::unique_ptr<aura::Window> native_view_;
   ui::AXTreeID ax_tree_id_ = ui::AXTreeIDUnknown();
 };

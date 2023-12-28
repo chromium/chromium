@@ -1519,6 +1519,9 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
     if (global_trackers_.scroll_jank_dropped_frame_tracker) {
       global_trackers_.scroll_jank_dropped_frame_tracker->OnScrollStarted();
     }
+    if (global_trackers_.scroll_jank_ukm_reporter) {
+      global_trackers_.scroll_jank_ukm_reporter->EmitScrollJankUkm();
+    }
   }
 
   TRACE_EVENT("input,input.scrolling", "PresentedFrameInformation",

@@ -498,6 +498,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
       HTMLElement*,
       WebFormRelatedChangeType) {}
   virtual void DidChangeValueInTextField(HTMLFormControlElement&) {}
+  virtual void DidUserChangeContentEditableContent(Element&) {}
   virtual void DidEndEditingOnTextField(HTMLInputElement&) {}
   virtual void HandleKeyboardEventOnTextField(HTMLInputElement&,
                                               KeyboardEvent&) {}

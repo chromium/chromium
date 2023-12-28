@@ -14,7 +14,7 @@ namespace chromeos {
 // the user of the `profile`. A user is eligible if they are not managed.
 // If `kUploadOfficeToCloudForEnterprise` is enabled too, the condition is
 // loosened and the user becomes eligible if they're not a child profile.
-bool IsEligibleAndEnabledUploadOfficeToCloud(Profile* profile);
+bool IsEligibleAndEnabledUploadOfficeToCloud(const Profile* profile);
 
 namespace cloud_upload {
 
@@ -23,6 +23,10 @@ constexpr char kCloudUploadPolicyDisallowed[] = "disallowed";
 constexpr char kCloudUploadPolicyAutomated[] = "automated";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+// Returns true if the MicrosoftOneDriveMount policy is set to `allowed` or
+// `automated` and false otherwise.
+bool IsMicrosoftOfficeOneDriveIntegrationAllowed(const Profile* profile);
 
 // If `kUploadOfficeToCloudForEnterprise` is disabled, returns true if
 // IsEligibleAndEnabledUploadOfficeToCloud() is true.

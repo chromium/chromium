@@ -4315,6 +4315,15 @@ message CertProvBackendError {
     CA_FAILURE = 9;
     // The referenced certificate provisioning profile does not exist.
     PROFILE_NOT_FOUND = 10;
+    // The user primary email cannot be found.
+    USER_PRIMARY_EMAIL_NOT_FOUND = 11;
+    // The certificate provisioning profile is referencing a non-existent CA
+    // connection.
+    CA_CONNECTION_NOT_FOUND = 12;
+    // The CA connection referenced by the certificate provisioning profile
+    // is referencing a non-existent PubSub topic, or the system does not have
+    // permission to publish to that PubSub topic.
+    PUBSUB_TOPIC_NOT_FOUND = 13;
   }
 
   // The specific error type.

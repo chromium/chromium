@@ -16,6 +16,9 @@
 #include "base/traits_bag.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/web_applications/app_service/web_apps_with_shortcuts_test.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -102,6 +105,8 @@ class WebAppPublisherHelperTest : public testing::Test,
     profile_ = builder.Build();
 
     provider_ = WebAppProvider::GetForWebApps(profile());
+    apps::WaitForAppServiceProxyReady(
+        apps::AppServiceProxyFactory::GetForProfile(profile()));
 
     publisher_ = std::make_unique<WebAppPublisherHelper>(profile(), provider_,
                                                          &no_op_delegate_);
@@ -113,18 +118,7 @@ class WebAppPublisherHelperTest : public testing::Test,
 
   webapps::AppId CreateShortcut(const GURL& shortcut_url,
                                 const std::string& shortcut_name) {
-    // Create a web app entry without scope, which would be recognised
-    // as ShortcutApp in the web app system.
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->title = base::UTF8ToUTF16(shortcut_name);
-    web_app_info->start_url = shortcut_url;
-
-    webapps::AppId app_id =
-        test::InstallWebApp(profile(), std::move(web_app_info));
-    CHECK(
-        WebAppProvider::GetForTest(profile())->registrar_unsafe().IsShortcutApp(
-            app_id));
-    return app_id;
+    return test::InstallShortcut(profile(), shortcut_name, shortcut_url);
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -315,59 +309,6 @@ TEST_F(WebAppPublisherHelperTest, CreateIntentFiltersForWebApp_FileHandlers) {
   EXPECT_EQ(file_cond.condition_values[1]->match_type,
             apps::PatternMatchType::kFileExtension);
   EXPECT_EQ(file_cond.condition_values[1]->value, ".txt");
-}
-
-// Verify that Adobe Express has its OEM install source overwritten as
-// InstallReason::kDefault.
-// TODO(b/300857328): Remove this workaround.
-TEST_F(WebAppPublisherHelperTest, PublishOemAdobeExpressAsDefault) {
-  const std::string name = "some app name";
-  const GURL start_url("https://example.com/start_url");
-
-  // Manually edit the database to create an app with the specific App ID but a
-  // non-matching start URL.
-  {
-    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
-
-    auto new_app = std::make_unique<WebApp>(kAdobeExpressAppId);
-    new_app->SetStartUrl(start_url);
-    new_app->AddSource(WebAppManagement::Type::kOem);
-    new_app->SetName(name);
-
-    update->CreateApp(std::move(new_app));
-  }
-
-  const WebApp* web_app =
-      provider_->registrar_unsafe().GetAppById(kAdobeExpressAppId);
-
-  apps::AppPtr app = publisher_->CreateWebApp(web_app);
-  EXPECT_EQ(app->install_reason, apps::InstallReason::kDefault);
-}
-
-// Verify that the above behavior only applies when the app is OEM-installed.
-// TODO(b/300857328): Remove this workaround.
-TEST_F(WebAppPublisherHelperTest, PublishSyncAdobeExpressAsSync) {
-  const std::string name = "some app name";
-  const GURL start_url("https://example.com/start_url");
-
-  // Manually edit the database to create an app with the specific App ID but a
-  // non-matching start URL.
-  {
-    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
-
-    auto new_app = std::make_unique<WebApp>(kAdobeExpressAppId);
-    new_app->SetStartUrl(start_url);
-    new_app->AddSource(WebAppManagement::Type::kSync);
-    new_app->SetName(name);
-
-    update->CreateApp(std::move(new_app));
-  }
-
-  const WebApp* web_app =
-      provider_->registrar_unsafe().GetAppById(kAdobeExpressAppId);
-
-  apps::AppPtr app = publisher_->CreateWebApp(web_app);
-  EXPECT_EQ(app->install_reason, apps::InstallReason::kSync);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

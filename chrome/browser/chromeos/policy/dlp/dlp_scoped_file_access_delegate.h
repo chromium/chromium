@@ -29,6 +29,8 @@ namespace policy {
 class DlpScopedFileAccessDelegate
     : public file_access::ScopedFileAccessDelegate {
  public:
+  using DefaultAccess = file_access::ScopedFileAccessDelegate::DefaultAccess;
+
   ~DlpScopedFileAccessDelegate() override;
 
   using DlpClientProvider = base::RepeatingCallback<chromeos::DlpClient*()>;

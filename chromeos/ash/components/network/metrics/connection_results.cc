@@ -55,7 +55,7 @@ ShillConnectResult ShillErrorToConnectResult(const std::string& error_name) {
   } else if (error_name == shill::kErrorPppAuthFailed) {
     return ShillConnectResult::kErrorPppAuthFailed;
   } else if (error_name == shill::kErrorSimLocked) {
-    return ShillConnectResult::kErrorSimLocked;
+    return ShillConnectResult::kErrorSimPinPukLocked;
   } else if (error_name == shill::kErrorNotRegistered) {
     return ShillConnectResult::kErrorNotRegistered;
   } else if (error_name == shill::kErrorTooManySTAs) {
@@ -213,7 +213,7 @@ UserInitiatedConnectResult NetworkConnectionErrorToConnectResult(
     } else if (shill_error == shill::kErrorPppAuthFailed) {
       return UserInitiatedConnectResult::kErrorPppAuthFailed;
     } else if (shill_error == shill::kErrorSimLocked) {
-      return UserInitiatedConnectResult::kErrorSimLocked;
+      return UserInitiatedConnectResult::kErrorSimPinPukLocked;
     } else if (shill_error == shill::kErrorNotRegistered) {
       return UserInitiatedConnectResult::kErrorNotRegistered;
     } else if (shill_error == shill::kErrorTooManySTAs) {
@@ -266,8 +266,8 @@ UserInitiatedConnectResult NetworkConnectionErrorToConnectResult(
     return UserInitiatedConnectResult::kErrorCellularOutOfCredits;
   } else if (error_name == NetworkConnectionHandler::kErrorESimProfileIssue) {
     return UserInitiatedConnectResult::kErrorESimProfileIssue;
-  } else if (error_name == NetworkConnectionHandler::kErrorSimLocked) {
-    return UserInitiatedConnectResult::kErrorSimLocked;
+  } else if (error_name == NetworkConnectionHandler::kErrorSimPinPukLocked) {
+    return UserInitiatedConnectResult::kErrorSimPinPukLocked;
   } else if (error_name == NetworkConnectionHandler::kErrorCellularDeviceBusy) {
     return UserInitiatedConnectResult::kErrorCellularDeviceBusy;
   } else if (error_name == NetworkConnectionHandler::kErrorConnectTimeout) {
@@ -275,7 +275,10 @@ UserInitiatedConnectResult NetworkConnectionErrorToConnectResult(
   } else if (error_name ==
              NetworkConnectionHandler::kConnectableCellularTimeout) {
     return UserInitiatedConnectResult::kConnectableCellularTimeout;
+  } else if (error_name == NetworkConnectionHandler::kErrorSimCarrierLocked) {
+    return UserInitiatedConnectResult::kErrorSimCarrierLocked;
   }
+
   return UserInitiatedConnectResult::kUnknown;
 }
 

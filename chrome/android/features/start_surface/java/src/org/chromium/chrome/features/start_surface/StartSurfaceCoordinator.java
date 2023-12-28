@@ -50,12 +50,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.query_tiles.QueryTileSection;
-import org.chromium.chrome.browser.query_tiles.QueryTileUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.TileGroupDelegateImpl;
@@ -204,9 +199,9 @@ public class StartSurfaceCoordinator implements StartSurface {
     private MostVisitedSuggestionsUiDelegate mSuggestionsUiDelegate;
     private TileGroupDelegateImpl mTileGroupDelegate;
     private ObservableSupplier<Profile> mProfileSupplier;
-    private QueryTileSection mQueryTileSection;
     private boolean mIsMVTilesInitialized;
     private final boolean mIsSurfacePolishEnabled;
+    private final ObservableSupplier<Integer> mTabStripHeightSupplier;
 
     private class ScrollableContainerDelegateImpl implements ScrollableContainerDelegate {
         @Override
@@ -248,7 +243,7 @@ public class StartSurfaceCoordinator implements StartSurface {
      * @param windowAndroid The current {@link WindowAndroid}.a
      * @param jankTracker asd
      * @param containerView The container {@link ViewGroup} for this ui, also the root view for
-     *         StartSurface.
+     *     StartSurface.
      * @param dynamicResourceLoaderSupplier Supplies the current {@link DynamicResourceLoader}.
      * @param tabModelSelector The current {@link TabModelSelector}.
      * @param browserControlsManager Manages the browser controls.
@@ -265,9 +260,10 @@ public class StartSurfaceCoordinator implements StartSurface {
      * @param toolbarSupplier Supplies the {@link Toolbar}.
      * @param backPressManager {@link BackPressManager} to handle back press.
      * @param incognitoReauthControllerSupplier {@link OneshotSupplier<IncognitoReauthController>}
-     *         to detect pending re-auth when tab switcher is shown.
+     *     to detect pending re-auth when tab switcher is shown.
      * @param profileSupplier Supplies the {@Profile}.
      * @param tabSwitcherClickHandler The {@link OnClickListener} for the tab switcher button.
+     * @param tabStripHeightSupplier Supplier for the tab strip height.
      */
     public StartSurfaceCoordinator(
             @NonNull Activity activity,
@@ -296,7 +292,8 @@ public class StartSurfaceCoordinator implements StartSurface {
             BackPressManager backPressManager,
             @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @NonNull OnClickListener tabSwitcherClickHandler,
-            @NonNull ObservableSupplier<Profile> profileSupplier) {
+            @NonNull ObservableSupplier<Profile> profileSupplier,
+            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier) {
         mConstructedTimeNs = SystemClock.elapsedRealtimeNanos();
         mActivity = activity;
         mScrimCoordinator = scrimCoordinator;
@@ -322,11 +319,10 @@ public class StartSurfaceCoordinator implements StartSurface {
         mToolbarSupplier = toolbarSupplier;
         mIncognitoReauthControllerSupplier = incognitoReauthControllerSupplier;
         mProfileSupplier = profileSupplier;
+        mTabStripHeightSupplier = tabStripHeightSupplier;
 
         mUseMagicSpace = mIsStartSurfaceEnabled && StartSurfaceConfiguration.useMagicSpace();
         mTabSwitcherCustomViewManagerSupplier = new ObservableSupplierImpl<>();
-        boolean excludeQueryTiles =
-                !mIsStartSurfaceEnabled || !ChromeFeatureList.sQueryTilesOnStart.isEnabled();
         mIsStartSurfaceRefactorEnabled =
                 ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mActivity);
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
@@ -364,7 +360,7 @@ public class StartSurfaceCoordinator implements StartSurface {
 
             // createSwipeRefreshLayout has to be called before creating any surface.
             createSwipeRefreshLayout();
-            createAndSetStartSurface(excludeQueryTiles);
+            createAndSetStartSurface();
             controller = mTasksSurface.getController();
             initializeMVTilesRunnable = mTasksSurface::initializeMVTiles;
             logoContainerView = mTasksSurface.getView().findViewById(R.id.logo_container);
@@ -374,7 +370,7 @@ public class StartSurfaceCoordinator implements StartSurface {
 
             // createSwipeRefreshLayout has to be called before creating any surface.
             createSwipeRefreshLayout();
-            createStartSurfaceWithoutTasksSurface(excludeQueryTiles);
+            createStartSurfaceWithoutTasksSurface();
             initializeMVTilesRunnable = this::initializeMVTiles;
             logoContainerView = mView.findViewById(R.id.logo_container);
             feedPlaceholderParentView = mView.findViewById(R.id.tasks_surface_body);
@@ -392,7 +388,6 @@ public class StartSurfaceCoordinator implements StartSurface {
                         mBrowserControlsManager,
                         this::isActivityFinishingOrDestroyed,
                         mTabCreatorManager,
-                        excludeQueryTiles,
                         startSurfaceOneshotSupplier,
                         hadWarmStart,
                         initializeMVTilesRunnable,
@@ -557,7 +552,8 @@ public class StartSurfaceCoordinator implements StartSurface {
                             mTabModelSelector,
                             mToolbarSupplier,
                             mConstructedTimeNs,
-                            mSwipeRefreshLayout);
+                            mSwipeRefreshLayout,
+                            mTabStripHeightSupplier);
         }
         mStartSurfaceMediator.initWithNative(
                 mIsStartSurfaceEnabled ? mOmniboxStubSupplier.get() : null,
@@ -837,7 +833,6 @@ public class StartSurfaceCoordinator implements StartSurface {
             @TabSwitcherType int tabSwitcherType,
             @NonNull Supplier<Tab> parentTabSupplier,
             boolean hasMVTiles,
-            boolean hasQueryTiles,
             @NonNull WindowAndroid windowAndroid,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull TabModelSelector tabModelSelector,
@@ -859,7 +854,6 @@ public class StartSurfaceCoordinator implements StartSurface {
                 tabSwitcherType,
                 parentTabSupplier,
                 hasMVTiles,
-                hasQueryTiles,
                 windowAndroid,
                 activityLifecycleDispatcher,
                 tabModelSelector,
@@ -912,7 +906,7 @@ public class StartSurfaceCoordinator implements StartSurface {
     }
 
     /** Called only when Start Surface is enabled. */
-    private void createAndSetStartSurface(boolean excludeQueryTiles) {
+    private void createAndSetStartSurface() {
         ArrayList<PropertyKey> allProperties =
                 new ArrayList<>(Arrays.asList(TasksSurfaceProperties.ALL_KEYS));
         allProperties.addAll(Arrays.asList(StartSurfaceProperties.ALL_KEYS));
@@ -928,7 +922,6 @@ public class StartSurfaceCoordinator implements StartSurface {
                         TabSwitcherType.SINGLE,
                         mParentTabSupplier,
                         true,
-                        !excludeQueryTiles,
                         mWindowAndroid,
                         mActivityLifecycleDispatcher,
                         mTabModelSelector,
@@ -954,7 +947,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                         StartSurfaceWithParentViewBinder::bind);
     }
 
-    private void createStartSurfaceWithoutTasksSurface(boolean excludeQueryTiles) {
+    private void createStartSurfaceWithoutTasksSurface() {
         ArrayList<PropertyKey> allProperties =
                 new ArrayList<>(Arrays.asList(TasksSurfaceProperties.ALL_KEYS));
         allProperties.addAll(Arrays.asList(StartSurfaceProperties.ALL_KEYS));
@@ -1001,12 +994,6 @@ public class StartSurfaceCoordinator implements StartSurface {
                             mTabContentManager,
                             null);
         }
-        boolean isScrollableMVTEnabled =
-                !ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(mActivity);
-        int maxRowsForGridMVT =
-                getQueryTilesVisibility()
-                        ? QueryTileSection.getMaxRowsForMostVisitedTiles(mActivity)
-                        : MAX_TILE_ROWS_FOR_GRID_MVT;
         View mvTilesContainer = mView.findViewById(R.id.mv_tiles_container);
         mMostVisitedCoordinator =
                 new MostVisitedTilesCoordinator(
@@ -1017,20 +1004,11 @@ public class StartSurfaceCoordinator implements StartSurface {
                         TabUiFeatureUtilities.supportInstantStart(
                                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
                                 mActivity),
-                        isScrollableMVTEnabled,
-                        isScrollableMVTEnabled ? Integer.MAX_VALUE : maxRowsForGridMVT,
+                        /* isScrollableMVTEnabled= */ true,
+                        Integer.MAX_VALUE,
                         /* snapshotTileGridChangedRunnable= */ null,
                         /* tileCountChangedRunnable= */ null);
 
-        if (!excludeQueryTiles) {
-            if (ProfileManager.isInitialized()) {
-                initializeQueryTileSection(Profile.getLastUsedRegularProfile());
-            } else {
-                mProfileSupplier.addObserver(this::initializeQueryTileSection);
-            }
-        } else {
-            storeQueryTilesVisibility(false);
-        }
         initializeOffsetChangedListener();
         addHeaderOffsetChangeListener(mOffsetChangedListenerToGenerateScrollEvents);
 
@@ -1061,7 +1039,6 @@ public class StartSurfaceCoordinator implements StartSurface {
                         TabSwitcherType.GRID,
                         mParentTabSupplier,
                         /* hasMVTiles= */ false,
-                        /* hasQueryTiles= */ false,
                         mWindowAndroid,
                         mActivityLifecycleDispatcher,
                         mTabModelSelector,
@@ -1207,7 +1184,6 @@ public class StartSurfaceCoordinator implements StartSurface {
                             + getPixelSize(R.dimen.status_view_highlight_size)
                             + getPixelSize(
                                     OmniboxFeatures.shouldShowModernizeVisualUpdate(mActivity)
-                                                    && OmniboxFeatures.shouldShowSmallBottomMargin()
                                             ? R.dimen.location_bar_icon_end_padding_focused_smaller
                                             : R.dimen.location_bar_icon_end_padding_focused)
                             - getPixelSize(R.dimen.fake_search_box_start_padding);
@@ -1366,33 +1342,6 @@ public class StartSurfaceCoordinator implements StartSurface {
         mMostVisitedCoordinator.initWithNative(
                 mSuggestionsUiDelegate, mTileGroupDelegate, enabled -> {});
         mIsMVTilesInitialized = true;
-    }
-
-    private void storeQueryTilesVisibility(boolean isShown) {
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.QUERY_TILES_SHOWN_ON_START_SURFACE, isShown);
-    }
-
-    private boolean getQueryTilesVisibility() {
-        return ChromeSharedPreferences.getInstance()
-                .readBoolean(ChromePreferenceKeys.QUERY_TILES_SHOWN_ON_START_SURFACE, false);
-    }
-
-    private void initializeQueryTileSection(Profile profile) {
-        assert profile != null;
-        if (profile.isOffTheRecord()) return;
-
-        if (!QueryTileUtils.isQueryTilesEnabledOnStartSurface()) {
-            storeQueryTilesVisibility(false);
-            return;
-        }
-        mQueryTileSection =
-                new QueryTileSection(
-                        mView.findViewById(R.id.query_tiles_layout),
-                        profile,
-                        query -> performSearchQuery(query.queryText, query.searchParams));
-        storeQueryTilesVisibility(true);
-        mProfileSupplier.removeObserver(this::initializeQueryTileSection);
     }
 
     /**

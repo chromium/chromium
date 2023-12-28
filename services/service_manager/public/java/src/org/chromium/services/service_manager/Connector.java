@@ -19,7 +19,7 @@ public class Connector implements ConnectionErrorHandler {
     private static class ConnectorBindInterfaceResponseImpl
             implements org.chromium.service_manager.mojom.Connector.BindInterface_Response {
         @Override
-        public void call(Integer result, Identity identity) {}
+        public void call(int result, Identity identity) {}
     }
 
     public Connector(MessagePipeHandle handle) {

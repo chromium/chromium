@@ -49,41 +49,41 @@ class TestFencedFrameURLMappingResultObserver
 
   absl::optional<GURL> mapped_url() const {
     if (!observed_fenced_frame_properties_ ||
-        !observed_fenced_frame_properties_->mapped_url_) {
+        !observed_fenced_frame_properties_->mapped_url()) {
       return absl::nullopt;
     }
-    return observed_fenced_frame_properties_->mapped_url_
+    return observed_fenced_frame_properties_->mapped_url()
         ->GetValueIgnoringVisibility();
   }
 
   absl::optional<std::vector<std::pair<GURL, FencedFrameConfig>>>
   nested_urn_config_pairs() const {
     if (!observed_fenced_frame_properties_ ||
-        !observed_fenced_frame_properties_->nested_urn_config_pairs_) {
+        !observed_fenced_frame_properties_->nested_urn_config_pairs()) {
       return absl::nullopt;
     }
-    return observed_fenced_frame_properties_->nested_urn_config_pairs_
+    return observed_fenced_frame_properties_->nested_urn_config_pairs()
         ->GetValueIgnoringVisibility();
   }
 
   absl::optional<AdAuctionData> ad_auction_data() const {
     if (!observed_fenced_frame_properties_ ||
-        !observed_fenced_frame_properties_->ad_auction_data_) {
+        !observed_fenced_frame_properties_->ad_auction_data()) {
       return absl::nullopt;
     }
-    return observed_fenced_frame_properties_->ad_auction_data_
+    return observed_fenced_frame_properties_->ad_auction_data()
         ->GetValueIgnoringVisibility();
   }
 
   const base::RepeatingClosure& on_navigate_callback() const {
-    return observed_fenced_frame_properties_->on_navigate_callback_;
+    return observed_fenced_frame_properties_->on_navigate_callback();
   }
 
   FencedFrameReporter* fenced_frame_reporter() {
     if (!observed_fenced_frame_properties_) {
       return nullptr;
     }
-    return observed_fenced_frame_properties_->fenced_frame_reporter_.get();
+    return observed_fenced_frame_properties_->fenced_frame_reporter().get();
   }
 
  private:

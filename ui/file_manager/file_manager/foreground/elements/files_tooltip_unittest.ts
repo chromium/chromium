@@ -5,8 +5,6 @@
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {reportPromise} from '../../common/js/test_error_reporting.js';
-
 import {FilesTooltip} from './files_tooltip.js';
 
 let chocolateButton: HTMLButtonElement;
@@ -77,43 +75,34 @@ function waitForMutation(target: FilesTooltip) {
   });
 }
 
-export function testFocus(done: VoidCallback) {
+export async function testFocus() {
   chocolateButton.focus();
 
-  return reportPromise(
-      waitForMutation(tooltip)
-          .then(() => {
-            const label =
-                tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
-            assertEquals('Chocolate!', label.textContent?.trim());
-            assertTrue(tooltip.hasAttribute('visible'));
-            assertEquals('6px', tooltip.style.left);
-            assertEquals('78px', tooltip.style.top);
+  await waitForMutation(tooltip);
+  const label1 = tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
+  assertEquals('Chocolate!', label1.textContent?.trim());
+  assertTrue(tooltip.hasAttribute('visible'));
+  assertEquals('6px', tooltip.style.left);
+  assertEquals('78px', tooltip.style.top);
 
-            cherriesButton.focus();
-            return waitForMutation(tooltip);
-          })
-          .then(() => {
-            const label =
-                tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
-            assertEquals('Cherries!', label.textContent?.trim());
-            assertTrue(tooltip.hasAttribute('visible'));
+  cherriesButton.focus();
+  await waitForMutation(tooltip);
 
-            const expectedLeft = document.body.offsetWidth -
-                tooltip.offsetWidth - WINDOW_EDGE_PADDING + 'px';
-            assertEquals(expectedLeft, tooltip.style.left);
-            assertEquals('78px', tooltip.style.top);
+  const label2 = tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
+  assertEquals('Cherries!', label2.textContent?.trim());
+  assertTrue(tooltip.hasAttribute('visible'));
 
-            otherButton.focus();
-            return waitForMutation(tooltip);
-          })
-          .then(() => {
-            assertFalse(!!tooltip.getAttribute('visible'));
-          }),
-      done);
+  const expectedLeft = document.body.offsetWidth - tooltip.offsetWidth -
+      WINDOW_EDGE_PADDING + 'px';
+  assertEquals(expectedLeft, tooltip.style.left);
+  assertEquals('78px', tooltip.style.top);
+
+  otherButton.focus();
+  await waitForMutation(tooltip);
+  assertFalse(!!tooltip.getAttribute('visible'));
 }
 
-export function testFocusWithLink(done: VoidCallback) {
+export async function testFocusWithLink() {
   cherriesButton.dataset['tooltipLinkHref'] = 'https://cherries.com';
   cherriesButton.dataset['tooltipLinkAriaLabel'] =
       'Click here to get more cherries';
@@ -121,291 +110,234 @@ export function testFocusWithLink(done: VoidCallback) {
 
   chocolateButton.focus();
 
-  return reportPromise(
-      waitForMutation(tooltip)
-          .then(() => {
-            const label =
-                tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
-            assertEquals('Chocolate!', label.textContent?.trim());
-            assertTrue(tooltip.hasAttribute('visible'));
-            assertEquals('6px', tooltip.style.left);
-            assertEquals('78px', tooltip.style.top);
+  await waitForMutation(tooltip);
 
-            cherriesButton.focus();
-            return waitForMutation(tooltip);
-          })
-          .then(() => {
-            // Check the label.
-            const label =
-                tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
-            assertEquals('Cherries!', label.textContent?.trim());
-            // Check the link: it should be visible now.
-            const link =
-                tooltip.shadowRoot!.querySelector<HTMLLinkElement>('#link')!;
-            assertEquals(link.getAttribute('aria-hidden'), 'false');
-            assertEquals('More cherries', link.textContent?.trim());
-            assertEquals(
-                'Click here to get more cherries',
-                link.getAttribute('aria-label'));
-            assertEquals('https://cherries.com', link.getAttribute('href'));
+  const label1 = tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
+  assertEquals('Chocolate!', label1.textContent?.trim());
+  assertTrue(tooltip.hasAttribute('visible'));
+  assertEquals('6px', tooltip.style.left);
+  assertEquals('78px', tooltip.style.top);
 
-            assertEquals(tooltip.getAttribute('aria-hidden'), 'false');
-            assertTrue(tooltip.hasAttribute('visible'));
+  cherriesButton.focus();
+  await waitForMutation(tooltip);
+  // Check the label.
+  const label2 = tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
+  assertEquals('Cherries!', label2.textContent?.trim());
+  // Check the link: it should be visible now.
+  const link1 = tooltip.shadowRoot!.querySelector<HTMLLinkElement>('#link')!;
+  assertEquals(link1.getAttribute('aria-hidden'), 'false');
+  assertEquals('More cherries', link1.textContent?.trim());
+  assertEquals(
+      'Click here to get more cherries', link1.getAttribute('aria-label'));
+  assertEquals('https://cherries.com', link1.getAttribute('href'));
 
-            const expectedLeft = document.body.offsetWidth -
-                tooltip.offsetWidth - WINDOW_EDGE_PADDING + 'px';
-            assertEquals(expectedLeft, tooltip.style.left);
-            assertEquals('78px', tooltip.style.top);
+  assertEquals(tooltip.getAttribute('aria-hidden'), 'false');
+  assertTrue(tooltip.hasAttribute('visible'));
 
-            chocolateButton.focus();
-            return waitForMutation(tooltip);
-          })
-          .then(() => {
-            // Check the label.
-            const label =
-                tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
-            assertEquals('Chocolate!', label.textContent?.trim());
-            // Check the link: it should be hidden and cleared out.
-            const link =
-                tooltip.shadowRoot!.querySelector<HTMLLinkElement>('#link')!;
-            assertEquals(link.getAttribute('aria-hidden'), 'true');
-            assertEquals('', link.textContent?.trim());
-            assertFalse(link.hasAttribute('aria-label'));
-            assertEquals('#', link.getAttribute('href'));
-          }),
-      done);
+  const expectedLeft = document.body.offsetWidth - tooltip.offsetWidth -
+      WINDOW_EDGE_PADDING + 'px';
+  assertEquals(expectedLeft, tooltip.style.left);
+  assertEquals('78px', tooltip.style.top);
+
+  chocolateButton.focus();
+  await waitForMutation(tooltip);
+  // Check the label.
+  const label3 = tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
+  assertEquals('Chocolate!', label3.textContent?.trim());
+  // Check the link: it should be hidden and cleared out.
+  const link2 = tooltip.shadowRoot!.querySelector<HTMLLinkElement>('#link')!;
+  assertEquals(link2.getAttribute('aria-hidden'), 'true');
+  assertEquals('', link2.textContent?.trim());
+  assertFalse(link2.hasAttribute('aria-label'));
+  assertEquals('#', link2.getAttribute('href'));
 }
 
-export function testFocusWithLabelChange(done: VoidCallback) {
+export async function testFocusWithLabelChange() {
   chocolateButton.focus();
 
-  return reportPromise(
-      waitForMutation(tooltip)
-          .then(() => {
-            const label =
-                tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
-            assertEquals('Chocolate!', label.textContent?.trim());
-            // Change the button's aria-label attribute and the tooltip should
-            // also update.
-            chocolateButton.setAttribute('aria-label', 'New chocolate!');
+  await waitForMutation(tooltip);
+  const label1 = tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
+  assertEquals('Chocolate!', label1.textContent?.trim());
+  // Change the button's aria-label attribute and the tooltip should
+  // also update.
+  chocolateButton.setAttribute('aria-label', 'New chocolate!');
 
-            tooltip.updateTooltipText(chocolateButton);
-            return waitForMutation(tooltip);
-          })
-          .then(() => {
-            const label =
-                tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
-            assertEquals('New chocolate!', label.textContent?.trim());
-          }),
-      done);
+  tooltip.updateTooltipText(chocolateButton);
+  await waitForMutation(tooltip);
+
+  const label2 = tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
+  assertEquals('New chocolate!', label2.textContent?.trim());
 }
 
-export function testHover(done: VoidCallback) {
+export async function testHover() {
   chocolateButton.dispatchEvent(new MouseEvent('mouseover'));
 
-  return reportPromise(
-      waitForMutation(tooltip)
-          .then(() => {
-            const label =
-                tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
-            assertEquals('Chocolate!', label.textContent?.trim());
-            assertTrue(tooltip.hasAttribute('visible'));
-            assertEquals(tooltip.getAttribute('aria-hidden'), 'false');
+  await waitForMutation(tooltip);
+  const label1 = tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
+  assertEquals('Chocolate!', label1.textContent?.trim());
+  assertTrue(tooltip.hasAttribute('visible'));
+  assertEquals(tooltip.getAttribute('aria-hidden'), 'false');
 
-            assertEquals('6px', tooltip.style.left);
-            assertEquals('78px', tooltip.style.top);
+  assertEquals('6px', tooltip.style.left);
+  assertEquals('78px', tooltip.style.top);
 
-            chocolateButton.dispatchEvent(new MouseEvent('mouseout'));
-            cherriesButton.dispatchEvent(new MouseEvent('mouseover'));
-            return waitForMutation(tooltip);
-          })
-          .then(() => {
-            const label =
-                tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
-            assertEquals('Cherries!', label.textContent?.trim());
-            assertTrue(tooltip.hasAttribute('visible'));
+  chocolateButton.dispatchEvent(new MouseEvent('mouseout'));
+  cherriesButton.dispatchEvent(new MouseEvent('mouseover'));
+  await waitForMutation(tooltip);
 
-            const expectedLeft = document.body.offsetWidth -
-                tooltip.offsetWidth - WINDOW_EDGE_PADDING + 'px';
-            assertEquals(expectedLeft, tooltip.style.left);
-            assertEquals('78px', tooltip.style.top);
+  const label2 = tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
+  assertEquals('Cherries!', label2.textContent?.trim());
+  assertTrue(tooltip.hasAttribute('visible'));
 
-            cherriesButton.dispatchEvent(new MouseEvent('mouseout'));
-            return waitForMutation(tooltip);
-          })
-          .then(() => {
-            assertFalse(!!tooltip.getAttribute('visible'));
-          }),
-      done);
+  const expectedLeft = document.body.offsetWidth - tooltip.offsetWidth -
+      WINDOW_EDGE_PADDING + 'px';
+  assertEquals(expectedLeft, tooltip.style.left);
+  assertEquals('78px', tooltip.style.top);
+
+  cherriesButton.dispatchEvent(new MouseEvent('mouseout'));
+  await waitForMutation(tooltip);
+
+  assertFalse(!!tooltip.getAttribute('visible'));
 }
 
-export function testClickHides(done: VoidCallback) {
+export async function testClickHides() {
   chocolateButton.dispatchEvent(new MouseEvent('mouseover', {bubbles: true}));
 
-  return reportPromise(
-      waitForMutation(tooltip)
-          .then(() => {
-            const label =
-                tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
-            assertEquals('Chocolate!', label.textContent?.trim());
-            assertTrue(tooltip.hasAttribute('visible'));
-            // Hiding here is synchronous. Dispatch the event asynchronously,
-            // so the mutation observer is started before hiding.
-            setTimeout(() => {
-              document.body.dispatchEvent(new MouseEvent('mousedown'));
-            });
-            return waitForMutation(tooltip);
-          })
-          .then(() => {
-            assertFalse(tooltip.hasAttribute('visible'));
-            assertEquals(tooltip.getAttribute('aria-hidden'), 'true');
-          }),
-      done);
+  await waitForMutation(tooltip);
+
+  const label = tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
+  assertEquals('Chocolate!', label.textContent?.trim());
+  assertTrue(tooltip.hasAttribute('visible'));
+  // Hiding here is synchronous. Dispatch the event asynchronously,
+  // so the mutation observer is started before hiding.
+  setTimeout(() => {
+    document.body.dispatchEvent(new MouseEvent('mousedown'));
+  });
+  await waitForMutation(tooltip);
+
+  assertFalse(tooltip.hasAttribute('visible'));
+  assertEquals(tooltip.getAttribute('aria-hidden'), 'true');
 }
 
-export function testCardTooltipHover(done: VoidCallback) {
+export async function testCardTooltipHover() {
   cheeseButton.dispatchEvent(new MouseEvent('mouseover'));
 
-  return reportPromise(
-      waitForMutation(tooltip)
-          .then(() => {
-            const label =
-                tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
-            assertEquals('Cheese!', label.textContent?.trim());
-            assertTrue(tooltip.hasAttribute('visible'));
-            assertEquals(tooltip.getAttribute('aria-hidden'), 'false');
+  await waitForMutation(tooltip);
 
-            assertEquals('card-tooltip', tooltip.className);
-            assertEquals('card-label', label.className);
+  const label = tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
+  assertEquals('Cheese!', label.textContent?.trim());
+  assertTrue(tooltip.hasAttribute('visible'));
+  assertEquals(tooltip.getAttribute('aria-hidden'), 'false');
 
-            assertEquals('38px', tooltip.style.left);
-            assertEquals('162px', tooltip.style.top);
+  assertEquals('card-tooltip', tooltip.className);
+  assertEquals('card-label', label.className);
 
-            cheeseButton.dispatchEvent(new MouseEvent('mouseout'));
-            return waitForMutation(tooltip);
-          })
-          .then(() => {
-            assertFalse(!!tooltip.getAttribute('visible'));
-          }),
-      done);
+  assertEquals('38px', tooltip.style.left);
+  assertEquals('162px', tooltip.style.top);
+
+  cheeseButton.dispatchEvent(new MouseEvent('mouseout'));
+  await waitForMutation(tooltip);
+
+  assertFalse(!!tooltip.getAttribute('visible'));
 }
 
-export function testCardTooltipRTL(done: VoidCallback) {
+export async function testCardTooltipRTL() {
   document.documentElement.setAttribute('dir', 'rtl');
   document.body.setAttribute('dir', 'rtl');
 
   cheeseButton.dispatchEvent(new MouseEvent('mouseover'));
 
-  return reportPromise(
-      waitForMutation(tooltip)
-          .then(() => {
-            const label =
-                tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
-            assertEquals('Cheese!', label.textContent?.trim());
-            assertTrue(tooltip.hasAttribute('visible'));
-            assertEquals(tooltip.getAttribute('aria-hidden'), 'false');
+  await waitForMutation(tooltip);
 
-            assertEquals('card-tooltip', tooltip.className);
-            assertEquals('card-label', label.className);
+  const label = tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
+  assertEquals('Cheese!', label.textContent?.trim());
+  assertTrue(tooltip.hasAttribute('visible'));
+  assertEquals(tooltip.getAttribute('aria-hidden'), 'false');
 
-            // A border with 1px insets (top=bottom=left=right=1px) will be
-            // applied to the window when drak/light feature is enabled. See
-            // more details at crrev.com/c/3656414.
-            assertTrue(
-                `962px` == tooltip.style.left || `960px` == tooltip.style.left);
-            assertEquals('162px', tooltip.style.top);
+  assertEquals('card-tooltip', tooltip.className);
+  assertEquals('card-label', label.className);
 
-            cheeseButton.dispatchEvent(new MouseEvent('mouseout'));
-            return waitForMutation(tooltip);
-          })
-          .then(() => {
-            // revert back document direction to not impact other tests.
-            document.documentElement.setAttribute('dir', 'ltr');
-            document.body.setAttribute('dir', 'ltr');
-          }),
-      done);
+  // A border with 1px insets (top=bottom=left=right=1px) will be
+  // applied to the window when drak/light feature is enabled. See
+  // more details at crrev.com/c/3656414.
+  assertTrue(`962px` == tooltip.style.left || `960px` == tooltip.style.left);
+  assertEquals('162px', tooltip.style.top);
+
+  cheeseButton.dispatchEvent(new MouseEvent('mouseout'));
+  await waitForMutation(tooltip);
+
+  // revert back document direction to not impact other tests.
+  document.documentElement.setAttribute('dir', 'ltr');
+  document.body.setAttribute('dir', 'ltr');
 }
 
-export function testCardTooltipWithLinkHover(done: VoidCallback) {
+export async function testCardTooltipWithLinkHover() {
   cheeseButton.dataset['tooltipLinkHref'] = 'https://cheese.com';
   cheeseButton.dataset['tooltipLinkAriaLabel'] =
       'Click here to get more cheese';
   cheeseButton.dataset['tooltipLinkText'] = 'More cheese';
   cheeseButton.dispatchEvent(new MouseEvent('mouseover'));
 
-  return reportPromise(
-      waitForMutation(tooltip)
-          .then(() => {
-            // Check the label.
-            const label =
-                tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
-            assertEquals('Cheese!', label.textContent?.trim());
-            // Check the link: it should be visible now.
-            const link =
-                tooltip.shadowRoot!.querySelector<HTMLLinkElement>('#link')!;
-            assertEquals(link.getAttribute('aria-hidden'), 'false');
-            assertEquals('More cheese', link.textContent?.trim());
-            assertEquals(
-                'Click here to get more cheese',
-                link.getAttribute('aria-label'));
-            assertEquals('https://cheese.com', link.getAttribute('href'));
+  await waitForMutation(tooltip);
 
-            assertTrue(tooltip.hasAttribute('visible'));
-            assertEquals(tooltip.getAttribute('aria-hidden'), 'false');
+  // Check the label.
+  const label = tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
+  assertEquals('Cheese!', label.textContent?.trim());
+  // Check the link: it should be visible now.
+  const link = tooltip.shadowRoot!.querySelector<HTMLLinkElement>('#link')!;
+  assertEquals(link.getAttribute('aria-hidden'), 'false');
+  assertEquals('More cheese', link.textContent?.trim());
+  assertEquals(
+      'Click here to get more cheese', link.getAttribute('aria-label'));
+  assertEquals('https://cheese.com', link.getAttribute('href'));
 
-            assertTrue(tooltip.classList.contains('card-tooltip'));
-            assertEquals('card-label', label.className);
+  assertTrue(tooltip.hasAttribute('visible'));
+  assertEquals(tooltip.getAttribute('aria-hidden'), 'false');
 
-            assertEquals('38px', tooltip.style.left);
-            assertEquals('162px', tooltip.style.top);
+  assertTrue(tooltip.classList.contains('card-tooltip'));
+  assertEquals('card-label', label.className);
 
-            assertTrue(tooltip.classList.contains('link-tooltip'));
+  assertEquals('38px', tooltip.style.left);
+  assertEquals('162px', tooltip.style.top);
 
-            cheeseButton.dispatchEvent(new MouseEvent('mouseout'));
-            return waitForMutation(tooltip);
-          })
-          .then(() => {
-            assertFalse(!!tooltip.getAttribute('visible'));
-          }),
-      done);
+  assertTrue(tooltip.classList.contains('link-tooltip'));
+
+  cheeseButton.dispatchEvent(new MouseEvent('mouseout'));
+  await waitForMutation(tooltip);
+
+  assertFalse(!!tooltip.getAttribute('visible'));
 }
 
-export function testTooltipWithIncompleteLinkHover(done: VoidCallback) {
+export async function testTooltipWithIncompleteLinkHover() {
   cheeseButton.dataset['tooltipLinkHref'] = 'https://cheese.com';
   cheeseButton.dispatchEvent(new MouseEvent('mouseover'));
 
-  return reportPromise(
-      waitForMutation(tooltip)
-          .then(() => {
-            // Check the label.
-            const label =
-                tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
-            assertEquals('Cheese!', label.textContent?.trim());
-            // Check the link: it should be hidden since not all required
-            // attributes are set.
-            const link =
-                tooltip.shadowRoot!.querySelector<HTMLLinkElement>('#link')!;
-            assertEquals(link.getAttribute('aria-hidden'), 'true');
-            assertEquals('', link.textContent?.trim());
-            assertFalse(link.hasAttribute('aria-label'));
-            assertEquals('#', link.getAttribute('href'));
+  await waitForMutation(tooltip);
 
-            assertTrue(tooltip.hasAttribute('visible'));
-            assertEquals(tooltip.getAttribute('aria-hidden'), 'false');
+  // Check the label.
+  const label = tooltip.shadowRoot!.querySelector<HTMLDivElement>('#label')!;
+  assertEquals('Cheese!', label.textContent?.trim());
+  // Check the link: it should be hidden since not all required
+  // attributes are set.
+  const link = tooltip.shadowRoot!.querySelector<HTMLLinkElement>('#link')!;
+  assertEquals(link.getAttribute('aria-hidden'), 'true');
+  assertEquals('', link.textContent?.trim());
+  assertFalse(link.hasAttribute('aria-label'));
+  assertEquals('#', link.getAttribute('href'));
 
-            assertTrue(tooltip.classList.contains('card-tooltip'));
-            assertEquals('card-label', label.className);
+  assertTrue(tooltip.hasAttribute('visible'));
+  assertEquals(tooltip.getAttribute('aria-hidden'), 'false');
 
-            assertEquals('38px', tooltip.style.left);
-            assertEquals('162px', tooltip.style.top);
+  assertTrue(tooltip.classList.contains('card-tooltip'));
+  assertEquals('card-label', label.className);
 
-            assertFalse(tooltip.classList.contains('link-tooltip'));
+  assertEquals('38px', tooltip.style.left);
+  assertEquals('162px', tooltip.style.top);
 
-            cheeseButton.dispatchEvent(new MouseEvent('mouseout'));
-            return waitForMutation(tooltip);
-          })
-          .then(() => {
-            assertFalse(!!tooltip.getAttribute('visible'));
-          }),
-      done);
+  assertFalse(tooltip.classList.contains('link-tooltip'));
+
+  cheeseButton.dispatchEvent(new MouseEvent('mouseout'));
+  await waitForMutation(tooltip);
+
+  assertFalse(!!tooltip.getAttribute('visible'));
 }

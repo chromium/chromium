@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
-import {TimerProxy} from './types.js';
+import type {TimerProxy} from './types.js';
 
 /**
  * @fileoverview A debouncer which fires the given callback after a delay. The

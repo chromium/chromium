@@ -204,8 +204,7 @@ class WallpaperPrefManagerTestBase : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
 
-  raw_ptr<TestProfileHelper, DanglingUntriaged | ExperimentalAsh>
-      profile_helper_;
+  raw_ptr<TestProfileHelper, DanglingUntriaged> profile_helper_;
 
   TestWallpaperControllerClient client_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;

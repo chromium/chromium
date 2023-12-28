@@ -67,7 +67,7 @@ class AutofillSaveCardDelegate {
   virtual void GatherAdditionalConsentIfApplicable(
       AutofillClient::UserProvidedCardDetails user_provided_details);
 
-  void LogUserAction(AutofillMetrics::InfoBarMetric user_action);
+  void LogInfoBarAction(AutofillMetrics::InfoBarMetric user_action);
 
   // If the cardholder name is missing, request the name from the user before
   // saving the card. If the expiration date is missing, request the missing

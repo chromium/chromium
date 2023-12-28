@@ -216,7 +216,8 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   bool called_switch_to_tab_ = false;
 
   // Listened TabOrganization sessions.
-  std::vector<TabOrganizationSession*> listened_sessions_;
+  std::vector<raw_ptr<TabOrganizationSession, VectorExperimental>>
+      listened_sessions_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_TAB_SEARCH_TAB_SEARCH_PAGE_HANDLER_H_

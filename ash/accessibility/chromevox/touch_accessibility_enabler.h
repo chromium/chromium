@@ -109,10 +109,10 @@ class ASH_EXPORT TouchAccessibilityEnabler : public ui::EventHandler {
     WAIT_FOR_NO_FINGERS
   };
 
-  raw_ptr<aura::Window, ExperimentalAsh> root_window_;
+  raw_ptr<aura::Window> root_window_;
 
   // Called when we detect a long-press of two fingers. Not owned.
-  raw_ptr<TouchAccessibilityEnablerDelegate, ExperimentalAsh> delegate_;
+  raw_ptr<TouchAccessibilityEnablerDelegate> delegate_;
 
   // The current state.
   State state_;
@@ -132,7 +132,7 @@ class ASH_EXPORT TouchAccessibilityEnabler : public ui::EventHandler {
 
   // When touch_accessibility_enabler gets time relative to real time during
   // testing, this clock is set to the simulated clock and used.
-  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Whether or not we currently have an event handler installed. It can
   // be removed when TouchExplorationController is running.

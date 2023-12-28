@@ -145,7 +145,7 @@ void LogRemovedSettingInaccessibleFields(bool did_remove) {
 }
 
 // static
-void LogRemovedSettingInaccessibleField(ServerFieldType field) {
+void LogRemovedSettingInaccessibleField(FieldType field) {
   base::UmaHistogramEnumeration(
       "Autofill.ProfileImport.InaccessibleFieldsRemoved.ByFieldType",
       ConvertSettingsVisibleFieldTypeForMetrics(field));
@@ -157,7 +157,7 @@ void LogPhoneNumberImportParsingResult(bool parsed_successfully) {
                             parsed_successfully);
 }
 
-void LogNewProfileEditedType(ServerFieldType edited_type) {
+void LogNewProfileEditedType(FieldType edited_type) {
   base::UmaHistogramEnumeration(
       "Autofill.ProfileImport.NewProfileEditedType",
       ConvertSettingsVisibleFieldTypeForMetrics(edited_type));
@@ -170,7 +170,7 @@ void LogNewProfileNumberOfEditedFields(int number_of_edited_fields) {
 }
 
 void LogProfileUpdateAffectedType(
-    ServerFieldType affected_type,
+    FieldType affected_type,
     AutofillClient::SaveAddressProfileOfferUserDecision decision) {
   // Record the decision-specific metric.
   base::UmaHistogramEnumeration(
@@ -184,7 +184,7 @@ void LogProfileUpdateAffectedType(
       ConvertSettingsVisibleFieldTypeForMetrics(affected_type));
 }
 
-void LogProfileUpdateEditedType(ServerFieldType edited_type) {
+void LogProfileUpdateEditedType(FieldType edited_type) {
   base::UmaHistogramEnumeration(
       "Autofill.ProfileImport.UpdateProfileEditedType",
       ConvertSettingsVisibleFieldTypeForMetrics(edited_type));
@@ -218,7 +218,7 @@ void LogProfileMigrationImportDecision(
                                 decision);
 }
 
-void LogProfileMigrationEditedType(ServerFieldType edited_type) {
+void LogProfileMigrationEditedType(FieldType edited_type) {
   base::UmaHistogramEnumeration(
       "Autofill.ProfileImport.MigrateProfileEditedType",
       ConvertSettingsVisibleFieldTypeForMetrics(edited_type));

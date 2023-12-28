@@ -4,7 +4,7 @@
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {MetadataItem} from './metadata_item.js';
+import {MetadataItem, type MetadataKey} from './metadata_item.js';
 import {MetadataModel} from './metadata_model.js';
 import {ThumbnailModel} from './thumbnail_model.js';
 
@@ -48,7 +48,7 @@ export function setUp() {
   metadata.contentImageTransform = imageTransformation;
 
   thumbnailModel = new ThumbnailModel({
-    get: function(_: Entry[], names: string[]) {
+    get: function(_: Entry[], names: MetadataKey[]) {
       const result = new MetadataItem();
       // Assign all the properties from `metadata` with keys in `names` to the
       // same named property in `result`.

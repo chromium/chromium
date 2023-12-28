@@ -92,7 +92,10 @@ def PackageInArchive(directory_path, archive_path):
     for f in os.listdir(bin_dir_path):
       file_path = os.path.join(bin_dir_path, f)
       if not os.path.islink(file_path):
-        subprocess.call(['strip', file_path])
+        if sys.platform == 'darwin':
+          subprocess.call(['strip', '-x', file_path])
+        else:
+          subprocess.call(['strip', file_path])
 
   with tarfile.open(archive_path + '.tar.xz',
                     'w:xz',

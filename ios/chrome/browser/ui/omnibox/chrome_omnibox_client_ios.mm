@@ -274,6 +274,10 @@ LocationBarModel* ChromeOmniboxClientIOS::GetLocationBarModel() {
   return location_bar_->GetLocationBarModel();
 }
 
+base::WeakPtr<OmniboxClient> ChromeOmniboxClientIOS::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void ChromeOmniboxClientIOS::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/delete_edit_shortcut.h"
 
+#include <memory>
+
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -14,64 +16,36 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
-#include "ui/views/background.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace arc::input_overlay {
 
 namespace {
 
-constexpr int kSpaceFromEditingList = 8;
+constexpr int kSpaceToEditingList = 8;
+constexpr char kDeleteEditShortcut[] = "DeleteEditShortcut";
 
 }  // namespace
 
 DeleteEditShortcut::DeleteEditShortcut(DisplayOverlayController* controller,
                                        ActionViewListItem* anchor_view)
-    : controller_(controller), anchor_view_(anchor_view) {
-  Init();
-  observation_.Observe(anchor_view);
-}
+    : views::BubbleDialogDelegateView(anchor_view,
+                                      views::BubbleBorder::LEFT_CENTER,
+                                      views::BubbleBorder::NO_SHADOW),
+      controller_(controller) {
+  set_margins(gfx::Insets(12));
+  set_corner_radius(20);
+  set_close_on_deactivate(false);
+  set_focus_traversable_from_anchor_view(true);
+  set_internal_name(kDeleteEditShortcut);
+  set_parent_window(anchor_view->GetWidget()->GetNativeWindow());
+  SetButtons(ui::DIALOG_BUTTON_NONE);
 
-DeleteEditShortcut::~DeleteEditShortcut() {
-  observation_.Reset();
-}
-
-void DeleteEditShortcut::UpdateAnchorView(ActionViewListItem* anchor_view) {
-  observation_.Reset();
-  observation_.Observe(anchor_view);
-  anchor_view_ = anchor_view;
-  UpdateWidget();
-}
-
-void DeleteEditShortcut::VisibilityChanged(views::View* starting_from,
-                                           bool is_visible) {
-  if (is_visible) {
-    UpdateWidget();
-  }
-}
-
-void DeleteEditShortcut::OnMouseExited(const ui::MouseEvent& event) {
-  views::View::OnMouseExited(event);
-  if (!IsMouseHovered()) {
-    controller_->RemoveDeleteEditShortcutWidget();
-  }
-}
-
-void DeleteEditShortcut::OnViewRemovedFromWidget(views::View*) {
-  controller_->RemoveDeleteEditShortcutWidget();
-}
-
-void DeleteEditShortcut::OnViewBoundsChanged(views::View*) {
-  controller_->RemoveDeleteEditShortcutWidget();
-}
-
-void DeleteEditShortcut::Init() {
-  SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(12, 12)));
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemBaseElevatedOpaque,
-      /*radius=*/20,
-      /*for_border_thickness=*/0));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       /*inside_border_insets=*/gfx::Insets(),
@@ -90,28 +64,63 @@ void DeleteEditShortcut::Init() {
       IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
 }
 
+DeleteEditShortcut::~DeleteEditShortcut() = default;
+
+void DeleteEditShortcut::UpdateAnchorView(ActionViewListItem* anchor_view) {
+  SetAnchorView(anchor_view);
+}
+
 void DeleteEditShortcut::OnEditButtonPressed() {
-  controller_->AddButtonOptionsMenuWidget(anchor_view_->action());
-  controller_->RemoveDeleteEditShortcutWidget();
+  if (auto* anchor_view =
+          views::AsViewClass<ActionViewListItem>(GetAnchorView())) {
+    controller_->AddButtonOptionsMenuWidget(anchor_view->action());
+  }
 }
 
 void DeleteEditShortcut::OnDeleteButtonPressed() {
-  controller_->RemoveAction(anchor_view_->action());
+  if (auto* anchor_view =
+          views::AsViewClass<ActionViewListItem>(GetAnchorView())) {
+    controller_->RemoveAction(anchor_view->action());
+    controller_->RemoveDeleteEditShortcutWidget();
+  }
 }
 
-void DeleteEditShortcut::UpdateWidget() {
-  auto* widget = GetWidget();
-  DCHECK(widget);
+std::unique_ptr<views::NonClientFrameView>
+DeleteEditShortcut::CreateNonClientFrameView(views::Widget* widget) {
+  // Create the customized bubble border.
+  auto bubble_border =
+      std::make_unique<views::BubbleBorder>(arrow(), GetShadow());
+  bubble_border->SetColor(color());
+  if (GetParams().round_corners) {
+    bubble_border->SetCornerRadius(GetCornerRadius());
+  }
+  bubble_border->set_avoid_shadow_overlap(true);
+  bubble_border->set_insets(
+      gfx::Insets::VH(0, kSpaceToEditingList + kEditingListInsideBorderInsets));
 
-  auto anchor_point = anchor_view_->GetBoundsInScreen().top_right();
-  auto preferred_size = GetPreferredSize();
-  anchor_point.Offset(kEditingListInsideBorderInsets + kSpaceFromEditingList,
-                      (anchor_view_->height() - preferred_size.height()) / 2);
-  widget->SetBounds(gfx::Rect(anchor_point, preferred_size));
-  widget->StackAtTop();
+  auto frame =
+      views::BubbleDialogDelegateView::CreateNonClientFrameView(widget);
+  static_cast<views::BubbleFrameView*>(frame.get())
+      ->SetBubbleBorder(std::move(bubble_border));
+  return frame;
 }
 
-BEGIN_METADATA(DeleteEditShortcut, views::View)
+void DeleteEditShortcut::OnThemeChanged() {
+  views::BubbleDialogDelegateView::OnThemeChanged();
+  if (auto* color_provider = GetColorProvider()) {
+    set_color(color_provider->GetColor(
+        cros_tokens::kCrosSysSystemBaseElevatedOpaque));
+  }
+}
+
+void DeleteEditShortcut::OnMouseExited(const ui::MouseEvent& event) {
+  if (auto* widget = GetWidget();
+      widget->IsMouseEventsEnabled() && !IsMouseHovered()) {
+    controller_->RemoveDeleteEditShortcutWidget();
+  }
+}
+
+BEGIN_METADATA(DeleteEditShortcut, views::BubbleDialogDelegateView)
 END_METADATA
 
 }  // namespace arc::input_overlay

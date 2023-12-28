@@ -6,17 +6,15 @@
 
 namespace content {
 
+AutomaticBeaconInfo::AutomaticBeaconInfo() = default;
+
 AutomaticBeaconInfo::AutomaticBeaconInfo(
     const std::string& data,
     const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-    network::AttributionReportingRuntimeFeatures
-        attribution_reporting_runtime_features,
     bool once,
     bool cross_origin_exposed)
     : data(data),
       destinations(destinations),
-      attribution_reporting_runtime_features(
-          attribution_reporting_runtime_features),
       once(once),
       cross_origin_exposed(cross_origin_exposed) {}
 

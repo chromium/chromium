@@ -55,7 +55,7 @@ CreateFileSystemAccessRestrictedDirectoryDialog(
           ui::DialogModelLabel::CreateEmphasizedText(origin_identity_name)))
       .AddOkButton(
           std::move(accept_callback),
-          ui::DialogModelButton::Params().SetLabel(l10n_util::GetStringUTF16(
+          ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
               handle_type == HandleType::kDirectory
                   ? IDS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_BUTTON
                   : IDS_FILE_SYSTEM_ACCESS_RESTRICTED_FILE_BUTTON)))

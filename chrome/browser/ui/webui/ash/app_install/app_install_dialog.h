@@ -8,25 +8,10 @@
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install_ui.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
-// TODO(b/308717267): Remove this dependency when moving to mojom struct
-// definition for Lacros support.
-#include "chrome/browser/web_applications/web_app_install_info.h"
-#include "components/webapps/browser/installable/installable_data.h"
 
 namespace ash::app_install {
 
-struct ChromeOsAppInstallDialogParams {
-  GURL icon_url;
-  std::string name;
-  GURL url;
-  std::string description;
-  std::vector<webapps::Screenshot> screenshots;
-
-  ChromeOsAppInstallDialogParams(const web_app::WebAppInstallInfo& web_app_info,
-                                 std::vector<webapps::Screenshot> screenshots);
-  ~ChromeOsAppInstallDialogParams();
-  ChromeOsAppInstallDialogParams(ChromeOsAppInstallDialogParams&&);
-};
+const int kIconSize = 32;
 
 // Defines the web dialog used for installing an app.
 class AppInstallDialog : public SystemWebDialogDelegate {
@@ -39,10 +24,12 @@ class AppInstallDialog : public SystemWebDialogDelegate {
 
   // Displays the dialog.
   void Show(gfx::NativeWindow parent,
-            ChromeOsAppInstallDialogParams params,
+            mojom::DialogArgsPtr args,
+            std::string expected_app_id,
             base::OnceCallback<void(bool accepted)> dialog_accepted_callback);
-  // Callers must set whether the install was successful or not.
-  void SetInstallSuccess(bool success);
+  // Callers must call this once the install has finished, passing in the app_id
+  // if the installation succeeded or a nullptr if it failed.
+  void SetInstallComplete(const std::string* app_id);
 
   void OnDialogShown(content::WebUI* webui) override;
 
@@ -58,6 +45,8 @@ class AppInstallDialog : public SystemWebDialogDelegate {
   base::WeakPtr<AppInstallDialog> GetWeakPtr();
 
   mojom::DialogArgsPtr dialog_args_;
+  std::string expected_app_id_;
+
   raw_ptr<AppInstallDialogUI> dialog_ui_ = nullptr;
   base::OnceCallback<void(bool accepted)> dialog_accepted_callback_;
 

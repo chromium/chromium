@@ -1351,4 +1351,21 @@ void SVGElement::SynchronizeListOfSVGAttributes(
   }
 }
 
+void SVGElement::AttachLayoutTree(AttachContext& context) {
+  Element::AttachLayoutTree(context);
+
+  if (!context.performing_reattach && GetLayoutObject() &&
+      GetSMILAnimations()) {
+    GetTimeContainer()->DidAttachLayoutObject();
+  }
+}
+
+SMILTimeContainer* SVGElement::GetTimeContainer() const {
+  if (auto* svg_root = DynamicTo<SVGSVGElement>(*this)) {
+    return svg_root->TimeContainer();
+  }
+
+  return ownerSVGElement()->TimeContainer();
+}
+
 }  // namespace blink

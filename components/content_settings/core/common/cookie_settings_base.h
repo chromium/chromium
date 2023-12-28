@@ -164,7 +164,7 @@ class CookieSettingsBase {
   bool ShouldDeleteCookieOnExit(
       const ContentSettingsForOneType& cookie_settings,
       const std::string& domain,
-      bool is_https) const;
+      net::CookieSourceScheme scheme) const;
 
   // Returns true if the page identified by (`url`, `site_for_cookies`,
   // `top_frame_origin`) is allowed to access (i.e., read or write) cookies.

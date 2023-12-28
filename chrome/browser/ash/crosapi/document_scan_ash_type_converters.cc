@@ -582,15 +582,15 @@ TypeConverter<crosapi::mojom::GetOptionGroupsResponsePtr,
       ConvertTo<crosapi::mojom::ScannerOperationResult>(input.result());
 
   if (output->result == crosapi::mojom::ScannerOperationResult::kSuccess) {
-    output->options.emplace();
-    output->options->reserve(input.config().option_groups_size());
+    output->groups.emplace();
+    output->groups->reserve(input.config().option_groups_size());
     // Grab the OptionGroup from the ScannerConfig.
     for (const lorgnette::OptionGroup& group : input.config().option_groups()) {
       auto output_group = crosapi::mojom::OptionGroup::New();
       output_group->title = group.title();
       output_group->members = std::vector<std::string>(group.members().begin(),
                                                        group.members().end());
-      output->options->emplace_back(std::move(output_group));
+      output->groups->emplace_back(std::move(output_group));
     }
   }
 

@@ -38,6 +38,13 @@ std::string PsmUseCaseHistogramVariant(PsmUseCase psm_use_case) {
 
 }  // namespace
 
+void RecordIsDevicePingRequired(PsmUseCase use_case, bool is_ping_required) {
+  std::string variant_name =
+      base::StrCat({"Ash.Report.", PsmUseCaseHistogramVariant(use_case),
+                    ".IsDevicePingRequired"});
+  base::UmaHistogramBoolean(variant_name, is_ping_required);
+}
+
 void RecordNetErrorCode(PsmUseCase use_case, PsmRequest request, int net_code) {
   std::string variant_name = base::StrCat(
       {"Ash.Report.Psm", PsmUseCaseHistogramVariant(use_case),

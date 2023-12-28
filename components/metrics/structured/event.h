@@ -7,12 +7,12 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/metrics/structured/enums.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Builder classes for sending events are generated in
 // //components/metrics/structured/structured_events.h based on XML
@@ -117,9 +117,9 @@ class Event {
   std::map<std::string, MetricValue> metric_values_;
 
   // System uptime for which the event was recorded.
-  absl::optional<base::TimeDelta> recorded_time_since_boot_;
+  std::optional<base::TimeDelta> recorded_time_since_boot_;
 
-  absl::optional<EventSequenceMetadata> event_sequence_metadata_;
+  std::optional<EventSequenceMetadata> event_sequence_metadata_;
 
   // Returns true if part of a sequence.
   bool is_event_sequence_ = false;

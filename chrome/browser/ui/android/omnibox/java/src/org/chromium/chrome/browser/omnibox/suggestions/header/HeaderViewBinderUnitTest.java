@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -70,22 +69,6 @@ public class HeaderViewBinderUnitTest {
 
         mModel = new PropertyModel(HeaderViewProperties.ALL_KEYS);
         PropertyModelChangeProcessor.create(mModel, mHeaderView, HeaderViewBinder::bind);
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    public void headerView_useModernizedHeaderPaddingFalse() {
-        mModel.set(HeaderViewProperties.USE_MODERNIZED_HEADER_PADDING, false);
-
-        int minHeight = mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_height);
-        int paddingStart =
-                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_start);
-        int paddingTop =
-                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_top);
-        int paddingBottom =
-                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_bottom);
-        verify(mHeaderView, times(1))
-                .setUpdateHeaderPadding(minHeight, paddingStart, paddingTop, paddingBottom);
     }
 
     @Test

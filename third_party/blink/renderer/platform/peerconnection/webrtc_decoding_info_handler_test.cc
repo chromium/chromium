@@ -24,7 +24,6 @@
 namespace blink {
 
 namespace {
-using Params = webrtc::SdpVideoFormat::Parameters;
 const webrtc::SdpVideoFormat kVideoFormatVp9{"VP9"};
 const webrtc::SdpVideoFormat kVideoFormatFoo{"Foo"};
 
@@ -75,7 +74,7 @@ class MediaCapabilitiesDecodingInfoCallback {
 
 }  // namespace
 
-typedef webrtc::VideoDecoderFactory::CodecSupport CodecSupport;
+using CodecSupport = webrtc::VideoDecoderFactory::CodecSupport;
 
 class WebrtcDecodingInfoHandlerTests : public ::testing::Test {
  public:

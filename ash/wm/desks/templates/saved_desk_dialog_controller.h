@@ -42,7 +42,8 @@ class ASH_EXPORT SavedDeskDialogController : public views::WidgetObserver {
   // dialog description.
   void ShowUnsupportedAppsDialog(
       aura::Window* root_window,
-      const std::vector<aura::Window*>& unsupported_apps,
+      const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
+          unsupported_apps,
       size_t incognito_window_count,
       DesksController::GetDeskTemplateCallback callback,
       std::unique_ptr<DeskTemplate> desk_template);
@@ -79,7 +80,7 @@ class ASH_EXPORT SavedDeskDialogController : public views::WidgetObserver {
   void OnUserCanceledUnsupportedAppsDialog();
 
   // Pointer to the widget (if any) that contains the current dialog.
-  raw_ptr<views::Widget, ExperimentalAsh> dialog_widget_ = nullptr;
+  raw_ptr<views::Widget> dialog_widget_ = nullptr;
 
   // When a caller creates an unsupported apps dialog, they provide a callback
   // for the result. Since we can only bind the callback once, we have to store

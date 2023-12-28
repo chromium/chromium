@@ -9,6 +9,7 @@
 #include "device/vr/openxr/openxr_view_configuration.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
+#include "ui/gl/gl_bindings.h"
 
 namespace device {
 
@@ -24,20 +25,25 @@ SwapChainInfo::~SwapChainInfo() {
   // cleared before destruction, either due to the context provider being lost
   // or from normal session ending. If shared images are not being used, these
   // should not have been initialized in the first place.
-  DCHECK(mailbox_holder.mailbox.IsZero());
-  DCHECK(!mailbox_holder.sync_token.HasData());
+  DCHECK(!shared_image);
+  DCHECK(!sync_token.HasData());
 }
 SwapChainInfo::SwapChainInfo(SwapChainInfo&&) = default;
 SwapChainInfo& SwapChainInfo::operator=(SwapChainInfo&&) = default;
 
 void SwapChainInfo::Clear() {
-  mailbox_holder.mailbox.SetZero();
-  mailbox_holder.sync_token.Clear();
+  shared_image.reset();
+  sync_token.Clear();
 #if BUILDFLAG(IS_ANDROID)
   // Resetting the SharedBufferSize ensures that we will re-create the Shared
   // Buffer if it is needed.
   shared_buffer_size = {0, 0};
 #endif
+}
+
+gpu::MailboxHolder SwapChainInfo::GetMailboxHolder() const {
+  CHECK(shared_image);
+  return gpu::MailboxHolder(shared_image->mailbox(), sync_token, GL_TEXTURE_2D);
 }
 
 bool OpenXrGraphicsBinding::Render() {
@@ -56,7 +62,7 @@ void OpenXrGraphicsBinding::PrepareViewConfigForRender(
 
     XrCompositionLayerProjectionView& projection_view =
         view_config.GetProjectionView(view_index);
-    const XrViewConfigurationView& properties =
+    const OpenXrViewProperties& properties =
         view_config.Properties()[view_index];
     projection_view.type = XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW;
     projection_view.pose = view.pose;
@@ -67,16 +73,13 @@ void OpenXrGraphicsBinding::PrepareViewConfigForRender(
     // and is always index 0. If secondary views are enabled, those views are
     // also in this same texture array.
     projection_view.subImage.imageArrayIndex = 0;
-    projection_view.subImage.imageRect.extent.width =
-        properties.recommendedImageRectWidth;
-    projection_view.subImage.imageRect.extent.height =
-        properties.recommendedImageRectHeight;
+    projection_view.subImage.imageRect.extent.width = properties.Width();
+    projection_view.subImage.imageRect.extent.height = properties.Height();
     projection_view.subImage.imageRect.offset.x = x_offset;
-    x_offset += properties.recommendedImageRectWidth;
+    x_offset += properties.Width();
 
     projection_view.subImage.imageRect.offset.y =
-        GetSwapchainImageSize().height() -
-        properties.recommendedImageRectHeight;
+        GetSwapchainImageSize().height() - properties.Height();
     projection_view.fov.angleUp = view.fov.angleUp;
     projection_view.fov.angleDown = view.fov.angleDown;
 
@@ -94,8 +97,7 @@ void OpenXrGraphicsBinding::PrepareViewConfigForRender(
 
 bool OpenXrGraphicsBinding::IsUsingSharedImages() {
   const auto swapchain_info = GetSwapChainImages();
-  return ((swapchain_info.size() > 1) &&
-          !swapchain_info[0].mailbox_holder.mailbox.IsZero());
+  return ((swapchain_info.size() > 1) && swapchain_info[0].shared_image);
 }
 
 gfx::Size OpenXrGraphicsBinding::GetSwapchainImageSize() {
@@ -131,10 +133,10 @@ void OpenXrGraphicsBinding::DestroySwapchainImages(
     gpu::SharedImageInterface* shared_image_interface =
         context_provider->SharedImageInterface();
     for (SwapChainInfo& info : GetSwapChainImages()) {
-      if (shared_image_interface && !info.mailbox_holder.mailbox.IsZero() &&
-          info.mailbox_holder.sync_token.HasData()) {
+      if (shared_image_interface && info.shared_image &&
+          info.sync_token.HasData()) {
         shared_image_interface->DestroySharedImage(
-            info.mailbox_holder.sync_token, info.mailbox_holder.mailbox);
+            info.sync_token, std::move(info.shared_image));
       }
       info.Clear();
     }

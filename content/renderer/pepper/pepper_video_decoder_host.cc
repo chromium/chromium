@@ -565,7 +565,8 @@ gpu::Mailbox PepperVideoDecoderHost::CreateSharedImage(gfx::Size size) {
   auto client_shared_image = sii->CreateSharedImage(
       viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_RASTER,
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
+          gpu::SHARED_IMAGE_USAGE_RASTER,
       "PepperVideoDecoder", gpu::SurfaceHandle());
   CHECK(client_shared_image);
   auto mailbox = client_shared_image->mailbox();

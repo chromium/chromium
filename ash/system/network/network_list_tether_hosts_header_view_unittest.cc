@@ -88,7 +88,7 @@ class NetworkListTetherHostsHeaderViewTest : public AshTestBase {
   network_config::CrosNetworkConfigTestHelper network_config_helper_;
   FakeNetworkListNetworkHeaderViewDelegate
       fake_network_list_network_header_delegate_;
-  raw_ptr<NetworkListTetherHostsHeaderView, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<NetworkListTetherHostsHeaderView, DanglingUntriaged>
       network_list_tether_hosts_header_view_;
 };
 

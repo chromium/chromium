@@ -38,30 +38,30 @@ typedef ::testing::Types<char, char16_t> SupportedCharTypes;
 TYPED_TEST_SUITE(CommonStringPieceTest, SupportedCharTypes);
 
 TYPED_TEST(CommonStringPieceTest, CheckComparisonOperators) {
-#define CMP_Y(op, x, y)                                                   \
-  {                                                                       \
-    std::basic_string<TypeParam> lhs(TestFixture::as_string(x));          \
-    std::basic_string<TypeParam> rhs(TestFixture::as_string(y));          \
-    ASSERT_TRUE((BasicStringPiece<TypeParam>((lhs.c_str()))               \
-                     op BasicStringPiece<TypeParam>((rhs.c_str()))));     \
-    ASSERT_TRUE(BasicStringPiece<TypeParam>(lhs) op rhs);                 \
-    ASSERT_TRUE(lhs op BasicStringPiece<TypeParam>(rhs));                 \
-    ASSERT_TRUE((BasicStringPiece<TypeParam>((lhs.c_str()))               \
-                     .compare(BasicStringPiece<TypeParam>((rhs.c_str()))) \
-                         op 0));                                          \
+#define CMP_Y(op, x, y)                                                        \
+  {                                                                            \
+    std::basic_string<TypeParam> lhs(TestFixture::as_string(x));               \
+    std::basic_string<TypeParam> rhs(TestFixture::as_string(y));               \
+    ASSERT_TRUE((std::basic_string_view<TypeParam>((lhs.c_str()))              \
+                     op std::basic_string_view<TypeParam>((rhs.c_str()))));    \
+    ASSERT_TRUE(std::basic_string_view<TypeParam>(lhs) op rhs);                \
+    ASSERT_TRUE(lhs op std::basic_string_view<TypeParam>(rhs));                \
+    ASSERT_TRUE((                                                              \
+        std::basic_string_view<TypeParam>((lhs.c_str()))                       \
+            .compare(std::basic_string_view<TypeParam>((rhs.c_str()))) op 0)); \
   }
 
-#define CMP_N(op, x, y)                                                    \
-  {                                                                        \
-    std::basic_string<TypeParam> lhs(TestFixture::as_string(x));           \
-    std::basic_string<TypeParam> rhs(TestFixture::as_string(y));           \
-    ASSERT_FALSE((BasicStringPiece<TypeParam>((lhs.c_str()))               \
-                      op BasicStringPiece<TypeParam>((rhs.c_str()))));     \
-    ASSERT_FALSE(BasicStringPiece<TypeParam>(lhs) op rhs);                 \
-    ASSERT_FALSE(lhs op BasicStringPiece<TypeParam>(rhs));                 \
-    ASSERT_FALSE((BasicStringPiece<TypeParam>((lhs.c_str()))               \
-                      .compare(BasicStringPiece<TypeParam>((rhs.c_str()))) \
-                          op 0));                                          \
+#define CMP_N(op, x, y)                                                        \
+  {                                                                            \
+    std::basic_string<TypeParam> lhs(TestFixture::as_string(x));               \
+    std::basic_string<TypeParam> rhs(TestFixture::as_string(y));               \
+    ASSERT_FALSE((std::basic_string_view<TypeParam>((lhs.c_str()))             \
+                      op std::basic_string_view<TypeParam>((rhs.c_str()))));   \
+    ASSERT_FALSE(std::basic_string_view<TypeParam>(lhs) op rhs);               \
+    ASSERT_FALSE(lhs op std::basic_string_view<TypeParam>(rhs));               \
+    ASSERT_FALSE((                                                             \
+        std::basic_string_view<TypeParam>((lhs.c_str()))                       \
+            .compare(std::basic_string_view<TypeParam>((rhs.c_str()))) op 0)); \
   }
 
   CMP_Y(==, "", "")
@@ -145,15 +145,15 @@ TYPED_TEST(CommonStringPieceTest, CheckSTL) {
   std::basic_string<TypeParam> xyz(TestFixture::as_string("xyz"));
   std::basic_string<TypeParam> foobar(TestFixture::as_string("foobar"));
 
-  BasicStringPiece<TypeParam> a(alphabet);
-  BasicStringPiece<TypeParam> b(abc);
-  BasicStringPiece<TypeParam> c(xyz);
-  BasicStringPiece<TypeParam> d(foobar);
-  BasicStringPiece<TypeParam> e;
+  std::basic_string_view<TypeParam> a(alphabet);
+  std::basic_string_view<TypeParam> b(abc);
+  std::basic_string_view<TypeParam> c(xyz);
+  std::basic_string_view<TypeParam> d(foobar);
+  std::basic_string_view<TypeParam> e;
   std::basic_string<TypeParam> temp(TestFixture::as_string("123"));
   temp += static_cast<TypeParam>(0);
   temp += TestFixture::as_string("456");
-  BasicStringPiece<TypeParam> f(temp);
+  std::basic_string_view<TypeParam> f(temp);
 
   ASSERT_EQ(a[6], static_cast<TypeParam>('g'));
   ASSERT_EQ(b[0], static_cast<TypeParam>('a'));
@@ -188,7 +188,7 @@ TYPED_TEST(CommonStringPieceTest, CheckSTL) {
   ASSERT_TRUE(e.empty());
   ASSERT_EQ(e.begin(), e.end());
 
-  d = BasicStringPiece<TypeParam>();
+  d = std::basic_string_view<TypeParam>();
   ASSERT_EQ(d.size(), 0U);
   ASSERT_TRUE(d.empty());
   ASSERT_EQ(d.data(), nullptr);
@@ -198,7 +198,7 @@ TYPED_TEST(CommonStringPieceTest, CheckSTL) {
 }
 
 TYPED_TEST(CommonStringPieceTest, CheckFind) {
-  typedef BasicStringPiece<TypeParam> Piece;
+  typedef std::basic_string_view<TypeParam> Piece;
 
   std::basic_string<TypeParam> alphabet(
       TestFixture::as_string("abcdefghijklmnopqrstuvwxyz"));
@@ -206,10 +206,10 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   std::basic_string<TypeParam> xyz(TestFixture::as_string("xyz"));
   std::basic_string<TypeParam> foobar(TestFixture::as_string("foobar"));
 
-  BasicStringPiece<TypeParam> a(alphabet);
-  BasicStringPiece<TypeParam> b(abc);
-  BasicStringPiece<TypeParam> c(xyz);
-  BasicStringPiece<TypeParam> d(foobar);
+  std::basic_string_view<TypeParam> a(alphabet);
+  std::basic_string_view<TypeParam> b(abc);
+  std::basic_string_view<TypeParam> c(xyz);
+  std::basic_string_view<TypeParam> d(foobar);
 
   d = Piece();
   Piece e;
@@ -514,16 +514,16 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
 
 TYPED_TEST(CommonStringPieceTest, CheckCustom) {
   std::basic_string<TypeParam> foobar(TestFixture::as_string("foobar"));
-  BasicStringPiece<TypeParam> a(foobar);
+  std::basic_string_view<TypeParam> a(foobar);
   std::basic_string<TypeParam> s1(TestFixture::as_string("123"));
   s1 += static_cast<TypeParam>('\0');
   s1 += TestFixture::as_string("456");
-  [[maybe_unused]] BasicStringPiece<TypeParam> b(s1);
-  BasicStringPiece<TypeParam> e;
+  [[maybe_unused]] std::basic_string_view<TypeParam> b(s1);
+  std::basic_string_view<TypeParam> e;
   std::basic_string<TypeParam> s2;
 
   // remove_prefix
-  BasicStringPiece<TypeParam> c(a);
+  std::basic_string_view<TypeParam> c(a);
   c.remove_prefix(3);
   ASSERT_EQ(c, TestFixture::as_string("bar"));
   c = a;
@@ -579,7 +579,7 @@ TEST(StringPieceTest, CheckCustom) {
 }
 
 TYPED_TEST(CommonStringPieceTest, CheckNULL) {
-  BasicStringPiece<TypeParam> s;
+  std::basic_string_view<TypeParam> s;
   ASSERT_EQ(s.data(), nullptr);
   ASSERT_EQ(s.size(), 0U);
 
@@ -595,17 +595,17 @@ TYPED_TEST(CommonStringPieceTest, CheckComparisons2) {
       TestFixture::as_string("abcdefghijklmnopqrstuvwxyzz"));
   std::basic_string<TypeParam> alphabet_y(
       TestFixture::as_string("abcdefghijklmnopqrstuvwxyy"));
-  BasicStringPiece<TypeParam> abc(alphabet);
+  std::basic_string_view<TypeParam> abc(alphabet);
 
   // check comparison operations on strings longer than 4 bytes.
-  ASSERT_EQ(abc, BasicStringPiece<TypeParam>(alphabet));
-  ASSERT_EQ(abc.compare(BasicStringPiece<TypeParam>(alphabet)), 0);
+  ASSERT_EQ(abc, std::basic_string_view<TypeParam>(alphabet));
+  ASSERT_EQ(abc.compare(std::basic_string_view<TypeParam>(alphabet)), 0);
 
-  ASSERT_TRUE(abc < BasicStringPiece<TypeParam>(alphabet_z));
-  ASSERT_LT(abc.compare(BasicStringPiece<TypeParam>(alphabet_z)), 0);
+  ASSERT_TRUE(abc < std::basic_string_view<TypeParam>(alphabet_z));
+  ASSERT_LT(abc.compare(std::basic_string_view<TypeParam>(alphabet_z)), 0);
 
-  ASSERT_TRUE(abc > BasicStringPiece<TypeParam>(alphabet_y));
-  ASSERT_GT(abc.compare(BasicStringPiece<TypeParam>(alphabet_y)), 0);
+  ASSERT_TRUE(abc > std::basic_string_view<TypeParam>(alphabet_y));
+  ASSERT_GT(abc.compare(std::basic_string_view<TypeParam>(alphabet_y)), 0);
 }
 
 TYPED_TEST(CommonStringPieceTest, StringCompareNotAmbiguous) {
@@ -618,8 +618,8 @@ TYPED_TEST(CommonStringPieceTest, StringCompareNotAmbiguous) {
 TYPED_TEST(CommonStringPieceTest, HeterogenousStringPieceEquals) {
   std::basic_string<TypeParam> hello(TestFixture::as_string("hello"));
 
-  ASSERT_EQ(BasicStringPiece<TypeParam>(hello), hello);
-  ASSERT_EQ(hello.c_str(), BasicStringPiece<TypeParam>(hello));
+  ASSERT_EQ(std::basic_string_view<TypeParam>(hello), hello);
+  ASSERT_EQ(hello.c_str(), std::basic_string_view<TypeParam>(hello));
 }
 
 // std::u16string-specific stuff
@@ -648,23 +648,25 @@ TYPED_TEST(CommonStringPieceTest, CheckConstructors) {
   std::basic_string<TypeParam> str(TestFixture::as_string("hello world"));
   std::basic_string<TypeParam> empty;
 
-  ASSERT_EQ(str, BasicStringPiece<TypeParam>(str));
-  ASSERT_EQ(str, BasicStringPiece<TypeParam>(str.c_str()));
+  ASSERT_EQ(str, std::basic_string_view<TypeParam>(str));
+  ASSERT_EQ(str, std::basic_string_view<TypeParam>(str.c_str()));
   ASSERT_TRUE(TestFixture::as_string("hello") ==
-              BasicStringPiece<TypeParam>(str.c_str(), 5));
+              std::basic_string_view<TypeParam>(str.c_str(), 5));
   ASSERT_EQ(
       empty,
-      BasicStringPiece<TypeParam>(
+      std::basic_string_view<TypeParam>(
           str.c_str(),
-          static_cast<typename BasicStringPiece<TypeParam>::size_type>(0)));
-  ASSERT_EQ(empty, BasicStringPiece<TypeParam>());
+          static_cast<typename std::basic_string_view<TypeParam>::size_type>(
+              0)));
+  ASSERT_EQ(empty, std::basic_string_view<TypeParam>());
   ASSERT_TRUE(
       empty ==
-      BasicStringPiece<TypeParam>(
+      std::basic_string_view<TypeParam>(
           nullptr,
-          static_cast<typename BasicStringPiece<TypeParam>::size_type>(0)));
-  ASSERT_EQ(empty, BasicStringPiece<TypeParam>());
-  ASSERT_EQ(empty, BasicStringPiece<TypeParam>(empty));
+          static_cast<typename std::basic_string_view<TypeParam>::size_type>(
+              0)));
+  ASSERT_EQ(empty, std::basic_string_view<TypeParam>());
+  ASSERT_EQ(empty, std::basic_string_view<TypeParam>(empty));
 }
 
 TEST(StringPieceTest, ConstexprCtor) {

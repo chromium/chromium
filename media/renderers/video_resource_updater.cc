@@ -549,8 +549,11 @@ class VideoResourceUpdater::HardwarePlaneResource
         use_gpu_memory_buffer_resources &&
         sii->GetCapabilities().supports_scanout_shared_images &&
         CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(format);
-    uint32_t shared_image_usage =
-        gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+    // These SharedImages will have the contents of VideoFrames written into
+    // them via the GLES2 interface and then will be sent over to the display
+    // compositor as TransferableResources.
+    uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
+                                  gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
     if (overlay_candidate_) {
       shared_image_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
       texture_target_ = gpu::GetBufferTextureTarget(

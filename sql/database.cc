@@ -2096,12 +2096,6 @@ void Database::StatementRefDeleted(StatementRef* ref) {
   open_statements_.erase(ref);
 }
 
-void Database::set_histogram_tag(const std::string& tag) {
-  DCHECK(!is_open());
-
-  histogram_tag_ = tag;
-}
-
 void Database::OnSqliteError(SqliteErrorCode sqlite_error_code,
                              sql::Statement* statement,
                              const char* sql_statement) {

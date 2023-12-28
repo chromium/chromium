@@ -64,6 +64,9 @@ struct EVENTS_DEVICES_EXPORT InputDevice {
   // If the device is suspected to be falsely identifying as a keyboard.
   bool suspected_keyboard_imposter = false;
 
+  // If the device is suspected to be falsely identifying as a mouse.
+  bool suspected_mouse_imposter = false;
+
   // The path to the input device in the sysfs filesystem.
   base::FilePath sys_path;
 

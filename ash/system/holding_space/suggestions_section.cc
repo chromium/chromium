@@ -64,8 +64,8 @@ class Header : public views::Button {
             holding_space_ui::CreateSuggestionsSectionHeaderLabel(
                 IDS_ASH_HOLDING_SPACE_SUGGESTIONS_TITLE)
                 .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-                .SetProperty(views::kFlexBehaviorKey,
-                             views::FlexSpecification().WithWeight(1)),
+                .SetProperty(views::kBoxLayoutFlexKey,
+                             views::BoxLayoutFlexSpecification()),
             views::Builder<views::ImageView>().CopyAddressTo(&chevron_).SetID(
                 kHoldingSpaceSuggestionsChevronIconId))
         .BuildChildren();
@@ -139,7 +139,7 @@ class Header : public views::Button {
   }
 
   // Owned by view hierarchy.
-  raw_ptr<views::ImageView, ExperimentalAsh> chevron_ = nullptr;
+  raw_ptr<views::ImageView> chevron_ = nullptr;
 
   // The user can expand and collapse the suggestions section by activating the
   // section header. This registrar is associated with the active user pref

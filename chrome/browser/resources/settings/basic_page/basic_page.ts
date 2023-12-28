@@ -340,21 +340,19 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   }
 
   private showAdvancedSettings_(visibility?: boolean): boolean {
-    return visibility !== false;
+    return this.showPage_(visibility);
   }
 
   private showPerformancePage_(visibility?: boolean): boolean {
-    return visibility !== false;
+    return this.showPage_(visibility);
   }
 
   private showBatteryPage_(visibility?: boolean): boolean {
-    return visibility !== false;
+    return this.showPage_(visibility);
   }
 
   private showSpeedPage_(visibility?: boolean): boolean {
-    return loadTimeData.getBoolean(
-               'isPerformanceSettingsPreloadingSubpageEnabled') &&
-        this.showPage_(visibility);
+    return this.showPage_(visibility);
   }
 
   private showSafetyCheckPage_(visibility?: boolean): boolean {
@@ -374,13 +372,13 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
 
   // <if expr="_google_chrome">
   private showGetMostChrome_(visibility?: boolean): boolean {
-    return visibility !== false &&
-        loadTimeData.getBoolean('showGetTheMostOutOfChromeSection');
+    return loadTimeData.getBoolean('showGetTheMostOutOfChromeSection') &&
+        this.showPage_(visibility);
   }
 
-  private onSendHighEfficiencyFeedbackClick_(e: Event) {
+  private onSendMemorySaverFeedbackClick_(e: Event) {
     e.stopPropagation();
-    this.performanceBrowserProxy_.openHighEfficiencyFeedbackDialog();
+    this.performanceBrowserProxy_.openMemorySaverFeedbackDialog();
   }
 
   private onSendBatterySaverFeedbackClick_(e: Event) {
@@ -393,13 +391,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     this.performanceBrowserProxy_.openSpeedFeedbackDialog();
   }
   // </if>
-
-  private getPerformancePageTitle_(): string {
-    return loadTimeData.getBoolean(
-               'isPerformanceSettingsPreloadingSubpageEnabled') ?
-        this.i18n('memoryPageTitle') :
-        this.i18n('performancePageTitle');
-  }
 }
 
 declare global {

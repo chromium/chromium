@@ -85,8 +85,7 @@ class FakeQuickPairProcessManager
   mojo::PendingRemote<ash::quick_pair::mojom::FastPairDataParser>
       fast_pair_data_parser_;
   std::unique_ptr<ash::quick_pair::FastPairDataParser> data_parser_;
-  raw_ptr<base::test::SingleThreadTaskEnvironment, ExperimentalAsh>
-      task_environment_;
+  raw_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
   ProcessStoppedCallback on_process_stopped_callback_;
 };
 
@@ -160,8 +159,7 @@ class FastPairDiscoverableScannerImplTest : public testing::Test {
     return device_ptr;
   }
 
-  raw_ptr<FakeQuickPairProcessManager, DanglingUntriaged | ExperimentalAsh>
-      fake_process_manager_;
+  raw_ptr<FakeQuickPairProcessManager, DanglingUntriaged> fake_process_manager_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   NetworkStateTestHelper helper_{/*use_default_devices_and_services=*/true};
   scoped_refptr<FakeFastPairScanner> scanner_;

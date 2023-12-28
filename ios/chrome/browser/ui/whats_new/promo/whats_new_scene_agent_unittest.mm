@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/whats_new/promo/whats_new_scene_agent.h"
 
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
@@ -20,37 +19,6 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-
-namespace {
-
-void UpdateWhatsNewDaysAfterFre(int num_day) {
-  NSTimeInterval days = num_day * 24 * 60 * 60;
-  NSDate* date = [NSDate dateWithTimeIntervalSinceNow:-days];
-  [[NSUserDefaults standardUserDefaults] setObject:date
-                                            forKey:kWhatsNewDaysAfterFre];
-}
-
-void UpdateWhatsNewLaunchesAfterFre(int num_lanches) {
-  [[NSUserDefaults standardUserDefaults] setInteger:num_lanches
-                                             forKey:kWhatsNewLaunchesAfterFre];
-}
-
-void ClearWhatsNewUserData() {
-  [[NSUserDefaults standardUserDefaults]
-      removeObjectForKey:kWhatsNewDaysAfterFre];
-  [[NSUserDefaults standardUserDefaults]
-      removeObjectForKey:kWhatsNewLaunchesAfterFre];
-  [[NSUserDefaults standardUserDefaults]
-      removeObjectForKey:kWhatsNewPromoRegistrationKey];
-  [[NSUserDefaults standardUserDefaults]
-      removeObjectForKey:kWhatsNewM116PromoRegistrationKey];
-  [[NSUserDefaults standardUserDefaults]
-      removeObjectForKey:kWhatsNewUsageEntryKey];
-  [[NSUserDefaults standardUserDefaults]
-      removeObjectForKey:kWhatsNewM116UsageEntryKey];
-}
-
-}  // namespace
 
 class WhatsNewSceneAgentTest : public PlatformTest {
  public:
@@ -73,7 +41,10 @@ class WhatsNewSceneAgentTest : public PlatformTest {
     agent_.sceneState = scene_state_;
   }
 
-  void TearDown() override { ClearWhatsNewUserData(); }
+  void TearDown() override {
+    [[NSUserDefaults standardUserDefaults]
+        removeObjectForKey:kWhatsNewM116UsageEntryKey];
+  }
 
  protected:
   WhatsNewSceneAgent* agent_;
@@ -82,76 +53,23 @@ class WhatsNewSceneAgentTest : public PlatformTest {
   SceneState* scene_state_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MockPromosManager> promos_manager_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Tests that the What's New promo did not register in the promo manager when
-// the conditions aren't met.
-TEST_F(WhatsNewSceneAgentTest, TestWhatsNewNoPromoRegistration) {
-  EXPECT_CALL(*promos_manager_.get(),
-              RegisterPromoForSingleDisplay(promos_manager::Promo::WhatsNew))
-      .Times(0);
-
-  // Set the number of day after FRE to 0.
-  UpdateWhatsNewDaysAfterFre(0);
-  // Set the number of launches to 0.
-  UpdateWhatsNewLaunchesAfterFre(0);
-
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-}
-
-// Tests that the What's New promo registers in the promo manager after 6 days
-// have been recorded.
-// TODO(crbug.com/1508296): test consistently fail, re-enable when fixed.
-TEST_F(WhatsNewSceneAgentTest,
-       DISABLED_TestWhatsNewPromoRegistrationWith6Days) {
-  EXPECT_CALL(*promos_manager_.get(),
-              RegisterPromoForSingleDisplay(promos_manager::Promo::WhatsNew))
+// Tests that the What's New promo continuous registers in the promo manager.
+TEST_F(WhatsNewSceneAgentTest, TestWhatsNewPromoRegistration) {
+  EXPECT_CALL(*promos_manager_.get(), RegisterPromoForContinuousDisplay(
+                                          promos_manager::Promo::WhatsNew))
       .Times(1);
-
-  // Set the number of day after FRE to 6.
-  UpdateWhatsNewDaysAfterFre(6);
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 }
 
-// Tests that the What's New promo did not register in the promo manager after 4
-// days have been recorded.
-// TODO(crbug.com/1508296): test consistently fail, re-enable when fixed.
-TEST_F(WhatsNewSceneAgentTest,
-       DISABLED_TestWhatsNewPromoNoRegistrationWith4Days) {
-  EXPECT_CALL(*promos_manager_.get(),
-              RegisterPromoForSingleDisplay(promos_manager::Promo::WhatsNew))
+// Tests that the What's New promo did not register in the promo manager if the
+// user viewed What's New M116 prior to the migration to FET.
+TEST_F(WhatsNewSceneAgentTest, TestWhatsNewDoesNotRegisterWhenDefaultM116Used) {
+  [[NSUserDefaults standardUserDefaults] setBool:YES
+                                          forKey:kWhatsNewM116UsageEntryKey];
+  EXPECT_CALL(*promos_manager_.get(), RegisterPromoForContinuousDisplay(
+                                          promos_manager::Promo::WhatsNew))
       .Times(0);
-
-  // Set the number of day after FRE to 4.
-  UpdateWhatsNewDaysAfterFre(4);
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-}
-
-// Tests that the What's New promo registers in the promo manager after 6
-// launches have been recorded.
-// TODO(crbug.com/1508296): test consistently fail, re-enable when fixed.
-TEST_F(WhatsNewSceneAgentTest,
-       DISABLED_TestWhatsNewPromoRegistrationWith6Launches) {
-  EXPECT_CALL(*promos_manager_.get(),
-              RegisterPromoForSingleDisplay(promos_manager::Promo::WhatsNew))
-      .Times(1);
-
-  // Set the number of launches to 6.
-  UpdateWhatsNewLaunchesAfterFre(6);
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-}
-
-// Tests that the What's New promo did not register in the promo manager after 3
-// launches have been recorded.
-// TODO(crbug.com/1508296): test consistently fail, re-enable when fixed.
-TEST_F(WhatsNewSceneAgentTest,
-       DISABLED_TestWhatsNewPromoNoRegistrationWith3Launches) {
-  EXPECT_CALL(*promos_manager_.get(),
-              RegisterPromoForSingleDisplay(promos_manager::Promo::WhatsNew))
-      .Times(0);
-
-  // Set the number of launches to 3.
-  UpdateWhatsNewLaunchesAfterFre(3);
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 }

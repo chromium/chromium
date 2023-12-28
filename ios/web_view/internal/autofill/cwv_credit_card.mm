@@ -13,7 +13,7 @@
 @interface CWVCreditCard ()
 
 // Gets |value| for |type| from |_internalCard|.
-- (NSString*)valueForType:(autofill::ServerFieldType)type;
+- (NSString*)valueForType:(autofill::FieldType)type;
 
 @end
 
@@ -79,7 +79,7 @@
 
 #pragma mark - Private Methods
 
-- (NSString*)valueForType:(autofill::ServerFieldType)type {
+- (NSString*)valueForType:(autofill::FieldType)type {
   const std::string& locale =
       ios_web_view::ApplicationContext::GetInstance()->GetApplicationLocale();
   return base::SysUTF16ToNSString(_internalCard.GetInfo(type, locale));

@@ -37,6 +37,7 @@ class ImageSkia;
 namespace ash {
 
 class AmbientAccessTokenController;
+class AmbientBackupPhotoDownloader;
 
 // Class to handle photos in ambient mode.
 //
@@ -261,6 +262,9 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewDelegateObserver {
 
   base::ScopedObservation<AmbientViewDelegate, AmbientViewDelegateObserver>
       scoped_view_delegate_observation_{this};
+
+  std::vector<std::unique_ptr<AmbientBackupPhotoDownloader>>
+      active_backup_image_downloads_;
 
   base::WeakPtrFactory<AmbientPhotoController> weak_factory_{this};
 };

@@ -12,15 +12,25 @@
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 
-#if defined(COMPONENT_BUILD) && defined(_WIN32)
+#if BUILDFLAG(IS_WIN)
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/logging.h"
+#endif  // BUILDFLAG(IS_WIN)
+
+#if defined(COMPONENT_BUILD) && BUILDFLAG(IS_WIN)
 // In component builds on Windows, weak function exported by ASan have the
 // `__dll` suffix. ASan itself uses the `alternatename` directive to account for
 // that.
 #pragma comment(linker,                                                \
                     "/alternatename:__sanitizer_report_error_summary=" \
                     "__sanitizer_report_error_summary__dll")
-#endif  // defined(COMPONENT_BUILD) && defined(_WIN32)
+#pragma comment(linker,                                     \
+                "/alternatename:__sanitizer_set_report_fd=" \
+                "__sanitizer_set_report_fd__dll")
+#endif  // defined(COMPONENT_BUILD) && BUILDFLAG(IS_WIN)
 
 namespace base {
 namespace debug {
@@ -60,6 +70,20 @@ AsanService* AsanService::GetInstance() {
 void AsanService::Initialize() {
   AutoLock lock(lock_);
   if (!is_initialized_) {
+#if BUILDFLAG(IS_WIN)
+    if (logging::IsLoggingToFileEnabled()) {
+      // This path is allowed by the sandbox when `--enable-logging
+      //  --log-file={path}` are both specified when launching Chromium.
+      auto log_file = base::File(
+          base::FilePath(logging::GetLogFileFullPath()),
+          base::File::Flags::FLAG_OPEN_ALWAYS | base::File::Flags::FLAG_APPEND);
+      if (log_file.IsValid()) {
+        // Sanitizer APIs need a HANDLE cast to void*.
+        __sanitizer_set_report_fd(
+            reinterpret_cast<void*>(log_file.TakePlatformFile()));
+      }
+    }
+#endif  // BUILDFLAG(IS_WIN)
     __asan_set_error_report_callback(ErrorReportCallback);
     error_callbacks_.push_back(TaskTraceErrorCallback);
     is_initialized_ = true;

@@ -47,7 +47,7 @@ TestProvider kValidTestProviders[] = {
     {.name = "work name",
      .shortcut = "work",
      .url = "https://work.com/{searchTerms}",
-     .featured_by_policy = true,
+     .featured_by_policy = false,
      .favicon = "https://work.com/favicon.ico"},
     {.name = "docs name",
      .shortcut = "docs",
@@ -193,6 +193,25 @@ TestProvider kNonHttpsUrlTestProviders[] = {
      .favicon = "http://work.com/favicon.ico"},
 };
 
+// Used for tests that require a list of featured providers.
+TestProvider kTestProvidersWithFeaturedEntries[] = {
+    {.name = "work name",
+     .shortcut = "work",
+     .url = "https://work.com/{searchTerms}",
+     .featured_by_policy = true,
+     .favicon = "https://work.com/favicon.ico"},
+    {.name = "non-featured name",
+     .shortcut = "non-featured",
+     .url = "https://non-featured.com/{searchTerms}",
+     .featured_by_policy = false,
+     .favicon = "https://non-featured.com/favicon.ico"},
+    {.name = "docs name",
+     .shortcut = "docs",
+     .url = "https://docs.com/{searchTerms}",
+     .featured_by_policy = true,
+     .favicon = "https://docs.com/favicon.ico"},
+};
+
 // Creates a simple list item for the site search policy.
 base::Value::Dict GenerateSiteSearchPolicyEntry(const std::string& name,
                                                 const std::string& shortcut,
@@ -229,7 +248,7 @@ MATCHER_P2(HasStringField,
            base::StringPrintf("%s string field `%s` with value `%s`",
                               negation ? "does not contain" : "contains",
                               field_name,
-                              expected_value)) {
+                              expected_value.c_str())) {
   const std::string* dict_value = (arg).GetDict().FindString(field_name);
   return dict_value && *dict_value == expected_value;
 }
@@ -273,21 +292,37 @@ MATCHER_P(HasDoubleField,
 
 // Returns a matcher that accepts entries for the pref corresponding to the
 // site search policy. Field values are obtained from |test_case|.
-testing::Matcher<const base::Value&> IsSiteSearchEntry(TestProvider test_case) {
+testing::Matcher<const base::Value&> IsSiteSearchEntry(TestProvider test_case,
+                                                       bool featured) {
+  std::string expected_keyword =
+      base::StringPrintf("%s%s", (featured ? "@" : ""), test_case.shortcut);
   return AllOf(
-      HasStringField(DefaultSearchManager::kShortName, test_case.name),
-      HasStringField(DefaultSearchManager::kKeyword, test_case.shortcut),
-      HasStringField(DefaultSearchManager::kURL, test_case.url),
-      HasBooleanField(DefaultSearchManager::kFeaturedByPolicy,
-                      test_case.featured_by_policy),
+      HasStringField(DefaultSearchManager::kShortName,
+                     std::string(test_case.name)),
+      HasStringField(DefaultSearchManager::kKeyword, expected_keyword),
+      HasStringField(DefaultSearchManager::kURL, std::string(test_case.url)),
+      HasBooleanField(DefaultSearchManager::kFeaturedByPolicy, featured),
       HasIntegerField(
           DefaultSearchManager::kCreatedByPolicy,
           static_cast<int>(TemplateURLData::CreatedByPolicy::kSiteSearch)),
       HasBooleanField(DefaultSearchManager::kEnforcedByPolicy, false),
-      HasStringField(DefaultSearchManager::kFaviconURL, test_case.favicon),
+      HasIntegerField(DefaultSearchManager::kIsActive,
+                      static_cast<int>(TemplateURLData::ActiveStatus::kTrue)),
+      HasStringField(DefaultSearchManager::kFaviconURL,
+                     std::string(test_case.favicon)),
       HasBooleanField(DefaultSearchManager::kSafeForAutoReplace, false),
       HasDoubleField(DefaultSearchManager::kDateCreated),
       HasDoubleField(DefaultSearchManager::kLastModified));
+}
+
+testing::Matcher<const base::Value&> IsNonFeaturedSiteSearchEntry(
+    TestProvider test_case) {
+  return IsSiteSearchEntry(test_case, /*featured=*/false);
+}
+
+testing::Matcher<const base::Value&> IsFeaturedSiteSearchEntry(
+    TestProvider test_case) {
+  return IsSiteSearchEntry(test_case, /*featured=*/true);
 }
 
 MATCHER_P(HasValidationError,
@@ -380,9 +415,10 @@ TEST(SiteSearchPolicyHandlerTest, ValidSiteSearchEntries) {
       EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
-  EXPECT_THAT(providers->GetList(),
-              ElementsAre(IsSiteSearchEntry(kValidTestProviders[0]),
-                          IsSiteSearchEntry(kValidTestProviders[1])));
+  EXPECT_THAT(
+      providers->GetList(),
+      ElementsAre(IsNonFeaturedSiteSearchEntry(kValidTestProviders[0]),
+                  IsNonFeaturedSiteSearchEntry(kValidTestProviders[1])));
 }
 
 TEST(SiteSearchPolicyHandlerTest, InvalidFormat) {
@@ -526,9 +562,8 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutNotUnique) {
       EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
-  EXPECT_THAT(
-      providers->GetList(),
-      ElementsAre(IsSiteSearchEntry(kShortcutNotUniqueTestProviders[2])));
+  EXPECT_THAT(providers->GetList(), ElementsAre(IsNonFeaturedSiteSearchEntry(
+                                        kShortcutNotUniqueTestProviders[2])));
 }
 
 TEST(SiteSearchPolicyHandlerTest, NoUniqueShortcut) {
@@ -622,8 +657,9 @@ TEST(SiteSearchPolicyHandlerTest, UnknownField) {
       EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
-  EXPECT_THAT(providers->GetList(),
-              ElementsAre(IsSiteSearchEntry(kUnknownFieldTestProviders[0])));
+  EXPECT_THAT(
+      providers->GetList(),
+      ElementsAre(IsNonFeaturedSiteSearchEntry(kUnknownFieldTestProviders[0])));
 }
 
 TEST(SiteSearchPolicyHandlerTest, ShortcutWithSpace) {
@@ -691,9 +727,9 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutStartsWithAt) {
       EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
-  EXPECT_THAT(
-      providers->GetList(),
-      ElementsAre(IsSiteSearchEntry(kShortcutStartsWithAtTestProviders[1])));
+  EXPECT_THAT(providers->GetList(),
+              ElementsAre(IsNonFeaturedSiteSearchEntry(
+                  kShortcutStartsWithAtTestProviders[1])));
 }
 
 TEST(SiteSearchPolicyHandlerTest, InvalidUrl) {
@@ -761,11 +797,11 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPEnabledNotSet) {
       EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
-  EXPECT_THAT(
-      providers->GetList(),
-      ElementsAre(
-          IsSiteSearchEntry(kShortcutSameAsDSPKeywordTestProviders[0]),
-          IsSiteSearchEntry(kShortcutSameAsDSPKeywordTestProviders[1])));
+  EXPECT_THAT(providers->GetList(),
+              ElementsAre(IsNonFeaturedSiteSearchEntry(
+                              kShortcutSameAsDSPKeywordTestProviders[0]),
+                          IsNonFeaturedSiteSearchEntry(
+                              kShortcutSameAsDSPKeywordTestProviders[1])));
 }
 
 TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPDisabled) {
@@ -804,11 +840,11 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPDisabled) {
       EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
-  EXPECT_THAT(
-      providers->GetList(),
-      ElementsAre(
-          IsSiteSearchEntry(kShortcutSameAsDSPKeywordTestProviders[0]),
-          IsSiteSearchEntry(kShortcutSameAsDSPKeywordTestProviders[1])));
+  EXPECT_THAT(providers->GetList(),
+              ElementsAre(IsNonFeaturedSiteSearchEntry(
+                              kShortcutSameAsDSPKeywordTestProviders[0]),
+                          IsNonFeaturedSiteSearchEntry(
+                              kShortcutSameAsDSPKeywordTestProviders[1])));
 }
 
 TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPEnabled) {
@@ -852,7 +888,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPEnabled) {
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
   EXPECT_THAT(providers->GetList(),
-              ElementsAre(IsSiteSearchEntry(
+              ElementsAre(IsNonFeaturedSiteSearchEntry(
                   kShortcutSameAsDSPKeywordTestProviders[1])));
 }
 
@@ -887,8 +923,9 @@ TEST(SiteSearchPolicyHandlerTest, NonHttpsUrl) {
       EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
-  EXPECT_THAT(providers->GetList(),
-              ElementsAre(IsSiteSearchEntry(kNonHttpsUrlTestProviders[0])));
+  EXPECT_THAT(
+      providers->GetList(),
+      ElementsAre(IsNonFeaturedSiteSearchEntry(kNonHttpsUrlTestProviders[0])));
 }
 
 TEST(SiteSearchPolicyHandlerTest, NoValidEntry) {
@@ -909,6 +946,46 @@ TEST(SiteSearchPolicyHandlerTest, NoValidEntry) {
   ASSERT_FALSE(handler.CheckPolicySettings(policies, &errors));
   EXPECT_THAT(&errors, HasValidationError(l10n_util::GetStringUTF16(
                            IDS_POLICY_SITE_SEARCH_SETTINGS_NO_VALID_PROVIDER)));
+}
+
+TEST(SiteSearchPolicyHandlerTest, FeaturedSiteSearchEntries) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+
+  SiteSearchPolicyHandler handler(
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+
+  policy::PolicyMap policies;
+  PolicyErrorMap errors;
+  PrefValueMap prefs;
+
+  base::Value::List policy_value;
+  for (auto* it = std::begin(kTestProvidersWithFeaturedEntries);
+       it != std::end(kTestProvidersWithFeaturedEntries); ++it) {
+    policy_value.Append(GenerateSiteSearchPolicyEntry(*it));
+  }
+
+  policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(std::move(policy_value)), nullptr);
+
+  ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
+  EXPECT_TRUE(errors.empty());
+
+  handler.ApplyPolicySettings(policies, &prefs);
+  base::Value* providers = nullptr;
+  ASSERT_TRUE(prefs.GetValue(
+      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+  ASSERT_NE(providers, nullptr);
+  ASSERT_TRUE(providers->is_list());
+  EXPECT_THAT(
+      providers->GetList(),
+      ElementsAre(
+          IsNonFeaturedSiteSearchEntry(kTestProvidersWithFeaturedEntries[0]),
+          IsFeaturedSiteSearchEntry(kTestProvidersWithFeaturedEntries[0]),
+          IsNonFeaturedSiteSearchEntry(kTestProvidersWithFeaturedEntries[1]),
+          IsNonFeaturedSiteSearchEntry(kTestProvidersWithFeaturedEntries[2]),
+          IsFeaturedSiteSearchEntry(kTestProvidersWithFeaturedEntries[2])));
 }
 
 }  // namespace policy

@@ -57,14 +57,17 @@ class AXSystemCaretWinTest : public test::DesktopWidgetTest {
   }
 
   void TearDown() override {
-    widget_->CloseNow();
+    DCHECK(!textfield_->owned_by_client());
+    textfield_ = nullptr;
+    // Calling CloseNow() will destroy the Widget.
+    widget_.ExtractAsDangling()->CloseNow();
     test::DesktopWidgetTest::TearDown();
     ui::ResourceBundle::CleanupSharedInstance();
   }
 
  protected:
-  raw_ptr<Widget, DanglingUntriaged> widget_;
-  raw_ptr<Textfield, DanglingUntriaged> textfield_;
+  raw_ptr<Widget> widget_;
+  raw_ptr<Textfield> textfield_;
   base::win::ScopedVariant self_;
 };
 

@@ -48,7 +48,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.components.autofill.ServerFieldType;
+import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -753,26 +753,26 @@ public class AutofillUiUtils {
         cardLabelView.setTextAppearance(cardLabelTextAppearance);
     }
 
-    public static int getInputTypeForField(@ServerFieldType int type) {
+    public static int getInputTypeForField(@FieldType int type) {
         switch (type) {
-            case ServerFieldType.NAME_FULL:
+            case FieldType.NAME_FULL:
                 return InputType.TYPE_CLASS_TEXT
                         | InputType.TYPE_TEXT_FLAG_CAP_WORDS
                         | InputType.TYPE_TEXT_VARIATION_PERSON_NAME;
-            case ServerFieldType.ADDRESS_HOME_SORTING_CODE:
-            case ServerFieldType.ADDRESS_HOME_ZIP:
+            case FieldType.ADDRESS_HOME_SORTING_CODE:
+            case FieldType.ADDRESS_HOME_ZIP:
                 return InputType.TYPE_CLASS_TEXT
                         | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
                         | InputType.TYPE_TEXT_VARIATION_POSTAL_ADDRESS;
-            case ServerFieldType.PHONE_HOME_WHOLE_NUMBER:
+            case FieldType.PHONE_HOME_WHOLE_NUMBER:
                 // Show the keyboard with numbers and phone-related symbols.
                 return InputType.TYPE_CLASS_PHONE;
-            case ServerFieldType.ADDRESS_HOME_STREET_ADDRESS:
+            case FieldType.ADDRESS_HOME_STREET_ADDRESS:
                 return InputType.TYPE_CLASS_TEXT
                         | InputType.TYPE_TEXT_FLAG_CAP_WORDS
                         | InputType.TYPE_TEXT_FLAG_MULTI_LINE
                         | InputType.TYPE_TEXT_VARIATION_POSTAL_ADDRESS;
-            case ServerFieldType.EMAIL_ADDRESS:
+            case FieldType.EMAIL_ADDRESS:
                 return InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
             default:
                 return InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS;

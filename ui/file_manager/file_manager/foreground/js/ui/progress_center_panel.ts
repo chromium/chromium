@@ -4,11 +4,11 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 
-import {PolicyErrorType, ProgressCenterItem, ProgressItemExtraButton, ProgressItemState, ProgressItemType} from '../../../common/js/progress_center_common.js';
+import {PolicyErrorType, ProgressCenterItem, type ProgressItemExtraButton, ProgressItemState, ProgressItemType} from '../../../common/js/progress_center_common.js';
 import {secondsToRemainingTimeString, str, strf} from '../../../common/js/translations.js';
 import {ProgressCenterPanelInterface} from '../../../externs/progress_center_panel.js';
 import {DisplayPanel} from '../../elements/xf_display_panel.js';
-import {PanelType, UserData} from '../../elements/xf_panel_item.js';
+import {PanelType, type UserData} from '../../elements/xf_panel_item.js';
 
 /**
  * Progress center panel.
@@ -443,7 +443,11 @@ export class ProgressCenterPanel implements ProgressCenterPanelInterface {
     }
 
     if (item.state === ProgressItemState.SCANNING) {
-      return str('SCANNING_LABEL');
+      if (item.itemCount === 1) {
+        return str('SCANNING_LABEL');
+      } else {
+        return str('SCANNING_LABEL_PLURAL');
+      }
     }
 
     // Check if remaining time is valid (ie finite and positive).

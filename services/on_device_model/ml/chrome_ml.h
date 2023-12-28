@@ -6,6 +6,7 @@
 #define SERVICES_ON_DEVICE_MODEL_ML_CHROME_ML_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_native_library.h"
@@ -27,7 +28,8 @@ class ChromeML {
 
   // Gets a lazily initialized global instance of ChromeML. May return null
   // if the underlying library could not be loaded.
-  static ChromeML* Get();
+  static ChromeML* Get(
+      const std::optional<std::string>& library_name = std::nullopt);
 
   // Exposes the raw ChromeMLAPI functions defined by the library.
   const ChromeMLAPI& api() const { return *api_; }
@@ -35,11 +37,17 @@ class ChromeML {
   // Whether or not the GPU is blocklisted.
   bool IsGpuBlocked() const;
 
+  void SetAllowGpuForTesting(bool allow_gpu) {
+    allow_gpu_for_testing_ = allow_gpu;
+  }
+
  private:
-  static std::unique_ptr<ChromeML> Create();
+  static std::unique_ptr<ChromeML> Create(
+      const std::optional<std::string>& library_name);
 
   const base::ScopedNativeLibrary library_;
   const raw_ptr<const ChromeMLAPI> api_;
+  bool allow_gpu_for_testing_ = false;
 };
 
 }  // namespace ml

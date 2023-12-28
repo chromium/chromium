@@ -493,8 +493,8 @@ void IDBTransaction::StartAborting(DOMException* error, bool from_frontend) {
   // due to a constraint error), we're already asynchronous.
   AbortOutstandingRequests(/*queue_tasks=*/from_frontend);
 
-  if (from_frontend && BackendDB()) {
-    BackendDB()->Abort(id_);
+  if (from_frontend && database_) {
+    database_->Abort(id_);
   }
 }
 
@@ -583,10 +583,6 @@ mojom::blink::IDBTransactionMode IDBTransaction::StringToMode(
     return mojom::blink::IDBTransactionMode::VersionChange;
   NOTREACHED();
   return mojom::blink::IDBTransactionMode::ReadOnly;
-}
-
-WebIDBDatabase* IDBTransaction::BackendDB() const {
-  return database_->Backend();
 }
 
 const String& IDBTransaction::mode() const {

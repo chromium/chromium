@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
-#include "components/signin/public/base/signin_buildflags.h"
 
 class Profile;
 class ProfileManagementStepController;
@@ -58,10 +57,8 @@ class ProfileManagementFlowController {
     // Renders a default browser promo.
     kDefaultBrowser,
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
     // Renders the search engine choice screen.
     kSearchEngineChoice,
-#endif
 
     kFinishFlow,
   };
@@ -107,9 +104,10 @@ class ProfileManagementFlowController {
   // (which is the default), the host will choose itself some generic title.
   virtual std::u16string GetFallbackAccessibleWindowTitle() const;
 
-  // A helper method to create a pop callback that will switch to the existing
-  // step (prior to the actual switch that this pop closure should be part of).
-  base::OnceClosure CreateSwitchToCurrentStepPopCallback();
+  // A helper method to create a pop callback that will switch to the given
+  // step (can be used with `current_step()` to facilitate switching back to the
+  // current active step).
+  base::OnceClosure CreateSwitchToStepPopCallback(Step step);
 
  protected:
   void RegisterStep(Step step,

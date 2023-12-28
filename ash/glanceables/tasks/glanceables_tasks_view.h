@@ -13,6 +13,7 @@
 #include "ash/glanceables/glanceables_metrics.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/list_model.h"
@@ -29,7 +30,7 @@ namespace ash {
 class Combobox;
 class GlanceablesListFooterView;
 class GlanceablesProgressBarView;
-class GlanceablesTaskView;
+class GlanceablesTaskViewV2;
 class TasksComboboxModel;
 
 // Temporary interface to allow smooth migration from `TasksBubbleView` to
@@ -73,8 +74,8 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
   // Handles press behavior for `add_new_task_button_`.
   void AddNewTaskButtonPressed();
 
-  // Creates a `GlanceablesTaskView` instance with bound callbacks.
-  std::unique_ptr<GlanceablesTaskView> CreateTaskView(
+  // Creates a `GlanceablesTaskViewV2` instance with bound callbacks.
+  std::unique_ptr<GlanceablesTaskViewV2> CreateTaskView(
       const std::string& task_list_id,
       const api::Task* task);
 
@@ -96,17 +97,22 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
                            bool completed);
 
   // Saves the task (either creates or updates the existing one).
+  // `view`     - individual task view which triggered this request.
   // `callback` - done callback passed from an individual task view.
   void SaveTask(const std::string& task_list_id,
+                base::WeakPtr<GlanceablesTaskViewV2> view,
                 const std::string& task_id,
                 const std::string& title,
                 api::TasksClient::OnTaskSavedCallback callback);
 
   // Handles completion of `SaveTask`.
+  // `view`     - individual task view which triggered this request.
   // `callback` - callback passed from an individual task view via `SaveTask`.
   // `task`     - newly created or edited task if the request completes
   //              successfully, `nullptr` otherwise.
-  void OnTaskSaved(api::TasksClient::OnTaskSavedCallback callback,
+  void OnTaskSaved(base::WeakPtr<GlanceablesTaskViewV2> view,
+                   const std::string& task_id,
+                   api::TasksClient::OnTaskSavedCallback callback,
                    const api::Task* task);
 
   // Model for the combobox used to change the active task list.
@@ -121,19 +127,13 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
   bool first_task_list_shown_ = false;
 
   // Owned by views hierarchy.
-  raw_ptr<views::FlexLayoutView, ExperimentalAsh> tasks_header_view_ = nullptr;
-  raw_ptr<Combobox, ExperimentalAsh> task_list_combo_box_view_ = nullptr;
-  raw_ptr<views::FlexLayoutView, ExperimentalAsh> button_container_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> task_items_container_view_ = nullptr;
-  raw_ptr<views::LabelButton, ExperimentalAsh> add_new_task_button_ = nullptr;
-  raw_ptr<GlanceablesListFooterView, ExperimentalAsh> list_footer_view_ =
-      nullptr;
-  raw_ptr<GlanceablesProgressBarView, ExperimentalAsh> progress_bar_ = nullptr;
-
-  // Pending new task that was added after pressing `add_new_task_button_`.
-  // Used to limit the number of such views to only one and to remove the view
-  // from `task_items_container_view_` if needed.
-  raw_ptr<GlanceablesTaskView> pending_new_task_ = nullptr;
+  raw_ptr<views::FlexLayoutView> tasks_header_view_ = nullptr;
+  raw_ptr<Combobox> task_list_combo_box_view_ = nullptr;
+  raw_ptr<views::FlexLayoutView> button_container_ = nullptr;
+  raw_ptr<views::View> task_items_container_view_ = nullptr;
+  raw_ptr<views::LabelButton> add_new_task_button_ = nullptr;
+  raw_ptr<GlanceablesListFooterView> list_footer_view_ = nullptr;
+  raw_ptr<GlanceablesProgressBarView> progress_bar_ = nullptr;
 
   // Records the time when the bubble was about to request a task list. Used for
   // metrics.

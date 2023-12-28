@@ -687,16 +687,17 @@ Polymer({
     if (this.networkState.type === NetworkType.kCellular) {
       // For carrier lock, display string is different from regular
       // pin lock
-      if (this.isCellularCarrierLockEnabled_ &&
-          this.networkState.typeState.cellular.simLocked &&
-          this.networkState.typeState.cellular.simLockType === 'network-pin') {
-        return this.i18n('networkListItemUpdatedCellularSimCardCarrierLocked');
+      if (this.networkState.typeState.cellular.simLocked) {
+        if (this.isCellularCarrierLockEnabled_ &&
+            this.networkState.typeState.cellular.simLockType ===
+                'network-pin') {
+          return this.i18n(
+              'networkListItemUpdatedCellularSimCardCarrierLocked');
+        }
+        return this.i18n('networkListItemUpdatedCellularSimCardLocked');
       }
       if (this.isPsimPendingActivationWhileLoggedOut_()) {
         return this.i18n('networkListItemActivateAfterDeviceSetup');
-      }
-      if (this.networkState.typeState.cellular.simLocked) {
-        return this.i18n('networkListItemUpdatedCellularSimCardLocked');
       }
       if (this.isPSimUnavailableNetwork_ || this.isESimUnactivatedProfile_) {
         return this.i18n('networkListItemUnavailableSimNetwork');

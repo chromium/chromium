@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -30,9 +31,15 @@ namespace password_manager {
 
 class PasswordManagerClient;
 
+// Password attributes (whether a password has special symbols, numeric, etc.)
+enum class PasswordAttribute {
+  kHasLetter,
+  kHasSpecialSymbol,
+  kPasswordAttributesCount
+};
+
 // Map from a field's renderer id to a field type.
-using FieldTypeMap =
-    std::map<autofill::FieldRendererId, autofill::ServerFieldType>;
+using FieldTypeMap = std::map<autofill::FieldRendererId, autofill::FieldType>;
 // A map from field's renderer id to a vote type (e.g. CREDENTIALS_REUSED).
 using VoteTypeMap = std::map<autofill::FieldRendererId,
                              autofill::AutofillUploadContents::Field::VoteType>;
@@ -47,7 +54,8 @@ struct SingleUsernameVoteData {
       autofill::FieldRendererId renderer_id,
       const std::u16string& username_value,
       const FormPredictions& form_predictions,
-      const std::vector<const PasswordForm*>& stored_credentials,
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+          stored_credentials,
       PasswordFormHadMatchingUsername password_form_had_matching_username);
   SingleUsernameVoteData(const SingleUsernameVoteData&);
   SingleUsernameVoteData& operator=(const SingleUsernameVoteData&);
@@ -82,6 +90,21 @@ struct SingleUsernameVoteData {
   // If set to true, sends `SingleUsernameVoteType::IN_FORM_OVERRULE` vote. Read
   // more about this vote type in proto file.
   bool is_form_overrule;
+};
+
+struct PasswordAttributesMetadata {
+  // The vote about password attributes (e.g. whether the password has a
+  // numeric character).
+  std::pair<PasswordAttribute, bool> password_attributes_vote;
+
+  // If `password_attribute_vote` contains (kHasSpecialSymbol, true), this
+  // field contains noisified information about a special symbol in a
+  // user-created password stored as ASCII code. The default value of 0
+  // indicates that no symbol was set.
+  int password_symbol_vote = 0;
+
+  // Noisified password length for crowdsourcing.
+  int password_length_vote = 0;
 };
 
 // This class manages vote uploads for password forms.
@@ -125,10 +148,12 @@ class VotesUploader {
   ~VotesUploader();
 
   // Send appropriate votes based on what is currently being saved.
-  void SendVotesOnSave(const autofill::FormData& observed,
-                       const PasswordForm& submitted_form,
-                       const std::vector<const PasswordForm*>& best_matches,
-                       PasswordForm* pending_credentials);
+  void SendVotesOnSave(
+      const autofill::FormData& observed,
+      const PasswordForm& submitted_form,
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+          best_matches,
+      PasswordForm* pending_credentials);
 
   // Check to see if |pending| corresponds to an account creation form. If we
   // think that it does, we label it as such and upload this state to the
@@ -143,13 +168,14 @@ class VotesUploader {
   // a |FormStructure| and upload it to the server. Returns true on success.
   bool UploadPasswordVote(const PasswordForm& form_to_upload,
                           const PasswordForm& submitted_form,
-                          const autofill::ServerFieldType password_type,
+                          const autofill::FieldType password_type,
                           const std::string& login_form_signature);
 
   // Sends USERNAME and PASSWORD votes, when a credential is used to login for
   // the first time. |form_to_upload| is the submitted login form.
   void UploadFirstLoginVotes(
-      const std::vector<const PasswordForm*>& best_matches,
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+          best_matches,
       const PasswordForm& pending_credentials,
       const PasswordForm& form_to_upload);
 
@@ -158,14 +184,15 @@ class VotesUploader {
   // value of the match is equal to |password|, the match is saved to
   // |username_correction_vote_| and the method returns true.
   bool FindCorrectedUsernameElement(
-      const std::vector<const PasswordForm*>& matches,
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+          matches,
       const std::u16string& username,
       const std::u16string& password);
 
-  // Generates a password attributes vote based on |password_value| and saves it
-  // to |form_structure|. Declared as public for testing.
-  void GeneratePasswordAttributesVote(const std::u16string& password_value,
-                                      autofill::FormStructure* form_structure);
+  // Returns a password attributes vote based on `password_value` . Declared as
+  // public for testing.
+  std::optional<PasswordAttributesMetadata> GeneratePasswordAttributesMetadata(
+      const std::u16string& password_value);
 
   // Stores the |unique_renderer_id| and |values| of the fields in
   // |observed_form| to |initial_field_values_|.
@@ -223,6 +250,7 @@ class VotesUploader {
     username_change_state_ = username_change_state;
   }
 
+  bool passwords_revealed_vote() const { return has_passwords_revealed_vote_; }
   void set_has_passwords_revealed_vote(bool has_passwords_revealed_vote) {
     has_passwords_revealed_vote_ = has_passwords_revealed_vote;
   }
@@ -278,9 +306,11 @@ class VotesUploader {
 
   // Sets the known-value flag for each field, indicating that the field
   // contained a previously stored credential on submission.
-  void SetKnownValueFlag(const PasswordForm& pending_credentials,
-                         const std::vector<const PasswordForm*>& best_matches,
-                         autofill::FormStructure* form_to_upload);
+  void SetKnownValueFlag(
+      const PasswordForm& pending_credentials,
+      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+          best_matches,
+      autofill::FormStructure* form_to_upload);
 
   // Searches for |username| in |all_alternative_usernames| of |match|. If the
   // username value is found, the match is saved to |username_correction_vote_|
@@ -290,7 +320,7 @@ class VotesUploader {
 
   bool StartUploadRequest(
       autofill::FormStructure& form_to_upload,
-      const autofill::ServerFieldTypeSet& available_field_types,
+      const autofill::FieldTypeSet& available_field_types,
       const std::string& login_form_signature = std::string());
 
   // On username first and forgot password flows votes are uploaded both for the
@@ -301,7 +331,7 @@ class VotesUploader {
   bool SetSingleUsernameVoteOnUsernameForm(
       autofill::AutofillField* field,
       const SingleUsernameVoteData& single_username,
-      autofill::ServerFieldTypeSet* available_field_types,
+      autofill::FieldTypeSet* available_field_types,
       autofill::FormSignature form_signature,
       autofill::IsMostRecentSingleUsernameCandidate
           is_most_recent_single_username_candidate,
@@ -372,10 +402,10 @@ class VotesUploader {
   UsernameChangeState username_change_state_ = UsernameChangeState::kUnchanged;
 
   // If the user typed username that doesn't match any saved credentials, but
-  // matches an entry from |all_alternative_usernames| of a saved credential,
-  // |username_correction_vote_| stores the credential with matched username.
-  // The matched credential is copied to |username_correction_vote_|, but
-  // |username_correction_vote_.username_element| is set to the name of the
+  // matches an entry from `all_alternative_usernames` of a saved credential,
+  // `username_correction_vote_` stores the credential with matched username.
+  // The matched credential is copied to `username_correction_vote_`, but
+  // `username_correction_vote_.username_element` is set to the name of the
   // field where the matched username was found.
   std::optional<PasswordForm> username_correction_vote_;
 

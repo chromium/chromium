@@ -72,8 +72,6 @@ void AddProductInfoToExistingBookmark(
     const absl::optional<int64_t>& last_subscription_change_time =
         absl::nullopt);
 
-CommerceSubscription CreateUserTrackedSubscription(uint64_t cluster_id);
-
 // Sets the state of the enterprise policy for the shopping list feature for
 // testing.
 void SetShoppingListEnterprisePolicyPref(PrefService* prefs, bool enabled);

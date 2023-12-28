@@ -58,7 +58,7 @@ InstallFencedFrameReporterObserver(
   CHECK(fenced_frame_properties.has_value());
 
   scoped_refptr<content::FencedFrameReporter> fenced_frame_reporter =
-      fenced_frame_properties->fenced_frame_reporter_;
+      fenced_frame_properties->fenced_frame_reporter();
   CHECK(fenced_frame_reporter);
 
   return std::make_unique<FencedFrameReporterObserverForTesting>(

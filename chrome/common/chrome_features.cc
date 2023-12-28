@@ -621,6 +621,11 @@ BASE_FEATURE(kHappinessTrackingSurveysForNtpPhotosOptOut,
              "HappinessTrackingSurveysForrNtpPhotosOptOut",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables the Happiness Tracking System for Wallpaper Search.
+BASE_FEATURE(kHappinessTrackingSurveysForWallpaperSearch,
+             "HappinessTrackingSurveysForWallpaperSearch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the Happiness Tracking System for Chrome What's New.
 BASE_FEATURE(kHappinessTrackingSurveysForDesktopWhatsNew,
              "HappinessTrackingSurveysForDesktopWhatsNew",
@@ -672,6 +677,10 @@ extern const base::FeatureParam<std::string>
     kHappinessTrackingSurveysForSecurityPageTriggerId{
         &kHappinessTrackingSurveysForSecurityPage, "security-page-trigger-id",
         ""};
+extern const base::FeatureParam<bool>
+    kHappinessTrackingSurveysForSecurityPageRequireInteraction{
+        &kHappinessTrackingSurveysForSecurityPage,
+        "security-page-require-interaction", false};
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -1099,16 +1108,6 @@ BASE_FEATURE(kLocalPrinterObserving,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kPrivacyGuideAndroid,
-             "PrivacyGuideAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPrivacyGuideAndroidPostMVP,
-             "PrivacyGuideAndroidPostMVP",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // Enables or disables push subscriptions keeping Chrome running in the
 // background when closed.
 BASE_FEATURE(kPushMessagingBackgroundMode,
@@ -1293,7 +1292,7 @@ BASE_FEATURE(kTreatUnsafeDownloadsAsActive,
 // Show warnings on downloads not delivered over HTTPS.
 BASE_FEATURE(kInsecureDownloadWarnings,
              "InsecureDownloadWarnings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TrackingProtectionSentimentSurvey
 #if !BUILDFLAG(IS_ANDROID)

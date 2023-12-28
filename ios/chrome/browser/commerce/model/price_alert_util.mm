@@ -8,6 +8,7 @@
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/prefs/pref_service.h"
 #import "components/unified_consent/url_keyed_data_collection_consent_helper.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -18,11 +19,12 @@ bool IsPriceAlertsEligible(web::BrowserState* browser_state) {
   if (browser_state->IsOffTheRecord()) {
     return false;
   }
-  // Price drop annotations are only enabled for en_US.
-  NSLocale* current_locale = [NSLocale currentLocale];
-  if (![@"en_US" isEqualToString:current_locale.localeIdentifier]) {
+
+  // Price drop annotations are only enabled for en-US.
+  if (GetApplicationContext()->GetApplicationLocale() != "en-US") {
     return false;
   }
+
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(browser_state);
   AuthenticationService* authentication_service =

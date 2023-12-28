@@ -383,7 +383,9 @@ chromium-metrics-reviews@google.com.
   <int value="52" label="Password migration warning on Android only"/>
   <int value="53" label="Save to photos iOS"/>
   <int value="54" label="Chrome Sign-in intercept bubble."/>
-  <int value="55" label="Tab organization"/>
+  <int value="55" label="Restore primary account on profile load"/>
+  <int value="56" label="Tab organization"/>
+  <int value="57" label="Save to Drive iOS"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

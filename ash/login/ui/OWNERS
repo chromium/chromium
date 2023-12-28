@@ -6,3 +6,5 @@ per-file lock_contents_view*=file://ash/login/LOGIN_LOCK_OWNERS
 
 per-file *auth_factor*=cclem@google.com
 per-file *auth_factor*=hansberry@chromium.org
+
+per-file lock_screen_media*=file://components/global_media_controls/OWNERS

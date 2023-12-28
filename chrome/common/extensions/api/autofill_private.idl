@@ -12,9 +12,9 @@ namespace autofillPrivate {
     boolean isEligibleForAddressAccountStorage;
   };
 
-  // A copy of ServerFieldType from
+  // A copy of FieldType from
   // chrome/common/extensions/api/autofill_private.idl
-  enum ServerFieldType {
+  enum FieldType {
     NO_SERVER_DATA,
     UNKNOWN_TYPE,
     EMPTY_TYPE,
@@ -162,7 +162,7 @@ namespace autofillPrivate {
   // Represents single entry of the autofill profile, containing field type and
   // the corresponding field value.
   dictionary AddressField {
-    ServerFieldType type;
+    FieldType type;
     DOMString value;
   };
 
@@ -194,7 +194,7 @@ namespace autofillPrivate {
   // different components to their addresses.
   dictionary AddressComponent {
     // The field type.
-    ServerFieldType field;
+    FieldType field;
 
     // The name of the field.
     DOMString fieldName;

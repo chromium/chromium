@@ -11,7 +11,6 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/single_field_form_filler.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/webdata/autocomplete_entry.h"
@@ -64,9 +63,6 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
   void Init(scoped_refptr<AutofillWebDataService> profile_database,
             PrefService* pref_service,
             bool is_off_the_record);
-
-  // Returns a weak pointer to the current AutocompleteHistoryManager instance.
-  base::WeakPtr<AutocompleteHistoryManager> GetWeakPtr();
 
   // WebDataServiceConsumer implementation.
   void OnWebDataServiceRequestDone(
@@ -151,8 +147,6 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
 
   // Whether the service is associated with an off-the-record browser context.
   bool is_off_the_record_ = false;
-
-  base::WeakPtrFactory<AutocompleteHistoryManager> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

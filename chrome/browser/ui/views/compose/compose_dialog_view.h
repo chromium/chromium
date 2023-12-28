@@ -13,9 +13,9 @@
 
 // A view for the contents area of the Compose dialog.
 class ComposeDialogView : public WebUIBubbleDialogView {
- public:
-  METADATA_HEADER(ComposeDialogView);
+  METADATA_HEADER(ComposeDialogView, WebUIBubbleDialogView)
 
+ public:
   explicit ComposeDialogView(
       View* anchor_view,
       std::unique_ptr<BubbleContentsWrapperT<ComposeUI>> bubble_wrapper,
@@ -25,8 +25,11 @@ class ComposeDialogView : public WebUIBubbleDialogView {
   ~ComposeDialogView() override;
 
   // WebUIBubbleDialogView:
-  void ResizeDueToAutoResize(content::WebContents* source,
-                             const gfx::Size& new_size) override;
+  gfx::Rect GetBubbleBounds() override;
+  void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
+                                views::Widget* widget) const override;
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
+                         const content::ContextMenuParams& params) override;
 
   BubbleContentsWrapperT<ComposeUI>* bubble_wrapper() {
     return bubble_wrapper_.get();

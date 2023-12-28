@@ -349,6 +349,34 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream) {
   EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
 }
 
+#if BUILDFLAG(USE_VAAPI)
+TEST_F(VideoEncoderTest, FlushAtEndOfStream_EnableDropFrame) {
+  const VideoCodec codec = VideoCodecProfileToVideoCodec(g_env->Profile());
+  if (codec != media::VideoCodec::kVP8) {
+    GTEST_SKIP() << "VideoEncodeAccelerator on this device doesn't support drop"
+                 << "frame with codec=" << GetCodecName(codec);
+  }
+  if (g_env->BitrateAllocation().GetMode() == Bitrate::Mode::kVariable) {
+    GTEST_SKIP() << "Drop frame doesn't support in VBR encoding";
+  }
+
+  auto config = GetDefaultConfig();
+  constexpr uint8_t kDropFrameThreshold = 10;
+  config.drop_frame_thresh = kDropFrameThreshold;
+  auto encoder = CreateVideoEncoder(g_env->Video(), config);
+  encoder->Encode();
+  EXPECT_TRUE(encoder->WaitForFlushDone());
+
+  EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
+  EXPECT_EQ(encoder->GetFrameReleasedCount(), g_env->Video()->NumFrames());
+  EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
+
+  auto stats = encoder->GetStats();
+  VLOG(0) << "Dropped frames: " << stats.num_dropped_frames << " / "
+          << stats.total_num_encoded_frames;
+}
+#endif  // BUILDFLAG(USE_VAAPI)
+
 // Test initializing the video encoder. The test will be successful if the video
 // encoder is capable of setting up the encoder for the specified codec and
 // resolution. The test only verifies initialization and doesn't do any

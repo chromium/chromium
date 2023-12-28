@@ -6,11 +6,6 @@
 #define CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_CLIENT_SIDE_TRIAL_H_
 
 #include "base/metrics/field_trial.h"
-#include "components/signin/public/base/signin_buildflags.h"
-
-#if !BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-#error "Unsupported platform"
-#endif
 
 namespace base {
 class FeatureList;

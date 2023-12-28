@@ -30,7 +30,7 @@ namespace extensions {
 // A storage area for per-extension state that needs to be persisted to disk.
 class StateStore : public ExtensionRegistryObserver {
  public:
-  typedef value_store::ValueStoreFrontend::ReadCallback ReadCallback;
+  using ReadCallback = value_store::ValueStoreFrontend::ReadCallback;
 
   // The kind of extensions data stored in a backend.
   enum class BackendType { RULES, STATE, SCRIPTS };

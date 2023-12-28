@@ -1,5 +1,4 @@
 include_rules = [
-    "+base/check_deref.h",
     "+services/metrics/public/cpp/ukm_recorder.h",
     "+third_party/skia/include",
 ]

@@ -34,7 +34,7 @@ struct Badge {
   }
   bool operator!=(const Badge& other) const { return !(other == *this); }
 
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon = nullptr;
+  raw_ptr<const gfx::VectorIcon> icon = nullptr;
   SkColor color = gfx::kPlaceholderColor;
 };
 

@@ -171,8 +171,6 @@ class OfflinePageTabHelper
   // Finalize the offline info when the navigation is done.
   void FinalizeOfflineInfo(content::NavigationHandle* navigation_handle);
 
-  void ReportOfflinePageMetrics();
-
   // Reload the URL in order to fetch the offline page on certain net errors.
   void TryLoadingOfflinePageOnNetError(
       content::NavigationHandle* navigation_handle);

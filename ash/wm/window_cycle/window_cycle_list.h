@@ -36,7 +36,7 @@ using WindowCyclingDirection = WindowCycleController::WindowCyclingDirection;
 class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
                                    public display::DisplayObserver {
  public:
-  using WindowList = std::vector<aura::Window*>;
+  using WindowList = std::vector<raw_ptr<aura::Window, VectorExperimental>>;
 
   WindowCycleList(const WindowList& windows, bool same_app_only);
   WindowCycleList(const WindowCycleList&) = delete;
@@ -187,10 +187,10 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
 
   // The top level View for the window cycle UI. May be null if the UI is not
   // showing.
-  raw_ptr<WindowCycleView, ExperimentalAsh> cycle_view_ = nullptr;
+  raw_ptr<WindowCycleView> cycle_view_ = nullptr;
 
   // The widget that hosts the window cycle UI.
-  raw_ptr<views::Widget, ExperimentalAsh> cycle_ui_widget_ = nullptr;
+  raw_ptr<views::Widget> cycle_ui_widget_ = nullptr;
 
   // The window list will dismiss if the display metrics change.
   display::ScopedDisplayObserver display_observer_{this};
@@ -204,8 +204,7 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
 
   // Tracks what window was active when starting to cycle and used to determine
   // if alt-tab should focus the first or the second window in the list.
-  raw_ptr<aura::Window, ExperimentalAsh> active_window_before_window_cycle_ =
-      nullptr;
+  raw_ptr<aura::Window> active_window_before_window_cycle_ = nullptr;
 
   // The most recent direction `Step()` was called with.
   WindowCyclingDirection last_cycling_direction_;

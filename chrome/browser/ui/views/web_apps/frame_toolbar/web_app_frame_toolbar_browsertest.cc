@@ -1681,6 +1681,20 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   ASSERT_EQ(blue, EvalJs(web_contents, get_background_color));
 }
 
+// Verifies that draggable and non draggable regions defined by the app-region
+// CSS property are collected.
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
+                       DraggableRegionsEnabled) {
+  InstallAndLaunchWebApp();
+  ToggleWindowControlsOverlayAndWait();
+
+  absl::optional<SkRegion> draggable_region =
+      helper()->browser_view()->browser()->app_controller()->draggable_region();
+
+  EXPECT_TRUE(draggable_region.has_value());
+  EXPECT_FALSE(draggable_region.value().isEmpty());
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
     : public WebAppFrameToolbarBrowserTest {

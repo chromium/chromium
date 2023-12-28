@@ -92,7 +92,7 @@ leveldb::Status TransactionalLevelDBIterator::SeekToLast() {
 }
 
 leveldb::Status TransactionalLevelDBIterator::Seek(
-    const base::StringPiece& target) {
+    const std::string_view& target) {
   DCHECK(db_);
   CheckState();
 
@@ -154,7 +154,7 @@ leveldb::Status TransactionalLevelDBIterator::Prev() {
   return WrappedIteratorStatus();
 }
 
-base::StringPiece TransactionalLevelDBIterator::Key() const {
+std::string_view TransactionalLevelDBIterator::Key() const {
   DCHECK(db_);
   DCHECK(IsValid());
   CheckState();
@@ -164,7 +164,7 @@ base::StringPiece TransactionalLevelDBIterator::Key() const {
   return leveldb_env::MakeStringPiece(iterator_->key());
 }
 
-base::StringPiece TransactionalLevelDBIterator::Value() const {
+std::string_view TransactionalLevelDBIterator::Value() const {
   DCHECK(db_);
   DCHECK(IsValid());
   CheckState();

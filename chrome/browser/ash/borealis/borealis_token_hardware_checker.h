@@ -21,17 +21,19 @@ namespace borealis {
 // find it ~if you go to the place we all know and love~.
 class BorealisTokenHardwareChecker : public TokenHardwareChecker {
  public:
-  static BorealisFeatures::AllowStatus BuildAndCheck(Data data);
+  // Returns true if hardware is sufficient, false otherwise.
+  static bool BuildAndCheck(Data data);
 
   explicit BorealisTokenHardwareChecker(Data data);
 
   ~BorealisTokenHardwareChecker();
 
-  BorealisFeatures::AllowStatus Check() const;
+  // Returns true if hardware is sufficient, false otherwise.
+  bool Check() const;
 
  private:
   // Helper method that performs different checks based on the user's board.
-  BorealisFeatures::AllowStatus BoardSpecificChecks() const;
+  bool BoardSpecificChecks() const;
 
   // Returns the true if the board's CPU matches the given |cpu_regex| and RAM
   // is more than 7G.

@@ -11,8 +11,8 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/lazy_context_id.h"
+#include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/browser/process_manager.h"
-#include "extensions/browser/service_worker_task_queue.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/mojom/view_type.mojom.h"
@@ -83,10 +83,10 @@ void ExtensionBackgroundPageWaiter::WaitForBackgroundWorkerInitialized() {
       [&run_loop](std::unique_ptr<LazyContextTaskQueue::ContextInfo>) {
         run_loop.QuitWhenIdle();
       };
-  ServiceWorkerTaskQueue::Get(browser_context_)
-      ->AddPendingTask(
-          LazyContextId(browser_context_, extension_->id(), extension_->url()),
-          base::BindLambdaForTesting(quit_loop_adapter));
+  const auto context_id =
+      LazyContextId::ForExtension(browser_context_, extension_.get());
+  context_id.GetTaskQueue()->AddPendingTask(
+      context_id, base::BindLambdaForTesting(quit_loop_adapter));
   run_loop.Run();
 }
 

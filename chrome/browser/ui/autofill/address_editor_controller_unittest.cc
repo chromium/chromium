@@ -148,7 +148,7 @@ TEST_F(AddressEditorControllerTest, SetProfileInfo) {
   CreateController(/*is_validatable=*/false);
 
   for (const auto& type_value_pair :
-       std::vector<std::pair<ServerFieldType, std::u16string>>{
+       std::vector<std::pair<FieldType, std::u16string>>{
            {ADDRESS_HOME_COUNTRY, u"Germany"},
            {NAME_FULL, u"John Doe"},
            {ADDRESS_HOME_STREET_ADDRESS, u"Lake St. 123"},
@@ -167,7 +167,7 @@ TEST_F(AddressEditorControllerTest, StaticEditorFields) {
   CreateController(/*is_validatable=*/false);
   // Country, phone number and email address fields are added unconditionally
   // to the set of editor fields.
-  for (auto type : std::vector<ServerFieldType>{
+  for (auto type : std::vector<FieldType>{
            ADDRESS_HOME_COUNTRY, PHONE_HOME_WHOLE_NUMBER, EMAIL_ADDRESS}) {
     EXPECT_EQ(base::ranges::count_if(
                   controller_->editor_fields(),

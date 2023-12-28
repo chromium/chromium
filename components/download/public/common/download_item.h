@@ -27,6 +27,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list_types.h"
 #include "base/supports_user_data.h"
+#include "build/build_config.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
@@ -438,6 +439,11 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
 
   // Gets the pointer to the DownloadFile owned by this object.
   virtual DownloadFile* GetDownloadFile() = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Gets whether the download is triggered from external app.
+  virtual bool IsFromExternalApp() = 0;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   //    Progress State accessors -----------------------------------------------
 

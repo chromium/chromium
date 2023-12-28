@@ -72,7 +72,7 @@ class SearchBoxFocusHost : public views::View {
   const char* GetClassName() const override { return "SearchBoxFocusHost"; }
 
  private:
-  raw_ptr<views::Widget, ExperimentalAsh> search_box_widget_;
+  raw_ptr<views::Widget> search_box_widget_;
 };
 
 float ComputeSubpixelOffset(const display::Display& display, float value) {

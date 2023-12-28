@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 #include "components/autofill/core/browser/metrics/granular_filling_metrics_utils.h"
+#include "components/autofill/core/browser/metrics/placeholder_metrics.h"
 #include "components/autofill/core/browser/metrics/precedence_over_autocomplete_metrics.h"
 #include "components/autofill/core/browser/metrics/shadow_prediction_metrics.h"
 #include "components/autofill/core/browser/validation.h"
@@ -36,7 +37,7 @@ void LogQualityMetrics(
   bool card_form = base::Contains(form_types, FormType::kCreditCardForm);
   bool address_form = base::Contains(form_types, FormType::kAddressForm);
 
-  ServerFieldTypeSet autofilled_field_types;
+  FieldTypeSet autofilled_field_types;
   size_t num_detected_field_types = 0;
   size_t num_edited_autofilled_fields = 0;
   size_t num_of_accepted_autofilled_fields = 0;
@@ -199,6 +200,10 @@ void LogQualityMetrics(
           AddFillingStatsForAutofillFillingMethod(
               *field, address_field_stats_by_filling_method);
         }
+
+        LogPreFilledFields(
+            std::string(FormTypeToStringView(form_type_of_field)),
+            field->initial_value_changed());
       }
     }
 
@@ -207,7 +212,7 @@ void LogQualityMetrics(
     /// field type. This means the field must contain a value that can be found
     /// in one of the stored Autofill profiles.
     ///////////////////////////////////////////////////////////////////////////
-    const ServerFieldTypeSet& field_types = field->possible_types();
+    const FieldTypeSet& field_types = field->possible_types();
     DCHECK(!field_types.empty());
 
     // For every field that has a heuristics prediction for a

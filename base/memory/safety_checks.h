@@ -119,11 +119,6 @@ ALWAYS_INLINE partition_alloc::PartitionRoot*
 GetPartitionRootForMemorySafetyCheckedAllocation() {
   return allocator_shim::internal::PartitionAllocMalloc::Allocator();
 }
-
-ALWAYS_INLINE partition_alloc::PartitionRoot*
-GetAlignedPartitionRootForMemorySafetyCheckedAllocation() {
-  return allocator_shim::internal::PartitionAllocMalloc::AlignedAllocator();
-}
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 template <MemorySafetyCheck checks>
@@ -145,7 +140,7 @@ NOINLINE void* HandleMemorySafetyCheckedOperatorNew(
     std::align_val_t alignment) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if constexpr (ShouldUsePartitionAlloc(checks)) {
-    return GetAlignedPartitionRootForMemorySafetyCheckedAllocation()
+    return GetPartitionRootForMemorySafetyCheckedAllocation()
         ->AlignedAlloc<GetAllocFlags(checks)>(static_cast<size_t>(alignment),
                                               count);
   } else
@@ -174,7 +169,7 @@ NOINLINE void HandleMemorySafetyCheckedOperatorDelete(
     std::align_val_t alignment) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if constexpr (ShouldUsePartitionAlloc(checks)) {
-    GetAlignedPartitionRootForMemorySafetyCheckedAllocation()
+    GetPartitionRootForMemorySafetyCheckedAllocation()
         ->Free<GetFreeFlags(checks)>(ptr);
   } else
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -237,5 +232,56 @@ NOINLINE void HandleMemorySafetyCheckedOperatorDelete(
 #define ADVANCED_MEMORY_SAFETY_CHECKS() \
   ADVANCED_MEMORY_SAFETY_CHECKS_INTERNAL(ALWAYS_INLINE)
 #endif  // DCHECK_IS_ON()
+
+// When a struct/class with `ADVANCED_MEMORY_SAFETY_CHECKS()` is inherited, a
+// derived struct/class operator will use customized `operator new()` and
+// `operator delete()` too. If a class has multiple base classes with the macro,
+// a compiler may complain ambiguity between multiple `operator new()`s. On the
+// other hand, if a class uses private inheritance, a compiler may report
+// private `operator new()` that is making impossible to `new` that class. We
+// have two utility macros to resolve these issues:
+// - `INHERIT_MEMORY_SAFETY_CHECKS(BaseClass)`
+//       Explicitly exports operators from given `BaseClass` to re-apply
+//       checks specified in the parent class. This is the recommended option as
+//       a derived class is likely to have the same characteristics to its baes
+//       class.
+// - `DEFAULT_MEMORY_SAFETY_CHECKS()`
+//       Re-define default `operator new()` and `operator delete()` using
+//       global operators that comes with default checks.
+//
+// Note that if you use these macros at the top of struct declaration, the
+// declaration context would be left as |private|. Please switch it back to
+// |public| manually if needed.
+#define INHERIT_MEMORY_SAFETY_CHECKS(BASE_CLASS) \
+ public:                                         \
+  using BASE_CLASS::kMemorySafetyChecks;         \
+  using BASE_CLASS::operator new;                \
+  using BASE_CLASS::operator delete;             \
+                                                 \
+ private:                                        \
+  static_assert(true) /* semicolon here */
+
+#define DEFAULT_MEMORY_SAFETY_CHECKS()                                    \
+ public:                                                                  \
+  ALWAYS_INLINE static void* operator new(std::size_t count) {            \
+    return ::operator new(count);                                         \
+  }                                                                       \
+  ALWAYS_INLINE static void* operator new(std::size_t count,              \
+                                          std::align_val_t alignment) {   \
+    return ::operator new(count, alignment);                              \
+  }                                                                       \
+  ALWAYS_INLINE static void* operator new(std::size_t count, void* ptr) { \
+    return ::operator new(count, ptr);                                    \
+  }                                                                       \
+  ALWAYS_INLINE static void operator delete(void* ptr) noexcept {         \
+    return ::operator delete(ptr);                                        \
+  }                                                                       \
+  ALWAYS_INLINE static void operator delete(                              \
+      void* ptr, std::align_val_t alignment) noexcept {                   \
+    return ::operator delete(ptr, alignment);                             \
+  }                                                                       \
+                                                                          \
+ private:                                                                 \
+  static_assert(true) /* semicolon here */
 
 #endif  // BASE_MEMORY_SAFETY_CHECKS_H_

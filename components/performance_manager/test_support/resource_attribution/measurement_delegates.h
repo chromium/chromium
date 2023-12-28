@@ -183,7 +183,7 @@ class FakeMemoryMeasurementDelegateFactory final
 
   // Returns a reference to the map of memory measurements that will be returned
   // by delegates created by this factory. Callers can modify the map through
-  // the reference.
+  // the reference. To simulate a measurement error, use an empty map.
   MemoryMeasurementDelegate::MemorySummaryMap& memory_summaries() {
     return memory_summaries_;
   }

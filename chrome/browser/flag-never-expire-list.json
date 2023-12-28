@@ -24,6 +24,7 @@
   "ash-enable-unified-desktop",
   "cellular-bypass-esim-installation-connectivity-check",
   "cellular-use-second-euicc",
+  "chrome-labs",
   "dcheck-is-fatal",
   "disable-accelerated-2d-canvas",
   "disable-accelerated-mjpeg-decode",

@@ -85,7 +85,7 @@ class ASH_EXPORT LoginPinView : public NonAccessibleView {
     void ClickOnDigit(int number) const;
 
    private:
-    const raw_ptr<LoginPinView, DanglingUntriaged | ExperimentalAsh> view_;
+    const raw_ptr<LoginPinView, DanglingUntriaged> view_;
   };
 
   using OnPinKey = base::RepeatingCallback<void(int value)>;
@@ -123,12 +123,12 @@ class ASH_EXPORT LoginPinView : public NonAccessibleView {
   // Builds and returns a new view which contains a row of the PIN keyboard.
   NonAccessibleView* BuildAndAddRow();
 
-  raw_ptr<BackspacePinButton, ExperimentalAsh> backspace_ = nullptr;
+  raw_ptr<BackspacePinButton> backspace_ = nullptr;
   // The submit button does not exist when no |on_submit| callback is passed.
-  raw_ptr<SubmitPinButton, ExperimentalAsh> submit_button_ = nullptr;
+  raw_ptr<SubmitPinButton> submit_button_ = nullptr;
 
-  std::vector<NonAccessibleView*> rows_;
-  std::vector<DigitPinButton*> digit_buttons_;
+  std::vector<raw_ptr<NonAccessibleView, VectorExperimental>> rows_;
+  std::vector<raw_ptr<DigitPinButton, VectorExperimental>> digit_buttons_;
 };
 
 }  // namespace ash

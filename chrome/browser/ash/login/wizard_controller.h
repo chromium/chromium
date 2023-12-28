@@ -58,9 +58,11 @@
 #include "chrome/browser/ash/login/screens/osauth/apply_online_password_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/cryptohome_recovery_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/cryptohome_recovery_setup_screen.h"
+#include "chrome/browser/ash/login/screens/osauth/enter_old_password_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/factor_setup_success_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/gaia_password_changed_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/gaia_password_changed_screen_legacy.h"
+#include "chrome/browser/ash/login/screens/osauth/local_data_loss_warning_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/local_password_setup_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/osauth_error_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/password_selection_screen.h"
@@ -346,6 +348,8 @@ class WizardController : public OobeUI::Observer {
   void ShowLocalPasswordSetupScreen();
   void ShowApplyOnlinePasswordScreen();
   void ShowOSAuthErrorScreen();
+  void ShowEnterOldPasswordScreen();
+  void ShowLocalDataLossWarningScreen();
   void ShowFactorSetupSuccessScreen();
 
   // Shows images login screen.
@@ -397,12 +401,23 @@ class WizardController : public OobeUI::Observer {
   void OnTermsOfServiceScreenExit(TermsOfServiceScreen::Result result);
   void OnSyncConsentScreenExit(SyncConsentScreen::Result result);
   // Start of Local authentication setup sub-group
+  // Authentication part
+  void OnCryptohomeRecoveryScreenExit(CryptohomeRecoveryScreen::Result result);
+  void OnEnterOldPasswordScreenExit(EnterOldPasswordScreen::Result result);
+  void OnLocalDataLossWarningScreenExit(
+      LocalDataLossWarningScreen::Result result);
+  // Factor setup part
   void StartAuthFactorsSetup();
   void OnCryptohomeRecoverySetupScreenExit(
       CryptohomeRecoverySetupScreen::Result result);
   void OnPasswordSelectionScreenExit(PasswordSelectionScreen::Result result);
   void OnFingerprintSetupScreenExit(FingerprintSetupScreen::Result result);
   void OnPinSetupScreenExit(PinSetupScreen::Result result);
+  void ObtainContextAndLoginAuthenticated();
+  void LoginAuthenticatedWithContext(std::unique_ptr<UserContext> user_context);
+  void ObtainContextAndAttemptLocalAuthentication();
+  void AttemptLocalAuthenticationWithContext(
+      std::unique_ptr<UserContext> user_context);
   void FinishAuthFactorsSetup();
   // End of Local authentication setup sub-group
   void OnRecommendAppsScreenExit(RecommendAppsScreen::Result result);
@@ -438,7 +453,6 @@ class WizardController : public OobeUI::Observer {
   void OnSmartPrivacyProtectionScreenExit(
       SmartPrivacyProtectionScreen::Result result);
   void OnThemeSelectionScreenExit(ThemeSelectionScreen::Result result);
-  void OnCryptohomeRecoveryScreenExit(CryptohomeRecoveryScreen::Result result);
   void OnChoobeScreenExit(ChoobeScreen::Result result);
   void OnTouchpadScreenExit(TouchpadScrollScreen::Result result);
   void OnDisplaySizeScreenExit(DisplaySizeScreen::Result result);

@@ -110,14 +110,12 @@ namespace blink {
 struct SameSizeAsComputedStyleBase
     : public GarbageCollected<SameSizeAsComputedStyleBase> {
   SameSizeAsComputedStyleBase() {
-    base::debug::Alias(&data_refs);
     base::debug::Alias(&pointers);
     base::debug::Alias(&bitfields);
   }
 
  private:
-  void* data_refs[8];
-  Member<void*> pointers[1];
+  Member<void*> pointers[10];
   unsigned bitfields[5];
 };
 
@@ -1823,47 +1821,45 @@ static String DisableNewGeorgianCapitalLetters(const String& text) {
 
 namespace {
 
-static void ApplyMathAutoTransform(String* text) {
-  if (text->length() != 1) {
-    return;
+String ApplyMathAutoTransform(const String& text) {
+  if (text.length() != 1) {
+    return text;
   }
-  UChar character = (*text)[0];
-  UChar32 transformed_char = ItalicMathVariant((*text)[0]);
+  UChar character = text[0];
+  UChar32 transformed_char = ItalicMathVariant(text[0]);
   if (transformed_char == static_cast<UChar32>(character)) {
-    return;
+    return text;
   }
 
   Vector<UChar> transformed_text(U16_LENGTH(transformed_char));
   int i = 0;
   U16_APPEND_UNSAFE(transformed_text, i, transformed_char);
-  *text = String(transformed_text);
+  return String(transformed_text);
 }
 
 }  // namespace
 
-void ComputedStyle::ApplyTextTransform(String* text,
-                                       UChar previous_character) const {
+String ComputedStyle::ApplyTextTransform(const String& text,
+                                         UChar previous_character,
+                                         TextOffsetMap* offset_map) const {
   switch (TextTransform()) {
     case ETextTransform::kNone:
-      return;
+      return text;
     case ETextTransform::kCapitalize:
-      *text = Capitalize(*text, previous_character);
-      return;
+      return Capitalize(text, previous_character);
     case ETextTransform::kUppercase: {
       const LayoutLocale* locale = GetFontDescription().Locale();
       CaseMap case_map(locale ? locale->CaseMapLocale() : CaseMap::Locale());
-      *text = DisableNewGeorgianCapitalLetters(case_map.ToUpper(*text));
-      return;
+      return DisableNewGeorgianCapitalLetters(
+          case_map.ToUpper(text, offset_map));
     }
     case ETextTransform::kLowercase: {
       const LayoutLocale* locale = GetFontDescription().Locale();
       CaseMap case_map(locale ? locale->CaseMapLocale() : CaseMap::Locale());
-      *text = case_map.ToLower(*text);
-      return;
+      return case_map.ToLower(text, offset_map);
     }
     case ETextTransform::kMathAuto:
-      ApplyMathAutoTransform(text);
-      return;
+      return ApplyMathAutoTransform(text);
   }
   NOTREACHED();
 }

@@ -31,7 +31,7 @@ enum class AutofillFillingMethodMetric {
 // and numeric values should never be reused. This is a subset of field
 // types that can be chosen when the user fills a specific field using one of
 // the field by field filling suggestions. Update this enum when a new
-// `ServerFieldType` is included in the available field by field filling field
+// `FieldType` is included in the available field by field filling field
 // type suggestions.
 enum class AutofillFieldByFieldFillingTypes {
   kNameFirst = 0,
@@ -58,7 +58,7 @@ void LogEditAddressProfileDialogClosed(bool user_saved_changes);
 
 // This metric is only relevant for granular filling, i.e. when the delete
 // dialog is opened from the Autofill popup.
-void LogDeleteAddressProfileDialogClosed(bool user_accepted_delete);
+void LogDeleteAddressProfileFromExtendedMenu(bool user_accepted_delete);
 
 // Logs the `AutofillFillingMethodMetric` chosen by the user.
 void LogFillingMethodUsed(AutofillFillingMethodMetric filling_method);
@@ -66,7 +66,7 @@ void LogFillingMethodUsed(AutofillFillingMethodMetric filling_method);
 // Logs the `AutofillFieldByFieldFillingTypes` that corresponds
 // to the `field_type` chosen by the user when accepting a field-by-field
 // filling suggestions.
-void LogFieldByFieldFillingFieldUsed(ServerFieldType field_type);
+void LogFieldByFieldFillingFieldUsed(FieldType field_type);
 
 }  // namespace autofill::autofill_metrics
 

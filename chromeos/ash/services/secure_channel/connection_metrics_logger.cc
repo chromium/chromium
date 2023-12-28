@@ -11,7 +11,7 @@ namespace ash::secure_channel {
 namespace {
 
 constexpr const base::TimeDelta kMinLatencyDuration = base::Milliseconds(1);
-constexpr const base::TimeDelta kMaxLatencyDuration = base::Seconds(30);
+constexpr const base::TimeDelta kMaxLatencyDuration = base::Seconds(45);
 
 // Provide enough granularity so that durations <10s are assigned to buckets
 // in the hundreds of milliseconds.

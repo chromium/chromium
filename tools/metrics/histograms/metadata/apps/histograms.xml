@@ -40,7 +40,6 @@ chromium-metrics-reviews@google.com.
   <variant name="ChromeBrowser" summary="Chrome browsers"/>
   <variant name="Crostini" summary="Crostini apps"/>
   <variant name="Extension" summary="Browser extensions"/>
-  <variant name="MacOs" summary="MacOs apps"/>
   <variant name="PluginVm" summary="Plugin VM app"/>
   <variant name="RemoteApp" summary="Remote apps"/>
   <variant name="StandaloneBrowser" summary="Standalone browsers"/>
@@ -64,7 +63,6 @@ chromium-metrics-reviews@google.com.
   <variant name="ChromeBrowser" summary="Chrome browsers"/>
   <variant name="Crostini" summary="Crostini apps"/>
   <variant name="Extension" summary="Browser extensions"/>
-  <variant name="MacOs" summary="MacOs apps"/>
   <variant name="PluginVm" summary="Plugin VM app"/>
   <variant name="RemoteApp" summary="Remote apps"/>
   <variant name="StandaloneBrowser" summary="Standalone browsers"/>
@@ -86,17 +84,13 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="AppUIComponent">
-  <variant name=".AppGrid" summary="App - Fullscreen Launcher"/>
   <variant name=".Desktop" summary="Desktop"/>
   <variant name=".ProductivityLauncherAppGrid"
       summary="App - Productivity Launcher"/>
   <variant name=".ProductivityLauncherRecentApp"
       summary="Recent App, Productivity Launcher"/>
-  <variant name=".SearchResult" summary="Launcher App Search Result"/>
   <variant name=".Shelf" summary="Shelf"/>
   <variant name=".ShelfButton" summary="ShelfButton"/>
-  <variant name=".SuggestedAppFullscreen"
-      summary="Suggested App, Fullscreen Launcher"/>
 </variants>
 
 <variants name="HomeLauncherVisibility">
@@ -566,9 +560,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.FileResult.DefaultRelevanceUsed"
-    enum="BooleanUsage" expires_after="2023-11-30">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
+    enum="BooleanUsage" expires_after="2024-11-30">
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>laurencom@chromium.org</owner>
   <summary>
     Whether or not the default relevance was used when calculating the relevance
     score between a filename and the search query. The default relevance is used
@@ -600,9 +594,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.FileSearchProvider.Relevance" units="score"
-    expires_after="2023-12-04">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
+    expires_after="2024-12-04">
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>laurencom@chromium.org</owner>
   <summary>
     Relevance score for a local file result that was returned in response to a
     search query. Logged once for each file per search query.
@@ -663,9 +657,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.HelpAppProvider.QueryTime" units="ms"
-    expires_after="2023-11-30">
-  <owner>thanhdng@chromium.org</owner>
-  <owner>tby@chromium.org</owner>
+    expires_after="2025-01-14">
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>chenjih@chromium.org</owner>
   <owner>zufeng@google.com</owner>
   <summary>
     The latency of a search in the HelpAppProvider. Recorded each time a search
@@ -810,9 +804,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.OsSettingsProvider.Error"
-    enum="OsSettingsProviderStatus" expires_after="2024-01-14">
-  <owner>tby@chromium.org</owner>
-  <owner>thanhdng@chromium.org</owner>
+    enum="OsSettingsProviderStatus" expires_after="2025-01-14">
+  <owner>chenjih@chromium.org</owner>
+  <owner>dgrebenyuk@google.com</owner>
   <summary>
     Various error states of the provider for OS settings in the cros launcher.
     Emitted either the case of an unexpected error or an successful non-empty
@@ -823,8 +817,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.OsSettingsProvider.IconLoadStatus"
-    enum="OsSettingsProviderIconLoadStatus" expires_after="2024-01-14">
-  <owner>tby@chromium.org</owner>
+    enum="OsSettingsProviderIconLoadStatus" expires_after="2025-01-14">
+  <owner>dgrebenyuk@google.com</owner>
   <owner>chenjih@chromium.org</owner>
   <summary>
     Various states of the icon related parameters for OS settings in the cros
@@ -1980,8 +1974,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     The user journey time for a ContextMenu, defined as the time between
     launching a context menu and the context menu's close callback being
-    activated. Not recorded whenever the context menu is not for an app icon on
-    the shelf. {AppUIComponent}
+    activated. {AppUIComponent}
   </summary>
   <token key="AppUIComponent" variants="AppUIComponent"/>
   <token key="TabletOrClamshellMode" variants="TabletOrClamshellMode"/>
@@ -2215,7 +2208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.NewUserFirstLauncherAction{TabletOrClamshell}"
-    enum="AppListLaunchedFrom" expires_after="2024-04-17">
+    enum="AppListLaunchedFrom" expires_after="2024-06-16">
   <owner>andrewxu@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -2617,7 +2610,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening{TabletOrClamshell}"
-    units="ms" expires_after="2024-04-17">
+    units="ms" expires_after="2024-06-23">
   <owner>andrewxu@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>

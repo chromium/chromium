@@ -91,9 +91,10 @@ void OneShotCollector::OnMetricDataCollected(
   CHECK(is_event_driven || on_data_reported_);
   CHECK(metric_report_queue_);
   if (!metric_data.has_value()) {
-    base::UmaHistogramEnumeration(OneShotCollector::kNoMetricDataMetricsName,
-                                  metric_report_queue_->GetDestination(),
-                                  Destination_MAX);
+    base::UmaHistogramExactLinear(
+        OneShotCollector::kNoMetricDataMetricsName,
+        static_cast<int>(metric_report_queue_->GetDestination()),
+        Destination_ARRAYSIZE);
     return;
   }
 

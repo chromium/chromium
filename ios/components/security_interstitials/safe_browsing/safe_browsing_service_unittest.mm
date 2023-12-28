@@ -305,7 +305,8 @@ class SafeBrowsingServiceTest : public PlatformTest {
         base::BindRepeating([](bool) { return false; }),
         /*is_off_the_record=*/false,
         /*variations_service=*/nullptr,
-        /*referrer_chain_provider=*/nullptr);
+        /*referrer_chain_provider=*/nullptr,
+        /*webui_delegate=*/nullptr);
     safe_browsing_client_.set_real_time_url_lookup_service(
         lookup_service_.get());
   }

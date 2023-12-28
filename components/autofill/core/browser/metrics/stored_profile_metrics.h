@@ -6,9 +6,10 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_STORED_PROFILE_METRICS_H_
 
 #include <stddef.h>
+
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 
@@ -49,7 +50,7 @@ void LogStoredProfileMetrics(const std::vector<AutofillProfile*>& profiles);
 // deleted from the account storage.
 // Comparisons are done by the `app_locale`-based `AutofillProfileComparator`.
 void LogLocalProfileSupersetMetrics(std::vector<AutofillProfile*> profiles,
-                                    base::StringPiece app_locale);
+                                    std::string_view app_locale);
 
 }  // namespace autofill::autofill_metrics
 

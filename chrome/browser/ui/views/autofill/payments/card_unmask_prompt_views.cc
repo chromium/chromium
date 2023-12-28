@@ -56,8 +56,9 @@ CardUnmaskPromptViews::CardUnmaskPromptViews(
 }
 
 CardUnmaskPromptViews::~CardUnmaskPromptViews() {
-  if (controller_)
+  if (controller_) {
     controller_->OnUnmaskDialogClosed();
+  }
 }
 
 void CardUnmaskPromptViews::Show() {
@@ -113,8 +114,9 @@ void CardUnmaskPromptViews::GotVerificationResult(
         // For non-virtual cards, show a "Update card" link that triggers the UI
         // to update the expiration date. This isn't relevant for virtual cards
         // since they never expire.
-        if (!controller_->IsVirtualCard())
+        if (!controller_->IsVirtualCard()) {
           ShowNewCardLink();
+        }
       }
 
       // TODO(estade): When do we hide |error_label_|?
@@ -185,8 +187,9 @@ void CardUnmaskPromptViews::SetInputsEnabled(bool enabled) {
 }
 
 void CardUnmaskPromptViews::ShowNewCardLink() {
-  if (new_card_link_)
+  if (new_card_link_) {
     return;
+  }
 
   auto new_card_link = std::make_unique<views::Link>(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_CARD_UNMASK_NEW_CARD_LINK));
@@ -211,8 +214,9 @@ std::u16string CardUnmaskPromptViews::GetWindowTitle() const {
 
 bool CardUnmaskPromptViews::IsDialogButtonEnabled(
     ui::DialogButton button) const {
-  if (button == ui::DIALOG_BUTTON_CANCEL)
+  if (button == ui::DIALOG_BUTTON_CANCEL) {
     return true;
+  }
 
   DCHECK_EQ(ui::DIALOG_BUTTON_OK, button);
 
@@ -234,8 +238,9 @@ bool CardUnmaskPromptViews::Cancel() {
 }
 
 bool CardUnmaskPromptViews::Accept() {
-  if (!controller_)
+  if (!controller_) {
     return true;
+  }
 
   controller_->OnUnmaskPromptAccepted(
       cvc_input_->GetText(),
@@ -245,15 +250,17 @@ bool CardUnmaskPromptViews::Accept() {
       year_input_->GetVisible()
           ? year_input_->GetTextForRow(year_input_->GetSelectedIndex().value())
           : std::u16string(),
-      /*enable_fido_auth=*/false);
+      /*enable_fido_auth=*/false,
+      /*was_checkbox_visible=*/false);
   return false;
 }
 
 void CardUnmaskPromptViews::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
-  if (controller_->InputCvcIsValid(new_contents))
+  if (controller_->InputCvcIsValid(new_contents)) {
     cvc_input_->SetInvalid(false);
+  }
 
   UpdateButtons();
   DialogModelChanged();
@@ -281,8 +288,9 @@ void CardUnmaskPromptViews::DateChanged() {
 }
 
 void CardUnmaskPromptViews::InitIfNecessary() {
-  if (!children().empty())
+  if (!children().empty()) {
     return;
+  }
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
 
   // The layout is a FillLayout that will contain the progress or error overlay
@@ -413,8 +421,9 @@ void CardUnmaskPromptViews::InitIfNecessary() {
 }
 
 bool CardUnmaskPromptViews::ExpirationDateIsValid() const {
-  if (!controller_->ShouldRequestExpirationDate())
+  if (!controller_->ShouldRequestExpirationDate()) {
     return true;
+  }
 
   return controller_->InputExpirationIsValid(
       month_input_->GetTextForRow(month_input_->GetSelectedIndex().value()),
@@ -443,8 +452,9 @@ void CardUnmaskPromptViews::UpdateButtons() {
 
 void CardUnmaskPromptViews::LinkClicked() {
   controller_->NewCardLinkClicked();
-  for (views::View* child : input_row_->children())
+  for (views::View* child : input_row_->children()) {
     child->SetVisible(true);
+  }
 
   new_card_link_->SetVisible(false);
   input_row_->InvalidateLayout();
@@ -463,7 +473,7 @@ CardUnmaskPromptView* CreateCardUnmaskPromptView(
   return new CardUnmaskPromptViews(controller, web_contents);
 }
 
-BEGIN_METADATA(CardUnmaskPromptViews, views::BubbleDialogDelegateView)
+BEGIN_METADATA(CardUnmaskPromptViews)
 END_METADATA
 
 }  // namespace autofill

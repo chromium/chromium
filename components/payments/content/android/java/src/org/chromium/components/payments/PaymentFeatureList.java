@@ -19,7 +19,6 @@ public abstract class PaymentFeatureList {
     public static final String ADD_IDENTITY_IN_CAN_MAKE_PAYMENT_EVENT =
             "AddIdentityInCanMakePaymentEvent";
 
-    public static final String ANDROID_APP_PAYMENT_UPDATE_EVENTS = "AndroidAppPaymentUpdateEvents";
     public static final String ENFORCE_FULL_DELEGATION = "EnforceFullDelegation";
     public static final String GPAY_APP_DYNAMIC_UPDATE = "GPayAppDynamicUpdate";
     public static final String OMIT_PARAMETERS_IN_READY_TO_PAY = "OmitParametersInReadyToPay";

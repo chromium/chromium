@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {AmbientModeAlbum, AmbientObserverInterface, AmbientObserverReceiver, AmbientProviderInterface, AmbientTheme, AmbientUiVisibility, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
@@ -9,7 +10,7 @@ import {isAmbientModeAllowed, isPersonalizationJellyEnabled} from '../load_time_
 import {logGooglePhotosPreviewsLoadTime} from '../personalization_metrics_logger.js';
 import {Paths} from '../personalization_router_element.js';
 import {PersonalizationStore} from '../personalization_store.js';
-import {isNonEmptyArray, isRecentHighlightsAlbum} from '../utils.js';
+import {isRecentHighlightsAlbum} from '../utils.js';
 
 import {setAlbumsAction, setAmbientModeEnabledAction, setAmbientThemeAction, setAmbientUiVisibilityAction, setPreviewsAction, setScreenSaverDurationAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';

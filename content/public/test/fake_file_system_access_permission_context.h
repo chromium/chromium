@@ -79,6 +79,10 @@ class FakeFileSystemAccessPermissionContext
                         const base::FilePath& old_path,
                         const base::FilePath& new_path) override;
 
+  void OnFileCreatedFromShowSaveFilePicker(
+      const GURL& file_picker_binding_context,
+      const storage::FileSystemURL& url) override;
+
  private:
   std::map<std::string, PathInfo> id_pathinfo_map_;
   std::map<blink::mojom::WellKnownDirectory, base::FilePath>

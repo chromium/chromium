@@ -170,10 +170,11 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
     DVLOG_FUNC(1) << "AddMailbox";
     mailbox_added_ = true;
     gpu::SharedImageInterface* sii = factory_->SharedImageInterface();
-    shared_image =
-        sii->NotifyMailboxAdded(mailbox_, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                              gpu::SHARED_IMAGE_USAGE_GLES2 |
-                                              gpu::SHARED_IMAGE_USAGE_RASTER);
+    shared_image = sii->NotifyMailboxAdded(
+        mailbox_, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                      gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                      gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
+                      gpu::SHARED_IMAGE_USAGE_RASTER);
   }
 
   gpu::MailboxHolder holders[media::VideoFrame::kMaxPlanes] = {

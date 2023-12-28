@@ -222,7 +222,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
                    size_t row_bytes,
                    int x,
                    int y) override;
-  void WillOverwriteCanvas() override;
+  void SkipQueuedDrawCommands() override;
+  void RestartRecording() override;
   void TryRestoreContextEvent(TimerBase*) override;
 
   bool WillSetFont() const final;

@@ -804,7 +804,6 @@ ClosuresForMojoResponse::ClosuresForMojoResponse() = default;
 
 ClosuresForMojoResponse::~ClosuresForMojoResponse() {
   RunScriptedPrintPreviewQuitClosure();
-  RunPrintSettingFromUserQuitClosure();
 }
 
 void ClosuresForMojoResponse::SetScriptedPrintPreviewQuitClosure(
@@ -823,20 +822,6 @@ void ClosuresForMojoResponse::RunScriptedPrintPreviewQuitClosure() {
   }
 
   std::move(scripted_print_preview_quit_closure_).Run();
-}
-
-void ClosuresForMojoResponse::SetPrintSettingFromUserQuitClosure(
-    base::OnceClosure quit_print_setting) {
-  DCHECK(!get_print_settings_from_user_quit_closure_);
-  get_print_settings_from_user_quit_closure_ = std::move(quit_print_setting);
-}
-
-void ClosuresForMojoResponse::RunPrintSettingFromUserQuitClosure() {
-  if (!get_print_settings_from_user_quit_closure_) {
-    return;
-  }
-
-  std::move(get_print_settings_from_user_quit_closure_).Run();
 }
 
 // Class that calls the Begin and End print functions on the frame and changes
@@ -1168,7 +1153,7 @@ PrintRenderFrameHelper::GetPrintManagerHost() {
     // Makes sure that it quits the runloop that runs while a Mojo call waits
     // for a reply if |print_manager_host_| is disconnected before the reply.
     print_manager_host_.set_disconnect_handler(
-        base::BindOnce(&PrintRenderFrameHelper::QuitActiveRunLoops,
+        base::BindOnce(&PrintRenderFrameHelper::QuitScriptedPrintPreviewRunLoop,
                        weak_ptr_factory_.GetWeakPtr()));
   }
   return print_manager_host_;
@@ -1601,77 +1586,6 @@ void PrintRenderFrameHelper::PrintNodeUnderContextMenu() {
   ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());
   PrintNode(render_frame()->GetWebFrame()->ContextMenuNode());
 }
-
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-void PrintRenderFrameHelper::SnapshotForContentAnalysis(
-    SnapshotForContentAnalysisCallback callback) {
-  // Use default print params to snapshot the page.
-  mojom::PrintPagesParams print_pages_params;
-  GetPrintManagerHost()->GetDefaultPrintSettings(&print_pages_params.params);
-  if (!print_pages_params.params) {
-    LOG(ERROR) << "GetDefaultPrintSettings() failed";
-    std::move(callback).Run(nullptr);
-    return;
-  }
-
-  CHECK(PrintMsgPrintParamsIsValid(*print_pages_params.params));
-  ContentProxySet typeface_content_info;
-  auto metafile = std::make_unique<MetafileSkia>(
-      print_pages_params.params->printed_doc_type,
-      print_pages_params.params->document_cookie);
-  CHECK(metafile->Init());
-  metafile->UtilizeTypefaceContext(&typeface_content_info);
-
-  blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
-  blink::WebNode node = delegate_->GetPdfElement(frame);
-  bool is_pdf = IsPrintingPdfFrame(frame, node);
-  blink::WebPrintParams web_print_params = ComputeWebKitPrintParamsInDesiredDpi(
-      *print_pages_params.params, is_pdf, ignore_css_margins_);
-  uint32_t page_count = frame->PrintBegin(web_print_params, node);
-  if (page_count == 0) {
-    frame->PrintEnd();
-    metafile->FinishDocument();
-    LOG(ERROR) << "PrintBegin() returned 0 pages";
-    std::move(callback).Run(nullptr);
-    return;
-  }
-
-  GetPrintManagerHost()->DidGetPrintedPagesCount(
-      print_pages_params.params->document_cookie, page_count);
-
-  {
-    std::unique_ptr<HeaderAndFooterContext> header_footer_context;
-    blink::WebLocalFrame* header_footer_frame = nullptr;
-    if (print_pages_params.params->display_header_footer) {
-      header_footer_context = std::make_unique<HeaderAndFooterContext>(*frame);
-      header_footer_frame = header_footer_context->frame();
-    }
-    for (size_t page_index = 0; page_index < page_count; ++page_index) {
-      PrintPageInternal(*print_pages_params.params, page_index, page_count,
-                        frame, header_footer_frame, metafile.get());
-    }
-  }
-  frame->PrintEnd();
-  metafile->FinishDocument();
-
-  mojom::DidPrintDocumentParamsPtr page_params =
-      mojom::DidPrintDocumentParams::New();
-  page_params->content = mojom::DidPrintContentParams::New();
-
-  if (!CopyMetafileDataToDidPrintContentParams(*metafile,
-                                               page_params->content.get())) {
-    LOG(ERROR) << "CopyMetafileDataToDidPrintContentParams() failed";
-    std::move(callback).Run(nullptr);
-    return;
-  }
-
-  page_params->document_cookie = print_pages_params.params->document_cookie;
-#if BUILDFLAG(IS_WIN)
-  page_params->physical_offsets = printer_printable_area_.origin();
-#endif
-  std::move(callback).Run(std::move(page_params));
-}
-#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
 void PrintRenderFrameHelper::UpdateFrameMarginsCssInfo(
     const base::Value::Dict& settings) {
@@ -2514,23 +2428,7 @@ mojom::PrintPagesParamsPtr PrintRenderFrameHelper::GetPrintSettingsFromUser(
   print_pages_params_.reset();
 
   mojom::PrintPagesParamsPtr print_settings;
-  base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
-  closures_for_mojo_responses_->SetPrintSettingFromUserQuitClosure(
-      loop.QuitClosure());
-  GetPrintManagerHost()->ScriptedPrint(
-      std::move(params),
-      base::BindOnce(
-          [](base::OnceClosure quit_closure, mojom::PrintPagesParamsPtr* output,
-             mojom::PrintPagesParamsPtr input) {
-            *output = std::move(input);
-            std::move(quit_closure).Run();
-          },
-          base::BindOnce(
-              &PrintRenderFrameHelper::QuitGetPrintSettingsFromUserRunLoop,
-              weak_ptr_factory_.GetWeakPtr()),
-          &print_settings));
-  // Runs the nested run loop until ScriptedPrint() gets the reply.
-  loop.Run();
+  GetPrintManagerHost()->ScriptedPrint(std::move(params), &print_settings);
   return print_settings;
   // WARNING: `this` may be gone at this point. Do not do any more work here
   // and just return.
@@ -3090,17 +2988,8 @@ void PrintRenderFrameHelper::SetPrintPagesParams(
   print_pages_params_ = settings.Clone();
 }
 
-void PrintRenderFrameHelper::QuitActiveRunLoops() {
-  QuitScriptedPrintPreviewRunLoop();
-  QuitGetPrintSettingsFromUserRunLoop();
-}
-
 void PrintRenderFrameHelper::QuitScriptedPrintPreviewRunLoop() {
   closures_for_mojo_responses_->RunScriptedPrintPreviewQuitClosure();
-}
-
-void PrintRenderFrameHelper::QuitGetPrintSettingsFromUserRunLoop() {
-  closures_for_mojo_responses_->RunPrintSettingFromUserQuitClosure();
 }
 
 PrintRenderFrameHelper::ScopedIPC::ScopedIPC(

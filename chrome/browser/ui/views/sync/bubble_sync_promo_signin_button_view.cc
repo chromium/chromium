@@ -25,7 +25,7 @@
 
 BubbleSyncPromoSigninButtonView::BubbleSyncPromoSigninButtonView(
     views::Button::PressedCallback callback,
-    bool prominent)
+    ui::ButtonStyle button_style)
     : account_(std::nullopt) {
   views::Builder<BubbleSyncPromoSigninButtonView>(this)
       .SetUseDefaultFillLayout(true)
@@ -35,7 +35,7 @@ BubbleSyncPromoSigninButtonView::BubbleSyncPromoSigninButtonView(
               .SetCallback(std::move(callback))
               .SetText(
                   l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON))
-              .SetProminent(prominent))
+              .SetStyle(button_style))
       .BuildChildren();
 }
 
@@ -66,11 +66,8 @@ BubbleSyncPromoSigninButtonView::BubbleSyncPromoSigninButtonView(
   if (orientation == views::BoxLayout::Orientation::kHorizontal) {
     button_layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
-    hover_button->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                                 views::MaximumFlexSizeRule::kUnbounded)
-            .WithAlignment(views::LayoutAlignment::kStart));
+    hover_button->SetProperty(views::kBoxLayoutFlexKey,
+                              views::BoxLayoutFlexSpecification());
   }
 
   views::Builder<BubbleSyncPromoSigninButtonView>(this)

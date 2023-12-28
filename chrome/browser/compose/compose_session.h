@@ -11,7 +11,6 @@
 
 #include "base/check_op.h"
 #include "base/timer/elapsed_timer.h"
-#include "chrome/browser/compose/inner_text_extractor.h"
 #include "chrome/common/compose/compose.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_metrics.h"
@@ -25,6 +24,10 @@
 namespace content {
 class WebContents;
 }  // namespace content
+
+namespace content_extraction {
+struct InnerTextResult;
+}  // namespace content_extraction
 
 // The state of a compose session. This currently includes the model quality log
 // entry, and the mojo based compose state.
@@ -95,6 +98,10 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // Down button is clicked. This implementation is designed for Fishfood only.
   void OpenBugReportingLink() override;
 
+  // Opens the Compose Learn More page in a new tab when the "Learn more" link
+  // is clicked in the FRE dialog.
+  void OpenComposeLearnMorePage() override;
+
   // Opens the Compose feedback survey page in a new tab. This implementation is
   // designed for Dogfood only.
   void OpenFeedbackSurveyLink() override;
@@ -110,7 +117,8 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
 
   // Notifies the session that a new dialog is opening and starts refreshing
   // inner text. Calls Compose immediately if the initial input is valid.
-  void InitializeWithText(const std::optional<std::string>& text);
+  void InitializeWithText(const std::optional<std::string>& text,
+                          const bool text_selected);
 
   // Opens the Chrome Feedback UI for Compose. |feedback_id| is returned from
   // OptimizationGuideModel result.
@@ -130,12 +138,16 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
     skip_inner_text_ = skip_inner_text;
   }
 
-  void set_initial_consent_state(compose::mojom::ConsentState consent_state) {
-    initial_consent_state_ = consent_state;
+  void set_current_consent_state(compose::mojom::ConsentState consent_state) {
+    current_consent_state_ = consent_state;
   }
 
-  compose::mojom::ConsentState get_initial_consent_state() {
-    return initial_consent_state_;
+  bool get_current_msbb_state() { return current_msbb_state_; }
+
+  void set_current_msbb_state(bool current_msbb_state);
+
+  compose::mojom::ConsentState get_current_consent_state() {
+    return current_consent_state_;
   }
 
   // Set the first time the user progresses through the consent/disclaimer
@@ -155,6 +167,8 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   void SetConsentCloseReason(
       compose::ComposeConsentSessionCloseReason close_reason);
 
+  void SetMSBBCloseReason(compose::ComposeMSBBSessionCloseReason close_reason);
+
   void SetCloseReason(compose::ComposeSessionCloseReason close_reason);
 
  private:
@@ -166,7 +180,7 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
       optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
   // Adds page content to the session context.
-  void AddPageContentToSession(const std::string& inner_text);
+  void AddPageContentToSession(std::string inner_text);
 
   // Makes compose or rewrite request.
   void MakeRequest(optimization_guide::proto::ComposeRequest request,
@@ -178,8 +192,11 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
       const optimization_guide::proto::ComposeRequest& request,
       bool is_input_edited);
 
+  // This function is bound to the callback for requesting inner-text.
+  // `request_id` is used to identify the request.
   void UpdateInnerTextAndContinueComposeIfNecessary(
-      const std::string& inner_text);
+      int request_id,
+      std::unique_ptr<content_extraction::InnerTextResult> result);
 
   void SetQualityLogEntryUponError(
       std::unique_ptr<optimization_guide::ModelQualityLogEntry>,
@@ -208,16 +225,24 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
 
   // Renderer provided text selection.
   std::string initial_input_;
+  // True if the user selected text when the dialog is opened.
+  bool text_selected_;
 
   // The state of consent-related prefs when the session is first created.
-  compose::mojom::ConsentState initial_consent_state_ =
+  compose::mojom::ConsentState current_consent_state_ =
       compose::mojom::ConsentState::kUnset;
   // True if the user either gave consent or acknowledged given consent in this
   // session.
   bool consent_given_or_acknowledged_ = false;
 
+  // The state of the MSBB preference
+  bool current_msbb_state_;
+  bool msbb_intilially_off_;
+  bool msbb_enabled_during_session_;
   // Reason that a compose consent session was exited, used for metrics.
   compose::ComposeConsentSessionCloseReason consent_close_reason_;
+  // Reason that a compose msbb session was exited, used for metrics.
+  compose::ComposeMSBBSessionCloseReason msbb_close_reason_;
   // Reason that a compose session was exited, used for metrics.
   compose::ComposeSessionCloseReason close_reason_;
   // Reason that a compose session was exited, used for quality logging.
@@ -237,17 +262,22 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // requests.
   int request_id_ = 0;
 
+  // Increasing counter used to identify most recent request for inner-text.
+  int current_inner_text_request_id_ = 0;
+
   bool skip_inner_text_ = false;
 
   // Logging counters.
   int compose_count_ = 0;
   int dialog_shown_count_ = 0;
+  int msbb_dialog_shown_count_ = 0;
   int undo_count_ = 0;
+  int update_input_count_ = 0;
 
   bool consent_given_in_session_ = false;
 
-  InnerTextExtractor inner_text_extractor_;
-  std::optional<std::string> inner_text_;
+  // If true, the inner-text was received.
+  bool got_inner_text_ = false;
 
   base::OnceClosure continue_compose_;
 

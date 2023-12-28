@@ -37,7 +37,7 @@ class ASH_EXPORT TracingNotificationController : public TracingObserver {
   // OnTracingModeChanged was called.
   bool was_tracing_ = false;
 
-  const raw_ptr<TracingModel, ExperimentalAsh> model_;
+  const raw_ptr<TracingModel> model_;
 };
 
 }  // namespace ash

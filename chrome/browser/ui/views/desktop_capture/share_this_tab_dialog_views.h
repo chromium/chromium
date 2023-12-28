@@ -21,8 +21,9 @@ class ShareThisTabDialogViews;
 
 // Dialog view used for ShareThisTabDialogViews.
 class ShareThisTabDialogView : public views::DialogDelegateView {
+  METADATA_HEADER(ShareThisTabDialogView, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(ShareThisTabDialogView);
   ShareThisTabDialogView(const DesktopMediaPicker::Params& params,
                          ShareThisTabDialogViews* parent);
   ShareThisTabDialogView(const ShareThisTabDialogView&) = delete;

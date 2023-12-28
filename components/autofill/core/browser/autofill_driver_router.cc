@@ -150,7 +150,7 @@ void AutofillDriverRouter::FormsSeen(
 
 void AutofillDriverRouter::SetFormToBeProbablySubmitted(
     AutofillDriver* source,
-    absl::optional<FormData> form,
+    std::optional<FormData> form,
     void (*callback)(AutofillDriver* target, const FormData* optional_form)) {
   if (!form) {
     callback(source, nullptr);
@@ -414,7 +414,7 @@ std::vector<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
     mojom::ActionPersistence action_persistence,
     const FormData& data,
     const url::Origin& triggered_origin,
-    const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map,
+    const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
     void (*callback)(AutofillDriver* target,
                      mojom::ActionType action_type,
                      mojom::ActionPersistence action_persistence,

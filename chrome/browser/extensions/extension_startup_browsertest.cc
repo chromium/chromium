@@ -268,7 +268,7 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
 // ExtensionsStartupTest
 // Ensures that we can startup the browser with --enable-extensions and some
 // extensions installed and see them run and do basic things.
-typedef ExtensionStartupTestBase ExtensionStartupTest;
+using ExtensionStartupTest = ExtensionStartupTestBase;
 
 IN_PROC_BROWSER_TEST_F(ExtensionStartupTest, Test) {
   WaitForServicesToStart(num_expected_extensions_, true);

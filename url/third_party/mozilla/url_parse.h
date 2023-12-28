@@ -7,6 +7,7 @@
 
 #include <iosfwd>
 
+#include "base/check.h"
 #include "base/component_export.h"
 
 namespace url {
@@ -49,6 +50,13 @@ struct Component {
 
   bool operator==(const Component& other) const {
     return begin == other.begin && len == other.len;
+  }
+
+  // Returns a string_view using `source` as a backend.
+  template <typename CharT>
+  std::basic_string_view<CharT> as_string_view_on(const CharT* source) const {
+    DCHECK(is_valid());
+    return std::basic_string_view(&source[begin], len);
   }
 
   int begin;  // Byte offset in the string of this component.

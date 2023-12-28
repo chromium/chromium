@@ -115,8 +115,8 @@ class SystemNudge::SystemNudgeView : public views::View {
     layer()->SetColor(ShelfConfig::Get()->GetDefaultShelfColor(GetWidget()));
   }
 
-  raw_ptr<views::View, ExperimentalAsh> label_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
+  raw_ptr<views::View> label_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
 };
 
 SystemNudge::SystemNudge(const std::string& name,

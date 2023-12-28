@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -661,11 +660,6 @@ void PositionView(UIView* view, CGPoint point) {
 }
 
 - (void)setMainTabView:(UIView*)mainTabView {
-  if (!mainTabView) {
-    // TODO(crbug.com/1506555): Temporary investigation to see if there is a
-    // misconfiguration in the transition.
-    base::debug::DumpWithoutCrashing();
-  }
   DCHECK(!_mainTabView) << "mainTabView should only be set once.";
   if (!mainTabView.superview)
     [self.contentView addSubview:mainTabView];

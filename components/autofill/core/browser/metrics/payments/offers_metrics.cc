@@ -16,14 +16,6 @@
 
 namespace autofill::autofill_metrics {
 
-namespace {
-bool ShouldBreakDownUsageFromHistoryCluster() {
-  return base::FeatureList::IsEnabled(
-             ntp_features::kNtpHistoryClustersModuleDiscounts) ||
-         base::FeatureList::IsEnabled(commerce::kShowDiscountOnNavigation);
-}
-}  // namespace
-
 void LogOfferNotificationBubbleOfferMetric(
     AutofillOfferData::OfferType offer_type,
     bool is_reshow,
@@ -39,10 +31,8 @@ void LogOfferNotificationBubbleOfferMetric(
       break;
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
       histogram_name += "FreeListingCouponOffer";
-      if (ShouldBreakDownUsageFromHistoryCluster()) {
-        base::UmaHistogramBoolean(histogram_name + ".FromHistoryCluster",
-                                  commerce::UrlContainsDiscountUtmTag(url));
-      }
+      base::UmaHistogramBoolean(histogram_name + ".FromHistoryCluster",
+                                commerce::UrlContainsDiscountUtmTag(url));
       break;
     case AutofillOfferData::OfferType::UNKNOWN:
       NOTREACHED();
@@ -64,10 +54,8 @@ void LogOfferNotificationBubblePromoCodeButtonClicked(
       break;
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
       histogram_name += "FreeListingCouponOffer";
-      if (ShouldBreakDownUsageFromHistoryCluster()) {
         base::UmaHistogramBoolean(histogram_name + ".FromHistoryCluster",
                                   commerce::UrlContainsDiscountUtmTag(url));
-      }
       break;
     case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
@@ -238,10 +226,8 @@ void LogPageLoadsWithOfferIconShown(AutofillOfferData::OfferType offer_type,
   switch (offer_type) {
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
       histogram_name += ".FreeListingCouponOffer";
-      if (ShouldBreakDownUsageFromHistoryCluster()) {
         base::UmaHistogramBoolean(histogram_name + ".FromHistoryCluster",
                                   commerce::UrlContainsDiscountUtmTag(url));
-      }
       break;
     case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
       histogram_name += "CardLinkedOffer";

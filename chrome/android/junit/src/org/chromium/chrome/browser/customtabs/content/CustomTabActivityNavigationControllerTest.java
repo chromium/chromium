@@ -86,7 +86,7 @@ public class CustomTabActivityNavigationControllerTest {
                                 MinimizeAppAndCloseTabType.MINIMIZE_APP)
                         .expectIntRecord(
                                 BackPressManager.getHistogramForTesting(),
-                                BackPressManager.getHistogramValueForTesting(
+                                BackPressManager.getHistogramValue(
                                         BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB))
                         .build();
         when(mTabController.onlyOneTabRemaining()).thenReturn(true);
@@ -133,7 +133,7 @@ public class CustomTabActivityNavigationControllerTest {
                                 MinimizeAppAndCloseTabType.CLOSE_TAB)
                         .expectIntRecord(
                                 BackPressManager.getHistogramForTesting(),
-                                BackPressManager.getHistogramValueForTesting(
+                                BackPressManager.getHistogramValue(
                                         BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB))
                         .build();
         doAnswer(
@@ -186,7 +186,7 @@ public class CustomTabActivityNavigationControllerTest {
                                 MinimizeAppAndCloseTabType.CLOSE_TAB)
                         .expectIntRecord(
                                 BackPressManager.getHistogramForTesting(),
-                                BackPressManager.getHistogramValueForTesting(
+                                BackPressManager.getHistogramValue(
                                         BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB))
                         .build();
 

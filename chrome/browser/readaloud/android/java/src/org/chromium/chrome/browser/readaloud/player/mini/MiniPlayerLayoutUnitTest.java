@@ -38,6 +38,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 
 /** Unit tests for {@link PlayerCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -321,6 +322,16 @@ public class MiniPlayerLayoutUnitTest {
         TouchDelegate delegate =
                 ((View) mLayout.findViewById(R.id.close_button).getParent()).getTouchDelegate();
         assertNotNull(delegate);
+    }
+
+    @Test
+    @Config(qualifiers = "night")
+    public void testDarkModeBackgroundColor() {
+        View spyBackdrop = replaceWithSpy(R.id.backdrop);
+        mLayout.onFinishInflate();
+        int bg = ChromeColors.getSurfaceColor(mActivity, R.dimen.default_elevation_4);
+        verify(spyBackdrop).setBackgroundColor(eq(bg));
+        verify(mMediator).onBackgroundColorUpdated(eq(bg));
     }
 
     private View replaceWithSpy(int childId) {

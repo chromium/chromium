@@ -122,7 +122,7 @@ void SecureDnsHandler::OnJavascriptDisallowed() {
 
 base::Value::List SecureDnsHandler::GetSecureDnsResolverList() {
   base::Value::List resolvers;
-  for (const auto* entry : providers_) {
+  for (const net::DohProviderEntry* entry : providers_) {
     net::DnsOverHttpsConfig doh_config({entry->doh_server_config});
     base::Value::Dict dict;
     dict.Set("name", entry->ui_name);

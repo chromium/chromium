@@ -54,6 +54,8 @@ _GN_PATH = os.path.join(_CHROMIUM_SRC, 'third_party', 'depot_tools', 'gn')
 _GRADLEW = os.path.join(_CHROMIUM_SRC, 'third_party', 'gradle_wrapper',
                         'gradlew')
 
+_JAVA_HOME = os.path.join(_CHROMIUM_SRC, 'third_party', 'jdk', 'current')
+
 # Git-controlled files needed by, but not updated by this tool.
 # Relative to _PRIMARY_ANDROID_DEPS_DIR.
 _PRIMARY_ANDROID_DEPS_FILES = [
@@ -141,7 +143,10 @@ def RunCommand(args, print_stdout=False, cwd=None):
   """
     logging.debug('Run %s', args)
     stdout = None if print_stdout else subprocess.PIPE
-    p = subprocess.Popen(args, stdout=stdout, cwd=cwd)
+    # Explicitly set JAVA_HOME since some bots do not have this already set.
+    env = os.environ.copy()
+    env['JAVA_HOME'] = _JAVA_HOME
+    p = subprocess.Popen(args, stdout=stdout, cwd=cwd, env=env)
     pout, _ = p.communicate()
     if p.returncode != 0:
         RaiseCommandException(args, p.returncode, None, pout)
@@ -162,7 +167,13 @@ def RunCommandAndGetOutput(args):
     messages.
   """
     logging.debug('Run %s', args)
-    p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    # Explicitly set JAVA_HOME since some bots do not have this already set.
+    env = os.environ.copy()
+    env['JAVA_HOME'] = _JAVA_HOME
+    p = subprocess.Popen(args,
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.PIPE,
+                         env=env)
     pout, perr = p.communicate()
     if p.returncode != 0:
         RaiseCommandException(args, p.returncode, pout, perr)

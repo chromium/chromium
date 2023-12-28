@@ -2196,6 +2196,32 @@ to `absl::bind_front`.
 Overlaps with `base::Bind`.
 ***
 
+### std::bit_cast <sup>[banned]</sup>
+
+```c++
+float quake_rsqrt(float number) {
+  long i = std::bit_cast<long>(number);
+  i = 0x5f3759df - (i >> 1);  // wtf?
+  float y = std::bit_cast<float>(i);
+  return y * (1.5f - (0.5f * number * y * y));
+}
+```
+
+**Description:** Returns an value constructed with the same bits as an value of
+a different type.
+
+**Documentation:**
+[`std::bit_cast`](https://en.cppreference.com/w/cpp/numeric/bit_cast)
+
+**Notes:**
+*** promo
+The `std::` version of `bit_cast` allows casting of pointer and reference types,
+which is both useless in that it doesn't avoid UB, and dangerous in that it
+allows arbitrary casting away of modifiers like `const`. Instead of using
+`bit_cast` on pointers, use standard C++ casts. For use on values, use
+`base::bit_cast` which does not allow this unwanted usage.
+***
+
 ### std::{c8rtomb,mbrtoc8} <sup>[banned]</sup>
 
 ```c++

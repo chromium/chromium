@@ -102,7 +102,7 @@ bool TestSyncedTabDelegate::IsBeingDestroyed() const {
   return false;
 }
 
-base::Time TestSyncedTabDelegate::GetLastActiveTime() const {
+base::Time TestSyncedTabDelegate::GetLastActiveTime() {
   return base::Time::UnixEpoch();
 }
 
@@ -203,7 +203,7 @@ bool PlaceholderTabDelegate::IsBeingDestroyed() const {
   return false;
 }
 
-base::Time PlaceholderTabDelegate::GetLastActiveTime() const {
+base::Time PlaceholderTabDelegate::GetLastActiveTime() {
   NOTREACHED();
   return base::Time::UnixEpoch();
 }

@@ -33,8 +33,7 @@ class ASH_EXPORT DesktopTaskSwitchMetricRecorder
 
  private:
   // Tracks the last active task window.
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh>
-      last_active_task_window_;
+  raw_ptr<aura::Window, DanglingUntriaged> last_active_task_window_;
 };
 
 }  // namespace ash

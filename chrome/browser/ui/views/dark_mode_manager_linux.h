@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -35,10 +36,12 @@ class DarkModeManagerLinuxTest;
 class DarkModeManagerLinux : public NativeThemeObserver {
  public:
   DarkModeManagerLinux();
-  DarkModeManagerLinux(scoped_refptr<dbus::Bus> bus,
-                       LinuxUiTheme* default_linux_ui_theme,
-                       const std::vector<LinuxUiTheme*>* linux_ui_themes,
-                       std::vector<NativeTheme*> native_themes);
+  DarkModeManagerLinux(
+      scoped_refptr<dbus::Bus> bus,
+      LinuxUiTheme* default_linux_ui_theme,
+      const std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>*
+          linux_ui_themes,
+      std::vector<raw_ptr<NativeTheme, VectorExperimental>> native_themes);
   DarkModeManagerLinux(const DarkModeManagerLinux&) = delete;
   DarkModeManagerLinux& operator=(const DarkModeManagerLinux&) = delete;
   ~DarkModeManagerLinux() override;
@@ -76,8 +79,9 @@ class DarkModeManagerLinux : public NativeThemeObserver {
   // Sets `prefer_dark_theme_` and propagates to the web theme.
   void SetColorScheme(bool prefer_dark_theme, bool from_toolkit_theme);
 
-  raw_ptr<const std::vector<LinuxUiTheme*>> linux_ui_themes_;
-  std::vector<NativeTheme*> native_themes_;
+  raw_ptr<const std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>>
+      linux_ui_themes_;
+  std::vector<raw_ptr<NativeTheme, VectorExperimental>> native_themes_;
 
   scoped_refptr<dbus::Bus> bus_;
   raw_ptr<dbus::ObjectProxy> settings_proxy_;

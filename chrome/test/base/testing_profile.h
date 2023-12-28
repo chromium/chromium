@@ -43,7 +43,6 @@ class HostContentSettingsMap;
 class TestingPrefStore;
 
 namespace content {
-class ResourceContext;
 class SSLHostStateDelegate;
 class ZoomLevelDelegate;
 }  // namespace content
@@ -334,7 +333,6 @@ class TestingProfile : public Profile {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   const OTRProfileID& GetOTRProfileID() const override;
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
-  content::ResourceContext* GetResourceContext() override;
   content::BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
   content::PlatformNotificationService* GetPlatformNotificationService()
@@ -521,11 +519,6 @@ class TestingProfile : public Profile {
       SimpleDependencyManager::GetInstance()};
   raw_ptr<BrowserContextDependencyManager> browser_context_dependency_manager_{
       BrowserContextDependencyManager::GetInstance()};
-
-  // Live on the IO thread:
-  std::unique_ptr<content::ResourceContext,
-                  content::BrowserThread::DeleteOnIOThread>
-      resource_context_;
 
   std::unique_ptr<policy::SchemaRegistryService> schema_registry_service_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)

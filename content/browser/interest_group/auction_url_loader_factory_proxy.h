@@ -45,6 +45,9 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key)>;
 
+  using GetCookieDeprecationLabelCallback =
+      base::RepeatingCallback<absl::optional<std::string>()>;
+
   // Passed in callbacks must be safe to call at any time during the lifetime of
   // the AuctionURLLoaderFactoryProxy.
   //
@@ -91,6 +94,7 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
       GetUrlLoaderFactoryCallback get_frame_url_loader_factory,
       GetUrlLoaderFactoryCallback get_trusted_url_loader_factory,
       PreconnectSocketCallback preconnect_socket_callback,
+      GetCookieDeprecationLabelCallback get_cookie_deprecation_label,
       bool force_reload,
       const url::Origin& top_frame_origin,
       const url::Origin& frame_origin,
@@ -159,6 +163,7 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
 
   const GetUrlLoaderFactoryCallback get_frame_url_loader_factory_;
   const GetUrlLoaderFactoryCallback get_trusted_url_loader_factory_;
+  const GetCookieDeprecationLabelCallback get_cookie_deprecation_label_;
 
   // Manages the bundle subresource URLs that may be accessed by the worklet.
   SubresourceUrlAuthorizations subresource_url_authorizations_;

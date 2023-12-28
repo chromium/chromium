@@ -94,8 +94,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     friend class HoldingSpaceModel;
     ScopedItemUpdate(HoldingSpaceModel* model, HoldingSpaceItem* item);
 
-    const raw_ptr<HoldingSpaceModel, ExperimentalAsh> model_;
-    const raw_ptr<HoldingSpaceItem, ExperimentalAsh> item_;
+    const raw_ptr<HoldingSpaceModel> model_;
+    const raw_ptr<HoldingSpaceItem> item_;
 
     std::optional<std::optional<std::u16string>> accessible_name_;
     std::optional<HoldingSpaceFile> file_;

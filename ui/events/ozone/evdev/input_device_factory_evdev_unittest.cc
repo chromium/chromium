@@ -53,6 +53,8 @@ constexpr char kDescriptionLogInputDeviceHeader[] = "class=ui::InputDevice";
 
 constexpr char kKeyboardImposterIsTrue[] = "suspected_keyboard_imposter=1";
 constexpr char kKeyboardImposterIsFalse[] = "suspected_keyboard_imposter=0";
+constexpr char kMouseImposterIsTrue[] = "suspected_mouse_imposter=1";
+constexpr char kMouseImposterIsFalse[] = "suspected_mouse_imposter=0";
 
 // Splits multi-line block of text into array of strings.
 std::vector<std::string> SplitLines(const std::string& param) {
@@ -124,8 +126,11 @@ class StubDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
  public:
   explicit StubDeviceEventDispatcherEvdev(
       base::RepeatingCallback<void(const std::vector<KeyboardDevice>& devices)>
-          callback)
-      : callback_(callback) {}
+          keyboard_callback,
+      base::RepeatingCallback<void(const std::vector<InputDevice>& devices)>
+          mouse_callback)
+      : keyboard_callback_(keyboard_callback),
+        mouse_callback_(mouse_callback) {}
   ~StubDeviceEventDispatcherEvdev() override = default;
 
   void DispatchKeyEvent(const KeyEventParams& params) override {}
@@ -141,12 +146,14 @@ class StubDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
   void DispatchKeyboardDevicesUpdated(
       const std::vector<KeyboardDevice>& devices,
       base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override {
-    callback_.Run(devices);
+    keyboard_callback_.Run(devices);
   }
   void DispatchTouchscreenDevicesUpdated(
       const std::vector<TouchscreenDevice>& devices) override {}
   void DispatchMouseDevicesUpdated(const std::vector<InputDevice>& devices,
-                                   bool has_mouse) override {}
+                                   bool has_mouse) override {
+    mouse_callback_.Run(devices);
+  }
   void DispatchPointingStickDevicesUpdated(
       const std::vector<InputDevice>& devices) override {}
   void DispatchTouchpadDevicesUpdated(
@@ -168,7 +175,9 @@ class StubDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
 
  private:
   base::RepeatingCallback<void(const std::vector<KeyboardDevice>& devices)>
-      callback_;
+      keyboard_callback_;
+  base::RepeatingCallback<void(const std::vector<InputDevice>& devices)>
+      mouse_callback_;
 };
 
 class FakeInputDeviceOpenerEvdev : public InputDeviceOpener {
@@ -194,9 +203,12 @@ class InputDeviceFactoryEvdevTest : public testing::Test {
 
   // ::testing::Test:
   void SetUp() override {
-    dispatcher_ =
-        std::make_unique<StubDeviceEventDispatcherEvdev>(base::BindRepeating(
+    dispatcher_ = std::make_unique<StubDeviceEventDispatcherEvdev>(
+        base::BindRepeating(
             &InputDeviceFactoryEvdevTest::OnKeyboardDevicesRetrieved,
+            base::Unretained(this)),
+        base::BindRepeating(
+            &InputDeviceFactoryEvdevTest::OnMouseDevicesRetrieved,
             base::Unretained(this)));
   }
 
@@ -221,7 +233,12 @@ class InputDeviceFactoryEvdevTest : public testing::Test {
     keyboards_ = devices;
   }
 
+  void OnMouseDevicesRetrieved(const std::vector<InputDevice>& devices) {
+    mice_ = devices;
+  }
+
   std::vector<KeyboardDevice> keyboards_;
+  std::vector<InputDevice> mice_;
   base::test::SingleThreadTaskEnvironment task_environment{
       base::test::TaskEnvironment::MainThreadType::UI};
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -285,6 +302,8 @@ TEST_F(InputDeviceFactoryEvdevTest, AttachSingularMouse) {
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_EQ(keyboards_.size(), std::size_t(0));
+  EXPECT_EQ(mice_.size(), std::size_t(1));
+  EXPECT_FALSE(mice_.front().suspected_mouse_imposter);
 }
 
 TEST_F(InputDeviceFactoryEvdevTest,
@@ -355,6 +374,43 @@ TEST_F(InputDeviceFactoryEvdevTest,
   run_loop.Run();
   EXPECT_EQ(keyboards_.size(), std::size_t(1));
   EXPECT_TRUE(keyboards_.front().suspected_keyboard_imposter);
+  EXPECT_FALSE(keyboards_.front().suspected_mouse_imposter);
+}
+
+TEST_F(InputDeviceFactoryEvdevTest,
+       AttachMouseAndKeyboardSameUSBTopologyFakeMouseHeuristicEnabled) {
+  scoped_feature_list_.InitAndEnableFeature(kEnableFakeMouseHeuristic);
+  std::vector<std::unique_ptr<FakeEventConverterEvdev>> converters;
+  base::RunLoop run_loop;
+
+  std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
+      std::make_unique<FakeEventConverterEvdev>(
+          1, base::FilePath("mouse_path"), 1,
+          InputDeviceType::INPUT_DEVICE_INTERNAL, "mouse_name",
+          "usb-0000:00:14.0-9/input0", 1, 1, 1, DeviceForm::MOUSE);
+  std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
+      std::make_unique<FakeEventConverterEvdev>(
+          2, base::FilePath("keyboard_path"), 2,
+          InputDeviceType::INPUT_DEVICE_INTERNAL, "keyboard_name",
+          "usb-0000:00:14.0-9/input1", 2, 2, 2, DeviceForm::KEYBOARD);
+
+  converters.push_back(std::move(mouse_converter));
+  converters.push_back(std::move(keyboard_converter));
+
+  std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
+      std::make_unique<InputDeviceFactoryEvdev>(
+          std::move(dispatcher_), nullptr,
+          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)),
+          &input_controller_);
+  input_device_factory_->OnStartupScanComplete();
+  input_device_factory_->AddInputDevice(1, base::FilePath("unused_value"));
+  input_device_factory_->AddInputDevice(2, base::FilePath("unused_value"));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_EQ(mice_.size(), std::size_t(1));
+  EXPECT_TRUE(mice_.front().suspected_mouse_imposter);
+  EXPECT_FALSE(mice_.front().suspected_keyboard_imposter);
 }
 
 TEST_F(InputDeviceFactoryEvdevTest,
@@ -390,6 +446,41 @@ TEST_F(InputDeviceFactoryEvdevTest,
   run_loop.Run();
   EXPECT_EQ(keyboards_.size(), std::size_t(1));
   EXPECT_FALSE(keyboards_.front().suspected_keyboard_imposter);
+}
+
+TEST_F(InputDeviceFactoryEvdevTest,
+       AttachMouseAndKeyboardDifferentUSBTopologyFakeMouseHeuristicEnabled) {
+  scoped_feature_list_.InitAndEnableFeature(kEnableFakeMouseHeuristic);
+  std::vector<std::unique_ptr<FakeEventConverterEvdev>> converters;
+  base::RunLoop run_loop;
+
+  std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
+      std::make_unique<FakeEventConverterEvdev>(
+          1, base::FilePath("mouse_path"), 1,
+          InputDeviceType::INPUT_DEVICE_INTERNAL, "mouse_name",
+          "usb-0000:00:9.0-1/input0", 1, 1, 1, DeviceForm::MOUSE);
+  std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
+      std::make_unique<FakeEventConverterEvdev>(
+          2, base::FilePath("keyboard_path"), 2,
+          InputDeviceType::INPUT_DEVICE_INTERNAL, "keyboard_name",
+          "usb-0000:00:14.0-9/input0", 2, 2, 2, DeviceForm::KEYBOARD);
+
+  converters.push_back(std::move(mouse_converter));
+  converters.push_back(std::move(keyboard_converter));
+
+  std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
+      std::make_unique<InputDeviceFactoryEvdev>(
+          std::move(dispatcher_), nullptr,
+          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)),
+          &input_controller_);
+  input_device_factory_->OnStartupScanComplete();
+  input_device_factory_->AddInputDevice(1, base::FilePath("unused_value"));
+  input_device_factory_->AddInputDevice(2, base::FilePath("unused_value"));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_EQ(mice_.size(), std::size_t(1));
+  EXPECT_FALSE(mice_.front().suspected_mouse_imposter);
 }
 
 TEST_F(InputDeviceFactoryEvdevTest,
@@ -453,6 +544,34 @@ TEST_F(InputDeviceFactoryEvdevTest,
   run_loop.Run();
   EXPECT_EQ(keyboards_.size(), std::size_t(1));
   EXPECT_TRUE(keyboards_.front().suspected_keyboard_imposter);
+}
+
+TEST_F(InputDeviceFactoryEvdevTest,
+       AttachSingularKeyboardAndMouseFakeMouseHeuristicEnabled) {
+  scoped_feature_list_.InitAndEnableFeature(kEnableFakeMouseHeuristic);
+  std::vector<std::unique_ptr<FakeEventConverterEvdev>> converters;
+  base::RunLoop run_loop;
+
+  std::unique_ptr<FakeEventConverterEvdev> keyboard_and_mouse_converter =
+      std::make_unique<FakeEventConverterEvdev>(
+          1, base::FilePath("path"), 1, InputDeviceType::INPUT_DEVICE_INTERNAL,
+          "name", "phys_path", 1, 1, 1,
+          DeviceForm::MOUSE | DeviceForm::KEYBOARD);
+
+  converters.push_back(std::move(keyboard_and_mouse_converter));
+
+  std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
+      std::make_unique<InputDeviceFactoryEvdev>(
+          std::move(dispatcher_), nullptr,
+          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)),
+          &input_controller_);
+  input_device_factory_->OnStartupScanComplete();
+  input_device_factory_->AddInputDevice(1, base::FilePath("unused_value"));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_EQ(mice_.size(), std::size_t(1));
+  EXPECT_TRUE(mice_.front().suspected_mouse_imposter);
 }
 
 TEST_F(InputDeviceFactoryEvdevTest,
@@ -617,6 +736,34 @@ TEST_F(InputDeviceFactoryEvdevTest,
 }
 
 TEST_F(InputDeviceFactoryEvdevTest,
+       AttachSingularKeyboardAndMouseFakeMouseHeuristicDisabled) {
+  scoped_feature_list_.InitAndDisableFeature(kEnableFakeMouseHeuristic);
+  std::vector<std::unique_ptr<FakeEventConverterEvdev>> converters;
+  base::RunLoop run_loop;
+
+  std::unique_ptr<FakeEventConverterEvdev> keyboard_and_mouse_converter =
+      std::make_unique<FakeEventConverterEvdev>(
+          1, base::FilePath("path"), 1, InputDeviceType::INPUT_DEVICE_INTERNAL,
+          "name", "phys_path", 1, 1, 1,
+          DeviceForm::MOUSE | DeviceForm::KEYBOARD);
+
+  converters.push_back(std::move(keyboard_and_mouse_converter));
+
+  std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
+      std::make_unique<InputDeviceFactoryEvdev>(
+          std::move(dispatcher_), nullptr,
+          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)),
+          &input_controller_);
+  input_device_factory_->OnStartupScanComplete();
+  input_device_factory_->AddInputDevice(1, base::FilePath("unused_value"));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_EQ(mice_.size(), std::size_t(1));
+  EXPECT_FALSE(mice_.front().suspected_mouse_imposter);
+}
+
+TEST_F(InputDeviceFactoryEvdevTest,
        AttachAndRemoveDeviceFakeKeyboardHeuristicEnabled) {
   scoped_feature_list_.InitAndEnableFeature(kEnableFakeKeyboardHeuristic);
   std::vector<std::unique_ptr<FakeEventConverterEvdev>> converters;
@@ -737,7 +884,6 @@ TEST_F(InputDeviceFactoryEvdevTest, AttachBluetoothMouseTriggersMetricLogging) {
 TEST_F(InputDeviceFactoryEvdevTest, DescribeForLogSingularMouse) {
   std::vector<std::unique_ptr<FakeEventConverterEvdev>> converters;
   base::RunLoop run_loop;
-  std::string response;
 
   std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
@@ -758,9 +904,15 @@ TEST_F(InputDeviceFactoryEvdevTest, DescribeForLogSingularMouse) {
 
   RunDescribeForLog(input_device_factory_.get());
 
-  EXPECT_NE(GetLogResponse(), "");
-  EXPECT_THAT(SplitLines(GetLogResponse()),
+  std::string response = GetLogResponse();
+
+  EXPECT_NE(response, "");
+
+  auto lines = SplitLines(response);
+
+  EXPECT_THAT(lines,
               Contains(HasSubstr(kDescriptionLogInputDeviceHeader)).Times(1));
+  EXPECT_THAT(lines, Contains(HasSubstr(kMouseImposterIsFalse)));
 }
 
 TEST_F(InputDeviceFactoryEvdevTest, DescribeForLogAttachInternalKeyboard) {
@@ -881,6 +1033,7 @@ TEST_F(InputDeviceFactoryEvdevTest, DescribeForLogOneDeviceMouseAndKeyboard) {
   EXPECT_THAT(lines,
               Contains(HasSubstr(kDescriptionLogInputDeviceHeader)).Times(1));
   EXPECT_THAT(lines, Contains(HasSubstr(kKeyboardImposterIsTrue)));
+  EXPECT_THAT(lines, Contains(HasSubstr(kMouseImposterIsTrue)));
 }
 
 }  // namespace ui

@@ -20,7 +20,8 @@ public class PendingIntentProvider {
 
     /**
      * Creates {@link PendingIntent}that triggers {@link android.content.BroadcastReceiver}.
-     * @See {@link PendingIntent#getBroadcast(Context, int, Intent, int)}.
+     *
+     * @see {@link PendingIntent#getBroadcast(Context, int, Intent, int)}.
      */
     public static PendingIntentProvider getBroadcast(
             Context context, int requestCode, Intent intent, int flags, boolean mutable) {
@@ -39,7 +40,8 @@ public class PendingIntentProvider {
 
     /**
      * Creates {@link PendingIntent} that triggers {@link android.app.Service}.
-     * @See {@link PendingIntent#getService(Context, int, Intent, int)} .
+     *
+     * @see {@link PendingIntent#getService(Context, int, Intent, int)} .
      */
     public static PendingIntentProvider getService(
             Context context, int requestCode, Intent intent, int flags, boolean mutable) {
@@ -56,7 +58,8 @@ public class PendingIntentProvider {
 
     /**
      * Creates {@link PendingIntent} that triggers {@link android.app.Activity}.
-     * @See {@link PendingIntent#getActivity(Context, int, Intent, int)}.
+     *
+     * @see {@link PendingIntent#getActivity(Context, int, Intent, int)}.
      */
     public static PendingIntentProvider getActivity(
             Context context, int requestCode, Intent intent, int flags, boolean mutable) {

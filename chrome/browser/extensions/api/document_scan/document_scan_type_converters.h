@@ -40,10 +40,59 @@ struct TypeConverter<extensions::api::document_scan::OpenScannerResponse,
 };
 
 template <>
+struct TypeConverter<extensions::api::document_scan::GetOptionGroupsResponse,
+                     crosapi::mojom::GetOptionGroupsResponsePtr> {
+  static extensions::api::document_scan::GetOptionGroupsResponse Convert(
+      const crosapi::mojom::GetOptionGroupsResponsePtr& input);
+};
+
+template <>
 struct TypeConverter<extensions::api::document_scan::CloseScannerResponse,
                      crosapi::mojom::CloseScannerResponsePtr> {
   static extensions::api::document_scan::CloseScannerResponse Convert(
       const crosapi::mojom::CloseScannerResponsePtr& input);
+};
+
+template <>
+struct TypeConverter<crosapi::mojom::OptionSettingPtr,
+                     extensions::api::document_scan::OptionSetting> {
+  static crosapi::mojom::OptionSettingPtr Convert(
+      const extensions::api::document_scan::OptionSetting& input);
+};
+
+template <>
+struct TypeConverter<extensions::api::document_scan::SetOptionsResponse,
+                     crosapi::mojom::SetOptionsResponsePtr> {
+  static extensions::api::document_scan::SetOptionsResponse Convert(
+      const crosapi::mojom::SetOptionsResponsePtr& input);
+};
+
+template <>
+struct TypeConverter<crosapi::mojom::StartScanOptionsPtr,
+                     extensions::api::document_scan::StartScanOptions> {
+  static crosapi::mojom::StartScanOptionsPtr Convert(
+      const extensions::api::document_scan::StartScanOptions& input);
+};
+
+template <>
+struct TypeConverter<extensions::api::document_scan::StartScanResponse,
+                     crosapi::mojom::StartPreparedScanResponsePtr> {
+  static extensions::api::document_scan::StartScanResponse Convert(
+      const crosapi::mojom::StartPreparedScanResponsePtr& input);
+};
+
+template <>
+struct TypeConverter<extensions::api::document_scan::CancelScanResponse,
+                     crosapi::mojom::CancelScanResponsePtr> {
+  static extensions::api::document_scan::CancelScanResponse Convert(
+      const crosapi::mojom::CancelScanResponsePtr& input);
+};
+
+template <>
+struct TypeConverter<extensions::api::document_scan::ReadScanDataResponse,
+                     crosapi::mojom::ReadScanDataResponsePtr> {
+  static extensions::api::document_scan::ReadScanDataResponse Convert(
+      const crosapi::mojom::ReadScanDataResponsePtr& input);
 };
 
 // Test wrappers for type conversions that don't need to be done explicitly.

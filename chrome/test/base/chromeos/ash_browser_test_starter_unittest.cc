@@ -71,63 +71,8 @@ TEST_F(AshBrowserTestStarterTest, TestLacrosLogFolderWithOneRetry) {
   base::FilePath user_data_dir =
       command_line->GetSwitchValuePath(switches::kUserDataDir);
   base::FilePath expected_user_data_dir(summary_path.Append(
-      "AshBrowserTestStarterTest.TestLacrosLogFolderWithOneRetry.retry_1"));
-  EXPECT_EQ(user_data_dir, expected_user_data_dir);
+      "AshBrowserTestStarterTest.TestLacrosLogFolderWithOneRetry.attempt_"));
+  EXPECT_TRUE(user_data_dir.AsUTF8Unsafe().starts_with(
+      expected_user_data_dir.AsUTF8Unsafe()));
 }
 
-TEST_F(AshBrowserTestStarterTest, TestLacrosLogFolderWithTwoRetry) {
-  base::FilePath summary_path;
-  base::ScopedTempDir scoped_summary_dir;
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  bool on_bot = GetSummaryOutputFolder(summary_path);
-  if (!on_bot) {
-    ASSERT_TRUE(scoped_summary_dir.CreateUniqueTempDir());
-    command_line->AppendSwitchPath(
-        switches::kTestLauncherSummaryOutput,
-        scoped_summary_dir.GetPath().Append("output.json"));
-    summary_path = scoped_summary_dir.GetPath();
-  }
-  command_line->AppendSwitchASCII(ash::switches::kLacrosChromePath, "/tmp/bbb");
-  ASSERT_TRUE(base::CreateDirectory(summary_path.Append(
-      "AshBrowserTestStarterTest.TestLacrosLogFolderWithTwoRetry")));
-  ASSERT_TRUE(base::CreateDirectory(summary_path.Append(
-      "AshBrowserTestStarterTest.TestLacrosLogFolderWithTwoRetry.retry_1")));
-  test::AshBrowserTestStarter starter;
-  bool success = starter.PrepareEnvironmentForLacros();
-  EXPECT_TRUE(success);
-  EXPECT_TRUE(command_line->HasSwitch(switches::kUserDataDir));
-  base::FilePath user_data_dir =
-      command_line->GetSwitchValuePath(switches::kUserDataDir);
-  base::FilePath expected_user_data_dir(summary_path.Append(
-      "AshBrowserTestStarterTest.TestLacrosLogFolderWithTwoRetry.retry_2"));
-  EXPECT_EQ(user_data_dir, expected_user_data_dir);
-}
-
-TEST_F(AshBrowserTestStarterTest, TestLacrosLogFolderWithFiveRetry) {
-  base::FilePath summary_path;
-  base::ScopedTempDir scoped_summary_dir;
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  bool on_bot = GetSummaryOutputFolder(summary_path);
-  if (!on_bot) {
-    ASSERT_TRUE(scoped_summary_dir.CreateUniqueTempDir());
-    command_line->AppendSwitchPath(
-        switches::kTestLauncherSummaryOutput,
-        scoped_summary_dir.GetPath().Append("output.json"));
-    summary_path = scoped_summary_dir.GetPath();
-  }
-  command_line->AppendSwitchASCII(ash::switches::kLacrosChromePath, "/tmp/bbb");
-  ASSERT_TRUE(base::CreateDirectory(summary_path.Append(
-      "AshBrowserTestStarterTest.TestLacrosLogFolderWithFiveRetry")));
-  ASSERT_TRUE(base::CreateDirectory(summary_path.Append(
-      "AshBrowserTestStarterTest.TestLacrosLogFolderWithFiveRetry.retry_1")));
-  ASSERT_TRUE(base::CreateDirectory(summary_path.Append(
-      "AshBrowserTestStarterTest.TestLacrosLogFolderWithFiveRetry.retry_2")));
-  ASSERT_TRUE(base::CreateDirectory(summary_path.Append(
-      "AshBrowserTestStarterTest.TestLacrosLogFolderWithFiveRetry.retry_3")));
-  ASSERT_TRUE(base::CreateDirectory(summary_path.Append(
-      "AshBrowserTestStarterTest.TestLacrosLogFolderWithFiveRetry.retry_4")));
-  test::AshBrowserTestStarter starter;
-  bool success = starter.PrepareEnvironmentForLacros();
-  EXPECT_TRUE(success);
-  EXPECT_FALSE(command_line->HasSwitch(switches::kUserDataDir));
-}

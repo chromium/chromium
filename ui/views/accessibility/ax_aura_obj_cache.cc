@@ -160,7 +160,7 @@ AXAuraObjWrapper* AXAuraObjCache::Get(int32_t id) {
 }
 
 void AXAuraObjCache::GetTopLevelWindows(
-    std::vector<AXAuraObjWrapper*>* children) {
+    std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>>* children) {
   for (aura::Window* root : root_windows_)
     children->push_back(GetOrCreate(root));
 }

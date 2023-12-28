@@ -23,7 +23,7 @@ import com.sun.source.tree.MethodInvocationTree;
 @AutoService(BugChecker.class)
 @BugPattern(
         name = "NoResourcesGetColor",
-        summary = "Do not use android.content.Context#getColor(int).",
+        summary = "Do not use android.content.res.Resources#getColor(int).",
         severity = SeverityLevel.ERROR,
         linkType = LinkType.CUSTOM,
         link = "https://crbug.com/1302803")

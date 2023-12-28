@@ -4,7 +4,7 @@
 
 #include "ash/system/unified/unified_system_tray.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/tray_background_view_catalog.h"
@@ -19,7 +19,7 @@
 #include "ash/system/channel_indicator/channel_indicator_utils.h"
 #include "ash/system/hotspot/hotspot_tray_view.h"
 #include "ash/system/human_presence/snooping_protection_view.h"
-#include "ash/system/message_center/ash_message_popup_collection.h"
+#include "ash/system/notification_center/ash_message_popup_collection.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_tray_view.h"

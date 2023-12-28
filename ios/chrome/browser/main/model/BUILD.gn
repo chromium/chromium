@@ -29,7 +29,7 @@ source_set("model") {
     "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/metrics/model:metrics_browser_agent",
-    "//ios/chrome/browser/policy",
+    "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/send_tab_to_self/model",
     "//ios/chrome/browser/sessions",

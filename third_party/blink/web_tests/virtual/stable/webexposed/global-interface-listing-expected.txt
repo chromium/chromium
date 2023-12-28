@@ -3570,6 +3570,7 @@ interface HTMLHtmlElement : HTMLElement
     setter version
 interface HTMLIFrameElement : HTMLElement
     attribute @@toStringTag
+    getter adAuctionHeaders
     getter align
     getter allow
     getter allowFullscreen
@@ -3595,6 +3596,7 @@ interface HTMLIFrameElement : HTMLElement
     getter width
     method constructor
     method getSVGDocument
+    setter adAuctionHeaders
     setter align
     setter allow
     setter allowFullscreen

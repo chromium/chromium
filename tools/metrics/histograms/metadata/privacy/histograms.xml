@@ -51,7 +51,7 @@ reviewer.
 </variants>
 
 <histogram name="Privacy.3PCD.AdsHeuristicAddedToOverrides"
-    enum="ProfileEligibilityMismatch" expires_after="2024-07-01">
+    enum="AdsHeuristicCookieOverride" expires_after="2024-07-01">
   <owner>johnidel@chromium.org</owner>
   <owner>src/chrome/browser/tpcd/OWNERS</owner>
   <summary>
@@ -458,7 +458,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacyGuide.CanShowNTPPromo" enum="Boolean"
-    expires_after="2024-01-31">
+    expires_after="2024-06-02">
   <owner>msramek@chromium.org</owner>
   <owner>rainhard@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -470,7 +470,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.AggregationService.KeyFetcher.HttpResponseOrNetErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-01-13">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-07-13">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -492,13 +492,20 @@ reviewer.
 
 <histogram name="PrivacySandbox.AggregationService.ReportAssembler.Status"
     enum="PrivacySandboxAggregationServiceReportAssemblerStatus"
-    expires_after="2024-04-28">
+    expires_after="never">
+<!-- expires-never: critical system health metric for monitoring -->
+
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
     Records the high level status of each aggregatable report assembly request.
     Recorded for reports requested from any API (e.g. Attribution Reporting
     API).
+
+    This is a critical histogram monitored by alerts to
+    measurement-api-dev+alerts@google.com. Please make sure future versions of
+    this histogram are properly set up for alerting, but prefer not to version
+    the histogram if possible.
   </summary>
 </histogram>
 
@@ -516,7 +523,9 @@ reviewer.
 
 <histogram name="PrivacySandbox.AggregationService.ReportSender.Status"
     enum="PrivacySandboxAggregationServiceReportSenderStatus"
-    expires_after="2024-04-28">
+    expires_after="never">
+<!-- expires-never: critical system health metric for monitoring -->
+
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -526,6 +535,11 @@ reviewer.
 
     Recorded for every aggregatable report sent. It might retry in case of
     failure but only the final status will be counted for each report.
+
+    This is a critical histogram monitored by alerts to
+    measurement-api-dev+alerts@google.com. Please make sure future versions of
+    this histogram are properly set up for alerting, but prefer not to version
+    the histogram if possible.
   </summary>
 </histogram>
 
@@ -827,6 +841,17 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="PrivacySandbox.Attestations.Parsing.SentinelVersion"
+    units="version" expires_after="M122">
+  <owner>shivanisha@chromium.org</owner>
+  <owner>xiaochenzh@chromium.org</owner>
+  <summary>
+    Records the version of the sentinel file when the sentinel file prevents the
+    parsing of the attestation list. The version of the sentinel file is the
+    same as the attestation list which failed to be parsed in the first place.
+  </summary>
+</histogram>
+
 <histogram name="PrivacySandbox.Attestations.Parsing.Status"
     enum="PrivacySandboxAttestationParsingStatus" expires_after="2024-04-28">
   <owner>shivanisha@chromium.org</owner>
@@ -1025,7 +1050,9 @@ reviewer.
 
 <histogram name="PrivacySandbox.PrivateAggregation.Manager.RequestResult"
     enum="PrivacySandboxPrivateAggregationManagerRequestResult"
-    expires_after="2024-05-12">
+    expires_after="never">
+<!-- expires-never: critical system health metric for monitoring -->
+
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -1035,6 +1062,11 @@ reviewer.
     cleared due to budget denial. Also breaks out the case of a report that
     started with no contributions. Recorded for each individual report request
     (but not each individual histogram contribution).
+
+    This is a critical histogram monitored by alerts to
+    measurement-api-dev+alerts@google.com. Please make sure future versions of
+    this histogram are properly set up for alerting, but prefer not to version
+    the histogram if possible.
   </summary>
 </histogram>
 
@@ -1343,7 +1375,9 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.{ApiType}" enum="PrivacySandboxApiAllowed"
-    expires_after="2024-04-28">
+    expires_after="never">
+<!-- expires-never: critical system health metric for monitoring -->
+
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>sauski@chromium.org</owner>
@@ -1351,6 +1385,11 @@ reviewer.
     Whether or not the {ApiType} operation was allowed by Privacy Sandbox
     settings and why. Recorded at the time settings are checked when performing
     the operation.
+
+    This is a critical histogram monitored by alerts. Please make sure future
+    versions of this histogram are properly set up for alerting. The attribution
+    reporting and private aggregation variants are monitored by
+    measurement-api-dev+alerts@google.com.
   </summary>
   <token key="ApiType">
     <variant name="IsAttributionReportingAllowed"

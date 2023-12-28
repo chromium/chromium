@@ -106,14 +106,23 @@ void ShowExtensionInstallBlockedByParentDialog(
 #if BUILDFLAG(IS_CHROMEOS)
 
 // Shows a scanner discovery confirmation dialog bubble anchored to the toolbar
-// icon for the extension.
-// If there's no toolbar icon, shows a modal dialog using
-// CreateBrowserModalDialogViews(). Note that this dialog is shown even if there
-// is no `parent` window.
+// icon for the extension.  If there's no toolbar icon or parent, it will
+// display a browser-modal dialog instead.
 void ShowDocumentScannerDiscoveryConfirmationDialog(
     gfx::NativeWindow parent,
     const ExtensionId& extension_id,
     const std::u16string& extension_name,
+    const gfx::ImageSkia& extension_icon,
+    base::OnceCallback<void(bool)> callback);
+
+// Shows a start scan confirmation dialog bubble anchored to the toolbar icon
+// for the extension.  If there's no toolbar icon or parent, it will display a
+// browser-modal dialog instead.
+void ShowDocumentScannerStartScanConfirmationDialog(
+    gfx::NativeWindow parent,
+    const ExtensionId& extension_id,
+    const std::u16string& extension_name,
+    const std::u16string& scanner_name,
     const gfx::ImageSkia& extension_icon,
     base::OnceCallback<void(bool)> callback);
 
@@ -127,10 +136,8 @@ void ShowRequestFileSystemDialog(
     base::OnceCallback<void(ui::DialogButton)> callback);
 
 // Shows the print job confirmation dialog bubble anchored to the toolbar icon
-// for the extension.
-// If there's no toolbar icon, shows a modal dialog using
-// CreateBrowserModalDialogViews(). Note that this dialog is shown even if there
-// is no `parent` window.
+// for the extension.  If there's no toolbar icon or parent, it will display a
+// browser-modal dialog instead.
 void ShowPrintJobConfirmationDialog(gfx::NativeWindow parent,
                                     const ExtensionId& extension_id,
                                     const std::u16string& extension_name,

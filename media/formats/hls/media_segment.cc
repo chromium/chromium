@@ -26,7 +26,8 @@ MediaSegment::MediaSegment(
     absl::optional<types::ByteRange> byte_range,
     absl::optional<types::DecimalInteger> bitrate,
     bool has_discontinuity,
-    bool is_gap)
+    bool is_gap,
+    bool has_new_init_segment)
     : duration_(duration),
       media_sequence_number_(media_sequence_number),
       discontinuity_sequence_number_(discontinuity_sequence_number),
@@ -35,7 +36,8 @@ MediaSegment::MediaSegment(
       byte_range_(byte_range),
       bitrate_(bitrate),
       has_discontinuity_(has_discontinuity),
-      is_gap_(is_gap) {}
+      is_gap_(is_gap),
+      has_new_init_segment_(has_new_init_segment) {}
 
 MediaSegment::~MediaSegment() = default;
 

@@ -560,6 +560,11 @@ autofill::PopupType PasswordAutofillManager::GetPopupType() const {
   return autofill::PopupType::kPasswords;
 }
 
+autofill::FillingProduct PasswordAutofillManager::GetMainFillingProduct()
+    const {
+  return autofill::FillingProduct::kPassword;
+}
+
 int32_t PasswordAutofillManager::GetWebContentsPopupControllerAxId() const {
   // TODO: Needs to be implemented when we step up accessibility features in the
   // future.

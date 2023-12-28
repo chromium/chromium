@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_BROWSER_AUTOFILL_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,7 +15,6 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace autofill {
@@ -82,7 +82,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   // Unique to TestBrowserAutofillManager:
 
   void AddSeenForm(const FormData& form,
-                   const std::vector<ServerFieldType>& field_types,
+                   const std::vector<FieldType>& field_types,
                    bool preserve_values_in_form_structure = false) {
     AddSeenForm(form, /*heuristic_types=*/field_types,
                 /*server_types=*/field_types,
@@ -90,16 +90,15 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   }
 
   void AddSeenForm(const FormData& form,
-                   const std::vector<ServerFieldType>& heuristic_types,
-                   const std::vector<ServerFieldType>& server_types,
+                   const std::vector<FieldType>& heuristic_types,
+                   const std::vector<FieldType>& server_types,
                    bool preserve_values_in_form_structure = false);
 
   void AddSeenForm(
       const FormData& form,
-      const std::vector<
-          std::vector<std::pair<HeuristicSource, ServerFieldType>>>&
+      const std::vector<std::vector<std::pair<HeuristicSource, FieldType>>>&
           heuristic_types,
-      const std::vector<ServerFieldType>& server_types,
+      const std::vector<FieldType>& server_types,
       bool preserve_values_in_form_structure = false);
 
   void AddSeenFormStructure(std::unique_ptr<FormStructure> form_structure);
@@ -124,20 +123,20 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
                                         bool credit_card_enabled);
 
   void SetExpectedSubmittedFieldTypes(
-      const std::vector<ServerFieldTypeSet>& expected_types);
+      const std::vector<FieldTypeSet>& expected_types);
 
   void SetExpectedObservedSubmission(bool expected);
 
  private:
   bool autofill_profile_enabled_ = true;
   bool autofill_payment_methods_enabled_ = true;
-  absl::optional<bool> expected_observed_submission_;
+  std::optional<bool> expected_observed_submission_;
   const gfx::Image card_image_ = gfx::test::CreateImage(40, 24);
 
   std::unique_ptr<base::RunLoop> run_loop_;
 
   std::string submitted_form_signature_;
-  std::vector<ServerFieldTypeSet> expected_submitted_field_types_;
+  std::vector<FieldTypeSet> expected_submitted_field_types_;
 };
 
 }  // namespace autofill

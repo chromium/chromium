@@ -4,6 +4,8 @@
 
 #include "components/webcrypto/algorithms/x25519.h"
 
+#include <string_view>
+
 #include "components/webcrypto/algorithms/asymmetric_key_util.h"
 #include "components/webcrypto/algorithms/util.h"
 #include "components/webcrypto/blink_key_handle.h"
@@ -64,7 +66,7 @@ Status CreateWebCryptoX25519PublicKey(
 
 // Reads a fixed length base64url-decoded bytes from a JWK.
 Status ReadBytes(const JwkReader& jwk,
-                 base::StringPiece member_name,
+                 std::string_view member_name,
                  size_t expected_length,
                  std::vector<uint8_t>* out) {
   std::vector<uint8_t> bytes;

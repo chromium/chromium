@@ -222,7 +222,11 @@ SavePackageFilePicker::SavePackageFilePicker(
         ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
         suggested_path_copy, &file_type_info, file_type_index,
         default_extension_copy,
-        platform_util::GetTopLevel(web_contents->GetNativeView()), nullptr);
+        platform_util::GetTopLevel(web_contents->GetNativeView()),
+        /*params=*/nullptr, /*caller=*/
+        web_contents
+            ? &web_contents->GetPrimaryMainFrame()->GetLastCommittedURL()
+            : nullptr);
     return;
   }
 

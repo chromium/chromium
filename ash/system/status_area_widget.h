@@ -151,7 +151,8 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
 
   Shelf* shelf() { return shelf_; }
 
-  const std::vector<TrayBackgroundView*>& tray_buttons() const {
+  const std::vector<raw_ptr<TrayBackgroundView, VectorExperimental>>&
+  tray_buttons() const {
     return tray_buttons_;
   }
 
@@ -271,8 +272,7 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   // SessionObserver:
   void OnLockStateChanged(bool locked) override;
 
-  const raw_ptr<StatusAreaWidgetDelegate, ExperimentalAsh>
-      status_area_widget_delegate_;
+  const raw_ptr<StatusAreaWidgetDelegate> status_area_widget_delegate_;
 
   // The active tray bubble that is opened on the display where this status area
   // widget lives.
@@ -280,47 +280,38 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
 
   // All tray items are owned by StatusAreaWidgetDelegate, and destroyed
   // explicitly in a shutdown call in the StatusAreaWidget dtor.
-  raw_ptr<StatusAreaOverflowButtonTray, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<StatusAreaOverflowButtonTray, DanglingUntriaged>
       overflow_button_tray_ = nullptr;
-  raw_ptr<OverviewButtonTray, DanglingUntriaged | ExperimentalAsh>
-      overview_button_tray_ = nullptr;
-  raw_ptr<DictationButtonTray, DanglingUntriaged | ExperimentalAsh>
-      dictation_button_tray_ = nullptr;
-  raw_ptr<MediaTray, DanglingUntriaged | ExperimentalAsh> media_tray_ = nullptr;
-  raw_ptr<NotificationCenterTray, DanglingUntriaged | ExperimentalAsh>
-      notification_center_tray_ = nullptr;
-  raw_ptr<DateTray, DanglingUntriaged | ExperimentalAsh> date_tray_ = nullptr;
-  raw_ptr<UnifiedSystemTray, DanglingUntriaged | ExperimentalAsh>
-      unified_system_tray_ = nullptr;
-  raw_ptr<LogoutButtonTray, DanglingUntriaged | ExperimentalAsh>
-      logout_button_tray_ = nullptr;
-  raw_ptr<PaletteTray, DanglingUntriaged | ExperimentalAsh> palette_tray_ =
+  raw_ptr<OverviewButtonTray, DanglingUntriaged> overview_button_tray_ =
       nullptr;
-  raw_ptr<PhoneHubTray, DanglingUntriaged | ExperimentalAsh> phone_hub_tray_ =
+  raw_ptr<DictationButtonTray, DanglingUntriaged> dictation_button_tray_ =
       nullptr;
-  raw_ptr<EcheTray, DanglingUntriaged | ExperimentalAsh> eche_tray_ = nullptr;
-  raw_ptr<VideoConferenceTray, DanglingUntriaged | ExperimentalAsh>
-      video_conference_tray_ = nullptr;
-  raw_ptr<StopRecordingButtonTray, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<MediaTray, DanglingUntriaged> media_tray_ = nullptr;
+  raw_ptr<NotificationCenterTray, DanglingUntriaged> notification_center_tray_ =
+      nullptr;
+  raw_ptr<DateTray, DanglingUntriaged> date_tray_ = nullptr;
+  raw_ptr<UnifiedSystemTray, DanglingUntriaged> unified_system_tray_ = nullptr;
+  raw_ptr<LogoutButtonTray, DanglingUntriaged> logout_button_tray_ = nullptr;
+  raw_ptr<PaletteTray, DanglingUntriaged> palette_tray_ = nullptr;
+  raw_ptr<PhoneHubTray, DanglingUntriaged> phone_hub_tray_ = nullptr;
+  raw_ptr<EcheTray, DanglingUntriaged> eche_tray_ = nullptr;
+  raw_ptr<VideoConferenceTray, DanglingUntriaged> video_conference_tray_ =
+      nullptr;
+  raw_ptr<StopRecordingButtonTray, DanglingUntriaged>
       stop_recording_button_tray_ = nullptr;
-  raw_ptr<FocusModeTray, DanglingUntriaged | ExperimentalAsh> focus_mode_tray_ =
-      nullptr;
-  raw_ptr<ProjectorAnnotationTray, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FocusModeTray, DanglingUntriaged> focus_mode_tray_ = nullptr;
+  raw_ptr<ProjectorAnnotationTray, DanglingUntriaged>
       projector_annotation_tray_ = nullptr;
-  raw_ptr<VirtualKeyboardTray, DanglingUntriaged | ExperimentalAsh>
-      virtual_keyboard_tray_ = nullptr;
-  raw_ptr<ImeMenuTray, DanglingUntriaged | ExperimentalAsh> ime_menu_tray_ =
+  raw_ptr<VirtualKeyboardTray, DanglingUntriaged> virtual_keyboard_tray_ =
       nullptr;
-  raw_ptr<SelectToSpeakTray, DanglingUntriaged | ExperimentalAsh>
-      select_to_speak_tray_ = nullptr;
-  raw_ptr<HoldingSpaceTray, DanglingUntriaged | ExperimentalAsh>
-      holding_space_tray_ = nullptr;
-  raw_ptr<WmModeButtonTray, DanglingUntriaged | ExperimentalAsh>
-      wm_mode_button_tray_ = nullptr;
+  raw_ptr<ImeMenuTray, DanglingUntriaged> ime_menu_tray_ = nullptr;
+  raw_ptr<SelectToSpeakTray, DanglingUntriaged> select_to_speak_tray_ = nullptr;
+  raw_ptr<HoldingSpaceTray, DanglingUntriaged> holding_space_tray_ = nullptr;
+  raw_ptr<WmModeButtonTray, DanglingUntriaged> wm_mode_button_tray_ = nullptr;
 
   // Vector of the tray buttons above. The ordering is used to determine which
   // tray buttons are hidden when they overflow the available width.
-  std::vector<TrayBackgroundView*> tray_buttons_;
+  std::vector<raw_ptr<TrayBackgroundView, VectorExperimental>> tray_buttons_;
 
   LoginStatus login_status_ = LoginStatus::NOT_LOGGED_IN;
 
@@ -328,7 +319,7 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
 
   gfx::Rect target_bounds_;
 
-  raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  raw_ptr<Shelf> shelf_;
 
   bool initialized_ = false;
 

@@ -396,6 +396,10 @@
       "session_types": ["kiosk"]
     }
   ],
+  "trial_tokens": {
+    "channel": "canary",
+    "extension_types": ["extension"]
+  },
   "usb_printers": {
     "channel": "stable",
     "extension_types": ["platform_app"]

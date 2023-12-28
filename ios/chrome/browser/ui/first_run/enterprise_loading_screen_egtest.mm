@@ -9,7 +9,7 @@
 #import "components/policy/core/common/cloud/cloud_policy_constants.h"
 #import "components/policy/core/common/policy_switches.h"
 #import "components/policy/test_support/embedded_policy_test_server.h"
-#import "ios/chrome/browser/policy/policy_app_interface.h"
+#import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"

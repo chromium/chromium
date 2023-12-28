@@ -18,14 +18,13 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/separator.h"
-#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout_view.h"
 
 namespace {
 constexpr int kSeparatorBottomMargin = 16;
 constexpr int kBackIconSize = 16;
 constexpr int kBackIconSizeRefreshStyle = 20;
-constexpr int kSpaceBetweenBackArrowAndTitle = 8;
 }  // namespace
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kSubpageViewId);
@@ -46,9 +45,13 @@ void SubpageView::SetTitle(const std::u16string& title) {
 }
 
 void SubpageView::SetUpSubpageTitle(views::Button::PressedCallback callback) {
-  auto title_view = std::make_unique<views::View>();
-  title_view->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+  const auto* layout_provider = ChromeLayoutProvider::Get();
+  auto title_view = std::make_unique<views::BoxLayoutView>();
+  title_view->SetBetweenChildSpacing(
+      layout_provider->GetDistanceMetric(
+          views::DISTANCE_RELATED_CONTROL_HORIZONTAL) -
+      layout_provider->GetInsetsMetric(views::INSETS_VECTOR_IMAGE_BUTTON)
+          .right());
 
   auto back_button = views::CreateVectorImageButtonWithNativeTheme(
       std::move(callback),
@@ -72,9 +75,22 @@ void SubpageView::SetUpSubpageTitle(views::Button::PressedCallback callback) {
           .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .Build());
-  title_->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(0, kSpaceBetweenBackArrowAndTitle, 0, 0));
+  title_->SetMultiLine(true);
+  // This limits the SubpageView only works for standard the preferred width
+  // bubble.
+  int title_width =
+      layout_provider->GetDistanceMetric(
+          views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
+      layout_provider->GetInsetsMetric(views::INSETS_DIALOG).width() -
+      layout_provider->GetInsetsMetric(views::INSETS_DIALOG_TITLE).width();
+  views::Button* close_button = bubble_frame_view_->close_button();
+  if (close_button && close_button->GetVisible()) {
+    int close_button_width =
+        bubble_frame_view_->close_button()->width() +
+        layout_provider->GetDistanceMetric(views::DISTANCE_CLOSE_BUTTON_MARGIN);
+    title_width -= close_button_width;
+  }
+  title_->SetMaximumWidth(title_width);
 
   bubble_frame_view_->SetTitleView(std::move(title_view));
 }
@@ -105,5 +121,5 @@ void SubpageView::SetFootnoteView(std::unique_ptr<views::View> footnote_view) {
   bubble_frame_view_->SetFootnoteView(std::move(footnote_view));
 }
 
-BEGIN_METADATA(SubpageView, views::View)
+BEGIN_METADATA(SubpageView)
 END_METADATA

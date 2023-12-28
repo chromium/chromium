@@ -5981,7 +5981,7 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
     view_for_second_process_.ExtractAsDangling()->Destroy();
     view_for_third_process_.ExtractAsDangling()->Destroy();
 
-    for (auto* host : widget_hosts_to_cleanup_) {
+    for (content::MockRenderWidgetHostImpl* host : widget_hosts_to_cleanup_) {
       host->ShutdownAndDestroyWidget(true);
     }
 
@@ -6041,9 +6041,11 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
 
   MockRenderWidgetHostImpl* tab_widget_host() const { return widget_host_; }
 
-  std::vector<RenderWidgetHostViewBase*> views_;
-  std::vector<MockRenderWidgetHostImpl*> widget_hosts_;
-  std::vector<MockRenderWidgetHostImpl*> widget_hosts_to_cleanup_;
+  std::vector<raw_ptr<RenderWidgetHostViewBase, VectorExperimental>> views_;
+  std::vector<raw_ptr<MockRenderWidgetHostImpl, VectorExperimental>>
+      widget_hosts_;
+  std::vector<raw_ptr<MockRenderWidgetHostImpl, VectorExperimental>>
+      widget_hosts_to_cleanup_;
   // A sequence of indices in [0, 3] which determines the index of a RWHV in
   // |views_|. This sequence is used in the tests to sequentially make a RWHV
   // active for a subsequent IME result method call.
@@ -6488,7 +6490,7 @@ TEST_F(InputMethodStateAuraTest, SelectedTextCopiedToClipboard) {
 // composition, the RenderWidgetHostViewAura will receive the notification and
 // the current composition is canceled.
 TEST_F(InputMethodStateAuraTest, ImeCancelCompositionForAllViews) {
-  for (auto* view : views_) {
+  for (content::RenderWidgetHostViewBase* view : views_) {
     ActivateViewForTextInputManager(view, ui::TEXT_INPUT_TYPE_TEXT);
     // There is no composition in the beginning.
     EXPECT_FALSE(has_composition_text());
@@ -6610,6 +6612,13 @@ class RenderWidgetHostViewAuraInputMethodTest
     text_input_client_ = nullptr;
   }
 
+  void TearDown() override {
+    // text_input_client_ may point at |parent_view_| or something else owned by
+    // RenderWidgetHostViewAuraTest and will get destroyed in TearDown().
+    text_input_client_ = nullptr;
+    RenderWidgetHostViewAuraTest::TearDown();
+  }
+
   // Override from ui::InputMethodObserver.
   void OnFocus() override {}
   void OnBlur() override {}
@@ -6620,7 +6629,7 @@ class RenderWidgetHostViewAuraInputMethodTest
   void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {}
 
  protected:
-  raw_ptr<const ui::TextInputClient, DanglingUntriaged> text_input_client_;
+  raw_ptr<const ui::TextInputClient> text_input_client_;
 };
 
 // This test is for notifying InputMethod for surrounding text changes.

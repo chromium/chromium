@@ -56,7 +56,8 @@ class BackForwardCachePageLoadMetricsObserverBrowserTest
   void ExpectMetricValueForUrl(const GURL& url,
                                const char* metric_name,
                                const int expected_value) {
-    for (auto* entry : ukm_recorder().GetEntriesByName(UkmEntry::kEntryName)) {
+    for (const ukm::mojom::UkmEntry* entry :
+         ukm_recorder().GetEntriesByName(UkmEntry::kEntryName)) {
       // As the source ID is generated from the back-forward restore navigation,
       // this should not match with the source ID by the ID used by the initial
       // navigation which loaded the page.
@@ -76,7 +77,8 @@ class BackForwardCachePageLoadMetricsObserverBrowserTest
                                const char* metric_name,
                                const int expected_count) {
     int count = 0;
-    for (auto* entry : ukm_recorder().GetEntriesByName(UkmEntry::kEntryName)) {
+    for (const ukm::mojom::UkmEntry* entry :
+         ukm_recorder().GetEntriesByName(UkmEntry::kEntryName)) {
       // As the source ID is generated from the back-forward restore navigation,
       // this should not match with the source ID by the ID used by the initial
       // navigation which loaded the page.
@@ -96,7 +98,8 @@ class BackForwardCachePageLoadMetricsObserverBrowserTest
   void VerifyHistoryNavPageEndReasons(const std::vector<PageEndReason>& reasons,
                                       const GURL& url) {
     unsigned int reason_index = 0;
-    for (auto* entry : ukm_recorder().GetEntriesByName(UkmEntry::kEntryName)) {
+    for (const ukm::mojom::UkmEntry* entry :
+         ukm_recorder().GetEntriesByName(UkmEntry::kEntryName)) {
       auto* source = ukm_recorder().GetSourceForSourceId(entry->source_id);
       if (source->url() != url)
         continue;

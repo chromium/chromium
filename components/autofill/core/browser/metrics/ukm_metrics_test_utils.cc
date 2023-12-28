@@ -84,7 +84,7 @@ void VerifyDeveloperEngagementUkm(
   auto entries =
       ukm_recorder->GetEntriesByName(UkmDeveloperEngagementType::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     ukm_recorder->ExpectEntrySourceHasUrl(
         entry, GURL(form.main_frame_origin.GetURL()));
     EXPECT_EQ(4u, entry->metrics.size());
@@ -146,9 +146,9 @@ void AppendFieldFillStatusUkm(
 
 void AppendFieldTypeUkm(
     const FormData& form,
-    const std::vector<ServerFieldType>& heuristic_types,
-    const std::vector<ServerFieldType>& server_types,
-    const std::vector<ServerFieldType>& actual_types,
+    const std::vector<FieldType>& heuristic_types,
+    const std::vector<FieldType>& server_types,
+    const std::vector<FieldType>& actual_types,
     std::vector<std::vector<ExpectedUkmMetricsPair>>* expected_metrics) {
   ASSERT_EQ(heuristic_types.size(), form.fields.size());
   ASSERT_EQ(server_types.size(), form.fields.size());

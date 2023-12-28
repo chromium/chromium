@@ -139,6 +139,7 @@ inline constexpr char kThemeColors[] = "colors";
 inline constexpr char kThemeDisplayProperties[] = "properties";
 inline constexpr char kThemeImages[] = "images";
 inline constexpr char kThemeTints[] = "tints";
+inline constexpr char kTrialTokens[] = "trial_tokens";
 inline constexpr char kTtsEngine[] = "tts_engine";
 inline constexpr char kTtsEngineSampleRate[] = "sample_rate";
 inline constexpr char kTtsEngineBufferSize[] = "buffer_size";
@@ -583,6 +584,15 @@ inline constexpr char kInvalidThemeImagesMissing[] =
     "An image specified in the theme is missing.";
 inline constexpr char16_t kInvalidThemeTints[] =
     u"Invalid value for theme images - tints must be decimal numbers.";
+inline constexpr char16_t kInvalidTrialTokensNonEmptyList[] =
+    u"Invalid value for 'trial_tokens'. Must be a non-empty list.";
+inline constexpr char16_t kInvalidTrialTokensValue[] =
+    u"Invalid element in 'trial_tokens'. Must be a non-empty string.";
+inline constexpr char kInvalidTrialTokensValueTooLong[] =
+    "Invalid element in 'trial_tokens'. Token must not be longer than %zu.";
+inline constexpr char kInvalidTrialTokensTooManyTokens[] =
+    "Invalid value for 'trial_tokens': too many tokens. Only the first %zu "
+    "will be processed.";
 inline constexpr char16_t kInvalidTts[] = u"Invalid value for 'tts_engine'.";
 inline constexpr char16_t kInvalidTtsSampleRateFormat[] =
     u"Invalid format for tts_engine.sample_rate: expected integer.";

@@ -152,7 +152,8 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
   MockOpenTabsUIDelegate() = default;
 
   bool GetAllForeignSessions(
-      std::vector<const sync_sessions::SyncedSession*>* sessions) override {
+      std::vector<raw_ptr<const sync_sessions::SyncedSession,
+                          VectorExperimental>>* sessions) override {
     *sessions = foreign_sessions_;
     base::ranges::sort(*sessions, std::greater(),
                        [](const sync_sessions::SyncedSession* session) {
@@ -169,7 +170,8 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
   }
 
   void SetForeignSessionsForTesting(
-      std::vector<const sync_sessions::SyncedSession*> foreign_sessions) {
+      std::vector<raw_ptr<const sync_sessions::SyncedSession,
+                          VectorExperimental>> foreign_sessions) {
     foreign_sessions_ = foreign_sessions;
   }
 
@@ -193,7 +195,8 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
                     std::vector<const sessions::SessionTab*>* tabs));
 
  private:
-  std::vector<const sync_sessions::SyncedSession*> foreign_sessions_;
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+      foreign_sessions_;
   raw_ptr<sync_sessions::SyncedSession, DanglingUntriaged | ExperimentalAsh>
       local_session_ = nullptr;
 };
@@ -230,7 +233,8 @@ class TestFloatingWorkSpaceService : public FloatingWorkspaceService {
   }
 
   void SetForeignSessionForTesting(
-      std::vector<const sync_sessions::SyncedSession*> foreign_sessions) {
+      std::vector<raw_ptr<const sync_sessions::SyncedSession,
+                          VectorExperimental>> foreign_sessions) {
     mock_open_tabs_->SetForeignSessionsForTesting(foreign_sessions);
   }
 
@@ -412,7 +416,8 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreRemoteSession) {
           kFloatingWorkspaceV1Enabled);
   std::unique_ptr<sync_sessions::SyncedSession> local_session =
       CreateNewSession(kLocalSessionName, more_recent_time);
-  std::vector<const sync_sessions::SyncedSession*> foreign_sessions;
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+      foreign_sessions;
   // This remote session has most recent timestamp and should be restored.
   const std::unique_ptr<sync_sessions::SyncedSession>
       most_recent_remote_session =
@@ -450,7 +455,8 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreLocalSession) {
   // Local session has most recent timestamp and should be restored.
   std::unique_ptr<sync_sessions::SyncedSession> local_session =
       CreateNewSession(kLocalSessionName, most_recent_time);
-  std::vector<const sync_sessions::SyncedSession*> foreign_sessions;
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+      foreign_sessions;
   const std::unique_ptr<sync_sessions::SyncedSession>
       most_recent_remote_session =
           CreateNewSession(kRemoteSessionOneName, more_recent_time);
@@ -487,7 +493,8 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreRemoteSessionAfterUpdated) {
   // Local session has most recent timestamp and should be restored.
   std::unique_ptr<sync_sessions::SyncedSession> local_session =
       CreateNewSession(kLocalSessionName, most_recent_time);
-  std::vector<const sync_sessions::SyncedSession*> foreign_sessions;
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+      foreign_sessions;
   const std::unique_ptr<sync_sessions::SyncedSession>
       most_recent_remote_session =
           CreateNewSession(kRemoteSessionOneName, more_recent_time);
@@ -532,7 +539,8 @@ TEST_F(FloatingWorkspaceServiceTest, NoLocalSession) {
       /*mock_sync_service=*/nullptr,
       floating_workspace_util::FloatingWorkspaceVersion::
           kFloatingWorkspaceV1Enabled);
-  std::vector<const sync_sessions::SyncedSession*> foreign_sessions;
+  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
+      foreign_sessions;
   const std::unique_ptr<sync_sessions::SyncedSession>
       most_recent_remote_session =
           CreateNewSession(kRemoteSessionOneName, more_recent_time);

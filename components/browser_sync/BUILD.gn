@@ -11,8 +11,6 @@ static_library("browser_sync") {
     "active_devices_provider_impl.cc",
     "active_devices_provider_impl.h",
     "browser_sync_client.h",
-    "browser_sync_switches.cc",
-    "browser_sync_switches.h",
     "signin_confirmation_helper.cc",
     "signin_confirmation_helper.h",
     "sync_api_component_factory_impl.cc",
@@ -23,7 +21,10 @@ static_library("browser_sync") {
     "sync_to_signin_migration.h",
   ]
 
-  public_deps = [ "//components/sync" ]
+  public_deps = [
+    ":switches",
+    "//components/sync",
+  ]
 
   deps = [
     "//base",
@@ -50,6 +51,7 @@ static_library("browser_sync") {
     "//components/url_formatter",
     "//components/version_info",
     "//components/version_info:generate_version_info",
+    "//components/webauthn/core/browser",
     "//ui/base",
   ]
 
@@ -63,6 +65,15 @@ static_library("browser_sync") {
   if (enable_supervised_users) {
     deps += [ "//components/supervised_user/core/browser" ]
   }
+}
+
+static_library("switches") {
+  sources = [
+    "browser_sync_switches.cc",
+    "browser_sync_switches.h",
+  ]
+
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {

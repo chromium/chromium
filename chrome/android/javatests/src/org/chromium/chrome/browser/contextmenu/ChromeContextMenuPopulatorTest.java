@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuMode;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -103,8 +102,6 @@ public class ChromeContextMenuPopulatorTest {
 
         FeatureList.setTestCanUseDefaultsForTesting();
         HashMap<String, Boolean> features = new HashMap<String, Boolean>();
-        features.put(ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS, false);
-
         FeatureList.setTestFeatures(features);
 
         TestThreadUtils.runOnUiThreadBlocking(

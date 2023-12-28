@@ -126,6 +126,7 @@ void SupervisionMixin::SetParentalControlsAccountCapability(
   auto* identity_manager = GetIdentityTestEnvironment()->identity_manager();
   CoreAccountInfo account_info =
       identity_manager->GetPrimaryAccountInfo(consent_level_);
+  CHECK_EQ(account_info.email, email_);
   AccountInfo account = identity_manager->FindExtendedAccountInfo(account_info);
 
   AccountCapabilitiesTestMutator mutator(&account.capabilities);
@@ -157,11 +158,15 @@ void SupervisionMixin::ConfigureIdentityTestEnvironment() {
     // test runs.
     AccountInfo account_info =
         GetIdentityTestEnvironment()->MakeAccountAvailable(email_);
-    GetIdentityTestEnvironment()->SetPrimaryAccount(email_, consent_level_);
     CHECK(!account_info.account_id.empty());
+
+    GetIdentityTestEnvironment()->SetPrimaryAccount(email_, consent_level_);
+    WaitForPrimaryAccount(GetIdentityTestEnvironment()->identity_manager(),
+                          consent_level_, account_info.account_id);
+  } else {
+    GetIdentityTestEnvironment()->SetRefreshTokenForPrimaryAccount();
   }
 
-  GetIdentityTestEnvironment()->SetRefreshTokenForPrimaryAccount();
   GetIdentityTestEnvironment()->SetAutomaticIssueOfAccessTokens(true);
   ConfigureParentalControls(
       /*is_supervised_profile=*/sign_in_mode_ == SignInMode::kSupervised);
@@ -181,6 +186,13 @@ signin::IdentityTestEnvironment* SupervisionMixin::GetIdentityTestEnvironment()
 void SupervisionMixin::SetNextReAuthStatus(
     GaiaAuthConsumer::ReAuthProofTokenStatus status) {
   fake_gaia_mixin_.fake_gaia()->SetNextReAuthStatus(status);
+}
+
+void SupervisionMixin::SignIn(SignInMode mode) {
+  CHECK_NE(mode, SignInMode::kSignedOut);
+  CHECK_EQ(sign_in_mode_, SignInMode::kSignedOut);
+  sign_in_mode_ = mode;
+  ConfigureIdentityTestEnvironment();
 }
 
 std::ostream& operator<<(std::ostream& stream,

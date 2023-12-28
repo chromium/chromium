@@ -73,5 +73,8 @@
     <wallpaper-subpage path="[[path_]]" query-params="[[queryParams_]]">
     </wallpaper-subpage>
   </template>
+  <template is="dom-if" if="[[shouldShowSeaPen_(path_)]]" restamp>
+    <sea-pen-router base-path="[[seaPenBasePath_]]"></sea-pen-router>
+  </template>
   <personalization-toast></personalization-toast>
 </div>

@@ -145,7 +145,7 @@ base::Value::Dict PaymentsRequest::BuildCreditCardDictionary(
 
 // static
 void PaymentsRequest::AppendStringIfNotEmpty(const AutofillProfile& profile,
-                                             const ServerFieldType& type,
+                                             const FieldType& type,
                                              const std::string& app_locale,
                                              base::Value::List& list) {
   std::u16string value = profile.GetInfo(type, app_locale);
@@ -155,7 +155,7 @@ void PaymentsRequest::AppendStringIfNotEmpty(const AutofillProfile& profile,
 
 // static
 void PaymentsRequest::SetStringIfNotEmpty(const AutofillDataModel& profile,
-                                          const ServerFieldType& type,
+                                          const FieldType& type,
                                           const std::string& app_locale,
                                           const std::string& path,
                                           base::Value::Dict& dictionary) {

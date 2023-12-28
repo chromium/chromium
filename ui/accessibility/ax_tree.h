@@ -391,10 +391,11 @@ class AX_EXPORT AXTree {
   // if they exist, and creating otherwise. Reparenting is disallowed, so
   // if the id already exists as the child of another node, that's an
   // error. Returns true on success, false on fatal error.
-  bool CreateNewChildVector(AXNode* node,
-                            const std::vector<AXNodeID>& new_child_ids,
-                            std::vector<AXNode*>* new_children,
-                            AXTreeUpdateState* update_state);
+  bool CreateNewChildVector(
+      AXNode* node,
+      const std::vector<AXNodeID>& new_child_ids,
+      std::vector<raw_ptr<AXNode, VectorExperimental>>* new_children,
+      AXTreeUpdateState* update_state);
 
   // Returns the lowest unignored ancestor of the node with the given ID. If the
   // node is not ignored, it returns the node.

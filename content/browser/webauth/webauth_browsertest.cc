@@ -66,6 +66,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -128,16 +129,15 @@ constexpr char kAbortErrorMessage[] =
 
 constexpr char kAbortReasonMessage[] = "Error";
 
+constexpr char kCreatePermissionsPolicyMissingMessage[] =
+    "NotAllowedError: The 'publickey-credentials-create' feature is "
+    "not enabled in this document. Permissions Policy may be used to delegate "
+    "Web Authentication capabilities to cross-origin child frames.";
+
 constexpr char kGetPermissionsPolicyMissingMessage[] =
     "NotAllowedError: The 'publickey-credentials-get' feature is "
     "not enabled in this document. Permissions Policy may be used to delegate "
     "Web Authentication capabilities to cross-origin child frames.";
-
-constexpr char kCrossOriginAncestorMessage[] =
-    "NotAllowedError: The following credential operations can only "
-    "occur in a document which is same-origin with all of its ancestors: "
-    "storage/retrieval of 'PasswordCredential' and 'FederatedCredential', "
-    "storage of 'PublicKeyCredential'.";
 
 constexpr char kAllowCredentialsRangeErrorMessage[] =
     "RangeError: The `allowCredentials` attribute exceeds the maximum "
@@ -958,6 +958,10 @@ class WebAuthJavascriptClientBrowserTest : public WebAuthBrowserTestBase {
       const WebAuthJavascriptClientBrowserTest&) = delete;
 
   ~WebAuthJavascriptClientBrowserTest() override = default;
+
+ private:
+  const base::test::ScopedFeatureList scoped_feature_list{
+      blink::features::kWebAuthAllowCreateInCrossOriginFrame};
 };
 
 constexpr device::ProtocolVersion kAllProtocols[] = {
@@ -1438,6 +1442,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
       {false, true, true, ""},
       {true, false, false, ""},
       {true, false, true, "publickey-credentials-get"},
+      {true, true, false, "publickey-credentials-create"},
   };
 
   for (const auto& test : kTestCases) {
@@ -1472,7 +1477,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
     if (test.create_should_work) {
       EXPECT_EQ(std::string(kOkMessage), result);
     } else {
-      EXPECT_EQ(kCrossOriginAncestorMessage, result);
+      EXPECT_EQ(kCreatePermissionsPolicyMissingMessage, result);
     }
 
     GetParameters get_params;

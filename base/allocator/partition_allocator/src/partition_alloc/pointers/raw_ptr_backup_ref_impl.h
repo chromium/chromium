@@ -10,7 +10,6 @@
 #include <type_traits>
 
 #include "build/build_config.h"
-#include "partition_alloc/chromeos_buildflags.h"
 #include "partition_alloc/partition_address_space.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
@@ -36,35 +35,10 @@ PA_COMPONENT_EXPORT(RAW_PTR)
 void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address);
 #endif
 
-class BackupRefPtrGlobalSettings {
- public:
-  static void EnableExperimentalAsh() {
-    PA_CHECK(!experimental_ash_raw_ptr_enabled_);
-    experimental_ash_raw_ptr_enabled_ = true;
-  }
-
-  static void DisableExperimentalAshForTest() {
-    PA_CHECK(experimental_ash_raw_ptr_enabled_);
-    experimental_ash_raw_ptr_enabled_ = false;
-  }
-
-  PA_ALWAYS_INLINE static bool IsExperimentalAshEnabled() {
-    return experimental_ash_raw_ptr_enabled_;
-  }
-
- private:
-  // Write-once settings that should be in its own cacheline, as they're
-  // accessed frequently on a hot path.
-  PA_ALIGNAS(partition_alloc::internal::kPartitionCachelineSize)
-  static inline bool experimental_ash_raw_ptr_enabled_ = false;
-  [[maybe_unused]] char
-      padding_[partition_alloc::internal::kPartitionCachelineSize - 1];
-};
-
 // Note that `RawPtrBackupRefImpl` itself is not thread-safe. If multiple
 // threads modify the same raw_ptr object without synchronization, a data race
 // will occur.
-template <bool AllowDangling = false, bool ExperimentalAsh = false>
+template <bool AllowDangling = false, bool VectorExperimental = false>
 struct RawPtrBackupRefImpl {
   // These are needed for correctness, or else we may end up manipulating
   // ref-count where we shouldn't, thus affecting the BRP's integrity. Unlike
@@ -77,18 +51,10 @@ struct RawPtrBackupRefImpl {
 
  private:
   PA_ALWAYS_INLINE static bool UseBrp(uintptr_t address) {
-    // Pointer annotated with ExperimentalAsh are subject to a separate,
-    // Ash-related experiment.
-    //
-    // Note that this can be enabled only before the BRP partition is created,
-    // so it's impossible for this function to change its answer for a specific
-    // pointer. (This relies on the original partition to not be BRP-enabled.)
-    if constexpr (ExperimentalAsh) {
-#if BUILDFLAG(PA_IS_CHROMEOS_ASH)
-      if (!BackupRefPtrGlobalSettings::IsExperimentalAshEnabled()) {
-        return false;
-      }
-#endif
+    // BRP is temporarily disabled for Pointers annotated with
+    // VectorExperimental.
+    if constexpr (VectorExperimental) {
+      return false;
     }
     return partition_alloc::IsManagedByPartitionAllocBRPPool(address);
   }
@@ -315,32 +281,6 @@ struct RawPtrBackupRefImpl {
   PA_ALWAYS_INLINE static T* VerifyAndPoisonPointerAfterAdvanceOrRetreat(
       T* unpoisoned_ptr,
       T* new_ptr) {
-    // In the "before allocation" mode, on 32-bit, we can run into a problem
-    // that the end-of-allocation address could fall outside of
-    // PartitionAlloc's pools, if this is the last slot of the super page,
-    // thus pointing to the guard page. This means the ref-count won't be
-    // decreased when the pointer is released (leak).
-    //
-    // We could possibly solve it in a few different ways:
-    // - Add the trailing guard page to the pool, but we'd have to think very
-    //   hard if this doesn't create another hole.
-    // - Add an address adjustment to "is in pool?" check, similar as the one in
-    //   PartitionAllocGetSlotStartInBRPPool(), but that seems fragile, not to
-    //   mention adding an extra instruction to an inlined hot path.
-    // - Let the leak happen, since it should a very rare condition.
-    // - Go back to the previous solution of rewrapping the pointer, but that
-    //   had an issue of losing BRP protection in case the pointer ever gets
-    //   shifted back before the end of allocation.
-    //
-    // We decided to cross that bridge once we get there... if we ever get
-    // there. Currently there are no plans to switch back to the "before
-    // allocation" mode.
-    //
-    // This problem doesn't exist in the "previous slot" mode, or any mode that
-    // involves putting extras after the allocation, because the
-    // end-of-allocation address belongs to the same slot.
-    static_assert(BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT));
-
     // First check if the new address didn't migrate in/out the BRP pool, and
     // that it lands within the same allocation. An end-of-allocation address is
     // ok, too, and that may lead to the pointer being poisoned if the relevant
@@ -354,6 +294,15 @@ struct RawPtrBackupRefImpl {
     // ref-count to go to 0 upon this pointer's destruction, even though there
     // may be another pointer still pointing to it, thus making it lose the BRP
     // protection prematurely.
+    //
+    // Note 2, if we ever need to restore the "before allocation" mode, we can
+    // run into a problem on 32-bit that the end-of-allocation address could
+    // fall outside of PartitionAlloc's pools, if this is the last slot of the
+    // super page, thus pointing to the guard page. This means the ref-count
+    // won't be decreased when the pointer is released (leak). This problem
+    // doesn't exist in the modes that involve putting extras after the
+    // allocation, because the end-of-allocation address belongs to the same
+    // slot.
     const uintptr_t before_addr = partition_alloc::UntagPtr(unpoisoned_ptr);
     const uintptr_t after_addr = partition_alloc::UntagPtr(new_ptr);
     // TODO(bartekn): Consider adding support for non-BRP pools too (without

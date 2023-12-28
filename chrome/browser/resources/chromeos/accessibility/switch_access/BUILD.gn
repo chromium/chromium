@@ -16,13 +16,13 @@ assert(is_chromeos_ash)
 switch_access_dir =
     "$root_out_dir/resources/chromeos/accessibility/switch_access"
 tsc_out_dir = "$target_gen_dir/tsc"
-common_tsc_out_dir = "$target_gen_dir/../common/tsc"
 
 # TS files to compile.
-ts_modules = []
-
-# TS files needed from ../common/.
-common_ts_modules = []
+ts_modules = [
+  "commands.ts",
+  "navigator_interfaces.ts",
+  "settings_manager.ts",
+]
 
 # JS files needed to compile TS.
 js_deps = []
@@ -31,8 +31,18 @@ js_deps = []
 ts_library("ts_build") {
   root_dir = "../"
   out_dir = tsc_out_dir
-  deps = [ "../common:ts_build" ]
-  definitions = []
+  definitions = [
+    "../definitions/accessibility_private_mv2.d.ts",
+    "../definitions/automation.d.ts",
+    "../definitions/command_line_private.d.ts",
+    "../definitions/extension_types.d.ts",
+    "../definitions/extensions.d.ts",
+    "../definitions/runtime.d.ts",
+    "../definitions/settings_private_mv2.d.ts",
+    "../definitions/tabs.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/windows.d.ts",
+  ]
 
   in_files = []
   foreach(_js_file, js_deps) {
@@ -46,20 +56,23 @@ ts_library("ts_build") {
 }
 
 group("build") {
-  deps = [ ":switch_access_copied_files" ]
+  deps = [ ":copied_files" ]
 }
 
 # Instead of setting up one copy target for each subdirectory, use a script
 # to copy all files.
-run_jsbundler("switch_access_copied_files") {
+run_jsbundler("copied_files") {
   mode = "copy"
   dest_dir = switch_access_dir
+  deps = [
+    ":ts_build",
+    "../common:copied_files",
+  ]
   sources = [
     "action_manager.js",
     "auto_scan_manager.js",
     "background.html",
     "cache.js",
-    "commands.js",
     "focus_ring_manager.js",
     "history.js",
     "icons/back.svg",
@@ -92,7 +105,6 @@ run_jsbundler("switch_access_copied_files") {
     "menu_manager.js",
     "metrics.js",
     "navigator.js",
-    "navigator_interfaces.js",
     "nodes/back_button_node.js",
     "nodes/basic_node.js",
     "nodes/combo_box_node.js",
@@ -106,26 +118,15 @@ run_jsbundler("switch_access_copied_files") {
     "nodes/tab_node.js",
     "nodes/window_node.js",
     "point_scan_manager.js",
-    "settings_manager.js",
     "switch_access.js",
     "switch_access_constants.js",
     "switch_access_predicate.js",
     "text_navigation_manager.js",
   ]
-
-  foreach(_ts_file, ts_modules) {
-    sources +=
-        [ "$tsc_out_dir/switch_access/" + get_path_info(_ts_file, "dir") + "/" +
-          get_path_info(_ts_file, "name") + ".js" ]
-  }
-  foreach(_ts_file, common_ts_modules) {
-    sources += [ "$common_tsc_out_dir/" + get_path_info(_ts_file, "dir") + "/" +
-                 get_path_info(_ts_file, "name") + ".js" ]
-  }
+  sources += filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
 
   rewrite_rules = [
     rebase_path("$tsc_out_dir/switch_access", root_build_dir) + ":",
-    rebase_path(common_tsc_out_dir, root_build_dir) + ":",
     rebase_path(".", root_build_dir) + ":",
     rebase_path(closure_library_dir, root_build_dir) + ":closure",
   ]
@@ -182,7 +183,4 @@ js2gtest("switch_access_extjs_tests") {
     "//chromeos",
   ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-}
-
-group("closure_compile") {
 }

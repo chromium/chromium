@@ -46,6 +46,7 @@ component("policy") {
       "//sandbox:sandbox_buildflags",
       "//sandbox/linux:sandbox_services",
       "//sandbox/linux:seccomp_bpf",
+      "//third_party/jni_zero",
     ]
   }
   if (is_linux || is_chromeos) {

@@ -247,20 +247,13 @@ public class AppMenuPropertiesDelegateUnitTest {
     }
 
     private void setupFeatureDefaults() {
-        setBookmarkItemRowEnabled(false);
-        setShoppingListItemRowEnabled(false);
+        setShoppingListEligible(false);
+        setShoppingListEligible(false);
         FeatureList.setTestValues(mTestValues);
     }
 
-    private void setBookmarkItemRowEnabled(boolean enabled) {
+    private void setShoppingListEligible(boolean enabled) {
         ShoppingFeatures.setShoppingListEligibleForTesting(enabled);
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.BOOKMARKS_REFRESH, enabled);
-        FeatureList.setTestValues(mTestValues);
-    }
-
-    private void setShoppingListItemRowEnabled(boolean enabled) {
-        ShoppingFeatures.setShoppingListEligibleForTesting(enabled);
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.BOOKMARKS_REFRESH, enabled);
         FeatureList.setTestValues(mTestValues);
     }
 
@@ -742,7 +735,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void updateBookmarkMenuItemRow() {
-        setBookmarkItemRowEnabled(true);
+        setShoppingListEligible(true);
         doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
 
         MenuItem bookmarkMenuItemAdd = mock(MenuItem.class);
@@ -755,7 +748,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void updateBookmarkMenuItemRow_NullTab() {
-        setBookmarkItemRowEnabled(true);
+        setShoppingListEligible(true);
 
         MenuItem bookmarkMenuItemAdd = mock(MenuItem.class);
         MenuItem bookmarkMenuItemEdit = mock(MenuItem.class);
@@ -767,7 +760,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void updateBookmarkMenuItemRow_NullBookmarkModel() {
-        setBookmarkItemRowEnabled(true);
+        setShoppingListEligible(true);
         mBookmarkModelSupplier.set(null);
 
         MenuItem bookmarkMenuItemAdd = mock(MenuItem.class);
@@ -780,7 +773,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void enablePriceTrackingItemRow() {
-        setShoppingListItemRowEnabled(true);
+        setShoppingListEligible(true);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
         doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
 
@@ -803,7 +796,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void enablePriceTrackingItemRow_NullBookmarkModel() {
-        setShoppingListItemRowEnabled(true);
+        setShoppingListEligible(true);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
         mBookmarkModelSupplier.set(null);
 
@@ -817,7 +810,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void enablePriceTrackingItemRow_NullBookmarkId() {
-        setShoppingListItemRowEnabled(true);
+        setShoppingListEligible(true);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
         doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
 
@@ -840,7 +833,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void enablePriceTrackingItemRow_PriceTrackingEnabled() {
-        setShoppingListItemRowEnabled(true);
+        setShoppingListEligible(true);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
         doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
 
@@ -887,7 +880,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void enablePriceTrackingItemRow_PriceTrackingEnabled_NoProductInfo() {
-        setShoppingListItemRowEnabled(true);
+        setShoppingListEligible(true);
 
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
         doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();

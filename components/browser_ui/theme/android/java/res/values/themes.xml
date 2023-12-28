@@ -46,12 +46,8 @@ found in the LICENSE file.
 
         <!-- Elevation overlays -->
         <item name="elevationOverlayEnabled">true</item>
-        <item name="elevationOverlayColor">@color/baseline_neutral_40</item>
-        <item name="elevationOverlayAccentColor">?attr/colorPrimary</item>
-
-        <!-- Current Clank Baseline Surface-N Colors. See https://crbug.com/1410537. -->
-        <item name="tileViewIconBackgroundModern">@drawable/oval_surface_1</item>
-        <item name="cardElevation">@dimen/card_elevation</item>
+        <item name="elevationOverlayColor">@color/gm3_baseline_surface_tint</item>
+        <item name="elevationOverlayAccentColor">@android:color/transparent</item>
 
         <!-- Dynamic colors that are applied to the buttons and links. -->
         <item name="globalFilledButtonBgColor">@color/filled_button_bg_dynamic_list</item>
@@ -67,6 +63,8 @@ found in the LICENSE file.
         <!-- Switches style workaround for UI that might use SwitchPreferenceCompat while not
          using the theme for SettingsActivity (e.g. PageInfoView) -->
         <item name="switchPreferenceCompatStyle">@style/SwitchPreference</item>
+
+        <item name="android:elegantTextHeight">false</item>
     </style>
     <style name="Base.V31.Theme.BrowserUI" parent="Base.V21.Theme.BrowserUI" />
     <style name="Base.Theme.BrowserUI" parent="Base.V31.Theme.BrowserUI" />
@@ -146,12 +144,8 @@ found in the LICENSE file.
 
         <!-- Elevation overlays -->
         <item name="elevationOverlayEnabled">true</item>
-        <item name="elevationOverlayColor">@color/baseline_neutral_40</item>
-        <item name="elevationOverlayAccentColor">?attr/colorPrimary</item>
-
-        <!-- Current Clank Baseline Surface-N Colors. See https://crbug.com/1410537. -->
-        <item name="tileViewIconBackgroundModern">@drawable/oval_surface_1</item>
-        <item name="cardElevation">@dimen/card_elevation</item>
+        <item name="elevationOverlayColor">@color/gm3_baseline_surface_tint</item>
+        <item name="elevationOverlayAccentColor">@android:color/transparent</item>
 
         <!-- Dynamic colors that are applied to the buttons and links. -->
         <item name="globalFilledButtonBgColor">@color/filled_button_bg_dynamic_list</item>
@@ -167,6 +161,8 @@ found in the LICENSE file.
         <!-- Switches style workaround for UI that might use SwitchPreferenceCompat while not
          using the theme for SettingsActivity (e.g. PageInfoView) -->
         <item name="switchPreferenceCompatStyle">@style/SwitchPreference</item>
+
+        <item name="android:elegantTextHeight">false</item>
     </style>
     <!-- Overridden by night mode. -->
     <style name="Theme.BrowserUI.DialogWhenLarge.DayNight" parent="Theme.BrowserUI.DialogWhenLarge"/>
@@ -213,12 +209,8 @@ found in the LICENSE file.
 
         <!-- Elevation overlays -->
         <item name="elevationOverlayEnabled">true</item>
-        <item name="elevationOverlayColor">@color/baseline_neutral_40</item>
-        <item name="elevationOverlayAccentColor">?attr/colorPrimary</item>
-
-        <!-- Current Clank Baseline Surface-N Colors. See https://crbug.com/1410537. -->
-        <item name="tileViewIconBackgroundModern">@drawable/oval_surface_1</item>
-        <item name="cardElevation">@dimen/card_elevation</item>
+        <item name="elevationOverlayColor">@color/gm3_baseline_surface_tint</item>
+        <item name="elevationOverlayAccentColor">@android:color/transparent</item>
 
         <!-- Dynamic colors that are applied to the buttons and links. -->
         <item name="globalFilledButtonBgColor">@color/filled_button_bg_dynamic_list</item>
@@ -250,6 +242,8 @@ found in the LICENSE file.
         <!-- NoActionBar -->
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
+
+        <item name="android:elegantTextHeight">false</item>
     </style>
     <!-- Overridden by night mode. -->
     <style name="Theme.BrowserUI.AlertDialog.NoActionBar.DayNight" parent="Theme.BrowserUI.AlertDialog.NoActionBar"/>
@@ -276,5 +270,9 @@ found in the LICENSE file.
     <style name="Theme.BrowserUI.Translucent.NoTitleBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="ThemeOverlay.BrowserUI.ElegantTextHeight" parent="">
+        <item name="android:elegantTextHeight">true</item>
     </style>
 </resources>

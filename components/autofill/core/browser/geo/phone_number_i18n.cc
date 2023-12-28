@@ -5,12 +5,12 @@
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
@@ -98,7 +98,7 @@ void FormatValidatedNumber(const ::i18n::phonenumbers::PhoneNumber& number,
 // multi-byte UTF-8 characters, every byte has its most significant bit set
 // (i.e., is in the range 128-255, inclusive), so all bytes <=127 are
 // single-byte characters.
-bool IsPrintable(base::StringPiece str) {
+bool IsPrintable(std::string_view str) {
   for (unsigned char c : str) {
     if (c < 32 || c == 127)
       return false;

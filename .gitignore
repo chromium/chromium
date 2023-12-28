@@ -135,7 +135,6 @@ vs-chromium-project.txt
 /chrome/browser/sharing/internal
 /chrome/browser/ui/media_router/internal
 /chrome/browser_tests_run.xml
-/chrome/chrome_cleaner/internal
 /chrome/chrome_run.xml
 /chrome/chrome_user32_delay_imports.xml
 /chrome/chrome_version_resources.xml

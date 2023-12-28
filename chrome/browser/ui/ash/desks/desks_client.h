@@ -113,7 +113,8 @@ class DesksClient : public ash::SessionObserver {
 
   using GetDeskTemplatesCallback =
       base::OnceCallback<void(std::optional<DeskActionError> result,
-                              const std::vector<const ash::DeskTemplate*>&)>;
+                              const std::vector<raw_ptr<const ash::DeskTemplate,
+                                                        VectorExperimental>>&)>;
   // Returns the current available saved desk templates.
   // TODO(crbug.com/1286515): This will be removed with the extension. Avoid
   // further uses of this method.

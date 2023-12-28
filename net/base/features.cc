@@ -79,21 +79,9 @@ BASE_FEATURE(kEnableIPv6ReachabilityOverride,
              "EnableIPv6ReachabilityOverride",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSHA1ServerSignature,
-             "SHA1ServerSignature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableTLS13EarlyData,
              "EnableTLS13EarlyData",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEncryptedClientHello,
-             "EncryptedClientHello",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEncryptedClientHelloQuic,
-             "EncryptedClientHelloQuic",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRSAKeyUsageForLocalAnchors,
              "RSAKeyUsageForLocalAnchors",
@@ -245,6 +233,14 @@ BASE_FEATURE(kCookieSameSiteConsidersRedirectChain,
 BASE_FEATURE(kWaitForFirstPartySetsInit,
              "WaitForFirstPartySetsInit",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls the maximum time duration an outermost frame navigation should be
+// deferred by RWS initialization.
+extern const base::FeatureParam<base::TimeDelta>
+    kWaitForFirstPartySetsInitNavigationThrottleTimeout{
+        &kWaitForFirstPartySetsInit,
+        "kWaitForFirstPartySetsInitNavigationThrottleTimeout",
+        base::Seconds(0)};
 
 BASE_FEATURE(kPartitionedCookies,
              "PartitionedCookies",
@@ -408,6 +404,11 @@ const base::FeatureParam<bool> kIpPrivacyUseProxyChains{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyUseProxyChains",
     /*default_value=*/false};
 
+const base::FeatureParam<bool> kIpPrivacyIncludeOAuthTokenInGetProxyConfig{
+    &kEnableIpProtectionProxy,
+    /*name=*/"IpPrivacyIncludeOAuthTokenInGetProxyConfig",
+    /*default_value=*/false};
+
 const base::FeatureParam<std::string> kIpPrivacyProxyAHostnameOverride{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyProxyAHostnameOverride",
     /*default_value=*/""};
@@ -449,6 +450,10 @@ BASE_FEATURE(kEnablePortBoundCookies,
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableSchemeBoundCookies);
 BASE_FEATURE(kEnableSchemeBoundCookies,
              "EnableSchemeBoundCookies",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTimeLimitedInsecureCookies,
+             "TimeLimitedInsecureCookies",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable third-party cookie blocking from the command line.

@@ -572,6 +572,7 @@ enum HistogramValue {
   OS_DIAGNOSTICS_ON_FAN_ROUTINE_FINISHED = 550,
   ODFS_CONFIG_PRIVATE_MOUNT_CHANGED = 551,
   ODFS_CONFIG_PRIVATE_ACCOUNT_RESTRICTIONS_CHANGED = 552,
+  PDF_VIEWER_PRIVATE_ON_SAVE = 553,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

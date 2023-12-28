@@ -4,9 +4,15 @@
 
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
+
 namespace autofill::payments {
 
-ChromePaymentsAutofillClient::ChromePaymentsAutofillClient() = default;
+ChromePaymentsAutofillClient::ChromePaymentsAutofillClient(
+    content::WebContents* web_contents) {
+  content::WebContentsObserver::Observe(web_contents);
+}
 
 ChromePaymentsAutofillClient::~ChromePaymentsAutofillClient() = default;
 

@@ -26,7 +26,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/holding_space/holding_space_animation_registry.h"
-#include "ash/system/message_center/message_popup_animation_waiter.h"
+#include "ash/system/notification_center/message_popup_animation_waiter.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/progress_indicator/progress_ring_animation.h"
 #include "ash/system/status_area_widget.h"
@@ -62,6 +62,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_test_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
+#include "chrome/browser/ui/ash/mock_activation_change_observer.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/download/public/common/mock_download_item.h"
@@ -95,7 +96,6 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
-#include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace ash {
@@ -249,16 +249,6 @@ void WaitForText(views::Label* label, const std::u16string& text) {
 }
 
 // Mocks -----------------------------------------------------------------------
-
-class MockActivationChangeObserver : public wm::ActivationChangeObserver {
- public:
-  MOCK_METHOD(void,
-              OnWindowActivated,
-              (wm::ActivationChangeObserver::ActivationReason reason,
-               aura::Window* gained_active,
-               aura::Window* lost_active),
-              (override));
-};
 
 class MockDownloadControllerClient
     : public crosapi::mojom::DownloadControllerClient {
@@ -528,7 +518,7 @@ class HoldingSpaceUiDragAndDropBrowserTest
     // Cache a reference to preview layers.
     const ui::Layer* previews_container_layer =
         test_api().GetPreviewsTrayIcon()->layer()->children()[0];
-    const std::vector<ui::Layer*>& preview_layers =
+    const std::vector<raw_ptr<ui::Layer, VectorExperimental>>& preview_layers =
         previews_container_layer->children();
 
     // Iterate over the layers for each preview.
@@ -1195,8 +1185,9 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, RemoveItem) {
       EXPECT_CALL(mock, OnHoldingSpaceItemsRemoved)
           .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items) {
             ASSERT_EQ(items.size(), item_ids.size());
-            for (const HoldingSpaceItem* item : items)
+            for (const HoldingSpaceItem* item : items) {
               ASSERT_TRUE(base::Contains(item_ids, item->id()));
+            }
             run_loop.Quit();
           });
 
@@ -1272,7 +1263,8 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, TogglePreviews) {
   ASSERT_TRUE(previews_tray_icon);
   ASSERT_TRUE(previews_tray_icon->layer());
   ASSERT_EQ(1u, previews_tray_icon->layer()->children().size());
-  auto* previews_container_layer = previews_tray_icon->layer()->children()[0];
+  auto* previews_container_layer =
+      previews_tray_icon->layer()->children()[0].get();
   EXPECT_FALSE(previews_tray_icon->GetVisible());
 
   // After pinning a file, we should have a single preview in the tray icon.

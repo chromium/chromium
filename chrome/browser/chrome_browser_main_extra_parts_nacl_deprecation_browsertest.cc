@@ -27,6 +27,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBrowserMainExtraPartsNaclDeprecationTest,
   EXPECT_FALSE(IsNaclAllowed());
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 class ChromeBrowserMainExtraPartsNaclDeprecationWithPolicyTest
     : public policy::PolicyTest {
  public:
@@ -45,4 +46,6 @@ IN_PROC_BROWSER_TEST_F(ChromeBrowserMainExtraPartsNaclDeprecationWithPolicyTest,
                        PolicyOverridesFieldTrial) {
   EXPECT_TRUE(IsNaclAllowed());
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace

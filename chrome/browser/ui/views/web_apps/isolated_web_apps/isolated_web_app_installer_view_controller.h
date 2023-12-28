@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_INSTALLER_VIEW_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_INSTALLER_VIEW_CONTROLLER_H_
 
-#include <string>
-
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -16,6 +14,7 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 
+class IsolatedWebAppsEnabledPrefObserver;
 class Profile;
 
 namespace views {
@@ -37,9 +36,14 @@ class IsolatedWebAppInstallerViewController
                                         IsolatedWebAppInstallerModel* model);
   virtual ~IsolatedWebAppInstallerViewController();
 
-  void Start();
+  // Starts the installer state transition. |initialized_callback| will be
+  // called once the dialog is initialized and ready for display.
+  // |complete_callback| will be called when the dialog is being closed.
+  void Start(base::OnceClosure initialized_callback,
+             base::OnceClosure completion_callback);
 
-  void Show(base::OnceClosure callback);
+  // Present the installer when it is initialized.
+  void Show();
 
   void SetViewForTesting(IsolatedWebAppInstallerView* view);
 
@@ -71,6 +75,7 @@ class IsolatedWebAppInstallerViewController
   void OnGetMetadataProgressUpdated(double progress);
   void OnInstallabilityChecked(InstallabilityChecker::Result result);
   void OnInstallProgressUpdated(double progress);
+
   void OnInstallComplete(
       base::expected<InstallIsolatedWebAppCommandSuccess,
                      InstallIsolatedWebAppCommandError> result);
@@ -96,9 +101,12 @@ class IsolatedWebAppInstallerViewController
   raw_ptr<views::DialogDelegate> dialog_delegate_;
 
   std::unique_ptr<CallbackDelayer> callback_delayer_;
+  std::unique_ptr<IsolatedWebAppsEnabledPrefObserver> pref_observer_;
   std::unique_ptr<InstallabilityChecker> installability_checker_;
+  bool is_initialized_ = false;
 
-  base::OnceClosure callback_;
+  base::OnceClosure initialized_callback_;
+  base::OnceClosure completion_callback_;
   base::WeakPtrFactory<IsolatedWebAppInstallerViewController> weak_ptr_factory_{
       this};
 };

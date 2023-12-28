@@ -13,6 +13,7 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/consent_auditor/consent_auditor.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/protocol/user_consent_specifics.pb.h"
 #include "content/public/test/browser_test.h"
 
@@ -25,7 +26,8 @@ using SyncConsent = sync_pb::UserConsentTypes::SyncConsent;
 namespace {
 
 CoreAccountId GetAccountId() {
-  return CoreAccountId::FromGaiaId("gaia_id_for_user_gmail.com");
+  return CoreAccountId::FromGaiaId(
+      signin::GetTestGaiaIdForEmail(SyncTest::kDefaultUserEmail));
 }
 
 class UserConsentEqualityChecker : public SingleClientStatusChangeChecker {

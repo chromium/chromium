@@ -252,8 +252,10 @@ source_set("app_framework_shared_headers") {
 
   sources = [
     "src/AppFramework/Action/GREYAction.h",
+    "src/AppFramework/Action/GREYActionBlock.h",
     "src/AppFramework/Action/GREYActions.h",
     "src/AppFramework/Action/GREYActionsShorthand.h",
+    "src/AppFramework/Action/GREYBaseAction.h",
     "src/AppFramework/Additions/UITextSelectionView+GREYApp.h",
     "src/AppFramework/Config/GREYAppConfiguration.h",
     "src/AppFramework/Core/GREYElementInteraction.h",
@@ -281,11 +283,9 @@ ios_framework_bundle("app_framework") {
 
   sources = [
     "src/AppFramework/Action/GREYActionBlock+Private.h",
-    "src/AppFramework/Action/GREYActionBlock.h",
     "src/AppFramework/Action/GREYActionBlock.m",
     "src/AppFramework/Action/GREYActions.m",
     "src/AppFramework/Action/GREYActionsShorthand.m",
-    "src/AppFramework/Action/GREYBaseAction.h",
     "src/AppFramework/Action/GREYBaseAction.m",
     "src/AppFramework/Action/GREYChangeStepperAction.h",
     "src/AppFramework/Action/GREYChangeStepperAction.m",

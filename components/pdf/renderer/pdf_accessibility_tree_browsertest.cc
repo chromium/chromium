@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -648,7 +649,7 @@ TEST_F(PdfAccessibilityTreeTest, TestOverlappingAnnots) {
   ui::AXNode* paragraph_node = page_node->GetChildAtIndex(0);
   ASSERT_TRUE(paragraph_node);
   EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
-  const std::vector<ui::AXNode*>& child_nodes =
+  const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>& child_nodes =
       paragraph_node->GetAllChildren();
   ASSERT_EQ(3u, child_nodes.size());
 
@@ -864,7 +865,7 @@ TEST_F(PdfAccessibilityTreeTest, TestTextFieldNodeCreation) {
   paragraph_node = page_node->GetChildAtIndex(1);
   ASSERT_TRUE(paragraph_node);
   EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
-  const std::vector<ui::AXNode*>& child_nodes =
+  const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>& child_nodes =
       paragraph_node->GetAllChildren();
   ASSERT_EQ(3u, child_nodes.size());
 
@@ -1021,7 +1022,7 @@ TEST_F(PdfAccessibilityTreeTest, TestButtonNodeCreation) {
   paragraph_node = page_node->GetChildAtIndex(1);
   ASSERT_TRUE(paragraph_node);
   EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
-  const std::vector<ui::AXNode*>& child_nodes =
+  const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>& child_nodes =
       paragraph_node->GetAllChildren();
   ASSERT_EQ(5u, child_nodes.size());
 
@@ -1212,7 +1213,7 @@ TEST_F(PdfAccessibilityTreeTest, TestListboxNodeCreation) {
   paragraph_node = page_node->GetChildAtIndex(1);
   ASSERT_TRUE(paragraph_node);
   EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
-  const std::vector<ui::AXNode*>& child_nodes =
+  const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>& child_nodes =
       paragraph_node->GetAllChildren();
   ASSERT_EQ(3u, child_nodes.size());
 
@@ -1233,8 +1234,8 @@ TEST_F(PdfAccessibilityTreeTest, TestListboxNodeCreation) {
     EXPECT_TRUE(listbox_node->HasState(ax::mojom::State::kFocusable));
     EXPECT_EQ(kExpectedBounds[0], listbox_node->data().relative_bounds.bounds);
     ASSERT_EQ(std::size(kExpectedOptions[0]), listbox_node->GetChildCount());
-    const std::vector<ui::AXNode*>& listbox_child_nodes =
-        listbox_node->GetAllChildren();
+    const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
+        listbox_child_nodes = listbox_node->GetAllChildren();
     for (size_t i = 0; i < listbox_child_nodes.size(); i++) {
       EXPECT_EQ(ax::mojom::Role::kListBoxOption,
                 listbox_child_nodes[i]->GetRole());
@@ -1265,8 +1266,8 @@ TEST_F(PdfAccessibilityTreeTest, TestListboxNodeCreation) {
     EXPECT_TRUE(listbox_node->HasState(ax::mojom::State::kFocusable));
     EXPECT_EQ(kExpectedBounds[1], listbox_node->data().relative_bounds.bounds);
     ASSERT_EQ(std::size(kExpectedOptions[1]), listbox_node->GetChildCount());
-    const std::vector<ui::AXNode*>& listbox_child_nodes =
-        listbox_node->GetAllChildren();
+    const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
+        listbox_child_nodes = listbox_node->GetAllChildren();
     for (size_t i = 0; i < listbox_child_nodes.size(); i++) {
       EXPECT_EQ(ax::mojom::Role::kListBoxOption,
                 listbox_child_nodes[i]->GetRole());
@@ -1405,7 +1406,7 @@ TEST_F(PdfAccessibilityTreeTest, TestComboboxNodeCreation) {
   paragraph_node = page_node->GetChildAtIndex(1);
   ASSERT_TRUE(paragraph_node);
   EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
-  const std::vector<ui::AXNode*>& child_nodes =
+  const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>& child_nodes =
       paragraph_node->GetAllChildren();
   ASSERT_EQ(3u, child_nodes.size());
 
@@ -1423,8 +1424,8 @@ TEST_F(PdfAccessibilityTreeTest, TestComboboxNodeCreation) {
     EXPECT_TRUE(combobox_node->HasState(ax::mojom::State::kFocusable));
     EXPECT_EQ(kExpectedBounds[0], combobox_node->data().relative_bounds.bounds);
     ASSERT_EQ(2u, combobox_node->GetChildCount());
-    const std::vector<ui::AXNode*>& combobox_child_nodes =
-        combobox_node->GetAllChildren();
+    const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
+        combobox_child_nodes = combobox_node->GetAllChildren();
 
     ui::AXNode* combobox_input_node = combobox_child_nodes[0];
     EXPECT_EQ(ax::mojom::Role::kTextFieldWithComboBox,
@@ -1449,8 +1450,8 @@ TEST_F(PdfAccessibilityTreeTest, TestComboboxNodeCreation) {
               combobox_popup_node->data().relative_bounds.bounds);
     ASSERT_EQ(std::size(kExpectedOptions[0]),
               combobox_popup_node->GetChildCount());
-    const std::vector<ui::AXNode*>& popup_child_nodes =
-        combobox_popup_node->GetAllChildren();
+    const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
+        popup_child_nodes = combobox_popup_node->GetAllChildren();
     for (size_t i = 0; i < popup_child_nodes.size(); i++) {
       EXPECT_EQ(ax::mojom::Role::kListBoxOption,
                 popup_child_nodes[i]->GetRole());
@@ -1484,8 +1485,8 @@ TEST_F(PdfAccessibilityTreeTest, TestComboboxNodeCreation) {
     EXPECT_TRUE(combobox_node->HasState(ax::mojom::State::kFocusable));
     EXPECT_EQ(kExpectedBounds[1], combobox_node->data().relative_bounds.bounds);
     ASSERT_EQ(2u, combobox_node->GetChildCount());
-    const std::vector<ui::AXNode*>& combobox_child_nodes =
-        combobox_node->GetAllChildren();
+    const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
+        combobox_child_nodes = combobox_node->GetAllChildren();
 
     ui::AXNode* combobox_input_node = combobox_child_nodes[0];
     EXPECT_EQ(ax::mojom::Role::kComboBoxMenuButton,
@@ -1508,8 +1509,8 @@ TEST_F(PdfAccessibilityTreeTest, TestComboboxNodeCreation) {
               combobox_popup_node->data().relative_bounds.bounds);
     ASSERT_EQ(std::size(kExpectedOptions[1]),
               combobox_popup_node->GetChildCount());
-    const std::vector<ui::AXNode*>& popup_child_nodes =
-        combobox_popup_node->GetAllChildren();
+    const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
+        popup_child_nodes = combobox_popup_node->GetAllChildren();
     for (size_t i = 0; i < popup_child_nodes.size(); i++) {
       EXPECT_EQ(ax::mojom::Role::kListBoxOption,
                 popup_child_nodes[i]->GetRole());
@@ -2050,9 +2051,11 @@ TEST_F(PdfAccessibilityTreeTest, TestClickActionDataConversion) {
   ASSERT_NE(nullptr, page_node);
   ASSERT_EQ(ax::mojom::Role::kRegion, page_node->GetRole());
 
-  const std::vector<ui::AXNode*>& para_nodes = page_node->GetAllChildren();
+  const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>& para_nodes =
+      page_node->GetAllChildren();
   ASSERT_EQ(2u, para_nodes.size());
-  const std::vector<ui::AXNode*>& link_nodes = para_nodes[1]->GetAllChildren();
+  const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>& link_nodes =
+      para_nodes[1]->GetAllChildren();
   ASSERT_EQ(1u, link_nodes.size());
 
   const ui::AXNode* link_node = link_nodes[0];
@@ -2193,24 +2196,25 @@ TEST_F(PdfAccessibilityTreeTest, TestSelectionActionDataConversion) {
   ui::AXNode* page_node = root_node->GetChildAtIndex(1);
   ASSERT_NE(nullptr, page_node);
   ASSERT_EQ(ax::mojom::Role::kRegion, page_node->GetRole());
-  const std::vector<ui::AXNode*>& para_nodes = page_node->GetAllChildren();
+  const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>& para_nodes =
+      page_node->GetAllChildren();
   ASSERT_EQ(2u, para_nodes.size());
   ASSERT_TRUE(para_nodes[0]);
-  const std::vector<ui::AXNode*>& static_text_nodes1 =
-      para_nodes[0]->GetAllChildren();
+  const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
+      static_text_nodes1 = para_nodes[0]->GetAllChildren();
   ASSERT_EQ(1u, static_text_nodes1.size());
   ASSERT_TRUE(static_text_nodes1[0]);
-  const std::vector<ui::AXNode*>& inline_text_nodes1 =
-      static_text_nodes1[0]->GetAllChildren();
+  const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
+      inline_text_nodes1 = static_text_nodes1[0]->GetAllChildren();
   ASSERT_TRUE(inline_text_nodes1[0]);
   ASSERT_EQ(1u, inline_text_nodes1.size());
   ASSERT_TRUE(para_nodes[1]);
-  const std::vector<ui::AXNode*>& static_text_nodes2 =
-      para_nodes[1]->GetAllChildren();
+  const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
+      static_text_nodes2 = para_nodes[1]->GetAllChildren();
   ASSERT_EQ(1u, static_text_nodes2.size());
   ASSERT_TRUE(static_text_nodes2[0]);
-  const std::vector<ui::AXNode*>& inline_text_nodes2 =
-      static_text_nodes2[0]->GetAllChildren();
+  const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>&
+      inline_text_nodes2 = static_text_nodes2[0]->GetAllChildren();
   ASSERT_TRUE(inline_text_nodes2[0]);
   ASSERT_EQ(1u, inline_text_nodes2.size());
 

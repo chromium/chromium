@@ -24,11 +24,6 @@
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
 #include "url/origin.h"
 
-namespace features {
-CONTENT_EXPORT BASE_DECLARE_FEATURE(
-    kEnableBackForwardCacheForPagesWithMediaDevicesDispatcherHost);
-}  // namespace features
-
 namespace content {
 
 class MediaStreamManager;
@@ -75,7 +70,7 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
       override;
   void SetCaptureHandleConfig(
       blink::mojom::CaptureHandleConfigPtr config) override;
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void CloseFocusWindowOfOpportunity(const std::string& label) override;
   void ProduceSubCaptureTargetId(
       media::mojom::SubCaptureTargetType type,

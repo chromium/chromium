@@ -9,6 +9,7 @@
 #include "base/values.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/content/policy_blocklist_navigation_throttle.h"
+#include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/content/safe_search_service.h"
 #include "components/policy/content/safe_sites_navigation_throttle.h"
 #include "components/policy/core/browser/url_blocklist_manager.h"
@@ -445,3 +446,48 @@ TEST_F(PolicyBlocklistNavigationThrottleTest,
 
   TestSafeSitesRedirectAndCachedSites(nullptr);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(PolicyBlocklistNavigationThrottleTest, UseVpnPreConnectFiltering) {
+  SetBlocklistUrlPattern("block-by-general-pref.com");
+  base::Value::List list;
+  list.Append("allowed-preconnect.com");
+  pref_service_.SetManagedPref(
+      policy::policy_prefs::kAlwaysOnVpnPreConnectUrlAllowlist,
+      base::Value(std::move(list)));
+
+  PolicyBlocklistService* service =
+      PolicyBlocklistFactory::GetForBrowserContext(browser_context());
+  service->SetAlwaysOnVpnPreConnectUrlAllowlistEnforced(
+      /*enforced=*/true);
+
+  task_environment()->RunUntilIdle();
+
+  // Verify that the pref kAlwaysOnVpnPreConnectUrlAllowlist is enforced
+  // while kEnforceAlwaysOnVpnPreConnectUrlAllowlist is true.
+  auto navigation_simulator =
+      StartNavigation(GURL("http://allowed-preconnect.com/"));
+  ASSERT_FALSE(navigation_simulator->IsDeferred());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            navigation_simulator->GetLastThrottleCheckResult());
+  navigation_simulator =
+      StartNavigation(GURL("http://neural-by-general-pref.com/"));
+  EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST,
+            navigation_simulator->GetLastThrottleCheckResult());
+
+  service->SetAlwaysOnVpnPreConnectUrlAllowlistEnforced(
+      /*enforced=*/false);
+
+  task_environment()->RunUntilIdle();
+
+  navigation_simulator =
+      StartNavigation(GURL("http://block-by-general-pref.com/"));
+  ASSERT_FALSE(navigation_simulator->IsDeferred());
+  EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST,
+            navigation_simulator->GetLastThrottleCheckResult());
+  navigation_simulator =
+      StartNavigation(GURL("http://neural-by-general-pref.com/"));
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            navigation_simulator->GetLastThrottleCheckResult());
+}
+#endif

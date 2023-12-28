@@ -80,12 +80,11 @@ class ASH_EXPORT BluetoothDetailedViewController
 
   bluetooth_config::mojom::BluetoothSystemState system_state_ =
       bluetooth_config::mojom::BluetoothSystemState::kUnavailable;
-  raw_ptr<BluetoothDetailedView, DanglingUntriaged | ExperimentalAsh> view_ =
-      nullptr;
+  raw_ptr<BluetoothDetailedView, DanglingUntriaged> view_ = nullptr;
   std::unique_ptr<BluetoothDeviceListController> device_list_controller_;
   PairedBluetoothDevicePropertiesPtrs connected_devices_;
   PairedBluetoothDevicePropertiesPtrs previously_connected_devices_;
-  raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
+  raw_ptr<UnifiedSystemTrayController> tray_controller_;
 };
 
 }  // namespace ash

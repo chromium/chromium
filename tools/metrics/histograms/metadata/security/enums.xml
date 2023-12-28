@@ -37,6 +37,22 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Ephemeral device stored base on IP address"/>
 </enum>
 
+<enum name="PrivateNetworkAccessCheckResult">
+  <int value="0" label="AllowedMissingClientSecurityState"/>
+  <int value="1" label="AllowedNoLessPublic"/>
+  <int value="2" label="AllowedByPolicyAllow"/>
+  <int value="3" label="AllowedByPolicyWarn"/>
+  <int value="4" label="BlockedByLoadOption"/>
+  <int value="5" label="BlockedByPolicyBlock"/>
+  <int value="6" label="AllowedByTargetIpAddressSpace"/>
+  <int value="7" label="BlockedByTargetIpAddressSpace"/>
+  <int value="8" label="BlockedByPolicyPreflightWarn"/>
+  <int value="9" label="BlockedByPolicyPreflightBlock"/>
+  <int value="10" label="AllowedByPolicyPreflightWarn"/>
+  <int value="11" label="BlockedByInconsistentIpAddressSpace"/>
+  <int value="12" label="AllowedPotentiallyTrustworthySameOrigin"/>
+</enum>
+
 <enum name="PrivateNetworkDeviceValidity">
   <int value="0" label="Device exists"/>
   <int value="1" label="New valid device"/>

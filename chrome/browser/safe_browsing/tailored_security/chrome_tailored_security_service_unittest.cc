@@ -540,6 +540,54 @@ TEST_F(ChromeTailoredSecurityServiceTest,
 }
 
 TEST_F(ChromeTailoredSecurityServiceTest,
+       WhenRetryEnabledButHistorySyncDisabledSetsNoRetryNeeded) {
+  SetUpPrerequisites(/* history_sync_enabled= */ false,
+                     /* policy_controlled_sb_enabled= */ false);
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+
+  prefs()->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
+                      safe_browsing::TailoredSecurityRetryState::UNSET);
+
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
+                                                   base::Time::Now());
+
+  EXPECT_EQ(prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState),
+            safe_browsing::TailoredSecurityRetryState::NO_RETRY_NEEDED);
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
+       WhenRetryEnabledAndSbControlledByPolicySetsNoRetryNeeded) {
+  SetUpPrerequisites(/* history_sync_enabled= */ true,
+                     /* policy_controlled_sb_enabled= */ true);
+
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+  prefs()->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
+                      safe_browsing::UNSET);
+
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
+                                                   base::Time::Now());
+
+  EXPECT_EQ(prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState),
+            safe_browsing::NO_RETRY_NEEDED);
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
+       WhenRetryEnabledAndEpAlreadyEnabledSetsNoRetryNeeded) {
+  SetUpPrerequisites(/* history_sync_enabled= */ true,
+                     /* policy_controlled_sb_enabled= */ false);
+
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION);
+  prefs()->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
+                      safe_browsing::TailoredSecurityRetryState::UNSET);
+
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
+                                                   base::Time::Now());
+
+  EXPECT_EQ(prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState),
+            safe_browsing::TailoredSecurityRetryState::NO_RETRY_NEEDED);
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
        HistorySyncAndSbNotControlledByPolicyRunsRetryLogicAfterStartupDelay) {
   SetUpPrerequisites(/* history_sync_enabled= */ true,
                      /* policy_controlled_sb_enabled= */ false);

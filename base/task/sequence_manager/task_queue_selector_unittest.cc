@@ -53,6 +53,7 @@ class MockObserver : public TaskQueueSelector::Observer {
   ~MockObserver() override = default;
 
   MOCK_METHOD1(OnTaskQueueEnabled, void(internal::TaskQueueImpl*));
+  MOCK_METHOD0(OnWorkAvailable, void());
 };
 
 class TaskQueueSelectorForTest : public TaskQueueSelector {
@@ -198,11 +199,18 @@ TEST_F(TaskQueueSelectorTest, TestMultiplePriorities) {
               ElementsAre(9, 8, 7, 6, 5, 4, 3, 2, 1, 0));
 }
 
+TEST_F(TaskQueueSelectorTest, TestObserverWorkAvailableOnPushTask) {
+  testing::StrictMock<MockObserver> mock_observer;
+  selector_.SetTaskQueueSelectorObserver(&mock_observer);
+  EXPECT_CALL(mock_observer, OnWorkAvailable());
+  PushTask(/* queue_index=*/0, /* enqueue_order=*/4);
+}
+
 TEST_F(TaskQueueSelectorTest, TestObserverWithEnabledQueue) {
   task_queues_[1]->SetQueueEnabled(false);
   selector_.DisableQueue(task_queues_[1].get());
   {
-    MockObserver mock_observer;
+    testing::StrictMock<MockObserver> mock_observer;
     selector_.SetTaskQueueSelectorObserver(&mock_observer);
     EXPECT_CALL(mock_observer, OnTaskQueueEnabled(_)).Times(1);
     task_queues_[1]->SetQueueEnabled(true);
@@ -217,7 +225,7 @@ TEST_F(TaskQueueSelectorTest,
        TestObserverWithSetQueuePriorityAndQueueAlreadyEnabled) {
   selector_.SetQueuePriority(task_queues_[1].get(), kHighPriority);
   {
-    MockObserver mock_observer;
+    testing::StrictMock<MockObserver> mock_observer;
     selector_.SetTaskQueueSelectorObserver(&mock_observer);
     EXPECT_CALL(mock_observer, OnTaskQueueEnabled(_)).Times(0);
     selector_.SetQueuePriority(task_queues_[1].get(), kDefaultPriority);
@@ -228,11 +236,16 @@ TEST_F(TaskQueueSelectorTest,
 }
 
 TEST_F(TaskQueueSelectorTest, TestDisableEnable) {
-  MockObserver mock_observer;
+  testing::StrictMock<MockObserver> mock_observer;
   selector_.SetTaskQueueSelectorObserver(&mock_observer);
-
   size_t queue_order[] = {0, 1, 2, 3, 4};
-  PushTasks(queue_order, 5);
+  {
+    // Work is available when a task is pushed to an enabled queue (all queues
+    // were previously empty).
+    EXPECT_CALL(mock_observer, OnWorkAvailable());
+    PushTasks(queue_order, 5);
+    testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  }
   task_queues_[2]->SetQueueEnabled(false);
   selector_.DisableQueue(task_queues_[2].get());
   task_queues_[4]->SetQueueEnabled(false);
@@ -241,14 +254,26 @@ TEST_F(TaskQueueSelectorTest, TestDisableEnable) {
   EXPECT_EQ(kDefaultPriority, task_queues_[2]->GetQueuePriority());
   EXPECT_EQ(kDefaultPriority, task_queues_[4]->GetQueuePriority());
   EXPECT_THAT(PopTasksAndReturnQueueIndices(), ElementsAre(0, 1, 3));
-
-  EXPECT_CALL(mock_observer, OnTaskQueueEnabled(_)).Times(2);
   task_queues_[2]->SetQueueEnabled(true);
-  selector_.EnableQueue(task_queues_[2].get());
+  {
+    EXPECT_CALL(mock_observer, OnTaskQueueEnabled(_));
+    // Work is available when a non-empty queue is enabled (all queues were
+    // previously disabled).
+    EXPECT_CALL(mock_observer, OnWorkAvailable());
+    selector_.EnableQueue(task_queues_[2].get());
+    testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  }
   selector_.SetQueuePriority(task_queues_[2].get(), kPriorityCount - 1);
   EXPECT_THAT(PopTasksAndReturnQueueIndices(), ElementsAre(2));
   task_queues_[4]->SetQueueEnabled(true);
-  selector_.EnableQueue(task_queues_[4].get());
+  {
+    EXPECT_CALL(mock_observer, OnTaskQueueEnabled(_));
+    // Work is available when a non-empty queue is enabled (all queues were
+    // previously disabled).
+    EXPECT_CALL(mock_observer, OnWorkAvailable());
+    selector_.EnableQueue(task_queues_[4].get());
+    testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  }
   EXPECT_THAT(PopTasksAndReturnQueueIndices(), ElementsAre(4));
 
   // Clear observer before it goes out of scope.
@@ -470,11 +495,9 @@ TEST_F(TaskQueueSelectorTest,
 }
 
 TEST_F(TaskQueueSelectorTest, TestObserverWithOneBlockedQueue) {
-  MockObserver mock_observer;  // Must outlive `selector`
+  testing::StrictMock<MockObserver> mock_observer;  // Must outlive `selector`
   TaskQueueSelectorForTest selector(associated_thread_);
   selector.SetTaskQueueSelectorObserver(&mock_observer);
-
-  EXPECT_CALL(mock_observer, OnTaskQueueEnabled(_)).Times(1);
 
   std::unique_ptr<TaskQueueImpl> task_queue(NewTaskQueueWithBlockReporting());
   selector.AddQueue(task_queue.get(), kDefaultPriority);
@@ -489,13 +512,18 @@ TEST_F(TaskQueueSelectorTest, TestObserverWithOneBlockedQueue) {
   EXPECT_EQ(nullptr, selector.SelectWorkQueueToService());
 
   task_queue->SetQueueEnabled(true);
-  selector.EnableQueue(task_queue.get());
+  {
+    EXPECT_CALL(mock_observer, OnTaskQueueEnabled(_));
+    EXPECT_CALL(mock_observer, OnWorkAvailable());
+    selector.EnableQueue(task_queue.get());
+    testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  }
   selector.RemoveQueue(task_queue.get());
   task_queue->UnregisterTaskQueue();
 }
 
 TEST_F(TaskQueueSelectorTest, TestObserverWithTwoBlockedQueues) {
-  MockObserver mock_observer;  // Must outlive `selector`
+  testing::StrictMock<MockObserver> mock_observer;  // Must outlive `selector`
   TaskQueueSelectorForTest selector(associated_thread_);
   selector.SetTaskQueueSelectorObserver(&mock_observer);
 
@@ -520,19 +548,26 @@ TEST_F(TaskQueueSelectorTest, TestObserverWithTwoBlockedQueues) {
   task_queue->immediate_work_queue()->Push(std::move(task1));
   task_queue2->immediate_work_queue()->Push(std::move(task2));
   EXPECT_EQ(nullptr, selector.SelectWorkQueueToService());
-  testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
-  EXPECT_CALL(mock_observer, OnTaskQueueEnabled(_)).Times(2);
-
-  task_queue->SetQueueEnabled(true);
-  selector.EnableQueue(task_queue.get());
+  {
+    EXPECT_CALL(mock_observer, OnTaskQueueEnabled(_));
+    EXPECT_CALL(mock_observer, OnWorkAvailable());
+    task_queue->SetQueueEnabled(true);
+    selector.EnableQueue(task_queue.get());
+    testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  }
 
   selector.RemoveQueue(task_queue.get());
   task_queue->UnregisterTaskQueue();
   EXPECT_EQ(nullptr, selector.SelectWorkQueueToService());
 
-  task_queue2->SetQueueEnabled(true);
-  selector.EnableQueue(task_queue2.get());
+  {
+    EXPECT_CALL(mock_observer, OnTaskQueueEnabled(_));
+    EXPECT_CALL(mock_observer, OnWorkAvailable());
+    task_queue2->SetQueueEnabled(true);
+    selector.EnableQueue(task_queue2.get());
+    testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  }
   selector.RemoveQueue(task_queue2.get());
   task_queue2->UnregisterTaskQueue();
 }

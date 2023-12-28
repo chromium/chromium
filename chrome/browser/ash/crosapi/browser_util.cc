@@ -54,6 +54,11 @@ using user_manager::UserManager;
 using version_info::Channel;
 
 namespace crosapi::browser_util {
+
+BASE_FEATURE(kLacrosLaunchAtLoginScreen,
+             "LacrosLaunchAtLoginScreen",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 // At session start the value for LacrosAvailability logic is applied and the
@@ -313,7 +318,7 @@ bool IsProfileMigrationEnabled(const user_manager::User* user,
                                PolicyInitState policy_init_state) {
   return !base::FeatureList::IsEnabled(ash::standalone_browser::features::
                                            kLacrosProfileMigrationForceOff) &&
-         !IsAshWebBrowserEnabledForMigration(user, policy_init_state);
+         IsLacrosEnabledForMigration(user, policy_init_state);
 }
 
 bool IsProfileMigrationAvailable() {
@@ -335,11 +340,6 @@ bool IsProfileMigrationAvailable() {
 
 bool IsAshWebBrowserEnabled() {
   return !IsLacrosEnabled();
-}
-
-bool IsAshWebBrowserEnabledForMigration(const user_manager::User* user,
-                                        PolicyInitState policy_init_state) {
-  return !IsLacrosEnabledForMigration(user, policy_init_state);
 }
 
 bool IsLacrosOnlyBrowserAllowed() {

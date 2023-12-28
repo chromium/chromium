@@ -12,7 +12,6 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
-#include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_util.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/logging.h"
@@ -151,25 +150,20 @@ void ClipboardPortalInjector::OnSetSelectionCallback(GObject* object,
   }
 }
 
-void ClipboardPortalInjector::SelectionWrite() {
+void ClipboardPortalInjector::SelectionWrite(const uint serial) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(proxy_);
   DCHECK(cancellable_);
   DCHECK(!session_handle_.empty());
-  DCHECK(!write_serials_.empty());
+  DCHECK(serial);
   DCHECK(!write_data_.empty());
 
-  GVariantBuilder serials_builder;
-  g_variant_builder_init(&serials_builder, G_VARIANT_TYPE("au"));
-  for (auto serial : write_serials_) {
-    g_variant_builder_add(&serials_builder, "u", serial);
-  }
-  write_serials_.clear();
+  write_serial_ = serial;
 
   Scoped<GError> error;
   g_dbus_proxy_call_with_unix_fd_list(
       proxy_, "SelectionWrite",
-      g_variant_new("(oau)", session_handle_.c_str(), &serials_builder),
+      g_variant_new("(ou)", session_handle_.c_str(), write_serial_),
       G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, nullptr, cancellable_,
       OnSelectionWriteCallback, this);
 }
@@ -185,7 +179,7 @@ void ClipboardPortalInjector::OnSelectionWriteCallback(GObject* object,
 
   Scoped<GError> error;
   Scoped<GUnixFDList> outlist;
-  std::unordered_map<int, gboolean> request_successes;
+  gboolean success;
 
   Scoped<GVariant> variant(g_dbus_proxy_call_with_unix_fd_list_finish(
       proxy, outlist.receive(), result, error.receive()));
@@ -195,48 +189,40 @@ void ClipboardPortalInjector::OnSelectionWriteCallback(GObject* object,
   }
 
   int32_t fd_id;
-  guint serial;
-  GVariantIter iterator;
-  g_variant_iter_init(&iterator, g_variant_get_child_value(variant.get(), 0));
-  while (g_variant_iter_loop(&iterator, "{uh}", &serial, &fd_id)) {
-    Scoped<GError> fd_error;
-    base::ScopedFD fd(
-        g_unix_fd_list_get(outlist.get(), fd_id, fd_error.receive()));
+  Scoped<GError> fd_error;
+  success = false;
 
-    request_successes[serial] = false;
-    if (!fd.is_valid()) {
-      LOG(ERROR) << "Failed to get file descriptor from the list: "
-                 << fd_error->message;
-    } else {
-      request_successes[serial] =
-          base::WriteFileDescriptor(fd.get(), that->write_data_);
-      if (!request_successes[serial]) {
-        LOG(ERROR) << "Failed to write clipboard data to file descriptor";
-      }
+  fd_id = g_variant_get_handle(variant.get());
+
+  base::ScopedFD fd(
+      g_unix_fd_list_get(outlist.get(), fd_id, fd_error.receive()));
+
+  if (!fd.is_valid()) {
+    LOG(ERROR) << "Failed to get file descriptor from the list: "
+               << fd_error->message;
+  } else {
+    success = base::WriteFileDescriptor(fd.get(), that->write_data_);
+    if (!success) {
+      LOG(ERROR) << "Failed to write clipboard data to file descriptor";
     }
   }
 
-  that->SelectionWriteDone(request_successes);
+  that->SelectionWriteDone(that->write_serial_, success);
+  that->write_serial_ = 0;
 }
 
-void ClipboardPortalInjector::SelectionWriteDone(
-    const std::unordered_map<int, gboolean>& request_successes) {
+void ClipboardPortalInjector::SelectionWriteDone(const uint serial,
+                                                 const gboolean success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(proxy_);
   DCHECK(cancellable_);
   DCHECK(!session_handle_.empty());
 
-  GVariantBuilder request_successes_builder;
-  g_variant_builder_init(&request_successes_builder, G_VARIANT_TYPE("a{ub}"));
-  for (const auto& [serial, success] : request_successes) {
-    g_variant_builder_add(&request_successes_builder, "{ub}", serial, success);
-  }
-
-  g_dbus_proxy_call(proxy_, "SelectionWriteDone",
-                    g_variant_new("(oa{ub})", session_handle_.c_str(),
-                                  &request_successes_builder),
-                    G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, cancellable_,
-                    OnSelectionWriteDoneCallback, this);
+  g_dbus_proxy_call(
+      proxy_, "SelectionWriteDone",
+      g_variant_new("(oub)", session_handle_.c_str(), serial, success),
+      G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, cancellable_,
+      OnSelectionWriteDoneCallback, this);
 }
 
 // static
@@ -372,9 +358,15 @@ void ClipboardPortalInjector::OnSelectionTransferSignal(
   g_variant_get(parameters, "(osu)", /*session_handle*/ nullptr,
                 /*mime_type*/ nullptr, &serial);
 
-  that->write_serials_.insert(serial);
-
-  that->SelectionWrite();
+  if (!that->write_serial_) {
+    that->SelectionWrite(serial);
+  } else {
+    // we only process one write request at a time, so tell the backend to
+    // release any extra serials it allocates.
+    LOG(ERROR)
+        << "Received clipboard write serial while busy processing another.";
+    that->SelectionWriteDone(serial, false);
+  }
 }
 
 // static

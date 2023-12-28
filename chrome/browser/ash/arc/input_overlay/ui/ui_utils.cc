@@ -137,7 +137,8 @@ std::u16string GetDisplayTextAccessibleName(const std::u16string& text) {
 gfx::Rect CalculateAvailableBounds(aura::Window* root_window) {
   DCHECK(root_window->IsRootWindow());
 
-  auto* shelf = ash::RootWindowController::ForWindow(root_window)->shelf();
+  const auto* shelf =
+      ash::RootWindowController::ForWindow(root_window)->shelf();
   DCHECK(shelf);
   if (!shelf->IsVisible()) {
     return root_window->bounds();

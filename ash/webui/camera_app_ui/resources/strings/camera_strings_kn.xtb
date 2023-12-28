@@ -78,6 +78,7 @@
 <translation id="4705093842003735294">ಪೂರ್ಣ ರೆಸಲ್ಯೂಷನ್</translation>
 <translation id="4864143361253542638">ಸ್ಕ್ಯಾನ್ ಮಾಡಿದ ಪುಟದ ಪಟ್ಟಿ</translation>
 <translation id="4890010094662541459">3 x 3</translation>
+<translation id="4892746741161549733">ಲಿಂಕ್ ವಿಳಾಸ <ph name="URL" /> ಅನ್ನು ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="491895758387112773">ಮಲ್ಟಿಸ್ಟ್ರೀಮ್ ವೀಡಿಯೊ ರೆಕಾರ್ಡಿಂಗ್</translation>
 <translation id="495170559598752135">ಕ್ರಿಯೆಗಳು</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
@@ -129,6 +130,7 @@
 <translation id="7450541714075000668">ಪಠ್ಯವನ್ನು ನಕಲಿಸಲಾಗಿದೆ</translation>
 <translation id="7488619942230388918">GIF ವೀಡಿಯೊ ರೆಕಾರ್ಡ್ ಮಾಡಿ</translation>
 <translation id="7557677699350329807">ಮುಂದಿನ ಕ್ಯಾಮರಾಗೆ ಬದಲಿಸಿ</translation>
+<translation id="7562584071994185503"><ph name="TEXT" /> ಪಠ್ಯವನ್ನು ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="7607002721634913082">ವಿರಾಮದಲ್ಲಿದೆ</translation>
 <translation id="7608223098072244877">4 x 4</translation>
 <translation id="761421184377987513">ಕೆಳಗೆ ಎಡ ದಿಕ್ಕಿನಲ್ಲಿ ಚಲಿಸುತ್ತಿದೆ</translation>
@@ -141,6 +143,7 @@
 <translation id="7726641833034062494">ಸಾಮಾನ್ಯ ವೀಡಿಯೊ ರೆಕಾರ್ಡ್ ಮಾಡಿ</translation>
 <translation id="7748344063862150053">ಡಾಕ್ಯುಮೆಂಟ್ ಮೇಲಿನ ಬಲ ಮೂಲೆ</translation>
 <translation id="7933675232020478311">ಕೆಳಗೆ ಬಲ ದಿಕ್ಕಿನಲ್ಲಿ ಚಲಿಸುತ್ತಿದೆ</translation>
+<translation id="7983668134180549431">ಪಠ್ಯ ಪತ್ತೆಯಾಗಿದೆ.</translation>
 <translation id="8079255378695216066">ರೆಕಾರ್ಡಿಂಗ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="8120146556401698679">ಪ್ಯಾನ್ ಮಾಡಿ ಟಿಲ್ಟ್ ಮಾಡಿ ಝೂಮ್ ಮಾಡಿ</translation>
 <translation id="8131740175452115882">ದೃಢೀಕರಿಸು</translation>
@@ -150,6 +153,7 @@
 <translation id="8346544573713510785">Camera HAL ನ ಫ್ರೇಮ್‌ಗಳನ್ನು ಸ್ಕೇಲ್ ಮಾಡಿ</translation>
 <translation id="8425673304802773841">ಕೆಳಗೆ ಟಿಲ್ಟ್ ಮಾಡಿ</translation>
 <translation id="8428213095426709021">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
+<translation id="8609951387004618906"><ph name="URL" /> ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಮ್ಯೂಟ್ ಮಾಡುವ ಬಟನ್ ಟಾಗಲ್ ಮಾಡಿ. ಮ್ಯೂಟ್ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="8730621377337864115">ಮುಗಿದಿದೆ</translation>
@@ -159,7 +163,6 @@
 <translation id="8870695351537079478">ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="8880167521484863515">4 ರಿಂದ 3</translation>
 <translation id="8903921497873541725">ಝೂಮ್ ಇನ್</translation>
-<translation id="8926890870105777777">"<ph name="WIFINAME" />" ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಸೇರಿಕೊಳ್ಳಿ</translation>
 <translation id="9045010116236796332">ಡಾಕ್ಯುಮೆಂಟ್‌ನ ಎಲ್ಲಾ ಅಂಚುಗಳನ್ನು ಫ್ರೇಮ್‌ನೊಳಗೆ ಇರಿಸಿ</translation>
 <translation id="9045155556724273246">10 ಸೆಕೆಂಡುಗಳು</translation>
 <translation id="906331135292332864">ಚಿತ್ರವನ್ನು ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>

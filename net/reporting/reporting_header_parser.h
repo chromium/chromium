@@ -53,8 +53,8 @@ class NET_EXPORT ReportingHeaderParser {
       const base::Value::List& list);
 
   // `isolation_info` here will be stored in the cache, associated with the
-  // `reporting_source`. `network_anonymization_key` is the NIK which will be
-  // passed in with reports to be queued. This must match the NIK from
+  // `reporting_source`. `network_anonymization_key` is the NAK which will be
+  // passed in with reports to be queued. This must match the NAK from
   // `isolation_source`, unless it is empty (which will be the case if the
   // network state partitioning is disabled).
   static void ProcessParsedReportingEndpointsHeader(

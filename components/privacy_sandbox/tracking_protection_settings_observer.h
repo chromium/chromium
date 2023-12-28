@@ -22,6 +22,9 @@ class TrackingProtectionSettingsObserver {
   // For observation of DNT.
   virtual void OnDoNotTrackEnabledChanged() {}
 
+  // For observation of IP protection.
+  virtual void OnIpProtectionEnabledChanged() {}
+
   // For observation of block all 3PC.
   virtual void OnBlockAllThirdPartyCookiesChanged() {}
 

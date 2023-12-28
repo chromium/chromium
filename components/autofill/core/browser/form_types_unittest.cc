@@ -13,11 +13,11 @@
 
 namespace autofill {
 
-using autofill::ServerFieldType;
+using autofill::FieldType;
 using std::string;
 
 struct FormTypesTestCase {
-  std::vector<ServerFieldType> field_types;
+  std::vector<FieldType> field_types;
   std::vector<std::u16string> field_values;
   bool expected_result;
 };

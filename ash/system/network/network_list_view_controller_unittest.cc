@@ -471,7 +471,7 @@ class NetworkListViewControllerTest : public AshTestBase,
   std::unique_ptr<views::Widget> widget_;
 
   // Owned by `widget_`.
-  raw_ptr<NetworkDetailedNetworkViewImpl, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<NetworkDetailedNetworkViewImpl, DanglingUntriaged>
       network_detailed_network_view_ = nullptr;
 
   std::unique_ptr<NetworkListViewControllerImpl>

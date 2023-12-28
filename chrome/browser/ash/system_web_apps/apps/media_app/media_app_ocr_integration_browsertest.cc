@@ -83,6 +83,29 @@ base::FilePath TestFile(const std::string& ascii_name) {
   return path;
 }
 
+// Waits for a file to finish loading, assuming the busy attribute on the app
+// element disappears when this happens. Uses the last active web UI.
+void WaitForFirstFileLoadInActiveWindow(const std::string& filename) {
+  constexpr char kWaitForAppIdleScript[] = R"(
+      (async function waitForFileLoad() {
+        await waitForNode('.app-bar-filename[filename="$1"]',
+                          ['backlight-app-bar', 'backlight-app']);
+        await waitForNode('backlight-app:not([busy])');
+        return 'loaded';
+      })();
+  )";
+
+  Browser* app_browser = chrome::FindBrowserWithActiveWindow();
+  content::WebContents* web_ui =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  MediaAppUiBrowserTest::PrepareAppForTest(web_ui);
+
+  EXPECT_EQ("loaded",
+            MediaAppUiBrowserTest::EvalJsInAppFrame(
+                web_ui, base::ReplaceStringPlaceholders(kWaitForAppIdleScript,
+                                                        {filename}, nullptr)));
+}
+
 }  // namespace
 
 // Test that the Media App connects to the OCR service when opening PDFs.
@@ -99,6 +122,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppOcrIntegrationTest, MediaAppLaunchPdfMulti) {
   const BrowserList* browser_list = BrowserList::GetInstance();
   EXPECT_EQ(browser_list->size(), 2u);
 
+  WaitForFirstFileLoadInActiveWindow(kFilePdfImg);
   // There should be one handler after one PDF window is opened. If it's in the
   // UniqueReceiverSet, this also means it's bound to a remote.
   EXPECT_EQ(ax_factory->media_app_receivers().size(), 1u);
@@ -110,6 +134,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppOcrIntegrationTest, MediaAppLaunchPdfMulti) {
   WaitForBrowserCount(3);  // 1 extra for the browser test browser.
   EXPECT_EQ(browser_list->size(), 3u);
 
+  WaitForFirstFileLoadInActiveWindow(kFilePdfTall);
   // There should be a second handler after a second PDF window is opened.
   EXPECT_EQ(ax_factory->media_app_receivers().size(), 2u);
 }

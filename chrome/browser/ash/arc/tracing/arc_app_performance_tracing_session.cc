@@ -92,6 +92,7 @@ void ArcAppPerformanceTracingSession::Start() {
   VLOG(1) << "Start tracing.";
 
   frames_.emplace();
+  commit_count_ = 0;
 
   exo::Surface* const surface = exo::GetShellRootSurface(window_);
   DCHECK(surface);
@@ -151,11 +152,14 @@ void ArcAppPerformanceTracingSession::OnCommit(exo::Surface* surface) {
     return;
   }
 
+  commit_count_++;
   frames_->ListenForPresent(surface);
 }
 
 void ArcAppPerformanceTracingSession::Analyze(base::TimeDelta tracing_period) {
-  if (frames_->presents().size() < 2 || tracing_period <= base::TimeDelta() ||
+  const auto& presents = frames_->presents();
+
+  if (presents.size() < 2 || tracing_period <= base::TimeDelta() ||
       DetectIdle()) {
     Stop(std::nullopt);
     return;
@@ -165,10 +169,9 @@ void ArcAppPerformanceTracingSession::Analyze(base::TimeDelta tracing_period) {
 
   double vsync_error_deviation_accumulator = 0;
   std::vector<base::TimeDelta> deltas;
-  deltas.reserve(frames_->presents().size() - 1);
+  deltas.reserve(presents.size() - 1);
 
-  for (auto fitr = frames_->presents().begin() + 1;
-       fitr != frames_->presents().end(); fitr++) {
+  for (auto fitr = presents.begin() + 1; fitr != presents.end(); fitr++) {
     const auto frame_delta = base::Microseconds(*fitr - *(fitr - 1));
     deltas.push_back(frame_delta);
 
@@ -186,18 +189,20 @@ void ArcAppPerformanceTracingSession::Analyze(base::TimeDelta tracing_period) {
     vsync_error_deviation_accumulator +=
         (vsync_error.InMicrosecondsF() * vsync_error.InMicrosecondsF());
   }
-  const double present_deviation =
+  PerfTraceResult result;
+  result.present_deviation =
       sqrt(vsync_error_deviation_accumulator / deltas.size());
 
   std::sort(deltas.begin(), deltas.end());
   // Get 10% and 90% indices.
   const size_t lower_position = deltas.size() / 10;
   const size_t upper_position = deltas.size() - 1 - lower_position;
-  const double render_quality = deltas[lower_position] / deltas[upper_position];
+  result.render_quality = deltas[lower_position] / deltas[upper_position];
 
-  const double fps = deltas.size() / tracing_period.InSecondsF();
+  result.fps = commit_count_ / tracing_period.InSecondsF();
+  result.perceived_fps = presents.size() / tracing_period.InSecondsF();
 
-  Stop(PerfTraceResult{fps, present_deviation, render_quality});
+  Stop(result);
 }
 
 }  // namespace arc

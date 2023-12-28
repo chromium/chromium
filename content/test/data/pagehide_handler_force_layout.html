@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <div id="tall" style="height: 1000em">
+    This page will force a layout on pagehide
+  </div>
+</body>
+<script>
+window.addEventListener('pagehide', function(event) {
+  // Shrink the page.
+  document.getElementById('tall').style.height = '999em';
+  // Move the scroll position.
+  window.scroll(0, 100);
+  // Read the scroll position - this forces layout.
+  console.log(window.scrollY);
+  // Notify the opening window so tests can wait for this to run.
+  window.opener.postMessage('unloaded', '*');
+});
+// Notify the opening window that the page loaded, so tests can wait for it.
+window.opener.postMessage('loaded', '*');
+</script>
+</html>

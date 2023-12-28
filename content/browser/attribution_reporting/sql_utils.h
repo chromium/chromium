@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/trigger_data_matching.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -80,16 +81,16 @@ std::string SerializeReportMetadata(
 std::string SerializeReportMetadata(
     const AttributionReport::NullAggregatableData&);
 
-[[nodiscard]] bool DeserializeReportMetadata(const std::string&,
+[[nodiscard]] bool DeserializeReportMetadata(base::span<const uint8_t>,
                                              uint32_t& trigger_data,
                                              int64_t& priority);
 
 [[nodiscard]] bool DeserializeReportMetadata(
-    const std::string&,
+    base::span<const uint8_t>,
     AttributionReport::AggregatableAttributionData&);
 
 [[nodiscard]] bool DeserializeReportMetadata(
-    const std::string&,
+    base::span<const uint8_t>,
     AttributionReport::NullAggregatableData&);
 
 }  // namespace content

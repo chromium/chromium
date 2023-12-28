@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -187,6 +188,8 @@ class ViewTransitionTest : public testing::Test,
   }
 
  protected:
+  test::TaskEnvironment task_environment;
+
   std::unique_ptr<frame_test_helpers::WebViewHelper> web_view_helper_;
 };
 

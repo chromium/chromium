@@ -2190,8 +2190,7 @@ void RenderWidgetHostViewAndroid::ProcessAckedTouchEvent(
 
 void RenderWidgetHostViewAndroid::GestureEventAck(
     const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result,
-    blink::mojom::ScrollResultDataPtr scroll_result_data) {
+    blink::mojom::InputEventResultState ack_result) {
   if (overscroll_controller_)
     overscroll_controller_->OnGestureEventAck(event, ack_result);
   mouse_wheel_phase_handler_.GestureEventAck(event, ack_result);
@@ -2203,19 +2202,16 @@ void RenderWidgetHostViewAndroid::GestureEventAck(
   StopFlingingIfNecessary(event, ack_result);
 
   if (gesture_listener_manager_)
-    gesture_listener_manager_->GestureEventAck(event, ack_result,
-                                               std::move(scroll_result_data));
+    gesture_listener_manager_->GestureEventAck(event, ack_result);
 
   HandleSwipeToMoveCursorGestureAck(event);
 }
 
 void RenderWidgetHostViewAndroid::ChildDidAckGestureEvent(
     const blink::WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result,
-    blink::mojom::ScrollResultDataPtr scroll_result_data) {
+    blink::mojom::InputEventResultState ack_result) {
   if (gesture_listener_manager_)
-    gesture_listener_manager_->GestureEventAck(event, ack_result,
-                                               std::move(scroll_result_data));
+    gesture_listener_manager_->GestureEventAck(event, ack_result);
 }
 
 blink::mojom::InputEventResultState

@@ -15,10 +15,12 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/insertion_ordered_set.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
@@ -47,10 +49,6 @@ constexpr auto enabled_by_default_mobile_only =
 #else
     base::FEATURE_DISABLED_BY_DEFAULT;
 #endif
-
-using RequestContextSet = base::EnumSet<proto::RequestContext,
-                                        proto::RequestContext_MIN,
-                                        proto::RequestContext_MAX>;
 
 // Returns whether |locale| is a supported locale for |feature|.
 //
@@ -122,25 +120,6 @@ bool IsSupportedCountryForFeature(const std::string& country_code,
         return base::EqualsCaseInsensitiveASCII(supported_country_code,
                                                 country_code);
       });
-}
-
-RequestContextSet GetAllowedContexts() {
-  RequestContextSet allowed_contexts;
-
-  if (!base::FeatureList::IsEnabled(kOptimizationGuidePersonalizedFetching)) {
-    return allowed_contexts;
-  }
-
-  std::string param = base::GetFieldTrialParamValueByFeature(
-      kOptimizationGuidePersonalizedFetching, "allowed_contexts");
-  for (const auto& context_str : base::SplitString(
-           param, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
-    proto::RequestContext context;
-    if (proto::RequestContext_Parse(context_str, &context)) {
-      allowed_contexts.Put(context);
-    }
-  }
-  return allowed_contexts;
 }
 
 }  // namespace
@@ -335,6 +314,11 @@ BASE_FEATURE(kLogOnDeviceMetricsOnStartup,
              "LogOnDeviceMetricsOnStartup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether to download the text safety classifier model.
+BASE_FEATURE(kTextSafetyClassifier,
+             "TextSafetyClassifier",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 size_t MaxRelatedSearchesCacheSize() {
   return GetFieldTrialParamByFeatureAsInt(
       kExtractRelatedSearchesFromPrefetchedZPSResponse,
@@ -453,6 +437,11 @@ bool IsModelQualityLoggingEnabled() {
 bool IsModelQualityLoggingEnabledForFeature(
     proto::ModelExecutionFeature feature_name) {
   if (!IsModelQualityLoggingEnabled()) {
+    return false;
+  }
+
+  if (feature_name ==
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST) {
     return false;
   }
 
@@ -602,14 +591,30 @@ bool ShouldPersistHintsToDisk() {
                                            "persist_hints_to_disk", true);
 }
 
-bool IsAllowedContextForPersonalizedMetadata(
-    proto::RequestContext request_context) {
-  const RequestContextSet allowed_contexts = GetAllowedContexts();
-  return allowed_contexts.Has(request_context);
-}
-
 bool ShouldEnablePersonalizedMetadata(proto::RequestContext request_context) {
-  static const RequestContextSet allowed_contexts = GetAllowedContexts();
+  if (!base::FeatureList::IsEnabled(kOptimizationGuidePersonalizedFetching)) {
+    return false;
+  }
+  using RequestContextSet =
+      base::EnumSet<proto::RequestContext, proto::RequestContext_MIN,
+                    proto::RequestContext_MAX>;
+
+  static const RequestContextSet allowed_contexts = []() -> RequestContextSet {
+    DCHECK(
+        base::FeatureList::IsEnabled(kOptimizationGuidePersonalizedFetching));
+    std::string param = base::GetFieldTrialParamValueByFeature(
+        kOptimizationGuidePersonalizedFetching, "allowed_contexts");
+    RequestContextSet allowed_contexts;
+    for (const auto& context_str : base::SplitString(
+             param, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+      proto::RequestContext context;
+      if (proto::RequestContext_Parse(context_str, &context)) {
+        allowed_contexts.Put(context);
+      }
+    }
+    return allowed_contexts;
+  }();
+
   return allowed_contexts.Has(request_context);
 }
 
@@ -997,9 +1002,57 @@ bool GetOnDeviceFallbackToServerOnDisconnect() {
   return kOnDeviceModelFallbackToServerOnDisconnect.Get();
 }
 
+bool IsPerformanceClassCompatibleWithOnDeviceModel(
+    OnDeviceModelPerformanceClass performance_class) {
+  std::string perf_classes_string = base::GetFieldTrialParamValueByFeature(
+      kOptimizationGuideOnDeviceModel,
+      "compatible_on_device_performance_classes");
+  if (perf_classes_string.empty()) {
+    perf_classes_string = "3,4,5,6";
+  }
+  std::vector<std::string_view> perf_classes_list = base::SplitStringPiece(
+      perf_classes_string, ",", base::WhitespaceHandling::TRIM_WHITESPACE,
+      base::SplitResult::SPLIT_WANT_NONEMPTY);
+  return base::Contains(perf_classes_list,
+                        base::ToString(static_cast<int>(performance_class)));
+}
+
 bool CanLaunchOnDeviceModelService() {
   return base::FeatureList::IsEnabled(kOptimizationGuideOnDeviceModel) ||
          base::FeatureList::IsEnabled(kLogOnDeviceMetricsOnStartup);
+}
+
+bool IsOnDeviceExecutionEnabled() {
+  return base::FeatureList::IsEnabled(
+             features::kOptimizationGuideModelExecution) &&
+         base::FeatureList::IsEnabled(kOptimizationGuideOnDeviceModel) &&
+         base::FeatureList::IsEnabled(kLogOnDeviceMetricsOnStartup);
+}
+
+base::TimeDelta GetOnDeviceModelRetentionTime() {
+  return base::GetFieldTrialParamByFeatureAsTimeDelta(
+      kOptimizationGuideOnDeviceModel, "on_device_model_retention_time",
+      base::Days(30));
+}
+
+bool GetOnDeviceModelRetractUnsafeContent() {
+  static const base::FeatureParam<bool>
+      kOnDeviceModelShouldRetractUnsafeContent{
+          &kOptimizationGuideOnDeviceModel, "on_device_retract_unsafe_content",
+          false};
+  return kOnDeviceModelShouldRetractUnsafeContent.Get();
+}
+
+bool GetOnDeviceModelMustUseSafetyModel() {
+  static const base::FeatureParam<bool>
+      kOnDeviceModelShouldRetractUnsafeContent{
+          &kOptimizationGuideOnDeviceModel, "on_device_must_use_safety_model",
+          false};
+  return kOnDeviceModelShouldRetractUnsafeContent.Get();
+}
+
+bool ShouldDownloadTextSafetyClassifierModel() {
+  return base::FeatureList::IsEnabled(kTextSafetyClassifier);
 }
 
 }  // namespace features

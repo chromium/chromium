@@ -18,11 +18,11 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/triggers/suspicious_site_trigger.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
@@ -58,7 +58,7 @@ void CreateSafeBrowsingUserInteractionObserver(
     bool is_main_frame,
     scoped_refptr<SafeBrowsingUIManager> ui_manager) {
   content::WebContents* web_contents =
-      security_interstitials::GetWebContentsForResource(resource);
+      unsafe_resource_util::GetWebContentsForResource(resource);
   // Don't delay the interstitial for prerender pages.
   if (!web_contents ||
       prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(

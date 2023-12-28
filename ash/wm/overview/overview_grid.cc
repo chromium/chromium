@@ -8,7 +8,7 @@
 #include <string>
 #include <utility>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/metrics/histogram_macros.h"
@@ -60,6 +60,7 @@
 #include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_properties.h"
+#include "ash/wm/window_restore/pine_contents_view.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/workspace/backdrop_controller.h"
@@ -68,6 +69,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
@@ -268,7 +270,7 @@ class ShutdownAnimationMetricsTrackerObserver : public OverviewObserver,
   }
 
  private:
-  raw_ptr<ui::Compositor, ExperimentalAsh> compositor_;
+  raw_ptr<ui::Compositor> compositor_;
   OverviewExitMetricsTracker metrics_tracker_;
 };
 
@@ -368,7 +370,7 @@ aura::Window::Windows GetWindowsAssociatedWithDragging(
 // Returns true if all the `windows` associated with the drag are not null and
 // have parent.
 bool AreDraggedWindowsValid(const aura::Window::Windows& windows) {
-  for (const auto* window : windows) {
+  for (const aura::Window* window : windows) {
     if (!window || !window->parent()) {
       return false;
     }
@@ -379,7 +381,7 @@ bool AreDraggedWindowsValid(const aura::Window::Windows& windows) {
 
 // Returns true if all the `windows` associated with the drag are maximized.
 bool AreAllWindowsMaximized(const aura::Window::Windows& windows) {
-  for (const auto* window : windows) {
+  for (const aura::Window* window : windows) {
     if (!WindowState::Get(window)->IsMaximized()) {
       return false;
     }
@@ -391,7 +393,7 @@ bool AreAllWindowsMaximized(const aura::Window::Windows& windows) {
 // Returns the total size of the `windows` associated with the drag.
 gfx::Size GetTotalDraggedWindowsSize(const aura::Window::Windows& windows) {
   gfx::Rect total_bounds;
-  for (auto* win : windows) {
+  for (aura::Window* win : windows) {
     total_bounds.Union(win->bounds());
   }
 
@@ -404,7 +406,7 @@ gfx::Size GetTotalDraggedWindowsSize(const aura::Window::Windows& windows) {
 gfx::SizeF GetTotalUnionSizeIncludingTransients(
     const aura::Window::Windows& windows) {
   gfx::RectF total_bounds;
-  for (auto* win : windows) {
+  for (aura::Window* win : windows) {
     total_bounds.Union(GetUnionScreenBoundsForWindow(win));
   }
 
@@ -421,7 +423,7 @@ gfx::SizeF GetTotalUnionSizeIncludingTransients(
 // Returns the maximum of the `aura::client::kTopViewInset` among the `windows`.
 int GetTopViewInset(const aura::Window::Windows& windows) {
   int inset = 0;
-  for (auto* win : windows) {
+  for (aura::Window* win : windows) {
     const int win_inset = win->GetProperty(aura::client::kTopViewInset);
     inset = std::max(inset, win_inset);
   }
@@ -473,9 +475,10 @@ bool ShouldImmediatelyInitDeskBar(OverviewGrid* grid) {
 
 }  // namespace
 
-OverviewGrid::OverviewGrid(aura::Window* root_window,
-                           const std::vector<aura::Window*>& windows,
-                           OverviewSession* overview_session)
+OverviewGrid::OverviewGrid(
+    aura::Window* root_window,
+    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows,
+    OverviewSession* overview_session)
     : root_window_(root_window),
       overview_session_(overview_session),
       split_view_drag_indicators_(
@@ -485,7 +488,7 @@ OverviewGrid::OverviewGrid(aura::Window* root_window,
       bounds_(GetGridBoundsInScreen(root_window)) {
   TRACE_EVENT0("ui", "OverviewGrid::OverviewGrid");
 
-  for (auto* window : windows) {
+  for (aura::Window* window : windows) {
     if (window->GetRootWindow() != root_window)
       continue;
 
@@ -588,6 +591,13 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
 void OverviewGrid::PrepareForOverview() {
   if (ShouldImmediatelyInitDeskBar(this)) {
     MaybeInitDesksWidget();
+  }
+
+  if (root_window_ == Shell::GetPrimaryRootWindow() &&
+      overview_session_->enter_exit_overview_type() ==
+          OverviewEnterExitType::kPine) {
+    pine_widget_ = PineContentsView::Create(root_window_);
+    pine_widget_->ShowInactive();
   }
 
   for (const auto& item : item_list_) {
@@ -906,7 +916,6 @@ void OverviewGrid::RemoveItem(OverviewItemBase* overview_item,
             ? std::make_optional(
                   split_view_drag_indicators_->current_window_dragging_state())
             : std::nullopt,
-        /*divider_changed=*/false,
         /*account_for_hotseat=*/true);
     SetBoundsAndUpdatePositions(grid_bounds, ignored_items, /*animate=*/true);
   }
@@ -997,7 +1006,7 @@ void OverviewGrid::RearrangeDuringDrag(
   // Update the grid's bounds.
   const gfx::Rect wanted_grid_bounds = GetGridBoundsInScreen(
       root_window_, std::make_optional(window_dragging_state),
-      /*divider_changed=*/false, /*account_for_hotseat=*/true);
+      /*account_for_hotseat=*/true);
   if (bounds_ != wanted_grid_bounds) {
     base::flat_set<OverviewItemBase*> ignored_items;
     if (dragged_item)
@@ -1567,7 +1576,7 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
 
   auto move_windows_to_target_desk = [&](Desk* target_desk) -> bool {
     bool did_any_window_move = false;
-    for (auto* dragged_window : dragged_item->GetWindows()) {
+    for (aura::Window* dragged_window : dragged_item->GetWindows()) {
       if (!desks_controller->MoveWindowFromActiveDeskTo(
               dragged_window, target_desk, root_window_,
               DesksMoveWindowFromActiveDeskSource::kDragAndDrop)) {
@@ -1579,7 +1588,7 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
     return true;
   };
 
-  for (auto* mini_view : desks_bar_view_->mini_views()) {
+  for (ash::DeskMiniView* mini_view : desks_bar_view_->mini_views()) {
     if (!mini_view->IsPointOnMiniView(screen_location))
       continue;
 
@@ -1951,7 +1960,7 @@ bool OverviewGrid::IsShowingSavedDeskLibrary() const {
 
 bool OverviewGrid::IsSavedDeskNameBeingModified() const {
   if (const SavedDeskLibraryView* library_view = GetSavedDeskLibraryView()) {
-    for (auto* grid_view : library_view->grid_views()) {
+    for (ash::SavedDeskGridView* grid_view : library_view->grid_views()) {
       if (grid_view->IsSavedDeskNameBeingModified()) {
         return true;
       }
@@ -1972,6 +1981,12 @@ void OverviewGrid::UpdateNoWindowsWidget(bool no_items,
           ? !RootWindowController::ForWindow(root_window())
                  ->split_view_overview_session()
           : !no_items || IsShowingSavedDeskLibrary()) {
+    no_windows_widget_.reset();
+    return;
+  }
+
+  if (overview_session_->enter_exit_overview_type() ==
+      OverviewEnterExitType::kPine) {
     no_windows_widget_.reset();
     return;
   }
@@ -2314,7 +2329,6 @@ void OverviewGrid::OnSplitViewDividerPositionChanged() {
   SetBoundsAndUpdatePositions(
       GetGridBoundsInScreen(root_window_,
                             /*window_dragging_state=*/std::nullopt,
-                            /*divider_changed=*/true,
                             /*account_for_hotseat=*/true),
       /*ignored_items=*/{}, /*animate=*/false);
 }
@@ -2778,7 +2792,7 @@ void OverviewGrid::OnSaveDeskButtonContainerFadedOut() {
 }
 
 void OverviewGrid::UpdateNumSavedDeskUnsupportedWindows(
-    const std::vector<aura::Window*>& windows,
+    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows,
     bool increment) {
   if (!saved_desk_util::IsSavedDesksEnabled())
     return;
@@ -2787,7 +2801,7 @@ void OverviewGrid::UpdateNumSavedDeskUnsupportedWindows(
 
   // Track the number of unsupported and incognito windows. The saved desk
   // buttons are disabled if there are no supported or non-incognito windows.
-  for (auto* window : windows) {
+  for (aura::Window* window : windows) {
     if (IsUnsupportedWindow(window)) {
       num_unsupported_windows_ += addend;
     } else if (IsIncognitoWindow(window)) {

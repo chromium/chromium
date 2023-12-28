@@ -24,10 +24,6 @@ std::string BuildKpEntityTitleText(const std::string& average_score,
 // Build title text for Quick Answers translation result.
 std::string BuildTranslationTitleText(const IntentInfo& intent_info);
 
-// Build title text for Quick Answers translation result.
-std::string BuildTranslationTitleText(const std::string& query_text,
-                                      const std::string& locale_name);
-
 // Build display text for Quick Answers unit conversion result.
 std::string BuildUnitConversionResultText(const std::string& result_value,
                                           const std::string& name);

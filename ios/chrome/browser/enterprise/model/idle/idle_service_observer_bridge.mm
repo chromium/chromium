@@ -20,14 +20,21 @@ void IdleServiceObserverBridge::OnIdleTimeoutInForeground() {
   }
 }
 
-void IdleServiceObserverBridge::OnClearDataOnStartup() {
-  if ([observer_ respondsToSelector:@selector(onClearDataOnStartup)]) {
-    [observer_ onClearDataOnStartup];
+void IdleServiceObserverBridge::OnIdleTimeoutOnStartup() {
+  if ([observer_ respondsToSelector:@selector(onIdleTimeoutOnStartup)]) {
+    [observer_ onIdleTimeoutOnStartup];
   }
 }
 
 void IdleServiceObserverBridge::OnIdleTimeoutActionsCompleted() {
   if ([observer_ respondsToSelector:@selector(onIdleTimeoutActionsCompleted)]) {
     [observer_ onIdleTimeoutActionsCompleted];
+  }
+}
+
+void IdleServiceObserverBridge::OnApplicationWillEnterBackground() {
+  if ([observer_
+          respondsToSelector:@selector(onApplicationWillEnterBackground)]) {
+    [observer_ onApplicationWillEnterBackground];
   }
 }

@@ -17,8 +17,7 @@
 
 class Profile;
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 class ProvidedFileSystemInterface;
 class ProviderId;
@@ -68,7 +67,6 @@ class ProviderInterface {
                             RequestMountCallback callback) = 0;
 };
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_PROVIDER_INTERFACE_H_

@@ -18,9 +18,9 @@ class Checkbox;
 
 // A dialog box that confirms that the user wants to enable caret browsing.
 class CaretBrowsingDialogDelegate : public views::DialogDelegateView {
- public:
-  METADATA_HEADER(CaretBrowsingDialogDelegate);
+  METADATA_HEADER(CaretBrowsingDialogDelegate, views::DialogDelegateView)
 
+ public:
   static void Show(gfx::NativeWindow parent_window, PrefService* pref_service);
 
  private:

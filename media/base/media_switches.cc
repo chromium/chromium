@@ -69,6 +69,28 @@ const char kAlsaOutputDevice[] = "alsa-output-device";
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_FREEBSD) || BUILDFLAG(IS_SOLARIS)
 
+#if BUILDFLAG(IS_WIN)
+// Use exclusive mode audio streaming for Windows Vista and higher.
+// Leads to lower latencies for audio streams which uses the
+// AudioParameters::AUDIO_PCM_LOW_LATENCY audio path.
+// See http://msdn.microsoft.com/en-us/library/windows/desktop/dd370844.aspx
+// for details.
+const char kEnableExclusiveAudio[] = "enable-exclusive-audio";
+
+// Use Windows WaveOut/In audio API even if Core Audio is supported.
+const char kForceWaveAudio[] = "force-wave-audio";
+
+// Instead of always using the hardware channel layout, check if a driver
+// supports the source channel layout.  Avoids outputting empty channels and
+// permits drivers to enable stereo to multichannel expansion.  Kept behind a
+// flag since some drivers lie about supported layouts and hang when used.  See
+// http://crbug.com/259165 for more details.
+const char kTrySupportedChannelLayouts[] = "try-supported-channel-layouts";
+
+// Number of buffers to use for WaveOut.
+const char kWaveOutBuffers[] = "waveout-buffers";
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_FUCHSIA)
 // Enables protected buffers for encrypted video streams.
 const char kEnableProtectedVideoBuffers[] = "enable-protected-video-buffers";
@@ -144,11 +166,6 @@ const char kDisableAcceleratedMjpegDecode[] =
 // Mutes audio sent to the audio device so it is not audible during
 // automated testing.
 const char kMuteAudio[] = "mute-audio";
-
-// Allows clients to override the threshold for when the media renderer will
-// declare the underflow state for the video stream when audio is present.
-// TODO(dalecurtis): Remove once experiments for http://crbug.com/470940 finish.
-const char kVideoUnderflowThresholdMs[] = "video-underflow-threshold-ms";
 
 // Disables the new rendering algorithm for webrtc, which is designed to improve
 // the rendering smoothness.
@@ -243,6 +260,14 @@ const char kUserGestureRequiredPolicy[] = "user-gesture-required";
 // This provides a mechanism during testing to lock the decoder framerate
 // to a specific value.
 const char kHardwareVideoDecodeFrameRate[] = "hardware-video-decode-framerate";
+#endif
+
+#if BUILDFLAG(USE_V4L2_CODEC)
+// This is needed for V4L2 testing using VISL (virtual driver) on cros VM with
+// arm64-generic-vm. Minigbm buffer allocation is done using dumb driver with
+// vkms.
+const char kEnablePrimaryNodeAccessForVkmsTesting[] =
+    "enable-primary-node-access-for-vkms-testing";
 #endif
 
 const char kCastStreamingForceDisableHardwareH264[] =
@@ -341,7 +366,19 @@ BASE_FEATURE(kMacLoopbackAudioForCast,
 BASE_FEATURE(kMacLoopbackAudioForScreenShare,
              "MacLoopbackAudioForScreenShare",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
+#endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_LINUX)
+// Enables system audio mirroring using pulseaudio.
+BASE_FEATURE(kPulseaudioLoopbackForCast,
+             "PulseaudioLoopbackForCast",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables system audio sharing using pulseaudio.
+BASE_FEATURE(kPulseaudioLoopbackForScreenShare,
+             "PulseaudioLoopbackForScreenShare",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_LINUX)
 
 // When enabled, MediaCapabilities will check with GPU Video Accelerator
 // Factories to determine isPowerEfficient = true/false.
@@ -413,7 +450,7 @@ BASE_FEATURE(kCdmProcessSiteIsolation,
 // Enables the "Save Video Frame As" context menu item.
 BASE_FEATURE(kContextMenuSaveVideoFrameAs,
              "ContextMenuSaveVideoFrameAs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the "Search Video Frame with <Search Provider>" context menu item.
 BASE_FEATURE(kContextMenuSearchForVideoFrame,

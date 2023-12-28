@@ -106,10 +106,10 @@ enum class RawPtrTraits : unsigned {
   // Don't use directly, use AllowPtrArithmetic instead.
   kAllowPtrArithmetic = (1 << 3),
 
-  // This pointer is evaluated by a separate, Ash-related experiment.
+  // This pointer has BRP disabled for Vector-related raw_ptrs.
   //
-  // Don't use directly, use ExperimentalAsh instead.
-  kExperimentalAsh = (1 << 4),
+  // Don't use directly, use VectorExperimental instead.
+  kVectorExperimental = (1 << 4),
 
   // Uninitialized pointers are discouraged and disabled by default.
   //
@@ -132,8 +132,8 @@ enum class RawPtrTraits : unsigned {
   kDummyForTest = (1 << 11),
 
   kAllMask = kMayDangle | kDisableHooks | kAllowPtrArithmetic |
-             kExperimentalAsh | kAllowUninitialized | kUseCountingImplForTest |
-             kDummyForTest,
+             kVectorExperimental | kAllowUninitialized |
+             kUseCountingImplForTest | kDummyForTest,
 };
 // Template specialization to use |PA_DEFINE_OPERATORS_FOR_FLAGS| without
 // |kMaxValue| declaration.
@@ -227,9 +227,9 @@ using UnderlyingImplForTraits = internal::RawPtrBackupRefImpl<
     /*AllowDangling=*/partition_alloc::internal::ContainsFlags(
         Traits,
         RawPtrTraits::kMayDangle),
-    /*ExperimentalAsh=*/partition_alloc::internal::ContainsFlags(
+    /*VectorExperimental=*/partition_alloc::internal::ContainsFlags(
         Traits,
-        RawPtrTraits::kExperimentalAsh)>;
+        RawPtrTraits::kVectorExperimental)>;
 
 #elif BUILDFLAG(USE_ASAN_UNOWNED_PTR)
 template <RawPtrTraits Traits>
@@ -663,10 +663,9 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
                 !std::is_void_v<typename std::remove_cv<U>::type> &&
                 partition_alloc::internal::is_offset_type<Z>>>
   U& operator[](Z delta_elems) const {
-    static_assert(
-        raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
-        "cannot index raw_ptr unless AllowPtrArithmetic trait is present.");
-    return *Impl::Advance(wrapped_ptr_, delta_elems);
+    // Don't check for AllowPtrArithmetic here, as operator+ already does that,
+    // and we'd get double errors.
+    return *(*this + delta_elems).GetForDereference();
   }
 
   // Do not disable operator+() and operator-().
@@ -680,6 +679,8 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   template <typename Z>
   PA_ALWAYS_INLINE friend constexpr raw_ptr operator+(const raw_ptr& p,
                                                       Z delta_elems) {
+    // Don't check for AllowPtrArithmetic here, as operator+= already does that,
+    // and we'd get double errors.
     raw_ptr result = p;
     return result += delta_elems;
   }
@@ -691,20 +692,31 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   template <typename Z>
   PA_ALWAYS_INLINE friend constexpr raw_ptr operator-(const raw_ptr& p,
                                                       Z delta_elems) {
+    // Don't check for AllowPtrArithmetic here, as operator-= already does that,
+    // and we'd get double errors.
     raw_ptr result = p;
     return result -= delta_elems;
   }
 
   PA_ALWAYS_INLINE friend constexpr ptrdiff_t operator-(const raw_ptr& p1,
                                                         const raw_ptr& p2) {
+    static_assert(
+        raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
+        "cannot subtract raw_ptrs unless AllowPtrArithmetic trait is present.");
     return Impl::GetDeltaElems(p1.wrapped_ptr_, p2.wrapped_ptr_);
   }
   PA_ALWAYS_INLINE friend constexpr ptrdiff_t operator-(T* p1,
                                                         const raw_ptr& p2) {
+    static_assert(
+        raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
+        "cannot subtract raw_ptrs unless AllowPtrArithmetic trait is present.");
     return Impl::GetDeltaElems(p1, p2.wrapped_ptr_);
   }
   PA_ALWAYS_INLINE friend constexpr ptrdiff_t operator-(const raw_ptr& p1,
                                                         T* p2) {
+    static_assert(
+        raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
+        "cannot subtract raw_ptrs unless AllowPtrArithmetic trait is present.");
     return Impl::GetDeltaElems(p1.wrapped_ptr_, p2);
   }
 
@@ -965,14 +977,6 @@ struct RemovePointer<raw_ptr<T, Traits>> {
 template <typename T>
 using RemovePointerT = typename RemovePointer<T>::type;
 
-struct RawPtrGlobalSettings {
-  static void EnableExperimentalAsh() {
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    internal::BackupRefPtrGlobalSettings::EnableExperimentalAsh();
-#endif
-  }
-};
-
 }  // namespace base
 
 using base::raw_ptr;
@@ -1013,14 +1017,9 @@ constexpr auto AcrossTasksDanglingUntriaged = base::RawPtrTraits::kMayDangle;
 // instead of the raw_ptr.
 constexpr auto AllowPtrArithmetic = base::RawPtrTraits::kAllowPtrArithmetic;
 
-// Temporary flag for `raw_ptr` / `raw_ref`. This is used by finch experiments
-// to differentiate pointers added recently for the ChromeOS ash rewrite.
-//
-// See launch plan:
-// https://docs.google.com/document/d/105OVhNl-2lrfWElQSk5BXYv-nLynfxUrbC4l8cZ0CoU/edit
-//
-// This is not meant to be added manually. You can ignore this flag.
-constexpr auto ExperimentalAsh = base::RawPtrTraits::kExperimentalAsh;
+// Does nothing.
+// TODO(bartekn): Remove once no longer referenced.
+constexpr auto ExperimentalAsh = base::RawPtrTraits::kEmpty;
 
 // The use of uninitialized pointers is strongly discouraged. raw_ptrs will
 // be initialized to nullptr by default in all cases when building against
@@ -1049,6 +1048,21 @@ constexpr auto LeakedDanglingUntriaged = base::RawPtrTraits::kMayDangle;
 //
 // DO NOT ADD new occurrences of this.
 constexpr auto ExperimentalRenderer = base::RawPtrTraits::kMayDangle;
+
+// Temporary introduced alias in the context of rewriting std::vector<T*> into
+// std::vector<raw_ptr<T>> and in order to temporarily bypass the dangling ptr
+// checks on the CQ. This alias will be removed gradually after the cl lands and
+// will be replaced by DanglingUntriaged where necessary.
+// Update: The alias now temporarily disables BRP. This is due to performance
+// issues. BRP will be re-enabled once the issues are identified and handled.
+constexpr inline auto VectorExperimental =
+    base::RawPtrTraits::kVectorExperimental;
+
+// Temporary workaround needed when using vector<raw_ptr<T, VectorExperimental>
+// in Mocked method signatures as the macros don't allow commas within.
+template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
+using vector_experimental_raw_ptr =
+    base::raw_ptr<T, Traits | VectorExperimental>;
 
 // Public verson used in callbacks arguments when it is known that they might
 // receive dangling pointers. In any other cases, please

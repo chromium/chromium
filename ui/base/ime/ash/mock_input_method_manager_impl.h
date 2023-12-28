@@ -44,7 +44,7 @@ class MockInputMethodManagerImpl : public MockInputMethodManager {
     ~State() override;
 
    private:
-    const raw_ptr<MockInputMethodManager, ExperimentalAsh> manager_;
+    const raw_ptr<MockInputMethodManager> manager_;
   };
 
   MockInputMethodManagerImpl();

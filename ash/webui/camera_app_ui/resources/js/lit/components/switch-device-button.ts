@@ -26,7 +26,6 @@ export class SwitchDeviceButton extends LitElement {
         align-items: center;
         border-radius: 50%;
         display: flex;
-        flex-shrink: 0;
         height: var(--big-icon);
         justify-content: center;
         outline-offset: 8px;

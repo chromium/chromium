@@ -146,6 +146,34 @@ TEST(UnguessableTokenTest, VerifyDeserializeZeroes) {
   EXPECT_FALSE(token.has_value());
 }
 
+TEST(UnguessableTokenTest, VerifyDeserializeFromString) {
+  auto expected = UnguessableToken::CreateForTesting(1, 2);
+  auto actual = UnguessableToken::DeserializeFromString(
+      "00000000000000010000000000000002");
+  EXPECT_TRUE(actual.has_value());
+  EXPECT_TRUE(actual.value() == expected);
+}
+
+TEST(UnguessableTokenTest, VerifyDeserializeFromInvalidString) {
+  const char* invalid_representations[] = {
+      // Not a hex string representing 128 bits.
+      "1234",
+      // A string with valid length of 128 bits but 'X' is not a hex value.
+      "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+      // A invalid hex string because of the lower case letters.
+      "0123456789abcdef0123456789abcdef",
+      // A zeroed out token is not a valid `UnguessableToken`.
+      "00000000000000000000000000000000"};
+  for (auto* invalid_representation : invalid_representations) {
+    auto actual =
+        UnguessableToken::DeserializeFromString(invalid_representation);
+    EXPECT_FALSE(actual.has_value())
+        << "'" << invalid_representation
+        << "' should not be deserialized to an UnguessableToken.";
+    ;
+  }
+}
+
 TEST(UnguessableTokenTest, VerifySmallerThanOperator) {
   // Deserialize is used for testing purposes.
   // Use UnguessableToken::Create() in production code instead.

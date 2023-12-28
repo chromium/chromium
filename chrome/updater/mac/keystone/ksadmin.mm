@@ -401,8 +401,7 @@ void KSAdminApp::Register() {
   const std::string brand_key = SwitchValue(kCommandBrandKey);
   if (!brand_key.empty() &&
       brand_key != base::SysNSStringToUTF8(kCRUTicketBrandKey)) {
-    PrintUsage("Unsupported brand key.");
-    return;
+    LOG(WARNING) << "Ignoring unsupported brand key (use KSBrandID).";
   }
 
   const std::string tag_key = SwitchValue(kCommandTagKey);
@@ -740,9 +739,10 @@ int KSAdminAppMain(int argc, const char* argv[]) {
   // base::CommandLine may reorder arguments and switches, this is not the exact
   // command line.
   VLOG(0) << base::CommandLine::ForCurrentProcess()->GetCommandLineString();
+  VLOG(0) << "ksadmin version: " << kUpdaterVersion;
 
   int exit = base::MakeRefCounted<KSAdminApp>(command_line)->Run();
-  VLOG_IF(0, exit != 0) << "Exiting " << exit;
+  VLOG(0) << "Exiting " << exit;
   return exit;
 }
 

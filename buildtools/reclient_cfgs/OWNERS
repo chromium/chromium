@@ -1,14 +1,2 @@
-# Chrome Browser Build team
-jwata@google.com
-philwo@google.com
-richardwa@google.com
-tikuta@chromium.org
-ukai@google.com
-
-# Foundry-X team
-abdelaal@chromium.org
-andusyu@google.com
-banisingh@google.com
-bentekkie@google.com
-kousikk@google.com
-msavigny@google.com
+include ../../infra/config/groups/chrome-build/OWNERS
+include ../../infra/config/groups/foundry-x/OWNERS

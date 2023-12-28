@@ -212,7 +212,7 @@ class SplitViewDragIndicators::RotatedImageLabelView
   // left/top one.
   const bool is_right_or_bottom_;
 
-  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
 };
 
 BEGIN_METADATA(SplitViewDragIndicators,
@@ -260,7 +260,12 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
       dragged_window_->RemoveObserver(this);
   }
 
-  SplitViewHighlightView* left_highlight_view() { return left_highlight_view_; }
+  const SplitViewHighlightView* left_highlight_view() const {
+    return left_highlight_view_;
+  }
+  const SplitViewHighlightView* right_highlight_view() const {
+    return right_highlight_view_;
+  }
 
   // Called by parent widget when the state machine changes. Handles setting the
   // opacity and bounds of the highlights and labels.
@@ -605,18 +610,16 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
     right_rotated_view_->layer()->SetTransform(right_rotation);
   }
 
-  raw_ptr<SplitViewHighlightView, ExperimentalAsh> left_highlight_view_ =
-      nullptr;
-  raw_ptr<SplitViewHighlightView, ExperimentalAsh> right_highlight_view_ =
-      nullptr;
-  raw_ptr<RotatedImageLabelView, ExperimentalAsh> left_rotated_view_ = nullptr;
-  raw_ptr<RotatedImageLabelView, ExperimentalAsh> right_rotated_view_ = nullptr;
+  raw_ptr<SplitViewHighlightView> left_highlight_view_ = nullptr;
+  raw_ptr<SplitViewHighlightView> right_highlight_view_ = nullptr;
+  raw_ptr<RotatedImageLabelView> left_rotated_view_ = nullptr;
+  raw_ptr<RotatedImageLabelView> right_rotated_view_ = nullptr;
 
   WindowDraggingState window_dragging_state_ = WindowDraggingState::kNoDrag;
   WindowDraggingState previous_window_dragging_state_ =
       WindowDraggingState::kNoDrag;
 
-  raw_ptr<aura::Window, ExperimentalAsh> dragged_window_ = nullptr;
+  raw_ptr<aura::Window> dragged_window_ = nullptr;
 };
 
 BEGIN_METADATA(SplitViewDragIndicators,
@@ -676,14 +679,19 @@ void SplitViewDragIndicators::OnDisplayBoundsChanged() {
   widget_->SetBounds(GetWorkAreaBoundsNoOverlapWithShelf(root_window));
 }
 
+gfx::Rect SplitViewDragIndicators::GetLeftHighlightViewBounds() const {
+  return indicators_view_->left_highlight_view()->bounds();
+}
+
+gfx::Rect SplitViewDragIndicators::GetRightHighlightViewBoundsForTesting()
+    const {
+  return indicators_view_->right_highlight_view()->bounds();
+}
+
 bool SplitViewDragIndicators::GetIndicatorTypeVisibilityForTesting(
     IndicatorType type) const {
   return indicators_view_->GetViewForIndicatorType(type)->layer()->opacity() >
          0.f;
-}
-
-gfx::Rect SplitViewDragIndicators::GetLeftHighlightViewBounds() const {
-  return indicators_view_->left_highlight_view()->bounds();
 }
 
 }  // namespace ash

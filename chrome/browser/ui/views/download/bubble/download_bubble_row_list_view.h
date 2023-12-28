@@ -23,9 +23,9 @@ class DownloadBubbleNavigationHandler;
 
 class DownloadBubbleRowListView : public views::FlexLayoutView,
                                   public DownloadBubbleRowListViewInfoObserver {
- public:
-  METADATA_HEADER(DownloadBubbleRowListView);
+  METADATA_HEADER(DownloadBubbleRowListView, views::FlexLayoutView)
 
+ public:
   DownloadBubbleRowListView(
       base::WeakPtr<Browser> browser,
       base::WeakPtr<DownloadBubbleUIController> bubble_controller,

@@ -47,7 +47,7 @@ class LoginTestWidgetDelegate : public views::WidgetDelegate {
   bool CanActivate() const override { return true; }
 
  private:
-  raw_ptr<views::Widget, ExperimentalAsh> widget_;
+  raw_ptr<views::Widget> widget_;
 };
 
 }  // namespace

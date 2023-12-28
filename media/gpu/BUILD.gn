@@ -11,6 +11,7 @@ import("//gpu/vulkan/features.gni")
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
 import("//testing/test.gni")
+import("//third_party/libgav1/options.gni")
 import("//tools/generate_stubs/rules.gni")
 
 buildflag_header("buildflags") {
@@ -334,6 +335,10 @@ source_set("common") {
     "h264_decoder.h",
     "h264_dpb.cc",
     "h264_dpb.h",
+    "h264_rate_control_util.cc",
+    "h264_rate_control_util.h",
+    "h264_rate_controller.cc",
+    "h264_rate_controller.h",
     "hrd_buffer.cc",
     "hrd_buffer.h",
     "macros.h",
@@ -395,7 +400,9 @@ source_set("common") {
       "//third_party/libvpx:libvpxrc",
     ]
   }
-  if (use_libgav1_parser) {
+
+  if (use_av1_hw_decoder) {
+    assert(use_libgav1_parser)
     sources += [
       "av1_decoder.cc",
       "av1_decoder.h",
@@ -606,6 +613,8 @@ source_set("unit_tests") {
     "exponential_moving_average_unittest.cc",
     "frame_size_estimator_unittest.cc",
     "h264_decoder_unittest.cc",
+    "h264_rate_control_util_unittest.cc",
+    "h264_rate_controller_unittest.cc",
     "hrd_buffer_unittest.cc",
   ]
   if (enable_hevc_parser_and_hw_decoder) {
@@ -633,7 +642,7 @@ source_set("unit_tests") {
     sources += [ "vp8_decoder_unittest.cc" ]
   }
 
-  if (use_libgav1_parser && media_use_ffmpeg) {
+  if (use_av1_hw_decoder && media_use_ffmpeg) {
     sources += [ "av1_decoder_unittest.cc" ]
     deps += [
       "//build:chromeos_buildflags",
@@ -677,7 +686,7 @@ if (enable_hevc_parser_and_hw_decoder) {
   }
 }
 
-if (use_libgav1_parser) {
+if (use_av1_hw_decoder) {
   fuzzer_test("media_av1_decoder_fuzzer") {
     sources = [ "av1_decoder_fuzzertest.cc" ]
     deps = [

@@ -4,7 +4,7 @@
 
 source_set("context_menu") {
   sources = [
-    "context_menu_configuration_provider+private.h",
+    "context_menu_configuration_provider+Testing.h",
     "context_menu_configuration_provider.h",
     "context_menu_configuration_provider.mm",
   ]
@@ -14,10 +14,10 @@ source_set("context_menu") {
     "//components/search_engines",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/favicon",
-    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/photos/model:metrics",
     "//ios/chrome/browser/photos/model:photos_availability",
-    "//ios/chrome/browser/policy:policy_util",
+    "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/search_engines/model:search_engines_util",
@@ -67,7 +67,10 @@ source_set("context_menu_ui") {
 
 source_set("unit_tests") {
   testonly = true
-
+  sources = [
+    "context_menu_configuration_provider_unittest.mm",
+    "context_menu_utils_unittest.mm",
+  ]
   deps = [
     ":context_menu",
     ":context_menu_ui",
@@ -75,7 +78,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/url_formatter",
-    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/web_state_list",
@@ -93,11 +95,6 @@ source_set("unit_tests") {
     "//net",
     "//testing/gtest",
     "//third_party/ocmock",
-  ]
-
-  sources = [
-    "context_menu_configuration_provider_unittest.mm",
-    "context_menu_utils_unittest.mm",
   ]
 }
 

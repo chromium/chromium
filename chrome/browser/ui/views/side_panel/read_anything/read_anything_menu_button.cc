@@ -89,6 +89,6 @@ void ReadAnythingMenuButton::SetDropdownColorIds(ui::ColorId background_color,
   menu_model_->SetSelectedBackgroundColorId(selected_color);
 }
 
-BEGIN_METADATA(ReadAnythingMenuButton, MenuButton)
+BEGIN_METADATA(ReadAnythingMenuButton)
 ADD_PROPERTY_METADATA(ReadAnythingMenuModel*, MenuModel)
 END_METADATA

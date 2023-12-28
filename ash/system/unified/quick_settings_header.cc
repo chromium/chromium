@@ -170,10 +170,10 @@ class QuickSettingsHeader::ManagedStateView : public views::Button {
   }
 
   // Owned by views hierarchy.
-  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> image_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
+  raw_ptr<views::ImageView> image_ = nullptr;
 
-  const raw_ref<const gfx::VectorIcon, ExperimentalAsh> icon_;
+  const raw_ref<const gfx::VectorIcon> icon_;
 };
 
 BEGIN_METADATA(QuickSettingsHeader, ManagedStateView, views::Button)

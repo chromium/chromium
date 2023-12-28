@@ -66,7 +66,7 @@ class MEDIA_GPU_EXPORT LocalGpuMemoryBufferManager
                                  gfx::BufferUsage usage);
 
  private:
-  raw_ptr<gbm_device, ExperimentalAsh> gbm_device_;
+  raw_ptr<gbm_device> gbm_device_;
 };
 
 }  // namespace media

@@ -13,7 +13,6 @@
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
@@ -114,6 +113,10 @@ class PasswordStoreProxyBackendBaseTest : public testing::Test {
         prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
     prefs_.registry()->RegisterBooleanPref(
         prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
+    prefs_.registry()->RegisterIntegerPref(
+        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+        static_cast<int>(
+            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
   }
 
   void SetUp() override {
@@ -157,7 +160,6 @@ class PasswordStoreProxyBackendBaseTest : public testing::Test {
   StrictMock<MockPasswordStoreBackend> android_backend_;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<PasswordStoreProxyBackend> proxy_backend_;
   syncer::TestSyncService sync_service_;
@@ -241,9 +243,10 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
 
 TEST_F(PasswordStoreProxyBackendBaseTest,
        ProfileLocalSupportCallRemoteChangesOnlyFromAndroidBackend) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration};
+  prefs()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
   base::MockCallback<RemoveChangesReceived> original_callback;
 
   // Both backends receive a callback that they trigger for new remote changes.
@@ -281,9 +284,10 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
 TEST_F(PasswordStoreProxyBackendBaseTest,
        AccountCallRemoteChangesOnlyForMainBackend) {
   // The account backend only exists if there is support for local passwords.
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration};
+  prefs()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
 
   base::MockCallback<RemoveChangesReceived> original_callback;
 
@@ -347,9 +351,10 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
 TEST_F(PasswordStoreProxyBackendBaseTest,
        AccountCallSyncCallbackForTheBuiltInBackend) {
   // The account backend only exists if there is support for local passwords.
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration};
+  prefs()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
   base::MockCallback<base::RepeatingClosure> original_callback;
 
   // Both backends receive a callback that they trigger for new remote changes.
@@ -403,13 +408,10 @@ class PasswordStoreProxyBackendTest
     prefs()->SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
                         GetParam().is_unenrolled);
     if (GetParam().is_using_split_account_local_stores) {
-      scoped_feature_list_.InitAndEnableFeature(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+      prefs()->SetInteger(
+          password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+          static_cast<int>(
+              password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
     }
   }
 
@@ -428,9 +430,6 @@ class PasswordStoreProxyBackendTest
     return GetParam().android_is_main_backend ? built_in_backend()
                                               : android_backend();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(PasswordStoreProxyBackendTest, UseMainBackendToGetAllLoginsAsync) {
@@ -721,13 +720,10 @@ class PasswordStoreProxyBackendTestWithErrorsForFallbacks
   void SetUp() override {
     PasswordStoreProxyBackendBaseTest::SetUp();
     if (GetParam().is_using_split_account_local_stores) {
-      scoped_feature_list_.InitAndEnableFeature(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+      prefs()->SetInteger(
+          password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+          static_cast<int>(
+              password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
     }
   }
 
@@ -736,9 +732,6 @@ class PasswordStoreProxyBackendTestWithErrorsForFallbacks
         &built_in_backend_, &android_backend_, prefs(),
         IsAccountStore(GetParam().is_account_store));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(PasswordStoreProxyBackendTestWithErrorsForFallbacks,

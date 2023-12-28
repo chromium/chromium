@@ -12,8 +12,8 @@
 #import "base/time/default_tick_clock.h"
 #import "components/network_time/network_time_tracker.h"
 #import "components/variations/service/variations_service.h"
-#import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
-#import "ios/chrome/browser/policy/configuration_policy_handler_list_factory.h"
+#import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
+#import "ios/chrome/browser/policy/model/configuration_policy_handler_list_factory.h"
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/promos_manager/mock_promos_manager.h"
 #import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_service.h"
@@ -26,7 +26,7 @@
 #import "services/network/test/test_url_loader_factory.h"
 
 TestingApplicationContext::TestingApplicationContext()
-    : application_locale_("en"),
+    : application_locale_("en-US"),
       application_country_("us"),
       local_state_(nullptr),
       chrome_browser_state_manager_(nullptr),

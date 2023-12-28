@@ -5,7 +5,7 @@
 #include <string>
 
 #include "ash/shell.h"
-#include "ash/system/message_center/ash_message_popup_collection.h"
+#include "ash/system/notification_center/ash_message_popup_collection.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
@@ -230,8 +230,8 @@ class RichAnswersBrowserTest : public QuickAnswersBrowserTest {
 
     std::unique_ptr<TranslationResult> translation_result =
         std::make_unique<TranslationResult>();
-    translation_result->text_to_translate = kSourceText;
-    translation_result->translated_text = kTranslatedText;
+    translation_result->text_to_translate = base::UTF16ToUTF8(kSourceText);
+    translation_result->translated_text = base::UTF16ToUTF8(kTranslatedText);
     translation_result->target_locale = "en";
     translation_result->source_locale = "it";
 

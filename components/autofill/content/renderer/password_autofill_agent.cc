@@ -465,7 +465,7 @@ void FillNonTypedOrFilledPropertiesMasks(std::vector<FormFieldData>* fields,
       continue;
 
     for (const auto& [field_id, field_data] : manager.field_data_map()) {
-      const absl::optional<std::u16string>& value = field_data.first;
+      const std::optional<std::u16string>& value = field_data.first;
       FieldPropertiesMask properties = field_data.second;
       if ((properties & kFilledOrTyped) && value == field.value) {
         field.properties_mask |= properties & kFilledOrTyped;
@@ -1637,10 +1637,10 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
     ShowAll show_all,
     OnPasswordField show_on_password_field) {
   username_query_prefix_ = typed_username;
-  FormData form;
-  FormFieldData field;
-  form_util::FindFormAndFieldForFormControlElement(
-      user_input, field_data_manager(), /*extract_options=*/{}, &form, &field);
+  auto [form, field] =
+      form_util::FindFormAndFieldForFormControlElement(
+          user_input, field_data_manager(), /*extract_options=*/{})
+          .value_or(std::make_pair(FormData(), FormFieldData()));
 
   int options = 0;
   if (show_all)
@@ -1927,9 +1927,9 @@ void PasswordAutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
       }
       CleanupOnDocumentShutdown();
       return;
-    case mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR:
     case mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION:
     case mojom::SubmissionSource::XHR_SUCCEEDED:
+    case mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL:
       if (FrameCanAccessPasswordManager()) {
         GetPasswordManagerDriver().DynamicFormSubmission(
             ToSubmissionIndicatorEvent(source));
@@ -2167,11 +2167,11 @@ bool PasswordAutofillAgent::IsPasswordFieldFilledByUser(
 void PasswordAutofillAgent::NotifyPasswordManagerAboutClearedForm(
     const WebFormElement& cleared_form) {
   const auto extract_options = {ExtractOption::kValue, ExtractOption::kOptions};
-  FormData form_data;
-  if (WebFormElementToFormData(cleared_form, WebFormControlElement(),
-                               field_data_manager(), extract_options,
-                               &form_data, /*field=*/nullptr)) {
-    GetPasswordManagerDriver().PasswordFormCleared(form_data);
+  if (std::optional<FormData> form_data =
+          WebFormElementToFormData(cleared_form, WebFormControlElement(),
+                                   field_data_manager(), extract_options,
+                                   /*field=*/nullptr)) {
+    GetPasswordManagerDriver().PasswordFormCleared(*form_data);
   }
 }
 

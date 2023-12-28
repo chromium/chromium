@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
@@ -87,7 +88,8 @@ bool SyncAppListHelper::AppListMatch(Profile* profile1, Profile* profile2) {
 }
 
 bool SyncAppListHelper::AllProfilesHaveSameAppList(size_t* size_out) {
-  const std::vector<Profile*>& profiles = test_->GetAllProfiles();
+  const std::vector<raw_ptr<Profile, VectorExperimental>>& profiles =
+      test_->GetAllProfiles();
   for (Profile* profile : profiles) {
     if (profile != profiles.front() &&
         !AppListMatch(profiles.front(), profile)) {

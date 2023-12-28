@@ -14,6 +14,7 @@
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/debug/layer_tree_debug_state.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/aura/client/aura_constants.h"
@@ -131,7 +132,7 @@ void PrintWindowHierarchy(const aura::Window* active_window,
     views::PrintWidgetInformation(*widget, /*detailed*/ false, out);
   }
 
-  std::vector<aura::Window*> children =
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> children =
       instance ? instance->GetAdjustedWindowChildren(window)
                : window->children();
   for (aura::Window* child : children) {
@@ -158,7 +159,7 @@ std::vector<std::string> PrintWindowHierarchy(std::ostringstream* out,
 void ToggleShowDebugBorders() {
   aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
   std::unique_ptr<cc::DebugBorderTypes> value;
-  for (auto* window : root_windows) {
+  for (aura::Window* window : root_windows) {
     ui::Compositor* compositor = window->GetHost()->compositor();
     cc::LayerTreeDebugState state = compositor->GetLayerTreeDebugState();
     if (!value.get())
@@ -172,7 +173,7 @@ void ToggleShowDebugBorders() {
 void ToggleShowFpsCounter() {
   aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
   std::unique_ptr<bool> value;
-  for (auto* window : root_windows) {
+  for (aura::Window* window : root_windows) {
     ui::Compositor* compositor = window->GetHost()->compositor();
     cc::LayerTreeDebugState state = compositor->GetLayerTreeDebugState();
     if (!value.get())
@@ -185,7 +186,7 @@ void ToggleShowFpsCounter() {
 void ToggleShowPaintRects() {
   aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
   std::unique_ptr<bool> value;
-  for (auto* window : root_windows) {
+  for (aura::Window* window : root_windows) {
     ui::Compositor* compositor = window->GetHost()->compositor();
     cc::LayerTreeDebugState state = compositor->GetLayerTreeDebugState();
     if (!value.get())

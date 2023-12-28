@@ -68,10 +68,9 @@ class ASH_EXPORT UnifiedBrightnessView
   void VisibilityChanged(View* starting_from, bool is_visible) override;
 
   scoped_refptr<UnifiedSystemTrayModel> model_;
-  const raw_ptr<NightLightControllerImpl, ExperimentalAsh>
-      night_light_controller_;
+  const raw_ptr<NightLightControllerImpl> night_light_controller_;
   // Owned by the views hierarchy.
-  raw_ptr<IconButton, ExperimentalAsh> night_light_button_ = nullptr;
+  raw_ptr<IconButton> night_light_button_ = nullptr;
   raw_ptr<IconButton> more_button_ = nullptr;
 };
 

@@ -205,15 +205,13 @@ class ASH_EXPORT OverviewWindowDragController {
   // `new_desk_button_scale_up_timer_` for more information.
   void MaybeScaleUpNewDeskButton();
 
-  raw_ptr<OverviewSession, ExperimentalAsh> overview_session_;
+  raw_ptr<OverviewSession> overview_session_;
 
   // The drag target item in the overview mode.
-  raw_ptr<OverviewItemBase, DanglingUntriaged | ExperimentalAsh> item_ =
-      nullptr;
+  raw_ptr<OverviewItemBase, DanglingUntriaged> item_ = nullptr;
 
   // The source item of the drag event.
-  raw_ptr<OverviewItemBase, DanglingUntriaged | ExperimentalAsh>
-      event_source_item_ = nullptr;
+  raw_ptr<OverviewItemBase, DanglingUntriaged> event_source_item_ = nullptr;
 
   DragBehavior current_drag_behavior_ = DragBehavior::kNoDrag;
 

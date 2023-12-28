@@ -24,18 +24,6 @@ web_component_files = [
   "navigation_view_panel.js",
   "page_toolbar.js",
 
-  "bluetooth/bluetooth_icon.js",
-  "bluetooth/bluetooth_pairing_confirm_code_page.js",
-  "bluetooth/bluetooth_pairing_enter_code_page.js",
-  "bluetooth/bluetooth_pairing_device_selection_page.js",
-  "bluetooth/bluetooth_pairing_request_code_page.js",
-  "bluetooth/bluetooth_pairing_device_item.js",
-  "bluetooth/bluetooth_pairing_ui.js",
-  "bluetooth/bluetooth_base_page.js",
-  "bluetooth/bluetooth_battery_icon_percentage.js",
-  "bluetooth/bluetooth_device_battery_info.js",
-  "bluetooth/bluetooth_spinner_page.js",
-
   "cellular_setup/activation_code_page.js",
   "cellular_setup/activation_verification_page.js",
   "cellular_setup/base_page.js",
@@ -95,10 +83,6 @@ non_web_component_files = [
   "cr.js",
   "cr.m.js",
   "cr_deprecated.js",
-  "bluetooth/bluetooth_metrics_utils.js",
-  "bluetooth/bluetooth_types.js",
-  "bluetooth/bluetooth_utils.js",
-  "bluetooth/cros_bluetooth_config.js",
   "cellular_setup/cellular_types.js",
   "cellular_setup/cellular_setup_delegate.js",
   "cellular_setup/esim_manager_listener_behavior.js",
@@ -149,20 +133,37 @@ non_web_component_files = [
 
 web_component_files_ts = [
   "auth_setup/set_local_password_input.ts",
+  "bluetooth/bluetooth_icon.ts",
+  "bluetooth/bluetooth_pairing_confirm_code_page.ts",
+  "bluetooth/bluetooth_pairing_enter_code_page.ts",
+  "bluetooth/bluetooth_pairing_device_selection_page.ts",
+  "bluetooth/bluetooth_pairing_request_code_page.ts",
+  "bluetooth/bluetooth_pairing_device_item.ts",
+  "bluetooth/bluetooth_pairing_ui.ts",
+  "bluetooth/bluetooth_base_page.ts",
+  "bluetooth/bluetooth_battery_icon_percentage.ts",
+  "bluetooth/bluetooth_device_battery_info.ts",
+  "bluetooth/bluetooth_spinner_page.ts",
   "quick_unlock/pin_keyboard.ts",
   "quick_unlock/setup_pin_keyboard.ts",
   "quick_unlock/fingerprint_progress.ts",
   "shortcut_input_ui/shortcut_input.ts",
   "shortcut_input_ui/shortcut_input_key.ts",
+  "wallpaper_grid_item_element.ts",
 ]
 
 non_web_component_files_ts = [
   "connectivity/mojo_connectivity_provider.ts",
+  "bluetooth/bluetooth_metrics_utils.ts",
+  "bluetooth/bluetooth_types.ts",
+  "bluetooth/bluetooth_utils.ts",
+  "bluetooth/cros_bluetooth_config.ts",
   "hotspot/cros_hotspot_config.ts",
   "hotspot/fake_hotspot_config.ts",
   "quick_unlock/utils.ts",
   "typescript_utils/strict_query.ts",
   "quick_unlock/lock_screen_constants.ts",
+  "sea_pen/sea_pen_utils.ts",
   "shortcut_input_ui/fake_shortcut_input_provider.ts",
   "shortcut_input_ui/shortcut_utils.ts",
 ]
@@ -269,6 +270,8 @@ ts_library("build_ts") {
   definitions = [
     "//tools/typescript/definitions/quick_unlock_private.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/settings_private.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
   ]
   extra_deps = [
     ":generate_definitions",
@@ -352,6 +355,7 @@ generate_grd("build_grd") {
     ":build_html_css_wrapper_files_grdp",
     ":build_ts",
     ":preprocess",
+    "cr_elements:build_grdp",
     "//third_party/cros-components:cros_components_grdp",
     "//third_party/material_web_components:build_lit_grdp",
     "//third_party/material_web_components:build_mwc_grdp",
@@ -368,6 +372,7 @@ generate_grd("build_grd") {
     "$root_gen_dir/third_party/material_web_components/lit_resources.grdp",
     "$root_gen_dir/third_party/material_web_components/mwc_resources.grdp",
     "$target_gen_dir/html_css_wrapper_files_resources.grdp",
+    "$target_gen_dir/cr_elements/resources.grdp",
     "$root_gen_dir/third_party/cros-components/resources.grdp",
   ]
 }
@@ -389,10 +394,18 @@ grit("resources") {
 generate_definitions_js_files = [
   "assert.js",
   "auth_setup/set_local_password_input.html.js",
-  "bluetooth/bluetooth_metrics_utils.js",
-  "bluetooth/bluetooth_types.js",
-  "bluetooth/bluetooth_utils.js",
-  "bluetooth/cros_bluetooth_config.js",
+  "bluetooth/bluetooth_pairing_confirm_code_page.html.js",
+  "bluetooth/bluetooth_pairing_enter_code_page.html.js",
+  "bluetooth/bluetooth_pairing_device_selection_page.html.js",
+  "bluetooth/bluetooth_pairing_request_code_page.html.js",
+  "bluetooth/bluetooth_pairing_device_item.html.js",
+  "bluetooth/bluetooth_pairing_ui.html.js",
+  "bluetooth/bluetooth_base_page.html.js",
+  "bluetooth/bluetooth_icon.html.js",
+  "bluetooth/bluetooth_icons.html.js",
+  "bluetooth/bluetooth_battery_icon_percentage.html.js",
+  "bluetooth/bluetooth_device_battery_info.html.js",
+  "bluetooth/bluetooth_spinner_page.html.js",
   "cellular_setup/activation_code_page.html.js",
   "cellular_setup/activation_code_page.js",
   "cellular_setup/cellular_setup_delegate.js",
@@ -420,7 +433,6 @@ generate_definitions_js_files = [
   "network/cr_policy_network_behavior_mojo.js",
   "network_health/mojo_interface_provider.js",
   "network_health/network_diagnostics.html.js",
-  "network_health/network_diagnostics.js",
   "network_health/network_diagnostics_types.js",
   "network_health/network_health_container.html.js",
   "network_health/network_health_container.js",
@@ -447,6 +459,7 @@ generate_definitions_js_files = [
   "shortcut_input_ui/icons.html.js",
   "shortcut_input_ui/shortcut_input.html.js",
   "traffic_counters/traffic_counters_adapter.js",
+  "wallpaper_grid_item_element.html.js",
   "util.js",
 ]
 
@@ -488,18 +501,6 @@ checked_in_dts_files = [
   "navigation_selector.d.ts",
   "web_ui_listener_behavior.d.ts",
 
-  "bluetooth/bluetooth_base_page.d.ts",
-  "bluetooth/bluetooth_battery_icon_percentage.d.ts",
-  "bluetooth/bluetooth_device_battery_info.d.ts",
-  "bluetooth/bluetooth_icon.d.ts",
-  "bluetooth/bluetooth_pairing_confirm_code_page.d.ts",
-  "bluetooth/bluetooth_pairing_device_item.d.ts",
-  "bluetooth/bluetooth_pairing_device_selection_page.d.ts",
-  "bluetooth/bluetooth_pairing_enter_code_page.d.ts",
-  "bluetooth/bluetooth_pairing_request_code_page.d.ts",
-  "bluetooth/bluetooth_pairing_ui.d.ts",
-  "bluetooth/bluetooth_spinner_page.d.ts",
-
   "cellular_setup/base_page.d.ts",
   "cellular_setup/button_bar.d.ts",
   "cellular_setup/cellular_setup.d.ts",
@@ -514,6 +515,7 @@ checked_in_dts_files = [
   "smb_shares/smb_browser_proxy.d.ts",
   "traffic_counters/traffic_counters.d.ts",
 
+  "network/apn_detail_dialog.d.ts",
   "network/apn_list.d.ts",
   "network/apn_list_item.d.ts",
   "network/cr_policy_network_indicator_mojo.d.ts",
@@ -533,7 +535,8 @@ checked_in_dts_files = [
   "network/network_proxy.d.ts",
   "network/network_siminfo.d.ts",
   "network/sim_lock_dialogs.d.ts",
-  "network/apn_detail_dialog.d.ts",
+  "network_health/network_diagnostics.d.ts",
+  "network_health/network_health_summary.d.ts",
 
   "post_message_api/post_message_api_client.d.ts",
   "post_message_api/post_message_api_request_handler.d.ts",
@@ -548,7 +551,6 @@ copy("copy_checked_in_dts_files") {
 group("closure_compile") {
   deps = [
     ":closure_compile_local",
-    "bluetooth:closure_compile_module",
     "cellular_setup:closure_compile_module",
     "cr_picture:closure_compile_module",
     "multidevice_setup:closure_compile_module",

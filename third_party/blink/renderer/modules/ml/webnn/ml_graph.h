@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_H_
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
+#include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -56,7 +57,8 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   // ones to ComputeAsyncImpl() implemented by an MLGraph backend that binds the
   // array buffer views and executes the compiled platform graph. This method is
   // called by MLContext to implement MLContext.compute() method.
-  void ComputeAsync(const MLNamedArrayBufferViews& inputs,
+  void ComputeAsync(ScopedMLTrace scoped_trace,
+                    const MLNamedArrayBufferViews& inputs,
                     const MLNamedArrayBufferViews& outputs,
                     ScriptPromiseResolver* resolver,
                     ExceptionState& exception_state);
@@ -80,7 +82,8 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   // the input and output resources info. If there are no errors, it calls
   // BuildAsyncImpl() implemented by an MLGraph backend that builds the platform
   // specific graph.
-  void BuildAsync(const MLNamedOperands& named_outputs,
+  void BuildAsync(ScopedMLTrace scoped_trace,
+                  const MLNamedOperands& named_outputs,
                   ScriptPromiseResolver* resolver);
 
   // An MLGraph backend should implement this method to build and compile a
@@ -89,7 +92,8 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   // main thread. Once the platform graph is compiled, the resolver should be
   // resolved with a concrete MLGraph object. Otherwise, the resolver should be
   // rejected with a DOMException accordingly.
-  virtual void BuildAsyncImpl(const MLNamedOperands& outputs,
+  virtual void BuildAsyncImpl(ScopedMLTrace scoped_trace,
+                              const MLNamedOperands& outputs,
                               ScriptPromiseResolver* resolver) = 0;
 
   // BuildSync() has the similar function as BuildAsync() and should also be
@@ -121,7 +125,8 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   // the resolver will be resolved with an MLComputeResult that contains the
   // input and output buffers. Otherwise, the resolver will be rejected with a
   // DOMException accordingly.
-  virtual void ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,
+  virtual void ComputeAsyncImpl(ScopedMLTrace scoped_trace,
+                                const MLNamedArrayBufferViews& inputs,
                                 const MLNamedArrayBufferViews& outputs,
                                 ScriptPromiseResolver* resolver,
                                 ExceptionState& exception_state) = 0;

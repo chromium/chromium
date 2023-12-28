@@ -1010,10 +1010,14 @@ class ColorTransformToneMapInRec2020Linear : public ColorTransformStep {
                              ? hdr_metadata.cta_861_3->max_content_light_level
                              : hdr_metadata.smpte_st_2086->luminance_max;
     }
+    float sdr_white_nits = options.dst_sdr_max_luminance_nits;
     if (IsHlgPqSdrRelative()) {
-      return src_max_lum_nits / ColorSpace::kDefaultSDRWhiteLevel;
+      sdr_white_nits = ColorSpace::kDefaultSDRWhiteLevel;
+      if (options.src_hdr_metadata && options.src_hdr_metadata->ndwl) {
+        sdr_white_nits = options.src_hdr_metadata->ndwl->nits;
+      }
     }
-    return src_max_lum_nits / options.dst_sdr_max_luminance_nits;
+    return src_max_lum_nits / sdr_white_nits;
   }
   // Computes the constants used by the tone mapping algorithm described in
   // https://colab.research.google.com/drive/1hI10nq6L6ru_UFvz7-f7xQaQp0qarz_K

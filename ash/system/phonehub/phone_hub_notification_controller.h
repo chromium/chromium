@@ -136,14 +136,12 @@ class ASH_EXPORT PhoneHubNotificationController
       const message_center::Notification& notification,
       bool shown_in_popup);
 
-  raw_ptr<phonehub::NotificationInteractionHandler, ExperimentalAsh>
+  raw_ptr<phonehub::NotificationInteractionHandler>
       notification_interaction_handler_ = nullptr;
-  raw_ptr<phonehub::NotificationManager, ExperimentalAsh> manager_ = nullptr;
-  raw_ptr<phonehub::TetherController, ExperimentalAsh> tether_controller_ =
-      nullptr;
-  raw_ptr<phonehub::CameraRollManager, ExperimentalAsh> camera_roll_manager_ =
-      nullptr;
-  raw_ptr<phonehub::PhoneModel, ExperimentalAsh> phone_model_ = nullptr;
+  raw_ptr<phonehub::NotificationManager> manager_ = nullptr;
+  raw_ptr<phonehub::TetherController> tether_controller_ = nullptr;
+  raw_ptr<phonehub::CameraRollManager> camera_roll_manager_ = nullptr;
+  raw_ptr<phonehub::PhoneModel> phone_model_ = nullptr;
   std::unordered_map<int64_t, std::unique_ptr<NotificationDelegate>>
       notification_map_;
 

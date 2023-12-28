@@ -160,7 +160,9 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   this->InitChannelsProvider(false /* should_use_channels */);
   bool result = channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern(),
-      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_BLOCK));
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_BLOCK),
+      /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   EXPECT_FALSE(result);
 }
@@ -171,12 +173,15 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
   bool result = channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern(),
-      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW));
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW),
+      /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
   EXPECT_TRUE(result);
 
   std::unique_ptr<content_settings::RuleIterator> rule_iterator =
-      channels_provider_->GetRuleIterator(ContentSettingsType::NOTIFICATIONS,
-                                          false /* incognito */);
+      channels_provider_->GetRuleIterator(
+          ContentSettingsType::NOTIFICATIONS, false /* incognito */,
+          content_settings::PartitionKey::GetDefaultForTesting());
   EXPECT_TRUE(rule_iterator->HasNext());
   std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
   EXPECT_EQ(GetTestPattern(), rule->primary_pattern);
@@ -191,12 +196,15 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
   bool result = channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern(),
-      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_BLOCK));
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_BLOCK),
+      /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   EXPECT_TRUE(result);
   std::unique_ptr<content_settings::RuleIterator> rule_iterator =
-      channels_provider_->GetRuleIterator(ContentSettingsType::NOTIFICATIONS,
-                                          false /* incognito */);
+      channels_provider_->GetRuleIterator(
+          ContentSettingsType::NOTIFICATIONS, false /* incognito */,
+          content_settings::PartitionKey::GetDefaultForTesting());
   EXPECT_TRUE(rule_iterator->HasNext());
   std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
   EXPECT_EQ(GetTestPattern(), rule->primary_pattern);
@@ -211,15 +219,20 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
   channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern(),
-      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW));
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW),
+      /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
   bool result = channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern(),
-      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW));
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW),
+      /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   EXPECT_TRUE(result);
   std::unique_ptr<content_settings::RuleIterator> rule_iterator =
-      channels_provider_->GetRuleIterator(ContentSettingsType::NOTIFICATIONS,
-                                          false /* incognito */);
+      channels_provider_->GetRuleIterator(
+          ContentSettingsType::NOTIFICATIONS, false /* incognito */,
+          content_settings::PartitionKey::GetDefaultForTesting());
   EXPECT_TRUE(rule_iterator->HasNext());
   std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
   EXPECT_EQ(GetTestPattern(), rule->primary_pattern);
@@ -234,15 +247,20 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
   channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern(),
-      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_BLOCK));
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_BLOCK),
+      /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
   bool result = channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern(),
-      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_BLOCK));
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_BLOCK),
+      /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   EXPECT_TRUE(result);
   std::unique_ptr<content_settings::RuleIterator> rule_iterator =
-      channels_provider_->GetRuleIterator(ContentSettingsType::NOTIFICATIONS,
-                                          false /* incognito */);
+      channels_provider_->GetRuleIterator(
+          ContentSettingsType::NOTIFICATIONS, false /* incognito */,
+          content_settings::PartitionKey::GetDefaultForTesting());
   EXPECT_TRUE(rule_iterator->HasNext());
   std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
   EXPECT_EQ(GetTestPattern(), rule->primary_pattern);
@@ -256,39 +274,48 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   InitChannelsProvider(true /* should_use_channels */);
   channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern(),
-      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW));
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW),
+      /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   bool result = channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern(),
-      ContentSettingsType::NOTIFICATIONS, base::Value());
+      ContentSettingsType::NOTIFICATIONS, base::Value(), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   EXPECT_FALSE(result)
       << "SetWebsiteSetting should return false when passed a null value.";
   EXPECT_FALSE(channels_provider_->GetRuleIterator(
-      ContentSettingsType::NOTIFICATIONS, false /* incognito */));
+      ContentSettingsType::NOTIFICATIONS, false /* incognito */,
+      content_settings::PartitionKey::GetDefaultForTesting()));
 }
 
 TEST_F(NotificationChannelsProviderAndroidTest,
        NoRulesWhenChannelsShouldNotBeUsed) {
   InitChannelsProvider(false /* should_use_channels */);
   EXPECT_FALSE(channels_provider_->GetRuleIterator(
-      ContentSettingsType::NOTIFICATIONS, false /* incognito */));
+      ContentSettingsType::NOTIFICATIONS, false /* incognito */,
+      content_settings::PartitionKey::GetDefaultForTesting()));
 }
 
 TEST_F(NotificationChannelsProviderAndroidTest, NoRulesInIncognito) {
   InitChannelsProvider(true /* should_use_channels */);
   channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern(),
-      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW));
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW),
+      /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
   EXPECT_FALSE(channels_provider_->GetRuleIterator(
-      ContentSettingsType::NOTIFICATIONS, true /* incognito */));
+      ContentSettingsType::NOTIFICATIONS, true /* incognito */,
+      content_settings::PartitionKey::GetDefaultForTesting()));
 }
 
 TEST_F(NotificationChannelsProviderAndroidTest,
        NoRulesWhenNoWebsiteSettingsSet) {
   InitChannelsProvider(true /* should_use_channels */);
   EXPECT_FALSE(channels_provider_->GetRuleIterator(
-      ContentSettingsType::NOTIFICATIONS, false /* incognito */));
+      ContentSettingsType::NOTIFICATIONS, false /* incognito */,
+      content_settings::PartitionKey::GetDefaultForTesting()));
 }
 
 TEST_F(NotificationChannelsProviderAndroidTest,
@@ -298,16 +325,19 @@ TEST_F(NotificationChannelsProviderAndroidTest,
       ContentSettingsPattern::FromURLNoWildcard(GURL("https://abc.com"));
   ContentSettingsPattern xyz_pattern =
       ContentSettingsPattern::FromURLNoWildcard(GURL("https://xyz.com"));
-  channels_provider_->SetWebsiteSetting(abc_pattern, ContentSettingsPattern(),
-                                        ContentSettingsType::NOTIFICATIONS,
-                                        base::Value(CONTENT_SETTING_ALLOW));
-  channels_provider_->SetWebsiteSetting(xyz_pattern, ContentSettingsPattern(),
-                                        ContentSettingsType::NOTIFICATIONS,
-                                        base::Value(CONTENT_SETTING_BLOCK));
+  channels_provider_->SetWebsiteSetting(
+      abc_pattern, ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
+      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
+  channels_provider_->SetWebsiteSetting(
+      xyz_pattern, ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
+      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   std::unique_ptr<content_settings::RuleIterator> rule_iterator =
-      channels_provider_->GetRuleIterator(ContentSettingsType::NOTIFICATIONS,
-                                          false /* incognito */);
+      channels_provider_->GetRuleIterator(
+          ContentSettingsType::NOTIFICATIONS, false /* incognito */,
+          content_settings::PartitionKey::GetDefaultForTesting());
   EXPECT_TRUE(rule_iterator->HasNext());
   std::unique_ptr<content_settings::Rule> first_rule = rule_iterator->Next();
   EXPECT_EQ(abc_pattern, first_rule->primary_pattern);
@@ -333,7 +363,8 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   channels_provider_->SetWebsiteSetting(
       ContentSettingsPattern::FromString("https://example.com"),
       ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_ALLOW));
+      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
   content::RunAllTasksUntilIdle();
 
   // Emulate user blocking the channel.
@@ -343,13 +374,15 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   // Observer should be notified on first invocation of GetRuleIterator.
   EXPECT_CALL(mock_observer, OnContentSettingChanged(
                                  _, _, ContentSettingsType::NOTIFICATIONS));
-  channels_provider_->GetRuleIterator(ContentSettingsType::NOTIFICATIONS,
-                                      false /* incognito */);
+  channels_provider_->GetRuleIterator(
+      ContentSettingsType::NOTIFICATIONS, false /* incognito */,
+      content_settings::PartitionKey::GetDefaultForTesting());
   content::RunAllTasksUntilIdle();
 
   // Observer should not be notified the second time.
-  channels_provider_->GetRuleIterator(ContentSettingsType::NOTIFICATIONS,
-                                      false /* incognito */);
+  channels_provider_->GetRuleIterator(
+      ContentSettingsType::NOTIFICATIONS, false /* incognito */,
+      content_settings::PartitionKey::GetDefaultForTesting());
   content::RunAllTasksUntilIdle();
 }
 
@@ -366,12 +399,14 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   GURL xyz_url("https://xyz.com");
   ContentSettingsPattern xyz_pattern =
       ContentSettingsPattern::FromURLNoWildcard(xyz_url);
-  channels_provider_->SetWebsiteSetting(abc_pattern, ContentSettingsPattern(),
-                                        ContentSettingsType::NOTIFICATIONS,
-                                        base::Value(CONTENT_SETTING_ALLOW));
-  channels_provider_->SetWebsiteSetting(xyz_pattern, ContentSettingsPattern(),
-                                        ContentSettingsType::NOTIFICATIONS,
-                                        base::Value(CONTENT_SETTING_BLOCK));
+  channels_provider_->SetWebsiteSetting(
+      abc_pattern, ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
+      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
+  channels_provider_->SetWebsiteSetting(
+      xyz_pattern, ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
+      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   EXPECT_NE(base::Time(), content_settings::TestUtils::GetLastModified(
                               channels_provider_.get(), abc_url, abc_url,
@@ -383,7 +418,8 @@ TEST_F(NotificationChannelsProviderAndroidTest,
                                       ContentSettingsType::NOTIFICATIONS));
 
   channels_provider_->ClearAllContentSettingsRules(
-      ContentSettingsType::NOTIFICATIONS);
+      ContentSettingsType::NOTIFICATIONS,
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   // Ensure cached data is erased.
   EXPECT_EQ(base::Time(), content_settings::TestUtils::GetLastModified(
@@ -392,7 +428,8 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
   // Check no rules are returned.
   EXPECT_FALSE(channels_provider_->GetRuleIterator(
-      ContentSettingsType::NOTIFICATIONS, false /* incognito */));
+      ContentSettingsType::NOTIFICATIONS, false /* incognito */,
+      content_settings::PartitionKey::GetDefaultForTesting()));
 }
 
 TEST_F(NotificationChannelsProviderAndroidTest,
@@ -404,24 +441,30 @@ TEST_F(NotificationChannelsProviderAndroidTest,
       ContentSettingsPattern::FromURLNoWildcard(GURL("https://abc.com"));
   ContentSettingsPattern xyz_pattern =
       ContentSettingsPattern::FromURLNoWildcard(GURL("https://xyz.com"));
-  channels_provider_->SetWebsiteSetting(abc_pattern, ContentSettingsPattern(),
-                                        ContentSettingsType::NOTIFICATIONS,
-                                        base::Value(CONTENT_SETTING_ALLOW));
-  channels_provider_->SetWebsiteSetting(xyz_pattern, ContentSettingsPattern(),
-                                        ContentSettingsType::NOTIFICATIONS,
-                                        base::Value(CONTENT_SETTING_BLOCK));
+  channels_provider_->SetWebsiteSetting(
+      abc_pattern, ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
+      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
+  channels_provider_->SetWebsiteSetting(
+      xyz_pattern, ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
+      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   channels_provider_->ClearAllContentSettingsRules(
-      ContentSettingsType::COOKIES);
+      ContentSettingsType::COOKIES,
+      content_settings::PartitionKey::GetDefaultForTesting());
   channels_provider_->ClearAllContentSettingsRules(
-      ContentSettingsType::JAVASCRIPT);
+      ContentSettingsType::JAVASCRIPT,
+      content_settings::PartitionKey::GetDefaultForTesting());
   channels_provider_->ClearAllContentSettingsRules(
-      ContentSettingsType::GEOLOCATION);
+      ContentSettingsType::GEOLOCATION,
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   // Check two rules are still returned.
   std::unique_ptr<content_settings::RuleIterator> rule_iterator =
-      channels_provider_->GetRuleIterator(ContentSettingsType::NOTIFICATIONS,
-                                          false /* incognito */);
+      channels_provider_->GetRuleIterator(
+          ContentSettingsType::NOTIFICATIONS, false /* incognito */,
+          content_settings::PartitionKey::GetDefaultForTesting());
   EXPECT_TRUE(rule_iterator->HasNext());
   rule_iterator->Next();
   EXPECT_TRUE(rule_iterator->HasNext());
@@ -446,7 +489,9 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
   channels_provider_->SetWebsiteSetting(
       GetTestPattern(), ContentSettingsPattern(),
-      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW));
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW),
+      /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   auto result = content_settings::TestUtils::GetLastModified(
       channels_provider_.get(), GURL(kTestOrigin), GURL(kTestOrigin),
@@ -473,9 +518,11 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   GURL first_origin("https://example.com");
   ContentSettingsPattern first_pattern =
       ContentSettingsPattern::FromString(first_origin.spec());
-  channels_provider_->SetWebsiteSetting(first_pattern, ContentSettingsPattern(),
-                                        ContentSettingsType::NOTIFICATIONS,
-                                        base::Value(CONTENT_SETTING_ALLOW));
+  channels_provider_->SetWebsiteSetting(
+      first_pattern, ContentSettingsPattern(),
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW),
+      /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
   clock.Advance(base::Seconds(1));
 
   base::Time last_modified = content_settings::TestUtils::GetLastModified(
@@ -487,12 +534,15 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   // This simulates the user clearing data and regranting permisison.
   clock.Advance(base::Seconds(3));
   base::Time t2 = clock.Now();
-  channels_provider_->SetWebsiteSetting(first_pattern, ContentSettingsPattern(),
-                                        ContentSettingsType::NOTIFICATIONS,
-                                        base::Value());
-  channels_provider_->SetWebsiteSetting(first_pattern, ContentSettingsPattern(),
-                                        ContentSettingsType::NOTIFICATIONS,
-                                        base::Value(CONTENT_SETTING_ALLOW));
+  channels_provider_->SetWebsiteSetting(
+      first_pattern, ContentSettingsPattern(),
+      ContentSettingsType::NOTIFICATIONS, base::Value(), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
+  channels_provider_->SetWebsiteSetting(
+      first_pattern, ContentSettingsPattern(),
+      ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW),
+      /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   // Last modified time should be updated.
   last_modified = content_settings::TestUtils::GetLastModified(
@@ -506,7 +556,8 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   channels_provider_->SetWebsiteSetting(
       ContentSettingsPattern::FromString(second_origin),
       ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_ALLOW));
+      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   // Expect first origin's last-modified time to be unchanged.
   last_modified = content_settings::TestUtils::GetLastModified(
@@ -522,7 +573,8 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   old_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromString("https://blocked.com"),
       ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
-      base::Value(CONTENT_SETTING_BLOCK));
+      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   channels_provider_->MigrateToChannelsIfNecessary(profile_->GetPrefs(),
                                                    old_provider.get());
@@ -538,11 +590,13 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   old_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromString("https://blocked.com"),
       ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_BLOCK));
+      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
   old_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromString("https://allowed.com"),
       ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_ALLOW));
+      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   channels_provider_->MigrateToChannelsIfNecessary(profile_->GetPrefs(),
                                                    old_provider.get());
@@ -558,11 +612,13 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   old_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromString("https://blocked.com"),
       ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_BLOCK));
+      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
   old_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromString("https://allowed.com"),
       ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_ALLOW));
+      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   channels_provider_->MigrateToChannelsIfNecessary(profile_->GetPrefs(),
                                                    old_provider.get());
@@ -584,9 +640,11 @@ TEST_F(NotificationChannelsProviderAndroidTest,
       checked_blocked = true;
     }
   }
-  EXPECT_FALSE(old_provider->GetRuleIterator(ContentSettingsType::NOTIFICATIONS,
+  EXPECT_FALSE(old_provider->GetRuleIterator(
+      ContentSettingsType::NOTIFICATIONS,
 
-                                             false /* incognito */));
+      false /* incognito */,
+      content_settings::PartitionKey::GetDefaultForTesting()));
 }
 
 TEST_F(NotificationChannelsProviderAndroidTest,
@@ -598,7 +656,8 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   old_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromString("https://blocked.com"),
       ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_BLOCK));
+      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
+      content_settings::PartitionKey::GetDefaultForTesting());
 
   channels_provider_->MigrateToChannelsIfNecessary(profile_->GetPrefs(),
                                                    old_provider.get());

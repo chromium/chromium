@@ -7,7 +7,7 @@
 #include <utility>
 #include <vector>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_metrics.h"
@@ -174,8 +174,7 @@ class AppListMetricsTest : public AshTestBase {
   }
 
  private:
-  raw_ptr<SearchModel, DanglingUntriaged | ExperimentalAsh> search_model_ =
-      nullptr;
+  raw_ptr<SearchModel, DanglingUntriaged> search_model_ = nullptr;
   std::unique_ptr<ShelfViewTestAPI> shelf_test_api_;
 };
 

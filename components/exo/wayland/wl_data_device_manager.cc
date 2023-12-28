@@ -131,8 +131,8 @@ class WaylandDataSourceDelegate : public DataSourceDelegate {
   }
 
  private:
-  const raw_ptr<wl_client, ExperimentalAsh> client_;
-  const raw_ptr<wl_resource, ExperimentalAsh> data_source_resource_;
+  const raw_ptr<wl_client> client_;
+  const raw_ptr<wl_resource> data_source_resource_;
 };
 
 void data_source_offer(wl_client* client,
@@ -192,7 +192,7 @@ class WaylandDataOfferDelegate : public DataOfferDelegate {
   }
 
  private:
-  const raw_ptr<wl_resource, ExperimentalAsh> data_offer_resource_;
+  const raw_ptr<wl_resource> data_offer_resource_;
 };
 
 void data_offer_accept(wl_client* client,
@@ -319,7 +319,7 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
       if (serial_tracker_->GetPointerDownSerial() != serial) {
         LOG(ERROR)
             << "The serial passed to StartDrag for pointer does not match its "
-               "expected types. serial="
+               "expected types. tracker_id="
             << serial << ", " << serial_tracker_->ToString();
         source->Cancelled();
         return;
@@ -331,7 +331,7 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
       if (serial_tracker_->GetTouchDownSerial() != serial) {
         LOG(ERROR)
             << "The serial passed to StartDrag for touch does not match its "
-               "expected types. serial="
+               "expected types. tracker_id="
             << serial << ", " << serial_tracker_->ToString();
         source->Cancelled();
         return;
@@ -341,7 +341,7 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
                              ui::mojom::DragEventSource::kTouch);
     } else {
       LOG(ERROR) << "Invalid event type for StartDrag:" << (int)*event_type
-                 << ", serial=" << serial << ", "
+                 << ", tracker_id=" << serial << ", "
                  << serial_tracker_->ToString();
       source->Cancelled();
       return;
@@ -365,11 +365,11 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
   }
 
  private:
-  const raw_ptr<wl_client, ExperimentalAsh> client_;
-  const raw_ptr<wl_resource, ExperimentalAsh> data_device_resource_;
+  const raw_ptr<wl_client> client_;
+  const raw_ptr<wl_resource> data_device_resource_;
 
   // Owned by Server, which always outlives this delegate.
-  const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker_;
+  const raw_ptr<SerialTracker> serial_tracker_;
 };
 
 void data_device_start_drag(wl_client* client,

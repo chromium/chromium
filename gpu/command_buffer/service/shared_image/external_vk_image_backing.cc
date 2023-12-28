@@ -18,6 +18,7 @@
 #include "gpu/command_buffer/service/shared_image/external_vk_image_skia_representation.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_holder.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_gl_utils.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
@@ -124,13 +125,6 @@ bool UseSeparateGLTexture(SharedContextState* context_state,
   return true;
 }
 
-bool UseTexStorage2D() {
-  const auto* version_info = gl::g_current_gl_version;
-  const auto& ext = gl::g_current_gl_driver->ext;
-  return ext.b_GL_EXT_texture_storage || ext.b_GL_ARB_texture_storage ||
-         version_info->is_es3 || version_info->IsAtLeastGL(4, 2);
-}
-
 bool UseMinimalUsageFlags(SharedContextState* context_state) {
   return context_state->support_gl_external_object_flags();
 }
@@ -167,9 +161,9 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
 
   auto* device_queue = context_state->vk_context_provider()->GetDeviceQueue();
   constexpr auto kUsageNeedsColorAttachment =
-      SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
-      SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
-      SHARED_IMAGE_USAGE_WEBGPU;
+      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
+      SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT | SHARED_IMAGE_USAGE_RASTER |
+      SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_WEBGPU;
   VkImageUsageFlags vk_usage = VK_IMAGE_USAGE_SAMPLED_BIT |
                                VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                                VK_IMAGE_USAGE_TRANSFER_DST_BIT;
@@ -185,7 +179,7 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
   // Must request all available image usage flags if aliasing GL texture. This
   // is a spec requirement per EXT_memory_object. However, if
   // ANGLE_memory_object_flags is supported, usage flags can be arbitrary.
-  bool request_all_flags = is_external && (usage & SHARED_IMAGE_USAGE_GLES2) &&
+  bool request_all_flags = is_external && (HasGLES2ReadOrWriteUsage(usage)) &&
                            !UseMinimalUsageFlags(context_state.get());
 
   VkImageCreateFlags vk_create = 0;
@@ -805,7 +799,7 @@ bool ExternalVkImageBacking::CreateGLTexture(bool is_passthrough,
 
   if (use_separate_gl_texture()) {
     DCHECK(!memory_object);
-    if (UseTexStorage2D()) {
+    if (IsTexStorage2DAvailable()) {
       api->glTexStorage2DEXTFn(GL_TEXTURE_2D, 1,
                                format_desc.storage_internal_format,
                                plane_size.width(), plane_size.height());
@@ -869,7 +863,7 @@ ExternalVkImageBacking::ProduceGLTexture(SharedImageManager* manager,
     }
   }
 
-  std::vector<gles2::Texture*> textures;
+  std::vector<raw_ptr<gles2::Texture, VectorExperimental>> textures;
   textures.reserve(gl_textures_.size());
   for (auto& gl_texture : gl_textures_) {
     textures.push_back(gl_texture.texture());

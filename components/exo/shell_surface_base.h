@@ -28,6 +28,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
@@ -38,6 +39,10 @@
 namespace ash {
 class WindowState;
 }  // namespace ash
+
+namespace views {
+class ClientView;
+}  // namespace views
 
 namespace base {
 namespace trace_event {
@@ -295,6 +300,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   bool ShouldSaveWindowPlacement() const override;
   bool WidgetHasHitTestMask() const override;
   void GetWidgetHitTestMask(SkPath* mask) const override;
+  views::ClientView* CreateClientView(views::Widget* widget) override;
 
   // views::WidgetObserver:
   void OnWidgetClosing(views::Widget* widget) override;
@@ -456,7 +462,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
   static bool IsPopupWithGrab(aura::Window* window);
 
-  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
   bool movement_disabled_ = false;
   gfx::Point origin_;
 
@@ -549,7 +555,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // without actually updating it.
   bool CalculateCanResize() const;
 
-  raw_ptr<aura::Window, ExperimentalAsh> parent_ = nullptr;
+  raw_ptr<aura::Window> parent_ = nullptr;
   bool activatable_ = true;
   bool can_minimize_ = true;
   bool has_frame_colors_ = false;

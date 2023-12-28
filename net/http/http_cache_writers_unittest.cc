@@ -58,7 +58,7 @@ class TestHttpCache : public HttpCache {
                 std::unique_ptr<BackendFactory> backend_factory)
       : HttpCache(std::move(network_layer), std::move(backend_factory)) {}
 
-  void WritersDoneWritingToEntry(ActiveEntry* entry,
+  void WritersDoneWritingToEntry(scoped_refptr<ActiveEntry> entry,
                                  bool success,
                                  bool should_keep_entry,
                                  TransactionSet make_readers) override {
@@ -103,10 +103,11 @@ class WritersTest : public TestWithTaskEnvironment {
   void CreateWriters() {
     cache_.CreateBackendEntry(GenerateCacheKey(kSimpleGET_Transaction.url),
                               &disk_entry_, nullptr);
-    entry_ = std::make_unique<HttpCache::ActiveEntry>(cache_.GetWeakPtr(),
-                                                      disk_entry_, false);
+    entry_ =
+        new HttpCache::ActiveEntry(cache_.GetWeakPtr(), disk_entry_, false);
     (static_cast<MockDiskEntry*>(disk_entry_))->AddRef();
-    writers_ = std::make_unique<HttpCache::Writers>(&test_cache_, entry_.get());
+    writers_ = std::make_unique<HttpCache::Writers>(
+        &test_cache_, base::WrapRefCounted(entry_.get()));
   }
 
   std::unique_ptr<HttpTransaction> CreateNetworkTransaction() {
@@ -511,7 +512,7 @@ class WritersTest : public TestWithTaskEnvironment {
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
   RAW_PTR_EXCLUSION disk_cache::Entry* disk_entry_ = nullptr;
-  std::unique_ptr<HttpCache::ActiveEntry> entry_;
+  raw_ptr<HttpCache::ActiveEntry> entry_ = nullptr;
   TestHttpCache test_cache_;
 
   // Should be before transactions_ since it is accessed in the network

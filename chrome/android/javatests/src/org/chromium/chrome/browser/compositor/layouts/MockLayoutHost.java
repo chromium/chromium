@@ -45,9 +45,6 @@ class MockLayoutHost implements LayoutManagerHost, LayoutRenderHost {
     public void didSwapFrame(int pendingFrameCount) {}
 
     @Override
-    public void onSurfaceCreated() {}
-
-    @Override
     public void onSurfaceResized(int width, int height) {}
 
     @Override

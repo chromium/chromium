@@ -95,7 +95,7 @@ class SegmentationUkmHelperTest : public testing::Test {
                         const std::vector<int64_t>& values) {
     const auto& entries = test_recorder_.GetEntriesByName(entry_name);
     EXPECT_EQ(1u, entries.size());
-    for (const auto* entry : entries) {
+    for (const ukm::mojom::UkmEntry* entry : entries) {
       const size_t keys_size = keys.size();
       EXPECT_EQ(keys_size, values.size());
       for (size_t i = 0; i < keys_size; ++i) {

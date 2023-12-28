@@ -9,12 +9,6 @@
 
 namespace shared_highlighting {
 
-BASE_FEATURE(kPreemptiveLinkToTextGeneration,
-             "PreemptiveLinkToTextGeneration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-constexpr base::FeatureParam<int> kPreemptiveLinkGenTimeoutLengthMs{
-    &kPreemptiveLinkToTextGeneration, "TimeoutLengthMs", 500};
-
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kSharedHighlightingAmp,
              "SharedHighlightingAmp",
@@ -30,7 +24,11 @@ BASE_FEATURE(kSharedHighlightingManager,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 int GetPreemptiveLinkGenTimeoutLengthMs() {
-  return kPreemptiveLinkGenTimeoutLengthMs.Get();
+#if BUILDFLAG(IS_ANDROID)
+  return 100;
+#else
+  return 500;
+#endif
 }
 
 }  // namespace shared_highlighting

@@ -107,6 +107,11 @@ class LocalExtensionCacheTest : public testing::Test {
         extensions::LocalExtensionCache::ExtensionFileName(id, version, hash));
   }
 
+  base::FilePath GetInvalidCacheFilePath() {
+    return cache_dir_.GetPath().AppendASCII(
+        LocalExtensionCache::kInvalidCacheIdsFileName);
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
 
@@ -420,6 +425,91 @@ TEST_F(LocalExtensionCacheTest, PutExtensionCases) {
   // Old file kept.
   EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, hash3, nullptr, nullptr));
   EXPECT_TRUE(base::DeleteFile(temp7));
+}
+
+// This test checks that scheduling extension cache removal with
+// `RemoveOnNextInit` works correctly: extension cache is deleted for the
+// specified extension right on the next initialization, another extension is
+// not affected.
+TEST_F(LocalExtensionCacheTest, InvalidExtensionRemoval) {
+  base::FilePath cache_dir(CreateCacheDir());
+
+  LocalExtensionCache cache(
+      cache_dir, /*max_cache_size=*/1000, /*max_cache_age=*/base::Days(30),
+      /*backend_task_runner=*/
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
+  cache.SetCacheStatusPollingDelayForTests(base::TimeDelta());
+
+  bool initialized = false;
+  cache.Init(true, base::BindOnce(&SimpleCallback, &initialized));
+
+  const base::Time time = base::Time::Now() - base::Days(1);
+  base::FilePath file_1, file_2_1, file_2_2;
+  const std::string hash_1 = CreateSignedExtensionFile(
+      cache_dir, kTestExtensionId1, "1.0", 100, time, &file_1);
+  const std::string hash_2_1 = CreateSignedExtensionFile(
+      cache_dir, kTestExtensionId2, "2.0", 101, time, &file_2_1);
+  const std::string hash_2_2 = CreateSignedExtensionFile(
+      cache_dir, kTestExtensionId2, "2.0", 123, time, &file_2_2);
+  content::RunAllTasksUntilIdle();
+  ASSERT_TRUE(initialized);
+
+  EXPECT_TRUE(base::PathExists(file_1));
+  EXPECT_TRUE(base::PathExists(file_2_1));
+  EXPECT_TRUE(base::PathExists(file_2_2));
+
+  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, hash_1, nullptr, nullptr));
+  EXPECT_TRUE(cache.GetExtension(kTestExtensionId2, "", nullptr, nullptr));
+
+  // Invalid cache file should be removed on initializion.
+  EXPECT_FALSE(base::PathExists(GetInvalidCacheFilePath()));
+
+  cache.RemoveOnNextInit(kTestExtensionId2);
+  content::RunAllTasksUntilIdle();
+
+  // Extension files should still exist, nothing should be deleted before the
+  // next initialization.
+  EXPECT_TRUE(base::PathExists(file_1));
+  EXPECT_TRUE(base::PathExists(file_2_1));
+  EXPECT_TRUE(base::PathExists(file_2_2));
+
+  EXPECT_TRUE(cache.GetExtension(kTestExtensionId1, hash_1, nullptr, nullptr));
+  EXPECT_TRUE(cache.GetExtension(kTestExtensionId2, "", nullptr, nullptr));
+
+  bool did_shutdown = false;
+  cache.Shutdown(base::BindOnce(&SimpleCallback, &did_shutdown));
+  content::RunAllTasksUntilIdle();
+  ASSERT_TRUE(did_shutdown);
+
+  EXPECT_TRUE(base::PathExists(file_1));
+  EXPECT_TRUE(base::PathExists(file_2_1));
+  EXPECT_TRUE(base::PathExists(file_2_2));
+
+  // Create cache again for the same directory.
+  LocalExtensionCache new_cache(
+      cache_dir, 1000, base::Days(30),
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
+  initialized = false;
+  new_cache.Init(true, base::BindOnce(&SimpleCallback, &initialized));
+  content::RunAllTasksUntilIdle();
+  ASSERT_TRUE(initialized);
+
+  // Check that second extension's cache was cleaned up after initialization.
+  EXPECT_TRUE(base::PathExists(file_1));
+  EXPECT_FALSE(base::PathExists(file_2_1));
+  EXPECT_FALSE(base::PathExists(file_2_2));
+
+  EXPECT_TRUE(
+      new_cache.GetExtension(kTestExtensionId1, hash_1, nullptr, nullptr));
+  EXPECT_FALSE(new_cache.GetExtension(kTestExtensionId2, "", nullptr, nullptr));
+
+  // Invalid cache file should be removed on initializion.
+  EXPECT_FALSE(base::PathExists(GetInvalidCacheFilePath()));
+
+  did_shutdown = false;
+  new_cache.Shutdown(base::BindOnce(&SimpleCallback, &did_shutdown));
+  content::RunAllTasksUntilIdle();
+  ASSERT_TRUE(did_shutdown);
 }
 
 }  // namespace extensions

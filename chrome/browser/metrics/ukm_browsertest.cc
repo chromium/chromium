@@ -743,17 +743,14 @@ IN_PROC_BROWSER_TEST_P(UkmBrowserTestWithDemographics,
   ukm_test_helper.BuildAndStoreLog();
   EXPECT_TRUE(ukm_test_helper.HasUnsentLogs());
 
-  // Check the log's content and the histogram.
+  // Check the log's content.
   std::unique_ptr<ukm::Report> report = ukm_test_helper.GetUkmReport();
   if (param.expect_reported_demographics) {
     EXPECT_EQ(test::GetNoisedBirthYear(local_state(), test_birth_year),
               report->user_demographics().birth_year());
     EXPECT_EQ(test_gender, report->user_demographics().gender());
-    histogram.ExpectUniqueSample("UKM.UserDemographics.Status",
-                                 UserDemographicsStatus::kSuccess, 1);
   } else {
     EXPECT_FALSE(report->has_user_demographics());
-    histogram.ExpectTotalCount("UKM.UserDemographics.Status", /*count=*/0);
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)

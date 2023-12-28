@@ -160,7 +160,7 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
   absl::optional<VideoCaptureTarget> target_;
   uint32_t sub_capture_target_version_ = 0;
   // Overlays are owned by the callers of CreateOverlay().
-  std::vector<Overlay*> overlays_;
+  std::vector<raw_ptr<Overlay, VectorExperimental>> overlays_;
   bool is_started_ = false;
   // Buffer format preference of our consumer.
   mojom::BufferFormatPreference buffer_format_preference_;

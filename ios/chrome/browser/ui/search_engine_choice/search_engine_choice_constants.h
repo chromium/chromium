@@ -21,6 +21,8 @@ extern const CGFloat kFakeOmniboxHeight;
 // Favicon size and radius.
 extern const CGFloat kFaviconImageViewSize;
 extern const CGFloat kFaviconImageViewRadius;
+// The space before the fake omnibox field.
+extern const CGFloat kFakeOmniboxFieldLeadingInset;
 
 // Prefix for the SearchEngineCell accessibility identifier.
 extern NSString* const kSnippetSearchEngineIdentifierPrefix;

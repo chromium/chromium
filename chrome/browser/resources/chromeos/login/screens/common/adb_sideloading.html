@@ -16,7 +16,7 @@ found in the LICENSE file.
   </h1>
   <p slot="subtitle">
     [[i18nDynamic(locale, 'enableAdbSideloadingSetupMessage')]]
-    <a on-click="onLearnMoreTap_" class="oobe-local-link"
+    <a on-click="onLearnMoreClick" class="oobe-local-link"
         is="action-link">
       [[i18nDynamic(locale, 'enableAdbSideloadingLearnMore')]]
     </a>
@@ -26,10 +26,10 @@ found in the LICENSE file.
     </iron-icon>
   </div>
   <div slot="bottom-buttons">
-    <oobe-text-button border on-click="onCancelTap_"
+    <oobe-text-button border on-click="onCancelClick"
         text-key="enableAdbSideloadingCancelButton"
         id="enable-adb-sideloading-cancel-button"></oobe-text-button>
-    <oobe-text-button inverse on-click="onEnableTap_" class="focus-on-show"
+    <oobe-text-button inverse on-click="onEnableClick" class="focus-on-show"
         text-key="enableAdbSideloadingConfirmButton"
         id="enable-adb-sideloading-ok-button"></oobe-text-button>
   </div>
@@ -45,7 +45,7 @@ found in the LICENSE file.
   </h1>
   <p slot="subtitle">
     [[i18nDynamic(locale, 'enableAdbSideloadingErrorMessage')]]
-    <a on-click="onLearnMoreTap_" class="oobe-local-link" is="action-link">
+    <a on-click="onLearnMoreClick" class="oobe-local-link" is="action-link">
       [[i18nDynamic(locale, 'enableAdbSideloadingLearnMore')]]
     </a>
   </p>
@@ -54,7 +54,7 @@ found in the LICENSE file.
     </iron-icon>
   </div>
   <div slot="bottom-buttons">
-    <oobe-text-button inverse on-click="onCancelTap_" class="focus-on-show"
+    <oobe-text-button inverse on-click="onCancelClick" class="focus-on-show"
         text-key="enableAdbSideloadingOkButton"></oobe-text-button>
   </div>
 </oobe-adaptive-dialog>

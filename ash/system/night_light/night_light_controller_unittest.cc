@@ -1203,8 +1203,7 @@ TEST_F(NightLightTest, ManualStatusToggleCanPersistAfterResumeFromSuspend) {
 
 // Fixture for testing behavior of Night Light when displays support hardware
 // CRTC matrices.
-class NightLightCrtcTest : public NightLightTest,
-                           display::NativeDisplayObserver {
+class NightLightCrtcTest : public NightLightTest {
  public:
   NightLightCrtcTest()
       : logger_(std::make_unique<display::test::ActionLogger>()) {}
@@ -1225,7 +1224,6 @@ class NightLightCrtcTest : public NightLightTest,
     display_manager()->configurator()->SetDelegateForTesting(
         std::unique_ptr<display::NativeDisplayDelegate>(
             native_display_delegate_));
-    native_display_delegate_->AddObserver(this);
     display_change_observer_ =
         std::make_unique<display::DisplayChangeObserver>(display_manager());
     test_api_ = std::make_unique<display::DisplayConfigurator::TestApi>(
@@ -1236,28 +1234,22 @@ class NightLightCrtcTest : public NightLightTest,
     // DisplayChangeObserver access DeviceDataManager in its destructor, so
     // destroy it first.
     display_change_observer_ = nullptr;
-    native_display_delegate_->RemoveObserver(this);
     NightLightTest::TearDown();
   }
-
-  // NativeDisplayObserver:
-  void OnConfigurationChanged() override {}
-  void OnDisplaySnapshotsInvalidated() override { cached_snapshots_.clear(); }
 
   struct TestSnapshotParams {
     bool has_ctm_support;
   };
 
-  // Builds two displays snapshots into |owned_snapshots_| and return a list of
-  // unowned pointers to them. |snapshot_params| should contain exactly 2
-  // elements that correspond to capabilities of both displays.
-  std::vector<display::DisplaySnapshot*> BuildAndGetDisplaySnapshots(
-      const std::vector<TestSnapshotParams>& snapshot_params) {
+  // Builds two display snapshots returns a list of owned unique pointers to
+  // them. |snapshot_params| should contain exactly 2 elements that correspond
+  // to capabilities of both displays.
+  std::vector<std::unique_ptr<display::DisplaySnapshot>>
+  BuildAndGetDisplaySnapshots(
+      const std::vector<TestSnapshotParams>& snapshot_params) const {
     DCHECK_EQ(2u, snapshot_params.size());
-    std::move(begin(owned_snapshots_), end(owned_snapshots_),
-              std::back_inserter(cached_snapshots_));
-    owned_snapshots_.clear();
-    owned_snapshots_.emplace_back(
+    std::vector<std::unique_ptr<display::DisplaySnapshot>> snapshots;
+    snapshots.emplace_back(
         display::FakeDisplaySnapshot::Builder()
             .SetId(kId1)
             .SetNativeMode(kDisplaySize)
@@ -1265,28 +1257,29 @@ class NightLightCrtcTest : public NightLightTest,
             .SetHasColorCorrectionMatrix(snapshot_params[0].has_ctm_support)
             .SetType(display::DISPLAY_CONNECTION_TYPE_INTERNAL)
             .Build());
-    owned_snapshots_.back()->set_origin({0, 0});
-    owned_snapshots_.emplace_back(
+    snapshots.back()->set_origin({0, 0});
+    snapshots.emplace_back(
         display::FakeDisplaySnapshot::Builder()
             .SetId(kId2)
             .SetNativeMode(kDisplaySize)
             .SetCurrentMode(kDisplaySize)
             .SetHasColorCorrectionMatrix(snapshot_params[1].has_ctm_support)
             .Build());
-    owned_snapshots_.back()->set_origin({1030, 0});
-    std::vector<display::DisplaySnapshot*> outputs = {
-        owned_snapshots_[0].get(), owned_snapshots_[1].get()};
-    return outputs;
+    snapshots.back()->set_origin({1030, 0});
+    return snapshots;
   }
 
-  // Updates the display configurator and display manager with the given list of
-  // display snapshots.
-  void UpdateDisplays(const std::vector<display::DisplaySnapshot*>& outputs) {
-    native_display_delegate_->set_outputs(outputs);
+  // Takes ownership of |outputs| and updates the display configurator and
+  // display manager with them.
+  void UpdateDisplays(
+      std::vector<std::unique_ptr<display::DisplaySnapshot>> outputs) {
+    native_display_delegate_->SetOutputs(std::move(outputs));
     display_manager()->configurator()->OnConfigurationChanged();
     EXPECT_TRUE(test_api_->TriggerConfigureTimeout());
-    display_change_observer_->GetStateForDisplayIds(outputs);
-    display_change_observer_->OnDisplayModeChanged(outputs);
+    display_change_observer_->GetStateForDisplayIds(
+        native_display_delegate_->GetOutputs());
+    display_change_observer_->OnDisplayModeChanged(
+        native_display_delegate_->GetOutputs());
   }
 
   // Returns true if the software cursor is turned on.
@@ -1319,17 +1312,10 @@ class NightLightCrtcTest : public NightLightTest,
  private:
   std::unique_ptr<display::test::ActionLogger> logger_;
   // Not owned.
-  raw_ptr<display::test::TestNativeDisplayDelegate,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<display::test::TestNativeDisplayDelegate, DanglingUntriaged>
       native_display_delegate_;
   std::unique_ptr<display::DisplayChangeObserver> display_change_observer_;
   std::unique_ptr<display::DisplayConfigurator::TestApi> test_api_;
-
-  std::vector<std::unique_ptr<display::DisplaySnapshot>> owned_snapshots_;
-  // Outputs which have been removed from |owned_snapshots_| but cannot be
-  // deleted because they may still be referenced by the DisplayConfigurator
-  // cache.
-  std::vector<std::unique_ptr<display::DisplaySnapshot>> cached_snapshots_;
 };
 
 // static
@@ -1338,9 +1324,9 @@ constexpr gfx::Size NightLightCrtcTest::kDisplaySize;
 // All displays support CRTC matrices.
 TEST_F(NightLightCrtcTest, TestAllDisplaysSupportCrtcMatrix) {
   // Create two displays with both having support for CRTC matrices.
-  std::vector<display::DisplaySnapshot*> outputs =
+  std::vector<std::unique_ptr<display::DisplaySnapshot>> outputs =
       BuildAndGetDisplaySnapshots({{true}, {true}});
-  UpdateDisplays(outputs);
+  UpdateDisplays(std::move(outputs));
 
   EXPECT_EQ(2u, display_manager()->GetNumDisplays());
   ASSERT_EQ(2u, RootWindowController::root_window_controllers().size());
@@ -1394,9 +1380,9 @@ TEST_F(NightLightCrtcTest,
        TestAllDisplaysSupportCrtcMatrixCompressedGammaSpace) {
   // Create two displays with both having support for CRTC matrices that are
   // applied in the compressed gamma space.
-  std::vector<display::DisplaySnapshot*> outputs =
+  std::vector<std::unique_ptr<display::DisplaySnapshot>> outputs =
       BuildAndGetDisplaySnapshots({{true}, {true}});
-  UpdateDisplays(outputs);
+  UpdateDisplays(std::move(outputs));
 
   EXPECT_EQ(2u, display_manager()->GetNumDisplays());
   ASSERT_EQ(2u, RootWindowController::root_window_controllers().size());
@@ -1433,9 +1419,9 @@ TEST_F(NightLightCrtcTest,
 
 // One display supports CRTC matrix and the other doesn't.
 TEST_F(NightLightCrtcTest, TestMixedCrtcMatrixSupport) {
-  std::vector<display::DisplaySnapshot*> outputs =
+  std::vector<std::unique_ptr<display::DisplaySnapshot>> outputs =
       BuildAndGetDisplaySnapshots({{true}, {false}});
-  UpdateDisplays(outputs);
+  UpdateDisplays(std::move(outputs));
 
   EXPECT_EQ(2u, display_manager()->GetNumDisplays());
   ASSERT_EQ(2u, RootWindowController::root_window_controllers().size());
@@ -1454,7 +1440,7 @@ TEST_F(NightLightCrtcTest, TestMixedCrtcMatrixSupport) {
   // However, the second display doesn't support CRTC matrix, Night Light is
   // using the compositor matrix on this display.
   TestDisplayCompositorTemperature(kId2, temperature);
-  // With mixed CTRC support, software cursor must be on.
+  // With mixed CRTC support, software cursor must be on.
   EXPECT_TRUE(IsCursorCompositingEnabled());
   // Verify correct matrix has been set on both crtcs.
   const std::string logger_actions = GetLoggerActionsAndClear();
@@ -1464,9 +1450,9 @@ TEST_F(NightLightCrtcTest, TestMixedCrtcMatrixSupport) {
 
 // All displays don't support CRTC matrices.
 TEST_F(NightLightCrtcTest, TestNoCrtcMatrixSupport) {
-  std::vector<display::DisplaySnapshot*> outputs =
+  std::vector<std::unique_ptr<display::DisplaySnapshot>> outputs =
       BuildAndGetDisplaySnapshots({{false}, {false}});
-  UpdateDisplays(outputs);
+  UpdateDisplays(std::move(outputs));
 
   EXPECT_EQ(2u, display_manager()->GetNumDisplays());
   ASSERT_EQ(2u, RootWindowController::root_window_controllers().size());
@@ -1481,7 +1467,7 @@ TEST_F(NightLightCrtcTest, TestNoCrtcMatrixSupport) {
 
   // Compositor matrices are used on both displays.
   TestCompositorsTemperature(temperature);
-  // With no CTRC support, software cursor must be on.
+  // With no CRTC support, software cursor must be on.
   EXPECT_TRUE(IsCursorCompositingEnabled());
   // No CRTC matrices have been set.
   const std::string logger_actions = GetLoggerActionsAndClear();
@@ -1492,9 +1478,9 @@ TEST_F(NightLightCrtcTest, TestNoCrtcMatrixSupport) {
 // Tests that switching CRTC matrix support on while Night Light is enabled
 // doesn't result in the matrix being applied twice.
 TEST_F(NightLightCrtcTest, TestNoDoubleNightLightEffect) {
-  std::vector<display::DisplaySnapshot*> outputs =
+  std::vector<std::unique_ptr<display::DisplaySnapshot>> outputs =
       BuildAndGetDisplaySnapshots({{false}, {false}});
-  UpdateDisplays(outputs);
+  UpdateDisplays(std::move(outputs));
 
   EXPECT_EQ(2u, display_manager()->GetNumDisplays());
   ASSERT_EQ(2u, RootWindowController::root_window_controllers().size());
@@ -1509,7 +1495,7 @@ TEST_F(NightLightCrtcTest, TestNoDoubleNightLightEffect) {
 
   // Compositor matrices are used on both displays.
   TestCompositorsTemperature(temperature);
-  // With no CTRC support, software cursor must be on.
+  // With no CRTC support, software cursor must be on.
   EXPECT_TRUE(IsCursorCompositingEnabled());
   // No CRTC matrices have been set.
   std::string logger_actions = GetLoggerActionsAndClear();
@@ -1526,9 +1512,9 @@ TEST_F(NightLightCrtcTest, TestNoDoubleNightLightEffect) {
   // compositor matrix. When this happens, we need to assert that the compositor
   // matrix is set to identity, and the cursor compositing is updated correctly.
   // TODO(afakhry): Investigate the root cause of this https://crbug.com/844067.
-  std::vector<display::DisplaySnapshot*> outputs2 =
+  std::vector<std::unique_ptr<display::DisplaySnapshot>> outputs2 =
       BuildAndGetDisplaySnapshots({{true}, {true}});
-  UpdateDisplays(outputs2);
+  UpdateDisplays(std::move(outputs2));
   TestCompositorsTemperature(0.0f);
   EXPECT_FALSE(IsCursorCompositingEnabled());
   logger_actions = GetLoggerActionsAndClear();
@@ -1573,7 +1559,7 @@ TEST(AmbientTemperature, RemapAmbientColorTemperature) {
 // and check it's within a threshold of 0.01f;
 TEST(AmbientTemperature, AmbientTemperatureToRGBScaleFactors) {
   constexpr float allowed_difference = 0.01f;
-  // Netural temperature
+  // Neutral temperature
   gfx::Vector3dF vec =
       NightLightControllerImpl::ColorScalesFromRemappedTemperatureInKevin(6500);
   EXPECT_LT((vec - gfx::Vector3dF(1.0f, 1.0f, 1.0f)).Length(),
@@ -1803,10 +1789,10 @@ class AmbientEQTest : public NightLightTest {
         display_manager()->configurator());
   }
 
-  void ConfigureMulipleDisplaySetup() {
+  void ConfigureMultipleDisplaySetup() {
     const gfx::Size kDisplaySize{1024, 768};
-    owned_snapshots_.clear();
-    owned_snapshots_.emplace_back(
+    std::vector<std::unique_ptr<display::DisplaySnapshot>> snapshots;
+    snapshots.emplace_back(
         display::FakeDisplaySnapshot::Builder()
             .SetId(kInternalDisplayId)
             .SetNativeMode(kDisplaySize)
@@ -1814,21 +1800,20 @@ class AmbientEQTest : public NightLightTest {
             .SetType(display::DISPLAY_CONNECTION_TYPE_INTERNAL)
             .SetOrigin({0, 0})
             .Build());
-    owned_snapshots_.emplace_back(display::FakeDisplaySnapshot::Builder()
-                                      .SetId(kExternalDisplayId)
-                                      .SetNativeMode(kDisplaySize)
-                                      .SetCurrentMode(kDisplaySize)
-                                      .SetOrigin({1030, 0})
-                                      .Build());
+    snapshots.emplace_back(display::FakeDisplaySnapshot::Builder()
+                               .SetId(kExternalDisplayId)
+                               .SetNativeMode(kDisplaySize)
+                               .SetCurrentMode(kDisplaySize)
+                               .SetOrigin({1030, 0})
+                               .Build());
 
-    std::vector<display::DisplaySnapshot*> outputs = {
-        owned_snapshots_[0].get(), owned_snapshots_[1].get()};
-
-    native_display_delegate_->set_outputs(outputs);
+    native_display_delegate_->SetOutputs(std::move(snapshots));
     display_manager()->configurator()->OnConfigurationChanged();
     EXPECT_TRUE(test_api_->TriggerConfigureTimeout());
-    display_change_observer_->GetStateForDisplayIds(outputs);
-    display_change_observer_->OnDisplayModeChanged(outputs);
+    display_change_observer_->GetStateForDisplayIds(
+        native_display_delegate_->GetOutputs());
+    display_change_observer_->OnDisplayModeChanged(
+        native_display_delegate_->GetOutputs());
   }
 
   void TearDown() override {
@@ -1840,14 +1825,11 @@ class AmbientEQTest : public NightLightTest {
 
  protected:
   base::test::ScopedFeatureList features_;
-  std::vector<std::unique_ptr<display::DisplaySnapshot>> owned_snapshots_;
   std::unique_ptr<display::test::ActionLogger> logger_;
 
   // Not owned.
-  raw_ptr<NightLightControllerImpl, DanglingUntriaged | ExperimentalAsh>
-      controller_;
-  raw_ptr<display::test::TestNativeDisplayDelegate,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<NightLightControllerImpl, DanglingUntriaged> controller_;
+  raw_ptr<display::test::TestNativeDisplayDelegate, DanglingUntriaged>
       native_display_delegate_;
   std::unique_ptr<display::DisplayChangeObserver> display_change_observer_;
   std::unique_ptr<display::DisplayConfigurator::TestApi> test_api_;
@@ -1918,7 +1900,7 @@ TEST_F(AmbientEQTest, TestAmbientRgbScalingUpdatesOnUserChangedBothDisabled) {
 }
 
 TEST_F(AmbientEQTest, TestAmbientColorMatrix) {
-  ConfigureMulipleDisplaySetup();
+  ConfigureMultipleDisplaySetup();
   SetNightLightEnabled(false);
   SetAmbientColorPrefEnabled(true);
   auto scaling_factors = GetAllDisplaysCompositorsRGBScaleFactors();
@@ -1955,7 +1937,7 @@ TEST_F(AmbientEQTest, TestAmbientColorMatrix) {
 }
 
 TEST_F(AmbientEQTest, TestNightLightAndAmbientColorInteraction) {
-  ConfigureMulipleDisplaySetup();
+  ConfigureMultipleDisplaySetup();
 
   SetNightLightEnabled(true);
 

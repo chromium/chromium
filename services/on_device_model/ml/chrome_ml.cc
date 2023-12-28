@@ -8,9 +8,12 @@
 
 #include "base/base_paths.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
+#include "base/debug/crash_logging.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/native_library.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -35,7 +38,29 @@ constexpr std::string_view kChromeMLLibraryName = "optimization_guide_internal";
 
 const base::FeatureParam<std::string> kGpuBlockList{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
-    "on_device_model_gpu_block_list", ""};
+    "on_device_model_gpu_block_list",
+    // These devices are nearly always crashing or have very low performance.
+    "8086:412|8086:a16|8086:41e|8086:416|8086:402|8086:166|8086:1616|8086:22b1|"
+    "8086:22b0|1414:8c|8086:*:*31.0.101.4824*|8086:*:*31.0.101.4676*"};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class GpuBlockedReason {
+  kGpuConfigError = 0,
+  kBlocklisted = 1,
+  kBlocklistedForCpuAdapter = 2,
+  kNotBlocked = 3,
+  kMaxValue = kNotBlocked,
+};
+
+void LogGpuBlocked(GpuBlockedReason reason) {
+  base::UmaHistogramEnumeration("OnDeviceModel.GpuBlockedReason", reason);
+}
+
+void FatalErrorFn(const char* msg) {
+  SCOPED_CRASH_KEY_STRING1024("ChromeML", "error_msg", msg);
+  CHECK(false) << "ChromeML Error: " << msg;
+}
 
 }  // namespace
 
@@ -49,13 +74,16 @@ ChromeML::ChromeML(base::PassKey<ChromeML>,
 ChromeML::~ChromeML() = default;
 
 // static
-ChromeML* ChromeML::Get() {
-  static base::NoDestructor<std::unique_ptr<ChromeML>> chrome_ml{Create()};
+ChromeML* ChromeML::Get(const std::optional<std::string>& library_name) {
+  static base::NoDestructor<std::unique_ptr<ChromeML>> chrome_ml{
+      Create(library_name)};
   return chrome_ml->get();
 }
 
 // static
-std::unique_ptr<ChromeML> ChromeML::Create() {
+DISABLE_CFI_DLSYM
+std::unique_ptr<ChromeML> ChromeML::Create(
+    const std::optional<std::string>& library_name) {
   // Log GPU info for crash reports.
   gpu::GPUInfo gpu_info;
   gpu::CollectBasicGraphicsInfo(&gpu_info);
@@ -75,7 +103,8 @@ std::unique_ptr<ChromeML> ChromeML::Create() {
 #endif  // BUILDFLAG(IS_MAC)
 #endif  // !BUILDFLAG(IS_ANDROID)
   base::NativeLibrary library = base::LoadNativeLibrary(
-      base_dir.AppendASCII(base::GetNativeLibraryName(kChromeMLLibraryName)),
+      base_dir.AppendASCII(base::GetNativeLibraryName(
+          library_name.value_or(std::string(kChromeMLLibraryName)))),
       &error);
   if (!library) {
     LOG(ERROR) << "Error loading native library: " << error.ToString();
@@ -96,13 +125,22 @@ std::unique_ptr<ChromeML> ChromeML::Create() {
   }
 
   api->InitDawnProcs(dawn::native::GetProcs());
+  if (api->SetFatalErrorFn) {
+    api->SetFatalErrorFn(&FatalErrorFn);
+  }
   return std::make_unique<ChromeML>(base::PassKey<ChromeML>(),
                                     std::move(scoped_library), api);
 }
 
+DISABLE_CFI_DLSYM
 bool ChromeML::IsGpuBlocked() const {
+  if (allow_gpu_for_testing_) {
+    return false;
+  }
+
   GpuConfig gpu_config;
   if (!api().GetGpuConfig(gpu_config)) {
+    LogGpuBlocked(GpuBlockedReason::kGpuConfigError);
     LOG(ERROR) << "Unable to get gpu config";
     return true;
   }
@@ -115,9 +153,15 @@ bool ChromeML::IsGpuBlocked() const {
   wgpu_adapter_properties.backendType = gpu_config.backend_type;
   if (gpu::IsWebGPUAdapterBlocklisted(wgpu_adapter_properties,
                                       kGpuBlockList.Get())) {
+    if (gpu_config.adapter_type == WGPUAdapterType_CPU) {
+      LogGpuBlocked(GpuBlockedReason::kBlocklistedForCpuAdapter);
+    } else {
+      LogGpuBlocked(GpuBlockedReason::kBlocklisted);
+    }
     LOG(ERROR) << "WebGPU blocked on this device";
     return true;
   }
+  LogGpuBlocked(GpuBlockedReason::kNotBlocked);
   return false;
 }
 

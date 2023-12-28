@@ -135,7 +135,8 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
 
   // BookmarkContextMenuObserver methods.
   void WillRemoveBookmarks(
-      const std::vector<const bookmarks::BookmarkNode*>& bookmarks) override;
+      const std::vector<raw_ptr<const bookmarks::BookmarkNode,
+                                VectorExperimental>>& bookmarks) override;
   void DidRemoveBookmarks() override;
   void OnContextMenuClosed() override;
 

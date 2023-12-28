@@ -21,7 +21,6 @@
 namespace ash {
 
 class MojoSystemInfoDispatcher;
-class ScreenLocker;
 class UserBoardViewMojo;
 class UserSelectionScreen;
 
@@ -32,21 +31,14 @@ class ViewsScreenLocker : public LoginScreenClientImpl::Delegate,
                           public chromeos::PowerManagerClient::Observer,
                           public lock_screen_apps::FocusCyclerDelegate {
  public:
-  explicit ViewsScreenLocker(ScreenLocker* screen_locker);
+  ViewsScreenLocker();
 
   ViewsScreenLocker(const ViewsScreenLocker&) = delete;
   ViewsScreenLocker& operator=(const ViewsScreenLocker&) = delete;
 
   ~ViewsScreenLocker() override;
 
-  void Init();
-
-  // Shows the given error message.
-  void ShowErrorMessage(int error_msg_id,
-                        HelpAppLauncher::HelpTopic help_topic_id);
-
-  // Closes any displayed error messages.
-  void ClearErrors();
+  void Init(const user_manager::UserList& users);
 
   // Called by ScreenLocker to notify that ash lock animation finishes.
   void OnAshLockAnimationFinished();
@@ -88,9 +80,6 @@ class ViewsScreenLocker : public LoginScreenClientImpl::Delegate,
 
   std::unique_ptr<UserBoardViewMojo> user_board_view_mojo_;
   std::unique_ptr<UserSelectionScreen> user_selection_screen_;
-
-  // The ScreenLocker that owns this instance.
-  const raw_ptr<ScreenLocker, ExperimentalAsh> screen_locker_ = nullptr;
 
   // Time when lock was initiated, required for metrics.
   base::TimeTicks lock_time_;

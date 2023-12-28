@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/page_info/page_info_site_security_description.h"
 #import "ios/chrome/browser/ui/permissions/permissions_consumer.h"
 
@@ -16,8 +16,8 @@
 
 // View Controller for displaying the page info.
 @interface PageInfoViewController
-    : LegacyChromeTableViewController <PermissionsConsumer,
-                                       UIAdaptivePresentationControllerDelegate>
+    : ChromeTableViewController <PermissionsConsumer,
+                                 UIAdaptivePresentationControllerDelegate>
 
 // Designated initializer.
 - (instancetype)initWithSiteSecurityDescription:
@@ -25,12 +25,14 @@
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 
 @property(nonatomic, weak) id<PageInfoCommands> pageInfoCommandsHandler;
 
 // Delegate used to handle permission actions.
-@property(nonatomic, weak) id<PermissionsDelegate> permissionsDelegate
-    API_AVAILABLE(ios(15.0));
+@property(nonatomic, weak) id<PermissionsDelegate> permissionsDelegate;
 
 @end
 

@@ -164,6 +164,7 @@ import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncherSupplier;
+import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -305,6 +306,7 @@ public class RootUiCoordinator
     protected final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     protected StatusBarColorController mStatusBarColorController;
     protected final Supplier<SnackbarManager> mSnackbarManagerSupplier;
+    protected final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     protected final @ActivityType int mActivityType;
     protected final Supplier<Boolean> mIsInOverviewModeSupplier;
     private final Supplier<Boolean> mIsWarmOnResumeSupplier;
@@ -330,14 +332,15 @@ public class RootUiCoordinator
             new OneshotSupplierImpl<>();
     private FoldTransitionController mFoldTransitionController;
     private RestoreTabsFeatureHelper mRestoreTabsFeatureHelper;
-    private @Nullable EdgeToEdgeController mE2eController;
+    private @Nullable EdgeToEdgeController mEdgeToEdgeController;
+    private ComposedBrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
     private @Nullable BoardingPassController mBoardingPassController;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
+     *
      * @param activity The activity whose UI the coordinator is responsible for.
-     * @param onOmniboxFocusChangedListener callback to invoke when Omnibox focus
-     *         changes.
+     * @param onOmniboxFocusChangedListener callback to invoke when Omnibox focus changes.
      * @param shareDelegateSupplier Supplies the {@link ShareDelegate}.
      * @param tabProvider The {@link ActivityTabProvider} to get current tab of the activity.
      * @param profileSupplier Supplier of the currently applicable profile.
@@ -365,6 +368,7 @@ public class RootUiCoordinator
      * @param compositorViewHolderSupplier Supplies the {@link CompositorViewHolder}.
      * @param tabContentManagerSupplier Supplies the {@link TabContentManager}.
      * @param snackbarManagerSupplier Supplies the {@link SnackbarManager}.
+     * @param edgeToEdgeControllerSupplier Supplies an {@link EdgeToEdgeController}.
      * @param activityType The {@link ActivityType} for the activity.
      * @param isInOverviewModeSupplier Supplies whether the app is in overview mode.
      * @param isWarmOnResumeSupplier Supplies whether the app was warm on resume.
@@ -407,6 +411,7 @@ public class RootUiCoordinator
             @NonNull Supplier<CompositorViewHolder> compositorViewHolderSupplier,
             @NonNull Supplier<TabContentManager> tabContentManagerSupplier,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
+            @NonNull ObservableSupplierImpl<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             @ActivityType int activityType,
             @NonNull Supplier<Boolean> isInOverviewModeSupplier,
             @NonNull Supplier<Boolean> isWarmOnResumeSupplier,
@@ -435,6 +440,7 @@ public class RootUiCoordinator
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
+        mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
         mActivityType = activityType;
         mIsInOverviewModeSupplier = isInOverviewModeSupplier;
         mIsWarmOnResumeSupplier = isWarmOnResumeSupplier;
@@ -726,10 +732,11 @@ public class RootUiCoordinator
             mReadAloudControllerSupplier.set(null);
         }
 
-        if (mE2eController != null) {
-            mE2eController.destroy();
-            mE2eController = null;
+        if (mEdgeToEdgeController != null) {
+            mEdgeToEdgeController.destroy();
+            mEdgeToEdgeController = null;
         }
+        mEdgeToEdgeControllerSupplier.set(null);
 
         if (mBoardingPassController != null) {
             mBoardingPassController.destroy();
@@ -844,51 +851,11 @@ public class RootUiCoordinator
             initIncognitoReauthController();
         }
 
-        // TODO(crbug.com/1185887): Move feature flag and parameters into a separate class in
-        // the Messages component.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE)) {
-            MessagesResourceMapperInitializer.init();
-            MessageContainer container = mActivity.findViewById(R.id.message_container);
-            mMessageContainerCoordinator =
-                    new MessageContainerCoordinator(container, mBrowserControlsManager);
-            mMessageContainerObserver =
-                    new MessageContainerObserver() {
-                        @Override
-                        public void onShowMessageContainer() {
-                            if (mPageZoomCoordinator != null) {
-                                mPageZoomCoordinator.hide();
-                            }
-                        }
-
-                        @Override
-                        public void onHideMessageContainer() {}
-                    };
-            mMessageContainerCoordinator.addObserver(mMessageContainerObserver);
-            mMessageDispatcher =
-                    MessagesFactory.createMessageDispatcher(
-                            container,
-                            mMessageContainerCoordinator::getMessageTopOffset,
-                            mMessageContainerCoordinator::getMessageMaxTranslation,
-                            new ChromeMessageAutodismissDurationProvider(),
-                            mWindowAndroid::startAnimationOverContent,
-                            mWindowAndroid);
-            mMessageQueueMediator =
-                    new ChromeMessageQueueMediator(
-                            mBrowserControlsManager,
-                            mMessageContainerCoordinator,
-                            mActivityTabProvider,
-                            mLayoutStateProviderOneShotSupplier,
-                            mModalDialogManagerSupplier,
-                            getBottomSheetController(),
-                            mActivityLifecycleDispatcher,
-                            mMessageDispatcher);
-            mMessageDispatcher.setDelegate(mMessageQueueMediator);
-            MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMessageDispatcher);
-        }
-
+        initMessagesInfra();
         initMerchantTrustSignals();
         initScrollCapture();
-        initializeEdgeToEdgeController(mActivity, mActivityTabProvider);
+        initializeEdgeToEdgeController(
+                mActivity, mActivityTabProvider, mEdgeToEdgeControllerSupplier);
         initBoardingPassDetector();
 
         new OneShotCallback<>(mProfileSupplier, this::initHistoryClustersCoordinator);
@@ -923,6 +890,48 @@ public class RootUiCoordinator
             mReadAloudControllerSupplier.set(controller);
             mToolbarManager.setReadAloudReadabilitySupplier(controller.getReadabilitySupplier());
         }
+    }
+
+    private void initMessagesInfra() {
+        // TODO(crbug.com/1185887): Move feature flag and parameters into a separate class in
+        // the Messages component.
+        MessagesResourceMapperInitializer.init();
+        MessageContainer container = mActivity.findViewById(R.id.message_container);
+        mMessageContainerCoordinator =
+                new MessageContainerCoordinator(container, mBrowserControlsManager);
+        mMessageContainerObserver =
+                new MessageContainerObserver() {
+                    @Override
+                    public void onShowMessageContainer() {
+                        if (mPageZoomCoordinator != null) {
+                            mPageZoomCoordinator.hide();
+                        }
+                    }
+
+                    @Override
+                    public void onHideMessageContainer() {}
+                };
+        mMessageContainerCoordinator.addObserver(mMessageContainerObserver);
+        mMessageDispatcher =
+                MessagesFactory.createMessageDispatcher(
+                        container,
+                        mMessageContainerCoordinator::getMessageTopOffset,
+                        mMessageContainerCoordinator::getMessageMaxTranslation,
+                        new ChromeMessageAutodismissDurationProvider(),
+                        mWindowAndroid::startAnimationOverContent,
+                        mWindowAndroid);
+        mMessageQueueMediator =
+                new ChromeMessageQueueMediator(
+                        mBrowserControlsManager,
+                        mMessageContainerCoordinator,
+                        mActivityTabProvider,
+                        mLayoutStateProviderOneShotSupplier,
+                        mModalDialogManagerSupplier,
+                        getBottomSheetController(),
+                        mActivityLifecycleDispatcher,
+                        mMessageDispatcher);
+        mMessageDispatcher.setDelegate(mMessageQueueMediator);
+        MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMessageDispatcher);
     }
 
     private void initIncognitoReauthController() {
@@ -1303,7 +1312,7 @@ public class RootUiCoordinator
             VoiceToolbarButtonController voiceToolbarButtonController =
                     new VoiceToolbarButtonController(
                             mActivity,
-                            AppCompatResources.getDrawable(mActivity, R.drawable.btn_mic),
+                            AppCompatResources.getDrawable(mActivity, R.drawable.ic_mic_white_24dp),
                             mActivityTabProvider,
                             trackerSupplier,
                             mModalDialogManagerSupplier.get(),
@@ -1755,9 +1764,13 @@ public class RootUiCoordinator
     /** Setup drawing using Android Edge-to-Edge. */
     @VisibleForTesting
     void initializeEdgeToEdgeController(
-            Activity activity, ActivityTabProvider activityTabProvider) {
+            Activity activity,
+            ActivityTabProvider activityTabProvider,
+            ObservableSupplierImpl<EdgeToEdgeController> supplier) {
         if (supportsEdgeToEdge() && EdgeToEdgeControllerFactory.isEnabled()) {
-            mE2eController = EdgeToEdgeControllerFactory.create(activity, activityTabProvider);
+            mEdgeToEdgeController =
+                    EdgeToEdgeControllerFactory.create(activity, activityTabProvider);
+            supplier.set(mEdgeToEdgeController);
         }
     }
 
@@ -1789,9 +1802,20 @@ public class RootUiCoordinator
     }
 
     /**
+     * @return {@link ComposedBrowserControlsVisibilityDelegate} object for tabbed activity.
+     */
+    public ComposedBrowserControlsVisibilityDelegate getAppBrowserControlsVisibilityDelegate() {
+        if (mAppBrowserControlsVisibilityDelegate == null) {
+            mAppBrowserControlsVisibilityDelegate = new ComposedBrowserControlsVisibilityDelegate();
+        }
+        return mAppBrowserControlsVisibilityDelegate;
+    }
+
+    /**
      * Gets the browser controls manager, creates it unless already created.
+     *
      * @deprecated Instead, inject this directly to your constructor. If that's not possible, then
-     *         use {@link BrowserControlsManagerSupplier}.
+     *     use {@link BrowserControlsManagerSupplier}.
      */
     @NonNull
     @Deprecated
@@ -1969,10 +1993,6 @@ public class RootUiCoordinator
 
     public ScrimCoordinator getScrimCoordinatorForTesting() {
         return mScrimCoordinator;
-    }
-
-    public EdgeToEdgeController getEdgeToEdgeControllerForTesting() {
-        return mE2eController;
     }
 
     public void destroyActivityForTesting() {

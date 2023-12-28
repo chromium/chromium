@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/safe_browsing/content/browser/client_report_util.h"
-#include "components/security_interstitials/content/unsafe_resource_util.h"
+#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
 
@@ -40,8 +40,6 @@ CSBRR::ReportType GetReportTypeFromSBThreatType(SBThreatType threat_type) {
       return CSBRR::URL_UNWANTED;
     case SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
       return CSBRR::URL_CLIENT_SIDE_PHISHING;
-    case SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
-      return CSBRR::URL_CLIENT_SIDE_MALWARE;
     case SB_THREAT_TYPE_BLOCKED_AD_POPUP:
       return CSBRR::BLOCKED_AD_POPUP;
     case SB_THREAT_TYPE_AD_SAMPLE:
@@ -69,6 +67,7 @@ CSBRR::ReportType GetReportTypeFromSBThreatType(SBThreatType threat_type) {
     case SB_THREAT_TYPE_CSD_ALLOWLIST:
     case SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
     case DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
+    case DEPRECATED_SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
     case SB_THREAT_TYPE_MANAGED_POLICY_WARN:
     case SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
       // Gated by SafeBrowsingBlockingPage::ShouldReportThreatDetails.
@@ -89,8 +88,6 @@ CSBRR::WarningShownInfo::WarningUXType GetWarningUXTypeFromSBThreatType(
       return CSBRR::WarningShownInfo::UWS_INTERSTITIAL;
     case SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
       return CSBRR::WarningShownInfo::CLIENT_SIDE_PHISHING_INTERSTITIAL;
-    case SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
-      return CSBRR::WarningShownInfo::MALWARE_INTERSTITIAL;
     case SB_THREAT_TYPE_BILLING:
       return CSBRR::WarningShownInfo::BILLING_INTERSTITIAL;
     case SB_THREAT_TYPE_BLOCKED_AD_POPUP:
@@ -112,6 +109,7 @@ CSBRR::WarningShownInfo::WarningUXType GetWarningUXTypeFromSBThreatType(
     case SB_THREAT_TYPE_CSD_ALLOWLIST:
     case SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
     case DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
+    case DEPRECATED_SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
     case SB_THREAT_TYPE_MANAGED_POLICY_WARN:
     case SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
       NOTREACHED() << "We should not send report for threat type: "
@@ -238,7 +236,7 @@ GURL GetPageUrl(const security_interstitials::UnsafeResource& resource) {
     // |GetNavigationEntryForResource| can only be called from the UI thread.
     if (content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
       content::NavigationEntry* nav_entry =
-          GetNavigationEntryForResource(resource);
+          unsafe_resource_util::GetNavigationEntryForResource(resource);
       if (nav_entry) {
         page_url = nav_entry->GetURL();
       }
@@ -255,7 +253,7 @@ GURL GetReferrerUrl(const security_interstitials::UnsafeResource& resource) {
     // |GetNavigationEntryForResource| can only be called from the UI thread.
     if (content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
       content::NavigationEntry* nav_entry =
-          GetNavigationEntryForResource(resource);
+          unsafe_resource_util::GetNavigationEntryForResource(resource);
       if (nav_entry) {
         referrer_url = nav_entry->GetReferrer().url;
       }

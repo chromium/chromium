@@ -25,6 +25,8 @@ import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.
 import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manager_types.js';
 import {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
 
+import {getTemplate} from './fingerprint_setup.html.js';
+
 
 /**
  * These values must be kept in sync with the values in
@@ -85,7 +87,7 @@ class FingerprintSetup extends FingerprintSetupBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

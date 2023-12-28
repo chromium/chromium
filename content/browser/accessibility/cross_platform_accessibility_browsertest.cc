@@ -72,8 +72,9 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
                                 std::unordered_set<int>* ids) const {
     ASSERT_TRUE(ids->find(node->id()) == ids->end());
     ids->insert(node->id());
-    for (const auto* child : node->children())
+    for (const ui::AXNode* child : node->children()) {
       RecursiveAssertUniqueIds(child, ids);
+    }
   }
 
   void SetUp() override;

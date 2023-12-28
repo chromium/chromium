@@ -25,6 +25,9 @@
 // Whether the associated tab is loading.
 @property(nonatomic, assign) BOOL loading;
 
+// Whether the cell separator is hidden.
+@property(nonatomic, assign) BOOL separatorHidden;
+
 // Sets the title of the cell.
 - (void)setTitle:(NSString*)title;
 // Sets the favicon for the page. Passing nil sets the default image.

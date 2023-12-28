@@ -24,14 +24,15 @@ class Profile;
 class CrostiniAnsibleSoftwareConfigView
     : public views::BubbleDialogDelegateView,
       public crostini::AnsibleManagementService::Observer {
+  METADATA_HEADER(CrostiniAnsibleSoftwareConfigView,
+                  views::BubbleDialogDelegateView)
+
  public:
   CrostiniAnsibleSoftwareConfigView(const CrostiniAnsibleSoftwareConfigView&) =
       delete;
   CrostiniAnsibleSoftwareConfigView& operator=(
       const CrostiniAnsibleSoftwareConfigView&) = delete;
   ~CrostiniAnsibleSoftwareConfigView() override;
-
-  METADATA_HEADER(CrostiniAnsibleSoftwareConfigView);
 
   // views::DialogDelegateView:
   bool Accept() override;

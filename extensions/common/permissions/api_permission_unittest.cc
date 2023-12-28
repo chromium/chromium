@@ -23,8 +23,8 @@ namespace extensions {
 // Tests that the ExtensionPermission3 enum in enums.xml exactly matches the
 // mojom::APIPermissionID enum in Mojom.
 TEST(ExtensionAPIPermissionTest, CheckEnums) {
-  std::optional<base::HistogramEnumEntryMap> enums =
-      base::ReadEnumFromEnumsXml("ExtensionPermission3");
+  std::optional<base::HistogramEnumEntryMap> enums = base::ReadEnumFromEnumsXml(
+      "ExtensionPermission3", /*subdirectory=*/"extensions");
   ASSERT_TRUE(enums);
   // The number of enums in the histogram entry should be equal to the number of
   // enums in the C++ file.

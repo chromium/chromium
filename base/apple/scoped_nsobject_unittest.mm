@@ -5,9 +5,10 @@
 #include <vector>
 
 #include "base/apple/scoped_nsobject.h"
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(__has_feature) && __has_feature(objc_arc)
+#if HAS_FEATURE(objc_arc)
 #error "This file must not be compiled with ARC."
 #endif
 
@@ -51,7 +52,7 @@ TEST(ScopedNSObjectTest, ScopedNSObject) {
   }
   ASSERT_EQ(2u, [p1.get() retainCount]);
 
-  base::apple::scoped_nsobject<NSObject> p7([NSObject new]);
+  base::apple::scoped_nsobject<NSObject> p7([[NSObject alloc] init]);
   base::apple::scoped_nsobject<NSObject> p8(std::move(p7));
   ASSERT_TRUE(p8);
   ASSERT_EQ(1u, [p8.get() retainCount]);

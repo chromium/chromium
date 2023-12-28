@@ -11,9 +11,10 @@ import {ListPropertyUpdateMixin, ListPropertyUpdateMixinInterface} from 'chrome:
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {HighEfficiencyModeExceptionListAction, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from '../performance_metrics_proxy.js';
+import {MemorySaverModeExceptionListAction, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from '../performance_metrics_proxy.js';
+
 import {getTemplate} from './exception_add_input.html.js';
-import {TAB_DISCARD_EXCEPTIONS_PREF, ExceptionValidationMixin, ExceptionValidationMixinInterface} from './exception_validation_mixin.js';
+import {ExceptionValidationMixin, ExceptionValidationMixinInterface, TAB_DISCARD_EXCEPTIONS_PREF} from './exception_validation_mixin.js';
 
 export interface ExceptionAddInputElement {
   $: {
@@ -47,7 +48,7 @@ export class ExceptionAddInputElement extends
     const rule = this.rule.trim();
     this.appendPrefListItem(TAB_DISCARD_EXCEPTIONS_PREF, rule);
     this.metricsProxy_.recordExceptionListAction(
-        HighEfficiencyModeExceptionListAction.ADD_MANUAL);
+        MemorySaverModeExceptionListAction.ADD_MANUAL);
   }
 }
 

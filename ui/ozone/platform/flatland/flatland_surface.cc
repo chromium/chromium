@@ -59,19 +59,19 @@ OverlayTransformFlatlandProperties OverlayTransformToFlatlandProperties(
           .image_flip = fuchsia::ui::composition::ImageFlip::NONE};
     // gfx::OverlayTransform and Flatland rotate in opposite directions relative
     // to each other, so swap 90 and 270.
-    case gfx::OVERLAY_TRANSFORM_ROTATE_90:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90:
       return {
           .translation = {rounded_bounds.x() + rounded_bounds.width(),
                           rounded_bounds.y()},
           .orientation = fuchsia::ui::composition::Orientation::CCW_270_DEGREES,
           .image_flip = fuchsia::ui::composition::ImageFlip::NONE};
-    case gfx::OVERLAY_TRANSFORM_ROTATE_180:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180:
       return {
           .translation = {rounded_bounds.x() + rounded_bounds.width(),
                           rounded_bounds.y() + rounded_bounds.height()},
           .orientation = fuchsia::ui::composition::Orientation::CCW_180_DEGREES,
           .image_flip = fuchsia::ui::composition::ImageFlip::NONE};
-    case gfx::OVERLAY_TRANSFORM_ROTATE_270:
+    case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270:
       return {
           .translation = {rounded_bounds.x(),
                           rounded_bounds.y() + rounded_bounds.height()},
@@ -104,8 +104,8 @@ OverlayTransformFlatlandProperties OverlayTransformToFlatlandProperties(
 fuchsia::math::SizeU GfxSizeToFuchsiaSize(
     const gfx::Size& size,
     gfx::OverlayTransform plane_transform = gfx::OVERLAY_TRANSFORM_NONE) {
-  if (plane_transform == gfx::OVERLAY_TRANSFORM_ROTATE_90 ||
-      plane_transform == gfx::OVERLAY_TRANSFORM_ROTATE_270) {
+  if (plane_transform == gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90 ||
+      plane_transform == gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270) {
     return fuchsia::math::SizeU{static_cast<uint32_t>(size.height()),
                                 static_cast<uint32_t>(size.width())};
   }

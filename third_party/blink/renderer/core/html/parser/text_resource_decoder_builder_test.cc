@@ -5,9 +5,11 @@
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder_builder.h"
 
 #include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -27,12 +29,14 @@ static const WTF::TextEncoding DefaultEncodingForURL(const char* url) {
 }
 
 TEST(TextResourceDecoderBuilderTest, defaultEncodingForJsonIsUTF8) {
+  test::TaskEnvironment task_environment;
   EXPECT_EQ(WTF::TextEncoding("UTF-8"),
             DefaultEncodingForUrlAndContentType(
                 "https://udarenieru.ru/1.2/dealers/", "application/json"));
 }
 
 TEST(TextResourceDecoderBuilderTest, defaultEncodingComesFromTopLevelDomain) {
+  test::TaskEnvironment task_environment;
   EXPECT_EQ(WTF::TextEncoding("Shift_JIS"),
             DefaultEncodingForURL("http://tsubotaa.la.coocan.jp"));
   EXPECT_EQ(WTF::TextEncoding("windows-1251"),
@@ -41,6 +45,7 @@ TEST(TextResourceDecoderBuilderTest, defaultEncodingComesFromTopLevelDomain) {
 
 TEST(TextResourceDecoderBuilderTest,
      NoCountryDomainURLDefaultsToLatin1Encoding) {
+  test::TaskEnvironment task_environment;
   // Latin1 encoding is set in |TextResourceDecoder::defaultEncoding()|.
   EXPECT_EQ(WTF::Latin1Encoding(),
             DefaultEncodingForURL("http://arstechnica.com/about-us"));

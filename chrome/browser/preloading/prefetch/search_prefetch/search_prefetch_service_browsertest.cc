@@ -3261,9 +3261,7 @@ IN_PROC_BROWSER_TEST_F(GooglePFTestFieldTrialOverride,
 class GooglePFTestDefaultFieldTrialValue : public GooglePFTest {
  public:
   GooglePFTestDefaultFieldTrialValue() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        kSearchNavigationPrefetch,
-        {{"suggest_prefetch_param", ""}, {"navigation_prefetch_param", ""}});
+    feature_list_.InitAndEnableFeature(kSearchNavigationPrefetch);
   }
 
  private:

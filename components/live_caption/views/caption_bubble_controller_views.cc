@@ -10,11 +10,15 @@
 #include <unordered_map>
 
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/live_caption/caption_bubble_context.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/views/caption_bubble.h"
 #include "components/live_caption/views/caption_bubble_model.h"
 #include "components/prefs/pref_service.h"
+#include "components/soda/soda_installer.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace captions {
 
@@ -28,7 +32,8 @@ std::unique_ptr<CaptionBubbleController> CaptionBubbleController::Create(
 
 CaptionBubbleControllerViews::CaptionBubbleControllerViews(
     PrefService* profile_prefs,
-    const std::string& application_locale) {
+    const std::string& application_locale)
+    : application_locale_(application_locale) {
   caption_bubble_ = new CaptionBubble(
       profile_prefs, application_locale,
       base::BindOnce(&CaptionBubbleControllerViews::OnCaptionBubbleDestroyed,
@@ -36,11 +41,28 @@ CaptionBubbleControllerViews::CaptionBubbleControllerViews(
   caption_widget_ =
       views::BubbleDialogDelegateView::CreateBubble(caption_bubble_);
   caption_bubble_->SetCaptionBubbleStyle();
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
+  if (soda_installer) {
+    soda_installer->AddObserver(this);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 CaptionBubbleControllerViews::~CaptionBubbleControllerViews() {
   if (caption_widget_)
     caption_widget_->CloseNow();
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
+  // `soda_installer` is not guaranteed to be valid, since it's possible for
+  // this class to out-live it. This means that this class cannot use
+  // ScopedObservation and needs to manage removing the observer itself.
+  if (soda_installer) {
+    soda_installer->RemoveObserver(this);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void CaptionBubbleControllerViews::OnCaptionBubbleDestroyed() {
@@ -220,6 +242,36 @@ void CaptionBubbleControllerViews::OnLanguageIdentificationEvent(
   if (event->asr_switch_result ==
       media::mojom::AsrSwitchResult::kSwitchSucceeded) {
     active_model_->SetLanguage(event->language);
+  }
+}
+
+void CaptionBubbleControllerViews::OnSodaInstalled(
+    speech::LanguageCode language_code) {
+  if (active_model_ && language_code != speech::LanguageCode::kNone) {
+    active_model_->OnLanguagePackInstalled();
+  }
+}
+
+void CaptionBubbleControllerViews::OnSodaInstallError(
+    speech::LanguageCode language_code,
+    speech::SodaInstaller::ErrorCode error_code) {
+  if (active_model_ && language_code != speech::LanguageCode::kNone) {
+    active_model_->SetDownloadProgressText(l10n_util::GetStringFUTF16(
+        IDS_LIVE_CAPTION_LANGUAGE_DOWNLOAD_FAILED,
+        speech::GetLanguageDisplayName(speech::GetLanguageName(language_code),
+                                       application_locale_)));
+  }
+}
+
+void CaptionBubbleControllerViews::OnSodaProgress(
+    speech::LanguageCode language_code,
+    int progress) {
+  if (active_model_ && language_code != speech::LanguageCode::kNone) {
+    active_model_->SetDownloadProgressText(l10n_util::GetStringFUTF16(
+        IDS_LIVE_CAPTION_DOWNLOAD_PROGRESS,
+        speech::GetLanguageDisplayName(speech::GetLanguageName(language_code),
+                                       application_locale_),
+        base::UTF8ToUTF16(std::to_string(progress))));
   }
 }
 

@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {ModuleDescriptor, ModuleWrapperElement} from 'chrome://new-tab-page/lazy_load.js';
-import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {NewTabPageProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertThrows} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -13,6 +14,7 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {createElement, initNullModule, installMock} from '../test_support.js';
 
 suite('NewTabPageModulesModuleWrapperTest', () => {
+  let handler: TestMock<PageHandlerRemote>;
   let moduleWrapper: ModuleWrapperElement;
   let metrics: MetricsTracker;
   let windowProxy: TestMock<WindowProxy>;
@@ -22,6 +24,10 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
     loadTimeData.overrideValues({
       navigationStartTime: 0.0,
     });
+    handler = installMock(
+        PageHandlerRemote,
+        (mock: PageHandlerRemote) =>
+            NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
     metrics = fakeMetricsPrivate();
     windowProxy = installMock(WindowProxy);
     moduleWrapper = new ModuleWrapperElement();
@@ -76,11 +82,36 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
     };
 
     // Act.
-    moduleElement.dispatchEvent(new Event('usage'));
+    moduleElement.dispatchEvent(new Event('usage', {bubbles: true}));
 
     // Assert.
     assertEquals(1, metrics.count('NewTabPage.Modules.Usage'));
     assertEquals(1, metrics.count('NewTabPage.Modules.Usage.foo'));
+  });
+
+  suite('Redesigned modules', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({modulesRedesignedEnabled: true});
+    });
+
+    ['usage', 'menu-button-click'].forEach((eventName: string) => {
+      test(
+          `module ${eventName} event triggers onModuleUsed
+              function`,
+          () => {
+            const moduleId = 'foo';
+            const moduleElement = createElement();
+            moduleWrapper.module = {
+              descriptor: new ModuleDescriptor(moduleId, initNullModule),
+              element: moduleElement,
+            };
+
+            moduleElement.dispatchEvent(new Event(eventName, {bubbles: true}));
+
+            assertEquals(1, handler.getCallCount('onModuleUsed'));
+            assertEquals(moduleId, handler.getArgs('onModuleUsed')[0]);
+          });
+    });
   });
 
   test('clicking info button records click and module id', () => {

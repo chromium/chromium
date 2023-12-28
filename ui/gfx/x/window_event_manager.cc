@@ -87,7 +87,7 @@ class WindowEventManager::MultiMask {
   void RemoveMask(EventMask mask) {
     for (int i = 0; i < kMaskSize; i++) {
       if (static_cast<uint32_t>(mask) & (1 << i)) {
-        DUMP_WILL_BE_CHECK(mask_bits_[i]);
+        CHECK(mask_bits_[i]);
         mask_bits_[i]--;
       }
     }
@@ -113,10 +113,18 @@ WindowEventManager::WindowEventManager(Connection* connection)
     : connection_(connection) {}
 
 WindowEventManager::~WindowEventManager() {
+  Reset();
+}
+
+void WindowEventManager::Reset() {
+  if (!connection_) {
+    return;
+  }
   // Clear events still requested by not-yet-deleted ScopedEventSelectors.
   for (const auto& mask_pair : mask_map_) {
     SetEventMask(connection_, mask_pair.first, EventMask::NoEvent);
   }
+  connection_ = nullptr;
 }
 
 void WindowEventManager::SelectEvents(Window window, EventMask event_mask) {
@@ -130,7 +138,7 @@ void WindowEventManager::SelectEvents(Window window, EventMask event_mask) {
 }
 
 void WindowEventManager::DeselectEvents(Window window, EventMask event_mask) {
-  DUMP_WILL_BE_CHECK(mask_map_.find(window) != mask_map_.end());
+  CHECK(mask_map_.find(window) != mask_map_.end());
   std::unique_ptr<MultiMask>& mask = mask_map_[window];
   EventMask old_mask = mask->ToMask();
   mask->RemoveMask(event_mask);
@@ -143,7 +151,9 @@ void WindowEventManager::AfterMaskChanged(Window window, EventMask old_mask) {
     return;
   }
 
-  SetEventMask(connection_, window, new_mask);
+  if (connection_) {
+    SetEventMask(connection_, window, new_mask);
+  }
 
   if (new_mask == EventMask::NoEvent) {
     mask_map_.erase(window);

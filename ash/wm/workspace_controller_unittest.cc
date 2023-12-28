@@ -68,7 +68,8 @@ std::string GetLayerNames(const aura::Window* window) {
   }
 
   std::string result;
-  const std::vector<ui::Layer*>& layers(window->layer()->children());
+  const std::vector<raw_ptr<ui::Layer, VectorExperimental>>& layers(
+      window->layer()->children());
   for (size_t i = 0; i < layers.size(); ++i) {
     LayerToWindowNameMap::iterator layer_i = window_names.find(layers[i]);
     if (layer_i != window_names.end()) {
@@ -609,7 +610,7 @@ class DontCrashOnChangeAndActivateDelegate
   }
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
+  raw_ptr<aura::Window> window_ = nullptr;
 };
 
 }  // namespace
@@ -841,7 +842,7 @@ TEST_F(WorkspaceControllerTest, BasicAutoPlacingOnShowHide) {
 
   // Test4: A single manageable window should get centered.
   window4.reset();
-  window1_state->set_bounds_changed_by_user(false);
+  window1_state->SetBoundsChangedByUser(false);
   // Trigger the auto window placement function by showing (and hiding) it.
   window1->Hide();
   window1->Show();
@@ -871,7 +872,7 @@ TEST_F(WorkspaceControllerTest, TestUserMovedWindowRepositioning) {
 
   // Check that the current location gets preserved if the user has
   // positioned it previously.
-  window1_state->set_bounds_changed_by_user(true);
+  window1_state->SetBoundsChangedByUser(true);
   window1->Show();
   EXPECT_EQ("16,32 640x320", window1->bounds().ToString());
   // Flag should be still set.
@@ -893,7 +894,7 @@ TEST_F(WorkspaceControllerTest, TestUserMovedWindowRepositioning) {
   EXPECT_FALSE(window2_state->bounds_changed_by_user());
 
   // Going back to one shown window should keep the state.
-  window1_state->set_bounds_changed_by_user(true);
+  window1_state->SetBoundsChangedByUser(true);
   window2->Hide();
   EXPECT_EQ("0,32 640x320", window1->bounds().ToString());
   EXPECT_TRUE(window1_state->bounds_changed_by_user());
@@ -1023,7 +1024,7 @@ TEST_F(WorkspaceControllerTest, TestRestoreToUserModifiedBounds) {
   resizer->Drag(location, 0);
   resizer->CompleteDrag();
 
-  window1_state->set_bounds_changed_by_user(true);
+  window1_state->SetBoundsChangedByUser(true);
   window1->SetBounds(gfx::Rect(100, 0, 100, 100));
 
   window2->Show();

@@ -44,7 +44,7 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
   static get properties() {
     return {
       feedbackContext: {
-        type: FeedbackContext,
+        type: Object,
         readOnly: false,
         notify: true,
         observer: ShareDataPageElement.prototype.onFeedbackContextChanged,

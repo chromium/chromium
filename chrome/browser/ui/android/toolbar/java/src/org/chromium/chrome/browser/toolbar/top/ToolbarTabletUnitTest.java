@@ -7,11 +7,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.os.Looper;
@@ -31,10 +34,12 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.LooperMode;
+import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -56,6 +61,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.widget.ToastManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /** Unit tests for @{@link ToolbarTablet} */
 @LooperMode(LooperMode.Mode.PAUSED)
@@ -66,7 +72,7 @@ public final class ToolbarTabletUnitTest {
     @Mock private LocationBarCoordinatorTablet mLocationBarTablet;
     @Mock private StatusCoordinator mStatusCoordinator;
     @Mock private MenuButtonCoordinator mMenuButtonCoordinator;
-    @Mock private View mContainerView;
+    @Mock private TabStripTransitionCoordinator mTabStripTransitionCoordinator;
     private Activity mActivity;
     private ToolbarTablet mToolbarTablet;
     private LinearLayout mToolbarTabletLayout;
@@ -85,14 +91,16 @@ public final class ToolbarTabletUnitTest {
         MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mToolbarTablet =
+        ToolbarTablet realView =
                 (ToolbarTablet)
                         mActivity.getLayoutInflater().inflate(R.layout.toolbar_tablet, null);
+        mToolbarTablet = Mockito.spy(realView);
         when(mLocationBar.getTabletCoordinator()).thenReturn(mLocationBarTablet);
         mToolbarTablet.setLocationBarCoordinator(mLocationBar);
         LocationBarLayout locationBarLayout = mToolbarTablet.findViewById(R.id.location_bar);
         locationBarLayout.setStatusCoordinatorForTesting(mStatusCoordinator);
         mToolbarTablet.setMenuButtonCoordinatorForTesting(mMenuButtonCoordinator);
+        mToolbarTablet.setTabStripTransitionCoordinator(mTabStripTransitionCoordinator);
         mToolbarTabletLayout =
                 (LinearLayout) mToolbarTablet.findViewById(R.id.toolbar_tablet_layout);
         mHomeButton = mToolbarTablet.findViewById(R.id.home_button);
@@ -205,6 +213,7 @@ public final class ToolbarTabletUnitTest {
 
     @Test
     public void onMeasureSmallWidthWithAnimation_hidesToolbarButtons() {
+        doReturn(true).when(mToolbarTablet).isShown();
         for (ImageButton btn : mToolbarTablet.getToolbarButtons()) {
             when(mLocationBar.createHideButtonAnimatorForTablet(btn))
                     .thenReturn(ObjectAnimator.ofFloat(btn, View.ALPHA, 0.f));
@@ -215,6 +224,7 @@ public final class ToolbarTabletUnitTest {
         mToolbarTablet.enableButtonVisibilityChangeAnimationForTesting();
         // Call
         mToolbarTablet.measure(300, 300);
+        verify(mTabStripTransitionCoordinator).requestDeferTabStripTransitionToken();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
         // Verify
         ImageButton[] btns = mToolbarTablet.getToolbarButtons();
@@ -222,10 +232,12 @@ public final class ToolbarTabletUnitTest {
             assertEquals(
                     "Toolbar button visibility is not as expected", View.GONE, btn.getVisibility());
         }
+        verify(mTabStripTransitionCoordinator, atLeastOnce()).releaseTabStripToken(anyInt());
     }
 
     @Test
     public void onMeasureLargeWidthWithAnimation_showsToolbarButtons() {
+        doReturn(true).when(mToolbarTablet).isShown();
         mToolbarTablet.setToolbarButtonsVisibleForTesting(false);
         mToolbarTablet.enableButtonVisibilityChangeAnimationForTesting();
         for (ImageButton btn : mToolbarTablet.getToolbarButtons()) {
@@ -236,6 +248,7 @@ public final class ToolbarTabletUnitTest {
                 .thenReturn(new ArrayList<>());
         // Call
         mToolbarTablet.measure(700, 300);
+        verify(mTabStripTransitionCoordinator).requestDeferTabStripTransitionToken();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
         // Verify
         ImageButton[] btns = mToolbarTablet.getToolbarButtons();
@@ -245,6 +258,7 @@ public final class ToolbarTabletUnitTest {
                     View.VISIBLE,
                     btn.getVisibility());
         }
+        verify(mTabStripTransitionCoordinator, atLeastOnce()).releaseTabStripToken(anyInt());
     }
 
     @Test
@@ -323,14 +337,6 @@ public final class ToolbarTabletUnitTest {
                 mActivity.getResources().getString(R.string.accessibility_btn_refresh),
                 btn.getContentDescription());
         assertTrue("Button should be enabled", btn.isEnabled());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TOOLBAR_SCROLL_ABLATION_ANDROID)
-    public void testIsReadyForTextureCapture_Ablation() {
-        CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
-        Assert.assertFalse(result.isReady);
-        Assert.assertEquals(TopToolbarBlockCaptureReason.SCROLL_ABLATION, result.blockReason);
     }
 
     @Test
@@ -480,6 +486,56 @@ public final class ToolbarTabletUnitTest {
         CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
         Assert.assertFalse(result.isReady);
         Assert.assertEquals(TopToolbarBlockCaptureReason.TAB_SWITCHER_MODE, result.blockReason);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
+    public void testIsReadyForTextureCapture_ButtonShowAnimationInProgress() {
+        mToolbarTablet.setToolbarButtonsVisibleForTesting(false);
+        mToolbarTablet.enableButtonVisibilityChangeAnimationForTesting();
+
+        // Set a test-only animator so the animation can have an in-between state.
+        ValueAnimator animator = ValueAnimator.ofFloat(0.f, 1.f);
+        when(mLocationBar.getShowButtonsWhenUnfocusedAnimatorsForTablet(anyInt()))
+                .thenReturn(List.of(animator));
+
+        // Run animation.
+        mToolbarTablet.measure(700, 300);
+        CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
+        Assert.assertFalse(result.isReady);
+        Assert.assertEquals(
+                TopToolbarBlockCaptureReason.TABLET_BUTTON_ANIMATION_IN_PROGRESS,
+                result.blockReason);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        result = mToolbarTablet.isReadyForTextureCapture();
+        Assert.assertTrue(result.isReady);
+        Assert.assertEquals(TopToolbarAllowCaptureReason.SNAPSHOT_DIFFERENCE, result.allowReason);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
+    public void testIsReadyForTextureCapture_ButtonHideAnimationInProgress() {
+        mToolbarTablet.setToolbarButtonsVisibleForTesting(true);
+        mToolbarTablet.enableButtonVisibilityChangeAnimationForTesting();
+
+        // Set a test-only animator so the animation can have an in-between state.
+        ValueAnimator animator = ValueAnimator.ofFloat(0.f, 1.f);
+        when(mLocationBar.getHideButtonsWhenUnfocusedAnimatorsForTablet(anyInt()))
+                .thenReturn(List.of(animator));
+
+        // Run animation.
+        mToolbarTablet.measure(300, 300);
+        CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
+        Assert.assertFalse(result.isReady);
+        Assert.assertEquals(
+                TopToolbarBlockCaptureReason.TABLET_BUTTON_ANIMATION_IN_PROGRESS,
+                result.blockReason);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        result = mToolbarTablet.isReadyForTextureCapture();
+        Assert.assertTrue(result.isReady);
+        Assert.assertEquals(TopToolbarAllowCaptureReason.SNAPSHOT_DIFFERENCE, result.allowReason);
     }
 
     @Test

@@ -87,9 +87,6 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
      std::cref(blink::features::kClientHintThirdPartyDelegation),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
     {switches::kEnableExperimentalWebPlatformFeatures,
-     std::cref(blink::features::kClipboardCustomFormats),
-     base::FeatureList::OVERRIDE_ENABLE_FEATURE},
-    {switches::kEnableExperimentalWebPlatformFeatures,
      std::cref(blink::features::kEditContext),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
     {switches::kEnableExperimentalWebPlatformFeatures,
@@ -97,12 +94,6 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
     {switches::kEnableExperimentalWebPlatformFeatures,
      std::cref(net::features::kThirdPartyStoragePartitioning),
-     base::FeatureList::OVERRIDE_ENABLE_FEATURE},
-    {switches::kEnableExperimentalWebPlatformFeatures,
-     std::cref(blink::features::kStorageAccessAPI),
-     base::FeatureList::OVERRIDE_ENABLE_FEATURE},
-    {switches::kEnableExperimentalWebPlatformFeatures,
-     std::cref(blink::features::kStorageAccessAPIForOriginExtension),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
     {switches::kEnableExperimentalWebPlatformFeatures,
      std::cref(blink::features::kClientHintsFormFactor),
@@ -136,15 +127,6 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
     {switches::kIsolationByDefault,
      std::cref(network::features::kCrossOriginOpenerPolicyByDefault),
-     base::FeatureList::OVERRIDE_ENABLE_FEATURE},
-
-    // Overrides for First-Party Sets, which is enabled when either switch is
-    // present. When both switches are present, `kUseRelatedWebsiteSet` takes
-    // precedence.
-    {network::switches::kUseRelatedWebsiteSet,
-     std::cref(features::kFirstPartySets),
-     base::FeatureList::OVERRIDE_ENABLE_FEATURE},
-    {network::switches::kUseFirstPartySet, std::cref(features::kFirstPartySets),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 
     {blink::switches::kWebSQLAccess, std::cref(blink::features::kWebSQLAccess),

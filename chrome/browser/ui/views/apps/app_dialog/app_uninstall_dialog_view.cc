@@ -42,6 +42,7 @@
 #include "extensions/common/manifest_url_handlers.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/border.h"
@@ -72,9 +73,9 @@ AppUninstallDialogView* g_app_uninstall_dialog_view = nullptr;
 
 class UninstallCheckboxView : public views::View,
                               public views::ViewTargeterDelegate {
- public:
-  METADATA_HEADER(UninstallCheckboxView);
+  METADATA_HEADER(UninstallCheckboxView, views::View)
 
+ public:
   class CheckboxTargeter : public views::ViewTargeterDelegate {
    public:
     CheckboxTargeter() = default;
@@ -130,7 +131,7 @@ class UninstallCheckboxView : public views::View,
   raw_ptr<views::Checkbox> checkbox_;
 };
 
-BEGIN_METADATA(UninstallCheckboxView, views::View)
+BEGIN_METADATA(UninstallCheckboxView)
 END_METADATA
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -152,8 +153,9 @@ std::u16string GetWindowTitleForApp(Profile* profile,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On ChromeOS, all app types exist, but Arc shortcut apps get the regular
   // extension uninstall title.
-  if (app_type == apps::AppType::kArc && IsArcShortcutApp(profile, app_id))
+  if (app_type == apps::AppType::kArc && IsArcShortcutApp(profile, app_id)) {
     return l10n_util::GetStringUTF16(IDS_EXTENSION_UNINSTALL_PROMPT_TITLE);
+  }
 #else
   // On non-ChromeOS, only Chrome app and web app types meaningfully exist.
   DCHECK(app_type != apps::AppType::kChromeApp &&
@@ -256,7 +258,6 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
   switch (app_type) {
     case apps::AppType::kUnknown:
     case apps::AppType::kBuiltIn:
-    case apps::AppType::kMacOs:
     case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kRemote:
     case apps::AppType::kExtension:
@@ -331,8 +332,9 @@ void AppUninstallDialogView::InitializeCheckbox(const GURL& app_start_url) {
     auto domain = net::registry_controlled_domains::GetDomainAndRegistry(
         app_start_url,
         net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-    if (!domain.empty())
+    if (!domain.empty()) {
       domain[0] = base::ToUpperASCII(domain[0]);
+    }
 
     replacements.push_back(base::ASCIIToUTF16(domain));
   }
@@ -511,8 +513,7 @@ void AppUninstallDialogView::GetSubAppsInfo(
         });
 
     app_service_proxy->LoadIcon(
-        apps::AppType::kWeb, sub_app_id, apps::IconType::kUncompressed,
-        web_app::kWebAppIconSmall,
+        sub_app_id, apps::IconType::kUncompressed, web_app::kWebAppIconSmall,
         /*allow_placeholder_icon=*/false,
         base::BindOnce(
             [](std::u16string sub_app_name, apps::IconValuePtr icon_value_ptr) {
@@ -594,3 +595,6 @@ void AppUninstallDialogView::OnWidgetInitialized() {
   GetOkButton()->SetProperty(views::kElementIdentifierKey,
                              kAppUninstallDialogOkButtonId);
 }
+
+BEGIN_METADATA(AppUninstallDialogView)
+END_METADATA

@@ -94,7 +94,8 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
-class WebAppSettingsWindowDelegate : public AppManagementPageHandler::Delegate {
+class WebAppSettingsWindowDelegate
+    : public AppManagementPageHandlerBase::Delegate {
  public:
   explicit WebAppSettingsWindowDelegate(Profile* profile) : profile_(profile) {}
 
@@ -113,7 +114,7 @@ class WebAppSettingsWindowDelegate : public AppManagementPageHandler::Delegate {
 }  // namespace
 
 // static
-std::unique_ptr<AppManagementPageHandler::Delegate>
+std::unique_ptr<AppManagementPageHandlerBase::Delegate>
 WebAppSettingsUI::CreateAppManagementPageHandlerDelegate(Profile* profile) {
   return std::make_unique<WebAppSettingsWindowDelegate>(profile);
 }

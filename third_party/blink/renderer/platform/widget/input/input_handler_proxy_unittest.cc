@@ -468,8 +468,7 @@ InputHandlerProxy::EventDisposition HandleInputEventWithLatencyInfo(
               std::unique_ptr<blink::WebCoalescedInputEvent> event,
               std::unique_ptr<InputHandlerProxy::DidOverscrollParams> callback,
               const WebInputEventAttribution& attribution,
-              std::unique_ptr<cc::EventMetrics> metrics,
-              mojom::blink::ScrollResultDataPtr scroll_result_data) {
+              std::unique_ptr<cc::EventMetrics> metrics) {
             event_disposition = disposition;
           }));
   return event_disposition;
@@ -496,8 +495,7 @@ InputHandlerProxy::EventDisposition HandleInputEventAndFlushEventQueue(
               std::unique_ptr<blink::WebCoalescedInputEvent> event,
               std::unique_ptr<InputHandlerProxy::DidOverscrollParams> callback,
               const WebInputEventAttribution& attribution,
-              std::unique_ptr<cc::EventMetrics> metrics,
-              mojom::blink::ScrollResultDataPtr scroll_result_data) {
+              std::unique_ptr<cc::EventMetrics> metrics) {
             event_disposition = disposition;
           }));
 
@@ -556,8 +554,7 @@ class InputHandlerProxyEventQueueTest : public testing::Test {
       std::unique_ptr<WebCoalescedInputEvent> input_event,
       std::unique_ptr<InputHandlerProxy::DidOverscrollParams> overscroll_params,
       const WebInputEventAttribution& attribution,
-      std::unique_ptr<cc::EventMetrics> metrics,
-      mojom::blink::ScrollResultDataPtr scroll_result_data) {
+      std::unique_ptr<cc::EventMetrics> metrics) {
     event_disposition_recorder_.push_back(event_disposition);
     latency_info_recorder_.push_back(input_event->latency_info());
   }
@@ -1908,8 +1905,7 @@ class UnifiedScrollingInputHandlerProxyTest : public testing::Test {
       std::unique_ptr<WebCoalescedInputEvent> input_event,
       std::unique_ptr<InputHandlerProxy::DidOverscrollParams> overscroll_params,
       const WebInputEventAttribution& attribution,
-      std::unique_ptr<cc::EventMetrics> metrics,
-      mojom::blink::ScrollResultDataPtr scroll_result_data) {
+      std::unique_ptr<cc::EventMetrics> metrics) {
     if (out_disposition)
       *out_disposition = event_disposition;
   }
@@ -2466,7 +2462,7 @@ TEST_F(InputHandlerProxyEventQueueTest, VSyncAlignedGestureScroll) {
 }
 
 #if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) || \
-    defined(MEMORY_SANITIZER)
+    defined(MEMORY_SANITIZER) || defined(UNDEFINED_SANITIZER)
 // Flaky under sanitizers and in other "slow" bot configs:
 // https://crbug.com/1029250
 #define MAYBE_VSyncAlignedGestureScrollPinchScroll \

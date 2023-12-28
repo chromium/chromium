@@ -68,6 +68,11 @@ class MockPasswordReuseManager : public PasswordReuseManager {
               (std::unique_ptr<PasswordStoreSigninNotifier> notifier),
               (override));
   MOCK_METHOD(void, ScheduleEnterprisePasswordURLUpdate, (), (override));
+  MOCK_METHOD(void,
+              MaybeSavePasswordHash,
+              (const PasswordForm* submitted_form,
+               PasswordManagerClient* client),
+              (override));
 };
 
 }  // namespace password_manager

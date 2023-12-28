@@ -4,9 +4,12 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
+#include "ash/root_window_controller.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/bounds_tracker/window_bounds_tracker.h"
+#include "ash/wm/window_state.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/aura/window.h"
@@ -166,10 +169,8 @@ TEST_F(WindowBoundsTrackerTest, WorkAreaSizeChanges) {
   EXPECT_EQ(second_top_left_center, window2->bounds().CenterPoint());
 }
 
-// Tests that window's bounds stored in the same display configuration can be
-// updated correctly. Window can be restored to the update bounds in the tracker
-// correctly as well.
-TEST_F(WindowBoundsTrackerTest, RestoreToUpdatedBounds) {
+// Tests that window should be restored to the user assigned bounds correctly.
+TEST_F(WindowBoundsTrackerTest, UserAssignedBounds) {
   UpdateDisplay("400x300,600x500");
 
   // Initially, the window is half-offscreen inside the 2nd display. Moving it
@@ -191,12 +192,116 @@ TEST_F(WindowBoundsTrackerTest, RestoreToUpdatedBounds) {
   // as well.
   const gfx::Rect new_bounds_in_1st(300, 0, 200, 100);
   window->SetBounds(new_bounds_in_1st);
+  WindowState::Get(window)->SetBoundsChangedByUser(true);
   // Move the window to 2nd display and then back to 1st display, it should
-  // restore to its updated bounds stored in the tracker.
+  // restore to its user-assigned bounds stored in the tracker.
   PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
   EXPECT_EQ(initial_bounds, window->GetBoundsInScreen());
   PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
   EXPECT_EQ(new_bounds_in_1st, window->bounds());
+}
+
+TEST_F(WindowBoundsTrackerTest, NonUserAssignedBounds) {
+  UpdateDisplay("400x300,600x500");
+
+  display::Display first_display = GetPrimaryDisplay();
+  display::Display secondary_display = GetSecondaryDisplay();
+  const gfx::Rect first_display_work_area = first_display.work_area();
+  const gfx::Rect second_display_work_area = secondary_display.work_area();
+
+  // Initially, the window is half-offscreen inside the 2nd display.
+  const gfx::Size window_size(200, 100);
+  const gfx::Rect initial_bounds(gfx::Point(900, 0), window_size);
+  aura::Window* window = CreateTestWindowInShellWithBounds(initial_bounds);
+  wm::ActivateWindow(window);
+  // Moving the window to the 1st display and back to the 2nd display.
+  PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
+  const gfx::Rect bounds_in_1st(200, 0, 200, 100);
+  EXPECT_EQ(bounds_in_1st, window->bounds());
+  PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
+  EXPECT_EQ(initial_bounds, window->GetBoundsInScreen());
+
+  // Moving the window inside the 2nd display from half-offscreen to the center
+  // of the display.
+  const gfx::Point second_center_point = second_display_work_area.CenterPoint();
+  window->SetBoundsInScreen(
+      gfx::Rect(gfx::Point(second_center_point.x() - window_size.width() / 2,
+                           second_center_point.y() - window_size.height() / 2),
+                window_size),
+      secondary_display);
+  // Moving the window to the 1st display, it should be remapped to the center
+  // of the 1st display. As its previous non-user-assigned bounds should not be
+  // stored in the bounds database.
+  PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
+  EXPECT_EQ(first_display_work_area.CenterPoint(),
+            window->bounds().CenterPoint());
+}
+
+TEST_F(WindowBoundsTrackerTest,
+       NonUserAssignedBoundsWithUpdatedDisplayWindowInfo) {
+  UpdateDisplay("400x300,600x500");
+
+  display::Display first_display = GetPrimaryDisplay();
+  display::Display secondary_display = GetSecondaryDisplay();
+  const gfx::Rect initial_first_display_work_area = first_display.work_area();
+  const gfx::Rect second_display_work_area = secondary_display.work_area();
+
+  // Initially, the window is half-offscreen inside the 2nd display.
+  const gfx::Size window_size(200, 100);
+  const gfx::Rect initial_bounds(gfx::Point(900, 0), window_size);
+  aura::Window* window = CreateTestWindowInShellWithBounds(initial_bounds);
+  wm::ActivateWindow(window);
+  // Moving the window to the 1st display, it will be remapped to be fully
+  // visible.
+  PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
+  const gfx::Rect bounds_in_1st(200, 0, 200, 100);
+  EXPECT_EQ(bounds_in_1st, window->bounds());
+
+  // Change shelf alignment, which will change the work area. The window's
+  // bounds should have no changes on this.
+  Shelf* shelf =
+      Shell::GetRootWindowControllerWithDisplayId(first_display.id())->shelf();
+  shelf->SetAlignment(ShelfAlignment::kLeft);
+  EXPECT_EQ(ShelfAlignment::kLeft, shelf->alignment());
+  const gfx::Rect left_shelf_first_display_work_area =
+      GetPrimaryDisplay().work_area();
+  EXPECT_NE(initial_first_display_work_area,
+            left_shelf_first_display_work_area);
+  EXPECT_EQ(bounds_in_1st, window->bounds());
+
+  // Move the window to the 2nd display when the shelf is still left aligned.
+  // And then update its bounds inside the 2nd display from half-offscreen to
+  // the center of the display.
+  PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
+  const gfx::Point second_center_point = second_display_work_area.CenterPoint();
+  window->SetBoundsInScreen(
+      gfx::Rect(gfx::Point(second_center_point.x() - window_size.width() / 2,
+                           second_center_point.y() - window_size.height() / 2),
+                window_size),
+      secondary_display);
+  WindowState::Get(window)->SetBoundsChangedByUser(true);
+
+  // Move the window from the 2nd to the 1st, it should be remapped to the
+  // center of the work area when the shelf is left aligned.
+  PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
+  EXPECT_EQ(left_shelf_first_display_work_area.CenterPoint(),
+            window->GetBoundsInScreen().CenterPoint());
+
+  // Move the window from the 1st display to the 2nd display again.
+  PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
+  EXPECT_EQ(second_center_point, window->GetBoundsInScreen().CenterPoint());
+
+  // Move the window from the 2nd display to the 1st display after its shelf has
+  // been changed back to bottom aligned. The window should be remapped to the
+  // center of the display instead of restoring back to its previous remapped
+  // bounds. As its previous remapped bounds should be removed regardless the
+  // display configuration (e.g, different work area) when it was moved to
+  // another display.
+  shelf->SetAlignment(ShelfAlignment::kBottom);
+  EXPECT_EQ(initial_first_display_work_area, GetPrimaryDisplay().work_area());
+  PressAndReleaseKey(ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN);
+  EXPECT_EQ(initial_first_display_work_area.CenterPoint(),
+            window->GetBoundsInScreen().CenterPoint());
 }
 
 // Tests of moving a window from a landscape orientation display to a portrait
@@ -265,11 +370,15 @@ TEST_F(WindowBoundsTrackerTest, PortraitToLandscape) {
 TEST_F(WindowBoundsTrackerTest, RemoveNonPrimaryDisplay) {
   UpdateDisplay("400x300,600x500");
 
-  // Initially, the window is half-offscreen inside the 2nd display.
+  // Create 2 windows, one at the top left of the 1st display, another
+  // half-offscreen inside the 2nd display.
   const gfx::Size window_size(200, 100);
-  const gfx::Rect initial_bounds(gfx::Point(900, 0), window_size);
-  aura::Window* window = CreateTestWindowInShellWithBounds(initial_bounds);
-  wm::ActivateWindow(window);
+  const gfx::Rect initial_bounds_1st(window_size);
+  aura::Window* window1 = CreateTestWindowInShellWithBounds(initial_bounds_1st);
+  wm::ActivateWindow(window1);
+  const gfx::Rect initial_bounds_2nd(gfx::Point(900, 0), window_size);
+  aura::Window* window2 = CreateTestWindowInShellWithBounds(initial_bounds_2nd);
+  wm::ActivateWindow(window2);
 
   const int64_t primary_id = GetPrimaryDisplay().id();
   const int64_t secondary_id = GetSecondaryDisplay().id();
@@ -283,39 +392,43 @@ TEST_F(WindowBoundsTrackerTest, RemoveNonPrimaryDisplay) {
   std::vector<display::ManagedDisplayInfo> display_info_list;
   display_info_list.push_back(primary_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
-  // `window` is fully visible inside the primary display.
+  // `window2` is fully visible inside the primary display.
   const gfx::Rect remapping_bounds_in_1st(gfx::Point(200, 0), window_size);
-  EXPECT_EQ(remapping_bounds_in_1st, window->GetBoundsInScreen());
+  EXPECT_EQ(remapping_bounds_in_1st, window2->GetBoundsInScreen());
 
   // Reconnect the 2nd display.
   display_info_list.push_back(secondary_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
-  // `window` should be moved back to the 2nd display at its previous bounds.
-  EXPECT_EQ(initial_bounds, window->GetBoundsInScreen());
+  // `window1` should stay inside the 1st display while `window2` should be
+  // moved back to the 2nd display at its previous bounds.
+  EXPECT_EQ(initial_bounds_1st, window1->GetBoundsInScreen());
+  EXPECT_EQ(initial_bounds_2nd, window2->GetBoundsInScreen());
 
-  // Disconnect the 2nd display again. And change the window's bounds inside the
-  // primary display.
+  // Disconnect the 2nd display again. And change the bounds of `window2` inside
+  // the primary display.
   display_info_list.clear();
   display_info_list.push_back(primary_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
-  EXPECT_EQ(remapping_bounds_in_1st, window->GetBoundsInScreen());
-  // Change the window's bounds inside the 1st display, make it half-offscreen
-  // as well.
+  EXPECT_EQ(remapping_bounds_in_1st, window2->GetBoundsInScreen());
+  // Change the bounds of `window2` inside the 1st display, make it
+  // half-offscreen as well.
   const gfx::Rect updated_bounds_in_1st(gfx::Point(300, 0), window_size);
-  window->SetBounds(updated_bounds_in_1st);
+  window2->SetBounds(updated_bounds_in_1st);
+  WindowState::Get(window2)->SetBoundsChangedByUser(true);
 
   // Reconnects the 2nd display. It should still restore back to its previous
   // bounds even though the user changed its bounds inside the 1st display.
   display_info_list.push_back(secondary_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
-  EXPECT_EQ(initial_bounds, window->GetBoundsInScreen());
+  EXPECT_EQ(initial_bounds_1st, window1->GetBoundsInScreen());
+  EXPECT_EQ(initial_bounds_2nd, window2->GetBoundsInScreen());
 
-  // Disconnect the 2nd display, the window should restore to its updated bounds
-  // in the 1st display.
+  // Disconnect the 2nd display, `window2` should restore to its user-assigned
+  // bounds in the 1st display.
   display_info_list.clear();
   display_info_list.push_back(primary_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
-  EXPECT_EQ(updated_bounds_in_1st, window->GetBoundsInScreen());
+  EXPECT_EQ(updated_bounds_in_1st, window2->GetBoundsInScreen());
 }
 
 TEST_F(WindowBoundsTrackerTest, RootWindowChanges) {

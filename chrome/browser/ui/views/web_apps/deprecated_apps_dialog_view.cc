@@ -234,7 +234,8 @@ void DeprecatedAppsDialogView::InitDialog() {
   columns.emplace_back(ui::TableColumn());
 
   auto table = std::make_unique<views::TableView>(
-      deprecated_apps_table_model_.get(), columns, views::ICON_AND_TEXT,
+      deprecated_apps_table_model_.get(), columns,
+      views::TableType::kIconAndText,
       /*single_selection=*/true);
   deprecated_apps_table_view_ = table.get();
   table->SetID(DEPRECATED_APPS_TABLE);
@@ -270,10 +271,11 @@ void DeprecatedAppsDialogView::OnAccept() {
 void DeprecatedAppsDialogView::OnCancel() {
   bool hide_launch_anyways =
       features::kChromeAppsDeprecationHideLaunchAnyways.Get();
-  if (!hide_launch_anyways)
+  if (!hide_launch_anyways) {
     std::move(launch_anyways_).Run();
+  }
   CloseDialog();
 }
 
-BEGIN_METADATA(DeprecatedAppsDialogView, views::DialogDelegateView)
+BEGIN_METADATA(DeprecatedAppsDialogView)
 END_METADATA

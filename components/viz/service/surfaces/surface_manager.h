@@ -297,7 +297,9 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   base::flat_map<base::UnguessableToken,
                  std::unique_ptr<SurfaceAllocationGroup>>
       embed_token_to_allocation_group_;
-  base::flat_map<FrameSinkId, std::vector<SurfaceAllocationGroup*>>
+  base::flat_map<
+      FrameSinkId,
+      std::vector<raw_ptr<SurfaceAllocationGroup, VectorExperimental>>>
       frame_sink_id_to_allocation_groups_;
   base::flat_map<SurfaceId, std::unique_ptr<Surface>> surface_map_;
   base::ObserverList<SurfaceObserver>::Unchecked observer_list_;

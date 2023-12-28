@@ -11,6 +11,10 @@
 // what, rustc will see the conflict.
 extern crate transitive_dep;
 
+chromium::import! {
+    "//build/rust/tests/test_rust_metadata:foo_dependency";
+}
+
 pub use foo_dependency::say_foo;
 pub use foo_dependency::say_foo_directly;
 pub use transitive_dep::say_something;

@@ -8,7 +8,7 @@
 #import "base/time/time.h"
 #import "components/bookmarks/common/storage_type.h"
 #import "components/sync/base/features.h"
-#import "ios/chrome/browser/policy/cloud/user_policy_constants.h"
+#import "ios/chrome/browser/policy/model/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/shared/ui/elements/elements_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -43,17 +43,6 @@ namespace {
 constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 }
 
-// TODO(crbug.com/1403825): Fails on device.
-// Note: Defined here instead of with the test case because it's needed in
-// appConfigurationForTestCase.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testInterruptDuringSignOutConfirmation \
-  testInterruptDuringSignOutConfirmation
-#else
-#define MAYBE_testInterruptDuringSignOutConfirmation \
-  DISABLED_testInterruptDuringSignOutConfirmation
-#endif
-
 // Integration tests using the Account Settings screen.
 @interface AccountsTableTestCase : WebHttpServerChromeTestCase
 @end
@@ -65,7 +54,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [BookmarkEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
 
-  [ChromeEarlGrey clearSyncServerData];
+  [ChromeEarlGrey clearFakeSyncServerData];
   [super tearDown];
 }
 
@@ -93,8 +82,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
       [self isRunningTest:@selector(testSignOutCancelled)] ||
       [self isRunningTest:@selector
             (testRemoveSecondaryAccountWhileSignOutConfirmation)] ||
-      [self isRunningTest:@selector
-            (MAYBE_testInterruptDuringSignOutConfirmation)] ||
+      [self isRunningTest:@selector(testInterruptDuringSignOutConfirmation)] ||
       [self isRunningTest:@selector(testDismissSignOutConfirmationTwice)] ||
       // Data (of a managed account) is not cleared on signout anymore.
       [self isRunningTest:@selector
@@ -300,9 +288,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
 
-  // Sign out.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceKeepData];
+  [SigninEarlGreyUI signOut];
 
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];
@@ -314,9 +300,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
 // Tests that selecting sign-out and clear data from a non-managed user account
 // clears the user's synced data.
-// TODO(crbug.com/1377798): fails on iPhone SE because the screen is too small
-// to present both the prompt to select and account and the background view.
-- (void)DISABLED_testSignOutAndClearDataFromNonManagedAccountClearsData {
+- (void)testSignOutAndClearDataFromNonManagedAccount {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
   // Sign In `fakeIdentity`.
@@ -327,11 +311,9 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
                                    syncTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kAccount];
 
-  // Sign out.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
+  [SigninEarlGreyUI signOut];
 
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];
@@ -342,9 +324,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 }
 
 // Tests that signing out from a managed user account clears the user's data.
-// TODO(crbug.com/1377800): fails on iPhone SE because the screen is too small
-// to present both the prompt to select and account and the background view.
-- (void)DISABLED_testsSignOutFromManagedAccount {
+- (void)testsSignOutFromManagedAccount {
   // Sign In `fakeManagedIdentity`.
   [SigninEarlGreyUI
       signinWithFakeIdentity:[FakeSystemIdentity fakeManagedIdentity]];
@@ -354,11 +334,9 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
                                    syncTimeout:kSyncOperationTimeout];
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
+      setupStandardBookmarksInStorage:bookmarks::StorageType::kAccount];
 
-  // Sign out.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
+  [SigninEarlGreyUI signOut];
 
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];
@@ -378,8 +356,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity1];
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
+  [SigninEarlGreyUI signOut];
 
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity2];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity2];
@@ -501,9 +478,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
 // Tests to open the sign-out confirmation dialog, and then open an external
 // URL.
-// Note: The MAYBE_ macro is defined at the top of the file because it's needed
-// in appConfigurationForTestCase.
-- (void)MAYBE_testInterruptDuringSignOutConfirmation {
+- (void)testInterruptDuringSignOutConfirmation {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
@@ -568,9 +543,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
 
-  // Sign out.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceNotSyncing];
+  [SigninEarlGreyUI signOut];
 
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];
@@ -589,9 +562,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
 
-  // Sign out.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceNotSyncing];
+  [SigninEarlGreyUI signOut];
 
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];

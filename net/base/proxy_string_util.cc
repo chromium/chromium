@@ -45,49 +45,6 @@ ProxyServer::Scheme GetSchemeFromPacTypeInternal(std::string_view type) {
   return ProxyServer::SCHEME_INVALID;
 }
 
-ProxyServer FromSchemeHostAndPort(ProxyServer::Scheme scheme,
-                                  std::string_view host_and_port) {
-  // Trim leading/trailing space.
-  host_and_port = HttpUtil::TrimLWS(host_and_port);
-
-  if (scheme == ProxyServer::SCHEME_INVALID)
-    return ProxyServer();
-
-  if (scheme == ProxyServer::SCHEME_DIRECT) {
-    if (!host_and_port.empty())
-      return ProxyServer();  // Invalid -- DIRECT cannot have a host/port.
-    return ProxyServer::Direct();
-  }
-
-  url::Component username_component;
-  url::Component password_component;
-  url::Component hostname_component;
-  url::Component port_component;
-  url::ParseAuthority(host_and_port.data(),
-                      url::Component(0, host_and_port.size()),
-                      &username_component, &password_component,
-                      &hostname_component, &port_component);
-  if (username_component.is_valid() || password_component.is_valid() ||
-      hostname_component.is_empty()) {
-    return ProxyServer();
-  }
-
-  std::string_view hostname =
-      host_and_port.substr(hostname_component.begin, hostname_component.len);
-
-  // Reject inputs like "foo:". /url parsing and canonicalization code generally
-  // allows it and treats it the same as a URL without a specified port, but
-  // Chrome has traditionally disallowed it in proxy specifications.
-  if (port_component.is_valid() && port_component.is_empty())
-    return ProxyServer();
-  std::string_view port =
-      port_component.is_nonempty()
-          ? host_and_port.substr(port_component.begin, port_component.len)
-          : "";
-
-  return ProxyServer::FromSchemeHostAndPort(scheme, hostname, port);
-}
-
 std::string ConstructHostPortString(std::string_view hostname, uint16_t port) {
   DCHECK(!hostname.empty());
   DCHECK((hostname.front() == '[' && hostname.back() == ']') ||
@@ -125,7 +82,8 @@ ProxyServer PacResultElementToProxyServer(std::string_view pac_result_element) {
 
   // And everything to the right of the space is the
   // <host>[":" <port>].
-  return FromSchemeHostAndPort(scheme, pac_result_element.substr(space));
+  return ProxySchemeHostAndPortToProxyServer(scheme,
+                                             pac_result_element.substr(space));
 }
 
 std::string ProxyServerToPacResultElement(const ProxyServer& proxy_server) {
@@ -182,7 +140,7 @@ ProxyServer ProxyUriToProxyServer(std::string_view uri,
   }
 
   // Now parse the <host>[":"<port>].
-  return FromSchemeHostAndPort(scheme, uri);
+  return ProxySchemeHostAndPortToProxyServer(scheme, uri);
 }
 
 std::string ProxyServerToProxyUri(const ProxyServer& proxy_server) {
@@ -214,6 +172,53 @@ std::string ProxyServerToProxyUri(const ProxyServer& proxy_server) {
       NOTREACHED();
       return std::string();
   }
+}
+
+ProxyServer ProxySchemeHostAndPortToProxyServer(
+    ProxyServer::Scheme scheme,
+    std::string_view host_and_port) {
+  // Trim leading/trailing space.
+  host_and_port = HttpUtil::TrimLWS(host_and_port);
+
+  if (scheme == ProxyServer::SCHEME_INVALID) {
+    return ProxyServer();
+  }
+
+  if (scheme == ProxyServer::SCHEME_DIRECT) {
+    if (!host_and_port.empty()) {
+      return ProxyServer();  // Invalid -- DIRECT cannot have a host/port.
+    }
+    return ProxyServer::Direct();
+  }
+
+  url::Component username_component;
+  url::Component password_component;
+  url::Component hostname_component;
+  url::Component port_component;
+  url::ParseAuthority(host_and_port.data(),
+                      url::Component(0, host_and_port.size()),
+                      &username_component, &password_component,
+                      &hostname_component, &port_component);
+  if (username_component.is_valid() || password_component.is_valid() ||
+      hostname_component.is_empty()) {
+    return ProxyServer();
+  }
+
+  std::string_view hostname =
+      host_and_port.substr(hostname_component.begin, hostname_component.len);
+
+  // Reject inputs like "foo:". /url parsing and canonicalization code generally
+  // allows it and treats it the same as a URL without a specified port, but
+  // Chrome has traditionally disallowed it in proxy specifications.
+  if (port_component.is_valid() && port_component.is_empty()) {
+    return ProxyServer();
+  }
+  std::string_view port =
+      port_component.is_nonempty()
+          ? host_and_port.substr(port_component.begin, port_component.len)
+          : "";
+
+  return ProxyServer::FromSchemeHostAndPort(scheme, hostname, port);
 }
 
 ProxyServer::Scheme GetSchemeFromUriScheme(std::string_view scheme) {

@@ -1372,11 +1372,14 @@ void RTCVideoEncoder::Impl::NotifyErrorStatus(
   LOG(ERROR) << "NotifyErrorStatus is called with code="
              << static_cast<int>(status.code())
              << ", message=" << status.message();
-  RecordEncoderStatusUMA(status, video_codec_type_);
   if (encoder_metrics_provider_) {
     // |encoder_metrics_provider_| is nullptr if NotifyErrorStatus() is called
     // before it is created in CreateAndInitializeVEA().
     encoder_metrics_provider_->SetError(status);
+  }
+  // Don't count the error multiple times.
+  if (status_ != WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE) {
+    RecordEncoderStatusUMA(status, video_codec_type_);
   }
   video_encoder_.reset();
   status_ = WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;

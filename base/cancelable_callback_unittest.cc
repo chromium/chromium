@@ -166,6 +166,7 @@ TEST(CancelableCallbackTest, IsNull) {
 
 // CancelableRepeatingCallback posted to a task environment with PostTask.
 //  - Posted callbacks can be cancelled.
+//  - Chained callbacks from `.Then()` still run on cancelled callbacks.
 TEST(CancelableCallbackTest, PostTask) {
   test::TaskEnvironment task_environment;
 
@@ -182,12 +183,26 @@ TEST(CancelableCallbackTest, PostTask) {
   SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                         cancelable.callback());
 
-  // Cancel before running the tasks.
+  // Cancel before running the task.
   cancelable.Cancel();
   RunLoop().RunUntilIdle();
 
   // Callback never ran due to cancellation; count is the same.
   EXPECT_EQ(1, count);
+
+  // Chain a callback to the cancelable callback.
+  cancelable.Reset(base::BindRepeating(&Increment, base::Unretained(&count)));
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, cancelable.callback().Then(base::BindRepeating(
+                     &IncrementBy, base::Unretained(&count), 2)));
+
+  // Cancel before running the task.
+  cancelable.Cancel();
+  RunLoop().RunUntilIdle();
+
+  // Callback never ran due to cancellation, but chained callback still should
+  // have. Count should increase by exactly two.
+  EXPECT_EQ(3, count);
 }
 
 // CancelableRepeatingCallback can be used with move-only types.

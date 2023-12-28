@@ -4,7 +4,7 @@
 
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/system_dialog_delegate_view.h"
@@ -49,7 +49,8 @@ SavedDeskDialogController::~SavedDeskDialogController() {
 
 void SavedDeskDialogController::ShowUnsupportedAppsDialog(
     aura::Window* root_window,
-    const std::vector<aura::Window*>& unsupported_apps,
+    const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
+        unsupported_apps,
     size_t incognito_window_count,
     DesksController::GetDeskTemplateCallback callback,
     std::unique_ptr<DeskTemplate> desk_template) {
@@ -181,7 +182,8 @@ void SavedDeskDialogController::OnWidgetDestroying(views::Widget* widget) {
   for (auto& overview_grid :
        Shell::Get()->overview_controller()->overview_session()->grid_list()) {
     if (auto* library_view = overview_grid->GetSavedDeskLibraryView()) {
-      for (auto* templates_grid_view : library_view->grid_views()) {
+      for (ash::SavedDeskGridView* templates_grid_view :
+           library_view->grid_views()) {
         for (SavedDeskItemView* saved_desk_item :
              templates_grid_view->grid_items()) {
           // Update the button visibility when a dialog is closed.
@@ -221,7 +223,7 @@ void SavedDeskDialogController::CreateDialogWidget(
   dialog_widget_observation_.Observe(dialog_widget_.get());
 
   // Ensure that if ChromeVox is enabled, it focuses on the dialog.
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   if (accessibility_controller->spoken_feedback().enabled()) {
     accessibility_controller->SetA11yOverrideWindow(

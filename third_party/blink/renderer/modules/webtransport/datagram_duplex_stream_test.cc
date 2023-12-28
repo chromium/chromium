@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/modules/webtransport/test_utils.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -152,6 +153,7 @@ class ScopedDatagramDuplexStream final {
 };
 
 TEST(DatagramDuplexStreamTest, Defaults) {
+  test::TaskEnvironment task_environment;
   ScopedDatagramDuplexStream scope;
   auto* duplex = scope.Duplex();
   EXPECT_FALSE(duplex->incomingMaxAge().has_value());
@@ -161,6 +163,7 @@ TEST(DatagramDuplexStreamTest, Defaults) {
 }
 
 TEST(DatagramDuplexStreamTest, SetIncomingMaxAge) {
+  test::TaskEnvironment task_environment;
   ScopedDatagramDuplexStream scope;
   auto* duplex = scope.Duplex();
 
@@ -179,6 +182,7 @@ TEST(DatagramDuplexStreamTest, SetIncomingMaxAge) {
 }
 
 TEST(DatagramDuplexStreamTest, SetOutgoingMaxAge) {
+  test::TaskEnvironment task_environment;
   ScopedDatagramDuplexStream scope;
   auto* duplex = scope.Duplex();
   auto* stub = scope.Stub();
@@ -226,6 +230,7 @@ TEST(DatagramDuplexStreamTest, SetOutgoingMaxAge) {
 }
 
 TEST(DatagramDuplexStreamTest, SetIncomingHighWaterMark) {
+  test::TaskEnvironment task_environment;
   ScopedDatagramDuplexStream scope;
   auto* duplex = scope.Duplex();
 
@@ -240,6 +245,7 @@ TEST(DatagramDuplexStreamTest, SetIncomingHighWaterMark) {
 }
 
 TEST(DatagramDuplexStreamTest, SetOutgoingHighWaterMark) {
+  test::TaskEnvironment task_environment;
   ScopedDatagramDuplexStream scope;
   auto* duplex = scope.Duplex();
 
@@ -254,6 +260,7 @@ TEST(DatagramDuplexStreamTest, SetOutgoingHighWaterMark) {
 }
 
 TEST(DatagramDuplexStreamTest, InitialMaxDatagramSize) {
+  test::TaskEnvironment task_environment;
   ScopedDatagramDuplexStream scope;
   auto* duplex = scope.Duplex();
 

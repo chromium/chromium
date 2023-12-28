@@ -32,6 +32,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -244,13 +245,16 @@ public class FullscreenManagerTest {
     private void launchOnFullscreenMode(String url) {
         mActivityTestRule.startMainActivityWithURL(url);
 
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        final TabWebContentsDelegateAndroid delegate = TabTestUtils.getTabWebContentsDelegate(tab);
+        var activity = mActivityTestRule.getActivity();
+        Tab tab = activity.getActivityTab();
+        var delegate = TabTestUtils.getTabWebContentsDelegate(tab);
 
-        FullscreenTestUtils.waitForFullscreenFlag(tab, false, mActivityTestRule.getActivity());
+        FullscreenTestUtils.waitForFullscreenFlag(tab, false, activity);
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, false);
-        FullscreenTestUtils.togglePersistentFullscreenAndAssert(
-                tab, true, mActivityTestRule.getActivity());
+        FullscreenTestUtils.togglePersistentFullscreenAndAssert(tab, true, activity);
+        var browserControlsManager = activity.getBrowserControlsManager();
+        CriteriaHelper.pollUiThread(
+                () -> BrowserControlsUtils.areBrowserControlsOffScreen(browserControlsManager));
     }
 
     @Test
@@ -717,7 +721,6 @@ public class FullscreenManagerTest {
     public void testFullscreenPageHeight() throws Throwable {
         launchOnFullscreenMode(LONG_HTML_TEST_PAGE);
         Assert.assertTrue(getPersistentFullscreenMode());
-
         float pixelDensity =
                 InstrumentationRegistry.getInstrumentation()
                         .getContext()

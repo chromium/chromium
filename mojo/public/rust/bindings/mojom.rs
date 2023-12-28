@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+chromium::import! {
+    "//mojo/public/rust:mojo_system" as system;
+}
+
 use crate::decoding::{Decoder, DecodingState, ValidationError};
 use crate::encoding;
 use crate::encoding::{

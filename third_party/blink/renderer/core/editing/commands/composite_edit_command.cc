@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -82,6 +83,8 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -2123,6 +2126,14 @@ void CompositeEditCommand::AppliedEditing() {
     editor.GetUndoStack().RegisterUndoStep(EnsureUndoStep());
   }
 
+  if (Element* element = undo_step.StartingRootEditableElement()) {
+    if (element->GetDocument().IsPageVisible()) {
+      element->GetDocument()
+          .GetPage()
+          ->GetChromeClient()
+          .DidUserChangeContentEditableContent(*element);
+    }
+  }
   editor.RespondToChangedContents(new_selection.Base());
 
   if (auto* rc = GetDocument().GetResourceCoordinator()) {

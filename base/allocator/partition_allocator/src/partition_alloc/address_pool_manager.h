@@ -186,10 +186,17 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
   // front of the pools so that the isolated one starts on a page boundary.
   // We also skip the Lock at the beginning of the pool since it needs to be
   // used in contexts where we didn't enable write access to the pool memory.
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wzero-length-array"
+#endif
   char pad_[PA_THREAD_ISOLATED_ARRAY_PAD_SZ_WITH_OFFSET(
       Pool,
       kNumPools,
       offsetof(Pool, alloc_bitset_))] = {};
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
   Pool pools_[kNumPools];
 
 #endif  // BUILDFLAG(HAS_64_BIT_POINTERS)

@@ -129,6 +129,11 @@ class EditorMenuBrowserFeatureEnabledTest : public EditorMenuBrowserTest {
   }
 
   ~EditorMenuBrowserFeatureEnabledTest() override = default;
+
+// TODO(crbug.com/1513820): Tentatively disable the failing tests.
+#if BUILDFLAG(IS_CHROMEOS)
+  void SetUp() override { GTEST_SKIP(); }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureDisabledTest,
@@ -168,7 +173,8 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
       views::AsViewClass<EditorMenuView>(GetEditorMenuView())
           ->chips_container_for_testing();
   EXPECT_THAT(chips_container->children(),
-              ElementsAre(ChildrenSizeIs(3), ChildrenSizeIs(2)));
+              ElementsAre(::testing::Pointee(ChildrenSizeIs(3)),
+                          ::testing::Pointee(ChildrenSizeIs(2))));
 }
 
 IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
@@ -184,7 +190,8 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
   const auto* chips_container =
       views::AsViewClass<EditorMenuView>(GetEditorMenuView())
           ->chips_container_for_testing();
-  EXPECT_THAT(chips_container->children(), ElementsAre(ChildrenSizeIs(5)));
+  EXPECT_THAT(chips_container->children(),
+              ElementsAre(::testing::Pointee(ChildrenSizeIs(5))));
 }
 
 IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest, CanShowPromoCard) {

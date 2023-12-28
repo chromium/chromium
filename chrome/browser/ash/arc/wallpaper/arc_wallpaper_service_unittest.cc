@@ -130,9 +130,10 @@ class ArcWallpaperServiceTest : public testing::Test {
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   arc::ArcServiceManager arc_service_manager_;
-  // testing_profile_ needs to be deleted before arc_service_manager_.
-  TestingProfile testing_profile_;
   TestingPrefServiceSimple pref_service_;
+  // testing_profile_ needs to be deleted before arc_service_manager_ and
+  // pref_service_.
+  TestingProfile testing_profile_;
 };
 
 }  // namespace

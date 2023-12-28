@@ -93,6 +93,7 @@ member class=ui::InputDevice id=1
  phys=""
  enabled=1
  suspected_keyboard_imposter=0
+ suspected_mouse_imposter=0
  sys_path=""
  vendor_id=0000
  product_id=0000
@@ -141,6 +142,7 @@ member class=ui::InputDevice id=1
  phys=""
  enabled=1
  suspected_keyboard_imposter=0
+ suspected_mouse_imposter=0
  sys_path=""
  vendor_id=0000
  product_id=0000

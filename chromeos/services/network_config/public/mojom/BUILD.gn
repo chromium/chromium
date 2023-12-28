@@ -19,7 +19,7 @@ mojom("mojom") {
 
     # Used by ash/webui/common/resources/network_health, which is still using
     # JS + Closure.
-    use_typescript_sources = false
+    generate_webui_js_bindings = true
   }
 
   public_deps = [
@@ -54,6 +54,6 @@ mojom("network_types") {
 
     # Used by ash/webui/common/resources/network_health, which is still using
     # JS + Closure.
-    use_typescript_sources = false
+    generate_webui_js_bindings = true
   }
 }

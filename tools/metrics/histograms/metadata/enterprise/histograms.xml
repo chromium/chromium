@@ -147,16 +147,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.ActiveDirectoryJoin"
-    enum="ActiveDirectoryDomainJoinType" expires_after="M119">
-  <owner>fsandrade@chromium.org</owner>
-  <owner>src/chrome/browser/ash/authpolicy/OWNERS</owner>
-  <summary>
-    The way device is joined to the Active Directory domain. This will be
-    recorded during successful enterprise enrollment and domain join.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.AttributesTPMConsistency"
     enum="EnterpriseAttributesTPMConsistencyType" expires_after="never">
 <!-- expires-never: Needed for health check. -->
@@ -599,7 +589,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.DeviceRemoteCommand.Crd.{Enterprise_CrdSessionType}.{Enterprise_UserSessionType}.Result"
-    enum="EnterpriseCrdSessionResultCode" expires_after="2024-03-10">
+    enum="EnterpriseCrdSessionResultCode" expires_after="2024-06-16">
   <owner>macinashutosh@google.com</owner>
   <owner>chromeos-commercial-crd@google.com</owner>
   <summary>
@@ -1439,8 +1429,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.Dlp.FilesDefaultFileAccess"
+    enum="EnterpriseDlpFileAccessDefaultAction" expires_after="2024-12-01">
+  <owner>brinky@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Record if we were not able to pin a source URL to a file open request and
+    have to fallback on the default behaviour.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.Dlp.FilesUnknownAccessLevel"
-    units="DlpEnterprisePolicyLevel" expires_after="2024-10-01">
+    units="EnterpriseDlpPolicyLevel" expires_after="2024-10-01">
   <owner>poromov@google.com</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -1467,7 +1467,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.PrintingWarned" enum="BooleanWarned"
-    expires_after="2024-03-01">
+    expires_after="2024-06-23">
   <owner>aidazolic@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -1943,7 +1943,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentNudge.PolicyFetchResult"
-    enum="EnrollmentNudgePolicyFetchResult" expires_after="2024-04-28">
+    enum="EnrollmentNudgePolicyFetchResult" expires_after="2024-12-31">
   <owner>andreydav@google.com</owner>
   <owner>rodmartin@google.com</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
@@ -1954,7 +1954,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentNudge.UserAction"
-    enum="EnrollmentNudgeUserAction" expires_after="2024-02-01">
+    enum="EnrollmentNudgeUserAction" expires_after="2024-12-31">
   <owner>andreydav@google.com</owner>
   <owner>rodmartin@google.com</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
@@ -2033,6 +2033,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.InstallAttributes.ValidOnEnrolledDevice"
+    enum="Boolean" expires_after="2024-12-07">
+  <owner>igorcov@chromium.org</owner>
+  <owner>emaxx@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Whether the install attributes are valid on the enrolled device. Device is
+    determined to be enrolled based on the device policy. The check is performed
+    at device boot.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.InvalidDevicePolicyFilesStatus"
     enum="InvalidDevicePolicyFilesStatus" expires_after="2024-04-28">
   <owner>emaxx@chromium.org</owner>
@@ -2046,7 +2058,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.LoginApiCleanup.{CleanupHandler}.Success"
-    enum="BooleanSuccess" expires_after="2023-12-31">
+    enum="BooleanSuccess" expires_after="2024-12-31">
   <owner>mpetrisor@chromium.org</owner>
   <owner>imprivata-eng@google.com</owner>
   <summary>ChromeOS only. Records if cleanup handler succeeded.</summary>
@@ -2054,7 +2066,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.LoginApiCleanup.{CleanupHandler}.Timing" units="ms"
-    expires_after="2023-12-31">
+    expires_after="2024-12-31">
   <owner>mpetrisor@chromium.org</owner>
   <owner>imprivata-eng@google.com</owner>
   <summary>
@@ -2490,7 +2502,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.SecondaryGoogleAccountUsage.PolicyFetch.ResponseLatency"
-    units="ms" expires_after="2023-10-04">
+    units="ms" expires_after="2024-12-11">
   <owner>rodmartin@google.com</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
   <summary>
@@ -2498,6 +2510,9 @@ chromium-metrics-reviews@google.com.
     the amount of time required to fetch the policy value of
     SecondaryGoogleAccountUsage from the Secure Connect API. This is recorded
     when a user account is added as a secondary account (in-session).
+
+    Warning: this histogram was expired from 2023-10-04 to 2023-12-11; data may
+    be missing.
   </summary>
 </histogram>
 

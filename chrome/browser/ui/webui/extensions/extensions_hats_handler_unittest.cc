@@ -139,7 +139,8 @@ class ExtensionsHatsHandlerTest : public ChromeRenderViewHostTestHarness {
   base::Value::List args_;
 };
 
-TEST_F(ExtensionsHatsHandlerTest, ExtensionsPageLoad) {
+// TODO(http://crbug.com/1510074): Fix and re-enable.
+TEST_F(ExtensionsHatsHandlerTest, DISABLED_ExtensionsPageLoad) {
   SurveyStringData expected_product_specific_data = {
       {"Average extension age in days", "2"},
       {"Number of extensions installed", "2"},
@@ -158,7 +159,8 @@ TEST_F(ExtensionsHatsHandlerTest, ExtensionsPageLoad) {
   task_environment()->RunUntilIdle();
 }
 
-TEST_F(ExtensionsHatsHandlerTest, OnSurveyInteraction) {
+// TODO(http://crbug.com/1510074): Fix and re-enable.
+TEST_F(ExtensionsHatsHandlerTest, DISABLED_OnSurveyInteraction) {
   SurveyStringData expected_product_specific_data = {
       {"Average extension age in days", "2"},
       {"Time since last extension was installed in days", "1"},

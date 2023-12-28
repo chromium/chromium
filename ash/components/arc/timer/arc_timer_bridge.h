@@ -92,7 +92,7 @@ class ArcTimerBridge : public KeyedService,
   std::optional<TimerId> GetTimerId(clockid_t clock_id) const;
 
   // Owned by ArcServiceManager.
-  const raw_ptr<ArcBridgeService, ExperimentalAsh> arc_bridge_service_;
+  const raw_ptr<ArcBridgeService> arc_bridge_service_;
 
   // Mapping of clock ids (coresponding to <sys/timerfd.h>) sent by the instance
   // in |CreateTimers| to timer ids returned in |OnCreateArcTimersDBusMethod|.

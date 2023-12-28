@@ -21,10 +21,6 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
 
 void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   NotificationPlatformBridgeAndroid::RegisterProfilePrefs(registry);
-  registry->RegisterBooleanPref(prefs::kDesktopSitePeripheralSettingEnabled,
-                                false);
-  registry->RegisterBooleanPref(prefs::kDesktopSiteDisplaySettingEnabled,
-                                false);
   registry->RegisterBooleanPref(prefs::kDesktopSiteWindowSettingEnabled, false);
 }
 

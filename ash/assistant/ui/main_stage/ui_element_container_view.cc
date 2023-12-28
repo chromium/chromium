@@ -64,8 +64,7 @@ class ObservableOverflowIndicator : public views::View {
   }
 
  private:
-  raw_ptr<UiElementContainerView, ExperimentalAsh> ui_element_container_view_ =
-      nullptr;
+  raw_ptr<UiElementContainerView> ui_element_container_view_ = nullptr;
 };
 
 BEGIN_METADATA(ObservableOverflowIndicator, views::View)

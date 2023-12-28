@@ -49,7 +49,7 @@ void MandatoryReauthManager::OnAuthenticationCompleted(
 }
 
 bool MandatoryReauthManager::ShouldOfferOptin(
-    absl::optional<CreditCard::RecordType>
+    std::optional<CreditCard::RecordType>
         card_record_type_if_non_interactive_authentication_flow_completed) {
   opt_in_source_ = autofill_metrics::MandatoryReauthOptInOrOutSource::kUnknown;
   // We should not offer to update a user pref in off the record mode.

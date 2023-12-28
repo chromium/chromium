@@ -17,8 +17,9 @@
 // A dialog allowing the user to enter Bluetooth credentials (i.e. a PIN).
 class BluetoothDeviceCredentialsView : public views::DialogDelegateView,
                                        public views::TextfieldController {
+  METADATA_HEADER(BluetoothDeviceCredentialsView, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(BluetoothDeviceCredentialsView);
   BluetoothDeviceCredentialsView(
       const std::u16string& device_identifier,
       content::BluetoothDelegate::PairPromptCallback close_callback);

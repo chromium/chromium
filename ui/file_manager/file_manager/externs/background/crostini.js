@@ -63,7 +63,7 @@ export class Crostini {
   /**
    * Returns true if entry is shared with the specified VM.
    * @param {string} vmName
-   * @param {!Entry} entry
+   * @param {!Entry|FilesAppEntry} entry
    * @return {boolean} True if path is shared either by a direct
    *   share or from one of its ancestor directories.
    */

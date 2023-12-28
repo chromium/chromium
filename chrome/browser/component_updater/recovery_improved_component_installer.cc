@@ -77,15 +77,13 @@ void RecoveryComponentActionHandler::Unpack() {
   auto unzipper = base::MakeRefCounted<update_client::UnzipChromiumFactory>(
                       base::BindRepeating(&unzip::LaunchUnzipper))
                       ->Create();
-  auto unpacker = base::MakeRefCounted<update_client::ComponentUnpacker>(
-      key_hash_, crx_path_, nullptr, std::move(unzipper), nullptr,
-      verifier_format_);
-  unpacker->Unpack(
+  update_client::PuffinComponentUnpacker::Unpack(
+      key_hash_, crx_path_, std::move(unzipper), verifier_format_,
       base::BindOnce(&RecoveryComponentActionHandler::UnpackComplete, this));
 }
 
 void RecoveryComponentActionHandler::UnpackComplete(
-    const update_client::ComponentUnpacker::Result& result) {
+    const update_client::PuffinComponentUnpacker::Result& result) {
   if (result.error != update_client::UnpackerError::kNone) {
     DCHECK(!base::DirectoryExists(result.unpack_path));
     main_task_runner_->PostTask(

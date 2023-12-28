@@ -68,7 +68,6 @@ suite('<settings-system-preferences-page>', () => {
   setup(() => {
     loadTimeData.overrideValues({
       isGuest: false,
-      showGoogleDriveSettingsPage: false,
       showOfficeSettings: false,
     });
 
@@ -133,22 +132,11 @@ suite('<settings-system-preferences-page>', () => {
       assertSubpageIsVisible('settings-smb-shares-page');
     });
 
-    suite('when Google Drive settings are available', () => {
-      setup(() => {
-        recreateRoutesFromLoadTimeOverrides({
-          showGoogleDriveSettingsPage: true,
-        });
-      });
-
-      test(
-          'Google Drive subpage is visible for GOOGLE_DRIVE route',
-          async () => {
-            assertTrue(
-                !!routes.GOOGLE_DRIVE, 'GOOGLE_DRIVE route should exist');
-            await createPage();
-            await navigateToSubpage(routes.GOOGLE_DRIVE);
-            assertSubpageIsVisible('settings-google-drive-subpage');
-          });
+    test('Google Drive subpage is visible for GOOGLE_DRIVE route', async () => {
+      assertTrue(!!routes.GOOGLE_DRIVE, 'GOOGLE_DRIVE route should exist');
+      await createPage();
+      await navigateToSubpage(routes.GOOGLE_DRIVE);
+      assertSubpageIsVisible('settings-google-drive-subpage');
     });
 
     suite('when office settings are available', () => {

@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/html/html_dimension.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -42,29 +43,34 @@ void PrintTo(const HTMLDimension& dimension, ::std::ostream* os) {
 }
 
 TEST(HTMLDimensionTest, parseListOfDimensionsEmptyString) {
+  test::TaskEnvironment task_environment;
   Vector<HTMLDimension> result = ParseListOfDimensions(String(""));
   ASSERT_EQ(Vector<HTMLDimension>(), result);
 }
 
 TEST(HTMLDimensionTest, parseListOfDimensionsNoNumberAbsolute) {
+  test::TaskEnvironment task_environment;
   Vector<HTMLDimension> result = ParseListOfDimensions(String(" \t"));
   ASSERT_EQ(1U, result.size());
   ASSERT_EQ(HTMLDimension(0, HTMLDimension::kRelative), result[0]);
 }
 
 TEST(HTMLDimensionTest, parseListOfDimensionsNoNumberPercent) {
+  test::TaskEnvironment task_environment;
   Vector<HTMLDimension> result = ParseListOfDimensions(String(" \t%"));
   ASSERT_EQ(1U, result.size());
   ASSERT_EQ(HTMLDimension(0, HTMLDimension::kPercentage), result[0]);
 }
 
 TEST(HTMLDimensionTest, parseListOfDimensionsNoNumberRelative) {
+  test::TaskEnvironment task_environment;
   Vector<HTMLDimension> result = ParseListOfDimensions(String("\t *"));
   ASSERT_EQ(1U, result.size());
   ASSERT_EQ(HTMLDimension(0, HTMLDimension::kRelative), result[0]);
 }
 
 TEST(HTMLDimensionTest, parseListOfDimensionsSingleAbsolute) {
+  test::TaskEnvironment task_environment;
   Vector<HTMLDimension> result = ParseListOfDimensions(String("10"));
 
   ASSERT_EQ(1U, result.size());
@@ -72,6 +78,7 @@ TEST(HTMLDimensionTest, parseListOfDimensionsSingleAbsolute) {
 }
 
 TEST(HTMLDimensionTest, parseListOfDimensionsSinglePercentageWithSpaces) {
+  test::TaskEnvironment task_environment;
   Vector<HTMLDimension> result = ParseListOfDimensions(String("50  %"));
 
   ASSERT_EQ(1U, result.size());
@@ -79,6 +86,7 @@ TEST(HTMLDimensionTest, parseListOfDimensionsSinglePercentageWithSpaces) {
 }
 
 TEST(HTMLDimensionTest, parseListOfDimensionsSingleRelative) {
+  test::TaskEnvironment task_environment;
   Vector<HTMLDimension> result = ParseListOfDimensions(String("25*"));
 
   ASSERT_EQ(1U, result.size());
@@ -86,6 +94,7 @@ TEST(HTMLDimensionTest, parseListOfDimensionsSingleRelative) {
 }
 
 TEST(HTMLDimensionTest, parseListOfDimensionsDoubleAbsolute) {
+  test::TaskEnvironment task_environment;
   Vector<HTMLDimension> result = ParseListOfDimensions(String("10.054"));
 
   ASSERT_EQ(1U, result.size());
@@ -93,6 +102,7 @@ TEST(HTMLDimensionTest, parseListOfDimensionsDoubleAbsolute) {
 }
 
 TEST(HTMLDimensionTest, parseListOfDimensionsLeadingSpaceAbsolute) {
+  test::TaskEnvironment task_environment;
   Vector<HTMLDimension> result = ParseListOfDimensions(String("\t \t 10"));
 
   ASSERT_EQ(1U, result.size());
@@ -100,6 +110,7 @@ TEST(HTMLDimensionTest, parseListOfDimensionsLeadingSpaceAbsolute) {
 }
 
 TEST(HTMLDimensionTest, parseListOfDimensionsLeadingSpaceRelative) {
+  test::TaskEnvironment task_environment;
   Vector<HTMLDimension> result = ParseListOfDimensions(String(" \r25*"));
 
   ASSERT_EQ(1U, result.size());
@@ -107,6 +118,7 @@ TEST(HTMLDimensionTest, parseListOfDimensionsLeadingSpaceRelative) {
 }
 
 TEST(HTMLDimensionTest, parseListOfDimensionsLeadingSpacePercentage) {
+  test::TaskEnvironment task_environment;
   Vector<HTMLDimension> result = ParseListOfDimensions(String("\n 25%"));
 
   ASSERT_EQ(1U, result.size());
@@ -114,6 +126,7 @@ TEST(HTMLDimensionTest, parseListOfDimensionsLeadingSpacePercentage) {
 }
 
 TEST(HTMLDimensionTest, parseListOfDimensionsDoublePercentage) {
+  test::TaskEnvironment task_environment;
   Vector<HTMLDimension> result = ParseListOfDimensions(String("10.054%"));
 
   ASSERT_EQ(1U, result.size());
@@ -121,6 +134,7 @@ TEST(HTMLDimensionTest, parseListOfDimensionsDoublePercentage) {
 }
 
 TEST(HTMLDimensionTest, parseListOfDimensionsDoubleRelative) {
+  test::TaskEnvironment task_environment;
   Vector<HTMLDimension> result = ParseListOfDimensions(String("10.054*"));
 
   ASSERT_EQ(1U, result.size());
@@ -128,6 +142,7 @@ TEST(HTMLDimensionTest, parseListOfDimensionsDoubleRelative) {
 }
 
 TEST(HTMLDimensionTest, parseListOfDimensionsSpacesInIntegerDoubleAbsolute) {
+  test::TaskEnvironment task_environment;
   Vector<HTMLDimension> result = ParseListOfDimensions(String("1\n0 .025%"));
 
   ASSERT_EQ(1U, result.size());
@@ -135,6 +150,7 @@ TEST(HTMLDimensionTest, parseListOfDimensionsSpacesInIntegerDoubleAbsolute) {
 }
 
 TEST(HTMLDimensionTest, parseListOfDimensionsSpacesInIntegerDoublePercent) {
+  test::TaskEnvironment task_environment;
   Vector<HTMLDimension> result = ParseListOfDimensions(String("1\n0 .025%"));
 
   ASSERT_EQ(1U, result.size());
@@ -142,6 +158,7 @@ TEST(HTMLDimensionTest, parseListOfDimensionsSpacesInIntegerDoublePercent) {
 }
 
 TEST(HTMLDimensionTest, parseListOfDimensionsSpacesInIntegerDoubleRelative) {
+  test::TaskEnvironment task_environment;
   Vector<HTMLDimension> result = ParseListOfDimensions(String("1\n0 .025*"));
 
   ASSERT_EQ(1U, result.size());
@@ -165,6 +182,7 @@ TEST(HTMLDimensionTest,
 }
 
 TEST(HTMLDimensionTest, parseListOfDimensionsTrailingComma) {
+  test::TaskEnvironment task_environment;
   Vector<HTMLDimension> result = ParseListOfDimensions(String("10,"));
 
   ASSERT_EQ(1U, result.size());
@@ -172,6 +190,7 @@ TEST(HTMLDimensionTest, parseListOfDimensionsTrailingComma) {
 }
 
 TEST(HTMLDimensionTest, parseListOfDimensionsTwoDimensions) {
+  test::TaskEnvironment task_environment;
   Vector<HTMLDimension> result = ParseListOfDimensions(String("10*,25 %"));
 
   ASSERT_EQ(2U, result.size());
@@ -180,6 +199,7 @@ TEST(HTMLDimensionTest, parseListOfDimensionsTwoDimensions) {
 }
 
 TEST(HTMLDimensionTest, parseListOfDimensionsMultipleDimensionsWithSpaces) {
+  test::TaskEnvironment task_environment;
   Vector<HTMLDimension> result =
       ParseListOfDimensions(String("10   *   ,\t25 , 10.05\n5%"));
 
@@ -190,6 +210,7 @@ TEST(HTMLDimensionTest, parseListOfDimensionsMultipleDimensionsWithSpaces) {
 }
 
 TEST(HTMLDimensionTest, parseListOfDimensionsMultipleDimensionsWithOneEmpty) {
+  test::TaskEnvironment task_environment;
   Vector<HTMLDimension> result = ParseListOfDimensions(String("2*,,8.%"));
 
   ASSERT_EQ(3U, result.size());
@@ -199,74 +220,87 @@ TEST(HTMLDimensionTest, parseListOfDimensionsMultipleDimensionsWithOneEmpty) {
 }
 
 TEST(HTMLDimensionTest, parseDimensionValueEmptyString) {
+  test::TaskEnvironment task_environment;
   HTMLDimension dimension;
   EXPECT_FALSE(ParseDimensionValue(String(""), dimension));
 }
 
 TEST(HTMLDimensionTest, parseDimensionValueSpacesOnly) {
+  test::TaskEnvironment task_environment;
   HTMLDimension dimension;
   EXPECT_FALSE(ParseDimensionValue(String("     "), dimension));
 }
 
 TEST(HTMLDimensionTest, parseDimensionValueAllowedSpaces) {
+  test::TaskEnvironment task_environment;
   HTMLDimension dimension;
   EXPECT_TRUE(ParseDimensionValue(String(" \t\f\r\n10"), dimension));
   EXPECT_EQ(HTMLDimension(10, HTMLDimension::kAbsolute), dimension);
 }
 
 TEST(HTMLDimensionTest, parseDimensionValueLeadingPlus) {
+  test::TaskEnvironment task_environment;
   HTMLDimension dimension;
   EXPECT_FALSE(ParseDimensionValue(String("+10"), dimension));
 }
 
 TEST(HTMLDimensionTest, parseDimensionValueAbsolute) {
+  test::TaskEnvironment task_environment;
   HTMLDimension dimension;
   EXPECT_TRUE(ParseDimensionValue(String("10"), dimension));
   EXPECT_EQ(HTMLDimension(10, HTMLDimension::kAbsolute), dimension);
 }
 
 TEST(HTMLDimensionTest, parseDimensionValueAbsoluteFraction) {
+  test::TaskEnvironment task_environment;
   HTMLDimension dimension;
   EXPECT_TRUE(ParseDimensionValue(String("10.50"), dimension));
   EXPECT_EQ(HTMLDimension(10.5, HTMLDimension::kAbsolute), dimension);
 }
 
 TEST(HTMLDimensionTest, parseDimensionValueAbsoluteDotNoFraction) {
+  test::TaskEnvironment task_environment;
   HTMLDimension dimension;
   EXPECT_TRUE(ParseDimensionValue(String("10.%"), dimension));
   EXPECT_EQ(HTMLDimension(10, HTMLDimension::kPercentage), dimension);
 }
 
 TEST(HTMLDimensionTest, parseDimensionValueAbsoluteTrailingGarbage) {
+  test::TaskEnvironment task_environment;
   HTMLDimension dimension;
   EXPECT_TRUE(ParseDimensionValue(String("10foo"), dimension));
   EXPECT_EQ(HTMLDimension(10, HTMLDimension::kAbsolute), dimension);
 }
 
 TEST(HTMLDimensionTest, parseDimensionValueAbsoluteTrailingGarbageAfterSpace) {
+  test::TaskEnvironment task_environment;
   HTMLDimension dimension;
   EXPECT_TRUE(ParseDimensionValue(String("10 foo"), dimension));
   EXPECT_EQ(HTMLDimension(10, HTMLDimension::kAbsolute), dimension);
 }
 
 TEST(HTMLDimensionTest, parseDimensionValuePercentage) {
+  test::TaskEnvironment task_environment;
   HTMLDimension dimension;
   EXPECT_TRUE(ParseDimensionValue(String("10%"), dimension));
   EXPECT_EQ(HTMLDimension(10, HTMLDimension::kPercentage), dimension);
 }
 
 TEST(HTMLDimensionTest, parseDimensionValueRelative) {
+  test::TaskEnvironment task_environment;
   HTMLDimension dimension;
   EXPECT_TRUE(ParseDimensionValue(String("10*"), dimension));
   EXPECT_EQ(HTMLDimension(10, HTMLDimension::kRelative), dimension);
 }
 
 TEST(HTMLDimensionTest, parseDimensionValueInvalidNumberFormatDot) {
+  test::TaskEnvironment task_environment;
   HTMLDimension dimension;
   EXPECT_FALSE(ParseDimensionValue(String(".50"), dimension));
 }
 
 TEST(HTMLDimensionTest, parseDimensionValueInvalidNumberFormatExponent) {
+  test::TaskEnvironment task_environment;
   HTMLDimension dimension;
   EXPECT_TRUE(ParseDimensionValue(String("10e10"), dimension));
   EXPECT_EQ(HTMLDimension(10, HTMLDimension::kAbsolute), dimension);

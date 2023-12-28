@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/types/is_instantiation.h"
 
 namespace base::internal {
 
@@ -32,7 +33,7 @@ struct RectifyCallbackWrapper<CallbackType,
   template <typename Actual>
   static CallbackType<R(IgnoredArgs..., PartialArgs...)> Rectify(
       Actual&& callback) {
-    if constexpr (IsOnceCallback<CallbackType<void()>>::value) {
+    if constexpr (is_instantiation<OnceCallback, CallbackType<void()>>) {
       return BindOnce(
           [](OnceCallback<R(PartialArgs...)> callback, IgnoredArgs...,
              PartialArgs... args) {

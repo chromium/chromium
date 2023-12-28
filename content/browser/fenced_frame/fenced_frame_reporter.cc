@@ -20,6 +20,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/types/pass_key.h"
@@ -151,6 +152,58 @@ std::string AutomaticBeaconTypeAsString(
     default:
       return "";
   }
+}
+
+blink::FencedFrameBeaconReportingResult CreateBeaconReportingResultEnum(
+    const FencedFrameReporter::DestinationVariant& event_variant,
+    absl::optional<int> http_response_code) {
+  // Unfortunately absl::visit can't make this more compact, because each
+  // combination of results produces a unique output enum.
+  if (absl::holds_alternative<DestinationEnumEvent>(event_variant)) {
+    if (!http_response_code.has_value()) {
+      return blink::FencedFrameBeaconReportingResult::kDestinationEnumInvalid;
+    }
+    if (*http_response_code != 200) {
+      return blink::FencedFrameBeaconReportingResult::kDestinationEnumFailure;
+    }
+    return blink::FencedFrameBeaconReportingResult::kDestinationEnumSuccess;
+  }
+
+  if (absl::holds_alternative<DestinationURLEvent>(event_variant)) {
+    if (!http_response_code.has_value()) {
+      return blink::FencedFrameBeaconReportingResult::kDestinationUrlInvalid;
+    }
+    if (*http_response_code != 200) {
+      return blink::FencedFrameBeaconReportingResult::kDestinationUrlFailure;
+    }
+    return blink::FencedFrameBeaconReportingResult::kDestinationUrlSuccess;
+  }
+
+  if (absl::holds_alternative<AutomaticBeaconEvent>(event_variant)) {
+    if (!http_response_code.has_value()) {
+      return blink::FencedFrameBeaconReportingResult::kAutomaticInvalid;
+    }
+    if (*http_response_code != 200) {
+      return blink::FencedFrameBeaconReportingResult::kAutomaticFailure;
+    }
+    return blink::FencedFrameBeaconReportingResult::kAutomaticSuccess;
+  }
+
+  return blink::FencedFrameBeaconReportingResult::kUnknownResult;
+}
+
+void RecordBeaconReportingResultHistogram(
+    const FencedFrameReporter::DestinationVariant& event_variant,
+    net::HttpResponseHeaders* headers) {
+  absl::optional<int> http_response_code;
+
+  if (headers != nullptr) {
+    http_response_code = headers->response_code();
+  }
+
+  base::UmaHistogramEnumeration(
+      blink::kFencedFrameBeaconReportingHttpResultUMA,
+      CreateBeaconReportingResultEnum(event_variant, http_response_code));
 }
 
 }  // namespace
@@ -687,7 +740,8 @@ bool FencedFrameReporter::SendReportInternal(
     simple_url_loader_ptr->DownloadHeadersOnly(
         url_loader_factory_.get(),
         base::BindOnce(
-            [](base::WeakPtr<AttributionDataHostManager>
+            [](DestinationVariant event_variant,
+               base::WeakPtr<AttributionDataHostManager>
                    attribution_data_host_manager,
                BeaconId beacon_id,
                network::AttributionReportingRuntimeFeatures
@@ -703,13 +757,16 @@ bool FencedFrameReporter::SendReportInternal(
                         loader->GetFinalURL(), headers.get(),
                         /*is_final_response=*/true);
               }
-
               // Set up DevTools integration for the response.
               devtools_instrumentation::OnFencedFrameReportResponseReceived(
                   initiator_frame_tree_node_id, devtools_request_id,
                   loader->GetFinalURL(), headers);
+
+              // Record UMA metrics for the destination.
+              RecordBeaconReportingResultHistogram(event_variant,
+                                                   headers.get());
             },
-            attribution_data_host_manager->AsWeakPtr(),
+            event_variant, attribution_data_host_manager->AsWeakPtr(),
             attribution_reporting_data->beacon_id,
             attribution_reporting_data->attribution_reporting_runtime_features,
             std::move(simple_url_loader), initiator_frame_tree_node_id,
@@ -719,7 +776,8 @@ bool FencedFrameReporter::SendReportInternal(
     simple_url_loader_ptr->DownloadHeadersOnly(
         url_loader_factory_.get(),
         base::BindOnce(
-            [](std::unique_ptr<network::SimpleURLLoader> loader,
+            [](DestinationVariant event_variant,
+               std::unique_ptr<network::SimpleURLLoader> loader,
                int initiator_frame_tree_node_id,
                std::string devtools_request_id,
                scoped_refptr<net::HttpResponseHeaders> headers) {
@@ -727,9 +785,13 @@ bool FencedFrameReporter::SendReportInternal(
               devtools_instrumentation::OnFencedFrameReportResponseReceived(
                   initiator_frame_tree_node_id, devtools_request_id,
                   loader->GetFinalURL(), headers);
+
+              // Record UMA metrics for the destination.
+              RecordBeaconReportingResultHistogram(event_variant,
+                                                   headers.get());
             },
-            std::move(simple_url_loader), initiator_frame_tree_node_id,
-            devtools_request_id));
+            event_variant, std::move(simple_url_loader),
+            initiator_frame_tree_node_id, devtools_request_id));
   }
 
   return true;

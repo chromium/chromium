@@ -51,7 +51,7 @@ using FaviconFetchedCallback =
 // (e.g., getting information about the current page, retrieving objects
 // associated with the current tab, or performing operations that rely on such
 // objects under the hood).
-class OmniboxClient : public base::SupportsWeakPtr<OmniboxClient> {
+class OmniboxClient {
  public:
   OmniboxClient() = default;
   virtual ~OmniboxClient() = default;
@@ -219,6 +219,8 @@ class OmniboxClient : public base::SupportsWeakPtr<OmniboxClient> {
   virtual void OnPopupVisibilityChanged() {}
 
   virtual LocationBarModel* GetLocationBarModel() = 0;
+
+  virtual base::WeakPtr<OmniboxClient> AsWeakPtr() = 0;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_CLIENT_H_

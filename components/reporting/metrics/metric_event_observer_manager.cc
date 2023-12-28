@@ -93,9 +93,10 @@ void MetricEventObserverManager::OnEventObserved(MetricData metric_data) {
                                 MetricEventType_MAX);
 
   if (collector_pool_) {
-    std::vector<CollectorBase*> telemetry_collectors =
-        collector_pool_->GetTelemetryCollectors(event_type);
-    for (auto* telemetry_collector : telemetry_collectors) {
+    std::vector<raw_ptr<CollectorBase, VectorExperimental>>
+        telemetry_collectors =
+            collector_pool_->GetTelemetryCollectors(event_type);
+    for (CollectorBase* telemetry_collector : telemetry_collectors) {
       telemetry_collector->Collect(/*is_event_driven=*/true);
     }
   }

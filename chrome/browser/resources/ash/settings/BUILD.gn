@@ -249,6 +249,7 @@ build_webui("build") {
     "os_languages_page/add_input_methods_dialog.ts",
     "os_languages_page/add_items_dialog.ts",
     "os_languages_page/add_spellcheck_languages_dialog.ts",
+    "os_languages_page/app_languages_page.ts",
     "os_languages_page/change_device_language_dialog.ts",
     "os_languages_page/cr_checkbox_with_policy.ts",
     "os_languages_page/input_method_options_page.ts",

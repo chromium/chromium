@@ -223,8 +223,8 @@ bool TrySetSystemPagesAccessInternal(
                                             accessibility.thread_isolation);
   }
 #endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
-  return 0 == PA_HANDLE_EINTR(mprotect(reinterpret_cast<void*>(address), length,
-                                       GetAccessFlags(accessibility)));
+  return 0 == WrapEINTR(mprotect)(reinterpret_cast<void*>(address), length,
+                                  GetAccessFlags(accessibility));
 }
 
 void SetSystemPagesAccessInternal(
@@ -241,8 +241,8 @@ void SetSystemPagesAccessInternal(
   } else
 #endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
   {
-    ret = PA_HANDLE_EINTR(mprotect(reinterpret_cast<void*>(address), length,
-                                   GetAccessFlags(accessibility)));
+    ret = WrapEINTR(mprotect)(reinterpret_cast<void*>(address), length,
+                              GetAccessFlags(accessibility));
   }
 
   // On Linux, man mprotect(2) states that ENOMEM is returned when (1) internal

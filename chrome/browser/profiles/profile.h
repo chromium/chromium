@@ -43,7 +43,6 @@ class Time;
 }
 
 namespace content {
-class ResourceContext;
 class WebUI;
 }
 
@@ -241,8 +240,6 @@ class Profile : public content::BrowserContext {
 
   variations::VariationsClient* GetVariationsClient() override;
 
-  content::ResourceContext* GetResourceContext() override;
-
   // Returns the creation time of this profile. This will either be the creation
   // time of the profile directory or, for ephemeral off-the-record profiles,
   // the creation time of the profile object instance.
@@ -422,6 +419,9 @@ class Profile : public content::BrowserContext {
 
   // Returns whether it is an Incognito profile. An Incognito profile is an
   // off-the-record profile that is used for incognito mode.
+  //
+  // TODO(crbug.com/1348572): Also returns true for Lacros in a Ash guest
+  // profile.
   bool IsIncognitoProfile() const;
 
   // Returns true if this is a primary OffTheRecord profile, which covers the
@@ -498,6 +498,7 @@ class Profile : public content::BrowserContext {
 
   virtual void RecordPrimaryMainFrameNavigation() = 0;
 
+  base::WeakPtr<const Profile> GetWeakPtr() const;
   base::WeakPtr<Profile> GetWeakPtr();
 
   // Experimental getters/setters to gauge the performance of caching
@@ -539,12 +540,6 @@ class Profile : public content::BrowserContext {
   virtual bool IsSignedIn() = 0;
 
  private:
-  // Created on the UI thread, and returned by GetResourceContext(), but
-  // otherwise lives on and is destroyed on the IO thread.
-  //
-  // TODO(https://crbug.com/908955): Get rid of ResourceContext.
-  std::unique_ptr<content::ResourceContext> resource_context_;
-
   bool restored_last_session_ = false;
 
   // Used to prevent the notification that this Profile is destroyed from

@@ -1037,10 +1037,86 @@ CreateIDLSequenceFromV8ArraySlow(v8::Isolate* isolate,
     return {};
   }
 
-  typename NativeValueTraits<IDLSequence<T>>::ImplType result;
+  using ResultType = typename NativeValueTraits<IDLSequence<T>>::ImplType;
+  ResultType result;
   result.ReserveInitialCapacity(length);
   v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
   v8::TryCatch try_block(isolate);
+
+  // Fast path -- we're creating a sequence of script wrappables, which can be
+  // done by directly getting underlying object as long as array types are
+  // homogeneous. With ScriptWrappables, we don't expect to enter JS during
+  // iteration, so we can rely on v8::Array::Iterate() which is much faster than
+  // iterating an array on the client side of the v8. Additionally, for most
+  // subsptyes of ScriptWrappables, we can speed up type checks (see more on
+  // that below next to supports_scriptwrappable_specific_fast_array_iteration
+  // check.
+  if constexpr (std::is_base_of_v<ScriptWrappable, T>) {
+    struct CallbackData {
+      STACK_ALLOCATED();
+
+     public:
+      v8::Isolate* isolate;
+      v8::TypecheckWitness witness;
+      ResultType& result;
+      ExceptionState& exception_state;
+      CallbackData(v8::Isolate* isolate,
+                   ResultType& result,
+                   ExceptionState& exception_state)
+          : isolate(isolate),
+            witness(isolate),
+            result(result),
+            exception_state(exception_state) {}
+    };
+
+    CallbackData callback_data(isolate, result, exception_state);
+    v8::Array::IterationCallback callback = [](uint32_t index,
+                                               v8::Local<v8::Value> v8_element,
+                                               void* data) {
+      CallbackData* callback_data = reinterpret_cast<CallbackData*>(data);
+      // 3.4. Initialize Si to the result of converting nextItem to an IDL value
+      //   of type T.
+      v8::TypecheckWitness& witness = callback_data->witness;
+      // We can speed up type check by taking advantage of V8's type witness,
+      // provided traits' NativeValue implementation doesn't have additional
+      // logic beyond checking the type and calling ToScriptWrappable().
+      if constexpr (
+          NativeValueTraits<
+              T>::supports_scriptwrappable_specific_fast_array_iteration) {
+        if (witness.Matches(v8_element)) {
+          auto&& value = ToScriptWrappable(v8_element.As<v8::Object>())
+                             ->template ToImpl<T>();
+          callback_data->result.push_back(std::move(value));
+          return v8::Array::CallbackResult::kContinue;
+        }
+      }
+      auto&& element = NativeValueTraits<T>::NativeValue(
+          callback_data->isolate, v8_element, callback_data->exception_state);
+      if (callback_data->exception_state.HadException()) {
+        // It doesn't matter whether we return `kException` or `kBreak` here,
+        // as that only affects the return value of `v8_array->Iterate()`,
+        // which we are ignoring.
+        return v8::Array::CallbackResult::kException;
+      }
+      if constexpr (
+          NativeValueTraits<
+              T>::supports_scriptwrappable_specific_fast_array_iteration) {
+        witness.Update(v8_element);
+      }
+      callback_data->result.push_back(std::move(element));
+      return v8::Array::CallbackResult::kContinue;
+    };
+    if (!v8_array->Iterate(current_context, callback, &callback_data)
+             .IsJust()) {
+      if (try_block.HasCaught()) {
+        exception_state.RethrowV8Exception(try_block.Exception());
+      }
+      DCHECK(exception_state.HadException());
+      return {};
+    }
+    return result;
+  }
+
   // Array length may change if array is mutated during iteration.
   for (uint32_t i = 0; i < v8_array->Length(); ++i) {
     v8::Local<v8::Value> v8_element;
@@ -1056,6 +1132,7 @@ CreateIDLSequenceFromV8ArraySlow(v8::Isolate* isolate,
       return {};
     result.push_back(std::move(element));
   }
+
   // 3.2. If next is false, then return an IDL sequence value of type
   //   sequence<T> of length i, where the value of the element at index j is Sj.
   return result;
@@ -1398,6 +1475,7 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T*> {
   }
 };
 
+// Interface types
 template <typename T>
   requires std::derived_from<T, CallbackInterfaceBase>
 struct NativeValueTraits<IDLNullable<T>>
@@ -1470,12 +1548,21 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T> {
 template <typename T>
   requires std::derived_from<T, ScriptWrappable>
 struct NativeValueTraits<T> : public NativeValueTraitsBase<T*> {
+  // This signifies that CreateIDLSequenceFromV8ArraySlow() may apply
+  // certain optimization based on assumptions about `NativeValue()`
+  // implementation below. For subclasses of ScriptWrappable that have
+  // different implementation of NativeValue(), this should remain false.
+  static constexpr bool supports_scriptwrappable_specific_fast_array_iteration =
+      true;
+
   static inline T* NativeValue(v8::Isolate* isolate,
                                v8::Local<v8::Value> value,
                                ExceptionState& exception_state) {
     const WrapperTypeInfo* wrapper_type_info = T::GetStaticWrapperTypeInfo();
-    if (V8PerIsolateData::From(isolate)->HasInstance(wrapper_type_info, value))
+    if (V8PerIsolateData::From(isolate)->HasInstance(wrapper_type_info,
+                                                     value)) {
       return ToScriptWrappable(value.As<v8::Object>())->template ToImpl<T>();
+    }
 
     bindings::NativeValueTraitsInterfaceNotOfType(wrapper_type_info,
                                                   exception_state);

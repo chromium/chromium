@@ -133,9 +133,9 @@ void VideoCaptureManager::RegisterListener(
   listeners_.AddObserver(listener);
 #if BUILDFLAG(IS_ANDROID)
   application_state_has_running_activities_ = true;
-  app_status_listener_ = base::android::ApplicationStatusListener::New(
-      base::BindRepeating(&VideoCaptureManager::OnApplicationStateChange,
-                          base::Unretained(this)));
+  app_status_listener_ =
+      base::android::ApplicationStatusListener::New(base::BindRepeating(
+          &VideoCaptureManager::OnApplicationStateChange, this));
 #endif
 }
 
@@ -789,9 +789,6 @@ void VideoCaptureManager::OnDeviceInfosReceived(
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureManager::OnDeviceInfosReceived");
 
-  base::UmaHistogramTimes(
-      "Media.VideoCaptureManager.GetAvailableDevicesInfoOnDeviceThreadTime",
-      timer.Elapsed());
 
   if (error_code != media::mojom::DeviceEnumerationResult::kSuccess) {
     EmitLogMessage(

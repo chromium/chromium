@@ -51,14 +51,6 @@ class EditingList : public views::View, public TouchInjectorObserver {
 
   void UpdateWidget();
 
-  void MayShowEduNudgeForEditingTip();
-
-  // views::View:
-  bool OnMousePressed(const ui::MouseEvent& event) override;
-  bool OnMouseDragged(const ui::MouseEvent& event) override;
-  void OnMouseReleased(const ui::MouseEvent& event) override;
-  void OnGestureEvent(ui::GestureEvent* event) override;
-
  private:
   friend class ButtonOptionsMenuTest;
   friend class EditingListTest;
@@ -74,6 +66,11 @@ class EditingList : public views::View, public TouchInjectorObserver {
   void AddActionAddRow();
   // Add the list view for the actions / controls.
   void AddControlListContent();
+
+  // These are called after adding the first new action.
+  void MaybeApplyEduDecoration();
+  void ShowKeyEditNudge();
+  void PerformPulseAnimation();
 
   // Updates changes depending on whether `is_zero_state` is true.
   void UpdateOnZeroState(bool is_zero_state);
@@ -112,6 +109,11 @@ class EditingList : public views::View, public TouchInjectorObserver {
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
+  bool OnMousePressed(const ui::MouseEvent& event) override;
+  bool OnMouseDragged(const ui::MouseEvent& event) override;
+  void OnMouseReleased(const ui::MouseEvent& event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
+  void VisibilityChanged(views::View* starting_from, bool is_visible) override;
 
   // TouchInjectorObserver:
   void OnActionAdded(Action& action) override;
@@ -125,7 +127,7 @@ class EditingList : public views::View, public TouchInjectorObserver {
   bool IsKeyEditNudgeShownForTesting() const;
   ash::AnchoredNudge* GetKeyEditNudgeForTesting() const;
 
-  raw_ptr<DisplayOverlayController> controller_;
+  const raw_ptr<DisplayOverlayController> controller_;
 
   // It wraps ActionViewListItem.
   raw_ptr<views::View> scroll_content_;
@@ -142,8 +144,8 @@ class EditingList : public views::View, public TouchInjectorObserver {
 
   // Used to tell if the zero state view shows up.
   bool is_zero_state_ = false;
-  // Show nudge once after adding the first action.
-  bool show_nudge_ = false;
+  // Show education decoration once after adding the first action.
+  bool show_edu_ = false;
 
   // LocatedEvent's position when drag starts.
   gfx::Point start_drag_event_pos_;

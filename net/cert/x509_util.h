@@ -18,6 +18,7 @@
 #include "crypto/signature_verifier.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
+#include "net/cert/x509_certificate.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
@@ -28,9 +29,12 @@ class RSAPrivateKey;
 
 namespace net {
 
-class X509Certificate;
-
 namespace x509_util {
+
+// Parse all certificiates with default parsing options. Return those that
+// parse.
+NET_EXPORT bssl::ParsedCertificateList ParseAllCerts(
+    net::CertificateList x509_certs);
 
 // Supported digest algorithms for signing certificates.
 enum DigestAlgorithm { DIGEST_SHA256 };

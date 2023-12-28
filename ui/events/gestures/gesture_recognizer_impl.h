@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/events_export.h"
 #include "ui/events/gestures/gesture_provider_aura.h"
@@ -48,7 +49,9 @@ class EVENTS_EXPORT GestureRecognizerImpl : public GestureRecognizer,
 
   ~GestureRecognizerImpl() override;
 
-  std::vector<GestureEventHelper*>& helpers() { return helpers_; }
+  std::vector<raw_ptr<GestureEventHelper, VectorExperimental>>& helpers() {
+    return helpers_;
+  }
 
   // Returns a list of events of type |type|, one for each pointer down on
   // |consumer|. Event locations are pulled from the active pointers.
@@ -132,7 +135,7 @@ class EVENTS_EXPORT GestureRecognizerImpl : public GestureRecognizer,
   // ET_TOUCH_RELEASE and ET_TOUCH_CANCEL.
   TouchIdToConsumerMap touch_id_target_;
 
-  std::vector<GestureEventHelper*> helpers_;
+  std::vector<raw_ptr<GestureEventHelper, VectorExperimental>> helpers_;
 };
 
 }  // namespace ui

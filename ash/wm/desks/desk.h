@@ -73,7 +73,7 @@ class ASH_EXPORT Desk {
     ~ScopedContentUpdateNotificationDisabler();
 
    private:
-    std::vector<Desk*> desks_;
+    std::vector<raw_ptr<Desk, VectorExperimental>> desks_;
 
     // Notifies all desks in `desks_` via `NotifyContentChanged()` when this is
     // destroyed and there are no other disablers.
@@ -84,7 +84,7 @@ class ASH_EXPORT Desk {
   // used to support per-desk z-orders for all-desk windows. Entries are stored
   // in ascending `order`.
   struct AllDeskWindowStackingData {
-    raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> window = nullptr;
+    raw_ptr<aura::Window, DanglingUntriaged> window = nullptr;
     // The z-order of the window.
     // Note: this is reversed from how child windows are ordered in
     // `aura::Window`, so an entry with `order == 0` means topmost.
@@ -106,7 +106,10 @@ class ASH_EXPORT Desk {
 
   const base::Uuid& uuid() const { return uuid_; }
 
-  const std::vector<aura::Window*>& windows() const { return windows_; }
+  const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows()
+      const {
+    return windows_;
+  }
 
   const std::u16string& name() const { return name_; }
 
@@ -245,13 +248,15 @@ class ASH_EXPORT Desk {
   void RecordAndResetConsecutiveDailyVisits(bool being_removed);
 
   // Gets all app windows on this desk that should be closed.
-  std::vector<aura::Window*> GetAllAppWindows() const;
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> GetAllAppWindows()
+      const;
 
   // Gets desk windows including floated window (if any).
   // Note that floated window isn't tracked in `windows_` but still "belongs" to
   // this desk, it's stored in the float container and managed by
   // `FloatController`.
-  std::vector<aura::Window*> GetAllAssociatedWindows() const;
+  std::vector<raw_ptr<aura::Window, VectorExperimental>>
+  GetAllAssociatedWindows() const;
 
   // Construct stacking data for windows that appear on all desks. This is done
   // just as a desk becomes inactive. The stacking data is then later used by
@@ -324,7 +329,7 @@ class ASH_EXPORT Desk {
   // Windows tracked on this desk. Clients of the DesksController can use this
   // list when they're notified of desk change events.
   // TODO(afakhry): Change this to track MRU windows on this desk.
-  std::vector<aura::Window*> windows_;
+  std::vector<raw_ptr<aura::Window, VectorExperimental>> windows_;
 
   // The name given to this desk.
   std::u16string name_;
@@ -376,7 +381,7 @@ class ASH_EXPORT Desk {
 
   // Used to track the last active root when the desk is being deactivated.
   // Should be null if the current desk is active.
-  raw_ptr<aura::Window, ExperimentalAsh> last_active_root_ = nullptr;
+  raw_ptr<aura::Window> last_active_root_ = nullptr;
 
   // Tracks whether |this| has been interacted with this week. This value is
   // reset by the DesksController.

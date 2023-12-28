@@ -37,7 +37,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest,
   Browser* const app_browser = LaunchWebAppBrowserAndWait(test_web_app_id());
 
   EXPECT_TRUE(AppBrowserController::IsWebApp(app_browser));
-  NavigateToURLAndWait(app_browser, test_web_app_start_url());
+  NavigateViaLinkClickToURLAndWait(app_browser, test_web_app_start_url());
 
   const gfx::Rect bounds = gfx::Rect(50, 50, 550, 500);
   app_browser->window()->SetBounds(bounds);

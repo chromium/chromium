@@ -14,6 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "gpu/config/gpu_info.h"  //nogncheck
 #include "gpu/config/vulkan_info.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
@@ -21,7 +22,11 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
-#include "gpu/config/gpu_finch_features.h"  //nogncheck
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/linux/drm_util_linux.h"  //nogncheck
 #endif
 
 #define GL_NONE 0x00
@@ -403,9 +408,10 @@ VkResult VulkanQueuePresentKHRHook(VkQueue queue,
   return vkQueuePresentKHR(queue, pPresentInfo);
 }
 
-bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
-                              const GPUInfo& gpu_info,
-                              std::string enable_by_device_name) {
+bool CheckVulkanCompatibilities(const VulkanInfo& vulkan_info,
+                                const GPUInfo& gpu_info,
+                                const std::string& enable_by_device_name,
+                                bool disabled) {
 // Android uses AHB and SyncFD for interop. They are imported into GL with other
 // API.
 #if !BUILDFLAG(IS_ANDROID)
@@ -419,8 +425,12 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
   constexpr char kMemoryObjectExtension[] = "GL_EXT_memory_object_fd";
   constexpr char kSemaphoreExtension[] = "GL_EXT_semaphore_fd";
 #endif
+  if (disabled) {
+    return false;
+  }
+
   // If Chrome and ANGLE share the same VkQueue, they can share vulkan
-  // resource without those extensions. 
+  // resource without those extensions.
   if (!base::FeatureList::IsEnabled(features::kVulkanFromANGLE)) {
     // If both Vulkan and GL are using native GPU (non swiftshader), check
     // necessary extensions for GL and Vulkan interop.
@@ -456,17 +466,7 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
       return true;
   }
 
-  const base::FeatureParam<std::string> disable_patterns(
-      &features::kVulkan, "disable_by_gl_renderer", "");
-
-  if (IsDeviceBlocked(gpu_info.gl_renderer, disable_patterns.Get())) {
-    return false;
-  }
-
-  const base::FeatureParam<std::string> disable_driver_patterns(
-      &features::kVulkan, "disable_by_gl_driver", "");
-  if (IsDeviceBlocked(gpu_info.gpu.driver_version,
-                      disable_driver_patterns.Get())) {
+  if (disabled) {
     return false;
   }
 
@@ -520,11 +520,6 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
   // because of performance, and stability (crbug.com/1479335).
   if (device_info.properties.vendorID == kVendorGoogle &&
       device_info.properties.deviceID == kDeviceSwiftShader) {
-    return false;
-  }
-
-  // Canvas not working on NVidia shield https://crbug.com/1508791
-  if (device_info.properties.vendorID == kVendorNvidia) {
     return false;
   }
 
@@ -702,6 +697,36 @@ QueryVkDrmFormatModifierPropertiesEXT(VkPhysicalDevice physical_device,
   }
 
   return modifier_props;
+}
+
+void PopulateVkDrmFormatsAndModifiers(
+    VulkanDeviceQueue* device_queue,
+    base::flat_map<uint32_t, std::vector<uint64_t>>&
+        drm_formats_and_modifiers) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  for (int i = 0; i <= static_cast<int>(gfx::BufferFormat::LAST); i++) {
+    gfx::BufferFormat buffer_format = static_cast<gfx::BufferFormat>(i);
+    VkFormat vk_format = gfx::ToVkFormat(buffer_format);
+    int fourcc_format = ui::GetFourCCFormatFromBufferFormat(buffer_format);
+    if (vk_format == VK_FORMAT_UNDEFINED || fourcc_format == 0) {
+      continue;
+    }
+
+    std::vector<VkDrmFormatModifierPropertiesEXT> modifier_props =
+        QueryVkDrmFormatModifierPropertiesEXT(
+            device_queue->GetVulkanPhysicalDevice(), vk_format);
+    if (modifier_props.empty()) {
+      continue;
+    }
+
+    std::vector<uint64_t> modifiers;
+    modifiers.reserve(modifier_props.size());
+    for (const auto& props : modifier_props) {
+      modifiers.push_back(props.drmFormatModifier);
+    }
+    drm_formats_and_modifiers.emplace(fourcc_format, std::move(modifiers));
+  }
+#endif
 }
 
 }  // namespace gpu

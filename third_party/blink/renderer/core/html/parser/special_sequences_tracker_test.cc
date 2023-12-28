@@ -5,17 +5,20 @@
 #include "third_party/blink/renderer/core/html/parser/special_sequences_tracker.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 TEST(SpecialSequencesTrackerTest, FindNullChar) {
+  test::TaskEnvironment task_environment;
   SpecialSequencesTracker tracker;
   tracker.UpdateIndices(String("123\0", 4u));
   EXPECT_EQ(3u, tracker.index_of_first_special_sequence());
 }
 
 TEST(SpecialSequencesTrackerTest, FindNullCharSecondChunk) {
+  test::TaskEnvironment task_environment;
   SpecialSequencesTracker tracker;
   tracker.UpdateIndices("abc");
   tracker.UpdateIndices(String("d\0f", 3u));
@@ -23,12 +26,14 @@ TEST(SpecialSequencesTrackerTest, FindNullCharSecondChunk) {
 }
 
 TEST(SpecialSequencesTrackerTest, SimpleCData) {
+  test::TaskEnvironment task_environment;
   SpecialSequencesTracker tracker;
   tracker.UpdateIndices("abcdef<<![CDATA[");
   EXPECT_EQ(7u, tracker.index_of_first_special_sequence());
 }
 
 TEST(SpecialSequencesTrackerTest, SplitCData) {
+  test::TaskEnvironment task_environment;
   SpecialSequencesTracker tracker;
   tracker.UpdateIndices("abc<![");
   tracker.UpdateIndices("CD");
@@ -37,6 +42,7 @@ TEST(SpecialSequencesTrackerTest, SplitCData) {
 }
 
 TEST(SpecialSequencesTrackerTest, IncompleteCData) {
+  test::TaskEnvironment task_environment;
   SpecialSequencesTracker tracker;
   tracker.UpdateIndices("abcdef<<![CDATA");
   EXPECT_EQ(SpecialSequencesTracker::kNoSpecialSequencesFound,
@@ -44,6 +50,7 @@ TEST(SpecialSequencesTrackerTest, IncompleteCData) {
 }
 
 TEST(SpecialSequencesTrackerTest, SplitWithPartialThenFull) {
+  test::TaskEnvironment task_environment;
   SpecialSequencesTracker tracker;
   tracker.UpdateIndices("abc<![");
   tracker.UpdateIndices("<![CDATA[");

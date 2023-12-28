@@ -58,7 +58,7 @@ found in the LICENSE file.
 
         <ImageButton
             android:id="@+id/voice_search_quick_action_button"
-            android:src="@drawable/btn_mic"
+            android:src="@drawable/ic_mic_white_24dp"
             android:layout_marginHorizontal="@dimen/quick_action_search_widget_medium_button_horizontal_margin"
             style="@style/QuickActionSearchWidgetMediumButton"
             android:contentDescription="@string/accessibility_toolbar_btn_mic" />

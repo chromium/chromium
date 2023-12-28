@@ -1409,8 +1409,7 @@ void CertBuilder::GenerateCertificate() {
       SignData(*signature_algorithm, tbs_cert, issuer_->GetKey(), &signature));
 
   auto cert_der = FinishCBB(cbb.get());
-  cert_ =
-      x509_util::CreateCryptoBuffer(base::as_bytes(base::make_span(cert_der)));
+  cert_ = x509_util::CreateCryptoBuffer(base::as_byte_span(cert_der));
 }
 
 }  // namespace net

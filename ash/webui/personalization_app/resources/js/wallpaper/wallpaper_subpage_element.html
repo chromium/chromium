@@ -12,7 +12,7 @@
     width: 100%;
   }
 
-  wallpaper-subpage-top {
+  wallpaper-selected {
     background-color: var(--cros-bg-color);
     grid-area: selected;
     position: sticky;
@@ -23,9 +23,7 @@
   wallpaper-collections,
   wallpaper-images,
   google-photos-collection,
-  local-images,
-  sea-pen-images,
-  .sea-pen-collections {
+  local-images {
     grid-area: imagegrid;
     padding: 10px 0;
     background-color: var(--cros-bg-color);
@@ -37,16 +35,14 @@
     z-index: 1;
   }
 
-  :host-context(body.jelly-enabled) wallpaper-subpage-top {
+  :host-context(body.jelly-enabled) wallpaper-selected {
     background-color: var(--cros-sys-app_base_shaded);
   }
 
   :host-context(body.jelly-enabled) wallpaper-collections,
   wallpaper-images,
   google-photos-collection,
-  local-images,
-  sea-pen-images,
-  .sea-pen-collections {
+  local-images {
     background-color: var(--cros-bg-color);
   }
 </style>
@@ -54,11 +50,10 @@
   <!-- Prevent left margin from collapsing on narrow window in RTL -->
   <div class="leftspacertop"></div>
   <div class="leftspacerbottom"></div>
-  <wallpaper-subpage-top path="[[path]]" collection-id="[[queryParams.id]]"
-        google-photos-album-id="[[queryParams.googlePhotosAlbumId]]"
-        is-google-photos-album-shared="[[isGooglePhotosAlbumShared_]]"
-        template-id="[[queryParams.seaPenTemplateId]]">
-  </wallpaper-subpage-top>
+  <wallpaper-selected path="[[path]]" collection-id="[[queryParams.id]]"
+      google-photos-album-id="[[queryParams.googlePhotosAlbumId]]"
+      is-google-photos-album-shared="[[isGooglePhotosAlbumShared_]]">
+  </wallpaper-selected>
   <!-- do not use hidden$ here - need to listen on property change in
           these elements. -->
   <wallpaper-collections hidden="[[!shouldShowCollections_(path)]]">
@@ -74,15 +69,6 @@
   </template>
   <template is="dom-if" if="[[shouldShowLocalCollection_(path)]]" restamp>
     <local-images></local-images>
-  </template>
-  <template is="dom-if" if="[[shouldShowSeaPenCollection_(path)]]">
-    <div class="sea-pen-collections">
-      <sea-pen-templates></sea-pen-templates>
-      <sea-pen-recent-wallpapers></sea-pen-recent-wallpapers>
-    </div>
-  </template>
-  <template is="dom-if" if="[[shouldShowSeaPenResults_(path)]]">
-    <sea-pen-images template-id="[[queryParams.seaPenTemplateId]]"></sea-pen-images>
   </template>
   <!-- Prevent the right margin from collapsing when window gets very
            narrow -->

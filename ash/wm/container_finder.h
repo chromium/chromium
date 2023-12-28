@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/memory/raw_ptr.h"
 
 namespace aura {
 class Window;
@@ -34,9 +35,9 @@ ASH_EXPORT aura::Window* GetDefaultParentForWindow(
 // Returns the list of containers that match |container_id| in all root windows.
 // If |priority_root| is non-null, the container in |priority_root| is placed at
 // the front of the list.
-ASH_EXPORT std::vector<aura::Window*> GetContainersForAllRootWindows(
-    int container_id,
-    aura::Window* priority_root = nullptr);
+ASH_EXPORT std::vector<raw_ptr<aura::Window, VectorExperimental>>
+GetContainersForAllRootWindows(int container_id,
+                               aura::Window* priority_root = nullptr);
 
 // Returns the parent window for power button menu container for the provided
 // root_Window.

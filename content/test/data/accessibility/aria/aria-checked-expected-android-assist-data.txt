@@ -1,4 +1,4 @@
-WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
-++CheckBox textSize:16.00 style:0 bundle:[aria-checked="true", display="block", htmlTag="div", role="checkbox", tabindex="0"]
-++CheckBox textSize:16.00 style:0 bundle:[aria-checked="false", display="block", htmlTag="div", role="checkbox", tabindex="1"]
-++CheckBox textSize:16.00 style:0 bundle:[aria-checked="mixed", display="block", htmlTag="div", role="checkbox", tabindex="2"]
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++CheckBox textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-checked="true"}, {role="checkbox"}, {tabindex="0"}]
+++CheckBox textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-checked="false"}, {role="checkbox"}, {tabindex="1"}]
+++CheckBox textSize:16.0 style:0 htmlInfo:[{htmlTag="div"}, {display="block"}, {aria-checked="mixed"}, {role="checkbox"}, {tabindex="2"}]

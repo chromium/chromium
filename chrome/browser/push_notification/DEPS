@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/keyed_service/core/keyed_service.h",
+  "+components/push_notification",
+]

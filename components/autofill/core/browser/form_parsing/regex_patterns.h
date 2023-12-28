@@ -5,13 +5,14 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_REGEX_PATTERNS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_REGEX_PATTERNS_H_
 
+#include <optional>
+#include <string_view>
+
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/common/language_code.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -91,7 +92,7 @@ enum class PatternSource : uint8_t {
 // The active pattern and the available patterns depend on the build config and
 // the Finch config. If the active `HeuristicSource` is not a `PatternSource`,
 // then a nullopt is returned.
-absl::optional<PatternSource> GetActivePatternSource();
+std::optional<PatternSource> GetActivePatternSource();
 
 // Looks up the patterns for the given name and language.
 // The name is typically a field type.
@@ -104,13 +105,13 @@ absl::optional<PatternSource> GetActivePatternSource();
 // The returned patterns are sorted by their MatchingPattern::positive_score in
 // decreasing order.
 base::span<const MatchPatternRef> GetMatchPatterns(
-    base::StringPiece name,
-    absl::optional<LanguageCode> language_code,
+    std::string_view name,
+    std::optional<LanguageCode> language_code,
     PatternSource pattern_source);
 
 base::span<const MatchPatternRef> GetMatchPatterns(
-    ServerFieldType type,
-    absl::optional<LanguageCode> language_code,
+    FieldType type,
+    std::optional<LanguageCode> language_code,
     PatternSource pattern_source);
 
 // Returns true iff there at least one pattern for some PatternSource and

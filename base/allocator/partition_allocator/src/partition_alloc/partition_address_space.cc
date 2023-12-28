@@ -420,11 +420,12 @@ void PartitionAddressSpace::UninitThreadIsolatedPoolForTesting() {
 }
 #endif
 
-#if BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM64)
+#if (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)) && defined(ARCH_CPU_ARM64)
 
 PageCharacteristics page_characteristics;
 
-#endif  // BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM64)
+#endif  // (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)) &&
+        // defined(ARCH_CPU_ARM64)
 
 #endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
 

@@ -14,12 +14,12 @@ build_webui_tests("build") {
     "profile_picker_app_test.ts",
     "profile_picker_main_view_test.ts",
     "test_manage_profiles_browser_proxy.ts",
-    "enterprise_profile_welcome_test.ts",
+    "managed_user_profile_notice_test.ts",
     "profile_customization_test.ts",
     "profile_switch_test.ts",
     "profile_type_choice_test.ts",
     "sync_confirmation_test.ts",
-    "test_enterprise_profile_welcome_browser_proxy.ts",
+    "test_managed_user_profile_notice_browser_proxy.ts",
     "test_profile_customization_browser_proxy.ts",
     "test_sync_confirmation_browser_proxy.ts",
     "test_signin_reauth_browser_proxy.ts",
@@ -48,8 +48,8 @@ build_webui_tests("build") {
     "chrome://signin-dice-web-intercept/*|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/signin/tsc/dice_web_signin_intercept/*",
             target_gen_dir),
-    "chrome://enterprise-profile-welcome/*|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/signin/tsc/enterprise_profile_welcome/*",
+    "chrome://managed-user-profile-notice/*|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/signin/tsc/managed_user_profile_notice/*",
             target_gen_dir),
     "chrome://profile-customization/*|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/signin/tsc/profile_customization/*",

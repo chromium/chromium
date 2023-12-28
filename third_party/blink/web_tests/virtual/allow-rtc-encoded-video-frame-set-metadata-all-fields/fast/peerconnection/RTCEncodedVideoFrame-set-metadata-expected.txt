@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] setMetadata() does not allow changes to fields without a flag
-  assert_throws_dom: For field "height", function "() => clone.setMetadata(metadata)" did not throw
-Harness: the test ran to completion.
-

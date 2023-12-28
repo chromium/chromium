@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
@@ -130,14 +131,14 @@ CalculateAlignedByteLength(const Map& buffer_to_byte_length_map) {
       .key_to_d3d12_range_map = std::move(key_to_d3d12_range_map)};
 }
 
-// Upload constants/inputs buffers in one Direct3D 12 committed resource, the
+// Upload constants buffers in one Direct3D 12 committed resource, the
 // DML_BUFFER_BINDING specifies a resource binding described by a range of bytes
 // in the single buffer.
-template <typename Key>
-absl::optional<std::map<Key, DML_BUFFER_BINDING>> UploadAndCreateBufferBinding(
+absl::optional<std::map<uint64_t, DML_BUFFER_BINDING>>
+UploadAndCreateConstantBufferBinding(
     CommandRecorder* command_recorder,
-    const base::flat_map<Key, mojo_base::BigBuffer>& key_to_buffer_map,
-    const AlignedByteLength<Key>& aligned_byte_length,
+    const base::flat_map<uint64_t, mojo_base::BigBuffer>& key_to_buffer_map,
+    const AlignedByteLength<uint64_t>& aligned_byte_length,
     ComPtr<ID3D12Resource> upload_buffer,
     ComPtr<ID3D12Resource> default_buffer) {
   // Map entire resource to copy the array buffer of constant/input one by one
@@ -150,7 +151,7 @@ absl::optional<std::map<Key, DML_BUFFER_BINDING>> UploadAndCreateBufferBinding(
     return absl::nullopt;
   }
 
-  std::map<Key, DML_BUFFER_BINDING> key_to_buffer_binding_map;
+  std::map<uint64_t, DML_BUFFER_BINDING> key_to_buffer_binding_map;
   for (auto& [key, buffer] : key_to_buffer_map) {
     // Copy the input data to the upload heap with byte offset
     const auto& d3d12_range =
@@ -172,6 +173,26 @@ absl::optional<std::map<Key, DML_BUFFER_BINDING>> UploadAndCreateBufferBinding(
                           aligned_byte_length.total_byte_length);
 
   return key_to_buffer_binding_map;
+}
+
+HRESULT CopyInputDataToUploadBuffer(
+    const base::flat_map<std::string, mojo_base::BigBuffer>& named_inputs,
+    const std::map<std::string, D3D12_RANGE>& input_name_to_d3d12_range_map,
+    ID3D12Resource* upload_buffer) {
+  // Map entire resource to copy the array buffer of input one by one
+  // with byte offset.
+  void* mapped_upload_buffer = nullptr;
+  RETURN_IF_FAILED(upload_buffer->Map(0, nullptr, &mapped_upload_buffer));
+
+  for (auto& [name, buffer] : named_inputs) {
+    // Copy the input data to the upload heap with byte offset
+    const auto& d3d12_range = input_name_to_d3d12_range_map.at(name);
+    memcpy(static_cast<uint8_t*>(mapped_upload_buffer) + d3d12_range.Begin,
+           buffer.data(), buffer.size());
+  }
+  upload_buffer->Unmap(0, nullptr);
+
+  return S_OK;
 }
 
 // Define some methods like CreateInputNode and CreateOperatorNodeForRelu here
@@ -283,8 +304,10 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForArgMinMax(
 struct ActivationOperatorDesc {
   absl::variant<DML_ACTIVATION_ELU_OPERATOR_DESC,
                 DML_ACTIVATION_LEAKY_RELU_OPERATOR_DESC,
+                DML_ACTIVATION_LINEAR_OPERATOR_DESC,
                 DML_ACTIVATION_RELU_OPERATOR_DESC,
                 DML_ACTIVATION_SIGMOID_OPERATOR_DESC,
+                DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC,
                 DML_ACTIVATION_TANH_OPERATOR_DESC>
       desc;
 
@@ -296,6 +319,10 @@ struct ActivationOperatorDesc {
                    desc)) {
       return {DML_OPERATOR_ACTIVATION_LEAKY_RELU,
               &absl::get<DML_ACTIVATION_LEAKY_RELU_OPERATOR_DESC>(desc)};
+    } else if (absl::holds_alternative<DML_ACTIVATION_LINEAR_OPERATOR_DESC>(
+                   desc)) {
+      return {DML_OPERATOR_ACTIVATION_LINEAR,
+              &absl::get<DML_ACTIVATION_LINEAR_OPERATOR_DESC>(desc)};
     } else if (absl::holds_alternative<DML_ACTIVATION_RELU_OPERATOR_DESC>(
                    desc)) {
       return {DML_OPERATOR_ACTIVATION_RELU,
@@ -304,6 +331,10 @@ struct ActivationOperatorDesc {
                    desc)) {
       return {DML_OPERATOR_ACTIVATION_SIGMOID,
               &absl::get<DML_ACTIVATION_SIGMOID_OPERATOR_DESC>(desc)};
+    } else if (absl::holds_alternative<DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC>(
+                   desc)) {
+      return {DML_OPERATOR_ACTIVATION_SOFTPLUS,
+              &absl::get<DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC>(desc)};
     } else if (absl::holds_alternative<DML_ACTIVATION_TANH_OPERATOR_DESC>(
                    desc)) {
       return {DML_OPERATOR_ACTIVATION_TANH,
@@ -328,12 +359,21 @@ CreateActivationOperatorDesc(const mojom::ActivationPtr& activation) {
       return ActivationOperatorDesc{
           .desc = DML_ACTIVATION_LEAKY_RELU_OPERATOR_DESC{
               .Alpha = activation->get_leaky_relu()->alpha}};
+    case mojom::Activation::Tag::kLinear:
+      return ActivationOperatorDesc{
+          .desc = DML_ACTIVATION_LINEAR_OPERATOR_DESC{
+              .Alpha = activation->get_linear()->alpha,
+              .Beta = activation->get_linear()->beta}};
     case mojom::Activation::Tag::kRelu:
       return ActivationOperatorDesc{.desc =
                                         DML_ACTIVATION_RELU_OPERATOR_DESC{}};
     case mojom::Activation::Tag::kSigmoid:
       return ActivationOperatorDesc{.desc =
                                         DML_ACTIVATION_SIGMOID_OPERATOR_DESC{}};
+    case mojom::Activation::Tag::kSoftplus:
+      return ActivationOperatorDesc{
+          .desc = DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC{
+              .Steepness = activation->get_softplus()->steepness}};
     case mojom::Activation::Tag::kTanh:
       return ActivationOperatorDesc{.desc =
                                         DML_ACTIVATION_TANH_OPERATOR_DESC{}};
@@ -1486,9 +1526,16 @@ void CreateNodeOutputForReshape(const IdToOperandMap& id_to_operand_map,
                                 IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, reshape->input_operand_id);
+
+  // Ensure the output tensor description having the
+  // `DML_TENSOR_FLAG_OWNED_BY_DML` flag if its corresponding node is a constant
+  // graph input.
   uint64_t output_id = reshape->output_operand_id;
+  const OperandPtr& output_operand = id_to_operand_map.at(output_id);
+  const auto& input_tensor_desc = input->GetTensorDesc();
   auto output_tensor_desc =
-      CreateOutputTensorDesc(id_to_operand_map, output_id);
+      TensorDesc(input_tensor_desc.GetDataType(), input_tensor_desc.GetFlags(),
+                 output_operand->dimensions);
 
   const Node& input_node = input->GetNode();
 
@@ -1730,6 +1777,108 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGemm(
   return base::ok();
 }
 
+template <typename NormalizationPtr>
+base::expected<void, mojom::ErrorPtr>
+CreateOperatorNodeForMeanVarianceNormalization(
+    const IdToOperandMap& id_to_operand_map,
+    const NormalizationPtr& normalization,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map,
+    base::span<const uint32_t> mean_variance_axes,
+    base::span<const uint32_t> scale_bias_broadcast_axes,
+    mojom::Operation::Tag op) {
+  const NodeOutput* input = GetNodeOutputForOperand(
+      id_to_node_output_map, normalization->input_operand_id);
+  const auto& input_tensor_desc = input->GetTensorDesc();
+  size_t input_rank = input_tensor_desc.GetDimensions().size();
+
+  const NodeOutput* scale =
+      normalization->scale_operand_id.has_value()
+          ? GetNodeOutputForOperand(id_to_node_output_map,
+                                    normalization->scale_operand_id.value())
+          : nullptr;
+  const NodeOutput* bias =
+      normalization->bias_operand_id.has_value()
+          ? GetNodeOutputForOperand(id_to_node_output_map,
+                                    normalization->bias_operand_id.value())
+          : nullptr;
+
+  // `scale` and `bias` should be both given or not given when DML_FEATURE_LEVEL
+  // is less than DML_FEATURE_LEVEL_5_2.
+  // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_mean_variance_normalization1_operator_desc
+  if ((scale && !bias) || (!scale && bias)) {
+    return base::unexpected(CreateError(mojom::Error::Code::kNotSupportedError,
+                                        OpTagToString(op) +
+                                            ": The scale and bias must be both "
+                                            "given or not given."));
+  }
+
+  if (!base::MakeCheckedNum(mean_variance_axes.size()).IsValid<uint32_t>()) {
+    return base::unexpected(
+        CreateError(mojom::Error::Code::kUnknownError,
+                    OpTagToString(op) + ": The axes rank is too large."));
+  }
+
+  std::vector<const NodeOutput*> inputs = {input};
+  absl::optional<TensorDesc> scale_tensor_desc;
+  absl::optional<TensorDesc> bias_tensor_desc;
+
+  if (scale) {
+    inputs.push_back(scale);
+    scale_tensor_desc = scale->GetTensorDesc();
+    // The scale tensor should have the same rank as the input tensor required
+    // by DML_MEAN_VARIANCE_NORMALIZATION1_OPERATOR_DESC.
+    scale_tensor_desc->MakeBroadcastCompatible(input_rank,
+                                               scale_bias_broadcast_axes);
+  }
+  if (bias) {
+    inputs.push_back(bias);
+    bias_tensor_desc = bias->GetTensorDesc();
+    // The bias tensor should have the same rank as the input tensor required by
+    // DML_MEAN_VARIANCE_NORMALIZATION1_OPERATOR_DESC.
+    bias_tensor_desc->MakeBroadcastCompatible(input_rank,
+                                              scale_bias_broadcast_axes);
+  }
+
+  uint64_t output_id = normalization->output_operand_id;
+  const auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  DML_MEAN_VARIANCE_NORMALIZATION1_OPERATOR_DESC
+  normalization_operator_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .ScaleTensor = scale_tensor_desc.has_value()
+                         ? &scale_tensor_desc->GetDMLTensorDesc()
+                         : nullptr,
+      .BiasTensor = bias_tensor_desc.has_value()
+                        ? &bias_tensor_desc->GetDMLTensorDesc()
+                        : nullptr,
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .AxisCount = base::checked_cast<uint32_t>(mean_variance_axes.size()),
+      .Axes = mean_variance_axes.data(),
+      // The layer normalization and instance normalization includes variance.
+      .NormalizeVariance = true,
+      .Epsilon = normalization->epsilon,
+      .FusedActivation = nullptr};
+
+  const OperatorNode* normalization_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_MEAN_VARIANCE_NORMALIZATION1, &normalization_operator_desc,
+      inputs);
+  if (!normalization_node) {
+    return base::unexpected(
+        CreateError(mojom::Error::Code::kUnknownError,
+                    base::StringPrintf("Failed to create %s operator.",
+                                       OpTagToString(op).c_str())));
+  }
+
+  const NodeOutput* output = graph_builder.CreateNodeOutput(
+      normalization_node, std::move(output_tensor_desc));
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
+
+  return base::ok();
+}
+
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLeakyRelu(
     const IdToOperandMap& id_to_operand_map,
     const mojom::LeakyReluPtr& leaky_relu,
@@ -1759,6 +1908,41 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLeakyRelu(
 
   const NodeOutput* node_output = graph_builder.CreateNodeOutput(
       leaky_relu_node, std::move(output_tensor_desc));
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
+
+  return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLinear(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::LinearPtr& linear,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input =
+      GetNodeOutputForOperand(id_to_node_output_map, linear->input_operand_id);
+  const auto& input_tensor_desc = input->GetTensorDesc();
+
+  uint64_t output_id = linear->output_operand_id;
+  auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  DML_ACTIVATION_LINEAR_OPERATOR_DESC linear_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .Alpha = linear->alpha,
+      .Beta = linear->beta};
+
+  std::array<const NodeOutput*, 1> inputs = {input};
+  const OperatorNode* linear_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_ACTIVATION_LINEAR, &linear_desc, inputs);
+  if (!linear_node) {
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create linear operator."));
+  }
+
+  const NodeOutput* node_output = graph_builder.CreateNodeOutput(
+      linear_node, std::move(output_tensor_desc));
   // The output id must be unique in the map.
   CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
 
@@ -1820,6 +2004,49 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
       matmul_node, std::move(output_tensor_desc), 0);
   // The output id must be unique in the map.
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
+
+  return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForSoftplus(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::SoftplusPtr& softplus,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input = GetNodeOutputForOperand(id_to_node_output_map,
+                                                    softplus->input_operand_id);
+  const auto& input_tensor_desc = input->GetTensorDesc();
+
+  const uint64_t output_id = softplus->output_operand_id;
+  const auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  // The steepness must be greater than or equal to 1.0 when DML_FEATURE_LEVEL
+  // is less than DML_FEATURE_LEVEL_6_3:
+  // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_softplus_operator_desc
+  if (softplus->steepness < 1.0f) {
+    return base::unexpected(CreateError(
+        mojom::Error::Code::kNotSupportedError,
+        "The steepness of softplus should be greater than or equal to 1.0."));
+  }
+
+  DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC softplus_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .Steepness = softplus->steepness};
+
+  std::array<const NodeOutput*, 1> inputs = {input};
+  const OperatorNode* softplus_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_ACTIVATION_SOFTPLUS, &softplus_desc, inputs);
+  if (!softplus_node) {
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create softplus operator."));
+  }
+
+  const NodeOutput* node_output = graph_builder.CreateNodeOutput(
+      softplus_node, std::move(output_tensor_desc));
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
 
   return base::ok();
 }
@@ -1928,6 +2155,22 @@ GraphImpl::GraphBufferBindingInfo::GraphBufferBindingInfo(
     GraphBufferBindingInfo&&) = default;
 GraphImpl::GraphBufferBindingInfo& GraphImpl::GraphBufferBindingInfo::operator=(
     GraphBufferBindingInfo&&) = default;
+
+GraphImpl::PersistentResource::PersistentResource(
+    uint64_t persistent_buffer_byte_length,
+    ComPtr<ID3D12Resource> persistent_resource)
+    : persistent_buffer(std::move(persistent_resource)) {
+  CHECK_GT(persistent_buffer_byte_length, 0u);
+  CHECK_NE(persistent_buffer.Get(), nullptr);
+  persistent_buffer_binding =
+      DML_BUFFER_BINDING{.Buffer = persistent_buffer.Get(),
+                         .Offset = 0,
+                         .SizeInBytes = persistent_buffer_byte_length};
+  persistent_buffer_binding_desc = DML_BINDING_DESC{
+      .Type = DML_BINDING_TYPE_BUFFER, .Desc = &persistent_buffer_binding};
+}
+
+GraphImpl::PersistentResource::~PersistentResource() = default;
 
 GraphImpl::ComputeResources::ComputeResources(
     ComPtr<ID3D12DescriptorHeap> descriptor_heap,
@@ -2048,34 +2291,112 @@ GraphImpl::AllocateComputeResources(
       temporary_buffer_byte_length, std::move(temporary_buffer)));
 }
 
+// static
+HRESULT GraphImpl::RecordGraphExecution(
+    IDMLCompiledOperator* compiled_operator,
+    CommandRecorder* command_recorder,
+    const ComputeResources* compute_resources,
+    const PersistentResource* persistent_resource,
+    const GraphBufferBindingInfo& graph_buffer_binding_info) {
+  // Open the command recorder for recording the graph execution commands.
+  RETURN_IF_FAILED(command_recorder->Open());
+
+  // Create the input buffer bindings for the graph execution.
+  std::map<std::string, DML_BUFFER_BINDING>
+      graph_input_name_to_buffer_binding_map;
+  for (auto& [name, d3d12_range] :
+       compute_resources->input_aligned_byte_length.key_to_d3d12_range_map) {
+    auto size_in_bytes = d3d12_range.End - d3d12_range.Begin;
+    graph_input_name_to_buffer_binding_map[name] =
+        DML_BUFFER_BINDING{.Buffer = compute_resources->input_buffer.Get(),
+                           .Offset = d3d12_range.Begin,
+                           .SizeInBytes = size_in_bytes};
+  }
+
+  std::vector<DML_BINDING_DESC> input_buffer_binding_desc(
+      graph_buffer_binding_info.input_buffer_binding_count,
+      DML_BINDING_DESC{.Type = DML_BINDING_TYPE_NONE, .Desc = nullptr});
+
+  // The graph input tensors must be bound to the binding table during the
+  // graph execution.
+  for (auto& [name, buffer_binding] : graph_input_name_to_buffer_binding_map) {
+    // Get the graph input index with the name.
+    const auto graph_input_index_iterator =
+        graph_buffer_binding_info.graph_input_name_to_index_map.find(name);
+    CHECK(graph_input_index_iterator !=
+          graph_buffer_binding_info.graph_input_name_to_index_map.end());
+    uint32_t graph_input_index = graph_input_index_iterator->second;
+    input_buffer_binding_desc[graph_input_index] = {DML_BINDING_TYPE_BUFFER,
+                                                    &buffer_binding};
+  }
+
+  UploadBufferWithBarrier(
+      command_recorder, compute_resources->input_buffer,
+      compute_resources->upload_buffer,
+      compute_resources->input_aligned_byte_length.total_byte_length);
+
+  // Create the output buffer bindings for the graph execution.
+  size_t output_buffer_binding_count =
+      graph_buffer_binding_info.graph_output_name_to_index_map.size();
+  std::vector<DML_BINDING_DESC> output_buffer_binding_desc(
+      output_buffer_binding_count,
+      DML_BINDING_DESC{.Type = DML_BINDING_TYPE_NONE, .Desc = nullptr});
+  std::vector<DML_BUFFER_BINDING> output_buffer_binding;
+  output_buffer_binding.reserve(output_buffer_binding_count);
+
+  for (auto& [name, graph_output_index] :
+       graph_buffer_binding_info.graph_output_name_to_index_map) {
+    const auto graph_output_range_iterator =
+        compute_resources->output_aligned_byte_length.key_to_d3d12_range_map
+            .find(name);
+    CHECK(graph_output_range_iterator !=
+          compute_resources->output_aligned_byte_length.key_to_d3d12_range_map
+              .end());
+    const auto& d3d12_range = graph_output_range_iterator->second;
+    output_buffer_binding.push_back(
+        DML_BUFFER_BINDING{.Buffer = compute_resources->output_buffer.Get(),
+                           .Offset = d3d12_range.Begin,
+                           .SizeInBytes = d3d12_range.End - d3d12_range.Begin});
+    output_buffer_binding_desc[graph_output_index] = {
+        DML_BINDING_TYPE_BUFFER, &output_buffer_binding.back()};
+  }
+
+  absl::optional<DML_BINDING_DESC> persistent_buffer_binding_desc;
+  if (persistent_resource) {
+    persistent_buffer_binding_desc =
+        persistent_resource->persistent_buffer_binding_desc;
+  }
+
+  // Execute the graph with input, output and persistent buffer bindings.
+  RETURN_IF_FAILED(command_recorder->ExecuteOperator(
+      compiled_operator, compute_resources->descriptor_heap,
+      input_buffer_binding_desc, output_buffer_binding_desc,
+      persistent_buffer_binding_desc,
+      compute_resources->temporary_buffer_binding_desc));
+
+  ReadbackBufferWithBarrier(
+      command_recorder, compute_resources->readback_buffer,
+      compute_resources->output_buffer,
+      compute_resources->output_aligned_byte_length.total_byte_length);
+
+  RETURN_IF_FAILED(command_recorder->Close());
+  return S_OK;
+}
+
 GraphImpl::GraphImpl(std::unique_ptr<CommandRecorder> command_recorder,
-                     ComPtr<ID3D12Resource> persistent_buffer,
+                     std::unique_ptr<PersistentResource> persistent_resource,
                      ComPtr<IDMLCompiledOperator> compiled_operator,
                      ComputeResourceInfo compute_resource_info,
                      GraphBufferBindingInfo graph_buffer_binding_info,
                      std::unique_ptr<ComputeResources> compute_resources)
     : WebNNGraphImpl(std::move(compute_resource_info)),
-      persistent_buffer_(std::move(persistent_buffer)),
+      persistent_resource_(std::move(persistent_resource)),
       command_recorder_(std::move(command_recorder)),
       compiled_operator_(std::move(compiled_operator)),
       graph_buffer_binding_info_(std::move(graph_buffer_binding_info)),
       compute_resources_(std::move(compute_resources)) {
   command_queue_ = command_recorder_->GetCommandQueue();
   dml_device_ = command_recorder_->GetDMLDevice();
-
-  // Create the persistent buffer binding for the graph execution.
-  uint64_t persistent_buffer_size =
-      compiled_operator_->GetBindingProperties().PersistentResourceSize;
-  if (persistent_buffer_size) {
-    CHECK_NE(persistent_buffer_.Get(), nullptr);
-    persistent_buffer_binding_ =
-        DML_BUFFER_BINDING{.Buffer = persistent_buffer_.Get(),
-                           .Offset = 0,
-                           .SizeInBytes = persistent_buffer_size};
-    persistent_buffer_binding_desc_ =
-        DML_BINDING_DESC{.Type = DML_BINDING_TYPE_BUFFER,
-                         .Desc = &persistent_buffer_binding_.value()};
-  }
 }
 
 //  Notice that it's the CommandQueue's responsibility to wait for all of the
@@ -2178,7 +2499,7 @@ void GraphImpl::OnCompilationComplete(
                       "Failed to create default input buffer for constants.")));
       return;
     }
-    auto constant_buffer_binding = UploadAndCreateBufferBinding<uint64_t>(
+    auto constant_buffer_binding = UploadAndCreateConstantBufferBinding(
         command_recorder.get(), constant_id_to_buffer_map,
         aligned_byte_length_of_constants.value(), std::move(upload_buffer),
         std::move(default_buffer));
@@ -2209,14 +2530,14 @@ void GraphImpl::OnCompilationComplete(
 
   // Create the persistent resource which is bound as output of operator
   // initializer.
+  std::unique_ptr<PersistentResource> persistent_resource;
   absl::optional<DML_BINDING_DESC> persistent_buffer_binding_desc;
-  absl::optional<DML_BUFFER_BINDING> persistent_buffer_binding;
   DML_BINDING_PROPERTIES execution_binding_properties =
       compiled_operator->GetBindingProperties();
   uint64_t persistent_buffer_size =
       execution_binding_properties.PersistentResourceSize;
-  ComPtr<ID3D12Resource> persistent_buffer;
   if (persistent_buffer_size) {
+    ComPtr<ID3D12Resource> persistent_buffer;
     hr = command_recorder->CreateDefaultBuffer(
         persistent_buffer_size, L"WebNN_Default_Persistent_Buffer",
         persistent_buffer);
@@ -2229,14 +2550,10 @@ void GraphImpl::OnCompilationComplete(
       return;
     }
 
-    persistent_buffer_binding =
-        DML_BUFFER_BINDING{.Buffer = persistent_buffer.Get(),
-                           .Offset = 0,
-                           .SizeInBytes = persistent_buffer_size};
-
+    persistent_resource = base::WrapUnique(new PersistentResource(
+        persistent_buffer_size, std::move(persistent_buffer)));
     persistent_buffer_binding_desc =
-        DML_BINDING_DESC{.Type = DML_BINDING_TYPE_BUFFER,
-                         .Desc = &persistent_buffer_binding.value()};
+        persistent_resource->persistent_buffer_binding_desc;
   }
 
   hr = command_recorder->InitializeOperator(compiled_operator.Get(),
@@ -2266,7 +2583,7 @@ void GraphImpl::OnCompilationComplete(
 
   command_queue->WaitAsync(base::BindOnce(
       &GraphImpl::OnInitializationComplete, std::move(command_recorder),
-      std::move(persistent_buffer), std::move(compiled_operator),
+      std::move(persistent_resource), std::move(compiled_operator),
       std::move(compute_resource_info), std::move(graph_buffer_binding_info),
       std::move(callback)));
 }
@@ -2274,7 +2591,7 @@ void GraphImpl::OnCompilationComplete(
 // static
 void GraphImpl::OnInitializationComplete(
     std::unique_ptr<CommandRecorder> command_recorder,
-    ComPtr<ID3D12Resource> persistent_buffer,
+    std::unique_ptr<PersistentResource> persistent_resource,
     ComPtr<IDMLCompiledOperator> compiled_operator,
     ComputeResourceInfo compute_resource_info,
     GraphBufferBindingInfo graph_buffer_binding_info,
@@ -2300,6 +2617,19 @@ void GraphImpl::OnInitializationComplete(
     return;
   }
 
+  hr = RecordGraphExecution(compiled_operator.Get(), command_recorder.get(),
+                            compute_resources.get(), persistent_resource.get(),
+                            graph_buffer_binding_info);
+  if (FAILED(hr)) {
+    DLOG(ERROR)
+        << "Failed to record commands and bind resources for execution: "
+        << logging::SystemErrorCodeToString(hr);
+    std::move(callback).Run(mojom::CreateGraphResult::NewError(CreateError(
+        mojom::Error::Code::kUnknownError,
+        "Failed to record commands and bind resources for execution.")));
+    return;
+  }
+
   scoped_refptr<CommandQueue> command_queue(
       command_recorder->GetCommandQueue());
   // The remote sent to the renderer.
@@ -2307,7 +2637,7 @@ void GraphImpl::OnInitializationComplete(
   // The receiver bound to GraphImpl.
   mojo::MakeSelfOwnedReceiver<mojom::WebNNGraph>(
       base::WrapUnique(new GraphImpl(
-          std::move(command_recorder), std::move(persistent_buffer),
+          std::move(command_recorder), std::move(persistent_resource),
           std::move(compiled_operator), std::move(compute_resource_info),
           std::move(graph_buffer_binding_info), std::move(compute_resources))),
       blink_remote.InitWithNewPipeAndPassReceiver());
@@ -2434,9 +2764,47 @@ void GraphImpl::CreateAndBuild(
                                       graph_builder, id_to_node_output_map);
         break;
       }
+      case Operation::Tag::kInstanceNormalization: {
+        // The axes along which to calculate the Mean and Variance.
+        std::array<uint32_t, 2> mean_variance_axes;
+        std::array<uint32_t, 1> scale_bias_broadcast_axes;
+        const auto& instance_normalization =
+            operation->get_instance_normalization();
+        switch (instance_normalization->layout) {
+          case mojom::InputOperandLayout::kChannelsFirst: {
+            mean_variance_axes = {2, 3};
+            scale_bias_broadcast_axes = {1};
+            break;
+          }
+          case mojom::InputOperandLayout::kChannelsLast:
+            mean_variance_axes = {1, 2};
+            scale_bias_broadcast_axes = {3};
+            break;
+        }
+        create_operator_result = CreateOperatorNodeForMeanVarianceNormalization(
+            id_to_operand_map, instance_normalization, graph_builder,
+            id_to_node_output_map, mean_variance_axes,
+            scale_bias_broadcast_axes, Operation::Tag::kInstanceNormalization);
+        break;
+      }
+      case Operation::Tag::kLayerNormalization: {
+        const auto& layer_normalization = operation->get_layer_normalization();
+        const auto axes = layer_normalization->axes;
+        create_operator_result = CreateOperatorNodeForMeanVarianceNormalization(
+            id_to_operand_map, layer_normalization, graph_builder,
+            id_to_node_output_map, axes, axes,
+            Operation::Tag::kLayerNormalization);
+        break;
+      }
       case Operation::Tag::kLeakyRelu: {
         create_operator_result = CreateOperatorNodeForLeakyRelu(
             id_to_operand_map, operation->get_leaky_relu(), graph_builder,
+            id_to_node_output_map);
+        break;
+      }
+      case Operation::Tag::kLinear: {
+        create_operator_result = CreateOperatorNodeForLinear(
+            id_to_operand_map, operation->get_linear(), graph_builder,
             id_to_node_output_map);
         break;
       }
@@ -2510,6 +2878,12 @@ void GraphImpl::CreateAndBuild(
                                        DML_OPERATOR_ACTIVATION_SOFTMAX>(
                 id_to_operand_map, operation->get_softmax(), graph_builder,
                 id_to_node_output_map);
+        break;
+      }
+      case mojom::Operation::Tag::kSoftplus: {
+        create_operator_result = CreateOperatorNodeForSoftplus(
+            id_to_operand_map, operation->get_softplus(), graph_builder,
+            id_to_node_output_map);
         break;
       }
       case mojom::Operation::Tag::kSplit: {
@@ -2639,7 +3013,15 @@ void GraphImpl::ComputeImpl(
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
     mojom::WebNNGraph::ComputeCallback callback) {
   TRACE_EVENT0("gpu", "dml::GraphImpl::ComputeImpl");
+
+  // It indicates whether we need to record commands and bind resources again
+  // for the graph execution by calling `RecordGraphExecution` method. If either
+  // the `compute_resources_` or `command_recorder_` is not available during the
+  // graph execution, it must be set to true.
+  bool is_command_recording_needed = false;
+
   // Recreate the command recorder if it has been released by last failed
+  // computation or it is unavailable due to still being occupied by last
   // computation.
   if (!command_recorder_) {
     command_recorder_ = CommandRecorder::Create(command_queue_, dml_device_);
@@ -2648,21 +3030,18 @@ void GraphImpl::ComputeImpl(
                                std::move(callback));
       return;
     }
-  }
-  // Re-open the command recorder for recording the graph execution commands.
-  HRESULT hr = command_recorder_->Open();
-  if (FAILED(hr)) {
-    HandleComputationFailure("Failed to open the command recorder.", hr,
-                             std::move(callback));
-    return;
+    is_command_recording_needed = true;
   }
 
-  // Use the existing compute resource if it is available, otherwise allocate a
-  // new one.
+  std::unique_ptr<CommandRecorder> command_recorder =
+      std::move(command_recorder_);
+
+  // Use the existing compute resource if it is available, otherwise allocate
+  // a new one.
   std::unique_ptr<ComputeResources> compute_resources =
       std::move(compute_resources_);
   if (!compute_resources) {
-    compute_resources = AllocateComputeResources(command_recorder_.get(),
+    compute_resources = AllocateComputeResources(command_recorder.get(),
                                                  compiled_operator_.Get(),
                                                  compute_resource_info());
     if (!compute_resources) {
@@ -2670,101 +3049,54 @@ void GraphImpl::ComputeImpl(
                                std::move(callback));
       return;
     }
+    is_command_recording_needed = true;
   }
   CHECK(compute_resources);
 
-  // Create the input resource binding for graph execution.
-  auto input_buffer_binding = UploadAndCreateBufferBinding<std::string>(
-      command_recorder_.get(), named_inputs,
-      compute_resources->input_aligned_byte_length,
-      compute_resources->upload_buffer, compute_resources->input_buffer);
-  if (!input_buffer_binding) {
+  HRESULT hr = S_OK;
+
+  if (is_command_recording_needed) {
+    hr = RecordGraphExecution(compiled_operator_.Get(), command_recorder.get(),
+                              compute_resources.get(),
+                              persistent_resource_.get(),
+                              graph_buffer_binding_info_);
+    if (FAILED(hr)) {
+      HandleComputationFailure(
+          "Failed to record and bind resources for execution.", hr,
+          std::move(callback));
+      return;
+    }
+  }
+
+  hr = CopyInputDataToUploadBuffer(
+      named_inputs,
+      compute_resources->input_aligned_byte_length.key_to_d3d12_range_map,
+      compute_resources->upload_buffer.Get());
+  if (FAILED(hr)) {
     HandleComputationFailure(
-        "Failed to upload and create the input buffer binding.",
+        "Failed to copy the data from named inputs to the upload buffer.", hr,
         std::move(callback));
     return;
   }
 
-  std::vector<DML_BINDING_DESC> input_buffer_binding_desc(
-      graph_buffer_binding_info_.input_buffer_binding_count,
-      DML_BINDING_DESC{.Type = DML_BINDING_TYPE_NONE, .Desc = nullptr});
-
-  // The graph input tensors must be bound to the binding table during the graph
-  // execution.
-  for (auto& [name, buffer_binding] : input_buffer_binding.value()) {
-    // Get the graph input index with the name.
-    const auto graph_input_index_iterator =
-        graph_buffer_binding_info_.graph_input_name_to_index_map.find(name);
-    CHECK(graph_input_index_iterator !=
-          graph_buffer_binding_info_.graph_input_name_to_index_map.end());
-    uint32_t graph_input_index = graph_input_index_iterator->second;
-    input_buffer_binding_desc[graph_input_index] = {DML_BINDING_TYPE_BUFFER,
-                                                    &buffer_binding};
-  }
-
-  // Create the output buffer bindings for the graph execution.
-  size_t output_buffer_binding_count =
-      graph_buffer_binding_info_.graph_output_name_to_index_map.size();
-  std::vector<DML_BINDING_DESC> output_buffer_binding_desc(
-      output_buffer_binding_count,
-      DML_BINDING_DESC{.Type = DML_BINDING_TYPE_NONE, .Desc = nullptr});
-  std::vector<DML_BUFFER_BINDING> output_buffer_binding;
-  output_buffer_binding.reserve(output_buffer_binding_count);
-
-  for (auto& [name, graph_output_index] :
-       graph_buffer_binding_info_.graph_output_name_to_index_map) {
-    auto& d3d12_range = compute_resources->output_aligned_byte_length
-                            .key_to_d3d12_range_map[name];
-    output_buffer_binding.push_back(
-        DML_BUFFER_BINDING{.Buffer = compute_resources->output_buffer.Get(),
-                           .Offset = d3d12_range.Begin,
-                           .SizeInBytes = d3d12_range.End - d3d12_range.Begin});
-    output_buffer_binding_desc[graph_output_index] = {
-        DML_BINDING_TYPE_BUFFER, &output_buffer_binding.back()};
-  }
-
-  // Execute the graph with input, output and persistent buffer bindings.
-  hr = command_recorder_->ExecuteOperator(
-      compiled_operator_.Get(), compute_resources->descriptor_heap,
-      input_buffer_binding_desc, output_buffer_binding_desc,
-      persistent_buffer_binding_desc_,
-      compute_resources->temporary_buffer_binding_desc);
+  // Submit the command list for execution.
+  hr = command_recorder->Execute();
   if (FAILED(hr)) {
-    HandleComputationFailure("Failed to execute the operator.", hr,
+    HandleComputationFailure("Failed to execute the command list.", hr,
                              std::move(callback));
-    return;
-  }
-
-  // Copy the output data from output buffer to readback buffer.
-  D3D12_RESOURCE_BARRIER barriers[1];
-  barriers[0] = CreateTransitionBarrier(compute_resources->output_buffer.Get(),
-                                        D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-                                        D3D12_RESOURCE_STATE_COPY_SOURCE);
-  command_recorder_->ResourceBarrier(barriers);
-  command_recorder_->CopyBufferRegion(
-      compute_resources->readback_buffer.Get(), 0,
-      compute_resources->output_buffer.Get(), 0,
-      compute_resources->output_aligned_byte_length.total_byte_length);
-  barriers[0] = CreateTransitionBarrier(compute_resources->output_buffer.Get(),
-                                        D3D12_RESOURCE_STATE_COPY_SOURCE,
-                                        D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
-  command_recorder_->ResourceBarrier(barriers);
-
-  hr = command_recorder_->CloseAndExecute();
-  if (FAILED(hr)) {
-    HandleComputationFailure("Failed to close and execute the command list.",
-                             hr, std::move(callback));
     return;
   }
 
   command_queue_->WaitAsync(base::BindOnce(
       &GraphImpl::OnComputationComplete, weak_factory_.GetWeakPtr(),
-      std::move(callback), std::move(compute_resources)));
+      std::move(callback), std::move(compute_resources),
+      std::move(command_recorder)));
 }
 
 void GraphImpl::OnComputationComplete(
     mojom::WebNNGraph::ComputeCallback callback,
     std::unique_ptr<ComputeResources> compute_resources,
+    std::unique_ptr<CommandRecorder> command_recorder,
     HRESULT hr) {
   TRACE_EVENT0("gpu", "dml::GraphImpl::OnComputationComplete");
   if (FAILED(hr)) {
@@ -2798,10 +3130,16 @@ void GraphImpl::OnComputationComplete(
 
   compute_resources->readback_buffer->Unmap(0, nullptr);
 
-  // If there is an existing free compute resource, release this compute
+  // If there is an existing available compute resource, release this compute
   // resource. Otherwise, recycle this compute resource for the next call.
   if (!compute_resources_) {
     compute_resources_ = std::move(compute_resources);
+  }
+
+  // Similarly, if there is an existing available command_recorder, release
+  // it. Otherwise, recycle it for the next call.
+  if (!command_recorder_) {
+    command_recorder_ = std::move(command_recorder);
   }
 
   command_queue_->ReleaseCompletedResources();

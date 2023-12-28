@@ -37,7 +37,6 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
-#include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
@@ -435,7 +434,13 @@ absl::optional<webapps::AppId> WebAppRegistrar::FindAppWithUrlInScope(
       best_app_is_shortcut = app_is_shortcut;
     }
   }
-
+#if BUILDFLAG(IS_CHROMEOS)
+  // With project shortstand, shortcuts are no longer considered apps,
+  // so we should ignore results within the scope of shortcuts.
+  if (chromeos::features::IsCrosShortstandEnabled() && best_app_is_shortcut) {
+    return absl::nullopt;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return best_app_id;
 }
 
@@ -841,6 +846,16 @@ bool WebAppRegistrar::IsInstalledByDefaultManagement(
   const WebApp* web_app = GetAppById(app_id);
   DCHECK(web_app);
   return web_app->GetSources().Has(WebAppManagement::kDefault);
+}
+
+bool WebAppRegistrar::IsInstalledByPolicy(const webapps::AppId& app_id) const {
+  const WebApp* web_app = GetAppById(app_id);
+  if (!web_app) {
+    return false;
+  }
+
+  WebAppManagementTypes sources = web_app->GetSources();
+  return sources.Has(WebAppManagement::Type::kPolicy);
 }
 
 bool WebAppRegistrar::WasInstalledByDefaultOnly(

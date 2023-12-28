@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #include <new>
+
+#include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_address_space.h"
+#include "base/feature_list.h"
 #include "base/memory/safety_checks.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,6 +28,14 @@ struct AdvancedChecks {
   char data[16];
 };
 
+// Annotated object: should have |base::internal::kAdvancedMemorySafetyChecks|.
+struct AnotherAdvancedChecks {
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
+ public:
+  char data[16];
+};
+
 // Annotated and aligned object for testing aligned allocations.
 constexpr int kLargeAlignment = 2 * __STDCPP_DEFAULT_NEW_ALIGNMENT__;
 struct alignas(kLargeAlignment) AlignedAdvancedChecks {
@@ -33,6 +44,36 @@ struct alignas(kLargeAlignment) AlignedAdvancedChecks {
  public:
   char data[16];
 };
+
+struct PrivateInheritanceWithInheritMacro : private AdvancedChecks {
+  INHERIT_MEMORY_SAFETY_CHECKS(AdvancedChecks);
+};
+static_assert(
+    is_memory_safety_checked<PrivateInheritanceWithInheritMacro,
+                             MemorySafetyCheck::kForcePartitionAlloc>);
+
+struct PrivateInheritanceWithDefaultMacro : private AdvancedChecks {
+  DEFAULT_MEMORY_SAFETY_CHECKS();
+};
+static_assert(
+    !is_memory_safety_checked<PrivateInheritanceWithDefaultMacro,
+                              MemorySafetyCheck::kForcePartitionAlloc>);
+
+struct MultipleInheritanceWithInheritMacro : AdvancedChecks,
+                                             AnotherAdvancedChecks {
+  INHERIT_MEMORY_SAFETY_CHECKS(AdvancedChecks);
+};
+static_assert(
+    is_memory_safety_checked<MultipleInheritanceWithInheritMacro,
+                             MemorySafetyCheck::kForcePartitionAlloc>);
+
+struct MultipleInheritanceWithDefaultMacro : AdvancedChecks,
+                                             AnotherAdvancedChecks {
+  DEFAULT_MEMORY_SAFETY_CHECKS();
+};
+static_assert(
+    !is_memory_safety_checked<MultipleInheritanceWithDefaultMacro,
+                              MemorySafetyCheck::kForcePartitionAlloc>);
 
 // The macro may hook memory allocation/deallocation but should forward the
 // request to PA or any other allocator via
@@ -103,6 +144,14 @@ TEST(MemorySafetyCheckTest, AllocatorFunctions) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 TEST(MemorySafetyCheckTest, SchedulerLoopQuarantine) {
+  // The check is performed only if `kPartitionAllocSchedulerLoopQuarantine` is
+  // enabled. `base::ScopedFeatureList` does not work here because the default
+  // `PartitionRoot` is configured before running this test.
+  if (!base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocSchedulerLoopQuarantine)) {
+    return;
+  }
+
   static_assert(
       !is_memory_safety_checked<DefaultChecks,
                                 MemorySafetyCheck::kSchedulerLoopQuarantine>);
@@ -110,14 +159,9 @@ TEST(MemorySafetyCheckTest, SchedulerLoopQuarantine) {
       is_memory_safety_checked<AdvancedChecks,
                                MemorySafetyCheck::kSchedulerLoopQuarantine>);
 
-  constexpr size_t kCapacityInBytes = 1024;
-
   auto* root =
       base::internal::GetPartitionRootForMemorySafetyCheckedAllocation();
   auto& branch = root->GetSchedulerLoopQuarantineBranchForTesting();
-
-  size_t original_capacity_in_bytes = branch.GetRoot().GetCapacityInBytes();
-  branch.GetRoot().SetCapacityInBytesForTesting(kCapacityInBytes);
 
   auto* ptr1 = new DefaultChecks();
   EXPECT_NE(ptr1, nullptr);
@@ -130,10 +174,17 @@ TEST(MemorySafetyCheckTest, SchedulerLoopQuarantine) {
   EXPECT_TRUE(branch.IsQuarantinedForTesting(ptr2));
 
   branch.Purge();
-  branch.GetRoot().SetCapacityInBytesForTesting(original_capacity_in_bytes);
 }
 
 TEST(MemorySafetyCheckTest, ZapOnFree) {
+  // The check is performed only if `kPartitionAllocZappingByFreeFlags` is
+  // enabled. `base::ScopedFeatureList` does not work here because the default
+  // `PartitionRoot` is configured before running this test.
+  if (!base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocZappingByFreeFlags)) {
+    return;
+  }
+
   static_assert(
       !is_memory_safety_checked<DefaultChecks, MemorySafetyCheck::kZapOnFree>);
   static_assert(

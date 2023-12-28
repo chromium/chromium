@@ -505,6 +505,7 @@
 <translation id="4935975195727477204">ဂါဇာနီယာပန်း</translation>
 <translation id="4943368462779413526">ဘောလုံး</translation>
 <translation id="4961158930123534723">ဖိုင်တွဲ 1 ခုကို Parallels Desktop အား မျှဝေထားသည်</translation>
+<translation id="4965874878399872778">ဖိုင်များကို သင့်အဖွဲ့အစည်း၏ လုံခြုံရေးမူဝါဒများဖြင့် စစ်ဆေးနေသည်...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> ပြန်ယူပြီးပြီ</translation>
 <translation id="4969785127455456148">အယ်လ်ဘမ်</translation>
 <translation id="4972330214479971536">ဖိုင်စင့်ခ်လုပ်ခြင်း စနစ်ထည့်သွင်းမှုကို အပြီးသတ်၍မရပါ</translation>
@@ -560,7 +561,6 @@
 <translation id="5275973617553375938">Google Drive မှရှာဖွေထားသည့် ဖိုင်များ</translation>
 <translation id="5278111733643988471">ဤဖိုင်ကို ပြန်ယူရန် အမှိုက်ပုံးပြင်ပရှိ ဖိုင်တွဲအသစ်ထဲသို့ ဖိဆွဲပါ။ ဤဖိုင်၏ မူရင်းဖိုင်တွဲ “<ph name="PARENT_FOLDER_NAME" />” ကို ဖျက်လိုက်သည်။</translation>
 <translation id="5283101102242354279">‘ရုပ်ဖျက်မုဒ်’ တွင် နောက်ဆက်တွဲဖွင့်ရန်-</translation>
-<translation id="5286194356314741248">ရှာဖွေနေသည်</translation>
 <translation id="5288441970121584418">အသားညှပ်ပေါင်မုန့်လုံး</translation>
 <translation id="5293615890992542006">ဤဖိုင်ရွှေ့ခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
 <translation id="5305688511332277257">ဘာမှ မသွင်းထား</translation>
@@ -711,6 +711,7 @@
 <translation id="6430271654280079150">သင့်တွင် ကြိုးစားခွင့် ၁ ကြိမ် ကျန်သည်။</translation>
 <translation id="643243556292470964">ဖျက်လိုက်သည့်ဖိုင်များကို အမှိုက်ပုံးထဲ ယခုရွှေ့လိုက်သည်</translation>
 <translation id="6438480100790416671">သိုလှောင်ခန်းနေရာ စစ်ဆေးနေသည်…</translation>
+<translation id="6451527188465304418">ဖိုင်ကို သင့်အဖွဲ့အစည်း၏ လုံခြုံရေးမူဝါဒများဖြင့် စစ်ဆေးနေသည်...</translation>
 <translation id="6485131920355264772">နေရာခြားအချက်လက် ရယူခြင်း မအောင်မြင်ပါ</translation>
 <translation id="6495925982925244349">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="SECURITY_STATUS" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />% သင့် 'ကြီးကြပ်သူ' က စီမံထားသည်၊ အသေးစိတ်များ</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> ကို <ph name="FOLDER_NAME" /> တွင် ထုတ်ယူနေသည်</translation>

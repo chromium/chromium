@@ -55,6 +55,13 @@
       subdir: "web_engine",
     },
     {
+      directory: "tzdata-icu",
+      from: "parent",
+      rights: [ "r*" ],
+      to: "#realm_builder",
+    },
+
+    {
       protocol: [
         "fuchsia.logger.LogSink",
         "fuchsia.scheduler.ProfileProvider",

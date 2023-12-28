@@ -46,7 +46,7 @@ class WaylandTestBase {
   void SetUp();
   void TearDown();
 
-  // Posts 'callback' or 'closure' to run on the client thread; blocks till the
+  // Posts 'callback' or 'closure' to run on the server thread; blocks till the
   // callable is run and all pending Wayland requests and events are delivered.
   void PostToServerAndWait(
       base::OnceCallback<void(wl::TestWaylandServerThread* server)> callback);

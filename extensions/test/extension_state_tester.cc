@@ -100,16 +100,13 @@ bool ExtensionStateTester::ExpectTerminated(const ExtensionId& extension_id) {
 bool ExtensionStateTester::ExpectOnlyInSet(const ExtensionId& extension_id,
                                            const char* expected_set_name) {
   struct {
-    const raw_ref<const ExtensionSet, ExperimentalAsh> extensions;
+    const raw_ref<const ExtensionSet> extensions;
     const char* set_name;
   } registry_sets[] = {
-      {ToRawRef<ExperimentalAsh>(registry_->enabled_extensions()), kEnabledSet},
-      {ToRawRef<ExperimentalAsh>(registry_->disabled_extensions()),
-       kDisabledSet},
-      {ToRawRef<ExperimentalAsh>(registry_->terminated_extensions()),
-       kTerminatedSet},
-      {ToRawRef<ExperimentalAsh>(registry_->blocklisted_extensions()),
-       kBlocklistedSet},
+      {ToRawRef(registry_->enabled_extensions()), kEnabledSet},
+      {ToRawRef(registry_->disabled_extensions()), kDisabledSet},
+      {ToRawRef(registry_->terminated_extensions()), kTerminatedSet},
+      {ToRawRef(registry_->blocklisted_extensions()), kBlocklistedSet},
   };
 
   auto get_error = [extension_id](const char* set_name, bool expected_in_set) {

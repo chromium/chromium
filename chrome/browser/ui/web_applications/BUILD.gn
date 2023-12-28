@@ -40,6 +40,7 @@ source_set("browser_tests") {
     "create_shortcut_browsertest.cc",
     "pwa_mixed_content_browsertest.cc",
     "status_bar_browsertest.cc",
+    "sub_apps_permissions_policy_browsertest.cc",
     "sub_apps_service_impl_browsertest.cc",
     "web_app_browsertest.cc",
     "web_app_dark_mode_browsertest.cc",

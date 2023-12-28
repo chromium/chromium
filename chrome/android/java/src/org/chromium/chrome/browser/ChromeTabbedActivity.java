@@ -128,7 +128,6 @@ import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.MainIntentBehaviorMetrics;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.modaldialog.ChromeTabModalPresenter;
-import org.chromium.chrome.browser.modaldialog.TabModalLifetimeHandler;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceChromeTabbedActivity;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -241,13 +240,13 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragAndDropDelegateImpl;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -330,7 +329,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private HistoricalTabModelObserver mHistoricalTabModelObserver;
 
     private BrowserControlsVisibilityDelegate mVrBrowserControlsVisibilityDelegate;
-    private TabModalLifetimeHandler mTabModalHandler;
 
     private boolean mUIWithNativeInitialized;
 
@@ -770,6 +768,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mDragDropDelegate.setDragAndDropBrowserDelegate(
                     new ChromeDragAndDropBrowserDelegate(this));
 
+            assert getToolbarManager() != null;
             mLayoutManager =
                     new LayoutManagerChromeTablet(
                             compositorViewHolder,
@@ -789,7 +788,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             mDragDropDelegate,
                             toolbarContainerView,
                             tabHoverCardViewStub,
-                            getWindowAndroid());
+                            getWindowAndroid(),
+                            getToolbarManager().getTabStripHeightSupplier());
             mLayoutStateProviderSupplier.set(mLayoutManager);
         }
     }
@@ -841,7 +841,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mBackPressManager,
                 mRootUiCoordinator.getIncognitoReauthControllerSupplier(),
                 v -> onTabSwitcherClicked(),
-                mTabModelProfileSupplier);
+                mTabModelProfileSupplier,
+                getToolbarManager().getTabStripHeightSupplier());
     }
 
     private void createGridTabSwitcher(
@@ -1114,6 +1115,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             }
 
             mInactivityTracker.setLastVisibleTimeMsAndRecord(System.currentTimeMillis());
+
+            getSnackbarManager().setEdgeToEdgeSupplier(getEdgeToEdgeSupplier().get());
         }
     }
 
@@ -2035,6 +2038,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getCompositorViewHolderSupplier(),
                 getTabContentManagerSupplier(),
                 this::getSnackbarManager,
+                getEdgeToEdgeSupplier(),
                 getActivityType(),
                 this::isInOverviewMode,
                 this::isWarmOnResume,
@@ -2247,8 +2251,22 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (mMultiInstanceManager != null) {
             int assignedIndex = TabWindowManagerSingleton.getInstance().getIndexForWindow(this);
             // The given index and the one computed by TabWindowManager should be one and the same.
-            assert !MultiWindowUtils.isMultiInstanceApi31Enabled() || assignedIndex == mWindowId;
-            mMultiInstanceManager.initialize(assignedIndex, ApplicationStatus.getTaskId(this));
+            int taskId = ApplicationStatus.getTaskId(this);
+            Map<String, Integer> taskMap =
+                    ChromeSharedPreferences.getInstance()
+                            .readIntsWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
+            String message =
+                    String.format(
+                            Locale.getDefault(),
+                            "Instance mismatch for assignedIndex: %d, mWindowId: %d with taskId:"
+                                    + " %s and taskMap: %s",
+                            assignedIndex,
+                            mWindowId,
+                            taskId,
+                            taskMap);
+            assert !MultiWindowUtils.isMultiInstanceApi31Enabled() || assignedIndex == mWindowId
+                    : message;
+            mMultiInstanceManager.initialize(assignedIndex, taskId);
         }
 
         mTabModelSelector = mTabModelOrchestrator.getTabModelSelector();
@@ -2365,7 +2383,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             mJankTracker,
                             getToolbarManager()::getToolbar,
                             mHomeSurfaceTracker,
-                            getTabContentManagerSupplier());
+                            getTabContentManagerSupplier(),
+                            getToolbarManager().getTabStripHeightSupplier());
         }
         return mTabDelegateFactory;
     }
@@ -2836,7 +2855,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private void onOmniboxFocusChanged(boolean hasFocus) {
-        mTabModalHandler.onOmniboxFocusChanged(hasFocus);
+        getTabModalLifetimeHandler().onOmniboxFocusChanged(hasFocus);
     }
 
     private void recordLauncherShortcutAction(boolean isIncognito) {
@@ -2861,7 +2880,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             return true;
         }
 
-        if (mTabModalHandler.onBackPressed()) {
+        if (getTabModalLifetimeHandler().onBackPressed()) {
             BackPressManager.record(BackPressHandler.Type.TAB_MODAL_HANDLER);
             return true;
         }
@@ -3006,7 +3025,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             this::returnToOverviewModeOnBackPressed,
                             this::getActivityTab,
                             mLayoutStateProviderSupplier,
-                            mBackPressManager::getLastPressMs,
                             mIsHandleTabSwitcherShownEnabled);
             mBackPressManager.addHandler(
                     mReturnToChromeBackPressHandler,
@@ -3024,8 +3042,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             getActivityTabProvider(),
                             this::backShouldCloseTab,
                             this::sendToBackground,
-                            this::assertOnLastBackPress,
-                            mBackPressManager::getLastPressMs);
+                            this::assertOnLastBackPress);
             mBackPressManager.addHandler(
                     mMinimizeAppAndCloseTabBackPressHandler,
                     BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
@@ -3428,6 +3445,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     @Override
+    protected boolean supportsTabModalDialogs() {
+        return true;
+    }
+
+    @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         Boolean result =
                 KeyboardShortcuts.dispatchKeyEvent(
@@ -3525,29 +3547,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private ComposedBrowserControlsVisibilityDelegate getAppBrowserControlsVisibilityDelegate() {
-        // TODO(jinsukkim): Move this to RootUiCoordinator.
-        return ((TabbedRootUiCoordinator) mRootUiCoordinator)
-                .getAppBrowserControlsVisibilityDelegate();
-    }
-
-    @Override
-    protected ModalDialogManager createModalDialogManager() {
-        ModalDialogManager manager = super.createModalDialogManager();
-        // TODO(crbug.com/1157310): Transition this::method refs to dedicated suppliers.
-        mTabModalHandler =
-                new TabModalLifetimeHandler(
-                        this,
-                        getLifecycleDispatcher(),
-                        manager,
-                        this::getAppBrowserControlsVisibilityDelegate,
-                        this::getTabObscuringHandler,
-                        this::getToolbarManager,
-                        getContextualSearchManagerSupplier(),
-                        getTabModelSelectorSupplier(),
-                        this::getBrowserControlsManager,
-                        this::getFullscreenManager,
-                        mBackPressManager);
-        return manager;
+        return mRootUiCoordinator.getAppBrowserControlsVisibilityDelegate();
     }
 
     // App Menu related code -----------------------------------------------------------------------

@@ -30,8 +30,9 @@ TrayBubbleWrapper::~TrayBubbleWrapper() {
     auto* transient_manager = ::wm::TransientWindowManager::GetOrCreate(
         bubble_widget_->GetNativeWindow());
     if (transient_manager) {
-      for (auto* window : transient_manager->transient_children())
+      for (aura::Window* window : transient_manager->transient_children()) {
         transient_manager->RemoveTransientChild(window);
+      }
     }
     bubble_widget_->RemoveObserver(this);
     bubble_widget_->Close();

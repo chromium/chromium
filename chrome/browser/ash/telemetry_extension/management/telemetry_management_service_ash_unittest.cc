@@ -1,0 +1,110 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ash/telemetry_extension/management/telemetry_management_service_ash.h"
+
+#include <algorithm>
+#include <cstdint>
+#include <utility>
+
+#include "base/functional/bind.h"
+#include "base/test/bind.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "chromeos/ash/components/audio/audio_device.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace ash {
+
+namespace {
+constexpr uint64_t kFakeAudioNodeId =
+    0x100000001;  // From `FakeCrasAudioClient`.
+
+}  // namespace
+
+class TelemetryManagementServiceAshTest : public testing::Test {
+ public:
+  void SetUp() override {}
+
+  void TearDown() override {}
+
+  crosapi::mojom::TelemetryManagementServiceProxy* management_service() const {
+    return remote_management_service_.get();
+  }
+
+  CrasAudioHandler& cras_audio_handler() { return cras_audio_handler_.Get(); }
+
+ private:
+  base::test::TaskEnvironment task_environment_;
+
+  // ScopedCrasAudioHandlerForTesting is a helper class that initializes
+  // the `CrasAudioHandler` in its constructor with cleanup in its destructor.
+  ScopedCrasAudioHandlerForTesting cras_audio_handler_;
+
+  mojo::Remote<crosapi::mojom::TelemetryManagementService>
+      remote_management_service_;
+  std::unique_ptr<crosapi::mojom::TelemetryManagementService>
+      management_service_{TelemetryManagementServiceAsh::Factory::Create(
+          remote_management_service_.BindNewPipeAndPassReceiver())};
+};
+
+// Tests that AudioSetGain forwards requests to CrasAudioHandler to set the
+// audio gain correctly.
+TEST_F(TelemetryManagementServiceAshTest, AudioSetGainSuccess) {
+  // Set to an arbitrary value first.
+  cras_audio_handler().SetVolumeGainPercentForDevice(kFakeAudioNodeId, 10);
+
+  constexpr int32_t expected_gain = 60;
+  base::test::TestFuture<void> future;
+  management_service()->SetAudioGain(kFakeAudioNodeId, expected_gain,
+                                     future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(cras_audio_handler().GetInputGainPercentForDevice(kFakeAudioNodeId),
+            expected_gain);
+}
+
+// Tests that AudioSetGain returns false when |gain| is above max (100).
+TEST_F(TelemetryManagementServiceAshTest, AudioSetGainInvalidGainAboveMax) {
+  // Set to an arbitrary value first.
+  cras_audio_handler().SetVolumeGainPercentForDevice(kFakeAudioNodeId, 10);
+
+  base::test::TestFuture<void> future;
+  management_service()->SetAudioGain(kFakeAudioNodeId, 999,
+                                     future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(cras_audio_handler().GetInputGainPercentForDevice(kFakeAudioNodeId),
+            100);
+}
+
+// Tests that AudioSetGain returns false when |gain| is below min (0).
+TEST_F(TelemetryManagementServiceAshTest, AudioSetGainInvalidGainBelowMin) {
+  // Set to an arbitrary value first.
+  cras_audio_handler().SetVolumeGainPercentForDevice(kFakeAudioNodeId, 10);
+
+  base::test::TestFuture<void> future;
+  management_service()->SetAudioGain(kFakeAudioNodeId, -100,
+                                     future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(cras_audio_handler().GetInputGainPercentForDevice(kFakeAudioNodeId),
+            0);
+}
+
+// Tests that AudioSetGain returns true (but no-op) when |node_id| is invalid.
+TEST_F(TelemetryManagementServiceAshTest, AudioSetGainInvalidNodeId) {
+  uint64_t nonexistent_node_id = 0;
+  AudioDeviceList devices;
+  cras_audio_handler().GetAudioDevices(&devices);
+  for (const auto& device : devices) {
+    nonexistent_node_id = std::max(nonexistent_node_id, device.id) + 1;
+  }
+
+  base::test::TestFuture<void> future;
+  management_service()->SetAudioGain(nonexistent_node_id, 60,
+                                     future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+}
+
+}  // namespace ash

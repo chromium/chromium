@@ -53,9 +53,6 @@ void FakeLocalFrame::AddMessageToConsole(
     const std::string& message,
     bool discard_duplicates) {}
 
-void FakeLocalFrame::AddInspectorIssue(
-    blink::mojom::InspectorIssueInfoPtr info) {}
-
 void FakeLocalFrame::SwapInImmediately() {}
 
 void FakeLocalFrame::CheckCompleted() {}

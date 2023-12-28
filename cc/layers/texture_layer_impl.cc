@@ -103,7 +103,9 @@ bool TextureLayerImpl::WillDraw(
       // complexity arises here from WebGL/WebGPU textures, as they do not
       // necessarily maintain the data needed to rebuild the resources.
       resource_id_ = resource_provider->ImportResource(
-          transferable_resource_, std::move(release_callback_),
+          transferable_resource_,
+          /* impl_thread_release_callback= */ viz::ReleaseCallback(),
+          /* main_thread_release_callback= */ std::move(release_callback_),
           transferable_resource_.resource_source ==
                   viz::TransferableResource::ResourceSource::kCanvas
               ? base::BindOnce(&TextureLayerImpl::OnResourceEvicted,

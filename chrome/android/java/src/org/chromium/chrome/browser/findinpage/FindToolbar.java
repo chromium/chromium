@@ -233,7 +233,7 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
                 new TabModelObserver() {
                     @Override
                     public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                        deactivate();
+                        if (tab != mCurrentTab) deactivate();
                     }
 
                     @Override

@@ -266,7 +266,7 @@ class VPNListNetworkEntry : public HoverHighlightView,
   void OnGetNetworkState(NetworkStatePropertiesPtr result);
   void UpdateFromNetworkState(const NetworkStateProperties* network);
 
-  raw_ptr<TrayNetworkStateModel, ExperimentalAsh> model_;
+  raw_ptr<TrayNetworkStateModel> model_;
   const std::string guid_;
 
   base::WeakPtrFactory<VPNListNetworkEntry> weak_ptr_factory_{this};

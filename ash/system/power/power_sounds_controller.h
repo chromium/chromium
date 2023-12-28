@@ -110,7 +110,7 @@ class ASH_EXPORT PowerSoundsController
   // An observer to listen for changes to prefs::kChargingSoundsEnabled.
   BooleanPrefMember charging_sounds_enabled_;
 
-  raw_ptr<PrefService, ExperimentalAsh> local_state_ =
+  raw_ptr<PrefService> local_state_ =
       nullptr;  // Non-owned and must out-live this.
 
   base::WeakPtrFactory<PowerSoundsController> weak_factory_{this};

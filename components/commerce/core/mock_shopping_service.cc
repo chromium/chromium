@@ -11,7 +11,7 @@ namespace commerce {
 
 // static
 std::unique_ptr<KeyedService> MockShoppingService::Build() {
-  return std::make_unique<MockShoppingService>();
+  return std::make_unique<testing::NiceMock<MockShoppingService>>();
 }
 
 MockShoppingService::MockShoppingService()
@@ -29,8 +29,11 @@ MockShoppingService::MockShoppingService()
                                 nullptr,
                                 nullptr,
                                 nullptr,
-                                nullptr) {
-  // Set up some defaults so tests don't have to explicitly set up each.
+                                nullptr) {}
+
+MockShoppingService::~MockShoppingService() = default;
+
+void MockShoppingService::SetupPermissiveMock() {
   SetIsReady(true);
   SetResponseForGetProductInfoForUrl(absl::nullopt);
   SetResponsesForGetUpdatedProductInfoForBookmarks(
@@ -45,7 +48,6 @@ MockShoppingService::MockShoppingService()
   SetIsSubscribedCallbackValue(true);
   SetGetAllSubscriptionsCallbackValue(std::vector<CommerceSubscription>());
   SetIsShoppingListEligible(true);
-  SetIsClusterIdTrackedByUserResponse(true);
   SetIsMerchantViewerEnabled(true);
   SetGetAllPriceTrackedBookmarksCallbackValue(
       std::vector<const bookmarks::BookmarkNode*>());
@@ -55,8 +57,6 @@ MockShoppingService::MockShoppingService()
   SetResponseForGetPriceInsightsInfoForUrl(absl::nullopt);
   SetGetAllParcelStatusesCallbackValue(std::vector<ParcelTrackingStatus>());
 }
-
-MockShoppingService::~MockShoppingService() = default;
 
 void MockShoppingService::SetResponseForGetProductInfoForUrl(
     absl::optional<commerce::ProductInfo> product_info) {
@@ -188,15 +188,6 @@ void MockShoppingService::SetIsReady(bool ready) {
                   FROM_HERE, base::BindOnce(std::move(callback), this));
             }
           });
-}
-
-void MockShoppingService::SetIsClusterIdTrackedByUserResponse(bool is_tracked) {
-  ON_CALL(*this, IsClusterIdTrackedByUser)
-      .WillByDefault([is_tracked](uint64_t cluster_id,
-                                  base::OnceCallback<void(bool)> callback) {
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::BindOnce(std::move(callback), is_tracked));
-      });
 }
 
 void MockShoppingService::SetIsMerchantViewerEnabled(bool is_enabled) {

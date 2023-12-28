@@ -288,6 +288,11 @@ struct TypeConverter<
       const blink::IdentityCredentialDisconnectOptions&);
 };
 
+template <>
+struct TypeConverter<Vector<blink::mojom::blink::Hint>, Vector<String>> {
+  static Vector<blink::mojom::blink::Hint> Convert(const Vector<String>&);
+};
+
 }  // namespace mojo
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGEMENT_CREDENTIAL_MANAGER_TYPE_CONVERTERS_H_

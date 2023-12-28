@@ -8,6 +8,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/json/json_file_value_serializer.h"
@@ -242,7 +243,7 @@ class ProtoToJSONRuleConverter {
     return PopulateDomainsInternal(kExcludedDomainsKey, true /*exclude_value*/);
   }
 
-  bool PopulateDomainsInternal(base::StringPiece sub_key, bool exclude_value) {
+  bool PopulateDomainsInternal(std::string_view sub_key, bool exclude_value) {
     base::Value::List domains;
 
     // Note: This isn't always correct. Filters consider the $domain option to

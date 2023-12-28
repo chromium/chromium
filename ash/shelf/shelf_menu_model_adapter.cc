@@ -46,44 +46,44 @@ void ShelfMenuModelAdapter::RecordHistogramOnMenuClosed() {
   base::TimeDelta user_journey_time = base::TimeTicks::Now() - menu_open_time();
   // If the menu is for a ShelfButton.
   if (!app_id().empty()) {
-    UMA_HISTOGRAM_TIMES("Apps.ContextMenuUserJourneyTime.ShelfButton",
+    UMA_HISTOGRAM_TIMES("Apps.ContextMenuUserJourneyTimeV2.ShelfButton",
                         user_journey_time);
-    UMA_HISTOGRAM_ENUMERATION("Apps.ContextMenuShowSource.ShelfButton",
+    UMA_HISTOGRAM_ENUMERATION("Apps.ContextMenuShowSourceV2.ShelfButton",
                               source_type(), ui::MENU_SOURCE_TYPE_LAST);
     if (is_tablet_mode()) {
       UMA_HISTOGRAM_TIMES(
-          "Apps.ContextMenuUserJourneyTime.ShelfButton.TabletMode",
+          "Apps.ContextMenuUserJourneyTimeV2.ShelfButton.TabletMode",
           user_journey_time);
       UMA_HISTOGRAM_ENUMERATION(
-          "Apps.ContextMenuShowSource.ShelfButton.TabletMode", source_type(),
+          "Apps.ContextMenuShowSourceV2.ShelfButton.TabletMode", source_type(),
           ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
     } else {
       UMA_HISTOGRAM_TIMES(
-          "Apps.ContextMenuUserJourneyTime.ShelfButton.ClamshellMode",
+          "Apps.ContextMenuUserJourneyTimeV2.ShelfButton.ClamshellMode",
           user_journey_time);
       UMA_HISTOGRAM_ENUMERATION(
-          "Apps.ContextMenuShowSource.ShelfButton.ClamshellMode", source_type(),
-          ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
+          "Apps.ContextMenuShowSourceV2.ShelfButton.ClamshellMode",
+          source_type(), ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
     }
     return;
   }
 
-  UMA_HISTOGRAM_TIMES("Apps.ContextMenuUserJourneyTime.Shelf",
+  UMA_HISTOGRAM_TIMES("Apps.ContextMenuUserJourneyTimeV2.Shelf",
                       user_journey_time);
-  UMA_HISTOGRAM_ENUMERATION("Apps.ContextMenuShowSource.Shelf", source_type(),
+  UMA_HISTOGRAM_ENUMERATION("Apps.ContextMenuShowSourceV2.Shelf", source_type(),
                             ui::MENU_SOURCE_TYPE_LAST);
   if (is_tablet_mode()) {
-    UMA_HISTOGRAM_TIMES("Apps.ContextMenuUserJourneyTime.Shelf.TabletMode",
+    UMA_HISTOGRAM_TIMES("Apps.ContextMenuUserJourneyTimeV2.Shelf.TabletMode",
                         user_journey_time);
-    UMA_HISTOGRAM_ENUMERATION("Apps.ContextMenuShowSource.Shelf.TabletMode",
+    UMA_HISTOGRAM_ENUMERATION("Apps.ContextMenuShowSourceV2.Shelf.TabletMode",
                               source_type(),
                               ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
   } else {
-    UMA_HISTOGRAM_TIMES("Apps.ContextMenuUserJourneyTime.Shelf.ClamshellMode",
+    UMA_HISTOGRAM_TIMES("Apps.ContextMenuUserJourneyTimeV2.Shelf.ClamshellMode",
                         user_journey_time);
-    UMA_HISTOGRAM_ENUMERATION("Apps.ContextMenuShowSource.Shelf.ClamshellMode",
-                              source_type(),
-                              ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
+    UMA_HISTOGRAM_ENUMERATION(
+        "Apps.ContextMenuShowSourceV2.Shelf.ClamshellMode", source_type(),
+        ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
   }
 }
 

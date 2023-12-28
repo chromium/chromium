@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -33,6 +34,8 @@ class SignedWebBundleMetadata;
 // are any nested dialogs that show up during the installation flow. Those are
 // all handled by the ViewController.
 class IsolatedWebAppInstallerView : public views::View {
+  METADATA_HEADER(IsolatedWebAppInstallerView, views::View)
+
  public:
   class Delegate {
    public:

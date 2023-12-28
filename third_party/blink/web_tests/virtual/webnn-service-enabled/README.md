@@ -1,1 +1,1 @@
-# This suite runs tests with --enable-features=MachineLearningNeuralNetworkService
+# This suite runs tests with --enable-features=WebMachineLearningNeuralNetwork

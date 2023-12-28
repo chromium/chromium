@@ -86,6 +86,11 @@ class PageInfoMainView : public views::View,
     return toggle_rows_.size();
   }
 
+  const std::vector<raw_ptr<PermissionToggleRowView, VectorExperimental>>&
+  GetToggleRowsForTesting() const {
+    return toggle_rows_;
+  }
+
  protected:
   // TODO(olesiamarukhno): Was used for tests, will update it after redesigning
   // moves forward.
@@ -172,9 +177,11 @@ class PageInfoMainView : public views::View,
   // These rows bundle together all the |View|s involved in a single row of the
   // permissions section, and keep those views updated when the underlying
   // |Permission| changes.
-  std::vector<PermissionToggleRowView*> toggle_rows_;
+  std::vector<raw_ptr<PermissionToggleRowView, VectorExperimental>>
+      toggle_rows_;
 
-  std::vector<ChosenObjectView*> chosen_object_rows_;
+  std::vector<raw_ptr<ChosenObjectView, VectorExperimental>>
+      chosen_object_rows_;
 
   raw_ptr<views::Label> title_ = nullptr;
 

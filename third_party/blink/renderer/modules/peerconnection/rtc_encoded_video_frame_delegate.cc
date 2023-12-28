@@ -46,7 +46,7 @@ void RTCEncodedVideoFrameDelegate::SetRtpTimestamp(
 }
 
 absl::optional<webrtc::Timestamp>
-RTCEncodedVideoFrameDelegate::CaptureTimeIdentifier() const {
+RTCEncodedVideoFrameDelegate::PresentationTimestamp() const {
   base::AutoLock lock(lock_);
   return webrtc_frame_ ? webrtc_frame_->GetCaptureTimeIdentifier()
                        : absl::nullopt;

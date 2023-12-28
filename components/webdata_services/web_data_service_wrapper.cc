@@ -13,9 +13,11 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/autocomplete_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/autocomplete_table.h"
 #include "components/autofill/core/browser/webdata/autofill_profile_sync_bridge.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_wallet_credential_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_wallet_metadata_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_wallet_offer_sync_bridge.h"
@@ -23,6 +25,7 @@
 #include "components/autofill/core/browser/webdata/autofill_wallet_usage_data_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/contact_info_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/search_engines/keyword_table.h"
@@ -116,7 +119,13 @@ WebDataServiceWrapper::WebDataServiceWrapper(
 
   // All tables objects that participate in managing the database must
   // be added here.
-  profile_database_->AddTable(std::make_unique<autofill::AutofillTable>());
+  profile_database_->AddTable(
+      std::make_unique<autofill::AddressAutofillTable>());
+  profile_database_->AddTable(std::make_unique<autofill::AutocompleteTable>());
+  profile_database_->AddTable(
+      std::make_unique<autofill::AutofillSyncMetadataTable>());
+  profile_database_->AddTable(
+      std::make_unique<autofill::PaymentsAutofillTable>());
   profile_database_->AddTable(std::make_unique<KeywordTable>());
   profile_database_->AddTable(std::make_unique<TokenServiceTable>());
 #if BUILDFLAG(USE_BLINK)
@@ -181,7 +190,10 @@ WebDataServiceWrapper::WebDataServiceWrapper(
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   account_database_ = base::MakeRefCounted<WebDatabaseService>(
       account_storage_path, ui_task_runner, db_task_runner);
-  account_database_->AddTable(std::make_unique<autofill::AutofillTable>());
+  account_database_->AddTable(
+      std::make_unique<autofill::AutofillSyncMetadataTable>());
+  account_database_->AddTable(
+      std::make_unique<autofill::PaymentsAutofillTable>());
   account_database_->LoadDatabase();
 
   account_autofill_web_data_ =

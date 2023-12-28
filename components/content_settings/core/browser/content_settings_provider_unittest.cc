@@ -19,9 +19,10 @@ TEST(ContentSettingsProviderTest, Mock) {
   GURL url("http://www.youtube.com");
 
   MockProvider mock_provider(false);
-  mock_provider.SetWebsiteSetting(pattern, pattern,
-                                  ContentSettingsType::NOTIFICATIONS,
-                                  base::Value(CONTENT_SETTING_BLOCK));
+  mock_provider.SetWebsiteSetting(
+      pattern, pattern, ContentSettingsType::NOTIFICATIONS,
+      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
+      PartitionKey::GetDefaultForTesting());
 
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
@@ -42,7 +43,8 @@ TEST(ContentSettingsProviderTest, Mock) {
 
   bool owned = mock_provider.SetWebsiteSetting(
       pattern, pattern, ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_ALLOW));
+      base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
+      PartitionKey::GetDefaultForTesting());
   EXPECT_TRUE(owned);
   EXPECT_EQ(
       CONTENT_SETTING_ALLOW,
@@ -50,9 +52,10 @@ TEST(ContentSettingsProviderTest, Mock) {
                                    ContentSettingsType::NOTIFICATIONS, false));
 
   mock_provider.set_read_only(true);
-  owned = mock_provider.SetWebsiteSetting(pattern, pattern,
-                                          ContentSettingsType::NOTIFICATIONS,
-                                          base::Value(CONTENT_SETTING_BLOCK));
+  owned = mock_provider.SetWebsiteSetting(
+      pattern, pattern, ContentSettingsType::NOTIFICATIONS,
+      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
+      PartitionKey::GetDefaultForTesting());
   EXPECT_FALSE(owned);
   EXPECT_EQ(
       CONTENT_SETTING_ALLOW,
@@ -62,9 +65,10 @@ TEST(ContentSettingsProviderTest, Mock) {
   EXPECT_TRUE(mock_provider.read_only());
 
   mock_provider.set_read_only(false);
-  owned = mock_provider.SetWebsiteSetting(pattern, pattern,
-                                          ContentSettingsType::NOTIFICATIONS,
-                                          base::Value(CONTENT_SETTING_BLOCK));
+  owned = mock_provider.SetWebsiteSetting(
+      pattern, pattern, ContentSettingsType::NOTIFICATIONS,
+      base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
+      PartitionKey::GetDefaultForTesting());
   EXPECT_TRUE(owned);
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,

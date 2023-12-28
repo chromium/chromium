@@ -116,8 +116,8 @@ using update_client::UpdateQueryParams;
 
 namespace extensions {
 
-typedef ExtensionDownloaderDelegate::Error Error;
-typedef ExtensionDownloaderDelegate::PingResult PingResult;
+using Error = ExtensionDownloaderDelegate::Error;
+using PingResult = ExtensionDownloaderDelegate::PingResult;
 
 namespace {
 

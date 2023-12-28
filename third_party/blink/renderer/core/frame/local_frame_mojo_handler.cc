@@ -601,14 +601,6 @@ void LocalFrameMojoHandler::AddMessageToConsole(
       discard_duplicates);
 }
 
-void LocalFrameMojoHandler::AddInspectorIssue(
-    mojom::blink::InspectorIssueInfoPtr info) {
-  if (auto* page = GetPage()) {
-    page->GetInspectorIssueStorage().AddInspectorIssue(DomWindow(),
-                                                       std::move(info));
-  }
-}
-
 void LocalFrameMojoHandler::SwapInImmediately() {
   frame_->SwapIn();
   // Normally, this happens as part of committing a cross-Document navigation.

@@ -15,7 +15,7 @@ namespace {
 // Takes in an autofill profile and an autofill field type and returns the
 // corresponding field value.
 NSString* FieldValueOfTypeOnProfile(const autofill::AutofillProfile& profile,
-                                    autofill::ServerFieldType fieldType) {
+                                    autofill::FieldType fieldType) {
   return base::SysUTF16ToNSString(
       profile.GetInfo(autofill::AutofillType(fieldType),
                       GetApplicationContext()->GetApplicationLocale()));

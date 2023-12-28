@@ -9,6 +9,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/types/pass_key.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -60,8 +61,8 @@ class ScriptInjectionTracker {
   // TODO(https://crbug.com/1186557): The above is true (and how this class has
   // historically tracked injections), but if a script only executes in the main
   // world, it won't have content script bindings or be associated with a
-  // Feature::CONTENT_SCRIPT_CONTEXT. Should we just not track those, or track
-  // them separately? The injection world can be determined dynamically by
+  // mojom::ContextType::kContentScript. Should we just not track those, or
+  // track them separately? The injection world can be determined dynamically by
   // looking at `UserScript::execution_world` for persistent scripts and
   // `mojom::JSInjection::world` for one-time scripts.
   enum class ScriptType {

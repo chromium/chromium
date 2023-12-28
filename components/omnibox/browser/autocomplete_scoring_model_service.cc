@@ -44,8 +44,7 @@ int AutocompleteScoringModelService::GetModelVersion() const {
 
 std::vector<AutocompleteScoringModelService::Result>
 AutocompleteScoringModelService::BatchScoreAutocompleteUrlMatchesSync(
-    const std::vector<const ScoringSignals*>& batch_scoring_signals,
-    const std::vector<std::string>& stripped_destination_urls) {
+    const std::vector<const ScoringSignals*>& batch_scoring_signals) {
   TRACE_EVENT0(
       "omnibox",
       "AutocompleteScoringModelService::BatchScoreAutocompleteUrlMatchesSync");
@@ -60,29 +59,20 @@ AutocompleteScoringModelService::BatchScoreAutocompleteUrlMatchesSync(
   }
 
   // Synchronous model execution.
-  const auto batch_model_outputs =
+  const auto batch_model_output =
       url_scoring_model_handler_->BatchExecuteModelWithInputSync(
           *batch_model_input);
-  return GetBatchResultFromModelOutput(stripped_destination_urls,
-                                       batch_model_outputs);
+  std::vector<Result> batch_results;
+  batch_results.reserve(batch_model_output.size());
+  for (const auto& model_output : batch_model_output) {
+    batch_results.emplace_back(model_output
+                                   ? absl::make_optional(model_output->at(0))
+                                   : absl::nullopt);
+  }
+  return batch_results;
 }
 
 bool AutocompleteScoringModelService::UrlScoringModelAvailable() {
   return url_scoring_model_handler_ &&
          url_scoring_model_handler_->ModelAvailable();
-}
-
-std::vector<AutocompleteScoringModelService::Result>
-AutocompleteScoringModelService::GetBatchResultFromModelOutput(
-    const std::vector<std::string>& stripped_destination_urls,
-    const std::vector<absl::optional<ModelOutput>>& batch_model_output) {
-  std::vector<Result> batch_results;
-  batch_results.reserve(stripped_destination_urls.size());
-  for (size_t i = 0; i < stripped_destination_urls.size(); i++) {
-    const auto& model_output = batch_model_output.at(i);
-    batch_results.emplace_back(
-        model_output ? absl::make_optional(model_output->at(0)) : absl::nullopt,
-        stripped_destination_urls.at(i));
-  }
-  return batch_results;
 }

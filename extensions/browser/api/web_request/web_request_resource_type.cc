@@ -114,7 +114,7 @@ const char* WebRequestResourceTypeToString(WebRequestResourceType type) {
   return kResourceTypes[index].name;
 }
 
-bool ParseWebRequestResourceType(base::StringPiece text,
+bool ParseWebRequestResourceType(std::string_view text,
                                  WebRequestResourceType* type) {
   for (size_t i = 0; i < kResourceTypesLength; ++i) {
     if (text == kResourceTypes[i].name) {

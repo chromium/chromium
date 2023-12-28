@@ -82,7 +82,7 @@ class COMPONENT_EXPORT(X11) Event {
   bool send_event() const { return send_event_; }
 
   uint32_t sequence() const {
-    DUMP_WILL_BE_CHECK(!fabricated_);
+    CHECK(!fabricated_);
     return sequence_;
   }
 

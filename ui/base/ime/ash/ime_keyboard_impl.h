@@ -35,7 +35,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) ImeKeyboardImpl : public ImeKeyboard {
   bool IsCapsLockEnabled() override;
 
  private:
-  const raw_ptr<ui::InputController, ExperimentalAsh> input_controller_;
+  const raw_ptr<ui::InputController> input_controller_;
 };
 
 }  // namespace input_method

@@ -102,11 +102,10 @@ class ProfilePrefBackoffLevelProvider final : public BackoffLevelProvider {
 // other moments in this period.
 class TargetFrequencyTriggerPolicy final : public TriggerPolicy {
  public:
-  TargetFrequencyTriggerPolicy(
-      std::unique_ptr<base::TickClock> clock,
-      base::TimeDelta base_period,
-      float backoff_base,
-      std::unique_ptr<BackoffLevelProvider> backoff_level_provider);
+  TargetFrequencyTriggerPolicy(std::unique_ptr<base::TickClock> clock,
+                               base::TimeDelta base_period,
+                               float backoff_base,
+                               BackoffLevelProvider* backoff_level_provider);
   ~TargetFrequencyTriggerPolicy() override;
   bool ShouldTrigger(float score) override;
   void OnTriggerSucceeded();
@@ -116,20 +115,17 @@ class TargetFrequencyTriggerPolicy final : public TriggerPolicy {
   const std::unique_ptr<base::TickClock> clock_;
   const base::TimeDelta base_period_;
   const float backoff_base_;
-  const std::unique_ptr<BackoffLevelProvider> backoff_level_provider_;
+  const raw_ptr<BackoffLevelProvider> backoff_level_provider_;
 
   base::TimeTicks cycle_start_time_;
   std::optional<float> best_score = std::nullopt;
   bool has_triggered_ = false;
 };
 
-// Trigger only first time a trigger moment occurs.
-class GreedyTriggerPolicy final : public TriggerPolicy {
+// Trigger every time. Very spammy, but suitable for testing or demoing.
+class DemoTriggerPolicy final : public TriggerPolicy {
  public:
   bool ShouldTrigger(float score) override;
-
- private:
-  bool has_triggered_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_TRIGGER_POLICIES_H_

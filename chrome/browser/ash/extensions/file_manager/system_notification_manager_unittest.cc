@@ -45,6 +45,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 
 namespace file_manager {
 namespace {
@@ -1116,7 +1118,7 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressPolicyScanning) {
   // Check: the expected strings match.
   EXPECT_EQ(strings.title, u"Files");
   EXPECT_EQ(strings.message,
-            u"Checking files with your organization's security policies.");
+            l10n_util::GetStringUTF16(IDS_FILE_BROWSER_SCANNING_LABEL));
 
   // Send the success progress status.
   status.bytes_transferred = 100;

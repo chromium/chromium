@@ -30,7 +30,7 @@ class AutofillProviderAndroidBridgeImpl : public AutofillProviderAndroidBridge {
   void StartAutofillSession(FormDataAndroid& form,
                             const FieldInfo& field,
                             bool has_server_predictions) override;
-  void OnServerPredictionQueryDone(bool success) override;
+  void OnServerPredictionsAvailable() override;
   void ShowDatalistPopup(base::span<const SelectOption> options,
                          bool is_rtl) override;
   void HideDatalistPopup() override;

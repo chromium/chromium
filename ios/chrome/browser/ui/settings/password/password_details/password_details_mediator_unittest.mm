@@ -88,7 +88,7 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
 - (void)setUserEmail:(NSString*)userEmail {
 }
 
-- (void)setupRightShareButton {
+- (void)setupRightShareButton:(BOOL)enabled {
 }
 
 @end

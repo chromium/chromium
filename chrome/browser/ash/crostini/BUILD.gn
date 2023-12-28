@@ -11,6 +11,6 @@ mojom("crostini_installer_types_mojom") {
   webui_module_path = "/"
 
   # For Closure Compiler targets in chrome/browser/resources/chromeos/crostini
-  use_typescript_sources = false
+  generate_webui_js_bindings = true
   sources = [ "crostini_types.mojom" ]
 }

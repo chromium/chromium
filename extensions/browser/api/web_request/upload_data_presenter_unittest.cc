@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -36,7 +37,7 @@ TEST(WebRequestUploadDataPresenterTest, ParsedData) {
       ParsedDataPresenter::CreateForTests());
   ASSERT_TRUE(parsed_data_presenter.get() != nullptr);
   parsed_data_presenter->FeedBytes(
-      base::StringPiece(element.bytes(), element.length()));
+      std::string_view(element.bytes(), element.length()));
   EXPECT_TRUE(parsed_data_presenter->Succeeded());
   std::optional<base::Value> result = parsed_data_presenter->TakeResult();
   EXPECT_EQ(result, expected_form);

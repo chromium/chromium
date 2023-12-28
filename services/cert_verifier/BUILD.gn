@@ -18,9 +18,11 @@ source_set("lib") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//components/certificate_transparency",
     "//net",
     "//net/cert:root_store_proto_lite",
     "//services/cert_verifier/cert_net_url_loader",
+    "//services/network/public/cpp:buildflags",
     "//services/network/public/mojom",
   ]
 
@@ -45,6 +47,7 @@ source_set("tests") {
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
+    "//components/certificate_transparency",
     "//crypto:test_support",
     "//net",
     "//net:test_support",

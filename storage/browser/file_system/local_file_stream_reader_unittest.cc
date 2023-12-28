@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -91,11 +92,10 @@ class LocalFileStreamReaderTest : public FileStreamReaderTest {
   }
 
   void WriteFile(const std::string& file_name,
-                 const char* buf,
-                 size_t buf_size,
+                 std::string_view data,
                  base::Time* modification_time) override {
     base::FilePath path = test_dir().AppendASCII(file_name);
-    base::WriteFile(path, std::string_view(buf, buf_size));
+    base::WriteFile(path, data);
 
     base::File::Info file_info;
     ASSERT_TRUE(base::GetFileInfo(path, &file_info));
@@ -154,11 +154,10 @@ TEST_F(LocalFileStreamReaderTest, ReadAllowedByDataLeakPrevention) {
       Run(testing::ElementsAre(test_dir().AppendASCII(kTestFileName)), _))
       .WillOnce(base::test::RunOnceCallback<1>(CreateScopedFileAccess(true)));
 
-  int result = 0;
-  std::string data;
-  ReadFromReader(reader.get(), &data, this->kTestData.size(), &result);
-  ASSERT_EQ(net::OK, result);
-  ASSERT_EQ(this->kTestData, data);
+  auto data_or_error =
+      ReadFromReader(*reader, /*bytes_to_read=*/this->kTestData.size());
+  ASSERT_TRUE(data_or_error.has_value());
+  EXPECT_EQ(data_or_error.value(), this->kTestData);
 }
 
 // TODO(b/265908846): Replace direct call to
@@ -181,11 +180,10 @@ TEST_F(LocalFileStreamReaderTest, ReadBlockedByDataLeakPrevention) {
       Run(testing::ElementsAre(test_dir().AppendASCII(kTestFileName)), _))
       .WillOnce(base::test::RunOnceCallback<1>(CreateScopedFileAccess(false)));
 
-  int result = 0;
-  std::string data;
-  ReadFromReader(reader.get(), &data, this->kTestData.size(), &result);
-  ASSERT_EQ(net::ERR_ACCESS_DENIED, result);
-  ASSERT_EQ("", data);
+  auto data_or_error =
+      ReadFromReader(*reader, /*bytes_to_read=*/this->kTestData.size());
+  ASSERT_FALSE(data_or_error.has_value());
+  EXPECT_EQ(data_or_error.error(), net::ERR_ACCESS_DENIED);
 }
 
 TEST_F(LocalFileStreamReaderTest, ReadAllowedByDataLeakPreventionCallback) {
@@ -203,11 +201,10 @@ TEST_F(LocalFileStreamReaderTest, ReadAllowedByDataLeakPreventionCallback) {
       std::string(this->kTestFileName), 0, this->test_file_modification_time(),
       callback.Get()));
 
-  int result = 0;
-  std::string data;
-  ReadFromReader(reader.get(), &data, this->kTestData.size(), &result);
-  ASSERT_EQ(net::OK, result);
-  ASSERT_EQ(this->kTestData, data);
+  auto data_or_error =
+      ReadFromReader(*reader, /*bytes_to_read=*/this->kTestData.size());
+  ASSERT_TRUE(data_or_error.has_value());
+  EXPECT_EQ(data_or_error.value(), this->kTestData);
 }
 
 TEST_F(LocalFileStreamReaderTest, ReadBlockedByDataLeakPreventionCallback) {
@@ -227,11 +224,10 @@ TEST_F(LocalFileStreamReaderTest, ReadBlockedByDataLeakPreventionCallback) {
       std::string(this->kTestFileName), 0, this->test_file_modification_time(),
       callback.Get()));
 
-  int result = 0;
-  std::string data;
-  ReadFromReader(reader.get(), &data, this->kTestData.size(), &result);
-  ASSERT_EQ(net::ERR_ACCESS_DENIED, result);
-  ASSERT_EQ("", data);
+  auto data_or_error =
+      ReadFromReader(*reader, /*bytes_to_read=*/this->kTestData.size());
+  ASSERT_FALSE(data_or_error.has_value());
+  EXPECT_EQ(data_or_error.error(), net::ERR_ACCESS_DENIED);
 }
 
 }  // namespace storage

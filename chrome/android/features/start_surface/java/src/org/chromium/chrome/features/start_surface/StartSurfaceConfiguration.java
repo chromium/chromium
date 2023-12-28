@@ -120,8 +120,8 @@ public class StartSurfaceConfiguration {
 
     /**
      * @return Whether the Start Surface feature flag is enabled.
-     * @Deprecated Use {@link
-     * org.chromium.chrome.browser.tasks.ReturnToChromeUtil#isStartSurfaceEnabled} instead.
+     * @deprecated Use {@link
+     *     org.chromium.chrome.browser.tasks.ReturnToChromeUtil#isStartSurfaceEnabled} instead.
      */
     public static boolean isStartSurfaceFlagEnabled() {
         return ChromeFeatureList.sStartSurfaceAndroid.isEnabled() && !SysUtils.isLowEndDevice();

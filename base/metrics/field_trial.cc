@@ -12,6 +12,7 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -837,8 +838,9 @@ void FieldTrialList::NotifyFieldTrialGroupSelection(FieldTrial* field_trial) {
   if (!global_)
     return;
 
-  std::vector<Observer*> local_observers;
-  std::vector<Observer*> local_observers_including_low_anonymity;
+  std::vector<raw_ptr<Observer, VectorExperimental>> local_observers;
+  std::vector<raw_ptr<Observer, VectorExperimental>>
+      local_observers_including_low_anonymity;
 
   {
     AutoLock auto_lock(global_->lock_);

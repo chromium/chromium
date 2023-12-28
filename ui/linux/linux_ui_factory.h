@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/features.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ui {
 
@@ -34,7 +35,8 @@ LinuxUiTheme* GetLinuxUiTheme(SystemTheme system_theme);
 
 // Returns all `LinuxUiTheme`s that have been created.
 COMPONENT_EXPORT(LINUX_UI_FACTORY)
-const std::vector<LinuxUiTheme*>& GetLinuxUiThemes();
+const std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>&
+GetLinuxUiThemes();
 
 COMPONENT_EXPORT(LINUX_UI_FACTORY)
 SystemTheme GetDefaultSystemTheme();

@@ -371,7 +371,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   }
 
   TaskPriority find_in_page_priority() const {
-    return main_thread_only().current_policy.find_in_page_priority();
+    return main_thread_only().current_policy.find_in_page_priority;
   }
 
  protected:
@@ -457,84 +457,27 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   bool IsAnyOrdinaryMainFrameWaitingForFirstMeaningfulPaint() const;
   bool IsAnyOrdinaryMainFrameLoading() const;
 
-  class Policy {
+  struct Policy {
     DISALLOW_NEW();
 
    public:
+    RAILMode rail_mode = RAILMode::kAnimation;
+    bool should_freeze_compositor_task_queue = false;
+    bool should_defer_task_queues = false;
+    bool should_pause_task_queues = false;
+    bool should_pause_task_queues_for_android_webview = false;
+    bool should_prioritize_ipc_tasks = false;
+    TaskPriority find_in_page_priority =
+        FindInPageBudgetPoolController::kFindInPageBudgetNotExhaustedPriority;
+    UseCase use_case = UseCase::kNone;
+
     Policy() = default;
     ~Policy() = default;
 
-    RAILMode& rail_mode() { return rail_mode_; }
-    RAILMode rail_mode() const { return rail_mode_; }
-
-    bool& frozen_when_backgrounded() { return frozen_when_backgrounded_; }
-    bool frozen_when_backgrounded() const { return frozen_when_backgrounded_; }
-
-    bool& should_freeze_compositor_task_queue() {
-      return should_freeze_compositor_task_queue_;
-    }
-    bool should_freeze_compositor_task_queue() const {
-      return should_freeze_compositor_task_queue_;
-    }
-
-    bool& should_defer_task_queues() { return should_defer_task_queues_; }
-    bool should_defer_task_queues() const { return should_defer_task_queues_; }
-
-    bool& should_pause_task_queues() { return should_pause_task_queues_; }
-    bool should_pause_task_queues() const { return should_pause_task_queues_; }
-
-    bool& should_pause_task_queues_for_android_webview() {
-      return should_pause_task_queues_for_android_webview_;
-    }
-    bool should_pause_task_queues_for_android_webview() const {
-      return should_pause_task_queues_for_android_webview_;
-    }
-
-    TaskPriority& find_in_page_priority() { return find_in_page_priority_; }
-    TaskPriority find_in_page_priority() const {
-      return find_in_page_priority_;
-    }
-
-    bool& should_prioritize_ipc_tasks() { return should_prioritize_ipc_tasks_; }
-    bool should_prioritize_ipc_tasks() const {
-      return should_prioritize_ipc_tasks_;
-    }
-
-    UseCase& use_case() { return use_case_; }
-    UseCase use_case() const { return use_case_; }
-
-    bool operator==(const Policy& other) const {
-      return rail_mode_ == other.rail_mode_ &&
-             frozen_when_backgrounded_ == other.frozen_when_backgrounded_ &&
-             should_freeze_compositor_task_queue_ ==
-                 other.should_freeze_compositor_task_queue_ &&
-             should_defer_task_queues_ == other.should_defer_task_queues_ &&
-             should_pause_task_queues_ == other.should_pause_task_queues_ &&
-             should_pause_task_queues_for_android_webview_ ==
-                 other.should_pause_task_queues_for_android_webview_ &&
-             find_in_page_priority_ == other.find_in_page_priority_ &&
-             should_prioritize_ipc_tasks_ ==
-                 other.should_prioritize_ipc_tasks_ &&
-             use_case_ == other.use_case_;
-    }
+    bool operator==(const Policy& other) const = default;
 
     bool IsQueueEnabled(MainThreadTaskQueue* task_queue) const;
-
     void WriteIntoTrace(perfetto::TracedValue context) const;
-
-   private:
-    RAILMode rail_mode_{RAILMode::kAnimation};
-    bool frozen_when_backgrounded_{false};
-    bool should_freeze_compositor_task_queue_{false};
-    bool should_defer_task_queues_{false};
-    bool should_pause_task_queues_{false};
-    bool should_pause_task_queues_for_android_webview_{false};
-    bool should_prioritize_ipc_tasks_{false};
-
-    TaskPriority find_in_page_priority_{
-        FindInPageBudgetPoolController::kFindInPageBudgetNotExhaustedPriority};
-
-    UseCase use_case_{UseCase::kNone};
   };
 
   class TaskDurationMetricTracker;

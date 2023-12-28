@@ -31,7 +31,8 @@ class DrawCall {
     // "thread_id":"123456"}
     this.sourceIndex_ = parseInt(json.source_index);
     this.drawIndex_ = parseInt(json.drawindex);
-    this.threadId_ = parseInt(json.thread_id);
+    this.threadId_ =
+        parseInt(json.thread_id) || DrawFrame.demo_thread.thread_id;
     this.text = json.text;
     this.size_ = {
       width: json.size[0],
@@ -46,7 +47,7 @@ class DrawCall {
       this.color_ = json.option.color;
       this.alpha_ = DrawCall.alphaIntToHex(json.option.alpha)
     }
-    this.buffer_id = json.buff_id;
+    this.buffer_id = json.buff_id || -1;
     if (json.uv_size && json.uv_pos) {
       this.uv_size = {
         width: json.uv_size[0],
@@ -278,4 +279,3 @@ class Filter {
     Connection.sendMessage(message);
   }
 };
-

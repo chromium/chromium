@@ -16,6 +16,7 @@ static_library("search_engines") {
     "default_search_manager.h",
     "default_search_policy_handler.cc",
     "default_search_policy_handler.h",
+    "eea_countries_ids.h",
     "enterprise_site_search_manager.cc",
     "enterprise_site_search_manager.h",
     "keyword_table.cc",
@@ -110,7 +111,14 @@ static_library("search_engines") {
   }
 
   if (!is_android) {
-    sources += [ "generated_marketing_snippets.cc" ]
+    sources += [
+      "generated_marketing_snippets.cc",
+      "generated_search_engine_resource_ids.cc",
+    ]
+    deps += [
+      "//components/resources:components_scaled_resources_grit",
+      "//ui/resources",
+    ]
   }
 
   if (is_linux || is_win || is_mac || is_chromeos_ash) {

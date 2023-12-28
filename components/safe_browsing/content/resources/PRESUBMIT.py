@@ -24,10 +24,12 @@ def CheckVersionUpdatedInDownloadFileTypeList(input_api, output_api):
     results = []
     for download_file_types_file in download_file_types_files:
         has_changed_version = False
+        has_added_dangerous_level = False
         for _, line in download_file_types_file.ChangedContents():
             if line.strip().startswith('version_id: '):
                 has_changed_version = True
-                break
+            if 'danger_level: DANGEROUS' in line.strip():
+                has_added_dangerous_level = True
 
         # It's enticing to do something fancy like checking whether the ID was
         # in fact incremented or whether this is a whitespace-only or
@@ -43,6 +45,13 @@ def CheckVersionUpdatedInDownloadFileTypeList(input_api, output_api):
                     'Increment |version_id| in ' +
                     download_file_types_file.LocalPath() + ' if you are '
                     'updating the file types proto.'))
+        if has_added_dangerous_level:
+            results.append(
+                output_api.PresubmitPromptWarning(
+                    'You are adding a new file type under the DANGEROUS danger '
+                    + 'level. Please notify the partner team since it affects '
+                    + 'how they calculate the warning volume.'
+                ))
 
     results.append(
         output_api.PresubmitPromptWarning(

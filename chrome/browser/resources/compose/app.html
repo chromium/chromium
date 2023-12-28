@@ -1,7 +1,11 @@
-<style include="cr-hidden-style md-select">
+<style include="md-select">
   :host {
     --gap-between-sections_: 16px;
     --padding_: 20px;
+    display: grid;
+    grid-template-areas: "dialog";
+    grid-auto-columns: 100%;
+    align-items: start;
   }
 
   a {
@@ -16,10 +20,23 @@
     display: flex;
     flex-direction: column;
     gap: var(--gap-between-sections_);
+    grid-area: dialog;
     padding: var(--padding_) 0;
   }
 
   #consentHeading {
+    display: flex;
+    height: 48px;
+    align-items: start;
+    padding: 0 var(--padding_);
+  }
+
+  #closeButtonConsent {
+    /* Align with main app dialog close button. */
+    margin-block-start: -4px;
+  }
+
+  #freMsbbHeading {
     display: flex;
     height: 48px;
     align-items: start;
@@ -33,15 +50,18 @@
     border-radius: 12px;
     background: linear-gradient(
         136deg,  rgb(211, 227, 253) 1.59%, rgb(231, 248, 237) 100%);
+    color: rgb(4, 30, 73);
     display: flex;
     justify-content: center;
     align-items: center;
+    transform-origin: top left;
   }
 
   @media (prefers-color-scheme: dark) {
     #consentIconContainer {
       background: linear-gradient(
           136deg,  rgb(8, 66, 160) 1.59%, rgb(15, 82, 35) 100%);
+      color: rgb(194, 231, 255);
     }
   }
 
@@ -49,6 +69,7 @@
     background: linear-gradient(136deg,
         var(--color-sys-gradient-primary) 1.59%,
         var(--color-sys-gradient-tertiary) 100%);
+    color: var(--color-compose-dialog-logo);
   }
 
   #consentHeading iron-icon {
@@ -64,7 +85,16 @@
     display: flex;
     flex-direction: column;
     gap: 7px;
-    overflow: auto;
+    padding: 0 20px;
+  }
+
+  #freMsbbContainer {
+    color: var(--cr-secondary-text-color);
+    font: inherit;
+    font-size: 13px;
+    line-height: 20px;
+    display: flex;
+    flex-direction: column;
     padding: 0 20px;
   }
 
@@ -238,10 +268,14 @@
     justify-content: flex-end;
   }
 
+  #resultFooter {
+    gap:86px;
+  }
+
   .footer-text {
     display: flex;
-    align-items: center;
-    gap: 28px;
+    align-items: start;
+    gap: 8px;
     margin-inline-end: auto;
     color: var(--cr-secondary-text-color);
     font-size: 12px;
@@ -302,9 +336,22 @@
     padding: 0;
     visibility: visible;
   }
+
+  /**
+   * cr-hidden-style stamps an !important on [hidden] elements, which prevents
+   * any animations/transitions from applying. Instead of using cr-hidden-style,
+   * list all the [hidden] elements below. Not all elements need this, just
+   * the ones that override the default 'display' property.
+   */
+  .dialog[hidden],
+  .footer[hidden],
+  #loading[hidden],
+  #editContainer[hidden] {
+    display: none;
+  }
 </style>
 
-<div id="consentDialog" class="dialog" hidden="[[showMainAppDialog_]]">
+<div id="consentDialog" class="dialog" hidden="[[!showConsentDialog_]]">
   <div id="consentHeading">
     <div id="consentIconContainer">
       <iron-icon icon="compose:compose"></iron-icon>
@@ -343,6 +390,31 @@
   </div>
 </div>
 
+
+<div id="freMsbbDialog" class="dialog" hidden="[[!showMSBBDialog_]]">
+  <div id="freMsbbHeading">
+    <h1>$i18n{freMsbbTitle}</h1>
+    <cr-icon-button id="closeButtonMSBB" iron-icon="cr:close"
+      on-click="onClose_">
+    </cr-icon-button>
+  </div>
+
+
+  <div id="freMsbbContainer">
+    <div id="freMsbbText">
+      $i18nRaw{freMsbbMain}
+    </div>
+  </div>
+
+  <div id="freMsbbFooter" class="footer">
+    <cr-button id="SettingsButton" class="action-button"
+      on-click="onMsbbSettingsClick_">
+      $i18n{freMsbbSettingsButton}
+    </cr-button>
+  </div>
+</div>
+
+
 <div id="appDialog" class="dialog" hidden="[[!showMainAppDialog_]]">
   <div id="heading">
     <h1>$i18n{dialogTitle}</h1>
@@ -377,7 +449,8 @@
           <select class="md-select" id="lengthMenu" value="[[selectedLength_]]"
               aria-label="$i18n{lengthMenuTitle}" on-change="onLengthChanged_">
             <template is="dom-repeat" items="[[lengthOptions_]]">
-              <option value="[[item.value]]" hidden$="[[item.hidden]]">
+              <option value="[[item.value]]" disabled$="[[item.isDefault]]"
+                  selected$="[[item.isDefault]]">
                 [[item.label]]
               </option>
             </template>
@@ -385,7 +458,8 @@
           <select class="md-select" id="toneMenu" value="[[selectedTone_]]"
               aria-label="$i18n{toneMenuTitle}" on-change="onToneChanged_">
             <template is="dom-repeat" items="[[toneOptions_]]">
-              <option value="[[item.value]]" hidden$="[[item.hidden]]">
+              <option value="[[item.value]]" disabled$="[[item.isDefault]]"
+                  selected$="[[item.isDefault]]">
                 [[item.label]]
               </option>
             </template>
@@ -397,7 +471,7 @@
               on-click="onUndoClick_">
             </cr-icon-button>
             <cr-icon-button id="refreshButton" iron-icon="compose:refresh"
-              title="$i18n{resubmit}" on-click="onSubmit_">
+              title="$i18n{resubmit}" on-click="onRefresh_">
             </cr-icon-button>
           </div>
         </div>
@@ -428,8 +502,8 @@
             selected-option="[[feedbackState_]]">
         </cr-feedback-buttons>
       </div>
-      <cr-button id="insertButton" class="action-button" on-click="onAccept_">
-        $i18n{insertButton}
+      <cr-button id="acceptButton" class="action-button" on-click="onAccept_">
+        [[acceptButtonText_(textSelected_)]]
       </cr-button>
     </div>
 

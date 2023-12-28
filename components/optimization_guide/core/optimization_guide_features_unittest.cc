@@ -242,11 +242,11 @@ TEST(OptimizationGuideFeaturesTest, OptimizationGuidePersonalizedFetching) {
       });
 
   // Check contexts.
-  EXPECT_FALSE(features::IsAllowedContextForPersonalizedMetadata(
+  EXPECT_FALSE(features::ShouldEnablePersonalizedMetadata(
       optimization_guide::proto::CONTEXT_UNSPECIFIED));
-  EXPECT_TRUE(features::IsAllowedContextForPersonalizedMetadata(
+  EXPECT_TRUE(features::ShouldEnablePersonalizedMetadata(
       optimization_guide::proto::CONTEXT_PAGE_NAVIGATION));
-  EXPECT_TRUE(features::IsAllowedContextForPersonalizedMetadata(
+  EXPECT_TRUE(features::ShouldEnablePersonalizedMetadata(
       optimization_guide::proto::CONTEXT_BOOKMARKS));
 }
 
@@ -400,6 +400,23 @@ TEST(OptimizationGuideFeaturesTest, PredictionModelVersionInKillSwitch) {
                     testing::Pair(proto::OPTIMIZATION_TARGET_MODEL_VALIDATION,
                                   testing::ElementsAre(5))));
   }
+}
+
+TEST(OptimizationGuideFeaturesTest,
+     IsPerformanceClassCompatibleWithOnDeviceModel) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationGuideOnDeviceModel,
+      {{"compatible_on_device_performance_classes", "4,6"}});
+
+  EXPECT_FALSE(features::IsPerformanceClassCompatibleWithOnDeviceModel(
+      OnDeviceModelPerformanceClass::kError));
+  EXPECT_TRUE(features::IsPerformanceClassCompatibleWithOnDeviceModel(
+      OnDeviceModelPerformanceClass::kMedium));
+  EXPECT_FALSE(features::IsPerformanceClassCompatibleWithOnDeviceModel(
+      OnDeviceModelPerformanceClass::kHigh));
+  EXPECT_TRUE(features::IsPerformanceClassCompatibleWithOnDeviceModel(
+      OnDeviceModelPerformanceClass::kVeryHigh));
 }
 
 }  // namespace

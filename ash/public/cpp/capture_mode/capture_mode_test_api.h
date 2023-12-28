@@ -165,7 +165,7 @@ class ASH_EXPORT CaptureModeTestApi {
   // image capture otherwise.
   void SetType(bool for_video);
 
-  const raw_ptr<CaptureModeController, ExperimentalAsh> controller_;
+  const raw_ptr<CaptureModeController> controller_;
 };
 
 }  // namespace ash

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -27,6 +28,7 @@ class DoNothingListener : public NativeEventListener {
 // TODO(hayato): It's hard to see what's happening in these tests.
 // It would be better to refactor these tests.
 TEST(TreeScopeAdopterTest, SimpleMove) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* doc1 = Document::CreateForTest(execution_context.GetExecutionContext());
   auto* doc2 = Document::CreateForTest(execution_context.GetExecutionContext());
@@ -56,6 +58,7 @@ TEST(TreeScopeAdopterTest, SimpleMove) {
 }
 
 TEST(TreeScopeAdopterTest, MoveNestedShadowRoots) {
+  test::TaskEnvironment task_environment;
   DummyPageHolder source_page_holder;
   auto* source_doc = &source_page_holder.GetDocument();
   NativeEventListener* listener = MakeGarbageCollected<DoNothingListener>();

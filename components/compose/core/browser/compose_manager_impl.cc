@@ -5,54 +5,36 @@
 #include "components/compose/core/browser/compose_manager_impl.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/strings/string_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_metrics.h"
 
 namespace {
+
 // Passes the autofill `text` back into the `field` the dialog was opened on.
 // Called upon insertion.
 void FillTextWithAutofill(base::WeakPtr<autofill::AutofillManager> manager,
-                          autofill::FieldGlobalId field,
+                          const autofill::FormData& form,
+                          const autofill::FormFieldData& field,
                           const std::u16string& text) {
-  // TODO(crbug.com/1331312): Replace this call by FillOrPreviewField.
-  if (manager) {
-    manager->driver().ApplyFieldAction(
-        autofill::mojom::ActionPersistence::kFill,
-        autofill::mojom::TextReplacement::kReplaceSelection, field, text);
-  }
-}
-
-void GetBrowserFormHandler(autofill::FieldGlobalId field_id,
-                           autofill::AutofillDriver* driver,
-                           const std::optional<autofill::FormData>& form_data) {
-  if (!form_data) {
-    // TODO(b/305798770): replace with assert once form_data is always
-    // populated.
+  std::u16string trimmed_text;
+  base::TrimString(text, u" \t\n\r\f\v", &trimmed_text);
+  if (!manager) {
     return;
   }
-  const autofill::FormFieldData* form_field_data =
-      form_data->FindFieldByGlobalId(field_id);
-  if (!form_field_data) {
-    // TODO(b/305798770): replace with assert once form_data is always
-    // populated.
-    return;
-  }
-  autofill::AutofillManager& manager = driver->GetAutofillManager();
-  auto compose_callback =
-      base::BindOnce(&FillTextWithAutofill, manager.GetWeakPtr(),
-                     form_field_data->global_id());
-
-  autofill::AutofillComposeDelegate* delegate =
-      manager.client().GetComposeDelegate();
-  delegate->OpenCompose(
-      compose::ComposeManagerImpl::UiEntryPoint::kContextMenu, *form_field_data,
-      manager.client().GetPopupScreenLocation(), std::move(compose_callback));
+  static_cast<autofill::BrowserAutofillManager*>(manager.get())
+      ->FillOrPreviewField(autofill::mojom::ActionPersistence::kFill,
+                           autofill::mojom::TextReplacement::kReplaceSelection,
+                           form, field, trimmed_text,
+                           autofill::PopupItemId::kCompose);
 }
 
 }  // namespace
@@ -77,28 +59,48 @@ bool ComposeManagerImpl::HasSavedState(
   return client_->HasSession(trigger_field_id);
 }
 
-bool ComposeManagerImpl::IsEnabled() const {
-  return base::FeatureList::IsEnabled(features::kEnableCompose);
-}
-
-void ComposeManagerImpl::OpenComposeFromContextMenu(
+void ComposeManagerImpl::GetBrowserFormHandler(
+    autofill::FieldGlobalId field_id,
+    compose::ComposeManagerImpl::UiEntryPoint ui_entry_point,
     autofill::AutofillDriver* driver,
-    const autofill::FormRendererId form_renderer_id,
-    const autofill::FieldRendererId field_renderer_id) {
-  const autofill::LocalFrameToken frame_token = driver->GetFrameToken();
-  autofill::FormGlobalId form_global_id = {frame_token, form_renderer_id};
-  autofill::FieldGlobalId field_global_id = {frame_token, field_renderer_id};
+    const std::optional<autofill::FormData>& form_data) {
+  if (!form_data) {
+    // TODO(b/305798770): replace with assert once form_data is always
+    // populated.
+    return;
+  }
+  const autofill::FormFieldData* form_field_data =
+      form_data->FindFieldByGlobalId(field_id);
+  if (!form_field_data) {
+    // TODO(b/305798770): replace with assert once form_data is always
+    // populated.
+    return;
+  }
+  autofill::AutofillManager& manager = driver->GetAutofillManager();
+  auto compose_callback =
+      base::BindOnce(&FillTextWithAutofill, manager.GetWeakPtr(),
+                     form_data.value(), *form_field_data);
 
-  driver->ExtractForm(form_global_id,
-                      base::BindOnce(&GetBrowserFormHandler, field_global_id));
+  OpenComposeWithFormFieldData(ui_entry_point, *form_field_data,
+                               manager.client().GetPopupScreenLocation(),
+                               std::move(compose_callback));
 }
 
-void ComposeManagerImpl::OpenCompose(
+void ComposeManagerImpl::OpenCompose(autofill::AutofillDriver& driver,
+                                     autofill::FormGlobalId form_id,
+                                     autofill::FieldGlobalId field_id,
+                                     UiEntryPoint entry_point) {
+  driver.ExtractForm(
+      form_id,
+      base::BindOnce(&ComposeManagerImpl::GetBrowserFormHandler,
+                     weak_ptr_factory_.GetWeakPtr(), field_id, entry_point));
+}
+
+void ComposeManagerImpl::OpenComposeWithFormFieldData(
     UiEntryPoint ui_entry_point,
     const autofill::FormFieldData& trigger_field,
     std::optional<PopupScreenLocation> popup_screen_location,
     ComposeCallback callback) {
-  CHECK(IsEnabled());
   if (ui_entry_point == UiEntryPoint::kContextMenu) {
     compose::LogComposeContextMenuCtr(
         compose::ComposeContextMenuCtrEvent::kComposeOpened);

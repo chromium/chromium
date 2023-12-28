@@ -19,16 +19,15 @@ using autofill::CalculateFieldSignatureForField;
 using autofill::CalculateFormSignature;
 using autofill::FieldGlobalId;
 using autofill::FieldSignature;
+using autofill::FieldType;
 using autofill::FormData;
-using autofill::ServerFieldType;
-using autofill::ToSafeServerFieldType;
+using autofill::ToSafeFieldType;
 
 namespace password_manager {
 
 namespace {
 
-ServerFieldType GetServerType(
-    const AutofillType::ServerPrediction& prediction) {
+FieldType GetServerType(const AutofillType::ServerPrediction& prediction) {
   // The main server predictions is in `field.server_type()` but the server can
   // send additional predictions in `field.server_predictions()`. This function
   // chooses the relevant one for Password Manager predictions.
@@ -42,9 +41,9 @@ ServerFieldType GetServerType(
 
   // 2. If there is password related prediction returns it.
   for (const auto& server_predictions : prediction.server_predictions) {
-    ServerFieldType type = ToSafeServerFieldType(
-        server_predictions.type(), ServerFieldType::NO_SERVER_DATA);
-    if (DeriveFromServerFieldType(type) != CredentialFieldType::kNone) {
+    FieldType type =
+        ToSafeFieldType(server_predictions.type(), FieldType::NO_SERVER_DATA);
+    if (DeriveFromFieldType(type) != CredentialFieldType::kNone) {
       return type;
     }
   }
@@ -54,7 +53,7 @@ ServerFieldType GetServerType(
 }
 }  // namespace
 
-CredentialFieldType DeriveFromServerFieldType(ServerFieldType type) {
+CredentialFieldType DeriveFromFieldType(FieldType type) {
   switch (type) {
     case autofill::USERNAME:
     case autofill::USERNAME_AND_EMAIL_ADDRESS:
@@ -116,7 +115,7 @@ FormPredictions ConvertToFormPredictions(
     auto it = predictions.find(field.global_id());
     CHECK(it != predictions.end());
     const AutofillType::ServerPrediction& autofill_prediction = it->second;
-    ServerFieldType server_type = GetServerType(autofill_prediction);
+    FieldType server_type = GetServerType(autofill_prediction);
 
     FieldSignature current_signature = CalculateFieldSignatureForField(field);
 

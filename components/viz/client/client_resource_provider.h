@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/client/viz_client_export.h"
 #include "components/viz/common/display/renderer_settings.h"
@@ -42,7 +44,13 @@ class RasterContextProvider;
 // created on (in practice, the impl thread).
 class VIZ_CLIENT_EXPORT ClientResourceProvider {
  public:
+  using ResourceFlushCallback = base::RepeatingCallback<void()>;
+
   ClientResourceProvider();
+  ClientResourceProvider(
+      scoped_refptr<base::SequencedTaskRunner> main_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> impl_task_runner,
+      ResourceFlushCallback resource_flush_callback);
 
   ClientResourceProvider(const ClientResourceProvider&) = delete;
   ClientResourceProvider& operator=(const ClientResourceProvider&) = delete;
@@ -81,9 +89,13 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
   // `evicted_callback`, which will be invoked once we are no longer visible and
   // have been evicted. When `evicted_callback` is called the client should
   // invoke `RemoveImportedResources` to unlock the resource. Allowing the
-  // resource to be released when it is returned from the parent.
+  // resource to be released when it is returned from the parent. When
+  // `main_thread_release_callback` is provided, and
+  // `features::kBatchMainThreadReleaseCallbacks` is enabled, the callback will
+  // be invoked on `main_thread_task_runner_` when it has been returned.
   ResourceId ImportResource(const TransferableResource& resource,
-                            ReleaseCallback release_callback,
+                            ReleaseCallback impl_release_callback,
+                            ReleaseCallback main_thread_release_callback = {},
                             ResourceEvictedCallback evicted_callback = {});
   // Removes an imported resource, which will call the ReleaseCallback given
   // originally, once the resource is no longer in use by any compositor frame.
@@ -135,6 +147,9 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
   // being returned to the client (such as cc::LayerTreeHostImpl.)
   void HandleEviction();
 
+  void BatchMainReleaseCallbacks(
+      std::vector<base::OnceClosure> release_callbacks);
+
   THREAD_CHECKER(thread_checker_);
 
   base::flat_map<ResourceId, ImportedResource> imported_resources_;
@@ -152,6 +167,17 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
   // all `imported_resources_` may still be used by the Client. So it is not
   // safe to release them, even if we have been `evicted_`.
   bool visible_ = false;
+
+  const scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> impl_task_runner_;
+
+  ResourceFlushCallback resource_flush_callback_;
+
+  // When true, we are able to use our TaskRunners to post all
+  // `main_thread_release_callback` to the `main_task_runner_`. Enabling us to
+  // have a single thread hop, rather than each callback performing it's own
+  // separate hop.
+  bool threaded_release_callbacks_supported_ = false;
 };
 
 }  // namespace viz

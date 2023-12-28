@@ -31,7 +31,7 @@ class BeginMainFrameWaiter : public CompositorObserver {
   void Wait();
 
  private:
-  raw_ptr<Compositor, ExperimentalAsh> compositor_;
+  raw_ptr<Compositor> compositor_;
   bool begin_main_frame_received_ = false;
   base::RunLoop run_loop_;
 };

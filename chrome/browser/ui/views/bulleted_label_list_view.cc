@@ -17,8 +17,9 @@
 namespace {
 
 class BulletView : public views::View {
+  METADATA_HEADER(BulletView, views::View)
+
  public:
-  METADATA_HEADER(BulletView);
   BulletView() = default;
   BulletView(const BulletView&) = delete;
   BulletView& operator=(const BulletView&) = delete;
@@ -45,7 +46,7 @@ void BulletView::OnPaint(gfx::Canvas* canvas) {
   canvas->DrawPath(path, flags);
 }
 
-BEGIN_METADATA(BulletView, views::View)
+BEGIN_METADATA(BulletView)
 END_METADATA
 
 }  // namespace
@@ -83,5 +84,5 @@ void BulletedLabelListView::AddLabel(const std::u16string& text) {
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 }
 
-BEGIN_METADATA(BulletedLabelListView, views::View)
+BEGIN_METADATA(BulletedLabelListView)
 END_METADATA

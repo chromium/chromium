@@ -19,8 +19,7 @@
 
 using content::BrowserThread;
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 namespace {
 
 // Size of the stream reader internal buffer. At most this number of bytes will
@@ -92,5 +91,4 @@ void BackendDelegate::GetRedirectURLForContents(
   std::move(callback).Run(GURL());
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

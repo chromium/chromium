@@ -8,15 +8,15 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "net/cookies/cookie_constants.h"
 
 namespace network {
 // A DeleteCookiePredicate callback function decides if the cookie associated
 // with the domain and is_https status should be deleted on exit, and is used
 // when creating a cookie storage policy. It has two parameters, the first one
-// is the domain of a cookie and the second one is a bool which represents
-// whether the cookie is secure as parameters.
+// is the domain of a cookie and the second one is the scheme of the domain.
 using DeleteCookiePredicate =
-    base::RepeatingCallback<bool(const std::string&, bool)>;
+    base::RepeatingCallback<bool(const std::string&, net::CookieSourceScheme)>;
 
 }  // namespace network
 

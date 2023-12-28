@@ -130,7 +130,8 @@ ArcScreenCaptureSession::Initialize(content::DesktopMediaID desktop_id,
     std::u16string notification_text =
         l10n_util::GetStringFUTF16(IDS_MEDIA_SCREEN_CAPTURE_NOTIFICATION_TEXT,
                                    base::UTF8ToUTF16(display_name));
-    notification_ui_ = ScreenCaptureNotificationUI::Create(notification_text);
+    notification_ui_ = ScreenCaptureNotificationUI::Create(
+        notification_text, /*capturing_web_contents=*/nullptr);
     notification_ui_->OnStarted(
         base::BindOnce(&ArcScreenCaptureSession::NotificationStop,
                        weak_ptr_factory_.GetWeakPtr()),
@@ -227,7 +228,8 @@ void ArcScreenCaptureSession::SetOutputBuffer(
   auto client_shared_image = sii->CreateSharedImage(
       si_format, size_, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
       kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_GLES2,
+      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+          gpu::SHARED_IMAGE_USAGE_GLES2_WRITE,
       "ArcScreenCapture", std::move(handle));
   CHECK(client_shared_image);
   ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());

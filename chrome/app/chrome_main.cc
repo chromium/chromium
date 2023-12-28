@@ -24,10 +24,6 @@
 #include "headless/public/headless_shell.h"
 #include "headless/public/switches.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "base/base_switches.h"
-#endif
-
 #if BUILDFLAG(IS_MAC)
 #include "chrome/app/chrome_main_mac.h"
 #include "chrome/app/notification_metrics.h"
@@ -178,7 +174,7 @@ int ChromeMain(int argc, const char** argv) {
     BUILDFLAG(IS_WIN)
     if (headless::IsOldHeadlessMode()) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      command_line->AppendSwitch(::switches::kEnableCrashReporter);
+      command_line->AppendSwitch(::headless::switches::kEnableCrashReporter);
 #endif
       return headless::HeadlessShellMain(std::move(params));
     }

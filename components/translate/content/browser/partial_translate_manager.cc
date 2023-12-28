@@ -30,7 +30,7 @@ PartialTranslateManager::~PartialTranslateManager() = default;
 
 void PartialTranslateManager::StartPartialTranslate(
     content::WebContents* web_contents,
-    PartialTranslateRequest request,
+    const PartialTranslateRequest& request,
     PartialTranslateCallback callback) {
   // Invalidate any ongoing request.
   weak_ptr_factory_.InvalidateWeakPtrs();

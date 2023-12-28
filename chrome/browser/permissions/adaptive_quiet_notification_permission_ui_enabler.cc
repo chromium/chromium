@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -25,6 +24,7 @@
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -37,10 +37,6 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/scoped_user_pref_update.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -200,17 +196,7 @@ AdaptiveQuietNotificationPermissionUiEnabler::
           &AdaptiveQuietNotificationPermissionUiEnabler::OnQuietUiStateChanged,
           base::Unretained(this)));
 
-  bool should_record_metrics = profile_->IsRegularProfile();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // ChromeOS creates various irregular profiles (login, lock screen...); they
-  // are of type kRegular (returns true for `Profile::IsRegular()`), that aren't
-  // used to browse the web and users can't configure. Don't collect metrics
-  // about them.
-  should_record_metrics =
-      should_record_metrics && ash::ProfileHelper::IsUserProfile(profile_);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  if (should_record_metrics) {
+  if (profiles::IsRegularUserProfile(profile_)) {
     // Record whether the quiet UI is enabled, but only when notifications are
     // not completely blocked.
     auto* host_content_settings_map =

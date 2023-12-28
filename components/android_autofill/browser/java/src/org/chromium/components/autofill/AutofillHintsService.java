@@ -25,8 +25,6 @@ public class AutofillHintsService {
                         mCallback = callback;
                         if (mUnsentViewTypes != null) {
                             invokeOnViewTypeAvailable();
-                        } else if (mQueryFailed != null) {
-                            invokeOnQueryFailed();
                         }
                     }
                 };
@@ -43,13 +41,6 @@ public class AutofillHintsService {
         invokeOnViewTypeAvailable();
     }
 
-    public void onQueryFailed() {
-        if (mQueryFailed != null) return;
-        mQueryFailed = Boolean.TRUE;
-        if (mCallback == null) return;
-        invokeOnQueryFailed();
-    }
-
     private void invokeOnViewTypeAvailable() {
         try {
             mCallback.onViewTypeAvailable(mUnsentViewTypes);
@@ -58,16 +49,7 @@ public class AutofillHintsService {
         }
     }
 
-    private void invokeOnQueryFailed() {
-        try {
-            mCallback.onQueryFailed();
-        } catch (Exception e) {
-            Log.e(TAG, "onQueryFailed ", e);
-        }
-    }
-
     private IAutofillHintsService.Stub mBinder;
     private IViewTypeCallback mCallback;
     private List<ViewType> mUnsentViewTypes;
-    private Boolean mQueryFailed;
 }

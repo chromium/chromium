@@ -725,21 +725,14 @@ KeyboardShortcutResult::KeyboardShortcutResult(
 KeyboardShortcutResult::~KeyboardShortcutResult() = default;
 
 void KeyboardShortcutResult::Open(int event_flags) {
-  if (ash::features::ShouldOnlyShowNewShortcutApp()) {
-    // Pass the action and category of the selected shortcuts to the app so that
-    // the same shortcuts will be displayed in the app.
-    if (ash::features::isSearchCustomizableShortcutsInLauncherEnabled()) {
-      chrome::ShowShortcutCustomizationApp(profile_, accelerator_action_,
-                                           accelerator_category_);
-    } else {
-      chrome::ShowShortcutCustomizationApp(profile_);
-    }
-    return;
+  // Pass the action and category of the selected shortcuts to the app so that
+  // the same shortcuts will be displayed in the app.
+  if (ash::features::isSearchCustomizableShortcutsInLauncherEnabled()) {
+    chrome::ShowShortcutCustomizationApp(profile_, accelerator_action_,
+                                         accelerator_category_);
+  } else {
+    chrome::ShowShortcutCustomizationApp(profile_);
   }
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile_);
-  proxy->Launch(ash::kInternalAppIdKeyboardShortcutViewer, event_flags,
-                apps::LaunchSource::kFromAppListQuery, nullptr);
 }
 
 double KeyboardShortcutResult::CalculateRelevance(

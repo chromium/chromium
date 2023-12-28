@@ -47,12 +47,12 @@ void UserFaultFDThread(int uffd) {
         .events = POLLIN,
         .revents = 0,  // Unused output param of `pool` call.
     };
-    const int nready = PA_HANDLE_EINTR(poll(&pollfd, 1, -1));
+    const int nready = WrapEINTR(poll)(&pollfd, 1, -1);
     PA_CHECK(-1 != nready);
 
     // Get page fault info.
     uffd_msg msg;
-    const int nread = PA_HANDLE_EINTR(read(uffd, &msg, sizeof(msg)));
+    const int nread = WrapEINTR(read)(uffd, &msg, sizeof(msg));
     PA_CHECK(0 != nread);
 
     // We only expect page faults.

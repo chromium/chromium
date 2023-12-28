@@ -20,8 +20,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/blocklist_state.h"
 
-class PrefService;
-
 namespace content {
 class BrowserContext;
 }
@@ -63,7 +61,7 @@ class Blocklist : public KeyedService {
 
   using DatabaseReadyCallback = base::OnceCallback<void(bool)>;
 
-  explicit Blocklist(PrefService* profile_prefs);
+  Blocklist();
 
   Blocklist(const Blocklist&) = delete;
   Blocklist& operator=(const Blocklist&) = delete;
@@ -161,8 +159,6 @@ class Blocklist : public KeyedService {
   // is a pair of [vector of string ids to check, response closure].
   std::list<std::pair<std::vector<std::string>, base::OnceClosure>>
       state_requests_;
-
-  raw_ptr<PrefService> profile_prefs_ = nullptr;
 
   base::WeakPtrFactory<Blocklist> weak_ptr_factory_{this};
 };

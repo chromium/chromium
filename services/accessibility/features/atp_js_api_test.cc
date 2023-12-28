@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -21,6 +22,7 @@
 #include "services/accessibility/public/mojom/user_interface.mojom-shared.h"
 #include "services/accessibility/public/mojom/user_interface.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/mojom/event_constants.mojom-shared.h"
@@ -107,9 +109,8 @@ class AtpJSApiTest : public testing::Test {
   }
 
  private:
-  raw_ptr<AssistiveTechnologyControllerImpl,
-          DanglingUntriaged | ExperimentalAsh>
-      at_controller_ = nullptr;
+  raw_ptr<AssistiveTechnologyControllerImpl, DanglingUntriaged> at_controller_ =
+      nullptr;
   std::unique_ptr<OSAccessibilityService> service_;
   base::test::TaskEnvironment task_environment_;
   base::RunLoop test_waiter_;
@@ -1101,6 +1102,100 @@ TEST_F(SpeechRecognitionJSApiTest, StopError) {
       if (lastError && lastError.message === 'Test stop error') {
         remote.testComplete(/*success=*/true);
       }
+    });
+  )JS");
+  WaitForJSTestComplete();
+}
+
+class AutomationJSApiTest : public AtpJSApiTest {
+ public:
+  AutomationJSApiTest() = default;
+  AutomationJSApiTest(const AutomationJSApiTest&) = delete;
+  AutomationJSApiTest& operator=(const AutomationJSApiTest&) = delete;
+  ~AutomationJSApiTest() override = default;
+
+  mojom::AssistiveTechnologyType GetATTypeForTest() const override {
+    return mojom::AssistiveTechnologyType::kAutoClick;
+  }
+
+  const std::vector<std::string> GetJSFilePathsToLoad() const override {
+    // TODO(b:266856702): Eventually ATP will load its own JS instead of us
+    // doing it in the test. Right now the service doesn't have enough
+    // permissions so we load support JS within the test.
+    return std::vector<std::string>{
+        "services/accessibility/features/mojo/test/mojom_test_support.js",
+        "ui/gfx/geometry/mojom/geometry.mojom-lite.js",
+        "mojo/public/mojom/base/unguessable_token.mojom-lite.js",
+        "ui/accessibility/ax_enums.mojom-lite.js",
+        "ui/accessibility/mojom/ax_tree_id.mojom-lite.js",
+        "ui/accessibility/mojom/ax_action_data.mojom-lite.js",
+        "services/accessibility/public/mojom/automation_client.mojom-lite.js",
+        "services/accessibility/features/javascript/automation.js",
+    };
+  }
+};
+
+// Ensures chrome.automation.getDesktop exists and returns something.
+// Note that there are no tree updates so properties of the desktop object
+// can't yet be calculated.
+TEST_F(AutomationJSApiTest, GetDesktop) {
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    chrome.automation.getDesktop(desktop => {
+      remote.testComplete(/*success=*/desktop !== null && desktop.isRootNode);
+    });
+  )JS");
+  WaitForJSTestComplete();
+}
+
+// Ensures chrome.automation.getFocus exists and gets the correct node.
+TEST_F(AutomationJSApiTest, GetFocus) {
+  std::vector<ui::AXTreeUpdate> updates;
+  updates.emplace_back();
+  auto& tree_update = updates.back();
+  tree_update.has_tree_data = true;
+  tree_update.root_id = 1;
+  auto& tree_data = tree_update.tree_data;
+  tree_data.tree_id = client_->desktop_tree_id();
+  tree_data.focus_id = 2;
+  tree_update.nodes.emplace_back();
+  auto& node_data1 = tree_update.nodes.back();
+  node_data1.id = 1;
+  node_data1.role = ax::mojom::Role::kDesktop;
+  node_data1.child_ids.push_back(2);
+  tree_update.nodes.emplace_back();
+  auto& node_data2 = tree_update.nodes.back();
+  node_data2.id = 2;
+  node_data2.role = ax::mojom::Role::kButton;
+  std::vector<ui::AXEvent> events;
+  client_->SendAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(),
+                                   events);
+
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    chrome.automation.getDesktop(desktop => {
+        if (!desktop) {
+          remote.testComplete(/*success=*/false);
+        }
+        if (desktop.children.length !== 1 ||
+            desktop.firstChild !== desktop.lastChild) {
+          remote.testComplete(/*success=*/false);
+        }
+        const button = desktop.firstChild;
+        if (button.role !== 'button') {
+          remote.testComplete(/*success=*/false);
+        }
+        // Spot check button node.
+        if (button.parent !== desktop || button.root !== desktop ||
+            button.indexInParent !== 0 || button.children.length !== 0) {
+          remote.testComplete(/*success=*/false);
+        }
+        chrome.automation.getFocus(focus => {
+          if (!focus) {
+            remote.testComplete(/*success=*/false);
+          }
+         remote.testComplete(/*success=*/focus === button);
+        });
     });
   )JS");
   WaitForJSTestComplete();

@@ -13,6 +13,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -207,8 +208,10 @@ bool IsMutedInsecureCredential(const PasswordForm* credential,
   return it != credential->password_issues.end() && it->second.is_muted;
 }
 
-bool HasMutedCredentials(const std::vector<const PasswordForm*>& credentials,
-                         const std::u16string& username) {
+bool HasMutedCredentials(
+    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+        credentials,
+    const std::u16string& username) {
   return base::ranges::any_of(credentials, [&username](const auto& credential) {
     return credential->username_value == username &&
            (IsMutedInsecureCredential(credential, InsecureType::kLeaked) ||
@@ -475,7 +478,13 @@ void PasswordManager::DidNavigateMainFrame(bool form_may_be_submitted) {
     PasswordFormManager* manager = GetSubmittedManager();
     if (manager && manager->GetSubmittedForm()
                        ->form_data.is_gaia_with_skip_save_password_form) {
-      MaybeSavePasswordHash(manager);
+      password_manager::PasswordReuseManager* reuse_manager =
+          client_->GetPasswordReuseManager();
+      // May be null in tests.
+      if (reuse_manager) {
+        reuse_manager->MaybeSavePasswordHash(manager->GetSubmittedForm(),
+                                             client_);
+      }
     }
   }
 
@@ -540,9 +549,9 @@ void PasswordManager::DropFormManagers() {
   predictions_.clear();
 }
 
-const std::vector<const PasswordForm*>* PasswordManager::GetBestMatches(
-    PasswordManagerDriver* driver,
-    autofill::FormRendererId form_id) {
+const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
+PasswordManager::GetBestMatches(PasswordManagerDriver* driver,
+                                autofill::FormRendererId form_id) {
   PasswordFormManager* manager = GetMatchedManager(driver, form_id);
   return manager ? &(manager->GetBestMatches()) : nullptr;
 }
@@ -804,11 +813,6 @@ PasswordFormManager* PasswordManager::ProvisionallySaveForm(
     logger = std::make_unique<BrowserSavePasswordProgressLogger>(
         client_->GetLogManager());
     logger->LogMessage(Logger::STRING_PROVISIONALLY_SAVE_FORM_METHOD);
-  }
-  if (!client_->IsSavingAndFillingEnabled(submitted_form.url)) {
-    RecordProvisionalSaveFailure(
-        PasswordManagerMetricsRecorder::SAVING_DISABLED, submitted_form.url);
-    return nullptr;
   }
 
   if (store_password_called_)
@@ -1129,8 +1133,6 @@ void PasswordManager::OnLoginSuccessful() {
       submitted_form->federation_origin,
       submitted_manager->GetPendingCredentials().username_value);
   client_->NotifyOnSuccessfulLogin(submitted_form->username_value);
-  if (!client_->IsSavingAndFillingEnabled(submitted_form->url))
-    return;
 
   // Check for leaks only if there are no muted credentials and it is not a
   // single username submission (a leak warning may offer an automated password
@@ -1156,7 +1158,13 @@ void PasswordManager::OnLoginSuccessful() {
   if (!able_to_save_passwords)
     return;
 
-  MaybeSavePasswordHash(submitted_manager);
+  password_manager::PasswordReuseManager* reuse_manager =
+      client_->GetPasswordReuseManager();
+  // May be null in tests.
+  if (reuse_manager) {
+    reuse_manager->MaybeSavePasswordHash(submitted_manager->GetSubmittedForm(),
+                                         client_);
+  }
 
   // TODO(https://crbug.com/831123): Implement checking whether to save with
   // PasswordFormManager.
@@ -1182,6 +1190,10 @@ void PasswordManager::OnLoginSuccessful() {
 
   // If the form is eligible only for saving fallback, it shouldn't go here.
   CHECK(!submitted_manager->GetPendingCredentials().only_for_fallback);
+
+  if (!submitted_manager->IsSavingAllowed()) {
+    return;
+  }
 
   if (ShouldPromptUserToSavePassword(*submitted_manager)) {
     if (logger)
@@ -1209,71 +1221,6 @@ void PasswordManager::OnLoginSuccessful() {
     }
   }
   ResetSubmittedManager();
-}
-
-void PasswordManager::MaybeSavePasswordHash(
-    PasswordFormManager* submitted_manager) {
-  if (!base::FeatureList::IsEnabled(features::kPasswordReuseDetectionEnabled)) {
-    return;
-  }
-
-  const PasswordForm* submitted_form = submitted_manager->GetSubmittedForm();
-  // When |username_value| is empty, it's not clear whether the submitted
-  // credentials are really Gaia or enterprise credentials. Don't save
-  // password hash in that case.
-  std::string username = base::UTF16ToUTF8(submitted_form->username_value);
-  if (username.empty())
-    return;
-
-  password_manager::PasswordReuseManager* reuse_manager =
-      client_->GetPasswordReuseManager();
-  // May be null in tests.
-  if (!reuse_manager)
-    return;
-
-  bool should_save_enterprise_pw =
-      client_->GetStoreResultFilter()->ShouldSaveEnterprisePasswordHash(
-          *submitted_form);
-  bool should_save_gaia_pw =
-      client_->GetStoreResultFilter()->ShouldSaveGaiaPasswordHash(
-          *submitted_form);
-
-  if (!should_save_enterprise_pw && !should_save_gaia_pw)
-    return;
-
-  if (password_manager_util::IsLoggingActive(client_)) {
-    BrowserSavePasswordProgressLogger logger(client_->GetLogManager());
-    logger.LogMessage(Logger::STRING_SAVE_PASSWORD_HASH);
-  }
-
-  // Canonicalizes username if it is an email.
-  if (username.find('@') != std::string::npos)
-    username = gaia::CanonicalizeEmail(username);
-  bool is_password_change = !submitted_form->new_password_element.empty();
-  const std::u16string password = is_password_change
-                                      ? submitted_form->new_password_value
-                                      : submitted_form->password_value;
-
-  if (should_save_enterprise_pw) {
-    reuse_manager->SaveEnterprisePasswordHash(username, password);
-    return;
-  }
-
-  DCHECK(should_save_gaia_pw);
-  bool is_sync_account_email =
-      client_->GetStoreResultFilter()->IsSyncAccountEmail(username);
-  metrics_util::GaiaPasswordHashChange event =
-      is_sync_account_email
-          ? (is_password_change
-                 ? metrics_util::GaiaPasswordHashChange::CHANGED_IN_CONTENT_AREA
-                 : metrics_util::GaiaPasswordHashChange::SAVED_IN_CONTENT_AREA)
-          : (is_password_change
-                 ? metrics_util::GaiaPasswordHashChange::
-                       NOT_SYNC_PASSWORD_CHANGE
-                 : metrics_util::GaiaPasswordHashChange::SAVED_IN_CONTENT_AREA);
-  reuse_manager->SaveGaiaPasswordHash(
-      username, password,
-      /*is_sync_password_for_metrics=*/is_sync_account_email, event);
 }
 
 void PasswordManager::ProcessAutofillPredictions(

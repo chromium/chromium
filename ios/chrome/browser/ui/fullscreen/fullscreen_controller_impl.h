@@ -49,7 +49,6 @@ class FullscreenControllerImpl : public FullscreenController {
   void EnterForceFullscreenMode() override;
   void ExitForceFullscreenMode() override;
   void ResizeHorizontalViewport() override;
-  void FreezeToolbarHeight(bool freeze_toolbar_height) override;
 
  private:
 

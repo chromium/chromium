@@ -54,23 +54,17 @@ constexpr char kFullBubbleVisibleHistogramName[] =
     "Download.Bubble.FullView.VisibleTime";
 
 class ShowAllDownloadsButton : public RichHoverButton {
+  METADATA_HEADER(ShowAllDownloadsButton, RichHoverButton)
+
  public:
-  METADATA_HEADER(ShowAllDownloadsButton);
   explicit ShowAllDownloadsButton(
       base::RepeatingClosure show_all_downloads_callback)
       : RichHoverButton(
             std::move(show_all_downloads_callback),
             /*main_image_icon=*/ui::ImageModel(),
-            base::FeatureList::IsEnabled(
-                safe_browsing::kImprovedDownloadBubbleWarnings)
-                ? l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_FOOTER_LABEL)
-                : l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_FOOTER_LINK),
+            l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_FOOTER_LABEL),
             /*secondary_text=*/std::u16string(),
-            base::FeatureList::IsEnabled(
-                safe_browsing::kImprovedDownloadBubbleWarnings)
-                ? l10n_util::GetStringUTF16(
-                      IDS_DOWNLOAD_BUBBLE_FOOTER_TOOLTIP_LABEL)
-                : l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_FOOTER_TOOLTIP),
+            l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_FOOTER_TOOLTIP_LABEL),
             /*subtitle_text=*/std::u16string(),
             ui::ImageModel::FromVectorIcon(
                 features::IsChromeRefresh2023()
@@ -124,7 +118,7 @@ class ShowAllDownloadsButton : public RichHoverButton {
   }
 };
 
-BEGIN_METADATA(ShowAllDownloadsButton, RichHoverButton)
+BEGIN_METADATA(ShowAllDownloadsButton)
 END_METADATA
 
 }  // namespace
@@ -152,10 +146,7 @@ void DownloadDialogView::AddHeader() {
   header->SetBorder(views::CreateEmptyBorder(GetLayoutInsets(DOWNLOAD_ROW)));
 
   auto* title = header->AddChildView(std::make_unique<views::Label>(
-      base::FeatureList::IsEnabled(
-          safe_browsing::kImprovedDownloadBubbleWarnings)
-          ? l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_HEADER_LABEL)
-          : l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_HEADER_TEXT),
+      l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_HEADER_LABEL),
       views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
   title->SetProperty(
       views::kFlexBehaviorKey,
@@ -215,5 +206,5 @@ base::StringPiece DownloadDialogView::GetVisibleTimeHistogramName() const {
   return kFullBubbleVisibleHistogramName;
 }
 
-BEGIN_METADATA(DownloadDialogView, DownloadBubblePrimaryView)
+BEGIN_METADATA(DownloadDialogView)
 END_METADATA

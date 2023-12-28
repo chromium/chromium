@@ -75,10 +75,16 @@
                                                               gaiaID:gaiaID];
   self.mediator.consumer = self.viewController;
   self.mediator.handler = self;
+  self.mediator.presenter = self;
   _notificationsObserver.delegate = self.mediator;
   self.viewController.modelDelegate = self.mediator;
   [self.baseNavigationController pushViewController:self.viewController
                                            animated:YES];
+}
+
+- (void)stop {
+  _notificationsObserver.delegate = nil;
+  _notificationsObserver = nil;
 }
 
 #pragma mark - NotificationsAlertPresenter
@@ -88,29 +94,28 @@
   if (@available(iOS 15.4, *)) {
     settingURL = UIApplicationOpenNotificationSettingsURLString;
   }
-  // TODO(b/304781544): Update the alert strings.
-  NSString* alertTitle =
-      l10n_util::GetNSString(IDS_IOS_PRICE_NOTIFICATIONS_SETTINGS_ALERT_TITLE);
+  NSString* alertTitle = l10n_util::GetNSString(
+      IDS_IOS_CONTENT_NOTIFICATIONS_SETTINGS_ALERT_TITLE);
   NSString* alertMessage = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_SETTINGS_ALERT_MESSAGE);
+      IDS_IOS_CONTENT_NOTIFICATIONS_SETTINGS_ALERT_MESSAGE);
   NSString* cancelTitle = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_CANCEL);
+      IDS_IOS_CONTENT_NOTIFICATIONS_PERMISSION_REDIRECT_ALERT_CANCEL);
   NSString* settingsTitle = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_REDIRECT);
+      IDS_IOS_CONTENT_NOTIFICATIONS_PERMISSION_REDIRECT_ALERT_REDIRECT);
 
   __weak NotificationsCoordinator* weakSelf = self;
-  [self.alertCoordinator stop];
-  self.alertCoordinator =
+  [_alertCoordinator stop];
+  _alertCoordinator =
       [[AlertCoordinator alloc] initWithBaseViewController:self.viewController
                                                    browser:self.browser
                                                      title:alertTitle
                                                    message:alertMessage];
-  [self.alertCoordinator addItemWithTitle:cancelTitle
-                                   action:^{
-                                     [weakSelf dimissAlertCoordinator];
-                                   }
-                                    style:UIAlertActionStyleCancel];
-  [self.alertCoordinator
+  [_alertCoordinator addItemWithTitle:cancelTitle
+                               action:^{
+                                 [weakSelf dimissAlertCoordinator];
+                               }
+                                style:UIAlertActionStyleCancel];
+  [_alertCoordinator
       addItemWithTitle:settingsTitle
                 action:^{
                   [[UIApplication sharedApplication]
@@ -120,14 +125,14 @@
                   [weakSelf dimissAlertCoordinator];
                 }
                  style:UIAlertActionStyleDefault];
-  [self.alertCoordinator start];
+  [_alertCoordinator start];
 }
 
 #pragma mark - Private
 
 - (void)dimissAlertCoordinator {
-  [self.alertCoordinator stop];
-  self.alertCoordinator = nil;
+  [_alertCoordinator stop];
+  _alertCoordinator = nil;
 }
 
 #pragma mark - NotificationsNavigationCommands

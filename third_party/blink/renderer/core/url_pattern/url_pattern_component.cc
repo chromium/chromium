@@ -422,6 +422,10 @@ bool Component::ShouldTreatAsStandardURL() const {
   return *should_treat_as_standard_url_;
 }
 
+const std::vector<liburlpattern::Part>& Component::PartList() const {
+  return pattern_.PartList();
+}
+
 void Component::Trace(Visitor* visitor) const {
   visitor->Trace(regexp_);
 }

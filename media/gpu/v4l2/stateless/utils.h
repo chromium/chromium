@@ -12,11 +12,10 @@
 #include "media/video/video_decode_accelerator.h"
 
 namespace media {
+
 VideoDecodeAccelerator::SupportedProfiles GetSupportedDecodeProfiles(
     Device* device);
-void WaitOnceForEvents(struct pollfd event,
-                       base::OnceClosure dequeue_callback,
-                       base::OnceClosure error_callback);
+
 std::string IoctlToString(uint64_t request);
 }  // namespace media
 #endif  // MEDIA_GPU_V4L2_STATELESS_UTILS_H_

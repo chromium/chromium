@@ -18,7 +18,10 @@ class LayoutTextControlSingleLine final : public LayoutNGBlockFlow {
   HTMLElement* InnerEditorElement() const;
   Element* ContainerElement() const;
 
-  bool IsOfType(LayoutObjectType) const override;
+  bool IsTextField() const final {
+    NOT_DESTROYED();
+    return true;
+  }
 
   const char* GetName() const override {
     NOT_DESTROYED();

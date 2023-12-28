@@ -49,16 +49,20 @@ void AppInstallDialogUI::SetDialogArgs(mojom::DialogArgsPtr args) {
   dialog_args_ = std::move(args);
 }
 
+void AppInstallDialogUI::SetExpectedAppId(std::string expected_app_id) {
+  expected_app_id_ = expected_app_id;
+}
+
 void AppInstallDialogUI::SetDialogCallback(
     base::OnceCallback<void(bool accepted)> dialog_accepted_callback) {
   dialog_accepted_callback_ = std::move(dialog_accepted_callback);
 }
 
-void AppInstallDialogUI::SetInstallSuccess(bool success) {
+void AppInstallDialogUI::SetInstallComplete(const std::string* app_id) {
   if (!page_handler_) {
     return;
   }
-  page_handler_->OnInstallComplete(success);
+  page_handler_->OnInstallComplete(app_id);
 }
 
 void AppInstallDialogUI::BindInterface(
@@ -72,7 +76,8 @@ void AppInstallDialogUI::BindInterface(
 void AppInstallDialogUI::CreatePageHandler(
     mojo::PendingReceiver<mojom::PageHandler> receiver) {
   page_handler_ = std::make_unique<AppInstallPageHandler>(
-      std::move(dialog_args_), std::move(dialog_accepted_callback_),
+      Profile::FromWebUI(web_ui()), std::move(dialog_args_),
+      std::move(expected_app_id_), std::move(dialog_accepted_callback_),
       std::move(receiver),
       base::BindOnce(&AppInstallDialogUI::CloseDialog, base::Unretained(this)));
 }
@@ -85,8 +90,10 @@ WEB_UI_CONTROLLER_TYPE_IMPL(AppInstallDialogUI)
 
 bool AppInstallDialogUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(
-      chromeos::features::kCrosWebAppInstallDialog);
+  return (base::FeatureList::IsEnabled(
+              chromeos::features::kCrosWebAppInstallDialog) ||
+          base::FeatureList::IsEnabled(
+              chromeos::features::kCrosOmniboxInstallDialog));
 }
 
 AppInstallDialogUIConfig::AppInstallDialogUIConfig()

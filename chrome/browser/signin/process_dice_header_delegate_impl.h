@@ -31,7 +31,6 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
       base::OnceCallback<void(Profile*,
                               signin_metrics::AccessPoint,
                               signin_metrics::PromoAction,
-                              signin_metrics::Reason,
                               content::WebContents*,
                               const CoreAccountInfo&)>;
 
@@ -58,7 +57,6 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
       bool is_sync_signin_tab,
       signin_metrics::AccessPoint access_point,
       signin_metrics::PromoAction promo_action,
-      signin_metrics::Reason reason,
       GURL redirect_url,
       EnableSyncCallback enable_sync_callback,
       OnSigninHeaderReceived on_signin_header_received,
@@ -91,7 +89,6 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
   const bool is_sync_signin_tab_;
   const signin_metrics::AccessPoint access_point_;
   const signin_metrics::PromoAction promo_action_;
-  const signin_metrics::Reason reason_;
   const GURL redirect_url_;
   EnableSyncCallback enable_sync_callback_;
   OnSigninHeaderReceived on_signin_header_received_;

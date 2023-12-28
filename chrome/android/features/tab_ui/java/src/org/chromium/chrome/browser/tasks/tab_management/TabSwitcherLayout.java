@@ -139,7 +139,7 @@ public class TabSwitcherLayout extends Layout {
     private boolean mIsAnimatingHide;
     private @Nullable WeakReference<ConditionalAnimationRunner> mConditionalAnimationRunnerRef;
 
-    private boolean mShowEmptyLayer;
+    private boolean mShowEmptyLayer = true;
 
     /**
      * StaticTabSceneLayer is used to facilitate thumbnail capture when using Android based
@@ -208,7 +208,6 @@ public class TabSwitcherLayout extends Layout {
                                 currentTab.hide(TabHidingType.TAB_SWITCHER_SHOWN);
                             }
                         }
-                        mShowEmptyLayer = true;
                         resetLayoutTabs();
                         return;
                     }
@@ -491,6 +490,8 @@ public class TabSwitcherLayout extends Layout {
     }
 
     private void resetLayoutTabs() {
+        mShowEmptyLayer = true;
+
         // Clear the visible IDs. Once mLayoutTabs is empty, tabs will no longer be captureable and
         // this prevents a thumbnailing request from waiting indefinitely.
         updateCacheVisibleIds(Collections.emptyList());
@@ -634,6 +635,7 @@ public class TabSwitcherLayout extends Layout {
     public void doneShowing() {
         try (TraceEvent e = TraceEvent.scoped(TRACE_DONE_SHOWING_TAB_SWITCHER)) {
             if (!mAndroidViewFinishedShowing) return;
+            mShowEmptyLayer = true;
             mTabJavaView.setVisibility(View.GONE);
             super.doneShowing();
         }

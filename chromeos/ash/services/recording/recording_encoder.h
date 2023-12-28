@@ -11,6 +11,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/recording/recording_file_io_helper.h"
+#include "chromeos/ash/services/recording/rgb_video_frame.h"
 #include "media/base/encoder_status.h"
 #include "media/base/video_encoder.h"
 #include "media/base/video_types.h"
@@ -62,6 +63,12 @@ class RecordingEncoder : public RecordingFileIoHelper::Delegate {
     // Size changes during recording require a reconfiguration of the video
     // encoder.
     virtual bool SupportsVideoFrameSizeChanges() const = 0;
+
+    // Returns whether the encoder supports the extracted `RgbVideoFrame` from
+    // the `media::VideoFrame` directly. This allows us to discard the
+    // `media::VideoFrame` very early upon reception so that it can be returned
+    // immediately to viz capturer buffer pool (see b/316588576).
+    virtual bool SupportsRgbVideoFrame() const = 0;
   };
 
   explicit RecordingEncoder(OnFailureCallback on_failure_callback);
@@ -82,8 +89,11 @@ class RecordingEncoder : public RecordingFileIoHelper::Delegate {
   virtual void InitializeVideoEncoder(
       const media::VideoEncoder::Options& video_encoder_options) = 0;
 
-  // Encodes and muxes the given video `frame`.
+  // Encodes and muxes the given video `frame`. Clients must check first
+  // `Capabilities::SupportsRgbVideoFrame()` to determine which frame type to
+  // provide (i.e. `media::VideoFrame` or `RgbVideoFrame`.
   virtual void EncodeVideo(scoped_refptr<media::VideoFrame> frame) = 0;
+  virtual void EncodeRgbVideo(RgbVideoFrame rgb_video_frame) = 0;
 
   // Returns a callback bound to this object that can be called repeatedly by
   // the client to provide the audio buses along with their timestamps so that

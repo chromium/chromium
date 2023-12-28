@@ -232,4 +232,8 @@ GetFieldTracingConfig() {
   return absl::nullopt;
 }
 
+bool IsFieldTracingEnabled() {
+  return base::FeatureList::IsEnabled(kFieldTracing);
+}
+
 }  // namespace tracing

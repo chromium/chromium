@@ -186,6 +186,10 @@ void BitstreamValidator::ProcessBitstream(scoped_refptr<BitstreamRef> bitstream,
   LOG_ASSERT(frame_index <= last_frame_index_)
       << "frame_index is larger than last frame index, frame_index="
       << frame_index << ", last_frame_index_=" << last_frame_index_;
+  if (bitstream->metadata.payload_size_bytes == 0) {
+    // Drop frame. Do nothing.
+    return;
+  }
   base::AutoLock lock(validator_lock_);
   // If many pending buffers are accumulated in this validator class and the
   // allocated memory size becomes large, the test process is killed by the

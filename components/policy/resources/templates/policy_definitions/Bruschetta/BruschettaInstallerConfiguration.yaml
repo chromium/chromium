@@ -2,9 +2,7 @@ owners:
 - sidereal@google.com
 - file://chrome/browser/ash/guest_os/OWNERS
 
-caption: |-
-  Configure the installer for Bruschetta VMs on <ph name="PRODUCT_OS_NAME">$2
-  <ex>Google ChromeOS</ex></ph> devices
+caption: Configure the installer for Bruschetta VMs on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices
 
 desc: |-
   Sets metadata used by the installer for Bruschetta VMs on <ph

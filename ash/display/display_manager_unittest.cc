@@ -2271,8 +2271,8 @@ class CloseDisplayHandler : public ui::EventHandler {
   }
 
  private:
-  raw_ptr<AshTestBase, ExperimentalAsh> test_base_;
-  raw_ptr<aura::Window, ExperimentalAsh> root_;
+  raw_ptr<AshTestBase> test_base_;
+  raw_ptr<aura::Window> root_;
 };
 
 }  // namespace
@@ -2296,7 +2296,7 @@ TEST_F(DisplayManagerTest, CloseDisplayByEvent) {
 
   auto* mirror_window_controller =
       Shell::Get()->window_tree_host_manager()->mirror_window_controller();
-  auto* host_root = mirror_window_controller->GetAllRootWindows()[1];
+  auto* host_root = mirror_window_controller->GetAllRootWindows()[1].get();
   ui::test::EventGenerator generator(host_root);
   generator.PressAndReleaseKey(ui::VKEY_A);
 
@@ -3437,11 +3437,11 @@ TEST_F(DisplayManagerTest, UnifiedDesktopPrimarySizeWithRotatedDisplays) {
   std::vector<display::Display> display_list =
       display_manager()->software_mirroring_display_list();
   EXPECT_EQ(gfx::Size(700, 1000), host_list[0]->window()->bounds().size());
-  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_90,
+  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90,
             host_list[0]->compositor()->display_transform_hint());
   EXPECT_EQ(display::Display::ROTATE_90, display_list[0].panel_rotation());
   EXPECT_EQ(gfx::Size(700, 1000), host_list[1]->window()->bounds().size());
-  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_90,
+  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90,
             host_list[1]->compositor()->display_transform_hint());
   EXPECT_EQ(display::Display::ROTATE_90, display_list[1].panel_rotation());
 
@@ -3453,11 +3453,11 @@ TEST_F(DisplayManagerTest, UnifiedDesktopPrimarySizeWithRotatedDisplays) {
   host_list = test_api.GetHosts();
   display_list = display_manager()->software_mirroring_display_list();
   EXPECT_EQ(gfx::Size(700, 1000), host_list[0]->window()->bounds().size());
-  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_90,
+  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90,
             host_list[0]->compositor()->display_transform_hint());
   EXPECT_EQ(display::Display::ROTATE_90, display_list[0].panel_rotation());
   EXPECT_EQ(gfx::Size(700, 1000), host_list[1]->window()->bounds().size());
-  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_270,
+  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270,
             host_list[1]->compositor()->display_transform_hint());
   EXPECT_EQ(display::Display::ROTATE_270, display_list[1].panel_rotation());
 
@@ -3469,7 +3469,7 @@ TEST_F(DisplayManagerTest, UnifiedDesktopPrimarySizeWithRotatedDisplays) {
   host_list = test_api.GetHosts();
   display_list = display_manager()->software_mirroring_display_list();
   EXPECT_EQ(gfx::Size(700, 1000), host_list[0]->window()->bounds().size());
-  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_90,
+  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90,
             host_list[0]->compositor()->display_transform_hint());
   EXPECT_EQ(display::Display::ROTATE_90, display_list[0].panel_rotation());
   EXPECT_EQ(gfx::Size(1000, 700), host_list[1]->window()->bounds().size());
@@ -3485,15 +3485,15 @@ TEST_F(DisplayManagerTest, UnifiedDesktopPrimarySizeWithRotatedDisplays) {
   host_list = test_api.GetHosts();
   display_list = display_manager()->software_mirroring_display_list();
   EXPECT_EQ(gfx::Size(700, 1000), host_list[0]->window()->bounds().size());
-  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_270,
+  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270,
             host_list[0]->compositor()->display_transform_hint());
   EXPECT_EQ(display::Display::ROTATE_270, display_list[0].panel_rotation());
   EXPECT_EQ(gfx::Size(700, 1000), host_list[1]->window()->bounds().size());
-  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_90,
+  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90,
             host_list[1]->compositor()->display_transform_hint());
   EXPECT_EQ(display::Display::ROTATE_90, display_list[1].panel_rotation());
   EXPECT_EQ(gfx::Size(700, 1000), host_list[2]->window()->bounds().size());
-  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_270,
+  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270,
             host_list[2]->compositor()->display_transform_hint());
   EXPECT_EQ(display::Display::ROTATE_270, display_list[2].panel_rotation());
 }

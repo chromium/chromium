@@ -74,7 +74,7 @@ class WaylandNotificationShellNotification {
     wl_client_flush(wl_resource_get_client(resource_));
   }
 
-  const raw_ptr<wl_resource, ExperimentalAsh> resource_;
+  const raw_ptr<wl_resource> resource_;
   std::unique_ptr<Notification> notification_;
 
   base::WeakPtrFactory<WaylandNotificationShellNotification> weak_ptr_factory_{

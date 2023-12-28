@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/mojom/app_notification_handler.mojom.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
@@ -111,7 +112,8 @@ class AppNotificationHandlerTest : public testing::Test {
   void SetUp() override {
     MessageCenterAsh::SetForTesting(&message_center_ash_);
     app_service_proxy_ =
-        std::make_unique<apps::AppServiceProxy>(profile_.get());
+        apps::AppServiceProxyFactory::GetForProfile(profile_.get());
+    apps::WaitForAppServiceProxyReady(app_service_proxy_);
     handler_ =
         std::make_unique<AppNotificationHandler>(app_service_proxy_.get());
 
@@ -128,7 +130,6 @@ class AppNotificationHandlerTest : public testing::Test {
   void TearDown() override {
     new_window_provider_.reset();
     handler_.reset();
-    app_service_proxy_.reset();
     MessageCenterAsh::SetForTesting(nullptr);
   }
 
@@ -186,7 +187,7 @@ class AppNotificationHandlerTest : public testing::Test {
   std::unique_ptr<AppNotificationHandler> handler_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<apps::AppServiceProxy> app_service_proxy_;
+  raw_ptr<apps::AppServiceProxy> app_service_proxy_;
   FakeMessageCenterAsh message_center_ash_;
   std::unique_ptr<AppNotificationHandlerTestObserver> observer_;
   std::unique_ptr<TestNewWindowDelegateProvider> new_window_provider_;

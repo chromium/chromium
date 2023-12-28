@@ -5,12 +5,11 @@
 #include "third_party/blink/renderer/modules/compute_pressure/pressure_client_impl.h"
 
 #include "base/task/single_thread_task_runner.h"
+#include "services/device/public/mojom/pressure_manager.mojom-blink.h"
+#include "services/device/public/mojom/pressure_update.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/page/focus_controller.h"
-#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/compute_pressure/pressure_observer_manager.h"
-#include "third_party/blink/renderer/modules/document_picture_in_picture/picture_in_picture_controller_impl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 using device::mojom::blink::PressureSource;
@@ -54,10 +53,6 @@ PressureClientImpl::~PressureClientImpl() = default;
 
 void PressureClientImpl::OnPressureUpdated(
     device::mojom::blink::PressureUpdatePtr update) {
-  if (!PassesPrivacyTest()) {
-    return;
-  }
-
   auto source = PressureSourceToV8PressureSource(update->source);
   // New observers may be created and added. Take a snapshot so as
   // to safely iterate.
@@ -101,67 +96,6 @@ void PressureClientImpl::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
   visitor->Trace(observers_);
   ExecutionContextClient::Trace(visitor);
-}
-
-// https://w3c.github.io/compute-pressure/#dfn-passes-privacy-test
-bool PressureClientImpl::PassesPrivacyTest() const {
-  const ExecutionContext* context = GetExecutionContext();
-
-  // TODO(crbug.com/1425053): Check for active needed worker.
-  if (context->IsDedicatedWorkerGlobalScope() ||
-      context->IsSharedWorkerGlobalScope()) {
-    return true;
-  }
-
-  if (!DomWindow()) {
-    return false;
-  }
-
-  LocalFrame* this_frame = DomWindow()->GetFrame();
-  // 2. If associated document is not fully active, return false.
-  if (context->IsContextDestroyed() || !this_frame) {
-    return false;
-  }
-
-  // 4. If associated document is same-domain with initiators of active
-  // Picture-in-Picture sessions, return true.
-  //
-  // TODO(crbug.com/1396177): A frame should be able to access to
-  // PressureRecord if it is same-domain with initiators of active
-  // Picture-in-Picture sessions. However, it is hard to implement now. In
-  // current implementation, only the frame that triggers Picture-in-Picture
-  // can access to PressureRecord.
-  auto& pip_controller =
-      PictureInPictureControllerImpl::From(*(this_frame->GetDocument()));
-  if (pip_controller.PictureInPictureElement()) {
-    return true;
-  }
-
-  // 5. If browsing context is capturing, return true.
-  if (this_frame->IsCapturingMedia()) {
-    return true;
-  }
-
-  // 7. If top-level browsing context does not have system focus, return false.
-  CHECK(this_frame->GetPage());
-  const auto& focus_controller = this_frame->GetPage()->GetFocusController();
-  if (!focus_controller.IsFocused()) {
-    return false;
-  }
-
-  // 8. Let focused document be the currently focused area's node document.
-  const LocalFrame* focused_frame = focus_controller.FocusedFrame();
-  if (!focused_frame) {
-    return false;
-  }
-
-  // 9. If origin is same origin with focused document, return true.
-  // 10. Otherwise, return false.
-  const SecurityOrigin* focused_frame_origin =
-      focused_frame->GetSecurityContext()->GetSecurityOrigin();
-  const SecurityOrigin* this_origin =
-      this_frame->GetSecurityContext()->GetSecurityOrigin();
-  return focused_frame_origin->IsSameOriginWith(this_origin);
 }
 
 }  // namespace blink

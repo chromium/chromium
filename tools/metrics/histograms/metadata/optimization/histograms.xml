@@ -31,6 +31,7 @@ chromium-metrics-reviews@google.com.
 <variants name="ModelExecutionFeature">
   <variant name="Compose" summary="Compose"/>
   <variant name="TabOrganization" summary="Tab Organization"/>
+  <variant name="Test" summary="Test"/>
   <variant name="Unknown" summary="Unknown"/>
   <variant name="WallpaperSearch" summary="Wallpaper search"/>
 </variants>
@@ -98,6 +99,16 @@ chromium-metrics-reviews@google.com.
 <variants name="OptimizationType">
   <variant name="AboutThisSite"
       summary="Provides 'About this site' data about the site being visited"/>
+  <variant name="AmericanExpressCreditCardFlightBenefits"
+      summary="This optimization provides information about whether a
+               merchant url is eligible for flight credit card benefits.
+               Applies to only American Express credit cards that support
+               benefits on Chrome."/>
+  <variant name="AmericanExpressCreditCardSubscriptionBenefits"
+      summary="This optimization provides information about whether a
+               merchant url is eligible for subscription credit card
+               benefits. Applies to only American Express credit cards that
+               support benefits on Chrome."/>
   <variant name="AutofillSamplingRate"
       summary="This optimization provides information about a sampling rate
                of Autofill UKM metrics per origin based on origin popularity."/>
@@ -359,7 +370,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.HintsFetcher.GetHintsRequest.HintCount"
-    units="units" expires_after="2024-01-14">
+    units="units" expires_after="M125">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -379,7 +390,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.HintsFetcher.GetHintsRequest.NetErrorCode"
-    enum="NetErrorCodes" expires_after="2024-02-11">
+    enum="NetErrorCodes" expires_after="M125">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -627,6 +638,49 @@ chromium-metrics-reviews@google.com.
   <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
 </histogram>
 
+<histogram
+    name="OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria.{Event}.{Criteria}"
+    enum="Boolean" expires_after="2024-05-29">
+  <owner>harringtond@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records evaluation of various criteria required for on-device model
+    installation. {Event}
+  </summary>
+  <token key="Criteria">
+    <variant name="All" summary="All criteria have been met"/>
+    <variant name="DeviceCapability"
+        summary="The device is capable of running an on-device model"/>
+    <variant name="DiskSpace"
+        summary="There is sufficient disk space to install"/>
+    <variant name="EnabledByFeature"
+        summary="model installation is enabled by feature"/>
+    <variant name="FeatureUse"
+        summary="There has been recent feature use that could benefit from an
+                 on-device model"/>
+  </token>
+  <token key="Event">
+    <variant name="AtAttemptedUse"
+        summary="Recorded when a feature is being used that could benefit
+                 from the on-device model."/>
+    <variant name="AtRegistration"
+        summary="Recorded once shortly after startup, regardless of whether
+                 the on-device model is currently installed."/>
+  </token>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.ModelExecution.OnDeviceModelInstalledAtRegistrationTime"
+    enum="Boolean" expires_after="2024-05-29">
+  <owner>harringtond@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records whether the on-device model is fully installed. Recorded when the
+    on-device model installer is registered. This happens at most once per
+    restart, when the device becomes eligible for on-device execution.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.ModelExecution.OnDeviceModelLoadResult"
     enum="OnDeviceModelLoadResult" expires_after="2024-05-29">
   <owner>cduvall@chromium.org</owner>
@@ -645,6 +699,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the estimated performance class of this device based on a
     microbenchmark. This is recorded once on startup after a delay.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.ModelExecution.OnDeviceModelStatusAtUseTime"
+    enum="OptimizationGuideOnDeviceModelStatus" expires_after="2024-05-29">
+  <owner>harringtond@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the on-device model status. Recorded when a feature is used that
+    could benefit from an on-device model.
   </summary>
 </histogram>
 
@@ -943,6 +1007,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.ModelQuality.UserFeedback.{ModelExecutionFeature}"
+    enum="OptimizationGuideUserFeedback" expires_after="2024-05-10">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>sreejakshetty@chromium.org</owner>
+  <summary>
+    The user feedback for each model execution feature. Recorded once per each
+    model quality logs upload request.
+  </summary>
+  <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
+</histogram>
+
+<histogram
     name="OptimizationGuide.ModelQualityLogsUploaderService.NetErrorCode"
     enum="NetErrorCodes" expires_after="2024-05-10">
   <owner>sreejakshetty@chromium.org</owner>
@@ -961,6 +1037,20 @@ chromium-metrics-reviews@google.com.
     The HTTP response code for each model quality logs upload, recorded on
     success and failure.
   </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.{ModelExecutionFeature}"
+    enum="OptimizationGuideModelQualityLogsUploadStatus"
+    expires_after="2024-05-10">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>sreejakshetty@chromium.org</owner>
+  <summary>
+    The status of model quality logs upload request for each
+    {ModelExecutionFeature}. Uploaded once for each model quality logs upload
+    request.
+  </summary>
+  <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
 </histogram>
 
 <histogram name="OptimizationGuide.OptimizationFilterStatus.{OptimizationType}"

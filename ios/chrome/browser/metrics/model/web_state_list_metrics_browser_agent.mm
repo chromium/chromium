@@ -162,6 +162,16 @@ void WebStateListMetricsBrowserAgent::PageLoaded(
   }
   base::UmaHistogramBoolean("Tab.HasThemeColor",
                             web_state->GetThemeColor() != nil);
+  // By default the underpage color is white. Only consider color as custom if
+  // it is not white.
+  CGFloat red = 1;
+  CGFloat green = 1;
+  CGFloat blue = 1;
+  CGFloat alpha = 1;
+  UIColor* color = web_state->GetUnderPageBackgroundColor();
+  [color getRed:&red green:&green blue:&blue alpha:&alpha];
+  BOOL isWhite = red > 0.999 && green > 0.999 && blue > 0.999 && alpha > 0.99;
+  base::UmaHistogramBoolean("Tab.HasCustomUnderPageBackgroundColor", isWhite);
 }
 
 #pragma mark - BrowserObserver

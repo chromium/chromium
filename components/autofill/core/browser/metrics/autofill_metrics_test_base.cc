@@ -36,10 +36,7 @@ MockAutofillClient::MockAutofillClient() = default;
 MockAutofillClient::~MockAutofillClient() = default;
 
 AutofillMetricsBaseTest::AutofillMetricsBaseTest(bool is_in_any_main_frame)
-    : is_in_any_main_frame_(is_in_any_main_frame) {
-  scoped_feature_list_async_parse_form_.InitAndEnableFeature(
-      features::kAutofillParseAsync);
-}
+    : is_in_any_main_frame_(is_in_any_main_frame) {}
 
 AutofillMetricsBaseTest::~AutofillMetricsBaseTest() = default;
 
@@ -93,12 +90,10 @@ void AutofillMetricsBaseTest::SetUpHelper() {
   // Initialize the TestPersonalDataManager with some default data.
   CreateTestAutofillProfiles();
 
-#if BUILDFLAG(IS_ANDROID)
   // Mandatory re-auth is required for credit card autofill on automotive, so
   // the authenticator response needs to be properly mocked.
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    autofill_client_->SetUpDeviceBiometricAuthenticatorSuccessResponseMock();
-  }
+#if BUILDFLAG(IS_ANDROID)
+  autofill_client_->SetUpDeviceBiometricAuthenticatorSuccessOnAutomotive();
 #endif
 }
 
@@ -148,7 +143,7 @@ void AutofillMetricsBaseTest::SetFidoEligibility(bool is_verifiable) {
       ->AllowFidoRegistration(true);
   access_manager.is_authentication_in_progress_ = false;
   access_manager.can_fetch_unmask_details_ = true;
-  access_manager.is_user_verifiable_ = absl::nullopt;
+  access_manager.is_user_verifiable_ = std::nullopt;
 }
 
 void AutofillMetricsBaseTest::OnDidGetRealPan(

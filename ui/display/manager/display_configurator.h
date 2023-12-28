@@ -49,7 +49,8 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   using ConfigurationCallback = base::OnceCallback<void(bool /* success */)>;
   using DisplayControlCallback = base::OnceCallback<void(bool success)>;
 
-  using DisplayStateList = std::vector<DisplaySnapshot*>;
+  using DisplayStateList =
+      std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>;
 
   class Observer {
    public:
@@ -173,7 +174,8 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   ~DisplayConfigurator() override;
 
   MultipleDisplayState display_state() const { return current_display_state_; }
-  const std::vector<DisplaySnapshot*>& cached_displays() const {
+  const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&
+  cached_displays() const {
     return cached_displays_;
   }
   void set_state_controller(StateController* controller) {
@@ -347,12 +349,14 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
 
   // Callback for |configuration_task_|. When the configuration process finishes
   // this is called with the result (|success|) and the updated display state.
-  void OnConfigured(bool success,
-                    const std::vector<DisplaySnapshot*>& displays,
-                    const std::vector<DisplaySnapshot*>& unassociated_displays,
-                    MultipleDisplayState new_display_state,
-                    chromeos::DisplayPowerState new_power_state,
-                    bool new_vrr_state);
+  void OnConfigured(
+      bool success,
+      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>& displays,
+      const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&
+          unassociated_displays,
+      MultipleDisplayState new_display_state,
+      chromeos::DisplayPowerState new_power_state,
+      bool new_vrr_state);
 
   // Updates the current and pending power state and notifies observers.
   void UpdatePowerState(chromeos::DisplayPowerState new_power_state);

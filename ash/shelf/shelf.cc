@@ -250,7 +250,7 @@ class Shelf::AutoHideEventHandler : public ui::EventHandler {
   }
 
  private:
-  raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  raw_ptr<Shelf> shelf_;
 };
 
 // Shelf::AutoDimEventHandler -----------------------------------------------
@@ -324,7 +324,7 @@ class Shelf::AutoDimEventHandler : public ui::EventHandler,
 
  private:
   // Unowned pointer to the shelf that owns this event handler.
-  raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  raw_ptr<Shelf> shelf_;
   // OneShotTimer that dims shelf due to inactivity.
   base::OneShotTimer dim_shelf_timer_;
   // An observer that notifies the AutoDimHandler that shelf visibility has
@@ -407,7 +407,7 @@ void Shelf::ActivateShelfItemOnDisplay(int item_index, int64_t display_id) {
 
 // static
 void Shelf::UpdateShelfVisibility() {
-  for (auto* root : Shell::Get()->GetAllRootWindows()) {
+  for (aura::Window* root : Shell::Get()->GetAllRootWindows()) {
     Shelf::ForWindow(root)->UpdateVisibilityState();
   }
 }

@@ -218,16 +218,13 @@ class UserSelectionScreenBlockOfflineTest : public LoginManagerTest,
 
   const LoginManagerMixin::TestUserInfo test_user_over_the_limit_{
       AccountId::FromUserEmailGaiaId(kUser1Email, kGaia1ID),
-      test::kDefaultAuthSetup, user_manager::UserType::USER_TYPE_REGULAR,
-      user_manager::User::OAuthTokenStatus::OAUTH2_TOKEN_STATUS_INVALID};
+      test::UserAuthConfig::Create(test::kDefaultAuthSetup).RequireReauth()};
   const LoginManagerMixin::TestUserInfo test_user_under_the_limit_{
       AccountId::FromUserEmailGaiaId(kUser2Email, kGaia2ID),
-      test::kDefaultAuthSetup, user_manager::UserType::USER_TYPE_REGULAR,
-      user_manager::User::OAuthTokenStatus::OAUTH2_TOKEN_STATUS_INVALID};
+      test::UserAuthConfig::Create(test::kDefaultAuthSetup).RequireReauth()};
   const LoginManagerMixin::TestUserInfo test_user_limit_not_set_{
       AccountId::FromUserEmailGaiaId(kUser3Email, kGaia3ID),
-      test::kDefaultAuthSetup, user_manager::UserType::USER_TYPE_REGULAR,
-      user_manager::User::OAuthTokenStatus::OAUTH2_TOKEN_STATUS_INVALID};
+      test::UserAuthConfig::Create(test::kDefaultAuthSetup).RequireReauth()};
   LoginManagerMixin login_mixin_{
       &mixin_host_,
       {test_user_over_the_limit_, test_user_under_the_limit_,

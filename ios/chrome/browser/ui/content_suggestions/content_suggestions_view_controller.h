@@ -10,9 +10,9 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 
 @protocol ContentSuggestionsCommands;
+@protocol ContentSuggestionsImageDataSource;
 @protocol ContentSuggestionsMenuProvider;
 @protocol ContentSuggestionsViewControllerAudience;
-@protocol NewTabPageViewDelegate;
 @protocol ParcelTrackingOptInCommands;
 @protocol SafetyCheckViewDelegate;
 @protocol SetUpListViewDelegate;
@@ -34,6 +34,9 @@ class UrlLoadingBrowserAgent;
 // Handler for the commands sent by the ContentSuggestionsViewController.
 @property(nonatomic, weak) id<ContentSuggestionsCommands>
     suggestionCommandHandler;
+// Datasource to fetch favicons.
+@property(nonatomic, weak) id<ContentSuggestionsImageDataSource>
+    imageDataSource;
 @property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience,
                               SafetyCheckViewDelegate,
                               SetUpListViewDelegate>
@@ -41,9 +44,6 @@ class UrlLoadingBrowserAgent;
 // Provider of menu configurations for the contentSuggestions component.
 @property(nonatomic, weak) id<ContentSuggestionsMenuProvider> menuProvider;
 @property(nonatomic, assign) UrlLoadingBrowserAgent* urlLoadingBrowserAgent;
-
-// Delegate for getting information about NTP views.
-@property(nonatomic, weak) id<NewTabPageViewDelegate> NTPViewDelegate;
 
 // Recorder for content suggestions metrics.
 @property(nonatomic, weak)
@@ -58,6 +58,9 @@ class UrlLoadingBrowserAgent;
 
 // The layout guide center to use to refer to the Magic Stack.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
+
+// Called when the module width has changed.
+- (void)moduleWidthDidUpdate;
 
 @end
 

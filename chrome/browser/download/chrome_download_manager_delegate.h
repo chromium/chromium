@@ -147,9 +147,11 @@ class ChromeDownloadManagerDelegate
       download::DownloadItem* download_item,
       base::flat_map<base::FilePath, base::FilePath> save_package_files,
       content::SavePackageAllowedCallback callback) override;
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  bool IsFromExternalApp(download::DownloadItem* item) override;
+#else
   void AttachExtraInfo(download::DownloadItem* item) override;
-#endif  // !BUILDFLAG(IS_ANRDOID)
+#endif  // BUILDFLAG(IS_ANRDOID)
 
   // Opens a download using the platform handler. DownloadItem::OpenDownload,
   // which ends up being handled by OpenDownload(), will open a download in the

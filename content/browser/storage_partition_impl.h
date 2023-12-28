@@ -497,7 +497,7 @@ class CONTENT_EXPORT StoragePartitionImpl
     CreateForServiceWorker();
 
     // Used when `type` is `kRenderFrameHostContext` or
-    // `kNavigationRequestContext`.
+    // `kServiceWorkerContext`.
     URLLoaderNetworkContext(
         URLLoaderNetworkContext::Type type,
         GlobalRenderFrameHostId global_render_frame_host_id);

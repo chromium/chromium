@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/inspector/resolve_node.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -21,7 +22,8 @@ v8::Local<v8::Value> NodeV8Value(v8::Local<v8::Context> context, Node* node) {
       !BindingSecurity::ShouldAllowAccessTo(CurrentDOMWindow(isolate), node)) {
     return v8::Null(isolate);
   }
-  return ToV8(node, context->Global(), isolate);
+  return ToV8Traits<Node>::ToV8(ScriptState::From(context), node)
+      .ToLocalChecked();
 }
 
 std::unique_ptr<v8_inspector::protocol::Runtime::API::RemoteObject> ResolveNode(

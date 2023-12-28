@@ -53,7 +53,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_to_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_void_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
@@ -125,6 +127,7 @@
 #include "third_party/blink/renderer/core/page/create_window.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
+#include "third_party/blink/renderer/core/page/scrolling/sync_scroll_attempt_heuristic.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
@@ -161,6 +164,10 @@
 
 namespace blink {
 
+using mojom::blink::PermissionDescriptor;
+using mojom::blink::PermissionDescriptorPtr;
+using mojom::blink::PermissionName;
+
 namespace {
 bool IsRunningMicrotasks(ScriptState* script_state) {
   if (auto* microtask_queue = ToMicrotaskQueue(script_state))
@@ -180,10 +187,38 @@ void SetCurrentTaskAsCallbackParent(
 int RequestAnimationFrame(Document* document,
                           V8FrameRequestCallback* callback,
                           bool legacy) {
+  // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
+  // impact is understood.
+  SyncScrollAttemptHeuristic::DidRequestAnimationFrame();
   SetCurrentTaskAsCallbackParent(callback);
   auto* frame_callback = MakeGarbageCollected<V8FrameCallback>(callback);
   frame_callback->SetUseLegacyTimeBase(legacy);
   return document->RequestAnimationFrame(frame_callback);
+}
+
+PermissionDescriptorPtr CreatePermissionDescriptor(PermissionName name) {
+  auto descriptor = PermissionDescriptor::New();
+  descriptor->name = name;
+  return descriptor;
+}
+
+bool IsPermissionGranted(ScriptPromiseResolver* resolver,
+                         mojom::blink::PermissionStatus status) {
+  if (!resolver->GetScriptState()->ContextIsValid()) {
+    return false;
+  }
+
+  if (status != mojom::blink::PermissionStatus::GRANTED) {
+    ScriptState::Scope scope(resolver->GetScriptState());
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        resolver->GetScriptState()->GetIsolate(),
+        DOMExceptionCode::kNotAllowedError,
+        status == mojom::blink::PermissionStatus::DENIED
+            ? "Permission denied."
+            : "Permission decision deferred."));
+    return false;
+  }
+  return true;
 }
 
 }  // namespace
@@ -288,11 +323,12 @@ ScriptValue LocalDOMWindow::event(ScriptState* script_state) {
   // If current event is null, return undefined.
   if (!current_event_) {
     return ScriptValue(script_state->GetIsolate(),
-                       ToV8(ToV8UndefinedGenerator(), script_state));
+                       v8::Undefined(script_state->GetIsolate()));
   }
 
-  return ScriptValue(script_state->GetIsolate(),
-                     ToV8(CurrentEvent(), script_state));
+  return ScriptValue(
+      script_state->GetIsolate(),
+      ToV8Traits<Event>::ToV8(script_state, CurrentEvent()).ToLocalChecked());
 }
 
 Event* LocalDOMWindow::CurrentEvent() const {
@@ -720,14 +756,6 @@ LocalDOMWindow::GetAgentGroupSchedulerCompositorTaskRunner() {
     return nullptr;
   auto* frame_scheduler = GetFrame()->GetFrameScheduler();
   return frame_scheduler->GetAgentGroupScheduler()->CompositorTaskRunner();
-}
-
-void LocalDOMWindow::AddInspectorIssue(
-    mojom::blink::InspectorIssueInfoPtr info) {
-  if (GetFrame()) {
-    GetFrame()->GetPage()->GetInspectorIssueStorage().AddInspectorIssue(
-        this, std::move(info));
-  }
 }
 
 void LocalDOMWindow::AddInspectorIssue(AuditsIssue issue) {
@@ -1221,7 +1249,7 @@ void LocalDOMWindow::DispatchMessageEventWithOriginCheck(
               GetSecurityOrigin()->ToString() + "').");
       auto* console_message = MakeGarbageCollected<ConsoleMessage>(
           mojom::ConsoleMessageSource::kSecurity,
-          mojom::ConsoleMessageLevel::kError, message, std::move(location));
+          mojom::ConsoleMessageLevel::kWarning, message, std::move(location));
       GetFrameConsole()->AddMessage(console_message);
       return;
     }
@@ -1614,6 +1642,10 @@ double LocalDOMWindow::scrollX() const {
   if (!view)
     return 0;
 
+  // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
+  // impact is understood.
+  SyncScrollAttemptHeuristic::DidAccessScrollOffset();
+
   document()->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
   // TODO(bokan): This is wrong when the document.rootScroller is non-default.
@@ -1630,6 +1662,10 @@ double LocalDOMWindow::scrollY() const {
   LocalFrameView* view = GetFrame()->View();
   if (!view)
     return 0;
+
+  // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
+  // impact is understood.
+  SyncScrollAttemptHeuristic::DidAccessScrollOffset();
 
   document()->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
@@ -2537,52 +2573,118 @@ bool LocalDOMWindow::CanUseWindowingControls(ExceptionState& exception_state) {
 #endif
 }
 
-void LocalDOMWindow::maximize(ExceptionState& exception_state) {
-  if (!CanUseWindowingControls(exception_state)) {
-    return;
+ScriptPromise LocalDOMWindow::MaybePromptWindowManagementPermission(
+    ScriptPromiseResolver* resolver,
+    AdditionalWindowingControlsActionCallback callback) {
+  auto* permission_service =
+      document()->GetPermissionService(GetExecutionContext());
+  CHECK(permission_service);
+
+  auto permission_descriptor =
+      CreatePermissionDescriptor(PermissionName::WINDOW_MANAGEMENT);
+
+  // Only allow the user prompts when the frame has a transient activation.
+  // Otherwise, resolve or reject the promise with the current permission state.
+  if (LocalFrame::HasTransientUserActivation(GetFrame())) {
+    permission_service->RequestPermission(std::move(permission_descriptor),
+                                          /*user_gesture=*/true,
+                                          std::move(callback));
+  } else {
+    permission_service->HasPermission(std::move(permission_descriptor),
+                                      std::move(callback));
   }
 
-  // Require user activation.
-  if (!LocalFrame::ConsumeTransientUserActivation(GetFrame())) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
-                                      "API requires user activation.");
+  return resolver->Promise();
+}
+
+void LocalDOMWindow::OnMaximizePermissionRequestComplete(
+    ScriptPromiseResolver* resolver,
+    mojom::blink::PermissionStatus status) {
+  if (!IsPermissionGranted(resolver, status)) {
     return;
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   GetFrame()->GetLocalFrameHostRemote().Maximize();
 #endif
+
+  // TODO(crbug.com/1505666): Add wait for the display state change to be
+  // completed before resolving the promise.
+
+  resolver->Resolve();
 }
 
-void LocalDOMWindow::minimize(ExceptionState& exception_state) {
+ScriptPromise LocalDOMWindow::maximize(ScriptState* script_state,
+                                       ExceptionState& exception_state) {
   if (!CanUseWindowingControls(exception_state)) {
-    return;
+    return ScriptPromise();
   }
 
-  // Require user activation.
-  if (!LocalFrame::ConsumeTransientUserActivation(GetFrame())) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
-                                      "API requires user activation.");
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  return MaybePromptWindowManagementPermission(
+      resolver,
+      WTF::BindOnce(&LocalDOMWindow::OnMaximizePermissionRequestComplete,
+                    WrapPersistent(this), WrapPersistent(resolver)));
+}
+
+void LocalDOMWindow::OnMinimizePermissionRequestComplete(
+    ScriptPromiseResolver* resolver,
+    mojom::blink::PermissionStatus status) {
+  if (!IsPermissionGranted(resolver, status)) {
     return;
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   GetFrame()->GetLocalFrameHostRemote().Minimize();
 #endif
+
+  // TODO(crbug.com/1505666): Add wait for the display state change to be
+  // completed before resolving the promise.
+
+  resolver->Resolve();
 }
 
-void LocalDOMWindow::restore(ExceptionState& exception_state) {
+ScriptPromise LocalDOMWindow::minimize(ScriptState* script_state,
+                                       ExceptionState& exception_state) {
   if (!CanUseWindowingControls(exception_state)) {
-    return;
+    return ScriptPromise();
   }
 
-  // TODO(crbug.com/1466853): Add transient user activation for window.restore.
-  // This one is a bit more involved compared to minimize/maximize since it
-  // requires capability delegation.
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  return MaybePromptWindowManagementPermission(
+      resolver,
+      WTF::BindOnce(&LocalDOMWindow::OnMinimizePermissionRequestComplete,
+                    WrapPersistent(this), WrapPersistent(resolver)));
+}
+
+void LocalDOMWindow::OnRestorePermissionRequestComplete(
+    ScriptPromiseResolver* resolver,
+    mojom::blink::PermissionStatus status) {
+  if (!IsPermissionGranted(resolver, status)) {
+    return;
+  }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   GetFrame()->GetLocalFrameHostRemote().Restore();
 #endif
+
+  // TODO(crbug.com/1505666): Add wait for the display state change to be
+  // completed before resolving the promise.
+
+  resolver->Resolve();
+}
+
+ScriptPromise LocalDOMWindow::restore(ScriptState* script_state,
+                                      ExceptionState& exception_state) {
+  if (!CanUseWindowingControls(exception_state)) {
+    return ScriptPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  return MaybePromptWindowManagementPermission(
+      resolver,
+      WTF::BindOnce(&LocalDOMWindow::OnRestorePermissionRequestComplete,
+                    WrapPersistent(this), WrapPersistent(resolver)));
 }
 
 void LocalDOMWindow::setResizable(bool resizable,

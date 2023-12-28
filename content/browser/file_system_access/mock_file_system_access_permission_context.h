@@ -102,6 +102,12 @@ class MockFileSystemAccessPermissionContext
                const base::FilePath& old_path,
                const base::FilePath& new_path),
               (override));
+
+  MOCK_METHOD(void,
+              OnFileCreatedFromShowSaveFilePicker,
+              (const GURL& file_picker_binding_context,
+               const storage::FileSystemURL& url),
+              (override));
 };
 
 }  // namespace content

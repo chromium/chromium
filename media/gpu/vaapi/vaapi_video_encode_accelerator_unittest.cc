@@ -213,7 +213,7 @@ class MockVP9VaapiVideoEncoderDelegate : public VP9VaapiVideoEncoderDelegate {
   MOCK_CONST_METHOD0(GetBitstreamBufferSize, size_t());
   MOCK_CONST_METHOD0(GetMaxNumOfRefFrames, size_t());
   MOCK_METHOD2(GetMetadata, BitstreamBufferMetadata(const EncodeJob&, size_t));
-  MOCK_METHOD1(PrepareEncodeJob, bool(EncodeJob&));
+  MOCK_METHOD1(PrepareEncodeJob, PrepareEncodeJobResult(EncodeJob&));
   MOCK_METHOD1(BitrateControlUpdate, void(const BitstreamBufferMetadata&));
   MOCK_METHOD0(GetSVCLayerResolutions, std::vector<gfx::Size>());
   bool UpdateRates(const VideoBitrateAllocation&, uint32_t) override {
@@ -427,7 +427,7 @@ class VaapiVideoEncodeAcceleratorTest
             reinterpret_cast<VP9Picture*>(picture)->metadata_for_encoding =
                 Vp9Metadata();
           }
-          return true;
+          return VaapiVideoEncoderDelegate::PrepareEncodeJobResult::kSuccess;
         }));
     EXPECT_CALL(*mock_vaapi_wrapper_,
                 ExecuteAndDestroyPendingBuffers(kInputSurfaceId))
@@ -608,7 +608,7 @@ class VaapiVideoEncodeAcceleratorTest
             CodecPicture* picture = job.picture().get();
             reinterpret_cast<VP9Picture*>(picture)->metadata_for_encoding =
                 Vp9Metadata();
-            return true;
+            return VaapiVideoEncoderDelegate::PrepareEncodeJobResult::kSuccess;
           }));
       EXPECT_CALL(*mock_vaapi_wrapper_, ExecuteAndDestroyPendingBuffers(_))
           .WillOnce(Return(true));

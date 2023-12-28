@@ -42,7 +42,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
-import org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryButtonGroupView;
+import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupView;
 import org.chromium.chrome.browser.password_manager.FakePasswordStoreAndroidBackend;
 import org.chromium.chrome.browser.password_manager.FakePasswordStoreAndroidBackendFactoryImpl;
 import org.chromium.chrome.browser.password_manager.FakePasswordSyncControllerDelegateFactoryImpl;

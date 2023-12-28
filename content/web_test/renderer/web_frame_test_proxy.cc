@@ -551,21 +551,6 @@ void WebFrameTestProxy::PostAccessibilityEvent(const ui::AXEvent& event) {
   RenderFrameImpl::PostAccessibilityEvent(event);
 }
 
-void WebFrameTestProxy::NotifyWebAXObjectMarkedDirty(
-    const blink::WebAXObject& object) {
-  HandleWebAccessibilityEventForTest(object, "MarkDirty",
-                                     std::vector<ui::AXEventIntent>());
-
-  // Guard against the case where |this| was deleted as a result of an
-  // accessibility listener detaching a frame. If that occurs, the
-  // WebAXObject will be detached.
-  if (object.IsDetached()) {
-    return;  // |this| is invalid.
-  }
-
-  RenderFrameImpl::NotifyWebAXObjectMarkedDirty(object);
-}
-
 void WebFrameTestProxy::HandleWebAccessibilityEventForTest(
     const blink::WebAXObject& object,
     const char* event_name,

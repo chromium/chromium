@@ -27,13 +27,13 @@ using autofill::CONFIRMATION_PASSWORD;
 using autofill::CREDIT_CARD_VERIFICATION_CODE;
 using autofill::EMAIL_ADDRESS;
 using autofill::FieldGlobalId;
+using autofill::FieldType;
 using autofill::FormControlType;
 using autofill::FormData;
 using autofill::FormFieldData;
 using autofill::NEW_PASSWORD;
 using autofill::NO_SERVER_DATA;
 using autofill::PASSWORD;
-using autofill::ServerFieldType;
 using autofill::SINGLE_USERNAME;
 using autofill::UNKNOWN_TYPE;
 using autofill::USERNAME;
@@ -52,10 +52,10 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
   struct TestField {
     std::string name;
     FormControlType form_control_type;
-    ServerFieldType input_type;
-    ServerFieldType expected_type;
+    FieldType input_type;
+    FieldType expected_type;
     bool may_use_prefilled_placeholder;
-    std::vector<ServerFieldType> additional_types;
+    std::vector<FieldType> additional_types;
   } test_fields[] = {
       {"full_name", FormControlType::kInputText, UNKNOWN_TYPE, UNKNOWN_TYPE,
        false},
@@ -102,7 +102,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
     AutofillType::ServerPrediction prediction;
     prediction.server_predictions.push_back(
         CreateFieldPrediction(test_fields[i].input_type));
-    for (ServerFieldType type : test_fields[i].additional_types) {
+    for (FieldType type : test_fields[i].additional_types) {
       prediction.server_predictions.push_back(CreateFieldPrediction(type));
     }
     prediction.may_use_prefilled_placeholder =
@@ -136,8 +136,8 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_SynthesiseConfirmation) {
   struct TestField {
     std::string name;
     FormControlType form_control_type;
-    ServerFieldType input_type;
-    ServerFieldType expected_type;
+    FieldType input_type;
+    FieldType expected_type;
   };
   const std::vector<TestField> kTestForms[] = {
       {
@@ -199,11 +199,11 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_SynthesiseConfirmation) {
   }
 }
 
-TEST(FormPredictionsTest, DeriveFromServerFieldType) {
+TEST(FormPredictionsTest, DeriveFromFieldType) {
   struct TestCase {
     const char* name;
     // Input.
-    ServerFieldType server_type;
+    FieldType server_type;
     CredentialFieldType expected_result;
   } test_cases[] = {
       {"No prediction", NO_SERVER_DATA, CredentialFieldType::kNone},
@@ -224,7 +224,7 @@ TEST(FormPredictionsTest, DeriveFromServerFieldType) {
   for (const TestCase& test_case : test_cases) {
     SCOPED_TRACE(test_case.name);
     EXPECT_EQ(test_case.expected_result,
-              DeriveFromServerFieldType(test_case.server_type));
+              DeriveFromFieldType(test_case.server_type));
   }
 }
 

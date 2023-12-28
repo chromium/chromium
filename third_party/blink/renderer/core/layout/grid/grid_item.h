@@ -44,56 +44,35 @@ struct CORE_EXPORT GridItemData {
   void SetAlignmentFallback(GridTrackSizingDirection track_direction,
                             bool has_synthesized_baseline);
 
-  AxisEdge InlineAxisAlignment() const {
-    return inline_axis_alignment_fallback.value_or(inline_axis_alignment);
-  }
-  AxisEdge BlockAxisAlignment() const {
-    return block_axis_alignment_fallback.value_or(block_axis_alignment);
+  AxisEdge Alignment(GridTrackSizingDirection track_direction) const {
+    return (track_direction == kForColumns)
+               ? column_fallback_alignment.value_or(column_alignment)
+               : row_fallback_alignment.value_or(row_alignment);
   }
 
-  bool IsInlineAxisOverflowSafe() const {
-    return is_inline_axis_overflow_safe_fallback.value_or(
-        is_inline_axis_overflow_safe);
-  }
-  bool IsBlockAxisOverflowSafe() const {
-    return is_block_axis_overflow_safe_fallback.value_or(
-        is_block_axis_overflow_safe);
+  bool IsOverflowSafe(GridTrackSizingDirection track_direction) const {
+    return (track_direction == kForColumns)
+               ? column_fallback_alignment || is_overflow_safe_for_columns
+               : row_fallback_alignment || is_overflow_safe_for_rows;
   }
 
   bool IsBaselineAligned(GridTrackSizingDirection track_direction) const {
-    const bool is_for_columns = track_direction == kForColumns;
-    const bool has_subgridded_axis =
-        is_for_columns ? has_subgridded_columns : has_subgridded_rows;
-
-    if (has_subgridded_axis) {
-      return false;
-    }
-
-    const auto axis_alignment =
-        is_for_columns ? InlineAxisAlignment() : BlockAxisAlignment();
+    const auto axis_alignment = Alignment(track_direction);
     return (axis_alignment == AxisEdge::kFirstBaseline ||
             axis_alignment == AxisEdge::kLastBaseline);
   }
 
   bool IsBaselineSpecified(GridTrackSizingDirection track_direction) const {
-    const bool is_for_columns = track_direction == kForColumns;
-    const bool has_subgridded_axis =
-        is_for_columns ? has_subgridded_columns : has_subgridded_rows;
-
-    if (has_subgridded_axis) {
-      return false;
-    }
-
-    const auto axis_alignment =
-        is_for_columns ? inline_axis_alignment : block_axis_alignment;
+    const auto& axis_alignment =
+        (track_direction == kForColumns) ? column_alignment : row_alignment;
     return (axis_alignment == AxisEdge::kFirstBaseline ||
             axis_alignment == AxisEdge::kLastBaseline);
   }
 
   bool IsLastBaselineSpecified(GridTrackSizingDirection track_direction) const {
     return (track_direction == kForColumns)
-               ? inline_axis_alignment == AxisEdge::kLastBaseline
-               : block_axis_alignment == AxisEdge::kLastBaseline;
+               ? column_alignment == AxisEdge::kLastBaseline
+               : row_alignment == AxisEdge::kLastBaseline;
   }
 
   // For this item and track direction, computes the pair of indices |begin| and
@@ -231,31 +210,28 @@ struct CORE_EXPORT GridItemData {
 
   bool has_subgridded_columns : 1;
   bool has_subgridded_rows : 1;
-  bool is_block_axis_overflow_safe : 1;
   bool is_considered_for_column_sizing : 1;
   bool is_considered_for_row_sizing : 1;
-  bool is_inline_axis_overflow_safe : 1;
+  bool is_opposite_direction_in_root_grid_columns : 1;
+  bool is_opposite_direction_in_root_grid_rows : 1;
+  bool is_overflow_safe_for_columns : 1;
+  bool is_overflow_safe_for_rows : 1;
   bool is_parallel_with_root_grid : 1;
   bool is_sizing_dependent_on_block_size : 1;
   bool is_subgridded_to_parent_grid : 1;
-  bool is_opposite_direction_in_root_grid_columns : 1;
-  bool is_opposite_direction_in_root_grid_rows : 1;
   bool must_consider_grid_items_for_column_sizing : 1;
   bool must_consider_grid_items_for_row_sizing : 1;
 
   FontBaseline parent_grid_font_baseline;
 
-  AxisEdge inline_axis_alignment;
-  AxisEdge block_axis_alignment;
+  AxisEdge column_alignment;
+  AxisEdge row_alignment;
 
-  absl::optional<AxisEdge> inline_axis_alignment_fallback;
-  absl::optional<AxisEdge> block_axis_alignment_fallback;
+  absl::optional<AxisEdge> column_fallback_alignment;
+  absl::optional<AxisEdge> row_fallback_alignment;
 
-  absl::optional<bool> is_inline_axis_overflow_safe_fallback;
-  absl::optional<bool> is_block_axis_overflow_safe_fallback;
-
-  AutoSizeBehavior inline_auto_behavior;
-  AutoSizeBehavior block_auto_behavior;
+  AutoSizeBehavior column_auto_behavior;
+  AutoSizeBehavior row_auto_behavior;
 
   enum BaselineGroup column_baseline_group;
   enum BaselineGroup row_baseline_group;

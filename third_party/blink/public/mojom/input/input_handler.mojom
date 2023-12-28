@@ -272,6 +272,13 @@ interface WidgetInputHandlerHost {
   // when the mouse passes across different RenderWidget areas.
   SetMouseCapture(bool capture);
 
+  // Updates the browser whether this main frame widget has ongoing autoscroll
+  // selection. Any further mouse up event should always be dispatched to the
+  // main frame in addition to it's event target (OOP child frame) if the state
+  // is active. This API should only ever be called on the InputHandler for a
+  // main frame's RenderWidgetHost.
+  SetAutoscrollSelectionActiveInMainFrame(bool autoscroll_selection);
+
   // Requests locking the target of mouse events to a single element and
   // removing the cursor from view.  Mostly used by the Pointer Lock API.
   // See https://www.w3.org/TR/pointerlock/ for more info. This call is
@@ -424,12 +431,6 @@ enum FocusState
   kNotFocusedAndNotActive
 };
 
-// TODO(sinansahin): DidOverscrollParams and TouchActionOptional can be moved
-//  into this struct as well.
-struct ScrollResultData {
-  gfx.mojom.PointF? root_scroll_offset;
-};
-
 // Interface exposed by the renderer to the browser. This class represents
 // an input interface for an associated Widget object. See FrameWidgetInputHandler
 // for an interface at the frame level.
@@ -494,8 +495,7 @@ interface WidgetInputHandler {
          ui.mojom.LatencyInfo updated_latency,
          blink.mojom.InputEventResultState state,
          DidOverscrollParams? overscroll,
-         TouchActionOptional? touch_action,
-         ScrollResultData? scroll_result_data);
+         TouchActionOptional? touch_action);
 
   // Sends a non-blocking input event to the render widget. The behaviour
   // of this API is the same as DispatchEvent just that there is no callback

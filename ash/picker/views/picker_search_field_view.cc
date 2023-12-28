@@ -29,8 +29,6 @@ PickerSearchFieldView::PickerSearchFieldView(
       TypographyToken::kCrosBody2));
   // TODO(b/309706053): Replace this once the strings are finalized.
   textfield_->SetAccessibleName(u"placeholder");
-
-  search_callback_.Run(u"");
 }
 
 PickerSearchFieldView::~PickerSearchFieldView() = default;

@@ -12,5 +12,5 @@ mojom("mojom") {
   webui_module_path = "/"
 
   # Generate WebUI bindings in JavaScript instead of TypeScript.
-  use_typescript_sources = false
+  generate_webui_js_bindings = true
 }

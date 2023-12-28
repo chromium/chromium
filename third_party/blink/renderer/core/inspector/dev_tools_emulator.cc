@@ -163,9 +163,23 @@ DevToolsEmulator::DevToolsEmulator(WebViewImpl* web_view)
           web_view->GetPage()->GetSettings().GetForceDarkModeEnabled()),
       auto_dark_overriden_(false) {}
 
-DevToolsEmulator::~DevToolsEmulator() = default;
+DevToolsEmulator::~DevToolsEmulator() {
+  // This class is GarbageCollected, so desturctor may run at any time, hence
+  // we need to ensure the RAII handle for global overrides did its business
+  // before the destructor runs (i.e. Shutdown() has been called)
+  CHECK(!global_overrides_);
+  CHECK(is_shutdown_);
+}
 
 void DevToolsEmulator::Trace(Visitor* visitor) const {}
+
+void DevToolsEmulator::Shutdown() {
+  CHECK(!is_shutdown_);
+  is_shutdown_ = true;
+  // Restore global overrides, but do not restore any page overrides, since
+  // the page may already be in an inconsistent state at this moment.
+  global_overrides_.reset();
+}
 
 void DevToolsEmulator::SetTextAutosizingEnabled(bool enabled) {
   embedder_text_autosizing_enabled_ = enabled;
@@ -350,6 +364,7 @@ gfx::Transform DevToolsEmulator::EnableDeviceEmulation(
 }
 
 void DevToolsEmulator::DisableDeviceEmulation() {
+  CHECK(!is_shutdown_);
   if (!device_metrics_enabled_)
     return;
 
@@ -377,6 +392,7 @@ void DevToolsEmulator::EnableMobileEmulation() {
   if (global_overrides_) {
     return;
   }
+  CHECK(!is_shutdown_);
   CHECK(!emulate_mobile_enabled());
   global_overrides_ = ScopedGlobalOverrides::AssureInstalled();
   web_view_->GetPage()->GetSettings().SetForceAndroidOverlayScrollbar(true);

@@ -21,12 +21,12 @@
 #include "base/android/jni_android.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
-#include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "components/security_interstitials/core/urls.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -193,7 +193,7 @@ void AwUrlCheckerDelegateImpl::StartApplicationResponse(
     const security_interstitials::UnsafeResource& resource,
     const AwWebResourceRequest& request) {
   content::WebContents* web_contents =
-      security_interstitials::GetWebContentsForResource(resource);
+      safe_browsing::unsafe_resource_util::GetWebContentsForResource(resource);
 
   security_interstitials::SecurityInterstitialTabHelper*
       security_interstitial_tab_helper = security_interstitials::
@@ -229,7 +229,7 @@ void AwUrlCheckerDelegateImpl::DoApplicationResponse(
     SafeBrowsingAction action,
     bool reporting) {
   content::WebContents* web_contents =
-      security_interstitials::GetWebContentsForResource(resource);
+      safe_browsing::unsafe_resource_util::GetWebContentsForResource(resource);
   // |web_contents| can be null after RenderFrameHost is destroyed.
   if (!web_contents)
     return;
@@ -240,7 +240,9 @@ void AwUrlCheckerDelegateImpl::DoApplicationResponse(
     browser_context->SetExtendedReportingAllowed(false);
   }
 
-  content::NavigationEntry* entry = GetNavigationEntryForResource(resource);
+  content::NavigationEntry* entry =
+      safe_browsing::unsafe_resource_util::GetNavigationEntryForResource(
+          resource);
 
   // TODO(ntfschr): fully handle reporting once we add support (crbug/688629)
   bool proceed;
@@ -303,7 +305,7 @@ void AwUrlCheckerDelegateImpl::StartDisplayingDefaultBlockingPage(
     scoped_refptr<AwSafeBrowsingUIManager> ui_manager,
     const security_interstitials::UnsafeResource& resource) {
   content::WebContents* web_contents =
-      security_interstitials::GetWebContentsForResource(resource);
+      safe_browsing::unsafe_resource_util::GetWebContentsForResource(resource);
   if (web_contents) {
     ui_manager->DisplayBlockingPage(resource);
     return;

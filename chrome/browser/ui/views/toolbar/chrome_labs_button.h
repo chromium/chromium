@@ -16,8 +16,9 @@
 class BrowserView;
 
 class ChromeLabsButton : public ToolbarButton {
+  METADATA_HEADER(ChromeLabsButton, ToolbarButton)
+
  public:
-  METADATA_HEADER(ChromeLabsButton);
   explicit ChromeLabsButton(BrowserView* browser_view,
                             const ChromeLabsModel* model);
   ChromeLabsButton(const ChromeLabsButton&) = delete;

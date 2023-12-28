@@ -322,7 +322,7 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
   trials.emplace(base::features::kRendererLiveBRPSyntheticTrialName, "Control");
 #endif
 
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocMemoryTagging)) {
     if (base::CPU::GetInstanceNoAllocation().has_mte()) {
@@ -331,7 +331,7 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
       trials.emplace("MemoryTaggingDogfood", "Disabled");
     }
   }
-#endif
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
   return trials;
 }
@@ -854,11 +854,7 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
   CHECK(base::FeatureList::GetInstance());
 
   bool enable_brp = false;
-  bool enable_brp_for_ash = false;
-  bool split_main_partition = false;
-  bool use_dedicated_aligned_partition = false;
   bool process_affected_by_brp_flag = false;
-  size_t ref_count_size = 0;
 
 #if (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&  \
      BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)) || \
@@ -902,66 +898,15 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
 
       case base::features::BackupRefPtrMode::kEnabled:
         enable_brp = true;
-        split_main_partition = true;
-#if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-        // AlignedAlloc relies on natural alignment offered by the allocator
-        // (see the comment inside PartitionRoot::AlignedAllocFlags). Any extras
-        // in front of the allocation will mess up that alignment. Such extras
-        // are used when BackupRefPtr is on, in which case, we need a separate
-        // partition, dedicated to handle only aligned allocations, where those
-        // extras are disabled. However, if the "previous slot" variant is used,
-        // no dedicated partition is needed, as the extras won't interfere with
-        // the alignment requirements.
-        use_dedicated_aligned_partition = true;
-#endif
         break;
-
-      case base::features::BackupRefPtrMode::kDisabledButSplitPartitions2Way:
-        split_main_partition = true;
-        break;
-
-      case base::features::BackupRefPtrMode::kDisabledButSplitPartitions3Way:
-        split_main_partition = true;
-        use_dedicated_aligned_partition = true;
-        break;
-    }
-
-    if (enable_brp) {
-      switch (base::features::kBackupRefPtrRefCountSizeParam.Get()) {
-        case base::features::BackupRefPtrRefCountSize::kNatural:
-          ref_count_size = 0;
-          break;
-        case base::features::BackupRefPtrRefCountSize::k4B:
-          ref_count_size = 4;
-          break;
-        case base::features::BackupRefPtrRefCountSize::k8B:
-          ref_count_size = 8;
-          break;
-        case base::features::BackupRefPtrRefCountSize::k16B:
-          ref_count_size = 16;
-          break;
-      }
     }
   }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
-  // Enabling BRP for Ash makes sense only when BRP is enabled. If it wasn't,
-  // there would be no BRP pool, thus BRP would be equally inactive for Ash
-  // pointers.
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-  enable_brp_for_ash =
-      enable_brp && base::FeatureList::IsEnabled(
-                        base::features::kPartitionAllocBackupRefPtrForAsh);
-#endif
-
   return {
       enable_brp,
-      enable_brp_for_ash,
-      split_main_partition,
-      use_dedicated_aligned_partition,
       process_affected_by_brp_flag,
-      ref_count_size,
   };
 }
 
@@ -1036,7 +981,6 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   {
     base::AutoLock scoped_lock(lock_);
     // Avoid initializing more than once.
-    // TODO(bartekn): See if can be converted to (D)CHECK.
     if (called_after_feature_list_init_) {
       DCHECK_EQ(established_process_type_, process_type)
           << "ReconfigureAfterFeatureListInit was already called for process '"
@@ -1064,12 +1008,6 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   DCHECK_NE(process_type, switches::kZygoteProcess);
   [[maybe_unused]] BrpConfiguration brp_config =
       GetBrpConfiguration(process_type);
-
-  if (brp_config.enable_brp_for_ash) {
-    // This must be enabled before the BRP partition is created. See
-    // RawPtrBackupRefImpl::UseBrp().
-    base::RawPtrGlobalSettings::EnableExperimentalAsh();
-  }
 
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
   if (brp_config.process_affected_by_brp_flag) {
@@ -1101,9 +1039,14 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       break;
   }
 
+  const bool scheduler_loop_quarantine = base::FeatureList::IsEnabled(
+      base::features::kPartitionAllocSchedulerLoopQuarantine);
   const size_t scheduler_loop_quarantine_capacity_in_bytes =
       static_cast<size_t>(
           base::features::kPartitionAllocSchedulerLoopQuarantineCapacity.Get());
+  const size_t scheduler_loop_quarantine_capacity_count = static_cast<size_t>(
+      base::features::kPartitionAllocSchedulerLoopQuarantineCapacityCount
+          .Get());
   const bool zapping_by_free_flags = base::FeatureList::IsEnabled(
       base::features::kPartitionAllocZappingByFreeFlags);
 
@@ -1111,7 +1054,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   partition_alloc::TagViolationReportingMode memory_tagging_reporting_mode =
       partition_alloc::TagViolationReportingMode::kUndefined;
 
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
   // ShouldEnableMemoryTagging() checks kKillPartitionAllocMemoryTagging but
   // check here too to wrap the GetMemoryTaggingModeForCurrentThread() call.
   if (!base::FeatureList::IsEnabled(
@@ -1158,7 +1101,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 #endif  // BUILDFLAG(IS_ANDROID)
     }
   }
-#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
   if (enable_memory_tagging) {
     CHECK((memory_tagging_reporting_mode ==
@@ -1175,13 +1118,10 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   allocator_shim::ConfigurePartitions(
       allocator_shim::EnableBrp(brp_config.enable_brp),
       allocator_shim::EnableMemoryTagging(enable_memory_tagging),
-      memory_tagging_reporting_mode,
-      allocator_shim::SplitMainPartition(brp_config.split_main_partition ||
-                                         enable_memory_tagging),
-      allocator_shim::UseDedicatedAlignedPartition(
-          brp_config.use_dedicated_aligned_partition),
-      brp_config.ref_count_size, bucket_distribution,
+      memory_tagging_reporting_mode, bucket_distribution,
+      allocator_shim::SchedulerLoopQuarantine(scheduler_loop_quarantine),
       scheduler_loop_quarantine_capacity_in_bytes,
+      scheduler_loop_quarantine_capacity_count,
       allocator_shim::ZappingByFreeFlags(zapping_by_free_flags));
 
   const uint32_t extras_size = allocator_shim::GetMainPartitionRootExtrasSize();
@@ -1250,8 +1190,6 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocLargeEmptySlotSpanRing)) {
     allocator_shim::internal::PartitionAllocMalloc::Allocator()
-        ->EnableLargeEmptySlotSpanRing();
-    allocator_shim::internal::PartitionAllocMalloc::AlignedAllocator()
         ->EnableLargeEmptySlotSpanRing();
   }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

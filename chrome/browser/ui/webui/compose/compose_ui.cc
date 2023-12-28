@@ -43,6 +43,9 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
       {"consentMainBottom", IDS_COMPOSE_CONSENT_MAIN_BOTTOM},
       {"consentNoButton", IDS_COMPOSE_CONSENT_NO_BUTTON},
       {"consentYesButton", IDS_COMPOSE_CONSENT_YES_BUTTON},
+      {"freMsbbTitle", IDS_COMPOSE_FRE_MSBB_TITLE},
+      {"freMsbbMain", IDS_COMPOSE_FRE_MSBB_MAIN},
+      {"freMsbbSettingsButton", IDS_COMPOSE_FRE_MSBB_SETTINGS_BUTTON},
       {"dialogTitle", IDS_COMPOSE_DIALOG_TITLE},
       {"disclaimerLetsGoButton", IDS_COMPOSE_DISCLAIMER_BUTTON},
       {"inputPlaceholder", IDS_COMPOSE_INPUT_PLACEHOLDER},
@@ -50,6 +53,7 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
       {"submitButton", IDS_COMPOSE_SUBMIT_BUTTON},
       {"resultFooter", IDS_COMPOSE_FOOTER_FISHFOOD},
       {"insertButton", IDS_COMPOSE_INSERT_BUTTON},
+      {"replaceButton", IDS_COMPOSE_REPLACE_BUTTON},
       {"lengthMenuTitle", IDS_COMPOSE_MENU_LENGTH_TITLE},
       {"shorterOption", IDS_COMPOSE_MENU_SHORTER_OPTION},
       {"longerOption", IDS_COMPOSE_MENU_LONGER_OPTION},
@@ -68,8 +72,8 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
       {"editUpdateButton", IDS_COMPOSE_EDIT_UPDATE_BUTTON},
       {"undo", IDS_COMPOSE_UNDO},
       {"resubmit", IDS_COMPOSE_RESUBMIT},
-      {"thumbsDown", IDS_THUMBS_DOWN},
-      {"thumbsUp", IDS_THUMBS_UP},
+      {"thumbsDown", IDS_COMPOSE_THUMBS_DOWN},
+      {"thumbsUp", IDS_COMPOSE_THUMBS_UP},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("enableAnimations",

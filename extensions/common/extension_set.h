@@ -23,7 +23,7 @@ class URLPatternSet;
 // Only one extension can be in the set with a given ID.
 class ExtensionSet {
  public:
-  typedef std::map<ExtensionId, scoped_refptr<const Extension>> ExtensionMap;
+  using ExtensionMap = std::map<ExtensionId, scoped_refptr<const Extension>>;
 
   // Iteration over the values of the map (given that it's an ExtensionSet,
   // it should iterate like a set iterator).

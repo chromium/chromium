@@ -16,6 +16,10 @@
 
 namespace autofill {
 
+std::u16string Truncate(std::u16string_view data) {
+  return std::u16string(data.substr(0, kMaxDataLengthForDatabase));
+}
+
 bool CreateTable(
     sql::Database* db,
     std::string_view table_name,

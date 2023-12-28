@@ -260,6 +260,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void HandleKeyboardEventOnTextField(HTMLInputElement&,
                                       KeyboardEvent&) override;
   void DidChangeValueInTextField(HTMLFormControlElement&) override;
+  void DidUserChangeContentEditableContent(Element&) override;
   void DidEndEditingOnTextField(HTMLInputElement&) override;
   void OpenTextDataListChooser(HTMLInputElement&) override;
   void TextFieldDataListChanged(HTMLInputElement&) override;

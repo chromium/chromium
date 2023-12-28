@@ -32,10 +32,7 @@ NonMainThreadTaskQueue::NonMainThreadTaskQueue(
       web_scheduling_priority_(params.web_scheduling_priority),
       thread_task_runner_(std::move(thread_task_runner)),
       task_runner_with_default_task_type_(
-          base::FeatureList::IsEnabled(
-              features::kUseBlinkSchedulerTaskRunnerWithCustomDeleter)
-              ? WrapTaskRunner(task_queue_->task_runner())
-              : task_queue_->task_runner()) {
+          WrapTaskRunner(task_queue_->task_runner())) {
   // Throttling needs |should_notify_observers| to get task timing.
   DCHECK(!params.can_be_throttled || spec.should_notify_observers)
       << "Throttled queue is not supported with |!should_notify_observers|";
@@ -139,20 +136,13 @@ void NonMainThreadTaskQueue::OnWebSchedulingPriorityChanged() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 NonMainThreadTaskQueue::CreateTaskRunner(TaskType task_type) {
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      task_queue_->CreateTaskRunner(static_cast<int>(task_type));
-  if (base::FeatureList::IsEnabled(
-          features::kUseBlinkSchedulerTaskRunnerWithCustomDeleter)) {
-    return WrapTaskRunner(std::move(task_runner));
-  }
-  return task_runner;
+  return WrapTaskRunner(
+      task_queue_->CreateTaskRunner(static_cast<int>(task_type)));
 }
 
 scoped_refptr<BlinkSchedulerSingleThreadTaskRunner>
 NonMainThreadTaskQueue::WrapTaskRunner(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kUseBlinkSchedulerTaskRunnerWithCustomDeleter));
   // `thread_task_runner_` can be null if the default task runner wasn't set up
   // prior to creating this task queue. That's okay because the lifetime of
   // task queues created early matches the thead scheduler.

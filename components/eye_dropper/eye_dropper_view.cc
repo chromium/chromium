@@ -4,6 +4,8 @@
 
 #include "components/eye_dropper/eye_dropper_view.h"
 
+#include <utility>
+
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -28,7 +30,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/aura/client/screen_position_client.h"
-#include "ui/display/screen.h"
 #endif
 
 namespace eye_dropper {
@@ -45,7 +46,6 @@ class EyeDropperView::ViewPositionHandler {
 
   // Timer used for updating the window location.
   base::RepeatingTimer timer_;
-
   raw_ptr<EyeDropperView> owner_;
 };
 
@@ -62,13 +62,14 @@ EyeDropperView::ViewPositionHandler::~ViewPositionHandler() {
 }
 
 void EyeDropperView::ViewPositionHandler::UpdateViewPosition() {
-  owner_->UpdatePosition();
+  owner_->OnCursorPositionUpdate(
+      display::Screen::GetScreen()->GetCursorScreenPoint());
 }
 
 class EyeDropperView::ScreenCapturer
     : public webrtc::DesktopCapturer::Callback {
  public:
-  ScreenCapturer();
+  explicit ScreenCapturer(EyeDropperView* owner);
   ScreenCapturer(const ScreenCapturer&) = delete;
   ScreenCapturer& operator=(const ScreenCapturer&) = delete;
   ~ScreenCapturer() override = default;
@@ -84,13 +85,15 @@ class EyeDropperView::ScreenCapturer
   int original_offset_y() const;
 
  private:
+  raw_ptr<EyeDropperView> owner_;
   std::unique_ptr<webrtc::DesktopCapturer> capturer_;
   SkBitmap frame_;
   int original_offset_x_;
   int original_offset_y_;
 };
 
-EyeDropperView::ScreenCapturer::ScreenCapturer() {
+EyeDropperView::ScreenCapturer::ScreenCapturer(EyeDropperView* owner)
+    : owner_(owner) {
   static bool allow_wgc_screen_capture =
 #if BUILDFLAG(IS_WIN)
       // Allow WGC screen capture if Windows version is greater or equal
@@ -161,6 +164,7 @@ void EyeDropperView::ScreenCapturer::OnCaptureResult(
       original_offset_y_ = scaled_bounds.origin().y();
     }
   }
+  owner_->OnScreenCaptured();
 }
 
 SkBitmap EyeDropperView::ScreenCapturer::GetBitmap() const {
@@ -188,7 +192,7 @@ EyeDropperView::EyeDropperView(gfx::NativeView parent,
                                content::EyeDropperListener* listener)
     : listener_(listener),
       view_position_handler_(std::make_unique<ViewPositionHandler>(this)),
-      screen_capturer_(std::make_unique<ScreenCapturer>()) {
+      screen_capturer_(std::make_unique<ScreenCapturer>(this)) {
   SetModalType(ui::MODAL_TYPE_WINDOW);
   // This is owned as a unique_ptr<EyeDropper> elsewhere.
   SetOwnedByWidget(false);
@@ -216,24 +220,45 @@ EyeDropperView::EyeDropperView(gfx::NativeView parent,
   views::Widget* widget = new views::Widget();
   widget->Init(std::move(params));
   widget->SetContentsView(this);
-  MoveViewToFront();
   HideCursor();
   pre_dispatch_handler_ =
       std::make_unique<PreEventDispatchHandler>(this, event_handler);
   widget->Show();
-  CaptureInputIfNeeded();
+  CaptureInput();
+  auto* screen = display::Screen::GetScreen();
+  gfx::Point initial_position = screen->GetCursorScreenPoint();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (screen->InTabletMode()) {
+    initial_position =
+        screen->GetDisplayForNewWindows().work_area().CenterPoint();
+  }
+#endif
+  UpdatePosition(initial_position);
+
   // The ignore selection time should be long enough to allow the user to see
   // the UI.
   ignore_selection_time_ = base::TimeTicks::Now() + base::Milliseconds(500);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  window_observation_.Observe(GetWidget()->GetNativeWindow());
+  GetWidget()->GetNativeWindow()->AddObserver(this);
 #endif
 }
 
 EyeDropperView::~EyeDropperView() {
   if (GetWidget()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    GetWidget()->GetNativeWindow()->RemoveObserver(this);
+#endif
     GetWidget()->CloseNow();
+  }
+}
+
+void EyeDropperView::OnCursorPositionUpdate(gfx::Point cursor_position) {
+  // The view can be moved by either mouse or touch. Only move it to the cursor
+  // position when cursor changes.
+  if (std::exchange(last_cursor_position_, cursor_position) !=
+      cursor_position) {
+    UpdatePosition(std::move(cursor_position));
   }
 }
 
@@ -365,20 +390,14 @@ void EyeDropperView::CaptureScreen(
   screen_capturer_->CaptureScreen(screen);
 }
 
-void EyeDropperView::UpdatePosition() {
-  if (screen_capturer_->GetBitmap().drawsNothing() || !GetWidget()) {
-    return;
-  }
+void EyeDropperView::OnScreenCaptured() {
+  SchedulePaint();
+}
 
-  gfx::Point cursor_position =
-      display::Screen::GetScreen()->GetCursorScreenPoint();
-  if (cursor_position == GetWidget()->GetWindowBoundsInScreen().CenterPoint()) {
-    return;
-  }
-
+void EyeDropperView::UpdatePosition(gfx::Point position) {
   GetWidget()->SetBounds(
-      gfx::Rect(gfx::Point(cursor_position.x() - size().width() / 2,
-                           cursor_position.y() - size().height() / 2),
+      gfx::Rect(gfx::Point(position.x() - size().width() / 2,
+                           position.y() - size().height() / 2),
                 size()));
 }
 

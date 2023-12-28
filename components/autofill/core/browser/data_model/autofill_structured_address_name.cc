@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_regex_provider.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
@@ -39,11 +40,6 @@ std::u16string ReduceToInitials(const std::u16string& value) {
   return base::i18n::ToUpper(result);
 }
 
-NameHonorific::NameHonorific()
-    : AddressComponent(NAME_HONORIFIC_PREFIX, {}, MergeMode::kDefault) {}
-
-NameHonorific::~NameHonorific() = default;
-
 NameFirst::NameFirst()
     : AddressComponent(NAME_FIRST, {}, MergeMode::kDefault) {}
 
@@ -54,14 +50,13 @@ NameMiddle::NameMiddle()
 
 NameMiddle::~NameMiddle() = default;
 
-const ServerFieldTypeSet NameMiddle::GetAdditionalSupportedFieldTypes() const {
-  constexpr ServerFieldTypeSet additional_supported_field_types{
-      NAME_MIDDLE_INITIAL};
+const FieldTypeSet NameMiddle::GetAdditionalSupportedFieldTypes() const {
+  constexpr FieldTypeSet additional_supported_field_types{NAME_MIDDLE_INITIAL};
   return additional_supported_field_types;
 }
 
 std::u16string NameMiddle::GetValueForOtherSupportedType(
-    ServerFieldType field_type) const {
+    FieldType field_type) const {
   CHECK(IsSupportedType(field_type));
   return HasMiddleNameInitialsCharacteristics(base::UTF16ToUTF8(GetValue()))
              ? GetValue()
@@ -69,7 +64,7 @@ std::u16string NameMiddle::GetValueForOtherSupportedType(
 }
 
 void NameMiddle::SetValueForOtherSupportedType(
-    ServerFieldType field_type,
+    FieldType field_type,
     const std::u16string& value,
     const VerificationStatus& status) {
   CHECK(IsSupportedType(field_type));
@@ -129,11 +124,12 @@ NameFull::NameFull(const NameFull& other) : NameFull() {
 }
 
 NameHonorificPrefix::NameHonorificPrefix()
-    : AddressComponent(NAME_HONORIFIC_PREFIX,
-                       {},
-                       MergeMode::kUseBetterOrNewerForSameValue |
-                           MergeMode::kReplaceEmpty |
-                           MergeMode::kUseBetterOrMostRecentIfDifferent) {}
+    : FeatureGuardedAddressComponent(
+          &features::kAutofillEnableSupportForHonorificPrefixes,
+          NAME_HONORIFIC_PREFIX,
+          {},
+          MergeMode::kUseBetterOrNewerForSameValue | MergeMode::kReplaceEmpty |
+              MergeMode::kUseBetterOrMostRecentIfDifferent) {}
 
 NameHonorificPrefix::~NameHonorificPrefix() = default;
 
@@ -235,9 +231,11 @@ std::u16string NameFull::GetFormatString() const {
 NameFull::~NameFull() = default;
 
 NameFullWithPrefix::NameFullWithPrefix()
-    : AddressComponent(NAME_FULL_WITH_HONORIFIC_PREFIX,
-                       {},
-                       MergeMode::kMergeChildrenAndReformatIfNeeded) {
+    : FeatureGuardedAddressComponent(
+          &features::kAutofillEnableSupportForHonorificPrefixes,
+          NAME_FULL_WITH_HONORIFIC_PREFIX,
+          {},
+          MergeMode::kMergeChildrenAndReformatIfNeeded) {
   RegisterChildNode(std::make_unique<NameHonorificPrefix>());
   RegisterChildNode(std::make_unique<NameFull>());
 }

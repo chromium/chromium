@@ -1038,9 +1038,10 @@ class BeforeUnloadAtQuitWithTwoWindows : public InProcessBrowserTest {
 
     // Run the application event loop to completion, which will cycle the
     // native MessagePump on all platforms.
+    base::RunLoop loop;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
-    base::RunLoop().Run();
+        FROM_HERE, loop.QuitWhenIdleClosure());
+    loop.Run();
 
     // Take care of any remaining Cocoa work.
     CycleRunLoops();
@@ -1334,7 +1335,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ShouldShowLocationBar) {
   // Find the new browsers.
   Browser* app_browser = nullptr;
   Browser* dev_tools_browser = nullptr;
-  for (auto* b : *BrowserList::GetInstance()) {
+  for (Browser* b : *BrowserList::GetInstance()) {
     if (b == browser()) {
       continue;
     } else if (b->app_name() == DevToolsWindow::kDevToolsApp) {
@@ -1525,7 +1526,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OpenAppWindowLikeNtp) {
 
   // Find the new browser.
   Browser* new_browser = nullptr;
-  for (auto* b : *BrowserList::GetInstance()) {
+  for (Browser* b : *BrowserList::GetInstance()) {
     if (b != browser())
       new_browser = b;
   }

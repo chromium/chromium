@@ -5,8 +5,8 @@
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 import 'chrome://scanning/multi_page_checkbox.js';
 
+import {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
-import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {MultiPageCheckboxElement} from 'chrome://scanning/multi_page_checkbox.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';

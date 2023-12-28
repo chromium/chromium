@@ -8,8 +8,8 @@ include_rules = [
   "+ui/events",
   "+ui/base/x",
   "+ui/base/moving_max.h",
+  "+ui/base/ozone_buildflags.h",
   "+ui/gfx",
-  "+ui/ozone/buildflags.h",
   "+third_party/angle/src/gpu_info_util/SystemInfo.h",
 ]
 

@@ -42,8 +42,7 @@ class ASH_EXPORT GlanceableTrayChildBubble : public views::View {
   void ShowErrorMessage(const std::u16string& error_message);
 
  private:
-  raw_ptr<GlanceablesErrorMessageView, ExperimentalAsh> error_message_ =
-      nullptr;
+  raw_ptr<GlanceablesErrorMessageView> error_message_ = nullptr;
 };
 
 }  // namespace ash

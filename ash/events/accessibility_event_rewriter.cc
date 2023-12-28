@@ -4,7 +4,7 @@
 
 #include "ash/events/accessibility_event_rewriter.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/accessibility/switch_access/point_scan_controller.h"
@@ -155,7 +155,8 @@ bool AccessibilityEventRewriter::RewriteEventForChromeVox(
 
     // Always capture the Search key.
     capture |= rewritten_key_event->IsCommandDown() ||
-               rewritten_key_event->key_code() == ui::VKEY_LWIN;
+               rewritten_key_event->key_code() == ui::VKEY_LWIN ||
+               rewritten_key_event->key_code() == ui::VKEY_RWIN;
 
     // Don't capture tab as it gets consumed by Blink so never comes back
     // unhandled. In third_party/WebKit/Source/core/input/EventHandler.cpp, a
@@ -211,7 +212,7 @@ bool AccessibilityEventRewriter::RewriteEventForSwitchAccess(
   }
 
   if (key_event->type() == ui::ET_KEY_PRESSED) {
-    AccessibilityControllerImpl* accessibility_controller =
+    AccessibilityController* accessibility_controller =
         Shell::Get()->accessibility_controller();
 
     if (accessibility_controller->IsPointScanEnabled()) {
@@ -300,7 +301,7 @@ void AccessibilityEventRewriter::OnMagnifierKeyReleased(
 void AccessibilityEventRewriter::MaybeSendMouseEvent(const ui::Event& event) {
   // Mouse moves are the only pertinent event for accessibility component
   // extensions.
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   if (send_mouse_events_ &&
       (event.type() == ui::ET_MOUSE_MOVED ||

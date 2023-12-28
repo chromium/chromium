@@ -130,6 +130,7 @@ class TestEntryBuilder {
   absl::optional<base::FilePath> distilation_path_;
 };
 
+// TODO(crbug.com/1510547): Add test coverage for GetAccountModelIfSyncing.
 class DualReadingListModelTest : public testing::Test {
  public:
   DualReadingListModelTest() = default;

@@ -138,6 +138,6 @@ int HoverListView::GetPreferredViewHeight() const {
   return std::min(kMaxViewHeight, size);
 }
 
-BEGIN_METADATA(HoverListView, views::View)
+BEGIN_METADATA(HoverListView)
 ADD_READONLY_PROPERTY_METADATA(int, PreferredViewHeight)
 END_METADATA

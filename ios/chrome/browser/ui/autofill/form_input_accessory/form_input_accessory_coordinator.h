@@ -37,6 +37,9 @@
 // The delegate for the coordinator. Must be set before it starts.
 @property(nonatomic, weak) id<FormInputAccessoryCoordinatorNavigator> navigator;
 
+// Stops child coordinators presenting UI.
+- (void)clearPresentedState;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_FORM_INPUT_ACCESSORY_FORM_INPUT_ACCESSORY_COORDINATOR_H_

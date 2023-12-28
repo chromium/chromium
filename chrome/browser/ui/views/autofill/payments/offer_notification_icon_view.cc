@@ -50,16 +50,18 @@ OfferNotificationIconView::~OfferNotificationIconView() = default;
 
 views::BubbleDialogDelegate* OfferNotificationIconView::GetBubble() const {
   OfferNotificationBubbleController* controller = GetController();
-  if (!controller)
+  if (!controller) {
     return nullptr;
+  }
 
   return static_cast<autofill::OfferNotificationBubbleViews*>(
       controller->GetOfferNotificationBubbleView());
 }
 
 void OfferNotificationIconView::UpdateImpl() {
-  if (!GetWebContents())
+  if (!GetWebContents()) {
     return;
+  }
 
   // |controller| may be nullptr due to lazy initialization.
   OfferNotificationBubbleController* controller = GetController();
@@ -177,7 +179,7 @@ OfferNotificationBubbleController* OfferNotificationIconView::GetController()
   return OfferNotificationBubbleController::Get(GetWebContents());
 }
 
-BEGIN_METADATA(OfferNotificationIconView, PageActionIconView)
+BEGIN_METADATA(OfferNotificationIconView)
 END_METADATA
 
 }  // namespace autofill

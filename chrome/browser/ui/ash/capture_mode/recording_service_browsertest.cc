@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_tags.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -215,7 +216,13 @@ class RecordingServiceBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };
 
-IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, RecordFullscreen) {
+// TODO(b/252343017): Flaky on MSAN bots.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_RecordFullscreen DISABLED_RecordFullscreen
+#else
+#define MAYBE_RecordFullscreen RecordFullscreen
+#endif
+IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, MAYBE_RecordFullscreen) {
   ash::CaptureModeTestApi test_api;
   test_api.StartForFullscreen(/*for_video=*/true);
   FinishVideoRecordingTest(&test_api);
@@ -346,7 +353,14 @@ IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest,
   VerifyVideoFileAndDelete(video_path);
 }
 
-IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, InvalidDownloadsPath) {
+// TODO(b/273521375): Flaky on ChromeOS MSAN builds.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_InvalidDownloadsPath DISABLED_InvalidDownloadsPath
+#else
+#define MAYBE_InvalidDownloadsPath InvalidDownloadsPath
+#endif
+IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest,
+                       MAYBE_InvalidDownloadsPath) {
   auto* download_prefs =
       DownloadPrefs::FromBrowserContext(browser()->profile());
   const base::FilePath removable_path =
@@ -380,6 +394,9 @@ class GifRecordingBrowserTest : public InProcessBrowserTest {
 // Records a GIF image of a region that fills the entire screen, then attempts
 // to decode the resulting file to verify the GIF encoding was successful.
 IN_PROC_BROWSER_TEST_F(GifRecordingBrowserTest, SuccessfulEncodeDecode) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-9c11ed80-9e97-482c-9562-450bd891732b");
+
   aura::Window* browser_window = browser()->window()->GetNativeWindow();
   ash::CaptureModeTestApi test_api;
   test_api.SetRecordingType(ash::RecordingType::kGif);

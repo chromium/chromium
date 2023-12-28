@@ -95,7 +95,7 @@ class ArcPowerBridge::WakeLockRequestor {
   const device::mojom::WakeLockType type_;
 
   // The WakeLockProvider implementation we use to request WakeLocks. Not owned.
-  const raw_ptr<device::mojom::WakeLockProvider, ExperimentalAsh> provider_;
+  const raw_ptr<device::mojom::WakeLockProvider> provider_;
 
   // Number of outstanding Android requests.
   int num_android_requests_ = 0;

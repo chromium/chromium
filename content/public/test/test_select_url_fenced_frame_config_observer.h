@@ -14,7 +14,7 @@ class GURL;
 
 namespace content {
 
-struct FencedFrameConfig;
+class FencedFrameConfig;
 class StoragePartition;
 class TestSelectURLFencedFrameConfigObserverImpl;
 

@@ -183,6 +183,10 @@ export class FileAttachmentElement extends FileAttachmentElementBase {
   setSelectedFileForTesting(file: File): void {
     this.handleSelectedFileHelper(file);
   }
+
+  setSelectedImageUrlForTesting(imgUrl: string): void {
+    this.selectedImageUrl = imgUrl;
+  }
 }
 
 declare global {

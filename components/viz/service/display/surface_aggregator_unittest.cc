@@ -9242,7 +9242,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DisplayTransformDamageCallback) {
 
   auto frame =
       aggregator_.Aggregate(root_surface_id_, GetNextDisplayTimeAndIncrement(),
-                            gfx::OVERLAY_TRANSFORM_ROTATE_90);
+                            gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90);
   gfx::Rect transformed_rect(surface_size.height(), surface_size.width());
   EXPECT_EQ(frame.render_pass_list.back()->output_rect, transformed_rect);
   EXPECT_EQ(frame.render_pass_list.back()->damage_rect, transformed_rect);

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/chrome_views_export.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -34,6 +35,12 @@
 #include "ui/views/widget/widget_delegate.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/shell_integration_win.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/base/win/shell.h"
 #include "ui/views/win/hwnd_util.h"
 #endif
 
@@ -94,7 +101,9 @@ class ScreenCaptureNotificationUIViews : public ScreenCaptureNotificationUI,
                                          public views::ViewObserver {
  public:
   METADATA_HEADER(ScreenCaptureNotificationUIViews);
-  explicit ScreenCaptureNotificationUIViews(const std::u16string& text);
+  ScreenCaptureNotificationUIViews(
+      const std::u16string& text,
+      content::WebContents* capturing_web_contents);
   ScreenCaptureNotificationUIViews(const ScreenCaptureNotificationUIViews&) =
       delete;
   ScreenCaptureNotificationUIViews& operator=(
@@ -120,6 +129,10 @@ class ScreenCaptureNotificationUIViews : public ScreenCaptureNotificationUI,
   void NotifyStopped();
   // Helper to call |source_callback_|.
   void NotifySourceChange();
+  // Helper to set window id to parent browser window id for task bar grouping.
+#if BUILDFLAG(IS_WIN)
+  void SetWindowsAppId(views::Widget* widget);
+#endif
 
   base::OnceClosure stop_callback_;
   content::MediaStreamUI::SourceCallback source_callback_;
@@ -129,10 +142,15 @@ class ScreenCaptureNotificationUIViews : public ScreenCaptureNotificationUI,
   raw_ptr<views::View, DanglingUntriaged> source_button_ = nullptr;
   raw_ptr<views::View, DanglingUntriaged> stop_button_ = nullptr;
   raw_ptr<views::View, DanglingUntriaged> hide_link_ = nullptr;
+  const base::WeakPtr<content::WebContents> capturing_web_contents_;
 };
 
 ScreenCaptureNotificationUIViews::ScreenCaptureNotificationUIViews(
-    const std::u16string& text) {
+    const std::u16string& text,
+    content::WebContents* capturing_web_contents)
+    : capturing_web_contents_(capturing_web_contents
+                                  ? capturing_web_contents->GetWeakPtr()
+                                  : nullptr) {
   SetShowCloseButton(false);
   SetShowTitle(false);
   SetTitle(text);
@@ -172,7 +190,7 @@ ScreenCaptureNotificationUIViews::ScreenCaptureNotificationUIViews(
       base::BindRepeating(&ScreenCaptureNotificationUIViews::NotifyStopped,
                           base::Unretained(this)),
       stop_text);
-  stop_button->SetProminent(true);
+  stop_button->SetStyle(ui::ButtonStyle::kProminent);
   stop_button_ = AddChildView(std::move(stop_button));
 
   auto hide_link = std::make_unique<views::Link>(
@@ -245,6 +263,11 @@ gfx::NativeViewId ScreenCaptureNotificationUIViews::OnStarted(
       work_area.y() + work_area.height() - size.height(),
       size.width(), size.height());
   widget->SetBounds(bounds);
+
+#if BUILDFLAG(IS_WIN)
+  SetWindowsAppId(widget);
+#endif
+
   if (media_ids.empty() ||
       media_ids.front().type == content::DesktopMediaID::Type::TYPE_SCREEN) {
     // Focus the notification widget if sharing a screen.
@@ -296,13 +319,37 @@ void ScreenCaptureNotificationUIViews::NotifyStopped() {
     std::move(stop_callback_).Run();
 }
 
+#if BUILDFLAG(IS_WIN)
+void ScreenCaptureNotificationUIViews::SetWindowsAppId(views::Widget* widget) {
+  if (!capturing_web_contents_) {
+    return;
+  }
+  Browser* browser = chrome::FindBrowserWithTab(capturing_web_contents_.get());
+  // Can be nullptr from extension background page call.
+  if (!browser) {
+    return;
+  }
+  const base::FilePath profile_path = browser->profile()->GetPath();
+  std::wstring app_user_model_id =
+      browser->is_type_app()
+          ? shell_integration::win::GetAppUserModelIdForApp(
+                base::UTF8ToWide(browser->app_name()), profile_path)
+          : shell_integration::win::GetAppUserModelIdForBrowser(profile_path);
+  if (!app_user_model_id.empty()) {
+    ui::win::SetAppIdForWindow(app_user_model_id, views::HWNDForWidget(widget));
+  }
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 BEGIN_METADATA(ScreenCaptureNotificationUIViews, views::WidgetDelegateView)
 END_METADATA
 
 }  // namespace
 
 std::unique_ptr<ScreenCaptureNotificationUI>
-ScreenCaptureNotificationUI::Create(const std::u16string& text) {
-  return std::unique_ptr<ScreenCaptureNotificationUI>(
-      new ScreenCaptureNotificationUIViews(text));
+ScreenCaptureNotificationUI::Create(
+    const std::u16string& text,
+    content::WebContents* capturing_web_contents) {
+  return std::make_unique<ScreenCaptureNotificationUIViews>(
+      text, capturing_web_contents);
 }

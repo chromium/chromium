@@ -23,7 +23,8 @@ class CardUnmaskPromptController {
   virtual void OnUnmaskPromptAccepted(const std::u16string& cvc,
                                       const std::u16string& exp_month,
                                       const std::u16string& exp_year,
-                                      bool enable_fido_auth) = 0;
+                                      bool enable_fido_auth,
+                                      bool was_checkbox_visible) = 0;
   virtual void NewCardLinkClicked() = 0;
 
   // State.

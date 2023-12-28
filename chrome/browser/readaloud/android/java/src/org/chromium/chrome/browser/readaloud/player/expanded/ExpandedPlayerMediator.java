@@ -41,4 +41,12 @@ public class ExpandedPlayerMediator extends EmptyBottomSheetObserver {
     void setVisibility(@VisibilityState int state) {
         mModel.set(PlayerProperties.EXPANDED_PLAYER_VISIBILITY, state);
     }
+
+    void setOptionSheetPending(boolean value) {
+        mModel.set(PlayerProperties.OPTION_SHEET_PENDING, value);
+    }
+
+    boolean getOptionSheetPending() {
+        return mModel.get(PlayerProperties.OPTION_SHEET_PENDING);
+    }
 }

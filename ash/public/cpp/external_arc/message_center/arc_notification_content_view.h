@@ -137,8 +137,8 @@ class ArcNotificationContentView
 
   // If |item_| is null, we may be about to be destroyed. In this case,
   // we have to be careful about what we do.
-  raw_ptr<ArcNotificationItem, ExperimentalAsh> item_;
-  raw_ptr<ArcNotificationSurface, ExperimentalAsh> surface_ = nullptr;
+  raw_ptr<ArcNotificationItem> item_;
+  raw_ptr<ArcNotificationSurface> surface_ = nullptr;
   arc::mojom::ArcNotificationShownContents shown_content_ =
       arc::mojom::ArcNotificationShownContents::CONTENTS_SHOWN;
 
@@ -183,7 +183,7 @@ class ArcNotificationContentView
 
   // The message view which wrapps thie view. This must be the parent of this
   // view.
-  const raw_ptr<message_center::MessageView, ExperimentalAsh> message_view_;
+  const raw_ptr<message_center::MessageView> message_view_;
 
   // This view is owned by client (this).
   message_center::NotificationControlButtonsView control_buttons_view_;
@@ -192,7 +192,7 @@ class ArcNotificationContentView
   bool in_layout_ = false;
 
   // Widget which this view tree is currently attached to.
-  raw_ptr<views::Widget, ExperimentalAsh> attached_widget_ = nullptr;
+  raw_ptr<views::Widget> attached_widget_ = nullptr;
 
   std::u16string accessible_name_;
 

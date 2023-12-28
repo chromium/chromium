@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/bit_cast.h"
 #include "base/environment.h"
 #include "base/logging.h"
 #include "base/nix/xdg_util.h"
@@ -268,7 +269,7 @@ void XDGPopupWrapperImpl::Decorate(ui::PlatformWindowShadowType shadow_type) {
 void XDGPopupWrapperImpl::SetScaleFactor(float scale_factor) {
   if (aura_popup_ && zaura_popup_get_version(aura_popup_.get()) >=
                          ZAURA_POPUP_SET_SCALE_FACTOR_SINCE_VERSION) {
-    uint32_t value = *reinterpret_cast<uint32_t*>(&scale_factor);
+    uint32_t value = base::bit_cast<uint32_t>(scale_factor);
     zaura_popup_set_scale_factor(aura_popup_.get(), value);
   }
 }

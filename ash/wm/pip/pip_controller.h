@@ -52,7 +52,7 @@ class ASH_EXPORT PipController : public aura::WindowObserver {
   friend class PipControllerTestAPI;
 
   // The `pip_window` this controller is managing.
-  raw_ptr<aura::Window, ExperimentalAsh> pip_window_;
+  raw_ptr<aura::Window> pip_window_;
 
   // True if `pip_window` is tucked. False during construction.
   bool is_tucked_ = false;

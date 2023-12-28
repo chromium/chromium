@@ -237,7 +237,7 @@ static bool ExtractImageData(Image* image,
   }
 
   // Set |surface| to draw directly to |contents|.
-  const SkSurfaceProps disable_lcd_props(0, kUnknown_SkPixelGeometry);
+  const SkSurfaceProps disable_lcd_props;
   sk_sp<SkSurface> surface = SkSurfaces::WrapPixels(
       dst_info, contents.Data(), dst_info.minRowBytes(), &disable_lcd_props);
   if (!surface)

@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/compose/buildflags.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -134,6 +133,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorComposeDialogError] = {ui::kColorSysError};
   mixer[kColorComposeDialogForegroundSubtle] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorComposeDialogLink] = {ui::kColorSysPrimary};
+  mixer[kColorComposeDialogLogo] = {ui::kColorSysOnTonalContainer};
   mixer[kColorComposeDialogScrollbarThumb] = {ui::kColorSysPrimary};
   mixer[kColorComposeDialogResultBackground] = {ui::kColorSysSurface5};
   mixer[kColorComposeDialogResultForeground] = {ui::kColorSysOnSurface};
@@ -195,22 +195,10 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
                                  kColorDownloadShelfBackground),
       kColorDownloadShelfBackground);
   mixer[kColorDownloadItemIconDangerous] = {ui::kColorSysError};
-  // TODO(crbug.com/1399939): use a yellow-ish CR2023 color instead for the
-  // non-ImprovedDownloadBubbleWarnings case.
-  mixer[kColorDownloadItemIconWarning] = {
-      base::FeatureList::IsEnabled(
-          safe_browsing::kImprovedDownloadBubbleWarnings)
-          ? ui::kColorSysOnSurfaceSubtle
-          : ui::kColorAlertMediumSeverityIcon};
+  mixer[kColorDownloadItemIconWarning] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorDownloadItemProgressRingForeground] = {ui::kColorSysPrimary};
   mixer[kColorDownloadItemTextDangerous] = {ui::kColorSysError};
-  // TODO(crbug.com/1399939): use a yellow-ish CR2023 color instead for the
-  // non-ImprovedDownloadBubbleWarnings case.
-  mixer[kColorDownloadItemTextWarning] = {
-      base::FeatureList::IsEnabled(
-          safe_browsing::kImprovedDownloadBubbleWarnings)
-          ? ui::kColorSysOnSurfaceSubtle
-          : ui::kColorAlertMediumSeverityText};
+  mixer[kColorDownloadItemTextWarning] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorDownloadShelfBackground] = {ui::kColorSysBase};
   mixer[kColorDownloadShelfButtonIcon] = {kColorDownloadShelfForeground};
   mixer[kColorDownloadShelfButtonIconDisabled] = {ui::kColorSysStateDisabled};

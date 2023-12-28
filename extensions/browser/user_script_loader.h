@@ -57,7 +57,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   };
 
   // Parses the includes out of |script| and returns them in |includes|.
-  static bool ParseMetadataHeader(const base::StringPiece& script_text,
+  static bool ParseMetadataHeader(const std::string_view& script_text,
                                   UserScript* script);
 
   UserScriptLoader(content::BrowserContext* browser_context,

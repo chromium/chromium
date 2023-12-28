@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -340,6 +341,18 @@ void PushFlag(const base::Feature& feature,
       (base::FeatureList::IsEnabled(feature) ? "true" : "false"));
 }
 
+// Helper for converting |feature| and |param| of enum type into
+// feature_name=param_value arg for the given |out_command|.
+template <typename Enum>
+void PushParamEnum(const base::Feature& feature,
+                   const base::FeatureParam<Enum>& param,
+                   std::vector<std::string>& out_command) {
+  out_command.emplace_back(std::string(feature.name) + "=" +
+                           (base::FeatureList::IsEnabled(feature)
+                                ? param.GetName(param.Get())
+                                : "false"));
+}
+
 // Runs the update_flags script on the vm with the given |vm_name| and
 // |owner_id|, where the |flags| are <name, value> pairs. Returns "" on success,
 // otherwise returns an error message.
@@ -354,6 +367,9 @@ std::string SendFlagsToVm(const std::string& owner_id,
   PushFlag(ash::features::kBorealisForceBetaClient, command);
   PushFlag(ash::features::kBorealisForceDoubleScale, command);
   PushFlag(ash::features::kBorealisScaleClientByDPI, command);
+
+  PushParamEnum(ash::features::kBorealisZinkGlDriver,
+                ash::features::kBorealisZinkGlDriverParam, command);
 
   std::string output;
   if (!base::GetAppOutput(command, &output)) {

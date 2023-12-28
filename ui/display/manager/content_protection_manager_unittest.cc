@@ -47,7 +47,7 @@ class TestObserver : public ContentProtectionManager::Observer {
     security_changes_.emplace(display_id, secure);
   }
 
-  const raw_ptr<ContentProtectionManager, ExperimentalAsh> manager_;
+  const raw_ptr<ContentProtectionManager> manager_;
   SecurityChanges security_changes_;
 };
 
@@ -101,8 +101,8 @@ class ContentProtectionManagerTest : public testing::Test {
     for (size_t i = 0; i < count; ++i)
       displays.push_back(displays_[i]->Clone());
 
-    layout_manager_.set_displays(std::move(displays));
-    native_display_delegate_.set_outputs(layout_manager_.GetDisplayStates());
+    native_display_delegate_.SetOutputs(std::move(displays));
+    layout_manager_.set_displays(native_display_delegate_.GetOutputs());
   }
 
   void TriggerDisplayConfiguration() {

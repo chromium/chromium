@@ -8,6 +8,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/performance_controls/test_support/battery_saver_browser_test_mixin.h"
+#include "chrome/browser/ui/performance_controls/test_support/user_education_browser_test_mixin.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_bubble_view.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_button.h"
@@ -31,21 +33,9 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 
-namespace {
-
-void SetBatterySaverModeEnabled(bool enabled) {
-  auto mode = enabled ? performance_manager::user_tuning::prefs::
-                            BatterySaverModeState::kEnabled
-                      : performance_manager::user_tuning::prefs::
-                            BatterySaverModeState::kDisabled;
-  g_browser_process->local_state()->SetInteger(
-      performance_manager::user_tuning::prefs::kBatterySaverModeState,
-      static_cast<int>(mode));
-}
-
-}  // namespace
-
-class BatterySaverHelpPromoTest : public InProcessBrowserTest {
+class BatterySaverHelpPromoTest
+    : public BatterySaverBrowserTestMixin<
+          UserEducationBrowserTestMixin<InProcessBrowserTest>> {
  public:
   BatterySaverHelpPromoTest() = default;
   ~BatterySaverHelpPromoTest() override = default;
@@ -54,17 +44,7 @@ class BatterySaverHelpPromoTest : public InProcessBrowserTest {
     iph_features_.InitAndEnableFeatures(
         {feature_engagement::kIPHBatterySaverModeFeature});
 
-    SetUpFakeBatterySampler();
-
-    InProcessBrowserTest::SetUp();
-  }
-
-  void TearDown() override { InProcessBrowserTest::TearDown(); }
-
-  BrowserFeaturePromoController* GetFeaturePromoController() {
-    auto* promo_controller = static_cast<BrowserFeaturePromoController*>(
-        browser()->window()->GetFeaturePromoController());
-    return promo_controller;
+    BatterySaverBrowserTestMixin::SetUp();
   }
 
   void PressButton(views::Button* button) {
@@ -72,37 +52,7 @@ class BatterySaverHelpPromoTest : public InProcessBrowserTest {
         button, ui::test::InteractionTestUtil::InputType::kMouse);
   }
 
-  bool WaitForFeatureTrackerInitialization() {
-    feature_engagement::Tracker* tracker =
-        GetFeaturePromoController()->feature_engagement_tracker();
-    return user_education::test::WaitForFeatureEngagementReady(tracker);
-  }
-
-  void SetUpFakeBatterySampler() {
-    auto test_sampling_event_source =
-        std::make_unique<base::test::TestSamplingEventSource>();
-    auto test_battery_level_provider =
-        std::make_unique<base::test::TestBatteryLevelProvider>();
-
-    sampling_source_ = test_sampling_event_source.get();
-    battery_level_provider_ = test_battery_level_provider.get();
-    test_battery_level_provider->SetBatteryState(
-        base::test::TestBatteryLevelProvider::CreateBatteryState());
-
-    battery_state_sampler_ =
-        base::BatteryStateSampler::CreateInstanceForTesting(
-            std::move(test_sampling_event_source),
-            std::move(test_battery_level_provider));
-  }
-
  private:
-  raw_ptr<base::test::TestSamplingEventSource, AcrossTasksDanglingUntriaged>
-      sampling_source_;
-  raw_ptr<base::test::TestBatteryLevelProvider, AcrossTasksDanglingUntriaged>
-      battery_level_provider_;
-  // Only used on platforms without a battery level provider implementation.
-  std::unique_ptr<base::BatteryStateSampler> battery_state_sampler_;
-
   feature_engagement::test::ScopedIphFeatureList iph_features_;
 };
 
@@ -188,14 +138,11 @@ IN_PROC_BROWSER_TEST_F(BatterySaverHelpPromoTest, PromoCustomActionClicked) {
   EXPECT_EQ(expected_url, navigation_observer.last_navigation_url());
 }
 
-class BatterySaverBubbleViewTest : public InProcessBrowserTest {
+class BatterySaverBubbleViewTest
+    : public BatterySaverBrowserTestMixin<InProcessBrowserTest> {
  public:
   BatterySaverBubbleViewTest() = default;
   ~BatterySaverBubbleViewTest() override = default;
-
-  void SetUp() override { InProcessBrowserTest::SetUp(); }
-
-  void TearDown() override { InProcessBrowserTest::TearDown(); }
 
   BatterySaverButton* GetBatterySaverButton() {
     BatterySaverButton* battery_saver_button =

@@ -70,7 +70,7 @@ class HUDCheckboxHandler {
   void UpdateState() const { update_state_.Run(checkbox_.get()); }
 
  private:
-  const raw_ptr<views::Checkbox, ExperimentalAsh> checkbox_;  // not owned.
+  const raw_ptr<views::Checkbox> checkbox_;  // not owned.
   base::RepeatingCallback<void(views::Checkbox*)> update_state_;
 };
 
@@ -112,7 +112,7 @@ base::RepeatingCallback<void(views::Checkbox*)> GetCCDebugUpdateStateCallback(
          views::Checkbox* checkbox) {
         bool is_enabled = false;
         aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
-        for (auto* window : root_windows) {
+        for (aura::Window* window : root_windows) {
           ui::Compositor* compositor = window->GetHost()->compositor();
           is_enabled |= compositor->GetLayerTreeDebugState().*field;
         }
@@ -126,7 +126,7 @@ base::RepeatingCallback<void(views::Checkbox*)> GetCCDebugHandleClickCallback(
   return base::BindRepeating(
       [](bool cc::LayerTreeDebugState::*field, views::Checkbox* checkbox) {
         aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
-        for (auto* window : root_windows) {
+        for (aura::Window* window : root_windows) {
           ui::Compositor* compositor = window->GetHost()->compositor();
           cc::LayerTreeDebugState state = compositor->GetLayerTreeDebugState();
           state.*field = checkbox->GetChecked();
@@ -233,10 +233,8 @@ class AnimationSpeedControl : public views::SliderListener, public views::View {
   // Map slider values to animation scale.
   using SliderValuesMap = base::flat_map<float, float>;
 
-  raw_ptr<views::View, ExperimentalAsh> hints_container_ =
-      nullptr;  // not owned.
-  raw_ptr<AnimationSpeedSlider, ExperimentalAsh> slider_ =
-      nullptr;  // not owned.
+  raw_ptr<views::View> hints_container_ = nullptr;  // not owned.
+  raw_ptr<AnimationSpeedSlider> slider_ = nullptr;  // not owned.
 
   SliderValuesMap slider_values_;
 };
@@ -341,11 +339,13 @@ void AnimationSpeedControl::SliderValueChanged(
 void AnimationSpeedControl::Layout() {
   gfx::Size max_size;
   // Make all labels equal size.
-  for (const auto* label : hints_container_->children())
+  for (const views::View* label : hints_container_->children()) {
     max_size.SetToMax(label->GetPreferredSize());
+  }
 
-  for (auto* label : hints_container_->children())
+  for (views::View* label : hints_container_->children()) {
     label->SetPreferredSize(max_size);
+  }
 
   gfx::Size hints_total_size = hints_container_->GetPreferredSize();
   // Slider should begin in the middle of the first label, and end in the

@@ -172,6 +172,16 @@ BASE_DECLARE_FEATURE(kWebAuthnRelatedOrigin);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnChromeImplementedInvariant);
 
+// Allow extensions to assert WebAuthn relying party identifiers for domains
+// they have host permissions for.
+// Added in M121. Remove in or after M124.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kAllowExtensionsToSetWebAuthnRpIds);
+
+// Send and receive JSON from Play Services.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnAndroidFidoJson);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

@@ -1098,29 +1098,20 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
 }
 
 class NetworkServiceRestartWithFirstPartySetBrowserTest
-    : public NetworkServiceRestartBrowserTest,
-      public testing::WithParamInterface<bool> {
+    : public NetworkServiceRestartBrowserTest {
  public:
   NetworkServiceRestartWithFirstPartySetBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    if (IsFirstPartySetsEnabled()) {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kFirstPartySets,
-           net::features::kWaitForFirstPartySetsInit},
-          {});
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(features::kFirstPartySets);
-    }
+    scoped_feature_list_.InitWithFeatures(
+        {net::features::kWaitForFirstPartySetsInit}, {});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     NetworkServiceRestartBrowserTest::SetUpCommandLine(command_line);
-    if (IsFirstPartySetsEnabled()) {
-      command_line->AppendSwitchASCII(
-          network::switches::kUseRelatedWebsiteSet,
-          R"({"primary": "https://a.test",)"
-          R"("associatedSites": ["https://b.test","https://c.test"]})");
-    }
+    command_line->AppendSwitchASCII(
+        network::switches::kUseRelatedWebsiteSet,
+        R"({"primary": "https://a.test",)"
+        R"("associatedSites": ["https://b.test","https://c.test"]})");
   }
 
   void SetUpOnMainThread() override {
@@ -1145,14 +1136,12 @@ class NetworkServiceRestartWithFirstPartySetBrowserTest
 
   WebContents* web_contents() { return shell()->web_contents(); }
 
-  bool IsFirstPartySetsEnabled() const { return GetParam(); }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   net::test_server::EmbeddedTestServer https_server_;
 };
 
-IN_PROC_BROWSER_TEST_P(NetworkServiceRestartWithFirstPartySetBrowserTest,
+IN_PROC_BROWSER_TEST_F(NetworkServiceRestartWithFirstPartySetBrowserTest,
                        GetsUseFirstPartySetSwitch) {
   // Network service is not running out of process, so cannot be crashed.
   if (!content::IsOutOfProcessNetworkService()) {
@@ -1180,9 +1169,5 @@ IN_PROC_BROWSER_TEST_P(NetworkServiceRestartWithFirstPartySetBrowserTest,
               net::CookieStringIs(
                   testing::UnorderedElementsAre(testing::Key(kCookieName))));
 }
-
-INSTANTIATE_TEST_SUITE_P(/* no prefix */,
-                         NetworkServiceRestartWithFirstPartySetBrowserTest,
-                         testing::Bool());
 
 }  // namespace content

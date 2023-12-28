@@ -13,8 +13,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #include "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"
-#include "ios/chrome/browser/net/net_types.h"
-#include "ios/chrome/browser/policy/browser_state_policy_connector.h"
+#include "ios/chrome/browser/net/model/net_types.h"
+#include "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 

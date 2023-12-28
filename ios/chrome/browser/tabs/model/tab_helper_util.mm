@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/download/model/safari_download_tab_helper.h"
 #import "ios/chrome/browser/download/model/vcard_tab_helper.h"
+#import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/model/java_script_find_tab_helper.h"
@@ -83,7 +84,7 @@
 #import "ios/chrome/browser/ssl/model/captive_portal_tab_helper.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_error_container.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_url_filter_tab_helper.h"
-#import "ios/chrome/browser/sync/model/ios_chrome_synced_tab_delegate.h"
+#import "ios/chrome/browser/tabs/model/ios_chrome_synced_tab_delegate.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/voice/model/voice_search_navigations_tab_helper.h"
 #import "ios/chrome/browser/web/model/annotations/annotations_tab_helper.h"
@@ -225,6 +226,11 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   SafariDownloadTabHelper::CreateForWebState(web_state);
   PassKitTabHelper::CreateForWebState(web_state);
   VcardTabHelper::CreateForWebState(web_state);
+
+  // Drive tab helper.
+  if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
+    DriveTabHelper::CreateForWebState(web_state);
+  }
 
   PageloadForegroundDurationTabHelper::CreateForWebState(web_state);
 

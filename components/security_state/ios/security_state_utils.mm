@@ -48,7 +48,6 @@ MaliciousContentStatus GetMaliciousContentStatus(
     case safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
       return security_state::MALICIOUS_CONTENT_STATUS_SOCIAL_ENGINEERING;
     case safe_browsing::SB_THREAT_TYPE_URL_MALWARE:
-    case safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
       return security_state::MALICIOUS_CONTENT_STATUS_MALWARE;
     case safe_browsing::SB_THREAT_TYPE_URL_UNWANTED:
       return security_state::MALICIOUS_CONTENT_STATUS_UNWANTED_SOFTWARE;
@@ -60,6 +59,7 @@ MaliciousContentStatus GetMaliciousContentStatus(
       return security_state::MALICIOUS_CONTENT_STATUS_BILLING;
     case safe_browsing::
         DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
+    case safe_browsing::DEPRECATED_SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
     case safe_browsing::SB_THREAT_TYPE_URL_BINARY_MALWARE:
     case safe_browsing::SB_THREAT_TYPE_EXTENSION:
     case safe_browsing::SB_THREAT_TYPE_BLOCKLISTED_RESOURCE:

@@ -142,8 +142,12 @@ void WriteImageToDisk(UIImage* image, const base::FilePath& file_path) {
   if (!image) {
     return;
   }
-  // CGImage should exist, otherwise UIImageJPEG(PNG)Representation returns nil.
-  CHECK(image.CGImage);
+  if (!image.CGImage) {
+    // It's possible that CGImage doesn't exist for the chrome:// pages when
+    // it's an official build.
+    // TODO(crbug.com/1490496): Investigate why it happens and how to solve it.
+    return;
+  }
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 

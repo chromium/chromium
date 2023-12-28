@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -240,7 +241,8 @@ void CdmFactoryDaemonProxyAsh::GetOutputProtection(
 void CdmFactoryDaemonProxyAsh::GetScreenResolutions(
     GetScreenResolutionsCallback callback) {
   std::vector<gfx::Size> resolutions;
-  const std::vector<display::DisplaySnapshot*>& displays =
+  const std::vector<
+      raw_ptr<display::DisplaySnapshot, VectorExperimental>>& displays =
       ash::Shell::Get()->display_manager()->configurator()->cached_displays();
   for (display::DisplaySnapshot* display : displays)
     resolutions.emplace_back(display->native_mode()->size());

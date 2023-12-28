@@ -1,0 +1,224 @@
+<style>
+  :host {
+    -webkit-tap-highlight-color: transparent;
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    outline: none;
+    user-select: none;
+
+    /* Sizes. */
+    --cr-checkbox-border-size: 2px;
+    --cr-checkbox-size: 16px;
+    --cr-checkbox-ripple-size: 40px;
+
+    /* Derived sizes (offsets). */
+    --cr-checkbox-ripple-offset: calc(var(--cr-checkbox-size)/2 -
+        var(--cr-checkbox-ripple-size)/2 - var(--cr-checkbox-border-size));
+
+    /* --cr-checked-color automatically flips for light/dark mode. */
+    --cr-checkbox-checked-box-color: var(--cr-checked-color);
+    --cr-checkbox-ripple-checked-color: var(--cr-checked-color);
+
+    /* Light mode colors. */
+    --cr-checkbox-checked-ripple-opacity: .2;
+    --cr-checkbox-mark-color: white;
+    --cr-checkbox-ripple-unchecked-color: var(--google-grey-900);
+    --cr-checkbox-unchecked-box-color: var(--google-grey-700);
+    --cr-checkbox-unchecked-ripple-opacity: .15;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      /* Dark mode colors. */
+      --cr-checkbox-checked-ripple-opacity: .4;
+      --cr-checkbox-mark-color: var(--google-grey-900);
+      --cr-checkbox-ripple-unchecked-color: var(--google-grey-500);
+      --cr-checkbox-unchecked-box-color: var(--google-grey-500);
+      --cr-checkbox-unchecked-ripple-opacity: .4;
+    }
+  }
+
+  :host-context([chrome-refresh-2023]):host {
+    --cr-checkbox-ripple-size: 32px;
+    --cr-checkbox-mark-color: var(--color-checkbox-check,
+        var(--cr-fallback-color-on-primary));
+    --cr-checkbox-checked-box-color: var(--color-checkbox-foreground-checked,
+        var(--cr-fallback-color-primary));
+    --cr-checkbox-unchecked-box-color: var(--color-checkbox-foreground-unchecked,
+        var(--cr-fallback-color-outline));
+    --cr-checkbox-ripple-checked-color: var(--cr-active-background-color);
+    --cr-checkbox-ripple-unchecked-color: var(--cr-active-background-color);
+    --cr-checkbox-ripple-offset: 50%;
+    --cr-checkbox-ripple-opacity: 1;
+  }
+
+  :host([disabled]) {
+    cursor: initial;
+    opacity: var(--cr-disabled-opacity);
+    pointer-events: none;
+  }
+
+  :host-context([chrome-refresh-2023]):host([disabled]) {
+    opacity: 1;
+    --cr-checkbox-checked-box-color: var(
+        --color-checkbox-container-disabled,
+        var(--cr-fallback-color-disabled-background));
+    --cr-checkbox-unchecked-box-color: var(
+        --color-checkbox-outline-disabled,
+        var(--cr-fallback-color-disabled-background));
+    --cr-checkbox-mark-color: var(--color-checkbox-check-disabled,
+        var(--cr-fallback-color-disabled-foreground));
+  }
+
+  #checkbox {
+    background: none;
+    border: var(--cr-checkbox-border-size) solid
+        var(--cr-checkbox-unchecked-box-color);
+    border-radius: 2px;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: block;
+    flex-shrink: 0;
+    height: var(--cr-checkbox-size);
+    isolation: isolate;
+    margin: 0;
+    outline: none;
+    padding: 0;
+    position: relative;
+    transform: none;  /* Checkboxes shouldn't flip even in RTL. */
+    width: var(--cr-checkbox-size);
+  }
+
+  :host-context([chrome-refresh-2023]):host([disabled][checked]) #checkbox {
+    border-color: transparent;
+  }
+
+  :host-context([chrome-refresh-2023]) #hover-layer {
+    display: none;
+  }
+
+  :host-context([chrome-refresh-2023]) #checkbox:hover #hover-layer {
+    background-color: var(--cr-hover-background-color);
+    border-radius: 50%;
+    display: block;
+    height: 32px;
+    left: 50%;
+    overflow: hidden;
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 32px;
+  }
+
+  @media (forced-colors: active) {
+    /* paper-ripple is not showing in Windows HCM. Use outline instead. */
+    :host(:focus) #checkbox {
+      outline: var(--cr-focus-outline-hcm);
+    }
+  }
+
+  :host-context([chrome-refresh-2023]) #checkbox:focus-visible {
+    outline: var(--cr-checkbox-focus-outline,
+        2px solid var(--cr-focus-outline-color));
+    outline-offset: 2px;
+  }
+
+  #checkmark {
+    display: block;
+    /* Automatically adjust color of the checkmark SVG in forced colors mode.
+     * Otherwise, this property defaults to preserve-parent-color.
+     * https://www.w3.org/TR/css-color-adjust-1/#forced-color-adjust-prop */
+    forced-color-adjust: auto;
+    position: relative;
+    transform: scale(0);
+    z-index: 1;
+  }
+
+  #checkmark path {
+    fill: var(--cr-checkbox-mark-color);
+  }
+
+  :host([checked]) #checkmark {
+    transform: scale(1);
+    /* Only animate when showing checkmark. */
+    transition: transform 140ms ease-out;
+  }
+
+  :host([checked]) #checkbox {
+    background: var(--cr-checkbox-checked-box-background-color,
+        var(--cr-checkbox-checked-box-color));
+    border-color: var(--cr-checkbox-checked-box-color);
+  }
+
+  paper-ripple {
+    --paper-ripple-opacity: var(--cr-checkbox-ripple-opacity,
+        var(--cr-checkbox-unchecked-ripple-opacity));
+    color: var(--cr-checkbox-ripple-unchecked-color);
+    height: var(--cr-checkbox-ripple-size);
+    left: var(--cr-checkbox-ripple-offset);
+    outline: var(--cr-checkbox-ripple-ring, none);
+    pointer-events: none;
+    top: var(--cr-checkbox-ripple-offset);
+    transition: color linear 80ms;
+    width: var(--cr-checkbox-ripple-size);
+  }
+
+  :host([checked]) paper-ripple {
+    --paper-ripple-opacity: var(--cr-checkbox-ripple-opacity,
+        var(--cr-checkbox-checked-ripple-opacity));
+    color: var(--cr-checkbox-ripple-checked-color);
+  }
+
+  :host-context([dir=rtl]) paper-ripple {
+    left: auto;
+    right: var(--cr-checkbox-ripple-offset);
+  }
+
+  :host-context([chrome-refresh-2023]) paper-ripple {
+    transform: translate(-50%, -50%);
+  }
+
+  :host-context([dir=rtl][chrome-refresh-2023]) paper-ripple {
+    transform: translate(50%, -50%);
+  }
+
+  #label-container {
+    color: var(--cr-checkbox-label-color, var(--cr-primary-text-color));
+    padding-inline-start: var(--cr-checkbox-label-padding-start, 20px);
+    white-space: normal;
+  }
+
+  :host(.label-first) #label-container {
+    order: -1;
+    padding-inline-end: var(--cr-checkbox-label-padding-end, 20px);
+    padding-inline-start: 0;
+  }
+
+  :host(.no-label) #label-container {
+    display: none;
+  }
+
+  /* Hidden from UI, but not screen readers. */
+  #ariaDescription {
+    height: 0;
+    overflow: hidden;
+    width: 0;
+  }
+</style>
+<div id="checkbox" tabindex$="[[tabIndex]]" role="checkbox"
+    on-keydown="onKeyDown_" on-keyup="onKeyUp_" aria-disabled="false"
+    aria-checked="false" aria-labelledby="label-container"
+    aria-describedby="ariaDescription">
+  <!-- Inline SVG paints faster than loading it from a separate file. -->
+  <svg id="checkmark" width="12" height="12" viewBox="0 0 12 12"
+      fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path fill-rule="evenodd" clip-rule="evenodd" d="m10.192 2.121-6.01 6.01-2.121-2.12L1 7.07l2.121 2.121.707.707.354.354 7.071-7.071-1.06-1.06Z">
+  </svg>
+  <div id="hover-layer"></div>
+</div>
+<div id="label-container" aria-hidden="true" aria-label$="[[ariaLabelOverride]]" part="label-container">
+  <slot></slot>
+</div>
+<div id="ariaDescription" aria-hidden="true">[[ariaDescription]]</div>

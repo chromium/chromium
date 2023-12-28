@@ -70,12 +70,6 @@ void Recorder::ProfileAdded(const base::FilePath& profile_path) {
   delegating_events_processor_.OnProfileAdded(profile_path);
 }
 
-void Recorder::OnReportingStateChanged(bool enabled) {
-  for (auto& observer : observers_) {
-    observer.OnReportingStateChanged(enabled);
-  }
-}
-
 void Recorder::OnSystemProfileInitialized() {
   for (auto& observer : observers_) {
     observer.OnSystemProfileInitialized();

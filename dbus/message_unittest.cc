@@ -226,7 +226,7 @@ TEST(MessageTest, ArrayOfBytes) {
   bytes.push_back(1);
   bytes.push_back(2);
   bytes.push_back(3);
-  writer.AppendArrayOfBytes(bytes.data(), bytes.size());
+  writer.AppendArrayOfBytes(bytes);
 
   MessageReader reader(message.get());
   const uint8_t* output_bytes = nullptr;
@@ -247,7 +247,7 @@ TEST(MessageTest, ArrayOfInt32s) {
   int32s.push_back(1);
   int32s.push_back(2);
   int32s.push_back(3);
-  writer.AppendArrayOfInt32s(int32s.data(), int32s.size());
+  writer.AppendArrayOfInt32s(int32s);
 
   MessageReader reader(message.get());
   const int32_t* output_int32s = nullptr;
@@ -268,7 +268,7 @@ TEST(MessageTest, ArrayOfUint32s) {
   uint32s.push_back(1);
   uint32s.push_back(2);
   uint32s.push_back(3);
-  writer.AppendArrayOfUint32s(uint32s.data(), uint32s.size());
+  writer.AppendArrayOfUint32s(uint32s);
 
   MessageReader reader(message.get());
   const uint32_t* output_uint32s = nullptr;
@@ -289,7 +289,7 @@ TEST(MessageTest, ArrayOfDoubles) {
   doubles.push_back(0.2);
   doubles.push_back(0.5);
   doubles.push_back(1);
-  writer.AppendArrayOfDoubles(doubles.data(), doubles.size());
+  writer.AppendArrayOfDoubles(doubles);
 
   MessageReader reader(message.get());
   const double* output_doubles = nullptr;
@@ -307,7 +307,7 @@ TEST(MessageTest, ArrayOfBytes_Empty) {
   std::unique_ptr<Response> message(Response::CreateEmpty());
   MessageWriter writer(message.get());
   std::vector<uint8_t> bytes;
-  writer.AppendArrayOfBytes(bytes.data(), bytes.size());
+  writer.AppendArrayOfBytes(bytes);
 
   MessageReader reader(message.get());
   const uint8_t* output_bytes = nullptr;

@@ -919,6 +919,9 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
   AddLargestContentfulPaint(entry);
   if (HTMLImageElement* image_element = DynamicTo<HTMLImageElement>(element)) {
     image_element->SetIsLCPElement();
+    if (image_element->HasLazyLoadingAttribute()) {
+      element->GetDocument().CountUse(WebFeature::kLCPImageWasLazy);
+    }
   }
 
   if (element) {

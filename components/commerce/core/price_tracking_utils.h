@@ -120,8 +120,9 @@ bool GetEmailNotificationPrefValue(PrefService* pref_service);
 // set by the user or is still in the default state.
 bool IsEmailNotificationPrefSetByUser(PrefService* pref_service);
 
-// Build a user-tracked price tracking subscription object for the provided
-// cluster ID.
+// Builds a user-managed price tracking subscription object for the provided
+// cluster ID. This does not change the state of the subscription, it only
+// creates the object representing the subscription.
 CommerceSubscription BuildUserSubscriptionForClusterId(uint64_t cluster_id);
 
 // Returns whether price tracking can be initiated given either a ProductInfo

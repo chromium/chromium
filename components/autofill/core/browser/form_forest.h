@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_FOREST_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -17,7 +18,6 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill::internal {
@@ -212,7 +212,7 @@ class FormForest {
     // frame. When a parent form can Resolve() a child's FrameToken, it sets
     // itself as the parent of the child frame, even if no form in this frame
     // has been seen yet.
-    absl::optional<FormGlobalId> parent_form = absl::nullopt;
+    std::optional<FormGlobalId> parent_form = std::nullopt;
     // Pointer to the frame's AutofillDriver. This may be null because an
     // empty FrameData is created when a parent form can Resolve() a child's
     // LocalFrameToken and no form from that child frame has been seen yet.
@@ -245,11 +245,11 @@ class FormForest {
 
     SecurityOptions(
         const url::Origin* triggered_origin,
-        const base::flat_map<FieldGlobalId, ServerFieldType>* field_type_map);
+        const base::flat_map<FieldGlobalId, FieldType>* field_type_map);
 
     bool all_origins_are_trusted() const { return !triggered_origin_; }
     const url::Origin& triggered_origin() const { return *triggered_origin_; }
-    ServerFieldType GetFieldType(const FieldGlobalId& field) const;
+    FieldType GetFieldType(const FieldGlobalId& field) const;
 
    private:
     constexpr SecurityOptions() = default;
@@ -257,7 +257,7 @@ class FormForest {
     // The origin of the field from which Autofill was queried.
     const raw_ptr<const url::Origin> triggered_origin_ = nullptr;
     // Contains the field types of the fields in the browser form.
-    const raw_ptr<const base::flat_map<FieldGlobalId, ServerFieldType>>
+    const raw_ptr<const base::flat_map<FieldGlobalId, FieldType>>
         field_type_map_ = nullptr;
   };
 

@@ -22,7 +22,8 @@ class TouchTimeoutHandler {
  public:
   TouchTimeoutHandler(PassthroughTouchEventQueue* touch_queue,
                       base::TimeDelta desktop_timeout_delay,
-                      base::TimeDelta mobile_timeout_delay);
+                      base::TimeDelta mobile_timeout_delay,
+                      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   ~TouchTimeoutHandler();
 

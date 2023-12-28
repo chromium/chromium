@@ -5506,88 +5506,6 @@ TEST_F(ChromeShelfControllerTest, InternalAppPinUnpin) {
   EXPECT_FALSE(shelf_controller_->IsAppPinned(app_id));
 }
 
-class ChromeShelfControllerWithInternalAppTest
-    : public ChromeShelfControllerTest {
- public:
-  ChromeShelfControllerWithInternalAppTest() {
-    feature_list_.InitAndDisableFeature(
-        ash::features::kOnlyShowNewShortcutsApp);
-  }
-  ~ChromeShelfControllerWithInternalAppTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Test that internal app can be added and removed on shelf.
-TEST_F(ChromeShelfControllerWithInternalAppTest, InternalAppWindowRecreation) {
-  InitShelfController();
-
-  // Only test the first internal app. The others should be the same.
-  const auto& internal_app = app_list::GetInternalAppList(profile()).front();
-  const std::string app_id = internal_app.app_id;
-  const ash::ShelfID shelf_id(app_id);
-  EXPECT_FALSE(shelf_controller_->GetItem(shelf_id));
-
-  views::Widget* internal_app_window = CreateShelfAppWindow(app_id);
-  ASSERT_TRUE(internal_app_window);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(shelf_controller_->GetItem(shelf_id));
-
-  internal_app_window->Close();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(shelf_controller_->GetItem(shelf_id));
-
-  // Create and close again.
-  internal_app_window = CreateShelfAppWindow(app_id);
-  ASSERT_TRUE(internal_app_window);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(shelf_controller_->GetItem(shelf_id));
-
-  internal_app_window->Close();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(shelf_controller_->GetItem(shelf_id));
-}
-
-// Test that internal app can be added and removed by SetProperty of
-// ash::kShelfIDKey.
-TEST_F(ChromeShelfControllerWithInternalAppTest,
-       InternalAppWindowPropertyChanged) {
-  InitShelfController();
-
-  // Only test the first internal app. The others should be the same.
-  const auto internal_app = app_list::GetInternalAppList(profile()).front();
-  std::string app_id;
-  ash::ShelfID shelf_id;
-  EXPECT_FALSE(shelf_controller_->GetItem(shelf_id));
-
-  // Set an empty ash::kShelfIDKey.
-  views::Widget* internal_app_window = CreateShelfAppWindow(app_id);
-  ASSERT_TRUE(internal_app_window);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(shelf_controller_->GetItem(shelf_id));
-
-  // Set an invalid ash::kShelfIDKey.
-  app_id = "An invalid internal app id";
-  shelf_id = ash::ShelfID(app_id);
-  internal_app_window->GetNativeWindow()->SetProperty(
-      ash::kShelfIDKey, new std::string(shelf_id.Serialize()));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(shelf_controller_->GetItem(shelf_id));
-
-  // Set a valid ash::kShelfIDKey.
-  app_id = internal_app.app_id;
-  shelf_id = ash::ShelfID(app_id);
-  internal_app_window->GetNativeWindow()->SetProperty(
-      ash::kShelfIDKey, new std::string(shelf_id.Serialize()));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(shelf_controller_->GetItem(shelf_id));
-
-  internal_app_window->Close();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(shelf_controller_->GetItem(shelf_id));
-}
-
 // TODO(b/194627475): Move these tests to chrome_shelf_controller_browsertest.cc
 class ChromeShelfControllerDemoModeTest : public ChromeShelfControllerTestBase {
  protected:
@@ -6638,7 +6556,7 @@ class ChromeShelfControllerShortcutTest : public ChromeShelfControllerTest {
 
 TEST_F(ChromeShelfControllerShortcutTest, UpdateTitle) {
   apps::ShortcutPtr shortcut =
-      std::make_unique<apps::Shortcut>("app_id", "local_id");
+      std::make_unique<apps::Shortcut>(app_constants::kChromeAppId, "local_id");
   apps::ShortcutId shortcut_id = shortcut->shortcut_id;
   shortcut->name = "Name";
   cache()->UpdateShortcut(std::move(shortcut));
@@ -6652,16 +6570,20 @@ TEST_F(ChromeShelfControllerShortcutTest, UpdateTitle) {
   ash::ShelfID id(shortcut_id.value());
   const ash::ShelfItem* item = shelf_controller_->GetItem(id);
   EXPECT_EQ(item->title, std::u16string(u"Name"));
+  EXPECT_EQ(item->accessible_name,
+            u"Name, " + l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
 
   // Update shortcut title.
   apps::ShortcutPtr update =
-      std::make_unique<apps::Shortcut>("app_id", "local_id");
+      std::make_unique<apps::Shortcut>(app_constants::kChromeAppId, "local_id");
   update->name = "NewName";
   cache()->UpdateShortcut(std::move(update));
 
   // Verify that the shelf item has updated details.
   const ash::ShelfItem* item_after_update = shelf_controller_->GetItem(id);
   EXPECT_EQ(item_after_update->title, std::u16string(u"NewName"));
+  EXPECT_EQ(item->accessible_name,
+            u"NewName, " + l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
 }
 
 TEST_F(ChromeShelfControllerShortcutTest, ShortcutRemoved) {
@@ -6690,6 +6612,7 @@ TEST_F(ChromeShelfControllerShortcutTest, LoadIcon) {
 
   apps::ShortcutPtr shortcut =
       std::make_unique<apps::Shortcut>("app_id", "local_id");
+  shortcut->name = "Name";
   apps::ShortcutId shortcut_id = shortcut->shortcut_id;
   shortcut->icon_key = apps::IconKey();
   shortcut->icon_key->update_version = false;

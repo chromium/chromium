@@ -39,6 +39,7 @@ absl_source_set("inlined_vector_internal") {
   public = [ "internal/inlined_vector.h" ]
   deps = [
     ":compressed_tuple",
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/memory",
     "//third_party/abseil-cpp/absl/meta:type_traits",
@@ -347,13 +348,17 @@ absl_test("raw_hash_set_test") {
     ":hash_function_defaults",
     ":hash_policy_testing",
     ":hashtable_debug",
+    ":hashtablez_sampler",
     ":raw_hash_set",
     ":test_allocator",
     "//third_party/abseil-cpp/absl/base",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:prefetch",
+    "//third_party/abseil-cpp/absl/hash",
     "//third_party/abseil-cpp/absl/log",
+    "//third_party/abseil-cpp/absl/memory",
+    "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/strings",
   ]
 }

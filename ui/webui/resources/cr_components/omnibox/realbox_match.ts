@@ -81,10 +81,16 @@ export class RealboxMatchElement extends PolymerElement {
         value: () => loadTimeData.getBoolean('realboxCr23ExpandedStateLayout'),
       },
 
+      hasAction: {
+        type: Boolean,
+        computed: `computeHasAction_(match.actions)`,
+        reflectToAttribute: true,
+      },
+
       /** Whether action chip will have an outset focus ring. */
       hasOutsetActionFocusRing: {
         type: Boolean,
-        computed: `computeHasOutsetActionFocusRing_(match.actions)`,
+        computed: `computeHasOutsetActionFocusRing_(hasAction)`,
         reflectToAttribute: true,
       },
 
@@ -196,6 +202,7 @@ export class RealboxMatchElement extends PolymerElement {
 
   override ariaLabel: string;
   expandedStateIconsChromeRefresh: boolean;
+  hasAction: boolean;
   hasOutsetActionFocusRing: boolean;
   hasImage: boolean;
   match: AutocompleteMatch;
@@ -354,9 +361,12 @@ export class RealboxMatchElement extends PolymerElement {
                 .innerHTML);
   }
 
+  private computeHasAction_() {
+    return this.match?.actions?.length > 0;
+  }
+
   private computeHasOutsetActionFocusRing_() {
-    return this.expandedStateIconsChromeRefresh &&
-        this.match?.actions?.length > 0;
+    return this.expandedStateIconsChromeRefresh && this.hasAction;
   }
 
   private computeTailSuggestPrefix_(): string {

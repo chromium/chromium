@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/modules/webcodecs/array_buffer_util.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -113,6 +114,7 @@ class AudioDataTest : public testing::Test {
       EXPECT_EQ(allocations_size, expected_size);
     }
   }
+  test::TaskEnvironment task_environment_;
 };
 
 TEST_F(AudioDataTest, ConstructFromMediaBuffer) {

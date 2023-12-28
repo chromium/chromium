@@ -109,8 +109,6 @@ class AutofillProviderAndroid : public AutofillProvider,
   void OnHidePopup(AndroidAutofillManager* manager) override;
   void OnServerPredictionsAvailable(AndroidAutofillManager& manager,
                                     FormGlobalId form_id) override;
-  void OnServerQueryRequestError(AndroidAutofillManager* manager,
-                                 FormSignature form_signature) override;
 
   void OnManagerResetOrDestroyed(AndroidAutofillManager* manager) override;
 

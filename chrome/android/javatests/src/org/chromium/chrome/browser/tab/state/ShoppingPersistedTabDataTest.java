@@ -30,8 +30,6 @@ import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
-import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcherJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
@@ -71,7 +69,6 @@ public class ShoppingPersistedTabDataTest {
 
     @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
 
-    @Mock protected EndpointFetcher.Natives mEndpointFetcherJniMock;
 
     @Mock protected OptimizationGuideBridge.Natives mOptimizationGuideBridgeJniMock;
 
@@ -87,7 +84,6 @@ public class ShoppingPersistedTabDataTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mMocker.mock(EndpointFetcherJni.TEST_HOOKS, mEndpointFetcherJniMock);
         mMocker.mock(OptimizationGuideBridgeJni.TEST_HOOKS, mOptimizationGuideBridgeJniMock);
         // Ensure native pointer is initialized
         doReturn(1L).when(mOptimizationGuideBridgeJniMock).init();
@@ -1116,9 +1112,6 @@ public class ShoppingPersistedTabDataTest {
     @SmallTest
     @Test
     public void testShoppingPersistedTabDataSupportedForMaintenance() {
-        MockTab mockTab =
-                MockTab.createAndInitialize(ShoppingPersistedTabDataTestUtils.TAB_ID, mProfileMock);
-        ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(mockTab);
         Assert.assertTrue(
                 PersistedTabData.getSupportedMaintenanceClassesForTesting()
                         .contains(ShoppingPersistedTabData.class));

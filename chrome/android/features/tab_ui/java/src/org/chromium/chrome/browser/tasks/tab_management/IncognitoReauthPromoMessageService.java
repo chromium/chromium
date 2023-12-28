@@ -149,6 +149,11 @@ public class IncognitoReauthPromoMessageService extends MessageService
         activityLifecycleDispatcher.register(this);
     }
 
+    void destroy() {
+        // Duplicate unregister is safe if dismiss() was invoked.
+        mActivityLifecycleDispatcher.unregister(this);
+    }
+
     @VisibleForTesting
     void dismiss() {
         sendInvalidNotification();

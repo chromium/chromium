@@ -40,7 +40,7 @@ class SystemWallpaperController : public aura::WindowObserver {
                              ui::PropertyChangeReason reason) override;
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> root_window_;  // not owned
+  raw_ptr<aura::Window> root_window_;  // not owned
 
   std::unique_ptr<ui::Layer> layer_;
 };

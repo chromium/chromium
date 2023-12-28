@@ -13,6 +13,7 @@
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -1065,7 +1066,7 @@ RenderFrameDevToolsAgentHost::content_security_policy(const std::string& id) {
 }
 
 bool RenderFrameDevToolsAgentHost::HasSessionsWithoutTabTargetSupport() const {
-  const std::vector<DevToolsSession*>& sessions =
+  const std::vector<raw_ptr<DevToolsSession, VectorExperimental>>& sessions =
       DevToolsAgentHostImpl::sessions();
 
   return std::any_of(sessions.begin(), sessions.end(), [](DevToolsSession* s) {

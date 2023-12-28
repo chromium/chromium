@@ -27,20 +27,11 @@
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/pref_service_syncable_factory.h"
 #import "ios/chrome/browser/prefs/model/ios_chrome_pref_model_associator_client.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 namespace {
 
 const char kPreferencesFilename[] = "Preferences";
 const char kAccountPreferencesFilename[] = "AccountPreferences";
-
-// Record PersistentPrefStore's reading errors distribution.
-void HandleReadError(PersistentPrefStore::PrefReadError error) {
-  // Sample the histogram also for the successful case in order to get a
-  // baseline on the success rate in addition to the error distribution.
-  UMA_HISTOGRAM_ENUMERATION("PrefService.ReadError", error,
-                            PersistentPrefStore::PREF_READ_ERROR_MAX_ENUM);
-}
 
 void PrepareFactory(sync_preferences::PrefServiceSyncableFactory* factory,
                     const base::FilePath& pref_filename,
@@ -61,7 +52,6 @@ void PrepareFactory(sync_preferences::PrefServiceSyncableFactory* factory,
   factory->set_user_prefs(base::MakeRefCounted<JsonPrefStore>(
       pref_filename, std::unique_ptr<PrefFilter>(), pref_io_task_runner));
 
-  factory->set_read_error_callback(base::BindRepeating(&HandleReadError));
   factory->SetPrefModelAssociatorClient(
       base::MakeRefCounted<IOSChromePrefModelAssociatorClient>());
 }

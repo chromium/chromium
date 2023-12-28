@@ -263,7 +263,7 @@ void ChromeOsFeedbackDelegate::SendReport(
       report->feedback_context->is_internal_account;
 
   base::WeakPtr<feedback::FeedbackUploader> uploader =
-      base::AsWeakPtr(GetFeedbackUploaderForContext(profile_));
+      GetFeedbackUploaderForContext(profile_)->AsWeakPtr();
   scoped_refptr<::feedback::FeedbackData> feedback_data =
       base::MakeRefCounted<feedback::FeedbackData>(
           std::move(uploader), ContentTracingManager::Get());

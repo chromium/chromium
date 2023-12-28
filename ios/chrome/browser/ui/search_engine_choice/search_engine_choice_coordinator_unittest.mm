@@ -16,10 +16,6 @@
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/favicon/favicon_service_factory.h"
-#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
-#import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/promos_manager/mock_promos_manager.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -87,18 +83,6 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
-        ios::FaviconServiceFactory::GetInstance(),
-        ios::FaviconServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
-        IOSChromeLargeIconServiceFactory::GetInstance(),
-        IOSChromeLargeIconServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
-        IOSChromeFaviconLoaderFactory::GetInstance(),
-        IOSChromeFaviconLoaderFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
-        ios::HistoryServiceFactory::GetInstance(),
-        ios::HistoryServiceFactory::GetDefaultFactory());
     browser_state_ = test_cbs_builder.Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
   }

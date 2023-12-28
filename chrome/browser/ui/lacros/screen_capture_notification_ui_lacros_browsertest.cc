@@ -29,7 +29,7 @@ class ScreenCaptureNotificationUILacrosTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ScreenCaptureNotificationUILacrosTest, OnStarted) {
   std::unique_ptr<ScreenCaptureNotificationUI> screen_capture_notification_ui =
-      ScreenCaptureNotificationUI::Create(std::u16string(u"UI Test"));
+      ScreenCaptureNotificationUI::Create(std::u16string(u"UI Test"), nullptr);
 
   // OnStarted executed without issue.
   EXPECT_EQ(

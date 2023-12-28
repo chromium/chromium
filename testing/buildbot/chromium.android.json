@@ -118,7 +118,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC"
+              "revision": "dMHDxWyIpkzGNem_Z7ywDRj3Y2lUQKM7h4JT87_ejr8C"
             }
           ],
           "dimensions": {
@@ -170,7 +170,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC"
+              "revision": "dMHDxWyIpkzGNem_Z7ywDRj3Y2lUQKM7h4JT87_ejr8C"
             }
           ],
           "dimensions": {
@@ -486,7 +486,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC"
+              "revision": "dMHDxWyIpkzGNem_Z7ywDRj3Y2lUQKM7h4JT87_ejr8C"
             }
           ],
           "dimensions": {
@@ -537,7 +537,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC"
+              "revision": "dMHDxWyIpkzGNem_Z7ywDRj3Y2lUQKM7h4JT87_ejr8C"
             }
           ],
           "dimensions": {
@@ -1300,22 +1300,19 @@
       },
       {
         "args": [
-          "--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_cardboard_skipdon_setupcomplete.json",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--remove-system-package=com.google.vr.vrcore",
-          "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk"
+          "--recover-devices"
         ],
         "merge": {
           "args": [
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "chrome_public_test_vr_apk-ddready-cardboard"
+            "chrome_public_test_vr_apk"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "chrome_public_test_vr_apk-ddready-cardboard",
+        "name": "chrome_public_test_vr_apk",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1340,107 +1337,6 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
-        },
-        "test": "chrome_public_test_vr_apk",
-        "test_id_prefix": "ninja://chrome/android:chrome_public_test_vr_apk/"
-      },
-      {
-        "args": [
-          "--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_ddview_skipdon_setupcomplete.json",
-          "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_keyboard/vr_keyboard_current.apk",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--git-revision=${got_revision}",
-          "--remove-system-package=com.google.vr.vrcore",
-          "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk"
-        ],
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "chrome_public_test_vr_apk-ddready-ddview"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "chrome_public_test_vr_apk-ddready-ddview",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "device_os": "OPM4.171019.021.P2",
-            "device_os_flavor": "google",
-            "device_os_type": "userdebug",
-            "device_type": "walleye",
-            "os": "Android"
-          },
-          "output_links": [
-            {
-              "link": [
-                "https://luci-logdog.appspot.com/v/?s",
-                "=android%2Fswarming%2Flogcats%2F",
-                "${TASK_ID}%2F%2B%2Funified_logcats"
-              ],
-              "name": "shard #${SHARD_INDEX} logcats"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
-        },
-        "test": "chrome_public_test_vr_apk",
-        "test_id_prefix": "ninja://chrome/android:chrome_public_test_vr_apk/"
-      },
-      {
-        "args": [
-          "--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_ddview_don_setupcomplete.json",
-          "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_keyboard/vr_keyboard_current.apk",
-          "--annotation=Restriction=VR_DON_Enabled",
-          "--vr-don-enabled",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--remove-system-package=com.google.vr.vrcore",
-          "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk"
-        ],
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "chrome_public_test_vr_apk-ddready-don-enabled"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "chrome_public_test_vr_apk-ddready-don-enabled",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "device_os": "OPM4.171019.021.P2",
-            "device_os_flavor": "google",
-            "device_os_type": "userdebug",
-            "device_type": "walleye",
-            "os": "Android"
-          },
-          "output_links": [
-            {
-              "link": [
-                "https://luci-logdog.appspot.com/v/?s",
-                "=android%2Fswarming%2Flogcats%2F",
-                "${TASK_ID}%2F%2B%2Funified_logcats"
-              ],
-              "name": "shard #${SHARD_INDEX} logcats"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_public_test_vr_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_test_vr_apk/"
@@ -1715,22 +1611,19 @@
     "gtest_tests": [
       {
         "args": [
-          "--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_cardboard_skipdon_setupcomplete.json",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--remove-system-package=com.google.vr.vrcore",
-          "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk"
+          "--recover-devices"
         ],
         "merge": {
           "args": [
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "chrome_public_test_vr_apk-ddready-cardboard"
+            "chrome_public_test_vr_apk"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "chrome_public_test_vr_apk-ddready-cardboard",
+        "name": "chrome_public_test_vr_apk",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1755,107 +1648,6 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
-        },
-        "test": "chrome_public_test_vr_apk",
-        "test_id_prefix": "ninja://chrome/android:chrome_public_test_vr_apk/"
-      },
-      {
-        "args": [
-          "--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_ddview_skipdon_setupcomplete.json",
-          "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_keyboard/vr_keyboard_current.apk",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--git-revision=${got_revision}",
-          "--remove-system-package=com.google.vr.vrcore",
-          "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk"
-        ],
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "chrome_public_test_vr_apk-ddready-ddview"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "chrome_public_test_vr_apk-ddready-ddview",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "device_os": "QQ1A.191205.008",
-            "device_os_flavor": "google",
-            "device_os_type": "userdebug",
-            "device_type": "walleye",
-            "os": "Android"
-          },
-          "output_links": [
-            {
-              "link": [
-                "https://luci-logdog.appspot.com/v/?s",
-                "=android%2Fswarming%2Flogcats%2F",
-                "${TASK_ID}%2F%2B%2Funified_logcats"
-              ],
-              "name": "shard #${SHARD_INDEX} logcats"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
-        },
-        "test": "chrome_public_test_vr_apk",
-        "test_id_prefix": "ninja://chrome/android:chrome_public_test_vr_apk/"
-      },
-      {
-        "args": [
-          "--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_ddview_don_setupcomplete.json",
-          "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_keyboard/vr_keyboard_current.apk",
-          "--annotation=Restriction=VR_DON_Enabled",
-          "--vr-don-enabled",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--remove-system-package=com.google.vr.vrcore",
-          "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk"
-        ],
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "chrome_public_test_vr_apk-ddready-don-enabled"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "chrome_public_test_vr_apk-ddready-don-enabled",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "device_os": "QQ1A.191205.008",
-            "device_os_flavor": "google",
-            "device_os_type": "userdebug",
-            "device_type": "walleye",
-            "os": "Android"
-          },
-          "output_links": [
-            {
-              "link": [
-                "https://luci-logdog.appspot.com/v/?s",
-                "=android%2Fswarming%2Flogcats%2F",
-                "${TASK_ID}%2F%2B%2Funified_logcats"
-              ],
-              "name": "shard #${SHARD_INDEX} logcats"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_public_test_vr_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_test_vr_apk/"
@@ -5510,7 +5302,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC"
+              "revision": "dMHDxWyIpkzGNem_Z7ywDRj3Y2lUQKM7h4JT87_ejr8C"
             }
           ],
           "dimensions": {
@@ -5577,7 +5369,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC"
+              "revision": "dMHDxWyIpkzGNem_Z7ywDRj3Y2lUQKM7h4JT87_ejr8C"
             }
           ],
           "dimensions": {
@@ -9622,7 +9414,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC"
+              "revision": "dMHDxWyIpkzGNem_Z7ywDRj3Y2lUQKM7h4JT87_ejr8C"
             }
           ],
           "dimensions": {
@@ -9691,7 +9483,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC"
+              "revision": "dMHDxWyIpkzGNem_Z7ywDRj3Y2lUQKM7h4JT87_ejr8C"
             }
           ],
           "dimensions": {
@@ -9759,7 +9551,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC"
+              "revision": "dMHDxWyIpkzGNem_Z7ywDRj3Y2lUQKM7h4JT87_ejr8C"
             }
           ],
           "dimensions": {
@@ -17299,7 +17091,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC"
+              "revision": "dMHDxWyIpkzGNem_Z7ywDRj3Y2lUQKM7h4JT87_ejr8C"
             }
           ],
           "dimensions": {
@@ -17366,7 +17158,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC"
+              "revision": "dMHDxWyIpkzGNem_Z7ywDRj3Y2lUQKM7h4JT87_ejr8C"
             }
           ],
           "dimensions": {
@@ -17431,7 +17223,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC"
+              "revision": "dMHDxWyIpkzGNem_Z7ywDRj3Y2lUQKM7h4JT87_ejr8C"
             }
           ],
           "dimensions": {
@@ -18309,8 +18101,6 @@
       },
       {
         "args": [
-          "--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_cardboard_skipdon_setupcomplete.json",
-          "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -29540,7 +29330,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC"
+              "revision": "dMHDxWyIpkzGNem_Z7ywDRj3Y2lUQKM7h4JT87_ejr8C"
             }
           ],
           "dimensions": {
@@ -30438,7 +30228,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "telemetry_perf_unittests",
+        "name": "telemetry_perf_unittests_android_chrome",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -30662,22 +30452,19 @@
       },
       {
         "args": [
-          "--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_cardboard_skipdon_setupcomplete.json",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--remove-system-package=com.google.vr.vrcore",
-          "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk"
+          "--recover-devices"
         ],
         "merge": {
           "args": [
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "chrome_public_test_vr_apk-ddready-cardboard"
+            "chrome_public_test_vr_apk"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "chrome_public_test_vr_apk-ddready-cardboard",
+        "name": "chrome_public_test_vr_apk",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -30702,107 +30489,6 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
-        },
-        "test": "chrome_public_test_vr_apk",
-        "test_id_prefix": "ninja://chrome/android:chrome_public_test_vr_apk/"
-      },
-      {
-        "args": [
-          "--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_ddview_skipdon_setupcomplete.json",
-          "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_keyboard/vr_keyboard_current.apk",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--git-revision=${got_revision}",
-          "--remove-system-package=com.google.vr.vrcore",
-          "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk"
-        ],
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "chrome_public_test_vr_apk-ddready-ddview"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "chrome_public_test_vr_apk-ddready-ddview",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "device_os": "PQ3A.190801.002",
-            "device_os_flavor": "google",
-            "device_os_type": "userdebug",
-            "device_type": "walleye",
-            "os": "Android"
-          },
-          "output_links": [
-            {
-              "link": [
-                "https://luci-logdog.appspot.com/v/?s",
-                "=android%2Fswarming%2Flogcats%2F",
-                "${TASK_ID}%2F%2B%2Funified_logcats"
-              ],
-              "name": "shard #${SHARD_INDEX} logcats"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
-        },
-        "test": "chrome_public_test_vr_apk",
-        "test_id_prefix": "ninja://chrome/android:chrome_public_test_vr_apk/"
-      },
-      {
-        "args": [
-          "--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_ddview_don_setupcomplete.json",
-          "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_keyboard/vr_keyboard_current.apk",
-          "--annotation=Restriction=VR_DON_Enabled",
-          "--vr-don-enabled",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices",
-          "--remove-system-package=com.google.vr.vrcore",
-          "--additional-apk=//third_party/gvr-android-sdk/test-apks/vr_services/vr_services_current.apk"
-        ],
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "chrome_public_test_vr_apk-ddready-don-enabled"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "chrome_public_test_vr_apk-ddready-don-enabled",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "device_os": "PQ3A.190801.002",
-            "device_os_flavor": "google",
-            "device_os_type": "userdebug",
-            "device_type": "walleye",
-            "os": "Android"
-          },
-          "output_links": [
-            {
-              "link": [
-                "https://luci-logdog.appspot.com/v/?s",
-                "=android%2Fswarming%2Flogcats%2F",
-                "${TASK_ID}%2F%2B%2Funified_logcats"
-              ],
-              "name": "shard #${SHARD_INDEX} logcats"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_public_test_vr_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_test_vr_apk/"
@@ -31553,7 +31239,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC"
+              "revision": "dMHDxWyIpkzGNem_Z7ywDRj3Y2lUQKM7h4JT87_ejr8C"
             }
           ],
           "dimensions": {
@@ -35196,7 +34882,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC"
+              "revision": "dMHDxWyIpkzGNem_Z7ywDRj3Y2lUQKM7h4JT87_ejr8C"
             }
           ],
           "dimensions": {
@@ -35498,7 +35184,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC"
+              "revision": "dMHDxWyIpkzGNem_Z7ywDRj3Y2lUQKM7h4JT87_ejr8C"
             }
           ],
           "dimensions": {
@@ -35565,7 +35251,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC"
+              "revision": "dMHDxWyIpkzGNem_Z7ywDRj3Y2lUQKM7h4JT87_ejr8C"
             }
           ],
           "dimensions": {

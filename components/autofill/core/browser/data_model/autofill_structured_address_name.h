@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "components/autofill/core/browser/data_model/autofill_feature_guarded_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/field_types.h"
 
@@ -16,13 +17,6 @@ class RE2;
 }  // namespace re2
 
 namespace autofill {
-
-// Atomic component that represents the honorific prefix of a name.
-class NameHonorific : public AddressComponent {
- public:
-  NameHonorific();
-  ~NameHonorific() override;
-};
 
 // Atomic components that represents the first name.
 class NameFirst : public AddressComponent {
@@ -37,16 +31,16 @@ class NameMiddle : public AddressComponent {
   NameMiddle();
   ~NameMiddle() override;
 
-  const ServerFieldTypeSet GetAdditionalSupportedFieldTypes() const override;
+  const FieldTypeSet GetAdditionalSupportedFieldTypes() const override;
 
  protected:
   // Implements support for getting the value for the |MIDDLE_NAME_INITIAL|
   // type.
   std::u16string GetValueForOtherSupportedType(
-      ServerFieldType field_type) const override;
+      FieldType field_type) const override;
 
   // Implements support for setting the |MIDDLE_NAME_INITIAL| type.
-  void SetValueForOtherSupportedType(ServerFieldType field_type,
+  void SetValueForOtherSupportedType(FieldType field_type,
                                      const std::u16string& value,
                                      const VerificationStatus& status) override;
 };
@@ -139,7 +133,9 @@ class NameFull : public AddressComponent {
 };
 
 // Atomic component that represents a honorific prefix.
-class NameHonorificPrefix : public AddressComponent {
+// Without the second generation of the structured name tree, honorific
+// prefixes and the name including the prefix are unsupported types.
+class NameHonorificPrefix : public FeatureGuardedAddressComponent {
  public:
   NameHonorificPrefix();
   ~NameHonorificPrefix() override;
@@ -171,7 +167,9 @@ class NameHonorificPrefix : public AddressComponent {
 //                                   | _FIRST | | _CONJUNCTION | | _SECOND |
 //                                   +--------+ +--------------+ +---------+
 //
-class NameFullWithPrefix : public AddressComponent {
+// Without the second generation of the structured name tree, honorific
+// prefixes and the name including the prefix are unsupported types.
+class NameFullWithPrefix : public FeatureGuardedAddressComponent {
  public:
   NameFullWithPrefix();
   NameFullWithPrefix(const NameFullWithPrefix& other);

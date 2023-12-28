@@ -295,7 +295,9 @@ class PlatformAppPathLauncher
     // available, or it might be in the process of being unloaded, in which case
     // the lazy background task queue is used to load the extension and then
     // call back to us.
-    const extensions::LazyContextId context_id(context_, extension_id);
+    const auto context_id =
+        extensions::LazyContextId::ForExtension(context_, app);
+    CHECK(context_id.IsForBackgroundPage());
     extensions::LazyContextTaskQueue* const queue = context_id.GetTaskQueue();
     if (queue->ShouldEnqueueTask(context_, app)) {
       queue->AddPendingTask(

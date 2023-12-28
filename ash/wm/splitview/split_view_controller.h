@@ -55,26 +55,18 @@ class SplitViewMetricsController;
 class SplitViewObserver;
 class SplitViewOverviewSessionTest;
 
-// Histogram of the number of swapping window operations in split view.
-constexpr char kSplitViewSwapWindowsSource[] = "Ash.SplitView.SwapWindowSource";
-
 // `SplitViewController` controls what the window snapping behaviors should be
 // in different UI modes (clamshell UI mode and tablet UI mode), and how the
 // window snapping interacts with the overview mode. There is an instance for
 // each display.
 // The window snapping behaviors in clamshell mode:
-// 1. If the feature flag `kSnapGroup` is enabled:
-//  --1) When feature param `kAutomaticallyLockGroup` is true, once a window is
-//  snapped to one side of the screen, Overview will open automatically on the
-//  other side of the screen for the user to decide a 2nd window to snap. On
-//  window selected, the two windows will then be in one snap group.
-//  `SplitViewController` will observe the two snapped windows and control their
-//  behaviors until the two windows are no longer in a snap group.
-//  --2) When feature param `kAutomaticallyLockGroup` is false, a snap group
-//  will be created on lock button been pressed and the `split_view_divider_`
-//  will be created subsequently.
-// For the two feature params, the two snapped windows and the split view
-// divider are placed side-by-side with no overlap in the split screen (see
+// 1. If the feature flag `kSnapGroup` is enabled, once a window is snapped to
+// one side of the screen, Overview will open automatically on the other side of
+// the screen for the user to decide a 2nd window to snap. On window selected,
+// the two windows will then be in one snap group. `SplitViewController` will
+// observe the two snapped windows and control their behaviors until the two
+// windows are no longer in a snap group. The two snapped windows and the split
+// view divider are placed side-by-side with no overlap in the split screen (see
 // `SnapGroup` for more details). User is able to resize the two windows with
 // the `split_view_divider_`.  When the user explicitly ends split view mode,
 // two windows will be restored to their previous bounds and the
@@ -86,6 +78,7 @@ constexpr char kSplitViewSwapWindowsSource[] = "Ash.SplitView.SwapWindowSource";
 // if there is no window can be shown in overview.
 // 3. For other cases in clamshell mode, the snapping behaviors are not managed
 // by `SplitViewController`.
+//
 // The window snapping behaviors in tablet mode:
 // The window snapping behaviors in tablet mode will be managed by
 // `SplitViewController`. On one window snapped in the tablet mode, the overview
@@ -588,7 +581,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
                               const gfx::Point& event_location);
 
   // Called when the display tablet state is changed.
-  void OnTabletModeStarting();
   void OnTabletModeStarted();
   void OnTabletModeEnding();
   void OnTabletModeEnded();
@@ -613,11 +605,11 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   void SwapWindowsAndUpdateBounds();
 
   // Root window the split view is in.
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> root_window_;
+  raw_ptr<aura::Window, DanglingUntriaged> root_window_;
 
   // The current primary/secondary snapped window.
-  raw_ptr<aura::Window, ExperimentalAsh> primary_window_ = nullptr;
-  raw_ptr<aura::Window, ExperimentalAsh> secondary_window_ = nullptr;
+  raw_ptr<aura::Window> primary_window_ = nullptr;
+  raw_ptr<aura::Window> secondary_window_ = nullptr;
 
   // Observes the windows that are to be snapped in split screen.
   std::unique_ptr<ToBeSnappedWindowsObserver> to_be_snapped_windows_observer_;
@@ -683,10 +675,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   std::optional<OverviewStartAction> overview_start_action_;
   std::optional<OverviewEnterExitType> enter_exit_overview_type_;
 
-  // The split view type. See SplitViewType for the differences between tablet
-  // split view and clamshell split view.
-  SplitViewType split_view_type_ = SplitViewType::kTabletType;
-
   // The time when splitview starts. Used for metric collection purpose.
   base::Time splitview_start_time_;
 
@@ -715,8 +703,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // activated, or when the to-be-snapped is from overview and was the active
   // window before entering overview, so when it's snapped in splitview, it
   // should remain to be the active window.
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh>
-      to_be_activated_window_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged> to_be_activated_window_ = nullptr;
 
   // The split view resize mode for tablet mode.
   TabletResizeMode tablet_resize_mode_ = TabletResizeMode::kNormal;

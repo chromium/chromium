@@ -64,15 +64,14 @@ class ASH_EXPORT CalendarUpNextView : public views::View {
                                       const int target_edge);
 
   // Owned by `CalendarView`.
-  raw_ptr<CalendarViewController, DanglingUntriaged | ExperimentalAsh>
-      calendar_view_controller_;
+  raw_ptr<CalendarViewController, DanglingUntriaged> calendar_view_controller_;
 
   // Owned by `CalendarUpNextView`.
-  const raw_ptr<views::View, ExperimentalAsh> todays_events_button_container_;
-  const raw_ptr<views::View, ExperimentalAsh> header_view_;
-  raw_ptr<views::Button, ExperimentalAsh> left_scroll_button_;
-  raw_ptr<views::Button, ExperimentalAsh> right_scroll_button_;
-  const raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_;
+  const raw_ptr<views::View> todays_events_button_container_;
+  const raw_ptr<views::View> header_view_;
+  raw_ptr<views::Button> left_scroll_button_;
+  raw_ptr<views::Button> right_scroll_button_;
+  const raw_ptr<views::ScrollView> scroll_view_;
 
   // The current events displayed in calendar up next. Serves as a cache to diff
   // against when refreshing events.
@@ -80,7 +79,7 @@ class ASH_EXPORT CalendarUpNextView : public views::View {
 
   // The content of the horizontal `scroll_view`, which carries a list of
   // `CalendarEventListItemView`.
-  const raw_ptr<views::View, ExperimentalAsh> content_view_;
+  const raw_ptr<views::View> content_view_;
 
   // Helper class for animating the `scroll_view_` when a scroll button is
   // pressed.

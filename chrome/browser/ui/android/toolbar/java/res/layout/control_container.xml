@@ -53,6 +53,7 @@ found in the LICENSE file.
 
     <ViewStub
         android:id="@+id/target_view_stub"
+        android:inflatedId="@+id/toolbar_drag_drop_target_view"
         android:layout_width="match_parent"
         android:layout_marginTop="@dimen/tab_strip_height"
         android:layout_height="@dimen/toolbar_height_no_shadow"

@@ -135,7 +135,7 @@ void OnDialogChoiceReceived(
     ash::office_fallback::FallbackReason fallback_reason,
     gfx::NativeWindow modal_parent,
     std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics,
-    const std::string& choice);
+    std::optional<const std::string> choice);
 
 // Shows a new dialog for users to choose what to do next. Returns True
 // if a new dialog has been effectively created.

@@ -3,7 +3,7 @@
  * Copyright 2023 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { CloseReason, createDefaultCloseMenuEvent, isClosableKey } from './shared.js';
+import { CloseReason, createDefaultCloseMenuEvent, isClosableKey, } from './shared.js';
 /**
  * A controller that provides most functionality of an element that implements
  * the MenuItem interface.
@@ -23,28 +23,49 @@ export class MenuItemController {
         this.onClick = () => {
             if (this.host.keepOpen)
                 return;
-            this.host.dispatchEvent(createDefaultCloseMenuEvent(this.host, { kind: CloseReason.CLICK_SELECTION }));
+            this.host.dispatchEvent(createDefaultCloseMenuEvent(this.host, {
+                kind: CloseReason.CLICK_SELECTION,
+            }));
         };
         /**
          * Bind this click listener to the interactive element. Handles closing the
          * menu.
          */
         this.onKeydown = (event) => {
-            if (this.host.keepOpen || event.defaultPrevented)
+            // Check if the interactive element is an anchor tag. If so, click it.
+            if (this.host.href && event.code === 'Enter') {
+                const interactiveElement = this.getInteractiveElement();
+                if (interactiveElement instanceof HTMLAnchorElement) {
+                    interactiveElement.click();
+                }
+            }
+            if (event.defaultPrevented)
                 return;
+            // If the host has keepOpen = true we should ignore clicks & Space/Enter,
+            // however we always maintain the ability to close a menu with a explicit
+            // `escape` keypress.
             const keyCode = event.code;
-            if (!event.defaultPrevented && isClosableKey(keyCode)) {
+            if (this.host.keepOpen && keyCode !== 'Escape')
+                return;
+            if (isClosableKey(keyCode)) {
                 event.preventDefault();
-                this.host.dispatchEvent(createDefaultCloseMenuEvent(this.host, { kind: CloseReason.KEYDOWN, key: keyCode }));
+                this.host.dispatchEvent(createDefaultCloseMenuEvent(this.host, {
+                    kind: CloseReason.KEYDOWN,
+                    key: keyCode,
+                }));
             }
         };
-        const { getHeadlineElements, } = config;
-        this.getHeadlineElements = getHeadlineElements;
+        this.getHeadlineElements = config.getHeadlineElements;
+        this.getSupportingTextElements = config.getSupportingTextElements;
+        this.getDefaultElements = config.getDefaultElements;
+        this.getInteractiveElement = config.getInteractiveElement;
         this.host.addController(this);
     }
     /**
      * The text that is selectable via typeahead. If not set, defaults to the
-     * innerText of the item slotted into the `"headline"` slot.
+     * innerText of the item slotted into the `"headline"` slot, and if there are
+     * no slotted elements into headline, then it checks the _default_ slot, and
+     * then the `"supporting-text"` slot if nothing is in _default_.
      */
     get typeaheadText() {
         if (this.internalTypeaheadText !== null) {
@@ -57,6 +78,24 @@ export class MenuItemController {
                 textParts.push(headlineElement.textContent.trim());
             }
         });
+        // If there are no headline elements, check the default slot's text content
+        if (textParts.length === 0) {
+            this.getDefaultElements().forEach((defaultElement) => {
+                if (defaultElement.textContent && defaultElement.textContent.trim()) {
+                    textParts.push(defaultElement.textContent.trim());
+                }
+            });
+        }
+        // If there are no headline nor default slot elements, check the
+        //supporting-text slot's text content
+        if (textParts.length === 0) {
+            this.getSupportingTextElements().forEach((supportingTextElement) => {
+                if (supportingTextElement.textContent &&
+                    supportingTextElement.textContent.trim()) {
+                    textParts.push(supportingTextElement.textContent.trim());
+                }
+            });
+        }
         return textParts.join(' ');
     }
     /**

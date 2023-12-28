@@ -4,6 +4,8 @@
 
 import './trace_report.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
@@ -117,6 +119,23 @@ export class TraceReportListElement extends PolymerElement {
 
   private hasTraces_(traces: ClientTraceReport[]): boolean {
     return traces.length > 0;
+  }
+
+
+  private async onDeleteAllTracesClick_(): Promise<void> {
+    const {success} = await this.traceReportProxy_.handler.deleteAllTraces();
+    if (!success) {
+      this.dispatchToast_('Failed to delete to delete all traces.');
+    }
+    this.initializeList();
+  }
+
+  private dispatchToast_(message: string): void {
+    this.dispatchEvent(new CustomEvent('show-toast', {
+      bubbles: true,
+      composed: true,
+      detail: new Notification(NotificationTypeEnum.ERROR, message),
+    }));
   }
 }
 

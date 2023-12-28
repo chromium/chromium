@@ -168,7 +168,7 @@ class AshTracingRequest {
 
   bool user_logged_in_ = false;
 
-  raw_ptr<AshTracingManager, ExperimentalAsh> tracing_manager_;
+  raw_ptr<AshTracingManager> tracing_manager_;
 
   // This object is deleted once tracing is stopped.
   std::unique_ptr<AshTracingHandler> tracing_handler_;

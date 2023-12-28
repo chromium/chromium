@@ -116,16 +116,10 @@ class RefreshRateControllerTest : public AshTestBase {
   }
 
  protected:
-  void SetUpDisplays(
-      const std::vector<std::unique_ptr<DisplaySnapshot>>& snapshots) {
-    std::vector<DisplaySnapshot*> outputs;
-    for (const std::unique_ptr<DisplaySnapshot>& snapshot : snapshots) {
-      outputs.push_back(snapshot.get());
-    }
-
+  void SetUpDisplays(std::vector<std::unique_ptr<DisplaySnapshot>> snapshots) {
     display::DisplayConfigurator::TestApi test_api(
         display_manager()->configurator());
-    native_display_delegate_->set_outputs(outputs);
+    native_display_delegate_->SetOutputs(std::move(snapshots));
     display_manager()->configurator()->OnConfigurationChanged();
     display_manager()->configurator()->ForceInitialConfigure();
     ASSERT_TRUE(test_api.TriggerConfigureTimeout());
@@ -155,7 +149,7 @@ TEST_F(RefreshRateControllerTest, ShouldNotThrottleOnAC) {
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
       kDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
-  SetUpDisplays(snapshots);
+  SetUpDisplays(std::move(snapshots));
   ScopedSetInternalDisplayIds set_internal(kDisplayId);
 
   // Expect the initial state to be 120 Hz.
@@ -185,7 +179,7 @@ TEST_F(RefreshRateControllerTest, ShouldThrottleWithBatterySaverMode) {
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
       kDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
-  SetUpDisplays(snapshots);
+  SetUpDisplays(std::move(snapshots));
   ScopedSetInternalDisplayIds set_internal(kDisplayId);
 
   // Expect the initial state to be 120 Hz.
@@ -228,7 +222,7 @@ TEST_F(RefreshRateControllerTest, ShouldThrottleOnBattery) {
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
       kDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
-  SetUpDisplays(snapshots);
+  SetUpDisplays(std::move(snapshots));
   ScopedSetInternalDisplayIds set_internal(kDisplayId);
 
   // Expect the initial state to be 120 Hz.
@@ -258,7 +252,7 @@ TEST_F(RefreshRateControllerTest, ShouldNotThrottleForBorealis) {
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
       kDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
-  SetUpDisplays(snapshots);
+  SetUpDisplays(std::move(snapshots));
   ScopedSetInternalDisplayIds set_internal(kDisplayId);
 
   // Expect the initial state to be 120 Hz.
@@ -299,7 +293,7 @@ TEST_F(RefreshRateControllerTest, ShouldNotAffectExternalDisplay) {
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
       kDisplayId, display::DISPLAY_CONNECTION_TYPE_HDMI));
-  SetUpDisplays(snapshots);
+  SetUpDisplays(std::move(snapshots));
   ScopedSetInternalDisplayIds set_internal(kDisplayId);
 
   // Expect the initial state to be 120 Hz.
@@ -329,7 +323,7 @@ TEST_F(RefreshRateControllerTest, ShouldThrottleOnUSBCharger) {
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
       kDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
-  SetUpDisplays(snapshots);
+  SetUpDisplays(std::move(snapshots));
   ScopedSetInternalDisplayIds set_internal(kDisplayId);
 
   // Expect the initial state to be 120 Hz.
@@ -359,7 +353,7 @@ TEST_F(RefreshRateControllerTest, ShouldEnableVrrForBorealis) {
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildVrrPanelSnapshot(
       kDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
-  SetUpDisplays(snapshots);
+  SetUpDisplays(std::move(snapshots));
   ScopedSetInternalDisplayIds set_internal(kDisplayId);
 
   // Expect VRR to be initially disabled.
@@ -396,7 +390,7 @@ TEST_F(RefreshRateControllerTest, ShouldDisableVrrWithBatterySaverMode) {
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildVrrPanelSnapshot(
       kDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
-  SetUpDisplays(snapshots);
+  SetUpDisplays(std::move(snapshots));
   ScopedSetInternalDisplayIds set_internal(kDisplayId);
 
   // Set the game mode to indicate the user is gaming.

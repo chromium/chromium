@@ -174,17 +174,19 @@ class ChromePasswordManagerClient
 #endif
   void UpdateCredentialCache(
       const url::Origin& origin,
-      const std::vector<const password_manager::PasswordForm*>& best_matches,
+      const std::vector<raw_ptr<const password_manager::PasswordForm,
+                                VectorExperimental>>& best_matches,
       bool is_blocklisted) override;
   void AutomaticPasswordSave(
       std::unique_ptr<password_manager::PasswordFormManagerForUI>
           saved_form_manager,
       bool is_update_confirmation) override;
   void PasswordWasAutofilled(
-      const std::vector<const password_manager::PasswordForm*>& best_matches,
+      const std::vector<raw_ptr<const password_manager::PasswordForm,
+                                VectorExperimental>>& best_matches,
       const url::Origin& origin,
-      const std::vector<const password_manager::PasswordForm*>*
-          federated_matches,
+      const std::vector<raw_ptr<const password_manager::PasswordForm,
+                                VectorExperimental>>* federated_matches,
       bool was_autofilled_on_pageload) override;
   void AutofillHttpAuth(
       const password_manager::PasswordForm& preferred_match,
@@ -278,6 +280,7 @@ class ChromePasswordManagerClient
 #if BUILDFLAG(IS_ANDROID)
   webauthn::WebAuthnCredManDelegate* GetWebAuthnCredManDelegateForDriver(
       password_manager::PasswordManagerDriver* driver) override;
+  void MarkSharedCredentialsAsNotified(const GURL& url) override;
 #endif  // BUILDFLAG(IS_ANDROID)
   version_info::Channel GetChannel() const override;
   void RefreshPasswordManagerSettingsIfNeeded() const override;

@@ -7,7 +7,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 
 export class MockActionModel extends EventTarget {
   constructor(
-      public title: string, public entries: Entry[],
+      public title: string, public entries: Entry[] = [],
       public actionsModel: MockActionsModel|null = null) {
     super();
   }
@@ -24,7 +24,7 @@ export class MockActionModel extends EventTarget {
 }
 
 export class MockActionsModel extends EventTarget {
-  constructor(private actions_: Record<string, MockActionModel>) {
+  constructor(private actions_: Record<string, MockActionModel> = {}) {
     super();
 
     Object.keys(this.actions_).forEach((key) => {

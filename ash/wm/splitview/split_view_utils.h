@@ -102,7 +102,7 @@ class ASH_EXPORT WindowTransformAnimationObserver
   void OnWindowDestroying(aura::Window* window) override;
 
  private:
-  const raw_ptr<aura::Window, ExperimentalAsh> window_;
+  const raw_ptr<aura::Window> window_;
 
   WindowTransformAnimationObserver(const WindowTransformAnimationObserver&) =
       delete;
@@ -174,8 +174,6 @@ GetSnapPosition(aura::Window* root_window,
                 int horizontal_edge_inset,
                 int vertical_edge_inset);
 
-bool IsInTabletMode();
-
 // The return values of these two functions together indicate what actual
 // positions correspond to |PRIMARY| and |SECONDARY|:
 // |IsLayoutHorizontal|  |IsLayoutPrimary|    |PRIMARY|           |SECONDARY|
@@ -216,6 +214,7 @@ int GetMinimumWindowLength(aura::Window* window, bool horizontal);
 // bounds based on the window's minimum size.
 gfx::Rect CalculateSnappedWindowBoundsInScreen(
     SnapPosition snap_position,
+    aura::Window* root_window,
     aura::Window* window_for_minimum_size,
     int divider_position,
     int divider_width,
@@ -229,11 +228,6 @@ bool IsSnapGroupEnabledInClamshellMode();
 // Gets the expected window component for a window in split view, depending on
 // current screen orientation for resizing purpose.
 int GetWindowComponentForResize(aura::Window* window);
-
-// Returns the widget init params needed to create the widget.
-views::Widget::InitParams CreateWidgetInitParams(
-    aura::Window* parent_window,
-    const std::string& widget_name);
 
 // Builds the full histogram that records whether the window layout completes on
 // `SplitViewOverviewSession` exit. The full histogram is shown in the example

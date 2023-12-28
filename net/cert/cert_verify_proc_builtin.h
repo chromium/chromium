@@ -16,6 +16,8 @@ namespace net {
 
 class CertNetFetcher;
 class CRLSet;
+class CTPolicyEnforcer;
+class CTVerifier;
 class SystemTrustStore;
 
 // TODO(crbug.com/649017): This is not how other cert_verify_proc_*.h are
@@ -24,6 +26,8 @@ class SystemTrustStore;
 NET_EXPORT scoped_refptr<CertVerifyProc> CreateCertVerifyProcBuiltin(
     scoped_refptr<CertNetFetcher> net_fetcher,
     scoped_refptr<CRLSet> crl_set,
+    std::unique_ptr<CTVerifier> ct_verifier,
+    scoped_refptr<CTPolicyEnforcer> ct_policy_enforcer,
     std::unique_ptr<SystemTrustStore> system_trust_store,
     const CertVerifyProc::InstanceParams& instance_params);
 

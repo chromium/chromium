@@ -212,10 +212,7 @@ void DelegatedFrameHostAndroid::EvictDelegatedFrame(
 
 std::vector<viz::SurfaceId>
 DelegatedFrameHostAndroid::CollectSurfaceIdsForEviction() const {
-  if (base::FeatureList::IsEnabled(features::kEvictSubtree)) {
-    return client_->CollectSurfaceIdsForEviction();
-  }
-  return std::vector<viz::SurfaceId>();
+  return client_->CollectSurfaceIdsForEviction();
 }
 
 viz::SurfaceId DelegatedFrameHostAndroid::GetCurrentSurfaceId() const {

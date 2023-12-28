@@ -24,9 +24,9 @@ class ExtensionContextMenuController;
 // action in the browser's toolbar.
 class ToolbarActionView : public views::MenuButton,
                           public ToolbarActionViewDelegateViews {
- public:
-  METADATA_HEADER(ToolbarActionView);
+  METADATA_HEADER(ToolbarActionView, views::MenuButton)
 
+ public:
   // Need DragController here because ToolbarActionView could be
   // dragged/dropped.
   class Delegate : public views::DragController {

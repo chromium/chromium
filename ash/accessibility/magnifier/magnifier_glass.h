@@ -83,7 +83,7 @@ class ASH_EXPORT MagnifierGlass : public aura::WindowObserver,
 
   // The host widget is the root parent for all of the layers. The widget's
   // location follows the mouse, which causes the layers to also move.
-  raw_ptr<views::Widget, ExperimentalAsh> host_widget_ = nullptr;
+  raw_ptr<views::Widget> host_widget_ = nullptr;
 
   // Draws the background with a zoom filter applied.
   std::unique_ptr<ui::Layer> zoom_layer_;

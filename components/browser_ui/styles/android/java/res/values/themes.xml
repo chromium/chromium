@@ -23,14 +23,6 @@ found in the LICENSE file.
         <item name="elevationOverlayEnabled">false</item>
     </style>
 
-    <!-- Updated Clank Baseline Surface-N Colors. See https://crbug.com/1410537. -->
-    <style name="SurfaceColorsThemeOverlay" parent="">
-        <item name="elevationOverlayColor">@color/gm3_baseline_surface_tint</item>
-        <item name="elevationOverlayAccentColor">@android:color/transparent</item>
-        <item name="tileViewIconBackgroundModern">@drawable/oval_surface_2</item>
-        <item name="cardElevation">@dimen/default_elevation_2</item>
-    </style>
-
     <style name="ThemeOverlay.BrowserUI.DynamicColors" parent="ThemeOverlay.Material3.DynamicColors.DayNight">
         <item name="elevationOverlayColor">?attr/colorPrimary</item>
         <item name="elevationOverlayAccentColor">@android:color/transparent</item>

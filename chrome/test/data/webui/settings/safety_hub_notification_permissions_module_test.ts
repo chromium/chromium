@@ -8,18 +8,20 @@ import {isMac} from 'chrome://resources/js/platform.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SafetyHubBrowserProxyImpl, SafetyHubEvent, SettingsSafetyHubNotificationPermissionsModuleElement} from 'chrome://settings/lazy_load.js';
-import {Router, routes, SettingsPluralStringProxyImpl, SettingsRoutes} from 'chrome://settings/settings.js';
+import {MetricsBrowserProxyImpl, Router, routes, SafetyCheckNotificationsModuleInteractions, SettingsPluralStringProxyImpl, SettingsRoutes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
 // clang-format on
 
 suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
   let browserProxy: TestSafetyHubBrowserProxy;
   let pluralStringProxy: TestPluralStringProxy;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   let testElement: SettingsSafetyHubNotificationPermissionsModuleElement;
   let testRoutes: SettingsRoutes;
@@ -69,6 +71,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
         entries[index]!.querySelector(
                            '.site-representation')!.textContent!.trim();
     browserProxy.resetResolver(expectedProxyCall);
+    metricsBrowserProxy.reset();
     testElement.$.toastUndoButton.click();
     const origins = await browserProxy.whenCalled(expectedProxyCall);
     assertEquals(origins[0], expectedOrigin);
@@ -130,6 +133,8 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     browserProxy = new TestSafetyHubBrowserProxy();
     browserProxy.setNotificationPermissionReview(mockData);
     SafetyHubBrowserProxyImpl.setInstance(browserProxy);
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     pluralStringProxy = new TestPluralStringProxy();
     SettingsPluralStringProxyImpl.setInstance(pluralStringProxy);
     testRoutes = {
@@ -138,6 +143,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     Router.resetInstanceForTesting(new Router(routes));
     await createPage();
     assertEquals(2, getEntries().length);
+    metricsBrowserProxy.reset();
   });
 
   teardown(function() {
@@ -158,6 +164,13 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
           mockData[i]!.notificationInfoString,
           entries[i]!.querySelector('.cr-secondary-text')!.textContent!.trim());
     }
+  });
+
+  test('Record Suggestions Count', async function() {
+    await createPage();
+    const result = await metricsBrowserProxy.whenCalled(
+        'recordSafetyHubNotificationPermissionsModuleListCountHistogram');
+    assertEquals(mockData.length, result);
   });
 
   /**
@@ -181,6 +194,11 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
         testElement.i18n(
             'safetyCheckNotificationPermissionReviewBlockedToastLabel',
             expectedOrigin));
+
+    // Ensure the metric for 'Block' action is recorded.
+    const result = await metricsBrowserProxy.whenCalled(
+        'recordSafetyHubNotificationPermissionsModuleInteractionsHistogram');
+    assertEquals(SafetyCheckNotificationsModuleInteractions.BLOCK, result);
   });
 
   /**
@@ -209,6 +227,11 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
             expectedOrigin));
     // Ensure the action menu is closed.
     assertFalse(isVisible(testElement.$.actionMenu.getDialog()));
+
+    // Ensure the metric for 'Ignore' action is recorded.
+    const result = await metricsBrowserProxy.whenCalled(
+        'recordSafetyHubNotificationPermissionsModuleInteractionsHistogram');
+    assertEquals(SafetyCheckNotificationsModuleInteractions.IGNORE, result);
   });
 
   /**
@@ -236,6 +259,11 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
             expectedOrigin));
     // Ensure the action menu is closed.
     assertFalse(isVisible(testElement.$.actionMenu.getDialog()));
+
+    // Ensure the metric for 'Reset' action is recorded.
+    const result = await metricsBrowserProxy.whenCalled(
+        'recordSafetyHubNotificationPermissionsModuleInteractionsHistogram');
+    assertEquals(SafetyCheckNotificationsModuleInteractions.RESET, result);
   });
 
   /**
@@ -250,6 +278,11 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     await assertUndo('allowNotificationPermissionForOrigins', 0);
     webUIListenerCallback(
         SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED, mockData);
+
+    // Ensure the metric for 'Undo Block' action is recorded.
+    const result = await metricsBrowserProxy.whenCalled(
+        'recordSafetyHubNotificationPermissionsModuleInteractionsHistogram');
+    assertEquals(SafetyCheckNotificationsModuleInteractions.UNDO_BLOCK, result);
   });
 
   /**
@@ -265,6 +298,12 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     await assertUndo('undoIgnoreNotificationPermissionForOrigins', 0);
     webUIListenerCallback(
         SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED, mockData);
+
+    // Ensure the metric for 'Undo Ignore' action is recorded.
+    const result = await metricsBrowserProxy.whenCalled(
+        'recordSafetyHubNotificationPermissionsModuleInteractionsHistogram');
+    assertEquals(
+        SafetyCheckNotificationsModuleInteractions.UNDO_IGNORE, result);
   });
 
   /**
@@ -280,6 +319,11 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     await assertUndo('allowNotificationPermissionForOrigins', 0);
     webUIListenerCallback(
         SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED, mockData);
+
+    // Ensure the metric for 'Undo Reset' action is recorded.
+    const result = await metricsBrowserProxy.whenCalled(
+        'recordSafetyHubNotificationPermissionsModuleInteractionsHistogram');
+    assertEquals(SafetyCheckNotificationsModuleInteractions.UNDO_RESET, result);
   });
 
   /**
@@ -298,6 +342,12 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     await assertPluralString(
         'safetyCheckNotificationPermissionReviewBlockAllToastLabel', 2, 2);
 
+    // Ensure the metric for 'Block All' action is recorded.
+    const result = await metricsBrowserProxy.whenCalled(
+        'recordSafetyHubNotificationPermissionsModuleInteractionsHistogram');
+    assertEquals(SafetyCheckNotificationsModuleInteractions.BLOCK_ALL, result);
+    metricsBrowserProxy.reset();
+
     // Click undo button.
     testElement.$.toastUndoButton.click();
     const origins2 =
@@ -305,6 +355,12 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     assertEquals(2, origins2.length);
     assertEquals(
         JSON.stringify(origins2.sort()), JSON.stringify([origin1, origin2]));
+
+    // Ensure the metric for 'Undo Block All' action is recorded.
+    const result_undo = await metricsBrowserProxy.whenCalled(
+        'recordSafetyHubNotificationPermissionsModuleInteractionsHistogram');
+    assertEquals(
+        SafetyCheckNotificationsModuleInteractions.UNDO_BLOCK_ALL, result_undo);
   });
 
   /**
@@ -317,6 +373,8 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     // User clicks don't allow.
     const entry = getEntries()[0]!;
     clickButton(entry.querySelector('#mainButton'));
+    // Reset the action captured by clicking the Block button.
+    metricsBrowserProxy.reset();
 
     const expectedOrigin =
         entry.querySelector('.site-representation')!.textContent!.trim();
@@ -332,6 +390,11 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
         await browserProxy.whenCalled('allowNotificationPermissionForOrigins');
     assertEquals(origins[0], expectedOrigin);
     assertNotification(false);
+
+    // Ensure the metric for 'Undo Block' action is recorded.
+    const result = await metricsBrowserProxy.whenCalled(
+        'recordSafetyHubNotificationPermissionsModuleInteractionsHistogram');
+    assertEquals(SafetyCheckNotificationsModuleInteractions.UNDO_BLOCK, result);
   });
 
   test('Block All Click single entry', async function() {
@@ -416,5 +479,10 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     assertEquals(
         routes.SITE_SETTINGS_NOTIFICATIONS,
         Router.getInstance().getCurrentRoute());
+    // Ensure the metric for 'Go To Settings' action is recorded.
+    const result = await metricsBrowserProxy.whenCalled(
+        'recordSafetyHubNotificationPermissionsModuleInteractionsHistogram');
+    assertEquals(
+        SafetyCheckNotificationsModuleInteractions.GO_TO_SETTINGS, result);
   });
 });

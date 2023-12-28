@@ -319,7 +319,7 @@ void ShoppingServiceAndroid::GetAllPriceTrackedBookmarks(
       [](JNIEnv* env, const ScopedJavaGlobalRef<jobject>& callback,
          std::vector<const bookmarks::BookmarkNode*> tracked_items) {
         std::vector<int64_t> ids;
-        for (const auto* bookmark : tracked_items) {
+        for (const bookmarks::BookmarkNode* bookmark : tracked_items) {
           ids.push_back(bookmark->id());
         }
         Java_ShoppingService_runGetAllPriceTrackedBookmarksCallback(

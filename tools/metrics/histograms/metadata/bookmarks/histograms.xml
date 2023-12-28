@@ -196,16 +196,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Bookmarks.BookmarksInFolder" units="bookmarks"
-    expires_after="M85">
-  <owner>johntlee@chromium.org</owner>
-  <component>UI&gt;Browser&gt;Bookmarks</component>
-  <summary>
-    Logs the number of bookmark items inside a folder every time a folder is
-    opened inside the bookmark manager.
-  </summary>
-</histogram>
-
 <histogram name="Bookmarks.Clone.NumCloned" units="bookmarks"
     expires_after="2024-01-20">
   <owner>wylieb@chromium.org</owner>

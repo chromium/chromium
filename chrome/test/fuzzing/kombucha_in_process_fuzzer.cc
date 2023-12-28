@@ -108,16 +108,6 @@ void KombuchaInProcessFuzzer::SetUp() {
   ui_controls::EnableUIControls();
 #endif
 
-  // This will be used to ignore internal kombucha errors. For instance, some
-  // actions are not authorized when being followed by other actions, and our
-  // fuzzing process doesn't know about this. To avoid hitting unnecessary
-  // failures, we should just ignore those and keep fuzzing.
-  private_test_impl().set_aborted_callback_for_testing(
-      base::BindLambdaForTesting(
-          [](const ui::InteractionSequence::AbortedData& data) {
-            LOG(WARNING) << "Aborted callback fired: " << data;
-          }));
-
   InteractiveBrowserTestT::SetUp();
 }
 
@@ -202,6 +192,19 @@ void KombuchaInProcessFuzzer::CleanInProcessBrowserState() {
 int KombuchaInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
   FuzzCase fuzz_case;
   fuzz_case.ParseFromArray(data, size);
+
+  // This will be used to ignore internal kombucha errors. For instance, some
+  // actions are not authorized when being followed by other actions, and our
+  // fuzzing process doesn't know about this. To avoid hitting unnecessary
+  // failures, we should just ignore those and keep fuzzing.
+  // We need to reset this callback at each iteration because this is a once
+  // callback, and once it's being used, the default behaviour will for
+  // internal kombucha state failure will kick back in.
+  private_test_impl().set_aborted_callback_for_testing(
+      base::BindLambdaForTesting(
+          [](const ui::InteractionSequence::AbortedData& data) {
+            LOG(WARNING) << "Aborted callback fired: " << data;
+          }));
 
   // Used to reassign target with NameElement
   constexpr char TargetName[] = "name";

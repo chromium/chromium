@@ -86,7 +86,7 @@ class ASH_EXPORT StatusAreaOverflowButtonTray : public TrayBackgroundView {
   State state_ = CLICK_TO_EXPAND;
 
   // Owned by the views hierarchy.
-  const raw_ptr<IconView, ExperimentalAsh> icon_;
+  const raw_ptr<IconView> icon_;
 };
 
 }  // namespace ash

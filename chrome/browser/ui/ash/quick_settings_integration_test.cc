@@ -7,15 +7,17 @@
 #include "ash/shell.h"
 #include "ash/system/model/enterprise_domain_model.h"
 #include "ash/system/model/system_tray_model.h"
+#include "base/cpu.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ui/ash/chrome_browser_main_extra_parts_ash.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
@@ -31,11 +33,11 @@ EnterpriseDomainModel* GetEnterpriseDomainModel() {
   return Shell::Get()->system_tray_model()->enterprise_domain();
 }
 
-class QuickSettingsIntegrationTest : public InteractiveAshTest {
+class QuickSettingsIntegrationTest : public AshIntegrationTest {
  public:
-  // InteractiveAshTest:
+  // AshIntegrationTest:
   void SetUpOnMainThread() override {
-    InteractiveAshTest::SetUpOnMainThread();
+    AshIntegrationTest::SetUpOnMainThread();
 
     // Ensure the OS Settings system web app (SWA) is installed.
     InstallSystemApps();
@@ -92,9 +94,6 @@ IN_PROC_BROWSER_TEST_F(QuickSettingsIntegrationTest, ManagedDeviceInfo) {
 
                   Log("Test complete"));
 }
-
-// Testing with Lacros requires a VM or DUT.
-#if BUILDFLAG(IS_CHROMEOS_DEVICE)
 
 // Observes the aura environment to detect the Lacros window title.
 class LacrosWindowTitleObserver
@@ -155,7 +154,7 @@ class QuickSettingsLacrosIntegrationTest : public QuickSettingsIntegrationTest {
         ash::standalone_browser::features::kLacrosOnly);
   }
 
-  // InteractiveAshTest:
+  // AshIntegrationTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     QuickSettingsIntegrationTest::SetUpCommandLine(command_line);
     SetUpCommandLineForLacros(command_line);
@@ -165,10 +164,13 @@ class QuickSettingsLacrosIntegrationTest : public QuickSettingsIntegrationTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Flaky because Lacros can be older than Ash in chromeos_integration_tests,
-// causing NOTREACHED failures at the crosapi level. b/303359438
-IN_PROC_BROWSER_TEST_F(QuickSettingsLacrosIntegrationTest,
-                       DISABLED_ManagedDeviceInfo) {
+IN_PROC_BROWSER_TEST_F(QuickSettingsLacrosIntegrationTest, ManagedDeviceInfo) {
+  // On VM tryservers like chromeos-amd64-generic Lacros fails to start up
+  // correctly (it restarts in a loop). b/303359438
+  if (base::CPU().is_running_in_vm()) {
+    GTEST_SKIP();
+  }
+
   ASSERT_TRUE(crosapi::browser_util::IsLacrosEnabled());
 
   base::AddFeatureIdTagToTestResult(
@@ -206,8 +208,6 @@ IN_PROC_BROWSER_TEST_F(QuickSettingsLacrosIntegrationTest,
 
       Log("Test complete"));
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS_DEVICE)
 
 }  // namespace
 }  // namespace ash

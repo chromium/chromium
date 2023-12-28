@@ -95,6 +95,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
   }
 
   void FetchConfig(const GURL& provider,
+                   blink::mojom::RpMode rp_mode,
                    int idp_brand_icon_ideal_size,
                    int idp_brand_icon_minimum_size,
                    FetchConfigCallback callback) override {
@@ -265,8 +266,6 @@ class FederatedAuthRequestImplMultipleFramesTest
                                                dialog_controller_state));
     federated_auth_request_impl->SetNetworkManagerForTests(
         std::make_unique<TestIdpNetworkRequestManager>());
-    federated_auth_request_impl->SetTokenRequestDelayForTests(
-        base::TimeDelta());
     return federated_auth_request_impl;
   }
 
@@ -467,7 +466,7 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest,
 
   auto entries = ukm_recorder_->GetEntriesByName(FedCmEntry::kEntryName);
   ASSERT_FALSE(entries.empty());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     const int64_t* metric =
         ukm_recorder_->GetEntryMetric(entry, "PreventSilentAccessFrameType");
     EXPECT_FALSE(metric);
@@ -508,13 +507,12 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest,
   auto entries = ukm_recorder_->GetEntriesByName(FedCmEntry::kEntryName);
   ASSERT_FALSE(entries.empty());
   bool metric_found = false;
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     const int64_t* metric =
         ukm_recorder_->GetEntryMetric(entry, "PreventSilentAccessFrameType");
     if (metric) {
       metric_found = true;
-      EXPECT_EQ(*metric,
-                static_cast<int>(PreventSilentAccessFrameType::kMainFrame));
+      EXPECT_EQ(*metric, static_cast<int>(FedCmRequesterFrameType::kMainFrame));
     }
   }
   EXPECT_TRUE(metric_found);
@@ -554,13 +552,13 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest,
   auto entries = ukm_recorder_->GetEntriesByName(FedCmEntry::kEntryName);
   ASSERT_FALSE(entries.empty());
   bool metric_found = false;
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     const int64_t* metric =
         ukm_recorder_->GetEntryMetric(entry, "PreventSilentAccessFrameType");
     if (metric) {
       metric_found = true;
-      EXPECT_EQ(*metric, static_cast<int>(
-                             PreventSilentAccessFrameType::kSameSiteIframe));
+      EXPECT_EQ(*metric,
+                static_cast<int>(FedCmRequesterFrameType::kSameSiteIframe));
     }
   }
   EXPECT_TRUE(metric_found);
@@ -599,13 +597,13 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest,
   auto entries = ukm_recorder_->GetEntriesByName(FedCmEntry::kEntryName);
   ASSERT_FALSE(entries.empty());
   bool metric_found = false;
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     const int64_t* metric =
         ukm_recorder_->GetEntryMetric(entry, "PreventSilentAccessFrameType");
     if (metric) {
       metric_found = true;
-      EXPECT_EQ(*metric, static_cast<int>(
-                             PreventSilentAccessFrameType::kCrossSiteIframe));
+      EXPECT_EQ(*metric,
+                static_cast<int>(FedCmRequesterFrameType::kCrossSiteIframe));
     }
   }
   EXPECT_TRUE(metric_found);

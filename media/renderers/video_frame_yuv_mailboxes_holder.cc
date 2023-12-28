@@ -149,13 +149,18 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
   constexpr SkAlphaType kPlaneAlphaType = kPremul_SkAlphaType;
   auto* sii = provider_->SharedImageInterface();
   DCHECK(sii);
+
+  // These SharedImages will be written to (and later read from) via the raster
+  // interface. The correct usage depends on whether raster is OOP or is going
+  // over the GLES2 interface.
   uint32_t mailbox_usage;
   auto& caps = provider_->ContextCapabilities();
   if (caps.gpu_rasterization) {
     mailbox_usage = gpu::SHARED_IMAGE_USAGE_RASTER |
                     gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
   } else {
-    mailbox_usage = gpu::SHARED_IMAGE_USAGE_GLES2;
+    mailbox_usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                    gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
   }
 
   // Enabled with flags UseWritePixelsYUV and

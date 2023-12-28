@@ -67,9 +67,10 @@ class TargetFrequencyTriggerTest : public testing::Test {
   TargetFrequencyTriggerTest() {
     auto clock = std::make_unique<base::SimpleTestTickClock>();
     clock_ = clock.get();
+    backoff_level_provider_ = std::make_unique<FakeBackoffLevelProvider>();
     policy_ = std::make_unique<TargetFrequencyTriggerPolicy>(
         std::move(clock), base::Days(1.0f), 2.0f,
-        std::make_unique<FakeBackoffLevelProvider>());
+        backoff_level_provider_.get());
 
     // Start 10% into the period so +1 period doesn't put us exactly on the
     // rollover instant.
@@ -82,6 +83,7 @@ class TargetFrequencyTriggerTest : public testing::Test {
   TargetFrequencyTriggerPolicy* policy() { return policy_.get(); }
 
  private:
+  std::unique_ptr<BackoffLevelProvider> backoff_level_provider_;
   std::unique_ptr<TargetFrequencyTriggerPolicy> policy_;
   raw_ptr<base::SimpleTestTickClock> clock_;
 };

@@ -65,7 +65,7 @@ class ASH_EXPORT WindowPreviewView
   // |mirror_views_|.
   gfx::RectF GetUnionRect() const;
 
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 
   base::flat_map<aura::Window*, WindowMirrorView*> mirror_views_;
 

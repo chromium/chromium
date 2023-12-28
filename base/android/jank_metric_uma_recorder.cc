@@ -31,65 +31,88 @@ enum class PerScrollHistogramType {
 
 const char* GetPerScrollHistogramName(JankScenario scenario,
                                       int num_frames,
-                                      PerScrollHistogramType type) {
+                                      PerScrollHistogramType type,
+                                      bool with_scroll_size_suffix) {
 #define HISTOGRAM_NAME(hist_scenario, hist_type, length)     \
   "Android.FrameTimelineJank." #hist_scenario "." #hist_type \
   "."                                                        \
-  "PerScroll." #length
+  "PerScroll" #length
   if (scenario == JankScenario::WEBVIEW_SCROLLING) {
     if (type == PerScrollHistogramType::kPercentage) {
+      if (!with_scroll_size_suffix) {
+        return HISTOGRAM_NAME(WebviewScrolling, DelayedFramesPercentage,
+                              /*no suffix*/);
+      }
       if (num_frames <= 16) {
-        return HISTOGRAM_NAME(WebviewScrolling, DelayedFramesPercentage, Small);
+        return HISTOGRAM_NAME(WebviewScrolling, DelayedFramesPercentage,
+                              .Small);
       } else if (num_frames <= 64) {
         return HISTOGRAM_NAME(WebviewScrolling, DelayedFramesPercentage,
-                              Medium);
+                              .Medium);
       } else {
-        return HISTOGRAM_NAME(WebviewScrolling, DelayedFramesPercentage, Large);
+        return HISTOGRAM_NAME(WebviewScrolling, DelayedFramesPercentage,
+                              .Large);
       }
     } else if (type == PerScrollHistogramType::kMax) {
+      if (!with_scroll_size_suffix) {
+        return HISTOGRAM_NAME(WebviewScrolling, MissedVsyncsMax, /*no suffix*/);
+      }
       if (num_frames <= 16) {
-        return HISTOGRAM_NAME(WebviewScrolling, MissedVsyncsMax, Small);
+        return HISTOGRAM_NAME(WebviewScrolling, MissedVsyncsMax, .Small);
       } else if (num_frames <= 64) {
-        return HISTOGRAM_NAME(WebviewScrolling, MissedVsyncsMax, Medium);
+        return HISTOGRAM_NAME(WebviewScrolling, MissedVsyncsMax, .Medium);
       } else {
-        return HISTOGRAM_NAME(WebviewScrolling, MissedVsyncsMax, Large);
+        return HISTOGRAM_NAME(WebviewScrolling, MissedVsyncsMax, .Large);
       }
     } else {
       DCHECK_EQ(type, PerScrollHistogramType::kSum);
+      if (!with_scroll_size_suffix) {
+        return HISTOGRAM_NAME(WebviewScrolling, MissedVsyncsSum, /*no suffix*/);
+      }
       if (num_frames <= 16) {
-        return HISTOGRAM_NAME(WebviewScrolling, MissedVsyncsSum, Small);
+        return HISTOGRAM_NAME(WebviewScrolling, MissedVsyncsSum, .Small);
       } else if (num_frames <= 64) {
-        return HISTOGRAM_NAME(WebviewScrolling, MissedVsyncsSum, Medium);
+        return HISTOGRAM_NAME(WebviewScrolling, MissedVsyncsSum, .Medium);
       } else {
-        return HISTOGRAM_NAME(WebviewScrolling, MissedVsyncsSum, Large);
+        return HISTOGRAM_NAME(WebviewScrolling, MissedVsyncsSum, .Large);
       }
     }
   } else {
     DCHECK_EQ(scenario, JankScenario::FEED_SCROLLING);
     if (type == PerScrollHistogramType::kPercentage) {
+      if (!with_scroll_size_suffix) {
+        return HISTOGRAM_NAME(FeedScrolling, DelayedFramesPercentage,
+                              /*no suffix*/);
+      }
       if (num_frames <= 16) {
-        return HISTOGRAM_NAME(FeedScrolling, DelayedFramesPercentage, Small);
+        return HISTOGRAM_NAME(FeedScrolling, DelayedFramesPercentage, .Small);
       } else if (num_frames <= 64) {
-        return HISTOGRAM_NAME(FeedScrolling, DelayedFramesPercentage, Medium);
+        return HISTOGRAM_NAME(FeedScrolling, DelayedFramesPercentage, .Medium);
       } else {
-        return HISTOGRAM_NAME(FeedScrolling, DelayedFramesPercentage, Large);
+        return HISTOGRAM_NAME(FeedScrolling, DelayedFramesPercentage, .Large);
       }
     } else if (type == PerScrollHistogramType::kMax) {
+      if (!with_scroll_size_suffix) {
+        return HISTOGRAM_NAME(FeedScrolling, MissedVsyncsMax, /*no suffix*/);
+      }
       if (num_frames <= 16) {
-        return HISTOGRAM_NAME(FeedScrolling, MissedVsyncsMax, Small);
+        return HISTOGRAM_NAME(FeedScrolling, MissedVsyncsMax, .Small);
       } else if (num_frames <= 64) {
-        return HISTOGRAM_NAME(FeedScrolling, MissedVsyncsMax, Medium);
+        return HISTOGRAM_NAME(FeedScrolling, MissedVsyncsMax, .Medium);
       } else {
-        return HISTOGRAM_NAME(FeedScrolling, MissedVsyncsMax, Large);
+        return HISTOGRAM_NAME(FeedScrolling, MissedVsyncsMax, .Large);
       }
     } else {
       DCHECK_EQ(type, PerScrollHistogramType::kSum);
+      if (!with_scroll_size_suffix) {
+        return HISTOGRAM_NAME(FeedScrolling, MissedVsyncsSum, /*no suffix*/);
+      }
       if (num_frames <= 16) {
-        return HISTOGRAM_NAME(FeedScrolling, MissedVsyncsSum, Small);
+        return HISTOGRAM_NAME(FeedScrolling, MissedVsyncsSum, .Small);
       } else if (num_frames <= 64) {
-        return HISTOGRAM_NAME(FeedScrolling, MissedVsyncsSum, Medium);
+        return HISTOGRAM_NAME(FeedScrolling, MissedVsyncsSum, .Medium);
       } else {
-        return HISTOGRAM_NAME(FeedScrolling, MissedVsyncsSum, Large);
+        return HISTOGRAM_NAME(FeedScrolling, MissedVsyncsSum, .Large);
       }
     }
   }
@@ -133,17 +156,39 @@ void EmitMetrics(JankScenario scenario,
       scenario != JankScenario::FEED_SCROLLING) {
     return;
   }
+  // Emit non-bucketed per scroll metrics.
   base::UmaHistogramPercentage(
       GetPerScrollHistogramName(scenario, num_presented_frames,
-                                PerScrollHistogramType::kPercentage),
+                                PerScrollHistogramType::kPercentage,
+                                /*with_scroll_size_suffix=*/false),
       delayed_frames_percentage);
   base::UmaHistogramCustomCounts(
       GetPerScrollHistogramName(scenario, num_presented_frames,
-                                PerScrollHistogramType::kMax),
+                                PerScrollHistogramType::kMax,
+                                /*with_scroll_size_suffix=*/false),
       missed_vsyncs_max, kVsyncCountsMin, kVsyncCountsMax, kVsyncCountsBuckets);
   base::UmaHistogramCustomCounts(
       GetPerScrollHistogramName(scenario, num_presented_frames,
-                                PerScrollHistogramType::kSum),
+                                PerScrollHistogramType::kSum,
+                                /*with_scroll_size_suffix=*/false),
+      missed_vsyncs_sum, kVsyncCountsMin, kVsyncCountsMax, kVsyncCountsBuckets);
+
+  // Emit bucketed per scroll metrics where scrolls are divided into three
+  // buckets Small, Medium, Large.
+  base::UmaHistogramPercentage(
+      GetPerScrollHistogramName(scenario, num_presented_frames,
+                                PerScrollHistogramType::kPercentage,
+                                /*with_scroll_size_suffix=*/true),
+      delayed_frames_percentage);
+  base::UmaHistogramCustomCounts(
+      GetPerScrollHistogramName(scenario, num_presented_frames,
+                                PerScrollHistogramType::kMax,
+                                /*with_scroll_size_suffix=*/true),
+      missed_vsyncs_max, kVsyncCountsMin, kVsyncCountsMax, kVsyncCountsBuckets);
+  base::UmaHistogramCustomCounts(
+      GetPerScrollHistogramName(scenario, num_presented_frames,
+                                PerScrollHistogramType::kSum,
+                                /*with_scroll_size_suffix=*/true),
       missed_vsyncs_sum, kVsyncCountsMin, kVsyncCountsMax, kVsyncCountsBuckets);
 }
 

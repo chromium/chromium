@@ -112,8 +112,7 @@ class VpnDetailedViewPixelTest : public AshTestBase {
     vpn_detailed_view_->OnGetNetworkStateList(std::move(networks));
   }
 
-  raw_ptr<VpnDetailedView, DanglingUntriaged | ExperimentalAsh>
-      vpn_detailed_view_ = nullptr;
+  raw_ptr<VpnDetailedView, DanglingUntriaged> vpn_detailed_view_ = nullptr;
 };
 
 TEST_F(VpnDetailedViewPixelTest, OnlyBuiltInVpn) {

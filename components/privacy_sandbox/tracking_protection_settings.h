@@ -42,6 +42,9 @@ class TrackingProtectionSettings
   // (i.e. without mitigations).
   bool AreAllThirdPartyCookiesBlocked() const;
 
+  // Returns whether IP protection is enabled.
+  bool IsIpProtectionEnabled() const;
+
   // From TrackingProtectionOnboarding::Observer
   void OnTrackingProtectionOnboardingUpdated(
       TrackingProtectionOnboarding::OnboardingStatus onboarding_status)
@@ -54,6 +57,7 @@ class TrackingProtectionSettings
   void OnDoNotTrackEnabledPrefChanged();
   void OnBlockAllThirdPartyCookiesPrefChanged();
   void OnTrackingProtection3pcdPrefChanged();
+  void OnIpProtectionPrefChanged();
 
   base::ObserverList<TrackingProtectionSettingsObserver>::Unchecked observers_;
   PrefChangeRegistrar pref_change_registrar_;

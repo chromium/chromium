@@ -128,10 +128,7 @@ MainThreadTaskQueue::MainThreadTaskQueue(
       agent_group_scheduler_(params.agent_group_scheduler),
       frame_scheduler_(params.frame_scheduler) {
   task_runner_with_default_task_type_ =
-      base::FeatureList::IsEnabled(
-          features::kUseBlinkSchedulerTaskRunnerWithCustomDeleter)
-          ? WrapTaskRunner(task_queue_->task_runner())
-          : task_queue_->task_runner();
+      WrapTaskRunner(task_queue_->task_runner());
   // Throttling needs |should_notify_observers| to get task timing.
   DCHECK(!params.queue_traits.can_be_throttled || spec.should_notify_observers)
       << "Throttled queue is not supported with |!should_notify_observers|";
@@ -352,20 +349,13 @@ void MainThreadTaskQueue::QueueTraits::WriteIntoTrace(
 scoped_refptr<base::SingleThreadTaskRunner>
 MainThreadTaskQueue::CreateTaskRunner(TaskType task_type) {
   CHECK(task_queue_);
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      task_queue_->CreateTaskRunner(static_cast<int>(task_type));
-  if (base::FeatureList::IsEnabled(
-          features::kUseBlinkSchedulerTaskRunnerWithCustomDeleter)) {
-    return WrapTaskRunner(std::move(task_runner));
-  }
-  return task_runner;
+  return WrapTaskRunner(
+      task_queue_->CreateTaskRunner(static_cast<int>(task_type)));
 }
 
 scoped_refptr<BlinkSchedulerSingleThreadTaskRunner>
 MainThreadTaskQueue::WrapTaskRunner(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kUseBlinkSchedulerTaskRunnerWithCustomDeleter));
   // We need to pass the cleanup task runner to task task queues that may stop
   // running tasks before the main thread shuts down as a backup for object
   // deleter tasks.

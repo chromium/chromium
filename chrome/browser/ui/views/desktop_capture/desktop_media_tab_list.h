@@ -31,8 +31,9 @@ class TabListViewObserver;
 // * TabListViewObserver, which is a TableViewObserver that notifies the
 //   controller when the user takes an action on the TableView.
 class DesktopMediaTabList : public DesktopMediaListController::ListView {
+  METADATA_HEADER(DesktopMediaTabList, DesktopMediaListController::ListView)
+
  public:
-  METADATA_HEADER(DesktopMediaTabList);
   DesktopMediaTabList(DesktopMediaListController* controller,
                       const std::u16string& accessible_name);
   DesktopMediaTabList(const DesktopMediaTabList&) = delete;

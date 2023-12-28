@@ -51,26 +51,6 @@ class SafeBrowsingService;
 // extended reporting preferences.
 class CertificateReportingService : public KeyedService {
  public:
-  // Events for UMA. Do not rename or remove values, add new values to the end.
-  // Public for testing.
-  enum class ReportOutcome {
-    // A report is submitted. This includes failed and successful uploads as
-    // well as uploads that never return a response.
-    SUBMITTED = 0,
-    // A report submission failed, either because of a net error or a non-HTTP
-    // 200 response from the server.
-    FAILED = 1,
-    // A report submission was successfully sent, receiving an HTTP 200 response
-    // from the server.
-    SUCCESSFUL = 2,
-    // A report was dropped from the reporting queue because it was older
-    // than report TTL, or it was ignored because the queue was full and the
-    // report was older than the oldest report in the queue. Does not include
-    // reports that were cleared because of a SafeBrowsing preference change.
-    DROPPED_OR_IGNORED = 3,
-    EVENT_COUNT = 4
-  };
-
   // Represents a report to be sent.
   struct Report {
     int report_id;
@@ -174,9 +154,6 @@ class CertificateReportingService : public KeyedService {
 
     base::WeakPtrFactory<Reporter> weak_factory_{this};
   };
-
-  // Public for testing.
-  static const char kReportEventHistogram[];
 
   CertificateReportingService(
       safe_browsing::SafeBrowsingService* safe_browsing_service,

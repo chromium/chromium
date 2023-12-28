@@ -17,8 +17,9 @@ class ManageMigrationUiController;
 // The icon shown in location bar for the intermediate local card migration
 // bubble.
 class LocalCardMigrationIconView : public PageActionIconView {
+  METADATA_HEADER(LocalCardMigrationIconView, PageActionIconView)
+
  public:
-  METADATA_HEADER(LocalCardMigrationIconView);
   LocalCardMigrationIconView(
       CommandUpdater* command_updater,
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,

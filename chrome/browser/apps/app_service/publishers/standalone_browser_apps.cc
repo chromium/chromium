@@ -92,8 +92,9 @@ AppPtr StandaloneBrowserApps::CreateStandaloneBrowserApp() {
       InstallSource::kSystem);
   app->short_name = short_name;
 
-  if (crosapi::browser_util::IsAshWebBrowserEnabled())
+  if (crosapi::browser_util::IsAshWebBrowserEnabled()) {
     app->additional_search_terms.push_back("chrome");
+  }
 
   app->icon_key = std::move(*CreateIconKey(/*is_browser_load_success=*/true));
   app->searchable = true;
@@ -110,8 +111,9 @@ AppPtr StandaloneBrowserApps::CreateStandaloneBrowserApp() {
 void StandaloneBrowserApps::Initialize() {
   auto* browser_manager = crosapi::BrowserManager::Get();
   // |browser_manager| may be null in tests. For tests, assume Lacros is ready.
-  if (browser_manager && !observation_.IsObserving())
+  if (browser_manager && !observation_.IsObserving()) {
     observation_.Observe(browser_manager);
+  }
 
   RegisterPublisher(AppType::kStandaloneBrowser);
 
@@ -148,8 +150,9 @@ void StandaloneBrowserApps::GetMenuModel(
 void StandaloneBrowserApps::OpenNativeSettings(const std::string& app_id) {
   auto* browser_manager = crosapi::BrowserManager::Get();
   // `browser_manager` may be null in tests.
-  if (!browser_manager)
+  if (!browser_manager) {
     return;
+  }
   browser_manager->SwitchToTab(
       chrome::GetSettingsUrl(chrome::kContentSettingsSubPage),
       /*path_behavior=*/NavigateParams::RESPECT);

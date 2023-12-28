@@ -96,18 +96,18 @@ class ASH_EXPORT FeatureTilesContainerView : public views::View,
   void UpdateTotalPages();
 
   // Owned by `UnifiedSystemTrayBubble`.
-  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> controller_;
+  const raw_ptr<UnifiedSystemTrayController> controller_;
 
   // Owned by `UnifiedSystemTrayModel`.
-  const raw_ptr<PaginationModel, ExperimentalAsh> pagination_model_;
+  const raw_ptr<PaginationModel> pagination_model_;
 
   // List of pages that contain `RowContainer` elements.
   // Owned by views hierarchy.
-  std::vector<PageContainer*> pages_;
+  std::vector<raw_ptr<PageContainer, VectorExperimental>> pages_;
 
   // List of rows that contain `FeatureTile` elements.
   // Owned by views hierarchy.
-  std::vector<RowContainer*> rows_;
+  std::vector<raw_ptr<RowContainer, VectorExperimental>> rows_;
 
   // Number of rows that can be displayed based on the available
   // max height.

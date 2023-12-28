@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -180,7 +181,7 @@ absl::optional<syncer::ModelError> DeskSyncBridge::MergeFullSyncData(
 absl::optional<syncer::ModelError> DeskSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  std::vector<const DeskTemplate*> added_or_updated;
+  std::vector<raw_ptr<const DeskTemplate, VectorExperimental>> added_or_updated;
   std::vector<base::Uuid> removed;
   std::unique_ptr<ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
@@ -280,11 +281,12 @@ std::string DeskSyncBridge::GetStorageKey(
 DeskModel::GetAllEntriesResult DeskSyncBridge::GetAllEntries() {
   if (!IsReady()) {
     LOG(WARNING) << "Unable to get all entries: Not Ready";
-    return GetAllEntriesResult(GetAllEntriesStatus::kFailure,
-                               std::vector<const DeskTemplate*>());
+    return GetAllEntriesResult(
+        GetAllEntriesStatus::kFailure,
+        std::vector<raw_ptr<const DeskTemplate, VectorExperimental>>());
   }
 
-  std::vector<const DeskTemplate*> entries;
+  std::vector<raw_ptr<const DeskTemplate, VectorExperimental>> entries;
 
   for (const auto& it : policy_entries_)
     entries.push_back(it.get());
@@ -534,7 +536,8 @@ void DeskSyncBridge::NotifyDeskModelLoaded() {
 }
 
 void DeskSyncBridge::NotifyRemoteDeskTemplateAddedOrUpdated(
-    const std::vector<const DeskTemplate*>& new_entries) {
+    const std::vector<raw_ptr<const DeskTemplate, VectorExperimental>>&
+        new_entries) {
   if (new_entries.empty()) {
     return;
   }

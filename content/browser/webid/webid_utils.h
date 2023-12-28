@@ -18,6 +18,7 @@ enum class IdpSigninStatus;
 
 namespace content {
 class BrowserContext;
+enum class FedCmDisconnectStatus;
 enum class FedCmIdpSigninStatusMode;
 class FedCmMetrics;
 class FederatedIdentityApiPermissionContextDelegate;
@@ -75,6 +76,11 @@ void UpdateIdpSigninStatusForAccountsEndpointResponse(
 // FederatedAuthRequestResult.
 CONTENT_EXPORT std::string GetConsoleErrorMessageFromResult(
     blink::mojom::FederatedAuthRequestResult result);
+
+// Returns a string to be used as the console error message for a disconnect()
+// call.
+CONTENT_EXPORT std::string GetDisconnectConsoleErrorMessage(
+    FedCmDisconnectStatus disconnect_status_for_metrics);
 
 FedCmIdpSigninStatusMode GetIdpSigninStatusMode(RenderFrameHost& host,
                                                 const url::Origin& idp_origin);

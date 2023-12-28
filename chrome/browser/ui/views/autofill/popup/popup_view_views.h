@@ -56,9 +56,9 @@ class PopupViewViews : public PopupBaseView,
                        public AutofillPopupView,
                        public PopupRowView::SelectionDelegate,
                        public ExpandablePopupParentView {
- public:
-  METADATA_HEADER(PopupViewViews);
+  METADATA_HEADER(PopupViewViews, PopupBaseView)
 
+ public:
   using RowPointer =
       absl::variant<PopupRowView*, PopupSeparatorView*, PopupWarningView*>;
 
@@ -179,10 +179,10 @@ class PopupViewViews : public PopupBaseView,
 
   bool CanShowDropdownInBounds(const gfx::Rect& bounds) const;
 
-  // Opens a sub-popup on a new cell (and closes the open one if any), or just
+  // Opens a sub-popup on a new row (and closes the open one if any), or just
   // closes the existing if `std::nullopt` is passed.
-  void SetCellWithOpenSubPopup(std::optional<CellIndex> cell_index,
-                               PopupCellSelectionSource selection_source);
+  void SetRowWithOpenSubPopup(std::optional<size_t> row_index,
+                              PopupCellSelectionSource selection_source);
 
   // Controller for this view.
   base::WeakPtr<AutofillPopupController> controller_ = nullptr;
@@ -193,9 +193,9 @@ class PopupViewViews : public PopupBaseView,
   // The index of the row with a selected cell.
   std::optional<size_t> row_with_selected_cell_;
 
-  // The latest cell which was set as having a sub-popup open. Storing it
-  // is required to maintain the invariant of at most one such a cell.
-  std::optional<CellIndex> open_sub_popup_cell_;
+  // The latest row which was set as having a sub-popup open. Storing it
+  // is required to maintain the invariant of at most one such a row.
+  std::optional<size_t> row_with_open_sub_popup_;
 
   std::vector<RowPointer> rows_;
   raw_ptr<views::ScrollView> scroll_view_ = nullptr;
@@ -204,6 +204,16 @@ class PopupViewViews : public PopupBaseView,
 
   base::OneShotTimer open_sub_popup_timer_;
   base::OneShotTimer no_selection_sub_popup_close_timer_;
+
+  // Defines whether the popup handles keyboard events like UP/DOWN/ESC/etc.
+  // This value is important for defining which popup handles the event when
+  // a chain of (sub-)popups is open: having no focus for a sub-popup means
+  // that its parent will take care of handling it.
+  // It's automatically set `true` for the root popup (so that it always handles
+  // events) and when something is selected in sub-popups. The initial value is
+  // set in `Show()`, but after that once it is `true` the value never gets back
+  // to `false.`
+  bool has_keyboard_focus_ = false;
 
   base::WeakPtrFactory<PopupViewViews> weak_ptr_factory_{this};
 };

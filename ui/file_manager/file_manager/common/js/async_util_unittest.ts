@@ -4,7 +4,7 @@
 
 import {assertArrayEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {AsyncQueue, RateLimiter, Task} from './async_util.js';
+import {AsyncQueue, RateLimiter, type Task} from './async_util.js';
 import {waitUntil} from './test_error_reporting.js';
 
 /** Checks that the order of the tasks is preserved. */

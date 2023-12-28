@@ -60,10 +60,14 @@ class AvatarToolbarButton : public ToolbarButton {
   void ShowSignInText();
   // Contracts the pill so that no text is shown.
   void HideSignInText();
-
-  void DisableActionButton();
-  void ResetActionButton();
 #endif
+
+  // Control whether the button action is active or not.
+  // One reason to disable the action; when a bubble is shown from this button
+  // (and not the profile menu), we want to disable the button action, however
+  // the button should remain in an "active" state from a UI perspective.
+  void SetButtonActionDisabled(bool disabled);
+  bool IsButtonActionDisabled() const;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -97,21 +101,6 @@ class AvatarToolbarButton : public ToolbarButton {
   FRIEND_TEST_ALL_PREFIXES(AvatarToolbarButtonTest,
                            HighlightMeetsMinimumContrast);
 
-  // Struct to store the button state before overriding the disabled state.
-  class DisabledStateHelper {
-   public:
-    void Init(bool previous_enable_state, SkColor previous_disabled_text_color);
-
-    bool GetPreviousEnableState() const;
-    SkColor GetPreviousDisabledTextColor() const;
-
-   private:
-    bool init_ = false;
-
-    bool previous_enable_state_ = true;
-    SkColor previous_disabled_text_color_;
-  };
-
   // ui::PropertyHandler:
   void AfterPropertyChange(const void* key, int64_t old_value) override;
 
@@ -137,7 +126,10 @@ class AvatarToolbarButton : public ToolbarButton {
   // separate animation.
   static base::TimeDelta g_iph_min_delay_after_creation;
 
-  DisabledStateHelper disabled_state_helper_;
+  // Controls the action of the button, on press.
+  // Setting this to true will stop the button reaction but the button will
+  // remain in active state, not affecting it's UI in any way.
+  bool button_action_disabled_ = false;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 

@@ -112,8 +112,7 @@ class OfferNotificationIconViewInteractiveTest : public InteractiveBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList test_features_{
-      commerce::kShowDiscountOnNavigation};
+  base::test::ScopedFeatureList test_features_{};
   base::CallbackListSubscription create_services_subscription_;
   base::WeakPtrFactory<OfferNotificationIconViewInteractiveTest>
       weak_ptr_factory_{this};

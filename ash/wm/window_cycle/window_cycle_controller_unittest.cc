@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
@@ -73,6 +73,7 @@
 #include "ui/display/manager/display_layout_store.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/scoped_display_for_new_windows.h"
+#include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/test/event_generator.h"
@@ -179,7 +180,7 @@ class WindowCycleListTestApi {
   }
 
  private:
-  const raw_ptr<const WindowCycleList, ExperimentalAsh> cycle_list_;
+  const raw_ptr<const WindowCycleList> cycle_list_;
 };
 
 using aura::Window;
@@ -689,7 +690,7 @@ TEST_F(WindowCycleControllerTest, SelectingHidesAppList) {
 // mode.
 TEST_F(WindowCycleControllerTest, SelectingDoesNotHideAppListInTabletMode) {
   TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_TRUE(TabletModeControllerTestApi().IsTabletModeStarted());
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_TRUE(Shell::Get()->app_list_controller()->IsHomeScreenVisible());
 
   std::unique_ptr<aura::Window> window0(CreateTestWindowInShellWithId(0));
@@ -2018,8 +2019,7 @@ class ModeSelectionWindowCycleControllerTest
   }
 
  private:
-  raw_ptr<ui::test::EventGenerator, DanglingUntriaged | ExperimentalAsh>
-      generator_;
+  raw_ptr<ui::test::EventGenerator, DanglingUntriaged> generator_;
 };
 
 // Tests that when user taps tab slider buttons, the active mode should
@@ -3299,17 +3299,14 @@ class MultiUserWindowCycleControllerTest
   }
 
  private:
-  raw_ptr<ui::test::EventGenerator, DanglingUntriaged | ExperimentalAsh>
-      generator_;
+  raw_ptr<ui::test::EventGenerator, DanglingUntriaged> generator_;
 
   std::unique_ptr<ShelfViewTestAPI> shelf_view_test_;
 
   std::unique_ptr<MultiUserWindowManager> multi_user_window_manager_;
 
-  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged | ExperimentalAsh>
-      user_1_prefs_ = nullptr;
-  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged | ExperimentalAsh>
-      user_2_prefs_ = nullptr;
+  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged> user_1_prefs_ = nullptr;
+  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged> user_2_prefs_ = nullptr;
 };
 
 // Tests that when the active user prefs' |prefs::kAltTabPerDesk| is updated,

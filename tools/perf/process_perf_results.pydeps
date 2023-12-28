@@ -6,7 +6,6 @@
 ../../build/android/pylib/utils/__init__.py
 ../../build/android/pylib/utils/decorators.py
 ../../build/android/pylib/utils/logdog_helper.py
-../../build/android/pylib/utils/shared_preference_utils.py
 ../../components/variations/service/generate_ui_string_overrider.py
 ../../third_party/catapult/common/py_trace_event/py_trace_event/__init__.py
 ../../third_party/catapult/common/py_trace_event/py_trace_event/trace_event.py

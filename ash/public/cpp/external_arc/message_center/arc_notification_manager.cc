@@ -16,8 +16,8 @@
 #include "ash/public/cpp/external_arc/message_center/metrics_utils.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
 #include "ash/public/cpp/message_center/arc_notification_manager_delegate.h"
-#include "ash/system/message_center/message_view_factory.h"
-#include "ash/system/message_center/metrics_utils.h"
+#include "ash/system/notification_center/message_view_factory.h"
+#include "ash/system/notification_center/metrics_utils.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -76,7 +76,7 @@ class DoNotDisturbManager : public message_center::MessageCenterObserver {
   }
 
  private:
-  const raw_ptr<ArcNotificationManager, ExperimentalAsh> manager_;
+  const raw_ptr<ArcNotificationManager> manager_;
 };
 
 class VisibilityManager : public message_center::MessageCenterObserver {
@@ -103,7 +103,7 @@ class VisibilityManager : public message_center::MessageCenterObserver {
     return MessageCenterVisibility::VISIBILITY_TRANSIENT;
   }
 
-  const raw_ptr<ArcNotificationManager, ExperimentalAsh> manager_;
+  const raw_ptr<ArcNotificationManager> manager_;
 };
 
 }  // namespace

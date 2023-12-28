@@ -47,6 +47,7 @@ _allowed_compiler_options = [
     'strictPropertyInitialization',
     'typeRoots',
     'types',
+    'useDefineForClassFields',
 ]
 
 
@@ -117,9 +118,12 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       'ash/webui/diagnostics_ui/',
       'ash/webui/face_ml_app_ui/',
       'ash/webui/file_manager/resources/labs/',
-      # TODO(b/310963279): Migrate os_feedback_ui to TypeScript and remove
+      # TODO(b/314827247): Migrate media_app_ui to TypeScript and remove
       # exception.
-      'ash/webui/os_feedback_ui/',
+      'ash/webui/media_app_ui/',
+      # TODO(b/315002705): Migrate shimless_rma to TypeScript and remove
+      # exception.
+      'ash/webui/shimless_rma/',
       'ash/webui/shortcut_customization_ui/',
       'ash/webui/sample_system_web_app_ui/',
       # TODO(b/267329383): Migrate A11y to TypeScript.
@@ -136,6 +140,8 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       # remove exception.
       'chrome/browser/resources/bluetooth_internals',
       'chrome/browser/resources/chromeos/accessibility',
+      # TODO(crbug.com/1511758): Migrate to TypeScript.
+      'chrome/browser/resources/device_log',
       'chrome/test/data/webui',
       'chrome/test/data/webui/chromeos',
       'chrome/test/data/webui/chromeos/ash_common',
@@ -175,7 +181,7 @@ def isInAshFolder(path):
   ash_folders = [
       # Source code folders
       'ash/webui',
-      'chrome/browser/resources/ash/settings',
+      'chrome/browser/resources/ash',
       'chrome/browser/resources/chromeos',
       'chrome/browser/resources/nearby_share',
       'ui/file_manager',
@@ -204,12 +210,6 @@ def isDependencyAllowed(is_ash_target, raw_dep, target_path):
 def isMappingAllowed(is_ash_target, target_path, mapping_path):
   if is_ash_target:
     return True
-
-  # TODO(https://crbug.com/1506304): Remove these incorrect dependencies.
-  exceptions = [
-      'chrome/browser/resources/inline_login',
-      'chrome/test/data/webui/inline_login',
-  ]
 
   return not isInAshFolder(mapping_path) or target_path in exceptions
 

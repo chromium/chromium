@@ -164,7 +164,7 @@ class ParentAccessControllerImplTest : public LoginTestBase {
 
   base::HistogramTester histogram_tester_;
 
-  raw_ptr<PinRequestView, DanglingUntriaged | ExperimentalAsh> view_ =
+  raw_ptr<PinRequestView, DanglingUntriaged> view_ =
       nullptr;  // Owned by test widget view hierarchy.
 };
 

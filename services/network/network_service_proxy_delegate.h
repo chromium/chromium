@@ -43,11 +43,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
 
   ~NetworkServiceProxyDelegate() override;
 
-  void SetProxyResolutionService(
-      net::ProxyResolutionService* proxy_resolution_service) {
-    proxy_resolution_service_ = proxy_resolution_service;
-  }
-
   void SetIpProtectionConfigCache(
       std::unique_ptr<IpProtectionConfigCache> ipp_config_cache) {
     ipp_config_cache_ = std::move(ipp_config_cache);
@@ -68,6 +63,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
       const net::ProxyChain& proxy_chain,
       size_t chain_index,
       const net::HttpResponseHeaders& response_headers) override;
+  void SetProxyResolutionService(
+      net::ProxyResolutionService* proxy_resolution_service) override;
 
   IpProtectionConfigCache* GetIpProtectionConfigCache() {
     return ipp_config_cache_.get();
@@ -112,8 +109,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   mojo::Remote<mojom::CustomProxyConnectionObserver> observer_;
   raw_ptr<NetworkServiceProxyAllowList> network_service_proxy_allow_list_;
 
-  raw_ptr<net::ProxyResolutionService, DanglingUntriaged>
-      proxy_resolution_service_ = nullptr;
+  raw_ptr<net::ProxyResolutionService> proxy_resolution_service_ = nullptr;
 
   std::unique_ptr<IpProtectionConfigCache> ipp_config_cache_;
 };

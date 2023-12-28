@@ -103,11 +103,10 @@ class FastPairBluetoothConfigDelegate
   std::vector<bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr>
       fast_pairable_device_properties_;
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
-  raw_ptr<bluetooth_config::AdapterStateController, ExperimentalAsh>
-      adapter_state_controller_ = nullptr;
-  raw_ptr<bluetooth_config::DeviceNameManager, ExperimentalAsh>
-      device_name_manager_ = nullptr;
+  raw_ptr<Delegate> delegate_;
+  raw_ptr<bluetooth_config::AdapterStateController> adapter_state_controller_ =
+      nullptr;
+  raw_ptr<bluetooth_config::DeviceNameManager> device_name_manager_ = nullptr;
 };
 
 }  // namespace quick_pair

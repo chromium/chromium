@@ -25,8 +25,9 @@ class StyledLabel;
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kPriceTrackingBubbleDialogId);
 
 class PriceTrackingBubbleDialogView : public LocationBarBubbleDelegateView {
+  METADATA_HEADER(PriceTrackingBubbleDialogView, LocationBarBubbleDelegateView)
+
  public:
-  METADATA_HEADER(PriceTrackingBubbleDialogView);
   using OnTrackPriceCallback = base::OnceCallback<void(bool)>;
 
   enum Type {

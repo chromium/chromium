@@ -357,14 +357,25 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Sync.CrossUserSharingPublicPrivateKeyInitializedOnStartup"
-    enum="Boolean" expires_after="2024-05-19">
+<histogram name="Sync.CrossUserSharingDecryptionResult"
+    enum="CrossUserSharingDecryptionResult" expires_after="2024-11-12">
   <owner>rushans@google.com</owner>
   <owner>mmoskvitin@google.com</owner>
   <component>Services&gt;Sync</component>
   <summary>
-    Records whether Nigori contains cross user sharing key pair. Recorded on
-    browser startup if there is valid local data.
+    Records the result of decryption of incoming password sharing invitations.
+    Recorded for each incoming invitation received from the server.
+  </summary>
+</histogram>
+
+<histogram name="Sync.CrossUserSharingKeyPairState"
+    enum="CrossUserSharingKeyPairState" expires_after="2024-11-12">
+  <owner>rushans@google.com</owner>
+  <owner>mmoskvitin@google.com</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records the state of cross user sharing key pair on browser startup (or
+    profile load) when Nigori local data is valid.
   </summary>
 </histogram>
 
@@ -473,7 +484,9 @@ chromium-metrics-reviews@google.com.
     NOTE: This does NOT include OS datatypes. Use Sync.CustomOSSync for those.
 
     See also &quot;Sync.SelectedTypesInTransportMode&quot; which is the
-    corresponding histogram for Sync-transport users.
+    corresponding histogram for Sync-transport users, and
+    &quot;Sync.SyncEverything2&quot; which is the histogram for whether the user
+    has selected the &quot;Sync Everything&quot; option.
   </summary>
 </histogram>
 
@@ -710,7 +723,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.InvalidBookmarkSpecifics"
-    enum="InvalidBookmarkSpecificsError" expires_after="2024-04-23">
+    enum="InvalidBookmarkSpecificsError" expires_after="2024-06-23">
   <owner>mastiz@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <component>Services&gt;Sync</component>
@@ -850,7 +863,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeCommitWithDepletedQuota" enum="SyncModelTypes"
-    expires_after="2024-02-04">
+    expires_after="2024-11-04">
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -885,7 +898,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeCount4{SyncModelType}" units="entries"
-    expires_after="2024-04-24">
+    expires_after="2024-06-23">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -898,7 +911,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeEntityChange3{SyncModelType}"
-    enum="SyncEntityChange" expires_after="2024-04-24">
+    enum="SyncEntityChange" expires_after="2024-06-23">
   <owner>treib@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <component>Services&gt;Sync</component>
@@ -948,7 +961,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeInitialUpdateReceived" enum="SyncModelTypes"
-    expires_after="2024-04-16">
+    expires_after="2024-06-16">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -1070,7 +1083,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeUpdateDrop.{Reason}" enum="SyncModelTypes"
-    expires_after="2024-04-24">
+    expires_after="2024-06-23">
   <owner>treib@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <component>Services&gt;Sync</component>
@@ -1137,19 +1150,22 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Sync.NonReflectionUpdateFreshnessPossiblySkewed2{SyncModelType}"
-    units="ms" expires_after="2024-04-24">
+    units="ms" expires_after="2024-06-23">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
     Freshness of the sync data per received sync entity update, excluding
-    reflections. The time represents the clock difference from the model being
-    modified (usually on another device) until the change is processing by this
-    instance of the browser. The time is capped at 1 week. Beware of potential
-    clock skew due to two clients being involved.
+    reflections, for {SyncModelType}. The time represents the clock difference
+    from the model being modified (usually on another device) until the change
+    is processing by this instance of the browser. The time is capped at 1 week.
+    Beware of potential clock skew due to two clients being involved.
   </summary>
   <token key="SyncModelType" variants="SyncModelType">
-    <variant name="" summary="Any type"/>
+    <variant name=""
+        summary="any data type. NOTE that changes in this histogram are often
+                 caused by data types being introduced or retired, so look at
+                 the per-data-type splits"/>
   </token>
 </histogram>
 
@@ -1933,7 +1949,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.TrustedVaultLocalDataDecryptionIsSuccessful"
-    enum="BooleanSuccess" expires_after="2024-04-08">
+    enum="BooleanSuccess" expires_after="2024-06-09">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>

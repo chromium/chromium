@@ -204,8 +204,8 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
 
   // Create ad vector and its first entry.
   synth_interest_group.interest_group.ads.emplace();
-  synth_interest_group.interest_group.ads.value().emplace_back();
-  synth_interest_group.interest_group.ads.value()[0].render_url = render_url;
+  synth_interest_group.interest_group.ads->emplace_back(
+      render_url, /*metadata=*/absl::nullopt);
 
   absl::optional<double> bid_val = bid_dict->FindDouble("bid");
   if (!bid_val || bid_val.value() <= 0) {
@@ -381,7 +381,7 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
       *bid_val,
       /*bid_currency=*/bid_currency,
       /*ad_cost=*/ad_cost,
-      /*ad_descriptor=*/blink::AdDescriptor(bid_ad->render_url),
+      /*ad_descriptor=*/blink::AdDescriptor(GURL(bid_ad->render_url())),
       /*ad_component_descriptors=*/std::move(ad_components),
       /*modeling_signals=*/
       static_cast<absl::optional<uint16_t>>(modeling_signals),

@@ -6,6 +6,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -95,10 +96,10 @@ struct PrecedenceOverAutocompleteParams {
   // These values denote what type the field was viewed by html, server and
   // heuristic prediction.
   const HtmlFieldType html_field_type;
-  const ServerFieldType server_type;
-  const ServerFieldType heuristic_type;
+  const FieldType server_type;
+  const FieldType heuristic_type;
   // This value denotes what `ComputedType` should return as field type.
-  const ServerFieldType expected_result;
+  const FieldType expected_result;
 };
 
 class PrecedenceOverAutocompleteTest
@@ -281,7 +282,7 @@ INSTANTIATE_TEST_SUITE_P(
 // return value of the aforementioned function is.
 struct AutocompleteUnrecognizedTypeTestCase {
   // Either server or heuristic type - this doesn't matter for these tests.
-  ServerFieldType predicted_type;
+  FieldType predicted_type;
   // If the predicted type should be treated as a server overwrite. Server
   // overwrites already take precedence over ac=unrecognized.
   bool is_server_overwrite = false;
@@ -337,10 +338,10 @@ struct AutofillLocalHeuristicsOverridesParams {
   // These values denote what type the field was classified as html, server and
   // heuristic prediction.
   const HtmlFieldType html_field_type;
-  const ServerFieldType server_type;
-  const ServerFieldType heuristic_type;
+  const FieldType server_type;
+  const FieldType heuristic_type;
   // This value denotes what `ComputedType` should return as field type.
-  const ServerFieldType expected_result;
+  const FieldType expected_result;
 };
 
 class AutofillLocalHeuristicsOverridesTest
@@ -446,6 +447,57 @@ INSTANTIATE_TEST_SUITE_P(
             .server_type = ADDRESS_HOME_CITY,
             .heuristic_type = ADDRESS_HOME_APT_NUM,
             .expected_result = ADDRESS_HOME_CITY}));
+
+// Tests that consecutive identical events are not added twice to the event log.
+TEST(AutofillFieldLogEventTypeTest, AppendLogEventIfNotRepeated) {
+  // The following three FieldLogEventTypes are arbitrary besides being of
+  // distinct types.
+  AutofillField::FieldLogEventType a = AskForValuesToFillFieldLogEvent{
+      .has_suggestion = OptionalBoolean::kFalse,
+      .suggestion_is_shown = OptionalBoolean::kFalse};
+  AutofillField::FieldLogEventType a2 = AskForValuesToFillFieldLogEvent{
+      .has_suggestion = OptionalBoolean::kTrue,
+      .suggestion_is_shown = OptionalBoolean::kTrue};
+  AutofillField::FieldLogEventType b =
+      TriggerFillFieldLogEvent{.data_type = FillDataType::kUndefined,
+                               .associated_country_code = "DE",
+                               .timestamp = AutofillClock::Now()};
+  AutofillField::FieldLogEventType c = FillFieldLogEvent{
+      .fill_event_id = absl::get<TriggerFillFieldLogEvent>(b).fill_event_id,
+      .had_value_before_filling = OptionalBoolean::kTrue,
+      .autofill_skipped_status =
+          FieldFillingSkipReason::kAutofilledFieldsNotRefill,
+      .was_autofilled = OptionalBoolean::kTrue,
+      .had_value_after_filling = OptionalBoolean::kTrue};
+
+  AutofillField f;
+  EXPECT_TRUE(f.field_log_events().empty());
+
+  f.AppendLogEventIfNotRepeated(a);
+  EXPECT_EQ(f.field_log_events().size(), 1u);
+  f.AppendLogEventIfNotRepeated(a);
+  EXPECT_EQ(f.field_log_events().size(), 1u);
+
+  f.AppendLogEventIfNotRepeated(a2);
+  EXPECT_EQ(f.field_log_events().size(), 2u);
+  f.AppendLogEventIfNotRepeated(a2);
+  EXPECT_EQ(f.field_log_events().size(), 2u);
+
+  f.AppendLogEventIfNotRepeated(b);
+  EXPECT_EQ(f.field_log_events().size(), 3u);
+  f.AppendLogEventIfNotRepeated(b);
+  EXPECT_EQ(f.field_log_events().size(), 3u);
+
+  f.AppendLogEventIfNotRepeated(c);
+  EXPECT_EQ(f.field_log_events().size(), 4u);
+  f.AppendLogEventIfNotRepeated(c);
+  EXPECT_EQ(f.field_log_events().size(), 4u);
+
+  f.AppendLogEventIfNotRepeated(a);
+  EXPECT_EQ(f.field_log_events().size(), 5u);
+  f.AppendLogEventIfNotRepeated(a);
+  EXPECT_EQ(f.field_log_events().size(), 5u);
+}
 
 }  // namespace
 }  // namespace autofill

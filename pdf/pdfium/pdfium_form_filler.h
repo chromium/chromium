@@ -210,8 +210,9 @@ class PDFiumFormFiller : public FPDF_FORMFILLINFO, public IPDF_JSPLATFORM {
 
   class EngineInIsolateScopeFactory {
    public:
-    explicit EngineInIsolateScopeFactory(PDFiumEngine* engine);
-    EngineInIsolateScopeFactory(const EngineInIsolateScope&) = delete;
+    EngineInIsolateScopeFactory(PDFiumEngine* engine,
+                                ScriptOption script_option);
+    EngineInIsolateScopeFactory(const EngineInIsolateScopeFactory&) = delete;
     EngineInIsolateScopeFactory& operator=(
         const EngineInIsolateScopeFactory&&) = delete;
     ~EngineInIsolateScopeFactory();

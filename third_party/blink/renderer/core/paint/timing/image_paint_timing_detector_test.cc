@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
+#include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_test_helper.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
@@ -29,6 +30,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -154,26 +156,22 @@ class ImagePaintTimingDetectorTest : public testing::Test,
         .records_manager_.recorded_images_.size();
   }
 
-  void UpdateCandidate() {
-    GetPaintTimingDetector()
-        .GetImagePaintTimingDetector()
-        .UpdateMetricsCandidate();
-  }
+  void UpdateCandidate() { GetPaintTimingDetector().UpdateLcpCandidate(); }
 
   void UpdateCandidateForChildFrame() {
-    GetChildPaintTimingDetector()
-        .GetImagePaintTimingDetector()
-        .UpdateMetricsCandidate();
+    GetChildPaintTimingDetector().UpdateLcpCandidate();
   }
 
   base::TimeTicks LargestPaintTime() {
     return GetPaintTimingDetector()
-        .latest_lcp_details_.largest_image_paint_time_;
+        .LatestLcpDetailsForTest()
+        .largest_image_paint_time;
   }
 
   uint64_t LargestPaintSize() {
     return GetPaintTimingDetector()
-        .latest_lcp_details_.largest_image_paint_size_;
+        .LatestLcpDetailsForTest()
+        .largest_image_paint_size;
   }
 
   static constexpr base::TimeDelta kQuantumOfTime = base::Milliseconds(10);
@@ -272,6 +270,7 @@ class ImagePaintTimingDetectorTest : public testing::Test,
     return To<LocalFrame>(GetFrame()->Tree().FirstChild());
   }
 
+  test::TaskEnvironment task_environment_;
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
   frame_test_helpers::WebViewHelper web_view_helper_;
 
@@ -332,7 +331,7 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_OneImage) {
   SimulateKeyDown();
   auto entries = test_ukm_recorder.GetEntriesByName(UkmPaintTiming::kEntryName);
   EXPECT_EQ(1ul, entries.size());
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   test_ukm_recorder.ExpectEntryMetric(
       entry, UkmPaintTiming::kLCPDebugging_HasViewportImageName, false);
 }
@@ -1250,7 +1249,7 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_FullViewportImage) {
   SimulateKeyDown();
   auto entries = test_ukm_recorder.GetEntriesByName(UkmPaintTiming::kEntryName);
   EXPECT_EQ(1ul, entries.size());
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   test_ukm_recorder.ExpectEntryMetric(
       entry, UkmPaintTiming::kLCPDebugging_HasViewportImageName, true);
 }

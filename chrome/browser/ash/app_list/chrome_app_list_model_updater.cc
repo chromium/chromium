@@ -14,9 +14,9 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
@@ -28,10 +28,12 @@
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/app_icon_color_cache.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "extensions/common/constants.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/display/screen.h"
 
 namespace {
 
@@ -264,6 +266,8 @@ void ChromeAppListModelUpdater::RemoveItem(const std::string& id,
     return;
   }
 
+  ash::AppIconColorCache::GetInstance(profile_).RemoveColorDataForApp(id);
+
   // Copy the ID to the stack since it may to be destroyed in
   // RemoveChromeItem(). See crbug.com/1190347.
   std::string id_copy = id;
@@ -338,17 +342,18 @@ void ChromeAppListModelUpdater::OnFeatureEngagementTrackerInitialized(
 }
 
 void ChromeAppListModelUpdater::PublishSearchResults(
-    const std::vector<ChromeSearchResult*>& results,
+    const std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>& results,
     const std::vector<ash::AppListSearchResultCategory>& categories) {
   TRACE_EVENT0("ui", "ChromeAppListModelUpdater::PublishSearchResults");
   published_results_ = results;
 
-  for (auto* const result : results)
+  for (ChromeSearchResult* const result : results) {
     result->set_model_updater(this);
+  }
 
   std::vector<std::unique_ptr<ash::SearchResult>> ash_results;
   std::vector<std::unique_ptr<ash::SearchResultMetadata>> result_data;
-  for (auto* result : results) {
+  for (ChromeSearchResult* result : results) {
     auto ash_result = std::make_unique<ash::SearchResult>();
     ash_result->SetMetadata(result->CloneMetadata());
     ash_results.push_back(std::move(ash_result));
@@ -361,7 +366,7 @@ void ChromeAppListModelUpdater::ClearSearchResults() {
   search_model_.DeleteAllResults();
 }
 
-std::vector<ChromeSearchResult*>
+std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>
 ChromeAppListModelUpdater::GetPublishedSearchResultsForTest() {
   return published_results_;
 }
@@ -1268,9 +1273,8 @@ void ChromeAppListModelUpdater::ResetPrefSortOrderInNonTemporaryMode(
 
   order_delegate_->SetAppListPreferredOrder(ash::AppListSortOrder::kCustom);
 
-  // The tablet mode controller may not exist in tests.
-  if (ash::TabletMode::Get())
-    ReportPrefOrderClearAction(event, ash::TabletMode::Get()->IsInTabletMode());
+  ReportPrefOrderClearAction(event,
+                             display::Screen::GetScreen()->InTabletMode());
 }
 
 void ChromeAppListModelUpdater::MaybeUpdatePositionWhenIconColorChange(

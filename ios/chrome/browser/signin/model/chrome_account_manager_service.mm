@@ -262,10 +262,9 @@ void ChromeAccountManagerService::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void ChromeAccountManagerService::OnIdentityListChanged(
-    bool need_user_approval) {
+void ChromeAccountManagerService::OnIdentityListChanged(bool notify_user) {
   for (auto& observer : observer_list_)
-    observer.OnIdentityListChanged(need_user_approval);
+    observer.OnIdentityListChanged(notify_user);
 }
 
 void ChromeAccountManagerService::OnIdentityUpdated(
@@ -286,7 +285,7 @@ void ChromeAccountManagerService::UpdateRestriction() {
   // We want to notify the user that the account list has been updated. This
   // might provide notifications with no changes (if the new restriction doesn't
   // change the account list).
-  OnIdentityListChanged(/* need_user_approval */ true);
+  OnIdentityListChanged(/*notify_user=*/true);
 }
 
 ResizedAvatarCache*

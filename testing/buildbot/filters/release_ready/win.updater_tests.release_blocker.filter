@@ -125,6 +125,7 @@ DMStorage.LoadEnrollmentToken
 DMStorage.PersistPolicies
 DMStorage.ReadCachedOmahaPolicy
 DMStorage.StoreEnrollmentToken
+ExeTagTest.FileNotFound
 ExeTagTest.TaggedExeEncodeUtf8
 ExeTagTest.UntaggedExe
 ExeTagTestExeWriteTagTestCases/ExeTagTestExeWriteTagTest.TestCases/0

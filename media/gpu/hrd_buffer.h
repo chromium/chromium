@@ -17,14 +17,15 @@ namespace media {
 // constant bitrate, while the data is filled in after every encoded frame. The
 // encoding loop should call HRD Buffer methods in the following order:
 // ...
-// ShrinkHRDBuffer(timestamp); <- optional
+// Shrink(timestamp); <- optional
 // ...
-// AddFrameBytes(frame_bytes, frame_timestamp, check_overshoot);
+// AddFrameBytes(frame_bytes, frame_timestamp);
 // ...
 class MEDIA_GPU_EXPORT HRDBuffer {
  public:
   // A basic constructor. Buffer size and bitrate are specified while the
-  // internal buffer state is set to default values.
+  // internal buffer state is set to default values. `buffer_size` is in bytes,
+  // `avg_bitrate` is in bits per second.
   HRDBuffer(size_t buffer_size, uint32_t avg_bitrate);
 
   // A constructor where the initial internal buffer state is specified: the
@@ -82,9 +83,9 @@ class MEDIA_GPU_EXPORT HRDBuffer {
   // Timestamp of the last added frame.
   base::TimeDelta last_frame_timestamp_ = base::Microseconds(-1);
 
-  // Current HRD buffer size in bits.
+  // Current HRD buffer size in bytes.
   size_t buffer_size_ = 0;
-  // New HRD buffer size in bits - when the buffer size changes.
+  // New HRD buffer size in bytes - when the buffer size changes.
   size_t new_buffer_size_ = 0;
 
   // Stream bitrate used in HRD model.

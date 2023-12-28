@@ -1303,6 +1303,7 @@
     "repeating-radial-gradient",
     "repeating-conic-gradient",
     "paint",
+    "cross-fade",
     "-webkit-cross-fade",
     "-webkit-gradient",
     "-webkit-linear-gradient",

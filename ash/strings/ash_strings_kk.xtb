@@ -40,6 +40,7 @@
 <translation id="1153356358378277386">Жұпталған құрылғылар</translation>
 <translation id="1155734730463845512">Қазіргі батарея деңгейі: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1160215328209699296">қосулы және қолданыста</translation>
+<translation id="1163437384438183174">Сөреден Phone Hub-ты өшіру</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">USB-C кабелі дисплейлерге дұрыс жалғанбауы мүмкін.</translation>
 <translation id="1175572348579024023">Айналдыру</translation>
@@ -70,6 +71,7 @@
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> қосылды.</translation>
 <translation id="1240638468526743569">Қолданба</translation>
 <translation id="1242883863226959074">құрылғы</translation>
+<translation id="1245644940275736236">Assistant-ке өту</translation>
 <translation id="124678866338384709">Ағымдағы қойындыны жабу</translation>
 <translation id="1246890715821376239">Қолдау көрсетілмейтін қолданбалар</translation>
 <translation id="1247372569136754018">Микрофон (ішкі)</translation>
@@ -326,6 +328,7 @@
 <translation id="2361210043495191221">Wi-Fi функциясын қосу/өшіру. <ph name="STATE" />.</translation>
 <translation id="2367186422933365202">Chromebook құрылғысына кіру мүмкін емес.</translation>
 <translation id="2367972762794486313">Қолданбаларды көрсету</translation>
+<translation id="2368828502825385061">Телефонды табу</translation>
 <translation id="2369165858548251131">Қытай тілінде "Сәлем" қалай болады?</translation>
 <translation id="2382875860893882175">Қазір трансляция кідіртілген. Кез келген уақытта трансляцияны жалғастыруға немесе тоқтатуға болады.</translation>
 <translation id="2386292613071805067">Беттегі барлығын таңдау</translation>
@@ -692,6 +695,7 @@
 <translation id="383629559565718788">Пернетақта параметрлерін көрсету</translation>
 <translation id="384082539148746321">Үлгі жойылсын ба?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, одан кейін <ph name="KEY_ONE" /> не <ph name="KEY_TWO" /> не <ph name="KEY_THREE" /> не <ph name="KEY_FOUR" /></translation>
+<translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">Қолжетімді желі мәліметтері жоқ</translation>
 <translation id="385051799172605136">Артқа</translation>
 <translation id="385300504083504382">Басына өту</translation>
@@ -861,6 +865,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Жұпталмаған құрылғылар</translation>
 <translation id="4485506555414638855">Телефондағы соңғы фотосуреттерді, медиафайлдарды, хабарландыруларды және қолданбаларды көру мүмкіндігін реттеуден бас тарту</translation>
+<translation id="4491109536499578614">Кескін</translation>
 <translation id="450584155212756404">Әзірлеуші арнасы</translation>
 <translation id="4513946894732546136">Пікір жіберу</translation>
 <translation id="4516212064498225455">Қазіргі жұмыс үстелі: <ph name="CURRENT_DESK_NAME" />, барлық жұмыс үстелі мәзірін ашу үшін Іздеу+Бос орын тіркесімін пайдаланыңыз.</translation>
@@ -925,6 +930,7 @@
 <translation id="4759238208242260848">Жүктеп алынғандар</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + жоғары бағыт пернесі</translation>
 <translation id="4762573482154983647">Қолданбаларды жасыру</translation>
+<translation id="4762802395013012237">5 фут қанша метрге тең?</translation>
 <translation id="4763885921995354846">Бұл камера рұқсаты бар барлық қолданба мен веб-сайттың камераны пайдалануына мүмкіндік береді. Веб-бетті жаңарту немесе қолданбаны өшіріп қосу керек болуы мүмкін.</translation>
 <translation id="4774338217796918551">Ертең сағат <ph name="COME_BACK_TIME" /> шамасында қайта қолдануыңызға болады.</translation>
 <translation id="4776584068981882959">Құпия сөзіңіз әлі расталмады. Қайталап көріңіз.</translation>
@@ -967,6 +973,7 @@
 <translation id="491504982845934899">Құрылғыны орнатудан кейін <ph name="NETWORK_NAME" /> желісін белсендіру</translation>
 <translation id="4917385247580444890">Күшті</translation>
 <translation id="4918086044614829423">Қабылдау</translation>
+<translation id="491907188205944472">Қажет нәрсені іске қосу тақтасынан тікелей іздеңіз</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> қолданбасы камераны пайдаланып жатыр.</translation>
 <translation id="492453977506755176">Түсіру режимінің пернесі</translation>
 <translation id="4925542575807923399">Бұл аккаунтның әкімшісі аккаунтның көп кіру сеансында алғашқы жүйеге кірген аккаунт болуын талап етеді.</translation>
@@ -1117,6 +1124,7 @@
 <translation id="5518068085000130971">Бұл негіздер болды! Кеңестер мен анықтама үшін ендірілген Explore қолданбамызда жалғастырыңыз. Бастау бойынша кеңестерді, ұсынылған қолданбаларды, арнайы ұсыныстарды және Chromebook-тың ең жаңа мүмкіндіктерін табасыз.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Әкімшіңіз барлық eSIM профилін өшірген. Толығырақ ақпарат алу үшін әкімшіге хабарласыңыз.</translation>
+<translation id="5520909879404821039">Француз тілінде "Сәлем" қалай болады?</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> қосылуда.</translation>
 <translation id="5529587891732734495">Трансляциялауды кідірту</translation>
 <translation id="5532994612895037630">Толық экранды жазу үшін кез келген жерді басыңыз.</translation>
@@ -1137,6 +1145,7 @@
 <translation id="5577281275355252094">Phone Hub функциясын пайдалану үшін телефоныңызда Bluetooth қосылып тұруы керек.</translation>
 <translation id="5578188167649348993">жад</translation>
 <translation id="5580000943347215299">Жинақ</translation>
+<translation id="5587506661873751671"><ph name="DOWNLOAD_PERCENT" />% жүктеп алынып жатыр</translation>
 <translation id="558849140439112033">Түсіруге керек аймақты таңдау үшін сүйреңіз.</translation>
 <translation id="5590609058453685222">Микрофонның сөніп тұрғанын еске салу қосулы. Дыбысы өшірілген күйде сөйлессеңіз, сізге хабарландыру келеді.</translation>
 <translation id="5596627076506792578">Қосымша опциялар</translation>
@@ -1195,6 +1204,7 @@
 <translation id="5788127256798019331">Play файлдары</translation>
 <translation id="5788535737706478207">Соңғы жабылған қойындыны немесе терезені қайта ашу</translation>
 <translation id="5790085346892983794">Орындалды</translation>
+<translation id="579415080077680903">Дыбыссыз режим</translation>
 <translation id="5802516411616338943">Жылдам параметрлерді ашу</translation>
 <translation id="5804651031882187592">"SIM картасын құлыптау" параметрін өшіру</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> іске қосу үшін басыңыз</translation>
@@ -1273,6 +1283,7 @@
 <translation id="6095425951508823973"><ph name="PROVIDER" /> көмегімен байланыс қосу</translation>
 <translation id="6099678161144790572">Өткен айда өзгертілді.</translation>
 <translation id="6103838137565245112">жүйе</translation>
+<translation id="6108952804512516814">AI көмегімен жасау</translation>
 <translation id="6114505516289286752">Тіл файлдары (<ph name="LANGUAGE" />) жүктеп алынды</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6119972796024789243">Түсті түзету</translation>
@@ -1692,6 +1703,7 @@
 <translation id="7886277072580235377">Сіз шыққан кезде, сеансыңыз өшіріледі. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Электрондық хат жіберу</translation>
 <translation id="7893503627044934815">Бұл файлдың көрсетілгенін қаламаймын</translation>
+<translation id="7893547474469215105">Зенит анықтамасы</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Экранды бұруға арналған пернелер тіркесімін бастыңыз. Оны бұрғыңыз келе ме?</translation>
 <translation id="7897626842031123113">Күй жолағы, уақыты: <ph name="TIME" />,
@@ -1707,6 +1719,7 @@
 <translation id="7904094684485781019">Бұл аккаунттың әкімшісі бірнеше рет кіруге рұқсат бермеген.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> құрылғы жалғанған.</translation>
+<translation id="7923534281713082605">Ауа райы</translation>
 <translation id="7926080067315048321">Интернетте Google Tasks ішіндегі барлық тапсырманы көру</translation>
 <translation id="7930731167419639574">Айтылған сөз енді жергілікті деңгейде өңделеді және Мәтінді дауыспен енгізу функциясы офлайн режимде жұмыс істейді</translation>
 <translation id="7932451802722951285">Google Calendar арқылы ашу</translation>
@@ -1796,6 +1809,7 @@
 <translation id="830868413617744215">Бета</translation>
 <translation id="8314772463905284467">Caps Lock қосулы</translation>
 <translation id="8315514906653279104">Қосылып жатыр…</translation>
+<translation id="8331351032546853669">Жүктеп алу басталмады</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> терезесі таңдалды</translation>
 <translation id="8349826889576450703">қосқыш</translation>
@@ -1852,6 +1866,7 @@
 <translation id="8555757996376137129">Ағымдағы жұмыс үстелін өшіру</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> сізге <ph name="DEVICE_TYPE" /> құрылғысын жаңартуды ұсынады.</translation>
 <translation id="8563862697512465947">Хабарландыру параметрлері</translation>
+<translation id="8569751806372591456">Мұнда ұсыныстар берілген</translation>
 <translation id="857201607579416096">Мәзір экранның төменгі оң жақ бұрышына жылжытылды.</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> пернесін басып, сілтемені түртіңіз</translation>
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>
@@ -1895,6 +1910,7 @@
 <translation id="875593634123171288">VPN параметрлерін көрсету</translation>
 <translation id="8759408218731716181">Бірнеше аккаунттың кіру мүмкіндігін орнату мүмкін емес</translation>
 <translation id="8763883995157866248">Құрылғыны ұйқы режиміне қою</translation>
+<translation id="877404052021108314">90°F қанша C-ге тең?</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, қолданба орнатылған, блокталған</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> желісіне қосылу</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1903,6 +1919,7 @@
 <translation id="8806053966018712535"><ph name="FOLDER_NAME" /> қалтасы</translation>
 <translation id="880709030178078220">"Анықтама"</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8815390544836110344">Скриншот таңбашасын басып, Ctrl, Shift және "Шолу режимі" пернелерін бір уақытта басыңыз</translation>
 <translation id="881757059229893486">Енгізу әдістерінің параметрлері</translation>
 <translation id="8819728065740986820">Бейімдеп зарядтау функциясы қосулы</translation>
 <translation id="8825863694328519386">Артқа оралу үшін солдан оңға қарай сырғытыңыз.</translation>

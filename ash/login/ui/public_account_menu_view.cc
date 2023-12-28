@@ -55,8 +55,7 @@ class PublicAccountComboboxModel : public ui::ComboboxModel {
   }
 
  private:
-  const raw_ref<const std::vector<PublicAccountMenuView::Item>, ExperimentalAsh>
-      items_;
+  const raw_ref<const std::vector<PublicAccountMenuView::Item>> items_;
   const size_t default_index_;
 };
 

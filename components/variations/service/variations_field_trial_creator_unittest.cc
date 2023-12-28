@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/base_switches.h"
 #include "base/build_time.h"
 #include "base/command_line.h"
@@ -39,11 +40,13 @@
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
+#include "components/variations/limited_entropy_mode_gate.h"
 #include "components/variations/platform_field_trials.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/service/buildflags.h"
+#include "components/variations/service/limited_entropy_synthetic_trial.h"
 #include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_client.h"
@@ -56,6 +59,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/zlib/google/compression_utils.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/variations/seed_response.h"
@@ -108,6 +112,38 @@ VariationsSeed CreateTestSeed() {
   return seed;
 }
 
+// Returns a test seed that contains a single study,
+// "UMA-Uniformity-Trial-10-Percent", which has a single experiment, "abc", with
+// probability weight 100. The study references the 100% slot of a LIMITED
+// entropy layer.
+VariationsSeed CreateTestSeedWithLimitedEntropyLayer() {
+  VariationsSeed seed;
+  seed.set_serial_number(kTestSeedSerialNumber);
+
+  auto* layer = seed.add_layers();
+  layer->set_id(1);
+  layer->set_num_slots(100);
+  layer->set_entropy_mode(Layer::LIMITED);
+
+  auto* layer_member = layer->add_members();
+  layer_member->set_id(1);
+  auto* slot = layer_member->add_slots();
+  slot->set_start(0);
+  slot->set_end(99);
+
+  Study* study = seed.add_study();
+  study->set_name(kTestSeedStudyName);
+  auto* layer_member_reference = study->mutable_layer();
+  layer_member_reference->set_layer_id(1);
+  layer_member_reference->set_layer_member_id(1);
+
+  Study_Experiment* experiment = study->add_experiment();
+  experiment->set_name(kTestSeedExperimentName);
+  experiment->set_probability_weight(kTestSeedExperimentProbability);
+
+  return seed;
+}
+
 // Returns a seed with simple test data. The seed has a single study,
 // "UMA-Uniformity-Trial-10-Percent", which has a single experiment,
 // "abc.safe", with probability weight 100.
@@ -120,6 +156,14 @@ VariationsSeed CreateTestSafeSeed() {
   study->set_default_experiment_name(kTestSafeSeedExperimentName);
   study->mutable_experiment(0)->set_name(kTestSafeSeedExperimentName);
   return seed;
+}
+
+// Returns a hex string of the GZipped, base64 encoded, and serialized seed.
+std::string GZipAndB64EncodeToHexString(const VariationsSeed& seed) {
+  auto serialized = seed.SerializeAsString();
+  std::string compressed;
+  compression::GzipCompress(serialized, &compressed);
+  return base::Base64Encode(compressed);
 }
 
 // A base::Time instance representing a time in the distant past. Here, it would
@@ -210,6 +254,14 @@ class TestVariationsServiceClient : public VariationsServiceClient {
   bool IsEnterprise() override { return false; }
   void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
       PrefService* local_state) override {}
+  // TODO(crbug.com/1508150): Remove once the trial has wrapped up.
+  void RegisterLimitedEntropySyntheticTrial(
+      std::string_view group_name) override {
+    limited_entropy_synthetic_trial_group_ = std::string(group_name);
+  }
+  std::string_view GetLimitedEntropySyntheticTrialGroupName() {
+    return limited_entropy_synthetic_trial_group_;
+  }
 
  private:
   // VariationsServiceClient:
@@ -218,6 +270,7 @@ class TestVariationsServiceClient : public VariationsServiceClient {
   }
 
   std::string restrict_parameter_;
+  std::string limited_entropy_synthetic_trial_group_;
 };
 
 class MockVariationsServiceClient : public TestVariationsServiceClient {
@@ -278,10 +331,12 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
       const base::FilePath user_data_dir = base::FilePath(),
       metrics::StartupVisibility startup_visibility =
           metrics::StartupVisibility::kUnknown)
-      : VariationsFieldTrialCreator(client,
-                                    // Pass a VariationsSeedStore to base class.
-                                    CreateSeedStore(local_state),
-                                    UIStringOverrider()),
+      : VariationsFieldTrialCreator(
+            client,
+            // Pass a VariationsSeedStore to base class.
+            CreateSeedStore(local_state),
+            UIStringOverrider(),
+            /*limited_entropy_synthetic_trial=*/nullptr),
         enabled_state_provider_(/*consent=*/true, /*enabled=*/true),
         // Instead, use a TestVariationsSeedStore as the member variable.
         seed_store_(local_state),
@@ -800,7 +855,8 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedJsonPath) {
   TestVariationsServiceClient variations_service_client;
   auto seed_store = CreateSeedStore(local_state());
   VariationsFieldTrialCreator field_trial_creator(
-      &variations_service_client, std::move(seed_store), UIStringOverrider());
+      &variations_service_client, std::move(seed_store), UIStringOverrider(),
+      /*limited_entropy_synthetic_trial=*/nullptr);
   metrics::TestEnabledStateProvider enabled_state_provider(
       /*consent=*/true,
       /*enabled=*/true);
@@ -850,7 +906,8 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
       /*signature_verification_enabled=*/false,
       std::make_unique<VariationsSafeSeedStoreLocalState>(local_state()));
   VariationsFieldTrialCreator field_trial_creator(
-      &variations_service_client, std::move(seed_store), UIStringOverrider());
+      &variations_service_client, std::move(seed_store), UIStringOverrider(),
+      /*limited_entropy_synthetic_trial=*/nullptr);
 
   metrics::TestEnabledStateProvider enabled_state_provider(/*consent=*/true,
                                                            /*enabled=*/true);
@@ -1374,6 +1431,100 @@ TEST_F(FieldTrialCreatorTest, GetGoogleGroupsFromPrefsClearsDeletedProfiles) {
 
 namespace {
 
+struct TestCase {
+  bool is_limited_layer_in_seed;
+  bool is_limited_entropy_synthetic_trial_applicable;
+  std::string test_name;
+  bool is_group_registration_expected;
+};
+
+const TestCase kTestCases[] = {
+    {true, true, "ApplicableClientWithLimitedLayer", true},
+    {true, false, "NonApplicableClientWithLimitedLayer", false},
+    {false, true, "ApplicableClientWithoutLimitedLayer", false},
+    {false, false, "NonApplicableClientWithoutLimitedLayer", false},
+};
+
+class LimitedEntropySyntheticTrialGroupRegistrationTest
+    : public FieldTrialCreatorTest,
+      public ::testing::WithParamInterface<TestCase> {
+ public:
+  LimitedEntropySyntheticTrialGroupRegistrationTest() {
+    EnableLimitedEntropyModeForTesting();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         LimitedEntropySyntheticTrialGroupRegistrationTest,
+                         ::testing::ValuesIn(kTestCases),
+                         [](const ::testing::TestParamInfo<TestCase>& info) {
+                           return info.param.test_name;
+                         });
+
+TEST_P(LimitedEntropySyntheticTrialGroupRegistrationTest,
+       RegisterGroupMembership) {
+  const TestCase test_case = GetParam();
+
+  VariationsSeed seed;
+  if (test_case.is_limited_layer_in_seed) {
+    // Sets up a test seed with a LIMITED entropy layer.
+    seed = CreateTestSeedWithLimitedEntropyLayer();
+  } else {
+    // Sets up a test seed without a LIMITED entropy layer.
+    seed = CreateTestSeed();
+  }
+  auto encoded_and_compressed = GZipAndB64EncodeToHexString(seed);
+  local_state()->SetString(prefs::kVariationsCompressedSeed,
+                           encoded_and_compressed);
+
+  // Allows and writes an empty signature for the test seed.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kAcceptEmptySeedSignatureForTesting);
+  local_state()->SetString(prefs::kVariationsSeedSignature, "");
+
+  // Sets up dependencies and mocks.
+  TestVariationsServiceClient variations_service_client;
+  LimitedEntropySyntheticTrial limited_entropy_synthetic_trial(local_state());
+  auto seed_store = CreateSeedStore(local_state());
+  VariationsFieldTrialCreator field_trial_creator(
+      &variations_service_client, std::move(seed_store), UIStringOverrider(),
+      test_case.is_limited_entropy_synthetic_trial_applicable
+          ? &limited_entropy_synthetic_trial
+          : nullptr);
+  metrics::TestEnabledStateProvider enabled_state_provider(
+      /*consent=*/true,
+      /*enabled=*/true);
+  auto metrics_state_manager = metrics::MetricsStateManager::Create(
+      local_state(), &enabled_state_provider, std::wstring(), base::FilePath());
+  metrics_state_manager->InstantiateFieldTrialList();
+  PlatformFieldTrials platform_field_trials;
+  NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
+
+  // The client should not be registered to a group of the limited entropy
+  // synthetic trial before the test.
+  EXPECT_EQ(
+      std::string(),
+      variations_service_client.GetLimitedEntropySyntheticTrialGroupName());
+
+  EXPECT_TRUE(field_trial_creator.SetUpFieldTrials(
+      /*variation_ids=*/{},
+      /*command_line_variation_ids=*/std::string(),
+      std::vector<base::FeatureList::FeatureOverrideInfo>(),
+      std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
+      &platform_field_trials, &safe_seed_manager,
+      /*add_entropy_source_to_variations_ids=*/true));
+
+  if (test_case.is_group_registration_expected) {
+    EXPECT_NE(
+        std::string(),
+        variations_service_client.GetLimitedEntropySyntheticTrialGroupName());
+  } else {
+    EXPECT_EQ(
+        std::string(),
+        variations_service_client.GetLimitedEntropySyntheticTrialGroupName());
+  }
+}
+
 // Test feature names prefixed with __ to avoid collision with real features.
 BASE_FEATURE(kDesktopFeature, "__Desktop", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPhoneFeature, "__Phone", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1445,7 +1596,7 @@ TEST_P(FieldTrialCreatorFormFactorTest, FilterByFormFactor) {
   // Set up the field trials.
   VariationsFieldTrialCreator field_trial_creator{
       &variations_service_client, CreateSeedStore(local_state()),
-      UIStringOverrider()};
+      UIStringOverrider(), /*limited_entropy_synthetic_trial=*/nullptr};
   EXPECT_TRUE(field_trial_creator.SetUpFieldTrials(
       /*variation_ids=*/{},
       /*command_line_variation_ids=*/std::string(),

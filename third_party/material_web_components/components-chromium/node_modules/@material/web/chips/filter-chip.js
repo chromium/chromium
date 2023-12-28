@@ -20,7 +20,11 @@ import { styles as trailingIconStyles } from './internal/trailing-icon-styles.cs
 export let MdFilterChip = class MdFilterChip extends FilterChip {
 };
 MdFilterChip.styles = [
-    sharedStyles, elevatedStyles, trailingIconStyles, selectableStyles, styles
+    sharedStyles,
+    elevatedStyles,
+    trailingIconStyles,
+    selectableStyles,
+    styles,
 ];
 MdFilterChip = __decorate([
     customElement('md-filter-chip')

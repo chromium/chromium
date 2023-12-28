@@ -103,7 +103,7 @@ class ArcTracingDataSource
   friend class base::NoDestructor<ArcTracingDataSource>;
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   using DataSourceProxy =
-      tracing::PerfettoTracedProcess::DataSourceProxy<CastDataSource>;
+      tracing::PerfettoTracedProcess::DataSourceProxy<ArcTracingDataSource>;
   using SystemTraceWriter =
       tracing::SystemTraceWriter<std::string, DataSourceProxy>;
 #else
@@ -118,7 +118,7 @@ class ArcTracingDataSource
     tracing::PerfettoTracedProcess::Get()->AddDataSource(this);
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     perfetto::DataSourceDescriptor dsd;
-    dsd.set_name(mojom::kArcTraceDataSourceName);
+    dsd.set_name(tracing::mojom::kArcTraceDataSourceName);
     DataSourceProxy::Register(dsd, this);
 #endif
   }

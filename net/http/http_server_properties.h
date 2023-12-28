@@ -644,7 +644,7 @@ class NET_EXPORT HttpServerProperties
 
   IPAddress last_local_address_when_quic_worked_;
   // Contains a map of servers which could share the same alternate protocol.
-  // Map from a Canonical scheme/host/port/NIK (host is some postfix of host
+  // Map from a Canonical scheme/host/port/NAK (host is some postfix of host
   // names) to an actual origin, which has a plausible alternate protocol
   // mapping.
   CanonicalMap canonical_alt_svc_map_;

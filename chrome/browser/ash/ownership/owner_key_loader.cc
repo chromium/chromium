@@ -7,8 +7,8 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/ownership/ownership_histograms.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -17,14 +17,51 @@
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/channel_info.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/user_manager.h"
+#include "components/version_info/channel.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/cert/nss_cert_database.h"
 
 namespace ash {
+
+// Enable storing a newly created owner key in the private slot.
+BASE_FEATURE(kStoreOwnerKeyInPrivateSlot,
+             "StoreOwnerKeyInPrivateSlot",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enable migration of the owner key from the public to the private slot. This
+// experiment represents the second stage of `kStoreOwnerKeyInPrivateSlot` and
+// is only respected if kStoreOwnerKeyInPrivateSlot is enabled.
+BASE_FEATURE(kMigrateOwnerKeyToPrivateSlot,
+             "MigrateOwnerKeyToPrivateSlot",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsStoreOwnerKeyInPrivateSlotEnabled() {
+  if (base::FeatureList::GetInstance()->IsFeatureOverridden(
+          kStoreOwnerKeyInPrivateSlot.name)) {
+    // Return the value if it was overridden by Finch, command line, etc.
+    return base::FeatureList::IsEnabled(kStoreOwnerKeyInPrivateSlot);
+  }
+
+  version_info::Channel channel = chrome::GetChannel();
+  if (channel == version_info::Channel::STABLE ||
+      channel == version_info::Channel::BETA) {
+    // TODO(b/264397430): Disable on beta and stable channels for now, remove
+    // the condition when the new code is more reliable.
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(kStoreOwnerKeyInPrivateSlot);
+}
+
+bool ShouldMigrateOwnerKeyToPrivateSlot() {
+  return IsStoreOwnerKeyInPrivateSlotEnabled() &&
+         base::FeatureList::IsEnabled(kMigrateOwnerKeyToPrivateSlot);
+}
 
 namespace {
 
@@ -85,7 +122,7 @@ void GenerateNewOwnerKeyOnWorkerThread(
     crypto::ScopedPK11Slot public_slot,
     crypto::ScopedPK11Slot private_slot) {
   crypto::ScopedSECKEYPrivateKey sec_priv_key;
-  if (private_slot && features::IsStoreOwnerKeyInPrivateSlotEnabled()) {
+  if (private_slot && IsStoreOwnerKeyInPrivateSlotEnabled()) {
     sec_priv_key = owner_key_util->GenerateKeyPair(private_slot.get());
     RecordOwnerKeyEvent(OwnerKeyEvent::kPrivateSlotKeyGeneration,
                         bool(sec_priv_key));
@@ -299,8 +336,7 @@ void OwnerKeyLoader::OnPrivateKeyLoaded(
     RecordOwnerKeyEvent(OwnerKeyEvent::kOwnerKeyInPublicSlot,
                         /*success=*/found_in_public_slot);
 
-    if (features::ShouldMigrateOwnerKeyToPrivateSlot() &&
-        found_in_public_slot) {
+    if (ShouldMigrateOwnerKeyToPrivateSlot() && found_in_public_slot) {
       // If the key was found in the public slot and the migration is enabled,
       // then replace it by generating a new one in the private slot. The old
       // key will be deleted by OwnerSettingsServiceAsh when the new key is
@@ -314,9 +350,8 @@ void OwnerKeyLoader::OnPrivateKeyLoaded(
       return;
     }
 
-    if (!features::ShouldMigrateOwnerKeyToPrivateSlot() &&
-        !features::IsStoreOwnerKeyInPrivateSlotEnabled() &&
-        !found_in_public_slot) {
+    if (!ShouldMigrateOwnerKeyToPrivateSlot() &&
+        !IsStoreOwnerKeyInPrivateSlotEnabled() && !found_in_public_slot) {
       // If all experiments are disabled but the key is in the private slot, it
       // means they were reverted and it's probably better to migrate the owner
       // key back to the public slot.

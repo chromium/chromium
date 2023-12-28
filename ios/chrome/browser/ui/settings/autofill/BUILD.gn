@@ -39,7 +39,7 @@ source_set("autofill") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/model",
-    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",

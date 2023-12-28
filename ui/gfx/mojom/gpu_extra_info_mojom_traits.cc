@@ -5,6 +5,7 @@
 #include "ui/gfx/mojom/gpu_extra_info_mojom_traits.h"
 
 #include "build/build_config.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/gfx/mojom/buffer_types_mojom_traits.h"
 
 namespace mojo {
@@ -24,10 +25,10 @@ bool StructTraits<gfx::mojom::GpuExtraInfoDataView, gfx::GpuExtraInfo>::Read(
     gfx::GpuExtraInfo* out) {
   if (!data.ReadAngleFeatures(&out->angle_features))
     return false;
-#if defined(USE_OZONE_PLATFORM_X11)
+#if BUILDFLAG(IS_OZONE_X11)
   if (!data.ReadGpuMemoryBufferSupportX11(&out->gpu_memory_buffer_support_x11))
     return false;
-#endif
+#endif  // BUILDFLAG(IS_OZONE_X11)
   return true;
 }
 

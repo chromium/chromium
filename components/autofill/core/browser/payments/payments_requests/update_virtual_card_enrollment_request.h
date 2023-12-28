@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUESTS_UPDATE_VIRTUAL_CARD_ENROLLMENT_REQUEST_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUESTS_UPDATE_VIRTUAL_CARD_ENROLLMENT_REQUEST_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -58,7 +58,7 @@ class UpdateVirtualCardEnrollmentRequest : public PaymentsRequest {
   PaymentsNetworkInterface::UpdateVirtualCardEnrollmentRequestDetails
       request_details_;
   base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback_;
-  absl::optional<std::string> enroll_result_;
+  std::optional<std::string> enroll_result_;
 };
 
 }  // namespace payments

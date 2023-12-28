@@ -13,7 +13,7 @@ struct DialogArgs {
 
   string description;
 
-  url.mojom.Url iconUrl;
+  url.mojom.Url icon_url;
 
   // TODO(crbug.com/1488697): Add screenshots.
 };
@@ -37,4 +37,7 @@ interface PageHandler {
   // Runs the callback to install the app and returns whether the app was
   // successfully installed.
   InstallApp() => (bool installed);
+
+  // Opens the app that was just installed, then closes the dialog.
+  LaunchApp();
 };

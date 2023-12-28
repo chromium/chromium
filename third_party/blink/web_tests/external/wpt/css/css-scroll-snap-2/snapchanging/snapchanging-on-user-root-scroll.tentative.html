@@ -139,7 +139,26 @@
       await test_snap_event(t, test_data, "snapchanging");
     }, "scrollbar dragging fires snapchanging.");
 
-    // Touch scroll test.
+    // Keyboard test.
+    promise_test(async (t) => {
+      await waitForCompositorCommit();
+      const test_data = {
+        scroller: scroller,
+        scrolling_function: async () => {
+          scroller.focus();
+          window.test_driver.send_keys(document.documentElement, '\ue015'/*ArrowDown*/);
+        },
+        expected_snap_targets: [snap_area_2.id],
+        expected_scroll_offsets: {
+           x: 0,
+           y: snap_area_2.offsetTop
+        }
+       };
+      await test_snap_event(t, test_data, "snapchanging");
+    }, "keyboard scroll triggers snapchanging.");
+
+    // Touch scroll test: peek at snap_area_2 and then drag back to
+    // snap_area_1.
     promise_test(async (t) => {
       await waitForScrollReset(t, scroller);
       await waitForCompositorCommit();

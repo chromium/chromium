@@ -25,6 +25,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #import <AppKit/AppKit.h>
+#import <CoreText/CoreText.h>
 #endif  // BUILDFLAG(IS_MAC)
 #import <AvailabilityMacros.h>
 
@@ -34,7 +35,9 @@
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_settings.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkFont.h"
@@ -42,6 +45,9 @@
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/core/SkTypes.h"
 #import "third_party/skia/include/ports/SkTypeface_mac.h"
+
+using base::apple::NSToCFPtrCast;
+using base::apple::ScopedCFTypeRef;
 
 namespace {
 #if BUILDFLAG(IS_MAC)
@@ -96,16 +102,19 @@ bool VariableAxisChangeEffective(SkTypeface* typeface,
   return false;
 }
 
-static bool CanLoadInProcess(NSFont* ns_font) {
-  base::apple::ScopedCFTypeRef<CGFontRef> cg_font(CTFontCopyGraphicsFont(
-      base::apple::NSToCFPtrCast(ns_font), /*attributes=*/nullptr));
-  NSString* font_name =
-      base::apple::CFToNSOwnershipCast(CGFontCopyPostScriptName(cg_font.get()));
-  return ![font_name isEqualToString:@"LastResort"];
+static bool CanLoadInProcess(ScopedCFTypeRef<CTFontRef> ct_font) {
+  ScopedCFTypeRef<CGFontRef> cg_font(
+      CTFontCopyGraphicsFont(ct_font.get(), /*attributes=*/nullptr));
+  ScopedCFTypeRef<CFStringRef> font_name(
+      CGFontCopyPostScriptName(cg_font.get()));
+  ScopedCFTypeRef<CFStringRef> last_resort_font_name(CFStringCreateWithCString(
+      kCFAllocatorDefault, "LastResort", kCFStringEncodingUTF8));
+  return CFStringCompare(font_name.get(), last_resort_font_name.get(), 0) !=
+         kCFCompareEqualTo;
 }
 
-std::unique_ptr<FontPlatformData> FontPlatformDataFromNSFont(
-    NSFont* ns_font,
+std::unique_ptr<FontPlatformData> FontPlatformDataFromCTFont(
+    ScopedCFTypeRef<CTFontRef> ct_font,
     float size,
     float specified_size,
     bool synthetic_bold,
@@ -115,14 +124,13 @@ std::unique_ptr<FontPlatformData> FontPlatformDataFromNSFont(
     FontOrientation orientation,
     OpticalSizing optical_sizing,
     FontVariationSettings* variation_settings) {
-  DCHECK(ns_font);
+  DCHECK(ct_font);
 
   // fontd automatically issues a sandbox extension to permit reading
   // activated fonts that would otherwise be restricted by the sandbox.
-  DCHECK(CanLoadInProcess(ns_font));
+  DCHECK(CanLoadInProcess(ct_font));
 
-  sk_sp<SkTypeface> typeface =
-      SkMakeTypefaceFromCTFont(base::apple::NSToCFPtrCast(ns_font));
+  sk_sp<SkTypeface> typeface = SkMakeTypefaceFromCTFont(ct_font.get());
 
   auto make_typeface_fontplatformdata = [&typeface, &size, &synthetic_bold,
                                          &synthetic_italic, &text_rendering,

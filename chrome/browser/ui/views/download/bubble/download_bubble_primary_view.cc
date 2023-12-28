@@ -149,5 +149,5 @@ DownloadBubbleRowView* DownloadBubblePrimaryView::GetRowForTesting(
   return static_cast<DownloadBubbleRowView*>(row_list_view_->children()[index]);
 }
 
-BEGIN_METADATA(DownloadBubblePrimaryView, views::FlexLayoutView)
+BEGIN_METADATA(DownloadBubblePrimaryView)
 END_METADATA

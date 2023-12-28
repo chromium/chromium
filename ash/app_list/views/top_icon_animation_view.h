@@ -76,12 +76,11 @@ class TopIconAnimationView : public views::View,
   void OnImplicitAnimationsCompleted() override;
   bool RequiresNotificationWhenAnimatorDestroyed() const override;
 
-  raw_ptr<const AppsGridView, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<const AppsGridView, DanglingUntriaged>
       grid_;  // Owned by views hierarchy.
   gfx::Size icon_size_;
-  raw_ptr<views::ImageView, ExperimentalAsh>
-      icon_;                                      // Owned by views hierarchy.
-  raw_ptr<views::Label, ExperimentalAsh> title_;  // Owned by views hierarchy.
+  raw_ptr<views::ImageView> icon_;  // Owned by views hierarchy.
+  raw_ptr<views::Label> title_;     // Owned by views hierarchy.
   // Rect of the scaled down top item icon inside folder icon's ink bubble.
   gfx::Rect scaled_rect_;
   // true: opening folder; false: closing folder.

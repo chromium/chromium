@@ -56,7 +56,7 @@ class ASH_EXPORT ScrollViewGradientHelper {
   void RemoveMaskLayer();
 
   // The scroll view being decorated.
-  const raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_;
+  const raw_ptr<views::ScrollView> scroll_view_;
 
   // The height of the gradient in DIPs.
   const int gradient_height_;

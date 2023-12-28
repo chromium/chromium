@@ -61,12 +61,10 @@ class ChannelIndicatorQuickSettingsViewTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<TestSystemTrayClient, DanglingUntriaged | ExperimentalAsh>
-      system_tray_client_ = nullptr;
+  raw_ptr<TestSystemTrayClient, DanglingUntriaged> system_tray_client_ =
+      nullptr;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<ChannelIndicatorQuickSettingsView,
-          DanglingUntriaged | ExperimentalAsh>
-      view_ = nullptr;
+  raw_ptr<ChannelIndicatorQuickSettingsView, DanglingUntriaged> view_ = nullptr;
 };
 
 // Run the `Visible` test below for each value of version_info::Channel.

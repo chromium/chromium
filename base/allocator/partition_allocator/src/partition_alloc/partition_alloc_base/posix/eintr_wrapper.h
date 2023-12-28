@@ -8,10 +8,10 @@
 // that should be masked) to go unnoticed, there is a limit after which the
 // caller will nonetheless see an EINTR in Debug builds.
 //
-// On Windows and Fuchsia, this wrapper macro does nothing because there are no
+// On Windows and Fuchsia, this wrapper does nothing because there are no
 // signals.
 //
-// Don't wrap close calls in HANDLE_EINTR. Use IGNORE_EINTR if the return
+// Don't wrap close calls in WrapEINTR. Use IGNORE_EINTR macro if the return
 // value of close is significant. See http://crbug.com/269623.
 
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_POSIX_EINTR_WRAPPER_H_
@@ -20,39 +20,41 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_POSIX)
-
 #include <errno.h>
+#include <utility>
+#endif
 
+namespace partition_alloc {
+#if BUILDFLAG(IS_POSIX)
+
+template <typename Fn>
+inline auto WrapEINTR(Fn fn) {
+  return [fn](auto&&... args) {
+    int out = -1;
 #if defined(NDEBUG)
-
-#define PA_HANDLE_EINTR(x)                                  \
-  ({                                                        \
-    decltype(x) eintr_wrapper_result;                       \
-    do {                                                    \
-      eintr_wrapper_result = (x);                           \
-    } while (eintr_wrapper_result == -1 && errno == EINTR); \
-    eintr_wrapper_result;                                   \
-  })
-
+    while (true)
 #else
-
-#define PA_HANDLE_EINTR(x)                                   \
-  ({                                                         \
-    int eintr_wrapper_counter = 0;                           \
-    decltype(x) eintr_wrapper_result;                        \
-    do {                                                     \
-      eintr_wrapper_result = (x);                            \
-    } while (eintr_wrapper_result == -1 && errno == EINTR && \
-             eintr_wrapper_counter++ < 100);                 \
-    eintr_wrapper_result;                                    \
-  })
-
-#endif  // NDEBUG
+    for (int retry_count = 0; retry_count < 100; ++retry_count)
+#endif
+    {
+      out = fn(std::forward<decltype(args)>(args)...);
+      if (out != -1 || errno != EINTR) {
+        return out;
+      }
+    }
+    return out;
+  };
+}
 
 #else  // !BUILDFLAG(IS_POSIX)
 
-#define PA_HANDLE_EINTR(x) (x)
+template <typename Fn>
+inline auto WrapEINTR(Fn fn) {
+  return fn;
+}
 
 #endif  // !BUILDFLAG(IS_POSIX)
+
+}  // namespace partition_alloc
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_POSIX_EINTR_WRAPPER_H_

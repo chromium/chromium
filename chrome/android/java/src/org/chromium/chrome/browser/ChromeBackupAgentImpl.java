@@ -53,7 +53,8 @@ import java.util.concurrent.atomic.AtomicReference;
 @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
 public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
     private static final String ANDROID_DEFAULT_PREFIX = "AndroidDefault.";
-    private static final String NATIVE_PREF_PREFIX = "native.";
+    private static final String NATIVE_BOOL_PREF_PREFIX = "native.";
+    private static final String NATIVE_DICT_PREF_PREFIX = "NativeJsonDict.";
 
     private static final String TAG = "ChromeBackupAgent";
 
@@ -211,18 +212,23 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                                             .getIdentityManager(Profile.getLastUsedRegularProfile())
                                             .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
 
-                            String[] nativeBackupNames =
-                                    ChromeBackupAgentImplJni.get().getBoolBackupNames(this);
-                            boolean[] nativeBackupValues =
-                                    ChromeBackupAgentImplJni.get().getBoolBackupValues(this);
+                            Natives jni = ChromeBackupAgentImplJni.get();
+
+                            String[] nativeBackupNames = jni.getBoolBackupNames(this);
+                            boolean[] nativeBackupValues = jni.getBoolBackupValues(this);
                             assert nativeBackupNames.length == nativeBackupValues.length;
 
                             for (String name : nativeBackupNames) {
-                                backupNames.add(NATIVE_PREF_PREFIX + name);
+                                backupNames.add(NATIVE_BOOL_PREF_PREFIX + name);
                             }
                             for (boolean val : nativeBackupValues) {
                                 backupValues.add(booleanToBytes(val));
                             }
+                            backupNames.add(
+                                    NATIVE_DICT_PREF_PREFIX
+                                            + jni.getAccountSettingsBackupName(this));
+                            backupValues.add(jni.getAccountSettingsBackupValue(this).getBytes());
+
                             return true;
                         });
         SharedPreferences sharedPrefs = ContextUtils.getAppSharedPreferences();
@@ -394,23 +400,27 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         PostTask.runSynchronously(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    ArrayList<String> nativeBackupNames = new ArrayList<>();
-                    boolean[] nativeBackupValues = new boolean[backupNames.size()];
+                    ArrayList<String> nativeBoolBackupNames = new ArrayList<>();
+                    boolean[] nativeBoolBackupValues = new boolean[backupNames.size()];
                     int count = 0;
-                    int prefixLength = NATIVE_PREF_PREFIX.length();
+                    int boolPrefixLength = NATIVE_BOOL_PREF_PREFIX.length();
                     for (int i = 0; i < backupNames.size(); i++) {
                         String name = backupNames.get(i);
-                        if (name.startsWith(NATIVE_PREF_PREFIX)) {
-                            nativeBackupNames.add(name.substring(prefixLength));
-                            nativeBackupValues[count] = bytesToBoolean(backupValues.get(i));
+                        if (name.startsWith(NATIVE_BOOL_PREF_PREFIX)) {
+                            nativeBoolBackupNames.add(name.substring(boolPrefixLength));
+                            nativeBoolBackupValues[count] = bytesToBoolean(backupValues.get(i));
                             count++;
+                        } else if (name.startsWith(NATIVE_DICT_PREF_PREFIX)) {
+                            // TODO(crbug.com/1493706): Implement the restoration of the account
+                            // settings.
+                            continue;
                         }
                     }
                     ChromeBackupAgentImplJni.get()
                             .setBoolBackupPrefs(
                                     this,
-                                    nativeBackupNames.toArray(new String[count]),
-                                    Arrays.copyOf(nativeBackupValues, count));
+                                    nativeBoolBackupNames.toArray(new String[count]),
+                                    Arrays.copyOf(nativeBoolBackupValues, count));
                 });
 
         // Now that everything looks good so restore the Android preferences.
@@ -510,5 +520,9 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         boolean[] getBoolBackupValues(ChromeBackupAgentImpl caller);
 
         void setBoolBackupPrefs(ChromeBackupAgentImpl caller, String[] name, boolean[] value);
+
+        String getAccountSettingsBackupName(ChromeBackupAgentImpl caller);
+
+        String getAccountSettingsBackupValue(ChromeBackupAgentImpl caller);
     }
 }

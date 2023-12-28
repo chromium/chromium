@@ -49,7 +49,7 @@ struct LinuxBufferParams {
   explicit LinuxBufferParams(WaylandDmabufFeedbackManager* feedback_manager)
       : feedback_manager(feedback_manager) {}
 
-  const raw_ptr<WaylandDmabufFeedbackManager, ExperimentalAsh> feedback_manager;
+  const raw_ptr<WaylandDmabufFeedbackManager> feedback_manager;
   std::map<uint32_t, Plane> planes;
 };
 

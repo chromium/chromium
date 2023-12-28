@@ -13,7 +13,6 @@ import android.util.TypedValue;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
-import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Px;
@@ -48,16 +47,13 @@ public class OmniboxResourceProvider {
      */
     public static @NonNull Drawable getDrawable(Context context, @DrawableRes int res) {
         ThreadUtils.assertOnUiThread();
-        boolean cacheResources = OmniboxFeatures.shouldCacheSuggestionResources();
-        ConstantState constantState = cacheResources ? sDrawableCache.get(res, null) : null;
+        ConstantState constantState = sDrawableCache.get(res, null);
         if (constantState != null) {
             return constantState.newDrawable(context.getResources());
         }
 
         Drawable drawable = AppCompatResources.getDrawable(context, res);
-        if (cacheResources) {
-            sDrawableCache.put(res, drawable.getConstantState());
-        }
+        sDrawableCache.put(res, drawable.getConstantState());
         return drawable;
     }
 
@@ -69,13 +65,10 @@ public class OmniboxResourceProvider {
      */
     public static @NonNull String getString(Context context, @StringRes int res, Object... args) {
         ThreadUtils.assertOnUiThread();
-        boolean cacheResources = OmniboxFeatures.shouldCacheSuggestionResources();
-        String string = cacheResources ? sStringCache.get(res, null) : null;
+        String string = sStringCache.get(res, null);
         if (string == null) {
             string = context.getResources().getString(res);
-            if (cacheResources) {
-                sStringCache.put(res, string);
-            }
+            sStringCache.put(res, string);
         }
 
         return args.length == 0
@@ -420,28 +413,18 @@ public class OmniboxResourceProvider {
     public static @Px int getSideSpacing(@NonNull Context context) {
         context = maybeReplaceContextForSmallTabletWindow(context);
         return context.getResources()
-                .getDimensionPixelSize(
-                        selectMarginDimen(
-                                context,
-                                R.dimen.omnibox_suggestion_side_spacing,
-                                R.dimen.omnibox_suggestion_side_spacing_smaller,
-                                R.dimen.omnibox_suggestion_side_spacing_smallest));
+                .getDimensionPixelSize(R.dimen.omnibox_suggestion_side_spacing_smallest);
     }
 
     /** Get the top margin for a suggestion that is the beginning of a group. */
     public static int getSuggestionGroupTopMargin(Context context) {
         context = maybeReplaceContextForSmallTabletWindow(context);
         return context.getResources()
-                .getDimensionPixelSize(
-                        selectMarginDimen(
-                                context,
-                                R.dimen.omnibox_suggestion_group_vertical_margin,
-                                R.dimen.omnibox_suggestion_group_vertical_smaller_margin,
-                                R.dimen.omnibox_suggestion_group_vertical_smallest_margin));
+                .getDimensionPixelSize(R.dimen.omnibox_suggestion_group_vertical_smallest_margin);
     }
 
     /** Get the top padding for the MV carousel. */
-    public static @Px int getCarouselTopPadding(Context context) {
+    public static @Px int getMostVisitedCarouselTopPadding(Context context) {
         if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
             return context.getResources()
                     .getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding);
@@ -449,16 +432,11 @@ public class OmniboxResourceProvider {
 
         context = maybeReplaceContextForSmallTabletWindow(context);
         return context.getResources()
-                .getDimensionPixelSize(
-                        selectMarginDimen(
-                                context,
-                                R.dimen.omnibox_carousel_suggestion_padding_smaller,
-                                R.dimen.omnibox_carousel_suggestion_padding_smallest,
-                                R.dimen.omnibox_carousel_suggestion_padding_smaller));
+                .getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding_smaller);
     }
 
     /** Get the bottom padding for the MV carousel. */
-    public static @Px int getCarouselBottomPadding(Context context) {
+    public static @Px int getMostVisitedCarouselBottomPadding(Context context) {
         if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
             return context.getResources()
                     .getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding);
@@ -466,23 +444,13 @@ public class OmniboxResourceProvider {
 
         context = maybeReplaceContextForSmallTabletWindow(context);
         return context.getResources()
-                .getDimensionPixelSize(
-                        selectMarginDimen(
-                                context,
-                                R.dimen.omnibox_carousel_suggestion_small_bottom_padding,
-                                R.dimen.omnibox_carousel_suggestion_small_bottom_padding,
-                                R.dimen.omnibox_carousel_suggestion_padding));
+                .getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding);
     }
 
     /** Get the top margin for first suggestion in the omnibox with "active color" enabled. */
     public static @Px int getActiveOmniboxTopSmallMargin(Context context) {
         return context.getResources()
-                .getDimensionPixelSize(
-                        selectMarginDimen(
-                                context,
-                                R.dimen.omnibox_suggestion_list_active_top_small_margin,
-                                R.dimen.omnibox_suggestion_list_active_top_smaller_margin,
-                                R.dimen.omnibox_suggestion_list_active_top_small_margin));
+                .getDimensionPixelSize(R.dimen.omnibox_suggestion_list_active_top_small_margin);
     }
 
     /** Gets the start padding for a header suggestion. */
@@ -490,23 +458,14 @@ public class OmniboxResourceProvider {
         context = maybeReplaceContextForSmallTabletWindow(context);
         return context.getResources()
                 .getDimensionPixelSize(
-                        selectMarginDimen(
-                                context,
-                                R.dimen.omnibox_suggestion_header_padding_start_modern,
-                                R.dimen.omnibox_suggestion_header_padding_start_modern_smaller,
-                                R.dimen.omnibox_suggestion_header_padding_start_modern_smallest));
+                        R.dimen.omnibox_suggestion_header_padding_start_modern_smallest);
     }
 
     /** Gets the top padding for a header suggestion. */
     public static int getHeaderTopPadding(Context context) {
         context = maybeReplaceContextForSmallTabletWindow(context);
         return context.getResources()
-                .getDimensionPixelSize(
-                        selectMarginDimen(
-                                context,
-                                R.dimen.omnibox_suggestion_header_padding_top,
-                                R.dimen.omnibox_suggestion_header_padding_top_smaller,
-                                R.dimen.omnibox_suggestion_header_padding_top_smallest));
+                .getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_top_smallest);
     }
 
     /** Returns the min height of the header view. */
@@ -514,11 +473,7 @@ public class OmniboxResourceProvider {
         context = maybeReplaceContextForSmallTabletWindow(context);
         return context.getResources()
                 .getDimensionPixelSize(
-                        selectMarginDimen(
-                                context,
-                                R.dimen.omnibox_suggestion_header_height_modern_phase2,
-                                R.dimen.omnibox_suggestion_header_height_modern_phase2_smaller,
-                                R.dimen.omnibox_suggestion_header_height_modern_phase2_smallest));
+                        R.dimen.omnibox_suggestion_header_height_modern_phase2_smallest);
     }
 
     /**
@@ -531,12 +486,7 @@ public class OmniboxResourceProvider {
         }
 
         return context.getResources()
-                .getDimensionPixelSize(
-                        selectMarginDimen(
-                                context,
-                                R.dimen.location_bar_status_view_left_space_width,
-                                R.dimen.location_bar_status_view_left_space_width_bigger,
-                                R.dimen.location_bar_status_view_left_space_width_bigger));
+                .getDimensionPixelSize(R.dimen.location_bar_status_view_left_space_width_bigger);
     }
 
     /**
@@ -557,15 +507,7 @@ public class OmniboxResourceProvider {
 
     /** Returns the amount of pixels for the toolbar's side padding when the omnibox is focused. */
     public static @Px int getToolbarSidePadding(Context context) {
-        return context.getResources()
-                .getDimensionPixelSize(
-                        OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
-                                ? OmniboxResourceProvider.selectMarginDimen(
-                                        context,
-                                        R.dimen.toolbar_edge_padding_modern,
-                                        R.dimen.toolbar_edge_padding_modern_smaller,
-                                        R.dimen.toolbar_edge_padding)
-                                : R.dimen.toolbar_edge_padding);
+        return context.getResources().getDimensionPixelSize(R.dimen.toolbar_edge_padding);
     }
 
     /**
@@ -589,17 +531,6 @@ public class OmniboxResourceProvider {
 
         return context.getResources()
                 .getDimensionPixelSize(R.dimen.omnibox_suggestion_icon_area_size);
-    }
-
-    /** */
-    public static @DimenRes int selectMarginDimen(
-            Context context, @DimenRes int regular, @DimenRes int smaller, @DimenRes int smallest) {
-        if (OmniboxFeatures.shouldShowSmallestMargins(context)) {
-            return smallest;
-        } else if (OmniboxFeatures.shouldShowSmallerMargins(context)) {
-            return smaller;
-        }
-        return regular;
     }
 
     /**

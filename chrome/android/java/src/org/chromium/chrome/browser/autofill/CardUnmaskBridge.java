@@ -129,7 +129,12 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
     }
 
     @Override
-    public void onUserInput(String cvc, String month, String year, boolean enableFidoAuth) {
+    public void onUserInput(
+            String cvc,
+            String month,
+            String year,
+            boolean enableFidoAuth,
+            boolean wasCheckboxVisible) {
         CardUnmaskBridgeJni.get()
                 .onUserInput(
                         mNativeCardUnmaskPromptViewAndroid,
@@ -137,7 +142,8 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
                         cvc,
                         month,
                         year,
-                        enableFidoAuth);
+                        enableFidoAuth,
+                        wasCheckboxVisible);
     }
 
     @Override
@@ -216,7 +222,8 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
                 String cvc,
                 String month,
                 String year,
-                boolean enableFidoAuth);
+                boolean enableFidoAuth,
+                boolean wasCheckboxVisible);
 
         void onNewCardLinkClicked(long nativeCardUnmaskPromptViewAndroid, CardUnmaskBridge caller);
 

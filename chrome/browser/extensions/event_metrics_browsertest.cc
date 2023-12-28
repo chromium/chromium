@@ -5,8 +5,12 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/service_worker_context.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/background_script_executor.h"
+#include "extensions/browser/service_worker/service_worker_test_utils.h"
+#include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
@@ -20,6 +24,67 @@ namespace {
 
 using ContextType = ExtensionBrowserTest::ContextType;
 using EventMetricsBrowserTest = ExtensionBrowserTest;
+
+// TODO(crbug.com/1441221): combine this observer with
+// extensions/browser/service_worker/service_worker_test_utils.h and
+// chrome/browser/extensions/service_worker_event_dispatching_browsertest.cc
+// observers.
+class TestWorkerStatusObserver : public content::ServiceWorkerContextObserver {
+ public:
+  TestWorkerStatusObserver(content::BrowserContext* browser_context,
+                           const ExtensionId& extension_id)
+      : extension_url_(Extension::GetBaseURLFromExtensionId(extension_id)),
+        sw_context_(service_worker_test_utils::GetServiceWorkerContext(
+            browser_context)) {
+    scoped_observation_.Observe(sw_context_);
+  }
+
+  TestWorkerStatusObserver(const TestWorkerStatusObserver&) = delete;
+  TestWorkerStatusObserver& operator=(const TestWorkerStatusObserver&) = delete;
+
+  void WaitForWorkerStarted() { started_worker_run_loop_.Run(); }
+  void WaitForWorkerStopped() { stopped_worker_run_loop_.Run(); }
+
+  int64_t test_worker_version_id() const { return test_worker_version_id_; }
+
+ private:
+  // ServiceWorkerContextObserver:
+
+  // Called when a worker has entered the
+  // `blink::EmbeddedWorkerStatus::kRunning` status. Used to indicate when our
+  // test extension is now running.
+  void OnVersionStartedRunning(
+      int64_t version_id,
+      const content::ServiceWorkerRunningInfo& running_info) override {
+    if (running_info.scope != extension_url_) {
+      return;
+    }
+
+    test_worker_version_id_ = version_id;
+    started_worker_run_loop_.Quit();
+  }
+
+  // Called when a worker has entered the
+  // `blink::EmbeddedWorkerStatus::kStopping` status. Used to indicate when our
+  // test extension has stopped.
+  void OnVersionStoppedRunning(int64_t version_id) override {
+    // `test_worker_version_id_` is the previously running version's id.
+    if (test_worker_version_id_ != version_id) {
+      return;
+    }
+    stopped_worker_run_loop_.Quit();
+  }
+
+  int64_t test_worker_version_id_ =
+      blink::mojom::kInvalidServiceWorkerVersionId;
+  base::RunLoop started_worker_run_loop_;
+  base::RunLoop stopped_worker_run_loop_;
+  const GURL extension_url_;
+  const raw_ptr<content::ServiceWorkerContext> sw_context_;
+  base::ScopedObservation<content::ServiceWorkerContext,
+                          content::ServiceWorkerContextObserver>
+      scoped_observation_{this};
+};
 
 // Tests that the only the dispatch time histogram provided to the test is
 // emitted with a sane value, and that other provided metrics are not emitted.
@@ -134,6 +199,198 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest, ExternalRequestMetrics) {
       "Extensions.ServiceWorkerBackground.FinishedExternalRequest_Result_"
       "PostReturn",
       /*expected_count=*/1);
+}
+
+// Tests that an active event page will emit the proper dispatch time metric.
+IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
+                       EventPageDispatchToAckTimeActive) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // Extend background page expiration time so that the event page will be
+  // active for the test.
+  ProcessManager::SetEventPageIdleTimeForTesting(60000);
+  ProcessManager::SetEventPageSuspendingTimeForTesting(60000);
+
+  ExtensionTestMessageListener extension_oninstall_listener_fired(
+      "installed listener fired");
+  scoped_refptr<const Extension> extension =
+      LoadExtension(test_data_dir_.AppendASCII("events/metrics/web_navigation"),
+                    {.context_type = ContextType::kEventPage});
+  ASSERT_TRUE(extension);
+  // This ensures that we wait until the the browser receives the ack from the
+  // renderer. This prevents unexpected histogram emits later.
+  ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
+
+  ExtensionBackgroundPageWaiter(profile(), *extension).WaitForBackgroundOpen();
+  ProcessManager* process_manager = ProcessManager::Get(profile());
+  ASSERT_FALSE(process_manager->IsEventPageSuspended(extension->id()));
+
+  base::HistogramTester histogram_tester;
+  ExtensionTestMessageListener test_event_listener_fired("listener fired");
+  // Navigate somewhere to trigger the webNavigation.onBeforeRequest event to
+  // the extension listener.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
+  ASSERT_TRUE(test_event_listener_fired.WaitUntilSatisfied());
+
+  // Call to webNavigation.onCompleted expected.
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionEventPage3.Active",
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionEventPage3.Inactive",
+      /*expected_count=*/0);
+  // Verify that the recorded values are sane -- that is, that they are less
+  // than the maximum bucket.
+  histogram_tester.ExpectBucketCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionEventPage3.Active",
+      /*sample=*/base::Minutes(5).InMicroseconds(),
+      /*expected_count=*/0);
+}
+
+// Tests that an inactive event page will emit the proper dispatch time metric.
+IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
+                       EventPageDispatchToAckTimeInactive) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // Minimize background page expiration time so that the event page will
+  // suspend/idle quickly for the test.
+  ProcessManager::SetEventPageIdleTimeForTesting(1);
+  ProcessManager::SetEventPageSuspendingTimeForTesting(1);
+
+  ExtensionTestMessageListener extension_oninstall_listener_fired(
+      "installed listener fired");
+  scoped_refptr<const Extension> extension =
+      LoadExtension(test_data_dir_.AppendASCII("events/metrics/web_navigation"),
+                    {.context_type = ContextType::kEventPage});
+  ASSERT_TRUE(extension);
+  // This ensures that we wait until the the browser receives the ack from the
+  // renderer. This prevents unexpected histogram emits later.
+  ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
+
+  ExtensionBackgroundPageWaiter(profile(), *extension)
+      .WaitForBackgroundClosed();
+  ProcessManager* process_manager = ProcessManager::Get(profile());
+  ASSERT_TRUE(process_manager->IsEventPageSuspended(extension->id()));
+
+  base::HistogramTester histogram_tester;
+  ExtensionTestMessageListener test_event_listener_fired("listener fired");
+  // Navigate somewhere to trigger the webNavigation.onBeforeRequest event to
+  // the extension listener.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
+  ASSERT_TRUE(test_event_listener_fired.WaitUntilSatisfied());
+
+  // Call to webNavigation.onCompleted expected.
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionEventPage3.Inactive",
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionEventPage3.Active",
+      /*expected_count=*/0);
+  // Verify that the recorded values are sane -- that is, that they are less
+  // than the maximum bucket.
+  histogram_tester.ExpectBucketCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionEventPage3.Inactive",
+      /*sample=*/base::Minutes(5).InMicroseconds(),
+      /*expected_count=*/0);
+}
+
+// Tests that an active service worker will emit the proper dispatch time
+// metric.
+IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
+                       ServiceWorkerDispatchToAckTimeActive) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ExtensionTestMessageListener extension_oninstall_listener_fired(
+      "installed listener fired");
+  // Load the extension for the particular context type. The manifest
+  // file is for a legacy event page-based extension. LoadExtension will
+  // modify the extension for the kServiceWorker case.
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("events/metrics/web_navigation"),
+                    {.context_type = ContextType::kServiceWorker});
+  ASSERT_TRUE(extension);
+  // This ensures that we wait until the the browser receives the ack from the
+  // renderer. This prevents unexpected histogram emits later.
+  ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
+  ASSERT_TRUE(content::CheckServiceWorkerIsRunning(
+      // The first SW version ID is always 0.
+      GetServiceWorkerContext(), /*service_worker_version_id=*/0));
+
+  base::HistogramTester histogram_tester;
+  ExtensionTestMessageListener test_event_listener_fired("listener fired");
+  // Navigate somewhere to trigger the webNavigation.onBeforeRequest event to
+  // the extension listener.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
+  ASSERT_TRUE(test_event_listener_fired.WaitUntilSatisfied());
+
+  // Call to webNavigation.onCompleted expected.
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Active",
+      /*expected_count=*/1);
+  // Verify that the recorded values are sane -- that is, that they are less
+  // than the maximum bucket.
+  histogram_tester.ExpectBucketCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Active",
+      /*sample=*/base::Minutes(5).InMicroseconds(), /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Inactive",
+      /*expected_count=*/0);
+}
+
+// Tests that an inactive service worker will emit the proper dispatch time
+// metric.
+IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
+                       ServiceWorkerDispatchToAckTimeInactive) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  constexpr char kTestExtensionId[] = "iegclhlplifhodhkoafiokenjoapiobj";
+  // Stop the service worker to make it inactive.
+  TestWorkerStatusObserver test_worker_start_stop_observer(profile(),
+                                                           kTestExtensionId);
+  ExtensionTestMessageListener extension_oninstall_listener_fired(
+      "installed listener fired");
+  // We need to load an extension where we know the extensions ID so that we
+  // can correctly observe when the worker starts and stops.
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("events/reliability/service_worker"),
+      {.wait_for_registration_stored = true});
+  ASSERT_TRUE(extension);
+  // This ensures that we wait until the the browser receives the ack from the
+  // renderer. This prevents unexpected histogram emits later.
+  ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
+  test_worker_start_stop_observer.WaitForWorkerStarted();
+
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             kTestExtensionId);
+  test_worker_start_stop_observer.WaitForWorkerStopped();
+  ASSERT_TRUE(content::CheckServiceWorkerIsStopped(
+      GetServiceWorkerContext(),
+      test_worker_start_stop_observer.test_worker_version_id()));
+
+  base::HistogramTester histogram_tester;
+  ExtensionTestMessageListener test_event_listener_fired("listener fired");
+  // Navigate somewhere to trigger the webNavigation.onBeforeRequest event to
+  // the extension listener.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
+  ASSERT_TRUE(test_event_listener_fired.WaitUntilSatisfied());
+
+  // Call to webNavigation.onCompleted expected.
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Inactive",
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Active",
+      /*expected_count=*/0);
+  // Verify that the recorded values are sane -- that is, that they are less
+  // than the maximum bucket.
+  histogram_tester.ExpectBucketCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2.Inactive",
+      /*sample=*/base::Minutes(5).InMicroseconds(),
+      /*expected_count=*/0);
 }
 
 class EventMetricsDispatchToSenderBrowserTest

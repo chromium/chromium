@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
+#include "components/memory_pressure/reclaim_target.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
@@ -345,7 +346,7 @@ class TabManagerDelegate::MemoryStat {
 
   // Returns target size of memory to free given current memory pressure and
   // pre-configured low memory margin.
-  virtual int TargetMemoryToFreeKB();
+  virtual memory_pressure::ReclaimTarget TargetMemoryToFree();
 
   // Returns estimated memory to be freed if the process |handle| is killed.
   virtual int EstimatedMemoryFreedKB(base::ProcessHandle handle);

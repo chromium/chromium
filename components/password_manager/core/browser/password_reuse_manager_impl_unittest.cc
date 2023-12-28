@@ -14,6 +14,8 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/password_store_signin_notifier.h"
+#include "components/password_manager/core/browser/stub_credentials_filter.h"
+#include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -76,6 +78,31 @@ class MockSharedPreferencesDelegateAndroid : public SharedPreferencesDelegate {
   MOCK_METHOD(void, SetCredentials, (const std::string&), (override));
 };
 
+class MockStoreResultFilter : public StubCredentialsFilter {
+ public:
+  MOCK_METHOD(bool,
+              ShouldSaveGaiaPasswordHash,
+              (const PasswordForm&),
+              (const override));
+  MOCK_METHOD(bool,
+              ShouldSaveEnterprisePasswordHash,
+              (const PasswordForm&),
+              (const override));
+};
+
+class MockPasswordManagerClient : public StubPasswordManagerClient {
+ public:
+  MockPasswordManagerClient() {
+    ON_CALL(*this, GetStoreResultFilter()).WillByDefault(Return(&filter_));
+  }
+  MOCK_METHOD(const MockStoreResultFilter*,
+              GetStoreResultFilter,
+              (),
+              (const, override));
+
+ private:
+  testing::NiceMock<MockStoreResultFilter> filter_;
+};
 class PasswordReuseManagerImplTest : public testing::Test {
  public:
   PasswordReuseManagerImplTest() = default;
@@ -470,6 +497,53 @@ TEST_F(PasswordReuseManagerImplTest, NoReuseFoundAfterClearingAccountStorage) {
                                /*saved_passwords=*/0, _, _));
   reuse_manager()->CheckReuse(u"password", "https://evil.com", &mock_consumer);
   RunUntilIdle();
+}
+
+TEST_F(PasswordReuseManagerImplTest, MaybeSavePasswordHashNoHashSaved) {
+  PasswordForm submitted_form =
+      CreateForm("http://yahoo.com", u"user@yahoo.com", u"password",
+                 PasswordForm::Store::kAccountStore);
+  MockPasswordManagerClient client;
+  reuse_manager()->MaybeSavePasswordHash(&submitted_form, &client);
+
+  RunUntilIdle();
+  EXPECT_EQ(0u, prefs().GetList(prefs::kPasswordHashDataList).size());
+}
+
+TEST_F(PasswordReuseManagerImplTest, MaybeSavePasswordHashGaiaHashSaved) {
+  PasswordForm submitted_form =
+      CreateForm("http://google.com", u"user@gmail.com", u"password",
+                 PasswordForm::Store::kAccountStore);
+  MockPasswordManagerClient client;
+  ON_CALL(*client.GetStoreResultFilter(), ShouldSaveGaiaPasswordHash(_))
+      .WillByDefault(Return(true));
+  reuse_manager()->MaybeSavePasswordHash(&submitted_form, &client);
+
+  RunUntilIdle();
+  // Check that right pref has been saved.
+  PasswordHashData password_hash_data =
+      ConvertToPasswordHashData(
+          prefs().GetList(prefs::kPasswordHashDataList)[0])
+          .value();
+  EXPECT_TRUE(password_hash_data.is_gaia_password);
+}
+
+TEST_F(PasswordReuseManagerImplTest, MaybeSavePasswordHashEnterpriseHashSaved) {
+  PasswordForm submitted_form =
+      CreateForm("http://somecorp.com", u"user@somecorp.com", u"password",
+                 PasswordForm::Store::kAccountStore);
+  MockPasswordManagerClient client;
+  ON_CALL(*client.GetStoreResultFilter(), ShouldSaveEnterprisePasswordHash(_))
+      .WillByDefault(Return(true));
+  reuse_manager()->MaybeSavePasswordHash(&submitted_form, &client);
+
+  RunUntilIdle();
+  // Check that right pref has been saved.
+  PasswordHashData password_hash_data =
+      ConvertToPasswordHashData(
+          prefs().GetList(prefs::kPasswordHashDataList)[0])
+          .value();
+  EXPECT_FALSE(password_hash_data.is_gaia_password);
 }
 
 #if BUILDFLAG(IS_ANDROID)

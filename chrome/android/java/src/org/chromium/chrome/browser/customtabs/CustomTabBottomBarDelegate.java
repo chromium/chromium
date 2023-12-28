@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.Over
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.RemoteViewsWithNightModeInflater;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.tab.Tab;
@@ -85,10 +84,7 @@ public class CustomTabBottomBarDelegate
                 public void onClick(View v) {
                     if (mClickPendingIntent == null) return;
                     Intent extraIntent = new Intent();
-                    int originalId = v.getId();
-                    if (ChromeFeatureList.sCctRemoveRemoteViewIds.isEnabled()) {
-                        originalId = (Integer) v.getTag(R.id.view_id_tag_key);
-                    }
+                    int originalId = (Integer) v.getTag(R.id.view_id_tag_key);
                     extraIntent.putExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS_CLICKED_ID, originalId);
                     sendPendingIntentWithUrl(
                             mClickPendingIntent, extraIntent, mActivity, mTabProvider);
@@ -371,11 +367,11 @@ public class CustomTabBottomBarDelegate
                 if (view != null) view.setOnClickListener(mBottomBarClickListener);
             }
         }
-        if (ChromeFeatureList.sCctRemoveRemoteViewIds.isEnabled()) {
-            // Set all views' ids to be View.NO_ID to prevent them clashing with
-            // chrome's resource ids. See http://crbug.com/1061872
-            transformViewIds(inflatedView);
-        }
+
+        // Set all views' ids to be View.NO_ID to prevent them clashing with
+        // chrome's resource ids. See http://crbug.com/1061872
+        transformViewIds(inflatedView);
+
         getBottomBarView().addView(inflatedView, 1);
         inflatedView.addOnLayoutChangeListener(
                 new OnLayoutChangeListener() {
@@ -471,6 +467,9 @@ public class CustomTabBottomBarDelegate
      */
     public void hideBottomBar(boolean hidesBottomBar) {
         if (hidesBottomBar) {
+            // No-op if it is already in hidden state. This keeps bottom controls height from
+            // changing inadvertently while it is being updated by other insets.
+            if (getBottomBarView().getVisibility() == View.GONE) return;
             getBottomBarView().setVisibility(View.GONE);
             mBrowserControlsSizer.setBottomControlsHeight(0, 0);
         } else {

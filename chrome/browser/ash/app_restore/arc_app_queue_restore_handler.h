@@ -172,7 +172,7 @@ class ArcAppQueueRestoreHandler
 
   // Override ResourcedClient::Observer
   void OnMemoryPressure(ResourcedClient::PressureLevel level,
-                        uint64_t reclaim_target_kb) override;
+                        memory_pressure::ReclaimTarget target) override;
 
   // Returns true if there are windows to be restored. Otherwise, returns false.
   bool HasRestoreData();

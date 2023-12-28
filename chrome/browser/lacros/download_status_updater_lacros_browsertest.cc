@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/download_status_updater.h"
+
+#include <memory>
 
 #include "base/files/file_path.h"
 #include "base/observer_list.h"
@@ -13,6 +16,8 @@
 #include "chrome/browser/download/download_browsertest_utils.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
+#include "chrome/browser/download/download_item_model.h"
+#include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/lacros/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -280,19 +285,6 @@ class DownloadStatusUpdaterBrowserTest : public DownloadTestBase {
     item_ = nullptr;
   }
 
-  Browser* CreateAndWaitForBrowser(Profile* profile, bool otr = false) {
-    Browser* browser =
-        otr ? CreateIncognitoBrowser(profile) : CreateBrowser(profile);
-    std::string browser_window_id =
-        lacros_window_utility::GetRootWindowUniqueId(
-            BrowserView::GetBrowserViewForBrowser(browser)
-                ->frame()
-                ->GetNativeWindow()
-                ->GetRootWindow());
-    EXPECT_TRUE(browser_test_util::WaitForWindowCreation(browser_window_id));
-    return browser;
-  }
-
   void SetUpBrowserForTest(Browser* browser) {
     download_button(browser)->DisableAutoCloseTimerForTesting();
     download_button(browser)->DisableDownloadStartedAnimationForTesting();
@@ -359,7 +351,7 @@ class DownloadStatusUpdaterBrowserTest : public DownloadTestBase {
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, url));
     waiter->WaitForFinished();
 
-    std::vector<download::DownloadItem*> items;
+    std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> items;
     DownloadManagerForBrowser(browser)->GetAllDownloads(&items);
     EXPECT_FALSE(items.empty());
 
@@ -545,7 +537,7 @@ IN_PROC_BROWSER_TEST_F(
     DownloadStatusUpdaterBrowserTest,
     ShowInBrowser_NormalDownload_PickMostRecentActiveBrowser) {
   // Open a different browser window and activate it.
-  Browser* browser2 = CreateAndWaitForBrowser(browser()->profile());
+  Browser* browser2 = CreateBrowser(browser()->profile());
   ActivateBrowser(browser2);
 
   DownloadStatusUpdaterClientAsyncWaiter client(
@@ -572,7 +564,7 @@ IN_PROC_BROWSER_TEST_F(
     DownloadStatusUpdaterBrowserTest,
     ShowInBrowser_DangerousDownload_PickMostRecentActiveBrowser) {
   // Open a different browser window and activate it.
-  Browser* browser2 = CreateAndWaitForBrowser(browser()->profile());
+  Browser* browser2 = CreateBrowser(browser()->profile());
   ActivateBrowser(browser2);
 
   DownloadStatusUpdaterClientAsyncWaiter client(
@@ -702,8 +694,7 @@ IN_PROC_BROWSER_TEST_F(
     DownloadStatusUpdaterBrowserTest,
     ShowInBrowser_NormalDownload_MatchBrowserForExactProfile) {
   // Open an incognito browser window.
-  Browser* otr_browser =
-      CreateAndWaitForBrowser(browser()->profile(), /*otr=*/true);
+  Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
 
   // Make the incognito window the last active browser. It should not be picked
   // even though it is the most recent active browser, because the profile is
@@ -734,8 +725,7 @@ IN_PROC_BROWSER_TEST_F(
     DownloadStatusUpdaterBrowserTest,
     ShowInBrowser_DangerousDownload_MatchBrowserForExactProfile) {
   // Open an incognito browser window.
-  Browser* otr_browser =
-      CreateAndWaitForBrowser(browser()->profile(), /*otr=*/true);
+  Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
 
   // Make the incognito window the last active browser. It should not be picked
   // even though it is the most recent active browser, because the profile is
@@ -765,8 +755,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest,
                        ShowInBrowser_NormalDownload_IncognitoBrowser) {
   // Open an incognito browser window.
-  Browser* otr_browser =
-      CreateAndWaitForBrowser(browser()->profile(), /*otr=*/true);
+  Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
 
   // Make `browser()` the last active browser. It should not be picked even
   // though it is the most recent active browser, because the profile is
@@ -797,8 +786,7 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest,
 IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest,
                        ShowInBrowser_DangerousDownload_IncognitoBrowser) {
   // Open an incognito browser window.
-  Browser* otr_browser =
-      CreateAndWaitForBrowser(browser()->profile(), /*otr=*/true);
+  Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
 
   // Make `browser()` the last active browser. It should not be picked even
   // though it is the most recent active browser, because the profile is
@@ -858,6 +846,9 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, Update) {
   content::DownloadItemUtils::AttachInfoForTesting(&item, browser()->profile(),
                                                    /*web_contents=*/nullptr);
 
+  DownloadItemModel download_item_model(
+      &item, std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>());
+
   // Expect a `DownloadStatusUpdater::Update()` event in Ash Chrome when the
   // download status updater in Lacros Chrome is notified of `item` creation.
   EXPECT_CALL(
@@ -872,7 +863,9 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, Update) {
           Field(&DownloadStatus::full_path, Eq(item.GetFullPath())),
           Field(&DownloadStatus::cancellable, Eq(true)),
           Field(&DownloadStatus::pausable, Eq(true)),
-          Field(&DownloadStatus::resumable, Eq(false))))));
+          Field(&DownloadStatus::resumable, Eq(false)),
+          Field(&DownloadStatus::status_text,
+                Eq(download_item_model.GetStatusText()))))));
 
   // Notify the download status updater in Lacros Chrome of `item` creation and
   // verify Ash Chrome expectations.
@@ -897,7 +890,9 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, Update) {
           Field(&DownloadStatus::full_path, Eq(item.GetFullPath())),
           Field(&DownloadStatus::cancellable, Eq(true)),
           Field(&DownloadStatus::pausable, Eq(false)),
-          Field(&DownloadStatus::resumable, Eq(true))))));
+          Field(&DownloadStatus::resumable, Eq(true)),
+          Field(&DownloadStatus::status_text,
+                Eq(download_item_model.GetStatusText()))))));
 
   // Notify the download status updater in Lacros Chrome of `item` update and
   // verify Ash Chrome expectations.
@@ -925,7 +920,9 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, Update) {
           Field(&DownloadStatus::full_path, Eq(item.GetFullPath())),
           Field(&DownloadStatus::cancellable, Eq(false)),
           Field(&DownloadStatus::pausable, Eq(false)),
-          Field(&DownloadStatus::resumable, Eq(false))))));
+          Field(&DownloadStatus::resumable, Eq(false)),
+          Field(&DownloadStatus::status_text,
+                Eq(download_item_model.GetStatusText()))))));
 
   // Notify the download status updater in Lacros Chrome of `item` update and
   // verify Ash Chrome expectations.

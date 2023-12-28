@@ -8,9 +8,9 @@
   </outputs>
   <release seq="1">
     <includes>
-      <include name="IDR_CHROME_EXTENSION_API_FEATURES" file="extensions\api\_api_features.json" type="BINDATA" />
-      <include name="IDR_CHROME_APP_API_FEATURES" file="apps\platform_apps\api\_api_features.json" type="BINDATA" />
-      <include name="IDR_CHROME_CONTROLLED_FRAME_API_FEATURES" file="controlled_frame\api\_api_features.json" type="BINDATA" />
+      <include name="IDR_CHROME_EXTENSION_API_FEATURES" file="extensions\api\_api_features.json" type="BINDATA" compress="gzip"/>
+      <include name="IDR_CHROME_APP_API_FEATURES" file="apps\platform_apps\api\_api_features.json" type="BINDATA" compress="gzip"/>
+      <include name="IDR_CHROME_CONTROLLED_FRAME_API_FEATURES" file="controlled_frame\api\_api_features.json" type="BINDATA" compress="gzip"/>
     </includes>
   </release>
 </grit>

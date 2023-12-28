@@ -82,7 +82,7 @@ class InfoBarContainer : public InfoBarManager::Observer {
   virtual void PlatformSpecificInfoBarStateChanged(bool is_animating) {}
 
  private:
-  typedef std::vector<InfoBar*> InfoBars;
+  typedef std::vector<raw_ptr<InfoBar, VectorExperimental>> InfoBars;
 
   // InfoBarManager::Observer:
   void OnInfoBarAdded(InfoBar* infobar) override;

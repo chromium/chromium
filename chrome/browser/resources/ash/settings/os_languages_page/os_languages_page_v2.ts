@@ -38,7 +38,7 @@ import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, routes} from '../router.js';
+import {Route, Router, routes} from '../router.js';
 
 import {LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './languages_metrics_proxy.js';
 import {LanguageHelper, LanguagesModel, LanguageState} from './languages_types.js';
@@ -116,6 +116,13 @@ export class OsSettingsLanguagesPageV2Element extends
         },
       },
 
+      isPerAppLanguageEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isPerAppLanguageEnabled');
+        },
+      },
+
       languageSettingsV2Update2Enabled_: Boolean,
     };
   }
@@ -149,6 +156,7 @@ export class OsSettingsLanguagesPageV2Element extends
   private isGuest_: boolean;
   private isSecondaryUser_: boolean;
   private primaryUserEmail_: string;
+  private isPerAppLanguageEnabled_: boolean;
   // TODO: b/263823772 - Inline this variable.
   private languageSettingsV2Update2Enabled_ = true;
 
@@ -185,6 +193,13 @@ export class OsSettingsLanguagesPageV2Element extends
     return this.i18n(
         'changeDeviceLanguageButtonDescription',
         this.getLanguageDisplayName_(language));
+  }
+
+  /**
+   * Navigates to app languages subpage.
+   */
+  private onAppLanguagesClick_(): void {
+    Router.getInstance().navigateTo(routes.OS_LANGUAGES_APP_LANGUAGES);
   }
 
   /**

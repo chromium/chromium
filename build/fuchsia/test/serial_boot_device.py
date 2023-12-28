@@ -13,14 +13,28 @@ import json
 import logging
 import os
 import shutil
+import signal
 import subprocess
 import sys
 import time
 
 from typing import List
 from boot_device import BootMode
+from compatible_utils import running_unattended
 
 # pylint: disable=too-many-return-statements, too-many-branches
+
+
+def _env_ready() -> bool:
+    """Checks if the required environment is ready to support the functions in
+    this file."""
+    if shutil.which('fastboot') is None:
+        logging.warning('fastboot is not accessible')
+        return False
+    if shutil.which('serialio') is None:
+        logging.warning('serialio is not accessible')
+        return False
+    return True
 
 
 def boot_device(node_id: str,
@@ -50,16 +64,9 @@ def boot_device(node_id: str,
     assert node_id is not None
     assert serial_num is not None
 
-    if not mode in [BootMode.REGULAR, BootMode.BOOTLOADER]:
-        logging.warning('Unsupported BootMode %s for serial_boot_device.',
-                        mode)
-        return False
-    if shutil.which('fastboot') is None:
-        logging.warning('fastboot is not accessible')
-        return False
-    if shutil.which('serialio') is None:
-        logging.warning('serialio is not accessible')
-        return False
+    assert mode in [BootMode.REGULAR, BootMode.BOOTLOADER
+                    ], 'Unsupported BootMode %s for serial_boot_device.' % mode
+    assert _env_ready()
 
     if is_in_fuchsia(node_id):
         if not must_boot and mode == BootMode.REGULAR:
@@ -196,6 +203,21 @@ def _run_fastboot(args: List[str], serial_num: str) -> bool:
     return False
 
 
+def _shutdown_if_serial_is_unavailable(node_id: str) -> None:
+    if not running_unattended():
+        return
+    # pylint: disable=subprocess-run-check
+    if subprocess.run(['serialio', node_id, 'poll']).returncode != 0:
+        logging.warning('shutting down the docker by killing the pid 1')
+        # Before killing the process itself, force shutting down the logging to
+        # flush everything.
+        logging.shutdown()
+        # In docker instance, killing root process will cause the instance to be
+        # shut down and restarted by swarm_docker. So the updated tty can be
+        # attached to the new docker instance.
+        os.kill(1, signal.SIGTERM)
+
+
 def main(action: str) -> int:
     """Main entry of serial_boot_device."""
     node_id = os.getenv('FUCHSIA_NODENAME')
@@ -208,10 +230,18 @@ def main(action: str) -> int:
         handlers.append(
             logging.FileHandler('/home/swarming/dmc.%s.log' % node_id))
     logging.basicConfig(format='%(levelname)s %(asctime)s %(message)s',
-                        handlers=handlers)
-    logging.info('running command %s', sys.argv)
+                        handlers=handlers,
+                        level=logging.INFO)
+    logging.info('Running command %s against %s %s', sys.argv, node_id,
+                 serial_num)
+
+    # Checks the environment after initializing the logging.
+    if not _env_ready():
+        logging.error('Missing environment setup, unable to perform action.')
+        return 2
 
     if action == 'health-check':
+        _shutdown_if_serial_is_unavailable(node_id)
         if is_in_fuchsia(node_id) or is_in_fastboot(serial_num):
             # Print out the json result without using logging to avoid any
             # potential formatting issue.
@@ -227,6 +257,8 @@ def main(action: str) -> int:
                       node_id, serial_num)
         return 1
     if action in ['reboot', 'after-task']:
+        if action == 'after-task':
+            _shutdown_if_serial_is_unavailable(node_id)
         if boot_device(node_id, serial_num, BootMode.REGULAR, must_boot=True):
             return 0
         logging.error(
@@ -258,10 +290,13 @@ def main(action: str) -> int:
         print('chromium')
         return 0
     if action == 'before-task':
-        # Do nothing
+        # TODO(crbug.com/1490434): fuchsia.py requires IMAGE_MANIFEST_PATH and
+        # BOOTSERVER_PATH to support before-task call. So the following
+        # statement does not work as it should be.
+        _shutdown_if_serial_is_unavailable(node_id)
         return 0
     if action == 'set-power-state':
-        # Do nothing
+        # Do nothing. The device is always restarted during after-task.
         return 0
     logging.error('Unknown command %s', action)
     return 2

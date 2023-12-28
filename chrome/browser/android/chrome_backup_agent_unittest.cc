@@ -9,6 +9,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/android/jni_string.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/android/chrome_backup_agent.h"
@@ -26,15 +28,18 @@ namespace android {
 
 using base::android::AppendJavaStringArrayToStringVector;
 using base::android::AttachCurrentThread;
+using base::android::JavaBooleanArrayToBoolVector;
+using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfStrings;
 using base::android::ToJavaBooleanArray;
-using base::android::JavaParamRef;
 
 class ChromeBackupAgentTest : public ::testing::Test {
  protected:
   ChromeBackupAgentTest()
-      : expected_pref_names_(GetBackupPrefNames()),
+      : expected_bool_pref_names_(GetBackupBoolPrefNames()),
+        expected_account_settings_pref_name_(
+            GetBackupAccountSettingsPrefName()),
         testing_profile_manager_(TestingBrowserProcess::GetGlobal()),
         env_(AttachCurrentThread()) {}
 
@@ -49,7 +54,8 @@ class ChromeBackupAgentTest : public ::testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  std::vector<std::string> expected_pref_names_;
+  std::vector<std::string> expected_bool_pref_names_;
+  std::string expected_account_settings_pref_name_;
   TestingProfileManager testing_profile_manager_;
   raw_ptr<TestingProfile> testing_profile_;
   raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
@@ -63,7 +69,7 @@ TEST_F(ChromeBackupAgentTest, GetBoolBackupNames) {
   std::vector<std::string> pref_names;
   AppendJavaStringArrayToStringVector(AttachCurrentThread(), result,
                                       &pref_names);
-  EXPECT_EQ(expected_pref_names_, pref_names);
+  EXPECT_EQ(expected_bool_pref_names_, pref_names);
 }
 
 TEST_F(ChromeBackupAgentTest, GetBoolBackupValues_AllDefault) {
@@ -71,13 +77,13 @@ TEST_F(ChromeBackupAgentTest, GetBoolBackupValues_AllDefault) {
       GetBoolBackupValuesForTesting(env_, JavaParamRef<jobject>(nullptr));
   std::vector<bool> values;
   JavaBooleanArrayToBoolVector(env_, result, &values);
-  ASSERT_EQ(expected_pref_names_.size(), values.size());
+  ASSERT_EQ(expected_bool_pref_names_.size(), values.size());
   for (size_t i = 0; i < values.size(); i++) {
     const base::Value* default_pref_value =
-        pref_service_->GetDefaultPrefValue(expected_pref_names_[i]);
+        pref_service_->GetDefaultPrefValue(expected_bool_pref_names_[i]);
     ASSERT_TRUE(default_pref_value->is_bool());
     EXPECT_EQ(default_pref_value->GetBool(), values[i])
-        << "i = " << i << ", " << expected_pref_names_[i];
+        << "i = " << i << ", " << expected_bool_pref_names_[i];
   }
 }
 
@@ -89,50 +95,119 @@ TEST_F(ChromeBackupAgentTest, GetBoolBackupValues_IrrelevantChange) {
       GetBoolBackupValuesForTesting(env_, JavaParamRef<jobject>(nullptr));
   std::vector<bool> values;
   JavaBooleanArrayToBoolVector(env_, result, &values);
-  ASSERT_EQ(expected_pref_names_.size(), values.size());
+  ASSERT_EQ(expected_bool_pref_names_.size(), values.size());
   for (size_t i = 0; i < values.size(); i++) {
     const base::Value* default_pref_value =
-        pref_service_->GetDefaultPrefValue(expected_pref_names_[i]);
+        pref_service_->GetDefaultPrefValue(expected_bool_pref_names_[i]);
     ASSERT_TRUE(default_pref_value->is_bool());
     EXPECT_EQ(default_pref_value->GetBool(), values[i])
-        << "i = " << i << ", " << expected_pref_names_[i];
+        << "i = " << i << ", " << expected_bool_pref_names_[i];
   }
 }
 
 TEST_F(ChromeBackupAgentTest, GetBoolBackupValues_RelevantChange) {
   // Change one of the values we care about
-  pref_service_->SetBoolean(expected_pref_names_[3], false);
+  pref_service_->SetBoolean(expected_bool_pref_names_[3], false);
   ScopedJavaLocalRef<jbooleanArray> result =
       GetBoolBackupValuesForTesting(env_, JavaParamRef<jobject>(nullptr));
   std::vector<bool> values;
   JavaBooleanArrayToBoolVector(env_, result, &values);
-  ASSERT_EQ(expected_pref_names_.size(), values.size());
+  ASSERT_EQ(expected_bool_pref_names_.size(), values.size());
   for (size_t i = 0; i < values.size(); i++) {
-    EXPECT_EQ(pref_service_->GetBoolean(expected_pref_names_[i]), values[i])
-        << "i = " << i << ", " << expected_pref_names_[i];
+    EXPECT_EQ(pref_service_->GetBoolean(expected_bool_pref_names_[i]),
+              values[i])
+        << "i = " << i << ", " << expected_bool_pref_names_[i];
   }
 }
 
 TEST_F(ChromeBackupAgentTest, SetBoolBackupValues) {
   ScopedJavaLocalRef<jobjectArray> narray =
-      ToJavaArrayOfStrings(env_, expected_pref_names_);
-  bool* values = new bool[expected_pref_names_.size()];
-  for (size_t i = 0; i < expected_pref_names_.size(); i++) {
+      ToJavaArrayOfStrings(env_, expected_bool_pref_names_);
+  bool* values = new bool[expected_bool_pref_names_.size()];
+  for (size_t i = 0; i < expected_bool_pref_names_.size(); i++) {
     values[i] = false;
   }
   // Set a couple of the values to true.
   values[5] = true;
   values[8] = true;
   ScopedJavaLocalRef<jbooleanArray> varray =
-      ToJavaBooleanArray(env_, values, expected_pref_names_.size());
+      ToJavaBooleanArray(env_, values, expected_bool_pref_names_.size());
   SetBoolBackupPrefsForTesting(env_, JavaParamRef<jobject>(nullptr),
                                JavaParamRef<jobjectArray>(env_, narray.obj()),
                                JavaParamRef<jbooleanArray>(env_, varray.obj()));
-  for (size_t i = 0; i < expected_pref_names_.size(); i++) {
-    EXPECT_EQ(values[i], pref_service_->GetBoolean(expected_pref_names_[i]))
-        << "i = " << i << ", " << expected_pref_names_[i];
+  for (size_t i = 0; i < expected_bool_pref_names_.size(); i++) {
+    EXPECT_EQ(values[i],
+              pref_service_->GetBoolean(expected_bool_pref_names_[i]))
+        << "i = " << i << ", " << expected_bool_pref_names_[i];
   }
   EXPECT_FALSE(pref_service_->GetBoolean("dummy"));
+}
+
+TEST_F(ChromeBackupAgentTest, GetAccountSettingsBackupName) {
+  ScopedJavaLocalRef<jstring> result = GetAccountSettingsBackupNameForTesting(
+      env_, JavaParamRef<jobject>(nullptr));
+  std::string pref_name = base::android::ConvertJavaStringToUTF8(env_, result);
+  EXPECT_EQ(expected_account_settings_pref_name_, pref_name);
+}
+
+TEST_F(ChromeBackupAgentTest, GetAccountSettingsBackupValue_DefaultValue) {
+  const ScopedJavaLocalRef<jstring> result =
+      GetAccountSettingsBackupValueForTesting(env_,
+                                              JavaParamRef<jobject>(nullptr));
+  const std::string serialized_pref_value =
+      base::android::ConvertJavaStringToUTF8(env_, result);
+  const base::Value::Dict& default_pref_value =
+      pref_service_->GetDefaultPrefValue(expected_account_settings_pref_name_)
+          ->GetDict();
+
+  // TODO(crbug.com/1493706): Replace this by the deserialization method.
+  int error_code;
+  std::string error_message;
+  JSONStringValueDeserializer deserializer(serialized_pref_value);
+  const std::unique_ptr<const base::Value> deserialized_pref_value =
+      deserializer.Deserialize(&error_code, &error_message);
+
+  ASSERT_NE(deserialized_pref_value, nullptr) << error_message;
+  ASSERT_TRUE(deserialized_pref_value.get()->is_dict());
+  EXPECT_EQ(default_pref_value, deserialized_pref_value->GetDict())
+      << "Expected dict: \n"
+      << default_pref_value.DebugString() << "Deserialized dict: \n"
+      << deserialized_pref_value->DebugString();
+}
+
+TEST_F(ChromeBackupAgentTest, GetAccountSettingsBackupValue_ChangedValue) {
+  base::Value::Dict new_pref_value = base::Value::Dict()
+                                         .Set("id_1", base::Value::Dict()
+                                                          .Set("bool1", false)
+                                                          .Set("bool2", true)
+                                                          .Set("bool3", false))
+                                         .Set("id_2", base::Value::Dict()
+                                                          .Set("bool1", true)
+                                                          .Set("bool2", false)
+                                                          .Set("bool3", true));
+
+  pref_service_->SetDict(expected_account_settings_pref_name_,
+                         new_pref_value.Clone());
+
+  const ScopedJavaLocalRef<jstring> result =
+      GetAccountSettingsBackupValueForTesting(env_,
+                                              JavaParamRef<jobject>(nullptr));
+  const std::string serialized_pref_value =
+      base::android::ConvertJavaStringToUTF8(env_, result);
+
+  // TODO(crbug.com/1493706): Replace this by the deserialization method.
+  int error_code;
+  std::string error_message;
+  JSONStringValueDeserializer deserializer(serialized_pref_value);
+  const std::unique_ptr<const base::Value> deserialized_pref_value =
+      deserializer.Deserialize(&error_code, &error_message);
+
+  ASSERT_NE(deserialized_pref_value, nullptr) << error_message;
+  ASSERT_TRUE(deserialized_pref_value.get()->is_dict());
+  EXPECT_EQ(new_pref_value, deserialized_pref_value->GetDict())
+      << "Expected dict: \n"
+      << new_pref_value.DebugString() << "Deserialized dict: \n"
+      << deserialized_pref_value->DebugString();
 }
 
 }  //  namespace android

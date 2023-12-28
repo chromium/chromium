@@ -53,6 +53,11 @@ void BookmarkModelBridge::BookmarkNodeAdded(
     bool added_by_user) {
   DCHECK(model_observation_.IsObservingSource(model));
   [observer_ bookmarkModel:model didChangeChildrenForNode:parent];
+  SEL selector = @selector(bookmarkModel:didAddNode:toFolder:);
+  if ([observer_ respondsToSelector:selector]) {
+    const bookmarks::BookmarkNode* node = parent->children()[index].get();
+    [observer_ bookmarkModel:model didAddNode:node toFolder:parent];
+  }
 }
 
 void BookmarkModelBridge::OnWillRemoveBookmarks(
@@ -83,6 +88,16 @@ void BookmarkModelBridge::BookmarkNodeRemoved(
   __weak id<BookmarkModelBridgeObserver> observer = observer_;
   [observer bookmarkModel:model didDeleteNode:node fromFolder:parent];
   [observer bookmarkModel:model didChangeChildrenForNode:parent];
+}
+
+void BookmarkModelBridge::OnWillChangeBookmarkNode(
+    bookmarks::BookmarkModel* model,
+    const bookmarks::BookmarkNode* node) {
+  CHECK(model_observation_.IsObservingSource(model));
+  SEL selector = @selector(bookmarkModel:willChangeBookmarkNode:);
+  if ([observer_ respondsToSelector:selector]) {
+    [observer_ bookmarkModel:model willChangeBookmarkNode:node];
+  }
 }
 
 void BookmarkModelBridge::BookmarkNodeChanged(

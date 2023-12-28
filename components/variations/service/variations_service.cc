@@ -321,7 +321,7 @@ class DeviceVariationsRestrictionByPolicyApplicator {
     }
   }
 
-  const raw_ptr<PrefService, ExperimentalAsh> policy_pref_service_;
+  const raw_ptr<PrefService> policy_pref_service_;
 
   // Watch the changes of the variations prefs.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
@@ -351,7 +351,8 @@ VariationsService::VariationsService(
               MaybeImportFirstRunSeed(client_.get(), local_state),
               /*signature_verification_enabled=*/true,
               std::make_unique<VariationsSafeSeedStoreLocalState>(local_state)),
-          ui_string_overrider) {
+          ui_string_overrider,
+          &limited_entropy_synthetic_trial_) {
   DCHECK(client_);
   DCHECK(resource_request_allowed_notifier_);
 

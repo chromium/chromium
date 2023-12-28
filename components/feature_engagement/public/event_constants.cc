@@ -24,6 +24,9 @@ const char kCustomizeChromeOpened[] = "customize_chrome_opened";
 const char kMediaBackgrounded[] = "media_backgrounded";
 const char kGlobalMediaControlsOpened[] = "global_media_controls_opened";
 
+const char kSidePanelPinned[] = "side_panel_pinned";
+const char kSidePanelFromMenuShown[] = "side_panel_from_menu_shown";
+
 const char kSideSearchAutoTriggered[] = "side_search_auto_triggered";
 const char kSideSearchOpened[] = "side_search_opened";
 const char kSideSearchPageActionLabelShown[] =
@@ -46,7 +49,9 @@ const char kFocusHelpBubbleAcceleratorPromoRead[] =
 
 const char kBatterySaverDialogShown[] = "battery_saver_info_shown";
 
-const char kHighEfficiencyDialogShown[] = "high_efficiency_info_shown";
+// The event constant is used in Finch experiments so it is unable to be renamed
+// alongside the variable name.
+const char kMemorySaverDialogShown[] = "high_efficiency_info_shown";
 
 const char kExtensionsMenuOpenedWhileExtensionHasAccess[] =
     "extensions_menu_opened_while_extension_has_access";
@@ -64,7 +69,7 @@ const char kChromeOpened[] = "chrome_opened";
 const char kIncognitoTabOpened[] = "incognito_tab_opened";
 const char kClearedBrowsingData[] = "cleared_browsing_data";
 const char kViewedReadingList[] = "viewed_reading_list";
-const char kViewedWhatsNew[] = "viewed_whats_new";
+const char kViewedWhatsNew[] = "viewed_whats_new_m116";
 const char kTriggeredTranslateInfobar[] = "triggered_translate_infobar";
 const char kBottomToolbarOpened[] = "bottom_toolbar_opened";
 const char kDiscoverFeedLoaded[] = "discover_feed_loaded";
@@ -107,6 +112,7 @@ const char kShareToolbarItemUsed[] = "share_toolbar_item_used";
 const char kDefaultBrowserVideoPromoConditionsMet[] =
     "default_browser_video_promo_conditions_met";
 const char kLensButtonKeyboardUsed[] = "lens_keyboard_used";
+const char kOmniboxPositionPromoShown[] = "omnibox_position_promo_shown";
 const char kParcelTrackingTriggered[] = "parcel_tracking_triggered";
 const char kParcelTracked[] = "parcel_tracked";
 const char kIOSMultiGestureRefreshUsed[] = "multi_gesture_refresh_used";

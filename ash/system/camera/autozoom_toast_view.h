@@ -39,9 +39,9 @@ class ASH_EXPORT AutozoomToastView : public views::View,
   void OnViewFocused(views::View* observed_view) override;
   void OnViewBlurred(views::View* observed_view) override;
 
-  raw_ptr<AutozoomToastController, ExperimentalAsh> controller_ = nullptr;
-  raw_ptr<FeaturePodIconButton, ExperimentalAsh> button_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
+  raw_ptr<AutozoomToastController> controller_ = nullptr;
+  raw_ptr<FeaturePodIconButton> button_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
 };
 
 }  // namespace ash

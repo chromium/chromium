@@ -60,9 +60,6 @@ class StorageAccessAPIServiceImpl : public StorageAccessAPIService,
   // Timer to periodically update state for the associated profile.
   base::RepeatingTimer periodic_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Whether grant refreshes are enabled.
-  const bool grant_refreshes_enabled_ GUARDED_BY_CONTEXT(sequence_checker_);
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<StorageAccessAPIServiceImpl> weak_ptr_factory_{this};

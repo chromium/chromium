@@ -99,15 +99,13 @@ class WaylandDisplayHandler : public display::DisplayObserver,
   AuraOutputManager* GetAuraOutputManager();
 
   // Output.
-  raw_ptr<WaylandDisplayOutput, ExperimentalAsh> output_;
+  raw_ptr<WaylandDisplayOutput> output_;
 
   // The output resource associated with the display.
-  const raw_ptr<wl_resource, DanglingUntriaged | ExperimentalAsh>
-      output_resource_;
+  const raw_ptr<wl_resource, DanglingUntriaged> output_resource_;
 
   // Resource associated with a zxdg_output_v1 object.
-  raw_ptr<wl_resource, DanglingUntriaged | ExperimentalAsh>
-      xdg_output_resource_ = nullptr;
+  raw_ptr<wl_resource, DanglingUntriaged> xdg_output_resource_ = nullptr;
 
   base::ObserverList<WaylandDisplayObserver> observers_;
 

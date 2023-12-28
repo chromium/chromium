@@ -350,7 +350,7 @@ class ClipboardHistoryControllerImpl::AcceleratorTarget
   }
 
   // The controller responsible for showing the clipboard history menu.
-  const raw_ptr<ClipboardHistoryControllerImpl, ExperimentalAsh> controller_;
+  const raw_ptr<ClipboardHistoryControllerImpl> controller_;
 
   // Deletes the selected menu item.
   const ui::Accelerator delete_selected_;
@@ -385,7 +385,7 @@ class ClipboardHistoryControllerImpl::MenuDelegate
 
  private:
   // The controller responsible for showing the Clipboard History menu.
-  const raw_ptr<ClipboardHistoryControllerImpl, ExperimentalAsh> controller_;
+  const raw_ptr<ClipboardHistoryControllerImpl> controller_;
 };
 
 // ClipboardHistoryControllerImpl ----------------------------------------------

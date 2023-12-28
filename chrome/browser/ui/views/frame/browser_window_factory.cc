@@ -25,6 +25,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/views/frame/browser_view_ash.h"
 #include "chrome/browser/ui/views/frame/custom_tab_browser_frame.h"
 #endif
 
@@ -50,11 +51,14 @@ BrowserWindow* BrowserWindow::CreateBrowserWindow(
 #endif
   // Create the view and the frame. The frame will attach itself via the view
   // so we don't need to do anything with the pointer.
-  BrowserView* view = new BrowserView(std::move(browser));
+  BrowserView* view = nullptr;
   BrowserFrame* browser_frame = nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  view = new BrowserViewAsh(std::move(browser));
   if (view->browser()->is_type_custom_tab())
     browser_frame = new CustomTabBrowserFrame(view);
+#else
+  view = new BrowserView(std::move(browser));
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   browser_frame = new BrowserFrameLacros(view);

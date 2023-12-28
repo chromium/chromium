@@ -37,9 +37,7 @@ struct OverflowMenuDestinationView: View {
     /// There is `iconSpacing` to either side of the icon, and `iconPadding`
     /// around the icon and inside the background.
     case vertical(iconSpacing: CGFloat, iconPadding: CGFloat)
-    /// The destination has an icon on the left and text on the right. Here
-    /// the view will have a fixed overall `itemWidth`.
-    case horizontal(itemWidth: CGFloat)
+    case horizontal
   }
 
   /// Shape consisting of a path around the icon and text.
@@ -74,7 +72,7 @@ struct OverflowMenuDestinationView: View {
 
     /// The padding on either side of the view in the horizontal layout,
     /// separating it from the next view.
-    static let horizontalLayoutViewPadding: CGFloat = 16
+    static let horizontalLayoutViewPadding: CGFloat = 13
 
     /// The padding around the icon and inside the background in horizontal
     /// layout.
@@ -174,22 +172,22 @@ struct OverflowMenuDestinationView: View {
   /// The content of the button view.
   @ViewBuilder
   var buttonContent: some View {
-    let destinationWidth = Self.destinationWidth(layoutParameters)
     Group {
       switch layoutParameters {
-      case .vertical:
+      case .vertical(let iconSpacing, let iconPadding):
         VStack {
           icon
           text
         }
-        .frame(width: destinationWidth)
+        .frame(
+          width: Self.verticalLayoutDestinationWidth(
+            iconSpacing: iconSpacing, iconPadding: iconPadding))
       case .horizontal:
         HStack {
           icon
           Spacer().frame(width: Dimensions.horizontalLayoutIconSpacing)
           text
         }
-        .frame(width: destinationWidth, alignment: .leading)
         // In horizontal layout, the item itself has leading and trailing
         // padding.
         .padding([.leading, .trailing], Dimensions.horizontalLayoutViewPadding)
@@ -336,12 +334,9 @@ struct OverflowMenuDestinationView: View {
     ].compactMap { $0 }.joined(separator: "-")
   }
 
-  static public func destinationWidth(_ layoutParameters: LayoutParameters) -> CGFloat {
-    switch layoutParameters {
-    case .vertical(let iconSpacing, let iconPadding):
-      return Dimensions.imageWidth + 2 * iconSpacing + 2 * iconPadding
-    case .horizontal(let itemWidth):
-      return itemWidth
-    }
+  static public func verticalLayoutDestinationWidth(iconSpacing: CGFloat, iconPadding: CGFloat)
+    -> CGFloat
+  {
+    return Dimensions.imageWidth + 2 * iconSpacing + 2 * iconPadding
   }
 }

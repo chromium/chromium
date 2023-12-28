@@ -74,7 +74,6 @@ TEST_F(ReportPageProcessesPolicyTest, ReportPageProcesses) {
   auto page_node1 = CreateNode<performance_manager::PageNodeImpl>();
   auto main_frame_node1 =
       CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
-  main_frame_node1->SetIsCurrent(true);
   testing::MakePageNodeDiscardable(page_node1.get(), task_env());
   AdvanceClock(base::Minutes(30));
   main_frame_node1->SetIsCurrent(false);
@@ -88,7 +87,6 @@ TEST_F(ReportPageProcessesPolicyTest, ReportPageProcesses) {
   auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
   auto main_frame_node2 =
       CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
-  main_frame_node2->SetIsCurrent(true);
   testing::MakePageNodeDiscardable(page_node2.get(), task_env());
   AdvanceClock(base::Minutes(30));
   main_frame_node2->SetIsCurrent(false);
@@ -100,7 +98,6 @@ TEST_F(ReportPageProcessesPolicyTest, ReportPageProcesses) {
   auto page_node3 = CreateNode<performance_manager::PageNodeImpl>();
   auto main_frame_node3 =
       CreateFrameNodeAutoId(process_node3.get(), page_node3.get());
-  main_frame_node3->SetIsCurrent(true);
   testing::MakePageNodeDiscardable(page_node3.get(), task_env());
   AdvanceClock(base::Minutes(30));
   main_frame_node3->SetIsCurrent(false);
@@ -112,7 +109,6 @@ TEST_F(ReportPageProcessesPolicyTest, ReportPageProcesses) {
   auto page_node4 = CreateNode<performance_manager::PageNodeImpl>();
   auto main_frame_node4 =
       CreateFrameNodeAutoId(process_node4.get(), page_node4.get());
-  main_frame_node4->SetIsCurrent(true);
   testing::MakePageNodeDiscardable(page_node4.get(), task_env());
   AdvanceClock(base::Minutes(30));
   main_frame_node4->SetIsCurrent(false);
@@ -124,7 +120,6 @@ TEST_F(ReportPageProcessesPolicyTest, ReportPageProcesses) {
   auto page_node5 = CreateNode<performance_manager::PageNodeImpl>();
   auto main_frame_node5 =
       CreateFrameNodeAutoId(process_node5.get(), page_node5.get());
-  main_frame_node5->SetIsCurrent(true);
   testing::MakePageNodeDiscardable(page_node5.get(), task_env());
   AdvanceClock(base::Minutes(30));
   page_node5->SetIsVisible(true);
@@ -136,7 +131,6 @@ TEST_F(ReportPageProcessesPolicyTest, ReportPageProcesses) {
   auto page_node6 = CreateNode<performance_manager::PageNodeImpl>();
   auto main_frame_node6 =
       CreateFrameNodeAutoId(process_node6.get(), page_node6.get());
-  main_frame_node6->SetIsCurrent(true);
   testing::MakePageNodeDiscardable(page_node6.get(), task_env());
   AdvanceClock(base::Minutes(30));
   main_frame_node6->SetIsCurrent(false);

@@ -47,8 +47,9 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     TestRunner.addSniffer(Elements.StylesSidebarPane.StylesSidebarPane.prototype, 'doUpdate', rebuildUpdate);
     TestRunner.domModel.addEventListener(SDK.DOMModel.Events.AttrModified, attributeChanged, this);
     // Click "Add new rule".
-    Elements.ElementsPanel.ElementsPanel.instance().stylesWidget.contentElement.querySelector('.styles-pane-toolbar')
-        .shadowRoot.querySelector('.largeicon-add')
+    Elements.ElementsPanel.ElementsPanel.instance()
+        .stylesWidget.contentElement.querySelector('.styles-pane-toolbar')
+        .shadowRoot.querySelector('.plus')
         .click();
     TestRunner.evaluateInPage('addStyleClass()', step2);
   }

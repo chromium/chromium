@@ -9,16 +9,17 @@ export class TestOsA11yPageBrowserProxy extends TestBrowserProxy implements
     OsA11yPageBrowserProxy {
   constructor() {
     super([
-      'a11yPageReady',
       'confirmA11yImageLabels',
+      'getScreenReaderState',
     ]);
-  }
-
-  a11yPageReady() {
-    this.methodCalled('a11yPageReady');
   }
 
   confirmA11yImageLabels() {
     this.methodCalled('confirmA11yImageLabels');
+  }
+
+  getScreenReaderState() {
+    this.methodCalled('getScreenReaderState');
+    return Promise.resolve(false);
   }
 }

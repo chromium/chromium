@@ -5,7 +5,7 @@ include_rules = [
   "+ios/chrome/browser/ntp/model/set_up_list_prefs.h",
   "+ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h",
   "+ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h",
-  "+ios/chrome/browser/policy/policy_util.h",
+  "+ios/chrome/browser/policy/model/policy_util.h",
   "+ios/chrome/browser/prerender/model/prerender_pref.h",
   "+ios/chrome/browser/push_notification/model/push_notification_service.h",
   "+ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h",

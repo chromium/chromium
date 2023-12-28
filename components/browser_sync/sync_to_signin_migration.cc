@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "components/bookmarks/common/bookmark_constants.h"
+#include "components/browser_sync/browser_sync_switches.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/gaia_id_hash.h"
@@ -24,10 +25,6 @@
 
 namespace browser_sync {
 
-BASE_FEATURE(kMigrateSyncingUserToSignedIn,
-             "MigrateSyncingUserToSignedIn",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 namespace {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -39,11 +36,28 @@ enum class SyncToSigninMigrationDecision {
   kDontMigrateSyncStatusUndefined = 3,
   kDontMigrateSyncStatusInitializing = 4,
   kDontMigrateFlagDisabled = 5,
-  kMaxValue = kDontMigrateFlagDisabled
+  kUndoMigration = 6,
+  kUndoNotNecessary = 7,
+  kMaxValue = kUndoNotNecessary
 };
 
-SyncToSigninMigrationDecision ShouldMigrateSyncingUserToSignedIn(
+SyncToSigninMigrationDecision GetSyncToSigninMigrationDecision(
     const PrefService* pref_service) {
+  // If the flag to undo the migration is set, that overrides anything else.
+  if (base::FeatureList::IsEnabled(
+          switches::kUndoMigrationOfSyncingUserToSignedIn)) {
+    if (pref_service
+            ->GetString(prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn)
+            .empty()) {
+      // The user was never migrated, or the migration was already undone.
+      // Nothing to be done here.
+      return SyncToSigninMigrationDecision::kUndoNotNecessary;
+    } else {
+      // The user (or more precisely, this profile) was previously migrated.
+      return SyncToSigninMigrationDecision::kUndoMigration;
+    }
+  }
+
   if (pref_service->GetString(prefs::kGoogleServicesAccountId).empty()) {
     // Signed-out user, nothing to migrate.
     return SyncToSigninMigrationDecision::kDontMigrateNotSignedIn;
@@ -77,21 +91,89 @@ SyncToSigninMigrationDecision ShouldMigrateSyncingUserToSignedIn(
 
   // Check the feature flag last, so that metrics can record all the other
   // reasons to not do the migration, even with the flag disabled.
-  if (!base::FeatureList::IsEnabled(kMigrateSyncingUserToSignedIn)) {
+  if (!base::FeatureList::IsEnabled(switches::kMigrateSyncingUserToSignedIn)) {
     return SyncToSigninMigrationDecision::kDontMigrateFlagDisabled;
   }
 
   return SyncToSigninMigrationDecision::kMigrate;
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class SyncToSigninMigrationDataTypeDecision {
-  kMigrate = 0,
-  kDontMigrateTypeDisabled = 1,
-  kDontMigrateTypeNotActive = 2,
-  kMaxValue = kDontMigrateTypeNotActive
-};
+void UndoSyncToSigninMigration(PrefService* pref_service) {
+  const std::string migrated_gaia_id = pref_service->GetString(
+      prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn);
+
+  if (migrated_gaia_id.empty()) {
+    // The user was never migrated, or the migration was already undone. Nothing
+    // to be done here.
+    return;
+  }
+
+  const std::string signed_in_gaia_id =
+      pref_service->GetString(prefs::kGoogleServicesAccountId);
+
+  if (signed_in_gaia_id != migrated_gaia_id) {
+    // The user was migrated, but has since signed out, or signed in with a
+    // different account. Clean up the migration prefs; otherwise nothing to be
+    // done here.
+    pref_service->ClearPref(
+        prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn);
+    pref_service->ClearPref(
+        prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn);
+    return;
+  }
+
+  // The user was migrated, and is still signed in with the same account. Undo
+  // the migration.
+
+  // Mark the user as syncing again.
+  pref_service->SetBoolean(prefs::kGoogleServicesConsentedToSync, true);
+
+  // Restore the "previously syncing user" prefs too.
+  pref_service->SetString(prefs::kGoogleServicesLastSyncingAccountIdDeprecated,
+                          signed_in_gaia_id);
+  pref_service->SetString(prefs::kGoogleServicesLastSyncingGaiaId,
+                          signed_in_gaia_id);
+  pref_service->SetString(
+      prefs::kGoogleServicesLastSyncingUsername,
+      pref_service->GetString(
+          prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn));
+
+  // Clear the "migrated user" prefs, so the "undo" logic doesn't run again.
+  pref_service->ClearPref(
+      prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn);
+  pref_service->ClearPref(
+      prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn);
+
+  // Selected-data-types prefs: No reverse migration - the user will just go
+  // back to their previous Sync settings.
+
+#if BUILDFLAG(IS_IOS)
+  // Bookmarks: The forward migration is an atomic file move. Either that
+  // happened, in which case the Sync machinery will clean up the account store
+  // and start over with the local-or-syncable store. Or the file move didn't
+  // happen for some reason. Either way, nothing to be done here.
+#else
+  // TODO(crbug.com/1503647): On platforms other than iOS, the forward migration
+  // for bookmarks isn't implemented yet, so the reverse migration can't be
+  // implemented either.
+  NOTIMPLEMENTED();
+#endif  // BUILDFLAG(IS_IOS)
+
+  // Passwords: Same as bookmarks, this is an atomic file move. Nothing to be
+  // done here.
+
+  // ReadingList: The migration is asynchronous. Most likely it has been
+  // completed by this point, but in case it's still pending, stop attempting it
+  // now.
+  pref_service->ClearPref(
+      syncer::prefs::internal::kMigrateReadingListFromLocalToAccount);
+}
+
+const char* GetHistogramMigratingOrNotInfix(bool doing_migration) {
+  return doing_migration ? "Migration." : "DryRun.";
+}
+
+}  // namespace
 
 SyncToSigninMigrationDataTypeDecision GetSyncToSigninMigrationDataTypeDecision(
     const PrefService* pref_service,
@@ -123,12 +205,6 @@ SyncToSigninMigrationDataTypeDecision GetSyncToSigninMigrationDataTypeDecision(
   return SyncToSigninMigrationDataTypeDecision::kMigrate;
 }
 
-const char* GetHistogramMigratingOrNotInfix(bool doing_migration) {
-  return doing_migration ? "Migration." : "DryRun.";
-}
-
-}  // namespace
-
 void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
                                        PrefService* pref_service) {
   // ======================================
@@ -136,14 +212,19 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
   // ======================================
 
   const SyncToSigninMigrationDecision decision =
-      ShouldMigrateSyncingUserToSignedIn(pref_service);
+      GetSyncToSigninMigrationDecision(pref_service);
   base::UmaHistogramEnumeration("Sync.SyncToSigninMigrationDecision", decision);
 
   switch (decision) {
+    case SyncToSigninMigrationDecision::kUndoMigration:
+      // Undo the migration (if appropriate) and nothing else.
+      UndoSyncToSigninMigration(pref_service);
+      return;
     case SyncToSigninMigrationDecision::kDontMigrateNotSignedIn:
     case SyncToSigninMigrationDecision::kDontMigrateNotSyncing:
     case SyncToSigninMigrationDecision::kDontMigrateSyncStatusUndefined:
     case SyncToSigninMigrationDecision::kDontMigrateSyncStatusInitializing:
+    case SyncToSigninMigrationDecision::kUndoNotNecessary:
       // No migration, and no point in recording per-type metrics - we're done.
       return;
     case SyncToSigninMigrationDecision::kDontMigrateFlagDisabled:
@@ -202,7 +283,7 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
   // `kGoogleServicesAccountId` stores the Gaia ID of the syncing account.
   const std::string gaia_id =
       pref_service->GetString(prefs::kGoogleServicesAccountId);
-  // Guaranteed to be non-empty by ShouldMigrateSyncingUserToSignedIn().
+  // Guaranteed to be non-empty by GetSyncToSigninMigrationDecision().
   CHECK(!gaia_id.empty());
 
   // Remove ConsentLevel::kSync. This also ensures that the whole migration will

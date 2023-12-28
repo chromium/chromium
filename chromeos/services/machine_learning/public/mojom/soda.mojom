@@ -20,6 +20,7 @@
 // Version 3: Include recognition mode in request config.
 // Version 4: Include mask offensive words mode in request config.
 // Version 5: Include speaker change detection in request config.
+// Version 6: Include logging inclusion in request config.
 module chromeos.machine_learning.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
@@ -60,6 +61,8 @@ struct SodaConfig {
   [MinVersion=4] bool mask_offensive_words = false;
   // Whether to detect speaker changes in the transcript from model.
   [MinVersion=5] bool speaker_change_detection = false;
+  // Print more logging output in ML Service.
+  [MinVersion=6] bool include_logging_output = false;
 };
 
 // From the endpointer, What kind of endpointer event to record.

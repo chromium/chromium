@@ -8,6 +8,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/window_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -263,7 +264,7 @@ TEST_F(ScopedOverviewTransformWindowTest, InvisibleTransients) {
   EXPECT_FALSE(child2->IsVisible());
 
   auto transform = gfx::Transform::MakeTranslation(10.f, 10.f);
-  SetTransform(window.get(), transform);
+  window_util::SetTransform(window.get(), transform);
   EXPECT_EQ(transform, window->transform());
   EXPECT_EQ(transform, child->transform());
   EXPECT_TRUE(child2->transform().IsIdentity());

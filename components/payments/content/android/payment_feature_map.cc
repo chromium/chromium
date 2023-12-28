@@ -32,7 +32,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kGPayAppDynamicUpdate,
     &features::kWebPaymentsExperimentalFeatures,
     &features::kWebPaymentsSingleAppUiSkip,
-    &kAndroidAppPaymentUpdateEvents,
     &kOmitParametersInReadyToPay,
 };
 
@@ -50,9 +49,6 @@ static jlong JNI_PaymentFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 // Android only features.
-BASE_FEATURE(kAndroidAppPaymentUpdateEvents,
-             "AndroidAppPaymentUpdateEvents",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kOmitParametersInReadyToPay,
              "OmitParametersInReadyToPay",
              base::FEATURE_DISABLED_BY_DEFAULT);

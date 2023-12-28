@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/testing/fake_local_frame_host.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -247,6 +248,7 @@ class ExternalPopupMenuTest : public testing::Test {
   WebLocalFrameImpl* MainFrame() const { return helper_.LocalMainFrame(); }
 
  private:
+  test::TaskEnvironment task_environment_;
   TestLocalFrameExternalPopupClient frame_host_;
   frame_test_helpers::TestWebFrameClient web_frame_client_;
   std::string base_url_;

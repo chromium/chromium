@@ -25,6 +25,8 @@ class ActionViewListItem : public ActionEditView {
   ActionViewListItem& operator=(const ActionViewListItem&) = delete;
   ~ActionViewListItem() override;
 
+  void PerformPulseAnimation();
+
   // ActionEditView:
   void OnActionNameUpdated() override;
 

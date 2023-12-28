@@ -5,8 +5,8 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './routine_group.js';
 
-import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {ArcDnsResolutionProblem, ArcHttpProblem, ArcPingProblem, CaptivePortalProblem, DnsLatencyProblem, DnsResolutionProblem, DnsResolverPresentProblem, GatewayCanBePingedProblem, HasSecureWiFiConnectionProblem, HttpFirewallProblem, HttpsFirewallProblem, HttpsLatencyProblem, RoutineProblems, RoutineType, RoutineVerdict, SignalStrengthProblem, VideoConferencingProblem} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js';
 
 import {getNetworkDiagnosticsService} from './mojo_interface_provider.js';
@@ -38,169 +38,185 @@ function createRoutine(name, type, group, func) {
   };
 }
 
-Polymer({
-  _template: getTemplate(),
-  is: 'network-diagnostics',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const NetworkDiagnosticsElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [
-    I18nBehavior,
-  ],
+/** @polymer */
+export class NetworkDiagnosticsElement extends NetworkDiagnosticsElementBase {
+  static get is() {
+    return 'network-diagnostics';
+  }
 
-  properties: {
-    /**
-     * List of Diagnostics Routines
-     * @private {!Array<!Routine>}
-     */
-    routines_: {
-      type: Array,
-      value: function() {
-        const routineGroups = [
-          {
-            group: RoutineGroup.CONNECTION,
-            routines: [
-              {
-                name: 'NetworkDiagnosticsLanConnectivity',
-                type: RoutineType.kLanConnectivity,
-                func: () => getNetworkDiagnosticsService().runLanConnectivity(),
-              },
-            ],
-          },
-          {
-            group: RoutineGroup.WIFI,
-            routines: [
-              {
-                name: 'NetworkDiagnosticsSignalStrength',
-                type: RoutineType.kSignalStrength,
-                func: () => getNetworkDiagnosticsService().runSignalStrength(),
-              },
-              {
-                name: 'NetworkDiagnosticsHasSecureWiFiConnection',
-                type: RoutineType.kHasSecureWiFiConnection,
-                func: () =>
-                    getNetworkDiagnosticsService().runHasSecureWiFiConnection(),
-              },
-            ],
-          },
-          {
-            group: RoutineGroup.PORTAL,
-            routines: [
-              {
-                name: 'NetworkDiagnosticsCaptivePortal',
-                type: RoutineType.kCaptivePortal,
-                func: () => getNetworkDiagnosticsService().runCaptivePortal(),
-              },
-            ],
-          },
-          {
-            group: RoutineGroup.GATEWAY,
-            routines: [
-              {
-                name: 'NetworkDiagnosticsGatewayCanBePinged',
-                type: RoutineType.kGatewayCanBePinged,
-                func: () =>
-                    getNetworkDiagnosticsService().runGatewayCanBePinged(),
-              },
-            ],
-          },
-          {
-            group: RoutineGroup.FIREWALL,
-            routines: [
-              {
-                name: 'NetworkDiagnosticsHttpFirewall',
-                type: RoutineType.kHttpFirewall,
-                func: () => getNetworkDiagnosticsService().runHttpFirewall(),
-              },
-              {
-                name: 'NetworkDiagnosticsHttpsFirewall',
-                type: RoutineType.kHttpsFirewall,
-                func: () => getNetworkDiagnosticsService().runHttpsFirewall(),
+  static get template() {
+    return getTemplate();
+  }
 
-              },
-              {
-                name: 'NetworkDiagnosticsHttpsLatency',
-                type: RoutineType.kHttpsLatency,
-                func: () => getNetworkDiagnosticsService().runHttpsLatency(),
-              },
-            ],
-          },
-          {
-            group: RoutineGroup.DNS,
-            routines: [
-              {
-                name: 'NetworkDiagnosticsDnsResolverPresent',
-                type: RoutineType.kDnsResolverPresent,
-                func: () =>
-                    getNetworkDiagnosticsService().runDnsResolverPresent(),
-              },
-              {
-                name: 'NetworkDiagnosticsDnsLatency',
-                type: RoutineType.kDnsLatency,
-                func: () => getNetworkDiagnosticsService().runDnsLatency(),
-              },
-              {
-                name: 'NetworkDiagnosticsDnsResolution',
-                type: RoutineType.kDnsResolution,
-                func: () => getNetworkDiagnosticsService().runDnsResolution(),
-              },
-            ],
-          },
-          {
-            group: RoutineGroup.GOOGLE_SERVICES,
-            routines: [
-              {
-                name: 'NetworkDiagnosticsVideoConferencing',
-                type: RoutineType.kVideoConferencing,
-                // A null stun_server_hostname will use the routine
-                // default.
-                func: () => getNetworkDiagnosticsService().runVideoConferencing(
-                    /*stun_server_hostname=*/ null),
-              },
-            ],
-          },
-          {
-            group: RoutineGroup.ARC,
-            routines: [
-              {
-                name: 'ArcNetworkDiagnosticsPing',
-                type: RoutineType.kArcPing,
-                func: () => getNetworkDiagnosticsService().runArcPing(),
-              },
-              {
-                name: 'ArcNetworkDiagnosticsHttp',
-                type: RoutineType.kArcHttp,
-                func: () => getNetworkDiagnosticsService().runArcHttp(),
-              },
-              {
-                name: 'ArcNetworkDiagnosticsDnsResolution',
-                type: RoutineType.kArcDnsResolution,
-                func: () =>
-                    getNetworkDiagnosticsService().runArcDnsResolution(),
-              },
-            ],
-          },
-        ];
-        const routines = [];
+  static get properties() {
+    return {
+      /**
+       * List of Diagnostics Routines
+       * @private {!Array<!Routine>}
+       */
+      routines_: {
+        type: Array,
+        value: function() {
+          const routineGroups = [
+            {
+              group: RoutineGroup.CONNECTION,
+              routines: [
+                {
+                  name: 'NetworkDiagnosticsLanConnectivity',
+                  type: RoutineType.kLanConnectivity,
+                  func: () =>
+                      getNetworkDiagnosticsService().runLanConnectivity(),
+                },
+              ],
+            },
+            {
+              group: RoutineGroup.WIFI,
+              routines: [
+                {
+                  name: 'NetworkDiagnosticsSignalStrength',
+                  type: RoutineType.kSignalStrength,
+                  func: () =>
+                      getNetworkDiagnosticsService().runSignalStrength(),
+                },
+                {
+                  name: 'NetworkDiagnosticsHasSecureWiFiConnection',
+                  type: RoutineType.kHasSecureWiFiConnection,
+                  func: () => getNetworkDiagnosticsService()
+                                  .runHasSecureWiFiConnection(),
+                },
+              ],
+            },
+            {
+              group: RoutineGroup.PORTAL,
+              routines: [
+                {
+                  name: 'NetworkDiagnosticsCaptivePortal',
+                  type: RoutineType.kCaptivePortal,
+                  func: () => getNetworkDiagnosticsService().runCaptivePortal(),
+                },
+              ],
+            },
+            {
+              group: RoutineGroup.GATEWAY,
+              routines: [
+                {
+                  name: 'NetworkDiagnosticsGatewayCanBePinged',
+                  type: RoutineType.kGatewayCanBePinged,
+                  func: () =>
+                      getNetworkDiagnosticsService().runGatewayCanBePinged(),
+                },
+              ],
+            },
+            {
+              group: RoutineGroup.FIREWALL,
+              routines: [
+                {
+                  name: 'NetworkDiagnosticsHttpFirewall',
+                  type: RoutineType.kHttpFirewall,
+                  func: () => getNetworkDiagnosticsService().runHttpFirewall(),
+                },
+                {
+                  name: 'NetworkDiagnosticsHttpsFirewall',
+                  type: RoutineType.kHttpsFirewall,
+                  func: () => getNetworkDiagnosticsService().runHttpsFirewall(),
 
-        for (const group of routineGroups) {
-          for (const routine of group.routines) {
-            routines[routine.type] = createRoutine(
-                routine.name, routine.type, group.group, routine.func);
+                },
+                {
+                  name: 'NetworkDiagnosticsHttpsLatency',
+                  type: RoutineType.kHttpsLatency,
+                  func: () => getNetworkDiagnosticsService().runHttpsLatency(),
+                },
+              ],
+            },
+            {
+              group: RoutineGroup.DNS,
+              routines: [
+                {
+                  name: 'NetworkDiagnosticsDnsResolverPresent',
+                  type: RoutineType.kDnsResolverPresent,
+                  func: () =>
+                      getNetworkDiagnosticsService().runDnsResolverPresent(),
+                },
+                {
+                  name: 'NetworkDiagnosticsDnsLatency',
+                  type: RoutineType.kDnsLatency,
+                  func: () => getNetworkDiagnosticsService().runDnsLatency(),
+                },
+                {
+                  name: 'NetworkDiagnosticsDnsResolution',
+                  type: RoutineType.kDnsResolution,
+                  func: () => getNetworkDiagnosticsService().runDnsResolution(),
+                },
+              ],
+            },
+            {
+              group: RoutineGroup.GOOGLE_SERVICES,
+              routines: [
+                {
+                  name: 'NetworkDiagnosticsVideoConferencing',
+                  type: RoutineType.kVideoConferencing,
+                  // A null stun_server_hostname will use the routine
+                  // default.
+                  func: () =>
+                      getNetworkDiagnosticsService().runVideoConferencing(
+                          /*stun_server_hostname=*/ null),
+                },
+              ],
+            },
+            {
+              group: RoutineGroup.ARC,
+              routines: [
+                {
+                  name: 'ArcNetworkDiagnosticsPing',
+                  type: RoutineType.kArcPing,
+                  func: () => getNetworkDiagnosticsService().runArcPing(),
+                },
+                {
+                  name: 'ArcNetworkDiagnosticsHttp',
+                  type: RoutineType.kArcHttp,
+                  func: () => getNetworkDiagnosticsService().runArcHttp(),
+                },
+                {
+                  name: 'ArcNetworkDiagnosticsDnsResolution',
+                  type: RoutineType.kArcDnsResolution,
+                  func: () =>
+                      getNetworkDiagnosticsService().runArcDnsResolution(),
+                },
+              ],
+            },
+          ];
+          const routines = [];
+
+          for (const group of routineGroups) {
+            for (const routine of group.routines) {
+              routines[routine.type] = createRoutine(
+                  routine.name, routine.type, group.group, routine.func);
+            }
           }
-        }
 
-        return routines;
+          return routines;
+        },
       },
-    },
 
-    /**
-     * Enum of Routine Groups
-     * @private {Object}
-     */
-    RoutineGroup_: {
-      type: Object,
-      value: RoutineGroup,
-    },
-  },
+      /**
+       * Enum of Routine Groups
+       * @private {Object}
+       */
+      RoutineGroup_: {
+        type: Object,
+        value: RoutineGroup,
+      },
+
+    };
+  }
 
   /**
    * Runs all supported network diagnostics routines.
@@ -210,7 +226,7 @@ Polymer({
     for (const routine of this.routines_) {
       this.runRoutine_(routine.type);
     }
-  },
+  }
 
   /**
    * Runs all supported network diagnostics routines.
@@ -221,7 +237,7 @@ Polymer({
    */
   getRoutineGroup_(routines, group) {
     return routines.base.filter(r => r.group === group);
-  },
+  }
 
   /**
    * @param {!RoutineType} type
@@ -237,7 +253,7 @@ Polymer({
 
     this.routines_[type].func().then(
         result => this.evaluateRoutine_(type, result));
-  },
+  }
 
   /**
    * @param {!RoutineType} type
@@ -252,7 +268,7 @@ Polymer({
     const resultMsg = this.getRoutineResult_(this.routines_[type]);
     this.set(routine + '.resultMsg', resultMsg);
     this.set(routine + '.ariaDescription', resultMsg);
-  },
+  }
 
   /**
    * Helper function to generate the routine result string.
@@ -285,7 +301,7 @@ Polymer({
     }
 
     return '';
-  },
+  }
 
   /**
    * @param {!RoutineType} type The type of routine
@@ -582,7 +598,7 @@ Polymer({
     }
 
     return problemStrings;
-  },
+  }
 
   /**
    * Converts a collection ArcPingProblem into string identifiers for display.
@@ -623,7 +639,7 @@ Polymer({
     }
 
     return problemStringIds;
-  },
+  }
 
   /**
    * Converts a collection ArcDnsResolutionProblem into string identifiers for
@@ -660,7 +676,7 @@ Polymer({
     }
 
     return problemStringIds;
-  },
+  }
 
   /**
    * Converts a collection ArcHttpProblem into string identifiers for display.
@@ -695,7 +711,7 @@ Polymer({
     }
 
     return problemStringIds;
-  },
+  }
 
   /**
    * @param {!RoutineVerdict} verdict
@@ -712,5 +728,7 @@ Polymer({
         return 'Failed';
     }
     return 'Unknown';
-  },
-});
+  }
+}
+
+customElements.define(NetworkDiagnosticsElement.is, NetworkDiagnosticsElement);

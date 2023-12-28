@@ -90,7 +90,7 @@ class ASH_EXPORT ClipboardHistoryResourceManager
   void OnClipboardHistoryCleared() override;
 
   // Owned by `ClipboardHistoryController`.
-  const raw_ptr<ClipboardHistory, ExperimentalAsh> clipboard_history_;
+  const raw_ptr<ClipboardHistory> clipboard_history_;
 
   // Pending requests for image models to be rendered. Once a request finishes,
   // all of the clipboard history items waiting on that image model will be

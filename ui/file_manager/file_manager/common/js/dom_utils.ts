@@ -9,9 +9,9 @@ import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
 import type {DirectoryItem, DirectoryTree} from '../../foreground/js/ui/directory_tree.js';
 import type {XfTree} from '../../widgets/xf_tree.js';
 import type {XfTreeItem} from '../../widgets/xf_tree_item.js';
-import {isTree, isTreeItem} from '../../widgets/xf_tree_util.js';
+import {isTreeItem, isXfTree} from '../../widgets/xf_tree_util.js';
 
-import {DecoratableElement} from './cr_ui.js';
+import {crInjectTypeAndInit, type DecoratableElement} from './cr_ui.js';
 
 /**
  * Function to be used as event listener for `mouseenter`, it sets the `title`
@@ -117,23 +117,11 @@ export function queryRequiredElement(
  * @param query Query for the element.
  * @param type Type used to decorate.
  */
-export function queryDecoratedElement<T>(
-    query: string, type: DecoratableElement<T>): T {
+export function queryDecoratedElement<T extends DecoratableElement>(
+    query: string, type: {new (...args: any): T}): T {
   const element = queryRequiredElement(query);
-  legacyDecorate(element, type);
+  crInjectTypeAndInit(element, type);
   return element as any as T;
-}
-
-/**
- * Decorates elements as an instance of a class.
- * @param constr The constructor/class to decorate with. The `constr` needs to
- *     have a `decorate` method.
- */
-export function legacyDecorate<T>(
-    element: HTMLElement, constr: DecoratableElement<T>) {
-  if (!(element instanceof constr)) {
-    constr.decorate(element);
-  }
 }
 
 /**
@@ -237,7 +225,7 @@ export function getCrActionMenuTop(
  * TODO(b/285977941): Remove the old tree support.
  */
 export function isDirectoryTree(element: any): element is DirectoryTree|XfTree {
-  return element.typeName === 'directory_tree' || isTree(element);
+  return element.typeName === 'directory_tree' || isXfTree(element);
 }
 export function isDirectoryTreeItem(element: any): element is DirectoryItem|
     XfTreeItem {
@@ -247,7 +235,7 @@ export function getFocusedTreeItem(tree: any): DirectoryItem|XfTreeItem|null {
   if (tree.typeName === 'directory_tree') {
     return tree.selectedItem;
   }
-  if (isTree(tree)) {
+  if (isXfTree(tree)) {
     return tree.focusedItem;
   }
   return null;

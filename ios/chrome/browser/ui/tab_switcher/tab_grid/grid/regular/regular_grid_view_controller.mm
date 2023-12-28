@@ -228,9 +228,7 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
 
   // Configure it.
   [gHeader configureWithDaysThreshold:_inactiveTabsDaysThreshold];
-  if (IsShowInactiveTabsCountEnabled()) {
-    [gHeader configureWithCount:_inactiveTabsCount];
-  }
+  [gHeader configureWithCount:_inactiveTabsCount];
 
   // Get its fitting size.
   CGFloat width = CGRectGetWidth(self.collectionView.bounds);
@@ -281,8 +279,10 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
 }
 
 - (void)hideInactiveTabsButtonHeader {
-  NSIndexPath* indexPath =
-      [NSIndexPath indexPathForItem:0 inSection:kGridOpenTabsSectionIndex];
+  NSInteger tabSectionIndex = [self.diffableDataSource
+      indexForSectionIdentifier:kGridOpenTabsSectionIdentifier];
+  NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
+                                               inSection:tabSectionIndex];
   InactiveTabsButtonHeader* header =
       ObjCCast<InactiveTabsButtonHeader>([self.collectionView
           supplementaryViewForElementKind:UICollectionElementKindSectionHeader
@@ -330,8 +330,10 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
 
 // Reconfigures the Inactive Tabs button header.
 - (void)updateInactiveTabsButtonHeader {
-  NSIndexPath* indexPath =
-      [NSIndexPath indexPathForItem:0 inSection:kGridOpenTabsSectionIndex];
+  NSInteger tabSectionIndex = [self.diffableDataSource
+      indexForSectionIdentifier:kGridOpenTabsSectionIdentifier];
+  NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
+                                               inSection:tabSectionIndex];
   InactiveTabsButtonHeader* header =
       ObjCCast<InactiveTabsButtonHeader>([self.collectionView
           supplementaryViewForElementKind:UICollectionElementKindSectionHeader
@@ -343,8 +345,10 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
 
 // Reconfigures the Inactive Tabs preamble header.
 - (void)updateInactiveTabsPreambleHeader {
-  NSIndexPath* indexPath =
-      [NSIndexPath indexPathForItem:0 inSection:kGridOpenTabsSectionIndex];
+  NSInteger tabSectionIndex = [self.diffableDataSource
+      indexForSectionIdentifier:kGridOpenTabsSectionIdentifier];
+  NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
+                                               inSection:tabSectionIndex];
   InactiveTabsPreambleHeader* header =
       ObjCCast<InactiveTabsPreambleHeader>([self.collectionView
           supplementaryViewForElementKind:UICollectionElementKindSectionHeader
@@ -364,9 +368,7 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
     [weakSelf didTapInactiveTabsButton];
   };
   [header configureWithDaysThreshold:_inactiveTabsDaysThreshold];
-  if (IsShowInactiveTabsCountEnabled()) {
-    [header configureWithCount:_inactiveTabsCount];
-  }
+  [header configureWithCount:_inactiveTabsCount];
   header.hidden = _inactiveTabsCount == 0;
 }
 
@@ -378,6 +380,7 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
     [weakSelf didTapInactiveTabsSettingsLink];
   };
   header.daysThreshold = _inactiveTabsDaysThreshold;
+  header.hidden = !IsInactiveTabsEnabled();
 }
 
 @end

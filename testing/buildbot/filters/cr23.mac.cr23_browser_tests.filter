@@ -1,11 +1,1 @@
 # cr23_browser_tests that are expected to fail on mac bots:
--AccessibilityFocusHighlightBrowserTest.FocusAppearance
--CompanionPageBrowserTest.ReloadWillRefreshCompanion
--IntentChipButtonBrowserTest.ShowsAppIconInChip
--LiveCaptionControllerTest.DispatchTranscription_MultipleProfiles
--LiveCaptionControllerTest.LiveCaptionEnabledChanged_MultipleProfiles
--LiveCaptionControllerTest.OnAudioStreamEnd_MultipleProfiles
--LiveCaptionControllerTest.OnError_MultipleProfiles
--LoadImageBrowserTest.LoadImage
--LoadImageBrowserTest.LoadImageWithMap
--PrivacySandboxDialogSmallWindowTest.All

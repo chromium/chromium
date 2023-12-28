@@ -94,7 +94,6 @@ import org.chromium.ui.modelutil.PropertyModel;
     ChromeFeatureList.WEB_FEED,
     ChromeFeatureList.INTEREST_FEED_V2_HEARTS,
     ChromeFeatureList.WEB_FEED_SORT,
-    ChromeFeatureList.FEED_HEADER_STICK_TO_TOP
 })
 public class FeedSurfaceMediatorTest {
     static final @Px int TOOLBAR_HEIGHT = 10;

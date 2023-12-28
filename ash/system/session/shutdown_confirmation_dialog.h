@@ -34,7 +34,7 @@ class ShutdownConfirmationDialog : public views::DialogDelegateView {
   gfx::Size CalculatePreferredSize() const override;
 
  private:
-  raw_ptr<views::Label, ExperimentalAsh> label_;
+  raw_ptr<views::Label> label_;
 };
 
 }  // namespace ash

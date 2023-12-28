@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "author": "calamity@chromium.org",
   "dependencies": {
-    "@material/web": "1.0.0"
+    "@material/web": "1.1.2-nightly.c9360e2.0",
+    "lit": "3.1.0"
   },
   "devDependencies": {
     "acorn": "8.8.2",

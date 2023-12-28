@@ -56,9 +56,9 @@ class ASH_EXPORT MediaControlsHeaderView : public views::View,
  private:
   void UpdateCloseButtonVisibility();
 
-  raw_ptr<views::ImageView, ExperimentalAsh> app_icon_view_;
-  raw_ptr<views::Label, ExperimentalAsh> app_name_view_;
-  raw_ptr<views::ImageButton, ExperimentalAsh> close_button_ = nullptr;
+  raw_ptr<views::ImageView> app_icon_view_;
+  raw_ptr<views::Label> app_name_view_;
+  raw_ptr<views::ImageButton> close_button_ = nullptr;
 
   bool force_close_x_visible_ = false;
 };

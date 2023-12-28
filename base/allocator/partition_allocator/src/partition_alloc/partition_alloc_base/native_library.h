@@ -17,7 +17,7 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #elif BUILDFLAG(IS_APPLE)
-#import <CoreFoundation/CoreFoundation.h>
+#include <CoreFoundation/CoreFoundation.h>
 #endif  // OS_*
 
 namespace partition_alloc::internal::base {

@@ -45,31 +45,6 @@ AshColorProvider* AshColorProvider::Get() {
   return g_instance;
 }
 
-SkColor AshColorProvider::GetBaseLayerColor(BaseLayerType type) const {
-  // TODO(crbug.com/1350510): Delete this function after all clients migrate.
-  auto* color_provider = GetColorProvider();
-  DCHECK(color_provider);
-
-  switch (type) {
-    case BaseLayerType::kTransparent20:
-      return color_provider->GetColor(kColorAshShieldAndBase20);
-    case BaseLayerType::kTransparent40:
-      return color_provider->GetColor(kColorAshShieldAndBase40);
-    case BaseLayerType::kTransparent60:
-      return color_provider->GetColor(kColorAshShieldAndBase60);
-    case BaseLayerType::kTransparent80:
-      return color_provider->GetColor(kColorAshShieldAndBase80);
-    case BaseLayerType::kInvertedTransparent80:
-      return color_provider->GetColor(kColorAshInvertedShieldAndBase80);
-    case BaseLayerType::kTransparent90:
-      return color_provider->GetColor(kColorAshShieldAndBase90);
-    case BaseLayerType::kTransparent95:
-      return color_provider->GetColor(kColorAshShieldAndBase95);
-    case BaseLayerType::kOpaque:
-      return color_provider->GetColor(kColorAshShieldAndBaseOpaque);
-  }
-}
-
 SkColor AshColorProvider::GetControlsLayerColor(ControlsLayerType type) const {
   // TODO(crbug.com/1292244): Delete this function after all callers migrate.
   auto* color_provider = GetColorProvider();

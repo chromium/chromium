@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Default binaryType value
+  assert_equals: dc.binaryType should be 'blob' expected "blob" but got "arraybuffer"
+[FAIL] Setting binaryType to 'blob' should succeed
+  Failed to set the 'binaryType' property on 'RTCDataChannel': Blob support not implemented yet
+Harness: the test ran to completion.
+

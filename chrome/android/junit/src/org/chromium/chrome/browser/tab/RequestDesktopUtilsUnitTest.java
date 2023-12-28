@@ -931,19 +931,6 @@ public class RequestDesktopUtilsUnitTest {
     }
 
     @Test
-    public void testMaybeRegisterSyntheticFieldTrials_DefaultOnEnabled12Inches() {
-        RequestDesktopUtils.maybeRegisterSyntheticFieldTrials(false, 12.0, 0, false);
-        Assert.assertEquals(
-                "Trial name is incorrect.",
-                "RequestDesktopSiteDefaultsSynthetic",
-                sGlobalDefaultsExperimentTrialName);
-        Assert.assertEquals(
-                "Group name is incorrect.",
-                "DefaultOn_12_0_Enabled",
-                sGlobalDefaultsExperimentGroupName);
-    }
-
-    @Test
     public void testMaybeRegisterSyntheticFieldTrials_DefaultOnEnabled12Inches_WithCohortId() {
         RequestDesktopUtils.maybeRegisterSyntheticFieldTrials(false, 12.0, 2, false);
         Assert.assertEquals(
@@ -955,19 +942,6 @@ public class RequestDesktopUtilsUnitTest {
     }
 
     @Test
-    public void testMaybeRegisterSyntheticFieldTrials_DefaultOnControl12Inches() {
-        RequestDesktopUtils.maybeRegisterSyntheticFieldTrials(true, 12.0, 0, false);
-        Assert.assertEquals(
-                "Trial name is incorrect.",
-                "RequestDesktopSiteDefaultsControlSynthetic",
-                sGlobalDefaultsExperimentTrialName);
-        Assert.assertEquals(
-                "Group name is incorrect.",
-                "DefaultOn_12_0_Control",
-                sGlobalDefaultsExperimentGroupName);
-    }
-
-    @Test
     public void testMaybeRegisterSyntheticFieldTrials_DefaultOnControl12Inches_WithCohortId() {
         RequestDesktopUtils.maybeRegisterSyntheticFieldTrials(true, 12.0, 2, false);
         Assert.assertEquals(
@@ -976,29 +950,6 @@ public class RequestDesktopUtilsUnitTest {
                 sGlobalDefaultsExperimentTrialName);
         Assert.assertEquals(
                 "Group name is incorrect.", "DefaultOn_12_0_2", sGlobalDefaultsExperimentGroupName);
-    }
-
-    @Test
-    public void testMaybeRegisterSyntheticFieldTrials_OptInEnabled10Inches() {
-        RequestDesktopUtils.maybeRegisterSyntheticFieldTrials(false, 10.0, 0, true);
-        Assert.assertEquals(
-                "Trial name is incorrect.",
-                "RequestDesktopSiteOptInSynthetic",
-                sGlobalDefaultsExperimentTrialName);
-        Assert.assertEquals(
-                "Group name is incorrect.",
-                "OptIn_10_0_Enabled",
-                sGlobalDefaultsExperimentGroupName);
-    }
-
-    @Test
-    public void testMaybeRegisterSyntheticFieldTrials_DoNothingWhenExperimentIsActive() {
-        enableFeatureWithParams("RequestDesktopSiteDefaultsSynthetic", null, true);
-        RequestDesktopUtils.maybeRegisterSyntheticFieldTrials(false, 12.0, 0, false);
-        Assert.assertTrue(
-                "Synthetic trial should not be registered.",
-                sGlobalDefaultsExperimentTrialName == null
-                        && sGlobalDefaultsExperimentGroupName == null);
     }
 
     @Test
@@ -1807,10 +1758,8 @@ public class RequestDesktopUtilsUnitTest {
     private void disableGlobalDefaultsExperimentFeatures() {
         enableFeatureWithParams("RequestDesktopSiteDefaults", null, false);
         enableFeatureWithParams("RequestDesktopSiteDefaultsControl", null, false);
-        enableFeatureWithParams("RequestDesktopSiteDefaultsControlSynthetic", null, false);
-        enableFeatureWithParams("RequestDesktopSiteDefaultsSynthetic", null, false);
-        enableFeatureWithParams("RequestDesktopSiteOptInControlSynthetic", null, false);
-        enableFeatureWithParams("RequestDesktopSiteOptInSynthetic", null, false);
+        enableFeatureWithParams("RequestDesktopSiteDefaultsControlCohort1", null, false);
+        enableFeatureWithParams("RequestDesktopSiteDefaultsEnabledCohort1", null, false);
         enableFeatureWithParams("RequestDesktopSiteDefaultsControlCohort2", null, false);
         enableFeatureWithParams("RequestDesktopSiteDefaultsEnabledCohort2", null, false);
     }

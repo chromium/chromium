@@ -6,15 +6,19 @@
 
 #include "base/no_destructor.h"
 #include "base/values.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
+#import "components/autofill/ios/form_util/child_frame_registrar.h"
 #include "components/autofill/ios/form_util/form_activity_tab_helper.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #include "ios/web/public/js_messaging/java_script_feature_util.h"
+#import "ios/web/public/js_messaging/script_message.h"
 
 namespace {
 constexpr char kScriptName[] = "form_handlers";
 constexpr char kScriptMessageName[] = "FormHandlersMessage";
+constexpr char kChildFrameCommand[] = "registerAsChildFrame";
 }  // namespace
 
 namespace autofill {
@@ -63,6 +67,24 @@ FormHandlersJavaScriptFeature::GetScriptMessageHandlerName() const {
 void FormHandlersJavaScriptFeature::ScriptMessageReceived(
     web::WebState* web_state,
     const web::ScriptMessage& message) {
+  // Delegate to ChildFrameRegistrar for kChildFrameCommand messages.
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAcrossIframesIos)) {
+    if (message.body() && message.body()->is_dict()) {
+      const std::string* command =
+          message.body()->GetDict().FindString("command");
+      if (command && *command == kChildFrameCommand) {
+        ChildFrameRegistrar* registrar =
+            ChildFrameRegistrar::GetOrCreateForWebState(web_state);
+        if (registrar) {
+          registrar->ProcessRegistrationMessage(message.body());
+        }
+        return;
+      }
+    }
+  }
+
+  // Delegate to FormActivityTabHelper for all other messages.
   FormActivityTabHelper* helper =
       FormActivityTabHelper::GetOrCreateForWebState(web_state);
   helper->OnFormMessageReceived(web_state, message);

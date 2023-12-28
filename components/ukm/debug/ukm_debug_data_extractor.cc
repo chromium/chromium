@@ -28,7 +28,7 @@ static const uint64_t BIT_FILTER_LAST32 = 0xffffffffULL;
 
 struct SourceData {
   raw_ptr<UkmSource> source;
-  std::vector<mojom::UkmEntry*> entries;
+  std::vector<raw_ptr<mojom::UkmEntry, VectorExperimental>> entries;
 };
 
 std::string GetName(const ukm::builders::EntryDecoder& decoder, uint64_t hash) {
@@ -122,7 +122,7 @@ base::Value UkmDebugDataExtractor::GetStructuredData(
     }
 
     base::Value::List entries_list;
-    for (auto* entry : kv.second.entries) {
+    for (ukm::mojom::UkmEntry* entry : kv.second.entries) {
       entries_list.Append(ConvertEntryToDict(ukm_service->decode_map_, *entry));
     }
 

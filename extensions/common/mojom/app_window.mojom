@@ -6,4 +6,8 @@ module extensions.mojom;
 
 interface AppWindow {
   SetVisuallyDeemphasized(bool deemphasized);
+
+  // Indicates that the frame should collect draggable regions set using the
+  // app-region CSS property.
+  SetSupportsAppRegion(bool supports_app_region);
 };

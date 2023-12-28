@@ -7,8 +7,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 source_set("sync") {
   sources = [
-    "credential_model_type_controller.cc",
-    "credential_model_type_controller.h",
+    "password_model_type_controller.cc",
+    "password_model_type_controller.h",
     "password_proto_utils.cc",
     "password_proto_utils.h",
     "password_store_sync.cc",
@@ -35,6 +35,7 @@ source_set("sync") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "password_model_type_controller_unittest.cc",
     "password_proto_utils_unittest.cc",
     "password_sync_bridge_unittest.cc",
   ]
@@ -47,6 +48,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/common",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
     "//components/sync/protocol",
     "//testing/gmock",

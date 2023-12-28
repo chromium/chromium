@@ -6,6 +6,7 @@
 
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/ui/first_run/omnibox_position/metrics.h"
 #import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_consumer.h"
 #import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_util.h"
 
@@ -16,12 +17,16 @@
 
 @end
 
-@implementation OmniboxPositionChoiceMediator
+@implementation OmniboxPositionChoiceMediator {
+  /// Whether the screen is being shown in the FRE.
+  BOOL _isFirstRun;
+}
 
-- (instancetype)init {
+- (instancetype)initWithFirstRun:(BOOL)isFirstRun {
   self = [super init];
   if (self) {
     _selectedPosition = DefaultSelectedOmniboxPosition();
+    _isFirstRun = isFirstRun;
   }
   return self;
 }
@@ -32,11 +37,31 @@
         prefs::kBottomOmnibox,
         self.selectedPosition == ToolbarType::kSecondary);
   }
-  // TODO(crbug.com/1503638): Record selected position histogram.
+  RecordScreenEvent(OmniboxPositionChoiceScreenEvent::kPositionValidated,
+                    _isFirstRun);
+  RecordSelectedPosition(
+      self.selectedPosition,
+      self.selectedPosition == DefaultSelectedOmniboxPosition(), _isFirstRun);
 }
 
 - (void)discardSelectedPosition {
-  // TODO(crbug.com/1503638): Record selected position histogram.
+  CHECK(!_isFirstRun);  // Discard is not available on first run.
+  RecordScreenEvent(OmniboxPositionChoiceScreenEvent::kPositionDiscarded,
+                    _isFirstRun);
+}
+
+- (void)skipSelection {
+  CHECK(_isFirstRun);
+  if (self.originalPrefService) {
+    const BOOL defaultPositionIsBottom =
+        DefaultSelectedOmniboxPosition() == ToolbarType::kSecondary;
+    self.originalPrefService->SetBoolean(prefs::kBottomOmniboxByDefault,
+                                         defaultPositionIsBottom);
+    self.originalPrefService->SetDefaultPrefValue(
+        prefs::kBottomOmnibox, base::Value(defaultPositionIsBottom));
+  }
+  RecordScreenEvent(OmniboxPositionChoiceScreenEvent::kScreenSkipped,
+                    _isFirstRun);
 }
 
 #pragma mark - Setters
@@ -55,12 +80,14 @@
 
 - (void)selectTopOmnibox {
   self.selectedPosition = ToolbarType::kPrimary;
-  // TODO(crbug.com/1503638): Recoard user action.
+  RecordScreenEvent(OmniboxPositionChoiceScreenEvent::kTopOptionSelected,
+                    _isFirstRun);
 }
 
 - (void)selectBottomOmnibox {
   self.selectedPosition = ToolbarType::kSecondary;
-  // TODO(crbug.com/1503638): Record user action.
+  RecordScreenEvent(OmniboxPositionChoiceScreenEvent::kBottomOptionSelected,
+                    _isFirstRun);
 }
 
 @end

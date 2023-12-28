@@ -19,26 +19,89 @@ declare_args() {
 
 accessibility_common_dir =
     "$root_out_dir/resources/chromeos/accessibility/accessibility_common"
+tsc_preprocess_folder = "$root_gen_dir/chrome/browser/resources/chromeos/accessibility/tsc_preprocessed"
 tsc_out_dir = "$target_gen_dir/tsc"
-common_tsc_out_dir = "$target_gen_dir/../common/tsc"
+
+misc_sources = [
+  "background.html",
+  "dictation/earcons/audio_end.wav",
+  "dictation/earcons/audio_initiate.wav",
+  "dictation/earcons/null_selection.wav",
+  "dictation/parse/input_text_strategy.js",
+  "dictation/parse/parse_strategy.js",
+  "dictation/parse/pumpkin/pumpkin_constants.js",
+  "dictation/parse/pumpkin_parse_strategy.js",
+  "dictation/parse/sandboxed_pumpkin_tagger.js",
+  "dictation/parse/simple_parse_strategy.js",
+  "dictation/parse/speech_parser.js",
+  "facegaze/camera_stream.html",
+]
 
 # TS files to build.
-ts_modules = []
+ts_modules = [
+  "accessibility_common_loader.ts",
+  "autoclick/autoclick.ts",
+  "dictation/context_checker.ts",
+  "dictation/dictation.ts",
+  "dictation/editing_util.ts",
+  "dictation/focus_handler.ts",
+  "dictation/input_controller.ts",
+  "dictation/locale_info.ts",
+  "dictation/metrics_utils.ts",
+  "dictation/ui_controller.ts",
+  "dictation/macros/delete_prev_sent_macro.ts",
+  "dictation/macros/input_text_view_macro.ts",
+  "dictation/macros/list_commands_macro.ts",
+  "dictation/macros/macro.ts",
+  "dictation/macros/macro_names.ts",
+  "dictation/macros/nav_sent_macro.ts",
+  "dictation/macros/repeat_macro.ts",
+  "dictation/macros/repeatable_key_press_macro.ts",
+  "dictation/macros/smart_delete_phrase_macro.ts",
+  "dictation/macros/smart_insert_before_macro.ts",
+  "dictation/macros/smart_replace_phrase_macro.ts",
+  "dictation/macros/smart_select_between_macro.ts",
+  "dictation/macros/stop_listening_macro.ts",
+  "facegaze/facegaze.ts",
+  "facegaze/camera_stream.ts",
+  "magnifier/magnifier.ts",
+]
 
-# TS files needed from ../common/.
-common_ts_modules = []
+ts_definitions = [
+  "../definitions/accessibility_private_mv2.d.ts",
+  "../definitions/audio.d.ts",
+  "../definitions/automation.d.ts",
+  "../definitions/command_line_private.d.ts",
+  "../definitions/extensions.d.ts",
+  "../definitions/extension_types.d.ts",
+  "../definitions/input_ime.d.ts",
+  "../definitions/input_method_private.d.ts",
+  "../definitions/language_settings_private.d.ts",
+  "../definitions/metrics_private.d.ts",
+  "../definitions/runtime.d.ts",
+  "../definitions/settings_private_mv2.d.ts",
+  "../definitions/speech_recognition_private.d.ts",
+  "../definitions/tabs.d.ts",
+  "../definitions/settings_private_mv2.d.ts",
+  "../definitions/accessibility_features_mv2.d.ts",
+  "//tools/typescript/definitions/i18n.d.ts",
+  "//tools/typescript/definitions/windows.d.ts",
+]
+
+# Generated files needed for TS build.
+generated_ts_modules = []
+generated_ts_definitions = []
 
 # JS files needed by the TS compiler.
 js_deps = []
 
-# Root dir must be the parent directory so it can reach common.
 ts_library("ts_build") {
-  root_dir = "../"
+  # Root dir must be the tsc preprocessed folder, since it will use both checked-in and generated files.
+  root_dir = "$tsc_preprocess_folder"
   out_dir = tsc_out_dir
-  deps = [ "../common:ts_build" ]
-  definitions = []
+  definitions = ts_definitions + generated_ts_definitions
 
-  in_files = []
+  in_files = generated_ts_modules
   foreach(_js_file, js_deps) {
     in_files += [ "accessibility_common/" + _js_file ]
   }
@@ -47,10 +110,17 @@ ts_library("ts_build") {
   }
 
   tsconfig_base = "../tsconfig.base.json"
+
+  # Targets that need to run before running the TS build.
+  extra_deps = [
+    ":preprocess_files_for_ts_build",
+    "..:preprocess_files_for_ts_build",
+    "../common:preprocess_files_for_ts_build",
+  ]
 }
 
 group("build") {
-  deps = [ ":accessibility_common_copied_files" ]
+  deps = [ ":copied_files" ]
 
   if (include_mediapipe_task_vision_files_for_facegaze) {
     deps += [ ":extract_mediapipe_task_vision_files" ]
@@ -58,63 +128,19 @@ group("build") {
 }
 
 # Instead of setting up copy targets, use a script to copy all files.
-run_jsbundler("accessibility_common_copied_files") {
+run_jsbundler("copied_files") {
   mode = "copy"
   dest_dir = accessibility_common_dir
-  sources = [
-    "accessibility_common_loader.js",
-    "autoclick/autoclick.js",
-    "background.html",
-    "dictation/context_checker.js",
-    "dictation/dictation.js",
-    "dictation/earcons/audio_end.wav",
-    "dictation/earcons/audio_initiate.wav",
-    "dictation/earcons/null_selection.wav",
-    "dictation/editing_util.js",
-    "dictation/focus_handler.js",
-    "dictation/input_controller.js",
-    "dictation/locale_info.js",
-    "dictation/macros/delete_prev_sent_macro.js",
-    "dictation/macros/input_text_view_macro.js",
-    "dictation/macros/list_commands_macro.js",
-    "dictation/macros/macro.js",
-    "dictation/macros/macro_names.js",
-    "dictation/macros/nav_sent_macro.js",
-    "dictation/macros/repeat_macro.js",
-    "dictation/macros/repeatable_key_press_macro.js",
-    "dictation/macros/smart_delete_phrase_macro.js",
-    "dictation/macros/smart_insert_before_macro.js",
-    "dictation/macros/smart_replace_phrase_macro.js",
-    "dictation/macros/smart_select_between_macro.js",
-    "dictation/macros/stop_listening_macro.js",
-    "dictation/metrics_utils.js",
-    "dictation/parse/input_text_strategy.js",
-    "dictation/parse/parse_strategy.js",
-    "dictation/parse/pumpkin/pumpkin_constants.js",
-    "dictation/parse/pumpkin_parse_strategy.js",
-    "dictation/parse/sandboxed_pumpkin_tagger.js",
-    "dictation/parse/simple_parse_strategy.js",
-    "dictation/parse/speech_parser.js",
-    "dictation/ui_controller.js",
-    "facegaze/camera_stream.html",
-    "facegaze/camera_stream.js",
-    "facegaze/facegaze.js",
-    "magnifier/magnifier.js",
+  deps = [
+    ":ts_build",
+    "../common:copied_files",
   ]
 
-  foreach(_ts_file, ts_modules) {
-    sources += [ "$tsc_out_dir/accessibility_common/" +
-                 get_path_info(_ts_file, "dir") + "/" +
-                 get_path_info(_ts_file, "name") + ".js" ]
-  }
-  foreach(_ts_file, common_ts_modules) {
-    sources += [ "$common_tsc_out_dir/" + get_path_info(_ts_file, "dir") + "/" +
-                 get_path_info(_ts_file, "name") + ".js" ]
-  }
+  sources =
+      misc_sources + filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
 
   rewrite_rules = [
     rebase_path("$tsc_out_dir/accessibility_common", root_build_dir) + ":",
-    rebase_path(common_tsc_out_dir, root_build_dir) + ":",
     rebase_path(".", root_build_dir) + ":",
     rebase_path(closure_library_dir, root_build_dir) + ":closure",
   ]
@@ -184,6 +210,7 @@ js2gtest("accessibility_common_extjs_tests") {
 
   # The test base classes generate C++ code with these deps.
   deps = [
+    ":ts_build",
     "//ash",
     "//ash/keyboard/ui",
     "//base",
@@ -191,9 +218,6 @@ js2gtest("accessibility_common_extjs_tests") {
     "//chrome/common",
   ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-}
-
-group("closure_compile") {
 }
 
 action("pumpkin_test_files") {
@@ -246,4 +270,14 @@ if (include_mediapipe_task_vision_files_for_facegaze) {
     ]
     outputs = files_to_extract
   }
+}
+
+# Copy all JS and TS sources to a preprocess folder. All generated TS/JS files
+# will also be copied into this folder, which will allow us to support a TS
+# build that uses both checked-in and generated files.
+copy("preprocess_files_for_ts_build") {
+  sources = misc_sources + ts_modules
+  outputs = [
+    "$tsc_preprocess_folder/accessibility_common/{{source_target_relative}}",
+  ]
 }

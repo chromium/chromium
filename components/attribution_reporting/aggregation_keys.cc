@@ -12,10 +12,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
@@ -79,19 +81,18 @@ AggregationKeys::FromJSON(const base::Value* value) {
           SourceRegistrationError::kAggregationKeysKeyTooLong);
     }
 
-    const std::string* s = maybe_string_value.GetIfString();
-    if (!s) {
-      return base::unexpected(
-          SourceRegistrationError::kAggregationKeysValueWrongType);
-    }
+    ASSIGN_OR_RETURN(
+        absl::uint128 key, ParseAggregationKeyPiece(maybe_string_value),
+        [](AggregationKeyPieceError error) {
+          switch (error) {
+            case AggregationKeyPieceError::kWrongType:
+              return SourceRegistrationError::kAggregationKeysValueWrongType;
+            case AggregationKeyPieceError::kWrongFormat:
+              return SourceRegistrationError::kAggregationKeysValueWrongFormat;
+          }
+        });
 
-    absl::optional<absl::uint128> key = StringToAggregationKeyPiece(*s);
-    if (!key) {
-      return base::unexpected(
-          SourceRegistrationError::kAggregationKeysValueWrongFormat);
-    }
-
-    keys.emplace_back(key_id, *key);
+    keys.emplace_back(key_id, key);
   }
 
   return AggregationKeys(Keys(base::sorted_unique, std::move(keys)));

@@ -82,10 +82,9 @@ class CORE_EXPORT LayoutCustomScrollbarPart final : public LayoutReplaced {
   LayoutUnit MarginLeft() const override;
   LayoutUnit MarginRight() const override;
 
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsLayoutCustomScrollbarPart() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectCustomScrollbarPart ||
-           LayoutReplaced::IsOfType(type);
+    return true;
   }
   ScrollableArea* GetScrollableArea() const {
     NOT_DESTROYED();

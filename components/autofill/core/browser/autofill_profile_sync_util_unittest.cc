@@ -11,7 +11,7 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/autofill_table_utils.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
@@ -697,8 +697,8 @@ TEST_F(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile_Empty) {
 // Test that long fields get trimmed.
 TEST_F(AutofillProfileSyncUtilTest,
        CreateEntityDataFromAutofillProfile_Trimmed) {
-  std::string kNameLong(AutofillTable::kMaxDataLength + 1, 'a');
-  std::string kNameTrimmed(AutofillTable::kMaxDataLength, 'a');
+  std::string kNameLong(kMaxDataLengthForDatabase + 1, 'a');
+  std::string kNameTrimmed(kMaxDataLengthForDatabase, 'a');
 
   AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable,
                           i18n_model_definition::kLegacyHierarchyCountryCode);
@@ -720,7 +720,7 @@ TEST_F(AutofillProfileSyncUtilTest,
   std::string kNameLong("aä");
   std::string kNameTrimmed("a");
 
-  for (unsigned int i = 0; i < AutofillTable::kMaxDataLength / 2 - 1; ++i) {
+  for (unsigned int i = 0; i < kMaxDataLengthForDatabase / 2 - 1; ++i) {
     kNameLong += "ä";
     kNameTrimmed += "ä";
   }

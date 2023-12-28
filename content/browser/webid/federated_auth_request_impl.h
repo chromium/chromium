@@ -97,7 +97,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void OnIdpSigninStatusReceived(const url::Origin& idp_config_origin,
                                  bool idp_signin_status) override;
 
-  void SetTokenRequestDelayForTests(base::TimeDelta delay);
   void SetNetworkManagerForTests(
       std::unique_ptr<IdpNetworkRequestManager> manager);
   void SetDialogControllerForTests(
@@ -234,12 +233,18 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       const IdpNetworkRequestManager::ClientMetadata& client_metadata);
 
   // Called when there is an error in fetching information to show the prompt
-  // for a given IDP - `idp_info`.
+  // for a given IDP - `idp_info`, but we do not need to show failure UI for the
+  // IDP.
   void OnFetchDataForIdpFailed(
       std::unique_ptr<IdentityProviderInfo> idp_info,
       blink::mojom::FederatedAuthRequestResult result,
       absl::optional<content::FedCmRequestIdTokenStatus> token_status,
       bool should_delay_callback);
+
+  // Called when there is an error fetching information to show the prompt for a
+  // given IDP, and because of the mismatch this IDP must be present in the
+  // dialog we show to the user.
+  void OnIdpMismatch(std::unique_ptr<IdentityProviderInfo> idp_info);
 
   std::vector<blink::mojom::IdentityProviderPtr> MaybeAddRegisteredProviders(
       std::vector<blink::mojom::IdentityProviderPtr>& providers);
@@ -249,6 +254,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void ShowErrorDialog(const GURL& idp_config_url,
                        IdpNetworkRequestManager::FetchStatus status,
                        absl::optional<TokenError> error);
+  // Called when we should show a failure dialog since all IDP account fetches
+  // resulted in a mismatch with the accounts fetch.
+  void ShowIdpFailureDialog();
 
   // Updates the IdpSigninStatus in case of accounts fetch failure and shows a
   // failure UI if applicable.
@@ -393,8 +401,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Populated in OnAllConfigAndWellKnownFetched().
   base::flat_map<GURL, GURL> metrics_endpoints_;
 
-  // Populated by MaybeShowAccountsDialog().
+  // Populated by OnFetchDataForIdpSucceeded() and OnIdpMismatch().
   base::flat_map<GURL, std::unique_ptr<IdentityProviderInfo>> idp_infos_;
+  // Populated by MaybeShowAccountsDialog().
   std::vector<IdentityProviderData> idp_data_for_display_;
 
   // Maps the login URL to the info that may be added as query parameters to
@@ -416,7 +425,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   base::TimeTicks show_accounts_dialog_time_;
   base::TimeTicks select_account_time_;
   base::TimeTicks token_response_time_;
-  base::TimeDelta token_request_delay_;
   bool errors_logged_to_console_{false};
   // This gets set at the beginning of a request. It indicates whether we
   // should bypass the delay to notify the renderer, for use in automated

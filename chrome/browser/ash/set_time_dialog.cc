@@ -18,7 +18,7 @@ namespace {
 // Dialog width and height in DIPs.
 const int kDefaultWidth = 530;
 const int kDefaultHeightWithTimezone = 396;
-const int kDefaultHeightWithoutTimezone = 238;
+const int kDefaultHeightWithoutTimezone = 258;
 
 }  // namespace
 

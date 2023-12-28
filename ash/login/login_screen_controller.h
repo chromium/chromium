@@ -155,12 +155,11 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
 
   LoginDataDispatcher login_data_dispatcher_;
 
-  raw_ptr<LoginScreenClient, DanglingUntriaged | ExperimentalAsh> client_ =
-      nullptr;
+  raw_ptr<LoginScreenClient, DanglingUntriaged> client_ = nullptr;
 
   AuthenticationStage authentication_stage_ = AuthenticationStage::kIdle;
 
-  raw_ptr<SystemTrayNotifier, ExperimentalAsh> system_tray_notifier_;
+  raw_ptr<SystemTrayNotifier> system_tray_notifier_;
 
   SecurityTokenRequestController security_token_request_controller_;
 

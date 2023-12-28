@@ -85,8 +85,13 @@ template("trichrome_library_apk_tmpl") {
     manifest_package = _manifest_package
 
     if (defined(invoker.expected_android_manifest)) {
-      expected_android_manifest_version_code_offset = chrome_version_code
-      expected_android_manifest_library_version_offset = chrome_version_code
+      if (android_64bit_target_cpu) {
+        _version_code_offset = chrome_32_version_code
+      } else {
+        _version_code_offset = chrome_version_code
+      }
+      expected_android_manifest_version_code_offset = _version_code_offset
+      expected_android_manifest_library_version_offset = _version_code_offset
     }
 
     omit_dex = true

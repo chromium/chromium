@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "gpu/command_buffer/service/command_buffer_task_executor.h"
+#include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/gpu_task_scheduler_helper.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/scheduler_sequence.h"
@@ -105,8 +106,18 @@ scoped_refptr<gl::Presenter> SkiaOutputSurfaceDependencyImpl::CreatePresenter(
     base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub) {
   DCHECK(!IsOffscreen());
 
+  auto context_state = GetSharedContextState();
+#if BUILDFLAG(IS_WIN)
+  // DirectComposition is only supported with dawn D3D11 backend.
+  if (context_state->gr_context_type() == gpu::GrContextType::kGraphiteDawn &&
+      context_state->dawn_context_provider()->backend_type() !=
+          wgpu::BackendType::D3D11) {
+    return {};
+  }
+#endif
+
   auto presenter = gpu::ImageTransportSurface::CreatePresenter(
-      GetSharedContextState()->display(), stub, surface_handle_);
+      context_state->display(), stub, surface_handle_);
   if (presenter &&
       GetGpuDriverBugWorkarounds().rely_on_implicit_sync_for_swap_buffers) {
     presenter->SetRelyOnImplicitSync();

@@ -98,9 +98,11 @@ enum PrintScalingOption {
 enum SkiaDocumentType {
   // PDF document type.
   kPDF,
-  // MultiPictureDocument type. kMSKP is an experimental, fragile, and
-  // diagnostic-only document type.
+  // MultiPictureDocument type
   kMSKP,
+  // XPS document type.
+  [EnableIf=is_win]
+  kXPS,
 };
 
 // Metafile data type encapsulated by a player.

@@ -20,6 +20,18 @@ namespace safe_search_api {
 // The SafeSearch API classification of a URL.
 enum class Classification { SAFE, UNSAFE };
 
+// These values are sent to Uma to understand Cache utilization. Must not be
+// renumbered.
+enum class CacheAccessStatus {
+  // Entry was found.
+  kHit = 0,
+  // Entry was not found.
+  kNotFound = 1,
+  // Entry was found but was stale.
+  kOutdated = 2,
+  kMaxValue = kOutdated,
+};
+
 // This class uses one implementation of URLCheckerClient to check the
 // classification of the content on a given URL and returns the result
 // asynchronously via a callback. It is also responsible for the synchronous
@@ -62,6 +74,10 @@ class URLChecker {
   void OnAsyncCheckComplete(CheckList::iterator it,
                             const GURL& url,
                             ClientClassification classification);
+
+  // Either reuses pending check for given url if it already exists (see
+  // checks_in_progress_), or schedules a new one.
+  void MaybeScheduleAsyncCheck(const GURL& url, CheckCallback callback);
 
   std::unique_ptr<URLCheckerClient> async_checker_;
   CheckList checks_in_progress_;

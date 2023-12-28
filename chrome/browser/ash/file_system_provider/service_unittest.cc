@@ -41,8 +41,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 namespace {
 
 const extensions::ExtensionId kExtensionId = "mbflcebpggnecokmikipoihdbecnjfoj";
@@ -496,5 +495,4 @@ TEST_F(FileSystemProviderServiceTest, RememberFileSystem_OnUnmountByUser) {
   service_->RemoveObserver(&observer);
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

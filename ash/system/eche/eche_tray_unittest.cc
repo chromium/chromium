@@ -162,12 +162,10 @@ class EcheTrayTest : public AshTestBase {
 
  private:
   FakeConnectionStatusObserver fake_connection_status_observer_;
-  raw_ptr<EcheTray, DanglingUntriaged | ExperimentalAsh> eche_tray_ =
+  raw_ptr<EcheTray, DanglingUntriaged> eche_tray_ = nullptr;  // Not owned
+  raw_ptr<PhoneHubTray, DanglingUntriaged> phone_hub_tray_ =
       nullptr;  // Not owned
-  raw_ptr<PhoneHubTray, DanglingUntriaged | ExperimentalAsh> phone_hub_tray_ =
-      nullptr;  // Not owned
-  raw_ptr<ToastManagerImpl, DanglingUntriaged | ExperimentalAsh>
-      toast_manager_ = nullptr;
+  raw_ptr<ToastManagerImpl, DanglingUntriaged> toast_manager_ = nullptr;
 
   // Calling the factory constructor is enough to set it up.
   std::unique_ptr<TestAshWebViewFactory> test_web_view_factory_ =

@@ -1426,8 +1426,7 @@ RenderWidgetHostViewMac::GetKeyboardLayoutMap() {
 
 void RenderWidgetHostViewMac::GestureEventAck(
     const WebGestureEvent& event,
-    blink::mojom::InputEventResultState ack_result,
-    blink::mojom::ScrollResultDataPtr scroll_result_data) {
+    blink::mojom::InputEventResultState ack_result) {
   ForwardTouchpadZoomEventIfNecessary(event, ack_result);
 
   // Stop flinging if a GSU event with momentum phase is sent to the renderer

@@ -462,9 +462,6 @@ void IOSChromeMetricsServiceClient::CollectFinalHistograms() {
   }
   base::UmaHistogramCounts10000("Memory.Browser.MemoryFootprint.NumOpenTabs",
                                 open_tabs_count);
-  base::UmaHistogramCounts10000(
-      "Memory.Browser.MemoryFootprint.NumLiveOverscroll",
-      [OverscrollActionsController instanceCount]);
 
   std::move(collect_final_metrics_done_callback_).Run();
 }

@@ -12,11 +12,11 @@
       "drawsContent": false
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='non-opaque'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='non-opaque'",
       "bounds": [220, 120]
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='opaque'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='opaque'",
       "position": [0, 50],
       "bounds": [220, 220],
       "contentsOpaque": true,

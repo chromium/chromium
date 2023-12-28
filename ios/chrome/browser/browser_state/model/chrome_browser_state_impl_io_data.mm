@@ -14,17 +14,15 @@
 #import "base/functional/callback.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
-#import "components/cookie_config/cookie_store_util.h"
 #import "components/net_log/chrome_net_log.h"
 #import "components/prefs/json_pref_store.h"
 #import "components/prefs/pref_filter.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/browser_state/model/constants.h"
 #import "ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h"
-#import "ios/chrome/browser/net/http_server_properties_factory.h"
-#import "ios/chrome/browser/net/ios_chrome_network_delegate.h"
-#import "ios/chrome/browser/net/ios_chrome_url_request_context_getter.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/net/model/http_server_properties_factory.h"
+#import "ios/chrome/browser/net/model/ios_chrome_network_delegate.h"
+#import "ios/chrome/browser/net/model/ios_chrome_url_request_context_getter.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/components/cookie_util/cookie_util.h"
@@ -174,8 +172,7 @@ void ChromeBrowserStateImplIOData::InitializeInternal(
   cookie_util::CookieStoreConfig ios_cookie_config(
       lazy_params_->cookie_path,
       cookie_util::CookieStoreConfig::RESTORED_SESSION_COOKIES,
-      cookie_util::CookieStoreConfig::COOKIE_STORE_IOS,
-      cookie_config::GetCookieCryptoDelegate());
+      cookie_util::CookieStoreConfig::COOKIE_STORE_IOS);
   auto cookie_store = cookie_util::CreateCookieStore(
       ios_cookie_config, std::move(profile_params->system_cookie_store),
       io_thread->net_log());

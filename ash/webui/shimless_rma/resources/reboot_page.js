@@ -4,12 +4,13 @@
 
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './base_page.js';
-import './shimless_rma_shared_css.js';
+import './shimless_rma_shared.css.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {RmadErrorCode} from './shimless_rma_types.js';
+import {getTemplate} from './reboot_page.html.js';
+import {RmadErrorCode} from './shimless_rma.mojom-webui.js';
 import {focusPageTitle} from './shimless_rma_util.js';
 
 // The displayed value for how many seconds you wait before the reboot or shut
@@ -35,7 +36,7 @@ export class RebootPage extends RebootPageBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -61,7 +62,7 @@ export class RebootPage extends RebootPageBase {
    * @return {string}
    * @protected
    */
-  getPageTitle_() {
+  getPageTitle() {
     return this.errorCode === RmadErrorCode.kExpectReboot ?
         this.i18n('rebootPageTitle') :
         this.i18n('shutdownPageTitle');
@@ -71,7 +72,7 @@ export class RebootPage extends RebootPageBase {
    * @return {string}
    * @protected
    */
-  getPageInstructions_() {
+  getPageInstructions() {
     return this.errorCode === RmadErrorCode.kExpectReboot ?
         this.i18n('rebootPageMessage', DELAY_DURATION) :
         this.i18n('shutdownPageMessage', DELAY_DURATION);

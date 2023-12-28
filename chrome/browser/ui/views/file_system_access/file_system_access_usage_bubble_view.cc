@@ -184,7 +184,7 @@ class CollapsibleListView : public views::View {
 
     std::vector<ui::TableColumn> table_columns{ui::TableColumn()};
     auto table_view = std::make_unique<views::TableView>(
-        model, std::move(table_columns), views::ICON_AND_TEXT,
+        model, std::move(table_columns), views::TableType::kIconAndText,
         /*single_selection=*/true);
     table_view->SetEnabled(false);
     int row_height = table_view->GetRowHeight();

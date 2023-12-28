@@ -35,7 +35,7 @@ TEST(AutofillStructuredAddressUtils, TestParseValueByRegularExpression) {
   std::string regex = kFirstMiddleLastRe;
   std::string value = "first middle1 middle2 middle3 last";
 
-  absl::optional<base::flat_map<std::string, std::string>> result_map;
+  std::optional<base::flat_map<std::string, std::string>> result_map;
 
   result_map = ParseValueByRegularExpression(value, regex);
 
@@ -184,12 +184,13 @@ TEST(AutofillStructuredAddressUtils, TestGetPlaceholderToken) {
 TEST(AutofillStructuredAddressUtils, CaptureTypeWithPattern) {
   EXPECT_EQ("(?i:(?P<NAME_FULL>abs\\w)(?:,|\\s+|$)+)?",
             CaptureTypeWithPattern(NAME_FULL, {"abs", "\\w"},
-                                   {.quantifier = MATCH_OPTIONAL}));
+                                   {.quantifier = MatchQuantifier::kOptional}));
   EXPECT_EQ("(?i:(?P<NAME_FULL>abs\\w)(?:,|\\s+|$)+)",
             CaptureTypeWithPattern(NAME_FULL, {"abs", "\\w"}));
-  EXPECT_EQ("(?i:(?P<NAME_FULL>abs\\w)(?:,|\\s+|$)+)??",
-            CaptureTypeWithPattern(NAME_FULL, "abs\\w",
-                                   {.quantifier = MATCH_LAZY_OPTIONAL}));
+  EXPECT_EQ(
+      "(?i:(?P<NAME_FULL>abs\\w)(?:,|\\s+|$)+)??",
+      CaptureTypeWithPattern(NAME_FULL, "abs\\w",
+                             {.quantifier = MatchQuantifier::kLazyOptional}));
   EXPECT_EQ("(?i:(?P<NAME_FULL>abs\\w)(?:,|\\s+|$)+)",
             CaptureTypeWithPattern(NAME_FULL, "abs\\w"));
   EXPECT_EQ("(?i:(?P<NAME_FULL>abs\\w)(?:_)+)",
@@ -197,11 +198,13 @@ TEST(AutofillStructuredAddressUtils, CaptureTypeWithPattern) {
 }
 
 TEST(AutofillStructuredAddressUtils, NoCaptureTypeWithPattern) {
-  EXPECT_EQ("(?i:abs\\w(?:,|\\s+|$)+)?",
-            NoCapturePattern("abs\\w", {.quantifier = MATCH_OPTIONAL}));
+  EXPECT_EQ(
+      "(?i:abs\\w(?:,|\\s+|$)+)?",
+      NoCapturePattern("abs\\w", {.quantifier = MatchQuantifier::kOptional}));
   EXPECT_EQ("(?i:abs\\w(?:,|\\s+|$)+)", NoCapturePattern("abs\\w"));
   EXPECT_EQ("(?i:abs\\w(?:,|\\s+|$)+)??",
-            NoCapturePattern("abs\\w", {.quantifier = MATCH_LAZY_OPTIONAL}));
+            NoCapturePattern("abs\\w",
+                             {.quantifier = MatchQuantifier::kLazyOptional}));
   EXPECT_EQ("(?i:abs\\w(?:,|\\s+|$)+)", NoCapturePattern("abs\\w"));
   EXPECT_EQ("(?i:abs\\w(?:_)+)",
             NoCapturePattern("abs\\w", {.separator = "_"}));

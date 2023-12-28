@@ -376,6 +376,12 @@ void GlanceablesTaskView::UpdateTaskTitleViewForState(
       task_title_button_->UpdateLabelForState(/*completed=*/button_->checked());
       break;
     case TaskTitleViewState::kEdit:
+      // TODO(b/315188389): As there is a GlanceablesTaskViewV2 that replace
+      // this class when the stable launch flag is enabled, remove the
+      // adding/editing functions in this class to simplify the code.
+      if (!features::IsGlanceablesTimeManagementStableLaunchEnabled()) {
+        break;
+      }
       auto* const text_field =
           tasks_title_view_->AddChildView(std::make_unique<TaskViewTextField>(
               task_title_,

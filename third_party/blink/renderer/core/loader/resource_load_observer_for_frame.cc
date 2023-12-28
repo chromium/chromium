@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
-#include "third_party/blink/renderer/core/loader/subresource_filter.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_activity_logger.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
@@ -187,10 +186,6 @@ void ResourceLoadObserverForFrame::DidReceiveResponse(
   LocalFrame* frame = document_->GetFrame();
   DCHECK(frame);
   LocalFrameClient* frame_client = frame->Client();
-  SubresourceFilter* subresource_filter =
-      document_loader_->GetSubresourceFilter();
-  if (subresource_filter && resource->GetResourceRequest().IsAdResource())
-    subresource_filter->ReportAdRequestId(response.RequestId());
 
   DCHECK(frame_client);
   if (response_source == ResponseSource::kFromMemoryCache) {

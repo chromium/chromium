@@ -51,7 +51,7 @@ class ArcAppfuseBridge : public KeyedService, public mojom::AppfuseHost {
   static void EnsureFactoryBuilt();
 
  private:
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 };
 

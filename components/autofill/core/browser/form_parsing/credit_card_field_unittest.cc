@@ -88,22 +88,21 @@ class CreditCardFieldTestBase : public FormFieldTestBase {
   CreditCardFieldTestBase& operator=(const CreditCardFieldTestBase&) = delete;
 
  protected:
-  std::unique_ptr<FormField> Parse(
-      AutofillScanner* scanner,
-      const GeoIpCountryCode& client_country,
-      const LanguageCode& page_language = LanguageCode("us")) override {
-    return CreditCardField::Parse(scanner, client_country, page_language,
-                                  *GetActivePatternSource(), nullptr);
+  std::unique_ptr<FormField> Parse(ParsingContext& context,
+                                   AutofillScanner* scanner) override {
+    return CreditCardField::Parse(context, scanner);
   }
 
   // Runs multiple parsing attempts until the end of the form is reached.
   void ClassifyAndVerifyWithMultipleParses(
       const LanguageCode& page_language = LanguageCode("")) {
+    ParsingContext context(GeoIpCountryCode(""), page_language,
+                           *GetActivePatternSource());
     AutofillScanner scanner(list_);
     while (!scanner.IsEnd()) {
       // An empty page_language means the language is unknown and patterns of
       // all languages are used.
-      field_ = Parse(&scanner, GeoIpCountryCode(""), page_language);
+      field_ = Parse(context, &scanner);
       if (field_ == nullptr) {
         scanner.Advance();
       } else {
@@ -188,7 +187,7 @@ TEST_P(CreditCardFieldTest, ParseMiniumCreditCardWithMaxLength) {
 
 struct CreditCardFieldYearTestCase {
   bool with_noise;
-  ServerFieldType expected_type;
+  FieldType expected_type;
 };
 
 class CreditCardFieldYearTest
@@ -204,7 +203,7 @@ class CreditCardFieldYearTest
 
   bool ShouldSwapMonthAndYear() const { return std::get<2>(GetParam()); }
 
-  ServerFieldType expected_type() const {
+  FieldType expected_type() const {
     return std::get<1>(GetParam()).expected_type;
   }
 
@@ -297,7 +296,7 @@ struct ParseExpFieldTestCase {
   const FormControlType cc_fields_form_control_type;
   const std::string label;
   const int max_length;
-  const ServerFieldType expected_prediction;
+  const FieldType expected_prediction;
 };
 
 class ParseExpFieldTest
@@ -622,7 +621,7 @@ struct DetermineExpirationDateFormatTestCase {
   const uint8_t expected_year_length;
   const std::string label;
   const int max_length;
-  ServerFieldType server_type_hint = NO_SERVER_DATA;
+  FieldType server_type_hint = NO_SERVER_DATA;
   bool is_server_override = false;
 };
 
@@ -752,7 +751,7 @@ TEST_P(DetermineExpirationDateFormat, TestDetermineFormat) {
   field.max_length = test_case().max_length;
   field.label = base::UTF8ToUTF16(test_case().label);
 
-  ServerFieldType fallback_type = CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR;
+  FieldType fallback_type = CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR;
 
   CreditCardField::ExpirationDateFormat result =
       CreditCardField::DetermineExpirationDateFormat(

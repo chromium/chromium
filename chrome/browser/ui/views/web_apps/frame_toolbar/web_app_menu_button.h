@@ -20,8 +20,9 @@ class BrowserView;
 
 // The 'app menu' button for a web app window.
 class WebAppMenuButton : public AppMenuButton {
+  METADATA_HEADER(WebAppMenuButton, AppMenuButton)
+
  public:
-  METADATA_HEADER(WebAppMenuButton);
   static int GetMenuButtonSizeForBrowser(Browser* browser);
   explicit WebAppMenuButton(BrowserView* browser_view,
                             std::u16string accessible_name = std::u16string());

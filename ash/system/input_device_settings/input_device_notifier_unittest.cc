@@ -11,6 +11,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/ranges/functional.h"
 #include "base/test/scoped_feature_list.h"
@@ -246,7 +247,8 @@ TEST_F(InputDeviceStateNotifierTest, BluetoothKeyboardTest) {
   ON_CALL(*mock_device, GetProductID)
       .WillByDefault(testing::Return(test_product_id));
 
-  std::vector<const device::BluetoothDevice*> devices;
+  std::vector<raw_ptr<const device::BluetoothDevice, VectorExperimental>>
+      devices;
   devices.push_back(mock_device.get());
   ON_CALL(*bluetooth_adapter_, GetDevices)
       .WillByDefault(testing::Return(devices));
@@ -665,7 +667,8 @@ TEST_F(InputDeviceMouseNotifierTest, BluetoothMouseTest) {
   ON_CALL(*mock_device, GetProductID)
       .WillByDefault(testing::Return(test_product_id));
 
-  std::vector<const device::BluetoothDevice*> devices;
+  std::vector<raw_ptr<const device::BluetoothDevice, VectorExperimental>>
+      devices;
   devices.push_back(mock_device.get());
   ON_CALL(*bluetooth_adapter_, GetDevices)
       .WillByDefault(testing::Return(devices));
@@ -715,8 +718,9 @@ TEST_F(InputDeviceMouseNotifierTest, BluetoothMouseTest) {
 
   // Needed to reset the `bluetooth_adapter_`.
   ON_CALL(*bluetooth_adapter_, GetDevices)
-      .WillByDefault(
-          testing::Return(std::vector<const device::BluetoothDevice*>()));
+      .WillByDefault(testing::Return(
+          std::vector<
+              raw_ptr<const device::BluetoothDevice, VectorExperimental>>()));
 }
 
 }  // namespace ash

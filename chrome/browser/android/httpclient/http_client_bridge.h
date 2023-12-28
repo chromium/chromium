@@ -7,6 +7,8 @@
 
 #include <jni.h>
 
+#include <vector>
+
 #include "base/android/scoped_java_ref.h"
 
 namespace httpclient {

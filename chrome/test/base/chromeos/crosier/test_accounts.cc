@@ -32,6 +32,10 @@ std::unique_ptr<base::Value> ReadJsonFile(const base::FilePath& json_path) {
 
 }  // namespace
 
+FamilyAccounts::FamilyAccounts() = default;
+FamilyAccounts::FamilyAccounts(const FamilyAccounts& other) = default;
+FamilyAccounts::~FamilyAccounts() = default;
+
 void GetGaiaTestAccount(std::string& out_email, std::string& out_password) {
   base::FilePath root_path;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_path);
@@ -51,6 +55,37 @@ void GetGaiaTestAccount(std::string& out_email, std::string& out_password) {
       (*default_pool)[base::RandInt(0, default_pool->size() - 1)].GetDict();
   out_email = *account.FindString("email");
   out_password = *account.FindString("password");
+}
+
+FamilyAccounts GetFamilyTestAccounts() {
+  base::FilePath root_path;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_path);
+
+  base::FilePath::StringPieceType kTestAccountFilePath = FILE_PATH_LITERAL(
+      "chrome/browser/internal/resources/chromeos/crosier/test_accounts.json");
+  base::FilePath test_accounts_path =
+      base::MakeAbsoluteFilePath(root_path.Append(kTestAccountFilePath));
+
+  std::unique_ptr<base::Value> store = ReadJsonFile(test_accounts_path);
+  const base::Value::List* default_pool = store->GetDict().FindList("family");
+  CHECK(default_pool);
+  CHECK(!default_pool->empty());
+  const base::Value::Dict& accounts = (*default_pool)[0].GetDict();
+  FamilyAccounts account_pool;
+  account_pool.unicorn =
+      FamilyAccounts::User{*accounts.FindString("unicornEmail"),
+                           *accounts.FindString("unicornPassword")};
+  account_pool.geller =
+      FamilyAccounts::User{*accounts.FindString("gellerEmail"),
+                           *accounts.FindString("gellerPassword")};
+  account_pool.griffin =
+      FamilyAccounts::User{*accounts.FindString("griffinEmail"),
+                           *accounts.FindString("griffinPassword")};
+  account_pool.parent =
+      FamilyAccounts::User{*accounts.FindString("parentEmail"),
+                           *accounts.FindString("parentPassword")};
+
+  return account_pool;
 }
 
 }  // namespace crosier

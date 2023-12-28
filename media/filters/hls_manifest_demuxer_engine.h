@@ -54,10 +54,11 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   void Stop() override;
 
   // HlsRenditionHost implementation.
-  void ReadFromUrl(GURL uri,
-                   bool read_chunked,
-                   absl::optional<hls::types::ByteRange> range,
-                   HlsDataSourceProvider::ReadCb cb) override;
+  void ReadManifest(const GURL& uri, HlsDataSourceProvider::ReadCb cb) override;
+  void ReadMediaSegment(const hls::MediaSegment& segment,
+                        bool read_chunked,
+                        bool include_init,
+                        HlsDataSourceProvider::ReadCb cb) override;
   void ReadStream(std::unique_ptr<HlsDataSourceStream> stream,
                   HlsDataSourceProvider::ReadCb cb) override;
   void UpdateNetworkSpeed(uint64_t bps) override;
@@ -100,6 +101,10 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   // completed.
   void FinishInitialization(PipelineStatusCallback cb, PipelineStatus status);
   void OnAdaptationComplete(PipelineStatus status);
+
+  // Helper for OnTimeUpdate/CheckState which helps record tracing macros.
+  void FinishTimeUpdate(ManifestDemuxer::DelayCallback cb,
+                        base::TimeDelta delay_time);
 
   // Calls Rendition::CheckState and binds OnStateChecked to it's closure arg,
   // and records the timetick when the state checking happened.

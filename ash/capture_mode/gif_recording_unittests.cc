@@ -17,6 +17,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
+#include "base/test/gtest_tags.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -261,6 +262,9 @@ TEST_F(GifRecordingTest, FutureCaptureSessionsAffected) {
 }
 
 TEST_F(GifRecordingTest, TabNavigation) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-759f3130-3839-408a-8342-a373654e8927");
+
   auto* controller = StartRegionVideoCapture();
 
   // Tab 15 times until we reach the capture button.

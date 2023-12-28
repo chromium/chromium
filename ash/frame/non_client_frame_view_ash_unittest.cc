@@ -102,8 +102,7 @@ class NonClientFrameViewAshTestWidgetDelegate
 
  private:
   // Not owned.
-  raw_ptr<NonClientFrameViewAsh, ExperimentalAsh> non_client_frame_view_ =
-      nullptr;
+  raw_ptr<NonClientFrameViewAsh> non_client_frame_view_ = nullptr;
 };
 
 class TestWidgetConstraintsDelegate

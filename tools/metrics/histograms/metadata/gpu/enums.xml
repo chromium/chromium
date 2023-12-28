@@ -1010,17 +1010,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="6" label="Died sixth time"/>
 </enum>
 
-<enum name="GPUsetIsAcceleratedCompositingActive">
-  <summary>
-    Combinations of input parameter active and previous active state set in
-    third_party/WebKit/WebKit/chromium/src/ChromiumBridge.cpp
-  </summary>
-  <int value="0" label="inactive, was inactive"/>
-  <int value="1" label="inactive, was active"/>
-  <int value="2" label="active, was inactive"/>
-  <int value="3" label="active, was active"/>
-</enum>
-
 <enum name="GpuTerminationOrigin">
   <summary>
     Return status re-encoded values from GpuTerminationOrigin as defined in
@@ -1064,25 +1053,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="8" label="KillOnLessThreadTime"/>
   <int value="9" label="SlowWatchdogThread"/>
   <int value="10" label="NoKillForGpuProgressInCrashDump"/>
-</enum>
-
-<enum name="GPUWebGraphicsContext3D_Init_CanLoseContext">
-  <summary>
-    Combinations of context loss variables from
-    chrome/renderer/webgraphicscontext3d_command_buffer_impl.cc
-  </summary>
-  <int value="0"
-      label="InitOK attributes.canRecoverFromContextLoss=False
-             gpu_info.can_lose_context=False"/>
-  <int value="1"
-      label="InitFAILS attributes.canRecoverFromContextLoss=False
-             gpu_info.can_lose_context=True"/>
-  <int value="2"
-      label="InitOK attributes.canRecoverFromContextLoss=True
-             gpu_info.can_lose_context=False"/>
-  <int value="3"
-      label="InitOK attributes.canRecoverFromContextLoss=True
-             gpu_info.can_lose_context=True"/>
 </enum>
 
 <enum name="HasDiscreteGpu">
@@ -1346,13 +1316,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1" label="Non-Occluding Damage Only"/>
   <int value="2" label="Occluding Damage Only (Deprecated)"/>
   <int value="3" label="Occluding and Non-Occluding Damages"/>
-</enum>
-
-<enum name="WaitForVBlankErrorCode">
-  <int value="0" label="Success"/>
-  <int value="1" label="Failed to get monitor info"/>
-  <int value="2" label="Failed to open adapter"/>
-  <int value="3" label="Failed to wait for VBlank event"/>
 </enum>
 
 <enum name="WebGPUSupport">

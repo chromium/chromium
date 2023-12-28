@@ -61,7 +61,7 @@ class WmFlingHandler : public ui::CompositorAnimationObserver {
   std::optional<gfx::Vector2dF> fling_last_offset_;
 
   // The compositor we are observing.
-  raw_ptr<ui::Compositor, ExperimentalAsh> observed_compositor_ = nullptr;
+  raw_ptr<ui::Compositor> observed_compositor_ = nullptr;
 
   StepCallback on_step_callback_;
   base::RepeatingClosure on_end_callback_;

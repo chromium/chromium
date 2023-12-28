@@ -657,6 +657,22 @@ void CanonicalizeIPAddress(const char16_t* spec,
     return;
 }
 
+void CanonicalizeIPv6Address(const char* spec,
+                             const Component& host,
+                             CanonOutput& output,
+                             CanonHostInfo& host_info) {
+  DoCanonicalizeIPv6Address<char, unsigned char>(spec, host, &output,
+                                                 &host_info);
+}
+
+void CanonicalizeIPv6Address(const char16_t* spec,
+                             const Component& host,
+                             CanonOutput& output,
+                             CanonHostInfo& host_info) {
+  DoCanonicalizeIPv6Address<char16_t, char16_t>(spec, host, &output,
+                                                &host_info);
+}
+
 CanonHostInfo::Family IPv4AddressToNumber(const char* spec,
                                           const Component& host,
                                           unsigned char address[4],

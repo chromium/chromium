@@ -753,7 +753,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
       shell()->web_contents()->GetPrimaryMainFrame());
 
   // Audible audio output should cause the media stream count to increment.
-  rfhi->OnAudibleStateChanged(true);
+  rfhi->OnMediaStreamAdded(
+      RenderFrameHostImpl::MediaStreamType::kPlayingAudibleAudioStream);
 
   RenderFrameDeletedObserver delete_frame(rfhi);
 

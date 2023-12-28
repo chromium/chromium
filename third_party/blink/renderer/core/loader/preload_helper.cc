@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/timer/elapsed_timer.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -909,6 +911,8 @@ void PreloadHelper::FetchDictionaryIfNeeded(
 Resource* PreloadHelper::StartPreload(ResourceType type,
                                       FetchParameters& params,
                                       Document& document) {
+  base::ElapsedTimer timer;
+
   ResourceFetcher* resource_fetcher = document.Fetcher();
   Resource* resource = nullptr;
   switch (type) {
@@ -966,6 +970,9 @@ Resource* PreloadHelper::StartPreload(ResourceType type,
     default:
       NOTREACHED();
   }
+
+  base::UmaHistogramMicrosecondsTimes("Blink.PreloadRequestStartDuration",
+                                      timer.Elapsed());
 
   return resource;
 }

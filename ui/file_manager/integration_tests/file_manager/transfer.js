@@ -805,6 +805,10 @@ testcase.transferDragAndHoverTreeItemFakeEntry = async () => {
 
   // Wait for the directory tree target.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  if (await isSinglePartitionFormat(appId)) {
+    await directoryTree.waitForItemByLabel('FAKEUSB');
+    await directoryTree.expandTreeItemByLabel('FAKEUSB');
+  }
   await directoryTree.waitForItemByLabel('fake-usb');
 
   // Drag the source and hover it over the target.

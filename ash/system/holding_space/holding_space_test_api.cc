@@ -33,7 +33,7 @@ template <typename T>
 void FindDescendentsOfClass(views::View* parent,
                             std::vector<views::View*>* descendents) {
   if (parent) {
-    for (auto* child : parent->children()) {
+    for (views::View* child : parent->children()) {
       if (IsViewClass<T>(child)) {
         descendents->push_back(child);
       }

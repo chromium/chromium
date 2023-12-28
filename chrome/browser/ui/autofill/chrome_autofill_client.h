@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -22,6 +23,7 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
@@ -112,6 +114,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   PersonalDataManager* GetPersonalDataManager() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   IbanManager* GetIbanManager() override;
+  IbanAccessManager* GetIbanAccessManager() override;
   plus_addresses::PlusAddressService* GetPlusAddressService() override;
   AutofillComposeDelegate* GetComposeDelegate() override;
   void OfferPlusAddressCreation(
@@ -195,7 +198,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void UpdateWebauthnOfferDialogWithError() override;
   bool CloseWebauthnDialog() override;
   void OfferVirtualCardOptions(
-      const std::vector<CreditCard*>& candidates,
+      const std::vector<raw_ptr<CreditCard, VectorExperimental>>& candidates,
       base::OnceCallback<void(const std::string&)> callback) override;
 #else  // !BUILDFLAG(IS_ANDROID)
   void ConfirmAccountNameFixFlow(
@@ -237,7 +240,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
       AddressProfileSavePromptCallback callback) override;
   bool HasCreditCardScanFeature() override;
   void ScanCreditCard(CreditCardScanCallback callback) override;
-  bool IsTouchToFillCreditCardSupported() override;
   bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const autofill::CreditCard> cards_to_suggest) override;
@@ -352,6 +354,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::unique_ptr<FormDataImporter> form_data_importer_;
   std::unique_ptr<payments::MandatoryReauthManager>
       payments_mandatory_reauth_manager_;
+  std::unique_ptr<IbanAccessManager> iban_access_manager_;
 
   base::WeakPtr<AutofillPopupControllerImpl> popup_controller_;
   FormInteractionsFlowId flow_id_{};

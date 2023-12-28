@@ -18,7 +18,6 @@
 #include <string.h>
 #include <sys/sysmacros.h>
 
-#include "base/bit_cast.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"

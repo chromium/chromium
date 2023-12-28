@@ -1226,8 +1226,10 @@ bool AutocorrectManager::DisabledByInvalidExperimentContext() {
   // autocorrect.
   return !(
       suggestion_provider_ &&
-      suggestion_provider_ ==
-          ime::AutocorrectSuggestionProvider::kUsEnglish840 &&
+      (suggestion_provider_ ==
+           ime::AutocorrectSuggestionProvider::kUsEnglish840 ||
+       suggestion_provider_ ==
+           ime::AutocorrectSuggestionProvider::kUsEnglish840V2) &&
       base::FeatureList::IsEnabled(ash::features::kImeFstDecoderParamsUpdate));
 }
 

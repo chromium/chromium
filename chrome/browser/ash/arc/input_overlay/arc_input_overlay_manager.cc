@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/input_overlay_resources_util.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/delete_edit_shortcut.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/app_restore/window_properties.h"
@@ -36,6 +37,8 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
@@ -103,14 +106,16 @@ aura::Window* GetGameBubbleDialogAnchorWindow(aura::Window* window) {
     return nullptr;
   }
 
-  auto* contents_view = bubble_delegate->GetContentsView();
   views::Widget* anchor_widget = nullptr;
-  if (views::AsViewClass<ash::GameDashboardMainMenuView>(contents_view)) {
+  if (const auto* contents_view = bubble_delegate->GetContentsView();
+      views::AsViewClass<ash::GameDashboardMainMenuView>(contents_view)) {
     // `window` has `ash::GameDashboardMainMenuView` as contents view.
     anchor_widget = widget->parent();
     DCHECK(anchor_widget);
-  } else if (views::AsViewClass<ash::AnchoredNudge>(contents_view)) {
-    // `window` has `ash::AnchoredNudge` as contents view.
+  } else if (views::AsViewClass<ash::AnchoredNudge>(contents_view) ||
+             views::AsViewClass<DeleteEditShortcut>(contents_view)) {
+    // `window` has `ash::AnchoredNudge` or `DeleteEditShortcut` as contents
+    // view.
     if (auto* nudge_anchor_view = bubble_delegate->GetAnchorView()) {
       anchor_widget = nudge_anchor_view->GetWidget();
       DCHECK(anchor_widget);
@@ -161,19 +166,9 @@ ArcInputOverlayManager::ArcInputOverlayManager(
   if (aura::Env::HasInstance()) {
     env_observation_.Observe(aura::Env::GetInstance());
   }
-  if (ash::Shell::HasInstance()) {
-    if (ash::Shell::Get()->tablet_mode_controller()) {
-      ash::Shell::Get()->tablet_mode_controller()->AddObserver(this);
-    }
-
-    if (ash::Shell::Get()->display_manager()) {
-      ash::Shell::Get()->display_manager()->AddObserver(this);
-    }
-
-    if (ash::Shell::GetPrimaryRootWindow()) {
-      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
-          ->AddObserver(this);
-    }
+  if (ash::Shell::HasInstance() && ash::Shell::GetPrimaryRootWindow()) {
+    aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
+        ->AddObserver(this);
   }
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -231,7 +226,8 @@ void ArcInputOverlayManager::OnWindowPropertyChanged(aura::Window* window,
       IsGhostWindowLoading(window) || loading_data_windows_.contains(window)) {
     return;
   }
-  std::string* package_name = window->GetProperty(ash::kArcPackageNameKey);
+  const std::string* package_name =
+      window->GetProperty(ash::kArcPackageNameKey);
   if (!package_name || package_name->empty()) {
     return;
   }
@@ -285,19 +281,9 @@ void ArcInputOverlayManager::OnWindowParentChanged(aura::Window* window,
 void ArcInputOverlayManager::Shutdown() {
   UnRegisterWindow(registered_top_level_window_);
   window_observations_.RemoveAllObservations();
-  if (ash::Shell::HasInstance()) {
-    if (ash::Shell::GetPrimaryRootWindow()) {
-      aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
-          ->RemoveObserver(this);
-    }
-
-    if (ash::Shell::Get()->tablet_mode_controller()) {
-      ash::Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
-    }
-
-    if (ash::Shell::Get()->display_manager()) {
-      ash::Shell::Get()->display_manager()->RemoveObserver(this);
-    }
+  if (ash::Shell::HasInstance() && ash::Shell::GetPrimaryRootWindow()) {
+    aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
+        ->RemoveObserver(this);
   }
   if (aura::Env::HasInstance()) {
     env_observation_.Reset();
@@ -306,7 +292,7 @@ void ArcInputOverlayManager::Shutdown() {
 
 void ArcInputOverlayManager::OnWindowFocused(aura::Window* gained_focus,
                                              aura::Window* lost_focus) {
-  if (ash::Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     return;
   }
 
@@ -332,14 +318,6 @@ void ArcInputOverlayManager::OnWindowFocused(aura::Window* gained_focus,
   RegisterWindow(gained_anchor_window);
 }
 
-void ArcInputOverlayManager::OnTabletModeStarting() {
-  UnRegisterWindow(registered_top_level_window_);
-}
-
-void ArcInputOverlayManager::OnTabletModeEnded() {
-  RegisterFocusedWindow();
-}
-
 void ArcInputOverlayManager::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t metrics) {
@@ -347,12 +325,26 @@ void ArcInputOverlayManager::OnDisplayMetricsChanged(
     return;
   }
 
-  auto it = input_overlay_enabled_windows_.find(registered_top_level_window_);
-  if (it == input_overlay_enabled_windows_.end()) {
-    return;
+  if (auto it =
+          input_overlay_enabled_windows_.find(registered_top_level_window_);
+      it != input_overlay_enabled_windows_.end()) {
+    it->second->UpdatePositionsForRegister();
   }
+}
 
-  it->second->UpdatePositionsForRegister();
+void ArcInputOverlayManager::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  switch (state) {
+    case display::TabletState::kInClamshellMode:
+      RegisterFocusedWindow();
+      break;
+    case display::TabletState::kEnteringTabletMode:
+      UnRegisterWindow(registered_top_level_window_);
+      break;
+    case display::TabletState::kInTabletMode:
+    case display::TabletState::kExitingTabletMode:
+      break;
+  }
 }
 
 void ArcInputOverlayManager::RemoveWindowObservation(aura::Window* window) {
@@ -375,18 +367,19 @@ std::unique_ptr<TouchInjector> ArcInputOverlayManager::ReadDefaultData(
   DCHECK(touch_injector);
 
   const std::string& package_name = touch_injector->package_name();
-  auto resource_id = GetInputOverlayResourceId(package_name);
+  const auto resource_id = GetInputOverlayResourceId(package_name);
   if (!resource_id) {
     return touch_injector;
   }
 
-  auto json_file = ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-      resource_id.value());
+  const auto json_file =
+      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+          resource_id.value());
   if (json_file.empty()) {
     LOG(WARNING) << "No content for: " << package_name;
     return touch_injector;
   }
-  auto result = base::JSONReader::ReadAndReturnValueWithError(json_file);
+  const auto result = base::JSONReader::ReadAndReturnValueWithError(json_file);
   DCHECK(result.has_value())
       << "Could not load input overlay data file: " << result.error().message;
   if (!result.has_value() || !result->is_dict()) {
@@ -557,7 +550,7 @@ void ArcInputOverlayManager::CheckO4C(
     return;
   }
 
-  std::string package_name = touch_injector->package_name();
+  const std::string package_name = touch_injector->package_name();
   VLOG(2) << "Check if pkg: " << package_name << " is an O4C app.";
 
   instance->IsOptimizedForCrosApp(
@@ -589,8 +582,9 @@ void ArcInputOverlayManager::OnDidCheckO4C(
 }
 
 void ArcInputOverlayManager::NotifyTextInputState() {
-  auto it = input_overlay_enabled_windows_.find(registered_top_level_window_);
-  if (it != input_overlay_enabled_windows_.end()) {
+  if (const auto it =
+          input_overlay_enabled_windows_.find(registered_top_level_window_);
+      it != input_overlay_enabled_windows_.end()) {
     it->second->NotifyTextInputState(is_text_input_active_);
   }
 }
@@ -631,7 +625,7 @@ void ArcInputOverlayManager::RegisterWindow(aura::Window* window) {
               window);
   }
 
-  auto it = input_overlay_enabled_windows_.find(window);
+  const auto it = input_overlay_enabled_windows_.find(window);
   if (it == input_overlay_enabled_windows_.end()) {
     return;
   }
@@ -653,7 +647,8 @@ void ArcInputOverlayManager::UnRegisterWindow(aura::Window* window) {
   if (!registered_top_level_window_ || registered_top_level_window_ != window) {
     return;
   }
-  auto it = input_overlay_enabled_windows_.find(registered_top_level_window_);
+  const auto it =
+      input_overlay_enabled_windows_.find(registered_top_level_window_);
   DCHECK(it != input_overlay_enabled_windows_.end());
   if (it == input_overlay_enabled_windows_.end()) {
     return;
@@ -669,14 +664,11 @@ void ArcInputOverlayManager::UnRegisterWindow(aura::Window* window) {
 }
 
 void ArcInputOverlayManager::RegisterFocusedWindow() {
-  auto* focused_window = ash::window_util::GetFocusedWindow();
-  // Don't register window if it is in tablet mode.
-  if (ash::Shell::Get()->tablet_mode_controller()->InTabletMode() ||
-      !focused_window) {
-    return;
+  // Register window if it is not in tablet mode.
+  if (auto* focused_window = ash::window_util::GetFocusedWindow();
+      focused_window && !display::Screen::GetScreen()->InTabletMode()) {
+    RegisterWindow(GetAnchorWindow(focused_window->GetToplevelWindow()));
   }
-
-  RegisterWindow(GetAnchorWindow(focused_window->GetToplevelWindow()));
 }
 
 void ArcInputOverlayManager::AddDisplayOverlayController(

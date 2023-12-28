@@ -5,6 +5,7 @@
 #include "chrome/browser/android/auxiliary_search/auxiliary_search_provider.h"
 
 #include "base/android/jni_android.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/android/persisted_tab_data/persisted_tab_data_android.h"
@@ -61,8 +62,9 @@ class AuxiliarySearchProviderBrowserTest : public AndroidBrowserTest {
     return Profile::FromBrowserContext(web_contents->GetBrowserContext());
   }
 
-  std::vector<TabAndroid*> CreateOneTab(bool is_sensitive) {
-    std::vector<TabAndroid*> tab_vec;
+  std::vector<raw_ptr<TabAndroid, VectorExperimental>> CreateOneTab(
+      bool is_sensitive) {
+    std::vector<raw_ptr<TabAndroid, VectorExperimental>> tab_vec;
     TabAndroid* tab_android = TabAndroid::FromWebContents(web_contents());
     tab_vec.push_back(tab_android);
     std::unique_ptr<SensitivityPersistedTabDataAndroid> sptda =
@@ -80,7 +82,8 @@ class AuxiliarySearchProviderBrowserTest : public AndroidBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(AuxiliarySearchProviderBrowserTest, QuerySensitiveTab) {
   base::RunLoop run_loop;
-  std::vector<TabAndroid*> tab_vec = CreateOneTab(true);
+  std::vector<raw_ptr<TabAndroid, VectorExperimental>> tab_vec =
+      CreateOneTab(true);
 
   provider()->GetNonSensitiveTabsInternal(
       tab_vec, base::BindOnce(
@@ -97,7 +100,8 @@ IN_PROC_BROWSER_TEST_F(AuxiliarySearchProviderBrowserTest, QuerySensitiveTab) {
 IN_PROC_BROWSER_TEST_F(AuxiliarySearchProviderBrowserTest,
                        QueryNonSensitiveTab) {
   base::RunLoop run_loop;
-  std::vector<TabAndroid*> tab_vec = CreateOneTab(false);
+  std::vector<raw_ptr<TabAndroid, VectorExperimental>> tab_vec =
+      CreateOneTab(false);
 
   TabModel* tab_model = TabModelList::GetTabModelForWebContents(web_contents());
   TabAndroid* second_tab = TabAndroid::FromWebContents(web_contents());
@@ -125,7 +129,8 @@ IN_PROC_BROWSER_TEST_F(AuxiliarySearchProviderBrowserTest,
 IN_PROC_BROWSER_TEST_F(AuxiliarySearchProviderBrowserTest,
                        QueryNonSensitiveTab_flagTest) {
   base::RunLoop run_loop;
-  std::vector<TabAndroid*> tab_vec = CreateOneTab(false);
+  std::vector<raw_ptr<TabAndroid, VectorExperimental>> tab_vec =
+      CreateOneTab(false);
 
   TabModel* tab_model = TabModelList::GetTabModelForWebContents(web_contents());
   TabAndroid* second_tab = TabAndroid::FromWebContents(web_contents());
@@ -165,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(AuxiliarySearchProviderBrowserTest, QueryEmptyTabList) {
   base::RunLoop run_loop;
 
   provider()->GetNonSensitiveTabsInternal(
-      std::vector<TabAndroid*>(),
+      std::vector<raw_ptr<TabAndroid, VectorExperimental>>(),
       base::BindOnce(
           [](base::OnceClosure done,
              std::unique_ptr<std::vector<base::WeakPtr<TabAndroid>>>
@@ -181,7 +186,8 @@ IN_PROC_BROWSER_TEST_F(AuxiliarySearchProviderBrowserTest, NativeTabTest) {
   base::RunLoop run_loop;
   ASSERT_TRUE(
       content::NavigateToURL(web_contents(), GURL(url::kAboutBlankURL)));
-  std::vector<TabAndroid*> tab_vec = CreateOneTab(false);
+  std::vector<raw_ptr<TabAndroid, VectorExperimental>> tab_vec =
+      CreateOneTab(false);
 
   provider()->GetNonSensitiveTabsInternal(
       tab_vec, base::BindOnce(
@@ -208,7 +214,8 @@ IN_PROC_BROWSER_TEST_F(AuxiliarySearchProviderBrowserTest, FilterTabsTest) {
 
   for (const auto& test_case : test_cases) {
     ASSERT_TRUE(content::NavigateToURL(web_contents(), test_case.url));
-    std::vector<TabAndroid*> tab_vec = CreateOneTab(false);
+    std::vector<raw_ptr<TabAndroid, VectorExperimental>> tab_vec =
+        CreateOneTab(false);
 
     std::vector<base::WeakPtr<TabAndroid>> filtered_tabs =
         AuxiliarySearchProvider::FilterTabsByScheme(tab_vec);

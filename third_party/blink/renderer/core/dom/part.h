@@ -36,10 +36,7 @@ class CORE_EXPORT Part : public ScriptWrappable {
   virtual PartRoot* GetAsPartRoot() const { return nullptr; }
   virtual bool IncludeInPartsList() const { return true; }
   PartRoot* root() const { return root_.Get(); }
-  void MoveToRoot(PartRoot* new_root);
   virtual Document& GetDocument() const = 0;
-  void PartDisconnected(Node& node);
-  void PartConnected(Node& node, ContainerNode& insertion_point);
 
   // Part API
   V8UnionChildNodePartOrDocumentPartRoot* rootForBindings() const;
@@ -50,6 +47,7 @@ class CORE_EXPORT Part : public ScriptWrappable {
   Part(PartRoot& root, const Vector<String> metadata)
       : root_(root), metadata_(metadata) {}
   bool IsConnected() { return connected_; }
+  static bool IsAcceptableNodeType(Node& node);
 
  private:
   Member<PartRoot> root_;

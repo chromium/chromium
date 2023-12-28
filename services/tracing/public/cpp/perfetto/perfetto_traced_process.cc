@@ -21,6 +21,7 @@
 #include "services/tracing/public/cpp/perfetto/track_name_recorder.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 #include "services/tracing/public/cpp/trace_startup.h"
+#include "services/tracing/public/cpp/traced_process_impl.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "services/tracing/public/mojom/tracing_service.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
@@ -75,6 +76,54 @@ void OnPerfettoLogMessage(perfetto::base::LogMessageCallbackArgs args) {
   ::logging::LogMessage(args.filename, args.line, severity).stream()
       << args.message;
 }
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY) && BUILDFLAG(IS_POSIX) && \
+    !BUILDFLAG(IS_ANDROID)
+// The async socket connection function passed to the client library for
+// connecting the producer socket in the browser process via mojo IPC.
+// |cb| is a callback from within the client library this function calls when
+// the socket is opened.
+void ConnectProducerSocketViaMojo(perfetto::CreateSocketCallback cb,
+                                  uint32_t retry_delay_ms) {
+  // Binary backoff with a max of 30 sec.
+  constexpr uint32_t kMaxRetryMs = 30 * 1000;
+  auto next_retry_delay_ms = std::min(retry_delay_ms * 2, kMaxRetryMs);
+  // Delayed reconnect function is bound with the increased retry delay.
+  auto delayed_reconnect_fn = [cb, next_retry_delay_ms]() {
+    ConnectProducerSocketViaMojo(cb, next_retry_delay_ms);
+  };
+
+  auto& remote = TracedProcessImpl::GetInstance()->system_tracing_service();
+  if (!remote.is_bound()) {
+    // Retry if the mojo remote is not bound yet.
+    return PerfettoTracedProcess::GetTaskRunner()->PostDelayedTask(
+        delayed_reconnect_fn, retry_delay_ms);
+  }
+
+  auto callback = base::BindOnce(
+      [](perfetto::CreateSocketCallback cb,
+         std::function<void()> delayed_reconnect_fn, uint32_t retry_delay_ms,
+         base::File file) {
+        if (!file.IsValid()) {
+          return PerfettoTracedProcess::GetTaskRunner()->PostDelayedTask(
+              delayed_reconnect_fn, retry_delay_ms);
+        }
+
+        // Success, call |cb| into the Perfetto client library with a valid
+        // socket handle.
+        cb(file.TakePlatformFile());
+      },
+      cb, delayed_reconnect_fn, retry_delay_ms);
+
+  // Open the socket remotely using Mojo.
+  remote->OpenProducerSocket(std::move(callback));
+}
+
+// Wrapper for |ConnectProducerSocketViaMojo| to be used as a function pointer.
+void ConnectProducerSocketAsync(perfetto::CreateSocketCallback cb) {
+  ConnectProducerSocketViaMojo(std::move(cb), 100);
+}
+#endif
 
 }  // namespace
 
@@ -324,6 +373,15 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
 #endif  // @BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     init_args.backends |= perfetto::kSystemBackend;
     init_args.tracing_policy = this;
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY) && BUILDFLAG(IS_POSIX) && \
+    !BUILDFLAG(IS_ANDROID)
+    auto type =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("type");
+    if (!type.empty()) {  // Sandboxed. Need to delegate to the browser process
+                          // using Mojo.
+      init_args.create_socket_async = ConnectProducerSocketAsync;
+    }
+#endif
   }
 #endif
   // Proxy perfetto log messages into Chrome logs, so they are retained on all

@@ -20,15 +20,12 @@
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
+#include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
+#include "components/search_engines/search_engine_choice_utils.h"
 #include "google_apis/gaia/core_account_id.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
-#endif
-
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-#include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
-#include "components/search_engines/search_engine_choice_utils.h"
 #endif
 
 namespace {
@@ -285,7 +282,6 @@ class FinishFlowAndRunInBrowserStepController
   base::OnceClosure finish_flow_and_run_in_browser_callback_;
 };
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
 class SearchEngineChoiceStepController
     : public ProfileManagementStepController {
  public:
@@ -377,8 +373,6 @@ class SearchEngineChoiceStepController
   // The web contents in which we want to display the screen.
   raw_ptr<content::WebContents> web_contents_;
 };
-#endif  // BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-
 }  // namespace
 
 // static
@@ -424,7 +418,6 @@ ProfileManagementStepController::CreateForPostSignInFlow(
                                                     std::move(signed_in_flow));
 }
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
 // static
 std::unique_ptr<ProfileManagementStepController>
 ProfileManagementStepController::CreateForSearchEngineChoice(
@@ -437,7 +430,6 @@ ProfileManagementStepController::CreateForSearchEngineChoice(
       host, search_engine_choice_service, web_contents, entry_point,
       std::move(callback));
 }
-#endif
 
 // static
 std::unique_ptr<ProfileManagementStepController>

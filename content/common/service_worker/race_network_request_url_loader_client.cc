@@ -331,6 +331,14 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteResponse() {
       TRACE_ID_LOCAL(this),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", request_.url,
       "state", state_);
+  bool is_aborted = false;
+  switch (state_) {
+    case State::kAborted:
+      is_aborted = true;
+      break;
+    default:
+      break;
+  }
   switch (owner_->commit_responsibility()) {
     case FetchResponseFrom::kNoResponseYet:
     case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
@@ -344,6 +352,11 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteResponse() {
       // RaceNetworkRequest, do nothing. Defer the handling to the owner.
       break;
     case FetchResponseFrom::kWithoutServiceWorker:
+      if (is_aborted) {
+        owner_->CommitCompleted(completion_status_->error_code,
+                                "RaceNetworkRequest has aborted.");
+        return;
+      }
       TransitionState(State::kCompleted);
       owner_->CommitCompleted(completion_status_->error_code,
                               "RaceNetworkRequest has completed.");

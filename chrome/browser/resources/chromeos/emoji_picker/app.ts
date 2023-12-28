@@ -20,16 +20,16 @@ import {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_ico
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './app.html.js';
 import * as constants from './constants.js';
 import {EmojiGroupComponent} from './emoji_group.js';
-import {getTemplate} from './app.html.js';
 import {Feature, Status} from './emoji_picker.mojom-webui.js';
 import {EmojiPickerApiProxy, EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
 import {EmojiSearch} from './emoji_search.js';
 import * as events from './events.js';
 import {CATEGORY_METADATA, CATEGORY_TABS, EMOJI_GROUP_TABS, GIF_CATEGORY_METADATA, gifCategoryTabs, SUBCATEGORY_TABS, TABS_CATEGORY_START_INDEX, TABS_CATEGORY_START_INDEX_GIF_SUPPORT} from './metadata_extension.js';
 import {GifNudgeHistoryStore, RecentlyUsedStore} from './store.js';
-import {CategoryEnum, Emoji, EmojiGroupData, EmojiGroupElement, EmojiVariants, GifSubcategoryData, SubcategoryData, VisualContent} from './types.js';
+import {CategoryEnum, Emoji, EmojiGroupData, EmojiGroupElement, EmojiVariants, GifSubcategoryData, PreferenceMapping, SubcategoryData} from './types.js';
 
 export interface EmojiPickerApp {
   $: {
@@ -296,8 +296,7 @@ export class EmojiPickerApp extends PolymerElement {
 
     // After initial data is loaded, if the GIF nudge is not shown before, show
     // the GIF nudge.
-    if (this.gifSupport &&
-        !GifNudgeHistoryStore.getInstance().hasNudgeShown()) {
+    if (this.gifSupport && !GifNudgeHistoryStore.hasNudgeShown()) {
       this.showGifNudgeOverlay = true;
     }
 
@@ -646,21 +645,11 @@ export class EmojiPickerApp extends PolymerElement {
     this.insertVisualContent(category, ev.detail);
   }
 
-  private async insertText(category: CategoryEnum, item: {
-    isVariant: boolean,
-    baseEmoji?: string,
-    allVariants?: Emoji[],
-    name?: string, text: string,
-  }) {
-    const {text, isVariant, baseEmoji, allVariants, name} = item;
+  private async insertText(category: CategoryEnum, item: events.TextItem) {
+    const {text, isVariant} = item;
     this.$.message.textContent = text + ' inserted.';
 
-    this.insertHistoryTextItem(category, {
-      selectedEmoji: text,
-      baseEmoji: baseEmoji,
-      alternates: allVariants || [],
-      name: name,
-    });
+    this.insertHistoryTextItem(category, item);
 
     const searchLength = this.$['search-container']
                              .shadowRoot!.querySelector('cr-search-field')
@@ -672,9 +661,7 @@ export class EmojiPickerApp extends PolymerElement {
     this.apiProxy.insertEmoji(text, isVariant, searchLength);
   }
 
-  private insertVisualContent(category: CategoryEnum, item: {
-    name?: string, visualContent: VisualContent,
-  }) {
+  private insertVisualContent(category: CategoryEnum, item: events.VisualItem) {
     this.apiProxy.insertGif(item.visualContent.url.full);
     this.insertHistoryVisualContentItem(category, item);
   }
@@ -1103,7 +1090,7 @@ export class EmojiPickerApp extends PolymerElement {
       return [];
     }
 
-    return this.categoriesHistory[category]?.data?.history?.map(
+    return this.categoriesHistory[category]?.getHistory().map(
                emoji => ({
                  base: {
                    string: emoji.base.string,
@@ -1175,24 +1162,18 @@ export class EmojiPickerApp extends PolymerElement {
    * incognito state.
    *
    */
-  private insertHistoryTextItem(category: CategoryEnum, item: {
-    selectedEmoji: string,
-    baseEmoji?: string, alternates: Emoji[],
-    name?: string,
-  }) {
+  private insertHistoryTextItem(category: CategoryEnum, item: events.TextItem) {
     if (this.incognito) {
       return;
     }
 
-    const {selectedEmoji, baseEmoji, alternates, name} = item;
+    const {text, baseEmoji, alternates, name} = item;
 
     this.categoriesHistory[category]?.bumpItem(
-        category,
-        {base: {string: selectedEmoji, name: name}, alternates: alternates});
+        category, {base: {string: text, name}, alternates});
 
     const preferenceUpdated =
-        this.categoriesHistory[category]?.savePreferredVariant(
-            selectedEmoji, baseEmoji);
+        this.categoriesHistory[category]?.savePreferredVariant(text, baseEmoji);
 
     this.categoryHistoryUpdated(category, true, preferenceUpdated);
   }
@@ -1201,10 +1182,8 @@ export class EmojiPickerApp extends PolymerElement {
    * Inserts a new item to the history of a visual content category. It will do
    * nothing during incognito state.
    */
-  private insertHistoryVisualContentItem(category: CategoryEnum, item: {
-    visualContent: VisualContent,
-    name?: string,
-  }) {
+  private insertHistoryVisualContentItem(
+      category: CategoryEnum, item: events.VisualItem) {
     if (this.incognito) {
       return;
     }
@@ -1241,8 +1220,7 @@ export class EmojiPickerApp extends PolymerElement {
    * @returns {boolean} True for empty history.
    */
   private isCategoryHistoryEmpty(category: CategoryEnum) {
-    return this.incognito ||
-        (this.categoriesHistory[category]?.data?.history?.length ?? 0) === 0;
+    return this.incognito || this.categoriesHistory[category]?.isHistoryEmpty();
   }
 
   /**
@@ -1299,7 +1277,7 @@ export class EmojiPickerApp extends PolymerElement {
    * Create an instance of emoji group element.
    */
   private createEmojiGroupElement(
-      emoji: EmojiVariants[], preferences: {[index: string]: string},
+      emoji: EmojiVariants[], preferences: PreferenceMapping,
       isHistory: boolean, subcategoryIndex: number): EmojiGroupElement {
     const baseDetails = {
       'emoji': emoji,
@@ -1315,12 +1293,11 @@ export class EmojiPickerApp extends PolymerElement {
    * Gets preferences for an emoji group.
    *
    */
-  private getEmojiGroupPreference(category: CategoryEnum):
-      {[index: string]: string} {
+  private getEmojiGroupPreference(category: CategoryEnum): PreferenceMapping {
     return this.incognito ? {} :
                             // ! is safe as categories history must contain
                             // entries for all categories.
-                            this.categoriesHistory[category]!.data.preference;
+        this.categoriesHistory[category]!.getPreferenceMapping();
   }
 
   private onShowEmojiVariants(ev: events.EmojiVariantsShownEvent) {
@@ -1590,7 +1567,7 @@ export class EmojiPickerApp extends PolymerElement {
       this.showGifNudgeOverlay = false;
     }
 
-    GifNudgeHistoryStore.getInstance().setNudgeShown(true);
+    GifNudgeHistoryStore.setNudgeShown(true);
   }
 }
 

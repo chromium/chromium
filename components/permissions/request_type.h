@@ -26,6 +26,9 @@ enum class RequestType {
   kCameraPanTiltZoom,
 #endif
   kCameraStream,
+#if !BUILDFLAG(IS_ANDROID)
+  kCapturedSurfaceControl,
+#endif
   kClipboard,
   kTopLevelStorageAccess,
   kDiskQuota,
@@ -50,6 +53,9 @@ enum class RequestType {
 #endif
 #if !BUILDFLAG(IS_ANDROID)
   kRegisterProtocolHandler,
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+  kSmartCard,
 #endif
   kStorageAccess,
   kVrSession,

@@ -12,7 +12,10 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -426,6 +429,75 @@ TEST_F(PasswordManagerFeaturesUtilTest, MigrateOptInPrefToSyncSelectedTypes) {
           .Has(syncer::UserSelectableType::kPasswords));
 
   // Verify the default store settings are unnaffected.
+  SetSyncStateTransportActive(account1);
+  EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
+            PasswordForm::Store::kAccountStore);
+  SetSyncStateTransportActive(account2);
+  EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
+            PasswordForm::Store::kProfileStore);
+}
+
+TEST_F(PasswordManagerFeaturesUtilTest,
+       MigrateDeclinedSaveOptInToExplicitOptOut) {
+  // Using the Uno Flag because it will automatically turn on account password
+  // storage if the default store has not been set to kProfileStore.
+  base::test::ScopedFeatureList scoped_feature_list{switches::kUnoDesktop};
+  syncer::SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
+  // Pref is registered in signin internal `PrimaryAccountManager`.
+  pref_service_.registry()->RegisterBooleanPref(::prefs::kExplicitBrowserSignin,
+                                                false);
+
+  pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
+
+  CoreAccountInfo account1;
+  account1.gaia = "gaia1";
+  auto gaia_with_account_store_hash =
+      signin::GaiaIdHash::FromGaiaId(account1.gaia);
+  CoreAccountInfo account2;
+  account2.gaia = "gaia2";
+  auto gaia_with_profile_store_hash =
+      signin::GaiaIdHash::FromGaiaId(account2.gaia);
+  pref_service_.SetDict(
+      prefs::kAccountStoragePerAccountSettings,
+      base::Value::Dict()
+          .Set(gaia_with_account_store_hash.ToBase64(),
+               base::Value::Dict().Set(
+                   "default_store",
+                   static_cast<int>(PasswordForm::Store::kAccountStore)))
+          .Set(gaia_with_profile_store_hash.ToBase64(),
+               base::Value::Dict().Set(
+                   "default_store",
+                   static_cast<int>(PasswordForm::Store::kProfileStore))));
+
+  syncer::SyncPrefs sync_prefs(&pref_service_);
+  // Without the migration, passwords storage will be turned on.
+  EXPECT_TRUE(
+      sync_prefs.GetSelectedTypesForAccount(gaia_with_account_store_hash)
+          .Has(syncer::UserSelectableType::kPasswords));
+  EXPECT_TRUE(
+      sync_prefs.GetSelectedTypesForAccount(gaia_with_profile_store_hash)
+          .Has(syncer::UserSelectableType::kPasswords));
+  EXPECT_TRUE(
+      sync_prefs
+          .GetSelectedTypesForAccount(signin::GaiaIdHash::FromGaiaId("other"))
+          .Has(syncer::UserSelectableType::kPasswords));
+
+  MigrateDeclinedSaveOptInToExplicitOptOut(&pref_service_);
+
+  EXPECT_TRUE(
+      sync_prefs.GetSelectedTypesForAccount(gaia_with_account_store_hash)
+          .Has(syncer::UserSelectableType::kPasswords));
+  // After the migration, passwords storage will be turned off if the default
+  // store was kProfileStore.
+  EXPECT_FALSE(
+      sync_prefs.GetSelectedTypesForAccount(gaia_with_profile_store_hash)
+          .Has(syncer::UserSelectableType::kPasswords));
+  EXPECT_TRUE(
+      sync_prefs
+          .GetSelectedTypesForAccount(signin::GaiaIdHash::FromGaiaId("other"))
+          .Has(syncer::UserSelectableType::kPasswords));
+
+  // Verify the default store settings are unaffected.
   SetSyncStateTransportActive(account1);
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
             PasswordForm::Store::kAccountStore);

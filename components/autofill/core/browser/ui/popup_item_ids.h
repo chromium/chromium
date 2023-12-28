@@ -38,10 +38,8 @@ enum class PopupItemId : int {
   // will fill every email field.
   kFillFullEmail,
   kAddressFieldByFieldFilling,
-  kTitle,
   kEditAddressProfile,
   kDeleteAddressProfile,
-  kAddressEntryNotSelectable,
   kAutofillOptions,
 
   // Compose suggestions.
@@ -70,7 +68,6 @@ enum class PopupItemId : int {
   kVirtualCreditCardEntry,
   kCreditCardFieldByFieldFilling,
   kIbanEntry,
-  kPaymentsEntryNotSelectable,
 
   // Plus address suggestions.
   kCreateNewPlusAddress,

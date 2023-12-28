@@ -883,7 +883,7 @@ class BookmarkManagerMediator
         if (state.mUiMode == BookmarkUiMode.FOLDER) {
             // Loading and searching states may be pushed to the stack but should never be stored in
             // preferences.
-            BookmarkUtils.setLastUsedUrl(mContext, state.mUrl);
+            BookmarkUtils.setLastUsedUrl(state.mUrl);
             // If a loading state is replaced by another loading state, do not notify this change.
             if (mNativePage != null) {
                 mNativePage.onStateChange(state.mUrl, false);

@@ -14,37 +14,37 @@ Before:
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='side side-1'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='side side-1'",
       "bounds": [100, 100],
       "backgroundColor": "#00FF00CC",
       "transform": 5
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='side side-2'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='side side-2'",
       "bounds": [100, 100],
       "backgroundColor": "#00FF00CC",
       "transform": 7
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='side side-3'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='side side-3'",
       "bounds": [100, 100],
       "backgroundColor": "#00FF00CC",
       "transform": 9
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='side side-4'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='side side-4'",
       "bounds": [100, 100],
       "backgroundColor": "#00FF00CC",
       "transform": 11
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='side side-5'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='side side-5'",
       "bounds": [100, 100],
       "backgroundColor": "#00FF00CC",
       "transform": 13
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='side side-6'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='side side-6'",
       "bounds": [100, 100],
       "backgroundColor": "#00FF00CC",
       "transform": 15
@@ -210,37 +210,37 @@ After:
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='side side-1'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='side side-1'",
       "bounds": [100, 100],
       "backgroundColor": "#00FF00CC",
       "transform": 5
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='side side-2'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='side side-2'",
       "bounds": [100, 100],
       "backgroundColor": "#00FF00CC",
       "transform": 7
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='side side-3'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='side side-3'",
       "bounds": [100, 100],
       "backgroundColor": "#00FF00CC",
       "transform": 9
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='side side-4'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='side side-4'",
       "bounds": [100, 100],
       "backgroundColor": "#00FF00CC",
       "transform": 11
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='side side-5'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='side side-5'",
       "bounds": [100, 100],
       "backgroundColor": "#00FF00CC",
       "transform": 13
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='side side-6'",
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='side side-6'",
       "bounds": [100, 100],
       "backgroundColor": "#00FF00CC",
       "transform": 15

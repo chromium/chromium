@@ -339,7 +339,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   bool RequestedMainFramePending() override;
   ukm::UkmRecorder* MainFrameUkmRecorder() override;
   ukm::SourceId MainFrameUkmSourceId() override;
-  bool IsMainFrameFullyLoaded() const override;
 
   // WebFrameWidget overrides.
   void InitializeNonCompositing(WebNonCompositedWidgetClient* client) override;
@@ -613,6 +612,9 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   // Called when the widget should get targeting input.
   void SetMouseCapture(bool capture);
+
+  // Called when the widget's main frame has ongoing autoscroll selection.
+  void NotifyAutoscrollForSelectionInMainFrame(bool autoscroll_selection);
 
   // Sets the current page scale factor and minimum / maximum limits. Both
   // limits are initially 1 (no page scale allowed).
@@ -889,8 +891,6 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   void ForEachRemoteFrameControlledByWidget(
       base::FunctionRef<void(RemoteFrame*)> callback);
-
-  void SetWindowRectSynchronously(const gfx::Rect& new_window_rect);
 
   void SendOverscrollEventFromImplSide(const gfx::Vector2dF& overscroll_delta,
                                        cc::ElementId scroll_latched_element_id);

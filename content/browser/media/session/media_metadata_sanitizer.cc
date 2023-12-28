@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/time/time.h"
 #include "services/media_session/public/cpp/media_image.h"
 #include "services/media_session/public/cpp/media_metadata.h"
 
@@ -26,6 +27,9 @@ const size_t kMaxMediaImageTypeLength = 2 * 127 + 1;
 
 // Maximum number of MediaImages inside the MediaMetadata.
 const size_t kMaxNumberOfMediaImages = 10;
+
+// Maximum number of `ChapterInformation` inside the `MediaMetadata`.
+const size_t kMaxNumberOfChapters = 200;
 
 // Maximum of sizes in a MediaImage.
 const size_t kMaxNumberOfMediaImageSizes = 10;
@@ -54,6 +58,25 @@ bool CheckMediaImageSanity(const media_session::MediaImage& image) {
   return true;
 }
 
+bool CheckChapterInformationSanity(
+    const media_session::mojom::ChapterInformationPtr& chapter) {
+  if (chapter->title.size() > kMaxIPCStringLength) {
+    return false;
+  }
+
+  if (chapter->startTime < base::Seconds(0)) {
+    return false;
+  }
+
+  for (const auto& image : chapter->artwork) {
+    if (!CheckMediaImageSanity(image)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 }  // anonymous namespace
 
 bool MediaMetadataSanitizer::CheckSanity(
@@ -66,10 +89,19 @@ bool MediaMetadataSanitizer::CheckSanity(
     return false;
   if (metadata->artwork.size() > kMaxNumberOfMediaImages)
     return false;
+  if (metadata->chapterInfo.size() > kMaxNumberOfChapters) {
+    return false;
+  }
 
   for (const auto& image : metadata->artwork) {
     if (!CheckMediaImageSanity(image))
       return false;
+  }
+
+  for (const auto& chapter : metadata->chapterInfo) {
+    if (!CheckChapterInformationSanity(chapter)) {
+      return false;
+    }
   }
 
   return true;

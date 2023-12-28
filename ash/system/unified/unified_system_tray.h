@@ -246,17 +246,15 @@ class ASH_EXPORT UnifiedSystemTray
   std::unique_ptr<AutozoomToastController> autozoom_toast_controller_;
 
   // Owned by the views hierarchy.
-  raw_ptr<CurrentLocaleView, ExperimentalAsh> current_locale_view_ = nullptr;
-  raw_ptr<ImeModeView, ExperimentalAsh> ime_mode_view_ = nullptr;
-  raw_ptr<ManagedDeviceTrayItemView, ExperimentalAsh> managed_device_view_ =
-      nullptr;
-  raw_ptr<CameraMicTrayItemView, ExperimentalAsh> camera_view_ = nullptr;
-  raw_ptr<CameraMicTrayItemView, ExperimentalAsh> mic_view_ = nullptr;
-  raw_ptr<TimeTrayItemView, ExperimentalAsh> time_view_ = nullptr;
-  raw_ptr<HotspotTrayView, ExperimentalAsh> hotspot_tray_view_ = nullptr;
-  raw_ptr<NetworkTrayView, ExperimentalAsh> network_tray_view_ = nullptr;
-  raw_ptr<ChannelIndicatorView, ExperimentalAsh> channel_indicator_view_ =
-      nullptr;
+  raw_ptr<CurrentLocaleView> current_locale_view_ = nullptr;
+  raw_ptr<ImeModeView> ime_mode_view_ = nullptr;
+  raw_ptr<ManagedDeviceTrayItemView> managed_device_view_ = nullptr;
+  raw_ptr<CameraMicTrayItemView> camera_view_ = nullptr;
+  raw_ptr<CameraMicTrayItemView> mic_view_ = nullptr;
+  raw_ptr<TimeTrayItemView> time_view_ = nullptr;
+  raw_ptr<HotspotTrayView> hotspot_tray_view_ = nullptr;
+  raw_ptr<NetworkTrayView> network_tray_view_ = nullptr;
+  raw_ptr<ChannelIndicatorView> channel_indicator_view_ = nullptr;
 
   // Contains all tray items views added to tray_container().
   std::list<TrayItemView*> tray_items_;

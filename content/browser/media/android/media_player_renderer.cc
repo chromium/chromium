@@ -118,7 +118,7 @@ void MediaPlayerRenderer::CreateMediaPlayer(
       url_params.top_frame_origin, url_params.has_storage_access, user_agent,
       false,  // hide_url_log
       this,   // MediaPlayerBridge::Client
-      url_params.allow_credentials, url_params.is_hls);
+      url_params.allow_credentials, url_params.is_hls, url_params.headers);
 
   media_player_->Initialize();
   UpdateVolume();

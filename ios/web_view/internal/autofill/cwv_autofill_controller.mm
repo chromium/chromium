@@ -453,7 +453,9 @@ using UserDecision =
   // Not supported.
 }
 
-- (void)handleParsedForms:(const std::vector<autofill::FormStructure*>&)forms
+- (void)handleParsedForms:
+            (const std::vector<
+                raw_ptr<autofill::FormStructure, VectorExperimental>>&)forms
                   inFrame:(web::WebFrame*)frame {
   if (![_delegate respondsToSelector:@selector(autofillController:
                                                      didFindForms:frameID:)]) {

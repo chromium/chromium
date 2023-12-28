@@ -93,7 +93,7 @@ class SyncServiceImpl : public SyncService,
         nullptr;
     version_info::Channel channel = version_info::Channel::UNKNOWN;
     std::string debug_identifier;
-    bool sync_poll_immediately_on_every_startup;
+    bool sync_poll_immediately_on_every_startup = false;
   };
 
   explicit SyncServiceImpl(InitParams init_params);

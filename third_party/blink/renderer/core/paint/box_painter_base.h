@@ -22,6 +22,7 @@ class Rect;
 namespace blink {
 
 class BackgroundImageGeometry;
+class BoxBackgroundPaintContext;
 class ComputedStyle;
 class Document;
 class FillLayer;
@@ -50,7 +51,7 @@ class BoxPainterBase {
                        const Color&,
                        const FillLayer&,
                        const PhysicalRect&,
-                       BackgroundImageGeometry&,
+                       const BoxBackgroundPaintContext&,
                        BackgroundBleedAvoidance = kBackgroundBleedNone);
 
   void PaintFillLayer(const PaintInfo&,
@@ -58,14 +59,14 @@ class BoxPainterBase {
                       const FillLayer&,
                       const PhysicalRect&,
                       BackgroundBleedAvoidance,
-                      BackgroundImageGeometry&,
+                      const BoxBackgroundPaintContext&,
                       bool object_has_multiple_boxes = false,
                       const PhysicalSize& flow_box_size = PhysicalSize());
 
   void PaintMaskImages(const PaintInfo&,
                        const PhysicalRect&,
                        const ImageResourceObserver&,
-                       BackgroundImageGeometry&,
+                       const BoxBackgroundPaintContext&,
                        PhysicalBoxSides sides_to_include);
 
   static void PaintNormalBoxShadow(
@@ -173,10 +174,6 @@ class BoxPainterBase {
       PhysicalBoxSides sides_to_include = PhysicalBoxSides());
 
  private:
-  virtual PhysicalBoxStrut ComputeBorders() const = 0;
-  virtual PhysicalBoxStrut ComputePadding() const = 0;
-  PhysicalBoxStrut ComputeSnappedBorders() const;
-
   const Document& document_;
   const ComputedStyle& style_;
   Node* node_;

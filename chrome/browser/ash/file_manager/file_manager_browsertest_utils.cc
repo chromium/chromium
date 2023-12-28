@@ -293,8 +293,11 @@ std::string TestCase::GetFullName() const {
     full_name += "_FSPsInRecents";
   }
 
-  if (options.enable_google_one_offer_files_banner) {
-    full_name += "_GoogleOneOfferFilesBanner";
+  // Google One offer is enabled by default. Append it to a test name only if
+  // it's different from the default value.
+  // TODO(b/315829911): Remove Google One offer files banner flag.
+  if (!options.enable_google_one_offer_files_banner) {
+    full_name += "_DisableGoogleOneOfferFilesBanner";
   }
 
   if (options.enable_drive_bulk_pinning) {

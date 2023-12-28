@@ -18,6 +18,8 @@
 
 namespace optimization_guide {
 
+class Redactor;
+
 class OnDeviceModelExecutionConfigInterpreter {
  public:
   OnDeviceModelExecutionConfigInterpreter();
@@ -54,13 +56,32 @@ class OnDeviceModelExecutionConfigInterpreter {
       proto::ModelExecutionFeature feature,
       const std::string& output) const;
 
+  // Returns the string that is used for checking redaction against.
+  std::string GetStringToCheckForRedacting(
+      proto::ModelExecutionFeature feature,
+      const google::protobuf::MessageLite& message) const;
+
+  // Returns the Redactor for the specified feature. Return value is owned by
+  // this and may be null.
+  const Redactor* GetRedactorForFeature(
+      proto::ModelExecutionFeature feature) const;
+
   void OverrideFeatureConfigForTesting(
-      const proto::OnDeviceModelExecutionFeatureConfig& config) {
-    feature_configs_[config.feature()] = config;
-  }
+      const proto::OnDeviceModelExecutionFeatureConfig& config);
 
  private:
-  // Populates `feature_configs_` based on `config`.
+  // Contains the state applicable to a feature.
+  struct FeatureData {
+    FeatureData();
+    ~FeatureData();
+    proto::OnDeviceModelExecutionFeatureConfig config;
+    std::unique_ptr<Redactor> redactor;
+  };
+
+  void RegisterFeature(
+      const proto::OnDeviceModelExecutionFeatureConfig& config);
+
+  // Populates `feature_to_data_` based on `config`.
   void PopulateFeatureConfigs(
       std::unique_ptr<proto::OnDeviceModelExecutionConfig> config);
 
@@ -71,10 +92,9 @@ class OnDeviceModelExecutionConfigInterpreter {
   // The task runner to process new config files on.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
-  // Map from feature to its model execution feature config.
-  base::flat_map<proto::ModelExecutionFeature,
-                 proto::OnDeviceModelExecutionFeatureConfig>
-      feature_configs_;
+  // Map from feature to associated state.
+  base::flat_map<proto::ModelExecutionFeature, std::unique_ptr<FeatureData>>
+      feature_to_data_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -61,7 +61,7 @@ class PageFlipWaiter : public PaginationModelObserver {
   }
 
   std::unique_ptr<base::RunLoop> ui_run_loop_;
-  raw_ptr<PaginationModel, ExperimentalAsh> model_ = nullptr;
+  raw_ptr<PaginationModel> model_ = nullptr;
 };
 
 }  // namespace

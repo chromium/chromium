@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.jank_tracker.JankTracker;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.feed.FeedSwipeRefreshLayout;
 import org.chromium.chrome.browser.feed.ScrollableContainerDelegate;
@@ -42,7 +43,7 @@ class ExploreSurfaceCoordinatorFactory {
     private final long mEmbeddingSurfaceConstructedTimeNs;
     @Nullable private final FeedSwipeRefreshLayout mSwipeRefreshLayout;
     @NonNull private final ViewGroup mParentView;
-    private ExploreSurfaceFeedLifecycleManager mExploreSurfaceFeedLifecycleManager;
+    private final ObservableSupplier<Integer> mTabStripHeightSupplier;
 
     /**
      * @param activity The current {@link Activity}.
@@ -58,7 +59,8 @@ class ExploreSurfaceCoordinatorFactory {
      * @param tabModelSelector The current {@link TabModelSelector}.
      * @param toolbarSupplier Supplies the {@link Toolbar}.
      * @param embeddingSurfaceConstructedTimeNs Timestamp taken when the caller was constructed.
-     * @param swipeRefreshLayout The layout to support pull-to-refresg.
+     * @param swipeRefreshLayout The layout to support pull-to-refresh.
+     * @param tabStripHeightSupplier Supplier for the tab strip height.
      */
     ExploreSurfaceCoordinatorFactory(
             @NonNull Activity activity,
@@ -74,7 +76,8 @@ class ExploreSurfaceCoordinatorFactory {
             @NonNull TabModelSelector tabModelSelector,
             @NonNull Supplier<Toolbar> toolbarSupplier,
             long embeddingSurfaceConstructedTimeNs,
-            @Nullable FeedSwipeRefreshLayout swipeRefreshLayout) {
+            @Nullable FeedSwipeRefreshLayout swipeRefreshLayout,
+            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier) {
         mActivity = activity;
         mParentView = parentView;
         mParentTabSupplier = parentTabSupplier;
@@ -91,6 +94,7 @@ class ExploreSurfaceCoordinatorFactory {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         containerPropertyModel, parentView, ExploreSurfaceViewBinder::bind);
+        mTabStripHeightSupplier = tabStripHeightSupplier;
     }
 
     /**
@@ -122,6 +126,7 @@ class ExploreSurfaceCoordinatorFactory {
                 mShareDelegateSupplier,
                 mWindowAndroid,
                 mJankTracker,
-                mTabModelSelector);
+                mTabModelSelector,
+                mTabStripHeightSupplier);
     }
 }

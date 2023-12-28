@@ -22,8 +22,8 @@
 #include "url/origin.h"
 
 namespace content {
-struct FencedFrameConfig;
-struct FencedFrameProperties;
+class FencedFrameConfig;
+class FencedFrameProperties;
 }  // namespace content
 
 namespace blink::FencedFrame {
@@ -134,7 +134,7 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameConfig {
   }
 
  private:
-  friend struct content::FencedFrameConfig;
+  friend class content::FencedFrameConfig;
   friend struct mojo::StructTraits<
       blink::mojom::FencedFrameConfigDataView,
       blink::FencedFrame::RedactedFencedFrameConfig>;
@@ -208,7 +208,7 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
   }
 
  private:
-  friend struct content::FencedFrameProperties;
+  friend class content::FencedFrameProperties;
   friend struct mojo::StructTraits<
       blink::mojom::FencedFramePropertiesDataView,
       blink::FencedFrame::RedactedFencedFrameProperties>;

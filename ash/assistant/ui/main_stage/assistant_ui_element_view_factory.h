@@ -31,7 +31,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantUiElementViewFactory {
 
  private:
   // Owned by AssistantController.
-  const raw_ptr<AssistantViewDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<AssistantViewDelegate> delegate_;
 };
 
 }  // namespace ash

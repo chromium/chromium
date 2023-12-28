@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_NETWORK_INTERFACE_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -27,7 +28,6 @@
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace signin {
@@ -101,7 +101,7 @@ class PaymentsNetworkInterface {
     bool offer_fido_opt_in = false;
     // Public Key Credential Request Options required for authentication.
     // https://www.w3.org/TR/webauthn/#dictdef-publickeycredentialrequestoptions
-    absl::optional<base::Value::Dict> fido_request_options;
+    std::optional<base::Value::Dict> fido_request_options;
     // Set of credit cards ids that are eligible for FIDO Authentication.
     std::set<std::string> fido_eligible_card_ids;
   };
@@ -118,23 +118,23 @@ class PaymentsNetworkInterface {
     CreditCard card;
     std::string risk_data;
     CardUnmaskDelegate::UserProvidedUnmaskDetails user_response;
-    absl::optional<base::Value::Dict> fido_assertion_info;
+    std::optional<base::Value::Dict> fido_assertion_info;
     std::u16string otp;
     // An opaque token used to chain consecutive payments requests together.
     std::string context_token;
     // The origin of the primary main frame where the unmasking happened.
     // Should be populated when the unmasking is for a virtual-card.
-    absl::optional<GURL> last_committed_primary_main_frame_origin;
+    std::optional<GURL> last_committed_primary_main_frame_origin;
     // The selected challenge option. Should be populated when we are doing CVC
     // unmasking for a virtual card.
-    absl::optional<CardUnmaskChallengeOption> selected_challenge_option;
+    std::optional<CardUnmaskChallengeOption> selected_challenge_option;
     // A vector of signals used to share client behavior with the Payments
     // server.
     std::vector<ClientBehaviorConstants> client_behavior_signals;
     // The origin of the primary main frame where the unmasking happened. Should
     // only be populated when the client is not in incognito mode since it will
     // be used for personalization.
-    absl::optional<url::Origin> merchant_domain_for_footprints;
+    std::optional<url::Origin> merchant_domain_for_footprints;
   };
 
   // Information retrieved from an UnmaskRequest.
@@ -168,7 +168,7 @@ class PaymentsNetworkInterface {
     std::string expiration_year;
     // Challenge required for authorizing user for FIDO authentication for
     // future card unmasking.
-    absl::optional<base::Value::Dict> fido_request_options;
+    std::optional<base::Value::Dict> fido_request_options;
     // An opaque token used to logically chain consecutive UnmaskCard and
     // OptChange calls together.
     std::string card_authorization_token;
@@ -188,7 +188,7 @@ class PaymentsNetworkInterface {
     // If present, that means this response was an error, and these fields
     // should be used for the autofill error dialog as they will provide detail
     // into the specific error that occurred.
-    absl::optional<AutofillErrorDialogContext> autofill_error_dialog_context;
+    std::optional<AutofillErrorDialogContext> autofill_error_dialog_context;
   };
 
   // A collection of information required to make an unmask IBAN request.
@@ -228,7 +228,7 @@ class PaymentsNetworkInterface {
     Reason reason;
     // Signature required for enrolling user into FIDO authentication for future
     // card unmasking.
-    absl::optional<base::Value::Dict> fido_authenticator_response;
+    std::optional<base::Value::Dict> fido_authenticator_response;
     // An opaque token used to logically chain consecutive UnmaskCard and
     // OptChange calls together.
     std::string card_authorization_token = std::string();
@@ -242,13 +242,13 @@ class PaymentsNetworkInterface {
 
     // Unset if response failed. True if user is opted-in for FIDO
     // authentication for card unmasking. False otherwise.
-    absl::optional<bool> user_is_opted_in;
+    std::optional<bool> user_is_opted_in;
     // Challenge required for enrolling user into FIDO authentication for future
     // card unmasking.
-    absl::optional<base::Value::Dict> fido_creation_options;
+    std::optional<base::Value::Dict> fido_creation_options;
     // Challenge required for authorizing user for FIDO authentication for
     // future card unmasking.
-    absl::optional<base::Value::Dict> fido_request_options;
+    std::optional<base::Value::Dict> fido_request_options;
   };
 
   // A collection of the information required to make local credit cards
@@ -305,12 +305,12 @@ class PaymentsNetworkInterface {
     int64_t billing_customer_number = 0;
     // Populated if it is an unenroll request. |instrument_id| lets the server
     // know which card to unenroll from VCN.
-    absl::optional<int64_t> instrument_id;
+    std::optional<int64_t> instrument_id;
     // Populated if it is an enroll request. Based on the |vcn_context_token|
     // the server is able to retrieve the instrument id, and using
     // |vcn_context_token| for enroll allows the server to link a
     // GetDetailsForEnroll call with the corresponding Enroll call.
-    absl::optional<std::string> vcn_context_token;
+    std::optional<std::string> vcn_context_token;
   };
 
   // The struct to hold all detailed information to construct a
@@ -422,7 +422,7 @@ class PaymentsNetworkInterface {
     // enrollment flow. Will only not be populated in the case of an imperfect
     // conversion from string to int64_t, or if the server does not return an
     // instrument id.
-    absl::optional<int64_t> instrument_id;
+    std::optional<int64_t> instrument_id;
     // |virtual_card_enrollment_state| is used to determine whether we want to
     // pursue further action with the credit card that was uploaded regarding
     // virtual card enrollment. For example, if the state is
@@ -443,8 +443,8 @@ class PaymentsNetworkInterface {
     // |get_details_for_enrollment_response_details| will be populated so that
     // we can display the virtual card enrollment bubble without needing to do
     // another GetDetailsForEnroll network call.
-    absl::optional<GetDetailsForEnrollmentResponseDetails>
-        get_details_for_enrollment_response_details = absl::nullopt;
+    std::optional<GetDetailsForEnrollmentResponseDetails>
+        get_details_for_enrollment_response_details = std::nullopt;
   };
 
   // |url_loader_factory| is reference counted so it has no lifetime or

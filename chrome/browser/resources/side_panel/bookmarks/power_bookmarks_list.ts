@@ -27,7 +27,7 @@ import '//resources/cr_elements/cr_toolbar/cr_toolbar_selection_overlay.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
 
-import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from '//bookmarks-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
+import {ShoppingServiceApiProxy, ShoppingServiceApiProxyImpl} from '//bookmarks-side-panel.top-chrome/shared/commerce/shopping_service_api_proxy.js';
 import {BookmarkProductInfo} from '//bookmarks-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
 import {SpEmptyStateElement} from '//bookmarks-side-panel.top-chrome/shared/sp_empty_state.js';
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
@@ -250,8 +250,8 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   private bookmarksApi_: BookmarksApiProxy =
       BookmarksApiProxyImpl.getInstance();
-  private shoppingListApi_: ShoppingListApiProxy =
-      ShoppingListApiProxyImpl.getInstance();
+  private shoppingServiceApi_: ShoppingServiceApiProxy =
+      ShoppingServiceApiProxyImpl.getInstance();
   private shoppingListenerIds_: number[] = [];
   private displayLists_: chrome.bookmarks.BookmarkTreeNode[][];
   private trackedProductInfos_ = new Map<string, BookmarkProductInfo>();
@@ -297,18 +297,18 @@ export class PowerBookmarksListElement extends PolymerElement {
     });
     this.focusOutlineManager_ = FocusOutlineManager.forDocument(document);
     this.bookmarksService_.startListening();
-    this.shoppingListApi_.getAllPriceTrackedBookmarkProductInfo().then(res => {
+    this.shoppingServiceApi_.getAllPriceTrackedBookmarkProductInfo().then(res => {
       res.productInfos.forEach(
           product => this.set(
               `trackedProductInfos_.${product.bookmarkId.toString()}`,
               product));
     });
-    this.shoppingListApi_.getAllShoppingBookmarkProductInfo().then(res => {
+    this.shoppingServiceApi_.getAllShoppingBookmarkProductInfo().then(res => {
       res.productInfos.forEach(
           product => this.setAvailableProductInfo_(product));
     });
     this.updateShoppingCollectionFolderId_();
-    const callbackRouter = this.shoppingListApi_.getCallbackRouter();
+    const callbackRouter = this.shoppingServiceApi_.getCallbackRouter();
     this.shoppingListenerIds_.push(
         callbackRouter.priceTrackedForBookmark.addListener(
             (product: BookmarkProductInfo) =>
@@ -333,7 +333,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   override disconnectedCallback() {
     this.bookmarksService_.stopListening();
     this.shoppingListenerIds_.forEach(
-        id => this.shoppingListApi_.getCallbackRouter().removeListener(id));
+        id => this.shoppingServiceApi_.getCallbackRouter().removeListener(id));
 
     if (this.shownBookmarksResizeObserver_) {
       this.shownBookmarksResizeObserver_.disconnect();
@@ -706,7 +706,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   }
 
   private updateShoppingCollectionFolderId_(): void {
-    this.shoppingListApi_.getShoppingCollectionBookmarkFolderId().then(res => {
+    this.shoppingServiceApi_.getShoppingCollectionBookmarkFolderId().then(res => {
       this.shoppingCollectionFolderId_ = res.collectionId.toString();
     });
   }
@@ -767,7 +767,7 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   private updateShoppingData_() {
     this.availableProductInfos_.clear();
-    this.shoppingListApi_.getAllShoppingBookmarkProductInfo().then(res => {
+    this.shoppingServiceApi_.getAllShoppingBookmarkProductInfo().then(res => {
       res.productInfos.forEach(
           product => this.setAvailableProductInfo_(product));
     });

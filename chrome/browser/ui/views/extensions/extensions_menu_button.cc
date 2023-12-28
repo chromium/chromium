@@ -97,5 +97,5 @@ void ExtensionsMenuButton::ButtonPressed() {
       ToolbarActionViewController::InvocationSource::kMenuEntry);
 }
 
-BEGIN_METADATA(ExtensionsMenuButton, views::LabelButton)
+BEGIN_METADATA(ExtensionsMenuButton)
 END_METADATA

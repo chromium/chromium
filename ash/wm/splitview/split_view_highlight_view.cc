@@ -51,7 +51,7 @@ class ClippingObserver : public ui::ImplicitAnimationObserver,
   }
 
  private:
-  const raw_ptr<views::View, ExperimentalAsh> view_;
+  const raw_ptr<views::View> view_;
   std::optional<gfx::Rect> bounds_;
 };
 

@@ -280,11 +280,12 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
         break;
       }
       case FilterOperation::OperationType::kBlur: {
-        float std_deviation = FloatValueForLength(
-            To<BlurFilterOperation>(filter_operation)->StdDeviation(), 0);
-        std_deviation *= shorthand_scale_;
+        const LengthPoint& std_deviation =
+            To<BlurFilterOperation>(filter_operation)->StdDeviationXY();
         effect = MakeGarbageCollected<FEGaussianBlur>(
-            parent_filter, std_deviation, std_deviation);
+            parent_filter,
+            FloatValueForLength(std_deviation.X(), 0) * shorthand_scale_,
+            FloatValueForLength(std_deviation.Y(), 0) * shorthand_scale_);
         break;
       }
       case FilterOperation::OperationType::kDropShadow: {

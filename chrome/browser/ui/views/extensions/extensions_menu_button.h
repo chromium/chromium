@@ -25,8 +25,9 @@ class Button;
 // the extension action.
 class ExtensionsMenuButton : public HoverButton,
                              public ToolbarActionViewDelegateViews {
+  METADATA_HEADER(ExtensionsMenuButton, HoverButton)
+
  public:
-  METADATA_HEADER(ExtensionsMenuButton);
   ExtensionsMenuButton(Browser* browser,
                        ToolbarActionViewController* controller);
   ExtensionsMenuButton(const ExtensionsMenuButton&) = delete;

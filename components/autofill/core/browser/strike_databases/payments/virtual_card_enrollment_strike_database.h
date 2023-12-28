@@ -35,7 +35,7 @@ class VirtualCardEnrollmentStrikeDatabase
   // |instrument_id|.
   bool IsLastOffer(const std::string& instrument_id) const;
 
-  absl::optional<base::TimeDelta> GetRequiredDelaySinceLastStrike()
+  std::optional<base::TimeDelta> GetRequiredDelaySinceLastStrike()
       const override;
 };
 

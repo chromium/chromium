@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/login/hats_unlock_survey_trigger.h"
 
-#include "ash/public/cpp/tablet_mode.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/login/smart_lock/smart_lock_service.h"
 #include "chrome/browser/ash/login/smart_lock/smart_lock_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/session_manager/core/session_manager.h"
+#include "ui/display/screen.h"
 
 namespace ash {
 
@@ -115,7 +115,8 @@ void HatsUnlockSurveyTrigger::ShowSurveyIfSelected(const AccountId& account_id,
 
   base::flat_map<std::string, std::string> product_specific_data = {
       {"authMethod", AuthMethodToString(method)},
-      {"tabletMode", TabletMode::Get()->InTabletMode() ? "true" : "false"},
+      {"tabletMode",
+       display::Screen::GetScreen()->InTabletMode() ? "true" : "false"},
       {"smartLockEnabled", smartlock_enabled ? "true" : "false"},
       {"smartLockGetRemoteStatusUnlock", smartlock_remotestatus}};
 

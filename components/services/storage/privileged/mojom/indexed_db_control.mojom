@@ -65,10 +65,6 @@ interface IndexedDBControl {
   // Forcibly closes all connections to all databases within the bucket.
   ForceClose(storage.mojom.BucketId bucket_id, ForceCloseReason reason) => ();
 
-  // Returns the current number of connections.
-  GetConnectionCount(storage.mojom.BucketId bucket_id) =>
-    (uint64 connection_count);
-
   // Called by chrome://indexeddb-internals to download all of the indexeddb
   // data for a particular bucket.  This creates a zip file at
   // `zip_path` using the temporary directory `temp_path` which needs to be

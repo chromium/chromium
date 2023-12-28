@@ -16,6 +16,7 @@
 #include "base/files/file.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -466,7 +467,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
 
   // MountPoints used to crack FileSystemURLs. The MountPoints are ordered
   // in order they should try to crack a FileSystemURL.
-  std::vector<MountPoints*> url_crackers_;
+  std::vector<raw_ptr<MountPoints, VectorExperimental>> url_crackers_;
 
   // The base path of the storage partition for this context.
   const base::FilePath partition_path_;

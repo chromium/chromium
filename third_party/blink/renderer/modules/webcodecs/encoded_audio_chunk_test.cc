@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_subsample_entry.h"
 #include "third_party/blink/renderer/modules/webcodecs/test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -17,6 +18,7 @@ namespace blink {
 namespace {
 
 TEST(EncodedAudioChunkTest, ConstructorAndAttributes) {
+  test::TaskEnvironment task_environment;
   V8TestingScope v8_scope;
   String type = "key";
   int64_t timestamp = 1000000;
@@ -35,6 +37,7 @@ TEST(EncodedAudioChunkTest, ConstructorAndAttributes) {
 }
 
 TEST(EncodedAudioChunkTest, ConstructorWithDuration) {
+  test::TaskEnvironment task_environment;
   V8TestingScope v8_scope;
   String type = "key";
   int64_t timestamp = 1000000;
@@ -56,6 +59,7 @@ TEST(EncodedAudioChunkTest, ConstructorWithDuration) {
 }
 
 TEST(EncodedAudioChunkTest, TransferBuffer) {
+  test::TaskEnvironment task_environment;
   V8TestingScope v8_scope;
   String type = "key";
   int64_t timestamp = 1000000;
@@ -76,6 +80,7 @@ TEST(EncodedAudioChunkTest, TransferBuffer) {
 }
 
 TEST(EncodedAudioChunkTest, DecryptConfig) {
+  test::TaskEnvironment task_environment;
   V8TestingScope v8_scope;
   auto* init = EncodedAudioChunkInit::Create();
   init->setTimestamp(1);

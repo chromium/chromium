@@ -14,7 +14,6 @@
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_parsing_expression_components.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace re2 {
 class RE2;
@@ -111,7 +110,7 @@ enum MergeMode {
 // child components.
 //
 // In a proper component tree, each AddressComponent has a unique
-// ServerFieldType. Additionally, an AddressComponent may be associated with a
+// FieldType. Additionally, an AddressComponent may be associated with a
 // list of additional field types that allow for retrieving and setting the
 // Component's value in specific formats. For example, NAME_MIDDLE may be the
 // storage type and NAME_MIDDLE_INITIAL is an additional field type.
@@ -144,7 +143,7 @@ class AddressComponent {
   using SubcomponentsList = std::vector<std::unique_ptr<AddressComponent>>;
 
   // Constructor for a compound child node.
-  AddressComponent(ServerFieldType storage_type,
+  AddressComponent(FieldType storage_type,
                    SubcomponentsList subcomponents,
                    unsigned int merge_mode);
 
@@ -173,7 +172,12 @@ class AddressComponent {
   void CopyFrom(const AddressComponent& other);
 
   // Returns the autofill storage type stored in |storage_type_|.
-  ServerFieldType GetStorageType() const;
+  FieldType GetStorageType() const;
+
+  // Returns either `storage_type_` or a fallback type used to replace
+  // `storage_type_` in case its node does not contain information.
+  // TODO(crbug.com/1464568): Add logic for i18n fallback types.
+  FieldType GetFallbackType() const { return storage_type_; }
 
   // Returns the string representation of |storage_type_|.
   std::string GetStorageTypeName() const;
@@ -188,9 +192,9 @@ class AddressComponent {
   // assigned, an empty string is returned.
   const std::u16string& GetValue() const;
 
-  // Returns a canonicalized version of the value or absl::nullopt if
+  // Returns a canonicalized version of the value or std::nullopt if
   // canonicalization is not possible or not implemented.
-  virtual absl::optional<std::u16string> GetCanonicalizedValue() const;
+  virtual std::optional<std::u16string> GetCanonicalizedValue() const;
 
   // Returns true if the value of this AddressComponent is assigned.
   bool IsValueAssigned() const;
@@ -200,14 +204,14 @@ class AddressComponent {
 
   // Wrapper function around
   // SetValueForTypeIfPossible(/*invalidate_child_nodes=*/false);
-  bool SetValueForType(ServerFieldType field_type,
+  bool SetValueForType(FieldType field_type,
                        const std::u16string& value,
                        const VerificationStatus& status);
 
   // Wrapper function around
   // SetValueForTypeIfPossible(/*invalidate_child_nodes=*/true);
   // TODO(1440504): Remove and merge with SetValueForType.
-  bool SetValueForTypeAndResetSubstructure(ServerFieldType field_type,
+  bool SetValueForTypeAndResetSubstructure(FieldType field_type,
                                            const std::u16string& value,
                                            const VerificationStatus& status);
 
@@ -217,23 +221,27 @@ class AddressComponent {
 
   // Convenience method to get the value of |field_type|.
   // Returns an empty string if |field_type| is not supported.
-  std::u16string GetValueForType(ServerFieldType field_type) const;
+  std::u16string GetValueForType(FieldType field_type) const;
 
   // Convenience method to get the value of `field_type` to be used for
   // comparison with `other`. Returns an empty string if `field_type` is not
   // supported.
   std::u16string GetValueForComparisonForType(
-      ServerFieldType field_type,
+      FieldType field_type,
       const AddressComponent& other) const;
 
   // Convenience method to get the verification status of `field_type`.
   // Returns |VerificationStatus::kNoStatus| if `field_type` is not supported.
-  VerificationStatus GetVerificationStatusForType(
-      ServerFieldType field_type) const;
+  VerificationStatus GetVerificationStatusForType(FieldType field_type) const;
+
+  // Convenience method to get the fallback type of a specific node whose
+  // supported type include `field_type`. Returns `field_type` in case it could
+  // not find a `field_type` node.
+  FieldType GetFallbackTypeForType(FieldType field_type) const;
 
   // Returns true if the |value| and |verification_status| were successfully
   // unset for |type|.
-  bool UnsetValueForTypeIfSupported(ServerFieldType field_type);
+  bool UnsetValueForTypeIfSupported(FieldType field_type);
 
   // Parses |value_| to assign values to the subcomponents.
   // The method uses 2 stages:
@@ -263,22 +271,22 @@ class AddressComponent {
 
   // Recursively adds the supported types to the set. Calls
   // |GetAdditionalSupportedFieldTypes()| to add field types.
-  void GetSupportedTypes(ServerFieldTypeSet* supported_types) const;
+  void GetSupportedTypes(FieldTypeSet* supported_types) const;
 
   // Recursively adds only the storable types to the set. No computed type is
   // ever added (e.g. GetAdditionalSupportedFieldTypes).
-  void GetStorableTypes(ServerFieldTypeSet* supported_types) const;
+  void GetStorableTypes(FieldTypeSet* supported_types) const;
 
   // Recursively finds the storable type of `type`:
   // - If `type` is a `storable_type_` of any node, this is simply `type`.
   // - If `type` is an additional supported type of any node, this is the
   //   storable type of that node.
   // - Otherwise, if `type` is not a supported type of any node, return nullopt.
-  std::optional<ServerFieldType> GetStorableTypeOf(ServerFieldType type) const;
+  std::optional<FieldType> GetStorableTypeOf(FieldType type) const;
 
   // Adds the additional supported field types to |supported_types|.
   // The method should DCHECK that the added types are not part of the set yet.
-  virtual const ServerFieldTypeSet GetAdditionalSupportedFieldTypes() const;
+  virtual const FieldTypeSet GetAdditionalSupportedFieldTypes() const;
 
   // Unassigns all nodes with parsed or formatted values.
   void UnsetParsedAndFormattedValuesInEntireTree();
@@ -322,8 +330,7 @@ class AddressComponent {
 
   // Return if the value associated with |field_type| is valid.
   // If |wipe_if_not|, the value is unset if invalid.
-  bool IsValueForTypeValid(ServerFieldType field_type,
-                           bool wipe_if_not = false);
+  bool IsValueForTypeValid(FieldType field_type, bool wipe_if_not = false);
 
   // While processing two structured addresses, if only one of them has their
   // country set, the other should assume the non-empty one while merging. This
@@ -363,7 +370,7 @@ class AddressComponent {
 
   // Returns a vector containing the |storage_types_| of all direct
   // subcomponents.
-  std::vector<ServerFieldType> GetSubcomponentTypesForTesting() const {
+  std::vector<FieldType> GetSubcomponentTypesForTesting() const {
     return GetSubcomponentTypes();
   }
 
@@ -376,7 +383,7 @@ class AddressComponent {
     return GetValueForComparison(other);
   }
 
-  AddressComponent* GetNodeForTypeForTesting(ServerFieldType field_type) {
+  AddressComponent* GetNodeForTypeForTesting(FieldType field_type) {
     return GetNodeForType(field_type);
   }
 #endif
@@ -387,11 +394,11 @@ class AddressComponent {
   virtual int GetStructureVerificationScore() const;
 
   // Returns whether `field_type` is a supported type for the current node.
-  bool IsSupportedType(ServerFieldType field_type) const;
+  bool IsSupportedType(FieldType field_type) const;
 
   // Returns a vector containing the |storage_types_| of all direct
   // subcomponents.
-  std::vector<ServerFieldType> GetSubcomponentTypes() const;
+  std::vector<FieldType> GetSubcomponentTypes() const;
 
   // Setter for the component's parent.
   void SetParent(AddressComponent* parent) { parent_ = parent; }
@@ -412,7 +419,7 @@ class AddressComponent {
   // This method is used to set the value given by a type different than the
   // storage type. It must implement the conversion logic specific to each
   // type.
-  virtual void SetValueForOtherSupportedType(ServerFieldType field_type,
+  virtual void SetValueForOtherSupportedType(FieldType field_type,
                                              const std::u16string& value,
                                              const VerificationStatus& status);
 
@@ -420,7 +427,7 @@ class AddressComponent {
   // different from the storage type. It must implement the conversion logic
   // specific to each type.
   virtual std::u16string GetValueForOtherSupportedType(
-      ServerFieldType field_type) const;
+      FieldType field_type) const;
 
   // Clears all parsed and formatted values.
   void ClearAllParsedAndFormattedValues();
@@ -497,15 +504,15 @@ class AddressComponent {
 
   // Returns the node in the tree that supports `field_type`. This node, if it
   // exists, is unique by definition. Returns nullptr if no such node exists.
-  AddressComponent* GetNodeForType(ServerFieldType field_type);
+  AddressComponent* GetNodeForType(FieldType field_type);
 
   // const version of GetNodeForType.
-  const AddressComponent* GetNodeForType(ServerFieldType field_type) const;
+  const AddressComponent* GetNodeForType(FieldType field_type) const;
 
   // Recursively adds the supported types to the set. If `!storable_only`, calls
   // |GetAdditionalSupportedFieldTypes()| to add computed field types.
   virtual void GetTypes(bool storable_only,
-                        ServerFieldTypeSet* supported_types) const;
+                        FieldTypeSet* supported_types) const;
 
  private:
   // Unsets the node and all of its children.
@@ -579,14 +586,14 @@ class AddressComponent {
   bool IsValueCompatibleWithAncestors(const std::u16string& value) const;
 
   // The unstructured value of this component.
-  absl::optional<std::u16string> value_;
+  std::optional<std::u16string> value_;
 
   // The verification status of |value_| indicates the certainty of the value
   // to be correct.
   VerificationStatus value_verification_status_;
 
   // The storable Autofill type of the component.
-  const ServerFieldType storage_type_;
+  const FieldType storage_type_;
 
   // A vector of children of the component.
   SubcomponentsList subcomponents_;
@@ -595,7 +602,7 @@ class AddressComponent {
   // meaning that it was converted to lower case and diacritics have been
   // removed. |value_| is tokenized by splitting the string by white spaces and
   // commas. It is calculated when |value_| is set.
-  absl::optional<std::vector<AddressToken>> sorted_normalized_tokens_;
+  std::optional<std::vector<AddressToken>> sorted_normalized_tokens_;
 
   // A pointer to the parent node. It is set to nullptr if the node is the root
   // node of the AddressComponent tree.

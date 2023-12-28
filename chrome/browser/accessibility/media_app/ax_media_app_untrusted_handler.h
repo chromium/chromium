@@ -21,7 +21,6 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_mode_observer.h"
 #include "ui/accessibility/platform/ax_platform.h"
-#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -63,9 +62,9 @@ class AXMediaAppUntrustedHandler : private ui::AXActionHandlerBase,
 
   bool IsOcrServiceEnabled() const;
   bool IsAccessibilityEnabled() const;
-  void DocumentUpdated(const std::vector<gfx::Insets>& page_locations,
+  void DocumentUpdated(const std::vector<gfx::RectF>& page_locations,
                        const std::vector<uint64_t>& dirty_pages);
-  void ViewportUpdated(const gfx::Insets& viewport_box, float scaleFactor);
+  void ViewportUpdated(const gfx::RectF& viewport_box, float scaleFactor);
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   const std::vector<std::unique_ptr<ui::AXTreeManager>>& GetPagesForTesting() {
@@ -102,8 +101,7 @@ class AXMediaAppUntrustedHandler : private ui::AXActionHandlerBase,
 
  private:
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  void UpdatePageLocation(uint64_t page_index,
-                          const gfx::Insets& page_location);
+  void UpdatePageLocation(uint64_t page_index, const gfx::RectF& page_location);
   void OcrNextDirtyPageIfAny();
   void OnPageOcred(uint64_t dirty_page_index,
                    const ui::AXTreeUpdate& tree_update);
@@ -112,7 +110,7 @@ class AXMediaAppUntrustedHandler : private ui::AXActionHandlerBase,
   base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
       ax_mode_observation_{this};
 
-  std::vector<gfx::Insets> page_locations_;
+  std::vector<gfx::RectF> page_locations_;
   // This `BrowserContext` will always outlive the WebUI, so this is safe.
   raw_ref<content::BrowserContext> browser_context_;
   mojo::Remote<media_app_ui::mojom::OcrUntrustedPage> media_app_page_;

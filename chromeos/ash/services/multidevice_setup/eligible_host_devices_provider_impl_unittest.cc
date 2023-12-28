@@ -173,6 +173,20 @@ TEST_P(MultiDeviceSetupEligibleHostDevicesProviderImplTest, NoEligibleDevices) {
   EXPECT_TRUE(provider()->GetEligibleHostDevices().empty());
 }
 
+// Regression test for b/207089877
+TEST_P(MultiDeviceSetupEligibleHostDevicesProviderImplTest,
+       NoEligibleDevices_NoDeviceId) {
+  GetMutableRemoteDevice(test_devices()[0])->instance_id = std::string();
+  GetMutableRemoteDevice(test_devices()[1])->instance_id = std::string();
+
+  multidevice::RemoteDeviceRefList devices{test_devices()[0],
+                                           test_devices()[1]};
+  fake_device_sync_client()->set_synced_devices(devices);
+  fake_device_sync_client()->NotifyNewDevicesSynced();
+
+  EXPECT_TRUE(provider()->GetEligibleHostDevices().empty());
+}
+
 TEST_P(MultiDeviceSetupEligibleHostDevicesProviderImplTest, Sorting) {
   SetBitsOnTestDevices();
 

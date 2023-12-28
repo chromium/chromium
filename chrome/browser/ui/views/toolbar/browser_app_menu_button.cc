@@ -284,5 +284,5 @@ void BrowserAppMenuButton::ButtonPressed(const ui::Event& event) {
                               : views::MenuRunner::NO_FLAGS);
 }
 
-BEGIN_METADATA(BrowserAppMenuButton, AppMenuButton)
+BEGIN_METADATA(BrowserAppMenuButton)
 END_METADATA

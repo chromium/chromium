@@ -17,8 +17,9 @@
 // View displaying a preview, icon and title for the tab being shared, or a
 // throbber while the dialog is not yet activated.
 class ShareThisTabSourceView : public views::View {
+  METADATA_HEADER(ShareThisTabSourceView, views::View)
+
  public:
-  METADATA_HEADER(ShareThisTabSourceView);
   explicit ShareThisTabSourceView(
       base::WeakPtr<content::WebContents> web_contents);
   ShareThisTabSourceView(const ShareThisTabSourceView&) = delete;

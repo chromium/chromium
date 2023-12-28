@@ -3,7 +3,12 @@
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-import { ReactiveElement } from '../reactive-element.js';
+import type { ReactiveElement } from '../reactive-element.js';
+import type { Interface } from './base.js';
+export type EventOptionsDecorator = {
+    (proto: Interface<ReactiveElement>, name: PropertyKey): void | any;
+    <C, V extends (this: C, ...args: any) => any>(value: V, _context: ClassMethodDecoratorContext<C, V>): void;
+};
 /**
  * Adds event listener options to a method used as an event listener in a
  * lit-html template.
@@ -34,5 +39,5 @@ import { ReactiveElement } from '../reactive-element.js';
  * ```
  * @category Decorator
  */
-export declare function eventOptions(options: AddEventListenerOptions): (protoOrDescriptor: import("./base.js").ClassElement | import("./base.js").Interface<ReactiveElement>, name?: PropertyKey | undefined) => any;
+export declare function eventOptions(options: AddEventListenerOptions): EventOptionsDecorator;
 //# sourceMappingURL=event-options.d.ts.map

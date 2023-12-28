@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/svg/svg_path_string_builder.h"
 #include "third_party/blink/renderer/core/svg/svg_path_string_source.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -39,6 +40,7 @@ bool ParsePath(const char* input, String& output) {
   }
 
 TEST(SVGPathParserTest, Simple) {
+  test::TaskEnvironment task_environment;
   VALID("M1,2", "M 1 2");
   VALID("m1,2", "m 1 2");
   VALID("M100,200 m3,4", "M 100 200 m 3 4");
@@ -173,6 +175,7 @@ SVGParsingError ParsePathWithError(const char* input) {
   }
 
 TEST(SVGPathParserTest, ErrorReporting) {
+  test::TaskEnvironment task_environment;
   // Missing initial moveto.
   EXPECT_ERROR(" 10 10", 1u, SVGParseStatus::kExpectedMoveToCommand);
   EXPECT_ERROR("L 10 10", 0u, SVGParseStatus::kExpectedMoveToCommand);

@@ -124,7 +124,8 @@ public class TabListCoordinator
      * @param itemType The item type to put in the list of tabs.
      * @param selectionDelegateProvider Provider to provide selected Tabs for a selectable tab list.
      *     It's NULL when selection is not possible.
-     * @param priceWelcomeMessageController A controller to show PriceWelcomeMessage.
+     * @param priceWelcomeMessageControllerSupplier A supplier for a controller to show
+     *     PriceWelcomeMessage.
      * @param parentView {@link ViewGroup} The root view of the UI.
      * @param attachToParent Whether the UI should attach to root view.
      * @param componentName A unique string uses to identify different components for UMA recording.
@@ -150,8 +151,7 @@ public class TabListCoordinator
             @Nullable TabListMediator.TabGridDialogHandler dialogHandler,
             @UiType int itemType,
             @Nullable TabListMediator.SelectionDelegateProvider selectionDelegateProvider,
-            @Nullable
-                    TabSwitcherMediator.PriceWelcomeMessageController priceWelcomeMessageController,
+            @NonNull Supplier<PriceWelcomeMessageController> priceWelcomeMessageControllerSupplier,
             @NonNull ViewGroup parentView,
             boolean attachToParent,
             String componentName,
@@ -170,7 +170,7 @@ public class TabListCoordinator
                 dialogHandler,
                 itemType,
                 selectionDelegateProvider,
-                priceWelcomeMessageController,
+                priceWelcomeMessageControllerSupplier,
                 parentView,
                 attachToParent,
                 componentName,
@@ -196,8 +196,7 @@ public class TabListCoordinator
             @Nullable TabListMediator.TabGridDialogHandler dialogHandler,
             @UiType int itemType,
             @Nullable TabListMediator.SelectionDelegateProvider selectionDelegateProvider,
-            @Nullable
-                    TabSwitcherMediator.PriceWelcomeMessageController priceWelcomeMessageController,
+            @NonNull Supplier<PriceWelcomeMessageController> priceWelcomeMessageControllerSupplier,
             @NonNull ViewGroup parentView,
             boolean attachToParent,
             String componentName,
@@ -352,7 +351,7 @@ public class TabListCoordinator
                         selectionDelegateProvider,
                         gridCardOnClickListenerProvider,
                         dialogHandler,
-                        priceWelcomeMessageController,
+                        priceWelcomeMessageControllerSupplier,
                         componentName,
                         itemType);
 

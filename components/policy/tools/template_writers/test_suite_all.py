@@ -20,8 +20,6 @@ class TestSuiteAll(unittest.TestSuite):
     import writers.adml_writer_unittest
     import writers.admx_writer_unittest
     import writers.android_policy_writer_unittest
-    import writers.chromeos_adml_writer_unittest
-    import writers.chromeos_admx_writer_unittest
     import writers.doc_writer_unittest
     import writers.google_adml_writer_unittest
     import writers.google_admx_writer_unittest
@@ -40,8 +38,6 @@ class TestSuiteAll(unittest.TestSuite):
         writers.adml_writer_unittest.AdmlWriterUnittest,
         writers.admx_writer_unittest.AdmxWriterUnittest,
         writers.android_policy_writer_unittest.AndroidPolicyWriterUnittest,
-        writers.chromeos_adml_writer_unittest.ChromeOsAdmlWriterUnittest,
-        writers.chromeos_admx_writer_unittest.ChromeOsAdmxWriterUnittest,
         writers.doc_writer_unittest.DocWriterUnittest,
         writers.google_adml_writer_unittest.GoogleAdmlWriterUnittest,
         writers.google_admx_writer_unittest.GoogleAdmxWriterUnittest,

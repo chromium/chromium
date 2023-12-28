@@ -26,17 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="ActiveDirectoryDomainJoinType">
-  <summary>
-    This list corresponds to the ways device could be joined to the Active
-    Directory domain.
-  </summary>
-  <int value="0" label="Joined without streamline configuration"/>
-  <int value="1"
-      label="Had streamline configuration set but did not unlock it"/>
-  <int value="2" label="Joined using streamline configuration"/>
-</enum>
-
 <enum name="BooleanWarned">
   <int value="0" label="Not Warned"/>
   <int value="1" label="Warned"/>
@@ -472,6 +461,14 @@ chromium-metrics-reviews@google.com.
   <int value="909" label="SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK"/>
 </enum>
 
+<enum name="EnterpriseDlpFileAccessDefaultAction">
+  <summary>Type of action triggering a default file access behaviour.</summary>
+  <int value="0" label="Creating file access in MyFiles"/>
+  <int value="1" label="Not creating file access in MyFiles"/>
+  <int value="2" label="Creating file access outside of MyFiles"/>
+  <int value="3" label="Not creating file access outside of MyFiles"/>
+</enum>
+
 <enum name="EnterpriseDlpPolicyCrOSAdaptorError">
   <summary>
     Type of errors triggered by the adaptor usage in the ChromeOS Data Leak
@@ -544,6 +541,15 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="kMove"/>
   <int value="6" label="kOpen"/>
   <int value="7" label="kShare"/>
+</enum>
+
+<enum name="EnterpriseDlpPolicyLevel">
+  <summary>Restriction level enforced by Data Leak Prevention policy.</summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Report"/>
+  <int value="2" label="Warn"/>
+  <int value="3" label="Block"/>
+  <int value="4" label="Allow"/>
 </enum>
 
 <enum name="EnterpriseDlpPolicyRestriction">
@@ -1901,7 +1907,6 @@ chromium-metrics-reviews@google.com.
   <int value="1095" label="InsecureHashesInTLSHandshakesEnabled"/>
   <int value="1096" label="DeviceLoginScreenGeolocationAccessLevel"/>
   <int value="1097" label="DeviceReportNetworkEvents"/>
-  <int value="1098" label="SafeBrowsingExtensionProtectionAllowed"/>
   <int value="1099" label="ShowDisplaySizeScreenEnabled"/>
   <int value="1100" label="EssentialSearchEnabled"/>
   <int value="1101" label="LegacyTechReportAllowlist"/>
@@ -1993,6 +1998,10 @@ chromium-metrics-reviews@google.com.
   <int value="1187" label="ComposeAllowed"/>
   <int value="1188" label="WallpaperSearchAllowed"/>
   <int value="1189" label="ListenToThisPageEnabled"/>
+  <int value="1190" label="AlwaysOnVpnPreConnectUrlAllowlist"/>
+  <int value="1191" label="CACertificates"/>
+  <int value="1192" label="CADistrustedCertificates"/>
+  <int value="1193" label="CAHintCertificates"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

@@ -28,7 +28,7 @@ enum class AppTypeName {
   kCrostini = 3,
   kChromeApp = 4,
   kWeb = 5,
-  kMacOs = 6,
+  // kMacOs = 6,  // Removed.
   kPluginVm = 7,
   kStandaloneBrowser = 8,
   kRemote = 9,
@@ -61,7 +61,7 @@ enum class AppTypeNameV2 {
   kChromeAppTab = 5,
   kWebWindow = 6,
   kWebTab = 7,
-  kMacOs = 8,
+  // kMacOs = 8, // Removed.
   kPluginVm = 9,
   kStandaloneBrowser = 10,
   kRemote = 11,
@@ -94,7 +94,6 @@ constexpr char kBuiltInHistogramName[] = "BuiltIn";
 constexpr char kCrostiniHistogramName[] = "Crostini";
 constexpr char kChromeAppHistogramName[] = "ChromeApp";
 constexpr char kWebAppHistogramName[] = "WebApp";
-constexpr char kMacOsHistogramName[] = "MacOs";
 constexpr char kPluginVmHistogramName[] = "PluginVm";
 constexpr char kStandaloneBrowserHistogramName[] = "StandaloneBrowser";
 constexpr char kRemoteHistogramName[] = "RemoteApp";

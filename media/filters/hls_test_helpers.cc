@@ -20,9 +20,10 @@ MockHlsDataSourceProvider::~MockHlsDataSourceProvider() = default;
 // static
 std::unique_ptr<HlsDataSourceStream>
 StringHlsDataSourceStreamFactory::CreateStream(std::string content) {
+  HlsDataSourceProvider::SegmentQueue segments;
   auto stream = std::make_unique<HlsDataSourceStream>(
-      HlsDataSourceStream::StreamId::FromUnsafeValue(42), base::DoNothing(),
-      absl::nullopt);
+      HlsDataSourceStream::StreamId::FromUnsafeValue(42), std::move(segments),
+      base::DoNothing());
   auto* buffer = stream->LockStreamForWriting(content.length());
   memcpy(buffer, content.c_str(), content.length());
   stream->UnlockStreamPostWrite(content.length(), true);
@@ -36,9 +37,10 @@ FileHlsDataSourceStreamFactory::CreateStream(std::string filename) {
   int64_t file_size = 0;
   CHECK(base::GetFileSize(file_path, &file_size))
       << "Failed to get file size for '" << filename << "'";
+  HlsDataSourceProvider::SegmentQueue segments;
   auto stream = std::make_unique<HlsDataSourceStream>(
-      HlsDataSourceStream::StreamId::FromUnsafeValue(42), base::DoNothing(),
-      absl::nullopt);
+      HlsDataSourceStream::StreamId::FromUnsafeValue(42), std::move(segments),
+      base::DoNothing());
   auto* buffer = stream->LockStreamForWriting(file_size);
   CHECK_EQ(file_size, base::ReadFile(file_path, reinterpret_cast<char*>(buffer),
                                      file_size));

@@ -42,7 +42,7 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
   if (buttons & ConfirmInfoBarDelegate::BUTTON_OK) {
     ok_button_ = create_button(ConfirmInfoBarDelegate::BUTTON_OK,
                                &ConfirmInfoBar::OkButtonPressed);
-    ok_button_->SetProminent(true);
+    ok_button_->SetStyle(ui::ButtonStyle::kProminent);
     ok_button_->SetImageModel(
         views::Button::STATE_NORMAL,
         delegate_ptr->GetButtonImage(ConfirmInfoBarDelegate::BUTTON_OK));
@@ -59,7 +59,7 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
       cancel_button_->SetStyle(ui::ButtonStyle::kTonal);
     }
     if (buttons == ConfirmInfoBarDelegate::BUTTON_CANCEL) {
-      cancel_button_->SetProminent(true);
+      cancel_button_->SetStyle(ui::ButtonStyle::kProminent);
     }
     cancel_button_->SetImageModel(
         views::Button::STATE_NORMAL,
@@ -77,7 +77,7 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
       extra_button_->SetStyle(ui::ButtonStyle::kTonal);
     }
     if (buttons == ConfirmInfoBarDelegate::BUTTON_EXTRA) {
-      extra_button_->SetProminent(true);
+      extra_button_->SetStyle(ui::ButtonStyle::kProminent);
     }
     extra_button_->SetImageModel(
         views::Button::STATE_NORMAL,
@@ -111,8 +111,8 @@ void ConfirmInfoBar::Layout() {
 
   int x = GetStartX();
   Views views;
-  views.push_back(label_);
-  views.push_back(link_);
+  views.push_back(label_.get());
+  views.push_back(link_.get());
   AssignWidths(&views, std::max(0, GetEndX() - x - NonLabelWidth()));
 
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();

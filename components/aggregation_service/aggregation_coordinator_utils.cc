@@ -5,10 +5,10 @@
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/containers/enum_set.h"
-#include "base/strings/string_piece.h"
 #include "components/aggregation_service/features.h"
 #include "components/attribution_reporting/is_origin_suitable.h"
 #include "url/gurl.h"
@@ -29,8 +29,8 @@ enum class AggregationCoordinator {
 };
 
 url::Origin GetAggregationCoordinatorOriginFromString(
-    base::StringPiece origin_str,
-    base::StringPiece default_origin_str) {
+    std::string_view origin_str,
+    std::string_view default_origin_str) {
   // Uses default origin in case of erroneous Finch params.
   auto origin = url::Origin::Create(GURL(origin_str));
   if (attribution_reporting::IsOriginSuitable(origin)) {

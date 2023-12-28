@@ -36,15 +36,6 @@ import java.util.Set;
 
 /** Android implementation of the authenticator.mojom interface. */
 public final class AuthenticatorImpl implements Authenticator {
-    /**
-     * Interface for code that will show the user a confirmation before creating a credential.
-     *
-     * This is intended for use in Incognito mode.
-     **/
-    public interface CreateConfirmationUiDelegate {
-        boolean show(Runnable positiveCallback, Runnable negativeCallback);
-    }
-
     private static final String GMSCORE_PACKAGE_NAME = "com.google.android.gms";
     public static final int GMSCORE_MIN_VERSION = 16890000;
     public static final int GMSCORE_MIN_VERSION_GET_MATCHING_CRED_IDS = 223300000;
@@ -73,12 +64,15 @@ public final class AuthenticatorImpl implements Authenticator {
 
     private MakeCredential_Response mMakeCredentialCallback;
     private GetAssertion_Response mGetAssertionCallback;
-    // A queue is used to store pending IsUserVerifyingPlatformAuthenticatorAvailable request
-    // callbacks when there are multiple requests pending on the result from GMSCore. Noted that
-    // the callbacks may not be invoked in the same order as the pending requests, which in this
-    // situation does not matter because all pending requests will return the same value.
-    private Queue<org.chromium.mojo.bindings.Callbacks.Callback1<Boolean>>
+    // A queue for pending isUserVerifyingPlatformAuthenticatorAvailable request callbacks when
+    // there are multiple requests pending on the result from GMSCore. Note that the callbacks may
+    // not be invoked in the same order the pending requests were enqueued, but this is OK because
+    // all pending requests end up returning the same value.
+    private Queue<IsUserVerifyingPlatformAuthenticatorAvailable_Response>
             mIsUserVerifyingPlatformAuthenticatorAvailableCallbackQueue = new LinkedList<>();
+    // Similar to the above, but for pending isConditionalMediationAvailable request callbacks.
+    private Queue<IsConditionalMediationAvailable_Response>
+            mIsConditionalMediationAvailableCallbackQueue = new LinkedList<>();
     private Fido2CredentialRequest mPendingFido2CredentialRequest;
     private Set<Fido2CredentialRequest> mUnclosedFido2CredentialRequests = new HashSet<>();
 
@@ -141,7 +135,7 @@ public final class AuthenticatorImpl implements Authenticator {
 
     /**
      * @param payment The payment information to be added to the "clientDataJson". Should be used
-     * only if the user has confirmed the payment information that was displayed to the user.
+     *     only if the user has confirmed the payment information that was displayed to the user.
      */
     public void setPaymentOptions(PaymentOptions payment) {
         mPayment = payment;
@@ -252,7 +246,7 @@ public final class AuthenticatorImpl implements Authenticator {
      * given input credential IDs. Optionally, may also filter the credentials to only return those
      * that are marked as third-party payment enabled.
      *
-     * Because this functionality does not participate in the normal WebAuthn UI flow and is
+     * <p>Because this functionality does not participate in the normal WebAuthn UI flow and is
      * idempotent at the Fido2 layer, it does not adhere to the 'one call at a time' logic used for
      * the create/get methods.
      */
@@ -288,12 +282,10 @@ public final class AuthenticatorImpl implements Authenticator {
         // If the gmscore and chromium versions are out of sync for some reason, this method will
         // return true but chrome will ignore conditional requests. Android surfaces only platform
         // credentials on conditional requests, use IsUVPAA as a proxy for availability.
-        mIsUserVerifyingPlatformAuthenticatorAvailableCallbackQueue.add(callback);
+        mIsConditionalMediationAvailableCallbackQueue.add(callback);
         getFido2CredentialRequest()
                 .handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(
-                        mContext,
-                        isUvpaa ->
-                                onIsUserVerifyingPlatformAuthenticatorAvailableResponse(isUvpaa));
+                        mContext, isUvpaa -> onIsConditionalMediationAvailableResponse(isUvpaa));
     }
 
     @Override
@@ -332,6 +324,11 @@ public final class AuthenticatorImpl implements Authenticator {
     public void onIsUserVerifyingPlatformAuthenticatorAvailableResponse(boolean isUVPAA) {
         assert !mIsUserVerifyingPlatformAuthenticatorAvailableCallbackQueue.isEmpty();
         mIsUserVerifyingPlatformAuthenticatorAvailableCallbackQueue.poll().call(isUVPAA);
+    }
+
+    public void onIsConditionalMediationAvailableResponse(boolean isUVPAA) {
+        assert !mIsConditionalMediationAvailableCallbackQueue.isEmpty();
+        mIsConditionalMediationAvailableCallbackQueue.poll().call(isUVPAA);
     }
 
     public void onError(Integer status) {

@@ -23,7 +23,6 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
-#include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -41,6 +40,11 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/user_manager/user_names.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "base/base_paths_win.h"
+#include "base/test/scoped_path_override.h"
 #endif
 
 namespace web_app {
@@ -450,6 +454,13 @@ class WebAppPolicyManagerGuestModeTest : public InProcessBrowserTest {
     command_line->AppendSwitch(switches::kIncognito);
 #endif
   }
+#if BUILDFLAG(IS_WIN)
+  // This is needed to stop WebAppPolicyManagerGuestModeTests creating a
+  // shortcut in the Windows start menu. The override needs to last until the
+  // test is destroyed, because Windows shortcut tasks which create the shortcut
+  // can run after the test body returns.
+  base::ScopedPathOverride override_start_dir{base::DIR_START_MENU};
+#endif  // BUILDFLAG(IS_WIN
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerGuestModeTest,

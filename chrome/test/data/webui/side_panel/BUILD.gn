@@ -15,7 +15,7 @@ build_webui_tests("build") {
     "bookmarks/test_bookmarks_api_proxy.ts",
     "bookmarks/test_power_bookmarks_delegate.ts",
     "bookmarks/commerce/shopping_list_test.ts",
-    "bookmarks/commerce/test_shopping_list_api_proxy.ts",
+    "bookmarks/commerce/test_shopping_service_api_proxy.ts",
     "commerce/shopping_insights_app_test.ts",
     "commerce/price_tracking_section_test.ts",
     "performance_controls/app_test.ts",

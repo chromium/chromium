@@ -607,6 +607,8 @@ class ImageCaptureDeviceState {
 
     absl::optional<BoolSet> torch_intersection_;
     absl::optional<BoolSet> background_blur_intersection_;
+    absl::optional<BoolSet> eye_gaze_correction_intersection_;
+    absl::optional<BoolSet> face_framing_intersection_;
   };
 
   explicit ImageCaptureDeviceState(const DeviceInfo& device) {}
@@ -621,7 +623,14 @@ class ImageCaptureDeviceState {
                                failed_constraint_name) &&
           TryToApplyConstraint(
               constraint_set.background_blur, background_blur_set_,
-              result->background_blur_intersection_, failed_constraint_name))) {
+              result->background_blur_intersection_, failed_constraint_name) &&
+          TryToApplyConstraint(constraint_set.eye_gaze_correction,
+                               eye_gaze_correction_set_,
+                               result->eye_gaze_correction_intersection_,
+                               failed_constraint_name) &&
+          TryToApplyConstraint(constraint_set.face_framing, face_framing_set_,
+                               result->face_framing_intersection_,
+                               failed_constraint_name))) {
       result.reset();
     }
 
@@ -635,13 +644,22 @@ class ImageCaptureDeviceState {
     if (result.background_blur_intersection_.has_value()) {
       background_blur_set_ = *result.background_blur_intersection_;
     }
+    if (result.eye_gaze_correction_intersection_.has_value()) {
+      eye_gaze_correction_set_ = *result.eye_gaze_correction_intersection_;
+    }
+    if (result.face_framing_intersection_.has_value()) {
+      face_framing_set_ = *result.face_framing_intersection_;
+    }
   }
 
   double Fitness(
       const MediaTrackConstraintSetPlatform& basic_constraint_set) const {
     return BoolSetFitness(basic_constraint_set.torch, torch_set_) +
            BoolSetFitness(basic_constraint_set.background_blur,
-                          background_blur_set_);
+                          background_blur_set_) +
+           BoolSetFitness(basic_constraint_set.eye_gaze_correction,
+                          eye_gaze_correction_set_) +
+           BoolSetFitness(basic_constraint_set.face_framing, face_framing_set_);
   }
 
   absl::optional<ImageCaptureDeviceSettings> SelectSettings(
@@ -656,9 +674,14 @@ class ImageCaptureDeviceState {
     settings->torch = SelectSetting(basic_constraint_set.torch, torch_set_);
     settings->background_blur = SelectSetting(
         basic_constraint_set.background_blur, background_blur_set_);
+    settings->eye_gaze_correction = SelectSetting(
+        basic_constraint_set.eye_gaze_correction, eye_gaze_correction_set_);
+    settings->face_framing =
+        SelectSetting(basic_constraint_set.face_framing, face_framing_set_);
 
     if (!(settings->pan || settings->tilt || settings->zoom ||
-          settings->torch || settings->background_blur)) {
+          settings->torch || settings->background_blur ||
+          settings->eye_gaze_correction || settings->face_framing)) {
       settings.reset();
     }
 
@@ -700,6 +723,8 @@ class ImageCaptureDeviceState {
 
   BoolSet torch_set_;
   BoolSet background_blur_set_;
+  BoolSet eye_gaze_correction_set_;
+  BoolSet face_framing_set_;
 };
 
 // Returns true if |constraint_set| can be satisfied by |device|. Otherwise,

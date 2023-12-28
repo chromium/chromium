@@ -256,6 +256,11 @@ void ContentSettingsPref::ClearAllContentSettingsRules() {
                        ContentSettingsPattern::Wildcard(), content_type_);
 }
 
+void ContentSettingsPref::OnShutdown() {
+  prefs_ = nullptr;
+  registrar_ = nullptr;
+}
+
 size_t ContentSettingsPref::GetNumExceptions() {
   base::AutoLock auto_lock(value_map_.GetLock());
   return value_map_.size();

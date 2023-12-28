@@ -36,8 +36,9 @@ class TableModel;
 }
 
 class DeprecatedAppsDialogView : public views::DialogDelegateView {
+  METADATA_HEADER(DeprecatedAppsDialogView, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(DeprecatedAppsDialogView);
   DeprecatedAppsDialogView(const DeprecatedAppsDialogView&) = delete;
   DeprecatedAppsDialogView& operator=(const DeprecatedAppsDialogView&) = delete;
   ~DeprecatedAppsDialogView() override;

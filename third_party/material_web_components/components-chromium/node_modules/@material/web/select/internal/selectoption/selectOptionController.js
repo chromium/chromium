@@ -3,7 +3,7 @@
  * Copyright 2023 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { MenuItemController } from '../../../menu/internal/controllers/menuItemController.js';
+import { MenuItemController, } from '../../../menu/internal/controllers/menuItemController.js';
 /**
  * Creates an event fired by a SelectOption to request selection from md-select.
  * Typically fired after `selected` changes from `false` to `true`.
@@ -37,7 +37,9 @@ export class SelectOptionController {
     }
     /**
      * The text that is selectable via typeahead. If not set, defaults to the
-     * innerText of the item slotted into the `"headline"` slot.
+     * innerText of the item slotted into the `"headline"` slot, and if there are
+     * no slotted elements into headline, then it checks the _default_ slot, and
+     * then the `"supporting-text"` slot if nothing is in _default_.
      */
     get typeaheadText() {
         return this.menuItemController.typeaheadText;
@@ -47,20 +49,16 @@ export class SelectOptionController {
     }
     /**
      * The text that is displayed in the select field when selected. If not set,
-     * defaults to the textContent of the item slotted into the `"headline"` slot.
+     * defaults to the textContent of the item slotted into the `"headline"` slot,
+     * and if there are no slotted elements into headline, then it checks the
+     * _default_ slot, and then the `"supporting-text"` slot if nothing is in
+     * _default_.
      */
     get displayText() {
         if (this.internalDisplayText !== null) {
             return this.internalDisplayText;
         }
-        const headlineElements = this.getHeadlineElements();
-        const textParts = [];
-        headlineElements.forEach((headlineElement) => {
-            if (headlineElement.textContent && headlineElement.textContent.trim()) {
-                textParts.push(headlineElement.textContent.trim());
-            }
-        });
-        return textParts.join(' ');
+        return this.menuItemController.typeaheadText;
     }
     setDisplayText(text) {
         this.internalDisplayText = text;
@@ -89,7 +87,6 @@ export class SelectOptionController {
             this.menuItemController.onKeydown(e);
         };
         this.menuItemController = new MenuItemController(host, config);
-        this.getHeadlineElements = config.getHeadlineElements;
         host.addController(this);
     }
     hostUpdate() {

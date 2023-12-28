@@ -18,6 +18,7 @@ import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
 
 import {assert} from '//resources/ash/common/assert.js';
+import {sendWithPromise} from '//resources/ash/common/cr.m.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -298,6 +299,11 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
     this.authenticator_.missingGaiaInfoCallback = () => {
       this.showError(loadTimeData.getString('fatalEnrollmentError'), false);
     };
+
+    this.authenticator_.addEventListener('getDeviceId', (e) => {
+      sendWithPromise('getDeviceIdForEnrollment')
+          .then(deviceId => this.authenticator_.getDeviceIdResponse(deviceId));
+    });
   }
 
   /**

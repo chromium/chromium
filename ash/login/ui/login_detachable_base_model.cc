@@ -55,7 +55,7 @@ class LoginDetachableBaseModelImpl : public LoginDetachableBaseModel,
   void OnDetachableBaseRequiresUpdateChanged(bool requires_update) override {}
 
  private:
-  raw_ptr<DetachableBaseHandler, LeakedDanglingUntriaged | ExperimentalAsh>
+  raw_ptr<DetachableBaseHandler, LeakedDanglingUntriaged>
       detachable_base_handler_;
   base::ScopedObservation<DetachableBaseHandler, DetachableBaseObserver>
       detachable_base_observation_{this};

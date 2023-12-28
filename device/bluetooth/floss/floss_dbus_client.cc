@@ -479,7 +479,7 @@ void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
 template <>
 void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
                                      const std::vector<uint8_t>& data) {
-  writer->AppendArrayOfBytes(data.data(), data.size());
+  writer->AppendArrayOfBytes(data);
 }
 
 template <>

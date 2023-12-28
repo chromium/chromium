@@ -1042,7 +1042,7 @@
         # run on ash, which means every test starts and shuts down ash, which most likely explains why it takes longer than on other platforms.
         # crbug.com/865455
         'swarming': {
-          'shards': 64,
+          'shards': 70,
         },
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.msan.browser_tests.oobe_negative.filter',
@@ -1382,6 +1382,9 @@
         'swarming': {
           'shards': 3,
         },
+      },
+      'linux-lacros-tester-rel': {
+        'ci_only': True, # https://crbug.com/1509554
       },
     },
   },
@@ -3248,6 +3251,13 @@
     },
   },
   'interactive_ui_tests_no_field_trial': {
+    'modifications': {
+      'Win10 Tests x64': {
+        'swarming': {
+          'shards': 4,
+        },
+      },
+    },
     'remove_from': [
       'win10-rel-no-external-ip',
       'win-arm64-rel',
@@ -4202,24 +4212,6 @@
       'Mac13 Tests': {
         'ci_only': True,
       },
-      # If you change this, make similar changes in android-x86-code-coverage below
-      'android-oreo-x86-rel': {
-        'args': [
-          # For whatever reason, automatic browser selection on this bot chooses
-          # webview instead of the full browser, so explicitly specify it here.
-          '--browser=android-chromium',
-        ],
-        'ci_only': True,
-      },
-      # Keep this same as android-oreo-x86-rel above
-      'android-x86-code-coverage': {
-        'args': [
-          # For whatever reason, automatic browser selection on this bot chooses
-          # webview instead of the full browser, so explicitly specify it here.
-          '--browser=android-chromium',
-        ],
-        'ci_only': True,
-      },
       'chromeos-eve-chrome': {
         'args': [
           # TODO(crbug.com/1191132): Re-enable.
@@ -4255,6 +4247,28 @@
       'win10-rel-no-external-ip',
       'win-rel-cft',
     ],
+  },
+  'telemetry_perf_unittests_android_chrome': {
+    'modifications': {
+      # If you change this, make similar changes in android-x86-code-coverage below
+      'android-oreo-x86-rel': {
+        'args': [
+          # For whatever reason, automatic browser selection on this bot chooses
+          # webview instead of the full browser, so explicitly specify it here.
+          '--browser=android-chromium',
+        ],
+        'ci_only': True,
+      },
+      # Keep this same as android-oreo-x86-rel above
+      'android-x86-code-coverage': {
+        'args': [
+          # For whatever reason, automatic browser selection on this bot chooses
+          # webview instead of the full browser, so explicitly specify it here.
+          '--browser=android-chromium',
+        ],
+        'ci_only': True,
+      },
+    },
   },
   'telemetry_unittests': {
     'modifications': {
@@ -4526,6 +4540,9 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.viz_unittests.filter',
         ],
+      },
+      'linux-lacros-tester-rel': {
+        'ci_only': True, # https://crbug.com/1509573
       },
     },
   },

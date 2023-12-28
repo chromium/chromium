@@ -55,7 +55,8 @@
   </div>
   <app-management-app-language-item
       class="permission-card-row separated-row"
-      app="[[app_]]">
+      app="[[app_]]"
+      prefs="{{prefs}}">
   </app-management-app-language-item>
   <app-management-more-permissions-item id="managePermissions"
     hidden$="[[!hasReadOnlyPermissions_]]"

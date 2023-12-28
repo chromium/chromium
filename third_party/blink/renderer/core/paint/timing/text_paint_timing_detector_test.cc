@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -69,14 +70,14 @@ class TextPaintTimingDetectorTest : public testing::Test {
     return &GetPaintTimingDetector().GetTextPaintTimingDetector();
   }
 
-  TextPaintTimingDetector* GetChildFrameTextPaintTimingDetector() {
-    return &GetChildFrameView()
-                .GetPaintTimingDetector()
-                .GetTextPaintTimingDetector();
+  TextPaintTimingDetector& GetChildFrameTextPaintTimingDetector() {
+    return GetChildFrameView()
+        .GetPaintTimingDetector()
+        .GetTextPaintTimingDetector();
   }
 
-  LargestTextPaintManager* GetLargestTextPaintManager() {
-    return GetTextPaintTimingDetector()->ltp_manager_.Get();
+  LargestTextPaintManager& GetLargestTextPaintManager() {
+    return *GetTextPaintTimingDetector()->ltp_manager_;
   }
 
   wtf_size_t CountRecordedSize() {
@@ -109,30 +110,35 @@ class TextPaintTimingDetectorTest : public testing::Test {
   void InvokeCallback() {
     DCHECK_GT(mock_callback_manager_->CountCallbacks(), 0u);
     InvokePresentationTimeCallback(mock_callback_manager_);
+    // Outside the tests, this is invoked by
+    // |PaintTimingCallbackManagerImpl::ReportPaintTime|.
+    GetLargestTextPaintManager().UpdateMetricsCandidate();
   }
 
   void ChildFramePresentationTimeCallBack() {
     DCHECK_GT(child_frame_mock_callback_manager_->CountCallbacks(), 0u);
     InvokePresentationTimeCallback(child_frame_mock_callback_manager_);
+    // Outside the tests, this is invoked by
+    // |PaintTimingCallbackManagerImpl::ReportPaintTime|.
+    GetChildFrameTextPaintTimingDetector().UpdateMetricsCandidate();
   }
 
   void InvokePresentationTimeCallback(
       MockPaintTimingCallbackManager* callback_manager) {
     callback_manager->InvokePresentationTimeCallback(
         test_task_runner_->NowTicks());
-    // Outside the tests, this is invoked by
-    // |PaintTimingCallbackManagerImpl::ReportPaintTime|.
-    GetLargestTextPaintManager()->UpdateMetricsCandidate();
   }
 
   base::TimeTicks LargestPaintTime() {
     return GetPaintTimingDetector()
-        .latest_lcp_details_.largest_text_paint_time_;
+        .LatestLcpDetailsForTest()
+        .largest_text_paint_time;
   }
 
   uint64_t LargestPaintSize() {
     return GetPaintTimingDetector()
-        .latest_lcp_details_.largest_text_paint_size_;
+        .LatestLcpDetailsForTest()
+        .largest_text_paint_size;
   }
 
   void SetBodyInnerHTML(const std::string& content) {
@@ -150,7 +156,7 @@ class TextPaintTimingDetectorTest : public testing::Test {
     GetChildDocument()->body()->setInnerHTML(content, ASSERT_NO_EXCEPTION);
     child_frame_mock_callback_manager_ =
         MakeGarbageCollected<MockPaintTimingCallbackManager>();
-    GetChildFrameTextPaintTimingDetector()->ResetCallbackManager(
+    GetChildFrameTextPaintTimingDetector().ResetCallbackManager(
         child_frame_mock_callback_manager_);
     UpdateAllLifecyclePhases();
   }
@@ -205,7 +211,7 @@ class TextPaintTimingDetectorTest : public testing::Test {
   }
 
   TextRecord* TextRecordOfLargestTextPaint() {
-    return GetLargestTextPaintManager()->LargestText();
+    return GetLargestTextPaintManager().LargestText();
   }
 
   TextRecord* ChildFrameTextRecordOfLargestTextPaint() {
@@ -242,6 +248,7 @@ class TextPaintTimingDetectorTest : public testing::Test {
     return web_view_helper_.GetWebView()->MainFrameImpl()->GetFrame();
   }
 
+  test::TaskEnvironment task_environment_;
   frame_test_helpers::WebViewHelper web_view_helper_;
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
   Persistent<MockPaintTimingCallbackManager> mock_callback_manager_;
@@ -590,7 +597,6 @@ TEST_F(TextPaintTimingDetectorTest,
   EXPECT_TRUE(GetTextPaintTimingDetector()->IsRecordingLargestTextPaint());
 
   SimulateInputEvent();
-  EXPECT_TRUE(GetLargestTextPaintManager());
   EXPECT_FALSE(GetTextPaintTimingDetector()->IsRecordingLargestTextPaint());
 }
 
@@ -602,7 +608,6 @@ TEST_F(TextPaintTimingDetectorTest, DoNotStopRecordingLCPAfterKeyUp) {
   EXPECT_TRUE(GetTextPaintTimingDetector()->IsRecordingLargestTextPaint());
 
   SimulateKeyUp();
-  EXPECT_TRUE(GetLargestTextPaintManager());
   EXPECT_TRUE(GetTextPaintTimingDetector()->IsRecordingLargestTextPaint());
 }
 
@@ -814,7 +819,6 @@ TEST_F(TextPaintTimingDetectorTest, VisibleTextAfterUserInput) {
   AppendDivElementToBody("text");
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
   EXPECT_EQ(CountRecordedSize(), 1u);
-  EXPECT_TRUE(GetLargestTextPaintManager());
 
   SimulateInputEvent();
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
@@ -827,7 +831,6 @@ TEST_F(TextPaintTimingDetectorTest, VisibleTextAfterUserScroll) {
   AppendDivElementToBody("text");
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
   EXPECT_EQ(CountRecordedSize(), 1u);
-  EXPECT_TRUE(GetLargestTextPaintManager());
 
   SimulateScroll();
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();

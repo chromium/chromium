@@ -212,7 +212,7 @@ const std::vector<UninstallTestData>& GetTestData() {
 
 }  // namespace
 
-typedef testing::Test FileUtilTest;
+using FileUtilTest = testing::Test;
 
 // Tests that packed extensions have all their versions deleted when the
 // extension is uninstalled.

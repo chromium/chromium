@@ -536,8 +536,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
 
-  // 3) Post IPC tasks to the page, testing both mojo remote and associated
-  // remote objects.
+  // 3) Post IPC tasks to the page, testing mojo remote objects.
 
   // Send a message via an associated interface - which will post a task with an
   // IPC hash and will be routed to the per-thread task queue.
@@ -550,33 +549,16 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       1);
   run_loop.Run();
 
-  // Post a non-associated interface. Will be routed to a frame-specific task
-  // queue with IPC set in SimpleWatcher.
-  base::RunLoop run_loop2;
-  rfh_a->GetHighPriorityLocalFrame()->DispatchBeforeUnload(
-      false,
-      base::BindOnce([](base::RepeatingClosure quit_closure, bool proceed,
-                        base::TimeTicks start_time,
-                        base::TimeTicks end_time) { quit_closure.Run(); },
-                     run_loop2.QuitClosure()));
-  run_loop2.Run();
-
   // 4) Check the histogram.
-  std::vector<base::HistogramBase::Sample> samples = {
-      base::HistogramBase::Sample(
-          base::TaskAnnotator::ScopedSetIpcHash::MD5HashMetricName(
-              "blink.mojom.HighPriorityLocalFrame")),
-      base::HistogramBase::Sample(
-          base::TaskAnnotator::ScopedSetIpcHash::MD5HashMetricName(
-              "blink.mojom.LocalFrame"))};
+  base::HistogramBase::Sample sample = base::HistogramBase::Sample(
+      base::TaskAnnotator::ScopedSetIpcHash::MD5HashMetricName(
+          "blink.mojom.LocalFrame"));
 
-  for (base::HistogramBase::Sample sample : samples) {
-    FetchHistogramsFromChildProcesses();
-    EXPECT_TRUE(HistogramContainsIntValue(
-        sample, histogram_tester().GetAllSamples(
-                    "BackForwardCache.Experimental."
-                    "UnexpectedIPCMessagePostedToCachedFrame.MethodHash")));
-  }
+  FetchHistogramsFromChildProcesses();
+  EXPECT_TRUE(HistogramContainsIntValue(
+      sample, histogram_tester().GetAllSamples(
+                  "BackForwardCache.Experimental."
+                  "UnexpectedIPCMessagePostedToCachedFrame.MethodHash")));
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,

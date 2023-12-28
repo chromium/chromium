@@ -21,7 +21,7 @@ Second dump layer tree:
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='child' class='child'",
+      "name": "LayoutNGBlockFlow (relative positioned, children-inline) DIV id='child' class='child'",
       "bounds": [250, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000",

@@ -9,8 +9,8 @@ import { Button } from './button.js';
  * An outlined button component.
  */
 export class OutlinedButton extends Button {
-    renderOutline() {
-        return html `<span class="button__outline"></span>`;
+    renderElevationOrOutline() {
+        return html `<div class="outline"></div>`;
     }
 }
 //# sourceMappingURL=outlined-button.js.map

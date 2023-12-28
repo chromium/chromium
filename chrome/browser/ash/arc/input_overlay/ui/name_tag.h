@@ -55,6 +55,7 @@ class NameTag : public views::View {
 
  private:
   friend class EditLabelTest;
+  friend class OverlayViewTestBase;
 
   void Init();
   // Child labels are multi-lines. It needs to set fit width depending on

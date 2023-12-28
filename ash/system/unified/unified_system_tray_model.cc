@@ -4,7 +4,7 @@
 
 #include "ash/system/unified/unified_system_tray_model.h"
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
@@ -45,7 +45,7 @@ class UnifiedSystemTrayModel::DBusObserver
   void KeyboardBrightnessChanged(
       const power_manager::BacklightBrightnessChange& change) override;
 
-  const raw_ptr<UnifiedSystemTrayModel, ExperimentalAsh> owner_;
+  const raw_ptr<UnifiedSystemTrayModel> owner_;
 
   base::WeakPtrFactory<DBusObserver> weak_ptr_factory_{this};
 };

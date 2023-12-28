@@ -14,6 +14,12 @@ enum MLConvTranspose2dFilterOperandLayout { "iohw", "hwoi", "ohwi" };
 
 enum MLAutoPad { "explicit", "same-upper", "same-lower" };
 
+dictionary MLArgMinMaxOptions {
+  sequence<[EnforceRange] unsigned long> axes;
+  boolean keepDimensions = false;
+  boolean selectLastIndex = false;
+};
+
 // A spec file was issued for WG discussion:
 // https://github.com/webmachinelearning/webnn/issues/481.
 // TODO(crbug.com/1502361): Revisit whether the scale and bias operands
@@ -138,6 +144,10 @@ dictionary MLResample2dOptions {
   sequence<[EnforceRange] unsigned long> axes;
 };
 
+dictionary MLSoftplusOptions {
+  float steepness = 1.0;
+};
+
 dictionary MLTransposeOptions {
   sequence<[EnforceRange] unsigned long> permutation;
 };
@@ -155,6 +165,9 @@ dictionary MLSplitOptions {
   [RaisesException] MLOperand input(DOMString name, MLOperandDescriptor desc);
 
   [RaisesException] MLOperand constant(MLOperandDescriptor desc, MLBufferView bufferView);
+
+  [RaisesException] MLOperand argMin(MLOperand input, optional MLArgMinMaxOptions options = {});
+  [RaisesException] MLOperand argMax(MLOperand input, optional MLArgMinMaxOptions options = {});
 
   [RaisesException] MLOperand batchNormalization(MLOperand input, MLOperand mean, MLOperand variance, optional MLBatchNormalizationOptions options = {});
 
@@ -176,7 +189,9 @@ dictionary MLSplitOptions {
   [RaisesException] MLOperand pow(MLOperand a, MLOperand b);
   [RaisesException] MLOperand equal(MLOperand a, MLOperand b);
   [RaisesException] MLOperand greater(MLOperand a, MLOperand b);
+  [RaisesException] MLOperand greaterOrEqual(MLOperand a, MLOperand b);
   [RaisesException] MLOperand lesser(MLOperand a, MLOperand b);
+  [RaisesException] MLOperand lesserOrEqual(MLOperand a, MLOperand b);
 
   // Element-wise unary operations
   [RaisesException] MLOperand abs(MLOperand x);
@@ -254,6 +269,9 @@ dictionary MLSplitOptions {
 
   [RaisesException] MLOperand softmax(MLOperand input);
   [RaisesException] MLActivation softmax();
+
+  [RaisesException] MLOperand softplus(MLOperand input, optional MLSoftplusOptions options = {});
+  [RaisesException] MLActivation softplus(optional MLSoftplusOptions options = {});
 
   [RaisesException] MLOperand softsign(MLOperand input);
   [RaisesException] MLActivation softsign();

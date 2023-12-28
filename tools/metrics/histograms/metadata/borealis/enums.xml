@@ -55,27 +55,6 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Main app never showed up"/>
 </enum>
 
-<enum name="BorealisStartupFsckResult">
-  <summary>
-    These correspond to e2fsck exit codes. Note that 0 differs from e2fsck's man
-    (https://linux.die.net/man/8/e2fsck). 0 is used to capture any errors we
-    don't expect (i.e higher than the sum of all documented errors) and 1
-    captures when fsck exits with multiple errors at once. TODO(b/258589422):
-    Revisit once we have metrics to determine if error 1 is sufficient, or if we
-    need more in-depth enumeration for combined errors.
-  </summary>
-  <int value="0" label="Unexpected result"/>
-  <int value="1" label="Combined error"/>
-  <int value="2" label="No errors"/>
-  <int value="3" label="File system errors corrected"/>
-  <int value="4" label="System should be rebooted"/>
-  <int value="5" label="File system errors left uncorrected"/>
-  <int value="6" label="Operational error"/>
-  <int value="7" label="Usage or syntax error"/>
-  <int value="8" label="Fsck canceled by user request"/>
-  <int value="9" label="Shared library error"/>
-</enum>
-
 <enum name="BorealisStartupResult">
   <int value="0" label="Success"/>
   <int value="1" label="Cancelled"/>

@@ -125,12 +125,6 @@ template("chrome_common_shared_library") {
                    rebase_path(_linker_script, root_build_dir) ]
     }
 
-    # Handle VR JNI registration and dependencies.
-    if (!_is_webview && enable_vr) {
-      # Custom registration of a few JNI methods found in the .so file.
-      sources += [ "../browser/android/vr/register_jni_monochrome.cc" ]
-    }
-
     if (_generate_partitions) {
       partitions = []
       foreach(_module_desc, _module_descs) {

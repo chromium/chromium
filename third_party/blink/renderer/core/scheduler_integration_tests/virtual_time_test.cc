@@ -112,10 +112,10 @@ TEST_F(VirtualTimeTest, MAYBE_SetInterval) {
       "     clearInterval(interval_handle);"
       "  }"
       "  run_order.push(count);"
-      "}, 1000);"
+      "}, 900);"
       "setTimeout(function() { run_order.push('timer'); }, 1500);");
 
-  RunTasksForPeriod(10001);
+  RunTasksForPeriod(9001);
 
   EXPECT_EQ("9, timer, 8, 7, 6, 5, 4, 3, 2, 1, 0",
             ExecuteJavaScript("run_order.join(', ')"));

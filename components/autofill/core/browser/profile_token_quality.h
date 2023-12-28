@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -101,7 +102,6 @@ class ProfileTokenQuality {
   ~ProfileTokenQuality();
 
   bool operator==(const ProfileTokenQuality& other) const;
-  bool operator!=(const ProfileTokenQuality& other) const;
 
   // Derives an observation from every field of the `form_structure` that was
   // autofilled with the `profile_`. Only fields with no existing observation
@@ -136,7 +136,7 @@ class ProfileTokenQuality {
   // `type` must be a supported type of `AutofillProfile`. For a derived `type`,
   // the observations of the corresponding stored type are returned.
   std::vector<ObservationType> GetObservationTypesForFieldType(
-      ServerFieldType type) const;
+      FieldType type) const;
 
   // Observations are stored together with their stored `type` in the database.
   // The observations for each stored type are serialized as a sequence of
@@ -145,10 +145,9 @@ class ProfileTokenQuality {
   // `FormSignatureHash`.
   // Changing the encoding requires adding migration logic to `AutofillTable`.
   // Tested by autofill_table_unittest.cc.
-  std::vector<uint8_t> SerializeObservationsForStoredType(
-      ServerFieldType type) const;
+  std::vector<uint8_t> SerializeObservationsForStoredType(FieldType type) const;
   void LoadSerializedObservationsForStoredType(
-      ServerFieldType type,
+      FieldType type,
       base::span<const uint8_t> serialized_data);
 
   void set_profile(AutofillProfile* profile) {
@@ -157,11 +156,11 @@ class ProfileTokenQuality {
   }
 
   // Copy the observations for the `type` from `other`.
-  void CopyObservationsForStoredType(ServerFieldType type,
+  void CopyObservationsForStoredType(FieldType type,
                                      const ProfileTokenQuality& other);
 
   // Resets all observations for the `type`.
-  void ResetObservationsForStoredType(ServerFieldType type);
+  void ResetObservationsForStoredType(FieldType type);
 
   // Resets the observations for all tokens in which `profile_` and `other`
   // differ. This is used as a mechanism to reset outdated observations, by
@@ -220,7 +219,7 @@ class ProfileTokenQuality {
   // Adds the `observation` to the `observations_` for the stored type of
   // `type`. The oldest existing observation for that type is discarded, if
   // the limit of `kMaxObservationsPerToken` is exceeded.
-  void AddObservation(ServerFieldType type, Observation observation);
+  void AddObservation(FieldType type, Observation observation);
 
   // The set of types of the form is form identifying. To avoid tracking
   // browsing history, this function randomly drops 3 observations from all
@@ -230,7 +229,7 @@ class ProfileTokenQuality {
   // most 8 are added.
   // Returns the number of observations added.
   size_t AddSubsetOfObservations(
-      std::vector<std::pair<ServerFieldType, Observation>> observations);
+      std::vector<std::pair<FieldType, Observation>> observations);
 
   // Deduces the `ObservationType` from a `field` that was autofilled with
   // `profile_`. `other_profiles` are all the other profiles that the user has
@@ -254,8 +253,7 @@ class ProfileTokenQuality {
   // - The observations are ordered from oldest (`front()`) to newest
   //   (`back()`).
   // - No more than `kMaxObservationsPerToken` elements are stored.
-  base::flat_map<ServerFieldType, base::circular_deque<Observation>>
-      observations_;
+  base::flat_map<FieldType, base::circular_deque<Observation>> observations_;
 
   // When true, `AddSubsetOfObservations()` adds all observations.
   bool diable_randomization_for_testing_ = false;

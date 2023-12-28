@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/loader/document_load_timing.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
+#include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
@@ -34,43 +35,43 @@ static uint64_t ToIntegerMilliseconds(base::TimeDelta duration,
 
 LargestContentfulPaintDetailsForReporting PerformanceTimingForReporting::
     PopulateLargestContentfulPaintDetailsForReporting(
-        PaintTimingDetector::LargestContentfulPaintDetails timing) const {
+        const LargestContentfulPaintDetails& timing) const {
   // The largest_image_paint_time and the largest_text_paint_time are converted
   // into seconds.
   double largest_image_paint_time =
       base::Milliseconds(
-          MonotonicTimeToIntegerMilliseconds(timing.largest_image_paint_time_))
+          MonotonicTimeToIntegerMilliseconds(timing.largest_image_paint_time))
           .InSecondsF();
 
   double largest_text_paint_time =
       base::Milliseconds(
-          MonotonicTimeToIntegerMilliseconds(timing.largest_text_paint_time_))
+          MonotonicTimeToIntegerMilliseconds(timing.largest_text_paint_time))
           .InSecondsF();
 
   absl::optional<base::TimeDelta> largest_image_discovery_time =
-      MonotonicTimeToPseudoWallTime(timing.largest_image_discovery_time_);
+      MonotonicTimeToPseudoWallTime(timing.largest_image_discovery_time);
 
   absl::optional<base::TimeDelta> largest_image_load_start =
-      MonotonicTimeToPseudoWallTime(timing.largest_image_load_start_);
+      MonotonicTimeToPseudoWallTime(timing.largest_image_load_start);
 
   absl::optional<base::TimeDelta> largest_image_load_end =
-      MonotonicTimeToPseudoWallTime(timing.largest_image_load_end_);
+      MonotonicTimeToPseudoWallTime(timing.largest_image_load_end);
 
   return {largest_image_paint_time,
-          timing.largest_image_paint_size_,
+          timing.largest_image_paint_size,
           largest_image_discovery_time,
           largest_image_load_start,
           largest_image_load_end,
-          timing.largest_contentful_paint_type_,
+          timing.largest_contentful_paint_type,
 
-          timing.largest_contentful_paint_image_bpp_,
+          timing.largest_contentful_paint_image_bpp,
           largest_text_paint_time,
-          timing.largest_text_paint_size_,
-          timing.largest_contentful_paint_time_,
+          timing.largest_text_paint_size,
+          timing.largest_contentful_paint_time,
 
-          timing.largest_contentful_paint_image_request_priority_,
-          timing.is_loaded_from_memory_cache_,
-          timing.is_preloaded_with_early_hints_};
+          timing.largest_contentful_paint_image_request_priority,
+          timing.is_loaded_from_memory_cache,
+          timing.is_preloaded_with_early_hints};
 }
 
 PerformanceTimingForReporting::PerformanceTimingForReporting(

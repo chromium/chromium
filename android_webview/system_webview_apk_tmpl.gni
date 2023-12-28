@@ -37,6 +37,7 @@ template("system_webview_apk_or_module_tmpl") {
   if (_is_trichrome) {
     _is_64_bit_browser = android_64bit_target_cpu && invoker.is_64_bit_browser
     _version_code = TRICHROME_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
+
     # Allow a custom version_code, but always use the default _trichrome_library_version_code
     _trichrome_library_version_code = _version_code
   } else {
@@ -72,8 +73,8 @@ template("system_webview_apk_or_module_tmpl") {
       "manifest_package=$_manifest_package",
     ]
     if (_is_trichrome) {
-      variables +=
-          trichrome_jinja_variables + [ "trichrome_version=$_trichrome_library_version_code" ]
+      variables += trichrome_jinja_variables +
+                   [ "trichrome_version=$_trichrome_library_version_code" ]
       if (_is_64_bit_browser) {
         variables += [ "library=libmonochrome_64.so" ]
       } else {
@@ -123,8 +124,13 @@ template("system_webview_apk_or_module_tmpl") {
       min_sdk_version = 29
     }
     if (defined(expected_android_manifest)) {
-      expected_android_manifest_version_code_offset = chrome_version_code
-      expected_android_manifest_library_version_offset = chrome_version_code
+      if (android_64bit_target_cpu) {
+        _version_code_offset = chrome_32_version_code
+      } else {
+        _version_code_offset = chrome_version_code
+      }
+      expected_android_manifest_version_code_offset = _version_code_offset
+      expected_android_manifest_library_version_offset = _version_code_offset
     }
 
     android_manifest = _android_manifest

@@ -93,13 +93,6 @@ std::string BuildTranslationTitleText(const IntentInfo& intent_info) {
                                    locale_name);
 }
 
-std::string BuildTranslationTitleText(const std::string& query_text,
-                                      const std::string& locale_name) {
-  return l10n_util::GetStringFUTF8(IDS_QUICK_ANSWERS_TRANSLATION_TITLE_TEXT,
-                                   base::UTF8ToUTF16(query_text),
-                                   base::UTF8ToUTF16(locale_name));
-}
-
 std::string BuildUnitConversionResultText(const std::string& result_value,
                                           const std::string& name) {
   return l10n_util::GetStringFUTF8(

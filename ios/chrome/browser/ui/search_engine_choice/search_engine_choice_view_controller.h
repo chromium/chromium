@@ -23,7 +23,8 @@
 
 // A base view controller for showing a choice screen.
 @interface SearchEngineChoiceViewController
-    : UIViewController <SearchEngineChoiceConsumer, UITextViewDelegate>
+    : UIViewController <SearchEngineChoiceConsumer,
+                        UITextViewDelegate>
 
 // Delegate for all the user actions.
 @property(nonatomic, weak) id<SearchEngineChoiceActionDelegate> actionDelegate;

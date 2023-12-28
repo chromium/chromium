@@ -96,7 +96,7 @@ class AssistantResponse::Processor {
   }
 
   // |response_| should outlive the Processor.
-  const raw_ptr<AssistantResponse, ExperimentalAsh> response_;
+  const raw_ptr<AssistantResponse> response_;
   ProcessingCallback callback_;
 
   int processing_count_ = 0;

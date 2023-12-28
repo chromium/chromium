@@ -184,6 +184,9 @@ class EmbeddedTestServer {
     // included in the TLS handshake, but is available through the leaf's
     // AIA caIssuers URL.
     kByAIA,
+    // Generated cert is issued by a generated intermediate, which is NOT
+    // included in the TLS handshake and not served by an AIA server.
+    kMissing,
   };
 
   struct OCSPConfig {
@@ -447,10 +450,24 @@ class EmbeddedTestServer {
   bool ResetSSLConfig(ServerCertificate cert,
                       const SSLServerConfig& ssl_config);
 
+  // Configures the test server to generate a certificate that covers the
+  // specified hostnames. This implicitly also includes 127.0.0.1 in the
+  // certificate. It is invalid to call after the server is started. If called
+  // multiple times, the last call will have effect.
+  // Convenience method for configuring an HTTPS test server when a test needs
+  // to support a set of hostnames over HTTPS, rather than explicitly setting
+  /// up a full config using SetSSLConfig().
+  void SetCertHostnames(std::vector<std::string> hostnames);
+
   // Returns the certificate that the server is using.
   // If using a generated ServerCertificate type, this must not be called before
   // InitializeAndListen() has been called.
   scoped_refptr<X509Certificate> GetCertificate();
+
+  // Returns any generated intermediates that the server may be using. May
+  // return null if no intermediate is generated. Must not be called before
+  // InitializeAndListen().
+  scoped_refptr<X509Certificate> GetGeneratedIntermediate();
 
   // Registers request handler which serves files from |directory|.
   // For instance, a request to "/foo.html" is served by "foo.html" under
@@ -604,6 +621,8 @@ class EmbeddedTestServer {
   ServerCertificate cert_ = CERT_OK;
   ServerCertificateConfig cert_config_;
   scoped_refptr<X509Certificate> x509_cert_;
+  // May be null if no intermediate is generated.
+  scoped_refptr<X509Certificate> intermediate_;
   bssl::UniquePtr<EVP_PKEY> private_key_;
   base::flat_map<std::string, std::string> alps_accept_ch_;
   std::unique_ptr<SSLServerContext> context_;

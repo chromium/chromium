@@ -76,7 +76,9 @@ class FakeCryptAuthFeatureStatusGetterFactory
 
   // Returns a vector of all FakeCryptAuthFeatureStatusGetter instances created
   // by CreateInstance().
-  const std::vector<FakeCryptAuthFeatureStatusGetter*>& instances() const {
+  const std::vector<
+      raw_ptr<FakeCryptAuthFeatureStatusGetter, VectorExperimental>>&
+  instances() const {
     return instances_;
   }
 
@@ -91,7 +93,8 @@ class FakeCryptAuthFeatureStatusGetterFactory
       CryptAuthClientFactory* client_factory,
       std::unique_ptr<base::OneShotTimer> timer) override;
 
-  std::vector<FakeCryptAuthFeatureStatusGetter*> instances_;
+  std::vector<raw_ptr<FakeCryptAuthFeatureStatusGetter, VectorExperimental>>
+      instances_;
   raw_ptr<CryptAuthClientFactory, ExperimentalAsh> last_client_factory_ =
       nullptr;
 };

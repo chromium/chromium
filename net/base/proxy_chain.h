@@ -115,13 +115,22 @@ class NET_EXPORT ProxyChain {
                                           : false;
   }
 
+  // Determines if HTTP GETs to the last proxy in the chain are allowed,
+  // instead of establishing a tunnel with CONNECT. This is currently not
+  // supported for multi-proxy chains.
+  bool is_get_to_proxy_allowed() const {
+    return is_single_proxy() && GetProxyServer(0).is_http_like();
+  }
+
   // Returns true if a proxy server list is available.
   bool IsValid() const { return proxy_server_list_.has_value(); }
 
   // Returns a `ProxyChain` for use by the IP Protection feature. This is used
   // for metrics collection and for special handling (for instance, IP
   // protection proxy chains will have an authorization header appended to the
-  // CONNECT requests sent to the proxy servers).
+  // CONNECT requests sent to the proxy servers, and requests sent through an
+  // IP Protection proxy chain will have an "IP-Protection: 1" header added to
+  // them).
   ProxyChain&& ForIpProtection() &&;
   bool is_for_ip_protection() const { return is_for_ip_protection_; }
 

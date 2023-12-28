@@ -36,7 +36,7 @@ class ComposeSessionBrowserTest : public InteractiveBrowserTest {
         {compose::features::kEnableCompose,
          optimization_guide::features::kOptimizationGuideModelExecution},
         {});
-    InProcessBrowserTest::SetUp();
+    InteractiveBrowserTest::SetUp();
   }
 
   base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
@@ -45,21 +45,14 @@ class ComposeSessionBrowserTest : public InteractiveBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-#if BUILDFLAG(IS_MAC)
-// Mac failures: b/311208586
-#define MAYBE_LifetimeOfBubbleWrapper DISABLED_LifetimeOfBubbleWrapper
-#else
-#define MAYBE_LifetimeOfBubbleWrapper LifetimeOfBubbleWrapper
-#endif
-IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest,
-                       MAYBE_LifetimeOfBubbleWrapper) {
+IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, LifetimeOfBubbleWrapper) {
   ASSERT_TRUE(embedded_test_server()->Start());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/compose/test2.html")));
   ASSERT_NE(nullptr, ChromeComposeClient::FromWebContents(web_contents));
   auto* client = ChromeComposeClient::FromWebContents(web_contents);
-  client->GetComposeEnabling().SetEnabledForTesting();
+  client->GetComposeEnabling().SetEnabledForTesting(true);
 
   // get point of element
   gfx::PointF textarea_center =
@@ -77,13 +70,22 @@ IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, OpenFeedbackPage) {
+  // Feedback page can only be opened from a dialog state where MSSB is enabled.
+  // TODO(b/316601302): Without directly setting the MSBB pref value this test
+  // is flaky on Linux MSan builders. This requires further investigation, but
+  // the MSBB dialog state is not on the feedback page testing path so the
+  // current state still satisfies the test requirement.
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  prefs->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+
   ASSERT_TRUE(embedded_test_server()->Start());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/compose/test2.html")));
   ASSERT_NE(nullptr, ChromeComposeClient::FromWebContents(web_contents));
   auto* client = ChromeComposeClient::FromWebContents(web_contents);
-  client->GetComposeEnabling().SetEnabledForTesting();
+  client->GetComposeEnabling().SetEnabledForTesting(true);
 
   // get point of element
   gfx::PointF textarea_center =

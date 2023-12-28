@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -300,7 +300,7 @@ TEST_F(AutoclickTest, MovementThreshold) {
     GetAutoclickController()->SetMovementThreshold(movement_threshold);
 
     // Run test for the secondary display too to test fix for crbug.com/449870.
-    for (auto* root_window : root_windows) {
+    for (aura::Window* root_window : root_windows) {
       gfx::Point center = root_window->GetBoundsInScreen().CenterPoint();
 
       GetAutoclickController()->SetEnabled(true,
@@ -814,7 +814,7 @@ TEST_F(AutoclickTest, WaitsToDrawAnimationAfterDwellBegins) {
 }
 
 TEST_F(AutoclickTest, DoesActionOnBubbleWhenInDifferentModes) {
-  AccessibilityControllerImpl* accessibility_controller =
+  AccessibilityController* accessibility_controller =
       Shell::Get()->accessibility_controller();
   // Enable autoclick from the accessibility controller so that the bubble is
   // constructed too.

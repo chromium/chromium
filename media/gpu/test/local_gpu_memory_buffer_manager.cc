@@ -187,8 +187,6 @@ class GpuMemoryBufferImplGbm : public gfx::GpuMemoryBuffer {
     return gbm_bo_get_stride_for_plane(buffer_object_, plane);
   }
 
-  void SetColorSpace(const gfx::ColorSpace& color_space) override {}
-
   gfx::GpuMemoryBufferId GetId() const override { return handle_.id; }
 
   gfx::GpuMemoryBufferType GetType() const override {
@@ -218,12 +216,12 @@ class GpuMemoryBufferImplGbm : public gfx::GpuMemoryBuffer {
 
  private:
   struct MappedPlane {
-    raw_ptr<void, ExperimentalAsh> addr;
-    raw_ptr<void, ExperimentalAsh> mapped_data;
+    raw_ptr<void> addr;
+    raw_ptr<void> mapped_data;
   };
 
   gfx::BufferFormat format_;
-  raw_ptr<gbm_bo, ExperimentalAsh> buffer_object_;
+  raw_ptr<gbm_bo> buffer_object_;
   gfx::GpuMemoryBufferHandle handle_;
   bool mapped_;
   std::vector<MappedPlane> mapped_planes_;

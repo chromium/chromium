@@ -34,6 +34,15 @@ void SetUpFakeSyncServer();
 // real one. Must only be called if `IsFakeSyncServerSetUp()` is true.
 void TearDownFakeSyncServer();
 
+// Clears fake sync server data if the server is running, otherwise does
+// nothing.
+void ClearFakeSyncServerData();
+
+// Ensures that all of the FakeServer's data is persisted to disk. This is
+// useful before app restarts, where otherwise the FakeServer may not get to do
+// its usual on-destruction flush.
+void FlushFakeSyncServerToDisk();
+
 // Triggers a sync cycle for a `type`.
 void TriggerSyncCycle(syncer::ModelType type);
 
@@ -79,10 +88,6 @@ void DeleteAutofillProfileFromFakeSyncServer(std::string guid);
 
 // Clears the autofill profile for the given `guid`.
 void ClearAutofillProfile(std::string guid);
-
-// Clears fake sync server data if the server is running, otherwise does
-// nothing.
-void ClearSyncServerData();
 
 // See SyncService::IsEngineInitialized().
 bool IsSyncEngineInitialized();

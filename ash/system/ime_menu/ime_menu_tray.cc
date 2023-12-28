@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "ash/accessibility/a11y_feature_type.h"
-#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/ime/ime_controller_impl.h"
@@ -240,7 +240,7 @@ class ImeTitleView : public views::BoxLayoutView {
   ~ImeTitleView() override = default;
 
  private:
-  raw_ptr<IconButton, ExperimentalAsh> settings_button_ = nullptr;
+  raw_ptr<IconButton> settings_button_ = nullptr;
 };
 
 BEGIN_METADATA(ImeTitleView, views::BoxLayoutView)
@@ -316,10 +316,10 @@ class ImeButtonsView : public views::View {
     }
   }
 
-  raw_ptr<ImeMenuTray, DanglingUntriaged | ExperimentalAsh> ime_menu_tray_;
-  raw_ptr<SystemMenuButton, ExperimentalAsh> emoji_button_;
-  raw_ptr<SystemMenuButton, ExperimentalAsh> handwriting_button_;
-  raw_ptr<SystemMenuButton, ExperimentalAsh> voice_button_;
+  raw_ptr<ImeMenuTray, DanglingUntriaged> ime_menu_tray_;
+  raw_ptr<SystemMenuButton> emoji_button_;
+  raw_ptr<SystemMenuButton> handwriting_button_;
+  raw_ptr<SystemMenuButton> voice_button_;
 };
 
 BEGIN_METADATA(ImeButtonsView, views::View)

@@ -122,10 +122,8 @@ bool WmShadowControllerDelegate::ShouldShowShadowForWindow(
 
 bool WmShadowControllerDelegate::ShouldHaveRoundedShadowForWindow(
     const aura::Window* window) {
-  // Apply rounded corner to shadow, only if the frame associated with the
-  // `window` has rounded corners. Rounded corners on the frame are applied
-  // based on the `WindowStateType` of `window`.
-  return chromeos::GetFrameCornerRadius(window) > 0;
+  // Apply rounded corner to shadow, if the `window` has rounded corners.
+  return chromeos::ShouldWindowHaveRoundedCorners(window);
 }
 
 bool WmShadowControllerDelegate::ShouldUpdateShadowOnWindowPropertyChange(

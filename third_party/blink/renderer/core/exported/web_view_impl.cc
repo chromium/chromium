@@ -1148,6 +1148,8 @@ void WebViewImpl::Close() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   receiver_.reset();
 
+  dev_tools_emulator_->Shutdown();
+
   // Initiate shutdown for the entire frameset.  This will cause a lot of
   // notifications to be sent. This will detach all frames in this WebView's
   // frame tree.
@@ -3986,6 +3988,10 @@ const SessionStorageNamespaceId& WebViewImpl::GetSessionStorageNamespaceId() {
 
 bool WebViewImpl::IsFencedFrameRoot() const {
   return GetPage()->IsMainFrameFencedFrameRoot();
+}
+
+void WebViewImpl::SetSupportsAppRegion(bool supports_app_region) {
+  MainFrameImpl()->GetFrame()->SetSupportsAppRegion(supports_app_region);
 }
 
 void WebViewImpl::MojoDisconnected() {

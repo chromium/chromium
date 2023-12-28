@@ -499,6 +499,15 @@ void HintsManager::ProcessOptimizationFilters(
                                /*is_allowlist=*/true);
   ProcessOptimizationFilterSet(blocklist_optimization_filters,
                                /*is_allowlist=*/false);
+
+  ScopedDictPrefUpdate previous_opt_types_with_filter(
+      pref_service_, prefs::kPreviousOptimizationTypesWithFilter);
+  previous_opt_types_with_filter->clear();
+  for (auto optimization_type : optimization_types_with_filter_) {
+    previous_opt_types_with_filter->Set(
+        optimization_guide::proto::OptimizationType_Name(optimization_type),
+        true);
+  }
 }
 
 void HintsManager::ProcessOptimizationFilterSet(
@@ -1453,7 +1462,10 @@ OptimizationTypeDecision HintsManager::CanApplyOptimization(
   // Check if we had an optimization filter for it, but it was not loaded into
   // memory.
   if (optimization_types_with_filter_.find(optimization_type) !=
-      optimization_types_with_filter_.end()) {
+          optimization_types_with_filter_.end() ||
+      pref_service_->GetDict(prefs::kPreviousOptimizationTypesWithFilter)
+          .contains(optimization_guide::proto::OptimizationType_Name(
+              optimization_type))) {
     scoped_logger.set_type_decision(
         OptimizationTypeDecision::kHadOptimizationFilterButNotLoadedInTime);
     return OptimizationTypeDecision::kHadOptimizationFilterButNotLoadedInTime;

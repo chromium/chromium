@@ -831,7 +831,7 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
      */
     public void requestAccessibilitySnapshot(ViewStructure root, Runnable doneCallback) {
         checkNotDestroyed();
-        ViewStructureBuilder builder = ViewStructureBuilder.create(mRenderCoordinates);
+        ViewStructureBuilder builder = new ViewStructureBuilder(mRenderCoordinates);
 
         WebContentsImplJni.get()
                 .requestAccessibilitySnapshot(

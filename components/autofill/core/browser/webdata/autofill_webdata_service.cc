@@ -16,7 +16,6 @@
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/webdata/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend_impl.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -226,6 +225,13 @@ void AutofillWebDataService::RemoveLocalIban(const std::string& guid) {
   wdbs_->ScheduleDBTask(
       FROM_HERE, base::BindOnce(&AutofillWebDataBackendImpl::RemoveLocalIban,
                                 autofill_backend_, guid));
+}
+
+void AutofillWebDataService::UpdateServerIbanMetadata(const Iban& iban) {
+  wdbs_->ScheduleDBTask(
+      FROM_HERE,
+      base::BindOnce(&AutofillWebDataBackendImpl::UpdateServerIbanMetadata,
+                     autofill_backend_, iban));
 }
 
 void AutofillWebDataService::AddServerCvc(int64_t instrument_id,

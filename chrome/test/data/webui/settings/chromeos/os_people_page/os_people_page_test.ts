@@ -26,6 +26,8 @@ interface SubpageTriggerData {
 }
 
 suite('<os-settings-people-page>', () => {
+  const isRevampWayfindingEnabled =
+      loadTimeData.getBoolean('isRevampWayfindingEnabled');
   let peoplePage: OsSettingsPeoplePageElement;
   let browserProxy: ProfileInfoBrowserProxy&TestProfileInfoBrowserProxy;
   let syncBrowserProxy: SyncBrowserProxy&TestSyncBrowserProxy;
@@ -57,11 +59,7 @@ suite('<os-settings-people-page>', () => {
     Router.getInstance().resetRouteForTesting();
   });
 
-  suite('with isRevampWayfindingEnabled disabled', () => {
-    setup(() => {
-      loadTimeData.overrideValues({isRevampWayfindingEnabled: false});
-    });
-
+  if (!isRevampWayfindingEnabled) {
     test('Profile name and picture, account manager disabled', async () => {
       loadTimeData.overrideValues({
         isAccountManagerEnabled: false,
@@ -342,13 +340,7 @@ suite('<os-settings-people-page>', () => {
                 `${triggerSelector} should be focused.`);
           });
     });
-  });
-
-  suite('with isRevampWayfindingEnabled enabled', () => {
-    setup(() => {
-      loadTimeData.overrideValues({isRevampWayfindingEnabled: true});
-    });
-
+  } else {
     test('account manager settings card is visible', async () => {
       createPage();
 
@@ -417,5 +409,5 @@ suite('<os-settings-people-page>', () => {
 
           assertNull(parentalControlsSettingsCard);
         });
-  });
+  }
 });

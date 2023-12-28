@@ -113,7 +113,8 @@ DOMException* MLGraphTestBase::ComputeGraph(V8TestingScope& scope,
       auto* resolver =
           MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
       ScriptPromiseTester tester(scope.GetScriptState(), resolver->Promise());
-      graph->ComputeAsync(inputs, outputs, resolver, scope.GetExceptionState());
+      graph->ComputeAsync(ScopedMLTrace("ComputeAsync"), inputs, outputs,
+                          resolver, scope.GetExceptionState());
       tester.WaitUntilSettled();
       if (tester.IsFulfilled()) {
         // For `MLGraph::ComputeAsync()`, the input and output ArrayBufferViews

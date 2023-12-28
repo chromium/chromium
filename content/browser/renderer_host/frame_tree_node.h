@@ -526,8 +526,8 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // less necessary.
   void SetFencedFramePropertiesOpaqueAdsModeForTesting() {
     if (fenced_frame_properties_.has_value()) {
-      fenced_frame_properties_->mode_ =
-          blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
+      fenced_frame_properties_
+          ->SetFencedFramePropertiesOpaqueAdsModeForTesting();
     }
   }
 
@@ -607,8 +607,6 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
       blink::mojom::AutomaticBeaconType event_type,
       const std::string& event_data,
       const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-      network::AttributionReportingRuntimeFeatures
-          attribution_reporting_runtime_features,
       bool once,
       bool cross_origin_exposed) override;
 

@@ -102,16 +102,26 @@ void DeskAnimationBase::OnStartingDeskScreenshotTaken(int ending_desk_index) {
       return;
   }
 
+  // If ending desk index goes out of sync with the one provided due to screenshot delay 
+  // and user action, end animation. Speculative fix for http://b/307304567.
+  if (ending_desk_index != ending_desk_index_) {
+    // This will effectively delete `this`.
+    ActivateTargetDeskWithoutAnimation();
+    return;
+  }
+
   // Extend the compositors' timeouts in order to prevents any repaints until
   // the desks are switched and overview mode exits.
   const auto roots = Shell::GetAllRootWindows();
-  for (auto* root : roots)
+  for (aura::Window* root : roots) {
     root->GetHost()->compositor()->SetAllowLocksToExtendTimeout(true);
+  }
 
   OnStartingDeskScreenshotTakenInternal(ending_desk_index);
 
-  for (auto* root : roots)
+  for (aura::Window* root : roots) {
     root->GetHost()->compositor()->SetAllowLocksToExtendTimeout(false);
+  }
 
   // Continue the second phase of the animation by taking the ending desk
   // screenshot and actually animating the layers.
@@ -231,7 +241,7 @@ void DeskAnimationBase::ActivateTargetDeskWithoutAnimation() {
 
 bool DeskAnimationBase::AnimatorFailed() const {
   for (const auto& animator : desk_switch_animators_) {
-    if (animator->screenshot_failed()) {
+    if (animator->animator_failed()) {
       return true;
     }
   }

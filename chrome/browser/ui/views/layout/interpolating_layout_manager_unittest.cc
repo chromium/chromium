@@ -31,7 +31,7 @@ class TestLayout : public views::LayoutManagerBase {
       if (!IsChildIncludedInLayout(*it))
         continue;
       views::ChildLayout child_layout;
-      child_layout.child_view = *it;
+      child_layout.child_view = (*it).get();
       child_layout.visible = true;
       child_layout.bounds = gfx::Rect(x, 1, size_, size_);
       layout.child_layouts.push_back(child_layout);

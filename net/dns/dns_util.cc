@@ -50,7 +50,7 @@ DohProviderEntry::List GetDohProviderEntriesFromNameservers(
   DohProviderEntry::List entries;
 
   for (const auto& server : dns_servers) {
-    for (const auto* entry : providers) {
+    for (const net::DohProviderEntry* entry : providers) {
       // DoH servers should only be added once.
       // Note: Check whether the provider is enabled *after* we've determined
       // that the IP addresses match so that if we are doing experimentation via
@@ -160,7 +160,7 @@ std::vector<DnsOverHttpsServerConfig> GetDohUpgradeServersFromDotHostname(
   if (dot_server.empty())
     return doh_servers;
 
-  for (const auto* entry : DohProviderEntry::GetList()) {
+  for (const net::DohProviderEntry* entry : DohProviderEntry::GetList()) {
     // Note: Check whether the provider is enabled *after* we've determined that
     // the hostnames match so that if we are doing experimentation via Finch,
     // the experiment only includes possible users of the corresponding DoH

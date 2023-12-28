@@ -48,5 +48,5 @@ done
 
 # Remove excluded files from the staging directory.
 for pattern in "${GLOB_EXCLUDES[@]}"; do
-  rm -rf $pattern
+  rm -rf "${PREFIX}/${pattern}"
 done

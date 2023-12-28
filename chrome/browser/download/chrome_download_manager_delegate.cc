@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -96,6 +97,7 @@
 #include "base/android/build_info.h"
 #include "base/android/content_uri_utils.h"
 #include "base/android/path_utils.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/download/android/chrome_duplicate_download_infobar_delegate.h"
 #include "chrome/browser/download/android/download_controller.h"
 #include "chrome/browser/download/android/download_dialog_bridge.h"
@@ -107,6 +109,8 @@
 #include "chrome/browser/download/android/insecure_download_dialog_bridge.h"
 #include "chrome/browser/download/android/insecure_download_infobar_delegate.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "net/http/http_content_disposition.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
@@ -963,14 +967,14 @@ bool ChromeDownloadManagerDelegate::IsMostRecentDownloadItemAtFilePath(
       profile->GetOriginalProfile()->GetAllOffTheRecordProfiles();
   profiles_to_check.push_back(profile->GetOriginalProfile());
 
-  std::vector<DownloadItem*> all_downloads;
+  std::vector<raw_ptr<DownloadItem, VectorExperimental>> all_downloads;
   for (auto* profile_to_check : profiles_to_check) {
     content::DownloadManager* manager = profile_to_check->GetDownloadManager();
     if (manager)
       manager->GetAllDownloads(&all_downloads);
   }
 
-  for (const auto* item : all_downloads) {
+  for (const download::DownloadItem* item : all_downloads) {
     if (item->GetGuid() == download->GetGuid() ||
         item->GetTargetFilePath() != download->GetTargetFilePath())
       continue;
@@ -1856,6 +1860,27 @@ void ChromeDownloadManagerDelegate::AttachExtraInfo(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+bool ChromeDownloadManagerDelegate::IsFromExternalApp(
+    download::DownloadItem* item) {
+  content::WebContents* web_contents =
+      content::DownloadItemUtils::GetWebContents(item);
+  TabModel* tab_model = TabModelList::GetTabModelForWebContents(web_contents);
+  if (!tab_model) {
+    return false;
+  }
+
+  for (int index = 0; index < tab_model->GetTabCount(); ++index) {
+    if (web_contents == tab_model->GetWebContentsAt(index)) {
+      return tab_model->GetTabAt(index)->GetLaunchType() ==
+             static_cast<int>(TabModel::TabLaunchType::FROM_EXTERNAL_APP);
+    }
+  }
+
+  return false;
+}
+#endif  // BUILDFLAG(IS_ANRDOID)
+
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 ChromeDownloadManagerDelegate::SafeBrowsingState::~SafeBrowsingState() {}
 
@@ -1922,7 +1947,7 @@ void ChromeDownloadManagerDelegate::CancelAllEphemeralWarnings() {
   }
   content::DownloadManager::DownloadVector downloads;
   download_manager_->GetAllDownloads(&downloads);
-  for (auto* download : downloads) {
+  for (download::DownloadItem* download : downloads) {
     auto model = std::make_unique<DownloadItemModel>(download);
     if (model->IsEphemeralWarning() &&
         model->GetState() != download::DownloadItem::CANCELLED) {

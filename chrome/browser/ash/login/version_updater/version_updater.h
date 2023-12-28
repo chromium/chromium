@@ -124,6 +124,9 @@ class VersionUpdater : public UpdateEngineClient::Observer,
   void StartNetworkCheck();
   void StartUpdateCheck();
 
+  // Cleans up observer registrations for this object.
+  void StopObserving();
+
   void RefreshTimeLeftEstimation();
 
   void SetUpdateOverCellularOneTimePermission();

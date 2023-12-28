@@ -9,6 +9,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "services/network/ip_protection_proxy_list_manager.h"
 #include "services/network/ip_protection_proxy_list_manager_impl.h"
 #include "services/network/ip_protection_token_cache_manager.h"
@@ -107,13 +108,12 @@ std::vector<net::ProxyChain>
 IpProtectionConfigCacheImpl::ConvertProxyServerStringsToProxyChainList(
     const std::vector<std::vector<std::string>>& proxy_server_strings) {
   std::vector<net::ProxyChain> proxy_chain_list;
-  for (const std::vector<std::string>& proxy_chain_hostnames :
-       proxy_server_strings) {
+  for (const std::vector<std::string>& proxy_chain : proxy_server_strings) {
     bool invalid_proxy_server = false;
     std::vector<net::ProxyServer> proxy_servers;
-    for (const auto& proxy : proxy_chain_hostnames) {
-      net::ProxyServer proxy_server = net::ProxyServer::FromSchemeHostAndPort(
-          net::ProxyServer::SCHEME_HTTPS, proxy, absl::nullopt);
+    for (const auto& proxy : proxy_chain) {
+      net::ProxyServer proxy_server = net::ProxySchemeHostAndPortToProxyServer(
+          net::ProxyServer::SCHEME_HTTPS, proxy);
       // If invalid proxy server, skip entire proxy chain.
       if (!proxy_server.is_valid()) {
         invalid_proxy_server = true;

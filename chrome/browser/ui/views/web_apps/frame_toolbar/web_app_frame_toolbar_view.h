@@ -36,8 +36,9 @@ class WebAppToolbarButtonContainer;
 class WebAppFrameToolbarView : public views::AccessiblePaneView,
                                public ToolbarButtonProvider,
                                public views::ViewTargeterDelegate {
+  METADATA_HEADER(WebAppFrameToolbarView, views::AccessiblePaneView)
+
  public:
-  METADATA_HEADER(WebAppFrameToolbarView);
   explicit WebAppFrameToolbarView(BrowserView* browser_view);
   WebAppFrameToolbarView(const WebAppFrameToolbarView&) = delete;
   WebAppFrameToolbarView& operator=(const WebAppFrameToolbarView&) = delete;
@@ -114,7 +115,7 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
 
   views::View* GetContentSettingContainerForTesting();
 
-  const std::vector<ContentSettingImageView*>&
+  const std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>&
   GetContentSettingViewsForTesting() const;
 
   void UpdateCachedColors();

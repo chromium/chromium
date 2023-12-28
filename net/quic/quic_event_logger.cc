@@ -799,8 +799,7 @@ void QuicEventLogger::OnEncryptedClientHelloSent(
     std::string_view client_hello) {
   net_log_.AddEvent(NetLogEventType::SSL_ENCRYPTED_CLIENT_HELLO, [&] {
     return base::Value::Dict().Set(
-        "bytes",
-        NetLogBinaryValue(base::as_bytes(base::make_span(client_hello))));
+        "bytes", NetLogBinaryValue(base::as_byte_span(client_hello)));
   });
 }
 

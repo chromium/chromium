@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -31,6 +32,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  * refactor that will move it out of current folder.
  */
 public class ShoppingPersistedTabDataService {
+    private static final BooleanCachedFieldTrialParameter
+            SKIP_SHOPPING_PERSISTED_TAB_DATA_DELAYED_INITIALIZATION =
+                    new BooleanCachedFieldTrialParameter(
+                            ChromeFeatureList.PRICE_CHANGE_MODULE,
+                            "skip_shopping_persisted_tab_data_delayed_initialization",
+                            true);
     private static ProfileKeyedMap<ShoppingPersistedTabDataService> sProfileToPriceDropService;
     private static ShoppingPersistedTabDataService sServiceForTesting;
 
@@ -42,11 +49,11 @@ public class ShoppingPersistedTabDataService {
      * Class for a price change item when externtal components ask for price changes from this
      * service.
      */
-    public class PriceChangeItem {
+    public static class PriceChangeItem {
         private Tab mTab;
         private ShoppingPersistedTabData mData;
 
-        PriceChangeItem(Tab tab, ShoppingPersistedTabData data) {
+        public PriceChangeItem(Tab tab, ShoppingPersistedTabData data) {
             mTab = tab;
             mData = data;
         }
@@ -182,7 +189,8 @@ public class ShoppingPersistedTabDataService {
                         if (counter.incrementAndGet() == currentTabsWithPriceDrop.size()) {
                             callback.onResult(sortShoppingPersistedTabDataWithPriceDrops(results));
                         }
-                    });
+                    },
+                    SKIP_SHOPPING_PERSISTED_TAB_DATA_DELAYED_INITIALIZATION.getValue());
         }
     }
 
@@ -212,7 +220,7 @@ public class ShoppingPersistedTabDataService {
     }
 
     /** Sets the {@link ShoppingPersistedTabDataService} for testing. */
-    protected static void setServiceForTesting(ShoppingPersistedTabDataService service) {
+    public static void setServiceForTesting(ShoppingPersistedTabDataService service) {
         sServiceForTesting = service;
     }
 

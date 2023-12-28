@@ -5,12 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_TABS_MODEL_CLOSING_WEB_STATE_OBSERVER_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_TABS_MODEL_CLOSING_WEB_STATE_OBSERVER_BROWSER_AGENT_H_
 
+#import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 
-namespace sessions {
-class TabRestoreService;
+namespace web::proto {
+class WebStateStorage;
 }
 
 // TODO(crbug.com/1121120): more cleanly separate the responsibilities of this
@@ -39,6 +41,10 @@ class ClosingWebStateObserverBrowserAgent
   // bookmark UI.
   void RecordHistoryForWebStateAtIndex(web::WebState* web_state, int index);
 
+  // Records history for a given unrealized WebState after loading its state
+  // from storage.
+  void RecordHistoryFromStorage(int index, web::proto::WebStateStorage storage);
+
   // BrowserObserver methods.
   void BrowserDestroyed(Browser* browser) override;
 
@@ -50,6 +56,9 @@ class ClosingWebStateObserverBrowserAgent
                              const WebStateListChange& change,
                              const WebStateListStatus& status) override;
 
-  sessions::TabRestoreService* restore_service_ = nullptr;
+  raw_ptr<Browser> browser_;
+
+  base::WeakPtrFactory<ClosingWebStateObserverBrowserAgent> weak_ptr_factory_{
+      this};
 };
 #endif  // IOS_CHROME_BROWSER_TABS_MODEL_CLOSING_WEB_STATE_OBSERVER_BROWSER_AGENT_H_

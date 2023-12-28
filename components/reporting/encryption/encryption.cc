@@ -51,7 +51,8 @@ void Encryptor::Handle::ProduceEncryptedRecord(
 
   // Validate and accept asymmetric peer key.
   if (!asymmetric_key_result.has_value()) {
-    std::move(cb).Run(base::unexpected(asymmetric_key_result.error()));
+    std::move(cb).Run(
+        base::unexpected(std::move(asymmetric_key_result).error()));
     return;
   }
   const auto& asymmetric_key = asymmetric_key_result.value();
@@ -158,7 +159,6 @@ void Encryptor::RetrieveAsymmetricKey(
              scoped_refptr<Encryptor> encryptor) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(
                 encryptor->asymmetric_key_sequence_checker_);
-            StatusOr<std::pair<std::string, PublicKeyId>> response;
             // Schedule response on regular thread pool.
             base::ThreadPool::PostTask(
                 FROM_HERE,
@@ -166,7 +166,7 @@ void Encryptor::RetrieveAsymmetricKey(
                     [](base::OnceCallback<void(
                            StatusOr<std::pair<std::string, PublicKeyId>>)> cb,
                        StatusOr<std::pair<std::string, PublicKeyId>> response) {
-                      std::move(cb).Run(response);
+                      std::move(cb).Run(std::move(response));
                     },
                     std::move(cb),
                     !encryptor->asymmetric_key_.has_value()

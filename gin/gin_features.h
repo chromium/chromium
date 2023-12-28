@@ -43,6 +43,9 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kV8PerContextMarkingWorklist);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8ReduceConcurrentMarkingTasks);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8ShortBuiltinCalls);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8SingleThreadedGCInBackground);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8EfficiencyModeTiering);
+GIN_EXPORT extern const base::FeatureParam<int>
+    kV8EfficiencyModeTieringDelayTurbofan;
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8SlowHistograms);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8SlowHistogramsCodeMemoryWriteProtection);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8SlowHistogramsNoTurbofan);
@@ -66,6 +69,7 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptCompileHintsMagic);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptIteratorHelpers);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptPromiseWithResolvers);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptArrayFromAsync);
+GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptRegExpModifiers);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyTailCall);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyInlining);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyGenericWrapper);

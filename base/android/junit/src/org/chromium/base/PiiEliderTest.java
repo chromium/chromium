@@ -73,22 +73,6 @@ public class PiiEliderTest {
     }
 
     @Test
-    public void testElideUrl8() {
-        String original =
-                "exception at org.chromium.chrome.browser.compositor.scene_layer."
-                        + "TabListSceneLayer.nativeUpdateLayer(Native Method)";
-        assertEquals(original, PiiElider.elideUrl(original));
-    }
-
-    @Test
-    public void testElideUrl9() {
-        String original =
-                "I/dalvikvm( 5083): at org.chromium.chrome.browser.compositor."
-                        + "scene_layer.TabListSceneLayer.nativeUpdateLayer(Native Method)";
-        assertEquals(original, PiiElider.elideUrl(original));
-    }
-
-    @Test
     public void testElideUrl10() {
         String original =
                 "Caused by: java.lang.ClassNotFoundException: Didn't find class "
@@ -110,14 +94,6 @@ public class PiiEliderTest {
     }
 
     @Test
-    public void testElideUrl12() {
-        String original =
-                "System.err: at kH.onAnimationEnd"
-                        + "(chromium-TrichromeChromeGoogle6432.aab-canary-530200034:42)";
-        assertEquals(original, PiiElider.elideUrl(original));
-    }
-
-    @Test
     public void testElideNonHttpUrl() {
         String original = "test some-other-scheme://address/01010?param=33&other_param=AAA !!!";
         String expected = "test HTTP://WEBADDRESS.ELIDED !!!";
@@ -127,6 +103,15 @@ public class PiiEliderTest {
     @Test
     public void testDontElideFileSuffixes() {
         String original = "chromium_android_linker.so";
+        assertEquals(original, PiiElider.elideUrl(original));
+    }
+
+    @Test
+    public void testDontElideFilePaths() {
+        String original =
+                """
+            dlopen failed: library "/data/app/com.chrome.dev-Lo4Mduh0dhPARVPBiAM_ag==/Chrome.apk!/\
+            lib/arm64-v8a/libelements.so" not found""";
         assertEquals(original, PiiElider.elideUrl(original));
     }
 
@@ -170,23 +155,25 @@ public class PiiEliderTest {
     public void testElideUrlInStacktrace() {
         String original =
                 "java.lang.RuntimeException: Outer Exception crbug.com/12345\n"
-                    + "  at org.chromium.base.PiiElider.sanitizeStacktrace (PiiElider.java:120)\n"
-                    + "Caused by: java.lang.NullPointerException: Inner Exception"
+                    + "\tat org.chromium.base.PiiElider.sanitizeStacktrace (PiiElider.java:120)\n"
+                    + "Caused by: java.lang.NullPointerException: Inner Exception\n"
                     + " shorturl.com/bxyj5";
         String expected =
                 "java.lang.RuntimeException: Outer Exception HTTP://WEBADDRESS.ELIDED\n"
-                    + "  at org.chromium.base.PiiElider.sanitizeStacktrace (PiiElider.java:120)\n"
-                    + "Caused by: java.lang.NullPointerException: Inner Exception "
-                    + "HTTP://WEBADDRESS.ELIDED";
+                    + "\tat org.chromium.base.PiiElider.sanitizeStacktrace (PiiElider.java:120)\n"
+                    + "Caused by: java.lang.NullPointerException: Inner Exception\n"
+                    + " HTTP://WEBADDRESS.ELIDED";
         assertEquals(expected, PiiElider.sanitizeStacktrace(original));
     }
 
     @Test
     public void testDoesNotElideMethodNameInStacktrace() {
         String original =
-                "java.lang.NullPointerException: Attempt to invoke virtual method 'int"
-                    + " org.robolectric.internal.AndroidSandbox.getBackStackEntryCount()' on a null"
-                    + " object reference";
+                """
+                java.lang.NullPointerException: Attempt to invoke virtual method 'int \
+                org.robolectric.internal.AndroidSandbox.getBackStackEntryCount()' on a null \
+                object reference
+                \tat ...""";
         assertEquals(original, PiiElider.sanitizeStacktrace(original));
     }
 }

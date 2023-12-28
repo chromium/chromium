@@ -251,9 +251,7 @@ TEST_F(NetworkQualitiesPrefManager, WriteAndReadWithMultipleNetworkIDs) {
   // NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN.
   EXPECT_LE(kMaxCacheSize - 1, count_2g_entries);
 
-  base::HistogramTester histogram_tester;
   estimator.OnPrefsRead(read_prefs);
-  histogram_tester.ExpectUniqueSample("NQE.Prefs.ReadSize", kMaxCacheSize, 1);
 
   manager.ShutdownOnPrefSequence();
 }

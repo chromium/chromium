@@ -106,6 +106,21 @@ void LegacySessionRestorationService::LoadSession(Browser* browser) {
   SessionRestorationBrowserAgent::FromBrowser(browser)->RestoreSession();
 }
 
+void LegacySessionRestorationService::LoadWebStateStorage(
+    Browser* browser,
+    web::WebState* web_state,
+    WebStateStorageCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!base::Contains(browsers_, browser)) {
+    return;
+  }
+
+  web::proto::WebStateStorage storage;
+  [web_state->BuildSessionStorage() serializeToProto:storage];
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(storage)));
+}
+
 void LegacySessionRestorationService::Disconnect(Browser* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::Contains(browsers_, browser));
@@ -159,6 +174,11 @@ void LegacySessionRestorationService::PurgeUnassociatedData(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [web_session_state_cache_
       purgeUnassociatedDataWithCompletion:std::move(closure)];
+}
+
+bool LegacySessionRestorationService::PlaceholderTabsEnabled() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return false;
 }
 
 void LegacySessionRestorationService::WillStartSessionRestoration(

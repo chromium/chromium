@@ -761,32 +761,32 @@ TEST_F(TransformedOverlayClipRectTest, NoTransform) {
 TEST_F(TransformedOverlayClipRectTest, Rotate90) {
   // If the candidate is rotated by 90 degrees, the top-left corner of the quad
   // corresponds to the bottom-left corner in UV space.
-  RunClipToTopLeftCornerTest(gfx::OverlayTransform::OVERLAY_TRANSFORM_ROTATE_90,
-                             gfx::RectF(1, 1),
-                             gfx::RectF(0.0f, 0.5f, 0.5f, 0.5f));
+  RunClipToTopLeftCornerTest(
+      gfx::OverlayTransform::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90,
+      gfx::RectF(1, 1), gfx::RectF(0.0f, 0.5f, 0.5f, 0.5f));
 }
 
 TEST_F(TransformedOverlayClipRectTest, Rotate180) {
   // If the candidate is rotated by 180 degrees, the top-left corner of the quad
   // corresponds to the bottom-right corner in UV space.
   RunClipToTopLeftCornerTest(
-      gfx::OverlayTransform::OVERLAY_TRANSFORM_ROTATE_180, gfx::RectF(1, 1),
-      gfx::RectF(0.5f, 0.5f, 0.5f, 0.5f));
+      gfx::OverlayTransform::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180,
+      gfx::RectF(1, 1), gfx::RectF(0.5f, 0.5f, 0.5f, 0.5f));
 }
 
 TEST_F(TransformedOverlayClipRectTest, Rotate270) {
   // If the candidate is rotated by 270 degrees, the top-left corner of the quad
   // corresponds to the top-right corner in UV space.
   RunClipToTopLeftCornerTest(
-      gfx::OverlayTransform::OVERLAY_TRANSFORM_ROTATE_270, gfx::RectF(1, 1),
-      gfx::RectF(0.5f, 0.0f, 0.5f, 0.5f));
+      gfx::OverlayTransform::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270,
+      gfx::RectF(1, 1), gfx::RectF(0.5f, 0.0f, 0.5f, 0.5f));
 }
 
 TEST_F(TransformedOverlayClipRectTest, ClippedUvs) {
   // Check that the clip is calculated correctly if the candidate's |uv_rect| is
   // not full size, and offset from the origin.
   RunClipToTopLeftCornerTest(
-      gfx::OverlayTransform::OVERLAY_TRANSFORM_ROTATE_180,
+      gfx::OverlayTransform::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180,
       gfx::RectF(0.1f, 0.2f, 0.4f, 0.4f), gfx::RectF(0.3f, 0.4f, 0.2f, 0.2f));
 }
 

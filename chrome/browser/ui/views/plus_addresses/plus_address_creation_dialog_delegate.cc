@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller_desktop.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_view.h"
@@ -29,6 +30,7 @@
 #include "ui/color/color_id.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/styled_label.h"
@@ -38,12 +40,23 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "components/plus_addresses/resources/vector_icons.h"
+#else
+#include "components/vector_icons/vector_icons.h"
+#endif
 
 namespace plus_addresses {
 
 namespace {
 const float kDescriptionWidthPercent = 0.8;
 const int kPlusAddressLabelVerticalMargin = 10;
+const int kPlusAddressLogoWidth = 100;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+const gfx::VectorIcon& kLogoIcon = plus_addresses::kPlusAddressesLogoIcon;
+#else
+const gfx::VectorIcon& kLogoIcon = vector_icons::kProductIcon;
+#endif
 }  // namespace
 
 PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
@@ -70,12 +83,10 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
           .Build();
 
   // Create hero image.
-  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
   primary_view->AddChildView(
       views::Builder<views::ImageView>()
-          .SetImage(ui::ImageModel::FromImageSkia(
-              // TODO(crbug.com/1467623) - Replace this placeholder image.
-              *bundle.GetImageSkiaNamed(IDR_TAILORED_SECURITY_CONSENTED)))
+          .SetImage(ui::ImageModel::FromVectorIcon(kLogoIcon, ui::kColorIcon,
+                                                   kPlusAddressLogoWidth))
           .Build());
 
   // Add title view.

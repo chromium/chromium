@@ -126,8 +126,7 @@ class FakeFastPairGattServiceClientImplFactory
     return fake_fast_pair_gatt_service_client;
   }
 
-  raw_ptr<ash::quick_pair::FakeFastPairGattServiceClient,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::quick_pair::FakeFastPairGattServiceClient, DanglingUntriaged>
       fake_fast_pair_gatt_service_client_ = nullptr;
 };
 
@@ -273,14 +272,13 @@ class RetroactivePairingDetectorTest
 
   scoped_refptr<FakeBluetoothAdapter> adapter_;
   std::unique_ptr<PairerBroker> pairer_broker_;
-  raw_ptr<MockPairerBroker, ExperimentalAsh> mock_pairer_broker_ = nullptr;
+  raw_ptr<MockPairerBroker> mock_pairer_broker_ = nullptr;
 
   scoped_refptr<FakeBluetoothSocket> fake_socket_ =
       base::MakeRefCounted<FakeBluetoothSocket>();
   std::unique_ptr<MessageStream> message_stream_;
   std::unique_ptr<MessageStreamLookup> message_stream_lookup_;
-  raw_ptr<FakeMessageStreamLookup, ExperimentalAsh>
-      fake_message_stream_lookup_ = nullptr;
+  raw_ptr<FakeMessageStreamLookup> fake_message_stream_lookup_ = nullptr;
   std::unique_ptr<FakeFastPairRepository> fast_pair_repository_;
 
   FakeFastPairGattServiceClientImplFactory fast_pair_gatt_service_factory_;

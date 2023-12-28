@@ -23,6 +23,7 @@
 #include "ui/views/action_view_interface.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/metadata/view_factory.h"
 
 class TabStripModel;
@@ -44,8 +45,13 @@ class MenuRunner;
 // appearing in the toolbar.
 class ToolbarButton : public views::LabelButton,
                       public views::ContextMenuController {
+  METADATA_HEADER(ToolbarButton, views::LabelButton)
+
  public:
-  METADATA_HEADER(ToolbarButton);
+  enum class Edge {
+    kLeft = 0,
+    kRight,
+  };
 
   // More convenient form of the ctor below, when |model| and |tab_strip_model|
   // are both nullptr.
@@ -102,6 +108,9 @@ class ToolbarButton : public views::LabelButton,
   // icon state changes, e.g. in response to theme or touch mode changes.
   virtual void UpdateIcon();
 
+  // Returns the button's corner radius for `edge`.
+  virtual float GetCornerRadiusFor(ToolbarButton::Edge edge) const;
+
   // Gets/Sets |layout_insets_|, see comment there.
   std::optional<gfx::Insets> GetLayoutInsets() const;
   void SetLayoutInsets(const std::optional<gfx::Insets>& insets);
@@ -154,7 +163,8 @@ class ToolbarButton : public views::LabelButton,
   // Sets |layout_inset_delta_|, see comment there.
   void SetLayoutInsetDelta(const gfx::Insets& insets);
 
-  void UpdateColorsAndInsets();
+  // Updates the button's background and border.
+  virtual void UpdateColorsAndInsets();
 
   // Returns the standard toolbar button foreground color for the given state.
   // This color is typically used for the icon and text of toolbar buttons.
@@ -182,6 +192,19 @@ class ToolbarButton : public views::LabelButton,
   // Virtual method to explicitly set the highlighted border color instead of
   // the default behavior of the HighlightColorAnimation.
   virtual std::optional<SkColor> GetHighlightBorderColor() const;
+
+  // Sets the spacing on the outer side of the label (not the side where the
+  // image is). The spacing is applied only when the label is non-empty.
+  void SetLabelSideSpacing(int spacing);
+
+  // Returns the target insets according to the button's layout.
+  const gfx::Insets GetTargetInsets() const;
+
+  // Returns the target size according to the current button's size and insets.
+  const gfx::Size GetTargetSize() const;
+
+  // Returns the button's rounded corner radius based on its size.
+  int GetRoundedCornerRadius() const;
 
   // Updates the images using the given icons and specific colors.
   void UpdateIconsWithColors(const gfx::VectorIcon& icon,
@@ -263,10 +286,6 @@ class ToolbarButton : public views::LabelButton,
   // it hides the current highlight using an animation. Otherwise, it is a
   // no-op.
   void ClearHighlight();
-
-  // Sets the spacing on the outer side of the label (not the side where the
-  // image is). The spacing is applied only when the label is non-empty.
-  void SetLabelSideSpacing(int spacing);
 
   // Callback for MenuModelAdapter.
   void OnMenuClosed();

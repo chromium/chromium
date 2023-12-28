@@ -505,6 +505,7 @@
 <translation id="4935975195727477204">勳章菊花</translation>
 <translation id="4943368462779413526">足球</translation>
 <translation id="4961158930123534723">已與 Parallels Desktop 共用 1 個資料夾</translation>
+<translation id="4965874878399872778">正在檢查檔案是否符合貴機構的安全性政策...</translation>
 <translation id="496656650103537022">已還原 <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">相簿</translation>
 <translation id="4972330214479971536">無法完成檔案同步處理設定</translation>
@@ -557,10 +558,9 @@
     無論裝置發生任何狀況，您的檔案都安全存放於 Google 雲端硬碟。<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />檔案集中存放，<ph name="MARKUP_8" />
     方便共用、建立檔案並與他人協同合作。<ph name="MARKUP_9" /></translation>
-<translation id="5275973617553375938">從 Google 雲端硬碟還原檔案</translation>
+<translation id="5275973617553375938">從 Google 雲端硬碟還原的檔案</translation>
 <translation id="5278111733643988471">如要還原這個項目，請將該項目從垃圾桶中拖曳到新資料夾，因為這個項目所屬的資料夾「<ph name="PARENT_FOLDER_NAME" />」已經刪除。</translation>
 <translation id="5283101102242354279">在無痕模式中開啟擴充功能：</translation>
-<translation id="5286194356314741248">掃描中</translation>
 <translation id="5288441970121584418">漢堡</translation>
 <translation id="5293615890992542006">根據系統管理員政策，你無法移動這個檔案</translation>
 <translation id="5305688511332277257">未安裝任何憑證</translation>
@@ -711,6 +711,7 @@
 <translation id="6430271654280079150">你只剩 1 次重試機會。</translation>
 <translation id="643243556292470964">已刪除的檔案現在會移到垃圾桶</translation>
 <translation id="6438480100790416671">正在檢查儲存空間…</translation>
+<translation id="6451527188465304418">正在檢查檔案是否符合貴機構的安全性政策...</translation>
 <translation id="6485131920355264772">無法擷取空間資訊</translation>
 <translation id="6495925982925244349">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，由系統管理員管理，詳細資料</translation>
 <translation id="649877868557234318">將 <ph name="FILE_NAME" /> 解壓縮至 <ph name="FOLDER_NAME" /></translation>

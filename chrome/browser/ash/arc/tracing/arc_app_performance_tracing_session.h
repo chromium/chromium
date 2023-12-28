@@ -27,7 +27,7 @@ class Surface;
 namespace arc {
 
 struct PerfTraceResult {
-  double fps, present_deviation, render_quality;
+  double fps, perceived_fps, present_deviation, render_quality;
 };
 
 using TicksNowCallback = base::RepeatingCallback<base::TimeTicks()>;
@@ -121,6 +121,10 @@ class ArcAppPerformanceTracingSession : public exo::SurfaceObserver {
 
   // Traces and records frame timing.
   std::optional<PresentFramesTracer> frames_;
+
+  // Number of commits that occurred during the trace. This count will include
+  // frames that were not presented by exo e.g. as a result of late commit.
+  uint32_t commit_count_;
 
   TicksNowCallback ticks_now_callback_;
 

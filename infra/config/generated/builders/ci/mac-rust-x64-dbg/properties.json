@@ -25,9 +25,6 @@
                 "target_platform": "mac"
               },
               "legacy_gclient_config": {
-                "apply_configs": [
-                  "checkout_rust"
-                ],
                 "config": "chromium"
               }
             }

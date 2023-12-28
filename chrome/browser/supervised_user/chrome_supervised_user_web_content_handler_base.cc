@@ -54,7 +54,7 @@ void ChromeSupervisedUserWebContentHandlerBase::CleanUpInfoBarOnMainFrame() {
   }
   // Copy the infobars to allow safe iteration while removing elements.
   const auto infobars = manager->infobars();
-  for (auto* infobar : infobars) {
+  for (infobars::InfoBar* infobar : infobars) {
     if (infobar->delegate()->ShouldExpire(
             infobars::ContentInfoBarManager::
                 NavigationDetailsFromLoadCommittedDetails(details))) {

@@ -12,8 +12,7 @@
 #include "net/base/net_errors.h"
 #include "storage/browser/file_system/file_system_backend.h"
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 BufferingFileStreamReader::BufferingFileStreamReader(
     std::unique_ptr<storage::FileStreamReader> file_stream_reader,
@@ -134,5 +133,4 @@ void BufferingFileStreamReader::OnReadCompleted(
   std::move(callback).Run(result);
 }
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider

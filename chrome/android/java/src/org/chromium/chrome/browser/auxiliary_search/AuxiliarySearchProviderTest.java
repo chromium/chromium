@@ -23,7 +23,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -38,7 +37,6 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.url.GURL;
@@ -50,7 +48,6 @@ import java.util.HashSet;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION})
-@DisableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_SAFE_SEARCH})
 public class AuxiliarySearchProviderTest {
     private static final String TAB_TITLE = "tab";
     private static final String TAB_URL = "https://tab.google.com/";
@@ -73,42 +70,7 @@ public class AuxiliarySearchProviderTest {
     public void setUp() {
         mJniMocker.mock(AuxiliarySearchBridgeJni.TEST_HOOKS, mMockAuxiliarySearchBridgeJni);
         doReturn(FAKE_NATIVE_PROVIDER).when(mMockAuxiliarySearchBridgeJni).getForProfile(mProfile);
-        doAnswer((Answer<Object[]>) invocation -> ((Object[]) invocation.getArguments()[1]))
-                .when(mMockAuxiliarySearchBridgeJni)
-                .getSearchableTabs(eq(FAKE_NATIVE_PROVIDER), any(Tab[].class));
         mAuxiliarySearchProvider = new AuxiliarySearchProvider(mProfile, mTabModelSelector);
-    }
-
-    @Test
-    @SmallTest
-    public void testGetTabsSearchableDataProto() throws InterruptedException {
-        MockTabModel mockTabModel = new MockTabModel(mProfile, null);
-        for (int i = 0; i < 200; i++) {
-            MockTab tab = mockTabModel.addTab(i);
-            tab.setGurlOverrideForTesting(new GURL(TAB_URL + Integer.toString(i)));
-            tab.setTitle(TAB_TITLE + Integer.toString(i));
-            tab.setTimestampMillis(i);
-        }
-
-        doReturn(mockTabModel).when(mTabModelSelector).getModel(false);
-        AuxiliarySearchTabGroup tabGroup = mAuxiliarySearchProvider.getTabsSearchableDataProto();
-
-        assertEquals(tabGroup.getTabCount(), 100);
-        HashSet<Integer> returnedTabsNumbers = new HashSet<Integer>();
-        for (int i = 0; i < tabGroup.getTabCount(); i++) {
-            AuxiliarySearchEntry tab = tabGroup.getTab(i);
-            assertTrue(tab.hasTitle());
-            assertTrue(tab.hasUrl());
-            assertTrue(tab.hasLastAccessTimestamp());
-            assertFalse(tab.hasCreationTimestamp());
-            assertFalse(tab.hasLastModificationTimestamp());
-
-            int number = Integer.valueOf(tab.getUrl().substring(TAB_URL.length()));
-            assertTrue(number >= 100 && number <= 199);
-            assertEquals(number, (int) tab.getLastAccessTimestamp());
-            returnedTabsNumbers.add(number);
-        }
-        assertEquals(returnedTabsNumbers.size(), 100);
     }
 
     @Test
@@ -148,114 +110,6 @@ public class AuxiliarySearchProviderTest {
         AuxiliarySearchBookmarkGroup bookmarksList =
                 mAuxiliarySearchProvider.getBookmarksSearchableDataProto();
         assertNull(bookmarksList);
-    }
-
-    @Test
-    @SmallTest
-    public void testTabHasNullTitle() {
-        MockTabModel mockTabModel = new MockTabModel(mProfile, null);
-
-        // Add a normal tab
-        MockTab tab = mockTabModel.addTab(0);
-        tab.setGurlOverrideForTesting(new GURL(TAB_URL + "0"));
-        tab.setTitle(TAB_TITLE + "0");
-        tab.setTimestampMillis(0);
-
-        // Add a null title tab
-        tab = mockTabModel.addTab(1);
-        tab.setGurlOverrideForTesting(new GURL(TAB_URL + Integer.toString(1)));
-        tab.setTimestampMillis(1);
-        tab.setTitle(null);
-
-        doReturn(mockTabModel).when(mTabModelSelector).getModel(false);
-        AuxiliarySearchTabGroup tabGroup = mAuxiliarySearchProvider.getTabsSearchableDataProto();
-
-        assertEquals(1, tabGroup.getTabCount());
-        assertTrue(tabGroup.getTab(0).hasTitle());
-        assertEquals(TAB_TITLE + "0", tabGroup.getTab(0).getTitle());
-        assertTrue(tabGroup.getTab(0).hasUrl());
-        assertEquals(TAB_URL + "0", tabGroup.getTab(0).getUrl());
-    }
-
-    @Test
-    @SmallTest
-    public void testTabHasEmptyTitle() {
-        MockTabModel mockTabModel = new MockTabModel(mProfile, null);
-
-        // Add a normal tab
-        MockTab tab = mockTabModel.addTab(0);
-        tab.setGurlOverrideForTesting(new GURL(TAB_URL + "0"));
-        tab.setTitle(TAB_TITLE + "0");
-        tab.setTimestampMillis(0);
-
-        // Add an empty title tab
-        tab = mockTabModel.addTab(1);
-        tab.setGurlOverrideForTesting(new GURL(TAB_URL + "1"));
-        tab.setTimestampMillis(1);
-        tab.setTitle("");
-
-        doReturn(mockTabModel).when(mTabModelSelector).getModel(false);
-        AuxiliarySearchTabGroup tabGroup = mAuxiliarySearchProvider.getTabsSearchableDataProto();
-
-        assertEquals(1, tabGroup.getTabCount());
-        assertTrue(tabGroup.getTab(0).hasTitle());
-        assertEquals(TAB_TITLE + "0", tabGroup.getTab(0).getTitle());
-        assertTrue(tabGroup.getTab(0).hasUrl());
-        assertEquals(TAB_URL + "0", tabGroup.getTab(0).getUrl());
-    }
-
-    @Test
-    @SmallTest
-    public void testTabHasNullUrl() {
-        MockTabModel mockTabModel = new MockTabModel(mProfile, null);
-
-        // Add a normal tab
-        MockTab tab = mockTabModel.addTab(0);
-        tab.setGurlOverrideForTesting(new GURL(TAB_URL + "0"));
-        tab.setTitle(TAB_TITLE + "0");
-        tab.setTimestampMillis(0);
-
-        // Add a null url tab
-        tab = mockTabModel.addTab(1);
-        tab.setGurlOverrideForTesting(null);
-        tab.setTimestampMillis(1);
-        tab.setTitle(TAB_TITLE + "0");
-
-        doReturn(mockTabModel).when(mTabModelSelector).getModel(false);
-        AuxiliarySearchTabGroup tabGroup = mAuxiliarySearchProvider.getTabsSearchableDataProto();
-
-        assertEquals(1, tabGroup.getTabCount());
-        assertTrue(tabGroup.getTab(0).hasTitle());
-        assertEquals(TAB_TITLE + "0", tabGroup.getTab(0).getTitle());
-        assertTrue(tabGroup.getTab(0).hasUrl());
-        assertEquals(TAB_URL + "0", tabGroup.getTab(0).getUrl());
-    }
-
-    @Test
-    @SmallTest
-    public void testTabHasInvalidlUrl() {
-        MockTabModel mockTabModel = new MockTabModel(mProfile, null);
-
-        // Add a normal tab
-        MockTab tab = mockTabModel.addTab(0);
-        tab.setGurlOverrideForTesting(new GURL(TAB_URL + "0"));
-        tab.setTitle(TAB_TITLE + "0");
-        tab.setTimestampMillis(0);
-
-        // Add an invalid url tab
-        tab = mockTabModel.addTab(1);
-        tab.setGurlOverrideForTesting(new GURL("invalid"));
-        tab.setTimestampMillis(1);
-        tab.setTitle(TAB_TITLE + "0");
-
-        doReturn(mockTabModel).when(mTabModelSelector).getModel(false);
-        AuxiliarySearchTabGroup tabGroup = mAuxiliarySearchProvider.getTabsSearchableDataProto();
-
-        assertEquals(1, tabGroup.getTabCount());
-        assertTrue(tabGroup.getTab(0).hasTitle());
-        assertEquals(TAB_TITLE + "0", tabGroup.getTab(0).getTitle());
-        assertTrue(tabGroup.getTab(0).hasUrl());
-        assertEquals(TAB_URL + "0", tabGroup.getTab(0).getUrl());
     }
 
     @Test

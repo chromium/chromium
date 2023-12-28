@@ -44,18 +44,13 @@ BASE_DECLARE_FEATURE(kEnableImageTranslate);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kEnableImageSearchSidePanelFor3PDse);
 
-// Enables using more optimized image formats for Lens requests.
+// Enables launching the region search experience in a new tab with WebUI.
 COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensImageFormatOptimizations);
+BASE_DECLARE_FEATURE(kLensRegionSearchStaticPage);
 
 // Enables the context menu in the Lens side panel.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(EnableContextMenuInLensSidePanel);
-
-// Enables the ping for Lens Standalone, which is sent before the Standalone
-// request.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kEnableLensPing);
 
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -97,36 +92,6 @@ extern const base::FeatureParam<bool> kDismissLoadingStateOnPrimaryPageChanged;
 // Enables Lens fullscreen search on Desktop platforms.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<bool> kEnableFullscreenSearch;
-
-// Enables encoding to WebP for region search queries. This param takes
-// precedence over kUseJpegForImageSearch.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<bool> kUseWebpForImageSearch;
-
-// Enables encoding to JPEG for region search queries. This param does
-// nothing if kUseWebpForImageSearch is enabled.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<bool> kUseJpegForImageSearch;
-
-// Value in range 0-100 that dictates the encoding quality for jpeg
-// format.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<int> kEncodingQualityJpeg;
-
-// Value in range 0-100 that dictates the encoding quality for webp
-// format.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<int> kEncodingQualityWebp;
-
-// The URL to send pings for Lens Standalone.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<std::string> kLensPingURL;
-
-// Enables sequential processing of the Lens Ping before performing the
-// Lens Standalone search. If false, the ping will occur in parallel to
-// the search.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<bool> kPingLensSequentially;
 
 // Enables Latency logging for the LensStandalone feature.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -200,29 +165,9 @@ extern bool IsLensInScreenshotSharingEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensRegionSearchStaticPageEnabled();
 
-// Get the encoding quality for jpeg search queries.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern int GetEncodingQualityJpeg();
-
-// Get the encoding quality for webp search queries.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern int GetEncodingQualityWebp();
-
-// Returns whether to use WebP encoding for image search queries.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsWebpForImageSearchEnabled();
-
-// Returns whether to use JPEG encoding for image search queries.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsJpegForImageSearchEnabled();
-
 // Returns whether to enable the context menu in the Lens side panel.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetEnableContextMenuInLensSidePanel();
-
-// Returns whether to ping Lens before sending a Standalone request.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetEnableLensPing();
 
 // The URL for the Lens ping.
 COMPONENT_EXPORT(LENS_FEATURES)

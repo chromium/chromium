@@ -80,11 +80,11 @@ class UnifiedKeyboardBacklightToggleView
   }
 
  private:
-  const raw_ptr<UnifiedSystemTrayModel, ExperimentalAsh> model_;
+  const raw_ptr<UnifiedSystemTrayModel> model_;
 
   // Owned by the views hierarchy.
-  raw_ptr<views::Label, ExperimentalAsh> toast_label_ = nullptr;
-  raw_ptr<IconButton, ExperimentalAsh> icon_button_ = nullptr;
+  raw_ptr<views::Label> toast_label_ = nullptr;
+  raw_ptr<IconButton> icon_button_ = nullptr;
 };
 
 }  // namespace

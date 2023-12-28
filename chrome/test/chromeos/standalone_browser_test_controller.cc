@@ -345,6 +345,28 @@ void StandaloneBrowserTestController::SetWebAppSettingsPref(
   std::move(callback).Run(/*success=*/true);
 }
 
+void StandaloneBrowserTestController::SetWebAppInstallForceListPref(
+    const std::string& policy,
+    SetWebAppInstallForceListPrefCallback callback) {
+  CHECK(callback);
+
+  auto result = base::JSONReader::ReadAndReturnValueWithError(
+      policy, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+  if (!result.has_value()) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+  if (!result->is_list()) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  ProfileManager::GetPrimaryUserProfile()->GetPrefs()->SetList(
+      prefs::kWebAppInstallForceList, std::move(*result).TakeList());
+
+  std::move(callback).Run(/*success=*/true);
+}
+
 void StandaloneBrowserTestController::OnUtteranceFinished(int utterance_id) {
   // Delete the utterace event delegate object when the utterance is finished.
   lacros_utterance_event_delegates_.erase(utterance_id);

@@ -356,6 +356,7 @@ fn placeholder_crate(
         name: &'a str,
         version: &'a semver::Version,
         dependencies: Vec<PlaceholderDependency<'a>>,
+        features: Vec<String>,
     }
     #[derive(serde::Serialize)]
     struct PlaceholderDependency<'a> {
@@ -412,8 +413,11 @@ fn placeholder_crate(
         })
         .collect();
 
+    let mut features = package.features.keys().cloned().collect::<Vec<String>>();
+    features.sort_unstable();
+
     let placeholder_crate =
-        PlaceholderCrate { name: &package.name, version: &package.version, dependencies };
+        PlaceholderCrate { name: &package.name, version: &package.version, dependencies, features };
 
     {
         let rendered = removed_cargo_template.render("template", &placeholder_crate)?;

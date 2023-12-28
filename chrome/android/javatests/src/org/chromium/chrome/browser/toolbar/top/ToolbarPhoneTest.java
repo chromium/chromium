@@ -14,7 +14,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
@@ -50,8 +49,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -81,7 +79,6 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
-import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.NtpSearchBoxDrawable;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -120,7 +117,6 @@ public class ToolbarPhoneTest {
     @Mock ThemeColorProvider mThemeColorProvider;
     @Mock GradientDrawable mLocationbarBackgroundDrawable;
     @Mock OptionalButtonCoordinator mOptionalButtonCoordinator;
-    @Mock NtpSearchBoxDrawable mNtpSearchBoxDrawable;
 
     private Canvas mCanvas = new Canvas();
     private ToolbarPhone mToolbar;
@@ -963,52 +959,6 @@ public class ToolbarPhoneTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
-    public void testLocationBarBackgroundChangedWithStartSurfaceState() {
-        // Test updating the location bar background when entering the search page from the Start
-        // Surface.
-        assertEquals(false, mToolbar.isLocationBarShownInNtp());
-        mToolbar.setLocationBarBackgroundDrawableForTesting(mLocationbarBackgroundDrawable);
-        mToolbar.setIsShowingStartSurfaceHomepageForTesting(true);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mToolbar.onStartSurfaceStateChanged(false, false, false, true);
-                });
-        assertEquals(
-                mLocationbarBackgroundDrawable,
-                mToolbar.getActiveLocationBarBackgroundForTesting());
-
-        // Test updating the location bar background when entering the New Tab Page from the Start
-        // Surface.
-        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        NewTabPageTestUtils.waitForNtpLoaded(tab);
-        assertEquals(true, mToolbar.isLocationBarShownInNtp());
-        mToolbar.setNtpSearchBoxBackgroundForTesting(mNtpSearchBoxDrawable);
-        mToolbar.setIsShowingStartSurfaceHomepageForTesting(true);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mToolbar.onStartSurfaceStateChanged(false, false, false, false);
-                });
-        assertEquals(mNtpSearchBoxDrawable, mToolbar.getActiveLocationBarBackgroundForTesting());
-
-        // Test updating the location bar background when entering the New Tab Page from the Start
-        // Surface when NtpSearchBoxDrawable hasn't been constructed.
-        assertEquals(true, mToolbar.isLocationBarShownInNtp());
-        mToolbar.setNtpSearchBoxBackgroundForTesting(null);
-        mToolbar.setIsShowingStartSurfaceHomepageForTesting(true);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mToolbar.onStartSurfaceStateChanged(false, false, false, false);
-                });
-        assertTrue(mToolbar.getActiveLocationBarBackgroundForTesting() != null);
-        assertTrue(
-                mToolbar.getActiveLocationBarBackgroundForTesting()
-                        instanceof NtpSearchBoxDrawable);
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
     public void testToolbarBackgroundChanged() {
         ColorDrawable toolbarBackgroundDrawable = mToolbar.getBackgroundDrawable();
         @ColorInt
@@ -1050,10 +1000,10 @@ public class ToolbarPhoneTest {
         View iconBackground = mToolbar.findViewById(R.id.location_bar_status_icon_bg);
         int expectedEndMarginAfterPolish =
                 mToolbar.getResources()
-                        .getDimensionPixelOffset(R.dimen.location_bar_url_action_offset_polish);
+                        .getDimensionPixelSize(R.dimen.location_bar_url_action_offset_polish);
         int expectedEndMarginBeforePolish =
                 mToolbar.getResources()
-                        .getDimensionPixelOffset(R.dimen.location_bar_url_action_offset);
+                        .getDimensionPixelSize(R.dimen.location_bar_url_action_offset);
 
         assertEquals(false, mToolbar.isLocationBarShownInNtp());
         assertEquals(View.INVISIBLE, iconBackground.getVisibility());
@@ -1069,7 +1019,8 @@ public class ToolbarPhoneTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mToolbar.setNtpSearchBoxScrollFractionForTesting(1);
-                    mToolbar.updateLocationBarForSurfacePolish(VisualState.NEW_TAB_NORMAL, false);
+                    mToolbar.updateLocationBarForSurfacePolish(
+                            VisualState.NEW_TAB_NORMAL, /* hasFocus= */ false);
                 });
         if (nightModeEnabled) {
             assertEquals(View.INVISIBLE, iconBackground.getVisibility());
@@ -1126,21 +1077,7 @@ public class ToolbarPhoneTest {
     private static class TestControlsVisibilityDelegate
             extends BrowserStateBrowserControlsVisibilityDelegate {
         public TestControlsVisibilityDelegate() {
-            super(
-                    new ObservableSupplier<Boolean>() {
-                        @Override
-                        public Boolean addObserver(Callback<Boolean> obs) {
-                            return false;
-                        }
-
-                        @Override
-                        public void removeObserver(Callback<Boolean> obs) {}
-
-                        @Override
-                        public Boolean get() {
-                            return false;
-                        }
-                    });
+            super(new ObservableSupplierImpl<>(false));
         }
     }
 }

@@ -2337,8 +2337,8 @@ internal::GraphemeIterator RenderText::GetGraphemeIteratorAtIndex(
   if (index == text.length())
     return text_to_display_indices_.end();
 
-  DCHECK(layout_text_up_to_date_);
-  DCHECK(!text_to_display_indices_.empty());
+  CHECK(layout_text_up_to_date_);
+  CHECK(!text_to_display_indices_.empty());
 
   // The function std::lower_bound(...) finds the first not less than |index|.
   internal::GraphemeIterator iter = std::lower_bound(
@@ -2348,7 +2348,7 @@ internal::GraphemeIterator RenderText::GetGraphemeIteratorAtIndex(
       });
 
   if (iter == text_to_display_indices_.end() || *iter.*field != index) {
-    DCHECK(iter != text_to_display_indices_.begin());
+    CHECK(iter != text_to_display_indices_.begin());
     --iter;
   }
 

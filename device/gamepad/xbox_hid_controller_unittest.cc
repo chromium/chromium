@@ -85,7 +85,10 @@ class XboxHidControllerTest : public testing::Test {
   XboxHidControllerTest(const XboxHidControllerTest&) = delete;
   XboxHidControllerTest& operator=(const XboxHidControllerTest&) = delete;
 
-  void TearDown() override { gamepad_->Shutdown(); }
+  void TearDown() override {
+    fake_hid_writer_ = nullptr;
+    gamepad_->Shutdown();
+  }
 
   void PostPlayEffect(
       double start_delay,
@@ -116,7 +119,7 @@ class XboxHidControllerTest : public testing::Test {
   const std::vector<uint8_t> stop_vibration_report_;
   int callback_count_;
   mojom::GamepadHapticsResult callback_result_;
-  raw_ptr<FakeHidWriter, DanglingUntriaged> fake_hid_writer_;
+  raw_ptr<FakeHidWriter> fake_hid_writer_;
   std::unique_ptr<XboxHidController> gamepad_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

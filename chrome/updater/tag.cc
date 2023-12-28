@@ -7,15 +7,18 @@
 #include <algorithm>
 #include <cstdint>
 #include <map>
+#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/escape.h"
@@ -526,7 +529,7 @@ uint16_t BigEndianReadU16(std::vector<uint8_t>::const_iterator it) {
 
 // Loads up to the last 80K bytes from `filename`.
 std::vector<uint8_t> ReadFileTail(const base::FilePath& filename) {
-  constexpr size_t kMaxBufferLength = 81920;  // 80K
+  constexpr int64_t kMaxBytesToRead = 81920;  // 80K
 
   base::File file(filename, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!file.IsValid()) {
@@ -534,16 +537,11 @@ std::vector<uint8_t> ReadFileTail(const base::FilePath& filename) {
   }
 
   const int64_t file_length = file.GetLength();
+  const int64_t bytes_to_read = std::min(file_length, kMaxBytesToRead);
+  const int64_t offset =
+      (file_length > bytes_to_read) ? file_length - bytes_to_read : 0;
 
-  int bytes_to_read = kMaxBufferLength;
-  int64_t offset = 0;
-  if (file_length > static_cast<int64_t>(bytes_to_read)) {
-    offset = file_length - bytes_to_read;
-  } else {
-    bytes_to_read = file_length;
-  }
-
-  std::vector<uint8_t> buffer(bytes_to_read + 1);
+  std::vector<uint8_t> buffer(bytes_to_read);
   const int num_bytes_read =
       file.Read(offset, reinterpret_cast<char*>(&buffer[0]), bytes_to_read);
   if (num_bytes_read != bytes_to_read) {
@@ -553,26 +551,14 @@ std::vector<uint8_t> ReadFileTail(const base::FilePath& filename) {
   return buffer;
 }
 
-std::optional<tagging::TagArgs> ParseTagBuffer(
-    const std::vector<uint8_t>& tag_buffer) {
+std::string ParseTagBuffer(const std::vector<uint8_t>& tag_buffer) {
   if (tag_buffer.empty()) {
     return {};
   }
 
   const std::string tag_string = ReadTag(tag_buffer.begin(), tag_buffer.end());
-  if (tag_string.empty()) {
-    LOG(ERROR) << __func__ << ": Tag not found in file.";
-    return {};
-  }
-
-  tagging::TagArgs tag_args;
-  const tagging::ErrorCode error = tagging::Parse(tag_string, {}, &tag_args);
-  if (error != tagging::ErrorCode::kSuccess) {
-    LOG(ERROR) << __func__ << ": Invalid tag string: " << tag_string << ": "
-               << error;
-    return {};
-  }
-  return tag_args;
+  LOG_IF(ERROR, tag_string.empty()) << __func__ << ": Tag not found in file.";
+  return tag_string;
 }
 
 std::vector<uint8_t> ReadEntireFile(const base::FilePath& file) {
@@ -748,7 +734,7 @@ std::string ReadTag(std::vector<uint8_t>::const_iterator begin,
   const uint8_t* magic_end = std::end(kTagMagicUtf8);
 
   std::vector<uint8_t>::const_iterator magic_str =
-      std::search(begin, end, magic_begin, magic_end);
+      std::find_end(begin, end, magic_begin, magic_end);
   if (magic_str == end) {
     return std::string();
   }
@@ -778,21 +764,47 @@ std::string ReadTag(std::vector<uint8_t>::const_iterator begin,
   return std::string(tag_buf, tag_buf + tag_len);
 }
 
-std::string ExeReadTag(const base::FilePath& file) {
-  const std::vector<uint8_t> contents = ReadEntireFile(file);
-  std::optional<tagging::Binary> bin = Binary::Parse(contents);
+std::unique_ptr<tagging::BinaryInterface> CreateBinary(
+    const base::FilePath& file,
+    base::span<const uint8_t> contents) {
+  if (file.MatchesExtension(FILE_PATH_LITERAL(".exe"))) {
+    return CreatePEBinary(contents);
+  } else if (file.MatchesExtension(FILE_PATH_LITERAL(".msi"))) {
+    return CreateMSIBinary(contents);
+  } else {
+    std::unique_ptr<BinaryInterface> binary = CreatePEBinary(contents);
+    if (!binary) {
+      binary = CreateMSIBinary(contents);
+    }
+    return binary;
+  }
+}
+
+std::string BinaryReadTagString(const base::FilePath& file) {
+  // For MSI files, simply search the tail of the file for the tag.
+  if (!file.MatchesExtension(FILE_PATH_LITERAL(".exe"))) {
+    return ParseTagBuffer(ReadFileTail(file));
+  }
+
+  base::MemoryMappedFile mapped_file;
+  if (!mapped_file.Initialize(file)) {
+    LOG(ERROR) << __func__ << ": Unknown or empty file: " << file;
+    return {};
+  }
+  std::unique_ptr<tagging::BinaryInterface> bin =
+      CreateBinary(file, mapped_file.bytes());
   if (!bin) {
     LOG(ERROR) << __func__ << ": Could not parse binary: " << file;
     return {};
   }
 
-  std::optional<base::span<const uint8_t>> tag = bin->tag();
+  std::optional<std::vector<uint8_t>> tag = bin->tag();
   if (!tag) {
     LOG(ERROR) << __func__ << ": No superfluous certificate in file: " << file;
     return {};
   }
 
-  const std::vector<const uint8_t> tag_data = {tag->begin(), tag->end()};
+  const std::vector<uint8_t> tag_data = {tag->begin(), tag->end()};
   const std::string tag_string = ReadTag(tag_data.begin(), tag_data.end());
   if (tag_string.empty()) {
     LOG(ERROR) << __func__ << ": file is untagged: " << file;
@@ -800,12 +812,28 @@ std::string ExeReadTag(const base::FilePath& file) {
   return tag_string;
 }
 
-bool ExeWriteTag(const base::FilePath& in_file,
-                 const std::string& tag_string,
-                 int padded_length,
-                 const base::FilePath& out_file) {
+std::optional<tagging::TagArgs> BinaryReadTag(const base::FilePath& file) {
+  const std::string tag_string = BinaryReadTagString(file);
+  if (tag_string.empty()) {
+    return {};
+  }
+  tagging::TagArgs tag_args;
+  const tagging::ErrorCode error = tagging::Parse(tag_string, {}, &tag_args);
+  if (error != tagging::ErrorCode::kSuccess) {
+    LOG(ERROR) << __func__ << ": Invalid tag string: " << tag_string << ": "
+               << error;
+    return {};
+  }
+  return tag_args;
+}
+
+bool BinaryWriteTag(const base::FilePath& in_file,
+                    const std::string& tag_string,
+                    int padded_length,
+                    base::FilePath out_file) {
   const std::vector<uint8_t> contents = ReadEntireFile(in_file);
-  std::optional<tagging::Binary> bin = tagging::Binary::Parse(contents);
+  std::unique_ptr<tagging::BinaryInterface> bin =
+      CreateBinary(in_file, contents);
   if (!bin) {
     LOG(ERROR) << __func__ << ": Could not parse binary: " << in_file;
     return false;
@@ -841,54 +869,15 @@ bool ExeWriteTag(const base::FilePath& in_file,
                << "Error while setting superfluous certificate tag.";
     return false;
   }
+  if (out_file.empty()) {
+    out_file = in_file;
+  }
   if (!base::WriteFile(out_file, *new_contents)) {
     LOG(ERROR) << __func__ << "Error while writing updated file: " << out_file
                << ": " << logging::GetLastSystemErrorCode();
     return false;
   }
   return true;
-}
-
-std::optional<tagging::TagArgs> MsiReadTag(const base::FilePath& filename) {
-  return ParseTagBuffer(ReadFileTail(filename));
-}
-
-bool MsiWriteTag(const base::FilePath& file,
-                 const std::string& tag_string,
-                 base::FilePath out_file) {
-  if (tag_string.empty()) {
-    LOG(ERROR) << __func__ << ": empty tag string.";
-    return false;
-  }
-
-  // Check if the file is already tagged.
-  if (MsiReadTag(file)) {
-    LOG(ERROR) << __func__ << ": file already tagged: " << file;
-    return false;
-  }
-
-  // Validate the tag string.
-  tagging::TagArgs tag_args;
-  const tagging::ErrorCode error = tagging::Parse(tag_string, {}, &tag_args);
-  if (error != tagging::ErrorCode::kSuccess) {
-    LOG(ERROR) << __func__ << ": Invalid tag string: " << tag_string << ": "
-               << error;
-    return false;
-  }
-
-  if (out_file.empty()) {
-    out_file = file;
-  } else if (!base::CopyFile(file, out_file)) {
-    return false;
-  }
-  base::File out(out_file, base::File::FLAG_OPEN | base::File::FLAG_APPEND);
-  if (!out.IsValid()) {
-    return false;
-  }
-
-  const std::vector<uint8_t> tag = GetTagFromTagString(tag_string);
-  return out.WriteAtCurrentPos(reinterpret_cast<const char*>(tag.data()),
-                               tag.size()) == static_cast<int>(tag.size());
 }
 
 }  // namespace tagging

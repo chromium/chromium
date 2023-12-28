@@ -89,9 +89,9 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
     return "LayoutView";
   }
 
-  bool IsOfType(LayoutObjectType type) const override {
+  bool IsLayoutView() const final {
     NOT_DESTROYED();
-    return type == kLayoutObjectView || LayoutNGBlockFlow::IsOfType(type);
+    return true;
   }
 
   PaintLayerType LayerTypeRequired() const override {

@@ -67,7 +67,7 @@ void BindRawPtrParam() {
   // `raw_ptr` is not intended to be used as a function param type, so trying to
   // bind to a function with a `raw_ptr<T>` param should error out.
   raw_ptr<int> ptr = new int(3);
-  base::BindOnce([](raw_ptr<int> ptr) {}, ptr);  // expected-error@*:* {{base::Bind() target functor has a parameter of type raw_ptr<T>.}}
+  base::BindOnce([](raw_ptr<int> ptr) {}, ptr);  // expected-error@*:* {{Use T* or T& instead of raw_ptr<T> for function parameters, unless you must mark the parameter as MayBeDangling<T>.}}
 }
 
 void PointerArithmetic() {
@@ -100,11 +100,12 @@ void PointerArithmeticDisabled() {
   ptr_a2 = ptr_a1 - 1;                 // expected-error@*:* {{cannot decrement raw_ptr unless AllowPtrArithmetic trait is present.}}
   raw_ptr<TypeB> ptr_b1 = new TypeB();
   raw_ptr<TypeB> ptr_b2 = 1 + ptr_b1;  // expected-error@*:* {{cannot increment raw_ptr unless AllowPtrArithmetic trait is present.}}
+  ptr_b2 - ptr_b1;                     // expected-error@*:* {{cannot subtract raw_ptrs unless AllowPtrArithmetic trait is present.}}
 }
 
 void Indexing() {
   raw_ptr<int> ptr = new int(3);
-  [[maybe_unused]] int val = ptr[1];  // expected-error@*:* {{cannot index raw_ptr unless AllowPtrArithmetic trait is present.}}
+  [[maybe_unused]] int val = ptr[1];  // expected-error@*:* {{cannot increment raw_ptr unless AllowPtrArithmetic trait is present.}}
 }
 #endif
 

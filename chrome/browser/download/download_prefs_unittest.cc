@@ -704,29 +704,6 @@ TEST(DownloadPrefsTest, ManagedPromptForDownload) {
       prefs::kPromptForDownload, std::make_unique<base::Value>(false));
   EXPECT_FALSE(prefs.PromptForDownload());
 }
-
-#else  // !is_android
-// Verifies the returned value of PromptForDuplicateFile().
-// TODO(chlily): Clean up this test/pref. We no longer plan to implement this.
-TEST(DownloadPrefsTest, PromptForDuplicateFile) {
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-  DownloadPrefs prefs(&profile);
-
-  // Duplicate prompt disabled.
-  profile.GetPrefs()->SetBoolean(prefs::kDownloadDuplicateFilePromptEnabled,
-                                 false);
-  EXPECT_FALSE(prefs.PromptForDuplicateFile());
-
-  // Duplicate prompt enabled.
-  profile.GetPrefs()->SetBoolean(prefs::kDownloadDuplicateFilePromptEnabled,
-                                 true);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_FALSE(prefs.PromptForDuplicateFile());
-#else
-  EXPECT_TRUE(prefs.PromptForDuplicateFile());
-#endif
-}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace

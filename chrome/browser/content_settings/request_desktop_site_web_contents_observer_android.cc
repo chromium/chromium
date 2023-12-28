@@ -8,7 +8,6 @@
 #include "base/command_line.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -35,10 +34,8 @@ RequestDesktopSiteWebContentsObserverAndroid::
   host_content_settings_map_ =
       HostContentSettingsMapFactory::GetForProfile(profile);
   if (base::FeatureList::IsEnabled(
-          features::kRequestDesktopSiteWindowSetting) ||
-      base::FeatureList::IsEnabled(features::kRequestDesktopSiteAdditions)) {
+          features::kRequestDesktopSiteWindowSetting)) {
     pref_service_ = profile->GetPrefs();
-    tab_android_ = TabAndroid::FromWebContents(contents);
   }
 }
 
@@ -81,17 +78,6 @@ void RequestDesktopSiteWebContentsObserverAndroid::DidStartNavigation(
     if (web_contents_width_dp > 0 &&
         web_contents_width_dp < content::kAndroidMinimumTabletWidthDp) {
       desktop_mode = false;
-    }
-  }
-
-  // Take secondary settings into account if ContentSetting is global setting.
-  if (!desktop_mode &&
-      base::FeatureList::IsEnabled(features::kRequestDesktopSiteAdditions) &&
-      is_global_setting) {
-    bool desktop_mode_peripheral =
-        pref_service_->GetBoolean(prefs::kDesktopSitePeripheralSettingEnabled);
-    if (desktop_mode_peripheral) {
-      desktop_mode = TabAndroid::isHardwareKeyboardAvailable(tab_android_);
     }
   }
 

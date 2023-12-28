@@ -19,13 +19,13 @@ ProfileTokenQualityTestApi::ProfileTokenQualityTestApi(
     : quality_(*quality) {}
 
 void ProfileTokenQualityTestApi::AddObservation(
-    ServerFieldType field_type,
+    FieldType field_type,
     ProfileTokenQuality::ObservationType observation_type) {
   AddObservation(field_type, observation_type, FormSignatureHash(0));
 }
 
 void ProfileTokenQualityTestApi::AddObservation(
-    ServerFieldType field_type,
+    FieldType field_type,
     ProfileTokenQuality::ObservationType observation_type,
     FormSignatureHash hash) {
   quality_->AddObservation(
@@ -35,7 +35,7 @@ void ProfileTokenQualityTestApi::AddObservation(
 }
 
 std::vector<ProfileTokenQualityTestApi::FormSignatureHash>
-ProfileTokenQualityTestApi::GetHashesForStoredType(ServerFieldType type) const {
+ProfileTokenQualityTestApi::GetHashesForStoredType(FieldType type) const {
   CHECK(GetDatabaseStoredTypesOfAutofillProfile().contains(type));
   auto it = quality_->observations_.find(type);
   if (it == quality_->observations_.end()) {

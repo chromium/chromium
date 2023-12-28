@@ -37,6 +37,9 @@ class PrefService;
 - (instancetype)init NS_UNAVAILABLE;
 // Set the current displayed page (incognito, regular or remote).
 - (void)setPage:(TabGridPage)page;
+// Set the current mode (normal/selection/search/inactive) on the currently
+// displayed page.
+- (void)setModeOnCurrentPage:(TabGridMode)mode;
 // Stops mediating and disconnects from backend models.
 - (void)disconnect;
 

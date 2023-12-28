@@ -34,7 +34,9 @@ export class SurfacePositionController {
         };
         // Previous values stored for change detection. Open change detection is
         // calculated separately so initialize it here.
-        this.lastValues = { isOpen: false };
+        this.lastValues = {
+            isOpen: false,
+        };
         this.host.addController(this);
     }
     /**
@@ -56,6 +58,22 @@ export class SurfacePositionController {
         if (!surfaceEl || !anchorEl) {
             return;
         }
+        // Store these before we potentially resize the window with the next set of
+        // lines
+        const windowInnerWidth = window.innerWidth;
+        const windowInnerHeight = window.innerHeight;
+        const div = document.createElement('div');
+        div.style.opacity = '0';
+        div.style.position = 'fixed';
+        div.style.display = 'block';
+        div.style.inset = '0';
+        document.body.appendChild(div);
+        const scrollbarTestRect = div.getBoundingClientRect();
+        div.remove();
+        // Calculate the widths of the scrollbars in the inline and block directions
+        // to account for window-relative calculations.
+        const blockScrollbarHeight = window.innerHeight - scrollbarTestRect.bottom;
+        const inlineScrollbarWidth = window.innerWidth - scrollbarTestRect.right;
         // Paint the surface transparently so that we can get the position and the
         // rect info of the surface.
         this.surfaceStylesInternal = {
@@ -65,46 +83,61 @@ export class SurfacePositionController {
         // Wait for it to be visible.
         this.host.requestUpdate();
         await this.host.updateComplete;
-        const surfaceRect = surfaceEl.getSurfacePositionClientRect ?
-            surfaceEl.getSurfacePositionClientRect() :
-            surfaceEl.getBoundingClientRect();
-        const anchorRect = anchorEl.getSurfacePositionClientRect ?
-            anchorEl.getSurfacePositionClientRect() :
-            anchorEl.getBoundingClientRect();
+        // Safari has a bug that makes popovers render incorrectly if the node is
+        // made visible + Animation Frame before calling showPopover().
+        // https://bugs.webkit.org/show_bug.cgi?id=264069
+        // also the cast is required due to differing TS types in Google and OSS.
+        if (surfaceEl.popover &&
+            surfaceEl.isConnected) {
+            surfaceEl.showPopover();
+        }
+        const surfaceRect = surfaceEl.getSurfacePositionClientRect
+            ? surfaceEl.getSurfacePositionClientRect()
+            : surfaceEl.getBoundingClientRect();
+        const anchorRect = anchorEl.getSurfacePositionClientRect
+            ? anchorEl.getSurfacePositionClientRect()
+            : anchorEl.getBoundingClientRect();
         const [surfaceBlock, surfaceInline] = surfaceCorner.split('-');
         const [anchorBlock, anchorInline] = anchorCorner.split('-');
         // LTR depends on the direction of the SURFACE not the anchor.
         const isLTR = getComputedStyle(surfaceEl).direction === 'ltr';
         /*
-         * A diagram that helps describe some of the variables used in the following
-         * calculations.
+         * For more on inline and block dimensions, see MDN article:
+         * https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_logical_properties_and_values
          *
-         * ┌───── inline/blockTopLayerOffset
-         * │       │
-         * │     ┌─▼───┐                  Window
-         * │    ┌┼─────┴────────────────────────┐
-         * │    ││                              │
-         * └──► ││  ┌──inline/blockAnchorOffset │
-         *      ││  │     │                     │
-         *      └┤  │  ┌──▼───┐                 │
-         *       │  │ ┌┼──────┤                 │
-         *       │  └─►│Anchor│                 │
-         *       │    └┴──────┘                 │
-         *       │                              │
-         *       │     ┌────────────────────────┼────┐
-         *       │     │ Surface                │    │
-         *       │     │                        │    │
-         *       │     │                        │    │
-         *       │     │                        │    │
-         *       │     │                        │    │
-         *       │     │                        │    │
-         *       └─────┼────────────────────────┘    ├┐
-         *             │ inline/blockOOBCorrection   ││
-         *             │                         │   ││
-         *             │                         ├──►││
-         *             │                         │   ││
-         *             └────────────────────────┐▼───┼┘
-         *                                      └────┘
+         * ┌───── inline/blockDocumentOffset  inlineScrollbarWidth
+         * │       │                                    │
+         * │     ┌─▼─────┐                              │Document
+         * │    ┌┼───────┴──────────────────────────────┼────────┐
+         * │    ││                                      │        │
+         * └──► ││ ┌───── inline/blockWindowOffset      │        │
+         *      ││ │       │                            ▼        │
+         *      ││ │     ┌─▼───┐                 Window┌┐        │
+         *      └┤ │    ┌┼─────┴───────────────────────┼│        │
+         *       │ │    ││                             ││        │
+         *       │ └──► ││  ┌──inline/blockAnchorOffset││        │
+         *       │      ││  │     │                    ││        │
+         *       │      └┤  │  ┌──▼───┐                ││        │
+         *       │       │  │ ┌┼──────┤                ││        │
+         *       │       │  └─►│Anchor│                ││        │
+         *       │       │    └┴──────┘                ││        │
+         *       │       │                             ││        │
+         *       │       │     ┌───────────────────────┼┼────┐   │
+         *       │       │     │ Surface               ││    │   │
+         *       │       │     │                       ││    │   │
+         *       │       │     │                       ││    │   │
+         *       │       │     │                       ││    │   │
+         *       │       │     │                       ││    │   │
+         *       │      ┌┼─────┼───────────────────────┼│    │   │
+         *       │   ┌─►┴──────┼────────────────────────┘    ├┐  │
+         *       │   │         │ inline/blockOOBCorrection   ││  │
+         *       │   │         │                         │   ││  │
+         *       │   │         │                         ├──►├│  │
+         *       │   │         │                         │   ││  │
+         *       │   │         └────────────────────────┐▼───┼┘  │
+         *       │  blockScrollbarHeight                └────┘   │
+         *       │                                               │
+         *       └───────────────────────────────────────────────┘
          */
         // Calculate the block positioning properties
         let { blockInset, blockOutOfBoundsCorrection, surfaceBlockProperty } = this.calculateBlock({
@@ -113,7 +146,9 @@ export class SurfacePositionController {
             anchorBlock,
             surfaceBlock,
             yOffset,
-            positioning
+            positioning,
+            windowInnerHeight,
+            blockScrollbarHeight,
         });
         // If the surface should be out of bounds in the block direction, flip the
         // surface and anchor corner block values and recalculate
@@ -126,12 +161,13 @@ export class SurfacePositionController {
                 anchorBlock: flippedAnchorBlock,
                 surfaceBlock: flippedSurfaceBlock,
                 yOffset,
-                positioning
+                positioning,
+                windowInnerHeight,
+                blockScrollbarHeight,
             });
             // In the case that the flipped verion would require less out of bounds
             // correcting, use the flipped corner block values
-            if (blockOutOfBoundsCorrection >
-                flippedBlock.blockOutOfBoundsCorrection) {
+            if (blockOutOfBoundsCorrection > flippedBlock.blockOutOfBoundsCorrection) {
                 blockInset = flippedBlock.blockInset;
                 blockOutOfBoundsCorrection = flippedBlock.blockOutOfBoundsCorrection;
                 surfaceBlockProperty = flippedBlock.surfaceBlockProperty;
@@ -146,6 +182,8 @@ export class SurfacePositionController {
             xOffset,
             positioning,
             isLTR,
+            windowInnerWidth,
+            inlineScrollbarWidth,
         });
         // If the surface should be out of bounds in the inline direction, flip the
         // surface and anchor corner inline values and recalculate
@@ -160,6 +198,8 @@ export class SurfacePositionController {
                 xOffset,
                 positioning,
                 isLTR,
+                windowInnerWidth,
+                inlineScrollbarWidth,
             });
             // In the case that the flipped verion would require less out of bounds
             // correcting, use the flipped corner inline values
@@ -187,13 +227,11 @@ export class SurfacePositionController {
         if (repositionStrategy === 'resize') {
             // Add a height property to the styles if there is block height correction
             if (blockOutOfBoundsCorrection) {
-                this.surfaceStylesInternal['height'] =
-                    `${surfaceRect.height - blockOutOfBoundsCorrection}px`;
+                this.surfaceStylesInternal['height'] = `${surfaceRect.height - blockOutOfBoundsCorrection}px`;
             }
             // Add a width property to the styles if there is block height correction
             if (inlineOutOfBoundsCorrection) {
-                this.surfaceStylesInternal['width'] =
-                    `${surfaceRect.width - inlineOutOfBoundsCorrection}px`;
+                this.surfaceStylesInternal['width'] = `${surfaceRect.width - inlineOutOfBoundsCorrection}px`;
             }
         }
         this.host.requestUpdate();
@@ -203,10 +241,11 @@ export class SurfacePositionController {
      * for the surface in the block direction.
      */
     calculateBlock(config) {
-        const { surfaceRect, anchorRect, anchorBlock, surfaceBlock, yOffset, positioning, } = config;
+        const { surfaceRect, anchorRect, anchorBlock, surfaceBlock, yOffset, positioning, windowInnerHeight, blockScrollbarHeight, } = config;
         // We use number booleans to multiply values rather than `if` / ternary
         // statements because it _heavily_ cuts down on nesting and readability
-        const relativeToWindow = positioning === 'fixed' ? 1 : 0;
+        const relativeToWindow = positioning === 'fixed' || positioning === 'document' ? 1 : 0;
+        const relativeToDocument = positioning === 'document' ? 1 : 0;
         const isSurfaceBlockStart = surfaceBlock === 'start' ? 1 : 0;
         const isSurfaceBlockEnd = surfaceBlock === 'end' ? 1 : 0;
         const isOneBlockEnd = anchorBlock !== surfaceBlock ? 1 : 0;
@@ -214,13 +253,19 @@ export class SurfacePositionController {
         const blockAnchorOffset = isOneBlockEnd * anchorRect.height + yOffset;
         // The absolute block position of the anchor relative to window
         const blockTopLayerOffset = isSurfaceBlockStart * anchorRect.top +
-            isSurfaceBlockEnd * (window.innerHeight - anchorRect.bottom);
+            isSurfaceBlockEnd *
+                (windowInnerHeight - anchorRect.bottom - blockScrollbarHeight);
+        const blockDocumentOffset = isSurfaceBlockStart * window.scrollY - isSurfaceBlockEnd * window.scrollY;
         // If the surface's block would be out of bounds of the window, move it back
         // in
-        const blockOutOfBoundsCorrection = Math.abs(Math.min(0, window.innerHeight - blockTopLayerOffset - blockAnchorOffset -
+        const blockOutOfBoundsCorrection = Math.abs(Math.min(0, windowInnerHeight -
+            blockTopLayerOffset -
+            blockAnchorOffset -
             surfaceRect.height));
         // The block logical value of the surface
-        const blockInset = relativeToWindow * blockTopLayerOffset + blockAnchorOffset;
+        const blockInset = relativeToWindow * blockTopLayerOffset +
+            relativeToDocument * blockDocumentOffset +
+            blockAnchorOffset;
         const surfaceBlockProperty = surfaceBlock === 'start' ? 'inset-block-start' : 'inset-block-end';
         return { blockInset, blockOutOfBoundsCorrection, surfaceBlockProperty };
     }
@@ -229,10 +274,11 @@ export class SurfacePositionController {
      * for the surface in the inline direction.
      */
     calculateInline(config) {
-        const { isLTR: isLTRBool, surfaceInline, anchorInline, anchorRect, surfaceRect, xOffset, positioning, } = config;
+        const { isLTR: isLTRBool, surfaceInline, anchorInline, anchorRect, surfaceRect, xOffset, positioning, windowInnerWidth, inlineScrollbarWidth, } = config;
         // We use number booleans to multiply values rather than `if` / ternary
         // statements because it _heavily_ cuts down on nesting and readability
-        const relativeToWindow = positioning === 'fixed' ? 1 : 0;
+        const relativeToWindow = positioning === 'fixed' || positioning === 'document' ? 1 : 0;
+        const relativeToDocument = positioning === 'document' ? 1 : 0;
         const isLTR = isLTRBool ? 1 : 0;
         const isRTL = isLTRBool ? 0 : 1;
         const isSurfaceInlineStart = surfaceInline === 'start' ? 1 : 0;
@@ -242,19 +288,44 @@ export class SurfacePositionController {
         const inlineAnchorOffset = isOneInlineEnd * anchorRect.width + xOffset;
         // The inline position of the anchor relative to window in LTR
         const inlineTopLayerOffsetLTR = isSurfaceInlineStart * anchorRect.left +
-            isSurfaceInlineEnd * (window.innerWidth - anchorRect.right);
+            isSurfaceInlineEnd *
+                (windowInnerWidth - anchorRect.right - inlineScrollbarWidth);
         // The inline position of the anchor relative to window in RTL
-        const inlineTopLayerOffsetRTL = isSurfaceInlineStart * (window.innerWidth - anchorRect.right) +
+        const inlineTopLayerOffsetRTL = isSurfaceInlineStart *
+            (windowInnerWidth - anchorRect.right - inlineScrollbarWidth) +
             isSurfaceInlineEnd * anchorRect.left;
         // The inline position of the anchor relative to window
         const inlineTopLayerOffset = isLTR * inlineTopLayerOffsetLTR + isRTL * inlineTopLayerOffsetRTL;
+        // The inline position of the anchor relative to window in LTR
+        const inlineDocumentOffsetLTR = isSurfaceInlineStart * window.scrollX -
+            isSurfaceInlineEnd * window.scrollX;
+        // The inline position of the anchor relative to window in RTL
+        const inlineDocumentOffsetRTL = isSurfaceInlineEnd * window.scrollX -
+            isSurfaceInlineStart * window.scrollX;
+        // The inline position of the anchor relative to window
+        const inlineDocumentOffset = isLTR * inlineDocumentOffsetLTR + isRTL * inlineDocumentOffsetRTL;
         // If the surface's inline would be out of bounds of the window, move it
         // back in
-        const inlineOutOfBoundsCorrection = Math.abs(Math.min(0, window.innerWidth - inlineTopLayerOffset - inlineAnchorOffset -
+        const inlineOutOfBoundsCorrection = Math.abs(Math.min(0, windowInnerWidth -
+            inlineTopLayerOffset -
+            inlineAnchorOffset -
             surfaceRect.width));
         // The inline logical value of the surface
-        const inlineInset = relativeToWindow * inlineTopLayerOffset + inlineAnchorOffset;
-        const surfaceInlineProperty = surfaceInline === 'start' ? 'inset-inline-start' : 'inset-inline-end';
+        const inlineInset = relativeToWindow * inlineTopLayerOffset +
+            inlineAnchorOffset +
+            relativeToDocument * inlineDocumentOffset;
+        let surfaceInlineProperty = surfaceInline === 'start' ? 'inset-inline-start' : 'inset-inline-end';
+        // There are cases where the element is RTL but the root of the page is not.
+        // In these cases we want to not use logical properties.
+        if (positioning === 'document' || positioning === 'fixed') {
+            if ((surfaceInline === 'start' && isLTRBool) ||
+                (surfaceInline === 'end' && !isLTRBool)) {
+                surfaceInlineProperty = 'left';
+            }
+            else {
+                surfaceInlineProperty = 'right';
+            }
+        }
         return {
             inlineInset,
             inlineOutOfBoundsCorrection,
@@ -277,7 +348,7 @@ export class SurfacePositionController {
         let hasChanged = false;
         for (const [key, value] of Object.entries(props)) {
             // tslint:disable-next-line
-            hasChanged = hasChanged || (value !== this.lastValues[key]);
+            hasChanged = hasChanged || value !== this.lastValues[key];
             if (hasChanged)
                 break;
         }
@@ -311,6 +382,13 @@ export class SurfacePositionController {
             'display': 'none',
         };
         this.host.requestUpdate();
+        const surfaceEl = this.getProperties().surfaceEl;
+        // The following type casts are required due to differing TS types in Google
+        // and open source.
+        if (surfaceEl?.popover &&
+            surfaceEl?.isConnected) {
+            surfaceEl.hidePopover();
+        }
     }
 }
 //# sourceMappingURL=surfacePositionController.js.map

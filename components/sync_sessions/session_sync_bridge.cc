@@ -415,7 +415,7 @@ void SessionSyncBridge::DoGarbageCollection(SessionStore::WriteBatch* batch) {
 
   // Iterate through all the sessions and delete any with age older than
   // |kStaleSessionThreshold|.
-  for (const auto* session :
+  for (const sync_sessions::SyncedSession* session :
        store_->tracker()->LookupAllForeignSessions(SyncedSessionTracker::RAW)) {
     const base::TimeDelta session_age =
         base::Time::Now() - session->GetModifiedTime();

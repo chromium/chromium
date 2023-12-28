@@ -1105,3 +1105,20 @@ function waitForStableScrollOffset(scroller, timeout) {
     tick(0, start_timestamp);
   });
 }
+
+function keyPress(key) {
+  return new Promise((resolve, reject) => {
+    if (window.eventSender) {
+      eventSender.keyDown(key);
+      resolve();
+    }
+    else {
+      reject('This test requires window.eventSender');
+    }
+  })
+}
+
+function keyboardScroll(key, scroller) {
+  const scrollPromise = waitForScrollendEvent(scroller);
+  return Promise.all([ keyPress(key), scrollPromise ]);
+}

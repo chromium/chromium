@@ -164,8 +164,7 @@ class VersionUpdaterTest : public testing::Test {
   std::unique_ptr<UIProxyConfigService> ui_proxy_config_service_;
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
   TestingPrefServiceSimple local_state_;
-  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
-      fake_update_engine_client_;
+  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged> fake_update_engine_client_;
   update_engine::ErrorCode error_code_;
 
   base::test::TaskEnvironment task_environment_;

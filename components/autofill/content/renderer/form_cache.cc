@@ -8,6 +8,7 @@
 #include <functional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -17,8 +18,8 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/page_form_analyser_logger.h"
@@ -58,7 +59,7 @@ using form_util::ExtractOption;
 namespace {
 
 blink::FormElementPiiType MapTypePredictionToFormElementPiiType(
-    base::StringPiece type) {
+    std::string_view type) {
   if (type == "NO_SERVER_DATA" || type == "UNKNOWN_TYPE" ||
       type == "EMPTY_TYPE" || type == "") {
     return blink::FormElementPiiType::kUnknown;
@@ -190,17 +191,15 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
     return r;
 
   for (const WebFormElement& form_element : document.Forms()) {
-    FormData form;
-    if (!WebFormElementToFormData(form_element, WebFormControlElement(),
-                                  field_data_manager, extract_options, &form,
-                                  nullptr)) {
-      continue;
-    }
-    if (!ProcessForm(
-            std::move(form),
-            form_util::ExtractAutofillableElementsInForm(form_element))) {
-      PruneInitialValueCaches(observed_unique_renderer_ids);
-      return r;
+    if (std::optional<FormData> form = WebFormElementToFormData(
+            form_element, WebFormControlElement(), field_data_manager,
+            extract_options, nullptr)) {
+      if (!ProcessForm(
+              std::move(*form),
+              form_util::ExtractAutofillableElementsInForm(form_element))) {
+        PruneInitialValueCaches(observed_unique_renderer_ids);
+        return r;
+      }
     }
   }
 
@@ -211,18 +210,17 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
   std::vector<WebElement> iframe_elements =
       form_util::GetUnownedIframeElements(document);
 
-  FormData synthetic_form;
-  if (!UnownedFormElementsToFormData(
-          control_elements, iframe_elements, nullptr, document,
-          field_data_manager, extract_options, &synthetic_form, nullptr)) {
+  std::optional<FormData> synthetic_form = UnownedFormElementsToFormData(
+      control_elements, iframe_elements, nullptr, document, field_data_manager,
+      extract_options, nullptr);
+  if (!synthetic_form) {
     PruneInitialValueCaches(observed_unique_renderer_ids);
     return r;
   }
-  if (!ProcessForm(std::move(synthetic_form), control_elements)) {
+  if (!ProcessForm(std::move(*synthetic_form), control_elements)) {
     PruneInitialValueCaches(observed_unique_renderer_ids);
     return r;
   }
-
   PruneInitialValueCaches(observed_unique_renderer_ids);
   return r;
 }
@@ -384,8 +382,11 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
       constexpr size_t kMaxLabelSize = 100;
       // TODO(crbug/1165780): Use `parseable_label()` once the feature is
       // launched.
-      const std::u16string truncated_label =
+      std::u16string truncated_label =
           field_data.label.substr(0, kMaxLabelSize);
+      // The label may be derived from the placeholder attribute and may contain
+      // line wraps which are normalized here.
+      base::ReplaceChars(truncated_label, u"\n", u"|", &truncated_label);
 
       std::string form_id =
           base::NumberToString(form.data.unique_renderer_id.value());

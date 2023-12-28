@@ -22,31 +22,33 @@ namespace base {
 int ReturnsInt();
 double ReturnsDouble();
 
-void OnceCallbackWithNonVoidReturnType() {
+void OnceCallbackWithNonVoidReturnType1() {
   {
     OnceCallback<int()> cb = BindOnce(&ReturnsInt);
-    auto post_cb = BindPostTask(SequencedTaskRunner::GetCurrentDefault(), std::move(cb));  // expected-error@base/task/bind_post_task.h:* {{OnceCallback must have void return type in order to produce a closure for PostTask().}}
-                                                                                           // expected-error@*:* {{no matching constructor for initialization}}
+    auto post_cb = BindPostTask(SequencedTaskRunner::GetCurrentDefault(), std::move(cb));  // expected-error@base/task/bind_post_task_nocompile.nc:* {{no matching function for call to 'BindPostTask'}}
+                                                                                           // expected-note@base/task/bind_post_task.h:* {{because 'std::is_void_v<int>' evaluated to false}}
+
   }
 
   {
     OnceCallback<double()> cb = BindOnce(&ReturnsDouble);
-    auto post_cb = BindPostTaskToCurrentDefault(std::move(cb));  // expected-error@base/task/bind_post_task.h:* {{OnceCallback must have void return type in order to produce a closure for PostTask().}}
-                                                                 // expected-error@*:* {{no matching constructor for initialization}}
-  }
+    auto post_cb = BindPostTaskToCurrentDefault(std::move(cb));  // expected-error@base/task/bind_post_task_nocompile.nc:* {{no matching function for call to 'BindPostTaskToCurrentDefault'}}
+  }                                                              // expected-note@base/task/bind_post_task.h:* {{because 'std::is_void_v<double>' evaluated to false}}
+
 }
 
 void RepeatingCallbackWithNonVoidReturnType() {
   {
     RepeatingCallback<int()> cb = BindRepeating(&ReturnsInt);
-    auto post_cb = BindPostTask(SequencedTaskRunner::GetCurrentDefault(), std::move(cb));  // expected-error@base/task/bind_post_task.h:* {{RepeatingCallback must have void return type in order to produce a closure for PostTask().}}
-                                                                                           // expected-error@*:* {{no matching constructor for initialization}}
+    auto post_cb = BindPostTask(SequencedTaskRunner::GetCurrentDefault(), std::move(cb));  // expected-error@base/task/bind_post_task_nocompile.nc:* {{no matching function for call to 'BindPostTask'}}
+                                                                                           // expected-note@base/task/bind_post_task.h:* {{because 'std::is_void_v<int>' evaluated to false}}
   }
 
   {
     RepeatingCallback<double()> cb = BindRepeating(&ReturnsDouble);
-    auto post_cb = BindPostTaskToCurrentDefault(std::move(cb));  // expected-error@base/task/bind_post_task.h:* {{RepeatingCallback must have void return type in order to produce a closure for PostTask().}}
-                                                                 // expected-error@*:* {{no matching constructor for initialization}}
+    auto post_cb = BindPostTaskToCurrentDefault(std::move(cb));  // expected-error@base/task/bind_post_task_nocompile.nc:* {{no matching function for call to 'BindPostTaskToCurrentDefault'}}
+                                                                 // expected-note@base/task/bind_post_task.h:* {{because 'std::is_void_v<double>' evaluated to false}}
+
   }
 }
 

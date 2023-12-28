@@ -11,6 +11,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -343,14 +344,15 @@ TEST(PasswordManagerUtil, FindBestMatches) {
       form.username_value = match.username;
       owning_matches.push_back(form);
     }
-    std::vector<const PasswordForm*> matches;
+    std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches;
     for (const PasswordForm& match : owning_matches)
       matches.push_back(&match);
 
-    std::vector<const PasswordForm*> best_matches;
+    std::vector<raw_ptr<const PasswordForm, VectorExperimental>> best_matches;
     const PasswordForm* preferred_match = nullptr;
 
-    std::vector<const PasswordForm*> same_scheme_matches;
+    std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+        same_scheme_matches;
     FindBestMatches(matches, PasswordForm::Scheme::kHtml, &same_scheme_matches,
                     &best_matches);
     if (!best_matches.empty()) {
@@ -413,14 +415,15 @@ TEST(PasswordManagerUtil, FindBestMatchesInProfileAndAccountStores) {
   profile_form2.password_value = kPassword2;
   profile_form2.in_store = PasswordForm::Store::kProfileStore;
 
-  std::vector<const PasswordForm*> matches;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches;
   matches.push_back(&account_form1);
   matches.push_back(&profile_form1);
   matches.push_back(&account_form2);
   matches.push_back(&profile_form2);
 
-  std::vector<const PasswordForm*> best_matches;
-  std::vector<const PasswordForm*> same_scheme_matches;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> best_matches;
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+      same_scheme_matches;
   FindBestMatches(matches, PasswordForm::Scheme::kHtml, &same_scheme_matches,
                   &best_matches);
   // |profile_form1| is filtered out because it's the same as |account_form1|.

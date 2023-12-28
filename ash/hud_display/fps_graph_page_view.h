@@ -78,7 +78,7 @@ class FPSGraphPageView : public GraphPageViewBase,
   // Active display refresh rate.
   Graph refresh_rate_;
 
-  raw_ptr<ReferenceLines, ExperimentalAsh> reference_lines_;  // not owned
+  raw_ptr<ReferenceLines> reference_lines_;  // not owned
 
   float frame_rate_for_last_half_second_;
 

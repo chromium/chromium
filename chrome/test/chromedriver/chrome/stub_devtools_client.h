@@ -24,7 +24,8 @@ class StubDevToolsClient : public DevToolsClient {
   const std::string& SessionId() const override;
   const std::string& TunnelSessionId() const override;
   Status SetTunnelSessionId(std::string session_id) override;
-  Status StartBidiServer(std::string bidi_mapper_script) override;
+  Status StartBidiServer(std::string bidi_mapper_script,
+                         const base::Value::Dict& mapper_options) override;
   bool IsNull() const override;
   bool WasCrashed() override;
   bool IsConnected() const override;

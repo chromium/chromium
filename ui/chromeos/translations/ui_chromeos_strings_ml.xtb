@@ -505,6 +505,7 @@
 <translation id="4935975195727477204">ഗസാനിയ പുഷ്‌പം</translation>
 <translation id="4943368462779413526">ഫുട്‌ബോള്‍</translation>
 <translation id="4961158930123534723">Parallels Desktop ഉപയോഗിച്ച് ഒരു ഫോൾഡർ പങ്കിട്ടു</translation>
+<translation id="4965874878399872778">നിങ്ങളുടെ ഓർഗനൈസേഷന്റെ സുരക്ഷാ നയങ്ങൾ പാലിക്കുന്നുണ്ടോ എന്നറിയാൻ ഫയലുകൾ പരിശോധിക്കുന്നു...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> പുനഃസ്ഥാപിച്ചു</translation>
 <translation id="4969785127455456148">ആല്‍‌ബം</translation>
 <translation id="4972330214479971536">ഫയൽ സമന്വയിപ്പിക്കൽ സജ്ജീകരിക്കുന്നത് പൂർത്തിയാക്കാനായില്ല</translation>
@@ -560,7 +561,6 @@
 <translation id="5275973617553375938">Google ഡ്രൈവിൽ നിന്നും ഫയലുകൾ വീണ്ടെടുത്തു</translation>
 <translation id="5278111733643988471">ഈ ഇനം പുനഃസ്ഥാപിക്കാൻ, ട്രാഷിന് പുറത്തുള്ള ഒരു പുതിയ ഫോൾഡറിലേക്ക് ഇത് വലിച്ചിടുക. ഈ ഇനത്തിന്റെ ഒറിജിനൽ ഫോൾഡറായ "<ph name="PARENT_FOLDER_NAME" />" ഇല്ലാതാക്കി.</translation>
 <translation id="5283101102242354279">അദൃശ്യ മോഡിൽ ഒരു വിപുലീകരണം ഓണാക്കുക:</translation>
-<translation id="5286194356314741248">സ്‌കാൻ ചെയ്യുന്നു</translation>
 <translation id="5288441970121584418">ബർഗർ</translation>
 <translation id="5293615890992542006">ഈ ഫയൽ നീക്കുന്നത് അഡ്‌മിൻ നയം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="5305688511332277257">ഒന്നും ഇന്‍സ്റ്റാള്‍ ചെയ്തിട്ടില്ല</translation>
@@ -711,6 +711,7 @@
 <translation id="6430271654280079150">നിങ്ങൾക്ക് ഒരു ശ്രമം കൂടി ബാക്കിയുണ്ട്.</translation>
 <translation id="643243556292470964">ഇല്ലാതാക്കിയ ഫയലുകൾ ഇപ്പോൾ ട്രാഷിലേക്ക് നീക്കി</translation>
 <translation id="6438480100790416671">സ്‌റ്റോറേജ് സ്‌പെയ്‌സ് പരിശോധിക്കുന്നു…</translation>
+<translation id="6451527188465304418">നിങ്ങളുടെ ഓർഗനൈസേഷന്റെ സുരക്ഷാ നയങ്ങൾ പാലിക്കുന്നുണ്ടോ എന്നറിയാൻ ഫയൽ പരിശോധിക്കുന്നു...</translation>
 <translation id="6485131920355264772">സ്‌പെയ്‌സ് വിവരം വീണ്ടെടുക്കുന്നതിന് പരാജയപ്പെട്ടു</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്, വിശദാംശങ്ങൾ</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> എന്നത് <ph name="FOLDER_NAME" /> എന്നതിലേക്ക് എക്‌സ്‌ട്രാക്റ്റ് ചെയ്യുന്നു</translation>

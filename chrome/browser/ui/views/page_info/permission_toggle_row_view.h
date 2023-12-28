@@ -49,6 +49,8 @@ class PermissionToggleRowView : public views::View {
     return row_view_->GetTitleForTesting();
   }
 
+  bool GetToggleButtonStateForTesting() const;
+
  private:
   friend class test::PageInfoBubbleViewTestApi;
 

@@ -18,9 +18,10 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
-#include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/sync_data.h"
@@ -63,6 +64,7 @@ class AutofillWalletUsageDataSyncBridgeTest : public testing::Test {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    db_.AddTable(&sync_metadata_table_);
     db_.AddTable(&table_);
     db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"));
     ON_CALL(backend_, GetDatabase()).WillByDefault(Return(&db_));
@@ -99,7 +101,7 @@ class AutofillWalletUsageDataSyncBridgeTest : public testing::Test {
     return SpecificsToEntity(specifics);
   }
 
-  AutofillTable* table() { return &table_; }
+  PaymentsAutofillTable* table() { return &table_; }
 
   AutofillWalletUsageDataSyncBridge* bridge() { return bridge_.get(); }
 
@@ -113,7 +115,8 @@ class AutofillWalletUsageDataSyncBridgeTest : public testing::Test {
   ScopedTempDir temp_dir_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   NiceMock<MockAutofillWebDataBackend> backend_;
-  AutofillTable table_;
+  AutofillSyncMetadataTable sync_metadata_table_;
+  PaymentsAutofillTable table_;
   WebDatabase db_;
   NiceMock<MockModelTypeChangeProcessor> mock_processor_;
   std::unique_ptr<AutofillWalletUsageDataSyncBridge> bridge_;
@@ -202,7 +205,7 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, ApplyIncrementalSyncChanges) {
   // `MergeFullSyncData()` returns an error if it fails.
   EXPECT_EQ(bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
                                         std::move(entity_change_list_merge)),
-            absl::nullopt);
+            std::nullopt);
   // Expect `MergeFullSyncData()` was successful.
   EXPECT_THAT(GetVirtualCardUsageDataFromTable(),
               testing::UnorderedElementsAre(virtual_card_usage_data1));
@@ -269,7 +272,7 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, ApplyDisableSyncChanges) {
       *old_data.usage_data_id(), VirtualCardUsageDataToEntity(old_data)));
   EXPECT_EQ(bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
                                         std::move(entity_change_list)),
-            absl::nullopt);
+            std::nullopt);
 
   EXPECT_CALL(backend(), CommitChanges());
   EXPECT_CALL(backend(),

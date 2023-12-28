@@ -43,7 +43,7 @@
 <translation id="134645005685694099">No hay suficiente espacio de almacenamiento en el dispositivo para mantener activada la sincronización de archivos. Los archivos nuevos ya no se sincronizarán automáticamente.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">No se puede utilizar el archivo o el directorio.</translation>
-<translation id="1363028406613469049">Pista</translation>
+<translation id="1363028406613469049">Seguir</translation>
 <translation id="1378727793141957596">Te damos la bienvenida a Google Drive</translation>
 <translation id="1379911846207762492">Puedes hacer que tus archivos estén disponibles sin conexión para acceder a ellos cuando no tengas Internet.</translation>
 <translation id="1383876407941801731">Buscar</translation>
@@ -505,6 +505,7 @@
 <translation id="4935975195727477204">Gazania</translation>
 <translation id="4943368462779413526">Balón de fútbol</translation>
 <translation id="4961158930123534723">1 carpeta compartida con Parallels Desktop</translation>
+<translation id="4965874878399872778">Comprobando si los archivos cumplen las políticas de seguridad de tu organización…</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> restaurado</translation>
 <translation id="4969785127455456148">Álbum</translation>
 <translation id="4972330214479971536">No se ha podido terminar de configurar la sincronización de archivos</translation>
@@ -560,7 +561,6 @@
 <translation id="5275973617553375938">Archivos recuperados de Google Drive</translation>
 <translation id="5278111733643988471">Para restaurar este elemento, arrástralo a una nueva carpeta fuera de la papelera. Se ha eliminado la carpeta original "<ph name="PARENT_FOLDER_NAME" />" de este elemento.</translation>
 <translation id="5283101102242354279">Para activar una extensión en modo Incógnito:</translation>
-<translation id="5286194356314741248">Buscando</translation>
 <translation id="5288441970121584418">Hamburguesa</translation>
 <translation id="5293615890992542006">La política del administrador ha bloqueado la opción de mover este archivo</translation>
 <translation id="5305688511332277257">No hay certificados instalados</translation>
@@ -711,6 +711,7 @@
 <translation id="6430271654280079150">Te queda 1 intento.</translation>
 <translation id="643243556292470964">Los archivos eliminados ahora se mueven a la papelera</translation>
 <translation id="6438480100790416671">Comprobando espacio de almacenamiento…</translation>
+<translation id="6451527188465304418">Comprobando si el archivo cumple las políticas de seguridad de tu organización…</translation>
 <translation id="6485131920355264772">No se ha podido obtener información sobre el espacio.</translation>
 <translation id="6495925982925244349">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, gestionada por el administrador, detalles</translation>
 <translation id="649877868557234318">Extrayendo <ph name="FILE_NAME" /> en <ph name="FOLDER_NAME" /></translation>

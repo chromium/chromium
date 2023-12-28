@@ -49,7 +49,7 @@ import org.chromium.url.GURL;
 /** Tests for {@link StartSurfaceCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@DisableFeatures({ChromeFeatureList.WEB_FEED, ChromeFeatureList.SHOPPING_LIST})
+@DisableFeatures({ChromeFeatureList.WEB_FEED})
 public class StartSurfaceCoordinatorUnitTest {
     private static final String START_SURFACE_TIME_SPENT = "StartSurface.TimeSpent";
     private static final String HISTOGRAM_START_SURFACE_MODULE_CLICK = "StartSurface.Module.Click";

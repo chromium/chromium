@@ -50,6 +50,7 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
@@ -71,6 +72,7 @@
 #include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/os_install_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/tpm_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
@@ -135,6 +137,9 @@ const int kCrashCountLimit = 5;
 // The default fade out animation time in ms.
 const int kDefaultFadeTimeMs = 200;
 
+const char kValidInstallAttributesHistogram[] =
+    "Enterprise.InstallAttributes.ValidOnEnrolledDevice";
+
 // A class to observe an implicit animation and invokes the callback after the
 // animation is completed.
 class AnimationObserver : public ui::ImplicitAnimationObserver {
@@ -157,6 +162,15 @@ class AnimationObserver : public ui::ImplicitAnimationObserver {
   base::OnceClosure callback_;
 };
 
+// Returns whether the device settings are managed.
+bool HasManagedDeviceSettings() {
+  if (!DeviceSettingsService::IsInitialized()) {
+    CHECK_IS_TEST();
+    return false;
+  }
+  return DeviceSettingsService::Get()->IsDeviceManaged();
+}
+
 // Even if oobe is complete we may still want to show it, for example, if there
 // are no users registered then the user may want to enterprise enroll.
 bool IsOobeComplete() {
@@ -165,7 +179,8 @@ bool IsOobeComplete() {
 
   // Oobe is completed and we have a user or we are enterprise enrolled.
   return StartupUtils::IsOobeCompleted() &&
-         (!user_manager::UserManager::Get()->GetUsers().empty() ||
+         ((!user_manager::UserManager::Get()->GetUsers().empty() &&
+           !HasManagedDeviceSettings()) ||
           connector->IsDeviceEnterpriseManaged());
 }
 
@@ -188,6 +203,18 @@ void MaybeShowDeviceDisabledScreen() {
 
   LoginDisplayHost::default_host()->StartWizard(
       DeviceDisabledScreenView::kScreenId);
+}
+
+void MaybeShowInstallAttributesCorruptedScreen() {
+  if (HasManagedDeviceSettings() &&
+      !InstallAttributes::Get()->IsDeviceLocked()) {
+    LOG(ERROR) << "Corrupted install attributes, showing the TPM error";
+    base::UmaHistogramBoolean(kValidInstallAttributesHistogram, false);
+    // TODO(b/314268843): Create a separate screen for this error.
+    LoginDisplayHost::default_host()->StartWizard(TpmErrorView::kScreenId);
+  } else {
+    base::UmaHistogramBoolean(kValidInstallAttributesHistogram, true);
+  }
 }
 
 void MaybeShutdownLoginDisplayHostWebUI() {
@@ -290,6 +317,8 @@ void ShowLoginWizardFinish(
           session_manager::SessionState::OOBE) {
     WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
   }
+
+  MaybeShowInstallAttributesCorruptedScreen();
 
   // TODO(crbug.com/1105387): Part of initial screen logic.
   MaybeShowDeviceDisabledScreen();

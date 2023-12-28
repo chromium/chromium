@@ -8,6 +8,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/strong_alias.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/supervised_user/family_live_test.h"
@@ -20,12 +21,18 @@
 namespace supervised_user {
 namespace {
 
+static constexpr std::string_view kPermissionRequestUrl =
+    "https://families.google.com/u/0/manage/family/";
+
 // TODO(b/303401498): Use dedicated RPCs in supervised user e2e desktop tests
 // instead of clicking around the pages.
-class UrlFilterUiTest : public InteractiveBrowserTestT<FamilyLiveTest> {
+class UrlFilterUiTest
+    : public InteractiveBrowserTestT<FamilyLiveTest>,
+      public testing::WithParamInterface<supervised_user::FamilyIdentifier> {
  public:
   UrlFilterUiTest()
       : InteractiveBrowserTestT<FamilyLiveTest>(
+            /*family_identifier=*/GetParam(),
             /*extra_enabled_hosts=*/std::vector<std::string>(
                 {"example.com", "www.pornhub.com"})) {}
 
@@ -101,6 +108,50 @@ class UrlFilterUiTest : public InteractiveBrowserTestT<FamilyLiveTest> {
     return state_change;
   }
 
+  // Clicks the approval request button for a pending request on Family Link.
+  auto ParentApprovesPermissionRequest(ui::ElementIdentifier kParentTab) {
+    return Steps(ExecuteJsAt(
+        kParentTab, {"#view_container"},
+        // The "Allow All" is the last button on the permission request page.
+        R"js(
+                (view_container) => {
+                  const buttons = view_container.querySelectorAll("div[role='button']");
+                  const allow = buttons[buttons.length - 1];
+                  allow.click();
+                }
+              )js"));
+  }
+
+  // Clicks the remote approval request button on the supervised user
+  // interstitial.
+  auto ChildRequestsRemoteApproval(ui::ElementIdentifier kChildTab) {
+    return Steps(ExecuteJsAt(kChildTab,
+                             {"#frame-blocked #remote-approvals-button"},
+                             R"js( (button) => { button.click(); } )js"));
+  }
+
+  // Checks that a permission request exists on Family link.
+  StateChange RemotePermissionRequestAppeared() {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kTextFound);
+    StateChange state_change;
+    state_change.type = StateChange::Type::kExistsAndConditionTrue;
+    state_change.where = {"#view_container"};
+
+    // The "Allow All" (host approval) is the last button on the permission
+    // request page.
+    std::string_view remote_permission_approval_button_text = "ALLOW ALL";
+    state_change.test_function =
+        base::StringPrintf(R"js(
+          (view_container) => {
+            const buttons = view_container.querySelectorAll("div[role='button']");
+            return buttons[buttons.length - 1].innerText == '%s'; }
+          )js",
+                           remote_permission_approval_button_text.data());
+    state_change.event = kTextFound;
+    state_change.continue_across_navigation = true;
+    return state_change;
+  }
+
   // Checks if a page title matches the given regexp in ecma script dialect.
   StateChange PageWithMatchingTitle(std::string_view title_regexp) {
     DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kStateChange);
@@ -116,7 +167,7 @@ class UrlFilterUiTest : public InteractiveBrowserTestT<FamilyLiveTest> {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(UrlFilterUiTest, ParentBlocksPage) {
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentBlocksPage) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kParentControlsTab);
 
@@ -153,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(UrlFilterUiTest, ParentBlocksPage) {
       WaitForStateChange(kChildElementId, RemoteApprovalButtonAppeared()));
 }
 
-IN_PROC_BROWSER_TEST_F(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kParentControlsTab);
 
@@ -188,6 +239,64 @@ IN_PROC_BROWSER_TEST_F(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
       ParentAddsUrlToControlList(kParentControlsTab, "www.pornhub.com"),
       WaitForStateChange(kChildElementId, PageWithMatchingTitle("Pornhub")));
 }
+
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
+                       ParentAprovesPermissionRequestForBlockedSite) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kParentControlsTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kParentApprovalTab);
+
+  TurnOnSyncFor(head_of_household());
+  TurnOnSyncFor(child());
+
+  // Child and parent activity is happening in these tabs.
+  int child_tab_index = 0;
+  int parent_tab_index = 0;
+
+  RunTestSequence(
+      InstrumentTab(kParentControlsTab, parent_tab_index,
+                    /*in_browser=*/head_of_household().browser()),
+
+      // Clear all existing filters.
+      ParentOpensControlListPage(
+          kParentControlsTab, head_of_household().GetBlockListUrlFor(child())),
+      ParentRemovesUrlsFromControlList(kParentControlsTab),
+
+      ParentOpensControlListPage(
+          kParentControlsTab, head_of_household().GetAllowListUrlFor(child())),
+      ParentRemovesUrlsFromControlList(kParentControlsTab),
+
+      // At this point, it's the allowlist control page that stays open.
+
+      // Supervised user navigates to inappropriate page and is blocked, and
+      // makes approval request.
+      InstrumentTab(kChildElementId, child_tab_index, child().browser()),
+      NavigateWebContents(kChildElementId,
+                          GetRoutedUrl("https://www.pornhub.com")),
+      WaitForStateChange(kChildElementId, RemoteApprovalButtonAppeared()),
+      ChildRequestsRemoteApproval(kChildElementId),
+
+      // Parent receives remote approval request for the blocked page in Family
+      // Link.
+      InstrumentTab(kParentApprovalTab, parent_tab_index,
+                    /*in_browser=*/head_of_household().browser()),
+      ParentOpensControlListPage(kParentApprovalTab,
+                                 GURL(kPermissionRequestUrl)),
+      WaitForStateChange(kParentApprovalTab, RemotePermissionRequestAppeared()),
+
+      // Parent approves the request and supervised user consumes the page
+      // content.
+      ParentApprovesPermissionRequest(kParentApprovalTab),
+      WaitForStateChange(kChildElementId, PageWithMatchingTitle("Pornhub")));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    UrlFilterUiTest,
+    testing::Values(supervised_user::FamilyIdentifier("FAMILY_DMA_NONE"),
+                    supervised_user::FamilyIdentifier("FAMILY_DMA_ALL"),
+                    supervised_user::FamilyIdentifier("FAMILY")),
+    [](const auto& info) { return info.param->data(); });
 
 }  // namespace
 }  // namespace supervised_user

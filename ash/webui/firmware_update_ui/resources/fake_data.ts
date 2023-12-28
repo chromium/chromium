@@ -4,7 +4,7 @@
 
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 
-import {FirmwareUpdate, InstallationProgress, UpdatePriority, UpdateState} from './firmware_update.mojom-webui.js';
+import {DeviceRequest, DeviceRequestId, DeviceRequestKind, FirmwareUpdate, InstallationProgress, UpdatePriority, UpdateState} from './firmware_update.mojom-webui.js';
 
 export const fakeFirmwareUpdates: FirmwareUpdate[][] = [[
   {
@@ -42,6 +42,29 @@ export const fakeFirmwareUpdates: FirmwareUpdate[][] = [[
     checksum:
         '3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a9232',
   },
+  {
+    deviceId: '4',
+    deviceName: stringToMojoString16('Game Controller (has user requests)'),
+    deviceVersion: '90.0.1',
+    deviceDescription: stringToMojoString16(
+        'Update this device to see what a device request looks like'),
+    priority: UpdatePriority.kLow,
+    filepath: {'path': '4.cab'},
+    checksum:
+        '3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a9232',
+  },
+  {
+    deviceId: '5',
+    deviceName:
+        stringToMojoString16('Game Controller 2 (has user requests, fails)'),
+    deviceVersion: '90.0.1',
+    deviceDescription:
+        stringToMojoString16('This update will fail during the device request'),
+    priority: UpdatePriority.kLow,
+    filepath: {'path': '4.cab'},
+    checksum:
+        '3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a9232',
+  },
 ]];
 
 export const fakeInstallationProgress: InstallationProgress[] = [
@@ -56,6 +79,20 @@ export const fakeInstallationProgressFailure: InstallationProgress[] = [
   {percentage: 100, state: UpdateState.kRestarting},
   {percentage: 100, state: UpdateState.kFailed},
 ];
+
+export const fakeInstallationProgressWithRequest: InstallationProgress[] = [
+  {percentage: 33, state: UpdateState.kUpdating},
+  {percentage: 50, state: UpdateState.kWaitingForUser},
+  {percentage: 75, state: UpdateState.kUpdating},
+  {percentage: 100, state: UpdateState.kSuccess},
+];
+
+export const fakeInstallationProgressWithRequestAndFailure:
+    InstallationProgress[] = [
+      {percentage: 33, state: UpdateState.kUpdating},
+      {percentage: 75, state: UpdateState.kWaitingForUser},
+      {percentage: 100, state: UpdateState.kFailed},
+    ];
 
 export const fakeFirmwareUpdate: FirmwareUpdate = {
   deviceId: '1',
@@ -77,4 +114,9 @@ export const fakeCriticalFirmwareUpdate: FirmwareUpdate = {
   priority: UpdatePriority.kCritical,
   filepath: {'path': '2.cab'},
   checksum: '3fab34cfa1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a923f',
+};
+
+export const fakeDeviceRequest: DeviceRequest = {
+  id: DeviceRequestId.kPressUnlock,
+  kind: DeviceRequestKind.kImmediate,
 };

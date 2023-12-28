@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
-#include "third_party/blink/renderer/core/paint/background_image_geometry.h"
+#include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
 #include "third_party/blink/renderer/core/paint/box_model_object_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
@@ -478,12 +478,12 @@ void ReplacedPainter::PaintBackground(
   if (layout_replaced_.BackgroundIsKnownToBeObscured()) {
     return;
   }
-  BackgroundImageGeometry geometry(layout_replaced_);
   BoxModelObjectPainter box_model_painter(layout_replaced_);
+  BoxBackgroundPaintContext bg_paint_context(layout_replaced_);
   box_model_painter.PaintFillLayers(
       paint_info, background_color,
-      layout_replaced_.StyleRef().BackgroundLayers(), paint_rect, geometry,
-      bleed_avoidance);
+      layout_replaced_.StyleRef().BackgroundLayers(), paint_rect,
+      bg_paint_context, bleed_avoidance);
 }
 
 void ReplacedPainter::PaintMask(const PaintInfo& paint_info,
@@ -511,10 +511,10 @@ void ReplacedPainter::PaintMaskImages(const PaintInfo& paint_info,
   // For mask images legacy layout painting handles multi-line boxes by giving
   // the full width of the element, not the current line box, thereby clipping
   // the offending edges.
-  BackgroundImageGeometry geometry(layout_replaced_);
   BoxModelObjectPainter painter(layout_replaced_);
-  painter.PaintMaskImages(paint_info, paint_rect, layout_replaced_, geometry,
-                          PhysicalBoxSides());
+  BoxBackgroundPaintContext bg_paint_context(layout_replaced_);
+  painter.PaintMaskImages(paint_info, paint_rect, layout_replaced_,
+                          bg_paint_context, PhysicalBoxSides());
 }
 
 }  // namespace blink

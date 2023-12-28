@@ -144,16 +144,16 @@ def Run():
             name.startswith('content_browsertests')) and '(with patch)' in name:
           s_name = name
 
-      bb_command = [
-          'bb',
-          'log',
-          builder['id'],
-          '\"%s\"' % s_name,
-      ]
-      bb_command_expanded = ' '.join(bb_command)
-      # print((BRIGHT_COLOR + '=> %s' + NORMAL_COLOR) % bb_command_expanded)
-      output = os.popen(bb_command_expanded).readlines()
-      ParseLog('\n'.join(output))
+          bb_command = [
+              'bb',
+              'log',
+              builder['id'],
+              '\"%s\"' % s_name,
+          ]
+          bb_command_expanded = ' '.join(bb_command)
+          # print((BRIGHT_COLOR + '=> %s' + NORMAL_COLOR) % bb_command_expanded)
+          output = os.popen(bb_command_expanded).readlines()
+          ParseLog('\n'.join(output))
       if not output:
         print('No content_browsertests (with patch) step found')
         continue

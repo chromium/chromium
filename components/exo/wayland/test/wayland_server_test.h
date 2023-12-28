@@ -56,6 +56,10 @@ class WaylandServerTest : public WaylandServerTestBase {
     PostToClientAndWait(base::BindLambdaForTesting(std::move(lambda)));
   }
 
+  // Initiates a client disconnect from the client thread. Waits until the
+  // disconnect has been processed on the server thread.
+  void DisconnectClientAndWait();
+
   // Subclasses can override this method to create a TestClient subclass
   // instance or customize client configuration if needed.
   // This method is run on the client thread.
@@ -65,6 +69,7 @@ class WaylandServerTest : public WaylandServerTestBase {
   std::unique_ptr<Server> server_;
 
   std::unique_ptr<TestWaylandClientThread> client_thread_;
+  raw_ptr<wl_client> client_resource_;
 };
 
 }  // namespace exo::wayland::test

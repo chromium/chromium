@@ -6,42 +6,28 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/logging.h"
+#include "media/gpu/h264_rate_control_util.h"
 
 namespace media {
-namespace {
-
-base::TimeDelta TimestampDiff(base::TimeDelta ts_new, base::TimeDelta ts_old) {
-  base::TimeDelta elapsed_time = ts_new - ts_old;
-  if (elapsed_time < base::Seconds(0) || elapsed_time > base::Seconds(300)) {
-    // Keeps distance between frames max 300 seconds apart. 300 seconds is an
-    // arbitrarily chosen value, long enough to support specific use cases.
-    DLOG(WARNING) << "Unexpected elapsed time " << elapsed_time;
-    elapsed_time = base::Seconds(300);
-  }
-  return elapsed_time;
+HRDBuffer::HRDBuffer(size_t buffer_size, uint32_t avg_bitrate) {
+  SetParameters(buffer_size, avg_bitrate, 0, false);
 }
 
-}  // namespace
-
-HRDBuffer::HRDBuffer(size_t hrd_buffer_size, uint32_t avg_bitrate) {
-  SetParameters(hrd_buffer_size, avg_bitrate, 0, false);
-}
-
-HRDBuffer::HRDBuffer(size_t hrd_buffer_size,
+HRDBuffer::HRDBuffer(size_t buffer_size,
                      uint32_t avg_bitrate,
                      int last_frame_buffer_bytes,
                      base::TimeDelta last_frame_timestamp)
     : last_frame_buffer_bytes_(last_frame_buffer_bytes),
       last_frame_timestamp_(last_frame_timestamp) {
-  SetParameters(hrd_buffer_size, avg_bitrate, 0, false);
+  SetParameters(buffer_size, avg_bitrate, 0, false);
 }
 
 HRDBuffer::~HRDBuffer() = default;
 
 int HRDBuffer::GetBytesAtTime(base::TimeDelta timestamp) const {
   const base::TimeDelta elapsed_time =
-      TimestampDiff(timestamp, last_frame_timestamp_);
+      h264_rate_control_util::ClampedTimestampDiff(timestamp,
+                                                   last_frame_timestamp_);
   const float max_rate_bytes_per_sec = avg_bitrate_ / 8.0f;
   const float max_flow_in_bytes_since_last_frame =
       max_rate_bytes_per_sec / base::Time::kMicrosecondsPerSecond *
@@ -52,9 +38,8 @@ int HRDBuffer::GetBytesAtTime(base::TimeDelta timestamp) const {
 }
 
 int HRDBuffer::GetBytesRemainingAtTime(base::TimeDelta timestamp) const {
-  int bytes_remaining = buffer_size_ / 8 - GetBytesAtTime(timestamp);
-  CHECK_GE(bytes_remaining, 0);
-  return bytes_remaining;
+  int bytes_remaining = buffer_size_ - GetBytesAtTime(timestamp);
+  return std::max(bytes_remaining, 0);
 }
 
 void HRDBuffer::SetParameters(size_t buffer_size,
@@ -108,8 +93,8 @@ void HRDBuffer::Shrink(base::TimeDelta timestamp) {
     return;
   }
 
-  base::TimeDelta elapsed_time =
-      TimestampDiff(timestamp, last_frame_timestamp_);
+  base::TimeDelta elapsed_time = h264_rate_control_util::ClampedTimestampDiff(
+      timestamp, last_frame_timestamp_);
   size_t target_buffer_size =
       buffer_size_ -
       static_cast<int>((elapsed_time.InMillisecondsF() /
@@ -123,8 +108,7 @@ void HRDBuffer::AddFrameBytes(size_t frame_bytes,
   const int buffer_bytes = GetBytesAtTime(frame_timestamp);
   const int buffer_bytes_new = buffer_bytes + frame_bytes;
 
-  const int buffer_size = buffer_size_ / 8;
-  frame_overshooting_ = buffer_bytes_new > buffer_size;
+  frame_overshooting_ = buffer_bytes_new > static_cast<int>(buffer_size_);
 
   last_frame_buffer_bytes_ = buffer_bytes_new;
   last_frame_timestamp_ = frame_timestamp;

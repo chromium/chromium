@@ -75,7 +75,8 @@ void StreamTextureWrapperImpl::CreateVideoFrame(
   gpu::SharedImageInterface* sii = factory_->SharedImageInterface();
   auto shared_image =
       sii->NotifyMailboxAdded(mailbox, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                           gpu::SHARED_IMAGE_USAGE_GLES2 |
+                                           gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                                           gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
                                            gpu::SHARED_IMAGE_USAGE_RASTER);
 
   // The pixel format doesn't matter here as long as it's valid for texture

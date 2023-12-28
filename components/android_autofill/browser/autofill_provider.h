@@ -81,9 +81,6 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
   virtual void OnServerPredictionsAvailable(AndroidAutofillManager& manager,
                                             FormGlobalId form_id) = 0;
 
-  virtual void OnServerQueryRequestError(AndroidAutofillManager* manager,
-                                         FormSignature form_signature) = 0;
-
   // Reacts to a reset or destruction of `manager`, e.g., by submitting forms
   // for suspected navigations.
   virtual void OnManagerResetOrDestroyed(AndroidAutofillManager* manager) = 0;

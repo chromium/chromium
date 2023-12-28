@@ -63,6 +63,7 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
     GetUrlLoaderFactoryCallback get_frame_url_loader_factory,
     GetUrlLoaderFactoryCallback get_trusted_url_loader_factory,
     PreconnectSocketCallback preconnect_socket_callback,
+    GetCookieDeprecationLabelCallback get_cookie_deprecation_label,
     bool force_reload,
     const url::Origin& top_frame_origin,
     const url::Origin& frame_origin,
@@ -78,6 +79,7 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
       get_frame_url_loader_factory_(std::move(get_frame_url_loader_factory)),
       get_trusted_url_loader_factory_(
           std::move(get_trusted_url_loader_factory)),
+      get_cookie_deprecation_label_(std::move(get_cookie_deprecation_label)),
       top_frame_origin_(top_frame_origin),
       frame_origin_(frame_origin),
       renderer_process_id_(renderer_process_id),
@@ -188,6 +190,15 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   new_request.credentials_mode = network::mojom::CredentialsMode::kOmit;
   new_request.request_initiator = frame_origin_;
   new_request.enable_load_timing = url_request.enable_load_timing;
+
+  if (is_trusted_bidding_signals_request) {
+    absl::optional<std::string> maybe_deprecation_label =
+        get_cookie_deprecation_label_.Run();
+    if (maybe_deprecation_label) {
+      new_request.headers.SetHeader("Sec-Cookie-Deprecation",
+                                    *maybe_deprecation_label);
+    }
+  }
 
   if (force_reload_) {
     new_request.load_flags = net::LOAD_BYPASS_CACHE;

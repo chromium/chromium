@@ -383,7 +383,7 @@ TEST_F(BlockTabUnderTest, LogsUkm) {
 
   auto entries = test_ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     test_ukm_recorder.ExpectEntrySourceHasUrl(entry, first_url);
     test_ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kDidTabUnderName,
                                         true);
@@ -395,7 +395,7 @@ TEST_F(BlockTabUnderTest, LogsUkm) {
 
   auto entries2 = test_ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries2.size());
-  for (const auto* const entry : entries2) {
+  for (const ukm::mojom::UkmEntry* const entry : entries2) {
     test_ukm_recorder.ExpectEntrySourceHasUrl(entry, first_url);
   }
 }

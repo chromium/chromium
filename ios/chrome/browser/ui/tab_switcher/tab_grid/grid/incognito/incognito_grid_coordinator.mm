@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_coordinator.h"
 
-#import "ios/chrome/browser/policy/policy_util.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -107,7 +107,7 @@
   _mediator.browser = self.browser;
   _mediator.delegate = self.gridMediatorDelegate;
   _mediator.toolbarsMutator = self.toolbarsMutator;
-  _mediator.actionWrangler = self.tabGridViewController;
+  _mediator.toolbarTabGridDelegate = self.tabGridViewController;
   _mediator.incognitoDelegate = self;
   _mediator.reauthSceneAgent = _reauthAgent;
   _mediator.dispatcher = self;

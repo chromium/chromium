@@ -90,14 +90,8 @@ class ImageStorage : public base::RefCounted<ImageStorage> {
   const ImageRep* AddRepresentation(std::unique_ptr<ImageRep> rep) const;
 
 #if BUILDFLAG(IS_MAC)
-  void set_default_representation_color_space(CGColorSpaceRef color_space) {
-    DCHECK(IsOnValidSequence());
-    default_representation_color_space_ = color_space;
-  }
-  CGColorSpaceRef default_representation_color_space() const {
-    DCHECK(IsOnValidSequence());
-    return default_representation_color_space_;
-  }
+  // TODO(https://crbug.com/1495334): Remove callers of this function.
+  void set_default_representation_color_space(CGColorSpaceRef color_space) {}
 #endif  // BUILDFLAG(IS_MAC)
 
  private:
@@ -108,14 +102,6 @@ class ImageStorage : public base::RefCounted<ImageStorage> {
   // The type of image that was passed to the constructor. This key will always
   // exist in the |representations_| map.
   Image::RepresentationType default_representation_type_;
-
-#if BUILDFLAG(IS_MAC)
-  // The default representation's colorspace. This is used for converting to
-  // NSImage. This field exists to compensate for PNGCodec not writing or
-  // reading colorspace ancillary chunks. (sRGB, iCCP).
-  // Not owned.
-  CGColorSpaceRef default_representation_color_space_;
-#endif  // BUILDFLAG(IS_MAC)
 
   // All the representations of an Image. Size will always be at least one, with
   // more for any converted representations.

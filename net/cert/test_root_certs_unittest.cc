@@ -13,6 +13,7 @@
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/crl_set.h"
+#include "net/cert/do_nothing_ct_verifier.h"
 #include "net/cert/x509_certificate.h"
 #include "net/log/net_log_with_source.h"
 #include "net/net_buildflags.h"
@@ -39,16 +40,22 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc() {
   if (base::FeatureList::IsEnabled(features::kChromeRootStoreUsed)) {
     return CertVerifyProc::CreateBuiltinWithChromeRootStore(
         /*cert_net_fetcher=*/nullptr, CRLSet::BuiltinCRLSet().get(),
+        std::make_unique<DoNothingCTVerifier>(),
+        base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
         /*root_store_data=*/nullptr, /*instance_params=*/{});
   }
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_ONLY)
   return CertVerifyProc::CreateBuiltinWithChromeRootStore(
       /*cert_net_fetcher=*/nullptr, CRLSet::BuiltinCRLSet().get(),
+      std::make_unique<DoNothingCTVerifier>(),
+      base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
       /*root_store_data=*/nullptr, /*instance_params=*/{});
 #elif BUILDFLAG(IS_FUCHSIA)
   return CertVerifyProc::CreateBuiltinVerifyProc(
       /*cert_net_fetcher=*/nullptr, CRLSet::BuiltinCRLSet().get(),
+      std::make_unique<DoNothingCTVerifier>(),
+      base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
       /*instance_params=*/{});
 #else
   return CertVerifyProc::CreateSystemVerifyProc(/*cert_net_fetcher=*/nullptr,

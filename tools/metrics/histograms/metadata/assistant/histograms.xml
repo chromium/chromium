@@ -83,7 +83,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.HotwordEnableNotification" enum="BooleanHit"
-    expires_after="2023-10-31">
+    expires_after="2024-10-31">
   <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -101,6 +101,21 @@ chromium-metrics-reviews@google.com.
     Assistant server interpreted a particular query and decision on the state,
     e.g. if the conversation is normal or timed out or ended with other errors.
   </summary>
+</histogram>
+
+<histogram name="Assistant.LauncherSearchIphQueryType.{Location}"
+    enum="Assistant.LauncherSearchIphQueryType" expires_after="2024-12-01">
+  <owner>wutao@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Record the query types selected in the Assistant LauncherSearchIphView.
+    Emitted when the query chip in the LauncherSearchIphView is clicked. The
+    LauncherSearchIphView can be located in the {Location}
+  </summary>
+  <token key="Location">
+    <variant name="AssistantPage" summary="IPH in AssistantPage"/>
+    <variant name="SearchBox" summary="IPH in SearchBox"/>
+  </token>
 </histogram>
 
 <histogram name="Assistant.Libassistant.DlcInstallResult"
@@ -124,7 +139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.OptInFlow.GetSettingsRequestTime" units="ms"
-    expires_after="2023-10-15">
+    expires_after="2024-10-15">
   <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -135,7 +150,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.OptInFlow.LoadingTimeoutCount" units="timeouts"
-    expires_after="2023-08-13">
+    expires_after="2024-08-13">
   <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -199,7 +214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.ServiceStartTime" units="ms"
-    expires_after="2023-12-17">
+    expires_after="2024-12-17">
   <owner>updowndota@chromium.org</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
@@ -217,7 +232,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.SetDspHotwordLocale" enum="BooleanSuccess"
-    expires_after="2023-11-12">
+    expires_after="2024-11-12">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>

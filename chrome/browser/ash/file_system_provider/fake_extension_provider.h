@@ -16,8 +16,7 @@
 
 class Profile;
 
-namespace ash {
-namespace file_system_provider {
+namespace ash::file_system_provider {
 
 class FakeExtensionProvider : public ProviderInterface {
  public:
@@ -49,7 +48,6 @@ class FakeExtensionProvider : public ProviderInterface {
   IconSet icon_set_;
 };
 
-}  // namespace file_system_provider
-}  // namespace ash
+}  // namespace ash::file_system_provider
 
 #endif  // CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_FAKE_EXTENSION_PROVIDER_H_

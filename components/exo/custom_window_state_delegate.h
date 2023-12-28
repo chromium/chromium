@@ -33,7 +33,7 @@ class CustomWindowStateDelegate : public ash::WindowStateDelegate {
   void OnDragFinished(bool cancel, const gfx::PointF& location) override;
 
  private:
-  const raw_ptr<ShellSurface, ExperimentalAsh> shell_surface_;
+  const raw_ptr<ShellSurface> shell_surface_;
 };
 
 }  //  namespace exo

@@ -135,8 +135,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
                            ShowEmptyUserNoteSidePanel);
   FRIEND_TEST_ALL_PREFIXES(UserNoteUICoordinatorTest,
                            PopulateUserNoteSidePanel);
-  FRIEND_TEST_ALL_PREFIXES(SidePanelPinningCoordinatorTest,
-                           SidePanelTitleUpdates);
 
   // Unlike `Show()` which takes in a SidePanelEntry's id or key, this version
   // should only be used for the rare case when we need to show a particular

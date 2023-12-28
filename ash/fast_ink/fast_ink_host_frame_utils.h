@@ -77,7 +77,7 @@ ASH_EXPORT std::unique_ptr<UiResource> CreateUiResource(
     gpu::SyncToken sync_token);
 
 // Creates and configures a compositor frame. Uses the SharedImage that
-// `mailbox` is referencing if that is non-zero, in which case the created
+// `shared_image` is referencing if that is non-null, in which case the created
 // UiResource does not own that SharedImage. Otherwise creates a new SharedImage
 // if needing to create a new UiResource and has the UiResource take ownership
 // of that SharedImage.
@@ -90,7 +90,7 @@ ASH_EXPORT std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
     const gfx::Size& buffer_size,
     gfx::GpuMemoryBuffer* gpu_memory_buffer,
     UiResourceManager* resource_manager,
-    gpu::Mailbox mailbox,
+    const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     gpu::SyncToken sync_token);
 
 // Returns the RasterContextProvider used within FastInk.

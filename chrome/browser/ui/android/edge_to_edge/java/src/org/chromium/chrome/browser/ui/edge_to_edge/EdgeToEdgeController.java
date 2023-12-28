@@ -4,19 +4,18 @@
 
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
-import androidx.annotation.Nullable;
 
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.chrome.browser.tab.Tab;
 
 /**
- * Control drawing using the Android Edge to Edge Feature.
- * This allows drawing under Android System Bars.
+ * Control drawing using the Android Edge to Edge Feature. This allows drawing under Android System
+ * Bars.
  */
-public interface EdgeToEdgeController extends Destroyable {
+public interface EdgeToEdgeController extends Destroyable, EdgeToEdgeSupplier {
     /**
-     * Notifies the controller that a different tab is under observation.<br>
-     * @param tab The tab that the observer is now observing. This can be {@code null}.
+     * @return the inset in DPs needed for the bottom UI to adjust views to draw below the Bottom
+     *     Nav Bar. Returns 0 when Edge To Edge is not enabled or when the controller is drawing the
+     *     page ToNormal.
      */
-    void onTabSwitched(@Nullable Tab tab);
+    int getBottomInset();
 }

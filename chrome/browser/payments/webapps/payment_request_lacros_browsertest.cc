@@ -156,7 +156,7 @@ class PaymentRequestLacrosBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(PaymentRequestLacrosBrowserTest, BrowserTab) {
-  web_app::NavigateToURLAndWait(browser(), GetAppURL());
+  web_app::NavigateViaLinkClickToURLAndWait(browser(), GetAppURL());
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::RenderFrameHost* render_frame_host = contents->GetPrimaryMainFrame();
@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_P(PaymentRequestLacrosBrowserTest, AppWindow) {
 IN_PROC_BROWSER_TEST_P(PaymentRequestLacrosBrowserTest, OutOfScope) {
   Browser* app_browser =
       web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id());
-  web_app::NavigateToURLAndWait(
+  web_app::NavigateViaLinkClickToURLAndWait(
       app_browser, https_server()->GetURL("another.test.site", "/"));
   content::WebContents* contents =
       app_browser->tab_strip_model()->GetActiveWebContents();

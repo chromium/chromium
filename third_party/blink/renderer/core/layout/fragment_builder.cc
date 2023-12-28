@@ -250,8 +250,18 @@ void FragmentBuilder::PropagateFromFragment(
   PropagateSnapAreas(child);
   PropagateScrollStartTarget(child);
 
+  // Propagate info about OOF descendants if necessary. This part must be
+  // skipped when adding OOF children to fragmentainers, as propagation is
+  // special and performed manually from the OOF code in such cases, and cannot
+  // be done as part of adding child fragments. First of all, the parameters to
+  // PropagateOOFPositionedInfo() will be different from what we can provide
+  // here, and furthermore, OOFs in fragmentation are added by recreating
+  // fragmentainers, by adding old children and then appending new OOF
+  // children. This may take place in several passes (if there are nested OOFs
+  // that are discovered as part of laying out an outer OOF), and repropagating
+  // for OOFs that were laid out previously over and over again would be wrong.
   if (child.NeedsOOFPositionedInfoPropagation() &&
-      !disable_oof_descendants_propagation_) {
+      (!IsFragmentainerBoxType() || !child.IsOutOfFlowPositioned())) {
     LayoutUnit adjustment_for_oof_propagation =
         BlockOffsetAdjustmentForFragmentainer();
 
@@ -421,6 +431,10 @@ void FragmentBuilder::SwapOutOfFlowPositionedCandidates(
     HeapVector<LogicalOofPositionedNode>* candidates) {
   DCHECK(candidates->empty());
   std::swap(oof_positioned_candidates_, *candidates);
+}
+
+void FragmentBuilder::ClearOutOfFlowPositionedCandidates() {
+  oof_positioned_candidates_.clear();
 }
 
 void FragmentBuilder::AddMulticolWithPendingOOFs(
@@ -594,7 +608,7 @@ void FragmentBuilder::PropagateOOFPositionedInfo(
         new_inline_container);
   }
 
-  auto* oof_data = fragment.GetFragmentedOofData();
+  const auto* oof_data = fragment.GetFragmentedOofData();
   if (!oof_data)
     return;
   DCHECK(!oof_data->multicols_with_pending_oofs.empty() ||
@@ -687,7 +701,7 @@ void FragmentBuilder::PropagateOOFFragmentainerDescendants(
     const OofContainingBlock<LogicalOffset>* containing_block,
     const OofContainingBlock<LogicalOffset>* fixedpos_containing_block,
     HeapVector<LogicalOofNodeForFragmentation>* out_list) {
-  auto* oof_data = fragment.GetFragmentedOofData();
+  const auto* oof_data = fragment.GetFragmentedOofData();
   if (!oof_data || oof_data->oof_positioned_fragmentainer_descendants.empty())
     return;
 
@@ -695,20 +709,14 @@ void FragmentBuilder::PropagateOOFFragmentainerDescendants(
   const auto* box_fragment = DynamicTo<PhysicalBoxFragment>(&fragment);
   bool is_column_spanner = box_fragment && box_fragment->IsColumnSpanAll();
 
-  auto& out_of_flow_fragmentainer_descendants =
-      oof_data->oof_positioned_fragmentainer_descendants;
-  wtf_size_t next_idx;
-  for (wtf_size_t idx = 0; idx < out_of_flow_fragmentainer_descendants.size();
-       idx = next_idx) {
-    next_idx = idx + 1;
-    const auto& descendant = out_of_flow_fragmentainer_descendants[idx];
+  for (const PhysicalOofNodeForFragmentation& descendant :
+       oof_data->oof_positioned_fragmentainer_descendants) {
     const PhysicalFragment* containing_block_fragment =
         descendant.containing_block.Fragment();
     bool container_inside_column_spanner =
         descendant.containing_block.IsInsideColumnSpanner();
     bool fixedpos_container_inside_column_spanner =
         descendant.fixedpos_containing_block.IsInsideColumnSpanner();
-    bool remove_descendant = false;
 
     if (!containing_block_fragment) {
       DCHECK(box_fragment);
@@ -727,7 +735,6 @@ void FragmentBuilder::PropagateOOFFragmentainerDescendants(
         // the OOF past the next fragmentation context root ancestor.
         container_inside_column_spanner = false;
         fixedpos_container_inside_column_spanner = false;
-        remove_descendant = true;
       } else {
         DCHECK(!fixedpos_container_inside_column_spanner);
         continue;
@@ -863,13 +870,6 @@ void FragmentBuilder::PropagateOOFFragmentainerDescendants(
       out_list->emplace_back(oof_node);
     } else {
       AddOutOfFlowFragmentainerDescendant(oof_node);
-
-      // Remove any descendants that were propagated to the next fragmentation
-      // context root (as a result of a column spanner).
-      if (remove_descendant) {
-        out_of_flow_fragmentainer_descendants.EraseAt(idx);
-        next_idx = idx;
-      }
     }
   }
 }

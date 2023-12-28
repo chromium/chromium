@@ -9,9 +9,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/sequence_bound.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/sha2.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -55,13 +53,7 @@ void WriteEmptyFile(const base::FilePath& path, const std::string& file_name) {
 class ExtensionTelemetryFileProcessorTest : public ::testing::Test {
  public:
   ExtensionTelemetryFileProcessorTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{kExtensionTelemetryFileData,
-                               {{"MaxFilesToProcess", "50"},
-                                {"MaxFileSizeBytes", "102400"}}}},
-        /*disabled_features=*/{});
-  }
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
     // Set up temp directory.
@@ -72,7 +64,11 @@ class ExtensionTelemetryFileProcessorTest : public ::testing::Test {
     extension_root_dir_ = temp_dir_.GetPath().AppendASCII(kExtensionId);
     ASSERT_TRUE(base::CreateDirectory(extension_root_dir_));
 
-    InitProcessor();
+    processor_ = base::SequenceBound<ExtensionTelemetryFileProcessor>(
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+             base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}));
+    task_environment_.RunUntilIdle();
   }
 
   void SetUpExtensionFiles() {
@@ -98,14 +94,6 @@ class ExtensionTelemetryFileProcessorTest : public ::testing::Test {
     WriteExtensionFile(extension_sub_dir_, kCSSFile2, kCSSFile2);
   }
 
-  void InitProcessor() {
-    processor_ = base::SequenceBound<ExtensionTelemetryFileProcessor>(
-        base::ThreadPool::CreateSequencedTaskRunner(
-            {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-             base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}));
-    task_environment_.RunUntilIdle();
-  }
-
   void CallbackHelper(base::Value::Dict data) {
     extensions_data_ = std::move(data);
   }
@@ -120,7 +108,6 @@ class ExtensionTelemetryFileProcessorTest : public ::testing::Test {
   base::FilePath extension_root_dir_;
   base::FilePath extension_sub_dir_;
 
-  base::test::ScopedFeatureList feature_list_;
   base::SequenceBound<safe_browsing::ExtensionTelemetryFileProcessor>
       processor_;
   content::BrowserTaskEnvironment task_environment_;
@@ -303,13 +290,9 @@ TEST_F(ExtensionTelemetryFileProcessorTest, EnforcesMaxFilesToReadLimit) {
 TEST_F(ExtensionTelemetryFileProcessorTest, EnforcesMaxNumFilesLimit) {
   SetUpExtensionFiles();
   // Set max_files_to_process to 4.
-  feature_list_.Reset();
-  feature_list_.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{kExtensionTelemetryFileData,
-                             {{"MaxFilesToProcess", "4"},
-                              {"MaxFileSizeBytes", "102400"}}}},
-      /*disabled_features=*/{});
-  InitProcessor();
+  processor_
+      .AsyncCall(&ExtensionTelemetryFileProcessor::SetMaxFilesToProcessForTest)
+      .WithArgs(4);
 
   auto callback =
       base::BindOnce(&ExtensionTelemetryFileProcessorTest::CallbackHelper,
@@ -339,13 +322,12 @@ TEST_F(ExtensionTelemetryFileProcessorTest, EnforcesMaxFileSizeLimit) {
 
   // Set max_file_size to 50 bytes.
   int64_t max_file_size = 50;
-  feature_list_.Reset();
-  feature_list_.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{kExtensionTelemetryFileData,
-                             {{"MaxFilesToProcess", "50"},
-                              {"MaxFileSizeBytes", "50"}}}},
-      /*disabled_features=*/{});
-  InitProcessor();
+  processor_
+      .AsyncCall(&ExtensionTelemetryFileProcessor::SetMaxFilesToProcessForTest)
+      .WithArgs(50);
+  processor_
+      .AsyncCall(&ExtensionTelemetryFileProcessor::SetMaxFileSizeBytesForTest)
+      .WithArgs(max_file_size);
 
   auto callback =
       base::BindOnce(&ExtensionTelemetryFileProcessorTest::CallbackHelper,

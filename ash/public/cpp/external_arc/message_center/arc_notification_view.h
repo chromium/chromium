@@ -77,6 +77,7 @@ class ArcNotificationView : public message_center::MessageView,
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void ChildPreferredSizeChanged(View* child) override;
   bool HandleAccessibleAction(const ui::AXActionData& action) override;
+  void OnThemeChanged() override;
 
   // ArcNotificationItem::Observer
   void OnItemDestroying() override;
@@ -93,10 +94,10 @@ class ArcNotificationView : public message_center::MessageView,
   void UpdateControlButtonsVisibilityWithNotification(
       const message_center::Notification& notification);
 
-  raw_ptr<ArcNotificationItem, ExperimentalAsh> item_;
+  raw_ptr<ArcNotificationItem> item_;
 
   // The view for the custom content. Owned by view hierarchy.
-  const raw_ptr<ArcNotificationContentView, ExperimentalAsh> content_view_;
+  const raw_ptr<ArcNotificationContentView> content_view_;
 
   const bool shown_in_popup_;
 

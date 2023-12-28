@@ -10,6 +10,7 @@ import {isLocalDev} from '../models/load_time_data.js';
 import * as state from '../state.js';
 import {
   CameraSuspendError,
+  CropRegionRect,
   ErrorLevel,
   ErrorType,
   Facing,
@@ -812,6 +813,24 @@ export class DeviceOperator {
       AndroidInfoSupportedHardwareLevel.ANDROID_INFO_SUPPORTED_HARDWARE_LEVEL_3,
     ];
     return supportedLevel.includes(level);
+  }
+
+  /**
+   * Sets the crop region for the configured stream on camera with |deviceId|.
+   */
+  async setCropRegion(deviceId: string, cropRegion: CropRegionRect):
+      Promise<void> {
+    const device = await this.getDevice(deviceId);
+    await device.setCropRegion(cropRegion);
+  }
+
+  /**
+   * Resets the crop region for the camera with |deviceId| to let the camera
+   * stream back to full frame.
+   */
+  async resetCropRegion(deviceId: string): Promise<void> {
+    const device = await this.getDevice(deviceId);
+    await device.resetCropRegion();
   }
 
   /**

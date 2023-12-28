@@ -6,13 +6,13 @@ package org.chromium.chrome.browser.keyboard_accessory;
 
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
+import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.scrollToLastElement;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.selectTabAtPosition;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.whenDisplayed;
-import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabTestHelper.isKeyboardAccessoryTabLayout;
 
 import androidx.test.filters.MediumTest;
 
@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupView;
 import org.chromium.chrome.browser.test.ScreenShooter;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -54,8 +55,8 @@ public class ManualFillingUiCaptureTest {
 
     @Test
     @MediumTest
-    @Feature({"KeyboardAccessoryModern", "LTR", "UiCatalogue"})
-    public void testCaptureKeyboardAccessoryV2WithPasswords()
+    @Feature({"KeyboardAccessory", "LTR", "UiCatalogue"})
+    public void testCaptureKeyboardAccessoryWithPasswords()
             throws InterruptedException, TimeoutException {
         mHelper.loadTestPage(false);
         ManualFillingTestHelper.createAutofillTestProfiles();
@@ -66,26 +67,28 @@ public class ManualFillingUiCaptureTest {
 
         waitForActionsInAccessory();
         waitForUnrelatedChromeUi();
-        mScreenShooter.shoot("AccessoryBarV2");
+        mScreenShooter.shoot("AccessoryBar");
 
         whenDisplayed(withId(R.id.bar_items_view))
                 .perform(
-                        scrollTo(isKeyboardAccessoryTabLayout()),
-                        actionOnItem(isKeyboardAccessoryTabLayout(), selectTabAtPosition(0)));
+                        scrollTo(isAssignableFrom(KeyboardAccessoryButtonGroupView.class)),
+                        actionOnItem(
+                                isAssignableFrom(KeyboardAccessoryButtonGroupView.class),
+                                selectTabAtPosition(0)));
 
         waitForSuggestionsInSheet();
         waitForUnrelatedChromeUi();
-        mScreenShooter.shoot("AccessorySheetPasswordsV2");
+        mScreenShooter.shoot("AccessorySheetPasswords");
 
         whenDisplayed(withId(R.id.passwords_sheet)).perform(scrollToLastElement());
         waitForUnrelatedChromeUi();
-        mScreenShooter.shoot("AccessorySheetPasswordsV2Scrolled");
+        mScreenShooter.shoot("AccessorySheetPasswordsScrolled");
     }
 
     @Test
     @MediumTest
-    @Feature({"KeyboardAccessoryModern", "RTL", "UiCatalogue"})
-    public void testCaptureKeyboardAccessoryV2WithPasswordsRTL()
+    @Feature({"KeyboardAccessory", "RTL", "UiCatalogue"})
+    public void testCaptureKeyboardAccessoryWithPasswordsRTL()
             throws InterruptedException, TimeoutException {
         mHelper.loadTestPage(true);
         ManualFillingTestHelper.createAutofillTestProfiles();
@@ -96,20 +99,22 @@ public class ManualFillingUiCaptureTest {
 
         waitForActionsInAccessory();
         waitForUnrelatedChromeUi();
-        mScreenShooter.shoot("AccessoryBarV2RTL");
+        mScreenShooter.shoot("AccessoryBarRTL");
 
         whenDisplayed(withId(R.id.bar_items_view))
                 .perform(
-                        scrollTo(isKeyboardAccessoryTabLayout()),
-                        actionOnItem(isKeyboardAccessoryTabLayout(), selectTabAtPosition(0)));
+                        scrollTo(isAssignableFrom(KeyboardAccessoryButtonGroupView.class)),
+                        actionOnItem(
+                                isAssignableFrom(KeyboardAccessoryButtonGroupView.class),
+                                selectTabAtPosition(0)));
 
         waitForSuggestionsInSheet();
         waitForUnrelatedChromeUi();
-        mScreenShooter.shoot("AccessorySheetPasswordsV2RTL");
+        mScreenShooter.shoot("AccessorySheetPasswordsRTL");
 
         whenDisplayed(withId(R.id.passwords_sheet)).perform(scrollToLastElement());
         waitForUnrelatedChromeUi();
-        mScreenShooter.shoot("AccessorySheetPasswordsV2ScrolledRTL");
+        mScreenShooter.shoot("AccessorySheetPasswordsScrolledRTL");
     }
 
     private void waitForUnrelatedChromeUi() throws InterruptedException {

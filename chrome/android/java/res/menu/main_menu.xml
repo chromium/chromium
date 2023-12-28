@@ -22,7 +22,7 @@ found in the LICENSE file.
               <item android:id="@+id/bookmark_this_page_id"
                 android:title="@string/accessibility_menu_bookmark"
                 android:titleCondensed="@string/menu_bookmark"
-                android:icon="@drawable/btn_star"/>
+                android:icon="@drawable/star_outline_24dp"/>
               <item android:id="@+id/offline_page_id"
                 android:title="@string/download_page"
                 android:titleCondensed="@string/menu_download"
@@ -91,7 +91,7 @@ found in the LICENSE file.
         </item>
         <item android:id="@+id/add_bookmark_menu_id"
             android:title="@string/menu_add_bookmark"
-            android:icon="@drawable/btn_star"/>
+            android:icon="@drawable/star_outline_24dp"/>
         <item android:id="@+id/edit_bookmark_menu_id"
             android:title="@string/menu_edit_bookmark"
             android:icon="@drawable/btn_star_filled"/>

@@ -45,7 +45,8 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   static std::unique_ptr<views::Widget> CreateSavedDeskLibraryWidget(
       aura::Window* root);
 
-  const std::vector<SavedDeskGridView*>& grid_views() const {
+  const std::vector<raw_ptr<SavedDeskGridView, VectorExperimental>>&
+  grid_views() const {
     return grid_views_;
   }
 
@@ -57,9 +58,11 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   // corresponding entry will be placed first. This will animate the entries to
   // their final positions if `animate` is true. Currently only allows a maximum
   // of 6 saved desks to be shown in the grid.
-  void AddOrUpdateEntries(const std::vector<const DeskTemplate*>& entries,
-                          const base::Uuid& order_first_uuid,
-                          bool animate);
+  void AddOrUpdateEntries(
+      const std::vector<raw_ptr<const DeskTemplate, VectorExperimental>>&
+          entries,
+      const base::Uuid& order_first_uuid,
+      bool animate);
 
   // Deletes all entries identified by `uuids`. If `delete_animation` is false,
   // then the respective item views will just disappear instead of fading out.
@@ -106,23 +109,21 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
 
   // Pointers to the grids with saved desks of specific types. These will be set
   // depending on which features are enabled.
-  raw_ptr<SavedDeskGridView, ExperimentalAsh> desk_template_grid_view_ =
-      nullptr;
-  raw_ptr<SavedDeskGridView, ExperimentalAsh> save_and_recall_grid_view_ =
-      nullptr;
+  raw_ptr<SavedDeskGridView> desk_template_grid_view_ = nullptr;
+  raw_ptr<SavedDeskGridView> save_and_recall_grid_view_ = nullptr;
 
   // Used for scroll functionality of the library page. Owned by views
   // hierarchy.
-  raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
+  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
 
   // Adds a fade in/out gradient to the top/bottom of `scroll_view_`.
   std::unique_ptr<ScrollViewGradientHelper> scroll_view_gradient_helper_;
 
   // Holds the active ones, for convenience.
-  std::vector<SavedDeskGridView*> grid_views_;
+  std::vector<raw_ptr<SavedDeskGridView, VectorExperimental>> grid_views_;
 
   // Label that shows up when the library has no items.
-  raw_ptr<views::Label, ExperimentalAsh> no_items_label_ = nullptr;
+  raw_ptr<views::Label> no_items_label_ = nullptr;
 
   // Handles mouse/touch events on saved desk library widget.
   std::unique_ptr<SavedDeskLibraryEventHandler> event_handler_;

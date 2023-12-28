@@ -18,6 +18,8 @@ import org.chromium.url.GURL;
  * <p>This class contains extras that are used only by Android Share, and should never be
  * componentized. {@link ShareParams} lives in //components and only contains parameters that are
  * used in more than one part of the Chromium codebase.
+ *
+ * <p>These int value for these enums are safe to modify as its not used for metrics.
  */
 public class ChromeShareExtras {
     @IntDef({
@@ -26,8 +28,6 @@ public class ChromeShareExtras {
         DetailedContentType.GIF,
         DetailedContentType.HIGHLIGHTED_TEXT,
         DetailedContentType.SCREENSHOT,
-        DetailedContentType.WEB_NOTES,
-        DetailedContentType.LIGHTWEIGHT_REACTION,
         DetailedContentType.WEB_SHARE
     })
     public @interface DetailedContentType {
@@ -36,9 +36,7 @@ public class ChromeShareExtras {
         int GIF = 2;
         int HIGHLIGHTED_TEXT = 3;
         int SCREENSHOT = 4;
-        int WEB_NOTES = 5;
-        int LIGHTWEIGHT_REACTION = 6;
-        int WEB_SHARE = 7;
+        int WEB_SHARE = 5;
     }
 
     /** Whether to save the chosen activity for future direct sharing. */
@@ -59,9 +57,6 @@ public class ChromeShareExtras {
     /** Url of the content being shared. */
     @NonNull private final GURL mContentUrl;
 
-    /** Whether it is sharing a tab group. */
-    private final boolean mSharingTabGroup;
-
     private final boolean mIsReshareHighlightedText;
 
     /** Whether page sharing 1P actions should be added to the share sheet or not. */
@@ -78,7 +73,6 @@ public class ChromeShareExtras {
             boolean isUrlOfVisiblePage,
             GURL imageSrcUrl,
             GURL contentUrl,
-            boolean sharingTabGroup,
             boolean isReshareHighlightedText,
             boolean skipPageSharingActions,
             RenderFrameHost renderFrameHost,
@@ -88,7 +82,6 @@ public class ChromeShareExtras {
         mIsUrlOfVisiblePage = isUrlOfVisiblePage;
         mImageSrcUrl = imageSrcUrl == null ? GURL.emptyGURL() : imageSrcUrl;
         mContentUrl = contentUrl == null ? GURL.emptyGURL() : contentUrl;
-        mSharingTabGroup = sharingTabGroup;
         mIsReshareHighlightedText = isReshareHighlightedText;
         mSkipPageSharingActions = skipPageSharingActions;
         mRenderFrameHost = renderFrameHost;
@@ -129,13 +122,6 @@ public class ChromeShareExtras {
      */
     public @NonNull GURL getContentUrl() {
         return mContentUrl;
-    }
-
-    /**
-     * @return Whether it is sharing a tab group.
-     */
-    public boolean sharingTabGroup() {
-        return mSharingTabGroup;
     }
 
     public boolean isReshareHighlightedText() {
@@ -180,7 +166,6 @@ public class ChromeShareExtras {
         private boolean mIsUrlOfVisiblePage;
         private GURL mImageSrcUrl;
         private GURL mContentUrl;
-        private boolean mSharingTabGroup;
         private boolean mIsReshareHighlightedText;
         private boolean mSkipPageSharingActions;
         private RenderFrameHost mRenderFrameHost;
@@ -248,7 +233,6 @@ public class ChromeShareExtras {
                     mIsUrlOfVisiblePage,
                     mImageSrcUrl,
                     mContentUrl,
-                    mSharingTabGroup,
                     mIsReshareHighlightedText,
                     mSkipPageSharingActions,
                     mRenderFrameHost,

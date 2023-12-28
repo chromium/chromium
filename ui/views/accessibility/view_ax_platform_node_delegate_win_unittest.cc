@@ -604,8 +604,8 @@ class ViewAXPlatformNodeDelegateWinTableTest
     columns.push_back(TestTableColumn(2, "GDP"));
 
     model_ = std::make_unique<TestTableModel>();
-    auto table =
-        std::make_unique<TableView>(model_.get(), columns, TEXT_ONLY, true);
+    auto table = std::make_unique<TableView>(model_.get(), columns,
+                                             TableType::kTextOnly, true);
     table_ = table.get();
 
     widget_ = std::make_unique<Widget>();

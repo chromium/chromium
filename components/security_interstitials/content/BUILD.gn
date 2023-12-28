@@ -56,8 +56,6 @@ static_library("security_interstitial_page") {
     "ssl_error_navigation_throttle.h",
     "stateful_ssl_host_state_delegate.cc",
     "stateful_ssl_host_state_delegate.h",
-    "unsafe_resource_util.cc",
-    "unsafe_resource_util.h",
     "urls.cc",
     "urls.h",
     "utils.cc",

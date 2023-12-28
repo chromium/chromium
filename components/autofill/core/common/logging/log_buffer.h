@@ -7,6 +7,7 @@
 
 #include <concepts>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -76,7 +77,7 @@ struct Tag {
 struct CTag {
   CTag() = default;
   // |opt_name| is not used, and only exists for readability.
-  explicit CTag(base::StringPiece opt_name) {}
+  explicit CTag(std::string_view opt_name) {}
 };
 
 // Attribute of an HTML Tag (e.g. class="foo" would be represented by
@@ -111,7 +112,7 @@ class LogBuffer {
   LogBuffer& operator=(const LogBuffer& other) = delete;
 
   // Returns the contents of the buffer if any and empties it.
-  absl::optional<base::Value::Dict> RetrieveResult();
+  std::optional<base::Value::Dict> RetrieveResult();
 
   // Returns whether an active WebUI is listening. If false, the buffer may
   // not do any logging.
@@ -121,7 +122,7 @@ class LogBuffer {
   friend LogBuffer& operator<<(LogBuffer& buf, Tag&& tag);
   friend LogBuffer& operator<<(LogBuffer& buf, CTag&& tag);
   friend LogBuffer& operator<<(LogBuffer& buf, Attrib&& attrib);
-  friend LogBuffer& operator<<(LogBuffer& buf, base::StringPiece text);
+  friend LogBuffer& operator<<(LogBuffer& buf, std::string_view text);
   friend LogBuffer& operator<<(LogBuffer& buf, LogBuffer&& buffer);
 
   // The stack of values being constructed. Each item is a dictionary with the
@@ -154,7 +155,7 @@ LogBuffer& operator<<(LogBuffer& buf, Attrib&& attrib);
 
 LogBuffer& operator<<(LogBuffer& buf, Br&& tag);
 
-LogBuffer& operator<<(LogBuffer& buf, base::StringPiece text);
+LogBuffer& operator<<(LogBuffer& buf, std::string_view text);
 
 LogBuffer& operator<<(LogBuffer& buf, base::StringPiece16 text);
 
@@ -221,7 +222,7 @@ LogTableRowBuffer&& operator<<(LogTableRowBuffer&& buf, T&& value) {
 LogTableRowBuffer&& operator<<(LogTableRowBuffer&& buf, Attrib&& attrib);
 
 // Highlights the first |needle| in |haystack| by wrapping it in <b> tags.
-LogBuffer HighlightValue(base::StringPiece haystack, base::StringPiece needle);
+LogBuffer HighlightValue(std::string_view haystack, std::string_view needle);
 LogBuffer HighlightValue(base::StringPiece16 haystack,
                          base::StringPiece16 needle);
 

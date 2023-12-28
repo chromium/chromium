@@ -12,30 +12,24 @@
 
 namespace extensions {
 
-LazyContextId::LazyContextId(content::BrowserContext* context,
+LazyContextId::LazyContextId(Type type,
+                             content::BrowserContext* context,
                              const ExtensionId& extension_id)
-    : type_(Type::kEventPage), context_(context), extension_id_(extension_id) {}
-
-LazyContextId::LazyContextId(content::BrowserContext* context,
-                             const ExtensionId& extension_id,
-                             const GURL& service_worker_scope)
-    : type_(Type::kServiceWorker),
-      context_(context),
-      extension_id_(extension_id),
-      service_worker_scope_(service_worker_scope) {}
+    : type_(type), context_(context), extension_id_(extension_id) {}
 
 LazyContextId::LazyContextId(content::BrowserContext* context,
                              const Extension* extension)
     : context_(context), extension_id_(extension->id()) {
-  if (BackgroundInfo::HasLazyBackgroundPage(extension)) {
-    type_ = Type::kEventPage;
-  } else {
-    // TODO(crbug.com/773103): This currently assumes all workers are
-    // registered in the '/' scope.
-    DCHECK(BackgroundInfo::IsServiceWorkerBased(extension));
+  if (BackgroundInfo::IsServiceWorkerBased(extension)) {
     type_ = Type::kServiceWorker;
-    service_worker_scope_ =
-        Extension::GetBaseURLFromExtensionId(extension->id());
+  } else if (BackgroundInfo::HasBackgroundPage(extension)) {
+    // Packaged apps and extensions with persistent background and event pages
+    // all use the same task queue.
+    type_ = Type::kBackgroundPage;
+  } else {
+    // There are tests where a LazyContextId is constructed for an extension
+    // without a background page or service worker, so this is a fallback.
+    type_ = Type::kNone;
   }
 }
 

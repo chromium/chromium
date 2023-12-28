@@ -89,13 +89,12 @@
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/focus_tab_after_navigation_helper.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
-#include "chrome/browser/ui/performance_controls/high_efficiency_chip_tab_helper.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt_helper.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
-#include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 #include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
@@ -190,6 +189,7 @@
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_desktop.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/search/search_tab_helper.h"
+#include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 #include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
 #include "chrome/browser/ui/side_panel/companion/exps_registration_success_observer.h"
 #include "chrome/browser/ui/side_panel/customize_chrome/customize_chrome_tab_helper.h"
@@ -246,10 +246,6 @@
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #endif
 
-#if BUILDFLAG(ENABLE_COMPOSE)
-#include "chrome/browser/compose/chrome_compose_client.h"
-#endif
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_api.h"
 #include "chrome/browser/extensions/navigation_extension_enabler.h"
@@ -290,6 +286,7 @@
 
 #if BUILDFLAG(ENABLE_COMPOSE)
 #include "chrome/browser/compose/chrome_compose_client.h"
+#include "chrome/browser/compose/compose_enabling.h"
 #include "components/compose/buildflags.h"
 #include "components/compose/core/browser/compose_features.h"
 #endif
@@ -426,9 +423,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     // android tab
     // TODO(crbug.com/1466970): Consider moving check conditions or the
     // registration logic to sensitivity_persisted_tab_data_android.*
-    if (!profile->IsOffTheRecord() &&
-        base::FeatureList::IsEnabled(
-            chrome::android::kAndroidAppIntegrationSafeSearch)) {
+    if (!profile->IsOffTheRecord()) {
       if (auto* tab = TabAndroid::FromWebContents(web_contents);
           (tab && !tab->IsCustomTab())) {
         SensitivityPersistedTabDataAndroid::From(
@@ -519,6 +514,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   v8_compile_hints::V8CompileHintsTabHelper::MaybeCreateForWebContents(
       web_contents);
   vr::VrTabHelper::CreateForWebContents(web_contents);
+  if (base::FeatureList::IsEnabled(permissions::features::kOneTimePermission)) {
+    OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents);
+  }
 
   // NO! Do not just add your tab helper here. This is a large alphabetized
   // block; please insert your tab helper above in alphabetical order.
@@ -563,20 +561,15 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       web_contents,
       std::make_unique<JavaScriptTabModalDialogManagerDelegateDesktop>(
           web_contents));
-  if (base::FeatureList::IsEnabled(permissions::features::kOneTimePermission)) {
-    OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents);
-  }
   ManagePasswordsUIController::CreateForWebContents(web_contents);
   if (PrivacySandboxPromptHelper::ProfileRequiresPrompt(profile)) {
     PrivacySandboxPromptHelper::CreateForWebContents(web_contents);
   }
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
   if (search_engines::IsChoiceScreenFlagEnabled(
           search_engines::ChoicePromo::kDialog)) {
     SearchEngineChoiceTabHelper::CreateForWebContents(web_contents);
   }
-#endif
 
   SadTabHelper::CreateForWebContents(web_contents);
   SearchTabHelper::CreateForWebContents(web_contents);
@@ -586,7 +579,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     privacy_sandbox::TrackingProtectionNoticeService::TabHelper::
         CreateForWebContents(web_contents);
   }
-  HighEfficiencyChipTabHelper::CreateForWebContents(web_contents);
+  MemorySaverChipTabHelper::CreateForWebContents(web_contents);
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kMemoryUsageInHovercards)) {
     performance_manager::user_tuning::UserPerformanceTuningManager::
@@ -630,7 +623,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
-  if (base::FeatureList::IsEnabled(compose::features::kEnableCompose) &&
+  if ((ComposeEnabling::IsEnabledForProfile(profile)) &&
       !profile->IsOffTheRecord()) {
     ChromeComposeClient::CreateForWebContents(web_contents);
   }
@@ -680,7 +673,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
               kPerformanceControlsBatteryPerformanceSurvey) ||
       base::FeatureList::IsEnabled(
           performance_manager::features::
-              kPerformanceControlsHighEfficiencyOptOutSurvey) ||
+              kPerformanceControlsMemorySaverOptOutSurvey) ||
       base::FeatureList::IsEnabled(
           performance_manager::features::
               kPerformanceControlsBatterySaverOptOutSurvey)) {

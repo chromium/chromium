@@ -5,6 +5,10 @@
 #![feature(test)]
 extern crate test;
 
+chromium::import! {
+    "//build/rust/tests/test_rust_static_library";
+}
+
 use test::Bencher;
 use test_rust_static_library::add_two_ints_via_rust;
 

@@ -70,7 +70,7 @@ void RequestDispatcher::OnPlatformInitialized(
     for (const auto& config : storage_service_->config_holder()->configs()) {
       request_handlers_[config->segmentation_key] = RequestHandler::Create(
           *config, std::move(result_providers[config->segmentation_key]),
-          execution_service);
+          execution_service, storage_service_);
     }
   }
 
@@ -165,40 +165,29 @@ void RequestDispatcher::GetModelResult(
                        RawResult(PredictionStatus::kFailed)));
     return;
   }
+
   Config* config =
       storage_service_->config_holder()->GetConfigForSegmentationKey(
           segmentation_key);
   CHECK(config);
 
-  if (!options.on_demand_execution) {
-    // Returns result directly from prefs for non-ondemand models.
-    auto pred_result = storage_service_->cached_result_provider()
-                           ->GetPredictionResultForClient(segmentation_key);
-    RawResult raw_result(PredictionStatus::kFailed);
-    if (pred_result) {
-      raw_result = PostProcessor().GetRawResult(*pred_result,
-                                                PredictionStatus::kSucceeded);
-
-      storage_service_->cached_result_writer()->MarkResultAsUsed(config);
-      stats::RecordSegmentSelectionFailure(
-          *config, stats::SegmentationSelectionFailureReason::
-                       kClassificationResultFromPrefs);
-    } else {
-      stats::RecordSegmentSelectionFailure(
-          *config, stats::SegmentationSelectionFailureReason::
-                       kClassificationResultNotAvailableInPrefs);
-    }
-
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), /*is_cached_result=*/true,
-                       std::move(raw_result)));
+  if (options.on_demand_execution) {
+    ExecuteOnDemand(segmentation_key, config, options, input_context,
+                    std::move(callback));
     return;
   }
+  HandleCachedExecution(segmentation_key, config, options, input_context,
+                        std::move(callback));
+}
 
-  // TODO(ssid): Support cached results for all APIs.
-  DCHECK(options.on_demand_execution);
-
+void RequestDispatcher::ExecuteOnDemand(
+    const std::string& segmentation_key,
+    const Config* config,
+    const PredictionOptions& options,
+    scoped_refptr<InputContext> input_context,
+    WrappedCallback callback) {
+  DCHECK(options.on_demand_execution ||
+         (!options.on_demand_execution && options.fallback_allowed));
   // For on-demand results, we need to run the models for which we need DB
   // initialization to be complete. Hence cache the request if platform
   // initialization isn't completed yet.
@@ -228,9 +217,85 @@ void RequestDispatcher::GetModelResult(
   auto iter = request_handlers_.find(segmentation_key);
   CHECK(iter != request_handlers_.end());
   auto final_callback =
-      base::BindOnce(std::move(callback), /*is_cached_result=*/false);
+      base::BindOnce(&RequestDispatcher::OnFinishedOnDemandExecution,
+                     weak_ptr_factory_.GetWeakPtr(), segmentation_key, config,
+                     options, input_context, std::move(callback));
   iter->second->GetPredictionResult(options, input_context,
                                     std::move(final_callback));
+}
+
+void RequestDispatcher::OnFinishedOnDemandExecution(
+    const std::string& segmentation_key,
+    const Config* config,
+    const PredictionOptions& options,
+    scoped_refptr<InputContext> input_context,
+    WrappedCallback callback,
+    const RawResult& raw_result) {
+  if (raw_result.status == PredictionStatus::kFailed) {
+    // If there is no result from ondemand execution and fallback is enabled
+    // return cached result if previously result was cached.
+    if (options.on_demand_execution && options.fallback_allowed &&
+        options.can_update_cache_for_future_requests) {
+      HandleCachedExecution(segmentation_key, config, options, input_context,
+                            std::move(callback));
+      return;
+    }
+    stats::RecordSegmentSelectionFailure(
+        *config, stats::SegmentationSelectionFailureReason::
+                     kOnDemandModelExecutionFailed);
+  }
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), /*is_cached_result=*/false,
+                                std::move(raw_result)));
+}
+
+void RequestDispatcher::HandleCachedExecution(
+    const std::string& segmentation_key,
+    const Config* config,
+    const PredictionOptions& options,
+    scoped_refptr<InputContext> input_context,
+    WrappedCallback callback) {
+  // Returns result directly from prefs for non-ondemand models.
+  auto pred_result =
+      storage_service_->cached_result_provider()->GetPredictionResultForClient(
+          segmentation_key);
+
+  RawResult raw_result(PredictionStatus::kFailed);
+  bool cached_execution_fallback_on_failure =
+      !options.on_demand_execution && options.fallback_allowed;
+
+  if (!pred_result && cached_execution_fallback_on_failure) {
+    // Execute ondemand if no cached result is available and fallback is
+    // allowed. Only supported for cached execution.
+    stats::RecordSegmentSelectionFailure(
+        *config, stats::SegmentationSelectionFailureReason::
+                     kCachedResultUnavailableExecutingOndemand);
+    ExecuteOnDemand(segmentation_key, config, options, input_context,
+                    std::move(callback));
+    return;
+  }
+
+  if (pred_result) {
+    // Return cached result.
+    raw_result = PostProcessor().GetRawResult(*pred_result,
+                                              PredictionStatus::kSucceeded);
+
+    storage_service_->cached_result_writer()->MarkResultAsUsed(config);
+    stats::RecordSegmentSelectionFailure(
+        *config, stats::SegmentationSelectionFailureReason::
+                     kClassificationResultFromPrefs);
+  } else {
+    // Return failure if no cached result is available.
+    // This happens in two scenarios:
+    // 1. Ondemand execution fails and fallback execution also fails.
+    // 2. Cached execution fails and fallback is not allowed.
+    stats::RecordSegmentSelectionFailure(
+        *config, stats::SegmentationSelectionFailureReason::
+                     kClassificationResultNotAvailableInPrefs);
+  }
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), /*is_cached_result=*/true,
+                                std::move(raw_result)));
 }
 
 void RequestDispatcher::GetClassificationResult(

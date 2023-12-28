@@ -23,6 +23,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import {PrefsState} from '../common/types.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {Route, routes} from '../router.js';
 
@@ -50,6 +51,11 @@ export class SettingsCrostiniArcAdbElement extends
 
   static get properties() {
     return {
+      prefs: {
+        type: Object,
+        notify: true,
+      },
+
       arcAdbEnabled_: {
         type: Boolean,
         value: false,
@@ -99,6 +105,7 @@ export class SettingsCrostiniArcAdbElement extends
     };
   }
 
+  prefs: PrefsState;
   private arcAdbEnabled_: boolean;
   private arcAdbNeedPowerwash_: boolean;
   private browserProxy_: CrostiniBrowserProxy;

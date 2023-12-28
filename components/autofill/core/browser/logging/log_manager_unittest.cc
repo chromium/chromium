@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/logging/log_manager.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "components/autofill/core/browser/logging/log_receiver.h"
@@ -21,7 +23,7 @@ namespace {
 
 const char kTestText[] = "abcd1234";
 
-auto JsonHasText(base::StringPiece text) {
+auto JsonHasText(std::string_view text) {
   return testing::ResultOf(
       [](const base::Value::Dict& dict) {
         const std::string* value = dict.FindString("value");

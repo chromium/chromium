@@ -117,4 +117,9 @@ std::unique_ptr<AwVariationsSeed> TakeSeed() {
   return seed;
 }
 
+void CacheSeedFreshness(long freshness) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_VariationsSeedLoader_cacheSeedFreshness(env, freshness);
+}
+
 }  // namespace android_webview

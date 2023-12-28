@@ -41,7 +41,10 @@ class CORE_EXPORT GridLayoutAlgorithm
   const LayoutResult* Layout() override;
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 
-  MinMaxSizesResult ComputeMinMaxSizes(const GridSizingSubtree& sizing_subtree);
+  LayoutUnit ComputeSubgridIntrinsicBlockSize(
+      const GridSizingSubtree& sizing_subtree) const;
+  MinMaxSizesResult ComputeSubgridMinMaxSizes(
+      const GridSizingSubtree& sizing_subtree) const;
 
   // Computes the containing block rect of out of flow items from stored data in
   // |GridLayoutData|.
@@ -170,7 +173,7 @@ class CORE_EXPORT GridLayoutAlgorithm
                       const CallbackFunc& callback_func,
                       bool should_compute_min_max_sizes = true) const;
 
-  LayoutUnit ComputeSubgridContributionSize(
+  LayoutUnit ComputeSubgridIntrinsicSize(
       const GridSizingSubtree& sizing_subtree,
       GridTrackSizingDirection track_direction,
       SizingConstraint sizing_constraint) const;

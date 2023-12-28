@@ -22,6 +22,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator responsible for Read Aloud mini player lifecycle. */
 public class MiniPlayerCoordinator {
+    private static ViewStub sViewStubForTesting;
     private final PropertyModelChangeProcessor<PropertyModel, MiniPlayerLayout, PropertyKey>
             mPlayerModelChangeProcessor;
     private final PropertyModelChangeProcessor<
@@ -54,7 +55,10 @@ public class MiniPlayerCoordinator {
     }
 
     private static MiniPlayerLayout inflateLayout(Activity activity, Context context) {
-        ViewStub stub = activity.findViewById(R.id.readaloud_mini_player_stub);
+        ViewStub stub =
+                sViewStubForTesting != null
+                        ? sViewStubForTesting
+                        : activity.findViewById(R.id.readaloud_mini_player_stub);
         assert stub != null;
         stub.setLayoutResource(R.layout.readaloud_mini_player_layout);
         stub.setLayoutInflater(LayoutInflater.from(context));
@@ -113,5 +117,9 @@ public class MiniPlayerCoordinator {
      */
     public void dismiss(boolean animate) {
         mMediator.dismiss(animate);
+    }
+
+    public static void setViewStubForTesting(ViewStub stub) {
+        sViewStubForTesting = stub;
     }
 }

@@ -64,7 +64,7 @@ DebugDaemonClient* g_instance_for_test = nullptr;
 // terminated. Once the data has been completely read from the pipe, it invokes
 // the GetLogsCallback |callback| passing the deserialized logs data back to
 // the requester.
-class PipeReaderWrapper : public base::SupportsWeakPtr<PipeReaderWrapper> {
+class PipeReaderWrapper final {
  public:
   explicit PipeReaderWrapper(DebugDaemonClient::GetLogsCallback callback)
       : pipe_reader_(base::ThreadPool::CreateTaskRunner(
@@ -76,8 +76,8 @@ class PipeReaderWrapper : public base::SupportsWeakPtr<PipeReaderWrapper> {
   PipeReaderWrapper& operator=(const PipeReaderWrapper&) = delete;
 
   base::ScopedFD Initialize() {
-    return pipe_reader_.StartIO(
-        base::BindOnce(&PipeReaderWrapper::OnIOComplete, AsWeakPtr()));
+    return pipe_reader_.StartIO(base::BindOnce(&PipeReaderWrapper::OnIOComplete,
+                                               weak_ptr_factory_.GetWeakPtr()));
   }
 
   void OnIOComplete(std::optional<std::string> result) {
@@ -111,6 +111,10 @@ class PipeReaderWrapper : public base::SupportsWeakPtr<PipeReaderWrapper> {
     RunCallbackAndDestroy(std::nullopt);
   }
 
+  base::WeakPtr<PipeReaderWrapper> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   void RunCallbackAndDestroy(
       std::optional<std::map<std::string, std::string>> result) {
@@ -124,6 +128,7 @@ class PipeReaderWrapper : public base::SupportsWeakPtr<PipeReaderWrapper> {
 
   chromeos::PipeReader pipe_reader_;
   DebugDaemonClient::GetLogsCallback callback_;
+  base::WeakPtrFactory<PipeReaderWrapper> weak_ptr_factory_{this};
 };
 
 // The DebugDaemonClient implementation used in production.
@@ -539,9 +544,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
     writer.AppendString(name);
     writer.AppendString(uri);
     writer.AppendString(language);
-    writer.AppendArrayOfBytes(
-        reinterpret_cast<const uint8_t*>(ppd_contents.data()),
-        ppd_contents.size());
+    writer.AppendArrayOfBytes(base::as_byte_span(ppd_contents));
 
     debugdaemon_proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,

@@ -231,7 +231,7 @@ std::unique_ptr<views::View> ResizeConfirmationDialogView::MakeButtonsView() {
                 base::Unretained(this), false,
                 views::Widget::ClosedReason::kAcceptButtonClicked))
             .SetText(l10n_util::GetStringUTF16(IDS_APP_CANCEL))
-            .SetProminent(false)
+            .SetStyle(ui::ButtonStyle::kDefault)
             .SetIsDefault(false),
         views::Builder<views::MdTextButton>()  // Accept button.
             .CopyAddressTo(&accept_button_)
@@ -241,7 +241,7 @@ std::unique_ptr<views::View> ResizeConfirmationDialogView::MakeButtonsView() {
                 views::Widget::ClosedReason::kAcceptButtonClicked))
             .SetText(l10n_util::GetStringUTF16(
                 IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_ACCEPT))
-            .SetProminent(true)
+            .SetStyle(ui::ButtonStyle::kProminent)
             .SetIsDefault(true));
   }
   return std::move(builder).Build();

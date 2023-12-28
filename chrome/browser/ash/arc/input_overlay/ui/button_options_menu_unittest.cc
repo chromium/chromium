@@ -35,17 +35,6 @@ class ButtonOptionsMenuTest : public OverlayViewTestBase {
   ButtonOptionsMenuTest() = default;
   ~ButtonOptionsMenuTest() override = default;
 
-  size_t GetActionListItemsSize() {
-    DCHECK(editing_list_);
-
-    views::View* scroll_content = editing_list_->scroll_content_;
-    DCHECK(scroll_content);
-    if (editing_list_->HasControls()) {
-      return scroll_content->children().size();
-    }
-    return 0;
-  }
-
   // Return -1 if there is no list item for `action`. Otherwise, return the
   // index of list item in `EditingList` for `action`.
   int GetIndexInEditingList(Action* action) {
@@ -56,7 +45,7 @@ class ButtonOptionsMenuTest : public OverlayViewTestBase {
     views::View* scroll_content = editing_list_->scroll_content_;
     DCHECK(scroll_content);
     for (size_t i = 0; i < scroll_content->children().size(); i++) {
-      auto* list_item =
+      const auto* list_item =
           static_cast<ActionViewListItem*>(scroll_content->children()[i]);
       if (list_item->action() == action) {
         return i;
@@ -66,11 +55,6 @@ class ButtonOptionsMenuTest : public OverlayViewTestBase {
   }
 
   bool IsEditingListInZeroState() { return editing_list_->is_zero_state_; }
-
-  void PressDeleteButton(ButtonOptionsMenu* menu) {
-    DCHECK(menu);
-    menu->OnDeleteButtonPressed();
-  }
 
   ActionType GetActionType(ButtonOptionsMenu* menu) {
     DCHECK(menu);
@@ -98,11 +82,6 @@ class ButtonOptionsMenuTest : public OverlayViewTestBase {
     action_edit->OnClicked();
   }
 
-  void PressDoneButton(ButtonOptionsMenu* menu) {
-    DCHECK(menu);
-    LeftClickOn(menu->done_button_);
-  }
-
   void MouseDragActionBy(Action* action, int x, int y) {
     auto* event_generator = GetEventGenerator();
     auto* touch_point = action->action_view()->touch_point();
@@ -125,7 +104,7 @@ class ButtonOptionsMenuTest : public OverlayViewTestBase {
   bool IsActionInEditingList(Action* action) {
     views::View* scroll_content = editing_list_->scroll_content_;
     DCHECK(scroll_content);
-    for (auto* child : scroll_content->children()) {
+    for (views::View* child : scroll_content->children()) {
       auto* list_item = static_cast<ActionViewListItem*>(child);
       DCHECK(list_item);
       if (list_item->action() == action) {
@@ -156,8 +135,8 @@ TEST_F(ButtonOptionsMenuTest, TestRemoveAction) {
   EXPECT_FALSE(move_action_->IsDeleted());
 
   // Remove Action Tap.
-  auto* menu = ShowButtonOptionsMenu(tap_action_);
-  PressDeleteButton(menu);
+  ShowButtonOptionsMenu(tap_action_);
+  PressDeleteButtonOnButtonOptionsMenu();
   // Default action is still in the list even it is deleted and it is marked as
   // deleted. But it doesn't show up visually.
   CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
@@ -170,8 +149,8 @@ TEST_F(ButtonOptionsMenuTest, TestRemoveAction) {
   EXPECT_EQ(2u, GetActionViewSize());
 
   // Remove Action Move.
-  menu = ShowButtonOptionsMenu(move_action_);
-  PressDeleteButton(menu);
+  ShowButtonOptionsMenu(move_action_);
+  PressDeleteButtonOnButtonOptionsMenu();
   // Default action is still in the list even it is deleted and it is marked as
   // deleted. But it doesn't show up visually.
   CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
@@ -184,8 +163,8 @@ TEST_F(ButtonOptionsMenuTest, TestRemoveAction) {
   EXPECT_EQ(1u, GetActionViewSize());
 
   // Remove Action Move.
-  menu = ShowButtonOptionsMenu(tap_action_two_);
-  PressDeleteButton(menu);
+  ShowButtonOptionsMenu(tap_action_two_);
+  PressDeleteButtonOnButtonOptionsMenu();
   // Default action is still in the list even it is deleted and it is marked as
   // deleted. But it doesn't show up visually.
   CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
@@ -230,6 +209,37 @@ TEST_F(ButtonOptionsMenuTest, TestChangeActionType) {
   EXPECT_EQ(list_index, GetIndexInEditingList(menu->action()));
 }
 
+TEST_F(ButtonOptionsMenuTest, TestActionMoveDefaultInputBinding) {
+  // Originally there is an `ActionMove` with WASD as default bindings. Add
+  // another new `ActionMove` and the new `ActionMove` will not assign default
+  // WASD bindings.
+  AddNewActionInCenter();
+  auto* menu = GetButtonOptionsMenu();
+  ASSERT_TRUE(menu);
+  PressActionMoveButton(menu);
+  auto* new_action = GetButtonOptionsMenuAction();
+  ASSERT_TRUE(new_action);
+  EXPECT_TRUE(new_action->current_input()->IsUnbound());
+  VerifyActionKeyBinding(new_action, {ui::DomCode::NONE, ui::DomCode::NONE,
+                                      ui::DomCode::NONE, ui::DomCode::NONE});
+  VerifyUIDisplay(new_action, {u"", u"", u"", u""}, u"Unassigned joystick");
+
+  // Delete the original action move and add another `ActionMove`. The new
+  // `ActionMove` will assign default WASD bindings.
+  ShowButtonOptionsMenu(move_action_);
+  PressDeleteButtonOnButtonOptionsMenu();
+  AddNewActionInCenter();
+  menu = GetButtonOptionsMenu();
+  ASSERT_TRUE(menu);
+  PressActionMoveButton(menu);
+  new_action = GetButtonOptionsMenuAction();
+  ASSERT_TRUE(new_action);
+  EXPECT_FALSE(new_action->current_input()->IsUnbound());
+  VerifyActionKeyBinding(new_action, {ui::DomCode::US_W, ui::DomCode::US_A,
+                                      ui::DomCode::US_S, ui::DomCode::US_D});
+  VerifyUIDisplay(new_action, {u"w", u"a", u"s", u"d"}, u"Joystick wasd");
+}
+
 TEST_F(ButtonOptionsMenuTest, TestClickActionEdit) {
   auto* menu = ShowButtonOptionsMenu(tap_action_);
   PressActionEdit(menu);
@@ -259,7 +269,7 @@ TEST_F(ButtonOptionsMenuTest, TestDisplayRelatedToShelf) {
       root_window->bounds().bottom() - ash::ShelfConfig::Get()->shelf_size(),
       menu->GetWidget()->GetNativeWindow()->bounds().bottom());
   // Close menu.
-  PressDoneButton(menu);
+  PressDoneButtonOnButtonOptionsMenu();
   // Set shelf to auto hide.
   shelf->SetAutoHideBehavior(ash::ShelfAutoHideBehavior::kAlways);
   EXPECT_FALSE(shelf->IsVisible());

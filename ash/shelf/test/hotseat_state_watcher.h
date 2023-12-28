@@ -25,7 +25,7 @@ class HotseatStateWatcher : public ShelfLayoutManagerObserver {
   void WaitUntilStateChanged();
 
  private:
-  raw_ptr<ShelfLayoutManager, ExperimentalAsh> shelf_layout_manager_;
+  raw_ptr<ShelfLayoutManager> shelf_layout_manager_;
   std::vector<HotseatState> state_changes_;
   base::RunLoop run_loop_;
 };

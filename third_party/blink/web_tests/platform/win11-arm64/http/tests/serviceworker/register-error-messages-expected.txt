@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Registering script with no MIME type
+  assert_equals: expected "Failed to register a ServiceWorker for scope ('http://127.0.0.1:8000/serviceworker/resources/scope/no-mime-type-worker/') with script ('http://127.0.0.1:8000/serviceworker/resources/mime-type-worker.php'): The script does not have a MIME type." but got "Failed to register a ServiceWorker for scope ('http://127.0.0.1:8000/serviceworker/resources/scope/no-mime-type-worker/') with script ('http://127.0.0.1:8000/serviceworker/resources/mime-type-worker.php'): The script has an unsupported MIME type ('text/html')."
+Harness: the test ran to completion.
+

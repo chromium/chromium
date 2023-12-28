@@ -24,6 +24,7 @@ namespace {
 // const values
 constexpr size_t kMaxProvisioningResponseSizeBytes = 1 << 20;  // 1MB;
 constexpr base::TimeDelta kRequestTimeoutSeconds = base::Seconds(30);
+const char kAndroidId[] = "123";
 
 // Pixel provisioning server data
 const char kProvisioningRecord[] = "deviceProvisioningRecord";
@@ -76,7 +77,6 @@ ProvisioningConfigFetcherImpl::~ProvisioningConfigFetcherImpl() = default;
 void ProvisioningConfigFetcherImpl::RequestConfig(
     const std::string& serial,
     const std::string& imei,
-    const std::string& android_id,
     const std::string& manufacturer,
     const std::string& model,
     const std::string& fcm_token,
@@ -105,11 +105,12 @@ void ProvisioningConfigFetcherImpl::RequestConfig(
   base::Value::Dict request;
   base::Value::Dict device;
   std::string request_body;
-  request.Set("android_id", android_id);
+  request.Set("android_id", kAndroidId);
   request.Set("gcm_registration_id", fcm_token);
   device.Set("manufacturer", manufacturer);
   device.Set("model", model);
   device.Set("serialNumber", serial);
+  device.Set("chromeOsAttestedDeviceId", serial);
   device.Set("imei", imei);
   request.Set("deviceIdentifier", std::move(device));
   base::JSONWriter::Write(request, &request_body);

@@ -52,6 +52,8 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView {
       api::TasksClient::OnTaskSavedCallback callback)>;
 
   // Modes of `tasks_title_view_` (simple label or text field).
+  // TODO(b/315188389): Remove this as editing functions is replaced by
+  // GlanceablesTaskViewV2 when the stable launch is enabled.
   enum class TaskTitleViewState { kView, kEdit };
 
   GlanceablesTaskView(const api::Task* task,
@@ -87,10 +89,10 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView {
 
   // Owned by views hierarchy.
   raw_ptr<CheckButton> button_ = nullptr;
-  raw_ptr<views::FlexLayoutView, ExperimentalAsh> contents_view_ = nullptr;
-  raw_ptr<views::FlexLayoutView, ExperimentalAsh> tasks_title_view_ = nullptr;
-  raw_ptr<TaskTitleButton, ExperimentalAsh> task_title_button_ = nullptr;
-  raw_ptr<views::FlexLayoutView, ExperimentalAsh> tasks_details_view_ = nullptr;
+  raw_ptr<views::FlexLayoutView> contents_view_ = nullptr;
+  raw_ptr<views::FlexLayoutView> tasks_title_view_ = nullptr;
+  raw_ptr<TaskTitleButton> task_title_button_ = nullptr;
+  raw_ptr<views::FlexLayoutView> tasks_details_view_ = nullptr;
 
   // ID for the task represented by this view.
   std::string task_id_;

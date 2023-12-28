@@ -90,7 +90,7 @@ class ASH_EXPORT OptionButtonBase : public views::LabelButton {
   // True if the button is currently selected.
   bool selected_ = false;
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 };
 
 }  // namespace ash

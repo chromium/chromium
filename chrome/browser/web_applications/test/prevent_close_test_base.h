@@ -32,7 +32,12 @@ class PreventCloseTestBase : public policy::PolicyTest {
   void SetUpInProcessBrowserTestFixture() override;
   void TearDownInProcessBrowserTestFixture() override;
 
-  void SetWebAppSettings(base::StringPiece config);
+  void SetPolicies(base::StringPiece web_app_settings,
+                   base::StringPiece web_app_install_force_list);
+  void SetPoliciesAndWaitUntilInstalled(
+      const webapps::AppId& app_id,
+      base::StringPiece web_app_settings,
+      base::StringPiece web_app_install_force_list);
   void ClearWebAppSettings();
   void InstallPWA(const GURL& app_url, const webapps::AppId& app_id);
   Browser* LaunchPWA(const webapps::AppId& app_id, bool launch_in_window);
@@ -49,6 +54,10 @@ class PreventCloseTestBase : public policy::PolicyTest {
   // method finishes.
   // See https://crbug.com/1239809
   base::ScopedPathOverride override_user_startup_{base::DIR_USER_STARTUP};
+
+  // Similarly, this prevents tests from adding shortcuts to the user's real
+  // Windows start menu.
+  base::ScopedPathOverride override_start_dir{base::DIR_START_MENU};
 #endif  // BUILDFLAG(IS_WIN)
 
   base::test::ScopedFeatureList scoped_feature_list_;

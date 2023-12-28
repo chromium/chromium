@@ -33,7 +33,7 @@ class RenderFrameHostManagerTest
   void NavigateToPageWithLinks(Shell* shell);
 
  protected:
-  void AssertCanRemoveSubframeInUnload(bool same_site);
+  void AssertCanRemoveSubframeInPageHide(bool same_site);
 
   std::string foo_com_;
   GURL::Replacements replace_host_;

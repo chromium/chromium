@@ -178,8 +178,8 @@
       <!-- The #container ID is necessary for the CrContainerShadowMixin to work. -->
       <div id="container" class="input-wrapper"
           show-bottom-shadow>
-        <div hidden="[[!shouldShowComplianceSection_(featureLevel_)]]">
-          <div hidden="[[isComplianceStatusKnown_(featureLevel_)]]">
+        <div hidden="[[!shouldShowComplianceSection(featureLevel)]]">
+          <div hidden="[[isComplianceStatusKnown(featureLevel)]]">
             <div class="input-row">
               <div class="label-wrapper">
                 <label id="isChassisBrandedLabel" class="cr-form-field-label">
@@ -192,16 +192,16 @@
               </div>
               <div class="input-holder">
                 <select id="isChassisBranded" class="md-select"
-                    on-change="onIsChassisBrandedChange_"
+                    on-change="onIsChassisBrandedChange"
                     aria-labelledby="isChassisBrandedLabel"
                     disabled="[[allButtonsDisabled]]">
-                  <option value="[[booleanOrDefaultOptions_.DEFAULT]]">
+                  <option value="[[booleanOrDefaultOptions.DEFAULT]]">
                     [[i18n('confirmDeviceInfoDeviceAnswerDefault')]]
                   </option>
-                  <option value="[[booleanOrDefaultOptions_.NO]]">
+                  <option value="[[booleanOrDefaultOptions.NO]]">
                     [[i18n('confirmDeviceInfoDeviceAnswerNo')]]
                   </option>
-                  <option value="[[booleanOrDefaultOptions_.YES]]">
+                  <option value="[[booleanOrDefaultOptions.YES]]">
                     [[i18n('confirmDeviceInfoDeviceAnswerYes')]]
                   </option>
                 </select>
@@ -227,16 +227,16 @@
               </div>
               <div class="input-holder">
                 <select id="doesMeetRequirements" class="md-select"
-                    on-change="onDoesMeetRequirementsChange_"
+                    on-change="onDoesMeetRequirementsChange"
                     aria-labelledby="doesMeetRequirementsLabel"
                     disabled="[[allButtonsDisabled]]">
-                  <option value="[[booleanOrDefaultOptions_.DEFAULT]]">
+                  <option value="[[booleanOrDefaultOptions.DEFAULT]]">
                     [[i18n('confirmDeviceInfoDeviceAnswerDefault')]]
                   </option>
-                  <option value="[[booleanOrDefaultOptions_.NO]]">
+                  <option value="[[booleanOrDefaultOptions.NO]]">
                     [[i18n('confirmDeviceInfoDeviceAnswerNo')]]
                   </option>
-                  <option value="[[booleanOrDefaultOptions_.YES]]">
+                  <option value="[[booleanOrDefaultOptions.YES]]">
                     [[i18n('confirmDeviceInfoDeviceAnswerYes')]]
                   </option>
                 </select>
@@ -246,13 +246,13 @@
         </div>
         <div class="input-row">
           <div class="input-holder">
-            <cr-input id="serialNumber" value="{{serialNumber_}}"
+            <cr-input id="serialNumber" value="{{serialNumber}}"
                 label="[[i18n('confirmDeviceInfoSerialNumberLabel')]]"
                 disabled="[[allButtonsDisabled]]">
             </cr-input>
             <cr-button id="resetSerialNumber"
-                on-click="onResetSerialNumberButtonClicked_"
-                disabled="[[disableResetSerialNumber_]]"
+                on-click="onResetSerialNumberButtonClicked"
+                disabled="[[disableResetSerialNumber]]"
                 aria-description="[[i18n('confirmDeviceInfoSerialNumberLabel')]]">
               [[i18n('confirmDeviceInfoResetButtonLabel')]]
             </cr-button>
@@ -260,13 +260,13 @@
         </div>
         <div class="input-row">
           <div class="input-holder">
-            <cr-input id="dramPartNumber" value="{{dramPartNumber_}}"
+            <cr-input id="dramPartNumber" value="{{dramPartNumber}}"
                 label="[[i18n('confirmDeviceInfoDramPartNumberLabel')]]"
                 disabled="[[allButtonsDisabled]]">
             </cr-input>
             <cr-button id="resetDramPartNumber"
-                on-click="onResetDramPartNumberButtonClicked_"
-                disabled="[[disableResetDramPartNumber_]]"
+                on-click="onResetDramPartNumberButtonClicked"
+                disabled="[[disableResetDramPartNumber]]"
                 aria-description="[[i18n('confirmDeviceInfoDramPartNumberLabel')]]">
               [[i18n('confirmDeviceInfoResetButtonLabel')]]
             </cr-button>
@@ -278,16 +278,16 @@
           </label>
           <div class="input-holder">
             <select id="regionSelect" class="md-select"
-                on-change="onSelectedRegionChange_" aria-labelledby="regionLabel"
+                on-change="onSelectedRegionChange" aria-labelledby="regionLabel"
                 disabled="[[allButtonsDisabled]]">
-              <template is="dom-repeat" items="[[regions_]]" as="region">
+              <template is="dom-repeat" items="[[regions]]" as="region">
                 <option value="[[region]]">
                   [[region]]
                 </option>
               </template>
             </select>
-            <cr-button id="resetRegion" on-click="onResetRegionButtonClicked_"
-                disabled="[[disableResetRegion_]]"
+            <cr-button id="resetRegion" on-click="onResetRegionButtonClicked"
+                disabled="[[disableResetRegion]]"
                 aria-describedby="regionLabel">
               [[i18n('confirmDeviceInfoResetButtonLabel')]]
             </cr-button>
@@ -299,18 +299,18 @@
           </label>
           <div class="input-holder">
             <select id="customLabelSelect" class="md-select"
-                on-change="onSelectedCustomLabelChange_"
+                on-change="onSelectedCustomLabelChange"
                 aria-labelledby="customLabelLabel"
                 disabled="[[allButtonsDisabled]]">
-              <template is="dom-repeat" items="[[customLabels_]]" as="customLabel">
+              <template is="dom-repeat" items="[[customLabels]]" as="customLabel">
                 <option value="[[customLabel]]">
                   [[customLabel]]
                 </option>
               </template>
             </select>
             <cr-button id="resetCustomLabel"
-                on-click="onResetCustomLabelButtonClicked_"
-                disabled="[[disableResetCustomLabel_]]"
+                on-click="onResetCustomLabelButtonClicked"
+                disabled="[[disableResetCustomLabel]]"
                 aria-describedby="customLabelLabel">
               [[i18n('confirmDeviceInfoResetButtonLabel')]]
             </cr-button>
@@ -330,27 +330,27 @@
         </div>
         <div class="input-holder input-row">
           <select id="skuSelect" class="md-select"
-              on-change="onSelectedSkuChange_" aria-labelledby="skuLabel"
+              on-change="onSelectedSkuChange" aria-labelledby="skuLabel"
               disabled="[[allButtonsDisabled]]">
-            <template is="dom-repeat" items="[[skus_]]" as="sku">
+            <template is="dom-repeat" items="[[skus]]" as="sku">
               <option value="[[sku]]">
                 [[sku]]
               </option>
             </template>
           </select>
-          <cr-button id="resetSku" on-click="onResetSkuButtonClicked_"
-              disabled="[[disableResetSku_]]"
+          <cr-button id="resetSku" on-click="onResetSkuButtonClicked"
+              disabled="[[disableResetSku]]"
               aria-describedby="skuLabel">
             [[i18n('confirmDeviceInfoResetButtonLabel')]]
           </cr-button>
         </div>
       </div>
-      <div hidden="[[!shouldShowComplianceSection_(featureLevel_)]]">
-        <div hidden="[[!isComplianceStatusKnown_(featureLevel_)]]">
+      <div hidden="[[!shouldShowComplianceSection(featureLevel)]]">
+        <div hidden="[[!isComplianceStatusKnown(featureLevel)]]">
           <hr aria-hidden="true">
           <div class="input-row">
             <div class="compliance-status-string">
-              [[getComplianceStatusString_(featureLevel_)]]
+              [[getComplianceStatusString(featureLevel)]]
             </div>
             <div id="complianceWarning">
               <iron-icon icon="shimless-icon:info"></iron-icon>

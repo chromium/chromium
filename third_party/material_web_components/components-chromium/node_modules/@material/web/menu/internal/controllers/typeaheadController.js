@@ -112,17 +112,22 @@ export class TypeaheadController {
         // We don't want to typeahead if the _beginning_ of the typeahead is a menu
         // navigation, or a selection. We will handle "Space" only if it's in the
         // middle of a typeahead
-        if (event.code === 'Space' || event.code === 'Enter' ||
-            event.code.startsWith('Arrow') || event.code === 'Escape') {
+        if (event.code === 'Space' ||
+            event.code === 'Enter' ||
+            event.code.startsWith('Arrow') ||
+            event.code === 'Escape') {
             return;
         }
         this.isTypingAhead = true;
         // Generates the record array data structure which is the index, the element
         // and a normalized header.
-        this.typeaheadRecords = this.items.map((el, index) => [index, el, el.typeaheadText.trim().toLowerCase()]);
+        this.typeaheadRecords = this.items.map((el, index) => [
+            index,
+            el,
+            el.typeaheadText.trim().toLowerCase(),
+        ]);
         this.lastActiveRecord =
-            this.typeaheadRecords.find(record => (record[TYPEAHEAD_RECORD.ITEM].tabIndex === 0)) ??
-                null;
+            this.typeaheadRecords.find((record) => record[TYPEAHEAD_RECORD.ITEM].tabIndex === 0) ?? null;
         if (this.lastActiveRecord) {
             this.lastActiveRecord[TYPEAHEAD_RECORD.ITEM].tabIndex = -1;
         }
@@ -170,7 +175,8 @@ export class TypeaheadController {
         clearTimeout(this.cancelTypeaheadTimeout);
         // Stop typingahead if one of the navigation or selection keys (except for
         // Space) are pressed
-        if (event.code === 'Enter' || event.code.startsWith('Arrow') ||
+        if (event.code === 'Enter' ||
+            event.code.startsWith('Arrow') ||
             event.code === 'Escape') {
             this.endTypeahead();
             if (this.lastActiveRecord) {
@@ -183,12 +189,11 @@ export class TypeaheadController {
             event.preventDefault();
         }
         // Start up a new keystroke buffer timeout
-        this.cancelTypeaheadTimeout =
-            setTimeout(this.endTypeahead, this.getProperties().typeaheadBufferTime);
+        this.cancelTypeaheadTimeout = setTimeout(this.endTypeahead, this.getProperties().typeaheadBufferTime);
         this.typaheadBuffer += event.key.toLowerCase();
-        const lastActiveIndex = this.lastActiveRecord ?
-            this.lastActiveRecord[TYPEAHEAD_RECORD.INDEX] :
-            -1;
+        const lastActiveIndex = this.lastActiveRecord
+            ? this.lastActiveRecord[TYPEAHEAD_RECORD.INDEX]
+            : -1;
         const numRecords = this.typeaheadRecords.length;
         /**
          * Sorting function that will resort the items starting with the given index
@@ -213,12 +218,12 @@ export class TypeaheadController {
          * 5: [2, <reference>, 'banana']
          */
         const rebaseIndexOnActive = (record) => {
-            return (record[TYPEAHEAD_RECORD.INDEX] + numRecords - lastActiveIndex) %
-                numRecords;
+            return ((record[TYPEAHEAD_RECORD.INDEX] + numRecords - lastActiveIndex) %
+                numRecords);
         };
         // records filtered and sorted / rebased around the last active index
         const matchingRecords = this.typeaheadRecords
-            .filter(record => !record[TYPEAHEAD_RECORD.ITEM].disabled &&
+            .filter((record) => !record[TYPEAHEAD_RECORD.ITEM].disabled &&
             record[TYPEAHEAD_RECORD.TEXT].startsWith(this.typaheadBuffer))
             .sort((a, b) => rebaseIndexOnActive(a) - rebaseIndexOnActive(b));
         // Just leave if there's nothing that matches. Native select will just

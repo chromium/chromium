@@ -17,7 +17,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryStartedShowing;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryViewFullyHidden;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryViewFullyShown;
-import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabTestHelper.isKeyboardAccessoryTabLayout;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_INVISIBLE;
@@ -40,8 +39,6 @@ import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import com.google.android.material.tabs.TabLayout;
-
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -55,15 +52,14 @@ import org.chromium.chrome.browser.ChromeKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
+import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupView;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.PasswordAccessorySheetCoordinator;
-import org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryButtonGroupView;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.content_public.browser.ImeAdapter;
@@ -191,7 +187,7 @@ public class ManualFillingTestHelper {
         ViewGroup recyclerView = getAccessoryBarView();
         assert recyclerView != null;
         View view = recyclerView.getChildAt(0);
-        return isKeyboardAccessoryTabLayout().matches(view) ? null : view;
+        return isAssignableFrom(KeyboardAccessoryButtonGroupView.class).matches(view) ? null : view;
     }
 
     public void focusPasswordField() throws TimeoutException {
@@ -486,12 +482,8 @@ public class ManualFillingTestHelper {
         return new ViewAction() {
             @Override
             public Matcher<View> getConstraints() {
-                if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
-                    return allOf(
-                            isDisplayed(),
-                            isAssignableFrom(KeyboardAccessoryButtonGroupView.class));
-                }
-                return allOf(isDisplayed(), isAssignableFrom(TabLayout.class));
+                return allOf(
+                        isDisplayed(), isAssignableFrom(KeyboardAccessoryButtonGroupView.class));
             }
 
             @Override
@@ -501,27 +493,16 @@ public class ManualFillingTestHelper {
 
             @Override
             public void perform(UiController uiController, View view) {
-                if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
-                    KeyboardAccessoryButtonGroupView buttonGroupView =
-                            (KeyboardAccessoryButtonGroupView) view;
-                    if (tabIndex >= buttonGroupView.getButtons().size()) {
-                        throw new PerformException.Builder()
-                                .withCause(new Throwable("No button at index " + tabIndex))
-                                .build();
-                    }
-                    PostTask.runOrPostTask(
-                            TaskTraits.UI_DEFAULT,
-                            () -> buttonGroupView.getButtons().get(tabIndex).performClick());
-                    return;
-                }
-                TabLayout tabLayout = (TabLayout) view;
-                if (tabLayout.getTabAt(tabIndex) == null) {
+                KeyboardAccessoryButtonGroupView buttonGroupView =
+                        (KeyboardAccessoryButtonGroupView) view;
+                if (tabIndex >= buttonGroupView.getButtons().size()) {
                     throw new PerformException.Builder()
-                            .withCause(new Throwable("No tab at index " + tabIndex))
+                            .withCause(new Throwable("No button at index " + tabIndex))
                             .build();
                 }
                 PostTask.runOrPostTask(
-                        TaskTraits.UI_DEFAULT, () -> tabLayout.getTabAt(tabIndex).select());
+                        TaskTraits.UI_DEFAULT,
+                        () -> buttonGroupView.getButtons().get(tabIndex).performClick());
             }
         };
     }
@@ -535,7 +516,8 @@ public class ManualFillingTestHelper {
         return new ViewAction() {
             @Override
             public Matcher<View> getConstraints() {
-                return allOf(isDisplayed(), isKeyboardAccessoryTabLayout());
+                return allOf(
+                        isDisplayed(), isAssignableFrom(KeyboardAccessoryButtonGroupView.class));
             }
 
             @Override
@@ -546,35 +528,20 @@ public class ManualFillingTestHelper {
             @Override
             public void perform(UiController uiController, View view) {
                 String descriptionToMatch = view.getContext().getString(descriptionResId);
-                if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
-                    KeyboardAccessoryButtonGroupView buttonGroupView =
-                            (KeyboardAccessoryButtonGroupView) view;
-                    for (int buttonIndex = 0;
-                            buttonIndex < buttonGroupView.getButtons().size();
-                            buttonIndex++) {
-                        final ChromeImageButton button =
-                                buttonGroupView.getButtons().get(buttonIndex);
-                        if (descriptionToMatch.equals(button.getContentDescription())) {
-                            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, button::performClick);
-                            return;
-                        }
-                    }
-                    throw new PerformException.Builder()
-                            .withCause(
-                                    new Throwable(
-                                            "No button with description: " + descriptionToMatch))
-                            .build();
-                }
-                TabLayout tabLayout = (TabLayout) view;
-                for (int tabIndex = 0; tabIndex < tabLayout.getTabCount(); tabIndex++) {
-                    final TabLayout.Tab tab = tabLayout.getTabAt(tabIndex);
-                    if (descriptionToMatch.equals(tab.getContentDescription())) {
-                        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, tab::select);
+                KeyboardAccessoryButtonGroupView buttonGroupView =
+                        (KeyboardAccessoryButtonGroupView) view;
+                for (int buttonIndex = 0;
+                        buttonIndex < buttonGroupView.getButtons().size();
+                        buttonIndex++) {
+                    final ChromeImageButton button = buttonGroupView.getButtons().get(buttonIndex);
+                    if (descriptionToMatch.equals(button.getContentDescription())) {
+                        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, button::performClick);
                         return;
                     }
                 }
                 throw new PerformException.Builder()
-                        .withCause(new Throwable("No tab with description: " + descriptionToMatch))
+                        .withCause(
+                                new Throwable("No button with description: " + descriptionToMatch))
                         .build();
             }
         };

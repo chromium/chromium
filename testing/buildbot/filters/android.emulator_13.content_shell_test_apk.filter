@@ -6,9 +6,6 @@
 -org.chromium.content.browser.input.ImeInputModeTest.testShowAndHideInputMode
 -org.chromium.content.browser.input.ImeInputModeTest.testShowAndHideInputModeWithPhysicalKeyboard
 
-# https://crbug.com/1220151
--org.chromium.base.task.AsyncTaskTest.testChromeThreadPoolExecutorOsAsyncTask
-
 # https://crbug.com/1233309
 -org.chromium.content.browser.GestureDetectorResetTest.testSeparateClicksAreRegisteredOnReload
 

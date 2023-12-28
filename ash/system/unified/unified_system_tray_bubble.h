@@ -133,14 +133,14 @@ class ASH_EXPORT UnifiedSystemTrayBubble : public TrayBubbleBase,
   std::unique_ptr<UnifiedSystemTrayController> controller_;
 
   // Owner of this class.
-  raw_ptr<UnifiedSystemTray, ExperimentalAsh> unified_system_tray_;
+  raw_ptr<UnifiedSystemTray> unified_system_tray_;
 
   // Widget that contains `QuickSettingsView`. Unowned.
   // When the widget is closed by deactivation, `bubble_widget_` pointer is
   // invalidated and we have to delete `UnifiedSystemTrayBubble` by calling
   // `UnifiedSystemTray::CloseBubble()`.
   // In order to do this, we observe `OnWidgetDestroying()`.
-  raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_ = nullptr;
+  raw_ptr<views::Widget> bubble_widget_ = nullptr;
 
   // PreTargetHandler of `quick_settings_view_` to record TimeToClick metrics.
   // Owned.
@@ -149,7 +149,7 @@ class ASH_EXPORT UnifiedSystemTrayBubble : public TrayBubbleBase,
   // The time the bubble is created.
   std::optional<base::TimeTicks> time_opened_;
 
-  raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
+  raw_ptr<TrayBubbleView> bubble_view_ = nullptr;
 
   raw_ptr<QuickSettingsView, DanglingUntriaged> quick_settings_view_ = nullptr;
 

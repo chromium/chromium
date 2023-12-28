@@ -5,6 +5,7 @@
 <translation id="1347497506789975534">Show saved payment methods</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1717486229951421299">List of credentials to be filled in on touch opened at half height.</translation>
+<translation id="1913037223029790376">Use CVC for this virtual card</translation>
 <translation id="207576718733492531">List of credentials to be filled in on touch is closed.</translation>
 <translation id="2652129567809778422">Select password</translation>
 <translation id="2903493209154104877">Addresses</translation>
@@ -21,7 +22,6 @@
 <translation id="7594473730623999723">Swipe to see more suggestions</translation>
 <translation id="7873973044507799456">Show saved addresses</translation>
 <translation id="7992095260806105436">Use Chrome autofill suggestion</translation>
-<translation id="8507520749471379845">Passwords available</translation>
 <translation id="8705308553596171387">No password</translation>
 <translation id="879180780857354295">Alternative filling options available above the keyboard</translation>
 <translation id="8849262850971482943">Use your virtual card for added security</translation>

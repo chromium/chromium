@@ -750,6 +750,8 @@ component("base") {
     "task/sequence_manager/work_queue.h",
     "task/sequence_manager/work_queue_sets.cc",
     "task/sequence_manager/work_queue_sets.h",
+    "task/sequence_manager/work_tracker.cc",
+    "task/sequence_manager/work_tracker.h",
     "task/sequenced_task_runner.cc",
     "task/sequenced_task_runner.h",
     "task/sequenced_task_runner_helpers.h",
@@ -1324,7 +1326,6 @@ component("base") {
       "android/library_loader/library_loader_hooks.cc",
       "android/library_loader/library_loader_hooks.h",
       "android/native_uma_recorder.cc",
-      "android/scoped_java_ref.cc",
       "android/scoped_java_ref.h",
       "android/trace_event_binding.cc",
       "android/trace_event_binding.h",
@@ -1333,6 +1334,7 @@ component("base") {
       ":base_jni",
       ":process_launcher_jni",
     ]
+    public_deps += [ "//third_party/jni_zero:jni_zero_utils" ]
   }  # is_android || is_robolectric
 
   # Chromeos.
@@ -1344,7 +1346,7 @@ component("base") {
 
     sources += [ "power_monitor/power_monitor_device_source_chromeos.cc" ]
 
-    if (current_cpu == "x64") {
+    if (current_cpu == "x64" || current_cpu == "arm64") {
       sources += [
         "profiler/frame_pointer_unwinder.cc",
         "profiler/frame_pointer_unwinder.h",
@@ -2843,7 +2845,7 @@ if (is_win) {
 
 if ((is_win && (current_cpu == "x64" || current_cpu == "arm64")) || is_mac ||
     (is_android && (current_cpu == "arm" || current_cpu == "arm64")) ||
-    (is_chromeos && current_cpu == "x64")) {
+    (is_chromeos && (current_cpu == "x64" || current_cpu == "arm64"))) {
   # Must be a loadable module so that it can be loaded/unloaded at runtime
   # during testing.
   loadable_module("base_profiler_test_support_library") {
@@ -3354,6 +3356,7 @@ test("base_unittests") {
     "task/sequence_manager/work_deduplicator_unittest.cc",
     "task/sequence_manager/work_queue_sets_unittest.cc",
     "task/sequence_manager/work_queue_unittest.cc",
+    "task/sequence_manager/work_tracker_unittest.cc",
     "task/sequenced_task_runner_unittest.cc",
     "task/single_thread_task_executor_unittest.cc",
     "task/single_thread_task_runner_unittest.cc",
@@ -3733,7 +3736,8 @@ test("base_unittests") {
       "test/launcher/test_results_tracker_unittest.cc",
     ]
     deps += [
-      ":base_java_unittest_support",
+      ":base_unittest_support_java",
+      ":base_unittest_support_jni",
       "//base/test:test_support_java",
       "//third_party/jni_zero",
     ]
@@ -4038,7 +4042,7 @@ test("base_unittests") {
   if (is_apple) {
     sources += [ "profiler/frame_pointer_unwinder_unittest.cc" ]
   }
-  if (is_chromeos && current_cpu == "x64") {
+  if (is_chromeos && (current_cpu == "x64" || current_cpu == "arm64")) {
     sources += [ "profiler/frame_pointer_unwinder_unittest.cc" ]
     deps += [ ":base_profiler_test_support_library" ]
   }
@@ -4095,7 +4099,7 @@ test("base_unittests") {
     ]
   }
 
-  if (enable_nocompile_tests_new) {
+  if (enable_nocompile_tests) {
     deps += [ ":base_nocompile_tests" ]
   }
 }
@@ -4124,7 +4128,7 @@ action("build_date") {
   ]
 }
 
-if (enable_nocompile_tests_new) {
+if (enable_nocompile_tests) {
   nocompile_source_set("base_nocompile_tests") {
     sources = [
       "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/thread_annotations_pa_nocompile.nc",
@@ -4375,6 +4379,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/UnownedUserDataKey.java",
       "android/java/src/org/chromium/base/UserData.java",
       "android/java/src/org/chromium/base/UserDataHost.java",
+      "android/java/src/org/chromium/base/ValueChangedCallback.java",
       "android/java/src/org/chromium/base/WrappedClassLoader.java",
       "android/java/src/org/chromium/base/compat/ApiHelperForM.java",
       "android/java/src/org/chromium/base/compat/ApiHelperForN.java",
@@ -4779,6 +4784,7 @@ if (is_android) {
       "android/junit/src/org/chromium/base/TraceEventTest.java",
       "android/junit/src/org/chromium/base/UnownedUserDataHostTest.java",
       "android/junit/src/org/chromium/base/UnownedUserDataKeyTest.java",
+      "android/junit/src/org/chromium/base/ValueChangedCallbackTest.java",
       "android/junit/src/org/chromium/base/jank_tracker/FrameMetricsListenerTest.java",
       "android/junit/src/org/chromium/base/jank_tracker/FrameMetricsStoreTest.java",
       "android/junit/src/org/chromium/base/jank_tracker/JankActivityTrackerTest.java",
@@ -4876,17 +4882,26 @@ if (is_android) {
     ]
   }
 
-  android_library("base_java_unittest_support") {
+  generate_jni("base_unittest_support_jni") {
+    testonly = true
+    sources =
+        [ "test/android/java/src/org/chromium/base/JniAndroidTestUtils.java" ]
+  }
+
+  # Used by gtests and not by robolectric / instrumentation tests.
+  android_library("base_unittest_support_java") {
     testonly = true
 
     deps = [
       ":base_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
+    srcjar_deps = [ ":base_unittest_support_jni" ]
 
     sources = [
       "test/android/java/src/org/chromium/base/ContentUriTestUtils.java",
       "test/android/java/src/org/chromium/base/JavaHandlerThreadHelpers.java",
+      "test/android/java/src/org/chromium/base/JniAndroidTestUtils.java",
     ]
   }
 }  # is_android

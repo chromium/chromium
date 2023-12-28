@@ -88,6 +88,7 @@ Verbs fall into a number of different categories:
     - `Check()`
     - `CheckResult()`
     - `CheckElement()`
+    - `CheckVariable()`
     - `CheckView()` [Views]
     - `CheckViewProperty()` [Views]
     - `Screenshot` [Browser] - compares the target against Skia Gold in pixel
@@ -186,6 +187,10 @@ Verbs fall into a number of different categories:
   [Waiting for Asynchronous Events](#waiting-for-asynchronous-events) for more
   information.
    - `ObserveState()`
+   - `PollState()`
+   - `PollElement()`
+   - `PollView()` [Views]
+   - `PollViewProperty()` [Views]
    - `WaitForState()`
    - `PollState()`
    - `PollElement()`

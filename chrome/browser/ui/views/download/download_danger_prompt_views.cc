@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/download/download_danger_prompt.h"
 #include "chrome/browser/download/download_stats.h"
+#include "chrome/browser/download/download_ui_safe_browsing_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
@@ -73,6 +74,8 @@ class DownloadDangerPromptViews : public DownloadDangerPrompt,
   // If show_context_ is true, this is a download confirmation dialog by
   // download API, otherwise it is download recovery dialog from a regular
   // download.
+  // TODO(chlily): Remove this after ImprovedDownloadPageWarnings launches,
+  // because then this will only ever be shown for download API.
   const bool show_context_;
   OnDone done_;
 };
@@ -284,7 +287,13 @@ void DownloadDangerPromptViews::RunDone(Action action) {
               DownloadItemWarningData::WarningAction::PROCEED);
         }
       }
-      RecordDownloadDangerPrompt(accept, *download_);
+      // Log here for "Shown" unconditionally, and for "Proceed" iff the dialog
+      // was accepted. This assumes the dialog cannot be dismissed once it is
+      // shown without taking some action on it.
+      RecordDownloadDangerPromptHistogram("Shown", *download_);
+      if (accept) {
+        RecordDownloadDangerPromptHistogram("Proceed", *download_);
+      }
       RecordDownloadWarningEvent(action, download_);
       if (!download_->GetURL().is_empty() &&
           !content::DownloadItemUtils::GetBrowserContext(download_)
@@ -293,11 +302,8 @@ void DownloadDangerPromptViews::RunDone(Action action) {
             show_context_
                 ? ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_BY_API
                 : ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_RECOVERY;
-        // Do not send cancel report under the new trigger condition since it's
-        // not a terminal action.
-        if (!base::FeatureList::IsEnabled(
-                safe_browsing::kSafeBrowsingCsbrrNewDownloadTrigger) ||
-            accept) {
+        // Do not send cancel report since it's not a terminal action.
+        if (accept) {
           SendSafeBrowsingDownloadReport(report_type, accept, download_);
         }
       }

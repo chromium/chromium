@@ -7,7 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
-#include "ash/system/message_center/message_center_controller.h"
+#include "ash/system/notification_center/message_center_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
@@ -137,15 +137,11 @@ class PhoneHubNotificationControllerTest : public AshTestBase {
  protected:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<message_center::MessageCenter, DanglingUntriaged | ExperimentalAsh>
-      message_center_;
+  raw_ptr<message_center::MessageCenter, DanglingUntriaged> message_center_;
   phonehub::FakePhoneHubManager phone_hub_manager_;
-  raw_ptr<phonehub::FakeNotificationManager, ExperimentalAsh>
-      notification_manager_;
-  raw_ptr<phonehub::FakeFeatureStatusProvider, ExperimentalAsh>
-      feature_status_provider_;
-  raw_ptr<PhoneHubNotificationController, DanglingUntriaged | ExperimentalAsh>
-      controller_;
+  raw_ptr<phonehub::FakeNotificationManager> notification_manager_;
+  raw_ptr<phonehub::FakeFeatureStatusProvider> feature_status_provider_;
+  raw_ptr<PhoneHubNotificationController, DanglingUntriaged> controller_;
   base::flat_set<phonehub::Notification> fake_notifications_;
 };
 

@@ -160,7 +160,8 @@ void SyncExplicitPassphraseClientLacros::QueryDecryptionKeyFromAsh() {
 void SyncExplicitPassphraseClientLacros::SendDecryptionKeyToAsh() {
   DCHECK(sync_service_);
   std::unique_ptr<syncer::Nigori> decryption_key =
-      sync_service_->GetUserSettings()->GetDecryptionNigoriKey();
+      sync_service_->GetUserSettings()
+          ->GetExplicitPassphraseDecryptionNigoriKey();
   if (!decryption_key) {
     return;
   }
@@ -182,6 +183,6 @@ void SyncExplicitPassphraseClientLacros::OnQueryDecryptionKeyFromAshCompleted(
     // Nigori key.
     return;
   }
-  sync_service_->GetUserSettings()->SetDecryptionNigoriKey(
+  sync_service_->GetUserSettings()->SetExplicitPassphraseDecryptionNigoriKey(
       std::move(nigori_key));
 }

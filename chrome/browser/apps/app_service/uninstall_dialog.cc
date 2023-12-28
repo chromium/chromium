@@ -28,8 +28,9 @@ UninstallDialog::UninstallDialog(Profile* profile,
       app_name_(app_name),
       parent_window_(parent_window),
       uninstall_callback_(std::move(uninstall_callback)) {
-  if (parent_window)
+  if (parent_window) {
     parent_window_tracker_ = views::NativeWindowTracker::Create(parent_window);
+  }
 }
 
 UninstallDialog::~UninstallDialog() = default;

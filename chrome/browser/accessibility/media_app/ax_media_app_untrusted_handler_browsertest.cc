@@ -28,7 +28,6 @@
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_manager.h"
-#include "ui/gfx/geometry/insets.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include <vector>
@@ -40,6 +39,24 @@
 namespace ash::test {
 
 namespace {
+
+// Gap or padding between pages.
+constexpr uint64_t kTestPageGap = 2;
+// Width of a test page.
+constexpr uint64_t kTestPageWidth = 3;
+// Height of a test page.
+constexpr uint64_t kTestPageHeight = 8;
+
+std::vector<gfx::RectF> CreateFakePageBounds(const uint64_t num_pages) {
+  uint64_t x = 0, y = 0;
+  std::vector<gfx::RectF> fake_page_locations;
+  for (uint64_t i = 0; i < num_pages; ++i) {
+    gfx::RectF page_location(x, y + kTestPageGap * i + kTestPageHeight * i,
+                             kTestPageWidth, kTestPageHeight);
+    fake_page_locations.push_back(page_location);
+  }
+  return fake_page_locations;
+}
 
 class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
  public:
@@ -99,7 +116,7 @@ class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, DocumentUpdated) {
   handler_->DocumentUpdated(
-      /*page_locations=*/{gfx::Insets(1u), gfx::Insets(2u), gfx::Insets(3u)},
+      /*page_locations=*/CreateFakePageBounds(3),
       /*dirty_pages=*/{0u, 1u, 2u});
   WaitForOcringPages(3u);
 
@@ -123,18 +140,31 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, DocumentUpdated) {
   for (const std::unique_ptr<ui::AXTreeManager>& page : pages) {
     page->ax_tree()->UpdateDataForTesting(tree_data);
   }
-  EXPECT_EQ("AXTree\nid=-2 staticText name=Testing (1, 1)-(2, 2)\n",
+  EXPECT_EQ("AXTree\nid=-2 staticText name=Testing (0, 0)-(3, 8)\n",
             pages[0]->ax_tree()->ToString());
-  EXPECT_EQ("AXTree\nid=-3 staticText name=Testing (2, 2)-(4, 4)\n",
+  EXPECT_EQ("AXTree\nid=-3 staticText name=Testing (0, 10)-(3, 8)\n",
             pages[1]->ax_tree()->ToString());
-  EXPECT_EQ("AXTree\nid=-4 staticText name=Testing (3, 3)-(6, 6)\n",
+  EXPECT_EQ("AXTree\nid=-4 staticText name=Testing (0, 20)-(3, 8)\n",
             pages[2]->ax_tree()->ToString());
 
-  // Resize all pages, OCR the second page  again, and add an additional page to
-  // the end.
+  // Relocate or resize all pages, OCR the second page again, and add an
+  // additional page to the end. This scenario could happen if the second page
+  // was rotated.
   handler_->DocumentUpdated(
-      /*page_locations=*/{gfx::Insets(2u), gfx::Insets(3u), gfx::Insets(4u),
-                          gfx::Insets(5u)},
+      /*page_locations=*/
+      {
+          gfx::RectF(/*x=*/-3, /*y=*/0, /*width=*/kTestPageWidth,
+                     /*height=*/kTestPageHeight),
+          gfx::RectF(/*x=*/-3, /*y=*/10,
+                     /*width=*/kTestPageHeight,
+                     /*height=*/kTestPageWidth),
+          gfx::RectF(/*x=*/-3, /*y=*/15,
+                     /*width=*/kTestPageWidth,
+                     /*height=*/kTestPageHeight),
+          gfx::RectF(/*x=*/-3, /*y=*/25,
+                     /*width=*/kTestPageWidth,
+                     /*height=*/kTestPageHeight),
+      },
       /*dirty_pages=*/{1u, 3u});
   WaitForOcringPages(2u);
 
@@ -151,13 +181,13 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, DocumentUpdated) {
     page->ax_tree()->UpdateDataForTesting(tree_data);
   }
 
-  EXPECT_EQ("AXTree\nid=-2 staticText name=Testing (2, 2)-(4, 4)\n",
+  EXPECT_EQ("AXTree\nid=-2 staticText name=Testing (-3, 0)-(3, 8)\n",
             pages2[0]->ax_tree()->ToString());
-  EXPECT_EQ("AXTree\nid=-5 staticText name=Testing (3, 3)-(6, 6)\n",
+  EXPECT_EQ("AXTree\nid=-5 staticText name=Testing (-3, 10)-(8, 3)\n",
             pages2[1]->ax_tree()->ToString());
-  EXPECT_EQ("AXTree\nid=-4 staticText name=Testing (4, 4)-(8, 8)\n",
+  EXPECT_EQ("AXTree\nid=-4 staticText name=Testing (-3, 15)-(3, 8)\n",
             pages2[2]->ax_tree()->ToString());
-  EXPECT_EQ("AXTree\nid=-6 staticText name=Testing (5, 5)-(10, 10)\n",
+  EXPECT_EQ("AXTree\nid=-6 staticText name=Testing (-3, 25)-(3, 8)\n",
             pages2[3]->ax_tree()->ToString());
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

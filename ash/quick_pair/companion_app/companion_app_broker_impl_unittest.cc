@@ -88,7 +88,7 @@ class CompanionAppBrokerImplUnitTest : public AshTestBase,
   std::unique_ptr<CompanionAppBrokerImpl> companion_app_broker_;
   scoped_refptr<Device> test_device_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
-  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   bool install_companion_app_notification_shown_ = false;
   bool launch_companion_app_notification_shown_ = false;

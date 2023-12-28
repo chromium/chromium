@@ -89,11 +89,11 @@ class PowerButtonTestBase : public AshTestBase {
   // they come too close.
   void AdvanceClockToAvoidIgnoring();
 
-  raw_ptr<PowerButtonController, DanglingUntriaged | ExperimentalAsh>
-      power_button_controller_ = nullptr;  // Not owned.
-  raw_ptr<LockStateController, DanglingUntriaged | ExperimentalAsh>
-      lock_state_controller_ = nullptr;  // Not owned.
-  raw_ptr<PowerButtonScreenshotController, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<PowerButtonController, DanglingUntriaged> power_button_controller_ =
+      nullptr;  // Not owned.
+  raw_ptr<LockStateController, DanglingUntriaged> lock_state_controller_ =
+      nullptr;  // Not owned.
+  raw_ptr<PowerButtonScreenshotController, DanglingUntriaged>
       screenshot_controller_ = nullptr;  // Not owned.
   std::unique_ptr<LockStateControllerTestApi> lock_state_test_api_;
   std::unique_ptr<PowerButtonControllerTestApi> power_button_test_api_;

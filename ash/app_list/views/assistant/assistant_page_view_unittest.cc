@@ -112,13 +112,14 @@ class FocusChangeListenerStub : public views::FocusChangeListener {
   }
 
   // Returns all views that received the focus at some point.
-  const std::vector<views::View*>& focused_views() const {
+  const std::vector<raw_ptr<views::View, VectorExperimental>>& focused_views()
+      const {
     return focused_views_;
   }
 
  private:
-  std::vector<views::View*> focused_views_;
-  raw_ptr<views::FocusManager, ExperimentalAsh> focus_manager_;
+  std::vector<raw_ptr<views::View, VectorExperimental>> focused_views_;
+  raw_ptr<views::FocusManager> focus_manager_;
 };
 
 // |ViewObserver| that simply remembers whether the given view was drawn
@@ -150,7 +151,7 @@ class VisibilityObserver : public views::ViewObserver {
       was_drawn_ = true;
   }
 
-  const raw_ptr<views::View, ExperimentalAsh> observed_view_;
+  const raw_ptr<views::View> observed_view_;
   bool was_drawn_ = false;
 };
 
@@ -623,13 +624,12 @@ TEST_F(AssistantPageViewTest, PageViewHasBackgroundBlurInTabletMode) {
   EXPECT_FALSE(page_view_layer->fills_bounds_opaquely());
   EXPECT_EQ(page_view_layer->background_blur(),
             ColorProvider::kBackgroundBlurSigma);
-  EXPECT_EQ(page_view_layer->GetTargetColor(),
-            ColorProvider::Get()->GetBaseLayerColor(
-                ColorProvider::BaseLayerType::kTransparent80));
+  EXPECT_EQ(
+      page_view_layer->GetTargetColor(),
+      page_view()->GetColorProvider()->GetColor(kColorAshShieldAndBase80));
 }
 
 TEST_F(AssistantPageViewTest, BackgroundColorInDarkLightMode) {
-  auto* color_provider = AshColorProvider::Get();
   auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
   dark_light_mode_controller->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
@@ -641,18 +641,18 @@ TEST_F(AssistantPageViewTest, BackgroundColorInDarkLightMode) {
 
   const bool initial_dark_mode_status =
       dark_light_mode_controller->IsDarkModeEnabled();
-  EXPECT_EQ(page_view()->layer()->GetTargetColor(),
-            color_provider->GetBaseLayerColor(
-                ColorProvider::BaseLayerType::kTransparent80));
+  EXPECT_EQ(
+      page_view()->layer()->GetTargetColor(),
+      page_view()->GetColorProvider()->GetColor(kColorAshShieldAndBase80));
 
   // Switch the color mode.
   dark_light_mode_controller->ToggleColorMode();
   ASSERT_NE(initial_dark_mode_status,
             dark_light_mode_controller->IsDarkModeEnabled());
 
-  EXPECT_EQ(page_view()->layer()->GetTargetColor(),
-            color_provider->GetBaseLayerColor(
-                ColorProvider::BaseLayerType::kTransparent80));
+  EXPECT_EQ(
+      page_view()->layer()->GetTargetColor(),
+      page_view()->GetColorProvider()->GetColor(kColorAshShieldAndBase80));
 }
 
 //------------------------------------------------------------------------------

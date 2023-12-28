@@ -118,14 +118,16 @@ base::expected<flatbuffers::DetachedBuffer, String> BuildTfLiteModel(
 }  // namespace
 
 // static
-void MLGraphCrOS::ValidateAndBuildAsync(MLContext* ml_context,
+void MLGraphCrOS::ValidateAndBuildAsync(ScopedMLTrace scoped_trace,
+                                        MLContext* ml_context,
                                         const MLNamedOperands& named_outputs,
                                         ScriptPromiseResolver* resolver) {
+  scoped_trace.AddStep("MLGraphCrOS::ValidateAndBuildAsync");
   auto* script_state = resolver->GetScriptState();
   auto* execution_context = ExecutionContext::From(script_state);
   auto* graph =
       MakeGarbageCollected<MLGraphCrOS>(execution_context, ml_context);
-  graph->BuildAsync(named_outputs, resolver);
+  graph->BuildAsync(std::move(scoped_trace), named_outputs, resolver);
 }
 
 MLGraphCrOS::MLGraphCrOS(ExecutionContext* execution_context,
@@ -139,7 +141,8 @@ void MLGraphCrOS::Trace(Visitor* visitor) const {
   MLGraph::Trace(visitor);
 }
 
-void MLGraphCrOS::BuildAsyncImpl(const MLNamedOperands& outputs,
+void MLGraphCrOS::BuildAsyncImpl(ScopedMLTrace scoped_trace,
+                                 const MLNamedOperands& outputs,
                                  ScriptPromiseResolver* resolver) {
   DOMArrayBuffer* buffer = nullptr;
   if (g_flatbuffer_for_testing) {
@@ -162,11 +165,12 @@ void MLGraphCrOS::BuildAsyncImpl(const MLNamedOperands& outputs,
   ml_model_loader->Load(
       script_state, buffer,
       WTF::BindOnce(&MLGraphCrOS::OnRemoteModelLoad, WrapPersistent(this),
-                    WrapPersistent(execution_context),
+                    std::move(scoped_trace), WrapPersistent(execution_context),
                     WrapPersistent(resolver)));
 }
 
 void MLGraphCrOS::OnRemoteModelLoad(
+    ScopedMLTrace scoped_trace,
     ExecutionContext* execution_context,
     ScriptPromiseResolver* resolver,
     ml::model_loader::mojom::blink::LoadModelResult result,
@@ -219,7 +223,8 @@ MLGraph* MLGraphCrOS::BuildSyncImpl(ScriptState* script_state,
   return nullptr;
 }
 
-void MLGraphCrOS::ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,
+void MLGraphCrOS::ComputeAsyncImpl(ScopedMLTrace scoped_trace,
+                                   const MLNamedArrayBufferViews& inputs,
                                    const MLNamedArrayBufferViews& outputs,
                                    ScriptPromiseResolver* resolver,
                                    ExceptionState& exception_state) {
@@ -255,11 +260,12 @@ void MLGraphCrOS::ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,
   remote_model_->Compute(
       std::move(input_mojo),
       WTF::BindOnce(&MLGraphCrOS::OnComputeGraph, WrapPersistent(this),
-                    WrapPersistent(resolver), std::move(inputs_info),
-                    std::move(outputs_info)));
+                    std::move(scoped_trace), WrapPersistent(resolver),
+                    std::move(inputs_info), std::move(outputs_info)));
 }
 
 void MLGraphCrOS::OnComputeGraph(
+    ScopedMLTrace scoped_trace,
     ScriptPromiseResolver* resolver,
     std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>> inputs_info,
     std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>

@@ -66,7 +66,6 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
@@ -82,9 +81,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
-import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
@@ -105,7 +102,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Test for {@link AndroidShareSheetController} and {@link AndroidCustomActionProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({ChromeFeatureList.WEBNOTES_STYLIZE})
 @Config(shadows = {ShadowShareImageFileUtils.class, ShadowPostTask.class})
 public class AndroidShareSheetControllerUnitTest {
     private static final String KEY_CHOOSER_ACTION_ICON = "icon";
@@ -599,37 +595,6 @@ public class AndroidShareSheetControllerUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SHARE_SHEET_CUSTOM_ACTIONS_POLISH)
-    @Config(
-            sdk = 34,
-            shadows = {ShadowChooserActionHelper.class})
-    public void ensureNonPolishActionInOrder() {
-        Uri testImageUri = Uri.parse("content://test.image.uri");
-        ShareParams params =
-                new ShareParams.Builder(mWindow, "", "")
-                        .setFileContentType("image/png")
-                        .setSingleImageUri(testImageUri)
-                        .setBypassFixingDomDistillerUrl(true)
-                        .build();
-        ChromeShareExtras chromeShareExtras =
-                new ChromeShareExtras.Builder()
-                        .setDetailedContentType(DetailedContentType.IMAGE)
-                        .setContentUrl(JUnitTestGURLs.GOOGLE_URL)
-                        .setImageSrcUrl(JUnitTestGURLs.GOOGLE_URL_DOGS)
-                        .build();
-
-        mController.showShareSheet(params, chromeShareExtras, 1L);
-
-        // No download option here.
-        Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
-        assertCustomActions(
-                intent,
-                R.string.sharing_copy_image_with_link,
-                R.string.sharing_send_tab_to_self,
-                R.string.qr_code_share_icon_label);
-    }
-
-    @Test
     @Config(
             sdk = 34,
             shadows = {ShadowChooserActionHelper.class})
@@ -902,8 +867,7 @@ public class AndroidShareSheetControllerUnitTest {
                 Tab tab,
                 String shareUrl,
                 ChromeOptionShareCallback chromeOptionShareCallback,
-                BottomSheetController sheetController,
-                ImageEditorModuleProvider imageEditorModuleProvider) {
+                BottomSheetController sheetController) {
             return sMockInstance;
         }
     }

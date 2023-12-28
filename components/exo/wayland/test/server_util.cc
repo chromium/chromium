@@ -13,11 +13,11 @@ namespace exo::wayland::test::server_util {
 
 wl_resource* LookUpResource(Server* server, const ResourceKey& key) {
   struct IteratorData {
-    raw_ptr<wl_resource, ExperimentalAsh> result = nullptr;
-    const raw_ref<const ResourceKey, ExperimentalAsh> key;
+    raw_ptr<wl_resource> result = nullptr;
+    const raw_ref<const ResourceKey> key;
   };
 
-  IteratorData iterator_data{.key = ToRawRef<ExperimentalAsh>(key)};
+  IteratorData iterator_data{.key = ToRawRef(key)};
 
   wl_client* client = nullptr;
   wl_list* all_clients =

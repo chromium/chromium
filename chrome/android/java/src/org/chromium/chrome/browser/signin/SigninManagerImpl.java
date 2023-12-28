@@ -51,7 +51,6 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityMutator;
 import org.chromium.components.signin.identitymanager.PrimaryAccountError;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.components.signin.metrics.SigninReason;
 import org.chromium.components.signin.metrics.SignoutDelete;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.SyncService;
@@ -474,10 +473,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                     "Signin.SigninCompletedAccessPoint",
                     mSignInState.getAccessPoint(),
                     SigninAccessPoint.MAX);
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Signin.SigninReason",
-                    SigninReason.SIGNIN_PRIMARY_ACCOUNT,
-                    SigninReason.MAX_VALUE + 1);
         }
 
         if (mSignInState.mCallback != null) {

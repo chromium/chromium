@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_subsample_entry.h"
 #include "third_party/blink/renderer/modules/webcodecs/array_buffer_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -18,6 +19,7 @@ namespace blink {
 namespace {
 
 TEST(EncodedVideoChunkTest, ConstructorAndAttributes) {
+  test::TaskEnvironment task_environment;
   V8TestingScope v8_scope;
   String type = "key";
   int64_t timestamp = 1000000;
@@ -36,6 +38,7 @@ TEST(EncodedVideoChunkTest, ConstructorAndAttributes) {
 }
 
 TEST(EncodedVideoChunkTest, ConstructorWithDuration) {
+  test::TaskEnvironment task_environment;
   V8TestingScope v8_scope;
   String type = "key";
   int64_t timestamp = 1000000;
@@ -57,6 +60,7 @@ TEST(EncodedVideoChunkTest, ConstructorWithDuration) {
 }
 
 TEST(EncodedVideoChunkTest, TransferBuffer) {
+  test::TaskEnvironment task_environment;
   V8TestingScope v8_scope;
   String type = "key";
   int64_t timestamp = 1000000;
@@ -77,6 +81,7 @@ TEST(EncodedVideoChunkTest, TransferBuffer) {
 }
 
 TEST(EncodedVideoChunkTest, DecryptConfig) {
+  test::TaskEnvironment task_environment;
   V8TestingScope v8_scope;
   auto* init = EncodedVideoChunkInit::Create();
   init->setTimestamp(1);

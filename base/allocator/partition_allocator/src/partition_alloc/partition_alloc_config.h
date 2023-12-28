@@ -146,43 +146,34 @@ static_assert(sizeof(void*) != 8, "");
 // Enable free list shadow entry to strengthen hardening as much as possible.
 // The shadow entry is an inversion (bitwise-NOT) of the encoded `next` pointer.
 //
-// Disabled when ref-count is placed in the previous slot, as it will overlap
-// with the shadow for the smallest slots.
+// Disabled when BRP is used, because ref-count is placed at the end of a slot,
+// and it will overlap with the shadow for the smallest slots.
 //
 // Disabled on Big Endian CPUs, because encoding is also a bitwise-NOT there,
 // making the shadow entry equal to the original, valid pointer to the next
 // slot. In case Use-after-Free happens, we'd rather not hand out a valid,
 // ready-to-use pointer.
-#if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && \
-    defined(ARCH_CPU_LITTLE_ENDIAN)
+#if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && defined(ARCH_CPU_LITTLE_ENDIAN)
 #define PA_CONFIG_HAS_FREELIST_SHADOW_ENTRY() 1
 #else
 #define PA_CONFIG_HAS_FREELIST_SHADOW_ENTRY() 0
 #endif
 
-#if defined(ARCH_CPU_ARM64) && defined(__clang__) && \
-    !defined(ADDRESS_SANITIZER) &&                   \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID))
-#define PA_CONFIG_HAS_MEMORY_TAGGING() 1
-#else
-#define PA_CONFIG_HAS_MEMORY_TAGGING() 0
-#endif
-
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
 static_assert(sizeof(void*) == 8);
 #endif
 
-// If memory tagging is enabled with BRP previous slot, the MTE tag and BRP ref
-// count will cause a race (crbug.com/1445816). To prevent this, the
-// ref_count_size is increased to the MTE granule size and the ref count is not
-// tagged.
-#if PA_CONFIG(HAS_MEMORY_TAGGING) &&            \
+// If memory tagging is enabled with BRP in "previous slot" mode, the MTE tag
+// and BRP ref count will cause a race (crbug.com/1445816). To prevent this, the
+// ref_count_size is increased to the MTE granule size and is excluded from MTE
+// tagging.
+#if BUILDFLAG(HAS_MEMORY_TAGGING) &&            \
     BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
     BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 #define PA_CONFIG_INCREASE_REF_COUNT_SIZE_FOR_MTE() 1
 #else
 #define PA_CONFIG_INCREASE_REF_COUNT_SIZE_FOR_MTE() 0
-#endif
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
 // Specifies whether allocation extras need to be added.
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -320,7 +311,7 @@ constexpr bool kUseLazyCommit = false;
 #define PA_CONFIG_ENABLE_SHADOW_METADATA() 0
 #endif
 
-// According to crbug.com/1349955#c24, macOS 11 has a bug where they asset that
+// According to crbug.com/1349955#c24, macOS 11 has a bug where they assert that
 // malloc_size() of an allocation is equal to the requested size. This is
 // generally not true. The assert passed only because it happened to be true for
 // the sizes they requested. BRP changes that, hence can't be deployed without a
@@ -328,15 +319,21 @@ constexpr bool kUseLazyCommit = false;
 //
 // The bug has been fixed in macOS 12. Here we can only check the platform, and
 // the version is checked dynamically later.
-#define PA_CONFIG_ENABLE_MAC11_MALLOC_SIZE_HACK() \
-  (BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && BUILDFLAG(IS_MAC))
+//
+// The settings has MAYBE in the name, because the final decision to enable is
+// based on the operarting version check done at run-time.
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && BUILDFLAG(IS_MAC)
+#define PA_CONFIG_MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK() 1
+#else
+#define PA_CONFIG_MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK() 0
+#endif
 
 #if BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 #error "Dynamically selected pool size is currently not supported"
 #endif
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
 // TODO(1376980): Address MTE once it's enabled.
 #error "Compressed pointers don't support tag in the upper bits"
 #endif

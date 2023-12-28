@@ -139,8 +139,6 @@ const char kExtensionTelemetryConfig[] =
     "safebrowsing.extension_telemetry_configuration";
 const char kExtensionTelemetryFileData[] =
     "safebrowsing.extension_telemetry_file_data";
-const char kSafeBrowsingExtensionProtectionAllowedByPolicy[] =
-    "safebrowsing.extension_protection_allowed_by_policy";
 const char kHashPrefixRealTimeChecksAllowedByPolicy[] =
     "safebrowsing.hash_prefix_real_time_checks_allowed_by_policy";
 }  // namespace prefs
@@ -217,11 +215,6 @@ bool IsSafeBrowsingExtensionControlled(const PrefService& prefs) {
   // that can control the kSafeBrowsingEnhanced protection pref.
   return prefs.FindPreference(prefs::kSafeBrowsingEnabled)
              ->IsExtensionControlled();
-}
-
-bool IsSafeBrowsingExtensionProtectionAllowed(const PrefService& prefs) {
-  return prefs.GetBoolean(
-      prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy);
 }
 
 bool AreHashPrefixRealTimeLookupsAllowedByPolicy(const PrefService& prefs) {
@@ -314,8 +307,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                              base::Time::Now());
   registry->RegisterDictionaryPref(prefs::kExtensionTelemetryConfig);
   registry->RegisterDictionaryPref(prefs::kExtensionTelemetryFileData);
-  registry->RegisterBooleanPref(
-      prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy, true);
   registry->RegisterBooleanPref(prefs::kHashPrefixRealTimeChecksAllowedByPolicy,
                                 true);
   registry->RegisterBooleanPref(prefs::kSafeBrowsingSurveysEnabled, true);
@@ -426,11 +417,6 @@ base::Value::List GetSafeBrowsingPoliciesList(PrefService* prefs) {
   }
   preferences_list.Append(login_urls);
   preferences_list.Append(prefs::kPasswordProtectionLoginURLs);
-
-  preferences_list.Append(prefs->GetBoolean(
-      prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy));
-  preferences_list.Append(
-      prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy);
   preferences_list.Append(
       prefs->GetBoolean(prefs::kHashPrefixRealTimeChecksAllowedByPolicy));
   preferences_list.Append(prefs::kHashPrefixRealTimeChecksAllowedByPolicy);

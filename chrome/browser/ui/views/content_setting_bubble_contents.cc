@@ -107,8 +107,9 @@ struct LayoutRow {
 // ContentSettingBubbleContents::ListItemContainer -----------------------------
 
 class ContentSettingBubbleContents::ListItemContainer : public views::View {
+  METADATA_HEADER(ListItemContainer, views::View)
+
  public:
-  METADATA_HEADER(ListItemContainer);
   explicit ListItemContainer(ContentSettingBubbleContents* parent);
   ListItemContainer(const ListItemContainer&) = delete;
   ListItemContainer& operator=(const ListItemContainer&) = delete;
@@ -620,5 +621,5 @@ void ContentSettingBubbleContents::WebContentsDestroyed() {
   GetWidget()->Close();
 }
 
-BEGIN_METADATA(ContentSettingBubbleContents, views::BubbleDialogDelegateView)
+BEGIN_METADATA(ContentSettingBubbleContents)
 END_METADATA

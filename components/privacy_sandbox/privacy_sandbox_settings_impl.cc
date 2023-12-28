@@ -733,10 +733,6 @@ void PrivacySandboxSettingsImpl::OnCookiesCleared() {
 }
 
 void PrivacySandboxSettingsImpl::OnRelatedWebsiteSetsEnabledPrefChanged() {
-  if (!base::FeatureList::IsEnabled(features::kFirstPartySets)) {
-    return;
-  }
-
   for (auto& observer : observers_) {
     observer.OnFirstPartySetsEnabledChanged(AreRelatedWebsiteSetsEnabled());
   }
@@ -848,10 +844,6 @@ bool PrivacySandboxSettingsImpl::IsCookieDeprecationLabelAllowedForContext(
 }
 
 void PrivacySandboxSettingsImpl::OnBlockAllThirdPartyCookiesChanged() {
-  if (!base::FeatureList::IsEnabled(features::kFirstPartySets)) {
-    return;
-  }
-
   for (auto& observer : observers_) {
     observer.OnFirstPartySetsEnabledChanged(AreRelatedWebsiteSetsEnabled());
   }

@@ -6,7 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/ns_range.h"
-#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
@@ -31,16 +31,8 @@
   [super configureCell:tableCell withStyler:styler];
   TableViewTextLinkCell* cell =
       base::apple::ObjCCastStrict<TableViewTextLinkCell>(tableCell);
-  cell.textView.text = self.text;
+  [cell setText:self.text linkURLs:self.linkURLs linkRanges:self.linkRanges];
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
-
-  if (self.linkRanges) {
-    [self.linkRanges enumerateObjectsUsingBlock:^(NSValue* rangeValue,
-                                                  NSUInteger i, BOOL* stop) {
-      CrURL* crurl = [[CrURL alloc] initWithGURL:self.linkURLs[i]];
-      [cell setLinkURL:crurl forRange:rangeValue.rangeValue];
-    }];
-  }
 }
 
 @end
@@ -64,6 +56,8 @@
     _textView.translatesAutoresizingMaskIntoConstraints = NO;
     _textView.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     _textView.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    _textView.linkTextAttributes =
+        @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
     _textView.backgroundColor = UIColor.clearColor;
 
     // Add subviews to View Hierarchy.
@@ -87,39 +81,31 @@
   return self;
 }
 
-- (void)setLinkURL:(CrURL*)URL {
-  if (!URL) {
-    return;
-  }
-  if (URL.gurl.is_valid()) {
-    UITextView* textView = self.textView;
-    DCHECK(textView.text.length > 0);
-    // Attribute form of the font/color given to the text view on init.
-    NSDictionary<NSAttributedStringKey, id>* textAttributes =
-        [textView.attributedText attributesAtIndex:0 effectiveRange:nullptr];
-    textView.attributedText = AttributedStringFromStringWithLink(
-        textView.text, textAttributes, [self linkAttributesForURL:URL]);
-  }
-}
-
-- (void)setLinkURL:(CrURL*)URL forRange:(NSRange)range {
-  if (!URL) {
-    return;
-  }
-  if (URL.gurl.is_valid()) {
-    NSMutableAttributedString* text = [[NSMutableAttributedString alloc]
-        initWithAttributedString:self.textView.attributedText];
-    [text addAttributes:[self linkAttributesForURL:URL] range:range];
-    self.textView.attributedText = text;
-  }
-}
-
-- (NSDictionary<NSAttributedStringKey, id>*)linkAttributesForURL:(CrURL*)URL {
-  NSURL* linkURL = URL.nsurl;
-  return @{
-    NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
-    NSLinkAttributeName : linkURL,
+- (void)setText:(NSString*)text
+       linkURLs:(std::vector<GURL>)linkURLs
+     linkRanges:(NSArray*)linkRanges {
+  NSDictionary* textAttributes = @{
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor]
   };
+
+  NSMutableAttributedString* attributedText =
+      [[NSMutableAttributedString alloc] initWithString:text
+                                             attributes:textAttributes];
+  if (linkRanges) {
+    [linkRanges enumerateObjectsUsingBlock:^(NSValue* rangeValue, NSUInteger i,
+                                             BOOL* stop) {
+      CrURL* crurl = [[CrURL alloc] initWithGURL:linkURLs[i]];
+      if (!crurl || !crurl.gurl.is_valid()) {
+        return;
+      }
+      [attributedText addAttribute:NSLinkAttributeName
+                             value:crurl.nsurl
+                             range:rangeValue.rangeValue];
+    }];
+  }
+  self.textView.attributedText = attributedText;
 }
 
 - (void)prepareForReuse {

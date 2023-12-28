@@ -59,7 +59,7 @@ class SurfaceContentType : SurfaceObserver {
     surface_->SetContainsVideo(false);
   }
 
-  raw_ptr<Surface, ExperimentalAsh> surface_;
+  raw_ptr<Surface> surface_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

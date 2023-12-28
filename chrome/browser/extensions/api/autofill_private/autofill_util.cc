@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
@@ -42,7 +43,7 @@ namespace {
 
 // Gets the string corresponding to |type| from |profile|.
 std::string GetStringFromProfile(const autofill::AutofillProfile& profile,
-                                 const autofill::ServerFieldType& type) {
+                                 const autofill::FieldType& type) {
   return base::UTF16ToUTF8(profile.GetRawInfo(type));
 }
 
@@ -72,8 +73,8 @@ autofill_private::AddressEntry ProfileToAddressEntry(
       autofill::GetDatabaseStoredTypesOfAutofillProfile(),
       back_inserter(address.fields), [&profile](auto field_type) {
         autofill_private::AddressField field;
-        field.type = autofill_private::ParseServerFieldType(
-            FieldTypeToStringView(field_type));
+        field.type =
+            autofill_private::ParseFieldType(FieldTypeToStringView(field_type));
         field.value = GetStringFromProfile(profile, field_type);
         return field;
       });
@@ -194,8 +195,8 @@ AddressEntryList GenerateAddressList(
   // TODO(crbug.com/1487119): Replace by `profiles` when
   // `GetProfilesForSettings` starts returning a list of const AutofillProfile*.
   autofill::AutofillProfile::CreateDifferentiatingLabels(
-      std::vector<const autofill::AutofillProfile*>(profiles.begin(),
-                                                    profiles.end()),
+      std::vector<raw_ptr<const autofill::AutofillProfile, VectorExperimental>>(
+          profiles.begin(), profiles.end()),
       g_browser_process->GetApplicationLocale(), &labels);
   DCHECK_EQ(labels.size(), profiles.size());
 

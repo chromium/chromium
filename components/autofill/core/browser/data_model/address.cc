@@ -87,7 +87,7 @@ bool Address::MergeStructuredAddress(const Address& newer,
                                                  newer_was_more_recently_used);
 }
 
-absl::optional<AlternativeStateNameMap::CanonicalStateName>
+std::optional<AlternativeStateNameMap::CanonicalStateName>
 Address::GetCanonicalizedStateName() const {
   return AlternativeStateNameMap::GetCanonicalStateName(
       base::UTF16ToUTF8(GetRawInfo(ADDRESS_HOME_COUNTRY)),
@@ -109,16 +109,16 @@ AddressCountryCode Address::GetAddressCountryCode() const {
   return AddressCountryCode(country_code);
 }
 
-std::u16string Address::GetRawInfo(ServerFieldType type) const {
-  DCHECK_EQ(FieldTypeGroup::kAddress, GroupTypeOfServerFieldType(type));
+std::u16string Address::GetRawInfo(FieldType type) const {
+  DCHECK_EQ(FieldTypeGroup::kAddress, GroupTypeOfFieldType(type));
 
   return structured_address_->GetValueForType(type);
 }
 
-void Address::SetRawInfoWithVerificationStatus(ServerFieldType type,
+void Address::SetRawInfoWithVerificationStatus(FieldType type,
                                                const std::u16string& value,
                                                VerificationStatus status) {
-  DCHECK_EQ(FieldTypeGroup::kAddress, GroupTypeOfServerFieldType(type));
+  DCHECK_EQ(FieldTypeGroup::kAddress, GroupTypeOfFieldType(type));
   // The street address has a structure that may have already been set before
   // using the settings dialog. In case the settings dialog was used to change
   // the address to contain different tokens, the structure must be reset.
@@ -146,7 +146,7 @@ void Address::SetRawInfoWithVerificationStatus(ServerFieldType type,
 
 void Address::GetMatchingTypes(const std::u16string& text,
                                const std::string& app_locale,
-                               ServerFieldTypeSet* matching_types) const {
+                               FieldTypeSet* matching_types) const {
   FormGroup::GetMatchingTypes(text, app_locale, matching_types);
 
   std::string country_code = base::UTF16ToUTF8(
@@ -182,7 +182,7 @@ void Address::GetMatchingTypes(const std::u16string& text,
   }
 }
 
-void Address::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
+void Address::GetSupportedTypes(FieldTypeSet* supported_types) const {
   structured_address_->GetSupportedTypes(supported_types);
 }
 
@@ -195,7 +195,7 @@ std::u16string Address::GetInfoImpl(const AutofillType& type,
     return base::ASCIIToUTF16(country_code);
   }
 
-  ServerFieldType storable_type = type.GetStorableType();
+  FieldType storable_type = type.GetStorableType();
   if (storable_type == ADDRESS_HOME_COUNTRY && !country_code.empty())
     return AutofillCountry(country_code, locale).name();
 
@@ -230,7 +230,7 @@ bool Address::SetInfoWithVerificationStatusImpl(const AutofillType& type,
     return !country_code.empty();
   }
 
-  ServerFieldType storable_type = type.GetStorableType();
+  FieldType storable_type = type.GetStorableType();
   if (storable_type == ADDRESS_HOME_COUNTRY && !value.empty()) {
     std::string country_code =
         CountryNames::GetInstance()->GetCountryCodeForLocalizedCountryName(
@@ -254,8 +254,7 @@ bool Address::SetInfoWithVerificationStatusImpl(const AutofillType& type,
   return true;
 }
 
-VerificationStatus Address::GetVerificationStatusImpl(
-    ServerFieldType type) const {
+VerificationStatus Address::GetVerificationStatusImpl(FieldType type) const {
   return structured_address_->GetVerificationStatusForType(type);
 }
 
@@ -298,11 +297,11 @@ void Address::SetAddressCountryCode(const std::u16string& country_code,
   // Transfer the content from the old model into the new one. Note that it
   // is possible that some nodes are not present in the updated model. Those
   // will be ignored.
-  ServerFieldTypeSet prev_supported_types;
+  FieldTypeSet prev_supported_types;
   structured_address_->GetStorableTypes(&prev_supported_types);
   prev_supported_types.erase(ADDRESS_HOME_COUNTRY);
 
-  for (ServerFieldType type : prev_supported_types) {
+  for (FieldType type : prev_supported_types) {
     updated_structured_address->SetValueForType(
         type, structured_address_->GetValueForType(type),
         structured_address_->GetVerificationStatusForType(type));

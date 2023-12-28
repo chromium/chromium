@@ -39,10 +39,8 @@ std::unique_ptr<views::View> CreatePasswordLabelWithEyeIconView(
   auto* password_label_ptr = password_label_with_eye_icon_view->AddChildView(
       std::move(password_label));
   password_label_ptr->SetTextStyle(views::style::STYLE_PRIMARY);
-  password_label_ptr->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                               views::MaximumFlexSizeRule::kScaleToMaximum));
+  password_label_ptr->SetProperty(views::kBoxLayoutFlexKey,
+                                  views::BoxLayoutFlexSpecification());
 
   auto* eye_icon = password_label_with_eye_icon_view->AddChildView(
       CreateVectorToggleImageButton(views::Button::PressedCallback()));

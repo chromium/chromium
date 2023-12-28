@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "extensions/common/extension_id.h"
-#include "url/gurl.h"
 
 namespace content {
 class BrowserContext;
@@ -21,22 +20,20 @@ class LazyContextTaskQueue;
 
 class LazyContextId {
  public:
-  enum class Type {
-    kEventPage,
-    kServiceWorker,
-  };
+  static LazyContextId ForBackgroundPage(content::BrowserContext* context,
+                                         const ExtensionId& extension_id) {
+    return LazyContextId(Type::kBackgroundPage, context, extension_id);
+  }
 
-  // An event page (lazy background) context.
-  LazyContextId(content::BrowserContext* context,
-                const ExtensionId& extension_id);
+  static LazyContextId ForServiceWorker(content::BrowserContext* context,
+                                        const ExtensionId& extension_id) {
+    return LazyContextId(Type::kServiceWorker, context, extension_id);
+  }
 
-  // An extension service worker context.
-  LazyContextId(content::BrowserContext* context,
-                const ExtensionId& extension_id,
-                const GURL& service_worker_scope);
-
-  // The context is derived from the extension.
-  LazyContextId(content::BrowserContext* context, const Extension* extension);
+  static LazyContextId ForExtension(content::BrowserContext* context,
+                                    const Extension* extension) {
+    return LazyContextId(context, extension);
+  }
 
   // Copy and move constructors.
   LazyContextId(const LazyContextId& other) = default;
@@ -45,43 +42,51 @@ class LazyContextId {
   LazyContextId& operator=(const LazyContextId&) noexcept = default;
   LazyContextId& operator=(LazyContextId&&) noexcept = default;
 
-  bool is_for_event_page() const { return type_ == Type::kEventPage; }
-  bool is_for_service_worker() const { return type_ == Type::kServiceWorker; }
+  bool IsForBackgroundPage() const { return type_ == Type::kBackgroundPage; }
+  bool IsForServiceWorker() const { return type_ == Type::kServiceWorker; }
 
   content::BrowserContext* browser_context() const { return context_; }
-  void set_browser_context(content::BrowserContext* context) {
-    context_ = context;
-  }
 
   const ExtensionId& extension_id() const { return extension_id_; }
 
-  const GURL& service_worker_scope() const {
-    DCHECK(is_for_service_worker());
-    return service_worker_scope_;
-  }
-
   LazyContextTaskQueue* GetTaskQueue() const;
 
-  bool operator<(const LazyContextId& rhs) const {
-    return std::tie(type_, context_, extension_id_, service_worker_scope_) <
-           std::tie(rhs.type_, rhs.context_, rhs.extension_id_,
-                    rhs.service_worker_scope_);
-  }
-
-  bool operator==(const LazyContextId& rhs) const {
-    return std::tie(type_, context_, extension_id_, service_worker_scope_) ==
-           std::tie(rhs.type_, rhs.context_, rhs.extension_id_,
-                    rhs.service_worker_scope_);
-  }
-
-  bool operator!=(const LazyContextId& rhs) const { return !(*this == rhs); }
-
  private:
+  enum class Type {
+    kNone,
+    kBackgroundPage,
+    kServiceWorker,
+  };
+
+  friend bool operator<(const LazyContextId& lhs, const LazyContextId& rhs);
+  friend bool operator==(const LazyContextId& lhs, const LazyContextId& rhs);
+
+  // An event page or service worker based on the type.
+  LazyContextId(Type type,
+                content::BrowserContext* context,
+                const ExtensionId& extension_id);
+
+  // The type is derived from the extension.
+  LazyContextId(content::BrowserContext* context, const Extension* extension);
+
   Type type_;
   raw_ptr<content::BrowserContext, DanglingUntriaged> context_;
   ExtensionId extension_id_;
-  GURL service_worker_scope_;
 };
+
+inline bool operator<(const LazyContextId& lhs, const LazyContextId& rhs) {
+  return std::tie(lhs.type_, lhs.context_, lhs.extension_id_) <
+         std::tie(rhs.type_, rhs.context_, rhs.extension_id_);
+}
+
+inline bool operator==(const LazyContextId& lhs, const LazyContextId& rhs) {
+  return std::tie(lhs.type_, lhs.context_, lhs.extension_id_) ==
+         std::tie(rhs.type_, rhs.context_, rhs.extension_id_);
+}
+
+inline bool operator!=(const LazyContextId& lhs, const LazyContextId& rhs) {
+  return !(lhs == rhs);
+}
 
 }  // namespace extensions
 

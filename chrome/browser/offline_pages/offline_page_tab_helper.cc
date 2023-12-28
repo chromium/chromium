@@ -202,8 +202,6 @@ void OfflinePageTabHelper::DidFinishNavigation(
   FinalizeOfflineInfo(navigation_handle);
   provisional_offline_info_.Clear();
 
-  ReportOfflinePageMetrics();
-
   TryLoadingOfflinePageOnNetError(navigation_handle);
 }
 
@@ -243,14 +241,6 @@ void OfflinePageTabHelper::FinalizeOfflineInfo(
       provisional_offline_info_.Clear();
     }
   }
-}
-
-void OfflinePageTabHelper::ReportOfflinePageMetrics() {
-  if (!offline_page())
-    return;
-  UMA_HISTOGRAM_ENUMERATION("OfflinePages.TrustStateOnOpen",
-                            offline_info_.trusted_state,
-                            OfflinePageTrustedState::TRUSTED_STATE_MAX);
 }
 
 void OfflinePageTabHelper::TryLoadingOfflinePageOnNetError(

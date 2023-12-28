@@ -59,9 +59,7 @@ std::string RandBase64String() {
 std::string CodeChallengeS256(const std::string& code_verifier) {
   DCHECK_GE(code_verifier.size(), 43u);
   DCHECK_LE(code_verifier.size(), 128u);
-  std::string output;
-  base::Base64Encode(crypto::SHA256HashString(code_verifier), &output);
-  return output;
+  return base::Base64Encode(crypto::SHA256HashString(code_verifier));
 }
 
 // Builds and returns URL for Authorization Request (see RFC6749-4.1) with

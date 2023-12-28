@@ -48,7 +48,8 @@ class AwCookieAccessPolicy {
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       base::optional_ref<const content::GlobalRenderFrameHostToken>
-          global_frame_token);
+          global_frame_token,
+      bool has_storage_access);
 
  private:
   friend class base::NoDestructor<AwCookieAccessPolicy>;
@@ -59,7 +60,8 @@ class AwCookieAccessPolicy {
 
   bool CanAccessCookies(const GURL& url,
                         const net::SiteForCookies& site_for_cookies,
-                        bool accept_third_party_cookies);
+                        bool accept_third_party_cookies,
+                        bool has_storage_access);
   bool accept_cookies_;
   base::Lock lock_;
 };

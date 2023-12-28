@@ -36,6 +36,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/feature_promo_handle.h"
 #include "components/user_education/common/feature_promo_registry.h"
@@ -388,7 +389,7 @@ void MaybeRegisterChromeFeaturePromos(
                     .SetBubbleArrow(HelpBubbleArrow::kTopRight)));
 
   // kIPHPowerBookmarksSidePanelFeature:
-  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+  if (features::IsSidePanelPinningEnabled()) {
     registry.RegisterFeature(
         std::move(FeaturePromoSpecification::CreateForSnoozePromo(
                       feature_engagement::kIPHPowerBookmarksSidePanelFeature,
@@ -404,7 +405,7 @@ void MaybeRegisterChromeFeaturePromos(
   }
 
   // kIPHCompanionSidePanelFeature:
-  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+  if (features::IsSidePanelPinningEnabled()) {
     registry.RegisterFeature(std::move(
         FeaturePromoSpecification::CreateForToastPromo(
             feature_engagement::kIPHCompanionSidePanelFeature,
@@ -474,7 +475,7 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleTitleText(IDS_3PCD_USER_BYPASS_PROMO_TITLE)));
 
   // kIPHReadingListDiscoveryFeature:
-  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+  if (features::IsSidePanelPinningEnabled()) {
     registry.RegisterFeature(
         std::move(FeaturePromoSpecification::CreateForLegacyPromo(
                       &feature_engagement::kIPHReadingListDiscoveryFeature,
@@ -494,7 +495,7 @@ void MaybeRegisterChromeFeaturePromos(
       kBookmarkStarViewElementId, IDS_READING_LIST_ENTRY_POINT_PROMO));
 
   // kIPHReadingListInSidePanelFeature:
-  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+  if (features::IsSidePanelPinningEnabled()) {
     registry.RegisterFeature(
         std::move(FeaturePromoSpecification::CreateForLegacyPromo(
                       &feature_engagement::kIPHReadingListInSidePanelFeature,
@@ -510,7 +511,7 @@ void MaybeRegisterChromeFeaturePromos(
   }
 
   // kIPHReadingModeSidePanelFeature:
-  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+  if (features::IsSidePanelPinningEnabled()) {
     registry.RegisterFeature(std::move(
         FeaturePromoSpecification::CreateForSnoozePromo(
             feature_engagement::kIPHReadingModeSidePanelFeature,
@@ -523,7 +524,7 @@ void MaybeRegisterChromeFeaturePromos(
         kToolbarSidePanelButtonElementId, IDS_READING_MODE_SIDE_PANEL_PROMO));
   }
 
-  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+  if (features::IsSidePanelPinningEnabled()) {
     // kIPHSidePanelGenericMenuFeature:
     registry.RegisterFeature(std::move(
         FeaturePromoSpecification::CreateForToastPromo(
@@ -648,39 +649,65 @@ void MaybeRegisterChromeFeaturePromos(
               [](ui::ElementContext ctx,
                  user_education::FeaturePromoHandle promo_handle) {
                 auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
-                if (browser)
+                if (browser) {
                   chrome::ShowSettingsSubPage(browser,
                                               chrome::kPerformanceSubPage);
+                }
                 RecordBatterySaverIPHOpenSettings(browser != nullptr);
               }))
           .SetBubbleTitleText(IDS_BATTERY_SAVER_MODE_PROMO_TITLE)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)));
 
-  // kIPHHighEfficiencyModeFeature:
+  // kIPHMemorySaverModeFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(
-          feature_engagement::kIPHHighEfficiencyModeFeature,
-          kToolbarAppMenuButtonElementId, IDS_HIGH_EFFICIENCY_MODE_PROMO_TEXT,
-          IDS_HIGH_EFFICIENCY_MODE_PROMO_ACTION_TEXT,
+          feature_engagement::kIPHMemorySaverModeFeature,
+          kToolbarAppMenuButtonElementId, IDS_MEMORY_SAVER_MODE_PROMO_TEXT,
+          IDS_MEMORY_SAVER_MODE_PROMO_ACTION_TEXT,
           base::BindRepeating(
               [](ui::ElementContext context,
                  user_education::FeaturePromoHandle promo_handle) {
                 performance_manager::user_tuning::UserPerformanceTuningManager::
                     GetInstance()
-                        ->SetHighEfficiencyModeEnabled(true);
-                RecordHighEfficiencyIPHEnableMode(true);
+                        ->SetMemorySaverModeEnabled(true);
+                RecordMemorySaverIPHEnableMode(true);
               }))
           .SetCustomActionIsDefault(true)
           .SetCustomActionDismissText(IDS_NO_THANKS)
-          .SetBubbleTitleText(IDS_HIGH_EFFICIENCY_MODE_PROMO_TITLE)
+          .SetBubbleTitleText(IDS_MEMORY_SAVER_MODE_PROMO_TITLE)
           .SetHighlightedMenuItem(ToolsMenuModel::kPerformanceMenuItem)));
 
   // kIPHPriceTrackingInSidePanelFeature;
-  if (!base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+  if (!features::IsSidePanelPinningEnabled()) {
     registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
         &feature_engagement::kIPHPriceTrackingInSidePanelFeature,
         kToolbarSidePanelButtonElementId, IDS_PRICE_TRACKING_SIDE_PANEL_IPH));
   }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // kIPHDownloadEsbPromoFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHDownloadEsbPromoFeature,
+          kToolbarDownloadButtonElementId, IDS_DOWNLOAD_BUBBLE_ESB_PROMO,
+          IDS_DOWNLOAD_BUBBLE_ESB_PROMO_CUSTOM_ACTION,
+          base::BindRepeating(
+              [](ui::ElementContext ctx,
+                 user_education::FeaturePromoHandle promo_handle) {
+                auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
+                if (!browser) {
+                  return;
+                }
+                chrome::ShowSafeBrowsingEnhancedProtectionWithIph(
+                    browser, safe_browsing::SafeBrowsingSettingReferralMethod::
+                                 kDownloadButtonIphPromo);
+              }))
+          .SetCustomActionIsDefault(true)
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetBubbleTitleText(IDS_DOWNLOAD_BUBBLE_ESB_PROMO_TITLE)
+          .SetCustomActionDismissText(IDS_DOWNLOAD_BUBBLE_ESB_PROMO_DISMISS)
+          .SetBubbleIcon(&vector_icons::kGshieldIcon)));
+#endif
 
   // kIPHDownloadToolbarButtonFeature:
   registry.RegisterFeature(
@@ -752,8 +779,9 @@ void MaybeRegisterChromeTutorials(
 
   // TODO (dfried): we might want to do something more sophisticated in the
   // future.
-  if (tutorial_registry.IsTutorialRegistered(kTabGroupTutorialId))
+  if (tutorial_registry.IsTutorialRegistered(kTabGroupTutorialId)) {
     return;
+  }
 
   {  // Menu item bubble test.
     TutorialDescription test_description;

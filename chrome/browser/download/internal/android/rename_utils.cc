@@ -17,6 +17,7 @@ JNI_RenameUtils_GetFileExtension(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& fileName) {
   std::string extension =
-      base::FilePath(ConvertJavaStringToUTF8(env, fileName)).Extension();
+      base::FilePath(base::android::ConvertJavaStringToUTF8(env, fileName))
+          .Extension();
   return ConvertUTF8ToJavaString(env, extension);
 }

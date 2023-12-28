@@ -64,12 +64,19 @@ export interface HatsBrowserProxy {
    * Inform HaTS that the user performed an interaction on security page.
    * @param securityPageInteraction The type of interaction performed on the
    *     security page.
-   * @param safeBrowsingSetting The type of safe browsing settings the user is
+   * @param safeBrowsingSetting The type of safe browsing settings the user was
    *     on prior to the interaction.
+   * @param totalTimeOnPage The amount of time the user spent on the security
+   *     page.
    */
-  securityPageInteractionOccurred(
+  securityPageHatsRequest(
       securityPageInteraction: SecurityPageInteraction,
-      safeBrowsingSetting: SafeBrowsingSetting): void;
+      safeBrowsingSetting: SafeBrowsingSetting, totalTimeOnPage: number): void;
+
+  /**
+   * Returns the current date value.
+   */
+  now(): number;
 }
 
 export class HatsBrowserProxyImpl implements HatsBrowserProxy {
@@ -77,12 +84,16 @@ export class HatsBrowserProxyImpl implements HatsBrowserProxy {
     chrome.send('trustSafetyInteractionOccurred', [interaction]);
   }
 
-  securityPageInteractionOccurred(
+  securityPageHatsRequest(
       securityPageInteraction: SecurityPageInteraction,
-      safeBrowsingSetting: SafeBrowsingSetting) {
+      safeBrowsingSetting: SafeBrowsingSetting, totalTimeOnPage: number) {
     chrome.send(
-        'securityPageInteractionOccurred',
-        [securityPageInteraction, safeBrowsingSetting]);
+        'securityPageHatsRequest',
+        [securityPageInteraction, safeBrowsingSetting, totalTimeOnPage]);
+  }
+
+  now() {
+    return window.performance.now();
   }
 
   static getInstance(): HatsBrowserProxy {

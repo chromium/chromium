@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -18,6 +19,7 @@
 #include "services/cert_verifier/cert_verifier_creation.h"
 #include "services/cert_verifier/cert_verifier_service.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
+#include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -59,6 +61,11 @@ class CertVerifierServiceFactoryImpl
   void UpdateCRLSet(mojo_base::BigBuffer crl_set,
                     mojom::CertVerifierServiceFactory::UpdateCRLSetCallback
                         callback) override;
+#if BUILDFLAG(IS_CT_SUPPORTED)
+  void UpdateCtLogList(std::vector<network::mojom::CTLogInfoPtr> log_list,
+                       base::Time update_time,
+                       UpdateCtLogListCallback callback) override;
+#endif
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   void UpdateChromeRootStore(mojom::ChromeRootStorePtr new_root_store,
                              UpdateChromeRootStoreCallback callback) override;
