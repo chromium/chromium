@@ -1652,18 +1652,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="MediaRouter.Cast.App.Availability"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="MediaVideoCaptureManagerTime" separator=".">
-  <suffix name="GetAvailableDevicesInfoOnDeviceThreadTime"
-      label="Measures the time taken to enumerate devices and their
-             capabilities, between EnumerateDevices() and
-             OnDevicesInfoEnumerated()."/>
-  <suffix name="StartDeviceTime"
-      label="Measures the time taken for DoStartDeviceOnDeviceThread()."/>
-  <suffix name="StopDeviceTime"
-      label="Measures the time taken for DoStopDeviceOnDeviceThread()."/>
-  <affected-histogram name="Media.VideoCaptureManager"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="MediaWatchTimeCategories" separator=".">
   <suffix name="Audio.AC"
       label="Watch time for all media with only an audio track on AC power."/>
