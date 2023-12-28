@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_NOTIFICATIONS_NOTIFICATIONS_SETTINGS_UTIL_H_
-#define IOS_CHROME_BROWSER_UI_SETTINGS_NOTIFICATIONS_NOTIFICATIONS_SETTINGS_UTIL_H_
+#ifndef IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_SETTINGS_UTIL_H_
+#define IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_SETTINGS_UTIL_H_
 
 #import <Foundation/Foundation.h>
 #import <string>
@@ -11,7 +11,7 @@
 class PrefService;
 enum class PushNotificationClientId;
 
-namespace notifications_settings {
+namespace push_notification_settings {
 
 // Reflects the state a push notification client's notification permission set
 // holds when aggregated across all modes of transmission (i.e mobile, email,
@@ -41,6 +41,6 @@ BOOL GetMobileNotificationPermissionStatusForClient(
     PushNotificationClientId clientID,
     const std::string& gaia_id);
 
-}  // namespace notifications_settings
+}  // namespace push_notification_settings
 
-#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_NOTIFICATIONS_NOTIFICATIONS_SETTINGS_UTIL_H_
+#endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_SETTINGS_UTIL_H_

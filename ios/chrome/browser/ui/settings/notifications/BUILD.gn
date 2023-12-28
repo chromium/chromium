@@ -68,8 +68,6 @@ source_set("utils") {
   sources = [
     "notifications_settings_observer.h",
     "notifications_settings_observer.mm",
-    "notifications_settings_util.h",
-    "notifications_settings_util.mm",
   ]
   deps = [
     "//components/commerce/core:pref_names",

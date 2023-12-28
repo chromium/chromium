@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_browser_state_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
@@ -25,7 +26,6 @@
 #import "ios/chrome/browser/ui/settings/notifications/notifications_consumer.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
-#import "ios/chrome/browser/ui/settings/notifications/notifications_settings_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -99,8 +99,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
                              symbol:kNewspaperSFSymbol
               symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
             accessibilityIdentifier:kSettingsNotificationsContentCellId];
-    _contentNotificationsItem.on =
-        notifications_settings::GetMobileNotificationPermissionStatusForClient(
+    _contentNotificationsItem.on = push_notification_settings::
+        GetMobileNotificationPermissionStatusForClient(
             PushNotificationClientId::kContent, _gaiaID);
   }
   return _contentNotificationsItem;
@@ -179,15 +179,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
   DCHECK(item);
   TableViewDetailIconItem* iconItem =
       base::apple::ObjCCastStrict<TableViewDetailIconItem>(item);
-  notifications_settings::ClientPermissionState permissionState =
-      notifications_settings::GetClientPermissionState(clientID, _gaiaID,
-                                                       _prefService);
+  push_notification_settings::ClientPermissionState permissionState =
+      push_notification_settings::GetClientPermissionState(clientID, _gaiaID,
+                                                           _prefService);
   NSString* detailText = nil;
   if (permissionState ==
-      notifications_settings::ClientPermissionState::ENABLED) {
+      push_notification_settings::ClientPermissionState::ENABLED) {
     detailText = l10n_util::GetNSString(IDS_IOS_SETTING_ON);
   } else if (permissionState ==
-             notifications_settings::ClientPermissionState::DISABLED) {
+             push_notification_settings::ClientPermissionState::DISABLED) {
     detailText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
   }
 
@@ -202,7 +202,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   switch (type) {
     case ItemTypeContentNotifications: {
       [self setPreferenceFor:PushNotificationClientId::kContent to:value];
-      self.contentNotificationsItem.on = notifications_settings::
+      self.contentNotificationsItem.on = push_notification_settings::
           GetMobileNotificationPermissionStatusForClient(
               PushNotificationClientId::kContent, _gaiaID);
       if (!value) {

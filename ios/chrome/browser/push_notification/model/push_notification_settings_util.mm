@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/notifications/notifications_settings_util.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 
 #import "components/commerce/core/pref_names.h"
 #import "components/prefs/pref_service.h"
@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
-namespace notifications_settings {
+namespace push_notification_settings {
 
 ClientPermissionState GetNotificationPermissionState(
     const std::string& gaia_id,
@@ -89,4 +89,4 @@ BOOL GetMobileNotificationPermissionStatusForClient(
                                           forAccount:gaia_id];
 }
 
-}  // namespace notifications_settings
+}  // namespace push_notification_settings
