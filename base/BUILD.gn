@@ -2845,7 +2845,7 @@ if (is_win) {
 
 if ((is_win && (current_cpu == "x64" || current_cpu == "arm64")) || is_mac ||
     (is_android && (current_cpu == "arm" || current_cpu == "arm64")) ||
-    (is_chromeos && current_cpu == "x64")) {
+    (is_chromeos && (current_cpu == "x64" || current_cpu == "arm64"))) {
   # Must be a loadable module so that it can be loaded/unloaded at runtime
   # during testing.
   loadable_module("base_profiler_test_support_library") {
@@ -4042,7 +4042,7 @@ test("base_unittests") {
   if (is_apple) {
     sources += [ "profiler/frame_pointer_unwinder_unittest.cc" ]
   }
-  if (is_chromeos && current_cpu == "x64") {
+  if (is_chromeos && (current_cpu == "x64" || current_cpu == "arm64")) {
     sources += [ "profiler/frame_pointer_unwinder_unittest.cc" ]
     deps += [ ":base_profiler_test_support_library" ]
   }
