@@ -42,7 +42,6 @@ chromevox_es6_modules = [
   "../common/browser_util.js",
   "../common/cursors/cursor.js",
   "../common/cursors/range.js",
-  "../common/cursors/recovery_strategy.js",
   "../common/key_code.js",
   "../common/local_storage.js",
   "../common/rect_util.js",
