@@ -214,6 +214,9 @@ class PrivacySandboxAttestations {
   // The attestations file from the component updater should always carry a
   // valid version. If this is a `nullopt`, this implies the attestations list
   // has not been loaded yet.
+  // The attestations file version uses a format of YYYY.MM.DD.VV. The last two
+  // digits "VV" is used for multiple versions released in the same day. It has
+  // a range from 0 to 99. It is usually 0.
   base::Version file_version_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // A data structure for storing and checking Privacy Sandbox attestations,
