@@ -10,6 +10,7 @@ import {GalleryButton} from '../lit/components/gallery-button.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {ToteMetricFormat} from '../mojo/type.js';
 import {
+  Awaitable,
   ErrorLevel,
   ErrorType,
   Metadata,
@@ -24,7 +25,6 @@ import {
   DirectoryAccessEntry,
   FileAccessEntry,
 } from './file_system_access_entry.js';
-import {TimeLapseSaver, VideoSaver} from './video_saver.js';
 
 /**
  * Handles captured result photos and video.
@@ -51,20 +51,11 @@ export interface ResultSaver {
   saveGif(blob: Blob, name: string): Promise<void>;
 
   /**
-   * Returns a video saver to save captured result video.
-   *
-   * @param videoRotation Clock-wise rotation in degrees to set in the
-   *     video metadata so that the saved video can be displayed in upright
-   *     orientation.
-   */
-  startSaveVideo(videoRotation: number): Promise<VideoSaver>;
-
-  /**
    * Saves captured video result.
    *
-   * @param video Contains the video result to be saved.
+   * @param file Contains the video file to be saved.
    */
-  finishSaveVideo(video: TimeLapseSaver|VideoSaver): Promise<void>;
+  saveVideo(video: FileAccessEntry): Awaitable<void>;
 }
 
 /**
@@ -213,14 +204,7 @@ export class DefaultResultSaver implements ResultSaver {
     await this.updateCover(file);
   }
 
-  async startSaveVideo(videoRotation: number): Promise<VideoSaver> {
-    return VideoSaver.create(videoRotation);
-  }
-
-  async finishSaveVideo(video: TimeLapseSaver|VideoSaver): Promise<void> {
-    const file = await video.endWrite();
-    assert(file !== null);
-
+  async saveVideo(file: FileAccessEntry): Promise<void> {
     const videoName = (new Filenamer()).newVideoName(VideoType.MP4);
     assert(this.directory !== null);
     await file.moveTo(this.directory, videoName);
