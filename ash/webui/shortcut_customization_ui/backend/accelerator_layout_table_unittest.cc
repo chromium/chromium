@@ -83,10 +83,13 @@ class AcceleratorLayoutMetadataTest : public testing::Test {
   ~AcceleratorLayoutMetadataTest() override = default;
 
   void SetUp() override {
-    for (const auto& layout : ash::kAcceleratorLayouts) {
-      if (layout.source == mojom::AcceleratorSource::kAsh) {
+    for (const auto& layout_id : ash::kAcceleratorLayouts) {
+      const std::optional<AcceleratorLayoutDetails> layout =
+          GetAcceleratorLayout(layout_id);
+      ASSERT_TRUE(layout.has_value());
+      if (layout->source == mojom::AcceleratorSource::kAsh) {
         ash_accelerator_with_layouts_.insert(
-            static_cast<ash::AcceleratorAction>(layout.action_id));
+            static_cast<ash::AcceleratorAction>(layout->action_id));
       }
     }
 
