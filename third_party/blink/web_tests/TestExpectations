@@ -382,7 +382,6 @@ crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-le
 crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=normal&right-white-space=pre-wrap [ Failure ]
 crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=nowrap&right-white-space=normal [ Failure ]
 crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=nowrap&right-white-space=pre [ Failure ]
-crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=nowrap&right-white-space=pre-line [ Failure ]
 crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=nowrap&right-white-space=pre-wrap [ Failure ]
 crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=pre&right-white-space=normal [ Failure ]
 crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=pre&right-white-space=nowrap [ Failure ]
@@ -4222,8 +4221,6 @@ crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/t
 # reftests that only pass when the new direction code is enabled.
 crbug.com/576815 virtual/dir-pseudo-disabled/external/wpt/html/dom/elements/global-attributes/dir_auto-N-EN.html [ Failure ]
 
-# SwANGLE issues
-crbug.com/1204234 css3/blending/background-blend-mode-single-accelerated-element.html [ Failure ]
 
 # "in-multicol-child.html" is laid out in legacy layout due by "multicol" but
 # reference is laid out by LayoutNG.
@@ -5541,7 +5538,7 @@ crbug.com/1406027 [ Win ] virtual/media-foundation-for-clear-dcomp/media/control
 crbug.com/1289607 [ Linux ] external/wpt/cookie-store/cookieStore_subscribe_arguments.https.any.html [ Failure ]
 crbug.com/1408294 [ Debug Linux ] virtual/gpu/external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html [ Failure ]
 crbug.com/1229708 fast/events/pointerevents/pointer-event-in-slop-region.html [ Failure Pass ]
-crbug.com/1406896 [ Linux ] http/tests/inspector-protocol/cpu-profiler/record-cpu-profile-with-cpu-throttling.js [ Crash ]
+crbug.com/1406896 [ Debug Linux ] http/tests/inspector-protocol/cpu-profiler/record-cpu-profile-with-cpu-throttling.js [ Crash ]
 crbug.com/1370749 [ Debug Linux ] virtual/threaded-no-composited-antialiasing/animations/add-keyframes-recalc.html [ Failure ]
 crbug.com/1422340 [ Win ] virtual/media-foundation-for-clear-dcomp/media/video-move-to-document-pip.html [ Failure ]
 crbug.com/1434123 media/video-source-type.html [ Failure Pass ]
@@ -6618,8 +6615,6 @@ crbug.com/1459188 [ Linux ] inspector-protocol/input/dispatchMouseEvent-dragging
 
 # Re-enable after new baselines are generated
 crbug.com/1456636 [ Linux ] virtual/view-transition/view-transition/parent-transition-cancels-child.html [ Failure ]  # Reftest image failure
-crbug.com/1456636 [ Linux ] virtual/view-transition-wide-gamut/view-transition/parent-transition-cancels-child.html [ Failure ]  # Reftest image failure
-crbug.com/1456636 [ Linux ] virtual/view-transition-mpa-serialization/view-transition/parent-transition-cancels-child.html [ Failure ]  # Reftest image failure
 
 crbug.com/1367789 [ Win10.20h2 ] external/wpt/orientation-event/motion/page-visibility.https.html [ Timeout ]
 

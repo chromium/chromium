@@ -120,7 +120,8 @@ crbug.com/24182 [ Debug Mac13-arm64 ] fast/events/tabindex-focus-blur-all.html [
 crbug.com/24182 [ Linux ] fast/events/tabindex-focus-blur-all.html [ Slow ]
 crbug.com/24182 [ Mac11 Release ] fast/events/tabindex-focus-blur-all.html [ Slow ]
 crbug.com/24182 [ Mac12 ] fast/events/tabindex-focus-blur-all.html [ Slow ]
-crbug.com/24182 [ Release Win ] fast/events/tabindex-focus-blur-all.html [ Slow ]
+crbug.com/24182 [ Release Win10.20h2 ] fast/events/tabindex-focus-blur-all.html [ Slow ]
+crbug.com/24182 [ Release Win11 ] fast/events/tabindex-focus-blur-all.html [ Slow ]
 crbug.com/451577 [ Debug Linux ] fast/dom/gc-treescope.html [ Slow ]
 crbug.com/451577 [ Debug Linux ] fast/frames/calculate-round.html [ Slow ]
 
