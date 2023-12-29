@@ -142,7 +142,7 @@ bool PhoneField::LikelyAugmentedPhoneCountryCode(
   AutofillField* field = scanner->Cursor();
 
   // Return false if the field is not a selection box.
-  if (!MatchesFormControlType(FormControlTypeToString(field->form_control_type),
+  if (!MatchesFormControlType(field->form_control_type,
                               {MatchFieldType::kSelect})) {
     return false;
   }

@@ -354,9 +354,8 @@ bool FormField::FieldMatchesMatchPatternRef(
     const char* regex_name) {
   for (MatchPatternRef pattern_ref : patterns) {
     MatchingPattern pattern = *pattern_ref;
-    if (!MatchesFormControlType(
-            FormControlTypeToString(field.form_control_type),
-            pattern.match_field_input_types)) {
+    if (!MatchesFormControlType(field.form_control_type,
+                                pattern.match_field_input_types)) {
       continue;
     }
 
@@ -414,7 +413,7 @@ bool FormField::ParseFieldSpecificsWithLegacyPattern(
 
   const AutofillField* field = scanner->Cursor();
 
-  if (!MatchesFormControlType(FormControlTypeToString(field->form_control_type),
+  if (!MatchesFormControlType(field->form_control_type,
                               match_type.field_types)) {
     return false;
   }
@@ -439,9 +438,8 @@ bool FormField::ParseFieldSpecificsWithNewPatterns(
   for (MatchPatternRef pattern_ref : patterns) {
     MatchingPattern pattern =
         projection ? (*projection)(*pattern_ref) : *pattern_ref;
-    if (!MatchesFormControlType(
-            FormControlTypeToString(field->form_control_type),
-            pattern.match_field_input_types)) {
+    if (!MatchesFormControlType(field->form_control_type,
+                                pattern.match_field_input_types)) {
       continue;
     }
 
@@ -684,35 +682,35 @@ void FormField::ParseFormFieldsPass(
 }
 
 // static
-bool FormField::MatchesFormControlType(std::string_view type,
+bool FormField::MatchesFormControlType(FormControlType type,
                                        DenseSet<MatchFieldType> match_type) {
-  if (match_type.contains(MatchFieldType::kText) && type == "text")
-    return true;
-
-  if (match_type.contains(MatchFieldType::kEmail) && type == "email")
-    return true;
-
-  if (match_type.contains(MatchFieldType::kTelephone) && type == "tel")
-    return true;
-
-  if (match_type.contains(MatchFieldType::kSelect) &&
-      (type == "select-one" || type == "selectlist")) {
-    return true;
+  switch (type) {
+    case FormControlType::kInputEmail:
+      return match_type.contains(MatchFieldType::kEmail);
+    case FormControlType::kInputNumber:
+      return match_type.contains(MatchFieldType::kNumber);
+    case FormControlType::kInputPassword:
+      return match_type.contains(MatchFieldType::kPassword);
+    case FormControlType::kInputSearch:
+      return match_type.contains(MatchFieldType::kSearch);
+    case FormControlType::kInputTelephone:
+      return match_type.contains(MatchFieldType::kTelephone);
+    case FormControlType::kInputText:
+      return match_type.contains(MatchFieldType::kText);
+    case FormControlType::kSelectOne:
+    case FormControlType::kSelectList:
+      return match_type.contains(MatchFieldType::kSelect);
+    case FormControlType::kTextArea:
+      return match_type.contains(MatchFieldType::kTextArea);
+    case FormControlType::kContentEditable:
+    case FormControlType::kInputCheckbox:
+    case FormControlType::kInputMonth:
+    case FormControlType::kInputRadio:
+    case FormControlType::kInputUrl:
+    case FormControlType::kSelectMultiple:
+      return false;
   }
-
-  if (match_type.contains(MatchFieldType::kTextArea) && type == "textarea")
-    return true;
-
-  if (match_type.contains(MatchFieldType::kPassword) && type == "password")
-    return true;
-
-  if (match_type.contains(MatchFieldType::kNumber) && type == "number")
-    return true;
-
-  if (match_type.contains(MatchFieldType::kSearch) && type == "search")
-    return true;
-
-  return false;
+  NOTREACHED_NORETURN();
 }
 
 // static

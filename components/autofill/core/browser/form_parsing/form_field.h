@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/language_code.h"
 
 namespace autofill {
@@ -284,8 +285,8 @@ class FormField {
                                 float score,
                                 FieldCandidatesMap& field_candidates);
 
-  // Returns true iff |type| matches |match_type|.
-  static bool MatchesFormControlType(std::string_view type,
+  // Returns true iff `type` matches `match_type`.
+  static bool MatchesFormControlType(FormControlType type,
                                      DenseSet<MatchFieldType> match_type);
 
  protected:

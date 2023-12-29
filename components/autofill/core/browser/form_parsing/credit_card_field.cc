@@ -282,7 +282,7 @@ bool CreditCardField::LikelyCardMonthSelectField(AutofillScanner* scanner) {
 
   AutofillField* field = scanner->Cursor();
   if (!MatchesFormControlType(
-          FormControlTypeToString(field->form_control_type),
+          field->form_control_type,
           {MatchFieldType::kSelect, MatchFieldType::kSearch})) {
     return false;
   }
@@ -314,7 +314,7 @@ bool CreditCardField::LikelyCardYearSelectField(ParsingContext* context,
 
   AutofillField* field = scanner->Cursor();
   if (!MatchesFormControlType(
-          FormControlTypeToString(field->form_control_type),
+          field->form_control_type,
           {MatchFieldType::kSelect, MatchFieldType::kSearch})) {
     return false;
   }
@@ -392,7 +392,7 @@ bool CreditCardField::LikelyCardTypeSelectField(AutofillScanner* scanner) {
   AutofillField* field = scanner->Cursor();
 
   if (!MatchesFormControlType(
-          FormControlTypeToString(field->form_control_type),
+          field->form_control_type,
           {MatchFieldType::kSelect, MatchFieldType::kSearch})) {
     return false;
   }
