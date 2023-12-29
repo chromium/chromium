@@ -2074,8 +2074,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateThresholdOneOfRoot) {
 }
 
 TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateThresholdFilterOnRoot) {
-  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled() ||
-      RuntimeEnabledFeatures::IntersectionObserverIgnoreFiltersEnabled()) {
+  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
     return;
   }
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -2095,7 +2094,9 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateThresholdFilterOnRoot) {
   LocalFrameView* frame_view = GetDocument().View();
 
   TestIntersectionObserverDelegate* observer_delegate =
-      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(
+          GetDocument(),
+          LocalFrameUkmAggregator::kDisplayLockIntersectionObserver);
   IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
   observer_init->setRoot(MakeGarbageCollected<V8UnionDocumentOrElement>(root));
   DummyExceptionStateForTesting exception_state;
@@ -2119,8 +2120,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateThresholdFilterOnRoot) {
 
 TEST_P(IntersectionObserverTest,
        MinScrollDeltaToUpdateThresholdFilterOnTarget) {
-  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled() ||
-      RuntimeEnabledFeatures::IntersectionObserverIgnoreFiltersEnabled()) {
+  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
     return;
   }
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -2139,33 +2139,47 @@ TEST_P(IntersectionObserverTest,
   Element* target = GetDocument().getElementById(AtomicString("target"));
   LocalFrameView* frame_view = GetDocument().View();
 
-  TestIntersectionObserverDelegate* observer_delegate =
+  TestIntersectionObserverDelegate* observer_delegate_js =
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+  TestIntersectionObserverDelegate* observer_delegate_display_lock =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(
+          GetDocument(),
+          LocalFrameUkmAggregator::kDisplayLockIntersectionObserver);
   IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
   observer_init->setRoot(MakeGarbageCollected<V8UnionDocumentOrElement>(root));
   DummyExceptionStateForTesting exception_state;
-  IntersectionObserver* observer = IntersectionObserver::Create(
-      observer_init, *observer_delegate, exception_state);
+  IntersectionObserver* observer_js = IntersectionObserver::Create(
+      observer_init, *observer_delegate_js, exception_state);
+  IntersectionObserver* observer_display_lock = IntersectionObserver::Create(
+      observer_init, *observer_delegate_display_lock, exception_state);
   ASSERT_FALSE(exception_state.HadException());
-  observer->observe(target, exception_state);
+  observer_js->observe(target, exception_state);
   ASSERT_FALSE(exception_state.HadException());
-  const IntersectionObservation* observation =
-      target->IntersectionObserverData()->GetObservationFor(*observer);
-  EXPECT_EQ(gfx::Vector2dF(), observation->MinScrollDeltaToUpdate());
+  observer_display_lock->observe(target, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  const IntersectionObservation* observation_js =
+      target->IntersectionObserverData()->GetObservationFor(*observer_js);
+  EXPECT_EQ(gfx::Vector2dF(), observation_js->MinScrollDeltaToUpdate());
+  const IntersectionObservation* observation_display_lock =
+      target->IntersectionObserverData()->GetObservationFor(
+          *observer_display_lock);
+  EXPECT_EQ(gfx::Vector2dF(),
+            observation_display_lock->MinScrollDeltaToUpdate());
   EXPECT_EQ(LocalFrameView::kRequired,
             frame_view->GetIntersectionObservationStateForTesting());
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
-  EXPECT_EQ(gfx::Vector2dF(), observation->MinScrollDeltaToUpdate());
+  EXPECT_EQ(gfx::Vector2dF(100, 100), observation_js->MinScrollDeltaToUpdate());
+  EXPECT_EQ(gfx::Vector2dF(),
+            observation_display_lock->MinScrollDeltaToUpdate());
   EXPECT_EQ(LocalFrameView::kNotNeeded,
             frame_view->GetIntersectionObservationStateForTesting());
 }
 
 TEST_P(IntersectionObserverTest,
        MinScrollDeltaToUpdateThresholdFilterOnIntermediateContainer) {
-  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled() ||
-      RuntimeEnabledFeatures::IntersectionObserverIgnoreFiltersEnabled()) {
+  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
     return;
   }
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -2186,7 +2200,9 @@ TEST_P(IntersectionObserverTest,
   LocalFrameView* frame_view = GetDocument().View();
 
   TestIntersectionObserverDelegate* observer_delegate =
-      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(
+          GetDocument(),
+          LocalFrameUkmAggregator::kDisplayLockIntersectionObserver);
   IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
   observer_init->setRoot(MakeGarbageCollected<V8UnionDocumentOrElement>(root));
   DummyExceptionStateForTesting exception_state;
@@ -2210,8 +2226,7 @@ TEST_P(IntersectionObserverTest,
 
 TEST_P(IntersectionObserverTest,
        MinScrollDeltaToUpdateThresholdFilterOnIntermediateNonContainer) {
-  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled() ||
-      RuntimeEnabledFeatures::IntersectionObserverIgnoreFiltersEnabled()) {
+  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
     return;
   }
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -2234,7 +2249,9 @@ TEST_P(IntersectionObserverTest,
   LocalFrameView* frame_view = GetDocument().View();
 
   TestIntersectionObserverDelegate* observer_delegate =
-      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(
+          GetDocument(),
+          LocalFrameUkmAggregator::kDisplayLockIntersectionObserver);
   IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
   observer_init->setRoot(MakeGarbageCollected<V8UnionDocumentOrElement>(root));
   DummyExceptionStateForTesting exception_state;

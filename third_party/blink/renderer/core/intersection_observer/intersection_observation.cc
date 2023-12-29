@@ -251,6 +251,11 @@ unsigned IntersectionObservation::GetIntersectionGeometryFlags(
     geometry_flags |= IntersectionGeometry::kShouldTrackFractionOfRoot;
   if (Observer()->UseOverflowClipEdge())
     geometry_flags |= IntersectionGeometry::kUseOverflowClipEdge;
+  if (Observer()->IsInternal()) {
+    // TODO(wangxianzhu): Let internal clients decide whether to respect
+    // filters.
+    geometry_flags |= IntersectionGeometry::kRespectFilters;
+  }
   return geometry_flags;
 }
 
