@@ -691,34 +691,7 @@ void FormField::ParseFormFieldsPass(
 // static
 bool FormField::MatchesFormControlType(FormControlType type,
                                        DenseSet<FormControlType> match_type) {
-  switch (type) {
-    case FormControlType::kInputEmail:
-      return match_type.contains(FormControlType::kInputEmail);
-    case FormControlType::kInputNumber:
-      return match_type.contains(FormControlType::kInputNumber);
-    case FormControlType::kInputPassword:
-      return match_type.contains(FormControlType::kInputPassword);
-    case FormControlType::kInputSearch:
-      return match_type.contains(FormControlType::kInputSearch);
-    case FormControlType::kInputTelephone:
-      return match_type.contains(FormControlType::kInputTelephone);
-    case FormControlType::kInputText:
-      return match_type.contains(FormControlType::kInputText);
-    case FormControlType::kSelectOne:
-      return match_type.contains(FormControlType::kSelectOne);
-    case FormControlType::kSelectList:
-      return match_type.contains(FormControlType::kSelectList);
-    case FormControlType::kTextArea:
-      return match_type.contains(FormControlType::kTextArea);
-    case FormControlType::kContentEditable:
-    case FormControlType::kInputCheckbox:
-    case FormControlType::kInputMonth:
-    case FormControlType::kInputRadio:
-    case FormControlType::kInputUrl:
-    case FormControlType::kSelectMultiple:
-      return false;
-  }
-  NOTREACHED_NORETURN();
+  return match_type.contains(type);
 }
 
 // static
