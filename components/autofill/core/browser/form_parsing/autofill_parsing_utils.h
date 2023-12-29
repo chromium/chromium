@@ -19,32 +19,6 @@ namespace autofill {
 // the kLabel is "Cellphone number" and the kName is "mobile".
 enum class MatchAttribute { kLabel, kName, kMaxValue = kName };
 
-// The types of fields which may be matched.
-//
-// For example, in
-// <label for="mobile">Cellphone number:</label> <input type="tel" id="mobile">
-// the MatchFieldType is kTelephone.
-// The types of fields which may be matched.
-//
-// For example, in
-// <label for="mobile">Cellphone number:</label> <input type="tel" id="mobile">
-// the MatchFieldType is kTelephone.
-class MatchFieldType {
- public:
-  static constexpr FormControlType kText = FormControlType::kInputText;
-  static constexpr FormControlType kEmail = FormControlType::kInputEmail;
-  static constexpr FormControlType kTelephone =
-      FormControlType::kInputTelephone;
-  static constexpr FormControlType kSelectOne = FormControlType::kSelectOne;
-  static constexpr FormControlType kSelectList = FormControlType::kSelectList;
-  static constexpr FormControlType kTextArea = FormControlType::kTextArea;
-  static constexpr FormControlType kPassword = FormControlType::kInputPassword;
-  static constexpr FormControlType kNumber = FormControlType::kInputNumber;
-  static constexpr FormControlType kSearch = FormControlType::kInputSearch;
-
-  MatchFieldType() = delete;
-};
-
 // Contains all MatchAttribute constants.
 constexpr DenseSet<MatchAttribute> kAllMatchAttributes{MatchAttribute::kLabel,
                                                        MatchAttribute::kName};
@@ -52,11 +26,11 @@ constexpr DenseSet<MatchAttribute> kAllMatchAttributes{MatchAttribute::kLabel,
 // Contains all FormControlType constants used for the heuristics.
 // TODO(crbug.com/1514693): Remove.
 constexpr DenseSet<FormControlType> kAllMatchFieldTypes{
-    MatchFieldType::kText,       MatchFieldType::kEmail,
-    MatchFieldType::kTelephone,  MatchFieldType::kSelectOne,
-    MatchFieldType::kSelectList, MatchFieldType::kTextArea,
-    MatchFieldType::kPassword,   MatchFieldType::kNumber,
-    MatchFieldType::kSearch};
+    FormControlType::kInputText,      FormControlType::kInputEmail,
+    FormControlType::kInputTelephone, FormControlType::kSelectOne,
+    FormControlType::kSelectList,     FormControlType::kTextArea,
+    FormControlType::kInputPassword,  FormControlType::kInputNumber,
+    FormControlType::kInputSearch};
 
 // A pair of sets of MatchAttributes and MatchFieldTypes.
 struct MatchParams {
@@ -84,7 +58,7 @@ inline constexpr MatchParams& MatchParams::operator=(MatchParams&&) = default;
 template <FormControlType... additional_match_field_types>
 constexpr MatchParams kDefaultMatchParamsWith{
     kAllMatchAttributes,
-    {MatchFieldType::kText, additional_match_field_types...}};
+    {FormControlType::kInputText, additional_match_field_types...}};
 
 constexpr MatchParams kDefaultMatchParams = kDefaultMatchParamsWith<>;
 

@@ -21,8 +21,8 @@ std::unique_ptr<FormField> MerchantPromoCodeField::Parse(
                        context.pattern_source);
 
   if (ParseFieldSpecifics(context, scanner, kMerchantPromoCodeRe,
-                          kDefaultMatchParamsWith<MatchFieldType::kNumber,
-                                                  MatchFieldType::kTextArea>,
+                          kDefaultMatchParamsWith<FormControlType::kInputNumber,
+                                                  FormControlType::kTextArea>,
                           merchant_promo_code_patterns, &field,
                           "kMerchantPromoCodeRe")) {
     return std::make_unique<MerchantPromoCodeField>(field);

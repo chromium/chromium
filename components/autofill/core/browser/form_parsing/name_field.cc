@@ -242,11 +242,12 @@ FirstTwoLastNamesField::ParseComponentNames(ParsingContext& context,
     }
 
     // Skip over any unrelated fields, e.g. "username" or "nickname".
-    if (ParseFieldSpecifics(context, scanner, kNameIgnoredRe,
-                            kDefaultMatchParamsWith<MatchFieldType::kSelectOne,
-                                                    MatchFieldType::kSelectList,
-                                                    MatchFieldType::kSearch>,
-                            name_ignored_patterns, nullptr, "kNameIgnoredRe")) {
+    if (ParseFieldSpecifics(
+            context, scanner, kNameIgnoredRe,
+            kDefaultMatchParamsWith<FormControlType::kSelectOne,
+                                    FormControlType::kSelectList,
+                                    FormControlType::kInputSearch>,
+            name_ignored_patterns, nullptr, "kNameIgnoredRe")) {
       continue;
     }
 
@@ -442,11 +443,12 @@ FirstLastNameField::ParseSpecificComponentSequence(ParsingContext& context,
     }
 
     // Skip over any unrelated name fields, e.g. "username" or "nickname".
-    if (ParseFieldSpecifics(context, scanner, kNameIgnoredRe,
-                            kDefaultMatchParamsWith<MatchFieldType::kSelectOne,
-                                                    MatchFieldType::kSelectList,
-                                                    MatchFieldType::kSearch>,
-                            name_ignored_patterns, nullptr, "kNameIgnoredRe")) {
+    if (ParseFieldSpecifics(
+            context, scanner, kNameIgnoredRe,
+            kDefaultMatchParamsWith<FormControlType::kSelectOne,
+                                    FormControlType::kSelectList,
+                                    FormControlType::kInputSearch>,
+            name_ignored_patterns, nullptr, "kNameIgnoredRe")) {
       continue;
     }
 

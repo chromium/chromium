@@ -151,9 +151,9 @@ std::unique_ptr<FormField> CreditCardField::Parse(ParsingContext& context,
     // Note: Some sites use type="tel" or type="number" for numerical inputs.
     // They also sometimes use type="password" for sensitive types.
     const auto kMatchNumTelAndPwd =
-        kDefaultMatchParamsWith<MatchFieldType::kNumber,
-                                MatchFieldType::kTelephone,
-                                MatchFieldType::kPassword>;
+        kDefaultMatchParamsWith<FormControlType::kInputNumber,
+                                FormControlType::kInputTelephone,
+                                FormControlType::kInputPassword>;
 
     if (!credit_card_field->verification_ &&
         ParseFieldSpecifics(context, scanner, kCardCvcRe, kMatchNumTelAndPwd,
@@ -283,8 +283,8 @@ bool CreditCardField::LikelyCardMonthSelectField(AutofillScanner* scanner) {
   AutofillField* field = scanner->Cursor();
   if (!MatchesFormControlType(
           field->form_control_type,
-          {MatchFieldType::kSelectOne, MatchFieldType::kSelectList,
-           MatchFieldType::kSearch})) {
+          {FormControlType::kSelectOne, FormControlType::kSelectList,
+           FormControlType::kInputSearch})) {
     return false;
   }
 
@@ -316,8 +316,8 @@ bool CreditCardField::LikelyCardYearSelectField(ParsingContext* context,
   AutofillField* field = scanner->Cursor();
   if (!MatchesFormControlType(
           field->form_control_type,
-          {MatchFieldType::kSelectOne, MatchFieldType::kSelectList,
-           MatchFieldType::kSearch})) {
+          {FormControlType::kSelectOne, FormControlType::kSelectList,
+           FormControlType::kInputSearch})) {
     return false;
   }
 
@@ -335,8 +335,8 @@ bool CreditCardField::LikelyCardYearSelectField(ParsingContext* context,
       GetMatchPatterns("DAY", *context);
   if (FormField::ParseFieldSpecifics(
           *context, scanner, kDayRe,
-          kDefaultMatchParamsWith<MatchFieldType::kSelectOne,
-                                  MatchFieldType::kSelectList>,
+          kDefaultMatchParamsWith<FormControlType::kSelectOne,
+                                  FormControlType::kSelectList>,
           day_patterns, nullptr, "kDayRe")) {
     return false;
   }
@@ -396,8 +396,8 @@ bool CreditCardField::LikelyCardTypeSelectField(AutofillScanner* scanner) {
 
   if (!MatchesFormControlType(
           field->form_control_type,
-          {MatchFieldType::kSelectOne, MatchFieldType::kSelectList,
-           MatchFieldType::kSearch})) {
+          {FormControlType::kSelectOne, FormControlType::kSelectList,
+           FormControlType::kInputSearch})) {
     return false;
   }
 
@@ -422,8 +422,8 @@ bool CreditCardField::IsGiftCardField(ParsingContext& context,
   // CREDIT_CARD_NUMBER matching. Otherwise, a gift card field may not match the
   // GIFT_CARD pattern but erroneously do match the CREDIT_CARD_NUMBER pattern.
   const auto kMatchFieldType = kDefaultMatchParamsWith<
-      MatchFieldType::kNumber, MatchFieldType::kTelephone,
-      MatchFieldType::kSearch, MatchFieldType::kPassword>;
+      FormControlType::kInputNumber, FormControlType::kInputTelephone,
+      FormControlType::kInputSearch, FormControlType::kInputPassword>;
   size_t saved_cursor = scanner->SaveCursor();
 
   base::span<const MatchPatternRef> debit_cards_patterns =
@@ -551,9 +551,9 @@ bool CreditCardField::ParseExpirationDate(ParsingContext& context,
   // If that fails, do a general regex search.
   size_t month_year_saved_cursor = scanner->SaveCursor();
   const auto kMatchCCType = kDefaultMatchParamsWith<
-      MatchFieldType::kNumber, MatchFieldType::kTelephone,
-      MatchFieldType::kSelectOne, MatchFieldType::kSelectList,
-      MatchFieldType::kSearch>;
+      FormControlType::kInputNumber, FormControlType::kInputTelephone,
+      FormControlType::kSelectOne, FormControlType::kSelectList,
+      FormControlType::kInputSearch>;
 
   base::span<const MatchPatternRef> cc_exp_month_patterns =
       GetMatchPatterns(CREDIT_CARD_EXP_MONTH, context);

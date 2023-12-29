@@ -81,47 +81,53 @@ MatchingPattern WithFieldType(MatchingPattern p, FormControlType field_type) {
 // Some sites use type="tel" for zip fields (to get a numerical input).
 // http://crbug.com/426958
 constexpr MatchParams kZipCodeMatchType =
-    kDefaultMatchParamsWith<MatchFieldType::kTelephone,
-                            MatchFieldType::kNumber>;
+    kDefaultMatchParamsWith<FormControlType::kInputTelephone,
+                            FormControlType::kInputNumber>;
 
 constexpr MatchParams kDependentLocalityMatchType =
-    kDefaultMatchParamsWith<MatchFieldType::kSelectOne,
-                            MatchFieldType::kSelectList,
-                            MatchFieldType::kSearch,
-                            MatchFieldType::kTextArea>;
+    kDefaultMatchParamsWith<FormControlType::kSelectOne,
+                            FormControlType::kSelectList,
+                            FormControlType::kInputSearch,
+                            FormControlType::kTextArea>;
 
 constexpr MatchParams kStreetLocationMatchType =
-    kDefaultMatchParamsWith<MatchFieldType::kTextArea, MatchFieldType::kSearch>;
+    kDefaultMatchParamsWith<FormControlType::kTextArea,
+                            FormControlType::kInputSearch>;
 
 // Select fields are allowed here.  This occurs on top-100 site rediff.com.
 constexpr MatchParams kCityMatchType =
-    kDefaultMatchParamsWith<MatchFieldType::kSelectOne,
-                            MatchFieldType::kSelectList,
-                            MatchFieldType::kSearch>;
+    kDefaultMatchParamsWith<FormControlType::kSelectOne,
+                            FormControlType::kSelectList,
+                            FormControlType::kInputSearch>;
 
 constexpr MatchParams kStateMatchType =
-    kDefaultMatchParamsWith<MatchFieldType::kSelectOne,
-                            MatchFieldType::kSelectList,
-                            MatchFieldType::kSearch>;
+    kDefaultMatchParamsWith<FormControlType::kSelectOne,
+                            FormControlType::kSelectList,
+                            FormControlType::kInputSearch>;
 
 constexpr MatchParams kLandmarkMatchType =
-    kDefaultMatchParamsWith<MatchFieldType::kTextArea, MatchFieldType::kSearch>;
+    kDefaultMatchParamsWith<FormControlType::kTextArea,
+                            FormControlType::kInputSearch>;
 
 constexpr MatchParams kBetweenStreetsOrLandmarkMatchType =
-    kDefaultMatchParamsWith<MatchFieldType::kTextArea, MatchFieldType::kSearch>;
+    kDefaultMatchParamsWith<FormControlType::kTextArea,
+                            FormControlType::kInputSearch>;
 
 constexpr MatchParams kBetweenStreetsMatchType =
-    kDefaultMatchParamsWith<MatchFieldType::kTextArea, MatchFieldType::kSearch>;
+    kDefaultMatchParamsWith<FormControlType::kTextArea,
+                            FormControlType::kInputSearch>;
 
 constexpr MatchParams kAdminLevel2MatchType =
-    kDefaultMatchParamsWith<MatchFieldType::kTextArea,
-                            MatchFieldType::kSearch,
-                            MatchFieldType::kSelectOne,
-                            MatchFieldType::kSelectList>;
+    kDefaultMatchParamsWith<FormControlType::kTextArea,
+                            FormControlType::kInputSearch,
+                            FormControlType::kSelectOne,
+                            FormControlType::kSelectList>;
 constexpr MatchParams kOverflowMatchType =
-    kDefaultMatchParamsWith<MatchFieldType::kTextArea, MatchFieldType::kSearch>;
+    kDefaultMatchParamsWith<FormControlType::kTextArea,
+                            FormControlType::kInputSearch>;
 constexpr MatchParams kOverflowAndLandmarkMatchType =
-    kDefaultMatchParamsWith<MatchFieldType::kTextArea, MatchFieldType::kSearch>;
+    kDefaultMatchParamsWith<FormControlType::kTextArea,
+                            FormControlType::kInputSearch>;
 
 }  // namespace
 
@@ -167,10 +173,10 @@ std::unique_ptr<FormField> AddressField::Parse(ParsingContext& context,
       // Ignore email addresses.
     } else if (ParseFieldSpecifics(
                    context, scanner, kEmailRe,
-                   kDefaultMatchParamsWith<MatchFieldType::kTextArea>,
+                   kDefaultMatchParamsWith<FormControlType::kTextArea>,
                    email_patterns, nullptr, "kEmailRe",
                    [](const MatchingPattern& p) {
-                     return WithFieldType(p, MatchFieldType::kTextArea);
+                     return WithFieldType(p, FormControlType::kTextArea);
                    })) {
       continue;
     } else if (address_field->ParseAddress(context, scanner) ||
@@ -425,10 +431,10 @@ bool AddressField::ParseAddressFieldSequence(ParsingContext& context,
     // TODO(crbug.com/1474308) Factor out these ParseFieldSpecifics into
     // ParseStreetName and similar functions.
     if (!street_name_ && !street_location_ &&
-        ParseFieldSpecifics(context, scanner, kStreetNameRe,
-                            kDefaultMatchParamsWith<MatchFieldType::kSearch>,
-                            street_name_patterns, &street_name_,
-                            "kStreetNameRe")) {
+        ParseFieldSpecifics(
+            context, scanner, kStreetNameRe,
+            kDefaultMatchParamsWith<FormControlType::kInputSearch>,
+            street_name_patterns, &street_name_, "kStreetNameRe")) {
       continue;
     }
 
@@ -475,11 +481,11 @@ bool AddressField::ParseAddressFieldSequence(ParsingContext& context,
     }
 
     if (!house_number_ && !street_location_ &&
-        ParseFieldSpecifics(context, scanner, kHouseNumberRe,
-                            kDefaultMatchParamsWith<MatchFieldType::kNumber,
-                                                    MatchFieldType::kTelephone>,
-                            house_number_patterns, &house_number_,
-                            "kHouseNumberRe")) {
+        ParseFieldSpecifics(
+            context, scanner, kHouseNumberRe,
+            kDefaultMatchParamsWith<FormControlType::kInputNumber,
+                                    FormControlType::kInputTelephone>,
+            house_number_patterns, &house_number_, "kHouseNumberRe")) {
       continue;
     }
 
@@ -489,11 +495,12 @@ bool AddressField::ParseAddressFieldSequence(ParsingContext& context,
         !apartment_number_ &&
         i18n_model_definition::IsTypeEnabledForCountry(ADDRESS_HOME_APT_NUM,
                                                        country_code) &&
-        ParseFieldSpecifics(context, scanner, kApartmentNumberRe,
-                            kDefaultMatchParamsWith<MatchFieldType::kNumber,
-                                                    MatchFieldType::kTelephone>,
-                            apartment_number_patterns, &apartment_number_,
-                            "kApartmentNumberRe")) {
+        ParseFieldSpecifics(
+            context, scanner, kApartmentNumberRe,
+            kDefaultMatchParamsWith<FormControlType::kInputNumber,
+                                    FormControlType::kInputTelephone>,
+            apartment_number_patterns, &apartment_number_,
+            "kApartmentNumberRe")) {
       continue;
     }
 
@@ -608,30 +615,30 @@ bool AddressField::ParseAddressLines(ParsingContext& context,
   // Address line 1 is skipped if a |street_name_|, |house_number_| combination
   // is present.
   if (!(street_name_ && house_number_) &&
-      !ParseFieldSpecifics(context, scanner, pattern,
-                           kDefaultMatchParamsWith<MatchFieldType::kSearch>,
-                           address_line1_patterns, &address1_,
-                           "kAddressLine1Re") &&
+      !ParseFieldSpecifics(
+          context, scanner, pattern,
+          kDefaultMatchParamsWith<FormControlType::kInputSearch>,
+          address_line1_patterns, &address1_, "kAddressLine1Re") &&
       !ParseFieldSpecifics(
           context, scanner, label_pattern,
-          MatchParams({MatchAttribute::kLabel},
-                      {MatchFieldType::kSearch, MatchFieldType::kText}),
+          MatchParams({MatchAttribute::kLabel}, {FormControlType::kInputSearch,
+                                                 FormControlType::kInputText}),
           address_line1_patterns, &address1_, "kAddressLine1LabelRe") &&
-      !ParseFieldSpecifics(context, scanner, pattern,
-                           kDefaultMatchParamsWith<MatchFieldType::kSearch,
-                                                   MatchFieldType::kTextArea>,
-                           address_line1_patterns, &street_address_,
-                           "kAddressLine1Re",
-                           [](const MatchingPattern& p) {
-                             return WithFieldType(p, MatchFieldType::kTextArea);
-                           }) &&
+      !ParseFieldSpecifics(
+          context, scanner, pattern,
+          kDefaultMatchParamsWith<FormControlType::kInputSearch,
+                                  FormControlType::kTextArea>,
+          address_line1_patterns, &street_address_, "kAddressLine1Re",
+          [](const MatchingPattern& p) {
+            return WithFieldType(p, FormControlType::kTextArea);
+          }) &&
       !ParseFieldSpecifics(
           context, scanner, label_pattern,
-          MatchParams({MatchAttribute::kLabel},
-                      {MatchFieldType::kSearch, MatchFieldType::kTextArea}),
+          MatchParams({MatchAttribute::kLabel}, {FormControlType::kInputSearch,
+                                                 FormControlType::kTextArea}),
           address_line1_patterns, &street_address_, "kAddressLine1LabelRe",
           [](const MatchingPattern& p) {
-            return WithFieldType(p, MatchFieldType::kTextArea);
+            return WithFieldType(p, FormControlType::kTextArea);
           })) {
     return false;
   }
@@ -652,7 +659,7 @@ bool AddressField::ParseAddressLines(ParsingContext& context,
                   "kAddressLine2Re") &&
       !ParseFieldSpecifics(
           context, scanner, label_pattern,
-          MatchParams({MatchAttribute::kLabel}, {MatchFieldType::kText}),
+          MatchParams({MatchAttribute::kLabel}, {FormControlType::kInputText}),
           address_line2_patterns, &address2_, "kAddressLine2LabelRe")) {
     return true;
   }
@@ -667,7 +674,7 @@ bool AddressField::ParseAddressLines(ParsingContext& context,
                   &address3_, "kAddressLinesExtraRe") &&
       !ParseFieldSpecifics(
           context, scanner, label_pattern,
-          MatchParams({MatchAttribute::kLabel}, {MatchFieldType::kText}),
+          MatchParams({MatchAttribute::kLabel}, {FormControlType::kInputText}),
           address_line2_patterns, &address3_, "kAddressLine2LabelRe")) {
     return true;
   }
@@ -1057,9 +1064,9 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForCountry(
 
   ParseNameLabelResult country_result = ParseNameAndLabelSeparately(
       context, scanner, kCountryRe,
-      kDefaultMatchParamsWith<MatchFieldType::kSelectOne,
-                              MatchFieldType::kSelectList,
-                              MatchFieldType::kSearch>,
+      kDefaultMatchParamsWith<FormControlType::kSelectOne,
+                              FormControlType::kSelectList,
+                              FormControlType::kInputSearch>,
       country_patterns, &country_, "kCountryRe");
   if (country_result != RESULT_MATCH_NONE)
     return country_result;
@@ -1069,8 +1076,8 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForCountry(
   return ParseNameAndLabelSeparately(
       context, scanner, kCountryLocationRe,
       MatchParams({MatchAttribute::kLabel, MatchAttribute::kName},
-                  {MatchFieldType::kSelectOne, MatchFieldType::kSelectList,
-                   MatchFieldType::kSearch}),
+                  {FormControlType::kSelectOne, FormControlType::kSelectList,
+                   FormControlType::kInputSearch}),
       country_location_patterns, &country_, "kCountryLocationRe");
 }
 

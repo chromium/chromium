@@ -144,7 +144,7 @@ bool PhoneField::LikelyAugmentedPhoneCountryCode(
   // Return false if the field is not a selection box.
   if (!MatchesFormControlType(
           field->form_control_type,
-          {MatchFieldType::kSelectOne, MatchFieldType::kSelectList})) {
+          {FormControlType::kSelectOne, FormControlType::kSelectList})) {
     return false;
   }
 
@@ -449,13 +449,14 @@ bool PhoneField::ParsePhoneField(ParsingContext& context,
                                  const char* regex_name,
                                  const bool is_country_code_field,
                                  const std::string& json_field_type) {
-  MatchParams match_type = kDefaultMatchParamsWith<MatchFieldType::kTelephone,
-                                                   MatchFieldType::kNumber>;
+  MatchParams match_type =
+      kDefaultMatchParamsWith<FormControlType::kInputTelephone,
+                              FormControlType::kInputNumber>;
   // Include the selection boxes too for the matching of the phone country code.
   if (is_country_code_field) {
     match_type = kDefaultMatchParamsWith<
-        MatchFieldType::kTelephone, MatchFieldType::kNumber,
-        MatchFieldType::kSelectOne, MatchFieldType::kSelectList>;
+        FormControlType::kInputTelephone, FormControlType::kInputNumber,
+        FormControlType::kSelectOne, FormControlType::kSelectList>;
   }
 
   base::span<const MatchPatternRef> patterns = GetMatchPatterns(
