@@ -40,7 +40,8 @@ public class GpmCredManRequestDecoratorRobolectricTest {
 
     private CreateCredentialRequest.Builder mBuilder =
             Shadow.newInstanceOf(CreateCredentialRequest.Builder.class);
-    @Mock private CredManCreateCredentialRequestHelper mHelper;
+    @Mock private CredManCreateCredentialRequestHelper mCreateHelper;
+    @Mock private CredManGetCredentialRequestHelper mGetHelper;
 
     private GpmCredManRequestDecorator mDecorator = GpmCredManRequestDecorator.getInstance();
 
@@ -52,12 +53,12 @@ public class GpmCredManRequestDecoratorRobolectricTest {
     @Test
     @SmallTest
     public void testUpdateCreateCredentialRequestBundle() {
-        when(mHelper.getUserId()).thenReturn(USER_ID);
+        when(mCreateHelper.getUserId()).thenReturn(USER_ID);
         Bundle bundle = new Bundle();
 
-        mDecorator.updateCreateCredentialRequestBundle(bundle, mHelper);
+        mDecorator.updateCreateCredentialRequestBundle(bundle, mCreateHelper);
 
-        verify(mHelper).getUserId();
+        verify(mCreateHelper).getUserId();
         Bundle displayInfoBundle =
                 bundle.getBundle("androidx.credentials.BUNDLE_KEY_REQUEST_DISPLAY_INFO");
         assertThat(displayInfoBundle).isNotNull();
@@ -73,11 +74,81 @@ public class GpmCredManRequestDecoratorRobolectricTest {
     @Test
     @SmallTest
     public void testUpdateCreateCredentialRequestBuilder() {
-        when(mHelper.getOrigin()).thenReturn(ORIGIN);
+        when(mCreateHelper.getOrigin()).thenReturn(ORIGIN);
 
-        mDecorator.updateCreateCredentialRequestBuilder(mBuilder, mHelper);
+        mDecorator.updateCreateCredentialRequestBuilder(mBuilder, mCreateHelper);
 
         ShadowCreateCredentialRequest.ShadowBuilder shadowBuilder = Shadow.extract(mBuilder);
         assertThat(shadowBuilder.getOrigin()).isEqualTo(ORIGIN);
+    }
+
+    @Test
+    @SmallTest
+    public void
+            testUpdateGetCredentialRequestBundle_whenIgnoreGpmFalse_thenBundleContainsBranding() {
+        when(mGetHelper.getPlayServicesAvailable()).thenReturn(true);
+        when(mGetHelper.getPreferImmediatelyAvailable()).thenReturn(true);
+        when(mGetHelper.getIgnoreGpm()).thenReturn(false);
+        Bundle bundle = new Bundle();
+
+        mDecorator.updateGetCredentialRequestBundle(bundle, mGetHelper);
+
+        assertThat(
+                        bundle.containsKey(
+                                "androidx.credentials.BUNDLE_KEY_PREFER_IMMEDIATELY_AVAILABLE_CREDENTIALS"))
+                .isTrue();
+        assertThat(
+                        bundle.containsKey(
+                                "androidx.credentials.BUNDLE_KEY_PREFER_UI_BRANDING_COMPONENT_NAME"))
+                .isTrue();
+    }
+
+    @Test
+    @SmallTest
+    public void
+            testUpdateGetCredentialRequestBundle_whenIgnoreGpmTrue_thenBundleDoesNotContainBranding() {
+        when(mGetHelper.getPlayServicesAvailable()).thenReturn(true);
+        when(mGetHelper.getPreferImmediatelyAvailable()).thenReturn(true);
+        when(mGetHelper.getIgnoreGpm()).thenReturn(true);
+        Bundle bundle = new Bundle();
+
+        mDecorator.updateGetCredentialRequestBundle(bundle, mGetHelper);
+
+        assertThat(
+                        bundle.containsKey(
+                                "androidx.credentials.BUNDLE_KEY_PREFER_UI_BRANDING_COMPONENT_NAME"))
+                .isFalse();
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdatePublicKeyCredentialOptionBundle() {
+        Bundle bundle = new Bundle();
+        when(mGetHelper.getRenderFrameHost()).thenReturn(null);
+        when(mGetHelper.getIgnoreGpm()).thenReturn(false);
+
+        mDecorator.updatePublicKeyCredentialOptionBundle(bundle, mGetHelper);
+
+        assertThat(bundle.containsKey("com.android.chrome.CHANNEL")).isTrue();
+        assertThat(bundle.containsKey("com.android.chrome.INCOGNITO")).isTrue();
+        assertThat(bundle.containsKey("com.android.chrome.GPM_IGNORE")).isTrue();
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdatePasswordCredentialOptionBundle() {
+        Bundle bundle = new Bundle();
+        when(mGetHelper.getRenderFrameHost()).thenReturn(null);
+        when(mGetHelper.getIgnoreGpm()).thenReturn(false);
+
+        mDecorator.updatePasswordCredentialOptionBundle(bundle, mGetHelper);
+
+        assertThat(bundle.containsKey("com.android.chrome.CHANNEL")).isTrue();
+        assertThat(bundle.containsKey("com.android.chrome.INCOGNITO")).isTrue();
+        assertThat(bundle.containsKey("com.android.chrome.PASSWORDS_ONLY_FOR_THE_CHANNEL"))
+                .isTrue();
+        assertThat(bundle.containsKey("com.android.chrome.PASSWORDS_WITH_NO_USERNAME_INCLUDED"))
+                .isTrue();
+        assertThat(bundle.containsKey("com.android.chrome.GPM_IGNORE")).isTrue();
     }
 }

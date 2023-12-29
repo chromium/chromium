@@ -4,15 +4,11 @@
 
 package org.chromium.components.webauthn.cred_man;
 
-import static org.chromium.components.webauthn.cred_man.GpmCredManRequestDecorator.getChannel;
-
-import android.content.ComponentName;
 import android.content.Context;
 import android.credentials.CreateCredentialException;
 import android.credentials.CreateCredentialRequest;
 import android.credentials.CreateCredentialResponse;
 import android.credentials.CredentialManager;
-import android.credentials.CredentialOption;
 import android.credentials.GetCredentialException;
 import android.credentials.GetCredentialRequest;
 import android.credentials.GetCredentialResponse;
@@ -45,14 +41,11 @@ import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManPre
 import org.chromium.content_public.browser.ClientDataJson;
 import org.chromium.content_public.browser.ClientDataRequestType;
 import org.chromium.content_public.browser.RenderFrameHost;
-import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.url.Origin;
 
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Set;
 
 public class CredManHelper {
     // These two values are formed differently because they come from the
@@ -61,23 +54,9 @@ public class CredManHelper {
     public static final String CRED_MAN_EXCEPTION_CREATE_CREDENTIAL_TYPE_INVALID_STATE_ERROR =
             "androidx.credentials.TYPE_CREATE_PUBLIC_KEY_CREDENTIAL_DOM_EXCEPTION/androidx.credentials.TYPE_INVALID_STATE_ERROR";
 
-    public static final String CRED_MAN_IS_AUTO_SELECT_ALLOWED =
-            "androidx.credentials.BUNDLE_KEY_IS_AUTO_SELECT_ALLOWED";
-
     protected static final String CRED_MAN_PREFIX = "androidx.credentials.";
     protected static final String TYPE_PASSKEY = CRED_MAN_PREFIX + "TYPE_PUBLIC_KEY_CREDENTIAL";
 
-    private static final String CHANNEL_KEY = "com.android.chrome.CHANNEL";
-    private static final String INCOGNITO_KEY = "com.android.chrome.INCOGNITO";
-    private static final ComponentName GPM_COMPONENT_NAME =
-            ComponentName.createRelative(
-                    "com.google.android.gms",
-                    ".auth.api.credentials.credman.service.PasswordAndPasskeyService");
-    private static final String PASSWORDS_ONLY_FOR_THE_CHANNEL =
-            "com.android.chrome.PASSWORDS_ONLY_FOR_THE_CHANNEL";
-    private static final String PASSWORDS_WITH_NO_USERNAME_INCLUDED =
-            "com.android.chrome.PASSWORDS_WITH_NO_USERNAME_INCLUDED";
-    private static final String IGNORE_GPM = "com.android.chrome.GPM_IGNORE";
     private static final String TAG = "CredManHelper";
 
     private Callback<Integer> mErrorCallback;
@@ -633,94 +612,19 @@ public class CredManHelper {
 
         boolean hasAllowCredentials =
                 options.allowCredentials != null && options.allowCredentials.length != 0;
-        Bundle publicKeyCredentialOptionBundle =
-                buildPublicKeyCredentialOptionBundle(
-                        requestAsJson,
-                        clientDataHash,
-                        ignoreGpm,
-                        /* allowAutoSelect= */ hasAllowCredentials);
-        CredentialOption credentialOption =
-                new CredentialOption.Builder(
-                                TYPE_PASSKEY,
-                                publicKeyCredentialOptionBundle,
-                                publicKeyCredentialOptionBundle)
+        CredManGetCredentialRequestHelper helper =
+                new CredManGetCredentialRequestHelper.Builder(
+                                requestAsJson,
+                                clientDataHash,
+                                preferImmediatelyAvailable,
+                                hasAllowCredentials,
+                                requestPasswords)
+                        .setOrigin(originString)
+                        .setPlayServicesAvailable(mPlayServicesAvailable)
+                        .setIgnoreGpm(ignoreGpm)
+                        .setRenderFrameHost(mFrameHost)
                         .build();
-
-        // TODO(crbug.com/1511193): Handle this through CredManRequestDecorator
-        Bundle getCredentialRequestBundle = new Bundle();
-        if (!ignoreGpm) {
-            getCredentialRequestBundle.putParcelable(
-                    CRED_MAN_PREFIX + "BUNDLE_KEY_PREFER_UI_BRANDING_COMPONENT_NAME",
-                    GPM_COMPONENT_NAME);
-        }
-        // The CredMan UI for the case where there aren't any credentials isn't
-        // suitable for the modal case. This bundle key requests that the
-        // request fail immediately if there aren't any credentials. It'll fail
-        // with a `CRED_MAN_EXCEPTION_GET_CREDENTIAL_TYPE_NO_CREDENTIAL` error
-        // which is handled above by calling Play Services to render the error.
-        getCredentialRequestBundle.putBoolean(
-                CRED_MAN_PREFIX + "BUNDLE_KEY_PREFER_IMMEDIATELY_AVAILABLE_CREDENTIALS",
-                preferImmediatelyAvailable && mPlayServicesAvailable);
-        final GetCredentialRequest.Builder getCredentialRequestBuilder =
-                new GetCredentialRequest.Builder(getCredentialRequestBundle)
-                        .addCredentialOption(credentialOption);
-        if (requestPasswords) {
-            getCredentialRequestBuilder.addCredentialOption(buildPasswordOption(ignoreGpm));
-        }
-        return getCredentialRequestBuilder.setOrigin(originString).build();
-    }
-
-    // TODO(crbug.com/1511193): Handle this through CredManRequestDecorator
-    private Bundle buildPublicKeyCredentialOptionBundle(
-            String requestAsJson,
-            byte[] clientDataHash,
-            boolean ignoreGpm,
-            boolean allowAutoSelect) {
-        final Bundle publicKeyCredentialOptionBundle = new Bundle();
-        publicKeyCredentialOptionBundle.putString(
-                CRED_MAN_PREFIX + "BUNDLE_KEY_SUBTYPE",
-                CRED_MAN_PREFIX + "BUNDLE_VALUE_SUBTYPE_GET_PUBLIC_KEY_CREDENTIAL_OPTION");
-        publicKeyCredentialOptionBundle.putString(
-                CRED_MAN_PREFIX + "BUNDLE_KEY_REQUEST_JSON", requestAsJson);
-        publicKeyCredentialOptionBundle.putByteArray(
-                CRED_MAN_PREFIX + "BUNDLE_KEY_CLIENT_DATA_HASH", clientDataHash);
-
-        if (allowAutoSelect) {
-            // Auto-select means that, when an allowlist is present and one of
-            // the providers matches with it, the account selector can be
-            // skipped. (However, if two or more providers match with the
-            // allowlist then the selector will, sadly, still be shown.)
-            publicKeyCredentialOptionBundle.putBoolean(CRED_MAN_IS_AUTO_SELECT_ALLOWED, true);
-        }
-
-        publicKeyCredentialOptionBundle.putString(CHANNEL_KEY, getChannel());
-        publicKeyCredentialOptionBundle.putBoolean(INCOGNITO_KEY, isIncognito());
-        publicKeyCredentialOptionBundle.putBoolean(IGNORE_GPM, ignoreGpm);
-        return publicKeyCredentialOptionBundle;
-    }
-
-    // TODO(crbug.com/1511193): Handle this through CredManRequestDecorator
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    private CredentialOption buildPasswordOption(boolean ignoreGpm) {
-        Bundle passwordOptionBundle = new Bundle();
-        passwordOptionBundle.putString(CHANNEL_KEY, getChannel());
-        passwordOptionBundle.putBoolean(INCOGNITO_KEY, isIncognito());
-        passwordOptionBundle.putBoolean(PASSWORDS_ONLY_FOR_THE_CHANNEL, true);
-        passwordOptionBundle.putBoolean(PASSWORDS_WITH_NO_USERNAME_INCLUDED, true);
-        passwordOptionBundle.putBoolean(IGNORE_GPM, ignoreGpm);
-
-        return new CredentialOption.Builder(
-                        "android.credentials.TYPE_PASSWORD_CREDENTIAL",
-                        passwordOptionBundle,
-                        passwordOptionBundle)
-                .setAllowedProviders(Set.of(GPM_COMPONENT_NAME))
-                .build();
-    }
-
-    private final boolean isIncognito() {
-        if (mFrameHost == null) return false;
-        WebContents webContents = WebContentsStatics.fromRenderFrameHost(mFrameHost);
-        return webContents == null ? false : webContents.isIncognito();
+        return helper.getGetCredentialRequest(mCredManRequestDecorator);
     }
 
     private static void logDeserializationException(Throwable e) {

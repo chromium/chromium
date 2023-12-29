@@ -22,7 +22,6 @@ import android.credentials.CreateCredentialRequest;
 import android.credentials.CreateCredentialResponse;
 import android.credentials.Credential;
 import android.credentials.CredentialManager;
-import android.credentials.CredentialOption;
 import android.credentials.GetCredentialException;
 import android.credentials.GetCredentialRequest;
 import android.credentials.GetCredentialResponse;
@@ -62,8 +61,6 @@ import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManPre
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 
-import java.util.List;
-
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
@@ -102,6 +99,8 @@ public class CredManHelperRobolectricTest {
     @Mock private CredManRequestDecorator mRequestDecorator;
     @Mock private CredManCreateCredentialRequestHelper mCredManCreateCredentialRequestHelper;
     @Mock private CreateCredentialRequest mCreateCredentialRequest;
+    @Mock private CredManGetCredentialRequestHelper mCredManGetCredentialRequestHelper;
+    @Mock private GetCredentialRequest mGetCredentialRequest;
 
     private CredManHelper.BridgeProvider mBridgeProvider =
             new CredManHelper.BridgeProvider() {
@@ -134,6 +133,10 @@ public class CredManHelperRobolectricTest {
                 mCredManCreateCredentialRequestHelper);
         when(mCredManCreateCredentialRequestHelper.getCreateCredentialRequest(any()))
                 .thenReturn(mCreateCredentialRequest);
+        CredManGetCredentialRequestHelper.setInstanceForTesting(mCredManGetCredentialRequestHelper);
+        when(mCredManGetCredentialRequestHelper.getGetCredentialRequest(any()))
+                .thenReturn(mGetCredentialRequest);
+
         mCredManHelper =
                 new CredManHelper(
                         mBridgeProvider, /* playServicesAvailable= */ true, mRequestDecorator);
@@ -296,32 +299,10 @@ public class CredManHelperRobolectricTest {
 
         assertThat(result).isEqualTo(AuthenticatorStatus.SUCCESS);
 
+        verify(mCredManGetCredentialRequestHelper).getGetCredentialRequest(eq(mRequestDecorator));
         ShadowCredentialManager shadowCredentialManager = Shadow.extract(mCredentialManager);
         GetCredentialRequest credManRequest = shadowCredentialManager.getGetCredentialRequest();
-        assertThat(credManRequest).isNotNull();
-        assertThat(
-                        credManRequest
-                                .getData()
-                                .containsKey(
-                                        "androidx.credentials.BUNDLE_KEY_PREFER_UI_BRANDING_COMPONENT_NAME"))
-                .isTrue();
-        assertThat(credManRequest.getOrigin()).isEqualTo(mOriginString);
-        assertThat(credManRequest.getCredentialOptions()).hasSize(1);
-
-        CredentialOption option = credManRequest.getCredentialOptions().get(0);
-        assertThat(option).isNotNull();
-        assertThat(option.getType()).isEqualTo("androidx.credentials.TYPE_PUBLIC_KEY_CREDENTIAL");
-        assertThat(
-                        option.getCredentialRetrievalData()
-                                .getString("androidx.credentials.BUNDLE_KEY_REQUEST_JSON"))
-                .isEqualTo("{serialized_get_request}");
-        assertThat(option.getCandidateQueryData().containsKey("com.android.chrome.CHANNEL"))
-                .isTrue();
-        assertThat(
-                        option.getCandidateQueryData()
-                                .getBoolean("com.android.chrome.GPM_IGNORE", false))
-                .isFalse();
-        assertThat(option.isSystemProviderRequired()).isFalse();
+        assertThat(credManRequest).isEqualTo(mGetCredentialRequest);
 
         GetCredentialResponse response = new GetCredentialResponse(createPasskeyCredential());
         shadowCredentialManager.getGetCredentialCallback().onResult(response);
@@ -351,15 +332,10 @@ public class CredManHelperRobolectricTest {
 
         assertThat(result).isEqualTo(AuthenticatorStatus.SUCCESS);
 
+        verify(mCredManGetCredentialRequestHelper).getGetCredentialRequest(eq(mRequestDecorator));
         ShadowCredentialManager shadowCredentialManager = Shadow.extract(mCredentialManager);
         GetCredentialRequest credManRequest = shadowCredentialManager.getGetCredentialRequest();
-        assertThat(credManRequest).isNotNull();
-        assertThat(credManRequest.getCredentialOptions()).hasSize(1);
-        CredentialOption option = credManRequest.getCredentialOptions().get(0);
-        assertThat(
-                        option.getCredentialRetrievalData()
-                                .getByteArray("androidx.credentials.BUNDLE_KEY_CLIENT_DATA_HASH"))
-                .isEqualTo(mMaybeClientDataHash);
+        assertThat(credManRequest).isEqualTo(mGetCredentialRequest);
     }
 
     @Test
@@ -384,13 +360,7 @@ public class CredManHelperRobolectricTest {
 
         ShadowCredentialManager shadowCredentialManager = Shadow.extract(mCredentialManager);
         GetCredentialRequest credManRequest = shadowCredentialManager.getGetCredentialRequest();
-        assertThat(credManRequest).isNotNull();
-        assertThat(
-                        credManRequest
-                                .getData()
-                                .getBoolean(
-                                        "androidx.credentials.BUNDLE_KEY_PREFER_IMMEDIATELY_AVAILABLE_CREDENTIALS"))
-                .isTrue();
+        assertThat(credManRequest).isEqualTo(mGetCredentialRequest);
 
         GetCredentialException exception =
                 new GetCredentialException(GetCredentialException.TYPE_NO_CREDENTIAL, "Message");
@@ -499,17 +469,7 @@ public class CredManHelperRobolectricTest {
 
         ShadowCredentialManager shadowCredentialManager = Shadow.extract(mCredentialManager);
         GetCredentialRequest credManRequest = shadowCredentialManager.getGetCredentialRequest();
-
-        assertThat(credManRequest).isNotNull();
-        assertThat(credManRequest.getOrigin()).isEqualTo(mOriginString);
-        CredentialOption option = credManRequest.getCredentialOptions().get(0);
-        assertThat(option).isNotNull();
-        assertThat(option.getType()).isEqualTo("androidx.credentials.TYPE_PUBLIC_KEY_CREDENTIAL");
-        assertThat(
-                        option.getCredentialRetrievalData()
-                                .getString("androidx.credentials.BUNDLE_KEY_REQUEST_JSON"))
-                .isEqualTo("{serialized_get_request}");
-        assertThat(option.isSystemProviderRequired()).isFalse();
+        assertThat(credManRequest).isEqualTo(mGetCredentialRequest);
 
         PrepareGetCredentialResponse prepareGetCredentialResponse =
                 Shadow.newInstanceOf(PrepareGetCredentialResponse.class);
@@ -691,11 +651,6 @@ public class CredManHelperRobolectricTest {
         credManCallSuccessfulRunback.getValue().run();
 
         verify(mMetricsHelper, times(1)).recordCredmanPrepareRequestDuration(anyLong());
-
-        GetCredentialRequest credManRequest = shadowCredentialManager.getGetCredentialRequest();
-        assertThat(credManRequest).isNotNull();
-        assertThat(credManRequest.getCredentialOptions()).hasSize(1);
-
         verify(mBrowserBridge, times(1))
                 .onCredManConditionalRequestPending(any(), anyBoolean(), callbackCaptor.capture());
 
@@ -707,21 +662,6 @@ public class CredManHelperRobolectricTest {
         // Trigger the startPrefetchRequest's startGetRequest:
         callbackCaptor.getValue().onResult(true);
         shadowCredentialManager.getGetCredentialCallback().onResult(response);
-
-        credManRequest = shadowCredentialManager.getGetCredentialRequest();
-        assertThat(credManRequest).isNotNull();
-        assertThat(credManRequest.getCredentialOptions()).hasSize(2);
-        List<CredentialOption> credentialOptions = credManRequest.getCredentialOptions();
-        assertThat(credentialOptions.get(0).getType())
-                .isEqualTo("androidx.credentials.TYPE_PUBLIC_KEY_CREDENTIAL");
-        assertThat(credentialOptions.get(1).getType())
-                .isEqualTo(Credential.TYPE_PASSWORD_CREDENTIAL);
-        assertThat(
-                        credentialOptions
-                                .get(1)
-                                .getCandidateQueryData()
-                                .containsKey("com.android.chrome.PASSWORDS_ONLY_FOR_THE_CHANNEL"))
-                .isTrue();
 
         verify(mBrowserBridge, never()).onCredManUiClosed(any(), anyBoolean());
         // A password is selected, the callback will not be signed.
@@ -749,21 +689,7 @@ public class CredManHelperRobolectricTest {
 
         ShadowCredentialManager shadowCredentialManager = Shadow.extract(mCredentialManager);
         GetCredentialRequest credManRequest = shadowCredentialManager.getGetCredentialRequest();
-        assertThat(credManRequest).isNotNull();
-        assertThat(
-                        credManRequest
-                                .getData()
-                                .containsKey(
-                                        "androidx.credentials.BUNDLE_KEY_PREFER_UI_BRANDING_COMPONENT_NAME"))
-                .isFalse();
-        assertThat(credManRequest.getCredentialOptions()).hasSize(1);
-        CredentialOption option = credManRequest.getCredentialOptions().get(0);
-        assertThat(option).isNotNull();
-        assertThat(option.getType()).isEqualTo("androidx.credentials.TYPE_PUBLIC_KEY_CREDENTIAL");
-        assertThat(option.getCandidateQueryData().containsKey("com.android.chrome.GPM_IGNORE"))
-                .isTrue();
-        assertThat(option.getCandidateQueryData().getBoolean("com.android.chrome.GPM_IGNORE"))
-                .isTrue();
+        assertThat(credManRequest).isEqualTo(mGetCredentialRequest);
     }
 
     private Credential createPasskeyCredential() {
