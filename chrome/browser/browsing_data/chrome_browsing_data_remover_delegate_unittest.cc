@@ -929,8 +929,8 @@ class PersonalDataLoadedObserverMock
 
 }  // namespace
 
-ACTION(QuitMainMessageLoop) {
-  base::RunLoop::QuitCurrentWhenIdleDeprecated();
+ACTION_P2(QuitMessageLoop, quit_closure) {
+  std::move(quit_closure).Run();
 }
 
 // RemoveAutofillTester is not a part of the anonymous namespace above, as
@@ -973,6 +973,7 @@ class RemoveAutofillTester {
   // Add one profile and two credit cards to the database. One credit card has a
   // web origin and the other has a Chrome origin.
   void AddProfilesAndCards() {
+    base::RunLoop loop(base::RunLoop::Type::kNestableTasksAllowed);
     autofill::AutofillProfile profile(
         autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
     profile.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
@@ -982,7 +983,7 @@ class RemoveAutofillTester {
     profile.SetRawInfo(autofill::EMAIL_ADDRESS, u"sue@example.com");
     profile.SetRawInfo(autofill::COMPANY_NAME, u"Company X");
     personal_data_manager_->AddProfile(profile);
-    WaitForOnPersonalDataFinishedProfileTasks();
+    WaitForOnPersonalDataFinishedProfileTasks(&loop);
 
     std::vector<autofill::CreditCard> cards;
     autofill::CreditCard card;
@@ -996,20 +997,19 @@ class RemoveAutofillTester {
     cards.push_back(card);
 
     personal_data_manager_->SetCreditCards(&cards);
-    WaitForOnPersonalDataChanged();
+    WaitForOnPersonalDataChanged(&loop);
+    loop.Run();
   }
 
  private:
-  void WaitForOnPersonalDataChanged() {
+  void WaitForOnPersonalDataChanged(base::RunLoop* loop) {
     EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
-        .WillRepeatedly(QuitMainMessageLoop());
-    base::RunLoop().Run();
+        .WillRepeatedly(QuitMessageLoop(loop->QuitWhenIdleClosure()));
   }
 
-  void WaitForOnPersonalDataFinishedProfileTasks() {
+  void WaitForOnPersonalDataFinishedProfileTasks(base::RunLoop* loop) {
     EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
-        .WillRepeatedly(QuitMainMessageLoop());
-    base::RunLoop().Run();
+        .WillRepeatedly(QuitMessageLoop(loop->QuitWhenIdleClosure()));
   }
 
   raw_ptr<autofill::PersonalDataManager> personal_data_manager_;

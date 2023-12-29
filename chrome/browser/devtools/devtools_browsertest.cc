@@ -521,11 +521,6 @@ class DevToolsBeforeUnloadTest : public DevToolsTest {
   }
 };
 
-void TimeoutCallback(const std::string& timeout_message) {
-  ADD_FAILURE() << timeout_message;
-  base::RunLoop::QuitCurrentWhenIdleDeprecated();
-}
-
 constexpr char kPublicKey[] =
     "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC8c4fBSPZ6utYoZ8NiWF/"
     "DSaimBhihjwgOsskyleFGaurhi3TDClTVSGPxNkgCzrz0wACML7M4aNjpd05qupdbR2d294j"

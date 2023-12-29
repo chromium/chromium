@@ -101,7 +101,7 @@ class ExtensionActionIconFactoryTest
 
   void WaitForIconUpdate() {
     quit_in_icon_updated_ = true;
-    base::RunLoop().Run();
+    loop_.Run();
     quit_in_icon_updated_ = false;
   }
 
@@ -148,13 +148,12 @@ class ExtensionActionIconFactoryTest
 
   void TearDown() override {
     profile_.reset();  // Get all DeleteSoon calls sent to ui_loop_.
-    base::RunLoop().RunUntilIdle();
   }
 
   // ExtensionActionIconFactory::Observer overrides:
   void OnIconUpdated() override {
     if (quit_in_icon_updated_)
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
+      loop_.QuitWhenIdle();
   }
 
   gfx::ImageSkia GetFavicon() {
@@ -174,6 +173,7 @@ class ExtensionActionIconFactoryTest
   bool quit_in_icon_updated_;
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<ExtensionService, DanglingUntriaged> extension_service_;
+  base::RunLoop loop_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;

@@ -113,8 +113,8 @@ class CountingPolicyTest : public testing::Test {
 
     // Set up a timeout for receiving results; if we haven't received anything
     // when the timeout triggers then assume that the test is broken.
-    base::CancelableOnceClosure timeout(
-        base::BindOnce(&CountingPolicyTest::TimeoutCallback));
+    base::CancelableOnceClosure timeout(base::BindOnce(
+        &CountingPolicyTest::TimeoutCallback, run_loop.QuitWhenIdleClosure()));
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, timeout.callback(), TestTimeouts::action_timeout());
 
@@ -158,8 +158,8 @@ class CountingPolicyTest : public testing::Test {
     std::move(done).Run();
   }
 
-  static void TimeoutCallback() {
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  static void TimeoutCallback(base::OnceClosure quit_closure) {
+    std::move(quit_closure).Run();
     FAIL() << "Policy test timed out waiting for results";
   }
 

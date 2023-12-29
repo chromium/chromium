@@ -65,7 +65,7 @@ class TestMemoryDetails : public MetricsMemoryDetails {
   void StartFetchAndWait() {
     uma_ = std::make_unique<base::HistogramTester>();
     StartFetch();
-    content::RunMessageLoop();
+    loop_.Run();
   }
 
   // Returns a HistogramTester which observed the most recent call to
@@ -102,10 +102,11 @@ class TestMemoryDetails : public MetricsMemoryDetails {
   void OnDetailsAvailable() override {
     MetricsMemoryDetails::OnDetailsAvailable();
     // Exit the loop initiated by StartFetchAndWait().
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    loop_.QuitWhenIdle();
   }
 
   std::unique_ptr<base::HistogramTester> uma_;
+  base::RunLoop loop_;
 };
 
 // This matcher takes three other matchers as arguments, and applies one of them

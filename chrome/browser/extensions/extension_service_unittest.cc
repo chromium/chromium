@@ -901,7 +901,8 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
 class PackExtensionTestClient : public PackExtensionJob::Client {
  public:
   PackExtensionTestClient(const base::FilePath& expected_crx_path,
-                          const base::FilePath& expected_private_key_path);
+                          const base::FilePath& expected_private_key_path,
+                          base::OnceClosure quit_closure);
 
   PackExtensionTestClient(const PackExtensionTestClient&) = delete;
   PackExtensionTestClient& operator=(const PackExtensionTestClient&) = delete;
@@ -914,13 +915,16 @@ class PackExtensionTestClient : public PackExtensionJob::Client {
  private:
   const base::FilePath expected_crx_path_;
   const base::FilePath expected_private_key_path_;
+  base::OnceClosure quit_closure_;
 };
 
 PackExtensionTestClient::PackExtensionTestClient(
     const base::FilePath& expected_crx_path,
-    const base::FilePath& expected_private_key_path)
+    const base::FilePath& expected_private_key_path,
+    base::OnceClosure quit_closure)
     : expected_crx_path_(expected_crx_path),
-      expected_private_key_path_(expected_private_key_path) {}
+      expected_private_key_path_(expected_private_key_path),
+      quit_closure_(std::move(quit_closure)) {}
 
 // If packing succeeded, we make sure that the package names match our
 // expectations.
@@ -932,7 +936,7 @@ void PackExtensionTestClient::OnPackSuccess(
   // on with the rest of the test.
   // This call to |Quit()| matches the call to |Run()| in the
   // |PackPunctuatedExtension| test.
-  base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  std::move(quit_closure_).Run();
   EXPECT_EQ(expected_crx_path_.value(), crx_path.value());
   EXPECT_EQ(expected_private_key_path_.value(), private_key_path.value());
   ASSERT_TRUE(base::PathExists(private_key_path));
@@ -2339,7 +2343,7 @@ TEST_F(ExtensionServiceTest, PackPunctuatedExtension) {
   for (size_t i = 0; i < std::size(punctuated_names); ++i) {
     SCOPED_TRACE(punctuated_names[i].value().c_str());
     base::FilePath output_dir = temp_dir.GetPath().Append(punctuated_names[i]);
-
+    base::RunLoop loop;
     // Copy the extension into the output directory, as PackExtensionJob doesn't
     // let us choose where to output the packed extension.
     ASSERT_TRUE(base::CopyDirectory(input_directory, output_dir, true));
@@ -2349,7 +2353,8 @@ TEST_F(ExtensionServiceTest, PackPunctuatedExtension) {
     base::FilePath expected_private_key_path =
         temp_dir.GetPath().Append(expected_private_key_names[i]);
     PackExtensionTestClient pack_client(expected_crx_path,
-                                        expected_private_key_path);
+                                        expected_private_key_path,
+                                        loop.QuitWhenIdleClosure());
     {
       PackExtensionJob packer(&pack_client, output_dir, base::FilePath(),
                               ExtensionCreator::kOverwriteCRX);
@@ -2361,7 +2366,7 @@ TEST_F(ExtensionServiceTest, PackPunctuatedExtension) {
       // exit.
       // This call to |Run()| is matched by a call to |Quit()| in the
       // |PackExtensionTestClient|'s notification handling code.
-      base::RunLoop().Run();
+      loop.Run();
     }
 
     if (HasFatalFailure())

@@ -84,7 +84,7 @@ class WebstoreInstallListener : public WebstorePrivateApi::Delegate {
 
     if (waiting_) {
       waiting_ = false;
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
+      loop_.QuitWhenIdle();
     }
   }
 
@@ -99,7 +99,7 @@ class WebstoreInstallListener : public WebstorePrivateApi::Delegate {
 
     if (waiting_) {
       waiting_ = false;
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
+      loop_.QuitWhenIdle();
     }
   }
 
@@ -108,7 +108,7 @@ class WebstoreInstallListener : public WebstorePrivateApi::Delegate {
       return;
 
     waiting_ = true;
-    content::RunMessageLoop();
+    loop_.Run();
   }
   bool received_success() const { return received_success_; }
   bool received_failure() const { return received_failure_; }
@@ -124,6 +124,7 @@ class WebstoreInstallListener : public WebstorePrivateApi::Delegate {
   WebstoreInstaller::FailureReason last_failure_reason_;
   std::string id_;
   std::string error_;
+  base::RunLoop loop_;
 };
 
 }  // namespace
