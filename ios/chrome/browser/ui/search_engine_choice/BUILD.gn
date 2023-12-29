@@ -55,6 +55,7 @@ source_set("ui_util") {
   deps = [
     "//base",
     "//base:i18n",
+    "//components/search_engines",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",

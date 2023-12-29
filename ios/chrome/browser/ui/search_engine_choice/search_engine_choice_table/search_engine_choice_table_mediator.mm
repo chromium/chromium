@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells/snippet_search_engine_item.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/search_engine_choice_table_consumer.h"
-#import "ui/base/resource/resource_bundle.h"
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_ui_util.h"
 
 namespace {
 
@@ -26,25 +26,19 @@ namespace {
 // only be for a prepopulated search engine. This function doesn't support
 // custom search engine.
 SnippetSearchEngineItem* CreateSnippetSearchEngineItemFromTemplateURL(
-    TemplateURL* template_url,
-    TemplateURLService* template_url_service) {
+    const TemplateURL& template_url) {
   SnippetSearchEngineItem* item = nil;
-  // Only prepopulated search engines are shown.
-  CHECK_GT(template_url->prepopulate_id(), 0)
-      << base::UTF16ToUTF8(template_url->short_name());
+  // Only works for prepopulated search engines.
+  CHECK_GT(template_url.prepopulate_id(), 0)
+      << base::UTF16ToUTF8(template_url.short_name());
   item = [[SnippetSearchEngineItem alloc] initWithType:kItemTypeEnumZero];
   // Add the name and snippet to the item.
-  item.name = base::SysUTF16ToNSString(template_url->short_name());
+  item.name = base::SysUTF16ToNSString(template_url.short_name());
   std::u16string string =
-      search_engines::GetMarketingSnippetString(template_url->data());
+      search_engines::GetMarketingSnippetString(template_url.data());
   item.snippetDescription = base::SysUTF16ToNSString(string);
   // Add the favicon to the item.
-  std::u16string engine_keyword = template_url->data().keyword();
-  int resource_id = search_engines::GetIconResourceId(engine_keyword);
-  CHECK_NE(resource_id, -1) << base::UTF16ToUTF8(engine_keyword);
-  ui::ResourceBundle& resource_bundle = ui::ResourceBundle::GetSharedInstance();
-  item.faviconImage =
-      resource_bundle.GetNativeImageNamed(resource_id).ToUIImage();
+  item.faviconImage = SearchEngineFaviconFromTemplateURL(template_url);
   return item;
 }
 
@@ -123,8 +117,7 @@ SnippetSearchEngineItem* CreateSnippetSearchEngineItemFromTemplateURL(
   // Convert TemplateURLs to SnippetSearchEngineItems.
   for (auto& templateURL : _urlList) {
     SnippetSearchEngineItem* item =
-        CreateSnippetSearchEngineItemFromTemplateURL(templateURL.get(),
-                                                     _templateURLService);
+        CreateSnippetSearchEngineItemFromTemplateURL(*templateURL);
     [searchEngineList addObject:item];
   }
 
