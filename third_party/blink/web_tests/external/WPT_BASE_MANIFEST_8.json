@@ -286454,7 +286454,46 @@
         {}
        ]
       ]
-     }
+     },
+     "side-effects-of-animations-current.html": [
+      "b0de72bdbf9bcffef88ca5dc12bbe0f9ef239823",
+      [
+       null,
+       [
+        [
+         "/web-animations/animation-model/side-effects-of-animations-current-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "side-effects-of-animations-in-effect.html": [
+      "ff53c98d79373bd048f5ec96051cb129d7ed5795",
+      [
+       null,
+       [
+        [
+         "/web-animations/animation-model/side-effects-of-animations-in-effect-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "side-effects-of-animations-none.html": [
+      "b460ecc27fd1487075b9871e656e5a3bdbfb5399",
+      [
+       null,
+       [
+        [
+         "/web-animations/animation-model/side-effects-of-animations-none-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ]
     },
     "responsive": {
      "toggle-animated-iframe-visibility.html": [
@@ -393364,7 +393403,19 @@
        "1e7f250c48fb093160a509b3d98c0b265085179f",
        []
       ]
-     }
+     },
+     "side-effects-of-animations-current-ref.html": [
+      "acc0465b074c2dddfeb1ac427d49a55e5dcecd64",
+      []
+     ],
+     "side-effects-of-animations-in-effect-ref.html": [
+      "24160cb267788196430c4299e12dc6c010183fc0",
+      []
+     ],
+     "side-effects-of-animations-none-ref.html": [
+      "4d1ea997f4cb6923f6c1a22409469652d7170d87",
+      []
+     ]
     },
     "idlharness.window-expected.txt": [
      "ce969c5afbe5f63195d75624a798340d97619a0d",
@@ -444133,7 +444184,7 @@
        ]
       ],
       "content-visibility-vs-scrollIntoView-003.html": [
-       "65e48663a917d029238feb767395c132ecf8a43d",
+       "93b085a5318c0cc2fcaf44fbb1fe3f50485b6319",
        [
         null,
         {}
