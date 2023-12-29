@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/organization/request_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
+#include "chrome/browser/ui/tabs/organization/tab_sensitivity_cache.h"
 #include "chrome/browser/ui/tabs/organization/trigger_policies.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -35,6 +36,8 @@ TabOrganizationService::TabOrganizationService(
     optimization_guide_keyed_service_->AddModelExecutionSettingsEnabledObserver(
         this);
   }
+  tab_sensitivity_cache_ = std::make_unique<TabSensitivityCache>(
+      Profile::FromBrowserContext(browser_context));
   auto trigger_backoff =
       std::make_unique<ProfilePrefBackoffLevelProvider>(browser_context);
   trigger_backoff_ = trigger_backoff.get();
