@@ -13,6 +13,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.components.password_manager.core.browser.proto.ListAffiliatedPasswordsResult;
+import org.chromium.components.password_manager.core.browser.proto.ListAffiliatedPasswordsResult.AffiliatedPassword;
 import org.chromium.components.password_manager.core.browser.proto.ListPasswordsResult;
 import org.chromium.components.password_manager.core.browser.proto.PasswordWithLocalData;
 import org.chromium.components.sync.protocol.PasswordSpecificsData;
@@ -125,6 +127,34 @@ public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBack
                                                     pwd -> hasSignonRealm(pwd, signonRealm)))
                                     .build();
                     loginsReply.onResult(allLogins.toByteArray());
+                });
+    }
+
+    @Override
+    public void getAffiliatedLoginsForSignonRealm(
+            String signonRealm,
+            Optional<Account> syncingAccount,
+            Callback<byte[]> loginsReply,
+            Callback<Exception> failureCallback) {
+        mTaskRunner.postTask(
+                () -> {
+                    Account account = getAccountOrFail(syncingAccount, failureCallback);
+                    if (account == null) return;
+                    List<PasswordWithLocalData> filteredPasswords =
+                            filterPasswords(
+                                    mSavedPasswords.get(account),
+                                    pwd -> hasSignonRealm(pwd, signonRealm));
+                    List<AffiliatedPassword> affiliatedPasswords = new ArrayList<>();
+                    for (PasswordWithLocalData password : filteredPasswords) {
+                        affiliatedPasswords.add(
+                                AffiliatedPassword.newBuilder().setPasswordData(password).build());
+                    }
+
+                    ListAffiliatedPasswordsResult allAffiliatedLogins =
+                            ListAffiliatedPasswordsResult.newBuilder()
+                                    .addAllAffiliatedPasswords(affiliatedPasswords)
+                                    .build();
+                    loginsReply.onResult(allAffiliatedLogins.toByteArray());
                 });
     }
 
