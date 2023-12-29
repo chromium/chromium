@@ -42,7 +42,7 @@ found in the LICENSE file.
         android:key="search_engine"
         android:order="6"
         android:title="@string/search_engine_settings"/>
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+    <org.chromium.chrome.browser.password_manager.settings.PasswordsPreference
         android:fragment="org.chromium.chrome.browser.password_manager.settings.PasswordSettings"
         android:key="passwords"
         android:order="7"

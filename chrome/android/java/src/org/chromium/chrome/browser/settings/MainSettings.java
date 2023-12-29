@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
+import org.chromium.chrome.browser.password_manager.settings.PasswordsPreference;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
@@ -404,16 +405,17 @@ public class MainSettings extends ChromeBaseSettingsFragment
                 .setOnPreferenceClickListener(
                         preference ->
                                 SettingsLauncherHelper.showAutofillProfileSettings(getActivity()));
-        findPreference(PREF_PASSWORDS)
-                .setOnPreferenceClickListener(
-                        preference -> {
-                            PasswordManagerLauncher.showPasswordSettings(
-                                    getActivity(),
-                                    ManagePasswordsReferrer.CHROME_SETTINGS,
-                                    mModalDialogManagerSupplier,
-                                    /* managePasskeys= */ false);
-                            return true;
-                        });
+        PasswordsPreference passwordsPreference = findPreference(PREF_PASSWORDS);
+        passwordsPreference.setProfile(getProfile());
+        passwordsPreference.setOnPreferenceClickListener(
+                preference -> {
+                    PasswordManagerLauncher.showPasswordSettings(
+                            getActivity(),
+                            ManagePasswordsReferrer.CHROME_SETTINGS,
+                            mModalDialogManagerSupplier,
+                            /* managePasskeys= */ false);
+                    return true;
+                });
     }
 
     private void updatePlusAddressesPreference() {
