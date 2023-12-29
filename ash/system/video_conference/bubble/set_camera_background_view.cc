@@ -10,6 +10,7 @@
 #include "ash/system/camera/camera_effects_controller.h"
 #include "ash/system/video_conference/bubble/bubble_view.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "skia/ext/image_operations.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -112,7 +113,7 @@ class RecentlyUsedImageButton : public views::ImageButton {
   METADATA_HEADER(RecentlyUsedImageButton, views::ImageButton)
 
  public:
-  RecentlyUsedImageButton(const std::string& filename,
+  RecentlyUsedImageButton(const base::FilePath& filename,
                           const std::string& jpeg_bytes,
                           const int expected_width)
       : ImageButton(
@@ -139,7 +140,8 @@ class RecentlyUsedImageButton : public views::ImageButton {
 
   // Apply background replace when the button is clicked on.
   void OnButtonClicked(const ui::Event& event) {
-    GetCameraEffectsController()->SetBackgroundImage(filename_);
+    GetCameraEffectsController()->SetBackgroundImage(filename_,
+                                                     base::DoNothing());
   }
 
  private:
