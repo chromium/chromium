@@ -86,8 +86,13 @@ KeyedService* SupervisedUserServiceFactory::BuildInstanceFor(Profile* profile) {
       SyncServiceFactory::GetInstance()->GetForProfile(profile),
       base::BindRepeating(supervised_user::IsSupportedChromeExtensionURL),
       std::make_unique<FilterDelegateImpl>(),
+#if BUILDFLAG(IS_ANDROID)
+      std::make_unique<SupervisedUserServicePlatformDelegate>(
+          SupervisedUserServicePlatformDelegate()),
+#else
       std::make_unique<SupervisedUserServicePlatformDelegate>(
           SupervisedUserServicePlatformDelegate(*profile)),
+#endif
       /*can_show_first_time_interstitial_banner=*/!profile->IsNewProfile());
 }
 

@@ -18,7 +18,7 @@
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/supervised_user/android/favicon_fetcher.h"
-#include "chrome/browser/supervised_user/jni_headers/WebsiteParentApproval_jni.h"
+#include "chrome/browser/supervised_user/website_parent_approval_jni_headers/WebsiteParentApproval_jni.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 #include "url/android/gurl_android.h"
