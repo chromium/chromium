@@ -65,7 +65,8 @@ void FilesScanData::ExpandPaths(base::OnceClosure done_closure) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&GetPathsToScan, base_paths_),
-      base::BindOnce(&FilesScanData::OnExpandPathsDone, AsWeakPtr()));
+      base::BindOnce(&FilesScanData::OnExpandPathsDone,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 std::set<size_t> FilesScanData::IndexesToBlock(
