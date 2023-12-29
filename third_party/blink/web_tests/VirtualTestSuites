@@ -439,7 +439,8 @@
     "exclusive_tests": ["fast/hidpi/static"],
     "args": ["--force-device-scale-factor=2",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "owners": ["paint-dev@chromium.org"],
+    "expires": "never"
   },
   {
     "prefix": "scalefactor150",
@@ -449,7 +450,8 @@
     "exclusive_tests": ["fast/hidpi/static"],
     "args": ["--force-device-scale-factor=1.5",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "owners": ["paint-dev@chromium.org"],
+    "expires": "never"
   },
   {
     "prefix": "dark-mode-classifier-transparency-and-num-colors",
@@ -601,7 +603,7 @@
     "prefix": "direct-sockets",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/direct-sockets",
-    	      "wpt_internal/direct-sockets"],
+              "wpt_internal/direct-sockets"],
     "exclusive_tests": "ALL",
     "args": ["--isolated-context-origins=https://web-platform.test",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
