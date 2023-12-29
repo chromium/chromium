@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/cells/settings_search_engine_item.h"
+#import "ios/chrome/browser/ui/settings/cells/legacy_settings_search_engine_item.h"
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -15,17 +15,17 @@
 #import "url/gurl.h"
 
 namespace {
-using SettingsSearchEngineItemTest = PlatformTest;
+using LegacySettingsSearchEngineItemTest = PlatformTest;
 }  // namespace
 
 // Tests that the UILabels are set properly after a call to `configureCell:`.
-TEST_F(SettingsSearchEngineItemTest, BasicProperties) {
+TEST_F(LegacySettingsSearchEngineItemTest, BasicProperties) {
   NSString* text = @"Title text";
   NSString* detailText = @"www.google.com";
   GURL URL = net::GURLWithNSURL([NSURL URLWithString:detailText]);
 
-  SettingsSearchEngineItem* item =
-      [[SettingsSearchEngineItem alloc] initWithType:0];
+  LegacySettingsSearchEngineItem* item =
+      [[LegacySettingsSearchEngineItem alloc] initWithType:0];
   item.text = text;
   item.detailText = detailText;
   item.URL = URL;
@@ -49,7 +49,7 @@ TEST_F(SettingsSearchEngineItemTest, BasicProperties) {
   EXPECT_EQ(UITableViewCellAccessoryCheckmark, URLCell.accessoryType);
 }
 
-TEST_F(SettingsSearchEngineItemTest, isEqual) {
+TEST_F(LegacySettingsSearchEngineItemTest, isEqual) {
   NSString* text = @"Title text";
   NSString* detailText = @"www.google.com";
   GURL URL = net::GURLWithNSURL([NSURL URLWithString:detailText]);
@@ -57,38 +57,38 @@ TEST_F(SettingsSearchEngineItemTest, isEqual) {
   NSString* otherDetailText = @"www.notGoogle.com";
   GURL otherURL = net::GURLWithNSURL([NSURL URLWithString:otherDetailText]);
 
-  SettingsSearchEngineItem* item =
-      [[SettingsSearchEngineItem alloc] initWithType:0];
+  LegacySettingsSearchEngineItem* item =
+      [[LegacySettingsSearchEngineItem alloc] initWithType:0];
   item.text = text;
   item.detailText = detailText;
   item.URL = URL;
 
-  SettingsSearchEngineItem* sameItem =
-      [[SettingsSearchEngineItem alloc] initWithType:0];
+  LegacySettingsSearchEngineItem* sameItem =
+      [[LegacySettingsSearchEngineItem alloc] initWithType:0];
   sameItem.text = text;
   sameItem.detailText = detailText;
   sameItem.URL = URL;
 
   EXPECT_TRUE([item isEqual:sameItem]);
 
-  SettingsSearchEngineItem* itemWithDifferentText =
-      [[SettingsSearchEngineItem alloc] initWithType:0];
+  LegacySettingsSearchEngineItem* itemWithDifferentText =
+      [[LegacySettingsSearchEngineItem alloc] initWithType:0];
   itemWithDifferentText.text = otherText;
   itemWithDifferentText.detailText = item.detailText;
   itemWithDifferentText.URL = item.URL;
 
   EXPECT_FALSE([item isEqual:itemWithDifferentText]);
 
-  SettingsSearchEngineItem* itemWithDifferentDetailText =
-      [[SettingsSearchEngineItem alloc] initWithType:0];
+  LegacySettingsSearchEngineItem* itemWithDifferentDetailText =
+      [[LegacySettingsSearchEngineItem alloc] initWithType:0];
   itemWithDifferentDetailText.text = item.text;
   itemWithDifferentDetailText.detailText = otherDetailText;
   itemWithDifferentDetailText.URL = item.URL;
 
   EXPECT_FALSE([item isEqual:itemWithDifferentDetailText]);
 
-  SettingsSearchEngineItem* itemWithDifferentURL =
-      [[SettingsSearchEngineItem alloc] initWithType:0];
+  LegacySettingsSearchEngineItem* itemWithDifferentURL =
+      [[LegacySettingsSearchEngineItem alloc] initWithType:0];
   itemWithDifferentURL.text = item.text;
   itemWithDifferentURL.detailText = item.detailText;
   itemWithDifferentURL.URL = otherURL;

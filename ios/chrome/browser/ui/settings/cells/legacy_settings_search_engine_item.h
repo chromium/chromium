@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_CELLS_SETTINGS_SEARCH_ENGINE_ITEM_H_
-#define IOS_CHROME_BROWSER_UI_SETTINGS_CELLS_SETTINGS_SEARCH_ENGINE_ITEM_H_
+#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_CELLS_LEGACY_SETTINGS_SEARCH_ENGINE_ITEM_H_
+#define IOS_CHROME_BROWSER_UI_SETTINGS_CELLS_LEGACY_SETTINGS_SEARCH_ENGINE_ITEM_H_
 
 #import <UIKit/UIKit.h>
 
@@ -11,8 +11,9 @@
 
 class GURL;
 
-// SearchEngineItem contains the model data for a TableViewURLCell.
-@interface SettingsSearchEngineItem : TableViewItem
+// LegacySettingsSearchEngineItem contains the model data for a TableViewURLCell.
+// This class is deprecated for SettingsSearchEngineItem.
+@interface LegacySettingsSearchEngineItem : TableViewItem
 
 // The enabled/disabled state. If disabled, user interaction will be forbidden
 // and cell's alpha will be reduced.
@@ -30,4 +31,4 @@ class GURL;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_CELLS_SETTINGS_SEARCH_ENGINE_ITEM_H_
+#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_CELLS_LEGACY_SETTINGS_SEARCH_ENGINE_ITEM_H_

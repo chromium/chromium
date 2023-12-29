@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/cells/settings_search_engine_item.h"
+#import "ios/chrome/browser/ui/settings/cells/legacy_settings_search_engine_item.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
@@ -17,14 +17,14 @@
 
 #pragma mark - SearchEngineItem
 
-@interface SettingsSearchEngineItem ()
+@interface LegacySettingsSearchEngineItem ()
 
 // Redefined as read write.
 @property(nonatomic, readwrite, copy) NSString* uniqueIdentifier;
 
 @end
 
-@implementation SettingsSearchEngineItem
+@implementation LegacySettingsSearchEngineItem
 
 - (instancetype)initWithType:(NSInteger)type {
   self = [super initWithType:type];
@@ -66,7 +66,7 @@
   [cell configureUILayout];
 }
 
-- (BOOL)isEqual:(SettingsSearchEngineItem*)otherItem {
+- (BOOL)isEqual:(LegacySettingsSearchEngineItem*)otherItem {
   return (self.text == otherItem.text) &&
          (self.detailText == otherItem.detailText) &&
          (self.URL == otherItem.URL);
