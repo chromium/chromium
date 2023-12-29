@@ -214,8 +214,10 @@ export class CursorRange {
       // Richly editables should always set a caret, but not select. This
       // makes it possible to navigate through content editables using
       // ChromeVox keys and not hear selections as you go.
-      if (startNode.state[StateType.RICHLY_EDITABLE] ||
-          endNode.state[StateType.RICHLY_EDITABLE]) {
+      // TODO(b/314203187): Not nulls asserted, check these to make sure they
+      // are correct.
+      if (startNode.state![StateType.RICHLY_EDITABLE] ||
+          endNode.state![StateType.RICHLY_EDITABLE]) {
         endIndex = startIndex;
       }
 
@@ -240,15 +242,17 @@ export class CursorRange {
       case CursorUnit.WORD:
         let startCursor = this.start;
         if (!AutomationPredicate.leafWithWordStop(startCursor.node)) {
-          let startNode = startCursor.node;
+          let startNode: AutomationNode|null = startCursor.node;
+          // TODO(b/314203187): Not nulls asserted, check these to make sure
+          // they are correct.
           if (dir === constants.Dir.FORWARD) {
             startNode = AutomationUtil.findNextNode(
-                startNode, constants.Dir.FORWARD,
+                startNode!, constants.Dir.FORWARD,
                 AutomationPredicate.leafWithWordStop,
                 {skipInitialSubtree: false});
           } else {
             startNode = AutomationUtil.findNodePost(
-                startNode, dir, AutomationPredicate.leafWithWordStop);
+                startNode!, dir, AutomationPredicate.leafWithWordStop);
           }
           if (!startNode) {
             return null;
@@ -304,9 +308,11 @@ export class CursorRange {
 
   /** Returns true if this range has either cursor end on web content. */
   isWebRange(): boolean {
+    // TODO(b/314203187): Not nulls asserted, check these to make sure they
+    // are correct.
     return this.isValid() &&
-        (this.start.node.root.role !== RoleType.DESKTOP ||
-         this.end.node.root.role !== RoleType.DESKTOP);
+        (this.start.node.root!.role !== RoleType.DESKTOP ||
+         this.end.node.root!.role !== RoleType.DESKTOP);
   }
 
   /** Returns whether this range has valid start and end cursors. */
