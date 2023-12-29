@@ -416,12 +416,13 @@ void DialogClientView::SetupLayout() {
   auto* layout = button_row_container_->SetLayoutManager(
       std::make_unique<views::TableLayout>());
   layout->SetMinimumSize(minimum_size_);
-  if (extra_view_ && !extra_view_->GetVisible()) {
+  if (extra_view_) {
     // TableLayout will force its child views to be visible if they aren't
     // explicitly ignored, which will cause the extra view the client supplied
     // to be shown when they don't want it to.
     // TODO(https://crbug.com/1474952): Remove this workaround.
-    layout->SetChildViewIgnoredByLayout(extra_view_, true);
+    extra_view_->SetProperty(kViewIgnoredByLayoutKey,
+                             !extra_view_->GetVisible());
   }
 
   // The |resize_percent| constants. There's only one stretchy column (padding
