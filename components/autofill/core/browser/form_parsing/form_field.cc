@@ -683,7 +683,7 @@ void FormField::ParseFormFieldsPass(
 
 // static
 bool FormField::MatchesFormControlType(FormControlType type,
-                                       DenseSet<MatchFieldType> match_type) {
+                                       DenseSet<FormControlType> match_type) {
   switch (type) {
     case FormControlType::kInputEmail:
       return match_type.contains(MatchFieldType::kEmail);

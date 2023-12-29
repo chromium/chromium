@@ -7,6 +7,7 @@
 
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/common/dense_set.h"
+#include "components/autofill/core/common/form_field_data.h"
 
 namespace autofill {
 
@@ -23,25 +24,34 @@ enum class MatchAttribute { kLabel, kName, kMaxValue = kName };
 // For example, in
 // <label for="mobile">Cellphone number:</label> <input type="tel" id="mobile">
 // the MatchFieldType is kTelephone.
-enum class MatchFieldType {
-  kText,
-  kEmail,
-  kTelephone,
-  kSelectOne,
-  kSelectList,
-  kTextArea,
-  kPassword,
-  kNumber,
-  kSearch,
-  kMaxValue = kSearch
+// The types of fields which may be matched.
+//
+// For example, in
+// <label for="mobile">Cellphone number:</label> <input type="tel" id="mobile">
+// the MatchFieldType is kTelephone.
+class MatchFieldType {
+ public:
+  static constexpr FormControlType kText = FormControlType::kInputText;
+  static constexpr FormControlType kEmail = FormControlType::kInputEmail;
+  static constexpr FormControlType kTelephone =
+      FormControlType::kInputTelephone;
+  static constexpr FormControlType kSelectOne = FormControlType::kSelectOne;
+  static constexpr FormControlType kSelectList = FormControlType::kSelectList;
+  static constexpr FormControlType kTextArea = FormControlType::kTextArea;
+  static constexpr FormControlType kPassword = FormControlType::kInputPassword;
+  static constexpr FormControlType kNumber = FormControlType::kInputNumber;
+  static constexpr FormControlType kSearch = FormControlType::kInputSearch;
+
+  MatchFieldType() = delete;
 };
 
 // Contains all MatchAttribute constants.
 constexpr DenseSet<MatchAttribute> kAllMatchAttributes{MatchAttribute::kLabel,
                                                        MatchAttribute::kName};
 
-// Contains all MatchFieldType constants.
-constexpr DenseSet<MatchFieldType> kAllMatchFieldTypes{
+// Contains all FormControlType constants used for the heuristics.
+// TODO(crbug.com/1514693): Remove.
+constexpr DenseSet<FormControlType> kAllMatchFieldTypes{
     MatchFieldType::kText,       MatchFieldType::kEmail,
     MatchFieldType::kTelephone,  MatchFieldType::kSelectOne,
     MatchFieldType::kSelectList, MatchFieldType::kTextArea,
@@ -51,18 +61,18 @@ constexpr DenseSet<MatchFieldType> kAllMatchFieldTypes{
 // A pair of sets of MatchAttributes and MatchFieldTypes.
 struct MatchParams {
   inline constexpr MatchParams(DenseSet<MatchAttribute> attributes,
-                               DenseSet<MatchFieldType> field_types);
+                               DenseSet<FormControlType> field_types);
   inline constexpr MatchParams(const MatchParams&);
   inline constexpr MatchParams& operator=(const MatchParams&);
   inline constexpr MatchParams(MatchParams&&);
   inline constexpr MatchParams& operator=(MatchParams&&);
 
   DenseSet<MatchAttribute> attributes;
-  DenseSet<MatchFieldType> field_types;
+  DenseSet<FormControlType> field_types;
 };
 
 inline constexpr MatchParams::MatchParams(DenseSet<MatchAttribute> attributes,
-                                          DenseSet<MatchFieldType> field_types)
+                                          DenseSet<FormControlType> field_types)
     : attributes(attributes), field_types(field_types) {}
 inline constexpr MatchParams::MatchParams(const MatchParams&) = default;
 inline constexpr MatchParams& MatchParams::operator=(const MatchParams&) =
@@ -71,7 +81,7 @@ inline constexpr MatchParams::MatchParams(MatchParams&&) = default;
 inline constexpr MatchParams& MatchParams::operator=(MatchParams&&) = default;
 
 // By default match label and name for <input type="text"> elements.
-template <MatchFieldType... additional_match_field_types>
+template <FormControlType... additional_match_field_types>
 constexpr MatchParams kDefaultMatchParamsWith{
     kAllMatchAttributes,
     {MatchFieldType::kText, additional_match_field_types...}};
@@ -93,7 +103,7 @@ struct MatchingPattern {
   const char16_t* negative_pattern;
   const float positive_score = 1.1;
   const DenseSet<MatchAttribute> match_field_attributes;
-  const DenseSet<MatchFieldType> match_field_input_types;
+  const DenseSet<FormControlType> match_field_input_types;
 };
 
 }  // namespace autofill

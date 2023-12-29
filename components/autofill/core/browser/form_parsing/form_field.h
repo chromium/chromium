@@ -287,7 +287,7 @@ class FormField {
 
   // Returns true iff `type` matches `match_type`.
   static bool MatchesFormControlType(FormControlType type,
-                                     DenseSet<MatchFieldType> match_type);
+                                     DenseSet<FormControlType> match_type);
 
  protected:
   // Returns true if |field_type| is a single field parseable type.

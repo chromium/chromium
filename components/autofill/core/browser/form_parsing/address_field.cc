@@ -63,11 +63,11 @@ MatchParams WithoutAttribute(MatchParams match_type, MatchAttribute attribute) {
   return match_type;
 }
 
-// Adds a MatchFieldType to a MatchingPattern.
+// Adds a FormControlType to a MatchingPattern.
 // TODO(crbug/1142936): This is necessary for AddressField::ParseAddressLines()
 // and AddressField::Parse().
-MatchingPattern WithFieldType(MatchingPattern p, MatchFieldType field_type) {
-  DenseSet<MatchFieldType> match_field_input_types = p.match_field_input_types;
+MatchingPattern WithFieldType(MatchingPattern p, FormControlType field_type) {
+  DenseSet<FormControlType> match_field_input_types = p.match_field_input_types;
   match_field_input_types.insert(field_type);
   return {
       .positive_pattern = p.positive_pattern,
