@@ -666,7 +666,10 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     static_assert(
         raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
         "cannot index raw_ptr unless AllowPtrArithmetic trait is present.");
-    return *Impl::Advance(wrapped_ptr_, delta_elems);
+    // Call SafelyUnwrapPtrForDereference() to simulate what GetForDereference()
+    // does, but without creating a temporary.
+    return *Impl::SafelyUnwrapPtrForDereference(
+        Impl::Advance(wrapped_ptr_, delta_elems));
   }
 
   // Do not disable operator+() and operator-().
