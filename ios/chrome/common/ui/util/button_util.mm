@@ -29,7 +29,7 @@ UIButton* PrimaryActionButton(BOOL pointer_interaction_enabled) {
     UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
     NSDictionary* attributes = @{NSFontAttributeName : font};
     NSMutableAttributedString* string =
-        [[NSMutableAttributedString alloc] initWithString:@""];
+        [[NSMutableAttributedString alloc] initWithString:@" "];
     [string addAttributes:attributes range:NSMakeRange(0, string.length)];
     buttonConfiguration.attributedTitle = string;
 
