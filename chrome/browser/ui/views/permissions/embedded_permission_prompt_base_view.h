@@ -10,10 +10,13 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_view_delegate.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_base_view.h"
+#include "components/favicon_base/favicon_types.h"
 #include "components/permissions/permission_prompt.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/controls/styled_label.h"
+#include "ui/views/layout/flex_layout_view.h"
 
 class Browser;
 
@@ -64,6 +67,7 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
   // views::BubbleDialogDelegateView:
   bool ShouldShowCloseButton() const override;
   void Init() override;
+  void AddedToWidget() override;
 
  protected:
   enum class ButtonType {

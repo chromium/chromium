@@ -23,35 +23,10 @@ EmbeddedPermissionPromptShowSystemPromptView::
 
 std::u16string
 EmbeddedPermissionPromptShowSystemPromptView::GetAccessibleWindowTitle() const {
-  return GetMessageText();
+  return GetWindowTitle();
 }
 
 std::u16string EmbeddedPermissionPromptShowSystemPromptView::GetWindowTitle()
-    const {
-  return std::u16string();
-}
-
-void EmbeddedPermissionPromptShowSystemPromptView::RunButtonCallback(
-    int button_id) {
-  // This view has no buttons.
-  NOTREACHED();
-  return;
-}
-
-std::vector<
-    EmbeddedPermissionPromptShowSystemPromptView::RequestLineConfiguration>
-EmbeddedPermissionPromptShowSystemPromptView::GetRequestLinesConfiguration()
-    const {
-  return {{/*icon=*/nullptr, GetMessageText()}};
-}
-
-std::vector<EmbeddedPermissionPromptShowSystemPromptView::ButtonConfiguration>
-EmbeddedPermissionPromptShowSystemPromptView::GetButtonsConfiguration() const {
-  // This view has no buttons.
-  return std::vector<ButtonConfiguration>();
-}
-
-std::u16string EmbeddedPermissionPromptShowSystemPromptView::GetMessageText()
     const {
   const auto& requests = delegate()->Requests();
   CHECK_GT(requests.size(), 0U);
@@ -66,4 +41,24 @@ std::u16string EmbeddedPermissionPromptShowSystemPromptView::GetMessageText()
 
   return l10n_util::GetStringFUTF16(IDS_PERMISSION_CHROME_NEEDS_PERMISSION,
                                     permission_name);
+}
+
+void EmbeddedPermissionPromptShowSystemPromptView::RunButtonCallback(
+    int button_id) {
+  // This view has no buttons.
+  NOTREACHED();
+  return;
+}
+
+std::vector<
+    EmbeddedPermissionPromptShowSystemPromptView::RequestLineConfiguration>
+EmbeddedPermissionPromptShowSystemPromptView::GetRequestLinesConfiguration()
+    const {
+  return {};
+}
+
+std::vector<EmbeddedPermissionPromptShowSystemPromptView::ButtonConfiguration>
+EmbeddedPermissionPromptShowSystemPromptView::GetButtonsConfiguration() const {
+  // This view has no buttons.
+  return std::vector<ButtonConfiguration>();
 }

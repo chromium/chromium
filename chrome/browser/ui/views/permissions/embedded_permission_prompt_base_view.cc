@@ -81,6 +81,30 @@ void EmbeddedPermissionPromptBaseView::CreateWidget() {
   }
 }
 
+void EmbeddedPermissionPromptBaseView::AddedToWidget() {
+  if (!GetRequestLinesConfiguration().empty()) {
+    return;
+  }
+
+  auto title_container = std::make_unique<views::FlexLayoutView>();
+  title_container->SetOrientation(views::LayoutOrientation::kVertical);
+
+  auto label = std::make_unique<views::Label>(
+      GetWindowTitle(), views::style::CONTEXT_DIALOG_BODY_TEXT);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label->SetCollapseWhenHidden(true);
+  label->SetMultiLine(true);
+  label->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kScaleToMaximum,
+                               /*adjust_height_for_width=*/true));
+  AddElementIdentifierToLabel(*label, /*index*/ 0);
+  title_container->AddChildView(std::move(label));
+
+  GetBubbleFrameView()->SetTitleView(std::move(title_container));
+}
+
 void EmbeddedPermissionPromptBaseView::ClosingPermission() {
   if (delegate()) {
     delegate()->Dismiss();

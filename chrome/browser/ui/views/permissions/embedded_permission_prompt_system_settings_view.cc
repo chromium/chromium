@@ -23,12 +23,24 @@ EmbeddedPermissionPromptSystemSettingsView::
 
 std::u16string
 EmbeddedPermissionPromptSystemSettingsView::GetAccessibleWindowTitle() const {
-  return GetMessageText();
+  return GetWindowTitle();
 }
 
 std::u16string EmbeddedPermissionPromptSystemSettingsView::GetWindowTitle()
     const {
-  return std::u16string();
+  const auto& requests = delegate()->Requests();
+  CHECK_GT(requests.size(), 0U);
+
+  std::u16string permission_name;
+  if (requests.size() == 2) {
+    permission_name = l10n_util::GetStringUTF16(
+        IDS_CAMERA_AND_MICROPHONE_PERMISSION_NAME_FRAGMENT);
+  } else {
+    permission_name = requests[0]->GetPermissionNameTextFragment();
+  }
+
+  return l10n_util::GetStringFUTF16(IDS_PERMISSION_OFF_FOR_CHROME,
+                                    permission_name);
 }
 
 void EmbeddedPermissionPromptSystemSettingsView::RunButtonCallback(
@@ -47,7 +59,7 @@ std::vector<
     EmbeddedPermissionPromptSystemSettingsView::RequestLineConfiguration>
 EmbeddedPermissionPromptSystemSettingsView::GetRequestLinesConfiguration()
     const {
-  return {{/*icon=*/nullptr, GetMessageText()}};
+  return {};
 }
 
 std::vector<EmbeddedPermissionPromptSystemSettingsView::ButtonConfiguration>
@@ -66,21 +78,4 @@ EmbeddedPermissionPromptSystemSettingsView::GetButtonsConfiguration() const {
   return {{l10n_util::GetStringFUTF16(IDS_EMBEDDED_PROMPT_OPEN_SYSTEM_SETTINGS,
                                       operating_system_name),
            ButtonType::kSystemSettings, ui::ButtonStyle::kTonal}};
-}
-
-std::u16string EmbeddedPermissionPromptSystemSettingsView::GetMessageText()
-    const {
-  const auto& requests = delegate()->Requests();
-  CHECK_GT(requests.size(), 0U);
-
-  std::u16string permission_name;
-  if (requests.size() == 2) {
-    permission_name = l10n_util::GetStringUTF16(
-        IDS_CAMERA_AND_MICROPHONE_PERMISSION_NAME_FRAGMENT);
-  } else {
-    permission_name = requests[0]->GetPermissionNameTextFragment();
-  }
-
-  return l10n_util::GetStringFUTF16(IDS_PERMISSION_OFF_FOR_CHROME,
-                                    permission_name);
 }
