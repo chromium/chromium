@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "third_party/skia/include/core/SkRRect.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -74,6 +75,9 @@ GtkCssContext HeaderContext(bool solid_frame, bool focused) {
       AppendCssNodeToStyleContext(context, "headerbar.header-bar.titlebar");
   if (!focused) {
     gtk_style_context_set_state(context, GTK_STATE_FLAG_BACKDROP);
+  }
+  if (features::IsChromeRefresh2023()) {
+    ApplyCssToContext(context, "* { border-bottom-style: none; }");
   }
   return context;
 }
