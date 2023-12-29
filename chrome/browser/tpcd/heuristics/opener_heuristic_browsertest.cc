@@ -1256,8 +1256,16 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest, TopLevel_PopupId) {
   EXPECT_NE(popup_id, popup_id2);
 }
 
+// TODO(crbug.com/1511706): Flaky on mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TopLevel_PastInteraction_AdTagged \
+  DISABLED_TopLevel_PastInteraction_AdTagged
+#else
+#define MAYBE_TopLevel_PastInteraction_AdTagged \
+  TopLevel_PastInteraction_AdTagged
+#endif
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
-                       TopLevel_PastInteraction_AdTagged) {
+                       MAYBE_TopLevel_PastInteraction_AdTagged) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL toplevel_url =
       embedded_test_server()->GetURL("a.com", "/ad_tagging/frame_factory.html");
