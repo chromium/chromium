@@ -15,10 +15,10 @@ import {AutomationTreeWalker} from '../tree_walker.js';
 
 import {AncestryRecoveryStrategy, RecoveryStrategy} from './recovery_strategy.js';
 
-const AutomationNode = chrome.automation.AutomationNode;
-const Dir = constants.Dir;
-const RoleType = chrome.automation.RoleType;
-const StateType = chrome.automation.StateType;
+import AutomationNode = chrome.automation.AutomationNode;
+import Dir = constants.Dir;
+import RoleType = chrome.automation.RoleType;
+import StateType = chrome.automation.StateType;
 
 /**
  * The special index that represents a cursor pointing to a node without
@@ -26,72 +26,73 @@ const StateType = chrome.automation.StateType;
  */
 export const CURSOR_NODE_INDEX = -1;
 
-/**
- * Represents units of CursorMovement.
- * @enum {string}
- */
-export const CursorUnit = {
+/** Represents units of CursorMovement. */
+export enum CursorUnit {
   /** A single character within accessible name or value. */
-  CHARACTER: 'character',
+  CHARACTER = 'character',
 
   /** A range of characters (given by attributes on automation nodes). */
-  WORD: 'word',
+  WORD = 'word',
 
   /** A text node. */
-  TEXT: 'text',
+  TEXT = 'text',
 
   /** A leaf node. */
-  NODE: 'node',
+  NODE = 'node',
 
   /** A leaf node for guesture navigation. */
-  GESTURE_NODE: 'gesture_node',
+  GESTURE_NODE = 'gesture_node',
 
   /**
    * A node or in line textbox that immediately precedes or follows a visual
    *     line break.
    */
-  LINE: 'line',
-};
+  LINE = 'line',
+}
 
-/**
- * Represents the ways in which cursors can move given a cursor unit.
- * @enum {string}
- */
-export const CursorMovement = {
+/** Represents the ways in which cursors can move given a cursor unit. */
+export enum CursorMovement {
   /** Move to the beginning or end of the current unit. */
-  BOUND: 'bound',
+  BOUND = 'bound',
 
   /** Move to the next unit in a particular direction. */
-  DIRECTIONAL: 'directional',
+  DIRECTIONAL = 'directional',
 
   /**
    * Move to the beginning or end of the current cursor. Only supports
    * Unit.CHARACTER and Unit.WORD
    */
-  SYNC: 'sync',
-};
+  SYNC = 'sync',
+}
 
 /**
  * Represents a position within the automation tree.
  */
 export class Cursor {
+  private index_: number;
+  private recovery_: RecoveryStrategy;
+  private wrapped_: boolean;
+
   /**
-   * @param {!AutomationNode} node
-   * @param {number} index A 0-based index into this cursor node's primary
+   * @param index A 0-based index into this cursor node's primary
    * accessible name. An index of |CURSOR_NODE_INDEX| means the node as a
    * whole is pointed to and covers the case where the accessible text is
    * empty.
-   * @param {{wrapped: (boolean|undefined),
-   *            preferNodeStartEquivalent: (boolean|undefined)}} args
+   * @param args
    *     wrapped: determines whether this cursor wraps when moved beyond a
    * document boundary.
    *     preferNodeStartEquivalent: When true,moves this cursor to the start of
    * the next node when it points to the end of the current node.
    */
-  constructor(node, index, args = {}) {
+  constructor(node: AutomationNode, index: number, args: {
+    wrapped?: boolean,
+    preferNodeStartEquivalent?: boolean,
+  } = {}) {
     // Compensate for specific issues in Blink.
     // TODO(dtseng): Pass through affinity; if upstream, skip below.
-    if (node.role === RoleType.STATIC_TEXT && node.name.length === index &&
+    // TODO(b/314203187): Not null asserted, check these to make sure this is
+    // correct.
+    if (node.role === RoleType.STATIC_TEXT && node.name!.length === index &&
         !args.preferNodeStartEquivalent) {
       // Re-interpret this case as the beginning of the next node.
       const nextNode = AutomationUtil.findNextNode(
@@ -106,29 +107,20 @@ export class Cursor {
       }
     }
 
-    /** @type {number} @private */
     this.index_ = index;
-    /** @type {RecoveryStrategy} */
     this.recovery_ = new AncestryRecoveryStrategy(node);
-    /** @private {boolean} */
     this.wrapped_ = args.wrapped || false;
   }
 
-  /**
-   * Convenience method to construct a Cursor from a node.
-   * @param {!AutomationNode} node
-   * @return {!Cursor}
-   */
-  static fromNode(node) {
+  /** Convenience method to construct a Cursor from a node. */
+  static fromNode(node: AutomationNode): Cursor {
     return new Cursor(node, CURSOR_NODE_INDEX);
   }
 
   /**
    * Gives a function that returns true for leaf types for |unit| navigations.
-   * @param {!CursorUnit} unit
-   * @return {AutomationPredicate.Unary}
    */
-  static getLeafPredForUnit(unit) {
+  static getLeafPredForUnit(unit: CursorUnit): AutomationPredicate.Unary {
     switch (unit) {
       case CursorUnit.TEXT:
         return AutomationPredicate.leaf;
@@ -142,14 +134,12 @@ export class Cursor {
   /**
    * Returns true if |rhs| is equal to this cursor.
    * Use this for strict equality between cursors.
-   * @param {!Cursor} rhs
-   * @return {boolean}
    */
-  equals(rhs) {
+  equals(rhs: Cursor): boolean {
     return this.node === rhs.node && this.index === rhs.index;
   }
 
-  equalsWithoutRecovery(rhs) {
+  equalsWithoutRecovery(rhs: Cursor): boolean {
     return this.recovery_.equalsWithoutRecovery(rhs.recovery_);
   }
 
@@ -158,14 +148,12 @@ export class Cursor {
    * Use this for loose equality between cursors where specific
    * character-based indicies do not matter such as when processing
    * node-targeted events.
-   * @param {!Cursor} rhs
-   * @return {boolean}
    */
-  contentEquals(rhs) {
+  contentEquals(rhs: Cursor): boolean {
     // First, normalize the two nodes so they both point to the first non-text
     // node.
-    let lNode = this.node;
-    let rNode = rhs.node;
+    let lNode: AutomationNode|undefined = this.node;
+    let rNode: AutomationNode|undefined = rhs.node;
     while (lNode &&
            (lNode.role === RoleType.INLINE_TEXT_BOX ||
             lNode.role === RoleType.STATIC_TEXT)) {
@@ -184,11 +172,10 @@ export class Cursor {
 
   /**
    * Compares this cursor with |rhs|.
-   * @param {Cursor} rhs
    * @return Dir.BACKWARD if |rhs| comes before this cursor in
    * document order. Forward otherwise.
    */
-  compare(rhs) {
+  compare(rhs: Cursor): Dir {
     if (!this.node || !rhs.node) {
       return Dir.FORWARD;
     }
@@ -202,9 +189,8 @@ export class Cursor {
   /**
    * Returns the node. If the node is invalid since the last time it
    * was accessed, moves the cursor to the nearest valid ancestor first.
-   * @return {!AutomationNode}
    */
-  get node() {
+  get node(): AutomationNode {
     if (this.requiresRecovery()) {
       // If we need to recover, the index is no longer valid.
       this.index_ = CURSOR_NODE_INDEX;
@@ -212,18 +198,12 @@ export class Cursor {
     return this.recovery_.node;
   }
 
-  /**
-   * @return {number}
-   */
-  get index() {
+  get index(): number {
     return this.index_;
   }
 
-  /**
-   * A node appropriate for making selections.
-   * @return {AutomationNode}
-   */
-  get selectionNode() {
+  /** A node appropriate for making selections. */
+  get selectionNode(): AutomationNode {
     // TODO(accessibility): figure out if we still need the above property.
     return this.node;
   }
@@ -232,35 +212,28 @@ export class Cursor {
    * An index appropriate for making selections.  If this cursor has a
    * CURSOR_NODE_INDEX index, the selection index is a node offset e.g. the
    * index in parent. If not, the index is a character offset.
-   * @return {number}
    */
-  get selectionIndex() {
+  get selectionIndex(): number {
     return this.index_ === CURSOR_NODE_INDEX ? 0 : this.index_;
   }
 
-  /**
-   * Gets the accessible text of the node associated with this cursor.
-   * @return {string}
-   */
-  getText() {
+  /** Gets the accessible text of the node associated with this cursor. */
+  getText(): string {
     return AutomationUtil.getText(this.node);
   }
 
   /**
    * Makes a Cursor which has been moved from this cursor by the unit in the
    * given direction using the given movement type.
-   * @param {CursorUnit} unit
-   * @param {CursorMovement} movement
-   * @param {constants.Dir} dir
-   * @return {!Cursor} The moved cursor.
+   * @return The moved cursor.
    */
-  move(unit, movement, dir) {
+  move(unit: CursorUnit, movement: CursorMovement, dir: constants.Dir): Cursor {
     const originalNode = this.node;
     if (!originalNode) {
       return this;
     }
 
-    let newNode = originalNode;
+    let newNode: AutomationNode|null = originalNode;
     let newIndex = this.index_;
 
     switch (unit) {
@@ -341,10 +314,12 @@ export class Cursor {
             }
             let start;
             let end;
-            for (let i = 0; i < wordStarts.length; i++) {
-              if (newIndex >= wordStarts[i] && newIndex < wordEnds[i]) {
-                start = wordStarts[i];
-                end = wordEnds[i];
+            // TODO(b/314203187): Not nulls asserted, check these to make sure
+            // they are correct.
+            for (let i = 0; i < wordStarts!.length; i++) {
+              if (newIndex >= wordStarts![i] && newIndex < wordEnds![i]) {
+                start = wordStarts![i];
+                end = wordEnds![i];
                 break;
               }
             }
@@ -352,6 +327,7 @@ export class Cursor {
               newIndex = dir === Dir.FORWARD ? end : start;
             }
           } break;
+          // @ts-expect-error Fallthrough case in switch
           case CursorMovement.SYNC:
             if (newIndex === CURSOR_NODE_INDEX) {
               newIndex = dir === Dir.FORWARD ? firstWordStart - 1 :
@@ -370,10 +346,12 @@ export class Cursor {
               wordEnds = newNode.nonInlineTextWordEnds;
             }
             // Go to the next word stop in the same piece of text.
-            for (let i = 0; i < wordStarts.length; i++) {
-              if ((dir === Dir.FORWARD && newIndex < wordStarts[i]) ||
-                  (dir === Dir.BACKWARD && newIndex >= wordEnds[i])) {
-                start = wordStarts[i];
+            // TODO(b/314203187): Not nulls asserted, check these to make sure
+            // they are correct.
+            for (let i = 0; i < wordStarts!.length; i++) {
+              if ((dir === Dir.FORWARD && newIndex < wordStarts![i]) ||
+                  (dir === Dir.BACKWARD && newIndex >= wordEnds![i])) {
+                start = wordStarts![i];
                 if (dir === Dir.FORWARD) {
                   break;
                 }
@@ -389,9 +367,11 @@ export class Cursor {
                 // The backward case is special at the beginning of nodes.
                 newIndex = firstWordStart;
               } else {
+                // TODO(b/314203187): Not null asserted, check these to make
+                // sure this is correct.
                 newNode = AutomationUtil.findNextNode(
                     newNode, dir, AutomationPredicate.leafWithWordStop,
-                    {root: r => r === newNode.root});
+                    {root: r => r === newNode!.root});
                 if (newNode) {
                   let starts;
                   if (newNode.role === RoleType.INLINE_TEXT_BOX) {
@@ -399,10 +379,12 @@ export class Cursor {
                   } else {
                     starts = newNode.nonInlineTextWordStarts;
                   }
-                  if (starts.length) {
+                  // TODO(b/314203187): Not nulls asserted, check these to make
+                  // sure they are correct.
+                  if (starts!.length) {
                     newIndex = dir === Dir.BACKWARD ?
-                        starts[starts.length - 1] :
-                        starts[0];
+                        starts![starts!.length - 1] :
+                        starts![0];
                   }
                 }
               }
@@ -454,26 +436,29 @@ export class Cursor {
 
   /**
    * Returns the deepest equivalent cursor.
-   * @return {!Cursor}
    */
-  get deepEquivalent() {
+  get deepEquivalent(): Cursor {
     let newNode = this.node;
     let newIndex = this.index_;
     let isTextIndex = false;
 
     while (newNode.firstChild) {
+      // TODO(b/314203187): Not nulls asserted, check these to make sure this is
+      // correct.
       if (AutomationPredicate.editText(newNode) &&
-          !newNode.state[StateType.MULTILINE]) {
+          !newNode.state![StateType.MULTILINE]) {
         // Do not reinterpret nodes and indices on this node.
         break;
       } else if (newNode.role === RoleType.STATIC_TEXT) {
         // Text offset.
         // Re-interpret the index as an offset into an inlineTextBox.
         isTextIndex = true;
-        let target = newNode.firstChild;
+        let target: AutomationNode|undefined = newNode.firstChild;
         let length = 0;
         while (target && length < newIndex) {
-          const newLength = length + target.name.length;
+          // TODO(b/314203187): Not nulls asserted, check these to make sure
+          // this is correct.
+          const newLength = length + target.name!.length;
 
           // Either |newIndex| falls between target's text or |newIndex| is
           // the total length of all sibling text content.
@@ -495,8 +480,10 @@ export class Cursor {
           // editable should be treated as a child offset.
           // However, an index inside a simple editable, such as an input
           // element, should be treated as a character offset.
-          (!newNode.state[StateType.EDITABLE] ||
-           newNode.state[StateType.RICHLY_EDITABLE]) &&
+          // TODO(b/314203187): Not nulls asserted, check these to make sure
+          // they are correct.
+          (!newNode.state![StateType.EDITABLE] ||
+           newNode.state![StateType.RICHLY_EDITABLE]) &&
           newIndex <= newNode.children.length) {
         // Valid child node offset. Note that there is a special case where
         // |newIndex == node.children.length|. In these cases, we actually
@@ -505,11 +492,15 @@ export class Cursor {
         // |newIndex| is assumed to be > 0.
         if (newIndex === newNode.children.length) {
           // Take the last child.
-          newNode = newNode.lastChild;
+          // TODO(b/314203187): Not nulls asserted, check these to make sure
+          // this is correct.
+          newNode = newNode.lastChild!;
 
           // The |newIndex| is either a text offset or a child offset.
           if (newNode.role === RoleType.STATIC_TEXT) {
-            newIndex = newNode.name.length;
+            // TODO(b/314203187): Not nulls asserted, check these to make sure
+            // this is correct.
+            newIndex = newNode.name!.length;
             isTextIndex = true;
             break;
           }
@@ -534,7 +525,9 @@ export class Cursor {
         let targetIndex = 0;
         let cur = 0;
         while (walker.next().node) {
-          const line = walker.node;
+          // TODO(b/314203187): Not nulls asserted, check these to make sure
+          // this is correct.
+          const line = walker.node!;
           const lineLength = line.name ? line.name.length : 1;
           cur += lineLength;
           if (cur > newIndex) {
@@ -554,9 +547,14 @@ export class Cursor {
           while (targetLine && targetLine.lastChild) {
             targetLine = targetLine.lastChild;
           }
-          targetIndex = targetLine ? targetLine.name.length : CURSOR_NODE_INDEX;
+          // TODO(b/314203187): Not nulls asserted, check these to make sure
+          // this is correct.
+          targetIndex =
+              targetLine ? targetLine.name!.length : CURSOR_NODE_INDEX;
         }
-        newNode = targetLine;
+        // TODO(b/314203187): Not nulls asserted, check these to make sure this
+        // is correct.
+        newNode = targetLine!;
         newIndex = targetIndex;
         break;
       }
@@ -565,22 +563,16 @@ export class Cursor {
       newIndex = CURSOR_NODE_INDEX;
     }
 
-    return new this.constructor(newNode, newIndex);
+    return new Cursor(newNode, newIndex);
   }
 
-  /**
-   * Returns whether this cursor points to a valid position.
-   * @return {boolean}
-   */
-  isValid() {
+  /** Returns whether this cursor points to a valid position. */
+  isValid(): boolean {
     return this.node != null;
   }
 
-  /**
-   * Returns true if this cursor requires recovery.
-   * @return {boolean}
-   */
-  requiresRecovery() {
+  /** Returns true if this cursor requires recovery. */
+  requiresRecovery(): boolean {
     return this.recovery_.requiresRecovery();
   }
 
@@ -588,43 +580,36 @@ export class Cursor {
    * Returns true if this cursor was created after wrapping. For example, moving
    * from a cursor at the end of a web contents to [this] range at the beginning
    * of the document.
-   * @return {boolean}
    */
-  get wrapped() {
+  get wrapped(): boolean {
     return this.wrapped_;
   }
 }
 
 
 /**
- * A Cursor that wraps from beginning to end and vice versa when
- * moved.
+ * A Cursor that wraps from beginning to end and vice versa when moved.
  */
 export class WrappingCursor extends Cursor {
   /**
-   * @param {!AutomationNode} node
-   * @param {number} index A 0-based index into this cursor node's primary
-   * accessible name. An index of |CURSOR_NODE_INDEX| means the node as a
-   * whole is pointed to and covers the case where the accessible text is
-   * empty.
-   * @param {{wrapped: (boolean|undefined)}} args
+   * @param index A 0-based index into this cursor node's primary accessible
+   * name. An index of |CURSOR_NODE_INDEX| means the node as a whole is pointed
+   * to and covers the case where the accessible text is empty.
    */
-  constructor(node, index, args = {}) {
+  constructor(node: AutomationNode, index: number, args: {
+    wrapped?: boolean,
+  } = {}) {
     super(node, index, args);
   }
 
-  /**
-   * Convenience method to construct a Cursor from a node.
-   * @param {!AutomationNode} node
-   * @return {!WrappingCursor}
-   */
-  static fromNode(node) {
+  /** Convenience method to construct a Cursor from a node. */
+  static override fromNode(node: AutomationNode): WrappingCursor {
     return new WrappingCursor(node, CURSOR_NODE_INDEX);
   }
 
-  /** @override */
-  move(unit, movement, dir) {
-    let result = this;
+  override move(unit: CursorUnit, movement: CursorMovement, dir: constants.Dir):
+      Cursor {
+    let result: Cursor = this;
     if (!result.node) {
       return this;
     }
@@ -655,10 +640,11 @@ export class WrappingCursor extends Cursor {
       }
 
       // Finds any explicitly provided focus.
-      const getDirectedFocus = function(node) {
-        return dir === Dir.FORWARD ? node.nextWindowFocus :
-                                     node.previousWindowFocus;
-      };
+      const getDirectedFocus = function(node: AutomationNode): AutomationNode|
+          undefined {
+            return dir === Dir.FORWARD ? node.nextWindowFocus :
+                                         node.previousWindowFocus;
+          };
 
       // Case 1: forwards (find the root-like node).
       let directedFocus;
