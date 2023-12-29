@@ -77,7 +77,7 @@ struct MatchingPattern {
   const char16_t* negative_pattern;
   const float positive_score = 1.1;
   const DenseSet<MatchAttribute> match_field_attributes;
-  const DenseSet<FormControlType> match_field_input_types;
+  const DenseSet<FormControlType> form_control_types;
 };
 
 }  // namespace autofill

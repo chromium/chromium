@@ -89,7 +89,7 @@ MatchingPattern MatchPatternRef::operator*() const {
       .match_field_attributes =
           is_supplementary() ? DenseSet<MatchAttribute>{MatchAttribute::kName}
                              : p.match_field_attributes,
-      .match_field_input_types = p.match_field_input_types,
+      .form_control_types = p.form_control_types,
   };
 }
 

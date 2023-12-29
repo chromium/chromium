@@ -147,7 +147,7 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
            f'  .negative_pattern = {negative_pattern},\n' \
            f'  .positive_score = {positive_score},\n' \
            f'  .match_field_attributes = {match_field_attributes},\n' \
-           f'  .match_field_input_types = {form_control_types},\n' \
+           f'  .form_control_types = {form_control_types},\n' \
            f'}}'
 
   # Name of the auxiliary C++ constant.

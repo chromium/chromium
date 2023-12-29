@@ -355,7 +355,7 @@ bool FormField::FieldMatchesMatchPatternRef(
   for (MatchPatternRef pattern_ref : patterns) {
     MatchingPattern pattern = *pattern_ref;
     if (!MatchesFormControlType(field.form_control_type,
-                                pattern.match_field_input_types)) {
+                                pattern.form_control_types)) {
       continue;
     }
 
@@ -364,7 +364,7 @@ bool FormField::FieldMatchesMatchPatternRef(
     // negative pattern. If yes, remove it from the attributes that are
     // considered for positive matching.
     MatchParams match_type(pattern.match_field_attributes,
-                           pattern.match_field_input_types);
+                           pattern.form_control_types);
 
     if (!IsEmpty(pattern.negative_pattern)) {
       for (MatchAttribute attribute : pattern.match_field_attributes) {
@@ -439,7 +439,7 @@ bool FormField::ParseFieldSpecificsWithNewPatterns(
     MatchingPattern pattern =
         projection ? (*projection)(*pattern_ref) : *pattern_ref;
     if (!MatchesFormControlType(field->form_control_type,
-                                pattern.match_field_input_types)) {
+                                pattern.form_control_types)) {
       continue;
     }
 
@@ -448,7 +448,7 @@ bool FormField::ParseFieldSpecificsWithNewPatterns(
     // pattern. If yes, remove it from the attributes that are considered for
     // positive matching.
     MatchParams match_type(pattern.match_field_attributes,
-                           pattern.match_field_input_types);
+                           pattern.form_control_types);
 
     if (!IsEmpty(pattern.negative_pattern)) {
       for (MatchAttribute attribute : pattern.match_field_attributes) {

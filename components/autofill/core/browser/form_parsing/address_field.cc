@@ -51,7 +51,7 @@ MatchingPattern WithoutAttribute(MatchingPattern p, MatchAttribute attribute) {
       .negative_pattern = p.negative_pattern,
       .positive_score = p.positive_score,
       .match_field_attributes = match_field_attributes,
-      .match_field_input_types = p.match_field_input_types,
+      .form_control_types = p.form_control_types,
   };
 }
 
@@ -67,14 +67,14 @@ MatchParams WithoutAttribute(MatchParams match_type, MatchAttribute attribute) {
 // TODO(crbug/1142936): This is necessary for AddressField::ParseAddressLines()
 // and AddressField::Parse().
 MatchingPattern WithFieldType(MatchingPattern p, FormControlType field_type) {
-  DenseSet<FormControlType> match_field_input_types = p.match_field_input_types;
-  match_field_input_types.insert(field_type);
+  DenseSet<FormControlType> form_control_types = p.form_control_types;
+  form_control_types.insert(field_type);
   return {
       .positive_pattern = p.positive_pattern,
       .negative_pattern = p.negative_pattern,
       .positive_score = p.positive_score,
       .match_field_attributes = p.match_field_attributes,
-      .match_field_input_types = match_field_input_types,
+      .form_control_types = form_control_types,
   };
 }
 
