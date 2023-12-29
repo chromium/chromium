@@ -56,7 +56,6 @@ constexpr char kLoadingDialog[] = "loadingDialog";
 constexpr char kCancelButton[] = "cancelButton";
 constexpr char kPinCodeWrapper[] = "pinWrapper";
 constexpr char kConfirmAccountDialog[] = "confirmAccountDialog";
-constexpr char kGaiaTransferDialog[] = "gaiaTransferDialog";
 constexpr char kScreenOpenedHistogram[] = "QuickStart.ScreenOpened";
 constexpr test::UIPath kQuickStartEntryPointPath = {
     WelcomeView::kScreenId.name, kWelcomeScreen, kQuickStartEntryPoint};
@@ -83,7 +82,7 @@ constexpr test::UIPath kQuickStartQrCodeCanvas = {
 constexpr test::UIPath kConfirmAccountDialogPath = {
     QuickStartView::kScreenId.name, kConfirmAccountDialog};
 constexpr test::UIPath kCancelButtonGaiaTransferDialog = {
-    QuickStartView::kScreenId.name, kGaiaTransferDialog, kCancelButton};
+    QuickStartView::kScreenId.name, kCancelButton};
 constexpr test::UIPath kQuickStartButtonGaia = {
     "gaia-signin", "signin-frame-dialog", "quick-start-signin-button"};
 

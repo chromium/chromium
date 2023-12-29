@@ -1478,7 +1478,7 @@
     Follow the instructions on your phone to continue setup. Make sure your phone is nearby and Bluetooth is turned on.
   </message>
   <message name="IDS_LOGIN_QUICK_START_ACCOUNT_TRANSFER_STEP_TITLE" desc="A title used on OOBE's Quick Start flow when the user's credentails are being transferred from the Android device to ChromeOS.">
-    Getting Google Account info...
+    Signing in...
   </message>
   <message name="IDS_LOGIN_QUICK_START_ACCOUNT_TRANSFER_STEP_SUBTITLE" desc="A subtitle used on OOBE's Quick Start flow when the user's credentails are being transferred from the Android device to ChromeOS.">
     Transfering Google Account info from your Android phone

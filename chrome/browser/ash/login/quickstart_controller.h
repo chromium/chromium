@@ -71,8 +71,9 @@ class QuickStartController
       CONNECTING_TO_WIFI,
       WIFI_CREDENTIALS_RECEIVED,
       CONFIRM_GOOGLE_ACCOUNT,
-      TRANSFERRING_GAIA_CREDENTIALS,
-      SHOWING_FIDO,
+      SIGNING_IN,
+      // Same state as 'SIGNING_IN' but without the 'Cancel' button.
+      CREATING_ACCOUNT,
       // Exits the screen.
       EXIT_SCREEN,
     };
@@ -81,6 +82,13 @@ class QuickStartController
 
    protected:
     ~UiDelegate() override = default;
+  };
+
+  // For showing the user information on the UI
+  struct UserInfo {
+    std::string email = "";
+    std::string full_name = "";
+    std::string avatar_url = "";
   };
 
   using EntryPointButtonVisibilityCallback = base::OnceCallback<void(bool)>;
@@ -121,7 +129,7 @@ class QuickStartController
   QRCode::PixelData GetQrCode() { return qr_code_data_.value(); }
   std::string GetPin() { return pin_.value(); }
   std::string GetDiscoverableName() { return discoverable_name_.value(); }
-  FidoAssertionInfo GetFidoAssertion() { return fido_.value(); }
+  UserInfo GetUserInfo() { return user_info_; }
   std::string GetWiFiName() { return wifi_name_.value(); }
 
   // Check if bluetooth is disabled which would require showing the enable
@@ -207,8 +215,8 @@ class QuickStartController
   // PIN to be shown on the UI when requested.
   std::optional<std::string> pin_;
 
-  // FIDO assertion returned by the phone. Used by the UI for debugging for now.
-  std::optional<FidoAssertionInfo> fido_;
+  // User information that is shown while 'Signing in...'
+  UserInfo user_info_;
 
   // WiFi name to be shown on the UI.
   std::optional<std::string> wifi_name_;

@@ -41,12 +41,24 @@ void QuickStartScreenHandler::ShowConfirmGoogleAccount() {
   CallExternalAPI("showConfirmGoogleAccount");
 }
 
-void QuickStartScreenHandler::ShowTransferringGaiaCredentials() {
-  CallExternalAPI("showTransferringGaiaCredentials");
+void QuickStartScreenHandler::ShowSigningInStep() {
+  CallExternalAPI("showSigningInStep");
 }
 
-void QuickStartScreenHandler::ShowFidoAssertionReceived(std::string email) {
-  CallExternalAPI("showFidoAssertionReceived", email);
+void QuickStartScreenHandler::ShowCreatingAccountStep() {
+  CallExternalAPI("showCreatingAccountStep");
+}
+
+void QuickStartScreenHandler::SetUserEmail(const std::string email) {
+  CallExternalAPI("setUserEmail", email);
+}
+
+void QuickStartScreenHandler::SetUserFullName(const std::string full_name) {
+  CallExternalAPI("setUserFullName", full_name);
+}
+
+void QuickStartScreenHandler::SetUserAvatar(const std::string avatar_url) {
+  CallExternalAPI("setUserAvatarUrl", avatar_url);
 }
 
 void QuickStartScreenHandler::DeclareLocalizedValues(
