@@ -87,7 +87,7 @@ class ReadWriter {
   // The CallXxx and OnXxx methods are static (but take a WeakPtr) so that the
   // callback will run even if the WeakPtr is invalidated.
 
-  static void OnFlushBeforeActualClose(
+  static void OnEOFFlushBeforeActualClose(
       base::WeakPtr<ReadWriter> weak_ptr,
       scoped_refptr<storage::FileSystemContext> fs_context,
       Close2Callback callback,
@@ -120,7 +120,7 @@ class ReadWriter {
                               Write2Callback callback,
                               WriteTempFileResult result);
 
-  static void OnFlushBeforeCallWriteDirect(
+  static void OnEOFFlushBeforeCallWriteDirect(
       base::WeakPtr<ReadWriter> weak_ptr,
       Write2Callback callback,
       scoped_refptr<storage::FileSystemContext> fs_context,
@@ -180,7 +180,10 @@ class ReadWriter {
   bool is_in_flight_ = false;
   bool closed_ = false;
   bool created_temp_file_ = false;
-  bool fs_writer_needs_flushing_ = false;
+  // storage::FileStreamWriter::Flush takes a storage::FlushMode parameter.
+  // This bool field is about calling with FlushMode::kEndOfFile, not with
+  // FlushMode::kDefault.
+  bool fs_writer_needs_eof_flushing_ = false;
 
   const bool use_temp_file_;
   const bool temp_file_starts_with_copy_;

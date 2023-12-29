@@ -111,23 +111,23 @@ void SaveCallback1(const std::string src_path,
                      std::move(callback)));
 }
 
-using FlushFsWriterCallback = base::OnceCallback<void(
+using EOFFlushFsWriterCallback = base::OnceCallback<void(
     std::unique_ptr<storage::FileStreamWriter> fs_writer,
     int64_t write_offset,
     int posix_error_code)>;
 
-// Calls fs_writer->Flush(), running the callback afterwards, if needs_flushing
-// is true. If false, it just runs the callback immediately.
+// Calls fs_writer->Flush(kEndOfFile), running the callback afterwards, if
+// needs_eof_flushing is true. If false, it just runs the callback immediately.
 //
 // The fs_writer and write_offset are passed through to the callback.
-void FlushFsWriterIfNecessary(
+void EOFFlushFsWriterIfNecessary(
     std::unique_ptr<storage::FileStreamWriter> fs_writer,
     int64_t write_offset,
-    bool needs_flushing,
-    FlushFsWriterCallback callback) {
+    bool needs_eof_flushing,
+    EOFFlushFsWriterCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  if (!fs_writer || !needs_flushing) {
+  if (!fs_writer || !needs_eof_flushing) {
     std::move(callback).Run(std::move(fs_writer), write_offset, 0);
     return;
   }
@@ -140,7 +140,7 @@ void FlushFsWriterIfNecessary(
 
   auto pair = base::SplitOnceCallback(base::BindOnce(
       [](std::unique_ptr<storage::FileStreamWriter> fs_writer,
-         int64_t write_offset, FlushFsWriterCallback callback, int result) {
+         int64_t write_offset, EOFFlushFsWriterCallback callback, int result) {
         int posix_error_code = (result < 0) ? NetErrorToErrno(result) : 0;
         std::move(callback).Run(std::move(fs_writer), write_offset,
                                 posix_error_code);
@@ -187,16 +187,16 @@ void ReadWriter::Close(scoped_refptr<storage::FileSystemContext> fs_context,
   }
   closed_ = true;
 
-  FlushFsWriterIfNecessary(
+  EOFFlushFsWriterIfNecessary(
       std::move(fs_writer_), std::exchange(write_offset_, -1),
-      std::exchange(fs_writer_needs_flushing_, false),
-      base::BindOnce(&ReadWriter::OnFlushBeforeActualClose,
+      std::exchange(fs_writer_needs_eof_flushing_, false),
+      base::BindOnce(&ReadWriter::OnEOFFlushBeforeActualClose,
                      weak_ptr_factory_.GetWeakPtr(), std::move(fs_context),
                      std::move(callback)));
 }
 
 // static
-void ReadWriter::OnFlushBeforeActualClose(
+void ReadWriter::OnEOFFlushBeforeActualClose(
     base::WeakPtr<ReadWriter> weak_ptr,
     scoped_refptr<storage::FileSystemContext> fs_context,
     Close2Callback callback,
@@ -410,7 +410,7 @@ void ReadWriter::Write(scoped_refptr<storage::FileSystemContext> fs_context,
   // See if we can re-use the previous storage::FileStreamWriter.
   //
   // If so, go on to CallWriteDirect immediately. Otherwise, go on to
-  // FlushFsWriterIfNecessary, OnFlushBeforeCallWriteDirect and then
+  // EOFFlushFsWriterIfNecessary, OnEOFFlushBeforeCallWriteDirect and then
   // CallWriteDirect.
   if (fs_writer_ && (write_offset_ == offset)) {
     CallWriteDirect(std::move(callback), std::move(fs_context),
@@ -421,18 +421,18 @@ void ReadWriter::Write(scoped_refptr<storage::FileSystemContext> fs_context,
 
   // We will need a new storage::FileStreamWriter, so destroy the previous one
   // saved to fs_writer_, if it is non-null. However, we might need to Flush it
-  // before destroying it.
+  // (with FlushMode::kEndOfFile) before destroying it.
   //
-  // Calling FlushFsWriterIfNecessary, with std::move(fs_writer_) and with
-  // OnFlushBeforeCallWriteDirect, will Flush (if needed) and destroy that
+  // Calling EOFFlushFsWriterIfNecessary, with std::move(fs_writer_) and with
+  // OnEOFFlushBeforeCallWriteDirect, will Flush (if needed) and destroy that
   // FileStreamWriter (positioned at write_offset_), if it is non-null.
   //
-  // Afterwards, OnFlushBeforeCallWriteDirect creates a new FileStreamWriter
+  // Afterwards, OnEOFFlushBeforeCallWriteDirect creates a new FileStreamWriter
   // (positioned at offset) and passes that on to CallWriteDirect.
-  FlushFsWriterIfNecessary(
+  EOFFlushFsWriterIfNecessary(
       std::move(fs_writer_), std::exchange(write_offset_, -1),
-      std::exchange(fs_writer_needs_flushing_, false),
-      base::BindOnce(&ReadWriter::OnFlushBeforeCallWriteDirect,
+      std::exchange(fs_writer_needs_eof_flushing_, false),
+      base::BindOnce(&ReadWriter::OnEOFFlushBeforeCallWriteDirect,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      std::move(fs_context), std::move(buffer), offset, length));
 }
@@ -526,7 +526,7 @@ void ReadWriter::OnWriteTempFile(base::WeakPtr<ReadWriter> weak_ptr,
 }
 
 // static
-void ReadWriter::OnFlushBeforeCallWriteDirect(
+void ReadWriter::OnEOFFlushBeforeCallWriteDirect(
     base::WeakPtr<ReadWriter> weak_ptr,
     Write2Callback callback,
     scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
@@ -618,8 +618,8 @@ void ReadWriter::OnWriteDirect(
   if (length >= 0) {
     self->fs_writer_ = std::move(fs_writer);
     self->write_offset_ = offset + length;
-    self->fs_writer_needs_flushing_ =
-        self->fs_writer_needs_flushing_ ||
+    self->fs_writer_needs_eof_flushing_ =
+        self->fs_writer_needs_eof_flushing_ ||
         (self->fs_url_.mount_option().flush_policy() ==
          storage::FlushPolicy::FLUSH_ON_COMPLETION);
   } else {
