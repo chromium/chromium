@@ -60,8 +60,9 @@ bool BirthdateField::IsSelectWithIncreasingValues(AutofillScanner* scanner,
                                                   int max_value,
                                                   size_t max_options) {
   AutofillField* field = scanner->Cursor();
-  if (!MatchesFormControlType(field->form_control_type,
-                              {MatchFieldType::kSelect})) {
+  if (!MatchesFormControlType(
+          field->form_control_type,
+          {MatchFieldType::kSelectOne, MatchFieldType::kSelectList})) {
     return false;
   }
   auto options = field->options;
@@ -86,8 +87,9 @@ bool BirthdateField::IsSelectWithIncreasingValues(AutofillScanner* scanner,
 bool BirthdateField::IsLikelyBirthdateYearSelectField(
     AutofillScanner* scanner) {
   AutofillField* field = scanner->Cursor();
-  if (!MatchesFormControlType(field->form_control_type,
-                              {MatchFieldType::kSelect})) {
+  if (!MatchesFormControlType(
+          field->form_control_type,
+          {MatchFieldType::kSelectOne, MatchFieldType::kSelectList})) {
     return false;
   }
   auto options = field->options;

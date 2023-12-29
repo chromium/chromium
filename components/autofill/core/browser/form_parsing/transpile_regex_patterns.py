@@ -102,6 +102,13 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
   # The strings must be the names of MatchFieldType constants, e.g., TEXT_AREA.
   # They're mapped to C++ constants, e.g., kTextArea.
   def json_to_cpp_match_field_input_types(enum_values):
+    # TODO(crbug.com/1514693): As a temporary workaround, map 'SELECT' to
+    # 'SELECT_ONE' and 'SELECT_LIST'.
+    expansions = (
+        ['SELECT_ONE', 'SELECT_LIST'] if e == 'SELECT' else [e]
+        for e in enum_values
+    )
+    enum_values = [e for es in expansions for e in es]
     return json_to_cpp_dense_set(enum_values, 'MatchFieldType')
 
   # Maps a JSON object representing a pattern to a C++ MatchingPattern

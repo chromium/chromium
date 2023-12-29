@@ -283,7 +283,8 @@ bool CreditCardField::LikelyCardMonthSelectField(AutofillScanner* scanner) {
   AutofillField* field = scanner->Cursor();
   if (!MatchesFormControlType(
           field->form_control_type,
-          {MatchFieldType::kSelect, MatchFieldType::kSearch})) {
+          {MatchFieldType::kSelectOne, MatchFieldType::kSelectList,
+           MatchFieldType::kSearch})) {
     return false;
   }
 
@@ -315,7 +316,8 @@ bool CreditCardField::LikelyCardYearSelectField(ParsingContext* context,
   AutofillField* field = scanner->Cursor();
   if (!MatchesFormControlType(
           field->form_control_type,
-          {MatchFieldType::kSelect, MatchFieldType::kSearch})) {
+          {MatchFieldType::kSelectOne, MatchFieldType::kSelectList,
+           MatchFieldType::kSearch})) {
     return false;
   }
 
@@ -333,8 +335,9 @@ bool CreditCardField::LikelyCardYearSelectField(ParsingContext* context,
       GetMatchPatterns("DAY", *context);
   if (FormField::ParseFieldSpecifics(
           *context, scanner, kDayRe,
-          kDefaultMatchParamsWith<MatchFieldType::kSelect>, day_patterns,
-          nullptr, "kDayRe")) {
+          kDefaultMatchParamsWith<MatchFieldType::kSelectOne,
+                                  MatchFieldType::kSelectList>,
+          day_patterns, nullptr, "kDayRe")) {
     return false;
   }
 
@@ -393,7 +396,8 @@ bool CreditCardField::LikelyCardTypeSelectField(AutofillScanner* scanner) {
 
   if (!MatchesFormControlType(
           field->form_control_type,
-          {MatchFieldType::kSelect, MatchFieldType::kSearch})) {
+          {MatchFieldType::kSelectOne, MatchFieldType::kSelectList,
+           MatchFieldType::kSearch})) {
     return false;
   }
 
@@ -546,10 +550,10 @@ bool CreditCardField::ParseExpirationDate(ParsingContext& context,
 
   // If that fails, do a general regex search.
   size_t month_year_saved_cursor = scanner->SaveCursor();
-  const auto kMatchCCType =
-      kDefaultMatchParamsWith<MatchFieldType::kNumber,
-                              MatchFieldType::kTelephone,
-                              MatchFieldType::kSelect, MatchFieldType::kSearch>;
+  const auto kMatchCCType = kDefaultMatchParamsWith<
+      MatchFieldType::kNumber, MatchFieldType::kTelephone,
+      MatchFieldType::kSelectOne, MatchFieldType::kSelectList,
+      MatchFieldType::kSearch>;
 
   base::span<const MatchPatternRef> cc_exp_month_patterns =
       GetMatchPatterns(CREDIT_CARD_EXP_MONTH, context);

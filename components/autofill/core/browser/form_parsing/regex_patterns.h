@@ -35,15 +35,15 @@ class MatchPatternRef {
   // apply to the field's HTML name, not to the field's user-visible label.
   //
   // We use this for English patterns: we augment non-English languages with the
-  // English patterns, restricted to the Attribute::kName. The motivation is
-  // that the coding language also of non-English pages is often English.
+  // English patterns, restricted to the MatchAttribute::kName. The motivation
+  // is that the coding language also of non-English pages is often English.
   //
   // Representing the distinction between ordinary and supplementary patterns in
   // MatchPatternRef saves us from storing the supplementary MatchingPatterns
   // explicitly and saves some binary size.
   //
   // The dereferencing operator implements the restriction to
-  // MatchFieldType::kName of supplementary MatchPatternRef.
+  // MatchAttribute::kName of supplementary MatchPatternRef.
 
   // We choose a small integer to save memory in the generated arrays.
   // Since the generated code passes integer literals to the constructor, the

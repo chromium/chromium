@@ -27,7 +27,8 @@ enum class MatchFieldType {
   kText,
   kEmail,
   kTelephone,
-  kSelect,
+  kSelectOne,
+  kSelectList,
   kTextArea,
   kPassword,
   kNumber,
@@ -41,10 +42,11 @@ constexpr DenseSet<MatchAttribute> kAllMatchAttributes{MatchAttribute::kLabel,
 
 // Contains all MatchFieldType constants.
 constexpr DenseSet<MatchFieldType> kAllMatchFieldTypes{
-    MatchFieldType::kText,      MatchFieldType::kEmail,
-    MatchFieldType::kTelephone, MatchFieldType::kSelect,
-    MatchFieldType::kTextArea,  MatchFieldType::kPassword,
-    MatchFieldType::kNumber,    MatchFieldType::kSearch};
+    MatchFieldType::kText,       MatchFieldType::kEmail,
+    MatchFieldType::kTelephone,  MatchFieldType::kSelectOne,
+    MatchFieldType::kSelectList, MatchFieldType::kTextArea,
+    MatchFieldType::kPassword,   MatchFieldType::kNumber,
+    MatchFieldType::kSearch};
 
 // A pair of sets of MatchAttributes and MatchFieldTypes.
 struct MatchParams {

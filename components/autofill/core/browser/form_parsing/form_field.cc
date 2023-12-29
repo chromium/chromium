@@ -698,8 +698,9 @@ bool FormField::MatchesFormControlType(FormControlType type,
     case FormControlType::kInputText:
       return match_type.contains(MatchFieldType::kText);
     case FormControlType::kSelectOne:
+      return match_type.contains(MatchFieldType::kSelectOne);
     case FormControlType::kSelectList:
-      return match_type.contains(MatchFieldType::kSelect);
+      return match_type.contains(MatchFieldType::kSelectList);
     case FormControlType::kTextArea:
       return match_type.contains(MatchFieldType::kTextArea);
     case FormControlType::kContentEditable:

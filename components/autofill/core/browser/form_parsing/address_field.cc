@@ -85,7 +85,8 @@ constexpr MatchParams kZipCodeMatchType =
                             MatchFieldType::kNumber>;
 
 constexpr MatchParams kDependentLocalityMatchType =
-    kDefaultMatchParamsWith<MatchFieldType::kSelect,
+    kDefaultMatchParamsWith<MatchFieldType::kSelectOne,
+                            MatchFieldType::kSelectList,
                             MatchFieldType::kSearch,
                             MatchFieldType::kTextArea>;
 
@@ -94,10 +95,14 @@ constexpr MatchParams kStreetLocationMatchType =
 
 // Select fields are allowed here.  This occurs on top-100 site rediff.com.
 constexpr MatchParams kCityMatchType =
-    kDefaultMatchParamsWith<MatchFieldType::kSelect, MatchFieldType::kSearch>;
+    kDefaultMatchParamsWith<MatchFieldType::kSelectOne,
+                            MatchFieldType::kSelectList,
+                            MatchFieldType::kSearch>;
 
 constexpr MatchParams kStateMatchType =
-    kDefaultMatchParamsWith<MatchFieldType::kSelect, MatchFieldType::kSearch>;
+    kDefaultMatchParamsWith<MatchFieldType::kSelectOne,
+                            MatchFieldType::kSelectList,
+                            MatchFieldType::kSearch>;
 
 constexpr MatchParams kLandmarkMatchType =
     kDefaultMatchParamsWith<MatchFieldType::kTextArea, MatchFieldType::kSearch>;
@@ -111,7 +116,8 @@ constexpr MatchParams kBetweenStreetsMatchType =
 constexpr MatchParams kAdminLevel2MatchType =
     kDefaultMatchParamsWith<MatchFieldType::kTextArea,
                             MatchFieldType::kSearch,
-                            MatchFieldType::kSelect>;
+                            MatchFieldType::kSelectOne,
+                            MatchFieldType::kSelectList>;
 constexpr MatchParams kOverflowMatchType =
     kDefaultMatchParamsWith<MatchFieldType::kTextArea, MatchFieldType::kSearch>;
 constexpr MatchParams kOverflowAndLandmarkMatchType =
@@ -1051,7 +1057,9 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForCountry(
 
   ParseNameLabelResult country_result = ParseNameAndLabelSeparately(
       context, scanner, kCountryRe,
-      kDefaultMatchParamsWith<MatchFieldType::kSelect, MatchFieldType::kSearch>,
+      kDefaultMatchParamsWith<MatchFieldType::kSelectOne,
+                              MatchFieldType::kSelectList,
+                              MatchFieldType::kSearch>,
       country_patterns, &country_, "kCountryRe");
   if (country_result != RESULT_MATCH_NONE)
     return country_result;
@@ -1061,7 +1069,8 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForCountry(
   return ParseNameAndLabelSeparately(
       context, scanner, kCountryLocationRe,
       MatchParams({MatchAttribute::kLabel, MatchAttribute::kName},
-                  {MatchFieldType::kSelect, MatchFieldType::kSearch}),
+                  {MatchFieldType::kSelectOne, MatchFieldType::kSelectList,
+                   MatchFieldType::kSearch}),
       country_location_patterns, &country_, "kCountryLocationRe");
 }
 

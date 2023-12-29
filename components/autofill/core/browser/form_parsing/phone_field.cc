@@ -142,8 +142,9 @@ bool PhoneField::LikelyAugmentedPhoneCountryCode(
   AutofillField* field = scanner->Cursor();
 
   // Return false if the field is not a selection box.
-  if (!MatchesFormControlType(field->form_control_type,
-                              {MatchFieldType::kSelect})) {
+  if (!MatchesFormControlType(
+          field->form_control_type,
+          {MatchFieldType::kSelectOne, MatchFieldType::kSelectList})) {
     return false;
   }
 
@@ -452,9 +453,9 @@ bool PhoneField::ParsePhoneField(ParsingContext& context,
                                                    MatchFieldType::kNumber>;
   // Include the selection boxes too for the matching of the phone country code.
   if (is_country_code_field) {
-    match_type = kDefaultMatchParamsWith<MatchFieldType::kTelephone,
-                                         MatchFieldType::kNumber,
-                                         MatchFieldType::kSelect>;
+    match_type = kDefaultMatchParamsWith<
+        MatchFieldType::kTelephone, MatchFieldType::kNumber,
+        MatchFieldType::kSelectOne, MatchFieldType::kSelectList>;
   }
 
   base::span<const MatchPatternRef> patterns = GetMatchPatterns(
