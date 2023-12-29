@@ -566,6 +566,9 @@ ts_test_files = [
   "file_manager/foreground/js/metadata/mock_metadata.ts",
   "file_manager/foreground/js/metadata/multi_metadata_provider_unittest.ts",
   "file_manager/foreground/js/metadata/thumbnail_model_unittest.ts",
+
+  # Image Loader:
+  "image_loader/image_orientation_unittest.ts",
 ]
 
 ts_generated_templates = []
@@ -631,7 +634,6 @@ unittest_files = [
   # Image Loader:
   "image_loader/scheduler_unittest.js",
   "image_loader/image_loader_unittest.js",
-  "image_loader/image_orientation_unittest.js",
   "image_loader/cache_unittest.js",
   "image_loader/image_loader_client_unittest.js",
 ]

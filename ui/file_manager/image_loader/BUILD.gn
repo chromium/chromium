@@ -99,13 +99,6 @@ js_unittest("image_loader_client_unittest") {
 js_library("image_orientation") {
 }
 
-js_unittest("image_orientation_unittest") {
-  deps = [
-    ":image_orientation",
-    "//chrome/test/data/webui/chromeos:chai_assert",
-  ]
-}
-
 js_library("piex_loader") {
   externs_list = [ "//ui/file_manager/file_manager/externs/platform.js" ]
 }
@@ -142,7 +135,6 @@ js_test_type_check("js_test_type_check") {
     ":cache_unittest",
     ":image_loader_client_unittest",
     ":image_loader_unittest",
-    ":image_orientation_unittest",
     ":scheduler_unittest",
   ]
 
