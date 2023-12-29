@@ -249,6 +249,8 @@
   if ([SigninPromoViewMediator
           shouldDisplaySigninPromoViewWithAccessPoint:
               signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO
+                                    signinPromoAction:SigninPromoAction::
+                                                          kInstantSignin
                                 authenticationService:self.authenticationService
                                           prefService:self.prefService]) {
     isAccountEligibleForSignInPromo = ![self isUserSignedIn];

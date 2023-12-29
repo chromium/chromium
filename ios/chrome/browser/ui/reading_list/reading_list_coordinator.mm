@@ -643,9 +643,19 @@
     return;
   }
 
+  SigninPromoAction signinPromoAction = SigninPromoAction::kInstantSignin;
+  if (_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+      base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos) &&
+      base::FeatureList::IsEnabled(kEnableReviewAccountSettingsPromo) &&
+      !_syncService->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kReadingList)) {
+    signinPromoAction = SigninPromoAction::kReviewAccountSettings;
+  }
   if (![SigninPromoViewMediator
           shouldDisplaySigninPromoViewWithAccessPoint:
               signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST
+                                    signinPromoAction:signinPromoAction
                                 authenticationService:_authService
                                           prefService:_prefService]) {
     self.shouldShowSignInPromo = NO;
