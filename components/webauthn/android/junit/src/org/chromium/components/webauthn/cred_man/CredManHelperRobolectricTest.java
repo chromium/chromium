@@ -99,6 +99,9 @@ public class CredManHelperRobolectricTest {
     @Mock private WebAuthnBrowserBridge mBrowserBridge;
     @Mock private Callback<Integer> mErrorCallback;
     @Mock private Barrier mBarrier;
+    @Mock private CredManRequestDecorator mRequestDecorator;
+    @Mock private CredManCreateCredentialRequestHelper mCredManCreateCredentialRequestHelper;
+    @Mock private CreateCredentialRequest mCreateCredentialRequest;
 
     private CredManHelper.BridgeProvider mBridgeProvider =
             new CredManHelper.BridgeProvider() {
@@ -127,7 +130,13 @@ public class CredManHelperRobolectricTest {
 
         mCallback = Fido2ApiTestHelper.getAuthenticatorCallback();
 
-        mCredManHelper = new CredManHelper(mBridgeProvider, /* playServicesAvailable= */ true);
+        CredManCreateCredentialRequestHelper.setInstanceForTesting(
+                mCredManCreateCredentialRequestHelper);
+        when(mCredManCreateCredentialRequestHelper.getCreateCredentialRequest(any()))
+                .thenReturn(mCreateCredentialRequest);
+        mCredManHelper =
+                new CredManHelper(
+                        mBridgeProvider, /* playServicesAvailable= */ true, mRequestDecorator);
         mCredManHelper.setMetricsHelperForTesting(mMetricsHelper);
         when(mContext.getSystemService(Context.CREDENTIAL_SERVICE)).thenReturn(mCredentialManager);
     }
@@ -150,21 +159,9 @@ public class CredManHelperRobolectricTest {
         ShadowCredentialManager shadowCredentialManager = Shadow.extract(mCredentialManager);
         CreateCredentialRequest createCredentialRequest =
                 shadowCredentialManager.getCreateCredentialRequest();
-        assertThat(createCredentialRequest).isNotNull();
-        assertThat(createCredentialRequest.getOrigin()).isEqualTo(mOriginString);
-        assertThat(createCredentialRequest.getType())
-                .isEqualTo("androidx.credentials.TYPE_PUBLIC_KEY_CREDENTIAL");
-        assertThat(
-                        createCredentialRequest
-                                .getCredentialData()
-                                .getString("androidx.credentials.BUNDLE_KEY_REQUEST_JSON"))
-                .isEqualTo("{serialized_make_request}");
-        assertThat(createCredentialRequest.alwaysSendAppInfoToProvider()).isTrue();
-        assertThat(
-                        createCredentialRequest
-                                .getCandidateQueryData()
-                                .containsKey("com.android.chrome.CHANNEL"))
-                .isTrue();
+        verify(mCredManCreateCredentialRequestHelper)
+                .getCreateCredentialRequest(eq(mRequestDecorator));
+        assertThat(createCredentialRequest).isEqualTo(mCreateCredentialRequest);
 
         shadowCredentialManager
                 .getCreateCredentialCallback()
@@ -193,13 +190,9 @@ public class CredManHelperRobolectricTest {
         ShadowCredentialManager shadowCredentialManager = Shadow.extract(mCredentialManager);
         CreateCredentialRequest createCredentialRequest =
                 shadowCredentialManager.getCreateCredentialRequest();
-        assertThat(createCredentialRequest).isNotNull();
-        assertThat(createCredentialRequest.getOrigin()).isEqualTo(mOriginString);
-        assertThat(
-                        createCredentialRequest
-                                .getCredentialData()
-                                .getByteArray("androidx.credentials.BUNDLE_KEY_CLIENT_DATA_HASH"))
-                .isEqualTo(mMaybeClientDataHash);
+        verify(mCredManCreateCredentialRequestHelper)
+                .getCreateCredentialRequest(eq(mRequestDecorator));
+        assertThat(createCredentialRequest).isEqualTo(mCreateCredentialRequest);
 
         shadowCredentialManager
                 .getCreateCredentialCallback()

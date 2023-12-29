@@ -4,6 +4,8 @@
 
 package org.chromium.components.webauthn.cred_man;
 
+import static org.chromium.components.webauthn.cred_man.GpmCredManRequestDecorator.getChannel;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.credentials.CreateCredentialException;
@@ -19,7 +21,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.OutcomeReceiver;
 import android.os.SystemClock;
-import android.util.Base64;
 
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
@@ -32,7 +33,6 @@ import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
-import org.chromium.components.version_info.VersionInfo;
 import org.chromium.components.webauthn.Barrier;
 import org.chromium.components.webauthn.Fido2CredentialRequest.ConditionalUiState;
 import org.chromium.components.webauthn.Fido2CredentialRequestJni;
@@ -64,9 +64,11 @@ public class CredManHelper {
     public static final String CRED_MAN_IS_AUTO_SELECT_ALLOWED =
             "androidx.credentials.BUNDLE_KEY_IS_AUTO_SELECT_ALLOWED";
 
+    protected static final String CRED_MAN_PREFIX = "androidx.credentials.";
+    protected static final String TYPE_PASSKEY = CRED_MAN_PREFIX + "TYPE_PUBLIC_KEY_CREDENTIAL";
+
     private static final String CHANNEL_KEY = "com.android.chrome.CHANNEL";
     private static final String INCOGNITO_KEY = "com.android.chrome.INCOGNITO";
-    private static final String CRED_MAN_PREFIX = "androidx.credentials.";
     private static final ComponentName GPM_COMPONENT_NAME =
             ComponentName.createRelative(
                     "com.google.android.gms",
@@ -77,7 +79,6 @@ public class CredManHelper {
             "com.android.chrome.PASSWORDS_WITH_NO_USERNAME_INCLUDED";
     private static final String IGNORE_GPM = "com.android.chrome.GPM_IGNORE";
     private static final String TAG = "CredManHelper";
-    private static final String TYPE_PASSKEY = CRED_MAN_PREFIX + "TYPE_PUBLIC_KEY_CREDENTIAL";
 
     private Callback<Integer> mErrorCallback;
     private Barrier mBarrier;
@@ -88,6 +89,7 @@ public class CredManHelper {
     private byte[] mClientDataJson;
     private ConditionalUiState mConditionalUiState = ConditionalUiState.NONE;
     private Context mContext;
+    private CredManRequestDecorator mCredManRequestDecorator;
     private CredManMetricsHelper mMetricsHelper;
     private RenderFrameHost mFrameHost;
     private Runnable mNoCredentialsFallback;
@@ -96,10 +98,14 @@ public class CredManHelper {
         WebAuthnBrowserBridge getBridge();
     }
 
-    public CredManHelper(BridgeProvider bridgeProvider, boolean playServicesAvailable) {
+    public CredManHelper(
+            BridgeProvider bridgeProvider,
+            boolean playServicesAvailable,
+            CredManRequestDecorator credManRequestDecorator) {
         mMetricsHelper = new CredManMetricsHelper();
         mBridgeProvider = bridgeProvider;
         mPlayServicesAvailable = playServicesAvailable;
+        mCredManRequestDecorator = credManRequestDecorator;
     }
 
     /** Create a credential using the Android 14 CredMan API. */
@@ -132,26 +138,6 @@ public class CredManHelper {
                     CredManCreateRequestEnum.COULD_NOT_SEND_REQUEST);
             return AuthenticatorStatus.NOT_ALLOWED_ERROR;
         }
-
-        final Bundle requestBundle = new Bundle();
-        requestBundle.putString(
-                CRED_MAN_PREFIX + "BUNDLE_KEY_SUBTYPE",
-                CRED_MAN_PREFIX + "BUNDLE_VALUE_SUBTYPE_CREATE_PUBLIC_KEY_CREDENTIAL_REQUEST");
-        requestBundle.putString(CRED_MAN_PREFIX + "BUNDLE_KEY_REQUEST_JSON", requestAsJson);
-        requestBundle.putByteArray(CRED_MAN_PREFIX + "BUNDLE_KEY_CLIENT_DATA_HASH", clientDataHash);
-
-        final Bundle displayInfoBundle = new Bundle();
-        displayInfoBundle.putCharSequence(
-                CRED_MAN_PREFIX + "BUNDLE_KEY_USER_ID",
-                Base64.encodeToString(
-                        options.user.id, Base64.URL_SAFE | Base64.NO_PADDING | Base64.NO_WRAP));
-        displayInfoBundle.putString(
-                CRED_MAN_PREFIX + "BUNDLE_KEY_DEFAULT_PROVIDER",
-                GPM_COMPONENT_NAME.flattenToString());
-
-        requestBundle.putBundle(
-                CRED_MAN_PREFIX + "BUNDLE_KEY_REQUEST_DISPLAY_INFO", displayInfoBundle);
-        requestBundle.putString(CHANNEL_KEY, getChannel());
 
         OutcomeReceiver<CreateCredentialResponse, CreateCredentialException> receiver =
                 new OutcomeReceiver<>() {
@@ -223,11 +209,13 @@ public class CredManHelper {
                     }
                 };
 
-        final CreateCredentialRequest request =
-                new CreateCredentialRequest.Builder(TYPE_PASSKEY, requestBundle, requestBundle)
-                        .setAlwaysSendAppInfoToProvider(true)
+        final CredManCreateCredentialRequestHelper requestHelper =
+                new CredManCreateCredentialRequestHelper.Builder(requestAsJson, clientDataHash)
+                        .setUserId(options.user.id)
                         .setOrigin(originString)
                         .build();
+        final CreateCredentialRequest request =
+                requestHelper.getCreateCredentialRequest(mCredManRequestDecorator);
         final CredentialManager manager =
                 (CredentialManager) mContext.getSystemService(Context.CREDENTIAL_SERVICE);
         manager.createCredential(mContext, request, null, mContext.getMainExecutor(), receiver);
@@ -658,6 +646,7 @@ public class CredManHelper {
                                 publicKeyCredentialOptionBundle)
                         .build();
 
+        // TODO(crbug.com/1511193): Handle this through CredManRequestDecorator
         Bundle getCredentialRequestBundle = new Bundle();
         if (!ignoreGpm) {
             getCredentialRequestBundle.putParcelable(
@@ -681,6 +670,7 @@ public class CredManHelper {
         return getCredentialRequestBuilder.setOrigin(originString).build();
     }
 
+    // TODO(crbug.com/1511193): Handle this through CredManRequestDecorator
     private Bundle buildPublicKeyCredentialOptionBundle(
             String requestAsJson,
             byte[] clientDataHash,
@@ -709,6 +699,7 @@ public class CredManHelper {
         return publicKeyCredentialOptionBundle;
     }
 
+    // TODO(crbug.com/1511193): Handle this through CredManRequestDecorator
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private CredentialOption buildPasswordOption(boolean ignoreGpm) {
         Bundle passwordOptionBundle = new Bundle();
@@ -730,26 +721,6 @@ public class CredManHelper {
         if (mFrameHost == null) return false;
         WebContents webContents = WebContentsStatics.fromRenderFrameHost(mFrameHost);
         return webContents == null ? false : webContents.isIncognito();
-    }
-
-    private static final String getChannel() {
-        if (VersionInfo.isCanaryBuild()) {
-            return "canary";
-        }
-        if (VersionInfo.isDevBuild()) {
-            return "dev";
-        }
-        if (VersionInfo.isBetaBuild()) {
-            return "beta";
-        }
-        if (VersionInfo.isStableBuild()) {
-            return "stable";
-        }
-        if (VersionInfo.isLocalBuild()) {
-            return "built_locally";
-        }
-        assert false : "Channel must be canary, dev, beta, stable or chrome must be built locally.";
-        return null;
     }
 
     private static void logDeserializationException(Throwable e) {
