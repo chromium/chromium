@@ -54,7 +54,7 @@ bool StandaloneCvcField::MatchGiftCard(ParsingContext& context,
     return false;
   }
 
-  const auto kMatchFieldType = kDefaultMatchParamsWith<
+  const auto kMatchParams = kDefaultMatchParamsWith<
       FormControlType::kInputNumber, FormControlType::kInputTelephone,
       FormControlType::kInputSearch, FormControlType::kInputPassword>;
   base::span<const MatchPatternRef> gift_card_patterns = GetMatchPatterns(
@@ -62,7 +62,7 @@ bool StandaloneCvcField::MatchGiftCard(ParsingContext& context,
 
   size_t saved_cursor = scanner->SaveCursor();
   const bool gift_card_match =
-      ParseFieldSpecifics(context, scanner, kGiftCardRe, kMatchFieldType,
+      ParseFieldSpecifics(context, scanner, kGiftCardRe, kMatchParams,
                           gift_card_patterns, nullptr, "kGiftCardRe");
   // MatchGiftCard only wants to test the presence of a gift card but not
   // consume the field.

@@ -538,7 +538,14 @@ bool FormField::ParseEmptyLabel(ParsingContext& context,
                                 raw_ptr<AutofillField>* match) {
   return ParseFieldSpecificsWithLegacyPattern(
       context, scanner, kEmptyLabelRegex,
-      MatchParams({MatchAttribute::kLabel}, kAllMatchFieldTypes), match,
+      MatchParams(
+          {MatchAttribute::kLabel},
+          {FormControlType::kInputEmail, FormControlType::kInputNumber,
+           FormControlType::kInputPassword, FormControlType::kInputSearch,
+           FormControlType::kInputTelephone, FormControlType::kInputText,
+           FormControlType::kSelectOne, FormControlType::kSelectList,
+           FormControlType::kTextArea}),
+      match,
       /*logging=*/{});
 }
 

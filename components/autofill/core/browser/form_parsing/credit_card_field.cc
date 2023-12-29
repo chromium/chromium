@@ -418,10 +418,10 @@ bool CreditCardField::IsGiftCardField(ParsingContext& context,
   if (scanner->IsEnd())
     return false;
 
-  // kMatchFieldType should subsume kMatchNumTelAndPwd used for
+  // kMatchParams should subsume kMatchNumTelAndPwd used for
   // CREDIT_CARD_NUMBER matching. Otherwise, a gift card field may not match the
   // GIFT_CARD pattern but erroneously do match the CREDIT_CARD_NUMBER pattern.
-  const auto kMatchFieldType = kDefaultMatchParamsWith<
+  const auto kMatchParams = kDefaultMatchParamsWith<
       FormControlType::kInputNumber, FormControlType::kInputTelephone,
       FormControlType::kInputSearch, FormControlType::kInputPassword>;
   size_t saved_cursor = scanner->SaveCursor();
@@ -435,19 +435,19 @@ bool CreditCardField::IsGiftCardField(ParsingContext& context,
   base::span<const MatchPatternRef> gift_card_patterns =
       GetMatchPatterns("GIFT_CARD", context);
 
-  if (ParseFieldSpecifics(context, scanner, kDebitCardRe, kMatchFieldType,
+  if (ParseFieldSpecifics(context, scanner, kDebitCardRe, kMatchParams,
                           debit_cards_patterns, nullptr, "kDebitCardRe")) {
     scanner->RewindTo(saved_cursor);
     return false;
   }
-  if (ParseFieldSpecifics(context, scanner, kDebitGiftCardRe, kMatchFieldType,
+  if (ParseFieldSpecifics(context, scanner, kDebitGiftCardRe, kMatchParams,
                           debit_gift_card_patterns, nullptr,
                           "kDebitGiftCardRe")) {
     scanner->RewindTo(saved_cursor);
     return false;
   }
 
-  return ParseFieldSpecifics(context, scanner, kGiftCardRe, kMatchFieldType,
+  return ParseFieldSpecifics(context, scanner, kGiftCardRe, kMatchParams,
                              gift_card_patterns, nullptr, "kGiftCardRe");
 }
 

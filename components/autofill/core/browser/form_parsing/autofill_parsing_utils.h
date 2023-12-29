@@ -19,20 +19,7 @@ namespace autofill {
 // the kLabel is "Cellphone number" and the kName is "mobile".
 enum class MatchAttribute { kLabel, kName, kMaxValue = kName };
 
-// Contains all MatchAttribute constants.
-constexpr DenseSet<MatchAttribute> kAllMatchAttributes{MatchAttribute::kLabel,
-                                                       MatchAttribute::kName};
-
-// Contains all FormControlType constants used for the heuristics.
-// TODO(crbug.com/1514693): Remove.
-constexpr DenseSet<FormControlType> kAllMatchFieldTypes{
-    FormControlType::kInputText,      FormControlType::kInputEmail,
-    FormControlType::kInputTelephone, FormControlType::kSelectOne,
-    FormControlType::kSelectList,     FormControlType::kTextArea,
-    FormControlType::kInputPassword,  FormControlType::kInputNumber,
-    FormControlType::kInputSearch};
-
-// A pair of sets of MatchAttributes and MatchFieldTypes.
+// A pair of sets of MatchAttributes and FormControlTypes.
 struct MatchParams {
   inline constexpr MatchParams(DenseSet<MatchAttribute> attributes,
                                DenseSet<FormControlType> field_types);
@@ -57,7 +44,7 @@ inline constexpr MatchParams& MatchParams::operator=(MatchParams&&) = default;
 // By default match label and name for <input type="text"> elements.
 template <FormControlType... additional_match_field_types>
 constexpr MatchParams kDefaultMatchParamsWith{
-    kAllMatchAttributes,
+    {MatchAttribute::kLabel, MatchAttribute::kName},
     {FormControlType::kInputText, additional_match_field_types...}};
 
 constexpr MatchParams kDefaultMatchParams = kDefaultMatchParamsWith<>;
