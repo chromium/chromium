@@ -104,29 +104,6 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
   def json_to_cpp_form_control_types(enum_values):
     return json_to_cpp_dense_set(enum_values, 'FormControlType')
 
-  # TODO(crbug.com/1514693): Remove once the JSON files are reformatted.
-  def json_to_cpp_match_field_input_types(enum_values):
-    expansions = (
-        ['INPUT_TEXT']
-        if e == 'TEXT'
-        else ['INPUT_EMAIL']
-        if e == 'EMAIL'
-        else ['INPUT_TELEPHONE']
-        if e == 'TELEPHONE'
-        else ['SELECT_ONE', 'SELECT_LIST']
-        if e == 'SELECT'
-        else ['INPUT_PASSWORD']
-        if e == 'PASSWORD'
-        else ['INPUT_NUMBER']
-        if e == 'NUMBER'
-        else ['INPUT_SEARCH']
-        if e == 'SEARCH'
-        else [e]
-        for e in enum_values
-    )
-    enum_values = [e for es in expansions for e in es]
-    return json_to_cpp_form_control_types(enum_values)
-
   # Maps a JSON object representing a pattern to a C++ MatchingPattern
   # expression.
   def json_to_cpp_pattern(json):
@@ -135,13 +112,8 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
     positive_score = json['positive_score']
     match_field_attributes = json_to_cpp_match_field_attributes(
         json['match_field_attributes'])
-    # TODO(crbug.com/1514693): Simplify once the JSON files are reformatted.
-    if 'form_control_types' in json:
-      form_control_types = json_to_cpp_form_control_types(
-          json['form_control_types'])
-    else:
-      form_control_types = json_to_cpp_match_field_input_types(
-          json['match_field_input_types'])
+    form_control_types = json_to_cpp_form_control_types(
+        json['form_control_types'])
     return f'MatchingPattern{{\n' \
            f'  .positive_pattern = {positive_pattern},\n' \
            f'  .negative_pattern = {negative_pattern},\n' \
