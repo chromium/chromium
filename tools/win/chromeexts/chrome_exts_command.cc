@@ -44,6 +44,20 @@ HRESULT ChromeExtsCommand::Printf(const char* format, ...) {
   return hr;
 }
 
+HRESULT ChromeExtsCommand::PrintfWithIndent(int indent_level,
+                                            const char* format,
+                                            ...) {
+  for (int i = 0; i < indent_level; i++) {
+    Printf("  ");
+  }
+
+  va_list ap;
+  va_start(ap, format);
+  HRESULT hr = PrintV(format, ap);
+  va_end(ap);
+  return hr;
+}
+
 HRESULT ChromeExtsCommand::PrintV(const char* format, va_list ap) {
   return debug_control_->OutputVaList(DEBUG_OUTPUT_NORMAL, format, ap);
 }
