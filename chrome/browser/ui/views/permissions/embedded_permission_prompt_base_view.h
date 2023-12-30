@@ -102,6 +102,7 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
   virtual std::vector<RequestLineConfiguration> GetRequestLinesConfiguration()
       const = 0;
   virtual std::vector<ButtonConfiguration> GetButtonsConfiguration() const = 0;
+  const virtual gfx::VectorIcon& GetIcon() const;
 
   base::WeakPtr<EmbeddedPermissionPromptViewDelegate>& delegate() {
     return delegate_;

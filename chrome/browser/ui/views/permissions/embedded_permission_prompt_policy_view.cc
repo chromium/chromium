@@ -8,6 +8,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/paint_vector_icon.h"
 
 EmbeddedPermissionPromptPolicyView::EmbeddedPermissionPromptPolicyView(
     Browser* browser,
@@ -21,39 +22,10 @@ EmbeddedPermissionPromptPolicyView::~EmbeddedPermissionPromptPolicyView() =
 
 std::u16string EmbeddedPermissionPromptPolicyView::GetAccessibleWindowTitle()
     const {
-  return GetMessageText();
+  return GetWindowTitle();
 }
 
 std::u16string EmbeddedPermissionPromptPolicyView::GetWindowTitle() const {
-  return std::u16string();
-}
-
-void EmbeddedPermissionPromptPolicyView::RunButtonCallback(int button_id) {
-  ButtonType button = GetButtonType(button_id);
-  DCHECK_EQ(button, ButtonType::kPolicyOK);
-
-  if (delegate()) {
-    delegate()->Acknowledge();
-  }
-}
-
-std::vector<EmbeddedPermissionPromptPolicyView::RequestLineConfiguration>
-EmbeddedPermissionPromptPolicyView::GetRequestLinesConfiguration() const {
-  std::vector<RequestLineConfiguration> lines;
-  lines.emplace_back(&vector_icons::kBusinessIcon, GetMessageText());
-
-  return lines;
-}
-
-std::vector<EmbeddedPermissionPromptPolicyView::ButtonConfiguration>
-EmbeddedPermissionPromptPolicyView::GetButtonsConfiguration() const {
-  std::vector<ButtonConfiguration> buttons;
-  buttons.emplace_back(l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_OK_LABEL),
-                       ButtonType::kPolicyOK, ui::ButtonStyle::kTonal);
-  return buttons;
-}
-
-std::u16string EmbeddedPermissionPromptPolicyView::GetMessageText() const {
   auto& requests = delegate()->Requests();
   std::u16string permission_name;
   if (requests.size() == 2) {
@@ -68,4 +40,30 @@ std::u16string EmbeddedPermissionPromptPolicyView::GetMessageText() const {
 
   return l10n_util::GetStringFUTF16(template_id, permission_name,
                                     GetUrlIdentityObject().name);
+}
+
+const gfx::VectorIcon& EmbeddedPermissionPromptPolicyView::GetIcon() const {
+  return vector_icons::kBusinessIcon;
+}
+
+void EmbeddedPermissionPromptPolicyView::RunButtonCallback(int button_id) {
+  ButtonType button = GetButtonType(button_id);
+  DCHECK_EQ(button, ButtonType::kPolicyOK);
+
+  if (delegate()) {
+    delegate()->Acknowledge();
+  }
+}
+
+std::vector<EmbeddedPermissionPromptPolicyView::RequestLineConfiguration>
+EmbeddedPermissionPromptPolicyView::GetRequestLinesConfiguration() const {
+  return {};
+}
+
+std::vector<EmbeddedPermissionPromptPolicyView::ButtonConfiguration>
+EmbeddedPermissionPromptPolicyView::GetButtonsConfiguration() const {
+  std::vector<ButtonConfiguration> buttons;
+  buttons.emplace_back(l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_OK_LABEL),
+                       ButtonType::kPolicyOK, ui::ButtonStyle::kTonal);
+  return buttons;
 }

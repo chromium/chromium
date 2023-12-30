@@ -28,6 +28,7 @@ class EmbeddedPermissionPromptPolicyView
 
   std::u16string GetAccessibleWindowTitle() const override;
   std::u16string GetWindowTitle() const override;
+  const gfx::VectorIcon& GetIcon() const override;
   void RunButtonCallback(int type) override;
 
  protected:
@@ -36,8 +37,6 @@ class EmbeddedPermissionPromptPolicyView
   std::vector<ButtonConfiguration> GetButtonsConfiguration() const override;
 
  private:
-  std::u16string GetMessageText() const;
-
   // Whether the administrator has "allowed" or "blocked" the particular
   // permission that this prompt is for.
   bool is_permission_allowed_;

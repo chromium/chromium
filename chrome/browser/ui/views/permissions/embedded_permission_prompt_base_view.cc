@@ -12,10 +12,13 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
@@ -36,6 +39,8 @@ namespace {
 
 constexpr int BODY_TOP_MARGIN = 10;
 constexpr int DISTANCE_BUTTON_VERTICAL = 8;
+constexpr int FAVICON_SIZE_IN_PIXEL = 28;
+constexpr int FAVICON_SPACER = 5;
 
 void AddElementIdentifierToLabel(views::Label& label, size_t index) {
   ui::ElementIdentifier id;
@@ -72,6 +77,10 @@ void EmbeddedPermissionPromptBaseView::Show() {
   ShowWidget();
 }
 
+const gfx::VectorIcon& EmbeddedPermissionPromptBaseView::GetIcon() const {
+  return gfx::kNoneIcon;
+}
+
 void EmbeddedPermissionPromptBaseView::CreateWidget() {
   DCHECK(browser_->window());
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
@@ -87,7 +96,22 @@ void EmbeddedPermissionPromptBaseView::AddedToWidget() {
   }
 
   auto title_container = std::make_unique<views::FlexLayoutView>();
-  title_container->SetOrientation(views::LayoutOrientation::kVertical);
+  title_container->SetOrientation(views::LayoutOrientation::kHorizontal);
+
+  const gfx::VectorIcon& vector_icon = GetIcon();
+
+  if (!vector_icon.is_empty()) {
+    auto icon =
+        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+            vector_icon, ui::kColorIcon, FAVICON_SIZE_IN_PIXEL));
+    icon->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
+    title_container->AddChildView(std::move(icon));
+
+    // Add space between the icon and the text.
+    auto spacer = std::make_unique<views::View>();
+    spacer->SetPreferredSize(gfx::Size(FAVICON_SPACER, /*height=*/1));
+    title_container->AddChildView(std::move(spacer));
+  }
 
   auto label = std::make_unique<views::Label>(
       GetWindowTitle(), views::style::CONTEXT_DIALOG_BODY_TEXT);
