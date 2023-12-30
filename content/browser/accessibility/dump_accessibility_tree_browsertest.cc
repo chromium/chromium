@@ -252,16 +252,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunCSSTest(FILE_PATH_LITERAL("display-contents.html"));
 }
 
-// TODO(crbug.com/1367886): De-flake and reenable.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_AccessibilityCSSDisplayContents \
-  DISABLED_AccessibilityCSSDisplayContents
-#else
-#define MAYBE_AccessibilityCSSDisplayContents \
-  AccessibilityCSSDisplayContents
-#endif
 IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityCSSDisplayContents) {
+                       AccessibilityCSSDisplayContents) {
   RunCSSTest(FILE_PATH_LITERAL("display-contents.html"));
 }
 
