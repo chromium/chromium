@@ -133,8 +133,9 @@ TEST_F(VKMSTest, SinglePlanePageFlip) {
       /*flags=*/0, &buffer, &framebuffer);
 
   auto planes = std::vector<ui::DrmOverlayPlane>();
-  planes.emplace_back(framebuffer,
-                      std::make_unique<gfx::GpuFence>(gfx::GpuFenceHandle()));
+  planes.push_back(ui::DrmOverlayPlane::TestPlane(
+      framebuffer, gfx::ColorSpace::CreateSRGB(),
+      std::make_unique<gfx::GpuFence>(gfx::GpuFenceHandle())));
 
   base::RunLoop run_loop;
   auto submission_callback =
