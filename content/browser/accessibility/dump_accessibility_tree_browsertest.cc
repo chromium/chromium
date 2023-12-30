@@ -3141,10 +3141,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySpan) {
   RunHtmlTest(FILE_PATH_LITERAL("span.html"));
 }
 
-// TODO(https://crbug.com/1367886): Flaky on asan builder on multiple platforms.
-// This is not fixed by rebuilding the subtree when parsing is complete.
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_ASAN(AccessibilitySpanLineBreak)) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySpanLineBreak) {
+  RunHtmlTest(FILE_PATH_LITERAL("span-line-break.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilitySpanLineBreak) {
   RunHtmlTest(FILE_PATH_LITERAL("span-line-break.html"));
 }
 
