@@ -79,6 +79,33 @@ chromium-metrics-reviews@google.com.
                kCommandLine and kUnpacked)"/>
 </variants>
 
+<!--
+This is similar to ManifestLocationGroup above, but allows for grouping
+of interesting buckets, such as "internal + external".
+-->
+
+<variants name="ManifestLocationGroupWithCombos">
+  <variant name="Component"
+      summary="component extension(s) (ManifestLocations kComponent and
+               kExternalComponent)"/>
+  <variant name="External"
+      summary="external extension(s) (ManifestLocations kExternalPref,
+               kExternalPrefDownload, and kExternalRegistry)"/>
+  <variant name="Internal"
+      summary="internal extension(s) (ManifestLocation::kInternal; likely
+               user-installed)"/>
+  <variant name="InternalAndExternal"
+      summary="internal and external extension(s) (ManifestLocations
+               kInternal, kExternalPref, kExternalPrefDownload, and
+               kExternalRegistry)"/>
+  <variant name="Policy"
+      summary="policy-installed extension(s) (ManifestLocations
+               kExternalPolicy and kExternalPolicyDownload)"/>
+  <variant name="Unpacked"
+      summary="unpacked and developer extension(s) (ManifestLocations
+               kCommandLine and kUnpacked)"/>
+</variants>
+
 <histogram name="ExtensionBlacklist.BlacklistInstalled"
     enum="ExtensionLocation" expires_after="2024-10-23">
   <owner>anunoy@chromium.org</owner>
@@ -3416,6 +3443,19 @@ chromium-metrics-reviews@google.com.
     installed).
   </summary>
   <token key="ManifestLocation" variants="ManifestLocationGroup"/>
+</histogram>
+
+<histogram name="Extensions.ManifestVersionPopulationSplit.{ManifestLocation}"
+    enum="ManifestVersionPopulationSplit" expires_after="2024-12-15">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The type of population split of the user's installed {ManifestLocation}.
+    Emitted on profile startup for user profiles (profiles where users can
+    install extensions, specifically profiles that can have non-component
+    extensions installed).
+  </summary>
+  <token key="ManifestLocation" variants="ManifestLocationGroupWithCombos"/>
 </histogram>
 
 <histogram

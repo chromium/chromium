@@ -3244,6 +3244,13 @@ Called by update_extension_permission.py.-->
   <int value="13" label="Bad App Status"/>
 </enum>
 
+<enum name="ManifestVersionPopulationSplit">
+  <int value="0" label="No extensions"/>
+  <int value="1" label="Manifest Version 2 extensions only"/>
+  <int value="2" label="Manifest Version 2 and Manifest Version 3 extensions"/>
+  <int value="3" label="Manifest Version 3 extensions only"/>
+</enum>
+
 <enum name="ReadDynamicRulesJSONStatus">
   <int value="0" label="kSuccess"/>
   <int value="1" label="kFileDoesNotExist"/>
