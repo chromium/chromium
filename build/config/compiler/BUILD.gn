@@ -1879,6 +1879,13 @@ config("default_warnings") {
           # TODO(https://crbug.com/1490607): Fix and re-enable.
           "-Wno-thread-safety-reference-return",
         ]
+
+        if (llvm_force_head_revision) {
+          cflags_cc += [
+            # TODO(https://crbug.com/1513724): Fix and re-enable.
+            "-Wno-c++11-narrowing-const-reference",
+          ]
+        }
       }
     }
 
