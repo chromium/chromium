@@ -8,7 +8,6 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
 
 namespace ash {
 
@@ -19,21 +18,21 @@ namespace ash {
 // property changed. Note, setting shill::kTetheringAllowedProperty value to
 // true is a pre-requisite of successfully enable/disable hotspot and check
 // tethering readiness in Shill.
-class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotAllowedFlagHandler
-    : public ShillPropertyChangedObserver {
+class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotAllowedFlagHandler {
  public:
   HotspotAllowedFlagHandler();
   HotspotAllowedFlagHandler(const HotspotAllowedFlagHandler&) = delete;
   HotspotAllowedFlagHandler& operator=(const HotspotAllowedFlagHandler&) =
       delete;
-  ~HotspotAllowedFlagHandler() override;
+  ~HotspotAllowedFlagHandler();
 
   void Init();
 
+  // Refreshes kTetheringAllowedProperty and kExperimentalTetheringFunctionality
+  // flags in shill based on user preferences
+  void UpdateFlags();
+
  private:
-  // ShillPropertyChangedObserver overrides
-  void OnPropertyChanged(const std::string& key,
-                         const base::Value& value) override;
 
   // Callback when set shill manager property operation failed.
   void OnSetManagerPropertyFailure(const std::string& property_name,

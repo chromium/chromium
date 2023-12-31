@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
+#include "chromeos/ash/components/network/hotspot_allowed_flag_handler.h"
 #include "chromeos/ash/components/network/hotspot_util.h"
 #include "chromeos/ash/components/network/metrics/hotspot_metrics_helper.h"
 #include "chromeos/ash/components/network/network_event_log.h"
@@ -91,9 +92,12 @@ HotspotCapabilitiesProvider::~HotspotCapabilitiesProvider() {
 }
 
 void HotspotCapabilitiesProvider::Init(
-    NetworkStateHandler* network_state_handler) {
+    NetworkStateHandler* network_state_handler,
+    HotspotAllowedFlagHandler* hotspot_allowed_flag_handler) {
   network_state_handler_ = network_state_handler;
   network_state_handler_observer_.Observe(network_state_handler_.get());
+
+  hotspot_allowed_flag_handler_ = hotspot_allowed_flag_handler;
 
   // Add as an observer here so that new hotspot state updated after this call
   // are recognized.
@@ -256,6 +260,7 @@ void HotspotCapabilitiesProvider::UpdateHotspotCapabilities(
 
 void HotspotCapabilitiesProvider::CheckTetheringReadiness(
     CheckTetheringReadinessCallback callback) {
+  hotspot_allowed_flag_handler_->UpdateFlags();
   auto callback_split = base::SplitOnceCallback(std::move(callback));
   ShillManagerClient::Get()->CheckTetheringReadiness(
       base::BindOnce(&HotspotCapabilitiesProvider::OnCheckReadinessSuccess,
