@@ -19,8 +19,8 @@ std::unique_ptr<FormField> IbanField::Parse(ParsingContext& context,
       IBAN_VALUE, context.page_language, context.pattern_source);
 
   if (ParseFieldSpecifics(context, scanner, kIbanRe,
-                          kDefaultMatchParamsWith<MatchFieldType::kNumber,
-                                                  MatchFieldType::kTextArea>,
+                          kDefaultMatchParamsWith<FormControlType::kInputNumber,
+                                                  FormControlType::kTextArea>,
                           iban_patterns, &field, "kIbanRe")) {
     return std::make_unique<IbanField>(field);
   }

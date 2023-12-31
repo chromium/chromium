@@ -738,12 +738,19 @@ void FocusModeDetailedView::OnClockMinutePassed() {
     return;
   }
 
+  StartClockTimer();
+
+  // If the user is still setting the timer, we should not always update the UI
+  // (for example, if a clock minute passes while the textfield is focused).
+  if (timer_textfield_->HasFocus()) {
+    return;
+  }
+
   // When a clock minute passes outside of focus mode, we want to update the
   // subheading to display the correct session end time and restart the clock
   // timer. If we are in focus mode, then `FocusModeController::end_time()` will
   // tell us the time at which the session will end.
   UpdateTimerSettingViewUI();
-  StartClockTimer();
 }
 
 void FocusModeDetailedView::StartClockTimer() {

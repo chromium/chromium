@@ -593,6 +593,7 @@ TEST_F(AutocompleteControllerTest, MlRanking) {
   OmniboxFieldTrial::ScopedMLConfigForTesting scoped_ml_config;
   scoped_ml_config.GetMLConfig().ml_url_scoring = true;
   scoped_ml_config.GetMLConfig().url_scoring_model = true;
+  scoped_ml_config.GetMLConfig().stable_search_ranking = false;
 
   EXPECT_THAT(controller_.SimulateCleanAutocompletePass({}),
               testing::ElementsAre());
@@ -752,6 +753,271 @@ TEST_F(AutocompleteControllerTest, MlRanking) {
           "search 1200",
           "history 1400 .5",
           "shortcut 1000 .1",
+      }));
+}
+
+TEST_F(AutocompleteControllerTest, MlRanking_stableSearchRanking) {
+  OmniboxFieldTrial::ScopedMLConfigForTesting scoped_ml_config;
+  scoped_ml_config.GetMLConfig().ml_url_scoring = true;
+  scoped_ml_config.GetMLConfig().url_scoring_model = true;
+  scoped_ml_config.GetMLConfig().stable_search_ranking = true;
+
+  EXPECT_THAT(controller_.SimulateCleanAutocompletePass({}),
+              testing::ElementsAre());
+
+  // Even if ML ranks a URL 0, it should still use traditional scores.
+  EXPECT_THAT(controller_.SimulateCleanAutocompletePass({
+                  CreateHistoryUrlMlScoredMatch("history", true, 1400, 0),
+                  CreateSearchMatch("search", true, 1300),
+              }),
+              testing::ElementsAreArray({
+                  "history",
+                  "search",
+              }));
+
+  // Simple case of redistributing ranking among only URLs.
+  EXPECT_THAT(
+      controller_.SimulateCleanAutocompletePass({
+          CreateHistoryUrlMlScoredMatch("history 1350 .5", true, 1350, .5),
+          CreateSearchMatch("search 1400", false, 1400),
+          CreateSearchMatch("search 800", true, 800),
+          CreateSearchMatch("search 600", false, 600),
+          CreateHistoryUrlMlScoredMatch("history 1200 .9", true, 1200, .9),
+          CreateHistoryUrlMlScoredMatch("history 1100 .1", false, 1100, .1),
+          CreateHistoryUrlMlScoredMatch("history 500 .2", true, 500, .2),
+      }),
+      testing::ElementsAreArray({
+          "history 1200 .9",
+          "search 1400",
+          "search 800",
+          "search 600",
+          "history 1350 .5",
+          "history 500 .2",
+          "history 1100 .1",
+      }));
+
+  // Can change the default suggestion from 1 history to another.
+  EXPECT_THAT(
+      controller_.SimulateCleanAutocompletePass({
+          CreateHistoryUrlMlScoredMatch("history 1400 .5", true, 1400, .5),
+          CreateSearchMatch("search", true, 1300),
+          CreateHistoryUrlMlScoredMatch("history 1200 .9", true, 1200, .9),
+      }),
+      testing::ElementsAreArray({
+          "history 1200 .9",
+          "search",
+          "history 1400 .5",
+      }));
+
+  // Can not change the default from search to history.
+  EXPECT_THAT(
+      controller_.SimulateCleanAutocompletePass({
+          CreateSearchMatch("search 1300", true, 1300),
+          CreateHistoryUrlMlScoredMatch("history 1400 .5", false, 1400, .5),
+          CreateHistoryUrlMlScoredMatch("history 1200 .9", true, 1200, .9),
+      }),
+      testing::ElementsAreArray({
+          "search 1300",
+          "history 1200 .9",
+          "history 1400 .5",
+      }));
+
+  // Can not change the default from history to search.
+  EXPECT_THAT(
+      controller_.SimulateCleanAutocompletePass({
+          CreateHistoryUrlMlScoredMatch("history 1400 .5", true, 1400, .5),
+          CreateSearchMatch("search 1300", true, 1300),
+          CreateHistoryUrlMlScoredMatch("history 1200 .9", false, 1200, .9),
+      }),
+      testing::ElementsAreArray({
+          "history 1400 .5",
+          "search 1300",
+          "history 1200 .9",
+      }));
+
+  // Can redistribute shortcut boosting to non-shortcuts.
+  EXPECT_THAT(
+      controller_.SimulateCleanAutocompletePass({
+          CreateSearchMatch("search 1300", true, 1300),
+          CreateBoostedShortcutMatch("shortcut 1000 .1", 1000, .1),
+          CreateSearchMatch("search 1200", true, 1200),
+          CreateHistoryUrlMlScoredMatch("history 1400 .9", false, 1400, .9),
+          CreateHistoryUrlMlScoredMatch("history 1100 .5", true, 1100, .5),
+      }),
+      testing::ElementsAreArray({
+          "search 1300",
+          "history 1400 .9",
+          "search 1200",
+          "history 1100 .5",
+          "shortcut 1000 .1",
+      }));
+
+  // Can not 'consume' shortcut boosting by assigning it to a match that's
+  // becoming default.
+  EXPECT_THAT(
+      controller_.SimulateCleanAutocompletePass({
+          CreateHistoryUrlMlScoredMatch("history 1400 .5", true, 1400, .5),
+          CreateBoostedShortcutMatch("shortcut 1000 .1", 1000, .1),
+          CreateSearchMatch("search 1300", true, 1300),
+          CreateSearchMatch("search 1200", true, 1200),
+          CreateHistoryUrlMlScoredMatch("history 1100 .9", true, 1100, .9),
+      }),
+      testing::ElementsAreArray({
+          "history 1100 .9",
+          "history 1400 .5",
+          "search 1300",
+          "search 1200",
+          "shortcut 1000 .1",
+      }));
+
+  // Can not 'consume' shortcut boosting by leaving it to a shortcut that's
+  // becoming default.
+  EXPECT_THAT(
+      controller_.SimulateCleanAutocompletePass({
+          CreateHistoryUrlMlScoredMatch("history 1400 .5", true, 1400, .5),
+          CreateBoostedShortcutMatch("shortcut 1000 .9", 1000, .9),
+          CreateSearchMatch("search 1300", true, 1300),
+          CreateSearchMatch("search 1200", true, 1200),
+          CreateHistoryUrlMlScoredMatch("history 1100 .1", true, 1100, .1),
+      }),
+      testing::ElementsAreArray({
+          "shortcut 1000 .9",
+          "history 1400 .5",
+          "search 1300",
+          "search 1200",
+          "history 1100 .1",
+      }));
+
+  // Can not redistribute a no-op boosted shortcut (i.e. a boosted shortcut that
+  // was default).
+  EXPECT_THAT(
+      controller_.SimulateCleanAutocompletePass({
+          CreateBoostedShortcutMatch("shortcut 1400 .1", 1400, .1),
+          CreateSearchMatch("search 1300", true, 1300),
+          CreateSearchMatch("search 1200", true, 1200),
+          CreateHistoryUrlMlScoredMatch("history 1100 .9", true, 1100, .9),
+          CreateHistoryUrlMlScoredMatch("history 1000 .5", true, 1000, .5),
+      }),
+      testing::ElementsAreArray({
+          "history 1100 .9",
+          "search 1300",
+          "search 1200",
+          "history 1000 .5",
+          "shortcut 1400 .1",
+      }));
+}
+
+TEST_F(AutocompleteControllerTest, UpdateResult_MLRanking_PreserveDefault) {
+  OmniboxFieldTrial::ScopedMLConfigForTesting scoped_ml_config;
+  scoped_ml_config.GetMLConfig().ml_url_scoring = true;
+  scoped_ml_config.GetMLConfig().url_scoring_model = true;
+  scoped_ml_config.GetMLConfig().stable_search_ranking = true;
+
+  // ML ranking should preserve search defaults.
+  EXPECT_THAT(controller_.SimulateAutocompletePass(
+                  true, true,
+                  {
+                      CreateSearchMatch("search 1300", true, 1300),
+                  }),
+              testing::ElementsAreArray({
+                  "search 1300",
+              }));
+  EXPECT_THAT(
+      controller_.SimulateAutocompletePass(
+          true, true,
+          {
+              CreateHistoryUrlMlScoredMatch("history 1400", true, 1400, 1),
+              CreateSearchMatch("search 1300", true, 1300),
+          }),
+      testing::ElementsAreArray({
+          "search 1300",
+          "history 1400",
+      }));
+
+  // ML ranking should preserve non-search defaults.
+  EXPECT_THAT(
+      controller_.SimulateAutocompletePass(
+          true, true,
+          {
+              CreateHistoryUrlMlScoredMatch("history 1300", true, 1300, 1),
+          }),
+      testing::ElementsAreArray({
+          "history 1300",
+      }));
+  EXPECT_THAT(
+      controller_.SimulateAutocompletePass(
+          true, true,
+          {
+              CreateHistoryUrlMlScoredMatch("history 1500", true, 1500, 1),
+              CreateSearchMatch("search 1400", true, 1400),
+              CreateHistoryUrlMlScoredMatch("history 1300", true, 1300, .1),
+          }),
+      testing::ElementsAreArray({
+          "history 1300",
+          "search 1400",
+          "history 1500",
+      }));
+}
+
+TEST_F(AutocompleteControllerTest, UpdateResult_MLRanking_AllMatches) {
+  OmniboxFieldTrial::ScopedMLConfigForTesting scoped_ml_config;
+  scoped_ml_config.GetMLConfig().ml_url_scoring = true;
+  scoped_ml_config.GetMLConfig().url_scoring_model = true;
+  scoped_ml_config.GetMLConfig().stable_search_ranking = true;
+
+  EXPECT_THAT(
+      controller_.SimulateAutocompletePass(
+          true, false,
+          {
+              CreateHistoryUrlMlScoredMatch("history 100", true, 100, 1),
+              CreateHistoryUrlMlScoredMatch("history 200", true, 200, 1),
+              CreateHistoryUrlMlScoredMatch("history 300", true, 300, 1),
+              CreateHistoryUrlMlScoredMatch("history 400", true, 400, 1),
+              CreateHistoryUrlMlScoredMatch("history 500", true, 500, 1),
+              CreateHistoryUrlMlScoredMatch("history 600", true, 600, 1),
+              CreateHistoryUrlMlScoredMatch("history 700", true, 700, 1),
+              CreateHistoryUrlMlScoredMatch("history 800", true, 800, 1),
+              CreateHistoryUrlMlScoredMatch("history 900", true, 900, 1),
+              CreateHistoryUrlMlScoredMatch("history 1000", true, 1000, 1),
+          }),
+      testing::ElementsAreArray({
+          "history 1000",
+          "history 900",
+          "history 800",
+          "history 700",
+          "history 600",
+          "history 500",
+          "history 400",
+          "history 300",
+      }));
+
+  EXPECT_THAT(
+      controller_.SimulateAutocompletePass(
+          true, false,
+          {
+              CreateHistoryUrlMlScoredMatch("history 100 .9", true, 100, .9),
+              CreateHistoryUrlMlScoredMatch("history 200 .8", true, 200, .8),
+              CreateHistoryUrlMlScoredMatch("history 300 .7", true, 300, .7),
+              CreateHistoryUrlMlScoredMatch("history 400 .6", true, 400, .6),
+              CreateHistoryUrlMlScoredMatch("history 500 .5", true, 500, .5),
+              CreateHistoryUrlMlScoredMatch("history 600 .4", true, 600, .4),
+              CreateHistoryUrlMlScoredMatch("history 700 .3", true, 700, .3),
+              CreateHistoryUrlMlScoredMatch("history 800 .2", true, 800, .2),
+              CreateHistoryUrlMlScoredMatch("history 900 .1", true, 900, .1),
+              CreateHistoryUrlMlScoredMatch("history 1000 0", true, 1000, 0),
+          }),
+      // TODO(manukh): After ML reranking is fixed to consider matches before
+      //   culling, this should include the 100 and 200 matches instead of 900
+      //   and 1000.
+      testing::ElementsAreArray({
+          "history 300 .7",
+          "history 400 .6",
+          "history 500 .5",
+          "history 600 .4",
+          "history 700 .3",
+          "history 800 .2",
+          "history 900 .1",
+          "history 1000 0",
       }));
 }
 #endif  //  BUILDFLAG(BUILD_WITH_TFLITE_LIB) && !BUILDFLAG(IS_ANDROID) &&

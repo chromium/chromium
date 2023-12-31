@@ -36,9 +36,6 @@ class EmbeddedPermissionPromptPreviouslyDeniedView
   std::vector<RequestLineConfiguration> GetRequestLinesConfiguration()
       const override;
   std::vector<ButtonConfiguration> GetButtonsConfiguration() const override;
-
- private:
-  std::u16string GetMessageText() const;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_EMBEDDED_PERMISSION_PROMPT_PREVIOUSLY_DENIED_VIEW_H_

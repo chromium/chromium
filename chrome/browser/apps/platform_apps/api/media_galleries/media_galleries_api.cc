@@ -64,6 +64,7 @@
 #include "storage/browser/blob/blob_data_handle.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 using content::WebContents;
 using storage_monitor::MediaStorageUtil;
@@ -232,16 +233,11 @@ class SelectDirectoryDialog : public ui::SelectFileDialog::Listener,
   }
 
   // ui::SelectFileDialog::Listener implementation.
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* params) override {
-    callback_.Run(path);
+    callback_.Run(file.path());
     Release();  // Balanced in Show().
-  }
-
-  void MultiFilesSelected(const std::vector<base::FilePath>& files,
-                          void* params) override {
-    NOTREACHED() << "Should not be able to select multiple files";
   }
 
   void FileSelectionCanceled(void* params) override {

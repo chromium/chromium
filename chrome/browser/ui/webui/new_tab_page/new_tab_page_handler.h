@@ -173,7 +173,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void OnPromoServiceShuttingDown() override;
 
   // SelectFileDialog::Listener:
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* params) override;
   void FileSelectionCanceled(void* params) override;

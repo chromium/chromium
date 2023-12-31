@@ -605,11 +605,10 @@ void SelectFileDialogExtension::NotifyListener(
       listener_->FileSelectionCanceled(params_);
       break;
     case SINGLE_FILE:
-      listener_->FileSelectedWithExtraInfo(selection_files[0], selection_index_,
-                                           params_);
+      listener_->FileSelected(selection_files[0], selection_index_, params_);
       break;
     case MULTIPLE_FILES:
-      listener_->MultiFilesSelectedWithExtraInfo(selection_files, params_);
+      listener_->MultiFilesSelected(selection_files, params_);
       break;
     default:
       NOTREACHED_NORETURN();

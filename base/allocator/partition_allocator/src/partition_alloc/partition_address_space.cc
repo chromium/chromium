@@ -65,7 +65,8 @@ PA_NOINLINE void HandlePoolAllocFailure() {
     // The error code says NOT_ENOUGH_MEMORY, but since we only do MEM_RESERVE,
     // it must be VA space exhaustion.
     HandlePoolAllocFailureOutOfVASpace();
-  } else if (alloc_page_error_code == ERROR_COMMITMENT_LIMIT) {
+  } else if (alloc_page_error_code == ERROR_COMMITMENT_LIMIT ||
+             alloc_page_error_code == ERROR_COMMITMENT_MINIMUM) {
     // Should not happen, since as of Windows 8.1+, reserving address space
     // should not be charged against the commit limit, aside from a very small
     // amount per 64kiB block. Keep this path anyway, to check in crash reports.

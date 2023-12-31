@@ -41,6 +41,7 @@
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 namespace ash {
 namespace {
@@ -60,12 +61,12 @@ class DialogListener : public ui::SelectFileDialog::Listener {
   scoped_refptr<SelectFileDialogExtension> dialog() { return dialog_; }
 
   // ui::SelectFileDialog::Listener:
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* params) override {
-    MultiFilesSelected({path}, params);
+    MultiFilesSelected({file}, params);
   }
-  void MultiFilesSelected(const std::vector<base::FilePath>& files,
+  void MultiFilesSelected(const std::vector<ui::SelectedFileInfo>& files,
                           void* params) override;
   void FileSelectionCanceled(void* params) override {
     MultiFilesSelected({}, params);
@@ -81,7 +82,7 @@ struct SelectFileData {
 };
 
 void DialogListener::MultiFilesSelected(
-    const std::vector<base::FilePath>& files,
+    const std::vector<ui::SelectedFileInfo>& files,
     void* params) {
   // `params` is the SelectFileData created by
   // VmApplicationsServiceProvider::SelectFile(). Take back ownership.
@@ -93,7 +94,7 @@ void DialogListener::MultiFilesSelected(
   }
 
   ShareWithVMAndTranslateToFileUrls(
-      target, files,
+      target, ui::SelectedFileInfoListToFilePathList(files),
       base::BindOnce(
           [](std::unique_ptr<SelectFileData> data,
              std::vector<std::string> file_urls) {

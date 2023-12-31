@@ -662,10 +662,14 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
             typename Unused = std::enable_if_t<
                 !std::is_void_v<typename std::remove_cv<U>::type> &&
                 partition_alloc::internal::is_offset_type<Z>>>
-  U& operator[](Z delta_elems) const {
-    // Don't check for AllowPtrArithmetic here, as operator+ already does that,
-    // and we'd get double errors.
-    return *(*this + delta_elems).GetForDereference();
+  PA_ALWAYS_INLINE constexpr U& operator[](Z delta_elems) const {
+    static_assert(
+        raw_ptr_traits::IsPtrArithmeticAllowed(Traits),
+        "cannot index raw_ptr unless AllowPtrArithmetic trait is present.");
+    // Call SafelyUnwrapPtrForDereference() to simulate what GetForDereference()
+    // does, but without creating a temporary.
+    return *Impl::SafelyUnwrapPtrForDereference(
+        Impl::Advance(wrapped_ptr_, delta_elems));
   }
 
   // Do not disable operator+() and operator-().

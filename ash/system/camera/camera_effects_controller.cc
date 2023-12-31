@@ -216,12 +216,13 @@ bool CopyBackgroundImageFile(const base::FilePath& background_image_filepath,
   return false;
 }
 
-// Reads from the `camera_background_img_dir` for the BackgroundImageInfo of the
-// latest `number_of_images`.
-std::vector<BackgroundImageInfo> GetRecentlyUsedBackgroundImagesOnWorker(
-    const int number_of_images,
+// Returns a full list of files inside `camera_background_img_dir`, sorted by
+// last_accessed time.
+std::vector<base::FilePath> GetBackgroundImageFileNamesOnWorker(
     const base::FilePath& camera_background_img_dir) {
-  std::vector<BackgroundImageInfo> background_images_info;
+  using FileNameAndTime = std::pair<base::FilePath, base::Time>;
+
+  std::vector<FileNameAndTime> filenames_and_modified_time;
 
   // Loop through all files in `camera_background_img_dir`.
   base::FileEnumerator enumerator(camera_background_img_dir,
@@ -230,39 +231,81 @@ std::vector<BackgroundImageInfo> GetRecentlyUsedBackgroundImagesOnWorker(
   for (auto path = enumerator.Next(); !path.empty(); path = enumerator.Next()) {
     base::File::Info file_info;
     base::GetFileInfo(path, &file_info);
-    background_images_info.push_back(
-        BackgroundImageInfo{file_info.creation_time, file_info.last_accessed,
-                            path.BaseName().value(), ""});
+    filenames_and_modified_time.push_back(
+        {path.BaseName(), file_info.last_accessed});
   }
 
   // Sorted by last_accessed.
-  std::sort(background_images_info.begin(), background_images_info.end(),
-            [](const BackgroundImageInfo& f1, const BackgroundImageInfo& f2) {
-              return f1.last_accessed > f2.last_accessed;
+  std::sort(filenames_and_modified_time.begin(),
+            filenames_and_modified_time.end(),
+            [](const FileNameAndTime& f1, const FileNameAndTime& f2) {
+              return f1.second > f2.second;
             });
 
   // Only keep the latest `kMaxNumberOfImageKeptOnDisk` images on disk.
-  if (background_images_info.size() > kMaxNumberOfImageKeptOnDisk) {
+  if (filenames_and_modified_time.size() > kMaxNumberOfImageKeptOnDisk) {
     for (std::size_t i = kMaxNumberOfImageKeptOnDisk;
-         i < background_images_info.size(); i++) {
-      base::DeleteFile(
-          camera_background_img_dir.Append(background_images_info[i].basename));
+         i < filenames_and_modified_time.size(); i++) {
+      base::DeleteFile(camera_background_img_dir.Append(
+          filenames_and_modified_time[i].first));
     }
   }
 
-  background_images_info.resize(
-      std::min<int>(background_images_info.size(), number_of_images));
-
-  // Adds creation_time and jpeg_bytes for each image file.
-  for (auto& info : background_images_info) {
-    const auto filename = camera_background_img_dir.Append(info.basename);
-
-    // TODO(b/314186143): resize the image since we don't need the full size
-    // image here.
-    base::ReadFileToString(filename, &info.jpeg_bytes);
+  std::vector<base::FilePath> filenames;
+  for (auto& filename_and_time : filenames_and_modified_time) {
+    filenames.push_back(filename_and_time.first);
   }
 
-  return background_images_info;
+  return filenames;
+}
+
+// Gets the BackgroundImageInfo of the `filename`.
+std::optional<BackgroundImageInfo> GetBackgroundImageInfoOnWorker(
+    const base::FilePath& filename) {
+  base::File::Info file_info;
+  if (!base::GetFileInfo(filename, &file_info)) {
+    return std::nullopt;
+  }
+
+  BackgroundImageInfo info{file_info.creation_time, file_info.last_accessed,
+                           filename.BaseName(), ""};
+
+  // TODO(b/314186143): resize the image since we don't need the full size
+  // image here.
+  if (!base::ReadFileToString(filename, &info.jpeg_bytes)) {
+    return std::nullopt;
+  }
+
+  return info;
+}
+
+// Reads from the `camera_background_img_dir` for the BackgroundImageInfo of the
+// latest `number_of_images`.
+std::vector<BackgroundImageInfo> GetRecentlyUsedBackgroundImagesOnWorker(
+    const std::size_t number_of_images,
+    const base::FilePath& camera_background_img_dir) {
+  std::vector<base::FilePath> basenames =
+      GetBackgroundImageFileNamesOnWorker(camera_background_img_dir);
+
+  std::vector<BackgroundImageInfo> background_image_info;
+
+  // Adds creation_time and jpeg_bytes for each image file.
+  for (auto& basename : basenames) {
+    const auto info = GetBackgroundImageInfoOnWorker(
+        camera_background_img_dir.Append(basename));
+
+    if (!info.has_value()) {
+      continue;
+    }
+
+    background_image_info.push_back(info.value());
+
+    if (background_image_info.size() == number_of_images) {
+      break;
+    }
+  }
+
+  return background_image_info;
 }
 
 void SetBackgroundReplaceUiVisible(bool visible) {
@@ -337,7 +380,8 @@ void CameraEffectsController::RegisterProfilePrefs(
 }
 
 void CameraEffectsController::SetBackgroundImage(
-    const base::FilePath& relative_path) {
+    const base::FilePath& relative_path,
+    base::OnceCallback<void(bool)> callback) {
   CHECK(!camera_background_img_dir_.empty())
       << "SetBackgroundImage should not be called when "
          "camera_background_img_dir_ is not set.";
@@ -346,17 +390,20 @@ void CameraEffectsController::SetBackgroundImage(
 
   if (new_effects->replace_enabled &&
       new_effects->background_filepath == relative_path) {
+    std::move(callback).Run(true);
     return;
   }
 
   new_effects->replace_enabled = true;
   new_effects->background_filepath = relative_path;
 
-  SetCameraEffects(std::move(new_effects), /*is_initialization*/ false);
+  SetCameraEffects(std::move(new_effects), /*is_initialization*/ false,
+                   std::move(callback));
 }
 
 void CameraEffectsController::SetBackgroundImageFromContent(
-    std::string&& jpeg_bytes) {
+    std::string&& jpeg_bytes,
+    base::OnceCallback<void(bool)> callback) {
   CHECK(!camera_background_img_dir_.empty())
       << "SetBackgroundImageFromContent should not be called when "
          "camera_background_img_dir_ is not set.";
@@ -370,22 +417,13 @@ void CameraEffectsController::SetBackgroundImageFromContent(
       base::BindOnce(&WriteImageToBackgroundDir, camera_background_img_dir_,
                      std::move(jpeg_bytes)),
       base::BindOnce(
-          [](base::OnceCallback<void(const base::FilePath&)>
-                 callback_on_success,
-             const base::FilePath& basename) {
-            if (basename.empty()) {
-              LOG(ERROR) << "Failed to write the image file: " << basename;
-
-            } else {
-              std::move(callback_on_success).Run(basename);
-            }
-          },
-          base::BindOnce(&CameraEffectsController::SetBackgroundImage,
-                         weak_factory_.GetWeakPtr())));
+          &CameraEffectsController::OnSaveBackgroundImageFileComplete,
+          weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void CameraEffectsController::RemoveBackgroundImage(
-    const base::FilePath& basename) {
+    const base::FilePath& basename,
+    base::OnceCallback<void(bool)> callback) {
   CHECK(!camera_background_img_dir_.empty())
       << "RemoveBackgroundImage should not be called when "
          "camera_background_img_dir_ is not set.";
@@ -397,7 +435,8 @@ void CameraEffectsController::RemoveBackgroundImage(
     new_effects->replace_enabled = false;
     new_effects->background_filepath.reset();
 
-    SetCameraEffects(std::move(new_effects), /*is_initialization*/ false);
+    SetCameraEffects(std::move(new_effects), /*is_initialization*/ false,
+                     base::NullCallback());
   }
 
   // Remove file.
@@ -405,13 +444,7 @@ void CameraEffectsController::RemoveBackgroundImage(
       FROM_HERE,
       base::BindOnce(&base::DeleteFile,
                      camera_background_img_dir_.Append(basename)),
-      base::BindOnce(
-          [](const base::FilePath& path, bool success) {
-            if (!success) {
-              LOG(ERROR) << "Failed to delete the file: " << path;
-            }
-          },
-          basename));
+      std::move(callback));
 }
 
 void CameraEffectsController::GetRecentlyUsedBackgroundImages(
@@ -426,6 +459,34 @@ void CameraEffectsController::GetRecentlyUsedBackgroundImages(
       FROM_HERE,
       base::BindOnce(&GetRecentlyUsedBackgroundImagesOnWorker, number_of_images,
                      camera_background_img_dir_),
+      std::move(callback));
+}
+
+void CameraEffectsController::GetBackgroundImageFileNames(
+    base::OnceCallback<void(const std::vector<base::FilePath>&)> callback) {
+  CHECK(!camera_background_img_dir_.empty())
+      << "GetBackgroundImageFileNames should not be called when "
+         "camera_background_img_dir_ is not set.";
+
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&GetBackgroundImageFileNamesOnWorker,
+                     camera_background_img_dir_),
+      std::move(callback));
+}
+
+void CameraEffectsController::GetBackgroundImageInfo(
+    const base::FilePath& basename,
+    base::OnceCallback<void(const std::optional<BackgroundImageInfo>&)>
+        callback) {
+  CHECK(!camera_background_img_dir_.empty())
+      << "GetRecentlyUsedBackgroundImages should not be called when "
+         "camera_background_img_dir_ is not set.";
+
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&GetBackgroundImageInfoOnWorker,
+                     camera_background_img_dir_.Append(basename)),
       std::move(callback));
 }
 
@@ -454,7 +515,8 @@ void CameraEffectsController::OnActiveUserPrefServiceChanged(
 
   // If the camera has started, it won't get the previous setting so call it
   // here too. If the camera service isn't ready it this call will be ignored.
-  SetCameraEffects(GetEffectsConfigFromPref(), /*is_initialization*/ true);
+  SetCameraEffects(GetEffectsConfigFromPref(), /*is_initialization*/ true,
+                   base::DoNothing());
 
   // If any effects have controls the user can access, this will create the
   // effects UI and register `CameraEffectsController`'s `VcEffectsDelegate`
@@ -540,7 +602,8 @@ void CameraEffectsController::OnEffectControlActivated(
       return;
   }
 
-  SetCameraEffects(std::move(new_effects), /*is_initialization*/ false);
+  SetCameraEffects(std::move(new_effects), /*is_initialization*/ false,
+                   base::DoNothing());
 }
 
 void CameraEffectsController::RecordMetricsForSetValueEffectOnClick(
@@ -636,7 +699,8 @@ CameraEffectsController::GetSegmentationModelType() {
 
 void CameraEffectsController::SetCameraEffects(
     cros::mojom::EffectsConfigPtr config,
-    bool is_initialization) {
+    bool is_initialization,
+    base::OnceCallback<void(bool)> copy_background_image_complete_callback) {
   // For backwards compatibility, will be removed after mojom is updated.
   if (config->blur_enabled) {
     config->effect = cros::mojom::CameraEffect::kBackgroundBlur;
@@ -671,7 +735,8 @@ void CameraEffectsController::SetCameraEffects(
                        background_run_filepath),
         base::BindOnce(
             &CameraEffectsController::OnCopyBackgroundImageFileComplete,
-            weak_factory_.GetWeakPtr(), std::move(config), is_initialization));
+            weak_factory_.GetWeakPtr(), std::move(config), is_initialization,
+            std::move(copy_background_image_complete_callback)));
   } else {
     SetCameraEffectsInCameraHalDispatcherImpl(std::move(config));
   }
@@ -680,7 +745,10 @@ void CameraEffectsController::SetCameraEffects(
 void CameraEffectsController::OnCopyBackgroundImageFileComplete(
     cros::mojom::EffectsConfigPtr new_config,
     bool is_initialization,
+    base::OnceCallback<void(bool)> copy_background_image_complete_callback,
     bool copy_succeeded) {
+  std::move(copy_background_image_complete_callback).Run(copy_succeeded);
+
   // If copy_succeeded, continue to apply all effects.
   if (copy_succeeded) {
     new_config->blur_enabled = false;
@@ -697,6 +765,18 @@ void CameraEffectsController::OnCopyBackgroundImageFileComplete(
     new_config->background_filepath.reset();
     SetCameraEffectsInCameraHalDispatcherImpl(std::move(new_config));
   }
+}
+
+void CameraEffectsController::OnSaveBackgroundImageFileComplete(
+    base::OnceCallback<void(bool)> callback,
+    const base::FilePath& basename) {
+  if (basename.empty()) {
+    LOG(ERROR) << "Failed to write the image file: " << basename;
+    std::move(callback).Run(false);
+    return;
+  }
+
+  SetBackgroundImage(basename, std::move(callback));
 }
 
 cros::mojom::EffectsConfigPtr

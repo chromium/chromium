@@ -34,9 +34,9 @@ std::unique_ptr<FormField> StandaloneCvcField::Parse(ParsingContext& context,
 
   // CVC fields can occur in many different field types so we check for each
   const auto kMatchNumTelAndPwd =
-      kDefaultMatchParamsWith<MatchFieldType::kNumber,
-                              MatchFieldType::kTelephone,
-                              MatchFieldType::kPassword>;
+      kDefaultMatchParamsWith<FormControlType::kInputNumber,
+                              FormControlType::kInputTelephone,
+                              FormControlType::kInputPassword>;
   if (ParseFieldSpecifics(context, scanner, kCardCvcRe, kMatchNumTelAndPwd,
                           cvc_patterns, &field, "kCardCvcRe(standalone)")) {
     return std::make_unique<StandaloneCvcField>(field);
@@ -54,15 +54,15 @@ bool StandaloneCvcField::MatchGiftCard(ParsingContext& context,
     return false;
   }
 
-  const auto kMatchFieldType = kDefaultMatchParamsWith<
-      MatchFieldType::kNumber, MatchFieldType::kTelephone,
-      MatchFieldType::kSearch, MatchFieldType::kPassword>;
+  const auto kMatchParams = kDefaultMatchParamsWith<
+      FormControlType::kInputNumber, FormControlType::kInputTelephone,
+      FormControlType::kInputSearch, FormControlType::kInputPassword>;
   base::span<const MatchPatternRef> gift_card_patterns = GetMatchPatterns(
       "GIFT_CARD", context.page_language, context.pattern_source);
 
   size_t saved_cursor = scanner->SaveCursor();
   const bool gift_card_match =
-      ParseFieldSpecifics(context, scanner, kGiftCardRe, kMatchFieldType,
+      ParseFieldSpecifics(context, scanner, kGiftCardRe, kMatchParams,
                           gift_card_patterns, nullptr, "kGiftCardRe");
   // MatchGiftCard only wants to test the presence of a gift card but not
   // consume the field.

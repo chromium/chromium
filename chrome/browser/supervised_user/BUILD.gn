@@ -100,8 +100,8 @@ if (is_android) {
     ]
 
     srcjar_deps = [
-      ":jni_headers",
       ":local_web_approval_outcome_java_enum_srcjar",
+      ":website_parent_approval_jni_headers",
     ]
 
     sources = [
@@ -116,8 +116,25 @@ if (is_android) {
     resources_package = "org.chromium.chrome.browser.supervised_user"
   }
 
-  generate_jni("jni_headers") {
+  generate_jni("website_parent_approval_jni_headers") {
     sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApproval.java" ]
+  }
+
+  android_library("supervised_user_service_platform_delegate_java") {
+    deps = [
+      "//base:base_java",
+      "//chrome/browser/tabmodel:java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+
+    srcjar_deps = [ ":supervised_user_service_platform_delegate_jni_headers" ]
+
+    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/SupervisedUserServicePlatformDelegate.java" ]
+    resources_package = "org.chromium.chrome.browser.supervised_user"
+  }
+
+  generate_jni("supervised_user_service_platform_delegate_jni_headers") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/SupervisedUserServicePlatformDelegate.java" ]
   }
 
   generate_jni("test_support_jni_headers") {
@@ -144,6 +161,7 @@ if (is_android) {
     testonly = true
     resources_package = "org.chromium.chrome.browser.supervised_user"
     sources = [
+      "android/javatests/src/org/chromium/chrome/browser/supervised_user/IncognitoSignInInteractionTest.java",
       "android/javatests/src/org/chromium/chrome/browser/supervised_user/SupervisedUserCriticalJourneysIntegrationTest.java",
       "android/javatests/src/org/chromium/chrome/browser/supervised_user/SupervisedUserSettingsTestUtils.java",
       "android/javatests/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApprovalNativesTest.java",

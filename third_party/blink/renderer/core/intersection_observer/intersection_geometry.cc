@@ -203,7 +203,8 @@ static const unsigned kConstructorFlagsMask =
     IntersectionGeometry::kShouldTrackFractionOfRoot |
     IntersectionGeometry::kForFrameViewportIntersection |
     IntersectionGeometry::kShouldConvertToCSSPixels |
-    IntersectionGeometry::kUseOverflowClipEdge;
+    IntersectionGeometry::kUseOverflowClipEdge |
+    IntersectionGeometry::kRespectFilters;
 
 }  // namespace
 
@@ -386,15 +387,12 @@ void IntersectionGeometry::RootAndTarget::ComputeRelationship(
   const LayoutObject* previous_container = nullptr;
   const LayoutObject* container = target;
   while (container != root) {
-    if (!RuntimeEnabledFeatures::IntersectionObserverIgnoreFiltersEnabled()) {
-      has_filter |= container->HasFilterInducingProperty();
-    }
+    has_filter |= container->HasFilterInducingProperty();
     // Don't check for filters if we've already found one.
     LayoutObject::AncestorSkipInfo skip_info(root, !has_filter);
     previous_container = container;
     container = container->Container(&skip_info);
-    if (!RuntimeEnabledFeatures::IntersectionObserverIgnoreFiltersEnabled() &&
-        !has_filter) {
+    if (!has_filter) {
       has_filter = skip_info.FilterSkipped();
     }
     if (!container || skip_info.AncestorSkipped()) {
@@ -711,7 +709,7 @@ bool IntersectionGeometry::ApplyClip(const LayoutObject* root,
 
   unsigned flags = kDefaultVisualRectFlags | kEdgeInclusive |
                    kDontApplyMainFrameOverflowClip;
-  if (RuntimeEnabledFeatures::IntersectionObserverIgnoreFiltersEnabled()) {
+  if (!ShouldRespectFilters()) {
     flags |= kIgnoreFilters;
   }
   if (CanUseGeometryMapper(*target)) {
@@ -847,8 +845,7 @@ gfx::Vector2dF IntersectionGeometry::ComputeMinScrollDeltaToUpdate(
     // Intersection is not affected by scroll.
     return kInfiniteScrollDelta;
   }
-  if (root_and_target.has_filter) {
-    DCHECK(!RuntimeEnabledFeatures::IntersectionObserverIgnoreFiltersEnabled());
+  if (root_and_target.has_filter && ShouldRespectFilters()) {
     // With filters, the intersection rect can be non-empty even if root_rect_
     // and target_rect_ don't intersect.
     return gfx::Vector2dF();

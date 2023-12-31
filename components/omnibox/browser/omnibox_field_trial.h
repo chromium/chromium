@@ -614,19 +614,7 @@ struct MLConfig {
   // Equivalent to OmniboxFieldTrial::kMlUrlScoringUnlimitedNumCandidates.
   bool ml_url_scoring_unlimited_num_candidates{false};
 
-  // If true, the ML model only re-scores and re-ranks the final set of matches
-  // that would be shown in the legacy scoring system. The full legacy system
-  // including the final call to `SortAndCull()` is completed before the ML
-  // model is invoked.
-  bool ml_url_scoring_rerank_final_matches_only{false};
-
-  // If true, the would-be default match from the legacy system is determined
-  // before ML scoring is invoked, and preserved even after re-scoring and
-  // re-ranking with the new scores.  This param has no effect if
-  // `ml_url_scoring_rerank_final_matches_only` above is false.
-  bool ml_url_scoring_preserve_default{false};
-
-  // If true, creates Omnibox autocompete URL scoring model.
+  // If true, creates Omnibox autocomplete URL scoring model.
   // Equivalent to omnibox::kUrlScoringModel.
   bool url_scoring_model{false};
 
@@ -636,6 +624,15 @@ struct MLConfig {
   // `OmniboxFieldTrial::kUIMaxAutocompleteMatchesByProviderParam`. This param
   // has no effect if `ml_url_scoring_unlimited_num_candidates` is true.
   std::string ml_url_scoring_max_matches_by_provider;
+
+  // If false, search suggestions are mostly left untouched, and URLs are
+  // shuffled amongst themselves. But the default suggestion can still swap from
+  // a search to a  URL; or vice versa; and thus also shift the search group up
+  // or down by 1 position. When true, the default suggestion won't swap between
+  // a search to a URL or vice versa; but it may still change from 1 URL to
+  // another. Similarly, when enabled, avoids the number of shortcut boosted
+  // URLs above searches increasing or decreasing by 1 when the default swaps.
+  bool stable_search_ranking{false};
 };
 
 // A testing utility class for overriding the current configuration returned

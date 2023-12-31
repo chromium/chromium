@@ -138,7 +138,9 @@ class PlayerMediator implements InteractionHandler {
     }
 
     @Override
-    public void onPublisherClick() {}
+    public void onPublisherClick() {
+        mDelegate.navigateToPlayingTab();
+    }
 
     @Override
     public void onSeekBackClick() {

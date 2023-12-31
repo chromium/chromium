@@ -2363,6 +2363,9 @@
   <message name="IDS_SETTINGS_SEARCH_ENGINES_EDIT_SEARCH_ENGINE" desc="Title for a dialog that allows editing an existing search engine.">
     Edit search engine
   </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_VIEW_SEARCH_ENGINE" desc="Title for a dialog that allows viewing details of an existing search engine.">
+    Search engine
+  </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_DELETE_CONFIRMATION_TITLE" desc="Title for a dialog that confirms that a user wants to delete an existing search engine.">
     Delete search engine
   </message>
@@ -2422,6 +2425,9 @@
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_DEACTIVATE" desc="Text of the button that deactivates a search engine">
     Deactivate
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_VIEW_DETAILS" desc="Label for button that allows the user to view details of a search engine">
+    Details
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_MANAGE_EXTENSION" desc="Text displayed for a button that allows the user to manage a Chrome extension">
     Manage

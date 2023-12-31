@@ -1259,7 +1259,7 @@ TEST_F(MAYBE_ScreenManagerTest, EnableControllerWhenWindowHasBuffer) {
   scoped_refptr<DrmFramebuffer> buffer =
       CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
   DrmOverlayPlaneList planes;
-  planes.emplace_back(buffer, nullptr);
+  planes.push_back(DrmOverlayPlane::TestPlane(buffer));
   window->SchedulePageFlip(std::move(planes), base::DoNothing(),
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
@@ -1293,7 +1293,7 @@ TEST_F(MAYBE_ScreenManagerTest,
   auto buffer = CreateBufferWithModifier(
       DRM_FORMAT_XRGB8888, I915_FORMAT_MOD_X_TILED, GetPrimaryBounds().size());
   DrmOverlayPlaneList planes;
-  planes.emplace_back(buffer, nullptr);
+  planes.push_back(DrmOverlayPlane::TestPlane(buffer));
   window->SchedulePageFlip(std::move(planes), base::DoNothing(),
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
@@ -1615,7 +1615,7 @@ TEST_F(MAYBE_ScreenManagerTest, CloningPlanesOnModeset) {
   scoped_refptr<DrmFramebuffer> buffer =
       CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
   DrmOverlayPlaneList planes;
-  planes.emplace_back(buffer, nullptr);
+  planes.push_back(DrmOverlayPlane::TestPlane(buffer));
   window->SchedulePageFlip(std::move(planes), base::DoNothing(),
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
@@ -1655,8 +1655,8 @@ TEST_F(MAYBE_ScreenManagerTest, CloningMultiplePlanesOnModeset) {
   scoped_refptr<DrmFramebuffer> overlay =
       CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
   DrmOverlayPlaneList planes;
-  planes.emplace_back(primary, nullptr);
-  planes.emplace_back(overlay, nullptr);
+  planes.push_back(DrmOverlayPlane::TestPlane(primary));
+  planes.push_back(DrmOverlayPlane::TestPlane(overlay));
   window->SchedulePageFlip(std::move(planes), base::DoNothing(),
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
@@ -1695,7 +1695,7 @@ TEST_F(MAYBE_ScreenManagerTest, ModesetWithClonedPlanesNoOverlays) {
   scoped_refptr<DrmFramebuffer> buffer =
       CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
   DrmOverlayPlaneList planes;
-  planes.emplace_back(buffer, nullptr);
+  planes.push_back(DrmOverlayPlane::TestPlane(buffer));
   window->SchedulePageFlip(std::move(planes), base::DoNothing(),
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
@@ -1737,8 +1737,8 @@ TEST_F(MAYBE_ScreenManagerTest, ModesetWithClonedPlanesWithOverlaySucceeding) {
   scoped_refptr<DrmFramebuffer> overlay =
       CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
   DrmOverlayPlaneList planes;
-  planes.emplace_back(primary, nullptr);
-  planes.emplace_back(overlay, nullptr);
+  planes.push_back(DrmOverlayPlane::TestPlane(primary));
+  planes.push_back(DrmOverlayPlane::TestPlane(overlay));
   window->SchedulePageFlip(std::move(planes), base::DoNothing(),
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
@@ -1785,8 +1785,8 @@ TEST_F(MAYBE_ScreenManagerTest, ModesetWithClonedPlanesWithOverlayFailing) {
   scoped_refptr<DrmFramebuffer> overlay =
       CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
   DrmOverlayPlaneList planes;
-  planes.emplace_back(primary, nullptr);
-  planes.emplace_back(overlay, nullptr);
+  planes.push_back(DrmOverlayPlane::TestPlane(primary));
+  planes.push_back(DrmOverlayPlane::TestPlane(overlay));
   window->SchedulePageFlip(std::move(planes), base::DoNothing(),
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
@@ -1836,8 +1836,8 @@ TEST_F(MAYBE_ScreenManagerTest, ModesetWithNewBuffersOnModifiersChange) {
   scoped_refptr<DrmFramebuffer> overlay =
       CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
   DrmOverlayPlaneList planes;
-  planes.emplace_back(primary, nullptr);
-  planes.emplace_back(overlay, nullptr);
+  planes.push_back(DrmOverlayPlane::TestPlane(primary));
+  planes.push_back(DrmOverlayPlane::TestPlane(overlay));
   window->SchedulePageFlip(std::move(planes), base::DoNothing(),
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
@@ -1905,10 +1905,10 @@ TEST_F(MAYBE_ScreenManagerTest, PinnedPlanesAndHwMirroring) {
   // The movable plane will be associated with the first display:
   {
     DrmOverlayPlaneList planes;
-    planes.emplace_back(
-        CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size()), nullptr);
-    planes.emplace_back(
-        CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size()), nullptr);
+    planes.push_back(DrmOverlayPlane::TestPlane(
+        CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size())));
+    planes.push_back(DrmOverlayPlane::TestPlane(
+        CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size())));
     screen_manager_->GetWindow(1)->SchedulePageFlip(
         std::move(planes), base::DoNothing(), base::DoNothing());
     drm_->RunCallbacks();
@@ -1969,10 +1969,10 @@ TEST_F(MAYBE_ScreenManagerTest, PinnedPlanesAndModesetting) {
   // The movable plane will be associated with the first display:
   {
     DrmOverlayPlaneList planes;
-    planes.emplace_back(
-        CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size()), nullptr);
-    planes.emplace_back(
-        CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size()), nullptr);
+    planes.push_back(DrmOverlayPlane::TestPlane(
+        CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size())));
+    planes.push_back(DrmOverlayPlane::TestPlane(
+        CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size())));
     screen_manager_->GetWindow(1)->SchedulePageFlip(
         std::move(planes), base::DoNothing(), base::DoNothing());
     drm_->RunCallbacks();

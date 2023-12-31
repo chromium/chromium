@@ -21,6 +21,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/linux/linux_ui_delegate.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
 #include "url/gurl.h"
@@ -694,7 +695,8 @@ void SelectFileDialogLinuxPortal::CompleteOpenOnMainThread(
 
   if (listener_) {
     if (info_->type == SELECT_OPEN_MULTI_FILE) {
-      listener_->MultiFilesSelected(paths, listener_params_);
+      listener_->MultiFilesSelected(FilePathListToSelectedFileInfoList(paths),
+                                    listener_params_);
     } else if (paths.size() > 1) {
       LOG(ERROR) << "Got >1 file URI from a single-file chooser";
     } else {
@@ -705,7 +707,8 @@ void SelectFileDialogLinuxPortal::CompleteOpenOnMainThread(
           break;
         }
       }
-      listener_->FileSelected(paths.front(), index, listener_params_);
+      listener_->FileSelected(SelectedFileInfo(paths[0]), index,
+                              listener_params_);
     }
   }
 }

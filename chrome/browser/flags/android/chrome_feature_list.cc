@@ -217,7 +217,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kIncognitoReauthenticationForAndroid,
     &kIncognitoScreenshot,
     &kInstantStart,
-    &kLensCameraAssistedSearch,
     &kLensOnQuickActionSearchWidget,
     &kMultiInstanceApplicationStatusCleanup,
     &kNewTabSearchEngineUrlAndroid,
@@ -537,10 +536,6 @@ BASE_FEATURE(kContextMenuTranslateWithGoogleLens,
              "ContextMenuTranslateWithGoogleLens",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensCameraAssistedSearch,
-             "LensCameraAssistedSearch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensOnQuickActionSearchWidget,
              "LensOnQuickActionSearchWidget",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -688,7 +683,7 @@ BASE_FEATURE(kOmniboxNoopEditUrlSuggestionClicks,
 
 BASE_FEATURE(kPartnerCustomizationsUma,
              "PartnerCustomizationsUma",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kQuickDeleteForAndroid,
              "QuickDeleteForAndroid",

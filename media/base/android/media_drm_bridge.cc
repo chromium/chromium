@@ -322,6 +322,28 @@ std::vector<uint8_t> MediaDrmBridge::GetUUID(const std::string& key_system) {
 }
 
 // static
+base::Version MediaDrmBridge::GetVersion(const std::string& key_system) {
+  scoped_refptr<MediaDrmBridge> media_drm_bridge =
+      MediaDrmBridge::CreateWithoutSessionSupport(
+          key_system, /* origin_id= */ "",
+          media::MediaDrmBridge::SECURITY_LEVEL_DEFAULT, base::NullCallback());
+  if (!media_drm_bridge) {
+    DVLOG(1) << "Unable to create MediaDrmBridge for " << key_system;
+    return base::Version();
+  }
+
+  std::string version_str = media_drm_bridge->GetVersionInternal();
+
+  // Some devices return the version with an additional level (e.g. 18.0.0@1),
+  // so simply replace any '@'.
+  base::ReplaceChars(version_str, "@", ".", &version_str);
+
+  auto version = base::Version(version_str);
+  DVLOG_IF(1, !version.IsValid()) << "Unable to convert " << version_str;
+  return version;
+}
+
+// static
 scoped_refptr<MediaDrmBridge> MediaDrmBridge::CreateInternal(
     const std::vector<uint8_t>& scheme_uuid,
     const std::string& origin_id,
@@ -904,6 +926,13 @@ MediaDrmBridge::SecurityLevel MediaDrmBridge::GetSecurityLevel() {
   std::string security_level_str =
       ConvertJavaStringToUTF8(env, j_security_level.obj());
   return GetSecurityLevelFromString(security_level_str);
+}
+
+std::string MediaDrmBridge::GetVersionInternal() {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jstring> j_version =
+      Java_MediaDrmBridge_getVersion(env, j_media_drm_);
+  return ConvertJavaStringToUTF8(env, j_version.obj());
 }
 
 void MediaDrmBridge::NotifyMediaCryptoReady(JavaObjectPtr j_media_crypto) {

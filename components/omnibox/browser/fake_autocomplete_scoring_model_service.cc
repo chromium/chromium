@@ -20,7 +20,7 @@ FakeAutocompleteScoringModelService::BatchScoreAutocompleteUrlMatchesSync(
         const FakeAutocompleteScoringModelService::ScoringSignals*>&
         batch_scoring_signals) {
   std::vector<Result> results;
-  for (size_t i = 0; i < batch_scoring_signals.size(); ++i)
-    results.push_back(batch_scoring_signals[i]->site_engagement());
+  for (const auto* signals : batch_scoring_signals)
+    results.push_back(signals->site_engagement());
   return results;
 }

@@ -168,14 +168,14 @@ void SelectFileDialogLacros::OnSelected(
   }
   if (mojo_files.size() == 1) {
     SelectedFileInfo file = ConvertSelectedFileInfo(std::move(mojo_files[0]));
-    listener_->FileSelectedWithExtraInfo(file, file_type_index, params_);
+    listener_->FileSelected(file, file_type_index, params_);
     return;
   }
   std::vector<SelectedFileInfo> files;
   for (auto& mojo_file : mojo_files) {
     files.push_back(ConvertSelectedFileInfo(std::move(mojo_file)));
   }
-  listener_->MultiFilesSelectedWithExtraInfo(files, params_);
+  listener_->MultiFilesSelected(files, params_);
 }
 
 }  // namespace ui

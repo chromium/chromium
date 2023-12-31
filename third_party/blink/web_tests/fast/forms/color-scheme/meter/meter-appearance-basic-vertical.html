@@ -25,7 +25,7 @@
   <meter class="tall" min="0" max="100" low="30" high="60" optimum="100" value="45"></meter>
   <meter class="tall" min="0" max="100" low="30" high="60" optimum="100" value="25"></meter></li>
 </ul>
-<h2>Providing meter styles</h2>
+<br><h2>Providing meter styles</h2><br>
 <ul>
   <li>Check that border is created:</li>
   <li>Check that padding is created:</li>
@@ -40,8 +40,7 @@
   <meter style="box-shadow: 4px 4px 10px rgba(255,0,0,0.5), inset 4px 4px 4px rgba(0,255,0,0.5);"></meter>
   <meter style="background: blue; color: white;" min="0" max="100" low="30" high="60" optimum="100" value="80"></meter>
 </ul>
-<h2>Providing bar and/or value styles</h2>
-<div>
+<br><h2>Providing bar and/or value styles</h2><br>
 <ul>
   <li>Check that optimum value is being styled:</li>
   <li>Check that suboptimum value is being styled:</li>
@@ -60,19 +59,15 @@
   <meter class="barstyled suboptimumvalstyled" min="0" max="100" low="30" high="60" optimum="100" value="45" ></meter>
   <meter class="barstyled evenlessgoodvalstyled" min="0" max="100" low="30" high="60" optimum="100" value="25" ></meter>
 </ul>
-<h2>Providing appearance none</h2>
+<br><h2>Others: Providing appearance none and bar paddings</h2><br>
 <ul>
   <li>Check that the meter disappears but the meters content is still present:</li>
   <li>Check that the meter still disappears when meter is initially rendered with "meter" appearance:</li>
-</ul>
-<ul>
-  <meter style="-webkit-appearance: none" min="0" max="100" low="30" high="60" optimum="100" value="80" >80</meter>
-</ul>
-<h2>Providing bar paddings</h2>
-<ul>
   <li>Check that meter bar gets padding:</li>
 </ul>
 <ul>
+  <meter style="-webkit-appearance: none" min="0" max="100" low="30" high="60" optimum="100" value="80" >80</meter>
+  <meter id="appearanceNoneLater" min="0" max="100" low="30" high="60" optimum="100" value="80" >80%</meter>
   <meter id="bar-paddings" min="0" max="100" low="30" high="60" optimum="100" value="80" ></meter>
 </ul>
 <script>

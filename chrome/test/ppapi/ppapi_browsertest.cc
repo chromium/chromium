@@ -1515,8 +1515,7 @@ IN_PROC_BROWSER_TEST_F(PPAPIPrivateNaClPNaClTest,
   base::FilePath existing_filename = temp_dir.GetPath().AppendASCII("foo"); \
   ASSERT_TRUE(base::WriteFile(existing_filename, kContents));               \
   PPAPITestSelectFileDialogFactory::SelectedFileInfoList file_info_list;    \
-  file_info_list.emplace_back(                                              \
-      ui::SelectedFileInfo(existing_filename, existing_filename));          \
+  file_info_list.emplace_back(ui::SelectedFileInfo(existing_filename));     \
   PPAPITestSelectFileDialogFactory test_dialog_factory(                     \
       PPAPITestSelectFileDialogFactory::RESPOND_WITH_FILE_LIST,             \
       file_info_list);

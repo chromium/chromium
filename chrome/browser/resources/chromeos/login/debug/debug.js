@@ -1841,7 +1841,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       id: 'quick-start',
       kind: ScreenKind.NORMAL,
       handledSteps:
-          'verification,connecting_to_wifi,gaia_credentials,fido_assertion_received',
+          'verification,connecting_to_wifi,signing_in',
       states: [
         {
           id: 'PinVerification',
@@ -1863,15 +1863,19 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
           },
         },
         {
-          id: 'TransferringGaiaCreds',
+          id: 'SigninInEmailOnly',
           trigger: (screen) => {
-            screen.showTransferringGaiaCredentials();
+            screen.showSigningInStep();
+            screen.setUserEmail('test_email@gmail.com');
           },
         },
         {
-          id: 'TransferredGaiaCreds',
+          id: 'SigninInFullAvatar',
           trigger: (screen) => {
-            screen.showFidoAssertionReceived('testUser@gmail.com');
+            screen.showSigningInStep();
+            screen.setUserEmail('test_email@gmail.com');
+            screen.setUserFullName('Test User');
+            screen.setUserAvatarUrl('https://lh3.googleusercontent.com/a/ACg8ocISjvU-p0Gz_kIBamP3jit_Y8PrQVU4AbIvQrUEZ04d=s96-c');
           },
         },
       ],

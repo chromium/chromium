@@ -5,25 +5,15 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_ANDROID_SUPERVISED_USER_SERVICE_PLATFORM_DELEGATE_H_
 #define CHROME_BROWSER_SUPERVISED_USER_ANDROID_SUPERVISED_USER_SERVICE_PLATFORM_DELEGATE_H_
 
-#include "base/memory/raw_ref.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
-
-class Profile;
 
 class SupervisedUserServicePlatformDelegate
     : public supervised_user::SupervisedUserService::PlatformDelegate {
  public:
-  explicit SupervisedUserServicePlatformDelegate(Profile& profile);
+  SupervisedUserServicePlatformDelegate();
 
   // SupervisedUserService::PlatformDelegate
-
-  // Currently this method is a no-op.
-  // TODO(crbug/1491611): implement incognito tab closing on Android, via bridge
-  // to Java.
   void CloseIncognitoTabs() override;
-
- private:
-  const raw_ref<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_ANDROID_SUPERVISED_USER_SERVICE_PLATFORM_DELEGATE_H_

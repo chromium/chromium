@@ -43,7 +43,7 @@ suite('SearchEngineEntryTest', function() {
         entry.shadowRoot!.querySelector('#shortcut-column')!.textContent);
     assertEquals(
         searchEngine.url,
-        entry.shadowRoot!.querySelector('#url-column-padded')!.textContent);
+        entry.shadowRoot!.querySelector('#url-column')!.textContent);
   });
 
   // Tests that columns are hidden and shown appropriately.
@@ -62,12 +62,10 @@ suite('SearchEngineEntryTest', function() {
     // Test query URL column visibility.
     entry.showQueryUrl = true;
     assertFalse(
-        entry.shadowRoot!.querySelector<HTMLElement>(
-                             '#url-column-padded')!.hidden);
+        entry.shadowRoot!.querySelector<HTMLElement>('#url-column')!.hidden);
     entry.showQueryUrl = false;
     assertTrue(
-        entry.shadowRoot!.querySelector<HTMLElement>(
-                             '#url-column-padded')!.hidden);
+        entry.shadowRoot!.querySelector<HTMLElement>('#url-column')!.hidden);
   });
 
   // Open and return the action menu
@@ -116,12 +114,13 @@ suite('SearchEngineEntryTest', function() {
     assertTrue(!!editButton);
     assertFalse(editButton.hidden);
 
-    const promise = eventToPromise('edit-search-engine', entry).then(e => {
-      assertEquals(engine, e.detail.engine);
-      assertEquals(
-          entry.shadowRoot!.querySelector('cr-icon-button'),
-          e.detail.anchorElement);
-    });
+    const promise =
+        eventToPromise('view-or-edit-search-engine', entry).then(e => {
+          assertEquals(engine, e.detail.engine);
+          assertEquals(
+              entry.shadowRoot!.querySelector('cr-icon-button'),
+              e.detail.anchorElement);
+        });
     editButton.click();
     return promise;
   });
@@ -289,7 +288,7 @@ suite('EnterpriseSiteSearchEntryTests', function() {
         entry.shadowRoot!.querySelector('#shortcut-column')!.textContent);
     assertEquals(
         searchEngine.url,
-        entry.shadowRoot!.querySelector('#url-column-padded')!.textContent);
+        entry.shadowRoot!.querySelector('#url-column')!.textContent);
   });
 
   // Verifies that the "edit" and "activate" buttons and the 3-dot action menu
@@ -311,6 +310,28 @@ suite('EnterpriseSiteSearchEntryTests', function() {
         'cr-icon-button.icon-more-vert');
     assertTrue(!!menuButton);
     assertTrue(menuButton.hidden);
+  });
+
+  // Verifies that the details can be seen.
+  test('ViewDetailsAllowed', function() {
+    flush();
+
+    const engine = entry.engine;
+    const viewDetailsButton =
+        entry.shadowRoot!.querySelector<HTMLButtonElement>(
+            `#viewDetailsButton`);
+    assertTrue(!!viewDetailsButton);
+    assertFalse(viewDetailsButton.hidden);
+
+    const promise =
+        eventToPromise('view-or-edit-search-engine', entry).then(e => {
+          assertEquals(engine, e.detail.engine);
+          assertEquals(
+              entry.shadowRoot!.querySelector('cr-icon-button'),
+              e.detail.anchorElement);
+        });
+    viewDetailsButton.click();
+    return promise;
   });
 
   // Verifies that the policy indicator is shown.

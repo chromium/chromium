@@ -77,10 +77,9 @@ class PPAPITestSelectFileDialog : public ui::SelectFileDialog {
     if (selected_file_info_.size() == 0)
       listener_->FileSelectionCanceled(params);
     else if (selected_file_info_.size() == 1)
-      listener_->FileSelectedWithExtraInfo(selected_file_info_.front(), 0,
-                                           params);
+      listener_->FileSelected(selected_file_info_.front(), 0, params);
     else
-      listener_->MultiFilesSelectedWithExtraInfo(selected_file_info_, params);
+      listener_->MultiFilesSelected(selected_file_info_, params);
   }
 
   PPAPITestSelectFileDialogFactory::SelectedFileInfoList selected_file_info_;

@@ -17,7 +17,6 @@ js_type_check("closure_compile") {
         "js_module_root=./gen/chrome/browser/resources/gaia_auth_host",
       ]
   deps = [
-    ":auto_enrollment_check",
     ":consumer_update",
     ":enterprise_enrollment",
     ":hid_detection",
@@ -30,17 +29,6 @@ js_type_check("closure_compile") {
 
 ###############################
 # Closure compiler libraries below
-
-js_library("auto_enrollment_check") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/auto_enrollment_check.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_loading_dialog",
-  ]
-  extra_deps = [ ":web_components" ]
-}
 
 js_library("consumer_update") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/consumer_update.js" ]

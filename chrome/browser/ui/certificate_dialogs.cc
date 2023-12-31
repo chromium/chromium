@@ -27,6 +27,7 @@
 #include "third_party/boringssl/src/include/openssl/pkcs7.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(USE_NSS_CERTS)
@@ -81,8 +82,8 @@ class Exporter : public ui::SelectFileDialog::Listener {
   Exporter(const Exporter&) = delete;
   Exporter& operator=(const Exporter&) = delete;
 
-  // SelectFileDialog::Listener implemenation.
-  void FileSelected(const base::FilePath& path,
+  // SelectFileDialog::Listener implementation.
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* params) override;
   void FileSelectionCanceled(void* params) override;
@@ -131,7 +132,7 @@ Exporter::~Exporter() {
     select_file_dialog_->ListenerDestroyed();
 }
 
-void Exporter::FileSelected(const base::FilePath& path,
+void Exporter::FileSelected(const ui::SelectedFileInfo& file,
                             int index,
                             void* params) {
   std::string data;
@@ -157,8 +158,9 @@ void Exporter::FileSelected(const base::FilePath& path,
   }
 
   if (!data.empty()) {
-    base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
-                               base::BindOnce(&WriterCallback, path, data));
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&WriterCallback, file.path(), data));
   }
 
   delete this;

@@ -22,8 +22,9 @@ std::unique_ptr<FormField> NumericQuantityField::Parse(
   if (ParseFieldSpecifics(
           context, scanner, kNumericQuantityRe,
           kDefaultMatchParamsWith<
-              MatchFieldType::kNumber, MatchFieldType::kSelect,
-              MatchFieldType::kTextArea, MatchFieldType::kSearch>,
+              FormControlType::kInputNumber, FormControlType::kSelectOne,
+              FormControlType::kSelectList, FormControlType::kTextArea,
+              FormControlType::kInputSearch>,
           quantity_patterns, &field, "kNumericQuantityRe")) {
     return base::WrapUnique(new NumericQuantityField(field));
   }

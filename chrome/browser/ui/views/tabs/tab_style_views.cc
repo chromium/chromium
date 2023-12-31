@@ -1091,7 +1091,6 @@ class ChromeRefresh2023TabStyleViews : public GM2TabStyleViews {
   SkColor GetTargetTabBackgroundColor(
       TabStyle::TabSelectionState selection_state,
       bool hovered) const override;
-  int GetStrokeThickness(bool should_paint_as_active = false) const override;
   SkPath GetPath(TabStyle::PathType path_type,
                  float scale,
                  bool force_active = false,
@@ -1119,15 +1118,6 @@ SkColor ChromeRefresh2023TabStyleViews::GetTargetTabBackgroundColor(
 
   return tab_style()->GetTabBackgroundColor(
       selection_state, hovered, active_widget, *tab()->GetColorProvider());
-}
-
-int ChromeRefresh2023TabStyleViews::GetStrokeThickness(
-    bool should_paint_as_active) const {
-  if (tab()->group().has_value() && tab()->IsActive()) {
-    return TabGroupUnderline::kStrokeThickness;
-  }
-
-  return 0;
 }
 
 SkPath ChromeRefresh2023TabStyleViews::GetPath(

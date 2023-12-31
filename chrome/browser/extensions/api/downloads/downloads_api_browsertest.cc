@@ -226,7 +226,7 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
     events_.push_back(base::WrapUnique(new_event));
     if (waiting_ && waiting_for_.get() && new_event->Satisfies(*waiting_for_)) {
       waiting_ = false;
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
+      std::move(quit_closure_).Run();
     }
   }
 
@@ -237,6 +237,7 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
   bool WaitFor(Profile* profile,
                const std::string& event_name,
                const std::string& json_args) {
+    base::RunLoop loop;
     base::Value args = base::JSONReader::Read(json_args).value();
     waiting_for_ =
         std::make_unique<Event>(profile, event_name, args, base::Time());
@@ -245,7 +246,8 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
         return true;
     }
     waiting_ = true;
-    content::RunMessageLoop();
+    quit_closure_ = loop.QuitWhenIdleClosure();
+    loop.Run();
     bool success = !waiting_;
     if (waiting_) {
       // Print the events that were caught since the last WaitFor() call to help
@@ -276,6 +278,7 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
   std::unique_ptr<Event> waiting_for_;
   base::circular_deque<std::unique_ptr<Event>> events_;
   raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_;
+  base::OnceClosure quit_closure_;
 };
 
 // Object waiting for a download open event.

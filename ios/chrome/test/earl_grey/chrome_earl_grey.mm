@@ -1239,6 +1239,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   GREYCondition* signOutFinished = [GREYCondition
       conditionWithName:@"Sign-out done, and identities & browsing data cleared"
                   block:^{
+                    // Spin run loop to ensure observers are notified when
+                    // webstate loading stops.
+                    base::test::ios::SpinRunLoopWithMinDelay(
+                        base::Milliseconds(100));
                     return isSignoutFinished;
                   }];
   bool success =

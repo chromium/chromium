@@ -75,7 +75,7 @@ class PasswordManagerPorter : public PasswordManagerPorterInterface,
   // Callback from the file selector dialogue when a file has been picked (for
   // either import or export).
   // ui::SelectFileDialog::Listener:
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* params) override;
   void FileSelectionCanceled(void* params) override;

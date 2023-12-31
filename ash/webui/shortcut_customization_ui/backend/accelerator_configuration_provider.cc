@@ -650,13 +650,19 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider(
   // Create LayoutInfos from kAcceleratorLayouts. LayoutInfos are static
   // data that provides additional details for the app for styling.
   // Also create a cached shortcut description lookup.
-  for (const auto& layout_details : kAcceleratorLayouts) {
-    if (ShouldExcludeItem(layout_details)) {
+  for (const auto& layout_id : kAcceleratorLayouts) {
+    const std::optional<AcceleratorLayoutDetails> layout =
+        GetAcceleratorLayout(layout_id);
+    if (!layout) {
+      LOG(ERROR) << "Unexpectedly could not find layout for id: " << layout_id;
       continue;
     }
-    layout_infos_.push_back(LayoutInfoToMojom(layout_details));
-    accelerator_layout_lookup_[GetUuid(
-        layout_details.source, layout_details.action_id)] = layout_details;
+    if (ShouldExcludeItem(*layout)) {
+      continue;
+    }
+    layout_infos_.push_back(LayoutInfoToMojom(*layout));
+    accelerator_layout_lookup_[GetUuid(layout->source, layout->action_id)] =
+        *layout;
   }
 }
 
@@ -1532,8 +1538,14 @@ void AcceleratorConfigurationProvider::PopulateAshAcceleratorConfig(
   auto& output_action_id_to_accelerators =
       accelerator_config_output[mojom::AcceleratorSource::kAsh];
 
-  for (const auto& layout_info : kAcceleratorLayouts) {
-    if (layout_info.source != mojom::AcceleratorSource::kAsh) {
+  for (const auto& layout_id : kAcceleratorLayouts) {
+    const std::optional<AcceleratorLayoutDetails> layout =
+        GetAcceleratorLayout(layout_id);
+    if (!layout) {
+      LOG(ERROR) << "Failed to get Accelerator layout for id: " << layout_id;
+      continue;
+    }
+    if (layout->source != mojom::AcceleratorSource::kAsh) {
       // Only ash accelerators can have dynamically modified properties.
       // Note that ambient accelerators cannot be in kAsh.
       continue;
@@ -1541,22 +1553,21 @@ void AcceleratorConfigurationProvider::PopulateAshAcceleratorConfig(
 
     // Remove layouts were initially added but should now be removed if they
     // are in the block list.
-    if (ShouldExcludeItem(layout_info)) {
-      const std::string uuid =
-          GetUuid(layout_info.source, layout_info.action_id);
+    if (ShouldExcludeItem(*layout)) {
+      const std::string uuid = GetUuid(layout->source, layout->action_id);
       if (accelerator_layout_lookup_.contains(uuid)) {
         accelerator_layout_lookup_.erase(uuid);
         std::erase_if(layout_infos_,
                       [&](const mojom::AcceleratorLayoutInfoPtr& info) {
-                        return info->source == layout_info.source &&
-                               info->action == layout_info.action_id;
+                        return info->source == layout->source &&
+                               info->action == layout->action_id;
                       });
       }
       continue;
     }
 
     const auto& id_to_accelerator_iter =
-        id_to_accelerators.find(layout_info.action_id);
+        id_to_accelerators.find(layout->action_id);
     // For tests, we only want to test a subset of accelerators so it's possible
     // that we don't have accelerators for the given `layout_info`.
     if (id_to_accelerator_iter == id_to_accelerators.end() &&
@@ -1566,7 +1577,7 @@ void AcceleratorConfigurationProvider::PopulateAshAcceleratorConfig(
 
     // TODO(jimmyxgong): Re-evaluate this after fixing the root cause of this.
     if (id_to_accelerator_iter == id_to_accelerators.end()) {
-      LOG(ERROR) << "Error: Layout with action ID: " << layout_info.action_id
+      LOG(ERROR) << "Error: Layout with action ID: " << layout->action_id
                  << " does not exist in the ID to Accelerator mapping. "
                  << " Skipping adding this to the Ash configuration map.";
       continue;
@@ -1578,7 +1589,7 @@ void AcceleratorConfigurationProvider::PopulateAshAcceleratorConfig(
     // mark them as disabled.
     const std::vector<ui::Accelerator>& default_accelerators =
         ash_accelerator_configuration_->GetDefaultAcceleratorsForId(
-            layout_info.action_id);
+            layout->action_id);
     for (const auto& default_accelerator : default_accelerators) {
       if (base::Contains(accelerators, default_accelerator)) {
         continue;
@@ -1586,22 +1597,21 @@ void AcceleratorConfigurationProvider::PopulateAshAcceleratorConfig(
 
       // Append the missing default accelerators but marked as disabled by user.
       CreateAndAppendAliasedAccelerators(
-          default_accelerator, layout_info.locked,
-          mojom::AcceleratorType::kDefault,
+          default_accelerator, layout->locked, mojom::AcceleratorType::kDefault,
           mojom::AcceleratorState::kDisabledByUser,
-          output_action_id_to_accelerators[layout_info.action_id]);
+          output_action_id_to_accelerators[layout->action_id]);
     }
 
     for (const auto& accelerator : accelerators) {
-      if (IsAcceleratorHidden(layout_info.action_id, accelerator)) {
+      if (IsAcceleratorHidden(layout->action_id, accelerator)) {
         continue;
       }
       // TODO(jimmyxgong): Check pref storage to determine whether the
       // AcceleratorType was user-added or default.
       CreateAndAppendAliasedAccelerators(
-          accelerator, layout_info.locked, mojom::AcceleratorType::kDefault,
+          accelerator, layout->locked, mojom::AcceleratorType::kDefault,
           mojom::AcceleratorState::kEnabled,
-          output_action_id_to_accelerators[layout_info.action_id]);
+          output_action_id_to_accelerators[layout->action_id]);
     }
   }
 }

@@ -847,6 +847,10 @@ void Buffer::OnIsProtectedNativePixmapHandle(bool is_protected) {
 }
 #endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 
+base::WeakPtr<Buffer> Buffer::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 SolidColorBuffer::SolidColorBuffer(const SkColor4f& color,
                                    const gfx::Size& size)
     : Buffer(nullptr), color_(color), size_(size) {}
@@ -874,6 +878,10 @@ SkColor4f SolidColorBuffer::GetColor() const {
 
 gfx::Size SolidColorBuffer::GetSize() const {
   return size_;
+}
+
+base::WeakPtr<Buffer> SolidColorBuffer::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace exo

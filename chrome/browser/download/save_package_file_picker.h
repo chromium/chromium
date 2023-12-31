@@ -36,7 +36,7 @@ class SavePackageFilePicker : public ui::SelectFileDialog::Listener {
 
  private:
   // SelectFileDialog::Listener implementation.
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* unused_params) override;
   void FileSelectionCanceled(void* unused_params) override;

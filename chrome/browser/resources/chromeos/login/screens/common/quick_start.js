@@ -34,8 +34,8 @@ export const QuickStartUIState = {
   VERIFICATION: 'verification',
   CONNECTING_TO_WIFI: 'connecting_to_wifi',
   CONNECTED_TO_WIFI: 'connected_to_wifi',
-  GAIA_CREDENTIALS: 'gaia_credentials',
-  FIDO_ASSERTION_RECEIVED: 'fido_assertion_received',
+  CONFIRM_GOOGLE_ACCOUNT: 'confirm_google_account',
+  SIGNING_IN: 'signing_in',
 };
 
 /**
@@ -62,12 +62,6 @@ class QuickStartScreen extends QuickStartScreenBase {
 
   static get properties() {
     return {
-      shapes_: {
-        type: Object,
-        // Should be in sync with the C++ enum (ash::quick_start::Shape).
-        value: {CIRCLE: 0, DIAMOND: 1, TRIANGLE: 2, SQUARE: 3},
-        readOnly: true,
-      },
       discoverableName_: {
         type: String,
         value: '',
@@ -81,9 +75,22 @@ class QuickStartScreen extends QuickStartScreenBase {
         type: Boolean,
         value: false,
       },
-      fidoAssertionEmail_: {
+      userEmail_: {
         type: String,
         value: '',
+      },
+      userFullName_: {
+        type: String,
+        value: '',
+      },
+      userAvatarUrl_: {
+        type: String,
+        value: '',
+      },
+      // Once account creation starts, it is no longer possible to cancel.
+      canCancelSignin_: {
+        type: Boolean,
+        value: true,
       },
     };
   }
@@ -102,8 +109,12 @@ class QuickStartScreen extends QuickStartScreenBase {
       'setPin',
       'showConnectingToWifi',
       'setDiscoverableName',
-      'showTransferringGaiaCredentials',
-      'showFidoAssertionReceived',
+      'showConfirmGoogleAccount',
+      'showSigningInStep',
+      'showCreatingAccountStep',
+      'setUserEmail',
+      'setUserFullName',
+      'setUserAvatarUrl',
     ];
   }
 
@@ -121,6 +132,10 @@ class QuickStartScreen extends QuickStartScreenBase {
 
     // Helper for drawing the QR code using circles as per spec.
     this.qrCodeCanvas = new QrCodeCanvas(this.getCanvas_());
+  }
+
+  onBeforeHide() {
+    this.$.spinner.playing = false;
   }
 
   /** @override */
@@ -154,17 +169,60 @@ class QuickStartScreen extends QuickStartScreenBase {
     this.discoverableName_ = discoverableName;
   }
 
-  showTransferringGaiaCredentials() {
-    this.setUIStep(QuickStartUIState.GAIA_CREDENTIALS);
+  showConfirmGoogleAccount() {
+    this.setUIStep(QuickStartUIState.CONFIRM_GOOGLE_ACCOUNT);
   }
 
-  showFidoAssertionReceived(email) {
-    this.fidoAssertionEmail_ = email;
-    this.setUIStep(QuickStartUIState.FIDO_ASSERTION_RECEIVED);
+  showSigningInStep() {
+    this.setUIStep(QuickStartUIState.SIGNING_IN);
+    this.$.spinner.playing = true;
+  }
+
+  showCreatingAccountStep() {
+    // Same UI as 'Signing in...' but without a cancel button.
+    this.setUIStep(QuickStartUIState.SIGNING_IN);
+    this.canCancelSignin_ = false;
+  }
+
+  setUserEmail(email) {
+    this.userEmail_ = email;
+  }
+
+  setUserFullName(userFullName) {
+    this.userFullName_ = userFullName;
+  }
+
+  setUserAvatarUrl(userAvatarUrl) {
+    this.userAvatarUrl_ = userAvatarUrl;
   }
 
   getCanvas_() {
     return this.shadowRoot.querySelector('#qrCodeCanvas');
+  }
+
+  /**
+   * Wrap the user avatar as an image into a html snippet.
+   *
+   * @param {string} avatarUri the icon uri to be wrapped.
+   * @return {string} wrapped html snippet.
+   *
+   * @private
+   */
+  getWrappedAvatar_(avatarUri) {
+    return ('data:text/html;charset=utf-8,' + encodeURIComponent(String.raw`
+    <html>
+      <style>
+        body {
+          margin: 0;
+        }
+        #avatar {
+          width: 32px;
+          height: 32px;
+          user-select: none;
+          border-radius: 50%;
+        }
+      </style>
+    <body><img id="avatar" src="` + avatarUri + '"></body></html>'));
   }
 
   onCancelClicked_() {

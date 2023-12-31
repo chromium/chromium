@@ -93,7 +93,7 @@ DrmOverlayPlane DrmOverlayValidator::MakeOverlayPlane(
   scoped_refptr<DrmFramebuffer> buffer =
       GetBufferForPageFlipTest(window_, param, &reusable_buffers);
 
-  return DrmOverlayPlane(buffer, param.plane_z_order,
+  return DrmOverlayPlane(buffer, param.color_space, param.plane_z_order,
                          absl::get<gfx::OverlayTransform>(param.transform),
                          gfx::ToNearestRect(param.display_rect),
                          gfx::ToNearestRect(param.display_rect),

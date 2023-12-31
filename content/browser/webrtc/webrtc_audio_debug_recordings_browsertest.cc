@@ -21,6 +21,7 @@
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 namespace {
 
@@ -140,7 +141,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
 
   // This fakes the behavior of another open tab with webrtc-internals, and
   // enabling audio debug recordings in that tab.
-  WebRTCInternals::GetInstance()->FileSelected(base_file_path, -1, nullptr);
+  WebRTCInternals::GetInstance()->FileSelected(
+      ui::SelectedFileInfo(base_file_path), -1, nullptr);
 
   // Make a call.
   GURL url(embedded_test_server()->GetURL("/media/peerconnection-call.html"));
@@ -229,7 +231,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
 
   // This fakes the behavior of another open tab with webrtc-internals, and
   // enabling audio debug recordings in that tab, then disabling it.
-  WebRTCInternals::GetInstance()->FileSelected(base_file_path, -1, nullptr);
+  WebRTCInternals::GetInstance()->FileSelected(
+      ui::SelectedFileInfo(base_file_path), -1, nullptr);
   WebRTCInternals::GetInstance()->DisableAudioDebugRecordings();
 
   // Make a call.
@@ -280,7 +283,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
 
   // This fakes the behavior of another open tab with webrtc-internals, and
   // enabling audio debug recordings in that tab.
-  WebRTCInternals::GetInstance()->FileSelected(base_file_path, -1, nullptr);
+  WebRTCInternals::GetInstance()->FileSelected(
+      ui::SelectedFileInfo(base_file_path), -1, nullptr);
 
   // Make the calls.
   GURL url(embedded_test_server()->GetURL("/media/peerconnection-call.html"));

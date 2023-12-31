@@ -445,10 +445,7 @@ void IntersectionObserver::observe(Element* target,
     observation->ComputeIntersection(
         IntersectionObservation::kImplicitRootObserversNeedUpdate |
             IntersectionObservation::kExplicitRootObserversNeedUpdate |
-            IntersectionObservation::kIgnoreDelay |
-            (use_overflow_clip_edge_
-                 ? IntersectionObservation::kUseOverflowClipEdge
-                 : 0),
+            IntersectionObservation::kIgnoreDelay,
         IntersectionGeometry::kInfiniteScrollDelta, monotonic_time,
         root_geometry);
   }
@@ -523,9 +520,6 @@ int64_t IntersectionObserver::ComputeIntersections(
   DCHECK(!RootIsImplicit());
   if (!RootIsValid() || !GetExecutionContext() || observations_.empty())
     return 0;
-
-  if (use_overflow_clip_edge_)
-    flags |= IntersectionObservation::kUseOverflowClipEdge;
 
   absl::optional<IntersectionGeometry::RootGeometry> root_geometry;
   int64_t result = 0;

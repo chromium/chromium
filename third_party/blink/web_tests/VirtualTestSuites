@@ -439,7 +439,8 @@
     "exclusive_tests": ["fast/hidpi/static"],
     "args": ["--force-device-scale-factor=2",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "owners": ["paint-dev@chromium.org"],
+    "expires": "never"
   },
   {
     "prefix": "scalefactor150",
@@ -449,7 +450,8 @@
     "exclusive_tests": ["fast/hidpi/static"],
     "args": ["--force-device-scale-factor=1.5",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "owners": ["paint-dev@chromium.org"],
+    "expires": "never"
   },
   {
     "prefix": "dark-mode-classifier-transparency-and-num-colors",
@@ -601,7 +603,7 @@
     "prefix": "direct-sockets",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/direct-sockets",
-    	      "wpt_internal/direct-sockets"],
+              "wpt_internal/direct-sockets"],
     "exclusive_tests": "ALL",
     "args": ["--isolated-context-origins=https://web-platform.test",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
@@ -2415,7 +2417,7 @@
     "args": ["--disable-features=FormControlsVerticalWritingModeTextSupport",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["dizhangg@chromium.org"],
-    "expires": "Mar 1, 2023"
+    "expires": "Mar 1, 2024"
   },
   {
     "prefix": "url-non-special",
@@ -2553,5 +2555,18 @@
     "args": ["--enable-features=DeprecateUnload"],
     "expires": "Jun 1, 2024",
     "owners": ["fergal@chromium.org", "rakina@chromium.org"]
+  },
+  {
+    "prefix": "vertical-form-controls-direction-disabled",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "fast/forms/color-scheme/meter/meter-appearance-basic-vertical.html",
+      "fast/forms/color-scheme/progress/progress-appearance-basic.html",
+      "fast/forms/range/range-appearance-border-padding.html"
+    ],
+    "args": ["--disable-features=FormControlsVerticalWritingModeDirectionSupport",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
+    "owners": ["dizhangg@chromium.org"],
+    "expires": "Jun 1, 2024"
   }
 ]

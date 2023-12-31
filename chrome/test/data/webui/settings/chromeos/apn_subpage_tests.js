@@ -21,8 +21,6 @@ suite('ApnSubpageTest', function() {
   let mojoApi_ = null;
 
   setup(async function() {
-    // Disable animations so sub-pages open within one event loop.
-    testing.Test.disableAnimationsAndTransitions();
     PolymerTest.clearBody();
     mojoApi_ = new FakeNetworkConfig();
     mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);

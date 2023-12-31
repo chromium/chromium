@@ -23,6 +23,7 @@ tsc_out_dir = "$target_gen_dir/tsc"
 # TS files to compile.
 ts_modules = [
   "background/editing/editing.ts",
+  "background/editing/rich_editable_text.ts",
   "background/editing/text_edit_handler.ts",
   "background/event/desktop_automation_interface.ts",
   "background/input/background_keyboard_handler.ts",
@@ -40,9 +41,6 @@ chromevox_es6_modules = [
   "../common/automation_predicate.js",
   "../common/async_util.js",
   "../common/browser_util.js",
-  "../common/cursors/cursor.js",
-  "../common/cursors/range.js",
-  "../common/cursors/recovery_strategy.js",
   "../common/key_code.js",
   "../common/local_storage.js",
   "../common/rect_util.js",

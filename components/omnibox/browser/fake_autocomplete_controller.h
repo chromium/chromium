@@ -85,6 +85,9 @@ class FakeAutocompleteController : public AutocompleteController {
   // Verifies neither a notification nor stop occur.
   void ExpectNoNotificationOrStop();
 
+  // AutocompleteController (structs):
+  using AutocompleteController::OldResult;
+
   // AutocompleteController (methods):
   using AutocompleteController::MaybeRemoveCompanyEntityImages;
   using AutocompleteController::RunBatchUrlScoringModel;

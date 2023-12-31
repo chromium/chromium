@@ -16,18 +16,19 @@
 
 class DevToolsFileSystemIndexerTest : public testing::Test {
  public:
-  void SetDone() {
+  void SetDone(base::OnceClosure quit_closure) {
     indexing_done_ = true;
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    std::move(quit_closure).Run();
   }
 
-  void SearchCallback(const std::vector<std::string>& results) {
+  void SearchCallback(base::OnceClosure quit_closure,
+                      const std::vector<std::string>& results) {
     search_results_.clear();
     for (const std::string& result : results) {
       search_results_.insert(
           base::FilePath::FromUTF8Unsafe(result).BaseName().AsUTF8Unsafe());
     }
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    std::move(quit_closure).Run();
   }
 
  protected:
@@ -44,6 +45,7 @@ class DevToolsFileSystemIndexerTest : public testing::Test {
 
 TEST_F(DevToolsFileSystemIndexerTest, BasicUsage) {
   base::FilePath base_test_path;
+  base::RunLoop loop;
   base::PathService::Get(chrome::DIR_TEST_DATA, &base_test_path);
   base::FilePath index_path =
       base_test_path.Append(FILE_PATH_LITERAL("devtools"))
@@ -51,30 +53,33 @@ TEST_F(DevToolsFileSystemIndexerTest, BasicUsage) {
 
   std::vector<std::string> excluded_folders;
   scoped_refptr<DevToolsFileSystemIndexer::FileSystemIndexingJob> job =
-      indexer_->IndexPath(index_path.AsUTF8Unsafe(), excluded_folders,
-                          base::DoNothing(), base::DoNothing(),
-                          base::BindOnce(&DevToolsFileSystemIndexerTest::SetDone,
-                                         base::Unretained(this)));
+      indexer_->IndexPath(
+          index_path.AsUTF8Unsafe(), excluded_folders, base::DoNothing(),
+          base::DoNothing(),
+          base::BindOnce(&DevToolsFileSystemIndexerTest::SetDone,
+                         base::Unretained(this), loop.QuitWhenIdleClosure()));
 
-  base::RunLoop().Run();
+  loop.Run();
   ASSERT_TRUE(indexing_done_);
 
+  base::RunLoop loop1;
   indexer_->SearchInPath(
       index_path.AsUTF8Unsafe(), "Hello",
       base::BindOnce(&DevToolsFileSystemIndexerTest::SearchCallback,
-                     base::Unretained(this)));
-  base::RunLoop().Run();
+                     base::Unretained(this), loop1.QuitWhenIdleClosure()));
+  loop1.Run();
 
   ASSERT_EQ(3lu, search_results_.size());
   ASSERT_EQ(1lu, search_results_.count("hello_world.c"));
   ASSERT_EQ(1lu, search_results_.count("hello_world.html"));
   ASSERT_EQ(1lu, search_results_.count("hello_world.js"));
 
+  base::RunLoop loop2;
   indexer_->SearchInPath(
       index_path.AsUTF8Unsafe(), "FUNCTION",
       base::BindOnce(&DevToolsFileSystemIndexerTest::SearchCallback,
-                     base::Unretained(this)));
-  base::RunLoop().Run();
+                     base::Unretained(this), loop2.QuitWhenIdleClosure()));
+  loop2.Run();
 
   ASSERT_EQ(1lu, search_results_.size());
   ASSERT_EQ(1lu, search_results_.count("hello_world.js"));

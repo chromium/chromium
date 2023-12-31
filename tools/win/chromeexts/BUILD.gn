@@ -8,6 +8,10 @@ shared_library("chromeexts") {
     "chrome_exts_command.h",
     "chromeexts.cc",
     "chromeexts.def",
+    "commands/crash_info_command.cc",
+    "commands/crash_info_command.h",
+    "commands/gwp_asan_command.cc",
+    "commands/gwp_asan_command.h",
     "commands/hwnd_command.cc",
     "commands/hwnd_command.h",
     "commands/view_command.cc",
@@ -16,6 +20,11 @@ shared_library("chromeexts") {
 
   deps = [
     "//base",
+    "//components/gwp_asan/crash_handler",
+    "//components/gwp_asan/crash_handler:crash_proto",
+    "//third_party/crashpad/crashpad/client",
+    "//third_party/crashpad/crashpad/minidump",
+    "//third_party/crashpad/crashpad/snapshot",
     "//ui/views/debug:views_debug",
   ]
 }

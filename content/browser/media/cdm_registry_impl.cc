@@ -29,6 +29,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/media/key_system_support_android.h"
+#include "media/base/android/media_drm_bridge.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -568,6 +569,13 @@ void CdmRegistryImpl::FinalizeCapability(
 
   itr->status = status;
   itr->capability = cdm_capability;
+#if BUILDFLAG(IS_ANDROID)
+  // Querying for the CDM version requires creating a MediaDrm object, so
+  // delaying it until the capability is determined.
+  // TODO(crbug.com/1478367): Once querying capabilities on Android is done in a
+  // separate process, include the version with the capabilities returned.
+  itr->version = media::MediaDrmBridge::GetVersion(key_system);
+#endif
 }
 
 void CdmRegistryImpl::UpdateAndNotifyKeySystemCapabilities() {

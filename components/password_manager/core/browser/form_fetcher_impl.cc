@@ -111,17 +111,7 @@ void FormFetcherImpl::Fetch() {
     return;
   }
 
-  PasswordStoreInterface* profile_password_store =
-      client_->GetProfilePasswordStore();
-  if (!profile_password_store) {
-    if (logger)
-      logger->LogMessage(Logger::STRING_NO_STORE);
-    NOTREACHED();
-    return;
-  }
-
-  PasswordStoreInterface* account_password_store =
-      client_->GetAccountPasswordStore();
+  state_ = State::WAITING;
 
   // Issue a fetch from the profile store and, if it exists, also from the
   // account store.
@@ -129,10 +119,23 @@ void FormFetcherImpl::Fetch() {
   // that things work correctly (i.e. we don't notify of completion too early)
   // even if the fetches return synchronously (which is the case in tests).
   wait_counter_++;
+
+  PasswordStoreInterface* profile_password_store =
+      client_->GetProfilePasswordStore();
+  if (!profile_password_store) {
+    if (logger)
+      logger->LogMessage(Logger::STRING_NO_STORE);
+
+    std::vector<std::unique_ptr<PasswordForm>> results;
+    AggregatePasswordStoreResults(std::move(results));
+    return;
+  }
+
+  PasswordStoreInterface* account_password_store =
+      client_->GetAccountPasswordStore();
   if (account_password_store)
     wait_counter_++;
 
-  state_ = State::WAITING;
   profile_password_store->GetLogins(form_digest_,
                                     weak_ptr_factory_.GetWeakPtr());
   if (account_password_store)

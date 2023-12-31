@@ -80,6 +80,10 @@ public class ShadowCreateCredentialRequest {
             return mRealBuilder;
         }
 
+        protected String getOrigin() {
+            return mOrigin;
+        }
+
         @Implementation
         protected CreateCredentialRequest build() {
             CreateCredentialRequest realRequest =

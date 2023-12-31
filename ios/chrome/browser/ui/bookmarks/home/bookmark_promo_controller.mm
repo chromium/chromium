@@ -100,59 +100,45 @@
       _browser->GetBrowserState()->GetOriginalChromeBrowserState();
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
-  if (![SigninPromoViewMediator
-          shouldDisplaySigninPromoViewWithAccessPoint:
-              signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER
-                                authenticationService:authenticationService
-                                          prefService:browserState
-                                                          ->GetPrefs()]) {
-    self.shouldShowSigninPromo = NO;
-    return;
-  }
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForBrowserState(browserState);
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(browserState);
+
+  std::optional<SigninPromoAction> signinPromoAction;
   if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     PrefService* prefs = browserState->GetPrefs();
     const std::string lastSignedInGaiaId =
         prefs->GetString(prefs::kGoogleServicesLastSyncingGaiaId);
-    // If the last signed-in user did not remove data during sign-out, don't
-    // show the signin promo if kEnableBatchUploadFromBookmarksManager is not
-    // enabled.
     if (lastSignedInGaiaId.empty() ||
         base::FeatureList::IsEnabled(kEnableBatchUploadFromBookmarksManager)) {
-      self.shouldShowSigninPromo = YES;
-      _signinPromoViewMediator.signinPromoAction =
-          SigninPromoAction::kInstantSignin;
+      signinPromoAction = SigninPromoAction::kInstantSignin;
     } else {
+      // If the last signed-in user did not remove data during sign-out, don't
+      // show the signin promo if kEnableBatchUploadFromBookmarksManager is not
+      // enabled.
       self.shouldShowSigninPromo = NO;
+      return;
     }
-    return;
-  }
-  // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
-  // deleted from the codebase. See ConsentLevel::kSync documentation for
-  // details.
-  if (identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+  } else if (identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
+    // deleted from the codebase. See ConsentLevel::kSync documentation for
+    // details.
     // If the user is already syncing, the promo should not be visible.
     self.shouldShowSigninPromo = NO;
     return;
-  }
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browserState);
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos) &&
-      !bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(syncService)) {
+  } else if (!base::FeatureList::IsEnabled(
+                 syncer::kReplaceSyncPromosWithSignInPromos) &&
+             !bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(
+                 syncService)) {
     // The user signed in, but not opted into syncing bookmarks - show sync
     // promo.
-    self.shouldShowSigninPromo = YES;
-    _signinPromoViewMediator.signinPromoAction = SigninPromoAction::kSync;
-    return;
-  }
-
-  // At this point, the user is signed-in not syncing.
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos) &&
-      base::FeatureList::IsEnabled(kEnableReviewAccountSettingsPromo) &&
-      !bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(syncService)) {
+    signinPromoAction = SigninPromoAction::kSync;
+  } else if (base::FeatureList::IsEnabled(
+                 syncer::kReplaceSyncPromosWithSignInPromos) &&
+             base::FeatureList::IsEnabled(kEnableReviewAccountSettingsPromo) &&
+             !bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(
+                 syncService)) {
     if (self.shouldShowSigninPromo &&
         _signinPromoViewMediator.signinPromoAction !=
             SigninPromoAction::kReviewAccountSettings) {
@@ -160,23 +146,35 @@
       // needs to be toggled first to reflect this change.
       self.shouldShowSigninPromo = NO;
     }
-    _signinPromoViewMediator.signinPromoAction =
-        SigninPromoAction::kReviewAccountSettings;
-    self.shouldShowSigninPromo = YES;
+    // The user signed in, but not opted into account bookmarks storage - show
+    // review account settings promo.
+    signinPromoAction = SigninPromoAction::kReviewAccountSettings;
+  } else if (self.signinPromoViewMediator.showSpinner) {
+    // The user is opted into syncing bookmarks, but the first sync is not
+    // finished yet - keep the promo visible with the same action to show the
+    // spinner.
+    signinPromoAction = SigninPromoAction::kInstantSignin;
+  } else {
+    // The user is opted into syncing bookmarks and the first sync is done -
+    // hide the promo.
+    self.shouldShowSigninPromo = NO;
     return;
   }
 
-  if (self.signinPromoViewMediator.showSpinner) {
-    // The user is opted into syncing bookmarks, but the first sync is not
-    // finished yet - keep the promo visible to show the spinner.
-    self.shouldShowSigninPromo = YES;
-    _signinPromoViewMediator.signinPromoAction =
-        SigninPromoAction::kInstantSignin;
+  CHECK(signinPromoAction.has_value());
+  if (![SigninPromoViewMediator
+          shouldDisplaySigninPromoViewWithAccessPoint:
+              signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER
+                                    signinPromoAction:signinPromoAction.value()
+                                authenticationService:authenticationService
+                                          prefService:browserState
+                                                          ->GetPrefs()]) {
+    self.shouldShowSigninPromo = NO;
     return;
   }
-  // The user is opted into syncing bookmarks and the first sync is done - hide
-  // the promo.
-  self.shouldShowSigninPromo = NO;
+
+  _signinPromoViewMediator.signinPromoAction = signinPromoAction.value();
+  self.shouldShowSigninPromo = YES;
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate

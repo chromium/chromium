@@ -268,6 +268,12 @@ public class PlayerMediatorUnitTest {
     }
 
     @Test
+    public void testOnPublisherClick() {
+        mMediator.onPublisherClick();
+        verify(mDelegate).navigateToPlayingTab();
+    }
+
+    @Test
     public void testOnSeekBack() {
         // make sure nothing happens if playback hasn't been set yet
         mMediator.setPlayback(null);

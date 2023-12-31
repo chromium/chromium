@@ -31,6 +31,7 @@
 #include "content/public/browser/save_page_type.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 using content::RenderProcessHost;
 using content::SavePageType;
@@ -233,7 +234,8 @@ SavePackageFilePicker::SavePackageFilePicker(
   // If |g_should_prompt_for_filename| is unset or |select_file_dialog_| could
   // not be instantiated for some reason, just use 'suggested_path_copy' instead
   // of opening the dialog prompt. Go through FileSelected() for consistency.
-  FileSelected(suggested_path_copy, file_type_index, nullptr);
+  FileSelected(ui::SelectedFileInfo(suggested_path_copy), file_type_index,
+               nullptr);
 }
 
 SavePackageFilePicker::~SavePackageFilePicker() {
@@ -246,7 +248,7 @@ void SavePackageFilePicker::SetShouldPromptUser(bool should_prompt) {
   g_should_prompt_for_filename = should_prompt;
 }
 
-void SavePackageFilePicker::FileSelected(const base::FilePath& path,
+void SavePackageFilePicker::FileSelected(const ui::SelectedFileInfo& file,
                                          int index,
                                          void* unused_params) {
   std::unique_ptr<SavePackageFilePicker> delete_this(this);
@@ -267,12 +269,12 @@ void SavePackageFilePicker::FileSelected(const base::FilePath& path,
     save_type = content::SAVE_PAGE_TYPE_AS_ONLY_HTML;
   }
 
-  base::FilePath path_copy(path);
-  base::i18n::NormalizeFileNameEncoding(&path_copy);
+  base::FilePath path = file.path();
+  base::i18n::NormalizeFileNameEncoding(&path);
 
-  download_prefs_->SetSaveFilePath(path_copy.DirName());
+  download_prefs_->SetSaveFilePath(path.DirName());
 
-  std::move(callback_).Run(path_copy, save_type,
+  std::move(callback_).Run(path, save_type,
                            base::BindOnce(&OnSavePackageDownloadCreated));
 }
 

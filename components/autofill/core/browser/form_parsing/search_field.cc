@@ -19,8 +19,8 @@ std::unique_ptr<FormField> SearchField::Parse(ParsingContext& context,
       SEARCH_TERM, context.page_language, context.pattern_source);
 
   if (ParseFieldSpecifics(context, scanner, kSearchTermRe,
-                          kDefaultMatchParamsWith<MatchFieldType::kSearch,
-                                                  MatchFieldType::kTextArea>,
+                          kDefaultMatchParamsWith<FormControlType::kInputSearch,
+                                                  FormControlType::kTextArea>,
                           patterns, &field, "kSearchTermRe")) {
     return std::make_unique<SearchField>(field);
   }

@@ -154,8 +154,7 @@ IN_PROC_BROWSER_TEST_F(PPAPIFileChooserTest, FileChooser_Open_Success) {
   ASSERT_TRUE(base::WriteFile(existing_filename, kContents));
 
   PPAPITestSelectFileDialogFactory::SelectedFileInfoList file_info_list;
-  file_info_list.push_back(
-      ui::SelectedFileInfo(existing_filename, existing_filename));
+  file_info_list.push_back(ui::SelectedFileInfo(existing_filename));
   PPAPITestSelectFileDialogFactory test_dialog_factory(
       PPAPITestSelectFileDialogFactory::RESPOND_WITH_FILE_LIST, file_info_list);
   RunTestViaHTTP("FileChooser_OpenSimple");
@@ -175,8 +174,7 @@ IN_PROC_BROWSER_TEST_F(PPAPIFileChooserTest, FileChooser_SaveAs_Success) {
   base::FilePath suggested_filename = temp_dir.GetPath().AppendASCII("foo");
 
   PPAPITestSelectFileDialogFactory::SelectedFileInfoList file_info_list;
-  file_info_list.push_back(
-      ui::SelectedFileInfo(suggested_filename, suggested_filename));
+  file_info_list.push_back(ui::SelectedFileInfo(suggested_filename));
   PPAPITestSelectFileDialogFactory test_dialog_factory(
       PPAPITestSelectFileDialogFactory::RESPOND_WITH_FILE_LIST, file_info_list);
 
@@ -192,8 +190,7 @@ IN_PROC_BROWSER_TEST_F(PPAPIFileChooserTest,
   base::FilePath suggested_filename = temp_dir.GetPath().AppendASCII("foo");
 
   PPAPITestSelectFileDialogFactory::SelectedFileInfoList file_info_list;
-  file_info_list.push_back(
-      ui::SelectedFileInfo(suggested_filename, suggested_filename));
+  file_info_list.push_back(ui::SelectedFileInfo(suggested_filename));
   PPAPITestSelectFileDialogFactory test_dialog_factory(
       PPAPITestSelectFileDialogFactory::REPLACE_BASENAME, file_info_list);
 
@@ -215,8 +212,7 @@ IN_PROC_BROWSER_TEST_F(PPAPIFileChooserTest,
   base::FilePath suggested_filename = temp_dir.GetPath().AppendASCII("foo");
 
   PPAPITestSelectFileDialogFactory::SelectedFileInfoList file_info_list;
-  file_info_list.push_back(
-      ui::SelectedFileInfo(suggested_filename, suggested_filename));
+  file_info_list.push_back(ui::SelectedFileInfo(suggested_filename));
   PPAPITestSelectFileDialogFactory test_dialog_factory(
       PPAPITestSelectFileDialogFactory::REPLACE_BASENAME, file_info_list);
 
@@ -250,8 +246,7 @@ IN_PROC_BROWSER_TEST_F(PPAPIFileChooserTest, FileChooser_Quarantine) {
   base::FilePath suggested_filename = temp_dir.GetPath().AppendASCII("foo");
 
   PPAPITestSelectFileDialogFactory::SelectedFileInfoList file_info_list;
-  file_info_list.push_back(
-      ui::SelectedFileInfo(suggested_filename, suggested_filename));
+  file_info_list.push_back(ui::SelectedFileInfo(suggested_filename));
   PPAPITestSelectFileDialogFactory test_dialog_factory(
       PPAPITestSelectFileDialogFactory::REPLACE_BASENAME, file_info_list);
 
@@ -283,8 +278,7 @@ IN_PROC_BROWSER_TEST_F(PPAPIFileChooserTestWithSBService,
   base::FilePath suggested_filename = temp_dir.GetPath().AppendASCII("foo");
 
   PPAPITestSelectFileDialogFactory::SelectedFileInfoList file_info_list;
-  file_info_list.push_back(
-      ui::SelectedFileInfo(suggested_filename, suggested_filename));
+  file_info_list.push_back(ui::SelectedFileInfo(suggested_filename));
   PPAPITestSelectFileDialogFactory test_dialog_factory(
       PPAPITestSelectFileDialogFactory::REPLACE_BASENAME, file_info_list);
 
@@ -340,8 +334,7 @@ IN_PROC_BROWSER_TEST_F(PPAPIFileChooserTestWithSBService,
       safe_browsing::DownloadCheckResult::DANGEROUS;
 
   PPAPITestSelectFileDialogFactory::SelectedFileInfoList file_info_list;
-  file_info_list.push_back(
-      ui::SelectedFileInfo(existing_filename, existing_filename));
+  file_info_list.push_back(ui::SelectedFileInfo(existing_filename));
   PPAPITestSelectFileDialogFactory test_dialog_factory(
       PPAPITestSelectFileDialogFactory::RESPOND_WITH_FILE_LIST, file_info_list);
   RunTestViaHTTP("FileChooser_OpenSimple");

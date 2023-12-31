@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/common/trace_event_common.h"
 #include "components/omnibox/browser/autocomplete_scoring_model_executor.h"
 #include "components/omnibox/browser/autocomplete_scoring_model_handler.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"

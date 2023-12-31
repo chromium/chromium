@@ -16,6 +16,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 
 namespace printing {
@@ -46,10 +47,10 @@ class FakePdfPrinterHandler : public PdfPrinterHandler {
     run_loop.Run();
   }
 
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* params) override {
-    SetPrintToPdfPathForTesting(path);
+    SetPrintToPdfPathForTesting(file.path());
     PostPrintToPdfTask();
   }
 

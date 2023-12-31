@@ -62,6 +62,7 @@
 #include "printing/backend/print_backend.h"
 #include "printing/printer_status.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 
 namespace ash::settings {
@@ -1116,22 +1117,23 @@ void CupsPrintersHandler::ResolvePrintersDone(
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
 
-void CupsPrintersHandler::FileSelected(const base::FilePath& path,
+void CupsPrintersHandler::FileSelected(const ui::SelectedFileInfo& file,
                                        int index,
                                        void* params) {
   DCHECK(!webui_callback_id_.empty());
 
   select_file_dialog_ = nullptr;
 
-  // Load the beginning contents of the file located at |path| and callback into
-  // VerifyPpdContents() in order to determine whether the file appears to be a
-  // PPD file. The task's priority is USER_BLOCKING because the this task
-  // updates the UI as a result of a direct user action.
+  // Load the beginning contents of |file| and callback into VerifyPpdContents()
+  // in order to determine whether the file appears to be a PPD file. The task's
+  // priority is USER_BLOCKING because the this task updates the UI as a result
+  // of a direct user action.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&ReadFileToStringWithMaxSize, path, kPpdMaxLineLength),
+      base::BindOnce(&ReadFileToStringWithMaxSize, file.path(),
+                     kPpdMaxLineLength),
       base::BindOnce(&CupsPrintersHandler::VerifyPpdContents,
-                     weak_factory_.GetWeakPtr(), path));
+                     weak_factory_.GetWeakPtr(), file.path()));
 }
 
 void CupsPrintersHandler::FileSelectionCanceled(void* params) {

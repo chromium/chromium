@@ -25,6 +25,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/select_file_dialog_linux.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "url/gurl.h"
 
@@ -451,7 +452,7 @@ void SelectFileDialogLinuxKde::FileSelected(const base::FilePath& path,
     NOTREACHED();
   if (listener_) {  // What does the filter index actually do?
     // TODO(dfilimon): Get a reasonable index value from somewhere.
-    listener_->FileSelected(path, 1, params);
+    listener_->FileSelected(SelectedFileInfo(path), 1, params);
   }
 }
 
@@ -460,7 +461,8 @@ void SelectFileDialogLinuxKde::MultiFilesSelected(
     void* params) {
   set_last_opened_path(files[0].DirName());
   if (listener_)
-    listener_->MultiFilesSelected(files, params);
+    listener_->MultiFilesSelected(FilePathListToSelectedFileInfoList(files),
+                                  params);
 }
 
 void SelectFileDialogLinuxKde::FileNotSelected(void* params) {

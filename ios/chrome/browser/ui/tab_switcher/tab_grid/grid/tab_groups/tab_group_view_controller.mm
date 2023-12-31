@@ -210,7 +210,7 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
   UIView* dotView = [[UIView alloc] initWithFrame:CGRectZero];
   dotView.translatesAutoresizingMaskIntoConstraints = NO;
   dotView.layer.cornerRadius = kColoredDotSize / 2;
-  dotView.layer.backgroundColor = _groupColor.CGColor;
+  dotView.backgroundColor = _groupColor;
 
   [NSLayoutConstraint activateConstraints:@[
     [dotView.heightAnchor constraintEqualToConstant:kColoredDotSize],
@@ -249,8 +249,7 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
 - (UIView*)configuredPrimaryTitle {
   UIView* fullTitleView = [[UIView alloc] initWithFrame:CGRectZero];
   fullTitleView.translatesAutoresizingMaskIntoConstraints = NO;
-  fullTitleView.backgroundColor =
-      [[UIColor colorNamed:kSolidWhiteColor] colorWithAlphaComponent:0.1];
+  fullTitleView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.1];
   fullTitleView.layer.cornerRadius = kTitleBackgroundCornerRadius;
   fullTitleView.opaque = NO;
 

@@ -14,6 +14,10 @@
 
 namespace ash::personalization_app {
 
+// TestPersonalizationAppWebUIProvider provides a mix of fake network fetchers
+// and fake mojom providers to fake all network requests during Personalization
+// App browsertests. This is designed for testing the entire app instead of
+// single components.
 class TestPersonalizationAppWebUIProvider
     : public TestChromeWebUIControllerFactory::WebUIProvider {
  public:

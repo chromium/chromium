@@ -288,13 +288,10 @@ void AutocompleteResult::DeduplicateMatches(
   DeduplicateMatches(&matches_, input, template_url_service);
 }
 
-void AutocompleteResult::SortAndCull(
+void AutocompleteResult::Sort(
     const AutocompleteInput& input,
     TemplateURLService* template_url_service,
-    OmniboxTriggeredFeatureService* triggered_feature_service,
     absl::optional<AutocompleteMatch> default_match_to_preserve) {
-  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
-      "Omnibox.AutocompletionTime.UpdateResult.SortAndCull");
   if (!is_ios)
     DemoteOnDeviceSearchSuggestions();
 
@@ -315,40 +312,52 @@ void AutocompleteResult::SortAndCull(
   // Find the best match and rotate it to the front to become the default match.
   // TODO(manukh) Ranking and preserving the default suggestion should be done
   //   by the grouping framework.
-  {
-    auto top_match = FindTopMatch(input, &matches_);
-    if (default_match_to_preserve &&
-        (top_match == matches_.end() ||
-         top_match->type != AutocompleteMatchType::URL_WHAT_YOU_TYPED)) {
-      const auto default_match_fields =
-          GetMatchComparisonFields(default_match_to_preserve.value());
-      const auto preserved_default_match =
-          base::ranges::find_if(matches_, [&](const AutocompleteMatch& match) {
-            // Find a match that is a duplicate AND has the same fill_into_edit.
-            // Don't preserve suggestions that are not default-able; e.g.,
-            // typing 'xy' shouldn't preserve default 'xz.com/xy'.
-            return default_match_fields == GetMatchComparisonFields(match) &&
-                   default_match_to_preserve->fill_into_edit ==
-                       match.fill_into_edit &&
-                   match.allowed_to_be_default_match;
-          });
-      if (preserved_default_match != matches_.end())
-        top_match = preserved_default_match;
-    }
-
-    RotateMatchToFront(top_match, &matches_);
-
-    // The search provider may pre-deduplicate search suggestions. It's possible
-    // for the un-deduped search suggestion that replaces a default search
-    // entity suggestion to not have had `ComputeStrippedDestinationURL()`
-    // invoked. Make sure to invoke it now as `AutocompleteController` relies on
-    // `stripped_destination_url` to detect result changes. If
-    // `stripped_destination_url` is already set, i.e. it was not a pre-deduped
-    // search suggestion, `ComputeStrippedDestinationURL()` will early exit.
-    if (UndedupTopSearchEntityMatch(&matches_)) {
-      matches_[0].ComputeStrippedDestinationURL(input, template_url_service);
-    }
+  auto top_match = FindTopMatch(input, &matches_);
+  if (default_match_to_preserve &&
+      (top_match == matches_.end() ||
+       top_match->type != AutocompleteMatchType::URL_WHAT_YOU_TYPED)) {
+    const auto default_match_fields =
+        GetMatchComparisonFields(default_match_to_preserve.value());
+    const auto preserved_default_match =
+        base::ranges::find_if(matches_, [&](const AutocompleteMatch& match) {
+          // Find a match that is a duplicate AND has the same fill_into_edit.
+          // Don't preserve suggestions that are not default-able; e.g.,
+          // typing 'xy' shouldn't preserve default 'xz.com/xy'.
+          return default_match_fields == GetMatchComparisonFields(match) &&
+                 default_match_to_preserve->fill_into_edit ==
+                     match.fill_into_edit &&
+                 match.allowed_to_be_default_match;
+        });
+    if (preserved_default_match != matches_.end())
+      top_match = preserved_default_match;
   }
+
+  RotateMatchToFront(top_match, &matches_);
+
+  // The search provider may pre-deduplicate search suggestions. It's possible
+  // for the un-deduped search suggestion that replaces a default search
+  // entity suggestion to not have had `ComputeStrippedDestinationURL()`
+  // invoked. Make sure to invoke it now as `AutocompleteController` relies on
+  // `stripped_destination_url` to detect result changes. If
+  // `stripped_destination_url` is already set, i.e. it was not a pre-deduped
+  // search suggestion, `ComputeStrippedDestinationURL()` will early exit.
+  if (UndedupTopSearchEntityMatch(&matches_)) {
+    matches_[0].ComputeStrippedDestinationURL(input, template_url_service);
+  }
+}
+
+void AutocompleteResult::SortAndCull(
+    const AutocompleteInput& input,
+    TemplateURLService* template_url_service,
+    OmniboxTriggeredFeatureService* triggered_feature_service,
+    absl::optional<AutocompleteMatch> default_match_to_preserve) {
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Omnibox.AutocompletionTime.UpdateResult.SortAndCull");
+  Sort(input, template_url_service, default_match_to_preserve);
+
+  const auto& page_classification = input.current_page_classification();
+  CompareWithDemoteByType<AutocompleteMatch> comparing_object(
+      page_classification);
 
   const bool is_zero_suggest = input.IsZeroSuggest();
   const bool use_grouping_for_zps =

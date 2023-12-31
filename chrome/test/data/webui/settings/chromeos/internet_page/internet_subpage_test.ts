@@ -18,7 +18,6 @@ import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {FakeESimManagerRemote} from 'chrome://webui-test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {disableAnimationsAndTransitions} from 'chrome://webui-test/test_api.js';
 
 suite('<settings-internet-subpage>', () => {
   let internetSubpage: SettingsInternetSubpageElement;
@@ -45,9 +44,6 @@ suite('<settings-internet-subpage>', () => {
     eSimManagerRemote = new FakeESimManagerRemote();
     setESimManagerRemoteForTesting(
         eSimManagerRemote as unknown as ESimManagerRemote);
-
-    // Disable animations so sub-pages open within one event loop.
-    disableAnimationsAndTransitions();
   });
 
   function setNetworksForTest(

@@ -38,7 +38,7 @@ class EntryPicker : public ui::SelectFileDialog::Listener {
   EntryPicker& operator=(const EntryPicker&) = delete;
 
   // Allow picker UI to be skipped in testing.
-  static void SkipPickerAndAlwaysSelectPathForTest(base::FilePath* path);
+  static void SkipPickerAndAlwaysSelectPathForTest(const base::FilePath& path);
   static void SkipPickerAndAlwaysCancelForTest();
   static void StopSkippingPickerForTest();
 
@@ -47,12 +47,10 @@ class EntryPicker : public ui::SelectFileDialog::Listener {
 
  private:
   // ui::SelectFileDialog::Listener:
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* params) override;
   void FileSelectionCanceled(void* params) override;
-  void MultiFilesSelected(const std::vector<base::FilePath>& files,
-                          void* params) override;
 
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   raw_ptr<EntryPickerClient> client_;

@@ -101,7 +101,6 @@ class AwBrowserContext : public content::BrowserContext,
   void SetWebLayerRunningInSameProcess(JNIEnv* env);
 
   AwFormDatabaseService* GetFormDatabaseService();
-  autofill::AutocompleteHistoryManager* GetAutocompleteHistoryManager();
   CookieManager* GetCookieManager();
 
   bool IsDefaultBrowserContext() const;

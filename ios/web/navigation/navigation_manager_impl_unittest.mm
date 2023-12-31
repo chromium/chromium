@@ -1556,6 +1556,14 @@ TEST_F(NavigationManagerTest, TestBackwardForwardItems) {
 
 // Tests that Restore() creates the correct navigation state.
 TEST_F(NavigationManagerTest, Restore) {
+  // With old session restoration code removed, this test requires a real
+  // underlying WKWebView which is tested in `NavigationManagerImplTest.
+  // *ItemRestore`.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kRemoveOldWebStateRestoration});
+
   ItemInfoToBeRestored restore_information[3];
   restore_information[0] = {GURL("http://www.url.com/0"),
                             GURL("http://virtual/0"), UserAgentType::MOBILE};
@@ -2556,6 +2564,14 @@ TEST_F(NavigationManagerTest, CanGoToOffset) {
 // Tests that non-empty session history can be restored, and are re-written if
 // necessary.
 TEST_F(NavigationManagerTest, RestoreSessionWithHistory) {
+  // With old session restoration code removed, this test requires a real
+  // underlying WKWebView which is tested in `NavigationManagerImplTest.
+  // MultipleItemRestore`.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kRemoveOldWebStateRestoration});
+
   manager_->AddTransientURLRewriter(&UrlRewriter);
   auto item0 = std::make_unique<NavigationItemImpl>();
   GURL url(url::SchemeHostPort(kSchemeToRewrite, "test", 0).Serialize());
@@ -2596,6 +2612,14 @@ TEST_F(NavigationManagerTest, RestoreSessionWithHistory) {
 
 // Tests that restoring session replaces existing history in navigation manager.
 TEST_F(NavigationManagerTest, RestoreSessionResetsHistory) {
+  // With old session restoration code removed, this test requires a real
+  // underlying WKWebView which is tested in `NavigationManagerImplTest.
+  // RestoreSessionResetsHistory`.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kRemoveOldWebStateRestoration});
+
   EXPECT_EQ(-1, manager_->GetPendingItemIndex());
   EXPECT_EQ(-1, manager_->GetLastCommittedItemIndex());
 
@@ -2844,6 +2868,14 @@ TEST_F(NavigationManagerDetachedModeTest, NothingToCache) {
 
 // Tests that Reload from detached mode restores cached history.
 TEST_F(NavigationManagerDetachedModeTest, Reload) {
+  // With old session restoration code removed, this test requires a real
+  // underlying WKWebView which is tested in `NavigationManagerImplTest.
+  // DetachedModeReload`.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kRemoveOldWebStateRestoration});
+
   manager_->DetachFromWebView();
   delegate_.RemoveWebView();
 
@@ -2865,6 +2897,14 @@ TEST_F(NavigationManagerDetachedModeTest, Reload) {
 // Tests that GoToIndex from detached mode restores cached history with updated
 // current item offset.
 TEST_F(NavigationManagerDetachedModeTest, GoToIndex) {
+  // With old session restoration code removed, this test requires a real
+  // underlying WKWebView which is tested in `NavigationManagerImplTest.
+  // DetachedModeGoToIndex`.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kRemoveOldWebStateRestoration});
+
   manager_->DetachFromWebView();
   delegate_.RemoveWebView();
 
@@ -2885,6 +2925,14 @@ TEST_F(NavigationManagerDetachedModeTest, GoToIndex) {
 
 // Tests that LoadIfNecessary from detached mode restores cached history.
 TEST_F(NavigationManagerDetachedModeTest, LoadIfNecessary) {
+  // With old session restoration code removed, this test requires a real
+  // underlying WKWebView which is tested in `NavigationManagerImplTest.
+  // DetachedModeLoadIfNecessary`.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kRemoveOldWebStateRestoration});
+
   manager_->DetachFromWebView();
   delegate_.RemoveWebView();
 
@@ -2906,6 +2954,13 @@ TEST_F(NavigationManagerDetachedModeTest, LoadIfNecessary) {
 // Tests that LoadURLWithParams from detached mode restores backward history and
 // adds the new item at the end.
 TEST_F(NavigationManagerDetachedModeTest, LoadURLWithParams) {
+  // With old session restoration code removed, this test requires a real
+  // underlying WKWebView which is tested in `NavigationManagerImplTest.
+  // DetachedModeLoadURLWithParams`.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kRemoveOldWebStateRestoration});
   manager_->DetachFromWebView();
   delegate_.RemoveWebView();
 

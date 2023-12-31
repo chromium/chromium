@@ -22,6 +22,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 namespace {
 
@@ -90,14 +91,14 @@ void ScanningHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void ScanningHandler::FileSelected(const base::FilePath& path,
+void ScanningHandler::FileSelected(const ui::SelectedFileInfo& file,
                                    int index,
                                    void* params) {
   DCHECK(IsJavascriptAllowed());
 
   select_file_dialog_ = nullptr;
   ResolveJavascriptCallback(base::Value(scan_location_callback_id_),
-                            CreateSelectedPathValue(path));
+                            CreateSelectedPathValue(file.path()));
 }
 
 void ScanningHandler::FileSelectionCanceled(void* params) {

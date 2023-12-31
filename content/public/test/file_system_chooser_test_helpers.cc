@@ -114,9 +114,9 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
     std::vector<ui::SelectedFileInfo> result = std::move(result_);
     result_.clear();
     if (result.size() == 1) {
-      listener_->FileSelectedWithExtraInfo(result[0], 0, params);
+      listener_->FileSelected(result[0], 0, params);
     } else {
-      listener_->MultiFilesSelectedWithExtraInfo(result, params);
+      listener_->MultiFilesSelected(result, params);
     }
   }
 

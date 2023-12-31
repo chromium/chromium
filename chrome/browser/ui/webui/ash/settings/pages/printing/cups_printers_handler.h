@@ -230,7 +230,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
                     const std::string& eula_url);
 
   // ui::SelectFileDialog::Listener override:
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* params) override;
   void FileSelectionCanceled(void* params) override;

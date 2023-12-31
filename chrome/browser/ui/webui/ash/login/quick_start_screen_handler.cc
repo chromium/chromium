@@ -7,6 +7,7 @@
 #include "base/values.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
+#include "quick_start_screen_handler.h"
 
 namespace ash {
 
@@ -36,12 +37,28 @@ void QuickStartScreenHandler::ShowConnectingToWifi() {
   CallExternalAPI("showConnectingToWifi");
 }
 
-void QuickStartScreenHandler::ShowTransferringGaiaCredentials() {
-  CallExternalAPI("showTransferringGaiaCredentials");
+void QuickStartScreenHandler::ShowConfirmGoogleAccount() {
+  CallExternalAPI("showConfirmGoogleAccount");
 }
 
-void QuickStartScreenHandler::ShowFidoAssertionReceived(std::string email) {
-  CallExternalAPI("showFidoAssertionReceived", email);
+void QuickStartScreenHandler::ShowSigningInStep() {
+  CallExternalAPI("showSigningInStep");
+}
+
+void QuickStartScreenHandler::ShowCreatingAccountStep() {
+  CallExternalAPI("showCreatingAccountStep");
+}
+
+void QuickStartScreenHandler::SetUserEmail(const std::string email) {
+  CallExternalAPI("setUserEmail", email);
+}
+
+void QuickStartScreenHandler::SetUserFullName(const std::string full_name) {
+  CallExternalAPI("setUserFullName", full_name);
+}
+
+void QuickStartScreenHandler::SetUserAvatar(const std::string avatar_url) {
+  CallExternalAPI("setUserAvatarUrl", avatar_url);
 }
 
 void QuickStartScreenHandler::DeclareLocalizedValues(
@@ -78,6 +95,10 @@ void QuickStartScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_QUICK_START_BLUETOOTH_DIALOG_CANCEL);
   builder->Add("quickStartBluetoothEnableButton",
                IDS_LOGIN_QUICK_START_BLUETOOTH_DIALOG_ENABLE);
+  builder->Add("quickStartConfirmAccountTitle",
+               IDS_LOGIN_QUICK_START_CONFIRM_ACCOUNT_TITLE);
+  builder->Add("quickStartConfirmAccountSubtitle",
+               IDS_LOGIN_QUICK_START_CONFIRM_ACCOUNT_SUBTITLE);
 }
 
 }  // namespace ash

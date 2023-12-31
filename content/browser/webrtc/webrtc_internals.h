@@ -173,7 +173,7 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
                            const ChildProcessTerminationInfo& info) override;
 
   // ui::SelectFileDialog::Listener implementation.
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* unused_params) override;
   void FileSelectionCanceled(void* params) override;

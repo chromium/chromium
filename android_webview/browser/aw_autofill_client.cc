@@ -92,8 +92,7 @@ autofill::PersonalDataManager* AwAutofillClient::GetPersonalDataManager() {
 
 autofill::AutocompleteHistoryManager*
 AwAutofillClient::GetAutocompleteHistoryManager() {
-  return AwBrowserContext::FromWebContents(&GetWebContents())
-      ->GetAutocompleteHistoryManager();
+  NOTREACHED_NORETURN();
 }
 
 PrefService* AwAutofillClient::GetPrefs() {

@@ -2,17 +2,88 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const connectToWebCam: () => Promise<void> = async () => {
-  const constraints = {video: true};
-  const stream = await navigator.mediaDevices.getUserMedia(constraints);
-  const videoElement =
-      document.getElementById('cameraStream') as HTMLMediaElement;
-  videoElement.srcObject = stream;
-  // Send the stream to the background page.
-  chrome.runtime.sendMessage(undefined, {type: 'cameraStream', stream});
-};
+import {FaceLandmarker, FilesetResolver} from './mediapipe_task_vision/task_vision.js';
 
-const button = document.createElement('button');
-button.textContent = 'Click to start FaceGaze';
-button.addEventListener('click', connectToWebCam);
-document.body.appendChild(button);
+/**
+ * Handles interaction with the webcam and FaceLandmarker.
+ * TODO(b/309121742): Move the FaceLandmarker logic from this class into the
+ * background context once we are able to retrieve camera data from C++.
+ */
+export class WebCamFaceLandmarker {
+  private faceLandmarker_: FaceLandmarker|null = null;
+  declare private intervalID_: number|null;
+  constructor() {
+    this.intervalID_ = null;
+  }
+
+  /**
+   * Initializes the FaceLandmarker, connects to the webcam, and starts
+   * detecting face landmarks.
+   */
+  async init(): Promise<void> {
+    await this.createFaceLandmarker_();
+    await this.connectToWebCam_();
+    this.startDetectingFaceLandmarks_();
+  }
+
+  private async createFaceLandmarker_(): Promise<void> {
+    const resolver =
+        await FilesetResolver.forVisionTasks('mediapipe_task_vision');
+    this.faceLandmarker_ = await FaceLandmarker.createFromOptions(resolver, {
+      baseOptions: {
+        modelAssetPath: `mediapipe_task_vision/face_landmarker.task`,
+      },
+      outputFaceBlendshapes: true,
+      outputFacialTransformationMatrixes: true,
+      runningMode: 'VIDEO',
+      numFaces: 1,
+    });
+  }
+
+  private async connectToWebCam_(): Promise<void> {
+    const constraints = {video: true};
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    const videoElement =
+        document.getElementById('cameraStream') as HTMLMediaElement;
+    videoElement.srcObject = stream;
+  }
+
+  private startDetectingFaceLandmarks_(): void {
+    this.intervalID_ = setInterval(
+        () => this.detectFaceLandmarks_(),
+        WebCamFaceLandmarker.DETECT_FACE_LANDMARKS_INTERVAL_MS);
+  }
+
+  private detectFaceLandmarks_(): void {
+    if (!this.faceLandmarker_) {
+      return;
+    }
+
+    const videoElement = document.getElementById('cameraStream');
+    const result = this.faceLandmarker_.detectForVideo(
+        /*videoFrame=*/ videoElement, /*timestamp=*/ performance.now());
+    // Send result to the background page for processing.
+    chrome.runtime.sendMessage(
+        undefined, {type: 'faceLandmarkerResult', result});
+  }
+}
+export namespace WebCamFaceLandmarker {
+  /**
+   * The interval, in milliseconds, for which we request results from the
+   * FaceLandmarker API.
+   */
+  export const DETECT_FACE_LANDMARKS_INTERVAL_MS = 200;
+}
+
+declare global {
+  var webCamFaceLandmarker: WebCamFaceLandmarker;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  globalThis.webCamFaceLandmarker = new WebCamFaceLandmarker();
+  const button = document.createElement('button');
+  button.textContent = 'Click to start FaceGaze';
+  button.addEventListener(
+      'click', () => globalThis.webCamFaceLandmarker.init());
+  document.body.appendChild(button);
+});

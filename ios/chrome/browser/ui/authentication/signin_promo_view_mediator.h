@@ -114,6 +114,8 @@ enum class SigninPromoAction {
 // of times it has been displayed and if the user closed the sign-in promo view.
 + (BOOL)shouldDisplaySigninPromoViewWithAccessPoint:
             (signin_metrics::AccessPoint)accessPoint
+                                  signinPromoAction:
+                                      (SigninPromoAction)signinPromoAction
                               authenticationService:
                                   (AuthenticationService*)authenticationService
                                         prefService:(PrefService*)prefService;

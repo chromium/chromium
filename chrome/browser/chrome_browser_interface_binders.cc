@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/webui/media/media_engagement_ui.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox.mojom.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_ui.h"
+#include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_ui.h"
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals_ui.h"
 #include "chrome/browser/ui/webui/suggest_internals/suggest_internals.mojom.h"
 #include "chrome/browser/ui/webui/suggest_internals/suggest_internals_ui.h"
@@ -78,6 +79,7 @@
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/search_engines/search_engine_choice_utils.h"
@@ -1726,6 +1728,13 @@ void PopulateChromeWebUIFrameBinders(
         compose::mojom::ComposeSessionPageHandlerFactory, ComposeUI>(map);
   }
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
+
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxInternalsDevUI)) {
+    RegisterWebUIControllerInterfaceBinder<
+        privacy_sandbox_internals::mojom::PageHandler,
+        privacy_sandbox_internals::PrivacySandboxInternalsUI>(map);
+  }
 }
 
 void PopulateChromeWebUIFrameInterfaceBrokers(

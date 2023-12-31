@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/future.h"
 
@@ -221,7 +222,13 @@ Atom AtomCache::GetAtom(const char* name) {
     CHECK_GT(atom, x11::Atom::kLastPredefinedAtom)
         << " Use x11::Atom::" << name << " instead of x11::GetAtom(\"" << name
         << "\")";
-    LOG(ERROR) << "Add " << name << " to kAtomsToCache";
+
+    // Don't log an error if the atom is dynamically named (ends with a digit).
+    size_t len = strlen(name);
+    if (!len || !absl::ascii_isdigit(name[len - 1])) {
+      LOG(ERROR) << "Add " << name << " to kAtomsToCache";
+    }
+
     cached_atoms_.emplace(
         owned_strings_.emplace_back(std::make_unique<std::string>(name))
             ->c_str(),

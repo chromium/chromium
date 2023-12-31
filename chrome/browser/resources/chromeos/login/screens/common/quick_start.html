@@ -58,6 +58,53 @@ found in the LICENSE file.
     padding-bottom: 24px;
   }
 
+  #userInfo {
+    border: solid 1px var(--cros-sys-separator);
+    border-radius: 12px;
+    height: 32px;
+    margin-top: 16px;
+    padding: 16px 20px;
+  }
+
+  #avatarWebview {
+    user-select: none;
+  }
+
+  #accountIcon {
+    width: 32px;
+    height: 32px;
+  }
+
+  #userPictureHolder {
+    height: 32px;
+    width: 32px;
+    margin: auto;
+    user-select: none;
+  }
+
+  #userNameHolder {
+    padding-inline-start: 16px;
+  }
+
+  #userFullName {
+    font-weight: 500;
+    line-height: 24px;
+  }
+
+  #userEmail {
+    font-weight: 400;
+    line-height: 20px;
+  }
+
+  #userEmailOnlyDiv {
+    line-height: 18px;
+    font-weight: 400;
+  }
+
+  #spinner {
+    height: 95%;
+  }
+
   #qrCodeWrapper {
     position: relative;
     width: 100%;
@@ -149,58 +196,59 @@ found in the LICENSE file.
   <iron-icon slot="icon" icon="oobe-20:quick-start-wifi">
   </iron-icon>
 </oobe-loading-dialog>
-<!-- DEBUG ONLY - CONNECTED TO WIFI -->
-<oobe-adaptive-dialog for-step="connected_to_wifi">
-  <iron-icon slot="icon" icon="oobe-20:quick-start-wifi">
-  </iron-icon>
-  <h1 slot="title">
-    [DEBUG] Connected to WiFi
-  </h1>
-  <div slot="content" class="flex layout vertical center center-justified">
-    <div>
-      SSID: [[ssid_]]
-    </div>
-    <div>
-      Password: [[password_]]
-    </div>
-    <div>
-        Click on the Next button to continue the flow.
-    </div>
-  </div>
-  <div slot="bottom-buttons">
-    <oobe-next-button id="wifiConnected" on-click="onWifiConnectedNextClicked_">
-    </oobe-next-button>
-  </div>
-</oobe-adaptive-dialog>
-<!-- TRANSFERRING GAIA CREDENTIALS -->
-<oobe-loading-dialog id="gaiaTransferDialog" for-step="gaia_credentials"
-    title-key="quickStartAccountTransferTitle"
-    subtitle-key="quickStartAccountTransferSubtitle"
-    on-cancel-loading="onCancelClicked_" can-cancel>
-  <iron-icon slot="icon" icon="oobe-32:googleg">
-  </iron-icon>
-</oobe-loading-dialog>
-<!-- DEBUG ONLY - GAIA CREDENTIALS -->
-<oobe-adaptive-dialog for-step="fido_assertion_received">
+<!-- CONFIRM GOOGLE ACCOUNT -->
+<oobe-adaptive-dialog id="confirmAccountDialog" for-step="confirm_google_account">
   <iron-icon slot="icon" icon="oobe-32:googleg">
   </iron-icon>
   <h1 slot="title">
-    [DEBUG] [[i18nDynamic(locale, 'quickStartAccountTransferTitle')]]
+    [[i18nDynamic(locale, 'quickStartConfirmAccountTitle')]]
   </h1>
   <div slot="subtitle">
-    [[i18nDynamic(locale, 'quickStartAccountTransferSubtitle')]]
+    [[i18nDynamic(locale, 'quickStartConfirmAccountSubtitle')]]
   </div>
   <div slot="content" class="flex layout vertical center center-justified">
-    <div>
-      Received FIDO assertion & Refresh token!
-    </div>
-    <div>
-      Email: [[fidoAssertionEmail_]]
-    </div>
+    <iron-icon class="illustration-jelly" icon="oobe-illos:quick-start-confirm-account">
+    </iron-icon>
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="cancelButton" on-click="onCancelClicked_"
         text-key="cancelButton">
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
+<!-- SIGNING IN STEP -->
+<oobe-adaptive-dialog for-step="signing_in" id="gaiaTransferDialog">
+  <iron-icon slot="icon" icon="oobe-32:googleg">
+  </iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'quickStartAccountTransferTitle')]]
+  </h1>
+  <div slot="subtitle">
+    <!-- Email only -->
+    <div id="userEmailOnlyDiv" hidden="[[userAvatarUrl_]]">[[userEmail_]]</div>
+    <!-- Full Avatar -->
+    <div id="userInfo" class="flex layout horizontal" hidden="[[!userAvatarUrl_]]">
+      <div id="userPictureHolder">
+        <webview role="img" class="avatar-icon" allowtransparency
+          id="avatarWebview"
+          src="[[getWrappedAvatar_(userAvatarUrl_)]]"
+          aria-hidden="true" tabindex="-1">
+        </webview>
+      </div>
+      <div class="flex layout vertical center-justified" id="userNameHolder">
+        <div id="userFullName">[[userFullName_]]</div>
+        <div id="userEmail">[[userEmail_]]</div>
+      </div>
+    </div>
+  </div>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <oobe-cr-lottie id="spinner" hide-play-pause-icon
+        animation-url="../../animations/spinner.json">
+    </oobe-cr-lottie>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="cancelButton" on-click="onCancelClicked_"
+        text-key="cancelButton" hidden="[[!canCancelSignin_]]">
     </oobe-text-button>
   </div>
 </oobe-adaptive-dialog>

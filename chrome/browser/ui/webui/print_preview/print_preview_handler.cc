@@ -70,6 +70,7 @@
 #include "printing/mojom/print.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/icu/source/i18n/unicode/ulocdata.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/data_protection/print_utils.h"
@@ -1245,7 +1246,8 @@ void PrintPreviewHandler::BadMessageReceived() {
 void PrintPreviewHandler::FileSelectedForTesting(const base::FilePath& path,
                                                  int index,
                                                  void* params) {
-  GetPdfPrinterHandler()->FileSelected(path, index, params);
+  GetPdfPrinterHandler()->FileSelected(ui::SelectedFileInfo(path), index,
+                                       params);
 }
 
 void PrintPreviewHandler::SetPdfSavedClosureForTesting(

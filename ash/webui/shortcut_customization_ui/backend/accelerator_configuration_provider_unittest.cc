@@ -245,15 +245,18 @@ void ValidateAcceleratorLayouts(
   for (const auto& actual : actual_layout_infos) {
     // Iterate through `kAcceleratorLayouts` to find the matching action.
     bool found_match = false;
-    for (const auto& expected_layout : kAcceleratorLayouts) {
-      if (expected_layout.action_id == actual->action &&
-          expected_layout.source == actual->source) {
-        EXPECT_EQ(expected_layout.category, actual->category);
-        EXPECT_EQ(expected_layout.sub_category, actual->sub_category);
-        EXPECT_EQ(expected_layout.layout_style, actual->style);
-        EXPECT_EQ(expected_layout.source, actual->source);
+    for (const auto& layout_id : kAcceleratorLayouts) {
+      const std::optional<AcceleratorLayoutDetails> expected_layout =
+          GetAcceleratorLayout(layout_id);
+      ASSERT_TRUE(expected_layout.has_value());
+      if (expected_layout->action_id == actual->action &&
+          expected_layout->source == actual->source) {
+        EXPECT_EQ(expected_layout->category, actual->category);
+        EXPECT_EQ(expected_layout->sub_category, actual->sub_category);
+        EXPECT_EQ(expected_layout->layout_style, actual->style);
+        EXPECT_EQ(expected_layout->source, actual->source);
         EXPECT_EQ(
-            l10n_util::GetStringUTF16(expected_layout.description_string_id),
+            l10n_util::GetStringUTF16(expected_layout->description_string_id),
             actual->description);
         found_match = true;
         break;

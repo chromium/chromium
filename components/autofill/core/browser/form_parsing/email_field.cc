@@ -17,7 +17,7 @@ std::unique_ptr<FormField> EmailField::Parse(ParsingContext& context,
   base::span<const MatchPatternRef> email_patterns = GetMatchPatterns(
       "EMAIL_ADDRESS", context.page_language, context.pattern_source);
   if (ParseFieldSpecifics(context, scanner, kEmailRe,
-                          kDefaultMatchParamsWith<MatchFieldType::kEmail>,
+                          kDefaultMatchParamsWith<FormControlType::kInputEmail>,
                           email_patterns, &field, "kEmailRe")) {
     return std::make_unique<EmailField>(field);
   }

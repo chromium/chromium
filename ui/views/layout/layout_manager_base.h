@@ -181,7 +181,6 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager {
   // layout.
   struct ChildInfo {
     bool can_be_visible = true;
-    bool ignored = false;
   };
 
   // LayoutManager:

@@ -250,6 +250,7 @@ void QuickStartController::OnStatusChanged(
     case Step::REQUESTING_GOOGLE_ACCOUNT_INFO:
       return;
     case Step::GOOGLE_ACCOUNT_INFO_RECEIVED:
+      UpdateUiState(UiState::SIGNING_IN);
       bootstrap_controller_->AttemptGoogleAccountTransfer();
       return;
     case Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS:
@@ -262,8 +263,8 @@ void QuickStartController::OnStatusChanged(
       CHECK(controller_state_ == ControllerState::CONNECTED);
       if (absl::holds_alternative<FidoAssertionInfo>(status.payload)) {
         QS_LOG(INFO) << "Successfully received FIDO assertion.";
-        fido_ = absl::get<FidoAssertionInfo>(status.payload);
-        UpdateUiState(UiState::SHOWING_FIDO);
+        // TODO(b/283724988) - Update with authorization code.
+        UpdateUiState(UiState::SIGNING_IN);
         SavePhoneInstanceID();
       } else {
         CHECK(absl::holds_alternative<ErrorCode>(status.payload));
@@ -355,7 +356,7 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
 }
 
 void QuickStartController::StartAccountTransfer() {
-  UpdateUiState(UiState::TRANSFERRING_GAIA_CREDENTIALS);
+  UpdateUiState(UiState::CONFIRM_GOOGLE_ACCOUNT);
   bootstrap_controller_->RequestGoogleAccountInfo();
 }
 
@@ -399,7 +400,7 @@ void QuickStartController::ResetState() {
   entry_point_.reset();
   qr_code_data_.reset();
   pin_.reset();
-  fido_.reset();
+  user_info_ = UserInfo();
   wifi_name_.reset();
   controller_state_ = ControllerState::NOT_ACTIVE;
   ui_state_.reset();

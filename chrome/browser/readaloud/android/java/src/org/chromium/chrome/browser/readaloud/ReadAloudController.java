@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelTabObserver;
 import org.chromium.chrome.browser.translate.TranslateBridge;
@@ -758,7 +759,17 @@ public class ReadAloudController
 
     @Override
     public void navigateToPlayingTab() {
-        // TODO: implement
+        if (mCurrentlyPlayingTab == null) {
+            return;
+        }
+        // Already on playing tab
+        if (mCurrentlyPlayingTab.getId() == mTabModel.getTabAt(mTabModel.index()).getId()) {
+            return;
+        }
+        if (mTabModel.indexOf(mCurrentlyPlayingTab) != TabModel.INVALID_TAB_INDEX) {
+            mTabModel.setIndex(
+                    mTabModel.indexOf(mCurrentlyPlayingTab), TabSelectionType.FROM_USER, false);
+        }
     }
 
     @Override

@@ -53,6 +53,7 @@ class AddPageTaskTest : public ModelTaskTestBase {
 
  private:
   absl::optional<AddPageResult> last_add_page_result_;
+  base::WeakPtrFactory<AddPageTaskTest> weak_ptr_factory_{this};
 };
 
 void AddPageTaskTest::ResetResults() {
@@ -64,7 +65,8 @@ void AddPageTaskTest::OnAddPageDone(AddPageResult result) {
 }
 
 AddPageTask::AddPageTaskCallback AddPageTaskTest::add_page_callback() {
-  return base::BindOnce(&AddPageTaskTest::OnAddPageDone, base::AsWeakPtr(this));
+  return base::BindOnce(&AddPageTaskTest::OnAddPageDone,
+                        weak_ptr_factory_.GetWeakPtr());
 }
 
 void AddPageTaskTest::AddPage(const OfflinePageItem& page) {

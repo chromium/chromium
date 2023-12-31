@@ -382,7 +382,6 @@ crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-le
 crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=normal&right-white-space=pre-wrap [ Failure ]
 crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=nowrap&right-white-space=normal [ Failure ]
 crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=nowrap&right-white-space=pre [ Failure ]
-crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=nowrap&right-white-space=pre-line [ Failure ]
 crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=nowrap&right-white-space=pre-wrap [ Failure ]
 crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=pre&right-white-space=normal [ Failure ]
 crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=pre&right-white-space=nowrap [ Failure ]
@@ -412,7 +411,6 @@ crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-le
 crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=normal&right-white-space=pre-wrap [ Failure ]
 crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=nowrap&right-white-space=normal [ Failure ]
 crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=nowrap&right-white-space=pre [ Failure ]
-crbug.com/1370704 [ Debug Mac13-arm64 ] external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=nowrap&right-white-space=pre-wrap [ Failure ]
 crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=pre&right-white-space=normal [ Failure ]
 crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=pre&right-white-space=nowrap [ Failure ]
 crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=pre&right-white-space=pre-wrap [ Failure ]
@@ -1649,7 +1647,6 @@ crbug.com/707210 external/wpt/html/rendering/non-replaced-elements/the-page/body
 
 crbug.com/821455 editing/pasteboard/drag-files-to-editable-element.html [ Failure ]
 
-crbug.com/1174937 [ Release Win11-arm64 ] external/wpt/mediacapture-streams/MediaStream-clone.https.html [ Crash ]
 crbug.com/1505380 [ Mac ] external/wpt/mediacapture-streams/MediaStreamTrack-getCapabilities.https.html [ Failure ]
 
 # Ref tests that needs investigation.
@@ -1881,7 +1878,6 @@ crbug.com/472330 fast/borders/border-image-outset-split-inline-vertical-lr.html 
 crbug.com/472330 fast/writing-mode/box-shadow-vertical-lr.html [ Failure ]
 crbug.com/472330 fast/writing-mode/box-shadow-vertical-rl.html [ Failure ]
 
-crbug.com/346473 fast/events/drag-on-mouse-move-cancelled.html [ Failure ]
 
 # During work on crbug.com/1171767, we discovered a bug demonstrable through
 # WPT. Marking as a failing test until we update our implementation.
@@ -2613,7 +2609,6 @@ crbug.com/626703 [ Mac12 ] external/wpt/long-animation-frame/tentative/loaf-sour
 crbug.com/626703 [ Mac13 ] external/wpt/long-animation-frame/tentative/loaf-source-location-redirect.html [ Skip Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-source-location-redirect.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/html/rendering/widgets/button-layout/input-type-button-clip.html [ Failure ]
-crbug.com/626703 [ Mac11-arm64 ] external/wpt/webnn/where.https.any.worker.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/css/css-text/text-justify/text-justify-word-separators.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-001.html?class=chws,htb [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-001.html?class=chws,vrl [ Failure ]
@@ -2681,7 +2676,6 @@ crbug.com/626703 external/wpt/jpegxl/3x3a_srgb_lossless.html [ Failure ]
 crbug.com/626703 external/wpt/jpegxl/3x3a_srgb_lossy.html [ Failure ]
 crbug.com/626703 [ Mac12 ] external/wpt/css/css-grid/animation/grid-template-rows-interpolation.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/performance-timeline/back-forward-cache-restoration.tentative.html [ Timeout ]
-crbug.com/626703 [ Mac12 ] virtual/pna-navigations-warning/external/wpt/fetch/private-network-access/shared-worker-fetch.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/prefetch-no-vary-search/external/wpt/speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?3-3 [ Timeout ]
 crbug.com/626703 external/wpt/css/css-backgrounds/border-image-image-type-001.htm [ Failure ]
 crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/border-image-image-type-001.htm [ Failure ]
@@ -2873,7 +2867,7 @@ crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-f
 crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-repeating-conic-gradient.html [ Failure ]
 crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-repeating-linear-gradient.html [ Failure ]
 crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-repeating-radial-gradient.html [ Failure ]
-crbug.com/626703 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-xywh-interpolation-001.html [ Failure ]
+crbug.com/626703 [ Debug Mac13-arm64 ] virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-xywh-interpolation-001.html [ Failure ]
 crbug.com/626703 external/wpt/editing/crashtests/insertparagraph-in-listitem-in-svg-followed-by-collapsible-spaces.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/workers/modules/shared-worker-import-failure.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/fetch/api/cors/cors-keepalive.any.html [ Skip Timeout ]
@@ -3889,7 +3883,6 @@ crbug.com/862643 http/tests/serviceworker/navigation_preload/use-counter.html [ 
 crbug.com/862589 virtual/threaded/fast/idle-callback/long_idle_periods.html [ Pass Timeout ]
 
 # fast/events/middleClickAutoscroll-* are failing on Mac
-crbug.com/874162 [ Debug Mac13-arm64 ] fast/events/middleClickAutoscroll-drag.html [ Crash Failure Pass Timeout ]
 crbug.com/874162 [ Mac Release ] fast/events/middleClickAutoscroll-drag.html [ Crash Failure Pass Timeout ]
 crbug.com/874162 [ Mac Release ] fast/events/middleClickAutoscroll-event-fired.html [ Crash Failure Pass Timeout ]
 crbug.com/874162 [ Mac ] fast/events/middleClickAutoscroll-latching.html [ Crash Failure Pass Timeout ]
@@ -4222,8 +4215,6 @@ crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/t
 # reftests that only pass when the new direction code is enabled.
 crbug.com/576815 virtual/dir-pseudo-disabled/external/wpt/html/dom/elements/global-attributes/dir_auto-N-EN.html [ Failure ]
 
-# SwANGLE issues
-crbug.com/1204234 css3/blending/background-blend-mode-single-accelerated-element.html [ Failure ]
 
 # "in-multicol-child.html" is laid out in legacy layout due by "multicol" but
 # reference is laid out by LayoutNG.
@@ -5541,7 +5532,7 @@ crbug.com/1406027 [ Win ] virtual/media-foundation-for-clear-dcomp/media/control
 crbug.com/1289607 [ Linux ] external/wpt/cookie-store/cookieStore_subscribe_arguments.https.any.html [ Failure ]
 crbug.com/1408294 [ Debug Linux ] virtual/gpu/external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html [ Failure ]
 crbug.com/1229708 fast/events/pointerevents/pointer-event-in-slop-region.html [ Failure Pass ]
-crbug.com/1406896 [ Linux ] http/tests/inspector-protocol/cpu-profiler/record-cpu-profile-with-cpu-throttling.js [ Crash ]
+crbug.com/1406896 [ Debug Linux ] http/tests/inspector-protocol/cpu-profiler/record-cpu-profile-with-cpu-throttling.js [ Crash ]
 crbug.com/1370749 [ Debug Linux ] virtual/threaded-no-composited-antialiasing/animations/add-keyframes-recalc.html [ Failure ]
 crbug.com/1422340 [ Win ] virtual/media-foundation-for-clear-dcomp/media/video-move-to-document-pip.html [ Failure ]
 crbug.com/1434123 media/video-source-type.html [ Failure Pass ]
@@ -6618,8 +6609,6 @@ crbug.com/1459188 [ Linux ] inspector-protocol/input/dispatchMouseEvent-dragging
 
 # Re-enable after new baselines are generated
 crbug.com/1456636 [ Linux ] virtual/view-transition/view-transition/parent-transition-cancels-child.html [ Failure ]  # Reftest image failure
-crbug.com/1456636 [ Linux ] virtual/view-transition-wide-gamut/view-transition/parent-transition-cancels-child.html [ Failure ]  # Reftest image failure
-crbug.com/1456636 [ Linux ] virtual/view-transition-mpa-serialization/view-transition/parent-transition-cancels-child.html [ Failure ]  # Reftest image failure
 
 crbug.com/1367789 [ Win10.20h2 ] external/wpt/orientation-event/motion/page-visibility.https.html [ Timeout ]
 

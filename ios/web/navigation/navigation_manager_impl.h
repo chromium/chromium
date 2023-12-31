@@ -451,6 +451,10 @@ class NavigationManagerImpl final : public NavigationManager {
   // FinalizeSessionRestore().
   bool is_restore_session_in_progress_ = false;
 
+  // Whether this navigation manager is in the process of restoring session
+  // history into WKWebView using native restoration.
+  bool native_restore_in_progress_ = false;
+
   // Set to true when delegate_->GoToBackForwardListItem is being called, which
   // is useful to know when comparing the VisibleWebViewURL with the last
   // committed item.

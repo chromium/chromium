@@ -111,12 +111,12 @@ export class SettingsSearchEngineEntryElement extends PolymerElement {
     });
   }
 
-  private onEditClick_(e: Event) {
+  private onViewOrEditClick_(e: Event) {
     e.preventDefault();
     this.closePopupMenu_();
     const anchor = this.shadowRoot!.querySelector('cr-icon-button');
     assert(anchor);
-    this.dispatchEvent(new CustomEvent('edit-search-engine', {
+    this.dispatchEvent(new CustomEvent('view-or-edit-search-engine', {
       bubbles: true,
       composed: true,
       detail: {

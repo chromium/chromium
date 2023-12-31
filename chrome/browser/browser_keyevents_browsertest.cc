@@ -84,7 +84,7 @@ class TestFinishObserver : public content::WebContentsObserver {
   bool WaitForFinish() {
     if (!finished_) {
       waiting_ = true;
-      content::RunMessageLoop();
+      loop_.Run();
       waiting_ = false;
     }
     return finished_;
@@ -97,13 +97,15 @@ class TestFinishObserver : public content::WebContentsObserver {
     if (dom_op_result == "\"FINISHED\"") {
       finished_ = true;
       if (waiting_)
-        base::RunLoop::QuitCurrentWhenIdleDeprecated();
+        loop_.QuitWhenIdle();
     }
   }
 
  private:
   bool finished_;
   bool waiting_;
+  // base::RunLoop used to require kNestableTaskAllowed
+  base::RunLoop loop_{base::RunLoop::Type::kNestableTasksAllowed};
 };
 
 class BrowserKeyEventsTest : public InProcessBrowserTest {

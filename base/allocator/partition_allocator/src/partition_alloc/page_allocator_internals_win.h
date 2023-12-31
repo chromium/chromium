@@ -26,7 +26,7 @@ bool IsOutOfMemory(DWORD error) {
   switch (error) {
     // Page file is being extended.
     case ERROR_COMMITMENT_MINIMUM:
-      // Page file is too small.
+    // Page file is too small.
     case ERROR_COMMITMENT_LIMIT:
 #if BUILDFLAG(HAS_64_BIT_POINTERS)
     // Not enough memory resources are available to process this command.
@@ -164,7 +164,8 @@ void SetSystemPagesAccessInternal(
   } else {
     if (!VirtualAllocWithRetry(ptr, length, MEM_COMMIT, access_flag)) {
       int32_t error = GetLastError();
-      if (error == ERROR_COMMITMENT_LIMIT) {
+      if (error == ERROR_COMMITMENT_LIMIT ||
+          error == ERROR_COMMITMENT_MINIMUM) {
         OOM_CRASH(length);
       }
       // We check `GetLastError` for `ERROR_SUCCESS` here so that in a crash

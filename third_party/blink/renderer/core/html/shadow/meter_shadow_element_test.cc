@@ -52,7 +52,7 @@ TEST_F(MeterShadowElementTest, LayoutObjectIsNotNeeded) {
   EXPECT_FALSE(shadow_element->LayoutObjectIsNeeded(*style));
 }
 
-TEST_F(MeterShadowElementTest, OnlyChangeDirectionOnShadowElement) {
+TEST_F(MeterShadowElementTest, DontChangeDirectionOnShadowElement) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <meter id='m' style='writing-mode:vertical-lr; direction: ltr;' />
   )HTML");
@@ -74,7 +74,7 @@ TEST_F(MeterShadowElementTest, OnlyChangeDirectionOnShadowElement) {
 
   EXPECT_TRUE(shadow_element->GetComputedStyle());
   EXPECT_EQ(shadow_element->GetComputedStyle()->Direction(),
-            TextDirection::kRtl);
+            TextDirection::kLtr);
 }
 
 }  // namespace blink

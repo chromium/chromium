@@ -40,6 +40,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 
 using ::testing::_;
@@ -73,7 +74,8 @@ class TestSelectFileDialog : public ui::SelectFileDialog {
                       gfx::NativeWindow owning_window,
                       void* params,
                       const GURL* caller) override {
-    listener_->FileSelected(forced_path_, file_type_index, params);
+    listener_->FileSelected(ui::SelectedFileInfo(forced_path_), file_type_index,
+                            params);
   }
   bool IsRunning(gfx::NativeWindow owning_window) const override {
     return false;

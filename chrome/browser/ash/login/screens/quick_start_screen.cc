@@ -104,9 +104,6 @@ void QuickStartScreen::OnUiUpdateRequested(
     case ash::quick_start::QuickStartController::UiState::SHOWING_QR:
       view_->SetQRCode(ConvertQrCode(controller_->GetQrCode()));
       break;
-    case quick_start::QuickStartController::UiState::SHOWING_FIDO:
-      view_->ShowFidoAssertionReceived(controller_->GetFidoAssertion().email);
-      break;
     case quick_start::QuickStartController::UiState::SHOWING_PIN:
       view_->SetPIN(controller_->GetPin());
       break;
@@ -116,9 +113,17 @@ void QuickStartScreen::OnUiUpdateRequested(
     case quick_start::QuickStartController::UiState::WIFI_CREDENTIALS_RECEIVED:
       exit_callback_.Run(Result::WIFI_CREDENTIALS_RECEIVED);
       break;
-    case ash::quick_start::QuickStartController::UiState::
-        TRANSFERRING_GAIA_CREDENTIALS:
-      view_->ShowTransferringGaiaCredentials();
+    case quick_start::QuickStartController::UiState::CONFIRM_GOOGLE_ACCOUNT:
+      view_->ShowConfirmGoogleAccount();
+      break;
+    case ash::quick_start::QuickStartController::UiState::SIGNING_IN:
+      view_->ShowSigningInStep();
+      view_->SetUserEmail(controller_->GetUserInfo().email);
+      view_->SetUserFullName(controller_->GetUserInfo().full_name);
+      view_->SetUserAvatar(controller_->GetUserInfo().avatar_url);
+      break;
+    case ash::quick_start::QuickStartController::UiState::CREATING_ACCOUNT:
+      view_->ShowCreatingAccountStep();
       break;
     case ash::quick_start::QuickStartController::UiState::LOADING:
       // TODO(b:283724988) - Add method to view to show the loading spinner.

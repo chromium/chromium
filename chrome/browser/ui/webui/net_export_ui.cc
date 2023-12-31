@@ -44,6 +44,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "net/log/net_log_capture_mode.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/browser_ui/share/android/intent_helper.h"
@@ -96,7 +97,7 @@ class NetExportMessageHandler
   void OnShowFile(const base::Value::List& list);
 
   // ui::SelectFileDialog::Listener implementation.
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* params) override;
   void FileSelectionCanceled(void* params) override;
@@ -264,14 +265,14 @@ void NetExportMessageHandler::OnShowFile(const base::Value::List& list) {
       base::BindOnce(&NetExportMessageHandler::ShowFileInShell, AsWeakPtr()));
 }
 
-void NetExportMessageHandler::FileSelected(const base::FilePath& path,
+void NetExportMessageHandler::FileSelected(const ui::SelectedFileInfo& file,
                                            int index,
                                            void* params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(select_file_dialog_);
-  *last_save_dir.Pointer() = path.DirName();
+  *last_save_dir.Pointer() = file.path().DirName();
 
-  StartNetLog(path);
+  StartNetLog(file.path());
 
   // IMPORTANT: resetting the dialog may lead to the deletion of |path|, so keep
   // this line last.

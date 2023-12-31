@@ -53,7 +53,6 @@ def main(argv: Optional[List[str]] = None) -> Optional[int]:
 
   tarArchive = args[0]
   outputFiles = args[1].split(',')
-  outDir = args[2]
   destDir = options.dest_dir
 
   with tempfile.TemporaryDirectory() as tempDir:

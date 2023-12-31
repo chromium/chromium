@@ -11,7 +11,7 @@ import {ChromeVoxRange} from '../chromevox_range.js';
 
 import {EditableLine} from './editable_line.js';
 import {AutomationEditableText} from './editable_text.js';
-import {AutomationRichEditableText} from './editing.js';
+import {AutomationRichEditableText} from './rich_editable_text.js';
 
 import AutomationIntent = chrome.automation.AutomationIntent;
 import AutomationNode = chrome.automation.AutomationNode;

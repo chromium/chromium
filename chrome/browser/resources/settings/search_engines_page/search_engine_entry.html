@@ -37,7 +37,7 @@
       }
 
       #shortcut-column,
-      #url-column-padded {
+      #url-column {
         flex: auto;
         margin-inline-end: 40px;
       }
@@ -54,7 +54,7 @@
         <span role="cell" id="shortcut-column" hidden="[[!showShortcut]]">
           <div>[[engine.keyword]]</div>
         </span>
-        <span role="cell" id="url-column-padded" class="text-elide"
+        <span role="cell" id="url-column" class="text-elide"
             hidden="[[!showQueryUrl]]">
           <div>[[engine.url]]</div>
         </span>
@@ -63,10 +63,14 @@
               hidden="[[!engine.canBeActivated]]" id="activate">
             $i18n{searchEnginesActivate}
           </cr-button>
-          <cr-icon-button class="icon-edit" on-click="onEditClick_"
+          <cr-icon-button class="icon-edit" on-click="onViewOrEditClick_"
               title="$i18n{edit}" hidden="[[!showEditIcon_]]"
               disabled$="[[!engine.canBeEdited]]" id="editIconButton">
           </cr-icon-button>
+          <cr-button class="secondary-button" on-click="onViewOrEditClick_"
+              hidden="[[!engine.isManaged]]" id="viewDetailsButton">
+            $i18n{searchEnginesViewDetails}
+          </cr-button>
           <cr-icon-button class="icon-more-vert" on-click="onDotsClick_"
               disabled$="[[engine.default]]" title="$i18n{moreActions}"
               hidden="[[engine.isManaged]]">

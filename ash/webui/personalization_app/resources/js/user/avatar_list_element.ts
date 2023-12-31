@@ -7,6 +7,8 @@
  * that the user can select from.
  */
 
+import 'chrome://resources/ash/common/personalization_shared_icons.html.js';
+
 import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';

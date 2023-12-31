@@ -45,12 +45,13 @@ class CORE_EXPORT IntersectionGeometry {
     // Applies to boxes. If true, OverflowClipRect() is used if necessary
     // instead of BorderBoundingBox().
     kUseOverflowClipEdge = 1 << 5,
+    kRespectFilters = 1 << 6,
 
     // These flags will be computed
-    kShouldUseCachedRects = 1 << 6,
-    kRootIsImplicit = 1 << 7,
-    kDidComputeGeometry = 1 << 8,
-    kIsVisible = 1 << 9
+    kShouldUseCachedRects = 1 << 7,
+    kRootIsImplicit = 1 << 8,
+    kDidComputeGeometry = 1 << 9,
+    kIsVisible = 1 << 10
   };
 
   struct RootGeometry {
@@ -139,6 +140,7 @@ class CORE_EXPORT IntersectionGeometry {
  private:
   bool RootIsImplicit() const { return flags_ & kRootIsImplicit; }
   bool ShouldUseCachedRects() const { return flags_ & kShouldUseCachedRects; }
+  bool ShouldRespectFilters() const { return flags_ & kRespectFilters; }
   bool IsForFrameViewportIntersection() const {
     return flags_ & kForFrameViewportIntersection;
   }
@@ -174,7 +176,8 @@ class CORE_EXPORT IntersectionGeometry {
     // - `root` is the LayoutView and `target` is contained by a fixed-position
     //   element that is fixed to the viewport.
     bool root_scrolls_target = false;
-    // This is used only when relationship is kScrollable*.
+    // This is used only when relationship is kHasIntermediateClippers or
+    // kScrollableByRootOnly.
     bool has_filter = false;
     // This is collected only if has_scroll_margin is true.
     HeapVector<Member<const LayoutBox>, 2> intermediate_scrollers;

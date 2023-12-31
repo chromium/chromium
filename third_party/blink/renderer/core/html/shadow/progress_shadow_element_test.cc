@@ -52,7 +52,7 @@ TEST_F(ProgressShadowElementTest, LayoutObjectIsNeeded) {
   EXPECT_TRUE(shadow_element->LayoutObjectIsNeeded(*style));
 }
 
-TEST_F(ProgressShadowElementTest, OnlyChangeDirectionOnShadowElement) {
+TEST_F(ProgressShadowElementTest, DontChangeDirectionOnShadowElement) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <progress id='prog' style='-webkit-appearance:none; writing-mode:vertical-lr; direction: ltr;' />
   )HTML");
@@ -74,7 +74,7 @@ TEST_F(ProgressShadowElementTest, OnlyChangeDirectionOnShadowElement) {
 
   EXPECT_TRUE(shadow_element->GetComputedStyle());
   EXPECT_EQ(shadow_element->GetComputedStyle()->Direction(),
-            TextDirection::kRtl);
+            TextDirection::kLtr);
 }
 
 }  // namespace blink

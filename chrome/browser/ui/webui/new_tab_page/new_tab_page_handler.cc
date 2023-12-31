@@ -82,6 +82,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 namespace {
 
@@ -1306,13 +1307,13 @@ void NewTabPageHandler::OnNtpBackgroundServiceShuttingDown() {
   ntp_background_service_ = nullptr;
 }
 
-void NewTabPageHandler::FileSelected(const base::FilePath& path,
+void NewTabPageHandler::FileSelected(const ui::SelectedFileInfo& file,
                                      int index,
                                      void* params) {
   DCHECK(choose_local_custom_background_callback_);
   if (ntp_custom_background_service_) {
-    profile_->set_last_selected_directory(path.DirName());
-    ntp_custom_background_service_->SelectLocalBackgroundImage(path);
+    profile_->set_last_selected_directory(file.path().DirName());
+    ntp_custom_background_service_->SelectLocalBackgroundImage(file.path());
   }
 
   select_file_dialog_ = nullptr;

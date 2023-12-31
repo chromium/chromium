@@ -924,7 +924,13 @@ DrmOverlayPlaneList ScreenManager::GetModesetPlanes(
   }
 
   DrmOverlayPlaneList modeset_planes;
-  modeset_planes.emplace_back(framebuffer, nullptr);
+  modeset_planes.emplace_back(framebuffer, gfx::ColorSpace::CreateSRGB(),
+                              /*z_order=*/0, gfx::OVERLAY_TRANSFORM_NONE,
+                              /*damage_rect=*/gfx::Rect(framebuffer->size()),
+                              /*display_bounds=*/gfx::Rect(framebuffer->size()),
+                              /*crop_rect=*/gfx::RectF(0, 0, 1, 1),
+                              /*enable_blend=*/false,
+                              /*gpu_fence=*/nullptr);
   return modeset_planes;
 }
 

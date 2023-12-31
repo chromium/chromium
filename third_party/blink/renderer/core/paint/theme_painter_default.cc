@@ -87,7 +87,8 @@ class DirectionFlippingScope {
   ~DirectionFlippingScope();
 
  private:
-  bool needs_flipping_;
+  bool needs_horizontal_flipping_;
+  bool needs_vertical_flipping_;
   const PaintInfo& paint_info_;
 };
 
@@ -95,18 +96,30 @@ DirectionFlippingScope::DirectionFlippingScope(
     const LayoutObject& layout_object,
     const PaintInfo& paint_info,
     const gfx::Rect& rect)
-    : needs_flipping_(!layout_object.StyleRef().IsLeftToRightDirection()),
+    : needs_horizontal_flipping_(
+          IsHorizontalWritingMode(layout_object.StyleRef().GetWritingMode()) &&
+          !layout_object.StyleRef().IsLeftToRightDirection()),
+      needs_vertical_flipping_(
+          !IsHorizontalWritingMode(layout_object.StyleRef().GetWritingMode()) &&
+          RuntimeEnabledFeatures::
+              FormControlsVerticalWritingModeDirectionSupportEnabled() &&
+          layout_object.StyleRef().IsLeftToRightDirection()),
       paint_info_(paint_info) {
-  if (!needs_flipping_)
-    return;
-  paint_info_.context.Save();
-  paint_info_.context.Translate(2 * rect.x() + rect.width(), 0);
-  paint_info_.context.Scale(-1, 1);
+  if (needs_horizontal_flipping_) {
+    paint_info_.context.Save();
+    paint_info_.context.Translate(2 * rect.x() + rect.width(), 0);
+    paint_info_.context.Scale(-1, 1);
+  } else if (needs_vertical_flipping_) {
+    paint_info_.context.Save();
+    paint_info_.context.Translate(0, 2 * rect.y() + rect.height());
+    paint_info_.context.Scale(1, -1);
+  }
 }
 
 DirectionFlippingScope::~DirectionFlippingScope() {
-  if (!needs_flipping_)
+  if (!needs_horizontal_flipping_ && !needs_vertical_flipping_) {
     return;
+  }
   paint_info_.context.Restore();
 }
 

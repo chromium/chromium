@@ -133,6 +133,11 @@ const char kIosBookmarkLastUsedStorageReceivingBookmarks[] =
 // the sign-in promo in bookmark view.
 const char kIosBookmarkPromoAlreadySeen[] = "ios.bookmark.promo_already_seen";
 
+// Preference that hold a boolean indicating if the user has already dismissed
+// the review account settings promo in bookmark view.
+const char kIosBookmarkSettingsPromoAlreadySeen[] =
+    "ios.bookmark.settings_promo_already_seen";
+
 // Integer to represent the number of time the sign-in promo has been displayed
 // in the bookmark view.
 const char kIosBookmarkSigninPromoDisplayedCount[] =
@@ -307,6 +312,11 @@ const char kIosNtpFeedTopSigninPromoDisplayedCount[] =
 // the sign-in promo in the reading list.
 const char kIosReadingListPromoAlreadySeen[] =
     "ios.reading_list.promo_already_seen";
+
+// Preference that hold a boolean indicating if the user has already dismissed
+// the review account settings promo in the reading list.
+const char kIosReadingListSettingsPromoAlreadySeen[] =
+    "ios.reading_list.settings_promo_already_seen";
 
 // Integer to represent the number of time the sign-in promo has been displayed
 // in the reading list view.

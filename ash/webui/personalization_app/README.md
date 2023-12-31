@@ -44,9 +44,9 @@ tests, javascript component browser tests, and javascript full-app browsertests.
   * All mojom calls are faked in javascript the same way as component browser
   tests
 * app browser tests
-  * `personalization_app_browsertest.js`
-  * `browser_tests --gtest_filter=*PersonalizationApp*BrowserTest`
-  * Uses fixture `personalization_app_browsertest_fixture.h`
+  * `personalization_app_test.ts`
+  * `browser_tests --gtest_filter=*PersonalizationAppBrowserTest`
+  * Uses fixture `personalization_app_mocha_test_base.h`
     * wallpaper mocked out at network layer by mocking out wallpaper fetchers
     via `TestWallpaperFetcherDelegate`
     * uses a real theme provider

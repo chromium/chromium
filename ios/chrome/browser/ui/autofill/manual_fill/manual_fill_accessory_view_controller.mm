@@ -159,12 +159,10 @@ static NSTimeInterval MFAnimationDuration = 0.2;
       defaultSymbol
           ? DefaultSymbolWithConfiguration(symbolName, imageConfiguration)
           : CustomSymbolWithConfiguration(symbolName, imageConfiguration);
-  if (IsUIButtonConfigurationEnabled()) {
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
-    button.configuration = buttonConfiguration;
-  }
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
+  button.configuration = buttonConfiguration;
 
   [button setImage:image forState:UIControlStateNormal];
   button.tintColor = IconActiveTintColor();
@@ -209,15 +207,10 @@ static NSTimeInterval MFAnimationDuration = 0.2;
 
   self.passwordButton.hidden = self.isPasswordButtonHidden;
 
-  if (IsUIButtonConfigurationEnabled()) {
-    UIButtonConfiguration* buttonConfiguration =
-        self.passwordButton.configuration;
-    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(0, 2, 0, 2);
-    self.passwordButton.configuration = buttonConfiguration;
-  } else {
-    UIEdgeInsets contentEdgeInsets = UIEdgeInsetsMake(0, 2, 0, 2);
-    SetContentEdgeInsets(self.passwordButton, contentEdgeInsets);
-  }
+  UIButtonConfiguration* buttonConfiguration =
+      self.passwordButton.configuration;
+  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(0, 2, 0, 2);
+  self.passwordButton.configuration = buttonConfiguration;
 
   [icons addObject:self.passwordButton];
 

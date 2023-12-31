@@ -170,16 +170,9 @@ void ShellFileSelectHelper::RunFileChooserEnd() {
   Release();
 }
 
-void ShellFileSelectHelper::FileSelected(const base::FilePath& path,
+void ShellFileSelectHelper::FileSelected(const ui::SelectedFileInfo& file,
                                          int index,
                                          void* params) {
-  FileSelectedWithExtraInfo(ui::SelectedFileInfo(path, path), index, params);
-}
-
-void ShellFileSelectHelper::FileSelectedWithExtraInfo(
-    const ui::SelectedFileInfo& file,
-    int index,
-    void* params) {
   if (dialog_type_ == ui::SelectFileDialog::SELECT_UPLOAD_FOLDER) {
     StartNewEnumeration(file.local_path);
     return;
@@ -188,15 +181,6 @@ void ShellFileSelectHelper::FileSelectedWithExtraInfo(
 }
 
 void ShellFileSelectHelper::MultiFilesSelected(
-    const std::vector<base::FilePath>& files,
-    void* params) {
-  std::vector<ui::SelectedFileInfo> selected_files =
-      ui::FilePathListToSelectedFileInfoList(files);
-
-  MultiFilesSelectedWithExtraInfo(selected_files, params);
-}
-
-void ShellFileSelectHelper::MultiFilesSelectedWithExtraInfo(
     const std::vector<ui::SelectedFileInfo>& files,
     void* params) {
   ConvertToFileChooserFileInfoList(files);

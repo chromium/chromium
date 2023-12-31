@@ -26,6 +26,7 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -72,12 +73,8 @@ class TestSelectFileDialog : public ui::SelectFileDialog {
       return;
     }
 
-    // Put the selected path on the stack so that it stays valid for the
-    // duration of Listener::FileSelected() despite deleting the
-    // SelectFileDialog immediately. This is in line with the default behavior
-    // of SelectFileDialog.
-    base::FilePath selected_path = std::move(selected_path_);
-    listener_->FileSelected(selected_path, 0 /* index */, nullptr /* params */);
+    listener_->FileSelected(ui::SelectedFileInfo(selected_path_), /*index=*/0,
+                            /*params=*/nullptr);
   }
 
   bool IsRunning(gfx::NativeWindow owning_window) const override {
@@ -89,7 +86,7 @@ class TestSelectFileDialog : public ui::SelectFileDialog {
  private:
   ~TestSelectFileDialog() override = default;
 
-  // The simulatd file path selected by the user.
+  // The simulated file path selected by the user.
   base::FilePath selected_path_;
 };
 

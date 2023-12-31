@@ -24,6 +24,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 
 #if BUILDFLAG(IS_WIN)
 #endif
@@ -243,15 +244,15 @@ void PasswordManagerPorter::PresentFileSelector(
 #endif
 }
 
-void PasswordManagerPorter::FileSelected(const base::FilePath& path,
+void PasswordManagerPorter::FileSelected(const ui::SelectedFileInfo& file,
                                          int index,
                                          void* params) {
   switch (reinterpret_cast<uintptr_t>(params)) {
     case PASSWORD_IMPORT:
-      ImportPasswordsFromPath(path);
+      ImportPasswordsFromPath(file.path());
       break;
     case PASSWORD_EXPORT:
-      ExportPasswordsToPath(path);
+      ExportPasswordsToPath(file.path());
       break;
   }
 

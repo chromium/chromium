@@ -1282,20 +1282,21 @@ void LayoutText::InvalidatePaint(const PaintInvalidatorContext& context) const {
 void LayoutText::InvalidateDisplayItemClients(
     PaintInvalidationReason reason) const {
   NOT_DESTROYED();
-  ObjectPaintInvalidator invalidator(*this);
-  invalidator.InvalidateDisplayItemClient(*this, reason);
+  LayoutObject::InvalidateDisplayItemClients(reason);
 
-  if (const auto* selection_client = GetSelectionDisplayItemClient())
-    invalidator.InvalidateDisplayItemClient(*selection_client, reason);
-
-  if (IsInLayoutNGInlineFormattingContext()) {
-#if DCHECK_IS_ON()
-    InlineCursor cursor;
-    for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject())
-      DCHECK_EQ(cursor.Current().GetDisplayItemClient(), this);
-#endif
-    return;
+  if (const auto* selection_client = GetSelectionDisplayItemClient()) {
+    ObjectPaintInvalidator(*this).InvalidateDisplayItemClient(*selection_client,
+                                                              reason);
   }
+
+#if DCHECK_IS_ON()
+  if (IsInLayoutNGInlineFormattingContext()) {
+    InlineCursor cursor;
+    for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
+      DCHECK_EQ(cursor.Current().GetDisplayItemClient(), this);
+    }
+  }
+#endif
 }
 
 const DisplayItemClient* LayoutText::GetSelectionDisplayItemClient() const {

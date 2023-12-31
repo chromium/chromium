@@ -1478,7 +1478,7 @@
     Follow the instructions on your phone to continue setup. Make sure your phone is nearby and Bluetooth is turned on.
   </message>
   <message name="IDS_LOGIN_QUICK_START_ACCOUNT_TRANSFER_STEP_TITLE" desc="A title used on OOBE's Quick Start flow when the user's credentails are being transferred from the Android device to ChromeOS.">
-    Getting Google Account info...
+    Signing in...
   </message>
   <message name="IDS_LOGIN_QUICK_START_ACCOUNT_TRANSFER_STEP_SUBTITLE" desc="A subtitle used on OOBE's Quick Start flow when the user's credentails are being transferred from the Android device to ChromeOS.">
     Transfering Google Account info from your Android phone
@@ -1503,6 +1503,12 @@
   </message>
   <message name="IDS_LOGIN_QUICK_START_BLUETOOTH_DIALOG_ENABLE" desc="A lable on the button of the enable bluetooth dialog. It lets the user allow turning on the bluetooth automatically to continue with the Quick Start flow.">
     Turn on
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_CONFIRM_ACCOUNT_TITLE" desc="A title used on OOBE's Quick Start flow when the user must confirm (on the source device) which Google account they wish to set up on the ChromeOS device.">
+    Confirm your Google Account on your phone
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_CONFIRM_ACCOUNT_SUBTITLE" desc="A subtitle used on OOBE's Quick Start flow when the user must confirm (on the source device) which Google account they wish to set up on the ChromeOS device.">
+    Follow the instructions on your phone
   </message>
   <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_SWIPE_FROM_SHELF_LABEL" desc="The label shown in ChromeOS system shelf above a drag handle UI on the last dialog in the set of screens displayed to the user on the first login to the ChromeOS device. The label informs the user that swiping up from the shelf will start the session.">
     Swipe up to get started

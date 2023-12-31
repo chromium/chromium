@@ -50,7 +50,7 @@ class DownloadFilePicker : public ui::SelectFileDialog::Listener,
   void OnFileSelected(const base::FilePath& virtual_path);
 
   // SelectFileDialog::Listener implementation.
-  void FileSelected(const base::FilePath& path,
+  void FileSelected(const ui::SelectedFileInfo& file,
                     int index,
                     void* params) override;
   void FileSelectionCanceled(void* params) override;

@@ -176,7 +176,7 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
       ++errors_observed_;
       if (errors_observed_ >= errors_expected_) {
         if (waiting_)
-          base::RunLoop::QuitCurrentWhenIdleDeprecated();
+          loop_.QuitWhenIdle();
       }
     }
 
@@ -186,7 +186,7 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
     void WaitForErrors() {
       if (errors_observed_ < errors_expected_) {
         waiting_ = true;
-        content::RunMessageLoop();
+        loop_.Run();
         waiting_ = false;
       }
     }
@@ -195,6 +195,8 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
     size_t errors_observed_;
     size_t errors_expected_;
     bool waiting_;
+
+    base::RunLoop loop_;
 
     raw_ptr<ErrorConsole> error_console_;
   };

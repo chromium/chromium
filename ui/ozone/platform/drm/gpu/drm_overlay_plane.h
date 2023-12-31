@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/overlay_plane_data.h"
@@ -28,11 +29,14 @@ struct DrmOverlayPlane;
 typedef std::vector<DrmOverlayPlane> DrmOverlayPlaneList;
 
 struct DrmOverlayPlane {
-  // Simpler constructor for the primary plane.
-  explicit DrmOverlayPlane(const scoped_refptr<DrmFramebuffer>& buffer,
-                           std::unique_ptr<gfx::GpuFence> gpu_fence);
+  // Simpler constructor for tests.
+  static DrmOverlayPlane TestPlane(
+      const scoped_refptr<DrmFramebuffer>& buffer,
+      gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB(),
+      std::unique_ptr<gfx::GpuFence> gpu_fence = nullptr);
 
   DrmOverlayPlane(const scoped_refptr<DrmFramebuffer>& buffer,
+                  const gfx::ColorSpace& color_space,
                   int z_order,
                   gfx::OverlayTransform plane_transform,
                   const gfx::Rect& damage_rect,
@@ -66,6 +70,7 @@ struct DrmOverlayPlane {
       const std::vector<DrmOverlayPlane>& planes);
 
   scoped_refptr<DrmFramebuffer> buffer;
+  gfx::ColorSpace color_space;
   int z_order = 0;
   gfx::OverlayTransform plane_transform;
   gfx::Rect damage_rect;

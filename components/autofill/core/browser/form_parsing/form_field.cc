@@ -354,9 +354,8 @@ bool FormField::FieldMatchesMatchPatternRef(
     const char* regex_name) {
   for (MatchPatternRef pattern_ref : patterns) {
     MatchingPattern pattern = *pattern_ref;
-    if (!MatchesFormControlType(
-            FormControlTypeToString(field.form_control_type),
-            pattern.match_field_input_types)) {
+    if (!MatchesFormControlType(field.form_control_type,
+                                pattern.form_control_types)) {
       continue;
     }
 
@@ -365,7 +364,7 @@ bool FormField::FieldMatchesMatchPatternRef(
     // negative pattern. If yes, remove it from the attributes that are
     // considered for positive matching.
     MatchParams match_type(pattern.match_field_attributes,
-                           pattern.match_field_input_types);
+                           pattern.form_control_types);
 
     if (!IsEmpty(pattern.negative_pattern)) {
       for (MatchAttribute attribute : pattern.match_field_attributes) {
@@ -414,7 +413,7 @@ bool FormField::ParseFieldSpecificsWithLegacyPattern(
 
   const AutofillField* field = scanner->Cursor();
 
-  if (!MatchesFormControlType(FormControlTypeToString(field->form_control_type),
+  if (!MatchesFormControlType(field->form_control_type,
                               match_type.field_types)) {
     return false;
   }
@@ -439,9 +438,8 @@ bool FormField::ParseFieldSpecificsWithNewPatterns(
   for (MatchPatternRef pattern_ref : patterns) {
     MatchingPattern pattern =
         projection ? (*projection)(*pattern_ref) : *pattern_ref;
-    if (!MatchesFormControlType(
-            FormControlTypeToString(field->form_control_type),
-            pattern.match_field_input_types)) {
+    if (!MatchesFormControlType(field->form_control_type,
+                                pattern.form_control_types)) {
       continue;
     }
 
@@ -450,7 +448,7 @@ bool FormField::ParseFieldSpecificsWithNewPatterns(
     // pattern. If yes, remove it from the attributes that are considered for
     // positive matching.
     MatchParams match_type(pattern.match_field_attributes,
-                           pattern.match_field_input_types);
+                           pattern.form_control_types);
 
     if (!IsEmpty(pattern.negative_pattern)) {
       for (MatchAttribute attribute : pattern.match_field_attributes) {
@@ -540,7 +538,14 @@ bool FormField::ParseEmptyLabel(ParsingContext& context,
                                 raw_ptr<AutofillField>* match) {
   return ParseFieldSpecificsWithLegacyPattern(
       context, scanner, kEmptyLabelRegex,
-      MatchParams({MatchAttribute::kLabel}, kAllMatchFieldTypes), match,
+      MatchParams(
+          {MatchAttribute::kLabel},
+          {FormControlType::kInputEmail, FormControlType::kInputNumber,
+           FormControlType::kInputPassword, FormControlType::kInputSearch,
+           FormControlType::kInputTelephone, FormControlType::kInputText,
+           FormControlType::kSelectOne, FormControlType::kSelectList,
+           FormControlType::kTextArea}),
+      match,
       /*logging=*/{});
 }
 
@@ -684,35 +689,9 @@ void FormField::ParseFormFieldsPass(
 }
 
 // static
-bool FormField::MatchesFormControlType(std::string_view type,
-                                       DenseSet<MatchFieldType> match_type) {
-  if (match_type.contains(MatchFieldType::kText) && type == "text")
-    return true;
-
-  if (match_type.contains(MatchFieldType::kEmail) && type == "email")
-    return true;
-
-  if (match_type.contains(MatchFieldType::kTelephone) && type == "tel")
-    return true;
-
-  if (match_type.contains(MatchFieldType::kSelect) &&
-      (type == "select-one" || type == "selectlist")) {
-    return true;
-  }
-
-  if (match_type.contains(MatchFieldType::kTextArea) && type == "textarea")
-    return true;
-
-  if (match_type.contains(MatchFieldType::kPassword) && type == "password")
-    return true;
-
-  if (match_type.contains(MatchFieldType::kNumber) && type == "number")
-    return true;
-
-  if (match_type.contains(MatchFieldType::kSearch) && type == "search")
-    return true;
-
-  return false;
+bool FormField::MatchesFormControlType(FormControlType type,
+                                       DenseSet<FormControlType> match_type) {
+  return match_type.contains(type);
 }
 
 // static

@@ -520,6 +520,33 @@ const char* AlreadySeenSigninViewPreferenceKey(
   }
 }
 
+// Returns AlreadySeen preference key string for `access_point` and
+// `promo_action`.
+const char* AlreadySeenSigninViewPreferenceKey(
+    signin_metrics::AccessPoint access_point,
+    SigninPromoAction promo_action) {
+  const char* pref_key = nullptr;
+  switch (promo_action) {
+    case SigninPromoAction::kReviewAccountSettings: {
+      if (access_point ==
+          signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER) {
+        pref_key = prefs::kIosBookmarkSettingsPromoAlreadySeen;
+      } else if (access_point ==
+                 signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST) {
+        pref_key = prefs::kIosReadingListSettingsPromoAlreadySeen;
+      }
+      break;
+    }
+    case SigninPromoAction::kSync:
+    case SigninPromoAction::kSigninSheet:
+    case SigninPromoAction::kInstantSignin:
+    case SigninPromoAction::kSigninWithNoDefaultIdentity:
+      pref_key = AlreadySeenSigninViewPreferenceKey(access_point);
+      break;
+  }
+  return pref_key;
+}
+
 // See documentation of displayedIdentity property.
 id<SystemIdentity> GetDisplayedIdentity(
     AuthenticationService* authService,
@@ -589,6 +616,8 @@ id<SystemIdentity> GetDisplayedIdentity(
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
   // Bookmarks
   registry->RegisterBooleanPref(prefs::kIosBookmarkPromoAlreadySeen, false);
+  registry->RegisterBooleanPref(prefs::kIosBookmarkSettingsPromoAlreadySeen,
+                                false);
   registry->RegisterIntegerPref(prefs::kIosBookmarkSigninPromoDisplayedCount,
                                 0);
   // NTP Feed
@@ -597,12 +626,16 @@ id<SystemIdentity> GetDisplayedIdentity(
                                 0);
   // Reading List
   registry->RegisterBooleanPref(prefs::kIosReadingListPromoAlreadySeen, false);
+  registry->RegisterBooleanPref(prefs::kIosReadingListSettingsPromoAlreadySeen,
+                                false);
   registry->RegisterIntegerPref(prefs::kIosReadingListSigninPromoDisplayedCount,
                                 0);
 }
 
 + (BOOL)shouldDisplaySigninPromoViewWithAccessPoint:
             (signin_metrics::AccessPoint)accessPoint
+                                  signinPromoAction:
+                                      (SigninPromoAction)signinPromoAction
                               authenticationService:
                                   (AuthenticationService*)authenticationService
                                         prefService:(PrefService*)prefService {
@@ -627,19 +660,21 @@ id<SystemIdentity> GetDisplayedIdentity(
     return YES;
   }
 
-  // Checks if the user has exceeded the max impression count.
-  const int maxDisplayedCount =
-      accessPoint ==
-              signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO
-          ? FeedSyncPromoAutodismissCount()
-          : kAutomaticSigninPromoViewDismissCount;
-  const char* displayedCountPreferenceKey =
-      DisplayedCountPreferenceKey(accessPoint);
-  const int displayedCount =
-      prefService ? prefService->GetInteger(displayedCountPreferenceKey)
-                  : INT_MAX;
-  if (displayedCount >= maxDisplayedCount) {
-    return NO;
+  if (signinPromoAction != SigninPromoAction::kReviewAccountSettings) {
+    // Checks if the user has exceeded the max impression count.
+    const int maxDisplayedCount =
+        accessPoint ==
+                signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO
+            ? FeedSyncPromoAutodismissCount()
+            : kAutomaticSigninPromoViewDismissCount;
+    const char* displayedCountPreferenceKey =
+        DisplayedCountPreferenceKey(accessPoint);
+    const int displayedCount =
+        prefService ? prefService->GetInteger(displayedCountPreferenceKey)
+                    : INT_MAX;
+    if (displayedCount >= maxDisplayedCount) {
+      return NO;
+    }
   }
 
   // For the top-of-feed promo, the user must have engaged with a feed first.
@@ -653,7 +688,7 @@ id<SystemIdentity> GetDisplayedIdentity(
 
   // Checks if user has already acknowledged or dismissed the promo.
   const char* alreadySeenSigninViewPreferenceKey =
-      AlreadySeenSigninViewPreferenceKey(accessPoint);
+      AlreadySeenSigninViewPreferenceKey(accessPoint, signinPromoAction);
   if (alreadySeenSigninViewPreferenceKey && prefService &&
       prefService->GetBoolean(alreadySeenSigninViewPreferenceKey)) {
     return NO;
@@ -711,7 +746,8 @@ id<SystemIdentity> GetDisplayedIdentity(
 
 - (SigninPromoViewConfigurator*)createConfigurator {
   BOOL hasCloseButton =
-      AlreadySeenSigninViewPreferenceKey(self.accessPoint) != nullptr;
+      AlreadySeenSigninViewPreferenceKey(self.accessPoint,
+                                         self.signinPromoAction) != nullptr;
   if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     if (!self.displayedIdentity) {
       // TODO(crbug.com/1227708): The default identity should already be known
@@ -784,6 +820,18 @@ id<SystemIdentity> GetDisplayedIdentity(
     self.signinPromoViewState = SigninPromoViewState::kUnused;
   }
   self.signinPromoViewVisible = YES;
+  switch (self.signinPromoAction) {
+    case SigninPromoAction::kReviewAccountSettings:
+      // TODO(crbug.com/1459255): Record user impression metrics for this promo
+      // action.
+      // This action should not contribute to the DisplayedCount pref.
+      return;
+    case SigninPromoAction::kSync:
+    case SigninPromoAction::kSigninSheet:
+    case SigninPromoAction::kInstantSignin:
+    case SigninPromoAction::kSigninWithNoDefaultIdentity:
+      break;
+  }
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
       self.accessPoint);
   const char* displayedCountPreferenceKey =
@@ -998,6 +1046,15 @@ id<SystemIdentity> GetDisplayedIdentity(
   if (wasNeverVisible)
     return;
 
+  switch (self.signinPromoAction) {
+    case SigninPromoAction::kReviewAccountSettings:
+      return;
+    case SigninPromoAction::kSync:
+    case SigninPromoAction::kSigninSheet:
+    case SigninPromoAction::kInstantSignin:
+    case SigninPromoAction::kSigninWithNoDefaultIdentity:
+      break;
+  }
   // If the sign-in promo view has been used at least once, it should not be
   // counted as dismissed (even if the sign-in has been canceled).
   const char* displayedCountPreferenceKey =
@@ -1180,18 +1237,32 @@ id<SystemIdentity> GetDisplayedIdentity(
   base::RecordAction(base::UserMetricsAction("Signin_Promo_Close"));
   self.signinPromoViewState = SigninPromoViewState::kClosed;
   const char* alreadySeenSigninViewPreferenceKey =
-      AlreadySeenSigninViewPreferenceKey(self.accessPoint);
+      AlreadySeenSigninViewPreferenceKey(self.accessPoint,
+                                         self.signinPromoAction);
   DCHECK(alreadySeenSigninViewPreferenceKey)
       << base::SysNSStringToUTF8([self description]);
   self.prefService->SetBoolean(alreadySeenSigninViewPreferenceKey, true);
-  const char* displayedCountPreferenceKey =
-      DisplayedCountPreferenceKey(self.accessPoint);
-  if (displayedCountPreferenceKey) {
-    int displayedCount =
-        self.prefService->GetInteger(displayedCountPreferenceKey);
-    RecordImpressionsTilXButtonHistogramForAccessPoint(self.accessPoint,
-                                                       displayedCount);
+
+  switch (self.signinPromoAction) {
+    case SigninPromoAction::kReviewAccountSettings:
+      // This promo action should not contribute to the displayed count of the
+      // sign-in actions.
+      break;
+    case SigninPromoAction::kSync:
+    case SigninPromoAction::kSigninSheet:
+    case SigninPromoAction::kInstantSignin:
+    case SigninPromoAction::kSigninWithNoDefaultIdentity:
+      const char* displayedCountPreferenceKey =
+          DisplayedCountPreferenceKey(self.accessPoint);
+      if (displayedCountPreferenceKey) {
+        int displayedCount =
+            self.prefService->GetInteger(displayedCountPreferenceKey);
+        RecordImpressionsTilXButtonHistogramForAccessPoint(self.accessPoint,
+                                                           displayedCount);
+        break;
+      }
   }
+
   if ([self.consumer respondsToSelector:@selector
                      (signinPromoViewMediatorCloseButtonWasTapped:)]) {
     [self.consumer signinPromoViewMediatorCloseButtonWasTapped:self];

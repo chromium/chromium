@@ -41,6 +41,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -1181,10 +1182,18 @@ bool TabStrip::ShouldDrawStrokes() const {
     return false;
   }
 
+  bool using_system_theme = false;
+  if (auto* profile = controller_->GetProfile()) {
+    auto* theme_service = ThemeServiceFactory::GetForProfile(profile);
+    using_system_theme =
+        theme_service->IsSystemThemeDistinctFromDefaultTheme() &&
+        theme_service->UsingSystemTheme();
+  }
+
   // The Tabstrip in the refreshed style does not meet the contrast ratio
   // requirements listed below but does not have strokes for Tabs or the bottom
   // border.
-  if (features::IsChromeRefresh2023()) {
+  if (features::IsChromeRefresh2023() && !using_system_theme) {
     return false;
   }
 

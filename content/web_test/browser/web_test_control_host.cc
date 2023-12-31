@@ -104,6 +104,7 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -1555,7 +1556,7 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
                       gfx::NativeWindow owning_window,
                       void* params,
                       const GURL* caller) override {
-    listener_->FileSelected(result_, 0, params);
+    listener_->FileSelected(ui::SelectedFileInfo(result_), 0, params);
   }
 
   bool IsRunning(gfx::NativeWindow owning_window) const override {

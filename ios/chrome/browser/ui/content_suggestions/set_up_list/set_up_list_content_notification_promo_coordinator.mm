@@ -71,7 +71,9 @@ using base::UserMetricsAction;
 }
 
 - (void)stop {
-  [self dimissAlertCoordinator];
+  if (self.alertCoordinator) {
+    [self dimissAlertCoordinator];
+  }
   _viewController.presentationController.delegate = nil;
 
   ProceduralBlock completion = nil;
@@ -113,11 +115,14 @@ using base::UserMetricsAction;
       dispatch_async(dispatch_get_main_queue(), ^{
         [weakSelf presentPushNotificationPermissionAlert];
       });
+    } else {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [weakSelf.delegate setUpListContentNotificationPromoDidFinish];
+      });
     }
   }];
 
   _markItemComplete = YES;
-  [self.delegate setUpListContentNotificationPromoDidFinish];
 }
 
 - (void)didTapSecondaryActionButton {
@@ -160,11 +165,13 @@ using base::UserMetricsAction;
                                                    browser:self.browser
                                                      title:alertTitle
                                                    message:alertMessage];
-  [self.alertCoordinator addItemWithTitle:cancelTitle
-                                   action:^{
-                                     [weakSelf dimissAlertCoordinator];
-                                   }
-                                    style:UIAlertActionStyleCancel];
+  [self.alertCoordinator
+      addItemWithTitle:cancelTitle
+                action:^{
+                  [weakSelf
+                          .delegate setUpListContentNotificationPromoDidFinish];
+                }
+                 style:UIAlertActionStyleCancel];
   [self.alertCoordinator
       addItemWithTitle:settingsTitle
                 action:^{
@@ -172,7 +179,8 @@ using base::UserMetricsAction;
                                 openURL:[NSURL URLWithString:settingURL]
                                 options:{}
                       completionHandler:nil];
-                  [weakSelf dimissAlertCoordinator];
+                  [weakSelf
+                          .delegate setUpListContentNotificationPromoDidFinish];
                 }
                  style:UIAlertActionStyleDefault];
   [self.alertCoordinator start];

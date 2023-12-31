@@ -175,7 +175,7 @@ export class SettingsSearchEnginesPageElement extends
         'search-engines-changed', this.enginesChanged_.bind(this));
 
     this.addEventListener(
-        'edit-search-engine',
+        'view-or-edit-search-engine',
         e => this.onEditSearchEngine_(e as SearchEngineEditEvent));
 
     this.addEventListener(
