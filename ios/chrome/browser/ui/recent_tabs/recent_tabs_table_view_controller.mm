@@ -113,7 +113,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeRecentlyClosedHeader = kItemTypeEnumZero,
   ItemTypeRecentlyClosed,
-  ItemTypeOtherDevicesHeader,
   ItemTypeOtherDevicesSyncOff,
   ItemTypeOtherDevicesNoSessions,
   ItemTypeOtherDevicesSignedOut,
@@ -122,7 +121,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSessionHeader,
   ItemTypeSessionTabData,
   ItemTypeShowFullHistory,
-  ItemTypeSigninDisabled,
   ItemTypeSuggestedActionsHeader,
   ItemTypeSuggestedActionSearchOpenTabs,
   ItemTypeSuggestedActionSearchWeb,
@@ -1230,10 +1228,8 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
       itemTypeSelected == ItemTypeSessionTabData) {
     [self loadFaviconForCell:cell indexPath:indexPath];
   }
-  // ItemTypeOtherDevicesNoSessions and ItemTypeSigninDisabled should not be
-  // selectable.
-  if (itemTypeSelected == ItemTypeOtherDevicesNoSessions ||
-      itemTypeSelected == ItemTypeSigninDisabled) {
+  // ItemTypeOtherDevicesNoSessions should not be selectable.
+  if (itemTypeSelected == ItemTypeOtherDevicesNoSessions) {
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
   }
   // Set button action method for ItemTypeOtherDevicesSyncOff.
@@ -1349,14 +1345,12 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     }
 
     case ItemTypeRecentlyClosedHeader:
-    case ItemTypeOtherDevicesHeader:
     case ItemTypeOtherDevicesSyncOff:
     case ItemTypeOtherDevicesNoSessions:
     case ItemTypeOtherDevicesSigninPromo:
     case ItemTypeOtherDevicesSyncInProgressHeader:
     case ItemTypeSessionHeader:
     case ItemTypeShowFullHistory:
-    case ItemTypeSigninDisabled:
       break;
   }
   return nil;
