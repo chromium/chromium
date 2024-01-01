@@ -1886,7 +1886,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.SmartCharging.Messages" enum="SmartChargingMessages"
-    expires_after="2024-02-04">
+    expires_after="2024-07-01">
   <owner>thanhdng@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <summary>Type of messages that are reported by smart charging.</summary>
