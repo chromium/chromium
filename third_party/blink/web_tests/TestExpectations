@@ -1611,7 +1611,6 @@ crbug.com/470482 fast/cookies/local-file-can-set-cookies.html [ Crash Failure Pa
 
 crbug.com/411164 [ Win ] http/tests/security/powerfulFeatureRestrictions/serviceworker-on-insecure-origin.html [ Pass ]
 
-crbug.com/686118 [ Release Win11-arm64 ] http/tests/security/setDomainRelaxationForbiddenForURLScheme.html [ Crash Pass ]
 
 # Flaky tests on Mac after enabling scroll animations in web_tests
 crbug.com/944583 [ Mac ] fast/events/platform-wheelevent-paging-xy-in-scrolling-div.html [ Failure Pass ]
@@ -4373,7 +4372,8 @@ crbug.com/1093445 http/tests/loading/pdf-commit-load-callbacks.html [ Failure Pa
 crbug.com/1093497 http/tests/history/client-redirect-after-push-state.html [ Failure Pass ]
 
 #Sheriff 2020-06-25
-crbug.com/1010170 [ Debug ] media/video-played-reset.html [ Failure Pass ]
+crbug.com/1010170 [ Debug Linux ] media/video-played-reset.html [ Failure Pass ]
+crbug.com/1010170 [ Debug Mac13 ] media/video-played-reset.html [ Failure Pass ]
 crbug.com/1010170 [ Mac11 Release ] media/video-played-reset.html [ Failure Pass ]
 crbug.com/1010170 [ Mac12 Release ] media/video-played-reset.html [ Failure Pass ]
 crbug.com/1010170 [ Release Win ] media/video-played-reset.html [ Failure Pass ]
@@ -6371,7 +6371,6 @@ crbug.com/1448021 fast/webgl/texture-color-profile.html [ Failure Pass ]
 crbug.com/1448043 virtual/compositor-threaded-percent-based-scrolling-dsf-2/virtual/percent-based-scrolling/max-percent-delta-pinch-zoom.html [ Pass Timeout ]
 crbug.com/1448024 external/wpt/scroll-animations/scroll-timelines/scroll-timeline-invalidation.html [ Failure Pass ]
 crbug.com/1447101 media/video-source-none-supported.html [ Failure Pass Timeout ]
-crbug.com/1430215 [ Debug Mac13-arm64 ] external/wpt/dom/events/scrolling/scrollend-event-for-user-scroll.html [ Failure Pass ]
 crbug.com/1434378 virtual/fenced-frame-mparch/http/tests/inspector-protocol/fenced-frame/permissions-policy-fenced-frame.https.js [ Pass Timeout ]
 
 # Sheriff 2023-05-26
