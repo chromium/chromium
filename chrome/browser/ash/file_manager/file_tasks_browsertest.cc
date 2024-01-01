@@ -106,6 +106,7 @@ using blink::features::kFileHandlingAPI;
 using drive::DriveIntegrationService;
 using drive::util::ConnectionStatus;
 using drive::util::SetDriveConnectionStatusForTesting;
+using extensions::api::file_manager_private::TaskResult;
 using network::TestNetworkConnectionTracker;
 using web_app::kMediaAppId;
 
@@ -1352,15 +1353,10 @@ IN_PROC_BROWSER_TEST_F(DriveTest, OfficeFallbackTryAgain) {
   navigation_observer_dialog.StartWatchingNewWebContents();
 
   // Launches the office fallback dialog as the system is offline.
-  ExecuteFileTask(
-      profile(), web_drive_office_task, file_urls, nullptr,
-      base::BindOnce(
-          [](extensions::api::file_manager_private::TaskResult result,
-             std::string error_message) {
-            ASSERT_EQ(
-                result,
-                extensions::api::file_manager_private::TaskResult::kOpened);
-          }));
+  base::test::TestFuture<TaskResult, std::string> executed_future;
+  ExecuteFileTask(profile(), web_drive_office_task, file_urls, nullptr,
+                  executed_future.GetCallback());
+  ASSERT_EQ(executed_future.Get<0>(), TaskResult::kOpened);
 
   // Wait for office fallback dialog to open.
   navigation_observer_dialog.Wait();
@@ -1504,11 +1500,8 @@ IN_PROC_BROWSER_TEST_F(DriveTest, FileNotInDriveOpensSetUpDialog) {
   gfx::NativeWindow modal_parent = LaunchFilesAppAndWait();
 
   // Triggers setup flow.
-  ExecuteFileTask(
-      profile(), web_drive_office_task, file_urls, modal_parent,
-      base::BindOnce(
-          [](extensions::api::file_manager_private::TaskResult result,
-             std::string error_message) {}));
+  ExecuteFileTask(profile(), web_drive_office_task, file_urls, modal_parent,
+                  base::DoNothing());
 
   // Wait for setup flow dialog to open.
   navigation_observer_dialog.Wait();
@@ -1744,15 +1737,10 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackTryAgain) {
   web_app_publisher_->ClearPastLaunches();
 
   // Launches the office fallback dialog as the system is offline.
-  ExecuteFileTask(
-      profile(), open_in_office_task, file_urls, nullptr,
-      base::BindOnce(
-          [](extensions::api::file_manager_private::TaskResult result,
-             std::string error_message) {
-            ASSERT_EQ(
-                result,
-                extensions::api::file_manager_private::TaskResult::kOpened);
-          }));
+  base::test::TestFuture<TaskResult, std::string> executed_future;
+  ExecuteFileTask(profile(), open_in_office_task, file_urls, nullptr,
+                  executed_future.GetCallback());
+  ASSERT_EQ(executed_future.Get<0>(), TaskResult::kOpened);
 
   // Wait for office fallback dialog to open.
   navigation_observer_dialog.Wait();
@@ -1814,15 +1802,10 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackCancel) {
   web_app_publisher_->ClearPastLaunches();
 
   // Launches the office fallback dialog as the system is offline.
-  ExecuteFileTask(
-      profile(), open_in_office_task, file_urls, nullptr,
-      base::BindOnce(
-          [](extensions::api::file_manager_private::TaskResult result,
-             std::string error_message) {
-            ASSERT_EQ(
-                result,
-                extensions::api::file_manager_private::TaskResult::kOpened);
-          }));
+  base::test::TestFuture<TaskResult, std::string> executed_future;
+  ExecuteFileTask(profile(), open_in_office_task, file_urls, nullptr,
+                  executed_future.GetCallback());
+  ASSERT_EQ(executed_future.Get<0>(), TaskResult::kOpened);
 
   // Wait for office fallback dialog to open.
   navigation_observer_dialog.Wait();
@@ -1875,30 +1858,20 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, CannotGetOfficeFallbackChoice) {
 
   // Launches the first office fallback dialog as the system is offline. Let it
   // hang waiting for a choice from the user.
-  ExecuteFileTask(
-      profile(), open_in_office_task, file_urls, nullptr,
-      base::BindOnce(
-          [](extensions::api::file_manager_private::TaskResult result,
-             std::string error_message) {
-            ASSERT_EQ(
-                result,
-                extensions::api::file_manager_private::TaskResult::kOpened);
-          }));
+  base::test::TestFuture<TaskResult, std::string> executed_future;
+  ExecuteFileTask(profile(), open_in_office_task, file_urls, nullptr,
+                  executed_future.GetCallback());
+  ASSERT_EQ(executed_future.Get<0>(), TaskResult::kOpened);
 
   // Wait for the first office fallback dialog to open.
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
   // Fails to launch a second office fallback dialog.
-  ExecuteFileTask(
-      profile(), open_in_office_task, file_urls, nullptr,
-      base::BindOnce(
-          [](extensions::api::file_manager_private::TaskResult result,
-             std::string error_message) {
-            ASSERT_EQ(
-                result,
-                extensions::api::file_manager_private::TaskResult::kFailed);
-          }));
+  base::test::TestFuture<TaskResult, std::string> failed_future;
+  ExecuteFileTask(profile(), open_in_office_task, file_urls, nullptr,
+                  failed_future.GetCallback());
+  ASSERT_EQ(failed_future.Get<0>(), TaskResult::kFailed);
 
   // Both open file requests will log the CloudProvider metric.
   histogram_.ExpectUniqueSample(
