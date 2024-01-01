@@ -122,16 +122,6 @@ class AppServiceProxyLacros : public KeyedService,
       bool allow_placeholder_icon,
       apps::LoadIconCallback callback);
 
-  // DEPRECATED: Use the version without `app_type` instead.
-  // TODO(b/316965167): Remove this.
-  std::unique_ptr<IconLoader::Releaser> LoadIcon(
-      AppType app_type,
-      const std::string& app_id,
-      const IconType& icon_type,
-      int32_t size_hint_in_dip,
-      bool allow_placeholder_icon,
-      apps::LoadIconCallback callback);
-
   // Return the most outer layer of the app icon loader that app service owns.
   IconLoader* app_icon_loader() { return &app_outer_icon_loader_; }
 

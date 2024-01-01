@@ -134,16 +134,6 @@ class AppServiceProxyBase : public KeyedService,
       bool allow_placeholder_icon,
       apps::LoadIconCallback callback);
 
-  // DEPRECATED: Use the version without `app_type` instead.
-  // TODO(b/316965167): Remove this.
-  std::unique_ptr<IconLoader::Releaser> LoadIcon(
-      AppType app_type,
-      const std::string& app_id,
-      const IconType& icon_type,
-      int32_t size_hint_in_dip,
-      bool allow_placeholder_icon,
-      apps::LoadIconCallback callback);
-
   // Get the default icon effects for the app represented by `app_id`,
   // which will be used when calling `LoadIcon()` for that app.
   uint32_t GetIconEffects(const std::string& app_id);
@@ -154,17 +144,6 @@ class AppServiceProxyBase : public KeyedService,
   // from the in memory cache and do not attempt to retry to load the actual
   // icon.
   std::unique_ptr<IconLoader::Releaser> LoadIconWithIconEffects(
-      const std::string& app_id,
-      uint32_t icon_effects,
-      IconType icon_type,
-      int32_t size_hint_in_dip,
-      bool allow_placeholder_icon,
-      LoadIconCallback callback);
-
-  // DEPRECATED: Use the version without `app_type` instead.
-  // TODO(b/316965167): Remove this.
-  std::unique_ptr<IconLoader::Releaser> LoadIconWithIconEffects(
-      AppType app_type,
       const std::string& app_id,
       uint32_t icon_effects,
       IconType icon_type,
