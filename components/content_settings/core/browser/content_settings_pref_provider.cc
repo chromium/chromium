@@ -30,6 +30,7 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_service.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
@@ -113,14 +114,15 @@ PrefProvider::PrefProvider(PrefService* prefs,
 
   DiscardOrMigrateObsoletePreferences();
 
-  pref_change_registrar_.Init(prefs_);
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(prefs_);
 
   WebsiteSettingsRegistry* website_settings =
       WebsiteSettingsRegistry::GetInstance();
   for (const WebsiteSettingsInfo* info : *website_settings) {
     content_settings_prefs_.insert(std::make_pair(
         info->type(), std::make_unique<ContentSettingsPref>(
-                          info->type(), prefs_, &pref_change_registrar_,
+                          info->type(), prefs_, pref_change_registrar_.get(),
                           info->pref_name(), off_the_record_, restore_session,
                           base::BindRepeating(&PrefProvider::Notify,
                                               base::Unretained(this)))));
@@ -368,7 +370,7 @@ void PrefProvider::ShutdownOnUIThread() {
   for (const auto& pref : content_settings_prefs_) {
     pref.second->OnShutdown();
   }
-  pref_change_registrar_.RemoveAll();
+  pref_change_registrar_.reset();
   prefs_ = nullptr;
 }
 

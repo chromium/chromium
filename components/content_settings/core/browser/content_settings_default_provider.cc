@@ -25,6 +25,7 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -156,13 +157,14 @@ DefaultProvider::DefaultProvider(PrefService* prefs,
   if (should_record_metrics)
     RecordHistogramMetrics();
 
-  pref_change_registrar_.Init(prefs_);
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(prefs_);
   PrefChangeRegistrar::NamedChangeCallback callback = base::BindRepeating(
       &DefaultProvider::OnPreferenceChanged, base::Unretained(this));
   WebsiteSettingsRegistry* website_settings =
       WebsiteSettingsRegistry::GetInstance();
   for (const WebsiteSettingsInfo* info : *website_settings)
-    pref_change_registrar_.Add(info->default_value_pref_name(), callback);
+    pref_change_registrar_->Add(info->default_value_pref_name(), callback);
 }
 
 DefaultProvider::~DefaultProvider() = default;
@@ -242,7 +244,7 @@ void DefaultProvider::ShutdownOnUIThread() {
   DCHECK(CalledOnValidThread());
   DCHECK(prefs_);
   RemoveAllObservers();
-  pref_change_registrar_.RemoveAll();
+  pref_change_registrar_.reset();
   prefs_ = nullptr;
 }
 
