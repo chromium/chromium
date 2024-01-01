@@ -2281,6 +2281,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.OCR.Latency.{ImageSize}" units="ms"
+    expires_after="2024-12-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the latency for an OCR request in Screen AI service for an image
+    with {ImageSize} pixels.
+  </summary>
+  <token key="ImageSize">
+    <variant name="Large" summary="[1000x1000, 2000x2000)"/>
+    <variant name="Medium" summary="[500x500, 1000x1000)"/>
+    <variant name="Small" summary="less than 500x500"/>
+    <variant name="XLarge" summary="2000x2000 and more"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.OCR.LinesCount" units="count"
     expires_after="2024-10-01">
   <owner>rhalavati@google.com</owner>
@@ -2297,13 +2313,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the number of lines that OCR recognized for an image sent from PDF.
   </summary>
-</histogram>
-
-<histogram name="Accessibility.ScreenAI.OCR.Time" units="ms"
-    expires_after="2024-10-01">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>Records how long an OCR request in Screen AI service takes.</summary>
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.OCR.Time.PDF" units="ms"
