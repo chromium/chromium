@@ -14,24 +14,21 @@ import '../../components/dialogs/oobe_loading_dialog.js';
 import '../../components/oobe_icons.html.js';
 import '../../components/oobe_slide.js';
 
-import {assert} from '//resources/ash/common/assert.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.js';
+import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 
 import {getTemplate} from './lacros_data_backward_migration.html.js';
 
+enum LacrosDataBackwardMigrationStep {
+  PROGRESS = 'progress',
+  ERROR = 'error',
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {OobeI18nBehaviorInterface}
- * @implements {MultiStepBehaviorInterface}
- */
 const LacrosDataBackwardMigrationScreenElementBase = mixinBehaviors(
     [
       OobeDialogHostBehavior,
@@ -39,40 +36,44 @@ const LacrosDataBackwardMigrationScreenElementBase = mixinBehaviors(
       LoginScreenBehavior,
       MultiStepBehavior,
     ],
-    PolymerElement);
+    PolymerElement) as { new (): PolymerElement
+      & OobeDialogHostBehaviorInterface
+      & OobeI18nBehaviorInterface
+      & LoginScreenBehaviorInterface
+      & MultiStepBehaviorInterface,
+  };
 
-/** @polymer */
-class LacrosDataBackwardMigrationScreen extends
+export class LacrosDataBackwardMigrationScreen extends
     LacrosDataBackwardMigrationScreenElementBase {
   static get is() {
-    return 'lacros-data-backward-migration-element';
+    return 'lacros-data-backward-migration-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
-      progressValue_: {
+      progressValue: {
         type: Number,
         value: 0,
       },
     };
   }
 
-  defaultUIStep() {
-    return 'progress';
+  private progressValue: number;
+
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override defaultUIStep(): string {
+    return LacrosDataBackwardMigrationStep.PROGRESS;
   }
 
-  get UI_STEPS() {
-    return {
-      PROGRESS: 'progress',
-      ERROR: 'error',
-    };
+  override get UI_STEPS() {
+    return LacrosDataBackwardMigrationStep;
   }
 
-  get EXTERNAL_API() {
+  override get EXTERNAL_API(): string[] {
     return [
       'setProgressValue',
       'setFailureStatus',
@@ -82,25 +83,31 @@ class LacrosDataBackwardMigrationScreen extends
   /**
    * Called when the migration failed.
   */
-  setFailureStatus() {
+  setFailureStatus(): void {
     this.setUIStep('error');
   }
 
   /**
    * Called to update the progress of data migration.
-   * @param {number} progress Percentage of data copied so far.
+   * @param progress Percentage of data copied so far.
    */
-  setProgressValue(progress) {
-    this.progressValue_ = progress;
+  setProgressValue(progress: number): void {
+    this.progressValue = progress;
   }
 
-  ready() {
+  override ready() {
     super.ready();
     this.initializeLoginScreen('LacrosDataBackwardMigrationScreen');
   }
 
-  onCancelButtonClicked_() {
+  private onCancelButtonClicked() {
     this.userActed('cancel');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [LacrosDataBackwardMigrationScreen.is]: LacrosDataBackwardMigrationScreen;
   }
 }
 

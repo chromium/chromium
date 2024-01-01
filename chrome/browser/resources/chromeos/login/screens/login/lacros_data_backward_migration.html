@@ -11,12 +11,12 @@ found in the LICENSE file.
     [[i18nDynamic(locale, 'lacrosDataBackwardMigrationTitle')]]
   </h1>
   <paper-progress slot="progress" min="0" max="100"
-      value="[[progressValue_]]">
+      value="[[progressValue]]">
   </paper-progress>
   <div slot="subtitle">
     <p role="status" aria-live="polite">
       [[i18nDynamic(locale, 'lacrosDataBackwardMigrationSubtitle',
-      progressValue_)]]
+      progressValue)]]
     </p>
   </div>
   <div slot="content" class="flex layout vertical center center-justified">
@@ -45,7 +45,7 @@ found in the LICENSE file.
   <!-- Cancel button -->
   <div slot="bottom-buttons" class="layout horizontal end-justified">
     <oobe-text-button id="cancelButton"
-                      on-click="onCancelButtonClicked_"
+                      on-click="onCancelButtonClicked"
                       text-key="lacrosDataBackwardMigrationErrorCancelButton">
     </oobe-text-button>
   </div>
