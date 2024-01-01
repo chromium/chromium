@@ -134,8 +134,8 @@ void NetBiosHostLocator::PacketReceived(const std::vector<uint8_t>& packet,
   ++outstanding_parse_requests_;
   smb_provider_client_->ParseNetBiosPacket(
       packet, transaction_id,
-      base::BindOnce(&NetBiosHostLocator::OnPacketParsed, AsWeakPtr(),
-                     sender_ip));
+      base::BindOnce(&NetBiosHostLocator::OnPacketParsed,
+                     weak_ptr_factory_.GetWeakPtr(), sender_ip));
 }
 
 void NetBiosHostLocator::OnPacketParsed(

@@ -24,7 +24,7 @@ using HostDiscoveryResponse = base::OnceClosure;
 
 // This class is responsible for finding hosts in a network and getting the
 // available shares for each host found.
-class SmbShareFinder : public base::SupportsWeakPtr<SmbShareFinder> {
+class SmbShareFinder final {
  public:
   // The callback that will be passed to GatherSharesInNetwork.
   using GatherSharesInNetworkResponse =
@@ -106,6 +106,7 @@ class SmbShareFinder : public base::SupportsWeakPtr<SmbShareFinder> {
   std::vector<GatherSharesInNetworkResponse> share_callbacks_;
 
   std::vector<SmbUrl> shares_;
+  base::WeakPtrFactory<SmbShareFinder> weak_ptr_factory_{this};
 };
 
 }  // namespace smb_client
