@@ -22,14 +22,13 @@ namespace views {
 class WebView;
 }  // namespace views
 
-// Owns the webview and navigates to a google search URL when requested. Its
+// Owns the webview and navigates to a google search URL when requested. It's
 // owned by the side panel registry.
-class AboutThisSiteSidePanelView
+class AboutThisSiteSidePanelView final
     : public views::FlexLayoutView,
       public content::WebContentsObserver,
       public content::WebContentsDelegate,
-      public AboutThisSiteWebContentsUserData::Delegate,
-      public base::SupportsWeakPtr<AboutThisSiteSidePanelView> {
+      public AboutThisSiteWebContentsUserData::Delegate {
  public:
   explicit AboutThisSiteSidePanelView(
       content::WebContents* parent_web_contents);
@@ -42,6 +41,10 @@ class AboutThisSiteSidePanelView
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
+  base::WeakPtr<AboutThisSiteSidePanelView> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   // Remove parameters that shouldn't be passed to the main browser.
@@ -81,6 +84,7 @@ class AboutThisSiteSidePanelView
   base::WeakPtr<content::WebContents> parent_web_contents_;
   raw_ptr<views::WebView> loading_indicator_web_view_;
   raw_ptr<views::WebView> web_view_;
+  base::WeakPtrFactory<AboutThisSiteSidePanelView> weak_ptr_factory_{this};
 };
 
 #endif // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_ABOUT_THIS_SITE_SIDE_PANEL_VIEW_H_
