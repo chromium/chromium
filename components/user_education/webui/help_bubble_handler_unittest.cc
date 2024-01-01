@@ -550,7 +550,9 @@ TEST_F(HelpBubbleHandlerTest, DestroyHandlerCleansUpElement) {
       kHelpBubbleHandlerTestElementIdentifier, context));
 }
 
-TEST_F(HelpBubbleHandlerTest, DestroyHandlerClosesHelpBubble) {
+// Asserts that closing the HelpBubble handle to a bubble instance destroys
+// the bubble.
+TEST_F(HelpBubbleHandlerTest, DestroyBubbleWrapperClosesHelpBubble) {
   UNCALLED_MOCK_CALLBACK(HelpBubble::ClosedCallback, closed);
 
   handler()->HelpBubbleAnchorVisibilityChanged(
@@ -571,8 +573,7 @@ TEST_F(HelpBubbleHandlerTest, DestroyHandlerClosesHelpBubble) {
   EXPECT_CALL(
       test_handler_->mock(),
       HideHelpBubble(kHelpBubbleHandlerTestElementIdentifier.GetName()));
-  EXPECT_CALL_IN_SCOPE(closed, Run, test_handler_.reset());
-  EXPECT_FALSE(help_bubble->is_open());
+  EXPECT_CALL_IN_SCOPE(closed, Run, help_bubble.reset());
 }
 
 TEST_F(HelpBubbleHandlerTest, HelpBubbleClosedWhenClosedByUserCallsDismiss) {
