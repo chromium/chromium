@@ -72,19 +72,18 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   }
 
   // probes
-  void WillHandlePromise(ExecutionContext*,
-                         ScriptState*,
+  void WillHandlePromise(ScriptState*,
                          bool resolving,
                          const char* class_like,
                          const String& property_like,
                          const String& script_url);
   void Will(const probe::EvaluateScriptBlock&);
   void Did(const probe::EvaluateScriptBlock& probe_data) {
-    PopScriptEntryPoint(probe_data);
+    PopScriptEntryPoint(probe_data.script_state, &probe_data);
   }
   void Will(const probe::ExecuteScript&);
   void Did(const probe::ExecuteScript& probe_data) {
-    PopScriptEntryPoint(probe_data);
+    PopScriptEntryPoint(ScriptState::From(probe_data.v8_context), &probe_data);
   }
   void Will(const probe::RecalculateStyle&);
   void Did(const probe::RecalculateStyle&);
@@ -92,7 +91,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   void Did(const probe::UpdateLayout&);
   void Will(const probe::InvokeCallback&);
   void Did(const probe::InvokeCallback& probe_data) {
-    PopScriptEntryPoint(probe_data);
+    PopScriptEntryPoint(probe_data.script_state, &probe_data);
   }
   void Will(const probe::InvokeEventHandler&);
   void Did(const probe::InvokeEventHandler&);
@@ -119,16 +118,11 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   };
 
   ScriptTimingInfo* PopScriptEntryPoint(
-      ExecutionContext* context,
+      ScriptState* script_state,
       const probe::ProbeBase* probe,
       base::TimeTicks end_time = base::TimeTicks());
 
-  template <typename Probe>
-  ScriptTimingInfo* PopScriptEntryPoint(const Probe& probe) {
-    return PopScriptEntryPoint(probe.context, &probe);
-  }
-  bool PushScriptEntryPoint(ExecutionContext*);
-  bool PopScriptEntryPoint(ExecutionContext*);
+  bool PushScriptEntryPoint(ScriptState*);
 
   void RecordLongAnimationFrameUKMAndTrace(const AnimationFrameTimingInfo&);
   void ApplyTaskDuration(base::TimeDelta task_duration);

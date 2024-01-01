@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
+#include "v8-local-handle.h"
 #include "v8-message.h"
 
 namespace blink {
@@ -160,8 +161,10 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
                                 ScriptTimingInfo::Type::kPromiseResolve) ||
                                (pending_script_info_->type ==
                                 ScriptTimingInfo::Type::kPromiseReject))) {
-    PopScriptEntryPoint(frame ? frame->DomWindow() : nullptr,
-                        /*probe_data*/ nullptr, end_time);
+    if (frame && frame->DomWindow()) {
+      PopScriptEntryPoint(ToScriptStateForMainWorld(frame),
+                          /*probe_data=*/nullptr, end_time);
+    }
   }
   entry_point_depth_ = 0;
   pending_script_info_ = absl::nullopt;
@@ -348,24 +351,28 @@ bool ShouldAllowScriptURL(const WTF::String& url) {
 }  // namespace
 
 bool AnimationFrameTimingMonitor::PushScriptEntryPoint(
-    ExecutionContext* context) {
+    ScriptState* script_state) {
   entry_point_depth_++;
   // This will return true if there's a potential long animation frame, i.e.
   // we're in a visible window, and this is the script entry point rather than
   // a nested script (entry_point_depth is 1).
-  return enabled_ && entry_point_depth_ == 1 && context->IsWindow() &&
+  return enabled_ && entry_point_depth_ == 1 &&
+         script_state->World().IsMainWorld() &&
+         ToExecutionContext(script_state)->IsWindow() &&
          client_.ShouldReportLongAnimationFrameTiming();
 }
 
 ScriptTimingInfo* AnimationFrameTimingMonitor::PopScriptEntryPoint(
-    ExecutionContext* context,
+    ScriptState* script_state,
     const probe::ProbeBase* probe,
     base::TimeTicks end_time) {
+  CHECK(script_state);
+  ExecutionContext* context = ToExecutionContext(script_state);
   if (!entry_point_depth_) {
     return nullptr;
   }
   entry_point_depth_--;
-  if (entry_point_depth_ > 0 || !pending_script_info_ || !context) {
+  if (entry_point_depth_ > 0 || !pending_script_info_) {
     return nullptr;
   }
 
@@ -412,7 +419,6 @@ ScriptTimingInfo* AnimationFrameTimingMonitor::PopScriptEntryPoint(
 }
 
 void AnimationFrameTimingMonitor::WillHandlePromise(
-    ExecutionContext* context,
     ScriptState* script_state,
     bool resolving,
     const char* class_like_name,
@@ -424,15 +430,14 @@ void AnimationFrameTimingMonitor::WillHandlePromise(
     return;
   }
 
-  if (!PushScriptEntryPoint(context)) {
+  if (!PushScriptEntryPoint(script_state)) {
     return;
   }
 
   // Make sure we only monitor top-level promise resolvers that are outside the
   // update-the-rendering phase (promise resolvers directly handled from a
   // posted task).
-  if (!script_state->World().IsMainWorld() ||
-      state_ != State::kProcessingTask) {
+  if (state_ != State::kProcessingTask) {
     return;
   }
 
@@ -449,12 +454,12 @@ void AnimationFrameTimingMonitor::WillHandlePromise(
 
 void AnimationFrameTimingMonitor::Will(
     const probe::EvaluateScriptBlock& probe_data) {
-  if (!PushScriptEntryPoint(probe_data.context)) {
+  if (!PushScriptEntryPoint(probe_data.script_state)) {
     return;
   }
   KURL url(probe_data.source_url);
   if (url.IsEmpty() || url.IsNull()) {
-    url = probe_data.context->Url();
+    url = ToExecutionContext(probe_data.script_state)->Url();
   }
 
   pending_script_info_ = PendingScriptInfo{
@@ -472,7 +477,7 @@ void AnimationFrameTimingMonitor::Will(const probe::ExecuteScript& probe_data) {
   // In some cases we get here without a EvaluateScriptBlock, e.g. when
   // executing an imported module script.
   // This is true for both imported and element-created scripts.
-  if (PushScriptEntryPoint(probe_data.context)) {
+  if (PushScriptEntryPoint(ScriptState::From(probe_data.v8_context))) {
     pending_script_info_ =
         PendingScriptInfo{.type = ScriptTimingInfo::Type::kModuleScript,
                           .start_time = probe_data.CaptureStartTime(),
@@ -526,55 +531,33 @@ ScriptTimingInfo::ScriptSourceLocation CaptureScriptSourceLocation(
       .start_position = function->GetScriptStartPosition()};
 }
 
-bool IsCallbackFromMainWorld(v8::MaybeLocal<v8::Value> callback) {
-  v8::Local<v8::Value> function;
-  v8::Local<v8::Context> context;
-  return callback.ToLocal(&function) && function->IsFunction() &&
-         function.As<v8::Function>()->GetCreationContext().ToLocal(&context) &&
-         ScriptState::From(context)->World().IsMainWorld();
-}
-
 }  // namespace
 
 void AnimationFrameTimingMonitor::Will(
     const probe::InvokeCallback& probe_data) {
-  if (!PushScriptEntryPoint(probe_data.context)) {
-    return;
-  }
-  if ((probe_data.callback &&
-       probe_data.callback->GetWorld().IsIsolatedWorld()) ||
-      (!probe_data.function.IsEmpty() &&
-       !IsCallbackFromMainWorld(probe_data.function))) {
+  if (!PushScriptEntryPoint(probe_data.script_state)) {
     return;
   }
 
-  v8::HandleScope handle_scope(probe_data.context->GetIsolate());
+  ScriptState::Scope scope(probe_data.script_state);
   pending_script_info_ = PendingScriptInfo{
       .type = ScriptTimingInfo::Type::kUserCallback,
       .start_time = probe_data.CaptureStartTime(),
       .execution_start_time = probe_data.CaptureStartTime(),
       .property_like_name = probe_data.name,
       .source_location = CaptureScriptSourceLocation(
-          probe_data.context->GetIsolate(),
+          probe_data.script_state->GetIsolate(),
           probe_data.callback ? probe_data.callback->CallbackObject()
                               : probe_data.function)};
 }
 
 void AnimationFrameTimingMonitor::Will(
     const probe::InvokeEventHandler& probe_data) {
-  if (!PushScriptEntryPoint(probe_data.context)) {
+  ScriptState::Scope scope(probe_data.script_state);
+  if (!PushScriptEntryPoint(probe_data.script_state)) {
     return;
   }
 
-  v8::HandleScope handle_scope(probe_data.context->GetIsolate());
-  if (!probe_data.context->IsWindow() ||
-      !client_.ShouldReportLongAnimationFrameTiming() || !probe_data.listener ||
-      !probe_data.listener->IsJSBasedEventListener() ||
-      !IsCallbackFromMainWorld(
-          To<JSBasedEventListener>(probe_data.listener)
-              ->GetListenerObject(*probe_data.event_target))) {
-    return;
-  }
   pending_script_info_ =
       PendingScriptInfo{.type = ScriptTimingInfo::Type::kEventHandler,
                         .start_time = probe_data.CaptureStartTime(),
@@ -588,13 +571,15 @@ void AnimationFrameTimingMonitor::Did(
   }
   did_see_ui_events_ = true;
 
-  ScriptTimingInfo* info = PopScriptEntryPoint(probe_data);
+  ScriptTimingInfo* info =
+      PopScriptEntryPoint(probe_data.script_state, &probe_data);
   if (!info) {
     return;
   }
 
   info->SetPropertyLikeName(probe_data.event->type());
-  if (Node* node = probe_data.event_target->ToNode()) {
+  EventTarget* target = probe_data.event->currentTarget();
+  if (Node* node = target->ToNode()) {
     StringBuilder builder;
     builder.Append(node->nodeName());
     if (Element* element = DynamicTo<Element>(node)) {
@@ -610,18 +595,13 @@ void AnimationFrameTimingMonitor::Did(
 
     info->SetClassLikeName(builder.ToAtomicString());
   } else {
-    info->SetClassLikeName(probe_data.event_target->InterfaceName());
+    info->SetClassLikeName(target->InterfaceName());
   }
 
-  if (!probe_data.listener->IsJSBasedEventListener()) {
-    return;
-  }
-
-  v8::HandleScope handle_scope(probe_data.context->GetIsolate());
+  v8::HandleScope scope(probe_data.script_state->GetIsolate());
   info->SetSourceLocation(CaptureScriptSourceLocation(
-      probe_data.context->GetIsolate(),
-      To<JSBasedEventListener>(probe_data.listener)
-          ->GetListenerObject(*probe_data.event_target)));
+      probe_data.script_state->GetIsolate(),
+      probe_data.listener->GetListenerObject(*target)));
 }
 
 void AnimationFrameTimingMonitor::Will(

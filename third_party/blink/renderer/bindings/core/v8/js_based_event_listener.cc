@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 
@@ -89,6 +90,7 @@ void JSBasedEventListener::Invoke(
   if (!script_state_of_listener->ContextIsValid())
     return;  // Silently fail.
 
+  probe::InvokeEventHandler probe_scope(script_state_of_listener, event, this);
   ScriptState::Scope listener_script_state_scope(script_state_of_listener);
 
   // https://dom.spec.whatwg.org/#firing-events

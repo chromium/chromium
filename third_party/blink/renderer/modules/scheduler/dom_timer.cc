@@ -361,7 +361,7 @@ void DOMTimer::Fired() {
   probe::UserCallback probe(context, is_interval ? "setInterval" : "setTimeout",
                             g_null_atom, true);
   probe::InvokeCallback invoke_probe(
-      context,
+      action_->GetScriptState(),
       is_interval ? "TimerHandler:setInterval" : "TimerHandler:setTimeout",
       action_->CallbackFunction());
   probe::AsyncTask async_task(context, &async_task_context_,
