@@ -352,6 +352,18 @@ chromium-metrics-reviews@google.com.
   <summary>Result of a detachable base RW firmware update.</summary>
 </histogram>
 
+<histogram name="Platform.DeviceManagement.InstallAttributesRestoreResult"
+    enum="InstallAttributesRestoreResult" expires_after="2024-12-28">
+  <owner>yich@google.com</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
+  <summary>
+    Each sample is the result of the install_attributes restoration process.
+    This is logged when lockbox-cache tries to restore the missing
+    install_attributes. See cryptohome::RestoreResult in
+    src/platform2/cryptohome/lockbox-cache.cc for more context.
+  </summary>
+</histogram>
+
 <histogram name="Platform.DeviceManagement.InstallAttributesStatus"
     enum="InstallAttributesStatus" expires_after="2024-11-09">
   <owner>sadmansakib@google.com</owner>

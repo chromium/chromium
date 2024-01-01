@@ -629,6 +629,13 @@ metrics consent we also won't be able to send UMA metrics. -->
   </int>
 </enum>
 
+<enum name="InstallAttributesRestoreResult">
+  <int value="0" label="No device policy"/>
+  <int value="1" label="Success with empty"/>
+  <int value="2" label="Success with enterprise"/>
+  <int value="3" label="Failed"/>
+</enum>
+
 <enum name="InstallAttributesStatus">
   <int value="0" label="Unknown"/>
   <int value="1" label="TPM not owned"/>
