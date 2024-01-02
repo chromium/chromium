@@ -36,6 +36,7 @@ export const QuickStartUIState = {
   CONNECTED_TO_WIFI: 'connected_to_wifi',
   CONFIRM_GOOGLE_ACCOUNT: 'confirm_google_account',
   SIGNING_IN: 'signing_in',
+  SETUP_COMPLETE: 'setup_complete',
 };
 
 /**
@@ -125,6 +126,18 @@ class QuickStartScreen extends QuickStartScreenBase {
     });
   }
 
+  getSetupCompleteTitle(locale) {
+    return this.i18nAdvanced('quickStartSetupCompleteTitle', {
+      substitutions: [loadTimeData.getString('deviceType')],
+    });
+  }
+
+  getSetupCompleteSubtitle(locale, email) {
+    return this.i18nAdvanced('quickStartSetupCompleteSubtitle', {
+      substitutions: [this.userEmail_],
+    });
+  }
+
   /** @override */
   ready() {
     super.ready();
@@ -184,6 +197,10 @@ class QuickStartScreen extends QuickStartScreenBase {
     this.canCancelSignin_ = false;
   }
 
+  showSetupCompleteStep() {
+    this.setUIStep(QuickStartUIState.SETUP_COMPLETE);
+  }
+
   setUserEmail(email) {
     this.userEmail_ = email;
   }
@@ -227,6 +244,10 @@ class QuickStartScreen extends QuickStartScreenBase {
 
   onCancelClicked_() {
     this.userActed('cancel');
+  }
+
+  onNextClicked_() {
+    this.userActed('next');
   }
 
   isEq_(a, b) {

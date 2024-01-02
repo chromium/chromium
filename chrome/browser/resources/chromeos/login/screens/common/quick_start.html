@@ -252,3 +252,24 @@ found in the LICENSE file.
     </oobe-text-button>
   </div>
 </oobe-adaptive-dialog>
+<!-- SETUP COMPLETE STEP -->
+<oobe-adaptive-dialog for-step="setup_complete">
+  <iron-icon slot="icon" icon="oobe-32:googleg">
+  </iron-icon>
+  <h1 slot="title">
+    <div inner-h-t-m-l="[[getSetupCompleteTitle(locale)]]">
+    </div>
+  </h1>
+  <div slot="subtitle">
+    <div inner-h-t-m-l="[[getSetupCompleteSubtitle(locale, userEmail_)]]">
+    </div>
+  </div>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <iron-icon icon="oobe-illos:quickstart-complete" class="illustration-jelly">
+    </iron-icon>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-next-button id="nextButton" on-click="onNextClicked_">
+    </oobe-next-button>
+  </div>
+</oobe-adaptive-dialog>

@@ -50,6 +50,7 @@ class QuickStartController
     CONNECTED,
     // TODO(b:283965994) - Replace with more appropriate state.
     CONTINUING_AFTER_ENROLLMENT_CHECKS,
+    SETUP_COMPLETE,
   };
 
   enum class AbortFlowReason {
@@ -74,6 +75,7 @@ class QuickStartController
       SIGNING_IN,
       // Same state as 'SIGNING_IN' but without the 'Cancel' button.
       CREATING_ACCOUNT,
+      SETUP_COMPLETE,
       // Exits the screen.
       EXIT_SCREEN,
     };

@@ -338,6 +338,13 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
     CHECK(entry_point.has_value()) << "Unknown entry point!";
     exit_point_ = entry_point_ = entry_point;
   } else {
+    // If the setup has finished, transitioning to QuickStart should
+    // show the last step of the flow.
+    if (controller_state_ == ControllerState::SETUP_COMPLETE) {
+      UpdateUiState(UiState::SETUP_COMPLETE);
+      return;
+    }
+
     // The flow must be resuming after reaching the GaiaInfoScreen or
     // GaiaScreen. Note the the GaiaInfoScreen/GaiaScreen is technically never
     // shown when it switches to QuickStart, so |previous_screen_| is one of the

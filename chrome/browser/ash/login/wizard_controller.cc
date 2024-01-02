@@ -1956,6 +1956,11 @@ void WizardController::OnQuickStartScreenExit(QuickStartScreen::Result result) {
     case QuickStartScreen::Result::CANCEL_AND_RETURN_TO_SIGNIN:
       AdvanceToScreen(GaiaView::kScreenId);
       return;
+    // Last step of the QuickStart flow. This is triggered immediately
+    // after the 'RecoveryEligibility' screen and continues OOBE into
+    // the TermsOfServiceScreen
+    case QuickStartScreen::Result::SETUP_COMPLETE_NEXT_BUTTON:
+      AdvanceToScreen(TermsOfServiceScreenView::kScreenId);
   }
 }
 
@@ -2239,7 +2244,14 @@ void WizardController::OnRecoveryEligibilityScreenExit(
     RecoveryEligibilityScreen::Result result) {
   OnScreenExit(RecoveryEligibilityView::kScreenId,
                RecoveryEligibilityScreen::GetResultString(result));
-  AdvanceToScreen(TermsOfServiceScreenView::kScreenId);
+  // QuickStart's 'Setup Complete' screen step is the first screen
+  // that a user sees after logging in. It just shows a 'Next' button
+  // which exits the screen into the TermsOfServiceScreen
+  if (wizard_context_->quick_start_enabled && wizard_context_->quick_start_setup_ongoing) {
+    AdvanceToScreen(QuickStartView::kScreenId);
+  } else {
+    AdvanceToScreen(TermsOfServiceScreenView::kScreenId);
+  }
 }
 
 void WizardController::OnTermsOfServiceScreenExit(

@@ -1841,7 +1841,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       id: 'quick-start',
       kind: ScreenKind.NORMAL,
       handledSteps:
-          'verification,connecting_to_wifi,signing_in',
+          'verification,connecting_to_wifi,signing_in,setup_complete',
       states: [
         {
           id: 'PinVerification',
@@ -1876,6 +1876,13 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
             screen.setUserEmail('test_email@gmail.com');
             screen.setUserFullName('Test User');
             screen.setUserAvatarUrl('https://lh3.googleusercontent.com/a/ACg8ocISjvU-p0Gz_kIBamP3jit_Y8PrQVU4AbIvQrUEZ04d=s96-c');
+          },
+        },
+        {
+          id: 'SetupComplete',
+          trigger: (screen) => {
+            screen.setUserEmail('test_email@gmail.com');
+            screen.showSetupCompleteStep();
           },
         },
       ],

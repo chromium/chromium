@@ -1483,6 +1483,12 @@
   <message name="IDS_LOGIN_QUICK_START_ACCOUNT_TRANSFER_STEP_SUBTITLE" desc="A subtitle used on OOBE's Quick Start flow when the user's credentails are being transferred from the Android device to ChromeOS.">
     Transfering Google Account info from your Android phone
   </message>
+  <message name="IDS_LOGIN_QUICK_START_SETUP_COMPLETE_STEP_TITLE" desc="A title used on OOBE's Quick Start flow screen notifying the user that they have completed the setup using their Android phone.">
+    Android quick setup is done. Continue setup on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_SETUP_COMPLETE_STEP_SUBTITLE" desc="A subtitle used on OOBE's Quick Start flow screen notifying the user that they have completed the setup using their Android phone.">
+    You connected to Wi-Fi and signed in to <ph name="USER_EMAIL">$1<ex>test@gmail.com</ex></ph> using your Android phone
+  </message>
   <message name="IDS_LOGIN_QUICK_START_SETUP_FROM_SIGNIN_SCREEN_TITLE" desc="A title used on OOBE's Quick Start screen for signing-in into their Chromebook using an Android device prompting the user to scan a QR code.">
     Sign in with your Android phone
   </message>
