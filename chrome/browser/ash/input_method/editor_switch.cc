@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
+#include "base/json/json_reader.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_identity_utils.h"
@@ -28,21 +29,6 @@ constexpr std::string_view kCountryAllowlist[] = {"allowed_country"};
 constexpr ui::TextInputType kTextInputTypeAllowlist[] = {
     ui::TEXT_INPUT_TYPE_CONTENT_EDITABLE, ui::TEXT_INPUT_TYPE_TEXT,
     ui::TEXT_INPUT_TYPE_TEXT_AREA};
-
-constexpr std::string_view kInputMethodEngineAllowlist[] = {
-    "xkb:gb::eng",
-    "xkb:gb:extd:eng",          // UK
-    "xkb:gb:dvorak:eng",        // UK Extended
-    "xkb:us:altgr-intl:eng",    // US Extended
-    "xkb:us:colemak:eng",       // US Colemak
-    "xkb:us:dvorak:eng",        // US Dvorak
-    "xkb:us:dvp:eng",           // US Programmer Dvorak
-    "xkb:us:intl_pc:eng",       // US Intl (PC)
-    "xkb:us:intl:eng",          // US Intl
-    "xkb:us:workman-intl:eng",  // US Workman Intl
-    "xkb:us:workman:eng",       // US Workman
-    "xkb:us::eng",              // US
-};
 
 constexpr AppType kAppTypeDenylist[] = {
     AppType::ARC_APP,
@@ -79,6 +65,10 @@ const char* kNonWorkspaceAppIdDenylist[] = {
 
 constexpr int kTextLengthMaxLimit = 10000;
 
+constexpr char kExperimentName[] = "OrcaEnabled";
+
+constexpr char kImeAllowlistLabel[] = "ime_allowlist";
+
 bool IsGoogleInternalAccountEmailFromProfile(Profile* profile) {
   absl::optional<std::string> user_email =
       GetSignedInUserEmailFromProfile(profile);
@@ -95,8 +85,14 @@ bool IsInputTypeAllowed(ui::TextInputType type) {
   return base::Contains(kTextInputTypeAllowlist, type);
 }
 
-bool IsInputMethodEngineAllowed(std::string_view engine_id) {
-  return base::Contains(kInputMethodEngineAllowlist, engine_id);
+bool IsInputMethodEngineAllowed(const std::vector<std::string>& allowlist,
+                                std::string_view engine_id) {
+  for (auto& ime : allowlist) {
+    if (engine_id == ime) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool IsAppTypeAllowed(AppType app_type) {
@@ -134,10 +130,43 @@ bool IsAppAllowed(Profile* profile, std::string_view app_id) {
          !base::Contains(kWorkspaceAppIdDenylist, app_id);
 }
 
+std::vector<std::string> GetAllowedInputMethodEngines() {
+  // Default English IMEs.
+  std::vector<std::string> allowed_imes = {
+      "xkb:gb::eng",
+      "xkb:gb:extd:eng",          // UK
+      "xkb:gb:dvorak:eng",        // UK Extended
+      "xkb:us:altgr-intl:eng",    // US Extended
+      "xkb:us:colemak:eng",       // US Colemak
+      "xkb:us:dvorak:eng",        // US Dvorak
+      "xkb:us:dvp:eng",           // US Programmer Dvorak
+      "xkb:us:intl_pc:eng",       // US Intl (PC)
+      "xkb:us:intl:eng",          // US Intl
+      "xkb:us:workman-intl:eng",  // US Workman Intl
+      "xkb:us:workman:eng",       // US Workman
+      "xkb:us::eng",              // US
+  };
+
+  // Loads allowed imes from field trials
+  if (auto parsed = base::JSONReader::Read(
+          base::GetFieldTrialParamValue(kExperimentName, kImeAllowlistLabel));
+      parsed.has_value() && parsed->is_list()) {
+    for (const auto& item : parsed->GetList()) {
+      if (item.is_string()) {
+        allowed_imes.push_back(item.GetString());
+      }
+    }
+  }
+
+  return allowed_imes;
+}
+
 }  // namespace
 
 EditorSwitch::EditorSwitch(Profile* profile, std::string_view country_code)
-    : profile_(profile), country_code_(country_code) {}
+    : profile_(profile),
+      country_code_(country_code),
+      ime_allowlist_(GetAllowedInputMethodEngines()) {}
 
 EditorSwitch::~EditorSwitch() = default;
 
@@ -176,7 +205,8 @@ bool EditorSwitch::CanBeTriggered() const {
   ConsentStatus current_consent_status = GetConsentStatusFromInteger(
       profile_->GetPrefs()->GetInteger(prefs::kOrcaConsentStatus));
 
-  return IsAllowedForUse() && IsInputMethodEngineAllowed(active_engine_id_) &&
+  return IsAllowedForUse() &&
+         IsInputMethodEngineAllowed(ime_allowlist_, active_engine_id_) &&
          IsInputTypeAllowed(input_type_) && IsAppTypeAllowed(app_type_) &&
          IsTriggerableFromConsentStatus(current_consent_status) &&
          IsUrlAllowed(profile_, url_) && IsAppAllowed(profile_, app_id_) &&

@@ -60,6 +60,8 @@ class EditorSwitch : public EditorConsentStore::Delegate {
   GURL url_;
   bool tablet_mode_enabled_ = false;
   size_t text_length_ = 0;
+
+  const std::vector<std::string> ime_allowlist_;
 };
 
 }  // namespace ash::input_method
