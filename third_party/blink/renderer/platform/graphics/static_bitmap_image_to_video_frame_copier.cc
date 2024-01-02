@@ -99,8 +99,9 @@ void StaticBitmapImageToVideoFrameCopier::Convert(
 
   const bool supports_yuv_readback =
       context_provider->GetCapabilities().supports_yuv_readback;
-  // If supports_yuv_rgb_conversion is true, supports_yuv_readback must also be.
-  CHECK(!context_provider->GetCapabilities().supports_yuv_rgb_conversion ||
+  // If supports_rgb_to_yuv_conversion is true, supports_yuv_readback must also
+  // be.
+  CHECK(!context_provider->GetCapabilities().supports_rgb_to_yuv_conversion ||
         supports_yuv_readback);
 
   // Try async reading if image is texture backed.

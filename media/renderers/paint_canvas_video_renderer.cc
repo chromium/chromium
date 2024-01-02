@@ -1646,7 +1646,7 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
   // * The Video is not MultiplanarSI and the codepath to handle legacy
   //   multiplanar via ConvertYUVAMailboxesToTexture() is not enabled.
   bool yuv_rgb_conversion_not_supported =
-      !destination_gl_capabilities.supports_yuv_rgb_conversion;
+      !destination_gl_capabilities.supports_yuv_to_rgb_conversion;
   bool video_frame_is_legacy_mailbox =
       video_frame->HasTextures() &&
       !video_frame->mailbox_holder(0).mailbox.IsSharedImage();

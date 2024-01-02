@@ -133,7 +133,7 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrame(
 
   if (raster_context_provider->GrContext() &&
       !(raster_context_provider->ContextCapabilities()
-            .supports_yuv_rgb_conversion &&
+            .supports_yuv_to_rgb_conversion &&
         dest_mailbox_holder.mailbox.IsSharedImage())) {
     return ConvertFromVideoFrameYUVWithGrContext(
         video_frame, raster_context_provider, dest_mailbox_holder,
