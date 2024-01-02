@@ -1500,10 +1500,14 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
             // Allow the user to drag the selected tab out of the tab toolbar.
             if (clickedTab != null) {
+                boolean res = false;
                 if (TabUiFeatureUtilities.isTabDragEnabled()) {
                     // The subsequent drag events will trigger reorder mode.
-                    allowMovingTabOutOfStripLayout(clickedTab, new PointF(x, y));
-                } else {
+                    res = allowMovingTabOutOfStripLayout(clickedTab, new PointF(x, y));
+                }
+
+                // If tab drag did not succeed, fallback to reorder within strip.
+                if (!res) {
                     startReorderMode(time, x, x);
                 }
             } else {
@@ -3502,13 +3506,14 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     @VisibleForTesting
-    void allowMovingTabOutOfStripLayout(
+    boolean allowMovingTabOutOfStripLayout(
             @NonNull StripLayoutTab clickedTab, @NonNull PointF dragStartPointF) {
-        if (!TabUiFeatureUtilities.isTabDragEnabled()) return;
+        if (!TabUiFeatureUtilities.isTabDragEnabled()) return false;
         // In addition to reordering, one can drag and drop the tab beyond the strip layout view.
         Tab tabBeingDragged = getTabById(clickedTab.getId());
+        boolean dragStarted = false;
         if (tabBeingDragged != null) {
-            boolean dragStarted =
+            dragStarted =
                     mTabDragSource.startTabDragAction(
                             mToolbarContainerView, tabBeingDragged, dragStartPointF);
             if (dragStarted) {
@@ -3517,6 +3522,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 mLastOffsetX = 0.f;
             }
         }
+        return dragStarted;
     }
 
     void setDraggedTabOffStripForTesting(boolean draggedTabOffStrip) {

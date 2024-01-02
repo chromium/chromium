@@ -207,17 +207,27 @@ public class MultiWindowUtils implements ActivityStateListener {
         // Not supported on automotive devices.
         if (BuildInfo.getInstance().isAutomotive) return false;
 
-        boolean hasAtMostOneTab = tabModelSelector.getTotalTabCount() <= 1;
-        boolean partnerHomepageEnabled =
-                PartnerBrowserCustomizations.getInstance().isHomepageProviderAvailableAndEnabled();
         // Do not allow move for last tab when partner homepage enabled.
-        if (hasAtMostOneTab && partnerHomepageEnabled) return false;
+        if (hasAtMostOneTabWithHomepageEnabled(tabModelSelector)) {
+            return false;
+        }
         if (instanceSwitcherEnabled() && isMultiInstanceApi31Enabled()) {
             // Moving tabs should be possible to any other instance.
             return getInstanceCount() > 1;
         } else {
             return isOpenInOtherWindowSupported(activity);
         }
+    }
+
+    /**
+     * @param tabModelSelector Used to pull total tab count. Returns whether last tab with partner
+     *     homepage enabled.
+     */
+    public boolean hasAtMostOneTabWithHomepageEnabled(TabModelSelector tabModelSelector) {
+        boolean hasAtMostOneTab = tabModelSelector.getTotalTabCount() <= 1;
+        boolean partnerHomepageEnabled =
+                PartnerBrowserCustomizations.getInstance().isHomepageProviderAvailableAndEnabled();
+        return hasAtMostOneTab && partnerHomepageEnabled;
     }
 
     /**

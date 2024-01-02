@@ -137,8 +137,8 @@ public class TabDragSource implements View.OnDragListener {
                         != MultiWindowUtils.INVALID_INSTANCE_ID) {
             return false;
         }
-        if (!MultiWindowUtils.getInstance()
-                .isMoveToOtherWindowSupported(getActivity(), mTabModelSelector)) {
+        // Do not allow move for last tab when partner homepage enabled.
+        if (MultiWindowUtils.getInstance().hasAtMostOneTabWithHomepageEnabled(mTabModelSelector)) {
             return false;
         }
 

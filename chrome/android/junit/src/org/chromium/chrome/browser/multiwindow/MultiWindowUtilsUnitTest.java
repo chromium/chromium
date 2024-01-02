@@ -249,6 +249,43 @@ public class MultiWindowUtilsUnitTest {
     }
 
     @Test
+    public void testHasAtMostOneTabWithHomepageEnabled_ReturnsTrue() {
+        PartnerBrowserCustomizations partnerBrowserCustomizations =
+                mock(PartnerBrowserCustomizations.class);
+        when(partnerBrowserCustomizations.isHomepageProviderAvailableAndEnabled()).thenReturn(true);
+        PartnerBrowserCustomizations.setInstanceForTesting(partnerBrowserCustomizations);
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(1);
+        assertTrue(
+                "Should return true for last tab with partner homepage.",
+                mUtils.hasAtMostOneTabWithHomepageEnabled(mTabModelSelector));
+    }
+
+    @Test
+    public void testHasAtMostOneTabWithHomepageEnabled_WithMoreThanOneTab_ReturnsFalse() {
+        PartnerBrowserCustomizations partnerBrowserCustomizations =
+                mock(PartnerBrowserCustomizations.class);
+        when(partnerBrowserCustomizations.isHomepageProviderAvailableAndEnabled()).thenReturn(true);
+        PartnerBrowserCustomizations.setInstanceForTesting(partnerBrowserCustomizations);
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(2);
+        assertFalse(
+                "Should return false for multiple tabs.",
+                mUtils.hasAtMostOneTabWithHomepageEnabled(mTabModelSelector));
+    }
+
+    @Test
+    public void testHasAtMostOneTabWithHomepageEnabled_WithHomepageDisabled_ReturnsFalse() {
+        PartnerBrowserCustomizations partnerBrowserCustomizations =
+                mock(PartnerBrowserCustomizations.class);
+        when(partnerBrowserCustomizations.isHomepageProviderAvailableAndEnabled())
+                .thenReturn(false);
+        PartnerBrowserCustomizations.setInstanceForTesting(partnerBrowserCustomizations);
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(1);
+        assertFalse(
+                "Should return false for homepage disabled.",
+                mUtils.hasAtMostOneTabWithHomepageEnabled(mTabModelSelector));
+    }
+
+    @Test
     public void testGetInstanceCount() {
         when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);

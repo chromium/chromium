@@ -140,7 +140,7 @@ public class TabDragSourceTest {
 
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
 
-        when(mMultiWindowUtils.isMoveToOtherWindowSupported(any(), any())).thenReturn(true);
+        when(mMultiWindowUtils.hasAtMostOneTabWithHomepageEnabled(any())).thenReturn(false);
         MultiWindowUtils.setInstanceForTesting(mMultiWindowUtils);
         MultiWindowTestUtils.enableMultiInstance();
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
@@ -250,10 +250,10 @@ public class TabDragSourceTest {
     @EnableFeatures({ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
     @DisableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
     @Test
-    public void test_startTabDragAction_withMoveToOtherWindowNotSupported_ReturnsFalse() {
-        when(mMultiWindowUtils.isMoveToOtherWindowSupported(any(), any())).thenReturn(false);
+    public void test_startTabDragAction_withHasOneTabWithHomepage_ReturnsFalse() {
+        when(mMultiWindowUtils.hasAtMostOneTabWithHomepageEnabled(any())).thenReturn(true);
         assertFalse(
-                "Should not startTabDragAction when move to other window is not supported",
+                "Should not startTabDragAction since last tab with homepage enabled.",
                 mSourceInstance.startTabDragAction(
                         mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT));
     }
