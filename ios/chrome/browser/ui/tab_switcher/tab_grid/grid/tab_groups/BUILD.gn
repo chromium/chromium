@@ -4,6 +4,10 @@
 
 source_set("tab_groups") {
   sources = [
+    "edit_tab_group_coordinator.h",
+    "edit_tab_group_coordinator.mm",
+    "edit_tab_group_mediator.h",
+    "edit_tab_group_mediator.mm",
     "tab_group_coordinator.h",
     "tab_group_coordinator.mm",
     "tab_group_mediator.h",
@@ -30,6 +34,8 @@ source_set("tab_groups") {
 
 source_set("tab_groups_ui") {
   sources = [
+    "edit_tab_group_view_controller.h",
+    "edit_tab_group_view_controller.mm",
     "tab_group_view_controller.h",
     "tab_group_view_controller.mm",
     "tab_groups_commands.h",
