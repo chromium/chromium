@@ -171,6 +171,7 @@ non_web_component_files_ts = [
 mojo_files_ts = [
   "connectivity/passpoint.mojom-webui.ts",
   "hotspot/cros_hotspot_config.mojom-webui.ts",
+  "sea_pen/sea_pen.mojom-webui.ts",
   "shortcut_input_ui/accelerator_actions.mojom-webui.ts",
   "shortcut_input_ui/accelerator_keys.mojom-webui.ts",
   "shortcut_input_ui/input_device_settings.mojom-webui.ts",
@@ -281,6 +282,7 @@ ts_library("build_ts") {
     ":preprocess_ts",
     "connectivity:copy_mojo_files",
     "hotspot:copy_mojo_files",
+    "sea_pen:copy_mojo_files",
     "shortcut_input_ui:copy_mojo_files",
   ]
 }

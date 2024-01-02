@@ -14,12 +14,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
-#include "ash/webui/personalization_app/mojom/sea_pen.mojom-forward.h"
-#include "ash/webui/personalization_app/mojom/sea_pen.mojom-shared.h"
-#include "ash/webui/personalization_app/mojom/sea_pen.mojom.h"
+#include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/notreached.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/manta/features.h"

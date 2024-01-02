@@ -5,7 +5,8 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {SeaPenPaths, SeaPenTemplateId, SeaPenTemplateQueryElement} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenPaths, SeaPenTemplateQueryElement} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 

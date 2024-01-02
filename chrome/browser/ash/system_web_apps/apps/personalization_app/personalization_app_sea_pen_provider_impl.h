@@ -5,16 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_SEA_PEN_PROVIDER_IMPL_H_
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_SEA_PEN_PROVIDER_IMPL_H_
 
-#include "ash/webui/personalization_app/mojom/sea_pen.mojom-forward.h"
-#include "ash/webui/personalization_app/mojom/sea_pen.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_sea_pen_provider.h"
 
 #include <map>
 #include <memory>
-#include <string>
 
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
-#include "base/files/file.h"
+#include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"

@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-
-import {SeaPenThumbnail} from '../../../sea_pen.mojom-webui.js';
 
 import {RecentSeaPenData} from './constants.js';
 import {SeaPenActionName, SeaPenActions} from './sea_pen_actions.js';

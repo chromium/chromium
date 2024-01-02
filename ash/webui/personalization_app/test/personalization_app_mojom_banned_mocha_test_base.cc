@@ -6,8 +6,8 @@
 
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/style/mojom/color_scheme.mojom-shared.h"
+#include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
-#include "ash/webui/personalization_app/mojom/sea_pen.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_ambient_provider.h"
 #include "ash/webui/personalization_app/personalization_app_keyboard_backlight_provider.h"
 #include "ash/webui/personalization_app/personalization_app_sea_pen_provider.h"

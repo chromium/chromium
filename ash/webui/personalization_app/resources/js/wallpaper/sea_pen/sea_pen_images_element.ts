@@ -14,9 +14,8 @@ import '../../../css/common.css.js';
 import './sparkle_placeholder_element.js';
 import '../../../css/sea_pen.css.js';
 
+import {SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
-
-import {SeaPenThumbnail} from '../../../sea_pen.mojom-webui.js';
 
 import {selectSeaPenWallpaper} from './sea_pen_controller.js';
 import {getTemplate} from './sea_pen_images_element.html.js';

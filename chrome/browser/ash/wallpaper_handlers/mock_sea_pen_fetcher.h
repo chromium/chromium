@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_MOCK_SEA_PEN_FETCHER_H_
 #define CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_MOCK_SEA_PEN_FETCHER_H_
 
-#include "ash/webui/personalization_app/mojom/sea_pen.mojom-forward.h"
-#include "ash/webui/personalization_app/mojom/sea_pen.mojom.h"
+#include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
 #include "testing/gmock/include/gmock/gmock.h"

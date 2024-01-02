@@ -16,9 +16,8 @@ import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../../../css/wallpaper.css.js';
 import '../../../css/cros_button_style.css.js';
 
+import {MAXIMUM_SEARCH_WALLPAPER_TEXT_BYTES, SeaPenQuery} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.js';
-
-import {MAXIMUM_SEARCH_WALLPAPER_TEXT_BYTES, SeaPenQuery} from '../../../sea_pen.mojom-webui.js';
 
 import {QUERY} from './constants.js';
 import {isSeaPenTextInputEnabled} from './load_time_booleans.js';

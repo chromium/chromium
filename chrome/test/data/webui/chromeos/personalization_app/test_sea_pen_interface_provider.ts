@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {RecentSeaPenData, SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from 'chrome://personalization/js/personalization_app.js';
+import {RecentSeaPenData} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 

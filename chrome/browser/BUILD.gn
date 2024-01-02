@@ -5163,6 +5163,7 @@ static_library("browser") {
       "//ash/webui/color_internals",
       "//ash/webui/color_internals/mojom",
       "//ash/webui/common/mojom",
+      "//ash/webui/common/mojom:sea_pen",
       "//ash/webui/connectivity_diagnostics",
       "//ash/webui/demo_mode_app_ui",
       "//ash/webui/demo_mode_app_ui/mojom",

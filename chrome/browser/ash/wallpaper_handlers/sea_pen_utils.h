@@ -7,8 +7,7 @@
 
 #include <string_view>
 
-#include "ash/public/cpp/wallpaper/wallpaper_types.h"
-#include "ash/webui/personalization_app/mojom/sea_pen.mojom-forward.h"
+#include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
 #include "components/manta/proto/manta.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

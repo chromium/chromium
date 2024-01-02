@@ -12,9 +12,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/webui/personalization_app/mojom/sea_pen.mojom-forward.h"
-#include "ash/webui/personalization_app/mojom/sea_pen.mojom-shared.h"
-#include "ash/webui/personalization_app/mojom/sea_pen.mojom.h"
+#include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"

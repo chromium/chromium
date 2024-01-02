@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {isNonEmptyArray, isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-
-import {SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from '../../../sea_pen.mojom-webui.js';
 
 import * as seaPenAction from './sea_pen_actions.js';
 import {SeaPenStoreInterface} from './sea_pen_store.js';

@@ -8,11 +8,13 @@
 #include <vector>
 
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
-#include "base/logging.h"
+#include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "base/functional/callback.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "components/manta/proto/manta.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace wallpaper_handlers {
 

@@ -32,6 +32,7 @@ static_library("personalization_app") {
     "//ash/constants:constants",
     "//ash/public/cpp",
     "//ash/webui/common:trusted_types_util",
+    "//ash/webui/common/mojom:sea_pen",
     "//ash/webui/personalization_app/mojom",
     "//ash/webui/personalization_app/proto",
     "//ash/webui/personalization_app/resources:resources",
@@ -70,6 +71,7 @@ source_set("test_support") {
   deps = [
     ":personalization_app",
     "//ash/public/cpp",
+    "//ash/webui/common/mojom:sea_pen",
     "//ash/webui/personalization_app/mojom",
     "//ash/webui/personalization_app/proto",
     "//chrome/test:test_support_ui",

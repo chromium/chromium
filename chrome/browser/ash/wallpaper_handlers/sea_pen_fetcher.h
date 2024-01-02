@@ -6,12 +6,10 @@
 #define CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_SEA_PEN_FETCHER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
-#include "ash/webui/personalization_app/mojom/sea_pen.mojom-forward.h"
-#include "ash/webui/personalization_app/mojom/sea_pen.mojom.h"
+#include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
 #include "base/functional/callback_forward.h"
 #include "components/manta/proto/manta.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_utils.h"
 
-#include "ash/webui/personalization_app/mojom/sea_pen.mojom-forward.h"
-#include "ash/webui/personalization_app/mojom/sea_pen.mojom-shared.h"
-#include "ash/webui/personalization_app/mojom/sea_pen.mojom.h"
+#include <string>
+
+#include "ash/webui/common/mojom/sea_pen.mojom.h"
 
 namespace wallpaper_handlers {
 

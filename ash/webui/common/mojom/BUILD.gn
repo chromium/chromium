@@ -33,3 +33,13 @@ mojom("shortcut_input_provider") {
 
   deps = [ "//ash/public/mojom:mojom" ]
 }
+
+mojom("sea_pen") {
+  disable_variants = true
+  webui_module_path = "/"
+  sources = [ "sea_pen.mojom" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
+}
