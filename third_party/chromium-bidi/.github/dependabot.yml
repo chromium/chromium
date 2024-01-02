@@ -48,3 +48,6 @@ updates:
       - dependency-name: '@types/node'
         update-types: ['version-update:semver-major']
       - dependency-name: devtools-protocol
+      - dependency-name: chai
+        versions: ['>=5.0.0']
+        update-types: ['version-update:semver-major']

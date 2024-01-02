@@ -15,16 +15,12 @@
  * limitations under the License.
  */
 
-import * as chai from 'chai';
 import {expect} from 'chai';
-import chaiAsPromised from 'chai-as-promised';
 import sinon from 'sinon';
 
 import {StubTransport} from '../utils/transportStub.spec.js';
 
 import {CdpConnection} from './CdpConnection.js';
-
-chai.use(chaiAsPromised);
 
 const SOME_SESSION_ID = 'ABCD';
 const ANOTHER_SESSION_ID = 'EFGH';

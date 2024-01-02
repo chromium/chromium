@@ -112,6 +112,7 @@ export class BrowserInstance {
     const browserProcess = launch({
       executablePath,
       args: chromeArguments,
+      env: process.env,
     });
 
     const cdpEndpoint = await browserProcess.waitForLineOutput(

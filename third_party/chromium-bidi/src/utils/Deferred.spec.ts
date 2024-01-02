@@ -15,9 +15,13 @@
  * limitations under the License.
  */
 
+import * as chai from 'chai';
 import {expect} from 'chai';
+import chaiAsPromised from 'chai-as-promised';
 
 import {Deferred} from './Deferred.js';
+
+chai.use(chaiAsPromised);
 
 describe('Deferred', () => {
   describe('isFinished', () => {
