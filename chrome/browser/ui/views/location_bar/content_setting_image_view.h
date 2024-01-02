@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_CONTENT_SETTING_IMAGE_VIEW_H_
 
 #include <memory>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
@@ -104,6 +105,10 @@ class ContentSettingImageView : public IconLabelBubbleView,
 
   const gfx::VectorIcon* get_icon_badge_for_testing() const {
     return content_setting_image_model_->get_icon_badge();
+  }
+
+  const std::u16string& get_tooltip_text_for_testing() const {
+    return content_setting_image_model_->get_tooltip();
   }
 
  private:

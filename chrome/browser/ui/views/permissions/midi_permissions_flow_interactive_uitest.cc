@@ -181,16 +181,17 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
       AfterShow(
           ContentSettingImageView::kMidiActivityIndicatorElementId,
           base::BindOnce([](ui::TrackedElement* element) {
-            EXPECT_EQ(AsView<ContentSettingImageView>(element)
-                          ->get_icon_for_testing(),
+            auto* element_view = AsView<ContentSettingImageView>(element);
+            EXPECT_EQ(element_view->get_icon_for_testing(),
                       base::FeatureList::IsEnabled(features::kChromeRefresh2023)
                           ? &vector_icons::kMidiOffChromeRefreshIcon
                           : &vector_icons::kMidiIcon);
-            EXPECT_EQ(AsView<ContentSettingImageView>(element)
-                          ->get_icon_badge_for_testing(),
+            EXPECT_EQ(element_view->get_icon_badge_for_testing(),
                       base::FeatureList::IsEnabled(features::kChromeRefresh2023)
                           ? &gfx::kNoneIcon
                           : &vector_icons::kBlockedBadgeIcon);
+            EXPECT_EQ(element_view->get_tooltip_text_for_testing(),
+                      l10n_util::GetStringUTF16(IDS_BLOCKED_MIDI_MESSAGE));
           })));
   // TODO(b/315345075): Add a check for the strings displayed in the bubble.
   // TODO(b/315345075): Add a check to ensure only one MIDI icon is displayed.
@@ -203,18 +204,19 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
       context(), NavigateAndRequestMidi(),
       PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
-      AfterShow(ContentSettingImageView::kMidiActivityIndicatorElementId,
-                base::BindOnce([](ui::TrackedElement* element) {
-                  EXPECT_EQ(
-                      AsView<ContentSettingImageView>(element)
-                          ->get_icon_for_testing(),
+      AfterShow(
+          ContentSettingImageView::kMidiActivityIndicatorElementId,
+          base::BindOnce([](ui::TrackedElement* element) {
+            auto* element_view = AsView<ContentSettingImageView>(element);
+            EXPECT_EQ(element_view->get_icon_for_testing(),
                       base::FeatureList::IsEnabled(features::kChromeRefresh2023)
                           ? &vector_icons::kMidiChromeRefreshIcon
                           : &vector_icons::kMidiIcon);
-                  EXPECT_EQ(AsView<ContentSettingImageView>(element)
-                                ->get_icon_badge_for_testing(),
-                            &gfx::kNoneIcon);
-                })));
+            EXPECT_EQ(element_view->get_icon_badge_for_testing(),
+                      &gfx::kNoneIcon);
+            EXPECT_EQ(element_view->get_tooltip_text_for_testing(),
+                      l10n_util::GetStringUTF16(IDS_ALLOWED_MIDI_MESSAGE));
+          })));
   // TODO(b/315345075): Add a check for the strings displayed in the bubble.
   // TODO(b/315345075): Add a check to ensure only one MIDI icon is displayed.
 }
