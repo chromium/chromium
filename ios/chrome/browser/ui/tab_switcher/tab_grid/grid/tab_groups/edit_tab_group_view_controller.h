@@ -5,4 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_TAB_GROUPS_EDIT_TAB_GROUP_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_TAB_GROUPS_EDIT_TAB_GROUP_VIEW_CONTROLLER_H_
 
+#import <UIKit/UIKit.h>
+
+// View controller that display the tab group edition or creation view.
+@interface EditTabGroupViewController : UIViewController
+
+@end
+
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_TAB_GROUPS_EDIT_TAB_GROUP_VIEW_CONTROLLER_H_

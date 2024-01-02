@@ -117,7 +117,8 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
   if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
     [menuElements addObject:[actionFactory actionToAddTabToNewGroupWithBlock:^{
                     [self.contextMenuDelegate
-                        createNewTabGroupWithIdentifier:cell.itemIdentifier];
+                        createNewTabGroupWithIdentifier:cell.itemIdentifier
+                                              incognito:self.incognito];
                   }]];
   }
 

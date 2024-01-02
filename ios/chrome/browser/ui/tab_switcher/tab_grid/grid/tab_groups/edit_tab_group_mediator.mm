@@ -3,3 +3,17 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/edit_tab_group_mediator.h"
+
+#import "base/check.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+
+@implementation EditTabGroupMediator
+
+- (instancetype)init {
+  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+      << "You should not be able to create a tab group outside the Tab Groups "
+         "experiment.";
+  return [super init];
+}
+
+@end

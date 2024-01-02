@@ -5,4 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_TAB_GROUPS_EDIT_TAB_GROUP_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_TAB_GROUPS_EDIT_TAB_GROUP_COORDINATOR_H_
 
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+
+// Coordinator that manage the model and UI of the tab group creation.
+@interface EditTabGroupCoordinator : ChromeCoordinator
+
+// TODO(crbug.com/1501837): Add init function with a tab group ID when the ID
+// will be available.
+
+@end
+
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_TAB_GROUPS_EDIT_TAB_GROUP_COORDINATOR_H_

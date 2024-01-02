@@ -5,4 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_TAB_GROUPS_EDIT_TAB_GROUP_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_TAB_GROUPS_EDIT_TAB_GROUP_MEDIATOR_H_
 
+#import <Foundation/Foundation.h>
+
+// Mediator to manage the model layer of the tab group creation or edition.
+@interface EditTabGroupMediator : NSObject
+
+@end
+
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_TAB_GROUPS_EDIT_TAB_GROUP_MEDIATOR_H_

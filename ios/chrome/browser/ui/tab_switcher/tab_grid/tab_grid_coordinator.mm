@@ -1335,11 +1335,18 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.pinnedTabsMediator setPinState:NO forItemWithID:identifier];
 }
 
-- (void)createNewTabGroupWithIdentifier:(web::WebStateID)identifier {
+- (void)createNewTabGroupWithIdentifier:(web::WebStateID)identifier
+                              incognito:(BOOL)incognito {
   CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
       << "You should not be able to create a new tab group outside the Tab "
          "Groups experiment.";
   // TODO(crbug.com/1501837): Display the tab group creation view.
+  std::set<web::WebStateID> webStateIDSet = {identifier};
+  if (incognito) {
+    [_incognitoGridCoordinator showTabGroupEditionForTabs:webStateIDSet];
+  } else {
+    [_regularGridCoordinator showTabGroupEditionForTabs:webStateIDSet];
+  }
 }
 
 - (void)closeTabWithIdentifier:(web::WebStateID)identifier
