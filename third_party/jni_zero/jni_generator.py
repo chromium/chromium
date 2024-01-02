@@ -796,7 +796,7 @@ ${FUNCTION_HEADER}
   CHECK_CLAZZ(env, ${FIRST_PARAM_IN_CALL},
       ${JAVA_CLASS}_clazz(env)${OPTIONAL_ERROR_RETURN});
 
-  jni_generator::JniJavaCallContext${CHECK_EXCEPTION} call_context;
+  jni_zero::JniJavaCallContext${CHECK_EXCEPTION} call_context;
   call_context.Init<
       base::android::MethodID::TYPE_${METHOD_ID_TYPE}>(
           env,

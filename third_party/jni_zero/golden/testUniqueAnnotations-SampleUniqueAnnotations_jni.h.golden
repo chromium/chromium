@@ -79,7 +79,7 @@ static void Java_SampleUniqueAnnotations_useBar1(JNIEnv* env, const base::androi
   CHECK_CLAZZ(env, clazz,
       org_jni_1zero_samples_SampleUniqueAnnotations_clazz(env));
 
-  jni_generator::JniJavaCallContextChecked call_context;
+  jni_zero::JniJavaCallContextChecked call_context;
   call_context.Init<
       base::android::MethodID::TYPE_STATIC>(
           env,

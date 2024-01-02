@@ -79,7 +79,7 @@ ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfContentCaptureFrame(
       base::android::GetClass(env, "java/lang/Object");
   jobjectArray joa =
       env->NewObjectArray(session.size(), object_clazz.obj(), nullptr);
-  jni_generator::CheckException(env);
+  base::android::CheckException(env);
 
   for (size_t i = 0; i < session.size(); ++i) {
     ScopedJavaLocalRef<jobject> item =

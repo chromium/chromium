@@ -209,7 +209,7 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT bool RegisterNative_org_jni_1zero_GEN_1JNI(JNIEn
       kMethods_org_jni_1zero_GEN_1JNI,
       number_of_methods) < 0) {
 
-    jni_generator::HandleRegistrationError(env, native_clazz.obj(), __FILE__);
+    jni_zero::HandleRegistrationError(env, native_clazz.obj(), __FILE__);
     return false;
   }
 

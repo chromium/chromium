@@ -16,6 +16,7 @@
 // 16-byte stack alignment on x86.
 #include "build/build_config.h"
 #endif                     // defined(USE_CHROMIUM_BASE)
+#include "third_party/jni_zero/core.h"
 #include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/jni_int_wrapper.h"
 #include "third_party/jni_zero/logging.h"
@@ -28,16 +29,12 @@
 
 #define CHECK_CLAZZ(env, jcaller, clazz, ...) JNI_ZERO_DCHECK(clazz);
 
-namespace jni_generator {
+namespace jni_zero {
 
 inline void HandleRegistrationError(JNIEnv* env,
                                     jclass clazz,
                                     const char* filename) {
   JNI_ZERO_ELOG("RegisterNatives failed in %s", filename);
-}
-
-inline void CheckException(JNIEnv* env) {
-  base::android::CheckException(env);
 }
 
 // A 32 bit number could be an address on stack. Random 64 bit marker on the
@@ -101,9 +98,7 @@ struct JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContextChecked {
     base.pc = reinterpret_cast<uintptr_t>(__builtin_return_address(0));
   }
 
-  NOINLINE ~JniJavaCallContextChecked() {
-    jni_generator::CheckException(base.env1);
-  }
+  NOINLINE ~JniJavaCallContextChecked() { CheckException(base.env1); }
 
   JniJavaCallContextUnchecked base;
 };
@@ -112,6 +107,6 @@ static_assert(sizeof(JniJavaCallContextChecked) ==
                   sizeof(JniJavaCallContextUnchecked),
               "Stack unwinder cannot work with structs of different sizes.");
 
-}  // namespace jni_generator
+}  // namespace jni_zero
 
 #endif  // JNI_ZERO_JNI_ZERO_HELPER_H_
