@@ -775,7 +775,11 @@ void SidePanelCoordinator::PopulateSidePanel(
   current_entry_ = entry->GetWeakPtr();
   if (browser_view_->toolbar()->pinned_toolbar_actions_container()) {
     NotifyPinnedContainerOfActiveStateChange(entry->key(), true);
-    if (previous_entry) {
+    // Notify active state change only if the entry ids for the side panel are
+    // different. This is to ensure extensions container isn't notified if we
+    // switch between different extensions side panels or between global to
+    // contextual side panel of the same extension.
+    if (previous_entry && previous_entry->key().id() != entry->key().id()) {
       NotifyPinnedContainerOfActiveStateChange(previous_entry->key(), false);
     }
   } else if (auto* side_panel_container =
