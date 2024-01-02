@@ -22,13 +22,14 @@ void RawPtrBackupRefImpl<AllowDangling, VectorExperimental>::AcquireInternal(
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   PA_BASE_CHECK(UseBrp(address));
 #endif
-  uintptr_t slot_start =
-      partition_alloc::PartitionAllocGetSlotStartInBRPPool(address);
+  auto [slot_start, slot_size] =
+      partition_alloc::PartitionAllocGetSlotStartAndSizeInBRPPool(address);
   if constexpr (AllowDangling) {
-    partition_alloc::internal::PartitionRefCountPointer(slot_start)
+    partition_alloc::internal::PartitionRefCountPointer(slot_start, slot_size)
         ->AcquireFromUnprotectedPtr();
   } else {
-    partition_alloc::internal::PartitionRefCountPointer(slot_start)->Acquire();
+    partition_alloc::internal::PartitionRefCountPointer(slot_start, slot_size)
+        ->Acquire();
   }
 }
 
@@ -38,15 +39,17 @@ void RawPtrBackupRefImpl<AllowDangling, VectorExperimental>::ReleaseInternal(
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   PA_BASE_CHECK(UseBrp(address));
 #endif
-  uintptr_t slot_start =
-      partition_alloc::PartitionAllocGetSlotStartInBRPPool(address);
+  auto [slot_start, slot_size] =
+      partition_alloc::PartitionAllocGetSlotStartAndSizeInBRPPool(address);
   if constexpr (AllowDangling) {
-    if (partition_alloc::internal::PartitionRefCountPointer(slot_start)
+    if (partition_alloc::internal::PartitionRefCountPointer(slot_start,
+                                                            slot_size)
             ->ReleaseFromUnprotectedPtr()) {
       partition_alloc::internal::PartitionAllocFreeForRefCounting(slot_start);
     }
   } else {
-    if (partition_alloc::internal::PartitionRefCountPointer(slot_start)
+    if (partition_alloc::internal::PartitionRefCountPointer(slot_start,
+                                                            slot_size)
             ->Release()) {
       partition_alloc::internal::PartitionAllocFreeForRefCounting(slot_start);
     }
@@ -58,9 +61,9 @@ void RawPtrBackupRefImpl<AllowDangling, VectorExperimental>::
     ReportIfDanglingInternal(uintptr_t address) {
   if (partition_alloc::internal::IsUnretainedDanglingRawPtrCheckEnabled()) {
     if (IsSupportedAndNotNull(address)) {
-      uintptr_t slot_start =
-          partition_alloc::PartitionAllocGetSlotStartInBRPPool(address);
-      partition_alloc::internal::PartitionRefCountPointer(slot_start)
+      auto [slot_start, slot_size] =
+          partition_alloc::PartitionAllocGetSlotStartAndSizeInBRPPool(address);
+      partition_alloc::internal::PartitionRefCountPointer(slot_start, slot_size)
           ->ReportIfDangling();
     }
   }
@@ -95,9 +98,10 @@ bool RawPtrBackupRefImpl<AllowDangling, VectorExperimental>::IsPointeeAlive(
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   PA_BASE_CHECK(UseBrp(address));
 #endif
-  uintptr_t slot_start =
-      partition_alloc::PartitionAllocGetSlotStartInBRPPool(address);
-  return partition_alloc::internal::PartitionRefCountPointer(slot_start)
+  auto [slot_start, slot_size] =
+      partition_alloc::PartitionAllocGetSlotStartAndSizeInBRPPool(address);
+  return partition_alloc::internal::PartitionRefCountPointer(slot_start,
+                                                             slot_size)
       ->IsAlive();
 }
 

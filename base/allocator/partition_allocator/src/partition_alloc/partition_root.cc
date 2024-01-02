@@ -71,7 +71,8 @@ PtrPosWithinAlloc IsPtrWithinSameAlloc(uintptr_t orig_address,
   PA_DCHECK(IsManagedByNormalBucketsOrDirectMap(orig_address));
   DCheckIfManagedByPartitionAllocBRPPool(orig_address);
 
-  uintptr_t slot_start = PartitionAllocGetSlotStartInBRPPool(orig_address);
+  auto [slot_start, _] =
+      PartitionAllocGetSlotStartAndSizeInBRPPool(orig_address);
   // Don't use |orig_address| beyond this point at all. It was needed to
   // pick the right slot, but now we're dealing with very concrete addresses.
   // Zero it just in case, to catch errors.
@@ -1219,7 +1220,7 @@ bool PartitionRoot::TryReallocInPlaceForDirectMap(
             reservation_start + current_reservation_size -
                 GetDirectMapMetadataAndGuardPagesSize() +
                 internal::PartitionPageSize());
-#endif
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 
   PA_DCHECK(new_slot_size > internal::kMaxMemoryTaggingSize);
   if (new_slot_size == current_slot_size) {
@@ -1233,8 +1234,8 @@ bool PartitionRoot::TryReallocInPlaceForDirectMap(
     // Since the decommited system pages are still reserved, we don't need to
     // change the entries for decommitted pages in the reservation offset table.
   } else if (new_slot_size <= available_reservation_size) {
-    // Grow within the actually reserved address space. Just need to make the
-    // pages accessible again.
+    // Grow within the actually reserved address space. Just need to make sure
+    // the pages are accessible.
     size_t recommit_slot_size_growth = new_slot_size - current_slot_size;
     // Direct map never uses tagging, as size is always >kMaxMemoryTaggingSize.
     RecommitSystemPagesForData(
@@ -1300,22 +1301,24 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
   // memory as we're already using, so re-use the allocation after updating
   // statistics (and cookie, if present).
   if (slot_span->CanStoreRawSize()) {
-#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && BUILDFLAG(PA_DCHECK_IS_ON)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && BUILDFLAG(PA_DCHECK_IS_ON)
     internal::PartitionRefCount* old_ref_count = nullptr;
     if (brp_enabled()) {
-      old_ref_count = internal::PartitionRefCountPointer(slot_start);
+      old_ref_count = internal::PartitionRefCountPointer(
+          slot_start, slot_span->bucket->slot_size);
     }
-#endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) &&
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
         // BUILDFLAG(PA_DCHECK_IS_ON)
     size_t new_raw_size = AdjustSizeForExtrasAdd(new_size);
     slot_span->SetRawSize(new_raw_size);
-#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && BUILDFLAG(PA_DCHECK_IS_ON)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && BUILDFLAG(PA_DCHECK_IS_ON)
     if (brp_enabled()) {
       internal::PartitionRefCount* new_ref_count =
-          internal::PartitionRefCountPointer(slot_start);
+          internal::PartitionRefCountPointer(slot_start,
+                                             slot_span->bucket->slot_size);
       PA_DCHECK(new_ref_count == old_ref_count);
     }
-#endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) &&
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
         // BUILDFLAG(PA_DCHECK_IS_ON)
     // Write a new trailing cookie only when it is possible to keep track
     // raw size (otherwise we wouldn't know where to look for it later).

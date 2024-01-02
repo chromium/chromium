@@ -149,9 +149,8 @@ buildflag_header("partition_alloc_buildflags") {
 
   _record_alloc_info = false
 
-  # GWP-ASan is tied to BRP's "refcount in previous slot" mode, whose
-  # enablement is already gated on BRP enablement.
-  _enable_gwp_asan_support = put_ref_count_in_previous_slot
+  # GWP-ASan is tied to BRP's enablement.
+  _enable_gwp_asan_support = enable_backup_ref_ptr_support
 
   # Pools are a logical concept when address space is 32-bit.
   _glue_core_pools = glue_core_pools && has_64_bit_pointers

@@ -146,8 +146,11 @@ static_assert(sizeof(void*) != 8, "");
 // Enable free list shadow entry to strengthen hardening as much as possible.
 // The shadow entry is an inversion (bitwise-NOT) of the encoded `next` pointer.
 //
-// Disabled when BRP is used, because ref-count is placed at the end of a slot,
-// and it will overlap with the shadow for the smallest slots.
+// Since the free list pointer and ref-count can share slot at the same time in
+// the "previous slot" mode, disable, as the ref-count will overlap with the
+// shadow for the smallest slots.
+// TODO(crbug.com/1511221): Enable in the "same slot" mode. It should work just
+// fine, because it's either-or. A slot never hosts both at the same time.
 //
 // Disabled on Big Endian CPUs, because encoding is also a bitwise-NOT there,
 // making the shadow entry equal to the original, valid pointer to the next
@@ -167,13 +170,18 @@ static_assert(sizeof(void*) == 8);
 // and BRP ref count will cause a race (crbug.com/1445816). To prevent this, the
 // ref_count_size is increased to the MTE granule size and is excluded from MTE
 // tagging.
+//
+// Note, this takes effect only when IsMemoryTaggingEnabled() is true, which is
+// for very few devices (10s or 100s), so this won't bias any BRP experiment.
 #if BUILDFLAG(HAS_MEMORY_TAGGING) &&            \
     BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
     BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 #define PA_CONFIG_INCREASE_REF_COUNT_SIZE_FOR_MTE() 1
 #else
 #define PA_CONFIG_INCREASE_REF_COUNT_SIZE_FOR_MTE() 0
-#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING) &&
+        // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
+        // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 
 // Specifies whether allocation extras need to be added.
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -259,10 +267,12 @@ constexpr bool kUseLazyCommit = false;
 // Due to potential conflict with the free list pointer in the "previous slot"
 // mode in the smallest bucket, we can't check both the cookie and the dangling
 // raw_ptr at the same time.
-#define PA_CONFIG_REF_COUNT_CHECK_COOKIE()         \
-  (!(BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS) &&  \
-     BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)) && \
-   (BUILDFLAG(PA_DCHECK_IS_ON) ||                  \
+// TODO(crbug.com/1511221): Allow in the "same slot" mode. It should work just
+// fine, because it's either-or. A slot never hosts both at the same time.
+#define PA_CONFIG_REF_COUNT_CHECK_COOKIE()        \
+  (!(BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS) && \
+     BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)) && \
+   (BUILDFLAG(PA_DCHECK_IS_ON) ||                 \
     BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)))
 
 // Use available space in the reference count to store the initially requested

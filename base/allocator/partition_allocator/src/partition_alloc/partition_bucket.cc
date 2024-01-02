@@ -308,11 +308,9 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
                           PageAccessibilityDisposition::kRequireUpdate);
     }
 
-#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-    // If PUT_REF_COUNT_IN_PREVIOUS_SLOT is on, and if the BRP pool is used,
-    // allocate a system page for BRP ref-count table (only one of its elements
-    // will be used).
     if (pool == kBRPPoolHandle) {
+      // Allocate a system page for BRP ref-count table (only one of its
+      // elements will be used).
       ScopedSyscallTimer timer{root};
       RecommitSystemPages(reservation_start + SystemPageSize() * 2,
                           SystemPageSize(),
@@ -320,7 +318,6 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
                               PageAccessibilityConfiguration::kReadWrite),
                           PageAccessibilityDisposition::kRequireUpdate);
     }
-#endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
     {
@@ -810,17 +807,14 @@ PartitionBucket::InitializeSuperPage(PartitionRoot* root,
                         PageAccessibilityDisposition::kRequireUpdate);
   }
 
-#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-  // If PUT_REF_COUNT_IN_PREVIOUS_SLOT is on, and if the BRP pool is used,
-  // allocate a system page for BRP ref-count table.
   if (root->ChoosePool() == kBRPPoolHandle) {
+    // Allocate a system page for BRP ref-count table.
     ScopedSyscallTimer timer{root};
     RecommitSystemPages(super_page + SystemPageSize() * 2, SystemPageSize(),
                         root->PageAccessibilityWithThreadIsolationIfEnabled(
                             PageAccessibilityConfiguration::kReadWrite),
                         PageAccessibilityDisposition::kRequireUpdate);
   }
-#endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
   {
@@ -1322,6 +1316,7 @@ uintptr_t PartitionBucket::SlowPathAlloc(PartitionRoot* root,
                                          AllocFlags flags,
                                          size_t raw_size,
                                          size_t slot_span_alignment,
+                                         SlotSpanMetadata** slot_span,
                                          bool* is_already_zeroed) {
   PA_DCHECK((slot_span_alignment >= PartitionPageSize()) &&
             std::has_single_bit(slot_span_alignment));
@@ -1465,6 +1460,7 @@ uintptr_t PartitionBucket::SlowPathAlloc(PartitionRoot* root,
     root->OutOfMemory(raw_size);
     PA_IMMEDIATE_CRASH();  // Not required, kept as documentation.
   }
+  *slot_span = new_slot_span;
 
   PA_DCHECK(new_bucket != &root->sentinel_bucket);
   new_bucket->active_slot_spans_head = new_slot_span;

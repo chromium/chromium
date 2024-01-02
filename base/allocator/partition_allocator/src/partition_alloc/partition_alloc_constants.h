@@ -211,7 +211,7 @@ constexpr size_t kHighThresholdForAlternateDistribution =
 // Free Slot Bitmap is only present when USE_FREESLOT_BITMAP is true. State
 // Bitmap is inserted for partitions that may have quarantine enabled.
 //
-// If PUT_REF_COUNT_IN_PREVIOUS_SLOT is enabled, RefCountTable(4KiB) is inserted
+// If ENABLE_BACKUP_REF_PTR_SUPPORT is on, RefCountTable(4KiB) is inserted
 // after the Metadata page for BackupRefPtr. The guard pages after the table
 // is reduced to 4KiB.
 //
