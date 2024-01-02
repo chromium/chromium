@@ -254,6 +254,7 @@ struct DefinitionResult {
   std::string word_class;
   PhoneticsInfo phonetics_info;
   Sense sense;
+  std::optional<std::vector<Sense>> subsenses_list;
 };
 
 // `TranslationResult` holds result for translation intent.
