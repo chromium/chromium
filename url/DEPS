@@ -8,7 +8,7 @@ specific_include_rules = {
   "gurl_fuzzer.cc": [
     "+base/i18n",
   ],
-  "url_(canon|idna)_icu(\.cc|_unittest\.cc)": [
+  "url_(canon|idna)_icu(\.cc|_unittest\.cc|_fuzzer\.cc)": [
     "+base/i18n",
     "+third_party/icu",
   ],
