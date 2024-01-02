@@ -275,6 +275,9 @@ chromium-metrics-reviews@google.com.
     The Session was destroyed while waiting for a response. This likely means
     the user closed the bubble before the response completed.
   </int>
+  <int value="9" label="Used on-device, but output considered unsafe">
+    On-device model was used, it completed successfully, but considered unsafe.
+  </int>
 </enum>
 
 <enum name="OptimizationGuideOnDeviceModelEligibilityReason">

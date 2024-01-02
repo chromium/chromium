@@ -35,6 +35,11 @@ using ExecuteModelResult = SessionImpl::ExecuteModelResult;
 namespace {
 // If non-zero this amount of delay is added before the response is sent.
 base::TimeDelta g_execute_delay = base::TimeDelta();
+
+// Status code supplied to OnComplete().
+on_device_model::mojom::ResponseStatus g_on_complete_response_type =
+    on_device_model::mojom::ResponseStatus::kOk;
+
 }  // namespace
 
 std::vector<std::string> ConcatResponses(
@@ -89,7 +94,7 @@ class FakeOnDeviceSession : public base::SupportsWeakPtr<FakeOnDeviceSession>,
       remote->OnResponse("Context: " + context + "\n");
     }
     remote->OnResponse("Input: " + input->text + "\n");
-    remote->OnComplete(on_device_model::mojom::ResponseStatus::kOk);
+    remote->OnComplete(g_on_complete_response_type);
   }
 
   void AddContextInternal(
@@ -216,6 +221,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
  public:
   void SetUp() override {
     g_execute_delay = base::TimeDelta();
+    g_on_complete_response_type = on_device_model::mojom::ResponseStatus::kOk;
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kOptimizationGuideOnDeviceModel,
         {{"on_device_model_min_tokens_for_context", "10"},
@@ -982,6 +988,20 @@ TEST_F(OnDeviceModelServiceControllerTest, UseServerWithRepeatedDelays) {
   // next session should use the server.
   EXPECT_EQ(nullptr, test_controller_->CreateSession(
                          kFeature, base::DoNothing(), &logger_));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, UsedOnDeviceOutputUnsafe) {
+  g_on_complete_response_type =
+      on_device_model::mojom::ResponseStatus::kRetracted;
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  ASSERT_TRUE(session);
+  ExecuteModel(*session, "foo");
+  base::HistogramTester histogram_tester;
+  task_environment_.RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
+      ExecuteModelResult::kUsedOnDeviceOutputUnsafe, 1);
 }
 
 }  // namespace optimization_guide
