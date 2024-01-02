@@ -285,6 +285,7 @@ chromium-metrics-reviews@google.com.
     Outcome of attempting to recover the {DatabaseTag} database with
     sql::BuiltInRecovery.
   </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
 </histogram>
 
 <histogram name="Sql.Recovery.ResultCode" enum="SqliteLoggedResultCode"
@@ -311,6 +312,7 @@ chromium-metrics-reviews@google.com.
     since not all recoveries fail due to SQLite errors (e.g. if a version number
     could not be read from the meta table).
   </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
 </histogram>
 
 <histogram name="Sql.Statement.{DatabaseTag}.VMSteps" units="count"
@@ -323,6 +325,7 @@ chromium-metrics-reviews@google.com.
     database. It is reported once per statement. It can be used as a proxy of
     total work done by queries executed over the database.
   </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
 </histogram>
 
 <histogram name="Sql.vfs.SyncTime" units="ms" expires_after="2024-12-08">
