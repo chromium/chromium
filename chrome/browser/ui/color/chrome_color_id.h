@@ -394,6 +394,8 @@
   E_CPONLY(kColorRealboxResultsUrl) \
   E_CPONLY(kColorRealboxResultsUrlSelected) \
   E_CPONLY(kColorRealboxSearchIconBackground) \
+  E_CPONLY(kColorRealboxSelectionBackground) \
+  E_CPONLY(kColorRealboxSelectionForeground) \
   E_CPONLY(kColorRealboxShadow) \
   /* Screenshot captured bubble colors. */ \
   E_CPONLY(kColorScreenshotCapturedImageBackground) \

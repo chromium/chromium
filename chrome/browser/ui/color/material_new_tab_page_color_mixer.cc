@@ -83,6 +83,10 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
     mixer[kColorRealboxPlaceholder] = {kColorOmniboxTextDimmed};
     mixer[kColorRealboxSearchIconBackground] = {kColorOmniboxResultsIcon};
     mixer[kColorRealboxLensVoiceIconBackground] = {ui::kColorSysPrimary};
+    mixer[kColorRealboxSelectionBackground] = {
+        kColorOmniboxSelectionBackground};
+    mixer[kColorRealboxSelectionForeground] = {
+        kColorOmniboxSelectionForeground};
 
     // Expanded state theme colors.
     mixer[kColorRealboxAnswerIconBackground] = {
