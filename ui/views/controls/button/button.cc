@@ -30,6 +30,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
+#include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/button/button_controller_delegate.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -395,10 +396,15 @@ void Button::SetFocusPainter(std::unique_ptr<Painter> focus_painter) {
 }
 
 void Button::SetHighlighted(bool highlighted) {
-  InkDrop::Get(ink_drop_view_)
-      ->AnimateToState(highlighted ? views::InkDropState::ACTIVATED
-                                   : views::InkDropState::DEACTIVATED,
-                       nullptr);
+  // Do nothing if the ink drop's target state matches what we are trying to set
+  // since same state transitions may restart animations.
+  InkDropState state = highlighted ? views::InkDropState::ACTIVATED
+                                   : views::InkDropState::DEACTIVATED;
+  if (InkDrop::Get(ink_drop_view_)->GetInkDrop()->GetTargetInkDropState() ==
+      state) {
+    return;
+  }
+  InkDrop::Get(ink_drop_view_)->AnimateToState(state, nullptr);
 }
 
 Button::ScopedAnchorHighlight Button::AddAnchorHighlight() {
@@ -585,8 +591,12 @@ void Button::OnDragDone() {
   if (state_ != STATE_DISABLED) {
     SetState(STATE_NORMAL);
   }
-  InkDrop::Get(ink_drop_view_)
-      ->AnimateToState(InkDropState::HIDDEN, nullptr /* event */);
+  if (anchor_count_ > 0) {
+    SetHighlighted(true);
+  } else {
+    InkDrop::Get(ink_drop_view_)
+        ->AnimateToState(InkDropState::HIDDEN, nullptr /* event */);
+  }
 }
 
 void Button::OnPaint(gfx::Canvas* canvas) {
@@ -627,6 +637,9 @@ void Button::VisibilityChanged(View* starting_from, bool visible) {
     return;
   }
   SetState(visible && ShouldEnterHoveredState() ? STATE_HOVERED : STATE_NORMAL);
+  if (visible && anchor_count_ > 0) {
+    SetHighlighted(true);
+  }
 }
 
 void Button::ViewHierarchyChanged(const ViewHierarchyChangedDetails& details) {
