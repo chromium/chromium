@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_chip_view.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_resource_view.h"
+#include "chrome/browser/ui/views/performance_controls/test_support/memory_saver_unit_test_mixin.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -43,75 +44,19 @@
 constexpr int kMemorySavingsKilobytes = 100 * 1024;
 constexpr int kSmallMemorySavingsKilobytes = 10;
 
-class DiscardMockNavigationHandle : public content::MockNavigationHandle {
+class MemorySaverBubbleViewTest
+    : public MemorySaverUnitTestMixin<TestWithBrowserView> {
  public:
-  void SetWasDiscarded(bool was_discarded) { was_discarded_ = was_discarded; }
-  bool ExistingDocumentWasDiscarded() const override { return was_discarded_; }
-  void SetWebContents(content::WebContents* web_contents) {
-    web_contents_ = web_contents;
-  }
-  content::WebContents* GetWebContents() override { return web_contents_; }
-
- private:
-  bool was_discarded_ = false;
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
-};
-
-class MemorySaverBubbleViewTest : public TestWithBrowserView {
- public:
- protected:
-  MemorySaverBubbleViewTest()
-      : TestWithBrowserView(
-            base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {}
-
   void SetUp() override {
     feature_list_.InitAndDisableFeature(
         performance_manager::features::kMemorySavingsReportingImprovements);
 
-    TestWithBrowserView::SetUp();
+    MemorySaverUnitTestMixin::SetUp();
 
     AddNewTab(kMemorySavingsKilobytes,
               ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
-    performance_manager::user_tuning::UserPerformanceTuningManager::
-        GetInstance()
-            ->SetMemorySaverModeEnabled(true);
-  }
-
-  // Creates a new tab at index 0 that would report the given memory savings and
-  // discard reason if the tab was discarded
-  void AddNewTab(int memory_savings,
-                 mojom::LifecycleUnitDiscardReason discard_reason) {
-    AddTab(browser(), GURL("http://foo"));
-    content::WebContents* const contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    MemorySaverChipTabHelper::CreateForWebContents(contents);
-    performance_manager::user_tuning::UserPerformanceTuningManager::
-        PreDiscardResourceUsage::CreateForWebContents(contents, memory_savings,
-                                                      discard_reason);
-  }
-
-  void SetTabDiscardState(int tab_index, bool is_discarded) {
-    content::WebContents* const web_contents =
-        browser()->tab_strip_model()->GetWebContentsAt(tab_index);
-    std::unique_ptr<DiscardMockNavigationHandle> navigation_handle =
-        std::make_unique<DiscardMockNavigationHandle>();
-    navigation_handle.get()->SetWasDiscarded(is_discarded);
-    navigation_handle.get()->SetWebContents(web_contents);
-    MemorySaverChipTabHelper::FromWebContents(web_contents)
-        ->DidStartNavigation(navigation_handle.get());
-
-    browser_view()
-        ->GetLocationBarView()
-        ->page_action_icon_controller()
-        ->UpdateAll();
-  }
-
-  PageActionIconView* GetPageActionIconView() {
-    return browser_view()
-        ->GetLocationBarView()
-        ->page_action_icon_controller()
-        ->GetIconView(PageActionIconType::kMemorySaver);
+    SetMemorySaverModeEnabled(true);
   }
 
   template <class T>
