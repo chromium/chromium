@@ -681,7 +681,7 @@ LogicalRect InkOverflow::ComputeMarkerOverflow(
     std::optional<TextOffsetRange> marker_offsets =
         mapping_context.GetTextContentOffsets(*marker);
     if (!marker_offsets) {
-      return LogicalRect();
+      continue;
     }
     LogicalRect decoration_bound;
     if (pseudo_style && pseudo_style->HasAppliedTextDecorations()) {
