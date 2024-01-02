@@ -70,7 +70,6 @@ BASE_DECLARE_FEATURE(kDeferKeepScreenOnDuringGesture);
 BASE_DECLARE_FEATURE(kDeferNotifyInMotion);
 BASE_DECLARE_FEATURE(kDeferTabSwitcherLayoutCreation);
 BASE_DECLARE_FEATURE(kDelayTempStripRemoval);
-BASE_DECLARE_FEATURE(kDelayTransitionsForAnimation);
 BASE_DECLARE_FEATURE(kDontPrefetchLibraries);
 BASE_DECLARE_FEATURE(kDownloadAutoResumptionThrottling);
 BASE_DECLARE_FEATURE(kDrawEdgeToEdge);

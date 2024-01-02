@@ -61,7 +61,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
-import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.bottom.ScrollingBottomViewSceneLayer;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarOverlayCoordinator;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -543,7 +542,7 @@ public class LayoutManagerImpl
         // TODO(mdjones): Remove the time related params from this method. The new animation system
         // has its own timer.
         boolean areAnimatorsComplete = mAnimationHandler.pushUpdate();
-        if (layout != null && ToolbarFeatures.shouldDelayTransitionsForAnimation()) {
+        if (layout != null) {
             areAnimatorsComplete &= !layout.isRunningAnimations();
         }
 

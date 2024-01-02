@@ -1169,9 +1169,7 @@ public class ToolbarManager
                         if (layoutType == LayoutType.TAB_SWITCHER) {
                             mToolbar.onTabSwitcherTransitionFinished();
                         }
-                        if (ToolbarFeatures.shouldDelayTransitionsForAnimation()) {
-                            mToolbar.onTransitionEnd();
-                        }
+                        mToolbar.onTransitionEnd();
                         if (layoutType == LayoutType.BROWSING) {
                             maybeShowUrlBarCursorIfHardwareKeyboardAvailable();
                         }
@@ -1188,9 +1186,7 @@ public class ToolbarManager
                                 mControlContainer.invalidateBitmap();
                             }
                         }
-                        if (ToolbarFeatures.shouldDelayTransitionsForAnimation()) {
-                            mToolbar.onTransitionStart();
-                        }
+                        mToolbar.onTransitionStart();
                     }
 
                     @Override

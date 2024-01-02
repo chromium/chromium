@@ -1663,14 +1663,9 @@ public class ToolbarPhone extends ToolbarLayout
      *         toolbar.
      */
     private boolean shouldDrawLocationBar() {
-        if (ToolbarFeatures.shouldDelayTransitionsForAnimation()) {
-            // The location bar should have alpha or clip+translation when its not supposed to be
-            // shown. Needs to be drawn during transitions, such as entering/exiting tab switcher.
-            return mLocationBarBackground != null;
-        } else {
-            return mLocationBarBackground != null
-                    && (mTabSwitcherState == STATIC_TAB || mTextureCaptureMode);
-        }
+        // The location bar should have alpha or clip+translation when its not supposed to be
+        // shown. Needs to be drawn during transitions, such as entering/exiting tab switcher.
+        return mLocationBarBackground != null;
     }
 
     private boolean drawLocationBar(Canvas canvas, long drawingTime) {
@@ -2098,11 +2093,9 @@ public class ToolbarPhone extends ToolbarLayout
             updateViewsForTabSwitcherMode();
         }
 
-        if (ToolbarFeatures.shouldDelayTransitionsForAnimation()) {
-            // Since mTabSwitcherState has changed, we need to also check if mVisualState should
-            // change.
-            updateVisualsForLocationBarState();
-        }
+        // Since mTabSwitcherState has changed, we need to also check if mVisualState should
+        // change.
+        updateVisualsForLocationBarState();
 
         updateButtonsTranslationY();
 

@@ -29,17 +29,6 @@ public final class ToolbarFeatures {
     }
 
     /**
-     * Returns whether the layout system will delay transitions between start/done hiding/showing
-     * for Android view animations or not. When this is delayed, the toolbar code will try to
-     * always draw itself from Android views during these transitions, to avoid letting the captured
-     * bitmap leak through during transitions. With suppression enabled, the captured bitmap is less
-     * reliable during these transitions.
-     */
-    public static boolean shouldDelayTransitionsForAnimation() {
-        return ChromeFeatureList.sDelayTransitionsForAnimation.isEnabled();
-    }
-
-    /**
      * Returns whether to record metrics from suppression experiment. This allows an arm of
      * suppression to run without the overhead from reporting any extra metrics in Java. Using a
      * feature instead of a param to utilize Java side caching.

@@ -216,7 +216,6 @@ public abstract class ChromeFeatureList {
     public static final String DEFER_TAB_SWITCHER_LAYOUT_CREATION =
             "DeferTabSwitcherLayoutCreation";
     public static final String DELAY_TEMP_STRIP_REMOVAL = "DelayTempStripRemoval";
-    public static final String DELAY_TRANSITIONS_FOR_ANIMATION = "DelayTransitionsForAnimation";
     public static final String DETAILED_LANGUAGE_SETTINGS = "DetailedLanguageSettings";
     public static final String DISCO_FEED_ENDPOINT = "DiscoFeedEndpoint";
     public static final String DNS_OVER_HTTPS = "DnsOverHttps";
@@ -668,8 +667,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(DEFER_KEEP_SCREEN_ON_DURING_GESTURE, false);
     public static final MutableFlagWithSafeDefault sDeferNotifyInMotion =
             newMutableFlagWithSafeDefault(DEFER_NOTIFY_IN_MOTION, false);
-    public static final MutableFlagWithSafeDefault sDelayTransitionsForAnimation =
-            newMutableFlagWithSafeDefault(DELAY_TRANSITIONS_FOR_ANIMATION, true);
     public static final MutableFlagWithSafeDefault sEnableBookmarkFoldersForAccountStorage =
             newMutableFlagWithSafeDefault(ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE, false);
 

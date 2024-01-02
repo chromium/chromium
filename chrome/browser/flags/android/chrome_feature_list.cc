@@ -202,7 +202,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDeferNotifyInMotion,
     &kDeferTabSwitcherLayoutCreation,
     &kDelayTempStripRemoval,
-    &kDelayTransitionsForAnimation,
     &kDragDropIntoOmnibox,
     &kDrawEdgeToEdge,
     &kDrawNativeEdgeToEdge,
@@ -566,10 +565,6 @@ BASE_FEATURE(kDeferTabSwitcherLayoutCreation,
 
 BASE_FEATURE(kDelayTempStripRemoval,
              "DelayTempStripRemoval",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDelayTransitionsForAnimation,
-             "DelayTransitionsForAnimation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDownloadAutoResumptionThrottling,
