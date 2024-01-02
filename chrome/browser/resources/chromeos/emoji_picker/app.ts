@@ -74,13 +74,16 @@ export class EmojiPickerApp extends PolymerElement {
     return {
       category: {type: String, value: 'emoji', observer: 'onCategoryChanged'},
       emojiGroupTabs: {type: Array},
-      dummyTab: {type: Object, value: () => ({
-        name: '',
-        groupId: '-1',
-        active: false,
-        disabled: false,
-        category: CategoryEnum.GIF,
-      })},
+      dummyTab: {
+        type: Object,
+        value: () => ({
+          name: '',
+          groupId: '-1',
+          active: false,
+          disabled: false,
+          category: CategoryEnum.GIF,
+        }),
+      },
       categoriesData: {type: Array, value: () => ([])},
       categoriesGroupElements: {type: Array, value: () => ([])},
       activeInfiniteGroupId: {type: String, value: null},
@@ -100,6 +103,7 @@ export class EmojiPickerApp extends PolymerElement {
       // fully launched.
       jellySupport: {type: Boolean, value: false},
       sealSupport: {type: Boolean, value: false},
+      variantGroupingSupport: {type: Boolean, value: false},
       showGifNudgeOverlay: {type: Boolean, value: false},
       nextGifPos: {type: Object, value: () => ({})},
       status: {type: Status, value: null},
@@ -122,6 +126,7 @@ export class EmojiPickerApp extends PolymerElement {
   private gifSupport: boolean;
   private jellySupport: boolean;
   private sealSupport: boolean;
+  private variantGroupingSupport: boolean;
   private showGifNudgeOverlay: boolean;
   private activeVariant: EmojiGroupComponent|null = null;
   private apiProxy: EmojiPickerApiProxy = EmojiPickerApiProxyImpl.getInstance();
@@ -511,6 +516,8 @@ export class EmojiPickerApp extends PolymerElement {
     this.jellySupport =
         featureList.includes(Feature.EMOJI_PICKER_JELLY_SUPPORT);
     this.sealSupport = featureList.includes(Feature.EMOJI_PICKER_SEAL_SUPPORT);
+    this.variantGroupingSupport =
+        featureList.includes(Feature.EMOJI_PICKER_VARIANT_GROUPING_SUPPORT);
   }
 
   private fetchOrderingData(url: string): Promise<EmojiGroupData> {

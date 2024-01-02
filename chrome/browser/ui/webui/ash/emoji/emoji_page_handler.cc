@@ -305,6 +305,12 @@ void EmojiPageHandler::GetFeatureList(GetFeatureListCallback callback) {
         emoji_picker::mojom::Feature::EMOJI_PICKER_SEAL_SUPPORT);
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kImeSystemEmojiPickerVariantGrouping)) {
+    enabled_features.push_back(
+        emoji_picker::mojom::Feature::EMOJI_PICKER_VARIANT_GROUPING_SUPPORT);
+  }
+
   std::move(callback).Run(enabled_features);
 }
 

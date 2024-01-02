@@ -173,6 +173,8 @@ export class EmojiGroupComponent extends PolymerElement {
         text,
         baseEmoji: emoji.base.string,
         isVariant: text !== emoji.base.string,
+        groupedTone: false,
+        groupedGender: false,
         alternates: emoji.alternates ?? [],
       }));
     } else {

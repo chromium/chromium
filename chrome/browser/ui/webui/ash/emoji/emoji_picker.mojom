@@ -22,6 +22,9 @@ enum Feature {
   EMOJI_PICKER_JELLY_SUPPORT = 3,
   // Extends the emoji picker with Seal support.
   EMOJI_PICKER_SEAL_SUPPORT = 4,
+  // Extends the emoji picker with global variant grouping by syncing skin tone
+  // and gender preferences between emojis.
+  EMOJI_PICKER_VARIANT_GROUPING_SUPPORT = 5,
 };
 
 // The below structs are used to represent the Response format from the Tenor

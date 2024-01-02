@@ -59,6 +59,8 @@ export class EmojiVariants extends PolymerElement {
   static get properties() {
     return {
       variants: {type: Array, readonly: true},
+      groupedTone: {type: Boolean, readonly: true},
+      groupedGender: {type: Boolean, readonly: true},
       variantRows: {type: Array},
       baseEmoji: {type: Array},
       showSkinTones: {type: Boolean},
@@ -67,6 +69,8 @@ export class EmojiVariants extends PolymerElement {
     };
   }
   variants: Emoji[];
+  private groupedTone = false;
+  private groupedGender = false;
   private variantRows: Emoji[][];
   private baseEmoji: string;
   private showSkinTones: boolean;

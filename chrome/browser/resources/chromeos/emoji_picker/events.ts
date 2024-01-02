@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CategoryEnum, Emoji, VisualContent} from './types';
+import {CategoryEnum, Emoji, Gender, Tone, VisualContent} from './types';
 
 export type CategoryButtonClickEvent =
     CustomEvent<{categoryName: CategoryEnum}>;
@@ -19,6 +19,10 @@ export interface TextItem {
   text: string;
   baseEmoji?: string;
   isVariant: boolean;
+  tone?: Tone;
+  gender?: Gender;
+  groupedTone: boolean;
+  groupedGender: boolean;
   alternates: Emoji[];
 }
 
