@@ -420,7 +420,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.AMP.Experimental.PageTiming.InputToNavigation.Subframe"
-    units="ms" expires_after="2024-01-14">
+    units="ms" expires_after="2025-01-03">
   <owner>bmcquade@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -587,7 +587,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.AMP.PaintTiming.InputToFirstContentfulPaint.Subframe.FullNavigation"
-    units="ms" expires_after="2024-02-25">
+    units="ms" expires_after="2025-01-03">
   <owner>bmcquade@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -624,7 +624,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.AMP.PaintTiming.InputToLargestContentfulPaint.Subframe.FullNavigation"
-    units="ms" expires_after="2024-02-09">
+    units="ms" expires_after="2025-01-03">
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
