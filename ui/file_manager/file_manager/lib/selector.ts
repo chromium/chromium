@@ -148,8 +148,8 @@ export class SelectorNode<T> implements Selector<T> {
    * default selectors using `combineXSelectors()` (and resulting selectors can be
    * further combined using `combineXSelectors()`).
    */
-  static createSourceNode<T>(select: () => T) {
-    return new SelectorNode<T>([], select);
+  static createSourceNode<T>(select: () => T, name?: string) {
+    return new SelectorNode<T>([], select, name);
   }
 
   /**
@@ -264,16 +264,18 @@ export class SelectorNode<T> implements Selector<T> {
 export function combine1Selector<O, I1>(
     combineFunction: (i1: I1) => O,
     s1: Selector<I1>,
+    name?: string,
     ): Selector<O> {
-  return new SelectorNode<O>([s1], combineFunction as any);
+  return new SelectorNode<O>([s1], combineFunction as any, name);
 }
 /** Create a selector whose value derives from 2 Selectors. */
 export function combine2Selectors<O, I1, I2>(
     combineFunction: (i1: I1, i2: I2) => O,
     s1: Selector<I1>,
     s2: Selector<I2>,
+    name?: string,
     ): Selector<O> {
-  return new SelectorNode<O>([s1, s2], combineFunction as any);
+  return new SelectorNode<O>([s1, s2], combineFunction as any, name);
 }
 /** Create a selector whose value derives from 3 Selectors. */
 export function combine3Selectors<O, I1, I2, I3>(
@@ -281,8 +283,9 @@ export function combine3Selectors<O, I1, I2, I3>(
     s1: Selector<I1>,
     s2: Selector<I2>,
     s3: Selector<I3>,
+    name?: string,
     ): Selector<O> {
-  return new SelectorNode<O>([s1, s2, s3], combineFunction as any);
+  return new SelectorNode<O>([s1, s2, s3], combineFunction as any, name);
 }
 /** Create a selector whose value derives from 4 Selectors. */
 export function combine4Selectors<O, I1, I2, I3, I4>(
@@ -291,8 +294,9 @@ export function combine4Selectors<O, I1, I2, I3, I4>(
     s2: Selector<I2>,
     s3: Selector<I3>,
     s4: Selector<I4>,
+    name?: string,
     ): Selector<O> {
-  return new SelectorNode<O>([s1, s2, s3, s4], combineFunction as any);
+  return new SelectorNode<O>([s1, s2, s3, s4], combineFunction as any, name);
 }
 
 /**

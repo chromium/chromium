@@ -184,7 +184,8 @@ export class BaseStore<State> {
     }
 
     // Connect the default root selector to the Selector Emitter.
-    const rootSelector = SelectorNode.createSourceNode(() => this.state_);
+    const rootSelector =
+        SelectorNode.createSourceNode(() => this.state_, 'root');
     this.selectorEmitter_.addSource(rootSelector);
     this.selector = rootSelector;
 
