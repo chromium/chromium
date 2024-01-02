@@ -216,9 +216,7 @@ void MouseCursorOverlayController::DisconnectFromToolkitForTesting() {
 // static
 SkBitmap MouseCursorOverlayController::GetCursorImage(
     const gfx::NativeCursor& cursor) {
-  return skia::NSImageToSkBitmapWithColorSpace(
-      cursor.Get().image, /*is_opaque=*/false,
-      base::mac::GetSystemColorSpace());
+  return skia::NSImageToSkBitmap(cursor.Get().image, /*is_opaque=*/false);
 }
 
 }  // namespace content

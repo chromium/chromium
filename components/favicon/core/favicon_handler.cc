@@ -315,12 +315,8 @@ void FaviconHandler::NotifyFaviconUpdated(const GURL& icon_url,
   if (image.IsEmpty())
     return;
 
-  gfx::Image image_with_adjusted_colorspace = image;
-  favicon_base::SetFaviconColorSpace(&image_with_adjusted_colorspace);
-
   delegate_->OnFaviconUpdated(last_page_url_, handler_type_, icon_url,
-                              icon_url != notification_icon_url_,
-                              image_with_adjusted_colorspace);
+                              icon_url != notification_icon_url_, image);
 
   notification_icon_url_ = icon_url;
   notification_icon_type_ = icon_type;

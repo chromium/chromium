@@ -160,12 +160,6 @@ std::vector<float> GetFaviconScales() {
   return favicon_scales;
 }
 
-void SetFaviconColorSpace(gfx::Image* image) {
-#if BUILDFLAG(IS_MAC)
-  image->SetSourceColorSpace(base::mac::GetSystemColorSpace());
-#endif  // BUILDFLAG(IS_MAC)
-}
-
 gfx::Image SelectFaviconFramesFromPNGs(
     const std::vector<favicon_base::FaviconRawBitmapResult>& png_data,
     const std::vector<float>& favicon_scales,

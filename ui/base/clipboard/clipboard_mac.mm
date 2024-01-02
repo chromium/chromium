@@ -576,20 +576,18 @@ void ClipboardMac::WriteBitmapInternal(const SkBitmap& bitmap,
   DCHECK_EQ(bitmap.colorType(), kN32_SkColorType);
 
   if (!base::FeatureList::IsEnabled(features::kMacClipboardWriteImageWithPng)) {
-    NSImage* image = skia::SkBitmapToNSImageWithColorSpace(
-        bitmap, base::mac::GetSystemColorSpace());
+    NSImage* image = skia::SkBitmapToNSImage(bitmap);
     if (!image) {
-      NOTREACHED() << "SkBitmapToNSImageWithColorSpace failed";
+      NOTREACHED() << "SkBitmapToNSImage failed";
       return;
     }
     [pasteboard writeObjects:@[ image ]];
     return;
   }
 
-  NSBitmapImageRep* image_rep = skia::SkBitmapToNSBitmapImageRepWithColorSpace(
-      bitmap, base::mac::GetSystemColorSpace());
+  NSBitmapImageRep* image_rep = skia::SkBitmapToNSBitmapImageRep(bitmap);
   if (!image_rep) {
-    NOTREACHED() << "SkBitmapToNSBitmapImageRepWithColorSpace failed";
+    NOTREACHED() << "SkBitmapToNSBitmapImageRep failed";
     return;
   }
   // Attempt to format the image representation as a PNG, and write it directly

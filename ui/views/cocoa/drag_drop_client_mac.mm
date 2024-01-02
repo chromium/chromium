@@ -59,8 +59,7 @@ void DragDropClientMac::StartDragAndDrop(
                        clickCount:1
                          pressure:1.0];
 
-  NSImage* image = gfx::NSImageFromImageSkiaWithColorSpace(
-      provider_mac.GetDragImage(), base::mac::GetSRGBColorSpace());
+  NSImage* image = gfx::NSImageFromImageSkia(provider_mac.GetDragImage());
 
   DCHECK(!NSEqualSizes(image.size, NSZeroSize));
   NSArray<NSDraggingItem*>* drag_items = provider_mac.GetDraggingItems();

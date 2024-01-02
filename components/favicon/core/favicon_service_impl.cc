@@ -35,7 +35,6 @@ void FaviconServiceImpl::RunFaviconImageCallbackWithBitmapResults(
   image_result.image = favicon_base::SelectFaviconFramesFromPNGs(
       favicon_bitmap_results, favicon_base::GetFaviconScales(),
       desired_size_in_dip);
-  favicon_base::SetFaviconColorSpace(&image_result.image);
 
   image_result.icon_url = image_result.image.IsEmpty()
                               ? GURL()
