@@ -92,6 +92,8 @@ class TestMetricsRenderFrameObserver : public MetricsRenderFrameObserver,
 
   bool HasNoRenderFrame() const override { return false; }
 
+  bool IsMainFrame() const override { return true; }
+
  private:
   FakePageTimingSender::PageTimingValidator validator_;
   mutable mojom::PageLoadTimingPtr fake_timing_;

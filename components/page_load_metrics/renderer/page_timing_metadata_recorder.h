@@ -35,6 +35,8 @@ class PageTimingMetadataRecorder {
 
     absl::optional<base::TimeTicks> first_input_timestamp;
     absl::optional<base::TimeDelta> first_input_delay;
+    // Frame local largest contentful paint timestamp.
+    absl::optional<base::TimeTicks> frame_largest_contentful_paint;
 
     // Stores the `DocumentToken` so that we can use it to find the value of
     // some browser side calculated metrics. Currently it is used to retrieve
@@ -42,7 +44,8 @@ class PageTimingMetadataRecorder {
     absl::optional<blink::DocumentToken> document_token;
   };
 
-  PageTimingMetadataRecorder(const MonotonicTiming& initial_timing);
+  PageTimingMetadataRecorder(const MonotonicTiming& initial_timing,
+                             const bool is_main_frame);
   ~PageTimingMetadataRecorder();
 
   PageTimingMetadataRecorder(const PageTimingMetadataRecorder&) = delete;
@@ -87,6 +90,7 @@ class PageTimingMetadataRecorder {
       const absl::optional<base::TimeTicks>& first_contentful_paint);
   void UpdateLargestContentfulPaintMetadata(
       const absl::optional<base::TimeTicks>& navigation_start,
+      const absl::optional<base::TimeTicks>& largest_contentful_paint,
       const absl::optional<blink::DocumentToken>& document_token);
 
   // Uniquely identifies an instance of the PageTimingMetadataRecorder. Used to
@@ -100,6 +104,8 @@ class PageTimingMetadataRecorder {
   uint32_t interaction_count_ = 0;
 
   MonotonicTiming timing_;
+
+  const bool is_main_frame_;
 };
 
 }  // namespace page_load_metrics

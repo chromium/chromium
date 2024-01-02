@@ -53,7 +53,8 @@ PageTimingMetricsSender::PageTimingMetricsSender(
     std::unique_ptr<base::OneShotTimer> timer,
     mojom::PageLoadTimingPtr initial_timing,
     const PageTimingMetadataRecorder::MonotonicTiming& initial_monotonic_timing,
-    std::unique_ptr<PageResourceDataUse> initial_request)
+    std::unique_ptr<PageResourceDataUse> initial_request,
+    bool is_main_frame)
     : sender_(std::move(sender)),
       timer_(std::move(timer)),
       last_timing_(std::move(initial_timing)),
@@ -62,7 +63,7 @@ PageTimingMetricsSender::PageTimingMetricsSender(
       metadata_(mojom::FrameMetadata::New()),
       soft_navigation_metrics_(CreateSoftNavigationMetrics()),
       buffer_timer_delay_ms_(GetBufferTimerDelayMillis(TimerType::kRenderer)),
-      metadata_recorder_(initial_monotonic_timing) {
+      metadata_recorder_(initial_monotonic_timing, is_main_frame) {
   InitiateUserInteractionTiming();
   if (initial_request) {
     int resource_id = initial_request->resource_id();

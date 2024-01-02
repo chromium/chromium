@@ -22,6 +22,25 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 
 namespace blink {
+namespace {
+absl::optional<base::TimeTicks> MergeLargestContentfulPaintValues(
+    const LargestContentfulPaintDetails& timing) {
+  const uint64_t text_paint_size = timing.largest_text_paint_size;
+  const uint64_t image_paint_size = timing.largest_image_paint_size;
+  if (text_paint_size == 0 && image_paint_size == 0) {
+    return absl::nullopt;
+  }
+
+  const base::TimeTicks largest_text_paint = timing.largest_text_paint_time;
+  const base::TimeTicks largest_image_paint = timing.largest_image_paint_time;
+
+  if (text_paint_size == image_paint_size) {
+    return std::max(largest_text_paint, largest_image_paint);
+  }
+  return text_paint_size > image_paint_size ? largest_text_paint
+                                            : largest_image_paint;
+}
+}  // namespace
 
 static uint64_t ToIntegerMilliseconds(base::TimeDelta duration,
                                       bool cross_origin_isolated_capability) {
@@ -57,6 +76,9 @@ LargestContentfulPaintDetailsForReporting PerformanceTimingForReporting::
   absl::optional<base::TimeDelta> largest_image_load_end =
       MonotonicTimeToPseudoWallTime(timing.largest_image_load_end);
 
+  absl::optional<base::TimeTicks> merged_unclamped_paint_time =
+      MergeLargestContentfulPaintValues(timing);
+
   return {largest_image_paint_time,
           timing.largest_image_paint_size,
           largest_image_discovery_time,
@@ -71,7 +93,8 @@ LargestContentfulPaintDetailsForReporting PerformanceTimingForReporting::
 
           timing.largest_contentful_paint_image_request_priority,
           timing.is_loaded_from_memory_cache,
-          timing.is_preloaded_with_early_hints};
+          timing.is_preloaded_with_early_hints,
+          merged_unclamped_paint_time};
 }
 
 PerformanceTimingForReporting::PerformanceTimingForReporting(

@@ -28,8 +28,9 @@ struct ProfileMetadataTaggingRequest {
 
 class TestPageTimingMetadataRecorder : public PageTimingMetadataRecorder {
  public:
-  explicit TestPageTimingMetadataRecorder(const MonotonicTiming& initial_timing)
-      : PageTimingMetadataRecorder(initial_timing) {}
+  explicit TestPageTimingMetadataRecorder(const MonotonicTiming& initial_timing,
+                                          bool is_main_frame = false)
+      : PageTimingMetadataRecorder(initial_timing, is_main_frame) {}
 
   void ApplyMetadataToPastSamples(base::TimeTicks period_start,
                                   base::TimeTicks period_end,
@@ -178,6 +179,102 @@ TEST_F(PageTimingMetadataRecorderTest, FirstInputDelayInvalidDuration) {
 
   // Should accept period_end == period_start.
   timing.first_input_delay = base::Milliseconds(0);
+  recorder.UpdateMetadata(timing);
+  EXPECT_EQ(1u, requests.size());
+}
+
+TEST_F(PageTimingMetadataRecorderTest, MainFrameLargestContentfulPaintUpdate) {
+  PageTimingMetadataRecorder::MonotonicTiming timing;
+  // The PageTimingMetadataRecorder constructor is supposed to call
+  // UpdateMetadata once, but due to class construction limitation, the
+  // call to ApplyMetadataToPastSample will not be captured by test class,
+  // as the test class is not ready yet.
+  TestPageTimingMetadataRecorder recorder(timing, /*is_main_frame=*/true);
+  const std::vector<MetadataTaggingRequest>& requests =
+      recorder.GetMetadataTaggingRequests();
+
+  timing.navigation_start = base::TimeTicks::Now() - base::Milliseconds(500);
+  timing.frame_largest_contentful_paint =
+      *timing.navigation_start + base::Milliseconds(10);
+  recorder.UpdateMetadata(timing);
+  ASSERT_EQ(1u, requests.size());
+  EXPECT_EQ(*timing.navigation_start, requests.at(0).period_start);
+  EXPECT_EQ(*timing.frame_largest_contentful_paint, requests.at(0).period_end);
+  EXPECT_EQ(
+      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.MainFrame",
+      requests.at(0).name);
+  EXPECT_EQ(10, requests.at(0).value);
+
+  // Update largest contentful paint timedelta should send another request.
+  timing.frame_largest_contentful_paint =
+      *timing.navigation_start + base::Milliseconds(20);
+  recorder.UpdateMetadata(timing);
+  ASSERT_EQ(2u, requests.size());
+  EXPECT_EQ(*timing.navigation_start, requests.at(1).period_start);
+  EXPECT_EQ(*timing.frame_largest_contentful_paint, requests.at(1).period_end);
+  EXPECT_EQ(
+      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.MainFrame",
+      requests.at(1).name);
+  EXPECT_EQ(20, requests.at(1).value);
+
+  // If nothing modified, should not send any requests.
+  recorder.UpdateMetadata(timing);
+  EXPECT_EQ(2u, requests.size());
+}
+
+TEST_F(PageTimingMetadataRecorderTest, SubFrameLargestContentfulPaintUpdate) {
+  PageTimingMetadataRecorder::MonotonicTiming timing;
+  // The PageTimingMetadataRecorder constructor is supposed to call
+  // UpdateMetadata once, but due to class construction limitation, the
+  // call to ApplyMetadataToPastSample will not be captured by test class,
+  // as the test class is not ready yet.
+  TestPageTimingMetadataRecorder recorder(timing, /* is_main_frame */ false);
+  const std::vector<MetadataTaggingRequest>& requests =
+      recorder.GetMetadataTaggingRequests();
+
+  timing.navigation_start = base::TimeTicks::Now() - base::Milliseconds(500);
+  timing.frame_largest_contentful_paint =
+      *timing.navigation_start + base::Milliseconds(10);
+  recorder.UpdateMetadata(timing);
+  ASSERT_EQ(1u, requests.size());
+  EXPECT_EQ(*timing.navigation_start, requests.at(0).period_start);
+  EXPECT_EQ(*timing.frame_largest_contentful_paint, requests.at(0).period_end);
+  EXPECT_EQ("PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.SubFrame",
+            requests.at(0).name);
+  EXPECT_EQ(10, requests.at(0).value);
+
+  // Update largest contentful paint timedelta should send another request.
+  timing.frame_largest_contentful_paint =
+      *timing.navigation_start + base::Milliseconds(20);
+  recorder.UpdateMetadata(timing);
+  ASSERT_EQ(2u, requests.size());
+  EXPECT_EQ(*timing.navigation_start, requests.at(1).period_start);
+  EXPECT_EQ(*timing.frame_largest_contentful_paint, requests.at(1).period_end);
+  EXPECT_EQ("PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.SubFrame",
+            requests.at(1).name);
+  EXPECT_EQ(20, requests.at(1).value);
+
+  // If nothing modified, should not send any requests.
+  recorder.UpdateMetadata(timing);
+  EXPECT_EQ(2u, requests.size());
+}
+
+TEST_F(PageTimingMetadataRecorderTest,
+       FrameLargestContentfulPaintInvalidDuration) {
+  PageTimingMetadataRecorder::MonotonicTiming timing;
+  TestPageTimingMetadataRecorder recorder(timing);
+  const std::vector<MetadataTaggingRequest>& requests =
+      recorder.GetMetadataTaggingRequests();
+
+  timing.navigation_start = base::TimeTicks::Now();
+  // Should reject negative TimeDelta.
+  timing.frame_largest_contentful_paint =
+      *timing.navigation_start - base::Hours(1);
+  recorder.UpdateMetadata(timing);
+  EXPECT_EQ(0u, requests.size());
+
+  // Should accept zero TimeDelta.
+  timing.frame_largest_contentful_paint = timing.navigation_start;
   recorder.UpdateMetadata(timing);
   EXPECT_EQ(1u, requests.size());
 }

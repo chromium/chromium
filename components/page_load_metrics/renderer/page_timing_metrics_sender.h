@@ -52,7 +52,8 @@ class PageTimingMetricsSender {
                           mojom::PageLoadTimingPtr initial_timing,
                           const PageTimingMetadataRecorder::MonotonicTiming&
                               initial_monotonic_timing,
-                          std::unique_ptr<PageResourceDataUse> initial_request);
+                          std::unique_ptr<PageResourceDataUse> initial_request,
+                          bool is_main_frame);
 
   PageTimingMetricsSender(const PageTimingMetricsSender&) = delete;
   PageTimingMetricsSender& operator=(const PageTimingMetricsSender&) = delete;

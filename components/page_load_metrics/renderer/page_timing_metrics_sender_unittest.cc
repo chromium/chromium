@@ -30,7 +30,8 @@ class TestPageTimingMetricsSender : public PageTimingMetricsSender {
                                 std::make_unique<base::MockOneShotTimer>(),
                                 std::move(initial_timing),
                                 monotonic_timing,
-                                /* initial_request=*/nullptr) {}
+                                /* initial_request=*/nullptr,
+                                /*is_main_frame=*/true) {}
 
   base::MockOneShotTimer* mock_timer() const {
     return static_cast<base::MockOneShotTimer*>(timer());
