@@ -556,7 +556,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceTracking.Untrack.BookmarkFound" enum="Boolean"
-    expires_after="2024-01-03">
+    expires_after="2025-01-01">
   <owner>ayman@chromium.org</owner>
   <owner>davidjm@chromium.org</owner>
   <summary>
