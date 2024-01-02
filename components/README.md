@@ -84,7 +84,13 @@ Components **can** depend on `//content/public`, `//ipc`, and
 `//third_party/blink/public`. This must be made explicit in the `DEPS` file of
 the component. If such a component is used by Chrome for iOS (which does not
 use content or IPC), the component will have to be in the form of a [layered
-component](http://www.chromium.org/developers/design-documents/layered-components-design).
+component](https://www.chromium.org/developers/design-documents/layered-components-design).
+In particular, code that is shared with iOS *cannot* depend on any of the
+above modules; those dependencies must be injected into the shared code (either via
+a layered component structure or directly from the embedder for simple dependencies
+such as booleans that can be passed as constructor parameters). It is not
+an acceptable solution to conditionally depend on the above modules in code shared
+with iOS.
 
 `//chrome`, `//ios/chrome`, `//content` and `//ios/web` **can** depend on
 individual components. The dependency might have to be made explicit in the
