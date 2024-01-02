@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/mouse_wheel_event_queue.h"
+#include "content/common/input/mouse_wheel_event_queue.h"
 
 #include <stddef.h>
 
@@ -15,7 +15,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "content/browser/renderer_host/input/timeout_monitor.h"
+#include "content/common/input/timeout_monitor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -617,7 +617,7 @@ TEST_F(MouseWheelEventQueueTest, GestureRailScrolling) {
       0U, sent_gesture_event(scroll_update_index)->data.scroll_update.delta_x);
   EXPECT_EQ(
       1U, sent_gesture_event(scroll_update_index)->data.scroll_update.delta_y);
-    EXPECT_EQ(1U, GetAndResetSentEventCount());
+  EXPECT_EQ(1U, GetAndResetSentEventCount());
 }
 
 TEST_F(MouseWheelEventQueueTest, WheelScrollLatching) {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_MOUSE_WHEEL_EVENT_QUEUE_H_
-#define CONTENT_BROWSER_RENDERER_HOST_INPUT_MOUSE_WHEEL_EVENT_QUEUE_H_
+#ifndef CONTENT_COMMON_INPUT_MOUSE_WHEEL_EVENT_QUEUE_H_
+#define CONTENT_COMMON_INPUT_MOUSE_WHEEL_EVENT_QUEUE_H_
 
 #include <memory>
 
@@ -136,4 +136,4 @@ class CONTENT_EXPORT MouseWheelEventQueue {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_INPUT_MOUSE_WHEEL_EVENT_QUEUE_H_
+#endif  // CONTENT_COMMON_INPUT_MOUSE_WHEEL_EVENT_QUEUE_H_

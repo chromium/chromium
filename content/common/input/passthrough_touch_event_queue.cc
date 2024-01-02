@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/passthrough_touch_event_queue.h"
+#include "content/common/input/passthrough_touch_event_queue.h"
 
 #include <memory>
 #include <string>
@@ -11,7 +11,7 @@
 #include "base/auto_reset.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/trace_event/trace_event.h"
-#include "content/browser/renderer_host/input/touch_timeout_handler.h"
+#include "content/common/input/touch_timeout_handler.h"
 #include "content/common/input/web_touch_event_traits.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point_f.h"

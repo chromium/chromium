@@ -22,7 +22,6 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "cc/input/touch_action.h"
-#include "content/browser/renderer_host/input/input_router_client.h"
 #include "content/browser/renderer_host/input/mock_input_disposition_handler.h"
 #include "content/browser/renderer_host/input/mock_input_router_client.h"
 #include "content/browser/renderer_host/mock_render_widget_host.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/touch_timeout_handler.h"
+#include "content/common/input/touch_timeout_handler.h"
 
 #include <utility>
 
@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
-#include "content/browser/renderer_host/input/passthrough_touch_event_queue.h"
+#include "content/common/input/passthrough_touch_event_queue.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point_f.h"
 

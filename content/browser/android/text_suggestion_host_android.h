@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "content/browser/android/render_widget_host_connector.h"
-#include "content/browser/renderer_host/input/timeout_monitor.h"
+#include "content/common/input/timeout_monitor.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/input/input_host.mojom.h"
 #include "third_party/blink/public/mojom/input/input_messages.mojom.h"

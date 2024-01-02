@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_INPUT_DISPOSITION_HANDLER_H_
-#define CONTENT_BROWSER_RENDERER_HOST_INPUT_INPUT_DISPOSITION_HANDLER_H_
+#ifndef CONTENT_COMMON_INPUT_INPUT_DISPOSITION_HANDLER_H_
+#define CONTENT_COMMON_INPUT_INPUT_DISPOSITION_HANDLER_H_
 
 #include "content/common/input/event_with_latency_info.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
@@ -34,4 +34,4 @@ class InputDispositionHandler {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_INPUT_INPUT_DISPOSITION_HANDLER_H_
+#endif  // CONTENT_COMMON_INPUT_INPUT_DISPOSITION_HANDLER_H_

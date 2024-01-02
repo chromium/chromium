@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_INPUT_ROUTER_H_
-#define CONTENT_BROWSER_RENDERER_HOST_INPUT_INPUT_ROUTER_H_
+#ifndef CONTENT_COMMON_INPUT_INPUT_ROUTER_H_
+#define CONTENT_COMMON_INPUT_INPUT_ROUTER_H_
 
 #include "base/functional/callback_forward.h"
 #include "base/task/sequenced_task_runner.h"
 #include "cc/input/touch_action.h"
-#include "content/browser/renderer_host/input/passthrough_touch_event_queue.h"
 #include "content/common/content_export.h"
 #include "content/common/input/event_with_latency_info.h"
 #include "content/common/input/gesture_event_queue.h"
+#include "content/common/input/passthrough_touch_event_queue.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -113,4 +113,4 @@ class InputRouter {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_INPUT_INPUT_ROUTER_H_
+#endif  // CONTENT_COMMON_INPUT_INPUT_ROUTER_H_

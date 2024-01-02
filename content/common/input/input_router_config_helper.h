@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_INPUT_ROUTER_CONFIG_HELPER_H_
-#define CONTENT_BROWSER_RENDERER_HOST_INPUT_INPUT_ROUTER_CONFIG_HELPER_H_
+#ifndef CONTENT_COMMON_INPUT_INPUT_ROUTER_CONFIG_HELPER_H_
+#define CONTENT_COMMON_INPUT_INPUT_ROUTER_CONFIG_HELPER_H_
 
-#include "content/browser/renderer_host/input/input_router.h"
+#include "content/common/input/input_router.h"
 
 namespace content {
 
@@ -16,4 +16,4 @@ InputRouter::Config GetInputRouterConfigForPlatform(
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_INPUT_INPUT_ROUTER_CONFIG_HELPER_H_
+#endif  // CONTENT_COMMON_INPUT_INPUT_ROUTER_CONFIG_HELPER_H_

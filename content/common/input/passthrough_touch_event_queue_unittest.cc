@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/passthrough_touch_event_queue.h"
+#include "content/common/input/passthrough_touch_event_queue.h"
 
 #include <stddef.h>
 
@@ -17,7 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "content/browser/renderer_host/input/timeout_monitor.h"
+#include "content/common/input/timeout_monitor.h"
 #include "content/common/input/web_touch_event_traits.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"

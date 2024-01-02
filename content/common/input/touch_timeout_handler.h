@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_TIMEOUT_HANDLER_H_
-#define CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_TIMEOUT_HANDLER_H_
+#ifndef CONTENT_COMMON_INPUT_TOUCH_TIMEOUT_HANDLER_H_
+#define CONTENT_COMMON_INPUT_TOUCH_TIMEOUT_HANDLER_H_
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "content/browser/renderer_host/input/timeout_monitor.h"
 #include "content/common/input/event_with_latency_info.h"
+#include "content/common/input/timeout_monitor.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
 namespace content {
@@ -82,4 +82,4 @@ class TouchTimeoutHandler {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_TIMEOUT_HANDLER_H_
+#endif  // CONTENT_COMMON_INPUT_TOUCH_TIMEOUT_HANDLER_H_

@@ -11,9 +11,9 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "content/browser/renderer_host/input/input_disposition_handler.h"
-#include "content/browser/renderer_host/input/input_router.h"
 #include "content/browser/scheduler/browser_ui_thread_scheduler.h"
+#include "content/common/input/input_disposition_handler.h"
+#include "content/common/input/input_router.h"
 
 namespace content {
 
