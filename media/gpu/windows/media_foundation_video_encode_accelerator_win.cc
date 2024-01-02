@@ -989,8 +989,8 @@ void MediaFoundationVideoEncodeAccelerator::EncodeInternal(
     default:
       NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
                          "Unexpected encoder state"});
-      DCHECK(false) << "Abandon input frame for video encoder."
-                    << " State: " << static_cast<int>(state_);
+      DVLOG(3) << "Abandon input frame for video encoder."
+               << " State: " << static_cast<int>(state_);
   }
 }
 
