@@ -24,7 +24,6 @@
 #import "components/policy/core/common/schema_registry.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
-#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "google_apis/gaia/gaia_constants.h"
 #import "google_apis/gaia/gaia_urls.h"
 #import "google_apis/gaia/google_service_auth_error.h"
@@ -35,7 +34,7 @@
 #import "ios/chrome/browser/policy/model/cloud/user_policy_switch.h"
 #import "ios/chrome/browser/policy/model/device_management_service_configuration_ios.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "net/base/net_errors.h"
@@ -122,22 +121,12 @@ class UserPolicySigninServiceTest : public PlatformTest {
     UserPolicySigninServiceFactory::SetDeviceManagementServiceForTesting(
         &device_management_service_);
 
-    local_state_ = std::make_unique<TestingPrefServiceSimple>();
-    RegisterLocalStatePrefs(local_state_->registry());
-    TestingApplicationContext::GetGlobal()->SetLocalState(local_state_.get());
-
+    pref_service_ = TestingApplicationContext::GetGlobal()->GetLocalState();
     TestingApplicationContext::GetGlobal()->GetBrowserPolicyConnector()->Init(
-        local_state_.get(),
+        pref_service_,
         TestingApplicationContext::GetGlobal()->GetSharedURLLoaderFactory());
 
-    auto prefs =
-        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
-    RegisterBrowserStatePrefs(prefs->registry());
-
     TestChromeBrowserState::Builder builder;
-    builder.SetPrefService(
-        std::unique_ptr<sync_preferences::PrefServiceSyncable>(
-            std::move(prefs)));
     builder.SetUserCloudPolicyManager(BuildCloudPolicyManager());
     browser_state_ = builder.Build();
     browser_state_->SetSharedURLLoaderFactory(
@@ -167,8 +156,6 @@ class UserPolicySigninServiceTest : public PlatformTest {
         nullptr);
 
     browser_state_.reset();
-    TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
-    local_state_.reset();
     TestingApplicationContext::GetGlobal()
         ->GetBrowserPolicyConnector()
         ->Shutdown();
@@ -237,8 +224,7 @@ class UserPolicySigninServiceTest : public PlatformTest {
   // service that is hold by `user_policy_signin_service_`.
   void InitUserPolicySigninService() {
     user_policy_signin_service_ = std::make_unique<UserPolicySigninService>(
-        browser_state_->GetPrefs(), local_state_.get(),
-        &device_management_service_,
+        browser_state_->GetPrefs(), pref_service_, &device_management_service_,
         browser_state_->GetUserCloudPolicyManager(),
         identity_test_env_.identity_manager(),
         browser_state_->GetSharedURLLoaderFactory());
@@ -291,6 +277,8 @@ class UserPolicySigninServiceTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::Options::DEFAULT,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  IOSChromeScopedTestingLocalState scoped_local_state_;
+  PrefService* pref_service_;
 
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 
@@ -315,7 +303,6 @@ class UserPolicySigninServiceTest : public PlatformTest {
   FakeDeviceManagementService device_management_service_{
       &job_creation_handler_};
 
-  std::unique_ptr<TestingPrefServiceSimple> local_state_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<UserPolicySigninService> user_policy_signin_service_;
