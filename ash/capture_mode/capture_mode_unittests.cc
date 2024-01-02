@@ -2148,7 +2148,8 @@ TEST_F(CaptureModeTest, RotateDisplayWhileRecording) {
 }
 
 // Regression test for https://crbug.com/1331095.
-TEST_F(CaptureModeTest, CornerRegionWithScreenRotation) {
+// This is disabled due to flakiness: b/318349807
+TEST_F(CaptureModeTest, DISABLED_CornerRegionWithScreenRotation) {
   UpdateDisplay("800x600");
 
   // Pick a region at the bottom right corner of the landscape screen, so that
