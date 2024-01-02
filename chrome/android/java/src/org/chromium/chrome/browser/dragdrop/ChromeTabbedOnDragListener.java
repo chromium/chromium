@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -53,8 +54,10 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
         switch (dragEvent.getAction()) {
             case DragEvent.ACTION_DRAG_STARTED:
                 // Only proceed with the dragged tab; otherwise, skip the operations.
-                if (dragEvent.getClipDescription().filterMimeTypes(
-                                 ChromeDragAndDropBrowserDelegate.CHROME_MIMETYPE_TAB) == null
+                if (dragEvent
+                                        .getClipDescription()
+                                        .filterMimeTypes(MimeTypeUtils.CHROME_MIMETYPE_TAB)
+                                == null
                         || draggedTab == null) {
                     return false;
                 }
