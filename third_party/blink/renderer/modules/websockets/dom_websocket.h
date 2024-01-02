@@ -237,7 +237,6 @@ class MODULES_EXPORT DOMWebSocket
   void ReflectBufferedAmountConsumption();
 
   void ReleaseChannel();
-  void RecordSendTypeHistogram(WebSocketSendType);
 
   // Called on web socket message activity (sending or receiving a message) that
   // the execution context may want to handle, such as to extend its own
