@@ -56,6 +56,7 @@ void PlusAddressCreationControllerDesktop::OfferCreation(
 
   PlusAddressMetrics::RecordModalEvent(
       PlusAddressMetrics::PlusAddressModalEvent::kModalShown);
+  modal_shown_time_ = clock_->Now();
   if (!suppress_ui_for_testing_) {
     dialog_delegate_ = std::make_unique<PlusAddressCreationDialogDelegate>(
         GetWeakPtr(), &GetWebContents(), maybe_email.value());
@@ -75,6 +76,8 @@ void PlusAddressCreationControllerDesktop::OnConfirmed() {
   CHECK(plus_profile_.has_value());
   PlusAddressMetrics::RecordModalEvent(
       PlusAddressMetrics::PlusAddressModalEvent::kModalConfirmed);
+  RecordModalShownDuration(
+      PlusAddressMetrics::PlusAddressModalCompletionStatus::kModalConfirmed);
 
   if (plus_profile_->is_confirmed) {
     OnPlusAddressConfirmed(plus_profile_.value());
@@ -97,6 +100,8 @@ void PlusAddressCreationControllerDesktop::OnConfirmed() {
 void PlusAddressCreationControllerDesktop::OnCanceled() {
   PlusAddressMetrics::RecordModalEvent(
       PlusAddressMetrics::PlusAddressModalEvent::kModalCanceled);
+  RecordModalShownDuration(
+      PlusAddressMetrics::PlusAddressModalCompletionStatus::kModalCanceled);
 }
 void PlusAddressCreationControllerDesktop::OnDialogDestroyed() {
   dialog_delegate_.reset();
@@ -106,6 +111,14 @@ void PlusAddressCreationControllerDesktop::OnDialogDestroyed() {
 PlusAddressCreationView*
 PlusAddressCreationControllerDesktop::get_view_for_testing() {
   return dialog_delegate_.get();
+}
+
+void PlusAddressCreationControllerDesktop::RecordModalShownDuration(
+    const PlusAddressMetrics::PlusAddressModalCompletionStatus status) {
+  CHECK(modal_shown_time_.has_value());
+  PlusAddressMetrics::RecordModalShownDuration(
+      status, clock_->Now() - modal_shown_time_.value());
+  modal_shown_time_.reset();
 }
 
 void PlusAddressCreationControllerDesktop::set_suppress_ui_for_testing(

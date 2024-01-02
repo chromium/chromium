@@ -338,6 +338,11 @@ chromium-metrics-reviews@google.com.
   <variant name=".Unknown" summary="Unknown form type"/>
 </variants>
 
+<variants name="AutofillPlusAddressModalCompletionStatus">
+  <variant name="Canceled" summary="Modal canceled"/>
+  <variant name="Confirmed" summary="Modal confirmed"/>
+</variants>
+
 <variants name="AutofillPlusAddressNetworkRequestType">
   <variant name="Create" summary="Create a Plus Address after reservation"/>
   <variant name="GetOrCreate" summary="Get or create a Plus Address"/>
@@ -3425,6 +3430,21 @@ chromium-metrics-reviews@google.com.
     out if desired. Written when the user clicks either of the cancel or ok
     buttons, and when the modal is presented to the user.
   </summary>
+</histogram>
+
+<histogram name="Autofill.PlusAddresses.Modal.{Status}.ShownDuration"
+    units="ms" expires_after="2024-09-24">
+  <owner>mreichhoff@chromium.org</owner>
+  <owner>kaklilu@chromium.org</owner>
+  <owner>minap@chromium.org</owner>
+  <summary>
+    Records the duration of time the user take to interact with the experimental
+    plus addresses modal/bottomsheet on iOS, providing insight on the user
+    experience with it. The duration is the span between when the
+    modal/bottomsheet on iOS is shown and when the user decide to confirm or
+    cancel the plus address.
+  </summary>
+  <token key="Status" variants="AutofillPlusAddressModalCompletionStatus"/>
 </histogram>
 
 <histogram name="Autofill.PlusAddresses.NetworkRequest.OauthError"
