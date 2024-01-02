@@ -17,14 +17,11 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ApplicationState;
-import org.chromium.base.BaseFeatures;
 import org.chromium.base.FakeTimeTestRule;
-import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -77,8 +74,6 @@ public class MemoryPurgeManagerTest {
     @Test
     @SmallTest
     public void testSimple() throws Exception {
-        FeatureList.setTestFeatures(Map.of(BaseFeatures.BROWSER_PROCESS_MEMORY_PURGE, true));
-
         int count = mGetCount.call();
         var manager = new MemoryPurgeManagerForTest(ApplicationState.HAS_RUNNING_ACTIVITIES);
         manager.start();
@@ -108,8 +103,6 @@ public class MemoryPurgeManagerTest {
     @Test
     @SmallTest
     public void testInitializedOnceInBackground() throws Exception {
-        FeatureList.setTestFeatures(Map.of(BaseFeatures.BROWSER_PROCESS_MEMORY_PURGE, true));
-
         int count = mGetCount.call();
         var manager = new MemoryPurgeManagerForTest(ApplicationState.HAS_STOPPED_ACTIVITIES);
         manager.start();
@@ -125,8 +118,6 @@ public class MemoryPurgeManagerTest {
     @Test
     @SmallTest
     public void testDontTriggerForProcessesWithNoActivities() {
-        FeatureList.setTestFeatures(Map.of(BaseFeatures.BROWSER_PROCESS_MEMORY_PURGE, true));
-
         var manager = new MemoryPurgeManagerForTest(ApplicationState.HAS_DESTROYED_ACTIVITIES);
         manager.start();
 
@@ -145,8 +136,6 @@ public class MemoryPurgeManagerTest {
     @Test
     @SmallTest
     public void testMultiple() throws Exception {
-        FeatureList.setTestFeatures(Map.of(BaseFeatures.BROWSER_PROCESS_MEMORY_PURGE, true));
-
         int count = mGetCount.call();
         var manager = new MemoryPurgeManagerForTest(ApplicationState.HAS_RUNNING_ACTIVITIES);
         manager.start();
@@ -176,8 +165,6 @@ public class MemoryPurgeManagerTest {
     @Test
     @SmallTest
     public void testNoEnoughTimeInBackground() {
-        FeatureList.setTestFeatures(Map.of(BaseFeatures.BROWSER_PROCESS_MEMORY_PURGE, true));
-
         var manager = new MemoryPurgeManagerForTest(ApplicationState.HAS_RUNNING_ACTIVITIES);
         manager.start();
 
