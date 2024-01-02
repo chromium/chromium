@@ -50,8 +50,8 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
   // numeric values should never be reused.
   enum class WarningAction {
     // The warning is shown. This is a special action that may not be triggered
-    // by user. We will use this action as the anchor to track the latency of
-    // other actions.
+    // by user. We will use the first instance of this action as the anchor to
+    // track the latency of other actions.
     SHOWN = 0,
     // The user clicks proceed, which means the user decides to bypass the
     // warning.
