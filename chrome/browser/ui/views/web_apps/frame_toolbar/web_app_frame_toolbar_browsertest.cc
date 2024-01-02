@@ -84,6 +84,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/widget/constants.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -699,7 +700,9 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
   EXPECT_FALSE(popup_browser_view->IsBorderlessModeEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, PopupSize) {
+IN_PROC_BROWSER_TEST_F(
+    BorderlessIsolatedWebAppBrowserTest,
+    PopupSize_CanSubceedMinimumWindowSize_And_InnerAndOuterSizesAreCorrect) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
   GrantWindowManagementPermission();
   ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
@@ -708,10 +711,15 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, PopupSize) {
       EvalJs(browser_view()->GetActiveWebContents(), "window.location.href")
           .ExtractString();
 
-  BrowserView* popup_browser_view =
-      OpenPopup("window.open('" + url +
-                "', '', 'location=0, status=0, scrollbars=0, "
-                "left=0, top=0, width=400, height=300');");
+  // width and height set should be less than `blink::kMinimumWindowSize` to
+  // ensure that for borderless apps, it's possible to subceed the limit.
+  const std::string kWindowOpenScript = base::StrCat(
+      {"window.open('", url,
+       "', '', 'location=0, status=0, scrollbars=0, left=0, top=0, width=",
+       base::NumberToString(blink::kMinimumBorderlessWindowSize), ", height=",
+       base::NumberToString(blink::kMinimumBorderlessWindowSize), "');"});
+  BrowserView* popup_browser_view = OpenPopup(kWindowOpenScript);
+
   EXPECT_TRUE(popup_browser_view->IsBorderlessModeEnabled());
   auto* popup_web_contents = popup_browser_view->GetActiveWebContents();
 
@@ -721,8 +729,8 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, PopupSize) {
                                            kBorderlessAppOnloadTitle);
   EXPECT_EQ(init_title_watcher.WaitAndGetTitle(), kBorderlessAppOnloadTitle);
 
-  constexpr int kExpectedWidth = 400, kExpectedHeight = 300;
-  gfx::Size expected_size(kExpectedWidth, kExpectedHeight);
+  gfx::Size expected_size(blink::kMinimumBorderlessWindowSize,
+                          blink::kMinimumBorderlessWindowSize);
 
 // For ChromeOS the resizable borders are "outside of the window" where as for
 // Linux they are "inside of the window".
@@ -733,14 +741,17 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, PopupSize) {
   constexpr int kFrameInsets =
       2 * OpaqueBrowserFrameViewLayout::kFrameBorderThickness;
   // window.open() sets the inner size to match with the given size.
-  gfx::Size expected_outer_size(kExpectedWidth + kFrameInsets,
-                                kExpectedHeight + kFrameInsets);
+  gfx::Size expected_outer_size(
+      blink::kMinimumBorderlessWindowSize + kFrameInsets,
+      blink::kMinimumBorderlessWindowSize + kFrameInsets);
   WaitForWindowSizeCorrectlyUpdated(popup_browser_view, expected_size,
                                     expected_outer_size);
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, PopupResize) {
+IN_PROC_BROWSER_TEST_F(
+    BorderlessIsolatedWebAppBrowserTest,
+    PopupResize_CanSubceedMinimumWindowSize_And_InnerAndOuterSizesAreCorrect) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
   GrantWindowManagementPermission();
   ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
@@ -775,12 +786,20 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, PopupResize) {
                                                          kResizeTitle);
 
   EXPECT_TRUE(ExecJs(popup_web_contents, kOnResizeScript));
-  EXPECT_TRUE(ExecJs(popup_web_contents, "window.resizeTo(600,500)"));
+
+  // width and height set should be less than `blink::kMinimumWindowSize` to
+  // ensure that for borderless apps, it's possible to subceed the limit.
+  const std::string kResizeToScript = content::JsReplace(
+      R"(
+    window.resizeTo($1,$1)
+  )",
+      base::NumberToString(blink::kMinimumBorderlessWindowSize));
+  EXPECT_TRUE(ExecJs(popup_web_contents, kResizeToScript));
   std::ignore = resized_title_watcher.WaitAndGetTitle();
   EXPECT_EQ(popup_web_contents->GetTitle(), kResizeTitle);
 
-  constexpr int kExpectedWidth = 600, kExpectedHeight = 500;
-  gfx::Size expected_size(kExpectedWidth, kExpectedHeight);
+  gfx::Size expected_size(blink::kMinimumBorderlessWindowSize,
+                          blink::kMinimumBorderlessWindowSize);
 
 #if BUILDFLAG(IS_CHROMEOS)
   WaitForWindowSizeCorrectlyUpdated(popup_browser_view, expected_size,
@@ -789,8 +808,9 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, PopupResize) {
   constexpr int kFrameInsets =
       2 * OpaqueBrowserFrameViewLayout::kFrameBorderThickness;
   // window.resizeTo() sets the outer size to match with the given size.
-  gfx::Size expected_inner_size(kExpectedWidth - kFrameInsets,
-                                kExpectedHeight - kFrameInsets);
+  gfx::Size expected_inner_size(
+      blink::kMinimumBorderlessWindowSize - kFrameInsets,
+      blink::kMinimumBorderlessWindowSize - kFrameInsets);
   WaitForWindowSizeCorrectlyUpdated(popup_browser_view, expected_inner_size,
                                     expected_size);
 #endif

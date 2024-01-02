@@ -13,6 +13,9 @@ namespace blink {
 // window object
 BLINK_COMMON_EXPORT extern const int kMinimumWindowSize;
 
+// The minimum allowed window size for when the app is borderless.
+BLINK_COMMON_EXPORT extern const int kMinimumBorderlessWindowSize;
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_WIDGET_CONSTANTS_H_
