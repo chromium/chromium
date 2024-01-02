@@ -340,7 +340,8 @@ void StorageMonitorMac::GetDiskInfoAndUpdate(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&BuildStorageInfo, dict, bsd_name),
-      base::BindOnce(&StorageMonitorMac::UpdateDisk, AsWeakPtr(), update_type,
+      base::BindOnce(&StorageMonitorMac::UpdateDisk,
+                     weak_ptr_factory_.GetWeakPtr(), update_type,
                      base::Owned(bsd_name)));
 }
 
