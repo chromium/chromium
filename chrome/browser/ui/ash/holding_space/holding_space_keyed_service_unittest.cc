@@ -41,6 +41,8 @@
 #include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "chrome/browser/ash/file_suggest/mock_file_suggest_keyed_service.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
@@ -83,10 +85,15 @@ namespace {
 
 using holding_space::ScopedTestMountPoint;
 using ::testing::AllOf;
+using ::testing::Conditional;
+using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::IsEmpty;
 using ::testing::IsFalse;
 using ::testing::IsTrue;
+using ::testing::Pointee;
+using ::testing::Property;
 using ::testing::ResultOf;
 using ::testing::Value;
 
@@ -3032,6 +3039,100 @@ TEST_F(HoldingSpaceKeyedServiceNearbySharingTest, AddNearbyShareItem) {
             GetVirtualPathFromUrl(item_2->file().file_system_url,
                                   downloads_mount->name()));
   EXPECT_EQ(u"File 2.png", item_2->GetText());
+}
+
+// Base class for tests of Photoshop Web integration. Parameterized by:
+// (a) whether to enable Photoshop Web integration, and
+// (b) the binding context to use for the file picker during testing.
+class HoldingSpaceKeyedServicePhotoshopWebIntegrationTest
+    : public HoldingSpaceKeyedServiceTest,
+      public ::testing::WithParamInterface<std::tuple<
+          /*enable_photoshop_web_integration=*/bool,
+          /*file_picker_binding_context=*/GURL>> {
+ public:
+  HoldingSpaceKeyedServicePhotoshopWebIntegrationTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kHoldingSpacePhotoshopWebIntegration,
+        IsPhotoshopWebIntegrationEnabled());
+  }
+
+  // The binding context to use for the file picker given test parameterization.
+  const GURL& GetFilePickerBindingContext() const {
+    return std::get<1>(GetParam());
+  }
+
+  // Whether Photoshop Web integration is enabled given test parameterization.
+  bool IsPhotoshopWebIntegrationEnabled() const {
+    return std::get<0>(GetParam());
+  }
+
+ private:
+  // Used to enable/disable Photoshop Web integration.
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HoldingSpaceKeyedServicePhotoshopWebIntegrationTest,
+    ::testing::Combine(/*enable_photoshop_web_integration=*/::testing::Bool(),
+                       /*file_picker_binding_context=*/::testing::Values(
+                           GURL(),
+                           GURL("https://google.com/"),
+                           GURL("https://photoshop.adobe.com/"))));
+
+// Verifies that a Photoshop Web item will be added to the user's Holding Space
+// under expected circumstances.
+TEST_P(HoldingSpaceKeyedServicePhotoshopWebIntegrationTest,
+       AddPhotoshopWebItem) {
+  // Cache `profile`.
+  TestingProfile* const profile = GetProfile();
+
+  // Wait for `model` attachment and verify initial state.
+  HoldingSpaceModelAttachedWaiter(profile).Wait();
+  const HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
+  ASSERT_TRUE(model);
+  ASSERT_EQ(model->items().size(), 0u);
+
+  // Create `mount_point`.
+  std::unique_ptr<ScopedTestMountPoint> mount_point =
+      ScopedTestMountPoint::CreateAndMountDownloads(profile);
+  ASSERT_TRUE(mount_point->IsValid());
+
+  // Create file and resolve metadata.
+  const base::FilePath file_path =
+      mount_point->CreateFile(/*relative_path=*/base::FilePath("foo"));
+  const GURL file_system_url =
+      holding_space_util::ResolveFileSystemUrl(profile, file_path);
+  const HoldingSpaceFile::FileSystemType file_system_type =
+      holding_space_util::ResolveFileSystemType(profile, file_system_url);
+
+  // Propagate file creation event from a file picker with the binding context
+  // specified by test parameterization.
+  FileSystemAccessPermissionContextFactory::GetForProfile(profile)
+      ->OnFileCreatedFromShowSaveFilePicker(
+          GetFilePickerBindingContext(),
+          file_manager::util::GetFileManagerFileSystemContext(profile)
+              ->CrackURLInFirstPartyContext(file_system_url));
+
+  // Verify that a Photoshop Web item is added to the user's Holding Space iff:
+  // (a) Photoshop Web integration is enabled, and
+  // (b) the binding context for the file picker is from the domain associated
+  //     with Photoshop Web.
+  EXPECT_THAT(
+      model->items(),
+      Conditional(
+          IsPhotoshopWebIntegrationEnabled() &&
+              GetFilePickerBindingContext().DomainIs("photoshop.adobe.com"),
+          ElementsAre(Pointee(AllOf(
+              Property(&HoldingSpaceItem::type,
+                       HoldingSpaceItem::Type::kPhotoshopWeb),
+              Property(&HoldingSpaceItem::file,
+                       AllOf(Field(&HoldingSpaceFile::file_path, file_path),
+                             Field(&HoldingSpaceFile::file_system_type,
+                                   file_system_type),
+                             Field(&HoldingSpaceFile::file_system_url,
+                                   file_system_url)))))),
+          IsEmpty()));
 }
 
 // Base class for tests of print-to-PDF integration. Parameterized by whether

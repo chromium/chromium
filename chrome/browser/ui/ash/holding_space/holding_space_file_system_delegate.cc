@@ -33,6 +33,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -409,6 +410,22 @@ void HoldingSpaceFileSystemDelegate::OnVolumeUnmounted(
       FROM_HERE,
       base::BindOnce(&HoldingSpaceFileSystemDelegate::RemoveItemsParentedByPath,
                      weak_factory_.GetWeakPtr(), volume.mount_path()));
+}
+
+void HoldingSpaceFileSystemDelegate::OnFileCreatedFromShowSaveFilePicker(
+    const GURL& file_picker_binding_context,
+    const storage::FileSystemURL& url) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!features::IsHoldingSpacePhotoshopWebIntegrationEnabled()) {
+    return;
+  }
+
+  if (file_picker_binding_context.DomainIs("photoshop.adobe.com")) {
+    service()->AddItemOfType(HoldingSpaceItem::Type::kPhotoshopWeb, url.path());
+    return;
+  }
+
+  // TODO(http://b/310708275): Emit histogram to track calls from other domains.
 }
 
 void HoldingSpaceFileSystemDelegate::OnFileModified(
