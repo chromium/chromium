@@ -1295,12 +1295,6 @@ BASE_FEATURE(kUserMediaScreenCapturing,
 // https://w3c.github.io/web-nfc/
 BASE_FEATURE(kWebNfc, "WebNFC", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Kill switch for allowing webview to suppress tap immediately after fling,
-// matching chrome behavior.
-BASE_FEATURE(kWebViewSuppressTapDuringFling,
-             "WebViewSuppressTapDuringFling",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
