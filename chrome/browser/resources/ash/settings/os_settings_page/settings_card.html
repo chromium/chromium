@@ -1,5 +1,6 @@
 <style>
   :host {
+    --settings-card-bg-color: var(--cros-sys-app_base);
     --settings-card-border-radius: var(--cr-card-border-radius);
 
     display: flex;
@@ -12,6 +13,12 @@
     --settings-card-border-radius: 16px;
 
     margin-bottom: 16px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host-context(body.revamp-wayfinding-enabled):host {
+      --settings-card-bg-color: var(--cros-sys-surface1);
+    }
   }
 
   :host-context(body.revamp-wayfinding-enabled) #header {
@@ -40,7 +47,7 @@
   }
 
   #card {
-    background-color: var(--cros-sys-app_base);
+    background-color: var(--settings-card-bg-color);
     border-radius: var(--settings-card-border-radius);
     flex: 1;
     overflow: hidden;
