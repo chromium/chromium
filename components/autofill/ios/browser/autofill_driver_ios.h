@@ -53,7 +53,7 @@ class AutofillDriverIOS : public AutofillDriver,
   bool IsPrerendering() const override;
   bool HasSharedAutofillPermission() const override;
   bool CanShowAutofillUi() const override;
-  std::vector<FieldGlobalId> ApplyFormAction(
+  std::set<FieldGlobalId> ApplyFormAction(
       mojom::ActionType action_type,
       mojom::ActionPersistence action_persistence,
       const FormData& data,

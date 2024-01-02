@@ -154,7 +154,7 @@ class AutofillDriver {
   // operation currently being filled or undone.
   //
   // This method is a no-op if the renderer is not currently available.
-  virtual std::vector<FieldGlobalId> ApplyFormAction(
+  virtual std::set<FieldGlobalId> ApplyFormAction(
       mojom::ActionType action_type,
       mojom::ActionPersistence action_persistence,
       const FormData& form,

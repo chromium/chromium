@@ -226,7 +226,7 @@ net::IsolationInfo ContentAutofillDriver::IsolationInfo() {
   return render_frame_host_->GetIsolationInfoForSubresources();
 }
 
-std::vector<FieldGlobalId> ContentAutofillDriver::ApplyFormAction(
+std::set<FieldGlobalId> ContentAutofillDriver::ApplyFormAction(
     mojom::ActionType action_type,
     mojom::ActionPersistence action_persistence,
     const FormData& form,

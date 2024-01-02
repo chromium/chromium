@@ -98,9 +98,7 @@ class TestAutofillDriverTemplate : public T {
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override {}
 
-  // The return value contains the members (field, type) of `field_type_map` for
-  // which `field_type_map_filter_.Run(triggered_origin, field, type)` is true.
-  std::vector<FieldGlobalId> ApplyFormAction(
+  std::set<FieldGlobalId> ApplyFormAction(
       mojom::ActionType action_type,
       mojom::ActionPersistence action_persistence,
       const FormData& form_data,
@@ -109,11 +107,11 @@ class TestAutofillDriverTemplate : public T {
     if (action_type == mojom::ActionType::kUndo) {
       return {};
     }
-    std::vector<FieldGlobalId> result;
+    std::set<FieldGlobalId> result;
     for (const auto& [id, type] : field_type_map) {
       if (!field_type_map_filter_ ||
           field_type_map_filter_.Run(triggered_origin, id, type)) {
-        result.push_back(id);
+        result.insert(id);
       }
     }
     return result;

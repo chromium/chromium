@@ -252,7 +252,7 @@ class AutofillDriverRouter {
 
   // Events called by the browser, passed to the renderer:
   // Keep in alphabetic order.
-  std::vector<FieldGlobalId> ApplyFormAction(
+  std::set<FieldGlobalId> ApplyFormAction(
       AutofillDriver* source,
       mojom::ActionType action_type,
       mojom::ActionPersistence action_persistence,

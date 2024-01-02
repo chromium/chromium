@@ -602,7 +602,7 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
     if (!IsSafeToFill(renderer_form->fields.back())) {
       renderer_form->fields.back().value.clear();
     } else {
-      result.safe_fields.push_back(browser_field.global_id());
+      result.safe_fields.insert(browser_field.global_id());
     }
   }
   return result;

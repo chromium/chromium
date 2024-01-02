@@ -2547,7 +2547,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
         return std::make_pair(field->global_id(),
                               field->Type().GetStorableType());
       });
-  std::vector<FieldGlobalId> safe_fields =
+  std::set<FieldGlobalId> safe_fields =
       driver().ApplyFormAction(mojom::ActionType::kFill, action_persistence,
                                result, field.origin, field_types);
   client().DidFillOrPreviewForm(action_persistence,
@@ -2563,7 +2563,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
 
   // Report the fields that were not filled due to the iframe security policy.
   for (FieldGlobalId newly_filled_field_id : newly_filled_field_ids) {
-    if (base::Contains(safe_fields, newly_filled_field_id)) {
+    if (safe_fields.contains(newly_filled_field_id)) {
       // A safe field was filled. Both functions will not return a nullptr
       // because they passed the `FieldFillingSkipReason::kFormChanged`
       // condition.
@@ -2614,7 +2614,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       credit_card_form_event_logger_->OnDidFillSuggestion(
           credit_card_, *form_structure, *autofill_trigger_field,
           newly_filled_field_ids,
-          base::flat_set<FieldGlobalId>(std::move(safe_fields)),
+          base::MakeFlatSet<FieldGlobalId>(std::move(safe_fields)),
           signin_state_for_metrics_, trigger_details.trigger_source);
     } else {
       // An address form was filled.
